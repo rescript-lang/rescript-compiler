@@ -52,7 +52,7 @@
 
 (** [enabled] is [true] if the compiler is configured with spacetime and [false]
     otherwise *)
-val enabled : bool
+val enabled : bool (* [@@dead "enabled"] *)
 
 module Series : sig
   (** Type representing a file that will hold a series of heap snapshots
@@ -61,14 +61,14 @@ module Series : sig
   type t
 
   (** [create ~path] creates a series file at [path]. *)
-  val create : path:string -> t
+  val create : path:string -> t (* [@@dead "Series.create"] *)
 
   (** [save_event] writes an event, which is an arbitrary string, into the
       given series file.  This may be used for identifying particular points
       during program execution when analysing the profile.
       The optional [time] parameter is as for {!Snapshot.take}.
   *)
-  val save_event : ?time:float -> t -> event_name:string -> unit
+  val save_event : ?time:float -> t -> event_name:string -> unit (* [@@dead "Series.save_event"] *)
 
   (** [save_and_close series] writes information into [series] required for
       interpreting the snapshots that [series] contains and then closes the
@@ -76,7 +76,7 @@ module Series : sig
       file.
       The optional [time] parameter is as for {!Snapshot.take}.
   *)
-  val save_and_close : ?time:float -> t -> unit
+  val save_and_close : ?time:float -> t -> unit (* [@@dead "Series.save_and_close"] *)
 end
 
 module Snapshot : sig
@@ -91,9 +91,9 @@ module Snapshot : sig
       clock time (which is not supported in the standard library) rather than
       elapsed CPU time.
   *)
-  val take : ?time:float -> Series.t -> unit
+  val take : ?time:float -> Series.t -> unit (* [@@dead "Snapshot.take"] *)
 end
 
 (** Like {!Series.save_event}, but writes to the automatic snapshot file.
     This function is a no-op if OCAML_SPACETIME_INTERVAL was not set. *)
-val save_event_for_automatic_snapshots : event_name:string -> unit
+val save_event_for_automatic_snapshots : event_name:string -> unit (* [@@dead "save_event_for_automatic_snapshots"] *)

@@ -29,27 +29,27 @@ val length : 'a t -> int
 
 val cons : 'a -> 'a t -> 'a t 
 
-val isEmpty : 'a t -> bool 
+val isEmpty : 'a t -> bool  (* [@@dead "isEmpty"] *)
 
-val hd : 'a t -> 'a option
+val hd : 'a t -> 'a option (* [@@dead "hd"] *)
 
-val tl : 'a t -> 'a t option
+val tl : 'a t -> 'a t option (* [@@dead "tl"] *)
 
-val nth : 'a t -> int -> 'a option
+val nth : 'a t -> int -> 'a option (* [@@dead "nth"] *)
 
-val revAppend : 'a t -> 'a t -> 'a t
+val revAppend : 'a t -> 'a t -> 'a t (* [@@dead "revAppend"] *)
 
-val rev : 'a t -> 'a t
+val rev : 'a t -> 'a t (* [@@dead "rev"] *)
 
-val mapRev : ('a -> 'b [@bs]) -> 'a t -> 'b t
+val mapRev : ('a -> 'b [@bs]) -> 'a t -> 'b t (* [@@dead "mapRev"] *)
 
-val map : ('a -> 'b [@bs]) -> 'a t -> 'b t
+val map : ('a -> 'b [@bs]) -> 'a t -> 'b t (* [@@dead "map"] *)
 
-val iter : ('a -> unit [@bs]) -> 'a t -> unit 
+val iter : ('a -> unit [@bs]) -> 'a t -> unit  (* [@@dead "iter"] *)
 
-val iteri : (int -> 'a -> unit [@bs]) -> 'a t -> unit 
+val iteri : (int -> 'a -> unit [@bs]) -> 'a t -> unit  (* [@@dead "iteri"] *)
 
-val foldLeft : ('a -> 'b -> 'a [@bs]) -> 'a -> 'b list -> 'a
+val foldLeft : ('a -> 'b -> 'a [@bs]) -> 'a -> 'b list -> 'a (* [@@dead "foldLeft"] *)
 (** Application order is left to right, tail recurisve *)
 
 val foldRight : ('a -> 'b -> 'b [@bs]) -> 'a list -> 'b -> 'b

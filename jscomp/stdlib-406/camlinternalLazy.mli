@@ -19,9 +19,9 @@
 
 exception Undefined
 
-val force_lazy_block : 'a lazy_t -> 'a
+val force_lazy_block : 'a lazy_t -> 'a (* [@@dead "force_lazy_block"] *)
 
-val force_val_lazy_block : 'a lazy_t -> 'a
+val force_val_lazy_block : 'a lazy_t -> 'a (* [@@dead "force_val_lazy_block"] *)
 
-val force : 'a lazy_t -> 'a
+val force : 'a lazy_t -> 'a (* [@@dead "force"] *)
 val force_val : 'a lazy_t -> 'a

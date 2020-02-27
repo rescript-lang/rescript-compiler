@@ -27,31 +27,31 @@ type t
 type obj
 type closure
 val public_method_label : string -> tag
-val new_method : table -> label
-val new_variable : table -> string -> int
-val new_methods_variables :
+val new_method : table -> label (* [@@dead "new_method"] *)
+val new_variable : table -> string -> int (* [@@dead "new_variable"] *)
+val new_methods_variables : (* [@@dead "new_methods_variables"] *)
     table -> string array -> string array -> label array
-val get_variable : table -> string -> int
-val get_variables : table -> string array -> int array
-val get_method_label : table -> string -> label
-val get_method_labels : table -> string array -> label array
-val get_method : table -> label -> meth
-val set_method : table -> label -> meth -> unit
-val set_methods : table -> label array -> unit
-val narrow : table -> string array -> string array -> string array -> unit
-val widen : table -> unit
-val add_initializer : table -> (obj -> unit) -> unit
-val dummy_table : table
-val create_table : string array -> table
-val init_class : table -> unit
-val inherits :
+val get_variable : table -> string -> int (* [@@dead "get_variable"] *)
+val get_variables : table -> string array -> int array (* [@@dead "get_variables"] *)
+val get_method_label : table -> string -> label (* [@@dead "get_method_label"] *)
+val get_method_labels : table -> string array -> label array (* [@@dead "get_method_labels"] *)
+val get_method : table -> label -> meth (* [@@dead "get_method"] *)
+val set_method : table -> label -> meth -> unit (* [@@dead "set_method"] *)
+val set_methods : table -> label array -> unit (* [@@dead "set_methods"] *)
+val narrow : table -> string array -> string array -> string array -> unit (* [@@dead "narrow"] *)
+val widen : table -> unit (* [@@dead "widen"] *)
+val add_initializer : table -> (obj -> unit) -> unit (* [@@dead "add_initializer"] *)
+val dummy_table : table (* [@@dead "dummy_table"] *)
+val create_table : string array -> table (* [@@dead "create_table"] *)
+val init_class : table -> unit (* [@@dead "init_class"] *)
+val inherits : (* [@@dead "inherits"] *)
     table -> string array -> string array -> string array ->
     (t * (table -> obj -> Obj.t) * t * obj) -> bool -> Obj.t array
-val make_class :
+val make_class : (* [@@dead "make_class"] *)
     string array -> (table -> Obj.t -> t) ->
     (t * (table -> Obj.t -> t) * (Obj.t -> t) * Obj.t)
 type init_table
-val make_class_store :
+val make_class_store : (* [@@dead "make_class_store"] *)
     string array -> (table -> t) -> init_table -> unit
 #if BS then    
 #else
@@ -62,11 +62,11 @@ val dummy_class :
 (** {1 Objects} *)
 
 val copy : (< .. > as 'a) -> 'a
-val create_object : table -> obj
-val create_object_opt : obj -> table -> obj
-val run_initializers : obj -> table -> unit
-val run_initializers_opt : obj -> obj -> table -> obj
-val create_object_and_run_initializers : obj -> table -> obj
+val create_object : table -> obj (* [@@dead "create_object"] *)
+val create_object_opt : obj -> table -> obj (* [@@dead "create_object_opt"] *)
+val run_initializers : obj -> table -> unit (* [@@dead "run_initializers"] *)
+val run_initializers_opt : obj -> obj -> table -> obj (* [@@dead "run_initializers_opt"] *)
+val create_object_and_run_initializers : obj -> table -> obj (* [@@dead "create_object_and_run_initializers"] *)
 #if BS then
 #else
 external send : obj -> tag -> t = "%send"
@@ -79,7 +79,7 @@ external get_public_method : obj -> tag -> closure
 (** {1 Table cache} *)
 
 type tables
-val lookup_tables : tables -> closure array -> tables
+val lookup_tables : tables -> closure array -> tables (* [@@dead "lookup_tables"] *)
 
 (** {1 Builtins to reduce code size} *)
 
@@ -111,48 +111,48 @@ val send_meth : tag -> label -> int -> closure
 *)
 
 type impl =
-    GetConst
-  | GetVar
-  | GetEnv
-  | GetMeth
-  | SetVar
-  | AppConst
-  | AppVar
-  | AppEnv
-  | AppMeth
-  | AppConstConst
-  | AppConstVar
-  | AppConstEnv
-  | AppConstMeth
-  | AppVarConst
-  | AppEnvConst
-  | AppMethConst
-  | MethAppConst
-  | MethAppVar
-  | MethAppEnv
-  | MethAppMeth
-  | SendConst
-  | SendVar
-  | SendEnv
-  | SendMeth
-  | Closure of closure
+    GetConst (* [@@dead "impl.GetConst"] *)
+  | GetVar (* [@@dead "impl.GetVar"] *)
+  | GetEnv (* [@@dead "impl.GetEnv"] *)
+  | GetMeth (* [@@dead "impl.GetMeth"] *)
+  | SetVar (* [@@dead "impl.SetVar"] *)
+  | AppConst (* [@@dead "impl.AppConst"] *)
+  | AppVar (* [@@dead "impl.AppVar"] *)
+  | AppEnv (* [@@dead "impl.AppEnv"] *)
+  | AppMeth (* [@@dead "impl.AppMeth"] *)
+  | AppConstConst (* [@@dead "impl.AppConstConst"] *)
+  | AppConstVar (* [@@dead "impl.AppConstVar"] *)
+  | AppConstEnv (* [@@dead "impl.AppConstEnv"] *)
+  | AppConstMeth (* [@@dead "impl.AppConstMeth"] *)
+  | AppVarConst (* [@@dead "impl.AppVarConst"] *)
+  | AppEnvConst (* [@@dead "impl.AppEnvConst"] *)
+  | AppMethConst (* [@@dead "impl.AppMethConst"] *)
+  | MethAppConst (* [@@dead "impl.MethAppConst"] *)
+  | MethAppVar (* [@@dead "impl.MethAppVar"] *)
+  | MethAppEnv (* [@@dead "impl.MethAppEnv"] *)
+  | MethAppMeth (* [@@dead "impl.MethAppMeth"] *)
+  | SendConst (* [@@dead "impl.SendConst"] *)
+  | SendVar (* [@@dead "impl.SendVar"] *)
+  | SendEnv (* [@@dead "impl.SendEnv"] *)
+  | SendMeth (* [@@dead "impl.SendMeth"] *)
+  | Closure of closure (* [@@dead "impl.Closure"] *)
 
 (** {1 Parameters} *)
 
 (* currently disabled *)
 type params =
-  { mutable compact_table : bool;
-    mutable copy_parent : bool;
-    mutable clean_when_copying : bool;
-    mutable retry_count : int;
-    mutable bucket_small_size : int }
+  { mutable compact_table : bool; (* [@@dead "params.compact_table"] *)
+    mutable copy_parent : bool; (* [@@dead "params.copy_parent"] *)
+    mutable clean_when_copying : bool; (* [@@dead "params.clean_when_copying"] *)
+    mutable retry_count : int; (* [@@dead "params.retry_count"] *)
+    mutable bucket_small_size : int } (* [@@dead "params.bucket_small_size"] *)
 
-val params : params
+val params : params (* [@@dead "params"] *)
 
 (** {1 Statistics} *)
 
 type stats =
-  { classes : int;
-    methods : int;
-    inst_vars : int }
-val stats : unit -> stats
+  { classes : int; (* [@@dead "stats.classes"] *)
+    methods : int; (* [@@dead "stats.methods"] *)
+    inst_vars : int } (* [@@dead "stats.inst_vars"] *)
+val stats : unit -> stats (* [@@dead "stats"] *)

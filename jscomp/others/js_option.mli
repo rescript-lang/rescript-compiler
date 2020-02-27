@@ -24,7 +24,7 @@
 
 type 'a t = 'a option
 
-val some : 'a -> 'a option
+val some : 'a -> 'a option (* [@@dead "some"] *)
 
 val isSome : 'a option -> bool
 
@@ -43,7 +43,7 @@ val map : ('a -> 'b [@bs]) -> 'a option -> 'b option
 
 val getWithDefault :  'a -> 'a option -> 'a
 
-val default : 'a -> 'a option -> 'a
+val default : 'a -> 'a option -> 'a (* [@@dead "default"] *)
 [@@deprecated "Use getWithDefault instead since default has special meaning in ES module"]
 
 

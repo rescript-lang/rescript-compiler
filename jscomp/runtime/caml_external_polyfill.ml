@@ -24,7 +24,7 @@
 
 
 type global 
-let  getGlobalThis : unit -> global [@bs]= [%raw{| function(){
+let  getGlobalThis : unit -> global [@bs]= [%raw{| function(){ (* [@@dead "getGlobalThis"] *)
   if (typeof globalThis !== 'undefined') return globalThis;
 	if (typeof self !== 'undefined') return self;
 	if (typeof window !== 'undefined') return window;
@@ -34,7 +34,7 @@ let  getGlobalThis : unit -> global [@bs]= [%raw{| function(){
 }|}]
 
 type dyn
-let resolve : string -> dyn [@bs] = [%raw {|function(s){
+let resolve : string -> dyn [@bs] = [%raw {|function(s){ (* [@@dead "resolve"] *)
   var myGlobal = getGlobalThis();
   if (myGlobal[s] === undefined){
     throw new Error(s + " not polyfilled by BuckleScript yet\n")
@@ -46,7 +46,7 @@ let resolve : string -> dyn [@bs] = [%raw {|function(s){
 type fn 
 
 
-let register : string -> fn -> unit = [%raw{| function(s,fn){
+let register : string -> fn -> unit = [%raw{| function(s,fn){ (* [@@dead "register"] *)
   var myGlobal = getGlobalThis();
   myGlobal[s] = fn 
   return 0

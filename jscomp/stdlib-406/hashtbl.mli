@@ -197,14 +197,14 @@ val is_randomized : unit -> bool
 
 (** @since 4.00.0 *)
 type statistics = {
-  num_bindings: int;
+  num_bindings: int; (* [@@dead "statistics.num_bindings"] *)
     (** Number of bindings present in the table.
         Same value as returned by {!Hashtbl.length}. *)
-  num_buckets: int;
+  num_buckets: int; (* [@@dead "statistics.num_buckets"] *)
     (** Number of buckets in the table. *)
-  max_bucket_length: int;
+  max_bucket_length: int; (* [@@dead "statistics.max_bucket_length"] *)
     (** Maximal number of bindings per bucket. *)
-  bucket_histogram: int array
+  bucket_histogram: int array (* [@@dead "statistics.bucket_histogram"] *)
     (** Histogram of bucket sizes.  This array [histo] has
         length [max_bucket_length + 1].  The value of
         [histo.(i)] is the number of buckets whose size is [i]. *)

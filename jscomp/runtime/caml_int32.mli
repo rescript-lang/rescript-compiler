@@ -24,15 +24,14 @@
 
 
 
-val div : nativeint -> nativeint -> nativeint
+val div : nativeint -> nativeint -> nativeint (* [@@dead "div"] *)
 
-val mod_ : nativeint -> nativeint -> nativeint
+val mod_ : nativeint -> nativeint -> nativeint (* [@@dead "mod_"] *)
 
-val caml_bswap16 : nativeint -> nativeint
+val caml_bswap16 : nativeint -> nativeint (* [@@dead "caml_bswap16"] *)
 
 val caml_int32_bswap : nativeint -> nativeint
 
-val caml_nativeint_bswap : nativeint -> nativeint
+val caml_nativeint_bswap : nativeint -> nativeint (* [@@dead "caml_nativeint_bswap"] *)
 
-val imul :int32 -> int32 -> int32
-
+val imul :int32 -> int32 -> int32 (* [@@dead "imul"] *)

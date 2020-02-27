@@ -41,18 +41,18 @@ val from : (int -> 'a option) -> 'a t
    [f] the first time with count [2].
 *)
 
-val of_list : 'a list -> 'a t
+val of_list : 'a list -> 'a t (* [@@dead "of_list"] *)
 (** Return the stream holding the elements of the list in the same
    order. *)
 
 val of_string : string -> char t
 (** Return the stream of the characters of the string parameter. *)
 
-val of_bytes : bytes -> char t
+val of_bytes : bytes -> char t (* [@@dead "of_bytes"] *)
 (** Return the stream of the characters of the bytes parameter.
     @since 4.02.0 *)
 
-val of_channel : in_channel -> char t
+val of_channel : in_channel -> char t (* [@@dead "of_channel"] *)
 (** Return the stream of the characters read from the input channel. *)
 
 
@@ -69,7 +69,7 @@ val next : 'a t -> 'a
 (** Return the first element of the stream and remove it from the
    stream. Raise {!Stream.Failure} if the stream is empty. *)
 
-val empty : 'a t -> unit
+val empty : 'a t -> unit (* [@@dead "empty"] *)
 (** Return [()] if the stream is empty, else raise {!Stream.Failure}. *)
 
 
@@ -83,11 +83,11 @@ val junk : 'a t -> unit
 (** Remove the first element of the stream, possibly unfreezing
    it before. *)
 
-val count : 'a t -> int
+val count : 'a t -> int (* [@@dead "count"] *)
 (** Return the current count of the stream elements, i.e. the number
    of the stream elements discarded. *)
 
-val npeek : int -> 'a t -> 'a list
+val npeek : int -> 'a t -> 'a list (* [@@dead "npeek"] *)
 (** [npeek n] returns the list of the [n] first elements of
    the stream, or all its remaining elements if less than [n]
    elements are available. *)
@@ -96,15 +96,15 @@ val npeek : int -> 'a t -> 'a list
 
 (* The following is for system use only. Do not call directly. *)
 
-val iapp : 'a t -> 'a t -> 'a t
+val iapp : 'a t -> 'a t -> 'a t (* [@@dead "iapp"] *)
 val icons : 'a -> 'a t -> 'a t
-val ising : 'a -> 'a t
+val ising : 'a -> 'a t (* [@@dead "ising"] *)
 
-val lapp : (unit -> 'a t) -> 'a t -> 'a t
-val lcons : (unit -> 'a) -> 'a t -> 'a t
-val lsing : (unit -> 'a) -> 'a t
+val lapp : (unit -> 'a t) -> 'a t -> 'a t (* [@@dead "lapp"] *)
+val lcons : (unit -> 'a) -> 'a t -> 'a t (* [@@dead "lcons"] *)
+val lsing : (unit -> 'a) -> 'a t (* [@@dead "lsing"] *)
 
 val sempty : 'a t
 val slazy : (unit -> 'a t) -> 'a t
 
-val dump : ('a -> unit) -> 'a t -> unit
+val dump : ('a -> unit) -> 'a t -> unit (* [@@dead "dump"] *)

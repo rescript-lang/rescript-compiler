@@ -80,14 +80,14 @@ let _1 o a0 =
   else curry_1 o a0 arity     
 
 (* Public *)
-let __1 o =
+let __1 o = (* [@@dead "__1"] *)
   let arity = function_length o in
   if arity = 1 then o
   else fun a0 -> _1 o a0
 
 
 (* Intenral use *)  
-let curry_2 o a0 a1 arity =
+let curry_2 o a0 a1 arity = (* [@@dead "curry_2"] *)
   match arity with
   | 1 -> app (apply1 (Obj.magic o) a0) [|a1|]
   | 2 -> apply2 (Obj.magic o) a0 a1
@@ -99,20 +99,20 @@ let curry_2 o a0 a1 arity =
   | _ -> Obj.magic (app o [|a0;a1|])    
 
 (* Public *)  
-let _2 o a0 a1 =
+let _2 o a0 a1 = (* [@@dead "_2"] *)
   let arity = function_length o in
   if arity = 2 then apply2 o a0 a1
   else curry_2 o a0 a1 arity     
 
 (* Public *)
-let __2 o =
+let __2 o = (* [@@dead "__2"] *)
   let arity = function_length o in
   if arity = 2 then o
   else fun a0 a1 -> _2 o a0 a1
 
 
 (* Intenral use *)  
-let curry_3 o a0 a1 a2 arity =
+let curry_3 o a0 a1 a2 arity = (* [@@dead "curry_3"] *)
   match arity with
   | 1 -> app (apply1 (Obj.magic o) a0) [|a1;a2|]
   | 2 -> app (apply2 (Obj.magic o) a0 a1) [|a2|]
@@ -124,13 +124,13 @@ let curry_3 o a0 a1 a2 arity =
   | _ -> Obj.magic (app o [|a0;a1;a2|])    
 
 (* Public *)  
-let _3 o a0 a1 a2 =
+let _3 o a0 a1 a2 = (* [@@dead "_3"] *)
   let arity = function_length o in
   if arity = 3 then apply3 o a0 a1 a2
   else curry_3 o a0 a1 a2 arity     
 
 (* Public *)
-let __3 o =
+let __3 o = (* [@@dead "__3"] *)
   let arity = function_length o in
   if arity = 3 then o
   else fun a0 a1 a2 -> _3 o a0 a1 a2
@@ -155,7 +155,7 @@ let _4 o a0 a1 a2 a3 =
   else curry_4 o a0 a1 a2 a3 arity     
 
 (* Public *)
-let __4 o =
+let __4 o = (* [@@dead "__4"] *)
   let arity = function_length o in
   if arity = 4 then o
   else fun a0 a1 a2 a3 -> _4 o a0 a1 a2 a3
@@ -180,14 +180,14 @@ let _5 o a0 a1 a2 a3 a4 =
   else curry_5 o a0 a1 a2 a3 a4 arity     
 
 (* Public *)
-let __5 o =
+let __5 o = (* [@@dead "__5"] *)
   let arity = function_length o in
   if arity = 5 then o
   else fun a0 a1 a2 a3 a4 -> _5 o a0 a1 a2 a3 a4
 
 
 (* Intenral use *)  
-let curry_6 o a0 a1 a2 a3 a4 a5 arity =
+let curry_6 o a0 a1 a2 a3 a4 a5 arity = (* [@@dead "curry_6"] *)
   match arity with
   | 1 -> app (apply1 (Obj.magic o) a0) [|a1;a2;a3;a4;a5|]
   | 2 -> app (apply2 (Obj.magic o) a0 a1) [|a2;a3;a4;a5|]
@@ -199,20 +199,20 @@ let curry_6 o a0 a1 a2 a3 a4 a5 arity =
   | _ -> Obj.magic (app o [|a0;a1;a2;a3;a4;a5|])    
 
 (* Public *)  
-let _6 o a0 a1 a2 a3 a4 a5 =
+let _6 o a0 a1 a2 a3 a4 a5 = (* [@@dead "_6"] *)
   let arity = function_length o in
   if arity = 6 then apply6 o a0 a1 a2 a3 a4 a5
   else curry_6 o a0 a1 a2 a3 a4 a5 arity     
 
 (* Public *)
-let __6 o =
+let __6 o = (* [@@dead "__6"] *)
   let arity = function_length o in
   if arity = 6 then o
   else fun a0 a1 a2 a3 a4 a5 -> _6 o a0 a1 a2 a3 a4 a5
 
 
 (* Intenral use *)  
-let curry_7 o a0 a1 a2 a3 a4 a5 a6 arity =
+let curry_7 o a0 a1 a2 a3 a4 a5 a6 arity = (* [@@dead "curry_7"] *)
   match arity with
   | 1 -> app (apply1 (Obj.magic o) a0) [|a1;a2;a3;a4;a5;a6|]
   | 2 -> app (apply2 (Obj.magic o) a0 a1) [|a2;a3;a4;a5;a6|]
@@ -224,13 +224,13 @@ let curry_7 o a0 a1 a2 a3 a4 a5 a6 arity =
   | _ -> Obj.magic (app o [|a0;a1;a2;a3;a4;a5;a6|])    
 
 (* Public *)  
-let _7 o a0 a1 a2 a3 a4 a5 a6 =
+let _7 o a0 a1 a2 a3 a4 a5 a6 = (* [@@dead "_7"] *)
   let arity = function_length o in
   if arity = 7 then apply7 o a0 a1 a2 a3 a4 a5 a6
   else curry_7 o a0 a1 a2 a3 a4 a5 a6 arity     
 
 (* Public *)
-let __7 o =
+let __7 o = (* [@@dead "__7"] *)
   let arity = function_length o in
   if arity = 7 then o
   else fun a0 a1 a2 a3 a4 a5 a6 -> _7 o a0 a1 a2 a3 a4 a5 a6
@@ -249,14 +249,13 @@ let curry_8 o a0 a1 a2 a3 a4 a5 a6 a7 arity =
   | _ -> Obj.magic (app o [|a0;a1;a2;a3;a4;a5;a6;a7|])    
 
 (* Public *)  
-let _8 o a0 a1 a2 a3 a4 a5 a6 a7 =
+let _8 o a0 a1 a2 a3 a4 a5 a6 a7 = (* [@@dead "_8"] *)
   let arity = function_length o in
   if arity = 8 then apply8 o a0 a1 a2 a3 a4 a5 a6 a7
   else curry_8 o a0 a1 a2 a3 a4 a5 a6 a7 arity     
 
 (* Public *)
-let __8 o =
+let __8 o = (* [@@dead "__8"] *)
   let arity = function_length o in
   if arity = 8 then o
   else fun a0 a1 a2 a3 a4 a5 a6 a7 -> _8 o a0 a1 a2 a3 a4 a5 a6 a7
-

@@ -90,7 +90,7 @@ type ('a, 'id) id = ('a, 'id) Belt_Id.hashable
 val make:  hintSize:int -> id:('key, 'id) id -> ('key,'value,'id) t
 (*TODO: allow randomization for security *)
 
-val clear: ('key, 'value, 'id ) t -> unit
+val clear: ('key, 'value, 'id ) t -> unit (* [@@dead "clear"] *)
 (** Empty a hash table. *)
 
 val isEmpty: _ t -> bool
@@ -101,7 +101,7 @@ val set: ('key, 'value, 'id ) t -> 'key -> 'value -> unit
      [v]
 *)
 
-val copy: ('key, 'value, 'id ) t -> ('key, 'value, 'id ) t
+val copy: ('key, 'value, 'id ) t -> ('key, 'value, 'id ) t (* [@@dead "copy"] *)
 
 val get: ('key, 'value, 'id ) t -> 'key -> 'value option
 
@@ -111,15 +111,15 @@ val has: ('key, 'value, 'id ) t -> 'key -> bool
 
 val remove: ('key, 'value, 'id ) t -> 'key ->  unit
 
-val forEachU: ('key, 'value, 'id ) t -> ('key -> 'value -> unit [@bs]) -> unit
-val forEach: ('key, 'value, 'id ) t -> ('key -> 'value -> unit) -> unit
+val forEachU: ('key, 'value, 'id ) t -> ('key -> 'value -> unit [@bs]) -> unit (* [@@dead "forEachU"] *)
+val forEach: ('key, 'value, 'id ) t -> ('key -> 'value -> unit) -> unit (* [@@dead "forEach"] *)
 (** [forEach tbl f] applies [f] to all bindings in table [tbl].
     [f] receives the key as first argument, and the associated value
     as second argument. Each binding is presented exactly once to [f].
 *)
 
-val reduceU: ('key, 'value, 'id ) t -> 'c -> ('c -> 'key -> 'value ->  'c [@bs]) ->  'c
-val reduce: ('key, 'value, 'id ) t -> 'c -> ('c -> 'key -> 'value ->  'c) ->  'c
+val reduceU: ('key, 'value, 'id ) t -> 'c -> ('c -> 'key -> 'value ->  'c [@bs]) ->  'c (* [@@dead "reduceU"] *)
+val reduce: ('key, 'value, 'id ) t -> 'c -> ('c -> 'key -> 'value ->  'c) ->  'c (* [@@dead "reduce"] *)
 (** [reduce  tbl init f] computes
     [(f kN dN ... (f k1 d1 init)...)],
     where [k1 ... kN] are the keys of all bindings in [tbl],
@@ -133,8 +133,8 @@ val reduce: ('key, 'value, 'id ) t -> 'c -> ('c -> 'key -> 'value ->  'c) ->  'c
 *)
 
 
-val keepMapInPlaceU: ('key, 'value, 'id ) t -> ('key -> 'value -> 'value option [@bs]) ->  unit
-val keepMapInPlace: ('key, 'value, 'id ) t -> ('key -> 'value -> 'value option ) ->  unit
+val keepMapInPlaceU: ('key, 'value, 'id ) t -> ('key -> 'value -> 'value option [@bs]) ->  unit (* [@@dead "keepMapInPlaceU"] *)
+val keepMapInPlace: ('key, 'value, 'id ) t -> ('key -> 'value -> 'value option ) ->  unit (* [@@dead "keepMapInPlace"] *)
 
 
 val size: _ t -> int
@@ -146,12 +146,10 @@ val size: _ t -> int
 
 
 
-val toArray: ('key, 'value, 'id ) t -> ('key * 'value) array
+val toArray: ('key, 'value, 'id ) t -> ('key * 'value) array (* [@@dead "toArray"] *)
 val keysToArray: ('key, _, _) t -> 'key array
-val valuesToArray: (_,'value,_) t -> 'value array
+val valuesToArray: (_,'value,_) t -> 'value array (* [@@dead "valuesToArray"] *)
 val fromArray: ('key * 'value) array -> id:('key,'id) id -> ('key, 'value, 'id ) t
 val mergeMany: ('key, 'value, 'id ) t -> ('key * 'value) array -> unit
-val getBucketHistogram: _ t -> int array
+val getBucketHistogram: _ t -> int array (* [@@dead "getBucketHistogram"] *)
 val logStats: _ t -> unit
-
-

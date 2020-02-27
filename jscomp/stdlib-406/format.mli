@@ -135,8 +135,8 @@ type formatter
   split the line.
 *)
 
-val pp_open_box : formatter -> int -> unit
-val open_box : int -> unit
+val pp_open_box : formatter -> int -> unit (* [@@dead "pp_open_box"] *)
+val open_box : int -> unit (* [@@dead "open_box"] *)
 (** [pp_open_box ppf d] opens a new compacting pretty-printing box with
     offset [d] in the formatter [ppf].
 
@@ -158,12 +158,12 @@ val open_box : int -> unit
 *)
 
 
-val pp_close_box : formatter -> unit -> unit
-val close_box : unit -> unit
+val pp_close_box : formatter -> unit -> unit (* [@@dead "pp_close_box"] *)
+val close_box : unit -> unit (* [@@dead "close_box"] *)
 (** Closes the most recently open pretty-printing box. *)
 
-val pp_open_hbox : formatter -> unit -> unit
-val open_hbox : unit -> unit
+val pp_open_hbox : formatter -> unit -> unit (* [@@dead "pp_open_hbox"] *)
+val open_hbox : unit -> unit (* [@@dead "open_hbox"] *)
 (** [pp_open_hbox ppf ()] opens a new 'horizontal' pretty-printing box.
 
   This box prints material on a single line.
@@ -172,8 +172,8 @@ val open_hbox : unit -> unit
   (Line splitting may still occur inside boxes nested deeper).
 *)
 
-val pp_open_vbox : formatter -> int -> unit
-val open_vbox : int -> unit
+val pp_open_vbox : formatter -> int -> unit (* [@@dead "pp_open_vbox"] *)
+val open_vbox : int -> unit (* [@@dead "open_vbox"] *)
 (** [pp_open_vbox ppf d] opens a new 'vertical' pretty-printing box
   with offset [d].
 
@@ -185,8 +185,8 @@ val open_vbox : int -> unit
   current indentation.
 *)
 
-val pp_open_hvbox : formatter -> int -> unit
-val open_hvbox : int -> unit
+val pp_open_hvbox : formatter -> int -> unit (* [@@dead "pp_open_hvbox"] *)
+val open_hvbox : int -> unit (* [@@dead "open_hvbox"] *)
 (** [pp_open_hvbox ppf d] opens a new 'horizontal/vertical' pretty-printing box
   with offset [d].
 
@@ -197,8 +197,8 @@ val open_hvbox : int -> unit
   current indentation.
 *)
 
-val pp_open_hovbox : formatter -> int -> unit
-val open_hovbox : int -> unit
+val pp_open_hovbox : formatter -> int -> unit (* [@@dead "pp_open_hovbox"] *)
+val open_hovbox : int -> unit (* [@@dead "open_hovbox"] *)
 (** [pp_open_hovbox ppf d] opens a new 'horizontal-or-vertical'
   pretty-printing box with offset [d].
 
@@ -214,29 +214,29 @@ val open_hovbox : int -> unit
 (** {1 Formatting functions} *)
 
 val pp_print_string : formatter -> string -> unit
-val print_string : string -> unit
+val print_string : string -> unit (* [@@dead "print_string"] *)
 (** [pp_print_string ppf s] prints [s] in the current pretty-printing box. *)
 
-val pp_print_as : formatter -> int -> string -> unit
-val print_as : int -> string -> unit
+val pp_print_as : formatter -> int -> string -> unit (* [@@dead "pp_print_as"] *)
+val print_as : int -> string -> unit (* [@@dead "print_as"] *)
 (** [pp_print_as ppf len s] prints [s] in the current pretty-printing box.
   The pretty-printer formats [s] as if it were of length [len].
 *)
 
 val pp_print_int : formatter -> int -> unit
-val print_int : int -> unit
+val print_int : int -> unit (* [@@dead "print_int"] *)
 (** Print an integer in the current pretty-printing box. *)
 
-val pp_print_float : formatter -> float -> unit
-val print_float : float -> unit
+val pp_print_float : formatter -> float -> unit (* [@@dead "pp_print_float"] *)
+val print_float : float -> unit (* [@@dead "print_float"] *)
 (** Print a floating point number in the current pretty-printing box. *)
 
 val pp_print_char : formatter -> char -> unit
-val print_char : char -> unit
+val print_char : char -> unit (* [@@dead "print_char"] *)
 (** Print a character in the current pretty-printing box. *)
 
-val pp_print_bool : formatter -> bool -> unit
-val print_bool : bool -> unit
+val pp_print_bool : formatter -> bool -> unit (* [@@dead "pp_print_bool"] *)
+val print_bool : bool -> unit (* [@@dead "print_bool"] *)
 (** Print a boolean in the current pretty-printing box. *)
 
 (** {1:breaks Break hints} *)
@@ -260,8 +260,8 @@ val print_bool : bool -> unit
   means printing a newline character (ASCII code 10).
 *)
 
-val pp_print_space : formatter -> unit -> unit
-val print_space : unit -> unit
+val pp_print_space : formatter -> unit -> unit (* [@@dead "pp_print_space"] *)
+val print_space : unit -> unit (* [@@dead "print_space"] *)
 (** [pp_print_space ppf ()] emits a 'space' break hint:
   the pretty-printer may split the line at this point,
   otherwise it prints one space.
@@ -269,8 +269,8 @@ val print_space : unit -> unit
   [pp_print_space ppf ()] is equivalent to [pp_print_break ppf 1 0].
 *)
 
-val pp_print_cut : formatter -> unit -> unit
-val print_cut : unit -> unit
+val pp_print_cut : formatter -> unit -> unit (* [@@dead "pp_print_cut"] *)
+val print_cut : unit -> unit (* [@@dead "print_cut"] *)
 (** [pp_print_cut ppf ()] emits a 'cut' break hint:
   the pretty-printer may split the line at this point,
   otherwise it prints nothing.
@@ -278,8 +278,8 @@ val print_cut : unit -> unit
   [pp_print_cut ppf ()] is equivalent to [pp_print_break ppf 0 0].
 *)
 
-val pp_print_break : formatter -> int -> int -> unit
-val print_break : int -> int -> unit
+val pp_print_break : formatter -> int -> int -> unit (* [@@dead "pp_print_break"] *)
+val print_break : int -> int -> unit (* [@@dead "print_break"] *)
 (** [pp_print_break ppf nspaces offset] emits a 'full' break hint:
   the pretty-printer may split the line at this point,
   otherwise it prints [nspaces] spaces.
@@ -288,8 +288,8 @@ val print_break : int -> int -> unit
   the current indentation.
 *)
 
-val pp_force_newline : formatter -> unit -> unit
-val force_newline : unit -> unit
+val pp_force_newline : formatter -> unit -> unit (* [@@dead "pp_force_newline"] *)
+val force_newline : unit -> unit (* [@@dead "force_newline"] *)
 (** Force a new line in the current pretty-printing box.
 
   The pretty-printer must split the line at this point,
@@ -300,8 +300,8 @@ val force_newline : unit -> unit
   alternative.
 *)
 
-val pp_print_if_newline : formatter -> unit -> unit
-val print_if_newline : unit -> unit
+val pp_print_if_newline : formatter -> unit -> unit (* [@@dead "pp_print_if_newline"] *)
+val print_if_newline : unit -> unit (* [@@dead "print_if_newline"] *)
 (** Execute the next formatting command if the preceding line
   has just been split. Otherwise, ignore the next formatting
   command.
@@ -310,7 +310,7 @@ val print_if_newline : unit -> unit
 (** {1 Pretty-printing termination} *)
 
 val pp_print_flush : formatter -> unit -> unit
-val print_flush : unit -> unit
+val print_flush : unit -> unit (* [@@dead "print_flush"] *)
 (** End of pretty-printing: resets the pretty-printer to initial state.
 
   All open pretty-printing boxes are closed, all pending text is printed.
@@ -335,8 +335,8 @@ val print_flush : unit -> unit
   efficiency.
 *)
 
-val pp_print_newline : formatter -> unit -> unit
-val print_newline : unit -> unit
+val pp_print_newline : formatter -> unit -> unit (* [@@dead "pp_print_newline"] *)
+val print_newline : unit -> unit (* [@@dead "print_newline"] *)
 (** End of pretty-printing: resets the pretty-printer to initial state.
 
   All open pretty-printing boxes are closed, all pending text is printed.
@@ -351,8 +351,8 @@ val print_newline : unit -> unit
 
 (** {1 Margin} *)
 
-val pp_set_margin : formatter -> int -> unit
-val set_margin : int -> unit
+val pp_set_margin : formatter -> int -> unit (* [@@dead "pp_set_margin"] *)
+val set_margin : int -> unit (* [@@dead "set_margin"] *)
 (** [pp_set_margin ppf d] sets the right margin to [d] (in characters):
   the pretty-printer splits lines that overflow the right margin according to
   the break hints given.
@@ -365,14 +365,14 @@ val set_margin : int -> unit
   the current difference [margin - max_indent].
 *)
 
-val pp_get_margin : formatter -> unit -> int
-val get_margin : unit -> int
+val pp_get_margin : formatter -> unit -> int (* [@@dead "pp_get_margin"] *)
+val get_margin : unit -> int (* [@@dead "get_margin"] *)
 (** Returns the position of the right margin. *)
 
 (** {1 Maximum indentation limit} *)
 
-val pp_set_max_indent : formatter -> int -> unit
-val set_max_indent : int -> unit
+val pp_set_max_indent : formatter -> int -> unit (* [@@dead "pp_set_max_indent"] *)
+val set_max_indent : int -> unit (* [@@dead "set_max_indent"] *)
 (** [pp_set_max_indent ppf d] sets the maximum indentation limit of lines
   to [d] (in characters):
   once this limit is reached, new pretty-printing boxes are rejected to the
@@ -386,8 +386,8 @@ val set_max_indent : int -> unit
   and the current maximum indentation limit is kept.
 *)
 
-val pp_get_max_indent : formatter -> unit -> int
-val get_max_indent : unit -> int
+val pp_get_max_indent : formatter -> unit -> int (* [@@dead "pp_get_max_indent"] *)
+val get_max_indent : unit -> int (* [@@dead "get_max_indent"] *)
 (** Return the maximum indentation limit (in characters). *)
 
 (** {1 Maximum formatting depth} *)
@@ -399,8 +399,8 @@ val get_max_indent : unit -> int
   precisely as the text returned by {!get_ellipsis_text} [()]).
 *)
 
-val pp_set_max_boxes : formatter -> int -> unit
-val set_max_boxes : int -> unit
+val pp_set_max_boxes : formatter -> int -> unit (* [@@dead "pp_set_max_boxes"] *)
+val set_max_boxes : int -> unit (* [@@dead "set_max_boxes"] *)
 (** [pp_set_max_boxes ppf max] sets the maximum number of pretty-printing
     boxes simultaneously open.
 
@@ -410,14 +410,14 @@ val set_max_boxes : int -> unit
   Nothing happens if [max] is smaller than 2.
 *)
 
-val pp_get_max_boxes : formatter -> unit -> int
-val get_max_boxes : unit -> int
+val pp_get_max_boxes : formatter -> unit -> int (* [@@dead "pp_get_max_boxes"] *)
+val get_max_boxes : unit -> int (* [@@dead "get_max_boxes"] *)
 (** Returns the maximum number of pretty-printing boxes allowed before
   ellipsis.
 *)
 
-val pp_over_max_boxes : formatter -> unit -> bool
-val over_max_boxes : unit -> bool
+val pp_over_max_boxes : formatter -> unit -> bool (* [@@dead "pp_over_max_boxes"] *)
+val over_max_boxes : unit -> bool (* [@@dead "over_max_boxes"] *)
 (** Tests if the maximum number of pretty-printing boxes allowed have already
   been opened.
 *)
@@ -440,8 +440,8 @@ val over_max_boxes : unit -> bool
   module {!Format}.
 *)
 
-val pp_open_tbox : formatter -> unit -> unit
-val open_tbox : unit -> unit
+val pp_open_tbox : formatter -> unit -> unit (* [@@dead "pp_open_tbox"] *)
+val open_tbox : unit -> unit (* [@@dead "open_tbox"] *)
 (** [open_tbox ()] opens a new tabulation box.
 
   This box prints lines separated into cells of fixed width.
@@ -455,16 +455,16 @@ val open_tbox : unit -> unit
   a tabulation break.
 *)
 
-val pp_close_tbox : formatter -> unit -> unit
-val close_tbox : unit -> unit
+val pp_close_tbox : formatter -> unit -> unit (* [@@dead "pp_close_tbox"] *)
+val close_tbox : unit -> unit (* [@@dead "close_tbox"] *)
 (** Closes the most recently opened tabulation box. *)
 
-val pp_set_tab : formatter -> unit -> unit
-val set_tab : unit -> unit
+val pp_set_tab : formatter -> unit -> unit (* [@@dead "pp_set_tab"] *)
+val set_tab : unit -> unit (* [@@dead "set_tab"] *)
 (** Sets a tabulation marker at current insertion point. *)
 
-val pp_print_tab : formatter -> unit -> unit
-val print_tab : unit -> unit
+val pp_print_tab : formatter -> unit -> unit (* [@@dead "pp_print_tab"] *)
+val print_tab : unit -> unit (* [@@dead "print_tab"] *)
 (** [print_tab ()] emits a 'next' tabulation break hint: if not already set on
   a tabulation marker, the insertion point moves to the first tabulation
   marker on the right, or the pretty-printer splits the line and insertion
@@ -472,8 +472,8 @@ val print_tab : unit -> unit
 
   It is equivalent to [print_tbreak 0 0]. *)
 
-val pp_print_tbreak : formatter -> int -> int -> unit
-val print_tbreak : int -> int -> unit
+val pp_print_tbreak : formatter -> int -> int -> unit (* [@@dead "pp_print_tbreak"] *)
+val print_tbreak : int -> int -> unit (* [@@dead "print_tbreak"] *)
 (** [print_tbreak nspaces offset] emits a 'full' tabulation break hint.
 
   If not already set on a tabulation marker, the insertion point moves to the
@@ -490,14 +490,14 @@ val print_tbreak : int -> int -> unit
 
 (** {1 Ellipsis} *)
 
-val pp_set_ellipsis_text : formatter -> string -> unit
-val set_ellipsis_text : string -> unit
+val pp_set_ellipsis_text : formatter -> string -> unit (* [@@dead "pp_set_ellipsis_text"] *)
+val set_ellipsis_text : string -> unit (* [@@dead "set_ellipsis_text"] *)
 (** Set the text of the ellipsis printed when too many pretty-printing boxes
   are open (a single dot, [.], by default).
 *)
 
-val pp_get_ellipsis_text : formatter -> unit -> string
-val get_ellipsis_text : unit -> string
+val pp_get_ellipsis_text : formatter -> unit -> string (* [@@dead "pp_get_ellipsis_text"] *)
+val get_ellipsis_text : unit -> string (* [@@dead "get_ellipsis_text"] *)
 (** Return the text of the ellipsis. *)
 
 (** {1:tags Semantic tags} *)
@@ -574,8 +574,8 @@ type tag = string
   Tag-printing operations may be set on or off with {!set_print_tags}.
 *)
 
-val pp_open_tag : formatter -> string -> unit
-val open_tag : tag -> unit
+val pp_open_tag : formatter -> string -> unit (* [@@dead "pp_open_tag"] *)
+val open_tag : tag -> unit (* [@@dead "open_tag"] *)
 (** [pp_open_tag ppf t] opens the semantic tag named [t].
 
   The [print_open_tag] tag-printing function of the formatter is called with
@@ -583,8 +583,8 @@ val open_tag : tag -> unit
   [mark_open_tag t], is written into the output device of the formatter.
 *)
 
-val pp_close_tag : formatter -> unit -> unit
-val close_tag : unit -> unit
+val pp_close_tag : formatter -> unit -> unit (* [@@dead "pp_close_tag"] *)
+val close_tag : unit -> unit (* [@@dead "close_tag"] *)
 (** [pp_close_tag ppf ()] closes the most recently opened semantic tag [t].
 
   The closing tag marker, as given by [mark_close_tag t], is written into the
@@ -592,32 +592,32 @@ val close_tag : unit -> unit
   function of the formatter is called with [t] as argument.
 *)
 
-val pp_set_tags : formatter -> bool -> unit
-val set_tags : bool -> unit
+val pp_set_tags : formatter -> bool -> unit (* [@@dead "pp_set_tags"] *)
+val set_tags : bool -> unit (* [@@dead "set_tags"] *)
 (** [pp_set_tags ppf b] turns on or off the treatment of semantic tags
   (default is off).
 *)
 
-val pp_set_print_tags : formatter -> bool -> unit
-val set_print_tags : bool -> unit
+val pp_set_print_tags : formatter -> bool -> unit (* [@@dead "pp_set_print_tags"] *)
+val set_print_tags : bool -> unit (* [@@dead "set_print_tags"] *)
 (** [pp_set_print_tags ppf b] turns on or off the tag-printing operations. *)
 
-val pp_set_mark_tags : formatter -> bool -> unit
-val set_mark_tags : bool -> unit
+val pp_set_mark_tags : formatter -> bool -> unit (* [@@dead "pp_set_mark_tags"] *)
+val set_mark_tags : bool -> unit (* [@@dead "set_mark_tags"] *)
 (** [pp_set_mark_tags ppf b] turns on or off the tag-marking operations. *)
 
-val pp_get_print_tags : formatter -> unit -> bool
-val get_print_tags : unit -> bool
+val pp_get_print_tags : formatter -> unit -> bool (* [@@dead "pp_get_print_tags"] *)
+val get_print_tags : unit -> bool (* [@@dead "get_print_tags"] *)
 (** Return the current status of tag-printing operations. *)
 
-val pp_get_mark_tags : formatter -> unit -> bool
-val get_mark_tags : unit -> bool
+val pp_get_mark_tags : formatter -> unit -> bool (* [@@dead "pp_get_mark_tags"] *)
+val get_mark_tags : unit -> bool (* [@@dead "get_mark_tags"] *)
 (** Return the current status of tag-marking operations. *)
 
 (** {1 Redirecting the standard formatter output} *)
-val pp_set_formatter_out_channel :
+val pp_set_formatter_out_channel : (* [@@dead "pp_set_formatter_out_channel"] *)
   formatter -> Pervasives.out_channel -> unit
-val set_formatter_out_channel : Pervasives.out_channel -> unit
+val set_formatter_out_channel : Pervasives.out_channel -> unit (* [@@dead "set_formatter_out_channel"] *)
 (** Redirect the standard pretty-printer output to the given channel.
   (All the output functions of the standard formatter are set to the
    default output functions printing to the given channel.)
@@ -626,9 +626,9 @@ val set_formatter_out_channel : Pervasives.out_channel -> unit
   {!pp_set_formatter_out_channel} [std_formatter].
 *)
 
-val pp_set_formatter_output_functions :
+val pp_set_formatter_output_functions : (* [@@dead "pp_set_formatter_output_functions"] *)
   formatter -> (string -> int -> int -> unit) -> (unit -> unit) -> unit
-val set_formatter_output_functions :
+val set_formatter_output_functions : (* [@@dead "set_formatter_output_functions"] *)
   (string -> int -> int -> unit) -> (unit -> unit) -> unit
 (** [pp_set_formatter_output_functions ppf out flush] redirects the
   standard pretty-printer output functions to the functions [out] and
@@ -644,9 +644,9 @@ val set_formatter_output_functions :
   using low level functions [print_flush] or [print_newline]).
 *)
 
-val pp_get_formatter_output_functions :
+val pp_get_formatter_output_functions : (* [@@dead "pp_get_formatter_output_functions"] *)
   formatter -> unit -> (string -> int -> int -> unit) * (unit -> unit)
-val get_formatter_output_functions :
+val get_formatter_output_functions : (* [@@dead "get_formatter_output_functions"] *)
   unit -> (string -> int -> int -> unit) * (unit -> unit)
 (** Return the current output functions of the standard pretty-printer. *)
 
@@ -661,11 +661,11 @@ val get_formatter_output_functions :
 (** {2 Redefining output functions} *)
 
 type formatter_out_functions = {
-  out_string : string -> int -> int -> unit;
-  out_flush : unit -> unit;
-  out_newline : unit -> unit;
-  out_spaces : int -> unit;
-  out_indent : int -> unit;
+  out_string : string -> int -> int -> unit; (* [@@dead "formatter_out_functions.out_string"] *)
+  out_flush : unit -> unit; (* [@@dead "formatter_out_functions.out_flush"] *)
+  out_newline : unit -> unit; (* [@@dead "formatter_out_functions.out_newline"] *)
+  out_spaces : int -> unit; (* [@@dead "formatter_out_functions.out_spaces"] *)
+  out_indent : int -> unit; (* [@@dead "formatter_out_functions.out_indent"] *)
 }
 (** The set of output functions specific to a formatter:
 - the [out_string] function performs all the pretty-printer string output.
@@ -692,9 +692,9 @@ type formatter_out_functions = {
   @since 4.01.0
 *)
 
-val pp_set_formatter_out_functions :
+val pp_set_formatter_out_functions : (* [@@dead "pp_set_formatter_out_functions"] *)
   formatter -> formatter_out_functions -> unit
-val set_formatter_out_functions : formatter_out_functions -> unit
+val set_formatter_out_functions : formatter_out_functions -> unit (* [@@dead "set_formatter_out_functions"] *)
 (** [pp_set_formatter_out_functions ppf out_funs]
   Set all the pretty-printer output functions of [ppf] to those of
   argument [out_funs],
@@ -710,9 +710,9 @@ val set_formatter_out_functions : formatter_out_functions -> unit
   @since 4.01.0
 *)
 
-val pp_get_formatter_out_functions :
+val pp_get_formatter_out_functions : (* [@@dead "pp_get_formatter_out_functions"] *)
   formatter -> unit -> formatter_out_functions
-val get_formatter_out_functions : unit -> formatter_out_functions
+val get_formatter_out_functions : unit -> formatter_out_functions (* [@@dead "get_formatter_out_functions"] *)
 (** Return the current output functions of the pretty-printer,
   including line splitting and indentation functions. Useful to record the
   current setting and restore it afterwards.
@@ -722,10 +722,10 @@ val get_formatter_out_functions : unit -> formatter_out_functions
 (** {1:tagsmeaning Redefining semantic tag operations} *)
 
 type formatter_tag_functions = {
-  mark_open_tag : tag -> string;
-  mark_close_tag : tag -> string;
-  print_open_tag : tag -> unit;
-  print_close_tag : tag -> unit;
+  mark_open_tag : tag -> string; (* [@@dead "formatter_tag_functions.mark_open_tag"] *)
+  mark_close_tag : tag -> string; (* [@@dead "formatter_tag_functions.mark_close_tag"] *)
+  print_open_tag : tag -> unit; (* [@@dead "formatter_tag_functions.print_open_tag"] *)
+  print_close_tag : tag -> unit; (* [@@dead "formatter_tag_functions.print_close_tag"] *)
 }
 (** The semantic tag handling functions specific to a formatter:
   [mark] versions are the 'tag-marking' functions that associate a string
@@ -735,9 +735,9 @@ type formatter_tag_functions = {
   regular printing when a tag is closed or opened.
 *)
 
-val pp_set_formatter_tag_functions :
+val pp_set_formatter_tag_functions : (* [@@dead "pp_set_formatter_tag_functions"] *)
   formatter -> formatter_tag_functions -> unit
-val set_formatter_tag_functions : formatter_tag_functions -> unit
+val set_formatter_tag_functions : formatter_tag_functions -> unit (* [@@dead "set_formatter_tag_functions"] *)
 (** [pp_set_formatter_tag_functions ppf tag_funs] changes the meaning of
   opening and closing semantic tag operations to use the functions in
   [tag_funs] when printing on [ppf].
@@ -755,9 +755,9 @@ val set_formatter_tag_functions : formatter_tag_functions -> unit
   in the pretty-printer queue.
 *)
 
-val pp_get_formatter_tag_functions :
+val pp_get_formatter_tag_functions : (* [@@dead "pp_get_formatter_tag_functions"] *)
   formatter -> unit -> formatter_tag_functions
-val get_formatter_tag_functions : unit -> formatter_tag_functions
+val get_formatter_tag_functions : unit -> formatter_tag_functions (* [@@dead "get_formatter_tag_functions"] *)
 (** Return the current semantic tag operation functions of the standard
   pretty-printer. *)
 
@@ -805,21 +805,21 @@ val formatter_of_buffer : Buffer.t -> formatter
   pending material into the buffer.
 *)
 
-val stdbuf : Buffer.t
+val stdbuf : Buffer.t (* [@@dead "stdbuf"] *)
 (** The string buffer in which [str_formatter] writes. *)
 
-val str_formatter : formatter
+val str_formatter : formatter (* [@@dead "str_formatter"] *)
 (** A formatter to output to the {!stdbuf} string buffer.
 
   [str_formatter] is defined as {!formatter_of_buffer} {!stdbuf}.
 *)
 
-val flush_str_formatter : unit -> string
+val flush_str_formatter : unit -> string (* [@@dead "flush_str_formatter"] *)
 (** Returns the material printed with [str_formatter], flushes
   the formatter and resets the corresponding buffer.
 *)
 
-val make_formatter :
+val make_formatter : (* [@@dead "make_formatter"] *)
   (string -> int -> int -> unit) -> (unit -> unit) -> formatter
 (** [make_formatter out flush] returns a new formatter that outputs with
   function [out], and flushes with function [flush].
@@ -831,7 +831,7 @@ val make_formatter :
   returns a formatter to the {!Pervasives.out_channel} [oc].
 *)
 
-val formatter_of_out_functions :
+val formatter_of_out_functions : (* [@@dead "formatter_of_out_functions"] *)
   formatter_out_functions -> formatter
 (** [formatter_of_out_functions out_funs] returns a new formatter that writes
   with the set of output functions [out_funs].
@@ -865,13 +865,13 @@ val formatter_of_out_functions :
 *)
 
 type symbolic_output_item =
-  | Output_flush (** symbolic flush command *)
-  | Output_newline (** symbolic newline command *)
-  | Output_string of string
+  | Output_flush (** symbolic flush command *) (* [@@dead "symbolic_output_item.Output_flush"] *)
+  | Output_newline (** symbolic newline command *) (* [@@dead "symbolic_output_item.Output_newline"] *)
+  | Output_string of string (* [@@dead "symbolic_output_item.Output_string"] *)
   (** [Output_string s]: symbolic output for string [s]*)
-  | Output_spaces of int
+  | Output_spaces of int (* [@@dead "symbolic_output_item.Output_spaces"] *)
   (** [Output_spaces n]: symbolic command to output [n] spaces *)
-  | Output_indent of int
+  | Output_indent of int (* [@@dead "symbolic_output_item.Output_indent"] *)
   (** [Output_indent i]: symbolic indentation of size [i] *)
 (** Items produced by symbolic pretty-printers
     @since 4.06.0
@@ -884,27 +884,27 @@ type symbolic_output_buffer
   @since 4.06.0
 *)
 
-val make_symbolic_output_buffer : unit -> symbolic_output_buffer
+val make_symbolic_output_buffer : unit -> symbolic_output_buffer (* [@@dead "make_symbolic_output_buffer"] *)
 (** [make_symbolic_output_buffer ()] returns a fresh buffer for
   symbolic output.
 
   @since 4.06.0
 *)
 
-val clear_symbolic_output_buffer : symbolic_output_buffer -> unit
+val clear_symbolic_output_buffer : symbolic_output_buffer -> unit (* [@@dead "clear_symbolic_output_buffer"] *)
 (** [clear_symbolic_output_buffer sob] resets buffer [sob].
 
   @since 4.06.0
 *)
 
-val get_symbolic_output_buffer :
+val get_symbolic_output_buffer : (* [@@dead "get_symbolic_output_buffer"] *)
   symbolic_output_buffer -> symbolic_output_item list
 (** [get_symbolic_output_buffer sob] returns the contents of buffer [sob].
 
   @since 4.06.0
 *)
 
-val flush_symbolic_output_buffer :
+val flush_symbolic_output_buffer : (* [@@dead "flush_symbolic_output_buffer"] *)
   symbolic_output_buffer -> symbolic_output_item list
 (** [flush_symbolic_output_buffer sob] returns the contents of buffer
   [sob] and resets buffer [sob].
@@ -915,14 +915,14 @@ val flush_symbolic_output_buffer :
   @since 4.06.0
 *)
 
-val add_symbolic_output_item :
+val add_symbolic_output_item : (* [@@dead "add_symbolic_output_item"] *)
   symbolic_output_buffer -> symbolic_output_item -> unit
 (** [add_symbolic_output_item sob itm] adds item [itm] to buffer [sob].
 
   @since 4.06.0
 *)
 
-val formatter_of_symbolic_output_buffer : symbolic_output_buffer -> formatter
+val formatter_of_symbolic_output_buffer : symbolic_output_buffer -> formatter (* [@@dead "formatter_of_symbolic_output_buffer"] *)
 (** [formatter_of_symbolic_output_buffer sob] returns a symbolic formatter
   that outputs to [symbolic_output_buffer] [sob].
 
@@ -942,7 +942,7 @@ val pp_print_list:
   @since 4.02.0
 *)
 
-val pp_print_text : formatter -> string -> unit
+val pp_print_text : formatter -> string -> unit (* [@@dead "pp_print_text"] *)
 (** [pp_print_text ppf s] prints [s] with spaces and newlines respectively
   printed using {!pp_print_space} and {!pp_force_newline}.
 
@@ -1037,10 +1037,10 @@ val fprintf : formatter -> ('a, formatter, unit) format -> 'a
 
 *)
 
-val printf : ('a, formatter, unit) format -> 'a
+val printf : ('a, formatter, unit) format -> 'a (* [@@dead "printf"] *)
 (** Same as [fprintf] above, but output on [std_formatter]. *)
 
-val eprintf : ('a, formatter, unit) format -> 'a
+val eprintf : ('a, formatter, unit) format -> 'a (* [@@dead "eprintf"] *)
 (** Same as [fprintf] above, but output on [err_formatter]. *)
 
 val sprintf : ('a, unit, string) format -> 'a
@@ -1077,13 +1077,13 @@ val ifprintf : formatter -> ('a, formatter, unit) format -> 'a
 
 (** Formatted Pretty-Printing with continuations. *)
 
-val kfprintf :
+val kfprintf : (* [@@dead "kfprintf"] *)
   (formatter -> 'a) -> formatter ->
   ('b, formatter, unit, 'a) format4 -> 'b
 (** Same as [fprintf] above, but instead of returning immediately,
   passes the formatter to its first argument at the end of printing. *)
 
-val ikfprintf :
+val ikfprintf : (* [@@dead "ikfprintf"] *)
   (formatter -> 'a) -> formatter ->
   ('b, formatter, unit, 'a) format4 -> 'b
 (** Same as [kfprintf] above, but does not print anything.
@@ -1096,7 +1096,7 @@ val ksprintf : (string -> 'a) -> ('b, unit, string, 'a) format4 -> 'b
 (** Same as [sprintf] above, but instead of returning the string,
   passes it to the first argument. *)
 
-val kasprintf : (string -> 'a) -> ('b, formatter, unit, 'a) format4 -> 'b
+val kasprintf : (string -> 'a) -> ('b, formatter, unit, 'a) format4 -> 'b (* [@@dead "kasprintf"] *)
 (** Same as [asprintf] above, but instead of returning the string,
   passes it to the first argument.
 
@@ -1105,7 +1105,7 @@ val kasprintf : (string -> 'a) -> ('b, formatter, unit, 'a) format4 -> 'b
 
 (** {1 Deprecated} *)
 
-val bprintf : Buffer.t -> ('a, formatter, unit) format -> 'a
+val bprintf : Buffer.t -> ('a, formatter, unit) format -> 'a (* [@@dead "bprintf"] *)
   [@@ocaml.deprecated]
 (** @deprecated This function is error prone. Do not use it.
   This function is neither compositional nor incremental, since it flushes
@@ -1116,11 +1116,11 @@ val bprintf : Buffer.t -> ('a, formatter, unit) format -> 'a
   use regular calls to [Format.fprintf] with formatter [to_b].
 *)
 
-val kprintf : (string -> 'a) -> ('b, unit, string, 'a) format4 -> 'b
+val kprintf : (string -> 'a) -> ('b, unit, string, 'a) format4 -> 'b (* [@@dead "kprintf"] *)
   [@@ocaml.deprecated "Use Format.ksprintf instead."]
 (** @deprecated An alias for [ksprintf]. *)
 
-val set_all_formatter_output_functions :
+val set_all_formatter_output_functions : (* [@@dead "set_all_formatter_output_functions"] *)
   out:(string -> int -> int -> unit) ->
   flush:(unit -> unit) ->
   newline:(unit -> unit) ->
@@ -1129,7 +1129,7 @@ val set_all_formatter_output_functions :
 [@@ocaml.deprecated "Use Format.set_formatter_out_functions instead."]
 (** @deprecated Subsumed by [set_formatter_out_functions]. *)
 
-val get_all_formatter_output_functions :
+val get_all_formatter_output_functions : (* [@@dead "get_all_formatter_output_functions"] *)
   unit ->
   (string -> int -> int -> unit) *
   (unit -> unit) *
@@ -1138,13 +1138,13 @@ val get_all_formatter_output_functions :
 [@@ocaml.deprecated "Use Format.get_formatter_out_functions instead."]
 (** @deprecated Subsumed by [get_formatter_out_functions]. *)
 
-val pp_set_all_formatter_output_functions :
+val pp_set_all_formatter_output_functions : (* [@@dead "pp_set_all_formatter_output_functions"] *)
   formatter -> out:(string -> int -> int -> unit) -> flush:(unit -> unit) ->
   newline:(unit -> unit) -> spaces:(int -> unit) -> unit
 [@@ocaml.deprecated "Use Format.pp_set_formatter_out_functions instead."]
 (** @deprecated Subsumed by [pp_set_formatter_out_functions]. *)
 
-val pp_get_all_formatter_output_functions :
+val pp_get_all_formatter_output_functions : (* [@@dead "pp_get_all_formatter_output_functions"] *)
   formatter -> unit ->
   (string -> int -> int -> unit) * (unit -> unit) * (unit -> unit) *
   (int -> unit)

@@ -79,7 +79,7 @@ val iter : 'a t -> ('a -> unit [@bs]) -> unit
 *)
 val fromOption : 'a option -> 'a t
 
-val from_opt: 'a option -> 'a t
+val from_opt: 'a option -> 'a t (* [@@dead "from_opt"] *)
 [@@ocaml.deprecated "Use fromOption instead"]
 
 (** Maps ['a Js.null_undefined] to ['a option]

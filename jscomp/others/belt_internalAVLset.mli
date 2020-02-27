@@ -83,13 +83,13 @@ val keepSharedU: 'a t -> ('a -> bool [@bs]) -> 'a t
 val keepShared: 'a t -> ('a -> bool ) -> 'a t    
 
 val keepCopyU: 'a t -> ('a -> bool  [@bs]) -> 'a t
-val keepCopy: 'a t -> ('a -> bool ) -> 'a t    
+val keepCopy: 'a t -> ('a -> bool ) -> 'a t     (* [@@dead "keepCopy"] *)
 
 val partitionSharedU: 'a t -> ('a -> bool [@bs]) -> 'a t * 'a t
 val partitionShared: 'a t -> ('a -> bool) -> 'a t * 'a t
 
 val partitionCopyU: 'a t -> ('a -> bool [@bs]) -> 'a t * 'a t
-val partitionCopy: 'a t -> ('a -> bool ) -> 'a t * 'a t
+val partitionCopy: 'a t -> ('a -> bool ) -> 'a t * 'a t (* [@@dead "partitionCopy"] *)
 
 val lengthNode: 'a node -> int   
 val size: 'a t -> int

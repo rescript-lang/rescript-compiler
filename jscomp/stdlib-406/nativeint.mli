@@ -30,13 +30,13 @@
    over the [int] type.
 *)
 
-val zero : nativeint
+val zero : nativeint (* [@@dead "zero"] *)
 (** The native integer 0.*)
 
-val one : nativeint
+val one : nativeint (* [@@dead "one"] *)
 (** The native integer 1.*)
 
-val minus_one : nativeint
+val minus_one : nativeint (* [@@dead "minus_one"] *)
 (** The native integer -1.*)
 
 external neg : nativeint -> nativeint = "%nativeint_neg"
@@ -64,7 +64,7 @@ external rem : nativeint -> nativeint -> nativeint = "%nativeint_mod"
                       (Nativeint.rem x y)].
    If [y = 0], [Nativeint.rem x y] raises [Division_by_zero]. *)
 
-val succ : nativeint -> nativeint
+val succ : nativeint -> nativeint (* [@@dead "succ"] *)
 (** Successor.
    [Nativeint.succ x] is [Nativeint.add x Nativeint.one]. *)
 
@@ -72,19 +72,19 @@ val pred : nativeint -> nativeint
 (** Predecessor.
    [Nativeint.pred x] is [Nativeint.sub x Nativeint.one]. *)
 
-val abs : nativeint -> nativeint
+val abs : nativeint -> nativeint (* [@@dead "abs"] *)
 (** Return the absolute value of its argument. *)
 
 val size : int
 (** The size in bits of a native integer.  This is equal to [32]
    on a 32-bit platform and to [64] on a 64-bit platform. *)
 
-val max_int : nativeint
+val max_int : nativeint (* [@@dead "max_int"] *)
 (** The greatest representable native integer,
    either 2{^31} - 1 on a 32-bit platform,
    or 2{^63} - 1 on a 64-bit platform. *)
 
-val min_int : nativeint
+val min_int : nativeint (* [@@dead "min_int"] *)
 (** The smallest representable native integer,
    either -2{^31} on a 32-bit platform,
    or -2{^63} on a 64-bit platform. *)
@@ -98,7 +98,7 @@ external logor : nativeint -> nativeint -> nativeint = "%nativeint_or"
 external logxor : nativeint -> nativeint -> nativeint = "%nativeint_xor"
 (** Bitwise logical exclusive or. *)
 
-val lognot : nativeint -> nativeint
+val lognot : nativeint -> nativeint (* [@@dead "lognot"] *)
 (** Bitwise logical negation. *)
 
 external shift_left : nativeint -> int -> nativeint = "%nativeint_lsl"
@@ -171,23 +171,23 @@ external of_string : string -> nativeint = "caml_nativeint_of_string"
    a valid representation of an integer, or if the integer represented
    exceeds the range of integers representable in type [nativeint]. *)
 
-val of_string_opt: string -> nativeint option
+val of_string_opt: string -> nativeint option (* [@@dead "of_string_opt"] *)
 (** Same as [of_string], but return [None] instead of raising.
     @since 4.05 *)
 
-val to_string : nativeint -> string
+val to_string : nativeint -> string (* [@@dead "to_string"] *)
 (** Return the string representation of its argument, in decimal. *)
 
 type t = nativeint
 (** An alias for the type of native integers. *)
 
-val compare: t -> t -> int
+val compare: t -> t -> int (* [@@dead "compare"] *)
 (** The comparison function for native integers, with the same specification as
     {!Pervasives.compare}.  Along with the type [t], this function [compare]
     allows the module [Nativeint] to be passed as argument to the functors
     {!Set.Make} and {!Map.Make}. *)
 
-val equal: t -> t -> bool
+val equal: t -> t -> bool (* [@@dead "equal"] *)
 (** The equal function for native ints.
     @since 4.03.0 *)
 

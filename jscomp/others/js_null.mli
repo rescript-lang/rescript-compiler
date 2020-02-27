@@ -33,7 +33,7 @@ external return : 'a -> 'a t  = "%identity"
 (** Constructs a value of ['a Js.null] containing a value of ['a] *)
 
 
-val test : 'a t -> bool 
+val test : 'a t -> bool  (* [@@dead "test"] *)
 [@@ocaml.deprecated "Use = Js.null directly "]
 (** Returns [true] if the given value is [empty] ([null]), [false] otherwise *)
 
@@ -43,7 +43,7 @@ external empty : 'a t = "#null"
 
 external getUnsafe : 'a t -> 'a = "%identity"
 
-val getExn : 'a t -> 'a
+val getExn : 'a t -> 'a (* [@@dead "getExn"] *)
 
 (** Maps the contained value using the given function
 
@@ -80,7 +80,7 @@ val iter : 'a t -> ('a -> unit [@bs]) -> unit
 *)
 val fromOption: 'a option -> 'a t
 
-val from_opt : 'a option -> 'a t
+val from_opt : 'a option -> 'a t (* [@@dead "from_opt"] *)
 [@@ocaml.deprecated "Use fromOption instead"]
 
 (** Maps ['a Js.null] to ['a option]
@@ -96,5 +96,3 @@ external toOption : 'a t -> 'a option = "#null_to_opt"
 
 external to_opt : 'a t -> 'a option = "#null_to_opt"
 [@@ocaml.deprecated "Use toOption instead"]
-
-

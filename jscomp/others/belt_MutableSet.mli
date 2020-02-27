@@ -45,8 +45,8 @@ type ('k, 'id) id = ('k, 'id) Belt_Id.comparable
 val make: id:('value, 'id) id -> ('value, 'id) t
 
 val fromArray: 'k array -> id:('k, 'id) id ->   ('k, 'id) t
-val fromSortedArrayUnsafe: 'value array -> id:('value, 'id) id ->  ('value,'id) t
-val copy: ('k, 'id) t -> ('k, 'id) t
+val fromSortedArrayUnsafe: 'value array -> id:('value, 'id) id ->  ('value,'id) t (* [@@dead "fromSortedArrayUnsafe"] *)
+val copy: ('k, 'id) t -> ('k, 'id) t (* [@@dead "copy"] *)
 val isEmpty: _ t -> bool
 val has:  ('value, _) t -> 'value ->  bool
 
@@ -71,36 +71,36 @@ val intersect: ('value, 'id) t -> ('value, 'id) t -> ('value, 'id) t
 val diff: ('value, 'id) t -> ('value, 'id) t -> ('value, 'id) t
 val subset: ('value, 'id) t -> ('value, 'id) t -> bool
 
-val cmp:
+val cmp: (* [@@dead "cmp"] *)
   ('value, 'id) t -> ('value, 'id) t -> int
 val eq:
   ('value, 'id) t -> ('value, 'id) t -> bool
 
-val forEachU: ('value, 'id) t -> ('value -> unit [@bs]) ->  unit
-val forEach: ('value, 'id) t -> ('value -> unit) ->  unit
+val forEachU: ('value, 'id) t -> ('value -> unit [@bs]) ->  unit (* [@@dead "forEachU"] *)
+val forEach: ('value, 'id) t -> ('value -> unit) ->  unit (* [@@dead "forEach"] *)
 (** [forEach m f] applies [f] in turn to all elements of [m].
     In increasing order *)
 
-val reduceU: ('value, 'id) t -> 'a -> ('a -> 'value -> 'a [@bs]) -> 'a
+val reduceU: ('value, 'id) t -> 'a -> ('a -> 'value -> 'a [@bs]) -> 'a (* [@@dead "reduceU"] *)
 val reduce: ('value, 'id) t -> 'a -> ('a -> 'value -> 'a) -> 'a
 (** In increasing order. *)
 
-val everyU: ('value, 'id) t -> ('value -> bool [@bs]) -> bool
-val every: ('value, 'id) t -> ('value -> bool) -> bool
+val everyU: ('value, 'id) t -> ('value -> bool [@bs]) -> bool (* [@@dead "everyU"] *)
+val every: ('value, 'id) t -> ('value -> bool) -> bool (* [@@dead "every"] *)
 (** [every s p] checks if all elements of the set
     satisfy the predicate [p]. Order unspecified *)
 
-val someU: ('value, 'id) t ->  ('value -> bool [@bs]) -> bool
-val some: ('value, 'id) t ->  ('value -> bool) -> bool
+val someU: ('value, 'id) t ->  ('value -> bool [@bs]) -> bool (* [@@dead "someU"] *)
+val some: ('value, 'id) t ->  ('value -> bool) -> bool (* [@@dead "some"] *)
 (** [some p s] checks if at least one element of
     the set satisfies the predicate [p]. *)
 
-val keepU: ('value, 'id) t -> ('value -> bool [@bs]) -> ('value, 'id) t
+val keepU: ('value, 'id) t -> ('value -> bool [@bs]) -> ('value, 'id) t (* [@@dead "keepU"] *)
 val keep: ('value, 'id) t -> ('value -> bool) -> ('value, 'id) t
 (** [keep s p] returns the set of all elements in [s]
     that satisfy predicate [p]. *)
 
-val partitionU: ('value, 'id) t -> ('value -> bool [@bs]) -> ('value, 'id) t * ('value, 'id) t
+val partitionU: ('value, 'id) t -> ('value -> bool [@bs]) -> ('value, 'id) t * ('value, 'id) t (* [@@dead "partitionU"] *)
 val partition: ('value, 'id) t -> ('value -> bool) -> ('value, 'id) t * ('value, 'id) t
 (** [partition p s] returns a pair of sets [(s1, s2)], where
     [s1] is the set of all the elements of [s] that satisfy the
@@ -121,8 +121,8 @@ val maximum: ('value, 'id) t -> 'value option
 val maxUndefined: ('value, 'id) t -> 'value Js.undefined
 
 val get: ('value, 'id) t -> 'value -> 'value option
-val getUndefined: ('value, 'id) t -> 'value -> 'value Js.undefined
-val getExn: ('value, 'id) t -> 'value -> 'value
+val getUndefined: ('value, 'id) t -> 'value -> 'value Js.undefined (* [@@dead "getUndefined"] *)
+val getExn: ('value, 'id) t -> 'value -> 'value (* [@@dead "getExn"] *)
 
 
 val split: ('value, 'id) t -> 'value ->  (('value, 'id) t * ('value, 'id) t) * bool
@@ -148,6 +148,4 @@ val checkInvariantInternal: _ t -> unit
     ('value, 'id) t0 -> 'value ->
     ('value, 'id) t0]
   2. It is not really significantly more *)
-
-
 

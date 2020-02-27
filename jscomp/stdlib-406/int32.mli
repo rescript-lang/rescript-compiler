@@ -26,13 +26,13 @@
    [int32] are generally slower than those on [int].  Use [int32]
    only when the application requires exact 32-bit arithmetic. *)
 
-val zero : int32
+val zero : int32 (* [@@dead "zero"] *)
 (** The 32-bit integer 0. *)
 
 val one : int32
 (** The 32-bit integer 1. *)
 
-val minus_one : int32
+val minus_one : int32 (* [@@dead "minus_one"] *)
 (** The 32-bit integer -1. *)
 
 external neg : int32 -> int32 = "%int32_neg"
@@ -61,10 +61,10 @@ external rem : int32 -> int32 -> int32 = "%int32_mod"
 val succ : int32 -> int32
 (** Successor.  [Int32.succ x] is [Int32.add x Int32.one]. *)
 
-val pred : int32 -> int32
+val pred : int32 -> int32 (* [@@dead "pred"] *)
 (** Predecessor.  [Int32.pred x] is [Int32.sub x Int32.one]. *)
 
-val abs : int32 -> int32
+val abs : int32 -> int32 (* [@@dead "abs"] *)
 (** Return the absolute value of its argument. *)
 
 val max_int : int32
@@ -83,7 +83,7 @@ external logor : int32 -> int32 -> int32 = "%int32_or"
 external logxor : int32 -> int32 -> int32 = "%int32_xor"
 (** Bitwise logical exclusive or. *)
 
-val lognot : int32 -> int32
+val lognot : int32 -> int32 (* [@@dead "lognot"] *)
 (** Bitwise logical negation. *)
 
 external shift_left : int32 -> int -> int32 = "%int32_lsl"
@@ -143,12 +143,12 @@ external of_string : string -> int32 = "caml_int32_of_string"
    a valid representation of an integer, or if the integer represented
    exceeds the range of integers representable in type [int32]. *)
 
-val of_string_opt: string -> int32 option
+val of_string_opt: string -> int32 option (* [@@dead "of_string_opt"] *)
 (** Same as [of_string], but return [None] instead of raising.
     @since 4.05 *)
 
 
-val to_string : int32 -> string
+val to_string : int32 -> string (* [@@dead "to_string"] *)
 (** Return the string representation of its argument, in signed decimal. *)
 
 external bits_of_float : float -> int32
@@ -170,13 +170,13 @@ external float_of_bits : int32 -> float
 type t = int32
 (** An alias for the type of 32-bit integers. *)
 
-val compare: t -> t -> int
+val compare: t -> t -> int (* [@@dead "compare"] *)
 (** The comparison function for 32-bit integers, with the same specification as
     {!Pervasives.compare}.  Along with the type [t], this function [compare]
     allows the module [Int32] to be passed as argument to the functors
     {!Set.Make} and {!Map.Make}. *)
 
-val equal: t -> t -> bool
+val equal: t -> t -> bool (* [@@dead "equal"] *)
 (** The equal function for int32s.
     @since 4.03.0 *)
 

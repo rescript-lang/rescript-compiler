@@ -18,14 +18,14 @@
 open CamlinternalFormatBasics
 
 val is_in_char_set : char_set -> char -> bool
-val rev_char_set : char_set -> char_set
+val rev_char_set : char_set -> char_set (* [@@dead "rev_char_set"] *)
 
 type mutable_char_set = bytes
-val create_char_set : unit -> mutable_char_set
-val add_in_char_set : mutable_char_set -> char -> unit
-val freeze_char_set : mutable_char_set -> char_set
+val create_char_set : unit -> mutable_char_set (* [@@dead "create_char_set"] *)
+val add_in_char_set : mutable_char_set -> char -> unit (* [@@dead "add_in_char_set"] *)
+val freeze_char_set : mutable_char_set -> char_set (* [@@dead "freeze_char_set"] *)
 
-type ('a, 'b, 'c, 'd, 'e, 'f) param_format_ebb = Param_format_EBB :
+type ('a, 'b, 'c, 'd, 'e, 'f) param_format_ebb = Param_format_EBB : (* [@@dead "param_format_ebb.Param_format_EBB"] *)
      ('x -> 'a, 'b, 'c, 'd, 'e, 'f) fmt ->
      ('a, 'b, 'c, 'd, 'e, 'f) param_format_ebb
 
@@ -34,26 +34,26 @@ val param_format_of_ignored_format :
   ('a, 'b, 'c, 'd, 'e, 'f) param_format_ebb
 
 type ('b, 'c) acc_formatting_gen =
-  | Acc_open_tag of ('b, 'c) acc
-  | Acc_open_box of ('b, 'c) acc
+  | Acc_open_tag of ('b, 'c) acc (* [@@dead "acc_formatting_gen.Acc_open_tag"] *)
+  | Acc_open_box of ('b, 'c) acc (* [@@dead "acc_formatting_gen.Acc_open_box"] *)
 
 and ('b, 'c) acc =
-  | Acc_formatting_lit of ('b, 'c) acc * formatting_lit
-  | Acc_formatting_gen of ('b, 'c) acc * ('b, 'c) acc_formatting_gen
-  | Acc_string_literal of ('b, 'c) acc * string
-  | Acc_char_literal   of ('b, 'c) acc * char
-  | Acc_data_string    of ('b, 'c) acc * string
-  | Acc_data_char      of ('b, 'c) acc * char
-  | Acc_delay          of ('b, 'c) acc * ('b -> 'c)
-  | Acc_flush          of ('b, 'c) acc
-  | Acc_invalid_arg    of ('b, 'c) acc * string
+  | Acc_formatting_lit of ('b, 'c) acc * formatting_lit (* [@@dead "acc.Acc_formatting_lit"] *)
+  | Acc_formatting_gen of ('b, 'c) acc * ('b, 'c) acc_formatting_gen (* [@@dead "acc.Acc_formatting_gen"] *)
+  | Acc_string_literal of ('b, 'c) acc * string (* [@@dead "acc.Acc_string_literal"] *)
+  | Acc_char_literal   of ('b, 'c) acc * char (* [@@dead "acc.Acc_char_literal"] *)
+  | Acc_data_string    of ('b, 'c) acc * string (* [@@dead "acc.Acc_data_string"] *)
+  | Acc_data_char      of ('b, 'c) acc * char (* [@@dead "acc.Acc_data_char"] *)
+  | Acc_delay          of ('b, 'c) acc * ('b -> 'c) (* [@@dead "acc.Acc_delay"] *)
+  | Acc_flush          of ('b, 'c) acc (* [@@dead "acc.Acc_flush"] *)
+  | Acc_invalid_arg    of ('b, 'c) acc * string (* [@@dead "acc.Acc_invalid_arg"] *)
   | End_of_acc
 
 type ('a, 'b) heter_list =
   | Cons : 'c * ('a, 'b) heter_list -> ('c -> 'a, 'b) heter_list
   | Nil : ('b, 'b) heter_list
 
-type ('b, 'c, 'e, 'f) fmt_ebb = Fmt_EBB :
+type ('b, 'c, 'e, 'f) fmt_ebb = Fmt_EBB : (* [@@dead "fmt_ebb.Fmt_EBB"] *)
      ('a, 'b, 'c, 'd, 'e, 'f) CamlinternalFormatBasics.fmt ->
      ('b, 'c, 'e, 'f) fmt_ebb
 
@@ -91,12 +91,12 @@ val format_of_string_format :
 
 val char_of_iconv : CamlinternalFormatBasics.int_conv -> char
 val string_of_formatting_lit : CamlinternalFormatBasics.formatting_lit -> string
-val string_of_formatting_gen :
+val string_of_formatting_gen : (* [@@dead "string_of_formatting_gen"] *)
   ('a, 'b, 'c, 'd, 'e, 'f) CamlinternalFormatBasics.formatting_gen -> string
 
-val string_of_fmtty :
+val string_of_fmtty : (* [@@dead "string_of_fmtty"] *)
   ('a, 'b, 'c, 'd, 'e, 'f) CamlinternalFormatBasics.fmtty -> string
-val string_of_fmt :
+val string_of_fmt : (* [@@dead "string_of_fmt"] *)
   ('a, 'b, 'c, 'd, 'e, 'f) CamlinternalFormatBasics.fmt -> string
 
 val open_box_of_string : string -> int * block_type
@@ -115,7 +115,7 @@ val trans :
 -> ('a1, 'b1, 'c1, 'd1, 'e1, 'f1,
     'a3, 'b3, 'c3, 'd3, 'e3, 'f3) fmtty_rel
 
-val recast :
+val recast : (* [@@dead "recast"] *)
    ('a1, 'b1, 'c1, 'd1, 'e1, 'f1) fmt
 -> ('a1, 'b1, 'c1, 'd1, 'e1, 'f1,
     'a2, 'b2, 'c2, 'd2, 'e2, 'f2) fmtty_rel

@@ -117,12 +117,12 @@ val has: ('k, 'v, 'id) t -> 'k  -> bool
     ]}
   *)
 
-val cmpU:
+val cmpU: (* [@@dead "cmpU"] *)
     ('k, 'v, 'id) t ->
     ('k, 'v, 'id) t ->
     ('v -> 'v -> int [@bs]) ->
      int
-val cmp:
+val cmp: (* [@@dead "cmp"] *)
     ('k, 'v, 'id) t ->
     ('k, 'v, 'id) t ->
     ('v -> 'v -> int ) ->
@@ -134,7 +134,7 @@ val cmp:
     It will compare size first and each element following the order one by one.
 *)
 
-val eqU:
+val eqU: (* [@@dead "eqU"] *)
     ('k, 'v, 'id) t ->
     ('k, 'v, 'id) t ->
     ('v -> 'v -> bool [@bs]) ->
@@ -149,8 +149,8 @@ val eq:
     equal data.  [veq] is the equality predicate used to compare
     the data associated with the keys. *)
 
-val findFirstByU : ('k, 'v, 'id) t -> ('k -> 'v -> bool [@bs]) -> ('k * 'v) option
-val findFirstBy : ('k, 'v, 'id) t -> ('k -> 'v -> bool ) -> ('k * 'v) option
+val findFirstByU : ('k, 'v, 'id) t -> ('k -> 'v -> bool [@bs]) -> ('k * 'v) option (* [@@dead "findFirstByU"] *)
+val findFirstBy : ('k, 'v, 'id) t -> ('k -> 'v -> bool ) -> ('k * 'v) option (* [@@dead "findFirstBy"] *)
 (** [findFirstBy m p] uses funcion [f] to find the first key value pair
     to match predicate [p].
 
@@ -160,8 +160,8 @@ val findFirstBy : ('k, 'v, 'id) t -> ('k -> 'v -> bool ) -> ('k * 'v) option
     ]}
 *)
 
-val forEachU:  ('k, 'v, 'id) t -> ('k -> 'v -> unit [@bs]) -> unit
-val forEach:  ('k, 'v, 'id) t -> ('k -> 'v -> unit) -> unit
+val forEachU:  ('k, 'v, 'id) t -> ('k -> 'v -> unit [@bs]) -> unit (* [@@dead "forEachU"] *)
+val forEach:  ('k, 'v, 'id) t -> ('k -> 'v -> unit) -> unit (* [@@dead "forEach"] *)
 (** [forEach m f] applies [f] to all bindings in map [m].
     [f] receives the 'k as first argument, and the associated value
     as second argument.  The bindings are passed to [f] in increasing
@@ -176,8 +176,8 @@ val forEach:  ('k, 'v, 'id) t -> ('k -> 'v -> unit) -> unit
     ]}
 *)
 
-val reduceU: ('k, 'v, 'id) t -> 'acc -> ('acc -> 'k -> 'v -> 'acc [@bs]) -> 'acc
-val reduce: ('k, 'v, 'id) t -> 'acc -> ('acc -> 'k -> 'v -> 'acc) -> 'acc
+val reduceU: ('k, 'v, 'id) t -> 'acc -> ('acc -> 'k -> 'v -> 'acc [@bs]) -> 'acc (* [@@dead "reduceU"] *)
+val reduce: ('k, 'v, 'id) t -> 'acc -> ('acc -> 'k -> 'v -> 'acc) -> 'acc (* [@@dead "reduce"] *)
 (** [reduce m a f] computes [(f kN dN ... (f k1 d1 a)...)],
     where [k1 ... kN] are the keys of all bindings in [m]
     (in increasing order), and [d1 ... dN] are the associated data.
@@ -188,17 +188,17 @@ val reduce: ('k, 'v, 'id) t -> 'acc -> ('acc -> 'k -> 'v -> 'acc) -> 'acc
     ]}
 *)
 
-val everyU: ('k, 'v, 'id) t -> ('k -> 'v -> bool [@bs]) ->  bool
-val every: ('k, 'v, 'id) t -> ('k -> 'v -> bool) ->  bool
+val everyU: ('k, 'v, 'id) t -> ('k -> 'v -> bool [@bs]) ->  bool (* [@@dead "everyU"] *)
+val every: ('k, 'v, 'id) t -> ('k -> 'v -> bool) ->  bool (* [@@dead "every"] *)
 (** [every m p] checks if all the bindings of the map
     satisfy the predicate [p]. Order unspecified *)
 
-val someU: ('k, 'v, 'id) t -> ('k -> 'v -> bool [@bs]) ->  bool
-val some: ('k, 'v, 'id) t -> ('k -> 'v -> bool) ->  bool
+val someU: ('k, 'v, 'id) t -> ('k -> 'v -> bool [@bs]) ->  bool (* [@@dead "someU"] *)
+val some: ('k, 'v, 'id) t -> ('k -> 'v -> bool) ->  bool (* [@@dead "some"] *)
 (** [some m p] checks if at least one binding of the map
     satisfy the predicate [p]. Order unspecified *)
 
-val size: ('k, 'v, 'id) t -> int
+val size: ('k, 'v, 'id) t -> int (* [@@dead "size"] *)
 (** [size s]
 
     @example {[
@@ -237,7 +237,7 @@ val keysToArray: ('k, 'v, 'id) t -> 'k  array
     ]}
 *)
 
-val valuesToArray: ('k, 'v, 'id) t -> 'v  array
+val valuesToArray: ('k, 'v, 'id) t -> 'v  array (* [@@dead "valuesToArray"] *)
 (** [valuesToArray s]
     @example {[
       valuesToArray (fromArray [2,"2"; 1,"1"; 3,"3"] ~id:(module IntCmp)) =
@@ -246,36 +246,36 @@ val valuesToArray: ('k, 'v, 'id) t -> 'v  array
 
 *)
 
-val minKey: ('k, _, _) t -> 'k option
+val minKey: ('k, _, _) t -> 'k option (* [@@dead "minKey"] *)
 (** [minKey s]
     @return the minimum key, None if not exist
 *)
 
-val minKeyUndefined: ('k, _, _) t -> 'k Js.undefined
+val minKeyUndefined: ('k, _, _) t -> 'k Js.undefined (* [@@dead "minKeyUndefined"] *)
 (** {b See} {!minKey}*)
 
-val maxKey: ('k, _, _) t -> 'k option
+val maxKey: ('k, _, _) t -> 'k option (* [@@dead "maxKey"] *)
 (** [maxKey s]
     @return the maximum key, None if not exist
 *)
 
-val maxKeyUndefined: ('k, _, _) t -> 'k Js.undefined
+val maxKeyUndefined: ('k, _, _) t -> 'k Js.undefined (* [@@dead "maxKeyUndefined"] *)
 (** {b See} {!maxKey} *)
 
-val minimum: ('k, 'v,  _) t -> ('k * 'v) option
+val minimum: ('k, 'v,  _) t -> ('k * 'v) option (* [@@dead "minimum"] *)
 (** [minimum s]
     @return the minimum key value pair, None if not exist
 *)
 
-val minUndefined: ('k, 'v, _) t -> ('k * 'v) Js.undefined
+val minUndefined: ('k, 'v, _) t -> ('k * 'v) Js.undefined (* [@@dead "minUndefined"] *)
 (** {b See} {!minimum} *)
 
-val maximum: ('k, 'v, _) t -> ('k * 'v) option
+val maximum: ('k, 'v, _) t -> ('k * 'v) option (* [@@dead "maximum"] *)
 (** [maximum s]
     @return the maximum key value pair, None if not exist
 *)
 
-val maxUndefined:('k, 'v, _) t -> ('k * 'v) Js.undefined
+val maxUndefined:('k, 'v, _) t -> ('k * 'v) Js.undefined (* [@@dead "maxUndefined"] *)
 (** {b See} {!maximum}
 *)
 
@@ -296,7 +296,7 @@ val getUndefined: ('k, 'v, 'id) t -> 'k ->  'v Js.undefined
     @return [undefined] when not found
 *)
 
-val getWithDefault:
+val getWithDefault: (* [@@dead "getWithDefault"] *)
     ('k, 'v, 'id) t -> 'k ->  'v -> 'v
 (** [getWithDefault s k default]
 
@@ -306,7 +306,7 @@ val getWithDefault:
 
 *)
 
-val getExn:  ('k, 'v, 'id) t -> 'k -> 'v
+val getExn:  ('k, 'v, 'id) t -> 'k -> 'v (* [@@dead "getExn"] *)
 (** [getExn s k]
 
    {b See} {!getExn}
@@ -353,7 +353,7 @@ val set:
     ]}
 *)
 
-val updateU: ('k, 'v, 'id) t -> 'k -> ('v option -> 'v option [@bs]) -> ('k, 'v, 'id) t
+val updateU: ('k, 'v, 'id) t -> 'k -> ('v option -> 'v option [@bs]) -> ('k, 'v, 'id) t (* [@@dead "updateU"] *)
 val update: ('k, 'v, 'id) t -> 'k -> ('v option -> 'v option) -> ('k, 'v, 'id) t
 (** [update m x f] returns a map containing the same bindings as
     [m], except for the binding of [x].
@@ -373,7 +373,7 @@ val mergeMany:
     exist [s]
 *)
 
-val mergeU:
+val mergeU: (* [@@dead "mergeU"] *)
    ('k, 'v, 'id ) t ->
    ('k, 'v2, 'id) t ->
    ('k -> 'v option -> 'v2 option -> 'v3 option [@bs]) ->
@@ -389,22 +389,22 @@ val merge:
 *)
 
 
-val keepU:
+val keepU: (* [@@dead "keepU"] *)
     ('k, 'v, 'id) t ->
     ('k -> 'v -> bool [@bs]) ->
     ('k, 'v, 'id) t
-val keep:
+val keep: (* [@@dead "keep"] *)
     ('k, 'v, 'id) t ->
     ('k -> 'v -> bool) ->
     ('k, 'v, 'id) t
 (** [keep m p] returns the map with all the bindings in [m]
     that satisfy predicate [p]. *)
 
-val partitionU:
+val partitionU: (* [@@dead "partitionU"] *)
     ('k, 'v, 'id) t ->
     ('k -> 'v -> bool [@bs]) ->
     ('k, 'v, 'id) t * ('k, 'v, 'id) t
-val partition:
+val partition: (* [@@dead "partition"] *)
     ('k, 'v, 'id) t ->
     ('k -> 'v -> bool) ->
     ('k, 'v, 'id) t * ('k, 'v, 'id) t
@@ -426,16 +426,16 @@ val split:
       or [Some v] if [m] binds [v] to [x].
 *)
 
-val mapU: ('k, 'v, 'id) t -> ('v -> 'v2 [@bs]) ->  ('k, 'v2, 'id) t
-val map: ('k, 'v, 'id) t -> ('v -> 'v2) ->  ('k, 'v2, 'id) t
+val mapU: ('k, 'v, 'id) t -> ('v -> 'v2 [@bs]) ->  ('k, 'v2, 'id) t (* [@@dead "mapU"] *)
+val map: ('k, 'v, 'id) t -> ('v -> 'v2) ->  ('k, 'v2, 'id) t (* [@@dead "map"] *)
 (** [map m f] returns a map with same domain as [m], where the
     associated value [a] of all bindings of [m] has been
     replaced by the result of the application of [f] to [a].
     The bindings are passed to [f] in increasing order
     with respect to the ordering over the type of the keys. *)
 
-val mapWithKeyU: ('k, 'v, 'id) t -> ('k -> 'v -> 'v2 [@bs]) -> ('k, 'v2, 'id) t
-val mapWithKey: ('k, 'v, 'id) t -> ('k -> 'v -> 'v2) -> ('k, 'v2, 'id) t
+val mapWithKeyU: ('k, 'v, 'id) t -> ('k -> 'v -> 'v2 [@bs]) -> ('k, 'v2, 'id) t (* [@@dead "mapWithKeyU"] *)
+val mapWithKey: ('k, 'v, 'id) t -> ('k -> 'v -> 'v2) -> ('k, 'v2, 'id) t (* [@@dead "mapWithKey"] *)
 (** [mapWithKey m f]
 
     The same as {!map} except that [f] is supplied with one more argument: the key
@@ -470,7 +470,7 @@ val packIdData: id:('k, 'id) id -> data:('k, 'v, 'id) Belt_MapDict.t -> ('k, 'v,
 *)
 
 (**/**)
-val checkInvariantInternal: _ t -> unit
+val checkInvariantInternal: _ t -> unit (* [@@dead "checkInvariantInternal"] *)
 (**
    {b raise} when invariant is not held
 *)

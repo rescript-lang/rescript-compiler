@@ -27,5 +27,4 @@
 
 (** *)
 
-val caml_md5_string : string -> int -> int -> string
-
+val caml_md5_string : string -> int -> int -> string (* [@@dead "caml_md5_string"] *)

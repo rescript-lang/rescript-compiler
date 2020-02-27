@@ -52,7 +52,7 @@ external force : 'a t -> 'a = "%lazy_force"
    recursively.
 *)
 
-val force_val : 'a t -> 'a
+val force_val : 'a t -> 'a (* [@@dead "force_val"] *)
 (** [force_val x] forces the suspension [x] and returns its
     result.  If [x] has already been forced, [force_val x]
     returns the same value again without recomputing it.
@@ -77,19 +77,19 @@ val from_val : 'a -> 'a t
     [lazy (v)].
     @since 4.00.0 *)
 
-val is_val : 'a t -> bool
+val is_val : 'a t -> bool (* [@@dead "is_val"] *)
 (** [is_val x] returns [true] if [x] has already been forced and
     did not raise an exception.
     @since 4.00.0 *)
 
-val lazy_from_fun : (unit -> 'a) -> 'a t
+val lazy_from_fun : (unit -> 'a) -> 'a t (* [@@dead "lazy_from_fun"] *)
   [@@ocaml.deprecated "Use Lazy.from_fun instead."]
 (** @deprecated synonym for [from_fun]. *)
 
-val lazy_from_val : 'a -> 'a t
+val lazy_from_val : 'a -> 'a t (* [@@dead "lazy_from_val"] *)
   [@@ocaml.deprecated "Use Lazy.from_val instead."]
 (** @deprecated synonym for [from_val]. *)
 
-val lazy_is_val : 'a t -> bool
+val lazy_is_val : 'a t -> bool (* [@@dead "lazy_is_val"] *)
   [@@ocaml.deprecated "Use Lazy.is_val instead."]
 (** @deprecated synonym for [is_val]. *)

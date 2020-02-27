@@ -23,16 +23,16 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
 
-val nullable_to_opt : 'a Js.null_undefined -> 'a option
+val nullable_to_opt : 'a Js.null_undefined -> 'a option (* [@@dead "nullable_to_opt"] *)
 
-val undefined_to_opt : 'a Js.undefined -> 'a option 
+val undefined_to_opt : 'a Js.undefined -> 'a option  (* [@@dead "undefined_to_opt"] *)
 
-val null_to_opt : 'a Js.null -> 'a option
+val null_to_opt : 'a Js.null -> 'a option (* [@@dead "null_to_opt"] *)
 
-val valFromOption : Caml_obj_extern.t -> Caml_obj_extern.t 
+val valFromOption : Caml_obj_extern.t -> Caml_obj_extern.t  (* [@@dead "valFromOption"] *)
 
-val some : Caml_obj_extern.t -> Caml_obj_extern.t 
+val some : Caml_obj_extern.t -> Caml_obj_extern.t  (* [@@dead "some"] *)
 
-val option_get : Caml_obj_extern.t option -> Caml_obj_extern.t Caml_undefined_extern.t 
+val option_get : Caml_obj_extern.t option -> Caml_obj_extern.t Caml_undefined_extern.t  (* [@@dead "option_get"] *)
 
-val option_get_unwrap : 'a option -> Caml_obj_extern.t Caml_undefined_extern.t
+val option_get_unwrap : 'a option -> Caml_obj_extern.t Caml_undefined_extern.t (* [@@dead "option_get_unwrap"] *)

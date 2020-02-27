@@ -41,7 +41,7 @@ val cmpU:
     kcmp:('k, 'id) cmp ->
     vcmp:('v -> 'v -> int [@bs]) -> 
      int
-val cmp: 
+val cmp:  (* [@@dead "cmp"] *)
     ('k, 'v, 'id) t ->
     ('k, 'v, 'id) t ->
     kcmp:('k, 'id) cmp ->
@@ -54,7 +54,7 @@ val eqU:
     kcmp:('k, 'id) cmp ->
     veq:('a -> 'a -> bool [@bs]) ->
     bool
-val eq:
+val eq: (* [@@dead "eq"] *)
     ('k, 'a, 'id) t ->
     ('k, 'a, 'id) t ->
     kcmp:('k, 'id) cmp ->
@@ -66,7 +66,7 @@ val eq:
     the data associated with the keys. *)
 
 val findFirstByU : ('k, 'v, 'id) t -> ('k -> 'v -> bool [@bs]) -> ('k * 'v) option
-val findFirstBy : ('k, 'v, 'id) t -> ('k -> 'v -> bool ) -> ('k * 'v) option
+val findFirstBy : ('k, 'v, 'id) t -> ('k -> 'v -> bool ) -> ('k * 'v) option (* [@@dead "findFirstBy"] *)
 (** [findFirstBy m p] uses funcion [f] to find the first key value pair
     to match predicate [p].
 
@@ -77,25 +77,25 @@ val findFirstBy : ('k, 'v, 'id) t -> ('k -> 'v -> bool ) -> ('k * 'v) option
 *)
 
 val forEachU: ('k, 'a, 'id) t -> ('k -> 'a -> unit [@bs]) -> unit
-val forEach: ('k, 'a, 'id) t -> ('k -> 'a -> unit) -> unit
+val forEach: ('k, 'a, 'id) t -> ('k -> 'a -> unit) -> unit (* [@@dead "forEach"] *)
 (** [forEach m f] applies [f] to all bindings in map [m].
     [f] receives the key as first argument, and the associated value
     as second argument. The bindings are passed to [f] in increasing
     order with respect to the ordering over the type of the keys. *)
 
 val reduceU: ('k, 'a, 'id) t -> 'b -> ('b -> 'k -> 'a -> 'b [@bs]) -> 'b
-val reduce: ('k, 'a, 'id) t -> 'b -> ('b -> 'k -> 'a -> 'b) -> 'b
+val reduce: ('k, 'a, 'id) t -> 'b -> ('b -> 'k -> 'a -> 'b) -> 'b (* [@@dead "reduce"] *)
 (** [reduce m a f] computes [(f kN dN ... (f k1 d1 a)...)],
     where [k1 ... kN] are the keys of all bindings in [m]
     (in increasing order), and [d1 ... dN] are the associated data. *)
 
 val everyU: ('k, 'a, 'id) t -> ('k -> 'a -> bool [@bs]) -> bool
-val every: ('k, 'a, 'id) t -> ('k -> 'a -> bool) -> bool
+val every: ('k, 'a, 'id) t -> ('k -> 'a -> bool) -> bool (* [@@dead "every"] *)
 (** [every m p] checks if all the bindings of the map
     satisfy the predicate [p]. Order unspecified *)
 
 val someU: ('k, 'a, 'id) t -> ('k -> 'a -> bool [@bs]) -> bool
-val some: ('k, 'a, 'id) t -> ('k -> 'a -> bool) -> bool
+val some: ('k, 'a, 'id) t -> ('k -> 'a -> bool) -> bool (* [@@dead "some"] *)
 (** [some m p] checks if at least one binding of the map
     satisfy the predicate [p]. Order unspecified *)
 
@@ -181,7 +181,7 @@ val updateU:
   ('b option -> 'b option [@bs]) ->
   cmp:('a, 'id) cmp ->
   ('a, 'b, 'id) t
-val update:
+val update: (* [@@dead "update"] *)
   ('a, 'b, 'id) t ->
   'a ->
   ('b option -> 'b option) ->
@@ -193,7 +193,7 @@ val mergeU:
   ('a, 'c, 'id) t ->
   ('a -> 'b option -> 'c option -> 'd option [@bs]) ->
   cmp:('a, 'id) cmp -> ('a, 'd, 'id) t
-val merge:
+val merge: (* [@@dead "merge"] *)
   ('a, 'b, 'id) t ->
   ('a, 'c, 'id) t ->
   ('a -> 'b option -> 'c option -> 'd option) ->
@@ -213,7 +213,7 @@ val keepU:
     ('k, 'a, 'id) t ->
     ('k -> 'a -> bool [@bs]) ->
     ('k, 'a, 'id) t
-val keep:
+val keep: (* [@@dead "keep"] *)
     ('k, 'a, 'id) t ->
     ('k -> 'a -> bool) ->
     ('k, 'a, 'id) t
@@ -224,7 +224,7 @@ val partitionU:
     ('k, 'a, 'id) t ->
     ('k -> 'a -> bool [@bs]) ->
     ('k, 'a, 'id) t * ('k, 'a, 'id) t
-val partition:
+val partition: (* [@@dead "partition"] *)
     ('k, 'a, 'id) t ->
     ('k -> 'a -> bool) -> 
     ('k, 'a, 'id) t * ('k, 'a, 'id) t
@@ -249,7 +249,7 @@ val split:
  *)
 
 val mapU: ('k, 'a, 'id) t -> ('a -> 'b [@bs]) -> ('k ,'b,'id) t
-val map: ('k, 'a, 'id) t -> ('a -> 'b) -> ('k ,'b,'id) t
+val map: ('k, 'a, 'id) t -> ('a -> 'b) -> ('k ,'b,'id) t (* [@@dead "map"] *)
 (** [map m f] returns a map with same domain as [m], where the
     associated value [a] of all bindings of [m] has been
     replaced by the result of the application of [f] to [a].
@@ -257,4 +257,4 @@ val map: ('k, 'a, 'id) t -> ('a -> 'b) -> ('k ,'b,'id) t
     with respect to the ordering over the type of the keys. *)
 
 val mapWithKeyU: ('k, 'a, 'id) t -> ('k -> 'a -> 'b [@bs]) -> ('k, 'b, 'id) t
-val mapWithKey: ('k, 'a, 'id) t -> ('k -> 'a -> 'b) -> ('k, 'b, 'id) t
+val mapWithKey: ('k, 'a, 'id) t -> ('k -> 'a -> 'b) -> ('k, 'b, 'id) t (* [@@dead "mapWithKey"] *)

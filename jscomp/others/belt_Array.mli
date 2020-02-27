@@ -170,7 +170,7 @@ val makeBy: int -> (int -> 'a ) -> 'a array
     ]}
 *)
 
-val makeByAndShuffleU: int -> (int -> 'a [@bs]) -> 'a array
+val makeByAndShuffleU: int -> (int -> 'a [@bs]) -> 'a array (* [@@dead "makeByAndShuffleU"] *)
 val makeByAndShuffle: int -> (int -> 'a ) -> 'a array
 (** [makeByAndShuffle n f]
 
@@ -190,7 +190,7 @@ val zip: 'a array -> 'b array -> ('a * 'b) array
  *)
 
 
- val zipByU: 'a array -> 'b array -> ('a -> 'b -> 'c [@bs]) -> 'c array
+ val zipByU: 'a array -> 'b array -> ('a -> 'b -> 'c [@bs]) -> 'c array (* [@@dead "zipByU"] *)
  val zipBy: 'a array -> 'b array -> ('a -> 'b -> 'c ) -> 'c array
  (**
     [zipBy xs ys f]
@@ -357,7 +357,7 @@ val forEach: 'a array ->  ('a -> unit ) -> unit
     ]}
 *)
 
-val mapU: 'a array ->  ('a -> 'b [@bs]) -> 'b array
+val mapU: 'a array ->  ('a -> 'b [@bs]) -> 'b array (* [@@dead "mapU"] *)
 val map: 'a array ->  ('a -> 'b ) -> 'b array
 (** [map xs f ]
 
@@ -370,7 +370,7 @@ val map: 'a array ->  ('a -> 'b ) -> 'b array
 
 *)
 
-val getByU: 'a array -> ('a -> bool [@bs]) -> 'a option
+val getByU: 'a array -> ('a -> bool [@bs]) -> 'a option (* [@@dead "getByU"] *)
 val getBy: 'a array -> ('a -> bool) -> 'a option
 (** [getBy xs p] returns [Some value] for the first value in [xs] that satisifies the predicate function [p]; returns [None] if no element satisifies the function.
 
@@ -380,7 +380,7 @@ val getBy: 'a array -> ('a -> bool) -> 'a option
     ]}
 *)
 
-val getIndexByU: 'a array -> ('a -> bool [@bs]) -> int option
+val getIndexByU: 'a array -> ('a -> bool [@bs]) -> int option (* [@@dead "getIndexByU"] *)
 val getIndexBy: 'a array -> ('a -> bool) -> int option
 (** [getIndexBy xs p] returns [Some index] for the first value in [xs] that satisifies the predicate function [p]; returns [None] if no element satisifies the function.
 
@@ -390,7 +390,7 @@ val getIndexBy: 'a array -> ('a -> bool) -> int option
     ]}
 *)
 
-val keepU: 'a array -> ('a -> bool [@bs]) -> 'a array
+val keepU: 'a array -> ('a -> bool [@bs]) -> 'a array (* [@@dead "keepU"] *)
 val keep: 'a array -> ('a -> bool ) -> 'a array
 (** [keep xs p ]
     @return a new array that keep all elements satisfy [p]
@@ -400,8 +400,8 @@ val keep: 'a array -> ('a -> bool ) -> 'a array
     ]}
 *)
 
-val keepWithIndexU: 'a array -> ('a -> int -> bool [@bs]) -> 'a array
-val keepWithIndex: 'a array -> ('a -> int -> bool ) -> 'a array
+val keepWithIndexU: 'a array -> ('a -> int -> bool [@bs]) -> 'a array (* [@@dead "keepWithIndexU"] *)
+val keepWithIndex: 'a array -> ('a -> int -> bool ) -> 'a array (* [@@dead "keepWithIndex"] *)
 (** [keepWithIndex xs p ]
     @return a new array that keep all elements satisfy [p]
 
@@ -410,7 +410,7 @@ val keepWithIndex: 'a array -> ('a -> int -> bool ) -> 'a array
     ]}
 *)
 
-val keepMapU: 'a array -> ('a -> 'b option [@bs]) -> 'b array
+val keepMapU: 'a array -> ('a -> 'b option [@bs]) -> 'b array (* [@@dead "keepMapU"] *)
 val keepMap: 'a array -> ('a -> 'b option) -> 'b array
 (** [keepMap xs p]
     @return a new array that keep all elements that return a non-None applied [p]
@@ -421,7 +421,7 @@ val keepMap: 'a array -> ('a -> 'b option) -> 'b array
     ]}
 *)
 
-val forEachWithIndexU: 'a array ->  (int -> 'a -> unit [@bs]) -> unit
+val forEachWithIndexU: 'a array ->  (int -> 'a -> unit [@bs]) -> unit (* [@@dead "forEachWithIndexU"] *)
 val forEachWithIndex: 'a array ->  (int -> 'a -> unit ) -> unit
 (** [forEachWithIndex xs f]
 
@@ -444,7 +444,7 @@ val forEachWithIndex: 'a array ->  (int -> 'a -> unit ) -> unit
 
 *)
 
-val mapWithIndexU: 'a array ->  (int -> 'a -> 'b [@bs]) -> 'b array
+val mapWithIndexU: 'a array ->  (int -> 'a -> 'b [@bs]) -> 'b array (* [@@dead "mapWithIndexU"] *)
 val mapWithIndex: 'a array ->  (int -> 'a -> 'b ) -> 'b array
 (** [mapWithIndex xs f ]
 
@@ -458,7 +458,7 @@ val mapWithIndex: 'a array ->  (int -> 'a -> 'b ) -> 'b array
 *)
 
 
-val partitionU : 'a array -> ('a -> bool [@bs]) -> 'a array * 'a array
+val partitionU : 'a array -> ('a -> bool [@bs]) -> 'a array * 'a array (* [@@dead "partitionU"] *)
 val partition : 'a array ->  ('a -> bool) -> 'a array * 'a array
 (** [partition f a] split array into tuple of two arrays based on predicate f; first of tuple where predicate cause true, second where predicate cause false
 
@@ -509,7 +509,7 @@ val reduceReverse2:
    ]}
 *)
 
-val reduceWithIndexU:  'a array -> 'b -> ('b -> 'a -> int -> 'b [@bs]) -> 'b
+val reduceWithIndexU:  'a array -> 'b -> ('b -> 'a -> int -> 'b [@bs]) -> 'b (* [@@dead "reduceWithIndexU"] *)
 val reduceWithIndex:  'a array -> 'b -> ('b -> 'a -> int -> 'b) -> 'b
 (** [reduceWithIndex xs f]
 
@@ -522,7 +522,7 @@ val reduceWithIndex:  'a array -> 'b -> ('b -> 'a -> int -> 'b) -> 'b
     ]}
 *)
 
-val someU: 'a array -> ('a -> bool [@bs]) -> bool
+val someU: 'a array -> ('a -> bool [@bs]) -> bool (* [@@dead "someU"] *)
 val some: 'a array -> ('a -> bool) -> bool
 (** [some xs p]
 
@@ -535,7 +535,7 @@ val some: 'a array -> ('a -> bool) -> bool
     ]}
 *)
 
-val everyU: 'a array -> ('a -> bool [@bs]) -> bool
+val everyU: 'a array -> ('a -> bool [@bs]) -> bool (* [@@dead "everyU"] *)
 val every: 'a array -> ('a -> bool ) -> bool
 (** [every xs p]
 
@@ -548,7 +548,7 @@ val every: 'a array -> ('a -> bool ) -> bool
     ]}
 *)
 
-val every2U: 'a array -> 'b array -> ('a -> 'b -> bool [@bs]) -> bool
+val every2U: 'a array -> 'b array -> ('a -> 'b -> bool [@bs]) -> bool (* [@@dead "every2U"] *)
 val every2: 'a array -> 'b array -> ('a -> 'b -> bool ) -> bool
 (** [every2 xs ys p] returns true if [p xi yi] is true for all pairs of elements
   up to the shorter length (i.e. [min (length xs) (length ys)])
@@ -560,7 +560,7 @@ val every2: 'a array -> 'b array -> ('a -> 'b -> bool ) -> bool
     ]}
 *)
 
-val some2U: 'a array -> 'b array -> ('a -> 'b -> bool [@bs]) -> bool
+val some2U: 'a array -> 'b array -> ('a -> 'b -> bool [@bs]) -> bool (* [@@dead "some2U"] *)
 val some2: 'a array -> 'b array -> ('a -> 'b -> bool ) -> bool
 (** [some2 xs ys p] returns true if [p xi yi] is true for any pair of elements
   up to the shorter length (i.e. [min (length xs) (length ys)])
@@ -572,7 +572,7 @@ val some2: 'a array -> 'b array -> ('a -> 'b -> bool ) -> bool
     ]}
 *)
 
-val cmpU: 'a array -> 'a array -> ('a -> 'a -> int [@bs]) -> int
+val cmpU: 'a array -> 'a array -> ('a -> 'a -> int [@bs]) -> int (* [@@dead "cmpU"] *)
 val cmp: 'a array -> 'a array -> ('a -> 'a -> int ) -> int
 (** [cmp xs ys f]
 
@@ -590,7 +590,7 @@ val cmp: 'a array -> 'a array -> ('a -> 'a -> int ) -> int
     ]}
 *)
 
-val eqU:  'a array -> 'a array -> ('a -> 'a -> bool [@bs]) -> bool
+val eqU:  'a array -> 'a array -> ('a -> 'a -> bool [@bs]) -> bool (* [@@dead "eqU"] *)
 val eq:  'a array -> 'a array -> ('a -> 'a -> bool ) -> bool
 (** [eq xs ys]
 

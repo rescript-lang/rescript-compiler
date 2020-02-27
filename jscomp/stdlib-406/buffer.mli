@@ -42,7 +42,7 @@ val contents : t -> string
 (** Return a copy of the current contents of the buffer.
     The buffer itself is unchanged. *)
 
-val to_bytes : t -> bytes
+val to_bytes : t -> bytes (* [@@dead "to_bytes"] *)
 (** Return a copy of the current contents of the buffer.
     The buffer itself is unchanged.
     @since 4.02 *)
@@ -54,7 +54,7 @@ val sub : t -> int -> int -> string
     Raise [Invalid_argument] if [srcoff] and [len] do not designate a valid
     range of [b]. *)
 
-val blit : t -> int -> bytes -> int -> int -> unit
+val blit : t -> int -> bytes -> int -> int -> unit (* [@@dead "blit"] *)
 (** [Buffer.blit src srcoff dst dstoff len] copies [len] characters from
    the current contents of the buffer [src], starting at offset [srcoff]
    to [dst], starting at character [dstoff].
@@ -65,7 +65,7 @@ val blit : t -> int -> bytes -> int -> int -> unit
    @since 3.11.2
 *)
 
-val nth : t -> int -> char
+val nth : t -> int -> char (* [@@dead "nth"] *)
 (** Get the n-th character of the buffer. Raise [Invalid_argument] if
     index out of bounds *)
 
@@ -85,20 +85,20 @@ val reset : t -> unit
 val add_char : t -> char -> unit
 (** [add_char b c] appends the character [c] at the end of buffer [b]. *)
 
-val add_utf_8_uchar : t -> Uchar.t -> unit
+val add_utf_8_uchar : t -> Uchar.t -> unit (* [@@dead "add_utf_8_uchar"] *)
 (** [add_utf_8_uchar b u] appends the {{:https://tools.ietf.org/html/rfc3629}
     UTF-8} encoding of [u] at the end of buffer [b].
 
     @since 4.06.0 *)
 
-val add_utf_16le_uchar : t -> Uchar.t -> unit
+val add_utf_16le_uchar : t -> Uchar.t -> unit (* [@@dead "add_utf_16le_uchar"] *)
 (** [add_utf_16le_uchar b u] appends the
     {{:https://tools.ietf.org/html/rfc2781}UTF-16LE} encoding of [u]
     at the end of buffer [b].
 
     @since 4.06.0 *)
 
-val add_utf_16be_uchar : t -> Uchar.t -> unit
+val add_utf_16be_uchar : t -> Uchar.t -> unit (* [@@dead "add_utf_16be_uchar"] *)
 (** [add_utf_16be_uchar b u] appends the
     {{:https://tools.ietf.org/html/rfc2781}UTF-16BE} encoding of [u]
     at the end of buffer [b].
@@ -108,7 +108,7 @@ val add_utf_16be_uchar : t -> Uchar.t -> unit
 val add_string : t -> string -> unit
 (** [add_string b s] appends the string [s] at the end of buffer [b]. *)
 
-val add_bytes : t -> bytes -> unit
+val add_bytes : t -> bytes -> unit (* [@@dead "add_bytes"] *)
 (** [add_bytes b s] appends the byte sequence [s] at the end of buffer [b].
     @since 4.02 *)
 
@@ -116,12 +116,12 @@ val add_substring : t -> string -> int -> int -> unit
 (** [add_substring b s ofs len] takes [len] characters from offset
    [ofs] in string [s] and appends them at the end of buffer [b]. *)
 
-val add_subbytes : t -> bytes -> int -> int -> unit
+val add_subbytes : t -> bytes -> int -> int -> unit (* [@@dead "add_subbytes"] *)
 (** [add_subbytes b s ofs len] takes [len] characters from offset
     [ofs] in byte sequence [s] and appends them at the end of buffer [b].
     @since 4.02 *)
 
-val add_substitute : t -> (string -> string) -> string -> unit
+val add_substitute : t -> (string -> string) -> string -> unit (* [@@dead "add_substitute"] *)
 (** [add_substitute b f s] appends the string pattern [s] at the end
    of buffer [b] with substitution.
    The substitution process looks for variables into
@@ -137,11 +137,11 @@ val add_substitute : t -> (string -> string) -> string -> unit
    Raise [Not_found] if the closing character of a parenthesized variable
    cannot be found. *)
 
-val add_buffer : t -> t -> unit
+val add_buffer : t -> t -> unit (* [@@dead "add_buffer"] *)
 (** [add_buffer b1 b2] appends the current contents of buffer [b2]
    at the end of buffer [b1].  [b2] is not modified. *)
 
-val add_channel : t -> in_channel -> int -> unit
+val add_channel : t -> in_channel -> int -> unit (* [@@dead "add_channel"] *)
 (** [add_channel b ic n] reads at most [n] characters from the
    input channel [ic] and stores them at the end of buffer [b].
    Raise [End_of_file] if the channel contains fewer than [n]
@@ -152,7 +152,7 @@ val output_buffer : out_channel -> t -> unit
 (** [output_buffer oc b] writes the current contents of buffer [b]
    on the output channel [oc]. *)
 
-val truncate : t -> int -> unit
+val truncate : t -> int -> unit (* [@@dead "truncate"] *)
 (** [truncate b len] truncates the length of [b] to [len]
   Note: the internal byte sequence is not shortened.
   Raise [Invalid_argument] if [len < 0] or [len > length b].

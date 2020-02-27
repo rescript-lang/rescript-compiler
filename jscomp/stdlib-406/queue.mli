@@ -50,7 +50,7 @@ val peek : 'a t -> 'a
 (** [peek q] returns the first element in queue [q], without removing
    it from the queue, or raises {!Empty} if the queue is empty. *)
 
-val top : 'a t -> 'a
+val top : 'a t -> 'a (* [@@dead "top"] *)
 (** [top] is a synonym for [peek]. *)
 
 val clear : 'a t -> unit

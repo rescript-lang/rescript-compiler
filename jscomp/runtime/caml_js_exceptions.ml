@@ -15,12 +15,12 @@ exception Error of t
    This function has to be in this module Since 
    [Error] is defined here 
 *)
-let internalToOCamlException (e : Caml_obj_extern.t) =
+let internalToOCamlException (e : Caml_obj_extern.t) = (* [@@dead "internalToOCamlException"] *)
   if Caml_exceptions.caml_is_extension e  then
     (Obj.magic e  : exn)
   else Error (Obj.magic (e : Caml_obj_extern.t) : t) 
 
-let caml_as_js_exn exn =   
+let caml_as_js_exn exn =    (* [@@dead "caml_as_js_exn"] *)
   match exn with 
   | Error t ->  
     Some t 

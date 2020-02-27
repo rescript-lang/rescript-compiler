@@ -26,13 +26,13 @@
 
 type control
 
-val caml_gc_counters : unit -> float * float * float
+val caml_gc_counters : unit -> float * float * float (* [@@dead "caml_gc_counters"] *)
 
-val caml_gc_set : control -> unit
-val caml_gc_minor : unit -> unit
-val caml_gc_major_slice : int -> int
-val caml_gc_major : unit -> unit
-val caml_gc_full_major : unit -> unit
-val caml_gc_compaction : unit -> unit
-val caml_final_register : ('a -> unit) -> 'a -> unit
-val caml_final_release : unit -> unit
+val caml_gc_set : control -> unit (* [@@dead "caml_gc_set"] *)
+val caml_gc_minor : unit -> unit (* [@@dead "caml_gc_minor"] *)
+val caml_gc_major_slice : int -> int (* [@@dead "caml_gc_major_slice"] *)
+val caml_gc_major : unit -> unit (* [@@dead "caml_gc_major"] *)
+val caml_gc_full_major : unit -> unit (* [@@dead "caml_gc_full_major"] *)
+val caml_gc_compaction : unit -> unit (* [@@dead "caml_gc_compaction"] *)
+val caml_final_register : ('a -> unit) -> 'a -> unit (* [@@dead "caml_final_register"] *)
+val caml_final_release : unit -> unit (* [@@dead "caml_final_release"] *)

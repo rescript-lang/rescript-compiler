@@ -25,6 +25,6 @@
 
 type obj = Caml_obj_extern.t
 
-val spliceApply : obj -> obj -> obj
+val spliceApply : obj -> obj -> obj (* [@@dead "spliceApply"] *)
 
-val spliceObjApply : obj -> obj -> obj -> obj
+val spliceObjApply : obj -> obj -> obj -> obj (* [@@dead "spliceObjApply"] *)

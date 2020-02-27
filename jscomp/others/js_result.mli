@@ -23,6 +23,6 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
 type (+'good, +'bad) t =
-  | Ok of 'good
-  | Error of 'bad
+  | Ok of 'good (* [@@dead "t.Ok"] *)
+  | Error of 'bad (* [@@dead "t.Error"] *)
 [@@ocaml.deprecated "Please use `Belt.Result.t` instead"]

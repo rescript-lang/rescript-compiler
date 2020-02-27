@@ -90,36 +90,35 @@ type ('a, 'id) t
 
 type ('a, 'id) id = ('a, 'id) Belt_Id.hashable
 
-val make:  hintSize:int -> id:('a,'id) id ->  ('a, 'id) t
-val clear: ('a, 'id) t -> unit
-val isEmpty: _ t -> bool
+val make:  hintSize:int -> id:('a,'id) id ->  ('a, 'id) t (* [@@dead "make"] *)
+val clear: ('a, 'id) t -> unit (* [@@dead "clear"] *)
+val isEmpty: _ t -> bool (* [@@dead "isEmpty"] *)
 
-val add: ('a, 'id) t -> 'a -> unit
+val add: ('a, 'id) t -> 'a -> unit (* [@@dead "add"] *)
 
-val copy: ('a, 'id) t -> ('a, 'id) t
+val copy: ('a, 'id) t -> ('a, 'id) t (* [@@dead "copy"] *)
 
-val has: ('a, 'id) t -> 'a -> bool
+val has: ('a, 'id) t -> 'a -> bool (* [@@dead "has"] *)
 
-val remove: ('a, 'id) t -> 'a -> unit
+val remove: ('a, 'id) t -> 'a -> unit (* [@@dead "remove"] *)
 
-val forEachU: ('a, 'id) t -> ('a  -> unit [@bs]) ->  unit
-val forEach: ('a, 'id) t -> ('a  -> unit) ->  unit
+val forEachU: ('a, 'id) t -> ('a  -> unit [@bs]) ->  unit (* [@@dead "forEachU"] *)
+val forEach: ('a, 'id) t -> ('a  -> unit) ->  unit (* [@@dead "forEach"] *)
 (** Order unspecified. *)
 
-val reduceU: ('a, 'id) t -> 'c -> ('c -> 'a  ->  'c [@bs]) -> 'c
-val reduce: ('a, 'id) t -> 'c -> ('c -> 'a  ->  'c) -> 'c
+val reduceU: ('a, 'id) t -> 'c -> ('c -> 'a  ->  'c [@bs]) -> 'c (* [@@dead "reduceU"] *)
+val reduce: ('a, 'id) t -> 'c -> ('c -> 'a  ->  'c) -> 'c (* [@@dead "reduce"] *)
 (** Order unspecified. *)
 
-val size: ('a, 'id) t -> int
+val size: ('a, 'id) t -> int (* [@@dead "size"] *)
 
-val logStats: _ t -> unit
+val logStats: _ t -> unit (* [@@dead "logStats"] *)
 
-val toArray: ('a,'id) t -> 'a array
+val toArray: ('a,'id) t -> 'a array (* [@@dead "toArray"] *)
 
-val fromArray: 'a array -> id:('a,'id) id -> ('a,'id) t
+val fromArray: 'a array -> id:('a,'id) id -> ('a,'id) t (* [@@dead "fromArray"] *)
 
-val mergeMany: ('a,'id) t -> 'a array -> unit
+val mergeMany: ('a,'id) t -> 'a array -> unit (* [@@dead "mergeMany"] *)
 
-val getBucketHistogram: _ t -> int array
-
+val getBucketHistogram: _ t -> int array (* [@@dead "getBucketHistogram"] *)
 

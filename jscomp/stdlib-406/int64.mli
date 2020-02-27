@@ -27,13 +27,13 @@
    only when the application requires exact 64-bit arithmetic.
 *)
 
-val zero : int64
+val zero : int64 (* [@@dead "zero"] *)
 (** The 64-bit integer 0. *)
 
 val one : int64
 (** The 64-bit integer 1. *)
 
-val minus_one : int64
+val minus_one : int64 (* [@@dead "minus_one"] *)
 (** The 64-bit integer -1. *)
 
 external neg : int64 -> int64 = "%int64_neg"
@@ -59,13 +59,13 @@ external rem : int64 -> int64 -> int64 = "%int64_mod"
    [x = Int64.add (Int64.mul (Int64.div x y) y) (Int64.rem x y)].
    If [y = 0], [Int64.rem x y] raises [Division_by_zero]. *)
 
-val succ : int64 -> int64
+val succ : int64 -> int64 (* [@@dead "succ"] *)
 (** Successor.  [Int64.succ x] is [Int64.add x Int64.one]. *)
 
 val pred : int64 -> int64
 (** Predecessor.  [Int64.pred x] is [Int64.sub x Int64.one]. *)
 
-val abs : int64 -> int64
+val abs : int64 -> int64 (* [@@dead "abs"] *)
 (** Return the absolute value of its argument. *)
 
 val max_int : int64
@@ -165,7 +165,7 @@ external of_string : string -> int64 = "caml_int64_of_string"
    a valid representation of an integer, or if the integer represented
    exceeds the range of integers representable in type [int64]. *)
 
-val of_string_opt: string -> int64 option
+val of_string_opt: string -> int64 option (* [@@dead "of_string_opt"] *)
 (** Same as [of_string], but return [None] instead of raising.
     @since 4.05 *)
 
@@ -197,7 +197,7 @@ val compare: t -> t -> int
     allows the module [Int64] to be passed as argument to the functors
     {!Set.Make} and {!Map.Make}. *)
 
-val equal: t -> t -> bool
+val equal: t -> t -> bool (* [@@dead "equal"] *)
 (** The equal function for int64s.
     @since 4.03.0 *)
 

@@ -27,22 +27,22 @@
     it use a for-loop internally instead of creating an array
 *)
 
-val forEachU: int -> int -> (int -> unit [@bs]) -> unit
-val forEach: int -> int -> (int -> unit ) -> unit
+val forEachU: int -> int -> (int -> unit [@bs]) -> unit (* [@@dead "forEachU"] *)
+val forEach: int -> int -> (int -> unit ) -> unit (* [@@dead "forEach"] *)
 (** [forEach start finish action]
 
     equivalent to [Belt.Array.(forEach (range start finish) action)]
 *)
   
-val everyU: int -> int -> (int -> bool [@bs]) -> bool
+val everyU: int -> int -> (int -> bool [@bs]) -> bool (* [@@dead "everyU"] *)
 val every: int -> int -> (int -> bool ) -> bool
 (** [every start finish p]
 
     equivalent to [Belt.Array.(every (range start finish) p )]
 *)
   
-val everyByU: int -> int -> step:int -> (int -> bool [@bs]) -> bool
-val everyBy: int -> int -> step:int -> (int -> bool ) -> bool
+val everyByU: int -> int -> step:int -> (int -> bool [@bs]) -> bool (* [@@dead "everyByU"] *)
+val everyBy: int -> int -> step:int -> (int -> bool ) -> bool (* [@@dead "everyBy"] *)
 (** [everyBy start finish ~step p]
 
     {b See} {!Belt_Array.rangeBy}
@@ -50,15 +50,15 @@ val everyBy: int -> int -> step:int -> (int -> bool ) -> bool
     equivalent to [Belt.Array.(every (rangeBy start finish ~step) p)]
 *)
   
-val someU: int -> int -> (int -> bool [@bs]) -> bool
-val some: int -> int -> (int -> bool ) -> bool
+val someU: int -> int -> (int -> bool [@bs]) -> bool (* [@@dead "someU"] *)
+val some: int -> int -> (int -> bool ) -> bool (* [@@dead "some"] *)
 (** [some start finish p]
 
     equivalent to [Belt.Array.(some (range start finish) p)]
 *)
 
-val someByU: int -> int -> step:int -> (int -> bool [@bs]) -> bool
-val someBy: int -> int -> step:int -> (int -> bool ) -> bool  
+val someByU: int -> int -> step:int -> (int -> bool [@bs]) -> bool (* [@@dead "someByU"] *)
+val someBy: int -> int -> step:int -> (int -> bool ) -> bool   (* [@@dead "someBy"] *)
 (** [someBy start finish ~step  p]
 
     {b See} {!Belt_Array.rangeBy}

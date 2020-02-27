@@ -27,7 +27,7 @@
 type t = string
 (** The type of digests: 16-character strings. *)
 
-val compare : t -> t -> int
+val compare : t -> t -> int (* [@@dead "compare"] *)
 (** The comparison function for 16-character digest, with the same
     specification as {!Pervasives.compare} and the implementation
     shared with {!String.compare}. Along with the type [t], this
@@ -35,22 +35,22 @@ val compare : t -> t -> int
     argument to the functors {!Set.Make} and {!Map.Make}.
     @since 4.00.0 *)
 
-val equal : t -> t -> bool
+val equal : t -> t -> bool (* [@@dead "equal"] *)
 (** The equal function for 16-character digest.
     @since 4.03.0 *)
 
 val string : string -> t
 (** Return the digest of the given string. *)
 
-val bytes : bytes -> t
+val bytes : bytes -> t (* [@@dead "bytes"] *)
 (** Return the digest of the given byte sequence.
     @since 4.02.0 *)
 
-val substring : string -> int -> int -> t
+val substring : string -> int -> int -> t (* [@@dead "substring"] *)
 (** [Digest.substring s ofs len] returns the digest of the substring
    of [s] starting at index [ofs] and containing [len] characters. *)
 
-val subbytes : bytes -> int -> int -> t
+val subbytes : bytes -> int -> int -> t (* [@@dead "subbytes"] *)
 (** [Digest.subbytes s ofs len] returns the digest of the subsequence
     of [s] starting at index [ofs] and containing [len] bytes.
     @since 4.02.0 *)
@@ -63,13 +63,13 @@ external channel : in_channel -> int -> t = "caml_md5_chan"
    all characters from [ic] until end-of-file is reached and return
    their digest. *)
 
-val file : string -> t
+val file : string -> t (* [@@dead "file"] *)
 (** Return the digest of the file whose name is given. *)
 
-val output : out_channel -> t -> unit
+val output : out_channel -> t -> unit (* [@@dead "output"] *)
 (** Write a digest on the given output channel. *)
 
-val input : in_channel -> t
+val input : in_channel -> t (* [@@dead "input"] *)
 (** Read a digest from the given input channel. *)
 
 val to_hex : t -> string
@@ -77,7 +77,7 @@ val to_hex : t -> string
     Raise [Invalid_argument] if the argument is not exactly 16 bytes.
  *)
 
-val from_hex : string -> t
+val from_hex : string -> t (* [@@dead "from_hex"] *)
 (** Convert a hexadecimal representation back into the corresponding digest.
    Raise [Invalid_argument] if the argument is not exactly 32 hexadecimal
    characters.

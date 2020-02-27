@@ -29,41 +29,40 @@
 external function_length : 'a -> int = "#function_length"
 
 (** For efficiency, [args.(0)] would contain obj as well  *)
-let js label cacheid obj args = 
+let js label cacheid obj args =  (* [@@dead "js"] *)
   let meth = 
     (Obj.magic Caml_oo.caml_get_public_method obj label cacheid) in
   Curry.app meth args
   
 
     
-let js1 label cacheid a0 =
+let js1 label cacheid a0 = (* [@@dead "js1"] *)
   Curry._1 (Obj.magic Caml_oo.caml_get_public_method a0 label cacheid) a0
 
     
-let js2 label cacheid a0 a1 =
+let js2 label cacheid a0 a1 = (* [@@dead "js2"] *)
   Curry._2 (Obj.magic Caml_oo.caml_get_public_method a0 label cacheid) a0 a1
 
     
-let js3 label cacheid a0 a1 a2 =
+let js3 label cacheid a0 a1 a2 = (* [@@dead "js3"] *)
   Curry._3 (Obj.magic Caml_oo.caml_get_public_method a0 label cacheid) a0 a1 a2
 
     
-let js4 label cacheid a0 a1 a2 a3 =
+let js4 label cacheid a0 a1 a2 a3 = (* [@@dead "js4"] *)
   Curry._4 (Obj.magic Caml_oo.caml_get_public_method a0 label cacheid) a0 a1 a2 a3
 
     
-let js5 label cacheid a0 a1 a2 a3 a4 =
+let js5 label cacheid a0 a1 a2 a3 a4 = (* [@@dead "js5"] *)
   Curry._5 (Obj.magic Caml_oo.caml_get_public_method a0 label cacheid) a0 a1 a2 a3 a4
 
     
-let js6 label cacheid a0 a1 a2 a3 a4 a5 =
+let js6 label cacheid a0 a1 a2 a3 a4 a5 = (* [@@dead "js6"] *)
   Curry._6 (Obj.magic Caml_oo.caml_get_public_method a0 label cacheid) a0 a1 a2 a3 a4 a5
 
     
-let js7 label cacheid a0 a1 a2 a3 a4 a5 a6 =
+let js7 label cacheid a0 a1 a2 a3 a4 a5 a6 = (* [@@dead "js7"] *)
   Curry._7 (Obj.magic Caml_oo.caml_get_public_method a0 label cacheid) a0 a1 a2 a3 a4 a5 a6
 
     
-let js8 label cacheid a0 a1 a2 a3 a4 a5 a6 a7 =
+let js8 label cacheid a0 a1 a2 a3 a4 a5 a6 a7 = (* [@@dead "js8"] *)
   Curry._8 (Obj.magic Caml_oo.caml_get_public_method a0 label cacheid) a0 a1 a2 a3 a4 a5 a6 a7
-

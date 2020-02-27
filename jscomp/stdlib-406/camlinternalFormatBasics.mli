@@ -46,11 +46,11 @@ type ('a, 'b) precision =
 type prec_option = int option
 
 type ('a, 'b, 'c) custom_arity =
-  | Custom_zero : ('a, string, 'a) custom_arity
-  | Custom_succ : ('a, 'b, 'c) custom_arity ->
+  | Custom_zero : ('a, string, 'a) custom_arity (* [@@dead "custom_arity.Custom_zero"] *)
+  | Custom_succ : ('a, 'b, 'c) custom_arity -> (* [@@dead "custom_arity.Custom_succ"] *)
     ('a, 'x -> 'b, 'x -> 'c) custom_arity
 
-type block_type = Pp_hbox | Pp_vbox | Pp_hvbox | Pp_hovbox | Pp_box | Pp_fits
+type block_type = Pp_hbox | Pp_vbox | Pp_hvbox | Pp_hovbox | Pp_box | Pp_fits (* [@@dead "block_type.Pp_fits"] *)
 
 type formatting_lit =
   | Close_box
@@ -261,7 +261,7 @@ and ('a, 'b, 'c, 'd, 'e, 'f) fmt =
       ('a, 'b, 'c, 'd, 'e, 'f) fmt
 
 (* Custom printing format *)
-| Custom :
+| Custom : (* [@@dead "fmt.Custom"] *)
     ('a, 'x, 'y) custom_arity * (unit -> 'x) * ('a, 'b, 'c, 'd, 'e, 'f) fmt ->
     ('y, 'b, 'c, 'd, 'e, 'f) fmt
 

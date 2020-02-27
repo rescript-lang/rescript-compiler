@@ -23,17 +23,17 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
 
-val caml_create_bytes : int -> bytes
-val caml_fill_bytes :  bytes -> int -> int -> char -> unit
-val get : bytes -> int -> char
+val caml_create_bytes : int -> bytes (* [@@dead "caml_create_bytes"] *)
+val caml_fill_bytes :  bytes -> int -> int -> char -> unit (* [@@dead "caml_fill_bytes"] *)
+val get : bytes -> int -> char (* [@@dead "get"] *)
 val bytes_to_string : bytes -> string 
-val caml_blit_bytes : bytes -> int -> bytes -> int -> int -> unit
+val caml_blit_bytes : bytes -> int -> bytes -> int -> int -> unit (* [@@dead "caml_blit_bytes"] *)
 
-val caml_blit_string : 
+val caml_blit_string :  (* [@@dead "caml_blit_string"] *)
   string -> 
   int -> 
   bytes -> 
   int -> 
   int -> 
   unit
-val bytes_of_string : string -> bytes
+val bytes_of_string : string -> bytes (* [@@dead "bytes_of_string"] *)

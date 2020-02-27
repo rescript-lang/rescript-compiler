@@ -42,7 +42,7 @@ val length: 'a t -> int
     @return the length of the list [xs]
 *)
 
-val size: 'a t -> int
+val size: 'a t -> int (* [@@dead "size"] *)
 (** {b See} {!length} *)
 
 val head: 'a t -> 'a option
@@ -123,7 +123,7 @@ val make: int -> 'a -> 'a t
      ]}
 *)
     
-val makeByU: int -> (int -> 'a [@bs]) -> 'a t 
+val makeByU: int -> (int -> 'a [@bs]) -> 'a t  (* [@@dead "makeByU"] *)
 val makeBy: int -> (int -> 'a) -> 'a t
 (** [makeBy n f] 
     
@@ -136,7 +136,7 @@ val makeBy: int -> (int -> 'a) -> 'a t
     ]}
 *)    
 
-val shuffle: 'a t -> 'a t 
+val shuffle: 'a t -> 'a t  (* [@@dead "shuffle"] *)
 (** [shuffle xs]
    @return a new list in random order
 *)
@@ -200,7 +200,7 @@ val concatMany: 'a t array -> 'a t
    ]}
 *)
 
-val reverseConcat: 'a t -> 'a t -> 'a t
+val reverseConcat: 'a t -> 'a t -> 'a t (* [@@dead "reverseConcat"] *)
 (**
    [reverseConcat xs ys] is  equivalent to [concat (reverse xs) ys]
    @example {[
@@ -218,7 +218,7 @@ val flatten: 'a t t -> 'a t
    ]}
 *)
 
-val mapU: 'a t -> ('a -> 'b [@bs]) -> 'b t
+val mapU: 'a t -> ('a -> 'b [@bs]) -> 'b t (* [@@dead "mapU"] *)
 val map: 'a t -> ('a -> 'b) -> 'b t
 (**
     [map xs f]
@@ -241,7 +241,7 @@ val zip: 'a t -> 'b t -> ('a * 'b) t
     ]}
 *)
 
-val zipByU: 'a t -> 'b t -> ('a -> 'b -> 'c [@bs]) -> 'c t
+val zipByU: 'a t -> 'b t -> ('a -> 'b -> 'c [@bs]) -> 'c t (* [@@dead "zipByU"] *)
 val zipBy: 'a t -> 'b t -> ('a -> 'b -> 'c) -> 'c t
 (** [zipBy xs ys f]
 
@@ -255,7 +255,7 @@ val zipBy: 'a t -> 'b t -> ('a -> 'b -> 'c) -> 'c t
 
 *)
 
-val mapWithIndexU: 'a t -> (int -> 'a -> 'b [@bs]) -> 'b t
+val mapWithIndexU: 'a t -> (int -> 'a -> 'b [@bs]) -> 'b t (* [@@dead "mapWithIndexU"] *)
 val mapWithIndex: 'a t -> (int -> 'a -> 'b) -> 'b t
 (** [mapWithIndex xs f] applies [f] to each element of [xs]. Function [f] takes two arguments:
   the index starting from 0 and the element from [xs].
@@ -295,7 +295,7 @@ val reverse: 'a t -> 'a t
     ]}
 *)
     
-val mapReverseU: 'a t -> ('a -> 'b [@bs]) -> 'b t
+val mapReverseU: 'a t -> ('a -> 'b [@bs]) -> 'b t (* [@@dead "mapReverseU"] *)
 val mapReverse: 'a t -> ('a -> 'b) -> 'b t
 (** [mapReverse xs f]
 
@@ -306,7 +306,7 @@ val mapReverse: 'a t -> ('a -> 'b) -> 'b t
     ]}
 *)
 
-val forEachU: 'a t -> ('a -> 'b [@bs]) -> unit
+val forEachU: 'a t -> ('a -> 'b [@bs]) -> unit (* [@@dead "forEachU"] *)
 val forEach: 'a t -> ('a -> 'b) -> unit
 (** [forEach xs f ]
     Call [f] on each element of [xs] from the beginning to end. [f] returns [unit], so no
@@ -327,7 +327,7 @@ val forEach: 'a t -> ('a -> 'b) -> unit
     ]}
 *)
   
-val forEachWithIndexU: 'a t -> (int -> 'a -> 'b [@bs]) -> unit
+val forEachWithIndexU: 'a t -> (int -> 'a -> 'b [@bs]) -> unit (* [@@dead "forEachWithIndexU"] *)
 val forEachWithIndex: 'a t -> (int -> 'a -> 'b) -> unit
 (** [forEachWithIndex xs f]
 
@@ -346,7 +346,7 @@ val forEachWithIndex: 'a t -> (int -> 'a -> 'b) -> unit
     ]}
 *)
 
-val reduceU:  'a t -> 'b -> ('b -> 'a -> 'b [@bs]) -> 'b
+val reduceU:  'a t -> 'b -> ('b -> 'a -> 'b [@bs]) -> 'b (* [@@dead "reduceU"] *)
 val reduce:  'a t -> 'b -> ('b -> 'a -> 'b) -> 'b
 (** [reduce xs f]
 
@@ -361,7 +361,7 @@ val reduce:  'a t -> 'b -> ('b -> 'a -> 'b) -> 'b
     ]}
 *)
 
-val reduceWithIndexU:  'a t -> 'b -> ('b -> 'a -> int -> 'b [@bs]) -> 'b
+val reduceWithIndexU:  'a t -> 'b -> ('b -> 'a -> int -> 'b [@bs]) -> 'b (* [@@dead "reduceWithIndexU"] *)
 val reduceWithIndex:  'a t -> 'b -> ('b -> 'a -> int -> 'b) -> 'b
 (** [reduceWithIndex xs f]
 
@@ -374,7 +374,7 @@ val reduceWithIndex:  'a t -> 'b -> ('b -> 'a -> int -> 'b) -> 'b
     ]}
 *)
   
-val reduceReverseU: 'a t -> 'b -> ('b -> 'a ->  'b [@bs]) -> 'b
+val reduceReverseU: 'a t -> 'b -> ('b -> 'a ->  'b [@bs]) -> 'b (* [@@dead "reduceReverseU"] *)
 val reduceReverse: 'a t -> 'b -> ('b -> 'a ->  'b) -> 'b
 (** [reduceReverse xs f]
 
@@ -388,7 +388,7 @@ val reduceReverse: 'a t -> 'b -> ('b -> 'a ->  'b) -> 'b
     ]}
 *)
   
-val mapReverse2U: 'a t -> 'b t -> ('a -> 'b -> 'c [@bs]) -> 'c t
+val mapReverse2U: 'a t -> 'b t -> ('a -> 'b -> 'c [@bs]) -> 'c t (* [@@dead "mapReverse2U"] *)
 val mapReverse2: 'a t -> 'b t -> ('a -> 'b -> 'c) -> 'c t
 (** [mapReverse2 xs ys f]
 
@@ -399,13 +399,13 @@ val mapReverse2: 'a t -> 'b t -> ('a -> 'b -> 'c) -> 'c t
     ]}
 *)
 
-val forEach2U: 'a t -> 'b t -> ('a -> 'b -> 'c [@bs]) -> unit
+val forEach2U: 'a t -> 'b t -> ('a -> 'b -> 'c [@bs]) -> unit (* [@@dead "forEach2U"] *)
 val forEach2: 'a t -> 'b t -> ('a -> 'b -> 'c) -> unit
 (** [forEach2 xs ys f] stop with the shorter list
 *)  
 
 
-val reduce2U:
+val reduce2U: (* [@@dead "reduce2U"] *)
   'b t -> 'c t -> 'a -> ('a -> 'b -> 'c -> 'a [@bs]) -> 'a
 val reduce2:
   'b t -> 'c t -> 'a -> ('a -> 'b -> 'c -> 'a) -> 'a
@@ -421,7 +421,7 @@ val reduce2:
     ]}
 *)
 
-val reduceReverse2U:
+val reduceReverse2U: (* [@@dead "reduceReverse2U"] *)
   'a t -> 'b t -> 'c -> ('c -> 'a -> 'b ->  'c [@bs]) -> 'c
 val reduceReverse2:
   'a t -> 'b t -> 'c -> ('c -> 'a -> 'b ->  'c) -> 'c
@@ -437,7 +437,7 @@ val reduceReverse2:
       reduceReverse2 [1;2;3] [4;5] [] (fun acc x y -> add acc (x + y) = [1 + 4;2 + 5];; (*add appends at end *)
     ]}*)
 
-val everyU: 'a t -> ('a -> bool [@bs]) ->  bool
+val everyU: 'a t -> ('a -> bool [@bs]) ->  bool (* [@@dead "everyU"] *)
 val every: 'a t -> ('a -> bool ) ->  bool
 (** [every xs p]
 
@@ -451,7 +451,7 @@ val every: 'a t -> ('a -> bool ) ->  bool
     ]}
 *)
 
-val someU: 'a t -> ('a -> bool [@bs]) -> bool
+val someU: 'a t -> ('a -> bool [@bs]) -> bool (* [@@dead "someU"] *)
 val some: 'a t -> ('a -> bool ) -> bool
 (** [some xs p]
     @return true if at least one of the elements in [xs] satifies [p], where [p] is a {i predicate}: a function taking
@@ -464,7 +464,7 @@ val some: 'a t -> ('a -> bool ) -> bool
     ]}
 *)
 
-val every2U: 'a t -> 'b t -> ('a -> 'b -> bool [@bs]) -> bool
+val every2U: 'a t -> 'b t -> ('a -> 'b -> bool [@bs]) -> bool (* [@@dead "every2U"] *)
 val every2: 'a t -> 'b t -> ('a -> 'b -> bool ) -> bool
 (** [every2 xs ys p] returns true if predicate [p xi yi] is true for all pairs of elements
   up to the shorter length (i.e. [min (length xs) (length ys)])
@@ -476,7 +476,7 @@ val every2: 'a t -> 'b t -> ('a -> 'b -> bool ) -> bool
     ]}
 *)
 
-val some2U:  'a t -> 'b t -> ('a -> 'b -> bool [@bs]) -> bool
+val some2U:  'a t -> 'b t -> ('a -> 'b -> bool [@bs]) -> bool (* [@@dead "some2U"] *)
 val some2:  'a t -> 'b t -> ('a -> 'b -> bool) -> bool
 (** [some2 xs ys p] returns true if [p xi yi] is true for any pair of elements
   up to the shorter length (i.e. [min (length xs) (length ys)])
@@ -502,7 +502,7 @@ val cmpByLength: 'a t -> 'a t -> int
 
 *)
   
-val cmpU: 'a t -> 'a t -> ('a -> 'a -> int [@bs]) -> int
+val cmpU: 'a t -> 'a t -> ('a -> 'a -> int [@bs]) -> int (* [@@dead "cmpU"] *)
 val cmp: 'a t -> 'a t -> ('a -> 'a -> int) -> int
 (**
     Compare elements one by one [f x y]. [f] returns
@@ -528,7 +528,7 @@ val cmp: 'a t -> 'a t -> ('a -> 'a -> int) -> int
 *)
 
 
-val eqU: 'a t -> 'a t -> ('a -> 'a -> bool [@bs]) -> bool
+val eqU: 'a t -> 'a t -> ('a -> 'a -> bool [@bs]) -> bool (* [@@dead "eqU"] *)
 val eq: 'a t -> 'a t -> ('a -> 'a -> bool) -> bool
 (**
    [eq xs ys eqElem]
@@ -544,7 +544,7 @@ val eq: 'a t -> 'a t -> ('a -> 'a -> bool) -> bool
 *)  
 
 
-val hasU:  'a t -> 'b -> ('a -> 'b -> bool [@bs]) -> bool
+val hasU:  'a t -> 'b -> ('a -> 'b -> bool [@bs]) -> bool (* [@@dead "hasU"] *)
 val has:  'a t -> 'b -> ('a -> 'b -> bool) -> bool
 (** 
     [has xs eqFcn] returns true if the list contains at least one element for which [eqFcn x] returns
@@ -556,7 +556,7 @@ val has:  'a t -> 'b -> ('a -> 'b -> bool) -> bool
     ]}
 *)
 
-val getByU: 'a t -> ('a -> bool [@bs]) -> 'a option
+val getByU: 'a t -> ('a -> bool [@bs]) -> 'a option (* [@@dead "getByU"] *)
 val getBy: 'a t -> ('a -> bool) -> 'a option
 (** [getBy xs p] returns [Some value] for the first value in [xs] that satisifies the predicate function [p]; returns [None] if no element satisifies the function.
 
@@ -566,7 +566,7 @@ val getBy: 'a t -> ('a -> bool) -> 'a option
     ]}
 *)
     
-val keepU: 'a t ->  ('a -> bool [@bs]) -> 'a t
+val keepU: 'a t ->  ('a -> bool [@bs]) -> 'a t (* [@@dead "keepU"] *)
 val keep: 'a t ->  ('a -> bool) -> 'a t
 (** [keep  xs p] returns a list of all elements in [xs] which satisfy the predicate function [p]
 
@@ -577,7 +577,7 @@ val keep: 'a t ->  ('a -> bool) -> 'a t
 *)
 
 
-val filter: 'a t ->  ('a -> bool) -> 'a t
+val filter: 'a t ->  ('a -> bool) -> 'a t (* [@@dead "filter"] *)
 [@@deprecated "This function will soon be deprecated. Please, use `List.keep` instead."]
 (** [filter  xs p] returns a list of all elements in [xs] which satisfy the predicate function [p]
 
@@ -587,7 +587,7 @@ val filter: 'a t ->  ('a -> bool) -> 'a t
     ]}
 *)
 
-val keepWithIndexU: 'a t ->  ('a -> int -> bool [@bs]) -> 'a t
+val keepWithIndexU: 'a t ->  ('a -> int -> bool [@bs]) -> 'a t (* [@@dead "keepWithIndexU"] *)
 val keepWithIndex: 'a t ->  ('a -> int -> bool) -> 'a t
 (** [keepWithIndex xs p] returns a list of all elements in [xs] which satisfy the predicate function [p]
 
@@ -599,7 +599,7 @@ val keepWithIndex: 'a t ->  ('a -> int -> bool) -> 'a t
 *)
 
 
-val filterWithIndex: 'a t ->  ('a -> int -> bool) -> 'a t
+val filterWithIndex: 'a t ->  ('a -> int -> bool) -> 'a t (* [@@dead "filterWithIndex"] *)
 [@@deprecated "This function will soon be deprecated. Please, use `List.keepWithIndex` instead."]
 (** [filterWithIndex xs p] returns a list of all elements in [xs] which satisfy the predicate function [p]
 
@@ -610,7 +610,7 @@ val filterWithIndex: 'a t ->  ('a -> int -> bool) -> 'a t
     ]}
 *)
 
-val keepMapU: 'a t -> ('a -> 'b option [@bs]) -> 'b t
+val keepMapU: 'a t -> ('a -> 'b option [@bs]) -> 'b t (* [@@dead "keepMapU"] *)
 val keepMap: 'a t -> ('a -> 'b option) -> 'b t
 (** [keepMap xs f] applies [f] to each element of [xs]. If [f xi] returns [Some value], then [value] is kept in the resulting list; if [f xi] returns [None], the element is not retained in the result.
 
@@ -621,7 +621,7 @@ val keepMap: 'a t -> ('a -> 'b option) -> 'b t
     ]}
 *)
 
-val partitionU: 'a t -> ('a -> bool [@bs]) ->  'a t * 'a t
+val partitionU: 'a t -> ('a -> bool [@bs]) ->  'a t * 'a t (* [@@dead "partitionU"] *)
 val partition: 'a t -> ('a -> bool) ->  'a t * 'a t
 (** [partition xs p] creates a pair of lists; the first list consists of all elements of [xs] that satisfy the predicate function [p]; the second list consists of all elements of [xs] that do not satisfy [p]
 
@@ -640,7 +640,7 @@ val unzip: ('a * 'b) t -> 'a t * 'b t
     ]}
 *)
 
-val getAssocU: ('a * 'c) t -> 'b ->  ('a -> 'b -> bool [@bs])  -> 'c option
+val getAssocU: ('a * 'c) t -> 'b ->  ('a -> 'b -> bool [@bs])  -> 'c option (* [@@dead "getAssocU"] *)
 val getAssoc: ('a * 'c) t -> 'b ->  ('a -> 'b -> bool)  -> 'c option
 (** [getAssoc xs k eq]
     
@@ -652,7 +652,7 @@ val getAssoc: ('a * 'c) t -> 'b ->  ('a -> 'b -> bool)  -> 'c option
     ]}
 *)
 
-val hasAssocU: ('a * 'c) t -> 'b -> ('a -> 'b -> bool [@bs]) -> bool
+val hasAssocU: ('a * 'c) t -> 'b -> ('a -> 'b -> bool [@bs]) -> bool (* [@@dead "hasAssocU"] *)
 val hasAssoc: ('a * 'c) t -> 'b -> ('a -> 'b -> bool ) -> bool
 (** [hasAssoc xs k eq]
      return true if there is a pair in [xs] where the first element equals [k] as per the predicate
@@ -663,7 +663,7 @@ val hasAssoc: ('a * 'c) t -> 'b -> ('a -> 'b -> bool ) -> bool
     ]}
 *)
 
-val removeAssocU:('a * 'c) t -> 'b -> ('a -> 'b -> bool [@bs]) -> ('a * 'c) t
+val removeAssocU:('a * 'c) t -> 'b -> ('a -> 'b -> bool [@bs]) -> ('a * 'c) t (* [@@dead "removeAssocU"] *)
 val removeAssoc: ('a * 'c) t -> 'b ->  ('a -> 'b -> bool) -> ('a * 'c) t
 (** [removeAssoc xs k eq]
     Return a list after removing the first pair whose first value is [k] per the equality predicate [eq]; if not found, return a new list identical to [xs].
@@ -675,7 +675,7 @@ val removeAssoc: ('a * 'c) t -> 'b ->  ('a -> 'b -> bool) -> ('a * 'c) t
     ]}
 *)
 
-val setAssocU: ('a * 'c) t -> 'a -> 'c -> ('a -> 'a -> bool [@bs]) -> ('a * 'c) t
+val setAssocU: ('a * 'c) t -> 'a -> 'c -> ('a -> 'a -> bool [@bs]) -> ('a * 'c) t (* [@@dead "setAssocU"] *)
 val setAssoc: ('a * 'c) t -> 'a -> 'c -> ('a -> 'a -> bool) -> ('a * 'c) t    
 (** [setAssoc xs k v eq]
     if [k] exists in [xs] by satisfying the [eq] predicate, return a new list
@@ -699,7 +699,7 @@ val setAssoc: ('a * 'c) t -> 'a -> 'c -> ('a -> 'a -> bool) -> ('a * 'c) t
 
 
 
-val sortU: 'a t -> ('a -> 'a -> int [@bs]) -> 'a t
+val sortU: 'a t -> ('a -> 'a -> int [@bs]) -> 'a t (* [@@dead "sortU"] *)
 val sort: 'a t -> ('a -> 'a -> int) -> 'a t
 (** [sort xs]
     Returns a sorted list.

@@ -16,62 +16,62 @@
 (** Memory management control and statistics; finalised values. *)
 
 type stat =
-  { minor_words : float;
+  { minor_words : float; (* [@@dead "stat.minor_words"] *)
     (** Number of words allocated in the minor heap since
        the program was started.  This number is accurate in
        byte-code programs, but only an approximation in programs
        compiled to native code. *)
 
-    promoted_words : float;
+    promoted_words : float; (* [@@dead "stat.promoted_words"] *)
     (** Number of words allocated in the minor heap that
        survived a minor collection and were moved to the major heap
        since the program was started. *)
 
-    major_words : float;
+    major_words : float; (* [@@dead "stat.major_words"] *)
     (** Number of words allocated in the major heap, including
        the promoted words, since the program was started. *)
 
-    minor_collections : int;
+    minor_collections : int; (* [@@dead "stat.minor_collections"] *)
     (** Number of minor collections since the program was started. *)
 
-    major_collections : int;
+    major_collections : int; (* [@@dead "stat.major_collections"] *)
     (** Number of major collection cycles completed since the program
         was started. *)
 
-    heap_words : int;
+    heap_words : int; (* [@@dead "stat.heap_words"] *)
     (** Total size of the major heap, in words. *)
 
-    heap_chunks : int;
+    heap_chunks : int; (* [@@dead "stat.heap_chunks"] *)
     (** Number of contiguous pieces of memory that make up the major heap. *)
 
-    live_words : int;
+    live_words : int; (* [@@dead "stat.live_words"] *)
     (** Number of words of live data in the major heap, including the header
        words. *)
 
-    live_blocks : int;
+    live_blocks : int; (* [@@dead "stat.live_blocks"] *)
     (** Number of live blocks in the major heap. *)
 
-    free_words : int;
+    free_words : int; (* [@@dead "stat.free_words"] *)
     (** Number of words in the free list. *)
 
-    free_blocks : int;
+    free_blocks : int; (* [@@dead "stat.free_blocks"] *)
     (** Number of blocks in the free list. *)
 
-    largest_free : int;
+    largest_free : int; (* [@@dead "stat.largest_free"] *)
     (** Size (in words) of the largest block in the free list. *)
 
-    fragments : int;
+    fragments : int; (* [@@dead "stat.fragments"] *)
     (** Number of wasted words due to fragmentation.  These are
        1-words free blocks placed between two live blocks.  They
        are not available for allocation. *)
 
-    compactions : int;
+    compactions : int; (* [@@dead "stat.compactions"] *)
     (** Number of heap compactions since the program was started. *)
 
-    top_heap_words : int;
+    top_heap_words : int; (* [@@dead "stat.top_heap_words"] *)
     (** Maximum size reached by the major heap, in words. *)
 
-    stack_size: int;
+    stack_size: int; (* [@@dead "stat.stack_size"] *)
     (** Current size of the stack, in words. @since 3.12.0 *)
 }
 (** The memory management counters are returned in a [stat] record.
@@ -83,18 +83,18 @@ type stat =
 *)
 
 type control =
-  { mutable minor_heap_size : int;
+  { mutable minor_heap_size : int; (* [@@dead "control.minor_heap_size"] *)
     (** The size (in words) of the minor heap.  Changing
        this parameter will trigger a minor collection.  Default: 256k. *)
 
-    mutable major_heap_increment : int;
+    mutable major_heap_increment : int; (* [@@dead "control.major_heap_increment"] *)
     (** How much to add to the major heap when increasing it. If this
         number is less than or equal to 1000, it is a percentage of
         the current heap size (i.e. setting it to 100 will double the heap
         size at each increase). If it is more than 1000, it is a fixed
         number of words that will be added to the heap. Default: 15. *)
 
-    mutable space_overhead : int;
+    mutable space_overhead : int; (* [@@dead "control.space_overhead"] *)
     (** The major GC speed is computed from this parameter.
        This is the memory that will be "wasted" because the GC does not
        immediately collect unreachable blocks.  It is expressed as a
@@ -103,7 +103,7 @@ type control =
        blocks more eagerly) if [space_overhead] is smaller.
        Default: 80. *)
 
-    mutable verbose : int;
+    mutable verbose : int; (* [@@dead "control.verbose"] *)
     (** This value controls the GC messages on standard error output.
        It is a sum of some of the following flags, to print messages
        on the corresponding events:
@@ -120,7 +120,7 @@ type control =
        - [0x400] Output GC statistics at program exit.
        Default: 0. *)
 
-    mutable max_overhead : int;
+    mutable max_overhead : int; (* [@@dead "control.max_overhead"] *)
     (** Heap compaction is triggered when the estimated amount
        of "wasted" memory is more than [max_overhead] percent of the
        amount of live data.  If [max_overhead] is set to 0, heap
@@ -131,12 +131,12 @@ type control =
        to set [allocation_policy] to 1.
        Default: 500. *)
 
-    mutable stack_limit : int;
+    mutable stack_limit : int; (* [@@dead "control.stack_limit"] *)
     (** The maximum size of the stack (in words).  This is only
        relevant to the byte-code runtime, as the native code runtime
        uses the operating system's stack.  Default: 1024k. *)
 
-    mutable allocation_policy : int;
+    mutable allocation_policy : int; (* [@@dead "control.allocation_policy"] *)
     (** The policy used for allocating in the heap.  Possible
         values are 0 and 1.  0 is the next-fit policy, which is
         quite fast but can result in fragmentation.  1 is the
@@ -144,7 +144,7 @@ type control =
         can be better for programs with fragmentation problems.
         Default: 0. @since 3.11.0 *)
 
-    window_size : int;
+    window_size : int; (* [@@dead "control.window_size"] *)
     (** The size of the window used by the major GC for smoothing
         out variations in its workload. This is an integer between
         1 and 50.
@@ -155,12 +155,12 @@ type control =
     OCAMLRUNPARAM environment variable.  See the documentation of
     [ocamlrun]. *)
 
-val stat : unit -> stat 
+val stat : unit -> stat  (* [@@dead "stat"] *)
 (** Return the current values of the memory management counters in a
    [stat] record.  This function examines every heap block to get the
    statistics. *)
 
-val quick_stat : unit -> stat 
+val quick_stat : unit -> stat  (* [@@dead "quick_stat"] *)
 (** Same as [stat] except that [live_words], [live_blocks], [free_words],
     [free_blocks], [largest_free], and [fragments] are set to 0.  This
     function is much faster than [stat] because it does not need to go
@@ -180,7 +180,7 @@ external minor_words : unit -> (float [@unboxed])
 
     @since 4.04 *)
 
-val get : unit -> control
+val get : unit -> control (* [@@dead "get"] *)
 (** Return the current values of the GC parameters in a [control] record. *)
 
 external set : control -> unit = "caml_gc_set"
@@ -210,11 +210,11 @@ external compact : unit -> unit = "caml_gc_compaction"
 (** Perform a full major collection and compact the heap.  Note that heap
    compaction is a lengthy operation. *)
 
-val print_stat : out_channel -> unit
+val print_stat : out_channel -> unit (* [@@dead "print_stat"] *)
 (** Print the current values of the memory management counters (in
    human-readable form) into the channel argument. *)
 
-val allocated_bytes : unit -> float
+val allocated_bytes : unit -> float (* [@@dead "allocated_bytes"] *)
 (** Return the total number of bytes allocated since the program was
    started.  It is returned as a [float] to avoid overflow problems
    with [int] on 32-bit machines. *)
@@ -244,7 +244,7 @@ external huge_fallback_count : unit -> int = "caml_gc_huge_fallback_count"
     back to small pages. This is always 0 if [OCAMLRUNPARAM] contains [H=1].
     @since 4.03.0 *)
 
-val finalise : ('a -> unit) -> 'a -> unit
+val finalise : ('a -> unit) -> 'a -> unit (* [@@dead "finalise"] *)
 (** [finalise f v] registers [f] as a finalisation function for [v].
    [v] must be heap-allocated.  [f] will be called with [v] as
    argument at some point between the first time [v] becomes unreachable
@@ -310,7 +310,7 @@ val finalise : ('a -> unit) -> 'a -> unit
    heap-allocated and non-constant except when the length argument is [0].
 *)
 
-val finalise_last : (unit -> unit) -> 'a -> unit
+val finalise_last : (unit -> unit) -> 'a -> unit (* [@@dead "finalise_last"] *)
 (** same as {!finalise} except the value is not given as argument. So
     you can't use the given value for the computation of the
     finalisation function. The benefit is that the function is called
@@ -325,7 +325,7 @@ val finalise_last : (unit -> unit) -> 'a -> unit
     @since 4.04
 *)
 
-val finalise_release : unit -> unit
+val finalise_release : unit -> unit (* [@@dead "finalise_release"] *)
 (** A finalisation function may call [finalise_release] to tell the
     GC that it can launch the next finalisation function without waiting
     for the current one to return. *)
@@ -335,12 +335,12 @@ type alarm
    each major GC cycle.  The following functions are provided to create
    and delete alarms. *)
 
-val create_alarm : (unit -> unit) -> alarm
+val create_alarm : (unit -> unit) -> alarm (* [@@dead "create_alarm"] *)
 (** [create_alarm f] will arrange for [f] to be called at the end of each
    major GC cycle, starting with the current cycle or the next one.
    A value of type [alarm] is returned that you can
    use to call [delete_alarm]. *)
 
-val delete_alarm : alarm -> unit
+val delete_alarm : alarm -> unit (* [@@dead "delete_alarm"] *)
 (** [delete_alarm a] will stop the calls to the function associated
    to [a].  Calling [delete_alarm a] again has no effect. *)

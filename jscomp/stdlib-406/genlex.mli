@@ -57,9 +57,9 @@ type token =
     Kwd of string
   | Ident of string
   | Int of int
-  | Float of float
-  | String of string
-  | Char of char
+  | Float of float (* [@@dead "token.Float"] *)
+  | String of string (* [@@dead "token.String"] *)
+  | Char of char (* [@@dead "token.Char"] *)
 
 val make_lexer : string list -> char Stream.t -> token Stream.t
 (** Construct the lexer function. The first argument is the list of

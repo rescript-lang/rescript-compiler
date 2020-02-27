@@ -31,26 +31,26 @@
 type 'a selector = 'a -> 'a -> 'a 
 
 
-val caml_bytes_compare: bytes -> bytes -> int
-val caml_bytes_equal : bytes -> bytes -> bool 
-val caml_int_compare : int -> int -> int
-val caml_bool_compare : bool -> bool -> int
-val caml_float_compare : float -> float -> int 
-val caml_nativeint_compare : int -> int -> int
-val caml_string_compare : string -> string -> int 
-val caml_int32_compare : int -> int -> int
+val caml_bytes_compare: bytes -> bytes -> int (* [@@dead "caml_bytes_compare"] *)
+val caml_bytes_equal : bytes -> bytes -> bool  (* [@@dead "caml_bytes_equal"] *)
+val caml_int_compare : int -> int -> int (* [@@dead "caml_int_compare"] *)
+val caml_bool_compare : bool -> bool -> int (* [@@dead "caml_bool_compare"] *)
+val caml_float_compare : float -> float -> int  (* [@@dead "caml_float_compare"] *)
+val caml_nativeint_compare : int -> int -> int (* [@@dead "caml_nativeint_compare"] *)
+val caml_string_compare : string -> string -> int  (* [@@dead "caml_string_compare"] *)
+val caml_int32_compare : int -> int -> int (* [@@dead "caml_int32_compare"] *)
 
 
-val caml_bool_min : bool selector 
-val caml_int_min : int selector
-val caml_float_min : float selector 
-val caml_string_min : string selector  
-val caml_nativeint_min : nativeint selector
-val caml_int32_min : int32 selector 
+val caml_bool_min : bool selector  (* [@@dead "caml_bool_min"] *)
+val caml_int_min : int selector (* [@@dead "caml_int_min"] *)
+val caml_float_min : float selector  (* [@@dead "caml_float_min"] *)
+val caml_string_min : string selector   (* [@@dead "caml_string_min"] *)
+val caml_nativeint_min : nativeint selector (* [@@dead "caml_nativeint_min"] *)
+val caml_int32_min : int32 selector  (* [@@dead "caml_int32_min"] *)
 
-val caml_bool_max : bool selector
-val caml_int_max : int selector
-val caml_float_max : float selector 
-val caml_string_max : string selector  
-val caml_nativeint_max : nativeint selector
-val caml_int32_max : int32 selector 
+val caml_bool_max : bool selector (* [@@dead "caml_bool_max"] *)
+val caml_int_max : int selector (* [@@dead "caml_int_max"] *)
+val caml_float_max : float selector  (* [@@dead "caml_float_max"] *)
+val caml_string_max : string selector   (* [@@dead "caml_string_max"] *)
+val caml_nativeint_max : nativeint selector (* [@@dead "caml_nativeint_max"] *)
+val caml_int32_max : int32 selector  (* [@@dead "caml_int32_max"] *)

@@ -55,7 +55,7 @@ val strictlySortedLength:
   ]}
 *)
 
-val isSortedU: 'a array -> ('a -> 'a -> int [@bs]) -> bool
+val isSortedU: 'a array -> ('a -> 'a -> int [@bs]) -> bool (* [@@dead "isSortedU"] *)
 val isSorted: 'a array -> ('a -> 'a -> int) -> bool
 (** [isSorted arr cmp]
     @return true if array is increasingly sorted (equal is okay )
@@ -72,7 +72,7 @@ val stableSortInPlaceBy: 'a array -> ('a -> 'a -> int ) -> unit
     are equal, their order will be preserved
 *)
 
-val stableSortByU: 'a array -> ('a -> 'a -> int [@bs]) -> 'a array
+val stableSortByU: 'a array -> ('a -> 'a -> int [@bs]) -> 'a array (* [@@dead "stableSortByU"] *)
 val stableSortBy: 'a array -> ('a -> 'a -> int) -> 'a array
 (** [stableSort xs cmp]
     @return a fresh array

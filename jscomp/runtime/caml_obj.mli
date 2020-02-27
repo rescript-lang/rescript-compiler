@@ -32,42 +32,42 @@ type t = Caml_obj_extern.t
 external repr : 'a -> t = "%identity"
 external field : t -> int -> t = "%obj_field"
 external set_field : t -> int -> t -> unit = "%obj_set_field" *)
-val caml_obj_block : int -> int -> Caml_obj_extern.t
+val caml_obj_block : int -> int -> Caml_obj_extern.t (* [@@dead "caml_obj_block"] *)
 val caml_obj_dup : Caml_obj_extern.t -> Caml_obj_extern.t
 
-val caml_obj_truncate : Caml_obj_extern.t -> int -> unit
+val caml_obj_truncate : Caml_obj_extern.t -> int -> unit (* [@@dead "caml_obj_truncate"] *)
 
 
 
-val caml_lazy_make_forward : 'a -> 'a lazy_t
+val caml_lazy_make_forward : 'a -> 'a lazy_t (* [@@dead "caml_lazy_make_forward"] *)
 
-val caml_lazy_make : 
+val caml_lazy_make :  (* [@@dead "caml_lazy_make"] *)
   (t -> t) -> 
   t
 
 val caml_update_dummy : Caml_obj_extern.t -> Caml_obj_extern.t -> unit
 
 
-val caml_compare : Caml_obj_extern.t -> Caml_obj_extern.t  -> int
+val caml_compare : Caml_obj_extern.t -> Caml_obj_extern.t  -> int (* [@@dead "caml_compare"] *)
 
 type eq = Caml_obj_extern.t -> Caml_obj_extern.t -> bool
 
-val caml_equal : eq
+val caml_equal : eq (* [@@dead "caml_equal"] *)
 
-val caml_equal_null : Caml_obj_extern.t -> Caml_obj_extern.t Js.null -> bool 
-val caml_equal_undefined : Caml_obj_extern.t -> Caml_obj_extern.t Js.undefined -> bool 
-val caml_equal_nullable : Caml_obj_extern.t -> Caml_obj_extern.t Js.nullable -> bool 
+val caml_equal_null : Caml_obj_extern.t -> Caml_obj_extern.t Js.null -> bool  (* [@@dead "caml_equal_null"] *)
+val caml_equal_undefined : Caml_obj_extern.t -> Caml_obj_extern.t Js.undefined -> bool  (* [@@dead "caml_equal_undefined"] *)
+val caml_equal_nullable : Caml_obj_extern.t -> Caml_obj_extern.t Js.nullable -> bool  (* [@@dead "caml_equal_nullable"] *)
 
-val caml_notequal : eq
-val caml_greaterequal : eq
-val caml_greaterthan : eq
-val caml_lessthan : eq
-val caml_lessequal : eq
+val caml_notequal : eq (* [@@dead "caml_notequal"] *)
+val caml_greaterequal : eq (* [@@dead "caml_greaterequal"] *)
+val caml_greaterthan : eq (* [@@dead "caml_greaterthan"] *)
+val caml_lessthan : eq (* [@@dead "caml_lessthan"] *)
+val caml_lessequal : eq (* [@@dead "caml_lessequal"] *)
 
 type 'a selector = 'a -> 'a -> 'a 
 
 
-val caml_min : Caml_obj_extern.t selector
-val caml_max : Caml_obj_extern.t selector
+val caml_min : Caml_obj_extern.t selector (* [@@dead "caml_min"] *)
+val caml_max : Caml_obj_extern.t selector (* [@@dead "caml_max"] *)
 
-val caml_obj_set_tag : Caml_obj_extern.t -> int -> unit 
+val caml_obj_set_tag : Caml_obj_extern.t -> int -> unit  (* [@@dead "caml_obj_set_tag"] *)

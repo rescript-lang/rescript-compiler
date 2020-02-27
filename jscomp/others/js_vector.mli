@@ -30,13 +30,13 @@ val empty : 'a t -> unit
 
 val pushBack : 'a -> 'a t -> unit
 
-val copy : 'a t -> 'a t 
+val copy : 'a t -> 'a t  (* [@@dead "copy"] *)
 (** shallow copy *)
 
-val memByRef : 'a -> 'a t -> bool
+val memByRef : 'a -> 'a t -> bool (* [@@dead "memByRef"] *)
 
-val iter : ('a -> unit [@bs]) -> 'a t -> unit
-val iteri : (int -> 'a -> unit [@bs]) -> 'a t -> unit 
+val iter : ('a -> unit [@bs]) -> 'a t -> unit (* [@@dead "iter"] *)
+val iteri : (int -> 'a -> unit [@bs]) -> 'a t -> unit  (* [@@dead "iteri"] *)
 
 
 (* [@@deprecated "Use Js.List.toVector instead"] *)
@@ -47,9 +47,9 @@ val iteri : (int -> 'a -> unit [@bs]) -> 'a t -> unit
 val toList : 'a t -> 'a list
 
 val map : ('a -> 'b [@bs]) -> 'a t -> 'b t 
-val mapi : (int -> 'a -> 'b [@bs]) -> 'a t -> 'b t 
-val foldLeft : ('a -> 'b -> 'a [@bs]) -> 'a -> 'b t -> 'a 
-val foldRight : ('b -> 'a -> 'a [@bs]) -> 'b t -> 'a -> 'a 
+val mapi : (int -> 'a -> 'b [@bs]) -> 'a t -> 'b t  (* [@@dead "mapi"] *)
+val foldLeft : ('a -> 'b -> 'a [@bs]) -> 'a -> 'b t -> 'a  (* [@@dead "foldLeft"] *)
+val foldRight : ('b -> 'a -> 'a [@bs]) -> 'b t -> 'a -> 'a  (* [@@dead "foldRight"] *)
 external length : 'a t -> int = "%array_length"
 (** Return the length (number of elements) of the given array. *)
 
@@ -90,7 +90,7 @@ val init : int -> (int -> 'a [@bs]) -> 'a t
     @param fn callback
     @raise RangeError when [n] is negative  *)
 
-val append : 'a -> 'a t -> 'a t
+val append : 'a -> 'a t -> 'a t (* [@@dead "append"] *)
 (** [append x a] returns a fresh array with x appended to a *)
 
 external unsafe_get : 'a t -> int -> 'a = "%array_unsafe_get"

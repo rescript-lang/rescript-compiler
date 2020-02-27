@@ -80,7 +80,7 @@ external cbrt : float -> float = "cbrt" [@@bs.val] [@@bs.scope "Math"]
 
 (** may return values not representable by [int] *)
 external unsafe_ceil_int : float -> int = "ceil" [@@bs.val] [@@bs.scope "Math"]
-let unsafe_ceil = unsafe_ceil_int
+let unsafe_ceil = unsafe_ceil_int (* [@@dead "unsafe_ceil"] *)
 [@@ocaml.deprecated "Please use `unsafe_ceil_int` instead"]
 
 (** smallest int greater than or equal to the argument *)
@@ -88,7 +88,7 @@ let ceil_int (f : float) : int =
   if f > Js_int.toFloat Js_int.max then Js_int.max
   else if f < Js_int.toFloat Js_int.min then Js_int.min
   else unsafe_ceil_int f
-let ceil = ceil_int
+let ceil = ceil_int (* [@@dead "ceil"] *)
 [@@ocaml.deprecated "Please use `ceil_int` instead"]
 
 (** smallest float greater than or equal to the argument *)

@@ -41,8 +41,8 @@ external empty : _ t = "#null"
 (* val empty : _ t *)
 type ('k, 'id) cmp = ('k, 'id) Belt_Id.cmp
     
-val copy : ('k, 'v) t -> ('k, 'v) t
-val create :
+val copy : ('k, 'v) t -> ('k, 'v) t (* [@@dead "copy"] *)
+val create : (* [@@dead "create"] *)
   ('a,'b) t -> 'a -> 'b -> ('a,'b) t -> ('a,'b) t
 val bal :
   ('a,'b) t -> 'a -> 'b -> ('a,'b) t -> ('a,'b) t
@@ -94,7 +94,7 @@ val some:  ('a,'b) t -> ('a -> 'b -> bool) -> bool
 
 val join: ('a,'b) t -> 'a -> 'b -> ('a,'b) t -> ('a, 'b) t
 
-val concat: ('a,'b) t -> ('a,'b) t -> ('a,'b) t
+val concat: ('a,'b) t -> ('a,'b) t -> ('a,'b) t (* [@@dead "concat"] *)
 
 val concatOrJoin:
   ('a,'b) t -> 'a -> 'b option -> ('a,'b) t -> ('a, 'b) t
@@ -112,7 +112,7 @@ val keepMapU:
   ('a, 'b) t -> 
   ('a -> 'b -> 'c option [@bs]) -> 
   ('a, 'c) t
-val keepMap:    
+val keepMap:     (* [@@dead "keepMap"] *)
   ('a, 'b) t -> 
   ('a -> 'b -> 'c option ) -> 
   ('a, 'c) t
@@ -128,7 +128,7 @@ val partitionShared:
   ('a,'b) t * ('a,'b) t
 
 
-val lengthNode : ('a, 'b) node -> int
+val lengthNode : ('a, 'b) node -> int (* [@@dead "lengthNode"] *)
 val size : ('a,'b) t -> int
 
 val toList : ('a,'b) t -> ('a * 'b) list
@@ -138,14 +138,14 @@ val checkInvariantInternal : ('a,'b) t -> unit
 *)  
   
 
-val fillArray : ('a,'b) node -> int -> ('a * 'b) array -> int  
+val fillArray : ('a,'b) node -> int -> ('a * 'b) array -> int   (* [@@dead "fillArray"] *)
 
 val toArray : ('a, 'b) t -> ('a * 'b) array  
 val keysToArray : ('a, 'b) t -> 'a array
 val valuesToArray : ('a, 'b) t -> 'b array 
 val fromSortedArrayAux : ('a * 'b) array -> int -> int -> ('a, 'b) t
 val fromSortedArrayRevAux : ('a * 'b) array -> int -> int -> ('a, 'b) t
-val fromSortedArrayUnsafe : ('a * 'b) array -> ('a, 'b) t
+val fromSortedArrayUnsafe : ('a * 'b) array -> ('a, 'b) t (* [@@dead "fromSortedArrayUnsafe"] *)
 
 val cmpU: 
   ('a, 'b) t -> ('a, 'c) t -> 

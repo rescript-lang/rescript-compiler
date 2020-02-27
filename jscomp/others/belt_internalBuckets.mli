@@ -46,7 +46,7 @@ val logStats : _ t -> unit
 val keepMapInPlaceU: (_, _, 'a, 'b) t -> ('a -> 'b -> 'b option [@bs]) -> unit
 val keepMapInPlace: (_, _, 'a, 'b) t -> ('a -> 'b -> 'b option) -> unit
 
-val fillArray : int -> ('a * 'b) array -> ('a, 'b) bucket -> int
+val fillArray : int -> ('a * 'b) array -> ('a, 'b) bucket -> int (* [@@dead "fillArray"] *)
 
 val keysToArray : (_, _, 'a, _) t -> 'a array
 

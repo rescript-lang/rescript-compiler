@@ -45,7 +45,7 @@ type _ t =
   | String : string t
   | Function : function_val t
   | Object : obj_val t
-  | Symbol : symbol t
+  | Symbol : symbol t (* [@@dead "t.Symbol"] *)
 
 
 val test : 'a -> 'b t -> bool
@@ -55,16 +55,15 @@ val test : 'a -> 'b t -> bool
 
 
 type tagged_t = 
-  | JSFalse
-  | JSTrue
-  | JSNull 
-  | JSUndefined     
-  | JSNumber of float 
-  | JSString of string
-  | JSFunction of function_val
-  | JSObject of obj_val
-  | JSSymbol of symbol 
+  | JSFalse (* [@@dead "tagged_t.JSFalse"] *)
+  | JSTrue (* [@@dead "tagged_t.JSTrue"] *)
+  | JSNull  (* [@@dead "tagged_t.JSNull"] *)
+  | JSUndefined      (* [@@dead "tagged_t.JSUndefined"] *)
+  | JSNumber of float  (* [@@dead "tagged_t.JSNumber"] *)
+  | JSString of string (* [@@dead "tagged_t.JSString"] *)
+  | JSFunction of function_val (* [@@dead "tagged_t.JSFunction"] *)
+  | JSObject of obj_val (* [@@dead "tagged_t.JSObject"] *)
+  | JSSymbol of symbol  (* [@@dead "tagged_t.JSSymbol"] *)
 
 
 val classify : 'a -> tagged_t
-

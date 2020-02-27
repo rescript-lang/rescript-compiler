@@ -71,7 +71,7 @@ val init : int -> (int -> 'a) -> 'a array
    If the return type of [f] is [float], then the maximum
    size is only [Sys.max_array_length / 2].*)
 
-val make_matrix : int -> int -> 'a -> 'a array array
+val make_matrix : int -> int -> 'a -> 'a array array (* [@@dead "make_matrix"] *)
 (** [Array.make_matrix dimx dimy e] returns a two-dimensional array
    (an array of arrays) with first dimension [dimx] and
    second dimension [dimy]. All the elements of this new matrix
@@ -84,7 +84,7 @@ val make_matrix : int -> int -> 'a -> 'a array array
    If the value of [e] is a floating-point number, then the maximum
    size is only [Sys.max_array_length / 2]. *)
 
-val create_matrix : int -> int -> 'a -> 'a array array
+val create_matrix : int -> int -> 'a -> 'a array array (* [@@dead "create_matrix"] *)
   [@@ocaml.deprecated "Use Array.make_matrix instead."]
 (** @deprecated [Array.create_matrix] is an alias for {!Array.make_matrix}. *)
 
@@ -171,13 +171,13 @@ val fold_right : ('b -> 'a -> 'a) -> 'b array -> 'a -> 'a
 (** {1 Iterators on two arrays} *)
 
 
-val iter2 : ('a -> 'b -> unit) -> 'a array -> 'b array -> unit
+val iter2 : ('a -> 'b -> unit) -> 'a array -> 'b array -> unit (* [@@dead "iter2"] *)
 (** [Array.iter2 f a b] applies function [f] to all the elements of [a]
    and [b].
    Raise [Invalid_argument] if the arrays are not the same size.
    @since 4.03.0 *)
 
-val map2 : ('a -> 'b -> 'c) -> 'a array -> 'b array -> 'c array
+val map2 : ('a -> 'b -> 'c) -> 'a array -> 'b array -> 'c array (* [@@dead "map2"] *)
 (** [Array.map2 f a b] applies function [f] to all the elements of [a]
    and [b], and builds an array with the results returned by [f]:
    [[| f a.(0) b.(0); ...; f a.(Array.length a - 1) b.(Array.length b - 1)|]].
@@ -188,24 +188,24 @@ val map2 : ('a -> 'b -> 'c) -> 'a array -> 'b array -> 'c array
 (** {1 Array scanning} *)
 
 
-val for_all : ('a -> bool) -> 'a array -> bool
+val for_all : ('a -> bool) -> 'a array -> bool (* [@@dead "for_all"] *)
 (** [Array.for_all p [|a1; ...; an|]] checks if all elements of the array
    satisfy the predicate [p]. That is, it returns
    [(p a1) && (p a2) && ... && (p an)].
    @since 4.03.0 *)
 
-val exists : ('a -> bool) -> 'a array -> bool
+val exists : ('a -> bool) -> 'a array -> bool (* [@@dead "exists"] *)
 (** [Array.exists p [|a1; ...; an|]] checks if at least one element of
     the array satisfies the predicate [p]. That is, it returns
     [(p a1) || (p a2) || ... || (p an)].
     @since 4.03.0 *)
 
-val mem : 'a -> 'a array -> bool
+val mem : 'a -> 'a array -> bool (* [@@dead "mem"] *)
 (** [mem a l] is true if and only if [a] is equal
    to an element of [l].
    @since 4.03.0 *)
 
-val memq : 'a -> 'a array -> bool
+val memq : 'a -> 'a array -> bool (* [@@dead "memq"] *)
 (** Same as {!Array.mem}, but uses physical equality instead of structural
    equality to compare array elements.
    @since 4.03.0 *)
@@ -240,7 +240,7 @@ val sort : ('a -> 'a -> int) -> 'a array -> unit
 -   [cmp a.(i) a.(j)] >= 0 if and only if i >= j
 *)
 
-val stable_sort : ('a -> 'a -> int) -> 'a array -> unit
+val stable_sort : ('a -> 'a -> int) -> 'a array -> unit (* [@@dead "stable_sort"] *)
 (** Same as {!Array.sort}, but the sorting algorithm is stable (i.e.
    elements that compare equal are kept in their original order) and
    not guaranteed to run in constant heap space.
@@ -250,7 +250,7 @@ val stable_sort : ('a -> 'a -> int) -> 'a array -> unit
    It is usually faster than the current implementation of {!Array.sort}.
 *)
 
-val fast_sort : ('a -> 'a -> int) -> 'a array -> unit
+val fast_sort : ('a -> 'a -> int) -> 'a array -> unit (* [@@dead "fast_sort"] *)
 (** Same as {!Array.sort} or {!Array.stable_sort}, whichever is faster
     on typical input.
 *)

@@ -712,7 +712,7 @@ val bool_of_string : string -> bool
    Raise [Invalid_argument "bool_of_string"] if the string is not
    ["true"] or ["false"]. *)
 
-val bool_of_string_opt: string -> bool option
+val bool_of_string_opt: string -> bool option (* [@@dead "bool_of_string_opt"] *)
 (** Convert the given string to a boolean.
     Return [None] if the string is not
     ["true"] or ["false"].
@@ -745,7 +745,7 @@ external int_of_string : string -> int = "caml_int_of_string"
    exceeds the range of integers representable in type [int]. *)
 
 
-val int_of_string_opt: string -> int option
+val int_of_string_opt: string -> int option (* [@@dead "int_of_string_opt"] *)
 (** Same as [int_of_string], but returns [None] instead of raising.
     @since 4.05
 *)
@@ -771,7 +771,7 @@ external float_of_string : string -> float = "caml_float_of_string"
    Raise [Failure "float_of_string"] if the given string is not a valid
    representation of a float. *)
 
-val float_of_string_opt: string -> float option
+val float_of_string_opt: string -> float option (* [@@dead "float_of_string_opt"] *)
 (** Same as [float_of_string], but returns [None] instead of raising.
     @since 4.05
 *)
@@ -817,7 +817,7 @@ val stderr : out_channel
 
 (** {2 Output functions on standard output} *)
 
-val print_char : char -> unit
+val print_char : char -> unit (* [@@dead "print_char"] *)
 (** Print a character on standard output. *)
 
 val print_string : string -> unit
@@ -830,7 +830,7 @@ val print_bytes : bytes -> unit
 val print_int : int -> unit
 (** Print an integer, in decimal, on standard output. *)
 
-val print_float : float -> unit
+val print_float : float -> unit (* [@@dead "print_float"] *)
 (** Print a floating-point number, in decimal, on standard output. *)
 
 #if BS then
@@ -850,20 +850,20 @@ val print_newline : unit -> unit
 
 (** {2 Output functions on standard error} *)
 
-val prerr_char : char -> unit
+val prerr_char : char -> unit (* [@@dead "prerr_char"] *)
 (** Print a character on standard error. *)
 
 val prerr_string : string -> unit
 (** Print a string on standard error. *)
 
-val prerr_bytes : bytes -> unit
+val prerr_bytes : bytes -> unit (* [@@dead "prerr_bytes"] *)
 (** Print a byte sequence on standard error.
    @since 4.02.0 *)
 
-val prerr_int : int -> unit
+val prerr_int : int -> unit (* [@@dead "prerr_int"] *)
 (** Print an integer, in decimal, on standard error. *)
 
-val prerr_float : float -> unit
+val prerr_float : float -> unit (* [@@dead "prerr_float"] *)
 (** Print a floating-point number, in decimal, on standard error. *)
 
 #if BS then
@@ -875,35 +875,35 @@ val prerr_endline : string -> unit
 (** Print a string, followed by a newline character on standard
    error and flush standard error. *)
 
-val prerr_newline : unit -> unit
+val prerr_newline : unit -> unit (* [@@dead "prerr_newline"] *)
 (** Print a newline character on standard error, and flush
    standard error. *)
 
 
 (** {2 Input functions on standard input} *)
 
-val read_line : unit -> string
+val read_line : unit -> string (* [@@dead "read_line"] *)
 (** Flush standard output, then read characters from standard input
    until a newline character is encountered. Return the string of
    all characters read, without the newline character at the end. *)
 
-val read_int : unit -> int
+val read_int : unit -> int (* [@@dead "read_int"] *)
 (** Flush standard output, then read one line from standard input
    and convert it to an integer. Raise [Failure "int_of_string"]
    if the line read is not a valid representation of an integer. *)
 
-val read_int_opt: unit -> int option
+val read_int_opt: unit -> int option (* [@@dead "read_int_opt"] *)
 (** Same as [read_int_opt], but returns [None] instead of raising.
     @since 4.05
 *)
 
-val read_float : unit -> float
+val read_float : unit -> float (* [@@dead "read_float"] *)
 (** Flush standard output, then read one line from standard input
    and convert it to a floating-point number.
    The result is unspecified if the line read is not a valid
    representation of a floating-point number. *)
 
-val read_float_opt: unit -> float option
+val read_float_opt: unit -> float option (* [@@dead "read_float_opt"] *)
 (** Flush standard output, then read one line from standard input
     and convert it to a floating-point number.
     Returns [None] if the line read is not a valid
@@ -914,15 +914,15 @@ val read_float_opt: unit -> float option
 (** {2 General output functions} *)
 
 type open_flag =
-    Open_rdonly      (** open for reading. *)
+    Open_rdonly      (** open for reading. *) (* [@@dead "open_flag.Open_rdonly"] *)
   | Open_wronly      (** open for writing. *)
-  | Open_append      (** open for appending: always write at end of file. *)
+  | Open_append      (** open for appending: always write at end of file. *) (* [@@dead "open_flag.Open_append"] *)
   | Open_creat       (** create the file if it does not exist. *)
-  | Open_trunc       (** empty the file if it already exists. *)
+  | Open_trunc       (** empty the file if it already exists. *) (* [@@dead "open_flag.Open_trunc"] *)
   | Open_excl        (** fail if Open_creat and the file already exists. *)
-  | Open_binary      (** open in binary mode (no conversion). *)
+  | Open_binary      (** open in binary mode (no conversion). *) (* [@@dead "open_flag.Open_binary"] *)
   | Open_text        (** open in text mode (may perform conversions). *)
-  | Open_nonblock    (** open in non-blocking mode. *)
+  | Open_nonblock    (** open in non-blocking mode. *) (* [@@dead "open_flag.Open_nonblock"] *)
 (** Opening modes for {!Pervasives.open_out_gen} and
   {!Pervasives.open_in_gen}. *)
 
@@ -952,7 +952,7 @@ val flush : out_channel -> unit
    Interactive programs must be careful about flushing standard
    output and standard error at the right time. *)
 
-val flush_all : unit -> unit
+val flush_all : unit -> unit (* [@@dead "flush_all"] *)
 (** Flush all open output channels; ignore errors. *)
 
 val output_char : out_channel -> char -> unit
@@ -976,12 +976,12 @@ val output_substring : out_channel -> string -> int -> int -> unit
    a byte sequence.
    @since 4.02.0 *)
 
-val output_byte : out_channel -> int -> unit
+val output_byte : out_channel -> int -> unit (* [@@dead "output_byte"] *)
 (** Write one 8-bit integer (as the single character with that code)
    on the given output channel. The given integer is taken modulo
    256. *)
 
-val output_binary_int : out_channel -> int -> unit
+val output_binary_int : out_channel -> int -> unit (* [@@dead "output_binary_int"] *)
 (** Write one integer in binary format (4 bytes, big-endian)
    on the given output channel.
    The given integer is taken modulo 2{^32}.
@@ -989,7 +989,7 @@ val output_binary_int : out_channel -> int -> unit
    {!Pervasives.input_binary_int} function. The format is compatible across
    all machines for a given version of OCaml. *)
 
-val output_value : out_channel -> 'a -> unit
+val output_value : out_channel -> 'a -> unit (* [@@dead "output_value"] *)
 (** Write the representation of a structured value of any type
    to a channel. Circularities and sharing inside the value
    are detected and preserved. The object can be read back,
@@ -997,18 +997,18 @@ val output_value : out_channel -> 'a -> unit
    {!Marshal} for more information. {!Pervasives.output_value} is equivalent
    to {!Marshal.to_channel} with an empty list of flags. *)
 
-val seek_out : out_channel -> int -> unit
+val seek_out : out_channel -> int -> unit (* [@@dead "seek_out"] *)
 (** [seek_out chan pos] sets the current writing position to [pos]
    for channel [chan]. This works only for regular files. On
    files of other kinds (such as terminals, pipes and sockets),
    the behavior is unspecified. *)
 
-val pos_out : out_channel -> int
+val pos_out : out_channel -> int (* [@@dead "pos_out"] *)
 (** Return the current writing position for the given channel.  Does
     not work on channels opened with the [Open_append] flag (returns
     unspecified results). *)
 
-val out_channel_length : out_channel -> int
+val out_channel_length : out_channel -> int (* [@@dead "out_channel_length"] *)
 (** Return the size (number of characters) of the regular file
    on which the given channel is opened.  If the channel is opened
     on a file that is not a regular file, the result is meaningless. *)
@@ -1021,10 +1021,10 @@ val close_out : out_channel -> unit
    Note that [close_out] may raise [Sys_error] if the operating
    system signals an error when flushing or closing. *)
 
-val close_out_noerr : out_channel -> unit
+val close_out_noerr : out_channel -> unit (* [@@dead "close_out_noerr"] *)
 (** Same as [close_out], but ignore all errors. *)
 
-val set_binary_mode_out : out_channel -> bool -> unit
+val set_binary_mode_out : out_channel -> bool -> unit (* [@@dead "set_binary_mode_out"] *)
 (** [set_binary_mode_out oc true] sets the channel [oc] to binary
    mode: no translations take place during output.
    [set_binary_mode_out oc false] sets the channel [oc] to text
@@ -1047,7 +1047,7 @@ val open_in_bin : string -> in_channel
    systems that do not distinguish between text mode and binary
    mode, this function behaves like {!Pervasives.open_in}. *)
 
-val open_in_gen : open_flag list -> int -> string -> in_channel
+val open_in_gen : open_flag list -> int -> string -> in_channel (* [@@dead "open_in_gen"] *)
 (** [open_in_gen mode perm filename] opens the named file for reading,
    as described above. The extra arguments
    [mode] and [perm] specify the opening mode and file permissions.
@@ -1082,7 +1082,7 @@ val input : in_channel -> bytes -> int -> int -> int
    Exception [Invalid_argument "input"] is raised if [pos] and [len]
    do not designate a valid range of [buf]. *)
 
-val really_input : in_channel -> bytes -> int -> int -> unit
+val really_input : in_channel -> bytes -> int -> int -> unit (* [@@dead "really_input"] *)
 (** [really_input ic buf pos len] reads [len] characters from channel [ic],
    storing them in byte sequence [buf], starting at character number [pos].
    Raise [End_of_file] if the end of file is reached before [len]
@@ -1097,33 +1097,33 @@ val really_input_string : in_channel -> int -> string
    characters have been read.
    @since 4.02.0 *)
 
-val input_byte : in_channel -> int
+val input_byte : in_channel -> int (* [@@dead "input_byte"] *)
 (** Same as {!Pervasives.input_char}, but return the 8-bit integer representing
    the character.
    Raise [End_of_file] if an end of file was reached. *)
 
-val input_binary_int : in_channel -> int
+val input_binary_int : in_channel -> int (* [@@dead "input_binary_int"] *)
 (** Read an integer encoded in binary format (4 bytes, big-endian)
    from the given input channel. See {!Pervasives.output_binary_int}.
    Raise [End_of_file] if an end of file was reached while reading the
    integer. *)
 
-val input_value : in_channel -> 'a
+val input_value : in_channel -> 'a (* [@@dead "input_value"] *)
 (** Read the representation of a structured value, as produced
    by {!Pervasives.output_value}, and return the corresponding value.
    This function is identical to {!Marshal.from_channel};
    see the description of module {!Marshal} for more information,
    in particular concerning the lack of type safety. *)
 
-val seek_in : in_channel -> int -> unit
+val seek_in : in_channel -> int -> unit (* [@@dead "seek_in"] *)
 (** [seek_in chan pos] sets the current reading position to [pos]
    for channel [chan]. This works only for regular files. On
    files of other kinds, the behavior is unspecified. *)
 
-val pos_in : in_channel -> int
+val pos_in : in_channel -> int (* [@@dead "pos_in"] *)
 (** Return the current reading position for the given channel. *)
 
-val in_channel_length : in_channel -> int
+val in_channel_length : in_channel -> int (* [@@dead "in_channel_length"] *)
 (** Return the size (number of characters) of the regular file
     on which the given channel is opened.  If the channel is opened
     on a file that is not a regular file, the result is meaningless.
@@ -1137,10 +1137,10 @@ val close_in : in_channel -> unit
   except [close_in], which does nothing when applied to an already
   closed channel. *)
 
-val close_in_noerr : in_channel -> unit
+val close_in_noerr : in_channel -> unit (* [@@dead "close_in_noerr"] *)
 (** Same as [close_in], but ignore all errors. *)
 
-val set_binary_mode_in : in_channel -> bool -> unit
+val set_binary_mode_in : in_channel -> bool -> unit (* [@@dead "set_binary_mode_in"] *)
 (** [set_binary_mode_in ic true] sets the channel [ic] to binary
    mode: no translations take place during input.
    [set_binary_mode_out ic false] sets the channel [ic] to text
@@ -1155,12 +1155,12 @@ val set_binary_mode_in : in_channel -> bool -> unit
 
 module LargeFile :
   sig
-    val seek_out : out_channel -> int64 -> unit
-    val pos_out : out_channel -> int64
-    val out_channel_length : out_channel -> int64
-    val seek_in : in_channel -> int64 -> unit
-    val pos_in : in_channel -> int64
-    val in_channel_length : in_channel -> int64
+    val seek_out : out_channel -> int64 -> unit (* [@@dead "LargeFile.seek_out"] *)
+    val pos_out : out_channel -> int64 (* [@@dead "LargeFile.pos_out"] *)
+    val out_channel_length : out_channel -> int64 (* [@@dead "LargeFile.out_channel_length"] *)
+    val seek_in : in_channel -> int64 -> unit (* [@@dead "LargeFile.seek_in"] *)
+    val pos_in : in_channel -> int64 (* [@@dead "LargeFile.pos_in"] *)
+    val in_channel_length : in_channel -> int64 (* [@@dead "LargeFile.in_channel_length"] *)
   end
 (** Operations on large files.
   This sub-module provides 64-bit variants of the channel functions
@@ -1281,7 +1281,7 @@ type ('a, 'b, 'c, 'd) format4 = ('a, 'b, 'c, 'c, 'c, 'd) format6
 
 type ('a, 'b, 'c) format = ('a, 'b, 'c, 'c) format4
 
-val string_of_format : ('a, 'b, 'c, 'd, 'e, 'f) format6 -> string
+val string_of_format : ('a, 'b, 'c, 'd, 'e, 'f) format6 -> string (* [@@dead "string_of_format"] *)
 (** Converts a format string into a string. *)
 
 external format_of_string :
@@ -1334,6 +1334,6 @@ val at_exit : (unit -> unit) -> unit
 
 val valid_float_lexem : string -> string
 
-val unsafe_really_input : in_channel -> bytes -> int -> int -> unit
+val unsafe_really_input : in_channel -> bytes -> int -> int -> unit (* [@@dead "unsafe_really_input"] *)
 
 val do_at_exit : unit -> unit

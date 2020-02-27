@@ -26,27 +26,27 @@
 module Hashtbl : sig
   type ('a, 'b) t = ('a, 'b) Hashtbl.t
   val create : ?random:bool -> int -> ('a, 'b) t
-  val clear : ('a, 'b) t -> unit
-  val reset : ('a, 'b) t -> unit
-  val copy : ('a, 'b) t -> ('a, 'b) t
-  val add : ('a, 'b) t -> key:'a -> data:'b -> unit
-  val find : ('a, 'b) t -> 'a -> 'b
-  val find_opt : ('a, 'b) t -> 'a -> 'b option
-  val find_all : ('a, 'b) t -> 'a -> 'b list
-  val mem : ('a, 'b) t -> 'a -> bool
-  val remove : ('a, 'b) t -> 'a -> unit
-  val replace : ('a, 'b) t -> key:'a -> data:'b -> unit
-  val iter : f:(key:'a -> data:'b -> unit) -> ('a, 'b) t -> unit
-  val filter_map_inplace:
+  val clear : ('a, 'b) t -> unit (* [@@dead "Hashtbl.clear"] *)
+  val reset : ('a, 'b) t -> unit (* [@@dead "Hashtbl.reset"] *)
+  val copy : ('a, 'b) t -> ('a, 'b) t (* [@@dead "Hashtbl.copy"] *)
+  val add : ('a, 'b) t -> key:'a -> data:'b -> unit (* [@@dead "Hashtbl.add"] *)
+  val find : ('a, 'b) t -> 'a -> 'b (* [@@dead "Hashtbl.find"] *)
+  val find_opt : ('a, 'b) t -> 'a -> 'b option (* [@@dead "Hashtbl.find_opt"] *)
+  val find_all : ('a, 'b) t -> 'a -> 'b list (* [@@dead "Hashtbl.find_all"] *)
+  val mem : ('a, 'b) t -> 'a -> bool (* [@@dead "Hashtbl.mem"] *)
+  val remove : ('a, 'b) t -> 'a -> unit (* [@@dead "Hashtbl.remove"] *)
+  val replace : ('a, 'b) t -> key:'a -> data:'b -> unit (* [@@dead "Hashtbl.replace"] *)
+  val iter : f:(key:'a -> data:'b -> unit) -> ('a, 'b) t -> unit (* [@@dead "Hashtbl.iter"] *)
+  val filter_map_inplace: (* [@@dead "Hashtbl.filter_map_inplace"] *)
     f:(key:'a -> data:'b -> 'b option) -> ('a, 'b) t -> unit
-  val fold :
+  val fold : (* [@@dead "Hashtbl.fold"] *)
       f:(key:'a -> data:'b -> 'c -> 'c) ->
         ('a, 'b) t -> init:'c -> 'c
-  val length : ('a, 'b) t -> int
-  val randomize : unit -> unit
-  val is_randomized : unit -> bool
+  val length : ('a, 'b) t -> int (* [@@dead "Hashtbl.length"] *)
+  val randomize : unit -> unit (* [@@dead "Hashtbl.randomize"] *)
+  val is_randomized : unit -> bool (* [@@dead "Hashtbl.is_randomized"] *)
   type statistics = Hashtbl.statistics
-  val stats : ('a, 'b) t -> statistics
+  val stats : ('a, 'b) t -> statistics (* [@@dead "Hashtbl.stats"] *)
   module type HashedType = Hashtbl.HashedType
   module type SeededHashedType = Hashtbl.SeededHashedType
   module type S =
@@ -99,10 +99,10 @@ module Hashtbl : sig
     end
   module Make : functor (H : HashedType) -> S with type key = H.t
   module MakeSeeded (H : SeededHashedType) : SeededS with type key = H.t
-  val hash : 'a -> int
-  val seeded_hash : int -> 'a -> int
-  val hash_param : int -> int -> 'a -> int
-  val seeded_hash_param : int -> int -> int -> 'a -> int
+  val hash : 'a -> int (* [@@dead "Hashtbl.hash"] *)
+  val seeded_hash : int -> 'a -> int (* [@@dead "Hashtbl.seeded_hash"] *)
+  val hash_param : int -> int -> 'a -> int (* [@@dead "Hashtbl.hash_param"] *)
+  val seeded_hash_param : int -> int -> int -> 'a -> int (* [@@dead "Hashtbl.seeded_hash_param"] *)
 end
 
 module Map : sig

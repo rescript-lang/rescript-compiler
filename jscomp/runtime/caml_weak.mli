@@ -30,9 +30,9 @@
 
 type 'a t 
 
-val caml_weak_create : int -> 'a t 
-val caml_weak_set : 'a t -> int -> 'a option -> unit 
-val caml_weak_get : 'a t -> int -> 'a option 
-val caml_weak_get_copy : 'a t -> int -> 'a option 
-val caml_weak_check : 'a t -> int -> bool 
-val caml_weak_blit : 'a t -> int -> 'a t -> int -> int -> unit
+val caml_weak_create : int -> 'a t  (* [@@dead "caml_weak_create"] *)
+val caml_weak_set : 'a t -> int -> 'a option -> unit  (* [@@dead "caml_weak_set"] *)
+val caml_weak_get : 'a t -> int -> 'a option  (* [@@dead "caml_weak_get"] *)
+val caml_weak_get_copy : 'a t -> int -> 'a option  (* [@@dead "caml_weak_get_copy"] *)
+val caml_weak_check : 'a t -> int -> bool  (* [@@dead "caml_weak_check"] *)
+val caml_weak_blit : 'a t -> int -> 'a t -> int -> int -> unit (* [@@dead "caml_weak_blit"] *)

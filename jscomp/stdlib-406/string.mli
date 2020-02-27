@@ -93,7 +93,7 @@ val init : int -> (int -> char) -> string
     @since 4.02.0
 *)
 
-val copy : string -> string [@@ocaml.deprecated]
+val copy : string -> string [@@ocaml.deprecated] (* [@@dead "copy"] *)
 (** Return a copy of the given string.
 
     @deprecated Because strings are immutable, it doesn't make much
@@ -107,7 +107,7 @@ val sub : string -> int -> int -> string
    Raise [Invalid_argument] if [start] and [len] do not
    designate a valid substring of [s]. *)
 
-val fill : bytes -> int -> int -> char -> unit
+val fill : bytes -> int -> int -> char -> unit (* [@@dead "fill"] *)
   [@@ocaml.deprecated "Use Bytes.fill instead."]
 (** [String.fill s start len c] modifies byte sequence [s] in place,
    replacing [len] bytes with [c], starting at [start].
@@ -132,7 +132,7 @@ val iter : (char -> unit) -> string -> unit
    the characters of [s].  It is equivalent to
    [f s.[0]; f s.[1]; ...; f s.[String.length s - 1]; ()]. *)
 
-val iteri : (int -> char -> unit) -> string -> unit
+val iteri : (int -> char -> unit) -> string -> unit (* [@@dead "iteri"] *)
 (** Same as {!String.iter}, but the
    function is applied to the index of the element as first argument
    (counting from 0), and the character itself as second argument.
@@ -144,13 +144,13 @@ val map : (char -> char) -> string -> string
     results in a new string that is returned.
     @since 4.00.0 *)
 
-val mapi : (int -> char -> char) -> string -> string
+val mapi : (int -> char -> char) -> string -> string (* [@@dead "mapi"] *)
 (** [String.mapi f s] calls [f] with each character of [s] and its
     index (in increasing index order) and stores the results in a new
     string that is returned.
     @since 4.02.0 *)
 
-val trim : string -> string
+val trim : string -> string (* [@@dead "trim"] *)
 (** Return a copy of the argument, without leading and trailing
    whitespace.  The characters regarded as whitespace are: [' '],
    ['\012'], ['\n'], ['\r'], and ['\t'].  If there is neither leading nor
@@ -181,19 +181,19 @@ val index : string -> char -> int
 
    Raise [Not_found] if [c] does not occur in [s]. *)
 
-val index_opt: string -> char -> int option
+val index_opt: string -> char -> int option (* [@@dead "index_opt"] *)
 (** [String.index_opt s c] returns the index of the first
     occurrence of character [c] in string [s], or
     [None] if [c] does not occur in [s].
     @since 4.05 *)
 
-val rindex : string -> char -> int
+val rindex : string -> char -> int (* [@@dead "rindex"] *)
 (** [String.rindex s c] returns the index of the last
    occurrence of character [c] in string [s].
 
    Raise [Not_found] if [c] does not occur in [s]. *)
 
-val rindex_opt: string -> char -> int option
+val rindex_opt: string -> char -> int option (* [@@dead "rindex_opt"] *)
 (** [String.rindex_opt s c] returns the index of the last occurrence
     of character [c] in string [s], or [None] if [c] does not occur in
     [s].
@@ -207,7 +207,7 @@ val index_from : string -> int -> char -> int
    Raise [Invalid_argument] if [i] is not a valid position in [s].
    Raise [Not_found] if [c] does not occur in [s] after position [i]. *)
 
-val index_from_opt: string -> int -> char -> int option
+val index_from_opt: string -> int -> char -> int option (* [@@dead "index_from_opt"] *)
 (** [String.index_from_opt s i c] returns the index of the
     first occurrence of character [c] in string [s] after position [i]
     or [None] if [c] does not occur in [s] after position [i].
@@ -227,7 +227,7 @@ val rindex_from : string -> int -> char -> int
    Raise [Invalid_argument] if [i+1] is not a valid position in [s].
    Raise [Not_found] if [c] does not occur in [s] before position [i+1]. *)
 
-val rindex_from_opt: string -> int -> char -> int option
+val rindex_from_opt: string -> int -> char -> int option (* [@@dead "rindex_from_opt"] *)
 (** [String.rindex_from_opt s i c] returns the index of the
    last occurrence of character [c] in string [s] before position [i+1]
    or [None] if [c] does not occur in [s] before position [i+1].
@@ -244,7 +244,7 @@ val contains : string -> char -> bool
 (** [String.contains s c] tests if character [c]
    appears in the string [s]. *)
 
-val contains_from : string -> int -> char -> bool
+val contains_from : string -> int -> char -> bool (* [@@dead "contains_from"] *)
 (** [String.contains_from s start c] tests if character [c]
    appears in [s] after position [start].
    [String.contains s c] is equivalent to
@@ -252,7 +252,7 @@ val contains_from : string -> int -> char -> bool
 
    Raise [Invalid_argument] if [start] is not a valid position in [s]. *)
 
-val rcontains_from : string -> int -> char -> bool
+val rcontains_from : string -> int -> char -> bool (* [@@dead "rcontains_from"] *)
 (** [String.rcontains_from s stop c] tests if character [c]
    appears in [s] before position [stop+1].
 
@@ -266,7 +266,7 @@ val uppercase : string -> string
    Latin-1 (8859-1) character set.
    @deprecated Functions operating on Latin-1 character set are deprecated. *)
 
-val lowercase : string -> string
+val lowercase : string -> string (* [@@dead "lowercase"] *)
   [@@ocaml.deprecated "Use String.lowercase_ascii instead."]
 (** Return a copy of the argument, with all uppercase letters
    translated to lowercase, including accented letters of the ISO
@@ -279,7 +279,7 @@ val capitalize : string -> string
    using the ISO Latin-1 (8859-1) character set..
    @deprecated Functions operating on Latin-1 character set are deprecated. *)
 
-val uncapitalize : string -> string
+val uncapitalize : string -> string (* [@@dead "uncapitalize"] *)
   [@@ocaml.deprecated "Use String.uncapitalize_ascii instead."]
 (** Return a copy of the argument, with the first character set to lowercase,
    using the ISO Latin-1 (8859-1) character set..
@@ -295,12 +295,12 @@ val lowercase_ascii : string -> string
    translated to lowercase, using the US-ASCII character set.
    @since 4.03.0 *)
 
-val capitalize_ascii : string -> string
+val capitalize_ascii : string -> string (* [@@dead "capitalize_ascii"] *)
 (** Return a copy of the argument, with the first character set to uppercase,
    using the US-ASCII character set.
    @since 4.03.0 *)
 
-val uncapitalize_ascii : string -> string
+val uncapitalize_ascii : string -> string (* [@@dead "uncapitalize_ascii"] *)
 (** Return a copy of the argument, with the first character set to lowercase,
    using the US-ASCII character set.
    @since 4.03.0 *)

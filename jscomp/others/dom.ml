@@ -146,7 +146,7 @@ type domSettableTokenList
 
 (* traversal *)
 type nodeFilter = {
-  acceptNode: element -> int (* return type should be NodeFilter.action, but that would create a cycle *)
+  acceptNode: element -> int (* return type should be NodeFilter.action, but that would create a cycle *) (* [@@dead "nodeFilter.acceptNode"] *)
 }
 type nodeIterator
 type treeWalker

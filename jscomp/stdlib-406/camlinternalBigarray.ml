@@ -16,18 +16,18 @@
 (* Bigarray types. These must be kept in sync with the tables in
    ../typing/typeopt.ml *)
 
-type float32_elt = Float32_elt
-type float64_elt = Float64_elt
-type int8_signed_elt = Int8_signed_elt
-type int8_unsigned_elt = Int8_unsigned_elt
-type int16_signed_elt = Int16_signed_elt
-type int16_unsigned_elt = Int16_unsigned_elt
-type int32_elt = Int32_elt
-type int64_elt = Int64_elt
-type int_elt = Int_elt
-type nativeint_elt = Nativeint_elt
-type complex32_elt = Complex32_elt
-type complex64_elt = Complex64_elt
+type float32_elt = Float32_elt (* [@@dead "float32_elt.Float32_elt"] *)
+type float64_elt = Float64_elt (* [@@dead "float64_elt.Float64_elt"] *)
+type int8_signed_elt = Int8_signed_elt (* [@@dead "int8_signed_elt.Int8_signed_elt"] *)
+type int8_unsigned_elt = Int8_unsigned_elt (* [@@dead "int8_unsigned_elt.Int8_unsigned_elt"] *)
+type int16_signed_elt = Int16_signed_elt (* [@@dead "int16_signed_elt.Int16_signed_elt"] *)
+type int16_unsigned_elt = Int16_unsigned_elt (* [@@dead "int16_unsigned_elt.Int16_unsigned_elt"] *)
+type int32_elt = Int32_elt (* [@@dead "int32_elt.Int32_elt"] *)
+type int64_elt = Int64_elt (* [@@dead "int64_elt.Int64_elt"] *)
+type int_elt = Int_elt (* [@@dead "int_elt.Int_elt"] *)
+type nativeint_elt = Nativeint_elt (* [@@dead "nativeint_elt.Nativeint_elt"] *)
+type complex32_elt = Complex32_elt (* [@@dead "complex32_elt.Complex32_elt"] *)
+type complex64_elt = Complex64_elt (* [@@dead "complex64_elt.Complex64_elt"] *)
 
 type ('a, 'b) kind =
     Float32 : (float, float32_elt) kind
@@ -44,8 +44,8 @@ type ('a, 'b) kind =
   | Complex64 : (Complex.t, complex64_elt) kind
   | Char : (char, int8_unsigned_elt) kind
 
-type c_layout = C_layout_typ
-type fortran_layout = Fortran_layout_typ
+type c_layout = C_layout_typ (* [@@dead "c_layout.C_layout_typ"] *)
+type fortran_layout = Fortran_layout_typ (* [@@dead "fortran_layout.Fortran_layout_typ"] *)
 
 type 'a layout =
     C_layout: c_layout layout

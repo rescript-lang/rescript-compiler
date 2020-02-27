@@ -22,18 +22,18 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
-val caml_array_dup : 'a array ->  'a array 
+val caml_array_dup : 'a array ->  'a array  (* [@@dead "caml_array_dup"] *)
 
-val caml_array_sub : 'a array -> int -> int -> 'a array
+val caml_array_sub : 'a array -> int -> int -> 'a array (* [@@dead "caml_array_sub"] *)
 
-val caml_array_concat : 'a array list -> 'a array
+val caml_array_concat : 'a array list -> 'a array (* [@@dead "caml_array_concat"] *)
 
-val caml_make_vect : int -> 'a -> 'a array
+val caml_make_vect : int -> 'a -> 'a array (* [@@dead "caml_make_vect"] *)
 
-val caml_make_float_vect : int -> float array
+val caml_make_float_vect : int -> float array (* [@@dead "caml_make_float_vect"] *)
 
 val caml_array_blit : 'a array -> int -> 'a array -> int -> int -> unit
 
-val caml_array_get: 'a array -> int -> 'a
+val caml_array_get: 'a array -> int -> 'a (* [@@dead "caml_array_get"] *)
 
-val caml_array_set: 'a array -> int -> 'a -> unit
+val caml_array_set: 'a array -> int -> 'a -> unit (* [@@dead "caml_array_set"] *)

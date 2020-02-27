@@ -43,23 +43,23 @@ external create : int -> bytes = "caml_create_string"
 
    @deprecated This is a deprecated alias of {!BytesLabels.create}. *)
 
-val make : int -> char -> string
+val make : int -> char -> string (* [@@dead "make"] *)
 (** [String.make n c] returns a fresh string of length [n],
    filled with the character [c].
 
    Raise [Invalid_argument] if [n < 0] or [n > ]{!Sys.max_string_length}. *)
 
-val init : int -> f:(int -> char) -> string
+val init : int -> f:(int -> char) -> string (* [@@dead "init"] *)
 (** [init n f] returns a string of length [n],
     with character [i] initialized to the result of [f i].
 
    Raise [Invalid_argument] if [n < 0] or [n > ]{!Sys.max_string_length}.
    @since 4.02.0 *)
 
-val copy : string -> string  [@@ocaml.deprecated]
+val copy : string -> string  [@@ocaml.deprecated] (* [@@dead "copy"] *)
 (** Return a copy of the given string. *)
 
-val sub : string -> pos:int -> len:int -> string
+val sub : string -> pos:int -> len:int -> string (* [@@dead "sub"] *)
 (** [String.sub s start len] returns a fresh string of length [len],
    containing the substring of [s] that starts at position [start] and
    has length [len].
@@ -67,7 +67,7 @@ val sub : string -> pos:int -> len:int -> string
    Raise [Invalid_argument] if [start] and [len] do not
    designate a valid substring of [s]. *)
 
-val fill : bytes -> pos:int -> len:int -> char -> unit
+val fill : bytes -> pos:int -> len:int -> char -> unit (* [@@dead "fill"] *)
   [@@ocaml.deprecated "Use BytesLabels.fill instead."]
 (** [String.fill s start len c] modifies byte sequence [s] in place,
    replacing [len] bytes by [c], starting at [start].
@@ -77,7 +77,7 @@ val fill : bytes -> pos:int -> len:int -> char -> unit
 
    @deprecated This is a deprecated alias of {!BytesLabels.fill}. *)
 
-val blit :
+val blit : (* [@@dead "blit"] *)
   src:string -> src_pos:int -> dst:bytes -> dst_pos:int -> len:int
   -> unit
 (** [String.blit src srcoff dst dstoff len] copies [len] bytes
@@ -88,34 +88,34 @@ val blit :
    designate a valid range of [src], or if [dstoff] and [len]
    do not designate a valid range of [dst]. *)
 
-val concat : sep:string -> string list -> string
+val concat : sep:string -> string list -> string (* [@@dead "concat"] *)
 (** [String.concat sep sl] concatenates the list of strings [sl],
    inserting the separator string [sep] between each. *)
 
-val iter : f:(char -> unit) -> string -> unit
+val iter : f:(char -> unit) -> string -> unit (* [@@dead "iter"] *)
 (** [String.iter f s] applies function [f] in turn to all
    the characters of [s].  It is equivalent to
    [f s.[0]; f s.[1]; ...; f s.[String.length s - 1]; ()]. *)
 
-val iteri : f:(int -> char -> unit) -> string -> unit
+val iteri : f:(int -> char -> unit) -> string -> unit (* [@@dead "iteri"] *)
 (** Same as {!String.iter}, but the
    function is applied to the index of the element as first argument
    (counting from 0), and the character itself as second argument.
    @since 4.00.0 *)
 
-val map : f:(char -> char) -> string -> string
+val map : f:(char -> char) -> string -> string (* [@@dead "map"] *)
 (** [String.map f s] applies function [f] in turn to all
    the characters of [s] and stores the results in a new string that
    is returned.
    @since 4.00.0 *)
 
-val mapi : f:(int -> char -> char) -> string -> string
+val mapi : f:(int -> char -> char) -> string -> string (* [@@dead "mapi"] *)
 (** [String.mapi f s] calls [f] with each character of [s] and its
     index (in increasing index order) and stores the results in a new
     string that is returned.
     @since 4.02.0 *)
 
-val trim : string -> string
+val trim : string -> string (* [@@dead "trim"] *)
 (** Return a copy of the argument, without leading and trailing
    whitespace.  The characters regarded as whitespace are: [' '],
    ['\012'], ['\n'], ['\r'], and ['\t'].  If there is no leading nor
@@ -123,38 +123,38 @@ val trim : string -> string
    string itself, not a copy.
    @since 4.00.0 *)
 
-val escaped : string -> string
+val escaped : string -> string (* [@@dead "escaped"] *)
 (** Return a copy of the argument, with special characters
    represented by escape sequences, following the lexical
    conventions of OCaml.  If there is no special
    character in the argument, return the original string itself,
    not a copy. Its inverse function is Scanf.unescaped. *)
 
-val index : string -> char -> int
+val index : string -> char -> int (* [@@dead "index"] *)
 (** [String.index s c] returns the index of the first
    occurrence of character [c] in string [s].
 
    Raise [Not_found] if [c] does not occur in [s]. *)
 
-val index_opt: string -> char -> int option
+val index_opt: string -> char -> int option (* [@@dead "index_opt"] *)
 (** [String.index_opt s c] returns the index of the first
     occurrence of character [c] in string [s], or
     [None] if [c] does not occur in [s].
     @since 4.05 *)
 
-val rindex : string -> char -> int
+val rindex : string -> char -> int (* [@@dead "rindex"] *)
 (** [String.rindex s c] returns the index of the last
    occurrence of character [c] in string [s].
 
    Raise [Not_found] if [c] does not occur in [s]. *)
 
-val rindex_opt: string -> char -> int option
+val rindex_opt: string -> char -> int option (* [@@dead "rindex_opt"] *)
 (** [String.rindex_opt s c] returns the index of the last occurrence
     of character [c] in string [s], or [None] if [c] does not occur in
     [s].
     @since 4.05 *)
 
-val index_from : string -> int -> char -> int
+val index_from : string -> int -> char -> int (* [@@dead "index_from"] *)
 (** [String.index_from s i c] returns the index of the
    first occurrence of character [c] in string [s] after position [i].
    [String.index s c] is equivalent to [String.index_from s 0 c].
@@ -162,7 +162,7 @@ val index_from : string -> int -> char -> int
    Raise [Invalid_argument] if [i] is not a valid position in [s].
    Raise [Not_found] if [c] does not occur in [s] after position [i]. *)
 
-val index_from_opt: string -> int -> char -> int option
+val index_from_opt: string -> int -> char -> int option (* [@@dead "index_from_opt"] *)
 (** [String.index_from_opt s i c] returns the index of the
     first occurrence of character [c] in string [s] after position [i]
     or [None] if [c] does not occur in [s] after position [i].
@@ -173,7 +173,7 @@ val index_from_opt: string -> int -> char -> int option
     @since 4.05
 *)
 
-val rindex_from : string -> int -> char -> int
+val rindex_from : string -> int -> char -> int (* [@@dead "rindex_from"] *)
 (** [String.rindex_from s i c] returns the index of the
    last occurrence of character [c] in string [s] before position [i+1].
    [String.rindex s c] is equivalent to
@@ -182,7 +182,7 @@ val rindex_from : string -> int -> char -> int
    Raise [Invalid_argument] if [i+1] is not a valid position in [s].
    Raise [Not_found] if [c] does not occur in [s] before position [i+1]. *)
 
-val rindex_from_opt: string -> int -> char -> int option
+val rindex_from_opt: string -> int -> char -> int option (* [@@dead "rindex_from_opt"] *)
 (** [String.rindex_from_opt s i c] returns the index of the
    last occurrence of character [c] in string [s] before position [i+1]
    or [None] if [c] does not occur in [s] before position [i+1].
@@ -195,11 +195,11 @@ val rindex_from_opt: string -> int -> char -> int option
     @since 4.05
 *)
 
-val contains : string -> char -> bool
+val contains : string -> char -> bool (* [@@dead "contains"] *)
 (** [String.contains s c] tests if character [c]
    appears in the string [s]. *)
 
-val contains_from : string -> int -> char -> bool
+val contains_from : string -> int -> char -> bool (* [@@dead "contains_from"] *)
 (** [String.contains_from s start c] tests if character [c]
    appears in [s] after position [start].
    [String.contains s c] is equivalent to
@@ -207,55 +207,55 @@ val contains_from : string -> int -> char -> bool
 
    Raise [Invalid_argument] if [start] is not a valid position in [s]. *)
 
-val rcontains_from : string -> int -> char -> bool
+val rcontains_from : string -> int -> char -> bool (* [@@dead "rcontains_from"] *)
 (** [String.rcontains_from s stop c] tests if character [c]
    appears in [s] before position [stop+1].
 
    Raise [Invalid_argument] if [stop < 0] or [stop+1] is not a valid
    position in [s]. *)
 
-val uppercase : string -> string
+val uppercase : string -> string (* [@@dead "uppercase"] *)
   [@@ocaml.deprecated "Use String.uppercase_ascii instead."]
 (** Return a copy of the argument, with all lowercase letters
    translated to uppercase, including accented letters of the ISO
    Latin-1 (8859-1) character set.
    @deprecated Functions operating on Latin-1 character set are deprecated. *)
 
-val lowercase : string -> string
+val lowercase : string -> string (* [@@dead "lowercase"] *)
   [@@ocaml.deprecated "Use String.lowercase_ascii instead."]
 (** Return a copy of the argument, with all uppercase letters
    translated to lowercase, including accented letters of the ISO
    Latin-1 (8859-1) character set.
    @deprecated Functions operating on Latin-1 character set are deprecated. *)
 
-val capitalize : string -> string
+val capitalize : string -> string (* [@@dead "capitalize"] *)
   [@@ocaml.deprecated "Use String.capitalize_ascii instead."]
 (** Return a copy of the argument, with the first character set to uppercase,
    using the ISO Latin-1 (8859-1) character set..
    @deprecated Functions operating on Latin-1 character set are deprecated. *)
 
-val uncapitalize : string -> string
+val uncapitalize : string -> string (* [@@dead "uncapitalize"] *)
   [@@ocaml.deprecated "Use String.uncapitalize_ascii instead."]
 (** Return a copy of the argument, with the first character set to lowercase,
    using the ISO Latin-1 (8859-1) character set..
    @deprecated Functions operating on Latin-1 character set are deprecated. *)
 
-val uppercase_ascii : string -> string
+val uppercase_ascii : string -> string (* [@@dead "uppercase_ascii"] *)
 (** Return a copy of the argument, with all lowercase letters
    translated to uppercase, using the US-ASCII character set.
    @since 4.05.0 *)
 
-val lowercase_ascii : string -> string
+val lowercase_ascii : string -> string (* [@@dead "lowercase_ascii"] *)
 (** Return a copy of the argument, with all uppercase letters
    translated to lowercase, using the US-ASCII character set.
    @since 4.05.0 *)
 
-val capitalize_ascii : string -> string
+val capitalize_ascii : string -> string (* [@@dead "capitalize_ascii"] *)
 (** Return a copy of the argument, with the first character set to uppercase,
    using the US-ASCII character set.
    @since 4.05.0 *)
 
-val uncapitalize_ascii : string -> string
+val uncapitalize_ascii : string -> string (* [@@dead "uncapitalize_ascii"] *)
 (** Return a copy of the argument, with the first character set to lowercase,
    using the US-ASCII character set.
    @since 4.05.0 *)
@@ -263,17 +263,17 @@ val uncapitalize_ascii : string -> string
 type t = string
 (** An alias for the type of strings. *)
 
-val compare: t -> t -> int
+val compare: t -> t -> int (* [@@dead "compare"] *)
 (** The comparison function for strings, with the same specification as
     {!Pervasives.compare}.  Along with the type [t], this function [compare]
     allows the module [String] to be passed as argument to the functors
     {!Set.Make} and {!Map.Make}. *)
 
-val equal: t -> t -> bool
+val equal: t -> t -> bool (* [@@dead "equal"] *)
 (** The equal function for strings.
     @since 4.05.0 *)
 
-val split_on_char: sep:char -> string -> string list
+val split_on_char: sep:char -> string -> string list (* [@@dead "split_on_char"] *)
 (** [String.split_on_char sep s] returns the list of all (possibly empty)
     substrings of [s] that are delimited by the [sep] character.
 

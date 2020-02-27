@@ -18,11 +18,11 @@
     casual user. *)
 
 type shape =
-  | Function
-  | Lazy
-  | Class
-  | Module of shape array
-  | Value of Obj.t
+  | Function (* [@@dead "shape.Function"] *)
+  | Lazy (* [@@dead "shape.Lazy"] *)
+  | Class (* [@@dead "shape.Class"] *)
+  | Module of shape array (* [@@dead "shape.Module"] *)
+  | Value of Obj.t (* [@@dead "shape.Value"] *)
 #if BS then 
 #else
 val init_mod: string * int * int -> shape -> Obj.t

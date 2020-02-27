@@ -48,15 +48,15 @@ val dummy_pos : position
 
 type lexbuf =
   { refill_buff : lexbuf -> unit;
-    mutable lex_buffer : bytes;
-    mutable lex_buffer_len : int;
-    mutable lex_abs_pos : int;
+    mutable lex_buffer : bytes; (* [@@dead "lexbuf.lex_buffer"] *)
+    mutable lex_buffer_len : int; (* [@@dead "lexbuf.lex_buffer_len"] *)
+    mutable lex_abs_pos : int; (* [@@dead "lexbuf.lex_abs_pos"] *)
     mutable lex_start_pos : int;
-    mutable lex_curr_pos : int;
-    mutable lex_last_pos : int;
-    mutable lex_last_action : int;
-    mutable lex_eof_reached : bool;
-    mutable lex_mem : int array;
+    mutable lex_curr_pos : int; (* [@@dead "lexbuf.lex_curr_pos"] *)
+    mutable lex_last_pos : int; (* [@@dead "lexbuf.lex_last_pos"] *)
+    mutable lex_last_action : int; (* [@@dead "lexbuf.lex_last_action"] *)
+    mutable lex_eof_reached : bool; (* [@@dead "lexbuf.lex_eof_reached"] *)
+    mutable lex_mem : int array; (* [@@dead "lexbuf.lex_mem"] *)
     mutable lex_start_p : position;
     mutable lex_curr_p : position;
   }
@@ -75,7 +75,7 @@ type lexbuf =
    end of line -- see also [new_line]).
  *)
 
-val from_channel : in_channel -> lexbuf
+val from_channel : in_channel -> lexbuf (* [@@dead "from_channel"] *)
 (** Create a lexer buffer on the given input channel.
    [Lexing.from_channel inchan] returns a lexer buffer which reads
    from the input channel [inchan], at the current reading position. *)
@@ -86,7 +86,7 @@ val from_string : string -> lexbuf
    the string. An end-of-input condition is generated when the
    end of the string is reached. *)
 
-val from_function : (bytes -> int -> int) -> lexbuf
+val from_function : (bytes -> int -> int) -> lexbuf (* [@@dead "from_function"] *)
 (** Create a lexer buffer with the given function as its reading method.
    When the scanner needs more characters, it will call the given
    function, giving it a byte sequence [s] and a byte
@@ -111,29 +111,29 @@ val lexeme : lexbuf -> string
 (** [Lexing.lexeme lexbuf] returns the string matched by
            the regular expression. *)
 
-val lexeme_char : lexbuf -> int -> char
+val lexeme_char : lexbuf -> int -> char (* [@@dead "lexeme_char"] *)
 (** [Lexing.lexeme_char lexbuf i] returns character number [i] in
    the matched string. *)
 
-val lexeme_start : lexbuf -> int
+val lexeme_start : lexbuf -> int (* [@@dead "lexeme_start"] *)
 (** [Lexing.lexeme_start lexbuf] returns the offset in the
    input stream of the first character of the matched string.
    The first character of the stream has offset 0. *)
 
-val lexeme_end : lexbuf -> int
+val lexeme_end : lexbuf -> int (* [@@dead "lexeme_end"] *)
 (** [Lexing.lexeme_end lexbuf] returns the offset in the input stream
    of the character following the last character of the matched
    string. The first character of the stream has offset 0. *)
 
-val lexeme_start_p : lexbuf -> position
+val lexeme_start_p : lexbuf -> position (* [@@dead "lexeme_start_p"] *)
 (** Like [lexeme_start], but return a complete [position] instead
     of an offset. *)
 
-val lexeme_end_p : lexbuf -> position
+val lexeme_end_p : lexbuf -> position (* [@@dead "lexeme_end_p"] *)
 (** Like [lexeme_end], but return a complete [position] instead
     of an offset. *)
 
-val new_line : lexbuf -> unit
+val new_line : lexbuf -> unit (* [@@dead "new_line"] *)
 (** Update the [lex_curr_p] field of the lexbuf to reflect the start
     of a new line.  You can call this function in the semantic action
     of the rule that matches the end-of-line character.
@@ -142,7 +142,7 @@ val new_line : lexbuf -> unit
 
 (** {1 Miscellaneous functions} *)
 
-val flush_input : lexbuf -> unit
+val flush_input : lexbuf -> unit (* [@@dead "flush_input"] *)
 (** Discard the contents of the buffer and reset the current
     position to 0.  The next use of the lexbuf will trigger a
     refill. *)
@@ -154,23 +154,23 @@ val flush_input : lexbuf -> unit
 (** The following definitions are used by the generated scanners only.
    They are not intended to be used directly by user programs. *)
 
-val sub_lexeme : lexbuf -> int -> int -> string
-val sub_lexeme_opt : lexbuf -> int -> int -> string option
+val sub_lexeme : lexbuf -> int -> int -> string (* [@@dead "sub_lexeme"] *)
+val sub_lexeme_opt : lexbuf -> int -> int -> string option (* [@@dead "sub_lexeme_opt"] *)
 val sub_lexeme_char : lexbuf -> int -> char
-val sub_lexeme_char_opt : lexbuf -> int -> char option
+val sub_lexeme_char_opt : lexbuf -> int -> char option (* [@@dead "sub_lexeme_char_opt"] *)
 
 type lex_tables =
-  { lex_base : string;
-    lex_backtrk : string;
-    lex_default : string;
-    lex_trans : string;
-    lex_check : string;
-    lex_base_code : string;
-    lex_backtrk_code : string;
-    lex_default_code : string;
-    lex_trans_code : string;
-    lex_check_code : string;
-    lex_code: string;}
+  { lex_base : string; (* [@@dead "lex_tables.lex_base"] *)
+    lex_backtrk : string; (* [@@dead "lex_tables.lex_backtrk"] *)
+    lex_default : string; (* [@@dead "lex_tables.lex_default"] *)
+    lex_trans : string; (* [@@dead "lex_tables.lex_trans"] *)
+    lex_check : string; (* [@@dead "lex_tables.lex_check"] *)
+    lex_base_code : string; (* [@@dead "lex_tables.lex_base_code"] *)
+    lex_backtrk_code : string; (* [@@dead "lex_tables.lex_backtrk_code"] *)
+    lex_default_code : string; (* [@@dead "lex_tables.lex_default_code"] *)
+    lex_trans_code : string; (* [@@dead "lex_tables.lex_trans_code"] *)
+    lex_check_code : string; (* [@@dead "lex_tables.lex_check_code"] *)
+    lex_code: string;} (* [@@dead "lex_tables.lex_code"] *)
 
 val engine : lex_tables -> int -> lexbuf -> int
-val new_engine : lex_tables -> int -> lexbuf -> int
+val new_engine : lex_tables -> int -> lexbuf -> int (* [@@dead "new_engine"] *)

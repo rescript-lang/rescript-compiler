@@ -99,7 +99,7 @@ val fromArray:  'value array -> id:('value, 'id) id ->  ('value, 'id) t
 
 
 
-val fromSortedArrayUnsafe: 'value array -> id:('value, 'id) id -> ('value,'id) t
+val fromSortedArrayUnsafe: 'value array -> id:('value, 'id) id -> ('value,'id) t (* [@@dead "fromSortedArrayUnsafe"] *)
 (** [fromSortedArrayUnsafe xs ~id]
 
     The same as {!fromArray} except it is after assuming the input array [x] is already sorted
@@ -232,7 +232,7 @@ val eq: ('value, 'id) t -> ('value, 'id) t -> bool
     @return true if [toArray s0 = toArray s1]
 *)
 
-val forEachU: ('value, 'id) t -> ('value -> unit [@bs]) ->  unit
+val forEachU: ('value, 'id) t -> ('value -> unit [@bs]) ->  unit (* [@@dead "forEachU"] *)
 val forEach: ('value, 'id) t -> ('value -> unit ) ->  unit
 (** [forEach s f] applies [f] in turn to all elements of [s].
     In increasing order
@@ -245,8 +245,8 @@ val forEach: ('value, 'id) t -> ('value -> unit ) ->  unit
     ]}
 *)
 
-val reduceU: ('value, 'id) t -> 'a  -> ('a -> 'value -> 'a [@bs]) ->  'a
-val reduce: ('value, 'id) t -> 'a  -> ('a -> 'value -> 'a ) ->  'a
+val reduceU: ('value, 'id) t -> 'a  -> ('a -> 'value -> 'a [@bs]) ->  'a (* [@@dead "reduceU"] *)
+val reduce: ('value, 'id) t -> 'a  -> ('a -> 'value -> 'a ) ->  'a (* [@@dead "reduce"] *)
 (** In increasing order.
 
     @example {[
@@ -255,23 +255,23 @@ val reduce: ('value, 'id) t -> 'a  -> ('a -> 'value -> 'a ) ->  'a
     ]}
 *)
 
-val everyU: ('value, 'id) t -> ('value -> bool [@bs]) -> bool
+val everyU: ('value, 'id) t -> ('value -> bool [@bs]) -> bool (* [@@dead "everyU"] *)
 val every: ('value, 'id) t -> ('value -> bool ) -> bool
 (** [every p s] checks if all elements of the set
     satisfy the predicate [p]. Order unspecified.
 *)
 
-val someU: ('value, 'id) t ->  ('value -> bool [@bs]) -> bool
+val someU: ('value, 'id) t ->  ('value -> bool [@bs]) -> bool (* [@@dead "someU"] *)
 val some: ('value, 'id) t ->  ('value -> bool ) -> bool
 (** [some p s] checks if at least one element of
     the set satisfies the predicate [p]. *)
 
-val keepU: ('value, 'id) t ->  ('value -> bool [@bs]) -> ('value, 'id) t
+val keepU: ('value, 'id) t ->  ('value -> bool [@bs]) -> ('value, 'id) t (* [@@dead "keepU"] *)
 val keep: ('value, 'id) t ->  ('value -> bool ) -> ('value, 'id) t
 (** [keep m p] returns the set of all elements in [s]
     that satisfy predicate [p]. *)
 
-val partitionU: ('value, 'id) t -> ('value -> bool [@bs]) ->  ('value, 'id) t * ('value, 'id) t
+val partitionU: ('value, 'id) t -> ('value -> bool [@bs]) ->  ('value, 'id) t * ('value, 'id) t (* [@@dead "partitionU"] *)
 val partition: ('value, 'id) t -> ('value -> bool) ->  ('value, 'id) t * ('value, 'id) t
 (** [partition m p] returns a pair of sets [(s1, s2)], where
     [s1] is the set of all the elements of [s] that satisfy the
@@ -372,7 +372,7 @@ val getData: ('value, 'id) t  -> ('value, 'id) Belt_SetDict.t
     without boxing
 *)
 
-val getId: ('value, 'id) t  -> ('value, 'id) id
+val getId: ('value, 'id) t  -> ('value, 'id) id (* [@@dead "getId"] *)
 (** [getId s0]
 
     {b Advanced usage only}
@@ -380,11 +380,10 @@ val getId: ('value, 'id) t  -> ('value, 'id) id
     @return the identity of [s0]
 *)
 
-val packIdData: id:('value, 'id) id -> data:('value, 'id) Belt_SetDict.t -> ('value, 'id) t
+val packIdData: id:('value, 'id) id -> data:('value, 'id) Belt_SetDict.t -> ('value, 'id) t (* [@@dead "packIdData"] *)
 (** [packIdData ~id ~data]
 
     {b Advanced usage only}
 
     @return the packed collection
 *)
-

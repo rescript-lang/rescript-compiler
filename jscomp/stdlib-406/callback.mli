@@ -20,7 +20,7 @@
    OCaml functions, or raise registered OCaml exceptions.
 *)
 
-val register : string -> 'a -> unit
+val register : string -> 'a -> unit (* [@@dead "register"] *)
 (** [Callback.register n v] registers the value [v] under
    the name [n]. C code can later retrieve a handle to [v]
    by calling [caml_named_value(n)]. *)

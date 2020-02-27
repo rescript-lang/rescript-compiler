@@ -36,11 +36,11 @@ val fromArray: 'a array -> 'a t
 val add: 'a t -> 'a -> unit
 (** [add q x] adds the element [x] at the end of the queue [q]. *)
     
-val peek: 'a t -> 'a option
+val peek: 'a t -> 'a option (* [@@dead "peek"] *)
 (** [peekOpt q] returns the first element in queue [q], without removing
     it from the queue. *)
 
-val peekUndefined: 'a t -> 'a Js.undefined
+val peekUndefined: 'a t -> 'a Js.undefined (* [@@dead "peekUndefined"] *)
 (** [peekUndefined q] returns [undefined] if not found *)
 
 val peekExn: 'a t -> 'a 
@@ -48,10 +48,10 @@ val peekExn: 'a t -> 'a
 
     {b raise} an exception if [q] is empty *)
 
-val pop: 'a t -> 'a option 
+val pop: 'a t -> 'a option  (* [@@dead "pop"] *)
 (** [pop q] removes and returns the first element in queue [q].*)
 
-val popUndefined: 'a t -> 'a Js.undefined
+val popUndefined: 'a t -> 'a Js.undefined (* [@@dead "popUndefined"] *)
 (** [popUndefined q] removes and returns the first element in queue [q].
     it will return undefined if it is already empty
 *)
@@ -71,16 +71,16 @@ val copy: 'a t -> 'a t
 val size: 'a t -> int
 (** @return the number of elements in a queue. *)
 
-val mapU: 'a t -> ('a -> 'b [@bs]) -> 'b t
+val mapU: 'a t -> ('a -> 'b [@bs]) -> 'b t (* [@@dead "mapU"] *)
 val map: 'a t -> ('a -> 'b ) -> 'b t
 
-val forEachU: 'a t -> ('a -> unit [@bs]) -> unit
+val forEachU: 'a t -> ('a -> unit [@bs]) -> unit (* [@@dead "forEachU"] *)
 val forEach: 'a t -> ('a -> unit ) -> unit
 (** [forEach q f] applies [f] in turn to all elements of [q],
     from the least recently entered to the most recently entered.
     The queue itself is unchanged. *)
 
-val reduceU: 'a t -> 'b -> ('b -> 'a -> 'b [@bs])  ->  'b
+val reduceU: 'a t -> 'b -> ('b -> 'a -> 'b [@bs])  ->  'b (* [@@dead "reduceU"] *)
 val reduce: 'a t -> 'b -> ('b -> 'a -> 'b )  ->  'b
 (** [reduce q accu f] is equivalent to [List.reduce l accu f],
     where [l] is the list of [q]'s elements. The queue remains

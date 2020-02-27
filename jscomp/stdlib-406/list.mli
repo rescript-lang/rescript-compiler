@@ -29,21 +29,21 @@
 val length : 'a list -> int
 (** Return the length (number of elements) of the given list. *)
 
-val compare_lengths : 'a list -> 'b list -> int
+val compare_lengths : 'a list -> 'b list -> int (* [@@dead "compare_lengths"] *)
 (** Compare the lengths of two lists. [compare_lengths l1 l2] is
    equivalent to [compare (length l1) (length l2)], except that
    the computation stops after itering on the shortest list.
    @since 4.05.0
  *)
 
-val compare_length_with : 'a list -> int -> int
+val compare_length_with : 'a list -> int -> int (* [@@dead "compare_length_with"] *)
 (** Compare the length of a list to an integer. [compare_length_with l n] is
    equivalent to [compare (length l) n], except that
    the computation stops after at most [n] iterations on the list.
    @since 4.05.0
 *)
 
-val cons : 'a -> 'a list -> 'a list
+val cons : 'a -> 'a list -> 'a list (* [@@dead "cons"] *)
 (** [cons x xs] is [x :: xs]
     @since 4.03.0
 *)
@@ -56,13 +56,13 @@ val tl : 'a list -> 'a list
 (** Return the given list without its first element. Raise
     [Failure "tl"] if the list is empty. *)
 
-val nth: 'a list -> int -> 'a
+val nth: 'a list -> int -> 'a (* [@@dead "nth"] *)
 (** Return the [n]-th element of the given list.
    The first element (head of the list) is at position 0.
    Raise [Failure "nth"] if the list is too short.
    Raise [Invalid_argument "List.nth"] if [n] is negative. *)
 
-val nth_opt: 'a list -> int -> 'a option
+val nth_opt: 'a list -> int -> 'a option (* [@@dead "nth_opt"] *)
 (** Return the [n]-th element of the given list.
     The first element (head of the list) is at position 0.
     Return [None] if the list is too short.
@@ -73,14 +73,14 @@ val nth_opt: 'a list -> int -> 'a option
 val rev : 'a list -> 'a list
 (** List reversal. *)
 
-val init : int -> (int -> 'a) -> 'a list
+val init : int -> (int -> 'a) -> 'a list (* [@@dead "init"] *)
 (** [List.init len f] is [f 0; f 1; ...; f (len-1)], evaluated left to right.
 
     @raise Invalid_argument if len < 0.
     @since 4.06.0
 *)
 
-val append : 'a list -> 'a list -> 'a list
+val append : 'a list -> 'a list -> 'a list (* [@@dead "append"] *)
 (** Concatenate two lists.  Same as the infix operator [@].
    Not tail-recursive (length of the first argument).  *)
 
@@ -126,7 +126,7 @@ val mapi : (int -> 'a -> 'b) -> 'a list -> 'b list
    @since 4.00.0
 *)
 
-val rev_map : ('a -> 'b) -> 'a list -> 'b list
+val rev_map : ('a -> 'b) -> 'a list -> 'b list (* [@@dead "rev_map"] *)
 (** [List.rev_map f l] gives the same result as
    {!List.rev}[ (]{!List.map}[ f l)], but is tail-recursive and
    more efficient. *)
@@ -149,24 +149,24 @@ val iter2 : ('a -> 'b -> unit) -> 'a list -> 'b list -> unit
    Raise [Invalid_argument] if the two lists are determined
    to have different lengths. *)
 
-val map2 : ('a -> 'b -> 'c) -> 'a list -> 'b list -> 'c list
+val map2 : ('a -> 'b -> 'c) -> 'a list -> 'b list -> 'c list (* [@@dead "map2"] *)
 (** [List.map2 f [a1; ...; an] [b1; ...; bn]] is
    [[f a1 b1; ...; f an bn]].
    Raise [Invalid_argument] if the two lists are determined
    to have different lengths.  Not tail-recursive. *)
 
-val rev_map2 : ('a -> 'b -> 'c) -> 'a list -> 'b list -> 'c list
+val rev_map2 : ('a -> 'b -> 'c) -> 'a list -> 'b list -> 'c list (* [@@dead "rev_map2"] *)
 (** [List.rev_map2 f l1 l2] gives the same result as
    {!List.rev}[ (]{!List.map2}[ f l1 l2)], but is tail-recursive and
    more efficient. *)
 
-val fold_left2 : ('a -> 'b -> 'c -> 'a) -> 'a -> 'b list -> 'c list -> 'a
+val fold_left2 : ('a -> 'b -> 'c -> 'a) -> 'a -> 'b list -> 'c list -> 'a (* [@@dead "fold_left2"] *)
 (** [List.fold_left2 f a [b1; ...; bn] [c1; ...; cn]] is
    [f (... (f (f a b1 c1) b2 c2) ...) bn cn].
    Raise [Invalid_argument] if the two lists are determined
    to have different lengths. *)
 
-val fold_right2 : ('a -> 'b -> 'c -> 'c) -> 'a list -> 'b list -> 'c -> 'c
+val fold_right2 : ('a -> 'b -> 'c -> 'c) -> 'a list -> 'b list -> 'c -> 'c (* [@@dead "fold_right2"] *)
 (** [List.fold_right2 f [a1; ...; an] [b1; ...; bn] c] is
    [f a1 b1 (f a2 b2 (... (f an bn c) ...))].
    Raise [Invalid_argument] if the two lists are determined
@@ -176,7 +176,7 @@ val fold_right2 : ('a -> 'b -> 'c -> 'c) -> 'a list -> 'b list -> 'c -> 'c
 (** {1 List scanning} *)
 
 
-val for_all : ('a -> bool) -> 'a list -> bool
+val for_all : ('a -> bool) -> 'a list -> bool (* [@@dead "for_all"] *)
 (** [for_all p [a1; ...; an]] checks if all elements of the list
    satisfy the predicate [p]. That is, it returns
    [(p a1) && (p a2) && ... && (p an)]. *)
@@ -186,12 +186,12 @@ val exists : ('a -> bool) -> 'a list -> bool
    the list satisfies the predicate [p]. That is, it returns
    [(p a1) || (p a2) || ... || (p an)]. *)
 
-val for_all2 : ('a -> 'b -> bool) -> 'a list -> 'b list -> bool
+val for_all2 : ('a -> 'b -> bool) -> 'a list -> 'b list -> bool (* [@@dead "for_all2"] *)
 (** Same as {!List.for_all}, but for a two-argument predicate.
    Raise [Invalid_argument] if the two lists are determined
    to have different lengths. *)
 
-val exists2 : ('a -> 'b -> bool) -> 'a list -> 'b list -> bool
+val exists2 : ('a -> 'b -> bool) -> 'a list -> 'b list -> bool (* [@@dead "exists2"] *)
 (** Same as {!List.exists}, but for a two-argument predicate.
    Raise [Invalid_argument] if the two lists are determined
    to have different lengths. *)
@@ -200,7 +200,7 @@ val mem : 'a -> 'a list -> bool
 (** [mem a l] is true if and only if [a] is equal
    to an element of [l]. *)
 
-val memq : 'a -> 'a list -> bool
+val memq : 'a -> 'a list -> bool (* [@@dead "memq"] *)
 (** Same as {!List.mem}, but uses physical equality instead of structural
    equality to compare list elements. *)
 
@@ -214,7 +214,7 @@ val find : ('a -> bool) -> 'a list -> 'a
    Raise [Not_found] if there is no value that satisfies [p] in the
    list [l]. *)
 
-val find_opt: ('a -> bool) -> 'a list -> 'a option
+val find_opt: ('a -> bool) -> 'a list -> 'a option (* [@@dead "find_opt"] *)
 (** [find_opt p l] returns the first element of the list [l] that
     satisfies the predicate [p], or [None] if there is no value that
     satisfies [p] in the list [l].
@@ -225,10 +225,10 @@ val filter : ('a -> bool) -> 'a list -> 'a list
    that satisfy the predicate [p].  The order of the elements
    in the input list is preserved.  *)
 
-val find_all : ('a -> bool) -> 'a list -> 'a list
+val find_all : ('a -> bool) -> 'a list -> 'a list (* [@@dead "find_all"] *)
 (** [find_all] is another name for {!List.filter}. *)
 
-val partition : ('a -> bool) -> 'a list -> 'a list * 'a list
+val partition : ('a -> bool) -> 'a list -> 'a list * 'a list (* [@@dead "partition"] *)
 (** [partition p l] returns a pair of lists [(l1, l2)], where
    [l1] is the list of all the elements of [l] that
    satisfy the predicate [p], and [l2] is the list of all the
@@ -247,7 +247,7 @@ val assoc : 'a -> ('a * 'b) list -> 'b
    Raise [Not_found] if there is no value associated with [a] in the
    list [l]. *)
 
-val assoc_opt: 'a -> ('a * 'b) list -> 'b option
+val assoc_opt: 'a -> ('a * 'b) list -> 'b option (* [@@dead "assoc_opt"] *)
 (** [assoc_opt a l] returns the value associated with key [a] in the list of
    pairs [l]. That is,
    [assoc_opt a [ ...; (a,b); ...] = b]
@@ -260,7 +260,7 @@ val assq : 'a -> ('a * 'b) list -> 'b
 (** Same as {!List.assoc}, but uses physical equality instead of structural
    equality to compare keys. *)
 
-val assq_opt : 'a -> ('a * 'b) list -> 'b option
+val assq_opt : 'a -> ('a * 'b) list -> 'b option (* [@@dead "assq_opt"] *)
 (** Same as {!List.assoc_opt}, but uses physical equality instead of structural
     equality to compare keys.
     @since 4.05 *)
@@ -269,16 +269,16 @@ val mem_assoc : 'a -> ('a * 'b) list -> bool
 (** Same as {!List.assoc}, but simply return true if a binding exists,
    and false if no bindings exist for the given key. *)
 
-val mem_assq : 'a -> ('a * 'b) list -> bool
+val mem_assq : 'a -> ('a * 'b) list -> bool (* [@@dead "mem_assq"] *)
 (** Same as {!List.mem_assoc}, but uses physical equality instead of
    structural equality to compare keys. *)
 
-val remove_assoc : 'a -> ('a * 'b) list -> ('a * 'b) list
+val remove_assoc : 'a -> ('a * 'b) list -> ('a * 'b) list (* [@@dead "remove_assoc"] *)
 (** [remove_assoc a l] returns the list of
    pairs [l] without the first pair with key [a], if any.
    Not tail-recursive. *)
 
-val remove_assq : 'a -> ('a * 'b) list -> ('a * 'b) list
+val remove_assq : 'a -> ('a * 'b) list -> ('a * 'b) list (* [@@dead "remove_assq"] *)
 (** Same as {!List.remove_assoc}, but uses physical equality instead
    of structural equality to compare keys.  Not tail-recursive. *)
 
@@ -292,7 +292,7 @@ val split : ('a * 'b) list -> 'a list * 'b list
    Not tail-recursive.
 *)
 
-val combine : 'a list -> 'b list -> ('a * 'b) list
+val combine : 'a list -> 'b list -> ('a * 'b) list (* [@@dead "combine"] *)
 (** Transform a pair of lists into a list of pairs:
    [combine [a1; ...; an] [b1; ...; bn]] is
    [[(a1,b1); ...; (an,bn)]].
@@ -319,7 +319,7 @@ val sort : ('a -> 'a -> int) -> 'a list -> 'a list
    heap space and logarithmic stack space.
 *)
 
-val stable_sort : ('a -> 'a -> int) -> 'a list -> 'a list
+val stable_sort : ('a -> 'a -> int) -> 'a list -> 'a list (* [@@dead "stable_sort"] *)
 (** Same as {!List.sort}, but the sorting algorithm is guaranteed to
    be stable (i.e. elements that compare equal are kept in their
    original order) .
@@ -328,7 +328,7 @@ val stable_sort : ('a -> 'a -> int) -> 'a list -> 'a list
    heap space and logarithmic stack space.
 *)
 
-val fast_sort : ('a -> 'a -> int) -> 'a list -> 'a list
+val fast_sort : ('a -> 'a -> int) -> 'a list -> 'a list (* [@@dead "fast_sort"] *)
 (** Same as {!List.sort} or {!List.stable_sort}, whichever is faster
     on typical input. *)
 
@@ -336,7 +336,7 @@ val sort_uniq : ('a -> 'a -> int) -> 'a list -> 'a list
 (** Same as {!List.sort}, but also remove duplicates.
     @since 4.02.0 *)
 
-val merge : ('a -> 'a -> int) -> 'a list -> 'a list -> 'a list
+val merge : ('a -> 'a -> int) -> 'a list -> 'a list -> 'a list (* [@@dead "merge"] *)
 (** Merge two lists:
     Assuming that [l1] and [l2] are sorted according to the
     comparison function [cmp], [merge cmp l1 l2] will return a

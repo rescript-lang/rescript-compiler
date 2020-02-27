@@ -21,7 +21,7 @@ val init : int -> unit
 (** Initialize the generator, using the argument as a seed.
      The same seed will always yield the same sequence of numbers. *)
 
-val full_init : int array -> unit
+val full_init : int array -> unit (* [@@dead "full_init"] *)
 (** Same as {!Random.init} but takes more data as seed. *)
 
 val self_init : unit -> unit
@@ -46,7 +46,7 @@ val int32 : Int32.t -> Int32.t
 (** [Random.int32 bound] returns a random integer between 0 (inclusive)
      and [bound] (exclusive).  [bound] must be greater than 0. *)
 
-val nativeint : Nativeint.t -> Nativeint.t
+val nativeint : Nativeint.t -> Nativeint.t (* [@@dead "nativeint"] *)
 (** [Random.nativeint bound] returns a random integer between 0 (inclusive)
      and [bound] (exclusive).  [bound] must be greater than 0. *)
 
@@ -77,31 +77,31 @@ module State : sig
   type t
   (** The type of PRNG states. *)
 
-  val make : int array -> t
+  val make : int array -> t (* [@@dead "State.make"] *)
   (** Create a new state and initialize it with the given seed. *)
 
   val make_self_init : unit -> t
   (** Create a new state and initialize it with a system-dependent
       low-entropy seed. *)
 
-  val copy : t -> t
+  val copy : t -> t (* [@@dead "State.copy"] *)
   (** Return a copy of the given state. *)
 
   val bits : t -> int
-  val int : t -> int -> int
-  val int32 : t -> Int32.t -> Int32.t
-  val nativeint : t -> Nativeint.t -> Nativeint.t
-  val int64 : t -> Int64.t -> Int64.t
-  val float : t -> float -> float
-  val bool : t -> bool
+  val int : t -> int -> int (* [@@dead "State.int"] *)
+  val int32 : t -> Int32.t -> Int32.t (* [@@dead "State.int32"] *)
+  val nativeint : t -> Nativeint.t -> Nativeint.t (* [@@dead "State.nativeint"] *)
+  val int64 : t -> Int64.t -> Int64.t (* [@@dead "State.int64"] *)
+  val float : t -> float -> float (* [@@dead "State.float"] *)
+  val bool : t -> bool (* [@@dead "State.bool"] *)
   (** These functions are the same as the basic functions, except that they
       use (and update) the given PRNG state instead of the default one.
   *)
 end
 
 
-val get_state : unit -> State.t
+val get_state : unit -> State.t (* [@@dead "get_state"] *)
 (** Return the current state of the generator used by the basic functions. *)
 
-val set_state : State.t -> unit
+val set_state : State.t -> unit (* [@@dead "set_state"] *)
 (** Set the state of the generator used by the basic functions. *)

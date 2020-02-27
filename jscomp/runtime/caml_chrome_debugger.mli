@@ -24,13 +24,13 @@
 
 type obj = Caml_obj_extern.t
 
-val __ : int -> obj -> obj
+val __ : int -> obj -> obj (* [@@dead "__"] *)
 
 
-val variant : 'a -> int ->  obj -> obj
+val variant : 'a -> int ->  obj -> obj (* [@@dead "variant"] *)
 
-val simpleVariant : 'a -> obj -> obj
+val simpleVariant : 'a -> obj -> obj (* [@@dead "simpleVariant"] *)
 
 
 
-val polyVar : 'a -> obj -> obj
+val polyVar : 'a -> obj -> obj (* [@@dead "polyVar"] *)

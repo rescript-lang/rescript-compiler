@@ -46,9 +46,9 @@ external isCamlExceptionOrOpenVariant:
 
 (** Raise Js exception Error object with stacktrace *)
 val raiseError : string -> 'a
-val raiseEvalError : string -> 'a
-val raiseRangeError : string -> 'a
-val raiseReferenceError :  string -> 'a
-val raiseSyntaxError : string -> 'a
-val raiseTypeError : string -> 'a
-val raiseUriError :  string -> 'a
+val raiseEvalError : string -> 'a (* [@@dead "raiseEvalError"] *)
+val raiseRangeError : string -> 'a (* [@@dead "raiseRangeError"] *)
+val raiseReferenceError :  string -> 'a (* [@@dead "raiseReferenceError"] *)
+val raiseSyntaxError : string -> 'a (* [@@dead "raiseSyntaxError"] *)
+val raiseTypeError : string -> 'a (* [@@dead "raiseTypeError"] *)
+val raiseUriError :  string -> 'a (* [@@dead "raiseUriError"] *)

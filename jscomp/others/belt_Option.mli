@@ -27,10 +27,10 @@
     Utilities for option data type
 *)
 
-val forEachU : 'a option -> ('a -> unit [@bs]) -> unit
+val forEachU : 'a option -> ('a -> unit [@bs]) -> unit (* [@@dead "forEachU"] *)
 (** Uncurried version of [forEach] *)
 
-val forEach : 'a option -> ('a -> unit) -> unit
+val forEach : 'a option -> ('a -> unit) -> unit (* [@@dead "forEach"] *)
 (**
   [forEach optionValue f]
   
@@ -42,7 +42,7 @@ val forEach : 'a option -> ('a -> unit) -> unit
   ]}
 *)
 
-val getExn : 'a option -> 'a
+val getExn : 'a option -> 'a (* [@@dead "getExn"] *)
 (** [getExn optionalValue]
   Returns [value] if [optionalValue] is [Some value], otherwise raises [getExn]
   
@@ -52,10 +52,10 @@ val getExn : 'a option -> 'a
   ]}
 *)
 
-val mapWithDefaultU : 'a option -> 'b -> ('a -> 'b [@bs]) -> 'b
+val mapWithDefaultU : 'a option -> 'b -> ('a -> 'b [@bs]) -> 'b (* [@@dead "mapWithDefaultU"] *)
 (** Uncurried version of [mapWithDefault] *)
 
-val mapWithDefault : 'a option -> 'b -> ('a -> 'b) -> 'b
+val mapWithDefault : 'a option -> 'b -> ('a -> 'b) -> 'b (* [@@dead "mapWithDefault"] *)
 (**
   [mapWithDefault optionValue default f]
   
@@ -67,10 +67,10 @@ val mapWithDefault : 'a option -> 'b -> ('a -> 'b) -> 'b
   ]}
 *)
 
-val mapU : 'a option -> ('a -> 'b [@bs]) -> 'b option
+val mapU : 'a option -> ('a -> 'b [@bs]) -> 'b option (* [@@dead "mapU"] *)
 (** Uncurried version of [map] *)
 
-val map : 'a option -> ('a -> 'b) -> 'b option
+val map : 'a option -> ('a -> 'b) -> 'b option (* [@@dead "map"] *)
 (**
   [map optionValue f]
   
@@ -82,10 +82,10 @@ val map : 'a option -> ('a -> 'b) -> 'b option
   ]}
 *)
 
-val flatMapU : 'a option -> ('a -> 'b option [@bs]) -> 'b option
+val flatMapU : 'a option -> ('a -> 'b option [@bs]) -> 'b option (* [@@dead "flatMapU"] *)
 (** Uncurried version of [flatMap] *)
 
-val flatMap : 'a option -> ('a -> 'b option) -> 'b option
+val flatMap : 'a option -> ('a -> 'b option) -> 'b option (* [@@dead "flatMap"] *)
 (**
   [flatMap optionValue f]
   
@@ -105,7 +105,7 @@ val flatMap : 'a option -> ('a -> 'b option) -> 'b option
   ]}
 *)
 
-val getWithDefault : 'a option -> 'a -> 'a
+val getWithDefault : 'a option -> 'a -> 'a (* [@@dead "getWithDefault"] *)
 (**
   [getWithDefault optionalValue default]
   
@@ -117,22 +117,22 @@ val getWithDefault : 'a option -> 'a -> 'a
   ]}
 *)
 
-val isSome : 'a option -> bool
+val isSome : 'a option -> bool (* [@@dead "isSome"] *)
 (**
   Returns [true] if the argument is [Some value], [false] otherwise
 *)
 
-val isNone : 'a option -> bool
+val isNone : 'a option -> bool (* [@@dead "isNone"] *)
 (**
   Returns [true] if the argument is [None], [false] otherwise
 *)
 
-val eqU : 'a option -> 'b option -> ('a -> 'b -> bool [@bs]) -> bool
+val eqU : 'a option -> 'b option -> ('a -> 'b -> bool [@bs]) -> bool (* [@@dead "eqU"] *)
 (**
   Uncurried version of [eq]
 *)
 
-val eq : 'a option -> 'b option -> ('a -> 'b -> bool) -> bool
+val eq : 'a option -> 'b option -> ('a -> 'b -> bool) -> bool (* [@@dead "eq"] *)
 (**
   [eq optValue1 optvalue2 predicate]
   
@@ -154,10 +154,10 @@ val eq : 'a option -> 'b option -> ('a -> 'b -> bool) -> bool
   ]}
 *)
     
-val cmpU : 'a option -> 'b option -> ('a -> 'b -> int [@bs]) -> int
+val cmpU : 'a option -> 'b option -> ('a -> 'b -> int [@bs]) -> int (* [@@dead "cmpU"] *)
 (** Uncurried version of [cmp] *)
 
-val cmp : 'a option -> 'b option -> ('a -> 'b -> int) -> int
+val cmp : 'a option -> 'b option -> ('a -> 'b -> int) -> int (* [@@dead "cmp"] *)
 (**
   [cmp optValue1 optvalue2 comparisonFcn]
   

@@ -77,10 +77,10 @@ module type S = sig
 
   include Hashtbl.S
 
-  val clean: 'a t -> unit
+  val clean: 'a t -> unit (* [@@dead "K1.Make.clean"] *)
   (** remove all dead bindings. Done automatically during automatic resizing. *)
 
-  val stats_alive: 'a t -> Hashtbl.statistics
+  val stats_alive: 'a t -> Hashtbl.statistics (* [@@dead "K1.Make.stats_alive"] *)
   (** same as {!Hashtbl.SeededS.stats} but only count the alive bindings *)
 end
 (** The output signature of the functor {!K1.Make} and {!K2.Make}.
@@ -91,10 +91,10 @@ end
 
 module type SeededS = sig
   include Hashtbl.SeededS
-  val clean: 'a t -> unit
+  val clean: 'a t -> unit (* [@@dead "GenHashTable.MakeSeeded.clean"] *)
   (** remove all dead bindings. Done automatically during automatic resizing. *)
 
-  val stats_alive: 'a t -> Hashtbl.statistics
+  val stats_alive: 'a t -> Hashtbl.statistics (* [@@dead "GenHashTable.MakeSeeded.stats_alive"] *)
   (** same as {!Hashtbl.SeededS.stats} but only count the alive bindings *)
 end
 (** The output signature of the functor {!K1.MakeSeeded} and {!K2.MakeSeeded}.
@@ -103,15 +103,15 @@ end
 module K1 : sig
   type ('k,'d) t (** an ephemeron with one key *)
 
-  val create: unit -> ('k,'d) t
+  val create: unit -> ('k,'d) t (* [@@dead "K1.create"] *)
   (** [Ephemeron.K1.create ()] creates an ephemeron with one key. The
       data and the key are empty *)
 
-  val get_key: ('k,'d) t -> 'k option
+  val get_key: ('k,'d) t -> 'k option (* [@@dead "K1.get_key"] *)
   (** [Ephemeron.K1.get_key eph] returns [None] if the key of [eph] is
       empty, [Some x] (where [x] is the key) if it is full. *)
 
-  val get_key_copy: ('k,'d) t -> 'k option
+  val get_key_copy: ('k,'d) t -> 'k option (* [@@dead "K1.get_key_copy"] *)
   (** [Ephemeron.K1.get_key_copy eph] returns [None] if the key of [eph] is
       empty, [Some x] (where [x] is a (shallow) copy of the key) if
       it is full. This function has the same GC friendliness as {!Weak.get_copy}
@@ -119,17 +119,17 @@ module K1 : sig
       If the element is a custom block it is not copied.
   *)
 
-  val set_key: ('k,'d) t -> 'k -> unit
+  val set_key: ('k,'d) t -> 'k -> unit (* [@@dead "K1.set_key"] *)
   (** [Ephemeron.K1.set_key eph el] sets the key of [eph] to be a
       (full) key to [el]
   *)
 
-  val unset_key: ('k,'d) t -> unit
+  val unset_key: ('k,'d) t -> unit (* [@@dead "K1.unset_key"] *)
   (** [Ephemeron.K1.unset_key eph el] sets the key of [eph] to be an
       empty key. Since there is only one key, the ephemeron starts
       behaving like a reference on the data. *)
 
-  val check_key: ('k,'d) t -> bool
+  val check_key: ('k,'d) t -> bool (* [@@dead "K1.check_key"] *)
   (** [Ephemeron.K1.check_key eph] returns [true] if the key of the [eph]
       is full, [false] if it is empty. Note that even if
       [Ephemeron.K1.check_key eph] returns [true], a subsequent
@@ -137,18 +137,18 @@ module K1 : sig
   *)
 
 
-  val blit_key : ('k,_) t -> ('k,_) t -> unit
+  val blit_key : ('k,_) t -> ('k,_) t -> unit (* [@@dead "K1.blit_key"] *)
   (** [Ephemeron.K1.blit_key eph1 eph2] sets the key of [eph2] with
       the key of [eph1]. Contrary to using {!Ephemeron.K1.get_key}
       followed by {!Ephemeron.K1.set_key} or {!Ephemeron.K1.unset_key}
       this function does not prevent the incremental GC from erasing
       the value in its current cycle. *)
 
-  val get_data: ('k,'d) t -> 'd option
+  val get_data: ('k,'d) t -> 'd option (* [@@dead "K1.get_data"] *)
   (** [Ephemeron.K1.get_data eph] returns [None] if the data of [eph] is
       empty, [Some x] (where [x] is the data) if it is full. *)
 
-  val get_data_copy: ('k,'d) t -> 'd option
+  val get_data_copy: ('k,'d) t -> 'd option (* [@@dead "K1.get_data_copy"] *)
   (** [Ephemeron.K1.get_data_copy eph] returns [None] if the data of [eph] is
       empty, [Some x] (where [x] is a (shallow) copy of the data) if
       it is full. This function has the same GC friendliness as {!Weak.get_copy}
@@ -156,24 +156,24 @@ module K1 : sig
       If the element is a custom block it is not copied.
   *)
 
-  val set_data: ('k,'d) t -> 'd -> unit
+  val set_data: ('k,'d) t -> 'd -> unit (* [@@dead "K1.set_data"] *)
   (** [Ephemeron.K1.set_data eph el] sets the data of [eph] to be a
       (full) data to [el]
   *)
 
-  val unset_data: ('k,'d) t -> unit
+  val unset_data: ('k,'d) t -> unit (* [@@dead "K1.unset_data"] *)
   (** [Ephemeron.K1.unset_data eph el] sets the key of [eph] to be an
       empty key. The ephemeron starts behaving like a weak pointer.
   *)
 
-  val check_data: ('k,'d) t -> bool
+  val check_data: ('k,'d) t -> bool (* [@@dead "K1.check_data"] *)
   (** [Ephemeron.K1.check_data eph] returns [true] if the data of the [eph]
       is full, [false] if it is empty. Note that even if
       [Ephemeron.K1.check_data eph] returns [true], a subsequent
       {!Ephemeron.K1.get_data}[eph] can return [None].
   *)
 
-  val blit_data : (_,'d) t -> (_,'d) t -> unit
+  val blit_data : (_,'d) t -> (_,'d) t -> unit (* [@@dead "K1.blit_data"] *)
   (** [Ephemeron.K1.blit_data eph1 eph2] sets the data of [eph2] with
       the data of [eph1]. Contrary to using {!Ephemeron.K1.get_data}
       followed by {!Ephemeron.K1.set_data} or {!Ephemeron.K1.unset_data}
@@ -192,64 +192,64 @@ end
 module K2 : sig
   type ('k1,'k2,'d) t (** an ephemeron with two keys *)
 
-  val create: unit -> ('k1,'k2,'d) t
+  val create: unit -> ('k1,'k2,'d) t (* [@@dead "K2.create"] *)
   (** Same as {!Ephemeron.K1.create} *)
 
-  val get_key1: ('k1,'k2,'d) t -> 'k1 option
+  val get_key1: ('k1,'k2,'d) t -> 'k1 option (* [@@dead "K2.get_key1"] *)
   (** Same as {!Ephemeron.K1.get_key} *)
 
-  val get_key1_copy: ('k1,'k2,'d) t -> 'k1 option
+  val get_key1_copy: ('k1,'k2,'d) t -> 'k1 option (* [@@dead "K2.get_key1_copy"] *)
   (** Same as {!Ephemeron.K1.get_key_copy} *)
 
-  val set_key1: ('k1,'k2,'d) t -> 'k1 -> unit
+  val set_key1: ('k1,'k2,'d) t -> 'k1 -> unit (* [@@dead "K2.set_key1"] *)
   (** Same as {!Ephemeron.K1.set_key} *)
 
-  val unset_key1: ('k1,'k2,'d) t -> unit
+  val unset_key1: ('k1,'k2,'d) t -> unit (* [@@dead "K2.unset_key1"] *)
   (** Same as {!Ephemeron.K1.unset_key} *)
 
-  val check_key1: ('k1,'k2,'d) t ->  bool
+  val check_key1: ('k1,'k2,'d) t ->  bool (* [@@dead "K2.check_key1"] *)
   (** Same as {!Ephemeron.K1.check_key} *)
 
-  val get_key2: ('k1,'k2,'d) t -> 'k2 option
+  val get_key2: ('k1,'k2,'d) t -> 'k2 option (* [@@dead "K2.get_key2"] *)
   (** Same as {!Ephemeron.K1.get_key} *)
 
-  val get_key2_copy: ('k1,'k2,'d) t -> 'k2 option
+  val get_key2_copy: ('k1,'k2,'d) t -> 'k2 option (* [@@dead "K2.get_key2_copy"] *)
   (** Same as {!Ephemeron.K1.get_key_copy} *)
 
-  val set_key2: ('k1,'k2,'d) t -> 'k2 -> unit
+  val set_key2: ('k1,'k2,'d) t -> 'k2 -> unit (* [@@dead "K2.set_key2"] *)
   (** Same as {!Ephemeron.K1.set_key} *)
 
-  val unset_key2: ('k1,'k2,'d) t -> unit
+  val unset_key2: ('k1,'k2,'d) t -> unit (* [@@dead "K2.unset_key2"] *)
   (** Same as {!Ephemeron.K1.unset_key} *)
 
-  val check_key2: ('k1,'k2,'d) t -> bool
+  val check_key2: ('k1,'k2,'d) t -> bool (* [@@dead "K2.check_key2"] *)
   (** Same as {!Ephemeron.K1.check_key} *)
 
-  val blit_key1: ('k1,_,_) t -> ('k1,_,_) t -> unit
+  val blit_key1: ('k1,_,_) t -> ('k1,_,_) t -> unit (* [@@dead "K2.blit_key1"] *)
   (** Same as {!Ephemeron.K1.blit_key} *)
 
-  val blit_key2: (_,'k2,_) t -> (_,'k2,_) t -> unit
+  val blit_key2: (_,'k2,_) t -> (_,'k2,_) t -> unit (* [@@dead "K2.blit_key2"] *)
   (** Same as {!Ephemeron.K1.blit_key} *)
 
-  val blit_key12: ('k1,'k2,_) t -> ('k1,'k2,_) t -> unit
+  val blit_key12: ('k1,'k2,_) t -> ('k1,'k2,_) t -> unit (* [@@dead "K2.blit_key12"] *)
   (** Same as {!Ephemeron.K1.blit_key} *)
 
-  val get_data: ('k1,'k2,'d) t -> 'd option
+  val get_data: ('k1,'k2,'d) t -> 'd option (* [@@dead "K2.get_data"] *)
   (** Same as {!Ephemeron.K1.get_data} *)
 
-  val get_data_copy: ('k1,'k2,'d) t -> 'd option
+  val get_data_copy: ('k1,'k2,'d) t -> 'd option (* [@@dead "K2.get_data_copy"] *)
   (** Same as {!Ephemeron.K1.get_data_copy} *)
 
-  val set_data: ('k1,'k2,'d) t -> 'd -> unit
+  val set_data: ('k1,'k2,'d) t -> 'd -> unit (* [@@dead "K2.set_data"] *)
   (** Same as {!Ephemeron.K1.set_data} *)
 
-  val unset_data: ('k1,'k2,'d) t -> unit
+  val unset_data: ('k1,'k2,'d) t -> unit (* [@@dead "K2.unset_data"] *)
   (** Same as {!Ephemeron.K1.unset_data} *)
 
-  val check_data: ('k1,'k2,'d) t -> bool
+  val check_data: ('k1,'k2,'d) t -> bool (* [@@dead "K2.check_data"] *)
   (** Same as {!Ephemeron.K1.check_data} *)
 
-  val blit_data: ('k1,'k2,'d) t -> ('k1,'k2,'d) t -> unit
+  val blit_data: ('k1,'k2,'d) t -> ('k1,'k2,'d) t -> unit (* [@@dead "K2.blit_data"] *)
   (** Same as {!Ephemeron.K1.blit_data} *)
 
   module Make
@@ -271,43 +271,43 @@ module Kn : sig
   type ('k,'d) t (** an ephemeron with an arbitrary number of keys
                       of the same type *)
 
-  val create: int -> ('k,'d) t
+  val create: int -> ('k,'d) t (* [@@dead "Kn.create"] *)
   (** Same as {!Ephemeron.K1.create} *)
 
-  val get_key: ('k,'d) t -> int -> 'k option
+  val get_key: ('k,'d) t -> int -> 'k option (* [@@dead "Kn.get_key"] *)
   (** Same as {!Ephemeron.K1.get_key} *)
 
-  val get_key_copy: ('k,'d) t -> int -> 'k option
+  val get_key_copy: ('k,'d) t -> int -> 'k option (* [@@dead "Kn.get_key_copy"] *)
   (** Same as {!Ephemeron.K1.get_key_copy} *)
 
-  val set_key: ('k,'d) t -> int -> 'k -> unit
+  val set_key: ('k,'d) t -> int -> 'k -> unit (* [@@dead "Kn.set_key"] *)
   (** Same as {!Ephemeron.K1.set_key} *)
 
-  val unset_key: ('k,'d) t -> int -> unit
+  val unset_key: ('k,'d) t -> int -> unit (* [@@dead "Kn.unset_key"] *)
   (** Same as {!Ephemeron.K1.unset_key} *)
 
-  val check_key: ('k,'d) t -> int ->  bool
+  val check_key: ('k,'d) t -> int ->  bool (* [@@dead "Kn.check_key"] *)
   (** Same as {!Ephemeron.K1.check_key} *)
 
-  val blit_key: ('k,_) t -> int -> ('k,_) t -> int -> int -> unit
+  val blit_key: ('k,_) t -> int -> ('k,_) t -> int -> int -> unit (* [@@dead "Kn.blit_key"] *)
   (** Same as {!Ephemeron.K1.blit_key} *)
 
-  val get_data: ('k,'d) t -> 'd option
+  val get_data: ('k,'d) t -> 'd option (* [@@dead "Kn.get_data"] *)
   (** Same as {!Ephemeron.K1.get_data} *)
 
-  val get_data_copy: ('k,'d) t -> 'd option
+  val get_data_copy: ('k,'d) t -> 'd option (* [@@dead "Kn.get_data_copy"] *)
   (** Same as {!Ephemeron.K1.get_data_copy} *)
 
-  val set_data: ('k,'d) t -> 'd -> unit
+  val set_data: ('k,'d) t -> 'd -> unit (* [@@dead "Kn.set_data"] *)
   (** Same as {!Ephemeron.K1.set_data} *)
 
-  val unset_data: ('k,'d) t -> unit
+  val unset_data: ('k,'d) t -> unit (* [@@dead "Kn.unset_data"] *)
   (** Same as {!Ephemeron.K1.unset_data} *)
 
-  val check_data: ('k,'d) t -> bool
+  val check_data: ('k,'d) t -> bool (* [@@dead "Kn.check_data"] *)
   (** Same as {!Ephemeron.K1.check_data} *)
 
-  val blit_data: ('k,'d) t -> ('k,'d) t -> unit
+  val blit_data: ('k,'d) t -> ('k,'d) t -> unit (* [@@dead "Kn.blit_data"] *)
   (** Same as {!Ephemeron.K1.blit_data} *)
 
   module Make
@@ -329,8 +329,8 @@ module GenHashTable: sig
       automatically remove it. *)
 
   type equal =
-  | ETrue | EFalse
-  | EDead (** the container is dead *)
+  | ETrue | EFalse (* [@@dead "GenHashTable.equal.EFalse"] *)
+  | EDead (** the container is dead *) (* [@@dead "GenHashTable.equal.EDead"] *)
 
   module MakeSeeded(H:
   sig

@@ -71,7 +71,7 @@ val forEach: ('value, 'id) t -> ('value -> unit) -> unit
     In increasing order *)
 
 val reduceU: ('value, 'id) t -> 'a -> ('a -> 'value -> 'a [@bs]) -> 'a
-val reduce: ('value, 'id) t -> 'a -> ('a -> 'value -> 'a) -> 'a
+val reduce: ('value, 'id) t -> 'a -> ('a -> 'value -> 'a) -> 'a (* [@@dead "reduce"] *)
 (** Iterate in increasing order. *)
 
 val everyU: ('value, 'id) t -> ('value -> bool [@bs]) -> bool
@@ -80,17 +80,17 @@ val every: ('value, 'id) t -> ('value -> bool) -> bool
     satisfy the predicate [p]. Order unspecified. *)
 
 val someU: ('value, 'id) t -> ('value -> bool [@bs]) -> bool
-val some: ('value, 'id) t -> ('value -> bool) -> bool
+val some: ('value, 'id) t -> ('value -> bool) -> bool (* [@@dead "some"] *)
 (** [some p s] checks if at least one element of
    the set satisfies the predicate [p]. Oder unspecified. *)
 
 val keepU: ('value, 'id) t -> ('value -> bool [@bs]) -> ('value, 'id) t
-val keep: ('value, 'id) t -> ('value -> bool) -> ('value, 'id) t
+val keep: ('value, 'id) t -> ('value -> bool) -> ('value, 'id) t (* [@@dead "keep"] *)
 (** [keep p s] returns the set of all elements in [s]
    that satisfy predicate [p]. *)
 
 val partitionU: ('value, 'id) t -> ('value -> bool [@bs]) -> ('value, 'id) t * ('value, 'id) t
-val partition: ('value, 'id) t -> ('value -> bool) -> ('value, 'id) t * ('value, 'id) t
+val partition: ('value, 'id) t -> ('value -> bool) -> ('value, 'id) t * ('value, 'id) t (* [@@dead "partition"] *)
 (** [partition p s] returns a pair of sets [(s1, s2)], where
    [s1] is the set of all the elements of [s] that satisfy the
    predicate [p], and [s2] is the set of all the elements of

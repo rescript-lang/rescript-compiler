@@ -56,8 +56,8 @@ external field : t -> int -> t = "%obj_field"
 external set_field : t -> int -> t -> unit = "%obj_set_field"
 external set_tag : t -> int -> unit = "caml_obj_set_tag"
 
-val [@inline always] double_field : t -> int -> float  (* @since 3.11.2 *)
-val [@inline always] set_double_field : t -> int -> float -> unit
+val [@inline always] double_field : t -> int -> float  (* @since 3.11.2 *) (* [@@dead "double_field"] *)
+val [@inline always] set_double_field : t -> int -> float -> unit (* [@@dead "set_double_field"] *)
   (* @since 3.11.2 *)
 external new_block : int -> int -> t = "caml_obj_block"
 external dup : t -> t = "caml_obj_dup"
@@ -65,8 +65,8 @@ external truncate : t -> int -> unit = "caml_obj_truncate"
 external add_offset : t -> Int32.t -> t = "caml_obj_add_offset"
          (* @since 3.12.0 *)
 
-val first_non_constant_constructor_tag : int
-val last_non_constant_constructor_tag : int
+val first_non_constant_constructor_tag : int (* [@@dead "first_non_constant_constructor_tag"] *)
+val last_non_constant_constructor_tag : int (* [@@dead "last_non_constant_constructor_tag"] *)
 
 val lazy_tag : int
 val closure_tag : int
@@ -79,23 +79,23 @@ val string_tag : int   (* both [string] and [bytes] *)
 val double_tag : int
 val double_array_tag : int
 val custom_tag : int
-val final_tag : int
+val final_tag : int (* [@@dead "final_tag"] *)
   [@@ocaml.deprecated "Replaced by custom_tag."]
 
-val int_tag : int
-val out_of_heap_tag : int
-val unaligned_tag : int   (* should never happen @since 3.11.0 *)
+val int_tag : int (* [@@dead "int_tag"] *)
+val out_of_heap_tag : int (* [@@dead "out_of_heap_tag"] *)
+val unaligned_tag : int   (* should never happen @since 3.11.0 *) (* [@@dead "unaligned_tag"] *)
 
-val extension_constructor : 'a -> extension_constructor
-val [@inline always] extension_name : extension_constructor -> string
-val [@inline always] extension_id : extension_constructor -> int
+val extension_constructor : 'a -> extension_constructor (* [@@dead "extension_constructor"] *)
+val [@inline always] extension_name : extension_constructor -> string (* [@@dead "extension_name"] *)
+val [@inline always] extension_id : extension_constructor -> int (* [@@dead "extension_id"] *)
 
 (** The following two functions are deprecated.  Use module {!Marshal}
     instead. *)
 
-val marshal : t -> bytes
+val marshal : t -> bytes (* [@@dead "marshal"] *)
   [@@ocaml.deprecated "Use Marshal.to_bytes instead."]
-val unmarshal : bytes -> int -> t * int
+val unmarshal : bytes -> int -> t * int (* [@@dead "unmarshal"] *)
   [@@ocaml.deprecated "Use Marshal.from_bytes and Marshal.total_size instead."]
 
 module Ephemeron: sig

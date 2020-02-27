@@ -53,12 +53,12 @@
  *)
 
 type extern_flags =
-    No_sharing                          (** Don't preserve sharing *)
-  | Closures                            (** Send function closures *)
-  | Compat_32                           (** Ensure 32-bit compatibility *)
+    No_sharing                          (** Don't preserve sharing *) (* [@@dead "extern_flags.No_sharing"] *)
+  | Closures                            (** Send function closures *) (* [@@dead "extern_flags.Closures"] *)
+  | Compat_32                           (** Ensure 32-bit compatibility *) (* [@@dead "extern_flags.Compat_32"] *)
 (** The flags to the [Marshal.to_*] functions below. *)
 
-val to_channel : out_channel -> 'a -> extern_flags list -> unit
+val to_channel : out_channel -> 'a -> extern_flags list -> unit (* [@@dead "to_channel"] *)
 (** [Marshal.to_channel chan v flags] writes the representation
    of [v] on channel [chan]. The [flags] argument is a
    possibly empty list of flags that governs the marshaling
@@ -124,7 +124,7 @@ external to_string :
 (** Same as [to_bytes] but return the result as a string instead of
     a byte sequence. *)
 
-val to_buffer : bytes -> int -> int -> 'a -> extern_flags list -> int
+val to_buffer : bytes -> int -> int -> 'a -> extern_flags list -> int (* [@@dead "to_buffer"] *)
 (** [Marshal.to_buffer buff ofs len v flags] marshals the value [v],
    storing its byte representation in the sequence [buff],
    starting at index [ofs], and writing at most
@@ -133,7 +133,7 @@ val to_buffer : bytes -> int -> int -> 'a -> extern_flags list -> int
    of [v] does not fit in [len] characters, the exception [Failure]
    is raised. *)
 
-val from_channel : in_channel -> 'a
+val from_channel : in_channel -> 'a (* [@@dead "from_channel"] *)
 (** [Marshal.from_channel chan] reads from channel [chan] the
    byte representation of a structured value, as produced by
    one of the [Marshal.to_*] functions, and reconstructs and
@@ -152,11 +152,11 @@ val from_bytes : bytes -> int -> 'a
    The byte sequence is not mutated.
    @since 4.02.0 *)
 
-val from_string : string -> int -> 'a
+val from_string : string -> int -> 'a (* [@@dead "from_string"] *)
 (** Same as [from_bytes] but take a string as argument instead of a
     byte sequence. *)
 
-val header_size : int
+val header_size : int (* [@@dead "header_size"] *)
 (** The bytes representing a marshaled value are composed of
    a fixed-size header and a variable-sized data part,
    whose size can be determined from the header.
@@ -178,7 +178,7 @@ val header_size : int
    data, then read it, and finally call {!Marshal.from_bytes}
    to unmarshal the value. *)
 
-val data_size : bytes -> int -> int
+val data_size : bytes -> int -> int (* [@@dead "data_size"] *)
 (** See {!Marshal.header_size}.*)
 
 val total_size : bytes -> int -> int

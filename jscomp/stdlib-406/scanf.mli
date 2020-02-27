@@ -107,7 +107,7 @@ type scanbuf = in_channel
     character yet to be read.
 *)
 
-val stdin : in_channel
+val stdin : in_channel (* [@@dead "Scanning.stdin"] *)
 (** The standard input notion for the {!Scanf} module.
     [Scanning.stdin] is the {!Scanning.in_channel} formatted input channel
     attached to {!Pervasives.stdin}.
@@ -125,7 +125,7 @@ type file_name = string
     @since 4.00.0
 *)
 
-val open_in : file_name -> in_channel
+val open_in : file_name -> in_channel (* [@@dead "Scanning.open_in"] *)
 (** [Scanning.open_in fname] returns a {!Scanning.in_channel} formatted input
     channel for bufferized reading in text mode from file [fname].
 
@@ -137,13 +137,13 @@ val open_in : file_name -> in_channel
     @since 3.12.0
 *)
 
-val open_in_bin : file_name -> in_channel
+val open_in_bin : file_name -> in_channel (* [@@dead "Scanning.open_in_bin"] *)
 (** [Scanning.open_in_bin fname] returns a {!Scanning.in_channel} formatted
     input channel for bufferized reading in binary mode from file [fname].
     @since 3.12.0
 *)
 
-val close_in : in_channel -> unit
+val close_in : in_channel -> unit (* [@@dead "Scanning.close_in"] *)
 (** Closes the {!Pervasives.in_channel} associated with the given
   {!Scanning.in_channel} formatted input channel.
   @since 3.12.0
@@ -152,7 +152,7 @@ val close_in : in_channel -> unit
 val from_file : file_name -> in_channel
 (** An alias for {!Scanning.open_in} above. *)
 
-val from_file_bin : string -> in_channel
+val from_file_bin : string -> in_channel (* [@@dead "Scanning.from_file_bin"] *)
 (** An alias for {!Scanning.open_in_bin} above. *)
 
 val from_string : string -> in_channel
@@ -172,7 +172,7 @@ val from_function : (unit -> char) -> in_channel
     end-of-input condition by raising the exception [End_of_file].
 *)
 
-val from_channel : Pervasives.in_channel -> in_channel
+val from_channel : Pervasives.in_channel -> in_channel (* [@@dead "Scanning.from_channel"] *)
 (** [Scanning.from_channel ic] returns a {!Scanning.in_channel} formatted
     input channel which reads from the regular {!Pervasives.in_channel} input
     channel [ic] argument.
@@ -189,13 +189,13 @@ val beginning_of_input : in_channel -> bool
     of the given {!Scanning.in_channel} formatted input channel.
 *)
 
-val name_of_input : in_channel -> string
+val name_of_input : in_channel -> string (* [@@dead "Scanning.name_of_input"] *)
 (** [Scanning.name_of_input ic] returns the name of the character source
     for the given {!Scanning.in_channel} formatted input channel.
     @since 3.09.0
 *)
 
-val stdib : in_channel
+val stdib : in_channel (* [@@dead "Scanning.stdib"] *)
   [@@ocaml.deprecated "Use Scanf.Scanning.stdin instead."]
 (** A deprecated alias for {!Scanning.stdin}, the scanning buffer reading from
     {!Pervasives.stdin}.
@@ -469,7 +469,7 @@ val bscanf : Scanning.in_channel -> ('a, 'b, 'c, 'd) scanner
 val sscanf : string -> ('a, 'b, 'c, 'd) scanner
 (** Same as {!Scanf.bscanf}, but reads from the given string. *)
 
-val scanf : ('a, 'b, 'c, 'd) scanner
+val scanf : ('a, 'b, 'c, 'd) scanner (* [@@dead "scanf"] *)
 (** Same as {!Scanf.bscanf}, but reads from the predefined formatted input
     channel {!Scanf.Scanning.stdin} that is connected to {!Pervasives.stdin}.
 *)
@@ -484,7 +484,7 @@ val kscanf :
     exception that aborted the scanning process as arguments.
 *)
 
-val ksscanf :
+val ksscanf : (* [@@dead "ksscanf"] *)
   string -> (Scanning.in_channel -> exn -> 'd) ->
     ('a, 'b, 'c, 'd) scanner
 (** Same as {!Scanf.kscanf} but reads from the given string.
@@ -492,7 +492,7 @@ val ksscanf :
 
 (** {1 Reading format strings from input} *)
 
-val bscanf_format :
+val bscanf_format : (* [@@dead "bscanf_format"] *)
   Scanning.in_channel -> ('a, 'b, 'c, 'd, 'e, 'f) format6 ->
     (('a, 'b, 'c, 'd, 'e, 'f) format6 -> 'g) -> 'g
 (** [bscanf_format ic fmt f] reads a format string token from the formatted
@@ -503,7 +503,7 @@ val bscanf_format :
     @since 3.09.0
 *)
 
-val sscanf_format :
+val sscanf_format : (* [@@dead "sscanf_format"] *)
   string -> ('a, 'b, 'c, 'd, 'e, 'f) format6 ->
     (('a, 'b, 'c, 'd, 'e, 'f) format6 -> 'g) -> 'g
 (** Same as {!Scanf.bscanf_format}, but reads from the given string.
@@ -520,7 +520,7 @@ val format_from_string :
     @since 3.10.0
 *)
 
-val unescaped : string -> string
+val unescaped : string -> string (* [@@dead "unescaped"] *)
 (** [unescaped s] return a copy of [s] with escape sequences (according to
     the lexical conventions of OCaml) replaced by their corresponding special
     characters.
@@ -537,7 +537,7 @@ val unescaped : string -> string
 
 (** {1 Deprecated} *)
 
-val fscanf : Pervasives.in_channel -> ('a, 'b, 'c, 'd) scanner
+val fscanf : Pervasives.in_channel -> ('a, 'b, 'c, 'd) scanner (* [@@dead "fscanf"] *)
   [@@ocaml.deprecated "Use Scanning.from_channel then Scanf.bscanf."]
 (** @deprecated [Scanf.fscanf] is error prone and deprecated since 4.03.0.
 
@@ -552,7 +552,7 @@ val fscanf : Pervasives.in_channel -> ('a, 'b, 'c, 'd) scanner
     then use [Scanf.bscanf ib] as usual.
 *)
 
-val kfscanf :
+val kfscanf : (* [@@dead "kfscanf"] *)
   Pervasives.in_channel -> (Scanning.in_channel -> exn -> 'd) ->
     ('a, 'b, 'c, 'd) scanner
   [@@ocaml.deprecated "Use Scanning.from_channel then Scanf.kscanf."]

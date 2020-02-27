@@ -31,7 +31,7 @@ type + 'a t = 'a Js.undefined
 external return : 'a -> 'a t = "%identity"
 
 
-val test : 'a t -> bool 
+val test : 'a t -> bool  (* [@@dead "test"] *)
 [@@ocaml.deprecated "Use = Js.undefined directly"]
 (** Returns [true] if the given value is [empty] ([undefined]), [false] otherwise *)
 
@@ -39,7 +39,7 @@ val test : 'a t -> bool
    @since 1.6.1
    Returns [true] if the given value is [empty] ([undefined])
 *)
-val testAny : 'a -> bool 
+val testAny : 'a -> bool  (* [@@dead "testAny"] *)
 
 
 (** The empty value, [undefined] *)
@@ -47,7 +47,7 @@ external empty : 'a t = "#undefined"
 
 external getUnsafe : 'a t -> 'a = "%identity"
 
-val getExn: 'a t -> 'a
+val getExn: 'a t -> 'a (* [@@dead "getExn"] *)
 
 (** Maps the contained value using the given function
 
@@ -83,7 +83,7 @@ val iter : 'a t -> ('a -> unit [@bs]) -> unit
 %}
 *)
 val fromOption: 'a option -> 'a t
-val from_opt : 'a option -> 'a t
+val from_opt : 'a option -> 'a t (* [@@dead "from_opt"] *)
 [@@ocaml.deprecated "Use fromOption instead"]
 
 (** Maps ['a Js.undefined] to ['a option]

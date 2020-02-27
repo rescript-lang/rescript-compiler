@@ -24,21 +24,21 @@
 
 
 
-val caml_sys_getenv : string -> string
+val caml_sys_getenv : string -> string (* [@@dead "caml_sys_getenv"] *)
 
-val caml_sys_time : unit -> float 
+val caml_sys_time : unit -> float  (* [@@dead "caml_sys_time"] *)
 
-val os_type : unit -> string 
+val os_type : unit -> string  (* [@@dead "os_type"] *)
 
-val caml_sys_random_seed : unit -> nativeint array
+val caml_sys_random_seed : unit -> nativeint array (* [@@dead "caml_sys_random_seed"] *)
 
-val caml_sys_system_command : string -> int
+val caml_sys_system_command : string -> int (* [@@dead "caml_sys_system_command"] *)
 
-val caml_sys_getcwd : unit -> string 
+val caml_sys_getcwd : unit -> string  (* [@@dead "caml_sys_getcwd"] *)
 
-val caml_sys_get_argv : unit -> string * string array
+val caml_sys_get_argv : unit -> string * string array (* [@@dead "caml_sys_get_argv"] *)
 
-val caml_sys_exit : int -> unit 
+val caml_sys_exit : int -> unit  (* [@@dead "caml_sys_exit"] *)
 
-val caml_sys_is_directory : string -> bool 
-val caml_sys_file_exists : string -> bool 
+val caml_sys_is_directory : string -> bool  (* [@@dead "caml_sys_is_directory"] *)
+val caml_sys_file_exists : string -> bool  (* [@@dead "caml_sys_file_exists"] *)

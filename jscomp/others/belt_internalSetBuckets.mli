@@ -35,7 +35,7 @@ val copy: ('hash, 'eq, 'a) t -> ('hash, 'eq, 'a) t
 
 val forEachU: ('hash, 'eq, 'a) t  -> ('a -> unit [@bs]) -> unit
 val forEach: ('hash, 'eq, 'a) t -> ('a -> unit) -> unit
-val fillArray: int -> 'a array -> 'a bucket -> int
+val fillArray: int -> 'a array -> 'a bucket -> int (* [@@dead "fillArray"] *)
 
 val toArray: (_,_,'a) t -> 'a array
 

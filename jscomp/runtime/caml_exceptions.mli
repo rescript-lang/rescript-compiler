@@ -28,12 +28,12 @@
 
 (** *)
 
-val caml_set_oo_id :
+val caml_set_oo_id : (* [@@dead "caml_set_oo_id"] *)
   Caml_builtin_exceptions.exception_block -> Caml_builtin_exceptions.exception_block
 
-val caml_fresh_oo_id : 
+val caml_fresh_oo_id :  (* [@@dead "caml_fresh_oo_id"] *)
   unit -> nativeint
 
-val create : string -> Caml_builtin_exceptions.exception_block
+val create : string -> Caml_builtin_exceptions.exception_block (* [@@dead "create"] *)
 (* val makeExtension : string -> Caml_builtin_exceptions.exception_block *)
-val caml_is_extension : 'a -> bool
+val caml_is_extension : 'a -> bool (* [@@dead "caml_is_extension"] *)

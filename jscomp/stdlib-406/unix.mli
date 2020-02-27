@@ -24,76 +24,76 @@
 
 
 type error =
-    E2BIG               (** Argument list too long *)
-  | EACCES              (** Permission denied *)
-  | EAGAIN              (** Resource temporarily unavailable; try again *)
-  | EBADF               (** Bad file descriptor *)
-  | EBUSY               (** Resource unavailable *)
-  | ECHILD              (** No child process *)
-  | EDEADLK             (** Resource deadlock would occur *)
-  | EDOM                (** Domain error for math functions, etc. *)
-  | EEXIST              (** File exists *)
-  | EFAULT              (** Bad address *)
-  | EFBIG               (** File too large *)
-  | EINTR               (** Function interrupted by signal *)
-  | EINVAL              (** Invalid argument *)
-  | EIO                 (** Hardware I/O error *)
-  | EISDIR              (** Is a directory *)
-  | EMFILE              (** Too many open files by the process *)
-  | EMLINK              (** Too many links *)
-  | ENAMETOOLONG        (** Filename too long *)
-  | ENFILE              (** Too many open files in the system *)
-  | ENODEV              (** No such device *)
-  | ENOENT              (** No such file or directory *)
-  | ENOEXEC             (** Not an executable file *)
-  | ENOLCK              (** No locks available *)
-  | ENOMEM              (** Not enough memory *)
-  | ENOSPC              (** No space left on device *)
-  | ENOSYS              (** Function not supported *)
-  | ENOTDIR             (** Not a directory *)
-  | ENOTEMPTY           (** Directory not empty *)
-  | ENOTTY              (** Inappropriate I/O control operation *)
-  | ENXIO               (** No such device or address *)
-  | EPERM               (** Operation not permitted *)
-  | EPIPE               (** Broken pipe *)
-  | ERANGE              (** Result too large *)
-  | EROFS               (** Read-only file system *)
-  | ESPIPE              (** Invalid seek e.g. on a pipe *)
-  | ESRCH               (** No such process *)
-  | EXDEV               (** Invalid link *)
-  | EWOULDBLOCK         (** Operation would block *)
-  | EINPROGRESS         (** Operation now in progress *)
-  | EALREADY            (** Operation already in progress *)
-  | ENOTSOCK            (** Socket operation on non-socket *)
-  | EDESTADDRREQ        (** Destination address required *)
-  | EMSGSIZE            (** Message too long *)
-  | EPROTOTYPE          (** Protocol wrong type for socket *)
-  | ENOPROTOOPT         (** Protocol not available *)
-  | EPROTONOSUPPORT     (** Protocol not supported *)
-  | ESOCKTNOSUPPORT     (** Socket type not supported *)
-  | EOPNOTSUPP          (** Operation not supported on socket *)
-  | EPFNOSUPPORT        (** Protocol family not supported *)
-  | EAFNOSUPPORT        (** Address family not supported by protocol family *)
-  | EADDRINUSE          (** Address already in use *)
-  | EADDRNOTAVAIL       (** Can't assign requested address *)
-  | ENETDOWN            (** Network is down *)
-  | ENETUNREACH         (** Network is unreachable *)
-  | ENETRESET           (** Network dropped connection on reset *)
-  | ECONNABORTED        (** Software caused connection abort *)
-  | ECONNRESET          (** Connection reset by peer *)
-  | ENOBUFS             (** No buffer space available *)
-  | EISCONN             (** Socket is already connected *)
-  | ENOTCONN            (** Socket is not connected *)
-  | ESHUTDOWN           (** Can't send after socket shutdown *)
-  | ETOOMANYREFS        (** Too many references: can't splice *)
-  | ETIMEDOUT           (** Connection timed out *)
-  | ECONNREFUSED        (** Connection refused *)
-  | EHOSTDOWN           (** Host is down *)
-  | EHOSTUNREACH        (** No route to host *)
-  | ELOOP               (** Too many levels of symbolic links *)
-  | EOVERFLOW           (** File size or position not representable *)
+    E2BIG               (** Argument list too long *) (* [@@dead "error.E2BIG"] *)
+  | EACCES              (** Permission denied *) (* [@@dead "error.EACCES"] *)
+  | EAGAIN              (** Resource temporarily unavailable; try again *) (* [@@dead "error.EAGAIN"] *)
+  | EBADF               (** Bad file descriptor *) (* [@@dead "error.EBADF"] *)
+  | EBUSY               (** Resource unavailable *) (* [@@dead "error.EBUSY"] *)
+  | ECHILD              (** No child process *) (* [@@dead "error.ECHILD"] *)
+  | EDEADLK             (** Resource deadlock would occur *) (* [@@dead "error.EDEADLK"] *)
+  | EDOM                (** Domain error for math functions, etc. *) (* [@@dead "error.EDOM"] *)
+  | EEXIST              (** File exists *) (* [@@dead "error.EEXIST"] *)
+  | EFAULT              (** Bad address *) (* [@@dead "error.EFAULT"] *)
+  | EFBIG               (** File too large *) (* [@@dead "error.EFBIG"] *)
+  | EINTR               (** Function interrupted by signal *) (* [@@dead "error.EINTR"] *)
+  | EINVAL              (** Invalid argument *) (* [@@dead "error.EINVAL"] *)
+  | EIO                 (** Hardware I/O error *) (* [@@dead "error.EIO"] *)
+  | EISDIR              (** Is a directory *) (* [@@dead "error.EISDIR"] *)
+  | EMFILE              (** Too many open files by the process *) (* [@@dead "error.EMFILE"] *)
+  | EMLINK              (** Too many links *) (* [@@dead "error.EMLINK"] *)
+  | ENAMETOOLONG        (** Filename too long *) (* [@@dead "error.ENAMETOOLONG"] *)
+  | ENFILE              (** Too many open files in the system *) (* [@@dead "error.ENFILE"] *)
+  | ENODEV              (** No such device *) (* [@@dead "error.ENODEV"] *)
+  | ENOENT              (** No such file or directory *) (* [@@dead "error.ENOENT"] *)
+  | ENOEXEC             (** Not an executable file *) (* [@@dead "error.ENOEXEC"] *)
+  | ENOLCK              (** No locks available *) (* [@@dead "error.ENOLCK"] *)
+  | ENOMEM              (** Not enough memory *) (* [@@dead "error.ENOMEM"] *)
+  | ENOSPC              (** No space left on device *) (* [@@dead "error.ENOSPC"] *)
+  | ENOSYS              (** Function not supported *) (* [@@dead "error.ENOSYS"] *)
+  | ENOTDIR             (** Not a directory *) (* [@@dead "error.ENOTDIR"] *)
+  | ENOTEMPTY           (** Directory not empty *) (* [@@dead "error.ENOTEMPTY"] *)
+  | ENOTTY              (** Inappropriate I/O control operation *) (* [@@dead "error.ENOTTY"] *)
+  | ENXIO               (** No such device or address *) (* [@@dead "error.ENXIO"] *)
+  | EPERM               (** Operation not permitted *) (* [@@dead "error.EPERM"] *)
+  | EPIPE               (** Broken pipe *) (* [@@dead "error.EPIPE"] *)
+  | ERANGE              (** Result too large *) (* [@@dead "error.ERANGE"] *)
+  | EROFS               (** Read-only file system *) (* [@@dead "error.EROFS"] *)
+  | ESPIPE              (** Invalid seek e.g. on a pipe *) (* [@@dead "error.ESPIPE"] *)
+  | ESRCH               (** No such process *) (* [@@dead "error.ESRCH"] *)
+  | EXDEV               (** Invalid link *) (* [@@dead "error.EXDEV"] *)
+  | EWOULDBLOCK         (** Operation would block *) (* [@@dead "error.EWOULDBLOCK"] *)
+  | EINPROGRESS         (** Operation now in progress *) (* [@@dead "error.EINPROGRESS"] *)
+  | EALREADY            (** Operation already in progress *) (* [@@dead "error.EALREADY"] *)
+  | ENOTSOCK            (** Socket operation on non-socket *) (* [@@dead "error.ENOTSOCK"] *)
+  | EDESTADDRREQ        (** Destination address required *) (* [@@dead "error.EDESTADDRREQ"] *)
+  | EMSGSIZE            (** Message too long *) (* [@@dead "error.EMSGSIZE"] *)
+  | EPROTOTYPE          (** Protocol wrong type for socket *) (* [@@dead "error.EPROTOTYPE"] *)
+  | ENOPROTOOPT         (** Protocol not available *) (* [@@dead "error.ENOPROTOOPT"] *)
+  | EPROTONOSUPPORT     (** Protocol not supported *) (* [@@dead "error.EPROTONOSUPPORT"] *)
+  | ESOCKTNOSUPPORT     (** Socket type not supported *) (* [@@dead "error.ESOCKTNOSUPPORT"] *)
+  | EOPNOTSUPP          (** Operation not supported on socket *) (* [@@dead "error.EOPNOTSUPP"] *)
+  | EPFNOSUPPORT        (** Protocol family not supported *) (* [@@dead "error.EPFNOSUPPORT"] *)
+  | EAFNOSUPPORT        (** Address family not supported by protocol family *) (* [@@dead "error.EAFNOSUPPORT"] *)
+  | EADDRINUSE          (** Address already in use *) (* [@@dead "error.EADDRINUSE"] *)
+  | EADDRNOTAVAIL       (** Can't assign requested address *) (* [@@dead "error.EADDRNOTAVAIL"] *)
+  | ENETDOWN            (** Network is down *) (* [@@dead "error.ENETDOWN"] *)
+  | ENETUNREACH         (** Network is unreachable *) (* [@@dead "error.ENETUNREACH"] *)
+  | ENETRESET           (** Network dropped connection on reset *) (* [@@dead "error.ENETRESET"] *)
+  | ECONNABORTED        (** Software caused connection abort *) (* [@@dead "error.ECONNABORTED"] *)
+  | ECONNRESET          (** Connection reset by peer *) (* [@@dead "error.ECONNRESET"] *)
+  | ENOBUFS             (** No buffer space available *) (* [@@dead "error.ENOBUFS"] *)
+  | EISCONN             (** Socket is already connected *) (* [@@dead "error.EISCONN"] *)
+  | ENOTCONN            (** Socket is not connected *) (* [@@dead "error.ENOTCONN"] *)
+  | ESHUTDOWN           (** Can't send after socket shutdown *) (* [@@dead "error.ESHUTDOWN"] *)
+  | ETOOMANYREFS        (** Too many references: can't splice *) (* [@@dead "error.ETOOMANYREFS"] *)
+  | ETIMEDOUT           (** Connection timed out *) (* [@@dead "error.ETIMEDOUT"] *)
+  | ECONNREFUSED        (** Connection refused *) (* [@@dead "error.ECONNREFUSED"] *)
+  | EHOSTDOWN           (** Host is down *) (* [@@dead "error.EHOSTDOWN"] *)
+  | EHOSTUNREACH        (** No route to host *) (* [@@dead "error.EHOSTUNREACH"] *)
+  | ELOOP               (** Too many levels of symbolic links *) (* [@@dead "error.ELOOP"] *)
+  | EOVERFLOW           (** File size or position not representable *) (* [@@dead "error.EOVERFLOW"] *)
 
-  | EUNKNOWNERR of int  (** Unknown error *)
+  | EUNKNOWNERR of int  (** Unknown error *) (* [@@dead "error.EUNKNOWNERR"] *)
 (** The type of error codes.
    Errors defined in the POSIX standard
    and additional errors from UNIX98 and BSD.
@@ -107,7 +107,7 @@ exception Unix_error of error * string * string
    is the function name; the third component is the string parameter
    to the function, if it has one, or the empty string otherwise. *)
 
-val error_message : error -> string
+val error_message : error -> string (* [@@dead "error_message"] *)
 (** Return a string describing the given error code. *)
 
 val handle_unix_error : ('a -> 'b) -> 'a -> 'b
@@ -119,12 +119,12 @@ val handle_unix_error : ('a -> 'b) -> 'a -> 'b
 (** {1 Access to the process environment} *)
 
 
-val environment : unit -> string array
+val environment : unit -> string array (* [@@dead "environment"] *)
 (** Return the process environment, as an array of strings
     with the format ``variable=value''.  The returned array
     is empty if the process has special privileges. *)
 
-val unsafe_environment : unit -> string array
+val unsafe_environment : unit -> string array (* [@@dead "unsafe_environment"] *)
 (** Return the process environment, as an array of strings with the
     format ``variable=value''.  Unlike {!environment}, this function
     returns a populated array even if the process has special
@@ -141,7 +141,7 @@ val getenv : string -> string
 
    (This function is identical to {!Sys.getenv}. *)
 
-val unsafe_getenv : string -> string
+val unsafe_getenv : string -> string (* [@@dead "unsafe_getenv"] *)
 (** Return the value associated to a variable in the process
    environment.
 
@@ -166,13 +166,13 @@ val putenv : string -> string -> unit
 
 
 type process_status =
-    WEXITED of int
+    WEXITED of int (* [@@dead "process_status.WEXITED"] *)
         (** The process terminated normally by [exit];
            the argument is the return code. *)
-  | WSIGNALED of int
+  | WSIGNALED of int (* [@@dead "process_status.WSIGNALED"] *)
         (** The process was killed by a signal;
            the argument is the signal number. *)
-  | WSTOPPED of int
+  | WSTOPPED of int (* [@@dead "process_status.WSTOPPED"] *)
         (** The process was stopped by a signal; the argument is the
            signal number. *)
 (** The termination status of a process.  See module {!Sys} for the
@@ -181,12 +181,12 @@ type process_status =
 
 
 type wait_flag =
-    WNOHANG (** Do not block if no child has
+    WNOHANG (** Do not block if no child has (* [@@dead "wait_flag.WNOHANG"] *)
                died yet, but immediately return with a pid equal to 0.*)
-  | WUNTRACED (** Report also the children that receive stop signals. *)
+  | WUNTRACED (** Report also the children that receive stop signals. *) (* [@@dead "wait_flag.WUNTRACED"] *)
 (** Flags for {!Unix.waitpid}. *)
 
-val execv : string -> string array -> 'a
+val execv : string -> string array -> 'a (* [@@dead "execv"] *)
 (** [execv prog args] execute the program in file [prog], with
    the arguments [args], and the current process environment.
    These [execv*] functions never return: on success, the current
@@ -262,35 +262,35 @@ type file_descr
 val stdin : file_descr
 (** File descriptor for standard input.*)
 
-val stdout : file_descr
+val stdout : file_descr (* [@@dead "stdout"] *)
 (** File descriptor for standard output.*)
 
 val stderr : file_descr
 (** File descriptor for standard error. *)
 
 type open_flag =
-    O_RDONLY                    (** Open for reading *)
-  | O_WRONLY                    (** Open for writing *)
-  | O_RDWR                      (** Open for reading and writing *)
-  | O_NONBLOCK                  (** Open in non-blocking mode *)
-  | O_APPEND                    (** Open for append *)
-  | O_CREAT                     (** Create if nonexistent *)
-  | O_TRUNC                     (** Truncate to 0 length if existing *)
-  | O_EXCL                      (** Fail if existing *)
-  | O_NOCTTY                    (** Don't make this dev a controlling tty *)
-  | O_DSYNC                     (** Writes complete as `Synchronised I/O data
+    O_RDONLY                    (** Open for reading *) (* [@@dead "open_flag.O_RDONLY"] *)
+  | O_WRONLY                    (** Open for writing *) (* [@@dead "open_flag.O_WRONLY"] *)
+  | O_RDWR                      (** Open for reading and writing *) (* [@@dead "open_flag.O_RDWR"] *)
+  | O_NONBLOCK                  (** Open in non-blocking mode *) (* [@@dead "open_flag.O_NONBLOCK"] *)
+  | O_APPEND                    (** Open for append *) (* [@@dead "open_flag.O_APPEND"] *)
+  | O_CREAT                     (** Create if nonexistent *) (* [@@dead "open_flag.O_CREAT"] *)
+  | O_TRUNC                     (** Truncate to 0 length if existing *) (* [@@dead "open_flag.O_TRUNC"] *)
+  | O_EXCL                      (** Fail if existing *) (* [@@dead "open_flag.O_EXCL"] *)
+  | O_NOCTTY                    (** Don't make this dev a controlling tty *) (* [@@dead "open_flag.O_NOCTTY"] *)
+  | O_DSYNC                     (** Writes complete as `Synchronised I/O data (* [@@dead "open_flag.O_DSYNC"] *)
                                    integrity completion' *)
-  | O_SYNC                      (** Writes complete as `Synchronised I/O file
+  | O_SYNC                      (** Writes complete as `Synchronised I/O file (* [@@dead "open_flag.O_SYNC"] *)
                                    integrity completion' *)
-  | O_RSYNC                     (** Reads complete as writes (depending on
+  | O_RSYNC                     (** Reads complete as writes (depending on (* [@@dead "open_flag.O_RSYNC"] *)
                                    O_SYNC/O_DSYNC) *)
-  | O_SHARE_DELETE              (** Windows only: allow the file to be deleted
+  | O_SHARE_DELETE              (** Windows only: allow the file to be deleted (* [@@dead "open_flag.O_SHARE_DELETE"] *)
                                    while still open *)
-  | O_CLOEXEC                   (** Set the close-on-exec flag on the
+  | O_CLOEXEC                   (** Set the close-on-exec flag on the (* [@@dead "open_flag.O_CLOEXEC"] *)
                                    descriptor returned by {!openfile}.
                                    See {!set_close_on_exec} for more
                                    information. *)
-  | O_KEEPEXEC                  (** Clear the close-on-exec flag.
+  | O_KEEPEXEC                  (** Clear the close-on-exec flag. (* [@@dead "open_flag.O_KEEPEXEC"] *)
                                     This is currently the default. *)
 (** The flags to {!Unix.openfile}. *)
 
@@ -304,7 +304,7 @@ val openfile : string -> open_flag list -> file_perm -> file_descr
    permissions to give to the file if it is created (see
    {!umask}). Return a file descriptor on the named file. *)
 
-val close : file_descr -> unit
+val close : file_descr -> unit (* [@@dead "close"] *)
 (** Close a file descriptor. *)
 
 val read : file_descr -> bytes -> int -> int -> int
@@ -329,7 +329,7 @@ val write_substring : file_descr -> string -> int -> int -> int
     sequence.
     @since 4.02.0 *)
 
-val single_write_substring : file_descr -> string -> int -> int -> int
+val single_write_substring : file_descr -> string -> int -> int -> int (* [@@dead "single_write_substring"] *)
 (** Same as [single_write], but take the data from a string instead of
     a byte sequence.
     @since 4.02.0 *)
@@ -384,9 +384,9 @@ val descr_of_out_channel : out_channel -> file_descr
 
 
 type seek_command =
-    SEEK_SET (** indicates positions relative to the beginning of the file *)
-  | SEEK_CUR (** indicates positions relative to the current position *)
-  | SEEK_END (** indicates positions relative to the end of the file *)
+    SEEK_SET (** indicates positions relative to the beginning of the file *) (* [@@dead "seek_command.SEEK_SET"] *)
+  | SEEK_CUR (** indicates positions relative to the current position *) (* [@@dead "seek_command.SEEK_CUR"] *)
+  | SEEK_END (** indicates positions relative to the end of the file *) (* [@@dead "seek_command.SEEK_END"] *)
 (** Positioning modes for {!Unix.lseek}. *)
 
 
@@ -410,27 +410,27 @@ val ftruncate : file_descr -> int -> unit
 
 
 type file_kind =
-    S_REG                       (** Regular file *)
-  | S_DIR                       (** Directory *)
-  | S_CHR                       (** Character device *)
-  | S_BLK                       (** Block device *)
-  | S_LNK                       (** Symbolic link *)
-  | S_FIFO                      (** Named pipe *)
-  | S_SOCK                      (** Socket *)
+    S_REG                       (** Regular file *) (* [@@dead "file_kind.S_REG"] *)
+  | S_DIR                       (** Directory *) (* [@@dead "file_kind.S_DIR"] *)
+  | S_CHR                       (** Character device *) (* [@@dead "file_kind.S_CHR"] *)
+  | S_BLK                       (** Block device *) (* [@@dead "file_kind.S_BLK"] *)
+  | S_LNK                       (** Symbolic link *) (* [@@dead "file_kind.S_LNK"] *)
+  | S_FIFO                      (** Named pipe *) (* [@@dead "file_kind.S_FIFO"] *)
+  | S_SOCK                      (** Socket *) (* [@@dead "file_kind.S_SOCK"] *)
 
 type stats =
-  { st_dev : int;               (** Device number *)
-    st_ino : int;               (** Inode number *)
-    st_kind : file_kind;        (** Kind of the file *)
-    st_perm : file_perm;        (** Access rights *)
-    st_nlink : int;             (** Number of links *)
-    st_uid : int;               (** User id of the owner *)
-    st_gid : int;               (** Group ID of the file's group *)
-    st_rdev : int;              (** Device minor number *)
-    st_size : int;              (** Size in bytes *)
-    st_atime : float;           (** Last access time *)
-    st_mtime : float;           (** Last modification time *)
-    st_ctime : float;           (** Last status change time *)
+  { st_dev : int;               (** Device number *) (* [@@dead "stats.st_dev"] *)
+    st_ino : int;               (** Inode number *) (* [@@dead "stats.st_ino"] *)
+    st_kind : file_kind;        (** Kind of the file *) (* [@@dead "stats.st_kind"] *)
+    st_perm : file_perm;        (** Access rights *) (* [@@dead "stats.st_perm"] *)
+    st_nlink : int;             (** Number of links *) (* [@@dead "stats.st_nlink"] *)
+    st_uid : int;               (** User id of the owner *) (* [@@dead "stats.st_uid"] *)
+    st_gid : int;               (** Group ID of the file's group *) (* [@@dead "stats.st_gid"] *)
+    st_rdev : int;              (** Device minor number *) (* [@@dead "stats.st_rdev"] *)
+    st_size : int;              (** Size in bytes *) (* [@@dead "stats.st_size"] *)
+    st_atime : float;           (** Last access time *) (* [@@dead "stats.st_atime"] *)
+    st_mtime : float;           (** Last modification time *) (* [@@dead "stats.st_mtime"] *)
+    st_ctime : float;           (** Last status change time *) (* [@@dead "stats.st_ctime"] *)
   }
 (** The information returned by the {!Unix.stat} calls. *)
 
@@ -463,22 +463,22 @@ module LargeFile :
     (** See {!Unix.ftruncate}. *)
 
     type stats =
-      { st_dev : int;               (** Device number *)
-        st_ino : int;               (** Inode number *)
-        st_kind : file_kind;        (** Kind of the file *)
-        st_perm : file_perm;        (** Access rights *)
-        st_nlink : int;             (** Number of links *)
-        st_uid : int;               (** User id of the owner *)
-        st_gid : int;               (** Group ID of the file's group *)
-        st_rdev : int;              (** Device minor number *)
-        st_size : int64;            (** Size in bytes *)
-        st_atime : float;           (** Last access time *)
-        st_mtime : float;           (** Last modification time *)
-        st_ctime : float;           (** Last status change time *)
+      { st_dev : int;               (** Device number *) (* [@@dead "LargeFile.stats.st_dev"] *)
+        st_ino : int;               (** Inode number *) (* [@@dead "LargeFile.stats.st_ino"] *)
+        st_kind : file_kind;        (** Kind of the file *) (* [@@dead "LargeFile.stats.st_kind"] *)
+        st_perm : file_perm;        (** Access rights *) (* [@@dead "LargeFile.stats.st_perm"] *)
+        st_nlink : int;             (** Number of links *) (* [@@dead "LargeFile.stats.st_nlink"] *)
+        st_uid : int;               (** User id of the owner *) (* [@@dead "LargeFile.stats.st_uid"] *)
+        st_gid : int;               (** Group ID of the file's group *) (* [@@dead "LargeFile.stats.st_gid"] *)
+        st_rdev : int;              (** Device minor number *) (* [@@dead "LargeFile.stats.st_rdev"] *)
+        st_size : int64;            (** Size in bytes *) (* [@@dead "LargeFile.stats.st_size"] *)
+        st_atime : float;           (** Last access time *) (* [@@dead "LargeFile.stats.st_atime"] *)
+        st_mtime : float;           (** Last modification time *) (* [@@dead "LargeFile.stats.st_mtime"] *)
+        st_ctime : float;           (** Last status change time *) (* [@@dead "LargeFile.stats.st_ctime"] *)
       }
     val stat : string -> stats
-    val lstat : string -> stats
-    val fstat : file_descr -> stats
+    val lstat : string -> stats (* [@@dead "LargeFile.lstat"] *)
+    val fstat : file_descr -> stats (* [@@dead "LargeFile.fstat"] *)
   end
 (** File operations on large files.
   This sub-module provides 64-bit variants of the functions
@@ -556,7 +556,7 @@ val unlink : string -> unit
     {- [EACCESS] on Windows}}
 *)
 
-val rename : string -> string -> unit
+val rename : string -> string -> unit (* [@@dead "rename"] *)
 (** [rename old new] changes the name of a file from [old] to [new],
     moving it between directories if needed.  If [new] already
     exists, its contents will be replaced with those of [old].
@@ -564,7 +564,7 @@ val rename : string -> string -> unit
     owner, etc) of [new] can either be preserved or be replaced by
     those of [old].  *)
 
-val link : string -> string -> unit
+val link : string -> string -> unit (* [@@dead "link"] *)
 (** [link source dest] creates a hard link named [dest] to the file
    named [source]. *)
 
@@ -573,10 +573,10 @@ val link : string -> string -> unit
 
 
 type access_permission =
-    R_OK                        (** Read permission *)
-  | W_OK                        (** Write permission *)
-  | X_OK                        (** Execution permission *)
-  | F_OK                        (** File exists *)
+    R_OK                        (** Read permission *) (* [@@dead "access_permission.R_OK"] *)
+  | W_OK                        (** Write permission *) (* [@@dead "access_permission.W_OK"] *)
+  | X_OK                        (** Execution permission *) (* [@@dead "access_permission.X_OK"] *)
+  | F_OK                        (** File exists *) (* [@@dead "access_permission.F_OK"] *)
 (** Flags for the {!Unix.access} call. *)
 
 
@@ -635,7 +635,7 @@ val clear_nonblock : file_descr -> unit
 (** Clear the ``non-blocking'' flag on the given descriptor.
    See {!Unix.set_nonblock}.*)
 
-val set_close_on_exec : file_descr -> unit
+val set_close_on_exec : file_descr -> unit (* [@@dead "set_close_on_exec"] *)
 (** Set the ``close-on-exec'' flag on the given descriptor.
    A descriptor with the close-on-exec flag is automatically
    closed when the current process starts another program with
@@ -682,7 +682,7 @@ val set_close_on_exec : file_descr -> unit
    file descriptor in ``keep-on-exec'' mode.
  *)
 
-val clear_close_on_exec : file_descr -> unit
+val clear_close_on_exec : file_descr -> unit (* [@@dead "clear_close_on_exec"] *)
 (** Clear the ``close-on-exec'' flag on the given descriptor.
    See {!Unix.set_close_on_exec}.*)
 
@@ -709,7 +709,7 @@ val chroot : string -> unit
 type dir_handle
 (** The type of descriptors over opened directories. *)
 
-val opendir : string -> dir_handle
+val opendir : string -> dir_handle (* [@@dead "opendir"] *)
 (** Open a descriptor on a directory *)
 
 val readdir : dir_handle -> string
@@ -719,7 +719,7 @@ val readdir : dir_handle -> string
 val rewinddir : dir_handle -> unit
 (** Reposition the descriptor to the beginning of the directory *)
 
-val closedir : dir_handle -> unit
+val closedir : dir_handle -> unit (* [@@dead "closedir"] *)
 (** Close a directory descriptor. *)
 
 
@@ -851,7 +851,7 @@ val symlink : ?to_dir:bool -> string -> string -> unit
    {!has_symlink} can be used to check that a process is able to create symbolic
    links. *)
 
-val has_symlink : unit -> bool
+val has_symlink : unit -> bool (* [@@dead "has_symlink"] *)
 (** Returns [true] if the user is able to create symbolic links. On Windows,
    this indicates that the user not only has the SeCreateSymbolicLinkPrivilege
    but is also running elevated, if necessary. On other platforms, this is
@@ -883,12 +883,12 @@ val select :
 (** {1 Locking} *)
 
 type lock_command =
-    F_ULOCK       (** Unlock a region *)
-  | F_LOCK        (** Lock a region for writing, and block if already locked *)
-  | F_TLOCK       (** Lock a region for writing, or fail if already locked *)
-  | F_TEST        (** Test a region for other process locks *)
-  | F_RLOCK       (** Lock a region for reading, and block if already locked *)
-  | F_TRLOCK      (** Lock a region for reading, or fail if already locked *)
+    F_ULOCK       (** Unlock a region *) (* [@@dead "lock_command.F_ULOCK"] *)
+  | F_LOCK        (** Lock a region for writing, and block if already locked *) (* [@@dead "lock_command.F_LOCK"] *)
+  | F_TLOCK       (** Lock a region for writing, or fail if already locked *) (* [@@dead "lock_command.F_TLOCK"] *)
+  | F_TEST        (** Test a region for other process locks *) (* [@@dead "lock_command.F_TEST"] *)
+  | F_RLOCK       (** Lock a region for reading, and block if already locked *) (* [@@dead "lock_command.F_RLOCK"] *)
+  | F_TRLOCK      (** Lock a region for reading, or fail if already locked *) (* [@@dead "lock_command.F_TRLOCK"] *)
 (** Commands for {!Unix.lockf}. *)
 
 val lockf : file_descr -> lock_command -> int -> unit
@@ -936,9 +936,9 @@ val kill : int -> int -> unit
    is emulated. *)
 
 type sigprocmask_command =
-    SIG_SETMASK
-  | SIG_BLOCK
-  | SIG_UNBLOCK
+    SIG_SETMASK (* [@@dead "sigprocmask_command.SIG_SETMASK"] *)
+  | SIG_BLOCK (* [@@dead "sigprocmask_command.SIG_BLOCK"] *)
+  | SIG_UNBLOCK (* [@@dead "sigprocmask_command.SIG_UNBLOCK"] *)
 
 val sigprocmask : sigprocmask_command -> int list -> int list
 (** [sigprocmask cmd sigs] changes the set of blocked signals.
@@ -974,23 +974,23 @@ val pause : unit -> unit
 
 
 type process_times =
-  { tms_utime : float;  (** User time for the process *)
-    tms_stime : float;  (** System time for the process *)
-    tms_cutime : float; (** User time for the children processes *)
-    tms_cstime : float; (** System time for the children processes *)
+  { tms_utime : float;  (** User time for the process *) (* [@@dead "process_times.tms_utime"] *)
+    tms_stime : float;  (** System time for the process *) (* [@@dead "process_times.tms_stime"] *)
+    tms_cutime : float; (** User time for the children processes *) (* [@@dead "process_times.tms_cutime"] *)
+    tms_cstime : float; (** System time for the children processes *) (* [@@dead "process_times.tms_cstime"] *)
   }
 (** The execution times (CPU times) of a process. *)
 
 type tm =
-  { tm_sec : int;               (** Seconds 0..60 *)
-    tm_min : int;               (** Minutes 0..59 *)
-    tm_hour : int;              (** Hours 0..23 *)
-    tm_mday : int;              (** Day of month 1..31 *)
-    tm_mon : int;               (** Month of year 0..11 *)
-    tm_year : int;              (** Year - 1900 *)
-    tm_wday : int;              (** Day of week (Sunday is 0) *)
-    tm_yday : int;              (** Day of year 0..365 *)
-    tm_isdst : bool;            (** Daylight time savings in effect *)
+  { tm_sec : int;               (** Seconds 0..60 *) (* [@@dead "tm.tm_sec"] *)
+    tm_min : int;               (** Minutes 0..59 *) (* [@@dead "tm.tm_min"] *)
+    tm_hour : int;              (** Hours 0..23 *) (* [@@dead "tm.tm_hour"] *)
+    tm_mday : int;              (** Day of month 1..31 *) (* [@@dead "tm.tm_mday"] *)
+    tm_mon : int;               (** Month of year 0..11 *) (* [@@dead "tm.tm_mon"] *)
+    tm_year : int;              (** Year - 1900 *) (* [@@dead "tm.tm_year"] *)
+    tm_wday : int;              (** Day of week (Sunday is 0) *) (* [@@dead "tm.tm_wday"] *)
+    tm_yday : int;              (** Day of year 0..365 *) (* [@@dead "tm.tm_yday"] *)
+    tm_isdst : bool;            (** Daylight time savings in effect *) (* [@@dead "tm.tm_isdst"] *)
   }
 (** The type representing wallclock time and calendar date. *)
 
@@ -1008,7 +1008,7 @@ val gmtime : float -> tm
    To perform the inverse conversion, set the TZ environment variable
    to "UTC", use {!mktime}, and then restore the original value of TZ. *)
 
-val localtime : float -> tm
+val localtime : float -> tm (* [@@dead "localtime"] *)
 (** Convert a time in seconds, as returned by {!Unix.time}, into a date and
    a time. Assumes the local time zone.
    The function performing the inverse conversion is {!mktime}. *)
@@ -1028,10 +1028,10 @@ val alarm : int -> int
 
    On Windows: not implemented. *)
 
-val sleep : int -> unit
+val sleep : int -> unit (* [@@dead "sleep"] *)
 (** Stop execution for the given number of seconds. *)
 
-val sleepf : float -> unit
+val sleepf : float -> unit (* [@@dead "sleepf"] *)
 (** Stop execution for the given number of seconds.  Like [sleep],
     but fractions of seconds are supported.
 
@@ -1042,37 +1042,37 @@ val times : unit -> process_times
    On Windows, it is partially implemented, will not report timings
    for child processes. *)
 
-val utimes : string -> float -> float -> unit
+val utimes : string -> float -> float -> unit (* [@@dead "utimes"] *)
 (** Set the last access time (second arg) and last modification time
    (third arg) for a file. Times are expressed in seconds from
    00:00:00 GMT, Jan. 1, 1970.  If both times are [0.0], the access
    and last modification times are both set to the current time. *)
 
 type interval_timer =
-    ITIMER_REAL
+    ITIMER_REAL (* [@@dead "interval_timer.ITIMER_REAL"] *)
       (** decrements in real time, and sends the signal [SIGALRM] when
          expired.*)
-  | ITIMER_VIRTUAL
+  | ITIMER_VIRTUAL (* [@@dead "interval_timer.ITIMER_VIRTUAL"] *)
       (** decrements in process virtual time, and sends [SIGVTALRM]
           when expired. *)
-  | ITIMER_PROF
+  | ITIMER_PROF (* [@@dead "interval_timer.ITIMER_PROF"] *)
       (** (for profiling) decrements both when the process
          is running and when the system is running on behalf of the
          process; it sends [SIGPROF] when expired. *)
 (** The three kinds of interval timers. *)
 
 type interval_timer_status =
-  { it_interval : float;         (** Period *)
-    it_value : float;            (** Current value of the timer *)
+  { it_interval : float;         (** Period *) (* [@@dead "interval_timer_status.it_interval"] *)
+    it_value : float;            (** Current value of the timer *) (* [@@dead "interval_timer_status.it_value"] *)
   }
 (** The type describing the status of an interval timer *)
 
-val getitimer : interval_timer -> interval_timer_status
+val getitimer : interval_timer -> interval_timer_status (* [@@dead "getitimer"] *)
 (** Return the current status of the given interval timer.
 
    On Windows: not implemented. *)
 
-val setitimer :
+val setitimer : (* [@@dead "setitimer"] *)
   interval_timer -> interval_timer_status -> interval_timer_status
 (** [setitimer t s] sets the interval timer [t] and returns
    its previous status. The [s] argument is interpreted as follows:
@@ -1093,7 +1093,7 @@ val getuid : unit -> int
 (** Return the user id of the user executing the process.
    On Windows, always return [1]. *)
 
-val geteuid : unit -> int
+val geteuid : unit -> int (* [@@dead "geteuid"] *)
 (** Return the effective user id under which the process runs.
    On Windows, always return [1]. *)
 
@@ -1109,7 +1109,7 @@ val getegid : unit -> int
 (** Return the effective group id under which the process runs.
    On Windows, always return [1]. *)
 
-val setgid : int -> unit
+val setgid : int -> unit (* [@@dead "setgid"] *)
 (** Set the real group id and effective group id for the process.
    On Windows: not implemented. *)
 
@@ -1118,7 +1118,7 @@ val getgroups : unit -> int array
    belongs.
    On Windows, always return [[|1|]]. *)
 
-val setgroups : int array -> unit
+val setgroups : int array -> unit (* [@@dead "setgroups"] *)
 (** [setgroups groups] sets the supplementary group IDs for the
     calling process. Appropriate privileges are required.
     On Windows: not implemented. *)
@@ -1131,28 +1131,28 @@ val initgroups : string -> int -> unit
     On Windows: not implemented. *)
 
 type passwd_entry =
-  { pw_name : string;
-    pw_passwd : string;
-    pw_uid : int;
-    pw_gid : int;
-    pw_gecos : string;
-    pw_dir : string;
-    pw_shell : string
+  { pw_name : string; (* [@@dead "passwd_entry.pw_name"] *)
+    pw_passwd : string; (* [@@dead "passwd_entry.pw_passwd"] *)
+    pw_uid : int; (* [@@dead "passwd_entry.pw_uid"] *)
+    pw_gid : int; (* [@@dead "passwd_entry.pw_gid"] *)
+    pw_gecos : string; (* [@@dead "passwd_entry.pw_gecos"] *)
+    pw_dir : string; (* [@@dead "passwd_entry.pw_dir"] *)
+    pw_shell : string (* [@@dead "passwd_entry.pw_shell"] *)
   }
 (** Structure of entries in the [passwd] database. *)
 
 type group_entry =
-  { gr_name : string;
-    gr_passwd : string;
-    gr_gid : int;
-    gr_mem : string array
+  { gr_name : string; (* [@@dead "group_entry.gr_name"] *)
+    gr_passwd : string; (* [@@dead "group_entry.gr_passwd"] *)
+    gr_gid : int; (* [@@dead "group_entry.gr_gid"] *)
+    gr_mem : string array (* [@@dead "group_entry.gr_mem"] *)
   }
 (** Structure of entries in the [groups] database. *)
 
 val getlogin : unit -> string
 (** Return the login name of the user executing the process. *)
 
-val getpwnam : string -> passwd_entry
+val getpwnam : string -> passwd_entry (* [@@dead "getpwnam"] *)
 (** Find an entry in [passwd] with the given name.
    @raise Not_found if no such entry exist.
 
@@ -1196,7 +1196,7 @@ val string_of_inet_addr : inet_addr -> string
     See {!Unix.inet_addr_of_string} for a description of the
     printable representation. *)
 
-val inet_addr_any : inet_addr
+val inet_addr_any : inet_addr (* [@@dead "inet_addr_any"] *)
 (** A special IPv4 address, for use only with [bind], representing
    all the Internet addresses that the host machine possesses. *)
 
@@ -1215,26 +1215,26 @@ val inet6_addr_loopback : inet_addr
 
 
 type socket_domain =
-    PF_UNIX                     (** Unix domain *)
-  | PF_INET                     (** Internet domain (IPv4) *)
-  | PF_INET6                    (** Internet domain (IPv6) *)
+    PF_UNIX                     (** Unix domain *) (* [@@dead "socket_domain.PF_UNIX"] *)
+  | PF_INET                     (** Internet domain (IPv4) *) (* [@@dead "socket_domain.PF_INET"] *)
+  | PF_INET6                    (** Internet domain (IPv6) *) (* [@@dead "socket_domain.PF_INET6"] *)
 (** The type of socket domains.  Not all platforms support
     IPv6 sockets (type [PF_INET6]).  Windows does not support
     [PF_UNIX]. *)
 
 type socket_type =
-    SOCK_STREAM                 (** Stream socket *)
-  | SOCK_DGRAM                  (** Datagram socket *)
-  | SOCK_RAW                    (** Raw socket *)
-  | SOCK_SEQPACKET              (** Sequenced packets socket *)
+    SOCK_STREAM                 (** Stream socket *) (* [@@dead "socket_type.SOCK_STREAM"] *)
+  | SOCK_DGRAM                  (** Datagram socket *) (* [@@dead "socket_type.SOCK_DGRAM"] *)
+  | SOCK_RAW                    (** Raw socket *) (* [@@dead "socket_type.SOCK_RAW"] *)
+  | SOCK_SEQPACKET              (** Sequenced packets socket *) (* [@@dead "socket_type.SOCK_SEQPACKET"] *)
 (** The type of socket kinds, specifying the semantics of
    communications.  [SOCK_SEQPACKET] is included for completeness,
    but is rarely supported by the OS, and needs system calls that
    are not available in this library. *)
 
 type sockaddr =
-    ADDR_UNIX of string
-  | ADDR_INET of inet_addr * int
+    ADDR_UNIX of string (* [@@dead "sockaddr.ADDR_UNIX"] *)
+  | ADDR_INET of inet_addr * int (* [@@dead "sockaddr.ADDR_INET"] *)
 (** The type of socket addresses. [ADDR_UNIX name] is a socket
    address in the Unix domain; [name] is a file name in the file
    system. [ADDR_INET(addr,port)] is a socket address in the Internet
@@ -1277,9 +1277,9 @@ val listen : file_descr -> int -> unit
    argument is the maximal number of pending requests. *)
 
 type shutdown_command =
-    SHUTDOWN_RECEIVE            (** Close for receiving *)
-  | SHUTDOWN_SEND               (** Close for sending *)
-  | SHUTDOWN_ALL                (** Close both *)
+    SHUTDOWN_RECEIVE            (** Close for receiving *) (* [@@dead "shutdown_command.SHUTDOWN_RECEIVE"] *)
+  | SHUTDOWN_SEND               (** Close for sending *) (* [@@dead "shutdown_command.SHUTDOWN_SEND"] *)
+  | SHUTDOWN_ALL                (** Close both *) (* [@@dead "shutdown_command.SHUTDOWN_ALL"] *)
 (** The type of commands for [shutdown]. *)
 
 
@@ -1297,9 +1297,9 @@ val getpeername : file_descr -> sockaddr
 (** Return the address of the host connected to the given socket. *)
 
 type msg_flag =
-    MSG_OOB
-  | MSG_DONTROUTE
-  | MSG_PEEK
+    MSG_OOB (* [@@dead "msg_flag.MSG_OOB"] *)
+  | MSG_DONTROUTE (* [@@dead "msg_flag.MSG_DONTROUTE"] *)
+  | MSG_PEEK (* [@@dead "msg_flag.MSG_PEEK"] *)
 (** The flags for {!Unix.recv},  {!Unix.recvfrom},
    {!Unix.send} and {!Unix.sendto}. *)
 
@@ -1318,7 +1318,7 @@ val send_substring : file_descr -> string -> int -> int -> msg_flag list -> int
     sequence.
     @since 4.02.0 *)
 
-val sendto :
+val sendto : (* [@@dead "sendto"] *)
   file_descr -> bytes -> int -> int -> msg_flag list -> sockaddr -> int
 (** Send data over an unconnected socket. *)
 
@@ -1333,33 +1333,33 @@ val sendto_substring :
 
 
 type socket_bool_option =
-    SO_DEBUG       (** Record debugging information *)
-  | SO_BROADCAST   (** Permit sending of broadcast messages *)
-  | SO_REUSEADDR   (** Allow reuse of local addresses for bind *)
-  | SO_KEEPALIVE   (** Keep connection active *)
-  | SO_DONTROUTE   (** Bypass the standard routing algorithms *)
-  | SO_OOBINLINE   (** Leave out-of-band data in line *)
-  | SO_ACCEPTCONN  (** Report whether socket listening is enabled *)
-  | TCP_NODELAY    (** Control the Nagle algorithm for TCP sockets *)
-  | IPV6_ONLY      (** Forbid binding an IPv6 socket to an IPv4 address *)
+    SO_DEBUG       (** Record debugging information *) (* [@@dead "socket_bool_option.SO_DEBUG"] *)
+  | SO_BROADCAST   (** Permit sending of broadcast messages *) (* [@@dead "socket_bool_option.SO_BROADCAST"] *)
+  | SO_REUSEADDR   (** Allow reuse of local addresses for bind *) (* [@@dead "socket_bool_option.SO_REUSEADDR"] *)
+  | SO_KEEPALIVE   (** Keep connection active *) (* [@@dead "socket_bool_option.SO_KEEPALIVE"] *)
+  | SO_DONTROUTE   (** Bypass the standard routing algorithms *) (* [@@dead "socket_bool_option.SO_DONTROUTE"] *)
+  | SO_OOBINLINE   (** Leave out-of-band data in line *) (* [@@dead "socket_bool_option.SO_OOBINLINE"] *)
+  | SO_ACCEPTCONN  (** Report whether socket listening is enabled *) (* [@@dead "socket_bool_option.SO_ACCEPTCONN"] *)
+  | TCP_NODELAY    (** Control the Nagle algorithm for TCP sockets *) (* [@@dead "socket_bool_option.TCP_NODELAY"] *)
+  | IPV6_ONLY      (** Forbid binding an IPv6 socket to an IPv4 address *) (* [@@dead "socket_bool_option.IPV6_ONLY"] *)
 (** The socket options that can be consulted with {!Unix.getsockopt}
    and modified with {!Unix.setsockopt}.  These options have a boolean
    ([true]/[false]) value. *)
 
 type socket_int_option =
-    SO_SNDBUF      (** Size of send buffer *)
-  | SO_RCVBUF      (** Size of received buffer *)
-  | SO_ERROR       (** Deprecated.  Use {!Unix.getsockopt_error} instead. *)
-  | SO_TYPE        (** Report the socket type *)
-  | SO_RCVLOWAT    (** Minimum number of bytes to process for input operations*)
-  | SO_SNDLOWAT    (** Minimum number of bytes to process for output
+    SO_SNDBUF      (** Size of send buffer *) (* [@@dead "socket_int_option.SO_SNDBUF"] *)
+  | SO_RCVBUF      (** Size of received buffer *) (* [@@dead "socket_int_option.SO_RCVBUF"] *)
+  | SO_ERROR       (** Deprecated.  Use {!Unix.getsockopt_error} instead. *) (* [@@dead "socket_int_option.SO_ERROR"] *)
+  | SO_TYPE        (** Report the socket type *) (* [@@dead "socket_int_option.SO_TYPE"] *)
+  | SO_RCVLOWAT    (** Minimum number of bytes to process for input operations*) (* [@@dead "socket_int_option.SO_RCVLOWAT"] *)
+  | SO_SNDLOWAT    (** Minimum number of bytes to process for output (* [@@dead "socket_int_option.SO_SNDLOWAT"] *)
                        operations *)
 (** The socket options that can be consulted with {!Unix.getsockopt_int}
    and modified with {!Unix.setsockopt_int}.  These options have an
    integer value. *)
 
 type socket_optint_option =
-  SO_LINGER      (** Whether to linger on closed connections
+  SO_LINGER      (** Whether to linger on closed connections (* [@@dead "socket_optint_option.SO_LINGER"] *)
                     that have data present, and for how long
                     (in seconds) *)
 (** The socket options that can be consulted with {!Unix.getsockopt_optint}
@@ -1367,31 +1367,31 @@ type socket_optint_option =
    value of type [int option], with [None] meaning ``disabled''. *)
 
 type socket_float_option =
-    SO_RCVTIMEO    (** Timeout for input operations *)
-  | SO_SNDTIMEO    (** Timeout for output operations *)
+    SO_RCVTIMEO    (** Timeout for input operations *) (* [@@dead "socket_float_option.SO_RCVTIMEO"] *)
+  | SO_SNDTIMEO    (** Timeout for output operations *) (* [@@dead "socket_float_option.SO_SNDTIMEO"] *)
 (** The socket options that can be consulted with {!Unix.getsockopt_float}
    and modified with {!Unix.setsockopt_float}.  These options have a
    floating-point value representing a time in seconds.
    The value 0 means infinite timeout. *)
 
-val getsockopt : file_descr -> socket_bool_option -> bool
+val getsockopt : file_descr -> socket_bool_option -> bool (* [@@dead "getsockopt"] *)
 (** Return the current status of a boolean-valued option
    in the given socket. *)
 
-val setsockopt : file_descr -> socket_bool_option -> bool -> unit
+val setsockopt : file_descr -> socket_bool_option -> bool -> unit (* [@@dead "setsockopt"] *)
 (** Set or clear a boolean-valued option in the given socket. *)
 
 val getsockopt_int : file_descr -> socket_int_option -> int
 (** Same as {!Unix.getsockopt} for an integer-valued socket option. *)
 
-val setsockopt_int : file_descr -> socket_int_option -> int -> unit
+val setsockopt_int : file_descr -> socket_int_option -> int -> unit (* [@@dead "setsockopt_int"] *)
 (** Same as {!Unix.setsockopt} for an integer-valued socket option. *)
 
 val getsockopt_optint : file_descr -> socket_optint_option -> int option
 (** Same as {!Unix.getsockopt} for a socket option whose value is an
    [int option]. *)
 
-val setsockopt_optint :
+val setsockopt_optint : (* [@@dead "setsockopt_optint"] *)
       file_descr -> socket_optint_option -> int option -> unit
 (** Same as {!Unix.setsockopt} for a socket option whose value is an
    [int option]. *)
@@ -1404,7 +1404,7 @@ val setsockopt_float : file_descr -> socket_float_option -> float -> unit
 (** Same as {!Unix.setsockopt} for a socket option whose value is a
    floating-point number. *)
 
-val getsockopt_error : file_descr -> error option
+val getsockopt_error : file_descr -> error option (* [@@dead "getsockopt_error"] *)
 (** Return the error condition associated with the given socket,
     and clear it. *)
 
@@ -1412,7 +1412,7 @@ val getsockopt_error : file_descr -> error option
 (** {1 High-level network connection functions} *)
 
 
-val open_connection : sockaddr -> in_channel * out_channel
+val open_connection : sockaddr -> in_channel * out_channel (* [@@dead "open_connection"] *)
 (** Connect to a server at the given address.
    Return a pair of buffered channels connected to the server.
    Remember to call {!Pervasives.flush} on the output channel at the right
@@ -1439,29 +1439,29 @@ val establish_server : (in_channel -> out_channel -> unit) -> sockaddr -> unit
 
 
 type host_entry =
-  { h_name : string;
-    h_aliases : string array;
-    h_addrtype : socket_domain;
-    h_addr_list : inet_addr array
+  { h_name : string; (* [@@dead "host_entry.h_name"] *)
+    h_aliases : string array; (* [@@dead "host_entry.h_aliases"] *)
+    h_addrtype : socket_domain; (* [@@dead "host_entry.h_addrtype"] *)
+    h_addr_list : inet_addr array (* [@@dead "host_entry.h_addr_list"] *)
   }
 (** Structure of entries in the [hosts] database. *)
 
 type protocol_entry =
-  { p_name : string;
-    p_aliases : string array;
-    p_proto : int
+  { p_name : string; (* [@@dead "protocol_entry.p_name"] *)
+    p_aliases : string array; (* [@@dead "protocol_entry.p_aliases"] *)
+    p_proto : int (* [@@dead "protocol_entry.p_proto"] *)
   }
 (** Structure of entries in the [protocols] database. *)
 
 type service_entry =
-  { s_name : string;
-    s_aliases : string array;
-    s_port : int;
-    s_proto : string
+  { s_name : string; (* [@@dead "service_entry.s_name"] *)
+    s_aliases : string array; (* [@@dead "service_entry.s_aliases"] *)
+    s_port : int; (* [@@dead "service_entry.s_port"] *)
+    s_proto : string (* [@@dead "service_entry.s_proto"] *)
   }
 (** Structure of entries in the [services] database. *)
 
-val gethostname : unit -> string
+val gethostname : unit -> string (* [@@dead "gethostname"] *)
 (** Return the name of the local host. *)
 
 val gethostbyname : string -> host_entry
@@ -1472,11 +1472,11 @@ val gethostbyaddr : inet_addr -> host_entry
 (** Find an entry in [hosts] with the given address.
     @raise Not_found if no such entry exist. *)
 
-val getprotobyname : string -> protocol_entry
+val getprotobyname : string -> protocol_entry (* [@@dead "getprotobyname"] *)
 (** Find an entry in [protocols] with the given name.
     @raise Not_found if no such entry exist. *)
 
-val getprotobynumber : int -> protocol_entry
+val getprotobynumber : int -> protocol_entry (* [@@dead "getprotobynumber"] *)
 (** Find an entry in [protocols] with the given protocol number.
     @raise Not_found if no such entry exist. *)
 
@@ -1489,23 +1489,23 @@ val getservbyport : int -> string -> service_entry
     @raise Not_found if no such entry exist. *)
 
 type addr_info =
-  { ai_family : socket_domain;          (** Socket domain *)
-    ai_socktype : socket_type;          (** Socket type *)
-    ai_protocol : int;                  (** Socket protocol number *)
-    ai_addr : sockaddr;                 (** Address *)
-    ai_canonname : string               (** Canonical host name  *)
+  { ai_family : socket_domain;          (** Socket domain *) (* [@@dead "addr_info.ai_family"] *)
+    ai_socktype : socket_type;          (** Socket type *) (* [@@dead "addr_info.ai_socktype"] *)
+    ai_protocol : int;                  (** Socket protocol number *) (* [@@dead "addr_info.ai_protocol"] *)
+    ai_addr : sockaddr;                 (** Address *) (* [@@dead "addr_info.ai_addr"] *)
+    ai_canonname : string               (** Canonical host name  *) (* [@@dead "addr_info.ai_canonname"] *)
   }
 (** Address information returned by {!Unix.getaddrinfo}. *)
 
 type getaddrinfo_option =
-    AI_FAMILY of socket_domain          (** Impose the given socket domain *)
-  | AI_SOCKTYPE of socket_type          (** Impose the given socket type *)
-  | AI_PROTOCOL of int                  (** Impose the given protocol  *)
-  | AI_NUMERICHOST                      (** Do not call name resolver,
+    AI_FAMILY of socket_domain          (** Impose the given socket domain *) (* [@@dead "getaddrinfo_option.AI_FAMILY"] *)
+  | AI_SOCKTYPE of socket_type          (** Impose the given socket type *) (* [@@dead "getaddrinfo_option.AI_SOCKTYPE"] *)
+  | AI_PROTOCOL of int                  (** Impose the given protocol  *) (* [@@dead "getaddrinfo_option.AI_PROTOCOL"] *)
+  | AI_NUMERICHOST                      (** Do not call name resolver, (* [@@dead "getaddrinfo_option.AI_NUMERICHOST"] *)
                                             expect numeric IP address *)
-  | AI_CANONNAME                        (** Fill the [ai_canonname] field
+  | AI_CANONNAME                        (** Fill the [ai_canonname] field (* [@@dead "getaddrinfo_option.AI_CANONNAME"] *)
                                             of the result *)
-  | AI_PASSIVE                          (** Set address to ``any'' address
+  | AI_PASSIVE                          (** Set address to ``any'' address (* [@@dead "getaddrinfo_option.AI_PASSIVE"] *)
                                             for use with {!Unix.bind} *)
 (** Options to {!Unix.getaddrinfo}. *)
 
@@ -1529,17 +1529,17 @@ val getaddrinfo:
     or a particular socket type (e.g. TCP only or UDP only). *)
 
 type name_info =
-  { ni_hostname : string;               (** Name or IP address of host *)
-    ni_service : string;                (** Name of service or port number *)
+  { ni_hostname : string;               (** Name or IP address of host *) (* [@@dead "name_info.ni_hostname"] *)
+    ni_service : string;                (** Name of service or port number *) (* [@@dead "name_info.ni_service"] *)
   }
 (** Host and service information returned by {!Unix.getnameinfo}. *)
 
 type getnameinfo_option =
-    NI_NOFQDN            (** Do not qualify local host names *)
-  | NI_NUMERICHOST       (** Always return host as IP address *)
-  | NI_NAMEREQD          (** Fail if host name cannot be determined *)
-  | NI_NUMERICSERV       (** Always return service as port number *)
-  | NI_DGRAM             (** Consider the service as UDP-based
+    NI_NOFQDN            (** Do not qualify local host names *) (* [@@dead "getnameinfo_option.NI_NOFQDN"] *)
+  | NI_NUMERICHOST       (** Always return host as IP address *) (* [@@dead "getnameinfo_option.NI_NUMERICHOST"] *)
+  | NI_NAMEREQD          (** Fail if host name cannot be determined *) (* [@@dead "getnameinfo_option.NI_NAMEREQD"] *)
+  | NI_NUMERICSERV       (** Always return service as port number *) (* [@@dead "getnameinfo_option.NI_NUMERICSERV"] *)
+  | NI_DGRAM             (** Consider the service as UDP-based (* [@@dead "getnameinfo_option.NI_DGRAM"] *)
                              instead of the default TCP *)
 (** Options to {!Unix.getnameinfo}. *)
 
@@ -1561,50 +1561,50 @@ val getnameinfo : sockaddr -> getnameinfo_option list -> name_info
 type terminal_io =
   {
     (* input modes *)
-    mutable c_ignbrk : bool;  (** Ignore the break condition. *)
-    mutable c_brkint : bool;  (** Signal interrupt on break condition. *)
-    mutable c_ignpar : bool;  (** Ignore characters with parity errors. *)
-    mutable c_parmrk : bool;  (** Mark parity errors. *)
-    mutable c_inpck : bool;   (** Enable parity check on input. *)
-    mutable c_istrip : bool;  (** Strip 8th bit on input characters. *)
-    mutable c_inlcr : bool;   (** Map NL to CR on input. *)
-    mutable c_igncr : bool;   (** Ignore CR on input. *)
-    mutable c_icrnl : bool;   (** Map CR to NL on input. *)
-    mutable c_ixon : bool;    (** Recognize XON/XOFF characters on input. *)
-    mutable c_ixoff : bool;   (** Emit XON/XOFF chars to control input flow. *)
+    mutable c_ignbrk : bool;  (** Ignore the break condition. *) (* [@@dead "terminal_io.c_ignbrk"] *)
+    mutable c_brkint : bool;  (** Signal interrupt on break condition. *) (* [@@dead "terminal_io.c_brkint"] *)
+    mutable c_ignpar : bool;  (** Ignore characters with parity errors. *) (* [@@dead "terminal_io.c_ignpar"] *)
+    mutable c_parmrk : bool;  (** Mark parity errors. *) (* [@@dead "terminal_io.c_parmrk"] *)
+    mutable c_inpck : bool;   (** Enable parity check on input. *) (* [@@dead "terminal_io.c_inpck"] *)
+    mutable c_istrip : bool;  (** Strip 8th bit on input characters. *) (* [@@dead "terminal_io.c_istrip"] *)
+    mutable c_inlcr : bool;   (** Map NL to CR on input. *) (* [@@dead "terminal_io.c_inlcr"] *)
+    mutable c_igncr : bool;   (** Ignore CR on input. *) (* [@@dead "terminal_io.c_igncr"] *)
+    mutable c_icrnl : bool;   (** Map CR to NL on input. *) (* [@@dead "terminal_io.c_icrnl"] *)
+    mutable c_ixon : bool;    (** Recognize XON/XOFF characters on input. *) (* [@@dead "terminal_io.c_ixon"] *)
+    mutable c_ixoff : bool;   (** Emit XON/XOFF chars to control input flow. *) (* [@@dead "terminal_io.c_ixoff"] *)
     (* Output modes: *)
-    mutable c_opost : bool;   (** Enable output processing. *)
+    mutable c_opost : bool;   (** Enable output processing. *) (* [@@dead "terminal_io.c_opost"] *)
     (* Control modes: *)
-    mutable c_obaud : int;    (** Output baud rate (0 means close connection).*)
-    mutable c_ibaud : int;    (** Input baud rate. *)
-    mutable c_csize : int;    (** Number of bits per character (5-8). *)
-    mutable c_cstopb : int;   (** Number of stop bits (1-2). *)
-    mutable c_cread : bool;   (** Reception is enabled. *)
-    mutable c_parenb : bool;  (** Enable parity generation and detection. *)
-    mutable c_parodd : bool;  (** Specify odd parity instead of even. *)
-    mutable c_hupcl : bool;   (** Hang up on last close. *)
-    mutable c_clocal : bool;  (** Ignore modem status lines. *)
+    mutable c_obaud : int;    (** Output baud rate (0 means close connection).*) (* [@@dead "terminal_io.c_obaud"] *)
+    mutable c_ibaud : int;    (** Input baud rate. *) (* [@@dead "terminal_io.c_ibaud"] *)
+    mutable c_csize : int;    (** Number of bits per character (5-8). *) (* [@@dead "terminal_io.c_csize"] *)
+    mutable c_cstopb : int;   (** Number of stop bits (1-2). *) (* [@@dead "terminal_io.c_cstopb"] *)
+    mutable c_cread : bool;   (** Reception is enabled. *) (* [@@dead "terminal_io.c_cread"] *)
+    mutable c_parenb : bool;  (** Enable parity generation and detection. *) (* [@@dead "terminal_io.c_parenb"] *)
+    mutable c_parodd : bool;  (** Specify odd parity instead of even. *) (* [@@dead "terminal_io.c_parodd"] *)
+    mutable c_hupcl : bool;   (** Hang up on last close. *) (* [@@dead "terminal_io.c_hupcl"] *)
+    mutable c_clocal : bool;  (** Ignore modem status lines. *) (* [@@dead "terminal_io.c_clocal"] *)
     (* Local modes: *)
-    mutable c_isig : bool;    (** Generate signal on INTR, QUIT, SUSP. *)
-    mutable c_icanon : bool;  (** Enable canonical processing
+    mutable c_isig : bool;    (** Generate signal on INTR, QUIT, SUSP. *) (* [@@dead "terminal_io.c_isig"] *)
+    mutable c_icanon : bool;  (** Enable canonical processing (* [@@dead "terminal_io.c_icanon"] *)
                                  (line buffering and editing) *)
-    mutable c_noflsh : bool;  (** Disable flush after INTR, QUIT, SUSP. *)
-    mutable c_echo : bool;    (** Echo input characters. *)
-    mutable c_echoe : bool;   (** Echo ERASE (to erase previous character). *)
-    mutable c_echok : bool;   (** Echo KILL (to erase the current line). *)
-    mutable c_echonl : bool;  (** Echo NL even if c_echo is not set. *)
+    mutable c_noflsh : bool;  (** Disable flush after INTR, QUIT, SUSP. *) (* [@@dead "terminal_io.c_noflsh"] *)
+    mutable c_echo : bool;    (** Echo input characters. *) (* [@@dead "terminal_io.c_echo"] *)
+    mutable c_echoe : bool;   (** Echo ERASE (to erase previous character). *) (* [@@dead "terminal_io.c_echoe"] *)
+    mutable c_echok : bool;   (** Echo KILL (to erase the current line). *) (* [@@dead "terminal_io.c_echok"] *)
+    mutable c_echonl : bool;  (** Echo NL even if c_echo is not set. *) (* [@@dead "terminal_io.c_echonl"] *)
     (* Control characters: *)
-    mutable c_vintr : char;   (** Interrupt character (usually ctrl-C). *)
-    mutable c_vquit : char;   (** Quit character (usually ctrl-\). *)
-    mutable c_verase : char;  (** Erase character (usually DEL or ctrl-H). *)
-    mutable c_vkill : char;   (** Kill line character (usually ctrl-U). *)
-    mutable c_veof : char;    (** End-of-file character (usually ctrl-D). *)
-    mutable c_veol : char;    (** Alternate end-of-line char. (usually none). *)
-    mutable c_vmin : int;     (** Minimum number of characters to read
+    mutable c_vintr : char;   (** Interrupt character (usually ctrl-C). *) (* [@@dead "terminal_io.c_vintr"] *)
+    mutable c_vquit : char;   (** Quit character (usually ctrl-\). *) (* [@@dead "terminal_io.c_vquit"] *)
+    mutable c_verase : char;  (** Erase character (usually DEL or ctrl-H). *) (* [@@dead "terminal_io.c_verase"] *)
+    mutable c_vkill : char;   (** Kill line character (usually ctrl-U). *) (* [@@dead "terminal_io.c_vkill"] *)
+    mutable c_veof : char;    (** End-of-file character (usually ctrl-D). *) (* [@@dead "terminal_io.c_veof"] *)
+    mutable c_veol : char;    (** Alternate end-of-line char. (usually none). *) (* [@@dead "terminal_io.c_veol"] *)
+    mutable c_vmin : int;     (** Minimum number of characters to read (* [@@dead "terminal_io.c_vmin"] *)
                                  before the read request is satisfied. *)
-    mutable c_vtime : int;    (** Maximum read wait (in 0.1s units). *)
-    mutable c_vstart : char;  (** Start character (usually ctrl-Q). *)
-    mutable c_vstop : char;   (** Stop character (usually ctrl-S). *)
+    mutable c_vtime : int;    (** Maximum read wait (in 0.1s units). *) (* [@@dead "terminal_io.c_vtime"] *)
+    mutable c_vstart : char;  (** Start character (usually ctrl-Q). *) (* [@@dead "terminal_io.c_vstart"] *)
+    mutable c_vstop : char;   (** Stop character (usually ctrl-S). *) (* [@@dead "terminal_io.c_vstop"] *)
   }
 
 val tcgetattr : file_descr -> terminal_io
@@ -1613,9 +1613,9 @@ val tcgetattr : file_descr -> terminal_io
    On Windows, not implemented. *)
 
 type setattr_when =
-    TCSANOW
-  | TCSADRAIN
-  | TCSAFLUSH
+    TCSANOW (* [@@dead "setattr_when.TCSANOW"] *)
+  | TCSADRAIN (* [@@dead "setattr_when.TCSADRAIN"] *)
+  | TCSAFLUSH (* [@@dead "setattr_when.TCSAFLUSH"] *)
 
 val tcsetattr : file_descr -> setattr_when -> terminal_io -> unit
 (** Set the status of the terminal referred to by the given
@@ -1629,7 +1629,7 @@ val tcsetattr : file_descr -> setattr_when -> terminal_io -> unit
 
    On Windows, not implemented. *)
 
-val tcsendbreak : file_descr -> int -> unit
+val tcsendbreak : file_descr -> int -> unit (* [@@dead "tcsendbreak"] *)
 (** Send a break condition on the given file descriptor.
    The second argument is the duration of the break, in 0.1s units;
    0 means standard duration (0.25s).
@@ -1643,9 +1643,9 @@ val tcdrain : file_descr -> unit
    On Windows, not implemented. *)
 
 type flush_queue =
-    TCIFLUSH
-  | TCOFLUSH
-  | TCIOFLUSH
+    TCIFLUSH (* [@@dead "flush_queue.TCIFLUSH"] *)
+  | TCOFLUSH (* [@@dead "flush_queue.TCOFLUSH"] *)
+  | TCIOFLUSH (* [@@dead "flush_queue.TCIOFLUSH"] *)
 
 val tcflush : file_descr -> flush_queue -> unit
 (** Discard data written on the given file descriptor but not yet
@@ -1657,10 +1657,10 @@ val tcflush : file_descr -> flush_queue -> unit
    On Windows, not implemented. *)
 
 type flow_action =
-    TCOOFF
-  | TCOON
-  | TCIOFF
-  | TCION
+    TCOOFF (* [@@dead "flow_action.TCOOFF"] *)
+  | TCOON (* [@@dead "flow_action.TCOON"] *)
+  | TCIOFF (* [@@dead "flow_action.TCIOFF"] *)
+  | TCION (* [@@dead "flow_action.TCION"] *)
 
 val tcflow : file_descr -> flow_action -> unit
 (** Suspend or restart reception or transmission of data on

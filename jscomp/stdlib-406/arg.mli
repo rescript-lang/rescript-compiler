@@ -59,7 +59,7 @@ type spec =
                                    call the function with the symbol *)
   | Rest of (string -> unit)   (** Stop interpreting keywords and call the
                                    function with each remaining argument *)
-  | Expand of (string -> string array) (** If the remaining arguments to process
+  | Expand of (string -> string array) (** If the remaining arguments to process (* [@@dead "spec.Expand"] *)
                                            are of the form
                                            [["-foo"; "arg"] @ rest] where "foo" is
                                            registered as [Expand f], then the
@@ -103,7 +103,7 @@ val parse :
     by specifying your own [-help] and [--help] options in [speclist].
 *)
 
-val parse_dynamic :
+val parse_dynamic : (* [@@dead "parse_dynamic"] *)
   (key * spec * doc) list ref -> anon_fun -> usage_msg -> unit
 (** Same as {!Arg.parse}, except that the [speclist] argument is a reference
     and may be updated during the parsing. A typical use for this feature
@@ -126,7 +126,7 @@ val parse_argv : ?current: int ref -> string array ->
   as argument.
 *)
 
-val parse_argv_dynamic : ?current:int ref -> string array ->
+val parse_argv_dynamic : ?current:int ref -> string array -> (* [@@dead "parse_argv_dynamic"] *)
   (key * spec * doc) list ref -> anon_fun -> string -> unit
 (** Same as {!Arg.parse_argv}, except that the [speclist] argument is a
     reference and may be updated during the parsing.
@@ -134,7 +134,7 @@ val parse_argv_dynamic : ?current:int ref -> string array ->
     @since 4.01.0
 *)
 
-val parse_and_expand_argv_dynamic : int ref -> string array ref ->
+val parse_and_expand_argv_dynamic : int ref -> string array ref -> (* [@@dead "parse_and_expand_argv_dynamic"] *)
   (key * spec * doc) list ref -> anon_fun -> string -> unit
 (** Same as {!Arg.parse_argv_dynamic}, except that the [argv] argument is a
     reference and may be updated during the parsing of [Expand] arguments.
@@ -142,7 +142,7 @@ val parse_and_expand_argv_dynamic : int ref -> string array ref ->
     @since 4.05.0
 *)
 
-val parse_expand:
+val parse_expand: (* [@@dead "parse_expand"] *)
   (key * spec * doc) list -> anon_fun -> usage_msg -> unit
 (** Same as {!Arg.parse}, except that the [Expand] arguments are allowed and
     the {!current} reference is not updated.
@@ -157,17 +157,17 @@ exception Bad of string
     message to reject invalid arguments.
     [Arg.Bad] is also raised by {!Arg.parse_argv} in case of an error. *)
 
-val usage : (key * spec * doc) list -> usage_msg -> unit
+val usage : (key * spec * doc) list -> usage_msg -> unit (* [@@dead "usage"] *)
 (** [Arg.usage speclist usage_msg] prints to standard error
     an error message that includes the list of valid options.  This is
     the same message that {!Arg.parse} prints in case of error.
     [speclist] and [usage_msg] are the same as for {!Arg.parse}. *)
 
-val usage_string : (key * spec * doc) list -> usage_msg -> string
+val usage_string : (key * spec * doc) list -> usage_msg -> string (* [@@dead "usage_string"] *)
 (** Returns the message that would have been printed by {!Arg.usage},
     if provided with the same parameters. *)
 
-val align: ?limit: int -> (key * spec * doc) list -> (key * spec * doc) list
+val align: ?limit: int -> (key * spec * doc) list -> (key * spec * doc) list (* [@@dead "align"] *)
 (** Align the documentation strings by inserting spaces at the first alignment
     separator (tab or, if tab is not found, space), according to the length of
     the keyword.  Use a alignment separator as the first character in a doc
@@ -176,31 +176,31 @@ val align: ?limit: int -> (key * spec * doc) list -> (key * spec * doc) list
     @param limit options with keyword and message longer than [limit] will not
     be used to compute the alignment. *)
 
-val current : int ref
+val current : int ref (* [@@dead "current"] *)
 (** Position (in {!Sys.argv}) of the argument being processed.  You can
     change this value, e.g. to force {!Arg.parse} to skip some arguments.
     {!Arg.parse} uses the initial value of {!Arg.current} as the index of
     argument 0 (the program name) and starts parsing arguments
     at the next element. *)
 
-val read_arg: string -> string array
+val read_arg: string -> string array (* [@@dead "read_arg"] *)
 (** [Arg.read_arg file] reads newline-terminated command line arguments from
     file [file].
     @since 4.05.0 *)
 
-val read_arg0: string -> string array
+val read_arg0: string -> string array (* [@@dead "read_arg0"] *)
 (** Identical to {!Arg.read_arg} but assumes null character terminated command line
     arguments.
     @since 4.05.0 *)
 
 
-val write_arg: string -> string array -> unit
+val write_arg: string -> string array -> unit (* [@@dead "write_arg"] *)
 (** [Arg.write_arg file args] writes the arguments [args] newline-terminated
     into the file [file]. If the any of the arguments in [args] contains a
     newline, use {!Arg.write_arg0} instead.
     @since 4.05.0 *)
 
-val write_arg0: string -> string array -> unit
+val write_arg0: string -> string array -> unit (* [@@dead "write_arg0"] *)
 (** Identical to {!Arg.write_arg} but uses the null character for terminator
     instead of newline.
     @since 4.05.0 *)

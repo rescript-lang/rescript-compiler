@@ -34,22 +34,22 @@ val is_relative : string -> bool
    directory, [false] if it is absolute (i.e. in Unix, starts
    with [/]). *)
 
-val is_implicit : string -> bool
+val is_implicit : string -> bool (* [@@dead "is_implicit"] *)
 (** Return [true] if the file name is relative and does not start
    with an explicit reference to the current directory ([./] or
    [../] in Unix), [false] if it starts with an explicit reference
    to the root directory or the current directory. *)
 
-val check_suffix : string -> string -> bool
+val check_suffix : string -> string -> bool (* [@@dead "check_suffix"] *)
 (** [check_suffix name suff] returns [true] if the filename [name]
    ends with the suffix [suff]. *)
 
-val chop_suffix : string -> string -> string
+val chop_suffix : string -> string -> string (* [@@dead "chop_suffix"] *)
 (** [chop_suffix name suff] removes the suffix [suff] from
    the filename [name]. The behavior is undefined if [name] does not
    end with the suffix [suff]. *)
 
-val extension : string -> string
+val extension : string -> string (* [@@dead "extension"] *)
 (** [extension name] is the shortest suffix [ext] of [name0] where:
 
     - [name0] is the longest suffix of [name] that does not
@@ -64,7 +64,7 @@ val extension : string -> string
     @since 4.04
 *)
 
-val remove_extension : string -> string
+val remove_extension : string -> string (* [@@dead "remove_extension"] *)
 (** Return the given file name without its extension, as defined
     in {!Filename.extension}. If the extension is empty, the function
     returns the given file name.
@@ -97,7 +97,7 @@ val dirname : string -> string
    This function conforms to the specification of POSIX.1-2008 for the
    [dirname] utility. *)
 
-val temp_file : ?temp_dir: string -> string -> string -> string
+val temp_file : ?temp_dir: string -> string -> string -> string (* [@@dead "temp_file"] *)
 (** [temp_file prefix suffix] returns the name of a
    fresh temporary file in the temporary directory.
    The base name of the temporary file is formed by concatenating
@@ -112,7 +112,7 @@ val temp_file : ?temp_dir: string -> string -> string -> string
    @before 3.11.2 no ?temp_dir optional argument
 *)
 
-val open_temp_file :
+val open_temp_file : (* [@@dead "open_temp_file"] *)
       ?mode: open_flag list -> ?perms: int -> ?temp_dir: string -> string ->
       string -> string * out_channel
 (** Same as {!Filename.temp_file}, but returns both the name of a fresh
@@ -131,7 +131,7 @@ val open_temp_file :
    @before 3.11.2 no ?temp_dir optional argument
 *)
 
-val get_temp_dir_name : unit -> string
+val get_temp_dir_name : unit -> string (* [@@dead "get_temp_dir_name"] *)
 (** The name of the temporary directory:
     Under Unix, the value of the [TMPDIR] environment variable, or "/tmp"
     if the variable is not set.
@@ -141,13 +141,13 @@ val get_temp_dir_name : unit -> string
     @since 4.00.0
 *)
 
-val set_temp_dir_name : string -> unit
+val set_temp_dir_name : string -> unit (* [@@dead "set_temp_dir_name"] *)
 (** Change the temporary directory returned by {!Filename.get_temp_dir_name}
     and used by {!Filename.temp_file} and {!Filename.open_temp_file}.
     @since 4.00.0
 *)
 
-val temp_dir_name : string
+val temp_dir_name : string (* [@@dead "temp_dir_name"] *)
   [@@ocaml.deprecated "Use Filename.get_temp_dir_name instead"]
 (** The name of the initial temporary directory:
     Under Unix, the value of the [TMPDIR] environment variable, or "/tmp"
@@ -158,7 +158,7 @@ val temp_dir_name : string
     @since 3.09.1
 *)
 
-val quote : string -> string
+val quote : string -> string (* [@@dead "quote"] *)
 (** Return a quoted version of a file name, suitable for use as
     one argument in a command line, escaping all meta-characters.
     Warning: under Windows, the output is only suitable for use

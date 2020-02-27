@@ -105,10 +105,10 @@ exception Unix_error of error * string * string
    is the function name; the third component is the string parameter
    to the function, if it has one, or the empty string otherwise. *)
 
-val error_message : error -> string
+val error_message : error -> string (* [@@dead "error_message"] *)
 (** Return a string describing the given error code. *)
 
-val handle_unix_error : ('a -> 'b) -> 'a -> 'b
+val handle_unix_error : ('a -> 'b) -> 'a -> 'b (* [@@dead "handle_unix_error"] *)
 (** [handle_unix_error f x] applies [f] to [x] and returns the result.
    If the exception [Unix_error] is raised, it prints a message
    describing the error and exits with code 2. *)
@@ -117,16 +117,16 @@ val handle_unix_error : ('a -> 'b) -> 'a -> 'b
 (** {1 Access to the process environment} *)
 
 
-val environment : unit -> string array
+val environment : unit -> string array (* [@@dead "environment"] *)
 (** Return the process environment, as an array of strings
     with the format ``variable=value''. *)
 
-val getenv : string -> string
+val getenv : string -> string (* [@@dead "getenv"] *)
 (** Return the value associated to a variable in the process
    environment. Raise [Not_found] if the variable is unbound.
    (This function is identical to [Sys.getenv].) *)
 
-val unsafe_getenv : string -> string
+val unsafe_getenv : string -> string (* [@@dead "unsafe_getenv"] *)
 (** Return the value associated to a variable in the process
    environment.
 
@@ -140,7 +140,7 @@ val unsafe_getenv : string -> string
    @raise Not_found if the variable is unbound.
    @since 4.06.0  *)
 
-val putenv : string -> string -> unit
+val putenv : string -> string -> unit (* [@@dead "putenv"] *)
 (** [Unix.putenv name value] sets the value associated to a
    variable in the process environment.
    [name] is the name of the environment variable,
@@ -171,34 +171,34 @@ type wait_flag = Unix.wait_flag =
   | WUNTRACED (** report also the children that receive stop signals. *)
 (** Flags for {!UnixLabels.waitpid}. *)
 
-val execv : prog:string -> args:string array -> 'a
+val execv : prog:string -> args:string array -> 'a (* [@@dead "execv"] *)
 (** [execv prog args] execute the program in file [prog], with
    the arguments [args], and the current process environment.
    These [execv*] functions never return: on success, the current
    program is replaced by the new one;
    on failure, a {!UnixLabels.Unix_error} exception is raised. *)
 
-val execve : prog:string -> args:string array -> env:string array -> 'a
+val execve : prog:string -> args:string array -> env:string array -> 'a (* [@@dead "execve"] *)
 (** Same as {!UnixLabels.execv}, except that the third argument provides the
    environment to the program executed. *)
 
-val execvp : prog:string -> args:string array -> 'a
+val execvp : prog:string -> args:string array -> 'a (* [@@dead "execvp"] *)
 (** Same as {!UnixLabels.execv}, except that
    the program is searched in the path. *)
 
-val execvpe : prog:string -> args:string array -> env:string array -> 'a
+val execvpe : prog:string -> args:string array -> env:string array -> 'a (* [@@dead "execvpe"] *)
 (** Same as {!UnixLabels.execve}, except that
    the program is searched in the path. *)
 
-val fork : unit -> int
+val fork : unit -> int (* [@@dead "fork"] *)
 (** Fork a new process. The returned integer is 0 for the child
    process, the pid of the child process for the parent process. *)
 
-val wait : unit -> int * process_status
+val wait : unit -> int * process_status (* [@@dead "wait"] *)
 (** Wait until one of the children processes die, and return its pid
    and termination status. *)
 
-val waitpid : mode:wait_flag list -> int -> int * process_status
+val waitpid : mode:wait_flag list -> int -> int * process_status (* [@@dead "waitpid"] *)
 (** Same as {!UnixLabels.wait}, but waits for the child process whose pid
    is given.
    A pid of [-1] means wait for any child.
@@ -208,20 +208,20 @@ val waitpid : mode:wait_flag list -> int -> int * process_status
    The list of options indicates whether [waitpid] should return
    immediately without waiting, or also report stopped children. *)
 
-val system : string -> process_status
+val system : string -> process_status (* [@@dead "system"] *)
 (** Execute the given command, wait until it terminates, and return
    its termination status. The string is interpreted by the shell
    [/bin/sh] and therefore can contain redirections, quotes, variables,
    etc. The result [WEXITED 127] indicates that the shell couldn't
    be executed. *)
 
-val getpid : unit -> int
+val getpid : unit -> int (* [@@dead "getpid"] *)
 (** Return the pid of the process. *)
 
-val getppid : unit -> int
+val getppid : unit -> int (* [@@dead "getppid"] *)
 (** Return the pid of the parent process. *)
 
-val nice : int -> int
+val nice : int -> int (* [@@dead "nice"] *)
 (** Change the process priority. The integer argument is added to the
    ``nice'' value. (Higher values of the ``nice'' value mean
    lower priorities.) Return the new nice value. *)
@@ -233,13 +233,13 @@ val nice : int -> int
 type file_descr = Unix.file_descr
 (** The abstract type of file descriptors. *)
 
-val stdin : file_descr
+val stdin : file_descr (* [@@dead "stdin"] *)
 (** File descriptor for standard input.*)
 
-val stdout : file_descr
+val stdout : file_descr (* [@@dead "stdout"] *)
 (** File descriptor for standard output.*)
 
-val stderr : file_descr
+val stderr : file_descr (* [@@dead "stderr"] *)
 (** File descriptor for standard error. *)
 
 type open_flag = Unix.open_flag =
@@ -271,37 +271,37 @@ type file_perm = int
 (** The type of file access rights, e.g. [0o640] is read and write for user,
     read for group, none for others *)
 
-val openfile : string -> mode:open_flag list -> perm:file_perm -> file_descr
+val openfile : string -> mode:open_flag list -> perm:file_perm -> file_descr (* [@@dead "openfile"] *)
 (** Open the named file with the given flags. Third argument is
    the permissions to give to the file if it is created. Return
    a file descriptor on the named file. *)
 
-val close : file_descr -> unit
+val close : file_descr -> unit (* [@@dead "close"] *)
 (** Close a file descriptor. *)
 
-val read : file_descr -> buf:bytes -> pos:int -> len:int -> int
+val read : file_descr -> buf:bytes -> pos:int -> len:int -> int (* [@@dead "read"] *)
 (** [read fd buff ofs len] reads [len] bytes from descriptor [fd],
     storing them in byte sequence [buff], starting at position [ofs] in
     [buff]. Return the number of bytes actually read. *)
 
-val write : file_descr -> buf:bytes -> pos:int -> len:int -> int
+val write : file_descr -> buf:bytes -> pos:int -> len:int -> int (* [@@dead "write"] *)
 (** [write fd buff ofs len] writes [len] bytes to descriptor [fd],
     taking them from byte sequence [buff], starting at position [ofs]
     in [buff]. Return the number of bytes actually written.  [write]
     repeats the writing operation until all bytes have been written or
     an error occurs.  *)
 
-val single_write : file_descr -> buf:bytes -> pos:int -> len:int -> int
+val single_write : file_descr -> buf:bytes -> pos:int -> len:int -> int (* [@@dead "single_write"] *)
 (** Same as [write], but attempts to write only once.
    Thus, if an error occurs, [single_write] guarantees that no data
    has been written. *)
 
-val write_substring : file_descr -> buf:string -> pos:int -> len:int -> int
+val write_substring : file_descr -> buf:string -> pos:int -> len:int -> int (* [@@dead "write_substring"] *)
 (** Same as [write], but take the data from a string instead of a byte
     sequence.
     @since 4.02.0 *)
 
-val single_write_substring :
+val single_write_substring : (* [@@dead "single_write_substring"] *)
   file_descr -> buf:string -> pos:int -> len:int -> int
 (** Same as [single_write], but take the data from a string instead of
     a byte sequence.
@@ -311,20 +311,20 @@ val single_write_substring :
 
 
 
-val in_channel_of_descr : file_descr -> in_channel
+val in_channel_of_descr : file_descr -> in_channel (* [@@dead "in_channel_of_descr"] *)
 (** Create an input channel reading from the given descriptor.
    The channel is initially in binary mode; use
    [set_binary_mode_in ic false] if text mode is desired. *)
 
-val out_channel_of_descr : file_descr -> out_channel
+val out_channel_of_descr : file_descr -> out_channel (* [@@dead "out_channel_of_descr"] *)
 (** Create an output channel writing on the given descriptor.
    The channel is initially in binary mode; use
    [set_binary_mode_out oc false] if text mode is desired. *)
 
-val descr_of_in_channel : in_channel -> file_descr
+val descr_of_in_channel : in_channel -> file_descr (* [@@dead "descr_of_in_channel"] *)
 (** Return the descriptor corresponding to an input channel. *)
 
-val descr_of_out_channel : out_channel -> file_descr
+val descr_of_out_channel : out_channel -> file_descr (* [@@dead "descr_of_out_channel"] *)
 (** Return the descriptor corresponding to an output channel. *)
 
 
@@ -338,14 +338,14 @@ type seek_command = Unix.seek_command =
 (** Positioning modes for {!UnixLabels.lseek}. *)
 
 
-val lseek : file_descr -> int -> mode:seek_command -> int
+val lseek : file_descr -> int -> mode:seek_command -> int (* [@@dead "lseek"] *)
 (** Set the current position for a file descriptor, and return the resulting
     offset (from the beginning of the file). *)
 
-val truncate : string -> len:int -> unit
+val truncate : string -> len:int -> unit (* [@@dead "truncate"] *)
 (** Truncates the named file to the given size. *)
 
-val ftruncate : file_descr -> len:int -> unit
+val ftruncate : file_descr -> len:int -> unit (* [@@dead "ftruncate"] *)
 (** Truncates the file corresponding to the given descriptor
    to the given size. *)
 
@@ -378,18 +378,18 @@ type stats = Unix.stats =
   }
 (** The information returned by the {!UnixLabels.stat} calls. *)
 
-val stat : string -> stats
+val stat : string -> stats (* [@@dead "stat"] *)
 (** Return the information for the named file. *)
 
-val lstat : string -> stats
+val lstat : string -> stats (* [@@dead "lstat"] *)
 (** Same as {!UnixLabels.stat}, but in case the file is a symbolic link,
    return the information for the link itself. *)
 
-val fstat : file_descr -> stats
+val fstat : file_descr -> stats (* [@@dead "fstat"] *)
 (** Return the information for the file associated with the given
    descriptor. *)
 
-val isatty : file_descr -> bool
+val isatty : file_descr -> bool (* [@@dead "isatty"] *)
 (** Return [true] if the given file descriptor refers to a terminal or
    console window, [false] otherwise. *)
 
@@ -397,9 +397,9 @@ val isatty : file_descr -> bool
 
 module LargeFile :
   sig
-    val lseek : file_descr -> int64 -> mode:seek_command -> int64
-    val truncate : string -> len:int64 -> unit
-    val ftruncate : file_descr -> len:int64 -> unit
+    val lseek : file_descr -> int64 -> mode:seek_command -> int64 (* [@@dead "LargeFile.lseek"] *)
+    val truncate : string -> len:int64 -> unit (* [@@dead "LargeFile.truncate"] *)
+    val ftruncate : file_descr -> len:int64 -> unit (* [@@dead "LargeFile.ftruncate"] *)
     type stats = Unix.LargeFile.stats =
       { st_dev : int;               (** Device number *)
         st_ino : int;               (** Inode number *)
@@ -414,9 +414,9 @@ module LargeFile :
         st_mtime : float;           (** Last modification time *)
         st_ctime : float;           (** Last status change time *)
       }
-    val stat : string -> stats
-    val lstat : string -> stats
-    val fstat : file_descr -> stats
+    val stat : string -> stats (* [@@dead "LargeFile.stat"] *)
+    val lstat : string -> stats (* [@@dead "LargeFile.lstat"] *)
+    val fstat : file_descr -> stats (* [@@dead "LargeFile.fstat"] *)
   end
 (** File operations on large files.
   This sub-module provides 64-bit variants of the functions
@@ -432,7 +432,7 @@ module LargeFile :
 
 (** {1 Mapping files into memory} *)
 
-val map_file :
+val map_file : (* [@@dead "map_file"] *)
   file_descr -> ?pos:int64 -> kind:('a, 'b) CamlinternalBigarray.kind ->
   layout:'c CamlinternalBigarray.layout -> shared:bool -> dims:int array ->
   ('a, 'b, 'c) CamlinternalBigarray.genarray
@@ -486,13 +486,13 @@ val map_file :
 (** {1 Operations on file names} *)
 
 
-val unlink : string -> unit
+val unlink : string -> unit (* [@@dead "unlink"] *)
 (** Removes the named file *)
 
-val rename : src:string -> dst:string -> unit
+val rename : src:string -> dst:string -> unit (* [@@dead "rename"] *)
 (** [rename old new] changes the name of a file from [old] to [new]. *)
 
-val link : src:string -> dst:string -> unit
+val link : src:string -> dst:string -> unit (* [@@dead "link"] *)
 (** [link source dest] creates a hard link named [dest] to the file
    named [source]. *)
 
@@ -508,23 +508,23 @@ type access_permission = Unix.access_permission =
 (** Flags for the {!UnixLabels.access} call. *)
 
 
-val chmod : string -> perm:file_perm -> unit
+val chmod : string -> perm:file_perm -> unit (* [@@dead "chmod"] *)
 (** Change the permissions of the named file. *)
 
-val fchmod : file_descr -> perm:file_perm -> unit
+val fchmod : file_descr -> perm:file_perm -> unit (* [@@dead "fchmod"] *)
 (** Change the permissions of an opened file. *)
 
-val chown : string -> uid:int -> gid:int -> unit
+val chown : string -> uid:int -> gid:int -> unit (* [@@dead "chown"] *)
 (** Change the owner uid and owner gid of the named file. *)
 
-val fchown : file_descr -> uid:int -> gid:int -> unit
+val fchown : file_descr -> uid:int -> gid:int -> unit (* [@@dead "fchown"] *)
 (** Change the owner uid and owner gid of an opened file. *)
 
-val umask : int -> int
+val umask : int -> int (* [@@dead "umask"] *)
 (** Set the process's file mode creation mask, and return the previous
     mask. *)
 
-val access : string -> perm:access_permission list -> unit
+val access : string -> perm:access_permission list -> unit (* [@@dead "access"] *)
 (** Check that the process has the given permissions over the named
    file. Raise [Unix_error] otherwise. *)
 
@@ -532,15 +532,15 @@ val access : string -> perm:access_permission list -> unit
 (** {1 Operations on file descriptors} *)
 
 
-val dup : ?cloexec:bool -> file_descr -> file_descr
+val dup : ?cloexec:bool -> file_descr -> file_descr (* [@@dead "dup"] *)
 (** Return a new file descriptor referencing the same file as
    the given descriptor. *)
 
-val dup2 : ?cloexec:bool -> src:file_descr -> dst:file_descr -> unit
+val dup2 : ?cloexec:bool -> src:file_descr -> dst:file_descr -> unit (* [@@dead "dup2"] *)
 (** [dup2 fd1 fd2] duplicates [fd1] to [fd2], closing [fd2] if already
    opened. *)
 
-val set_nonblock : file_descr -> unit
+val set_nonblock : file_descr -> unit (* [@@dead "set_nonblock"] *)
 (** Set the ``non-blocking'' flag on the given descriptor.
    When the non-blocking flag is set, reading on a descriptor
    on which there is temporarily no data available raises the
@@ -548,17 +548,17 @@ val set_nonblock : file_descr -> unit
    writing on a descriptor on which there is temporarily no room
    for writing also raises [EAGAIN] or [EWOULDBLOCK]. *)
 
-val clear_nonblock : file_descr -> unit
+val clear_nonblock : file_descr -> unit (* [@@dead "clear_nonblock"] *)
 (** Clear the ``non-blocking'' flag on the given descriptor.
    See {!UnixLabels.set_nonblock}.*)
 
-val set_close_on_exec : file_descr -> unit
+val set_close_on_exec : file_descr -> unit (* [@@dead "set_close_on_exec"] *)
 (** Set the ``close-on-exec'' flag on the given descriptor.
    A descriptor with the close-on-exec flag is automatically
    closed when the current process starts another program with
    one of the [exec] functions. *)
 
-val clear_close_on_exec : file_descr -> unit
+val clear_close_on_exec : file_descr -> unit (* [@@dead "clear_close_on_exec"] *)
 (** Clear the ``close-on-exec'' flag on the given descriptor.
    See {!UnixLabels.set_close_on_exec}.*)
 
@@ -566,35 +566,35 @@ val clear_close_on_exec : file_descr -> unit
 (** {1 Directories} *)
 
 
-val mkdir : string -> perm:file_perm -> unit
+val mkdir : string -> perm:file_perm -> unit (* [@@dead "mkdir"] *)
 (** Create a directory with the given permissions. *)
 
-val rmdir : string -> unit
+val rmdir : string -> unit (* [@@dead "rmdir"] *)
 (** Remove an empty directory. *)
 
-val chdir : string -> unit
+val chdir : string -> unit (* [@@dead "chdir"] *)
 (** Change the process working directory. *)
 
-val getcwd : unit -> string
+val getcwd : unit -> string (* [@@dead "getcwd"] *)
 (** Return the name of the current working directory. *)
 
-val chroot : string -> unit
+val chroot : string -> unit (* [@@dead "chroot"] *)
 (** Change the process root directory. *)
 
 type dir_handle = Unix.dir_handle
 (** The type of descriptors over opened directories. *)
 
-val opendir : string -> dir_handle
+val opendir : string -> dir_handle (* [@@dead "opendir"] *)
 (** Open a descriptor on a directory *)
 
-val readdir : dir_handle -> string
+val readdir : dir_handle -> string (* [@@dead "readdir"] *)
 (** Return the next entry in a directory.
    @raise End_of_file when the end of the directory has been reached. *)
 
-val rewinddir : dir_handle -> unit
+val rewinddir : dir_handle -> unit (* [@@dead "rewinddir"] *)
 (** Reposition the descriptor to the beginning of the directory *)
 
-val closedir : dir_handle -> unit
+val closedir : dir_handle -> unit (* [@@dead "closedir"] *)
 (** Close a directory descriptor. *)
 
 
@@ -602,19 +602,19 @@ val closedir : dir_handle -> unit
 (** {1 Pipes and redirections} *)
 
 
-val pipe : ?cloexec:bool -> unit -> file_descr * file_descr
+val pipe : ?cloexec:bool -> unit -> file_descr * file_descr (* [@@dead "pipe"] *)
 (** Create a pipe. The first component of the result is opened
    for reading, that's the exit to the pipe. The second component is
    opened for writing, that's the entrance to the pipe. *)
 
-val mkfifo : string -> perm:file_perm -> unit
+val mkfifo : string -> perm:file_perm -> unit (* [@@dead "mkfifo"] *)
 (** Create a named pipe with the given permissions. *)
 
 
 (** {1 High-level process and redirection management} *)
 
 
-val create_process :
+val create_process : (* [@@dead "create_process"] *)
   prog:string -> args:string array -> stdin:file_descr -> stdout:file_descr ->
     stderr:file_descr -> int
 (** [create_process prog args new_stdin new_stdout new_stderr]
@@ -630,7 +630,7 @@ val create_process :
    The executable file [prog] is searched in the path.
    The new process has the same environment as the current process. *)
 
-val create_process_env :
+val create_process_env : (* [@@dead "create_process_env"] *)
   prog:string -> args:string array -> env:string array -> stdin:file_descr ->
     stdout:file_descr -> stderr:file_descr -> int
 (** [create_process_env prog args env new_stdin new_stdout new_stderr]
@@ -638,14 +638,14 @@ val create_process_env :
    [env] specifies the environment passed to the program. *)
 
 
-val open_process_in : string -> in_channel
+val open_process_in : string -> in_channel (* [@@dead "open_process_in"] *)
 (** High-level pipe and process management. This function
    runs the given command in parallel with the program.
    The standard output of the command is redirected to a pipe,
    which can be read via the returned input channel.
    The command is interpreted by the shell [/bin/sh] (cf. [system]). *)
 
-val open_process_out : string -> out_channel
+val open_process_out : string -> out_channel (* [@@dead "open_process_out"] *)
 (** Same as {!UnixLabels.open_process_in}, but redirect the standard input of
    the command to a pipe.  Data written to the returned output channel
    is sent to the standard input of the command.
@@ -653,35 +653,35 @@ val open_process_out : string -> out_channel
    to call {!Pervasives.flush} at the right times to ensure
    correct synchronization. *)
 
-val open_process : string -> in_channel * out_channel
+val open_process : string -> in_channel * out_channel (* [@@dead "open_process"] *)
 (** Same as {!UnixLabels.open_process_out}, but redirects both the standard
    input and standard output of the command to pipes connected to the two
    returned channels.  The input channel is connected to the output
    of the command, and the output channel to the input of the command. *)
 
-val open_process_full :
+val open_process_full : (* [@@dead "open_process_full"] *)
   string -> env:string array -> in_channel * out_channel * in_channel
 (** Similar to {!UnixLabels.open_process}, but the second argument specifies
    the environment passed to the command.  The result is a triple
    of channels connected respectively to the standard output, standard input,
    and standard error of the command. *)
 
-val close_process_in : in_channel -> process_status
+val close_process_in : in_channel -> process_status (* [@@dead "close_process_in"] *)
 (** Close channels opened by {!UnixLabels.open_process_in},
    wait for the associated command to terminate,
    and return its termination status. *)
 
-val close_process_out : out_channel -> process_status
+val close_process_out : out_channel -> process_status (* [@@dead "close_process_out"] *)
 (** Close channels opened by {!UnixLabels.open_process_out},
    wait for the associated command to terminate,
    and return its termination status. *)
 
-val close_process : in_channel * out_channel -> process_status
+val close_process : in_channel * out_channel -> process_status (* [@@dead "close_process"] *)
 (** Close channels opened by {!UnixLabels.open_process},
    wait for the associated command to terminate,
    and return its termination status. *)
 
-val close_process_full :
+val close_process_full : (* [@@dead "close_process_full"] *)
   in_channel * out_channel * in_channel -> process_status
 (** Close channels opened by {!UnixLabels.open_process_full},
    wait for the associated command to terminate,
@@ -691,25 +691,25 @@ val close_process_full :
 (** {1 Symbolic links} *)
 
 
-val symlink : ?to_dir:bool -> src:string -> dst:string -> unit
+val symlink : ?to_dir:bool -> src:string -> dst:string -> unit (* [@@dead "symlink"] *)
 (** [symlink source dest] creates the file [dest] as a symbolic link
    to the file [source]. See {!Unix.symlink} for details of [~to_dir] *)
 
-val has_symlink : unit -> bool
+val has_symlink : unit -> bool (* [@@dead "has_symlink"] *)
 (** Returns [true] if the user is able to create symbolic links. On Windows,
    this indicates that the user not only has the SeCreateSymbolicLinkPrivilege
    but is also running elevated, if necessary. On other platforms, this is
    simply indicates that the symlink system call is available.
    @since 4.03.0 *)
 
-val readlink : string -> string
+val readlink : string -> string (* [@@dead "readlink"] *)
 (** Read the contents of a link. *)
 
 
 (** {1 Polling} *)
 
 
-val select :
+val select : (* [@@dead "select"] *)
   read:file_descr list -> write:file_descr list -> except:file_descr list ->
     timeout:float -> file_descr list * file_descr list * file_descr list
 (** Wait until some input/output operations become possible on
@@ -735,7 +735,7 @@ type lock_command = Unix.lock_command =
   | F_TRLOCK      (** Lock a region for reading, or fail if already locked *)
 (** Commands for {!UnixLabels.lockf}. *)
 
-val lockf : file_descr -> mode:lock_command -> len:int -> unit
+val lockf : file_descr -> mode:lock_command -> len:int -> unit (* [@@dead "lockf"] *)
 (** [lockf fd cmd size] puts a lock on a region of the file opened
    as [fd]. The region starts at the current read/write position for
    [fd] (as set by {!UnixLabels.lseek}), and extends [size] bytes forward if
@@ -767,7 +767,7 @@ val lockf : file_descr -> mode:lock_command -> len:int -> unit
    the functions {!Sys.signal} and {!Sys.set_signal}.
 *)
 
-val kill : pid:int -> signal:int -> unit
+val kill : pid:int -> signal:int -> unit (* [@@dead "kill"] *)
 (** [kill pid sig] sends signal number [sig] to the process
    with id [pid]. *)
 
@@ -776,7 +776,7 @@ type sigprocmask_command = Unix.sigprocmask_command =
   | SIG_BLOCK
   | SIG_UNBLOCK
 
-val sigprocmask : mode:sigprocmask_command -> int list -> int list
+val sigprocmask : mode:sigprocmask_command -> int list -> int list (* [@@dead "sigprocmask"] *)
 (** [sigprocmask cmd sigs] changes the set of blocked signals.
    If [cmd] is [SIG_SETMASK], blocked signals are set to those in
    the list [sigs].
@@ -786,15 +786,15 @@ val sigprocmask : mode:sigprocmask_command -> int list -> int list
    from the set of blocked signals.
    [sigprocmask] returns the set of previously blocked signals. *)
 
-val sigpending : unit -> int list
+val sigpending : unit -> int list (* [@@dead "sigpending"] *)
 (** Return the set of blocked signals that are currently pending. *)
 
-val sigsuspend : int list -> unit
+val sigsuspend : int list -> unit (* [@@dead "sigsuspend"] *)
 (** [sigsuspend sigs] atomically sets the blocked signals to [sigs]
    and waits for a non-ignored, non-blocked signal to be delivered.
    On return, the blocked signals are reset to their initial value. *)
 
-val pause : unit -> unit
+val pause : unit -> unit (* [@@dead "pause"] *)
 (** Wait until a non-ignored, non-blocked signal is delivered. *)
 
 
@@ -823,22 +823,22 @@ type tm = Unix.tm =
 (** The type representing wallclock time and calendar date. *)
 
 
-val time : unit -> float
+val time : unit -> float (* [@@dead "time"] *)
 (** Return the current time since 00:00:00 GMT, Jan. 1, 1970,
    in seconds. *)
 
-val gettimeofday : unit -> float
+val gettimeofday : unit -> float (* [@@dead "gettimeofday"] *)
 (** Same as {!UnixLabels.time}, but with resolution better than 1 second. *)
 
-val gmtime : float -> tm
+val gmtime : float -> tm (* [@@dead "gmtime"] *)
 (** Convert a time in seconds, as returned by {!UnixLabels.time}, into a date
    and a time. Assumes UTC (Coordinated Universal Time), also known as GMT. *)
 
-val localtime : float -> tm
+val localtime : float -> tm (* [@@dead "localtime"] *)
 (** Convert a time in seconds, as returned by {!UnixLabels.time}, into a date
    and a time. Assumes the local time zone. *)
 
-val mktime : tm -> float * tm
+val mktime : tm -> float * tm (* [@@dead "mktime"] *)
 (** Convert a date and time, specified by the [tm] argument, into
    a time in seconds, as returned by {!UnixLabels.time}.  The [tm_isdst],
    [tm_wday] and [tm_yday] fields of [tm] are ignored.  Also return a
@@ -848,16 +848,16 @@ val mktime : tm -> float * tm
    changed into 9 November).  The [tm] argument is interpreted in the
    local time zone. *)
 
-val alarm : int -> int
+val alarm : int -> int (* [@@dead "alarm"] *)
 (** Schedule a [SIGALRM] signal after the given number of seconds. *)
 
-val sleep : int -> unit
+val sleep : int -> unit (* [@@dead "sleep"] *)
 (** Stop execution for the given number of seconds. *)
 
-val times : unit -> process_times
+val times : unit -> process_times (* [@@dead "times"] *)
 (** Return the execution times of the process. *)
 
-val utimes : string -> access:float -> modif:float -> unit
+val utimes : string -> access:float -> modif:float -> unit (* [@@dead "utimes"] *)
 (** Set the last access time (second arg) and last modification time
    (third arg) for a file. Times are expressed in seconds from
    00:00:00 GMT, Jan. 1, 1970.  A time of [0.0] is interpreted as the
@@ -882,10 +882,10 @@ type interval_timer_status = Unix.interval_timer_status =
   }
 (** The type describing the status of an interval timer *)
 
-val getitimer : interval_timer -> interval_timer_status
+val getitimer : interval_timer -> interval_timer_status (* [@@dead "getitimer"] *)
 (** Return the current status of the given interval timer. *)
 
-val setitimer :
+val setitimer : (* [@@dead "setitimer"] *)
   interval_timer -> interval_timer_status -> interval_timer_status
 (** [setitimer t s] sets the interval timer [t] and returns
    its previous status. The [s] argument is interpreted as follows:
@@ -900,33 +900,33 @@ val setitimer :
 (** {1 User id, group id} *)
 
 
-val getuid : unit -> int
+val getuid : unit -> int (* [@@dead "getuid"] *)
 (** Return the user id of the user executing the process. *)
 
-val geteuid : unit -> int
+val geteuid : unit -> int (* [@@dead "geteuid"] *)
 (** Return the effective user id under which the process runs. *)
 
-val setuid : int -> unit
+val setuid : int -> unit (* [@@dead "setuid"] *)
 (** Set the real user id and effective user id for the process. *)
 
-val getgid : unit -> int
+val getgid : unit -> int (* [@@dead "getgid"] *)
 (** Return the group id of the user executing the process. *)
 
-val getegid : unit -> int
+val getegid : unit -> int (* [@@dead "getegid"] *)
 (** Return the effective group id under which the process runs. *)
 
-val setgid : int -> unit
+val setgid : int -> unit (* [@@dead "setgid"] *)
 (** Set the real group id and effective group id for the process. *)
 
-val getgroups : unit -> int array
+val getgroups : unit -> int array (* [@@dead "getgroups"] *)
 (** Return the list of groups to which the user executing the process
    belongs. *)
 
-val setgroups : int array -> unit
+val setgroups : int array -> unit (* [@@dead "setgroups"] *)
   (** [setgroups groups] sets the supplementary group IDs for the
       calling process. Appropriate privileges are required. *)
 
-val initgroups : string -> int -> unit
+val initgroups : string -> int -> unit (* [@@dead "initgroups"] *)
   (** [initgroups user group] initializes the group access list by
       reading the group database /etc/group and using all groups of
       which [user] is a member. The additional group [group] is also
@@ -951,22 +951,22 @@ type group_entry = Unix.group_entry =
   }
 (** Structure of entries in the [groups] database. *)
 
-val getlogin : unit -> string
+val getlogin : unit -> string (* [@@dead "getlogin"] *)
 (** Return the login name of the user executing the process. *)
 
-val getpwnam : string -> passwd_entry
+val getpwnam : string -> passwd_entry (* [@@dead "getpwnam"] *)
 (** Find an entry in [passwd] with the given name, or raise
    [Not_found]. *)
 
-val getgrnam : string -> group_entry
+val getgrnam : string -> group_entry (* [@@dead "getgrnam"] *)
 (** Find an entry in [group] with the given name, or raise
    [Not_found]. *)
 
-val getpwuid : int -> passwd_entry
+val getpwuid : int -> passwd_entry (* [@@dead "getpwuid"] *)
 (** Find an entry in [passwd] with the given user id, or raise
    [Not_found]. *)
 
-val getgrgid : int -> group_entry
+val getgrgid : int -> group_entry (* [@@dead "getgrgid"] *)
 (** Find an entry in [group] with the given group id, or raise
    [Not_found]. *)
 
@@ -977,7 +977,7 @@ val getgrgid : int -> group_entry
 type inet_addr = Unix.inet_addr
 (** The abstract type of Internet addresses. *)
 
-val inet_addr_of_string : string -> inet_addr
+val inet_addr_of_string : string -> inet_addr (* [@@dead "inet_addr_of_string"] *)
 (** Conversion from the printable representation of an Internet
     address to its internal representation.  The argument string
     consists of 4 numbers separated by periods ([XXX.YYY.ZZZ.TTT])
@@ -985,23 +985,23 @@ val inet_addr_of_string : string -> inet_addr
     for IPv6 addresses.  Raise [Failure] when given a string that
     does not match these formats. *)
 
-val string_of_inet_addr : inet_addr -> string
+val string_of_inet_addr : inet_addr -> string (* [@@dead "string_of_inet_addr"] *)
 (** Return the printable representation of the given Internet address.
     See {!Unix.inet_addr_of_string} for a description of the
     printable representation. *)
 
-val inet_addr_any : inet_addr
+val inet_addr_any : inet_addr (* [@@dead "inet_addr_any"] *)
 (** A special IPv4 address, for use only with [bind], representing
    all the Internet addresses that the host machine possesses. *)
 
-val inet_addr_loopback : inet_addr
+val inet_addr_loopback : inet_addr (* [@@dead "inet_addr_loopback"] *)
 (** A special IPv4 address representing the host machine ([127.0.0.1]). *)
 
-val inet6_addr_any : inet_addr
+val inet6_addr_any : inet_addr (* [@@dead "inet6_addr_any"] *)
 (** A special IPv6 address, for use only with [bind], representing
    all the Internet addresses that the host machine possesses. *)
 
-val inet6_addr_loopback : inet_addr
+val inet6_addr_loopback : inet_addr (* [@@dead "inet6_addr_loopback"] *)
 (** A special IPv6 address representing the host machine ([::1]). *)
 
 
@@ -1032,33 +1032,33 @@ type sockaddr = Unix.sockaddr =
    domain; [addr] is the Internet address of the machine, and
    [port] is the port number. *)
 
-val socket :
+val socket : (* [@@dead "socket"] *)
   ?cloexec:bool -> domain:socket_domain -> kind:socket_type -> protocol:int ->
      file_descr
 (** Create a new socket in the given domain, and with the
    given kind. The third argument is the protocol type; 0 selects
    the default protocol for that kind of sockets. *)
 
-val domain_of_sockaddr: sockaddr -> socket_domain
+val domain_of_sockaddr: sockaddr -> socket_domain (* [@@dead "domain_of_sockaddr"] *)
 (** Return the socket domain adequate for the given socket address. *)
 
-val socketpair :
+val socketpair : (* [@@dead "socketpair"] *)
   ?cloexec:bool -> domain:socket_domain -> kind:socket_type -> protocol:int ->
     file_descr * file_descr
 (** Create a pair of unnamed sockets, connected together. *)
 
-val accept : ?cloexec:bool -> file_descr -> file_descr * sockaddr
+val accept : ?cloexec:bool -> file_descr -> file_descr * sockaddr (* [@@dead "accept"] *)
 (** Accept connections on the given socket. The returned descriptor
    is a socket connected to the client; the returned address is
    the address of the connecting client. *)
 
-val bind : file_descr -> addr:sockaddr -> unit
+val bind : file_descr -> addr:sockaddr -> unit (* [@@dead "bind"] *)
 (** Bind a socket to an address. *)
 
-val connect : file_descr -> addr:sockaddr -> unit
+val connect : file_descr -> addr:sockaddr -> unit (* [@@dead "connect"] *)
 (** Connect a socket to an address. *)
 
-val listen : file_descr -> max:int -> unit
+val listen : file_descr -> max:int -> unit (* [@@dead "listen"] *)
 (** Set up a socket for receiving connection requests. The integer
    argument is the maximal number of pending requests. *)
 
@@ -1069,17 +1069,17 @@ type shutdown_command = Unix.shutdown_command =
 (** The type of commands for [shutdown]. *)
 
 
-val shutdown : file_descr -> mode:shutdown_command -> unit
+val shutdown : file_descr -> mode:shutdown_command -> unit (* [@@dead "shutdown"] *)
 (** Shutdown a socket connection. [SHUTDOWN_SEND] as second argument
    causes reads on the other end of the connection to return
    an end-of-file condition.
    [SHUTDOWN_RECEIVE] causes writes on the other end of the connection
    to return a closed pipe condition ([SIGPIPE] signal). *)
 
-val getsockname : file_descr -> sockaddr
+val getsockname : file_descr -> sockaddr (* [@@dead "getsockname"] *)
 (** Return the address of the given socket. *)
 
-val getpeername : file_descr -> sockaddr
+val getpeername : file_descr -> sockaddr (* [@@dead "getpeername"] *)
 (** Return the address of the host connected to the given socket. *)
 
 type msg_flag = Unix.msg_flag =
@@ -1089,31 +1089,31 @@ type msg_flag = Unix.msg_flag =
 (** The flags for {!UnixLabels.recv},  {!UnixLabels.recvfrom},
    {!UnixLabels.send} and {!UnixLabels.sendto}. *)
 
-val recv :
+val recv : (* [@@dead "recv"] *)
   file_descr -> buf:bytes -> pos:int -> len:int -> mode:msg_flag list -> int
 (** Receive data from a connected socket. *)
 
-val recvfrom :
+val recvfrom : (* [@@dead "recvfrom"] *)
   file_descr -> buf:bytes -> pos:int -> len:int -> mode:msg_flag list ->
     int * sockaddr
 (** Receive data from an unconnected socket. *)
 
-val send :
+val send : (* [@@dead "send"] *)
   file_descr -> buf:bytes -> pos:int -> len:int -> mode:msg_flag list -> int
 (** Send data over a connected socket. *)
 
-val send_substring :
+val send_substring : (* [@@dead "send_substring"] *)
   file_descr -> buf:string -> pos:int -> len:int -> mode:msg_flag list -> int
 (** Same as [send], but take the data from a string instead of a byte
     sequence.
     @since 4.02.0 *)
 
-val sendto :
+val sendto : (* [@@dead "sendto"] *)
   file_descr -> buf:bytes -> pos:int -> len:int -> mode:msg_flag list ->
     addr:sockaddr -> int
 (** Send data over an unconnected socket. *)
 
-val sendto_substring :
+val sendto_substring : (* [@@dead "sendto_substring"] *)
   file_descr -> buf:string -> pos:int -> len:int -> mode:msg_flag list
   -> sockaddr -> int
 (** Same as [sendto], but take the data from a string instead of a
@@ -1126,32 +1126,32 @@ val sendto_substring :
 
 
 type socket_bool_option =
-    SO_DEBUG       (** Record debugging information *)
-  | SO_BROADCAST   (** Permit sending of broadcast messages *)
-  | SO_REUSEADDR   (** Allow reuse of local addresses for bind *)
-  | SO_KEEPALIVE   (** Keep connection active *)
-  | SO_DONTROUTE   (** Bypass the standard routing algorithms *)
-  | SO_OOBINLINE   (** Leave out-of-band data in line *)
-  | SO_ACCEPTCONN  (** Report whether socket listening is enabled *)
-  | TCP_NODELAY    (** Control the Nagle algorithm for TCP sockets *)
-  | IPV6_ONLY      (** Forbid binding an IPv6 socket to an IPv4 address *)
+    SO_DEBUG       (** Record debugging information *) (* [@@dead "socket_bool_option.SO_DEBUG"] *)
+  | SO_BROADCAST   (** Permit sending of broadcast messages *) (* [@@dead "socket_bool_option.SO_BROADCAST"] *)
+  | SO_REUSEADDR   (** Allow reuse of local addresses for bind *) (* [@@dead "socket_bool_option.SO_REUSEADDR"] *)
+  | SO_KEEPALIVE   (** Keep connection active *) (* [@@dead "socket_bool_option.SO_KEEPALIVE"] *)
+  | SO_DONTROUTE   (** Bypass the standard routing algorithms *) (* [@@dead "socket_bool_option.SO_DONTROUTE"] *)
+  | SO_OOBINLINE   (** Leave out-of-band data in line *) (* [@@dead "socket_bool_option.SO_OOBINLINE"] *)
+  | SO_ACCEPTCONN  (** Report whether socket listening is enabled *) (* [@@dead "socket_bool_option.SO_ACCEPTCONN"] *)
+  | TCP_NODELAY    (** Control the Nagle algorithm for TCP sockets *) (* [@@dead "socket_bool_option.TCP_NODELAY"] *)
+  | IPV6_ONLY      (** Forbid binding an IPv6 socket to an IPv4 address *) (* [@@dead "socket_bool_option.IPV6_ONLY"] *)
 (** The socket options that can be consulted with {!UnixLabels.getsockopt}
    and modified with {!UnixLabels.setsockopt}.  These options have a boolean
    ([true]/[false]) value. *)
 
 type socket_int_option =
-    SO_SNDBUF    (** Size of send buffer *)
-  | SO_RCVBUF    (** Size of received buffer *)
-  | SO_ERROR     (** Deprecated.  Use {!Unix.getsockopt_error} instead. *)
-  | SO_TYPE      (** Report the socket type *)
-  | SO_RCVLOWAT  (** Minimum number of bytes to process for input operations *)
-  | SO_SNDLOWAT  (** Minimum number of bytes to process for output operations *)
+    SO_SNDBUF    (** Size of send buffer *) (* [@@dead "socket_int_option.SO_SNDBUF"] *)
+  | SO_RCVBUF    (** Size of received buffer *) (* [@@dead "socket_int_option.SO_RCVBUF"] *)
+  | SO_ERROR     (** Deprecated.  Use {!Unix.getsockopt_error} instead. *) (* [@@dead "socket_int_option.SO_ERROR"] *)
+  | SO_TYPE      (** Report the socket type *) (* [@@dead "socket_int_option.SO_TYPE"] *)
+  | SO_RCVLOWAT  (** Minimum number of bytes to process for input operations *) (* [@@dead "socket_int_option.SO_RCVLOWAT"] *)
+  | SO_SNDLOWAT  (** Minimum number of bytes to process for output operations *) (* [@@dead "socket_int_option.SO_SNDLOWAT"] *)
 (** The socket options that can be consulted with {!UnixLabels.getsockopt_int}
    and modified with {!UnixLabels.setsockopt_int}.  These options have an
    integer value. *)
 
 type socket_optint_option =
-  SO_LINGER      (** Whether to linger on closed connections
+  SO_LINGER      (** Whether to linger on closed connections (* [@@dead "socket_optint_option.SO_LINGER"] *)
                     that have data present, and for how long
                     (in seconds) *)
 (** The socket options that can be consulted with {!Unix.getsockopt_optint}
@@ -1159,62 +1159,62 @@ type socket_optint_option =
    value of type [int option], with [None] meaning ``disabled''. *)
 
 type socket_float_option =
-    SO_RCVTIMEO    (** Timeout for input operations *)
-  | SO_SNDTIMEO    (** Timeout for output operations *)
+    SO_RCVTIMEO    (** Timeout for input operations *) (* [@@dead "socket_float_option.SO_RCVTIMEO"] *)
+  | SO_SNDTIMEO    (** Timeout for output operations *) (* [@@dead "socket_float_option.SO_SNDTIMEO"] *)
 (** The socket options that can be consulted with {!UnixLabels.getsockopt_float}
    and modified with {!UnixLabels.setsockopt_float}.  These options have a
    floating-point value representing a time in seconds.
    The value 0 means infinite timeout. *)
 
-val getsockopt : file_descr -> socket_bool_option -> bool
+val getsockopt : file_descr -> socket_bool_option -> bool (* [@@dead "getsockopt"] *)
 (** Return the current status of a boolean-valued option
    in the given socket. *)
 
-val setsockopt : file_descr -> socket_bool_option -> bool -> unit
+val setsockopt : file_descr -> socket_bool_option -> bool -> unit (* [@@dead "setsockopt"] *)
 (** Set or clear a boolean-valued option in the given socket. *)
 
-val getsockopt_int : file_descr -> socket_int_option -> int
+val getsockopt_int : file_descr -> socket_int_option -> int (* [@@dead "getsockopt_int"] *)
 (** Same as {!Unix.getsockopt} for an integer-valued socket option. *)
 
-val setsockopt_int : file_descr -> socket_int_option -> int -> unit
+val setsockopt_int : file_descr -> socket_int_option -> int -> unit (* [@@dead "setsockopt_int"] *)
 (** Same as {!Unix.setsockopt} for an integer-valued socket option. *)
 
-val getsockopt_optint : file_descr -> socket_optint_option -> int option
+val getsockopt_optint : file_descr -> socket_optint_option -> int option (* [@@dead "getsockopt_optint"] *)
 (** Same as {!Unix.getsockopt} for a socket option whose value is
     an [int option]. *)
 
-val setsockopt_optint :
+val setsockopt_optint : (* [@@dead "setsockopt_optint"] *)
       file_descr -> socket_optint_option -> int option -> unit
 (** Same as {!Unix.setsockopt} for a socket option whose value is
     an [int option]. *)
 
-val getsockopt_float : file_descr -> socket_float_option -> float
+val getsockopt_float : file_descr -> socket_float_option -> float (* [@@dead "getsockopt_float"] *)
 (** Same as {!Unix.getsockopt} for a socket option whose value is a
     floating-point number. *)
 
-val setsockopt_float : file_descr -> socket_float_option -> float -> unit
+val setsockopt_float : file_descr -> socket_float_option -> float -> unit (* [@@dead "setsockopt_float"] *)
 (** Same as {!Unix.setsockopt} for a socket option whose value is a
     floating-point number. *)
 
-val getsockopt_error : file_descr -> error option
+val getsockopt_error : file_descr -> error option (* [@@dead "getsockopt_error"] *)
 (** Return the error condition associated with the given socket,
     and clear it. *)
 
 (** {1 High-level network connection functions} *)
 
 
-val open_connection : sockaddr -> in_channel * out_channel
+val open_connection : sockaddr -> in_channel * out_channel (* [@@dead "open_connection"] *)
 (** Connect to a server at the given address.
    Return a pair of buffered channels connected to the server.
    Remember to call {!Pervasives.flush} on the output channel at the right
    times to ensure correct synchronization. *)
 
-val shutdown_connection : in_channel -> unit
+val shutdown_connection : in_channel -> unit (* [@@dead "shutdown_connection"] *)
 (** ``Shut down'' a connection established with {!UnixLabels.open_connection};
    that is, transmit an end-of-file condition to the server reading
    on the other side of the connection. *)
 
-val establish_server :
+val establish_server : (* [@@dead "establish_server"] *)
   (in_channel -> out_channel -> unit) -> addr:sockaddr -> unit
 (** Establish a server on the given address.
    The function given as first argument is called for each connection
@@ -1249,55 +1249,55 @@ type service_entry = Unix.service_entry =
   }
 (** Structure of entries in the [services] database. *)
 
-val gethostname : unit -> string
+val gethostname : unit -> string (* [@@dead "gethostname"] *)
 (** Return the name of the local host. *)
 
-val gethostbyname : string -> host_entry
+val gethostbyname : string -> host_entry (* [@@dead "gethostbyname"] *)
 (** Find an entry in [hosts] with the given name, or raise
    [Not_found]. *)
 
-val gethostbyaddr : inet_addr -> host_entry
+val gethostbyaddr : inet_addr -> host_entry (* [@@dead "gethostbyaddr"] *)
 (** Find an entry in [hosts] with the given address, or raise
    [Not_found]. *)
 
-val getprotobyname : string -> protocol_entry
+val getprotobyname : string -> protocol_entry (* [@@dead "getprotobyname"] *)
 (** Find an entry in [protocols] with the given name, or raise
    [Not_found]. *)
 
-val getprotobynumber : int -> protocol_entry
+val getprotobynumber : int -> protocol_entry (* [@@dead "getprotobynumber"] *)
 (** Find an entry in [protocols] with the given protocol number,
    or raise [Not_found]. *)
 
-val getservbyname : string -> protocol:string -> service_entry
+val getservbyname : string -> protocol:string -> service_entry (* [@@dead "getservbyname"] *)
 (** Find an entry in [services] with the given name, or raise
    [Not_found]. *)
 
-val getservbyport : int -> protocol:string -> service_entry
+val getservbyport : int -> protocol:string -> service_entry (* [@@dead "getservbyport"] *)
 (** Find an entry in [services] with the given service number,
    or raise [Not_found]. *)
 
 type addr_info =
-  { ai_family : socket_domain;          (** Socket domain *)
-    ai_socktype : socket_type;          (** Socket type *)
-    ai_protocol : int;                  (** Socket protocol number *)
-    ai_addr : sockaddr;                 (** Address *)
-    ai_canonname : string               (** Canonical host name  *)
+  { ai_family : socket_domain;          (** Socket domain *) (* [@@dead "addr_info.ai_family"] *)
+    ai_socktype : socket_type;          (** Socket type *) (* [@@dead "addr_info.ai_socktype"] *)
+    ai_protocol : int;                  (** Socket protocol number *) (* [@@dead "addr_info.ai_protocol"] *)
+    ai_addr : sockaddr;                 (** Address *) (* [@@dead "addr_info.ai_addr"] *)
+    ai_canonname : string               (** Canonical host name  *) (* [@@dead "addr_info.ai_canonname"] *)
   }
 (** Address information returned by {!Unix.getaddrinfo}. *)
 
 type getaddrinfo_option =
-    AI_FAMILY of socket_domain          (** Impose the given socket domain *)
-  | AI_SOCKTYPE of socket_type          (** Impose the given socket type *)
-  | AI_PROTOCOL of int                  (** Impose the given protocol  *)
-  | AI_NUMERICHOST                      (** Do not call name resolver,
+    AI_FAMILY of socket_domain          (** Impose the given socket domain *) (* [@@dead "getaddrinfo_option.AI_FAMILY"] *)
+  | AI_SOCKTYPE of socket_type          (** Impose the given socket type *) (* [@@dead "getaddrinfo_option.AI_SOCKTYPE"] *)
+  | AI_PROTOCOL of int                  (** Impose the given protocol  *) (* [@@dead "getaddrinfo_option.AI_PROTOCOL"] *)
+  | AI_NUMERICHOST                      (** Do not call name resolver, (* [@@dead "getaddrinfo_option.AI_NUMERICHOST"] *)
                                             expect numeric IP address *)
-  | AI_CANONNAME                        (** Fill the [ai_canonname] field
+  | AI_CANONNAME                        (** Fill the [ai_canonname] field (* [@@dead "getaddrinfo_option.AI_CANONNAME"] *)
                                             of the result *)
-  | AI_PASSIVE                          (** Set address to ``any'' address
+  | AI_PASSIVE                          (** Set address to ``any'' address (* [@@dead "getaddrinfo_option.AI_PASSIVE"] *)
                                             for use with {!Unix.bind} *)
 (** Options to {!Unix.getaddrinfo}. *)
 
-val getaddrinfo:
+val getaddrinfo: (* [@@dead "getaddrinfo"] *)
   string -> string -> getaddrinfo_option list -> addr_info list
 (** [getaddrinfo host service opts] returns a list of {!Unix.addr_info}
     records describing socket parameters and addresses suitable for
@@ -1317,21 +1317,21 @@ val getaddrinfo:
     or a particular socket type (e.g. TCP only or UDP only). *)
 
 type name_info =
-  { ni_hostname : string;               (** Name or IP address of host *)
-    ni_service : string;                (** Name of service or port number *)
+  { ni_hostname : string;               (** Name or IP address of host *) (* [@@dead "name_info.ni_hostname"] *)
+    ni_service : string;                (** Name of service or port number *) (* [@@dead "name_info.ni_service"] *)
   }
 (** Host and service information returned by {!Unix.getnameinfo}. *)
 
 type getnameinfo_option =
-    NI_NOFQDN            (** Do not qualify local host names *)
-  | NI_NUMERICHOST       (** Always return host as IP address *)
-  | NI_NAMEREQD          (** Fail if host name cannot be determined *)
-  | NI_NUMERICSERV       (** Always return service as port number *)
-  | NI_DGRAM             (** Consider the service as UDP-based
+    NI_NOFQDN            (** Do not qualify local host names *) (* [@@dead "getnameinfo_option.NI_NOFQDN"] *)
+  | NI_NUMERICHOST       (** Always return host as IP address *) (* [@@dead "getnameinfo_option.NI_NUMERICHOST"] *)
+  | NI_NAMEREQD          (** Fail if host name cannot be determined *) (* [@@dead "getnameinfo_option.NI_NAMEREQD"] *)
+  | NI_NUMERICSERV       (** Always return service as port number *) (* [@@dead "getnameinfo_option.NI_NUMERICSERV"] *)
+  | NI_DGRAM             (** Consider the service as UDP-based (* [@@dead "getnameinfo_option.NI_DGRAM"] *)
                              instead of the default TCP *)
 (** Options to {!Unix.getnameinfo}. *)
 
-val getnameinfo : sockaddr -> getnameinfo_option list -> name_info
+val getnameinfo : sockaddr -> getnameinfo_option list -> name_info (* [@@dead "getnameinfo"] *)
 (** [getnameinfo addr opts] returns the host name and service name
     corresponding to the socket address [addr].  [opts] is a possibly
     empty list of options that governs how these names are obtained.
@@ -1395,7 +1395,7 @@ type terminal_io = Unix.terminal_io =
     mutable c_vstop : char;   (** Stop character (usually ctrl-S). *)
   }
 
-val tcgetattr : file_descr -> terminal_io
+val tcgetattr : file_descr -> terminal_io (* [@@dead "tcgetattr"] *)
 (** Return the status of the terminal referred to by the given
    file descriptor. *)
 
@@ -1404,7 +1404,7 @@ type setattr_when = Unix.setattr_when =
   | TCSADRAIN
   | TCSAFLUSH
 
-val tcsetattr : file_descr -> mode:setattr_when -> terminal_io -> unit
+val tcsetattr : file_descr -> mode:setattr_when -> terminal_io -> unit (* [@@dead "tcsetattr"] *)
 (** Set the status of the terminal referred to by the given
    file descriptor. The second argument indicates when the
    status change takes place: immediately ([TCSANOW]),
@@ -1414,12 +1414,12 @@ val tcsetattr : file_descr -> mode:setattr_when -> terminal_io -> unit
    the output parameters; [TCSAFLUSH], when changing the input
    parameters. *)
 
-val tcsendbreak : file_descr -> duration:int -> unit
+val tcsendbreak : file_descr -> duration:int -> unit (* [@@dead "tcsendbreak"] *)
 (** Send a break condition on the given file descriptor.
    The second argument is the duration of the break, in 0.1s units;
    0 means standard duration (0.25s). *)
 
-val tcdrain : file_descr -> unit
+val tcdrain : file_descr -> unit (* [@@dead "tcdrain"] *)
 (** Waits until all output written on the given file descriptor
    has been transmitted. *)
 
@@ -1428,7 +1428,7 @@ type flush_queue = Unix.flush_queue =
   | TCOFLUSH
   | TCIOFLUSH
 
-val tcflush : file_descr -> mode:flush_queue -> unit
+val tcflush : file_descr -> mode:flush_queue -> unit (* [@@dead "tcflush"] *)
 (** Discard data written on the given file descriptor but not yet
    transmitted, or data received but not yet read, depending on the
    second argument: [TCIFLUSH] flushes data received but not read,
@@ -1441,13 +1441,13 @@ type flow_action = Unix.flow_action =
   | TCIOFF
   | TCION
 
-val tcflow : file_descr -> mode:flow_action -> unit
+val tcflow : file_descr -> mode:flow_action -> unit (* [@@dead "tcflow"] *)
 (** Suspend or restart reception or transmission of data on
    the given file descriptor, depending on the second argument:
    [TCOOFF] suspends output, [TCOON] restarts output,
    [TCIOFF] transmits a STOP character to suspend input,
    and [TCION] transmits a START character to restart input. *)
 
-val setsid : unit -> int
+val setsid : unit -> int (* [@@dead "setsid"] *)
 (** Put the calling process in a new session and detach it from
    its controlling terminal. *)

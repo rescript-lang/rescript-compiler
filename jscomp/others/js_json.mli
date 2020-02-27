@@ -37,18 +37,18 @@ type _ kind =
   | String : Js_string.t kind
   | Number : float kind 
   | Object : t Js_dict.t kind 
-  | Array : t array kind 
+  | Array : t array kind  (* [@@dead "kind.Array"] *)
   | Boolean : bool kind
-  | Null : Js_types.null_val kind
+  | Null : Js_types.null_val kind (* [@@dead "kind.Null"] *)
 
 type tagged_t = 
-  | JSONFalse
-  | JSONTrue
-  | JSONNull
-  | JSONString of string 
-  | JSONNumber of float 
-  | JSONObject of t Js_dict.t   
-  | JSONArray of t array 
+  | JSONFalse (* [@@dead "tagged_t.JSONFalse"] *)
+  | JSONTrue (* [@@dead "tagged_t.JSONTrue"] *)
+  | JSONNull (* [@@dead "tagged_t.JSONNull"] *)
+  | JSONString of string  (* [@@dead "tagged_t.JSONString"] *)
+  | JSONNumber of float  (* [@@dead "tagged_t.JSONNumber"] *)
+  | JSONObject of t Js_dict.t    (* [@@dead "tagged_t.JSONObject"] *)
+  | JSONArray of t array  (* [@@dead "tagged_t.JSONArray"] *)
 
 
 (** {2 Accessor} *)
@@ -234,6 +234,4 @@ Js.log \@\@ Js.Json.stringifyAny [| "foo"; "bar" |]
 
 @see <https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/JSON/stringify> MDN
 *)
-
-
 

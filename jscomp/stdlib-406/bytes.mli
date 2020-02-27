@@ -75,7 +75,7 @@ val init : int -> (int -> char) -> bytes
 
     Raise [Invalid_argument] if [n < 0] or [n > ]{!Sys.max_string_length}. *)
 
-val empty : bytes
+val empty : bytes (* [@@dead "empty"] *)
 (** A byte sequence of size 0. *)
 
 val copy : bytes -> bytes
@@ -101,7 +101,7 @@ val sub : bytes -> int -> int -> bytes
 val sub_string : bytes -> int -> int -> string
 (** Same as [sub] but return a string instead of a byte sequence. *)
 
-val extend : bytes -> int -> int -> bytes
+val extend : bytes -> int -> int -> bytes (* [@@dead "extend"] *)
 (** [extend s left right] returns a new byte sequence that contains
     the bytes of [s], with [left] uninitialized bytes prepended and
     [right] uninitialized bytes appended to it. If [left] or [right]
@@ -138,7 +138,7 @@ val blit_string : string -> int -> bytes -> int -> int -> unit
     designate a valid range of [src], or if [dstoff] and [len]
     do not designate a valid range of [dst]. *)
 
-val concat : bytes -> bytes list -> bytes
+val concat : bytes -> bytes list -> bytes (* [@@dead "concat"] *)
 (** [concat sep sl] concatenates the list of byte sequences [sl],
     inserting the separator byte sequence [sep] between each, and
     returns the result as a new byte sequence.
@@ -146,19 +146,19 @@ val concat : bytes -> bytes list -> bytes
     Raise [Invalid_argument] if the result is longer than
     {!Sys.max_string_length} bytes. *)
 
-val cat : bytes -> bytes -> bytes
+val cat : bytes -> bytes -> bytes (* [@@dead "cat"] *)
 (** [cat s1 s2] concatenates [s1] and [s2] and returns the result
      as new byte sequence.
 
     Raise [Invalid_argument] if the result is longer than
     {!Sys.max_string_length} bytes. *)
 
-val iter : (char -> unit) -> bytes -> unit
+val iter : (char -> unit) -> bytes -> unit (* [@@dead "iter"] *)
 (** [iter f s] applies function [f] in turn to all the bytes of [s].
     It is equivalent to [f (get s 0); f (get s 1); ...; f (get s
     (length s - 1)); ()]. *)
 
-val iteri : (int -> char -> unit) -> bytes -> unit
+val iteri : (int -> char -> unit) -> bytes -> unit (* [@@dead "iteri"] *)
 (** Same as {!Bytes.iter}, but the function is applied to the index of
     the byte as first argument and the byte itself as second
     argument. *)
@@ -187,29 +187,29 @@ val escaped : bytes -> bytes
     Raise [Invalid_argument] if the result is longer than
     {!Sys.max_string_length} bytes. *)
 
-val index : bytes -> char -> int
+val index : bytes -> char -> int (* [@@dead "index"] *)
 (** [index s c] returns the index of the first occurrence of byte [c]
     in [s].
 
     Raise [Not_found] if [c] does not occur in [s]. *)
 
-val index_opt: bytes -> char -> int option
+val index_opt: bytes -> char -> int option (* [@@dead "index_opt"] *)
 (** [index_opt s c] returns the index of the first occurrence of byte [c]
     in [s] or [None] if [c] does not occur in [s].
     @since 4.05 *)
 
-val rindex : bytes -> char -> int
+val rindex : bytes -> char -> int (* [@@dead "rindex"] *)
 (** [rindex s c] returns the index of the last occurrence of byte [c]
     in [s].
 
     Raise [Not_found] if [c] does not occur in [s]. *)
 
-val rindex_opt: bytes -> char -> int option
+val rindex_opt: bytes -> char -> int option (* [@@dead "rindex_opt"] *)
 (** [rindex_opt s c] returns the index of the last occurrence of byte [c]
     in [s] or [None] if [c] does not occur in [s].
     @since 4.05 *)
 
-val index_from : bytes -> int -> char -> int
+val index_from : bytes -> int -> char -> int (* [@@dead "index_from"] *)
 (** [index_from s i c] returns the index of the first occurrence of
     byte [c] in [s] after position [i].  [Bytes.index s c] is
     equivalent to [Bytes.index_from s 0 c].
@@ -217,7 +217,7 @@ val index_from : bytes -> int -> char -> int
     Raise [Invalid_argument] if [i] is not a valid position in [s].
     Raise [Not_found] if [c] does not occur in [s] after position [i]. *)
 
-val index_from_opt: bytes -> int -> char -> int option
+val index_from_opt: bytes -> int -> char -> int option (* [@@dead "index_from_opt"] *)
 (** [index_from _opts i c] returns the index of the first occurrence of
     byte [c] in [s] after position [i] or [None] if [c] does not occur in [s] after position [i].
     [Bytes.index_opt s c] is equivalent to [Bytes.index_from_opt s 0 c].
@@ -225,7 +225,7 @@ val index_from_opt: bytes -> int -> char -> int option
     Raise [Invalid_argument] if [i] is not a valid position in [s].
     @since 4.05 *)
 
-val rindex_from : bytes -> int -> char -> int
+val rindex_from : bytes -> int -> char -> int (* [@@dead "rindex_from"] *)
 (** [rindex_from s i c] returns the index of the last occurrence of
     byte [c] in [s] before position [i+1].  [rindex s c] is equivalent
     to [rindex_from s (Bytes.length s - 1) c].
@@ -233,7 +233,7 @@ val rindex_from : bytes -> int -> char -> int
     Raise [Invalid_argument] if [i+1] is not a valid position in [s].
     Raise [Not_found] if [c] does not occur in [s] before position [i+1]. *)
 
-val rindex_from_opt: bytes -> int -> char -> int option
+val rindex_from_opt: bytes -> int -> char -> int option (* [@@dead "rindex_from_opt"] *)
 (** [rindex_from_opt s i c] returns the index of the last occurrence
     of byte [c] in [s] before position [i+1] or [None] if [c] does not
     occur in [s] before position [i+1].  [rindex_opt s c] is equivalent to
@@ -242,17 +242,17 @@ val rindex_from_opt: bytes -> int -> char -> int option
     Raise [Invalid_argument] if [i+1] is not a valid position in [s].
     @since 4.05 *)
 
-val contains : bytes -> char -> bool
+val contains : bytes -> char -> bool (* [@@dead "contains"] *)
 (** [contains s c] tests if byte [c] appears in [s]. *)
 
-val contains_from : bytes -> int -> char -> bool
+val contains_from : bytes -> int -> char -> bool (* [@@dead "contains_from"] *)
 (** [contains_from s start c] tests if byte [c] appears in [s] after
     position [start].  [contains s c] is equivalent to [contains_from
     s 0 c].
 
     Raise [Invalid_argument] if [start] is not a valid position in [s]. *)
 
-val rcontains_from : bytes -> int -> char -> bool
+val rcontains_from : bytes -> int -> char -> bool (* [@@dead "rcontains_from"] *)
 (** [rcontains_from s stop c] tests if byte [c] appears in [s] before
     position [stop+1].
 
@@ -308,13 +308,13 @@ val uncapitalize_ascii : bytes -> bytes
 type t = bytes
 (** An alias for the type of byte sequences. *)
 
-val compare: t -> t -> int
+val compare: t -> t -> int (* [@@dead "compare"] *)
 (** The comparison function for byte sequences, with the same
     specification as {!Pervasives.compare}.  Along with the type [t],
     this function [compare] allows the module [Bytes] to be passed as
     argument to the functors {!Set.Make} and {!Map.Make}. *)
 
-val equal: t -> t -> bool
+val equal: t -> t -> bool (* [@@dead "equal"] *)
 (** The equality function for byte sequences.
     @since 4.03.0 *)
 

@@ -38,34 +38,34 @@ external create : int -> bytes = "caml_create_bytes"
 
     Raise [Invalid_argument] if [n < 0] or [n > ]{!Sys.max_string_length}. *)
 
-val make : int -> char -> bytes
+val make : int -> char -> bytes (* [@@dead "make"] *)
 (** [make n c] returns a new byte sequence of length [n], filled with
     the byte [c].
 
     Raise [Invalid_argument] if [n < 0] or [n > ]{!Sys.max_string_length}. *)
 
-val init : int -> f:(int -> char) -> bytes
+val init : int -> f:(int -> char) -> bytes (* [@@dead "init"] *)
 (** [init n f] returns a fresh byte sequence of length [n],
     with character [i] initialized to the result of [f i].
 
     Raise [Invalid_argument] if [n < 0] or [n > ]{!Sys.max_string_length}. *)
 
-val empty : bytes
+val empty : bytes (* [@@dead "empty"] *)
 (** A byte sequence of size 0. *)
 
-val copy : bytes -> bytes
+val copy : bytes -> bytes (* [@@dead "copy"] *)
 (** Return a new byte sequence that contains the same bytes as the
     argument. *)
 
-val of_string : string -> bytes
+val of_string : string -> bytes (* [@@dead "of_string"] *)
 (** Return a new byte sequence that contains the same bytes as the
     given string. *)
 
-val to_string : bytes -> string
+val to_string : bytes -> string (* [@@dead "to_string"] *)
 (** Return a new string that contains the same bytes as the given byte
     sequence. *)
 
-val sub : bytes -> pos:int -> len:int -> bytes
+val sub : bytes -> pos:int -> len:int -> bytes (* [@@dead "sub"] *)
 (** [sub s start len] returns a new byte sequence of length [len],
     containing the subsequence of [s] that starts at position [start]
     and has length [len].
@@ -73,10 +73,10 @@ val sub : bytes -> pos:int -> len:int -> bytes
     Raise [Invalid_argument] if [start] and [len] do not designate a
     valid range of [s]. *)
 
-val sub_string : bytes -> pos:int -> len:int -> string
+val sub_string : bytes -> pos:int -> len:int -> string (* [@@dead "sub_string"] *)
 (** Same as [sub] but return a string instead of a byte sequence. *)
 
-val extend : bytes -> left:int -> right:int -> bytes
+val extend : bytes -> left:int -> right:int -> bytes (* [@@dead "extend"] *)
 (** [extend s left right] returns a new byte sequence that contains
     the bytes of [s], with [left] uninitialized bytes prepended and
     [right] uninitialized bytes appended to it. If [left] or [right]
@@ -87,14 +87,14 @@ val extend : bytes -> left:int -> right:int -> bytes
     longer than {!Sys.max_string_length} bytes.
     @since 4.05.0 *)
 
-val fill : bytes -> pos:int -> len:int -> char -> unit
+val fill : bytes -> pos:int -> len:int -> char -> unit (* [@@dead "fill"] *)
 (** [fill s start len c] modifies [s] in place, replacing [len]
     characters with [c], starting at [start].
 
     Raise [Invalid_argument] if [start] and [len] do not designate a
     valid range of [s]. *)
 
-val blit :
+val blit : (* [@@dead "blit"] *)
   src:bytes -> src_pos:int -> dst:bytes -> dst_pos:int -> len:int
   -> unit
 (** [blit src srcoff dst dstoff len] copies [len] bytes from sequence
@@ -107,7 +107,7 @@ val blit :
     designate a valid range of [src], or if [dstoff] and [len]
     do not designate a valid range of [dst]. *)
 
-val blit_string :
+val blit_string : (* [@@dead "blit_string"] *)
   src:string -> src_pos:int -> dst:bytes -> dst_pos:int -> len:int
   -> unit
 (** [blit src srcoff dst dstoff len] copies [len] bytes from string
@@ -119,12 +119,12 @@ val blit_string :
     do not designate a valid range of [dst].
     @since 4.05.0 *)
 
-val concat : sep:bytes -> bytes list -> bytes
+val concat : sep:bytes -> bytes list -> bytes (* [@@dead "concat"] *)
 (** [concat sep sl] concatenates the list of byte sequences [sl],
     inserting the separator byte sequence [sep] between each, and
     returns the result as a new byte sequence. *)
 
-val cat : bytes -> bytes -> bytes
+val cat : bytes -> bytes -> bytes (* [@@dead "cat"] *)
 (** [cat s1 s2] concatenates [s1] and [s2] and returns the result
      as new byte sequence.
 
@@ -132,58 +132,58 @@ val cat : bytes -> bytes -> bytes
     {!Sys.max_string_length} bytes.
     @since 4.05.0 *)
 
-val iter : f:(char -> unit) -> bytes -> unit
+val iter : f:(char -> unit) -> bytes -> unit (* [@@dead "iter"] *)
 (** [iter f s] applies function [f] in turn to all the bytes of [s].
     It is equivalent to [f (get s 0); f (get s 1); ...; f (get s
     (length s - 1)); ()]. *)
 
-val iteri : f:(int -> char -> unit) -> bytes -> unit
+val iteri : f:(int -> char -> unit) -> bytes -> unit (* [@@dead "iteri"] *)
 (** Same as {!Bytes.iter}, but the function is applied to the index of
     the byte as first argument and the byte itself as second
     argument. *)
 
-val map : f:(char -> char) -> bytes -> bytes
+val map : f:(char -> char) -> bytes -> bytes (* [@@dead "map"] *)
 (** [map f s] applies function [f] in turn to all the bytes of [s] and
     stores the resulting bytes in a new sequence that is returned as
     the result. *)
 
-val mapi : f:(int -> char -> char) -> bytes -> bytes
+val mapi : f:(int -> char -> char) -> bytes -> bytes (* [@@dead "mapi"] *)
 (** [mapi f s] calls [f] with each character of [s] and its
     index (in increasing index order) and stores the resulting bytes
     in a new sequence that is returned as the result. *)
 
-val trim : bytes -> bytes
+val trim : bytes -> bytes (* [@@dead "trim"] *)
 (** Return a copy of the argument, without leading and trailing
     whitespace. The bytes regarded as whitespace are the ASCII
     characters [' '], ['\012'], ['\n'], ['\r'], and ['\t']. *)
 
-val escaped : bytes -> bytes
+val escaped : bytes -> bytes (* [@@dead "escaped"] *)
 (** Return a copy of the argument, with special characters represented
     by escape sequences, following the lexical conventions of OCaml. *)
 
-val index : bytes -> char -> int
+val index : bytes -> char -> int (* [@@dead "index"] *)
 (** [index s c] returns the index of the first occurrence of byte [c]
     in [s].
 
     Raise [Not_found] if [c] does not occur in [s]. *)
 
-val index_opt: bytes -> char -> int option
+val index_opt: bytes -> char -> int option (* [@@dead "index_opt"] *)
 (** [index_opt s c] returns the index of the first occurrence of byte [c]
     in [s] or [None] if [c] does not occur in [s].
     @since 4.05 *)
 
-val rindex : bytes -> char -> int
+val rindex : bytes -> char -> int (* [@@dead "rindex"] *)
 (** [rindex s c] returns the index of the last occurrence of byte [c]
     in [s].
 
     Raise [Not_found] if [c] does not occur in [s]. *)
 
-val rindex_opt: bytes -> char -> int option
+val rindex_opt: bytes -> char -> int option (* [@@dead "rindex_opt"] *)
 (** [rindex_opt s c] returns the index of the last occurrence of byte [c]
     in [s] or [None] if [c] does not occur in [s].
     @since 4.05 *)
 
-val index_from : bytes -> int -> char -> int
+val index_from : bytes -> int -> char -> int (* [@@dead "index_from"] *)
 (** [index_from s i c] returns the index of the first occurrence of
     byte [c] in [s] after position [i].  [Bytes.index s c] is
     equivalent to [Bytes.index_from s 0 c].
@@ -191,7 +191,7 @@ val index_from : bytes -> int -> char -> int
     Raise [Invalid_argument] if [i] is not a valid position in [s].
     Raise [Not_found] if [c] does not occur in [s] after position [i]. *)
 
-val index_from_opt: bytes -> int -> char -> int option
+val index_from_opt: bytes -> int -> char -> int option (* [@@dead "index_from_opt"] *)
 (** [index_from _opts i c] returns the index of the first occurrence of
     byte [c] in [s] after position [i] or [None] if [c] does not occur in [s] after position [i].
     [Bytes.index_opt s c] is equivalent to [Bytes.index_from_opt s 0 c].
@@ -199,7 +199,7 @@ val index_from_opt: bytes -> int -> char -> int option
     Raise [Invalid_argument] if [i] is not a valid position in [s].
     @since 4.05 *)
 
-val rindex_from : bytes -> int -> char -> int
+val rindex_from : bytes -> int -> char -> int (* [@@dead "rindex_from"] *)
 (** [rindex_from s i c] returns the index of the last occurrence of
     byte [c] in [s] before position [i+1].  [rindex s c] is equivalent
     to [rindex_from s (Bytes.length s - 1) c].
@@ -207,7 +207,7 @@ val rindex_from : bytes -> int -> char -> int
     Raise [Invalid_argument] if [i+1] is not a valid position in [s].
     Raise [Not_found] if [c] does not occur in [s] before position [i+1]. *)
 
-val rindex_from_opt: bytes -> int -> char -> int option
+val rindex_from_opt: bytes -> int -> char -> int option (* [@@dead "rindex_from_opt"] *)
 (** [rindex_from_opt s i c] returns the index of the last occurrence
     of byte [c] in [s] before position [i+1] or [None] if [c] does not
     occur in [s] before position [i+1].  [rindex_opt s c] is equivalent to
@@ -216,65 +216,65 @@ val rindex_from_opt: bytes -> int -> char -> int option
     Raise [Invalid_argument] if [i+1] is not a valid position in [s].
     @since 4.05 *)
 
-val contains : bytes -> char -> bool
+val contains : bytes -> char -> bool (* [@@dead "contains"] *)
 (** [contains s c] tests if byte [c] appears in [s]. *)
 
-val contains_from : bytes -> int -> char -> bool
+val contains_from : bytes -> int -> char -> bool (* [@@dead "contains_from"] *)
 (** [contains_from s start c] tests if byte [c] appears in [s] after
     position [start].  [contains s c] is equivalent to [contains_from
     s 0 c].
 
     Raise [Invalid_argument] if [start] is not a valid position in [s]. *)
 
-val rcontains_from : bytes -> int -> char -> bool
+val rcontains_from : bytes -> int -> char -> bool (* [@@dead "rcontains_from"] *)
 (** [rcontains_from s stop c] tests if byte [c] appears in [s] before
     position [stop+1].
 
     Raise [Invalid_argument] if [stop < 0] or [stop+1] is not a valid
     position in [s]. *)
 
-val uppercase : bytes -> bytes
+val uppercase : bytes -> bytes (* [@@dead "uppercase"] *)
   [@@ocaml.deprecated "Use Bytes.uppercase_ascii instead."]
 (** Return a copy of the argument, with all lowercase letters
    translated to uppercase, including accented letters of the ISO
    Latin-1 (8859-1) character set.
    @deprecated Functions operating on Latin-1 character set are deprecated. *)
 
-val lowercase : bytes -> bytes
+val lowercase : bytes -> bytes (* [@@dead "lowercase"] *)
   [@@ocaml.deprecated "Use Bytes.lowercase_ascii instead."]
 (** Return a copy of the argument, with all uppercase letters
    translated to lowercase, including accented letters of the ISO
    Latin-1 (8859-1) character set.
    @deprecated Functions operating on Latin-1 character set are deprecated. *)
 
-val capitalize : bytes -> bytes
+val capitalize : bytes -> bytes (* [@@dead "capitalize"] *)
   [@@ocaml.deprecated "Use Bytes.capitalize_ascii instead."]
 (** Return a copy of the argument, with the first character set to uppercase,
    using the ISO Latin-1 (8859-1) character set..
    @deprecated Functions operating on Latin-1 character set are deprecated. *)
 
-val uncapitalize : bytes -> bytes
+val uncapitalize : bytes -> bytes (* [@@dead "uncapitalize"] *)
   [@@ocaml.deprecated "Use Bytes.uncapitalize_ascii instead."]
 (** Return a copy of the argument, with the first character set to lowercase,
    using the ISO Latin-1 (8859-1) character set..
    @deprecated Functions operating on Latin-1 character set are deprecated. *)
 
-val uppercase_ascii : bytes -> bytes
+val uppercase_ascii : bytes -> bytes (* [@@dead "uppercase_ascii"] *)
 (** Return a copy of the argument, with all lowercase letters
    translated to uppercase, using the US-ASCII character set.
    @since 4.05.0 *)
 
-val lowercase_ascii : bytes -> bytes
+val lowercase_ascii : bytes -> bytes (* [@@dead "lowercase_ascii"] *)
 (** Return a copy of the argument, with all uppercase letters
    translated to lowercase, using the US-ASCII character set.
    @since 4.05.0 *)
 
-val capitalize_ascii : bytes -> bytes
+val capitalize_ascii : bytes -> bytes (* [@@dead "capitalize_ascii"] *)
 (** Return a copy of the argument, with the first character set to uppercase,
    using the US-ASCII character set.
    @since 4.05.0 *)
 
-val uncapitalize_ascii : bytes -> bytes
+val uncapitalize_ascii : bytes -> bytes (* [@@dead "uncapitalize_ascii"] *)
 (** Return a copy of the argument, with the first character set to lowercase,
    using the US-ASCII character set.
    @since 4.05.0 *)
@@ -282,13 +282,13 @@ val uncapitalize_ascii : bytes -> bytes
 type t = bytes
 (** An alias for the type of byte sequences. *)
 
-val compare: t -> t -> int
+val compare: t -> t -> int (* [@@dead "compare"] *)
 (** The comparison function for byte sequences, with the same
     specification as {!Pervasives.compare}.  Along with the type [t],
     this function [compare] allows the module [Bytes] to be passed as
     argument to the functors {!Set.Make} and {!Map.Make}. *)
 
-val equal: t -> t -> bool
+val equal: t -> t -> bool (* [@@dead "equal"] *)
 (** The equality function for byte sequences.
     @since 4.05.0 *)
 
@@ -303,5 +303,5 @@ external unsafe_blit :
     unit = "caml_blit_bytes" [@@noalloc]
 external unsafe_fill :
   bytes -> pos:int -> len:int -> char -> unit = "caml_fill_bytes" [@@noalloc]
-val unsafe_to_string : bytes -> string
-val unsafe_of_string : string -> bytes
+val unsafe_to_string : bytes -> string (* [@@dead "unsafe_to_string"] *)
+val unsafe_of_string : string -> bytes (* [@@dead "unsafe_of_string"] *)

@@ -42,9 +42,9 @@
   ]}
 *)
 
-type ('a,'b) t = Ok of 'a | Error of 'b
+type ('a,'b) t = Ok of 'a | Error of 'b (* [@@dead "t.Ok"] *)
 
-val getExn : ('a, 'b) t -> 'a
+val getExn : ('a, 'b) t -> 'a (* [@@dead "getExn"] *)
 (**
   [getExn res]
   
@@ -57,8 +57,8 @@ val getExn : ('a, 'b) t -> 'a
   ]}
 *)
 
-val mapWithDefaultU : ('a, 'c) t -> 'b -> ('a -> 'b [@bs]) -> 'b
-val mapWithDefault : ('a, 'c) t -> 'b -> ('a -> 'b) -> 'b
+val mapWithDefaultU : ('a, 'c) t -> 'b -> ('a -> 'b [@bs]) -> 'b (* [@@dead "mapWithDefaultU"] *)
+val mapWithDefault : ('a, 'c) t -> 'b -> ('a -> 'b) -> 'b (* [@@dead "mapWithDefault"] *)
 (**
   [mapWithDefault res default f]
   
@@ -70,7 +70,7 @@ val mapWithDefault : ('a, 'c) t -> 'b -> ('a -> 'b) -> 'b
   ]}
 *)
 
-val mapU : ('a, 'c) t -> ('a -> 'b [@bs]) -> ('b, 'c) t
+val mapU : ('a, 'c) t -> ('a -> 'b [@bs]) -> ('b, 'c) t (* [@@dead "mapU"] *)
 val map : ('a, 'c) t -> ('a -> 'b) -> ('b, 'c) t
 (**
   [map res f]
@@ -85,8 +85,8 @@ val map : ('a, 'c) t -> ('a -> 'b) -> ('b, 'c) t
   ]}
 *)
 
-val flatMapU : ('a, 'c) t -> ('a -> ('b, 'c) t [@bs]) -> ('b, 'c) t
-val flatMap : ('a, 'c) t -> ('a -> ('b, 'c) t) -> ('b, 'c) t
+val flatMapU : ('a, 'c) t -> ('a -> ('b, 'c) t [@bs]) -> ('b, 'c) t (* [@@dead "flatMapU"] *)
+val flatMap : ('a, 'c) t -> ('a -> ('b, 'c) t) -> ('b, 'c) t (* [@@dead "flatMap"] *)
 (**
   [flatMap res f]
   
@@ -119,22 +119,22 @@ val getWithDefault : ('a, 'b) t -> 'a -> 'a
   ]}
 *)
 
-val isOk : ('a, 'b) t -> bool
+val isOk : ('a, 'b) t -> bool (* [@@dead "isOk"] *)
 (**
   [isOk res]
   
   Returns [true] if [res] is of the form [Ok n], [false] if it is the [Error e] variant.
 *)
 
-val isError : ('a, 'b) t -> bool
+val isError : ('a, 'b) t -> bool (* [@@dead "isError"] *)
 (**
   [isError res]
   
   Returns [true] if [res] is of the form [Error e], [false] if it is the [Ok n] variant.
 *)
 
-val eqU : ('a, 'c) t -> ('b, 'd) t -> ('a -> 'b -> bool [@bs]) -> bool
-val eq : ('a, 'c) t -> ('b, 'd) t -> ('a -> 'b -> bool) -> bool
+val eqU : ('a, 'c) t -> ('b, 'd) t -> ('a -> 'b -> bool [@bs]) -> bool (* [@@dead "eqU"] *)
+val eq : ('a, 'c) t -> ('b, 'd) t -> ('a -> 'b -> bool) -> bool (* [@@dead "eq"] *)
 (**
   [eq res1 res2 f]
   
@@ -159,8 +159,8 @@ val eq : ('a, 'c) t -> ('b, 'd) t -> ('a -> 'b -> bool) -> bool
   ]}
 *)
 
-val cmpU : ('a, 'c) t -> ('b, 'd) t -> ('a -> 'b -> int [@bs]) -> int
-val cmp : ('a, 'c) t -> ('b, 'd) t -> ('a -> 'b -> int) -> int
+val cmpU : ('a, 'c) t -> ('b, 'd) t -> ('a -> 'b -> int [@bs]) -> int (* [@@dead "cmpU"] *)
+val cmp : ('a, 'c) t -> ('b, 'd) t -> ('a -> 'b -> int) -> int (* [@@dead "cmp"] *)
 (**
   [cmp res1 res2 f]
   

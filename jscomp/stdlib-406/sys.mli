@@ -56,7 +56,7 @@ external getenv : string -> string = "caml_sys_getenv"
 (** Return the value associated to a variable in the process
    environment. Raise [Not_found] if the variable is unbound. *)
 
-val getenv_opt: string -> string option
+val getenv_opt: string -> string option (* [@@dead "getenv_opt"] *)
 (** Return the value associated to a variable in the process
     environment or [None] if the variable is unbound.
     @since 4.05
@@ -85,7 +85,7 @@ external readdir : string -> string array = "caml_sys_read_directory"
    in any specific order; they are not, in particular, guaranteed to
    appear in alphabetical order. *)
 
-val interactive : bool ref
+val interactive : bool ref (* [@@dead "interactive"] *)
 (** This reference is initially set to [false] in standalone
    programs and to [true] if the code is being executed under
    the interactive toplevel system [ocaml]. *)
@@ -97,9 +97,9 @@ val os_type : string
 -  ["Cygwin"] (for MS-Windows, OCaml compiled with Cygwin). *)
 
 type backend_type =
-  | Native
-  | Bytecode
-  | Other of string (**)
+  | Native (* [@@dead "backend_type.Native"] *)
+  | Bytecode (* [@@dead "backend_type.Bytecode"] *)
+  | Other of string (**) (* [@@dead "backend_type.Other"] *)
 (** Currently, the official distribution only supports [Native] and
     [Bytecode], but it can be other backends with alternative
     compilers, for example, javascript.
@@ -107,7 +107,7 @@ type backend_type =
     @since 4.04.0
 *)
 
-val backend_type : backend_type
+val backend_type : backend_type (* [@@dead "backend_type"] *)
 (** Backend type  currently executing the OCaml program.
     @since 4.04.0
  *)
@@ -128,14 +128,14 @@ val word_size : int
 (** Size of one word on the machine currently executing the OCaml
    program, in bits: 32 or 64. *)
 
-val int_size : int
+val int_size : int (* [@@dead "int_size"] *)
 (** Size of an int.  It is 31 bits (resp. 63 bits) when using the
     OCaml compiler on a 32 bits (resp. 64 bits) platform.  It may
     differ for other compilers, e.g. it is 32 bits when compiling to
     JavaScript.
     @since 4.03.0 *)
 
-val big_endian : bool
+val big_endian : bool (* [@@dead "big_endian"] *)
 (** Whether the machine currently executing the Caml program is big-endian.
     @since 4.00.0 *)
 
@@ -163,9 +163,9 @@ external runtime_parameters : unit -> string = "caml_runtime_parameters"
 
 
 type signal_behavior =
-    Signal_default
-  | Signal_ignore
-  | Signal_handle of (int -> unit)   (** *)
+    Signal_default (* [@@dead "signal_behavior.Signal_default"] *)
+  | Signal_ignore (* [@@dead "signal_behavior.Signal_ignore"] *)
+  | Signal_handle of (int -> unit)   (** *) (* [@@dead "signal_behavior.Signal_handle"] *)
 (** What to do when receiving a signal:
    - [Signal_default]: take the default behavior
      (usually: abort the program)
@@ -181,100 +181,100 @@ external signal :
    invalid (or not available on your system), an [Invalid_argument]
    exception is raised. *)
 
-val set_signal : int -> signal_behavior -> unit
+val set_signal : int -> signal_behavior -> unit (* [@@dead "set_signal"] *)
 (** Same as {!Sys.signal} but return value is ignored. *)
 
 
 (** {2 Signal numbers for the standard POSIX signals.} *)
 
-val sigabrt : int
+val sigabrt : int (* [@@dead "sigabrt"] *)
 (** Abnormal termination *)
 
-val sigalrm : int
+val sigalrm : int (* [@@dead "sigalrm"] *)
 (** Timeout *)
 
-val sigfpe : int
+val sigfpe : int (* [@@dead "sigfpe"] *)
 (** Arithmetic exception *)
 
-val sighup : int
+val sighup : int (* [@@dead "sighup"] *)
 (** Hangup on controlling terminal *)
 
-val sigill : int
+val sigill : int (* [@@dead "sigill"] *)
 (** Invalid hardware instruction *)
 
-val sigint : int
+val sigint : int (* [@@dead "sigint"] *)
 (** Interactive interrupt (ctrl-C) *)
 
-val sigkill : int
+val sigkill : int (* [@@dead "sigkill"] *)
 (** Termination (cannot be ignored) *)
 
-val sigpipe : int
+val sigpipe : int (* [@@dead "sigpipe"] *)
 (** Broken pipe *)
 
-val sigquit : int
+val sigquit : int (* [@@dead "sigquit"] *)
 (** Interactive termination *)
 
-val sigsegv : int
+val sigsegv : int (* [@@dead "sigsegv"] *)
 (** Invalid memory reference *)
 
-val sigterm : int
+val sigterm : int (* [@@dead "sigterm"] *)
 (** Termination *)
 
-val sigusr1 : int
+val sigusr1 : int (* [@@dead "sigusr1"] *)
 (** Application-defined signal 1 *)
 
-val sigusr2 : int
+val sigusr2 : int (* [@@dead "sigusr2"] *)
 (** Application-defined signal 2 *)
 
-val sigchld : int
+val sigchld : int (* [@@dead "sigchld"] *)
 (** Child process terminated *)
 
-val sigcont : int
+val sigcont : int (* [@@dead "sigcont"] *)
 (** Continue *)
 
-val sigstop : int
+val sigstop : int (* [@@dead "sigstop"] *)
 (** Stop *)
 
-val sigtstp : int
+val sigtstp : int (* [@@dead "sigtstp"] *)
 (** Interactive stop *)
 
-val sigttin : int
+val sigttin : int (* [@@dead "sigttin"] *)
 (** Terminal read from background process *)
 
-val sigttou : int
+val sigttou : int (* [@@dead "sigttou"] *)
 (** Terminal write from background process *)
 
-val sigvtalrm : int
+val sigvtalrm : int (* [@@dead "sigvtalrm"] *)
 (** Timeout in virtual time *)
 
-val sigprof : int
+val sigprof : int (* [@@dead "sigprof"] *)
 (** Profiling interrupt *)
 
-val sigbus : int
+val sigbus : int (* [@@dead "sigbus"] *)
 (** Bus error
     @since 4.03 *)
 
-val sigpoll : int
+val sigpoll : int (* [@@dead "sigpoll"] *)
 (** Pollable event
     @since 4.03 *)
 
-val sigsys : int
+val sigsys : int (* [@@dead "sigsys"] *)
 (** Bad argument to routine
     @since 4.03 *)
 
-val sigtrap : int
+val sigtrap : int (* [@@dead "sigtrap"] *)
 (** Trace/breakpoint trap
     @since 4.03 *)
 
-val sigurg : int
+val sigurg : int (* [@@dead "sigurg"] *)
 (** Urgent condition on socket
     @since 4.03 *)
 
-val sigxcpu : int
+val sigxcpu : int (* [@@dead "sigxcpu"] *)
 (** Timeout in cpu time
     @since 4.03 *)
 
-val sigxfsz : int
+val sigxfsz : int (* [@@dead "sigxfsz"] *)
 (** File size limit exceeded
     @since 4.03 *)
 
@@ -284,7 +284,7 @@ exception Break
    is on. *)
 
 
-val catch_break : bool -> unit
+val catch_break : bool -> unit (* [@@dead "catch_break"] *)
 (** [catch_break] governs whether interactive interrupt (ctrl-C)
    terminates the program or raises the [Break] exception.
    Call [catch_break true] to enable raising [Break],
@@ -292,7 +292,7 @@ val catch_break : bool -> unit
    terminate the program on user interrupt. *)
 
 
-val ocaml_version : string
+val ocaml_version : string (* [@@dead "ocaml_version"] *)
 (** [ocaml_version] is the version of OCaml.
     It is a string of the form ["major.minor[.patchlevel][+additional-info]"],
     where [major], [minor], and [patchlevel] are integers, and
@@ -300,7 +300,7 @@ val ocaml_version : string
     [[+additional-info]] parts may be absent. *)
 
 
-val enable_runtime_warnings: bool -> unit
+val enable_runtime_warnings: bool -> unit (* [@@dead "enable_runtime_warnings"] *)
 (** Control whether the OCaml runtime system can emit warnings
     on stderr.  Currently, the only supported warning is triggered
     when a channel created by [open_*] functions is finalized without
@@ -308,7 +308,7 @@ val enable_runtime_warnings: bool -> unit
 
     @since 4.03.0 *)
 
-val runtime_warnings_enabled: unit -> bool
+val runtime_warnings_enabled: unit -> bool (* [@@dead "runtime_warnings_enabled"] *)
 (** Return whether runtime warnings are currently enabled.
 
     @since 4.03.0 *)

@@ -89,7 +89,7 @@ module MakeComparable :
   end) ->
   Comparable with type t = M.t
 
-val comparableU:
+val comparableU: (* [@@dead "comparableU"] *)
   cmp:('a -> 'a -> int [@bs]) ->
   (module Comparable with type t = 'a)
 
@@ -135,7 +135,7 @@ module MakeHashable :
   end) ->
   Hashable with type t = M.t
 
-val hashableU :
+val hashableU : (* [@@dead "hashableU"] *)
   hash:('a -> int [@bs]) ->
   eq:('a -> 'a -> bool [@bs]) ->
   (module Hashable with type t = 'a)
