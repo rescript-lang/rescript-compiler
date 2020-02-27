@@ -700,9 +700,9 @@ let translate  loc
    It is inlined, this should not appear here *)    
   | Pbittest 
 
-  | Pstring_set_16 _
+  (* | Pstring_set_16 _
   | Pstring_set_32 _
-  | Pstring_set_64 _
+  | Pstring_set_64 _ *)
   | Pbigstring_load_16 _
   | Pbigstring_load_32 _
   | Pbigstring_load_64 _

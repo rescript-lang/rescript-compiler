@@ -367,9 +367,9 @@ let lam_prim ~primitive:( p : Lambda.primitive) ~args loc : Lam.t =
   | Pstring_load_16 x -> prim ~primitive:(Pstring_load_16 x) ~args loc
   | Pstring_load_32 x -> prim ~primitive:(Pstring_load_32 x) ~args loc
   | Pstring_load_64 x -> prim ~primitive:(Pstring_load_64 x) ~args loc
-  | Pstring_set_16 x -> prim ~primitive:(Pstring_set_16 x) ~args loc
-  | Pstring_set_32 x -> prim ~primitive:(Pstring_set_32 x) ~args loc
-  | Pstring_set_64 x -> prim ~primitive:(Pstring_set_64 x) ~args loc
+  | Pstring_set_16 _ 
+  | Pstring_set_32 _ 
+  | Pstring_set_64 _ -> assert false
   | Pbigstring_load_16 x -> prim ~primitive:(Pbigstring_load_16 x) ~args loc
   | Pbigstring_load_32 x -> prim ~primitive:(Pbigstring_load_32 x) ~args loc
   | Pbigstring_load_64 x -> prim ~primitive:(Pbigstring_load_64 x) ~args loc

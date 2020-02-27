@@ -84,6 +84,23 @@
                 "autoDetect",
                 "owner": "globalUnused"     
         }                
+    },
+    {
+        "label": "check unused refmt",
+        "command" : "node",
+        "options": {
+            "cwd": "${workspaceRoot}/lib"
+        },
+        "args": [
+            "../scripts/checkUnused.js" ,
+            "refmt_main3"
+        ],
+        "problemMatcher" :{
+            "base": "$ocamlc",
+            "fileLocation" :
+                "autoDetect",
+                "owner": "globalUnused"     
+        }                
     }
     ]
 }

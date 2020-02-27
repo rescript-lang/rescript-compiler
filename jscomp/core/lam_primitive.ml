@@ -119,9 +119,9 @@ type t =
   | Pstring_load_16 of bool
   | Pstring_load_32 of bool
   | Pstring_load_64 of bool
-  | Pstring_set_16 of bool
+  (* | Pstring_set_16 of bool
   | Pstring_set_32 of bool
-  | Pstring_set_64 of bool
+  | Pstring_set_64 of bool *)
   (* load/set 16,32,64 bits from a
      (char, int8_unsigned_elt, c_layout) Bigarray.Array1.t : (unsafe) *)
   | Pbigstring_load_16 of bool
@@ -318,9 +318,9 @@ let eq_primitive_approx ( lhs : t) (rhs : t) =
   | Pstring_load_16 str ->  (match  rhs with Pstring_load_16 str1 -> str = str1  | _ -> false )
   | Pstring_load_32 b -> (match rhs with Pstring_load_32 b1 -> b = b1 | _ -> false )    
   | Pstring_load_64 b -> (match rhs with Pstring_load_64 b1 -> b = b1 | _ -> false )    
-  | Pstring_set_16 b -> (match rhs with Pstring_set_16 b1 -> b = b1 | _ -> false )    
+  (* | Pstring_set_16 b -> (match rhs with Pstring_set_16 b1 -> b = b1 | _ -> false )    
   | Pstring_set_32 b -> (match rhs with Pstring_set_32 b1 -> b = b1 | _ -> false )    
-  | Pstring_set_64 b -> (match rhs with Pstring_set_64 b1 -> b = b1 | _ -> false )      
+  | Pstring_set_64 b -> (match rhs with Pstring_set_64 b1 -> b = b1 | _ -> false )       *)
   | Pbigstring_load_16 b -> (match rhs with Pbigstring_load_16 b1 -> b = b1 | _ -> false )      
   | Pbigstring_load_32 b -> (match rhs with Pbigstring_load_32 b1 -> b = b1 | _ -> false )      
   | Pbigstring_load_64 b -> (match rhs with Pbigstring_load_64 b1 -> b = b1 | _ -> false )      

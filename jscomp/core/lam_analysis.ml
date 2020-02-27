@@ -194,9 +194,9 @@ let rec no_side_effects (lam : Lam.t) : bool =
       | Pstring_load_16 _
       | Pstring_load_32 _
       | Pstring_load_64 _
-      | Pstring_set_16 _
+      (* | Pstring_set_16 _
       | Pstring_set_32 _
-      | Pstring_set_64 _
+      | Pstring_set_64 _ *)
       (* load/set 16,32,64 bits from a
          (char, int8_unsigned_elt, c_layout) Bigarray.Array1.t : (unsafe) *)
       | Pbigstring_load_16 _
