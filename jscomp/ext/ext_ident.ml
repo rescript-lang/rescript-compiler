@@ -138,6 +138,12 @@ let name_mangle name =
       | ':' -> Buffer.add_string buffer "$colon"
       | '?' -> Buffer.add_string buffer "$question"
       | '&' -> Buffer.add_string buffer "$amp"
+      | '(' -> Buffer.add_string buffer "$lpar"
+      | ')' -> Buffer.add_string buffer "$rpar"
+      | '{' -> Buffer.add_string buffer "$lbrace"
+      | '}' -> Buffer.add_string buffer "$lbrace"
+      | '[' -> Buffer.add_string buffer "$lbrack"
+      | ']' -> Buffer.add_string buffer "$rbrack"
       | 'a'..'z' | 'A'..'Z'| '_'
       | '$'
       | '0'..'9'-> Buffer.add_char buffer  c
@@ -170,6 +176,12 @@ let name_mangle name =
        | '?' -> Buffer.add_string buffer "$question"
        | '&' -> Buffer.add_string buffer "$amp"
        | '$' -> Buffer.add_string buffer "$dollar"
+       | '(' -> Buffer.add_string buffer "$lpar"
+       | ')' -> Buffer.add_string buffer "$rpar"
+       | '{' -> Buffer.add_string buffer "$lbrace"
+       | '}' -> Buffer.add_string buffer "$lbrace"
+       | '[' -> Buffer.add_string buffer "$lbrack"
+       | ']' -> Buffer.add_string buffer "$rbrack"
        | 'a'..'z' | 'A'..'Z'| '_'
        | '0'..'9'-> Buffer.add_char buffer  c
        | _ -> Buffer.add_string buffer "$unknown"

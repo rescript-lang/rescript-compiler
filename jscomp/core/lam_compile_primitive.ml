@@ -686,12 +686,12 @@ let translate  loc
     E.runtime_call Js_runtime_modules.int32 "caml_int32_bswap" args
   | Pbbswap Lambda.Pint64
     -> Js_long.swap args 
-  | Pstring_load_16 unsafe
+  (* | Pstring_load_16 unsafe
     -> E.runtime_call Js_runtime_modules.string "caml_string_get16" args
   | Pstring_load_32 unsafe
     -> E.runtime_call Js_runtime_modules.string "caml_string_get32" args
   | Pstring_load_64 unsafe
-    -> Js_long.get64 args
+    -> Js_long.get64 args *)
 
   | Plazyforce  
   (*   let parm = Ident.create "prim" in 
@@ -700,9 +700,9 @@ let translate  loc
    It is inlined, this should not appear here *)    
   | Pbittest 
 
-  | Pstring_set_16 _
+  (* | Pstring_set_16 _
   | Pstring_set_32 _
-  | Pstring_set_64 _
+  | Pstring_set_64 _ *)
   | Pbigstring_load_16 _
   | Pbigstring_load_32 _
   | Pbigstring_load_64 _

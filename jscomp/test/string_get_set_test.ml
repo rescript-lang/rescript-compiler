@@ -1,10 +1,16 @@
+[@@@bs.config{no_export}]
+let (.%()) (s : string) i = 
+    s.[i] 
 
-external caml_string_get_16 : string -> int -> int = "%caml_string_get16"
+;; Mt.from_pair_suites __FILE__    [
+    __LOC__, (fun _ -> Eq("h".%(0)  ,'h'))
+]
+(* external caml_string_get_16 : string -> int -> int = "%caml_string_get16"
 external caml_string_get_32 : string -> int -> int32 = "%caml_string_get32"
-external caml_string_get_64 : string -> int -> int64 = "%caml_string_get64"
+external caml_string_get_64 : string -> int -> int64 = "%caml_string_get64" *)
 
 (* TODO: endian-aware ? *)
-;; Mt.from_pair_suites __MODULE__ Mt.[
+(* ;; Mt.from_pair_suites __MODULE__ Mt.[
     __LOC__ , (fun _ -> Eq (caml_string_get_16 "2\000" 0, 50));
     __LOC__ , (fun _ -> Eq (caml_string_get_16 "20" 0, 12338));
     __LOC__, (fun _ -> Eq(caml_string_get_32 "0123" 0, 858927408l));
@@ -12,7 +18,7 @@ external caml_string_get_64 : string -> int -> int64 = "%caml_string_get64"
     __LOC__, (fun _ -> Eq(caml_string_get_32 "3210" 0, 808530483l));
     __LOC__, (fun _ -> Eq(caml_string_get_64 "12345678" 0, 4050765991979987505L));
     __LOC__, (fun _ -> Eq(caml_string_get_64 "87654321" 0, 3544952156018063160L))
-]
+] *)
 
 (* (\** does not make sense under immutable string setting *\) *)
 (* external caml_string_set_16 : string -> int -> int -> unit = *)

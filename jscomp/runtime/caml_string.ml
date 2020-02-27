@@ -31,21 +31,23 @@
 
 
 
-let caml_string_get s i= 
+let get s i= 
   if i >=Caml_string_extern.length s || i < 0  then
     raise (Invalid_argument "index out of bounds") 
   else Caml_string_extern.unsafe_get s i
 
-let caml_string_get16 s i = 
+(* let caml_string_get16 s i = 
   Caml_char.code (Caml_string_extern.unsafe_get s i) + Caml_char.code (Caml_string_extern.unsafe_get s (i+1)) lsl 8  
 
 let caml_string_get32 s i = 
   Caml_char.code (Caml_string_extern.unsafe_get s i) + 
   Caml_char.code (Caml_string_extern.unsafe_get s (i+1)) lsl 8  + 
   Caml_char.code (Caml_string_extern.unsafe_get s (i+2)) lsl 16 + 
-  Caml_char.code (Caml_string_extern.unsafe_get s (i+3)) lsl 24
+  Caml_char.code (Caml_string_extern.unsafe_get s (i+3)) lsl 24 *)
 
-let get s i =
+
+(* let get s i =
   if i < 0 || i >= Caml_string_extern.length s then
     raise (Invalid_argument "index out of bounds")
   else Caml_string_extern.unsafe_get s i      
+ *)

@@ -41,7 +41,7 @@ for (let dir of sourceDirs) {
  */
 function check(file) {
   var output = cp.spawnSync(
-    `${opt} -c  -opaque -linscan -I 4.06.1 -w a+32 4.06.1/${file}.mli 4.06.1/${file}.ml`,
+    `${opt} -c  -opaque -linscan -I +compiler-libs -I 4.06.1 -w a+32 4.06.1/${file}.mli 4.06.1/${file}.ml`,
     { cwd: path.join(__dirname, "..", "lib"), encoding: "utf8", shell: true }
   );
 
@@ -50,7 +50,7 @@ function check(file) {
   var result = output.stderr.replace(/File "(.*)"/g, (file, p1) => {
     let query = fileMap.get(p1);
     if (!query) {
-      return `Unkonwn file`;
+      return `Unkonwn file ${p1}`;
     }
     return `File "${query}/${p1}"`;
   });

@@ -458,7 +458,7 @@ let  bits_of_float : float -> t  = fun x ->
     ~hi:( to_nat (Int32_array.unsafe_get int32 1)) *)
 
 (** used by "%caml_string_get64" *)
-let get64 (s : string) (i:int) : t =
+(* let get64 (s : string) (i:int) : t =
   let module String = Caml_string_extern in 
   mk ~lo:
     (Caml_nativeint_extern.logor
@@ -476,4 +476,4 @@ let get64 (s : string) (i:int) : t =
          (Caml_nativeint_extern.logor
             (Caml_nativeint_extern.of_int (Caml_char.code s.[i+6]) << 48 )
             (Caml_nativeint_extern.of_int (Caml_char.code s.[i+7]) << 56 )))
-
+ *)

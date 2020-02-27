@@ -26,11 +26,14 @@
 external caml_array_dup : 'a array -> (_ [@bs.as 0]) -> 'a array = 
   "slice"  [@@bs.send]
 
+let (.!()) = Caml_array_extern.unsafe_get  
+let (.!()<-) = Caml_array_extern.unsafe_set
+
 let caml_array_sub (x : 'a array) (offset : int) (len : int) = 
   let result = Caml_array_extern.new_uninitialized len  in
   let j = {contents = 0} and i =  {contents = offset} in
   while j.contents < len do
-    Caml_array_extern.unsafe_set result j.contents (Caml_array_extern.unsafe_get x i.contents);
+    result.!(j.contents) <- x.!(i.contents);
     j.contents <- j.contents + 1; 
     i.contents <- i.contents + 1;
   done;
@@ -50,7 +53,7 @@ let rec fill arr i l =
       let k = {contents =  i} in
       let j = {contents = 0} in
       while j.contents < l do 
-        Caml_array_extern.unsafe_set arr k.contents (Caml_array_extern.unsafe_get  x j.contents);
+        arr.!(k.contents) <- x .!(j.contents);
         k.contents <- k.contents + 1; 
         j.contents <- j.contents + 1;
       done;
@@ -65,35 +68,35 @@ let  caml_array_concat (l : 'a array list) : 'a array =
 let caml_array_set xs index newval = 
   if index <0 || index >= Caml_array_extern.length xs
   then raise (Invalid_argument "index out of bounds")
-  else Caml_array_extern.unsafe_set xs index  newval
+  else  xs.!( index)<-  newval
 
 let caml_array_get xs index =  
   if index <0 || index >= Caml_array_extern.length xs then
     raise (Invalid_argument "index out of bounds")
-  else Caml_array_extern.unsafe_get xs index
+  else  xs.!( index)
 
 
 let caml_make_vect len init = 
   let b = Caml_array_extern.new_uninitialized len in
   for i = 0 to len - 1 do 
-    Caml_array_extern.unsafe_set b i  init
+     b.!(i) <-  init
   done;
   b
 
 let caml_make_float_vect len = 
   let b = Caml_array_extern.new_uninitialized len in
   for i = 0 to len - 1 do 
-      Caml_array_extern.unsafe_set b i  0.
+       b.!(i) <-  0.
   done;
   b  
   
 let caml_array_blit a1 i1 a2 i2 len = 
   if i2 <= i1 then 
     for j = 0 to len - 1 do
-      Caml_array_extern.unsafe_set a2 (j+i2) (Caml_array_extern.unsafe_get a1 (j+i1))
+      a2.! (j+i2) <- a1.! (j+i1)
     done
   else
     for j = len - 1 downto 0 do
-      Caml_array_extern.unsafe_set a2 (j+i2) (Caml_array_extern.unsafe_get a1 (j+i1))
+       a2 .!(j+i2) <-  a1.! (j+i1)
     done
 

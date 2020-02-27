@@ -81,7 +81,7 @@ val float_of_bits : t -> float
 (** [bits_of_float fl] it is undefined behaivor when [f] is NaN*)
 val bits_of_float : float -> t 
 
-val get64 : string -> int -> t
+(* val get64 : string -> int -> t *)
 
 
 external unsafe_to_int64 : t -> int64 = "%identity"           

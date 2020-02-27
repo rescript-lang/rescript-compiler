@@ -63,4 +63,4 @@ val compare : int64_call
 (* val of_string : int64_call *)
 val float_of_bits : int64_call
 val bits_of_float : int64_call  
-val get64 : int64_call
+(* val get64 : int64_call *)
