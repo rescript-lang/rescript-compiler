@@ -10,6 +10,9 @@
 *.ninja_deps
 *.ninja_log
 *~
+# darwin/bsc this does not work because bin
+# has a file happens to be named after it
+# npmignore is completely broken
 docs/*
 docs/docson/*
 !docs/docson/build-schema.json
@@ -32,4 +35,3 @@ vendor/cppo
 vendor/rollup.js
 package/
 *.tgz
-darwin/bsc

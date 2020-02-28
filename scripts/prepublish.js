@@ -13,6 +13,13 @@ var output = p.spawnSync(`npm pack --dry-run`, {
   // stdio: [0, 1, 2]
 });
 
+try {
+  // npmignore is broken let's do it
+  let file = path.join(root, process.platform, "bsc")
+  console.log(`try removing ${file}`)
+  fs.unlinkSync(file);
+} catch (e) {}
+
 /**
  *
  * @param {string} output
@@ -60,9 +67,10 @@ function stat(files) {
  * @param {Map<string, Set<string> >} map
  */
 function check(map) {
-  var compilers = ["bsb", "bsb_helper", "bsc",  "ninja", "refmt"];
+  var compilers = ["bsb", "bsb_helper", "bsc", "ninja", "refmt"];
   for (let os of ["win32", "darwin", "linux"]) {
     for (let c of compilers) {
+      assert(map.get(os));
       assert(map.get(os).has(`${c}.exe`));
     }
   }
@@ -96,3 +104,7 @@ fs.writeFileSync(
 if (!process.argv.includes("-nocheck")) {
   check(map);
 }
+
+console.log("The diff of artifacts")
+var output = p.spawnSync(`git diff jscomp/artifacts.json`,{cwd:root,encoding:'utf8'})
+console.log(output.stdout)
