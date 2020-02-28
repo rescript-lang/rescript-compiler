@@ -1,6 +1,6 @@
 {
   "name": "bs-platform",
-  "version": "5.2.0-dev.2",
+  "version": "7.2.0",
   "dependencies": {
     "ocaml": "4.6.1000+BS"
   },
