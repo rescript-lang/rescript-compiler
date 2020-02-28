@@ -1,17 +1,17 @@
 {
-  "checksum": "a0f4fa67bcb1beac6cda121fffdda6bb",
+  "checksum": "3c8b1af980087634890b5cb0aea5b450",
   "root": "bs-platform@link-dev:./esy.json",
   "node": {
-    "ocaml@github:bucklescript/ocaml:package.json#698e60f3cd2f442f2013e79860ce2f7b0a9624cb@d41d8cd9": {
+    "ocaml@github:bucklescript/ocaml:package.json#bf88fbf88d4e305bab82259def35a4492e475400@d41d8cd9": {
       "id":
-        "ocaml@github:bucklescript/ocaml:package.json#698e60f3cd2f442f2013e79860ce2f7b0a9624cb@d41d8cd9",
+        "ocaml@github:bucklescript/ocaml:package.json#bf88fbf88d4e305bab82259def35a4492e475400@d41d8cd9",
       "name": "ocaml",
       "version":
-        "github:bucklescript/ocaml:package.json#698e60f3cd2f442f2013e79860ce2f7b0a9624cb",
+        "github:bucklescript/ocaml:package.json#bf88fbf88d4e305bab82259def35a4492e475400",
       "source": {
         "type": "install",
         "source": [
-          "github:bucklescript/ocaml:package.json#698e60f3cd2f442f2013e79860ce2f7b0a9624cb"
+          "github:bucklescript/ocaml:package.json#bf88fbf88d4e305bab82259def35a4492e475400"
         ]
       },
       "overrides": [],
@@ -25,10 +25,10 @@
       "source": { "type": "link-dev", "path": ".", "manifest": "esy.json" },
       "overrides": [],
       "dependencies": [
-        "ocaml@github:bucklescript/ocaml:package.json#698e60f3cd2f442f2013e79860ce2f7b0a9624cb@d41d8cd9"
+        "ocaml@github:bucklescript/ocaml:package.json#bf88fbf88d4e305bab82259def35a4492e475400@d41d8cd9"
       ],
       "devDependencies": [
-        "ocaml@github:bucklescript/ocaml:package.json#698e60f3cd2f442f2013e79860ce2f7b0a9624cb@d41d8cd9"
+        "ocaml@github:bucklescript/ocaml:package.json#bf88fbf88d4e305bab82259def35a4492e475400@d41d8cd9"
       ]
     }
   }
