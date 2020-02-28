@@ -25,6 +25,7 @@
       ["cp", "-r", "-f", "#{self.root / 'lib'}", "#{self.install}"],
       ["cp", "-r", "-f", "#{self.root / 'scripts'}", "#{self.install}"],
       ["cp", "-r", "-f", "#{self.root / 'vendor'}", "#{self.install}"],
+      ["cp", "-r", "-f", "#{self.root / 'ocaml'}", "#{self.lib}"],
       ["cp", "-r", "-f", "#{self.root / 'darwin'}", "#{self.bin}"],
       ["cp", "-r", "-f", "#{self.root / 'freebsd'}", "#{self.bin}"],
       ["cp", "-r", "-f", "#{self.root / 'linux'}", "#{self.bin}"],
