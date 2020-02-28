@@ -744,7 +744,7 @@ let jsxMapper () =
         | None -> namedArgListWithKeyAndRef
         in
         let namedArgListWithKeyAndRefForNew = match forwardRef with
-        | Some(_) -> namedArgList @ [(nolabel, None, Pat.var {txt = "ref"; loc = emptyLoc}, "ref", emptyLoc, None)]
+        | Some(txt) -> namedArgList @ [(nolabel, None, Pat.var {txt; loc = emptyLoc}, txt, emptyLoc, None)]
         | None -> namedArgList
         in
         let pluckArg (label, _, _, alias, loc, _) =
