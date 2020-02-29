@@ -1,6 +1,7 @@
 `*` means  potential break changes
-
 # current
+
+# 7.2
 - #4177 #4180 support `[@@@bs.config {flags = [| ".." |] }]` per file level to allow file level special flags
 - #4158 #4157 #4166 #4168 loading stdlib from memory, no postinstall needed
 - #4152 support copyright style comments preserved in JS 
