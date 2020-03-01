@@ -1278,8 +1278,10 @@ let init n f =
 
 let rec rev_append l1 l2 =
   match l1 with
-    [] -> l2
-  | a :: l -> rev_append l   (a :: l2)
+  | [] -> l2
+  | [a0] -> a0::l2 (* single element is common *)
+  | [a0 ; a1] -> a1 :: a0 :: l2 
+  |  a0::a1::a2::rest -> rev_append rest (a2::a1::a0::l2) 
 
 let rev l = rev_append l []      
 
@@ -1356,7 +1358,16 @@ let rec rev_map_append l1 l2 f =
 let rec flat_map_aux f acc append lx =
   match lx with
   | [] -> rev_append acc  append
-  | a0::rest -> flat_map_aux f (rev_append (f a0)  acc ) append rest 
+  | a0::rest -> 
+    let new_acc = 
+      match f a0 with 
+      | [] -> acc 
+      | [a0] -> a0::acc
+      | [a0;a1] -> a1::a0::acc
+      | a0::a1::a2::rest -> 
+        rev_append rest (a2::a1::a0::acc)  
+    in 
+    flat_map_aux f  new_acc append rest 
 
 let flat_map lx f  =
   flat_map_aux f [] [] lx
