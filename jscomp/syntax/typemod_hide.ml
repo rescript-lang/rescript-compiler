@@ -29,3 +29,18 @@ let  should_hide ( x : Typedtree.module_binding) =
     | ({txt = "internal.local";_},_) :: rest -> true
     | _ :: rest -> 
       Ext_list.exists rest (fun (x,_) -> x.txt = "internal.local")
+
+let attrs : Parsetree.attributes = 
+  [{txt = "internal.local";loc = Location.none}, PStr []]
+
+let check (x : Parsetree.structure_item) =
+   match x.pstr_desc with 
+   | Pstr_eval _
+   | Pstr_value _
+   | Pstr_primitive _
+   | Pstr_typext _
+   | Pstr_exception _
+     -> ()
+   |  _ -> 
+    Location.raise_errorf ~loc:x.pstr_loc 
+      "the structure is not supported in local extension"
