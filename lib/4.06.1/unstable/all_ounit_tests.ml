@@ -17821,6 +17821,7 @@ val object_:
 
 val rec_type_str:  
   ?loc:loc -> 
+  Asttypes.rec_flag -> 
   type_declaration list -> 
   structure_item
 
@@ -17831,6 +17832,7 @@ val rec_type_str:
 
 val rec_type_sig:  
   ?loc:loc -> 
+  Asttypes.rec_flag -> 
   type_declaration list -> 
   signature_item
 
@@ -18056,27 +18058,25 @@ let opt_arrow ?(loc=default_loc) ?(attrs=[]) s a b : core_type =
       ptyp_attributes = attrs
   }    
 
-let rec_type_str ?(loc=default_loc)  tds : structure_item = 
+let rec_type_str 
+  ?(loc=default_loc) 
+  rf tds : structure_item = 
   {
     pstr_loc = loc;
     pstr_desc = Pstr_type ( 
-      Recursive,
+      rf,
       tds)
   }
 
-(* let nonrec_type_str ?(loc=default_loc)  tds : structure_item = 
-  {
-    pstr_loc = loc;
-    pstr_desc = Pstr_type ( 
-      Nonrecursive,
-      tds)
-  }   *)
 
-let rec_type_sig ?(loc=default_loc)  tds : signature_item = 
+
+let rec_type_sig 
+  ?(loc=default_loc)
+   rf tds : signature_item = 
   {
     psig_loc = loc;
     psig_desc = Psig_type ( 
-      Recursive,
+      rf,
       tds)
   }
 

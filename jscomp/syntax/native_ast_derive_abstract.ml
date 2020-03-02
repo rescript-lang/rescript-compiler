@@ -209,7 +209,7 @@ let code_sig_transform sigi = match sigi with
 #else assert false    
 #end
 
-let handleTdclsInStr ~light tdcls =
+let handleTdclsInStr ~light rf tdcls =
   let tdcls, tdcls_sig, code, code_sig =
     Ext_list.fold_right tdcls ([],[], [], []) (fun tdcl (tdcls, tdcls_sig, sts, code_sig)  ->
         match handleTdcl light tdcl with
@@ -222,11 +222,11 @@ let handleTdclsInStr ~light tdcls =
             Ext_list.map_append value_descriptions code_sig code_sig_transform
           )
       )  in
-  (Ast_compatible.rec_type_str tdcls :: code,
-   Ast_compatible.rec_type_sig tdcls_sig :: code_sig)
+  (Ast_compatible.rec_type_str rf tdcls :: code,
+   Ast_compatible.rec_type_sig rf tdcls_sig :: code_sig)
   (* still need perform transformation for non-abstract type*)
 
-let handleTdclsInSig ~light tdcls =
+let handleTdclsInSig ~light rf tdcls =
   let tdcls_sig, code =
     Ext_list.fold_right tdcls ([], []) (fun tdcl (tdcls_sig, sts)  ->
         match handleTdcl light tdcl with
@@ -237,4 +237,4 @@ let handleTdclsInSig ~light tdcls =
             Ext_list.map_append value_descriptions sts code_sig_transform
           )
       )  in
-   Ast_compatible.rec_type_sig tdcls_sig :: code
+   Ast_compatible.rec_type_sig rf tdcls_sig :: code

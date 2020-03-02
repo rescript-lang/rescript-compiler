@@ -37,8 +37,12 @@ val isAbstract :
 
 val handleTdclsInStr : 
   light:bool -> 
-  Parsetree.type_declaration list -> Parsetree.structure
+  Asttypes.rec_flag -> 
+  Parsetree.type_declaration list ->
+  Parsetree.structure
 
 val handleTdclsInSig:  
   light:bool ->
-  Parsetree.type_declaration list -> Parsetree.signature
+  Asttypes.rec_flag -> 
+  Parsetree.type_declaration list ->
+  Parsetree.signature

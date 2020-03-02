@@ -66,17 +66,17 @@ let typ_mapper (self : mapper) (typ : Parsetree.core_type) =
 let structure_item_mapper (self : mapper) (str : Parsetree.structure_item) =
   match str.pstr_desc with
   | Pstr_type (
-      _rf,
+      rf,
     (_ :: _ as tdcls )) ->
-      Ast_tdcls.handleTdclsInStru self str tdcls
+      Ast_tdcls.handleTdclsInStru self str rf tdcls
   | _ -> default_str_mapper self str
 
 let signature_item_mapper (self : mapper) (sigi : Parsetree.signature_item) =
   match sigi.psig_desc with
   | Psig_type (
-      _rf,
+      rf,
        (_ :: _ as tdcls)) ->  (*FIXME: check recursive handling*)
-      Ast_tdcls.handleTdclsInSigi self sigi tdcls
+      Ast_tdcls.handleTdclsInSigi self sigi rf tdcls
   | _ -> default_sig_mapper self sigi
 
 let my_mapper : mapper = {

@@ -154,12 +154,11 @@ let has_inline_payload_in_sig (attrs : t)  =
     ) 
 
 type derive_attr = {
-  explict_nonrec : bool;
   bs_deriving : Ast_payload.action list option
-}
+} [@@unboxed]
 
 let process_derive_type (attrs : t) : derive_attr * t =
-  Ext_list.fold_left attrs ({explict_nonrec = false; bs_deriving = None }, []) 
+  Ext_list.fold_left attrs ({bs_deriving = None }, []) 
     (fun (st, acc) ({txt ; loc}, payload  as attr)  ->
       match  st, txt  with
       |  {bs_deriving = None}, "bs.deriving"
@@ -172,10 +171,6 @@ let process_derive_type (attrs : t) : derive_attr * t =
         Bs_syntaxerr.err loc Duplicated_bs_deriving
 
       | _ , _ ->
-        let st =
-          if txt = "nonrec" then
-            { st with explict_nonrec = true }
-          else st in
         st, attr::acc
     ) 
 
