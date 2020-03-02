@@ -59,9 +59,8 @@ val has_inline_payload_in_sig :
   attr option 
 
 type derive_attr = {
-  explict_nonrec : bool;
   bs_deriving : Ast_payload.action list option
-}
+} [@@unboxed]
 
 
 val iter_process_bs_string_int_unwrap_uncurry :

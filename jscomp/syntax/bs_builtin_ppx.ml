@@ -211,9 +211,9 @@ let class_type_mapper (self : mapper) ({pcty_attributes; pcty_loc} as ctd : Pars
 let signature_item_mapper (self : mapper) (sigi : Parsetree.signature_item) =        
       match sigi.psig_desc with
       | Psig_type (
-          _rf, 
-           (_ :: _ as tdcls)) ->  (*FIXME: check recursive handling*)
-          Ast_tdcls.handleTdclsInSigi self sigi tdcls
+          rf, 
+          tdcls) ->  
+          Ast_tdcls.handleTdclsInSigi self sigi rf tdcls
       | Psig_value ({pval_attributes; pval_prim} as value_desc)
         
         ->
@@ -279,9 +279,9 @@ let local_module_name =
 let structure_item_mapper (self : mapper) (str : Parsetree.structure_item) =
   match str.pstr_desc with
   | Pstr_type (
-          _rf, (* FIXME *)
-          (_ :: _ as tdcls )) (* [ {ptype_attributes} as tdcl ] *)->
-          Ast_tdcls.handleTdclsInStru self str tdcls
+          rf, 
+          tdcls) (* [ {ptype_attributes} as tdcl ] *)->
+          Ast_tdcls.handleTdclsInStru self str rf tdcls
    | Pstr_primitive prim when Ast_attributes.external_needs_to_be_encoded prim.pval_attributes
       ->
       Ast_external.handleExternalInStru self prim str

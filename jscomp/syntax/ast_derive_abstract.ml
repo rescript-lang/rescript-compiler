@@ -197,7 +197,7 @@ let handleTdcl
     (* U.notApplicable tdcl.ptype_loc derivingName;  *)
     tdcl, []
 
-let handleTdclsInStr ~light tdcls =
+let handleTdclsInStr ~light rf tdcls =
   let tdcls, code =
     Ext_list.fold_right tdcls ([],[]) (fun tdcl (tdcls, sts)  ->
         match handleTdcl light tdcl with
@@ -205,10 +205,10 @@ let handleTdclsInStr ~light tdcls =
           ntdcl::tdcls,
           Ext_list.map_append value_descriptions sts (fun x -> Str.primitive x) 
       ) in
-Ast_compatible.rec_type_str tdcls :: code
+Ast_compatible.rec_type_str rf tdcls :: code
 (* still need perform transformation for non-abstract type*)
 
-let handleTdclsInSig ~light tdcls =
+let handleTdclsInSig ~light rf tdcls =
   let tdcls, code =
     Ext_list.fold_right tdcls ([],[]) (fun tdcl (tdcls, sts)  ->
         match handleTdcl light tdcl with
@@ -216,4 +216,4 @@ let handleTdclsInSig ~light tdcls =
           ntdcl::tdcls,
           Ext_list.map_append value_descriptions sts (fun x -> Sig.value x) 
       ) in
-  Ast_compatible.rec_type_sig tdcls :: code
+  Ast_compatible.rec_type_sig rf tdcls :: code

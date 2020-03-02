@@ -25,8 +25,8 @@
 type tdcls = Parsetree.type_declaration list
 
 type gen = {
-  structure_gen : tdcls -> bool -> Ast_structure.t ;
-  signature_gen : tdcls -> bool -> Ast_signature.t ; 
+  structure_gen : tdcls -> Asttypes.rec_flag -> Ast_structure.t ;
+  signature_gen : tdcls -> Asttypes.rec_flag -> Ast_signature.t ; 
   expression_gen : (Parsetree.core_type -> Parsetree.expression) option ; 
 }
 
@@ -58,7 +58,7 @@ let register key value =
 let gen_signature
     tdcls
     (actions :  Ast_payload.action list ) 
-    (explict_nonrec : bool )
+    (explict_nonrec : Asttypes.rec_flag )
   : Ast_signature.t = 
   Ext_list.flat_map actions
     (fun action -> 
@@ -80,7 +80,7 @@ let gen_structure_signature
     loc
     (tdcls : tdcls)   
     (action : Ast_payload.action)
-    (explicit_nonrec : bool) = 
+    (explicit_nonrec : Asttypes.rec_flag) = 
   let derive_table = !derive_table in  
   let u = 
     Ast_payload.table_dispatch derive_table action in  

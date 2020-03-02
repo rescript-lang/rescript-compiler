@@ -157,6 +157,7 @@ val object_:
 
 val rec_type_str:  
   ?loc:loc -> 
+  Asttypes.rec_flag -> 
   type_declaration list -> 
   structure_item
 
@@ -167,6 +168,7 @@ val rec_type_str:
 
 val rec_type_sig:  
   ?loc:loc -> 
+  Asttypes.rec_flag -> 
   type_declaration list -> 
   signature_item
 

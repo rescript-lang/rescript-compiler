@@ -25,8 +25,8 @@
 type tdcls = Parsetree.type_declaration list 
 
 type gen = {
-  structure_gen : tdcls -> bool -> Ast_structure.t ;
-  signature_gen : tdcls -> bool -> Ast_signature.t ; 
+  structure_gen : tdcls -> Asttypes.rec_flag -> Ast_structure.t ;
+  signature_gen : tdcls -> Asttypes.rec_flag -> Ast_signature.t ; 
   expression_gen : (Parsetree.core_type -> Parsetree.expression) option ; 
 }
 
@@ -48,7 +48,7 @@ val register :
 val gen_signature: 
   tdcls ->
   Ast_payload.action list -> 
-  bool -> 
+  Asttypes.rec_flag -> 
   Ast_signature.t
 
 
@@ -63,5 +63,5 @@ val gen_structure_signature :
   Location.t -> 
   Parsetree.type_declaration list ->
   Ast_payload.action -> 
-  bool -> 
+  Asttypes.rec_flag -> 
   Parsetree.structure_item
