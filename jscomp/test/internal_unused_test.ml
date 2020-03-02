@@ -25,6 +25,25 @@ let h = fun[@bs] a b -> a + b
 ]
 
 
+let%local h0 = 1
+
+let%local h1 = h0 + 1
+
+let%local h2 = h1 + 1 
+
+[%%local
+let h3 = 1 
+let h4 = h3 + 1 
+let h5 = h4 + 1
+]
+
+module N = struct 
+  let %local a = 3 
+  let b = a + 2  
+end   
+
+;; Js.log h5
+;; Js.log h2
 
 ;; Js.log f 
 
