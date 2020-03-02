@@ -476,7 +476,7 @@ if (watch_mode) {
             } else {
 
                 error_output('Error: could not acquire lockfile', 'Error')
-                console.error(lockFileName)
+                console.error(' ' + lockFileName)
 
                 console.log('Could be another process running in the background',
                     '\nEither kill that process or delete the staled lock')
