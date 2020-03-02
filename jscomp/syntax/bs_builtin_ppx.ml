@@ -270,11 +270,6 @@ let signature_item_mapper (self : mapper) (sigi : Parsetree.signature_item) =
           )
       | _ -> default_mapper.signature_item self sigi
 
-let local_module_name =     
-  let v = ref 0 in       
-  fun  () -> 
-    incr v ;
-  "local_" ^ (string_of_int !v) 
 
 let structure_item_mapper (self : mapper) (str : Parsetree.structure_item) =
   match str.pstr_desc with
@@ -337,6 +332,31 @@ let structure_item_mapper (self : mapper) (str : Parsetree.structure_item) =
     end 
   | _ -> default_mapper.structure_item self str
 
+let local_module_name =     
+  let v = ref 0 in       
+  fun  () -> 
+    incr v ;
+    "local_" ^ string_of_int !v
+
+
+let expand_local loc (stru : Ast_structure.t) (acc : Ast_structure.t) : Ast_structure.t = 
+  Ext_list.iter stru Typemod_hide.check; 
+  let local_module_name = local_module_name () in 
+  let open Ast_helper in 
+  Str.module_         
+    ~loc
+    { pmb_name = {txt = local_module_name; loc}; 
+      pmb_expr = {
+        pmod_desc= Pmod_structure stru;
+        pmod_loc = loc; 
+        pmod_attributes = [] };
+      pmb_attributes = Typemod_hide.attrs; pmb_loc = loc} ::
+  Str.open_ ~loc {
+    popen_lid = {txt = Lident local_module_name; loc};
+    popen_override = Override;
+    popen_loc = loc;
+    popen_attributes = []
+  } :: acc   
 
 let rec 
   structure_mapper (self : mapper) stru =     
@@ -344,44 +364,27 @@ let rec
   | [] -> []  
   | item::rest -> 
     let new_x = self.structure_item self item in 
+    let rest = (structure_mapper self rest) in 
     match new_x.pstr_desc with 
     | Pstr_extension (({txt = ("bs.debugger.chrome" | "debugger.chrome") ;loc}, _),_)
       -> 
       Location.prerr_warning loc (Preprocessor "this extension can be safely removed");
-      (structure_mapper self rest)
+      rest 
     | Pstr_extension ( ({txt = ("bs.raw"| "raw") ; loc}, payload), _attrs)
       ->
-      Ast_exp_handle_external.handle_raw_structure loc payload :: (structure_mapper self rest)     
+      Ast_exp_handle_external.handle_raw_structure loc payload :: rest 
     | Pstr_extension (({txt = "local"; loc}, payload),_)
       -> 
       begin match payload with 
         | PStr stru -> 
-          (* check no module, no type allowed *)
-          (* let stru = self.structure self stru in  *)
-          Ext_list.iter stru Typemod_hide.check; 
-          let local_module_name = local_module_name () in 
-          let open Ast_helper in 
-            Str.module_         
-              ~loc
-              { pmb_name = {txt = local_module_name; loc}; 
-                pmb_expr = {
-                  pmod_desc= Pmod_structure stru;
-                  pmod_loc = loc; 
-                  pmod_attributes = [] };
-                pmb_attributes = Typemod_hide.attrs; pmb_loc = loc} ::
-            Str.open_ ~loc {
-              popen_lid = {txt = Lident local_module_name; loc};
-              popen_override = Override;
-              popen_loc = loc;
-              popen_attributes = []
-            } :: structure_mapper self rest          
+          expand_local loc stru rest 
         | PSig _ 
         | PTyp _
         | PPat _ ->
           Location.raise_errorf ~loc "local extension is not support"
       end  
     | _ ->    
-      new_x :: (structure_mapper self rest)
+      new_x :: rest
   
 let  unsafe_mapper : mapper =
   { default_mapper with
