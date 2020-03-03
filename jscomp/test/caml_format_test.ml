@@ -188,7 +188,7 @@ let int64_suites =
     "i64_simple4", (fun _ -> Eq(a "%LX" 44L, "2C"));
     "i64_simple5", (fun _ -> Eq(a "%Lx" 44L, "2c"));
     "i64_simple6", (fun _ -> Eq(a "%*Lx" 5 44L, "   2c"));
-    "i64_simple7", (fun _ -> Eq(Int64.to_string 3333L, "3333"));
+    "i64_simple7", (fun _ -> Eq(Int64.to_string 3333L, "3333"));    
     "i64_simple8", (fun _ -> Eq( a  "%Ld%018Ld" 3L 3L, "3000000000000000003"));
     "i64_simple9", (fun _ -> Eq( a  "%Ld%018Ld" 460800000000000L 0L, 
                                  "460800000000000000000000000000000"));
