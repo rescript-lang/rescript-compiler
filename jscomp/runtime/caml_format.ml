@@ -424,6 +424,53 @@ let dec_of_int64 x =
       s .contents<- Caml_string_extern.get_string_unsafe cvtbl (Caml_int64_extern.to_int modulus.contents) ^ s.contents ;
     done); s.contents
 
+let oct_of_int64 x =   
+  let s = ref "" in  
+  let wbase  = 8L  in
+  let  cvtbl = "01234567" in
+  (if  x < 0L then
+     begin         
+       let y = Caml_int64.discard_sign  x in
+       (* 2 ^  63 + y `div_mod` 8 *)        
+       let quotient_l  = 1152921504606846976L 
+       (* {lo =   0n; hi =  268435456n } *) (* 2 ^ 31 / 8 *)
+       in 
+
+       (* let c, d = Caml_int64.div_mod (Caml_int64.add y modulus_l) wbase in
+          we can not do the code above, it can overflow when y is really large           
+       *)
+       let c, d = Caml_int64.div_mod  y  wbase in
+
+       let quotient =
+         ref (Caml_int64_extern.add quotient_l c )  in
+       let modulus = ref d in
+       s .contents<-
+         Caml_string_extern.get_string_unsafe 
+           cvtbl (Caml_int64_extern.to_int modulus.contents) ^ s.contents ;
+
+       while  quotient.contents <> 0L do
+         let a, b = Caml_int64.div_mod quotient.contents wbase in
+         quotient .contents<- a;
+         modulus .contents<- b;
+         s .contents<- Caml_string_extern.get_string_unsafe cvtbl (Caml_int64_extern.to_int modulus.contents) ^ s.contents ;
+       done;
+     end
+   else
+     let a, b =  Caml_int64.div_mod x wbase  in
+     let quotient = ref a  in
+     let modulus = ref b in
+     s .contents<-
+       Caml_string_extern.get_string_unsafe 
+         cvtbl (Caml_int64_extern.to_int modulus.contents) ^ s.contents ;
+
+     while  quotient.contents <> 0L do
+       let a, b = Caml_int64.div_mod (quotient.contents) wbase in
+       quotient .contents<- a;
+       modulus .contents<- b;
+       s .contents<- Caml_string_extern.get_string_unsafe cvtbl (Caml_int64_extern.to_int modulus.contents) ^ s.contents ;
+     done); s.contents   
+
+
 (* FIXME: improve codegen for such cases
 let div_mod (x : int64) (y : int64) : int64 * int64 =  
   let a, b = Caml_int64.(div_mod (unsafe_of_int64 x) (unsafe_of_int64 y)) in   
@@ -445,51 +492,7 @@ let caml_int64_format fmt x =
     | Hex ->
       s .contents<- Caml_int64.to_hex x ^ s.contents       
     | Oct ->
-      let wbase  = 8L  in
-      let  cvtbl = "01234567" in
-
-      if  x < 0L then
-        begin         
-          let y = Caml_int64.discard_sign  x in
-          (* 2 ^  63 + y `div_mod` 8 *)        
-          let quotient_l  = 1152921504606846976L 
-            (* {lo =   0n; hi =  268435456n } *) (* 2 ^ 31 / 8 *)
-          in 
-
-          (* let c, d = Caml_int64.div_mod (Caml_int64.add y modulus_l) wbase in
-             we can not do the code above, it can overflow when y is really large           
-          *)
-          let c, d = Caml_int64.div_mod  y  wbase in
-
-          let quotient =
-            ref (Caml_int64_extern.add quotient_l c )  in
-          let modulus = ref d in
-          s .contents<-
-            Caml_string_extern.get_string_unsafe 
-              cvtbl (Caml_int64_extern.to_int modulus.contents) ^ s.contents ;
-
-          while  quotient.contents <> 0L do
-            let a, b = Caml_int64.div_mod quotient.contents wbase in
-            quotient .contents<- a;
-            modulus .contents<- b;
-            s .contents<- Caml_string_extern.get_string_unsafe cvtbl (Caml_int64_extern.to_int modulus.contents) ^ s.contents ;
-          done;
-        end
-      else
-        let a, b =  Caml_int64.div_mod x wbase  in
-        let quotient = ref a  in
-        let modulus = ref b in
-        s .contents<-
-          Caml_string_extern.get_string_unsafe 
-            cvtbl (Caml_int64_extern.to_int modulus.contents) ^ s.contents ;
-
-        while  quotient.contents <> 0L do
-          let a, b = Caml_int64.div_mod (quotient.contents) wbase in
-          quotient .contents<- a;
-          modulus .contents<- b;
-          s .contents<- Caml_string_extern.get_string_unsafe cvtbl (Caml_int64_extern.to_int modulus.contents) ^ s.contents ;
-        done
-
+      s.contents <- oct_of_int64 x 
     | Dec ->
         s .contents <- dec_of_int64 x 
   end;
