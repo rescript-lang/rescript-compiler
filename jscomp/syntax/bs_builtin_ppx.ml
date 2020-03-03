@@ -270,11 +270,6 @@ let signature_item_mapper (self : mapper) (sigi : Parsetree.signature_item) =
           )
       | _ -> default_mapper.signature_item self sigi
 
-let local_module_name =     
-  let v = ref 0 in       
-  fun  () -> 
-    incr v ;
-  "local_" ^ (string_of_int !v) 
 
 let structure_item_mapper (self : mapper) (str : Parsetree.structure_item) =
   match str.pstr_desc with
@@ -338,50 +333,68 @@ let structure_item_mapper (self : mapper) (str : Parsetree.structure_item) =
   | _ -> default_mapper.structure_item self str
 
 
+let local_module_name =     
+  let v = ref 0 in       
+  fun  () -> 
+    incr v ;
+    "local_" ^ string_of_int !v
+
+
+let expand_reverse  (stru : Ast_structure.t) (acc : Ast_structure.t) : Ast_structure.t = 
+  if stru = [] then acc 
+  else begin 
+    Ext_list.iter stru Typemod_hide.check; 
+    let local_module_name = local_module_name () in 
+    let last_loc = (List.hd stru).pstr_loc  in 
+    let stru = List.rev stru in 
+    let first_loc = (List.hd  stru).pstr_loc in 
+    let loc = {first_loc with loc_end = last_loc.loc_end; } in  
+    let open Ast_helper in 
+    Str.module_         
+      ~loc
+      { pmb_name = {txt = local_module_name; loc}; 
+        pmb_expr = {
+          pmod_desc= Pmod_structure stru;
+          pmod_loc = loc; 
+          pmod_attributes = [] };
+        pmb_attributes = Typemod_hide.attrs; pmb_loc = loc} ::
+    Str.open_ ~loc {
+      popen_lid = {txt = Lident local_module_name; loc};
+      popen_override = Override;
+      popen_loc = loc;
+      popen_attributes = []
+    } :: acc   
+  end
+
+
 let rec 
-  structure_mapper (self : mapper) stru =     
+  structure_mapper (self : mapper) (stru : Ast_structure.t) =     
   match stru with 
   | [] -> []  
   | item::rest -> 
-    let new_x = self.structure_item self item in 
-    match new_x.pstr_desc with 
+    match item.pstr_desc with 
     | Pstr_extension (({txt = ("bs.debugger.chrome" | "debugger.chrome") ;loc}, _),_)
       -> 
       Location.prerr_warning loc (Preprocessor "this extension can be safely removed");
-      (structure_mapper self rest)
+      structure_mapper self rest
     | Pstr_extension ( ({txt = ("bs.raw"| "raw") ; loc}, payload), _attrs)
       ->
-      Ast_exp_handle_external.handle_raw_structure loc payload :: (structure_mapper self rest)     
-    | Pstr_extension (({txt = "local"; loc}, payload),_)
+      Ast_exp_handle_external.handle_raw_structure loc payload :: structure_mapper self rest
+    | Pstr_extension (({txt = "private"}, _),_)
       -> 
-      begin match payload with 
-        | PStr stru -> 
-          (* check no module, no type allowed *)
-          (* let stru = self.structure self stru in  *)
-          Ext_list.iter stru Typemod_hide.check; 
-          let local_module_name = local_module_name () in 
-          let open Ast_helper in 
-            Str.module_         
-              ~loc
-              { pmb_name = {txt = local_module_name; loc}; 
-                pmb_expr = {
-                  pmod_desc= Pmod_structure stru;
-                  pmod_loc = loc; 
-                  pmod_attributes = [] };
-                pmb_attributes = Typemod_hide.attrs; pmb_loc = loc} ::
-            Str.open_ ~loc {
-              popen_lid = {txt = Lident local_module_name; loc};
-              popen_override = Override;
-              popen_loc = loc;
-              popen_attributes = []
-            } :: structure_mapper self rest          
-        | PSig _ 
-        | PTyp _
-        | PPat _ ->
-          Location.raise_errorf ~loc "local extension is not support"
-      end  
+      let rec aux acc (rest : Ast_structure.t) =
+        match rest with 
+        | {pstr_desc = Pstr_extension (({txt = "private";loc}, payload), _) } :: next -> 
+          begin match payload with  
+            | PStr work -> 
+              aux (Ext_list.rev_map_append work acc (fun x -> self.structure_item self x)) next 
+            | (PSig _ | PTyp _ | PPat _) -> 
+              Location.raise_errorf ~loc "private extension is not support"
+          end        
+        | _ -> expand_reverse acc (structure_mapper self rest)
+      in  aux  [] stru
     | _ ->    
-      new_x :: (structure_mapper self rest)
+      self.structure_item self item  :: structure_mapper self rest
   
 let  unsafe_mapper : mapper =
   { default_mapper with

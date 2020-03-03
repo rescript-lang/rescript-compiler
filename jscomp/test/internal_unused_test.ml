@@ -14,17 +14,36 @@ open! P1
 
 let f () = raise A
 
-let%local b = 3
+let%private b = 3
 
-let%local c = b + 2
+let%private c = b + 2
 
-[%%local
+[%%private
 let d = c 
 let f = d 
 let h = fun[@bs] a b -> a + b
 ]
 
 
+let%private h0 = 1
+
+let%private h1 = h0 + 1
+
+let%private h2 = h1 + 1 
+
+[%%private
+let h3 = 1 
+let h4 = h3 + 1 
+let h5 = h4 + 1
+]
+
+module N = struct 
+  let %private a = 3 
+  let b = a + 2  
+end   
+
+;; Js.log h5
+;; Js.log h2
 
 ;; Js.log f 
 
