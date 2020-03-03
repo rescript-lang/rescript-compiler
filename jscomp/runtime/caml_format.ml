@@ -486,25 +486,26 @@ let caml_int64_format fmt x =
         Caml_int64_extern.neg x
       end
     else x in
-  let s = ref "" in
+  let s = 
 
   begin match f.base with
     | Hex ->
-      s .contents<- Caml_int64.to_hex x ^ s.contents       
+       Caml_int64.to_hex x 
     | Oct ->
-      s.contents <- oct_of_int64 x 
+       oct_of_int64 x 
     | Dec ->
-        s .contents <- dec_of_int64 x 
-  end;
+         dec_of_int64 x 
+  end in 
+  let fill_s = 
   if f.prec >= 0 then
     begin
       f.filter <- " ";
-      let n = f.prec -Caml_string_extern.length s.contents in
+      let n = f.prec -Caml_string_extern.length s in
       if n > 0 then
-        s .contents<- repeat n "0" ^ s.contents
-    end;
+        repeat n "0" ^ s else s 
+    end  else s in 
 
-  finish_formatting f s.contents
+  finish_formatting f fill_s
 
 let caml_format_float fmt x = 
   let module String = Caml_string_extern in 
