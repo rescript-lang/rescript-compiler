@@ -415,14 +415,14 @@ let caml_int64_format fmt x =
             ref (Caml_int64_extern.add quotient_l c )  in
           let modulus = ref d in
           s .contents<-
-            Caml_string_extern.of_char 
-              cvtbl.[ Caml_int64_extern.to_int modulus.contents] ^ s.contents ;
+            Caml_string_extern.get_string_unsafe 
+              cvtbl (Caml_int64_extern.to_int modulus.contents) ^ s.contents ;
 
           while  quotient.contents <> 0L do
             let a, b = Caml_int64.div_mod quotient.contents wbase in
             quotient .contents<- a;
             modulus .contents<- b;
-            s .contents<- Caml_string_extern.of_char cvtbl.[Caml_int64_extern.to_int modulus.contents] ^ s.contents ;
+            s .contents<- Caml_string_extern.get_string_unsafe cvtbl (Caml_int64_extern.to_int modulus.contents) ^ s.contents ;
           done;
         end
       else
@@ -430,14 +430,14 @@ let caml_int64_format fmt x =
         let quotient = ref a  in
         let modulus = ref b in
         s .contents<-
-          Caml_string_extern.of_char 
-            cvtbl.[ Caml_int64_extern.to_int modulus.contents] ^ s.contents ;
+          Caml_string_extern.get_string_unsafe 
+            cvtbl (Caml_int64_extern.to_int modulus.contents) ^ s.contents ;
 
         while  quotient.contents <> 0L do
           let a, b = Caml_int64.div_mod (quotient.contents) wbase in
           quotient .contents<- a;
           modulus .contents<- b;
-          s .contents<- Caml_string_extern.of_char cvtbl.[Caml_int64_extern.to_int modulus.contents] ^ s.contents ;
+          s .contents<- Caml_string_extern.get_string_unsafe cvtbl (Caml_int64_extern.to_int modulus.contents) ^ s.contents ;
         done
 
     | Dec ->
@@ -463,14 +463,14 @@ let caml_int64_format fmt x =
                  e)  in
         let modulus = ref f in
         s .contents<-
-          Caml_string_extern.of_char 
-            cvtbl.[Caml_int64_extern.to_int modulus.contents] ^ s.contents ;
+          Caml_string_extern.get_string_unsafe 
+            cvtbl (Caml_int64_extern.to_int modulus.contents) ^ s.contents ;
 
         while quotient.contents <> 0L do
           let a, b = Caml_int64.div_mod (quotient.contents) wbase in
           quotient .contents<- a;
           modulus .contents<- b;
-          s .contents<- Caml_string_extern.of_char cvtbl.[Caml_int64_extern.to_int modulus.contents] ^ s.contents ;
+          s .contents<- Caml_string_extern.get_string_unsafe cvtbl (Caml_int64_extern.to_int modulus.contents) ^ s.contents ;
         done;
 
       else
@@ -478,14 +478,14 @@ let caml_int64_format fmt x =
         let quotient = ref a  in
         let modulus = ref b in
         s .contents<-
-          Caml_string_extern.of_char 
-            cvtbl.[ Caml_int64_extern.to_int modulus.contents] ^ s.contents ;
+          Caml_string_extern.get_string_unsafe 
+            cvtbl ( Caml_int64_extern.to_int modulus.contents) ^ s.contents ;
 
         while  quotient.contents <> 0L do
           let a, b = Caml_int64.div_mod (quotient.contents) wbase in
           quotient .contents<- a;
           modulus .contents<- b;
-          s .contents<- Caml_string_extern.of_char cvtbl.[Caml_int64_extern.to_int modulus.contents] ^ s.contents ;
+          s .contents<- Caml_string_extern.get_string_unsafe cvtbl (Caml_int64_extern.to_int modulus.contents) ^ s.contents ;
         done;
   end;
   if f.prec >= 0 then
