@@ -375,7 +375,7 @@ let caml_format_int fmt i =
     aux f i 
 
       
-let dec_of_int64 x = 
+let dec_of_pos_int64 x = 
   let s = ref "" in   
   let wbase  =  10L  in
   let  cvtbl = "0123456789" in
@@ -493,7 +493,7 @@ let caml_int64_format fmt x =
     | Oct ->
        oct_of_int64 x 
     | Dec ->
-         dec_of_int64 x 
+         dec_of_pos_int64 x 
   end in 
   let fill_s = 
   if f.prec >= 0 then
