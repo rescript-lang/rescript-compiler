@@ -380,16 +380,16 @@ let rec
     | Pstr_extension ( ({txt = ("bs.raw"| "raw") ; loc}, payload), _attrs)
       ->
       Ast_exp_handle_external.handle_raw_structure loc payload :: structure_mapper self rest
-    | Pstr_extension (({txt = "local"}, _),_)
+    | Pstr_extension (({txt = "private"}, _),_)
       -> 
       let rec aux acc (rest : Ast_structure.t) =
         match rest with 
-        | {pstr_desc = Pstr_extension (({txt = "local";loc}, payload), _) } :: next -> 
+        | {pstr_desc = Pstr_extension (({txt = "private";loc}, payload), _) } :: next -> 
           begin match payload with  
             | PStr work -> 
               aux (Ext_list.rev_map_append work acc (fun x -> self.structure_item self x)) next 
             | (PSig _ | PTyp _ | PPat _) -> 
-              Location.raise_errorf ~loc "local extension is not support"
+              Location.raise_errorf ~loc "private extension is not support"
           end        
         | _ -> expand_reverse acc (structure_mapper self rest)
       in  aux  [] stru
