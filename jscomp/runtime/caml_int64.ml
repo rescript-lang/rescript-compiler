@@ -340,29 +340,29 @@ let rec to_string (Int64{hi=self_hi; lo= self_lo} as self : t) =
     if eq self min_int then "-9223372036854775808"
     else "-" ^ to_string (neg self)
   else (* large positive number *)
-  let approx_div1 =  (of_float (floor (to_float self /. 10.) )) in
-  let approx_div1_times8 = (lsl_ approx_div1 3) in 
-  let approx_div1_times2 = (lsl_ approx_div1 1) in 
-  let (Int64 { lo = rem_lo ;hi = rem_hi} as rem) = 
-    sub (sub self approx_div1_times8) approx_div1_times2 in 
-  if rem_lo =0n && rem_hi = 0n then to_string approx_div1 ^ "0"
-  else 
-  if rem_hi < 0n then 
-    let (Int64 {lo = rem_lo}) = neg rem in     
-    let rem_lo = Caml_nativeint_extern.to_float rem_lo in 
-    let delta =  (ceil (rem_lo /. 10.)) in 
-    let remainder = 10. *. delta -. rem_lo in
-    to_string (add approx_div1 
-      (neg (mk ~lo:(Caml_nativeint_extern.of_float delta) ~hi:0n))) ^ 
-        Caml_nativeint_extern.to_string (Caml_nativeint_extern.of_float remainder)
-  else 
-    let rem_lo = Caml_nativeint_extern.to_float rem_lo in 
-    let delta =  (floor (rem_lo /. 10.)) in 
-    let remainder = rem_lo -. 10. *. delta in 
-    to_string (add approx_div1 (mk ~lo:(Caml_nativeint_extern.of_float delta) ~hi:0n)) ^
-     Caml_nativeint_extern.to_string (Caml_nativeint_extern.of_float remainder) 
-    
-    
+    let approx_div1 =  (of_float (floor (to_float self /. 10.) )) in
+    let approx_div1_times8 = (lsl_ approx_div1 3) in 
+    let approx_div1_times2 = (lsl_ approx_div1 1) in 
+    let (Int64 { lo = rem_lo ;hi = rem_hi} as rem) = 
+      sub (sub self approx_div1_times8) approx_div1_times2 in 
+    if rem_lo =0n && rem_hi = 0n then to_string approx_div1 ^ "0"
+    else 
+    if rem_hi < 0n then 
+      let (Int64 {lo = rem_lo}) = neg rem in     
+      let rem_lo = Caml_nativeint_extern.to_float rem_lo in 
+      let delta =  (ceil (rem_lo /. 10.)) in 
+      let remainder = 10. *. delta -. rem_lo in
+      to_string (add approx_div1 
+                   (neg (mk ~lo:(Caml_nativeint_extern.of_float delta) ~hi:0n))) ^ 
+      Caml_nativeint_extern.to_string (Caml_nativeint_extern.of_float remainder)
+    else 
+      let rem_lo = Caml_nativeint_extern.to_float rem_lo in 
+      let delta =  (floor (rem_lo /. 10.)) in 
+      let remainder = rem_lo -. 10. *. delta in 
+      to_string (add approx_div1 (mk ~lo:(Caml_nativeint_extern.of_float delta) ~hi:0n)) ^
+      Caml_nativeint_extern.to_string (Caml_nativeint_extern.of_float remainder) 
+
+
 
 let rec div self other =
   match self, other with
