@@ -329,7 +329,7 @@ let rec to_string (Int64{hi=self_hi; lo= self_lo} as self : t) =
   else (* large positive number *)
   let approx_div1 =  (of_float (floor (to_float self /. 10.) )) in
   let (Int64 { lo = rem_lo ;hi = rem_hi} as rem) = 
-    sub (sub self (mul approx_div1 (mk ~lo:9n ~hi:0n))) approx_div1 in 
+    sub (sub self (lsl_ approx_div1 3)) (lsl_ approx_div1 1) in 
   if rem_lo =0n && rem_hi = 0n then to_string approx_div1 ^ "0"
   else 
   if rem_hi < 0n then 
