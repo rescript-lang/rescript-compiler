@@ -295,6 +295,8 @@ let translate loc (prim_name : string)
       end
     | "caml_bytes_equal" ->   
       call Js_runtime_modules.caml_primitive
+    | "caml_int64_to_string" -> 
+      E.runtime_call Js_runtime_modules.int64 "to_string" args 
     | "caml_int64_equal_null"
       -> Js_long.equal_null args 
     | "caml_int64_equal_undefined"

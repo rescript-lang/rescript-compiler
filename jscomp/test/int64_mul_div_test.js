@@ -9,7 +9,6 @@ var Int64 = require("../../lib/js/int64.js");
 var Printf = require("../../lib/js/printf.js");
 var Caml_int64 = require("../../lib/js/caml_int64.js");
 var Pervasives = require("../../lib/js/pervasives.js");
-var Caml_format = require("../../lib/js/caml_format.js");
 
 function commutative_mul(result, a, b) {
   return /* Eq */Block.__(0, [
@@ -1705,7 +1704,7 @@ function from_to_string(xs) {
                         (function (param) {
                             return /* Eq */Block.__(0, [
                                       str_a,
-                                      Caml_format.caml_int64_format("%d", a)
+                                      Caml_int64.to_string(a)
                                     ]);
                           })
                       ];

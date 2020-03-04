@@ -51,7 +51,7 @@ let max_int = 0x7FFFFFFFFFFFFFFFL
 let lognot n = logxor n (-1L)
 
 external format : string -> int64 -> string = "caml_int64_format"
-let to_string n = format "%d" n
+external to_string : int64 -> string = "caml_int64_to_string"
 
 external of_string : string -> int64 = "caml_int64_of_string"
 
