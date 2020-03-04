@@ -203,7 +203,7 @@ let int64_suites =
 
                           "FFFFFFFFFFFFFFFF"
                         ));
-    "i64_simple17", (fun _ ->
+    __LOC__, (fun _ ->
                       Eq( a "%Lx" (-1L),
 
                           "ffffffffffffffff"
@@ -211,12 +211,18 @@ let int64_suites =
 
     "i64_simple11", (fun _ -> Eq( a "%LX" Int64.max_int,"7FFFFFFFFFFFFFFF"
                                  ));
-    "i64_simple12", (fun _ ->  Eq( a "%LX" Int64.min_int, "8000000000000000"));
-    "i64_simple17", (fun _ ->
+    __LOC__, (fun _ ->  Eq( a "%LX" Int64.min_int, "8000000000000000"));
+    __LOC__, (fun _ ->
 
         Eq(a "%Lu" (-1L), "18446744073709551615")
       );
-    "i64_simple21", (fun _ -> Eq(a "%Lu" (-10000L), "18446744073709541616"));    
+    __LOC__, (fun _ -> 
+        Eq (a "%Lu" (-100L), "18446744073709551516")
+    ) ; 
+    __LOC__, (fun _ ->
+      Eq (a "%Lu" Int64.(add min_int 1L), "9223372036854775809")
+    );
+    __LOC__, (fun _ -> Eq(a "%Lu" (-10000L), "18446744073709541616"));    
     "i64_simple19", (fun _ -> Eq(a "%Lo" Int64.min_int , "1000000000000000000000") );
     "i64_simple13", (fun _ ->  Eq( a "%LX" Int64.(add min_int 1L),
                                    "8000000000000001"));

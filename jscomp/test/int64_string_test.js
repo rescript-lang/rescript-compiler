@@ -43,7 +43,15 @@ f(Caml_int64.add(Int64.min_int, /* int64 */[
           /* lo */100
         ]), "-9223372036854775708");
 
-Mt.from_pair_suites("File \"int64_string_test.ml\", line 18, characters 23-30", suites.contents);
+for(var i = 0; i <= 8; ++i){
+  eq("File \"int64_string_test.ml\", line 20, characters 5-12", Caml_format.caml_int64_format("%d", Caml_int64.add(Int64.min_int, Caml_int64.of_int32(i))), "-922337203685477580" + String(8 - i | 0));
+}
+
+for(var i$1 = 0; i$1 <= 8; ++i$1){
+  eq("File \"int64_string_test.ml\", line 24, characters 5-12", Caml_format.caml_int64_format("%d", Caml_int64.add(Int64.min_int, Caml_int64.of_int32(100 + i$1 | 0))), "-922337203685477570" + String(8 - i$1 | 0));
+}
+
+Mt.from_pair_suites("File \"int64_string_test.ml\", line 28, characters 23-30", suites.contents);
 
 exports.suites = suites;
 exports.test_id = test_id;

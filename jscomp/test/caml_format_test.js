@@ -2006,7 +2006,7 @@ var int64_suites_001 = /* :: */[
                             ],
                             /* :: */[
                               /* tuple */[
-                                "i64_simple17",
+                                "File \"caml_format_test.ml\", line 206, characters 4-11",
                                 (function (param) {
                                     return /* Eq */Block.__(0, [
                                               Curry._1(Format.asprintf(/* Format */[
@@ -2045,7 +2045,7 @@ var int64_suites_001 = /* :: */[
                                 ],
                                 /* :: */[
                                   /* tuple */[
-                                    "i64_simple12",
+                                    "File \"caml_format_test.ml\", line 214, characters 4-11",
                                     (function (param) {
                                         return /* Eq */Block.__(0, [
                                                   Curry._1(Format.asprintf(/* Format */[
@@ -2063,7 +2063,7 @@ var int64_suites_001 = /* :: */[
                                   ],
                                   /* :: */[
                                     /* tuple */[
-                                      "i64_simple17",
+                                      "File \"caml_format_test.ml\", line 215, characters 4-11",
                                       (function (param) {
                                           return /* Eq */Block.__(0, [
                                                     Curry._1(Format.asprintf(/* Format */[
@@ -2084,7 +2084,7 @@ var int64_suites_001 = /* :: */[
                                     ],
                                     /* :: */[
                                       /* tuple */[
-                                        "i64_simple21",
+                                        "File \"caml_format_test.ml\", line 219, characters 4-11",
                                         (function (param) {
                                             return /* Eq */Block.__(0, [
                                                       Curry._1(Format.asprintf(/* Format */[
@@ -2097,78 +2097,75 @@ var int64_suites_001 = /* :: */[
                                                                 "%Lu"
                                                               ]), /* int64 */[
                                                             /* hi */-1,
-                                                            /* lo */4294957296
+                                                            /* lo */4294967196
                                                           ]),
-                                                      "18446744073709541616"
+                                                      "18446744073709551516"
                                                     ]);
                                           })
                                       ],
                                       /* :: */[
                                         /* tuple */[
-                                          "i64_simple19",
+                                          "File \"caml_format_test.ml\", line 222, characters 4-11",
                                           (function (param) {
                                               return /* Eq */Block.__(0, [
                                                         Curry._1(Format.asprintf(/* Format */[
                                                                   /* Int64 */Block.__(7, [
-                                                                      /* Int_o */10,
+                                                                      /* Int_u */12,
                                                                       /* No_padding */0,
                                                                       /* No_precision */0,
                                                                       /* End_of_format */0
                                                                     ]),
-                                                                  "%Lo"
-                                                                ]), Int64.min_int),
-                                                        "1000000000000000000000"
+                                                                  "%Lu"
+                                                                ]), Caml_int64.add(Int64.min_int, /* int64 */[
+                                                                  /* hi */0,
+                                                                  /* lo */1
+                                                                ])),
+                                                        "9223372036854775809"
                                                       ]);
                                             })
                                         ],
                                         /* :: */[
                                           /* tuple */[
-                                            "i64_simple13",
+                                            "File \"caml_format_test.ml\", line 225, characters 4-11",
                                             (function (param) {
                                                 return /* Eq */Block.__(0, [
                                                           Curry._1(Format.asprintf(/* Format */[
                                                                     /* Int64 */Block.__(7, [
-                                                                        /* Int_X */8,
+                                                                        /* Int_u */12,
                                                                         /* No_padding */0,
                                                                         /* No_precision */0,
                                                                         /* End_of_format */0
                                                                       ]),
-                                                                    "%LX"
-                                                                  ]), Caml_int64.add(Int64.min_int, /* int64 */[
-                                                                    /* hi */0,
-                                                                    /* lo */1
-                                                                  ])),
-                                                          "8000000000000001"
+                                                                    "%Lu"
+                                                                  ]), /* int64 */[
+                                                                /* hi */-1,
+                                                                /* lo */4294957296
+                                                              ]),
+                                                          "18446744073709541616"
                                                         ]);
                                               })
                                           ],
                                           /* :: */[
                                             /* tuple */[
-                                              "i64_simple20",
+                                              "i64_simple19",
                                               (function (param) {
                                                   return /* Eq */Block.__(0, [
                                                             Curry._1(Format.asprintf(/* Format */[
                                                                       /* Int64 */Block.__(7, [
-                                                                          /* Int_x */6,
-                                                                          /* Lit_padding */Block.__(0, [
-                                                                              /* Right */1,
-                                                                              12
-                                                                            ]),
+                                                                          /* Int_o */10,
+                                                                          /* No_padding */0,
                                                                           /* No_precision */0,
                                                                           /* End_of_format */0
                                                                         ]),
-                                                                      "%12Lx"
-                                                                    ]), /* int64 */[
-                                                                  /* hi */0,
-                                                                  /* lo */3
-                                                                ]),
-                                                            "           3"
+                                                                      "%Lo"
+                                                                    ]), Int64.min_int),
+                                                            "1000000000000000000000"
                                                           ]);
                                                 })
                                             ],
                                             /* :: */[
                                               /* tuple */[
-                                                "i64_simple21",
+                                                "i64_simple13",
                                                 (function (param) {
                                                     return /* Eq */Block.__(0, [
                                                               Curry._1(Format.asprintf(/* Format */[
@@ -2179,45 +2176,65 @@ var int64_suites_001 = /* :: */[
                                                                             /* End_of_format */0
                                                                           ]),
                                                                         "%LX"
-                                                                      ]), /* int64 */[
-                                                                    /* hi */1859194407,
-                                                                    /* lo */1163551168
-                                                                  ]),
-                                                              "6ED10E27455A61C0"
+                                                                      ]), Caml_int64.add(Int64.min_int, /* int64 */[
+                                                                        /* hi */0,
+                                                                        /* lo */1
+                                                                      ])),
+                                                              "8000000000000001"
                                                             ]);
                                                   })
                                               ],
                                               /* :: */[
                                                 /* tuple */[
-                                                  "missing_neline",
+                                                  "i64_simple20",
                                                   (function (param) {
                                                       return /* Eq */Block.__(0, [
                                                                 Curry._1(Format.asprintf(/* Format */[
                                                                           /* Int64 */Block.__(7, [
-                                                                              /* Int_d */0,
-                                                                              /* No_padding */0,
+                                                                              /* Int_x */6,
+                                                                              /* Lit_padding */Block.__(0, [
+                                                                                  /* Right */1,
+                                                                                  12
+                                                                                ]),
                                                                               /* No_precision */0,
-                                                                              /* Char_literal */Block.__(12, [
-                                                                                  /* "\n" */10,
-                                                                                  /* End_of_format */0
-                                                                                ])
+                                                                              /* End_of_format */0
                                                                             ]),
-                                                                          "%Ld\n"
+                                                                          "%12Lx"
                                                                         ]), /* int64 */[
                                                                       /* hi */0,
-                                                                      /* lo */32
+                                                                      /* lo */3
                                                                     ]),
-                                                                "32\n"
+                                                                "           3"
                                                               ]);
                                                     })
                                                 ],
                                                 /* :: */[
                                                   /* tuple */[
-                                                    "missing_newline2",
+                                                    "i64_simple21",
                                                     (function (param) {
-                                                        var buf = $$Buffer.create(30);
                                                         return /* Eq */Block.__(0, [
-                                                                  (Curry._1(Printf.bprintf(buf, /* Format */[
+                                                                  Curry._1(Format.asprintf(/* Format */[
+                                                                            /* Int64 */Block.__(7, [
+                                                                                /* Int_X */8,
+                                                                                /* No_padding */0,
+                                                                                /* No_precision */0,
+                                                                                /* End_of_format */0
+                                                                              ]),
+                                                                            "%LX"
+                                                                          ]), /* int64 */[
+                                                                        /* hi */1859194407,
+                                                                        /* lo */1163551168
+                                                                      ]),
+                                                                  "6ED10E27455A61C0"
+                                                                ]);
+                                                      })
+                                                  ],
+                                                  /* :: */[
+                                                    /* tuple */[
+                                                      "missing_neline",
+                                                      (function (param) {
+                                                          return /* Eq */Block.__(0, [
+                                                                    Curry._1(Format.asprintf(/* Format */[
                                                                               /* Int64 */Block.__(7, [
                                                                                   /* Int_d */0,
                                                                                   /* No_padding */0,
@@ -2231,12 +2248,39 @@ var int64_suites_001 = /* :: */[
                                                                             ]), /* int64 */[
                                                                           /* hi */0,
                                                                           /* lo */32
-                                                                        ]), $$Buffer.contents(buf)),
-                                                                  "32\n"
-                                                                ]);
-                                                      })
-                                                  ],
-                                                  /* [] */0
+                                                                        ]),
+                                                                    "32\n"
+                                                                  ]);
+                                                        })
+                                                    ],
+                                                    /* :: */[
+                                                      /* tuple */[
+                                                        "missing_newline2",
+                                                        (function (param) {
+                                                            var buf = $$Buffer.create(30);
+                                                            return /* Eq */Block.__(0, [
+                                                                      (Curry._1(Printf.bprintf(buf, /* Format */[
+                                                                                  /* Int64 */Block.__(7, [
+                                                                                      /* Int_d */0,
+                                                                                      /* No_padding */0,
+                                                                                      /* No_precision */0,
+                                                                                      /* Char_literal */Block.__(12, [
+                                                                                          /* "\n" */10,
+                                                                                          /* End_of_format */0
+                                                                                        ])
+                                                                                    ]),
+                                                                                  "%Ld\n"
+                                                                                ]), /* int64 */[
+                                                                              /* hi */0,
+                                                                              /* lo */32
+                                                                            ]), $$Buffer.contents(buf)),
+                                                                      "32\n"
+                                                                    ]);
+                                                          })
+                                                      ],
+                                                      /* [] */0
+                                                    ]
+                                                  ]
                                                 ]
                                               ]
                                             ]

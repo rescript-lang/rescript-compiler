@@ -77,6 +77,8 @@ let suites :  Mt.pair_suites = Mt.[
     "of_int", (fun _ -> Eq(3L, Int64.of_int 3));
     "lognot", (fun _ -> Eq(-3L, Int64.lognot 2L));
     "neg", (fun _ -> Eq(-2L, Int64.neg 2L));
+    __LOC__, (fun _ -> Eq(Int64.min_int, Int64.neg Int64.min_int));
+    __LOC__, (fun _ -> Eq (Int64.max_int, Int64.neg Int64.(add min_int 1L)));
     "sub1", (fun _ -> Eq (2L, Int64.(sub 3L 1L)));
     "xor1", (fun _ -> 
         Eq ((logxor 0xEEFFEEFFL 0xFFEEFFEEL, logxor a 0xEEFFEEFFL), 
