@@ -359,6 +359,7 @@ build test/inner_unused.cmi test/inner_unused.cmj : cc test/inner_unused.ml | $s
 build test/installation_test.cmi test/installation_test.cmj : cc test/installation_test.ml | test/mt.cmj $stdlib
 build test/int32_test.cmi test/int32_test.cmj : cc test/int32_test.ml | test/ext_array_test.cmj test/mt.cmj $stdlib
 build test/int64_mul_div_test.cmi test/int64_mul_div_test.cmj : cc test/int64_mul_div_test.ml | test/mt.cmj $stdlib
+build test/int64_string_bench.cmi test/int64_string_bench.cmj : cc test/int64_string_bench.ml | $stdlib
 build test/int64_string_test.cmi test/int64_string_test.cmj : cc test/int64_string_test.ml | test/mt.cmj $stdlib
 build test/int64_test.cmi test/int64_test.cmj : cc test/int64_test.ml | test/ext_array_test.cmj test/mt.cmj $stdlib
 build test/int_hashtbl_test.cmi test/int_hashtbl_test.cmj : cc test/int_hashtbl_test.ml | test/mt.cmj $stdlib
