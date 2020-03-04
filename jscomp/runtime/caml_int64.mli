@@ -29,6 +29,7 @@
 (** *)
 
 type t 
+val succ : t -> t 
 val min_int : t
 val max_int : t
 val one : t
