@@ -82,7 +82,20 @@ let succ_aux ~x_lo ~x_hi =
 
 let succ (Int64 {lo = x_lo; hi = x_hi} : t) =
     succ_aux ~x_lo ~x_hi
-  
+
+(** [add_lo self y_lo] === [add self (mk ~lo:y_lo ~hi:0n)]
+*)
+let add_lo  (Int64 {lo = x_lo; hi = x_hi} : t) y_lo =     
+  let y_lo = to_unsigned y_lo in (* needed here *)
+  let lo =  ( x_lo +~ y_lo) &  0xffff_ffffn in
+  let overflow =
+    if (neg_signed x_lo && (neg_signed y_lo  || not (neg_signed lo)))
+       || (neg_signed y_lo  && not (neg_signed lo))
+    then 1n
+    else  0n
+  in
+  mk ~lo ~hi:(( x_hi +~  overflow) &  0xffff_ffffn)
+
 let add
     (Int64 {lo = x_lo; hi = x_hi} : t)
     (Int64 {lo = y_lo; hi = y_hi} : t) =
@@ -359,7 +372,7 @@ let rec to_string (Int64{hi=self_hi; lo= self_lo} as self : t) =
       let rem_lo = Caml_nativeint_extern.to_float rem_lo in 
       let delta =  (floor (rem_lo /. 10.)) in 
       let remainder = rem_lo -. 10. *. delta in 
-      to_string (add approx_div1 (mk ~lo:(Caml_nativeint_extern.of_float delta) ~hi:0n)) ^
+      to_string (add_lo approx_div1 ((Caml_nativeint_extern.of_float delta))) ^
       Caml_nativeint_extern.to_string (Caml_nativeint_extern.of_float remainder) 
 
 
