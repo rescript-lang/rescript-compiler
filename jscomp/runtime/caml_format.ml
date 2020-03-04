@@ -477,6 +477,8 @@ let div_mod (x : int64) (y : int64) : int64 * int64 =
   Caml_int64.unsafe_to_int64 a , Caml_int64.unsafe_to_int64 b 
 *)
 let caml_int64_format fmt x =
+  if fmt = "%d" then Caml_int64.to_string (Obj.magic x) 
+  else
   let f = parse_format fmt in
   let x =
     if f.signedconv &&  x < 0L then

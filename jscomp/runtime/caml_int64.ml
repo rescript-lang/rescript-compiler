@@ -315,7 +315,39 @@ let rec of_float (x : float) : t =
 external log2 : float = "LN2" [@@bs.val]  [@@bs.scope "Math"]
 external log : float -> float =  "log" [@@bs.val] [@@bs.scope "Math"]
 external ceil : float -> float =  "ceil" [@@bs.val] [@@bs.scope "Math"]
+external floor : float -> float =  "floor" [@@bs.val] [@@bs.scope "Math"]
 (* external maxFloat : float -> float -> float = "Math.max" [@@bs.val] *)
+
+
+
+let rec to_string (Int64{hi=self_hi; lo= self_lo} as self : t) = 
+  if self_hi = 0n then Caml_nativeint_extern.to_string self_lo
+  else 
+  if self_hi <0n then 
+    if eq self min_int then "-9223372036854775808"
+    else "-" ^ to_string (neg self)
+  else (* large positive number *)
+  let approx_div1 =  (of_float (floor (to_float self /. 10.) )) in
+  let (Int64 { lo = rem_lo ;hi = rem_hi} as rem) = 
+    sub (sub self (mul approx_div1 (mk ~lo:9n ~hi:0n))) approx_div1 in 
+  if rem_lo =0n && rem_hi = 0n then to_string approx_div1 ^ "0"
+  else 
+  if rem_hi < 0n then 
+    let (Int64 {lo = rem_lo}) = neg rem in     
+    let rem_lo = Caml_nativeint_extern.to_float rem_lo in 
+    let delta =  (ceil (rem_lo /. 10.)) in 
+    let remainder = 10. *. delta -. rem_lo in
+    to_string (add approx_div1 
+      (neg (mk ~lo:(Caml_nativeint_extern.of_float delta) ~hi:0n))) ^ 
+        Caml_nativeint_extern.to_string (Caml_nativeint_extern.of_float remainder)
+  else 
+    let rem_lo = Caml_nativeint_extern.to_float rem_lo in 
+    let delta =  (floor (rem_lo /. 10.)) in 
+    let remainder = rem_lo -. 10. *. delta in 
+    to_string (add approx_div1 (mk ~lo:(Caml_nativeint_extern.of_float delta) ~hi:0n)) ^
+     Caml_nativeint_extern.to_string (Caml_nativeint_extern.of_float remainder) 
+    
+    
 
 let rec div self other =
   match self, other with
@@ -477,3 +509,4 @@ let  bits_of_float : float -> t  = fun x ->
             (Caml_nativeint_extern.of_int (Caml_char.code s.[i+6]) << 48 )
             (Caml_nativeint_extern.of_int (Caml_char.code s.[i+7]) << 56 )))
  *)
+

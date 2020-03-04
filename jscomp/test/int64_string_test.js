@@ -17,14 +17,23 @@ function eq(loc, x, y) {
   return Mt.eq_suites(test_id, suites, loc, x, y);
 }
 
-var v = Caml_format.caml_int64_format("%d", /* int64 */[
-      /* hi */0,
-      /* lo */333
-    ]);
+var v = Caml_format.caml_int64_format("%d", Int64.max_int);
+
+eq("File \"int64_string_test.ml\", line 9, characters 6-13", v, "9223372036854775807");
 
 function f(a, b) {
-  return eq("File \"int64_string_test.ml\", line 10, characters 5-12", Caml_format.caml_int64_format("%d", a), b);
+  return eq("File \"int64_string_test.ml\", line 11, characters 5-12", Caml_format.caml_int64_format("%d", a), b);
 }
+
+var hh = Caml_int64.add(Int64.min_int, /* int64 */[
+      /* hi */0,
+      /* lo */100
+    ]);
+
+eq("File \"int64_string_test.ml\", line 15, characters 6-13", hh, /* int64 */[
+      /* hi */-2147483648,
+      /* lo */100
+    ]);
 
 f(/* int64 */[
       /* hi */-1,
@@ -38,24 +47,31 @@ f(/* int64 */[
 
 f(Int64.min_int, "-9223372036854775808");
 
-f(Caml_int64.add(Int64.min_int, /* int64 */[
-          /* hi */0,
-          /* lo */100
-        ]), "-9223372036854775708");
+f(hh, "-9223372036854775708");
 
 for(var i = 0; i <= 8; ++i){
-  eq("File \"int64_string_test.ml\", line 20, characters 5-12", Caml_format.caml_int64_format("%d", Caml_int64.add(Int64.min_int, Caml_int64.of_int32(i))), "-922337203685477580" + String(8 - i | 0));
+  eq("File \"int64_string_test.ml\", line 25, characters 5-12", Caml_format.caml_int64_format("%d", Caml_int64.add(Int64.min_int, Caml_int64.of_int32(i))), "-922337203685477580" + String(8 - i | 0));
 }
 
 for(var i$1 = 0; i$1 <= 8; ++i$1){
-  eq("File \"int64_string_test.ml\", line 24, characters 5-12", Caml_format.caml_int64_format("%d", Caml_int64.add(Int64.min_int, Caml_int64.of_int32(100 + i$1 | 0))), "-922337203685477570" + String(8 - i$1 | 0));
+  eq("File \"int64_string_test.ml\", line 29, characters 5-12", Caml_format.caml_int64_format("%d", Caml_int64.add(Int64.min_int, Caml_int64.of_int32(100 + i$1 | 0))), "-922337203685477570" + String(8 - i$1 | 0));
 }
 
-Mt.from_pair_suites("File \"int64_string_test.ml\", line 28, characters 23-30", suites.contents);
+for(var i$2 = 0; i$2 <= 8; ++i$2){
+  eq("File \"int64_string_test.ml\", line 33, characters 5-12", Caml_format.caml_int64_format("%d", Caml_int64.add(Int64.min_int, Caml_int64.of_int32(1000000 + i$2 | 0))), "-922337203685377580" + String(8 - i$2 | 0));
+}
+
+eq("File \"int64_string_test.ml\", line 36, characters 6-13", Caml_format.caml_int64_format("%d", /* int64 */[
+          /* hi */-1,
+          /* lo */4294967063
+        ]), "-233");
+
+Mt.from_pair_suites("File \"int64_string_test.ml\", line 37, characters 23-30", suites.contents);
 
 exports.suites = suites;
 exports.test_id = test_id;
 exports.eq = eq;
 exports.v = v;
 exports.f = f;
+exports.hh = hh;
 /* v Not a pure module */

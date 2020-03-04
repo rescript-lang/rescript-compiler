@@ -193,6 +193,7 @@ let () =
   id __LOC__ (-100L);
   id __LOC__ 0xff_ff_ff_ffL;
   id __LOC__ 0x1f_ff_ff_ffL;
-  id __LOC__ 0x1f_ff_fe_ffL
-
+  id __LOC__ 0x1f_ff_fe_ffL;
+  eq __LOC__ Int64.(div min_int 10L) (-922337203685477580L);
+  eq __LOC__ Int64.(to_string (div min_int 10L)) "-922337203685477580";
 ;; Mt.from_pair_suites __MODULE__ !suites
