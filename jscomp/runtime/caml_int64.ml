@@ -72,16 +72,16 @@ let neg_one = mk ~lo:(-1n) ~hi:(-1n)
 let neg_signed x =  (x  & 0x8000_0000n) <> 0n
 
 let add
-    (Int64 {lo = this_low_; hi = this_high_} : t)
-    (Int64 {lo = other_low_; hi = other_high_} : t) =
-  let lo =  ( this_low_ +~ other_low_) &  0xffff_ffffn in
+    (Int64 {lo = x_lo; hi = x_hi} : t)
+    (Int64 {lo = y_lo; hi = y_hi} : t) =
+  let lo =  ( x_lo +~ y_lo) &  0xffff_ffffn in
   let overflow =
-    if (neg_signed this_low_ && (neg_signed other_low_  || not (neg_signed lo)))
-       || (neg_signed other_low_  && not (neg_signed lo))
+    if (neg_signed x_lo && (neg_signed y_lo  || not (neg_signed lo)))
+       || (neg_signed y_lo  && not (neg_signed lo))
     then 1n
     else  0n
   in
-  mk ~lo ~hi:(( this_high_ +~ other_high_ +~ overflow) &  0xffff_ffffn)
+  mk ~lo ~hi:(( x_hi +~ y_hi +~ overflow) &  0xffff_ffffn)
 
 
 let not (Int64 {lo; hi })  = mk ~lo:(lognot lo) ~hi:(lognot hi)
