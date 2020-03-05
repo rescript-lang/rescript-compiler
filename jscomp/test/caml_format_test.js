@@ -1851,7 +1851,7 @@ var int64_suites_001 = /* :: */[
                   "i64_simple7",
                   (function (param) {
                       return /* Eq */Block.__(0, [
-                                Caml_format.caml_int64_format("%d", /* int64 */[
+                                Caml_int64.to_string(/* int64 */[
                                       /* hi */0,
                                       /* lo */3333
                                     ]),

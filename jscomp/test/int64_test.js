@@ -10,7 +10,6 @@ var Format = require("../../lib/js/format.js");
 var Caml_obj = require("../../lib/js/caml_obj.js");
 var Caml_int64 = require("../../lib/js/caml_int64.js");
 var Pervasives = require("../../lib/js/pervasives.js");
-var Caml_format = require("../../lib/js/caml_format.js");
 var Ext_array_test = require("./ext_array_test.js");
 
 function f(u, v) {
@@ -2474,7 +2473,7 @@ eq("File \"int64_test.ml\", line 199, characters 5-12", Caml_int64.div(Int64.min
       /* lo */858993460
     ]);
 
-eq("File \"int64_test.ml\", line 200, characters 5-12", Caml_format.caml_int64_format("%d", Caml_int64.div(Int64.min_int, /* int64 */[
+eq("File \"int64_test.ml\", line 200, characters 5-12", Caml_int64.to_string(Caml_int64.div(Int64.min_int, /* int64 */[
               /* hi */0,
               /* lo */10
             ])), "-922337203685477580");
