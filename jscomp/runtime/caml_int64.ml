@@ -108,7 +108,7 @@ let add
   add_aux self ~y_lo ~y_hi
 
 
-let not (Int64 {lo; hi })  = mk ~lo:(lognot lo) ~hi:(lognot hi)
+(* let not (Int64 {lo; hi })  = mk ~lo:(lognot lo) ~hi:(lognot hi) *)
 
 let eq (Int64 x) (Int64 y) = x.hi = y.hi && x.lo = y.lo
 

@@ -34,7 +34,7 @@ val min_int : t
 val max_int : t
 val one : t
 val zero : t
-val not : t -> t
+(* val not : t -> t *)
 val of_int32 : nativeint -> t
 val to_int32 : t -> nativeint
 
