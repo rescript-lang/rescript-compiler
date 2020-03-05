@@ -96,17 +96,22 @@ let add_lo  (Int64 {lo = x_lo; hi = x_hi} : t) y_lo =
   in
   mk ~lo ~hi:(( x_hi +~  overflow) &  0xffff_ffffn)
 
-let add
+let add_aux 
     (Int64 {lo = x_lo; hi = x_hi} : t)
-    (Int64 {lo = y_lo; hi = y_hi} : t) =
+    ~y_lo ~y_hi  =
   let lo =  ( x_lo +~ y_lo) &  0xffff_ffffn in
   let overflow =
     if (neg_signed x_lo && (neg_signed y_lo  || not (neg_signed lo)))
-       || (neg_signed y_lo  && not (neg_signed lo))
+    || (neg_signed y_lo  && not (neg_signed lo))
     then 1n
     else  0n
   in
   mk ~lo ~hi:(( x_hi +~ y_hi +~ overflow) &  0xffff_ffffn)
+
+let add
+    (self : t)
+    (Int64 {lo = y_lo; hi = y_hi} : t) =
+  add_aux self ~y_lo ~y_hi
 
 
 let not (Int64 {lo; hi })  = mk ~lo:(lognot lo) ~hi:(lognot hi)
