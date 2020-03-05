@@ -36,6 +36,7 @@
 
 let (>>>) = Caml_nativeint_extern.shift_right_logical
 let (>>) = Caml_nativeint_extern.shift_right
+let (|~) = Caml_nativeint_extern.logor
 let ( +~ ) = Caml_nativeint_extern.add
 let ( *~ ) = Caml_nativeint_extern.mul
 let ( & ) = Caml_nativeint_extern.logand
@@ -125,8 +126,14 @@ let equal_nullable x y =
 
 
 
-let sub x y =
-  add x (neg y)
+(* when [lo] is unsigned integer, [lognot lo] is still an unsigned integer  *)
+let sub_aux x ~lo ~hi = 
+  let neg_lo = to_unsigned ((lognot lo +~  1n) & 0xffff_ffffn) in 
+  let neg_hi =  ((lognot hi +~ if neg_lo = 0n then 1n else 0n)  &  0xffff_ffffn) in 
+  add_aux x ~y_lo:neg_lo ~y_hi:neg_hi
+
+let sub self (Int64{lo;hi})= sub_aux self ~lo ~hi 
+let sub_lo self lo = sub_aux self ~lo ~hi:0n
 
 let lsl_ (Int64 {lo; hi} as x) numBits =
   if numBits = 0 then
