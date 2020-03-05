@@ -72,13 +72,13 @@ let neg_one = mk ~lo:(-1n) ~hi:(-1n)
 let neg_signed x =  (x  & 0x8000_0000n) <> 0n
 
 let succ_aux ~x_lo ~x_hi = 
-  let lo =  ( x_lo +~ 1n) &  0xffff_ffffn in
-  let overflow =
-    if neg_signed x_lo &&  not (neg_signed lo)
-    then 1n
-    else  0n
-  in
-  mk ~lo ~hi:(( x_hi +~ overflow) &  0xffff_ffffn)
+  let lo =  ( x_lo +~ 1n) &  0xffff_ffffn in  
+  mk ~lo ~hi:(( x_hi +~ if lo = 0n then 1n else 0n) &  0xffff_ffffn)
+
+let neg (Int64 {lo;hi} ) =
+  let other_lo = (lognot lo +~  1n) & 0xffff_ffffn in   
+  mk ~lo:other_lo 
+    ~hi:((lognot hi +~ if other_lo = 0n then 1n else 0n)  &  0xffff_ffffn)
 
 let succ (Int64 {lo = x_lo; hi = x_hi} : t) =
     succ_aux ~x_lo ~x_hi
@@ -126,11 +126,6 @@ let equal_nullable x y =
   | None -> false 
   | Some y -> eq x y 
 
-let neg (Int64 {lo;hi} as x) =
-  if eq x  min_int then
-    min_int
-  else succ_aux ~x_lo:(lognot lo) ~x_hi:(lognot hi)
-    (* succ (not x) *)
 
 
 let sub x y =
