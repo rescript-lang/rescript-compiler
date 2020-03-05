@@ -35,6 +35,9 @@
 (*ATT: this relies on we encode `char' as int *)
 external of_char : char -> string = "String.fromCharCode" 
 [@@bs.val]  
+external get_string_unsafe : string -> int ->  string = ""
+[@@bs.get_index]
+
 external toUpperCase : string -> string = "toUpperCase" [@@bs.send] 
 external of_int : int -> base:int -> string = "toString" [@@bs.send]
 external of_nativeint : nativeint -> base:int -> string = "toString" [@@bs.send]
