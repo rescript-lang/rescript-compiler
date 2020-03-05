@@ -398,20 +398,11 @@ let dec_of_pos_int64 x =
     let c, d = Caml_int64.div_mod  y  wbase in
     let e ,f = Caml_int64.div_mod (Caml_int64_extern.add modulus_l d) wbase in        
     let quotient =
-      ref (Caml_int64_extern.add (Caml_int64_extern.add quotient_l c )
+       (Caml_int64_extern.add (Caml_int64_extern.add quotient_l c )
              e)  in
-    let modulus = ref f in
-    let s = ref 
+    Caml_int64.to_string quotient ^ 
       (Caml_string_extern.get_string_unsafe 
-        cvtbl (Caml_int64_extern.to_int modulus.contents)) in
-
-    while quotient.contents <> 0L do
-      let a, b = Caml_int64.div_mod (quotient.contents) wbase in
-      quotient .contents<- a;
-      modulus .contents<- b;
-      s .contents<- Caml_string_extern.get_string_unsafe cvtbl (Caml_int64_extern.to_int modulus.contents) ^ s.contents ;
-    done;
-    s.contents
+        cvtbl (Caml_int64_extern.to_int f))     
   else
    Caml_int64.to_string x)
     
