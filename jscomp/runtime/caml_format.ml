@@ -378,11 +378,12 @@ let caml_format_int fmt i =
   will overflow signed integer in general
 *)
 let dec_of_pos_int64 x = 
-  let s = ref "" in   
-  let wbase  =  10L  in
-  let  cvtbl = "0123456789" in
+  
 
   (if  x < 0L then
+     let s = ref "" in   
+     let wbase  =  10L  in
+     let  cvtbl = "0123456789" in
     let y  = Caml_int64.discard_sign x in
     (* 2 ^  63 + y `div_mod` 10 *)        
 
@@ -410,21 +411,9 @@ let dec_of_pos_int64 x =
       modulus .contents<- b;
       s .contents<- Caml_string_extern.get_string_unsafe cvtbl (Caml_int64_extern.to_int modulus.contents) ^ s.contents ;
     done;
-
+    s.contents
   else
-    let a, b =  Caml_int64.div_mod x wbase  in
-    let quotient = ref a  in
-    let modulus = ref b in
-    s .contents<-
-      Caml_string_extern.get_string_unsafe 
-        cvtbl ( Caml_int64_extern.to_int modulus.contents) ^ s.contents ;
-
-    while  quotient.contents <> 0L do
-      let a, b = Caml_int64.div_mod (quotient.contents) wbase in
-      quotient .contents<- a;
-      modulus .contents<- b;
-      s .contents<- Caml_string_extern.get_string_unsafe cvtbl (Caml_int64_extern.to_int modulus.contents) ^ s.contents ;
-    done); s.contents
+   Caml_int64.to_string x)
     
 let oct_of_int64 x =   
   let s = ref "" in  

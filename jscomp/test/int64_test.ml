@@ -189,6 +189,7 @@ let id loc (x : int64) =
 
 
 let () = 
+  let open Int64 in   
   eq __LOC__ (Int64.bits_of_float 0.3) 4599075939470750515L;
   eq __LOC__ (Int64.float_of_bits 4599075939470750515L) 0.3;
   id __LOC__ (-1L);
@@ -201,5 +202,8 @@ let () =
   eq __LOC__ Int64.(mul min_int 10L) 0L;
   eq __LOC__ Int64.(mul  10L min_int) 0L; 
   eq __LOC__ Int64.(mul  1L min_int) min_int;
-  eq __LOC__ Int64.(mul max_int 10L) (-10L)
+  eq __LOC__ Int64.(mul max_int 10L) (-10L);
+  eq __LOC__ Int64.(succ max_int) (min_int);
+  eq __LOC__ Int64.(succ min_int) (-9223372036854775807L);
+  eq __LOC__ (succ 0xffff_ffffL) 0x1_0000_0000L
 ;; Mt.from_pair_suites __MODULE__ !suites
