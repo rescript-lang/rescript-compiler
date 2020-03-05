@@ -343,7 +343,14 @@ external ceil : float -> float =  "ceil" [@@bs.val] [@@bs.scope "Math"]
 external floor : float -> float =  "floor" [@@bs.val] [@@bs.scope "Math"]
 (* external maxFloat : float -> float -> float = "Math.max" [@@bs.val] *)
 
-
+(* either top 11 bits are all 0 or all 1 
+  when it is all 1, we need exclude -2^53
+*)
+let isSafeInteger (Int64{hi;lo}) = 
+  let top11Bits = hi >> 21 in   
+  top11Bits = 0n || 
+  (top11Bits = -1n && 
+  Pervasives.not (lo = 0n && hi = (0xff_e0_00_00n |~ 0n )))
 
 let rec to_string (Int64{hi=self_hi; lo= self_lo} as self : t) = 
   if self_hi = 0n then Caml_nativeint_extern.to_string self_lo
