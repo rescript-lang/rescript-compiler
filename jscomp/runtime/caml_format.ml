@@ -381,7 +381,7 @@ let dec_of_pos_int64 x =
   
 
   (if  x < 0L then
-     let s = ref "" in   
+     
      let wbase  =  10L  in
      let  cvtbl = "0123456789" in
     let y  = Caml_int64.discard_sign x in
@@ -401,9 +401,9 @@ let dec_of_pos_int64 x =
       ref (Caml_int64_extern.add (Caml_int64_extern.add quotient_l c )
              e)  in
     let modulus = ref f in
-    s .contents<-
-      Caml_string_extern.get_string_unsafe 
-        cvtbl (Caml_int64_extern.to_int modulus.contents) ^ s.contents ;
+    let s = ref 
+      (Caml_string_extern.get_string_unsafe 
+        cvtbl (Caml_int64_extern.to_int modulus.contents)) in
 
     while quotient.contents <> 0L do
       let a, b = Caml_int64.div_mod (quotient.contents) wbase in
