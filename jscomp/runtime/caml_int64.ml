@@ -83,18 +83,8 @@ let neg (Int64 {lo;hi} ) =
 let succ (Int64 {lo = x_lo; hi = x_hi} : t) =
     succ_aux ~x_lo ~x_hi
 
-(** [add_lo self y_lo] === [add self (mk ~lo:y_lo ~hi:0n)]
-*)
-let add_lo  (Int64 {lo = x_lo; hi = x_hi} : t) y_lo =     
-  let y_lo = to_unsigned y_lo in (* needed here *)
-  let lo =  ( x_lo +~ y_lo) &  0xffff_ffffn in
-  let overflow =
-    if (neg_signed x_lo && (neg_signed y_lo  || not (neg_signed lo)))
-       || (neg_signed y_lo  && not (neg_signed lo))
-    then 1n
-    else  0n
-  in
-  mk ~lo ~hi:(( x_hi +~  overflow) &  0xffff_ffffn)
+
+
 
 let add_aux 
     (Int64 {lo = x_lo; hi = x_hi} : t)
@@ -108,6 +98,8 @@ let add_aux
   in
   mk ~lo ~hi:(( x_hi +~ y_hi +~ overflow) &  0xffff_ffffn)
 
+(** [add_lo self y_lo] === [add self (mk ~lo:y_lo ~hi:0n)] *)  
+let add_lo self lo = add_aux self ~y_lo:(to_unsigned lo) ~y_hi:0n
 let add
     (self : t)
     (Int64 {lo = y_lo; hi = y_hi} : t) =
