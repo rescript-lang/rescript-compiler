@@ -33,6 +33,24 @@ done
   eq __LOC__ (Int64.(to_string (add min_int (of_int @@ 1_000_000 + i))))
   ("-922337203685377580" ^ string_of_int (8 - i))  
 done  
+
+
+let u = 9007199254730991L
+(*  + 100 *)
+;; for i = 0 to 6 do 
+  let open Int64 in   
+  eq __LOC__ (u |. add (i * 100_00 |. of_int) |. to_string) ("90071992547"^ (string_of_int (3+i)) ^ "0991")
+done   
+
+let v = -9007199254790991L
+
+;; for i = 0 to 9 do 
+  let open Int64 in   
+  eq __LOC__ (v |. add (i * 100_00 |. of_int) |. to_string) ("-90071992547"^ (string_of_int (9-i)) ^ "0991")
+done   
+
+;; eq __LOC__ (9007199254740991L |. Int64.to_string) ("9007199254740991")
+;; eq __LOC__ (-9007199254740991L |. Int64.to_string) ("-9007199254740991")
 ;; eq __LOC__ (Int64.to_string (-233L)) "-233"  
 
 

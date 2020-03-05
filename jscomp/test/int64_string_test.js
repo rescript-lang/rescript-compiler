@@ -2,6 +2,7 @@
 
 var Mt = require("./mt.js");
 var Int64 = require("../../lib/js/int64.js");
+var Caml_int32 = require("../../lib/js/caml_int32.js");
 var Caml_int64 = require("../../lib/js/caml_int64.js");
 
 var suites = {
@@ -65,17 +66,46 @@ for(var i$2 = 0; i$2 <= 8; ++i$2){
   eq("File \"int64_string_test.ml\", line 33, characters 5-12", Caml_int64.to_string(Caml_int64.add(Int64.min_int, Caml_int64.of_int32(1000000 + i$2 | 0))), "-922337203685377580" + String(8 - i$2 | 0));
 }
 
-eq("File \"int64_string_test.ml\", line 36, characters 6-13", Caml_int64.to_string(/* int64 */[
+var u = /* int64 */[
+  /* hi */2097151,
+  /* lo */4294957295
+];
+
+for(var i$3 = 0; i$3 <= 6; ++i$3){
+  eq("File \"int64_string_test.ml\", line 42, characters 5-12", Caml_int64.to_string(Caml_int64.add(u, Caml_int64.of_int32(Caml_int32.imul(i$3, 10000)))), "90071992547" + (String(3 + i$3 | 0) + "0991"));
+}
+
+var v$1 = /* int64 */[
+  /* hi */-2097153,
+  /* lo */4294917297
+];
+
+for(var i$4 = 0; i$4 <= 9; ++i$4){
+  eq("File \"int64_string_test.ml\", line 49, characters 5-12", Caml_int64.to_string(Caml_int64.add(v$1, Caml_int64.of_int32(Caml_int32.imul(i$4, 10000)))), "-90071992547" + (String(9 - i$4 | 0) + "0991"));
+}
+
+eq("File \"int64_string_test.ml\", line 52, characters 6-13", Caml_int64.to_string(/* int64 */[
+          /* hi */2097151,
+          /* lo */4294967295
+        ]), "9007199254740991");
+
+eq("File \"int64_string_test.ml\", line 53, characters 6-13", Caml_int64.to_string(/* int64 */[
+          /* hi */-2097152,
+          /* lo */1
+        ]), "-9007199254740991");
+
+eq("File \"int64_string_test.ml\", line 54, characters 6-13", Caml_int64.to_string(/* int64 */[
           /* hi */-1,
           /* lo */4294967063
         ]), "-233");
 
-Mt.from_pair_suites("File \"int64_string_test.ml\", line 39, characters 23-30", suites.contents);
+Mt.from_pair_suites("File \"int64_string_test.ml\", line 57, characters 23-30", suites.contents);
 
 exports.suites = suites;
 exports.test_id = test_id;
 exports.eq = eq;
-exports.v = v;
 exports.f = f;
 exports.hh = hh;
+exports.u = u;
+exports.v = v$1;
 /* v Not a pure module */

@@ -363,19 +363,16 @@ let rec to_string (Int64{hi=self_hi;_} as self : t) =
     else "-" ^ to_string (neg self)
   else (* large positive number *)    
     let (Int64 {lo ; hi} as approx_div1) =  (of_float (floor (to_float self /. 10.) )) in
-    let (Int64 { lo = rem_lo ;hi = rem_hi} as rem) = 
+    let (Int64 { lo = rem_lo ;hi = rem_hi} ) = (* rem should be a pretty small number *)
         self 
         |. sub_aux  ~lo:(lo << 3) ~hi:((lo>>>29) |~ (hi << 3))
-        (* |. sub (lsl_ approx_div1 3)  *)
         |. sub_aux ~lo:(lo << 1) ~hi: ((lo >>> 31) |~ (hi << 1))
-        (* |. sub  (lsl_ approx_div1 1) *)
-       (* self *)
-      in 
+    in 
     if rem_lo =0n && rem_hi = 0n then to_string approx_div1 ^ "0"
     else 
     if rem_hi < 0n then 
-      let (Int64 {lo = rem_lo}) = neg rem in     
-      let rem_lo = Caml_nativeint_extern.to_float rem_lo in 
+      (* let (Int64 {lo = rem_lo}) = neg rem in      *)
+      let rem_lo = to_unsigned ((lognot rem_lo +~ 1n ) & 0xffff_ffffn) |. Caml_nativeint_extern.to_float  in 
       let delta =  (ceil (rem_lo /. 10.)) in 
       let remainder = 10. *. delta -. rem_lo in
       to_string (sub_lo approx_div1 
