@@ -143,9 +143,9 @@ let lsl_ (Int64 {lo; hi} as x) numBits =
   else
     mk ~lo:(Caml_nativeint_extern.shift_left lo numBits)
      ~hi:
-       (Caml_nativeint_extern.logor
-         ( lo >>>  (32 - numBits))
-         (Caml_nativeint_extern.shift_left hi numBits))
+       (
+         ( lo >>>  (32 - numBits)) |~
+         ( hi << numBits))
 
 
 let lsr_ (Int64 {lo; hi} as x) numBits =
@@ -186,60 +186,7 @@ let is_zero = function
   | _ -> false
 
 
-let rec ten_times this = 
-  match this with
-  | Int64 {lo = 0n ; hi = 0n}
-  | Int64 {lo = 0n; hi = - 0x80000000n}
-    -> zero (* 10L * min_int = 0L*)
-    
-  | Int64 {lo = this_lo; hi = this_hi}
-    ->
-    let other_hi = 0n in 
-    let other_lo = 10n in 
-    if this_hi < 0n  then
-      (* if other_hi < 0n then
-        mul (neg this) (neg other)
-      else *)
-        neg (ten_times (neg this) )
-    (* else if other_hi < 0n then
-      neg (mul this (neg other) ) *)
-    else
-      (* TODO: when both are small, use float multiplication *)
-      let a48 = this_hi >>> 16 in
-      let a32 =  this_hi & 0xffffn in
-      let a16 =  this_lo >>> 16 in
-      let a00 =  this_lo & 0xffffn in
 
-      let b48 =  other_hi >>> 16 in
-      let b32 =  other_hi & 0xffffn in
-      let b16 =  other_lo >>> 16 in
-      let b00 =  other_lo & 0xffffn in
-
-      let c48 = ref 0n in
-      let c32 = ref 0n in
-      let c16 = ref 0n in
-      begin
-        let c00 =  a00 *~ b00  in
-        c16.contents <-  (c00 >>> 16) +~   a16 *~ b00 ;
-        c32.contents <-  c16.contents >>> 16;
-        c16.contents <-  ( c16.contents & 0xffffn) +~ a00 *~ b16;
-        c32.contents <-  (c32.contents +~  ( c16.contents >>> 16)) +~  a32 *~ b00;
-        c48.contents <-  c32.contents >>>  16;
-        c32.contents <-  (c32.contents & 0xffffn) +~  a16 *~ b16;
-        c48.contents <-  c48.contents +~  ( c32.contents >>> 16);
-        c32.contents <-  (c32.contents & 0xffffn) +~  a00 *~ b32;
-        c48.contents <-  c48.contents +~  (c32.contents >>> 16);
-        c32.contents <-  c32.contents & 0xffffn;
-        c48.contents <-  (c48.contents  +~ (a48 *~ b00 +~ a32 *~ b16 +~ a16 *~ b32 +~ a00 *~ b48)) & 0xffffn;
-        mk ~lo:
-           (Caml_nativeint_extern.logor
-             (c00 & 0xffffn)
-             ( (c16.contents & 0xffffn) << 16))
-         ~hi:( Caml_nativeint_extern.logor
-             c32.contents
-             ( c48.contents << 16))
-
-      end
 
 
 let rec mul this
@@ -415,9 +362,14 @@ let rec to_string (Int64{hi=self_hi;_} as self : t) =
     if eq self min_int then "-9223372036854775808"
     else "-" ^ to_string (neg self)
   else (* large positive number *)    
-    let approx_div1 =  (of_float (floor (to_float self /. 10.) )) in
+    let (Int64 {lo ; hi} as approx_div1) =  (of_float (floor (to_float self /. 10.) )) in
     let (Int64 { lo = rem_lo ;hi = rem_hi} as rem) = 
-      sub self (ten_times approx_div1)
+        self 
+        |. sub_aux  ~lo:(lo << 3) ~hi:((lo>>>29) |~ (hi << 3))
+        (* |. sub (lsl_ approx_div1 3)  *)
+        |. sub_aux ~lo:(lo << 1) ~hi: ((lo >>> 31) |~ (hi << 1))
+        (* |. sub  (lsl_ approx_div1 1) *)
+       (* self *)
       in 
     if rem_lo =0n && rem_hi = 0n then to_string approx_div1 ^ "0"
     else 
