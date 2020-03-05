@@ -374,13 +374,93 @@ let caml_format_int fmt i =
     let f = parse_format fmt in 
     aux f i 
 
+(* This can handle unsigned integer (-1L) and print it as "%Lu" which 
+  will overflow signed integer in general
+*)
+let dec_of_pos_int64 x = 
+  
+
+  (if  x < 0L then
+     
+     let wbase  =  10L  in
+     let  cvtbl = "0123456789" in
+    let y  = Caml_int64.discard_sign x in
+    (* 2 ^  63 + y `div_mod` 10 *)        
+
+    let quotient_l  = 922337203685477580L (* 2 ^ 63 / 10 *)
+      (* {lo =   -858993460n; hi =  214748364n} *)
+      (* TODO:  int64 constant folding so that we can do idiomatic code
+         2 ^ 63 / 10 *)in 
+    let modulus_l  =  8L  in
+    (* let c, d = Caml_int64.div_mod (Caml_int64.add y modulus_l) wbase in
+       we can not do the code above, it can overflow when y is really large           
+    *)
+    let c, d = Caml_int64.div_mod  y  wbase in
+    let e ,f = Caml_int64.div_mod (Caml_int64_extern.add modulus_l d) wbase in        
+    let quotient =
+       (Caml_int64_extern.add (Caml_int64_extern.add quotient_l c )
+             e)  in
+    Caml_int64.to_string quotient ^ 
+      (Caml_string_extern.get_string_unsafe 
+        cvtbl (Caml_int64_extern.to_int f))     
+  else
+   Caml_int64.to_string x)
+    
+let oct_of_int64 x =   
+  let s = ref "" in  
+  let wbase  = 8L  in
+  let  cvtbl = "01234567" in
+  (if  x < 0L then
+     begin         
+       let y = Caml_int64.discard_sign  x in
+       (* 2 ^  63 + y `div_mod` 8 *)        
+       let quotient_l  = 1152921504606846976L 
+       (* {lo =   0n; hi =  268435456n } *) (* 2 ^ 31 / 8 *)
+       in 
+
+       (* let c, d = Caml_int64.div_mod (Caml_int64.add y modulus_l) wbase in
+          we can not do the code above, it can overflow when y is really large           
+       *)
+       let c, d = Caml_int64.div_mod  y  wbase in
+
+       let quotient =
+         ref (Caml_int64_extern.add quotient_l c )  in
+       let modulus = ref d in
+       s .contents<-
+         Caml_string_extern.get_string_unsafe 
+           cvtbl (Caml_int64_extern.to_int modulus.contents) ^ s.contents ;
+
+       while  quotient.contents <> 0L do
+         let a, b = Caml_int64.div_mod quotient.contents wbase in
+         quotient .contents<- a;
+         modulus .contents<- b;
+         s .contents<- Caml_string_extern.get_string_unsafe cvtbl (Caml_int64_extern.to_int modulus.contents) ^ s.contents ;
+       done;
+     end
+   else
+     let a, b =  Caml_int64.div_mod x wbase  in
+     let quotient = ref a  in
+     let modulus = ref b in
+     s .contents<-
+       Caml_string_extern.get_string_unsafe 
+         cvtbl (Caml_int64_extern.to_int modulus.contents) ^ s.contents ;
+
+     while  quotient.contents <> 0L do
+       let a, b = Caml_int64.div_mod (quotient.contents) wbase in
+       quotient .contents<- a;
+       modulus .contents<- b;
+       s .contents<- Caml_string_extern.get_string_unsafe cvtbl (Caml_int64_extern.to_int modulus.contents) ^ s.contents ;
+     done); s.contents   
+
+
 (* FIXME: improve codegen for such cases
 let div_mod (x : int64) (y : int64) : int64 * int64 =  
   let a, b = Caml_int64.(div_mod (unsafe_of_int64 x) (unsafe_of_int64 y)) in   
   Caml_int64.unsafe_to_int64 a , Caml_int64.unsafe_to_int64 b 
 *)
 let caml_int64_format fmt x =
-  let module String = Caml_string_extern in 
+  if fmt = "%d" then Caml_int64.to_string  x
+  else
   let f = parse_format fmt in
   let x =
     if f.signedconv &&  x < 0L then
@@ -389,114 +469,26 @@ let caml_int64_format fmt x =
         Caml_int64_extern.neg x
       end
     else x in
-  let s = ref "" in
+  let s = 
 
   begin match f.base with
     | Hex ->
-      s .contents<- Caml_int64.to_hex x ^ s.contents       
+       Caml_int64.to_hex x 
     | Oct ->
-      let wbase  = 8L  in
-      let  cvtbl = "01234567" in
-
-      if  x < 0L then
-        begin         
-          let y = Caml_int64.discard_sign  x in
-          (* 2 ^  63 + y `div_mod` 8 *)        
-          let quotient_l  = 1152921504606846976L 
-            (* {lo =   0n; hi =  268435456n } *) (* 2 ^ 31 / 8 *)
-          in 
-
-          (* let c, d = Caml_int64.div_mod (Caml_int64.add y modulus_l) wbase in
-             we can not do the code above, it can overflow when y is really large           
-          *)
-          let c, d = Caml_int64.div_mod  y  wbase in
-
-          let quotient =
-            ref (Caml_int64_extern.add quotient_l c )  in
-          let modulus = ref d in
-          s .contents<-
-            Caml_string_extern.of_char 
-              cvtbl.[ Caml_int64_extern.to_int modulus.contents] ^ s.contents ;
-
-          while  quotient.contents <> 0L do
-            let a, b = Caml_int64.div_mod quotient.contents wbase in
-            quotient .contents<- a;
-            modulus .contents<- b;
-            s .contents<- Caml_string_extern.of_char cvtbl.[Caml_int64_extern.to_int modulus.contents] ^ s.contents ;
-          done;
-        end
-      else
-        let a, b =  Caml_int64.div_mod x wbase  in
-        let quotient = ref a  in
-        let modulus = ref b in
-        s .contents<-
-          Caml_string_extern.of_char 
-            cvtbl.[ Caml_int64_extern.to_int modulus.contents] ^ s.contents ;
-
-        while  quotient.contents <> 0L do
-          let a, b = Caml_int64.div_mod (quotient.contents) wbase in
-          quotient .contents<- a;
-          modulus .contents<- b;
-          s .contents<- Caml_string_extern.of_char cvtbl.[Caml_int64_extern.to_int modulus.contents] ^ s.contents ;
-        done
-
+       oct_of_int64 x 
     | Dec ->
-      let wbase  =  10L  in
-      let  cvtbl = "0123456789" in
-
-      if  x < 0L then
-        let y  = Caml_int64.discard_sign x in
-        (* 2 ^  63 + y `div_mod` 10 *)        
-
-        let quotient_l  = 922337203685477580L (* 2 ^ 63 / 10 *)
-          (* {lo =   -858993460n; hi =  214748364n} *)
-          (* TODO:  int64 constant folding so that we can do idiomatic code
-             2 ^ 63 / 10 *)in 
-        let modulus_l  =  8L  in
-        (* let c, d = Caml_int64.div_mod (Caml_int64.add y modulus_l) wbase in
-           we can not do the code above, it can overflow when y is really large           
-        *)
-        let c, d = Caml_int64.div_mod  y  wbase in
-        let e ,f = Caml_int64.div_mod (Caml_int64_extern.add modulus_l d) wbase in        
-        let quotient =
-          ref (Caml_int64_extern.add (Caml_int64_extern.add quotient_l c )
-                 e)  in
-        let modulus = ref f in
-        s .contents<-
-          Caml_string_extern.of_char 
-            cvtbl.[Caml_int64_extern.to_int modulus.contents] ^ s.contents ;
-
-        while quotient.contents <> 0L do
-          let a, b = Caml_int64.div_mod (quotient.contents) wbase in
-          quotient .contents<- a;
-          modulus .contents<- b;
-          s .contents<- Caml_string_extern.of_char cvtbl.[Caml_int64_extern.to_int modulus.contents] ^ s.contents ;
-        done;
-
-      else
-        let a, b =  Caml_int64.div_mod x wbase  in
-        let quotient = ref a  in
-        let modulus = ref b in
-        s .contents<-
-          Caml_string_extern.of_char 
-            cvtbl.[ Caml_int64_extern.to_int modulus.contents] ^ s.contents ;
-
-        while  quotient.contents <> 0L do
-          let a, b = Caml_int64.div_mod (quotient.contents) wbase in
-          quotient .contents<- a;
-          modulus .contents<- b;
-          s .contents<- Caml_string_extern.of_char cvtbl.[Caml_int64_extern.to_int modulus.contents] ^ s.contents ;
-        done;
-  end;
+         dec_of_pos_int64 x
+  end in 
+  let fill_s = 
   if f.prec >= 0 then
     begin
       f.filter <- " ";
-      let n = f.prec -Caml_string_extern.length s.contents in
+      let n = f.prec -Caml_string_extern.length s in
       if n > 0 then
-        s .contents<- repeat n "0" ^ s.contents
-    end;
+        repeat n "0" ^ s else s 
+    end  else s in 
 
-  finish_formatting f s.contents
+  finish_formatting f fill_s
 
 let caml_format_float fmt x = 
   let module String = Caml_string_extern in 

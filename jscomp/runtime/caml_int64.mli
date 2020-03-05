@@ -29,11 +29,12 @@
 (** *)
 
 type t 
+val succ : t -> t 
 val min_int : t
 val max_int : t
 val one : t
 val zero : t
-val not : t -> t
+(* val not : t -> t *)
 val of_int32 : nativeint -> t
 val to_int32 : t -> nativeint
 
@@ -89,3 +90,4 @@ external unsafe_of_int64 : int64 -> t = "%identity"
 val div_mod :  int64 -> int64 -> int64 * int64
 val to_hex : int64 -> string
 val discard_sign : int64 -> int64 
+val to_string : int64 -> string 
