@@ -36,6 +36,7 @@
 
 let (>>>) = Caml_nativeint_extern.shift_right_logical
 let (>>) = Caml_nativeint_extern.shift_right
+let (|~) = Caml_nativeint_extern.logor
 let ( +~ ) = Caml_nativeint_extern.add
 let ( *~ ) = Caml_nativeint_extern.mul
 let ( & ) = Caml_nativeint_extern.logand
@@ -71,17 +72,34 @@ let neg_one = mk ~lo:(-1n) ~hi:(-1n)
 
 let neg_signed x =  (x  & 0x8000_0000n) <> 0n
 
-let add
-    (Int64 {lo = this_low_; hi = this_high_} : t)
-    (Int64 {lo = other_low_; hi = other_high_} : t) =
-  let lo =  ( this_low_ +~ other_low_) &  0xffff_ffffn in
+let neg (Int64 {lo;hi} ) =
+  let other_lo = (lognot lo +~  1n) & 0xffff_ffffn in   
+  mk ~lo:other_lo 
+    ~hi:((lognot hi +~ if other_lo = 0n then 1n else 0n)  &  0xffff_ffffn)
+
+
+
+
+
+
+let add_aux 
+    (Int64 {lo = x_lo; hi = x_hi} : t)
+    ~y_lo ~y_hi  =
+  let lo =  ( x_lo +~ y_lo) &  0xffff_ffffn in
   let overflow =
-    if (neg_signed this_low_ && (neg_signed other_low_  || not (neg_signed lo)))
-       || (neg_signed other_low_  && not (neg_signed lo))
+    if (neg_signed x_lo && (neg_signed y_lo  || not (neg_signed lo)))
+    || (neg_signed y_lo  && not (neg_signed lo))
     then 1n
     else  0n
   in
-  mk ~lo ~hi:(( this_high_ +~ other_high_ +~ overflow) &  0xffff_ffffn)
+  mk ~lo ~hi:(( x_hi +~ y_hi +~ overflow) &  0xffff_ffffn)
+
+(** [add_lo self y_lo] === [add self (mk ~lo:y_lo ~hi:0n)] *)  
+let add_lo self lo = add_aux self ~y_lo:(to_unsigned lo) ~y_hi:0n
+let add
+    (self : t)
+    (Int64 {lo = y_lo; hi = y_hi} : t) =
+  add_aux self ~y_lo ~y_hi
 
 
 let not (Int64 {lo; hi })  = mk ~lo:(lognot lo) ~hi:(lognot hi)
@@ -101,14 +119,16 @@ let equal_nullable x y =
   | None -> false 
   | Some y -> eq x y 
 
-let neg x =
-  if eq x  min_int then
-    min_int
-  else add (not x) one
 
 
-let sub x y =
-  add x (neg y)
+(* when [lo] is unsigned integer, [lognot lo] is still an unsigned integer  *)
+let sub_aux x ~lo ~hi = 
+  let neg_lo = to_unsigned ((lognot lo +~  1n) & 0xffff_ffffn) in 
+  let neg_hi =  ((lognot hi +~ if neg_lo = 0n then 1n else 0n)  &  0xffff_ffffn) in 
+  add_aux x ~y_lo:neg_lo ~y_hi:neg_hi
+
+let sub self (Int64{lo;hi})= sub_aux self ~lo ~hi 
+let sub_lo self lo = sub_aux self ~lo ~hi:0n
 
 let lsl_ (Int64 {lo; hi} as x) numBits =
   if numBits = 0 then
@@ -118,9 +138,9 @@ let lsl_ (Int64 {lo; hi} as x) numBits =
   else
     mk ~lo:(Caml_nativeint_extern.shift_left lo numBits)
      ~hi:
-       (Caml_nativeint_extern.logor
-         ( lo >>>  (32 - numBits))
-         (Caml_nativeint_extern.shift_left hi numBits))
+       (
+         ( lo >>>  (32 - numBits)) |~
+         ( hi << numBits))
 
 
 let lsr_ (Int64 {lo; hi} as x) numBits =

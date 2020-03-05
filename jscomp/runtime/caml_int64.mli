@@ -29,6 +29,7 @@
 (** *)
 
 type t 
+val succ : t -> t 
 val min_int : t
 val max_int : t
 val one : t
@@ -89,3 +90,4 @@ external unsafe_of_int64 : int64 -> t = "%identity"
 val div_mod :  int64 -> int64 -> int64 * int64
 val to_hex : int64 -> string
 val discard_sign : int64 -> int64 
+val to_string : t -> string 
