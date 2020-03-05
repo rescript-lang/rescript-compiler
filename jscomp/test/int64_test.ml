@@ -77,6 +77,8 @@ let suites :  Mt.pair_suites = Mt.[
     "of_int", (fun _ -> Eq(3L, Int64.of_int 3));
     "lognot", (fun _ -> Eq(-3L, Int64.lognot 2L));
     "neg", (fun _ -> Eq(-2L, Int64.neg 2L));
+    __LOC__, (fun _ -> Eq(Int64.min_int, Int64.neg Int64.min_int));
+    __LOC__, (fun _ -> Eq (Int64.max_int, Int64.neg Int64.(add min_int 1L)));
     "sub1", (fun _ -> Eq (2L, Int64.(sub 3L 1L)));
     "xor1", (fun _ -> 
         Eq ((logxor 0xEEFFEEFFL 0xFFEEFFEEL, logxor a 0xEEFFEEFFL), 
@@ -184,6 +186,8 @@ let id loc (x : int64) =
   | FP_nan -> ()
   | _  -> 
      eq loc (Int64.bits_of_float float_value) x 
+
+
 let () = 
   eq __LOC__ (Int64.bits_of_float 0.3) 4599075939470750515L;
   eq __LOC__ (Int64.float_of_bits 4599075939470750515L) 0.3;
@@ -191,6 +195,11 @@ let () =
   id __LOC__ (-100L);
   id __LOC__ 0xff_ff_ff_ffL;
   id __LOC__ 0x1f_ff_ff_ffL;
-  id __LOC__ 0x1f_ff_fe_ffL
-
+  id __LOC__ 0x1f_ff_fe_ffL;
+  eq __LOC__ Int64.(div min_int 10L) (-922337203685477580L);
+  eq __LOC__ Int64.(to_string (div min_int 10L)) "-922337203685477580";
+  eq __LOC__ Int64.(mul min_int 10L) 0L;
+  eq __LOC__ Int64.(mul  10L min_int) 0L; 
+  eq __LOC__ Int64.(mul  1L min_int) min_int;
+  eq __LOC__ Int64.(mul max_int 10L) (-10L)
 ;; Mt.from_pair_suites __MODULE__ !suites
