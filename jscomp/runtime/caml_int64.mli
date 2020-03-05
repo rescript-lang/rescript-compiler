@@ -90,4 +90,4 @@ external unsafe_of_int64 : int64 -> t = "%identity"
 val div_mod :  int64 -> int64 -> int64 * int64
 val to_hex : int64 -> string
 val discard_sign : int64 -> int64 
-val to_string : t -> string 
+val to_string : int64 -> string 

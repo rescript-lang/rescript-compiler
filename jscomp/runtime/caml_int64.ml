@@ -341,7 +341,53 @@ let rec of_float (x : float) : t =
 external log2 : float = "LN2" [@@bs.val]  [@@bs.scope "Math"]
 external log : float -> float =  "log" [@@bs.val] [@@bs.scope "Math"]
 external ceil : float -> float =  "ceil" [@@bs.val] [@@bs.scope "Math"]
+external floor : float -> float =  "floor" [@@bs.val] [@@bs.scope "Math"]
 (* external maxFloat : float -> float -> float = "Math.max" [@@bs.val] *)
+
+(* either top 11 bits are all 0 or all 1 
+  when it is all 1, we need exclude -2^53
+*)
+let isSafeInteger (Int64{hi;lo}) = 
+  let top11Bits = hi >> 21 in   
+  top11Bits = 0n || 
+  (top11Bits = -1n && 
+  Pervasives.not (lo = 0n && hi = (0xff_e0_00_00n |~ 0n )))
+
+external string_of_float : float -> string = "String" [@@bs.val] 
+let rec to_string ( self : int64) = 
+  let (Int64{hi=self_hi;_} as self) = unsafe_of_int64 self in
+  if isSafeInteger self then 
+     string_of_float (to_float self)
+  else 
+  
+  if self_hi <0n then 
+    if eq self min_int then "-9223372036854775808"
+    else "-" ^ to_string (unsafe_to_int64 (neg self))
+  else (* large positive number *)    
+    let (Int64 {lo ; hi} as approx_div1) =  (of_float (floor (to_float self /. 10.) )) in
+    let (Int64 { lo = rem_lo ;hi = rem_hi} ) = (* rem should be a pretty small number *)
+        self 
+        |. sub_aux  ~lo:(lo << 3) ~hi:((lo>>>29) |~ (hi << 3))
+        |. sub_aux ~lo:(lo << 1) ~hi: ((lo >>> 31) |~ (hi << 1))
+    in 
+    if rem_lo =0n && rem_hi = 0n then to_string (unsafe_to_int64 approx_div1) ^ "0"
+    else 
+    if rem_hi < 0n then 
+      (* let (Int64 {lo = rem_lo}) = neg rem in      *)
+      let rem_lo = to_unsigned ((lognot rem_lo +~ 1n ) & 0xffff_ffffn) |. Caml_nativeint_extern.to_float  in 
+      let delta =  (ceil (rem_lo /. 10.)) in 
+      let remainder = 10. *. delta -. rem_lo in
+      to_string (unsafe_to_int64 (sub_lo approx_div1 
+                   (Caml_nativeint_extern.of_float delta))) ^ 
+      Caml_nativeint_extern.to_string (Caml_nativeint_extern.of_float remainder)
+    else 
+      let rem_lo = Caml_nativeint_extern.to_float rem_lo in 
+      let delta =  (floor (rem_lo /. 10.)) in 
+      let remainder = rem_lo -. 10. *. delta in 
+      to_string (unsafe_to_int64 (add_lo approx_div1 ((Caml_nativeint_extern.of_float delta)))) ^                                                    
+      Caml_nativeint_extern.to_string (Caml_nativeint_extern.of_float remainder) 
+
+
 
 let rec div self other =
   match self, other with
