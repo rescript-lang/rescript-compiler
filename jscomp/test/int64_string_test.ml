@@ -20,7 +20,7 @@ let hh =   Int64.(add min_int 100L)
 ;; f Int64.min_int "-9223372036854775808"
 ;; f hh
   "-9223372036854775708"
-
+;; f (1_000_000_000_000_000L) "1000000000000000"
 ;; for i = 0 to 8 do 
   eq __LOC__ (Int64.(to_string (add min_int (of_int i))))
   ("-922337203685477580" ^ string_of_int (8 - i))
@@ -34,5 +34,7 @@ done
   ("-922337203685377580" ^ string_of_int (8 - i))  
 done  
 ;; eq __LOC__ (Int64.to_string (-233L)) "-233"  
+
+
 ;; Mt.from_pair_suites __LOC__ !suites
 

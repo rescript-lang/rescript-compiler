@@ -186,6 +186,8 @@ let id loc (x : int64) =
   | FP_nan -> ()
   | _  -> 
      eq loc (Int64.bits_of_float float_value) x 
+
+
 let () = 
   eq __LOC__ (Int64.bits_of_float 0.3) 4599075939470750515L;
   eq __LOC__ (Int64.float_of_bits 4599075939470750515L) 0.3;
@@ -196,4 +198,8 @@ let () =
   id __LOC__ 0x1f_ff_fe_ffL;
   eq __LOC__ Int64.(div min_int 10L) (-922337203685477580L);
   eq __LOC__ Int64.(to_string (div min_int 10L)) "-922337203685477580";
+  eq __LOC__ Int64.(mul min_int 10L) 0L;
+  eq __LOC__ Int64.(mul  10L min_int) 0L; 
+  eq __LOC__ Int64.(mul  1L min_int) min_int;
+  eq __LOC__ Int64.(mul max_int 10L) (-10L)
 ;; Mt.from_pair_suites __MODULE__ !suites

@@ -48,6 +48,11 @@ f(Int64.min_int, "-9223372036854775808");
 
 f(hh, "-9223372036854775708");
 
+f(/* int64 */[
+      /* hi */232830,
+      /* lo */2764472320
+    ], "1000000000000000");
+
 for(var i = 0; i <= 8; ++i){
   eq("File \"int64_string_test.ml\", line 25, characters 5-12", Caml_int64.to_string(Caml_int64.add(Int64.min_int, Caml_int64.of_int32(i))), "-922337203685477580" + String(8 - i | 0));
 }
@@ -65,7 +70,7 @@ eq("File \"int64_string_test.ml\", line 36, characters 6-13", Caml_int64.to_stri
           /* lo */4294967063
         ]), "-233");
 
-Mt.from_pair_suites("File \"int64_string_test.ml\", line 37, characters 23-30", suites.contents);
+Mt.from_pair_suites("File \"int64_string_test.ml\", line 39, characters 23-30", suites.contents);
 
 exports.suites = suites;
 exports.test_id = test_id;

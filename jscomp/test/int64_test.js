@@ -2430,42 +2430,42 @@ function id(loc, x) {
   }
 }
 
-eq("File \"int64_test.ml\", line 190, characters 5-12", Caml_int64.bits_of_float(0.3), /* int64 */[
+eq("File \"int64_test.ml\", line 192, characters 5-12", Caml_int64.bits_of_float(0.3), /* int64 */[
       /* hi */1070805811,
       /* lo */858993459
     ]);
 
-eq("File \"int64_test.ml\", line 191, characters 5-12", Caml_int64.float_of_bits(/* int64 */[
+eq("File \"int64_test.ml\", line 193, characters 5-12", Caml_int64.float_of_bits(/* int64 */[
           /* hi */1070805811,
           /* lo */858993459
         ]), 0.3);
 
-id("File \"int64_test.ml\", line 192, characters 5-12", /* int64 */[
-      /* hi */-1,
-      /* lo */4294967295
-    ]);
-
-id("File \"int64_test.ml\", line 193, characters 5-12", /* int64 */[
-      /* hi */-1,
-      /* lo */4294967196
-    ]);
-
 id("File \"int64_test.ml\", line 194, characters 5-12", /* int64 */[
-      /* hi */0,
+      /* hi */-1,
       /* lo */4294967295
     ]);
 
 id("File \"int64_test.ml\", line 195, characters 5-12", /* int64 */[
-      /* hi */0,
-      /* lo */536870911
+      /* hi */-1,
+      /* lo */4294967196
     ]);
 
 id("File \"int64_test.ml\", line 196, characters 5-12", /* int64 */[
       /* hi */0,
+      /* lo */4294967295
+    ]);
+
+id("File \"int64_test.ml\", line 197, characters 5-12", /* int64 */[
+      /* hi */0,
+      /* lo */536870911
+    ]);
+
+id("File \"int64_test.ml\", line 198, characters 5-12", /* int64 */[
+      /* hi */0,
       /* lo */536870655
     ]);
 
-eq("File \"int64_test.ml\", line 197, characters 5-12", Caml_int64.div(Int64.min_int, /* int64 */[
+eq("File \"int64_test.ml\", line 199, characters 5-12", Caml_int64.div(Int64.min_int, /* int64 */[
           /* hi */0,
           /* lo */10
         ]), /* int64 */[
@@ -2473,10 +2473,39 @@ eq("File \"int64_test.ml\", line 197, characters 5-12", Caml_int64.div(Int64.min
       /* lo */858993460
     ]);
 
-eq("File \"int64_test.ml\", line 198, characters 5-12", Caml_int64.to_string(Caml_int64.div(Int64.min_int, /* int64 */[
+eq("File \"int64_test.ml\", line 200, characters 5-12", Caml_int64.to_string(Caml_int64.div(Int64.min_int, /* int64 */[
               /* hi */0,
               /* lo */10
             ])), "-922337203685477580");
+
+eq("File \"int64_test.ml\", line 201, characters 5-12", Caml_int64.mul(Int64.min_int, /* int64 */[
+          /* hi */0,
+          /* lo */10
+        ]), /* int64 */[
+      /* hi */0,
+      /* lo */0
+    ]);
+
+eq("File \"int64_test.ml\", line 202, characters 5-12", Caml_int64.mul(/* int64 */[
+          /* hi */0,
+          /* lo */10
+        ], Int64.min_int), /* int64 */[
+      /* hi */0,
+      /* lo */0
+    ]);
+
+eq("File \"int64_test.ml\", line 203, characters 5-12", Caml_int64.mul(/* int64 */[
+          /* hi */0,
+          /* lo */1
+        ], Int64.min_int), Int64.min_int);
+
+eq("File \"int64_test.ml\", line 204, characters 5-12", Caml_int64.mul(Int64.max_int, /* int64 */[
+          /* hi */0,
+          /* lo */10
+        ]), /* int64 */[
+      /* hi */-1,
+      /* lo */4294967286
+    ]);
 
 Mt.from_pair_suites("Int64_test", suites$1.contents);
 
