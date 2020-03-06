@@ -11905,11 +11905,20 @@ let output_merlin_namespace buffer ns=
     Buffer.add_string buffer "-open ";
     Buffer.add_string buffer x 
 
+(* Literals.dash_nostdlib::
+   FIX editor tooling, note merlin does not need -nostdlib since we added S and B
+   RLS will add -I for those cmi files,  
+   Some consistency check is needed
+   Unless we tell the editor to peek those cmi for auto-complete and others for building which is too
+   complicated
+*)      
 let bsc_flg_to_merlin_ocamlc_flg bsc_flags  =
-  merlin_flg ^ 
-  String.concat Ext_string.single_space 
-    (List.filter (fun x -> not (Ext_string.starts_with x bs_flg_prefix )) ( 
-     Literals.dash_nostdlib::bsc_flags)) 
+  let flags = (List.filter (fun x -> not (Ext_string.starts_with x bs_flg_prefix )) ( 
+     bsc_flags)) in 
+  if flags <> [] then    
+    merlin_flg ^ 
+    String.concat Ext_string.single_space flags
+  else ""
 
 (* No need for [-warn-error] in merlin  *)     
 let warning_to_merlin_flg (warning: Bsb_warning.t ) : string=     
@@ -16270,7 +16279,7 @@ let run_npm_link cwd dirname  =
         exit 2
       end 
   else 
-  if Ext_sys.is_windows_or_cygwin then
+  (* if Ext_sys.is_windows_or_cygwin then *)
     begin
       let npm_link = "npm link bs-platform" in
       let exit_code = Sys.command npm_link in
@@ -16280,7 +16289,7 @@ let run_npm_link cwd dirname  =
           exit exit_code
         end
     end
-  else
+  (* else
     begin
       (* symlink bs-platform and bsb,bsc,bsrefmt to .bin directory
         we did not run npm link bs-platform for efficiency reasons
@@ -16298,7 +16307,7 @@ let run_npm_link cwd dirname  =
       Unix.symlink
         (Filename.dirname (Filename.dirname Sys.executable_name))
         (Filename.concat "node_modules" Bs_version.package_name)
-    end
+    end *)
 
 let enter_dir cwd x action =
   Unix.chdir x ;
