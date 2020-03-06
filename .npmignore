@@ -35,3 +35,4 @@ vendor/cppo
 vendor/rollup.js
 package/
 *.tgz
+.nyc_output/
