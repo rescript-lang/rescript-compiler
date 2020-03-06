@@ -134,11 +134,14 @@ let stdlib = "stdlib-406"
 let (//) = Filename.concat 
 let (|~) = Ext_string.contain_substring
 
+let cmi_target_file = (Filename.concat "main" "builtin_cmi_datasets.ml")
 let release_cmi = Array.exists ((=) "-release") Sys.argv
 let () = 
-  if release_cmi then 
-    print_endline "collecting cmi from ../lib/ocaml in release mode"  
-
+  if release_cmi then begin  
+    print_endline "collecting cmi from ../lib/ocaml in release mode" ;
+    try Sys.remove cmi_target_file with _ -> 
+      Format.fprintf Format.err_formatter "failed to remove %s@." cmi_target_file
+  end 
 let () = 
   let cmj_files = 
     ( 
@@ -161,5 +164,5 @@ let () =
   in     
   from_cmi 
   cmi_files
-    (Filename.concat "main" "builtin_cmi_datasets.ml")
+  cmi_target_file
 
