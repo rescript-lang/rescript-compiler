@@ -17,59 +17,6 @@ function rebuild() {
     stdio: [0, 1, 2]
   });
 }
-var assert = require("assert");
-/**
- *
- * @param {string} src
- * @param {(file:string)=>boolean} filter
- * @param {string} dest
- */
-function installDirBy(src, dest, filter) {
-  fs.readdir(src, function(err, files) {
-    if (err === null) {
-      files.forEach(function(file) {
-        if (filter(file)) {
-          var x = path.join(src, file);
-          var y = path.join(dest, file);
-          // console.log(x, '----->', y )
-          fs.copyFile(x, y, err => assert.equal(err, null));
-        }
-      });
-    } else {
-      throw err;
-    }
-  });
-}
-
-function install() {
-  var root_dir = path.join(__dirname, "..");
-  var lib_dir = path.join(root_dir, "lib");
-  var jscomp_dir = path.join(root_dir, "jscomp");
-  var runtime_dir = path.join(jscomp_dir, "runtime");
-  var others_dir = path.join(jscomp_dir, "others");
-  var ocaml_dir = path.join(lib_dir, "ocaml");
-  var stdlib_dir = path.join(jscomp_dir, "stdlib-406");
-  if(!fs.existsSync(ocaml_dir)){
-    fs.mkdirSync(ocaml_dir)
-  }
-  // sync up with cmij_main.ml
-  installDirBy(runtime_dir, ocaml_dir, function(file) {
-    var y = path.parse(file);
-    return y.name === "js" && y.ext !== ".cmj";
-    // install js.cmi, js.mli
-  });
-
-  // for merlin or other IDE
-  var installed_suffixes = [".ml", ".mli", ".cmi",".cmt", ".cmti"];
-  installDirBy(others_dir, ocaml_dir, function(file) {
-    var y = path.parse(file);
-    return installed_suffixes.includes(y.ext);
-  });
-  installDirBy(stdlib_dir, ocaml_dir, function(file) {
-    var y = path.parse(file);
-    return installed_suffixes.includes(y.ext)
-  });
-}
 
 function buildCompiler() {
   // for 4.02.3 it relies on OCAMLLIB to find stdlib path
@@ -104,7 +51,7 @@ if (!is_windows) {
 
 function createOCamlTar() {
   if (process.platform === hostPlatform) {
-    install();
+    require("./installUtils.js").install();
     cp.execSync(`git -C ocaml status -uno`, { cwd: root, stdio: [0, 1, 2] });
     cp.execSync(
       `git  -C ocaml archive --format=tar.gz HEAD -o ../vendor/ocaml.tar.gz`,

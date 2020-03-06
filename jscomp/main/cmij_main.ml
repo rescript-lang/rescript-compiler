@@ -104,13 +104,6 @@ let from_cmi (files : string list) (output_file : string) =
       let content = 
         Marshal.to_string 
           cmi
-          (* cmi_name, crcs can be saved, but only a tiny bit *)
-          (* (cmi.cmi_sign) *)
-          (* (Array.of_list cmi.cmi_sign) *)
-          (* ({ with 
-             (* cmi_crcs = [] *)
-             cmi_flags = []
-             }) *)
           [] in 
       Printf.sprintf {|%S (* %d *)|} module_name (String.length content) ,                              
       Printf.sprintf {|(* %s *) %S|} module_name content) in 
@@ -141,6 +134,14 @@ let stdlib = "stdlib-406"
 let (//) = Filename.concat 
 let (|~) = Ext_string.contain_substring
 
+let cmi_target_file = (Filename.concat "main" "builtin_cmi_datasets.ml")
+let release_cmi = Array.exists ((=) "-release") Sys.argv
+let () = 
+  if release_cmi then begin  
+    print_endline "collecting cmi from ../lib/ocaml in release mode" ;
+    try Sys.remove cmi_target_file with _ -> 
+      Format.fprintf Format.err_formatter "failed to remove %s@." cmi_target_file
+  end 
 let () = 
   let cmj_files = 
     ( 
@@ -150,14 +151,18 @@ let () =
   from_cmj cmj_files
     (Filename.concat "main" "builtin_cmj_datasets.ml");
   let cmi_files = 
-    "runtime" // "js.cmi" ::       
-    (get_files Literals.suffix_cmi stdlib @
-    get_files Literals.suffix_cmi "others" )
-    |> List.filter (fun x -> 
-       x|~ "js_internalOO" ||
-       x|~  "camlinternal" ||
-       not (x |~ "internal"))
+    if release_cmi then   
+      get_files Literals.suffix_cmi (".."//"lib"//"ocaml")  
+   else    
+     "runtime" // "js.cmi" ::       
+     (get_files Literals.suffix_cmi stdlib @
+      get_files Literals.suffix_cmi "others" )
+     |> List.filter (fun x -> 
+         x|~ "js_internalOO" ||
+         x|~  "camlinternal" ||
+         not (x |~ "internal")) 
   in     
-  from_cmi cmi_files
-    (Filename.concat "main" "builtin_cmi_datasets.ml")
+  from_cmi 
+  cmi_files
+  cmi_target_file
 

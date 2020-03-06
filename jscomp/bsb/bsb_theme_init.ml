@@ -76,7 +76,7 @@ let run_npm_link cwd dirname  =
         exit 2
       end 
   else 
-  if Ext_sys.is_windows_or_cygwin then
+  (* if Ext_sys.is_windows_or_cygwin then *)
     begin
       let npm_link = "npm link bs-platform" in
       let exit_code = Sys.command npm_link in
@@ -86,7 +86,7 @@ let run_npm_link cwd dirname  =
           exit exit_code
         end
     end
-  else
+  (* else
     begin
       (* symlink bs-platform and bsb,bsc,bsrefmt to .bin directory
         we did not run npm link bs-platform for efficiency reasons
@@ -104,7 +104,7 @@ let run_npm_link cwd dirname  =
       Unix.symlink
         (Filename.dirname (Filename.dirname Sys.executable_name))
         (Filename.concat "node_modules" Bs_version.package_name)
-    end
+    end *)
 
 let enter_dir cwd x action =
   Unix.chdir x ;
