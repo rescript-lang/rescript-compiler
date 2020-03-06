@@ -224,4 +224,5 @@ var stdlib = ocamlVersion.includes("4.02") ? "stdlib-402" : "stdlib-406";
 
 if (process.env.BS_TRAVIS_CI) {
   buildLibs(stdlib);
+  require('./installUtils.js').install()
 }
