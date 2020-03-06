@@ -49,7 +49,7 @@ function install() {
   installDirBy(others_dir, ocaml_dir, function(file) {
     var y = path.parse(file);
     if (y.ext === ".cmi") {
-      return !y.base.includes("Belt_internal");
+      return !y.base.match(/Belt_internal/i);
     }
     return installed_suffixes.includes(y.ext);
   });
