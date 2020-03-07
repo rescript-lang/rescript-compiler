@@ -2,14 +2,29 @@
 # current
 
 # 7.2
+- #4211 #4210 optimize int64 performance, Int64.to_string (10x faster), Int64.neg etc
+- #4209 add a space after "acquire lock" in bsb error handling
+- #4208 #4206 let%private support
+  ```ocaml
+  let %private  x = 3
+  ```
+  `x` will not be exported 
+  ```ocaml
+  module N = struct
+    let %private x = 3
+  end
+  ```
+  `x` will not be exported by N
+- #4196 fix printing indexed operators    
 - #4177 #4180 support `[@@@bs.config {flags = [| ".." |] }]` per file level to allow file level special flags
+
 - #4158 #4157 #4166 #4168 loading stdlib from memory, no postinstall needed
 - #4152 support copyright style comments preserved in JS 
   ```
   [%%raw "//copyright ]
   ```
   copyright will be preserved in output js 
-- #4191 add a flag -bs-unsafe-empty-array for easy transition (regain polymorphism for empty array), this is a temporary flag which will be removed eventually
+- #4191 #4189 add a flag -bs-unsafe-empty-array for easy transition (regain polymorphism for empty array), this is a temporary flag which will be removed eventually
 
 - #4190 (internal) remove bsdep which is not used
 - #4188 better encoding around internals for performance and size  
