@@ -5,6 +5,12 @@ var path = require("path");
 var fs = require("fs");
 var assert = require("assert");
 var root = path.join(__dirname, "..");
+try {
+  // npmignore is broken let's do it
+  let file = path.join(root, process.platform, "bsc")
+  console.log(`try removing ${file}`)
+  fs.unlinkSync(file);
+} catch (e) {}
 
 var output = p.spawnSync(`npm pack --dry-run`, {
   cwd: root,
@@ -13,12 +19,6 @@ var output = p.spawnSync(`npm pack --dry-run`, {
   // stdio: [0, 1, 2]
 });
 
-try {
-  // npmignore is broken let's do it
-  let file = path.join(root, process.platform, "bsc")
-  console.log(`try removing ${file}`)
-  fs.unlinkSync(file);
-} catch (e) {}
 
 /**
  *
