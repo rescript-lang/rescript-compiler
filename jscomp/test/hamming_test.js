@@ -10,30 +10,15 @@ var Caml_int64 = require("../../lib/js/caml_int64.js");
 var Caml_format = require("../../lib/js/caml_format.js");
 var CamlinternalLazy = require("../../lib/js/camlinternalLazy.js");
 
-var n0 = /* int64 */[
-  /* hi */0,
-  /* lo */0
-];
+var n0 = Caml_int64.zero;
 
-var n1 = /* int64 */[
-  /* hi */0,
-  /* lo */1
-];
+var n1 = Caml_int64.one;
 
-var n2 = /* int64 */[
-  /* hi */0,
-  /* lo */2
-];
+var n2 = Caml_int64.mk(2, 0);
 
-var n3 = /* int64 */[
-  /* hi */0,
-  /* lo */3
-];
+var n3 = Caml_int64.mk(3, 0);
 
-var n5 = /* int64 */[
-  /* hi */0,
-  /* lo */5
-];
+var n5 = Caml_int64.mk(5, 0);
 
 var $percent = Caml_int64.mod_;
 

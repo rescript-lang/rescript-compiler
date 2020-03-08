@@ -50693,10 +50693,7 @@ function build_other(ext, env) {
                                     ];
                               }), (function (i) {
                                 return /* Tpat_constant */Block.__(2, [/* Const_int64 */Block.__(5, [i])]);
-                              }), /* int64 */[
-                              /* hi */0,
-                              /* lo */0
-                            ], Int64.succ, p, env);
+                              }), Caml_int64.zero, Int64.succ, p, env);
               case /* Const_nativeint */6 :
                   return build_other_constant((function (param) {
                                 if (typeof param !== "number" && param.tag === /* Tpat_constant */2) {

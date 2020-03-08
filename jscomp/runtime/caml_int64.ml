@@ -53,16 +53,11 @@ let to_unsigned (x : nativeint) =
    x >>> 0
 
 let mk ~lo ~hi = Int64 {lo = to_unsigned lo ; hi}
-(*
-module N = struct 
-type nonrec t = t = private {  hi : nativeint; lo : nativeint ;  }
-end 
-open N
-*)
 let min_int =  mk  ~lo: 0n ~hi:(-0x80000000n)
+(* The high bits are signed 0x80000000 |~ 0 *)
 
 let max_int =
- mk  ~lo:( -0xffff_ffffn) ~hi: 0x7fff_ffffn
+ mk  ~lo:(0xffff_ffffn) ~hi: 0x7fff_ffffn
 
 let one = mk ~lo: 1n ~hi:0n
 let zero = mk ~lo: 0n ~hi: 0n

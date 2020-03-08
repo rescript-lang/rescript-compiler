@@ -8,6 +8,7 @@ var Printf = require("../../lib/js/printf.js");
 var Random = require("../../lib/js/random.js");
 var Mt_global = require("./mt_global.js");
 var Caml_array = require("../../lib/js/caml_array.js");
+var Caml_int64 = require("../../lib/js/caml_int64.js");
 
 var id = {
   contents: 0
@@ -70,10 +71,7 @@ Mt_global.collect_eq(id, suites, "File \"random_test.ml\", line 26, characters 5
 
 var f = Random.int64(Int64.max_int);
 
-var h = Random.int64(/* int64 */[
-      /* hi */0,
-      /* lo */3
-    ]);
+var h = Random.int64(Caml_int64.mk(3, 0));
 
 var vv = Random.bits(/* () */0);
 

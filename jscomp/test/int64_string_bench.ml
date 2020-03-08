@@ -7,15 +7,16 @@ let () =
   for i = 0 to 1_00_000 do 
     Int64.to_string u |> ignore
   done   ;
-  Js.Console.timeEnd "Int64.to_string"
-
+  Js.Console.timeEnd "Int64.to_string";
+  Js.log (Int64.to_string u)
 let () =
   Js.Console.timeStart "Int64.to_string";
   let u = 30_000_000L in 
   for i = 0 to 1_00_000 do 
     Int64.to_string u |> ignore
   done   ;
-  Js.Console.timeEnd "Int64.to_string"
+  Js.Console.timeEnd "Int64.to_string";
+  Js.log (Int64.to_string u)
 
 
 let () =  
@@ -24,4 +25,6 @@ let () =
   for i = 0 to 1_00_000 do 
     Int64.to_string u |> ignore
   done   ;
-  Js.Console.timeEnd "Int64.to_string"
+  Js.Console.timeEnd "Int64.to_string";
+  Js.log (Int64.to_string u)
+

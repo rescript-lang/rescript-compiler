@@ -5,6 +5,7 @@ var Block = require("../../lib/js/block.js");
 var Curry = require("../../lib/js/curry.js");
 var Scanf = require("../../lib/js/scanf.js");
 var Mt_global = require("./mt_global.js");
+var Caml_int64 = require("../../lib/js/caml_int64.js");
 
 var suites = {
   contents: /* [] */0
@@ -53,10 +54,7 @@ eq("File \"scanf_test.ml\", line 7, characters 5-12", /* tuple */[
               ]), (function (i) {
               return i;
             })),
-      /* int64 */[
-        /* hi */-1429646511,
-        /* lo */235324607
-      ]
+      Caml_int64.mk(235324607, -1429646511)
     ]);
 
 Mt.from_pair_suites("Scanf_test", suites.contents);

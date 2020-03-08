@@ -31,10 +31,7 @@ function approx(loc) {
     });
 }
 
-var epsilon_float = Caml_int64.float_of_bits(/* int64 */[
-      /* hi */1018167296,
-      /* lo */0
-    ]);
+var epsilon_float = Caml_int64.float_of_bits(Caml_int64.mk(0, 1018167296));
 
 var match = Caml_float.caml_frexp_float(12.0);
 

@@ -3,6 +3,7 @@
 var Block = require("../../lib/js/block.js");
 var Curry = require("../../lib/js/curry.js");
 var Printf = require("../../lib/js/printf.js");
+var Caml_int64 = require("../../lib/js/caml_int64.js");
 
 Curry._1(Printf.printf(/* Format */[
           /* Int64 */Block.__(7, [
@@ -15,10 +16,7 @@ Curry._1(Printf.printf(/* Format */[
                 ])
             ]),
           "%Ld\n"
-        ]), /* int64 */[
-      /* hi */0,
-      /* lo */32
-    ]);
+        ]), Caml_int64.mk(32, 0));
 
 Printf.printf(/* Format */[
       /* String_literal */Block.__(11, [
