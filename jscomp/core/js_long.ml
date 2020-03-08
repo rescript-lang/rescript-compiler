@@ -34,27 +34,6 @@ let int64_call (fn : string) args  =
   E.runtime_call Js_runtime_modules.int64 fn args 
 
 
-(* TODO: make layout easier to change later *)
-let record_info : Lam_tag_info.t = 
-    Blk_record_inlined ([|"hi";"lo"|],"Int64",1)
-let make_const ~lo ~hi = 
-  E.make_block 
-    ~comment:"int64" (E.zero_int_literal) 
-    record_info
-    [E.int hi; E.to_uint32 (E.int lo) ; ]
-    (* If we use unsigned int for lo field, 
-       then we can not use [E.int] which is 
-       assumed to to be signed int.
-       Or we can use [Int64] to encode 
-       in the ast node?
-    *)
-    Immutable
-
-(* let make ~lo ~hi = 
-  E.make_block 
-    ~comment:"int64" (E.zero_int_literal) 
-    record_info [   hi; E.to_uint32 lo ]
-    Immutable *)
 
 
 
@@ -63,9 +42,24 @@ let make_const ~lo ~hi =
 
 
 let of_const (v : Int64.t) = 
-  make_const
-    ~lo:(Int64.to_int32 v )
-    ~hi:(Int64.to_int32 (Int64.shift_right v 32))
+  match v with
+  | 0L -> 
+    E.runtime_var_dot  Js_runtime_modules.int64 "zero"
+  | 1L -> 
+    E.runtime_var_dot  Js_runtime_modules.int64 "one"   
+  | -1L ->  
+    E.runtime_var_dot  Js_runtime_modules.int64 "neg_one"   
+  | 9223372036854775807L ->
+    E.runtime_var_dot  Js_runtime_modules.int64 "max_int"   
+  | -9223372036854775808L ->
+    E.runtime_var_dot  Js_runtime_modules.int64 "min_int"
+  | _ -> 
+    E.runtime_call Js_runtime_modules.int64 "mk"
+      [
+        E.int (Int64.to_int32 v ); 
+        E.int (Int64.to_int32 (Int64.shift_right v 32))
+        (* signed shift right *)
+      ]  
 
 let to_int32 args = 
   int64_call "to_int32" args
@@ -77,8 +71,7 @@ let of_int32 (args : J.expression list) =
   match args with 
   | [{expression_desc = Number (Int {i}) ; _}] 
     -> 
-    if i < 0l then make_const ~lo:i ~hi:(-1l)
-    else make_const ~lo:i ~hi:0l
+    of_const (Int64.of_int32 i )
   | _ -> int64_call  "of_int32" args
 
 let comp (cmp : Lam_compat.comparison) args = 
