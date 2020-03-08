@@ -4171,10 +4171,7 @@ function test53(param) {
                       /* End_of_format */0
                     ]),
                   "%Ld"
-                ]), id), /* int64 */[
-          /* hi */0,
-          /* lo */123
-        ])) {
+                ]), id), Caml_int64.mk(123, 0))) {
     return Curry._1(Scanf.sscanf("124", /* Format */[
                     /* Int64 */Block.__(7, [
                         /* Int_d */0,
@@ -4184,13 +4181,7 @@ function test53(param) {
                       ]),
                     "%Ld"
                   ]), (function (i) {
-                  return Caml_int64.eq(Caml_int64.sub(i, /* int64 */[
-                                  /* hi */0,
-                                  /* lo */1
-                                ]), /* int64 */[
-                              /* hi */0,
-                              /* lo */123
-                            ]);
+                  return Caml_int64.eq(Caml_int64.sub(i, Caml_int64.one), Caml_int64.mk(123, 0));
                 }));
   } else {
     return false;
