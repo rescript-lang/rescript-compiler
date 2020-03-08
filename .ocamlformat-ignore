@@ -1,0 +1,2 @@
+# Files containing cppo directives that ocamlformat cannot parse
+jscomp/core/js_name_of_module_id.ml
