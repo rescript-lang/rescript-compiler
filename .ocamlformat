@@ -1,0 +1,13 @@
+margin = 80
+
+parse-docstrings = true
+wrap-comments = true
+
+field-space = loose
+let-binding-spacing = sparse
+module-item-spacing = preserve
+
+let-open = auto
+
+break-cases = fit-or-vertical
+sequence-blank-line = preserve-one
