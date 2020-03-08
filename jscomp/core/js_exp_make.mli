@@ -57,7 +57,7 @@ val var : ?comment:string  -> J.ident -> t
 
 val js_global : ?comment:string -> string -> t
 
-(* val runtime_var_dot : ?comment:string -> string -> string -> t *)
+val runtime_var_dot : ?comment:string -> string -> string -> t
 
 (* val runtime_var_vid : string -> string -> J.vident *)
 
