@@ -85,9 +85,9 @@ let simple_beta_reduce params body args =
       List.iter2 (fun p a -> Hash_ident.add param_hash p {lambda = a; used = false }) params args  
     in 
     begin match aux [] ap_args with 
-    | args -> 
+    | new_args -> 
       let result = 
-        Hash_ident.fold param_hash (Lam.prim ~primitive ~args ap_loc) (fun _param {lambda; used} acc -> 
+        Hash_ident.fold param_hash (Lam.prim ~primitive ~args:new_args ap_loc) (fun _param {lambda; used} acc -> 
             if not used then
               Lam.seq lambda acc
             else acc)  in 
