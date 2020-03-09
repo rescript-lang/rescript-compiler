@@ -41,7 +41,11 @@ let compatible (dep : module_system) (query : module_system) =
   | Es6_global -> dep = Es6_global || dep = Es6
 
 
-type location_descriptor = { module_system : module_system; path : string }
+type location_descriptor = {
+  module_system : module_system;
+  path : string;
+  extension : string;
+}
 
 type package_name = Pkg_empty | Pkg_runtime | Pkg_normal of string
 
@@ -96,9 +100,10 @@ let module_system_of_string package_name : module_system option =
 
 
 let dump_location_descriptor (fmt : Format.formatter)
-    ({ module_system = ms; path } : location_descriptor) =
-  Format.fprintf fmt "@[%s:@ %s@]" (string_of_module_system ms) path
-
+    { module_system = ms; path; extension } =
+  Format.fprintf fmt "@[%s:@ %s:@ %s@]"
+    (string_of_module_system ms)
+    path extension
 
 let dump_package_name fmt (x : package_name) =
   match x with
@@ -164,24 +169,20 @@ let get_output_dir (info : t) ~package_dir module_system =
 
 
 let append_location_descriptor_of_string (packages_info : t) (s : string) : t =
-  let module_system, path =
-    match Ext_string.split ~keep_empty:false s ':' with
-    | [ module_system; path ] ->
-        ( ( match module_system_of_string module_system with
-          | Some x -> x
-          | None -> Ext_arg.bad_argf "invalid module system %s" module_system ),
-          path )
-    | [ path ] -> (NodeJS, path)
-    | module_system :: path ->
-        ( ( match module_system_of_string module_system with
-          | Some x -> x
-          | None -> Ext_arg.bad_argf "invalid module system %s" module_system ),
-          String.concat ":" path )
-    | _ -> Ext_arg.bad_argf "invalid npm package path: %s" s
+  let module_system, path, extension = match Ext_string.split ~keep_empty:false s ':' with
+  | [ module_system; path; extension ] -> module_system, path, extension
+  | [ module_system; path ] -> module_system, path, "js"
+  | [ path ] -> "NodeJS", path, "js"
+  | _ -> Ext_arg.bad_argf "invalid value for -bs-package-output: %s" s
+  in
+  let module_system =
+  match module_system_of_string module_system with
+    | Some x -> x
+    | None -> Ext_arg.bad_argf "invalid module system in -bs-package-output: %s" module_system
   in
   {
     packages_info with
-    locations = { module_system; path } :: packages_info.locations;
+    locations = { module_system; path; extension } :: packages_info.locations;
   }
 
 (* support es6 modules instead

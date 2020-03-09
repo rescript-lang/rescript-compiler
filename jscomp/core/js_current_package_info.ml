@@ -37,7 +37,7 @@ let set_package_map module_name =
 
 let append_location_descriptor_of_string s =
   if Js_package_info.is_empty !packages_info then
-    Ext_arg.bad_argf "please set package name first using -bs-package-name or -bs-ns "
+    Ext_arg.bad_argf "please set package name first using -bs-package-name or -bs-ns"
   else
   packages_info := Js_package_info.append_location_descriptor_of_string !packages_info s
 

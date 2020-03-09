@@ -28,7 +28,11 @@ val runtime_dir_of_module_system : module_system -> string
 
 val runtime_package_path : module_system -> string -> string
 
-type location_descriptor = { module_system : module_system; path : string }
+type location_descriptor = {
+  module_system : module_system;
+  path : string;
+  extension : string;
+}
 
 type t
 
