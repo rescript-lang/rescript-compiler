@@ -28,7 +28,7 @@ val runtime_dir_of_module_system : module_system -> string
 
 val runtime_package_path : module_system -> string -> string
 
-type package_info = { module_system : module_system; path : string }
+type location_descriptor = { module_system : module_system; path : string }
 
 type t
 
@@ -36,7 +36,7 @@ val is_runtime_package : t -> bool
 
 val same_package_by_name : t -> t -> bool
 
-val iter : t -> (package_info -> unit) -> unit
+val iter : t -> (location_descriptor -> unit) -> unit
 
 val empty : t
 val from_name : string -> t
@@ -44,18 +44,18 @@ val is_empty : t -> bool
 
 val dump_packages_info : Format.formatter -> t -> unit
 
-val add_npm_package_path : t -> string -> t
+val append_location_descriptor_of_string : t -> string -> t
 (** used by command line option e.g [-bs-package-output commonjs:xx/path] *)
 
-type package_found_info = { rel_path : string; pkg_rel_path : string }
+type package_paths = { rel_path : string; pkg_rel_path : string }
 
-type info_query =
+type query_result =
   | Package_script
   | Package_not_found
-  | Package_found of package_found_info
+  | Package_found of package_paths
 
 val get_output_dir : t -> package_dir:string -> module_system -> string
 
 (* Note here we compare the package info by order in theory, we can compare it
    by set semantics *)
-val query_package_infos : t -> module_system -> info_query
+val query_package_location_by_module_system : t -> module_system -> query_result

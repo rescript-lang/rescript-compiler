@@ -42,13 +42,14 @@ let fix_path_for_windows : string -> string =
 
 let get_runtime_module_path (dep_module_id : Lam_module_ident.t)
     (current_package_info : Js_package_info.t) module_system =
-  let current_info_query =
-    Js_package_info.query_package_infos current_package_info module_system
+  let loc =
+    Js_package_info.query_package_location_by_module_system current_package_info
+      module_system
   in
   let js_file =
     Ext_namespace.js_name_of_modulename dep_module_id.id.name Little_js
   in
-  match current_info_query with
+  match loc with
   | Package_not_found -> assert false
   | Package_script ->
       Js_package_info.runtime_package_path module_system js_file
@@ -97,20 +98,16 @@ let string_of_module_id (dep_module_id : Lam_module_ident.t)
     | Runtime ->
         get_runtime_module_path dep_module_id current_package_info module_system
     | Ml -> (
-        let current_info_query =
-          Js_package_info.query_package_infos current_package_info
-            module_system
+        let query = Js_package_info.query_package_location_by_module_system in
+        let current_loc = query current_package_info module_system
         in
         match Lam_compile_env.get_package_path_from_cmj dep_module_id with
         | cmj_path, dep_package_info, little -> (
             let js_file =
               Ext_namespace.js_name_of_modulename dep_module_id.id.name little
             in
-            let dep_info_query =
-              Js_package_info.query_package_infos dep_package_info
-                module_system
-            in
-            match (dep_info_query, current_info_query) with
+            let dep_loc = query dep_package_info module_system in
+            match (dep_loc, current_loc) with
             | Package_not_found, _ ->
                 Bs_exception.error (Missing_ml_dependency dep_module_id.id.name)
             | Package_script, Package_found _ ->

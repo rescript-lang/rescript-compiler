@@ -35,8 +35,10 @@ let set_package_map module_name =
   Clflags.open_modules := module_name :: !Clflags.open_modules
 
 
-let update_npm_package_path s =
-  packages_info := Js_package_info.add_npm_package_path !packages_info s
-
+let append_location_descriptor_of_string s =
+  if Js_package_info.is_empty !packages_info then
+    Ext_arg.bad_argf "please set package name first using -bs-package-name or -bs-ns "
+  else
+  packages_info := Js_package_info.append_location_descriptor_of_string !packages_info s
 
 let get_packages_info () = !packages_info

@@ -41,7 +41,7 @@ let compatible (dep : module_system) (query : module_system) =
   | Es6_global -> dep = Es6_global || dep = Es6
 
 
-type package_info = { module_system : module_system; path : string }
+type location_descriptor = { module_system : module_system; path : string }
 
 type package_name = Pkg_empty | Pkg_runtime | Pkg_normal of string
 
@@ -60,23 +60,22 @@ let runtime_package_path (ms : module_system) js_file =
   runtime_package_name // "lib" // runtime_dir_of_module_system ms // js_file
 
 
-type t = { name : package_name; module_systems : package_info list }
+type t = { name : package_name; locations : location_descriptor list }
 
 let same_package_by_name (x : t) (y : t) = x.name = y.name
 
 let is_runtime_package (x : t) = x.name = Pkg_runtime
 
-let iter (x : t) cb = Ext_list.iter x.module_systems cb
+let iter (x : t) = Ext_list.iter x.locations
 
 (* TODO: not allowing user to provide such specific package name For empty
    package, [-bs-package-output] does not make sense it is only allowed to
    generate commonjs file in the same directory *)
-let empty : t = { name = Pkg_empty; module_systems = [] }
+let empty : t = { name = Pkg_empty; locations = [] }
 
 let from_name (name : string) =
-  if name = runtime_package_name then
-    { name = Pkg_runtime; module_systems = [] }
-  else { name = Pkg_normal name; module_systems = [] }
+  if name = runtime_package_name then { name = Pkg_runtime; locations = [] }
+  else { name = Pkg_normal name; locations = [] }
 
 
 let is_empty (x : t) = x.name = Pkg_empty
@@ -96,9 +95,9 @@ let module_system_of_string package_name : module_system option =
   | _ -> None
 
 
-let dump_package_info (fmt : Format.formatter)
-    ({ module_system = ms; path = name } : package_info) =
-  Format.fprintf fmt "@[%s:@ %s@]" (string_of_module_system ms) name
+let dump_location_descriptor (fmt : Format.formatter)
+    ({ module_system = ms; path } : location_descriptor) =
+  Format.fprintf fmt "@[%s:@ %s@]" (string_of_module_system ms) path
 
 
 let dump_package_name fmt (x : package_name) =
@@ -108,30 +107,29 @@ let dump_package_name fmt (x : package_name) =
   | Pkg_runtime -> Format.pp_print_string fmt runtime_package_name
 
 
-let dump_packages_info (fmt : Format.formatter)
-    ({ name; module_systems = ls } : t) =
+let dump_packages_info (fmt : Format.formatter) ({ name; locations } : t) =
   Format.fprintf fmt "@[%a;@ @[%a@]@]" dump_package_name name
     (Format.pp_print_list
        ~pp_sep:(fun fmt () -> Format.pp_print_space fmt ())
-       dump_package_info)
-    ls
+       dump_location_descriptor)
+    locations
 
 
-type package_found_info = { rel_path : string; pkg_rel_path : string }
-type info_query =
+type package_paths = { rel_path : string; pkg_rel_path : string }
+type query_result =
   | Package_script
   | Package_not_found
-  | Package_found of package_found_info
+  | Package_found of package_paths
 
 (* Note that package-name has to be exactly the same as npm package name,
    otherwise the path resolution will be wrong *)
-let query_package_infos ({ name; module_systems } : t)
-    (module_system : module_system) : info_query =
+let query_package_location_by_module_system ({ name; locations } : t)
+    (module_system : module_system) : query_result =
   match name with
   | Pkg_empty -> Package_script
   | Pkg_normal name -> (
       match
-        Ext_list.find_first module_systems (fun k ->
+        Ext_list.find_first locations (fun k ->
             compatible k.module_system module_system)
       with
       | Some k ->
@@ -141,7 +139,7 @@ let query_package_infos ({ name; module_systems } : t)
       | None -> Package_not_found )
   | Pkg_runtime -> (
       match
-        Ext_list.find_first module_systems (fun k ->
+        Ext_list.find_first locations (fun k ->
             compatible k.module_system module_system)
       with
       | Some k ->
@@ -153,7 +151,7 @@ let query_package_infos ({ name; module_systems } : t)
 
 let get_js_path (x : t) module_system =
   match
-    Ext_list.find_first x.module_systems (fun k ->
+    Ext_list.find_first x.locations (fun k ->
         compatible k.module_system module_system)
   with
   | Some k -> k.path
@@ -165,31 +163,26 @@ let get_output_dir (info : t) ~package_dir module_system =
   Filename.concat package_dir (get_js_path info module_system)
 
 
-let add_npm_package_path (packages_info : t) (s : string) : t =
-  if is_empty packages_info then
-    Ext_arg.bad_argf "please set package name first using -bs-package-name "
-  else
-    let module_system, path =
-      match Ext_string.split ~keep_empty:false s ':' with
-      | [ module_system; path ] ->
-          ( ( match module_system_of_string module_system with
-            | Some x -> x
-            | None -> Ext_arg.bad_argf "invalid module system %s" module_system
-            ),
-            path )
-      | [ path ] -> (NodeJS, path)
-      | module_system :: path ->
-          ( ( match module_system_of_string module_system with
-            | Some x -> x
-            | None -> Ext_arg.bad_argf "invalid module system %s" module_system
-            ),
-            String.concat ":" path )
-      | _ -> Ext_arg.bad_argf "invalid npm package path: %s" s
-    in
-    {
-      packages_info with
-      module_systems = { module_system; path } :: packages_info.module_systems;
-    }
+let append_location_descriptor_of_string (packages_info : t) (s : string) : t =
+  let module_system, path =
+    match Ext_string.split ~keep_empty:false s ':' with
+    | [ module_system; path ] ->
+        ( ( match module_system_of_string module_system with
+          | Some x -> x
+          | None -> Ext_arg.bad_argf "invalid module system %s" module_system ),
+          path )
+    | [ path ] -> (NodeJS, path)
+    | module_system :: path ->
+        ( ( match module_system_of_string module_system with
+          | Some x -> x
+          | None -> Ext_arg.bad_argf "invalid module system %s" module_system ),
+          String.concat ":" path )
+    | _ -> Ext_arg.bad_argf "invalid npm package path: %s" s
+  in
+  {
+    packages_info with
+    locations = { module_system; path } :: packages_info.locations;
+  }
 
 (* support es6 modules instead
 

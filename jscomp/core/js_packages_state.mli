@@ -28,4 +28,4 @@ val set_package_map : string -> unit
 
 val get_packages_info : unit -> Js_package_info.t
 
-val update_npm_package_path : string -> unit
+val append_location_descriptor_of_string : string -> unit
