@@ -11189,6 +11189,8 @@ let clean_bs_garbage proj_dir =
     Bsb_parse_sources.clean_re_js proj_dir; (* clean re.js files*)
     ninja_clean  proj_dir ;
     Ext_list.iter Bsb_config.all_lib_artifacts try_remove ;
+    try_remove (Filename.basename !Bsb_global_backend.lib_ocaml_dir);
+    try_remove (Filename.basename !Bsb_global_backend.lib_artifacts_dir);
   with
     e ->
     Bsb_log.warn "@{<warning>Failed@} to clean due to %s" (Printexc.to_string e)
@@ -13661,6 +13663,7 @@ let output_ninja_and_namespace_map
   let cwd_lib_bs = per_proj_dir // lib_artifacts_dir in 
   let ppx_flags = Bsb_build_util.ppx_flags ppx_files in
   let oc = open_out_bin (cwd_lib_bs // Literals.build_ninja) in          
+  let bsc_flags = "-bs-D BSB_BACKEND=\"js\"" :: bsc_flags in
   let g_pkg_flg , g_ns_flg = 
     match namespace with
     | None -> 
@@ -14236,10 +14239,19 @@ let regenerate_ninja
         ~name:(lib_bs_dir // Literals.sourcedirs_meta)
         config.file_groups
     ;
-    Bsb_merlin_gen.merlin_file_gen ~per_proj_dir
-       config;       
-    Bsb_ninja_gen.output_ninja_and_namespace_map 
-      ~per_proj_dir  ~toplevel config ;             
+
+    if !Bsb_global_backend.backend = Bsb_config_types.Js then begin
+      Bsb_merlin_gen.merlin_file_gen ~per_proj_dir
+        config;       
+      Bsb_ninja_gen.output_ninja_and_namespace_map 
+        ~per_proj_dir  ~toplevel config ;             
+    end else begin
+      let os = Filename.basename Bsb_global_paths.bsc_dir in
+      let plugin_path = Bsb_global_paths.cwd // "node_modules" // "bs-platform-native" // os // "bsb.exe" in
+      let status = Sys.command (plugin_path ^ " " ^ per_proj_dir ^ " " ^ lib_bs_dir ^ " " ^ Bsb_global_paths.cwd ^ " " ^ Bsb_global_paths.bsc_dir ^ " " ^ !Bsb_global_backend.backend_string) in
+      if status <> 0 then
+        print_endline "Error: plugin fucked up";
+    end;
     
     (* PR2184: we still need record empty dir 
         since it may add files in the future *)  
@@ -16581,7 +16593,7 @@ let install_targets cwd ({files_to_install; namespace; package_name = _} : Bsb_c
     install ~destdir (cwd // lib_artifacts_dir//x ^ Literals.suffix_cmt) ;
     install ~destdir (cwd // lib_artifacts_dir//x ^ Literals.suffix_cmti) ;
   in   
-  let destdir = cwd // Bsb_config.lib_ocaml in (* lib is already there after building, so just mkdir [lib/ocaml] *)
+  let destdir = cwd // !Bsb_global_backend.lib_ocaml_dir in (* lib is already there after building, so just mkdir [lib/ocaml] *)
   if not @@ Sys.file_exists destdir then begin Unix.mkdir destdir 0o777  end;
   begin
     Bsb_log.info "@{<info>Installing started@}@.";
@@ -16675,8 +16687,6 @@ end = struct
  * You should have received a copy of the GNU Lesser General Public License
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
-
-
 
 let () =  Bsb_log.setup () 
 
@@ -16822,7 +16832,9 @@ let install_target config_opt =
 let () =
   try begin 
     match Sys.argv with 
+    | [| _; "-backend"; _ |]
     | [| _ |] ->  (* specialize this path [bsb.exe] which is used in watcher *)
+
       Bsb_ninja_regen.regenerate_ninja 
         ~toplevel_package_specs:None 
         ~forced:false 

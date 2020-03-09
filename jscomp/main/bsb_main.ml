@@ -22,12 +22,6 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
-#if BS_NATIVE then 
- let (//) = Ext_path.combine
- let exec = ref false
- let node_lit = "node"
-#end
-
 let () =  Bsb_log.setup () 
 
 let force_regenerate = ref false
@@ -181,7 +175,16 @@ let install_target config_opt =
 let () =
   try begin 
     match Sys.argv with 
+    | [| _; "-backend"; _ |]
     | [| _ |] ->  (* specialize this path [bsb.exe] which is used in watcher *)
+#if BS_NATIVE then
+      if Array.length Sys.argv = 3 then begin match Array.get Sys.argv 2 with
+        | "js"       -> Bsb_global_backend.set_backend Bsb_config_types.Js
+        | "native"   -> Bsb_global_backend.set_backend Bsb_config_types.Native
+        | "bytecode" -> Bsb_global_backend.set_backend Bsb_config_types.Bytecode
+        | _ -> failwith "-backend should be one of: 'js', 'bytecode' or 'native'."
+      end;
+#end
       Bsb_ninja_regen.regenerate_ninja 
         ~toplevel_package_specs:None 
         ~forced:false 
