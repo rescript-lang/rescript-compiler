@@ -61,8 +61,8 @@ external apply7 : ('a0 -> 'a1 -> 'a2 -> 'a3 -> 'a4 -> 'a5 -> 'a6 -> 'a7) -> 'a0 
 (* Internal use *)
 external apply8 : ('a0 -> 'a1 -> 'a2 -> 'a3 -> 'a4 -> 'a5 -> 'a6 -> 'a7 -> 'a8) -> 'a0 -> 'a1 -> 'a2 -> 'a3 -> 'a4 -> 'a5 -> 'a6 -> 'a7 -> 'a8 = "#apply8"
 
-(* Intenral use *)  
-let curry_1 o a0 arity =
+
+let %private curry_1 o a0 arity =
   match arity with
   | 1 -> apply1 (Obj.magic o) a0
   | 2 -> apply2 (Obj.magic o) a0
@@ -86,8 +86,8 @@ let __1 o =
   else fun a0 -> _1 o a0
 
 
-(* Intenral use *)  
-let curry_2 o a0 a1 arity =
+
+let %private curry_2 o a0 a1 arity =
   match arity with
   | 1 -> app (apply1 (Obj.magic o) a0) [|a1|]
   | 2 -> apply2 (Obj.magic o) a0 a1
@@ -111,8 +111,8 @@ let __2 o =
   else fun a0 a1 -> _2 o a0 a1
 
 
-(* Intenral use *)  
-let curry_3 o a0 a1 a2 arity =
+
+let %private curry_3 o a0 a1 a2 arity =
   match arity with
   | 1 -> app (apply1 (Obj.magic o) a0) [|a1;a2|]
   | 2 -> app (apply2 (Obj.magic o) a0 a1) [|a2|]
@@ -136,8 +136,8 @@ let __3 o =
   else fun a0 a1 a2 -> _3 o a0 a1 a2
 
 
-(* Intenral use *)  
-let curry_4 o a0 a1 a2 a3 arity =
+
+let %private curry_4 o a0 a1 a2 a3 arity =
   match arity with
   | 1 -> app (apply1 (Obj.magic o) a0) [|a1;a2;a3|]
   | 2 -> app (apply2 (Obj.magic o) a0 a1) [|a2;a3|]
@@ -161,8 +161,8 @@ let __4 o =
   else fun a0 a1 a2 a3 -> _4 o a0 a1 a2 a3
 
 
-(* Intenral use *)  
-let curry_5 o a0 a1 a2 a3 a4 arity =
+
+let %private curry_5 o a0 a1 a2 a3 a4 arity =
   match arity with
   | 1 -> app (apply1 (Obj.magic o) a0) [|a1;a2;a3;a4|]
   | 2 -> app (apply2 (Obj.magic o) a0 a1) [|a2;a3;a4|]
@@ -186,8 +186,8 @@ let __5 o =
   else fun a0 a1 a2 a3 a4 -> _5 o a0 a1 a2 a3 a4
 
 
-(* Intenral use *)  
-let curry_6 o a0 a1 a2 a3 a4 a5 arity =
+
+let %private curry_6 o a0 a1 a2 a3 a4 a5 arity =
   match arity with
   | 1 -> app (apply1 (Obj.magic o) a0) [|a1;a2;a3;a4;a5|]
   | 2 -> app (apply2 (Obj.magic o) a0 a1) [|a2;a3;a4;a5|]
@@ -211,8 +211,8 @@ let __6 o =
   else fun a0 a1 a2 a3 a4 a5 -> _6 o a0 a1 a2 a3 a4 a5
 
 
-(* Intenral use *)  
-let curry_7 o a0 a1 a2 a3 a4 a5 a6 arity =
+
+let %private curry_7 o a0 a1 a2 a3 a4 a5 a6 arity =
   match arity with
   | 1 -> app (apply1 (Obj.magic o) a0) [|a1;a2;a3;a4;a5;a6|]
   | 2 -> app (apply2 (Obj.magic o) a0 a1) [|a2;a3;a4;a5;a6|]
@@ -236,8 +236,8 @@ let __7 o =
   else fun a0 a1 a2 a3 a4 a5 a6 -> _7 o a0 a1 a2 a3 a4 a5 a6
 
 
-(* Intenral use *)  
-let curry_8 o a0 a1 a2 a3 a4 a5 a6 a7 arity =
+
+let %private curry_8 o a0 a1 a2 a3 a4 a5 a6 a7 arity =
   match arity with
   | 1 -> app (apply1 (Obj.magic o) a0) [|a1;a2;a3;a4;a5;a6;a7|]
   | 2 -> app (apply2 (Obj.magic o) a0 a1) [|a2;a3;a4;a5;a6;a7|]

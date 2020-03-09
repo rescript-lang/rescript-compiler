@@ -109,8 +109,8 @@ let generate_fun args_number =
   let args_string =  (String.concat " " args) in
 
   Printf.sprintf {|
-(* Intenral use *)  
-let curry_%d o %s arity =
+
+let %%private curry_%d o %s arity =
   match arity with
   |%s    
 
