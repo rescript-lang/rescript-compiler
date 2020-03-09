@@ -29,4 +29,7 @@
 
 
 val simple_beta_reduce : 
-  Ident.t list -> Lam.t -> Lam.t list -> Lam.t option
+  Ident.t list ->
+  Lam.t -> 
+  Lam.t list ->
+  Lam.t option

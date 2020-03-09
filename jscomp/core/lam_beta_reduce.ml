@@ -54,7 +54,7 @@
    we can bound [x] to [100] in a single step     
  *)
 let propogate_beta_reduce 
-    (meta : Lam_stats.t) params body args =
+    (meta : Lam_stats.t) (params : Ident.t list) (body : Lam.t) (args : Lam.t list) =
   match Lam_beta_reduce_util.simple_beta_reduce params body  args with 
   | Some x -> x 
   | None -> 
