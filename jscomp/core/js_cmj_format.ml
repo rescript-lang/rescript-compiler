@@ -41,7 +41,7 @@ type keyed_cmj_values = (string * cmj_value) array
 type t = {
   values : keyed_cmj_values;
   pure : bool;
-  npm_package_path : Js_packages_info.t;
+  npm_package_path : Js_package_info.t;
   cmj_case : cmj_case;
 }
 
@@ -192,7 +192,7 @@ let pp_cmj_case (cmj_case : cmj_case) : unit =
 
 let pp_cmj ({ values; pure; npm_package_path; cmj_case } : t) =
   f "package info: %s\n"
-    (Format.asprintf "%a" Js_packages_info.dump_packages_info npm_package_path);
+    (Format.asprintf "%a" Js_package_info.dump_packages_info npm_package_path);
   pp_cmj_case cmj_case;
 
   f "effect: %s\n" (if pure then "pure" else "not pure");

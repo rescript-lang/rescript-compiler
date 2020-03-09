@@ -264,10 +264,10 @@ let lambda_as_module (lambda_output : J.deps_program) (output_prefix : string) :
       else Literals.suffix_js )
   in
   let package_info = Js_packages_state.get_packages_info () in
-  if Js_packages_info.is_empty package_info && !Js_config.js_stdout then
+  if Js_package_info.is_empty package_info && !Js_config.js_stdout then
     Js_dump_program.dump_deps_program ~output_prefix NodeJS lambda_output stdout
   else
-    Js_packages_info.iter package_info (fun { module_system; path = _path } ->
+    Js_package_info.iter package_info (fun { module_system; path = _path } ->
         let output_chan chan =
           Js_dump_program.dump_deps_program ~output_prefix module_system
             lambda_output chan

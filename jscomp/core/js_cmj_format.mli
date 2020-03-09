@@ -53,7 +53,7 @@ type t
 val mk :
   values:cmj_value Map_string.t ->
   effect:effect ->
-  npm_package_path:Js_packages_info.t ->
+  npm_package_path:Js_package_info.t ->
   cmj_case:cmj_case ->
   t
 
@@ -61,7 +61,7 @@ val query_by_name : t -> string -> arity * Lam.t option
 
 val is_pure : t -> bool
 
-val get_npm_package_path : t -> Js_packages_info.t
+val get_npm_package_path : t -> Js_package_info.t
 
 val get_cmj_case : t -> cmj_case
 

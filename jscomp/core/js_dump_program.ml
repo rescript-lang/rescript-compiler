@@ -85,7 +85,7 @@ let es6_program ~output_dir fmt f (x : J.deps_program) =
         Linguist::FileBlob.new('jscomp/test/test_u.js').generated?
     ]} *)
 
-let pp_deps_program ~output_prefix (kind : Js_packages_info.module_system)
+let pp_deps_program ~output_prefix (kind : Js_package_info.module_system)
     (program : J.deps_program) (f : Ext_pp.t) =
   if not !Js_config.no_version_header then (
     P.string f Bs_version.header;

@@ -11234,15 +11234,15 @@ module Js_config : sig
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
-(* val get_packages_info : unit -> Js_packages_info.t *)
+(* val get_packages_info : unit -> Js_package_info.t *)
 
 val no_version_header : bool ref
 (** set/get header *)
 
 (** return [package_name] and [path] when in script mode: *)
 
-(* val get_current_package_name_and_path : Js_packages_info.module_system ->
-   Js_packages_info.info_query *)
+(* val get_current_package_name_and_path : Js_package_info.module_system ->
+   Js_package_info.info_query *)
 
 (* val set_package_name : string -> unit val get_package_name : unit -> string
    option *)

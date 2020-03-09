@@ -27,14 +27,14 @@ val dump_program : J.program -> out_channel -> unit
 
 val pp_deps_program :
   output_prefix:string ->
-  Js_packages_info.module_system ->
+  Js_package_info.module_system ->
   J.deps_program ->
   Ext_pp.t ->
   unit
 
 val dump_deps_program :
   output_prefix:string ->
-  Js_packages_info.module_system ->
+  Js_package_info.module_system ->
   J.deps_program ->
   out_channel ->
   unit

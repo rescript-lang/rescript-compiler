@@ -42,7 +42,7 @@ let find_cmj_exn file : cmj_load_info =
           Bs_exception.error (Cmj_not_found file)
       | v ->
           { cmj_path = "BROWSER"; cmj_table = v }
-          (* see {!Js_packages_info.string_of_module_id} *) )
+          (* see {!Js_package_info.string_of_module_id} *) )
   | exception Not_found -> Bs_exception.error (Cmj_not_found file)
 
 #else

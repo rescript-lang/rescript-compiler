@@ -6711,7 +6711,7 @@ end = struct
 
 let ( // ) = Ext_path.combine
 
-(* TODO: sync up with {!Js_packages_info.module_system} *)
+(* TODO: sync up with {!Js_package_info.module_system} *)
 type format = NodeJS | Es6 | Es6_global
 
 type spec = { format : format; in_source : bool }

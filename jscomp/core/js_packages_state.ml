@@ -22,11 +22,11 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
-let packages_info = ref Js_packages_info.empty
+let packages_info = ref Js_package_info.empty
 
 let set_package_name name =
-  if Js_packages_info.is_empty !packages_info then
-    packages_info := Js_packages_info.from_name name
+  if Js_package_info.is_empty !packages_info then
+    packages_info := Js_package_info.from_name name
   else Ext_arg.bad_argf "duplicated flag for -bs-package-name"
 
 
@@ -36,7 +36,7 @@ let set_package_map module_name =
 
 
 let update_npm_package_path s =
-  packages_info := Js_packages_info.add_npm_package_path !packages_info s
+  packages_info := Js_package_info.add_npm_package_path !packages_info s
 
 
 let get_packages_info () = !packages_info
