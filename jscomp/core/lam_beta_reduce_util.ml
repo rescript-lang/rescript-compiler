@@ -87,10 +87,10 @@ let simple_beta_reduce params body args =
     begin match aux [] ap_args with 
     | args -> 
       let result = 
-        Hash_ident.fold param_hash (Lam.prim ~primitive ~args ap_loc) (fun _param {lambda; used} code -> 
+        Hash_ident.fold param_hash (Lam.prim ~primitive ~args ap_loc) (fun _param {lambda; used} acc -> 
             if not used then
-              Lam.seq lambda code
-            else code)  in 
+              Lam.seq lambda acc
+            else acc)  in 
       Hash_ident.clear param_hash;
       Some result 
     | exception _ -> 
@@ -108,14 +108,14 @@ let simple_beta_reduce params body args =
       if it is never removed, we have it as rest keys 
     *)
     begin match aux [] ap_args with 
-      | us -> 
+      | new_args -> 
         let f = find_param fn_name  f in
         let result = 
-          Hash_ident.fold param_hash (Lam.apply  f us  ap_loc status)
-            (fun _param {lambda; used} code -> 
+          Hash_ident.fold param_hash (Lam.apply  f new_args  ap_loc status)
+            (fun _param {lambda; used} acc -> 
                if not used then 
-                 Lam.seq lambda code
-               else code )
+                 Lam.seq lambda acc
+               else acc )
         in
         Hash_ident.clear param_hash;
         Some result 
