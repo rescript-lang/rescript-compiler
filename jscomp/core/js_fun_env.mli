@@ -37,9 +37,9 @@ type t
 
 val make :  ?immutable_mask:bool array  -> int -> t
 
-(* val is_tailcalled : t -> bool
+val no_tailcall : t -> bool
 
-val is_empty : t -> bool  *)
+(* val is_empty : t -> bool  *)
 
 val set_unbounded :  t -> Set_ident.t -> unit
 

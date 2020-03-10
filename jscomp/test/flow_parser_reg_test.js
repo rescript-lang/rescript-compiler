@@ -5178,9 +5178,8 @@ function lookahead(iOpt, env) {
         ];
   }
   var t = env.lookahead.contents;
-  var i$1 = i;
-  lex_until(t, i$1);
-  var match = Caml_array.caml_array_get(t.la_results, i$1);
+  lex_until(t, i);
+  var match = Caml_array.caml_array_get(t.la_results, i);
   if (match !== undefined) {
     return match[1];
   } else {
@@ -5344,9 +5343,8 @@ function comments(iOpt, env) {
 function lex_env(iOpt, env) {
   var i = iOpt !== undefined ? iOpt : 0;
   var t = env.lookahead.contents;
-  var i$1 = i;
-  lex_until(t, i$1);
-  var match = Caml_array.caml_array_get(t.la_results, i$1);
+  lex_until(t, i);
+  var match = Caml_array.caml_array_get(t.la_results, i);
   if (match !== undefined) {
     return match[0];
   } else {
@@ -5673,23 +5671,19 @@ function reset_token_sink(flush, env, token_buffer_info) {
 function to_parse(env, parse) {
   var saved_state = save_state(env);
   try {
-    var env$1 = env;
-    var saved_state$1 = saved_state;
     var result = Curry._1(parse, env);
-    reset_token_sink(true, env$1, saved_state$1.token_buffer);
+    reset_token_sink(true, env, saved_state.token_buffer);
     return /* ParsedSuccessfully */[result];
   }
   catch (exn){
     if (exn === Rollback) {
-      var env$2 = env;
-      var saved_state$2 = saved_state;
-      reset_token_sink(false, env$2, saved_state$2.token_buffer);
-      env$2.errors.contents = saved_state$2.saved_errors;
-      env$2.comments.contents = saved_state$2.saved_comments;
-      env$2.last_loc.contents = saved_state$2.saved_last_loc;
-      env$2.lex_mode_stack.contents = saved_state$2.saved_lex_mode_stack;
-      env$2.lex_env.contents = saved_state$2.saved_lex_env;
-      env$2.lookahead.contents = create$1(env$2.lex_env.contents, List.hd(env$2.lex_mode_stack.contents));
+      reset_token_sink(false, env, saved_state.token_buffer);
+      env.errors.contents = saved_state.saved_errors;
+      env.comments.contents = saved_state.saved_comments;
+      env.last_loc.contents = saved_state.saved_last_loc;
+      env.lex_mode_stack.contents = saved_state.saved_lex_mode_stack;
+      env.lex_env.contents = saved_state.saved_lex_env;
+      env.lookahead.contents = create$1(env.lex_env.contents, List.hd(env.lex_mode_stack.contents));
       return /* FailedToParse */0;
     } else {
       throw exn;
@@ -6278,15 +6272,14 @@ function primary(env) {
                   /* Object */Block.__(2, [match$1[1]])
                 ];
       case /* T_LPAREN */3 :
-          var env$1 = env;
-          var start_loc = Curry._2(Parser_env_Peek.loc, undefined, env$1);
-          var match$2 = param_list_or_type(env$1);
+          var start_loc = Curry._2(Parser_env_Peek.loc, undefined, env);
+          var match$2 = param_list_or_type(env);
           if (match$2.tag) {
             return match$2[0];
           } else {
             var match$3 = match$2[0];
-            token$4(env$1, /* T_ARROW */10);
-            var returnType = union(env$1);
+            token$4(env, /* T_ARROW */10);
+            var returnType = union(env);
             var end_loc = returnType[0];
             return /* tuple */[
                     btwn(start_loc, end_loc),
@@ -6299,12 +6292,11 @@ function primary(env) {
                   ];
           }
       case /* T_LBRACKET */5 :
-          var env$2 = env;
-          var start_loc$1 = Curry._2(Parser_env_Peek.loc, undefined, env$2);
-          token$4(env$2, /* T_LBRACKET */5);
-          var tl = types(env$2, /* [] */0);
-          var end_loc$1 = Curry._2(Parser_env_Peek.loc, undefined, env$2);
-          token$4(env$2, /* T_RBRACKET */6);
+          var start_loc$1 = Curry._2(Parser_env_Peek.loc, undefined, env);
+          token$4(env, /* T_LBRACKET */5);
+          var tl = types(env, /* [] */0);
+          var end_loc$1 = Curry._2(Parser_env_Peek.loc, undefined, env);
+          token$4(env, /* T_RBRACKET */6);
           return /* tuple */[
                   btwn(start_loc$1, end_loc$1),
                   /* Tuple */Block.__(8, [tl])
@@ -6322,12 +6314,11 @@ function primary(env) {
                   /* Typeof */Block.__(7, [t])
                 ];
       case /* T_LESS_THAN */89 :
-          var env$3 = env;
-          var start_loc$3 = Curry._2(Parser_env_Peek.loc, undefined, env$3);
-          var typeParameters = Curry._2(type_parameter_declaration, false, env$3);
-          var match$4 = function_param_list(env$3);
-          token$4(env$3, /* T_ARROW */10);
-          var returnType$1 = union(env$3);
+          var start_loc$3 = Curry._2(Parser_env_Peek.loc, undefined, env);
+          var typeParameters = Curry._2(type_parameter_declaration, false, env);
+          var match$4 = function_param_list(env);
+          token$4(env, /* T_ARROW */10);
+          var returnType$1 = union(env);
           var end_loc$2 = returnType$1[0];
           return /* tuple */[
                   btwn(start_loc$3, end_loc$2),
@@ -6534,9 +6525,8 @@ function prefix(env) {
             /* Nullable */Block.__(0, [t])
           ];
   } else {
-    var env$1 = env;
-    var t$1 = primary(env$1);
-    return postfix_with(env$1, t$1);
+    var t$1 = primary(env);
+    return postfix_with(env, t$1);
   }
 }
 
@@ -7285,22 +7275,19 @@ function pattern(check_env, _param) {
     var p = param[1];
     switch (p.tag | 0) {
       case /* Object */0 :
-          var check_env$1 = check_env;
           var o = p[0];
-          return List.fold_left(object_property, check_env$1, o.properties);
+          return List.fold_left(object_property, check_env, o.properties);
       case /* Array */1 :
-          var check_env$2 = check_env;
           var arr = p[0];
-          return List.fold_left(array_element, check_env$2, arr.elements);
+          return List.fold_left(array_element, check_env, arr.elements);
       case /* Assignment */2 :
           _param = p[0].left;
           continue ;
       case /* Identifier */3 :
-          var param$1 = check_env;
           var id = p[0];
           var name = id[1].name;
-          var param_names = param$1[1];
-          var env = param$1[0];
+          var param_names = check_env[1];
+          var env = check_env[0];
           if (mem$1(name, param_names)) {
             error_at(env, /* tuple */[
                   id[0],
@@ -7984,12 +7971,11 @@ function unary(env) {
                   }])
             ];
     } else {
-      var env$1 = env;
-      var argument$2 = left_hand_side(env$1);
-      if (Curry._1(Parser_env_Peek.is_line_terminator, env$1)) {
+      var argument$2 = left_hand_side(env);
+      if (Curry._1(Parser_env_Peek.is_line_terminator, env)) {
         return argument$2;
       } else {
-        var match$2 = Curry._2(Parser_env_Peek.token, undefined, env$1);
+        var match$2 = Curry._2(Parser_env_Peek.token, undefined, env);
         var op$2 = typeof match$2 === "number" ? (
             match$2 !== 102 ? (
                 match$2 !== 103 ? undefined : /* Decrement */1
@@ -7997,17 +7983,17 @@ function unary(env) {
           ) : undefined;
         if (op$2 !== undefined) {
           if (!is_lhs(argument$2)) {
-            error_at(env$1, /* tuple */[
+            error_at(env, /* tuple */[
                   argument$2[0],
                   /* InvalidLHSInAssignment */14
                 ]);
           }
           var match$3 = argument$2[1];
           if (typeof match$3 !== "number" && match$3.tag === /* Identifier */18 && is_restricted(match$3[0][1].name)) {
-            strict_error(env$1, /* StrictLHSPostfix */37);
+            strict_error(env, /* StrictLHSPostfix */37);
           }
-          var end_loc = Curry._2(Parser_env_Peek.loc, undefined, env$1);
-          token$3(env$1);
+          var end_loc = Curry._2(Parser_env_Peek.loc, undefined, env);
+          token$3(env);
           return /* tuple */[
                   btwn(argument$2[0], end_loc),
                   /* Update */Block.__(8, [{
@@ -8290,24 +8276,22 @@ function primary$1(env) {
   if (typeof token$5 === "number") {
     switch (token$5) {
       case /* T_LCURLY */1 :
-          var env$1 = env;
-          var match = Curry._1(Parse.object_initializer, env$1);
+          var match = Curry._1(Parse.object_initializer, env);
           return /* tuple */[
                   match[0],
                   /* Object */Block.__(1, [match[1]])
                 ];
       case /* T_LPAREN */3 :
-          var env$2 = env;
-          token$4(env$2, /* T_LPAREN */3);
-          var expression = Curry._1(assignment, env$2);
-          var match$1 = Curry._2(Parser_env_Peek.token, undefined, env$2);
+          token$4(env, /* T_LPAREN */3);
+          var expression = Curry._1(assignment, env);
+          var match$1 = Curry._2(Parser_env_Peek.token, undefined, env);
           var ret;
           if (typeof match$1 === "number") {
             if (match$1 !== 8) {
               if (match$1 !== 77) {
                 ret = expression;
               } else {
-                var typeAnnotation = wrap(annotation, env$2);
+                var typeAnnotation = wrap(annotation, env);
                 ret = /* tuple */[
                   btwn(expression[0], typeAnnotation[0]),
                   /* TypeCast */Block.__(24, [{
@@ -8317,7 +8301,7 @@ function primary$1(env) {
                 ];
               }
             } else {
-              ret = sequence(env$2, /* :: */[
+              ret = sequence(env, /* :: */[
                     expression,
                     /* [] */0
                   ]);
@@ -8325,7 +8309,7 @@ function primary$1(env) {
           } else {
             ret = expression;
           }
-          token$4(env$2, /* T_RPAREN */4);
+          token$4(env, /* T_RPAREN */4);
           return ret;
       case /* T_LBRACKET */5 :
           var match$2 = Curry._1(array_initializer, env);
@@ -8379,10 +8363,9 @@ function primary$1(env) {
                 ];
       case /* T_DIV_ASSIGN */70 :
       case /* T_DIV */96 :
-          var env$3 = env;
-          push_lex_mode(env$3, /* REGEXP */5);
-          var loc$2 = Curry._2(Parser_env_Peek.loc, undefined, env$3);
-          var match$4 = Curry._2(Parser_env_Peek.token, undefined, env$3);
+          push_lex_mode(env, /* REGEXP */5);
+          var loc$2 = Curry._2(Parser_env_Peek.loc, undefined, env);
+          var match$4 = Curry._2(Parser_env_Peek.token, undefined, env);
           var match$5;
           if (typeof match$4 === "number") {
             throw [
@@ -8395,8 +8378,8 @@ function primary$1(env) {
                 ];
           } else if (match$4.tag === /* T_REGEXP */3) {
             var match$6 = match$4[0];
-            var raw$1 = Curry._2(Parser_env_Peek.value, undefined, env$3);
-            token$3(env$3);
+            var raw$1 = Curry._2(Parser_env_Peek.value, undefined, env);
+            token$3(env);
             match$5 = /* tuple */[
               raw$1,
               match$6[1],
@@ -8413,7 +8396,7 @@ function primary$1(env) {
                 ];
           }
           var raw_flags = match$5[2];
-          pop_lex_mode(env$3);
+          pop_lex_mode(env);
           var filtered_flags = $$Buffer.create(raw_flags.length);
           $$String.iter((function (c) {
                   if (c >= 110) {
@@ -8441,7 +8424,7 @@ function primary$1(env) {
                 }), raw_flags);
           var flags = $$Buffer.contents(filtered_flags);
           if (flags !== raw_flags) {
-            error$1(env$3, /* InvalidRegExpFlags */Block.__(3, [raw_flags]));
+            error$1(env, /* InvalidRegExpFlags */Block.__(3, [raw_flags]));
           }
           var value = /* RegExp */Block.__(3, [{
                 pattern: match$5[1],
@@ -8730,22 +8713,21 @@ function assignment(env) {
     } else if (switcher !== 52 || !env.allow_yield) {
       exit = 2;
     } else {
-      var env$1 = env;
-      var start_loc = Curry._2(Parser_env_Peek.loc, undefined, env$1);
-      token$4(env$1, /* T_YIELD */56);
-      if (!env$1.allow_yield) {
-        error$1(env$1, /* IllegalYield */24);
+      var start_loc = Curry._2(Parser_env_Peek.loc, undefined, env);
+      token$4(env, /* T_YIELD */56);
+      if (!env.allow_yield) {
+        error$1(env, /* IllegalYield */24);
       }
-      var delegate = maybe(env$1, /* T_MULT */97);
-      var has_argument = !(Curry._2(Parser_env_Peek.token, undefined, env$1) === /* T_SEMICOLON */7 || Curry._1(Parser_env_Peek.is_implicit_semicolon, env$1));
-      var argument = delegate || has_argument ? Curry._1(assignment, env$1) : undefined;
+      var delegate = maybe(env, /* T_MULT */97);
+      var has_argument = !(Curry._2(Parser_env_Peek.token, undefined, env) === /* T_SEMICOLON */7 || Curry._1(Parser_env_Peek.is_implicit_semicolon, env));
+      var argument = delegate || has_argument ? Curry._1(assignment, env) : undefined;
       var end_loc;
       if (argument !== undefined) {
         end_loc = argument[0];
       } else {
-        var match$2 = Curry._2(Parser_env_Peek.semicolon_loc, undefined, env$1);
+        var match$2 = Curry._2(Parser_env_Peek.semicolon_loc, undefined, env);
         var end_loc$1 = match$2 !== undefined ? match$2 : start_loc;
-        semicolon(env$1);
+        semicolon(env);
         end_loc = end_loc$1;
       }
       return /* tuple */[
@@ -9427,23 +9409,21 @@ function try_arrow_function(env) {
   token$4(env$2, /* T_ARROW */10);
   var env$3 = without_error_callback(env$2);
   var match$2 = with_loc((function (param) {
-          var env = param;
-          var async$1 = async;
           var generator = false;
-          var env$1 = with_in_function(true, env);
-          var match = Curry._2(Parser_env_Peek.token, undefined, env$1);
+          var env = with_in_function(true, param);
+          var match = Curry._2(Parser_env_Peek.token, undefined, env);
           if (typeof match === "number" && match === 1) {
-            var match$1 = function_body(env$1, async$1, generator);
+            var match$1 = function_body(env, async, generator);
             return /* tuple */[
                     match$1[1],
                     match$1[2]
                   ];
           }
-          var env$2 = enter_function(env$1, async$1, generator);
-          var expr = Curry._1(Parse.assignment, env$2);
+          var env$1 = enter_function(env, async, generator);
+          var expr = Curry._1(Parse.assignment, env$1);
           return /* tuple */[
                   /* BodyExpression */Block.__(1, [expr]),
-                  env$2.in_strict_mode
+                  env$1.in_strict_mode
                 ];
         }), env$3);
   var match$3 = match$2[1];
@@ -10199,20 +10179,16 @@ function class_element(env) {
                   ) : 2;
                 switch (exit) {
                   case 2 :
-                      var env$1 = env;
-                      var start_loc$1 = start_loc;
-                      var decorators$1 = decorators;
-                      var $$static$1 = $$static;
-                      var match$2 = _method(env$1, /* Get */1);
+                      var match$2 = _method(env, /* Get */1);
                       var value = match$2[1];
                       return /* Method */Block.__(0, [/* tuple */[
-                                  btwn(start_loc$1, value[0]),
+                                  btwn(start_loc, value[0]),
                                   {
                                     kind: /* Get */2,
                                     key: match$2[0],
                                     value: value,
-                                    static: $$static$1,
-                                    decorators: decorators$1
+                                    static: $$static,
+                                    decorators: decorators
                                   }
                                 ]]);
                   case 3 :
@@ -10236,20 +10212,16 @@ function class_element(env) {
                   ) : 2;
                 switch (exit$1) {
                   case 2 :
-                      var env$2 = env;
-                      var start_loc$2 = start_loc;
-                      var decorators$2 = decorators;
-                      var $$static$2 = $$static;
-                      var match$4 = _method(env$2, /* Set */2);
+                      var match$4 = _method(env, /* Set */2);
                       var value$1 = match$4[1];
                       return /* Method */Block.__(0, [/* tuple */[
-                                  btwn(start_loc$2, value$1[0]),
+                                  btwn(start_loc, value$1[0]),
                                   {
                                     kind: /* Set */3,
                                     key: match$4[0],
                                     value: value$1,
-                                    static: $$static$2,
-                                    decorators: decorators$2
+                                    static: $$static,
+                                    decorators: decorators
                                   }
                                 ]]);
                   case 3 :
@@ -10961,9 +10933,7 @@ function declare(in_moduleOpt, env) {
           switch (match - 38 | 0) {
             case /* T_IDENTIFIER */0 :
                 token$4(env, /* T_DECLARE */58);
-                var env$1 = env;
-                var start_loc$1 = start_loc;
-                var match$1 = Curry._2(declare_class, env$1, start_loc$1);
+                var match$1 = Curry._2(declare_class, env, start_loc);
                 return /* tuple */[
                         match$1[0],
                         /* DeclareClass */Block.__(24, [match$1[1]])
@@ -11018,26 +10988,22 @@ function declare(in_moduleOpt, env) {
         token$4(env, /* T_DECLARE */58);
         contextual(env, "module");
         if (in_module || Curry._2(Parser_env_Peek.token, undefined, env) === /* T_PERIOD */9) {
-          var env$2 = env;
-          var start_loc$2 = start_loc;
-          token$4(env$2, /* T_PERIOD */9);
-          contextual(env$2, "exports");
-          var type_annot = wrap(annotation, env$2);
-          var match$2 = Curry._2(Parser_env_Peek.semicolon_loc, undefined, env$2);
+          token$4(env, /* T_PERIOD */9);
+          contextual(env, "exports");
+          var type_annot = wrap(annotation, env);
+          var match$2 = Curry._2(Parser_env_Peek.semicolon_loc, undefined, env);
           var end_loc = match$2 !== undefined ? match$2 : type_annot[0];
-          semicolon(env$2);
-          var loc = btwn(start_loc$2, end_loc);
+          semicolon(env);
+          var loc = btwn(start_loc, end_loc);
           return /* tuple */[
                   loc,
                   /* DeclareModuleExports */Block.__(26, [type_annot])
                 ];
         } else {
-          var env$3 = env;
-          var start_loc$3 = start_loc;
-          var match$3 = Curry._2(Parser_env_Peek.token, undefined, env$3);
+          var match$3 = Curry._2(Parser_env_Peek.token, undefined, env);
           var id;
           if (typeof match$3 === "number" || match$3.tag !== /* T_STRING */1) {
-            id = /* Identifier */Block.__(0, [Curry._2(Parse.identifier, undefined, env$3)]);
+            id = /* Identifier */Block.__(0, [Curry._2(Parse.identifier, undefined, env)]);
           } else {
             var match$4 = match$3[0];
             var octal = match$4[3];
@@ -11045,9 +11011,9 @@ function declare(in_moduleOpt, env) {
             var value = match$4[1];
             var loc$1 = match$4[0];
             if (octal) {
-              strict_error(env$3, /* StrictOctalLiteral */31);
+              strict_error(env, /* StrictOctalLiteral */31);
             }
-            token$4(env$3, /* T_STRING */Block.__(1, [/* tuple */[
+            token$4(env, /* T_STRING */Block.__(1, [/* tuple */[
                       loc$1,
                       value,
                       raw,
@@ -11062,12 +11028,12 @@ function declare(in_moduleOpt, env) {
                   }
                 ]]);
           }
-          var body_start_loc = Curry._2(Parser_env_Peek.loc, undefined, env$3);
-          token$4(env$3, /* T_LCURLY */1);
-          var match$5 = module_items(env$3, undefined, /* [] */0);
+          var body_start_loc = Curry._2(Parser_env_Peek.loc, undefined, env);
+          token$4(env, /* T_LCURLY */1);
+          var match$5 = module_items(env, undefined, /* [] */0);
           var module_kind = match$5[0];
-          token$4(env$3, /* T_RCURLY */2);
-          var body_end_loc = Curry._2(Parser_env_Peek.loc, undefined, env$3);
+          token$4(env, /* T_RCURLY */2);
+          var body_end_loc = Curry._2(Parser_env_Peek.loc, undefined, env);
           var body_loc = btwn(body_start_loc, body_end_loc);
           var body_001 = {
             body: match$5[1]
@@ -11076,7 +11042,7 @@ function declare(in_moduleOpt, env) {
             body_loc,
             body_001
           ];
-          var loc$2 = btwn(start_loc$3, body_loc);
+          var loc$2 = btwn(start_loc, body_loc);
           var kind = module_kind !== undefined ? module_kind : /* CommonJS */Block.__(0, [loc$2]);
           return /* tuple */[
                   loc$2,
@@ -11556,19 +11522,16 @@ function from_expr(env, param) {
   if (typeof expr !== "number") {
     switch (expr.tag | 0) {
       case /* Array */0 :
-          var env$1 = env;
           var param$1 = /* tuple */[
             loc,
             expr[0]
           ];
           var elements = List.map((function (param) {
-                  var env$2 = env$1;
-                  var param$1 = param;
-                  if (param$1 !== undefined) {
-                    var match = param$1;
+                  if (param !== undefined) {
+                    var match = param;
                     if (match.tag) {
                       var match$1 = match[0];
-                      var argument = Curry._2(Parse.pattern_from_expr, env$2, match$1[1].argument);
+                      var argument = Curry._2(Parse.pattern_from_expr, env, match$1[1].argument);
                       return /* Spread */Block.__(1, [/* tuple */[
                                   match$1[0],
                                   {
@@ -11577,7 +11540,7 @@ function from_expr(env, param) {
                                 ]]);
                     } else {
                       var match$2 = match[0];
-                      return /* Element */Block.__(0, [Curry._2(Parse.pattern_from_expr, env$2, /* tuple */[
+                      return /* Element */Block.__(0, [Curry._2(Parse.pattern_from_expr, env, /* tuple */[
                                       match$2[0],
                                       match$2[1]
                                     ])]);
@@ -11593,17 +11556,14 @@ function from_expr(env, param) {
                       }])
                 ];
       case /* Object */1 :
-          var env$2 = env;
           var param$2 = /* tuple */[
             loc,
             expr[0]
           ];
           var properties = List.map((function (param) {
-                  var env$3 = env$2;
-                  var prop = param;
-                  if (prop.tag) {
-                    var match = prop[0];
-                    var argument = Curry._2(Parse.pattern_from_expr, env$3, match[1].argument);
+                  if (param.tag) {
+                    var match = param[0];
+                    var argument = Curry._2(Parse.pattern_from_expr, env, match[1].argument);
                     return /* SpreadProperty */Block.__(1, [/* tuple */[
                                 match[0],
                                 {
@@ -11611,7 +11571,7 @@ function from_expr(env, param) {
                                 }
                               ]]);
                   } else {
-                    var match$1 = prop[0];
+                    var match$1 = param[0];
                     var match$2 = match$1[1];
                     var key = match$2.key;
                     var key$1;
@@ -11627,7 +11587,7 @@ function from_expr(env, param) {
                           break;
                       
                     }
-                    var pattern = Curry._2(Parse.pattern_from_expr, env$3, match$2.value);
+                    var pattern = Curry._2(Parse.pattern_from_expr, env, match$2.value);
                     return /* Property */Block.__(0, [/* tuple */[
                                 match$1[0],
                                 {
@@ -12381,12 +12341,11 @@ function statement_list_item(decoratorsOpt, env) {
   if (typeof match === "number") {
     if (match !== 25) {
       if (match === 26) {
-        var env$1 = env;
-        var start_loc = Curry._2(Parser_env_Peek.loc, undefined, env$1);
-        token$4(env$1, /* T_LET */26);
-        if (Curry._2(Parser_env_Peek.token, undefined, env$1) === /* T_LPAREN */3) {
-          token$4(env$1, /* T_LPAREN */3);
-          var match$1 = helper(with_no_let(true, env$1), /* [] */0, /* [] */0);
+        var start_loc = Curry._2(Parser_env_Peek.loc, undefined, env);
+        token$4(env, /* T_LET */26);
+        if (Curry._2(Parser_env_Peek.token, undefined, env) === /* T_LPAREN */3) {
+          token$4(env, /* T_LPAREN */3);
+          var match$1 = helper(with_no_let(true, env), /* [] */0, /* [] */0);
           var head = List.map((function (param) {
                   var match = param[1];
                   return {
@@ -12394,13 +12353,13 @@ function statement_list_item(decoratorsOpt, env) {
                           init: match.init
                         };
                 }), match$1[1]);
-          token$4(env$1, /* T_RPAREN */4);
-          var body = Curry._1(Parse.statement, env$1);
-          var match$2 = Curry._2(Parser_env_Peek.semicolon_loc, undefined, env$1);
+          token$4(env, /* T_RPAREN */4);
+          var body = Curry._1(Parse.statement, env);
+          var match$2 = Curry._2(Parser_env_Peek.semicolon_loc, undefined, env);
           var end_loc = match$2 !== undefined ? match$2 : match$1[0];
-          semicolon(env$1);
+          semicolon(env);
           List.iter((function (param) {
-                  return error_at(env$1, param);
+                  return error_at(env, param);
                 }), match$1[2]);
           return /* tuple */[
                   btwn(start_loc, end_loc),
@@ -12410,16 +12369,16 @@ function statement_list_item(decoratorsOpt, env) {
                       }])
                 ];
         } else {
-          var match$3 = helper(with_no_let(true, env$1), /* [] */0, /* [] */0);
+          var match$3 = helper(with_no_let(true, env), /* [] */0, /* [] */0);
           var declaration = /* VariableDeclaration */Block.__(19, [{
                 declarations: match$3[1],
                 kind: /* Let */1
               }]);
-          var match$4 = Curry._2(Parser_env_Peek.semicolon_loc, undefined, env$1);
+          var match$4 = Curry._2(Parser_env_Peek.semicolon_loc, undefined, env);
           var end_loc$1 = match$4 !== undefined ? match$4 : match$3[0];
-          semicolon(env$1);
+          semicolon(env);
           List.iter((function (param) {
-                  return error_at(env$1, param);
+                  return error_at(env, param);
                 }), match$3[2]);
           return /* tuple */[
                   btwn(start_loc, end_loc$1),
@@ -12465,12 +12424,10 @@ function module_item(env) {
   if (typeof match === "number") {
     switch (match) {
       case /* T_EXPORT */47 :
-          var env$1 = env;
-          var decorators$1 = decorators;
-          var env$2 = with_in_export(true, with_strict(true, env$1));
-          var start_loc = Curry._2(Parser_env_Peek.loc, undefined, env$2);
-          token$4(env$2, /* T_EXPORT */47);
-          var match$1 = Curry._2(Parser_env_Peek.token, undefined, env$2);
+          var env$1 = with_in_export(true, with_strict(true, env));
+          var start_loc = Curry._2(Parser_env_Peek.loc, undefined, env$1);
+          token$4(env$1, /* T_EXPORT */47);
+          var match$1 = Curry._2(Parser_env_Peek.token, undefined, env$1);
           var exit = 0;
           if (typeof match$1 === "number") {
             if (match$1 >= 51) {
@@ -12480,10 +12437,10 @@ function module_item(env) {
                 } else {
                   switch (match$1 - 51 | 0) {
                     case /* T_IDENTIFIER */0 :
-                        if (!env$2.parse_options.types) {
-                          error$1(env$2, /* UnexpectedTypeExport */9);
+                        if (!env$1.parse_options.types) {
+                          error$1(env$1, /* UnexpectedTypeExport */9);
                         }
-                        var $$interface$1 = $$interface(env$2);
+                        var $$interface$1 = $$interface(env$1);
                         var match$2 = $$interface$1[1];
                         if (typeof match$2 === "number") {
                           throw [
@@ -12491,7 +12448,7 @@ function module_item(env) {
                                 "Internal Flow Error! Parsed `export interface` into something other than an interface declaration!"
                               ];
                         } else if (match$2.tag === /* InterfaceDeclaration */21) {
-                          record_export(env$2, /* tuple */[
+                          record_export(env$1, /* tuple */[
                                 $$interface$1[0],
                                 extract_ident_name(match$2[0].id)
                               ]);
@@ -12513,11 +12470,11 @@ function module_item(env) {
                                     }])
                               ];
                     case /* T_COMMA */8 :
-                        if (Curry._2(Parser_env_Peek.token, 1, env$2) !== /* T_LCURLY */1) {
-                          if (!env$2.parse_options.types) {
-                            error$1(env$2, /* UnexpectedTypeExport */9);
+                        if (Curry._2(Parser_env_Peek.token, 1, env$1) !== /* T_LCURLY */1) {
+                          if (!env$1.parse_options.types) {
+                            error$1(env$1, /* UnexpectedTypeExport */9);
                           }
-                          var type_alias$1 = type_alias(env$2);
+                          var type_alias$1 = type_alias(env$1);
                           var match$3 = type_alias$1[1];
                           if (typeof match$3 === "number") {
                             throw [
@@ -12525,7 +12482,7 @@ function module_item(env) {
                                   "Internal Flow Error! Parsed `export type` into something other than a type alias!"
                                 ];
                           } else if (match$3.tag === /* TypeAlias */7) {
-                            record_export(env$2, /* tuple */[
+                            record_export(env$1, /* tuple */[
                                   type_alias$1[0],
                                   extract_ident_name(match$3[0].id)
                                 ]);
@@ -12567,19 +12524,19 @@ function module_item(env) {
                   }
                 }
               } else {
-                var loc = Curry._2(Parser_env_Peek.loc, undefined, env$2);
-                token$4(env$2, /* T_MULT */97);
-                var parse_export_star_as = env$2.parse_options.esproposal_export_star_as;
-                var local_name = Curry._2(Parser_env_Peek.value, undefined, env$2) === "as" ? (contextual(env$2, "as"), parse_export_star_as ? Curry._2(Parse.identifier, undefined, env$2) : (error$1(env$2, /* UnexpectedTypeDeclaration */7), undefined)) : undefined;
+                var loc = Curry._2(Parser_env_Peek.loc, undefined, env$1);
+                token$4(env$1, /* T_MULT */97);
+                var parse_export_star_as = env$1.parse_options.esproposal_export_star_as;
+                var local_name = Curry._2(Parser_env_Peek.value, undefined, env$1) === "as" ? (contextual(env$1, "as"), parse_export_star_as ? Curry._2(Parse.identifier, undefined, env$1) : (error$1(env$1, /* UnexpectedTypeDeclaration */7), undefined)) : undefined;
                 var specifiers = /* ExportBatchSpecifier */Block.__(1, [
                     loc,
                     local_name
                   ]);
-                var source$1 = export_source(env$2);
-                var match$4 = Curry._2(Parser_env_Peek.semicolon_loc, undefined, env$2);
+                var source$1 = export_source(env$1);
+                var match$4 = Curry._2(Parser_env_Peek.semicolon_loc, undefined, env$1);
                 var end_loc$2 = match$4 !== undefined ? match$4 : source$1[0];
                 var source$2 = source$1;
-                semicolon(env$2);
+                semicolon(env$1);
                 return /* tuple */[
                         btwn(start_loc, end_loc$2),
                         /* ExportDeclaration */Block.__(28, [{
@@ -12594,16 +12551,16 @@ function module_item(env) {
             } else {
               switch (match$1) {
                 case /* T_DEFAULT */34 :
-                    token$4(env$2, /* T_DEFAULT */34);
-                    record_export(env$2, /* tuple */[
-                          btwn(start_loc, Curry._2(Parser_env_Peek.loc, undefined, env$2)),
+                    token$4(env$1, /* T_DEFAULT */34);
+                    record_export(env$1, /* tuple */[
+                          btwn(start_loc, Curry._2(Parser_env_Peek.loc, undefined, env$1)),
                           "default"
                         ]);
-                    var match$5 = Curry._2(Parser_env_Peek.token, undefined, env$2);
+                    var match$5 = Curry._2(Parser_env_Peek.token, undefined, env$1);
                     var match$6;
                     var exit$1 = 0;
                     if (typeof match$5 === "number" && match$5 === 13) {
-                      var fn = _function(env$2);
+                      var fn = _function(env$1);
                       match$6 = /* tuple */[
                         fn[0],
                         /* Declaration */Block.__(0, [fn])
@@ -12612,17 +12569,17 @@ function module_item(env) {
                       exit$1 = 3;
                     }
                     if (exit$1 === 3) {
-                      if (Curry._2(Parser_env_Peek.is_class, undefined, env$2)) {
-                        var _class = class_declaration(env$2, decorators$1);
+                      if (Curry._2(Parser_env_Peek.is_class, undefined, env$1)) {
+                        var _class = class_declaration(env$1, decorators);
                         match$6 = /* tuple */[
                           _class[0],
                           /* Declaration */Block.__(0, [_class])
                         ];
                       } else {
-                        var expr = Curry._1(Parse.assignment, env$2);
-                        var match$7 = Curry._2(Parser_env_Peek.semicolon_loc, undefined, env$2);
+                        var expr = Curry._1(Parse.assignment, env$1);
+                        var match$7 = Curry._2(Parser_env_Peek.semicolon_loc, undefined, env$1);
                         var end_loc$3 = match$7 !== undefined ? match$7 : expr[0];
-                        semicolon(env$2);
+                        semicolon(env$1);
                         match$6 = /* tuple */[
                           end_loc$3,
                           /* Expression */Block.__(1, [expr])
@@ -12678,21 +12635,21 @@ function module_item(env) {
           }
           switch (exit) {
             case 1 :
-                var match$8 = Curry._2(Parser_env_Peek.token, undefined, env$2);
-                var exportKind = typeof match$8 === "number" && match$8 === 59 ? (token$3(env$2), /* ExportType */0) : /* ExportValue */1;
-                token$4(env$2, /* T_LCURLY */1);
-                var match$9 = export_specifiers_and_errs(env$2, /* [] */0, /* [] */0);
+                var match$8 = Curry._2(Parser_env_Peek.token, undefined, env$1);
+                var exportKind = typeof match$8 === "number" && match$8 === 59 ? (token$3(env$1), /* ExportType */0) : /* ExportValue */1;
+                token$4(env$1, /* T_LCURLY */1);
+                var match$9 = export_specifiers_and_errs(env$1, /* [] */0, /* [] */0);
                 var specifiers$1 = /* ExportSpecifiers */Block.__(0, [match$9[0]]);
-                var end_loc$4 = Curry._2(Parser_env_Peek.loc, undefined, env$2);
-                token$4(env$2, /* T_RCURLY */2);
-                var source$3 = Curry._2(Parser_env_Peek.value, undefined, env$2) === "from" ? export_source(env$2) : (List.iter((function (param) {
-                            return error_at(env$2, param);
+                var end_loc$4 = Curry._2(Parser_env_Peek.loc, undefined, env$1);
+                token$4(env$1, /* T_RCURLY */2);
+                var source$3 = Curry._2(Parser_env_Peek.value, undefined, env$1) === "from" ? export_source(env$1) : (List.iter((function (param) {
+                            return error_at(env$1, param);
                           }), match$9[1]), undefined);
-                var match$10 = Curry._2(Parser_env_Peek.semicolon_loc, undefined, env$2);
+                var match$10 = Curry._2(Parser_env_Peek.semicolon_loc, undefined, env$1);
                 var end_loc$5 = match$10 !== undefined ? match$10 : (
                     source$3 !== undefined ? source$3[0] : end_loc$4
                   );
-                semicolon(env$2);
+                semicolon(env$1);
                 return /* tuple */[
                         btwn(start_loc, end_loc$5),
                         /* ExportDeclaration */Block.__(28, [{
@@ -12704,7 +12661,7 @@ function module_item(env) {
                             }])
                       ];
             case 2 :
-                var stmt = Curry._2(Parse.statement_list_item, decorators$1, env$2);
+                var stmt = Curry._2(Parse.statement_list_item, decorators, env$1);
                 var match$11 = stmt[1];
                 var loc$1 = stmt[0];
                 var names;
@@ -12726,7 +12683,7 @@ function module_item(env) {
                             /* [] */0
                           ];
                         } else {
-                          error_at(env$2, /* tuple */[
+                          error_at(env$1, /* tuple */[
                                 loc$1,
                                 /* ExportNamelessFunction */56
                               ]);
@@ -12736,12 +12693,11 @@ function module_item(env) {
                     case /* VariableDeclaration */19 :
                         names = List.fold_left((function (names, param) {
                                 var id = param[1].id;
-                                var param$1 = names;
-                                var param$2 = /* :: */[
+                                var param$1 = /* :: */[
                                   id,
                                   /* [] */0
                                 ];
-                                return List.fold_left(fold, param$1, param$2);
+                                return List.fold_left(fold, names, param$1);
                               }), /* [] */0, match$11[0].declarations);
                         break;
                     case /* ClassDeclaration */20 :
@@ -12755,7 +12711,7 @@ function module_item(env) {
                             /* [] */0
                           ];
                         } else {
-                          error_at(env$2, /* tuple */[
+                          error_at(env$1, /* tuple */[
                                 loc$1,
                                 /* ExportNamelessClass */55
                               ]);
@@ -12770,7 +12726,7 @@ function module_item(env) {
                   }
                 }
                 List.iter((function (param) {
-                        return record_export(env$2, param);
+                        return record_export(env$1, param);
                       }), names);
                 var declaration = /* Declaration */Block.__(0, [stmt]);
                 return /* tuple */[
@@ -12787,11 +12743,10 @@ function module_item(env) {
           }
       case /* T_IMPORT */48 :
           error_on_decorators(env)(decorators);
-          var env$3 = env;
-          var env$4 = with_strict(true, env$3);
-          var start_loc$1 = Curry._2(Parser_env_Peek.loc, undefined, env$4);
-          token$4(env$4, /* T_IMPORT */48);
-          var match$14 = Curry._2(Parser_env_Peek.token, undefined, env$4);
+          var env$2 = with_strict(true, env);
+          var start_loc$1 = Curry._2(Parser_env_Peek.loc, undefined, env$2);
+          token$4(env$2, /* T_IMPORT */48);
+          var match$14 = Curry._2(Parser_env_Peek.token, undefined, env$2);
           var match$15;
           if (typeof match$14 === "number") {
             if (match$14 !== 44) {
@@ -12801,19 +12756,19 @@ function module_item(env) {
                   undefined
                 ];
               } else {
-                if (!env$4.parse_options.types) {
-                  error$1(env$4, /* UnexpectedTypeImport */8);
+                if (!env$2.parse_options.types) {
+                  error$1(env$2, /* UnexpectedTypeImport */8);
                 }
                 match$15 = /* tuple */[
                   /* ImportType */0,
-                  Curry._2(Parse.identifier, undefined, env$4)
+                  Curry._2(Parse.identifier, undefined, env$2)
                 ];
               }
             } else {
-              if (!env$4.parse_options.types) {
-                error$1(env$4, /* UnexpectedTypeImport */8);
+              if (!env$2.parse_options.types) {
+                error$1(env$2, /* UnexpectedTypeImport */8);
               }
-              token$4(env$4, /* T_TYPEOF */44);
+              token$4(env$2, /* T_TYPEOF */44);
               match$15 = /* tuple */[
                 /* ImportTypeof */1,
                 undefined
@@ -12827,8 +12782,8 @@ function module_item(env) {
           }
           var type_ident = match$15[1];
           var importKind = match$15[0];
-          var match$16 = Curry._2(Parser_env_Peek.token, undefined, env$4);
-          var match$17 = Curry._2(Parser_env_Peek.is_identifier, undefined, env$4);
+          var match$16 = Curry._2(Parser_env_Peek.token, undefined, env$2);
+          var match$17 = Curry._2(Parser_env_Peek.is_identifier, undefined, env$2);
           var exit$2 = 0;
           var exit$3 = 0;
           if (typeof match$16 === "number") {
@@ -12844,9 +12799,9 @@ function module_item(env) {
             var value = match$18[1];
             var str_loc = match$18[0];
             if (octal) {
-              strict_error(env$4, /* StrictOctalLiteral */31);
+              strict_error(env$2, /* StrictOctalLiteral */31);
             }
-            token$4(env$4, /* T_STRING */Block.__(1, [/* tuple */[
+            token$4(env$2, /* T_STRING */Block.__(1, [/* tuple */[
                       str_loc,
                       value,
                       raw,
@@ -12861,9 +12816,9 @@ function module_item(env) {
               str_loc,
               source_001
             ];
-            var match$19 = Curry._2(Parser_env_Peek.semicolon_loc, undefined, env$4);
+            var match$19 = Curry._2(Parser_env_Peek.semicolon_loc, undefined, env$2);
             var end_loc$6 = match$19 !== undefined ? match$19 : str_loc;
-            semicolon(env$4);
+            semicolon(env$2);
             return /* tuple */[
                     btwn(start_loc$1, end_loc$6),
                     /* ImportDeclaration */Block.__(29, [{
@@ -12879,11 +12834,11 @@ function module_item(env) {
             if (match$17) {
               exit$2 = 1;
             } else {
-              var specifiers$2 = named_or_namespace_specifier(env$4);
-              var source$5 = source(env$4);
-              var match$20 = Curry._2(Parser_env_Peek.semicolon_loc, undefined, env$4);
+              var specifiers$2 = named_or_namespace_specifier(env$2);
+              var source$5 = source(env$2);
+              var match$20 = Curry._2(Parser_env_Peek.semicolon_loc, undefined, env$2);
               var end_loc$7 = match$20 !== undefined ? match$20 : source$5[0];
-              semicolon(env$4);
+              semicolon(env$2);
               return /* tuple */[
                       btwn(start_loc$1, end_loc$7),
                       /* ImportDeclaration */Block.__(29, [{
@@ -12895,8 +12850,8 @@ function module_item(env) {
             }
           }
           if (exit$2 === 1) {
-            var match$21 = Curry._2(Parser_env_Peek.token, undefined, env$4);
-            var match$22 = Curry._2(Parser_env_Peek.value, undefined, env$4);
+            var match$21 = Curry._2(Parser_env_Peek.token, undefined, env$2);
+            var match$22 = Curry._2(Parser_env_Peek.value, undefined, env$2);
             var match$23;
             var exit$4 = 0;
             if (type_ident !== undefined && typeof match$21 === "number") {
@@ -12915,15 +12870,15 @@ function module_item(env) {
             if (exit$4 === 2) {
               match$23 = /* tuple */[
                 importKind,
-                /* ImportDefaultSpecifier */Block.__(1, [Curry._2(Parse.identifier, undefined, env$4)])
+                /* ImportDefaultSpecifier */Block.__(1, [Curry._2(Parse.identifier, undefined, env$2)])
               ];
             }
-            var match$24 = Curry._2(Parser_env_Peek.token, undefined, env$4);
-            var additional_specifiers = typeof match$24 === "number" && match$24 === 8 ? (token$4(env$4, /* T_COMMA */8), named_or_namespace_specifier(env$4)) : /* [] */0;
-            var source$6 = source(env$4);
-            var match$25 = Curry._2(Parser_env_Peek.semicolon_loc, undefined, env$4);
+            var match$24 = Curry._2(Parser_env_Peek.token, undefined, env$2);
+            var additional_specifiers = typeof match$24 === "number" && match$24 === 8 ? (token$4(env$2, /* T_COMMA */8), named_or_namespace_specifier(env$2)) : /* [] */0;
+            var source$6 = source(env$2);
+            var match$25 = Curry._2(Parser_env_Peek.semicolon_loc, undefined, env$2);
             var end_loc$8 = match$25 !== undefined ? match$25 : source$6[0];
-            semicolon(env$4);
+            semicolon(env$2);
             return /* tuple */[
                     btwn(start_loc$1, end_loc$8),
                     /* ImportDeclaration */Block.__(29, [{
@@ -12972,16 +12927,14 @@ function statement(env) {
         } else {
           switch (match) {
             case /* T_LCURLY */1 :
-                var env$1 = env;
-                var match$1 = Curry._1(Parse.block_body, env$1);
+                var match$1 = Curry._1(Parse.block_body, env);
                 return /* tuple */[
                         match$1[0],
                         /* Block */Block.__(0, [match$1[1]])
                       ];
             case /* T_SEMICOLON */7 :
-                var env$2 = env;
-                var loc = Curry._2(Parser_env_Peek.loc, undefined, env$2);
-                token$4(env$2, /* T_SEMICOLON */7);
+                var loc = Curry._2(Parser_env_Peek.loc, undefined, env);
+                token$4(env, /* T_SEMICOLON */7);
                 return /* tuple */[
                         loc,
                         /* Empty */0
@@ -12989,18 +12942,17 @@ function statement(env) {
             case /* T_IF */14 :
                 return _if(env);
             case /* T_RETURN */17 :
-                var env$3 = env;
-                if (!env$3.in_function) {
-                  error$1(env$3, /* IllegalReturn */23);
+                if (!env.in_function) {
+                  error$1(env, /* IllegalReturn */23);
                 }
-                var start_loc = Curry._2(Parser_env_Peek.loc, undefined, env$3);
-                token$4(env$3, /* T_RETURN */17);
-                var argument = Curry._2(Parser_env_Peek.token, undefined, env$3) === /* T_SEMICOLON */7 || Curry._1(Parser_env_Peek.is_implicit_semicolon, env$3) ? undefined : Curry._1(Parse.expression, env$3);
-                var match$2 = Curry._2(Parser_env_Peek.semicolon_loc, undefined, env$3);
+                var start_loc = Curry._2(Parser_env_Peek.loc, undefined, env);
+                token$4(env, /* T_RETURN */17);
+                var argument = Curry._2(Parser_env_Peek.token, undefined, env) === /* T_SEMICOLON */7 || Curry._1(Parser_env_Peek.is_implicit_semicolon, env) ? undefined : Curry._1(Parse.expression, env);
+                var match$2 = Curry._2(Parser_env_Peek.semicolon_loc, undefined, env);
                 var end_loc = match$2 !== undefined ? match$2 : (
                     argument !== undefined ? argument[0] : start_loc
                   );
-                semicolon(env$3);
+                semicolon(env);
                 return /* tuple */[
                         btwn(start_loc, end_loc),
                         /* Return */Block.__(9, [{
@@ -13008,19 +12960,18 @@ function statement(env) {
                             }])
                       ];
             case /* T_SWITCH */18 :
-                var env$4 = env;
-                var start_loc$1 = Curry._2(Parser_env_Peek.loc, undefined, env$4);
-                token$4(env$4, /* T_SWITCH */18);
-                token$4(env$4, /* T_LPAREN */3);
-                var discriminant = Curry._1(Parse.expression, env$4);
-                token$4(env$4, /* T_RPAREN */4);
-                token$4(env$4, /* T_LCURLY */1);
-                var cases = case_list(env$4, /* tuple */[
+                var start_loc$1 = Curry._2(Parser_env_Peek.loc, undefined, env);
+                token$4(env, /* T_SWITCH */18);
+                token$4(env, /* T_LPAREN */3);
+                var discriminant = Curry._1(Parse.expression, env);
+                token$4(env, /* T_RPAREN */4);
+                token$4(env, /* T_LCURLY */1);
+                var cases = case_list(env, /* tuple */[
                       false,
                       /* [] */0
                     ]);
-                var end_loc$1 = Curry._2(Parser_env_Peek.loc, undefined, env$4);
-                token$4(env$4, /* T_RCURLY */2);
+                var end_loc$1 = Curry._2(Parser_env_Peek.loc, undefined, env);
+                token$4(env, /* T_RCURLY */2);
                 return /* tuple */[
                         btwn(start_loc$1, end_loc$1),
                         /* Switch */Block.__(8, [{
@@ -13030,19 +12981,18 @@ function statement(env) {
                             }])
                       ];
             case /* T_THROW */20 :
-                var env$5 = env;
-                var start_loc$2 = Curry._2(Parser_env_Peek.loc, undefined, env$5);
-                token$4(env$5, /* T_THROW */20);
-                if (Curry._1(Parser_env_Peek.is_line_terminator, env$5)) {
-                  error_at(env$5, /* tuple */[
+                var start_loc$2 = Curry._2(Parser_env_Peek.loc, undefined, env);
+                token$4(env, /* T_THROW */20);
+                if (Curry._1(Parser_env_Peek.is_line_terminator, env)) {
+                  error_at(env, /* tuple */[
                         start_loc$2,
                         /* NewlineAfterThrow */11
                       ]);
                 }
-                var argument$1 = Curry._1(Parse.expression, env$5);
-                var match$3 = Curry._2(Parser_env_Peek.semicolon_loc, undefined, env$5);
+                var argument$1 = Curry._1(Parse.expression, env);
+                var match$3 = Curry._2(Parser_env_Peek.semicolon_loc, undefined, env);
                 var end_loc$2 = match$3 !== undefined ? match$3 : argument$1[0];
-                semicolon(env$5);
+                semicolon(env);
                 return /* tuple */[
                         btwn(start_loc$2, end_loc$2),
                         /* Throw */Block.__(10, [{
@@ -13050,25 +13000,24 @@ function statement(env) {
                             }])
                       ];
             case /* T_TRY */21 :
-                var env$6 = env;
-                var start_loc$3 = Curry._2(Parser_env_Peek.loc, undefined, env$6);
-                token$4(env$6, /* T_TRY */21);
-                var block = Curry._1(Parse.block_body, env$6);
-                var match$4 = Curry._2(Parser_env_Peek.token, undefined, env$6);
+                var start_loc$3 = Curry._2(Parser_env_Peek.loc, undefined, env);
+                token$4(env, /* T_TRY */21);
+                var block = Curry._1(Parse.block_body, env);
+                var match$4 = Curry._2(Parser_env_Peek.token, undefined, env);
                 var handler;
                 if (typeof match$4 === "number" && match$4 === 32) {
-                  var start_loc$4 = Curry._2(Parser_env_Peek.loc, undefined, env$6);
-                  token$4(env$6, /* T_CATCH */32);
-                  token$4(env$6, /* T_LPAREN */3);
-                  var id = Curry._2(Parse.identifier, /* StrictCatchVariable */26, env$6);
+                  var start_loc$4 = Curry._2(Parser_env_Peek.loc, undefined, env);
+                  token$4(env, /* T_CATCH */32);
+                  token$4(env, /* T_LPAREN */3);
+                  var id = Curry._2(Parse.identifier, /* StrictCatchVariable */26, env);
                   var param_000 = id[0];
                   var param_001 = /* Identifier */Block.__(3, [id]);
                   var param = /* tuple */[
                     param_000,
                     param_001
                   ];
-                  token$4(env$6, /* T_RPAREN */4);
-                  var body = Curry._1(Parse.block_body, env$6);
+                  token$4(env, /* T_RPAREN */4);
+                  var body = Curry._1(Parse.block_body, env);
                   var loc$1 = btwn(start_loc$4, body[0]);
                   handler = /* tuple */[
                     loc$1,
@@ -13081,10 +13030,10 @@ function statement(env) {
                 } else {
                   handler = undefined;
                 }
-                var match$5 = Curry._2(Parser_env_Peek.token, undefined, env$6);
-                var finalizer = typeof match$5 === "number" && match$5 === 36 ? (token$4(env$6, /* T_FINALLY */36), Curry._1(Parse.block_body, env$6)) : undefined;
+                var match$5 = Curry._2(Parser_env_Peek.token, undefined, env);
+                var finalizer = typeof match$5 === "number" && match$5 === 36 ? (token$4(env, /* T_FINALLY */36), Curry._1(Parse.block_body, env)) : undefined;
                 var end_loc$3 = finalizer !== undefined ? finalizer[0] : (
-                    handler !== undefined ? handler[0] : (error_at(env$6, /* tuple */[
+                    handler !== undefined ? handler[0] : (error_at(env, /* tuple */[
                               block[0],
                               /* NoCatchOrFinally */20
                             ]), block[0])
@@ -13101,13 +13050,12 @@ function statement(env) {
             case /* T_VAR */22 :
                 return var_or_const(env);
             case /* T_WHILE */23 :
-                var env$7 = env;
-                var start_loc$5 = Curry._2(Parser_env_Peek.loc, undefined, env$7);
-                token$4(env$7, /* T_WHILE */23);
-                token$4(env$7, /* T_LPAREN */3);
-                var test = Curry._1(Parse.expression, env$7);
-                token$4(env$7, /* T_RPAREN */4);
-                var body$1 = Curry._1(Parse.statement, with_in_loop(true, env$7));
+                var start_loc$5 = Curry._2(Parser_env_Peek.loc, undefined, env);
+                token$4(env, /* T_WHILE */23);
+                token$4(env, /* T_LPAREN */3);
+                var test = Curry._1(Parse.expression, env);
+                token$4(env, /* T_RPAREN */4);
+                var body$1 = Curry._1(Parse.statement, with_in_loop(true, env));
                 return /* tuple */[
                         btwn(start_loc$5, body$1[0]),
                         /* While */Block.__(12, [{
@@ -13116,15 +13064,14 @@ function statement(env) {
                             }])
                       ];
             case /* T_WITH */24 :
-                var env$8 = env;
-                var start_loc$6 = Curry._2(Parser_env_Peek.loc, undefined, env$8);
-                token$4(env$8, /* T_WITH */24);
-                token$4(env$8, /* T_LPAREN */3);
-                var _object = Curry._1(Parse.expression, env$8);
-                token$4(env$8, /* T_RPAREN */4);
-                var body$2 = Curry._1(Parse.statement, env$8);
+                var start_loc$6 = Curry._2(Parser_env_Peek.loc, undefined, env);
+                token$4(env, /* T_WITH */24);
+                token$4(env, /* T_LPAREN */3);
+                var _object = Curry._1(Parse.expression, env);
+                token$4(env, /* T_RPAREN */4);
+                var body$2 = Curry._1(Parse.statement, env);
                 var loc$2 = btwn(start_loc$6, body$2[0]);
-                strict_error_at(env$8, /* tuple */[
+                strict_error_at(env, /* tuple */[
                       loc$2,
                       /* StrictModeWith */25
                     ]);
@@ -13136,32 +13083,31 @@ function statement(env) {
                             }])
                       ];
             case /* T_BREAK */30 :
-                var env$9 = env;
-                var start_loc$7 = Curry._2(Parser_env_Peek.loc, undefined, env$9);
-                token$4(env$9, /* T_BREAK */30);
+                var start_loc$7 = Curry._2(Parser_env_Peek.loc, undefined, env);
+                token$4(env, /* T_BREAK */30);
                 var label;
-                if (Curry._2(Parser_env_Peek.token, undefined, env$9) === /* T_SEMICOLON */7 || Curry._1(Parser_env_Peek.is_implicit_semicolon, env$9)) {
+                if (Curry._2(Parser_env_Peek.token, undefined, env) === /* T_SEMICOLON */7 || Curry._1(Parser_env_Peek.is_implicit_semicolon, env)) {
                   label = undefined;
                 } else {
-                  var label$1 = Curry._2(Parse.identifier, undefined, env$9);
+                  var label$1 = Curry._2(Parse.identifier, undefined, env);
                   var name = label$1[1].name;
-                  if (!mem$1(name, env$9.labels)) {
-                    error$1(env$9, /* UnknownLabel */Block.__(4, [name]));
+                  if (!mem$1(name, env.labels)) {
+                    error$1(env, /* UnknownLabel */Block.__(4, [name]));
                   }
                   label = label$1;
                 }
-                var match$6 = Curry._2(Parser_env_Peek.semicolon_loc, undefined, env$9);
+                var match$6 = Curry._2(Parser_env_Peek.semicolon_loc, undefined, env);
                 var end_loc$4 = match$6 !== undefined ? match$6 : (
                     label !== undefined ? label[0] : start_loc$7
                   );
                 var loc$3 = btwn(start_loc$7, end_loc$4);
-                if (label === undefined && !(env$9.in_loop || env$9.in_switch)) {
-                  error_at(env$9, /* tuple */[
+                if (label === undefined && !(env.in_loop || env.in_switch)) {
+                  error_at(env, /* tuple */[
                         loc$3,
                         /* IllegalBreak */22
                       ]);
                 }
-                semicolon(env$9);
+                semicolon(env);
                 return /* tuple */[
                         loc$3,
                         /* Break */Block.__(4, [{
@@ -13169,32 +13115,31 @@ function statement(env) {
                             }])
                       ];
             case /* T_CONTINUE */33 :
-                var env$10 = env;
-                var start_loc$8 = Curry._2(Parser_env_Peek.loc, undefined, env$10);
-                token$4(env$10, /* T_CONTINUE */33);
+                var start_loc$8 = Curry._2(Parser_env_Peek.loc, undefined, env);
+                token$4(env, /* T_CONTINUE */33);
                 var label$2;
-                if (Curry._2(Parser_env_Peek.token, undefined, env$10) === /* T_SEMICOLON */7 || Curry._1(Parser_env_Peek.is_implicit_semicolon, env$10)) {
+                if (Curry._2(Parser_env_Peek.token, undefined, env) === /* T_SEMICOLON */7 || Curry._1(Parser_env_Peek.is_implicit_semicolon, env)) {
                   label$2 = undefined;
                 } else {
-                  var label$3 = Curry._2(Parse.identifier, undefined, env$10);
+                  var label$3 = Curry._2(Parse.identifier, undefined, env);
                   var name$1 = label$3[1].name;
-                  if (!mem$1(name$1, env$10.labels)) {
-                    error$1(env$10, /* UnknownLabel */Block.__(4, [name$1]));
+                  if (!mem$1(name$1, env.labels)) {
+                    error$1(env, /* UnknownLabel */Block.__(4, [name$1]));
                   }
                   label$2 = label$3;
                 }
-                var match$7 = Curry._2(Parser_env_Peek.semicolon_loc, undefined, env$10);
+                var match$7 = Curry._2(Parser_env_Peek.semicolon_loc, undefined, env);
                 var end_loc$5 = match$7 !== undefined ? match$7 : (
                     label$2 !== undefined ? label$2[0] : start_loc$8
                   );
                 var loc$4 = btwn(start_loc$8, end_loc$5);
-                if (!env$10.in_loop) {
-                  error_at(env$10, /* tuple */[
+                if (!env.in_loop) {
+                  error_at(env, /* tuple */[
                         loc$4,
                         /* IllegalContinue */21
                       ]);
                 }
-                semicolon(env$10);
+                semicolon(env);
                 return /* tuple */[
                         loc$4,
                         /* Continue */Block.__(5, [{
@@ -13202,19 +13147,18 @@ function statement(env) {
                             }])
                       ];
             case /* T_DO */35 :
-                var env$11 = env;
-                var start_loc$9 = Curry._2(Parser_env_Peek.loc, undefined, env$11);
-                token$4(env$11, /* T_DO */35);
-                var body$3 = Curry._1(Parse.statement, with_in_loop(true, env$11));
-                token$4(env$11, /* T_WHILE */23);
-                token$4(env$11, /* T_LPAREN */3);
-                var test$1 = Curry._1(Parse.expression, env$11);
-                var end_loc$6 = Curry._2(Parser_env_Peek.loc, undefined, env$11);
-                token$4(env$11, /* T_RPAREN */4);
-                var match$8 = Curry._2(Parser_env_Peek.semicolon_loc, undefined, env$11);
+                var start_loc$9 = Curry._2(Parser_env_Peek.loc, undefined, env);
+                token$4(env, /* T_DO */35);
+                var body$3 = Curry._1(Parse.statement, with_in_loop(true, env));
+                token$4(env, /* T_WHILE */23);
+                token$4(env, /* T_LPAREN */3);
+                var test$1 = Curry._1(Parse.expression, env);
+                var end_loc$6 = Curry._2(Parser_env_Peek.loc, undefined, env);
+                token$4(env, /* T_RPAREN */4);
+                var match$8 = Curry._2(Parser_env_Peek.semicolon_loc, undefined, env);
                 var end_loc$7 = match$8 !== undefined ? match$8 : end_loc$6;
-                if (Curry._2(Parser_env_Peek.token, undefined, env$11) === /* T_SEMICOLON */7) {
-                  semicolon(env$11);
+                if (Curry._2(Parser_env_Peek.token, undefined, env) === /* T_SEMICOLON */7) {
+                  semicolon(env);
                 }
                 return /* tuple */[
                         btwn(start_loc$9, end_loc$7),
@@ -13224,11 +13168,10 @@ function statement(env) {
                             }])
                       ];
             case /* T_FOR */37 :
-                var env$12 = env;
-                var start_loc$10 = Curry._2(Parser_env_Peek.loc, undefined, env$12);
-                token$4(env$12, /* T_FOR */37);
-                token$4(env$12, /* T_LPAREN */3);
-                var match$9 = Curry._2(Parser_env_Peek.token, undefined, env$12);
+                var start_loc$10 = Curry._2(Parser_env_Peek.loc, undefined, env);
+                token$4(env, /* T_FOR */37);
+                token$4(env, /* T_LPAREN */3);
+                var match$9 = Curry._2(Parser_env_Peek.token, undefined, env);
                 var match$10;
                 var exit$1 = 0;
                 if (typeof match$9 === "number") {
@@ -13238,7 +13181,7 @@ function statement(env) {
                     } else {
                       switch (match$9 - 22 | 0) {
                         case /* T_IDENTIFIER */0 :
-                            var match$11 = declarations(/* T_VAR */22, /* Var */0, with_no_in(true, env$12));
+                            var match$11 = declarations(/* T_VAR */22, /* Var */0, with_no_in(true, env));
                             match$10 = /* tuple */[
                               /* InitDeclaration */Block.__(0, [match$11[0]]),
                               match$11[1]
@@ -13249,14 +13192,14 @@ function statement(env) {
                             exit$1 = 1;
                             break;
                         case /* T_LPAREN */3 :
-                            var match$12 = $$const(with_no_in(true, env$12));
+                            var match$12 = $$const(with_no_in(true, env));
                             match$10 = /* tuple */[
                               /* InitDeclaration */Block.__(0, [match$12[0]]),
                               match$12[1]
                             ];
                             break;
                         case /* T_RPAREN */4 :
-                            var match$13 = _let(with_no_in(true, env$12));
+                            var match$13 = _let(with_no_in(true, env));
                             match$10 = /* tuple */[
                               /* InitDeclaration */Block.__(0, [match$13[0]]),
                               match$13[1]
@@ -13277,18 +13220,18 @@ function statement(env) {
                   exit$1 = 1;
                 }
                 if (exit$1 === 1) {
-                  var expr = Curry._1(Parse.expression, with_no_let(true, with_no_in(true, env$12)));
+                  var expr = Curry._1(Parse.expression, with_no_let(true, with_no_in(true, env)));
                   match$10 = /* tuple */[
                     /* InitExpression */Block.__(1, [expr]),
                     /* [] */0
                   ];
                 }
                 var init = match$10[0];
-                var match$14 = Curry._2(Parser_env_Peek.token, undefined, env$12);
+                var match$14 = Curry._2(Parser_env_Peek.token, undefined, env);
                 if (typeof match$14 === "number") {
                   if (match$14 !== 15) {
                     if (match$14 === 60) {
-                      assert_can_be_forin_or_forof(env$12, /* InvalidLHSInForOf */17, init);
+                      assert_can_be_forin_or_forof(env, /* InvalidLHSInForOf */17, init);
                       var left;
                       if (init !== undefined) {
                         var match$15 = init;
@@ -13303,10 +13246,10 @@ function statement(env) {
                               ]
                             ];
                       }
-                      token$4(env$12, /* T_OF */60);
-                      var right = Curry._1(Parse.assignment, env$12);
-                      token$4(env$12, /* T_RPAREN */4);
-                      var body$4 = Curry._1(Parse.statement, with_in_loop(true, env$12));
+                      token$4(env, /* T_OF */60);
+                      var right = Curry._1(Parse.assignment, env);
+                      token$4(env, /* T_RPAREN */4);
+                      var body$4 = Curry._1(Parse.statement, with_in_loop(true, env));
                       return /* tuple */[
                               btwn(start_loc$10, body$4[0]),
                               /* ForOf */Block.__(16, [{
@@ -13318,7 +13261,7 @@ function statement(env) {
                     }
                     
                   } else {
-                    assert_can_be_forin_or_forof(env$12, /* InvalidLHSInForIn */16, init);
+                    assert_can_be_forin_or_forof(env, /* InvalidLHSInForIn */16, init);
                     var left$1;
                     if (init !== undefined) {
                       var match$16 = init;
@@ -13333,10 +13276,10 @@ function statement(env) {
                             ]
                           ];
                     }
-                    token$4(env$12, /* T_IN */15);
-                    var right$1 = Curry._1(Parse.expression, env$12);
-                    token$4(env$12, /* T_RPAREN */4);
-                    var body$5 = Curry._1(Parse.statement, with_in_loop(true, env$12));
+                    token$4(env, /* T_IN */15);
+                    var right$1 = Curry._1(Parse.expression, env);
+                    token$4(env, /* T_RPAREN */4);
+                    var body$5 = Curry._1(Parse.statement, with_in_loop(true, env));
                     return /* tuple */[
                             btwn(start_loc$10, body$5[0]),
                             /* ForIn */Block.__(15, [{
@@ -13348,19 +13291,17 @@ function statement(env) {
                           ];
                   }
                 }
-                List.iter((function(env$12){
-                    return function (param) {
-                      return error_at(env$12, param);
-                    }
-                    }(env$12)), match$10[1]);
-                token$4(env$12, /* T_SEMICOLON */7);
-                var match$17 = Curry._2(Parser_env_Peek.token, undefined, env$12);
-                var test$2 = typeof match$17 === "number" && match$17 === 7 ? undefined : Curry._1(Parse.expression, env$12);
-                token$4(env$12, /* T_SEMICOLON */7);
-                var match$18 = Curry._2(Parser_env_Peek.token, undefined, env$12);
-                var update = typeof match$18 === "number" && match$18 === 4 ? undefined : Curry._1(Parse.expression, env$12);
-                token$4(env$12, /* T_RPAREN */4);
-                var body$6 = Curry._1(Parse.statement, with_in_loop(true, env$12));
+                List.iter((function (param) {
+                        return error_at(env, param);
+                      }), match$10[1]);
+                token$4(env, /* T_SEMICOLON */7);
+                var match$17 = Curry._2(Parser_env_Peek.token, undefined, env);
+                var test$2 = typeof match$17 === "number" && match$17 === 7 ? undefined : Curry._1(Parse.expression, env);
+                token$4(env, /* T_SEMICOLON */7);
+                var match$18 = Curry._2(Parser_env_Peek.token, undefined, env);
+                var update = typeof match$18 === "number" && match$18 === 4 ? undefined : Curry._1(Parse.expression, env);
+                token$4(env, /* T_RPAREN */4);
+                var body$6 = Curry._1(Parse.statement, with_in_loop(true, env));
                 return /* tuple */[
                         btwn(start_loc$10, body$6[0]),
                         /* For */Block.__(14, [{
@@ -13416,12 +13357,11 @@ function statement(env) {
                 exit = 2;
                 break;
             case /* T_DEBUGGER */57 :
-                var env$13 = env;
-                var start_loc$11 = Curry._2(Parser_env_Peek.loc, undefined, env$13);
-                token$4(env$13, /* T_DEBUGGER */57);
-                var match$19 = Curry._2(Parser_env_Peek.semicolon_loc, undefined, env$13);
+                var start_loc$11 = Curry._2(Parser_env_Peek.loc, undefined, env);
+                token$4(env, /* T_DEBUGGER */57);
+                var match$19 = Curry._2(Parser_env_Peek.semicolon_loc, undefined, env);
                 var end_loc$8 = match$19 !== undefined ? match$19 : start_loc$11;
-                semicolon(env$13);
+                semicolon(env);
                 return /* tuple */[
                         btwn(start_loc$11, end_loc$8),
                         /* Debugger */1
@@ -13441,18 +13381,17 @@ function statement(env) {
     }
     if (exit === 2) {
       if (Curry._2(Parser_env_Peek.is_identifier, undefined, env)) {
-        var env$14 = env;
-        var expr$1 = Curry._1(Parse.expression, env$14);
-        var match$20 = Curry._2(Parser_env_Peek.token, undefined, env$14);
+        var expr$1 = Curry._1(Parse.expression, env);
+        var match$20 = Curry._2(Parser_env_Peek.token, undefined, env);
         var match$21 = expr$1[1];
         var loc$5 = expr$1[0];
         if (typeof match$21 !== "number" && match$21.tag === /* Identifier */18 && typeof match$20 === "number" && match$20 === 77) {
           var label$4 = match$21[0];
           var match$22 = label$4[1];
           var name$2 = match$22.name;
-          token$4(env$14, /* T_COLON */77);
-          if (mem$1(name$2, env$14.labels)) {
-            error_at(env$14, /* tuple */[
+          token$4(env, /* T_COLON */77);
+          if (mem$1(name$2, env.labels)) {
+            error_at(env, /* tuple */[
                   loc$5,
                   /* Redeclaration */Block.__(5, [
                       "Label",
@@ -13460,8 +13399,8 @@ function statement(env) {
                     ])
                 ]);
           }
-          var env$15 = add_label(env$14, name$2);
-          var labeled_stmt = Curry._1(Parse.statement, env$15);
+          var env$1 = add_label(env, name$2);
+          var labeled_stmt = Curry._1(Parse.statement, env$1);
           return /* tuple */[
                   btwn(loc$5, labeled_stmt[0]),
                   /* Labeled */Block.__(3, [{
@@ -13470,9 +13409,9 @@ function statement(env) {
                       }])
                 ];
         }
-        var match$23 = Curry._2(Parser_env_Peek.semicolon_loc, undefined, env$14);
+        var match$23 = Curry._2(Parser_env_Peek.semicolon_loc, undefined, env);
         var end_loc$9 = match$23 !== undefined ? match$23 : expr$1[0];
-        semicolon(env$14);
+        semicolon(env);
         return /* tuple */[
                 btwn(expr$1[0], end_loc$9),
                 /* Expression */Block.__(1, [{
@@ -13658,13 +13597,11 @@ function directives(env, term_fn, item_fn) {
       ]);
   var env$1 = match[0];
   List.iter((function (param) {
-          var env$2 = env$1;
-          var param$1 = param;
-          var token = param$1[1];
+          var token = param[1];
           if (typeof token !== "number" && token.tag === /* T_STRING */1) {
             if (token[0][3]) {
-              return strict_error_at(env$2, /* tuple */[
-                          param$1[0],
+              return strict_error_at(env$1, /* tuple */[
+                          param[0],
                           /* StrictOctalLiteral */31
                         ]);
             } else {
@@ -14036,20 +13973,16 @@ function program$1(failOpt, token_sinkOpt, parse_optionsOpt, content) {
   var fail = failOpt !== undefined ? failOpt : true;
   var token_sink = token_sinkOpt !== undefined ? Caml_option.valFromOption(token_sinkOpt) : undefined;
   var parse_options = parse_optionsOpt !== undefined ? Caml_option.valFromOption(parse_optionsOpt) : undefined;
-  var fail$1 = fail;
   var token_sinkOpt$1 = Caml_option.some(token_sink);
   var parse_optionsOpt$1 = Caml_option.some(parse_options);
   var filename = undefined;
-  var content$1 = content;
   var token_sink$1 = token_sinkOpt$1 !== undefined ? Caml_option.valFromOption(token_sinkOpt$1) : undefined;
   var parse_options$1 = parse_optionsOpt$1 !== undefined ? Caml_option.valFromOption(parse_optionsOpt$1) : undefined;
-  var env = init_env(Caml_option.some(token_sink$1), Caml_option.some(parse_options$1), filename, content$1);
-  var env$1 = env;
+  var env = init_env(Caml_option.some(token_sink$1), Caml_option.some(parse_options$1), filename, content);
   var parser = Parse.program;
-  var fail$2 = fail$1;
-  var ast = Curry._1(parser, env$1);
-  var error_list = filter_duplicate_errors(env$1.errors.contents);
-  if (fail$2 && error_list !== /* [] */0) {
+  var ast = Curry._1(parser, env);
+  var error_list = filter_duplicate_errors(env.errors.contents);
+  if (fail && error_list !== /* [] */0) {
     throw [
           $$Error,
           error_list
@@ -14186,34 +14119,26 @@ function parse(content, options) {
       if (typeof t === "number") {
         switch (t) {
           case /* Any */0 :
-              var loc$1 = loc;
-              return node("AnyTypeAnnotation", loc$1, []);
+              return node("AnyTypeAnnotation", loc, []);
           case /* Void */1 :
-              var loc$2 = loc;
-              return node("VoidTypeAnnotation", loc$2, []);
+              return node("VoidTypeAnnotation", loc, []);
           case /* Null */2 :
-              var loc$3 = loc;
-              return node("NullTypeAnnotation", loc$3, []);
+              return node("NullTypeAnnotation", loc, []);
           case /* Number */3 :
-              var loc$4 = loc;
-              return node("NumberTypeAnnotation", loc$4, []);
+              return node("NumberTypeAnnotation", loc, []);
           case /* String */4 :
-              var loc$5 = loc;
-              return node("StringTypeAnnotation", loc$5, []);
+              return node("StringTypeAnnotation", loc, []);
           case /* Boolean */5 :
-              var loc$6 = loc;
-              return node("BooleanTypeAnnotation", loc$6, []);
+              return node("BooleanTypeAnnotation", loc, []);
           case /* Exists */6 :
-              var loc$7 = loc;
-              return node("ExistsTypeAnnotation", loc$7, []);
+              return node("ExistsTypeAnnotation", loc, []);
           
         }
       } else {
         switch (t.tag | 0) {
           case /* Nullable */0 :
-              var loc$8 = loc;
               var t$1 = t[0];
-              return node("NullableTypeAnnotation", loc$8, [/* tuple */[
+              return node("NullableTypeAnnotation", loc, [/* tuple */[
                             "typeAnnotation",
                             _type(t$1)
                           ]]);
@@ -14228,9 +14153,8 @@ function parse(content, options) {
                           t[0]
                         ]);
           case /* Array */3 :
-              var loc$9 = loc;
               var t$2 = t[0];
-              return node("ArrayTypeAnnotation", loc$9, [/* tuple */[
+              return node("ArrayTypeAnnotation", loc, [/* tuple */[
                             "elementType",
                             _type(t$2)
                           ]]);

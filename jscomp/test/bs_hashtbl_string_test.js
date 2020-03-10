@@ -256,8 +256,7 @@ function bench6(param) {
 }
 
 function bench7(param) {
-  var hintSize = 2000000;
-  var table = Belt_internalBucketsType.make(/* () */0, /* () */0, hintSize);
+  var table = Belt_internalBucketsType.make(/* () */0, /* () */0, 2000000);
   for(var i = 0; i <= 1000000; ++i){
     Belt_HashSetInt.add(table, i);
   }

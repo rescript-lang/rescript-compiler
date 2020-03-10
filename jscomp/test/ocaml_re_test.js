@@ -1330,17 +1330,14 @@ function delta_seq(c, next_cat, prev_cat, kind, y, z, rem) {
 
 function delta_4(c, next_cat, prev_cat, l, rem) {
   if (l) {
-    var c$1 = c;
-    var next_cat$1 = next_cat;
-    var prev_cat$1 = prev_cat;
     var x = l[0];
     var rem$1 = delta_4(c, next_cat, prev_cat, l[1], rem);
     switch (x.tag | 0) {
       case /* TSeq */0 :
-          var y$prime = delta_4(c$1, next_cat$1, prev_cat$1, x[0], /* [] */0);
-          return delta_seq(c$1, next_cat$1, prev_cat$1, x[2], y$prime, x[1], rem$1);
+          var y$prime = delta_4(c, next_cat, prev_cat, x[0], /* [] */0);
+          return delta_seq(c, next_cat, prev_cat, x[2], y$prime, x[1], rem$1);
       case /* TExp */1 :
-          return delta_1(x[0], c$1, next_cat$1, prev_cat$1, x[1], rem$1);
+          return delta_1(x[0], c, next_cat, prev_cat, x[1], rem$1);
       case /* TMatch */2 :
           return /* :: */[
                   x,
@@ -2875,19 +2872,15 @@ function compile(r) {
         contents: /* Empty */0
       }, col, regexp$1);
   var r$1 = enforce_kind(ids, /* First */332064784, match$1[1], match$1[0]);
-  var init = r$1;
-  var cols = col;
   var col_repr = match[1];
-  var ncol$2 = ncol$1;
-  var lnl$1 = lnl;
   var group_count = pos.contents / 2 | 0;
   return {
-          initial: init,
+          initial: r$1,
           initial_states: /* [] */0,
-          cols: cols,
+          cols: col,
           col_repr: col_repr,
-          ncol: ncol$2,
-          lnl: lnl$1,
+          ncol: ncol$1,
+          lnl: lnl,
           tbl: {
             contents: [false]
           },
@@ -2905,17 +2898,12 @@ function exec_internal(name, posOpt, lenOpt, groups, re, s) {
           name
         ];
   }
-  var groups$1 = groups;
   var partial = false;
-  var re$1 = re;
-  var s$1 = s;
-  var pos$1 = pos;
-  var len$1 = len;
-  var slen = s$1.length;
-  var last = len$1 === -1 ? slen : pos$1 + len$1 | 0;
+  var slen = s.length;
+  var last = len === -1 ? slen : pos + len | 0;
   var tmp;
-  if (groups$1) {
-    var n = re$1.tbl.contents.length + 1 | 0;
+  if (groups) {
+    var n = re.tbl.contents.length + 1 | 0;
     tmp = n <= 10 ? [
         0,
         0,
@@ -2932,22 +2920,22 @@ function exec_internal(name, posOpt, lenOpt, groups, re, s) {
     tmp = [];
   }
   var info = {
-    re: re$1,
-    i_cols: re$1.cols,
+    re: re,
+    i_cols: re.cols,
     positions: tmp,
-    pos: pos$1,
+    pos: pos,
     last: last
   };
-  var initial_cat = pos$1 === 0 ? Curry._2(Re_automata_Category.$plus$plus, Re_automata_Category.search_boundary, Re_automata_Category.inexistant) : Curry._2(Re_automata_Category.$plus$plus, Re_automata_Category.search_boundary, category(re$1, get_color(re$1, s$1, pos$1 - 1 | 0)));
-  var initial_state = find_initial_state(re$1, initial_cat);
-  var st = scan_str(info, s$1, initial_state, groups$1);
+  var initial_cat = pos === 0 ? Curry._2(Re_automata_Category.$plus$plus, Re_automata_Category.search_boundary, Re_automata_Category.inexistant) : Curry._2(Re_automata_Category.$plus$plus, Re_automata_Category.search_boundary, category(re, get_color(re, s, pos - 1 | 0)));
+  var initial_state = find_initial_state(re, initial_cat);
+  var st = scan_str(info, s, initial_state, groups);
   var res;
   if (st.idx === -3 || partial) {
     res = status(st.desc);
   } else {
-    var final_cat = last === slen ? Curry._2(Re_automata_Category.$plus$plus, Re_automata_Category.search_boundary, Re_automata_Category.inexistant) : Curry._2(Re_automata_Category.$plus$plus, Re_automata_Category.search_boundary, category(re$1, get_color(re$1, s$1, last)));
+    var final_cat = last === slen ? Curry._2(Re_automata_Category.$plus$plus, Re_automata_Category.search_boundary, Re_automata_Category.inexistant) : Curry._2(Re_automata_Category.$plus$plus, Re_automata_Category.search_boundary, category(re, get_color(re, s, last)));
     var match = $$final(info, st, final_cat);
-    if (groups$1) {
+    if (groups) {
       Caml_array.caml_array_set(info.positions, match[0], last + 1 | 0);
     }
     res = match[1];
@@ -2960,11 +2948,11 @@ function exec_internal(name, posOpt, lenOpt, groups, re, s) {
     }
   } else {
     return /* Match */[{
-              s: s$1,
+              s: s,
               marks: res[0],
               pmarks: res[1],
               gpos: info.positions,
-              gcount: re$1.group_count
+              gcount: re.group_count
             }];
   }
 }
@@ -3757,9 +3745,8 @@ function re(flagsOpt, pat) {
           }
         }), flags);
   var optsOpt = opts;
-  var s = pat;
   var opts$1 = optsOpt !== undefined ? optsOpt : /* [] */0;
-  var r = parse(List.memq(/* Multiline */1071952589, opts$1), List.memq(/* Dollar_endonly */-712595228, opts$1), List.memq(/* Dotall */-424303016, opts$1), List.memq(/* Ungreedy */-243745063, opts$1), s);
+  var r = parse(List.memq(/* Multiline */1071952589, opts$1), List.memq(/* Dollar_endonly */-712595228, opts$1), List.memq(/* Dotall */-424303016, opts$1), List.memq(/* Ungreedy */-243745063, opts$1), pat);
   var r$1 = List.memq(/* Anchored */616470068, opts$1) ? seq$2(/* :: */[
           /* Start */8,
           /* :: */[
@@ -3775,11 +3762,8 @@ function re(flagsOpt, pat) {
 }
 
 function exec(rex, pos, s) {
-  var pos$1 = pos;
   var len = undefined;
-  var re = rex;
-  var s$1 = s;
-  var match = exec_internal("Re.exec", pos$1, len, true, re, s$1);
+  var match = exec_internal("Re.exec", pos, len, true, rex, s);
   if (typeof match === "number") {
     throw Caml_builtin_exceptions.not_found;
   }

@@ -136,15 +136,12 @@ function test_raises_this_exc(exc) {
 }
 
 function failure_test(f, x, s) {
-  var s$1 = s;
-  var f$1 = f;
-  var x$1 = x;
   return test_raises_exc_p((function (x) {
                 return Caml_obj.caml_equal(x, [
                             Caml_builtin_exceptions.failure,
-                            s$1
+                            s
                           ]);
-              }), f$1, x$1);
+              }), f, x);
 }
 
 function scan_failure_test(f, x) {

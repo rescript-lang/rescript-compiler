@@ -116,10 +116,8 @@ function from_pair_suites(name, suites) {
             }));
       return /* () */0;
     } else {
-      var name$1 = name;
-      var suites$1 = suites;
       console.log(/* tuple */[
-            name$1,
+            name,
             "testing"
           ]);
       return List.iter((function (param) {
@@ -194,7 +192,7 @@ function from_pair_suites(name, suites) {
                           return /* () */0;
                       
                     }
-                  }), suites$1);
+                  }), suites);
     }
   } else {
     return /* () */0;

@@ -255,9 +255,8 @@ function make_type(typ, dir) {
           dir
         ];
         if (pt) {
-          var param = spr_type;
-          var typ$1 = param[0];
-          if (param[1]) {
+          var typ$1 = spr_type[0];
+          if (spr_type[1]) {
             switch (typ$1) {
               case /* Standing */0 :
                   return setup_sprite(undefined, /* tuple */[
@@ -379,9 +378,8 @@ function make_type(typ, dir) {
             }
           }
         } else {
-          var param$1 = spr_type;
-          var typ$2 = param$1[0];
-          if (param$1[1]) {
+          var typ$2 = spr_type[0];
+          if (spr_type[1]) {
             switch (typ$2) {
               case /* Standing */0 :
                   return setup_sprite(undefined, /* tuple */[
@@ -509,8 +507,8 @@ function make_type(typ, dir) {
                     dir
                   ]);
     case /* SItem */2 :
-        var param$2 = typ[0];
-        switch (param$2) {
+        var param = typ[0];
+        switch (param) {
           case /* Mushroom */0 :
               return setup_sprite(undefined, /* tuple */[
                           2,
@@ -558,9 +556,9 @@ function make_type(typ, dir) {
           
         }
     case /* SBlock */3 :
-        var param$3 = typ[0];
-        if (typeof param$3 === "number") {
-          switch (param$3) {
+        var param$1 = typ[0];
+        if (typeof param$1 === "number") {
+          switch (param$1) {
             case /* QBlockUsed */0 :
                 return setup_sprite(undefined, undefined, undefined, "blocks.png", 1, 0, /* tuple */[
                             16,
@@ -783,9 +781,8 @@ function $$process(part) {
     part.kill = true;
   }
   update_vel(part);
-  var part$1 = part;
-  part$1.pos.x = part$1.vel.x + part$1.pos.x;
-  part$1.pos.y = part$1.vel.y + part$1.pos.y;
+  part.pos.x = part.vel.x + part.pos.x;
+  part.pos.y = part.vel.y + part.pos.y;
   return /* () */0;
 }
 
@@ -961,42 +958,40 @@ function update_player(player, keys, context) {
   var prev_dir = player.dir;
   var prev_vx = Math.abs(player.vel.x);
   List.iter((function (param) {
-          var player$1 = player;
-          var controls = param;
-          var lr_acc = player$1.vel.x * 0.2;
-          switch (controls) {
+          var lr_acc = player.vel.x * 0.2;
+          switch (param) {
             case /* CLeft */0 :
-                if (player$1.crouch) {
+                if (player.crouch) {
                   return 0;
                 } else {
-                  if (player$1.vel.x > -player$1.params.speed) {
-                    player$1.vel.x = player$1.vel.x - (0.4 - lr_acc);
+                  if (player.vel.x > -player.params.speed) {
+                    player.vel.x = player.vel.x - (0.4 - lr_acc);
                   }
-                  player$1.dir = /* Left */0;
+                  player.dir = /* Left */0;
                   return /* () */0;
                 }
             case /* CRight */1 :
-                if (player$1.crouch) {
+                if (player.crouch) {
                   return 0;
                 } else {
-                  if (player$1.vel.x < player$1.params.speed) {
-                    player$1.vel.x = player$1.vel.x + (0.4 + lr_acc);
+                  if (player.vel.x < player.params.speed) {
+                    player.vel.x = player.vel.x + (0.4 + lr_acc);
                   }
-                  player$1.dir = /* Right */1;
+                  player.dir = /* Right */1;
                   return /* () */0;
                 }
             case /* CUp */2 :
-                if (!player$1.jumping && player$1.grounded) {
-                  player$1.jumping = true;
-                  player$1.grounded = false;
-                  player$1.vel.y = Caml_primitive.caml_float_max(player$1.vel.y - (5.7 + Math.abs(player$1.vel.x) * 0.25), -6);
+                if (!player.jumping && player.grounded) {
+                  player.jumping = true;
+                  player.grounded = false;
+                  player.vel.y = Caml_primitive.caml_float_max(player.vel.y - (5.7 + Math.abs(player.vel.x) * 0.25), -6);
                   return /* () */0;
                 } else {
                   return 0;
                 }
             case /* CDown */3 :
-                if (!player$1.jumping && player$1.grounded) {
-                  player$1.crouch = true;
+                if (!player.jumping && player.grounded) {
+                  player.crouch = true;
                   return /* () */0;
                 } else {
                   return 0;
@@ -1757,17 +1752,13 @@ function process_collision(dir, c1, c2, state) {
               }
               break;
           case /* Enemy */1 :
-              var t1$1 = t1;
-              var s1$5 = s1$3;
-              var o1$6 = o1$4;
               var t2$2 = c2[0];
               var s2$3 = c2[1];
               var o2$5 = c2[2];
-              var dir$1 = dir;
-              if (t1$1 !== 3) {
-                if (t1$1 >= 4) {
+              if (t1 !== 3) {
+                if (t1 >= 4) {
                   if (t2$2 >= 3) {
-                    dec_health(o1$6);
+                    dec_health(o1$4);
                     dec_health(o2$5);
                     return /* tuple */[
                             undefined,
@@ -1777,20 +1768,20 @@ function process_collision(dir, c1, c2, state) {
                   
                 } else if (t2$2 >= 3) {
                   if (o2$5.vel.x === 0) {
-                    rev_dir(o1$6, t1$1, s1$5);
+                    rev_dir(o1$4, t1, s1$3);
                     return /* tuple */[
                             undefined,
                             undefined
                           ];
                   } else {
-                    dec_health(o1$6);
+                    dec_health(o1$4);
                     return /* tuple */[
                             undefined,
                             undefined
                           ];
                   }
-                } else if (dir$1 >= 2) {
-                  rev_dir(o1$6, t1$1, s1$5);
+                } else if (dir >= 2) {
+                  rev_dir(o1$4, t1, s1$3);
                   rev_dir(o2$5, t2$2, s2$3);
                   return /* tuple */[
                           undefined,
@@ -1803,14 +1794,14 @@ function process_collision(dir, c1, c2, state) {
                         ];
                 }
               } else if (t2$2 >= 3) {
-                dec_health(o1$6);
+                dec_health(o1$4);
                 dec_health(o2$5);
                 return /* tuple */[
                         undefined,
                         undefined
                       ];
               }
-              if (o1$6.vel.x === 0) {
+              if (o1$4.vel.x === 0) {
                 rev_dir(o2$5, t2$2, s2$3);
                 return /* tuple */[
                         undefined,
@@ -1915,59 +1906,48 @@ function process_collision(dir, c1, c2, state) {
   }
   switch (exit) {
     case 1 :
-        var o1$7 = o1;
-        var typ$2 = typ;
-        var s2$4 = s2;
-        var o2$8 = o2;
-        var state$1 = state;
-        var context$1 = context;
-        o1$7.invuln = 10;
-        o1$7.jumping = false;
-        o1$7.grounded = true;
-        if (typ$2 >= 3) {
-          var r2 = evolve_enemy(o1$7.dir, typ$2, s2$4, o2$8, context$1);
-          o1$7.vel.y = -4;
-          o1$7.pos.y = o1$7.pos.y - 5;
+        o1.invuln = 10;
+        o1.jumping = false;
+        o1.grounded = true;
+        if (typ >= 3) {
+          var r2 = evolve_enemy(o1.dir, typ, s2, o2, context);
+          o1.vel.y = -4;
+          o1.pos.y = o1.pos.y - 5;
           return /* tuple */[
                   undefined,
                   r2
                 ];
         } else {
-          dec_health(o2$8);
-          o1$7.vel.y = -4;
-          if (state$1.multiplier === 8) {
-            update_score(state$1, 800);
-            o2$8.score = 800;
+          dec_health(o2);
+          o1.vel.y = -4;
+          if (state.multiplier === 8) {
+            update_score(state, 800);
+            o2.score = 800;
             return /* tuple */[
                     undefined,
-                    evolve_enemy(o1$7.dir, typ$2, s2$4, o2$8, context$1)
+                    evolve_enemy(o1.dir, typ, s2, o2, context)
                   ];
           } else {
-            var score = Caml_int32.imul(100, state$1.multiplier);
-            update_score(state$1, score);
-            o2$8.score = score;
-            state$1.multiplier = (state$1.multiplier << 1);
+            var score = Caml_int32.imul(100, state.multiplier);
+            update_score(state, score);
+            o2.score = score;
+            state.multiplier = (state.multiplier << 1);
             return /* tuple */[
                     undefined,
-                    evolve_enemy(o1$7.dir, typ$2, s2$4, o2$8, context$1)
+                    evolve_enemy(o1.dir, typ, s2, o2, context)
                   ];
           }
         }
     case 2 :
-        var o1$8 = o1$1;
-        var t2$4 = t2;
-        var s2$5 = s2$1;
-        var o2$9 = o2$1;
-        var context$2 = context;
-        if (t2$4 >= 3) {
-          var r2$1 = o2$9.vel.x === 0 ? evolve_enemy(o1$8.dir, t2$4, s2$5, o2$9, context$2) : (dec_health(o1$8), o1$8.invuln = 60, undefined);
+        if (t2 >= 3) {
+          var r2$1 = o2$1.vel.x === 0 ? evolve_enemy(o1$1.dir, t2, s2$1, o2$1, context) : (dec_health(o1$1), o1$1.invuln = 60, undefined);
           return /* tuple */[
                   undefined,
                   r2$1
                 ];
         } else {
-          dec_health(o1$8);
-          o1$8.invuln = 60;
+          dec_health(o1$1);
+          o1$1.invuln = 60;
           return /* tuple */[
                   undefined,
                   undefined
@@ -2026,27 +2006,24 @@ function check_collisions(collid, all_collids, state) {
   } else {
     var broad = broad_phase(collid, all_collids, state);
     var c = collid;
-    var cs = broad;
+    var _cs = broad;
     var state$1 = state;
-    var c$1 = c;
-    var _cs = cs;
-    var state$2 = state$1;
     var _acc = /* [] */0;
     while(true) {
       var acc = _acc;
-      var cs$1 = _cs;
-      if (cs$1) {
-        var h = cs$1[0];
-        var c_obj = c$1[2];
+      var cs = _cs;
+      if (cs) {
+        var h = cs[0];
+        var c_obj = c[2];
         var new_objs;
-        if (equals(c$1, h)) {
+        if (equals(c, h)) {
           new_objs = /* tuple */[
             undefined,
             undefined
           ];
         } else {
-          var match = check_collision(c$1, h);
-          new_objs = match !== undefined && h[2].id !== c_obj.id ? process_collision(match, c$1, h, state$2) : /* tuple */[
+          var match = check_collision(c, h);
+          new_objs = match !== undefined && h[2].id !== c_obj.id ? process_collision(match, c, h, state$1) : /* tuple */[
               undefined,
               undefined
             ];
@@ -2074,7 +2051,7 @@ function check_collisions(collid, all_collids, state) {
             ] : acc;
         }
         _acc = acc$1;
-        _cs = cs$1[1];
+        _cs = cs[1];
         continue ;
       } else {
         return acc;
@@ -2240,20 +2217,18 @@ function update_loop(canvas, param, map_dim) {
                 return /* () */0;
               }), objs);
         List.iter((function (part) {
-                var state$2 = state$1;
-                var part$1 = part;
-                $$process(part$1);
-                var x = part$1.pos.x - state$2.vpt.pos.x;
-                var y = part$1.pos.y - state$2.vpt.pos.y;
-                render(part$1.params.sprite, /* tuple */[
+                $$process(part);
+                var x = part.pos.x - state$1.vpt.pos.x;
+                var y = part.pos.y - state$1.vpt.pos.y;
+                render(part.params.sprite, /* tuple */[
                       x,
                       y
                     ]);
-                if (part$1.kill) {
+                if (part.kill) {
                   return 0;
                 } else {
                   particles.contents = /* :: */[
-                    part$1,
+                    part,
                     particles.contents
                   ];
                   return /* () */0;
@@ -2634,38 +2609,35 @@ function choose_block_pattern(blockw, blockh, cbx, cby, prob) {
           }
       case 2 :
           if (blockh - cby === 1) {
-            var cbx$1 = cbx;
-            var cby$1 = cby;
-            var typ = stair_typ;
             var four_000 = /* tuple */[
-              typ,
+              stair_typ,
               /* tuple */[
-                cbx$1,
-                cby$1
+                cbx,
+                cby
               ]
             ];
             var four_001 = /* :: */[
               /* tuple */[
-                typ,
+                stair_typ,
                 /* tuple */[
-                  cbx$1 + 1,
-                  cby$1
+                  cbx + 1,
+                  cby
                 ]
               ],
               /* :: */[
                 /* tuple */[
-                  typ,
+                  stair_typ,
                   /* tuple */[
-                    cbx$1 + 2,
-                    cby$1
+                    cbx + 2,
+                    cby
                   ]
                 ],
                 /* :: */[
                   /* tuple */[
-                    typ,
+                    stair_typ,
                     /* tuple */[
-                      cbx$1 + 3,
-                      cby$1
+                      cbx + 3,
+                      cby
                     ]
                   ],
                   /* [] */0
@@ -2677,26 +2649,26 @@ function choose_block_pattern(blockw, blockh, cbx, cby, prob) {
               four_001
             ];
             var three_000 = /* tuple */[
-              typ,
+              stair_typ,
               /* tuple */[
-                cbx$1 + 1,
-                cby$1 - 1
+                cbx + 1,
+                cby - 1
               ]
             ];
             var three_001 = /* :: */[
               /* tuple */[
-                typ,
+                stair_typ,
                 /* tuple */[
-                  cbx$1 + 2,
-                  cby$1 - 1
+                  cbx + 2,
+                  cby - 1
                 ]
               ],
               /* :: */[
                 /* tuple */[
-                  typ,
+                  stair_typ,
                   /* tuple */[
-                    cbx$1 + 3,
-                    cby$1 - 1
+                    cbx + 3,
+                    cby - 1
                   ]
                 ],
                 /* [] */0
@@ -2707,18 +2679,18 @@ function choose_block_pattern(blockw, blockh, cbx, cby, prob) {
               three_001
             ];
             var two_000 = /* tuple */[
-              typ,
+              stair_typ,
               /* tuple */[
-                cbx$1 + 2,
-                cby$1 - 2
+                cbx + 2,
+                cby - 2
               ]
             ];
             var two_001 = /* :: */[
               /* tuple */[
-                typ,
+                stair_typ,
                 /* tuple */[
-                  cbx$1 + 3,
-                  cby$1 - 2
+                  cbx + 3,
+                  cby - 2
                 ]
               ],
               /* [] */0
@@ -2728,10 +2700,10 @@ function choose_block_pattern(blockw, blockh, cbx, cby, prob) {
               two_001
             ];
             var one_000 = /* tuple */[
-              typ,
+              stair_typ,
               /* tuple */[
-                cbx$1 + 3,
-                cby$1 - 3
+                cbx + 3,
+                cby - 3
               ]
             ];
             var one = /* :: */[
@@ -2744,30 +2716,27 @@ function choose_block_pattern(blockw, blockh, cbx, cby, prob) {
           }
       case 3 :
           if (stair_typ === 0 && blockh - cby > 3) {
-            var cbx$2 = cbx;
-            var cby$2 = cby;
-            var typ$1 = stair_typ;
             var three_000$1 = /* tuple */[
-              typ$1,
+              stair_typ,
               /* tuple */[
-                cbx$2,
-                cby$2
+                cbx,
+                cby
               ]
             ];
             var three_001$1 = /* :: */[
               /* tuple */[
-                typ$1,
+                stair_typ,
                 /* tuple */[
-                  cbx$2 + 1,
-                  cby$2
+                  cbx + 1,
+                  cby
                 ]
               ],
               /* :: */[
                 /* tuple */[
-                  typ$1,
+                  stair_typ,
                   /* tuple */[
-                    cbx$2 + 2,
-                    cby$2
+                    cbx + 2,
+                    cby
                   ]
                 ],
                 /* [] */0
@@ -2778,18 +2747,18 @@ function choose_block_pattern(blockw, blockh, cbx, cby, prob) {
               three_001$1
             ];
             var two_000$1 = /* tuple */[
-              typ$1,
+              stair_typ,
               /* tuple */[
-                cbx$2 + 2,
-                cby$2 + 1
+                cbx + 2,
+                cby + 1
               ]
             ];
             var two_001$1 = /* :: */[
               /* tuple */[
-                typ$1,
+                stair_typ,
                 /* tuple */[
-                  cbx$2 + 3,
-                  cby$2 + 1
+                  cbx + 3,
+                  cby + 1
                 ]
               ],
               /* [] */0
@@ -2799,18 +2768,18 @@ function choose_block_pattern(blockw, blockh, cbx, cby, prob) {
               two_001$1
             ];
             var one_000$1 = /* tuple */[
-              typ$1,
+              stair_typ,
               /* tuple */[
-                cbx$2 + 5,
-                cby$2 + 2
+                cbx + 5,
+                cby + 2
               ]
             ];
             var one_001 = /* :: */[
               /* tuple */[
-                typ$1,
+                stair_typ,
                 /* tuple */[
-                  cbx$2 + 6,
-                  cby$2 + 2
+                  cbx + 6,
+                  cby + 2
                 ]
               ],
               /* [] */0
@@ -2821,22 +2790,19 @@ function choose_block_pattern(blockw, blockh, cbx, cby, prob) {
             ];
             return Pervasives.$at(three$1, Pervasives.$at(two$1, one$1));
           } else if (blockh - cby > 2) {
-            var cbx$3 = cbx;
-            var cby$3 = cby;
-            var typ$2 = stair_typ;
             var one_000$2 = /* tuple */[
-              typ$2,
+              stair_typ,
               /* tuple */[
-                cbx$3,
-                cby$3
+                cbx,
+                cby
               ]
             ];
             var one_001$1 = /* :: */[
               /* tuple */[
-                typ$2,
+                stair_typ,
                 /* tuple */[
-                  cbx$3 + 1,
-                  cby$3
+                  cbx + 1,
+                  cby
                 ]
               ],
               /* [] */0
@@ -2846,18 +2812,18 @@ function choose_block_pattern(blockw, blockh, cbx, cby, prob) {
               one_001$1
             ];
             var two_000$2 = /* tuple */[
-              typ$2,
+              stair_typ,
               /* tuple */[
-                cbx$3 + 3,
-                cby$3 - 1
+                cbx + 3,
+                cby - 1
               ]
             ];
             var two_001$2 = /* :: */[
               /* tuple */[
-                typ$2,
+                stair_typ,
                 /* tuple */[
-                  cbx$3 + 4,
-                  cby$3 - 1
+                  cbx + 4,
+                  cby - 1
                 ]
               ],
               /* [] */0
@@ -2867,26 +2833,26 @@ function choose_block_pattern(blockw, blockh, cbx, cby, prob) {
               two_001$2
             ];
             var three_000$2 = /* tuple */[
-              typ$2,
+              stair_typ,
               /* tuple */[
-                cbx$3 + 4,
-                cby$3 - 2
+                cbx + 4,
+                cby - 2
               ]
             ];
             var three_001$2 = /* :: */[
               /* tuple */[
-                typ$2,
+                stair_typ,
                 /* tuple */[
-                  cbx$3 + 5,
-                  cby$3 - 2
+                  cbx + 5,
+                  cby - 2
                 ]
               ],
               /* :: */[
                 /* tuple */[
-                  typ$2,
+                  stair_typ,
                   /* tuple */[
-                    cbx$3 + 6,
-                    cby$3 - 2
+                    cbx + 6,
+                    cby - 2
                   ]
                 ],
                 /* [] */0

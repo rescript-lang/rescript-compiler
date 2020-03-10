@@ -68,8 +68,8 @@ let make ?immutable_mask n = {
   bound_loop_mutable_values =Set_ident.empty;
 }
 
-(* let is_tailcalled x = 
-  x.immutable_mask <> All_immutable_and_no_tail_call *)
+ let no_tailcall x = 
+  x.immutable_mask = All_immutable_and_no_tail_call 
 
 let mark_unused  t i = 
   t.used_mask.(i) <- true

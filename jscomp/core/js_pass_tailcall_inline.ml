@@ -41,65 +41,12 @@ module S = Js_stmt_make
 (* module E = Js_exp_make *)
 
 
-(** Update ident info use cases, it is a non pure function, 
-    it will annotate [program] with some meta data
-    TODO: Ident Hash could be improved, 
-    since in this case it can not be global?  
-
-*)
-let count_collects () = 
-  object (self)
-    inherit Js_fold.fold as super
-    (* collect used status*)
-    val stats : int ref Hash_ident.t = Hash_ident.create 83
-    (* collect all def sites *)
-    val defined_idents : J.variable_declaration Hash_ident.t = Hash_ident.create 83
-
-    val mutable my_export_set  : Set_ident.t = Set_ident.empty
-
-
-    method add_use id = 
-      match Hash_ident.find_opt stats id with
-      | None -> Hash_ident.add stats id (ref 1)
-      | Some v -> incr v 
-    method! program x = 
-      my_export_set <- x.export_set ; 
-
-      super#program x
-    method! variable_declaration 
-        ({ident; value ; property = _ ; ident_info = _}  as v)
-      =  
-      Hash_ident.add defined_idents ident v; 
-      match value with 
-      | None -> 
-        self
-      | Some x
-        -> self#expression x 
-    method! ident id = self#add_use id; self
-    method get_stats = 
-      Hash_ident.iter defined_idents (fun ident v  -> 
-          if Set_ident.mem my_export_set ident then 
-            Js_op_util.update_used_stats v.ident_info Exported
-          else 
-            let pure = 
-              match v.value  with 
-              | None -> false  (* can not happen *)
-              | Some x -> Js_analyzer.no_side_effect_expression x in
-            match Hash_ident.find_opt stats ident with 
-            | None -> 
-              Js_op_util.update_used_stats v.ident_info 
-                (if pure then Dead_pure else Dead_non_pure)
-            | Some num -> 
-              if !num = 1 then 
-                Js_op_util.update_used_stats v.ident_info 
-                  (if pure then Once_pure else Used) 
-        ) ; defined_idents
-  end
-
-
-let get_stats (program : J.program) : J.variable_declaration Hash_ident.t
-  =  ((count_collects ()) #program program) #get_stats
-
+let substitue_variables (map : Ident.t Map_ident.t) = 
+    object (self)  
+      inherit Js_map.map
+      method! ident id =
+         Map_ident.find_default map id id 
+    end         
 
 (* 1. recursive value ? let rec x = 1 :: x
     non-terminating
@@ -109,6 +56,36 @@ let get_stats (program : J.program) : J.variable_declaration Hash_ident.t
     case is substituted
     we already have this? in [defined_idents]
 *)
+
+let inline_call
+  no_tailcall 
+  params (args : J.expression list) processed_blocks =  
+  if no_tailcall then   
+    let map, block =   
+      Ext_list.fold_right2 
+        params args  (Map_ident.empty,  processed_blocks)
+        (fun param arg (map,acc) ->  
+           match arg.expression_desc with 
+           | Var (Id id) ->  
+             Map_ident.add map param id, acc 
+           | _ -> 
+             map, S.define_variable ~kind:Variable param arg :: acc) in 
+    if Map_ident.is_empty map then block 
+    else (substitue_variables map) # block block        
+  else    
+  (*
+      At this time, when tailcall happened, the parameter can be assigned
+      for example {[
+        function (_x,y){
+          _x = u
+        }
+      ]}
+      if it is substitued, the assignment will align the value which is incorrect
+  *)
+    Ext_list.fold_right2 
+      params args  processed_blocks
+      (fun param arg acc ->  
+         S.define_variable ~kind:Variable param arg :: acc) 
 
 (** There is a side effect when traversing dead code, since 
     we assume that substitue a node would mark a node as dead node,
@@ -182,17 +159,15 @@ let subst (export_set : Set_ident.t) stats  =
             | Some _ -> self#statement st  :: self#block rest 
           end
 
-      | {statement_desc = 
+      | [{statement_desc = 
            Return {return_value = 
                      {expression_desc = 
-                        Call({expression_desc = Var (Id id)},args,_info)}} }
-        as st 
-        :: rest 
+                        Call({expression_desc = Var (Id id)},args,_info)}} } as st ]
         -> 
         begin match Hash_ident.find_opt stats id with 
 
           | Some ({ value = 
-                      Some {expression_desc = Fun (false, params, block, _env) ; comment = _}; 
+                      Some {expression_desc = Fun (false, params, block, env) ; comment = _}; 
                     (*TODO: don't inline method tail call yet, 
                       [this] semantics are weird 
                     *)              
@@ -202,21 +177,20 @@ let subst (export_set : Set_ident.t) stats  =
                   } as v)
             when Ext_list.same_length params args 
             -> 
-            (* Ext_log.dwarn  __LOC__ "%s is dead \n %s " id.name  *)
-            (*   (Js_dump.string_of_block [st]); *)
             Js_op_util.update_used_stats v.ident_info Dead_pure;
-            let block  = 
-              Ext_list.fold_right2 
-                params args  ( self#block block) (* see #278 before changes*)
-                (fun param arg acc ->  
-                   S.define_variable ~kind:Variable param arg :: acc)                                                
-            in
+            let no_tailcall = Js_fun_env.no_tailcall env in 
+            let processed_blocks = ( self#block block) (* see #278 before changes*) in 
+            inline_call no_tailcall params args processed_blocks
+            (* Ext_list.fold_right2 
+              params args  processed_blocks
+              (fun param arg acc ->  
+                 S.define_variable ~kind:Variable param arg :: acc)                                                 *)
             (* Mark a function as dead means it will never be scanned, 
                here we inline the function
             *)
-            Ext_list.append block (self#block rest)
+
           | (None | Some _) ->
-            self#statement st :: self#block rest
+            [self#statement st ]
         end
       | x :: xs 
         ->
@@ -229,7 +203,7 @@ let subst (export_set : Set_ident.t) stats  =
 
 
 let tailcall_inline (program : J.program) = 
-  let stats = get_stats program in
+  let stats = Js_pass_get_used.get_stats program in
   let export_set = program.export_set in
   (subst export_set stats )#program program
 

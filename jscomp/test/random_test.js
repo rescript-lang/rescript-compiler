@@ -36,15 +36,7 @@ function approx(f) {
     });
 }
 
-Random.self_init(/* () */0);
-
-var param = Random.$$int(1000);
-
-Random.self_init(/* () */0);
-
-var param$1 = Random.$$int(10000);
-
-Mt_global.collect_neq(id, suites, "File \"random_test.ml\", line 12, characters 6-13", param$1, param);
+Mt_global.collect_neq(id, suites, "File \"random_test.ml\", line 12, characters 6-13", (Random.self_init(/* () */0), Random.$$int(10000)), (Random.self_init(/* () */0), Random.$$int(1000)));
 
 Random.init(0);
 
@@ -54,20 +46,18 @@ for(var i = 0; i <= 9; ++i){
   Caml_array.caml_array_set(v, i, Random.bool(/* () */0));
 }
 
-var param$2 = [
-  true,
-  true,
-  true,
-  true,
-  true,
-  false,
-  true,
-  true,
-  true,
-  false
-];
-
-Mt_global.collect_eq(id, suites, "File \"random_test.ml\", line 26, characters 5-12", v, param$2);
+Mt_global.collect_eq(id, suites, "File \"random_test.ml\", line 26, characters 5-12", v, [
+      true,
+      true,
+      true,
+      true,
+      true,
+      false,
+      true,
+      true,
+      true,
+      false
+    ]);
 
 var f = Random.int64(Int64.max_int);
 

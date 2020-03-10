@@ -9,33 +9,31 @@ var Caml_builtin_exceptions = require("../../lib/js/caml_builtin_exceptions.js")
 
 function map(f, a) {
   var f$1 = Curry.__1(f);
-  var a$1 = a;
-  var l = a$1.length;
+  var l = a.length;
   if (l === 0) {
     return [];
   } else {
-    var r = Caml_array.caml_make_vect(l, f$1(a$1[0]));
+    var r = Caml_array.caml_make_vect(l, f$1(a[0]));
     for(var i = 1 ,i_finish = l - 1 | 0; i <= i_finish; ++i){
-      r[i] = f$1(a$1[i]);
+      r[i] = f$1(a[i]);
     }
     return r;
   }
 }
 
 function init(l, f) {
-  var l$1 = l;
   var f$1 = Curry.__1(f);
-  if (l$1 === 0) {
+  if (l === 0) {
     return [];
   } else {
-    if (l$1 < 0) {
+    if (l < 0) {
       throw [
             Caml_builtin_exceptions.invalid_argument,
             "Array.init"
           ];
     }
-    var res = Caml_array.caml_make_vect(l$1, f$1(0));
-    for(var i = 1 ,i_finish = l$1 - 1 | 0; i <= i_finish; ++i){
+    var res = Caml_array.caml_make_vect(l, f$1(0));
+    for(var i = 1 ,i_finish = l - 1 | 0; i <= i_finish; ++i){
       res[i] = f$1(i);
     }
     return res;
@@ -44,11 +42,9 @@ function init(l, f) {
 
 function fold_left(f, x, a) {
   var f$1 = Curry.__2(f);
-  var x$1 = x;
-  var a$1 = a;
-  var r = x$1;
-  for(var i = 0 ,i_finish = a$1.length - 1 | 0; i <= i_finish; ++i){
-    r = f$1(r, a$1[i]);
+  var r = x;
+  for(var i = 0 ,i_finish = a.length - 1 | 0; i <= i_finish; ++i){
+    r = f$1(r, a[i]);
   }
   return r;
 }

@@ -39,8 +39,7 @@ function path_as_directory(x) {
 }
 
 function absolute_path(s) {
-  var s$1 = s;
-  var s$2 = Curry._1(Filename.is_relative, s$1) ? Filename.concat(CamlinternalLazy.force(cwd), s$1) : s$1;
+  var s$1 = Curry._1(Filename.is_relative, s) ? Filename.concat(CamlinternalLazy.force(cwd), s) : s;
   var aux = function (_s) {
     while(true) {
       var s = _s;
@@ -58,7 +57,7 @@ function absolute_path(s) {
       }
     };
   };
-  return aux(s$2);
+  return aux(s$1);
 }
 
 function chop_extension(locOpt, name) {

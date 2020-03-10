@@ -49,8 +49,7 @@ function mergeInter(s1, s2) {
           }
           
         }));
-  var x = Belt_MapDict.keysToArray(m.data);
-  return Belt_Set.fromArray(x, Icmp);
+  return Belt_Set.fromArray(Belt_MapDict.keysToArray(m.data), Icmp);
 }
 
 function mergeUnion(s1, s2) {
@@ -60,8 +59,7 @@ function mergeUnion(s1, s2) {
           }
           
         }));
-  var x = Belt_MapDict.keysToArray(m.data);
-  return Belt_Set.fromArray(x, Icmp);
+  return Belt_Set.fromArray(Belt_MapDict.keysToArray(m.data), Icmp);
 }
 
 function mergeDiff(s1, s2) {
@@ -71,8 +69,7 @@ function mergeDiff(s1, s2) {
           }
           
         }));
-  var x = Belt_MapDict.keysToArray(m.data);
-  return Belt_Set.fromArray(x, Icmp);
+  return Belt_Set.fromArray(Belt_MapDict.keysToArray(m.data), Icmp);
 }
 
 function randomRange(i, j) {
@@ -84,33 +81,19 @@ function randomRange(i, j) {
               }));
 }
 
-var x = randomRange(0, 100);
+var u0 = Belt_Map.fromArray(randomRange(0, 100), Icmp);
 
-var u0 = Belt_Map.fromArray(x, Icmp);
+var u1 = Belt_Map.fromArray(randomRange(30, 120), Icmp);
 
-var x$1 = randomRange(30, 120);
+b("File \"bs_poly_map_test.ml\", line 48, characters 4-11", Belt_Set.eq(mergeInter(u0, u1), Belt_Set.fromArray(Array_data_util.range(30, 100), Icmp)));
 
-var u1 = Belt_Map.fromArray(x$1, Icmp);
+b("File \"bs_poly_map_test.ml\", line 49, characters 4-11", Belt_Set.eq(mergeUnion(u0, u1), Belt_Set.fromArray(Array_data_util.range(0, 120), Icmp)));
 
-var x$2 = Array_data_util.range(30, 100);
+b("File \"bs_poly_map_test.ml\", line 50, characters 4-11", Belt_Set.eq(mergeDiff(u0, u1), Belt_Set.fromArray(Array_data_util.range(0, 29), Icmp)));
 
-b("File \"bs_poly_map_test.ml\", line 48, characters 4-11", Belt_Set.eq(mergeInter(u0, u1), Belt_Set.fromArray(x$2, Icmp)));
+b("File \"bs_poly_map_test.ml\", line 51, characters 4-11", Belt_Set.eq(mergeDiff(u1, u0), Belt_Set.fromArray(Array_data_util.range(101, 120), Icmp)));
 
-var x$3 = Array_data_util.range(0, 120);
-
-b("File \"bs_poly_map_test.ml\", line 49, characters 4-11", Belt_Set.eq(mergeUnion(u0, u1), Belt_Set.fromArray(x$3, Icmp)));
-
-var x$4 = Array_data_util.range(0, 29);
-
-b("File \"bs_poly_map_test.ml\", line 50, characters 4-11", Belt_Set.eq(mergeDiff(u0, u1), Belt_Set.fromArray(x$4, Icmp)));
-
-var x$5 = Array_data_util.range(101, 120);
-
-b("File \"bs_poly_map_test.ml\", line 51, characters 4-11", Belt_Set.eq(mergeDiff(u1, u0), Belt_Set.fromArray(x$5, Icmp)));
-
-var x$6 = randomRange(0, 10);
-
-var a0 = Belt_Map.fromArray(x$6, Icmp);
+var a0 = Belt_Map.fromArray(randomRange(0, 10), Icmp);
 
 var a1 = Belt_Map.set(a0, 3, 33);
 
@@ -174,9 +157,7 @@ var a8 = Belt_Map.removeMany(a7, Array_data_util.randomRange(0, 100));
 
 b("File \"bs_poly_map_test.ml\", line 83, characters 4-11", Belt_MapDict.isEmpty(a8.data));
 
-var x$7 = randomRange(0, 100);
-
-var u0$1 = Belt_Map.fromArray(x$7, Icmp);
+var u0$1 = Belt_Map.fromArray(randomRange(0, 100), Icmp);
 
 var u1$1 = Belt_Map.set(u0$1, 3, 32);
 
@@ -186,9 +167,7 @@ eq("File \"bs_poly_map_test.ml\", line 91, characters 5-12", Belt_Map.get(u0$1, 
 
 function acc(m, is) {
   return Belt_Array.reduce(is, m, (function (a, i) {
-                var m = a;
-                var i$1 = i;
-                return Belt_Map.update(m, i$1, (function (n) {
+                return Belt_Map.update(a, i, (function (n) {
                               if (n !== undefined) {
                                 return n + 1 | 0;
                               } else {
@@ -205,14 +184,12 @@ var m = {
 
 var m1 = acc(m, Belt_Array.concat(Array_data_util.randomRange(0, 20), Array_data_util.randomRange(10, 30)));
 
-var x$8 = Belt_Array.makeBy(31, (function (i) {
-        return /* tuple */[
-                i,
-                i >= 10 && i <= 20 ? 2 : 1
-              ];
-      }));
-
-b("File \"bs_poly_map_test.ml\", line 103, characters 4-11", Belt_Map.eq(m1, Belt_Map.fromArray(x$8, Icmp), (function (x, y) {
+b("File \"bs_poly_map_test.ml\", line 103, characters 4-11", Belt_Map.eq(m1, Belt_Map.fromArray(Belt_Array.makeBy(31, (function (i) {
+                    return /* tuple */[
+                            i,
+                            i >= 10 && i <= 20 ? 2 : 1
+                          ];
+                  })), Icmp), (function (x, y) {
             return x === y;
           })));
 
@@ -228,14 +205,12 @@ var v1 = Belt_Map.mergeMany(v0, Belt_Array.map(Array_data_util.randomRange(0, 10
                   ];
           })));
 
-var x$9 = Belt_Array.map(Array_data_util.randomRange(0, 10000), (function (x) {
-        return /* tuple */[
-                x,
-                x
-              ];
-      }));
-
-var v2 = Belt_Map.fromArray(x$9, Icmp);
+var v2 = Belt_Map.fromArray(Belt_Array.map(Array_data_util.randomRange(0, 10000), (function (x) {
+            return /* tuple */[
+                    x,
+                    x
+                  ];
+          })), Icmp);
 
 b("File \"bs_poly_map_test.ml\", line 117, characters 4-11", Belt_Map.eq(v1, v2, (function (x, y) {
             return x === y;

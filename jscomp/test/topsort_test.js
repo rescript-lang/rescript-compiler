@@ -767,16 +767,14 @@ function remove(x, t) {
     var l = t[/* l */0];
     var c = Caml_primitive.caml_string_compare(x, v);
     if (c === 0) {
-      var t1 = l;
-      var t2 = r;
-      if (t1) {
-        if (t2) {
-          return bal(t1, min_elt(t2), remove_min_elt(t2));
+      if (l) {
+        if (r) {
+          return bal(l, min_elt(r), remove_min_elt(r));
         } else {
-          return t1;
+          return l;
         }
       } else {
-        return t2;
+        return r;
       }
     } else if (c < 0) {
       var ll = remove(x, l);
@@ -1295,15 +1293,10 @@ function map(f, t) {
     var r$prime = map(f, r);
     if (l === l$prime && v === v$prime && r === r$prime) {
       return t;
+    } else if ((l$prime === /* Empty */0 || Caml_primitive.caml_string_compare(max_elt(l$prime), v$prime) < 0) && (r$prime === /* Empty */0 || Caml_primitive.caml_string_compare(v$prime, min_elt(r$prime)) < 0)) {
+      return join(l$prime, v$prime, r$prime);
     } else {
-      var l$1 = l$prime;
-      var v$1 = v$prime;
-      var r$1 = r$prime;
-      if ((l$1 === /* Empty */0 || Caml_primitive.caml_string_compare(max_elt(l$1), v$1) < 0) && (r$1 === /* Empty */0 || Caml_primitive.caml_string_compare(v$1, min_elt(r$1)) < 0)) {
-        return join(l$1, v$1, r$1);
-      } else {
-        return union(l$1, add(v$1, r$1));
-      }
+      return union(l$prime, add(v$prime, r$prime));
     }
   } else {
     return /* Empty */0;

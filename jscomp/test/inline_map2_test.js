@@ -223,17 +223,15 @@ function Make(Ord) {
       var l = param[0];
       var c = Curry._2(Ord.compare, x, v);
       if (c === 0) {
-        var t1 = l;
-        var t2 = r;
-        if (t1) {
-          if (t2) {
-            var match = min_binding(t2);
-            return bal(t1, match[0], match[1], remove_min_binding(t2));
+        if (l) {
+          if (r) {
+            var match = min_binding(r);
+            return bal(l, match[0], match[1], remove_min_binding(r));
           } else {
-            return t1;
+            return l;
           }
         } else {
-          return t2;
+          return r;
         }
       } else if (c < 0) {
         return bal(remove(x, l), v, d, r);
@@ -855,17 +853,15 @@ function remove(x, param) {
     var l = param[0];
     var c = Caml_primitive.caml_int_compare(x, v);
     if (c === 0) {
-      var t1 = l;
-      var t2 = r;
-      if (t1) {
-        if (t2) {
-          var match = min_binding(t2);
-          return bal(t1, match[0], match[1], remove_min_binding(t2));
+      if (l) {
+        if (r) {
+          var match = min_binding(r);
+          return bal(l, match[0], match[1], remove_min_binding(r));
         } else {
-          return t1;
+          return l;
         }
       } else {
-        return t2;
+        return r;
       }
     } else if (c < 0) {
       return bal(remove(x, l), v, d, r);
@@ -1536,17 +1532,15 @@ function remove$1(x, param) {
     var l = param[0];
     var c = Caml_primitive.caml_string_compare(x, v);
     if (c === 0) {
-      var t1 = l;
-      var t2 = r;
-      if (t1) {
-        if (t2) {
-          var match = min_binding$1(t2);
-          return bal$1(t1, match[0], match[1], remove_min_binding$1(t2));
+      if (l) {
+        if (r) {
+          var match = min_binding$1(r);
+          return bal$1(l, match[0], match[1], remove_min_binding$1(r));
         } else {
-          return t1;
+          return l;
         }
       } else {
-        return t2;
+        return r;
       }
     } else if (c < 0) {
       return bal$1(remove$1(x, l), v, d, r);

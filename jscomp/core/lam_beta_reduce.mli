@@ -32,13 +32,16 @@
 (** Beta reduction of lambda IR *)
 
 
-val beta_reduce : Ident.t list -> Lam.t -> Lam.t list -> Lam.t
+val no_names_beta_reduce : Ident.t list -> Lam.t -> Lam.t list -> Lam.t
 (* Compile-time beta-reduction of functions immediately applied:
       Lapply(Lfunction(Curried, params, body), args, loc) ->
         let paramN = argN in ... let param1 = arg1 in body
       Lapply(Lfunction(Tupled, params, body), [Lprim(Pmakeblock(args))], loc) ->
         let paramN = argN in ... let param1 = arg1 in body
    Assumes |args| = |params|.
+
+  This function is used while counting used vars, no new names 
+  are generated to make this more complex
 *)
 
 (*

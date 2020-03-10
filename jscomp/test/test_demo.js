@@ -65,8 +65,7 @@ var u$1 = 7;
 
 function v(param) {
   var xx = 6;
-  var yy = param;
-  return (xx + yy | 0) + u$1 | 0;
+  return (xx + param | 0) + u$1 | 0;
 }
 
 var nil = /* Nil */0;
