@@ -22,7 +22,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
-let backend_is_set = ref false
+
 
 let backend = ref Bsb_config_types.Js
 
@@ -32,8 +32,11 @@ let lib_ocaml_dir = ref Bsb_config.lib_ocaml
 
 let backend_string = ref Literals.js
 
-let (//) = Ext_path.combine
 
+
+#if BS_NATIVE then
+let (//) = Ext_path.combine
+let backend_is_set = ref false
 let set_backend b =
   backend_is_set := true;
   backend := b;
@@ -51,3 +54,4 @@ let set_backend b =
     lib_ocaml_dir := Bsb_config.lib_lit // "ocaml-bytecode";
     backend_string := Literals.bytecode;
 
+#end

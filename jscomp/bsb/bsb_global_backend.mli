@@ -22,8 +22,6 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
-(* Flag to track whether backend has been set to a value. *)
-val backend_is_set : bool ref
 
 (* Target backend *)
 val backend : Bsb_config_types.compilation_kind_t ref
@@ -37,6 +35,11 @@ val lib_ocaml_dir : string ref
 (* string representation of the target backend, would be "js" when compiling to js *)
 val backend_string: string ref
 
+
+#if BS_NATIVE then
+(* Flag to track whether backend has been set to a value. *)
+val backend_is_set : bool ref
+
 (* convenience setter to update all the refs according to the given target backend *)
 val set_backend : Bsb_config_types.compilation_kind_t -> unit
-
+#end
