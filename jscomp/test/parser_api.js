@@ -12498,9 +12498,7 @@ if (exit === 1) {
   tmp = $$String.sub(Sys.ocaml_version, i + 1 | 0, (Sys.ocaml_version.length - i | 0) - 1 | 0);
 }
 
-var v = /* Dir_string */Block.__(3, [tmp]);
-
-Hashtbl.replace(directive_built_in_values, "OCAML_PATCH", v);
+Hashtbl.replace(directive_built_in_values, "OCAML_PATCH", /* Dir_string */Block.__(3, [tmp]));
 
 Hashtbl.replace(directive_built_in_values, "OS_TYPE", /* Dir_string */Block.__(3, [Sys.os_type]));
 
@@ -12791,24 +12789,24 @@ function query(loc, str) {
 
 function define_key_value(key, v) {
   if (key.length !== 0 && Char.uppercase(Caml_string.get(key, 0)) === Caml_string.get(key, 0)) {
-    var v$1;
+    var tmp;
     try {
-      v$1 = /* Dir_bool */Block.__(0, [Pervasives.bool_of_string(v)]);
+      tmp = /* Dir_bool */Block.__(0, [Pervasives.bool_of_string(v)]);
     }
     catch (exn){
       try {
-        v$1 = /* Dir_int */Block.__(2, [Caml_format.caml_int_of_string(v)]);
+        tmp = /* Dir_int */Block.__(2, [Caml_format.caml_int_of_string(v)]);
       }
       catch (exn$1){
         try {
-          v$1 = /* Dir_float */Block.__(1, [Caml_format.caml_float_of_string(v)]);
+          tmp = /* Dir_float */Block.__(1, [Caml_format.caml_float_of_string(v)]);
         }
         catch (exn$2){
-          v$1 = /* Dir_string */Block.__(3, [v]);
+          tmp = /* Dir_string */Block.__(3, [v]);
         }
       }
     }
-    Hashtbl.replace(directive_built_in_values, key, v$1);
+    Hashtbl.replace(directive_built_in_values, key, tmp);
     return true;
   } else {
     return false;

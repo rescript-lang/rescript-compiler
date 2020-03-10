@@ -97,7 +97,8 @@ let simple_beta_reduce params body args =
       Hash_ident.clear param_hash ;
       None
     end
-  | Lapply { ap_func = Lvar fn_name as f ; ap_args ;  ap_loc  ; ap_status = status}
+  | Lapply { ap_func = 
+          (Lvar _ | Lprim {primitive = Pfield _; args = [Lglobal_module _ ]} as f) ; ap_args ;  ap_loc  ; ap_status = status}
     ->  
     let () = 
       List.iter2 (fun p a -> Hash_ident.add param_hash p {lambda = a; used = false }) params args  
@@ -109,7 +110,10 @@ let simple_beta_reduce params body args =
     *)
     begin match aux [] ap_args with 
       | new_args -> 
-        let f = find_param fn_name  f in
+        let f = 
+          match f with 
+          | Lvar fn_name -> find_param fn_name  f 
+          | _ -> f in
         let result = 
           Hash_ident.fold param_hash (Lam.apply  f new_args  ap_loc status)
             (fun _param {lambda; used} acc -> 

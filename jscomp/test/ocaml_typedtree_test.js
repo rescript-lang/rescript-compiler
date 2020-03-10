@@ -20145,9 +20145,7 @@ if (exit === 1) {
   tmp = $$String.sub(Sys.ocaml_version, i + 1 | 0, (Sys.ocaml_version.length - i | 0) - 1 | 0);
 }
 
-var v = /* Dir_string */Block.__(3, [tmp]);
-
-Hashtbl.replace(directive_built_in_values, "OCAML_PATCH", v);
+Hashtbl.replace(directive_built_in_values, "OCAML_PATCH", /* Dir_string */Block.__(3, [tmp]));
 
 Hashtbl.replace(directive_built_in_values, "OS_TYPE", /* Dir_string */Block.__(3, [Sys.os_type]));
 
@@ -23417,8 +23415,9 @@ function TypedtreeMap_MakeMap(funarg) {
             ]);
           break;
       case /* Tcl_let */4 :
+          var rec_flat = match[0];
           cl_desc = /* Tcl_let */Block.__(4, [
-              match[0],
+              rec_flat,
               List.map(map_binding, match[1]),
               List.map((function (param) {
                       return /* tuple */[
@@ -23549,8 +23548,9 @@ function TypedtreeMap_MakeMap(funarg) {
     var exp_desc;
     switch (match.tag | 0) {
       case /* Texp_let */2 :
+          var rec_flag = match[0];
           exp_desc = /* Texp_let */Block.__(2, [
-              match[0],
+              rec_flag,
               List.map(map_binding, match[1]),
               map_expression(match[2])
             ]);
@@ -23751,8 +23751,9 @@ function TypedtreeMap_MakeMap(funarg) {
             ]);
           break;
       case /* Tstr_value */1 :
+          var rec_flag = match[0];
           str_desc = /* Tstr_value */Block.__(1, [
-              match[0],
+              rec_flag,
               List.map(map_binding, match[1])
             ]);
           break;

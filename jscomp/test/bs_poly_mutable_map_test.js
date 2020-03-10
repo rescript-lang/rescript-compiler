@@ -44,9 +44,7 @@ function randomRange(i, j) {
               }));
 }
 
-var x = randomRange(0, 10);
-
-var a0 = Belt_MutableMap.fromArray(x, Icmp);
+var a0 = Belt_MutableMap.fromArray(randomRange(0, 10), Icmp);
 
 Belt_MutableMap.set(a0, 3, 33);
 
