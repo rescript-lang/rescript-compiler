@@ -51,7 +51,7 @@ let count_collects () =
   object (self)
     inherit Js_fold.fold as super
     (* collect used status*)
-    val stats : int ref Hash_ident.t = Hash_ident.create 83
+    val stats : int Hash_ident.t = Hash_ident.create 83
     (* collect all def sites *)
     val defined_idents : J.variable_declaration Hash_ident.t = Hash_ident.create 83
 
@@ -59,9 +59,7 @@ let count_collects () =
 
 
     method add_use id = 
-      match Hash_ident.find_opt stats id with
-      | None -> Hash_ident.add stats id (ref 1)
-      | Some v -> incr v 
+      Hash_ident.add_or_update stats id 1 ~update:succ 
     method! program x = 
       my_export_set <- x.export_set ; 
 
@@ -90,7 +88,7 @@ let count_collects () =
               Js_op_util.update_used_stats v.ident_info 
                 (if pure then Dead_pure else Dead_non_pure)
             | Some num -> 
-              if !num = 1 then 
+              if num = 1 then 
                 Js_op_util.update_used_stats v.ident_info 
                   (if pure then Once_pure else Used) 
         ) ; defined_idents
