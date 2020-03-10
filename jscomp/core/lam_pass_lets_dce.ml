@@ -12,7 +12,7 @@
 (* Adapted for Javascript backend : Hongbo Zhang,  *)
 
 
-let lets_helper (count_var : Ident.t -> Lam_pass_count.used_info) lam = 
+let lets_helper (count_var : Ident.t -> Lam_pass_count.used_info) lam : Lam.t = 
   let subst : Lam.t Hash_ident.t = Hash_ident.create 32 in
   let string_table : string Hash_ident.t = Hash_ident.create 32 in  
   let used v = (count_var v ).times > 0 in
@@ -126,7 +126,7 @@ let lets_helper (count_var : Ident.t -> Lam_pass_count.used_info) lam =
     (* TODO: check if it is correct rollback to [StrictOpt]? *)
 
     | Llet((Strict | Variable as kind), v, l1, l2) -> 
-      if not @@ used v 
+      if not (used v)
       then
         let l1 = simplif l1 in
         let l2 = simplif l2 in
@@ -148,7 +148,7 @@ let lets_helper (count_var : Ident.t -> Lam_pass_count.used_info) lam =
 
     | Lapply{ap_func = Lfunction{params; body};  ap_args = args; _}
       when  Ext_list.same_length params args ->
-      simplif (Lam_beta_reduce.beta_reduce  params body args)
+      simplif (Lam_beta_reduce.no_names_beta_reduce  params body args)
     (* | Lapply{ fn = Lfunction{function_kind = Tupled; params; body}; *)
     (*           args = [Lprim {primitive = Pmakeblock _;  args; _}]; _} *)
     (*   (\** TODO: keep track of this parameter in ocaml trunk, *)
@@ -245,7 +245,7 @@ let lets_helper (count_var : Ident.t -> Lam_pass_count.used_info) lam =
     | Lassign(v, l) -> Lam.assign v (simplif l)
     | Lsend(k, m, o, ll, loc) ->
       Lam.send k (simplif m) (simplif o) (Ext_list.map ll simplif) loc
-  in simplif lam ;;
+  in simplif lam 
 
 
 (* To transform let-bound references into variables *)
@@ -258,7 +258,7 @@ let apply_lets  occ lambda =
     | Some  v -> v in
   lets_helper count_var lambda      
 
-let simplify_lets  (lam : Lam.t) = 
+let simplify_lets  (lam : Lam.t) : Lam.t = 
   let occ =  Lam_pass_count.collect_occurs  lam in 
 #if undefined BS_RELEASE_BUILD then 
   Ext_log.dwarn ~__POS__ "@[%a@]@." Lam_pass_count.pp_occ_tbl occ ;

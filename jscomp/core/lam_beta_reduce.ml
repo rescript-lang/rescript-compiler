@@ -129,7 +129,7 @@ let propogate_beta_reduce_with_map
 
 
 
-let beta_reduce params body args =
+let no_names_beta_reduce params body args =
   match Lam_beta_reduce_util.simple_beta_reduce params body args with 
   | Some x -> x 
   | None -> 

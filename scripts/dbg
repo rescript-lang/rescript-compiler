@@ -7,8 +7,7 @@ console.log(file);
 var fmt = path.parse(file);
 
 process.env.BS_DEBUG_FILE = file;
-var ninja = path.join(__dirname, "..", "vendor", "ninja", "snapshot", 
-  `ninja${require('./config.js').sys_extension}`);
+var ninja = path.join(__dirname, "..", process.platform, "ninja.exe");
 cp.execSync(`touch ${file} && ${ninja} ${fmt.dir}/${fmt.name}.cmj`, {
   stdio: [0, 1, 2]
 });
