@@ -54,7 +54,7 @@
    we can bound [x] to [100] in a single step     
  *)
 let propogate_beta_reduce 
-    (meta : Lam_stats.t) params body args =
+    (meta : Lam_stats.t) (params : Ident.t list) (body : Lam.t) (args : Lam.t list) =
   match Lam_beta_reduce_util.simple_beta_reduce params body  args with 
   | Some x -> x 
   | None -> 
@@ -70,27 +70,14 @@ let propogate_beta_reduce
   let new_body = Lam_bounded_vars.rewrite (Hash_ident.of_list2 (List.rev params) (rev_new_params)) body in
   Ext_list.fold_right rest_bindings new_body
     (fun (param, arg ) l -> 
-       let arg = 
-         match arg with 
-         | Lvar v -> 
-           begin 
-             match Hash_ident.find_opt meta.ident_tbl v with 
-             | None -> ()
-             | Some ident_info -> 
-               Hash_ident.add meta.ident_tbl param ident_info 
-           end;
-           arg          
-         (* alias meta param ident (Module (Global ident)) Strict *)
+       begin match arg with 
          | Lprim {primitive = Pmakeblock (_, _, Immutable) ;args ; _} -> 
-
            Hash_ident.replace meta.ident_tbl param 
-             (Lam_util.kind_of_lambda_block args ); (** *)
-           arg           
+             (Lam_util.kind_of_lambda_block args )
          | Lprim {primitive = Psome | Psome_not_nest; args = [v]; _} -> 
            Hash_ident.replace meta.ident_tbl param 
-            (Normal_optional(v));
-           arg
-         | _ -> arg in
+             (Normal_optional(v))
+         | _ -> () end;
        Lam_util.refine_let ~kind:Strict param arg l) 
      
 
@@ -127,26 +114,16 @@ let propogate_beta_reduce_with_map
   let new_body = Lam_bounded_vars.rewrite (Hash_ident.of_list2 (List.rev params) (rev_new_params)) body in
   Ext_list.fold_right rest_bindings new_body
     (fun (param, (arg : Lam.t)) l -> 
-       let arg = 
-         match arg with 
-         | Lvar v -> 
-           begin 
-             match Hash_ident.find_opt meta.ident_tbl v with 
-             | None -> ()
-             | Some ident_info -> 
-               Hash_ident.add meta.ident_tbl param ident_info 
-           end;
-           arg 
-         (* alias meta param ident (Module (Global ident)) Strict *)
+       begin match arg with 
          | Lprim {primitive = Pmakeblock (_, _, Immutable ) ; args} -> 
            Hash_ident.replace meta.ident_tbl param 
-             (Lam_util.kind_of_lambda_block args ); (** *)
-           arg
+             (Lam_util.kind_of_lambda_block args )
+
          | Lprim {primitive = Psome | Psome_not_nest; args = [v]} -> 
            Hash_ident.replace meta.ident_tbl param 
-            (Normal_optional(v));
-           arg 
-         | _ -> arg in
+             (Normal_optional(v));
+
+         | _ -> () end;
        Lam_util.refine_let ~kind:Strict param arg l) 
      
 

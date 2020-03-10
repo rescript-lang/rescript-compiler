@@ -41,13 +41,30 @@ type value =
     lambda  : Lam.t
   }
 let param_hash :  _ Hash_ident.t = Hash_ident.create 20
+
+
+(* optimize cases like 
+  (fun f (a,b){ g (a,b,1)} (e0, e1))
+  cases like
+  (fun f (a,b){ g (a,b,a)} (e0, e1)) needs avoids double eval
+
+    Note in a very special case we can avoid any allocation
+   {[
+     when Ext_list.for_all2_no_exn
+         (fun p a ->
+            match (a : Lam.t) with
+            | Lvar a -> Ident.same p a
+            | _ -> false ) params args'
+   ]}  
+*)
 let simple_beta_reduce params body args = 
-  let module E = struct exception Not_simple_apply end in
+  let exception Not_simple_apply in
   let find_param v  opt = 
     match Hash_ident.find_opt param_hash v with 
     | Some exp ->  
-      if exp.used then raise E.Not_simple_apply
-      else exp.used <- true; exp.lambda
+      if exp.used then raise_notrace Not_simple_apply
+      else 
+        exp.used <- true; exp.lambda
     | None -> opt
   in  
   let rec aux acc (us : Lam.t list) = 
@@ -58,36 +75,29 @@ let simple_beta_reduce params body args =
       aux  (find_param x a  :: acc) rest 
     | (Lconst  _  as u) :: rest 
       -> aux (u :: acc) rest 
-    | _ :: _ -> raise E.Not_simple_apply 
+    | _ :: _ -> raise_notrace Not_simple_apply 
   in 
   match (body : Lam.t) with 
-  | Lprim { primitive ; args =  args' ; loc}  (* There is no lambda in primitive *)
+  | Lprim { primitive ; args =  ap_args ; loc = ap_loc}  (* There is no lambda in primitive *)
     -> (* catch a special case of primitives *)
-    (* Note in a very special case we can avoid any allocation
-       {[
-         when Ext_list.for_all2_no_exn
-             (fun p a ->
-                match (a : Lam.t) with
-                | Lvar a -> Ident.same p a
-                | _ -> false ) params args'
-       ]}*)
+
     let () = 
       List.iter2 (fun p a -> Hash_ident.add param_hash p {lambda = a; used = false }) params args  
     in 
-    begin match aux [] args' with 
-    | args -> 
+    begin match aux [] ap_args with 
+    | new_args -> 
       let result = 
-        Hash_ident.fold param_hash (Lam.prim ~primitive ~args loc) (fun _param {lambda; used} code -> 
+        Hash_ident.fold param_hash (Lam.prim ~primitive ~args:new_args ap_loc) (fun _param {lambda; used} acc -> 
             if not used then
-              Lam.seq lambda code
-            else code)  in 
+              Lam.seq lambda acc
+            else acc)  in 
       Hash_ident.clear param_hash;
       Some result 
     | exception _ -> 
       Hash_ident.clear param_hash ;
       None
     end
-  | Lapply { ap_func = Lvar fn_name as f ; ap_args =  args';  ap_loc = loc ; ap_status = status}
+  | Lapply { ap_func = Lvar fn_name as f ; ap_args ;  ap_loc  ; ap_status = status}
     ->  
     let () = 
       List.iter2 (fun p a -> Hash_ident.add param_hash p {lambda = a; used = false }) params args  
@@ -97,15 +107,15 @@ let simple_beta_reduce params body args =
       if it is removed twice there will be exception.
       if it is never removed, we have it as rest keys 
     *)
-    begin match aux [] args' with 
-      | us -> 
+    begin match aux [] ap_args with 
+      | new_args -> 
         let f = find_param fn_name  f in
         let result = 
-          Hash_ident.fold param_hash (Lam.apply  f us  loc status)
-            (fun _param {lambda; used} code -> 
+          Hash_ident.fold param_hash (Lam.apply  f new_args  ap_loc status)
+            (fun _param {lambda; used} acc -> 
                if not used then 
-                 Lam.seq lambda code
-               else code )
+                 Lam.seq lambda acc
+               else acc )
         in
         Hash_ident.clear param_hash;
         Some result 
