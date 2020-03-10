@@ -127,7 +127,7 @@ let rec copyAux qRes prev cell =
   | None -> lastSet qRes  prev; qRes
   | Some x  ->
     let content = contentGet x in 
-    let res = return @@ node ~content ~next:null in
+    let res = node ~content ~next:null |. return in
     begin match Js.nullToOption prev with
       | None -> firstSet qRes res
       | Some p -> nextSet p  res
@@ -144,7 +144,7 @@ let rec copyMapAux qRes prev cell f =
   | None -> lastSet qRes  prev; qRes
   | Some x  ->
     let content = f (contentGet x) [@bs] in 
-    let res = return @@ node ~content ~next:null in
+    let res = node ~content ~next:null |. return in
     begin match Js.nullToOption prev with (*TODO: optimize to remove such check*)
       | None -> firstSet qRes res
       | Some p -> nextSet p  res

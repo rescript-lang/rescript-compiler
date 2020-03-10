@@ -41,7 +41,12 @@ module S = Js_stmt_make
 (* module E = Js_exp_make *)
 
 
-
+let substitue_variables (map : Ident.t Map_ident.t) = 
+    object (self)  
+      inherit Js_map.map
+      method! ident id =
+         Map_ident.find_default map id id 
+    end         
 
 (* 1. recursive value ? let rec x = 1 :: x
     non-terminating
@@ -51,6 +56,36 @@ module S = Js_stmt_make
     case is substituted
     we already have this? in [defined_idents]
 *)
+
+let inline_call
+  no_tailcall 
+  params (args : J.expression list) processed_blocks =  
+  if no_tailcall then   
+    let map, block =   
+      Ext_list.fold_right2 
+        params args  (Map_ident.empty,  processed_blocks)
+        (fun param arg (map,acc) ->  
+           match arg.expression_desc with 
+           | Var (Id id) ->  
+             Map_ident.add map param id, acc 
+           | _ -> 
+             map, S.define_variable ~kind:Variable param arg :: acc) in 
+    if Map_ident.is_empty map then block 
+    else (substitue_variables map) # block block        
+  else    
+  (*
+      At this time, when tailcall happened, the parameter can be assigned
+      for example {[
+        function (_x,y){
+          _x = u
+        }
+      ]}
+      if it is substitued, the assignment will align the value which is incorrect
+  *)
+    Ext_list.fold_right2 
+      params args  processed_blocks
+      (fun param arg acc ->  
+         S.define_variable ~kind:Variable param arg :: acc) 
 
 (** There is a side effect when traversing dead code, since 
     we assume that substitue a node would mark a node as dead node,
@@ -132,7 +167,7 @@ let subst (export_set : Set_ident.t) stats  =
         begin match Hash_ident.find_opt stats id with 
 
           | Some ({ value = 
-                      Some {expression_desc = Fun (false, params, block, _env) ; comment = _}; 
+                      Some {expression_desc = Fun (false, params, block, env) ; comment = _}; 
                     (*TODO: don't inline method tail call yet, 
                       [this] semantics are weird 
                     *)              
@@ -143,10 +178,13 @@ let subst (export_set : Set_ident.t) stats  =
             when Ext_list.same_length params args 
             -> 
             Js_op_util.update_used_stats v.ident_info Dead_pure;
-            Ext_list.fold_right2 
-              params args  ( self#block block) (* see #278 before changes*)
+            let no_tailcall = Js_fun_env.no_tailcall env in 
+            let processed_blocks = ( self#block block) (* see #278 before changes*) in 
+            inline_call no_tailcall params args processed_blocks
+            (* Ext_list.fold_right2 
+              params args  processed_blocks
               (fun param arg acc ->  
-                 S.define_variable ~kind:Variable param arg :: acc)                                                
+                 S.define_variable ~kind:Variable param arg :: acc)                                                 *)
             (* Mark a function as dead means it will never be scanned, 
                here we inline the function
             *)
