@@ -124,12 +124,10 @@ let subst (export_set : Set_ident.t) stats  =
             | Some _ -> self#statement st  :: self#block rest 
           end
 
-      | {statement_desc = 
+      | [{statement_desc = 
            Return {return_value = 
                      {expression_desc = 
-                        Call({expression_desc = Var (Id id)},args,_info)}} }
-        as st 
-        :: rest 
+                        Call({expression_desc = Var (Id id)},args,_info)}} } as st ]
         -> 
         begin match Hash_ident.find_opt stats id with 
 
@@ -144,21 +142,17 @@ let subst (export_set : Set_ident.t) stats  =
                   } as v)
             when Ext_list.same_length params args 
             -> 
-            (* Ext_log.dwarn  __LOC__ "%s is dead \n %s " id.name  *)
-            (*   (Js_dump.string_of_block [st]); *)
             Js_op_util.update_used_stats v.ident_info Dead_pure;
-            let block  = 
-              Ext_list.fold_right2 
-                params args  ( self#block block) (* see #278 before changes*)
-                (fun param arg acc ->  
-                   S.define_variable ~kind:Variable param arg :: acc)                                                
-            in
+            Ext_list.fold_right2 
+              params args  ( self#block block) (* see #278 before changes*)
+              (fun param arg acc ->  
+                 S.define_variable ~kind:Variable param arg :: acc)                                                
             (* Mark a function as dead means it will never be scanned, 
                here we inline the function
             *)
-            Ext_list.append block (self#block rest)
+
           | (None | Some _) ->
-            self#statement st :: self#block rest
+            [self#statement st ]
         end
       | x :: xs 
         ->
