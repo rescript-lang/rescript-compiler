@@ -81,9 +81,9 @@ let regenerate_ninja
     end else begin
       let os = Filename.basename Bsb_global_paths.bsc_dir in
       let plugin_path = Bsb_global_paths.cwd // "node_modules" // "bs-platform-native" // os // "bsb.exe" in
-      let status = Sys.command (plugin_path ^ " " ^ per_proj_dir ^ " " ^ lib_bs_dir ^ " " ^ Bsb_global_paths.cwd ^ " " ^ Bsb_global_paths.bsc_dir ^ " " ^ !Bsb_global_backend.backend_string) in
+      let status = Sys.command (Printf.sprintf "%s %s %s %s %s %s" plugin_path per_proj_dir lib_bs_dir Bsb_global_paths.cwd Bsb_global_paths.bsc_dir !Bsb_global_backend.backend_string) in
       if status <> 0 then
-        print_endline "Error: plugin fucked up";
+        print_endline "Error: native plugin ran into an error";
     end;
     
     (* PR2184: we still need record empty dir 
