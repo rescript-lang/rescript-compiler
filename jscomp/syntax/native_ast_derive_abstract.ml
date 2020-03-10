@@ -169,7 +169,7 @@ let handleTdcl light (tdcl : Parsetree.type_declaration) =
          else maker_body) in
 
         let myMaker =
-#if BS_NATIVE then          
+#if BS_NATIVE_PPX then          
 
          Str.value Nonrecursive [
            Vb.mk
@@ -204,7 +204,7 @@ let code_sig_transform sigi = match sigi with
     } ->
     Sig.value (Val.mk ~loc:pstr_loc name typ)
   | _ -> 
-#if BS_NATIVE  then
+#if BS_NATIVE_PPX  then
     Sig.type_ Nonrecursive []
 #else assert false    
 #end

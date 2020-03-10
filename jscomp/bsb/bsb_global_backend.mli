@@ -22,8 +22,21 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
-val cmdline_backend : Bsb_config_types.compilation_kind_t option ref
+(* Flag to track whether backend has been set to a value. *)
+val backend_is_set : bool ref
 
-val backend : Bsb_config_types.compilation_kind_t Lazy.t
+(* Target backend *)
+val backend : Bsb_config_types.compilation_kind_t ref
 
-val lib_artifacts_dir : string Lazy.t
+(* path to all intermediate build artifacts, would be lib/bs when compiling to JS *)
+val lib_artifacts_dir : string ref
+
+(* path to the compiled artifacts, would be lib/ocaml when compiling to JS *)
+val lib_ocaml_dir : string ref
+
+(* string representation of the target backend, would be "js" when compiling to js *)
+val backend_string: string ref
+
+(* convenience setter to update all the refs according to the given target backend *)
+val set_backend : Bsb_config_types.compilation_kind_t -> unit
+

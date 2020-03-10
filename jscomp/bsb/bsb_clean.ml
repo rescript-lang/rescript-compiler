@@ -29,7 +29,7 @@ let (//) = Ext_path.combine
 let ninja_clean  proj_dir =
   try
     let cmd = Bsb_global_paths.vendor_ninja in
-    let lib_artifacts_dir = Lazy.force Bsb_global_backend.lib_artifacts_dir in
+    let lib_artifacts_dir = !Bsb_global_backend.lib_artifacts_dir in
     let cwd = proj_dir // lib_artifacts_dir in
     if Sys.file_exists cwd then
       let eid =
