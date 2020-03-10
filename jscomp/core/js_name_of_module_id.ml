@@ -25,15 +25,6 @@
 let (=)  (x : int) (y:float) = assert false 
 *)
 
-(* "xx/lib/ocaml/js.cmj" 
-   Enhancement: This can be delegated to build system
-*)
-let runtime_package_path : string Lazy.t = 
-  lazy (Filename.dirname (Filename.dirname 
-    (Filename.dirname 
-      (match Config_util.find_opt "js.cmj" with 
-      | None -> assert false
-      | Some x -> x))))
 
 let (//) = Filename.concat 
 
@@ -83,7 +74,10 @@ let get_runtime_module_path
               current_package_info
               ~package_dir:(Lazy.force Ext_path.package_dir)
               module_system )
-          (Lazy.force runtime_package_path // dep_path // js_file)  
+          (*Invariant: the package path to bs-platform, it is used to 
+            calculate relative js path
+          *)
+          ((Filename.dirname (Filename.dirname Sys.executable_name)) // dep_path // js_file)  
 
 
 
