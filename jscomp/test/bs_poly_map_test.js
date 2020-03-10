@@ -167,9 +167,7 @@ eq("File \"bs_poly_map_test.ml\", line 91, characters 5-12", Belt_Map.get(u0$1, 
 
 function acc(m, is) {
   return Belt_Array.reduce(is, m, (function (a, i) {
-                var m = a;
-                var i$1 = i;
-                return Belt_Map.update(m, i$1, (function (n) {
+                return Belt_Map.update(a, i, (function (n) {
                               if (n !== undefined) {
                                 return n + 1 | 0;
                               } else {

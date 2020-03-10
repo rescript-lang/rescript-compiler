@@ -7,10 +7,8 @@ var d = new Date(2016, 2);
 
 function d2(param) {
   return (function (param$1, param$2) {
-      var prim = param;
-      var prim$1 = 2;
-      var prim$2 = param$1;
-      return new Date(prim, prim$1, prim$2);
+      var prim = 2;
+      return new Date(param, prim, param$1);
     });
 }
 

@@ -304,14 +304,13 @@ function to_chan(oc, t) {
 }
 
 function to_file_seq(filename, seq) {
-  var filename$1 = filename;
   var f = function (oc) {
     return Curry._1(seq, (function (t) {
                   to_chan(oc, t);
                   return Caml_io.caml_ml_output_char(oc, /* "\n" */10);
                 }));
   };
-  var oc = Pervasives.open_out(filename$1);
+  var oc = Pervasives.open_out(filename);
   try {
     var x = Curry._1(f, oc);
     Caml_io.caml_ml_flush(oc);

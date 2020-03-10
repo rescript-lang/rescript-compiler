@@ -118,8 +118,7 @@ function utf8_list(s) {
 }
 
 function decode(bytes, offset) {
-  var offset$1 = offset;
-  var match = classify(Caml_bytes.get(bytes, offset$1));
+  var match = classify(Caml_bytes.get(bytes, offset));
   if (typeof match === "number") {
     throw [
           Caml_builtin_exceptions.invalid_argument,
@@ -130,7 +129,7 @@ function decode(bytes, offset) {
       case /* Single */0 :
           return /* tuple */[
                   match[0],
-                  offset$1 + 1 | 0
+                  offset + 1 | 0
                 ];
       case /* Cont */1 :
           throw [
@@ -140,25 +139,25 @@ function decode(bytes, offset) {
       case /* Leading */2 :
           var _n = match[0];
           var _c = match[1];
-          var _offset = offset$1 + 1 | 0;
+          var _offset = offset + 1 | 0;
           while(true) {
-            var offset$2 = _offset;
+            var offset$1 = _offset;
             var c = _c;
             var n = _n;
             if (n === 0) {
               return /* tuple */[
                       c,
-                      offset$2
+                      offset$1
                     ];
             } else {
-              var match$1 = classify(Caml_bytes.get(bytes, offset$2));
+              var match$1 = classify(Caml_bytes.get(bytes, offset$1));
               if (typeof match$1 === "number") {
                 throw [
                       Caml_builtin_exceptions.invalid_argument,
                       "decode"
                     ];
               } else if (match$1.tag === /* Cont */1) {
-                _offset = offset$2 + 1 | 0;
+                _offset = offset$1 + 1 | 0;
                 _c = (c << 6) | match$1[0] & 63;
                 _n = n - 1 | 0;
                 continue ;

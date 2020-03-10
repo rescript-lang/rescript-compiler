@@ -1571,10 +1571,8 @@ function set_color_tag_handling(ppf) {
   var partial_arg = functions.mark_open_tag;
   var partial_arg$1 = functions.mark_close_tag;
   var functions$prime_mark_open_tag = function (param) {
-    var or_else = partial_arg;
-    var s = param;
     try {
-      var style = style_of_tag(s);
+      var style = style_of_tag(param);
       if (color_enabled.contents) {
         return ansi_of_style_l(style);
       } else {
@@ -1583,17 +1581,15 @@ function set_color_tag_handling(ppf) {
     }
     catch (exn){
       if (exn === Caml_builtin_exceptions.not_found) {
-        return Curry._1(or_else, s);
+        return Curry._1(partial_arg, param);
       } else {
         throw exn;
       }
     }
   };
   var functions$prime_mark_close_tag = function (param) {
-    var or_else = partial_arg$1;
-    var s = param;
     try {
-      style_of_tag(s);
+      style_of_tag(param);
       if (color_enabled.contents) {
         return ansi_of_style_l(/* :: */[
                     /* Reset */1,
@@ -1605,7 +1601,7 @@ function set_color_tag_handling(ppf) {
     }
     catch (exn){
       if (exn === Caml_builtin_exceptions.not_found) {
-        return Curry._1(or_else, s);
+        return Curry._1(partial_arg$1, param);
       } else {
         throw exn;
       }
@@ -7039,13 +7035,12 @@ var yyact = [
   (function (__caml_parser_env) {
       var _1 = Parsing.peek_val(__caml_parser_env, 0);
       var pos = 1;
-      var items = _1;
       return extra_text((function (txt) {
                     return /* :: */[
                             /* Ptop_def */Block.__(0, [text$1(txt)]),
                             /* [] */0
                           ];
-                  }), pos, items);
+                  }), pos, _1);
     }),
   (function (__caml_parser_env) {
       return Parsing.peek_val(__caml_parser_env, 0);
@@ -7843,8 +7838,6 @@ var yyact = [
   (function (__caml_parser_env) {
       var _1 = Parsing.peek_val(__caml_parser_env, 2);
       var _3 = Parsing.peek_val(__caml_parser_env, 0);
-      var lbs = _1;
-      var body = _3;
       var bindings = List.map((function (lb) {
               if (lb.lb_attributes !== /* [] */0) {
                 throw [
@@ -7856,29 +7849,29 @@ var yyact = [
                     ];
               }
               return mk$17(lb.lb_loc, undefined, undefined, undefined, lb.lb_pattern, lb.lb_expression);
-            }), lbs.lbs_bindings);
-      if (lbs.lbs_extension !== undefined) {
+            }), _1.lbs_bindings);
+      if (_1.lbs_extension !== undefined) {
         throw [
               $$Error$1,
               /* Not_expecting */Block.__(2, [
-                  lbs.lbs_loc,
+                  _1.lbs_loc,
                   "extension"
                 ])
             ];
       }
-      if (lbs.lbs_attributes !== /* [] */0) {
+      if (_1.lbs_attributes !== /* [] */0) {
         throw [
               $$Error$1,
               /* Not_expecting */Block.__(2, [
-                  lbs.lbs_loc,
+                  _1.lbs_loc,
                   "attributes"
                 ])
             ];
       }
       return mkclass(/* Pcl_let */Block.__(4, [
-                    lbs.lbs_rec,
+                    _1.lbs_rec,
                     List.rev(bindings),
-                    body
+                    _3
                   ]));
     }),
   (function (__caml_parser_env) {
@@ -8594,8 +8587,6 @@ var yyact = [
   (function (__caml_parser_env) {
       var _1 = Parsing.peek_val(__caml_parser_env, 2);
       var _3 = Parsing.peek_val(__caml_parser_env, 0);
-      var lbs = _1;
-      var body = _3;
       var bindings = List.map((function (lb) {
               if (lb.lb_attributes !== /* [] */0) {
                 throw [
@@ -8607,17 +8598,17 @@ var yyact = [
                     ];
               }
               return mk$17(lb.lb_loc, undefined, undefined, undefined, lb.lb_pattern, lb.lb_expression);
-            }), lbs.lbs_bindings);
-      var d_000 = lbs.lbs_rec;
+            }), _1.lbs_bindings);
+      var d_000 = _1.lbs_rec;
       var d_001 = List.rev(bindings);
       var d = /* Pexp_let */Block.__(2, [
           d_000,
           d_001,
-          body
+          _3
         ]);
       return wrap_exp_attrs(mkexp(d), /* tuple */[
-                  lbs.lbs_extension,
-                  lbs.lbs_attributes
+                  _1.lbs_extension,
+                  _1.lbs_attributes
                 ]);
     }),
   (function (__caml_parser_env) {
@@ -8906,11 +8897,9 @@ var yyact = [
   (function (__caml_parser_env) {
       var _1 = Parsing.peek_val(__caml_parser_env, 1);
       var _2 = Parsing.peek_val(__caml_parser_env, 0);
-      var name = _1;
-      var arg = _2;
-      var match = arg.pexp_desc;
+      var match = _2.pexp_desc;
       var exit = 0;
-      switch (name) {
+      switch (_1) {
         case "-" :
             if (match.tag === /* Pexp_constant */1) {
               var match$1 = match[0];
@@ -8944,11 +8933,11 @@ var yyact = [
         
       }
       return mkexp(/* Pexp_apply */Block.__(5, [
-                    mkoperator("~" + name, 1),
+                    mkoperator("~" + _1, 1),
                     /* :: */[
                       /* tuple */[
                         "",
-                        arg
+                        _2
                       ],
                       /* [] */0
                     ]
@@ -8957,11 +8946,9 @@ var yyact = [
   (function (__caml_parser_env) {
       var _1 = Parsing.peek_val(__caml_parser_env, 1);
       var _2 = Parsing.peek_val(__caml_parser_env, 0);
-      var name = _1;
-      var arg = _2;
-      var desc = arg.pexp_desc;
+      var desc = _2.pexp_desc;
       var exit = 0;
-      switch (name) {
+      switch (_1) {
         case "+" :
             if (desc.tag === /* Pexp_constant */1) {
               switch (desc[0].tag | 0) {
@@ -8987,11 +8974,11 @@ var yyact = [
         return mkexp(desc);
       }
       return mkexp(/* Pexp_apply */Block.__(5, [
-                    mkoperator("~" + name, 1),
+                    mkoperator("~" + _1, 1),
                     /* :: */[
                       /* tuple */[
                         "",
-                        arg
+                        _2
                       ],
                       /* [] */0
                     ]
@@ -9068,11 +9055,8 @@ var yyact = [
       var _1 = Parsing.peek_val(__caml_parser_env, 6);
       var _4 = Parsing.peek_val(__caml_parser_env, 3);
       var _7 = Parsing.peek_val(__caml_parser_env, 0);
-      var arr = _1;
-      var arg = _4;
-      var newval = _7;
       var set = fast.contents ? "unsafe_set" : "set";
-      var coords = bigarray_untuplify(arg);
+      var coords = bigarray_untuplify(_4);
       if (coords) {
         var match = coords[1];
         var c1 = coords[0];
@@ -9086,7 +9070,7 @@ var yyact = [
                             /* :: */[
                               /* tuple */[
                                 "",
-                                arr
+                                _1
                               ],
                               /* :: */[
                                 /* tuple */[
@@ -9106,7 +9090,7 @@ var yyact = [
                                     /* :: */[
                                       /* tuple */[
                                         "",
-                                        newval
+                                        _7
                                       ],
                                       /* [] */0
                                     ]
@@ -9123,7 +9107,7 @@ var yyact = [
                           /* :: */[
                             /* tuple */[
                               "",
-                              arr
+                              _1
                             ],
                             /* :: */[
                               /* tuple */[
@@ -9138,7 +9122,7 @@ var yyact = [
                                 /* :: */[
                                   /* tuple */[
                                     "",
-                                    newval
+                                    _7
                                   ],
                                   /* [] */0
                                 ]
@@ -9153,7 +9137,7 @@ var yyact = [
                         /* :: */[
                           /* tuple */[
                             "",
-                            arr
+                            _1
                           ],
                           /* :: */[
                             /* tuple */[
@@ -9163,7 +9147,7 @@ var yyact = [
                             /* :: */[
                               /* tuple */[
                                 "",
-                                newval
+                                _7
                               ],
                               /* [] */0
                             ]
@@ -9177,7 +9161,7 @@ var yyact = [
                     /* :: */[
                       /* tuple */[
                         "",
-                        arr
+                        _1
                       ],
                       /* :: */[
                         /* tuple */[
@@ -9187,7 +9171,7 @@ var yyact = [
                         /* :: */[
                           /* tuple */[
                             "",
-                            newval
+                            _7
                           ],
                           /* [] */0
                         ]
@@ -9374,10 +9358,8 @@ var yyact = [
   (function (__caml_parser_env) {
       var _1 = Parsing.peek_val(__caml_parser_env, 4);
       var _4 = Parsing.peek_val(__caml_parser_env, 1);
-      var arr = _1;
-      var arg = _4;
       var get = fast.contents ? "unsafe_get" : "get";
-      var coords = bigarray_untuplify(arg);
+      var coords = bigarray_untuplify(_4);
       if (coords) {
         var match = coords[1];
         var c1 = coords[0];
@@ -9391,7 +9373,7 @@ var yyact = [
                             /* :: */[
                               /* tuple */[
                                 "",
-                                arr
+                                _1
                               ],
                               /* :: */[
                                 /* tuple */[
@@ -9422,7 +9404,7 @@ var yyact = [
                           /* :: */[
                             /* tuple */[
                               "",
-                              arr
+                              _1
                             ],
                             /* :: */[
                               /* tuple */[
@@ -9446,7 +9428,7 @@ var yyact = [
                         /* :: */[
                           /* tuple */[
                             "",
-                            arr
+                            _1
                           ],
                           /* :: */[
                             /* tuple */[
@@ -9464,7 +9446,7 @@ var yyact = [
                     /* :: */[
                       /* tuple */[
                         "",
-                        arr
+                        _1
                       ],
                       /* :: */[
                         /* tuple */[
@@ -9838,17 +9820,15 @@ var yyact = [
   (function (__caml_parser_env) {
       var _1 = Parsing.peek_val(__caml_parser_env, 1);
       var _2 = Parsing.peek_val(__caml_parser_env, 0);
-      var lbs = _1;
-      var lb = _2;
       return {
               lbs_bindings: /* :: */[
-                lb,
-                lbs.lbs_bindings
+                _2,
+                _1.lbs_bindings
               ],
-              lbs_rec: lbs.lbs_rec,
-              lbs_extension: lbs.lbs_extension,
-              lbs_attributes: lbs.lbs_attributes,
-              lbs_loc: lbs.lbs_loc
+              lbs_rec: _1.lbs_rec,
+              lbs_extension: _1.lbs_extension,
+              lbs_attributes: _1.lbs_attributes,
+              lbs_loc: _1.lbs_loc
             };
     }),
   (function (__caml_parser_env) {
@@ -9856,17 +9836,15 @@ var yyact = [
       var _3 = Parsing.peek_val(__caml_parser_env, 2);
       var _4 = Parsing.peek_val(__caml_parser_env, 1);
       var _5 = Parsing.peek_val(__caml_parser_env, 0);
-      var param = _2;
-      var rf = _3;
       var lb = mklb(_4, _5);
       return {
               lbs_bindings: /* :: */[
                 lb,
                 /* [] */0
               ],
-              lbs_rec: rf,
-              lbs_extension: param[0],
-              lbs_attributes: param[1],
+              lbs_rec: _3,
+              lbs_extension: _2[0],
+              lbs_attributes: _2[1],
               lbs_loc: symbol_rloc(/* () */0)
             };
     }),
@@ -11826,12 +11804,10 @@ var yyact = [
   (function (__caml_parser_env) {
       var _1 = Parsing.peek_val(__caml_parser_env, 3);
       var _3 = Parsing.peek_val(__caml_parser_env, 1);
-      var p1 = _1;
-      var p2 = _3;
       if (applicative_functors.contents) {
         return /* Lapply */Block.__(2, [
-                  p1,
-                  p2
+                  _1,
+                  _3
                 ]);
       } else {
         throw [

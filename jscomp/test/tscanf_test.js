@@ -1870,9 +1870,7 @@ function scan_rest$1(ib, accu) {
                 if (param === "]") {
                   return accu;
                 } else {
-                  var ib$1 = ib;
-                  var accu$1 = accu;
-                  return Curry._1(Scanf.bscanf(ib$1, /* Format */[
+                  return Curry._1(Scanf.bscanf(ib, /* Format */[
                                   /* Char_literal */Block.__(12, [
                                       /* " " */32,
                                       /* Int */Block.__(4, [
@@ -1887,12 +1885,11 @@ function scan_rest$1(ib, accu) {
                                     ]),
                                   " %i "
                                 ]), (function (i) {
-                                var ib$2 = ib$1;
-                                var accu$2 = /* :: */[
+                                var accu$1 = /* :: */[
                                   i,
-                                  accu$1
+                                  accu
                                 ];
-                                return Curry._1(Scanf.bscanf(ib$2, /* Format */[
+                                return Curry._1(Scanf.bscanf(ib, /* Format */[
                                                 /* Scan_char_set */Block.__(20, [
                                                     1,
                                                     "\0\0\0\0\0\0\0\b\0\0\0 \0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0",
@@ -1902,9 +1899,9 @@ function scan_rest$1(ib, accu) {
                                               ]), (function (param) {
                                               switch (param) {
                                                 case ";" :
-                                                    return scan_rest$1(ib$2, accu$2);
+                                                    return scan_rest$1(ib, accu$1);
                                                 case "]" :
-                                                    return accu$2;
+                                                    return accu$1;
                                                 default:
                                                   var s = Printf.sprintf(/* Format */[
                                                         /* String_literal */Block.__(11, [
