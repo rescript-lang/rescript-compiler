@@ -49,8 +49,8 @@ let clean_bs_garbage proj_dir =
     Bsb_parse_sources.clean_re_js proj_dir; (* clean re.js files*)
     ninja_clean  proj_dir ;
     Ext_list.iter Bsb_config.all_lib_artifacts try_remove ;
-    try_remove (Filename.basename !Bsb_global_backend.lib_ocaml_dir);
-    try_remove (Filename.basename !Bsb_global_backend.lib_artifacts_dir);
+    try_remove (Bsb_config.lib_lit // (Filename.basename !Bsb_global_backend.lib_ocaml_dir));
+    try_remove (Bsb_config.lib_lit // (Filename.basename !Bsb_global_backend.lib_artifacts_dir));
   with
     e ->
     Bsb_log.warn "@{<warning>Failed@} to clean due to %s" (Printexc.to_string e)

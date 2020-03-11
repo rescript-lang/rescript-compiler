@@ -72,7 +72,7 @@ let regenerate_ninja
         ~name:(lib_bs_dir // Literals.sourcedirs_meta)
         config.file_groups
     ;
-
+#if BS_NATIVE then
     if !Bsb_global_backend.backend = Bsb_config_types.Js then begin
       Bsb_merlin_gen.merlin_file_gen ~per_proj_dir
         config;       
@@ -85,6 +85,12 @@ let regenerate_ninja
       if status <> 0 then
         print_endline "Error: native plugin ran into an error";
     end;
+#else
+    Bsb_merlin_gen.merlin_file_gen ~per_proj_dir
+       config;       
+    Bsb_ninja_gen.output_ninja_and_namespace_map 
+      ~per_proj_dir  ~toplevel config ;             
+#end
     
     (* PR2184: we still need record empty dir 
         since it may add files in the future *)  

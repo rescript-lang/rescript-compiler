@@ -11189,8 +11189,8 @@ let clean_bs_garbage proj_dir =
     Bsb_parse_sources.clean_re_js proj_dir; (* clean re.js files*)
     ninja_clean  proj_dir ;
     Ext_list.iter Bsb_config.all_lib_artifacts try_remove ;
-    try_remove (Filename.basename !Bsb_global_backend.lib_ocaml_dir);
-    try_remove (Filename.basename !Bsb_global_backend.lib_artifacts_dir);
+    try_remove (Bsb_config.lib_lit // (Filename.basename !Bsb_global_backend.lib_ocaml_dir));
+    try_remove (Bsb_config.lib_lit // (Filename.basename !Bsb_global_backend.lib_artifacts_dir));
   with
     e ->
     Bsb_log.warn "@{<warning>Failed@} to clean due to %s" (Printexc.to_string e)
@@ -12224,6 +12224,7 @@ let record ~per_proj_dir ~file  (file_or_dirs : string list) : unit =
     bit in case we found a different version of compiler
 *)
 let check ~(per_proj_dir:string) ~forced ~file : check_result =
+  print_endline @@ "Ext_string.concat3 file \"_\" !Bsb_global_backend.backend_string: " ^ (Ext_string.concat3 file "_" !Bsb_global_backend.backend_string); 
   read (Ext_string.concat3 file "_" !Bsb_global_backend.backend_string)  (fun  {
       dir_or_files ; source_directory; st_mtimes
     } ->
@@ -14240,18 +14241,11 @@ let regenerate_ninja
         config.file_groups
     ;
 
-    if !Bsb_global_backend.backend = Bsb_config_types.Js then begin
-      Bsb_merlin_gen.merlin_file_gen ~per_proj_dir
-        config;       
-      Bsb_ninja_gen.output_ninja_and_namespace_map 
-        ~per_proj_dir  ~toplevel config ;             
-    end else begin
-      let os = Filename.basename Bsb_global_paths.bsc_dir in
-      let plugin_path = Bsb_global_paths.cwd // "node_modules" // "bs-platform-native" // os // "bsb.exe" in
-      let status = Sys.command (Printf.sprintf "%s %s %s %s %s %s" plugin_path per_proj_dir lib_bs_dir Bsb_global_paths.cwd Bsb_global_paths.bsc_dir !Bsb_global_backend.backend_string) in
-      if status <> 0 then
-        print_endline "Error: native plugin ran into an error";
-    end;
+    Bsb_merlin_gen.merlin_file_gen ~per_proj_dir
+       config;       
+    Bsb_ninja_gen.output_ninja_and_namespace_map 
+      ~per_proj_dir  ~toplevel config ;             
+
     
     (* PR2184: we still need record empty dir 
         since it may add files in the future *)  
