@@ -66,17 +66,17 @@ let neg_one = mk ~lo:(-1n) ~hi:(-1n)
 
 
 let neg_signed x =  (x  & 0x8000_0000n) <> 0n
-
+let non_neg_signed x = (x  & 0x8000_0000n) = 0n
 let succ_aux ~x_lo ~x_hi = 
-  let lo =  ( x_lo +~ 1n) &  0xffff_ffffn in  
-  mk ~lo ~hi:(( x_hi +~ if lo = 0n then 1n else 0n) &  0xffff_ffffn)
+  let lo =  ( x_lo +~ 1n) |~ 0n in  
+  mk ~lo ~hi:(( x_hi +~ if lo = 0n then 1n else 0n) |~ 0n)
 let succ (Int64 {lo = x_lo; hi = x_hi} : t) =
   succ_aux ~x_lo ~x_hi
   
 let neg (Int64 {lo;hi} ) =
-  let other_lo = (lognot lo +~  1n) & 0xffff_ffffn in   
+  let other_lo = (lognot lo +~  1n) |~ 0n in   
   mk ~lo:other_lo 
-    ~hi:((lognot hi +~ if other_lo = 0n then 1n else 0n)  &  0xffff_ffffn)
+    ~hi:((lognot hi +~ if other_lo = 0n then 1n else 0n)  |~ 0n)
 
 
 
@@ -86,14 +86,20 @@ let neg (Int64 {lo;hi} ) =
 let add_aux 
     (Int64 {lo = x_lo; hi = x_hi} : t)
     ~y_lo ~y_hi  =
-  let lo =  ( x_lo +~ y_lo) &  0xffff_ffffn in
+  let lo =  ( x_lo +~ y_lo) |~ 0n in
   let overflow =
-    if (neg_signed x_lo && (neg_signed y_lo  || not (neg_signed lo)))
-    || (neg_signed y_lo  && not (neg_signed lo))
-    then 1n
+    if (neg_signed x_lo && ( neg_signed y_lo  ||  (non_neg_signed lo)))
+    || (neg_signed y_lo  &&  (non_neg_signed lo))
+    (* we can make it symmetric by adding (neg_signed x_lo) but it will make it 
+       verbose and slow
+       a (b+c) + b (a+c)
+       --> bc + ac + ab 
+       --> a (b+c) + bc
+    *)
+    then 1n 
     else  0n
   in
-  mk ~lo ~hi:(( x_hi +~ y_hi +~ overflow) &  0xffff_ffffn)
+  mk ~lo ~hi:(( x_hi +~ y_hi +~ overflow) |~ 0n)
 
 (** [add_lo self y_lo] === [add self (mk ~lo:y_lo ~hi:0n)] *)  
 let add_lo self lo = add_aux self ~y_lo:(to_unsigned lo) ~y_hi:0n
