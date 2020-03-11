@@ -12224,7 +12224,6 @@ let record ~per_proj_dir ~file  (file_or_dirs : string list) : unit =
     bit in case we found a different version of compiler
 *)
 let check ~(per_proj_dir:string) ~forced ~file : check_result =
-  print_endline @@ "Ext_string.concat3 file \"_\" !Bsb_global_backend.backend_string: " ^ (Ext_string.concat3 file "_" !Bsb_global_backend.backend_string); 
   read (Ext_string.concat3 file "_" !Bsb_global_backend.backend_string)  (fun  {
       dir_or_files ; source_directory; st_mtimes
     } ->
