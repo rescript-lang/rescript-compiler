@@ -15,7 +15,7 @@
     "test-bsb": "node scripts/ciTest.js -bsb",
     "test-ocaml": "node scripts/ciTest.js -ounit",
     "postinstall": "node scripts/install.js",
-    "coverage" : "nyc --timeout=3000 --reporter=html mocha jscomp/test/*test.js && open ./coverage/index.html"
+    "coverage": "nyc --timeout=3000 --reporter=html mocha jscomp/test/*test.js && open ./coverage/index.html"
   },
   "name": "bs-platform",
   "version": "7.3.0-dev.1",
