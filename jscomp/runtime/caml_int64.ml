@@ -49,10 +49,7 @@ external unsafe_to_int64 : t -> int64 = "%identity"
 external unsafe_of_int64 : int64 -> t = "%identity"
 
 
-let to_unsigned (x : nativeint) =
-   x >>> 0
-
-let mk ~lo ~hi = Int64 {lo = to_unsigned lo ; hi}
+let mk ~lo ~hi = Int64 {lo = lo >>> 0 ; hi}
 let min_int =  mk  ~lo: 0n ~hi:(-0x80000000n)
 (* The high bits are signed 0x80000000 |~ 0 *)
 
@@ -102,7 +99,7 @@ let add_aux
   mk ~lo ~hi:(( x_hi +~ y_hi +~ overflow) |~ 0n)
 
 (** [add_lo self y_lo] === [add self (mk ~lo:y_lo ~hi:0n)] *)  
-let add_lo self lo = add_aux self ~y_lo:(to_unsigned lo) ~y_hi:0n
+let add_lo self lo = add_aux self ~y_lo:( lo >>> 0) ~y_hi:0n
 let add
     (self : t)
     (Int64 {lo = y_lo; hi = y_hi} : t) =
@@ -378,14 +375,21 @@ let rec to_string ( self : int64) =
       let rem_lo = (lognot rem_lo +~ 1n ) >>> 0 |. Caml_nativeint_extern.to_float  in 
       let delta =  (ceil (rem_lo /. 10.)) in 
       let remainder = 10. *. delta -. rem_lo in
-      to_string (unsafe_to_int64 (sub_lo approx_div1 
-                   (Caml_nativeint_extern.of_float delta))) ^ 
+      (
+        approx_div1 |. sub_lo (Caml_nativeint_extern.of_float delta)
+        |. unsafe_to_int64 
+        |. to_string
+      ) ^ 
       Caml_nativeint_extern.to_string (Caml_nativeint_extern.of_float remainder)
     else 
       let rem_lo = Caml_nativeint_extern.to_float rem_lo in 
       let delta =  (floor (rem_lo /. 10.)) in 
       let remainder = rem_lo -. 10. *. delta in 
-      to_string (unsafe_to_int64 (add_lo approx_div1 ((Caml_nativeint_extern.of_float delta)))) ^                                                    
+      (approx_div1 
+      |. add_lo ((Caml_nativeint_extern.of_float delta))
+      |. unsafe_to_int64 
+      |. to_string)
+      ^                                                    
       Caml_nativeint_extern.to_string (Caml_nativeint_extern.of_float remainder) 
 
 
