@@ -98,8 +98,7 @@ let add_aux
   in
   mk ~lo ~hi:(( x_hi +~ y_hi +~ overflow) |~ 0n)
 
-(** [add_lo self y_lo] === [add self (mk ~lo:y_lo ~hi:0n)] *)  
-let add_lo self lo = add_aux self ~y_lo:( lo >>> 0) ~y_hi:0n
+
 let add
     (self : t)
     (Int64 {lo = y_lo; hi = y_hi} : t) =
@@ -387,7 +386,7 @@ let rec to_string ( self : int64) =
       let delta =  (floor (rem_lo /. 10.)) in 
       let remainder = rem_lo -. 10. *. delta in 
       (approx_div1 
-      |. add_lo ((Caml_nativeint_extern.of_float delta))
+      |. add_aux ~y_lo:(Caml_nativeint_extern.of_float delta) ~y_hi:0n
       |. unsafe_to_int64 
       |. to_string)
       ^                                                    
