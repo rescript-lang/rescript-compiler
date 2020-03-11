@@ -130,9 +130,9 @@ let equal_nullable x y =
 
 (* when [lo] is unsigned integer, [lognot lo] is still an unsigned integer  *)
 let sub_aux x ~lo ~hi = 
-  let neg_lo = to_unsigned ((lognot lo +~  1n) & 0xffff_ffffn) in 
-  let neg_hi =  ((lognot hi +~ if neg_lo = 0n then 1n else 0n)  &  0xffff_ffffn) in 
-  add_aux x ~y_lo:neg_lo ~y_hi:neg_hi
+  let y_lo =  (lognot lo +~  1n) >>> 0 in 
+  let y_hi =  ((lognot hi +~ if y_lo = 0n then 1n else 0n)  |~  0n) in 
+  add_aux x ~y_lo ~y_hi
 
 let sub self (Int64{lo;hi})= sub_aux self ~lo ~hi 
 let sub_lo self lo = sub_aux self ~lo ~hi:0n
