@@ -132,7 +132,7 @@ let sub_aux x ~lo ~hi =
   add_aux x ~y_lo ~y_hi
 
 let sub self (Int64{lo;hi})= sub_aux self ~lo ~hi 
-let sub_lo self lo = sub_aux self ~lo ~hi:0n
+
 
 let lsl_ (Int64 {lo; hi} as x) numBits =
   if numBits = 0 then
@@ -376,7 +376,8 @@ let rec to_string ( self : int64) =
       let delta =  (ceil (rem_lo /. 10.)) in 
       let remainder = 10. *. delta -. rem_lo in
       (
-        approx_div1 |. sub_lo (Caml_nativeint_extern.of_float delta)
+        approx_div1 
+        |. sub_aux ~lo:(Caml_nativeint_extern.of_float delta) ~hi:0n
         |. unsafe_to_int64 
         |. to_string
       ) ^ 
