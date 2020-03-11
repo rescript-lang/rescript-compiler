@@ -899,7 +899,40 @@ var suites = Pervasives.$at(/* :: */[
                                                                                                   ]);
                                                                                         })
                                                                                     ],
-                                                                                    /* [] */0
+                                                                                    /* :: */[
+                                                                                      /* tuple */[
+                                                                                        "File \"int64_test.ml\", line 163, characters 6-13",
+                                                                                        (function (param) {
+                                                                                            return /* Eq */Block.__(0, [
+                                                                                                      Caml_int64.add(Int64.max_int, Int64.max_int),
+                                                                                                      Caml_int64.mk(-2, -1)
+                                                                                                    ]);
+                                                                                          })
+                                                                                      ],
+                                                                                      /* :: */[
+                                                                                        /* tuple */[
+                                                                                          "File \"int64_test.ml\", line 166, characters 6-13",
+                                                                                          (function (param) {
+                                                                                              return /* Eq */Block.__(0, [
+                                                                                                        Caml_int64.add(Int64.min_int, Int64.min_int),
+                                                                                                        Caml_int64.zero
+                                                                                                      ]);
+                                                                                            })
+                                                                                        ],
+                                                                                        /* :: */[
+                                                                                          /* tuple */[
+                                                                                            "File \"int64_test.ml\", line 170, characters 6-13",
+                                                                                            (function (param) {
+                                                                                                return /* Eq */Block.__(0, [
+                                                                                                          Caml_int64.neg_one,
+                                                                                                          Caml_int64.neg_one
+                                                                                                        ]);
+                                                                                              })
+                                                                                          ],
+                                                                                          /* [] */0
+                                                                                        ]
+                                                                                      ]
+                                                                                    ]
                                                                                   ]
                                                                                 ]
                                                                               ]
@@ -1026,37 +1059,37 @@ function id(loc, x) {
   }
 }
 
-eq("File \"int64_test.ml\", line 193, characters 5-12", Caml_int64.bits_of_float(0.3), Caml_int64.mk(858993459, 1070805811));
+eq("File \"int64_test.ml\", line 202, characters 5-12", Caml_int64.bits_of_float(0.3), Caml_int64.mk(858993459, 1070805811));
 
-eq("File \"int64_test.ml\", line 194, characters 5-12", Caml_int64.float_of_bits(Caml_int64.mk(858993459, 1070805811)), 0.3);
+eq("File \"int64_test.ml\", line 203, characters 5-12", Caml_int64.float_of_bits(Caml_int64.mk(858993459, 1070805811)), 0.3);
 
-id("File \"int64_test.ml\", line 195, characters 5-12", Caml_int64.neg_one);
+id("File \"int64_test.ml\", line 204, characters 5-12", Caml_int64.neg_one);
 
-id("File \"int64_test.ml\", line 196, characters 5-12", Caml_int64.mk(-100, -1));
+id("File \"int64_test.ml\", line 205, characters 5-12", Caml_int64.mk(-100, -1));
 
-id("File \"int64_test.ml\", line 197, characters 5-12", Caml_int64.mk(-1, 0));
+id("File \"int64_test.ml\", line 206, characters 5-12", Caml_int64.mk(-1, 0));
 
-id("File \"int64_test.ml\", line 198, characters 5-12", Caml_int64.mk(536870911, 0));
+id("File \"int64_test.ml\", line 207, characters 5-12", Caml_int64.mk(536870911, 0));
 
-id("File \"int64_test.ml\", line 199, characters 5-12", Caml_int64.mk(536870655, 0));
+id("File \"int64_test.ml\", line 208, characters 5-12", Caml_int64.mk(536870655, 0));
 
-eq("File \"int64_test.ml\", line 200, characters 5-12", Caml_int64.div(Int64.min_int, Caml_int64.mk(10, 0)), Caml_int64.mk(858993460, -214748365));
+eq("File \"int64_test.ml\", line 209, characters 5-12", Caml_int64.div(Int64.min_int, Caml_int64.mk(10, 0)), Caml_int64.mk(858993460, -214748365));
 
-eq("File \"int64_test.ml\", line 201, characters 5-12", Caml_int64.to_string(Caml_int64.div(Int64.min_int, Caml_int64.mk(10, 0))), "-922337203685477580");
+eq("File \"int64_test.ml\", line 210, characters 5-12", Caml_int64.to_string(Caml_int64.div(Int64.min_int, Caml_int64.mk(10, 0))), "-922337203685477580");
 
-eq("File \"int64_test.ml\", line 202, characters 5-12", Caml_int64.mul(Int64.min_int, Caml_int64.mk(10, 0)), Caml_int64.zero);
+eq("File \"int64_test.ml\", line 211, characters 5-12", Caml_int64.mul(Int64.min_int, Caml_int64.mk(10, 0)), Caml_int64.zero);
 
-eq("File \"int64_test.ml\", line 203, characters 5-12", Caml_int64.mul(Caml_int64.mk(10, 0), Int64.min_int), Caml_int64.zero);
+eq("File \"int64_test.ml\", line 212, characters 5-12", Caml_int64.mul(Caml_int64.mk(10, 0), Int64.min_int), Caml_int64.zero);
 
-eq("File \"int64_test.ml\", line 204, characters 5-12", Caml_int64.mul(Caml_int64.one, Int64.min_int), Int64.min_int);
+eq("File \"int64_test.ml\", line 213, characters 5-12", Caml_int64.mul(Caml_int64.one, Int64.min_int), Int64.min_int);
 
-eq("File \"int64_test.ml\", line 205, characters 5-12", Caml_int64.mul(Int64.max_int, Caml_int64.mk(10, 0)), Caml_int64.mk(-10, -1));
+eq("File \"int64_test.ml\", line 214, characters 5-12", Caml_int64.mul(Int64.max_int, Caml_int64.mk(10, 0)), Caml_int64.mk(-10, -1));
 
-eq("File \"int64_test.ml\", line 206, characters 5-12", Caml_int64.succ(Int64.max_int), Int64.min_int);
+eq("File \"int64_test.ml\", line 215, characters 5-12", Caml_int64.succ(Int64.max_int), Int64.min_int);
 
-eq("File \"int64_test.ml\", line 207, characters 5-12", Caml_int64.succ(Int64.min_int), Caml_int64.mk(1, -2147483648));
+eq("File \"int64_test.ml\", line 216, characters 5-12", Caml_int64.succ(Int64.min_int), Caml_int64.mk(1, -2147483648));
 
-eq("File \"int64_test.ml\", line 208, characters 5-12", Caml_int64.succ(Caml_int64.mk(-1, 0)), Caml_int64.mk(0, 1));
+eq("File \"int64_test.ml\", line 217, characters 5-12", Caml_int64.succ(Caml_int64.mk(-1, 0)), Caml_int64.mk(0, 1));
 
 Mt.from_pair_suites("Int64_test", suites$1.contents);
 

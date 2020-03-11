@@ -159,8 +159,17 @@ let suites :  Mt.pair_suites = Mt.[
       );
     "fac_int64", (fun _ -> 
         Eq(fac 30 1L, -8764578968847253504L)
+      );
+      __LOC__, (fun _ -> 
+      Eq (Int64.(add max_int max_int), -2L)
+      );
+      __LOC__,  (fun _ -> 
+      Eq (Int64.(add min_int min_int), 0L)
       )
-      
+      ;
+      __LOC__, (fun _ -> 
+      Eq (Int64.(add 0x1111_1111_1111_1111L  0xeeee_eeee_eeee_eeeeL), -1L)
+      )
 ]
                                  @ (let (a,b) = shift_left_tests in    
      Ext_array_test.map2i (fun i a b -> Format.asprintf "shift_left_cases %d" i, (fun _ -> Mt.Eq(a,b)) ) a b
