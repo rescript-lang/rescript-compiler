@@ -375,7 +375,7 @@ let rec to_string ( self : int64) =
     else 
     if rem_hi < 0n then 
       (* let (Int64 {lo = rem_lo}) = neg rem in      *)
-      let rem_lo = to_unsigned ((lognot rem_lo +~ 1n ) & 0xffff_ffffn) |. Caml_nativeint_extern.to_float  in 
+      let rem_lo = (lognot rem_lo +~ 1n ) >>> 0 |. Caml_nativeint_extern.to_float  in 
       let delta =  (ceil (rem_lo /. 10.)) in 
       let remainder = 10. *. delta -. rem_lo in
       to_string (unsafe_to_int64 (sub_lo approx_div1 
