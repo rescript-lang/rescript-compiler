@@ -174,6 +174,7 @@ external minMany_float : float array -> float = "min" [@@bs.val] [@@bs.splice] [
 
 (** base to the power of the exponent *)
 external pow_int : base:int -> exp:int -> int = "pow" [@@bs.val] [@@bs.scope "Math"]
+[@@deprecated "use `power_float` instead, the return type may be not int"]
 
 (** base to the power of the exponent *)
 external pow_float : base:float -> exp:float -> float = "pow" [@@bs.val] [@@bs.scope "Math"]
