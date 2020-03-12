@@ -2,7 +2,6 @@
 FLG -ppx '/Users/hongbozhang/git/bucklescript/darwin/bsc.exe -as-ppx '
 S /Users/hongbozhang/git/bucklescript/jscomp/build_tests/node_modules/bs-platform/lib/ocaml
 B /Users/hongbozhang/git/bucklescript/jscomp/build_tests/node_modules/bs-platform/lib/ocaml
-FLG -nostdlib
 FLG -w +a-4-9-40-41-42-50-61-102
 S 📕annotation
 B lib/bs/📕annotation

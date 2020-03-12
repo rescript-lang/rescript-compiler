@@ -38,8 +38,8 @@ React.createElement(make, makeProps("test", (function (param, param$1) {
           }), /* () */0));
 
 function Gpr_3987_test$BuckleScript3987ReproOk2(Props) {
-  Props.value;
   Props.onChange;
+  Props.value;
   return null;
 }
 

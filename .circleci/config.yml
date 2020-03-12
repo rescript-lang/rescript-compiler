@@ -3,7 +3,7 @@ jobs: # a collection of steps
   build: # runs not using Workflows must have a `build` job as entry point
     working_directory: ~/git/bucklescript # directory where steps will run
     docker: # run the steps with Docker
-      - image: circleci/node:8.9.4 # ...with this image as the primary container; this is where all `steps` will run
+      - image: circleci/node:dubnium # ...with this image as the primary container; this is where all `steps` will run
     steps: # a collection of executable commands
       - checkout # special step to check out source code to working directory
       - run:       
@@ -21,8 +21,8 @@ jobs: # a collection of steps
             git submodule init
             git submodule update
       - run:
-          name: install-npm-wee
-          command: npm install # `npm ci` is not available on node v8
+          name: ci-install
+          command: npm ci # `npm ci` is not available on node v8
 
       - run: # run tests
           name: test
