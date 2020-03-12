@@ -24,8 +24,6 @@ if (supported_os.indexOf(process.platform) < 0) {
 }
 var is_windows = process.platform === "win32";
 
-
-
 var ninja_bin_output = path.join(root_dir, process.platform, "ninja.exe");
 
 /**
@@ -98,8 +96,6 @@ function ensureExists(dir) {
     fs.mkdirSync(dir);
   }
 }
-
-
 
 /**
  * @returns {string|undefined}
@@ -176,7 +172,7 @@ function provideCompiler() {
   if (myVersion !== undefined) {
     return myVersion;
   } else {
-    myVersion = require("./buildocaml.js").getVersionPrefix();
+    myVersion = "4.06.1";
     var ocamlopt =
       process.env.ESY === "true"
         ? "ocamlopt.opt"
@@ -203,11 +199,11 @@ function provideCompiler() {
 
     var filePath = path.join(lib_dir, "release.ninja");
     fs.writeFileSync(filePath, releaseNinja, "ascii");
-    cp.execFileSync(ninja_bin_output, ["-f", "release.ninja","-t", "clean"], {
+    cp.execFileSync(ninja_bin_output, ["-f", "release.ninja", "-t", "clean"], {
       cwd: lib_dir,
       stdio: [0, 1, 2]
     });
-    cp.execFileSync(ninja_bin_output, ["-f", "release.ninja","-v"], {
+    cp.execFileSync(ninja_bin_output, ["-f", "release.ninja", "-v"], {
       cwd: lib_dir,
       stdio: [0, 1, 2]
     });
@@ -218,11 +214,11 @@ function provideCompiler() {
 
 provideNinja();
 
-var ocamlVersion = provideCompiler();
+provideCompiler();
 
-var stdlib = ocamlVersion.includes("4.02") ? "stdlib-402" : "stdlib-406";
+var stdlib = "stdlib-406";
 
 if (process.env.BS_TRAVIS_CI) {
   buildLibs(stdlib);
-  require('./installUtils.js').install()
+  require("./installUtils.js").install();
 }

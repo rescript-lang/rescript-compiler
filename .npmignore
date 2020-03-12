@@ -36,3 +36,4 @@ vendor/rollup.js
 package/
 *.tgz
 .nyc_output/
+themes

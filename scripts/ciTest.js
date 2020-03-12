@@ -72,8 +72,9 @@ function main() {
   // console.log('OCaml:', output)
   var binDir = path.join(__dirname, "..", "jscomp", "bin");
   if (ounitTest) {
-    var fn = fs.copyFileSync ? fs.copyFileSync : fs.renameSync;
-    fn(
+    
+    // running tests for native code
+    fs.copyFileSync(
       path.join(
         __dirname,
         "..",
@@ -94,6 +95,7 @@ function main() {
     cp.execSync(`./test.exe`, { cwd: binDir, stdio: [0, 1, 2] });
   }
 
+  // running generated js tests  
   if (mochaTest) {
     cp.execSync(`mocha jscomp/test/**/*test.js`, {
       cwd: path.join(__dirname, ".."),
@@ -101,6 +103,8 @@ function main() {
     });
   }
 
+  // set up global directory properly using 
+  // npm config set prefix '~/.npm-global'
   if (installGlobal) {
     console.log("install bucklescript globally");
     cp.execSync("sudo npm i -g --unsafe-perm . && bsc -bs-internal-check", {
@@ -127,6 +131,13 @@ function main() {
       .map(x => x.trim())
       .filter(x => x);
     var themesDir = path.join(__dirname, "..", "themes");
+
+    if(fs.existsSync(themesDir)){
+      // fs.rmdirSync(themesDir,{recursive : true})
+      cp.execSync(`rm -rf ${themesDir}`,{stdio:[0,1,2]})
+      // we dont remove post-installation
+      // since it is useful for debugging
+    }
     fs.mkdirSync(themesDir);
     themes.forEach(function(theme) {
       cp.exec(
@@ -167,6 +178,9 @@ function main() {
     var files = fs.readdirSync(buildTestDir);
     files.forEach(function(file) {
       var testDir = path.join(buildTestDir, file);
+      if(file === 'node_modules' || !fs.lstatSync(testDir).isDirectory()){
+        return 
+      }
       if (!fs.existsSync(path.join(testDir, "input.js"))) {
         console.warn(`input.js does not exist in ${testDir}`);
       } else {
