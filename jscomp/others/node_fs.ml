@@ -74,7 +74,7 @@ module Watch = struct
     ] [@bs.string]
     ) -> t = "on"
   [@@bs.send.pipe: t]
-  [@@ocaml.deprecated "Please use `Node.Fs.on_` instead "]
+  [@@deprecated "Please use `Node.Fs.on_` instead "]
 
   external on_ : 
     t ->

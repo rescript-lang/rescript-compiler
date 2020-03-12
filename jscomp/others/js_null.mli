@@ -34,7 +34,7 @@ external return : 'a -> 'a t  = "%identity"
 
 
 val test : 'a t -> bool 
-[@@ocaml.deprecated "Use = Js.null directly "]
+[@@deprecated "Use = Js.null directly "]
 (** Returns [true] if the given value is [empty] ([null]), [false] otherwise *)
 
 (** The empty value, [null] *)
@@ -81,7 +81,7 @@ val iter : 'a t -> ('a -> unit [@bs]) -> unit
 val fromOption: 'a option -> 'a t
 
 val from_opt : 'a option -> 'a t
-[@@ocaml.deprecated "Use fromOption instead"]
+[@@deprecated "Use fromOption instead"]
 
 (** Maps ['a Js.null] to ['a option]
 
@@ -95,6 +95,6 @@ val from_opt : 'a option -> 'a t
 external toOption : 'a t -> 'a option = "#null_to_opt"
 
 external to_opt : 'a t -> 'a option = "#null_to_opt"
-[@@ocaml.deprecated "Use toOption instead"]
+[@@deprecated "Use toOption instead"]
 
 

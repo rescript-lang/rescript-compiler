@@ -469,7 +469,7 @@ external splitAtMost: t -> limit:int -> t array = "split" [@@bs.send.pipe: t]
   Deprecated - Please use [splitAtMost]
 *)
 external splitLimited : t -> int -> t array = "split" [@@bs.send.pipe: t]
-[@@ocaml.deprecated "Please use splitAtMost"]
+[@@deprecated "Please use splitAtMost"]
 
 (**
   [splitByRe regex str] splits the given [str] at every occurrence of [regex] and returns an
@@ -500,7 +500,7 @@ external splitByReAtMost : Js_re.t -> limit:int ->  t option array = "split" [@@
   Deprecated - Please use [splitByReAtMost]
 *)
 external splitRegexpLimited : Js_re.t -> int ->  t array = "split" [@@bs.send.pipe: t]
-[@@ocaml.deprecated "Please use splitByReAtMost"]
+[@@deprecated "Please use splitByReAtMost"]
 
 (** ES2015:
     [startsWith substr str] returns [true] if the [str] starts with [substr], [false] otherwise.

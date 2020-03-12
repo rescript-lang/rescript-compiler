@@ -25,4 +25,4 @@
 type (+'good, +'bad) t =
   | Ok of 'good
   | Error of 'bad
-[@@ocaml.deprecated "Please use `Belt.Result.t` instead"]
+[@@deprecated "Please use `Belt.Result.t` instead"]

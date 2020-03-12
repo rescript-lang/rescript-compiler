@@ -886,12 +886,12 @@ module Int32Array = struct
   
 # 307 "others/js_typed_array.cppo.ml"
   external create : int32 array -> t = "Int32Array" [@@bs.new]
-  [@@ocaml.deprecated "use `make` instead"]
+  [@@deprecated "use `make` instead"]
   external of_buffer : array_buffer -> t = "Int32Array" [@@bs.new]
-  [@@ocaml.deprecated "use `fromBuffer` instead"]
+  [@@deprecated "use `fromBuffer` instead"]
 end
 module Int32_array = Int32Array
-[@ocaml.deprecated "use `Int32Array` instead"]
+[@deprecated "use `Int32Array` instead"]
 
 
 module Uint32Array = struct
@@ -1137,12 +1137,12 @@ module Float32Array = struct
   
 # 327 "others/js_typed_array.cppo.ml"
   external create : float array -> t = "Float32Array" [@@bs.new]
-  [@@ocaml.deprecated "use `make` instead"]
+  [@@deprecated "use `make` instead"]
   external of_buffer : array_buffer -> t = "Float32Array" [@@bs.new]
-  [@@ocaml.deprecated "use `fromBuffer` instead"]
+  [@@deprecated "use `fromBuffer` instead"]
 end
 module Float32_array = Float32Array
-[@ocaml.deprecated "use `Float32Array` instead"]
+[@deprecated "use `Float32Array` instead"]
 
 
 module Float64Array = struct
@@ -1265,12 +1265,12 @@ module Float64Array = struct
   
 # 339 "others/js_typed_array.cppo.ml"
   external create : float array -> t = "Float64Array" [@@bs.new]
-  [@@ocaml.deprecated "use `make` instead"]
+  [@@deprecated "use `make` instead"]
   external of_buffer : array_buffer -> t = "Float64Array" [@@bs.new]
-  [@@ocaml.deprecated "use `fromBuffer` instead"]
+  [@@deprecated "use `fromBuffer` instead"]
 end
 module Float64_array = Float64Array
-[@ocaml.deprecated "use `Float64Array` instead"]
+[@deprecated "use `Float64Array` instead"]
 
 
 (** The DataView view provides a low-level interface for reading and writing
