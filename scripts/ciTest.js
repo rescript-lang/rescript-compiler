@@ -78,7 +78,7 @@ function main() {
         __dirname,
         "..",
         "lib",
-        require("./buildocaml.js").getVersionPrefix(),
+        '4.06.1',
         "unstable",
         "all_ounit_tests.ml"
       ),
