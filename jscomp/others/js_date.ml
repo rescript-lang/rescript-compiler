@@ -51,7 +51,7 @@ external now : unit -> float = "" [@@bs.val "Date.now"]
 (** returns the number of milliseconds since Unix epoch *)
 
 external parse : string -> t = "Date" [@@bs.new]
-[@@ocaml.deprecated "Please use `fromString` instead"]
+[@@deprecated "Please use `fromString` instead"]
 
 external parseAsFloat : string -> float = "" [@@bs.val "parse"] [@@bs.scope "Date"]
 (** returns NaN if passed invalid date string *)
@@ -89,7 +89,7 @@ external getUTCMonth : t -> float = "getUTCMonth" [@@bs.send]
 
 external getUTCSeconds : t -> float = "getUTCSeconds" [@@bs.send]
 external getYear : t -> float = "getYear" [@@bs.send]
-[@@ocaml.deprecated "use `getFullYear` instead"]
+[@@deprecated "use `getFullYear` instead"]
 
 external setDate : t -> float -> float = "setDate" [@@bs.send]
 external setFullYear : t -> float -> float = "setFullYear" [@@bs.send]
@@ -126,15 +126,15 @@ external setUTCSeconds : t -> float -> float = "setUTCSeconds" [@@bs.send]
 external setUTCSecondsMs : t -> seconds:float -> milliseconds:float -> unit -> float = "setUTCSeconds" [@@bs.send]
 external setUTCTime : t -> float -> float = "setUTCTime" [@@bs.send]
 external setYear : t -> float -> float = "setYear" [@@bs.send]
-[@@ocaml.deprecated "use `setFullYear` instead"]
+[@@deprecated "use `setFullYear` instead"]
 
 external toDateString : t -> string = "toDateString" [@@bs.send]
 external toGMTString : t -> string = "toGMTString" [@@bs.send]
-[@@ocaml.deprecated "use `toUTCString` instead"]
+[@@deprecated "use `toUTCString` instead"]
 
 external toISOString : t -> string = "toISOString" [@@bs.send]
 external toJSON : t -> string = "toJSON" [@@bs.send]
-[@@ocaml.deprecated "This method is unsafe. It will be changed to return option in a future release. Please use toJSONUnsafe instead."]
+[@@deprecated "This method is unsafe. It will be changed to return option in a future release. Please use toJSONUnsafe instead."]
 external toJSONUnsafe : t -> string = "toJSON" [@@bs.send]
 external toLocaleDateString : t -> string = "toLocaleDateString" [@@bs.send] (* TODO: has overloads with somewhat poor browser support *)
 external toLocaleString: t -> string = "toLocaleString" [@@bs.send] (* TODO: has overloads with somewhat poor browser support *)

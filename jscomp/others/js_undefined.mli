@@ -32,7 +32,7 @@ external return : 'a -> 'a t = "%identity"
 
 
 val test : 'a t -> bool 
-[@@ocaml.deprecated "Use = Js.undefined directly"]
+[@@deprecated "Use = Js.undefined directly"]
 (** Returns [true] if the given value is [empty] ([undefined]), [false] otherwise *)
 
 (**
@@ -84,7 +84,7 @@ val iter : 'a t -> ('a -> unit [@bs]) -> unit
 *)
 val fromOption: 'a option -> 'a t
 val from_opt : 'a option -> 'a t
-[@@ocaml.deprecated "Use fromOption instead"]
+[@@deprecated "Use fromOption instead"]
 
 (** Maps ['a Js.undefined] to ['a option]
 

@@ -22,7 +22,7 @@ jobs: # a collection of steps
             git submodule update
       - run:
           name: install-npm-wee
-          command: npm install
+          command: npm install # `npm ci` is not available on node v8
 
       - run: # run tests
           name: test

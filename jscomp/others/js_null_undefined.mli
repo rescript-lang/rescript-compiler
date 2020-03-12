@@ -31,7 +31,7 @@ type + 'a t = 'a Js.null_undefined
 external return : 'a -> 'a t = "%identity"
 
 external test : 'a t -> bool =  "#is_nullable"
-[@@ocaml.deprecated "Use Js.Nullable.isNullable instead"]
+[@@deprecated "Use Js.Nullable.isNullable instead"]
 
 (** Returns [true] if the given value is [null] or [undefined], [false] otherwise *)
 external isNullable : 'a t -> bool =  "#is_nullable"
@@ -80,7 +80,7 @@ val iter : 'a t -> ('a -> unit [@bs]) -> unit
 val fromOption : 'a option -> 'a t
 
 val from_opt: 'a option -> 'a t
-[@@ocaml.deprecated "Use fromOption instead"]
+[@@deprecated "Use fromOption instead"]
 
 (** Maps ['a Js.null_undefined] to ['a option]
 
@@ -95,4 +95,4 @@ val from_opt: 'a option -> 'a t
 external toOption : 'a t -> 'a option = "#nullable_to_opt"
 
 external to_opt : 'a t -> 'a option = "#nullable_to_opt"
-[@@ocaml.deprecated "Use toOption instead"]
+[@@deprecated "Use toOption instead"]
