@@ -2,14 +2,8 @@ module Bsb_dir_index :
   sig
     type t = private int[@@ocaml.doc
                           " Used to index [.bsbuildcache] may not be needed if we flatten dev \n  into  a single group\n"]
-    val lib_dir_index : t
     val is_lib_dir : t -> bool
-    val get_dev_index : unit -> t
     val of_int : int -> t
-    val get_current_number_of_dev_groups : unit -> int
-    val string_of_bsb_dev_include : t -> string
-    val reset : unit -> unit[@@ocaml.doc
-                              " TODO: Need reset\n   when generating each ninja file to provide stronger guarantee. \n   Here we get a weak guarantee because only dev group is \n  inside the toplevel project\n   "]
   end =
   struct
     type t = int
@@ -17,22 +11,6 @@ module Bsb_dir_index :
                                               " \n   0 : lib \n   1 : dev 1 \n   2 : dev 2 \n"]
     let lib_dir_index = 0
     let is_lib_dir x = x = lib_dir_index
-    let dir_index = ref 0
-    let get_dev_index () = incr dir_index; !dir_index
-    let get_current_number_of_dev_groups () = !dir_index
-    let bsc_group_1_includes = "bsc_group_1_includes"[@@ocaml.doc
-                                                       " bsb generate pre-defined variables [bsc_group_i_includes]\n  for each rule, there is variable [bsc_extra_excludes]\n  [g_dev_incls] are for app test etc\n  it will be like\n  {[\n    g_dev_incls = ${bsc_group_1_includes}\n  ]}\n  where [bsc_group_1_includes] will be pre-calcuated\n"]
-    let bsc_group_2_includes = "bsc_group_2_includes"
-    let bsc_group_3_includes = "bsc_group_3_includes"
-    let bsc_group_4_includes = "bsc_group_4_includes"
-    let string_of_bsb_dev_include i =
-      match i with
-      | 1 -> bsc_group_1_includes
-      | 2 -> bsc_group_2_includes
-      | 3 -> bsc_group_3_includes
-      | 4 -> bsc_group_4_includes
-      | _ -> "bsc_group_" ^ ((string_of_int i) ^ "_includes")
-    let reset () = dir_index := 0
   end 
 module Ext_bytes :
   sig
@@ -56,7 +34,6 @@ module Ext_buffer :
                                 " Return a copy of the current contents of the buffer.\n    The buffer itself is unchanged. "]
     val length : t -> int[@@ocaml.doc
                            " Return the number of characters currently contained in the buffer. "]
-    val is_empty : t -> bool
     [@@@ocaml.text " Empty the buffer. "]
     val add_char : t -> char -> unit[@@ocaml.doc
                                       " [add_char b c] appends the character [c] at the end of the buffer [b]. "]
@@ -74,12 +51,7 @@ module Ext_buffer :
       " [add_channel b ic n] reads exactly [n] character from the\n   input channel [ic] and stores them at the end of buffer [b].\n   Raise [End_of_file] if the channel contains fewer than [n]\n   characters. "]
     val output_buffer : out_channel -> t -> unit[@@ocaml.doc
                                                   " [output_buffer oc b] writes the current contents of buffer [b]\n   on the output channel [oc]. "]
-    val digest : t -> Digest.t
     val not_equal : t -> string -> bool
-    val add_int_1 : t -> int -> unit
-    val add_int_2 : t -> int -> unit
-    val add_int_3 : t -> int -> unit
-    val add_int_4 : t -> int -> unit
     val add_string_char : t -> string -> char -> unit
     val add_char_string : t -> char -> string -> unit
   end =
@@ -97,7 +69,6 @@ module Ext_buffer :
       { buffer = s; position = 0; length = n; initial_buffer = s }
     let contents b = Bytes.sub_string b.buffer 0 b.position
     let length b = b.position
-    let is_empty b = b.position = 0
     let resize b more =
       let len = b.length in
       let new_len = ref len in
@@ -146,7 +117,6 @@ module Ext_buffer :
     let output_buffer oc b = output oc b.buffer 0 b.position
     external unsafe_string :
       bytes -> int -> int -> Digest.t = "caml_md5_string"
-    let digest b = unsafe_string b.buffer 0 b.position
     let rec not_equal_aux (b : bytes) (s : string) i len =
       if i >= len
       then false
@@ -158,131 +128,14 @@ module Ext_buffer :
       let s_len = String.length s in
       (b_len <> s_len) || (not_equal_aux b.buffer s 0 s_len)[@@ocaml.doc
                                                               " avoid a large copy "]
-    let add_int_1 (b : t) (x : int) =
-      let c = Char.unsafe_chr (x land 0xff) in
-      let pos = b.position in
-      if pos >= b.length then resize b 1;
-      Bytes.unsafe_set b.buffer pos c;
-      b.position <- (pos + 1)[@@ocaml.doc
-                               "\n  It could be one byte, two bytes, three bytes and four bytes \n  TODO: inline for better performance\n"]
-    let add_int_2 (b : t) (x : int) =
-      let c1 = Char.unsafe_chr (x land 0xff) in
-      let c2 = Char.unsafe_chr ((x lsr 8) land 0xff) in
-      let pos = b.position in
-      if (pos + 1) >= b.length then resize b 2;
-      (let b_buffer = b.buffer in
-       Bytes.unsafe_set b_buffer pos c1;
-       Bytes.unsafe_set b_buffer (pos + 1) c2;
-       b.position <- (pos + 2))
-    let add_int_3 (b : t) (x : int) =
-      let c1 = Char.unsafe_chr (x land 0xff) in
-      let c2 = Char.unsafe_chr ((x lsr 8) land 0xff) in
-      let c3 = Char.unsafe_chr ((x lsr 16) land 0xff) in
-      let pos = b.position in
-      if (pos + 2) >= b.length then resize b 3;
-      (let b_buffer = b.buffer in
-       Bytes.unsafe_set b_buffer pos c1;
-       Bytes.unsafe_set b_buffer (pos + 1) c2;
-       Bytes.unsafe_set b_buffer (pos + 2) c3;
-       b.position <- (pos + 3))
-    let add_int_4 (b : t) (x : int) =
-      let c1 = Char.unsafe_chr (x land 0xff) in
-      let c2 = Char.unsafe_chr ((x lsr 8) land 0xff) in
-      let c3 = Char.unsafe_chr ((x lsr 16) land 0xff) in
-      let c4 = Char.unsafe_chr ((x lsr 24) land 0xff) in
-      let pos = b.position in
-      if (pos + 3) >= b.length then resize b 4;
-      (let b_buffer = b.buffer in
-       Bytes.unsafe_set b_buffer pos c1;
-       Bytes.unsafe_set b_buffer (pos + 1) c2;
-       Bytes.unsafe_set b_buffer (pos + 2) c3;
-       Bytes.unsafe_set b_buffer (pos + 3) c4;
-       b.position <- (pos + 4))
   end 
 module Ext_list :
   sig
-    val map : 'a list -> ('a -> 'b) -> 'b list
-    val map_combine : 'a list -> 'b list -> ('a -> 'c) -> ('c * 'b) list
-    val has_string : string list -> string -> bool
-    val map_split_opt :
-      'a list -> ('a -> ('b option * 'c option)) -> ('b list * 'c list)
-    val mapi : 'a list -> (int -> 'a -> 'b) -> 'b list
-    val map_snd : ('a * 'b) list -> ('b -> 'c) -> ('a * 'c) list
-    val map_last : 'a list -> (bool -> 'a -> 'b) -> 'b list[@@ocaml.doc
-                                                             " [map_last f xs ]\n    will pass [true] to [f] for the last element, \n    [false] otherwise. \n    For empty list, it returns empty\n"]
-    val last : 'a list -> 'a[@@ocaml.doc
-                              " [last l]\n    return the last element\n    raise if the list is empty\n"]
-    val append : 'a list -> 'a list -> 'a list
-    val append_one : 'a list -> 'a -> 'a list
-    val map_append : 'b list -> 'a list -> ('b -> 'a) -> 'a list
-    val fold_right : 'a list -> 'b -> ('a -> 'b -> 'b) -> 'b
-    val fold_right2 :
-      'a list -> 'b list -> 'c -> ('a -> 'b -> 'c -> 'c) -> 'c
-    val map2 : 'a list -> 'b list -> ('a -> 'b -> 'c) -> 'c list
-    val fold_left_with_offset :
-      'a list -> 'acc -> int -> ('a -> 'acc -> int -> 'acc) -> 'acc
-    val filter_map : 'a list -> ('a -> 'b option) -> 'b list[@@ocaml.doc
-                                                              " @unused "]
-    val exclude : 'a list -> ('a -> bool) -> 'a list[@@ocaml.doc
-                                                      " [exclude p l] is the opposite of [filter p l] "]
-    val exclude_with_val : 'a list -> ('a -> bool) -> 'a list option[@@ocaml.doc
-                                                                    " [excludes p l]\n    return a tuple [excluded,newl]\n    where [exluded] is true indicates that at least one  \n    element is removed,[newl] is the new list where all [p x] for [x] is false\n\n"]
-    val same_length : 'a list -> 'b list -> bool
-    val init : int -> (int -> 'a) -> 'a list
-    val split_at : 'a list -> int -> ('a list * 'a list)[@@ocaml.doc
-                                                          " [split_at n l]\n    will split [l] into two lists [a,b], [a] will be of length [n], \n    otherwise, it will raise\n"]
-    val split_at_last : 'a list -> ('a list * 'a)[@@ocaml.doc
-                                                   " [split_at_last l]\n    It is equivalent to [split_at (List.length l - 1) l ]\n"]
-    val filter_mapi : 'a list -> ('a -> int -> 'b option) -> 'b list
-    val filter_map2 :
-      'a list -> 'b list -> ('a -> 'b -> 'c option) -> 'c list
-    val length_compare : 'a list -> int -> [ `Gt  | `Eq  | `Lt ]
-    val length_ge : 'a list -> int -> bool
     [@@@ocaml.text
       "\n\n   {[length xs = length ys + n ]}\n   input n should be positive \n   TODO: input checking\n"]
-    val length_larger_than_n : 'a list -> 'a list -> int -> bool
-    val rev_map_append : 'a list -> 'b list -> ('a -> 'b) -> 'b list[@@ocaml.doc
-                                                                    "\n   [rev_map_append f l1 l2]\n   [map f l1] and reverse it to append [l2]\n   This weird semantics is due to it is the most efficient operation\n   we can do\n"]
-    val flat_map : 'a list -> ('a -> 'b list) -> 'b list
-    val flat_map_append : 'a list -> 'b list -> ('a -> 'b list) -> 'b list
-    val stable_group : 'a list -> ('a -> 'a -> bool) -> 'a list list[@@ocaml.doc
-                                                                    "\n    [stable_group eq lst]\n    Example:\n    Input:\n   {[\n     stable_group (=) [1;2;3;4;3]\n   ]}\n    Output:\n   {[\n     [[1];[2];[4];[3;3]]\n   ]}\n    TODO: this is O(n^2) behavior \n    which could be improved later\n"]
-    val drop : 'a list -> int -> 'a list[@@ocaml.doc
-                                          " [drop n list]\n    raise when [n] is negative\n    raise when list's length is less than [n]\n"]
-    val find_first : 'a list -> ('a -> bool) -> 'a option
-    val find_first_not : 'a list -> ('a -> bool) -> 'a option[@@ocaml.doc
-                                                               " [find_first_not p lst ]\n    if all elements in [lst] pass, return [None] \n    otherwise return the first element [e] as [Some e] which\n    fails the predicate\n"]
     [@@@ocaml.text
       " [find_opt f l] returns [None] if all return [None],  \n    otherwise returns the first one. \n"]
-    val find_opt : 'a list -> ('a -> 'b option) -> 'b option
-    val find_def : 'a list -> ('a -> 'b option) -> 'b -> 'b
-    val rev_iter : 'a list -> ('a -> unit) -> unit
     val iter : 'a list -> ('a -> unit) -> unit
-    val for_all : 'a list -> ('a -> bool) -> bool
-    val for_all_snd : ('a * 'b) list -> ('b -> bool) -> bool
-    val for_all2_no_exn : 'a list -> 'b list -> ('a -> 'b -> bool) -> bool
-    [@@ocaml.doc
-      " [for_all2_no_exn p xs ys]\n    return [true] if all satisfied,\n    [false] otherwise or length not equal\n"]
-    val split_map : 'a list -> ('a -> ('b * 'c)) -> ('b list * 'c list)
-    [@@ocaml.doc " [f] is applied follow the list order "]
-    val reduce_from_left : 'a list -> ('a -> 'a -> 'a) -> 'a[@@ocaml.doc
-                                                              " [fn] is applied from left to right "]
-    val sort_via_array : 'a list -> ('a -> 'a -> int) -> 'a list
-    val assoc_by_string : (string * 'a) list -> string -> 'a option -> 'a
-    [@@ocaml.doc
-      " [assoc_by_string default key lst]\n    if  [key] is found in the list  return that val,\n    other unbox the [default], \n    otherwise [assert false ]\n"]
-    val assoc_by_int : (int * 'a) list -> int -> 'a option -> 'a
-    val nth_opt : 'a list -> int -> 'a option
-    val iter_snd : ('a * 'b) list -> ('b -> unit) -> unit
-    val iter_fst : ('a * 'b) list -> ('a -> unit) -> unit
-    val exists : 'a list -> ('a -> bool) -> bool
-    val exists_fst : ('a * 'b) list -> ('a -> bool) -> bool
-    val exists_snd : ('a * 'b) list -> ('b -> bool) -> bool
-    val concat_append : 'a list list -> 'a list -> 'a list
-    val fold_left2 : 'a list -> 'b list -> 'c -> ('a -> 'b -> 'c -> 'c) -> 'c
-    val fold_left : 'a list -> 'b -> ('b -> 'a -> 'b) -> 'b
-    val singleton_exn : 'a list -> 'a
-    val mem_string : string list -> string -> bool
   end =
   struct
     let rec map l f =
@@ -366,7 +219,6 @@ module Ext_list :
       match lst with
       | [] -> []
       | a::l -> let r = f i a in r :: (mapi_aux l (i + 1) f)
-    let mapi lst f = mapi_aux lst 0 f
     let rec last xs =
       match xs with
       | x::[] -> x
@@ -383,7 +235,6 @@ module Ext_list :
       | a0::a1::a2::a3::a4::rest -> a0 :: a1 :: a2 :: a3 :: a4 ::
           (append_aux rest l2)
     let append l1 l2 = match l2 with | [] -> l1 | _ -> append_aux l1 l2
-    let append_one l1 x = append_aux l1 [x]
     let rec map_append l1 l2 f =
       match l1 with
       | [] -> l2
@@ -496,21 +347,6 @@ module Ext_list :
       | ([], []) -> true
       | (_::xs, _::ys) -> same_length xs ys
       | (_, _) -> false
-    let init n f =
-      match n with
-      | 0 -> []
-      | 1 -> let a0 = f 0 in [a0]
-      | 2 -> let a0 = f 0 in let a1 = f 1 in [a0; a1]
-      | 3 -> let a0 = f 0 in let a1 = f 1 in let a2 = f 2 in [a0; a1; a2]
-      | 4 ->
-          let a0 = f 0 in
-          let a1 = f 1 in let a2 = f 2 in let a3 = f 3 in [a0; a1; a2; a3]
-      | 5 ->
-          let a0 = f 0 in
-          let a1 = f 1 in
-          let a2 = f 2 in
-          let a3 = f 3 in let a4 = f 4 in [a0; a1; a2; a3; a4]
-      | _ -> Array.to_list (Array.init n f)
     let rec rev_append l1 l2 =
       match l1 with
       | [] -> l2
@@ -525,33 +361,11 @@ module Ext_list :
         (match l with
          | x::xs -> small_split_at (n - 1) (x :: acc) xs
          | _ -> invalid_arg "Ext_list.split_at")
-    let split_at l n = small_split_at n [] l
     let rec split_at_last_aux acc x =
       match x with
       | [] -> invalid_arg "Ext_list.split_at_last"
       | x::[] -> ((rev acc), x)
       | y0::ys -> split_at_last_aux (y0 :: acc) ys
-    let split_at_last (x : 'a list) =
-      match x with
-      | [] -> invalid_arg "Ext_list.split_at_last"
-      | a0::[] -> ([], a0)
-      | a0::a1::[] -> ([a0], a1)
-      | a0::a1::a2::[] -> ([a0; a1], a2)
-      | a0::a1::a2::a3::[] -> ([a0; a1; a2], a3)
-      | a0::a1::a2::a3::a4::[] -> ([a0; a1; a2; a3], a4)
-      | a0::a1::a2::a3::a4::rest ->
-          let (rev, last) = split_at_last_aux [] rest in
-          ((a0 :: a1 :: a2 :: a3 :: a4 :: rev), last)
-    let filter_mapi xs f =
-      let rec aux i xs =
-        match xs with
-        | [] -> []
-        | y::ys ->
-            (match f y i with
-             | None -> aux (i + 1) ys
-             | Some z -> z :: (aux (i + 1) ys)) in
-      aux 0 xs[@@ocaml.doc
-                "\n   can not do loop unroll due to state combination\n"]
     let rec filter_map2 xs ys (f : 'a -> 'b -> 'c option) =
       match (xs, ys) with
       | ([], []) -> []
@@ -574,8 +388,6 @@ module Ext_list :
             | a0::a1::a2::rest -> rev_append rest (a2 :: a1 :: a0 :: acc) in
           flat_map_aux f new_acc append rest[@@ocaml.doc
                                               " It is not worth loop unrolling, \n    it is already tail-call, and we need to be careful \n    about evaluation order when unroll\n"]
-    let flat_map lx f = flat_map_aux f [] [] lx
-    let flat_map_append lx append f = flat_map_aux f [] append lx
     let rec length_compare l n =
       if n < 0
       then `Gt
@@ -601,7 +413,6 @@ module Ext_list :
        | (y0::_ as y)::ys ->
            if eq x y0 then (x :: y) :: ys else y :: (aux eq x ys)
        | _::_ -> assert false : 'a list list)
-    let stable_group lst eq = (group eq lst) |> rev
     let rec drop h n =
       if n < 0
       then invalid_arg "Ext_list.drop"
@@ -679,8 +490,6 @@ module Ext_list :
           let (ass, bss) = split_map tail f in
           ((a1 :: a2 :: a3 :: a4 :: a5 :: ass), (b1 :: b2 :: b3 :: b4 :: b5
             :: bss))
-    let sort_via_array lst cmp =
-      let arr = Array.of_list lst in Array.sort cmp arr; Array.to_list arr
     let rec assoc_by_string lst (k : string) def =
       match lst with
       | [] -> (match def with | None -> assert false | Some x -> x)
@@ -693,7 +502,6 @@ module Ext_list :
       match l with
       | [] -> None
       | a::l -> if n = 0 then Some a else nth_aux l (n - 1)
-    let nth_opt l n = if n < 0 then None else nth_aux l n
     let rec iter_snd lst f =
       match lst with | [] -> () | (_, x)::xs -> (f x; iter_snd xs f)
     let rec iter_fst lst f =
@@ -709,27 +517,22 @@ module Ext_list :
       'a list)
     let rec fold_left l accu f =
       match l with | [] -> accu | a::l -> fold_left l (f accu a) f
-    let reduce_from_left lst fn =
-      match lst with
-      | first::rest -> fold_left rest first fn
-      | _ -> invalid_arg "Ext_list.reduce_from_left"
     let rec fold_left2 l1 l2 accu f =
       match (l1, l2) with
       | ([], []) -> accu
       | (a1::l1, a2::l2) -> fold_left2 l1 l2 (f a1 a2 accu) f
       | (_, _) -> invalid_arg "Ext_list.fold_left2"
-    let singleton_exn xs = match xs with | x::[] -> x | _ -> assert false
     let rec mem_string (xs : string list) (x : string) =
       match xs with | [] -> false | a::l -> (a = x) || (mem_string l x)
   end 
 module Bsb_helper_arg :
   sig
     type spec =
-      | Unit of (unit -> unit) 
-      | Set of bool ref 
+      | Unit of (unit -> unit) [@dead "Bsb_helper_arg.spec.Unit"]
+      | Set of bool ref [@dead "Bsb_helper_arg.spec.Set"]
       | String of (string -> unit) 
       | Set_string of string ref 
-      | Int of (int -> unit) 
+      | Int of (int -> unit) [@dead "Bsb_helper_arg.spec.Int"]
       | Set_int of int ref 
     type key = string
     type doc = string
@@ -848,19 +651,15 @@ module Bsb_helper_arg :
            incr current)
         done
   end 
-module Ext_digest : sig val length : int val hex_length : int end =
-  struct let length = 16
-         let hex_length = 32 end 
+module Ext_digest : sig val length : int end = struct let length = 16 end 
 module Ext_pervasives :
   sig
     [@@@ocaml.text
       " Extension to standard library [Pervavives] module, safe to open \n  "]
     external reraise : exn -> 'a = "%reraise"
     val finally : 'a -> clean:('a -> 'c) -> ('a -> 'b) -> 'b
-    val with_file_as_chan : string -> (out_channel -> 'a) -> 'a
     [@@@ocaml.text
       " Copied from {!Btype.hash_variant}:\n    need sync up and add test case\n "]
-    val nat_of_string_exn : string -> int
     val parse_nat_of_string : string -> int ref -> int
   end =
   struct
@@ -869,8 +668,6 @@ module Ext_pervasives :
       match f v with
       | exception e -> (action v; reraise e)
       | e -> (action v; e)
-    let with_file_as_chan filename f =
-      finally (open_out_bin filename) ~clean:close_out f
     let rec int_of_string_aux s acc off len =
       if off >= len
       then acc
@@ -879,9 +676,6 @@ module Ext_pervasives :
          if (d >= 0) && (d <= 9)
          then int_of_string_aux s ((10 * acc) + d) (off + 1) len
          else (-1))
-    let nat_of_string_exn (s : string) =
-      let acc = int_of_string_aux s 0 0 (String.length s) in
-      if acc < 0 then invalid_arg s else acc
     let parse_nat_of_string (s : string) (cursor : int ref) =
       let current = !cursor in
       assert (current >= 0);
@@ -898,13 +692,7 @@ module Ext_pervasives :
        cursor := (!cur);
        !acc)[@@ocaml.doc " return index "]
   end 
-module Ext_io :
-  sig
-    val load_file : string -> string
-    val rev_lines_of_file : string -> string list
-    val rev_lines_of_chann : in_channel -> string list
-    val write_file : string -> string -> unit
-  end =
+module Ext_io : sig val load_file : string -> string end =
   struct
     let load_file f =
       Ext_pervasives.finally (open_in_bin f) ~clean:close_in
@@ -913,145 +701,24 @@ module Ext_io :
            let s = Bytes.create n in
            really_input ic s 0 n; Bytes.unsafe_to_string s)[@@ocaml.doc
                                                              " on 32 bit , there are 16M limitation "]
-    let rev_lines_of_chann chan =
-      let rec loop acc chan =
-        match input_line chan with
-        | line -> loop (line :: acc) chan
-        | exception End_of_file -> (close_in chan; acc) in
-      loop [] chan
-    let rev_lines_of_file file =
-      Ext_pervasives.finally ~clean:close_in (open_in_bin file)
-        rev_lines_of_chann
-    let write_file f content =
-      Ext_pervasives.finally ~clean:close_out (open_out_bin f)
-        (fun oc -> output_string oc content)
   end 
 module Ext_string :
   sig
     [@@@ocaml.text
       " Extension to the standard library [String] module, fixed some bugs like\n    avoiding locale sensitivity "]
-    val split_by :
-      ?keep_empty:bool -> (char -> bool) -> string -> string list[@@ocaml.doc
-                                                                   " default is false "]
-    val trim : string -> string[@@ocaml.doc
-                                 " remove whitespace letters ('\\t', '\\n', ' ') on both side"]
-    val split : ?keep_empty:bool -> string -> char -> string list[@@ocaml.doc
-                                                                   " default is false "]
-    val quick_split_by_ws : string -> string list[@@ocaml.doc
-                                                   " split by space chars for quick scripting "]
-    val starts_with : string -> string -> bool
-    val ends_with_index : string -> string -> int[@@ocaml.doc
-                                                   "\n   return [-1] when not found, the returned index is useful \n   see [ends_with_then_chop]\n"]
-    val ends_with : string -> string -> bool
-    val ends_with_then_chop : string -> string -> string option[@@ocaml.doc
-                                                                 "\n  [ends_with_then_chop name ext]\n  @example:\n   {[\n     ends_with_then_chop \"a.cmj\" \".cmj\"\n     \"a\"\n   ]}\n   This is useful in controlled or file case sensitve system\n"]
-    val for_all_from : string -> int -> (char -> bool) -> bool[@@ocaml.doc
-                                                                "\n  [for_all_from  s start p]\n  if [start] is negative, it raises,\n  if [start] is too large, it returns true\n"]
-    val for_all : string -> (char -> bool) -> bool
-    val is_empty : string -> bool
-    val repeat : int -> string -> string
-    val equal : string -> string -> bool
     [@@@ocaml.text
       "\n  [extract_until s cursor sep]\n   When [sep] not found, the cursor is updated to -1,\n   otherwise cursor is increased to 1 + [sep_position]\n   User can not determine whether it is found or not by\n   telling the return string is empty since \n   \"\\n\\n\" would result in an empty string too.\n"]
     val index_count : string -> int -> char -> int -> int
-    val find : ?start:int -> sub:string -> string -> int[@@ocaml.doc
-                                                          "\n  [find ~start ~sub s]\n  returns [-1] if not found\n"]
-    val contain_substring : string -> string -> bool
-    val non_overlap_count : sub:string -> string -> int
-    val rfind : sub:string -> string -> int
-    val tail_from : string -> int -> string[@@ocaml.doc
-                                             " [tail_from s 1]\n  return a substring from offset 1 (inclusive)\n"]
-    val rindex_neg : string -> char -> int[@@ocaml.doc
-                                            " returns negative number if not found "]
-    val rindex_opt : string -> char -> int option
-    val no_char : string -> char -> int -> int -> bool
-    val no_slash : string -> bool
-    val no_slash_idx : string -> int[@@ocaml.doc
-                                      " return negative means no slash, otherwise [i] means the place for first slash "]
-    val no_slash_idx_from : string -> int -> int
-    val replace_slash_backward : string -> string[@@ocaml.doc
-                                                   " if no conversion happens, reference equality holds "]
-    val replace_backward_slash : string -> string[@@ocaml.doc
-                                                   " if no conversion happens, reference equality holds "]
-    val empty : string
     external compare :
       string -> string -> int = "caml_string_length_based_compare"[@@noalloc
                                                                     ]
-    val single_space : string
-    val concat3 : string -> string -> string -> string
-    val concat4 : string -> string -> string -> string -> string
-    val concat5 : string -> string -> string -> string -> string -> string
-    val inter2 : string -> string -> string
-    val inter3 : string -> string -> string -> string
-    val inter4 : string -> string -> string -> string -> string
-    val concat_array : string -> string array -> string
-    val single_colon : string
-    val parent_dir_lit : string
-    val current_dir_lit : string
     val capitalize_ascii : string -> string
     val capitalize_sub : string -> int -> string
     val uncapitalize_ascii : string -> string
-    val lowercase_ascii : string -> string
-    val get_int_1 : string -> int -> int[@@ocaml.doc
-                                          " Play parity to {!Ext_buffer.add_int_1} "]
-    val get_int_2 : string -> int -> int
-    val get_int_3 : string -> int -> int
-    val get_int_4 : string -> int -> int
     val get_1_2_3_4 : string -> off:int -> int -> int
     val unsafe_sub : string -> int -> int -> string
   end =
   struct
-    let split_by ?(keep_empty= false)  is_delim str =
-      let len = String.length str in
-      let rec loop acc last_pos pos =
-        if pos = (-1)
-        then
-          (if (last_pos = 0) && (not keep_empty)
-           then acc
-           else (String.sub str 0 last_pos) :: acc)
-        else
-          if is_delim (str.[pos])
-          then
-            (let new_len = (last_pos - pos) - 1 in
-             if (new_len <> 0) || keep_empty
-             then
-               let v = String.sub str (pos + 1) new_len in
-               loop (v :: acc) pos (pos - 1)
-             else loop acc pos (pos - 1))
-          else loop acc last_pos (pos - 1) in
-      loop [] len (len - 1)
-    let trim s =
-      let i = ref 0 in
-      let j = String.length s in
-      while
-        ((!i) < j) &&
-          ((let u = String.unsafe_get s (!i) in
-            (u = '\t') || ((u = '\n') || (u = ' '))))
-        do incr i done;
-      (let k = ref (j - 1) in
-       while
-         ((!k) >= (!i)) &&
-           ((let u = String.unsafe_get s (!k) in
-             (u = '\t') || ((u = '\n') || (u = ' '))))
-         do decr k done;
-       String.sub s (!i) (((!k) - (!i)) + 1))
-    let split ?keep_empty  str on =
-      if str = ""
-      then []
-      else split_by ?keep_empty (fun x -> (x : char) = on) str
-    let quick_split_by_ws str =
-      (split_by ~keep_empty:false
-         (fun x -> (x = '\t') || ((x = '\n') || (x = ' '))) str : string list)
-    let starts_with s beg =
-      let beg_len = String.length beg in
-      let s_len = String.length s in
-      (beg_len <= s_len) &&
-        (let i = ref 0 in
-         while
-           ((!i) < beg_len) &&
-             ((String.unsafe_get s (!i)) = (String.unsafe_get beg (!i)))
-           do incr i done;
-         (!i) = beg_len)
     let rec ends_aux s end_ j k =
       if k < 0
       then j + 1
@@ -1065,27 +732,10 @@ module Ext_string :
        if s_beg > s_finish then (-1) else ends_aux s end_ s_finish s_beg : 
       int)[@@ocaml.doc
             " return an index which is minus when [s] does not \n    end with [beg]\n"]
-    let ends_with s end_ = (ends_with_index s end_) >= 0
-    let ends_with_then_chop s beg =
-      let i = ends_with_index s beg in
-      if i >= 0 then Some (String.sub s 0 i) else None
     let rec unsafe_for_all_range s ~start  ~finish  p =
       (start > finish) ||
         ((p (String.unsafe_get s start)) &&
            (unsafe_for_all_range s ~start:(start + 1) ~finish p))
-    let for_all_from s start p =
-      let len = String.length s in
-      if start < 0
-      then invalid_arg "Ext_string.for_all_from"
-      else unsafe_for_all_range s ~start ~finish:(len - 1) p
-    let for_all s (p : char -> bool) =
-      unsafe_for_all_range s ~start:0 ~finish:((String.length s) - 1) p
-    let is_empty s = (String.length s) = 0
-    let repeat n s =
-      let len = String.length s in
-      let res = Bytes.create (n * len) in
-      for i = 0 to pred n do String.blit s 0 res (i * len) len done;
-      Bytes.to_string res
     let unsafe_is_sub ~sub  i s j ~len  =
       let rec check k =
         if k = len
@@ -1107,36 +757,6 @@ module Ext_string :
             done;
           (-1)
         with | Local_exit -> !i
-    let contain_substring s sub = (find s ~sub) >= 0
-    let non_overlap_count ~sub  s =
-      let sub_len = String.length sub in
-      let rec aux acc off =
-        let i = find ~start:off ~sub s in
-        if i < 0 then acc else aux (acc + 1) (i + sub_len) in
-      if (String.length sub) = 0
-      then invalid_arg "Ext_string.non_overlap_count"
-      else aux 0 0[@@ocaml.doc
-                    " TODO: optimize \n    avoid nonterminating when string is empty \n"]
-    let rfind ~sub  s =
-      let exception Local_exit  in
-        let n = String.length sub in
-        let i = ref ((String.length s) - n) in
-        try
-          while (!i) >= 0 do
-            (if unsafe_is_sub ~sub 0 s (!i) ~len:n
-             then raise_notrace Local_exit;
-             decr i)
-            done;
-          (-1)
-        with | Local_exit -> !i
-    let tail_from s x =
-      let len = String.length s in
-      if x > len
-      then
-        invalid_arg
-          ("Ext_string.tail_from " ^ (s ^ (" : " ^ (string_of_int x))))
-      else String.sub s x (len - x)
-    let equal (x : string) y = x = y
     let rec index_rec_count s lim i c count =
       if i >= lim
       then (-1)
@@ -1166,8 +786,6 @@ module Ext_string :
         if (String.unsafe_get s i) = c
         then Some i
         else rindex_rec_opt s (i - 1) c
-    let rindex_neg s c = rindex_rec s ((String.length s) - 1) c
-    let rindex_opt s c = rindex_rec_opt s ((String.length s) - 1) c
     let rec unsafe_no_char x ch i last_idx =
       (i > last_idx) ||
         (((String.unsafe_get x i) <> ch) &&
@@ -1180,98 +798,9 @@ module Ext_string :
         if (String.unsafe_get x i) <> ch
         then unsafe_no_char_idx x ch (i + 1) last_idx
         else i
-    let no_char x ch i len =
-      (let str_len = String.length x in
-       if (i < 0) || ((i >= str_len) || (len >= str_len))
-       then invalid_arg "Ext_string.no_char"
-       else unsafe_no_char x ch i len : bool)
-    let no_slash x = unsafe_no_char x '/' 0 ((String.length x) - 1)
-    let no_slash_idx x = unsafe_no_char_idx x '/' 0 ((String.length x) - 1)
-    let no_slash_idx_from x from =
-      let last_idx = (String.length x) - 1 in
-      assert (from >= 0); unsafe_no_char_idx x '/' from last_idx
-    let replace_slash_backward (x : string) =
-      let len = String.length x in
-      if unsafe_no_char x '/' 0 (len - 1)
-      then x
-      else String.map (function | '/' -> '\\' | x -> x) x
-    let replace_backward_slash (x : string) =
-      let len = String.length x in
-      if unsafe_no_char x '\\' 0 (len - 1)
-      then x
-      else String.map (function | '\\' -> '/' | x -> x) x
-    let empty = ""
     external compare :
       string -> string -> int = "caml_string_length_based_compare"[@@noalloc
                                                                     ]
-    let single_space = " "
-    let single_colon = ":"
-    let concat_array sep (s : string array) =
-      let s_len = Array.length s in
-      match s_len with
-      | 0 -> empty
-      | 1 -> Array.unsafe_get s 0
-      | _ ->
-          let sep_len = String.length sep in
-          let len = ref 0 in
-          (for i = 0 to s_len - 1 do
-             len := ((!len) + (String.length (Array.unsafe_get s i)))
-           done;
-           (let target = Bytes.create ((!len) + ((s_len - 1) * sep_len)) in
-            let hd = Array.unsafe_get s 0 in
-            let hd_len = String.length hd in
-            String.unsafe_blit hd 0 target 0 hd_len;
-            (let current_offset = ref hd_len in
-             for i = 1 to s_len - 1 do
-               (String.unsafe_blit sep 0 target (!current_offset) sep_len;
-                (let cur = Array.unsafe_get s i in
-                 let cur_len = String.length cur in
-                 let new_off_set = (!current_offset) + sep_len in
-                 String.unsafe_blit cur 0 target new_off_set cur_len;
-                 current_offset := (new_off_set + cur_len)))
-             done;
-             Bytes.unsafe_to_string target)))
-    let concat3 a b c =
-      let a_len = String.length a in
-      let b_len = String.length b in
-      let c_len = String.length c in
-      let len = (a_len + b_len) + c_len in
-      let target = Bytes.create len in
-      String.unsafe_blit a 0 target 0 a_len;
-      String.unsafe_blit b 0 target a_len b_len;
-      String.unsafe_blit c 0 target (a_len + b_len) c_len;
-      Bytes.unsafe_to_string target
-    let concat4 a b c d =
-      let a_len = String.length a in
-      let b_len = String.length b in
-      let c_len = String.length c in
-      let d_len = String.length d in
-      let len = ((a_len + b_len) + c_len) + d_len in
-      let target = Bytes.create len in
-      String.unsafe_blit a 0 target 0 a_len;
-      String.unsafe_blit b 0 target a_len b_len;
-      String.unsafe_blit c 0 target (a_len + b_len) c_len;
-      String.unsafe_blit d 0 target ((a_len + b_len) + c_len) d_len;
-      Bytes.unsafe_to_string target
-    let concat5 a b c d e =
-      let a_len = String.length a in
-      let b_len = String.length b in
-      let c_len = String.length c in
-      let d_len = String.length d in
-      let e_len = String.length e in
-      let len = (((a_len + b_len) + c_len) + d_len) + e_len in
-      let target = Bytes.create len in
-      String.unsafe_blit a 0 target 0 a_len;
-      String.unsafe_blit b 0 target a_len b_len;
-      String.unsafe_blit c 0 target (a_len + b_len) c_len;
-      String.unsafe_blit d 0 target ((a_len + b_len) + c_len) d_len;
-      String.unsafe_blit e 0 target (((a_len + b_len) + c_len) + d_len) e_len;
-      Bytes.unsafe_to_string target
-    let inter2 a b = concat3 a single_space b
-    let inter3 a b c = concat5 a single_space b single_space c
-    let inter4 a b c d = concat_array single_space [|a;b;c;d|]
-    let parent_dir_lit = ".."
-    let current_dir_lit = "."
     let capitalize_ascii (s : string) =
       (if (String.length s) = 0
        then s
@@ -1309,7 +838,6 @@ module Ext_string :
             done;
             Bytes.unsafe_to_string bytes) : string)
     let uncapitalize_ascii = String.uncapitalize_ascii
-    let lowercase_ascii = String.lowercase_ascii
     let get_int_1 (x : string) off = (Char.code (x.[off]) : int)
     let get_int_2 (x : string) off =
       ((Char.code (x.[off])) lor ((Char.code (x.[off + 1])) lsl 8) : 
@@ -1336,11 +864,7 @@ module Ext_string :
       Ext_bytes.unsafe_blit_string x offs b 0 len; Bytes.unsafe_to_string b
   end 
 module Ext_string_array :
-  sig
-    val cmp : string -> string -> int
-    val find_sorted : string array -> string -> int option
-    val find_sorted_assoc : (string * 'a) array -> string -> 'a option
-  end =
+  sig val find_sorted : string array -> string -> int option end =
   struct
     let cmp = Ext_string.compare
     let rec binarySearchAux (arr : string array) (lo : int) (hi : int)
@@ -1399,184 +923,26 @@ module Ext_string_array :
              (let hiVal = Array.unsafe_get arr hi in
               if (fst hiVal) = key then Some (snd hiVal) else None)
            else binarySearchAssoc arr mid hi key : _ option)
-    let find_sorted_assoc (type a) (sorted : (string * a) array)
-      (key : string) =
-      (let len = Array.length sorted in
-       if len = 0
-       then None
-       else
-         (let lo = Array.unsafe_get sorted 0 in
-          let c = cmp key (fst lo) in
-          if c < 0
-          then None
-          else
-            (let hi = Array.unsafe_get sorted (len - 1) in
-             let c2 = cmp key (fst hi) in
-             if c2 > 0
-             then None
-             else binarySearchAssoc sorted 0 (len - 1) key)) : a option)
   end 
 module Literals :
   sig
-    val js_array_ctor : string
-    val js_type_number : string
-    val js_type_string : string
-    val js_type_object : string
-    val js_type_boolean : string
-    val js_undefined : string
-    val js_prop_length : string
-    val param : string
-    val partial_arg : string
-    val prim : string
-    val tmp : string[@@ocaml.doc
-                      "temporary varaible used in {!Js_ast_util} "]
-    val create : string
-    val runtime : string
-    val stdlib : string
-    val imul : string
-    val setter_suffix : string
-    val setter_suffix_len : int
-    val debugger : string
-    val unsafe_downgrade : string
-    val fn_run : string
-    val method_run : string
-    val fn_method : string
-    val fn_mk : string
     [@@@ocaml.text " callback actually, not exposed to user yet "]
-    val bs_deriving : string
-    val bs_deriving_dot : string
-    val bs_type : string
     [@@@ocaml.text " nodejs "]
-    val node_modules : string
-    val node_modules_length : int
-    val package_json : string
-    val bsconfig_json : string
-    val build_ninja : string
-    val library_file : string
-    val suffix_a : string
     val suffix_cmj : string
     val suffix_cmo : string
-    val suffix_cma : string
     val suffix_cmi : string
     val suffix_cmx : string
-    val suffix_cmxa : string
-    val suffix_ml : string
-    val suffix_mlast : string
-    val suffix_mlast_simple : string
-    val suffix_mliast : string
-    val suffix_reast : string
-    val suffix_reiast : string
-    val suffix_mliast_simple : string
-    val suffix_mlmap : string
-    val suffix_mll : string
-    val suffix_re : string
-    val suffix_rei : string
     val suffix_d : string
-    val suffix_js : string
-    val suffix_bs_js : string
-    val suffix_gen_js : string
-    val suffix_gen_tsx : string
-    val suffix_tsx : string
-    val suffix_mli : string
-    val suffix_cmt : string
-    val suffix_cmti : string
-    val commonjs : string
-    val es6 : string
-    val es6_global : string
-    val unused_attribute : string
-    val dash_nostdlib : string
-    val reactjs_jsx_ppx_2_exe : string
-    val reactjs_jsx_ppx_3_exe : string
-    val native : string
-    val bytecode : string
-    val js : string
-    val node_sep : string
-    val node_parent : string
-    val node_current : string
-    val gentype_import : string
     val bsbuild_cache : string
-    val sourcedirs_meta : string
-    val ns_sep_char : char
     val ns_sep : string
   end =
   struct
-    let js_array_ctor = "Array"
-    let js_type_number = "number"
-    let js_type_string = "string"
-    let js_type_object = "object"
-    let js_type_boolean = "boolean"
-    let js_undefined = "undefined"
-    let js_prop_length = "length"
-    let prim = "prim"
-    let param = "param"
-    let partial_arg = "partial_arg"
-    let tmp = "tmp"
-    let create = "create"
-    let runtime = "runtime"
-    let stdlib = "stdlib"
-    let imul = "imul"
-    let setter_suffix = "#="
-    let setter_suffix_len = String.length setter_suffix
-    let debugger = "debugger"
-    let unsafe_downgrade = "unsafe_downgrade"
-    let fn_run = "fn_run"
-    let method_run = "method_run"
-    let fn_method = "fn_method"
-    let fn_mk = "fn_mk"
-    let bs_deriving = "bs.deriving"
-    let bs_deriving_dot = "bs.deriving."
-    let bs_type = "bs.type"
-    let node_modules = "node_modules"[@@ocaml.doc " nodejs "]
-    let node_modules_length = String.length "node_modules"
-    let package_json = "package.json"
-    let bsconfig_json = "bsconfig.json"
-    let build_ninja = "build.ninja"
-    let library_file = "lib"
-    let suffix_a = ".a"
     let suffix_cmj = ".cmj"
     let suffix_cmo = ".cmo"
-    let suffix_cma = ".cma"
     let suffix_cmi = ".cmi"
     let suffix_cmx = ".cmx"
-    let suffix_cmxa = ".cmxa"
-    let suffix_mll = ".mll"
-    let suffix_ml = ".ml"
-    let suffix_mli = ".mli"
-    let suffix_re = ".re"
-    let suffix_rei = ".rei"
-    let suffix_mlmap = ".mlmap"
-    let suffix_cmt = ".cmt"
-    let suffix_cmti = ".cmti"
-    let suffix_mlast = ".mlast"
-    let suffix_mlast_simple = ".mlast_simple"
-    let suffix_mliast = ".mliast"
-    let suffix_reast = ".reast"
-    let suffix_reiast = ".reiast"
-    let suffix_mliast_simple = ".mliast_simple"
     let suffix_d = ".d"
-    let suffix_js = ".js"
-    let suffix_bs_js = ".bs.js"
-    let suffix_gen_js = ".gen.js"
-    let suffix_gen_tsx = ".gen.tsx"
-    let suffix_tsx = ".tsx"
-    let commonjs = "commonjs"
-    let es6 = "es6"
-    let es6_global = "es6-global"
-    let unused_attribute = "Unused attribute "
-    let dash_nostdlib = "-nostdlib"
-    let reactjs_jsx_ppx_2_exe = "reactjs_jsx_ppx_2.exe"
-    let reactjs_jsx_ppx_3_exe = "reactjs_jsx_ppx_3.exe"
-    let native = "native"
-    let bytecode = "bytecode"
-    let js = "js"
-    let node_sep = "/"[@@ocaml.doc
-                        " Used when produce node compatible paths "]
-    let node_parent = ".."
-    let node_current = "."
-    let gentype_import = "genType.import"
     let bsbuild_cache = ".bsbuild"
-    let sourcedirs_meta = ".sourcedirs.json"
-    let ns_sep_char = '-'
     let ns_sep = "-"
   end 
 module Bsb_db_decode :
@@ -1588,7 +954,6 @@ module Bsb_db_decode :
       dir_length: int ;
       dir_info_offset: int ;
       module_info_offset: int }
-    val decode_internal : string -> int ref -> group array
     val read_build_cache : dir:string -> t
     type module_info = {
       case: bool ;
@@ -1686,30 +1051,20 @@ module Ext_filename :
   sig
     [@@@ocaml.text
       " An extension module to calculate relative path follow node/npm style. \n    TODO : this short name will have to change upon renaming the file.\n"]
-    val is_dir_sep : char -> bool
-    val maybe_quote : string -> string
     val chop_extension_maybe : string -> string
-    val get_extension_maybe : string -> string
     val new_extension : string -> string -> string
     val chop_all_extensions_maybe : string -> string
     val module_name : string -> string
-    type module_info = {
-      module_name: string ;
-      case: bool }
-    val as_module : basename:string -> module_info option
+    type module_info =
+      {
+      module_name: string [@dead "Ext_filename.module_info.module_name"];
+      case: bool [@dead "Ext_filename.module_info.case"]}
   end =
   struct
     let is_dir_sep_unix c = c = '/'
     let is_dir_sep_win_cygwin c = (c = '/') || ((c = '\\') || (c = ':'))
     let is_dir_sep =
       if Sys.unix then is_dir_sep_unix else is_dir_sep_win_cygwin
-    let maybe_quote (s : string) =
-      let noneed_quote =
-        Ext_string.for_all s
-          (function
-           | '0'..'9'|'a'..'z'|'A'..'Z'|'_'|'+'|'-'|'.'|'/'|'@' -> true
-           | _ -> false) in
-      if noneed_quote then s else Filename.quote s
     let chop_extension_maybe name =
       let rec search_dot i =
         if (i < 0) || (is_dir_sep (String.unsafe_get name i))
@@ -1719,16 +1074,6 @@ module Ext_filename :
           then String.sub name 0 i
           else search_dot (i - 1) in
       search_dot ((String.length name) - 1)
-    let get_extension_maybe name =
-      let name_len = String.length name in
-      let rec search_dot name i name_len =
-        if (i < 0) || (is_dir_sep (String.unsafe_get name i))
-        then ""
-        else
-          if (String.unsafe_get name i) = '.'
-          then String.sub name i (name_len - i)
-          else search_dot name (i - 1) name_len in
-      search_dot name (name_len - 1) name_len
     let chop_all_extensions_maybe name =
       let rec search_dot i last =
         if (i < 0) || (is_dir_sep (String.unsafe_get name i))
@@ -1791,39 +1136,6 @@ module Ext_filename :
          | 'a'..'z' ->
              if valid_module_name_aux name 1 len then Lower else Invalid
          | _ -> Invalid)
-    let as_module ~basename  =
-      let rec search_dot i name name_len =
-        if i < 0
-        then
-          match valid_module_name name name_len with
-          | Invalid -> None
-          | Upper -> Some { module_name = name; case = true }
-          | Lower ->
-              Some
-                {
-                  module_name = (Ext_string.capitalize_ascii name);
-                  case = false
-                }
-        else
-          if (String.unsafe_get name i) = '.'
-          then
-            (match valid_module_name name i with
-             | Invalid -> None
-             | Upper ->
-                 Some
-                   {
-                     module_name = (Ext_string.capitalize_sub name i);
-                     case = true
-                   }
-             | Lower ->
-                 Some
-                   {
-                     module_name = (Ext_string.capitalize_sub name i);
-                     case = false
-                   })
-          else search_dot (i - 1) name name_len in
-      let name_len = String.length basename in
-      search_dot (name_len - 1) basename name_len
   end 
 module Ext_namespace_encode :
   sig
@@ -1840,10 +1152,8 @@ module Bsb_helper_depfile_gen :
   sig
     type kind =
       | Js 
-      | Bytecode 
-      | Native 
-    val deps_of_channel : in_channel -> string list[@@ocaml.doc
-                                                     " [deps_of_channel ic]\n    given an input_channel dumps all modules it depend on, only used for debugging \n"]
+      | Bytecode [@dead "Bsb_helper_depfile_gen.kind.Bytecode"]
+      | Native [@dead "Bsb_helper_depfile_gen.kind.Native"]
     val emit_d :
       kind -> Bsb_dir_index.t -> string option -> string -> string -> unit
   end =
@@ -1870,17 +1180,6 @@ module Bsb_helper_depfile_gen :
        let size = input_binary_int ic in
        let s = really_input_string ic size in close_in ic; s : string)
     let magic_sep_char = '\n'
-    let deps_of_channel (ic : in_channel) =
-      (let size = input_binary_int ic in
-       let s = really_input_string ic size in
-       let rec aux (s : string) acc (offset : int) size =
-         (if offset < size
-          then
-            let next_tab = String.index_from s offset magic_sep_char in
-            aux s ((String.sub s offset (next_tab - offset)) :: acc)
-              (next_tab + 1) size
-          else acc : string list) in
-       aux s [] 1 size : string list)
     [@@@ocaml.text
       " Please refer to {!Binary_ast} for encoding format, we move it here \n    mostly for cutting the dependency so that [bsb_helper.exe] does\n    not depend on compler-libs\n"]
     type kind =
