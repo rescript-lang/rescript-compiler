@@ -267,8 +267,3 @@ module Int = Belt_Int
 module Float = Belt_Float
 
 
-(** {!Belt.Debug}
-
-    Utilities for set up debugging
-*)
-module Debug = Belt_Debug

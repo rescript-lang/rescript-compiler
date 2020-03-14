@@ -11,7 +11,7 @@ and y = {
 }
 
 
-let () = Belt.Debug.setupChromeDebugger ()
+
 
 let v = { a = Some 3 ; b = {xx = 2; yy = 3}}
 
