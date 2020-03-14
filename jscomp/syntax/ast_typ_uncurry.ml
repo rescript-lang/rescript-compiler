@@ -23,9 +23,7 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
 
- let uncurry_type_id = 
-  Ast_literal.Lid.js_fn
- 
+
 let method_id  = 
   Ast_literal.Lid.js_meth
 
@@ -60,8 +58,6 @@ let generic_lift txt loc (args : typ list) (result : typ) =
   in 
   Typ.constr ~loc {txt ; loc} xs
 
-let lift_curry_type  loc (args_type : typ list) (result_type : typ) = 
-  generic_lift   uncurry_type_id loc args_type result_type
 
 let lift_method_type loc  args_type result_type = 
   generic_lift  method_id loc args_type result_type
@@ -108,7 +104,8 @@ let generic_to_uncurry_type  kind loc (mapper : Bs_ast_mapper.mapper) (label : A
   match kind with 
   | `Fn ->
     let args = filter_args args in
-    lift_curry_type loc args result 
+    Typ.constr ({txt = Ldot (Lident "Js", "arity" ^ string_of_int (List.length args)); loc })
+      [Ext_list.fold_right args result (fun a b -> Typ.arrow Nolabel a b)]
   | `Method -> 
     let args = filter_args args in
     lift_method_type loc args result 

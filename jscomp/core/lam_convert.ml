@@ -576,12 +576,12 @@ let convert (exports : Set_ident.t) (lam : Lambda.lambda) : Lam.t * Lam_module_i
       in
       if primitive = Pfull_apply then
         match args with 
-        | [app] -> 
-          begin match convert_aux app with 
-          | Lapply {ap_func; ap_args}
-            -> prim ~primitive ~args:(ap_func::ap_args) loc
-          | _ -> assert false 
-          end
+        | [Lapply {ap_func = Lprim (Popaque,[ap_func],_); ap_args}] -> 
+          let ap_func = convert_aux ap_func in 
+          let ap_args = Ext_list.map ap_args convert_aux  in 
+          prim ~primitive ~args:(ap_func::ap_args) loc
+          (* There may be some optimization opportunities here
+            for cases like `(fun [@bs] a b -> a + b ) 1 2 [@bs]` *)          
         | _ -> assert false  
       else
         let args = Ext_list.map args convert_aux in
