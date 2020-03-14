@@ -40,6 +40,52 @@ The directory containing unit-test files, some unit tests are copied from OCaml 
 ## ounit_tests
 ## others (belt/stdlib/node bindings)
 
+## uncurry 
+
+```ocaml
+f a  b [@bs]
+```
+
+```ocaml
+(unsafeFullApply ((opaque f) a b ))
+```
+case 0
+
+```ocaml
+type 'a fn0 = {
+  _0 : 'a
+} 
+```
+create:
+```
+{_0 = fun () -> ...}
+```
+`(unit -> int) fn0` is different from `(unit -> int) fn1`
+
+When `f` is an external, without opaque
+```ocaml
+apply (Obj.magic f a b) ==> apply (f a b)
+```
+
+`fun [@bs] a b -> c ` is the same as `fun [@bs] a -> fun b -> c `
+from the view of parsetree
+
+
+
+`unit -> int [@bs]` --> `int Js.arity0`
+
+`f () [@bs]` --> `(run0 f)`
+
+`fun [@bs] () -> body` -> `fn_mk0 (fun () -> ...)`
+
+It is special handled due to `fn_mk0`, otherwise it will have arity 1
+
+We can `-open Js.Uncurry` to make names look pretty
+
+```
+bucklescript$bsc -bs-syntax-only -dsource -bs-eval 'let h1 x = fun%x y -> x y'
+let h1 x = [%x fun y -> x y]
+```
 
 # bspack
 

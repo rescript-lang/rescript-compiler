@@ -21,24 +21,24 @@ var v = [
     1,
     2,
     3
-  ].map((function (param, param$1) {
-        return f(param)(param$1);
+  ].map((function (a, b) {
+        return f(a)(b);
       }));
 
 var vv = [
     1,
     2,
     3
-  ].map((function (prim, prim$1) {
-        return prim + prim$1 | 0;
+  ].map((function (a, b) {
+        return a + b | 0;
       }));
 
 var hh = [
     "1",
     "2",
     "3"
-  ].map((function (prim) {
-        return parseInt(prim);
+  ].map((function (x) {
+        return parseInt(x);
       }));
 
 function u() {
@@ -112,56 +112,7 @@ Mt.from_pair_suites("Ffi_arity_test", /* :: */[
                         ]);
               })
           ],
-          /* :: */[
-            /* tuple */[
-              "File \"ffi_arity_test.ml\", line 48, characters 4-11",
-              (function (param) {
-                  return /* Eq */Block.__(0, [
-                            [
-                                  1,
-                                  2,
-                                  3
-                                ].map((function (x) {
-                                      return (function (y) {
-                                          return x + y | 0;
-                                        });
-                                    })).map((function (y) {
-                                    return Caml_int32.imul(Curry._1(y, 0), Curry._1(y, 1));
-                                  })),
-                            [
-                              2,
-                              6,
-                              12
-                            ]
-                          ]);
-                })
-            ],
-            /* :: */[
-              /* tuple */[
-                "File \"ffi_arity_test.ml\", line 53, characters 4-11",
-                (function (param) {
-                    return /* Eq */Block.__(0, [
-                              [
-                                  1,
-                                  2,
-                                  3
-                                ].map((function (x, param) {
-                                      var y = Caml_int32.imul(x, x);
-                                      return (function (i) {
-                                                  return y + i | 0;
-                                                })(param);
-                                    })),
-                              [
-                                1,
-                                5,
-                                11
-                              ]
-                            ]);
-                  })
-              ],
-              /* [] */0
-            ]
-          ]
+          /* [] */0
         ]
       ]
     ]);

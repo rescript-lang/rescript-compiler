@@ -42,6 +42,10 @@ var xx = unary(3);
 
 eq("File \"ppx_apply_test.ml\", line 17, characters 5-12", u, 3);
 
+function h(a) {
+  return xx(a);
+}
+
 Mt.from_pair_suites("Ppx_apply_test", suites.contents);
 
 exports.suites = suites;
@@ -51,4 +55,5 @@ exports.u = u;
 exports.nullary = nullary;
 exports.unary = unary;
 exports.xx = xx;
+exports.h = h;
 /* u Not a pure module */
