@@ -23,13 +23,13 @@ let f x y =
   Js.log "no inline";
   Js.Nullable.return (x + y)
 
-;; eq  __LOC__ (Js.test (Js.Nullable.return 3 )) false
+;; eq  __LOC__ (Js.isNullable (Js.Nullable.return 3 )) false
 
-;; eq  __LOC__ (Js.test ((f 1 2) )) false
+;; eq  __LOC__ (Js.isNullable ((f 1 2) )) false
 
-;; eq __LOC__ (Js.test [%raw "null"]) true 
+;; eq __LOC__ (Js.isNullable [%raw "null"]) true 
 
 ;; let null2 = Js.Nullable.return 3 in 
 let null = null2 in 
-eq __LOC__ (Js.test null) false
+eq __LOC__ (Js.isNullable null) false
 ;; Mt.from_pair_suites __MODULE__ !suites
