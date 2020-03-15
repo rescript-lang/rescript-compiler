@@ -123,9 +123,9 @@ let to_uncurry_type   loc (mapper : Bs_ast_mapper.mapper) (label : Asttypes.arg_
   match arity with 
   | Some 0
     -> 
-    Typ.constr ({txt = Ldot (Ldot (Lident "Js", "Fn"), "arity0") ; loc }) [typ]
+    Typ.constr ({txt = Ldot (Ast_literal.Lid.js_fn, "arity0") ; loc }) [typ]
   | Some n  -> 
-    Typ.constr ({txt = Ldot (Ldot (Lident "Js", "Fn"), "arity" ^ string_of_int n); loc })
+    Typ.constr ({txt = Ldot (Ast_literal.Lid.js_fn, "arity" ^ string_of_int n); loc })
       [fn_type]
   | None -> assert false  
 
