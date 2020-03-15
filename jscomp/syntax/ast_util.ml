@@ -64,7 +64,7 @@ let unsafeInvariantApply : Longident.t =
    (jsInternal,
    "unsafeInvariantApply")
 
-let generic_apply  kind loc 
+let generic_apply loc 
     (self : Bs_ast_mapper.mapper) 
     (obj : Parsetree.expression) 
     (args : Parsetree.expression list) (cb : loc -> exp-> exp)   =
@@ -79,35 +79,48 @@ let generic_apply  kind loc
       -> []
     | _ -> args in
   let arity = List.length args in       
-  match kind with 
-  | `Fn | `PropertyFn ->  
-
-    if arity = 0 then 
-      Parsetree.Pexp_apply 
+  if arity = 0 then 
+    Parsetree.Pexp_apply 
       (Exp.ident {txt = Ldot (jsInternal, "run0");loc}, [Nolabel,fn])
-    else 
-       let txt : Longident.t = 
-       Ldot (jsInternal, "run" ^ string_of_int arity) in 
-       Parsetree.Pexp_apply (
-       Exp.ident {txt = unsafeInvariantApply; loc},
-       [Nolabel,
+  else 
+    let txt : Longident.t = 
+      Ldot (jsInternal, "run" ^ string_of_int arity) in 
+    Parsetree.Pexp_apply (
+      Exp.ident {txt = unsafeInvariantApply; loc},
+      [Nolabel,
        Exp.apply (Exp.ident {txt ; loc}) ((Nolabel,fn) :: 
-       Ext_list.map args (fun x -> Asttypes.Nolabel,x))])                        
-  | `Method -> 
-      let txt : Longident.t = 
-        Ldot(Lident "Js_internalOO", Literals.method_run ^ string_of_int arity) in 
-      Parsetree.Pexp_apply (Exp.ident {txt ; loc}, (Nolabel,fn) :: Ext_list.map args (fun x -> Asttypes.Nolabel,x))
+                                          Ext_list.map args (fun x -> Asttypes.Nolabel,x))])                        
+
+let generic_method_apply  loc 
+    (self : Bs_ast_mapper.mapper) 
+    (obj : Parsetree.expression) 
+    (args : Parsetree.expression list) (cb : loc -> exp-> exp)   =
+  let obj = self.expr self obj in
+  let args =
+    Ext_list.map args (fun e -> self.expr self e) in
+  let fn = cb loc obj in   
+  let args  = 
+    match args with 
+    | [ {pexp_desc =
+           Pexp_construct ({txt = Lident "()"}, None)}]
+      -> []
+    | _ -> args in
+  let arity = List.length args in       
+  let txt : Longident.t = 
+    Ldot(Lident "Js_internalOO", Literals.method_run ^ string_of_int arity) in 
+  Parsetree.Pexp_apply (Exp.ident {txt ; loc}, (Nolabel,fn) :: Ext_list.map args (fun x -> Asttypes.Nolabel,x))
+
 
 
 let uncurry_fn_apply loc self fn args = 
-  generic_apply `Fn loc self fn args (fun _ obj -> obj )
+  generic_apply  loc self fn args (fun _ obj -> obj )
 
 let property_apply loc self obj name args  
-  =  generic_apply `PropertyFn loc self obj args 
+  =  generic_apply loc self obj args 
     (fun loc obj -> Exp.mk ~loc (js_property loc obj name))
 
 let method_apply loc self obj name args = 
-  generic_apply `Method loc self obj args 
+  generic_method_apply  loc self obj args 
     (fun loc obj -> Exp.mk ~loc (js_property loc obj name))
 
  
