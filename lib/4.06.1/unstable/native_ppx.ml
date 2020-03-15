@@ -21141,10 +21141,6 @@ let generic_to_uncurry_type  kind loc (mapper : Bs_ast_mapper.mapper) (label : A
       -> []
     | _ -> args in
   match kind with 
-  | `Fn ->
-    let args = filter_args args in
-    Typ.constr ({txt = Ldot (Ldot (Lident "Js", "Fn"), "arity" ^ string_of_int (List.length args)); loc })
-      [Ext_list.fold_right args result (fun a b -> Typ.arrow Nolabel a b)]
   | `Method -> 
     let args = filter_args args in
     lift_method_type loc args result 
@@ -21153,8 +21149,26 @@ let generic_to_uncurry_type  kind loc (mapper : Bs_ast_mapper.mapper) (label : A
     -> lift_js_method_callback loc args result 
 
 
-let to_uncurry_type  = 
-  generic_to_uncurry_type `Fn
+
+let to_uncurry_type   loc (mapper : Bs_ast_mapper.mapper) (label : Asttypes.arg_label)
+    (first_arg : Parsetree.core_type) 
+    (typ : Parsetree.core_type)  =
+
+  let first_arg = mapper.typ mapper first_arg in
+  let typ = mapper.typ mapper typ in 
+  
+  let fn_type = Typ.arrow ~loc label first_arg typ in 
+  let arity = Ast_core_type.get_uncurry_arity fn_type in 
+  match arity with 
+  | `Arity 0
+    -> 
+    Typ.constr ({txt = Ldot (Ldot (Lident "Js", "Fn"), "arity0") ; loc }) [typ]
+  | `Arity n  -> 
+    Typ.constr ({txt = Ldot (Ldot (Lident "Js", "Fn"), "arity" ^ string_of_int n); loc })
+      [fn_type]
+  | `Not_function -> assert false  
+
+
 let to_method_type  =
   generic_to_uncurry_type  `Method
 let to_method_callback_type  = 
