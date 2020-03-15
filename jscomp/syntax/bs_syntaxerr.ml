@@ -51,13 +51,15 @@ type error
   | Not_supported_directive_in_bs_return
   | Expect_opt_in_bs_return_to_opt
   | Label_in_uncurried_bs_attribute
-
+  | Optional_in_uncurried_bs_attribute
   | Bs_this_simple_pattern
 
 let pp_error fmt err =
-  Format.pp_print_string fmt @@ match err with
+  Format.pp_print_string fmt (match err with
   | Label_in_uncurried_bs_attribute
     -> "BuckleScript uncurried function doesn't support labeled arguments yet"
+  | Optional_in_uncurried_bs_attribute
+    -> "BuckleScript uncurried function doesn't support optional arguments yet"  
   | Expect_opt_in_bs_return_to_opt
       ->
         "bs.return directive *_to_opt expect return type to be \n\
@@ -119,7 +121,7 @@ let pp_error fmt err =
     "Conflicting FFI attributes found: " ^ str
   | Bs_this_simple_pattern
     ->
-    "[@bs.this] expect its pattern variable to be simple form"
+    "[@bs.this] expect its pattern variable to be simple form")
 
 type exn +=  Error of Location.t * error
 
@@ -132,3 +134,12 @@ let () =
     )
 
 let err loc error = raise (Error(loc, error))
+
+let optional_err loc (lbl : Asttypes.arg_label) = 
+  match lbl with 
+  | Optional _ -> raise (Error(loc, Optional_in_uncurried_bs_attribute))
+  | _ -> ()  
+
+let err_if_label loc (lbl : Asttypes.arg_label) =  
+  if lbl <> Nolabel then 
+    raise (Error (loc, Label_in_uncurried_bs_attribute))

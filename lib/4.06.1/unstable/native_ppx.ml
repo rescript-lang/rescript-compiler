@@ -11748,11 +11748,22 @@ type error
   | Not_supported_directive_in_bs_return
   | Expect_opt_in_bs_return_to_opt
   | Label_in_uncurried_bs_attribute
-
+  | Optional_in_uncurried_bs_attribute
   | Bs_this_simple_pattern
 
 
 val err : Location.t -> error -> 'a
+
+val optional_err : 
+  Location.t -> 
+  Asttypes.arg_label -> 
+  unit
+
+val err_if_label :
+  Location.t -> 
+  Asttypes.arg_label -> 
+  unit
+
 
 end = struct
 #1 "bs_syntaxerr.ml"
@@ -11809,13 +11820,15 @@ type error
   | Not_supported_directive_in_bs_return
   | Expect_opt_in_bs_return_to_opt
   | Label_in_uncurried_bs_attribute
-
+  | Optional_in_uncurried_bs_attribute
   | Bs_this_simple_pattern
 
 let pp_error fmt err =
-  Format.pp_print_string fmt @@ match err with
+  Format.pp_print_string fmt (match err with
   | Label_in_uncurried_bs_attribute
     -> "BuckleScript uncurried function doesn't support labeled arguments yet"
+  | Optional_in_uncurried_bs_attribute
+    -> "BuckleScript uncurried function doesn't support optional arguments yet"  
   | Expect_opt_in_bs_return_to_opt
       ->
         "bs.return directive *_to_opt expect return type to be \n\
@@ -11877,7 +11890,7 @@ let pp_error fmt err =
     "Conflicting FFI attributes found: " ^ str
   | Bs_this_simple_pattern
     ->
-    "[@bs.this] expect its pattern variable to be simple form"
+    "[@bs.this] expect its pattern variable to be simple form")
 
 type exn +=  Error of Location.t * error
 
@@ -11891,6 +11904,14 @@ let () =
 
 let err loc error = raise (Error(loc, error))
 
+let optional_err loc (lbl : Asttypes.arg_label) = 
+  match lbl with 
+  | Optional _ -> raise (Error(loc, Optional_in_uncurried_bs_attribute))
+  | _ -> ()  
+
+let err_if_label loc (lbl : Asttypes.arg_label) =  
+  if lbl <> Nolabel then 
+    raise (Error (loc, Label_in_uncurried_bs_attribute))
 end
 module Ast_core_type : sig 
 #1 "ast_core_type.mli"
@@ -21100,8 +21121,7 @@ let lift_js_method_callback loc args_type result_type
 let generic_to_uncurry_type  kind loc (mapper : Bs_ast_mapper.mapper) (label : Asttypes.arg_label)
     (first_arg : Parsetree.core_type) 
     (typ : Parsetree.core_type)  =
-  if label <> Nolabel then
-    Bs_syntaxerr.err loc Label_in_uncurried_bs_attribute;
+  Bs_syntaxerr.err_if_label loc label;
 
   let rec aux (acc : typ list) (typ : typ) : typ * typ list = 
     (* in general, 
@@ -21114,8 +21134,7 @@ let generic_to_uncurry_type  kind loc (mapper : Bs_ast_mapper.mapper) (label : A
       begin match typ.ptyp_desc with 
         | Ptyp_arrow (label, arg, body)
           -> 
-          if label <> Nolabel then
-            Bs_syntaxerr.err typ.ptyp_loc Label_in_uncurried_bs_attribute;
+          Bs_syntaxerr.err_if_label typ.ptyp_loc label;
           aux (mapper.typ mapper arg :: acc) body 
         | _ -> mapper.typ mapper typ, acc 
       end
@@ -21344,10 +21363,7 @@ let generic_apply loc
   let obj = self.expr self obj in
   let args =
     Ext_list.map args (fun (lbl,e) -> 
-        (match lbl with 
-         | Optional _ -> Bs_syntaxerr.err loc Label_in_uncurried_bs_attribute; 
-         | _ -> ()
-        );
+         Bs_syntaxerr.optional_err loc lbl; 
         (lbl,self.expr self e)) in
   let fn = cb loc obj in   
   let args  = 
@@ -21411,8 +21427,7 @@ let to_method_callback  loc (self : Bs_ast_mapper.mapper)  pat body
       begin match body.pexp_desc with 
         | Pexp_fun (arg_label,_, arg, body)
           -> 
-          if arg_label <> Nolabel  then
-            Bs_syntaxerr.err loc Label_in_uncurried_bs_attribute;
+          Bs_syntaxerr.err_if_label loc arg_label;
           aux (self.pat self arg :: acc) body 
         | _ -> self.expr self body, acc 
       end 
@@ -21442,18 +21457,14 @@ let to_method_callback  loc (self : Bs_ast_mapper.mapper)  pat body
 
 let to_uncurry_fn  loc (self : Bs_ast_mapper.mapper) (label : Asttypes.arg_label) pat body 
   = 
-  (match label with 
-  | Optional _ -> Bs_syntaxerr.err loc Label_in_uncurried_bs_attribute
-  | _ -> ());  
+  Bs_syntaxerr.optional_err loc label;  
   let rec aux acc (body : Parsetree.expression) = 
     match Ast_attributes.process_attributes_rev body.pexp_attributes with 
     | Nothing, _ -> 
       begin match body.pexp_desc with 
         | Pexp_fun (arg_label,_, arg, body)
           -> 
-          (match arg_label with 
-          | Optional _ -> Bs_syntaxerr.err loc Label_in_uncurried_bs_attribute
-          | _ -> ());
+          Bs_syntaxerr.optional_err loc arg_label; 
           aux ((arg_label, self.pat self arg) :: acc) body 
         | _ -> self.expr self body, acc 
       end 
@@ -21837,8 +21848,7 @@ let default_expr_mapper = Bs_ast_mapper.default_mapper.expr
 
 let check_and_discard (args : Ast_compatible.args) = 
   Ext_list.map args (fun (label,x) -> 
-      if label <> Nolabel then 
-        Bs_syntaxerr.err x.pexp_loc Label_in_uncurried_bs_attribute;
+      Bs_syntaxerr.err_if_label x.pexp_loc label;
       x  
     )
 

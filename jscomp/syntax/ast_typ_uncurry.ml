@@ -70,8 +70,7 @@ let lift_js_method_callback loc args_type result_type
 let generic_to_uncurry_type  kind loc (mapper : Bs_ast_mapper.mapper) (label : Asttypes.arg_label)
     (first_arg : Parsetree.core_type) 
     (typ : Parsetree.core_type)  =
-  if label <> Nolabel then
-    Bs_syntaxerr.err loc Label_in_uncurried_bs_attribute;
+  Bs_syntaxerr.err_if_label loc label;
 
   let rec aux (acc : typ list) (typ : typ) : typ * typ list = 
     (* in general, 
@@ -84,8 +83,7 @@ let generic_to_uncurry_type  kind loc (mapper : Bs_ast_mapper.mapper) (label : A
       begin match typ.ptyp_desc with 
         | Ptyp_arrow (label, arg, body)
           -> 
-          if label <> Nolabel then
-            Bs_syntaxerr.err typ.ptyp_loc Label_in_uncurried_bs_attribute;
+          Bs_syntaxerr.err_if_label typ.ptyp_loc label;
           aux (mapper.typ mapper arg :: acc) body 
         | _ -> mapper.typ mapper typ, acc 
       end
