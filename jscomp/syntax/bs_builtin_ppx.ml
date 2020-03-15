@@ -109,7 +109,7 @@ let expr_mapper  (self : mapper) (e : Parsetree.expression) =
            | true, pexp_attributes ->
              Ast_bs_open.convertBsErrorFunction e.pexp_loc self  pexp_attributes cases)
           
-        | Pexp_fun (Nolabel, _, pat , body)
+        | Pexp_fun (label, _, pat , body)
           ->
           begin match Ast_attributes.process_attributes_rev e.pexp_attributes with
             | Nothing, _
@@ -117,7 +117,7 @@ let expr_mapper  (self : mapper) (e : Parsetree.expression) =
             | Uncurry _, pexp_attributes
               ->
               {e with
-               pexp_desc = Ast_util.to_uncurry_fn e.pexp_loc self pat body  ;
+               pexp_desc = Ast_util.to_uncurry_fn e.pexp_loc self label pat body  ;
                pexp_attributes}
             | Method _ , _
               ->  Location.raise_errorf ~loc:e.pexp_loc "bs.meth is not supported in function expression"

@@ -56,36 +56,56 @@ type +'a t
 (* internal types for FFI, these types are not used by normal users 
     Absent cmi file when looking up module alias.
 *)
+module Fn = struct
+  type + 'a arity0 
+  type 'a arity1 = {
+    _1 : 'a
+  }[@@unboxed]
+  type 'a arity2 = {
+    _2 : 'a
+  }[@@unboxed]
+  type 'a arity3 = {
+    _3 : 'a
+  }[@@unboxed]
+  type 'a arity4 = {
+    _4 : 'a
+  }[@@unboxed]
+  type 'a arity5 = {
+    _5 : 'a
+  }[@@unboxed]
+  type 'a arity6 = {
+    _6 : 'a
+  }[@@unboxed]
+  type 'a arity7 = {
+    _7 : 'a
+  }[@@unboxed]
+  type 'a arity8 = {
+    _8 : 'a
+  }[@@unboxed]
+  type 'a arity9 = {
+    _9 : 'a
+  }[@@unboxed]
+end
 
 (**/**)
 module MapperRt = Js_mapperRt
-module Internal = struct
- 
- type (-'arg, + 'result) fn
- (** Js uncurried function *)
+module Internal = struct 
+  open Fn    
+  external unsafeInvariantApply : 'a -> 'a = "#full_apply"
 
- external fn_mk0 : (unit -> 'a0) -> (([`Arity_0], 'a0) fn) = "#fn_mk" "0"
- external fn_mk1 : ('a0 -> 'a1) -> (([`Arity_1 of ( 'a0 )], 'a1) fn) = "#fn_mk" "1"
- external fn_mk2 : ('a0 -> 'a1 -> 'a2) -> (([`Arity_2 of ( 'a0 * 'a1 )], 'a2) fn) = "#fn_mk" "2"
- external fn_mk3 : ('a0 -> 'a1 -> 'a2 -> 'a3) -> (([`Arity_3 of ( 'a0 * 'a1 * 'a2 )], 'a3) fn) = "#fn_mk" "3"
- external fn_mk4 : ('a0 -> 'a1 -> 'a2 -> 'a3 -> 'a4) -> (([`Arity_4 of ( 'a0 * 'a1 * 'a2 * 'a3 )], 'a4) fn) = "#fn_mk" "4"
- external fn_mk5 : ('a0 -> 'a1 -> 'a2 -> 'a3 -> 'a4 -> 'a5) -> (([`Arity_5 of ( 'a0 * 'a1 * 'a2 * 'a3 * 'a4 )], 'a5) fn) = "#fn_mk" "5"
- external fn_mk6 : ('a0 -> 'a1 -> 'a2 -> 'a3 -> 'a4 -> 'a5 -> 'a6) -> (([`Arity_6 of ( 'a0 * 'a1 * 'a2 * 'a3 * 'a4 * 'a5 )], 'a6) fn) = "#fn_mk" "6"
- external fn_mk7 : ('a0 -> 'a1 -> 'a2 -> 'a3 -> 'a4 -> 'a5 -> 'a6 -> 'a7) -> (([`Arity_7 of ( 'a0 * 'a1 * 'a2 * 'a3 * 'a4 * 'a5 * 'a6 )], 'a7) fn) = "#fn_mk" "7"
- external fn_mk8 : ('a0 -> 'a1 -> 'a2 -> 'a3 -> 'a4 -> 'a5 -> 'a6 -> 'a7 -> 'a8) -> (([`Arity_8 of ( 'a0 * 'a1 * 'a2 * 'a3 * 'a4 * 'a5 * 'a6 * 'a7 )], 'a8) fn) = "#fn_mk" "8"
- external fn_mk9 : ('a0 -> 'a1 -> 'a2 -> 'a3 -> 'a4 -> 'a5 -> 'a6 -> 'a7 -> 'a8 -> 'a9) -> (([`Arity_9 of ( 'a0 * 'a1 * 'a2 * 'a3 * 'a4 * 'a5 * 'a6 * 'a7 * 'a8 )], 'a9) fn) = "#fn_mk" "9"
- external fn_run0 : (([`Arity_0], 'a0) fn) ->  'a0  = "#fn_run" "0"
- external fn_run1 : (([`Arity_1 of ( 'a0 )], 'a1) fn) -> ('a0 -> 'a1 ) = "#fn_run" "1"
- external fn_run2 : (([`Arity_2 of ( 'a0 * 'a1 )], 'a2) fn) -> ('a0 -> 'a1 -> 'a2 ) = "#fn_run" "2"
- external fn_run3 : (([`Arity_3 of ( 'a0 * 'a1 * 'a2 )], 'a3) fn) -> ('a0 -> 'a1 -> 'a2 -> 'a3 ) = "#fn_run" "3"
- external fn_run4 : (([`Arity_4 of ( 'a0 * 'a1 * 'a2 * 'a3 )], 'a4) fn) -> ('a0 -> 'a1 -> 'a2 -> 'a3 -> 'a4 ) = "#fn_run" "4"
- external fn_run5 : (([`Arity_5 of ( 'a0 * 'a1 * 'a2 * 'a3 * 'a4 )], 'a5) fn) -> ('a0 -> 'a1 -> 'a2 -> 'a3 -> 'a4 -> 'a5 ) = "#fn_run" "5"
- external fn_run6 : (([`Arity_6 of ( 'a0 * 'a1 * 'a2 * 'a3 * 'a4 * 'a5 )], 'a6) fn) -> ('a0 -> 'a1 -> 'a2 -> 'a3 -> 'a4 -> 'a5 -> 'a6 ) = "#fn_run" "6"
- external fn_run7 : (([`Arity_7 of ( 'a0 * 'a1 * 'a2 * 'a3 * 'a4 * 'a5 * 'a6 )], 'a7) fn) -> ('a0 -> 'a1 -> 'a2 -> 'a3 -> 'a4 -> 'a5 -> 'a6 -> 'a7 ) = "#fn_run" "7"
- external fn_run8 : (([`Arity_8 of ( 'a0 * 'a1 * 'a2 * 'a3 * 'a4 * 'a5 * 'a6 * 'a7 )], 'a8) fn) -> ('a0 -> 'a1 -> 'a2 -> 'a3 -> 'a4 -> 'a5 -> 'a6 -> 'a7 -> 'a8 ) = "#fn_run" "8"
- external fn_run9 : (([`Arity_9 of ( 'a0 * 'a1 * 'a2 * 'a3 * 'a4 * 'a5 * 'a6 * 'a7 * 'a8 )], 'a9) fn) -> ('a0 -> 'a1 -> 'a2 -> 'a3 -> 'a4 -> 'a5 -> 'a6 -> 'a7 -> 'a8 -> 'a9 ) = "#fn_run" "9"
- 
-end
+  (* Use opaque instead of [._n] to prevent some optimizations happening *)
+  external run0 : 'a arity0 -> 'a = "#fn_run" "0"
+  external run1 : 'a arity1 -> 'a = "%opaque"
+  external run2 : 'a arity2 -> 'a = "%opaque"
+  external run3 : 'a arity3 -> 'a = "%opaque"
+  external run4 : 'a arity4 -> 'a = "%opaque"
+  external run5 : 'a arity5 -> 'a = "%opaque"
+  external run6 : 'a arity6 -> 'a = "%opaque"
+  external run7 : 'a arity7 -> 'a = "%opaque"
+  external run8 : 'a arity8 -> 'a = "%opaque"
+  external run9 : 'a arity9 -> 'a = "%opaque"
+  external mk0 : (unit -> 'a0) -> 'a0 arity0 = "#fn_mk" "0"    
+end    
 (**/**)
 
 
@@ -107,8 +127,7 @@ type + 'a null_undefined = 'a nullable
 external toOption : 'a nullable  -> 'a option = "#nullable_to_opt"
 external undefinedToOption : 'a undefined -> 'a option = "#undefined_to_opt"
 external nullToOption : 'a null -> 'a option = "#null_to_opt"
-external test : 'a nullable -> bool = "#is_nullable"
-[@@deprecated "Use Js.isNullable instead"]
+
 external isNullable : 'a nullable -> bool = "#is_nullable"
 
 (** The same as {!test} except that it is more permissive on the types of input *)

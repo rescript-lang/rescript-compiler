@@ -1,5 +1,5 @@
 
-let simpleEq = (fun [@bs] a b -> a = b)
+let simpleEq = (fun [@bs] (a : int) b -> a = b)
   
 let option_suites = Mt.[
     "option_isSome_Some" , (fun _ -> 

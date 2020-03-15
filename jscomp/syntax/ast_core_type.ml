@@ -145,12 +145,12 @@ let get_uncurry_arity (ty : t ) =
      rest  )  -> 
      begin match rest with 
      | {ptyp_desc = Ptyp_arrow _ } ->  
-      `Arity (get_uncurry_arity_aux rest 1 )
-    | _ -> `Arity 0 
+      Some (get_uncurry_arity_aux rest 1 )
+    | _ -> Some 0 
     end
   | Ptyp_arrow(_,_,rest ) ->
-    `Arity(get_uncurry_arity_aux rest 1)
-  | _ -> `Not_function
+    Some (get_uncurry_arity_aux rest 1)
+  | _ -> None
 
 let get_curry_arity  ty =
   get_uncurry_arity_aux ty 0

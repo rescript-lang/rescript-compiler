@@ -17,5 +17,9 @@ let () =
   eq __LOC__ u 3 
 
 ;;
+external f : int -> int [@bs] = "xx" [@@bs.val]
 
+let h a =
+  f a [@bs]  
+;;  
 Mt.from_pair_suites __MODULE__ !suites

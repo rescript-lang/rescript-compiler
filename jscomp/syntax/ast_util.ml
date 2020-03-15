@@ -57,9 +57,46 @@ let js_property loc obj (name : string) =
    have a final checking for property arities 
      [#=], 
 *)
+let jsInternal = 
+  Ast_literal.Lid.js_internal
+let unsafeInvariantApply : Longident.t =
+  Longident.Ldot
+   (jsInternal,
+   "unsafeInvariantApply")
 
+let generic_apply loc 
+    (self : Bs_ast_mapper.mapper) 
+    (obj : Parsetree.expression) 
+    (args : Ast_compatible.args) (cb : loc -> exp-> exp)   =
+  let obj = self.expr self obj in
+  let args =
+    Ext_list.map args (fun (lbl,e) -> 
+        (match lbl with 
+         | Optional _ -> Bs_syntaxerr.err loc Label_in_uncurried_bs_attribute; 
+         | _ -> ()
+        );
+        (lbl,self.expr self e)) in
+  let fn = cb loc obj in   
+  let args  = 
+    match args with 
+    | [ Nolabel, {pexp_desc =
+           Pexp_construct ({txt = Lident "()"}, None)}]
+      -> []
+    | _ -> args in
+  let arity = List.length args in       
+  if arity = 0 then 
+    Parsetree.Pexp_apply 
+      (Exp.ident {txt = Ldot (jsInternal, "run0");loc}, [Nolabel,fn])
+  else 
+    let txt : Longident.t = 
+      Ldot (jsInternal, "run" ^ string_of_int arity) in 
+    Parsetree.Pexp_apply (
+      Exp.ident {txt = unsafeInvariantApply; loc},
+      [Nolabel,
+       Exp.apply (Exp.apply (Exp.ident {txt ; loc}) [(Nolabel,fn)]) 
+                                          args])                        
 
-let generic_apply  kind loc 
+let generic_method_apply  loc 
     (self : Bs_ast_mapper.mapper) 
     (obj : Parsetree.expression) 
     (args : Parsetree.expression list) (cb : loc -> exp-> exp)   =
@@ -74,51 +111,26 @@ let generic_apply  kind loc
       -> []
     | _ -> args in
   let arity = List.length args in       
-  match kind with 
-  | `Fn | `PropertyFn ->  
-    if arity < 10 then 
-      let txt : Longident.t = 
-        Ldot (Ast_literal.Lid.js_internal, Literals.fn_run ^ string_of_int arity) in 
-      Parsetree.Pexp_apply (Exp.ident {txt ; loc}, (Nolabel,fn) :: Ext_list.map args (fun x -> Asttypes.Nolabel,x))
-    else 
-      let fn_type, args_type, result_type = Ast_comb.tuple_type_pair ~loc `Run arity  in 
-      let string_arity = string_of_int arity in
-      let pval_prim, pval_type = 
-        ["#fn_run"; string_arity], 
-        arrow ~loc  (Ast_typ_uncurry.lift_curry_type loc args_type result_type ) fn_type
-      in
-      Ast_external_mk.local_external_apply loc ~pval_prim ~pval_type 
-        (  fn :: args )
-  | `Method -> 
-    if arity < 10 then     
-      let txt : Longident.t = 
-        Ldot(Lident "Js_internalOO", Literals.method_run ^ string_of_int arity) in 
-      Parsetree.Pexp_apply (Exp.ident {txt ; loc}, (Nolabel,fn) :: Ext_list.map args (fun x -> Asttypes.Nolabel,x))
-    else 
-      let fn_type, args_type, result_type = Ast_comb.tuple_type_pair ~loc `Run arity  in 
-      let string_arity = string_of_int arity in
-      let pval_prim, pval_type = 
-        ["#method_run" ; string_arity], 
-        arrow ~loc  (Ast_typ_uncurry.lift_method_type loc args_type result_type) fn_type
-      in
-      Ast_external_mk.local_external_apply loc ~pval_prim ~pval_type 
-        (  fn :: args )
+  let txt : Longident.t = 
+    Ldot(Lident "Js_internalOO", Literals.method_run ^ string_of_int arity) in 
+  Parsetree.Pexp_apply (Exp.ident {txt ; loc}, (Nolabel,fn) :: Ext_list.map args (fun x -> Asttypes.Nolabel,x))
+
 
 
 let uncurry_fn_apply loc self fn args = 
-  generic_apply `Fn loc self fn args (fun _ obj -> obj )
+  generic_apply  loc self fn args (fun _ obj -> obj )
 
 let property_apply loc self obj name args  
-  =  generic_apply `PropertyFn loc self obj args 
+  =  generic_apply loc self obj args 
     (fun loc obj -> Exp.mk ~loc (js_property loc obj name))
 
 let method_apply loc self obj name args = 
-  generic_apply `Method loc self obj args 
+  generic_method_apply  loc self obj args 
     (fun loc obj -> Exp.mk ~loc (js_property loc obj name))
 
  
 
-let generic_to_uncurry_exp kind loc (self : Bs_ast_mapper.mapper)  pat body 
+let to_method_callback  loc (self : Bs_ast_mapper.mapper)  pat body 
   = 
   let rec aux acc (body : Parsetree.expression) = 
     match Ast_attributes.process_attributes_rev body.pexp_attributes with 
@@ -134,56 +146,72 @@ let generic_to_uncurry_exp kind loc (self : Bs_ast_mapper.mapper)  pat body
     | _, _ -> self.expr self body, acc  
   in 
   let first_arg = self.pat self pat in  
-  let () = 
-    match kind with 
-    | `Method_callback -> 
-      if not @@ Ast_pat.is_single_variable_pattern_conservative first_arg then
-        Bs_syntaxerr.err first_arg.ppat_loc  Bs_this_simple_pattern
-    | _ -> ()
-  in 
+  (if not @@ Ast_pat.is_single_variable_pattern_conservative first_arg then
+     Bs_syntaxerr.err first_arg.ppat_loc  Bs_this_simple_pattern);  
   let result, rev_extra_args = aux [first_arg] body in 
   let body = 
     Ext_list.fold_left rev_extra_args result (fun e p -> Ast_compatible.fun_ ~loc p e )
   in
   let len = List.length rev_extra_args in   
-  match kind with 
-  | `Fn -> 
-    let arity = 
-      match rev_extra_args with 
-      | [ p]
-        ->
-        Ast_pat.is_unit_cont ~yes:0 ~no:len p           
-      | _ -> len 
-    in 
-    if arity < 10  then 
-      let txt = 
-        Longident.Ldot ( Ast_literal.Lid.js_internal, Literals.fn_mk ^ string_of_int arity) in
-      Parsetree.Pexp_apply (Exp.ident {txt;loc} , [ Nolabel, body])
-    else 
-      let pval_prim =
-        [ "#fn_mk"; string_of_int arity]  in
-      let fn_type , args_type, result_type  = Ast_comb.tuple_type_pair ~loc `Make arity  in 
-      let pval_type = arrow ~loc  fn_type (Ast_typ_uncurry.lift_curry_type loc args_type result_type) in
-      Ast_external_mk.local_extern_cont loc ~pval_prim ~pval_type 
-        (fun prim -> Ast_compatible.app1 ~loc prim body) 
-  | `Method_callback -> 
-    let arity = len  in 
-    if arity < 10 then 
-      let txt = Longident.Ldot (Lident "Js_internalOO",  Literals.fn_method ^ string_of_int arity) in
-      Parsetree.Pexp_apply (Exp.ident {txt;loc} , [ Nolabel, body])
-    else 
-      let pval_prim =
-        [  "#fn_method"; string_of_int arity]  in
-      let fn_type , args_type, result_type  = Ast_comb.tuple_type_pair ~loc `Make arity  in 
-      let pval_type = arrow ~loc  fn_type 
-          (Ast_typ_uncurry.lift_js_method_callback loc args_type result_type) in
-      Ast_external_mk.local_extern_cont loc ~pval_prim ~pval_type 
-        (fun prim -> Ast_compatible.app1 ~loc prim body) 
+  let arity = len  in 
+  if arity < 10 then 
+    let txt = Longident.Ldot (Lident "Js_internalOO",  Literals.fn_method ^ string_of_int arity) in
+    Parsetree.Pexp_apply (Exp.ident {txt;loc} , [ Nolabel, body])
+  else 
+    let pval_prim =
+      [  "#fn_method"; string_of_int arity]  in
+    let fn_type , args_type, result_type  = Ast_comb.tuple_type_pair ~loc `Make arity  in 
+    let pval_type = arrow ~loc  fn_type 
+        (Ast_typ_uncurry.lift_js_method_callback loc args_type result_type) in
+    Ast_external_mk.local_extern_cont loc ~pval_prim ~pval_type 
+      (fun prim -> Ast_compatible.app1 ~loc prim body) 
 
-let to_uncurry_fn   = 
-  generic_to_uncurry_exp `Fn
-let to_method_callback  = 
-  generic_to_uncurry_exp `Method_callback 
+
+let to_uncurry_fn  loc (self : Bs_ast_mapper.mapper) (label : Asttypes.arg_label) pat body 
+  = 
+  (match label with 
+  | Optional _ -> Bs_syntaxerr.err loc Label_in_uncurried_bs_attribute
+  | _ -> ());  
+  let rec aux acc (body : Parsetree.expression) = 
+    match Ast_attributes.process_attributes_rev body.pexp_attributes with 
+    | Nothing, _ -> 
+      begin match body.pexp_desc with 
+        | Pexp_fun (arg_label,_, arg, body)
+          -> 
+          (match arg_label with 
+          | Optional _ -> Bs_syntaxerr.err loc Label_in_uncurried_bs_attribute
+          | _ -> ());
+          aux ((arg_label, self.pat self arg) :: acc) body 
+        | _ -> self.expr self body, acc 
+      end 
+    | _, _ -> self.expr self body, acc  
+  in 
+  let first_arg = self.pat self pat in  
+
+  let result, rev_extra_args = aux [label,first_arg] body in 
+  let body = 
+    Ext_list.fold_left rev_extra_args result (fun e (label,p) -> Ast_helper.Exp.fun_ ~loc label None p e)
+  in
+  let len = List.length rev_extra_args in   
+  let arity = 
+    match rev_extra_args with 
+    | [ l,p]
+      ->
+       Ast_pat.is_unit_cont ~yes:0 ~no:len p           
+    | _ -> len 
+  in 
+  if arity = 0 && label = Nolabel then 
+    let txt = 
+      Longident.Ldot (jsInternal, "mk0") in
+    Parsetree.Pexp_apply (Exp.ident {txt;loc} , [ Nolabel, body])
+  else 
+    Parsetree.Pexp_record ([
+        {
+          txt = Ldot (Ast_literal.Lid.js_fn, "_" ^ string_of_int arity); 
+          loc
+        },body], None) 
+
+
 
 
 

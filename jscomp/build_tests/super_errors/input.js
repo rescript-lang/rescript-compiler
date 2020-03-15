@@ -16,7 +16,7 @@ const fixtures = fs
   .readdirSync(path.join(__dirname, 'fixtures'))
   .filter(fileName => path.extname(fileName) === '.re')
 
-const runtime = path.join(__dirname, '..', '..', 'runtime')
+// const runtime = path.join(__dirname, '..', '..', 'runtime')
 const prefix = `${bsc} -bs-re-out  -w +A`
 
 const updateTests = process.argv[2] === 'update'

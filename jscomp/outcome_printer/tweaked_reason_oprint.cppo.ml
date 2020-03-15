@@ -295,38 +295,19 @@ and print_simple_out_type ppf =
   (* same for `Js.Internal.fn(...)`. Either might shown *)
   | Otyp_constr (
       (Oide_dot (
-          Oide_dot (Oide_ident "Js", "Internal") ,
-          "fn" 
-        ) as id),
-      ([Otyp_variant(_, Ovar_fields [variant, _, tys], _, _); result] as tyl)
+          Oide_dot (Oide_ident "Js", "Fn") ,
+          name
+        )),
+      [ty]
     ) ->
     (* Otyp_arrow *)
-      let make tys result =
-        if tys = [] then
-          Otyp_arrow ("", Otyp_constr (Oide_ident "unit", []),result)
-        else
-          match tys with
-          | [ Otyp_tuple tys as single] ->
-            if variant = "Arity_1" then
-              Otyp_arrow ("", single, result)
-            else
-              List.fold_right (fun x acc -> Otyp_arrow ("", x, acc)) tys result
-          | [single] ->
-            Otyp_arrow ("", single, result)
-          | _ ->
-            raise_notrace Not_found
-      in
-      begin match (make tys result) with
-      | exception _ ->
-        begin
-          pp_open_box ppf 0;
-          print_typargs ppf tyl;
-          print_ident ppf id;
-          pp_close_box ppf ()
-        end
-      | res ->
-        print_out_type_1 ~uncurried:true ppf res
-      end
+    let res = 
+      if name = "arity0" then
+        Otyp_arrow ("", Otyp_constr (Oide_ident "unit", []),ty)
+      else
+        ty in   
+    print_out_type_1 ~uncurried:true ppf res
+
   | Otyp_constr (
       Oide_dot (
         Oide_ident "Js_internalOO", "meth" ) as id

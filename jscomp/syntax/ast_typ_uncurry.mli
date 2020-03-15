@@ -38,11 +38,7 @@
  
 type typ = Parsetree.core_type
 
-val lift_curry_type :
-  Ast_helper.loc -> 
-  typ list ->
-  typ -> 
-  Parsetree.core_type
+
 val lift_method_type :
   Ast_helper.loc -> 
   typ list ->

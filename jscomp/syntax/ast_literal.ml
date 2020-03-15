@@ -49,7 +49,7 @@ module Lid = struct
   (* TODO should be moved into {!Js.t} Later *)
   let js_internal : t = Ldot (Lident "Js", "Internal")
   let js_fn : t =
-      Ldot (js_internal,  "fn")
+      Ldot (Lident "Js",  "Fn")
   let js_meth : t =
       Ldot (Lident "Js_internalOO" , "meth")
   let js_meth_callback : t =

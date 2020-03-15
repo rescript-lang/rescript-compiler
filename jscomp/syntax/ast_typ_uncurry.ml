@@ -23,9 +23,7 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
 
- let uncurry_type_id = 
-  Ast_literal.Lid.js_fn
- 
+
 let method_id  = 
   Ast_literal.Lid.js_meth
 
@@ -60,8 +58,6 @@ let generic_lift txt loc (args : typ list) (result : typ) =
   in 
   Typ.constr ~loc {txt ; loc} xs
 
-let lift_curry_type  loc (args_type : typ list) (result_type : typ) = 
-  generic_lift   uncurry_type_id loc args_type result_type
 
 let lift_method_type loc  args_type result_type = 
   generic_lift  method_id loc args_type result_type
@@ -106,9 +102,6 @@ let generic_to_uncurry_type  kind loc (mapper : Bs_ast_mapper.mapper) (label : A
       -> []
     | _ -> args in
   match kind with 
-  | `Fn ->
-    let args = filter_args args in
-    lift_curry_type loc args result 
   | `Method -> 
     let args = filter_args args in
     lift_method_type loc args result 
@@ -117,8 +110,26 @@ let generic_to_uncurry_type  kind loc (mapper : Bs_ast_mapper.mapper) (label : A
     -> lift_js_method_callback loc args result 
 
 
-let to_uncurry_type  = 
-  generic_to_uncurry_type `Fn
+
+let to_uncurry_type   loc (mapper : Bs_ast_mapper.mapper) (label : Asttypes.arg_label)
+    (first_arg : Parsetree.core_type) 
+    (typ : Parsetree.core_type)  =
+
+  let first_arg = mapper.typ mapper first_arg in
+  let typ = mapper.typ mapper typ in 
+  
+  let fn_type = Typ.arrow ~loc label first_arg typ in 
+  let arity = Ast_core_type.get_uncurry_arity fn_type in 
+  match arity with 
+  | Some 0
+    -> 
+    Typ.constr ({txt = Ldot (Ast_literal.Lid.js_fn, "arity0") ; loc }) [typ]
+  | Some n  -> 
+    Typ.constr ({txt = Ldot (Ast_literal.Lid.js_fn, "arity" ^ string_of_int n); loc })
+      [fn_type]
+  | None -> assert false  
+
+
 let to_method_type  =
   generic_to_uncurry_type  `Method
 let to_method_callback_type  = 

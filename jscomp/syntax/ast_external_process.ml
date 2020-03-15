@@ -74,13 +74,13 @@ let spec_of_ptyp
   | `Uncurry opt_arity ->
     let real_arity =  Ast_core_type.get_uncurry_arity ptyp in
     (begin match opt_arity, real_arity with
-       | Some arity, `Not_function ->
+       | Some arity, None ->
          Fn_uncurry_arity arity
-       | None, `Not_function  ->
+       | None, None  ->
          Bs_syntaxerr.err ptyp.ptyp_loc Canot_infer_arity_by_syntax
-       | None, `Arity arity  ->
+       | None, Some arity  ->
          Fn_uncurry_arity arity
-       | Some arity, `Arity n ->
+       | Some arity, Some n ->
          if n <> arity then
            Bs_syntaxerr.err ptyp.ptyp_loc (Inconsistent_arity (arity,n))
          else Fn_uncurry_arity arity
