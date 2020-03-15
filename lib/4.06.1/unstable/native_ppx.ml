@@ -12151,17 +12151,7 @@ let list_of_arrow
   in aux ty []
 
 
-(* type arg_label =
-  | Nolabel (* it will be ignored , side effect will be recorded *)
-  | Labelled of string
-  | Optional of string
-  
 
-let label_name l : arg_label =
-  if l = "" then Nolabel else
-  if is_optional_label l
-  then Optional (String.sub l 1 (String.length l - 1))
-  else Labelled l   *)
 end
 module Ast_iterator : sig 
 #1 "ast_iterator.mli"
@@ -21490,7 +21480,7 @@ let to_uncurry_fn  loc (self : Bs_ast_mapper.mapper) (label : Asttypes.arg_label
   else 
     Parsetree.Pexp_record ([
         {
-          txt = Ldot (Ast_literal.Lid.js_fn, "_" ^ string_of_int arity); 
+          txt = Ldot (Ast_literal.Lid.js_fn, "I_" ^ string_of_int arity); 
           loc
         },body], None) 
 
