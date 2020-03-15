@@ -67,14 +67,19 @@ let unsafeInvariantApply : Longident.t =
 let generic_apply loc 
     (self : Bs_ast_mapper.mapper) 
     (obj : Parsetree.expression) 
-    (args : Parsetree.expression list) (cb : loc -> exp-> exp)   =
+    (args : Ast_compatible.args) (cb : loc -> exp-> exp)   =
   let obj = self.expr self obj in
   let args =
-    Ext_list.map args (fun e -> self.expr self e) in
+    Ext_list.map args (fun (lbl,e) -> 
+        (match lbl with 
+         | Optional _ -> Bs_syntaxerr.err loc Label_in_uncurried_bs_attribute; 
+         | _ -> ()
+        );
+        (lbl,self.expr self e)) in
   let fn = cb loc obj in   
   let args  = 
     match args with 
-    | [ {pexp_desc =
+    | [ Nolabel, {pexp_desc =
            Pexp_construct ({txt = Lident "()"}, None)}]
       -> []
     | _ -> args in
@@ -88,8 +93,8 @@ let generic_apply loc
     Parsetree.Pexp_apply (
       Exp.ident {txt = unsafeInvariantApply; loc},
       [Nolabel,
-       Exp.apply (Exp.ident {txt ; loc}) ((Nolabel,fn) :: 
-                                          Ext_list.map args (fun x -> Asttypes.Nolabel,x))])                        
+       Exp.apply (Exp.apply (Exp.ident {txt ; loc}) [(Nolabel,fn)]) 
+                                          args])                        
 
 let generic_method_apply  loc 
     (self : Bs_ast_mapper.mapper) 

@@ -43,7 +43,7 @@ type uncurry_expression_gen =
 (** syntax: {[f arg0 arg1 [@bs]]}*)
 val uncurry_fn_apply : 
   (Parsetree.expression ->
-   Parsetree.expression list ->
+   Ast_compatible.args  ->
    Parsetree.expression_desc ) cxt 
 
 (** syntax : {[f## arg0 arg1 ]}*)
@@ -57,7 +57,7 @@ val method_apply :
 val property_apply : 
   (Parsetree.expression ->
    string ->
-   Parsetree.expression list ->
+   Ast_compatible.args ->
    Parsetree.expression_desc) cxt 
 
 

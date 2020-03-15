@@ -21222,7 +21222,7 @@ type uncurry_expression_gen =
 (** syntax: {[f arg0 arg1 [@bs]]}*)
 val uncurry_fn_apply : 
   (Parsetree.expression ->
-   Parsetree.expression list ->
+   Ast_compatible.args  ->
    Parsetree.expression_desc ) cxt 
 
 (** syntax : {[f## arg0 arg1 ]}*)
@@ -21236,7 +21236,7 @@ val method_apply :
 val property_apply : 
   (Parsetree.expression ->
    string ->
-   Parsetree.expression list ->
+   Ast_compatible.args ->
    Parsetree.expression_desc) cxt 
 
 
@@ -21350,14 +21350,19 @@ let unsafeInvariantApply : Longident.t =
 let generic_apply loc 
     (self : Bs_ast_mapper.mapper) 
     (obj : Parsetree.expression) 
-    (args : Parsetree.expression list) (cb : loc -> exp-> exp)   =
+    (args : Ast_compatible.args) (cb : loc -> exp-> exp)   =
   let obj = self.expr self obj in
   let args =
-    Ext_list.map args (fun e -> self.expr self e) in
+    Ext_list.map args (fun (lbl,e) -> 
+        (match lbl with 
+         | Optional _ -> Bs_syntaxerr.err loc Label_in_uncurried_bs_attribute; 
+         | _ -> ()
+        );
+        (lbl,self.expr self e)) in
   let fn = cb loc obj in   
   let args  = 
     match args with 
-    | [ {pexp_desc =
+    | [ Nolabel, {pexp_desc =
            Pexp_construct ({txt = Lident "()"}, None)}]
       -> []
     | _ -> args in
@@ -21372,7 +21377,7 @@ let generic_apply loc
       Exp.ident {txt = unsafeInvariantApply; loc},
       [Nolabel,
        Exp.apply (Exp.ident {txt ; loc}) ((Nolabel,fn) :: 
-                                          Ext_list.map args (fun x -> Asttypes.Nolabel,x))])                        
+                                          args)])                        
 
 let generic_method_apply  loc 
     (self : Bs_ast_mapper.mapper) 
@@ -21884,10 +21889,10 @@ let app_exp_mapper
           {pexp_desc = Pexp_ident {txt = Lident name;_ } ; _}]}
     ->  
     {e with pexp_desc = 
-        (if op = "##" then
-        Ast_util.method_apply 
-        else Ast_util.property_apply)
-        loc self obj name (check_and_discard args) }
+              if op = "##" then
+                Ast_util.method_apply loc self obj name (check_and_discard args)
+              else Ast_util.property_apply loc self obj name  args
+    }
    | Some {op; loc} ->
       Location.raise_errorf ~loc "%s expect f%sproperty arg0 arg2 form" op op
    | None -> 
@@ -22032,7 +22037,7 @@ let app_exp_mapper
        | None -> default_expr_mapper self e
        | Some pexp_attributes ->
          if !Config.bs_only then 
-           {e with pexp_desc = Ast_util.uncurry_fn_apply e.pexp_loc self fn (check_and_discard args) ;
+           {e with pexp_desc = Ast_util.uncurry_fn_apply e.pexp_loc self fn  args ;
                    pexp_attributes }
          else   {e with pexp_attributes } (* BS_NATIVE branch*)
      )

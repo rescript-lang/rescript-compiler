@@ -231,13 +231,13 @@ type fpclass =
   | FP_nan
 #if BS then  
 let classify_float (x : float) : fpclass =   
-  if [%raw{|isFinite|}] x [@bs] then
+  if ([%raw{|isFinite|}] : _ -> _ [@bs]) x [@bs] then
     if abs_float x >= (* 0x1p-1022 *) (* 2.22507385850720138e-308*) min_float  then
       FP_normal
     else if x <> 0. then FP_subnormal
     else FP_zero
   else
-  if [%raw{|isNaN|}] x [@bs] then
+  if ([%raw{|isNaN|}] : _ -> _ [@bs])  x [@bs] then
     FP_nan
   else FP_infinite  
 #else  
