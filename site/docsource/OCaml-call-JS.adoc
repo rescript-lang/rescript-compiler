@@ -1687,7 +1687,7 @@ val tToJs : t -> abs_t
 val tFromJs : abs_t -> t 
 --------------
 
-Note the derived type is slightly different, since `abs_t` is abstrac type, 
+Note the derived type is slightly different, since `abs_t` is abstract type, 
 we assume it is well structured value, so it should always return value of type `t`
  instead of `t option`.
 
