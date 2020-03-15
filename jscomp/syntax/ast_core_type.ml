@@ -177,14 +177,3 @@ let list_of_arrow
   in aux ty []
 
 
-(* type arg_label =
-  | Nolabel (* it will be ignored , side effect will be recorded *)
-  | Labelled of string
-  | Optional of string
-  
-
-let label_name l : arg_label =
-  if l = "" then Nolabel else
-  if is_optional_label l
-  then Optional (String.sub l 1 (String.length l - 1))
-  else Labelled l   *)
