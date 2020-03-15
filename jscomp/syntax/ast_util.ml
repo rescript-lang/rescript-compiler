@@ -207,7 +207,7 @@ let to_uncurry_fn  loc (self : Bs_ast_mapper.mapper) (label : Asttypes.arg_label
   else 
     Parsetree.Pexp_record ([
         {
-          txt = Ldot (Ast_literal.Lid.js_fn, "_" ^ string_of_int arity); 
+          txt = Ldot (Ast_literal.Lid.js_fn, "I_" ^ string_of_int arity); 
           loc
         },body], None) 
 

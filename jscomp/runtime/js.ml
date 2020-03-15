@@ -59,31 +59,31 @@ type +'a t
 module Fn = struct
   type + 'a arity0 
   type 'a arity1 = {
-    _1 : 'a
+    _1 : 'a [@internal]
   }[@@unboxed]
   type 'a arity2 = {
-    _2 : 'a
+    _2 : 'a [@internal]
   }[@@unboxed]
   type 'a arity3 = {
-    _3 : 'a
+    _3 : 'a [@internal]
   }[@@unboxed]
   type 'a arity4 = {
-    _4 : 'a
+    _4 : 'a [@internal]
   }[@@unboxed]
   type 'a arity5 = {
-    _5 : 'a
+    _5 : 'a [@internal]
   }[@@unboxed]
   type 'a arity6 = {
-    _6 : 'a
+    _6 : 'a [@internal]
   }[@@unboxed]
   type 'a arity7 = {
-    _7 : 'a
+    _7 : 'a [@internal]
   }[@@unboxed]
   type 'a arity8 = {
-    _8 : 'a
+    _8 : 'a [@internal]
   }[@@unboxed]
   type 'a arity9 = {
-    _9 : 'a
+    _9 : 'a [@internal]
   }[@@unboxed]
 end
 
