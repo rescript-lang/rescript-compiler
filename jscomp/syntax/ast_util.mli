@@ -68,7 +68,13 @@ val property_apply :
     [to_uncurry_fn (fun pat -> (fun pat1 -> ...  body))]
 
 *)
-val to_uncurry_fn : uncurry_expression_gen
+val to_uncurry_fn :  
+  (
+    Asttypes.arg_label ->   
+    Parsetree.pattern ->
+    Parsetree.expression ->
+    Parsetree.expression_desc) cxt
+
 
 
 (** syntax: 

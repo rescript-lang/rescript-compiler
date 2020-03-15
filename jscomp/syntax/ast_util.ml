@@ -149,43 +149,47 @@ let to_method_callback  loc (self : Bs_ast_mapper.mapper)  pat body
       (fun prim -> Ast_compatible.app1 ~loc prim body) 
 
 
-let to_uncurry_fn  loc (self : Bs_ast_mapper.mapper)  pat body 
+let to_uncurry_fn  loc (self : Bs_ast_mapper.mapper) (label : Asttypes.arg_label) pat body 
   = 
+  (match label with 
+  | Optional _ -> Bs_syntaxerr.err loc Label_in_uncurried_bs_attribute
+  | _ -> ());  
   let rec aux acc (body : Parsetree.expression) = 
     match Ast_attributes.process_attributes_rev body.pexp_attributes with 
     | Nothing, _ -> 
       begin match body.pexp_desc with 
         | Pexp_fun (arg_label,_, arg, body)
           -> 
-          if arg_label <> Nolabel  then
-            Bs_syntaxerr.err loc Label_in_uncurried_bs_attribute;
-          aux (self.pat self arg :: acc) body 
+          (match arg_label with 
+          | Optional _ -> Bs_syntaxerr.err loc Label_in_uncurried_bs_attribute
+          | _ -> ());
+          aux ((arg_label, self.pat self arg) :: acc) body 
         | _ -> self.expr self body, acc 
       end 
     | _, _ -> self.expr self body, acc  
   in 
   let first_arg = self.pat self pat in  
 
-  let result, rev_extra_args = aux [first_arg] body in 
+  let result, rev_extra_args = aux [label,first_arg] body in 
   let body = 
-    Ext_list.fold_left rev_extra_args result (fun e p -> Ast_compatible.fun_ ~loc p e )
+    Ext_list.fold_left rev_extra_args result (fun e (label,p) -> Ast_helper.Exp.fun_ ~loc label None p e)
   in
   let len = List.length rev_extra_args in   
   let arity = 
     match rev_extra_args with 
-    | [ p]
+    | [ l,p]
       ->
-      Ast_pat.is_unit_cont ~yes:0 ~no:len p           
+       Ast_pat.is_unit_cont ~yes:0 ~no:len p           
     | _ -> len 
   in 
-  if arity = 0 then 
+  if arity = 0 && label = Nolabel then 
     let txt = 
       Longident.Ldot (jsInternal, "mk0") in
     Parsetree.Pexp_apply (Exp.ident {txt;loc} , [ Nolabel, body])
   else 
     Parsetree.Pexp_record ([
         {
-          txt = Ldot (Ldot (Lident "Js", "Fn"), "_" ^ string_of_int arity); 
+          txt = Ldot (Ast_literal.Lid.js_fn, "_" ^ string_of_int arity); 
           loc
         },body], None) 
 
