@@ -82,10 +82,7 @@ It is special handled due to `fn_mk0`, otherwise it will have arity 1
 
 We can `-open Js.Uncurry` to make names look pretty
 
-```
-bucklescript$bsc -bs-syntax-only -dsource -bs-eval 'let h1 x = fun%x y -> x y'
-let h1 x = [%x fun y -> x y]
-```
+
 
 # bspack
 

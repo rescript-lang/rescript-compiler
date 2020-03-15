@@ -57,7 +57,12 @@ let js_property loc obj (name : string) =
    have a final checking for property arities 
      [#=], 
 *)
-
+let jsInternal = 
+  Longident.Ldot (Longident.Lident "Js", "Internal")  
+let unsafeInvariantApply : Longident.t =
+  Longident.Ldot
+   (jsInternal,
+   "unsafeInvariantApply")
 
 let generic_apply  kind loc 
     (self : Bs_ast_mapper.mapper) 
@@ -79,12 +84,12 @@ let generic_apply  kind loc
 
     if arity = 0 then 
       Parsetree.Pexp_apply 
-      (Exp.ident {txt = Ldot (Lident "Js", "run0");loc}, [Nolabel,fn])
+      (Exp.ident {txt = Ldot (jsInternal, "run0");loc}, [Nolabel,fn])
     else 
        let txt : Longident.t = 
-       Ldot (Lident "Js", "run" ^ string_of_int arity) in 
+       Ldot (jsInternal, "run" ^ string_of_int arity) in 
        Parsetree.Pexp_apply (
-       Exp.ident {txt = Ldot (Lident "Js", "unsafeInvariantApply"); loc},
+       Exp.ident {txt = unsafeInvariantApply; loc},
        [Nolabel,
        Exp.apply (Exp.ident {txt ; loc}) ((Nolabel,fn) :: 
        Ext_list.map args (fun x -> Asttypes.Nolabel,x))])                        
@@ -146,10 +151,14 @@ let generic_to_uncurry_exp kind loc (self : Bs_ast_mapper.mapper)  pat body
     in 
     if arity = 0 then 
       let txt = 
-        Longident.Ldot (Lident "Js", "mk0") in
+        Longident.Ldot (jsInternal, "mk0") in
       Parsetree.Pexp_apply (Exp.ident {txt;loc} , [ Nolabel, body])
     else 
-      Parsetree.Pexp_record ([{txt = Ldot (Lident "Js", "_" ^ string_of_int arity); loc},body], None) 
+      Parsetree.Pexp_record ([
+        {
+          txt = Ldot (Ldot (Lident "Js", "Fn"), "_" ^ string_of_int arity); 
+          loc
+        },body], None) 
 
   | `Method_callback -> 
     let arity = len  in 

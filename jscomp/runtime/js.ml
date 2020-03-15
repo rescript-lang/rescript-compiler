@@ -56,54 +56,56 @@ type +'a t
 (* internal types for FFI, these types are not used by normal users 
     Absent cmi file when looking up module alias.
 *)
-
-type + 'a arity0 
-
-type 'a arity1 = {
+module Fn = struct
+  type + 'a arity0 
+  type 'a arity1 = {
     _1 : 'a
-}[@@unboxed]
-type 'a arity2 = {
+  }[@@unboxed]
+  type 'a arity2 = {
     _2 : 'a
-}[@@unboxed]
-type 'a arity3 = {
+  }[@@unboxed]
+  type 'a arity3 = {
     _3 : 'a
-}[@@unboxed]
-type 'a arity4 = {
+  }[@@unboxed]
+  type 'a arity4 = {
     _4 : 'a
-}[@@unboxed]
-type 'a arity5 = {
+  }[@@unboxed]
+  type 'a arity5 = {
     _5 : 'a
-}[@@unboxed]
-type 'a arity6 = {
+  }[@@unboxed]
+  type 'a arity6 = {
     _6 : 'a
-}[@@unboxed]
-type 'a arity7 = {
+  }[@@unboxed]
+  type 'a arity7 = {
     _7 : 'a
-}[@@unboxed]
-type 'a arity8 = {
+  }[@@unboxed]
+  type 'a arity8 = {
     _8 : 'a
-}[@@unboxed]
-type 'a arity9 = {
+  }[@@unboxed]
+  type 'a arity9 = {
     _9 : 'a
-}[@@unboxed]
-
-external unsafeInvariantApply : 'a -> 'a = "#full_apply"
-
-(* Use opaque instead of [._n] to prevent some optimizations happening *)
-external run0 : 'a arity0 -> 'a = "#fn_run" "0"
-external run1 : 'a arity1 -> 'a = "%opaque"
-external run2 : 'a arity2 -> 'a = "%opaque"
-external run3 : 'a arity3 -> 'a = "%opaque"
-external run4 : 'a arity4 -> 'a = "%opaque"
-external run5 : 'a arity5 -> 'a = "%opaque"
-external run6 : 'a arity6 -> 'a = "%opaque"
-external run7 : 'a arity7 -> 'a = "%opaque"
-external run8 : 'a arity8 -> 'a = "%opaque"
-external run9 : 'a arity9 -> 'a = "%opaque"
-external mk0 : (unit -> 'a0) -> 'a0 arity0 = "#fn_mk" "0"
+  }[@@unboxed]
+end
 
 (**/**)
 module MapperRt = Js_mapperRt
+module Internal = struct 
+  open Fn    
+  external unsafeInvariantApply : 'a -> 'a = "#full_apply"
+
+  (* Use opaque instead of [._n] to prevent some optimizations happening *)
+  external run0 : 'a arity0 -> 'a = "#fn_run" "0"
+  external run1 : 'a arity1 -> 'a = "%opaque"
+  external run2 : 'a arity2 -> 'a = "%opaque"
+  external run3 : 'a arity3 -> 'a = "%opaque"
+  external run4 : 'a arity4 -> 'a = "%opaque"
+  external run5 : 'a arity5 -> 'a = "%opaque"
+  external run6 : 'a arity6 -> 'a = "%opaque"
+  external run7 : 'a arity7 -> 'a = "%opaque"
+  external run8 : 'a arity8 -> 'a = "%opaque"
+  external run9 : 'a arity9 -> 'a = "%opaque"
+  external mk0 : (unit -> 'a0) -> 'a0 arity0 = "#fn_mk" "0"    
+end    
 (**/**)
 
 

@@ -104,7 +104,7 @@ let generic_to_uncurry_type  kind loc (mapper : Bs_ast_mapper.mapper) (label : A
   match kind with 
   | `Fn ->
     let args = filter_args args in
-    Typ.constr ({txt = Ldot (Lident "Js", "arity" ^ string_of_int (List.length args)); loc })
+    Typ.constr ({txt = Ldot (Ldot (Lident "Js", "Fn"), "arity" ^ string_of_int (List.length args)); loc })
       [Ext_list.fold_right args result (fun a b -> Typ.arrow Nolabel a b)]
   | `Method -> 
     let args = filter_args args in
