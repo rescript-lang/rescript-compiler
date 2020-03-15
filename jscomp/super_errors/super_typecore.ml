@@ -221,7 +221,7 @@ let report_error env ppf = function
           fprintf ppf "@ @[It only accepts %i %s; here, it's called with more.@]@]"
                       acceptsCount (if acceptsCount == 1 then "argument" else "arguments")
       | Tconstr (
-          (Path.Pdot (((Pdot (Path.Pident {name="Js"}, "Internal", _)) | (Pident {name="Js_internal"})), ("fn" | "meth"), _)),
+          (Path.Pdot (((Pdot (Path.Pident {name="Js"}, "Fn", _)) ), _, _)),
           _,
           _
         )
