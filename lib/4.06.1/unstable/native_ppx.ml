@@ -21376,8 +21376,8 @@ let generic_apply loc
     Parsetree.Pexp_apply (
       Exp.ident {txt = unsafeInvariantApply; loc},
       [Nolabel,
-       Exp.apply (Exp.ident {txt ; loc}) ((Nolabel,fn) :: 
-                                          args)])                        
+       Exp.apply (Exp.apply (Exp.ident {txt ; loc}) [(Nolabel,fn)]) 
+                                          args])                        
 
 let generic_method_apply  loc 
     (self : Bs_ast_mapper.mapper) 
