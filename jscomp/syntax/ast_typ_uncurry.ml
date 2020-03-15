@@ -121,13 +121,13 @@ let to_uncurry_type   loc (mapper : Bs_ast_mapper.mapper) (label : Asttypes.arg_
   let fn_type = Typ.arrow ~loc label first_arg typ in 
   let arity = Ast_core_type.get_uncurry_arity fn_type in 
   match arity with 
-  | `Arity 0
+  | Some 0
     -> 
     Typ.constr ({txt = Ldot (Ldot (Lident "Js", "Fn"), "arity0") ; loc }) [typ]
-  | `Arity n  -> 
+  | Some n  -> 
     Typ.constr ({txt = Ldot (Ldot (Lident "Js", "Fn"), "arity" ^ string_of_int n); loc })
       [fn_type]
-  | `Not_function -> assert false  
+  | None -> assert false  
 
 
 let to_method_type  =

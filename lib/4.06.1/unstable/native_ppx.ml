@@ -11956,8 +11956,9 @@ val is_user_int : t -> bool *)
 
 (**
   returns 0 when it can not tell arity from the syntax
+  None -- means not a function
 *)
-val get_uncurry_arity : t -> [`Arity of int | `Not_function ]
+val get_uncurry_arity : t -> int option
 
 
 
@@ -12118,12 +12119,12 @@ let get_uncurry_arity (ty : t ) =
      rest  )  -> 
      begin match rest with 
      | {ptyp_desc = Ptyp_arrow _ } ->  
-      `Arity (get_uncurry_arity_aux rest 1 )
-    | _ -> `Arity 0 
+      Some (get_uncurry_arity_aux rest 1 )
+    | _ -> Some 0 
     end
   | Ptyp_arrow(_,_,rest ) ->
-    `Arity(get_uncurry_arity_aux rest 1)
-  | _ -> `Not_function
+    Some (get_uncurry_arity_aux rest 1)
+  | _ -> None
 
 let get_curry_arity  ty =
   get_uncurry_arity_aux ty 0
@@ -19098,13 +19099,13 @@ let spec_of_ptyp
   | `Uncurry opt_arity ->
     let real_arity =  Ast_core_type.get_uncurry_arity ptyp in
     (begin match opt_arity, real_arity with
-       | Some arity, `Not_function ->
+       | Some arity, None ->
          Fn_uncurry_arity arity
-       | None, `Not_function  ->
+       | None, None  ->
          Bs_syntaxerr.err ptyp.ptyp_loc Canot_infer_arity_by_syntax
-       | None, `Arity arity  ->
+       | None, Some arity  ->
          Fn_uncurry_arity arity
-       | Some arity, `Arity n ->
+       | Some arity, Some n ->
          if n <> arity then
            Bs_syntaxerr.err ptyp.ptyp_loc (Inconsistent_arity (arity,n))
          else Fn_uncurry_arity arity
@@ -21160,13 +21161,13 @@ let to_uncurry_type   loc (mapper : Bs_ast_mapper.mapper) (label : Asttypes.arg_
   let fn_type = Typ.arrow ~loc label first_arg typ in 
   let arity = Ast_core_type.get_uncurry_arity fn_type in 
   match arity with 
-  | `Arity 0
+  | Some 0
     -> 
     Typ.constr ({txt = Ldot (Ldot (Lident "Js", "Fn"), "arity0") ; loc }) [typ]
-  | `Arity n  -> 
+  | Some n  -> 
     Typ.constr ({txt = Ldot (Ldot (Lident "Js", "Fn"), "arity" ^ string_of_int n); loc })
       [fn_type]
-  | `Not_function -> assert false  
+  | None -> assert false  
 
 
 let to_method_type  =

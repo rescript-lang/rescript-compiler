@@ -60,8 +60,9 @@ val is_user_int : t -> bool *)
 
 (**
   returns 0 when it can not tell arity from the syntax
+  None -- means not a function
 *)
-val get_uncurry_arity : t -> [`Arity of int | `Not_function ]
+val get_uncurry_arity : t -> int option
 
 
 
