@@ -10037,21 +10037,6 @@ function directive_parse(token_with_comments, lexbuf) {
       return v;
     }
   };
-  var parse_or_aux = function (calc, v) {
-    var e = token(/* () */0);
-    if (typeof e === "number" && e === 8) {
-      var calc$1 = calc && !v;
-      var b = parse_or_aux(calc$1, parse_and_aux(calc$1, parse_relation(calc$1)));
-      if (v) {
-        return true;
-      } else {
-        return b;
-      }
-    } else {
-      push(e);
-      return v;
-    }
-  };
   var parse_relation = function (calc) {
     var curr_token = token(/* () */0);
     var curr_loc = curr(lexbuf);
@@ -10181,6 +10166,21 @@ function directive_parse(token_with_comments, lexbuf) {
                 curr_loc
               ];
       }
+    }
+  };
+  var parse_or_aux = function (calc, v) {
+    var e = token(/* () */0);
+    if (typeof e === "number" && e === 8) {
+      var calc$1 = calc && !v;
+      var b = parse_or_aux(calc$1, parse_and_aux(calc$1, parse_relation(calc$1)));
+      if (v) {
+        return true;
+      } else {
+        return b;
+      }
+    } else {
+      push(e);
+      return v;
     }
   };
   var v = parse_or_aux(true, parse_and_aux(true, parse_relation(true)));

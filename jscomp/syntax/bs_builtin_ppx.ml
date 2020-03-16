@@ -404,7 +404,16 @@ let  unsafe_mapper : mapper =
     signature_item =  signature_item_mapper ;
     value_bindings = Ast_tuple_pattern_flatten.value_bindings_mapper;
     structure_item = structure_item_mapper;
-    structure = structure_mapper
+    structure = structure_mapper;
+    (** Ad-hoc way to internalize stuff *)
+    label_declaration = (fun self lbl -> 
+      let lbl = default_mapper.label_declaration self lbl in 
+      match lbl.pld_attributes with 
+      | [ {txt="internal"}, _ ] -> 
+        {lbl with pld_name = {lbl.pld_name with txt = "I"^ lbl.pld_name.txt };
+                  pld_attributes = []}
+      | _ -> lbl  
+    )
   }
 
 

@@ -59,31 +59,70 @@ type +'a t
 module Fn = struct
   type + 'a arity0 
   type 'a arity1 = {
-    _1 : 'a
+    _1 : 'a [@internal]
   }[@@unboxed]
   type 'a arity2 = {
-    _2 : 'a
+    _2 : 'a [@internal]
   }[@@unboxed]
   type 'a arity3 = {
-    _3 : 'a
+    _3 : 'a [@internal]
   }[@@unboxed]
   type 'a arity4 = {
-    _4 : 'a
+    _4 : 'a [@internal]
   }[@@unboxed]
   type 'a arity5 = {
-    _5 : 'a
+    _5 : 'a [@internal]
   }[@@unboxed]
   type 'a arity6 = {
-    _6 : 'a
+    _6 : 'a [@internal]
   }[@@unboxed]
   type 'a arity7 = {
-    _7 : 'a
+    _7 : 'a [@internal]
   }[@@unboxed]
   type 'a arity8 = {
-    _8 : 'a
+    _8 : 'a [@internal]
   }[@@unboxed]
   type 'a arity9 = {
-    _9 : 'a
+    _9 : 'a [@internal]
+  }[@@unboxed]
+  type 'a arity10 = {
+    _10 : 'a [@internal]
+  }[@@unboxed]
+  type 'a arity11 = {
+    _11 : 'a [@internal]
+  }[@@unboxed]
+  type 'a arity12 = {
+    _12 : 'a [@internal]
+  }[@@unboxed]
+  type 'a arity13 = {
+    _13 : 'a [@internal]
+  }[@@unboxed]
+  type 'a arity14 = {
+    _14 : 'a [@internal]
+  }[@@unboxed]
+  type 'a arity15 = {
+    _15 : 'a [@internal]
+  }[@@unboxed]
+  type 'a arity16 = {
+    _16 : 'a [@internal]
+  }[@@unboxed]
+  type 'a arity17 = {
+    _17 : 'a [@internal]
+  }[@@unboxed]
+  type 'a arity18 = {
+    _18 : 'a [@internal]
+  }[@@unboxed]
+  type 'a arity19 = {
+    _19 : 'a [@internal]
+  }[@@unboxed]
+  type 'a arity20 = {
+    _20 : 'a [@internal]
+  }[@@unboxed]
+  type 'a arity21 = {
+    _21 : 'a [@internal]
+  }[@@unboxed]
+  type 'a arity22 = {
+    _22 : 'a [@internal]
   }[@@unboxed]
 end
 
@@ -104,6 +143,21 @@ module Internal = struct
   external run7 : 'a arity7 -> 'a = "%opaque"
   external run8 : 'a arity8 -> 'a = "%opaque"
   external run9 : 'a arity9 -> 'a = "%opaque"
+  external run10 : 'a arity10 -> 'a = "%opaque"
+  external run11 : 'a arity11 -> 'a = "%opaque"
+  external run12 : 'a arity12 -> 'a = "%opaque"
+  external run13 : 'a arity13 -> 'a = "%opaque"
+  external run14 : 'a arity14 -> 'a = "%opaque"
+  external run15 : 'a arity15 -> 'a = "%opaque"
+  external run16 : 'a arity16 -> 'a = "%opaque"
+  external run17 : 'a arity17 -> 'a = "%opaque"
+  external run18 : 'a arity18 -> 'a = "%opaque"
+  external run19 : 'a arity19 -> 'a = "%opaque"
+  external run20 : 'a arity20 -> 'a = "%opaque"
+  external run21 : 'a arity21 -> 'a = "%opaque"
+  external run22 : 'a arity22 -> 'a = "%opaque"
+
+
   external mk0 : (unit -> 'a0) -> 'a0 arity0 = "#fn_mk" "0"    
 end    
 (**/**)

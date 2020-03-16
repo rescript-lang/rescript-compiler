@@ -45,8 +45,7 @@ let default_expr_mapper = Bs_ast_mapper.default_mapper.expr
 
 let check_and_discard (args : Ast_compatible.args) = 
   Ext_list.map args (fun (label,x) -> 
-      if label <> Nolabel then 
-        Bs_syntaxerr.err x.pexp_loc Label_in_uncurried_bs_attribute;
+      Bs_syntaxerr.err_if_label x.pexp_loc label;
       x  
     )
 

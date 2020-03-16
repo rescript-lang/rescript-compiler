@@ -71,10 +71,7 @@ let generic_apply loc
   let obj = self.expr self obj in
   let args =
     Ext_list.map args (fun (lbl,e) -> 
-        (match lbl with 
-         | Optional _ -> Bs_syntaxerr.err loc Label_in_uncurried_bs_attribute; 
-         | _ -> ()
-        );
+         Bs_syntaxerr.optional_err loc lbl; 
         (lbl,self.expr self e)) in
   let fn = cb loc obj in   
   let args  = 
@@ -138,8 +135,7 @@ let to_method_callback  loc (self : Bs_ast_mapper.mapper)  pat body
       begin match body.pexp_desc with 
         | Pexp_fun (arg_label,_, arg, body)
           -> 
-          if arg_label <> Nolabel  then
-            Bs_syntaxerr.err loc Label_in_uncurried_bs_attribute;
+          Bs_syntaxerr.err_if_label loc arg_label;
           aux (self.pat self arg :: acc) body 
         | _ -> self.expr self body, acc 
       end 
@@ -169,18 +165,14 @@ let to_method_callback  loc (self : Bs_ast_mapper.mapper)  pat body
 
 let to_uncurry_fn  loc (self : Bs_ast_mapper.mapper) (label : Asttypes.arg_label) pat body 
   = 
-  (match label with 
-  | Optional _ -> Bs_syntaxerr.err loc Label_in_uncurried_bs_attribute
-  | _ -> ());  
+  Bs_syntaxerr.optional_err loc label;  
   let rec aux acc (body : Parsetree.expression) = 
     match Ast_attributes.process_attributes_rev body.pexp_attributes with 
     | Nothing, _ -> 
       begin match body.pexp_desc with 
         | Pexp_fun (arg_label,_, arg, body)
           -> 
-          (match arg_label with 
-          | Optional _ -> Bs_syntaxerr.err loc Label_in_uncurried_bs_attribute
-          | _ -> ());
+          Bs_syntaxerr.optional_err loc arg_label; 
           aux ((arg_label, self.pat self arg) :: acc) body 
         | _ -> self.expr self body, acc 
       end 
@@ -205,9 +197,12 @@ let to_uncurry_fn  loc (self : Bs_ast_mapper.mapper) (label : Asttypes.arg_label
       Longident.Ldot (jsInternal, "mk0") in
     Parsetree.Pexp_apply (Exp.ident {txt;loc} , [ Nolabel, body])
   else 
+  if arity > 22 then 
+    Bs_syntaxerr.err loc Bs_uncurried_arity_too_large
+  else  
     Parsetree.Pexp_record ([
         {
-          txt = Ldot (Ast_literal.Lid.js_fn, "_" ^ string_of_int arity); 
+          txt = Ldot (Ast_literal.Lid.js_fn, "I_" ^ string_of_int arity); 
           loc
         },body], None) 
 
