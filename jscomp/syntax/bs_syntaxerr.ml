@@ -53,9 +53,11 @@ type error
   | Label_in_uncurried_bs_attribute
   | Optional_in_uncurried_bs_attribute
   | Bs_this_simple_pattern
-
+  | Bs_uncurried_arity_too_large
 let pp_error fmt err =
   Format.pp_print_string fmt (match err with
+  | Bs_uncurried_arity_too_large
+    -> "BuckleScript support uncurried function up to arity 22"
   | Label_in_uncurried_bs_attribute
     -> "BuckleScript uncurried function doesn't support labeled arguments yet"
   | Optional_in_uncurried_bs_attribute

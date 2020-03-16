@@ -51,7 +51,7 @@ type error
   | Label_in_uncurried_bs_attribute
   | Optional_in_uncurried_bs_attribute
   | Bs_this_simple_pattern
-
+  | Bs_uncurried_arity_too_large
 
 val err : Location.t -> error -> 'a
 

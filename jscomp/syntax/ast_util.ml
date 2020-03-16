@@ -197,6 +197,9 @@ let to_uncurry_fn  loc (self : Bs_ast_mapper.mapper) (label : Asttypes.arg_label
       Longident.Ldot (jsInternal, "mk0") in
     Parsetree.Pexp_apply (Exp.ident {txt;loc} , [ Nolabel, body])
   else 
+  if arity > 22 then 
+    Bs_syntaxerr.err loc Bs_uncurried_arity_too_large
+  else  
     Parsetree.Pexp_record ([
         {
           txt = Ldot (Ast_literal.Lid.js_fn, "I_" ^ string_of_int arity); 
