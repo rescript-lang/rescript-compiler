@@ -123,7 +123,6 @@ let output_ninja_and_namespace_map
   let cwd_lib_bs = per_proj_dir // lib_artifacts_dir in 
   let ppx_flags = Bsb_build_util.ppx_flags ppx_files in
   let oc = open_out_bin (cwd_lib_bs // Literals.build_ninja) in          
-  let bsc_flags = "-bs-D BSB_BACKEND=\"js\"" :: bsc_flags in
   let g_pkg_flg , g_ns_flg = 
     match namespace with
     | None -> 

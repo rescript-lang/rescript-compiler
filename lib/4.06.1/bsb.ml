@@ -5195,6 +5195,12 @@ let all_lib_artifacts =
     lib_bs ; 
     lib_es6 ; 
     lib_es6_global;
+
+  (* Artifacts directories for other backends *)
+    lib_lit // "bs-native";
+    lib_lit // "bs-bytecode";
+    lib_lit // "ocaml-native";
+    lib_lit // "ocaml-bytecode";
   ]
 let rev_lib_bs = ".."// ".."
 
@@ -11189,8 +11195,6 @@ let clean_bs_garbage proj_dir =
     Bsb_parse_sources.clean_re_js proj_dir; (* clean re.js files*)
     ninja_clean  proj_dir ;
     Ext_list.iter Bsb_config.all_lib_artifacts try_remove ;
-    try_remove (Bsb_config.lib_lit // (Filename.basename !Bsb_global_backend.lib_ocaml_dir));
-    try_remove (Bsb_config.lib_lit // (Filename.basename !Bsb_global_backend.lib_artifacts_dir));
   with
     e ->
     Bsb_log.warn "@{<warning>Failed@} to clean due to %s" (Printexc.to_string e)
@@ -13663,7 +13667,6 @@ let output_ninja_and_namespace_map
   let cwd_lib_bs = per_proj_dir // lib_artifacts_dir in 
   let ppx_flags = Bsb_build_util.ppx_flags ppx_files in
   let oc = open_out_bin (cwd_lib_bs // Literals.build_ninja) in          
-  let bsc_flags = "-bs-D BSB_BACKEND=\"js\"" :: bsc_flags in
   let g_pkg_flg , g_ns_flg = 
     match namespace with
     | None -> 
