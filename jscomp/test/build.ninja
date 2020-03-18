@@ -39,6 +39,7 @@ build test/ari_regress_test.cmi : cc test/ari_regress_test.mli | $stdlib
 build test/arith_lexer.cmi test/arith_lexer.cmj : cc test/arith_lexer.ml | test/arith_parser.cmj test/arith_syntax.cmj $stdlib
 build test/arith_parser.cmi test/arith_parser.cmj : cc test/arith_parser.ml | test/arith_syntax.cmj $stdlib
 build test/arith_syntax.cmi test/arith_syntax.cmj : cc test/arith_syntax.ml | $stdlib
+build test/arity.cmi test/arity.cmj : cc test/arity.re | $stdlib
 build test/arity_deopt.cmi test/arity_deopt.cmj : cc test/arity_deopt.ml | test/mt.cmj $stdlib
 build test/arity_infer.cmi test/arity_infer.cmj : cc test/arity_infer.ml | $stdlib
 build test/array_data_util.cmi test/array_data_util.cmj : cc test/array_data_util.ml | $stdlib
