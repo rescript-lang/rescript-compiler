@@ -65,8 +65,7 @@ let setup_env () =
       Js_config.debug := true);
 #end
   Lexer.replace_directive_bool "BS" true;
-  (* Define BSB_BACKEND="js" here to allow conditional compilation towards different backends (native, bytecode, js, ios, android, etc...) *)
-  Lexer.replace_directive_string "BSB_BACKEND" "js";
+  Lexer.replace_directive_bool "JS" true;
   Lexer.replace_directive_string "BS_VERSION"  Bs_version.version
 #if false then
   ; Switch.cut := 100 (* tweakable but not very useful *)
