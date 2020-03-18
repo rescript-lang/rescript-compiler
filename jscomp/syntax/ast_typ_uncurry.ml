@@ -67,9 +67,45 @@ let lift_js_method_callback loc args_type result_type
   generic_lift method_call_back_id loc args_type result_type
  
 
-let generic_to_uncurry_type  kind loc (mapper : Bs_ast_mapper.mapper) (label : Asttypes.arg_label)
+let to_method_callback_type  loc (mapper : Bs_ast_mapper.mapper) (label : Asttypes.arg_label)
     (first_arg : Parsetree.core_type) 
     (typ : Parsetree.core_type)  =
+  Bs_syntaxerr.err_if_label loc label;
+
+  let rec aux (acc : typ list) (typ : typ) : typ * typ list = 
+    (* in general, 
+       we should collect [typ] in [int -> typ] before transformation, 
+       however: when attributes [bs] and [bs.this] found in typ, 
+       we should stop 
+    *)
+    match Ast_attributes.process_attributes_rev typ.ptyp_attributes with 
+    | Nothing, _   -> 
+      begin match typ.ptyp_desc with 
+        | Ptyp_arrow (label, arg, body)
+          -> 
+          Bs_syntaxerr.err_if_label typ.ptyp_loc label;
+          aux (mapper.typ mapper arg :: acc) body 
+        | _ -> mapper.typ mapper typ, acc 
+      end
+    | _, _ -> mapper.typ mapper typ, acc  
+  in 
+  let first_arg = mapper.typ mapper first_arg in
+  let result, rev_extra_args = aux  [first_arg] typ in 
+  let args  = List.rev rev_extra_args in 
+  (* let filter_args (args : typ list)  =  
+    match args with 
+    | [{ptyp_desc = 
+          (Ptyp_constr ({txt = Lident "unit"}, []) 
+          )}]
+      -> []
+    | _ -> args in *)
+lift_js_method_callback loc args result 
+
+
+let to_method_type loc 
+  (mapper : Bs_ast_mapper.mapper) 
+  (label : Asttypes.arg_label )
+  (first_arg : Parsetree.core_type) (typ : Parsetree.core_type) = 
   Bs_syntaxerr.err_if_label loc label;
 
   let rec aux (acc : typ list) (typ : typ) : typ * typ list = 
@@ -99,14 +135,8 @@ let generic_to_uncurry_type  kind loc (mapper : Bs_ast_mapper.mapper) (label : A
           )}]
       -> []
     | _ -> args in
-  match kind with 
-  | `Method -> 
     let args = filter_args args in
     lift_method_type loc args result 
-
-  | `Method_callback
-    -> lift_js_method_callback loc args result 
-
 
 
 let to_uncurry_type   loc (mapper : Bs_ast_mapper.mapper) (label : Asttypes.arg_label)
@@ -128,7 +158,4 @@ let to_uncurry_type   loc (mapper : Bs_ast_mapper.mapper) (label : Asttypes.arg_
   | None -> assert false  
 
 
-let to_method_type  =
-  generic_to_uncurry_type  `Method
-let to_method_callback_type  = 
-  generic_to_uncurry_type `Method_callback     
+
