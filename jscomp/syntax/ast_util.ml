@@ -48,7 +48,7 @@ let js_property loc obj (name : string) =
     ((Ast_compatible.app1 ~loc
         (Exp.ident ~loc
            {loc;
-            txt = Ldot (Lident "Js_internalOO", Literals.unsafe_downgrade)})
+            txt = Ldot (Ast_literal.Lid.js_oo, Literals.unsafe_downgrade)})
         obj), 
         {loc; txt = name}
         )
