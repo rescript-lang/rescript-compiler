@@ -175,7 +175,9 @@ let install_target config_opt =
 let () =
   try begin 
     match Sys.argv with 
+#if BS_NATIVE then
     | [| _; "-backend"; _ |]
+#end
     | [| _ |] ->  (* specialize this path [bsb.exe] which is used in watcher *)
 #if BS_NATIVE then
       if Array.length Sys.argv = 3 then begin match Array.get Sys.argv 2 with

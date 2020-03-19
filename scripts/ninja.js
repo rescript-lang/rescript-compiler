@@ -102,7 +102,6 @@ function generateVisitorPattern() {
  *
  */
 var useEnv = false;
-var BS_NATIVE = false
 
 /**
  * Note this file is not used in ninja file
@@ -616,7 +615,7 @@ function sourceToTarget(y) {
 function ocamlDepForBscAsync(files, dir, depsMap) {
   return new Promise((resolve, reject) => {
     cp.exec(
-      `BS_NATIVE=${BS_NATIVE} ${getOcamldepFile()} -allow-approx -one-line -native ${files.join(" ")}`,
+      `${getOcamldepFile()} -allow-approx -one-line -native ${files.join(" ")}`,
       {
         cwd: dir,
         encoding: "ascii"
@@ -693,7 +692,7 @@ function depModulesForBscAsync(files, dir, depsMap) {
   return [
     new Promise((resolve, reject) => {
       cp.exec(
-        `BS_NATIVE=${BS_NATIVE} ${getOcamldepFile()} -allow-approx -modules -one-line -native ${ocamlFiles.join(
+        `${getOcamldepFile()} -allow-approx -modules -one-line -native ${ocamlFiles.join(
           " "
         )}`,
         config,
@@ -703,7 +702,7 @@ function depModulesForBscAsync(files, dir, depsMap) {
 
     new Promise((resolve, reject) => {
       cp.exec(
-        `BS_NATIVE=${BS_NATIVE} ${getOcamldepFile()} -pp '../../${
+        `${getOcamldepFile()} -pp '../../${
           process.platform
         }/refmt.exe --print=binary' -modules -one-line -native -ml-synonym .re -mli-synonym .rei ${reFiles.join(
           " "
@@ -1599,7 +1598,7 @@ function nativeNinja() {
   var templateNative = `
 subninja ${getPreprocessorFileName()}
 rule optc
-    command = BS_NATIVE=${BS_NATIVE} $ocamlopt -safe-string -I +compiler-libs -opaque ${includes} -g -linscan -w A-4-9-27-29-40..42-48-50+6-40-30-23 -warn-error A -absname -c $in
+    command = BS_NATIVE=${!!process.env.BS_NATIVE} $ocamlopt -safe-string -I +compiler-libs -opaque ${includes} -g -linscan -w A-4-9-27-29-40..42-48-50+6-40-30-23 -warn-error A -absname -c $in
     description = $out : $in
 rule archive
     command = $ocamlopt -a $in -o $out
@@ -1688,7 +1687,7 @@ build ../odoc_gen/generator.cmxs : mk_shared ../odoc_gen/generator.mli ../odoc_g
   }
 
   cp.exec(
-    `BS_NATIVE=${BS_NATIVE} ${getOcamldepFile()} -allow-approx -one-line -native ${includes} ${files.join(
+    `${getOcamldepFile()} -allow-approx -one-line -native ${includes} ${files.join(
       " "
     )}`,
     { cwd: jscompDir, encoding: "ascii" },
@@ -1773,7 +1772,7 @@ function main() {
       checkEffect();
     }
     if (process.argv.includes("-native")) {
-      BS_NATIVE = true;
+      process.env.BS_NATIVE = "true"
       emptyCount++;
     }
 

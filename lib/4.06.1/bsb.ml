@@ -5196,11 +5196,6 @@ let all_lib_artifacts =
     lib_es6 ; 
     lib_es6_global;
 
-  (* Artifacts directories for other backends *)
-    lib_lit // "bs-native";
-    lib_lit // "bs-bytecode";
-    lib_lit // "ocaml-native";
-    lib_lit // "ocaml-bytecode";
   ]
 let rev_lib_bs = ".."// ".."
 
@@ -16828,7 +16823,7 @@ let install_target config_opt =
 let () =
   try begin 
     match Sys.argv with 
-    | [| _; "-backend"; _ |]
+
     | [| _ |] ->  (* specialize this path [bsb.exe] which is used in watcher *)
 
       Bsb_ninja_regen.regenerate_ninja 
