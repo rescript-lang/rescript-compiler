@@ -4209,7 +4209,6 @@ end = struct
  * You should have received a copy of the GNU Lesser General Public License
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
-
 let compilation_kind = ref Bsb_helper_depfile_gen.Js
 
 let hash : string ref = ref ""
@@ -4225,7 +4224,7 @@ let namespace = ref None
 let anonymous filename =
   collect_file filename
 let usage = "Usage: bsb_helper.exe [options] \nOptions are:"
-  
+ 
 let () =
   Bsb_helper_arg.parse_exn [
     "-g",  Set_int dev_group ,
@@ -4235,7 +4234,6 @@ let () =
     " Set namespace";
     "-hash",  Set_string hash,
     " Set hash(internal)";
-    
   ] anonymous usage;
   (* arrange with mlast comes first *)
   match !batch_files with

@@ -37,6 +37,13 @@ let all_lib_artifacts =
     lib_bs ; 
     lib_es6 ; 
     lib_es6_global;
+#if BS_NATIVE then
+  (* Artifacts directories for other backends *)
+    lib_lit // "bs-native";
+    lib_lit // "bs-bytecode";
+    lib_lit // "ocaml-native";
+    lib_lit // "ocaml-bytecode";
+#end
   ]
 let rev_lib_bs = ".."// ".."
 

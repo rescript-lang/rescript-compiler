@@ -1598,7 +1598,7 @@ function nativeNinja() {
   var templateNative = `
 subninja ${getPreprocessorFileName()}
 rule optc
-    command = $ocamlopt -safe-string -I +compiler-libs -opaque ${includes} -g -linscan -w A-4-9-27-29-40..42-48-50+6-40-30-23 -warn-error A -absname -c $in
+    command = BS_NATIVE=${!!process.env.BS_NATIVE} $ocamlopt -safe-string -I +compiler-libs -opaque ${includes} -g -linscan -w A-4-9-27-29-40..42-48-50+6-40-30-23 -warn-error A -absname -c $in
     description = $out : $in
 rule archive
     command = $ocamlopt -a $in -o $out
@@ -1642,7 +1642,7 @@ build ../${
     libs = ocamlcommon.cmxa unix.cmxa str.cmxa
 build ../${
     process.platform
-  }/bsb_helper.exe: link stubs/stubs.cmxa ext/ext.cmxa common/common.cmxa  bsb_helper/bsb_helper.cmxa main/bsb_helper_main.cmx
+  }/bsb_helper.exe: link stubs/stubs.cmxa ext/ext.cmxa common/common.cmxa  bsb/bsb.cmxa bsb_helper/bsb_helper.cmxa main/bsb_helper_main.cmx
     libs = ocamlcommon.cmxa unix.cmxa str.cmxa
 build ./bin/bspack.exe: link stubs/stubs.cmxa ext/ext.cmxa ./common/common.cmxa ./syntax/syntax.cmxa depends/depends.cmxa ./main/bspack_main.cmx
     libs = unix.cmxa ocamlcommon.cmxa
@@ -1770,6 +1770,10 @@ function main() {
     }
     if (process.argv.includes("-check")) {
       checkEffect();
+    }
+    if (process.argv.includes("-native")) {
+      process.env.BS_NATIVE = "true"
+      emptyCount++;
     }
 
     var subcommand = process.argv[2];

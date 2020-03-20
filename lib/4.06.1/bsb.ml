@@ -5195,6 +5195,7 @@ let all_lib_artifacts =
     lib_bs ; 
     lib_es6 ; 
     lib_es6_global;
+
   ]
 let rev_lib_bs = ".."// ".."
 
@@ -14236,10 +14237,12 @@ let regenerate_ninja
         ~name:(lib_bs_dir // Literals.sourcedirs_meta)
         config.file_groups
     ;
+
     Bsb_merlin_gen.merlin_file_gen ~per_proj_dir
        config;       
     Bsb_ninja_gen.output_ninja_and_namespace_map 
       ~per_proj_dir  ~toplevel config ;             
+
     
     (* PR2184: we still need record empty dir 
         since it may add files in the future *)  
@@ -16581,7 +16584,7 @@ let install_targets cwd ({files_to_install; namespace; package_name = _} : Bsb_c
     install ~destdir (cwd // lib_artifacts_dir//x ^ Literals.suffix_cmt) ;
     install ~destdir (cwd // lib_artifacts_dir//x ^ Literals.suffix_cmti) ;
   in   
-  let destdir = cwd // Bsb_config.lib_ocaml in (* lib is already there after building, so just mkdir [lib/ocaml] *)
+  let destdir = cwd // !Bsb_global_backend.lib_ocaml_dir in (* lib is already there after building, so just mkdir [lib/ocaml] *)
   if not @@ Sys.file_exists destdir then begin Unix.mkdir destdir 0o777  end;
   begin
     Bsb_log.info "@{<info>Installing started@}@.";
@@ -16675,8 +16678,6 @@ end = struct
  * You should have received a copy of the GNU Lesser General Public License
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
-
-
 
 let () =  Bsb_log.setup () 
 
@@ -16822,7 +16823,9 @@ let install_target config_opt =
 let () =
   try begin 
     match Sys.argv with 
+
     | [| _ |] ->  (* specialize this path [bsb.exe] which is used in watcher *)
+
       Bsb_ninja_regen.regenerate_ninja 
         ~toplevel_package_specs:None 
         ~forced:false 
