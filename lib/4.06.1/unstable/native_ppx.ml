@@ -4046,6 +4046,12 @@ type reporting_information =
   }
 
 let report w =
+  match w with 
+  | Name_out_of_scope _ (* 40 *)
+  | Disambiguated_name _ (* 42 *)
+  | Unboxable_type_in_prim_decl _ (* 61 *) -> `Inactive
+  (* TODO: we could simplify the code even more *)
+  | _ -> 
   match is_active w with
   | false -> `Inactive
   | true ->
@@ -21446,9 +21452,9 @@ let generic_apply loc
     Parsetree.Pexp_apply (
       Exp.ident {txt = unsafeInvariantApply; loc},
       [Nolabel,
-       Exp.apply 
-         (Exp.apply 
-            (Exp.ident {txt = Ast_literal.Lid.opaque; loc}) 
+       Exp.apply ~loc
+         (Exp.apply ~loc
+            (Exp.ident ~loc {txt = Ast_literal.Lid.opaque; loc}) 
             [(Nolabel, Exp.field ~loc 
               (Exp.constraint_ ~loc fn 
                 (Typ.constr ~loc {txt = Ldot (Ast_literal.Lid.js_fn, "arity"^arity_s);loc} 
@@ -21480,10 +21486,10 @@ let method_apply  loc
       Parsetree.Pexp_apply (
         Exp.ident {txt = unsafeInvariantApply; loc},
         [Nolabel,
-         Exp.apply (
-           Exp.apply (Exp.ident {txt = Ast_literal.Lid.opaque; loc}) 
+         Exp.apply ~loc (
+           Exp.apply ~loc (Exp.ident ~loc {txt = Ast_literal.Lid.opaque; loc}) 
              [(Nolabel,
-              Exp.field 
+              Exp.field ~loc
                 (Exp.constraint_ ~loc 
                   fn (Typ.constr ~loc {txt = Ldot (Ast_literal.Lid.js_meth,"arity"^arity_s);loc} [Typ.any ~loc ()]))
                 {loc; txt = Lident ( "I_"^arity_s)})]) 

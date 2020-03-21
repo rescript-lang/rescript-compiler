@@ -22,8 +22,14 @@ function add(prim, prim$1) {
   return prim + prim$1 | 0;
 }
 
+function h(u) {
+  var m = u.hi;
+  return m(1, 2);
+}
+
 exports.u = u;
 exports.u2 = u2;
 exports.f = f;
 exports.add = add;
+exports.h = h;
 /* No side effect */

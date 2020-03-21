@@ -32,3 +32,31 @@ let add = (+);
 // This function is a curried function where an uncurried function is expected
 
 
+/**
+let u = obj => {
+    obj##hai(1, 2) ; 
+    obj##hai(3, 4,2)
+}
+*/
+// This function has arity2 but was expected arity3
+
+/**
+let u = obj => {
+    obj##hai(1, 2) ; 
+    obj##hai("x",2)
+}
+*/
+// This expression has type string but an expression was expected of type
+
+/**
+let u = obj => {
+    obj##hai(1, 2) ; 
+    obj##hai(~x="x",2)
+}
+*/
+// This function is applied to arguments
+// This function is applied to arguments -- weird message
+let h = u => {
+    let m = u##hi ;
+    m(.1,2);
+}

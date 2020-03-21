@@ -42,6 +42,7 @@ build test/arith_syntax.cmi test/arith_syntax.cmj : cc test/arith_syntax.ml | $s
 build test/arity.cmi test/arity.cmj : cc test/arity.re | $stdlib
 build test/arity_deopt.cmi test/arity_deopt.cmj : cc test/arity_deopt.ml | test/mt.cmj $stdlib
 build test/arity_infer.cmi test/arity_infer.cmj : cc test/arity_infer.ml | $stdlib
+build test/arity_ml.cmi test/arity_ml.cmj : cc test/arity_ml.ml | $stdlib
 build test/array_data_util.cmi test/array_data_util.cmj : cc test/array_data_util.ml | $stdlib
 build test/array_safe_get.cmi test/array_safe_get.cmj : cc test/array_safe_get.ml | $stdlib
 build test/array_subtle_test.cmi test/array_subtle_test.cmj : cc test/array_subtle_test.ml | test/mt.cmj $stdlib
