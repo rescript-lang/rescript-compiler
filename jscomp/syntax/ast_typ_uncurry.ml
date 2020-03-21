@@ -142,7 +142,12 @@ let to_method_type loc
 let to_uncurry_type   loc (mapper : Bs_ast_mapper.mapper) (label : Asttypes.arg_label)
     (first_arg : Parsetree.core_type) 
     (typ : Parsetree.core_type)  =
-
+  (* no need to error for optional here, 
+     since we can not make it
+     TODO: still error out for external? 
+     Maybe no need to error on optional at all
+     it just does not make sense
+  *)
   let first_arg = mapper.typ mapper first_arg in
   let typ = mapper.typ mapper typ in 
   

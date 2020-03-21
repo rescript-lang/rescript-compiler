@@ -39,16 +39,7 @@
 type typ = Parsetree.core_type
 
 
-val lift_method_type :
-  Ast_helper.loc -> 
-  typ list ->
-  typ ->
-  Parsetree.core_type
-val lift_js_method_callback :
-  Ast_helper.loc ->
-  typ list ->
-  typ ->
-  Parsetree.core_type
+
 
 
 type 'a cxt = Ast_helper.loc -> Bs_ast_mapper.mapper -> 'a
@@ -75,4 +66,22 @@ val to_method_type : uncurry_type_gen
 *)
 val to_method_callback_type : uncurry_type_gen
 
+val generate_method_type :
+  Location.t -> 
+  Bs_ast_mapper.mapper -> 
+  ?alias_type : Parsetree.core_type -> 
+  string -> 
+  Asttypes.arg_label -> 
+  Parsetree.pattern -> 
+  Parsetree.expression ->
+  Parsetree.core_type  
 
+
+val generate_arg_type : 
+  Location.t ->
+  Bs_ast_mapper.mapper ->
+  string ->
+  Asttypes.arg_label ->  
+  Parsetree.pattern -> 
+  Parsetree.expression ->
+  Parsetree.core_type  

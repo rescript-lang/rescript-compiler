@@ -35,14 +35,6 @@ type uncurry_expression_gen =
    Parsetree.expression_desc) cxt
 
 
-
-
-
-
-
-let arrow = Ast_compatible.arrow
-
-
 let js_property loc obj (name : string) =
   Parsetree.Pexp_send
     ((Ast_compatible.app1 ~loc
@@ -93,26 +85,37 @@ let generic_apply loc
        Exp.apply (Exp.apply (Exp.ident {txt ; loc}) [(Nolabel,fn)]) 
                                           args])                        
 
-let generic_method_apply  loc 
+let method_apply  loc 
     (self : Bs_ast_mapper.mapper) 
-    (obj : Parsetree.expression) 
-    (args : Parsetree.expression list) (cb : loc -> exp-> exp)   =
-  let obj = self.expr self obj in
-  let args =
-    Ext_list.map args (fun e -> self.expr self e) in
-  let fn = cb loc obj in   
-  let args  = 
-    match args with 
-    | [ {pexp_desc =
-           Pexp_construct ({txt = Lident "()"}, None)}]
-      -> []
-    | _ -> args in
-  let arity = List.length args in       
-  let txt : Longident.t = 
-    Ldot(Lident "Js_internalOO", Literals.method_run ^ string_of_int arity) in 
-  Parsetree.Pexp_apply (Exp.ident {txt ; loc}, (Nolabel,fn) :: Ext_list.map args (fun x -> Asttypes.Nolabel,x))
-
-
+    (obj : Parsetree.expression) name
+    (args : Ast_compatible.args)   =
+    let obj = self.expr self obj in
+    let args =
+      Ext_list.map args (fun (lbl,e) -> 
+           Bs_syntaxerr.optional_err loc lbl; 
+          (lbl,self.expr self e)) in
+    let fn = Exp.mk ~loc (js_property loc obj name) in   
+    let args  = 
+      match args with 
+      | [ Nolabel, {pexp_desc =
+             Pexp_construct ({txt = Lident "()"}, None)}]
+        -> []
+      | _ -> args in
+    let arity = List.length args in       
+    if arity = 0 then 
+      Parsetree.Pexp_apply 
+        (Exp.ident {txt = Ldot ((Ldot (Ast_literal.Lid.js_oo,"Internal")), "run0");loc}, [Nolabel,fn])
+    else 
+      let txt : Longident.t = 
+        Ldot (Ldot (Ast_literal.Lid.js_oo,"Internal"), "id") in 
+      Parsetree.Pexp_apply (
+        Exp.ident {txt = unsafeInvariantApply; loc},
+        [Nolabel,
+         Exp.apply (
+           Exp.apply (Exp.ident {txt ; loc}) 
+             [(Nolabel,Exp.field fn {loc; txt = Ldot (Ast_literal.Lid.js_meth,"I_"^string_of_int arity)})]) 
+           args])
+  
 
 let uncurry_fn_apply loc self fn args = 
   generic_apply  loc self fn args (fun _ obj -> obj )
@@ -121,9 +124,6 @@ let property_apply loc self obj name args
   =  generic_apply loc self obj args 
     (fun loc obj -> Exp.mk ~loc (js_property loc obj name))
 
-let method_apply loc self obj name args = 
-  generic_method_apply  loc self obj args 
-    (fun loc obj -> Exp.mk ~loc (js_property loc obj name))
 
  
 

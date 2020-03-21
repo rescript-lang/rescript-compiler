@@ -50,7 +50,7 @@ val uncurry_fn_apply :
 val method_apply : 
   (Parsetree.expression ->
   string ->
-  Parsetree.expression list ->
+  Ast_compatible.args ->
   Parsetree.expression_desc) cxt 
 
 (** syntax {[f#@ arg0 arg1 ]}*)
@@ -80,7 +80,12 @@ val to_uncurry_fn :
 (** syntax: 
     {[fun [@bs.this] obj pat pat1 -> body]}    
 *)
-val to_method_callback : uncurry_expression_gen
+val to_method_callback : 
+  (
+    Asttypes.arg_label ->  
+    Parsetree.pattern ->
+    Parsetree.expression ->
+    Parsetree.expression_desc) cxt
 
 
 
