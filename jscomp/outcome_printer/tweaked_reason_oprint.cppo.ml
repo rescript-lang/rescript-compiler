@@ -309,69 +309,22 @@ and print_simple_out_type ppf =
     print_out_type_1 ~uncurried:true ppf res
 
   | Otyp_constr (
-      Oide_dot (
-        Oide_ident "Js_internalOO", "meth" ) as id
-      ,
-      ([Otyp_variant(_, Ovar_fields [variant, _, tys], _,_); result] as tyl)
+      Oide_dot (Oide_dot (
+          Oide_ident "Js_OO", "Meth" ), name),
+      [ty]
     ) ->
-    (* Otyp_arrow *)
-      let make tys result =
-        if tys = [] then
-          Otyp_arrow ("", Otyp_constr (Oide_ident "unit", []),result)
-        else
-          match tys with
-          | [ Otyp_tuple tys as single] ->
-            if variant = "Arity_1" then
-              Otyp_arrow ("", single, result)
-            else
-              List.fold_right (fun x acc -> Otyp_arrow ("", x, acc)) tys result
-          | [single] ->
-            Otyp_arrow ("", single, result)
-          | _ ->
-            assert false
-      in
-      begin match (make tys result) with
-      | exception _ ->
-        begin
-          pp_open_box ppf 0;
-          print_typargs ppf tyl;
-          print_ident ppf id;
-          pp_close_box ppf ()
-        end
-      | res ->
-        fprintf ppf "@[<0>(%a)@ [@bs.meth]@]" (print_out_type_1 ~uncurried:false) res
-      end
+    let res =
+      if name = "arity0" then Otyp_arrow ("", Otyp_constr (Oide_ident "unit", []),ty)
+      else ty in   
+    fprintf ppf "@[<0>(%a)@ [@bs.meth]@]" (print_out_type_1 ~uncurried:false) res
 
-  (* also BuckleScript-specific. See the comment in the previous pattern *)
   | Otyp_constr (
-      Oide_dot (
-         Oide_ident "Js_internalOO", "meth_callback" ) as id
-      ,
-      ([Otyp_variant(_, Ovar_fields [variant, _, tys], _,_); result] as tyl)
+      Oide_dot (Oide_dot (
+          Oide_ident "Js_OO", "Callback" ), name),
+      [res]
     ) ->
-      let make tys result =
-        match tys with
-        | [Otyp_tuple tys as single] ->
-          if variant = "Arity_1" then
-            Otyp_arrow ("", single, result)
-          else
-            List.fold_right (fun x acc  -> Otyp_arrow("", x, acc) ) tys result
-        | [single] ->
-          Otyp_arrow ("", single, result)
-        | _ ->
-          raise_notrace Not_found
-      in
-      begin match (make tys result) with
-      | exception _ ->
-        begin
-          pp_open_box ppf 0;
-          print_typargs ppf tyl;
-          print_ident ppf id;
-          pp_close_box ppf ()
-        end
-      | res ->
-        fprintf ppf "@[<0>(%a)@ [@bs.this]@]" (print_out_type_1 ~uncurried:false) res
-      end
+    fprintf ppf "@[<0>(%a)@ [@bs.this]@]" (print_out_type_1 ~uncurried:false) res
+
   (* also BuckleScript-specific. Turns Js.t({. foo: bar}) into {. "foo": bar} *)
   | Otyp_constr (
       (Oide_dot ((Oide_ident "Js"), "t")),
