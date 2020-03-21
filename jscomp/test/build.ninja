@@ -686,6 +686,7 @@ build test/unboxed_attribute_test.cmi test/unboxed_attribute_test.cmj : cc test/
 build test/unboxed_use_case.cmj : cc_cmi test/unboxed_use_case.ml | test/unboxed_use_case.cmi $stdlib
 build test/unboxed_use_case.cmi : cc test/unboxed_use_case.mli | $stdlib
 build test/uncurry_glob_test.cmi test/uncurry_glob_test.cmj : cc test/uncurry_glob_test.ml | $stdlib
+build test/uncurry_method.cmi test/uncurry_method.cmj : cc test/uncurry_method.ml | $stdlib
 build test/uncurry_test.cmj : cc_cmi test/uncurry_test.ml | test/uncurry_test.cmi $stdlib
 build test/uncurry_test.cmi : cc test/uncurry_test.mli | $stdlib
 build test/undef_regression2_test.cmi test/undef_regression2_test.cmj : cc test/undef_regression2_test.ml | test/mt.cmj $stdlib

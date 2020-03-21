@@ -6,13 +6,13 @@ external catch : t -> 'a -> 'b = "catch" [@@bs.send]
 let f p = 
   catch p 3
 
-class type promise =
-  object
-    method _then : 'a -> 'b
+class type ['b] promise =
+  object [@bs]
+    method _then : 'a -> 'b promise Js.t
     method catch : 'a -> 'b
-  end [@bs]
+  end 
 
-external new_promise : unit -> promise Js.t = 
+external new_promise : unit -> _ promise Js.t = 
   "Promise" [@@bs.new] [@@bs.module "sys-bluebird"]
 
 let () =

@@ -23,13 +23,6 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
 
-
-let method_id  = 
-  Ast_literal.Lid.js_meth
-
-let method_call_back_id  = 
-  Ast_literal.Lid.js_meth_callback
-
 type typ = Parsetree.core_type
 
 type 'a cxt = Ast_helper.loc -> Bs_ast_mapper.mapper -> 'a
@@ -41,104 +34,112 @@ type uncurry_type_gen =
    typ) cxt
 
 module Typ = Ast_helper.Typ
-let generic_lift txt loc (args : typ list) (result : typ) = 
-  let mk_args loc (n : int) (tys : typ list) : typ = 
-    Typ.variant ~loc 
-      [ Rtag (
-            {loc; txt = "Arity_" ^ string_of_int n}
-            ,
-            [], (n = 0),  tys)] Closed None
-  in  
-  let xs =
-    match args with 
-    | [ ] -> [mk_args loc 0   [] ; result ]
-    | [ x ] -> [ mk_args loc 1 [x] ; result ] 
-    | _ -> 
-      [mk_args loc (List.length args ) [Typ.tuple ~loc args] ; result ]
-  in 
-  Typ.constr ~loc {txt ; loc} xs
 
 
-let lift_method_type loc  args_type result_type = 
-  generic_lift  method_id loc args_type result_type
 
-let lift_js_method_callback loc args_type result_type
-  = 
-  generic_lift method_call_back_id loc args_type result_type
- 
-
-let to_method_callback_type  loc (mapper : Bs_ast_mapper.mapper) (label : Asttypes.arg_label)
+let to_method_callback_type  loc 
+  (mapper : Bs_ast_mapper.mapper) (label : Asttypes.arg_label)
     (first_arg : Parsetree.core_type) 
     (typ : Parsetree.core_type)  =
-  Bs_syntaxerr.err_if_label loc label;
-
-  let rec aux (acc : typ list) (typ : typ) : typ * typ list = 
-    (* in general, 
-       we should collect [typ] in [int -> typ] before transformation, 
-       however: when attributes [bs] and [bs.this] found in typ, 
-       we should stop 
-    *)
-    match Ast_attributes.process_attributes_rev typ.ptyp_attributes with 
-    | Nothing, _   -> 
-      begin match typ.ptyp_desc with 
-        | Ptyp_arrow (label, arg, body)
-          -> 
-          Bs_syntaxerr.err_if_label typ.ptyp_loc label;
-          aux (mapper.typ mapper arg :: acc) body 
-        | _ -> mapper.typ mapper typ, acc 
-      end
-    | _, _ -> mapper.typ mapper typ, acc  
-  in 
   let first_arg = mapper.typ mapper first_arg in
-  let result, rev_extra_args = aux  [first_arg] typ in 
-  let args  = List.rev rev_extra_args in 
-  (* let filter_args (args : typ list)  =  
-    match args with 
-    | [{ptyp_desc = 
-          (Ptyp_constr ({txt = Lident "unit"}, []) 
-          )}]
-      -> []
-    | _ -> args in *)
-lift_js_method_callback loc args result 
+  let typ = mapper.typ mapper typ in 
+  let meth_type = Typ.arrow ~loc label first_arg typ in 
+  let arity = Ast_core_type.get_uncurry_arity meth_type in 
+  match arity with 
+  | Some n ->  
+    Typ.constr {
+      txt = Ldot (Ast_literal.Lid.js_meth_callback,
+                  "arity"^string_of_int n);
+      loc
+    } [meth_type]
+  | None -> assert false
 
+
+let self_type_lit = "self_type"   
+let generate_method_type
+    loc
+    (mapper : Bs_ast_mapper.mapper)
+    ?alias_type 
+    method_name 
+    lbl 
+    pat 
+    e
+     : Parsetree.core_type =
+  let arity = Ast_pat.arity_of_fun pat e in    
+  let result = Typ.var ~loc method_name in   
+  let self_type loc = Typ.var ~loc self_type_lit in 
+
+  let self_type =
+    let v = self_type loc  in
+    match alias_type with 
+    | None -> v 
+    | Some ty -> Typ.alias ~loc ty self_type_lit
+  in  
+  if arity = 0 then
+    to_method_callback_type loc mapper  Nolabel self_type result      
+  else
+    let tyvars =
+      Ext_list.mapi (lbl :: Ast_pat.labels_of_fun e) (fun i x -> 
+        x, Typ.var ~loc (method_name ^ string_of_int i)
+        ) 
+      (* Ext_list.init arity (fun i -> Typ.var ~loc (method_name ^ string_of_int i)) *)
+    in
+    match tyvars with
+    | (label,x) :: rest ->
+      let method_rest =
+        Ext_list.fold_right rest result (fun (label,v) acc -> 
+          Typ.arrow ~loc  label v acc)
+      in         
+      (to_method_callback_type loc mapper  Nolabel self_type
+         (Typ.arrow ~loc  label x method_rest))
+    | _ -> assert false
+
+  
 
 let to_method_type loc 
   (mapper : Bs_ast_mapper.mapper) 
   (label : Asttypes.arg_label )
   (first_arg : Parsetree.core_type) (typ : Parsetree.core_type) = 
-  Bs_syntaxerr.err_if_label loc label;
-
-  let rec aux (acc : typ list) (typ : typ) : typ * typ list = 
-    (* in general, 
-       we should collect [typ] in [int -> typ] before transformation, 
-       however: when attributes [bs] and [bs.this] found in typ, 
-       we should stop 
-    *)
-    match Ast_attributes.process_attributes_rev typ.ptyp_attributes with 
-    | Nothing, _   -> 
-      begin match typ.ptyp_desc with 
-        | Ptyp_arrow (label, arg, body)
-          -> 
-          Bs_syntaxerr.err_if_label typ.ptyp_loc label;
-          aux (mapper.typ mapper arg :: acc) body 
-        | _ -> mapper.typ mapper typ, acc 
-      end
-    | _, _ -> mapper.typ mapper typ, acc  
-  in 
   let first_arg = mapper.typ mapper first_arg in
-  let result, rev_extra_args = aux  [first_arg] typ in 
-  let args  = List.rev rev_extra_args in 
-  let filter_args (args : typ list)  =  
-    match args with 
-    | [{ptyp_desc = 
-          (Ptyp_constr ({txt = Lident "unit"}, []) 
-          )}]
-      -> []
-    | _ -> args in
-    let args = filter_args args in
-    lift_method_type loc args result 
+  let typ = mapper.typ mapper typ in 
+  let meth_type = Typ.arrow ~loc label first_arg typ in 
+  let arity = Ast_core_type.get_uncurry_arity meth_type in 
+  match arity with 
+  | Some 0 -> 
+    Typ.constr (
+      {txt = 
+         Ldot( Ast_literal.Lid.js_meth,"arity0");
+       loc
+      }) [typ]
+  | Some n -> 
+      Typ.constr (
+        {txt = 
+          Ldot(Ast_literal.Lid.js_meth,"arity" ^ string_of_int n);
+          loc
+      }) [meth_type]
+  | None -> assert false
 
+let generate_arg_type loc (mapper  : Bs_ast_mapper.mapper)
+  method_name label pat body  : Ast_core_type.t = 
+let arity = Ast_pat.arity_of_fun pat body in   
+let result = Typ.var ~loc method_name in   
+if arity = 0 then
+  to_method_type loc mapper Nolabel (Ast_literal.type_unit ~loc ()) result 
 
+else
+  let tyvars =
+    Ext_list.mapi (label::Ast_pat.labels_of_fun body) (fun i x -> 
+     x, Typ.var ~loc (method_name ^ string_of_int i))
+  in
+  begin match tyvars with
+    | (label,x) :: rest ->
+      let method_rest =
+        Ext_list.fold_right rest result (fun (label,v) acc -> 
+          Typ.arrow ~loc label v acc)
+      in         
+      to_method_type loc mapper label x method_rest
+    | _ -> assert false
+  end     
 let to_uncurry_type   loc (mapper : Bs_ast_mapper.mapper) (label : Asttypes.arg_label)
     (first_arg : Parsetree.core_type) 
     (typ : Parsetree.core_type)  =

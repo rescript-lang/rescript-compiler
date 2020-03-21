@@ -20,3 +20,10 @@ let a = u1 u
 (* let u1 (f : u) =
   Js.Internal.unsafeInvariantApply ((Js.Internal.run2 (f : u)) ~y:"x" ~x:2) 
   *)
+
+
+type u0 = ?x:int -> y : string -> int [@bs]
+
+(*let f = fun[@bs] ?x y -> x + y *)
+
+(* let h (x :u0) = x ~y:"x" ~x:3 [@bs] *)

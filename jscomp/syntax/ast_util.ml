@@ -195,14 +195,15 @@ let to_uncurry_fn  loc (self : Bs_ast_mapper.mapper) (label : Asttypes.arg_label
       Longident.Ldot (jsInternal, "mk0") in
     Parsetree.Pexp_apply (Exp.ident {txt;loc} , [ Nolabel, body])
   else 
-  if arity > 22 then 
-    Bs_syntaxerr.err loc Bs_uncurried_arity_too_large
-  else  
-    Parsetree.Pexp_record ([
-        {
-          txt = Ldot (Ast_literal.Lid.js_fn, "I_" ^ string_of_int arity); 
-          loc
-        },body], None) 
+    begin 
+      Bs_syntaxerr.err_large_arity loc arity;
+      Parsetree.Pexp_record ([
+          {
+            txt = Ldot (Ast_literal.Lid.js_fn, "I_" ^ string_of_int arity); 
+            loc
+          },body], None) 
+    end
+
 
 
 
@@ -213,7 +214,6 @@ let ocaml_obj_as_js_object
     loc (mapper : Bs_ast_mapper.mapper)
     (self_pat : Parsetree.pattern)
     (clfs : Parsetree.class_field list) =
-  let self_type_lit = "self_type"   in 
 
   (** Attention: we should avoid type variable conflict for each method  
       Since the method name is unique, there would be no conflict 
@@ -244,54 +244,6 @@ let ocaml_obj_as_js_object
   (* Note mapper is only for API compatible 
    * TODO: we should check label name to avoid conflict 
   *)  
-  let self_type loc = Typ.var ~loc self_type_lit in 
-
-  let generate_arg_type loc (mapper  : Bs_ast_mapper.mapper)
-      method_name arity : Ast_core_type.t = 
-    let result = Typ.var ~loc method_name in   
-    if arity = 0 then
-      Ast_typ_uncurry.to_method_type loc mapper Nolabel (Ast_literal.type_unit ~loc ()) result 
-
-    else
-      let tyvars =
-        Ext_list.init arity (fun i -> Typ.var ~loc (method_name ^ string_of_int i))
-      in
-      begin match tyvars with
-        | x :: rest ->
-          let method_rest =
-            Ext_list.fold_right rest result (fun v acc -> Ast_compatible.arrow ~loc  v acc)
-          in         
-          Ast_typ_uncurry.to_method_type loc mapper Nolabel x method_rest
-        | _ -> assert false
-      end in          
-
-  let generate_method_type
-      loc
-      (mapper : Bs_ast_mapper.mapper)
-      ?alias_type method_name arity =
-    let result = Typ.var ~loc method_name in   
-
-    let self_type =
-      let v = self_type loc  in
-      match alias_type with 
-      | None -> v 
-      | Some ty -> Typ.alias ~loc ty self_type_lit
-    in  
-    if arity = 0 then
-      Ast_typ_uncurry.to_method_callback_type loc mapper  Nolabel self_type result      
-    else
-      let tyvars =
-        Ext_list.init arity (fun i -> Typ.var ~loc (method_name ^ string_of_int i))
-      in
-      begin match tyvars with
-        | x :: rest ->
-          let method_rest =
-            Ext_list.fold_right rest result (fun v acc -> Ast_compatible.arrow ~loc  v acc)
-          in         
-          (Ast_typ_uncurry.to_method_callback_type loc mapper  Nolabel self_type
-             (Ast_compatible.arrow ~loc  x method_rest))
-        | _ -> assert false
-      end in          
 
 
   (** we need calculate the real object type 
@@ -313,12 +265,11 @@ let ocaml_obj_as_js_object
           ->
           begin match e.pexp_desc with
             | Pexp_poly
-                (({pexp_desc = Pexp_fun (Nolabel, _, pat, e)} ),
+                (({pexp_desc = Pexp_fun ( lbl, _, pat, e)} ),
                  None) 
               ->  
-              let arity = Ast_pat.arity_of_fun pat e in
               let method_type =
-                generate_arg_type x.pcf_loc mapper label.txt arity in 
+                Ast_typ_uncurry.generate_arg_type x.pcf_loc mapper label.txt lbl pat e in 
               ((label, [], method_type) :: label_attr_types),
               (if public_flag = Public then
                  (label, [], method_type) :: public_label_attr_types
@@ -376,22 +327,22 @@ let ocaml_obj_as_js_object
           ->
           begin match e.pexp_desc with
             | Pexp_poly
-                (({pexp_desc = Pexp_fun (Nolabel, None, pat, e)} as f),
+                (({pexp_desc = Pexp_fun ( ll , None, pat, e)} as f),
                  None)
               ->  
-              let arity = Ast_pat.arity_of_fun pat e in
               let alias_type = 
                 if aliased then None 
                 else Some internal_obj_type in
               let  label_type =
-                generate_method_type ?alias_type
-                  x.pcf_loc mapper label.txt arity in 
+                Ast_typ_uncurry.generate_method_type ?alias_type
+                  x.pcf_loc mapper label.txt ll pat e  in 
               (label::labels,
                label_type::label_types,
                {f with
                 pexp_desc =
                   let f = Ast_pat.is_unit_cont pat ~yes:e ~no:f in                       
-                  to_method_callback loc mapper self_pat f
+                  to_method_callback loc mapper Nolabel self_pat f
+                  (* the first argument is this*)
                } :: exprs, 
                true
               )
