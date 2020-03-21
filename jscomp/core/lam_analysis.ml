@@ -175,10 +175,9 @@ let rec no_side_effects (lam : Lam.t) : bool =
       | Pupdate_mod
       | Pjs_unsafe_downgrade _
       | Pdebugger 
-      | Pjs_fn_run _ 
+      | Pjs_fn_run 
       | Pfull_apply
-      | Pmethod_run
-      | Pjs_fn_method _ 
+      | Pjs_fn_method 
       (* TODO *)
       | Praw_js_code _
       | Pbytessetu 

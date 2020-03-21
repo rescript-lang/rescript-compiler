@@ -1421,7 +1421,7 @@ and compile_prim (prim_info : Lam.prim_info) (lambda_cxt : Lam_compile_context.t
              | Some (x, b) ->
                Ext_list.append_one block  x,  E.dot (E.var b) property in
          Js_output.output_of_block_and_expression lambda_cxt.continuation blocks ret)
-    | {primitive = Pmethod_run;  args = [Lprim{
+    | {primitive =  Pfull_apply;  args = [Lprim{
         primitive =
           Pjs_unsafe_downgrade {name = property; loc; setter = true};
         args = [obj]} ;
@@ -1451,14 +1451,14 @@ and compile_prim (prim_info : Lam.prim_info) (lambda_cxt : Lam_compile_context.t
             cont obj_block arg_block (Some obj_code)
               (E.seq (E.assign (E.dot (E.var obj) property) value) E.unit)
        )
-    | {primitive = Pmethod_run;  args = Lprim{
+    | {primitive = Pfull_apply;  args = Lprim{
         primitive =
           Pjs_unsafe_downgrade {name = property; loc; setter = true};
         } :: _
        } -> assert false        
     | {primitive = 
         Pfull_apply |
-        Pjs_fn_run _ | Pmethod_run ;  args; loc}
+        Pjs_fn_run  ;  args; loc}
       ->
       (* 1. uncurried call should not do eta-conversion
             since `fn.length` will broken 
@@ -1473,10 +1473,10 @@ and compile_prim (prim_info : Lam.prim_info) (lambda_cxt : Lam_compile_context.t
            (Lam.apply fn rest loc App_uncurry)
        | [] -> assert false)
       
-    | {primitive = Pjs_fn_method arity;  args = args_lambda} ->
+    | {primitive = Pjs_fn_method;  args = args_lambda} ->
       (match args_lambda with
        | [Lfunction{arity = len; params; body} ]
-         when len = arity ->
+          ->
          Js_output.output_of_block_and_expression
            lambda_cxt.continuation
            []
