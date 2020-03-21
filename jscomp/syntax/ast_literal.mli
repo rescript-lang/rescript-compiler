@@ -35,6 +35,7 @@ module Lid : sig
   val type_unit : t 
   val type_int : t 
   val js_fn : t 
+  val js_oo : t
   val js_meth : t 
   val js_meth_callback : t 
   val js_obj : t 

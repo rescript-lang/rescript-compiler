@@ -65,3 +65,7 @@ val err_if_label :
   Asttypes.arg_label -> 
   unit
 
+val err_large_arity :
+  Location.t -> 
+  int -> 
+  unit

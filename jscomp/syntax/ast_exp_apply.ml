@@ -87,7 +87,7 @@ let app_exp_mapper
     ->  
     {e with pexp_desc = 
               if op = "##" then
-                Ast_util.method_apply loc self obj name (check_and_discard args)
+                Ast_util.method_apply loc self obj name args
               else Ast_util.property_apply loc self obj name  args
     }
    | Some {op; loc} ->
@@ -165,7 +165,7 @@ let app_exp_mapper
              ); pexp_attributes = attrs }
            -> 
            Bs_ast_invariant.warn_discarded_unused_attributes attrs ;
-           {e with pexp_desc = Ast_util.method_apply loc self obj name (check_and_discard args)}
+           {e with pexp_desc = Ast_util.method_apply loc self obj name args}
          | 
            {pexp_desc = 
               (Pexp_ident {txt = Lident name;_ } 
@@ -215,7 +215,7 @@ let app_exp_mapper
              { e with
                pexp_desc =
                  Ast_util.method_apply loc self obj
-                   (name ^ Literals.setter_suffix) [arg]  }
+                   (name ^ Literals.setter_suffix) [Nolabel,arg]  }
              (Ast_literal.type_unit ~loc ())
          | _ -> assert false
        end

@@ -6,9 +6,9 @@ let eq loc x y =
     (loc ^" id " ^ (string_of_int !test_id), (fun _ -> Mt.Eq(x,y))) :: !suites
 
 let f h = 
-  let open Js_internalOO in 
-  !(!(!h#x)#y)#z
+  h##x##y##z
 
+  
 let f2 h = 
   h##x##y##z
 

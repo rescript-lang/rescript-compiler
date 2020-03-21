@@ -145,3 +145,7 @@ let optional_err loc (lbl : Asttypes.arg_label) =
 let err_if_label loc (lbl : Asttypes.arg_label) =  
   if lbl <> Nolabel then 
     raise (Error (loc, Label_in_uncurried_bs_attribute))
+
+let err_large_arity loc arity = 
+  if arity > 22 then 
+    raise (Error(loc, Bs_uncurried_arity_too_large))    

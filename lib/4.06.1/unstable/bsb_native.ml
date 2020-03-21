@@ -5195,6 +5195,13 @@ let all_lib_artifacts =
     lib_bs ; 
     lib_es6 ; 
     lib_es6_global;
+
+  (* Artifacts directories for other backends *)
+    lib_lit // "bs-native";
+    lib_lit // "bs-bytecode";
+    lib_lit // "ocaml-native";
+    lib_lit // "ocaml-bytecode";
+
   ]
 let rev_lib_bs = ".."// ".."
 
@@ -14379,10 +14386,20 @@ let regenerate_ninja
         ~name:(lib_bs_dir // Literals.sourcedirs_meta)
         config.file_groups
     ;
-    Bsb_merlin_gen.merlin_file_gen ~per_proj_dir
-       config;       
-    Bsb_ninja_gen.output_ninja_and_namespace_map 
-      ~per_proj_dir  ~toplevel config ;             
+
+    if !Bsb_global_backend.backend = Bsb_config_types.Js then begin
+      Bsb_merlin_gen.merlin_file_gen ~per_proj_dir
+        config;       
+      Bsb_ninja_gen.output_ninja_and_namespace_map 
+        ~per_proj_dir  ~toplevel config ;             
+    end else begin
+      let os = Filename.basename Bsb_global_paths.bsc_dir in
+      let plugin_path = Bsb_global_paths.cwd // "node_modules" // "bs-platform-native" // os // "bsb.exe" in
+      let status = Sys.command (Printf.sprintf "%s %s %s %s %s %s" plugin_path per_proj_dir lib_bs_dir Bsb_global_paths.cwd Bsb_global_paths.bsc_dir !Bsb_global_backend.backend_string) in
+      if status <> 0 then
+        print_endline "Error: native plugin ran into an error";
+    end;
+
     
     (* PR2184: we still need record empty dir 
         since it may add files in the future *)  
@@ -16724,7 +16741,7 @@ let install_targets cwd ({files_to_install; namespace; package_name = _} : Bsb_c
     install ~destdir (cwd // lib_artifacts_dir//x ^ Literals.suffix_cmt) ;
     install ~destdir (cwd // lib_artifacts_dir//x ^ Literals.suffix_cmti) ;
   in   
-  let destdir = cwd // Bsb_config.lib_ocaml in (* lib is already there after building, so just mkdir [lib/ocaml] *)
+  let destdir = cwd // !Bsb_global_backend.lib_ocaml_dir in (* lib is already there after building, so just mkdir [lib/ocaml] *)
   if not @@ Sys.file_exists destdir then begin Unix.mkdir destdir 0o777  end;
   begin
     Bsb_log.info "@{<info>Installing started@}@.";
@@ -16818,12 +16835,6 @@ end = struct
  * You should have received a copy of the GNU Lesser General Public License
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
-
- 
- let (//) = Ext_path.combine
- let exec = ref false
- let node_lit = "node"
-
 
 let () =  Bsb_log.setup () 
 
@@ -16978,7 +16989,18 @@ let install_target config_opt =
 let () =
   try begin 
     match Sys.argv with 
+
+    | [| _; "-backend"; _ |]
+
     | [| _ |] ->  (* specialize this path [bsb.exe] which is used in watcher *)
+
+      if Array.length Sys.argv = 3 then begin match Array.get Sys.argv 2 with
+        | "js"       -> Bsb_global_backend.set_backend Bsb_config_types.Js
+        | "native"   -> Bsb_global_backend.set_backend Bsb_config_types.Native
+        | "bytecode" -> Bsb_global_backend.set_backend Bsb_config_types.Bytecode
+        | _ -> failwith "-backend should be one of: 'js', 'bytecode' or 'native'."
+      end;
+
       Bsb_ninja_regen.regenerate_ninja 
         ~toplevel_package_specs:None 
         ~forced:false 

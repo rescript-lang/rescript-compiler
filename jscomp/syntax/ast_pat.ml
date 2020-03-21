@@ -41,14 +41,21 @@ let arity_of_fun
     (e : Parsetree.expression) =
   let rec aux (e : Parsetree.expression)  =
     match e.pexp_desc with
-    | Pexp_fun (Nolabel, _, _, e) 
+    | Pexp_fun (_, _, _, e) 
      ->
-      1 + aux e       
-    | Pexp_fun _
+      1 + aux e    (*FIXME error on optional*)
+    (* | Pexp_fun _
       -> Location.raise_errorf
-           ~loc:e.pexp_loc "Label is not allowed in JS object"
+           ~loc:e.pexp_loc "Label is not allowed in JS object" *)
     | _ -> 0 in
   is_unit_cont ~yes:0 ~no:1 pat + aux e 
+
+let rec labels_of_fun (e : Parsetree.expression)  =
+  match e.pexp_desc with
+  | Pexp_fun (l, _, _, e) 
+    ->
+    l:: labels_of_fun e       
+  | _ -> [] 
 
 
 let rec is_single_variable_pattern_conservative  (p : t ) =

@@ -1,9 +1,9 @@
 
 
-open Js_internalOO
+(* open Js_internalOO *)
 
 let f x = 
-  !x # height + !x # width 
+  x ## height + x ## width 
 
 let g x : unit  = 
   let () = x #@ method1 3 in

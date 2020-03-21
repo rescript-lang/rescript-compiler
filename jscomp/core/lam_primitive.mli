@@ -147,10 +147,9 @@ type t =
   | Praw_js_function of 
     { block : string ; args : string list; arity : int}
   | Pjs_fn_make of int 
-  | Pjs_fn_run of int 
+  | Pjs_fn_run 
   | Pfull_apply 
-  | Pmethod_run
-  | Pjs_fn_method of int 
+  | Pjs_fn_method
   | Pundefined_to_opt
   | Pnull_to_opt
   | Pnull_undefined_to_opt 

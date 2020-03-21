@@ -158,7 +158,7 @@ let () =
      (get_files Literals.suffix_cmi stdlib @
       get_files Literals.suffix_cmi "others" )
      |> List.filter (fun x -> 
-         x|~ "js_internalOO" ||
+         x|~ "js_OO" ||
          x|~  "camlinternal" ||
          not (x |~ "internal")) 
   in     
