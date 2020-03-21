@@ -123,7 +123,7 @@ let primitive ppf (prim : Lam_primitive.t) = match prim with
       fprintf ppf "##%s#=" name
     else fprintf ppf "##%s" name
   | Pjs_function_length -> fprintf ppf "#function_length"
-  | Pjs_fn_run  -> fprintf ppf "#fn_run" 
+  | Pvoid_run  -> fprintf ppf "#run" 
   | Pfull_apply  -> fprintf ppf "#full_apply"  
   | Pjs_fn_make i -> fprintf ppf "js_fn_make_%i" i
   | Pjs_fn_method  -> fprintf ppf "js_fn_method"

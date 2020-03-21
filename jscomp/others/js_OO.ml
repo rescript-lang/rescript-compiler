@@ -169,7 +169,7 @@ module Internal = struct
   (* Use opaque instead of [._n] to prevent some optimizations happening *)
   external id : 'a -> 'a = "%opaque"
 
-  external run0 : 'a arity0 -> 'a = "#fn_run" "0"
+  external run0 : 'a arity0 -> 'a = "#run" "0"
   (* 
     x##meth a b --> 
     fullApppy (

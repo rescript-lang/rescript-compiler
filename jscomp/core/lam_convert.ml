@@ -563,8 +563,8 @@ let convert (exports : Set_ident.t) (lam : Lambda.lambda) : Lam.t * Lam_module_i
         | "#unsafe_neq" -> Pjscomp Cneq
 
         | "#typeof" -> Pjs_typeof
-        | "#fn_run"  -> 
-          Pjs_fn_run
+        | "#run"  -> 
+          Pvoid_run
         | "#full_apply" ->
           Pfull_apply  
 

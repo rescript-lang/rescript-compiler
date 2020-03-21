@@ -133,7 +133,7 @@ module Internal = struct
   external unsafeInvariantApply : 'a -> 'a = "#full_apply"
 
   (* Use opaque instead of [._n] to prevent some optimizations happening *)
-  external run0 : 'a arity0 -> 'a = "#fn_run" "0"
+  external run0 : 'a arity0 -> 'a = "#run" "0"
   external run1 : 'a arity1 -> 'a = "%opaque"
   external run2 : 'a arity2 -> 'a = "%opaque"
   external run3 : 'a arity3 -> 'a = "%opaque"
