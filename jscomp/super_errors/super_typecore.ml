@@ -70,37 +70,6 @@ let rec collect_missing_arguments env type1 type2 = match type1 with
     end
   | _ -> None
 
-let check_bs_arity_mismatch ppf trace =
-  let arity t = match t.Types.desc with
-    | Tvariant { row_fields = [(label,_)] } ->
-        let label_len = String.length label in
-        let arity_str = "Arity_" in
-        let arity_len = String.length arity_str in
-        if arity_len < label_len &&
-          String.sub label 0 arity_len = arity_str
-        then
-          try
-            Some (int_of_string (String.sub label arity_len (label_len-arity_len)))
-          with _ -> None
-        else None
-    | _ ->
-        None in
-  let check_mismatch t1 t2 = match (arity t1, arity t2) with
-    | Some n1, Some n2 ->
-        fprintf ppf "@[@{<info>Found uncurried application [@bs] with arity %d, where arity %d was expected.@}@]" n1 n2;
-        true
-    | None, _
-    | _, None ->
-        false in
-  let rec traverse = function
-    | (_arity1, type1) :: (_arity2, type2) :: rest ->
-        if traverse rest
-        then true
-        else check_mismatch type1 type2
-    | _ ->
-        false in
-  ignore (traverse trace)
-
 let print_expr_type_clash env trace ppf =
   (* this is the most frequent error. Do whatever we can to provide specific
     guidance to this generic error before giving up *)
@@ -160,8 +129,7 @@ let print_expr_type_clash env trace ppf =
         fprintf ppf "@[@{<info>Here's the original error message@}@]@,"
       | None -> ()
       end;
-      (* final fallback: show the generic type mismatch error *)
-      check_bs_arity_mismatch ppf trace;
+
       super_report_unification_error ppf env trace
         (function ppf ->
             fprintf ppf "This has type:")
