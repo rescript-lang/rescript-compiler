@@ -1,6 +1,6 @@
 {
   "devDependencies": {
-    "mocha": "^6.2.2",
+    "mocha": "^7.1.1",
     "nyc": "^15.0.0"
   },
   "bin": {
