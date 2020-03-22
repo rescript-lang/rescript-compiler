@@ -117,14 +117,14 @@ let expr_mapper  (self : mapper) (e : Parsetree.expression) =
             | Uncurry _, pexp_attributes
               ->
               {e with
-               pexp_desc = Ast_util.to_uncurry_fn e.pexp_loc self label pat body  ;
+               pexp_desc = Ast_uncurry_gen.to_uncurry_fn e.pexp_loc self label pat body  ;
                pexp_attributes}
             | Method _ , _
               ->  Location.raise_errorf ~loc:e.pexp_loc "bs.meth is not supported in function expression"
             | Meth_callback _, pexp_attributes
               ->
               (** FIXME: does it make sense to have a label for [this] ? *)
-              {e with pexp_desc = Ast_util.to_method_callback e.pexp_loc  self label pat body ;
+              {e with pexp_desc = Ast_uncurry_gen.to_method_callback e.pexp_loc  self label pat body ;
                       pexp_attributes }
           end
         | Pexp_apply (fn, args  ) ->

@@ -34,33 +34,6 @@
 
 
 
-(** 
-    [function] can only take one argument, that is the reason we did not adopt it
-    syntax:
-    {[ fun [@bs] pat pat1-> body ]}
-    [to_uncurry_fn (fun pat -> (fun pat1 -> ...  body))]
-
-*)
-val to_uncurry_fn :  
-  Location.t -> 
-  Bs_ast_mapper.mapper -> 
-  Asttypes.arg_label ->   
-  Parsetree.pattern ->
-  Parsetree.expression ->
-  Parsetree.expression_desc
-
-
-
-(** syntax: 
-    {[fun [@bs.this] obj pat pat1 -> body]}    
-*)
-val to_method_callback : 
-  Location.t -> 
-  Bs_ast_mapper.mapper ->
-  Asttypes.arg_label ->  
-  Parsetree.pattern ->
-  Parsetree.expression ->
-  Parsetree.expression_desc
 
 
 

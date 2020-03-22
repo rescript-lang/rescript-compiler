@@ -41,88 +41,6 @@ let js_property loc obj (name : string) =
 
  
 
-(* Handling `fun [@bs.this]` used in `object [@bs] end` *)
-let to_method_callback  loc (self : Bs_ast_mapper.mapper) 
-  label pat body : Parsetree.expression_desc
-  = 
-  Bs_syntaxerr.optional_err loc label;  
-  let rec aux acc (body : Parsetree.expression) = 
-    match Ast_attributes.process_attributes_rev body.pexp_attributes with 
-    | Nothing, _ -> 
-      begin match body.pexp_desc with 
-        | Pexp_fun (arg_label,_, arg, body)
-          -> 
-          Bs_syntaxerr.optional_err loc arg_label;
-          aux ((arg_label,self.pat self arg) :: acc) body 
-        | _ -> self.expr self body, acc 
-      end 
-    | _, _ -> self.expr self body, acc  
-  in 
-  let first_arg = self.pat self pat in  
-  (if not  (Ast_pat.is_single_variable_pattern_conservative first_arg) then
-     Bs_syntaxerr.err first_arg.ppat_loc  Bs_this_simple_pattern);  
-  let result, rev_extra_args = aux [label,first_arg] body in 
-  let body = 
-    Ext_list.fold_left rev_extra_args result (fun e (label,p) -> Ast_helper.Exp.fun_ ~loc label None p e )
-  in
-  let arity = List.length rev_extra_args in   
-  Parsetree.Pexp_apply 
-    (Exp.ident ~loc {loc ; txt = Ldot(Ast_literal.Lid.js_oo,"unsafe_to_method")},
-     [Nolabel,(Exp.record ~loc [{
-          loc ; 
-          txt = Longident.Ldot(Ast_literal.Lid.js_meth_callback 
-                              ,"I_"^string_of_int arity)},body]
-          None)])
-
-
-let to_uncurry_fn  loc (self : Bs_ast_mapper.mapper) (label : Asttypes.arg_label) pat body 
-  = 
-  Bs_syntaxerr.optional_err loc label;  
-  let rec aux acc (body : Parsetree.expression) = 
-    match Ast_attributes.process_attributes_rev body.pexp_attributes with 
-    | Nothing, _ -> 
-      begin match body.pexp_desc with 
-        | Pexp_fun (arg_label,_, arg, body)
-          -> 
-          Bs_syntaxerr.optional_err loc arg_label; 
-          aux ((arg_label, self.pat self arg) :: acc) body 
-        | _ -> self.expr self body, acc 
-      end 
-    | _, _ -> self.expr self body, acc  
-  in 
-  let first_arg = self.pat self pat in  
-
-  let result, rev_extra_args = aux [label,first_arg] body in 
-  let body = 
-    Ext_list.fold_left rev_extra_args result (fun e (label,p) -> Ast_helper.Exp.fun_ ~loc label None p e)
-  in
-  let len = List.length rev_extra_args in   
-  let arity = 
-    match rev_extra_args with 
-    | [ l,p]
-      ->
-       Ast_pat.is_unit_cont ~yes:0 ~no:len p           
-    | _ -> len 
-  in 
-  if arity = 0 && label = Nolabel then 
-    let txt = 
-      Longident.Ldot (Ast_literal.Lid.js_internal, "mk0") in
-    Parsetree.Pexp_apply (Exp.ident {txt;loc} , [ Nolabel, body])
-  else 
-    begin 
-      Bs_syntaxerr.err_large_arity loc arity;
-      Parsetree.Pexp_record ([
-          {
-            txt = Ldot (Ast_literal.Lid.js_fn, "I_" ^ string_of_int arity); 
-            loc
-          },body], None) 
-    end
-
-
-
-
-
-
 
 let ocaml_obj_as_js_object
     loc (mapper : Bs_ast_mapper.mapper)
@@ -135,10 +53,10 @@ let ocaml_obj_as_js_object
       but it does allow duplicates between instance variable and method name, 
       we should enforce such rules 
       {[
-        object 
+        object [@bs]
           val x = 3
           method x = 3 
-        end [@bs]
+        end 
       ]} should not compile with a meaningful error message
   *)
 
@@ -255,7 +173,7 @@ let ocaml_obj_as_js_object
                {f with
                 pexp_desc =
                   let f = Ast_pat.is_unit_cont pat ~yes:e ~no:f in                       
-                  to_method_callback loc mapper Nolabel self_pat f
+                  Ast_uncurry_gen.to_method_callback loc mapper Nolabel self_pat f
                   (* the first argument is this*)
                } :: exprs, 
                true
