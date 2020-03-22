@@ -49,13 +49,17 @@ let to_method_callback  loc (self : Bs_ast_mapper.mapper)
     Ext_list.fold_left rev_extra_args result (fun e (label,p) -> Ast_helper.Exp.fun_ ~loc label None p e )
   in
   let arity = List.length rev_extra_args in   
+  let arity_s = string_of_int arity in 
   Parsetree.Pexp_apply 
     (Exp.ident ~loc {loc ; txt = Ldot(Ast_literal.Lid.js_oo,"unsafe_to_method")},
-     [Nolabel,(Exp.record ~loc [{
-          loc ; 
-          txt = Longident.Ldot(Ast_literal.Lid.js_meth_callback 
-                              ,"I_"^string_of_int arity)},body]
-          None)])
+     [Nolabel,
+      (Exp.constraint_ ~loc 
+         (Exp.record ~loc [{
+              loc ; 
+              txt = Lident("I_"^ arity_s)},body]
+             None) 
+         (Typ.constr ~loc {loc; txt = Ldot (Ast_literal.Lid.js_meth_callback, "arity"^arity_s)} [Typ.any ~loc ()] )
+         )])
 
 let to_uncurry_fn  loc (self : Bs_ast_mapper.mapper) (label : Asttypes.arg_label) pat body 
   = 
@@ -93,11 +97,15 @@ let to_uncurry_fn  loc (self : Bs_ast_mapper.mapper) (label : Asttypes.arg_label
   else 
     begin 
       Bs_syntaxerr.err_large_arity loc arity;
-      Parsetree.Pexp_record ([
+      let arity_s = string_of_int arity in   
+      Parsetree.Pexp_constraint(
+        Exp.record ~loc [
           {
-            txt = Ldot (Ast_literal.Lid.js_fn, "I_" ^ string_of_int arity); 
+            txt = Lident ("I_" ^ arity_s); 
             loc
-          },body], None) 
+          },body] None, Typ.constr ~loc {txt = Ldot (Ast_literal.Lid.js_fn,"arity"^arity_s);loc}
+          [Typ.any ~loc ()]
+      )
     end
 
 
