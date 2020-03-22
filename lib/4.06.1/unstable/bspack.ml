@@ -4046,6 +4046,12 @@ type reporting_information =
   }
 
 let report w =
+  match w with 
+  | Name_out_of_scope _ (* 40 *)
+  | Disambiguated_name _ (* 42 *)
+  | Unboxable_type_in_prim_decl _ (* 61 *) -> `Inactive
+  (* TODO: we could simplify the code even more *)
+  | _ -> 
   match is_active w with
   | false -> `Inactive
   | true ->

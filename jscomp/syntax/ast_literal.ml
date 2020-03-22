@@ -48,6 +48,7 @@ module Lid = struct
   (* TODO should be renamed in to {!Js.fn} *)
   (* TODO should be moved into {!Js.t} Later *)
   let js_internal : t = Ldot (Lident "Js", "Internal")
+  let opaque : t = Ldot (js_internal, "opaque")
   let js_fn : t =
       Ldot (Lident "Js",  "Fn")
   let js_oo : t = Lident "Js_OO"    

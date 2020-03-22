@@ -4046,6 +4046,12 @@ type reporting_information =
   }
 
 let report w =
+  match w with 
+  | Name_out_of_scope _ (* 40 *)
+  | Disambiguated_name _ (* 42 *)
+  | Unboxable_type_in_prim_decl _ (* 61 *) -> `Inactive
+  (* TODO: we could simplify the code even more *)
+  | _ -> 
   match is_active w with
   | false -> `Inactive
   | true ->
@@ -11372,6 +11378,7 @@ module Lid : sig
   val type_unit : t 
   val type_int : t 
   val js_fn : t 
+  val opaque : t  
   val js_oo : t
   val js_meth : t 
   val js_meth_callback : t 
@@ -11452,6 +11459,7 @@ module Lid = struct
   (* TODO should be renamed in to {!Js.fn} *)
   (* TODO should be moved into {!Js.t} Later *)
   let js_internal : t = Ldot (Lident "Js", "Internal")
+  let opaque : t = Ldot (js_internal, "opaque")
   let js_fn : t =
       Ldot (Lident "Js",  "Fn")
   let js_oo : t = Lident "Js_OO"    
@@ -21437,15 +21445,21 @@ let generic_apply loc
   let arity = List.length args in       
   if arity = 0 then 
     Parsetree.Pexp_apply 
-      (Exp.ident {txt = Ldot (jsInternal, "run0");loc}, [Nolabel,fn])
+      (Exp.ident {txt = Ldot (jsInternal, "run");loc}, [Nolabel,fn])
   else 
-    let txt : Longident.t = 
-      Ldot (jsInternal, "run" ^ string_of_int arity) in 
+    let arity_s = string_of_int arity in 
+
     Parsetree.Pexp_apply (
       Exp.ident {txt = unsafeInvariantApply; loc},
       [Nolabel,
-       Exp.apply (Exp.apply (Exp.ident {txt ; loc}) [(Nolabel,fn)]) 
-                                          args])                        
+       Exp.apply ~loc
+         (Exp.apply ~loc
+            (Exp.ident ~loc {txt = Ast_literal.Lid.opaque; loc}) 
+            [(Nolabel, Exp.field ~loc 
+              (Exp.constraint_ ~loc fn 
+                (Typ.constr ~loc {txt = Ldot (Ast_literal.Lid.js_fn, "arity"^arity_s);loc} 
+                  [Typ.any ~loc ()])) {txt = Longident.Lident ("I_"^ arity_s); loc})]) 
+         args])                        
 
 let method_apply  loc 
     (self : Bs_ast_mapper.mapper) 
@@ -21466,16 +21480,19 @@ let method_apply  loc
     let arity = List.length args in       
     if arity = 0 then 
       Parsetree.Pexp_apply 
-        (Exp.ident {txt = Ldot ((Ldot (Ast_literal.Lid.js_oo,"Internal")), "run0");loc}, [Nolabel,fn])
+        (Exp.ident {txt = Ldot ((Ldot (Ast_literal.Lid.js_oo,"Internal")), "run");loc}, [Nolabel,fn])
     else 
-      let txt : Longident.t = 
-        Ldot (Ldot (Ast_literal.Lid.js_oo,"Internal"), "id") in 
+      let arity_s = string_of_int arity in 
       Parsetree.Pexp_apply (
         Exp.ident {txt = unsafeInvariantApply; loc},
         [Nolabel,
-         Exp.apply (
-           Exp.apply (Exp.ident {txt ; loc}) 
-             [(Nolabel,Exp.field fn {loc; txt = Ldot (Ast_literal.Lid.js_meth,"I_"^string_of_int arity)})]) 
+         Exp.apply ~loc (
+           Exp.apply ~loc (Exp.ident ~loc {txt = Ast_literal.Lid.opaque; loc}) 
+             [(Nolabel,
+              Exp.field ~loc
+                (Exp.constraint_ ~loc 
+                  fn (Typ.constr ~loc {txt = Ldot (Ast_literal.Lid.js_meth,"arity"^arity_s);loc} [Typ.any ~loc ()]))
+                {loc; txt = Lident ( "I_"^arity_s)})]) 
            args])
   
 

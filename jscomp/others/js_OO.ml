@@ -164,12 +164,12 @@ module Meth = struct
   }[@@unboxed]
 end
 
+(**/**)
 module Internal = struct
   open Meth
   (* Use opaque instead of [._n] to prevent some optimizations happening *)
-  external id : 'a -> 'a = "%opaque"
 
-  external run0 : 'a arity0 -> 'a = "#fn_run" "0"
+  external run : 'a arity0 -> 'a = "#run" "0"
   (* 
     x##meth a b --> 
     fullApppy (
@@ -177,3 +177,4 @@ module Internal = struct
         a b)
   *)  
 end  
+(**/**)

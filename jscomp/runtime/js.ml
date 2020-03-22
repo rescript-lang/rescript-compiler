@@ -133,31 +133,8 @@ module Internal = struct
   external unsafeInvariantApply : 'a -> 'a = "#full_apply"
 
   (* Use opaque instead of [._n] to prevent some optimizations happening *)
-  external run0 : 'a arity0 -> 'a = "#fn_run" "0"
-  external run1 : 'a arity1 -> 'a = "%opaque"
-  external run2 : 'a arity2 -> 'a = "%opaque"
-  external run3 : 'a arity3 -> 'a = "%opaque"
-  external run4 : 'a arity4 -> 'a = "%opaque"
-  external run5 : 'a arity5 -> 'a = "%opaque"
-  external run6 : 'a arity6 -> 'a = "%opaque"
-  external run7 : 'a arity7 -> 'a = "%opaque"
-  external run8 : 'a arity8 -> 'a = "%opaque"
-  external run9 : 'a arity9 -> 'a = "%opaque"
-  external run10 : 'a arity10 -> 'a = "%opaque"
-  external run11 : 'a arity11 -> 'a = "%opaque"
-  external run12 : 'a arity12 -> 'a = "%opaque"
-  external run13 : 'a arity13 -> 'a = "%opaque"
-  external run14 : 'a arity14 -> 'a = "%opaque"
-  external run15 : 'a arity15 -> 'a = "%opaque"
-  external run16 : 'a arity16 -> 'a = "%opaque"
-  external run17 : 'a arity17 -> 'a = "%opaque"
-  external run18 : 'a arity18 -> 'a = "%opaque"
-  external run19 : 'a arity19 -> 'a = "%opaque"
-  external run20 : 'a arity20 -> 'a = "%opaque"
-  external run21 : 'a arity21 -> 'a = "%opaque"
-  external run22 : 'a arity22 -> 'a = "%opaque"
-
-
+  external run : 'a arity0 -> 'a = "#run" 
+  external opaque : 'a -> 'a = "%opaque"
   external mk0 : (unit -> 'a0) -> 'a0 arity0 = "#fn_mk" "0"    
 end    
 (**/**)

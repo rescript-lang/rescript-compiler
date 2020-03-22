@@ -75,15 +75,21 @@ let generic_apply loc
   let arity = List.length args in       
   if arity = 0 then 
     Parsetree.Pexp_apply 
-      (Exp.ident {txt = Ldot (jsInternal, "run0");loc}, [Nolabel,fn])
+      (Exp.ident {txt = Ldot (jsInternal, "run");loc}, [Nolabel,fn])
   else 
-    let txt : Longident.t = 
-      Ldot (jsInternal, "run" ^ string_of_int arity) in 
+    let arity_s = string_of_int arity in 
+
     Parsetree.Pexp_apply (
       Exp.ident {txt = unsafeInvariantApply; loc},
       [Nolabel,
-       Exp.apply (Exp.apply (Exp.ident {txt ; loc}) [(Nolabel,fn)]) 
-                                          args])                        
+       Exp.apply ~loc
+         (Exp.apply ~loc
+            (Exp.ident ~loc {txt = Ast_literal.Lid.opaque; loc}) 
+            [(Nolabel, Exp.field ~loc 
+              (Exp.constraint_ ~loc fn 
+                (Typ.constr ~loc {txt = Ldot (Ast_literal.Lid.js_fn, "arity"^arity_s);loc} 
+                  [Typ.any ~loc ()])) {txt = Longident.Lident ("I_"^ arity_s); loc})]) 
+         args])                        
 
 let method_apply  loc 
     (self : Bs_ast_mapper.mapper) 
@@ -104,16 +110,19 @@ let method_apply  loc
     let arity = List.length args in       
     if arity = 0 then 
       Parsetree.Pexp_apply 
-        (Exp.ident {txt = Ldot ((Ldot (Ast_literal.Lid.js_oo,"Internal")), "run0");loc}, [Nolabel,fn])
+        (Exp.ident {txt = Ldot ((Ldot (Ast_literal.Lid.js_oo,"Internal")), "run");loc}, [Nolabel,fn])
     else 
-      let txt : Longident.t = 
-        Ldot (Ldot (Ast_literal.Lid.js_oo,"Internal"), "id") in 
+      let arity_s = string_of_int arity in 
       Parsetree.Pexp_apply (
         Exp.ident {txt = unsafeInvariantApply; loc},
         [Nolabel,
-         Exp.apply (
-           Exp.apply (Exp.ident {txt ; loc}) 
-             [(Nolabel,Exp.field fn {loc; txt = Ldot (Ast_literal.Lid.js_meth,"I_"^string_of_int arity)})]) 
+         Exp.apply ~loc (
+           Exp.apply ~loc (Exp.ident ~loc {txt = Ast_literal.Lid.opaque; loc}) 
+             [(Nolabel,
+              Exp.field ~loc
+                (Exp.constraint_ ~loc 
+                  fn (Typ.constr ~loc {txt = Ldot (Ast_literal.Lid.js_meth,"arity"^arity_s);loc} [Typ.any ~loc ()]))
+                {loc; txt = Lident ( "I_"^arity_s)})]) 
            args])
   
 

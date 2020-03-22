@@ -149,7 +149,7 @@ type t =
   | Praw_js_code of Js_raw_info.t  
   | Praw_js_function of {block : string ; args : string list; arity : int}
   | Pjs_fn_make of int
-  | Pjs_fn_run
+  | Pvoid_run
   | Pfull_apply 
   (* we wrap it when do the conversion to prevent 
     accendential optimization
@@ -329,7 +329,7 @@ let eq_primitive_approx ( lhs : t) (rhs : t) =
   | Pctconst compile_time_constant -> (match rhs with Pctconst compile_time_constant1 -> Lam_compat.eq_compile_time_constant compile_time_constant compile_time_constant1 | _ -> false)
   | Pjs_unsafe_downgrade {name; loc=_; setter } -> (match rhs with Pjs_unsafe_downgrade rhs -> name = rhs.name && setter = rhs.setter | _ -> false)  
   | Pjs_fn_make i -> (match rhs with Pjs_fn_make i1 -> i = i1 | _ -> false)
-  | Pjs_fn_run  -> rhs = Pjs_fn_run
+  | Pvoid_run  -> rhs = Pvoid_run
   | Pfull_apply -> rhs = Pfull_apply 
   | Pjs_fn_method  -> rhs = Pjs_fn_method 
   | Pbigarrayref  _ 

@@ -1458,7 +1458,7 @@ and compile_prim (prim_info : Lam.prim_info) (lambda_cxt : Lam_compile_context.t
        } -> assert false        
     | {primitive = 
         Pfull_apply |
-        Pjs_fn_run  ;  args; loc}
+        Pvoid_run  ;  args; loc}
       ->
       (* 1. uncurried call should not do eta-conversion
             since `fn.length` will broken 
