@@ -87,8 +87,8 @@ let app_exp_mapper
     ->  
     {e with pexp_desc = 
               if op = "##" then
-                Ast_util.method_apply loc self obj name args
-              else Ast_util.property_apply loc self obj name  args
+                Ast_uncurry_apply.method_apply loc self obj name args
+              else Ast_uncurry_apply.property_apply loc self obj name  args
     }
    | Some {op; loc} ->
       Location.raise_errorf ~loc "%s expect f%sproperty arg0 arg2 form" op op
@@ -165,7 +165,7 @@ let app_exp_mapper
              ); pexp_attributes = attrs }
            -> 
            Bs_ast_invariant.warn_discarded_unused_attributes attrs ;
-           {e with pexp_desc = Ast_util.method_apply loc self obj name args}
+           {e with pexp_desc = Ast_uncurry_apply.method_apply loc self obj name args}
          | 
            {pexp_desc = 
               (Pexp_ident {txt = Lident name;_ } 
@@ -214,7 +214,7 @@ let app_exp_mapper
            Exp.constraint_ ~loc
              { e with
                pexp_desc =
-                 Ast_util.method_apply loc self obj
+                 Ast_uncurry_apply.method_apply loc self obj
                    (name ^ Literals.setter_suffix) [Nolabel,arg]  }
              (Ast_literal.type_unit ~loc ())
          | _ -> assert false
@@ -234,7 +234,7 @@ let app_exp_mapper
        | None -> default_expr_mapper self e
        | Some pexp_attributes ->
          if !Config.bs_only then 
-           {e with pexp_desc = Ast_util.uncurry_fn_apply e.pexp_loc self fn  args ;
+           {e with pexp_desc = Ast_uncurry_apply.uncurry_fn_apply e.pexp_loc self fn  args ;
                    pexp_attributes }
          else   {e with pexp_attributes } (* BS_NATIVE branch*)
      )

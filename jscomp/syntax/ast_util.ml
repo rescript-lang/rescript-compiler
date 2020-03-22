@@ -23,17 +23,9 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
 open Ast_helper 
-type 'a cxt = Ast_helper.loc -> Bs_ast_mapper.mapper -> 'a
-type loc = Location.t 
 
-type exp = Parsetree.expression
 
 type label_exprs = (Longident.t Asttypes.loc * Parsetree.expression) list
-type uncurry_expression_gen = 
-  (Parsetree.pattern ->
-   Parsetree.expression ->
-   Parsetree.expression_desc) cxt
-
 
 let js_property loc obj (name : string) =
   Parsetree.Pexp_send
@@ -45,93 +37,6 @@ let js_property loc obj (name : string) =
         {loc; txt = name}
         )
 
-(* TODO: 
-   have a final checking for property arities 
-     [#=], 
-*)
-let jsInternal = 
-  Ast_literal.Lid.js_internal
-let unsafeInvariantApply : Longident.t =
-  Longident.Ldot
-   (jsInternal,
-   "unsafeInvariantApply")
-
-let generic_apply loc 
-    (self : Bs_ast_mapper.mapper) 
-    (obj : Parsetree.expression) 
-    (args : Ast_compatible.args) (cb : loc -> exp-> exp)   =
-  let obj = self.expr self obj in
-  let args =
-    Ext_list.map args (fun (lbl,e) -> 
-         Bs_syntaxerr.optional_err loc lbl; 
-        (lbl,self.expr self e)) in
-  let fn = cb loc obj in   
-  let args  = 
-    match args with 
-    | [ Nolabel, {pexp_desc =
-           Pexp_construct ({txt = Lident "()"}, None)}]
-      -> []
-    | _ -> args in
-  let arity = List.length args in       
-  if arity = 0 then 
-    Parsetree.Pexp_apply 
-      (Exp.ident {txt = Ldot (jsInternal, "run");loc}, [Nolabel,fn])
-  else 
-    let arity_s = string_of_int arity in 
-
-    Parsetree.Pexp_apply (
-      Exp.ident {txt = unsafeInvariantApply; loc},
-      [Nolabel,
-       Exp.apply ~loc
-         (Exp.apply ~loc
-            (Exp.ident ~loc {txt = Ast_literal.Lid.opaque; loc}) 
-            [(Nolabel, Exp.field ~loc 
-              (Exp.constraint_ ~loc fn 
-                (Typ.constr ~loc {txt = Ldot (Ast_literal.Lid.js_fn, "arity"^arity_s);loc} 
-                  [Typ.any ~loc ()])) {txt = Longident.Lident ("I_"^ arity_s); loc})]) 
-         args])                        
-
-let method_apply  loc 
-    (self : Bs_ast_mapper.mapper) 
-    (obj : Parsetree.expression) name
-    (args : Ast_compatible.args)   =
-    let obj = self.expr self obj in
-    let args =
-      Ext_list.map args (fun (lbl,e) -> 
-           Bs_syntaxerr.optional_err loc lbl; 
-          (lbl,self.expr self e)) in
-    let fn = Exp.mk ~loc (js_property loc obj name) in   
-    let args  = 
-      match args with 
-      | [ Nolabel, {pexp_desc =
-             Pexp_construct ({txt = Lident "()"}, None)}]
-        -> []
-      | _ -> args in
-    let arity = List.length args in       
-    if arity = 0 then 
-      Parsetree.Pexp_apply 
-        (Exp.ident {txt = Ldot ((Ldot (Ast_literal.Lid.js_oo,"Internal")), "run");loc}, [Nolabel,fn])
-    else 
-      let arity_s = string_of_int arity in 
-      Parsetree.Pexp_apply (
-        Exp.ident {txt = unsafeInvariantApply; loc},
-        [Nolabel,
-         Exp.apply ~loc (
-           Exp.apply ~loc (Exp.ident ~loc {txt = Ast_literal.Lid.opaque; loc}) 
-             [(Nolabel,
-              Exp.field ~loc
-                (Exp.constraint_ ~loc 
-                  fn (Typ.constr ~loc {txt = Ldot (Ast_literal.Lid.js_meth,"arity"^arity_s);loc} [Typ.any ~loc ()]))
-                {loc; txt = Lident ( "I_"^arity_s)})]) 
-           args])
-  
-
-let uncurry_fn_apply loc self fn args = 
-  generic_apply  loc self fn args (fun _ obj -> obj )
-
-let property_apply loc self obj name args  
-  =  generic_apply loc self obj args 
-    (fun loc obj -> Exp.mk ~loc (js_property loc obj name))
 
 
  
@@ -201,7 +106,7 @@ let to_uncurry_fn  loc (self : Bs_ast_mapper.mapper) (label : Asttypes.arg_label
   in 
   if arity = 0 && label = Nolabel then 
     let txt = 
-      Longident.Ldot (jsInternal, "mk0") in
+      Longident.Ldot (Ast_literal.Lid.js_internal, "mk0") in
     Parsetree.Pexp_apply (Exp.ident {txt;loc} , [ Nolabel, body])
   else 
     begin 
