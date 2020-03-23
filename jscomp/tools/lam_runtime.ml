@@ -48,7 +48,6 @@ let builtin_modules =
    "caml_unix", true;
    "caml_io", true;
    "caml_primitive", true;
-   "caml_utils", true;
    "caml_file", true;	    
    "caml_lexer", true;
    "caml_float", true;

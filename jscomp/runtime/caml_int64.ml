@@ -491,7 +491,7 @@ let to_hex (x : int64) =
     if pad <= 0 then
       aux x_hi ^ lo
     else
-      aux x_hi ^ Caml_utils.repeat pad "0"  ^ lo
+      aux x_hi ^ Caml_string_extern.repeat "0" pad   ^ lo
 
 
 let discard_sign (x : int64) : int64 = 
