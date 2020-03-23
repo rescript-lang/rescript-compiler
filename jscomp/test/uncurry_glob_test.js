@@ -1,8 +1,5 @@
 'use strict';
 
-var Caml_utils = require("../../lib/js/caml_utils.js");
-
-var v = Caml_utils.repeat(100, "x");
 
 function M(U) {
   var v = U.f(100, "x");
@@ -25,9 +22,8 @@ function u(h) {
   return $plus$great(3, h);
 }
 
-exports.v = v;
 exports.M = M;
 exports.f = f;
 exports.$plus$great = $plus$great;
 exports.u = u;
-/* v Not a pure module */
+/*  Not a pure module */

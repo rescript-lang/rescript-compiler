@@ -1,6 +1,5 @@
 module OUnitTypes
 = struct
-#1 "oUnitTypes.ml"
 
 (**
   * Commont types for OUnit
@@ -62,7 +61,6 @@ type state =
 end
 module OUnitChooser
 = struct
-#1 "oUnitChooser.ml"
 
 
 (**
@@ -80,7 +78,6 @@ let simple state =
 end
 module OUnitUtils
 = struct
-#1 "oUnitUtils.ml"
 
 (**
   * Utilities for OUnit
@@ -206,7 +203,6 @@ let fold_lefti f accu l =
 end
 module OUnitLogger
 = struct
-#1 "oUnitLogger.ml"
 (*
  * Logger for information and various OUnit events.
  *)
@@ -355,7 +351,6 @@ let printf log fmt =
 
 end
 module OUnit : sig 
-#1 "oUnit.mli"
 (***********************************************************************)
 (* The OUnit library                                                   *)
 (*                                                                     *)
@@ -623,7 +618,6 @@ val run_test_tt_main :
     test -> test_result list
 
 end = struct
-#1 "oUnit.ml"
 (***********************************************************************)
 (* The OUnit library                                                   *)
 (*                                                                     *)
@@ -1248,7 +1242,6 @@ let run_test_tt_main ?(arg_specs=[]) ?(set_verbose=ignore) suite =
 
 end
 module Ext_array : sig 
-#1 "ext_array.mli"
 (* Copyright (C) 2015-2016 Bloomberg Finance L.P.
  * 
  * This program is free software: you can redistribute it and/or modify
@@ -1360,7 +1353,6 @@ val get_or :
   (unit -> 'a) -> 
   'a
 end = struct
-#1 "ext_array.ml"
 (* Copyright (C) 2015-2016 Bloomberg Finance L.P.
  * 
  * This program is free software: you can redistribute it and/or modify
@@ -1634,7 +1626,6 @@ let get_or arr i cb =
   else cb ()  
 end
 module Ext_bytes : sig 
-#1 "ext_bytes.mli"
 (* Copyright (C) 2015-2016 Bloomberg Finance L.P.
  * 
  * This program is free software: you can redistribute it and/or modify
@@ -1671,7 +1662,6 @@ external unsafe_blit_string : string -> int -> bytes -> int -> int -> unit
 
 
 end = struct
-#1 "ext_bytes.ml"
 (* Copyright (C) 2015-2016 Bloomberg Finance L.P.
  * 
  * This program is free software: you can redistribute it and/or modify
@@ -1709,7 +1699,6 @@ external unsafe_blit_string : string -> int -> bytes -> int -> int -> unit
 
 end
 module Ext_string : sig 
-#1 "ext_string.mli"
 (* Copyright (C) 2015-2016 Bloomberg Finance L.P.
  * 
  * This program is free software: you can redistribute it and/or modify
@@ -1923,7 +1912,6 @@ val unsafe_sub :
   int -> 
   string
 end = struct
-#1 "ext_string.ml"
 (* Copyright (C) 2015-2016 Bloomberg Finance L.P.
  * 
  * This program is free software: you can redistribute it and/or modify
@@ -2432,7 +2420,6 @@ let unsafe_sub  x offs len =
 end
 module Ounit_array_tests
 = struct
-#1 "ounit_array_tests.ml"
 let ((>::),
     (>:::)) = OUnit.((>::),(>:::))
 
@@ -2525,7 +2512,6 @@ let suites =
 end
 module Ounit_tests_util
 = struct
-#1 "ounit_tests_util.ml"
 
 
 
@@ -2554,7 +2540,6 @@ let time ?nums description  f  =
 end
 module Set_gen
 = struct
-#1 "set_gen.ml"
 (***********************************************************************)
 (*                                                                     *)
 (*                                OCaml                                *)
@@ -2955,7 +2940,6 @@ end
 
 end
 module Ext_int : sig 
-#1 "ext_int.mli"
 (* Copyright (C) 2015-2016 Bloomberg Finance L.P.
  * 
  * This program is free software: you can redistribute it and/or modify
@@ -2986,7 +2970,6 @@ val compare : t -> t -> int
 val equal : t -> t -> bool 
 
 end = struct
-#1 "ext_int.ml"
 (* Copyright (C) 2015-2016 Bloomberg Finance L.P.
  * 
  * This program is free software: you can redistribute it and/or modify
@@ -3020,12 +3003,10 @@ let equal (x : t) (y : t) = x = y
 
 end
 module Set_int : sig 
-#1 "set_int.mli"
 
 
 include Set_gen.S with type elt = int 
 end = struct
-#1 "set_int.ml"
 # 1 "ext/set.cppo.ml"
 (* Copyright (C) 2015-2016 Bloomberg Finance L.P.
  * 
@@ -3227,7 +3208,6 @@ let print fmt s =
 end
 module Ounit_bal_tree_tests
 = struct
-#1 "ounit_bal_tree_tests.ml"
 let ((>::),
      (>:::)) = OUnit.((>::),(>:::))
 
@@ -3374,7 +3354,6 @@ let bench () =
 
 end
 module Bsb_pkg_types : sig 
-#1 "bsb_pkg_types.mli"
 (* Copyright (C) 2019- Authors of BuckleScript
  *
  * This program is free software: you can redistribute it and/or modify
@@ -3414,7 +3393,6 @@ val equal : t -> t -> bool
 val extract_pkg_name_and_file : string -> t * string 
 val string_as_package : string -> t 
 end = struct
-#1 "bsb_pkg_types.ml"
 
 (* Copyright (C) 2018- Authors of BuckleScript
  *
@@ -3521,7 +3499,6 @@ let string_as_package (s : string) : t =
 end
 module Ounit_bsb_pkg_tests
 = struct
-#1 "ounit_bsb_pkg_tests.ml"
 
 
 let ((>::),
@@ -3598,7 +3575,6 @@ let suites =
 
 end
 module Bsb_regex : sig 
-#1 "bsb_regex.mli"
 (* Copyright (C) 2017 Authors of BuckleScript
  *
  * This program is free software: you can redistribute it and/or modify
@@ -3631,7 +3607,6 @@ val global_substitute:
   (string -> string list -> string) -> 
   string
 end = struct
-#1 "bsb_regex.ml"
 (* Copyright (C) 2017 Authors of BuckleScript
  *
  * This program is free software: you can redistribute it and/or modify
@@ -3697,7 +3672,6 @@ let global_substitute text ~reg:expr repl_fun =
 end
 module Ounit_bsb_regex_tests
 = struct
-#1 "ounit_bsb_regex_tests.ml"
 
 
 let ((>::),
@@ -3893,7 +3867,6 @@ let suites =
     ]
 end
 module Literals : sig 
-#1 "literals.mli"
 (* Copyright (C) 2015-2016 Bloomberg Finance L.P.
  * 
  * This program is free software: you can redistribute it and/or modify
@@ -4033,7 +4006,6 @@ val sourcedirs_meta : string
 val ns_sep_char : char
 val ns_sep : string
 end = struct
-#1 "literals.ml"
 (* Copyright (C) 2015-2016 Bloomberg Finance L.P.
  * 
  * This program is free software: you can redistribute it and/or modify
@@ -4178,7 +4150,6 @@ let ns_sep = "-"
 
 end
 module Ounit_cmd_util : sig 
-#1 "ounit_cmd_util.mli"
 type output = {
   stderr : string ; 
   stdout : string ;
@@ -4196,7 +4167,6 @@ val perform_bsc : string array -> output
 
 val debug_output : output -> unit 
 end = struct
-#1 "ounit_cmd_util.ml"
 let (//) = Filename.concat
 
 (** may nonterminate when [cwd] is '.' *)
@@ -4313,7 +4283,6 @@ let bsc_check_eval str =
 end
 module Ounit_cmd_tests
 = struct
-#1 "ounit_cmd_tests.ml"
 let (//) = Filename.concat
 
 
@@ -4631,7 +4600,6 @@ let rec y = A y;;
 
 end
 module Bs_exception : sig 
-#1 "bs_exception.mli"
 (* Copyright (C) 2015-2016 Bloomberg Finance L.P.
  * 
  * This program is free software: you can redistribute it and/or modify
@@ -4679,7 +4647,6 @@ should not rely on such exception, it should have its own exception handling
 val error : error -> 'a 
 
 end = struct
-#1 "bs_exception.ml"
 (* Copyright (C) 2015-2016 Bloomberg Finance L.P.
  * 
  * This program is free software: you can redistribute it and/or modify
@@ -4766,7 +4733,6 @@ let () =
 
 end
 module Ext_filename : sig 
-#1 "ext_filename.mli"
 (* Copyright (C) 2015-2016 Bloomberg Finance L.P.
  * 
  * This program is free software: you can redistribute it and/or modify
@@ -4853,7 +4819,6 @@ val as_module:
   basename:string -> 
   module_info option
 end = struct
-#1 "ext_filename.ml"
 (* Copyright (C) 2015-2016 Bloomberg Finance L.P.
  * 
  * This program is free software: you can redistribute it and/or modify
@@ -5031,7 +4996,6 @@ let as_module ~basename =
     
 end
 module Ext_format : sig 
-#1 "ext_format.mli"
 (* Copyright (C) 2015-2016 Bloomberg Finance L.P.
  * 
  * This program is free software: you can redistribute it and/or modify
@@ -5104,7 +5068,6 @@ val pp_print_queue :
   (Format.formatter -> 'a -> unit) -> Format.formatter -> 'a Queue.t -> unit
 
 end = struct
-#1 "ext_format.ml"
 (* Copyright (C) 2015-2016 Bloomberg Finance L.P.
  * 
  * This program is free software: you can redistribute it and/or modify
@@ -5214,7 +5177,6 @@ let pp_print_queue ?(pp_sep = pp_print_cut) pp_v ppf q =
 
 end
 module Ext_list : sig 
-#1 "ext_list.mli"
 (* Copyright (C) 2015-2016 Bloomberg Finance L.P.
  * 
  * This program is free software: you can redistribute it and/or modify
@@ -5596,7 +5558,6 @@ val mem_string :
     string -> 
     bool
 end = struct
-#1 "ext_list.ml"
 (* Copyright (C) 2015-2016 Bloomberg Finance L.P.
  * 
  * This program is free software: you can redistribute it and/or modify
@@ -6336,7 +6297,6 @@ let rec mem_string (xs : string list) (x : string) =
 
 end
 module Ext_pervasives : sig 
-#1 "ext_pervasives.mli"
 (* Copyright (C) 2015-2016 Bloomberg Finance L.P.
  * 
  * This program is free software: you can redistribute it and/or modify
@@ -6410,7 +6370,6 @@ val parse_nat_of_string:
   int ref -> 
   int 
 end = struct
-#1 "ext_pervasives.ml"
 (* Copyright (C) 2015-2016 Bloomberg Finance L.P.
  * 
  * This program is free software: you can redistribute it and/or modify
@@ -6513,7 +6472,6 @@ let parse_nat_of_string (s : string) (cursor : int ref) =
 end
 module Ext_fmt
 = struct
-#1 "ext_fmt.ml"
 
 
 let with_file_as_pp filename f = 
@@ -6535,7 +6493,6 @@ let invalid_argf fmt = Format.ksprintf invalid_arg fmt
 
 end
 module Ext_sys : sig 
-#1 "ext_sys.mli"
 (* Copyright (C) 2015-2016 Bloomberg Finance L.P.
  * 
  * This program is free software: you can redistribute it and/or modify
@@ -6569,7 +6526,6 @@ val is_windows_or_cygwin : bool
 
 
 end = struct
-#1 "ext_sys.ml"
 (* Copyright (C) 2015-2016 Bloomberg Finance L.P.
  * 
  * This program is free software: you can redistribute it and/or modify
@@ -6605,7 +6561,6 @@ let is_windows_or_cygwin = Sys.win32 || Sys.cygwin
 
 end
 module Ext_path : sig 
-#1 "ext_path.mli"
 (* Copyright (C) 2017 Authors of BuckleScript
  * 
  * This program is free software: you can redistribute it and/or modify
@@ -6708,7 +6663,6 @@ val check_suffix_case :
 val package_dir : string Lazy.t
 
 end = struct
-#1 "ext_path.ml"
 (* Copyright (C) 2017 Authors of BuckleScript
  * 
  * This program is free software: you can redistribute it and/or modify
@@ -7037,7 +6991,6 @@ let package_dir = lazy (find_package_json_dir (Lazy.force cwd))
 
 end
 module Ext_ref : sig 
-#1 "ext_ref.mli"
 (* Copyright (C) 2015-2016 Bloomberg Finance L.P.
  * 
  * This program is free software: you can redistribute it and/or modify
@@ -7079,7 +7032,6 @@ val non_exn_protect2 : 'a ref -> 'b ref -> 'a -> 'b -> (unit -> 'c) -> 'c
 val protect_list : ('a ref * 'a) list -> (unit -> 'b) -> 'b
 
 end = struct
-#1 "ext_ref.ml"
 (* Copyright (C) 2015-2016 Bloomberg Finance L.P.
  * 
  * This program is free software: you can redistribute it and/or modify
@@ -7161,7 +7113,6 @@ let protect_list rvs body =
 end
 module Bs_hash_stubs
 = struct
-#1 "bs_hash_stubs.ml"
 
 
 external hash_string :  string -> int = "caml_bs_hash_string" [@@noalloc];;
@@ -7186,7 +7137,6 @@ external
 
 end
 module Ext_util : sig 
-#1 "ext_util.mli"
 (* Copyright (C) 2015-2016 Bloomberg Finance L.P.
  * 
  * This program is free software: you can redistribute it and/or modify
@@ -7218,7 +7168,6 @@ val power_2_above : int -> int -> int
 
 val stats_to_string : Hashtbl.statistics -> string 
 end = struct
-#1 "ext_util.ml"
 (* Copyright (C) 2015-2016 Bloomberg Finance L.P.
  * 
  * This program is free software: you can redistribute it and/or modify
@@ -7265,7 +7214,6 @@ let stats_to_string ({num_bindings; num_buckets; max_bucket_length; bucket_histo
 end
 module Hash_gen
 = struct
-#1 "hash_gen.ml"
 (***********************************************************************)
 (*                                                                     *)
 (*                                OCaml                                *)
@@ -7521,7 +7469,6 @@ end
 
 end
 module Hash_string : sig 
-#1 "hash_string.mli"
 (* Copyright (C) 2015-2016 Bloomberg Finance L.P.
  * 
  * This program is free software: you can redistribute it and/or modify
@@ -7553,7 +7500,6 @@ include Hash_gen.S with type key = string
 
 
 end = struct
-#1 "hash_string.ml"
 # 9 "ext/hash.cppo.ml"
 type key = string
 type 'a t = (key, 'a)  Hash_gen.t 
@@ -7674,7 +7620,6 @@ let of_list2 ks vs =
 
 end
 module Js_config : sig 
-#1 "js_config.mli"
 (* Copyright (C) 2015-2016 Bloomberg Finance L.P.
  * 
  * This program is free software: you can redistribute it and/or modify
@@ -7790,7 +7735,6 @@ val as_ppx : bool ref
 
 val mono_empty_array : bool ref
 end = struct
-#1 "js_config.ml"
 (* Copyright (C) 2015-2016 Bloomberg Finance L.P.
  *
  * This program is free software: you can redistribute it and/or modify
@@ -7913,7 +7857,6 @@ let mono_empty_array = ref true
 end
 module Map_gen
 = struct
-#1 "map_gen.ml"
 (***********************************************************************)
 (*                                                                     *)
 (*                                OCaml                                *)
@@ -8337,7 +8280,6 @@ module type S =
 
 end
 module Map_string : sig 
-#1 "map_string.mli"
 (* Copyright (C) 2015-2016 Bloomberg Finance L.P.
  * 
  * This program is free software: you can redistribute it and/or modify
@@ -8366,7 +8308,6 @@ module Map_string : sig
 include Map_gen.S with type key = string
 
 end = struct
-#1 "map_string.ml"
 
 # 2 "ext/map.cppo.ml"
 (* we don't create [map_poly], since some operations require raise an exception which carries [key] *)
@@ -8532,7 +8473,6 @@ let of_array xs =
 
 end
 module Ml_binary : sig 
-#1 "ml_binary.mli"
 (* Copyright (C) 2015-2016 Bloomberg Finance L.P.
  * 
  * This program is free software: you can redistribute it and/or modify
@@ -8569,7 +8509,6 @@ val read_ast : 'a kind -> in_channel -> 'a
 val write_ast :
    'a kind -> string -> 'a -> out_channel -> unit
 end = struct
-#1 "ml_binary.ml"
 (* Copyright (C) 2015-2016 Bloomberg Finance L.P.
  * 
  * This program is free software: you can redistribute it and/or modify
@@ -8623,7 +8562,6 @@ let write_ast (type t) (kind : t kind)
   output_value oc pt
 end
 module Ast_extract : sig 
-#1 "ast_extract.mli"
 (* Copyright (C) 2015-2016 Bloomberg Finance L.P.
  * 
  * This program is free software: you can redistribute it and/or modify
@@ -8730,7 +8668,6 @@ val build_lazy_queue :
 
 
 end = struct
-#1 "ast_extract.ml"
 (* Copyright (C) 2015-2016 Bloomberg Finance L.P.
  * 
  * This program is free software: you can redistribute it and/or modify
@@ -9085,7 +9022,6 @@ let build_lazy_queue ppf queue (ast_table : _ t Map_string.t)
 end
 module Ounit_depends_format_test
 = struct
-#1 "ounit_depends_format_test.ml"
 let ((>::),
      (>:::)) = OUnit.((>::),(>:::))
 
@@ -9109,7 +9045,6 @@ let suites =
 end
 module Ounit_ffi_error_debug_test
 = struct
-#1 "ounit_ffi_error_debug_test.ml"
 let (//) = Filename.concat
 
 
@@ -9192,7 +9127,6 @@ let output = bsc_eval {|
 end
 module Hash_set_gen
 = struct
-#1 "hash_set_gen.ml"
 (* Copyright (C) 2015-2016 Bloomberg Finance L.P.
  * 
  * This program is free software: you can redistribute it and/or modify
@@ -9376,7 +9310,6 @@ end
 
 end
 module Hash_set : sig 
-#1 "hash_set.mli"
 (* Copyright (C) 2015-2016 Bloomberg Finance L.P.
  * 
  * This program is free software: you can redistribute it and/or modify
@@ -9416,7 +9349,6 @@ module Make ( H : Hashtbl.HashedType) : (Hash_set_gen.S with type key = H.t)
 
 
 end = struct
-#1 "hash_set.ml"
 # 1 "ext/hash_set.cppo.ml"
 (* Copyright (C) 2015-2016 Bloomberg Finance L.P.
  * 
@@ -9515,7 +9447,6 @@ end
 
 end
 module Hash_set_poly : sig 
-#1 "hash_set_poly.mli"
 (* Copyright (C) 2015-2016 Bloomberg Finance L.P.
  * 
  * This program is free software: you can redistribute it and/or modify
@@ -9565,7 +9496,6 @@ val length : 'a t -> int
 (* val stats:  'a t -> Hashtbl.statistics *)
 
 end = struct
-#1 "hash_set_poly.ml"
 # 1 "ext/hash_set.cppo.ml"
 (* Copyright (C) 2015-2016 Bloomberg Finance L.P.
  * 
@@ -9663,7 +9593,6 @@ let mem (h :  _ Hash_set_gen.t) key =
 
 end
 module Hash_set_string : sig 
-#1 "hash_set_string.mli"
 (* Copyright (C) 2015-2016 Bloomberg Finance L.P.
  * 
  * This program is free software: you can redistribute it and/or modify
@@ -9692,7 +9621,6 @@ module Hash_set_string : sig
 include Hash_set_gen.S with type key = string
 
 end = struct
-#1 "hash_set_string.ml"
 # 1 "ext/hash_set.cppo.ml"
 (* Copyright (C) 2015-2016 Bloomberg Finance L.P.
  * 
@@ -9788,7 +9716,6 @@ let mem (h :  _ Hash_set_gen.t) key =
 end
 module Ounit_hash_set_tests
 = struct
-#1 "ounit_hash_set_tests.ml"
 let ((>::),
      (>:::)) = OUnit.((>::),(>:::))
 
@@ -9914,7 +9841,6 @@ let suites =
 
 end
 module Hash_set_int : sig 
-#1 "hash_set_int.mli"
 (* Copyright (C) 2015-2016 Bloomberg Finance L.P.
  * 
  * This program is free software: you can redistribute it and/or modify
@@ -9943,7 +9869,6 @@ module Hash_set_int : sig
 include Hash_set_gen.S with type key = int
 
 end = struct
-#1 "hash_set_int.ml"
 # 1 "ext/hash_set.cppo.ml"
 (* Copyright (C) 2015-2016 Bloomberg Finance L.P.
  * 
@@ -10039,7 +9964,6 @@ let mem (h :  _ Hash_set_gen.t) key =
 end
 module Ounit_hash_stubs_test
 = struct
-#1 "ounit_hash_stubs_test.ml"
 let ((>::),
     (>:::)) = OUnit.((>::),(>:::))
 
@@ -10117,7 +10041,6 @@ let suites =
 
 end
 module Ext_obj : sig 
-#1 "ext_obj.mli"
 (* Copyright (C) 2019-Present Authors of BuckleScript 
  * 
  * This program is free software: you can redistribute it and/or modify
@@ -10145,7 +10068,6 @@ val dump : 'a -> string
 val pp_any : Format.formatter -> 'a -> unit 
 val bt : unit -> unit
 end = struct
-#1 "ext_obj.ml"
 (* Copyright (C) 2019-Present Authors of BuckleScript 
  * 
  * This program is free software: you can redistribute it and/or modify
@@ -10280,7 +10202,6 @@ let bt () =
 end
 module Ounit_hashtbl_tests
 = struct
-#1 "ounit_hashtbl_tests.ml"
 let ((>::),
      (>:::)) = OUnit.((>::),(>:::))
 
@@ -10337,7 +10258,6 @@ let suites =
 
 end
 module Js_reserved_map : sig 
-#1 "js_reserved_map.mli"
 (* Copyright (C) 2019-Present Authors of BuckleScript
  *
  * This program is free software: you can redistribute it and/or modify
@@ -10366,7 +10286,6 @@ module Js_reserved_map : sig
  val is_reserved : 
   string -> bool 
 end = struct
-#1 "js_reserved_map.ml"
 
 (* Copyright (C) 2019-Present Authors of BuckleScript
  * 
@@ -11102,7 +11021,6 @@ let is_reserved s = binarySearch sorted_keywords s
 
 end
 module Ext_ident : sig 
-#1 "ext_ident.mli"
 (* Copyright (C) 2015-2016 Bloomberg Finance L.P.
  * 
  * This program is free software: you can redistribute it and/or modify
@@ -11170,7 +11088,6 @@ val compare : Ident.t -> Ident.t -> int
 val equal : Ident.t -> Ident.t -> bool 
 
 end = struct
-#1 "ext_ident.ml"
 (* Copyright (C) 2015-2016 Bloomberg Finance L.P.
  *
  * This program is free software: you can redistribute it and/or modify
@@ -11404,7 +11321,6 @@ let equal ( x : Ident.t) ( y : Ident.t) =
 
 end
 module Hash_set_ident_mask : sig 
-#1 "hash_set_ident_mask.mli"
 
 
 (** Based on [hash_set] specialized for mask operations  *)
@@ -11445,7 +11361,6 @@ val iter_and_unmask:
   
 
 end = struct
-#1 "hash_set_ident_mask.ml"
 
 (* Copyright (C) 2015-2016 Bloomberg Finance L.P.
  * 
@@ -11613,7 +11528,6 @@ let mask_and_check_all_hit (h : t) (key : Ident.t) =
 end
 module Ounit_ident_mask_tests
 = struct
-#1 "ounit_ident_mask_tests.ml"
 let ((>::),
      (>:::)) = OUnit.((>::),(>:::))
 
@@ -11670,7 +11584,6 @@ let suites =
 end
 module Vec_gen
 = struct
-#1 "vec_gen.ml"
 (* Copyright (C) 2015-2016 Bloomberg Finance L.P.
  * 
  * This program is free software: you can redistribute it and/or modify
@@ -11760,7 +11673,6 @@ end
 
 end
 module Vec_int : sig 
-#1 "vec_int.mli"
 (* Copyright (C) 2015-2016 Bloomberg Finance L.P.
  * 
  * This program is free software: you can redistribute it and/or modify
@@ -11788,7 +11700,6 @@ module Vec_int : sig
 include Vec_gen.S with type elt = int
 
 end = struct
-#1 "vec_int.ml"
 # 1 "ext/vec.cppo.ml"
 (* Copyright (C) 2015-2016 Bloomberg Finance L.P.
  * 
@@ -12262,7 +12173,6 @@ let init len f =
 
 end
 module Int_vec_util : sig 
-#1 "int_vec_util.mli"
 (* Copyright (C) 2015-2016 Bloomberg Finance L.P.
  * 
  * This program is free software: you can redistribute it and/or modify
@@ -12290,7 +12200,6 @@ module Int_vec_util : sig
 
 val mem : int -> Vec_int.t -> bool
 end = struct
-#1 "int_vec_util.ml"
 (* Copyright (C) 2015-2016 Bloomberg Finance L.P.
  * 
  * This program is free software: you can redistribute it and/or modify
@@ -12333,7 +12242,6 @@ let mem key (x : Vec_int.t) =
 end
 module Ounit_int_vec_tests
 = struct
-#1 "ounit_int_vec_tests.ml"
 let ((>::),
     (>:::)) = OUnit.((>::),(>:::))
 
@@ -12369,7 +12277,6 @@ let suites =
     ]
 end
 module Ext_utf8 : sig 
-#1 "ext_utf8.mli"
 (* Copyright (C) 2015-2016 Bloomberg Finance L.P.
  *
  * This program is free software: you can redistribute it and/or modify
@@ -12422,7 +12329,6 @@ exception Invalid_utf8 of string
  
 val decode_utf8_string : string -> int list
 end = struct
-#1 "ext_utf8.ml"
 (* Copyright (C) 2015-2016 Bloomberg Finance L.P.
  *
  * This program is free software: you can redistribute it and/or modify
@@ -12528,7 +12434,6 @@ let decode_utf8_string s =
   assert false *)
 end
 module Ext_js_regex : sig 
-#1 "ext_js_regex.mli"
 (* Copyright (C) 2015-2016 Bloomberg Finance L.P.
  * 
  * This program is free software: you can redistribute it and/or modify
@@ -12557,7 +12462,6 @@ module Ext_js_regex : sig
 
 val js_regex_checker : string -> bool
 end = struct
-#1 "ext_js_regex.ml"
 (* Copyright (C) 2015-2016 Bloomberg Finance L.P.
  *
  * This program is free software: you can redistribute it and/or modify
@@ -12607,7 +12511,6 @@ let js_regex_checker s =
 end
 module Ounit_js_regex_checker_tests
 = struct
-#1 "ounit_js_regex_checker_tests.ml"
 let ((>::),
     (>:::)) = OUnit.((>::),(>:::))
 
@@ -12657,7 +12560,6 @@ let suites =
 end
 module Ext_json_types
 = struct
-#1 "ext_json_types.ml"
 (* Copyright (C) 2015-2017 Bloomberg Finance L.P.
  * 
  * This program is free software: you can redistribute it and/or modify
@@ -12708,7 +12610,6 @@ and t =
 
 end
 module Ext_position : sig 
-#1 "ext_position.mli"
 (* Copyright (C) 2015-2016 Bloomberg Finance L.P.
  *
  * This program is free software: you can redistribute it and/or modify
@@ -12756,7 +12657,6 @@ val lexbuf_from_channel_with_fname:
 
 val print : Format.formatter -> t -> unit 
 end = struct
-#1 "ext_position.ml"
 (* Copyright (C) 2015-2016 Bloomberg Finance L.P.
  *
  * This program is free software: you can redistribute it and/or modify
@@ -12822,7 +12722,6 @@ let lexbuf_from_channel_with_fname ic fname =
 
 end
 module Ext_json : sig 
-#1 "ext_json.mli"
 (* Copyright (C) 2015-2016 Bloomberg Finance L.P.
  * 
  * This program is free software: you can redistribute it and/or modify
@@ -12883,7 +12782,6 @@ val loc_of : Ext_json_types.t -> Ext_position.t
 val equal : Ext_json_types.t -> Ext_json_types.t -> bool 
 
 end = struct
-#1 "ext_json.ml"
 (* Copyright (C) 2015-2016 Bloomberg Finance L.P.
  *
  * This program is free software: you can redistribute it and/or modify
@@ -13013,7 +12911,6 @@ let rec equal
 
 end
 module Ext_json_noloc : sig 
-#1 "ext_json_noloc.mli"
 (* Copyright (C) 2017- Authors of BuckleScript
  *
  * This program is free software: you can redistribute it and/or modify
@@ -13061,7 +12958,6 @@ val to_file :
   unit 
 
 end = struct
-#1 "ext_json_noloc.ml"
 (* Copyright (C) 2017- Authors of BuckleScript
  *
  * This program is free software: you can redistribute it and/or modify
@@ -13252,7 +13148,6 @@ let to_file name v =
   close_out ochan
 end
 module Ext_json_parse : sig 
-#1 "ext_json_parse.mli"
 (* Copyright (C) 2015-2016 Bloomberg Finance L.P.
  * 
  * This program is free software: you can redistribute it and/or modify
@@ -13292,7 +13187,6 @@ val parse_json_from_file  : string -> Ext_json_types.t
 
 
 end = struct
-#1 "ext_json_parse.ml"
 # 1 "ext/ext_json_parse.mll"
  
 type error =
@@ -13984,7 +13878,6 @@ let parse_json_from_file s =
 end
 module Ounit_json_tests
 = struct
-#1 "ounit_json_tests.ml"
 
 let ((>::),
      (>:::)) = OUnit.((>::),(>:::))
@@ -14124,7 +14017,6 @@ let suites =
 end
 module Ounit_list_test
 = struct
-#1 "ounit_list_test.ml"
 let ((>::),
      (>:::)) = OUnit.((>::),(>:::))
 
@@ -14272,7 +14164,6 @@ let suites =
   ]
 end
 module Map_int : sig 
-#1 "map_int.mli"
 (* Copyright (C) 2015-2016 Bloomberg Finance L.P.
  * 
  * This program is free software: you can redistribute it and/or modify
@@ -14307,7 +14198,6 @@ module Map_int : sig
 include Map_gen.S with type key = int
 
 end = struct
-#1 "map_int.ml"
 
 # 2 "ext/map.cppo.ml"
 (* we don't create [map_poly], since some operations require raise an exception which carries [key] *)
@@ -14474,7 +14364,6 @@ let of_array xs =
 end
 module Ounit_map_tests
 = struct
-#1 "ounit_map_tests.ml"
 let ((>::),
     (>:::)) = OUnit.((>::),(>:::))
 
@@ -14538,7 +14427,6 @@ let suites =
 end
 module Ounit_ordered_hash_set_tests
 = struct
-#1 "ounit_ordered_hash_set_tests.ml"
 let ((>::),
      (>:::)) = OUnit.((>::),(>:::))
 
@@ -14554,7 +14442,6 @@ let suites =
 end
 module Ounit_path_tests
 = struct
-#1 "ounit_path_tests.ml"
 let ((>::),
      (>:::)) = OUnit.((>::),(>:::))
 
@@ -14703,7 +14590,6 @@ let suites =
 
 end
 module Vec : sig 
-#1 "vec.mli"
 (* Copyright (C) 2015-2016 Bloomberg Finance L.P.
  * 
  * This program is free software: you can redistribute it and/or modify
@@ -14733,7 +14619,6 @@ module Make ( Resize : Vec_gen.ResizeType) : Vec_gen.S with type elt = Resize.t
 
 
 end = struct
-#1 "vec.ml"
 # 1 "ext/vec.cppo.ml"
 (* Copyright (C) 2015-2016 Bloomberg Finance L.P.
  * 
@@ -15238,7 +15123,6 @@ end
 
 end
 module Int_vec_vec : sig 
-#1 "int_vec_vec.mli"
 (* Copyright (C) 2015-2016 Bloomberg Finance L.P.
  * 
  * This program is free software: you can redistribute it and/or modify
@@ -15266,7 +15150,6 @@ module Int_vec_vec : sig
 include Vec_gen.S with type elt = Vec_int.t
 
 end = struct
-#1 "int_vec_vec.ml"
 (* Copyright (C) 2015-2016 Bloomberg Finance L.P.
  * 
  * This program is free software: you can redistribute it and/or modify
@@ -15296,7 +15179,6 @@ include Vec.Make(struct type t = Vec_int.t let null = Vec_int.empty () end)
 
 end
 module Ext_scc : sig 
-#1 "ext_scc.mli"
 (* Copyright (C) 2015-2016 Bloomberg Finance L.P.
  * 
  * This program is free software: you can redistribute it and/or modify
@@ -15344,7 +15226,6 @@ val graph : Vec_int.t array -> Int_vec_vec.t
 val graph_check : node array -> int * int list 
 
 end = struct
-#1 "ext_scc.ml"
 (* Copyright (C) 2015-2016 Bloomberg Finance L.P.
  * 
  * This program is free software: you can redistribute it and/or modify
@@ -15446,7 +15327,6 @@ let graph_check v =
 end
 module Ounit_scc_tests
 = struct
-#1 "ounit_scc_tests.ml"
 let ((>::),
     (>:::)) = OUnit.((>::),(>:::))
 
@@ -15842,7 +15722,6 @@ let suites =
 
 end
 module Ext_buffer : sig 
-#1 "ext_buffer.mli"
 (***********************************************************************)
 (*                                                                     *)
 (*                                OCaml                                *)
@@ -15960,7 +15839,6 @@ val add_char_string :
    string -> 
    unit
 end = struct
-#1 "ext_buffer.ml"
 (**************************************************************************)
 (*                                                                        *)
 (*                                 OCaml                                  *)
@@ -16175,7 +16053,6 @@ let add_int_4 (b : t ) (x : int ) =
 
 end
 module Ext_digest : sig 
-#1 "ext_digest.mli"
 (* Copyright (C) 2019- Authors of BuckleScript
  * 
  * This program is free software: you can redistribute it and/or modify
@@ -16205,7 +16082,6 @@ module Ext_digest : sig
 
  val hex_length : int
 end = struct
-#1 "ext_digest.ml"
 (* Copyright (C) 2019- Authors of BuckleScript
  * 
  * This program is free software: you can redistribute it and/or modify
@@ -16236,7 +16112,6 @@ end = struct
  let hex_length = 32
 end
 module Ext_modulename : sig 
-#1 "ext_modulename.mli"
 (* Copyright (C) 2017 Authors of BuckleScript
  * 
  * This program is free software: you can redistribute it and/or modify
@@ -16269,7 +16144,6 @@ module Ext_modulename : sig
 *)
 val js_id_name_of_hint_name : string -> string 
 end = struct
-#1 "ext_modulename.ml"
 (* Copyright (C) 2017 Authors of BuckleScript
  * 
  * This program is free software: you can redistribute it and/or modify
@@ -16381,7 +16255,6 @@ let js_id_name_of_hint_name module_name =
 end
 module Ext_js_file_kind
 = struct
-#1 "ext_js_file_kind.ml"
 (* Copyright (C) 2020- Authors of BuckleScript
  * 
  * This program is free software: you can redistribute it and/or modify
@@ -16415,7 +16288,6 @@ type t =
 
 end
 module Ext_namespace : sig 
-#1 "ext_namespace.mli"
 (* Copyright (C) 2017- Authors of BuckleScript
  * 
  * This program is free software: you can redistribute it and/or modify
@@ -16481,7 +16353,6 @@ val is_valid_npm_package_name : string -> bool
 val namespace_of_package_name : string -> string
 
 end = struct
-#1 "ext_namespace.ml"
 
 (* Copyright (C) 2015-2016 Bloomberg Finance L.P.
  * 
@@ -16602,7 +16473,6 @@ let namespace_of_package_name (s : string) : string =
 end
 module Ounit_data_random
 = struct
-#1 "ounit_data_random.ml"
 
 
 let min_int x y = 
@@ -16615,7 +16485,6 @@ let random_string chars upper =
 end
 module Ounit_string_tests
 = struct
-#1 "ounit_string_tests.ml"
 let ((>::),
      (>:::)) = OUnit.((>::),(>:::))
 
@@ -17153,7 +17022,6 @@ let suites =
 
 end
 module Ext_topsort : sig 
-#1 "ext_topsort.mli"
 (* Copyright (C) 2015-2016 Bloomberg Finance L.P.
  * 
  * This program is free software: you can redistribute it and/or modify
@@ -17189,7 +17057,6 @@ type t = Edge_vec.t
 *)
 val layered_dfs : t -> Set_int.t Queue.t
 end = struct
-#1 "ext_topsort.ml"
 (* Copyright (C) 2015-2016 Bloomberg Finance L.P.
  * 
  * This program is free software: you can redistribute it and/or modify
@@ -17254,7 +17121,6 @@ let layered_dfs (g : t) =
 end
 module Ounit_topsort_tests
 = struct
-#1 "ounit_topsort_tests.ml"
 let ((>::),
      (>:::)) = OUnit.((>::),(>:::))
 
@@ -17327,7 +17193,6 @@ let suites =
   ]
 end
 module Ext_char : sig 
-#1 "ext_char.mli"
 (* Copyright (C) 2015-2016 Bloomberg Finance L.P.
  * 
  * This program is free software: you can redistribute it and/or modify
@@ -17364,7 +17229,6 @@ val is_lower_case : char -> bool
 
 
 end = struct
-#1 "ext_char.ml"
 (* Copyright (C) 2015-2016 Bloomberg Finance L.P.
  * 
  * This program is free software: you can redistribute it and/or modify
@@ -17414,7 +17278,6 @@ let is_lower_case c =
 
 end
 module Ast_utf8_string : sig 
-#1 "ast_utf8_string.mli"
 (* Copyright (C) 2015-2016 Bloomberg Finance L.P.
  * 
  * This program is free software: you can redistribute it and/or modify
@@ -17459,7 +17322,6 @@ val transform : Location.t -> string -> string
 
 
 end = struct
-#1 "ast_utf8_string.ml"
 (* Copyright (C) 2015-2016 Bloomberg Finance L.P.
  * 
  * This program is free software: you can redistribute it and/or modify
@@ -17661,7 +17523,6 @@ let transform loc s =
 
 end
 module Ast_compatible : sig 
-#1 "ast_compatible.mli"
 (* Copyright (C) 2018 Authors of BuckleScript
  * 
  * This program is free software: you can redistribute it and/or modify
@@ -17859,7 +17720,6 @@ type args  =
   (Asttypes.arg_label * Parsetree.expression) list 
 
 end = struct
-#1 "ast_compatible.ml"
 (* Copyright (C) 2018 Authors of BuckleScript
  * 
  * This program is free software: you can redistribute it and/or modify
@@ -18134,7 +17994,6 @@ type args  =
 
 end
 module Bs_loc : sig 
-#1 "bs_loc.mli"
 (* Copyright (C) 2015-2016 Bloomberg Finance L.P.
  * 
  * This program is free software: you can redistribute it and/or modify
@@ -18171,7 +18030,6 @@ val merge : t -> t -> t
 
 
 end = struct
-#1 "bs_loc.ml"
 (* Copyright (C) 2015-2016 Bloomberg Finance L.P.
  * 
  * This program is free software: you can redistribute it and/or modify
@@ -18217,7 +18075,6 @@ let merge (l: t) (r : t) =
 
 end
 module Ast_utf8_string_interp : sig 
-#1 "ast_utf8_string_interp.mli"
 (* Copyright (C) 2015-2016 Bloomberg Finance L.P.
  * 
  * This program is free software: you can redistribute it and/or modify
@@ -18302,7 +18159,6 @@ val is_unescaped :
   string -> 
   bool
 end = struct
-#1 "ast_utf8_string_interp.ml"
 (* Copyright (C) 2015-2016 Bloomberg Finance L.P.
  *
  * This program is free software: you can redistribute it and/or modify
@@ -18780,7 +18636,6 @@ let is_unescaped s =
 end
 module Ounit_unicode_tests
 = struct
-#1 "ounit_unicode_tests.ml"
 let ((>::),
      (>:::)) = OUnit.((>::),(>:::))
 
@@ -19080,7 +18935,6 @@ let suites =
 
 end
 module Union_find : sig 
-#1 "union_find.mli"
 (* Copyright (C) 2015-2016 Bloomberg Finance L.P.
  * 
  * This program is free software: you can redistribute it and/or modify
@@ -19119,7 +18973,6 @@ val union : t -> int -> int -> unit
 val count : t -> int
 
 end = struct
-#1 "union_find.ml"
 (* Copyright (C) 2015-2016 Bloomberg Finance L.P.
  * 
  * This program is free software: you can redistribute it and/or modify
@@ -19207,7 +19060,6 @@ let count store = store.components
 end
 module Ounit_union_find_tests
 = struct
-#1 "ounit_union_find_tests.ml"
 let ((>::),
      (>:::)) = OUnit.((>::),(>:::))
 
@@ -20195,7 +20047,6 @@ let suites =
 end
 module Ounit_utf8_test
 = struct
-#1 "ounit_utf8_test.ml"
 
 
 (* https://www.cl.cam.ac.uk/~mgk25/ucs/examples/UTF-8-test.txt
@@ -20222,7 +20073,6 @@ let suites =
 end
 module Ounit_util_tests
 = struct
-#1 "ounit_util_tests.ml"
 
 let ((>::),
      (>:::)) = OUnit.((>::),(>:::))
@@ -20293,7 +20143,6 @@ let suites =
 end
 module Ounit_vec_test
 = struct
-#1 "ounit_vec_test.ml"
 let ((>::),
      (>:::)) = OUnit.((>::),(>:::))
 
@@ -20450,10 +20299,8 @@ let suites =
 
 end
 module Ounit_tests_main : sig 
-#1 "ounit_tests_main.mli"
 
 end = struct
-#1 "ounit_tests_main.ml"
 
 
 [@@@warning "-32"]

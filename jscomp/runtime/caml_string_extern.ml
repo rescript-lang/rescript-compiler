@@ -68,3 +68,4 @@ external length : string -> int = "%string_length"
 external unsafe_get : string -> int -> char = "%string_unsafe_get"
 external unsafe_set : bytes -> int -> char -> unit = "%bytes_unsafe_set"
 
+external repeat : string -> int -> string = "repeat" [@@bs.send]

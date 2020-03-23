@@ -134,16 +134,18 @@ let interface sourcefile =
       ast in
   ast, content
 
+let emit_line_directive = ref false
 
 let emit out_chan name =
-  output_string out_chan "#1 \"";
-  (*Note here we do this is mostly to avoid leaking user's
-    information, like private path, in the future, we can have
-    a flag
-  *)
-  output_string out_chan (Filename.basename name) ;
-  output_string out_chan "\"\n"
-
+  if !emit_line_directive then begin   
+    output_string out_chan "#1 \"";
+    (*Note here we do this is mostly to avoid leaking user's
+      information, like private path, in the future, we can have
+      a flag
+    *)
+    output_string out_chan (Filename.basename name) ;
+    output_string out_chan "\"\n"
+  end 
 let decorate_module 
     ?(module_bound=true)
     out_chan base mli_name ml_name mli_content ml_content =
@@ -326,7 +328,8 @@ let define_symbol (s : string) =
   | _ -> raise (Arg.Bad ("illegal definition: " ^ s))
 
 let specs : (string * Arg.spec * string) list =
-  [ 
+  [ "-bs-loc", (Arg.Set emit_line_directive),
+    " Add # linum filename directive";
     "-bs-no-implicit-include", (Arg.Set no_implicit_include),
     " Not including cwd as search path";
     "-prelude-str", (Arg.String set_prelude_str),

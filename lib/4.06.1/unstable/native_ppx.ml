@@ -1,5 +1,4 @@
 module Arg_helper : sig 
-#1 "arg_helper.mli"
 (**************************************************************************)
 (*                                                                        *)
 (*                                 OCaml                                  *)
@@ -65,7 +64,6 @@ end) : sig
 end
 
 end = struct
-#1 "arg_helper.ml"
 (**************************************************************************)
 (*                                                                        *)
 (*                                 OCaml                                  *)
@@ -196,7 +194,6 @@ end
 
 end
 module Config_whole_compiler : sig 
-#1 "config_whole_compiler.mli"
 (**************************************************************************)
 (*                                                                        *)
 (*                                 OCaml                                  *)
@@ -387,7 +384,6 @@ val afl_instrument : bool
 
 
 end = struct
-#1 "config_whole_compiler.ml"
 (**************************************************************************)
 (*                                                                        *)
 (*                                 OCaml                                  *)
@@ -578,7 +574,6 @@ let print_config oc =
 end
 module Config = Config_whole_compiler 
 module Misc : sig 
-#1 "misc.mli"
 (**************************************************************************)
 (*                                                                        *)
 (*                                 OCaml                                  *)
@@ -939,7 +934,6 @@ end
 module MakeHooks : functor (M : sig type t end) -> HookSig with type t = M.t
 
 end = struct
-#1 "misc.ml"
 (**************************************************************************)
 (*                                                                        *)
 (*                                 OCaml                                  *)
@@ -1704,7 +1698,6 @@ end
 
 end
 module Identifiable : sig 
-#1 "identifiable.mli"
 (**************************************************************************)
 (*                                                                        *)
 (*                                 OCaml                                  *)
@@ -1814,7 +1807,6 @@ end
 module Make (T : Thing) : S with type t := T.t
 
 end = struct
-#1 "identifiable.ml"
 (**************************************************************************)
 (*                                                                        *)
 (*                                 OCaml                                  *)
@@ -2072,7 +2064,6 @@ end
 
 end
 module Numbers : sig 
-#1 "numbers.mli"
 (**************************************************************************)
 (*                                                                        *)
 (*                                 OCaml                                  *)
@@ -2120,7 +2111,6 @@ end
 module Float : Identifiable.S with type t = float
 
 end = struct
-#1 "numbers.ml"
 (**************************************************************************)
 (*                                                                        *)
 (*                                 OCaml                                  *)
@@ -2210,7 +2200,6 @@ end
 
 end
 module Profile : sig 
-#1 "profile.mli"
 (**************************************************************************)
 (*                                                                        *)
 (*                                 OCaml                                  *)
@@ -2257,7 +2246,6 @@ val transl : string
 val typing : string
 
 end = struct
-#1 "profile.ml"
 (**************************************************************************)
 (*                                                                        *)
 (*                                 OCaml                                  *)
@@ -2595,7 +2583,6 @@ let typing = "typing"
 
 end
 module Clflags : sig 
-#1 "clflags.mli"
 (**************************************************************************)
 (*                                                                        *)
 (*                                 OCaml                                  *)
@@ -2843,7 +2830,6 @@ val dump_location : bool ref
 
 
 end = struct
-#1 "clflags.ml"
 (**************************************************************************)
 (*                                                                        *)
 (*                                 OCaml                                  *)
@@ -3268,7 +3254,6 @@ let dump_location = ref true
 
 end
 module Terminfo : sig 
-#1 "terminfo.mli"
 (**************************************************************************)
 (*                                                                        *)
 (*                                 OCaml                                  *)
@@ -3297,7 +3282,6 @@ external standout : bool -> unit = "caml_terminfo_standout";;
 external resume : int -> unit = "caml_terminfo_resume";;
 
 end = struct
-#1 "terminfo.ml"
 (**************************************************************************)
 (*                                                                        *)
 (*                                 OCaml                                  *)
@@ -3327,7 +3311,6 @@ external resume : int -> unit = "caml_terminfo_resume";;
 
 end
 module Warnings : sig 
-#1 "warnings.mli"
 (**************************************************************************)
 (*                                                                        *)
 (*                                 OCaml                                  *)
@@ -3466,7 +3449,6 @@ val super_report :
 
 
 end = struct
-#1 "warnings.ml"
 (**************************************************************************)
 (*                                                                        *)
 (*                                 OCaml                                  *)
@@ -4192,7 +4174,6 @@ let help_warnings () =
 
 end
 module Location : sig 
-#1 "location.mli"
 (**************************************************************************)
 (*                                                                        *)
 (*                                 OCaml                                  *)
@@ -4345,7 +4326,6 @@ val report_exception: formatter -> exn -> unit
 val deprecated: ?def:t -> ?use:t -> t -> string -> unit
 
 end = struct
-#1 "location.ml"
 (**************************************************************************)
 (*                                                                        *)
 (*                                 OCaml                                  *)
@@ -4845,7 +4825,6 @@ end
 (** Interface as module  *)
 module Asttypes
 = struct
-#1 "asttypes.mli"
 (**************************************************************************)
 (*                                                                        *)
 (*                                 OCaml                                  *)
@@ -4907,7 +4886,6 @@ type variance =
 
 end
 module Longident : sig 
-#1 "longident.mli"
 (**************************************************************************)
 (*                                                                        *)
 (*                                 OCaml                                  *)
@@ -4936,7 +4914,6 @@ val last: t -> string
 val parse: string -> t
 
 end = struct
-#1 "longident.ml"
 (**************************************************************************)
 (*                                                                        *)
 (*                                 OCaml                                  *)
@@ -4991,7 +4968,6 @@ end
 (** Interface as module  *)
 module Parsetree
 = struct
-#1 "parsetree.mli"
 (**************************************************************************)
 (*                                                                        *)
 (*                                 OCaml                                  *)
@@ -5870,7 +5846,6 @@ and directive_argument =
 
 end
 module Docstrings : sig 
-#1 "docstrings.mli"
 (**************************************************************************)
 (*                                                                        *)
 (*                                 OCaml                                  *)
@@ -6030,7 +6005,6 @@ val rhs_pre_extra_text : int -> text
 val rhs_post_extra_text : int -> text
 
 end = struct
-#1 "docstrings.ml"
 (**************************************************************************)
 (*                                                                        *)
 (*                                 OCaml                                  *)
@@ -6377,7 +6351,6 @@ let init () =
 
 end
 module Syntaxerr : sig 
-#1 "syntaxerr.mli"
 (**************************************************************************)
 (*                                                                        *)
 (*                                 OCaml                                  *)
@@ -6417,7 +6390,6 @@ val location_of_error: error -> Location.t
 val ill_formed_ast: Location.t -> string -> 'a
 
 end = struct
-#1 "syntaxerr.ml"
 (**************************************************************************)
 (*                                                                        *)
 (*                                 OCaml                                  *)
@@ -6508,7 +6480,6 @@ let ill_formed_ast loc s =
 
 end
 module Ast_helper : sig 
-#1 "ast_helper.mli"
 (**************************************************************************)
 (*                                                                        *)
 (*                                 OCaml                                  *)
@@ -6953,7 +6924,6 @@ module Cstr:
   end
 
 end = struct
-#1 "ast_helper.ml"
 (**************************************************************************)
 (*                                                                        *)
 (*                                 OCaml                                  *)
@@ -7518,7 +7488,6 @@ end
 
 end
 module Ext_list : sig 
-#1 "ext_list.mli"
 (* Copyright (C) 2015-2016 Bloomberg Finance L.P.
  * 
  * This program is free software: you can redistribute it and/or modify
@@ -7900,7 +7869,6 @@ val mem_string :
     string -> 
     bool
 end = struct
-#1 "ext_list.ml"
 (* Copyright (C) 2015-2016 Bloomberg Finance L.P.
  * 
  * This program is free software: you can redistribute it and/or modify
@@ -8640,7 +8608,6 @@ let rec mem_string (xs : string list) (x : string) =
 
 end
 module Ast_compatible : sig 
-#1 "ast_compatible.mli"
 (* Copyright (C) 2018 Authors of BuckleScript
  * 
  * This program is free software: you can redistribute it and/or modify
@@ -8838,7 +8805,6 @@ type args  =
   (Asttypes.arg_label * Parsetree.expression) list 
 
 end = struct
-#1 "ast_compatible.ml"
 (* Copyright (C) 2018 Authors of BuckleScript
  * 
  * This program is free software: you can redistribute it and/or modify
@@ -9114,7 +9080,6 @@ type args  =
 end
 module Js_raw_info
 = struct
-#1 "js_raw_info.ml"
 (* Copyright (C) 2020 Authors of BuckleScript
  * 
  * This program is free software: you can redistribute it and/or modify
@@ -9181,7 +9146,6 @@ type t = {
 
 end
 module Ext_array : sig 
-#1 "ext_array.mli"
 (* Copyright (C) 2015-2016 Bloomberg Finance L.P.
  * 
  * This program is free software: you can redistribute it and/or modify
@@ -9293,7 +9257,6 @@ val get_or :
   (unit -> 'a) -> 
   'a
 end = struct
-#1 "ext_array.ml"
 (* Copyright (C) 2015-2016 Bloomberg Finance L.P.
  * 
  * This program is free software: you can redistribute it and/or modify
@@ -9567,7 +9530,6 @@ let get_or arr i cb =
   else cb ()  
 end
 module Ext_bytes : sig 
-#1 "ext_bytes.mli"
 (* Copyright (C) 2015-2016 Bloomberg Finance L.P.
  * 
  * This program is free software: you can redistribute it and/or modify
@@ -9604,7 +9566,6 @@ external unsafe_blit_string : string -> int -> bytes -> int -> int -> unit
 
 
 end = struct
-#1 "ext_bytes.ml"
 (* Copyright (C) 2015-2016 Bloomberg Finance L.P.
  * 
  * This program is free software: you can redistribute it and/or modify
@@ -9642,7 +9603,6 @@ external unsafe_blit_string : string -> int -> bytes -> int -> int -> unit
 
 end
 module Ext_string : sig 
-#1 "ext_string.mli"
 (* Copyright (C) 2015-2016 Bloomberg Finance L.P.
  * 
  * This program is free software: you can redistribute it and/or modify
@@ -9856,7 +9816,6 @@ val unsafe_sub :
   int -> 
   string
 end = struct
-#1 "ext_string.ml"
 (* Copyright (C) 2015-2016 Bloomberg Finance L.P.
  * 
  * This program is free software: you can redistribute it and/or modify
@@ -10365,7 +10324,6 @@ let unsafe_sub  x offs len =
 end
 module Map_gen
 = struct
-#1 "map_gen.ml"
 (***********************************************************************)
 (*                                                                     *)
 (*                                OCaml                                *)
@@ -10789,7 +10747,6 @@ module type S =
 
 end
 module Map_string : sig 
-#1 "map_string.mli"
 (* Copyright (C) 2015-2016 Bloomberg Finance L.P.
  * 
  * This program is free software: you can redistribute it and/or modify
@@ -10818,7 +10775,6 @@ module Map_string : sig
 include Map_gen.S with type key = string
 
 end = struct
-#1 "map_string.ml"
 
 # 2 "ext/map.cppo.ml"
 (* we don't create [map_poly], since some operations require raise an exception which carries [key] *)
@@ -10984,7 +10940,6 @@ let of_array xs =
 
 end
 module Ast_payload : sig 
-#1 "ast_payload.mli"
 (* Copyright (C) 2015-2016 Bloomberg Finance L.P.
  * 
  * This program is free software: you can redistribute it and/or modify
@@ -11072,7 +11027,6 @@ val table_dispatch :
   (Parsetree.expression option  -> 'a) Map_string.t -> action -> 'a
 
 end = struct
-#1 "ast_payload.ml"
 (* Copyright (C) 2015-2016 Bloomberg Finance L.P.
  * 
  * This program is free software: you can redistribute it and/or modify
@@ -11340,7 +11294,6 @@ let table_dispatch table (action : action)
 
 end
 module Ast_literal : sig 
-#1 "ast_literal.mli"
 (* Copyright (C) 2015-2016 Bloomberg Finance L.P.
  * 
  * This program is free software: you can redistribute it and/or modify
@@ -11409,7 +11362,6 @@ val type_any : core_type_lit
 val pat_unit : pattern_lit
 
 end = struct
-#1 "ast_literal.ml"
 (* Copyright (C) 2015-2016 Bloomberg Finance L.P.
  *
  * This program is free software: you can redistribute it and/or modify
@@ -11555,7 +11507,6 @@ let pat_unit ?loc () =
 
 end
 module Ast_comb : sig 
-#1 "ast_comb.mli"
 (* Copyright (C) 2015-2016 Bloomberg Finance L.P.
  * 
  * This program is free software: you can redistribute it and/or modify
@@ -11618,7 +11569,6 @@ val single_non_rec_val :
   Parsetree.core_type -> 
   Parsetree.signature_item
 end = struct
-#1 "ast_comb.ml"
 (* Copyright (C) 2015-2016 Bloomberg Finance L.P.
  * 
  * This program is free software: you can redistribute it and/or modify
@@ -11709,7 +11659,6 @@ let single_non_rec_val name ty =
     (Val.mk name ty)
 end
 module Bs_syntaxerr : sig 
-#1 "bs_syntaxerr.mli"
 (* Copyright (C) 2015-2016 Bloomberg Finance L.P.
  * 
  * This program is free software: you can redistribute it and/or modify
@@ -11782,7 +11731,6 @@ val err_large_arity :
   int -> 
   unit
 end = struct
-#1 "bs_syntaxerr.ml"
 (* Copyright (C) 2015-2016 Bloomberg Finance L.P.
  *
  * This program is free software: you can redistribute it and/or modify
@@ -11936,7 +11884,6 @@ let err_large_arity loc arity =
     raise (Error(loc, Bs_uncurried_arity_too_large))    
 end
 module Ast_core_type : sig 
-#1 "ast_core_type.mli"
 (* Copyright (C) 2015-2016 Bloomberg Finance L.P.
  *
  * This program is free software: you can redistribute it and/or modify
@@ -12014,7 +11961,6 @@ val list_of_arrow :
 val is_arity_one : t -> bool
 
 end = struct
-#1 "ast_core_type.ml"
 (* Copyright (C) 2015-2016 Bloomberg Finance L.P.
  *
  * This program is free software: you can redistribute it and/or modify
@@ -12197,7 +12143,6 @@ let list_of_arrow
 
 end
 module Ast_iterator : sig 
-#1 "ast_iterator.mli"
 (**************************************************************************)
 (*                                                                        *)
 (*                                 OCaml                                  *)
@@ -12272,7 +12217,6 @@ val default_iterator: iterator
 (** A default iterator, which implements a "do not do anything" mapping. *)
 
 end = struct
-#1 "ast_iterator.ml"
 (**************************************************************************)
 (*                                                                        *)
 (*                                 OCaml                                  *)
@@ -12882,7 +12826,6 @@ let default_iterator =
 
 end
 module Ext_char : sig 
-#1 "ext_char.mli"
 (* Copyright (C) 2015-2016 Bloomberg Finance L.P.
  * 
  * This program is free software: you can redistribute it and/or modify
@@ -12919,7 +12862,6 @@ val is_lower_case : char -> bool
 
 
 end = struct
-#1 "ext_char.ml"
 (* Copyright (C) 2015-2016 Bloomberg Finance L.P.
  * 
  * This program is free software: you can redistribute it and/or modify
@@ -12969,7 +12911,6 @@ let is_lower_case c =
 
 end
 module Ext_utf8 : sig 
-#1 "ext_utf8.mli"
 (* Copyright (C) 2015-2016 Bloomberg Finance L.P.
  *
  * This program is free software: you can redistribute it and/or modify
@@ -13022,7 +12963,6 @@ exception Invalid_utf8 of string
  
 val decode_utf8_string : string -> int list
 end = struct
-#1 "ext_utf8.ml"
 (* Copyright (C) 2015-2016 Bloomberg Finance L.P.
  *
  * This program is free software: you can redistribute it and/or modify
@@ -13128,7 +13068,6 @@ let decode_utf8_string s =
   assert false *)
 end
 module Ast_utf8_string : sig 
-#1 "ast_utf8_string.mli"
 (* Copyright (C) 2015-2016 Bloomberg Finance L.P.
  * 
  * This program is free software: you can redistribute it and/or modify
@@ -13173,7 +13112,6 @@ val transform : Location.t -> string -> string
 
 
 end = struct
-#1 "ast_utf8_string.ml"
 (* Copyright (C) 2015-2016 Bloomberg Finance L.P.
  * 
  * This program is free software: you can redistribute it and/or modify
@@ -13375,7 +13313,6 @@ let transform loc s =
 
 end
 module Bs_loc : sig 
-#1 "bs_loc.mli"
 (* Copyright (C) 2015-2016 Bloomberg Finance L.P.
  * 
  * This program is free software: you can redistribute it and/or modify
@@ -13412,7 +13349,6 @@ val merge : t -> t -> t
 
 
 end = struct
-#1 "bs_loc.ml"
 (* Copyright (C) 2015-2016 Bloomberg Finance L.P.
  * 
  * This program is free software: you can redistribute it and/or modify
@@ -13458,7 +13394,6 @@ let merge (l: t) (r : t) =
 
 end
 module Ast_utf8_string_interp : sig 
-#1 "ast_utf8_string_interp.mli"
 (* Copyright (C) 2015-2016 Bloomberg Finance L.P.
  * 
  * This program is free software: you can redistribute it and/or modify
@@ -13543,7 +13478,6 @@ val is_unescaped :
   string -> 
   bool
 end = struct
-#1 "ast_utf8_string_interp.ml"
 (* Copyright (C) 2015-2016 Bloomberg Finance L.P.
  *
  * This program is free software: you can redistribute it and/or modify
@@ -14020,7 +13954,6 @@ let is_unescaped s =
   || Ext_string.equal s unescaped_js_delimiter
 end
 module Bs_warnings : sig 
-#1 "bs_warnings.mli"
 (* Copyright (C) 2015-2016 Bloomberg Finance L.P.
  * 
  * This program is free software: you can redistribute it and/or modify
@@ -14060,7 +13993,6 @@ val error_unescaped_delimiter :
   Location.t -> string  -> unit 
 
 end = struct
-#1 "bs_warnings.ml"
 (* Copyright (C) 2015-2016 Bloomberg Finance L.P.
  * 
  * This program is free software: you can redistribute it and/or modify
@@ -14126,7 +14058,6 @@ let error_unescaped_delimiter loc txt =
   
 end
 module Builtin_attributes : sig 
-#1 "builtin_attributes.mli"
 (**************************************************************************)
 (*                                                                        *)
 (*                                 OCaml                                  *)
@@ -14213,7 +14144,6 @@ val has_unboxed: Parsetree.attributes -> bool
 val has_boxed: Parsetree.attributes -> bool
 
 end = struct
-#1 "builtin_attributes.ml"
 (**************************************************************************)
 (*                                                                        *)
 (*                                 OCaml                                  *)
@@ -14426,7 +14356,6 @@ let has_boxed attr =
 
 end
 module Ext_util : sig 
-#1 "ext_util.mli"
 (* Copyright (C) 2015-2016 Bloomberg Finance L.P.
  * 
  * This program is free software: you can redistribute it and/or modify
@@ -14458,7 +14387,6 @@ val power_2_above : int -> int -> int
 
 val stats_to_string : Hashtbl.statistics -> string 
 end = struct
-#1 "ext_util.ml"
 (* Copyright (C) 2015-2016 Bloomberg Finance L.P.
  * 
  * This program is free software: you can redistribute it and/or modify
@@ -14505,7 +14433,6 @@ let stats_to_string ({num_bindings; num_buckets; max_bucket_length; bucket_histo
 end
 module Hash_set_gen
 = struct
-#1 "hash_set_gen.ml"
 (* Copyright (C) 2015-2016 Bloomberg Finance L.P.
  * 
  * This program is free software: you can redistribute it and/or modify
@@ -14689,7 +14616,6 @@ end
 
 end
 module Hash_set_poly : sig 
-#1 "hash_set_poly.mli"
 (* Copyright (C) 2015-2016 Bloomberg Finance L.P.
  * 
  * This program is free software: you can redistribute it and/or modify
@@ -14739,7 +14665,6 @@ val length : 'a t -> int
 (* val stats:  'a t -> Hashtbl.statistics *)
 
 end = struct
-#1 "hash_set_poly.ml"
 # 1 "ext/hash_set.cppo.ml"
 (* Copyright (C) 2015-2016 Bloomberg Finance L.P.
  * 
@@ -14837,7 +14762,6 @@ let mem (h :  _ Hash_set_gen.t) key =
 
 end
 module Bs_ast_invariant : sig 
-#1 "bs_ast_invariant.mli"
 (* Copyright (C) 2015-2016 Bloomberg Finance L.P.
  * 
  * This program is free software: you can redistribute it and/or modify
@@ -14887,7 +14811,6 @@ val emit_external_warnings_on_structure:
 val emit_external_warnings_on_signature:  
   Parsetree.signature -> unit
 end = struct
-#1 "bs_ast_invariant.ml"
 (* Copyright (C) 2015-2016 Bloomberg Finance L.P.
  * 
  * This program is free software: you can redistribute it and/or modify
@@ -15055,7 +14978,6 @@ let emit_external_warnings_on_signature  (sigi : Parsetree.signature) =
     emit_external_warnings.signature emit_external_warnings sigi
 end
 module Literals : sig 
-#1 "literals.mli"
 (* Copyright (C) 2015-2016 Bloomberg Finance L.P.
  * 
  * This program is free software: you can redistribute it and/or modify
@@ -15195,7 +15117,6 @@ val sourcedirs_meta : string
 val ns_sep_char : char
 val ns_sep : string
 end = struct
-#1 "literals.ml"
 (* Copyright (C) 2015-2016 Bloomberg Finance L.P.
  * 
  * This program is free software: you can redistribute it and/or modify
@@ -15340,7 +15261,6 @@ let ns_sep = "-"
 
 end
 module Ast_attributes : sig 
-#1 "ast_attributes.mli"
 (* Copyright (C) 2015-2016 Bloomberg Finance L.P.
  *
  * This program is free software: you can redistribute it and/or modify
@@ -15454,7 +15374,6 @@ val bs_return_undefined : attr
 (* val deprecated : string -> attr *)
 
 end = struct
-#1 "ast_attributes.ml"
 (* Copyright (C) 2015-2016 Bloomberg Finance L.P.
  *
  * This program is free software: you can redistribute it and/or modify
@@ -15845,7 +15764,6 @@ let bs_return_undefined : attr
 
 end
 module Ast_open_cxt : sig 
-#1 "ast_open_cxt.mli"
 (* Copyright (C) 2019 - Present Authors of BuckleScript
  *
  * This program is free software: you can redistribute it and/or modify
@@ -15890,7 +15808,6 @@ val destruct_open_tuple :
   t -> 
   (t * Parsetree.expression list * Parsetree.attributes ) option 
 end = struct
-#1 "ast_open_cxt.ml"
 (* Copyright (C) 2019 - Present Authors of BuckleScript
  *
  * This program is free software: you can redistribute it and/or modify
@@ -15974,7 +15891,6 @@ let restore_exp
     ) 
 end
 module Ast_external_mk : sig 
-#1 "ast_external_mk.mli"
 (* Copyright (C) 2015-2016 Bloomberg Finance L.P.
  * 
  * This program is free software: you can redistribute it and/or modify
@@ -16042,7 +15958,6 @@ val local_extern_cont :
   (Parsetree.expression -> Parsetree.expression) -> Parsetree.expression_desc
 
 end = struct
-#1 "ast_external_mk.ml"
 (* Copyright (C) 2015-2016 Bloomberg Finance L.P.
  * 
  * This program is free software: you can redistribute it and/or modify
@@ -16159,7 +16074,6 @@ let local_extern_cont loc
 end
 module Ext_json_types
 = struct
-#1 "ext_json_types.ml"
 (* Copyright (C) 2015-2017 Bloomberg Finance L.P.
  * 
  * This program is free software: you can redistribute it and/or modify
@@ -16210,7 +16124,6 @@ and t =
 
 end
 module Ext_position : sig 
-#1 "ext_position.mli"
 (* Copyright (C) 2015-2016 Bloomberg Finance L.P.
  *
  * This program is free software: you can redistribute it and/or modify
@@ -16258,7 +16171,6 @@ val lexbuf_from_channel_with_fname:
 
 val print : Format.formatter -> t -> unit 
 end = struct
-#1 "ext_position.ml"
 (* Copyright (C) 2015-2016 Bloomberg Finance L.P.
  *
  * This program is free software: you can redistribute it and/or modify
@@ -16324,7 +16236,6 @@ let lexbuf_from_channel_with_fname ic fname =
 
 end
 module Ext_json_parse : sig 
-#1 "ext_json_parse.mli"
 (* Copyright (C) 2015-2016 Bloomberg Finance L.P.
  * 
  * This program is free software: you can redistribute it and/or modify
@@ -16364,7 +16275,6 @@ val parse_json_from_file  : string -> Ext_json_types.t
 
 
 end = struct
-#1 "ext_json_parse.ml"
 # 1 "ext/ext_json_parse.mll"
  
 type error =
@@ -17055,7 +16965,6 @@ let parse_json_from_file s =
 
 end
 module External_arg_spec : sig 
-#1 "external_arg_spec.mli"
 (* Copyright (C) 2015-2016 Bloomberg Finance L.P.
  * 
  * This program is free software: you can redistribute it and/or modify
@@ -17140,7 +17049,6 @@ val optional  : string -> label
 val empty_kind : attr -> obj_param
 val dummy : param
 end = struct
-#1 "external_arg_spec.ml"
 (* Copyright (C) 2015-2016 Bloomberg Finance L.P.
  * 
  * This program is free software: you can redistribute it and/or modify
@@ -17260,7 +17168,6 @@ let dummy =
   {arg_type = Nothing; arg_label = Arg_empty}  
 end
 module Ast_polyvar : sig 
-#1 "ast_polyvar.mli"
 (* Copyright (C) 2017 Authors of BuckleScript
  * 
  * This program is free software: you can redistribute it and/or modify
@@ -17313,7 +17220,6 @@ val is_enum_constructors :
   Parsetree.constructor_declaration list ->
   bool 
 end = struct
-#1 "ast_polyvar.ml"
 (* Copyright (C) 2017 Authors of BuckleScript
  * 
  * This program is free software: you can redistribute it and/or modify
@@ -17458,7 +17364,6 @@ let is_enum_constructors
     constructors
 end
 module Ext_filename : sig 
-#1 "ext_filename.mli"
 (* Copyright (C) 2015-2016 Bloomberg Finance L.P.
  * 
  * This program is free software: you can redistribute it and/or modify
@@ -17545,7 +17450,6 @@ val as_module:
   basename:string -> 
   module_info option
 end = struct
-#1 "ext_filename.ml"
 (* Copyright (C) 2015-2016 Bloomberg Finance L.P.
  * 
  * This program is free software: you can redistribute it and/or modify
@@ -17723,7 +17627,6 @@ let as_module ~basename =
     
 end
 module Ext_marshal : sig 
-#1 "ext_marshal.mli"
 (* Copyright (C) 2015-2016 Bloomberg Finance L.P.
  * 
  * This program is free software: you can redistribute it and/or modify
@@ -17764,7 +17667,6 @@ module Ext_marshal : sig
 
 val from_string_uncheck : string -> 'a
 end = struct
-#1 "ext_marshal.ml"
 (* Copyright (C) 2015-2016 Bloomberg Finance L.P.
  * 
  * This program is free software: you can redistribute it and/or modify
@@ -17815,7 +17717,6 @@ let from_string_uncheck (s:string) =
   from_bytes_unsafe s 0  
 end
 module Ext_option : sig 
-#1 "ext_option.mli"
 (* Copyright (C) 2015-2016 Bloomberg Finance L.P.
  * 
  * This program is free software: you can redistribute it and/or modify
@@ -17855,7 +17756,6 @@ val iter : 'a option -> ('a -> unit) -> unit
 
 val exists : 'a option -> ('a -> bool) -> bool
 end = struct
-#1 "ext_option.ml"
 (* Copyright (C) 2015-2016 Bloomberg Finance L.P.
  * 
  * This program is free software: you can redistribute it and/or modify
@@ -17903,7 +17803,6 @@ let exists v f =
   | Some x -> f x 
 end
 module Lam_pointer_info : sig 
-#1 "lam_pointer_info.mli"
 (* Copyright (C) 2018- Authors of BuckleScript
  *
  * This program is free software: you can redistribute it and/or modify
@@ -17936,7 +17835,6 @@ type t =
   | Pt_na 
 
 end = struct
-#1 "lam_pointer_info.ml"
 (* Copyright (C) 2018- Authors of BuckleScript
  *
  * This program is free software: you can redistribute it and/or modify
@@ -17971,7 +17869,6 @@ type t =
 end
 module Lam_tag_info
 = struct
-#1 "lam_tag_info.ml"
 (* Copyright (C) 2018-Present Authors of BuckleScript
  *
  * This program is free software: you can redistribute it and/or modify
@@ -18017,7 +17914,6 @@ type t =
   | Blk_module_export
 end
 module Lam_constant : sig 
-#1 "lam_constant.mli"
 (* Copyright (C) 2018- Authors of BuckleScript
  *
  * This program is free software: you can redistribute it and/or modify
@@ -18066,7 +17962,6 @@ type t =
 val eq_approx : t -> t -> bool
 val lam_none : t   
 end = struct
-#1 "lam_constant.ml"
 (* Copyright (C) 2018- Authors of BuckleScript
  *
  * This program is free software: you can redistribute it and/or modify
@@ -18157,7 +18052,6 @@ let lam_none : t =
 
 end
 module External_ffi_types : sig 
-#1 "external_ffi_types.mli"
 (* Copyright (C) 2015-2016 Bloomberg Finance L.P.
  *
  * This program is free software: you can redistribute it and/or modify
@@ -18317,7 +18211,6 @@ val ffi_obj_as_prims:
   External_arg_spec.obj_params ->
   string list
 end = struct
-#1 "external_ffi_types.ml"
 (* Copyright (C) 2015-2016 Bloomberg Finance L.P.
  *
  * This program is free software: you can redistribute it and/or modify
@@ -18653,7 +18546,6 @@ let ffi_obj_as_prims obj_params =
 end
 module Bs_hash_stubs
 = struct
-#1 "bs_hash_stubs.ml"
 
 
 external hash_string :  string -> int = "caml_bs_hash_string" [@@noalloc];;
@@ -18678,7 +18570,6 @@ external
 
 end
 module Hash_set_string : sig 
-#1 "hash_set_string.mli"
 (* Copyright (C) 2015-2016 Bloomberg Finance L.P.
  * 
  * This program is free software: you can redistribute it and/or modify
@@ -18707,7 +18598,6 @@ module Hash_set_string : sig
 include Hash_set_gen.S with type key = string
 
 end = struct
-#1 "hash_set_string.ml"
 # 1 "ext/hash_set.cppo.ml"
 (* Copyright (C) 2015-2016 Bloomberg Finance L.P.
  * 
@@ -18802,7 +18692,6 @@ let mem (h :  _ Hash_set_gen.t) key =
 
 end
 module Lam_methname : sig 
-#1 "lam_methname.mli"
 (* Copyright (C) 2015-2016 Bloomberg Finance L.P.
  * 
  * This program is free software: you can redistribute it and/or modify
@@ -18833,7 +18722,6 @@ val translate :
   string -> string
 
 end = struct
-#1 "lam_methname.ml"
 (* Copyright (C) 2015-2016 Bloomberg Finance L.P.
  *
  * This program is free software: you can redistribute it and/or modify
@@ -18988,7 +18876,6 @@ let translate name =
 
 end
 module Ast_external_process : sig 
-#1 "ast_external_process.mli"
 (* Copyright (C) 2015-2016 Bloomberg Finance L.P.
  *
  * This program is free software: you can redistribute it and/or modify
@@ -19055,7 +18942,6 @@ val pval_prim_of_option_labels :
   string list
 
 end = struct
-#1 "ast_external_process.ml"
 (* Copyright (C) 2015-2016 Bloomberg Finance L.P.
  *
  * This program is free software: you can redistribute it and/or modify
@@ -20058,7 +19944,6 @@ let pval_prim_of_option_labels
 
 end
 module Ast_pat : sig 
-#1 "ast_pat.mli"
 (* Copyright (C) 2015-2016 Bloomberg Finance L.P.
  * 
  * This program is free software: you can redistribute it and/or modify
@@ -20099,7 +19984,6 @@ val labels_of_fun :
 val is_single_variable_pattern_conservative : t -> bool
 
 end = struct
-#1 "ast_pat.ml"
 (* Copyright (C) 2015-2016 Bloomberg Finance L.P.
  * 
  * This program is free software: you can redistribute it and/or modify
@@ -20172,7 +20056,6 @@ let rec is_single_variable_pattern_conservative  (p : t ) =
 
 end
 module Bs_ast_mapper : sig 
-#1 "bs_ast_mapper.mli"
 (**************************************************************************)
 (*                                                                        *)
 (*                                 OCaml                                  *)
@@ -20289,7 +20172,6 @@ val default_mapper: mapper
 (** A default mapper, which implements a "deep identity" mapping. *)
 
 end = struct
-#1 "bs_ast_mapper.ml"
 (**************************************************************************)
 (*                                                                        *)
 (*                                 OCaml                                  *)
@@ -21000,7 +20882,6 @@ let default_mapper =
 
 end
 module Ast_typ_uncurry : sig 
-#1 "ast_typ_uncurry.mli"
 (* Copyright (C) 2020 Authors of BuckleScript
  * 
  * This program is free software: you can redistribute it and/or modify
@@ -21090,7 +20971,6 @@ val generate_arg_type :
   Parsetree.core_type  
 
 end = struct
-#1 "ast_typ_uncurry.ml"
 (* Copyright (C) 2020 Authors of BuckleScript
  * 
  * This program is free software: you can redistribute it and/or modify
@@ -21261,7 +21141,6 @@ let to_uncurry_type   loc (mapper : Bs_ast_mapper.mapper) (label : Asttypes.arg_
 
 end
 module Ast_uncurry_gen : sig 
-#1 "ast_uncurry_gen.mli"
 (* Copyright (C) 2020- Authors of BuckleScript
  * 
  * This program is free software: you can redistribute it and/or modify
@@ -21316,7 +21195,6 @@ val to_method_callback :
   Parsetree.expression_desc
 
 end = struct
-#1 "ast_uncurry_gen.ml"
 (* Copyright (C) 2020- Authors of BuckleScript
  * 
  * This program is free software: you can redistribute it and/or modify
@@ -21434,7 +21312,6 @@ let to_uncurry_fn  loc (self : Bs_ast_mapper.mapper) (label : Asttypes.arg_label
 
 end
 module Ast_util : sig 
-#1 "ast_util.mli"
 (* Copyright (C) 2015-2016 Bloomberg Finance L.P.
  * 
  * This program is free software: you can redistribute it and/or modify
@@ -21498,7 +21375,6 @@ val ocaml_obj_as_js_object :
   Parsetree.expression_desc
 
 end = struct
-#1 "ast_util.ml"
 (* Copyright (C) 2015-2016 Bloomberg Finance L.P.
  * 
  * This program is free software: you can redistribute it and/or modify
@@ -21759,7 +21635,6 @@ let record_as_js_object
 
 end
 module Ast_uncurry_apply : sig 
-#1 "ast_uncurry_apply.mli"
 (* Copyright (C) 2020- Authors of BuckleScript
  * 
  * This program is free software: you can redistribute it and/or modify
@@ -21813,7 +21688,6 @@ val property_apply :
   Parsetree.expression_desc
 
 end = struct
-#1 "ast_uncurry_apply.ml"
 (* Copyright (C) 2020- Authors of BuckleScript
  * 
  * This program is free software: you can redistribute it and/or modify
@@ -21929,7 +21803,6 @@ let property_apply loc self obj name args
 
 end
 module Ast_exp_apply : sig 
-#1 "ast_exp_apply.mli"
 (* Copyright (C) 2018 Authors of BuckleScript
  * 
  * This program is free software: you can redistribute it and/or modify
@@ -21963,7 +21836,6 @@ val app_exp_mapper :
   Ast_compatible.args -> 
   Parsetree.expression
 end = struct
-#1 "ast_exp_apply.ml"
 (* Copyright (C) 2018 Authors of BuckleScript
  *
  * This program is free software: you can redistribute it and/or modify
@@ -22207,7 +22079,6 @@ let app_exp_mapper
 
 end
 module Ast_signature : sig 
-#1 "ast_signature.mli"
 (* Copyright (C) 2015-2016 Bloomberg Finance L.P.
  * 
  * This program is free software: you can redistribute it and/or modify
@@ -22238,7 +22109,6 @@ type t = item list
 
 val fuseAll : ?loc:Ast_helper.loc ->  t -> item
 end = struct
-#1 "ast_signature.ml"
 (* Copyright (C) 2015-2016 Bloomberg Finance L.P.
  * 
  * This program is free software: you can redistribute it and/or modify
@@ -22273,7 +22143,6 @@ let fuseAll ?(loc=Location.none)  (t : t) : item =
   
 end
 module Ast_structure : sig 
-#1 "ast_structure.mli"
 (* Copyright (C) 2015-2016 Bloomberg Finance L.P.
  * 
  * This program is free software: you can redistribute it and/or modify
@@ -22317,7 +22186,6 @@ val constraint_ : ?loc:Ast_helper.loc -> t -> Ast_signature.t -> item
 
 val dummy_item : Location.t -> item 
 end = struct
-#1 "ast_structure.ml"
 (* Copyright (C) 2015-2016 Bloomberg Finance L.P.
  * 
  * This program is free software: you can redistribute it and/or modify
@@ -22376,7 +22244,6 @@ let dummy_item  loc : item =
   Str.eval ~loc (Ast_literal.val_unit ~loc ())
 end
 module Ast_derive : sig 
-#1 "ast_derive.mli"
 (* Copyright (C) 2015-2016 Bloomberg Finance L.P.
  * 
  * This program is free software: you can redistribute it and/or modify
@@ -22445,7 +22312,6 @@ val gen_structure_signature :
   Asttypes.rec_flag -> 
   Parsetree.structure_item
 end = struct
-#1 "ast_derive.ml"
 (* Copyright (C) 2015-2016 Bloomberg Finance L.P.
  * 
  * This program is free software: you can redistribute it and/or modify
@@ -22544,7 +22410,6 @@ let gen_structure_signature
     )
 end
 module Ast_derive_util : sig 
-#1 "ast_derive_util.mli"
 (* Copyright (C) 2017 Authors of BuckleScript
  * 
  * This program is free software: you can redistribute it and/or modify
@@ -22598,7 +22463,6 @@ val notApplicable:
 
 val invalid_config : Parsetree.expression -> 'a   
 end = struct
-#1 "ast_derive_util.ml"
 (* Copyright (C) 2015-2016 Bloomberg Finance L.P.
  * 
  * This program is free software: you can redistribute it and/or modify
@@ -22685,7 +22549,6 @@ let invalid_config (config : Parsetree.expression) =
     
 end
 module Ast_derive_abstract : sig 
-#1 "ast_derive_abstract.mli"
 (* Copyright (C) 2017 Authors of BuckleScript
  * 
  * This program is free software: you can redistribute it and/or modify
@@ -22735,7 +22598,6 @@ val handleTdclsInSig:
   Parsetree.type_declaration list ->
   Parsetree.signature
 end = struct
-#1 "ast_derive_abstract.ml"
 (* Copyright (C) 2017 Authors of BuckleScript
  *
  * This program is free software: you can redistribute it and/or modify
@@ -22958,7 +22820,6 @@ let handleTdclsInSig ~light rf tdcls =
 
 end
 module Ast_tdcls : sig 
-#1 "ast_tdcls.mli"
 (* Copyright (C) 2018 Authors of BuckleScript
  *
  * This program is free software: you can redistribute it and/or modify
@@ -22998,7 +22859,6 @@ val handleTdclsInStru :
   Parsetree.type_declaration list -> Ast_structure.item
 
 end = struct
-#1 "ast_tdcls.ml"
 (* Copyright (C) 2018 Authors of BuckleScript
  *
  * This program is free software: you can redistribute it and/or modify
@@ -23144,7 +23004,6 @@ let handleTdclsInStru
 
 end
 module Js_config : sig 
-#1 "js_config.mli"
 (* Copyright (C) 2015-2016 Bloomberg Finance L.P.
  * 
  * This program is free software: you can redistribute it and/or modify
@@ -23260,7 +23119,6 @@ val as_ppx : bool ref
 
 val mono_empty_array : bool ref
 end = struct
-#1 "js_config.ml"
 (* Copyright (C) 2015-2016 Bloomberg Finance L.P.
  *
  * This program is free software: you can redistribute it and/or modify
@@ -23383,7 +23241,6 @@ let mono_empty_array = ref true
 end
 module Ppx_apply
 = struct
-#1 "ppx_apply.ml"
 (* Copyright (C) 2020- Authors of BuckleScript
  * 
  * This program is free software: you can redistribute it and/or modify
@@ -23438,7 +23295,6 @@ let apply_lazy ~source ~target
 
 end
 module Ppx_driver : sig 
-#1 "ppx_driver.mli"
 (* Copyright (C) 2019- Authors of BuckleScript
  * 
  * This program is free software: you can redistribute it and/or modify
@@ -23471,7 +23327,6 @@ val main :
   unit 
   
 end = struct
-#1 "ppx_driver.ml"
 (* Copyright (C) 2019- Authors of BuckleScript
  * 
  * This program is free software: you can redistribute it and/or modify
@@ -23529,10 +23384,8 @@ let main impl intf =
 
 end
 module Native_ppx_main : sig 
-#1 "native_ppx_main.mli"
 
 end = struct
-#1 "native_ppx_main.ml"
 (* Copyright (C) 2019- Authors of BuckleScript
  * 
  * This program is free software: you can redistribute it and/or modify
