@@ -22,7 +22,7 @@ if (base === undefined) {
 var file = `${base}.ml`;
 var cwd = path.join(__dirname, "..", "lib", "4.06.1");
 
-// TODO replace it with yours 
+// TODO replace it with yours
 var esy = `/Users/hongbozhang/git/genType/_esy/default/build/install/default/bin`;
 
 /**
@@ -30,8 +30,9 @@ var esy = `/Users/hongbozhang/git/genType/_esy/default/build/install/default/bin
  * @param {string} file
  */
 function dsource(file) {
+  let tmp = path.join(cwd, "tmp.ml");
   var output = cp.spawnSync(
-    `${bsc} -bs-no-builtin-ppx -bs-syntax-only -dsource  -c ${file} `,
+    `${bsc} -bs-no-builtin-ppx -bs-syntax-only -dsource  -c ${file} 2>${tmp}`,
     {
       cwd,
       encoding: "utf8",
@@ -39,14 +40,16 @@ function dsource(file) {
     }
   );
   // check output.status
-  if(output.status === 0){
-     fs.writeFileSync(path.join(cwd, file), output.stderr);
+  if (output.status === 0) {
+    //  fs.writeFileSync(path.join(cwd, file), output.stderr);
+    fs.copyFileSync(tmp, path.join(cwd, file));
+    fs.unlinkSync(tmp);
   } else {
-    console.error(`dsource failure`)
-    console.error(output.stderr)
-    process.exit(2)
+    console.error(`dsource failure`);
+    console.error(fs.readFileSync(tmp) + "");
+    process.exit(2);
   }
- 
+
   // fs.copyFileSync(path.join(cwd, tmp), path.join(cwd, file));
 }
 
@@ -56,16 +59,22 @@ function dsource(file) {
  * @param {string} msg
  */
 function checkDiff(file, msg) {
-  var output = cp.spawnSync(`git diff --quiet ${file}`, { shell: true , encoding : 'utf8',cwd});
+  var output = cp.spawnSync(`git diff --quiet ${file}`, {
+    shell: true,
+    encoding: "utf8",
+    cwd
+  });
   if (output.status !== 0) {
-    var output = cp.spawnSync(`git add ${file} && git commit -m "${msg} for ${file}"`, { shell: true,encoding:'utf8',cwd });
-    if(output.status !== 0){
-      console.error(`diff failure for ${file} -- ${msg}`)
-      process.exit(2)
+    var output = cp.spawnSync(
+      `git add ${file} && git commit -m "${msg} for ${file}"`,
+      { shell: true, encoding: "utf8", cwd }
+    );
+    if (output.status !== 0) {
+      console.error(`diff failure for ${file} -- ${msg}`);
+      process.exit(2);
     } else {
-      console.log(output.stdout)
+      console.log(output.stdout);
     }
-    
   } else {
     console.log(`nothing changes to ${file}`);
   }
@@ -75,21 +84,24 @@ function checkDiff(file, msg) {
  * @param {string} file
  */
 function shake(file) {
+  let tmp = path.join(cwd, "tmp.ml");
   var output = cp.spawnSync(
-    `${bsc} -bs-no-builtin-ppx -bs-syntax-only -dsource  -ppx ${esy}/deadcodeppx.exe -c ${file}`,
+    `${bsc} -bs-no-builtin-ppx -bs-syntax-only -dsource  -ppx ${esy}/deadcodeppx.exe -c ${file} 2>${tmp}`,
     {
       cwd,
       encoding: "utf8",
       shell: true
     }
   );
-  if(output.status !== 0){
-    console.error(`shake failure`) 
-    console.error(output.stderr)
-    process.exit(2)
+  if (output.status !== 0) {
+    console.error(`shake failure`);
+    console.error(fs.readFileSync(tmp)+"");
+    process.exit(2);
   } else {
-    fs.writeFileSync(path.join(cwd, file), output.stderr);
-  }  
+    // fs.writeFileSync(path.join(cwd, file), output.stderr);
+    fs.copyFileSync(tmp, path.join(cwd, file));
+    fs.unlinkSync(tmp);
+  }
 }
 
 /**
@@ -100,7 +112,7 @@ function attachDead(file) {
   var output = cp.spawnSync(`${ocamlopt} -bin-annot  -c ${file}`, {
     cwd,
     encoding: "utf8",
-    shell : true
+    shell: true
   });
 
   var genType = path.join(esy, "genType.exe");
@@ -110,14 +122,13 @@ function attachDead(file) {
     encoding: "utf8",
     shell: true
   });
-  if(output.status!==0){
-      console.error(`dce failure`)
-      console.error(output.stderr)
-      process.exit(2)
+  if (output.status !== 0) {
+    console.error(`dce failure`);
+    console.error(output.stderr);
+    process.exit(2);
   }
   // fs.writeFileSync(path.join(cwd,file),output.stderr)
 }
-
 
 // normalize files
 dsource(file);
