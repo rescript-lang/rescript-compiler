@@ -35,12 +35,13 @@ module Lid : sig
   val type_unit : t 
   val type_int : t 
   val js_fn : t 
+  val js_internal_full_apply : t 
   val opaque : t  
   val js_oo : t
   val js_meth : t 
   val js_meth_callback : t 
   val js_obj : t 
-
+  val hidden_field : t
   val ignore_id : t 
   val js_null : t 
   val js_undefined : t

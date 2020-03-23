@@ -143,6 +143,7 @@ build test/cps_test.cmi test/cps_test.cmj : cc test/cps_test.ml | test/mt.cmj $s
 build test/cross_module_inline_test.cmi test/cross_module_inline_test.cmj : cc test/cross_module_inline_test.ml | $stdlib
 build test/custom_error_test.cmi test/custom_error_test.cmj : cc test/custom_error_test.ml | $stdlib
 build test/debug_keep_test.cmi test/debug_keep_test.cmj : cc test/debug_keep_test.ml | $stdlib
+build test/debug_tmp.cmi test/debug_tmp.cmj : cc test/debug_tmp.ml | $stdlib
 build test/debugger_test.cmi test/debugger_test.cmj : cc test/debugger_test.ml | $stdlib
 build test/default_export_test.cmi test/default_export_test.cmj : cc test/default_export_test.ml | $stdlib
 build test/defunctor_make_test.cmi test/defunctor_make_test.cmj : cc test/defunctor_make_test.ml | $stdlib

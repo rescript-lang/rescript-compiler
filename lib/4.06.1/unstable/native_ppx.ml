@@ -11378,12 +11378,13 @@ module Lid : sig
   val type_unit : t 
   val type_int : t 
   val js_fn : t 
+  val js_internal_full_apply : t 
   val opaque : t  
   val js_oo : t
   val js_meth : t 
   val js_meth_callback : t 
   val js_obj : t 
-
+  val hidden_field : t
   val ignore_id : t 
   val js_null : t 
   val js_undefined : t
@@ -11459,6 +11460,7 @@ module Lid = struct
   (* TODO should be renamed in to {!Js.fn} *)
   (* TODO should be moved into {!Js.t} Later *)
   let js_internal : t = Ldot (Lident "Js", "Internal")
+  let js_internal_full_apply : t = Ldot (js_internal, "unsafeInvariantApply")
   let opaque : t = Ldot (js_internal, "opaque")
   let js_fn : t =
       Ldot (Lident "Js",  "Fn")
@@ -11469,6 +11471,7 @@ module Lid = struct
       Ldot (js_oo, "Callback")
   let js_obj : t = Ldot (Lident "Js", "t")
   let ignore_id : t = Ldot (Lident "Pervasives", "ignore")
+  let hidden_field : t = Lident "I"
   let js_null  : t = Ldot (Lident "Js", "null")
   let js_undefined : t = Ldot (Lident "Js", "undefined")
   let js_null_undefined : t = Ldot (Lident "Js", "null_undefined")
@@ -21257,6 +21260,179 @@ let to_uncurry_type   loc (mapper : Bs_ast_mapper.mapper) (label : Asttypes.arg_
 
 
 end
+module Ast_uncurry_gen : sig 
+#1 "ast_uncurry_gen.mli"
+(* Copyright (C) 2020- Authors of BuckleScript
+ * 
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * In addition to the permissions granted to you by the LGPL, you may combine
+ * or link a "work that uses the Library" with a publicly distributed version
+ * of this file to produce a combined library or application, then distribute
+ * that combined work under the terms of your choosing, with no requirement
+ * to comply with the obligations normally placed on you by section 4 of the
+ * LGPL version 3 (or the corresponding section of a later version of the LGPL
+ * should you choose to use a later version).
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ * 
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
+
+
+(** 
+    [function] can only take one argument, that is the reason we did not adopt it
+    syntax:
+    {[ fun [@bs] pat pat1-> body ]}
+    [to_uncurry_fn (fun pat -> (fun pat1 -> ...  body))]
+
+*)
+val to_uncurry_fn :  
+  Location.t -> 
+  Bs_ast_mapper.mapper -> 
+  Asttypes.arg_label ->   
+  Parsetree.pattern ->
+  Parsetree.expression ->
+  Parsetree.expression_desc
+
+
+
+(** syntax: 
+    {[fun [@bs.this] obj pat pat1 -> body]}    
+*)
+val to_method_callback : 
+  Location.t -> 
+  Bs_ast_mapper.mapper ->
+  Asttypes.arg_label ->  
+  Parsetree.pattern ->
+  Parsetree.expression ->
+  Parsetree.expression_desc
+
+end = struct
+#1 "ast_uncurry_gen.ml"
+(* Copyright (C) 2020- Authors of BuckleScript
+ * 
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * In addition to the permissions granted to you by the LGPL, you may combine
+ * or link a "work that uses the Library" with a publicly distributed version
+ * of this file to produce a combined library or application, then distribute
+ * that combined work under the terms of your choosing, with no requirement
+ * to comply with the obligations normally placed on you by section 4 of the
+ * LGPL version 3 (or the corresponding section of a later version of the LGPL
+ * should you choose to use a later version).
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ * 
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
+
+open Ast_helper
+
+(* Handling `fun [@bs.this]` used in `object [@bs] end` *)
+let to_method_callback  loc (self : Bs_ast_mapper.mapper) 
+  label pat body : Parsetree.expression_desc
+  = 
+  Bs_syntaxerr.optional_err loc label;  
+  let rec aux acc (body : Parsetree.expression) = 
+    match Ast_attributes.process_attributes_rev body.pexp_attributes with 
+    | Nothing, _ -> 
+      begin match body.pexp_desc with 
+        | Pexp_fun (arg_label,_, arg, body)
+          -> 
+          Bs_syntaxerr.optional_err loc arg_label;
+          aux ((arg_label,self.pat self arg) :: acc) body 
+        | _ -> self.expr self body, acc 
+      end 
+    | _, _ -> self.expr self body, acc  
+  in 
+  let first_arg = self.pat self pat in  
+  (if not  (Ast_pat.is_single_variable_pattern_conservative first_arg) then
+     Bs_syntaxerr.err first_arg.ppat_loc  Bs_this_simple_pattern);  
+  let result, rev_extra_args = aux [label,first_arg] body in 
+  let body = 
+    Ext_list.fold_left rev_extra_args result (fun e (label,p) -> Ast_helper.Exp.fun_ ~loc label None p e )
+  in
+  let arity = List.length rev_extra_args in   
+  let arity_s = string_of_int arity in 
+  Parsetree.Pexp_apply 
+    (Exp.ident ~loc {loc ; txt = Ldot(Ast_literal.Lid.js_oo,"unsafe_to_method")},
+     [Nolabel,
+      (Exp.constraint_ ~loc 
+         (Exp.record ~loc [{
+              loc ; 
+              txt = Ast_literal.Lid.hidden_field},body]
+             None) 
+         (Typ.constr ~loc {loc; txt = Ldot (Ast_literal.Lid.js_meth_callback, "arity"^arity_s)} [Typ.any ~loc ()] )
+         )])
+
+let to_uncurry_fn  loc (self : Bs_ast_mapper.mapper) (label : Asttypes.arg_label) pat body 
+  = 
+  Bs_syntaxerr.optional_err loc label;  
+  let rec aux acc (body : Parsetree.expression) = 
+    match Ast_attributes.process_attributes_rev body.pexp_attributes with 
+    | Nothing, _ -> 
+      begin match body.pexp_desc with 
+        | Pexp_fun (arg_label,_, arg, body)
+          -> 
+          Bs_syntaxerr.optional_err loc arg_label; 
+          aux ((arg_label, self.pat self arg) :: acc) body 
+        | _ -> self.expr self body, acc 
+      end 
+    | _, _ -> self.expr self body, acc  
+  in 
+  let first_arg = self.pat self pat in  
+
+  let result, rev_extra_args = aux [label,first_arg] body in 
+  let body = 
+    Ext_list.fold_left rev_extra_args result (fun e (label,p) -> Ast_helper.Exp.fun_ ~loc label None p e)
+  in
+  let len = List.length rev_extra_args in   
+  let arity = 
+    match rev_extra_args with 
+    | [ l,p]
+      ->
+      Ast_pat.is_unit_cont ~yes:0 ~no:len p           
+    | _ -> len 
+  in 
+  if arity = 0 && label = Nolabel then 
+    let txt = 
+      Longident.Ldot (Ast_literal.Lid.js_internal, "mk0") in
+    Parsetree.Pexp_apply (Exp.ident {txt;loc} , [ Nolabel, body])
+  else 
+    begin 
+      Bs_syntaxerr.err_large_arity loc arity;
+      let arity_s = string_of_int arity in   
+      Parsetree.Pexp_constraint(
+        Exp.record ~loc [
+          {
+            txt = Ast_literal.Lid.hidden_field;
+            loc
+          },body] None, Typ.constr ~loc {txt = Ldot (Ast_literal.Lid.js_fn,"arity"^arity_s);loc}
+          [Typ.any ~loc ()]
+      )
+    end
+
+
+
+
+
+
+end
 module Ast_util : sig 
 #1 "ast_util.mli"
 (* Copyright (C) 2015-2016 Bloomberg Finance L.P.
@@ -21285,86 +21461,41 @@ module Ast_util : sig
 
 
 
-type loc = Location.t 
-type label_exprs = (Longident.t Asttypes.loc * Parsetree.expression) list
-type 'a cxt = loc -> Bs_ast_mapper.mapper -> 'a
+
 
 (** In general three kinds of ast generation.
     - convert a curried to type to uncurried 
     - convert a curried fun to uncurried fun
     - convert a uncuried application to normal 
 *)
-type uncurry_expression_gen = 
-  (Parsetree.pattern ->
-   Parsetree.expression ->
-   Parsetree.expression_desc) cxt
-
-
-(** TODO: the interface is not reusable, it depends on too much context *)
-(** syntax: {[f arg0 arg1 [@bs]]}*)
-val uncurry_fn_apply : 
-  (Parsetree.expression ->
-   Ast_compatible.args  ->
-   Parsetree.expression_desc ) cxt 
-
-(** syntax : {[f## arg0 arg1 ]}*)
-val method_apply : 
-  (Parsetree.expression ->
-  string ->
-  Ast_compatible.args ->
-  Parsetree.expression_desc) cxt 
-
-(** syntax {[f#@ arg0 arg1 ]}*)
-val property_apply : 
-  (Parsetree.expression ->
-   string ->
-   Ast_compatible.args ->
-   Parsetree.expression_desc) cxt 
-
-
-(** 
-    [function] can only take one argument, that is the reason we did not adopt it
-    syntax:
-    {[ fun [@bs] pat pat1-> body ]}
-    [to_uncurry_fn (fun pat -> (fun pat1 -> ...  body))]
-
-*)
-val to_uncurry_fn :  
-  (
-    Asttypes.arg_label ->   
-    Parsetree.pattern ->
-    Parsetree.expression ->
-    Parsetree.expression_desc) cxt
 
 
 
-(** syntax: 
-    {[fun [@bs.this] obj pat pat1 -> body]}    
-*)
-val to_method_callback : 
-  (
-    Asttypes.arg_label ->  
-    Parsetree.pattern ->
-    Parsetree.expression ->
-    Parsetree.expression_desc) cxt
 
 
 
+type label_exprs = (Longident.t Asttypes.loc * Parsetree.expression) list
 
 
 val record_as_js_object : 
-  (label_exprs ->
-   Parsetree.expression_desc) cxt 
+  Location.t -> 
+  Bs_ast_mapper.mapper -> 
+  label_exprs ->
+  Parsetree.expression_desc
 
 val js_property : 
-  loc ->
-  Parsetree.expression -> string -> Parsetree.expression_desc
+  Location.t ->
+  Parsetree.expression -> 
+  string -> 
+  Parsetree.expression_desc
 
 
 val ocaml_obj_as_js_object :
-  (Parsetree.pattern ->
-   Parsetree.class_field list ->
-   Parsetree.expression_desc) cxt   
+  Location.t -> 
+  Bs_ast_mapper.mapper ->
+  Parsetree.pattern ->
+  Parsetree.class_field list ->
+  Parsetree.expression_desc
 
 end = struct
 #1 "ast_util.ml"
@@ -21393,17 +21524,9 @@ end = struct
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
 open Ast_helper 
-type 'a cxt = Ast_helper.loc -> Bs_ast_mapper.mapper -> 'a
-type loc = Location.t 
 
-type exp = Parsetree.expression
 
 type label_exprs = (Longident.t Asttypes.loc * Parsetree.expression) list
-type uncurry_expression_gen = 
-  (Parsetree.pattern ->
-   Parsetree.expression ->
-   Parsetree.expression_desc) cxt
-
 
 let js_property loc obj (name : string) =
   Parsetree.Pexp_send
@@ -21415,178 +21538,9 @@ let js_property loc obj (name : string) =
         {loc; txt = name}
         )
 
-(* TODO: 
-   have a final checking for property arities 
-     [#=], 
-*)
-let jsInternal = 
-  Ast_literal.Lid.js_internal
-let unsafeInvariantApply : Longident.t =
-  Longident.Ldot
-   (jsInternal,
-   "unsafeInvariantApply")
-
-let generic_apply loc 
-    (self : Bs_ast_mapper.mapper) 
-    (obj : Parsetree.expression) 
-    (args : Ast_compatible.args) (cb : loc -> exp-> exp)   =
-  let obj = self.expr self obj in
-  let args =
-    Ext_list.map args (fun (lbl,e) -> 
-         Bs_syntaxerr.optional_err loc lbl; 
-        (lbl,self.expr self e)) in
-  let fn = cb loc obj in   
-  let args  = 
-    match args with 
-    | [ Nolabel, {pexp_desc =
-           Pexp_construct ({txt = Lident "()"}, None)}]
-      -> []
-    | _ -> args in
-  let arity = List.length args in       
-  if arity = 0 then 
-    Parsetree.Pexp_apply 
-      (Exp.ident {txt = Ldot (jsInternal, "run");loc}, [Nolabel,fn])
-  else 
-    let arity_s = string_of_int arity in 
-
-    Parsetree.Pexp_apply (
-      Exp.ident {txt = unsafeInvariantApply; loc},
-      [Nolabel,
-       Exp.apply ~loc
-         (Exp.apply ~loc
-            (Exp.ident ~loc {txt = Ast_literal.Lid.opaque; loc}) 
-            [(Nolabel, Exp.field ~loc 
-              (Exp.constraint_ ~loc fn 
-                (Typ.constr ~loc {txt = Ldot (Ast_literal.Lid.js_fn, "arity"^arity_s);loc} 
-                  [Typ.any ~loc ()])) {txt = Longident.Lident ("I_"^ arity_s); loc})]) 
-         args])                        
-
-let method_apply  loc 
-    (self : Bs_ast_mapper.mapper) 
-    (obj : Parsetree.expression) name
-    (args : Ast_compatible.args)   =
-    let obj = self.expr self obj in
-    let args =
-      Ext_list.map args (fun (lbl,e) -> 
-           Bs_syntaxerr.optional_err loc lbl; 
-          (lbl,self.expr self e)) in
-    let fn = Exp.mk ~loc (js_property loc obj name) in   
-    let args  = 
-      match args with 
-      | [ Nolabel, {pexp_desc =
-             Pexp_construct ({txt = Lident "()"}, None)}]
-        -> []
-      | _ -> args in
-    let arity = List.length args in       
-    if arity = 0 then 
-      Parsetree.Pexp_apply 
-        (Exp.ident {txt = Ldot ((Ldot (Ast_literal.Lid.js_oo,"Internal")), "run");loc}, [Nolabel,fn])
-    else 
-      let arity_s = string_of_int arity in 
-      Parsetree.Pexp_apply (
-        Exp.ident {txt = unsafeInvariantApply; loc},
-        [Nolabel,
-         Exp.apply ~loc (
-           Exp.apply ~loc (Exp.ident ~loc {txt = Ast_literal.Lid.opaque; loc}) 
-             [(Nolabel,
-              Exp.field ~loc
-                (Exp.constraint_ ~loc 
-                  fn (Typ.constr ~loc {txt = Ldot (Ast_literal.Lid.js_meth,"arity"^arity_s);loc} [Typ.any ~loc ()]))
-                {loc; txt = Lident ( "I_"^arity_s)})]) 
-           args])
-  
-
-let uncurry_fn_apply loc self fn args = 
-  generic_apply  loc self fn args (fun _ obj -> obj )
-
-let property_apply loc self obj name args  
-  =  generic_apply loc self obj args 
-    (fun loc obj -> Exp.mk ~loc (js_property loc obj name))
 
 
  
-
-(* Handling `fun [@bs.this]` used in `object [@bs] end` *)
-let to_method_callback  loc (self : Bs_ast_mapper.mapper) 
-  label pat body : Parsetree.expression_desc
-  = 
-  Bs_syntaxerr.optional_err loc label;  
-  let rec aux acc (body : Parsetree.expression) = 
-    match Ast_attributes.process_attributes_rev body.pexp_attributes with 
-    | Nothing, _ -> 
-      begin match body.pexp_desc with 
-        | Pexp_fun (arg_label,_, arg, body)
-          -> 
-          Bs_syntaxerr.optional_err loc arg_label;
-          aux ((arg_label,self.pat self arg) :: acc) body 
-        | _ -> self.expr self body, acc 
-      end 
-    | _, _ -> self.expr self body, acc  
-  in 
-  let first_arg = self.pat self pat in  
-  (if not  (Ast_pat.is_single_variable_pattern_conservative first_arg) then
-     Bs_syntaxerr.err first_arg.ppat_loc  Bs_this_simple_pattern);  
-  let result, rev_extra_args = aux [label,first_arg] body in 
-  let body = 
-    Ext_list.fold_left rev_extra_args result (fun e (label,p) -> Ast_helper.Exp.fun_ ~loc label None p e )
-  in
-  let arity = List.length rev_extra_args in   
-  Parsetree.Pexp_apply 
-    (Exp.ident ~loc {loc ; txt = Ldot(Ast_literal.Lid.js_oo,"unsafe_to_method")},
-     [Nolabel,(Exp.record ~loc [{
-          loc ; 
-          txt = Longident.Ldot(Ast_literal.Lid.js_meth_callback 
-                              ,"I_"^string_of_int arity)},body]
-          None)])
-
-
-let to_uncurry_fn  loc (self : Bs_ast_mapper.mapper) (label : Asttypes.arg_label) pat body 
-  = 
-  Bs_syntaxerr.optional_err loc label;  
-  let rec aux acc (body : Parsetree.expression) = 
-    match Ast_attributes.process_attributes_rev body.pexp_attributes with 
-    | Nothing, _ -> 
-      begin match body.pexp_desc with 
-        | Pexp_fun (arg_label,_, arg, body)
-          -> 
-          Bs_syntaxerr.optional_err loc arg_label; 
-          aux ((arg_label, self.pat self arg) :: acc) body 
-        | _ -> self.expr self body, acc 
-      end 
-    | _, _ -> self.expr self body, acc  
-  in 
-  let first_arg = self.pat self pat in  
-
-  let result, rev_extra_args = aux [label,first_arg] body in 
-  let body = 
-    Ext_list.fold_left rev_extra_args result (fun e (label,p) -> Ast_helper.Exp.fun_ ~loc label None p e)
-  in
-  let len = List.length rev_extra_args in   
-  let arity = 
-    match rev_extra_args with 
-    | [ l,p]
-      ->
-       Ast_pat.is_unit_cont ~yes:0 ~no:len p           
-    | _ -> len 
-  in 
-  if arity = 0 && label = Nolabel then 
-    let txt = 
-      Longident.Ldot (jsInternal, "mk0") in
-    Parsetree.Pexp_apply (Exp.ident {txt;loc} , [ Nolabel, body])
-  else 
-    begin 
-      Bs_syntaxerr.err_large_arity loc arity;
-      Parsetree.Pexp_record ([
-          {
-            txt = Ldot (Ast_literal.Lid.js_fn, "I_" ^ string_of_int arity); 
-            loc
-          },body], None) 
-    end
-
-
-
-
-
 
 
 let ocaml_obj_as_js_object
@@ -21600,10 +21554,10 @@ let ocaml_obj_as_js_object
       but it does allow duplicates between instance variable and method name, 
       we should enforce such rules 
       {[
-        object 
+        object [@bs]
           val x = 3
           method x = 3 
-        end [@bs]
+        end 
       ]} should not compile with a meaningful error message
   *)
 
@@ -21720,7 +21674,7 @@ let ocaml_obj_as_js_object
                {f with
                 pexp_desc =
                   let f = Ast_pat.is_unit_cont pat ~yes:e ~no:f in                       
-                  to_method_callback loc mapper Nolabel self_pat f
+                  Ast_uncurry_gen.to_method_callback loc mapper Nolabel self_pat f
                   (* the first argument is this*)
                } :: exprs, 
                true
@@ -21802,6 +21756,176 @@ let record_as_js_object
     ~pval_type:(Ast_core_type.from_labels ~loc arity labels) 
     args 
 
+
+end
+module Ast_uncurry_apply : sig 
+#1 "ast_uncurry_apply.mli"
+(* Copyright (C) 2020- Authors of BuckleScript
+ * 
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * In addition to the permissions granted to you by the LGPL, you may combine
+ * or link a "work that uses the Library" with a publicly distributed version
+ * of this file to produce a combined library or application, then distribute
+ * that combined work under the terms of your choosing, with no requirement
+ * to comply with the obligations normally placed on you by section 4 of the
+ * LGPL version 3 (or the corresponding section of a later version of the LGPL
+ * should you choose to use a later version).
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ * 
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
+
+
+ (** TODO: the interface is not reusable, it depends on too much context *)
+(** syntax: {[f arg0 arg1 [@bs]]}*)
+val uncurry_fn_apply : 
+  Location.t -> 
+  Bs_ast_mapper.mapper -> 
+  Parsetree.expression ->
+  Ast_compatible.args  ->
+  Parsetree.expression_desc 
+
+(** syntax : {[f## arg0 arg1 ]}*)
+val method_apply : 
+  Location.t -> 
+  Bs_ast_mapper.mapper -> 
+  Parsetree.expression ->
+  string ->
+  Ast_compatible.args ->
+  Parsetree.expression_desc
+
+(** syntax {[f#@ arg0 arg1 ]}*)
+val property_apply : 
+  Location.t -> 
+  Bs_ast_mapper.mapper -> 
+  Parsetree.expression ->
+  string ->
+  Ast_compatible.args ->
+  Parsetree.expression_desc
+
+end = struct
+#1 "ast_uncurry_apply.ml"
+(* Copyright (C) 2020- Authors of BuckleScript
+ * 
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * In addition to the permissions granted to you by the LGPL, you may combine
+ * or link a "work that uses the Library" with a publicly distributed version
+ * of this file to produce a combined library or application, then distribute
+ * that combined work under the terms of your choosing, with no requirement
+ * to comply with the obligations normally placed on you by section 4 of the
+ * LGPL version 3 (or the corresponding section of a later version of the LGPL
+ * should you choose to use a later version).
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ * 
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
+
+open Ast_helper 
+
+type exp = Parsetree.expression 
+
+
+(* TODO: 
+   have a final checking for property arities 
+     [#=], 
+*)
+let jsInternal = 
+  Ast_literal.Lid.js_internal
+
+let generic_apply loc 
+    (self : Bs_ast_mapper.mapper) 
+    (obj : Parsetree.expression) 
+    (args : Ast_compatible.args) (cb : loc -> exp-> exp)   =
+  let obj = self.expr self obj in
+  let args =
+    Ext_list.map args (fun (lbl,e) -> 
+         Bs_syntaxerr.optional_err loc lbl; 
+        (lbl,self.expr self e)) in
+  let fn = cb loc obj in   
+  let args  = 
+    match args with 
+    | [ Nolabel, {pexp_desc =
+           Pexp_construct ({txt = Lident "()"}, None)}]
+      -> []
+    | _ -> args in
+  let arity = List.length args in       
+  if arity = 0 then 
+    Parsetree.Pexp_apply 
+      (Exp.ident {txt = Ldot (jsInternal, "run");loc}, [Nolabel,fn])
+  else 
+    let arity_s = string_of_int arity in 
+
+    Parsetree.Pexp_apply (
+      Exp.ident {txt = Ast_literal.Lid.js_internal_full_apply; loc},
+      [Nolabel,
+       Exp.apply ~loc
+         (Exp.apply ~loc
+            (Exp.ident ~loc {txt = Ast_literal.Lid.opaque; loc}) 
+            [(Nolabel, Exp.field ~loc 
+              (Exp.constraint_ ~loc fn 
+                (Typ.constr ~loc {txt = Ldot (Ast_literal.Lid.js_fn, "arity"^arity_s);loc} 
+                  [Typ.any ~loc ()])) {txt = Ast_literal.Lid.hidden_field; loc})]) 
+         args])                        
+
+let method_apply  loc 
+    (self : Bs_ast_mapper.mapper) 
+    (obj : Parsetree.expression) name
+    (args : Ast_compatible.args)   =
+    let obj = self.expr self obj in
+    let args =
+      Ext_list.map args (fun (lbl,e) -> 
+           Bs_syntaxerr.optional_err loc lbl; 
+          (lbl,self.expr self e)) in
+    let fn = Exp.mk ~loc (Ast_util.js_property loc obj name) in   
+    let args  = 
+      match args with 
+      | [ Nolabel, {pexp_desc =
+             Pexp_construct ({txt = Lident "()"}, None)}]
+        -> []
+      | _ -> args in
+    let arity = List.length args in       
+    if arity = 0 then 
+      Parsetree.Pexp_apply 
+        (Exp.ident {txt = Ldot ((Ldot (Ast_literal.Lid.js_oo,"Internal")), "run");loc}, [Nolabel,fn])
+    else 
+      let arity_s = string_of_int arity in 
+      Parsetree.Pexp_apply (
+        Exp.ident {txt = Ast_literal.Lid.js_internal_full_apply; loc},
+        [Nolabel,
+         Exp.apply ~loc (
+           Exp.apply ~loc (Exp.ident ~loc {txt = Ast_literal.Lid.opaque; loc}) 
+             [(Nolabel,
+              Exp.field ~loc
+                (Exp.constraint_ ~loc 
+                  fn (Typ.constr ~loc {txt = Ldot (Ast_literal.Lid.js_meth,"arity"^arity_s);loc} [Typ.any ~loc ()]))
+                {loc; txt = Ast_literal.Lid.hidden_field})]) 
+           args])
+  
+
+let uncurry_fn_apply loc self fn args = 
+  generic_apply  loc self fn args (fun _ obj -> obj )
+
+let property_apply loc self obj name args  
+  =  generic_apply loc self obj args 
+    (fun loc obj -> Exp.mk ~loc (Ast_util.js_property loc obj name))
 
 end
 module Ast_exp_apply : sig 
@@ -21929,8 +22053,8 @@ let app_exp_mapper
     ->  
     {e with pexp_desc = 
               if op = "##" then
-                Ast_util.method_apply loc self obj name args
-              else Ast_util.property_apply loc self obj name  args
+                Ast_uncurry_apply.method_apply loc self obj name args
+              else Ast_uncurry_apply.property_apply loc self obj name  args
     }
    | Some {op; loc} ->
       Location.raise_errorf ~loc "%s expect f%sproperty arg0 arg2 form" op op
@@ -22007,7 +22131,7 @@ let app_exp_mapper
              ); pexp_attributes = attrs }
            -> 
            Bs_ast_invariant.warn_discarded_unused_attributes attrs ;
-           {e with pexp_desc = Ast_util.method_apply loc self obj name args}
+           {e with pexp_desc = Ast_uncurry_apply.method_apply loc self obj name args}
          | 
            {pexp_desc = 
               (Pexp_ident {txt = Lident name;_ } 
@@ -22056,7 +22180,7 @@ let app_exp_mapper
            Exp.constraint_ ~loc
              { e with
                pexp_desc =
-                 Ast_util.method_apply loc self obj
+                 Ast_uncurry_apply.method_apply loc self obj
                    (name ^ Literals.setter_suffix) [Nolabel,arg]  }
              (Ast_literal.type_unit ~loc ())
          | _ -> assert false
@@ -22076,7 +22200,7 @@ let app_exp_mapper
        | None -> default_expr_mapper self e
        | Some pexp_attributes ->
          if !Config.bs_only then 
-           {e with pexp_desc = Ast_util.uncurry_fn_apply e.pexp_loc self fn  args ;
+           {e with pexp_desc = Ast_uncurry_apply.uncurry_fn_apply e.pexp_loc self fn  args ;
                    pexp_attributes }
          else   {e with pexp_attributes } (* BS_NATIVE branch*)
      )

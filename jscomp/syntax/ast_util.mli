@@ -24,83 +24,38 @@
 
 
 
-type loc = Location.t 
-type label_exprs = (Longident.t Asttypes.loc * Parsetree.expression) list
-type 'a cxt = loc -> Bs_ast_mapper.mapper -> 'a
+
 
 (** In general three kinds of ast generation.
     - convert a curried to type to uncurried 
     - convert a curried fun to uncurried fun
     - convert a uncuried application to normal 
 *)
-type uncurry_expression_gen = 
-  (Parsetree.pattern ->
-   Parsetree.expression ->
-   Parsetree.expression_desc) cxt
-
-
-(** TODO: the interface is not reusable, it depends on too much context *)
-(** syntax: {[f arg0 arg1 [@bs]]}*)
-val uncurry_fn_apply : 
-  (Parsetree.expression ->
-   Ast_compatible.args  ->
-   Parsetree.expression_desc ) cxt 
-
-(** syntax : {[f## arg0 arg1 ]}*)
-val method_apply : 
-  (Parsetree.expression ->
-  string ->
-  Ast_compatible.args ->
-  Parsetree.expression_desc) cxt 
-
-(** syntax {[f#@ arg0 arg1 ]}*)
-val property_apply : 
-  (Parsetree.expression ->
-   string ->
-   Ast_compatible.args ->
-   Parsetree.expression_desc) cxt 
-
-
-(** 
-    [function] can only take one argument, that is the reason we did not adopt it
-    syntax:
-    {[ fun [@bs] pat pat1-> body ]}
-    [to_uncurry_fn (fun pat -> (fun pat1 -> ...  body))]
-
-*)
-val to_uncurry_fn :  
-  (
-    Asttypes.arg_label ->   
-    Parsetree.pattern ->
-    Parsetree.expression ->
-    Parsetree.expression_desc) cxt
 
 
 
-(** syntax: 
-    {[fun [@bs.this] obj pat pat1 -> body]}    
-*)
-val to_method_callback : 
-  (
-    Asttypes.arg_label ->  
-    Parsetree.pattern ->
-    Parsetree.expression ->
-    Parsetree.expression_desc) cxt
 
 
 
+type label_exprs = (Longident.t Asttypes.loc * Parsetree.expression) list
 
 
 val record_as_js_object : 
-  (label_exprs ->
-   Parsetree.expression_desc) cxt 
+  Location.t -> 
+  Bs_ast_mapper.mapper -> 
+  label_exprs ->
+  Parsetree.expression_desc
 
 val js_property : 
-  loc ->
-  Parsetree.expression -> string -> Parsetree.expression_desc
+  Location.t ->
+  Parsetree.expression -> 
+  string -> 
+  Parsetree.expression_desc
 
 
 val ocaml_obj_as_js_object :
-  (Parsetree.pattern ->
-   Parsetree.class_field list ->
-   Parsetree.expression_desc) cxt   
+  Location.t -> 
+  Bs_ast_mapper.mapper ->
+  Parsetree.pattern ->
+  Parsetree.class_field list ->
+  Parsetree.expression_desc

@@ -22,7 +22,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
-
+[@@@bs.config {flags = [|"-unboxed-types";"-w" ;"-49"|]}]
 (* DESIGN:
     - It does not have any code, all its code will be inlined so that
        there will never be
@@ -52,78 +52,78 @@ type +'a t
     ]}
  *)
 
-[@@@warning "-49"] 
+
 (* internal types for FFI, these types are not used by normal users 
     Absent cmi file when looking up module alias.
 *)
 module Fn = struct
   type + 'a arity0 
   type 'a arity1 = {
-    _1 : 'a [@internal]
-  }[@@unboxed]
+    i : 'a [@internal]
+  }
   type 'a arity2 = {
-    _2 : 'a [@internal]
-  }[@@unboxed]
+    i : 'a [@internal]
+  }
   type 'a arity3 = {
-    _3 : 'a [@internal]
-  }[@@unboxed]
+    i : 'a [@internal]
+  }
   type 'a arity4 = {
-    _4 : 'a [@internal]
-  }[@@unboxed]
+    i : 'a [@internal]
+  }
   type 'a arity5 = {
-    _5 : 'a [@internal]
-  }[@@unboxed]
+    i : 'a [@internal]
+  }
   type 'a arity6 = {
-    _6 : 'a [@internal]
-  }[@@unboxed]
+    i : 'a [@internal]
+  }
   type 'a arity7 = {
-    _7 : 'a [@internal]
-  }[@@unboxed]
+    i : 'a [@internal]
+  }
   type 'a arity8 = {
-    _8 : 'a [@internal]
-  }[@@unboxed]
+    i : 'a [@internal]
+  }
   type 'a arity9 = {
-    _9 : 'a [@internal]
-  }[@@unboxed]
+    i : 'a [@internal]
+  }
   type 'a arity10 = {
-    _10 : 'a [@internal]
-  }[@@unboxed]
+    i : 'a [@internal]
+  }
   type 'a arity11 = {
-    _11 : 'a [@internal]
-  }[@@unboxed]
+    i : 'a [@internal]
+  }
   type 'a arity12 = {
-    _12 : 'a [@internal]
-  }[@@unboxed]
+    i : 'a [@internal]
+  }
   type 'a arity13 = {
-    _13 : 'a [@internal]
-  }[@@unboxed]
+    i : 'a [@internal]
+  }
   type 'a arity14 = {
-    _14 : 'a [@internal]
-  }[@@unboxed]
+    i : 'a [@internal]
+  }
   type 'a arity15 = {
-    _15 : 'a [@internal]
-  }[@@unboxed]
+    i : 'a [@internal]
+  }
   type 'a arity16 = {
-    _16 : 'a [@internal]
-  }[@@unboxed]
+    i : 'a [@internal]
+  }
   type 'a arity17 = {
-    _17 : 'a [@internal]
-  }[@@unboxed]
+    i : 'a [@internal]
+  }
   type 'a arity18 = {
-    _18 : 'a [@internal]
-  }[@@unboxed]
+    i : 'a [@internal]
+  }
   type 'a arity19 = {
-    _19 : 'a [@internal]
-  }[@@unboxed]
+    i : 'a [@internal]
+  }
   type 'a arity20 = {
-    _20 : 'a [@internal]
-  }[@@unboxed]
+    i : 'a [@internal]
+  }
   type 'a arity21 = {
-    _21 : 'a [@internal]
-  }[@@unboxed]
+    i : 'a [@internal]
+  }
   type 'a arity22 = {
-    _22 : 'a [@internal]
-  }[@@unboxed]
+    i : 'a [@internal]
+  }
 end
 
 (**/**)

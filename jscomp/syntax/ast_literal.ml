@@ -48,6 +48,7 @@ module Lid = struct
   (* TODO should be renamed in to {!Js.fn} *)
   (* TODO should be moved into {!Js.t} Later *)
   let js_internal : t = Ldot (Lident "Js", "Internal")
+  let js_internal_full_apply : t = Ldot (js_internal, "unsafeInvariantApply")
   let opaque : t = Ldot (js_internal, "opaque")
   let js_fn : t =
       Ldot (Lident "Js",  "Fn")
@@ -58,6 +59,7 @@ module Lid = struct
       Ldot (js_oo, "Callback")
   let js_obj : t = Ldot (Lident "Js", "t")
   let ignore_id : t = Ldot (Lident "Pervasives", "ignore")
+  let hidden_field : t = Lident "I"
   let js_null  : t = Ldot (Lident "Js", "null")
   let js_undefined : t = Ldot (Lident "Js", "undefined")
   let js_null_undefined : t = Ldot (Lident "Js", "null_undefined")
