@@ -411,7 +411,7 @@ let  unsafe_mapper : mapper =
       let lbl = default_mapper.label_declaration self lbl in 
       match lbl.pld_attributes with 
       | [ {txt="internal"}, _ ] -> 
-        {lbl with pld_name = {lbl.pld_name with txt = "I"^ lbl.pld_name.txt };
+        {lbl with pld_name = {lbl.pld_name with txt = String.capitalize_ascii lbl.pld_name.txt };
                   pld_attributes = []}
       | _ -> lbl  
     )

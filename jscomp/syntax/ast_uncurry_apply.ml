@@ -66,7 +66,7 @@ let generic_apply loc
             [(Nolabel, Exp.field ~loc 
               (Exp.constraint_ ~loc fn 
                 (Typ.constr ~loc {txt = Ldot (Ast_literal.Lid.js_fn, "arity"^arity_s);loc} 
-                  [Typ.any ~loc ()])) {txt = Longident.Lident ("I_"^ arity_s); loc})]) 
+                  [Typ.any ~loc ()])) {txt = Ast_literal.Lid.hidden_field; loc})]) 
          args])                        
 
 let method_apply  loc 
@@ -100,7 +100,7 @@ let method_apply  loc
               Exp.field ~loc
                 (Exp.constraint_ ~loc 
                   fn (Typ.constr ~loc {txt = Ldot (Ast_literal.Lid.js_meth,"arity"^arity_s);loc} [Typ.any ~loc ()]))
-                {loc; txt = Lident ( "I_"^arity_s)})]) 
+                {loc; txt = Ast_literal.Lid.hidden_field})]) 
            args])
   
 

@@ -41,7 +41,7 @@ module Lid : sig
   val js_meth : t 
   val js_meth_callback : t 
   val js_obj : t 
-
+  val hidden_field : t
   val ignore_id : t 
   val js_null : t 
   val js_undefined : t

@@ -167,6 +167,11 @@ let buckle_script_flags : (string * Arg.spec * string) list =
       (fun _ -> Lazy.force Super_main.setup)
      ,
    " Better error message combined with other tools "
+  ) 
+  ::
+  ("-unboxed-types",
+    Arg.Set Clflags.unboxed_types,
+    " unannotated unboxable types will be unboxed"
   )
    :: 
   ("-bs-re-out",
