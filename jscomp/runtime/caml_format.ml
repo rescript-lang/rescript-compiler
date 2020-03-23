@@ -25,9 +25,9 @@
 
 
 
-(** *)
 
-let repeat = Caml_utils.repeat
+external repeat : string -> int -> string = "repeat" [@@bs.send]
+
 let caml_failwith s = raise (Failure  s)
 (* let caml_invalid_argument s= raise (Invalid_argument s ) *)
 
@@ -364,7 +364,7 @@ let aux f (i : nativeint)  =
       f.filter <- " ";
       let n = f.prec -Caml_string_extern.length s.contents in 
       if n > 0 then
-        s .contents<-  repeat n "0"  ^ s.contents
+        s .contents<-  repeat "0" n   ^ s.contents
     end ;
   finish_formatting f s.contents
 
@@ -485,7 +485,7 @@ let caml_int64_format fmt x =
       f.filter <- " ";
       let n = f.prec -Caml_string_extern.length s in
       if n > 0 then
-        repeat n "0" ^ s else s 
+        ("0" |. repeat n)  ^ s else s 
     end  else s in 
 
   finish_formatting f fill_s
