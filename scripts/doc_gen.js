@@ -77,7 +77,7 @@ function main() {
         var hidden_modules = ``
         // hidden_modules =  `-hide ${hidden_list.join(',')}`
 
-        var prefix_flags = `${ocamldoc}  ${generator} ${hidden_modules} -w -40 -nostdlib -nopervasives  -I ${others_dir} -I ${runtime_dir} -open Bs_stdlib_mini -charset utf-8  -intro ${intro} -sort -ppx '${path.join(__dirname, '..', process.platform, 'bsc.exe')} -as-ppx'  -d ${api_doc_dir}`
+        var prefix_flags = `${ocamldoc}  ${generator} ${hidden_modules} -w -40 -nostdlib -nopervasives  -I ${others_dir} -I ${runtime_dir} -open Bs_stdlib_mini -charset utf-8  -intro ${intro} -sort -ppx '${path.join(__dirname, '..', process.platform, 'bsc')} -as-ppx'  -d ${api_doc_dir}`
 
         // -html it is weird
         // It is weird, -html will unload the plugin
