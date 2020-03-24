@@ -52,9 +52,9 @@ let  rec block ?comment  (b : J.block)   : t =
 (* It's a statement, we can discard some values *)       
 let rec exp ?comment (e : E.t) : t = 
   match e.expression_desc with 
-  | (Seq( {expression_desc = Number _}, b) 
-    | Seq( b, {expression_desc = Number _})) -> exp ?comment b 
-  | Number _ -> block []
+  | (Seq( {expression_desc = Number _ | Undefined}, b) 
+    | Seq( b, {expression_desc = Number _ | Undefined})) -> exp ?comment b 
+  | Number _ | Undefined -> block []
   (* TODO: we can do more *)      
   (* | _ when is_pure e ->  block [] *)
   |  _ -> 

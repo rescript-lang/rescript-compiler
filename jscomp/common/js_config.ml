@@ -69,7 +69,7 @@ let no_builtin_ppx = ref false
 let debug_file = ref ""
 
 
-let set_debug_file  f = debug_file := f
+let set_debug_file  () = debug_file := !Location.input_name
 
 let is_same_file () =
   !debug_file <> "" &&  !debug_file = !Location.input_name

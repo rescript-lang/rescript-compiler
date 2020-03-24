@@ -74,7 +74,7 @@ val get_check_div_by_zero : unit -> bool
 
 
 
-val set_debug_file : string -> unit
+val set_debug_file : unit -> unit
 
 
 val is_same_file : unit -> bool 

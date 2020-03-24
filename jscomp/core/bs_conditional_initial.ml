@@ -56,13 +56,6 @@ let setup_env () =
     Matching_polyfill.names_from_construct_pattern;
 #if undefined BS_RELEASE_BUILD then
     Printexc.record_backtrace true;
-    (match Sys.getenv_opt "BS_DEBUG_FILE" with 
-     | None -> ()       
-     | Some s -> 
-       Js_config.set_debug_file s 
-    );
-    (if Sys.getenv_opt "BS_DEBUG_CHROME" <> None then 
-      Js_config.debug := true);
 #end
   Lexer.replace_directive_bool "BS" true;
   Lexer.replace_directive_bool "JS" true;
