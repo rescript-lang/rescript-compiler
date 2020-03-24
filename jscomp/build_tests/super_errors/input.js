@@ -4,7 +4,7 @@ const child_process = require('child_process')
 
 
 var  bsc = path.join(__dirname,'..','..','..',process.platform,'bsc.exe')
-// var  refmt = path.join(__dirname,'..','..','..','lib','refmt.exe')   
+// var  refmt = path.join(__dirname,'..','..','..','lib','refmt.exe')
 
 
 // work around CI issue

@@ -29,6 +29,6 @@ etc
 
 Files in `formattingTests` get printed with `-colors always` so we can test formatting. The other ones are printed with `-colors never` so that it's readable.
 
-To add a new test case, add your code to the end of a file, and run `jscomp/build_tests/super_errors/rebuild.sh`. The output will be appended.
+To add a new test case, see `jscomp/build_tests/super_errors/README.md`.
 
-To test the changes on a dummy project, see [here](https://github.com/BuckleScript/bucklescript/blob/master/CONTRIBUTING.md#test-on-a-dummy-project).
+To test the changes on a dummy project, see "Test on a Dummy Project" in [CONTRIBUTING.md](../../CONTRIBUTING.md).
