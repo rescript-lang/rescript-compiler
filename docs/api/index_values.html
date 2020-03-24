@@ -11,7 +11,6 @@
                <body class="index elements-index">
 <nav class="module-index"><ul><li><a href="Belt.html">Belt</a></li>
 <li><a href="Belt_Array.html">Belt_Array</a></li>
-<li><a href="Belt_Debug.html">Belt_Debug</a></li>
 <li><a href="Belt_Float.html">Belt_Float</a></li>
 <li><a href="Belt_HashMap.html">Belt_HashMap</a></li>
 <li><a href="Belt_HashMapInt.html">Belt_HashMapInt</a></li>
@@ -57,6 +56,7 @@
 <li><a href="Dom_storage.html">Dom_storage</a></li>
 <li><a href="Dom_storage2.html">Dom_storage2</a></li>
 <li><a href="Js.html">Js</a></li>
+<li><a href="Js_OO.html">Js_OO</a></li>
 <li><a href="Js_array.html">Js_array</a></li>
 <li><a href="Js_array2.html">Js_array2</a></li>
 <li><a href="Js_cast.html">Js_cast</a></li>
@@ -1822,7 +1822,13 @@ The return type is <code class="code">float</code> because this function returns
 <tr><td><a href="Belt_Id.html#VALcomparable">comparable</a> [<a href="Belt_Id.html">Belt_Id</a>]</td>
 <td> <div class="info">                     
                 <div class="not-examples">
-                     
+                    <pre class="codepre"><code class="code">      module C = (
+        val Belt.Id.comparable ~cmp:(compare : int -&gt; int -&gt; int)
+      )
+      let m = Belt.Set.make(module C)
+    </code></pre>
+    Note that the name of C can not be ignored<br>
+ 
                 </div>
                 </div> </td></tr>
 <tr><td><a href="Belt_Id.html#VALcomparableU">comparableU</a> [<a href="Belt_Id.html">Belt_Id</a>]</td>
@@ -15934,12 +15940,6 @@ have been replaced by <code class="code">replacement</code>.<br>
                      
                 </div>
                 </div> </td></tr>
-<tr><td><a href="Belt_Debug.html#VALsetupChromeDebugger">setupChromeDebugger</a> [<a href="Belt_Debug.html">Belt_Debug</a>]</td>
-<td> <div class="info">                     
-                <div class="not-examples">
-                     
-                </div>
-                </div> </td></tr>
 <tr><td><a href="Js_array2.html#VALshift">shift</a> [<a href="Js_array2.html">Js_array2</a>]</td>
 <td> <div class="info">                     
                 <div class="not-examples">
@@ -18306,12 +18306,6 @@ If <code class="code">n</code> is greater than the length of <code class="code">
  
                 </div>
                 </div> </td></tr>
-<tr><td><a href="Js.html#VALtest">test</a> [<a href="Js.html">Js</a>]</td>
-<td> <div class="info">                     
-                <div class="not-examples">
-                     
-                </div>
-                </div> </td></tr>
 <tr><td><a href="Js_undefined.html#VALtestAny">testAny</a> [<a href="Js_undefined.html">Js_undefined</a>]</td>
 <td> <div class="info">                     
                 <div class="not-examples">
@@ -18321,7 +18315,7 @@ If <code class="code">n</code> is greater than the length of <code class="code">
 <tr><td><a href="Js.html#VALtestAny">testAny</a> [<a href="Js.html">Js</a>]</td>
 <td> <div class="info">                     
                 <div class="not-examples">
-                    The same as <a href="Js.html#VALtest"><code class="code">Js.test</code></a> except that it is more permissive on the types of input<br>
+                    The same as <code class="code">test</code> except that it is more permissive on the types of input<br>
  
                 </div>
                 </div> </td></tr>
@@ -19250,6 +19244,12 @@ before the decimal point.<br>
                 </div>
                 </div> </td></tr>
 <tr><td><a href="Belt_Int.html#VALtoString">toString</a> [<a href="Belt_Int.html">Belt_Int</a>]</td>
+<td> <div class="info">                     
+                <div class="not-examples">
+                     
+                </div>
+                </div> </td></tr>
+<tr><td><a href="Node_buffer.html#VALtoStringWithEncoding">toStringWithEncoding</a> [<a href="Node_buffer.html">Node_buffer</a>]</td>
 <td> <div class="info">                     
                 <div class="not-examples">
                      
