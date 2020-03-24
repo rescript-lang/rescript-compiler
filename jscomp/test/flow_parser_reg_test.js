@@ -4984,7 +4984,7 @@ function grow(t, n) {
     t.la_results = new_arr;
     return /* () */0;
   } else {
-    return 0;
+    return /* () */0;
   }
 }
 
@@ -5498,7 +5498,7 @@ function strict_error(env, e) {
   if (env.in_strict_mode) {
     return error$1(env, e);
   } else {
-    return 0;
+    return /* () */0;
   }
 }
 
@@ -5509,7 +5509,7 @@ function strict_error_at(env, param) {
                 param[1]
               ]);
   } else {
-    return 0;
+    return /* () */0;
   }
 }
 
@@ -5591,7 +5591,7 @@ function double_pop_lex_mode(env) {
 
 function semicolon(env) {
   if (is_implicit_semicolon(env)) {
-    return 0;
+    return /* () */0;
   } else if (token$2(undefined, env) === /* T_SEMICOLON */7) {
     return token$3(env);
   } else {
@@ -5661,7 +5661,7 @@ function reset_token_sink(flush, env, token_buffer_info) {
     if (flush) {
       return Queue.iter(orig_token_sink, match[1]);
     } else {
-      return 0;
+      return /* () */0;
     }
   } else {
     return /* () */0;
@@ -7396,7 +7396,7 @@ function strict_post_check(env, strict, simple, id, params) {
         ], params);
     return /* () */0;
   } else {
-    return 0;
+    return /* () */0;
   }
 }
 
@@ -11297,7 +11297,7 @@ function assert_can_be_forin_or_forof(env, err, param) {
               loc,
               match$1[1]
             ])) {
-        return 0;
+        return /* () */0;
       } else {
         return error_at(env, /* tuple */[
                     loc,
@@ -13605,7 +13605,7 @@ function directives(env, term_fn, item_fn) {
                           /* StrictOctalLiteral */31
                         ]);
             } else {
-              return 0;
+              return /* () */0;
             }
           }
           var s = "Nooo: " + (token_to_string(token) + "\n");

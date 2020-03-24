@@ -99,7 +99,7 @@ function fff2(x) {
     console.log("hi");
     return /* () */0;
   } else {
-    return 0;
+    return /* () */0;
   }
 }
 

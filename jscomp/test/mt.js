@@ -76,7 +76,7 @@ function handleCode(spec) {
         var b = spec[1];
         var a = spec[0];
         if (close_enough(undefined, a, b)) {
-          return 0;
+          return /* () */0;
         } else {
           Assert.deepEqual(a, b);
           return /* () */0;
@@ -85,7 +85,7 @@ function handleCode(spec) {
         var b$1 = spec[2];
         var a$1 = spec[1];
         if (close_enough(spec[0], a$1, b$1)) {
-          return 0;
+          return /* () */0;
         } else {
           Assert.deepEqual(a$1, b$1);
           return /* () */0;

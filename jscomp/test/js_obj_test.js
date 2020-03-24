@@ -15,9 +15,9 @@ function f_js(u) {
 }
 
 var class_tables = /* Cons */[
-  0,
-  0,
-  0
+  /* () */0,
+  /* () */0,
+  /* () */0
 ];
 
 var suites_000 = /* tuple */[
@@ -31,7 +31,7 @@ var suites_000 = /* tuple */[
                 return 1 + x | 0;
               }));
         var env_init = function (env$1) {
-          var self = CamlinternalOO.create_object_opt(0, $$class);
+          var self = CamlinternalOO.create_object_opt(/* () */0, $$class);
           self[env] = env$1;
           return self;
         };
@@ -40,7 +40,7 @@ var suites_000 = /* tuple */[
       }
       return /* Eq */Block.__(0, [
                 33,
-                f(Curry._1(class_tables[0], 0))
+                f(Curry._1(class_tables[0], /* () */0))
               ]);
     })
 ];

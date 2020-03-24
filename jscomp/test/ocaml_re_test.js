@@ -981,7 +981,7 @@ function mark_used_indices(tbl) {
                                   if (i >= 0) {
                                     return Caml_array.caml_array_set(tbl, i, true);
                                   } else {
-                                    return 0;
+                                    return /* () */0;
                                   }
                                 }), param[0].marks);
                   }), param);

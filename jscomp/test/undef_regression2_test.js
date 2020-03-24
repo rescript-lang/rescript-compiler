@@ -74,7 +74,7 @@ function test3(param) {
     console.log("production mode");
     return /* () */0;
   } else {
-    return 0;
+    return /* () */0;
   }
 }
 

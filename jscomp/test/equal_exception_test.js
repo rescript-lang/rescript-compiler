@@ -42,7 +42,7 @@ function is_equal(param) {
           ]
         ];
   }
-  return 0;
+  return /* () */0;
 }
 
 function is_exception(param) {

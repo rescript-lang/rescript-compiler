@@ -123,10 +123,10 @@ function abstract_point_001($$class) {
 }
 
 var abstract_point = /* class */[
-  0,
+  /* () */0,
   abstract_point_001,
-  0,
-  0
+  /* () */0,
+  /* () */0
 ];
 
 function point_init($$class) {
@@ -195,7 +195,7 @@ var colored_point = CamlinternalOO.make_class([
       "get_x"
     ], colored_point_init);
 
-var p$prime = Curry._3(colored_point[0], 0, 5, "red");
+var p$prime = Curry._3(colored_point[0], /* () */0, 5, "red");
 
 eq("File \"class4_test.ml\", line 67, characters 5-12", /* tuple */[
       5,

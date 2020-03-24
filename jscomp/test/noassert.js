@@ -14,7 +14,7 @@ function f(param) {
 }
 
 function h(param) {
-  return 0;
+  return /* () */0;
 }
 
 exports.f = f;

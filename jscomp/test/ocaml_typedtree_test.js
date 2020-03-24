@@ -1461,7 +1461,7 @@ function print(ppf, w) {
     nerrors.contents = nerrors.contents + 1 | 0;
     return /* () */0;
   } else {
-    return 0;
+    return /* () */0;
   }
 }
 
@@ -1986,7 +1986,7 @@ function default_warning_printer(loc, ppf, w) {
                     "@{<warning>%s@} %a@."
                   ]), "Warning", print, w);
   } else {
-    return 0;
+    return /* () */0;
   }
 }
 
@@ -4988,7 +4988,7 @@ function dup_kind(r) {
         ];
   }
   if (List.memq(r, new_kinds.contents)) {
-    return 0;
+    return /* () */0;
   } else {
     saved_kinds.contents = /* :: */[
       r,
@@ -5027,7 +5027,7 @@ function mark_type(ty) {
     ty$1.level = pivot_level - ty$1.level | 0;
     return iter_type_expr(mark_type, ty$1);
   } else {
-    return 0;
+    return /* () */0;
   }
 }
 
@@ -5037,7 +5037,7 @@ function mark_type_node(ty) {
     ty$1.level = pivot_level - ty$1.level | 0;
     return /* () */0;
   } else {
-    return 0;
+    return /* () */0;
   }
 }
 
@@ -5047,7 +5047,7 @@ function it_type_expr(it, ty) {
     mark_type_node(ty$1);
     return Curry._2(it.it_do_type_expr, it, ty$1);
   } else {
-    return 0;
+    return /* () */0;
   }
 }
 
@@ -5057,7 +5057,7 @@ function unmark_type(ty) {
     ty$1.level = pivot_level - ty$1.level | 0;
     return iter_type_expr(unmark_type, ty$1);
   } else {
-    return 0;
+    return /* () */0;
   }
 }
 
@@ -5283,7 +5283,7 @@ function log_type(ty) {
                   ty.desc
                 ]));
   } else {
-    return 0;
+    return /* () */0;
   }
 }
 
@@ -5664,7 +5664,7 @@ function free_vars(ty) {
                 var row = row_repr_aux(/* [] */0, match[0]);
                 iter_row(loop, row);
                 if (static_row(row)) {
-                  return 0;
+                  return /* () */0;
                 } else {
                   _ty = row.row_more;
                   continue ;
@@ -5674,7 +5674,7 @@ function free_vars(ty) {
           }
         }
       } else {
-        return 0;
+        return /* () */0;
       }
     };
   };
@@ -6333,7 +6333,7 @@ function warn_bad_docstrings(param) {
                   }
                 }), List.rev(docstrings.contents));
   } else {
-    return 0;
+    return /* () */0;
   }
 }
 
@@ -6522,7 +6522,7 @@ function set_pre_docstrings(pos, dsl) {
   if (dsl !== /* [] */0) {
     return Hashtbl.add(pre_table, pos, dsl);
   } else {
-    return 0;
+    return /* () */0;
   }
 }
 
@@ -6560,7 +6560,7 @@ function set_post_docstrings(pos, dsl) {
   if (dsl !== /* [] */0) {
     return Hashtbl.add(post_table, pos, dsl);
   } else {
-    return 0;
+    return /* () */0;
   }
 }
 
@@ -6612,7 +6612,7 @@ function set_floating_docstrings(pos, dsl) {
   if (dsl !== /* [] */0) {
     return Hashtbl.add(floating_table, pos, dsl);
   } else {
-    return 0;
+    return /* () */0;
   }
 }
 
@@ -6635,7 +6635,7 @@ function set_pre_extra_docstrings(pos, dsl) {
   if (dsl !== /* [] */0) {
     return Hashtbl.add(pre_extra_table, pos, dsl);
   } else {
-    return 0;
+    return /* () */0;
   }
 }
 
@@ -6658,7 +6658,7 @@ function set_post_extra_docstrings(pos, dsl) {
   if (dsl !== /* [] */0) {
     return Hashtbl.add(post_extra_table, pos, dsl);
   } else {
-    return 0;
+    return /* () */0;
   }
 }
 
@@ -10015,7 +10015,7 @@ function add_import(s) {
 
 function check_consistency(ps) {
   if (ps.ps_crcs_checked) {
-    return 0;
+    return /* () */0;
   } else {
     try {
       List.iter((function (param) {
@@ -10034,7 +10034,7 @@ function check_consistency(ps) {
                           match[1]
                         ];
                   } else {
-                    return 0;
+                    return /* () */0;
                   }
                 }
                 catch (exn){
@@ -10111,7 +10111,7 @@ function read_pers_struct(modname, filename) {
   add_import(name);
   List.iter((function (param) {
           if (recursive_types.contents) {
-            return 0;
+            return /* () */0;
           } else {
             throw [
                   $$Error$2,
@@ -10346,7 +10346,7 @@ function add_required_global(id) {
     ];
     return /* () */0;
   } else {
-    return 0;
+    return /* () */0;
   }
 }
 
@@ -10864,7 +10864,7 @@ function lookup_cltype(param, param$1) {
 
 function mark_value_used(env, name, vd) {
   if (is_implicit_coercion(env)) {
-    return 0;
+    return /* () */0;
   } else {
     try {
       return Curry._1(Hashtbl.find(value_declarations, /* tuple */[
@@ -10884,7 +10884,7 @@ function mark_value_used(env, name, vd) {
 
 function mark_type_used(env, name, vd) {
   if (is_implicit_coercion(env)) {
-    return 0;
+    return /* () */0;
   } else {
     try {
       return Curry._1(Hashtbl.find(type_declarations, /* tuple */[
@@ -10904,7 +10904,7 @@ function mark_type_used(env, name, vd) {
 
 function mark_constructor_used(usage, env, name, vd, constr) {
   if (is_implicit_coercion(env)) {
-    return 0;
+    return /* () */0;
   } else {
     try {
       return Curry._1(Hashtbl.find(used_constructors, /* tuple */[
@@ -10925,7 +10925,7 @@ function mark_constructor_used(usage, env, name, vd, constr) {
 
 function mark_extension_used(usage, env, ext, name) {
   if (is_implicit_coercion(env)) {
-    return 0;
+    return /* () */0;
   } else {
     var ty_name = last(ext.ext_type_path);
     try {
@@ -11087,7 +11087,7 @@ function lookup_all_constructors$1(lid, env) {
 
 function mark_constructor(usage, env, name, desc) {
   if (is_implicit_coercion(env)) {
-    return 0;
+    return /* () */0;
   } else {
     var match = desc.cstr_tag;
     switch (match.tag | 0) {
@@ -11338,7 +11338,7 @@ function used_persistent(param) {
             r.contents = add$2(s, r.contents);
             return /* () */0;
           } else {
-            return 0;
+            return /* () */0;
           }
         }), persistent_structures);
   return r.contents;
@@ -11527,7 +11527,7 @@ function add_gadt_instance_chain(env, lv, t) {
   var add_instance = function (t) {
     var t$1 = repr(t);
     if (mem$3(t$1, r.contents)) {
-      return 0;
+      return /* () */0;
     } else {
       set_typeset(r, add$3(t$1, r.contents));
       var match = t$1.desc;
@@ -11611,7 +11611,7 @@ function constructors_of_type(ty_path, decl) {
               num_normal.contents = num_normal.contents + 1 | 0;
               return /* () */0;
             } else {
-              return 0;
+              return /* () */0;
             }
           }), cstrs);
     var describe_constructors = function (idx_const, idx_nonconst, param) {
@@ -12113,11 +12113,11 @@ function check_usage(loc, id, warn, tbl) {
               return /* () */0;
             }));
       if (name === "" || Caml_string.get(name, 0) === /* "_" */95 || Caml_string.get(name, 0) === /* "#" */35) {
-        return 0;
+        return /* () */0;
       } else {
         return Curry._1(add_delayed_check_forward.contents, (function (param) {
                       if (used.contents) {
-                        return 0;
+                        return /* () */0;
                       } else {
                         return prerr_warning(loc, Curry._1(warn, name));
                       }
@@ -12125,7 +12125,7 @@ function check_usage(loc, id, warn, tbl) {
       }
     }
   } else {
-    return 0;
+    return /* () */0;
   }
 }
 
@@ -12154,7 +12154,7 @@ function check_value_name(name, loc) {
     }
     return /* () */0;
   } else {
-    return 0;
+    return /* () */0;
   }
 }
 
@@ -12476,7 +12476,7 @@ function store_type(check, slot, id, path, info, env, renv) {
               c
             ];
             if (Hashtbl.mem(used_constructors, k)) {
-              return 0;
+              return /* () */0;
             } else {
               var used = {
                 cu_positive: false,
@@ -12487,7 +12487,7 @@ function store_type(check, slot, id, path, info, env, renv) {
                       return add_constructor_usage(used, param);
                     }));
               if (ty === "" || Caml_string.get(ty, 0) === /* "_" */95) {
-                return 0;
+                return /* () */0;
               } else {
                 return Curry._1(add_delayed_check_forward.contents, (function (param) {
                               if (!is_in_signature(env) && !used.cu_positive) {
@@ -12497,7 +12497,7 @@ function store_type(check, slot, id, path, info, env, renv) {
                                               used.cu_privatize
                                             ]));
                               } else {
-                                return 0;
+                                return /* () */0;
                               }
                             }));
               }
@@ -12567,7 +12567,7 @@ function store_extension(check, slot, id, path, ext, env, renv) {
                               used.cu_privatize
                             ]));
               } else {
-                return 0;
+                return /* () */0;
               }
             }));
     }
@@ -12924,7 +12924,7 @@ function open_signature$1(locOpt, toplevelOpt, ovf, root, sg, env) {
     };
     Curry._1(add_delayed_check_forward.contents, (function (param) {
             if (used.contents) {
-              return 0;
+              return /* () */0;
             } else {
               return prerr_warning(loc, /* Unused_open */Block.__(17, [name(undefined, root)]));
             }
@@ -13630,7 +13630,7 @@ function from_pair_suites(name, suites) {
                                           var b = spec[1];
                                           var a = spec[0];
                                           if (close_enough(undefined, a, b)) {
-                                            return 0;
+                                            return /* () */0;
                                           } else {
                                             Assert.deepEqual(a, b);
                                             return /* () */0;
@@ -13639,7 +13639,7 @@ function from_pair_suites(name, suites) {
                                           var b$1 = spec[2];
                                           var a$1 = spec[1];
                                           if (close_enough(spec[0], a$1, b$1)) {
-                                            return 0;
+                                            return /* () */0;
                                           } else {
                                             Assert.deepEqual(a$1, b$1);
                                             return /* () */0;
@@ -14277,7 +14277,7 @@ function check_variable(vl, loc, v) {
             ])
         ];
   } else {
-    return 0;
+    return /* () */0;
   }
 }
 
@@ -24375,7 +24375,7 @@ function record_value_dependency(vd1, vd2) {
     ];
     return /* () */0;
   } else {
-    return 0;
+    return /* () */0;
   }
 }
 
@@ -24638,7 +24638,7 @@ function reset_trace_gadt_instances(b) {
     trace_gadt_instances.contents = false;
     return /* () */0;
   } else {
-    return 0;
+    return /* () */0;
   }
 }
 
@@ -25335,7 +25335,7 @@ function closed_schema_rec(_ty) {
               var row = row_repr_aux(/* [] */0, match[0]);
               iter_row(closed_schema_rec, row);
               if (static_row(row)) {
-                return 0;
+                return /* () */0;
               } else {
                 _ty = row.row_more;
                 continue ;
@@ -25345,7 +25345,7 @@ function closed_schema_rec(_ty) {
         }
       }
     } else {
-      return 0;
+      return /* () */0;
     }
   };
 }
@@ -25444,7 +25444,7 @@ function free_vars_rec(_real, _ty) {
                       return free_vars_rec(true, param);
                     }), row);
               if (static_row(row)) {
-                return 0;
+                return /* () */0;
               } else {
                 _ty = row.row_more;
                 _real = false;
@@ -25457,7 +25457,7 @@ function free_vars_rec(_real, _ty) {
         }
       }
     } else {
-      return 0;
+      return /* () */0;
     }
   };
 }
@@ -25584,7 +25584,7 @@ function closed_class(params, sign) {
           if (param[0] === dummy_method) {
             return mark_type(param[2]);
           } else {
-            return 0;
+            return /* () */0;
           }
         }), fields);
   try {
@@ -25611,7 +25611,7 @@ function closed_class(params, sign) {
                 throw exn;
               }
             } else {
-              return 0;
+              return /* () */0;
             }
           }), fields);
     iter_type_expr(mark_type, repr(sign.csig_self));
@@ -25684,11 +25684,11 @@ function generalize_structure(var_level, ty) {
                       return generalize_structure(var_level, param);
                     }), ty$1);
       } else {
-        return 0;
+        return /* () */0;
       }
     }
   } else {
-    return 0;
+    return /* () */0;
   }
 }
 
@@ -25923,7 +25923,7 @@ function update_level(env, level, _ty) {
                     return update_level(env, level, param);
                   }), ty$1);
     } else {
-      return 0;
+      return /* () */0;
     }
   };
 }
@@ -25992,7 +25992,7 @@ function generalize_expansive(env, var_level, _ty) {
         }
       }
     } else {
-      return 0;
+      return /* () */0;
     }
   };
 }
@@ -26072,7 +26072,7 @@ function limited_generalize(ty0, ty) {
       parents.contents = Pervasives.$at(pty, parents.contents);
       return /* () */0;
     } else {
-      return 0;
+      return /* () */0;
     }
   };
   var generalize_parents = function (ty) {
@@ -26089,11 +26089,11 @@ function limited_generalize(ty0, ty) {
         if ((lv < 0 || lv > current_level.contents) && lv !== 100000000) {
           return set_level(more, 100000000);
         } else {
-          return 0;
+          return /* () */0;
         }
       }
     } else {
-      return 0;
+      return /* () */0;
     }
   };
   inverse(/* [] */0, ty);
@@ -26108,7 +26108,7 @@ function limited_generalize(ty0, ty) {
                 if (ty.level !== 100000000) {
                   return set_level(ty, current_level.contents);
                 } else {
-                  return 0;
+                  return /* () */0;
                 }
               }), graph);
 }
@@ -26152,7 +26152,7 @@ function compute_univars(ty) {
     try {
       var univs = Curry._2(TypeHash.find, node_univars, inv.inv_type);
       if (mem$3(univ, univs.contents)) {
-        return 0;
+        return /* () */0;
       } else {
         univs.contents = add$3(univ, univs.contents);
         return List.iter((function (param) {
@@ -26177,7 +26177,7 @@ function compute_univars(ty) {
           if (is_Tunivar(ty)) {
             return add_univar(ty, inv);
           } else {
-            return 0;
+            return /* () */0;
           }
         }), inverted);
   return (function (ty) {
@@ -27031,7 +27031,7 @@ function check_abbrev_env(env) {
     previous_env.contents = env;
     return /* () */0;
   } else {
-    return 0;
+    return /* () */0;
   }
 }
 
@@ -27514,7 +27514,7 @@ function occur_rec(env, visited, ty0, ty) {
                 }
                 if (exit === 2) {
                   if (recursive_types.contents && is_contractive(env, ty$prime)) {
-                    return 0;
+                    return /* () */0;
                   } else {
                     var partial_arg$1 = /* :: */[
                       ty$prime,
@@ -27530,7 +27530,7 @@ function occur_rec(env, visited, ty0, ty) {
               catch (exn$1){
                 if (exn$1 === Cannot_expand) {
                   if (occur_ok) {
-                    return 0;
+                    return /* () */0;
                   } else {
                     throw Occur;
                   }
@@ -27551,7 +27551,7 @@ function occur_rec(env, visited, ty0, ty) {
     }
   }
   if (occur_ok) {
-    return 0;
+    return /* () */0;
   } else {
     return iter_type_expr((function (param) {
                   return occur_rec(env, visited, ty0, param);
@@ -27568,7 +27568,7 @@ function merge(r, b) {
     r.contents = true;
     return /* () */0;
   } else {
-    return 0;
+    return /* () */0;
   }
 }
 
@@ -27742,7 +27742,7 @@ function occur_univar(env, ty) {
                                 if (Curry._2(Types_Variance.mem, /* May_pos */0, v) || Curry._2(Types_Variance.mem, /* May_neg */1, v)) {
                                   return occur_rec(bound, t);
                                 } else {
-                                  return 0;
+                                  return /* () */0;
                                 }
                               }
                               }(bound)), tl, td.type_variance);
@@ -27763,7 +27763,7 @@ function occur_univar(env, ty) {
                 }
             case /* Tunivar */9 :
                 if (mem$3(ty$1, bound)) {
-                  return 0;
+                  return /* () */0;
                 } else {
                   throw [
                         Unify,
@@ -27790,7 +27790,7 @@ function occur_univar(env, ty) {
           }
         }
       } else {
-        return 0;
+        return /* () */0;
       }
     };
   };
@@ -27856,7 +27856,7 @@ function univars_escape(env, univar_pairs, vl, ty) {
                                   if (Curry._2(Types_Variance.mem, /* May_pos */0, v) || Curry._2(Types_Variance.mem, /* May_neg */1, v)) {
                                     return occur(t);
                                   } else {
-                                    return 0;
+                                    return /* () */0;
                                   }
                                 }), tl, td.type_variance);
                   }
@@ -27874,7 +27874,7 @@ function univars_escape(env, univar_pairs, vl, ty) {
                 if (mem$3(t$1, family)) {
                   throw Occur;
                 } else {
-                  return 0;
+                  return /* () */0;
                 }
             case /* Tpoly */10 :
                 if (List.exists((function (t) {
@@ -28034,7 +28034,7 @@ function deep_occur(t0, ty) {
       ty$1.level = pivot_level - ty$1.level | 0;
       return iter_type_expr(occur_rec, ty$1);
     } else {
-      return 0;
+      return /* () */0;
     }
   };
   try {
@@ -28423,7 +28423,7 @@ function mcomp(type_pairs, env, _t1, _t2) {
                                             if (i) {
                                               return mcomp(type_pairs, env, param[0], param[1]);
                                             } else {
-                                              return 0;
+                                              return /* () */0;
                                             }
                                           }), inj, List.combine(tl1, tl2));
                             } else {
@@ -28897,7 +28897,7 @@ function mcomp(type_pairs, env, _t1, _t2) {
                           /* [] */0
                         ];
                   } else {
-                    return 0;
+                    return /* () */0;
                   }
                 }
                 catch (exn$3){
@@ -29070,7 +29070,7 @@ function find_lowest_level(ty) {
       ty$1.level = pivot_level - ty$1.level | 0;
       return iter_type_expr(find, ty$1);
     } else {
-      return 0;
+      return /* () */0;
     }
   };
   find(ty);
@@ -30698,13 +30698,13 @@ function unify3(env, t1, t1$prime, t2, t2$prime) {
           forget_abbrev(match$9[2], match$9[0]);
           var t2$prime$prime = expand_head_unif(env.contents, t2);
           if (closed_parameterized_type(match$9[1], t2$prime$prime)) {
-            return 0;
+            return /* () */0;
           } else {
             return link_type(repr(t2), repr(t2$prime));
           }
         }
       } else {
-        return 0;
+        return /* () */0;
       }
     }
     catch (raw_exn$1){
@@ -31076,7 +31076,7 @@ function moregen_occur(env, level, ty) {
         }
       }
     } else {
-      return 0;
+      return /* () */0;
     }
   };
   try {
@@ -31479,10 +31479,10 @@ function moregen(inst_nongen, type_pairs, env, t1, t2) {
                                                         /* [] */0
                                                       ];
                                                 } else {
-                                                  return 0;
+                                                  return /* () */0;
                                                 }
                                               } else {
-                                                return 0;
+                                                return /* () */0;
                                               }
                                             } else {
                                               throw [
@@ -31804,7 +31804,7 @@ function rigidify_rec(vars, _ty) {
         switch (match.tag | 0) {
           case /* Tvar */0 :
               if (List.memq(ty$1, vars.contents)) {
-                return 0;
+                return /* () */0;
               } else {
                 vars.contents = /* :: */[
                   ty$1,
@@ -31834,7 +31834,7 @@ function rigidify_rec(vars, _ty) {
                       return rigidify_rec(vars, param);
                     }), row);
               if (static_row(row)) {
-                return 0;
+                return /* () */0;
               } else {
                 _ty = row_more(row);
                 continue ;
@@ -31846,7 +31846,7 @@ function rigidify_rec(vars, _ty) {
         }
       }
     } else {
-      return 0;
+      return /* () */0;
     }
   };
 }
@@ -31924,7 +31924,7 @@ function normalize_subst(subst) {
           }), subst.contents);
     return /* () */0;
   } else {
-    return 0;
+    return /* () */0;
   }
 }
 
@@ -31957,7 +31957,7 @@ function eqtype(rename, type_pairs, subst, env, t1, t2) {
                             /* [] */0
                           ];
                     } else {
-                      return 0;
+                      return /* () */0;
                     }
                   }
                   catch (exn){
@@ -32048,7 +32048,7 @@ function eqtype(rename, type_pairs, subst, env, t1, t2) {
                                     /* [] */0
                                   ];
                             } else {
-                              return 0;
+                              return /* () */0;
                             }
                           }
                           catch (exn$2){
@@ -34807,7 +34807,7 @@ function cyclic_abbrev(env, id, ty) {
 function normalize_type_rec(env, visited, ty) {
   var ty$1 = repr(ty);
   if (mem$3(ty$1, visited.contents)) {
-    return 0;
+    return /* () */0;
   } else {
     visited.contents = add$3(ty$1, visited.contents);
     var match = ty$1.desc;
@@ -40021,7 +40021,7 @@ function set_printing_env(env) {
                 }
               }
             } else {
-              return 0;
+              return /* () */0;
             }
           }));
     var cont = function (param) {
@@ -40100,7 +40100,7 @@ function best_type_path(p) {
                       r.contents = /* Best */Block.__(1, [p]);
                       return /* () */0;
                     } else {
-                      return 0;
+                      return /* () */0;
                     }
                   }), l);
             continue ;
@@ -40308,7 +40308,7 @@ var delayed = {
 
 function add_delayed(t) {
   if (List.memq(t, delayed.contents)) {
-    return 0;
+    return /* () */0;
   } else {
     delayed.contents = /* :: */[
       t,
@@ -40325,7 +40325,7 @@ function is_aliased(ty) {
 function add_alias(ty) {
   var px = proxy(ty);
   if (is_aliased(px)) {
-    return 0;
+    return /* () */0;
   } else {
     aliased.contents = /* :: */[
       px,
@@ -40437,7 +40437,7 @@ function mark_loops_rec(_visited, _ty) {
                               if (field_kind_repr(param[1]) === /* Fpresent */0) {
                                 return mark_loops_rec(visited$1, param[2]);
                               } else {
-                                return 0;
+                                return /* () */0;
                               }
                             }
                             }(visited$1)), match$3[0]);
@@ -43075,7 +43075,7 @@ function path_same_name(_p1, _p2) {
                   add_unique(id1);
                   return add_unique(id2);
                 } else {
-                  return 0;
+                  return /* () */0;
                 }
             case /* Pdot */1 :
             case /* Papply */2 :
@@ -46006,7 +46006,7 @@ function type_declarations$2(env, old_envOpt, cxt, subst, id, decl1, decl2) {
           ]
         ];
   } else {
-    return 0;
+    return /* () */0;
   }
 }
 
@@ -47835,7 +47835,7 @@ function report_error$4(ppf, errs) {
                             pe.contents = false;
                             return /* () */0;
                           } else {
-                            return 0;
+                            return /* () */0;
                           }
                         } else {
                           return Curry._2(Format.fprintf(ppf, /* Format */[
@@ -47912,7 +47912,7 @@ function record$2(ti) {
     ];
     return /* () */0;
   } else {
-    return 0;
+    return /* () */0;
   }
 }
 
@@ -49999,7 +49999,7 @@ function close_variant(env, row) {
                         row_name: nm
                       }])));
   } else {
-    return 0;
+    return /* () */0;
   }
 }
 
@@ -54079,7 +54079,7 @@ function transl_type(env, policy, styp) {
           if (present !== undefined) {
             List.iter((function (l) {
                     if (List.mem_assoc(l, fields$2)) {
-                      return 0;
+                      return /* () */0;
                     } else {
                       throw [
                             $$Error$6,
@@ -54297,7 +54297,7 @@ function make_fixed_univars(ty) {
       return iter_row(make_fixed_univars, row);
     }
   } else {
-    return 0;
+    return /* () */0;
   }
 }
 
@@ -54357,7 +54357,7 @@ function globalize_used_variables(env, fixed) {
               }
             }
           } else {
-            return 0;
+            return /* () */0;
           }
         }), used_variables.contents);
   used_variables.contents = /* Empty */0;
@@ -54406,7 +54406,7 @@ function transl_simple_type_univars(env, styp) {
             used_variables.contents = add$5(name, p, used_variables.contents);
             return /* () */0;
           } else {
-            return 0;
+            return /* () */0;
           }
         }), new_variables);
   globalize_used_variables(env, false)(/* () */0);
@@ -56992,10 +56992,10 @@ function check_recordpat_labels(loc, lbl_pat_list, closed) {
         var u = $$String.concat(", ", List.rev($$undefined));
         return prerr_warning(loc, /* Non_closed_record_pattern */Block.__(4, [u]));
       } else {
-        return 0;
+        return /* () */0;
       }
     } else {
-      return 0;
+      return /* () */0;
     }
   } else {
     return /* () */0;
@@ -57485,7 +57485,7 @@ function type_pat(constrs, labels, no_existentials, mode, env, sp, expected_ty) 
                       ])
                   ];
             } else {
-              return 0;
+              return /* () */0;
             }
           };
           var partial_arg = env.contents;
@@ -58751,7 +58751,7 @@ function check_application_result(env, statement, exp) {
   if (statement) {
     return prerr_warning(loc, /* Statement_type */4);
   } else {
-    return 0;
+    return /* () */0;
   }
 }
 
@@ -58820,7 +58820,7 @@ function contains_variant_either(ty) {
         return iter_row(loop, row);
       }
     } else {
-      return 0;
+      return /* () */0;
     }
   };
   try {
@@ -58908,7 +58908,7 @@ function contains_gadt(env, p) {
                 if (param[0].cstr_generalized) {
                   throw Pervasives.Exit;
                 } else {
-                  return 0;
+                  return /* () */0;
                 }
               }), cstrs);
       }
@@ -59888,7 +59888,7 @@ function type_expect_(in_function, env, sexp, ty_expected) {
                 unify$2(env, instance(undefined, env, ty_expected), match$1[2]);
                 return unify_exp_types(exp$1.exp_loc, env, ty_exp$1, match[2]);
               } else {
-                return 0;
+                return /* () */0;
               }
             };
             $$Array.iter(unify_kept, lbl_exp_list[0][1].lbl_all);
@@ -61740,7 +61740,7 @@ function type_application(env, funct, sargs) {
                 warned.contents = true;
                 return prerr_warning(loc, w);
               } else {
-                return 0;
+                return /* () */0;
               }
             }
             }(lv));
@@ -62386,7 +62386,7 @@ function type_cases(in_function, env, ty_arg, ty_res, partial_flag, loc, caselis
               }
             };
           } else {
-            return 0;
+            return /* () */0;
           }
         }));
   if (has_gadts) {
@@ -62498,7 +62498,7 @@ function type_let(checkOpt, check_strictOpt, env, rec_flag, spat_sexp_list, scop
                 ]);
             return iter_pattern(finalize_variant, pat);
           } else {
-            return 0;
+            return /* () */0;
           }
         }), pat_list);
   var pat_list$1 = principal.contents ? (end_def(/* () */0), List.map((function (pat) {
@@ -62543,7 +62543,7 @@ function type_let(checkOpt, check_strictOpt, env, rec_flag, spat_sexp_list, scop
                     if (!(name === "" || Caml_string.get(name, 0) === /* "_" */95 || Caml_string.get(name, 0) === /* "#" */35)) {
                       add_delayed_check((function (param) {
                               if (used.contents) {
-                                return 0;
+                                return /* () */0;
                               } else {
                                 return prerr_warning(vd.val_loc, Curry._1(some_used.contents ? check_strict : check$1, name));
                               }
@@ -62654,7 +62654,7 @@ function type_let(checkOpt, check_strictOpt, env, rec_flag, spat_sexp_list, scop
   end_def(/* () */0);
   List.iter2((function (pat, exp) {
           if (is_nonexpansive(exp)) {
-            return 0;
+            return /* () */0;
           } else {
             return iter_pattern((function (pat) {
                           return generalize_expansive$1(env, pat.pat_type);
@@ -63904,7 +63904,7 @@ register_error_of_exn((function (param) {
                                                                 ".@.@[<hov>%s@ %s@]"
                                                               ]), "This simple coercion was not fully general.", "Consider using a double coercion.");
                                               } else {
-                                                return 0;
+                                                return /* () */0;
                                               }
                                           case /* Too_many_arguments */26 :
                                               var ty$4 = param$1[1];
@@ -64831,7 +64831,7 @@ function check_coherence(env, loc, id, decl) {
                   ])
               ];
         } else {
-          return 0;
+          return /* () */0;
         }
       }
       catch (exn){
@@ -65008,7 +65008,7 @@ function check_recursion(env, loc, path, decl, to_check) {
         var ty = _ty;
         var ty$1 = repr(ty);
         if (List.memq(ty$1, visited.contents)) {
-          return 0;
+          return /* () */0;
         } else {
           visited.contents = /* :: */[
             ty$1,
@@ -65302,7 +65302,7 @@ function compute_variance_type(env, check, param, decl, tyl) {
                       ])
                   ];
             } else {
-              return 0;
+              return /* () */0;
             }
           }), params, required);
     var args = newty2(100000000, /* Ttuple */Block.__(2, [params]));
@@ -65382,7 +65382,7 @@ function compute_variance_type(env, check, param, decl, tyl) {
               return iter_type_expr(check$1, ty$1);
             }
           } else {
-            return 0;
+            return /* () */0;
           }
         }
       };
@@ -65676,7 +65676,7 @@ function compute_variance_fixpoint(env, decls, required, _variances) {
       List.iter2((function(new_env){
           return function (param, req) {
             if (is_sharp(param[0])) {
-              return 0;
+              return /* () */0;
             } else {
               compute_variance_decl(new_env, true, param[1], req);
               return /* () */0;
@@ -66868,7 +66868,7 @@ function customize_arity(arity, pval_attributes) {
                             cur_arity.contents = i;
                             return /* () */0;
                           } else {
-                            return 0;
+                            return /* () */0;
                           }
                         }
                       } else {
@@ -68185,7 +68185,7 @@ function report_error$5(ppf, param) {
                             " was expected to be %s,@ but it is %s.@]"
                           ]), variance(param[2]), variance(param[1]));
           } else {
-            return 0;
+            return /* () */0;
           }
       case /* Unavailable_type_constructor */17 :
           return Curry._2(Format.fprintf(ppf, /* Format */[
@@ -70733,7 +70733,7 @@ function type_classes(define_class, approx, kind, env, cls) {
                                 contents: /* [] */0
                               }, param[2]);
                   } else {
-                    return 0;
+                    return /* () */0;
                   }
                 }), match$1[0]);
           var rv = row_variable(sty);
@@ -75413,7 +75413,7 @@ function type_structure(toplevelOpt, funct_body, anchor, env, sstr, scope) {
               ];
               return /* () */0;
             } else {
-              return 0;
+              return /* () */0;
             }
           }), sstr);
   }
@@ -75691,7 +75691,7 @@ function type_implementation_more(sourcefile, outputprefix, modulename, initial_
                       return List.iter((function (param) {
                                     var exp = param.vb_expr;
                                     if (closed_schema(exp.exp_type)) {
-                                      return 0;
+                                      return /* () */0;
                                     } else {
                                       throw [
                                             $$Error$10,
@@ -75704,7 +75704,7 @@ function type_implementation_more(sourcefile, outputprefix, modulename, initial_
                   case /* Tstr_module */6 :
                       var md = match[0].mb_expr;
                       if (closed_modtype(md.mod_type)) {
-                        return 0;
+                        return /* () */0;
                       } else {
                         throw [
                               $$Error$10,

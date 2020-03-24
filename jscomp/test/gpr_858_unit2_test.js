@@ -20,7 +20,7 @@ for(var i = 1; i <= 2; ++i){
         });
       return /* () */0;
     } else if (i === n) {
-      return 0;
+      return /* () */0;
     } else {
       throw [
             Caml_builtin_exceptions.assert_failure,

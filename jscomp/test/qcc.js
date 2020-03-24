@@ -345,7 +345,7 @@ function out(x) {
     opos.contents = opos.contents + 1 | 0;
     return /* () */0;
   } else {
-    return 0;
+    return /* () */0;
   }
 }
 
@@ -416,7 +416,7 @@ function patch(rel, loc, n) {
     opos.contents = i;
     return /* () */0;
   } else {
-    return 0;
+    return /* () */0;
   }
 }
 
@@ -929,7 +929,7 @@ function unary(stk) {
             if (o === "!") {
               return cmp(2);
             } else {
-              return 0;
+              return /* () */0;
             }
         }
     case /* ILit */1 :
@@ -1032,7 +1032,7 @@ function postfix(stk) {
           if (align.contents % 2 !== 0) {
             return out(1216594952);
           } else {
-            return 0;
+            return /* () */0;
           }
       case "++" :
       case "--" :
@@ -1372,14 +1372,14 @@ function block(brk, stk) {
     align.contents = align.contents - n | 0;
     return /* () */0;
   } else {
-    return 0;
+    return /* () */0;
   }
 }
 
 function top(_param) {
   while(true) {
     if (nextis(/* Op */Block.__(0, ["EOF!"]))) {
-      return 0;
+      return /* () */0;
     } else if (nextis(tokint)) {
       decl(true, 0, /* [] */0);
       _param = /* () */0;
@@ -1586,7 +1586,7 @@ function elfgen(outf) {
                   if (g.va < 0 && g.loc !== 0) {
                     return Curry._3(f, s, s.length, g.loc);
                   } else {
-                    return 0;
+                    return /* () */0;
                   }
                 }));
   };
@@ -1600,7 +1600,7 @@ function elfgen(outf) {
     } else if (g.va >= 0) {
       return patch(false, g.loc, g.va);
     } else {
-      return 0;
+      return /* () */0;
     }
   };
   symitr(patchloc);
@@ -1642,7 +1642,7 @@ function elfgen(outf) {
                 _l = get32(l);
                 continue ;
               } else {
-                return 0;
+                return /* () */0;
               }
             };
           };

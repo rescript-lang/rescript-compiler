@@ -90,7 +90,7 @@ function copy(q) {
           _prev = res;
           continue ;
         } else {
-          return 0;
+          return /* () */0;
         }
       };
     };
@@ -121,11 +121,11 @@ function iter(f, q) {
         _cell = cell.next;
         continue ;
       } else {
-        return 0;
+        return /* () */0;
       }
     };
   } else {
-    return 0;
+    return /* () */0;
   }
 }
 
@@ -167,7 +167,7 @@ function transfer(q1, q2) {
     q2.tail = tail1;
     return /* () */0;
   } else {
-    return 0;
+    return /* () */0;
   }
 }
 

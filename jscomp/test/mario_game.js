@@ -679,7 +679,7 @@ function update_animation(spr) {
       spr.frame.contents = Caml_int32.mod_(spr.frame.contents + 1 | 0, spr.params.max_frames);
       return /* () */0;
     } else {
-      return 0;
+      return /* () */0;
     }
   } else {
     spr.ticks.contents = curr_ticks + 1 | 0;
@@ -962,7 +962,7 @@ function update_player(player, keys, context) {
           switch (param) {
             case /* CLeft */0 :
                 if (player.crouch) {
-                  return 0;
+                  return /* () */0;
                 } else {
                   if (player.vel.x > -player.params.speed) {
                     player.vel.x = player.vel.x - (0.4 - lr_acc);
@@ -972,7 +972,7 @@ function update_player(player, keys, context) {
                 }
             case /* CRight */1 :
                 if (player.crouch) {
-                  return 0;
+                  return /* () */0;
                 } else {
                   if (player.vel.x < player.params.speed) {
                     player.vel.x = player.vel.x + (0.4 + lr_acc);
@@ -987,14 +987,14 @@ function update_player(player, keys, context) {
                   player.vel.y = Caml_primitive.caml_float_max(player.vel.y - (5.7 + Math.abs(player.vel.x) * 0.25), -6);
                   return /* () */0;
                 } else {
-                  return 0;
+                  return /* () */0;
                 }
             case /* CDown */3 :
                 if (!player.jumping && player.grounded) {
                   player.crouch = true;
                   return /* () */0;
                 } else {
-                  return 0;
+                  return /* () */0;
                 }
             
           }
@@ -1056,7 +1056,7 @@ function update_vel$1(obj) {
     obj.vel.y = Caml_primitive.caml_float_min(obj.vel.y + 0.2 + Math.abs(obj.vel.y) * 0.01, 4.5);
     return /* () */0;
   } else {
-    return 0;
+    return /* () */0;
   }
 }
 
@@ -1066,7 +1066,7 @@ function update_pos(obj) {
     obj.pos.y = obj.vel.y + obj.pos.y;
     return /* () */0;
   } else {
-    return 0;
+    return /* () */0;
   }
 }
 
@@ -1077,7 +1077,7 @@ function process_obj(obj, mapy) {
     obj.kill = true;
     return /* () */0;
   } else {
-    return 0;
+    return /* () */0;
   }
 }
 
@@ -1098,7 +1098,7 @@ function collide_block(check_xOpt, dir, obj) {
         obj.vel.x = 0;
         return /* () */0;
       } else {
-        return 0;
+        return /* () */0;
       }
     } else {
       obj.vel.y = -0.001;
@@ -1179,7 +1179,7 @@ function dec_health(obj) {
     obj.health = health;
     return /* () */0;
   } else {
-    return 0;
+    return /* () */0;
   }
 }
 
@@ -2225,7 +2225,7 @@ function update_loop(canvas, param, map_dim) {
                       y
                     ]);
                 if (part.kill) {
-                  return 0;
+                  return /* () */0;
                 } else {
                   particles.contents = /* :: */[
                     part,
