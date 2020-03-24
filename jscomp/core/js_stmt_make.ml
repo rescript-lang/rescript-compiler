@@ -34,9 +34,6 @@ type t = J.statement
 let return_stmt ?comment e : t = 
   {statement_desc = Return {return_value = e; } ; comment}
 
-(* let return_unit  : t list =              
-    [{ statement_desc = Return {return_value = E.unit; } ; 
-      comment = None}] *)
   
 let empty_stmt  : t = 
   { statement_desc = Block []; comment = None}
@@ -301,21 +298,7 @@ let assign ?comment  id e : t =
     statement_desc = J.Exp ( E.assign (E.var id) e ) ;
     comment
   }
-(* let assign_unit ?comment  id :  t = 
-  {
-    statement_desc = J.Exp( E.assign (E.var id) E.unit);
-    comment
-  }
-let declare_unit ?comment  id :  t = 
-  {
-    statement_desc = 
-      J.Variable { ident =  id; 
-                   value = Some E.unit;
-                   property = Variable;
-                   ident_info = {used_stats = NA}
-                 };
-    comment
-  } *)
+
 
 let while_  ?comment  ?label ?env (e : E.t) (st : J.block) : t = 
   let env = 
