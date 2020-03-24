@@ -85,7 +85,7 @@ function point_init($$class) {
 
 var point = CamlinternalOO.make_class(shared$4, point_init);
 
-var p = Curry._2(point[0], 0, 55);
+var p = Curry._2(point[0], /* () */0, 55);
 
 var q = Oo.copy(p);
 
@@ -199,7 +199,7 @@ function get(_p, _n) {
   };
 }
 
-var p$1 = Curry._2(backup_ref[0], 0, 0);
+var p$1 = Curry._2(backup_ref[0], /* () */0, 0);
 
 Caml_oo_curry.js1(-867333315, 8, p$1);
 
@@ -294,7 +294,7 @@ var backup_ref2 = CamlinternalOO.make_class([
       "set"
     ], backup_ref2_init);
 
-var p$2 = Curry._2(backup_ref2[0], 0, 0);
+var p$2 = Curry._2(backup_ref2[0], /* () */0, 0);
 
 Caml_oo_curry.js1(-867333315, 12, p$2);
 

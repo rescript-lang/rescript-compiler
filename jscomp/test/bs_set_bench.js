@@ -31,7 +31,7 @@ function bench(param) {
   }
   console.timeEnd("test/bs_set_bench.ml 14");
   if (Belt_SetInt.size(data) === 0) {
-    return 0;
+    return /* () */0;
   } else {
     throw [
           Caml_builtin_exceptions.assert_failure,

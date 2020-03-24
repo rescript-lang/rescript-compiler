@@ -17,7 +17,7 @@ function fromArray(kvs) {
 
 function should(b) {
   if (b) {
-    return 0;
+    return /* () */0;
   } else {
     throw new Error("impossible");
   }

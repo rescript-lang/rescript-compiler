@@ -31,7 +31,7 @@ function bench(param) {
   }
   console.timeEnd("test/bs_rbset_int_bench.ml 14");
   if (Rbset.cardinal(data) === 0) {
-    return 0;
+    return /* () */0;
   } else {
     throw [
           Caml_builtin_exceptions.assert_failure,

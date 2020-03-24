@@ -274,7 +274,7 @@ function dfs3(nodes, graph) {
   };
   var aux = function (node, graph) {
     if (List.mem(node, visited.contents)) {
-      return 0;
+      return /* () */0;
     } else {
       visited.contents = /* :: */[
         node,
@@ -405,7 +405,7 @@ function unsafe_topsort(graph) {
   };
   var sort_node = function (node) {
     if (List.mem(node, visited.contents)) {
-      return 0;
+      return /* () */0;
     } else {
       var nodes = nexts(node, graph);
       List.iter(sort_node, nodes);
@@ -1511,7 +1511,7 @@ function pathsort(graph) {
   };
   var sort_node = function (path, node) {
     if (List.mem(node, visited.contents)) {
-      return 0;
+      return /* () */0;
     } else {
       sort_nodes($plus$great(node, path), nexts(node, graph));
       visited.contents = /* :: */[

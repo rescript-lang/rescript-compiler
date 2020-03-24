@@ -2620,7 +2620,7 @@ function print(ppf, w) {
     nerrors.contents = nerrors.contents + 1 | 0;
     return /* () */0;
   } else {
-    return 0;
+    return /* () */0;
   }
 }
 
@@ -2639,7 +2639,7 @@ function super_print(message, ppf, w) {
     nerrors.contents = nerrors.contents + 1 | 0;
     return /* () */0;
   } else {
-    return 0;
+    return /* () */0;
   }
 }
 
@@ -2655,7 +2655,7 @@ function check_fatal(param) {
     nerrors.contents = 0;
     throw e;
   } else {
-    return 0;
+    return /* () */0;
   }
 }
 
@@ -3636,7 +3636,7 @@ function default_warning_printer(loc, ppf, w) {
                     "@{<warning>%s@} %a@."
                   ]), "Warning", print, w);
   } else {
-    return 0;
+    return /* () */0;
   }
 }
 
@@ -4077,7 +4077,7 @@ function warn_bad_docstrings(param) {
                   }
                 }), List.rev(docstrings.contents));
   } else {
-    return 0;
+    return /* () */0;
   }
 }
 
@@ -4274,7 +4274,7 @@ function set_pre_docstrings(pos, dsl) {
   if (dsl !== /* [] */0) {
     return Hashtbl.add(pre_table, pos, dsl);
   } else {
-    return 0;
+    return /* () */0;
   }
 }
 
@@ -4312,7 +4312,7 @@ function set_post_docstrings(pos, dsl) {
   if (dsl !== /* [] */0) {
     return Hashtbl.add(post_table, pos, dsl);
   } else {
-    return 0;
+    return /* () */0;
   }
 }
 
@@ -4364,7 +4364,7 @@ function set_floating_docstrings(pos, dsl) {
   if (dsl !== /* [] */0) {
     return Hashtbl.add(floating_table, pos, dsl);
   } else {
-    return 0;
+    return /* () */0;
   }
 }
 
@@ -4387,7 +4387,7 @@ function set_pre_extra_docstrings(pos, dsl) {
   if (dsl !== /* [] */0) {
     return Hashtbl.add(pre_extra_table, pos, dsl);
   } else {
-    return 0;
+    return /* () */0;
   }
 }
 
@@ -4410,7 +4410,7 @@ function set_post_extra_docstrings(pos, dsl) {
   if (dsl !== /* [] */0) {
     return Hashtbl.add(post_extra_table, pos, dsl);
   } else {
-    return 0;
+    return /* () */0;
   }
 }
 
@@ -6618,7 +6618,7 @@ function check_variable(vl, loc, v) {
             ])
         ];
   } else {
-    return 0;
+    return /* () */0;
   }
 }
 

@@ -382,7 +382,7 @@ function main(param) {
     succeeded = succeeded && test_hwb(bdd, random_vars(22));
   }
   if (succeeded) {
-    return 0;
+    return /* () */0;
   } else {
     throw [
           Caml_builtin_exceptions.assert_failure,

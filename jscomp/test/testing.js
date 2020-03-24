@@ -79,7 +79,7 @@ function test(b) {
   test_num.contents = test_num.contents + 1 | 0;
   print_test_number(/* () */0);
   if (b) {
-    return 0;
+    return /* () */0;
   } else {
     all_tests_ok.contents = false;
     return Pervasives.print_string(Curry._1(Printf.sprintf(/* Format */[

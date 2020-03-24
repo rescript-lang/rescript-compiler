@@ -1179,7 +1179,7 @@ function print(ppf, w) {
     nerrors.contents = nerrors.contents + 1 | 0;
     return /* () */0;
   } else {
-    return 0;
+    return /* () */0;
   }
 }
 
@@ -1704,7 +1704,7 @@ function default_warning_printer(loc, ppf, w) {
                     "@{<warning>%s@} %a@."
                   ]), "Warning", print, w);
   } else {
-    return 0;
+    return /* () */0;
   }
 }
 
@@ -1915,7 +1915,7 @@ function from_pair_suites(name, suites) {
                                           var b = spec[1];
                                           var a = spec[0];
                                           if (close_enough(undefined, a, b)) {
-                                            return 0;
+                                            return /* () */0;
                                           } else {
                                             Assert.deepEqual(a, b);
                                             return /* () */0;
@@ -1924,7 +1924,7 @@ function from_pair_suites(name, suites) {
                                           var b$1 = spec[2];
                                           var a$1 = spec[1];
                                           if (close_enough(spec[0], a$1, b$1)) {
-                                            return 0;
+                                            return /* () */0;
                                           } else {
                                             Assert.deepEqual(a$1, b$1);
                                             return /* () */0;
@@ -2053,7 +2053,7 @@ function warn_bad_docstrings(param) {
                   }
                 }), List.rev(docstrings.contents));
   } else {
-    return 0;
+    return /* () */0;
   }
 }
 
@@ -2242,7 +2242,7 @@ function set_pre_docstrings(pos, dsl) {
   if (dsl !== /* [] */0) {
     return Hashtbl.add(pre_table, pos, dsl);
   } else {
-    return 0;
+    return /* () */0;
   }
 }
 
@@ -2280,7 +2280,7 @@ function set_post_docstrings(pos, dsl) {
   if (dsl !== /* [] */0) {
     return Hashtbl.add(post_table, pos, dsl);
   } else {
-    return 0;
+    return /* () */0;
   }
 }
 
@@ -2332,7 +2332,7 @@ function set_floating_docstrings(pos, dsl) {
   if (dsl !== /* [] */0) {
     return Hashtbl.add(floating_table, pos, dsl);
   } else {
-    return 0;
+    return /* () */0;
   }
 }
 
@@ -2355,7 +2355,7 @@ function set_pre_extra_docstrings(pos, dsl) {
   if (dsl !== /* [] */0) {
     return Hashtbl.add(pre_extra_table, pos, dsl);
   } else {
-    return 0;
+    return /* () */0;
   }
 }
 
@@ -2378,7 +2378,7 @@ function set_post_extra_docstrings(pos, dsl) {
   if (dsl !== /* [] */0) {
     return Hashtbl.add(post_extra_table, pos, dsl);
   } else {
-    return 0;
+    return /* () */0;
   }
 }
 
@@ -3784,7 +3784,7 @@ function check_variable(vl, loc, v) {
             ])
         ];
   } else {
-    return 0;
+    return /* () */0;
   }
 }
 

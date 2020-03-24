@@ -370,7 +370,7 @@ function check(r, v, msg) {
   if (Caml_obj.caml_notequal(r.contents, v)) {
     return error(msg);
   } else {
-    return 0;
+    return /* () */0;
   }
 }
 

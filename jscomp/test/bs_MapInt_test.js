@@ -5,7 +5,7 @@ var Belt_MapInt = require("../../lib/js/belt_MapInt.js");
 
 function should(b) {
   if (b) {
-    return 0;
+    return /* () */0;
   } else {
     return Js_exn.raiseError("IMPOSSIBLE");
   }

@@ -3099,7 +3099,7 @@ function resize(array, new_size) {
     array.methods = new_buck;
     return /* () */0;
   } else {
-    return 0;
+    return /* () */0;
   }
 }
 
@@ -3464,7 +3464,7 @@ function run_initializers(obj, table) {
   if (inits !== /* [] */0) {
     return iter_f(obj, inits);
   } else {
-    return 0;
+    return /* () */0;
   }
 }
 

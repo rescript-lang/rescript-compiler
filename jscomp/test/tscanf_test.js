@@ -704,7 +704,7 @@ function verify_read(c) {
               /* Caml_char */Block.__(1, [/* End_of_format */0]),
               "%C"
             ]), id) === c) {
-    return 0;
+    return /* () */0;
   } else {
     throw [
           Caml_builtin_exceptions.assert_failure,
