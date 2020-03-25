@@ -43,10 +43,7 @@ function f_0(param) {
 
 function f_01(param) {
   return hi((function () {
-                if (undefined === undefined) {
-                  console.log("x");
-                  return ;
-                }
+                console.log("x");
                 
               }));
 }

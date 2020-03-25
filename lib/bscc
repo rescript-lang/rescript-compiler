@@ -1,4 +1,0 @@
-#!/bin/sh
-DIR=$(dirname $0)
-bsc.exe -bs-package-name bs-platform -bs-no-version-header -bs-cross-module-opt -bs-diagnose -w -40 -I $DIR/../runtime/ -I  $DIR/../others/ -I $DIR/../stdlib   "$@"
-## This file is only used in dev 

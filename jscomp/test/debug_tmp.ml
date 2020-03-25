@@ -2,11 +2,13 @@
 [@@@bs.config {
   flags = [|
   "-drawlambda"; "-dlambda"; 
+  "-dtypedtree"
   (* "-bs-debug-unit" *)
   |]
 }]
 
-let u = Some (Some (Some ()))
+(* let u = Some (Some (Some ())) *)
+let u = fun () -> 2
 (* let u o = o##hi 1 2 *)
 
 (*

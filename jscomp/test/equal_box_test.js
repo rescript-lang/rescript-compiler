@@ -54,7 +54,7 @@ b("File \"equal_box_test.ml\", line 32, characters 4-11", Caml_obj.caml_equal_nu
 
 b("File \"equal_box_test.ml\", line 33, characters 4-11", true);
 
-b("File \"equal_box_test.ml\", line 34, characters 4-11", undefined === undefined);
+b("File \"equal_box_test.ml\", line 34, characters 4-11", true);
 
 b("File \"equal_box_test.ml\", line 35, characters 4-11", !Caml_obj.caml_equal_null(3, undefined));
 
@@ -80,13 +80,13 @@ b("File \"equal_box_test.ml\", line 47, characters 4-11", Caml_obj.caml_equal_nu
 
 b("File \"equal_box_test.ml\", line 48, characters 4-11", true);
 
-b("File \"equal_box_test.ml\", line 49, characters 4-11", undefined === undefined);
+b("File \"equal_box_test.ml\", line 49, characters 4-11", true);
 
 b("File \"equal_box_test.ml\", line 50, characters 4-11", !Caml_obj.caml_equal_nullable(3, undefined));
 
 b("File \"equal_box_test.ml\", line 55, characters 4-11", 3 !== undefined);
 
-b("File \"equal_box_test.ml\", line 56, characters 4-11", undefined === undefined);
+b("File \"equal_box_test.ml\", line 56, characters 4-11", true);
 
 b("File \"equal_box_test.ml\", line 57, characters 4-11", "3" !== undefined);
 
@@ -104,7 +104,7 @@ b("File \"equal_box_test.ml\", line 66, characters 4-11", !Caml_obj.caml_equal_u
 
 b("File \"equal_box_test.ml\", line 67, characters 4-11", true);
 
-b("File \"equal_box_test.ml\", line 68, characters 4-11", undefined === undefined);
+b("File \"equal_box_test.ml\", line 68, characters 4-11", true);
 
 b("File \"equal_box_test.ml\", line 69, characters 4-11", !Caml_obj.caml_equal_undefined(3, undefined));
 

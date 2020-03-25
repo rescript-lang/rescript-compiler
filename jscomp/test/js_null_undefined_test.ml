@@ -9,8 +9,7 @@ let suites = Mt.[
   "test - null", (fun _ -> Eq(true, null |> isNullable));
   "test - undefined", (fun _ -> Eq(true, undefined |> isNullable));
   "test - empty", (fun _ -> Eq(true, undefined |> isNullable));
-  (* __LOC__, (fun _ -> Eq(false, return () |> isNullable)); *)
-  (* FIXME: unit is now nullable *)
+  __LOC__, (fun _ -> Eq(true, return () |> isNullable));
   "bind - null", (fun _ -> StrictEq(null, bind null ((fun v -> v) [@bs])));
   "bind - undefined", (fun _ -> StrictEq(undefined, bind undefined ((fun v -> v) [@bs])));
   "bind - empty", (fun _ -> StrictEq(undefined, bind undefined ((fun v -> v) [@bs])));

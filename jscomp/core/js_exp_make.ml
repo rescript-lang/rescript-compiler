@@ -774,6 +774,7 @@ let rec float_equal ?comment (e0 : t) (e1 : t) : t =
   match e0.expression_desc, e1.expression_desc with     
   | Number (Int {i = i0 ; _}), Number (Int {i = i1; }) -> 
     bool (i0 = i1)
+  | Undefined , Undefined -> true_  
   | (Bin(Bor, 
          {expression_desc = Number(Int {i = 0l; _})}, 
          ({expression_desc = Caml_block_tag _; _} as a ))

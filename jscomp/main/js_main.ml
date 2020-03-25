@@ -168,11 +168,6 @@ let buckle_script_flags : (string * Arg.spec * string) list =
      ,
    " Better error message combined with other tools "
   ) 
-#if undefined BS_RELEASE_BUILD then
-  ::
-  ("-bs-debug-unit", Arg.Unit Js_config.set_debug_file,
-    " Set current debug file" )
-#end  
   ::
   ("-unboxed-types",
     Arg.Set Clflags.unboxed_types,
