@@ -53,11 +53,11 @@ function fff(param) {
   console.log("x");
   console.log("x");
   vvv.contents = vvv.contents + 1 | 0;
-  return /* () */0;
+  
 }
 
 function g() {
-  return fff(/* () */0);
+  return fff(undefined);
 }
 
 function abc(x, y, z) {
@@ -118,10 +118,10 @@ Mt.from_pair_suites("Ffi_arity_test", /* :: */[
     ]);
 
 function bar(fn) {
-  return Curry._1(fn, /* () */0);
+  return Curry._1(fn, undefined);
 }
 
-(Curry._1((function(){console.log("forgiving arity")}), /* () */0));
+(Curry._1((function(){console.log("forgiving arity")}), undefined));
 
 exports.f = f;
 exports.v = v;

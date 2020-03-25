@@ -7,7 +7,7 @@ var suites_000 = /* tuple */[
   "setTimeout/clearTimeout sanity check",
   (function (param) {
       var handle = setTimeout((function (param) {
-              return /* () */0;
+              
             }), 0);
       clearTimeout(handle);
       return /* Ok */Block.__(4, [true]);
@@ -19,7 +19,7 @@ var suites_001 = /* :: */[
     "setInerval/clearInterval sanity check",
     (function (param) {
         var handle = setInterval((function (param) {
-                return /* () */0;
+                
               }), 0);
         clearInterval(handle);
         return /* Ok */Block.__(4, [true]);

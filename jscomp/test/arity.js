@@ -5,13 +5,13 @@ var Curry = require("../../lib/js/curry.js");
 function u(f, a, b) {
   console.log(f(a, b));
   console.log(f(a, b));
-  return /* () */0;
+  
 }
 
 function u2(f, a, b) {
   console.log(Curry._2(f, a, b));
   console.log(Curry._2(f, a, b));
-  return /* () */0;
+  
 }
 
 function f(x, y) {

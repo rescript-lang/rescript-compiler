@@ -34,7 +34,7 @@ function sum2(h) {
   };
   Belt_HashSetInt.forEach(h, (function (x) {
           v.contents = v.contents + x | 0;
-          return /* () */0;
+          
         }));
   return v.contents;
 }
@@ -55,7 +55,7 @@ eq("File \"bs_hashset_int_test.ml\", line 24, characters 5-12", sum2(v), 6825);
 
 var u$1 = Belt_Array.concat(Array_data_util.randomRange(0, 100000), Array_data_util.randomRange(0, 100));
 
-var v$1 = Belt_internalBucketsType.make(/* () */0, /* () */0, 40);
+var v$1 = Belt_internalBucketsType.make(undefined, undefined, 40);
 
 Belt_HashSetInt.mergeMany(v$1, u$1);
 

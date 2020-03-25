@@ -36,7 +36,7 @@ Caml_module.update_mod(/* Module */Block.__(0, [[/* tuple */[
 
 function print$1(i) {
   console.log(String(i));
-  return /* () */0;
+  
 }
 
 Caml_module.update_mod(/* Module */Block.__(0, [[/* tuple */[

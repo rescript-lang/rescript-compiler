@@ -10,9 +10,8 @@ function f(g, x) {
   catch (exn){
     if (exn === Caml_builtin_exceptions.not_found) {
       return 3;
-    } else {
-      throw exn;
     }
+    throw exn;
   }
 }
 

@@ -9,14 +9,13 @@ function $plus$colon(_f, _g) {
     var f = _f;
     if (!f.tag) {
       var n = f[0];
-      if (g.tag) {
-        if (n === 0) {
-          return g;
-        }
-        
-      } else {
+      if (!g.tag) {
         return /* Int */Block.__(0, [n + g[0] | 0]);
       }
+      if (n === 0) {
+        return g;
+      }
+      
     }
     switch (g.tag | 0) {
       case /* Int */0 :
@@ -53,21 +52,22 @@ function $star$colon(_f, _g) {
       exit$1 = 3;
     } else {
       var n = f[0];
-      if (g.tag) {
-        if (n !== 0) {
-          exit$1 = 3;
-        } else {
-          return /* Int */Block.__(0, [0]);
-        }
-      } else {
+      if (!g.tag) {
         return /* Int */Block.__(0, [Caml_int32.imul(n, g[0])]);
       }
+      if (n === 0) {
+        return /* Int */Block.__(0, [0]);
+      }
+      exit$1 = 3;
     }
     if (exit$1 === 3) {
-      if (g.tag || g[0] !== 0) {
+      if (g.tag) {
         exit = 2;
       } else {
-        return /* Int */Block.__(0, [0]);
+        if (g[0] === 0) {
+          return /* Int */Block.__(0, [0]);
+        }
+        exit = 2;
       }
     }
     if (exit === 2 && !f.tag && f[0] === 1) {

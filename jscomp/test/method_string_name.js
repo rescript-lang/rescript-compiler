@@ -13,7 +13,7 @@ function ff(x) {
   console.log(({
           "Content-Type": "hello"
         })["Content-Type"]);
-  return /* () */0;
+  
 }
 
 exports.f = f;

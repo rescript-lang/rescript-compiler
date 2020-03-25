@@ -9,45 +9,42 @@ var Assert = require("assert");
 var Process = require("process");
 
 function assert_fail(msg) {
-  Assert.fail(/* () */0, /* () */0, msg, "");
-  return /* () */0;
+  Assert.fail(undefined, undefined, msg, "");
+  
 }
 
 function is_mocha(param) {
   var match = $$Array.to_list(Process.argv);
-  if (match) {
-    var match$1 = match[1];
-    if (match$1) {
-      var exec = Path.basename(match$1[0]);
-      if (exec === "mocha") {
-        return true;
-      } else {
-        return exec === "_mocha";
-      }
-    } else {
-      return false;
-    }
-  } else {
+  if (!match) {
     return false;
+  }
+  var match$1 = match[1];
+  if (!match$1) {
+    return false;
+  }
+  var exec = Path.basename(match$1[0]);
+  if (exec === "mocha") {
+    return true;
+  } else {
+    return exec === "_mocha";
   }
 }
 
 function from_suites(name, suite) {
   var match = $$Array.to_list(Process.argv);
-  if (match && is_mocha(/* () */0)) {
+  if (match && is_mocha(undefined)) {
     describe(name, (function () {
             return List.iter((function (param) {
                           var partial_arg = param[1];
                           it(param[0], (function () {
-                                  return Curry._1(partial_arg, /* () */0);
+                                  return Curry._1(partial_arg, undefined);
                                 }));
-                          return /* () */0;
+                          
                         }), suite);
           }));
-    return /* () */0;
-  } else {
-    return /* () */0;
+    return ;
   }
+  
 }
 
 function close_enough(thresholdOpt, a, b) {
@@ -59,40 +56,40 @@ function handleCode(spec) {
   switch (spec.tag | 0) {
     case /* Eq */0 :
         Assert.deepEqual(spec[0], spec[1]);
-        return /* () */0;
+        return ;
     case /* Neq */1 :
         Assert.notDeepEqual(spec[0], spec[1]);
-        return /* () */0;
+        return ;
     case /* StrictEq */2 :
         Assert.strictEqual(spec[0], spec[1]);
-        return /* () */0;
+        return ;
     case /* StrictNeq */3 :
         Assert.notStrictEqual(spec[0], spec[1]);
-        return /* () */0;
+        return ;
     case /* Ok */4 :
         Assert.ok(spec[0]);
-        return /* () */0;
+        return ;
     case /* Approx */5 :
         var b = spec[1];
         var a = spec[0];
-        if (close_enough(undefined, a, b)) {
-          return /* () */0;
-        } else {
+        if (!close_enough(undefined, a, b)) {
           Assert.deepEqual(a, b);
-          return /* () */0;
+          return ;
+        } else {
+          return ;
         }
     case /* ApproxThreshold */6 :
         var b$1 = spec[2];
         var a$1 = spec[1];
-        if (close_enough(spec[0], a$1, b$1)) {
-          return /* () */0;
-        } else {
+        if (!close_enough(spec[0], a$1, b$1)) {
           Assert.deepEqual(a$1, b$1);
-          return /* () */0;
+          return ;
+        } else {
+          return ;
         }
     case /* ThrowAny */7 :
         Assert.throws(spec[0]);
-        return /* () */0;
+        return ;
     case /* Fail */8 :
         return assert_fail("failed");
     case /* FailWith */9 :
@@ -104,17 +101,17 @@ function handleCode(spec) {
 function from_pair_suites(name, suites) {
   var match = $$Array.to_list(Process.argv);
   if (match) {
-    if (is_mocha(/* () */0)) {
+    if (is_mocha(undefined)) {
       describe(name, (function () {
               return List.iter((function (param) {
                             var code = param[1];
                             it(param[0], (function () {
-                                    return handleCode(Curry._1(code, /* () */0));
+                                    return handleCode(Curry._1(code, undefined));
                                   }));
-                            return /* () */0;
+                            
                           }), suites);
             }));
-      return /* () */0;
+      return ;
     } else {
       console.log(/* tuple */[
             name,
@@ -122,7 +119,7 @@ function from_pair_suites(name, suites) {
           ]);
       return List.iter((function (param) {
                     var name = param[0];
-                    var match = Curry._1(param[1], /* () */0);
+                    var match = Curry._1(param[1], undefined);
                     switch (match.tag | 0) {
                       case /* Eq */0 :
                           console.log(/* tuple */[
@@ -131,7 +128,7 @@ function from_pair_suites(name, suites) {
                                 "eq?",
                                 match[1]
                               ]);
-                          return /* () */0;
+                          return ;
                       case /* Neq */1 :
                           console.log(/* tuple */[
                                 name,
@@ -139,7 +136,7 @@ function from_pair_suites(name, suites) {
                                 "neq?",
                                 match[1]
                               ]);
-                          return /* () */0;
+                          return ;
                       case /* StrictEq */2 :
                           console.log(/* tuple */[
                                 name,
@@ -147,7 +144,7 @@ function from_pair_suites(name, suites) {
                                 "strict_eq?",
                                 match[1]
                               ]);
-                          return /* () */0;
+                          return ;
                       case /* StrictNeq */3 :
                           console.log(/* tuple */[
                                 name,
@@ -155,14 +152,14 @@ function from_pair_suites(name, suites) {
                                 "strict_neq?",
                                 match[1]
                               ]);
-                          return /* () */0;
+                          return ;
                       case /* Ok */4 :
                           console.log(/* tuple */[
                                 name,
                                 match[0],
                                 "ok?"
                               ]);
-                          return /* () */0;
+                          return ;
                       case /* Approx */5 :
                           console.log(/* tuple */[
                                 name,
@@ -170,7 +167,7 @@ function from_pair_suites(name, suites) {
                                 "~",
                                 match[1]
                               ]);
-                          return /* () */0;
+                          return ;
                       case /* ApproxThreshold */6 :
                           console.log(/* tuple */[
                                 name,
@@ -181,30 +178,29 @@ function from_pair_suites(name, suites) {
                                 match[0],
                                 ")"
                               ]);
-                          return /* () */0;
+                          return ;
                       case /* ThrowAny */7 :
-                          return /* () */0;
+                          return ;
                       case /* Fail */8 :
                           console.log("failed");
-                          return /* () */0;
+                          return ;
                       case /* FailWith */9 :
                           console.log("failed: " + match[0]);
-                          return /* () */0;
+                          return ;
                       
                     }
                   }), suites);
     }
-  } else {
-    return /* () */0;
   }
+  
 }
 
-var val_unit = Promise.resolve(/* () */0);
+var val_unit = Promise.resolve(undefined);
 
 function from_promise_suites(name, suites) {
   var match = $$Array.to_list(Process.argv);
   if (match) {
-    if (is_mocha(/* () */0)) {
+    if (is_mocha(undefined)) {
       describe(name, (function () {
               return List.iter((function (param) {
                             var code = param[1];
@@ -214,17 +210,16 @@ function from_promise_suites(name, suites) {
                                                   return val_unit;
                                                 }));
                                   }));
-                            return /* () */0;
+                            
                           }), suites);
             }));
-      return /* () */0;
+      return ;
     } else {
       console.log("promise suites");
-      return /* () */0;
+      return ;
     }
-  } else {
-    return /* () */0;
   }
+  
 }
 
 function eq_suites(test_id, suites, loc, x, y) {
@@ -241,7 +236,7 @@ function eq_suites(test_id, suites, loc, x, y) {
     ],
     suites.contents
   ];
-  return /* () */0;
+  
 }
 
 function bool_suites(test_id, suites, loc, x) {
@@ -255,7 +250,7 @@ function bool_suites(test_id, suites, loc, x) {
     ],
     suites.contents
   ];
-  return /* () */0;
+  
 }
 
 function throw_suites(test_id, suites, loc, x) {
@@ -269,7 +264,7 @@ function throw_suites(test_id, suites, loc, x) {
     ],
     suites.contents
   ];
-  return /* () */0;
+  
 }
 
 exports.from_suites = from_suites;

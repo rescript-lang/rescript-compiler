@@ -28,7 +28,7 @@ function eq(loc, x, y) {
     ],
     suites.contents
   ];
-  return /* () */0;
+  
 }
 
 var A = Caml_exceptions.create("Gpr_1501_test.A");

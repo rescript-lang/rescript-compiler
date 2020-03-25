@@ -403,8 +403,8 @@ let true_ : t =
 let false_ : t =
   Lconst (Const_js_false)
 
-let unit : t =
-  Lconst (Const_pointer( 0, Pt_constructor {name = "()"; cstrs = 1,0}))
+let unit : t = Lconst Const_js_undefined
+
 
 
 

@@ -67,16 +67,15 @@ function hd(x) {
 function tl_exn(x) {
   if (x) {
     return x[/* next */1];
-  } else {
-    throw [
-          Caml_builtin_exceptions.assert_failure,
-          /* tuple */[
-            "recursive_records_test.ml",
-            52,
-            11
-          ]
-        ];
   }
+  throw [
+        Caml_builtin_exceptions.assert_failure,
+        /* tuple */[
+          "recursive_records_test.ml",
+          52,
+          11
+        ]
+      ];
 }
 
 eq("File \"recursive_records_test.ml\", line 56, characters 6-13", (hd(rec_cell2) + hd(tl_exn(rec_cell2)) | 0) + hd(tl_exn(tl_exn(rec_cell2))) | 0, 9);

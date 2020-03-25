@@ -8,17 +8,16 @@ function f(_n, _acc) {
     var acc = _acc;
     var n = _n;
     if (n === 0) {
-      return Curry._1(acc, /* () */0);
-    } else {
-      _acc = (function(n,acc){
-      return function (param) {
-        console.log(String(n));
-        return Curry._1(acc, /* () */0);
-      }
-      }(n,acc));
-      _n = n - 1 | 0;
-      continue ;
+      return Curry._1(acc, undefined);
     }
+    _acc = (function(n,acc){
+    return function (param) {
+      console.log(String(n));
+      return Curry._1(acc, undefined);
+    }
+    }(n,acc));
+    _n = n - 1 | 0;
+    continue ;
   };
 }
 
@@ -37,7 +36,7 @@ function test_closure(param) {
 }
 
 f(10, (function (param) {
-        return /* () */0;
+        
       }));
 
 exports.f = f;

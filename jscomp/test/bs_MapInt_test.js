@@ -4,11 +4,10 @@ var Js_exn = require("../../lib/js/js_exn.js");
 var Belt_MapInt = require("../../lib/js/belt_MapInt.js");
 
 function should(b) {
-  if (b) {
-    return /* () */0;
-  } else {
+  if (!b) {
     return Js_exn.raiseError("IMPOSSIBLE");
   }
+  
 }
 
 function test(param) {
@@ -25,7 +24,7 @@ function test(param) {
   return should(Belt_MapInt.isEmpty(m));
 }
 
-test(/* () */0);
+test(undefined);
 
 var M = /* alias */0;
 

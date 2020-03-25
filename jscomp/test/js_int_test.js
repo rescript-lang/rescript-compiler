@@ -49,7 +49,7 @@ var suites_001 = /* :: */[
           (function (param) {
               return /* ThrowAny */Block.__(7, [(function (param) {
                             (0).toExponential(101);
-                            return /* () */0;
+                            
                           })]);
             })
         ],
@@ -59,7 +59,7 @@ var suites_001 = /* :: */[
             (function (param) {
                 return /* ThrowAny */Block.__(7, [(function (param) {
                               (0).toExponential(-1);
-                              return /* () */0;
+                              
                             })]);
               })
           ],
@@ -109,7 +109,7 @@ var suites_001 = /* :: */[
                       (function (param) {
                           return /* ThrowAny */Block.__(7, [(function (param) {
                                         (0).toPrecision(101);
-                                        return /* () */0;
+                                        
                                       })]);
                         })
                     ],
@@ -119,7 +119,7 @@ var suites_001 = /* :: */[
                         (function (param) {
                             return /* ThrowAny */Block.__(7, [(function (param) {
                                           (0).toPrecision(-1);
-                                          return /* () */0;
+                                          
                                         })]);
                           })
                       ],
@@ -169,7 +169,7 @@ var suites_001 = /* :: */[
                                   (function (param) {
                                       return /* ThrowAny */Block.__(7, [(function (param) {
                                                     (0).toString(37);
-                                                    return /* () */0;
+                                                    
                                                   })]);
                                     })
                                 ],
@@ -179,7 +179,7 @@ var suites_001 = /* :: */[
                                     (function (param) {
                                         return /* ThrowAny */Block.__(7, [(function (param) {
                                                       (0).toString(1);
-                                                      return /* () */0;
+                                                      
                                                     })]);
                                       })
                                   ],
@@ -189,7 +189,7 @@ var suites_001 = /* :: */[
                                       (function (param) {
                                           return /* ThrowAny */Block.__(7, [(function (param) {
                                                         (0).toString(-1);
-                                                        return /* () */0;
+                                                        
                                                       })]);
                                         })
                                     ],

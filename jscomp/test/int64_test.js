@@ -272,12 +272,11 @@ function fib(_n, _a, _b) {
     var n = _n;
     if (n === 0) {
       return a;
-    } else {
-      _b = Caml_int64.add(a, b);
-      _a = b;
-      _n = n - 1 | 0;
-      continue ;
     }
+    _b = Caml_int64.add(a, b);
+    _a = b;
+    _n = n - 1 | 0;
+    continue ;
   };
 }
 
@@ -287,11 +286,10 @@ function fac(_n, _acc) {
     var n = _n;
     if (n === 0) {
       return acc;
-    } else {
-      _acc = Caml_int64.mul(acc, Caml_int64.of_int32(n));
-      _n = n - 1 | 0;
-      continue ;
     }
+    _acc = Caml_int64.mul(acc, Caml_int64.of_int32(n));
+    _n = n - 1 | 0;
+    continue ;
   };
 }
 
@@ -1053,7 +1051,7 @@ function id(loc, x) {
   var float_value = Caml_int64.float_of_bits(x);
   var match = Pervasives.classify_float(float_value);
   if (match >= 4) {
-    return /* () */0;
+    return ;
   } else {
     return eq(loc, Caml_int64.bits_of_float(float_value), x);
   }

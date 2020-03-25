@@ -11,14 +11,13 @@ function find_package_json(_dir) {
     var dir = _dir;
     if (Fs.existsSync(Path.join(dir, package_json))) {
       return dir;
-    } else {
-      var new_dir = Path.dirname(dir);
-      if (new_dir === dir) {
-        throw Caml_builtin_exceptions.not_found;
-      }
-      _dir = new_dir;
-      continue ;
     }
+    var new_dir = Path.dirname(dir);
+    if (new_dir === dir) {
+      throw Caml_builtin_exceptions.not_found;
+    }
+    _dir = new_dir;
+    continue ;
   };
 }
 

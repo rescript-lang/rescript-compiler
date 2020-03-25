@@ -49,7 +49,7 @@ CamlinternalOO.set_methods($$class, [
 
 CamlinternalOO.init_class($$class);
 
-var u = CamlinternalOO.create_object_opt(/* () */0, $$class);
+var u = CamlinternalOO.create_object_opt(undefined, $$class);
 
 var $$class$1 = CamlinternalOO.create_table(["id"]);
 
@@ -61,7 +61,7 @@ CamlinternalOO.set_method($$class$1, id, (function (self$2) {
 
 CamlinternalOO.init_class($$class$1);
 
-var uu = CamlinternalOO.create_object_opt(/* () */0, $$class$1);
+var uu = CamlinternalOO.create_object_opt(undefined, $$class$1);
 
 var $$class$2 = CamlinternalOO.create_table(shared);
 
@@ -73,7 +73,7 @@ CamlinternalOO.set_method($$class$2, add, (function (self$3, x, y) {
 
 CamlinternalOO.init_class($$class$2);
 
-var uuu = CamlinternalOO.create_object_opt(/* () */0, $$class$2);
+var uuu = CamlinternalOO.create_object_opt(undefined, $$class$2);
 
 var $$class$3 = CamlinternalOO.create_table(shared);
 
@@ -85,7 +85,7 @@ CamlinternalOO.set_method($$class$3, add$1, (function (self$4, x, y) {
 
 CamlinternalOO.init_class($$class$3);
 
-var v = CamlinternalOO.create_object_opt(/* () */0, $$class$3);
+var v = CamlinternalOO.create_object_opt(undefined, $$class$3);
 
 function test(param) {
   if (Caml_oo_curry.js1(23515, 1, uu) !== "uu") {
@@ -149,17 +149,16 @@ function test(param) {
         ];
   }
   if (Caml_oo_curry.js2(616641298, 7, u, 32) === 32) {
-    return /* () */0;
-  } else {
-    throw [
-          Caml_builtin_exceptions.assert_failure,
-          /* tuple */[
-            "test_simple_obj.ml",
-            28,
-            4
-          ]
-        ];
+    return ;
   }
+  throw [
+        Caml_builtin_exceptions.assert_failure,
+        /* tuple */[
+          "test_simple_obj.ml",
+          28,
+          4
+        ]
+      ];
 }
 
 exports.u = u;

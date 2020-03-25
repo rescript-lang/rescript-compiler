@@ -37,7 +37,7 @@ var suites_001 = /* :: */[
     ],
     /* :: */[
       /* tuple */[
-        "toOption - 'a",
+        "File \"js_null_undefined_test.ml\", line 7, characters 2-9",
         (function (param) {
             return /* Eq */Block.__(0, [
                       "foo",
@@ -87,11 +87,11 @@ var suites_001 = /* :: */[
               ],
               /* :: */[
                 /* tuple */[
-                  "test - 'a",
+                  "File \"js_null_undefined_test.ml\", line 12, characters 2-9",
                   (function (param) {
                       return /* Eq */Block.__(0, [
-                                false,
-                                false
+                                true,
+                                true
                               ]);
                     })
                 ],
@@ -152,7 +152,7 @@ var suites_001 = /* :: */[
                                 };
                                 Js_null_undefined.iter(null, (function (param) {
                                         hit.contents = true;
-                                        return /* () */0;
+                                        
                                       }));
                                 return /* Eq */Block.__(0, [
                                           false,
@@ -169,7 +169,7 @@ var suites_001 = /* :: */[
                                   };
                                   Js_null_undefined.iter(undefined, (function (param) {
                                           hit.contents = true;
-                                          return /* () */0;
+                                          
                                         }));
                                   return /* Eq */Block.__(0, [
                                             false,
@@ -186,7 +186,7 @@ var suites_001 = /* :: */[
                                     };
                                     Js_null_undefined.iter(undefined, (function (param) {
                                             hit.contents = true;
-                                            return /* () */0;
+                                            
                                           }));
                                     return /* Eq */Block.__(0, [
                                               false,
@@ -203,7 +203,7 @@ var suites_001 = /* :: */[
                                       };
                                       Js_null_undefined.iter(2, (function (v) {
                                               hit.contents = v;
-                                              return /* () */0;
+                                              
                                             }));
                                       return /* Eq */Block.__(0, [
                                                 2,

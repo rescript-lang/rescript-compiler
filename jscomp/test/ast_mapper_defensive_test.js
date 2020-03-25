@@ -23,7 +23,7 @@ function $$throw(loc, x) {
     ],
     suites.contents
   ];
-  return /* () */0;
+  
 }
 
 function aToJs(param) {
@@ -76,17 +76,17 @@ function cFromJs(param) {
 
 $$throw("File \"ast_mapper_defensive_test.ml\", line 28, characters 16-23", (function (param) {
         aFromJs(3);
-        return /* () */0;
+        
       }));
 
 $$throw("File \"ast_mapper_defensive_test.ml\", line 29, characters 15-22", (function (param) {
         bFromJs(2);
-        return /* () */0;
+        
       }));
 
 $$throw("File \"ast_mapper_defensive_test.ml\", line 30, characters 15-22", (function (param) {
         cFromJs(33);
-        return /* () */0;
+        
       }));
 
 Mt.from_pair_suites("Ast_mapper_defensive_test", suites.contents);

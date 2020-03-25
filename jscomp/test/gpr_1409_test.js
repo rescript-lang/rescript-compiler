@@ -29,7 +29,7 @@ function eq(loc, x, y) {
     ],
     suites.contents
   ];
-  return /* () */0;
+  
 }
 
 var a = { };
@@ -58,9 +58,9 @@ function make(foo) {
     });
 }
 
-var a_ = make(undefined)(/* () */0);
+var a_ = make(undefined)(undefined);
 
-var b_ = make(42)(/* () */0);
+var b_ = make(42)(undefined);
 
 eq("File \"gpr_1409_test.ml\", line 30, characters 6-13", b_.foo, "42");
 

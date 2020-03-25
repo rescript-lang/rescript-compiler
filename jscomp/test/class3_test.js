@@ -83,7 +83,7 @@ function eq(loc, x, y) {
     ],
     suites.contents
   ];
-  return /* () */0;
+  
 }
 
 function point_init($$class) {
@@ -100,7 +100,7 @@ function point_init($$class) {
         move,
         (function (self$1, d) {
             self$1[x] = self$1[x] + d | 0;
-            return /* () */0;
+            
           })
       ]);
   return (function (env, self, x_init$1) {
@@ -113,7 +113,7 @@ function point_init($$class) {
 
 var point = CamlinternalOO.make_class(shared$5, point_init);
 
-var p = Curry._2(point[0], /* () */0, 7);
+var p = Curry._2(point[0], undefined, 7);
 
 eq("File \"class3_test.ml\", line 17, characters 12-19", Caml_oo_curry.js1(291546447, 1, p), 7);
 
@@ -137,7 +137,7 @@ function adjusted_point_init($$class) {
         move,
         (function (self$2, d) {
             self$2[x] = self$2[x] + d | 0;
-            return /* () */0;
+            
           })
       ]);
   return (function (env, self, x_init$1) {
@@ -152,7 +152,7 @@ function adjusted_point_init($$class) {
 
 var adjusted_point = CamlinternalOO.make_class(shared$1, adjusted_point_init);
 
-var tmp = Curry._2(adjusted_point[0], /* () */0, 31);
+var tmp = Curry._2(adjusted_point[0], undefined, 31);
 
 eq("File \"class3_test.ml\", line 28, characters 13-20", Caml_oo_curry.js1(291546447, 2, tmp), 30);
 
@@ -187,7 +187,7 @@ var adjusted_point2 = /* class */[
   adjusted_point2_003
 ];
 
-var tmp$1 = Curry._2(adjusted_point2_000, /* () */0, 31);
+var tmp$1 = Curry._2(adjusted_point2_000, undefined, 31);
 
 eq("File \"class3_test.ml\", line 33, characters 12-19", Caml_oo_curry.js1(291546447, 3, tmp$1), 30);
 
@@ -206,7 +206,7 @@ function printable_point_init($$class) {
         move,
         (function (self$4, d) {
             self$4[x] = self$4[x] + d | 0;
-            return /* () */0;
+            
           }),
         print,
         (function (self$4) {
@@ -223,7 +223,7 @@ function printable_point_init($$class) {
 
 var printable_point = CamlinternalOO.make_class(shared$2, printable_point_init);
 
-var p$1 = Curry._2(printable_point[0], /* () */0, 7);
+var p$1 = Curry._2(printable_point[0], undefined, 7);
 
 eq("File \"class3_test.ml\", line 49, characters 11-18", Caml_oo_curry.js1(-930392019, 4, p$1), 7);
 
@@ -252,7 +252,7 @@ CamlinternalOO.set_methods($$class, [
             self$5,
             ints.contents
           ];
-          return /* () */0;
+          
         }),
       len,
       (function (self$5) {
@@ -262,7 +262,7 @@ CamlinternalOO.set_methods($$class, [
 
 CamlinternalOO.init_class($$class);
 
-var my_int = CamlinternalOO.create_object_opt(/* () */0, $$class);
+var my_int = CamlinternalOO.create_object_opt(undefined, $$class);
 
 Caml_oo_curry.js1(-794843549, 5, my_int);
 
@@ -291,7 +291,7 @@ function printable_point2_init($$class) {
         move,
         (function (self$6, d) {
             self$6[x] = self$6[x] + d | 0;
-            return /* () */0;
+            
           }),
         print,
         (function (self$6) {
@@ -314,7 +314,7 @@ function printable_point2_init($$class) {
 
 var printable_point2 = CamlinternalOO.make_class(shared$2, printable_point2_init);
 
-Curry._2(printable_point2[0], /* () */0, 31);
+Curry._2(printable_point2[0], undefined, 31);
 
 eq("File \"class3_test.ml\", line 81, characters 12-19", v, [
       30,
@@ -337,10 +337,10 @@ function abstract_point_001($$class) {
 }
 
 var abstract_point = /* class */[
-  /* () */0,
+  undefined,
   abstract_point_001,
-  /* () */0,
-  /* () */0
+  undefined,
+  undefined
 ];
 
 function vpoint_init($$class) {
@@ -359,7 +359,7 @@ function vpoint_init($$class) {
         move,
         (function (self$8, d) {
             self$8[x] = self$8[x] + d | 0;
-            return /* () */0;
+            
           })
       ]);
   return (function (env, self, x_init$1) {
@@ -373,7 +373,7 @@ function vpoint_init($$class) {
 
 var vpoint = CamlinternalOO.make_class(shared$1, vpoint_init);
 
-var h = Curry._2(vpoint[0], /* () */0, 3);
+var h = Curry._2(vpoint[0], undefined, 3);
 
 Caml_oo_curry.js2(-933174511, 8, h, 32);
 
@@ -387,7 +387,7 @@ function abstract_point2_001($$class) {
   var x = ids[1];
   CamlinternalOO.set_method($$class, move, (function (self$9, d) {
           self$9[x] = self$9[x] + d | 0;
-          return /* () */0;
+          
         }));
   return (function (env, self) {
       return CamlinternalOO.create_object_opt(self, $$class);
@@ -395,10 +395,10 @@ function abstract_point2_001($$class) {
 }
 
 var abstract_point2 = /* class */[
-  /* () */0,
+  undefined,
   abstract_point2_001,
-  /* () */0,
-  /* () */0
+  undefined,
+  undefined
 ];
 
 function point2_init($$class) {
@@ -424,7 +424,7 @@ var point2 = CamlinternalOO.make_class([
       "get_offset"
     ], point2_init);
 
-var h$1 = Curry._2(point2[0], /* () */0, 3);
+var h$1 = Curry._2(point2[0], undefined, 3);
 
 Caml_oo_curry.js2(-933174511, 10, h$1, 32);
 
@@ -451,7 +451,7 @@ function restricted_point_init($$class) {
         move,
         (function (self$11, d) {
             self$11[x] = self$11[x] + d | 0;
-            return /* () */0;
+            
           }),
         bump,
         (function (self$11) {
@@ -471,7 +471,7 @@ var restricted_point = CamlinternalOO.make_class([
       "get_x"
     ], restricted_point_init);
 
-var p$2 = Curry._2(restricted_point[0], /* () */0, 0);
+var p$2 = Curry._2(restricted_point[0], undefined, 0);
 
 Caml_oo_curry.js1(-1054863370, 12, p$2);
 
@@ -494,7 +494,7 @@ function point_again_init($$class) {
 
 var point_again = CamlinternalOO.make_class(shared$4, point_again_init);
 
-var p$3 = Curry._2(point_again[0], /* () */0, 3);
+var p$3 = Curry._2(point_again[0], undefined, 3);
 
 Caml_oo_curry.js2(-933174511, 14, p$3, 3);
 
@@ -520,7 +520,7 @@ function point_again2_init($$class) {
 
 var point_again2 = CamlinternalOO.make_class(shared$4, point_again2_init);
 
-var p$4 = Curry._2(point_again2[0], /* () */0, 3);
+var p$4 = Curry._2(point_again2[0], undefined, 3);
 
 Caml_oo_curry.js2(-933174511, 18, p$4, 30);
 
@@ -549,7 +549,7 @@ function point_again3_init($$class) {
 
 var point_again3 = CamlinternalOO.make_class(shared$4, point_again3_init);
 
-var p$5 = Curry._2(point_again3[0], /* () */0, 3);
+var p$5 = Curry._2(point_again3[0], undefined, 3);
 
 Caml_oo_curry.js2(-933174511, 22, p$5, 300);
 

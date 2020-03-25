@@ -8,7 +8,7 @@ function f(x) {
               y: x
             };
     });
-  return /* () */0;
+  
 }
 
 exports.f = f;

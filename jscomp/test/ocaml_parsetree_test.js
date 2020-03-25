@@ -98,20 +98,21 @@ function ansi_of_color(param) {
 }
 
 function code_of_style(param) {
-  if (typeof param === "number") {
-    switch (param) {
-      case /* Bold */0 :
-          return "1";
-      case /* Reset */1 :
-          return "0";
-      case /* Dim */2 :
-          return "2";
-      
+  if (typeof param !== "number") {
+    if (param.tag) {
+      return "4" + ansi_of_color(param[0]);
+    } else {
+      return "3" + ansi_of_color(param[0]);
     }
-  } else if (param.tag) {
-    return "4" + ansi_of_color(param[0]);
-  } else {
-    return "3" + ansi_of_color(param[0]);
+  }
+  switch (param) {
+    case /* Bold */0 :
+        return "1";
+    case /* Reset */1 :
+        return "0";
+    case /* Dim */2 :
+        return "2";
+    
   }
 }
 
@@ -153,7 +154,7 @@ function get_styles(param) {
 
 function set_styles(s) {
   cur_styles.contents = s;
-  return /* () */0;
+  
 }
 
 function style_of_tag(s) {
@@ -192,7 +193,7 @@ var color_enabled = {
 };
 
 function set_color_tag_handling(ppf) {
-  var functions = Format.pp_get_formatter_tag_functions(ppf, /* () */0);
+  var functions = Format.pp_get_formatter_tag_functions(ppf, undefined);
   var partial_arg = functions.mark_open_tag;
   var partial_arg$1 = functions.mark_close_tag;
   var functions$prime_mark_open_tag = function (param) {
@@ -207,9 +208,8 @@ function set_color_tag_handling(ppf) {
     catch (exn){
       if (exn === Caml_builtin_exceptions.not_found) {
         return Curry._1(partial_arg, param);
-      } else {
-        throw exn;
       }
+      throw exn;
     }
   };
   var functions$prime_mark_close_tag = function (param) {
@@ -227,9 +227,8 @@ function set_color_tag_handling(ppf) {
     catch (exn){
       if (exn === Caml_builtin_exceptions.not_found) {
         return Curry._1(partial_arg$1, param);
-      } else {
-        throw exn;
       }
+      throw exn;
     }
   };
   var functions$prime_print_open_tag = functions.print_open_tag;
@@ -283,7 +282,7 @@ function setup(o) {
     }
     color_enabled.contents = tmp;
   }
-  return /* () */0;
+  
 }
 
 var Misc_Color = {
@@ -624,103 +623,99 @@ function parse_opt(error, active, flags, s) {
                 i,
                 n
               ];
-      } else {
-        var match = Caml_string.get(s, i);
-        if (match > 57 || match < 48) {
-          return /* tuple */[
-                  i,
-                  n
-                ];
-        } else {
-          _i = i + 1 | 0;
-          _n = (Caml_int32.imul(10, n) + Caml_string.get(s, i) | 0) - /* "0" */48 | 0;
-          continue ;
-        }
       }
+      var match = Caml_string.get(s, i);
+      if (match > 57 || match < 48) {
+        return /* tuple */[
+                i,
+                n
+              ];
+      }
+      _i = i + 1 | 0;
+      _n = (Caml_int32.imul(10, n) + Caml_string.get(s, i) | 0) - /* "0" */48 | 0;
+      continue ;
     };
   };
   var get_range = function (i) {
     var match = get_num(0, i);
     var n1 = match[1];
     var i$1 = match[0];
-    if ((i$1 + 2 | 0) < s.length && Caml_string.get(s, i$1) === /* "." */46 && Caml_string.get(s, i$1 + 1 | 0) === /* "." */46) {
-      var match$1 = get_num(0, i$1 + 2 | 0);
-      var n2 = match$1[1];
-      if (n2 < n1) {
-        throw [
-              Arg.Bad,
-              "Ill-formed list of warnings"
-            ];
-      }
-      return /* tuple */[
-              match$1[0],
-              n1,
-              n2
-            ];
-    } else {
+    if (!((i$1 + 2 | 0) < s.length && Caml_string.get(s, i$1) === /* "." */46 && Caml_string.get(s, i$1 + 1 | 0) === /* "." */46)) {
       return /* tuple */[
               i$1,
               n1,
               n1
             ];
     }
+    var match$1 = get_num(0, i$1 + 2 | 0);
+    var n2 = match$1[1];
+    if (n2 < n1) {
+      throw [
+            Arg.Bad,
+            "Ill-formed list of warnings"
+          ];
+    }
+    return /* tuple */[
+            match$1[0],
+            n1,
+            n2
+          ];
   };
   var loop = function (_i) {
     while(true) {
       var i = _i;
       if (i >= s.length) {
-        return /* () */0;
-      } else {
-        var c = Caml_string.get(s, i);
-        if (c >= 65) {
-          if (c >= 97) {
-            if (c >= 123) {
-              throw [
-                    Arg.Bad,
-                    "Ill-formed list of warnings"
-                  ];
-            }
-            List.iter(clear, letter(Caml_string.get(s, i)));
-            _i = i + 1 | 0;
-            continue ;
-          } else {
-            if (c >= 91) {
-              throw [
-                    Arg.Bad,
-                    "Ill-formed list of warnings"
-                  ];
-            }
-            List.iter(set, letter(Char.lowercase(Caml_string.get(s, i))));
-            _i = i + 1 | 0;
-            continue ;
-          }
-        } else if (c >= 46) {
-          if (c >= 64) {
-            return loop_letter_num(set_all, i + 1 | 0);
-          } else {
+        return ;
+      }
+      var c = Caml_string.get(s, i);
+      if (c >= 65) {
+        if (c >= 97) {
+          if (c >= 123) {
             throw [
                   Arg.Bad,
                   "Ill-formed list of warnings"
                 ];
           }
-        } else if (c >= 43) {
-          switch (c - 43 | 0) {
-            case 0 :
-                return loop_letter_num(set, i + 1 | 0);
-            case 1 :
-                throw [
-                      Arg.Bad,
-                      "Ill-formed list of warnings"
-                    ];
-            case 2 :
-                return loop_letter_num(clear, i + 1 | 0);
-            
-          }
+          List.iter(clear, letter(Caml_string.get(s, i)));
+          _i = i + 1 | 0;
+          continue ;
         } else {
+          if (c >= 91) {
+            throw [
+                  Arg.Bad,
+                  "Ill-formed list of warnings"
+                ];
+          }
+          List.iter(set, letter(Char.lowercase(Caml_string.get(s, i))));
+          _i = i + 1 | 0;
+          continue ;
+        }
+      } else if (c >= 46) {
+        if (c >= 64) {
+          return loop_letter_num(set_all, i + 1 | 0);
+        }
+        throw [
+              Arg.Bad,
+              "Ill-formed list of warnings"
+            ];
+      } else {
+        if (c < 43) {
           throw [
                 Arg.Bad,
                 "Ill-formed list of warnings"
               ];
+        }
+        switch (c - 43 | 0) {
+          case 0 :
+              return loop_letter_num(set, i + 1 | 0);
+          case 1 :
+              throw [
+                    Arg.Bad,
+                    "Ill-formed list of warnings"
+                  ];
+          case 2 :
+              return loop_letter_num(clear, i + 1 | 0);
+          
         }
       }
     };
@@ -778,7 +773,7 @@ function parse_options(errflag, s) {
     active: active,
     error: error
   };
-  return /* () */0;
+  
 }
 
 parse_options(false, "+a-4-6-7-9-27-29-32..39-41..42-44-45-48-50-102");
@@ -837,24 +832,7 @@ function message(param) {
           }
       case /* Method_override */2 :
           var match = param[0];
-          if (match) {
-            var slist = match[1];
-            var lab = match[0];
-            if (slist) {
-              return $$String.concat(" ", /* :: */[
-                          "the following methods are overridden by the class",
-                          /* :: */[
-                            lab,
-                            /* :: */[
-                              ":\n ",
-                              slist
-                            ]
-                          ]
-                        ]);
-            } else {
-              return "the method " + (lab + " is overridden.");
-            }
-          } else {
+          if (!match) {
             throw [
                   Caml_builtin_exceptions.assert_failure,
                   /* tuple */[
@@ -863,6 +841,22 @@ function message(param) {
                     26
                   ]
                 ];
+          }
+          var slist = match[1];
+          var lab = match[0];
+          if (slist) {
+            return $$String.concat(" ", /* :: */[
+                        "the following methods are overridden by the class",
+                        /* :: */[
+                          lab,
+                          /* :: */[
+                            ":\n ",
+                            slist
+                          ]
+                        ]
+                      ]);
+          } else {
+            return "the method " + (lab + " is overridden.");
           }
       case /* Partial_match */3 :
           var s$1 = param[0];
@@ -875,24 +869,7 @@ function message(param) {
           return "the following labels are not bound in this record pattern:\n" + (param[0] + "\nEither bind these labels explicitly or add '; _' to the pattern.");
       case /* Instance_variable_override */5 :
           var match$1 = param[0];
-          if (match$1) {
-            var slist$1 = match$1[1];
-            var lab$1 = match$1[0];
-            if (slist$1) {
-              return $$String.concat(" ", /* :: */[
-                          "the following instance variables are overridden by the class",
-                          /* :: */[
-                            lab$1,
-                            /* :: */[
-                              ":\n ",
-                              slist$1
-                            ]
-                          ]
-                        ]) + "\nThe behaviour changed in ocaml 3.10 (previous behaviour was hiding.)";
-            } else {
-              return "the instance variable " + (lab$1 + " is overridden.\nThe behaviour changed in ocaml 3.10 (previous behaviour was hiding.)");
-            }
-          } else {
+          if (!match$1) {
             throw [
                   Caml_builtin_exceptions.assert_failure,
                   /* tuple */[
@@ -901,6 +878,22 @@ function message(param) {
                     37
                   ]
                 ];
+          }
+          var slist$1 = match$1[1];
+          var lab$1 = match$1[0];
+          if (slist$1) {
+            return $$String.concat(" ", /* :: */[
+                        "the following instance variables are overridden by the class",
+                        /* :: */[
+                          lab$1,
+                          /* :: */[
+                            ":\n ",
+                            slist$1
+                          ]
+                        ]
+                      ]) + "\nThe behaviour changed in ocaml 3.10 (previous behaviour was hiding.)";
+          } else {
+            return "the instance variable " + (lab$1 + " is overridden.\nThe behaviour changed in ocaml 3.10 (previous behaviour was hiding.)");
           }
       case /* Implicit_public_methods */6 :
           return "the following private methods were made public implicitly:\n " + ($$String.concat(" ", param[0]) + ".");
@@ -1008,16 +1001,15 @@ function message(param) {
           }
           if (param[2]) {
             return "this record of type " + (ty + (" contains fields that are \nnot visible in the current scope: " + ($$String.concat(" ", slist$2) + ".\nThey will not be selected if the type becomes unknown.")));
-          } else {
-            throw [
-                  Caml_builtin_exceptions.assert_failure,
-                  /* tuple */[
-                    "warnings.ml",
-                    365,
-                    39
-                  ]
-                ];
           }
+          throw [
+                Caml_builtin_exceptions.assert_failure,
+                /* tuple */[
+                  "warnings.ml",
+                  365,
+                  39
+                ]
+              ];
           break;
       case /* Ambiguous_name */24 :
           var slist$3 = param[0];
@@ -1026,16 +1018,15 @@ function message(param) {
           }
           if (param[2]) {
             return "these field labels belong to several types: " + ($$String.concat(" ", param[1]) + "\nThe first one was selected. Please disambiguate if this is wrong.");
-          } else {
-            throw [
-                  Caml_builtin_exceptions.assert_failure,
-                  /* tuple */[
-                    "warnings.ml",
-                    374,
-                    36
-                  ]
-                ];
           }
+          throw [
+                Caml_builtin_exceptions.assert_failure,
+                /* tuple */[
+                  "warnings.ml",
+                  374,
+                  36
+                ]
+              ];
           break;
       case /* Disambiguated_name */25 :
           return "this use of " + (param[0] + " required disambiguation.");
@@ -1174,13 +1165,12 @@ function print(ppf, w) {
               ]),
             "%d: %s"
           ]), num, msg);
-  Format.pp_print_flush(ppf, /* () */0);
+  Format.pp_print_flush(ppf, undefined);
   if (Caml_array.caml_array_get(current.contents.error, num)) {
     nerrors.contents = nerrors.contents + 1 | 0;
-    return /* () */0;
-  } else {
-    return /* () */0;
+    return ;
   }
+  
 }
 
 var Errors = Caml_exceptions.create("Ocaml_parsetree_test.Warnings.Errors");
@@ -1215,16 +1205,16 @@ function curr(lexbuf) {
 
 function symbol_rloc(param) {
   return {
-          loc_start: Parsing.symbol_start_pos(/* () */0),
-          loc_end: Parsing.symbol_end_pos(/* () */0),
+          loc_start: Parsing.symbol_start_pos(undefined),
+          loc_end: Parsing.symbol_end_pos(undefined),
           loc_ghost: false
         };
 }
 
 function symbol_gloc(param) {
   return {
-          loc_start: Parsing.symbol_start_pos(/* () */0),
-          loc_end: Parsing.symbol_end_pos(/* () */0),
+          loc_start: Parsing.symbol_start_pos(undefined),
+          loc_end: Parsing.symbol_end_pos(undefined),
           loc_ghost: true
         };
 }
@@ -1254,7 +1244,7 @@ var num_loc_lines = {
 };
 
 function highlight_terminfo(ppf, num_lines, lb, locs) {
-  Format.pp_print_flush(ppf, /* () */0);
+  Format.pp_print_flush(ppf, undefined);
   var pos0 = -lb.lex_abs_pos | 0;
   if (pos0 < 0) {
     throw Pervasives.Exit;
@@ -1410,7 +1400,7 @@ function highlight_dumb(ppf, lb, loc) {
       pos_at_bol = pos$1 + 1 | 0;
     }
   }
-  return /* () */0;
+  
 }
 
 function highlight_locations(ppf, locs) {
@@ -1419,36 +1409,32 @@ function highlight_locations(ppf, locs) {
     if (typeof match === "number") {
       if (match !== 0) {
         var match$1 = input_lexbuf.contents;
-        if (match$1 !== undefined) {
-          var norepeat;
-          try {
-            norepeat = Caml_sys.caml_sys_getenv("TERM") === "norepeat";
-          }
-          catch (exn){
-            if (exn === Caml_builtin_exceptions.not_found) {
-              norepeat = false;
-            } else {
-              throw exn;
-            }
-          }
-          if (norepeat) {
-            return false;
-          } else {
-            var loc1 = List.hd(locs);
-            try {
-              highlight_dumb(ppf, match$1, loc1);
-              return true;
-            }
-            catch (exn$1){
-              if (exn$1 === Pervasives.Exit) {
-                return false;
-              } else {
-                throw exn$1;
-              }
-            }
-          }
-        } else {
+        if (match$1 === undefined) {
           return false;
+        }
+        var norepeat;
+        try {
+          norepeat = Caml_sys.caml_sys_getenv("TERM") === "norepeat";
+        }
+        catch (exn){
+          if (exn !== Caml_builtin_exceptions.not_found) {
+            throw exn;
+          }
+          norepeat = false;
+        }
+        if (norepeat) {
+          return false;
+        }
+        var loc1 = List.hd(locs);
+        try {
+          highlight_dumb(ppf, match$1, loc1);
+          return true;
+        }
+        catch (exn$1){
+          if (exn$1 === Pervasives.Exit) {
+            return false;
+          }
+          throw exn$1;
         }
       } else {
         status.contents = Caml_external_polyfill.resolve("caml_terminfo_setup")(Pervasives.stdout);
@@ -1456,20 +1442,18 @@ function highlight_locations(ppf, locs) {
       }
     } else {
       var match$2 = input_lexbuf.contents;
-      if (match$2 !== undefined) {
-        try {
-          highlight_terminfo(ppf, match[0], match$2, locs);
-          return true;
-        }
-        catch (exn$2){
-          if (exn$2 === Pervasives.Exit) {
-            return false;
-          } else {
-            throw exn$2;
-          }
-        }
-      } else {
+      if (match$2 === undefined) {
         return false;
+      }
+      try {
+        highlight_terminfo(ppf, match[0], match$2, locs);
+        return true;
+      }
+      catch (exn$2){
+        if (exn$2 === Pervasives.Exit) {
+          return false;
+        }
+        throw exn$2;
       }
     }
   };
@@ -1477,7 +1461,7 @@ function highlight_locations(ppf, locs) {
 
 function show_filename(file) {
   if (absname.contents) {
-    var s = Curry._1(Filename.is_relative, file) ? Filename.concat(Caml_sys.caml_sys_getcwd(/* () */0), file) : file;
+    var s = Curry._1(Filename.is_relative, file) ? Filename.concat(Caml_sys.caml_sys_getcwd(undefined), file) : file;
     var aux = function (_s) {
       while(true) {
         var s = _s;
@@ -1485,14 +1469,16 @@ function show_filename(file) {
         var dir = Curry._1(Filename.dirname, s);
         if (dir === s) {
           return dir;
-        } else if (base === Filename.current_dir_name) {
-          _s = dir;
-          continue ;
-        } else if (base === Filename.parent_dir_name) {
-          return Curry._1(Filename.dirname, aux(dir));
-        } else {
-          return Filename.concat(aux(dir), base);
         }
+        if (base !== Filename.current_dir_name) {
+          if (base === Filename.parent_dir_name) {
+            return Curry._1(Filename.dirname, aux(dir));
+          } else {
+            return Filename.concat(aux(dir), base);
+          }
+        }
+        _s = dir;
+        continue ;
       };
     };
     return aux(s);
@@ -1531,7 +1517,7 @@ function print_loc(ppf, loc) {
             loc,
             /* [] */0
           ])) {
-      return /* () */0;
+      return ;
     } else {
       return Curry._2(Format.fprintf(ppf, /* Format */[
                       /* String_literal */Block.__(11, [
@@ -1617,7 +1603,7 @@ function print$1(ppf, loc) {
           loc,
           /* [] */0
         ])) {
-    return /* () */0;
+    return ;
   } else {
     return Curry._3(Format.fprintf(ppf, /* Format */[
                     /* Formatting_gen */Block.__(18, [
@@ -1648,6 +1634,7 @@ var error_prefix = "Error";
 
 function print_error(ppf, loc) {
   print$1(ppf, loc);
+  var param;
   Curry._1(Misc_Color.setup, color.contents);
   Curry._1(Format.fprintf(ppf, /* Format */[
             /* Formatting_gen */Block.__(18, [
@@ -1671,7 +1658,7 @@ function print_error(ppf, loc) {
               ]),
             "@{<error>%s@}:"
           ]), error_prefix);
-  return /* () */0;
+  
 }
 
 function default_warning_printer(loc, ppf, w) {
@@ -1703,9 +1690,8 @@ function default_warning_printer(loc, ppf, w) {
                       ]),
                     "@{<warning>%s@} %a@."
                   ]), "Warning", print, w);
-  } else {
-    return /* () */0;
   }
+  
 }
 
 var warning_printer = {
@@ -1719,7 +1705,7 @@ var formatter_for_warnings = {
 function prerr_warning(loc, w) {
   var ppf = formatter_for_warnings.contents;
   var f = Curry._1(warning_printer.contents, loc);
-  var out_functions = Format.pp_get_formatter_out_functions(ppf, /* () */0);
+  var out_functions = Format.pp_get_formatter_out_functions(ppf, undefined);
   var out_string = function (str, start, len) {
     var count = function (_i, _c) {
       while(true) {
@@ -1727,7 +1713,8 @@ function prerr_warning(loc, w) {
         var i = _i;
         if (i === (start + len | 0)) {
           return c;
-        } else if (Caml_string.get(str, i) === /* "\n" */10) {
+        }
+        if (Caml_string.get(str, i) === /* "\n" */10) {
           _c = c + 1 | 0;
           _i = i + 1 | 0;
           continue ;
@@ -1748,7 +1735,7 @@ function prerr_warning(loc, w) {
         out_indent: out_functions.out_indent
       });
   Curry._2(f, ppf, w);
-  Format.pp_print_flush(ppf, /* () */0);
+  Format.pp_print_flush(ppf, undefined);
   return Format.pp_set_formatter_out_functions(ppf, out_functions);
 }
 
@@ -1776,7 +1763,7 @@ function errorf(locOpt, subOpt, if_highlightOpt, fmt) {
     Curry._1(before, ppf);
   }
   return Format.kfprintf((function (param) {
-                Format.pp_print_flush(ppf, /* () */0);
+                Format.pp_print_flush(ppf, undefined);
                 return Curry._1(k, $$Buffer.contents(buf));
               }), ppf, fmt);
 }
@@ -1790,7 +1777,7 @@ function register_error_of_exn(f) {
     f,
     error_of_exn.contents
   ];
-  return /* () */0;
+  
 }
 
 function error_of_printer(loc, print, x) {
@@ -1858,26 +1845,24 @@ function last(param) {
 }
 
 function assert_fail(msg) {
-  Assert.fail(/* () */0, /* () */0, msg, "");
-  return /* () */0;
+  Assert.fail(undefined, undefined, msg, "");
+  
 }
 
 function is_mocha(param) {
   var match = $$Array.to_list(Process.argv);
-  if (match) {
-    var match$1 = match[1];
-    if (match$1) {
-      var exec = Path.basename(match$1[0]);
-      if (exec === "mocha") {
-        return true;
-      } else {
-        return exec === "_mocha";
-      }
-    } else {
-      return false;
-    }
-  } else {
+  if (!match) {
     return false;
+  }
+  var match$1 = match[1];
+  if (!match$1) {
+    return false;
+  }
+  var exec = Path.basename(match$1[0]);
+  if (exec === "mocha") {
+    return true;
+  } else {
+    return exec === "_mocha";
   }
 }
 
@@ -1889,49 +1874,49 @@ function close_enough(thresholdOpt, a, b) {
 function from_pair_suites(name, suites) {
   var match = $$Array.to_list(Process.argv);
   if (match) {
-    if (is_mocha(/* () */0)) {
+    if (is_mocha(undefined)) {
       describe(name, (function () {
               return List.iter((function (param) {
                             var code = param[1];
                             it(param[0], (function () {
-                                    var spec = Curry._1(code, /* () */0);
+                                    var spec = Curry._1(code, undefined);
                                     switch (spec.tag | 0) {
                                       case /* Eq */0 :
                                           Assert.deepEqual(spec[0], spec[1]);
-                                          return /* () */0;
+                                          return ;
                                       case /* Neq */1 :
                                           Assert.notDeepEqual(spec[0], spec[1]);
-                                          return /* () */0;
+                                          return ;
                                       case /* StrictEq */2 :
                                           Assert.strictEqual(spec[0], spec[1]);
-                                          return /* () */0;
+                                          return ;
                                       case /* StrictNeq */3 :
                                           Assert.notStrictEqual(spec[0], spec[1]);
-                                          return /* () */0;
+                                          return ;
                                       case /* Ok */4 :
                                           Assert.ok(spec[0]);
-                                          return /* () */0;
+                                          return ;
                                       case /* Approx */5 :
                                           var b = spec[1];
                                           var a = spec[0];
-                                          if (close_enough(undefined, a, b)) {
-                                            return /* () */0;
-                                          } else {
+                                          if (!close_enough(undefined, a, b)) {
                                             Assert.deepEqual(a, b);
-                                            return /* () */0;
+                                            return ;
+                                          } else {
+                                            return ;
                                           }
                                       case /* ApproxThreshold */6 :
                                           var b$1 = spec[2];
                                           var a$1 = spec[1];
-                                          if (close_enough(spec[0], a$1, b$1)) {
-                                            return /* () */0;
-                                          } else {
+                                          if (!close_enough(spec[0], a$1, b$1)) {
                                             Assert.deepEqual(a$1, b$1);
-                                            return /* () */0;
+                                            return ;
+                                          } else {
+                                            return ;
                                           }
                                       case /* ThrowAny */7 :
                                           Assert.throws(spec[0]);
-                                          return /* () */0;
+                                          return ;
                                       case /* Fail */8 :
                                           return assert_fail("failed");
                                       case /* FailWith */9 :
@@ -1939,10 +1924,10 @@ function from_pair_suites(name, suites) {
                                       
                                     }
                                   }));
-                            return /* () */0;
+                            
                           }), suites);
             }));
-      return /* () */0;
+      return ;
     } else {
       console.log(/* tuple */[
             name,
@@ -1950,7 +1935,7 @@ function from_pair_suites(name, suites) {
           ]);
       return List.iter((function (param) {
                     var name = param[0];
-                    var match = Curry._1(param[1], /* () */0);
+                    var match = Curry._1(param[1], undefined);
                     switch (match.tag | 0) {
                       case /* Eq */0 :
                           console.log(/* tuple */[
@@ -1959,7 +1944,7 @@ function from_pair_suites(name, suites) {
                                 "eq?",
                                 match[1]
                               ]);
-                          return /* () */0;
+                          return ;
                       case /* Neq */1 :
                           console.log(/* tuple */[
                                 name,
@@ -1967,7 +1952,7 @@ function from_pair_suites(name, suites) {
                                 "neq?",
                                 match[1]
                               ]);
-                          return /* () */0;
+                          return ;
                       case /* StrictEq */2 :
                           console.log(/* tuple */[
                                 name,
@@ -1975,7 +1960,7 @@ function from_pair_suites(name, suites) {
                                 "strict_eq?",
                                 match[1]
                               ]);
-                          return /* () */0;
+                          return ;
                       case /* StrictNeq */3 :
                           console.log(/* tuple */[
                                 name,
@@ -1983,14 +1968,14 @@ function from_pair_suites(name, suites) {
                                 "strict_neq?",
                                 match[1]
                               ]);
-                          return /* () */0;
+                          return ;
                       case /* Ok */4 :
                           console.log(/* tuple */[
                                 name,
                                 match[0],
                                 "ok?"
                               ]);
-                          return /* () */0;
+                          return ;
                       case /* Approx */5 :
                           console.log(/* tuple */[
                                 name,
@@ -1998,7 +1983,7 @@ function from_pair_suites(name, suites) {
                                 "~",
                                 match[1]
                               ]);
-                          return /* () */0;
+                          return ;
                       case /* ApproxThreshold */6 :
                           console.log(/* tuple */[
                                 name,
@@ -2009,25 +1994,24 @@ function from_pair_suites(name, suites) {
                                 match[0],
                                 ")"
                               ]);
-                          return /* () */0;
+                          return ;
                       case /* ThrowAny */7 :
-                          return /* () */0;
+                          return ;
                       case /* Fail */8 :
                           console.log("failed");
-                          return /* () */0;
+                          return ;
                       case /* FailWith */9 :
                           console.log("failed: " + match[0]);
-                          return /* () */0;
+                          return ;
                       
                     }
                   }), suites);
     }
-  } else {
-    return /* () */0;
   }
+  
 }
 
-Promise.resolve(/* () */0);
+Promise.resolve(undefined);
 
 var docstrings = {
   contents: /* [] */0
@@ -2041,20 +2025,19 @@ function warn_bad_docstrings(param) {
                     case /* Unattached */0 :
                         return prerr_warning(ds.ds_loc, /* Bad_docstring */Block.__(33, [true]));
                     case /* Info */1 :
-                        return /* () */0;
+                        return ;
                     case /* Docs */2 :
                         var match$1 = ds.ds_associated;
                         if (match$1 >= 2) {
                           return prerr_warning(ds.ds_loc, /* Bad_docstring */Block.__(33, [false]));
                         } else {
-                          return /* () */0;
+                          return ;
                         }
                     
                   }
                 }), List.rev(docstrings.contents));
-  } else {
-    return /* () */0;
   }
+  
 }
 
 function docstring(body, loc) {
@@ -2180,18 +2163,17 @@ function get_docstring(info, dsl) {
   var _param = dsl;
   while(true) {
     var param = _param;
-    if (param) {
-      var ds = param[0];
-      var match = ds.ds_attached;
-      if (match !== 1) {
-        ds.ds_attached = info ? /* Info */1 : /* Docs */2;
-        return ds;
-      } else {
-        _param = param[1];
-        continue ;
-      }
-    } else {
+    if (!param) {
       return ;
+    }
+    var ds = param[0];
+    var match = ds.ds_attached;
+    if (match !== 1) {
+      ds.ds_attached = info ? /* Info */1 : /* Docs */2;
+      return ds;
+    } else {
+      _param = param[1];
+      continue ;
     }
   };
 }
@@ -2202,23 +2184,22 @@ function get_docstrings(dsl) {
   while(true) {
     var param = _param;
     var acc = _acc;
-    if (param) {
-      var ds = param[0];
-      var match = ds.ds_attached;
-      if (match !== 1) {
-        ds.ds_attached = /* Docs */2;
-        _param = param[1];
-        _acc = /* :: */[
-          ds,
-          acc
-        ];
-        continue ;
-      } else {
-        _param = param[1];
-        continue ;
-      }
-    } else {
+    if (!param) {
       return List.rev(acc);
+    }
+    var ds = param[0];
+    var match = ds.ds_attached;
+    if (match !== 1) {
+      ds.ds_attached = /* Docs */2;
+      _param = param[1];
+      _acc = /* :: */[
+        ds,
+        acc
+      ];
+      continue ;
+    } else {
+      _param = param[1];
+      continue ;
     }
   };
 }
@@ -2228,10 +2209,10 @@ function associate_docstrings(dsl) {
                 var match = ds.ds_associated;
                 if (match !== 0) {
                   ds.ds_associated = /* Many */2;
-                  return /* () */0;
+                  return ;
                 } else {
                   ds.ds_associated = /* One */1;
-                  return /* () */0;
+                  return ;
                 }
               }), dsl);
 }
@@ -2241,9 +2222,8 @@ var pre_table = Hashtbl.create(undefined, 50);
 function set_pre_docstrings(pos, dsl) {
   if (dsl !== /* [] */0) {
     return Hashtbl.add(pre_table, pos, dsl);
-  } else {
-    return /* () */0;
   }
+  
 }
 
 function get_pre_docs(pos) {
@@ -2255,9 +2235,8 @@ function get_pre_docs(pos) {
   catch (exn){
     if (exn === Caml_builtin_exceptions.not_found) {
       return ;
-    } else {
-      throw exn;
     }
+    throw exn;
   }
 }
 
@@ -2267,10 +2246,9 @@ function mark_pre_docs(pos) {
   }
   catch (exn){
     if (exn === Caml_builtin_exceptions.not_found) {
-      return /* () */0;
-    } else {
-      throw exn;
+      return ;
     }
+    throw exn;
   }
 }
 
@@ -2279,9 +2257,8 @@ var post_table = Hashtbl.create(undefined, 50);
 function set_post_docstrings(pos, dsl) {
   if (dsl !== /* [] */0) {
     return Hashtbl.add(post_table, pos, dsl);
-  } else {
-    return /* () */0;
   }
+  
 }
 
 function get_post_docs(pos) {
@@ -2293,9 +2270,8 @@ function get_post_docs(pos) {
   catch (exn){
     if (exn === Caml_builtin_exceptions.not_found) {
       return ;
-    } else {
-      throw exn;
     }
+    throw exn;
   }
 }
 
@@ -2305,10 +2281,9 @@ function mark_post_docs(pos) {
   }
   catch (exn){
     if (exn === Caml_builtin_exceptions.not_found) {
-      return /* () */0;
-    } else {
-      throw exn;
+      return ;
     }
+    throw exn;
   }
 }
 
@@ -2320,9 +2295,8 @@ function get_info(pos) {
   catch (exn){
     if (exn === Caml_builtin_exceptions.not_found) {
       return ;
-    } else {
-      throw exn;
     }
+    throw exn;
   }
 }
 
@@ -2331,9 +2305,8 @@ var floating_table = Hashtbl.create(undefined, 50);
 function set_floating_docstrings(pos, dsl) {
   if (dsl !== /* [] */0) {
     return Hashtbl.add(floating_table, pos, dsl);
-  } else {
-    return /* () */0;
   }
+  
 }
 
 function get_text(pos) {
@@ -2343,9 +2316,8 @@ function get_text(pos) {
   catch (exn){
     if (exn === Caml_builtin_exceptions.not_found) {
       return /* [] */0;
-    } else {
-      throw exn;
     }
+    throw exn;
   }
 }
 
@@ -2354,9 +2326,8 @@ var pre_extra_table = Hashtbl.create(undefined, 50);
 function set_pre_extra_docstrings(pos, dsl) {
   if (dsl !== /* [] */0) {
     return Hashtbl.add(pre_extra_table, pos, dsl);
-  } else {
-    return /* () */0;
   }
+  
 }
 
 function get_pre_extra_text(pos) {
@@ -2366,9 +2337,8 @@ function get_pre_extra_text(pos) {
   catch (exn){
     if (exn === Caml_builtin_exceptions.not_found) {
       return /* [] */0;
-    } else {
-      throw exn;
     }
+    throw exn;
   }
 }
 
@@ -2377,9 +2347,8 @@ var post_extra_table = Hashtbl.create(undefined, 50);
 function set_post_extra_docstrings(pos, dsl) {
   if (dsl !== /* [] */0) {
     return Hashtbl.add(post_extra_table, pos, dsl);
-  } else {
-    return /* () */0;
   }
+  
 }
 
 function get_post_extra_text(pos) {
@@ -2389,22 +2358,21 @@ function get_post_extra_text(pos) {
   catch (exn){
     if (exn === Caml_builtin_exceptions.not_found) {
       return /* [] */0;
-    } else {
-      throw exn;
     }
+    throw exn;
   }
 }
 
 function symbol_docs(param) {
   return {
-          docs_pre: get_pre_docs(Parsing.symbol_start_pos(/* () */0)),
-          docs_post: get_post_docs(Parsing.symbol_end_pos(/* () */0))
+          docs_pre: get_pre_docs(Parsing.symbol_start_pos(undefined)),
+          docs_post: get_post_docs(Parsing.symbol_end_pos(undefined))
         };
 }
 
 function symbol_docs_lazy(param) {
-  var p1 = Parsing.symbol_start_pos(/* () */0);
-  var p2 = Parsing.symbol_end_pos(/* () */0);
+  var p1 = Parsing.symbol_start_pos(undefined);
+  var p2 = Parsing.symbol_end_pos(undefined);
   return Caml_obj.caml_lazy_make((function (param) {
                 return {
                         docs_pre: get_pre_docs(p1),
@@ -2414,8 +2382,8 @@ function symbol_docs_lazy(param) {
 }
 
 function mark_symbol_docs(param) {
-  mark_pre_docs(Parsing.symbol_start_pos(/* () */0));
-  return mark_post_docs(Parsing.symbol_end_pos(/* () */0));
+  mark_pre_docs(Parsing.symbol_start_pos(undefined));
+  return mark_post_docs(Parsing.symbol_end_pos(undefined));
 }
 
 function mark_rhs_docs(pos1, pos2) {
@@ -2424,7 +2392,7 @@ function mark_rhs_docs(pos1, pos2) {
 }
 
 function symbol_text_lazy(param) {
-  var pos = Parsing.symbol_start_pos(/* () */0);
+  var pos = Parsing.symbol_start_pos(undefined);
   return Caml_obj.caml_lazy_make((function (param) {
                 return get_text(pos);
               }));
@@ -3404,47 +3372,47 @@ register_error_of_exn((function (param) {
       }));
 
 function mktyp(d) {
-  return mk(symbol_rloc(/* () */0), undefined, d);
+  return mk(symbol_rloc(undefined), undefined, d);
 }
 
 function mkpat(d) {
-  return mk$1(symbol_rloc(/* () */0), undefined, d);
+  return mk$1(symbol_rloc(undefined), undefined, d);
 }
 
 function mkexp(d) {
-  return Curry._3(Ast_helper_Exp.mk, symbol_rloc(/* () */0), undefined, d);
+  return Curry._3(Ast_helper_Exp.mk, symbol_rloc(undefined), undefined, d);
 }
 
 function mkmty(d) {
-  return mk$3(symbol_rloc(/* () */0), undefined, d);
+  return mk$3(symbol_rloc(undefined), undefined, d);
 }
 
 function mksig(d) {
-  return mk$5(symbol_rloc(/* () */0), d);
+  return mk$5(symbol_rloc(undefined), d);
 }
 
 function mkmod(d) {
-  return mk$4(symbol_rloc(/* () */0), undefined, d);
+  return mk$4(symbol_rloc(undefined), undefined, d);
 }
 
 function mkstr(d) {
-  return mk$6(symbol_rloc(/* () */0), d);
+  return mk$6(symbol_rloc(undefined), d);
 }
 
 function mkclass(d) {
-  return mk$7(symbol_rloc(/* () */0), undefined, d);
+  return mk$7(symbol_rloc(undefined), undefined, d);
 }
 
 function mkcty(d) {
-  return mk$8(symbol_rloc(/* () */0), undefined, d);
+  return mk$8(symbol_rloc(undefined), undefined, d);
 }
 
 function mkctf(attrs, docs, d) {
-  return Curry._4(Ast_helper_Ctf.mk, symbol_rloc(/* () */0), attrs, docs, d);
+  return Curry._4(Ast_helper_Ctf.mk, symbol_rloc(undefined), attrs, docs, d);
 }
 
 function mkcf(attrs, docs, d) {
-  return Curry._4(Ast_helper_Cf.mk, symbol_rloc(/* () */0), attrs, docs, d);
+  return Curry._4(Ast_helper_Cf.mk, symbol_rloc(undefined), attrs, docs, d);
 }
 
 function mkoption(d) {
@@ -3474,7 +3442,7 @@ function mkoption(d) {
 function reloc_pat(x) {
   return {
           ppat_desc: x.ppat_desc,
-          ppat_loc: symbol_rloc(/* () */0),
+          ppat_loc: symbol_rloc(undefined),
           ppat_attributes: x.ppat_attributes
         };
 }
@@ -3482,7 +3450,7 @@ function reloc_pat(x) {
 function reloc_exp(x) {
   return {
           pexp_desc: x.pexp_desc,
-          pexp_loc: symbol_rloc(/* () */0),
+          pexp_loc: symbol_rloc(undefined),
           pexp_attributes: x.pexp_attributes
         };
 }
@@ -3503,15 +3471,15 @@ function mkpatvar(name, pos) {
 }
 
 function ghexp(d) {
-  return Curry._3(Ast_helper_Exp.mk, symbol_gloc(/* () */0), undefined, d);
+  return Curry._3(Ast_helper_Exp.mk, symbol_gloc(undefined), undefined, d);
 }
 
 function ghpat(d) {
-  return mk$1(symbol_gloc(/* () */0), undefined, d);
+  return mk$1(symbol_gloc(undefined), undefined, d);
 }
 
 function ghtyp(d) {
-  return mk(symbol_gloc(/* () */0), undefined, d);
+  return mk(symbol_gloc(undefined), undefined, d);
 }
 
 function mkinfix(arg1, name, arg2) {
@@ -3673,22 +3641,22 @@ function mkexp_constraint(e, param) {
                     t1
                   ]));
     }
-  } else if (t2 !== undefined) {
+  }
+  if (t2 !== undefined) {
     return ghexp(/* Pexp_coerce */Block.__(20, [
                   e,
                   t1,
                   t2
                 ]));
-  } else {
-    throw [
-          Caml_builtin_exceptions.assert_failure,
-          /* tuple */[
-            "parser.mly",
-            153,
-            18
-          ]
-        ];
   }
+  throw [
+        Caml_builtin_exceptions.assert_failure,
+        /* tuple */[
+          "parser.mly",
+          153,
+          18
+        ]
+      ];
 }
 
 function array_function(str, name) {
@@ -3697,7 +3665,7 @@ function array_function(str, name) {
               /* Lident */Block.__(0, [str]),
               fast.contents ? "unsafe_" + name : name
             ]),
-          loc: symbol_gloc(/* () */0)
+          loc: symbol_gloc(undefined)
         };
 }
 
@@ -3742,7 +3710,7 @@ function bigarray_function(str, name) {
                 ]),
               name
             ]),
-          loc: symbol_gloc(/* () */0)
+          loc: symbol_gloc(undefined)
         };
 }
 
@@ -3783,9 +3751,8 @@ function check_variable(vl, loc, v) {
               v
             ])
         ];
-  } else {
-    return /* () */0;
   }
+  
 }
 
 function varify_constructors(var_names, t) {
@@ -3995,20 +3962,19 @@ function extra_csig(pos, items) {
 function add_nonrec(rf, attrs, pos) {
   if (rf) {
     return attrs;
-  } else {
-    var name_loc = rhs_loc(pos);
-    var name = {
-      txt: "nonrec",
-      loc: name_loc
-    };
-    return /* :: */[
-            /* tuple */[
-              name,
-              /* PStr */Block.__(0, [/* [] */0])
-            ],
-            attrs
-          ];
   }
+  var name_loc = rhs_loc(pos);
+  var name = {
+    txt: "nonrec",
+    loc: name_loc
+  };
+  return /* :: */[
+          /* tuple */[
+            name,
+            /* PStr */Block.__(0, [/* [] */0])
+          ],
+          attrs
+        ];
 }
 
 function mklb(param, attrs) {
@@ -4016,9 +3982,9 @@ function mklb(param, attrs) {
           lb_pattern: param[0],
           lb_expression: param[1],
           lb_attributes: attrs,
-          lb_docs: symbol_docs_lazy(/* () */0),
-          lb_text: symbol_text_lazy(/* () */0),
-          lb_loc: symbol_rloc(/* () */0)
+          lb_docs: symbol_docs_lazy(undefined),
+          lb_text: symbol_text_lazy(undefined),
+          lb_loc: symbol_rloc(undefined)
         };
 }
 
@@ -4530,7 +4496,7 @@ var yyact = [
             ],
             /* [] */0
           ]);
-        return mk$6(symbol_gloc(/* () */0), d);
+        return mk$6(symbol_gloc(undefined), d);
       } else {
         return str;
       }
@@ -4584,18 +4550,18 @@ var yyact = [
       var _2 = Parsing.peek_val(__caml_parser_env, 0);
       return mkstr(/* Pstr_extension */Block.__(14, [
                     _1,
-                    add_docs_attrs(symbol_docs(/* () */0), _2)
+                    add_docs_attrs(symbol_docs(undefined), _2)
                   ]));
     }),
   (function (__caml_parser_env) {
       var _1 = Parsing.peek_val(__caml_parser_env, 0);
-      mark_symbol_docs(/* () */0);
+      mark_symbol_docs(undefined);
       return mkstr(/* Pstr_attribute */Block.__(13, [_1]));
     }),
   (function (__caml_parser_env) {
       var _2 = Parsing.peek_val(__caml_parser_env, 1);
       var _3 = Parsing.peek_val(__caml_parser_env, 0);
-      return mk$16(symbol_rloc(/* () */0), _3, symbol_docs(/* () */0), _2);
+      return mk$16(symbol_rloc(undefined), _3, symbol_docs(undefined), _2);
     }),
   (function (__caml_parser_env) {
       return Parsing.peek_val(__caml_parser_env, 0);
@@ -4621,7 +4587,7 @@ var yyact = [
       var _2 = Parsing.peek_val(__caml_parser_env, 2);
       var _3 = Parsing.peek_val(__caml_parser_env, 1);
       var _4 = Parsing.peek_val(__caml_parser_env, 0);
-      return mk$14(symbol_rloc(/* () */0), _4, symbol_docs(/* () */0), undefined, {
+      return mk$14(symbol_rloc(undefined), _4, symbol_docs(undefined), undefined, {
                   txt: _2,
                   loc: rhs_loc(2)
                 }, _3);
@@ -4645,7 +4611,7 @@ var yyact = [
       var _3 = Parsing.peek_val(__caml_parser_env, 2);
       var _4 = Parsing.peek_val(__caml_parser_env, 1);
       var _5 = Parsing.peek_val(__caml_parser_env, 0);
-      return mk$14(symbol_rloc(/* () */0), _5, symbol_docs(/* () */0), undefined, {
+      return mk$14(symbol_rloc(undefined), _5, symbol_docs(undefined), undefined, {
                   txt: _3,
                   loc: rhs_loc(3)
                 }, _4);
@@ -4654,7 +4620,7 @@ var yyact = [
       var _2 = Parsing.peek_val(__caml_parser_env, 2);
       var _3 = Parsing.peek_val(__caml_parser_env, 1);
       var _4 = Parsing.peek_val(__caml_parser_env, 0);
-      return mk$14(symbol_rloc(/* () */0), _4, symbol_docs(/* () */0), get_text(Parsing.symbol_start_pos(/* () */0)), {
+      return mk$14(symbol_rloc(undefined), _4, symbol_docs(undefined), get_text(Parsing.symbol_start_pos(undefined)), {
                   txt: _2,
                   loc: rhs_loc(2)
                 }, _3);
@@ -4785,19 +4751,19 @@ var yyact = [
       var _2 = Parsing.peek_val(__caml_parser_env, 0);
       return mksig(/* Psig_extension */Block.__(12, [
                     _1,
-                    add_docs_attrs(symbol_docs(/* () */0), _2)
+                    add_docs_attrs(symbol_docs(undefined), _2)
                   ]));
     }),
   (function (__caml_parser_env) {
       var _1 = Parsing.peek_val(__caml_parser_env, 0);
-      mark_symbol_docs(/* () */0);
+      mark_symbol_docs(undefined);
       return mksig(/* Psig_attribute */Block.__(11, [_1]));
     }),
   (function (__caml_parser_env) {
       var _2 = Parsing.peek_val(__caml_parser_env, 2);
       var _3 = Parsing.peek_val(__caml_parser_env, 1);
       var _4 = Parsing.peek_val(__caml_parser_env, 0);
-      return mk$15(symbol_rloc(/* () */0), _4, symbol_docs(/* () */0), _2, {
+      return mk$15(symbol_rloc(undefined), _4, symbol_docs(undefined), _2, {
                   txt: _3,
                   loc: rhs_loc(3)
                 });
@@ -4805,7 +4771,7 @@ var yyact = [
   (function (__caml_parser_env) {
       var _2 = Parsing.peek_val(__caml_parser_env, 1);
       var _3 = Parsing.peek_val(__caml_parser_env, 0);
-      return mk$16(symbol_rloc(/* () */0), _3, symbol_docs(/* () */0), _2);
+      return mk$16(symbol_rloc(undefined), _3, symbol_docs(undefined), _2);
     }),
   (function (__caml_parser_env) {
       return Parsing.peek_val(__caml_parser_env, 0);
@@ -4838,7 +4804,7 @@ var yyact = [
       var _2 = Parsing.peek_val(__caml_parser_env, 2);
       var _3 = Parsing.peek_val(__caml_parser_env, 1);
       var _4 = Parsing.peek_val(__caml_parser_env, 0);
-      return mk$12(symbol_rloc(/* () */0), _4, symbol_docs(/* () */0), undefined, {
+      return mk$12(symbol_rloc(undefined), _4, symbol_docs(undefined), undefined, {
                   txt: _2,
                   loc: rhs_loc(2)
                 }, _3);
@@ -4847,7 +4813,7 @@ var yyact = [
       var _2 = Parsing.peek_val(__caml_parser_env, 3);
       var _4 = Parsing.peek_val(__caml_parser_env, 1);
       var _5 = Parsing.peek_val(__caml_parser_env, 0);
-      return mk$12(symbol_rloc(/* () */0), _5, symbol_docs(/* () */0), undefined, {
+      return mk$12(symbol_rloc(undefined), _5, symbol_docs(undefined), undefined, {
                   txt: _2,
                   loc: rhs_loc(2)
                 }, alias(rhs_loc(4), undefined, {
@@ -4874,7 +4840,7 @@ var yyact = [
       var _3 = Parsing.peek_val(__caml_parser_env, 3);
       var _5 = Parsing.peek_val(__caml_parser_env, 1);
       var _6 = Parsing.peek_val(__caml_parser_env, 0);
-      return mk$12(symbol_rloc(/* () */0), _6, symbol_docs(/* () */0), undefined, {
+      return mk$12(symbol_rloc(undefined), _6, symbol_docs(undefined), undefined, {
                   txt: _3,
                   loc: rhs_loc(3)
                 }, _5);
@@ -4883,13 +4849,13 @@ var yyact = [
       var _2 = Parsing.peek_val(__caml_parser_env, 3);
       var _4 = Parsing.peek_val(__caml_parser_env, 1);
       var _5 = Parsing.peek_val(__caml_parser_env, 0);
-      return mk$12(symbol_rloc(/* () */0), _5, symbol_docs(/* () */0), get_text(Parsing.symbol_start_pos(/* () */0)), {
+      return mk$12(symbol_rloc(undefined), _5, symbol_docs(undefined), get_text(Parsing.symbol_start_pos(undefined)), {
                   txt: _2,
                   loc: rhs_loc(2)
                 }, _4);
     }),
   (function (__caml_parser_env) {
-      return ;
+      
     }),
   (function (__caml_parser_env) {
       return Parsing.peek_val(__caml_parser_env, 0);
@@ -4898,7 +4864,7 @@ var yyact = [
       var _3 = Parsing.peek_val(__caml_parser_env, 2);
       var _4 = Parsing.peek_val(__caml_parser_env, 1);
       var _5 = Parsing.peek_val(__caml_parser_env, 0);
-      return mk$13(symbol_rloc(/* () */0), _5, symbol_docs(/* () */0), undefined, _4, {
+      return mk$13(symbol_rloc(undefined), _5, symbol_docs(undefined), undefined, _4, {
                   txt: _3,
                   loc: rhs_loc(3)
                 });
@@ -4924,7 +4890,7 @@ var yyact = [
       var _4 = Parsing.peek_val(__caml_parser_env, 2);
       var _5 = Parsing.peek_val(__caml_parser_env, 1);
       var _6 = Parsing.peek_val(__caml_parser_env, 0);
-      return mk$18(symbol_rloc(/* () */0), _6, symbol_docs(/* () */0), undefined, _2, _3, {
+      return mk$18(symbol_rloc(undefined), _6, symbol_docs(undefined), undefined, _2, _3, {
                   txt: _4,
                   loc: rhs_loc(4)
                 }, _5);
@@ -4935,7 +4901,7 @@ var yyact = [
       var _4 = Parsing.peek_val(__caml_parser_env, 2);
       var _5 = Parsing.peek_val(__caml_parser_env, 1);
       var _6 = Parsing.peek_val(__caml_parser_env, 0);
-      return mk$18(symbol_rloc(/* () */0), _6, symbol_docs(/* () */0), get_text(Parsing.symbol_start_pos(/* () */0)), _2, _3, {
+      return mk$18(symbol_rloc(undefined), _6, symbol_docs(undefined), get_text(Parsing.symbol_start_pos(undefined)), _2, _3, {
                   txt: _4,
                   loc: rhs_loc(4)
                 }, _5);
@@ -5136,7 +5102,7 @@ var yyact = [
       var _3 = Parsing.peek_val(__caml_parser_env, 2);
       var _4 = Parsing.peek_val(__caml_parser_env, 1);
       var _5 = Parsing.peek_val(__caml_parser_env, 0);
-      return mkcf(_5, symbol_docs(/* () */0), /* Pcf_inherit */Block.__(0, [
+      return mkcf(_5, symbol_docs(undefined), /* Pcf_inherit */Block.__(0, [
                     _2,
                     _3,
                     _4
@@ -5145,38 +5111,38 @@ var yyact = [
   (function (__caml_parser_env) {
       var _2 = Parsing.peek_val(__caml_parser_env, 1);
       var _3 = Parsing.peek_val(__caml_parser_env, 0);
-      return mkcf(_3, symbol_docs(/* () */0), /* Pcf_val */Block.__(1, [_2]));
+      return mkcf(_3, symbol_docs(undefined), /* Pcf_val */Block.__(1, [_2]));
     }),
   (function (__caml_parser_env) {
       var _2 = Parsing.peek_val(__caml_parser_env, 1);
       var _3 = Parsing.peek_val(__caml_parser_env, 0);
-      return mkcf(_3, symbol_docs(/* () */0), /* Pcf_method */Block.__(2, [_2]));
+      return mkcf(_3, symbol_docs(undefined), /* Pcf_method */Block.__(2, [_2]));
     }),
   (function (__caml_parser_env) {
       var _2 = Parsing.peek_val(__caml_parser_env, 1);
       var _3 = Parsing.peek_val(__caml_parser_env, 0);
-      return mkcf(_3, symbol_docs(/* () */0), /* Pcf_constraint */Block.__(3, [_2]));
+      return mkcf(_3, symbol_docs(undefined), /* Pcf_constraint */Block.__(3, [_2]));
     }),
   (function (__caml_parser_env) {
       var _2 = Parsing.peek_val(__caml_parser_env, 1);
       var _3 = Parsing.peek_val(__caml_parser_env, 0);
-      return mkcf(_3, symbol_docs(/* () */0), /* Pcf_initializer */Block.__(4, [_2]));
+      return mkcf(_3, symbol_docs(undefined), /* Pcf_initializer */Block.__(4, [_2]));
     }),
   (function (__caml_parser_env) {
       var _1 = Parsing.peek_val(__caml_parser_env, 1);
       var _2 = Parsing.peek_val(__caml_parser_env, 0);
-      return mkcf(_2, symbol_docs(/* () */0), /* Pcf_extension */Block.__(6, [_1]));
+      return mkcf(_2, symbol_docs(undefined), /* Pcf_extension */Block.__(6, [_1]));
     }),
   (function (__caml_parser_env) {
       var _1 = Parsing.peek_val(__caml_parser_env, 0);
-      mark_symbol_docs(/* () */0);
+      mark_symbol_docs(undefined);
       return mkcf(undefined, undefined, /* Pcf_attribute */Block.__(5, [_1]));
     }),
   (function (__caml_parser_env) {
       return Parsing.peek_val(__caml_parser_env, 0);
     }),
   (function (__caml_parser_env) {
-      return ;
+      
     }),
   (function (__caml_parser_env) {
       var _1 = Parsing.peek_val(__caml_parser_env, 5);
@@ -5448,19 +5414,19 @@ var yyact = [
   (function (__caml_parser_env) {
       var _2 = Parsing.peek_val(__caml_parser_env, 1);
       var _3 = Parsing.peek_val(__caml_parser_env, 0);
-      return mkctf(_3, symbol_docs(/* () */0), /* Pctf_inherit */Block.__(0, [_2]));
+      return mkctf(_3, symbol_docs(undefined), /* Pctf_inherit */Block.__(0, [_2]));
     }),
   (function (__caml_parser_env) {
       var _2 = Parsing.peek_val(__caml_parser_env, 1);
       var _3 = Parsing.peek_val(__caml_parser_env, 0);
-      return mkctf(_3, symbol_docs(/* () */0), /* Pctf_val */Block.__(1, [_2]));
+      return mkctf(_3, symbol_docs(undefined), /* Pctf_val */Block.__(1, [_2]));
     }),
   (function (__caml_parser_env) {
       var _2 = Parsing.peek_val(__caml_parser_env, 4);
       var _3 = Parsing.peek_val(__caml_parser_env, 3);
       var _5 = Parsing.peek_val(__caml_parser_env, 1);
       var _6 = Parsing.peek_val(__caml_parser_env, 0);
-      return mkctf(_6, symbol_docs(/* () */0), /* Pctf_method */Block.__(2, [/* tuple */[
+      return mkctf(_6, symbol_docs(undefined), /* Pctf_method */Block.__(2, [/* tuple */[
                       _3,
                       _2[0],
                       _2[1],
@@ -5470,16 +5436,16 @@ var yyact = [
   (function (__caml_parser_env) {
       var _2 = Parsing.peek_val(__caml_parser_env, 1);
       var _3 = Parsing.peek_val(__caml_parser_env, 0);
-      return mkctf(_3, symbol_docs(/* () */0), /* Pctf_constraint */Block.__(3, [_2]));
+      return mkctf(_3, symbol_docs(undefined), /* Pctf_constraint */Block.__(3, [_2]));
     }),
   (function (__caml_parser_env) {
       var _1 = Parsing.peek_val(__caml_parser_env, 1);
       var _2 = Parsing.peek_val(__caml_parser_env, 0);
-      return mkctf(_2, symbol_docs(/* () */0), /* Pctf_extension */Block.__(5, [_1]));
+      return mkctf(_2, symbol_docs(undefined), /* Pctf_extension */Block.__(5, [_1]));
     }),
   (function (__caml_parser_env) {
       var _1 = Parsing.peek_val(__caml_parser_env, 0);
-      mark_symbol_docs(/* () */0);
+      mark_symbol_docs(undefined);
       return mkctf(undefined, undefined, /* Pctf_attribute */Block.__(4, [_1]));
     }),
   (function (__caml_parser_env) {
@@ -5520,7 +5486,7 @@ var yyact = [
       return /* tuple */[
               _1,
               _3,
-              symbol_rloc(/* () */0)
+              symbol_rloc(undefined)
             ];
     }),
   (function (__caml_parser_env) {
@@ -5552,7 +5518,7 @@ var yyact = [
       var _4 = Parsing.peek_val(__caml_parser_env, 3);
       var _6 = Parsing.peek_val(__caml_parser_env, 1);
       var _7 = Parsing.peek_val(__caml_parser_env, 0);
-      return mk$18(symbol_rloc(/* () */0), _7, symbol_docs(/* () */0), undefined, _2, _3, {
+      return mk$18(symbol_rloc(undefined), _7, symbol_docs(undefined), undefined, _2, _3, {
                   txt: _4,
                   loc: rhs_loc(4)
                 }, _6);
@@ -5563,7 +5529,7 @@ var yyact = [
       var _4 = Parsing.peek_val(__caml_parser_env, 3);
       var _6 = Parsing.peek_val(__caml_parser_env, 1);
       var _7 = Parsing.peek_val(__caml_parser_env, 0);
-      return mk$18(symbol_rloc(/* () */0), _7, symbol_docs(/* () */0), get_text(Parsing.symbol_start_pos(/* () */0)), _2, _3, {
+      return mk$18(symbol_rloc(undefined), _7, symbol_docs(undefined), get_text(Parsing.symbol_start_pos(undefined)), _2, _3, {
                   txt: _4,
                   loc: rhs_loc(4)
                 }, _6);
@@ -5589,7 +5555,7 @@ var yyact = [
       var _5 = Parsing.peek_val(__caml_parser_env, 3);
       var _7 = Parsing.peek_val(__caml_parser_env, 1);
       var _8 = Parsing.peek_val(__caml_parser_env, 0);
-      return mk$18(symbol_rloc(/* () */0), _8, symbol_docs(/* () */0), undefined, _3, _4, {
+      return mk$18(symbol_rloc(undefined), _8, symbol_docs(undefined), undefined, _3, _4, {
                   txt: _5,
                   loc: rhs_loc(5)
                 }, _7);
@@ -5600,7 +5566,7 @@ var yyact = [
       var _4 = Parsing.peek_val(__caml_parser_env, 3);
       var _6 = Parsing.peek_val(__caml_parser_env, 1);
       var _7 = Parsing.peek_val(__caml_parser_env, 0);
-      return mk$18(symbol_rloc(/* () */0), _7, symbol_docs(/* () */0), get_text(Parsing.symbol_start_pos(/* () */0)), _2, _3, {
+      return mk$18(symbol_rloc(undefined), _7, symbol_docs(undefined), get_text(Parsing.symbol_start_pos(undefined)), _2, _3, {
                   txt: _4,
                   loc: rhs_loc(4)
                 }, _6);
@@ -5699,7 +5665,7 @@ var yyact = [
       return mkpat(/* Ppat_any */0);
     }),
   (function (__caml_parser_env) {
-      return ;
+      
     }),
   (function (__caml_parser_env) {
       return Parsing.peek_val(__caml_parser_env, 0);
@@ -5942,7 +5908,7 @@ var yyact = [
                             _3,
                             /* [] */0
                           ]
-                        ]])), symbol_rloc(/* () */0));
+                        ]])), symbol_rloc(undefined));
     }),
   (function (__caml_parser_env) {
       var _5 = Parsing.peek_val(__caml_parser_env, 3);
@@ -5953,7 +5919,7 @@ var yyact = [
                             _7,
                             /* [] */0
                           ]
-                        ]])), symbol_rloc(/* () */0));
+                        ]])), symbol_rloc(undefined));
     }),
   (function (__caml_parser_env) {
       var _1 = Parsing.peek_val(__caml_parser_env, 2);
@@ -6226,78 +6192,7 @@ var yyact = [
       if (coords) {
         var match = coords[1];
         var c1 = coords[0];
-        if (match) {
-          var match$1 = match[1];
-          var c2 = match[0];
-          if (match$1) {
-            if (!match$1[1]) {
-              return mkexp(/* Pexp_apply */Block.__(5, [
-                            ghexp(/* Pexp_ident */Block.__(0, [bigarray_function("Array3", set)])),
-                            /* :: */[
-                              /* tuple */[
-                                "",
-                                _1
-                              ],
-                              /* :: */[
-                                /* tuple */[
-                                  "",
-                                  c1
-                                ],
-                                /* :: */[
-                                  /* tuple */[
-                                    "",
-                                    c2
-                                  ],
-                                  /* :: */[
-                                    /* tuple */[
-                                      "",
-                                      match$1[0]
-                                    ],
-                                    /* :: */[
-                                      /* tuple */[
-                                        "",
-                                        _7
-                                      ],
-                                      /* [] */0
-                                    ]
-                                  ]
-                                ]
-                              ]
-                            ]
-                          ]));
-            }
-            
-          } else {
-            return mkexp(/* Pexp_apply */Block.__(5, [
-                          ghexp(/* Pexp_ident */Block.__(0, [bigarray_function("Array2", set)])),
-                          /* :: */[
-                            /* tuple */[
-                              "",
-                              _1
-                            ],
-                            /* :: */[
-                              /* tuple */[
-                                "",
-                                c1
-                              ],
-                              /* :: */[
-                                /* tuple */[
-                                  "",
-                                  c2
-                                ],
-                                /* :: */[
-                                  /* tuple */[
-                                    "",
-                                    _7
-                                  ],
-                                  /* [] */0
-                                ]
-                              ]
-                            ]
-                          ]
-                        ]));
-          }
-        } else {
+        if (!match) {
           return mkexp(/* Pexp_apply */Block.__(5, [
                         ghexp(/* Pexp_ident */Block.__(0, [bigarray_function("Array1", set)])),
                         /* :: */[
@@ -6321,6 +6216,75 @@ var yyact = [
                         ]
                       ]));
         }
+        var match$1 = match[1];
+        var c2 = match[0];
+        if (!match$1) {
+          return mkexp(/* Pexp_apply */Block.__(5, [
+                        ghexp(/* Pexp_ident */Block.__(0, [bigarray_function("Array2", set)])),
+                        /* :: */[
+                          /* tuple */[
+                            "",
+                            _1
+                          ],
+                          /* :: */[
+                            /* tuple */[
+                              "",
+                              c1
+                            ],
+                            /* :: */[
+                              /* tuple */[
+                                "",
+                                c2
+                              ],
+                              /* :: */[
+                                /* tuple */[
+                                  "",
+                                  _7
+                                ],
+                                /* [] */0
+                              ]
+                            ]
+                          ]
+                        ]
+                      ]));
+        }
+        if (!match$1[1]) {
+          return mkexp(/* Pexp_apply */Block.__(5, [
+                        ghexp(/* Pexp_ident */Block.__(0, [bigarray_function("Array3", set)])),
+                        /* :: */[
+                          /* tuple */[
+                            "",
+                            _1
+                          ],
+                          /* :: */[
+                            /* tuple */[
+                              "",
+                              c1
+                            ],
+                            /* :: */[
+                              /* tuple */[
+                                "",
+                                c2
+                              ],
+                              /* :: */[
+                                /* tuple */[
+                                  "",
+                                  match$1[0]
+                                ],
+                                /* :: */[
+                                  /* tuple */[
+                                    "",
+                                    _7
+                                  ],
+                                  /* [] */0
+                                ]
+                              ]
+                            ]
+                          ]
+                        ]
+                      ]));
+        }
+        
       }
       return mkexp(/* Pexp_apply */Block.__(5, [
                     ghexp(/* Pexp_ident */Block.__(0, [bigarray_function("Genarray", "set")])),
@@ -6425,7 +6389,7 @@ var yyact = [
       var _2 = Parsing.peek_val(__caml_parser_env, 1);
       var d_000 = {
         txt: /* Lident */Block.__(0, ["()"]),
-        loc: symbol_rloc(/* () */0)
+        loc: symbol_rloc(undefined)
       };
       var d = /* Pexp_construct */Block.__(9, [
           d_000,
@@ -6529,66 +6493,7 @@ var yyact = [
       if (coords) {
         var match = coords[1];
         var c1 = coords[0];
-        if (match) {
-          var match$1 = match[1];
-          var c2 = match[0];
-          if (match$1) {
-            if (!match$1[1]) {
-              return mkexp(/* Pexp_apply */Block.__(5, [
-                            ghexp(/* Pexp_ident */Block.__(0, [bigarray_function("Array3", get)])),
-                            /* :: */[
-                              /* tuple */[
-                                "",
-                                _1
-                              ],
-                              /* :: */[
-                                /* tuple */[
-                                  "",
-                                  c1
-                                ],
-                                /* :: */[
-                                  /* tuple */[
-                                    "",
-                                    c2
-                                  ],
-                                  /* :: */[
-                                    /* tuple */[
-                                      "",
-                                      match$1[0]
-                                    ],
-                                    /* [] */0
-                                  ]
-                                ]
-                              ]
-                            ]
-                          ]));
-            }
-            
-          } else {
-            return mkexp(/* Pexp_apply */Block.__(5, [
-                          ghexp(/* Pexp_ident */Block.__(0, [bigarray_function("Array2", get)])),
-                          /* :: */[
-                            /* tuple */[
-                              "",
-                              _1
-                            ],
-                            /* :: */[
-                              /* tuple */[
-                                "",
-                                c1
-                              ],
-                              /* :: */[
-                                /* tuple */[
-                                  "",
-                                  c2
-                                ],
-                                /* [] */0
-                              ]
-                            ]
-                          ]
-                        ]));
-          }
-        } else {
+        if (!match) {
           return mkexp(/* Pexp_apply */Block.__(5, [
                         ghexp(/* Pexp_ident */Block.__(0, [bigarray_function("Array1", get)])),
                         /* :: */[
@@ -6606,6 +6511,63 @@ var yyact = [
                         ]
                       ]));
         }
+        var match$1 = match[1];
+        var c2 = match[0];
+        if (!match$1) {
+          return mkexp(/* Pexp_apply */Block.__(5, [
+                        ghexp(/* Pexp_ident */Block.__(0, [bigarray_function("Array2", get)])),
+                        /* :: */[
+                          /* tuple */[
+                            "",
+                            _1
+                          ],
+                          /* :: */[
+                            /* tuple */[
+                              "",
+                              c1
+                            ],
+                            /* :: */[
+                              /* tuple */[
+                                "",
+                                c2
+                              ],
+                              /* [] */0
+                            ]
+                          ]
+                        ]
+                      ]));
+        }
+        if (!match$1[1]) {
+          return mkexp(/* Pexp_apply */Block.__(5, [
+                        ghexp(/* Pexp_ident */Block.__(0, [bigarray_function("Array3", get)])),
+                        /* :: */[
+                          /* tuple */[
+                            "",
+                            _1
+                          ],
+                          /* :: */[
+                            /* tuple */[
+                              "",
+                              c1
+                            ],
+                            /* :: */[
+                              /* tuple */[
+                                "",
+                                c2
+                              ],
+                              /* :: */[
+                                /* tuple */[
+                                  "",
+                                  match$1[0]
+                                ],
+                                /* [] */0
+                              ]
+                            ]
+                          ]
+                        ]
+                      ]));
+        }
+        
       }
       return mkexp(/* Pexp_apply */Block.__(5, [
                     ghexp(/* Pexp_ident */Block.__(0, [bigarray_function("Genarray", "get")])),
@@ -7011,7 +6973,7 @@ var yyact = [
               lbs_rec: _3,
               lbs_extension: _2[0],
               lbs_attributes: _2[1],
-              lbs_loc: symbol_rloc(/* () */0)
+              lbs_loc: symbol_rloc(undefined)
             };
     }),
   (function (__caml_parser_env) {
@@ -7294,7 +7256,7 @@ var yyact = [
                             _3,
                             /* [] */0
                           ]
-                        ]])), symbol_rloc(/* () */0));
+                        ]])), symbol_rloc(undefined));
     }),
   (function (__caml_parser_env) {
       Parsing.peek_val(__caml_parser_env, 2);
@@ -7309,7 +7271,7 @@ var yyact = [
                             _7,
                             /* [] */0
                           ]
-                        ]])), symbol_rloc(/* () */0));
+                        ]])), symbol_rloc(undefined));
     }),
   (function (__caml_parser_env) {
       Parsing.peek_val(__caml_parser_env, 3);
@@ -7580,7 +7542,7 @@ var yyact = [
       var _2 = Parsing.peek_val(__caml_parser_env, 3);
       var _4 = Parsing.peek_val(__caml_parser_env, 1);
       var _5 = Parsing.peek_val(__caml_parser_env, 0);
-      return mk$11(symbol_rloc(/* () */0), _5, symbol_docs(/* () */0), undefined, {
+      return mk$11(symbol_rloc(undefined), _5, symbol_docs(undefined), undefined, {
                   txt: _2,
                   loc: rhs_loc(2)
                 }, _4);
@@ -7605,7 +7567,7 @@ var yyact = [
       var _4 = Parsing.peek_val(__caml_parser_env, 3);
       var _6 = Parsing.peek_val(__caml_parser_env, 1);
       var _7 = Parsing.peek_val(__caml_parser_env, 0);
-      return mk$11(symbol_rloc(/* () */0), _7, symbol_docs(/* () */0), _6, {
+      return mk$11(symbol_rloc(undefined), _7, symbol_docs(undefined), _6, {
                   txt: _2,
                   loc: rhs_loc(2)
                 }, _4);
@@ -7632,7 +7594,7 @@ var yyact = [
       var _5 = Parsing.peek_val(__caml_parser_env, 2);
       var _6 = Parsing.peek_val(__caml_parser_env, 1);
       var _7 = Parsing.peek_val(__caml_parser_env, 0);
-      return mk$19(symbol_rloc(/* () */0), add_nonrec(_2, _7, 2), symbol_docs(/* () */0), undefined, _3, List.rev(_6), _5[0], _5[1], _5[2], {
+      return mk$19(symbol_rloc(undefined), add_nonrec(_2, _7, 2), symbol_docs(undefined), undefined, _3, List.rev(_6), _5[0], _5[1], _5[2], {
                   txt: _4,
                   loc: rhs_loc(4)
                 });
@@ -7643,7 +7605,7 @@ var yyact = [
       var _4 = Parsing.peek_val(__caml_parser_env, 2);
       var _5 = Parsing.peek_val(__caml_parser_env, 1);
       var _6 = Parsing.peek_val(__caml_parser_env, 0);
-      return mk$19(symbol_rloc(/* () */0), _6, symbol_docs(/* () */0), get_text(Parsing.symbol_start_pos(/* () */0)), _2, List.rev(_5), _4[0], _4[1], _4[2], {
+      return mk$19(symbol_rloc(undefined), _6, symbol_docs(undefined), get_text(Parsing.symbol_start_pos(undefined)), _2, List.rev(_5), _4[0], _4[1], _4[2], {
                   txt: _3,
                   loc: rhs_loc(3)
                 });
@@ -7860,7 +7822,7 @@ var yyact = [
       var _1 = Parsing.peek_val(__caml_parser_env, 2);
       var _2 = Parsing.peek_val(__caml_parser_env, 1);
       var _3 = Parsing.peek_val(__caml_parser_env, 0);
-      return constructor(symbol_rloc(/* () */0), _3, Caml_option.some(get_info(Parsing.symbol_end_pos(/* () */0))), _2[0], _2[1], {
+      return constructor(symbol_rloc(undefined), _3, Caml_option.some(get_info(Parsing.symbol_end_pos(undefined))), _2[0], _2[1], {
                   txt: _1,
                   loc: rhs_loc(1)
                 });
@@ -7869,7 +7831,7 @@ var yyact = [
       var _2 = Parsing.peek_val(__caml_parser_env, 2);
       var _3 = Parsing.peek_val(__caml_parser_env, 1);
       var _4 = Parsing.peek_val(__caml_parser_env, 0);
-      return constructor(symbol_rloc(/* () */0), _4, Caml_option.some(get_info(Parsing.symbol_end_pos(/* () */0))), _3[0], _3[1], {
+      return constructor(symbol_rloc(undefined), _4, Caml_option.some(get_info(Parsing.symbol_end_pos(undefined))), _3[0], _3[1], {
                   txt: _2,
                   loc: rhs_loc(2)
                 });
@@ -7882,7 +7844,7 @@ var yyact = [
       var _4 = Parsing.peek_val(__caml_parser_env, 2);
       var _5 = Parsing.peek_val(__caml_parser_env, 1);
       var _6 = Parsing.peek_val(__caml_parser_env, 0);
-      return rebind(symbol_rloc(/* () */0), Pervasives.$at(_5, _6), symbol_docs(/* () */0), undefined, {
+      return rebind(symbol_rloc(undefined), Pervasives.$at(_5, _6), symbol_docs(undefined), undefined, {
                   txt: _2,
                   loc: rhs_loc(2)
                 }, {
@@ -7895,7 +7857,7 @@ var yyact = [
       var _3 = Parsing.peek_val(__caml_parser_env, 2);
       var _4 = Parsing.peek_val(__caml_parser_env, 1);
       var _5 = Parsing.peek_val(__caml_parser_env, 0);
-      return decl(symbol_rloc(/* () */0), Pervasives.$at(_4, _5), symbol_docs(/* () */0), undefined, _3[0], _3[1], {
+      return decl(symbol_rloc(undefined), Pervasives.$at(_4, _5), symbol_docs(undefined), undefined, _3[0], _3[1], {
                   txt: _2,
                   loc: rhs_loc(2)
                 });
@@ -7955,7 +7917,7 @@ var yyact = [
       var _2 = Parsing.peek_val(__caml_parser_env, 3);
       var _4 = Parsing.peek_val(__caml_parser_env, 1);
       var _5 = Parsing.peek_val(__caml_parser_env, 0);
-      return field$1(symbol_rloc(/* () */0), _5, Caml_option.some(get_info(Parsing.symbol_end_pos(/* () */0))), _1, {
+      return field$1(symbol_rloc(undefined), _5, Caml_option.some(get_info(Parsing.symbol_end_pos(undefined))), _1, {
                   txt: _2,
                   loc: rhs_loc(2)
                 }, _4);
@@ -7967,8 +7929,8 @@ var yyact = [
       var _5 = Parsing.peek_val(__caml_parser_env, 2);
       var _7 = Parsing.peek_val(__caml_parser_env, 0);
       var info_before_semi = get_info(Parsing.rhs_end_pos(5));
-      var info = info_before_semi !== undefined ? info_before_semi : get_info(Parsing.symbol_end_pos(/* () */0));
-      return field$1(symbol_rloc(/* () */0), Pervasives.$at(_5, _7), Caml_option.some(info), _1, {
+      var info = info_before_semi !== undefined ? info_before_semi : get_info(Parsing.symbol_end_pos(undefined));
+      return field$1(symbol_rloc(undefined), Pervasives.$at(_5, _7), Caml_option.some(info), _1, {
                   txt: _2,
                   loc: rhs_loc(2)
                 }, _4);
@@ -7983,7 +7945,7 @@ var yyact = [
       if (_2 !== /* Recursive */1) {
         not_expecting(2, "nonrec flag");
       }
-      return mk$20(_8, symbol_docs(/* () */0), _3, _6, {
+      return mk$20(_8, symbol_docs(undefined), _3, _6, {
                   txt: _4,
                   loc: rhs_loc(4)
                 }, List.rev(_7));
@@ -7998,7 +7960,7 @@ var yyact = [
       if (_2 !== /* Recursive */1) {
         not_expecting(2, "nonrec flag");
       }
-      return mk$20(_8, symbol_docs(/* () */0), _3, _6, {
+      return mk$20(_8, symbol_docs(undefined), _3, _6, {
                   txt: _4,
                   loc: rhs_loc(4)
                 }, List.rev(_7));
@@ -8073,7 +8035,7 @@ var yyact = [
       var _1 = Parsing.peek_val(__caml_parser_env, 2);
       var _2 = Parsing.peek_val(__caml_parser_env, 1);
       var _3 = Parsing.peek_val(__caml_parser_env, 0);
-      return decl(symbol_rloc(/* () */0), _3, undefined, Caml_option.some(get_info(Parsing.symbol_end_pos(/* () */0))), _2[0], _2[1], {
+      return decl(symbol_rloc(undefined), _3, undefined, Caml_option.some(get_info(Parsing.symbol_end_pos(undefined))), _2[0], _2[1], {
                   txt: _1,
                   loc: rhs_loc(1)
                 });
@@ -8082,7 +8044,7 @@ var yyact = [
       var _2 = Parsing.peek_val(__caml_parser_env, 2);
       var _3 = Parsing.peek_val(__caml_parser_env, 1);
       var _4 = Parsing.peek_val(__caml_parser_env, 0);
-      return decl(symbol_rloc(/* () */0), _4, undefined, Caml_option.some(get_info(Parsing.symbol_end_pos(/* () */0))), _3[0], _3[1], {
+      return decl(symbol_rloc(undefined), _4, undefined, Caml_option.some(get_info(Parsing.symbol_end_pos(undefined))), _3[0], _3[1], {
                   txt: _2,
                   loc: rhs_loc(2)
                 });
@@ -8091,7 +8053,7 @@ var yyact = [
       var _1 = Parsing.peek_val(__caml_parser_env, 3);
       var _3 = Parsing.peek_val(__caml_parser_env, 1);
       var _4 = Parsing.peek_val(__caml_parser_env, 0);
-      return rebind(symbol_rloc(/* () */0), _4, undefined, Caml_option.some(get_info(Parsing.symbol_end_pos(/* () */0))), {
+      return rebind(symbol_rloc(undefined), _4, undefined, Caml_option.some(get_info(Parsing.symbol_end_pos(undefined))), {
                   txt: _1,
                   loc: rhs_loc(1)
                 }, {
@@ -8103,7 +8065,7 @@ var yyact = [
       var _2 = Parsing.peek_val(__caml_parser_env, 3);
       var _4 = Parsing.peek_val(__caml_parser_env, 1);
       var _5 = Parsing.peek_val(__caml_parser_env, 0);
-      return rebind(symbol_rloc(/* () */0), _5, undefined, Caml_option.some(get_info(Parsing.symbol_end_pos(/* () */0))), {
+      return rebind(symbol_rloc(undefined), _5, undefined, Caml_option.some(get_info(Parsing.symbol_end_pos(undefined))), {
                   txt: _2,
                   loc: rhs_loc(2)
                 }, {
@@ -8138,7 +8100,7 @@ var yyact = [
                   txt: _3,
                   loc: rhs_loc(3)
                 },
-                mk$19(symbol_rloc(/* () */0), undefined, undefined, undefined, _2, List.rev(_6), undefined, _4, _5, {
+                mk$19(symbol_rloc(undefined), undefined, undefined, undefined, _2, List.rev(_6), undefined, _4, _5, {
                       txt: rhs,
                       loc: rhs_loc(3)
                     })
@@ -8148,7 +8110,7 @@ var yyact = [
       var _2 = Parsing.peek_val(__caml_parser_env, 3);
       var _3 = Parsing.peek_val(__caml_parser_env, 2);
       var _5 = Parsing.peek_val(__caml_parser_env, 0);
-      return /* Pwith_typesubst */Block.__(2, [mk$19(symbol_rloc(/* () */0), undefined, undefined, undefined, _2, undefined, undefined, undefined, _5, {
+      return /* Pwith_typesubst */Block.__(2, [mk$19(symbol_rloc(undefined), undefined, undefined, undefined, _2, undefined, undefined, undefined, _5, {
                       txt: _3,
                       loc: rhs_loc(3)
                     })]);
@@ -8290,28 +8252,26 @@ var yyact = [
     }),
   (function (__caml_parser_env) {
       var _2 = Parsing.peek_val(__caml_parser_env, 1);
-      if (_2) {
-        if (_2[1]) {
-          throw Parsing.Parse_error;
-        }
-        return _2[0];
-      } else {
+      if (!_2) {
         throw Parsing.Parse_error;
       }
+      if (_2[1]) {
+        throw Parsing.Parse_error;
+      }
+      return _2[0];
     }),
   (function (__caml_parser_env) {
       return Parsing.peek_val(__caml_parser_env, 0);
     }),
   (function (__caml_parser_env) {
       var _2 = Parsing.peek_val(__caml_parser_env, 1);
-      if (_2) {
-        if (_2[1]) {
-          throw Parsing.Parse_error;
-        }
-        return _2[0];
-      } else {
+      if (!_2) {
         throw Parsing.Parse_error;
       }
+      if (_2[1]) {
+        throw Parsing.Parse_error;
+      }
+      return _2[0];
     }),
   (function (__caml_parser_env) {
       var _2 = Parsing.peek_val(__caml_parser_env, 0);
@@ -8975,12 +8935,11 @@ var yyact = [
                   _1,
                   _3
                 ]);
-      } else {
-        throw [
-              $$Error$1,
-              /* Applicative_path */Block.__(3, [symbol_rloc(/* () */0)])
-            ];
       }
+      throw [
+            $$Error$1,
+            /* Applicative_path */Block.__(3, [symbol_rloc(undefined)])
+          ];
     }),
   (function (__caml_parser_env) {
       var _1 = Parsing.peek_val(__caml_parser_env, 0);
@@ -9147,16 +9106,16 @@ var yyact = [
       return /* Override */0;
     }),
   (function (__caml_parser_env) {
-      return /* () */0;
+      
     }),
   (function (__caml_parser_env) {
-      return /* () */0;
+      
     }),
   (function (__caml_parser_env) {
-      return /* () */0;
+      
     }),
   (function (__caml_parser_env) {
-      return /* () */0;
+      
     }),
   (function (__caml_parser_env) {
       return "-";
@@ -9324,7 +9283,7 @@ var yyact = [
       var _1 = Parsing.peek_val(__caml_parser_env, 0);
       return {
               txt: _1,
-              loc: symbol_rloc(/* () */0)
+              loc: symbol_rloc(undefined)
             };
     }),
   (function (__caml_parser_env) {
@@ -9332,7 +9291,7 @@ var yyact = [
       var _3 = Parsing.peek_val(__caml_parser_env, 0);
       return {
               txt: _1 + ("." + _3.txt),
-              loc: symbol_rloc(/* () */0)
+              loc: symbol_rloc(undefined)
             };
     }),
   (function (__caml_parser_env) {
@@ -9515,18 +9474,17 @@ function implementation(lexfun, lexbuf) {
 function type_of_directive(x) {
   if (typeof x === "number") {
     return /* Dir_type_null */4;
-  } else {
-    switch (x.tag | 0) {
-      case /* Dir_bool */0 :
-          return /* Dir_type_bool */0;
-      case /* Dir_float */1 :
-          return /* Dir_type_float */1;
-      case /* Dir_int */2 :
-          return /* Dir_type_int */2;
-      case /* Dir_string */3 :
-          return /* Dir_type_string */3;
-      
-    }
+  }
+  switch (x.tag | 0) {
+    case /* Dir_bool */0 :
+        return /* Dir_type_bool */0;
+    case /* Dir_float */1 :
+        return /* Dir_type_float */1;
+    case /* Dir_int */2 :
+        return /* Dir_type_int */2;
+    case /* Dir_string */3 :
+        return /* Dir_type_string */3;
+    
   }
 }
 
@@ -9579,11 +9537,10 @@ try {
   exit = 1;
 }
 catch (exn$1){
-  if (exn$1 === Caml_builtin_exceptions.not_found) {
-    tmp = "";
-  } else {
+  if (exn$1 !== Caml_builtin_exceptions.not_found) {
     throw exn$1;
   }
+  tmp = "";
 }
 
 if (exit === 1) {
@@ -9603,32 +9560,29 @@ function semantic_version_parse(str, start, last_index) {
     while(true) {
       var acc = _acc;
       var start = _start;
-      if (start <= last_index) {
-        var c = str.charCodeAt(start);
-        if (c === /* "." */46) {
-          return /* tuple */[
-                  acc,
-                  start + 1 | 0
-                ];
-        } else {
-          var v = c - /* "0" */48 | 0;
-          if (v >= 0 && v <= 9) {
-            _acc = Caml_int32.imul(acc, 10) + v | 0;
-            _start = start + 1 | 0;
-            continue ;
-          } else {
-            return /* tuple */[
-                    acc,
-                    start
-                  ];
-          }
-        }
-      } else {
+      if (start > last_index) {
         return /* tuple */[
                 acc,
                 start
               ];
       }
+      var c = str.charCodeAt(start);
+      if (c === /* "." */46) {
+        return /* tuple */[
+                acc,
+                start + 1 | 0
+              ];
+      }
+      var v = c - /* "0" */48 | 0;
+      if (!(v >= 0 && v <= 9)) {
+        return /* tuple */[
+                acc,
+                start
+              ];
+      }
+      _acc = Caml_int32.imul(acc, 10) + v | 0;
+      _start = start + 1 | 0;
+      continue ;
     };
   };
   var match = aux(start, 0, last_index);
@@ -9673,42 +9627,40 @@ function query(loc, str) {
     v = Hashtbl.find(directive_built_in_values, str);
   }
   catch (exn){
-    if (exn === Caml_builtin_exceptions.not_found) {
-      var exit = 0;
-      var v$1;
-      try {
-        v$1 = Caml_sys.caml_sys_getenv(str);
-        exit = 2;
-      }
-      catch (exn$1){
-        if (exn$1 === Caml_builtin_exceptions.not_found) {
-          return /* Dir_bool */Block.__(0, [false]);
-        } else {
-          throw exn$1;
-        }
-      }
-      if (exit === 2) {
-        try {
-          return /* Dir_bool */Block.__(0, [Pervasives.bool_of_string(v$1)]);
-        }
-        catch (exn$2){
-          try {
-            return /* Dir_int */Block.__(2, [Caml_format.caml_int_of_string(v$1)]);
-          }
-          catch (exn$3){
-            try {
-              return /* Dir_float */Block.__(1, [Caml_format.caml_float_of_string(v$1)]);
-            }
-            catch (exn$4){
-              return /* Dir_string */Block.__(3, [v$1]);
-            }
-          }
-        }
-      }
-      
-    } else {
+    if (exn !== Caml_builtin_exceptions.not_found) {
       throw exn;
     }
+    var exit = 0;
+    var v$1;
+    try {
+      v$1 = Caml_sys.caml_sys_getenv(str);
+      exit = 2;
+    }
+    catch (exn$1){
+      if (exn$1 === Caml_builtin_exceptions.not_found) {
+        return /* Dir_bool */Block.__(0, [false]);
+      }
+      throw exn$1;
+    }
+    if (exit === 2) {
+      try {
+        return /* Dir_bool */Block.__(0, [Pervasives.bool_of_string(v$1)]);
+      }
+      catch (exn$2){
+        try {
+          return /* Dir_int */Block.__(2, [Caml_format.caml_int_of_string(v$1)]);
+        }
+        catch (exn$3){
+          try {
+            return /* Dir_float */Block.__(1, [Caml_format.caml_float_of_string(v$1)]);
+          }
+          catch (exn$4){
+            return /* Dir_string */Block.__(3, [v$1]);
+          }
+        }
+      }
+    }
+    
   }
   if (typeof v === "number") {
     return /* Dir_bool */Block.__(0, [false]);
@@ -9761,7 +9713,7 @@ function directive_parse(token_with_comments, lexbuf) {
       look_ahead.contents = undefined;
       return v;
     } else {
-      var _param = /* () */0;
+      var _param;
       while(true) {
         var t = Curry._1(token_with_comments, lexbuf);
         if (typeof t === "number") {
@@ -9773,7 +9725,7 @@ function directive_parse(token_with_comments, lexbuf) {
                       curr(lexbuf)
                     ];
             case /* EOL */100 :
-                _param = /* () */0;
+                _param = undefined;
                 continue ;
             default:
               return t;
@@ -9782,7 +9734,7 @@ function directive_parse(token_with_comments, lexbuf) {
           switch (t.tag | 0) {
             case /* COMMENT */18 :
             case /* DOCSTRING */19 :
-                _param = /* () */0;
+                _param = undefined;
                 continue ;
             default:
               return t;
@@ -9803,10 +9755,10 @@ function directive_parse(token_with_comments, lexbuf) {
           ];
     }
     look_ahead.contents = e;
-    return /* () */0;
+    
   };
   var token_op = function (calc, no, lhs) {
-    var op = token(/* () */0);
+    var op = token(undefined);
     var exit = 0;
     if (typeof op === "number") {
       switch (op) {
@@ -9818,17 +9770,23 @@ function directive_parse(token_with_comments, lexbuf) {
         default:
           return Curry._1(no, op);
       }
-    } else if (op.tag === /* INFIXOP0 */2) {
+    } else {
+      if (op.tag !== /* INFIXOP0 */2) {
+        return Curry._1(no, op);
+      }
       switch (op[0]) {
         case "=~" :
-            if (calc) {
-              if (typeof lhs !== "number" && lhs.tag === /* Dir_string */3) {
-                var curr_loc = curr(lexbuf);
-                var rhs = value_of_token(curr_loc, token(/* () */0));
-                var exit$1 = 0;
-                if (typeof rhs === "number" || rhs.tag !== /* Dir_string */3) {
-                  exit$1 = 3;
-                } else {
+            if (!calc) {
+              return true;
+            }
+            if (typeof lhs !== "number" && lhs.tag === /* Dir_string */3) {
+              var curr_loc = curr(lexbuf);
+              var rhs = value_of_token(curr_loc, token(undefined));
+              var exit$1 = 0;
+              if (typeof rhs === "number") {
+                exit$1 = 3;
+              } else {
+                if (rhs.tag === /* Dir_string */3) {
                   var lhs$1 = lhs[0];
                   var str = rhs[0];
                   var last_index = str.length - 1 | 0;
@@ -9936,29 +9894,28 @@ function directive_parse(token_with_comments, lexbuf) {
                     return Caml_obj.caml_greaterequal(lversion, version);
                   }
                 }
-                if (exit$1 === 3) {
-                  throw [
-                        $$Error$2,
-                        /* Conditional_expr_expected_type */Block.__(7, [
-                            /* Dir_type_string */3,
-                            type_of_directive(lhs)
-                          ]),
-                        curr(lexbuf)
-                      ];
-                }
-                
+                exit$1 = 3;
               }
-              throw [
-                    $$Error$2,
-                    /* Conditional_expr_expected_type */Block.__(7, [
-                        /* Dir_type_string */3,
-                        type_of_directive(lhs)
-                      ]),
-                    curr(lexbuf)
-                  ];
-            } else {
-              return true;
+              if (exit$1 === 3) {
+                throw [
+                      $$Error$2,
+                      /* Conditional_expr_expected_type */Block.__(7, [
+                          /* Dir_type_string */3,
+                          type_of_directive(lhs)
+                        ]),
+                      curr(lexbuf)
+                    ];
+              }
+              
             }
+            throw [
+                  $$Error$2,
+                  /* Conditional_expr_expected_type */Block.__(7, [
+                      /* Dir_type_string */3,
+                      type_of_directive(lhs)
+                    ]),
+                  curr(lexbuf)
+                ];
             break;
         case "<=" :
         case "<>" :
@@ -9968,8 +9925,6 @@ function directive_parse(token_with_comments, lexbuf) {
         default:
           return Curry._1(no, op);
       }
-    } else {
-      return Curry._1(no, op);
     }
     if (exit === 1) {
       var f;
@@ -10013,7 +9968,7 @@ function directive_parse(token_with_comments, lexbuf) {
             ];
       }
       var curr_loc$1 = curr(lexbuf);
-      var rhs$1 = value_of_token(curr_loc$1, token(/* () */0));
+      var rhs$1 = value_of_token(curr_loc$1, token(undefined));
       if (calc) {
         return Curry._2(f, lhs, assert_same_type(lexbuf, lhs, rhs$1));
       } else {
@@ -10023,7 +9978,7 @@ function directive_parse(token_with_comments, lexbuf) {
     
   };
   var parse_relation = function (calc) {
-    var curr_token = token(/* () */0);
+    var curr_token = token(undefined);
     var curr_loc = curr(lexbuf);
     if (typeof curr_token === "number") {
       switch (curr_token) {
@@ -10031,23 +9986,22 @@ function directive_parse(token_with_comments, lexbuf) {
             return false;
         case /* LPAREN */54 :
             var v = parse_or_aux(calc, parse_and_aux(calc, parse_relation(calc)));
-            var match = token(/* () */0);
-            if (typeof match === "number") {
-              if (match !== 81) {
-                throw [
-                      $$Error$2,
-                      /* Unterminated_paren_in_conditional */1,
-                      curr(lexbuf)
-                    ];
-              }
-              return v;
-            } else {
+            var match = token(undefined);
+            if (typeof match !== "number") {
               throw [
                     $$Error$2,
                     /* Unterminated_paren_in_conditional */1,
                     curr(lexbuf)
                   ];
             }
+            if (match !== 81) {
+              throw [
+                    $$Error$2,
+                    /* Unterminated_paren_in_conditional */1,
+                    curr(lexbuf)
+                  ];
+            }
+            return v;
         case /* TRUE */91 :
             return true;
         default:
@@ -10089,7 +10043,7 @@ function directive_parse(token_with_comments, lexbuf) {
                       curr_loc
                     ];
             }
-            var t = token(/* () */0);
+            var t = token(undefined);
             var loc = curr(lexbuf);
             if (typeof t === "number") {
               throw [
@@ -10097,23 +10051,23 @@ function directive_parse(token_with_comments, lexbuf) {
                     /* Unexpected_token_in_conditional */4,
                     loc
                   ];
-            } else if (t.tag === /* UIDENT */17) {
-              var s = t[0];
-              if (calc) {
-                if (Caml_string.get(r, 0) === /* "u" */117) {
-                  return !defined(s);
-                } else {
-                  return defined(s);
-                }
-              } else {
-                return true;
-              }
-            } else {
+            }
+            if (t.tag !== /* UIDENT */17) {
               throw [
                     $$Error$2,
                     /* Unexpected_token_in_conditional */4,
                     loc
                   ];
+            }
+            var s = t[0];
+            if (calc) {
+              if (Caml_string.get(r, 0) === /* "u" */117) {
+                return !defined(s);
+              } else {
+                return defined(s);
+              }
+            } else {
+              return true;
             }
             break;
         case /* STRING */16 :
@@ -10154,7 +10108,7 @@ function directive_parse(token_with_comments, lexbuf) {
     }
   };
   var parse_and_aux = function (calc, v) {
-    var e = token(/* () */0);
+    var e = token(undefined);
     if (typeof e === "number" && e === 0) {
       var calc$1 = calc && v;
       var b = parse_and_aux(calc$1, parse_relation(calc$1));
@@ -10169,7 +10123,7 @@ function directive_parse(token_with_comments, lexbuf) {
     }
   };
   var parse_or_aux = function (calc, v) {
-    var e = token(/* () */0);
+    var e = token(undefined);
     if (typeof e === "number" && e === 8) {
       var calc$1 = calc && !v;
       var b = parse_or_aux(calc$1, parse_and_aux(calc$1, parse_relation(calc$1)));
@@ -10184,23 +10138,22 @@ function directive_parse(token_with_comments, lexbuf) {
     }
   };
   var v = parse_or_aux(true, parse_and_aux(true, parse_relation(true)));
-  var match = token(/* () */0);
-  if (typeof match === "number") {
-    if (match !== 88) {
-      throw [
-            $$Error$2,
-            /* Expect_hash_then_in_conditional */5,
-            curr(lexbuf)
-          ];
-    }
-    return v;
-  } else {
+  var match = token(undefined);
+  if (typeof match !== "number") {
     throw [
           $$Error$2,
           /* Expect_hash_then_in_conditional */5,
           curr(lexbuf)
         ];
   }
+  if (match !== 88) {
+    throw [
+          $$Error$2,
+          /* Expect_hash_then_in_conditional */5,
+          curr(lexbuf)
+        ];
+  }
+  return v;
 }
 
 function is_elif(i) {
@@ -10562,7 +10515,7 @@ var string_index = {
 function reset_string_buffer(param) {
   string_buff.contents = initial_string_buffer;
   string_index.contents = 0;
-  return /* () */0;
+  
 }
 
 function store_string_char(c) {
@@ -10573,14 +10526,14 @@ function store_string_char(c) {
   }
   string_buff.contents[string_index.contents] = c;
   string_index.contents = string_index.contents + 1 | 0;
-  return /* () */0;
+  
 }
 
 function store_string(s) {
   for(var i = 0 ,i_finish = s.length - 1 | 0; i <= i_finish; ++i){
     store_string_char(Caml_string.get(s, i));
   }
-  return /* () */0;
+  
 }
 
 function get_stored_string(param) {
@@ -10619,10 +10572,10 @@ function with_comment_buffer(comment, lexbuf) {
     start_loc,
     /* [] */0
   ];
-  reset_string_buffer(/* () */0);
+  reset_string_buffer(undefined);
   var end_loc = Curry._1(comment, lexbuf);
-  var s = get_stored_string(/* () */0);
-  reset_string_buffer(/* () */0);
+  var s = get_stored_string(undefined);
+  reset_string_buffer(undefined);
   var loc_loc_start = start_loc.loc_start;
   var loc_loc_end = end_loc.loc_end;
   var loc_loc_ghost = start_loc.loc_ghost;
@@ -10638,47 +10591,45 @@ function with_comment_buffer(comment, lexbuf) {
 }
 
 function char_for_backslash(c) {
-  if (c >= 110) {
-    if (c >= 117) {
+  if (c < 110) {
+    if (c !== 98) {
       return c;
     } else {
-      switch (c - 110 | 0) {
-        case 0 :
-            return /* "\n" */10;
-        case 4 :
-            return /* "\r" */13;
-        case 1 :
-        case 2 :
-        case 3 :
-        case 5 :
-            return c;
-        case 6 :
-            return /* "\t" */9;
-        
-      }
+      return /* "\b" */8;
     }
-  } else if (c !== 98) {
+  }
+  if (c >= 117) {
     return c;
-  } else {
-    return /* "\b" */8;
+  }
+  switch (c - 110 | 0) {
+    case 0 :
+        return /* "\n" */10;
+    case 4 :
+        return /* "\r" */13;
+    case 1 :
+    case 2 :
+    case 3 :
+    case 5 :
+        return c;
+    case 6 :
+        return /* "\t" */9;
+    
   }
 }
 
 function char_for_decimal_code(lexbuf, i) {
   var c = (Caml_int32.imul(100, Lexing.lexeme_char(lexbuf, i) - 48 | 0) + Caml_int32.imul(10, Lexing.lexeme_char(lexbuf, i + 1 | 0) - 48 | 0) | 0) + (Lexing.lexeme_char(lexbuf, i + 2 | 0) - 48 | 0) | 0;
-  if (c < 0 || c > 255) {
-    if (comment_start_loc.contents !== /* [] */0) {
-      return /* "x" */120;
-    } else {
-      throw [
-            $$Error$2,
-            /* Illegal_escape */Block.__(1, [Lexing.lexeme(lexbuf)]),
-            curr(lexbuf)
-          ];
-    }
-  } else {
+  if (!(c < 0 || c > 255)) {
     return Char.chr(c);
   }
+  if (comment_start_loc.contents !== /* [] */0) {
+    return /* "x" */120;
+  }
+  throw [
+        $$Error$2,
+        /* Illegal_escape */Block.__(1, [Lexing.lexeme(lexbuf)]),
+        curr(lexbuf)
+      ];
 }
 
 function char_for_hexadecimal_code(lexbuf, i) {
@@ -10723,17 +10674,16 @@ function remove_underscores(s) {
       } else {
         return Bytes.sub_string(b, 0, dst);
       }
+    }
+    var c = Caml_string.get(s, src);
+    if (c !== 95) {
+      b[dst] = c;
+      _dst = dst + 1 | 0;
+      _src = src + 1 | 0;
+      continue ;
     } else {
-      var c = Caml_string.get(s, src);
-      if (c !== 95) {
-        b[dst] = c;
-        _dst = dst + 1 | 0;
-        _src = src + 1 | 0;
-        continue ;
-      } else {
-        _src = src + 1 | 0;
-        continue ;
-      }
+      _src = src + 1 | 0;
+      continue ;
     }
   };
 }
@@ -10760,7 +10710,7 @@ function update_loc(lexbuf, file, line, absolute, chars) {
     pos_bol: pos.pos_cnum - chars | 0,
     pos_cnum: pos.pos_cnum
   };
-  return /* () */0;
+  
 }
 
 var preprocessor = {
@@ -10780,7 +10730,7 @@ function add_comment(com) {
     com,
     comment_list.contents
   ];
-  return /* () */0;
+  
 }
 
 function add_docstring_comment(ds) {
@@ -11032,9 +10982,8 @@ function token(lexbuf) {
           catch (exn){
             if (exn === Caml_builtin_exceptions.not_found) {
               return /* LIDENT */Block.__(11, [s]);
-            } else {
-              throw exn;
             }
+            throw exn;
           }
       case 11 :
           prerr_warning(curr(lexbuf$1), /* Deprecated */Block.__(0, ["ISO-Latin1 characters in identifiers"]));
@@ -11107,7 +11056,7 @@ function token(lexbuf) {
             throw exn$4;
           }
       case 19 :
-          reset_string_buffer(/* () */0);
+          reset_string_buffer(undefined);
           is_in_string.contents = true;
           var string_start = lexbuf$1.lex_start_p;
           string_start_loc.contents = curr(lexbuf$1);
@@ -11115,11 +11064,11 @@ function token(lexbuf) {
           is_in_string.contents = false;
           lexbuf$1.lex_start_p = string_start;
           return /* STRING */Block.__(16, [/* tuple */[
-                      get_stored_string(/* () */0),
+                      get_stored_string(undefined),
                       undefined
                     ]]);
       case 20 :
-          reset_string_buffer(/* () */0);
+          reset_string_buffer(undefined);
           var delim = Lexing.lexeme(lexbuf$1);
           var delim$1 = $$String.sub(delim, 1, delim.length - 2 | 0);
           is_in_string.contents = true;
@@ -11129,7 +11078,7 @@ function token(lexbuf) {
           is_in_string.contents = false;
           lexbuf$1.lex_start_p = string_start$1;
           return /* STRING */Block.__(16, [/* tuple */[
-                      get_stored_string(/* () */0),
+                      get_stored_string(undefined),
                       delim$1
                     ]]);
       case 21 :
@@ -11316,22 +11265,21 @@ function token(lexbuf) {
       case 89 :
           return /* SHARPOP */Block.__(15, [Lexing.lexeme(lexbuf$1)]);
       case 90 :
-          if (if_then_else.contents !== /* Dir_out */2) {
-            if (if_then_else.contents === /* Dir_if_true */0) {
-              throw [
-                    $$Error$2,
-                    /* Unterminated_if */2,
-                    curr(lexbuf$1)
-                  ];
-            }
-            throw [
-                  $$Error$2,
-                  /* Unterminated_else */3,
-                  curr(lexbuf$1)
-                ];
-          } else {
+          if (if_then_else.contents === /* Dir_out */2) {
             return /* EOF */25;
           }
+          if (if_then_else.contents === /* Dir_if_true */0) {
+            throw [
+                  $$Error$2,
+                  /* Unterminated_if */2,
+                  curr(lexbuf$1)
+                ];
+          }
+          throw [
+                $$Error$2,
+                /* Unterminated_else */3,
+                curr(lexbuf$1)
+              ];
       case 91 :
           throw [
                 $$Error$2,
@@ -11355,7 +11303,7 @@ function string(lexbuf) {
     var __ocaml_lex_state$1 = Lexing.new_engine(__ocaml_lex_tables, __ocaml_lex_state, lexbuf$1);
     switch (__ocaml_lex_state$1) {
       case 0 :
-          return /* () */0;
+          return ;
       case 1 :
           var space = Lexing.sub_lexeme(lexbuf$1, Caml_array.caml_array_get(lexbuf$1.lex_mem, 0), lexbuf$1.lex_curr_pos);
           update_loc(lexbuf$1, undefined, 1, false, space.length);
@@ -11372,13 +11320,12 @@ function string(lexbuf) {
       case 5 :
           if (comment_start_loc.contents !== /* [] */0) {
             return string(lexbuf$1);
-          } else {
-            var loc = curr(lexbuf$1);
-            prerr_warning(loc, /* Illegal_backslash */7);
-            store_string_char(Lexing.lexeme_char(lexbuf$1, 0));
-            store_string_char(Lexing.lexeme_char(lexbuf$1, 1));
-            return string(lexbuf$1);
           }
+          var loc = curr(lexbuf$1);
+          prerr_warning(loc, /* Illegal_backslash */7);
+          store_string_char(Lexing.lexeme_char(lexbuf$1, 0));
+          store_string_char(Lexing.lexeme_char(lexbuf$1, 1));
+          return string(lexbuf$1);
       case 6 :
           if (comment_start_loc.contents === /* [] */0) {
             prerr_warning(curr(lexbuf$1), /* Eol_in_string */14);
@@ -11425,12 +11372,11 @@ function __ocaml_lex_quoted_string_rec(delim, lexbuf, ___ocaml_lex_state) {
           var edelim = Lexing.lexeme(lexbuf);
           var edelim$1 = $$String.sub(edelim, 1, edelim.length - 2 | 0);
           if (delim === edelim$1) {
-            return /* () */0;
-          } else {
-            store_string(Lexing.lexeme(lexbuf));
-            ___ocaml_lex_state = 183;
-            continue ;
+            return ;
           }
+          store_string(Lexing.lexeme(lexbuf));
+          ___ocaml_lex_state = 183;
+          continue ;
       case 3 :
           store_string_char(Lexing.lexeme_char(lexbuf, 0));
           ___ocaml_lex_state = 183;
@@ -11458,18 +11404,7 @@ function __ocaml_lex_comment_rec(lexbuf, ___ocaml_lex_state) {
           continue ;
       case 1 :
           var match = comment_start_loc.contents;
-          if (match) {
-            var l = match[1];
-            if (l) {
-              comment_start_loc.contents = l;
-              store_string(Lexing.lexeme(lexbuf));
-              ___ocaml_lex_state = 132;
-              continue ;
-            } else {
-              comment_start_loc.contents = /* [] */0;
-              return curr(lexbuf);
-            }
-          } else {
+          if (!match) {
             throw [
                   Caml_builtin_exceptions.assert_failure,
                   /* tuple */[
@@ -11478,6 +11413,16 @@ function __ocaml_lex_comment_rec(lexbuf, ___ocaml_lex_state) {
                     16
                   ]
                 ];
+          }
+          var l = match[1];
+          if (l) {
+            comment_start_loc.contents = l;
+            store_string(Lexing.lexeme(lexbuf));
+            ___ocaml_lex_state = 132;
+            continue ;
+          } else {
+            comment_start_loc.contents = /* [] */0;
+            return curr(lexbuf);
           }
       case 2 :
           string_start_loc.contents = curr(lexbuf);
@@ -11488,40 +11433,37 @@ function __ocaml_lex_comment_rec(lexbuf, ___ocaml_lex_state) {
           }
           catch (raw_exn){
             var exn = Caml_js_exceptions.internalToOCamlException(raw_exn);
-            if (exn[0] === $$Error$2) {
-              var match$1 = exn[1];
-              if (typeof match$1 === "number") {
-                if (match$1 !== 0) {
-                  throw exn;
-                }
-                var match$2 = comment_start_loc.contents;
-                if (match$2) {
-                  var start = List.hd(List.rev(comment_start_loc.contents));
-                  comment_start_loc.contents = /* [] */0;
-                  throw [
-                        $$Error$2,
-                        /* Unterminated_string_in_comment */Block.__(3, [
-                            start,
-                            exn[2]
-                          ]),
-                        match$2[0]
-                      ];
-                } else {
-                  throw [
-                        Caml_builtin_exceptions.assert_failure,
-                        /* tuple */[
-                          "lexer.mll",
-                          1006,
-                          18
-                        ]
-                      ];
-                }
-              } else {
-                throw exn;
-              }
-            } else {
+            if (exn[0] !== $$Error$2) {
               throw exn;
             }
+            var match$1 = exn[1];
+            if (typeof match$1 !== "number") {
+              throw exn;
+            }
+            if (match$1 !== 0) {
+              throw exn;
+            }
+            var match$2 = comment_start_loc.contents;
+            if (!match$2) {
+              throw [
+                    Caml_builtin_exceptions.assert_failure,
+                    /* tuple */[
+                      "lexer.mll",
+                      1006,
+                      18
+                    ]
+                  ];
+            }
+            var start = List.hd(List.rev(comment_start_loc.contents));
+            comment_start_loc.contents = /* [] */0;
+            throw [
+                  $$Error$2,
+                  /* Unterminated_string_in_comment */Block.__(3, [
+                      start,
+                      exn[2]
+                    ]),
+                  match$2[0]
+                ];
           }
           is_in_string.contents = false;
           store_string_char(/* "\"" */34);
@@ -11538,40 +11480,37 @@ function __ocaml_lex_comment_rec(lexbuf, ___ocaml_lex_state) {
           }
           catch (raw_exn$1){
             var exn$1 = Caml_js_exceptions.internalToOCamlException(raw_exn$1);
-            if (exn$1[0] === $$Error$2) {
-              var match$3 = exn$1[1];
-              if (typeof match$3 === "number") {
-                if (match$3 !== 0) {
-                  throw exn$1;
-                }
-                var match$4 = comment_start_loc.contents;
-                if (match$4) {
-                  var start$1 = List.hd(List.rev(comment_start_loc.contents));
-                  comment_start_loc.contents = /* [] */0;
-                  throw [
-                        $$Error$2,
-                        /* Unterminated_string_in_comment */Block.__(3, [
-                            start$1,
-                            exn$1[2]
-                          ]),
-                        match$4[0]
-                      ];
-                } else {
-                  throw [
-                        Caml_builtin_exceptions.assert_failure,
-                        /* tuple */[
-                          "lexer.mll",
-                          1026,
-                          18
-                        ]
-                      ];
-                }
-              } else {
-                throw exn$1;
-              }
-            } else {
+            if (exn$1[0] !== $$Error$2) {
               throw exn$1;
             }
+            var match$3 = exn$1[1];
+            if (typeof match$3 !== "number") {
+              throw exn$1;
+            }
+            if (match$3 !== 0) {
+              throw exn$1;
+            }
+            var match$4 = comment_start_loc.contents;
+            if (!match$4) {
+              throw [
+                    Caml_builtin_exceptions.assert_failure,
+                    /* tuple */[
+                      "lexer.mll",
+                      1026,
+                      18
+                    ]
+                  ];
+            }
+            var start$1 = List.hd(List.rev(comment_start_loc.contents));
+            comment_start_loc.contents = /* [] */0;
+            throw [
+                  $$Error$2,
+                  /* Unterminated_string_in_comment */Block.__(3, [
+                      start$1,
+                      exn$1[2]
+                    ]),
+                  match$4[0]
+                ];
           }
           is_in_string.contents = false;
           store_string_char(/* "|" */124);
@@ -11586,15 +11525,7 @@ function __ocaml_lex_comment_rec(lexbuf, ___ocaml_lex_state) {
           continue ;
       case 10 :
           var match$5 = comment_start_loc.contents;
-          if (match$5) {
-            var start$2 = List.hd(List.rev(comment_start_loc.contents));
-            comment_start_loc.contents = /* [] */0;
-            throw [
-                  $$Error$2,
-                  /* Unterminated_comment */Block.__(2, [start$2]),
-                  match$5[0]
-                ];
-          } else {
+          if (!match$5) {
             throw [
                   Caml_builtin_exceptions.assert_failure,
                   /* tuple */[
@@ -11604,6 +11535,13 @@ function __ocaml_lex_comment_rec(lexbuf, ___ocaml_lex_state) {
                   ]
                 ];
           }
+          var start$2 = List.hd(List.rev(comment_start_loc.contents));
+          comment_start_loc.contents = /* [] */0;
+          throw [
+                $$Error$2,
+                /* Unterminated_comment */Block.__(2, [start$2]),
+                match$5[0]
+              ];
       case 11 :
           update_loc(lexbuf, undefined, 1, false, 0);
           store_string(Lexing.lexeme(lexbuf));
@@ -11648,8 +11586,9 @@ function token$1(lexbuf) {
   var post_pos = lexbuf.lex_curr_p;
   var attach = function (lines, docs, pre_pos) {
     if (typeof docs === "number") {
-      return /* () */0;
-    } else if (docs.tag) {
+      return ;
+    }
+    if (docs.tag) {
       var b = docs[2];
       var f = docs[1];
       var a = docs[0];
@@ -11718,66 +11657,72 @@ function token$1(lexbuf) {
                         if_then_else.contents = /* Dir_out */2;
                         return Curry._1(cont, lexbuf);
                     case /* IF */37 :
-                        if (if_then_else$1 >= 2) {
-                          if (directive_parse(token_with_comments, lexbuf)) {
-                            if_then_else.contents = /* Dir_if_true */0;
-                            return Curry._1(cont, lexbuf);
-                          } else {
-                            var _param = /* () */0;
-                            while(true) {
-                              var token = token_with_comments(lexbuf);
-                              if (token === /* EOF */25) {
-                                throw [
-                                      $$Error$2,
-                                      /* Unterminated_if */2,
-                                      curr(lexbuf)
-                                    ];
-                              }
-                              if (token === /* SHARP */84 && at_bol(lexbuf)) {
-                                var token$1 = token_with_comments(lexbuf);
-                                if (typeof token$1 === "number") {
-                                  var switcher = token$1 - 23 | 0;
-                                  if (switcher === 0 || switcher === 1) {
-                                    if (switcher !== 0) {
-                                      if_then_else.contents = /* Dir_out */2;
-                                      return Curry._1(cont, lexbuf);
-                                    } else {
-                                      if_then_else.contents = /* Dir_if_false */1;
-                                      return Curry._1(cont, lexbuf);
-                                    }
-                                  } else if (switcher === 14) {
-                                    throw [
-                                          $$Error$2,
-                                          /* Unexpected_directive */6,
-                                          curr(lexbuf)
-                                        ];
-                                  }
-                                  
-                                }
-                                if (is_elif(token$1) && directive_parse(token_with_comments, lexbuf)) {
-                                  if_then_else.contents = /* Dir_if_true */0;
-                                  return Curry._1(cont, lexbuf);
-                                } else {
-                                  _param = /* () */0;
-                                  continue ;
-                                }
-                              } else {
-                                _param = /* () */0;
-                                continue ;
-                              }
-                            };
-                          }
-                        } else {
+                        if (if_then_else$1 < 2) {
                           throw [
                                 $$Error$2,
                                 /* Unexpected_directive */6,
                                 curr(lexbuf)
                               ];
                         }
+                        if (directive_parse(token_with_comments, lexbuf)) {
+                          if_then_else.contents = /* Dir_if_true */0;
+                          return Curry._1(cont, lexbuf);
+                        } else {
+                          var _param;
+                          while(true) {
+                            var token = token_with_comments(lexbuf);
+                            if (token === /* EOF */25) {
+                              throw [
+                                    $$Error$2,
+                                    /* Unterminated_if */2,
+                                    curr(lexbuf)
+                                  ];
+                            }
+                            if (token === /* SHARP */84 && at_bol(lexbuf)) {
+                              var token$1 = token_with_comments(lexbuf);
+                              if (typeof token$1 === "number") {
+                                var switcher = token$1 - 23 | 0;
+                                if (switcher === 0 || switcher === 1) {
+                                  if (switcher !== 0) {
+                                    if_then_else.contents = /* Dir_out */2;
+                                    return Curry._1(cont, lexbuf);
+                                  } else {
+                                    if_then_else.contents = /* Dir_if_false */1;
+                                    return Curry._1(cont, lexbuf);
+                                  }
+                                }
+                                if (switcher === 14) {
+                                  throw [
+                                        $$Error$2,
+                                        /* Unexpected_directive */6,
+                                        curr(lexbuf)
+                                      ];
+                                }
+                                
+                              }
+                              if (is_elif(token$1) && directive_parse(token_with_comments, lexbuf)) {
+                                if_then_else.contents = /* Dir_if_true */0;
+                                return Curry._1(cont, lexbuf);
+                              } else {
+                                _param = undefined;
+                                continue ;
+                              }
+                            } else {
+                              _param = undefined;
+                              continue ;
+                            }
+                          };
+                        }
                     default:
                       return Curry._1(look_ahead, match);
                   }
-                } else if (match.tag === /* LIDENT */11 && match[0] === "elif") {
+                } else {
+                  if (match.tag !== /* LIDENT */11) {
+                    return Curry._1(look_ahead, match);
+                  }
+                  if (match[0] !== "elif") {
+                    return Curry._1(look_ahead, match);
+                  }
                   if (if_then_else$1 !== 0) {
                     throw [
                           $$Error$2,
@@ -11786,64 +11731,61 @@ function token$1(lexbuf) {
                         ];
                   }
                   
-                } else {
-                  return Curry._1(look_ahead, match);
                 }
                 if (if_then_else$1 !== 0) {
                   return Curry._1(look_ahead, match);
-                } else {
-                  var _else_seen = match === /* ELSE */23;
-                  while(true) {
-                    var else_seen = _else_seen;
-                    var token$2 = token_with_comments(lexbuf);
-                    if (token$2 === /* EOF */25) {
-                      throw [
-                            $$Error$2,
-                            /* Unterminated_else */3,
-                            curr(lexbuf)
-                          ];
-                    }
-                    if (token$2 === /* SHARP */84 && at_bol(lexbuf)) {
-                      var token$3 = token_with_comments(lexbuf);
-                      if (typeof token$3 === "number") {
-                        var switcher$1 = token$3 - 23 | 0;
-                        if (switcher$1 === 0 || switcher$1 === 1) {
-                          if (switcher$1 !== 0) {
-                            if_then_else.contents = /* Dir_out */2;
-                            return Curry._1(cont, lexbuf);
-                          } else {
-                            if (else_seen) {
-                              throw [
-                                    $$Error$2,
-                                    /* Unexpected_directive */6,
-                                    curr(lexbuf)
-                                  ];
-                            }
-                            _else_seen = true;
-                            continue ;
+                }
+                var _else_seen = match === /* ELSE */23;
+                while(true) {
+                  var else_seen = _else_seen;
+                  var token$2 = token_with_comments(lexbuf);
+                  if (token$2 === /* EOF */25) {
+                    throw [
+                          $$Error$2,
+                          /* Unterminated_else */3,
+                          curr(lexbuf)
+                        ];
+                  }
+                  if (token$2 === /* SHARP */84 && at_bol(lexbuf)) {
+                    var token$3 = token_with_comments(lexbuf);
+                    if (typeof token$3 === "number") {
+                      var switcher$1 = token$3 - 23 | 0;
+                      if (switcher$1 === 0 || switcher$1 === 1) {
+                        if (switcher$1 !== 0) {
+                          if_then_else.contents = /* Dir_out */2;
+                          return Curry._1(cont, lexbuf);
+                        } else {
+                          if (else_seen) {
+                            throw [
+                                  $$Error$2,
+                                  /* Unexpected_directive */6,
+                                  curr(lexbuf)
+                                ];
                           }
-                        } else if (switcher$1 === 14) {
-                          throw [
-                                $$Error$2,
-                                /* Unexpected_directive */6,
-                                curr(lexbuf)
-                              ];
+                          _else_seen = true;
+                          continue ;
                         }
-                        
-                      }
-                      if (else_seen && is_elif(token$3)) {
+                      } else if (switcher$1 === 14) {
                         throw [
                               $$Error$2,
                               /* Unexpected_directive */6,
                               curr(lexbuf)
                             ];
                       }
-                      continue ;
-                    } else {
-                      continue ;
+                      
                     }
-                  };
-                }
+                    if (else_seen && is_elif(token$3)) {
+                      throw [
+                            $$Error$2,
+                            /* Unexpected_directive */6,
+                            curr(lexbuf)
+                          ];
+                    }
+                    continue ;
+                  } else {
+                    continue ;
+                  }
+                };
               }
               break;
           case /* EOL */100 :
@@ -11941,10 +11883,9 @@ function init$1(param) {
   comment_list.contents = /* [] */0;
   var match = preprocessor.contents;
   if (match !== undefined) {
-    return Curry._1(match[0], /* () */0);
-  } else {
-    return /* () */0;
+    return Curry._1(match[0], undefined);
   }
+  
 }
 
 function skip_phrase(lexbuf) {
@@ -11952,33 +11893,31 @@ function skip_phrase(lexbuf) {
     try {
       var match = token$1(lexbuf);
       if (typeof match === "number" && !(match !== 25 && match !== 83)) {
-        return /* () */0;
+        return ;
       } else {
         return skip_phrase(lexbuf);
       }
     }
     catch (raw_exn){
       var exn = Caml_js_exceptions.internalToOCamlException(raw_exn);
-      if (exn[0] === $$Error$2) {
-        var tmp = exn[1];
-        if (typeof tmp === "number") {
-          if (tmp === /* Unterminated_string */0) {
-            continue ;
-          } else {
-            throw exn;
-          }
-        } else {
-          switch (tmp.tag | 0) {
-            case /* Illegal_character */0 :
-            case /* Unterminated_comment */2 :
-            case /* Unterminated_string_in_comment */3 :
-                continue ;
-            default:
-              throw exn;
-          }
-        }
-      } else {
+      if (exn[0] !== $$Error$2) {
         throw exn;
+      }
+      var tmp = exn[1];
+      if (typeof tmp === "number") {
+        if (tmp !== /* Unterminated_string */0) {
+          throw exn;
+        }
+        continue ;
+      } else {
+        switch (tmp.tag | 0) {
+          case /* Illegal_character */0 :
+          case /* Unterminated_comment */2 :
+          case /* Unterminated_string_in_comment */3 :
+              continue ;
+          default:
+            throw exn;
+        }
       }
     }
   };
@@ -11986,7 +11925,7 @@ function skip_phrase(lexbuf) {
 
 function maybe_skip_phrase(lexbuf) {
   if (Parsing.is_current_lookahead(/* SEMISEMI */83) || Parsing.is_current_lookahead(/* EOF */25)) {
-    return /* () */0;
+    return ;
   } else {
     return skip_phrase(lexbuf);
   }
@@ -11994,11 +11933,11 @@ function maybe_skip_phrase(lexbuf) {
 
 function wrap(parsing_fun, lexbuf) {
   try {
-    init(/* () */0);
-    init$1(/* () */0);
+    init(undefined);
+    init$1(undefined);
     var ast = Curry._2(parsing_fun, token$1, lexbuf);
-    Parsing.clear_parser(/* () */0);
-    warn_bad_docstrings(/* () */0);
+    Parsing.clear_parser(undefined);
+    warn_bad_docstrings(undefined);
     return ast;
   }
   catch (raw_err){
@@ -12007,21 +11946,21 @@ function wrap(parsing_fun, lexbuf) {
       var tmp = err[1];
       if (typeof tmp === "number") {
         throw err;
-      } else if (tmp.tag) {
-        throw err;
-      } else if (input_name.contents === "//toplevel//") {
-        skip_phrase(lexbuf);
-        throw err;
-      } else {
+      }
+      if (tmp.tag) {
         throw err;
       }
+      if (input_name.contents !== "//toplevel//") {
+        throw err;
+      }
+      skip_phrase(lexbuf);
+      throw err;
     } else if (err[0] === $$Error$1) {
-      if (input_name.contents === "//toplevel//") {
-        maybe_skip_phrase(lexbuf);
-        throw err;
-      } else {
+      if (input_name.contents !== "//toplevel//") {
         throw err;
       }
+      maybe_skip_phrase(lexbuf);
+      throw err;
     } else if (err !== Parsing.Parse_error && err !== Escape_error) {
       throw err;
     }
@@ -12058,7 +11997,7 @@ function eq(loc, x, y) {
     ],
     suites.contents
   ];
-  return /* () */0;
+  
 }
 
 var match = wrap(implementation, Lexing.from_string("let v str = \n  str  \n  |> Lexing.from_string \n  |> Parse.implementation\n"));

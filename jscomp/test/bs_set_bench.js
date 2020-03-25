@@ -31,22 +31,21 @@ function bench(param) {
   }
   console.timeEnd("test/bs_set_bench.ml 14");
   if (Belt_SetInt.size(data) === 0) {
-    return /* () */0;
-  } else {
-    throw [
-          Caml_builtin_exceptions.assert_failure,
-          /* tuple */[
-            "bs_set_bench.ml",
-            17,
-            2
-          ]
-        ];
+    return ;
   }
+  throw [
+        Caml_builtin_exceptions.assert_failure,
+        /* tuple */[
+          "bs_set_bench.ml",
+          17,
+          2
+        ]
+      ];
 }
 
 console.time("test/bs_set_bench.ml 21");
 
-bench(/* () */0);
+bench(undefined);
 
 console.timeEnd("test/bs_set_bench.ml 21");
 

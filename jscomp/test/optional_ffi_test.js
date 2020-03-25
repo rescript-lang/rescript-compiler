@@ -28,7 +28,7 @@ function eq(loc, param) {
     ],
     suites.contents
   ];
-  return /* () */0;
+  
 }
 
 function hey(x, y) {

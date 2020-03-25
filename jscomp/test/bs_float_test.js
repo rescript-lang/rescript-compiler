@@ -38,7 +38,7 @@ function neq(loc, x, y) {
     ],
     suites.contents
   ];
-  return /* () */0;
+  
 }
 
 eq("File \"bs_float_test.ml\", line 14, characters 5-12", 1, 1.0);

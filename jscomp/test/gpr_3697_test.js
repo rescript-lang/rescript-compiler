@@ -5,7 +5,7 @@ var CamlinternalLazy = require("../../lib/js/camlinternalLazy.js");
 
 function fix(param) {
   return /* Fix */[Caml_obj.caml_lazy_make((function (param) {
-                  return fix(/* () */0);
+                  return fix(undefined);
                 }))];
 }
 
@@ -22,7 +22,7 @@ function unfix(p) {
     var match = p.contents;
     p.contents = CamlinternalLazy.force(match[0]);
   };
-  return /* () */0;
+  
 }
 
 exports.fix = fix;

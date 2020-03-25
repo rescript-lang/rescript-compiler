@@ -34,9 +34,6 @@ type t = J.statement
 let return_stmt ?comment e : t = 
   {statement_desc = Return {return_value = e; } ; comment}
 
-(* let return_unit  : t list =              
-    [{ statement_desc = Return {return_value = E.unit; } ; 
-      comment = None}] *)
   
 let empty_stmt  : t = 
   { statement_desc = Block []; comment = None}
@@ -55,9 +52,9 @@ let  rec block ?comment  (b : J.block)   : t =
 (* It's a statement, we can discard some values *)       
 let rec exp ?comment (e : E.t) : t = 
   match e.expression_desc with 
-  | (Seq( {expression_desc = Number _}, b) 
-    | Seq( b, {expression_desc = Number _})) -> exp ?comment b 
-  | Number _ -> block []
+  | (Seq( {expression_desc = Number _ | Undefined}, b) 
+    | Seq( b, {expression_desc = Number _ | Undefined})) -> exp ?comment b 
+  | Number _ | Undefined -> block []
   (* TODO: we can do more *)      
   (* | _ when is_pure e ->  block [] *)
   |  _ -> 
@@ -75,7 +72,9 @@ let declare_variable ?comment  ?ident_info  ~kind (ident:Ident.t)  : t=
    comment}
 
 let define_variable ?comment  ?ident_info 
-  ~kind (v:Ident.t) exp : t=
+  ~kind (v:Ident.t) (exp : J.expression) : t=
+  if exp.expression_desc = Undefined then declare_variable ?comment ?ident_info ~kind v
+  else 
   let property : J.property =  kind in
   let ident_info  : J.ident_info  = 
     match ident_info with
@@ -227,6 +226,19 @@ let if_ ?comment  ?declaration ?else_ (e : J.expression) (then_ : J.block)   : t
         [ {statement_desc = Return {return_value = ret_ifnot; _}; _} as _ifnot_stmt]
         ->      
         return_stmt (E.econd e ret_ifso ret_ifnot ) 
+      | [{statement_desc = Return _ | Throw _}],_  
+        ->  block ({ statement_desc =
+                If (e, 
+                    ifso,
+                    []); 
+              comment } :: ifnot )
+      | _, [{statement_desc = Return _ | Throw _}]
+        ->  block ({ statement_desc =
+                       If (E.not e, 
+                           ifnot,
+                           []); 
+                     comment } :: ifso )
+
       | [ {statement_desc = 
              Exp
                {expression_desc = Bin(Eq, ({expression_desc = Var (Id var_ifso); _} as lhs_ifso), rhs_ifso); _};
@@ -301,21 +313,7 @@ let assign ?comment  id e : t =
     statement_desc = J.Exp ( E.assign (E.var id) e ) ;
     comment
   }
-(* let assign_unit ?comment  id :  t = 
-  {
-    statement_desc = J.Exp( E.assign (E.var id) E.unit);
-    comment
-  }
-let declare_unit ?comment  id :  t = 
-  {
-    statement_desc = 
-      J.Variable { ident =  id; 
-                   value = Some E.unit;
-                   property = Variable;
-                   ident_info = {used_stats = NA}
-                 };
-    comment
-  } *)
+
 
 let while_  ?comment  ?label ?env (e : E.t) (st : J.block) : t = 
   let env = 

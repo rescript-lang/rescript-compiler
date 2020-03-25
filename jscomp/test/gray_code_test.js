@@ -14,11 +14,10 @@ function gray_decode(n) {
     var p = _p;
     if (n$1 === 0) {
       return p;
-    } else {
-      _n = (n$1 >>> 1);
-      _p = p ^ n$1;
-      continue ;
     }
+    _n = (n$1 >>> 1);
+    _p = p ^ n$1;
+    continue ;
   };
 }
 
@@ -34,11 +33,10 @@ function bool_string(len, n) {
     }
     if (i <= 0) {
       return s;
-    } else {
-      _n = (n$1 >>> 1);
-      _i = i - 1 | 0;
-      continue ;
     }
+    _n = (n$1 >>> 1);
+    _i = i - 1 | 0;
+    continue ;
   };
 }
 

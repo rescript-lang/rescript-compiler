@@ -32,7 +32,7 @@ function ffff(a_1, a_2) {
 function f(x, y) {
   var sum = x + y | 0;
   console.log(" " + (String(x) + (" + " + (String(y) + (" = " + (String(sum) + " "))))));
-  return /* () */0;
+  
 }
 
 var world = "世界";

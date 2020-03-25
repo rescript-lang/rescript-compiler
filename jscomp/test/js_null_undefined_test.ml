@@ -4,12 +4,12 @@ let suites = Mt.[
   "toOption - null", (fun _ -> Eq(None, null |> toOption));
   "toOption - undefined", (fun _ -> Eq(None, undefined |> toOption));
   "toOption - empty", (fun _ -> Eq(None, undefined |> toOption));
-  "toOption - 'a", (fun _ -> Eq(Some "foo", return "foo" |> toOption));
+  __LOC__, (fun _ -> Eq(Some "foo", return "foo" |> toOption));
   "return", (fun _ -> Eq(Some "something", return "something" |> toOption));
-  "test - null", (fun _ -> Eq(true, null |> test));
-  "test - undefined", (fun _ -> Eq(true, undefined |> test));
-  "test - empty", (fun _ -> Eq(true, undefined |> test));
-  "test - 'a", (fun _ -> Eq(false, return () |> test));
+  "test - null", (fun _ -> Eq(true, null |> isNullable));
+  "test - undefined", (fun _ -> Eq(true, undefined |> isNullable));
+  "test - empty", (fun _ -> Eq(true, undefined |> isNullable));
+  __LOC__, (fun _ -> Eq(true, return () |> isNullable));
   "bind - null", (fun _ -> StrictEq(null, bind null ((fun v -> v) [@bs])));
   "bind - undefined", (fun _ -> StrictEq(undefined, bind undefined ((fun v -> v) [@bs])));
   "bind - empty", (fun _ -> StrictEq(undefined, bind undefined ((fun v -> v) [@bs])));

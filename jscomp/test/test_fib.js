@@ -78,14 +78,13 @@ function fib3(n) {
     var n$1 = _n;
     var b = _b;
     var a = _a;
-    if (n$1 > 0) {
-      _n = n$1 - 1 | 0;
-      _b = a + b | 0;
-      _a = b;
-      continue ;
-    } else {
+    if (n$1 <= 0) {
       return a;
     }
+    _n = n$1 - 1 | 0;
+    _b = a + b | 0;
+    _a = b;
+    continue ;
   };
 }
 

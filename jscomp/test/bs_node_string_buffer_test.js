@@ -9,13 +9,13 @@ function f(str) {
           "buffer",
           Buffer.isBuffer(match[1])
         ]);
-    return /* () */0;
+    return ;
   } else {
     console.log(/* tuple */[
           "string",
           match[1]
         ]);
-    return /* () */0;
+    return ;
   }
 }
 

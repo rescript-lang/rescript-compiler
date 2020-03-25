@@ -213,7 +213,7 @@ let compile
 #if undefined BS_RELEASE_BUILD then   
   let () =
     Ext_log.dwarn ~__POS__ "After coercion: %a@." Lam_stats.print meta ;
-    if Js_config.is_same_file () then
+    if Js_config.get_diagnose () then
       let f =
         Ext_filename.new_extension !Location.input_name  ".lambda" in
       Ext_fmt.with_file_as_pp f begin fun fmt ->

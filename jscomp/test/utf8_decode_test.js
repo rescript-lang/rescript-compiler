@@ -46,56 +46,54 @@ function classify(chr) {
 function utf8_decode(strm) {
   return Stream.slazy((function (param) {
                 var match = Stream.peek(strm);
-                if (match !== undefined) {
-                  Stream.junk(strm);
-                  var match$1 = classify(match);
-                  if (typeof match$1 === "number") {
-                    throw [
-                          Stream.$$Error,
-                          "Invalid byte"
-                        ];
-                  } else {
-                    switch (match$1.tag | 0) {
-                      case /* Single */0 :
-                          return Stream.icons(match$1[0], utf8_decode(strm));
-                      case /* Cont */1 :
-                          throw [
-                                Stream.$$Error,
-                                "Unexpected continuation byte"
-                              ];
-                      case /* Leading */2 :
-                          var follow = function (strm, _n, _c) {
-                            while(true) {
-                              var c = _c;
-                              var n = _n;
-                              if (n === 0) {
-                                return c;
-                              } else {
-                                var match = classify(Stream.next(strm));
-                                if (typeof match === "number") {
-                                  throw [
-                                        Stream.$$Error,
-                                        "Continuation byte expected"
-                                      ];
-                                } else if (match.tag === /* Cont */1) {
-                                  _c = (c << 6) | match[0] & 63;
-                                  _n = n - 1 | 0;
-                                  continue ;
-                                } else {
-                                  throw [
-                                        Stream.$$Error,
-                                        "Continuation byte expected"
-                                      ];
-                                }
-                              }
-                            };
-                          };
-                          return Stream.icons(follow(strm, match$1[0], match$1[1]), utf8_decode(strm));
-                      
-                    }
-                  }
+                if (match === undefined) {
+                  return ;
                 }
-                
+                Stream.junk(strm);
+                var match$1 = classify(match);
+                if (typeof match$1 === "number") {
+                  throw [
+                        Stream.$$Error,
+                        "Invalid byte"
+                      ];
+                }
+                switch (match$1.tag | 0) {
+                  case /* Single */0 :
+                      return Stream.icons(match$1[0], utf8_decode(strm));
+                  case /* Cont */1 :
+                      throw [
+                            Stream.$$Error,
+                            "Unexpected continuation byte"
+                          ];
+                  case /* Leading */2 :
+                      var follow = function (strm, _n, _c) {
+                        while(true) {
+                          var c = _c;
+                          var n = _n;
+                          if (n === 0) {
+                            return c;
+                          }
+                          var match = classify(Stream.next(strm));
+                          if (typeof match === "number") {
+                            throw [
+                                  Stream.$$Error,
+                                  "Continuation byte expected"
+                                ];
+                          }
+                          if (match.tag !== /* Cont */1) {
+                            throw [
+                                  Stream.$$Error,
+                                  "Continuation byte expected"
+                                ];
+                          }
+                          _c = (c << 6) | match[0] & 63;
+                          _n = n - 1 | 0;
+                          continue ;
+                        };
+                      };
+                      return Stream.icons(follow(strm, match$1[0], match$1[1]), utf8_decode(strm));
+                  
+                }
               }));
 }
 
@@ -108,7 +106,7 @@ function to_list(xs) {
             x,
             v.contents
           ];
-          return /* () */0;
+          
         }), xs);
   return List.rev(v.contents);
 }
@@ -124,53 +122,51 @@ function decode(bytes, offset) {
           Caml_builtin_exceptions.invalid_argument,
           "decode"
         ];
-  } else {
-    switch (match.tag | 0) {
-      case /* Single */0 :
-          return /* tuple */[
-                  match[0],
-                  offset + 1 | 0
-                ];
-      case /* Cont */1 :
-          throw [
-                Caml_builtin_exceptions.invalid_argument,
-                "decode"
+  }
+  switch (match.tag | 0) {
+    case /* Single */0 :
+        return /* tuple */[
+                match[0],
+                offset + 1 | 0
               ];
-      case /* Leading */2 :
-          var _n = match[0];
-          var _c = match[1];
-          var _offset = offset + 1 | 0;
-          while(true) {
-            var offset$1 = _offset;
-            var c = _c;
-            var n = _n;
-            if (n === 0) {
-              return /* tuple */[
-                      c,
-                      offset$1
-                    ];
-            } else {
-              var match$1 = classify(Caml_bytes.get(bytes, offset$1));
-              if (typeof match$1 === "number") {
-                throw [
-                      Caml_builtin_exceptions.invalid_argument,
-                      "decode"
-                    ];
-              } else if (match$1.tag === /* Cont */1) {
-                _offset = offset$1 + 1 | 0;
-                _c = (c << 6) | match$1[0] & 63;
-                _n = n - 1 | 0;
-                continue ;
-              } else {
-                throw [
-                      Caml_builtin_exceptions.invalid_argument,
-                      "decode"
-                    ];
-              }
-            }
-          };
-      
-    }
+    case /* Cont */1 :
+        throw [
+              Caml_builtin_exceptions.invalid_argument,
+              "decode"
+            ];
+    case /* Leading */2 :
+        var _n = match[0];
+        var _c = match[1];
+        var _offset = offset + 1 | 0;
+        while(true) {
+          var offset$1 = _offset;
+          var c = _c;
+          var n = _n;
+          if (n === 0) {
+            return /* tuple */[
+                    c,
+                    offset$1
+                  ];
+          }
+          var match$1 = classify(Caml_bytes.get(bytes, offset$1));
+          if (typeof match$1 === "number") {
+            throw [
+                  Caml_builtin_exceptions.invalid_argument,
+                  "decode"
+                ];
+          }
+          if (match$1.tag !== /* Cont */1) {
+            throw [
+                  Caml_builtin_exceptions.invalid_argument,
+                  "decode"
+                ];
+          }
+          _offset = offset$1 + 1 | 0;
+          _c = (c << 6) | match$1[0] & 63;
+          _n = n - 1 | 0;
+          continue ;
+        };
+    
   }
 }
 
@@ -178,19 +174,22 @@ function eq_list(cmp, _xs, _ys) {
   while(true) {
     var ys = _ys;
     var xs = _xs;
-    if (xs) {
-      if (ys && Curry._2(cmp, xs[0], ys[0])) {
-        _ys = ys[1];
-        _xs = xs[1];
-        continue ;
-      } else {
+    if (!xs) {
+      if (ys) {
         return false;
+      } else {
+        return true;
       }
-    } else if (ys) {
-      return false;
-    } else {
-      return true;
     }
+    if (!ys) {
+      return false;
+    }
+    if (!Curry._2(cmp, xs[0], ys[0])) {
+      return false;
+    }
+    _ys = ys[1];
+    _xs = xs[1];
+    continue ;
   };
 }
 
@@ -222,7 +221,7 @@ function eq(loc, param) {
     ],
     suites.contents
   ];
-  return /* () */0;
+  
 }
 
 List.iter((function (param) {

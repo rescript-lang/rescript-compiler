@@ -59,13 +59,12 @@ function get_x0(x) {
 }
 
 function f1(x) {
-  if (x) {
-    var newrecord = Caml_array.caml_array_dup(x);
-    newrecord[/* x0 */0] = 1;
-    return newrecord;
-  } else {
+  if (!x) {
     return /* A1 */0;
   }
+  var newrecord = Caml_array.caml_array_dup(x);
+  newrecord[/* x0 */0] = 1;
+  return newrecord;
 }
 
 eq("File \"large_record_duplication_test.ml\", line 129, characters 6-13", get_x0(f1(v1)), 1);
@@ -107,11 +106,10 @@ function get_x0$1(x) {
 function f2(x) {
   if (x.tag) {
     return x;
-  } else {
-    var newrecord = Caml_obj.caml_obj_dup(x);
-    newrecord[/* x0 */0] = 1;
-    return newrecord;
   }
+  var newrecord = Caml_obj.caml_obj_dup(x);
+  newrecord[/* x0 */0] = 1;
+  return newrecord;
 }
 
 eq("File \"large_record_duplication_test.ml\", line 194, characters 6-13", get_x0$1(f2(v2)), 1);
@@ -119,13 +117,12 @@ eq("File \"large_record_duplication_test.ml\", line 194, characters 6-13", get_x
 var A0 = Caml_exceptions.create("Large_record_duplication_test.A0");
 
 function f3(x) {
-  if (x[0] === A0) {
-    var newrecord = Caml_array.caml_array_dup(x);
-    newrecord[/* x0 */1] = 1;
-    return newrecord;
-  } else {
+  if (x[0] !== A0) {
     return x;
   }
+  var newrecord = Caml_array.caml_array_dup(x);
+  newrecord[/* x0 */1] = 1;
+  return newrecord;
 }
 
 function get_x0$2(x) {

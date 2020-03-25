@@ -19,13 +19,12 @@ function get_tokens(lex, str) {
     var v = Curry._1(lex, buf);
     if (v === /* EOF */7) {
       return List.rev(acc);
-    } else {
-      _acc = /* :: */[
-        v,
-        acc
-      ];
-      continue ;
     }
+    _acc = /* :: */[
+      v,
+      acc
+    ];
+    continue ;
   };
 }
 
@@ -39,12 +38,11 @@ function from_tokens(lst) {
   };
   return (function (param) {
       var match = l.contents;
-      if (match) {
-        l.contents = match[1];
-        return match[0];
-      } else {
+      if (!match) {
         throw Caml_builtin_exceptions.end_of_file;
       }
+      l.contents = match[1];
+      return match[0];
     });
 }
 
@@ -101,7 +99,7 @@ var lexer_suites_001 = /* :: */[
               t,
               v.contents
             ];
-            return /* () */0;
+            
           };
           Number_lexer.token(add, Lexing.from_string("32 + 32 ( ) * / "));
           return /* Eq */Block.__(0, [

@@ -61,9 +61,7 @@ var v3 = [
 
 var tmp;
 
-if (A0 === A0) {
-  tmp = 3;
-} else {
+if (A0 !== A0) {
   throw [
         Caml_builtin_exceptions.assert_failure,
         /* tuple */[
@@ -74,15 +72,17 @@ if (A0 === A0) {
       ];
 }
 
+tmp = 3;
+
 eq("File \"inline_record_test.ml\", line 51, characters 6-13", tmp, 3);
 
 function ff(x) {
   if (x.tag) {
     x[/* z */0] = x[/* z */0] + 2 | 0;
-    return /* () */0;
+    return ;
   } else {
     x[/* x */0] = x[/* x */0] + 1 | 0;
-    return /* () */0;
+    return ;
   }
 }
 
@@ -110,17 +110,15 @@ if (v4.tag) {
           48
         ]
       ];
-} else {
-  tmp$1 = v4[/* x */0];
 }
+
+tmp$1 = v4[/* x */0];
 
 eq("File \"inline_record_test.ml\", line 69, characters 6-13", tmp$1, 11);
 
 var tmp$2;
 
-if (v5.tag) {
-  tmp$2 = v5[/* z */0];
-} else {
+if (!v5.tag) {
   throw [
         Caml_builtin_exceptions.assert_failure,
         /* tuple */[
@@ -130,6 +128,8 @@ if (v5.tag) {
         ]
       ];
 }
+
+tmp$2 = v5[/* z */0];
 
 eq("File \"inline_record_test.ml\", line 71, characters 6-13", tmp$2, 22);
 
@@ -146,10 +146,9 @@ function ff0(x) {
   if (x[0] === A4) {
     x[/* x */1] = x[/* x */1] + 1 | 0;
     x[/* z */3] = x[/* z */3] + 1 | 0;
-    return /* () */0;
-  } else {
-    return /* () */0;
+    return ;
   }
+  
 }
 
 for(var i$1 = 0; i$1 <= 10; ++i$1){
@@ -158,9 +157,7 @@ for(var i$1 = 0; i$1 <= 10; ++i$1){
 
 var tmp$3;
 
-if (v6[0] === A4) {
-  tmp$3 = v6[/* x */1];
-} else {
+if (v6[0] !== A4) {
   throw [
         Caml_builtin_exceptions.assert_failure,
         /* tuple */[
@@ -170,6 +167,8 @@ if (v6[0] === A4) {
         ]
       ];
 }
+
+tmp$3 = v6[/* x */1];
 
 eq("File \"inline_record_test.ml\", line 87, characters 6-13", tmp$3, 11);
 

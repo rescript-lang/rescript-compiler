@@ -1,8 +1,8 @@
 'use strict';
 
 
-function u(o) {
-  return o.hi(1, 2);
+function u(param) {
+  return 2;
 }
 
 exports.u = u;

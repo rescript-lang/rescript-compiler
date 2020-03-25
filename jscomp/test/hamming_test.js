@@ -43,18 +43,18 @@ function cmp(param, param$1) {
   var nh = param[1];
   if (Caml_obj.caml_lessthan(nh, ph)) {
     return -1;
-  } else if (Caml_obj.caml_greaterthan(nh, ph)) {
+  }
+  if (Caml_obj.caml_greaterthan(nh, ph)) {
+    return 1;
+  }
+  var pl = param$1[0];
+  var nl = param[0];
+  if (Caml_obj.caml_lessthan(nl, pl)) {
+    return -1;
+  } else if (Caml_obj.caml_greaterthan(nl, pl)) {
     return 1;
   } else {
-    var pl = param$1[0];
-    var nl = param[0];
-    if (Caml_obj.caml_lessthan(nl, pl)) {
-      return -1;
-    } else if (Caml_obj.caml_greaterthan(nl, pl)) {
-      return 1;
-    } else {
-      return 0;
-    }
+    return 0;
   }
 }
 
@@ -161,20 +161,19 @@ function iter_interval(f, _l, _param) {
     var l = _l;
     var stop = param[1];
     if (stop === 0) {
-      return /* () */0;
-    } else {
-      var start = param[0];
-      var match = CamlinternalLazy.force(l);
-      if (start <= 0) {
-        Curry._1(f, match[0]);
-      }
-      _param = /* tuple */[
-        start - 1 | 0,
-        stop - 1 | 0
-      ];
-      _l = match[1];
-      continue ;
+      return ;
     }
+    var start = param[0];
+    var match = CamlinternalLazy.force(l);
+    if (start <= 0) {
+      Curry._1(f, match[0]);
+    }
+    _param = /* tuple */[
+      start - 1 | 0,
+      stop - 1 | 0
+    ];
+    _l = match[1];
+    continue ;
   };
 }
 

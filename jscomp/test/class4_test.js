@@ -40,7 +40,7 @@ function eq(loc, x, y) {
     ],
     suites.contents
   ];
-  return /* () */0;
+  
 }
 
 function restricted_point_init($$class) {
@@ -62,7 +62,7 @@ function restricted_point_init($$class) {
         move,
         (function (self$1, d) {
             self$1[x] = self$1[x] + d | 0;
-            return /* () */0;
+            
           }),
         bump,
         (function (self$1) {
@@ -123,10 +123,10 @@ function abstract_point_001($$class) {
 }
 
 var abstract_point = /* class */[
-  /* () */0,
+  undefined,
   abstract_point_001,
-  /* () */0,
-  /* () */0
+  undefined,
+  undefined
 ];
 
 function point_init($$class) {
@@ -145,7 +145,7 @@ function point_init($$class) {
         move,
         (function (self$6, d) {
             self$6[x] = self$6[x] + d | 0;
-            return /* () */0;
+            
           })
       ]);
   return (function (env, self, x_init$1) {
@@ -195,7 +195,7 @@ var colored_point = CamlinternalOO.make_class([
       "get_x"
     ], colored_point_init);
 
-var p$prime = Curry._3(colored_point[0], /* () */0, 5, "red");
+var p$prime = Curry._3(colored_point[0], undefined, 5, "red");
 
 eq("File \"class4_test.ml\", line 67, characters 5-12", /* tuple */[
       5,

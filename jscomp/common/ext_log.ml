@@ -55,7 +55,7 @@ let iwarn b str f  =
 
 (* TODO: add {[@.]} later for all *)
 let dwarn ?(__POS__: (string * int * int * int) option) f  = 
-  if Js_config.is_same_file () then   
+  if Js_config.get_diagnose () then   
     match __POS__ with 
     | None -> Format.fprintf Format.err_formatter ("WARN: " ^^ f ^^ "@.")
     | Some (file,line,_,_) -> 

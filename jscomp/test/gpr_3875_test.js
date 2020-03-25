@@ -9,7 +9,7 @@ var result = {
 
 function log(x) {
   result.contents = x;
-  return /* () */0;
+  
 }
 
 var Xx = {
@@ -22,31 +22,32 @@ function compilerBug(a, b, c, f) {
     exit = 2;
   }
   if (exit === 2) {
-    if (b !== undefined) {
-      if (b !== "x") {
-        if (c) {
-          result.contents = "No x, c is true";
-          return /* () */0;
-        } else {
-          result.contents = "No x, c is false";
-          return /* () */0;
-        }
+    if (b === undefined) {
+      if (c) {
+        result.contents = "No x, c is true";
+        return ;
+      } else {
+        result.contents = "No x, c is false";
+        return ;
       }
-      
-    } else if (c) {
-      result.contents = "No x, c is true";
-      return /* () */0;
-    } else {
-      result.contents = "No x, c is false";
-      return /* () */0;
     }
+    if (b !== "x") {
+      if (c) {
+        result.contents = "No x, c is true";
+        return ;
+      } else {
+        result.contents = "No x, c is false";
+        return ;
+      }
+    }
+    
   }
-  if (Curry._1(f, /* () */0)) {
+  if (Curry._1(f, undefined)) {
     result.contents = "Some x, f returns true";
-    return /* () */0;
+    return ;
   } else {
     result.contents = "Some x, f returns false";
-    return /* () */0;
+    return ;
   }
 }
 

@@ -6,10 +6,9 @@ function even(_n) {
     var n = _n;
     if (n === 0) {
       return true;
-    } else {
-      _n = n - 1 | 0;
-      continue ;
     }
+    _n = n - 1 | 0;
+    continue ;
   };
 }
 
@@ -36,7 +35,7 @@ function obj_get(param) {
 
 function obj_set(i) {
   v.contents = i;
-  return /* () */0;
+  
 }
 
 var obj = {

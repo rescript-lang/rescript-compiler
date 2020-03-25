@@ -61,7 +61,7 @@ var suites_000 = /* tuple */[
                     /* [] */0
                   ]
                 ],
-                f(/* () */0)
+                f(undefined)
               ]);
     })
 ];

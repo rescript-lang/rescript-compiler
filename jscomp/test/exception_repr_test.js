@@ -30,7 +30,7 @@ function eq(loc, x, y) {
     ],
     suites.contents
   ];
-  return /* () */0;
+  
 }
 
 var Hi = Caml_exceptions.create("Exception_repr_test.Hi");

@@ -43,9 +43,8 @@ function to_list(s) {
     catch (exn){
       if (exn === Stream.Failure) {
         return List.rev(acc);
-      } else {
-        throw exn;
       }
+      throw exn;
     }
     _acc = /* :: */[
       v,

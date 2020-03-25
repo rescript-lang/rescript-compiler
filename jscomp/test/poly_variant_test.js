@@ -26,7 +26,7 @@ function eq(loc, x, y) {
     ],
     suites.contents
   ];
-  return /* () */0;
+  
 }
 
 function hey_string (option){
@@ -88,13 +88,13 @@ hey_string("in");
 function register(readline) {
   readline.on("line", (function (s) {
           console.log(s);
-          return /* () */0;
+          
         }));
   readline.on("close", (function () {
           console.log("finished");
-          return /* () */0;
+          
         }));
-  return /* () */0;
+  
 }
 
 function read(name) {
@@ -115,7 +115,7 @@ function test(readline, x) {
               
             }
           })(), x[1]);
-  return /* () */0;
+  
 }
 
 function p_is_int_test(x) {
@@ -145,7 +145,7 @@ function on2(prim, prim$1) {
               
             }
           })(), prim$1[1]);
-  return /* () */0;
+  
 }
 
 var readN = read$1;

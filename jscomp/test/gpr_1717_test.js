@@ -1,11 +1,11 @@
 'use strict';
 
 
-var A = /* () */0;
+var A;
 
-var A0 = /* () */0;
+var A0;
 
-var A1 = /* () */0;
+var A1;
 
 exports.A = A;
 exports.A0 = A0;

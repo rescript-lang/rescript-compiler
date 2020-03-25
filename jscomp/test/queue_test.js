@@ -18,7 +18,7 @@ function Test(Queue) {
     return v;
   };
   var queue_1 = function (x) {
-    var q = Curry._1(Queue.create, /* () */0);
+    var q = Curry._1(Queue.create, undefined);
     $$Array.iter((function (x) {
             return Curry._2(Queue.add, x, q);
           }), x);

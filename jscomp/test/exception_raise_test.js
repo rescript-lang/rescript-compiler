@@ -27,31 +27,33 @@ function appf(g, x) {
     var exn = Caml_js_exceptions.internalToOCamlException(raw_exn);
     if (exn === Local) {
       return 3;
-    } else if (exn === Caml_builtin_exceptions.not_found) {
+    }
+    if (exn === Caml_builtin_exceptions.not_found) {
       return 2;
-    } else if (exn[0] === A) {
+    }
+    if (exn[0] === A) {
       return 3;
-    } else if (exn[0] === B) {
-      var match = exn[1];
-      if (match) {
-        var match$1 = match[1];
-        if (match$1) {
-          var match$2 = match$1[1];
-          if (match$2) {
-            return match$2[0];
-          } else {
-            return 4;
-          }
-        } else {
-          return 4;
-        }
+    }
+    if (exn[0] !== B) {
+      if (exn[0] === C) {
+        return exn[1];
+      } else if (exn[0] === D) {
+        return exn[1][0];
       } else {
         return 4;
       }
-    } else if (exn[0] === C) {
-      return exn[1];
-    } else if (exn[0] === D) {
-      return exn[1][0];
+    }
+    var match = exn[1];
+    if (!match) {
+      return 4;
+    }
+    var match$1 = match[1];
+    if (!match$1) {
+      return 4;
+    }
+    var match$2 = match$1[1];
+    if (match$2) {
+      return match$2[0];
     } else {
       return 4;
     }
@@ -97,17 +99,20 @@ try {
 }
 catch (raw_exn$3){
   var exn$3 = Caml_js_exceptions.internalToOCamlException(raw_exn$3);
-  if (exn$3[0] === A || exn$3[0] === Js_exn.$$Error) {
+  if (exn$3[0] === A) {
     a0 = exn$3[1];
   } else {
-    throw [
-          Caml_builtin_exceptions.assert_failure,
-          /* tuple */[
-            "exception_raise_test.ml",
-            102,
-            9
-          ]
-        ];
+    if (exn$3[0] !== Js_exn.$$Error) {
+      throw [
+            Caml_builtin_exceptions.assert_failure,
+            /* tuple */[
+              "exception_raise_test.ml",
+              102,
+              9
+            ]
+          ];
+    }
+    a0 = exn$3[1];
   }
 }
 
@@ -159,16 +164,15 @@ var suites = {
                         a1[1],
                         2
                       ]);
-            } else {
-              throw [
-                    Caml_builtin_exceptions.assert_failure,
-                    /* tuple */[
-                      "exception_raise_test.ml",
-                      119,
-                      15
-                    ]
-                  ];
             }
+            throw [
+                  Caml_builtin_exceptions.assert_failure,
+                  /* tuple */[
+                    "exception_raise_test.ml",
+                    119,
+                    15
+                  ]
+                ];
           })
       ],
       /* [] */0
@@ -185,7 +189,7 @@ function eq(loc, x, y) {
 }
 
 try {
-  (function (_){throw 2}(/* () */0));
+  (function (_){throw 2}(undefined));
 }
 catch (raw_e$2){
   var e = Caml_js_exceptions.internalToOCamlException(raw_e$2);
@@ -203,12 +207,12 @@ catch (raw_e$3){
 function fff0(x, g) {
   var val;
   try {
-    val = Curry._1(x, /* () */0);
+    val = Curry._1(x, undefined);
   }
   catch (exn){
     return 1;
   }
-  return Curry._1(g, /* () */0);
+  return Curry._1(g, undefined);
 }
 
 function input_lines(ic, _acc) {

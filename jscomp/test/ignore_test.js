@@ -25,19 +25,19 @@ function eq(loc, x, y) {
     ],
     suites.contents
   ];
-  return /* () */0;
+  
 }
 
 function f(x) {
-  return /* () */0;
+  
 }
 
 function ff(x) {
   console.log(x);
-  return /* () */0;
+  
 }
 
-eq("File \"ignore_test.ml\", line 16, characters 5-12", /* () */0, /* () */0);
+eq("File \"ignore_test.ml\", line 16, characters 5-12", undefined, undefined);
 
 Mt.from_pair_suites("Ignore_test", suites.contents);
 

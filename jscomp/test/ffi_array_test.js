@@ -25,7 +25,7 @@ function eq(loc, x, y) {
     ],
     suites.contents
   ];
-  return /* () */0;
+  
 }
 
 eq("File \"ffi_array_test.ml\", line 12, characters 5-12", [

@@ -17,7 +17,7 @@ var c = v.open;
 function ff(param) {
   v["Content-Type"] = 3;
   v.l = 2;
-  return /* () */0;
+  
 }
 
 var partial_arg = "x";

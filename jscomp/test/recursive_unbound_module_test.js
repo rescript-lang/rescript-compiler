@@ -5,7 +5,7 @@ var Caml_module = require("../../lib/js/caml_module.js");
 
 function Make(X) {
   var f = function (param) {
-    return /* () */0;
+    
   };
   var M = {
     f: f
@@ -28,7 +28,7 @@ var B = Caml_module.init_mod(/* tuple */[
           ]]]));
 
 function f(param) {
-  return /* () */0;
+  
 }
 
 var M = {
@@ -45,7 +45,7 @@ Caml_module.update_mod(/* Module */Block.__(0, [[/* tuple */[
       M: M
     });
 
-var A = /* () */0;
+var A;
 
 exports.Make = Make;
 exports.A = A;

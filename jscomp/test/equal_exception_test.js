@@ -42,7 +42,7 @@ function is_equal(param) {
           ]
         ];
   }
-  return /* () */0;
+  
 }
 
 function is_exception(param) {
@@ -51,10 +51,9 @@ function is_exception(param) {
   }
   catch (exn){
     if (exn === Caml_builtin_exceptions.not_found) {
-      return /* () */0;
-    } else {
-      throw exn;
+      return ;
     }
+    throw exn;
   }
 }
 
@@ -69,15 +68,13 @@ function is_normal_exception(_x) {
   }
   catch (raw_exn){
     var exn = Caml_js_exceptions.internalToOCamlException(raw_exn);
-    if (exn[0] === A) {
-      if (exn[1] !== 3) {
-        throw exn;
-      } else {
-        return /* () */0;
-      }
-    } else {
+    if (exn[0] !== A) {
       throw exn;
     }
+    if (exn[1] !== 3) {
+      throw exn;
+    }
+    return ;
   }
 }
 
@@ -87,7 +84,7 @@ function is_arbitrary_exception(param) {
     throw A;
   }
   catch (exn){
-    return /* () */0;
+    return ;
   }
 }
 

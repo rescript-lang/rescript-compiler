@@ -1,7 +1,15 @@
-[@@@bs.config {flags = [|"-drawlambda"|]}]
 
+[@@@bs.config {
+  flags = [|
+  "-drawlambda"; "-dlambda"; 
+  "-dtypedtree"
+  (* "-bs-debug-unit" *)
+  |]
+}]
 
-let u o = o##hi 1 2
+(* let u = Some (Some (Some ())) *)
+let u = fun () -> 2
+(* let u o = o##hi 1 2 *)
 
 (*
 (setglobal Debug_tmp!

@@ -28,7 +28,6 @@ type + 'a t = 'a Js.nullable
 external toOption : 'a t -> 'a option = "#nullable_to_opt"
 external to_opt : 'a t -> 'a option = "#nullable_to_opt"
 external return : 'a -> 'a t = "%identity"
-external test : 'a t -> bool =  "#is_nullable"
 external isNullable : 'a t -> bool =  "#is_nullable"
 external null : 'a t = "#null"
 external undefined : 'a t = "#undefined"

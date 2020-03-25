@@ -3,10 +3,10 @@
 
 function f(param) {
   console.error("x");
-  console.log(/* () */0);
+  console.log(undefined);
   console.log("hi");
-  console.log(/* () */0);
-  return /* () */0;
+  console.log(undefined);
+  
 }
 
 exports.f = f;

@@ -128,15 +128,21 @@ function compare(context, state, _a, _b) {
       if (b.tag === /* Neg */1) {
         _b = b[0];
         continue ;
-      } else if (a.tag === /* Sum */2 && is_number(b)) {
-        return 1;
+      } else if (a.tag === /* Sum */2) {
+        if (is_number(b)) {
+          return 1;
+        }
+        exit$2 = 4;
       } else {
         exit$2 = 4;
       }
     }
     if (exit$2 === 4) {
-      if (b.tag === /* Sum */2 && is_number(a)) {
-        return -1;
+      if (b.tag === /* Sum */2) {
+        if (is_number(a)) {
+          return -1;
+        }
+        exit$1 = 3;
       } else {
         exit$1 = 3;
       }
@@ -167,13 +173,12 @@ function compare(context, state, _a, _b) {
           }
       case 2 :
           var denom = compare(context, state, da, db);
-          if (denom === 0) {
-            _b = nb;
-            _a = na;
-            continue ;
-          } else {
+          if (denom !== 0) {
             return denom;
           }
+          _b = nb;
+          _a = na;
+          continue ;
       
     }
   };

@@ -36,7 +36,7 @@ function eq(loc, param) {
     ],
     suites.contents
   ];
-  return /* () */0;
+  
 }
 
 var int_config = {
@@ -84,7 +84,7 @@ var same_type = /* tuple */[
 var v_obj = {
   hi: (function () {
       console.log("hei");
-      return /* () */0;
+      
     })
 };
 
@@ -174,7 +174,7 @@ function ffff(x) {
     3,
     "x"
   ];
-  return /* () */0;
+  
 }
 
 Mt.from_pair_suites("Ffi_js_test", suites.contents);

@@ -22,7 +22,7 @@ var runtimeMliFiles = runtimeFiles.filter(
 var runtimeSourceFiles = runtimeMlFiles.concat(runtimeMliFiles);
 var runtimeJsFiles = [...new Set(runtimeSourceFiles.map(baseName))];
 
-var commonBsFlags = `-no-keep-locs -absname -no-alias-deps -bs-no-version-header -bs-diagnose -bs-no-check-div-by-zero -nostdlib `;
+var commonBsFlags = `-no-keep-locs -absname -no-alias-deps -bs-no-version-header -bs-no-check-div-by-zero -nostdlib `;
 var js_package = pseudoTarget("js_pkg");
 var runtimeTarget = pseudoTarget("runtime");
 var othersTarget = pseudoTarget("others");
@@ -1234,7 +1234,7 @@ async function testNinja() {
   var ninjaOutput = useEnv ? "env.ninja" : "build.ninja";
   var ninjaCwd = `test`;
   var templateTestRules = `
-bsc_flags = -absname -bs-no-version-header -bs-diagnose -bs-cross-module-opt -bs-package-name bs-platform -bs-package-output commonjs:jscomp/test  -w -3-6-26-27-29-30-32..40-44-45-52-60-9-106+104  -warn-error A  -I runtime -I $stdlib -I others
+bsc_flags = -absname -bs-no-version-header  -bs-cross-module-opt -bs-package-name bs-platform -bs-package-output commonjs:jscomp/test  -w -3-6-26-27-29-30-32..40-44-45-52-60-9-106+104  -warn-error A  -I runtime -I $stdlib -I others
 ${ruleCC(ninjaCwd)}
 
 

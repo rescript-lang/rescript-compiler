@@ -19,7 +19,7 @@ function f(param) {
     contents: param[1]
   };
   console.log(a, b);
-  return /* () */0;
+  
 }
 
 function g(param) {
@@ -27,7 +27,7 @@ function g(param) {
 }
 
 function a0(f) {
-  var u = Curry._1(f, /* () */0);
+  var u = Curry._1(f, undefined);
   if (u !== null) {
     console.log(u);
     console.log(u);
@@ -40,14 +40,13 @@ function a0(f) {
 function a1(f) {
   var E = Caml_exceptions.create("E");
   try {
-    return Curry._1(f, /* () */0);
+    return Curry._1(f, undefined);
   }
   catch (exn){
     if (exn === E) {
       return 1;
-    } else {
-      throw exn;
     }
+    throw exn;
   }
 }
 

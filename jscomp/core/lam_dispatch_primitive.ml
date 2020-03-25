@@ -563,35 +563,7 @@ let translate loc (prim_name : string)
     | "caml_blit_bytes"
       -> 
       call Js_runtime_modules.bytes
-
-    | "caml_register_named_value" -> 
-      (**
-         callback.ml
-         {[ external register_named_value : string -> Obj.t -> unit
-           = "caml_register_named_value" ]}
-
-         See the manual chap19, Interfacing C with OCaml
-
-         {[
-           let f x = print_string "f is applied to "; print_int x; print_newline()
-           let _ = Callback.register "test function" f
-         ]}
-
-         On the C side 
-         {[
-           let f x = print_string "f is applied to "; print_int x; print_newline()
-           let _ = Callback.register "test function" f
-         ]}
-
-         [caml_named_value] is a c primitive but not belong to OCaml/runtimedef.ml,
-         so we don't needs
-         handle it 
-      *)
-      E.unit
-
     | "caml_backtrace_status"
-
-
     | "caml_get_exception_backtrace"
     | "caml_get_exception_raw_backtrace"
     | "caml_record_backtrace"
@@ -771,12 +743,7 @@ let translate loc (prim_name : string)
 
     (* End of Unix support *)
     (* bigarrary support *)
-    | "caml_ba_init"
-      -> 
-      begin match args with 
-        | [e] -> E.seq e E.unit 
-        | _ -> assert false
-      end
+
     (* call  Js_config.bigarray *)
     (* End of bigarray support *)
     | "caml_bswap16"

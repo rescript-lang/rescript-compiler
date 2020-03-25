@@ -17,16 +17,15 @@ function f_undefined(xs, i) {
   var match = xs[i];
   if (match !== undefined) {
     return match;
-  } else {
-    throw [
-          Caml_builtin_exceptions.assert_failure,
-          /* tuple */[
-            "return_check.ml",
-            31,
-            14
-          ]
-        ];
   }
+  throw [
+        Caml_builtin_exceptions.assert_failure,
+        /* tuple */[
+          "return_check.ml",
+          31,
+          14
+        ]
+      ];
 }
 
 function f_escaped_not(xs, i) {
@@ -52,23 +51,22 @@ function f_escaped_1(xs, i) {
 
 function f_escaped_2(xs, i) {
   console.log(Caml_option.undefined_to_opt(xs[i]));
-  return /* () */0;
+  
 }
 
 function f_null(xs, i) {
   var match = xs[i];
   if (match !== null) {
     return match;
-  } else {
-    throw [
-          Caml_builtin_exceptions.assert_failure,
-          /* tuple */[
-            "return_check.ml",
-            59,
-            14
-          ]
-        ];
   }
+  throw [
+        Caml_builtin_exceptions.assert_failure,
+        /* tuple */[
+          "return_check.ml",
+          59,
+          14
+        ]
+      ];
 }
 
 function f_null_undefined(xs, i) {
@@ -82,9 +80,8 @@ function f_null_undefined(xs, i) {
             14
           ]
         ];
-  } else {
-    return match;
   }
+  return match;
 }
 
 exports.test = test;

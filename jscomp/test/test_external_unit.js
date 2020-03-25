@@ -5,7 +5,7 @@ console.log(3);
 
 var v = console.log(3);
 
-var u = /* () */0;
+var u;
 
 exports.u = u;
 exports.v = v;

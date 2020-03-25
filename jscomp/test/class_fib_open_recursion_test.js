@@ -32,7 +32,7 @@ function eq(loc, x, y) {
     ],
     suites.contents
   ];
-  return /* () */0;
+  
 }
 
 function fib_init($$class) {
@@ -63,13 +63,12 @@ function memo_fib_init($$class) {
             return Hashtbl.find(self$2[cache], x);
           }
           catch (exn){
-            if (exn === Caml_builtin_exceptions.not_found) {
-              var v = Curry._2(calc$1, self$2, x);
-              Hashtbl.add(self$2[cache], x, v);
-              return v;
-            } else {
+            if (exn !== Caml_builtin_exceptions.not_found) {
               throw exn;
             }
+            var v = Curry._2(calc$1, self$2, x);
+            Hashtbl.add(self$2[cache], x, v);
+            return v;
           }
         }));
   return (function (env, self) {
@@ -82,7 +81,7 @@ function memo_fib_init($$class) {
 
 var memo_fib = CamlinternalOO.make_class(shared, memo_fib_init);
 
-var tmp = Curry._1(memo_fib[0], /* () */0);
+var tmp = Curry._1(memo_fib[0], undefined);
 
 eq("File \"class_fib_open_recursion_test.ml\", line 33, characters 5-12", Caml_oo_curry.js2(-1044768619, 1, tmp, 40), 165580141);
 

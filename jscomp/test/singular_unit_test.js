@@ -17,7 +17,7 @@ function f3(x) {
   }
 }
 
-var v0 = /* () */0;
+var v0;
 
 exports.f0 = f0;
 exports.f1 = f1;

@@ -28,7 +28,7 @@ function eq(loc, x, y) {
     ],
     suites.contents
   ];
-  return /* () */0;
+  
 }
 
 eq("File \"js_list_test.ml\", line 11, characters 7-14", Js_list.flatten(/* :: */[

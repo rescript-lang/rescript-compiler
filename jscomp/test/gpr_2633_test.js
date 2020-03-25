@@ -12,7 +12,7 @@ function on1(foo, $$event) {
               
             }
           })(), $$event[1]);
-  return /* () */0;
+  
 }
 
 function on2(foo, h, $$event) {
@@ -25,7 +25,7 @@ function on2(foo, h, $$event) {
               
             }
           })(), Curry._1(h, $$event)[1]);
-  return /* () */0;
+  
 }
 
 exports.on1 = on1;

@@ -17,11 +17,11 @@ var suites_000 = /* tuple */[
 
 var suites_001 = /* :: */[
   /* tuple */[
-    "toOption - 'a",
+    "File \"js_undefined_test.ml\", line 5, characters 2-9",
     (function (param) {
         return /* Eq */Block.__(0, [
-                  /* () */0,
-                  Caml_option.undefined_to_opt(/* () */0)
+                  undefined,
+                  undefined
                 ]);
       })
   ],
@@ -47,11 +47,11 @@ var suites_001 = /* :: */[
       ],
       /* :: */[
         /* tuple */[
-          "test - 'a",
+          "File \"js_undefined_test.ml\", line 8, characters 2-9",
           (function (param) {
               return /* Eq */Block.__(0, [
-                        false,
-                        false
+                        true,
+                        true
                       ]);
             })
         ],
@@ -88,7 +88,7 @@ var suites_001 = /* :: */[
                     };
                     Js_undefined.iter(undefined, (function (param) {
                             hit.contents = true;
-                            return /* () */0;
+                            
                           }));
                     return /* Eq */Block.__(0, [
                               false,
@@ -105,7 +105,7 @@ var suites_001 = /* :: */[
                       };
                       Js_undefined.iter(2, (function (v) {
                               hit.contents = v;
-                              return /* () */0;
+                              
                             }));
                       return /* Eq */Block.__(0, [
                                 2,

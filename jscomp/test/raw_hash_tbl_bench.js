@@ -24,10 +24,10 @@ function bench(param) {
   for(var i$2 = 0; i$2 <= 1000000; ++i$2){
     Hashtbl.remove(table, i$2);
   }
-  return /* () */0;
+  
 }
 
-bench(/* () */0);
+bench(undefined);
 
 var count = 1000000;
 

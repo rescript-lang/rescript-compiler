@@ -55,7 +55,7 @@ function eq(loc, x, y) {
     ],
     suites.contents
   ];
-  return /* () */0;
+  
 }
 
 function point_init($$class) {
@@ -72,7 +72,7 @@ function point_init($$class) {
         move,
         (function (self$1, d) {
             self$1[x] = self$1[x] + d | 0;
-            return /* () */0;
+            
           })
       ]);
   return (function (env, self, x_init$1) {
@@ -85,7 +85,7 @@ function point_init($$class) {
 
 var point = CamlinternalOO.make_class(shared$4, point_init);
 
-var p = Curry._2(point[0], /* () */0, 55);
+var p = Curry._2(point[0], undefined, 55);
 
 var q = Oo.copy(p);
 
@@ -116,7 +116,7 @@ function ref_init($$class) {
         set,
         (function (self$2, y) {
             self$2[x] = y;
-            return /* () */0;
+            
           })
       ]);
   return (function (env, self, x_init$1) {
@@ -139,7 +139,7 @@ function backup_init($$class) {
         (function (self$3) {
             var copy$1 = Caml_exceptions.caml_set_oo_id(Caml_obj.caml_obj_dup(self$3));
             self$3[copy] = Caml_option.some((copy$1[copy] = undefined, copy$1));
-            return /* () */0;
+            
           }),
         restore,
         (function (self$3) {
@@ -191,15 +191,14 @@ function get(_p, _n) {
     var p = _p;
     if (n === 0) {
       return Caml_oo_curry.js1(5144726, 6, p);
-    } else {
-      _n = n - 1 | 0;
-      _p = Caml_oo_curry.js1(-357537970, 7, p);
-      continue ;
     }
+    _n = n - 1 | 0;
+    _p = Caml_oo_curry.js1(-357537970, 7, p);
+    continue ;
   };
 }
 
-var p$1 = Curry._2(backup_ref[0], /* () */0, 0);
+var p$1 = Curry._2(backup_ref[0], undefined, 0);
 
 Caml_oo_curry.js1(-867333315, 8, p$1);
 
@@ -237,7 +236,7 @@ function backup2_init($$class) {
         save,
         (function (self$5) {
             self$5[copy] = Caml_option.some(Caml_exceptions.caml_set_oo_id(Caml_obj.caml_obj_dup(self$5)));
-            return /* () */0;
+            
           }),
         restore,
         (function (self$5) {
@@ -251,7 +250,7 @@ function backup2_init($$class) {
         clear,
         (function (self$5) {
             self$5[copy] = undefined;
-            return /* () */0;
+            
           })
       ]);
   return (function (env, self) {
@@ -294,7 +293,7 @@ var backup_ref2 = CamlinternalOO.make_class([
       "set"
     ], backup_ref2_init);
 
-var p$2 = Curry._2(backup_ref2[0], /* () */0, 0);
+var p$2 = Curry._2(backup_ref2[0], undefined, 0);
 
 Caml_oo_curry.js1(-867333315, 12, p$2);
 

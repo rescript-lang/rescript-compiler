@@ -21,9 +21,9 @@ Caml_module.update_mod(/* Module */Block.__(0, [[/* tuple */[
         })
     });
 
-var CRS = /* () */0;
+var CRS;
 
-var Layer = /* () */0;
+var Layer;
 
 exports.CRS = CRS;
 exports.Layer = Layer;

@@ -9,7 +9,8 @@ function $$eval(_bdd, vars) {
     var bdd = _bdd;
     if (typeof bdd === "number") {
       return bdd === 0;
-    } else if (Caml_array.caml_array_get(vars, bdd[1])) {
+    }
+    if (Caml_array.caml_array_get(vars, bdd[1])) {
       _bdd = bdd[3];
       continue ;
     } else {
@@ -58,28 +59,27 @@ function resize(newSize) {
   var copyBucket = function (_bucket) {
     while(true) {
       var bucket = _bucket;
-      if (bucket) {
-        var n = bucket[0];
-        if (typeof n === "number") {
-          throw [
-                Caml_builtin_exceptions.assert_failure,
-                /* tuple */[
-                  "bdd.ml",
-                  54,
-                  27
-                ]
-              ];
-        }
-        var ind = hashVal(getId(n[0]), getId(n[3]), n[1]) & newSz_1;
-        Caml_array.caml_array_set(newArr, ind, /* :: */[
-              n,
-              Caml_array.caml_array_get(newArr, ind)
-            ]);
-        _bucket = bucket[1];
-        continue ;
-      } else {
-        return /* () */0;
+      if (!bucket) {
+        return ;
       }
+      var n = bucket[0];
+      if (typeof n === "number") {
+        throw [
+              Caml_builtin_exceptions.assert_failure,
+              /* tuple */[
+                "bdd.ml",
+                54,
+                27
+              ]
+            ];
+      }
+      var ind = hashVal(getId(n[0]), getId(n[3]), n[1]) & newSz_1;
+      Caml_array.caml_array_set(newArr, ind, /* :: */[
+            n,
+            Caml_array.caml_array_get(newArr, ind)
+          ]);
+      _bucket = bucket[1];
+      continue ;
     };
   };
   for(var n = 0 ,n_finish = sz_1.contents; n <= n_finish; ++n){
@@ -87,7 +87,7 @@ function resize(newSize) {
   }
   htab.contents = newArr;
   sz_1.contents = newSz_1;
-  return /* () */0;
+  
 }
 
 function insert(idl, idh, v, ind, bucket, newNode) {
@@ -97,7 +97,7 @@ function insert(idl, idh, v, ind, bucket, newNode) {
           bucket
         ]);
     n_items.contents = n_items.contents + 1 | 0;
-    return /* () */0;
+    return ;
   } else {
     resize((sz_1.contents + sz_1.contents | 0) + 2 | 0);
     var ind$1 = hashVal(idl, idh, v) & sz_1.contents;
@@ -113,7 +113,7 @@ function resetUnique(param) {
   htab.contents = Caml_array.caml_make_vect(sz_1.contents + 1 | 0, /* [] */0);
   n_items.contents = 0;
   nodeC.contents = 1;
-  return /* () */0;
+  
 }
 
 function mkNode(low, v, high) {
@@ -121,43 +121,41 @@ function mkNode(low, v, high) {
   var idh = getId(high);
   if (idl === idh) {
     return low;
-  } else {
-    var ind = hashVal(idl, idh, v) & sz_1.contents;
-    var bucket = Caml_array.caml_array_get(htab.contents, ind);
-    var _b = bucket;
-    while(true) {
-      var b = _b;
-      if (b) {
-        var n = b[0];
-        if (typeof n === "number") {
-          throw [
-                Caml_builtin_exceptions.assert_failure,
-                /* tuple */[
-                  "bdd.ml",
-                  99,
-                  31
-                ]
-              ];
-        }
-        if (v === n[1] && idl === getId(n[0]) && idh === getId(n[3])) {
-          return n;
-        } else {
-          _b = b[1];
-          continue ;
-        }
-      } else {
-        var n_002 = (nodeC.contents = nodeC.contents + 1 | 0, nodeC.contents);
-        var n$1 = /* Node */[
-          low,
-          v,
-          n_002,
-          high
-        ];
-        insert(getId(low), getId(high), v, ind, bucket, n$1);
-        return n$1;
-      }
-    };
   }
+  var ind = hashVal(idl, idh, v) & sz_1.contents;
+  var bucket = Caml_array.caml_array_get(htab.contents, ind);
+  var _b = bucket;
+  while(true) {
+    var b = _b;
+    if (b) {
+      var n = b[0];
+      if (typeof n === "number") {
+        throw [
+              Caml_builtin_exceptions.assert_failure,
+              /* tuple */[
+                "bdd.ml",
+                99,
+                31
+              ]
+            ];
+      }
+      if (v === n[1] && idl === getId(n[0]) && idh === getId(n[3])) {
+        return n;
+      }
+      _b = b[1];
+      continue ;
+    } else {
+      var n_002 = (nodeC.contents = nodeC.contents + 1 | 0, nodeC.contents);
+      var n$1 = /* Node */[
+        low,
+        v,
+        n_002,
+        high
+      ];
+      insert(getId(low), getId(high), v, ind, bucket, n$1);
+      return n$1;
+    }
+  };
 }
 
 function cmpVar(x, y) {
@@ -201,18 +199,16 @@ function not(n) {
     } else {
       return /* Zero */1;
     }
-  } else {
-    var id = n[2];
-    var h = id % 1999;
-    if (id === Caml_array.caml_array_get(notslot1, h)) {
-      return Caml_array.caml_array_get(notslot2, h);
-    } else {
-      var f = mkNode(not(n[0]), n[1], not(n[3]));
-      Caml_array.caml_array_set(notslot1, h, id);
-      Caml_array.caml_array_set(notslot2, h, f);
-      return f;
-    }
   }
+  var id = n[2];
+  var h = id % 1999;
+  if (id === Caml_array.caml_array_get(notslot1, h)) {
+    return Caml_array.caml_array_get(notslot2, h);
+  }
+  var f = mkNode(not(n[0]), n[1], not(n[3]));
+  Caml_array.caml_array_set(notslot1, h, id);
+  Caml_array.caml_array_set(notslot2, h, f);
+  return f;
 }
 
 function and2(n1, n2) {
@@ -222,47 +218,44 @@ function and2(n1, n2) {
     } else {
       return n2;
     }
-  } else {
-    var r1 = n1[3];
-    var i1 = n1[2];
-    var v1 = n1[1];
-    var l1 = n1[0];
-    if (typeof n2 === "number") {
-      if (n2 !== 0) {
-        return /* Zero */1;
-      } else {
-        return n1;
-      }
+  }
+  var r1 = n1[3];
+  var i1 = n1[2];
+  var v1 = n1[1];
+  var l1 = n1[0];
+  if (typeof n2 === "number") {
+    if (n2 !== 0) {
+      return /* Zero */1;
     } else {
-      var r2 = n2[3];
-      var i2 = n2[2];
-      var v2 = n2[1];
-      var l2 = n2[0];
-      var h = hash(i1, i2);
-      if (i1 === Caml_array.caml_array_get(andslot1, h) && i2 === Caml_array.caml_array_get(andslot2, h)) {
-        return Caml_array.caml_array_get(andslot3, h);
-      } else {
-        var match = cmpVar(v1, v2);
-        var f;
-        switch (match) {
-          case /* LESS */0 :
-              f = mkNode(and2(l1, n2), v1, and2(r1, n2));
-              break;
-          case /* EQUAL */1 :
-              f = mkNode(and2(l1, l2), v1, and2(r1, r2));
-              break;
-          case /* GREATER */2 :
-              f = mkNode(and2(n1, l2), v2, and2(n1, r2));
-              break;
-          
-        }
-        Caml_array.caml_array_set(andslot1, h, i1);
-        Caml_array.caml_array_set(andslot2, h, i2);
-        Caml_array.caml_array_set(andslot3, h, f);
-        return f;
-      }
+      return n1;
     }
   }
+  var r2 = n2[3];
+  var i2 = n2[2];
+  var v2 = n2[1];
+  var l2 = n2[0];
+  var h = hash(i1, i2);
+  if (i1 === Caml_array.caml_array_get(andslot1, h) && i2 === Caml_array.caml_array_get(andslot2, h)) {
+    return Caml_array.caml_array_get(andslot3, h);
+  }
+  var match = cmpVar(v1, v2);
+  var f;
+  switch (match) {
+    case /* LESS */0 :
+        f = mkNode(and2(l1, n2), v1, and2(r1, n2));
+        break;
+    case /* EQUAL */1 :
+        f = mkNode(and2(l1, l2), v1, and2(r1, r2));
+        break;
+    case /* GREATER */2 :
+        f = mkNode(and2(n1, l2), v2, and2(n1, r2));
+        break;
+    
+  }
+  Caml_array.caml_array_set(andslot1, h, i1);
+  Caml_array.caml_array_set(andslot2, h, i2);
+  Caml_array.caml_array_set(andslot3, h, f);
+  return f;
 }
 
 function xor(n1, n2) {
@@ -272,47 +265,44 @@ function xor(n1, n2) {
     } else {
       return not(n2);
     }
-  } else {
-    var r1 = n1[3];
-    var i1 = n1[2];
-    var v1 = n1[1];
-    var l1 = n1[0];
-    if (typeof n2 === "number") {
-      if (n2 !== 0) {
-        return n1;
-      } else {
-        return not(n1);
-      }
+  }
+  var r1 = n1[3];
+  var i1 = n1[2];
+  var v1 = n1[1];
+  var l1 = n1[0];
+  if (typeof n2 === "number") {
+    if (n2 !== 0) {
+      return n1;
     } else {
-      var r2 = n2[3];
-      var i2 = n2[2];
-      var v2 = n2[1];
-      var l2 = n2[0];
-      var h = hash(i1, i2);
-      if (i1 === Caml_array.caml_array_get(andslot1, h) && i2 === Caml_array.caml_array_get(andslot2, h)) {
-        return Caml_array.caml_array_get(andslot3, h);
-      } else {
-        var match = cmpVar(v1, v2);
-        var f;
-        switch (match) {
-          case /* LESS */0 :
-              f = mkNode(xor(l1, n2), v1, xor(r1, n2));
-              break;
-          case /* EQUAL */1 :
-              f = mkNode(xor(l1, l2), v1, xor(r1, r2));
-              break;
-          case /* GREATER */2 :
-              f = mkNode(xor(n1, l2), v2, xor(n1, r2));
-              break;
-          
-        }
-        Caml_array.caml_array_set(andslot1, h, i1);
-        Caml_array.caml_array_set(andslot2, h, i2);
-        Caml_array.caml_array_set(andslot3, h, f);
-        return f;
-      }
+      return not(n1);
     }
   }
+  var r2 = n2[3];
+  var i2 = n2[2];
+  var v2 = n2[1];
+  var l2 = n2[0];
+  var h = hash(i1, i2);
+  if (i1 === Caml_array.caml_array_get(andslot1, h) && i2 === Caml_array.caml_array_get(andslot2, h)) {
+    return Caml_array.caml_array_get(andslot3, h);
+  }
+  var match = cmpVar(v1, v2);
+  var f;
+  switch (match) {
+    case /* LESS */0 :
+        f = mkNode(xor(l1, n2), v1, xor(r1, n2));
+        break;
+    case /* EQUAL */1 :
+        f = mkNode(xor(l1, l2), v1, xor(r1, r2));
+        break;
+    case /* GREATER */2 :
+        f = mkNode(xor(n1, l2), v2, xor(n1, r2));
+        break;
+    
+  }
+  Caml_array.caml_array_set(andslot1, h, i1);
+  Caml_array.caml_array_set(andslot2, h, i2);
+  Caml_array.caml_array_set(andslot3, h, f);
+  return f;
 }
 
 function hwb(n) {
@@ -345,7 +335,7 @@ function random(param) {
 function random_vars(n) {
   var vars = Caml_array.caml_make_vect(n, false);
   for(var i = 0 ,i_finish = n - 1 | 0; i <= i_finish; ++i){
-    Caml_array.caml_array_set(vars, i, random(/* () */0));
+    Caml_array.caml_array_set(vars, i, random(undefined));
   }
   return vars;
 }
@@ -382,20 +372,19 @@ function main(param) {
     succeeded = succeeded && test_hwb(bdd, random_vars(22));
   }
   if (succeeded) {
-    return /* () */0;
-  } else {
-    throw [
-          Caml_builtin_exceptions.assert_failure,
-          /* tuple */[
-            "bdd.ml",
-            233,
-            2
-          ]
-        ];
+    return ;
   }
+  throw [
+        Caml_builtin_exceptions.assert_failure,
+        /* tuple */[
+          "bdd.ml",
+          233,
+          2
+        ]
+      ];
 }
 
-main(/* () */0);
+main(undefined);
 
 var initSize_1 = 8191;
 

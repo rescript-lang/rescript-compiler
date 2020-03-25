@@ -1309,6 +1309,7 @@ and function_body (cxt : cxt) f (b : J.block) : unit =
                 Return {return_value = {expression_desc = Undefined}} }])
         ->
         ignore (statement false cxt f {s with statement_desc = If(bool,then_, [])} : cxt)
+    | Return {return_value = {expression_desc = Undefined }} -> ()    
     | _ ->        
       ignore (statement false  cxt f  s : cxt)
     end

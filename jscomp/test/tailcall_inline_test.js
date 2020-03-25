@@ -10,13 +10,12 @@ function f(param) {
     while(true) {
       var n = _n;
       var acc = _acc;
-      if (n > 0) {
-        _n = n - 1 | 0;
-        _acc = acc + n | 0;
-        continue ;
-      } else {
+      if (n <= 0) {
         return acc;
       }
+      _n = n - 1 | 0;
+      _acc = acc + n | 0;
+      continue ;
     };
   };
   var v = Caml_array.caml_make_vect(10, 0);
@@ -30,7 +29,7 @@ var suites_000 = /* tuple */[
   "acc",
   (function (param) {
       return /* Eq */Block.__(0, [
-                f(/* () */0),
+                f(undefined),
                 [
                   0,
                   1,

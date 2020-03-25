@@ -43,7 +43,7 @@ function f(x) {
   for(var i = 0; i <= 10; ++i){
     Caml_array.caml_array_set(x, i, i);
   }
-  return /* () */0;
+  
 }
 
 exports.g = g;

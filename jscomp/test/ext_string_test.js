@@ -30,7 +30,8 @@ function split_by(keep_emptyOpt, is_delim, str) {
                 acc
               ];
       }
-    } else if (Curry._1(is_delim, Caml_string.get(str, pos))) {
+    }
+    if (Curry._1(is_delim, Caml_string.get(str, pos))) {
       var new_len = (last_pos - pos | 0) - 1 | 0;
       if (new_len !== 0 || keep_empty) {
         var v = $$String.sub(str, pos + 1 | 0, new_len);
@@ -103,15 +104,14 @@ function quick_split_by_ws(str) {
 function starts_with(s, beg) {
   var beg_len = beg.length;
   var s_len = s.length;
-  if (beg_len <= s_len) {
-    var i = 0;
-    while(i < beg_len && s[i] === beg[i]) {
-      i = i + 1 | 0;
-    };
-    return i === beg_len;
-  } else {
+  if (beg_len > s_len) {
     return false;
   }
+  var i = 0;
+  while(i < beg_len && s[i] === beg[i]) {
+    i = i + 1 | 0;
+  };
+  return i === beg_len;
 }
 
 function ends_with_index(s, end_) {
@@ -119,23 +119,22 @@ function ends_with_index(s, end_) {
   var s_beg = end_.length - 1 | 0;
   if (s_beg > s_finish) {
     return -1;
-  } else {
-    var _j = s_finish;
-    var _k = s_beg;
-    while(true) {
-      var k = _k;
-      var j = _j;
-      if (k < 0) {
-        return j + 1 | 0;
-      } else if (s[j] === end_[k]) {
-        _k = k - 1 | 0;
-        _j = j - 1 | 0;
-        continue ;
-      } else {
-        return -1;
-      }
-    };
   }
+  var _j = s_finish;
+  var _k = s_beg;
+  while(true) {
+    var k = _k;
+    var j = _j;
+    if (k < 0) {
+      return j + 1 | 0;
+    }
+    if (s[j] !== end_[k]) {
+      return -1;
+    }
+    _k = k - 1 | 0;
+    _j = j - 1 | 0;
+    continue ;
+  };
 }
 
 function ends_with(s, end_) {
@@ -160,17 +159,15 @@ function check_any_suffix_case_then_chop(s, suffixes) {
   var _suffixes = suffixes;
   while(true) {
     var suffixes$1 = _suffixes;
-    if (suffixes$1) {
-      var id = ends_with_index(s, suffixes$1[0]);
-      if (id >= 0) {
-        return $$String.sub(s, 0, id);
-      } else {
-        _suffixes = suffixes$1[1];
-        continue ;
-      }
-    } else {
+    if (!suffixes$1) {
       return ;
     }
+    var id = ends_with_index(s, suffixes$1[0]);
+    if (id >= 0) {
+      return $$String.sub(s, 0, id);
+    }
+    _suffixes = suffixes$1[1];
+    continue ;
   };
 }
 
@@ -180,26 +177,24 @@ function escaped(s) {
       var i = _i;
       if (i >= s.length) {
         return false;
-      } else {
-        var match = s.charCodeAt(i);
-        if (match >= 32) {
-          var switcher = match - 34 | 0;
-          if (switcher > 58 || switcher < 0) {
-            if (switcher >= 93) {
-              return true;
-            } else {
-              _i = i + 1 | 0;
-              continue ;
-            }
-          } else if (switcher > 57 || switcher < 1) {
-            return true;
-          } else {
-            _i = i + 1 | 0;
-            continue ;
-          }
-        } else {
+      }
+      var match = s.charCodeAt(i);
+      if (match < 32) {
+        return true;
+      }
+      var switcher = match - 34 | 0;
+      if (switcher > 58 || switcher < 0) {
+        if (switcher >= 93) {
           return true;
         }
+        _i = i + 1 | 0;
+        continue ;
+      } else {
+        if (switcher > 57 || switcher < 1) {
+          return true;
+        }
+        _i = i + 1 | 0;
+        continue ;
       }
     };
   };
@@ -215,12 +210,12 @@ function unsafe_for_all_range(s, _start, finish, p) {
     var start = _start;
     if (start > finish) {
       return true;
-    } else if (Curry._1(p, s.charCodeAt(start))) {
-      _start = start + 1 | 0;
-      continue ;
-    } else {
+    }
+    if (!Curry._1(p, s.charCodeAt(start))) {
       return false;
     }
+    _start = start + 1 | 0;
+    continue ;
   };
 }
 
@@ -259,12 +254,12 @@ function unsafe_is_sub(sub, i, s, j, len) {
       var k = _k;
       if (k === len) {
         return true;
-      } else if (sub[i + k | 0] === s[j + k | 0]) {
-        _k = k + 1 | 0;
-        continue ;
-      } else {
+      }
+      if (sub[i + k | 0] !== s[j + k | 0]) {
         return false;
       }
+      _k = k + 1 | 0;
+      continue ;
     };
   } else {
     return false;
@@ -290,9 +285,8 @@ function find(startOpt, sub, s) {
   catch (exn){
     if (exn === Local_exit) {
       return i;
-    } else {
-      throw exn;
     }
+    throw exn;
   }
 }
 
@@ -316,11 +310,10 @@ function non_overlap_count(sub, s) {
     var i = find(off, sub, s);
     if (i < 0) {
       return acc;
-    } else {
-      _off = i + sub_len | 0;
-      _acc = acc + 1 | 0;
-      continue ;
     }
+    _off = i + sub_len | 0;
+    _acc = acc + 1 | 0;
+    continue ;
   };
 }
 
@@ -339,23 +332,21 @@ function rfind(sub, s) {
   catch (exn){
     if (exn === Local_exit) {
       return i;
-    } else {
-      throw exn;
     }
+    throw exn;
   }
 }
 
 function tail_from(s, x) {
   var len = s.length;
-  if (x > len) {
-    var s$1 = "Ext_string_test.tail_from " + (s + (" : " + String(x)));
-    throw [
-          Caml_builtin_exceptions.invalid_argument,
-          s$1
-        ];
-  } else {
+  if (x <= len) {
     return $$String.sub(s, x, len - x | 0);
   }
+  var s$1 = "Ext_string_test.tail_from " + (s + (" : " + String(x)));
+  throw [
+        Caml_builtin_exceptions.invalid_argument,
+        s$1
+      ];
 }
 
 function digits_of_str(s, offset, x) {
@@ -368,11 +359,10 @@ function digits_of_str(s, offset, x) {
     var i = _i;
     if (i >= x$1) {
       return acc;
-    } else {
-      _acc = (Caml_int32.imul(10, acc) + Caml_string.get(s$1, offset + i | 0) | 0) - 48 | 0;
-      _i = i + 1 | 0;
-      continue ;
     }
+    _acc = (Caml_int32.imul(10, acc) + Caml_string.get(s$1, offset + i | 0) | 0) - 48 | 0;
+    _i = i + 1 | 0;
+    continue ;
   };
 }
 
@@ -382,16 +372,15 @@ function starts_with_and_number(s, offset, beg) {
   var finish_delim = offset + beg_len | 0;
   if (finish_delim > s_len) {
     return -1;
+  }
+  var i = offset;
+  while(i < finish_delim && s[i] === beg[i - offset | 0]) {
+    i = i + 1 | 0;
+  };
+  if (i === finish_delim) {
+    return digits_of_str(s, finish_delim, 2);
   } else {
-    var i = offset;
-    while(i < finish_delim && s[i] === beg[i - offset | 0]) {
-      i = i + 1 | 0;
-    };
-    if (i === finish_delim) {
-      return digits_of_str(s, finish_delim, 2);
-    } else {
-      return -1;
-    }
+    return -1;
   }
 }
 
@@ -400,38 +389,39 @@ function equal(x, y) {
 }
 
 function unsafe_concat_with_length(len, sep, l) {
-  if (l) {
-    var hd = l[0];
-    var r = Caml_bytes.caml_create_bytes(len);
-    var hd_len = hd.length;
-    var sep_len = sep.length;
-    Caml_bytes.caml_blit_string(hd, 0, r, 0, hd_len);
-    var pos = {
-      contents: hd_len
-    };
-    List.iter((function (s) {
-            var s_len = s.length;
-            Caml_bytes.caml_blit_string(sep, 0, r, pos.contents, sep_len);
-            pos.contents = pos.contents + sep_len | 0;
-            Caml_bytes.caml_blit_string(s, 0, r, pos.contents, s_len);
-            pos.contents = pos.contents + s_len | 0;
-            return /* () */0;
-          }), l[1]);
-    return Caml_bytes.bytes_to_string(r);
-  } else {
+  if (!l) {
     return "";
   }
+  var hd = l[0];
+  var r = Caml_bytes.caml_create_bytes(len);
+  var hd_len = hd.length;
+  var sep_len = sep.length;
+  Caml_bytes.caml_blit_string(hd, 0, r, 0, hd_len);
+  var pos = {
+    contents: hd_len
+  };
+  List.iter((function (s) {
+          var s_len = s.length;
+          Caml_bytes.caml_blit_string(sep, 0, r, pos.contents, sep_len);
+          pos.contents = pos.contents + sep_len | 0;
+          Caml_bytes.caml_blit_string(s, 0, r, pos.contents, s_len);
+          pos.contents = pos.contents + s_len | 0;
+          
+        }), l[1]);
+  return Caml_bytes.bytes_to_string(r);
 }
 
 function rindex_rec(s, _i, c) {
   while(true) {
     var i = _i;
-    if (i < 0 || s.charCodeAt(i) === c) {
+    if (i < 0) {
       return i;
-    } else {
-      _i = i - 1 | 0;
-      continue ;
     }
+    if (s.charCodeAt(i) === c) {
+      return i;
+    }
+    _i = i - 1 | 0;
+    continue ;
   };
 }
 
@@ -440,12 +430,12 @@ function rindex_rec_opt(s, _i, c) {
     var i = _i;
     if (i < 0) {
       return ;
-    } else if (s.charCodeAt(i) === c) {
-      return i;
-    } else {
-      _i = i - 1 | 0;
-      continue ;
     }
+    if (s.charCodeAt(i) === c) {
+      return i;
+    }
+    _i = i - 1 | 0;
+    continue ;
   };
 }
 
@@ -459,63 +449,65 @@ function rindex_opt(s, c) {
 
 function is_valid_module_file(s) {
   var len = s.length;
-  if (len > 0) {
-    var match = s.charCodeAt(0);
-    if (match >= 91) {
-      if (match > 122 || match < 97) {
-        return false;
-      }
-      
-    } else if (match < 65) {
+  if (len <= 0) {
+    return false;
+  }
+  var match = s.charCodeAt(0);
+  if (match >= 91) {
+    if (match > 122 || match < 97) {
       return false;
     }
-    return unsafe_for_all_range(s, 1, len - 1 | 0, (function (x) {
-                  if (x >= 65) {
-                    var switcher = x - 91 | 0;
-                    if (switcher > 5 || switcher < 0) {
-                      return switcher < 32;
-                    } else {
-                      return switcher === 4;
-                    }
-                  } else if (x >= 48) {
+    
+  } else if (match < 65) {
+    return false;
+  }
+  return unsafe_for_all_range(s, 1, len - 1 | 0, (function (x) {
+                if (x < 65) {
+                  if (x >= 48) {
                     return x < 58;
                   } else {
                     return x === 39;
                   }
-                }));
-  } else {
-    return false;
-  }
+                }
+                var switcher = x - 91 | 0;
+                if (switcher > 5 || switcher < 0) {
+                  return switcher < 32;
+                } else {
+                  return switcher === 4;
+                }
+              }));
 }
 
 function is_valid_npm_package_name(s) {
   var len = s.length;
-  if (len <= 214 && len > 0) {
-    var match = s.charCodeAt(0);
-    if (match >= 97) {
-      if (match >= 123) {
-        return false;
-      }
-      
-    } else if (match !== 64) {
-      return false;
-    }
-    return unsafe_for_all_range(s, 1, len - 1 | 0, (function (x) {
-                  if (x >= 58) {
-                    if (x >= 97) {
-                      return x < 123;
-                    } else {
-                      return x === 95;
-                    }
-                  } else if (x !== 45) {
-                    return x >= 48;
-                  } else {
-                    return true;
-                  }
-                }));
-  } else {
+  if (len > 214) {
     return false;
   }
+  if (len <= 0) {
+    return false;
+  }
+  var match = s.charCodeAt(0);
+  if (match >= 97) {
+    if (match >= 123) {
+      return false;
+    }
+    
+  } else if (match !== 64) {
+    return false;
+  }
+  return unsafe_for_all_range(s, 1, len - 1 | 0, (function (x) {
+                if (x >= 58) {
+                  if (x >= 97) {
+                    return x < 123;
+                  } else {
+                    return x === 95;
+                  }
+                } else if (x !== 45) {
+                  return x >= 48;
+                } else {
+                  return true;
+                }
+              }));
 }
 
 function is_valid_source_name(name) {
@@ -548,12 +540,12 @@ function unsafe_no_char(x, ch, _i, last_idx) {
     var i = _i;
     if (i > last_idx) {
       return true;
-    } else if (x.charCodeAt(i) !== ch) {
-      _i = i + 1 | 0;
-      continue ;
-    } else {
+    }
+    if (x.charCodeAt(i) === ch) {
       return false;
     }
+    _i = i + 1 | 0;
+    continue ;
   };
 }
 
@@ -562,12 +554,12 @@ function unsafe_no_char_idx(x, ch, _i, last_idx) {
     var i = _i;
     if (i > last_idx) {
       return -1;
-    } else if (x.charCodeAt(i) !== ch) {
-      _i = i + 1 | 0;
-      continue ;
-    } else {
+    }
+    if (x.charCodeAt(i) === ch) {
       return i;
     }
+    _i = i + 1 | 0;
+    continue ;
   };
 }
 
@@ -626,33 +618,31 @@ var single_space = " ";
 
 function concat_array(sep, s) {
   var s_len = s.length;
-  if (s_len !== 0) {
-    if (s_len !== 1) {
-      var sep_len = sep.length;
-      var len = 0;
-      for(var i = 0 ,i_finish = s_len - 1 | 0; i <= i_finish; ++i){
-        len = len + s[i].length | 0;
-      }
-      var target = Caml_bytes.caml_create_bytes(len + Caml_int32.imul(s_len - 1 | 0, sep_len) | 0);
-      var hd = s[0];
-      var hd_len = hd.length;
-      Caml_bytes.caml_blit_string(hd, 0, target, 0, hd_len);
-      var current_offset = hd_len;
-      for(var i$1 = 1 ,i_finish$1 = s_len - 1 | 0; i$1 <= i_finish$1; ++i$1){
-        Caml_bytes.caml_blit_string(sep, 0, target, current_offset, sep_len);
-        var cur = s[i$1];
-        var cur_len = cur.length;
-        var new_off_set = current_offset + sep_len | 0;
-        Caml_bytes.caml_blit_string(cur, 0, target, new_off_set, cur_len);
-        current_offset = new_off_set + cur_len | 0;
-      }
-      return Caml_bytes.bytes_to_string(target);
-    } else {
-      return s[0];
-    }
-  } else {
+  if (s_len === 0) {
     return empty;
   }
+  if (s_len === 1) {
+    return s[0];
+  }
+  var sep_len = sep.length;
+  var len = 0;
+  for(var i = 0 ,i_finish = s_len - 1 | 0; i <= i_finish; ++i){
+    len = len + s[i].length | 0;
+  }
+  var target = Caml_bytes.caml_create_bytes(len + Caml_int32.imul(s_len - 1 | 0, sep_len) | 0);
+  var hd = s[0];
+  var hd_len = hd.length;
+  Caml_bytes.caml_blit_string(hd, 0, target, 0, hd_len);
+  var current_offset = hd_len;
+  for(var i$1 = 1 ,i_finish$1 = s_len - 1 | 0; i$1 <= i_finish$1; ++i$1){
+    Caml_bytes.caml_blit_string(sep, 0, target, current_offset, sep_len);
+    var cur = s[i$1];
+    var cur_len = cur.length;
+    var new_off_set = current_offset + sep_len | 0;
+    Caml_bytes.caml_blit_string(cur, 0, target, new_off_set, cur_len);
+    current_offset = new_off_set + cur_len | 0;
+  }
+  return Caml_bytes.bytes_to_string(target);
 }
 
 function concat3(a, b, c) {

@@ -112,16 +112,15 @@ function f9(param) {
     } else {
       return 1;
     }
-  } else {
-    switch (param.tag | 0) {
-      case /* T64 */0 :
-      case /* T65 */1 :
-          return 2;
-      case /* T66 */2 :
-      case /* T68 */3 :
-          return 3;
-      
-    }
+  }
+  switch (param.tag | 0) {
+    case /* T64 */0 :
+    case /* T65 */1 :
+        return 2;
+    case /* T66 */2 :
+    case /* T68 */3 :
+        return 3;
+    
   }
 }
 
@@ -154,7 +153,8 @@ function f10(param) {
 function f11(x) {
   if (typeof x === "number") {
     return 2;
-  } else if (x.tag) {
+  }
+  if (x.tag) {
     throw [
           Caml_builtin_exceptions.assert_failure,
           /* tuple */[
@@ -163,9 +163,8 @@ function f11(x) {
             9
           ]
         ];
-  } else {
-    return 1;
   }
+  return 1;
 }
 
 exports.f = f;

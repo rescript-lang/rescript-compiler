@@ -18,20 +18,21 @@ var Int$1 = Caml_exceptions.create("Extensible_variant_test.Int");
 function to_int(x) {
   if (x[0] === Str) {
     return -1;
-  } else if (x[0] === Int) {
-    return x[1];
-  } else if (x[0] === Int$1) {
-    return x[2];
-  } else {
-    throw [
-          Caml_builtin_exceptions.assert_failure,
-          /* tuple */[
-            "extensible_variant_test.ml",
-            16,
-            9
-          ]
-        ];
   }
+  if (x[0] === Int) {
+    return x[1];
+  }
+  if (x[0] === Int$1) {
+    return x[2];
+  }
+  throw [
+        Caml_builtin_exceptions.assert_failure,
+        /* tuple */[
+          "extensible_variant_test.ml",
+          16,
+          9
+        ]
+      ];
 }
 
 var suites_000 = /* tuple */[

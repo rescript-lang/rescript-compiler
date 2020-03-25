@@ -10,21 +10,20 @@ function treeHeight(n) {
 }
 
 function copy(n) {
-  if (n !== undefined) {
-    var match = n;
-    var v = match.value;
-    var h = match.height;
-    var l = match.left;
-    var r = match.right;
-    return {
-            value: v,
-            height: h,
-            left: copy(l),
-            right: copy(r)
-          };
-  } else {
+  if (n === undefined) {
     return n;
   }
+  var match = n;
+  var v = match.value;
+  var h = match.height;
+  var l = match.left;
+  var r = match.right;
+  return {
+          value: v,
+          height: h,
+          left: copy(l),
+          right: copy(r)
+        };
 }
 
 exports.treeHeight = treeHeight;

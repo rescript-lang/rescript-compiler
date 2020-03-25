@@ -34,7 +34,7 @@ function actionKey(key, a, b, c, d, e) {
       
   }
   return (function (param) {
-      return /* () */0;
+      
     });
 }
 

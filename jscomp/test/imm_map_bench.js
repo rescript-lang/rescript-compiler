@@ -17,10 +17,9 @@ function fromArray(kvs) {
 
 function should(b) {
   if (b) {
-    return /* () */0;
-  } else {
-    throw new Error("impossible");
+    return ;
   }
+  throw new Error("impossible");
 }
 
 var shuffledDataAdd = Belt_Array.makeByAndShuffle(1000001, (function (i) {
@@ -35,7 +34,7 @@ function test(param) {
   for(var j = 0; j <= 1000000; ++j){
     should(v.has(j));
   }
-  return /* () */0;
+  
 }
 
 function test2(param) {
@@ -43,18 +42,18 @@ function test2(param) {
   for(var j = 0; j <= 1000000; ++j){
     should(Belt_MapInt.has(v, j));
   }
-  return /* () */0;
+  
 }
 
 console.time("test/imm_map_bench.ml 44");
 
-test(/* () */0);
+test(undefined);
 
 console.timeEnd("test/imm_map_bench.ml 44");
 
 console.time("test/imm_map_bench.ml 45");
 
-test2(/* () */0);
+test2(undefined);
 
 console.timeEnd("test/imm_map_bench.ml 45");
 

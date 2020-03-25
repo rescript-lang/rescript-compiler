@@ -12,21 +12,19 @@ function sub(_tr, _k) {
   while(true) {
     var k = _k;
     var tr = _tr;
-    if (tr) {
-      if (k === 1) {
-        return tr[0];
-      } else {
-        _k = k / 2 | 0;
-        if (k % 2 === 0) {
-          _tr = tr[1];
-          continue ;
-        } else {
-          _tr = tr[2];
-          continue ;
-        }
-      }
-    } else {
+    if (!tr) {
       throw Caml_builtin_exceptions.not_found;
+    }
+    if (k === 1) {
+      return tr[0];
+    }
+    _k = k / 2 | 0;
+    if (k % 2 === 0) {
+      _tr = tr[1];
+      continue ;
+    } else {
+      _tr = tr[2];
+      continue ;
     }
   };
 }
@@ -41,57 +39,55 @@ function update(tr, k, w) {
               l,
               r
             ];
-    } else {
-      var v = tr[0];
-      if (k % 2 === 0) {
-        return /* Br */[
-                v,
-                update(l, k / 2 | 0, w),
-                r
-              ];
-      } else {
-        return /* Br */[
-                v,
-                l,
-                update(r, k / 2 | 0, w)
-              ];
-      }
     }
-  } else if (k === 1) {
-    return /* Br */[
-            w,
-            /* Lf */0,
-            /* Lf */0
-          ];
+    var v = tr[0];
+    if (k % 2 === 0) {
+      return /* Br */[
+              v,
+              update(l, k / 2 | 0, w),
+              r
+            ];
+    } else {
+      return /* Br */[
+              v,
+              l,
+              update(r, k / 2 | 0, w)
+            ];
+    }
   } else {
+    if (k === 1) {
+      return /* Br */[
+              w,
+              /* Lf */0,
+              /* Lf */0
+            ];
+    }
     throw Caml_builtin_exceptions.not_found;
   }
 }
 
 function $$delete(tr, n) {
-  if (tr) {
-    if (n === 1) {
-      return /* Lf */0;
-    } else {
-      var r = tr[2];
-      var l = tr[1];
-      var v = tr[0];
-      if (n % 2 === 0) {
-        return /* Br */[
-                v,
-                $$delete(l, n / 2 | 0),
-                r
-              ];
-      } else {
-        return /* Br */[
-                v,
-                l,
-                $$delete(r, n / 2 | 0)
-              ];
-      }
-    }
-  } else {
+  if (!tr) {
     throw Caml_builtin_exceptions.not_found;
+  }
+  if (n === 1) {
+    return /* Lf */0;
+  }
+  var r = tr[2];
+  var l = tr[1];
+  var v = tr[0];
+  if (n % 2 === 0) {
+    return /* Br */[
+            v,
+            $$delete(l, n / 2 | 0),
+            r
+          ];
+  } else {
+    return /* Br */[
+            v,
+            l,
+            $$delete(r, n / 2 | 0)
+          ];
   }
 }
 
@@ -112,29 +108,28 @@ function loext(tr, w) {
 }
 
 function lorem(tr) {
-  if (tr) {
-    var l = tr[1];
-    if (l) {
-      return /* Br */[
-              l[0],
-              tr[2],
-              lorem(l)
-            ];
-    } else if (tr[2]) {
-      throw [
-            Caml_builtin_exceptions.assert_failure,
-            /* tuple */[
-              "flexible_array_test.ml",
-              66,
-              9
-            ]
-          ];
-    } else {
-      return /* Lf */0;
-    }
-  } else {
+  if (!tr) {
     throw Caml_builtin_exceptions.not_found;
   }
+  var l = tr[1];
+  if (l) {
+    return /* Br */[
+            l[0],
+            tr[2],
+            lorem(l)
+          ];
+  }
+  if (tr[2]) {
+    throw [
+          Caml_builtin_exceptions.assert_failure,
+          /* tuple */[
+            "flexible_array_test.ml",
+            66,
+            9
+          ]
+        ];
+  }
+  return /* Lf */0;
 }
 
 var empty = /* tuple */[
@@ -149,12 +144,11 @@ function length(param) {
 function get(param, i) {
   if (i >= 0 && i < param[1]) {
     return sub(param[0], i + 1 | 0);
-  } else {
-    throw [
-          Caml_builtin_exceptions.invalid_argument,
-          "Array.get"
-        ];
   }
+  throw [
+        Caml_builtin_exceptions.invalid_argument,
+        "Array.get"
+      ];
 }
 
 function set(param, i, v) {
@@ -164,12 +158,11 @@ function set(param, i, v) {
             update(param[0], i + 1 | 0, v),
             k
           ];
-  } else {
-    throw [
-          Caml_builtin_exceptions.invalid_argument,
-          "Array.set"
-        ];
   }
+  throw [
+        Caml_builtin_exceptions.invalid_argument,
+        "Array.set"
+      ];
 }
 
 function push_front(param, v) {
@@ -186,12 +179,11 @@ function pop_front(param) {
             lorem(param[0]),
             k - 1 | 0
           ];
-  } else {
-    throw [
-          Caml_builtin_exceptions.invalid_argument,
-          "Array.pop_front"
-        ];
   }
+  throw [
+        Caml_builtin_exceptions.invalid_argument,
+        "Array.pop_front"
+      ];
 }
 
 function push_back(param, v) {
@@ -209,12 +201,11 @@ function pop_back(param) {
             $$delete(param[0], k),
             k - 1 | 0
           ];
-  } else {
-    throw [
-          Caml_builtin_exceptions.invalid_argument,
-          "Array.pop_back"
-        ];
   }
+  throw [
+        Caml_builtin_exceptions.invalid_argument,
+        "Array.pop_back"
+      ];
 }
 
 function pp(fmt, s) {
@@ -259,16 +250,15 @@ function sort(s) {
   var size = length(s);
   if (size <= 1) {
     return s;
-  } else {
-    var head = get(s, 0);
-    var larger = sort(filter_from(1, (function (x) {
-                return Caml_obj.caml_greaterthan(x, head);
-              }), s));
-    var smaller = sort(filter_from(1, (function (x) {
-                return Caml_obj.caml_lessequal(x, head);
-              }), s));
-    return append(smaller, push_front(larger, head));
   }
+  var head = get(s, 0);
+  var larger = sort(filter_from(1, (function (x) {
+              return Caml_obj.caml_greaterthan(x, head);
+            }), s));
+  var smaller = sort(filter_from(1, (function (x) {
+              return Caml_obj.caml_lessequal(x, head);
+            }), s));
+  return append(smaller, push_front(larger, head));
 }
 
 function of_array(arr) {

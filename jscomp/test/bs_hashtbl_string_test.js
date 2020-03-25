@@ -89,17 +89,16 @@ function bench2(m) {
     Belt_HashMap.remove(empty, String(i$2));
   }
   if (empty.size === 0) {
-    return /* () */0;
-  } else {
-    throw [
-          Caml_builtin_exceptions.assert_failure,
-          /* tuple */[
-            "bs_hashtbl_string_test.ml",
-            82,
-            2
-          ]
-        ];
+    return ;
   }
+  throw [
+        Caml_builtin_exceptions.assert_failure,
+        /* tuple */[
+          "bs_hashtbl_string_test.ml",
+          82,
+          2
+        ]
+      ];
 }
 
 function bench3(m) {
@@ -129,23 +128,22 @@ function bench3(m) {
     table = Belt_MapDict.remove(table, String(i$2), cmp);
   }
   if (Belt_MapDict.size(table) === 0) {
-    return /* () */0;
-  } else {
-    throw [
-          Caml_builtin_exceptions.assert_failure,
-          /* tuple */[
-            "bs_hashtbl_string_test.ml",
-            105,
-            2
-          ]
-        ];
+    return ;
   }
+  throw [
+        Caml_builtin_exceptions.assert_failure,
+        /* tuple */[
+          "bs_hashtbl_string_test.ml",
+          105,
+          2
+        ]
+      ];
 }
 
 var Sx = Belt_Id.comparable(Caml_primitive.caml_string_compare);
 
 function bench4(param) {
-  var table = Belt_internalBucketsType.make(/* () */0, /* () */0, 1000000);
+  var table = Belt_internalBucketsType.make(undefined, undefined, 1000000);
   for(var i = 0; i <= 1000000; ++i){
     Belt_HashMapString.set(table, String(i), i);
   }
@@ -166,17 +164,16 @@ function bench4(param) {
     Belt_HashMapString.remove(table, String(i$2));
   }
   if (Belt_HashMapString.isEmpty(table)) {
-    return /* () */0;
-  } else {
-    throw [
-          Caml_builtin_exceptions.assert_failure,
-          /* tuple */[
-            "bs_hashtbl_string_test.ml",
-            124,
-            2
-          ]
-        ];
+    return ;
   }
+  throw [
+        Caml_builtin_exceptions.assert_failure,
+        /* tuple */[
+          "bs_hashtbl_string_test.ml",
+          124,
+          2
+        ]
+      ];
 }
 
 function bench5(param) {
@@ -207,21 +204,20 @@ function bench5(param) {
   }
   console.timeEnd("test/bs_hashtbl_string_test.ml 141");
   if (Belt_HashMap.isEmpty(table)) {
-    return /* () */0;
-  } else {
-    throw [
-          Caml_builtin_exceptions.assert_failure,
-          /* tuple */[
-            "bs_hashtbl_string_test.ml",
-            144,
-            2
-          ]
-        ];
+    return ;
   }
+  throw [
+        Caml_builtin_exceptions.assert_failure,
+        /* tuple */[
+          "bs_hashtbl_string_test.ml",
+          144,
+          2
+        ]
+      ];
 }
 
 function bench6(param) {
-  var table = Belt_internalBucketsType.make(/* () */0, /* () */0, 1000000);
+  var table = Belt_internalBucketsType.make(undefined, undefined, 1000000);
   for(var i = 0; i <= 1000000; ++i){
     Belt_HashMapInt.set(table, i, i);
   }
@@ -242,21 +238,20 @@ function bench6(param) {
     Belt_HashMapInt.remove(table, i$2);
   }
   if (table.size === 0) {
-    return /* () */0;
-  } else {
-    throw [
-          Caml_builtin_exceptions.assert_failure,
-          /* tuple */[
-            "bs_hashtbl_string_test.ml",
-            162,
-            2
-          ]
-        ];
+    return ;
   }
+  throw [
+        Caml_builtin_exceptions.assert_failure,
+        /* tuple */[
+          "bs_hashtbl_string_test.ml",
+          162,
+          2
+        ]
+      ];
 }
 
 function bench7(param) {
-  var table = Belt_internalBucketsType.make(/* () */0, /* () */0, 2000000);
+  var table = Belt_internalBucketsType.make(undefined, undefined, 2000000);
   for(var i = 0; i <= 1000000; ++i){
     Belt_HashSetInt.add(table, i);
   }
@@ -277,22 +272,21 @@ function bench7(param) {
     Belt_HashSetInt.remove(table, i$2);
   }
   if (table.size === 0) {
-    return /* () */0;
-  } else {
-    throw [
-          Caml_builtin_exceptions.assert_failure,
-          /* tuple */[
-            "bs_hashtbl_string_test.ml",
-            192,
-            2
-          ]
-        ];
+    return ;
   }
+  throw [
+        Caml_builtin_exceptions.assert_failure,
+        /* tuple */[
+          "bs_hashtbl_string_test.ml",
+          192,
+          2
+        ]
+      ];
 }
 
 console.time("test/bs_hashtbl_string_test.ml 203");
 
-bench7(/* () */0);
+bench7(undefined);
 
 console.timeEnd("test/bs_hashtbl_string_test.ml 203");
 

@@ -22,7 +22,7 @@ function point_init($$class) {
         move,
         (function (self$1, d) {
             self$1[x] = self$1[x] + d | 0;
-            return /* () */0;
+            
           })
       ]);
   return (function (env, self, x_init$1) {
@@ -35,7 +35,7 @@ function point_init($$class) {
 
 var point = CamlinternalOO.make_class(shared, point_init);
 
-var p = Curry._2(point[0], /* () */0, 7);
+var p = Curry._2(point[0], undefined, 7);
 
 exports.point = point;
 exports.p = p;

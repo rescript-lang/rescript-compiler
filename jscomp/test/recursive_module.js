@@ -89,11 +89,10 @@ try {
   tmp = CamlinternalLazy.force(Intb.a);
 }
 catch (exn){
-  if (exn === Lazy.Undefined) {
-    tmp = -1;
-  } else {
+  if (exn !== Lazy.Undefined) {
     throw exn;
   }
+  tmp = -1;
 }
 
 eq("File \"recursive_module.ml\", line 41, characters 3-10", -1, tmp);
@@ -149,18 +148,17 @@ try {
 }
 catch (raw_exn){
   var exn$1 = Caml_js_exceptions.internalToOCamlException(raw_exn);
-  if (exn$1[0] === Caml_builtin_exceptions.undefined_recursive_module) {
-    tmp$1 = 4;
-  } else {
+  if (exn$1[0] !== Caml_builtin_exceptions.undefined_recursive_module) {
     throw exn$1;
   }
+  tmp$1 = 4;
 }
 
 eq("File \"recursive_module.ml\", line 60, characters 6-13", 4, tmp$1);
 
 Mt.from_pair_suites("Recursive_module", suites.contents);
 
-var Int32 = /* () */0;
+var Int32;
 
 var uuu = Xx.f;
 

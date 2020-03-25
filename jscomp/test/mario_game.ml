@@ -725,7 +725,7 @@ let make_block = function
   | Ground -> setup_obj ~g: false ()
 
 let make_type = function
-  | SPlayer(pt,t) -> make_player ()
+  | SPlayer(pt,t) -> make_player () (* FIXME: why unused param introduced here *)
   | SEnemy t -> make_enemy t
   | SItem t -> make_item t
   | SBlock t -> make_block t

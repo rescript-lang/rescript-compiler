@@ -69,16 +69,6 @@ val get_check_div_by_zero : unit -> bool
 
 
 
-
-
-
-
-
-val set_debug_file : string -> unit
-
-
-val is_same_file : unit -> bool 
-
 val tool_name : string
 
 
