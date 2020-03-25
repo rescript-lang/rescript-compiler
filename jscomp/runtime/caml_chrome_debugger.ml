@@ -141,7 +141,6 @@ if (typeof window === "undefined"){
 } else {
  window.devtoolsFormatters = [formatter]
 }
-return 0
 }
 |}]
 
