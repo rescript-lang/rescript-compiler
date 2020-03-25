@@ -27,7 +27,7 @@ var b = false;
 
 var c = null;
 
-var d = undefined;
+var d;
 
 exports.u = u;
 exports.a = a;

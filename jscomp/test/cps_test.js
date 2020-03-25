@@ -16,16 +16,15 @@ function test(param) {
       var n = _n;
       if (n === 0) {
         return Curry._1(acc, /* () */0);
-      } else {
-        _acc = (function(n,acc){
-        return function (param) {
-          v.contents = v.contents + n | 0;
-          return Curry._1(acc, /* () */0);
-        }
-        }(n,acc));
-        _n = n - 1 | 0;
-        continue ;
       }
+      _acc = (function(n,acc){
+      return function (param) {
+        v.contents = v.contents + n | 0;
+        return Curry._1(acc, /* () */0);
+      }
+      }(n,acc));
+      _n = n - 1 | 0;
+      continue ;
     };
   };
   f(10, (function (param) {

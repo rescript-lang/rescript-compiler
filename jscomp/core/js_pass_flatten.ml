@@ -89,7 +89,12 @@ let flatten_map =
           self#block ( bs @  rest)
       | x::rest  
         -> 
-          self#statement x :: self#block rest
+          let st = self#statement x in 
+          let block = self#block rest in 
+          begin match st.statement_desc with 
+          | Block bs ->  bs @ block
+          | _ -> st :: block
+          end  
       | [] -> []
   end
 

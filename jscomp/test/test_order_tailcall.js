@@ -63,11 +63,10 @@ function f5(_x, _y, z) {
 
 function f6(b) {
   while(true) {
-    if (b) {
-      continue ;
-    } else {
+    if (!b) {
       return false;
     }
+    continue ;
   };
 }
 
@@ -75,9 +74,8 @@ function f7(b) {
   while(true) {
     if (b) {
       return true;
-    } else {
-      continue ;
     }
+    continue ;
   };
 }
 
@@ -91,11 +89,12 @@ function f8(_x, _y) {
     } else if (x < 5) {
       _x = x - 1 | 0;
       continue ;
-    } else if (x > 6) {
+    } else {
+      if (x <= 6) {
+        return f8(x, y + 1 | 0) + f8(x - 1 | 0, y) | 0;
+      }
       _x = x - 2 | 0;
       continue ;
-    } else {
-      return f8(x, y + 1 | 0) + f8(x - 1 | 0, y) | 0;
     }
   };
 }

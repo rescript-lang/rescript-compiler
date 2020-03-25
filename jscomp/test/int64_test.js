@@ -272,12 +272,11 @@ function fib(_n, _a, _b) {
     var n = _n;
     if (n === 0) {
       return a;
-    } else {
-      _b = Caml_int64.add(a, b);
-      _a = b;
-      _n = n - 1 | 0;
-      continue ;
     }
+    _b = Caml_int64.add(a, b);
+    _a = b;
+    _n = n - 1 | 0;
+    continue ;
   };
 }
 
@@ -287,11 +286,10 @@ function fac(_n, _acc) {
     var n = _n;
     if (n === 0) {
       return acc;
-    } else {
-      _acc = Caml_int64.mul(acc, Caml_int64.of_int32(n));
-      _n = n - 1 | 0;
-      continue ;
     }
+    _acc = Caml_int64.mul(acc, Caml_int64.of_int32(n));
+    _n = n - 1 | 0;
+    continue ;
   };
 }
 

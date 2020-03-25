@@ -63,9 +63,8 @@ function does_raise(f, s) {
   catch (exn){
     if (exn === Stack.Empty) {
       return true;
-    } else {
-      throw exn;
     }
+    throw exn;
   }
 }
 

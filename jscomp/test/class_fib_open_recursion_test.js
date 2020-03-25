@@ -63,13 +63,12 @@ function memo_fib_init($$class) {
             return Hashtbl.find(self$2[cache], x);
           }
           catch (exn){
-            if (exn === Caml_builtin_exceptions.not_found) {
-              var v = Curry._2(calc$1, self$2, x);
-              Hashtbl.add(self$2[cache], x, v);
-              return v;
-            } else {
+            if (exn !== Caml_builtin_exceptions.not_found) {
               throw exn;
             }
+            var v = Curry._2(calc$1, self$2, x);
+            Hashtbl.add(self$2[cache], x, v);
+            return v;
           }
         }));
   return (function (env, self) {

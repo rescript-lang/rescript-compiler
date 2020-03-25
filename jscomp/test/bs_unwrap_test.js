@@ -101,7 +101,7 @@ function test00(param) {
         };
 }
 
-var none_arg = undefined;
+var none_arg;
 
 exports.arg_string = arg_string;
 exports.arg_pair = arg_pair;

@@ -40,16 +40,15 @@ function convert(s) {
                     var match = x.codePointAt(0);
                     if (match !== undefined) {
                       return match;
-                    } else {
-                      throw [
-                            Caml_builtin_exceptions.assert_failure,
-                            /* tuple */[
-                              "chn_test.ml",
-                              20,
-                              18
-                            ]
-                          ];
                     }
+                    throw [
+                          Caml_builtin_exceptions.assert_failure,
+                          /* tuple */[
+                            "chn_test.ml",
+                            20,
+                            18
+                          ]
+                        ];
                   })));
 }
 

@@ -34,77 +34,76 @@ function escaped(s) {
   }
   if (n === s.length) {
     return Bytes.copy(s);
-  } else {
-    var s$prime = Caml_bytes.caml_create_bytes(n);
-    n = 0;
-    for(var i$1 = 0 ,i_finish$1 = s.length - 1 | 0; i$1 <= i_finish$1; ++i$1){
-      var c$1 = s[i$1];
-      var exit$1 = 0;
-      var switcher = c$1 - 34 | 0;
-      if (switcher > 58 || switcher < 0) {
-        if (switcher >= -20) {
-          exit$1 = 1;
-        } else {
-          switch (switcher + 34 | 0) {
-            case 8 :
-                s$prime[n] = /* "\\" */92;
-                n = n + 1 | 0;
-                s$prime[n] = /* "b" */98;
-                break;
-            case 9 :
-                s$prime[n] = /* "\\" */92;
-                n = n + 1 | 0;
-                s$prime[n] = /* "t" */116;
-                break;
-            case 10 :
-                s$prime[n] = /* "\\" */92;
-                n = n + 1 | 0;
-                s$prime[n] = /* "n" */110;
-                break;
-            case 0 :
-            case 1 :
-            case 2 :
-            case 3 :
-            case 4 :
-            case 5 :
-            case 6 :
-            case 7 :
-            case 11 :
-            case 12 :
-                exit$1 = 1;
-                break;
-            case 13 :
-                s$prime[n] = /* "\\" */92;
-                n = n + 1 | 0;
-                s$prime[n] = /* "r" */114;
-                break;
-            
-          }
+  }
+  var s$prime = Caml_bytes.caml_create_bytes(n);
+  n = 0;
+  for(var i$1 = 0 ,i_finish$1 = s.length - 1 | 0; i$1 <= i_finish$1; ++i$1){
+    var c$1 = s[i$1];
+    var exit$1 = 0;
+    var switcher = c$1 - 34 | 0;
+    if (switcher > 58 || switcher < 0) {
+      if (switcher >= -20) {
+        exit$1 = 1;
+      } else {
+        switch (switcher + 34 | 0) {
+          case 8 :
+              s$prime[n] = /* "\\" */92;
+              n = n + 1 | 0;
+              s$prime[n] = /* "b" */98;
+              break;
+          case 9 :
+              s$prime[n] = /* "\\" */92;
+              n = n + 1 | 0;
+              s$prime[n] = /* "t" */116;
+              break;
+          case 10 :
+              s$prime[n] = /* "\\" */92;
+              n = n + 1 | 0;
+              s$prime[n] = /* "n" */110;
+              break;
+          case 0 :
+          case 1 :
+          case 2 :
+          case 3 :
+          case 4 :
+          case 5 :
+          case 6 :
+          case 7 :
+          case 11 :
+          case 12 :
+              exit$1 = 1;
+              break;
+          case 13 :
+              s$prime[n] = /* "\\" */92;
+              n = n + 1 | 0;
+              s$prime[n] = /* "r" */114;
+              break;
+          
         }
-      } else if (switcher > 57 || switcher < 1) {
-        s$prime[n] = /* "\\" */92;
-        n = n + 1 | 0;
+      }
+    } else if (switcher > 57 || switcher < 1) {
+      s$prime[n] = /* "\\" */92;
+      n = n + 1 | 0;
+      s$prime[n] = c$1;
+    } else {
+      exit$1 = 1;
+    }
+    if (exit$1 === 1) {
+      if (Caml_char.caml_is_printable(c$1)) {
         s$prime[n] = c$1;
       } else {
-        exit$1 = 1;
+        s$prime[n] = /* "\\" */92;
+        n = n + 1 | 0;
+        s$prime[n] = 48 + (c$1 / 100 | 0) | 0;
+        n = n + 1 | 0;
+        s$prime[n] = 48 + (c$1 / 10 | 0) % 10 | 0;
+        n = n + 1 | 0;
+        s$prime[n] = 48 + c$1 % 10 | 0;
       }
-      if (exit$1 === 1) {
-        if (Caml_char.caml_is_printable(c$1)) {
-          s$prime[n] = c$1;
-        } else {
-          s$prime[n] = /* "\\" */92;
-          n = n + 1 | 0;
-          s$prime[n] = 48 + (c$1 / 100 | 0) | 0;
-          n = n + 1 | 0;
-          s$prime[n] = 48 + (c$1 / 10 | 0) % 10 | 0;
-          n = n + 1 | 0;
-          s$prime[n] = 48 + c$1 % 10 | 0;
-        }
-      }
-      n = n + 1 | 0;
     }
-    return s$prime;
+    n = n + 1 | 0;
   }
+  return s$prime;
 }
 
 exports.escaped = escaped;

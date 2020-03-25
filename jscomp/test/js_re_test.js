@@ -10,22 +10,21 @@ var suites_000 = /* tuple */[
   (function (param) {
       var re = /(\d+)-(?:(\d+))?/g;
       var match = re.exec("3-");
-      if (match !== null) {
-        var defined = Caml_array.caml_array_get(match, 1);
-        var $$undefined = Caml_array.caml_array_get(match, 2);
-        return /* Eq */Block.__(0, [
-                  /* tuple */[
-                    "3",
-                    null
-                  ],
-                  /* tuple */[
-                    defined,
-                    $$undefined
-                  ]
-                ]);
-      } else {
+      if (match === null) {
         return /* Fail */Block.__(8, [/* () */0]);
       }
+      var defined = Caml_array.caml_array_get(match, 1);
+      var $$undefined = Caml_array.caml_array_get(match, 2);
+      return /* Eq */Block.__(0, [
+                /* tuple */[
+                  "3",
+                  null
+                ],
+                /* tuple */[
+                  defined,
+                  $$undefined
+                ]
+              ]);
     })
 ];
 

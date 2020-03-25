@@ -23080,7 +23080,7 @@ val get_check_div_by_zero : unit -> bool
 
 
 
-val set_debug_file : string -> unit
+val set_debug_file : unit -> unit
 
 
 val is_same_file : unit -> bool 
@@ -23190,7 +23190,7 @@ let no_builtin_ppx = ref false
 let debug_file = ref ""
 
 
-let set_debug_file  f = debug_file := f
+let set_debug_file  () = debug_file := !Location.input_name
 
 let is_same_file () =
   !debug_file <> "" &&  !debug_file = !Location.input_name

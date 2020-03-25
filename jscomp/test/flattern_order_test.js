@@ -6,10 +6,9 @@ function even(_n) {
     var n = _n;
     if (n === 0) {
       return true;
-    } else {
-      _n = n - 1 | 0;
-      continue ;
     }
+    _n = n - 1 | 0;
+    continue ;
   };
 }
 

@@ -47,14 +47,16 @@ function absolute_path(s) {
       var dir = Curry._1(Filename.dirname, s);
       if (dir === s) {
         return dir;
-      } else if (base === Filename.current_dir_name) {
-        _s = dir;
-        continue ;
-      } else if (base === Filename.parent_dir_name) {
-        return Curry._1(Filename.dirname, aux(dir));
-      } else {
-        return Filename.concat(aux(dir), base);
       }
+      if (base !== Filename.current_dir_name) {
+        if (base === Filename.parent_dir_name) {
+          return Curry._1(Filename.dirname, aux(dir));
+        } else {
+          return Filename.concat(aux(dir), base);
+        }
+      }
+      _s = dir;
+      continue ;
     };
   };
   return aux(s$1);
@@ -87,9 +89,8 @@ function chop_extension(locOpt, name) {
                         ]),
                       "Filename.chop_extension ( %s : %s )"
                     ]), loc, name);
-    } else {
-      throw exn;
     }
+    throw exn;
   }
 }
 
@@ -101,9 +102,8 @@ function chop_extension_if_any(fname) {
     var exn = Caml_js_exceptions.internalToOCamlException(raw_exn);
     if (exn[0] === Caml_builtin_exceptions.invalid_argument) {
       return fname;
-    } else {
-      throw exn;
     }
+    throw exn;
   }
 }
 
@@ -143,34 +143,7 @@ function node_relative_path(node_modules_shorten, file1, dep_file) {
   var file2 = dep_file[1];
   var v = Ext_string_test.find(undefined, Test_literals.node_modules, file2);
   var len = file2.length;
-  if (node_modules_shorten && v >= 0) {
-    var skip = function (_i) {
-      while(true) {
-        var i = _i;
-        if (i >= len) {
-          return Curry._1(Ext_pervasives_test.failwithf("File \"ext_filename_test.ml\", line 162, characters 43-50", /* Format */[
-                          /* String_literal */Block.__(11, [
-                              "invalid path: ",
-                              /* String */Block.__(2, [
-                                  /* No_padding */0,
-                                  /* End_of_format */0
-                                ])
-                            ]),
-                          "invalid path: %s"
-                        ]), file2);
-        } else {
-          var curr_char = file2.charCodeAt(i);
-          if (curr_char === os_path_separator_char || curr_char === /* "." */46) {
-            _i = i + 1 | 0;
-            continue ;
-          } else {
-            return i;
-          }
-        }
-      };
-    };
-    return Ext_string_test.tail_from(file2, skip(v + Test_literals.node_modules_length | 0));
-  } else {
+  if (!(node_modules_shorten && v >= 0)) {
     return relative_path(dep_file[0] >= 781515420 ? /* `File */[
                   781515420,
                   absolute_path(dep_file[1])
@@ -185,6 +158,30 @@ function node_relative_path(node_modules_shorten, file1, dep_file) {
                   absolute_path(file1[1])
                 ]) + (node_sep + Curry._1(Filename.basename, file2));
   }
+  var skip = function (_i) {
+    while(true) {
+      var i = _i;
+      if (i >= len) {
+        return Curry._1(Ext_pervasives_test.failwithf("File \"ext_filename_test.ml\", line 162, characters 43-50", /* Format */[
+                        /* String_literal */Block.__(11, [
+                            "invalid path: ",
+                            /* String */Block.__(2, [
+                                /* No_padding */0,
+                                /* End_of_format */0
+                              ])
+                          ]),
+                        "invalid path: %s"
+                      ]), file2);
+      }
+      var curr_char = file2.charCodeAt(i);
+      if (!(curr_char === os_path_separator_char || curr_char === /* "." */46)) {
+        return i;
+      }
+      _i = i + 1 | 0;
+      continue ;
+    };
+  };
+  return Ext_string_test.tail_from(file2, skip(v + Test_literals.node_modules_length | 0));
 }
 
 function find_root_filename(_cwd, filename) {
@@ -192,27 +189,25 @@ function find_root_filename(_cwd, filename) {
     var cwd = _cwd;
     if (Caml_external_polyfill.resolve("caml_sys_file_exists")(Filename.concat(cwd, filename))) {
       return cwd;
-    } else {
-      var cwd$prime = Curry._1(Filename.dirname, cwd);
-      if (cwd$prime.length < cwd.length) {
-        _cwd = cwd$prime;
-        continue ;
-      } else {
-        return Curry._2(Ext_pervasives_test.failwithf("File \"ext_filename_test.ml\", line 205, characters 13-20", /* Format */[
-                        /* String */Block.__(2, [
-                            /* No_padding */0,
-                            /* String_literal */Block.__(11, [
-                                " not found from ",
-                                /* String */Block.__(2, [
-                                    /* No_padding */0,
-                                    /* End_of_format */0
-                                  ])
-                              ])
-                          ]),
-                        "%s not found from %s"
-                      ]), filename, cwd);
-      }
     }
+    var cwd$prime = Curry._1(Filename.dirname, cwd);
+    if (cwd$prime.length >= cwd.length) {
+      return Curry._2(Ext_pervasives_test.failwithf("File \"ext_filename_test.ml\", line 205, characters 13-20", /* Format */[
+                      /* String */Block.__(2, [
+                          /* No_padding */0,
+                          /* String_literal */Block.__(11, [
+                              " not found from ",
+                              /* String */Block.__(2, [
+                                  /* No_padding */0,
+                                  /* End_of_format */0
+                                ])
+                            ])
+                        ]),
+                      "%s not found from %s"
+                    ]), filename, cwd);
+    }
+    _cwd = cwd$prime;
+    continue ;
   };
 }
 
@@ -259,19 +254,18 @@ function split_aux(p) {
               dir,
               acc
             ];
+    }
+    var new_path = Curry._1(Filename.basename, p$1);
+    if (new_path === Filename.dir_sep) {
+      _p = dir;
+      continue ;
     } else {
-      var new_path = Curry._1(Filename.basename, p$1);
-      if (new_path === Filename.dir_sep) {
-        _p = dir;
-        continue ;
-      } else {
-        _acc = /* :: */[
-          new_path,
-          acc
-        ];
-        _p = dir;
-        continue ;
-      }
+      _acc = /* :: */[
+        new_path,
+        acc
+      ];
+      _p = dir;
+      continue ;
     }
   };
 }
@@ -282,37 +276,36 @@ function rel_normalized_absolute_path(from, to_) {
   var root2 = match$1[0];
   if (match[0] !== root2) {
     return root2;
-  } else {
-    var _xss = match[1];
-    var _yss = match$1[1];
-    while(true) {
-      var yss = _yss;
-      var xss = _xss;
-      if (xss) {
-        var xs = xss[1];
-        if (yss) {
-          if (xss[0] === yss[0]) {
-            _yss = yss[1];
-            _xss = xs;
-            continue ;
-          } else {
-            var start = List.fold_left((function (acc, param) {
-                    return Filename.concat(acc, Ext_string_test.parent_dir_lit);
-                  }), Ext_string_test.parent_dir_lit, xs);
-            return List.fold_left(Filename.concat, start, yss);
-          }
-        } else {
-          return List.fold_left((function (acc, param) {
-                        return Filename.concat(acc, Ext_string_test.parent_dir_lit);
-                      }), Ext_string_test.parent_dir_lit, xs);
-        }
-      } else if (yss) {
+  }
+  var _xss = match[1];
+  var _yss = match$1[1];
+  while(true) {
+    var yss = _yss;
+    var xss = _xss;
+    if (!xss) {
+      if (yss) {
         return List.fold_left(Filename.concat, yss[0], yss[1]);
       } else {
         return Ext_string_test.empty;
       }
-    };
-  }
+    }
+    var xs = xss[1];
+    if (!yss) {
+      return List.fold_left((function (acc, param) {
+                    return Filename.concat(acc, Ext_string_test.parent_dir_lit);
+                  }), Ext_string_test.parent_dir_lit, xs);
+    }
+    if (xss[0] === yss[0]) {
+      _yss = yss[1];
+      _xss = xs;
+      continue ;
+    } else {
+      var start = List.fold_left((function (acc, param) {
+              return Filename.concat(acc, Ext_string_test.parent_dir_lit);
+            }), Ext_string_test.parent_dir_lit, xs);
+      return List.fold_left(Filename.concat, start, yss);
+    }
+  };
 }
 
 function normalize_absolute_path(x) {
@@ -327,24 +320,23 @@ function normalize_absolute_path(x) {
     while(true) {
       var paths = _paths;
       var acc = _acc;
-      if (paths) {
-        var xs = paths[1];
-        var x = paths[0];
-        _paths = xs;
-        if (x === Ext_string_test.current_dir_lit) {
-          continue ;
-        } else if (x === Ext_string_test.parent_dir_lit) {
-          _acc = drop_if_exist(acc);
-          continue ;
-        } else {
-          _acc = /* :: */[
-            x,
-            acc
-          ];
-          continue ;
-        }
-      } else {
+      if (!paths) {
         return acc;
+      }
+      var xs = paths[1];
+      var x = paths[0];
+      _paths = xs;
+      if (x === Ext_string_test.current_dir_lit) {
+        continue ;
+      } else if (x === Ext_string_test.parent_dir_lit) {
+        _acc = drop_if_exist(acc);
+        continue ;
+      } else {
+        _acc = /* :: */[
+          x,
+          acc
+        ];
+        continue ;
       }
     };
   };
@@ -357,13 +349,12 @@ function normalize_absolute_path(x) {
     while(true) {
       var rev_paths$1 = _rev_paths;
       var acc = _acc;
-      if (rev_paths$1) {
-        _rev_paths = rev_paths$1[1];
-        _acc = Filename.concat(rev_paths$1[0], acc);
-        continue ;
-      } else {
+      if (!rev_paths$1) {
         return Filename.concat(root, acc);
       }
+      _rev_paths = rev_paths$1[1];
+      _acc = Filename.concat(rev_paths$1[0], acc);
+      continue ;
     };
   } else {
     return root;

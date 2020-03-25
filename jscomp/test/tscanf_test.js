@@ -705,16 +705,15 @@ function verify_read(c) {
               "%C"
             ]), id) === c) {
     return /* () */0;
-  } else {
-    throw [
-          Caml_builtin_exceptions.assert_failure,
-          /* tuple */[
-            "tscanf_test.ml",
-            174,
-            2
-          ]
-        ];
   }
+  throw [
+        Caml_builtin_exceptions.assert_failure,
+        /* tuple */[
+          "tscanf_test.ml",
+          174,
+          2
+        ]
+      ];
 }
 
 function verify_scan_Chars(param) {
@@ -1416,23 +1415,22 @@ function scan_elems$1(ib, accu) {
                     ]),
                   " %i %c"
                 ]), (function (i, c) {
-                if (c !== 59) {
-                  if (c !== 93) {
-                    throw [
-                          Caml_builtin_exceptions.failure,
-                          "scan_elems"
-                        ];
-                  }
-                  return List.rev(/* :: */[
-                              i,
-                              accu
-                            ]);
-                } else {
+                if (c === 59) {
                   return scan_elems$1(ib, /* :: */[
                               i,
                               accu
                             ]);
                 }
+                if (c !== 93) {
+                  throw [
+                        Caml_builtin_exceptions.failure,
+                        "scan_elems"
+                      ];
+                }
+                return List.rev(/* :: */[
+                            i,
+                            accu
+                          ]);
               }));
 }
 
@@ -1525,9 +1523,10 @@ function scan_elems$2(ib, accu) {
                 "]"
               ]), /* () */0);
       return accu;
-    } else if (exn === Caml_builtin_exceptions.end_of_file) {
-      return accu;
     } else {
+      if (exn === Caml_builtin_exceptions.end_of_file) {
+        return accu;
+      }
       throw exn;
     }
   }
@@ -1684,15 +1683,7 @@ function scan_rest(ib, accu) {
                     ]),
                   " %c "
                 ]), (function (c) {
-                if (c !== 59) {
-                  if (c !== 93) {
-                    throw [
-                          Caml_builtin_exceptions.failure,
-                          "scan_rest"
-                        ];
-                  }
-                  return accu;
-                } else {
+                if (c === 59) {
                   return Curry._1(Scanf.bscanf(ib, /* Format */[
                                   /* Scan_char_set */Block.__(20, [
                                       undefined,
@@ -1727,6 +1718,13 @@ function scan_rest(ib, accu) {
                                 }
                               }));
                 }
+                if (c !== 93) {
+                  throw [
+                        Caml_builtin_exceptions.failure,
+                        "scan_rest"
+                      ];
+                }
+                return accu;
               }));
 }
 
@@ -1781,12 +1779,11 @@ function scan_elems$4(ib, accu) {
                                               }));
                                 }
                               }));
-                } else {
-                  throw [
-                        Caml_builtin_exceptions.failure,
-                        "scan_elems"
-                      ];
                 }
+                throw [
+                      Caml_builtin_exceptions.failure,
+                      "scan_elems"
+                    ];
               }));
 }
 
@@ -1796,11 +1793,31 @@ function scan_int_list$3(ib) {
 
 function test18(param) {
   var ib = Scanf.Scanning.from_string("[]");
-  if (List.rev(scan_elems$4(ib, /* [] */0)) === /* [] */0) {
-    var ib$1 = Scanf.Scanning.from_string("[ ]");
-    if (List.rev(scan_elems$4(ib$1, /* [] */0)) === /* [] */0) {
-      var ib$2 = Scanf.Scanning.from_string("[1;2;3;4]");
-      if (Caml_obj.caml_equal(List.rev(scan_elems$4(ib$2, /* [] */0)), /* :: */[
+  if (List.rev(scan_elems$4(ib, /* [] */0)) !== /* [] */0) {
+    return false;
+  }
+  var ib$1 = Scanf.Scanning.from_string("[ ]");
+  if (List.rev(scan_elems$4(ib$1, /* [] */0)) !== /* [] */0) {
+    return false;
+  }
+  var ib$2 = Scanf.Scanning.from_string("[1;2;3;4]");
+  if (!Caml_obj.caml_equal(List.rev(scan_elems$4(ib$2, /* [] */0)), /* :: */[
+          1,
+          /* :: */[
+            2,
+            /* :: */[
+              3,
+              /* :: */[
+                4,
+                /* [] */0
+              ]
+            ]
+          ]
+        ])) {
+    return false;
+  }
+  var ib$3 = Scanf.Scanning.from_string("[1;2;3;4; ]");
+  return Caml_obj.caml_equal(List.rev(scan_elems$4(ib$3, /* [] */0)), /* :: */[
               1,
               /* :: */[
                 2,
@@ -1812,30 +1829,7 @@ function test18(param) {
                   ]
                 ]
               ]
-            ])) {
-        var ib$3 = Scanf.Scanning.from_string("[1;2;3;4; ]");
-        return Caml_obj.caml_equal(List.rev(scan_elems$4(ib$3, /* [] */0)), /* :: */[
-                    1,
-                    /* :: */[
-                      2,
-                      /* :: */[
-                        3,
-                        /* :: */[
-                          4,
-                          /* [] */0
-                        ]
-                      ]
-                    ]
-                  ]);
-      } else {
-        return false;
-      }
-    } else {
-      return false;
-    }
-  } else {
-    return false;
-  }
+            ]);
 }
 
 test("File \"tscanf_test.ml\", line 446, characters 5-12", test18(/* () */0));
@@ -1987,9 +1981,8 @@ function scan_elems$5(ib, scan_elem, accu) {
     var exn = Caml_js_exceptions.internalToOCamlException(raw_exn);
     if (exn[0] === Scanf.Scan_failure) {
       return accu;
-    } else {
-      throw exn;
     }
+    throw exn;
   }
 }
 
@@ -3179,7 +3172,7 @@ test("File \"tscanf_test.ml\", line 1055, characters 5-12", test41(/* () */0));
 function test42(param) {
   var s = "defcbaaghi";
   var ib = Scanf.Scanning.from_string(s);
-  if (Curry._1(Scanf.bscanf(ib, /* Format */[
+  if (!Curry._1(Scanf.bscanf(ib, /* Format */[
               /* Scan_char_set */Block.__(20, [
                   undefined,
                   "\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xf1\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff",
@@ -3200,22 +3193,21 @@ function test42(param) {
               return false;
             }
           }))) {
-    var ib$1 = Scanf.Scanning.from_string(s);
-    return Curry._1(Scanf.bscanf(ib$1, /* Format */[
-                    /* String */Block.__(2, [
-                        /* No_padding */0,
-                        /* Formatting_lit */Block.__(17, [
-                            /* Scan_indic */Block.__(2, [/* "\t" */9]),
-                            /* End_of_format */0
-                          ])
-                      ]),
-                    "%s@\t"
-                  ]), (function (s) {
-                  return s === "defcbaaghi";
-                }));
-  } else {
     return false;
   }
+  var ib$1 = Scanf.Scanning.from_string(s);
+  return Curry._1(Scanf.bscanf(ib$1, /* Format */[
+                  /* String */Block.__(2, [
+                      /* No_padding */0,
+                      /* Formatting_lit */Block.__(17, [
+                          /* Scan_indic */Block.__(2, [/* "\t" */9]),
+                          /* End_of_format */0
+                        ])
+                    ]),
+                  "%s@\t"
+                ]), (function (s) {
+                return s === "defcbaaghi";
+              }));
 }
 
 test("File \"tscanf_test.ml\", line 1067, characters 5-12", test42(/* () */0));
@@ -3367,7 +3359,10 @@ function test48(param) {
       ]),
     "%i"
   ];
-  if (test_meta_read("%i", fmt, fmt) && test_meta_read("%i", /* Format */[
+  if (!test_meta_read("%i", fmt, fmt)) {
+    return false;
+  }
+  if (!test_meta_read("%i", /* Format */[
           /* Int */Block.__(4, [
               /* Int_d */0,
               /* No_padding */0,
@@ -3383,7 +3378,10 @@ function test48(param) {
               /* End_of_format */0
             ]),
           "%i"
-        ]) && Curry._1(Scanf.sscanf("12 \"%i\"89 ", /* Format */[
+        ])) {
+    return false;
+  }
+  if (!Curry._1(Scanf.sscanf("12 \"%i\"89 ", /* Format */[
               /* Int */Block.__(4, [
                   /* Int_i */3,
                   /* No_padding */0,
@@ -3419,110 +3417,133 @@ function test48(param) {
               return false;
             }
           }))) {
-    var k = function (s) {
-      return Curry._1(Scanf.sscanf(s, /* Format */[
-                      /* Format_subst */Block.__(14, [
-                          undefined,
-                          /* Float_ty */Block.__(6, [/* End_of_fmtty */0]),
-                          /* End_of_format */0
-                        ]),
-                      "%(%f%)"
-                    ]), (function (_fmt, i) {
-                    return i;
-                  }));
-    };
-    if (k("\" : %1f\": 987654321") === 9.0 && k("\" : %2f\": 987654321") === 98.0 && k("\" : %3f\": 9.87654321") === 9.8 && k("\" : %4f\": 9.87654321") === 9.87) {
-      var h = function (s) {
-        return Curry._1(Scanf.sscanf(s, /* Format */[
-                        /* String_literal */Block.__(11, [
-                            "Read integers with ",
-                            /* Format_subst */Block.__(14, [
-                                undefined,
-                                /* Int_ty */Block.__(2, [/* End_of_fmtty */0]),
-                                /* End_of_format */0
-                              ])
-                          ]),
-                        "Read integers with %(%i%)"
-                      ]), (function (_fmt, i) {
-                      return i;
-                    }));
-      };
-      if (h("Read integers with \"%1d\"987654321") === 9 && h("Read integers with \"%2d\"987654321") === 98 && h("Read integers with \"%3u\"987654321") === 987 && h("Read integers with \"%4x\"987654321") === 39030) {
-        var i = function (s) {
-          return Curry._1(Scanf.sscanf(s, /* Format */[
-                          /* String_literal */Block.__(11, [
-                              "with ",
-                              /* Format_subst */Block.__(14, [
-                                  undefined,
-                                  /* Int_ty */Block.__(2, [/* String_ty */Block.__(1, [/* End_of_fmtty */0])]),
-                                  /* End_of_format */0
-                                ])
-                            ]),
-                          "with %(%i %s%)"
-                        ]), (function (_fmt, amount, currency) {
-                        return /* tuple */[
-                                amount,
-                                currency
-                              ];
-                      }));
-        };
-        if (Caml_obj.caml_equal(i("with \" : %d %s\" :        21 euros"), /* tuple */[
-                21,
-                "euros"
-              ]) && Caml_obj.caml_equal(i("with \" : %d %s\" : 987654321 dollars"), /* tuple */[
-                987654321,
-                "dollars"
-              ]) && Caml_obj.caml_equal(i("with \" : %u %s\" :     54321 pounds"), /* tuple */[
-                54321,
-                "pounds"
-              ]) && Caml_obj.caml_equal(i("with \" : %x %s\" :       321 yens"), /* tuple */[
-                801,
+    return false;
+  }
+  var k = function (s) {
+    return Curry._1(Scanf.sscanf(s, /* Format */[
+                    /* Format_subst */Block.__(14, [
+                        undefined,
+                        /* Float_ty */Block.__(6, [/* End_of_fmtty */0]),
+                        /* End_of_format */0
+                      ]),
+                    "%(%f%)"
+                  ]), (function (_fmt, i) {
+                  return i;
+                }));
+  };
+  if (k("\" : %1f\": 987654321") !== 9.0) {
+    return false;
+  }
+  if (k("\" : %2f\": 987654321") !== 98.0) {
+    return false;
+  }
+  if (k("\" : %3f\": 9.87654321") !== 9.8) {
+    return false;
+  }
+  if (k("\" : %4f\": 9.87654321") !== 9.87) {
+    return false;
+  }
+  var h = function (s) {
+    return Curry._1(Scanf.sscanf(s, /* Format */[
+                    /* String_literal */Block.__(11, [
+                        "Read integers with ",
+                        /* Format_subst */Block.__(14, [
+                            undefined,
+                            /* Int_ty */Block.__(2, [/* End_of_fmtty */0]),
+                            /* End_of_format */0
+                          ])
+                      ]),
+                    "Read integers with %(%i%)"
+                  ]), (function (_fmt, i) {
+                  return i;
+                }));
+  };
+  if (h("Read integers with \"%1d\"987654321") !== 9) {
+    return false;
+  }
+  if (h("Read integers with \"%2d\"987654321") !== 98) {
+    return false;
+  }
+  if (h("Read integers with \"%3u\"987654321") !== 987) {
+    return false;
+  }
+  if (h("Read integers with \"%4x\"987654321") !== 39030) {
+    return false;
+  }
+  var i = function (s) {
+    return Curry._1(Scanf.sscanf(s, /* Format */[
+                    /* String_literal */Block.__(11, [
+                        "with ",
+                        /* Format_subst */Block.__(14, [
+                            undefined,
+                            /* Int_ty */Block.__(2, [/* String_ty */Block.__(1, [/* End_of_fmtty */0])]),
+                            /* End_of_format */0
+                          ])
+                      ]),
+                    "with %(%i %s%)"
+                  ]), (function (_fmt, amount, currency) {
+                  return /* tuple */[
+                          amount,
+                          currency
+                        ];
+                }));
+  };
+  if (!Caml_obj.caml_equal(i("with \" : %d %s\" :        21 euros"), /* tuple */[
+          21,
+          "euros"
+        ])) {
+    return false;
+  }
+  if (!Caml_obj.caml_equal(i("with \" : %d %s\" : 987654321 dollars"), /* tuple */[
+          987654321,
+          "dollars"
+        ])) {
+    return false;
+  }
+  if (!Caml_obj.caml_equal(i("with \" : %u %s\" :     54321 pounds"), /* tuple */[
+          54321,
+          "pounds"
+        ])) {
+    return false;
+  }
+  if (!Caml_obj.caml_equal(i("with \" : %x %s\" :       321 yens"), /* tuple */[
+          801,
+          "yens"
+        ])) {
+    return false;
+  }
+  var j = function (s) {
+    return Curry._1(Scanf.sscanf(s, /* Format */[
+                    /* String_literal */Block.__(11, [
+                        "with ",
+                        /* Format_subst */Block.__(14, [
+                            undefined,
+                            /* Int_ty */Block.__(2, [/* String_ty */Block.__(1, [/* End_of_fmtty */0])]),
+                            /* End_of_format */0
+                          ])
+                      ]),
+                    "with %(%i %_s %s%)"
+                  ]), (function (_fmt, amount, currency) {
+                  return /* tuple */[
+                          amount,
+                          currency
+                        ];
+                }));
+  };
+  if (Caml_obj.caml_equal(j("with \" : %1d %_s %s\" : 987654321 euros"), /* tuple */[
+          9,
+          "euros"
+        ]) && Caml_obj.caml_equal(j("with \" : %2d %_s %s\" : 987654321 dollars"), /* tuple */[
+          98,
+          "dollars"
+        ]) && Caml_obj.caml_equal(j("with \" : %3u %_s %s\" : 987654321 pounds"), /* tuple */[
+          987,
+          "pounds"
+        ])) {
+    return Caml_obj.caml_equal(j("with \" : %4x %_s %s\" : 987654321 yens"), /* tuple */[
+                39030,
                 "yens"
-              ])) {
-          var j = function (s) {
-            return Curry._1(Scanf.sscanf(s, /* Format */[
-                            /* String_literal */Block.__(11, [
-                                "with ",
-                                /* Format_subst */Block.__(14, [
-                                    undefined,
-                                    /* Int_ty */Block.__(2, [/* String_ty */Block.__(1, [/* End_of_fmtty */0])]),
-                                    /* End_of_format */0
-                                  ])
-                              ]),
-                            "with %(%i %_s %s%)"
-                          ]), (function (_fmt, amount, currency) {
-                          return /* tuple */[
-                                  amount,
-                                  currency
-                                ];
-                        }));
-          };
-          if (Caml_obj.caml_equal(j("with \" : %1d %_s %s\" : 987654321 euros"), /* tuple */[
-                  9,
-                  "euros"
-                ]) && Caml_obj.caml_equal(j("with \" : %2d %_s %s\" : 987654321 dollars"), /* tuple */[
-                  98,
-                  "dollars"
-                ]) && Caml_obj.caml_equal(j("with \" : %3u %_s %s\" : 987654321 pounds"), /* tuple */[
-                  987,
-                  "pounds"
-                ])) {
-            return Caml_obj.caml_equal(j("with \" : %4x %_s %s\" : 987654321 yens"), /* tuple */[
-                        39030,
-                        "yens"
-                      ]);
-          } else {
-            return false;
-          }
-        } else {
-          return false;
-        }
-      } else {
-        return false;
-      }
-    } else {
-      return false;
-    }
+              ]);
   } else {
     return false;
   }

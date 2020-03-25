@@ -20,36 +20,34 @@ function split(delim, s) {
     while(true) {
       var i = _i;
       var l = _l;
-      if (i !== 0) {
-        var i$prime;
-        try {
-          i$prime = $$String.rindex_from(s, i - 1 | 0, delim);
-        }
-        catch (exn){
-          if (exn === Caml_builtin_exceptions.not_found) {
-            return /* :: */[
-                    $$String.sub(s, 0, i),
-                    l
-                  ];
-          } else {
-            throw exn;
-          }
-        }
-        var l_000 = $$String.sub(s, i$prime + 1 | 0, (i - i$prime | 0) - 1 | 0);
-        var l$1 = /* :: */[
-          l_000,
-          l
-        ];
-        var l$2 = i$prime === 0 ? /* :: */[
-            "",
-            l$1
-          ] : l$1;
-        _i = i$prime;
-        _l = l$2;
-        continue ;
-      } else {
+      if (i === 0) {
         return l;
       }
+      var i$prime;
+      try {
+        i$prime = $$String.rindex_from(s, i - 1 | 0, delim);
+      }
+      catch (exn){
+        if (exn === Caml_builtin_exceptions.not_found) {
+          return /* :: */[
+                  $$String.sub(s, 0, i),
+                  l
+                ];
+        }
+        throw exn;
+      }
+      var l_000 = $$String.sub(s, i$prime + 1 | 0, (i - i$prime | 0) - 1 | 0);
+      var l$1 = /* :: */[
+        l_000,
+        l
+      ];
+      var l$2 = i$prime === 0 ? /* :: */[
+          "",
+          l$1
+        ] : l$1;
+      _i = i$prime;
+      _l = l$2;
+      continue ;
     };
   } else {
     return /* [] */0;
@@ -146,57 +144,56 @@ function bal(l, x, d, r) {
   var hl = l ? l[/* h */4] : 0;
   var hr = r ? r[/* h */4] : 0;
   if (hl > (hr + 2 | 0)) {
-    if (l) {
-      var lr = l[/* r */3];
-      var ld = l[/* d */2];
-      var lv = l[/* v */1];
-      var ll = l[/* l */0];
-      if (height(ll) >= height(lr)) {
-        return create(ll, lv, ld, create(lr, x, d, r));
-      } else if (lr) {
-        return create(create(ll, lv, ld, lr[/* l */0]), lr[/* v */1], lr[/* d */2], create(lr[/* r */3], x, d, r));
-      } else {
-        throw [
-              Caml_builtin_exceptions.invalid_argument,
-              "Map.bal"
-            ];
-      }
-    } else {
+    if (!l) {
       throw [
             Caml_builtin_exceptions.invalid_argument,
             "Map.bal"
           ];
     }
-  } else if (hr > (hl + 2 | 0)) {
-    if (r) {
-      var rr = r[/* r */3];
-      var rd = r[/* d */2];
-      var rv = r[/* v */1];
-      var rl = r[/* l */0];
-      if (height(rr) >= height(rl)) {
-        return create(create(l, x, d, rl), rv, rd, rr);
-      } else if (rl) {
-        return create(create(l, x, d, rl[/* l */0]), rl[/* v */1], rl[/* d */2], create(rl[/* r */3], rv, rd, rr));
-      } else {
-        throw [
-              Caml_builtin_exceptions.invalid_argument,
-              "Map.bal"
-            ];
-      }
-    } else {
-      throw [
-            Caml_builtin_exceptions.invalid_argument,
-            "Map.bal"
-          ];
+    var lr = l[/* r */3];
+    var ld = l[/* d */2];
+    var lv = l[/* v */1];
+    var ll = l[/* l */0];
+    if (height(ll) >= height(lr)) {
+      return create(ll, lv, ld, create(lr, x, d, r));
     }
+    if (lr) {
+      return create(create(ll, lv, ld, lr[/* l */0]), lr[/* v */1], lr[/* d */2], create(lr[/* r */3], x, d, r));
+    }
+    throw [
+          Caml_builtin_exceptions.invalid_argument,
+          "Map.bal"
+        ];
   } else {
-    return /* Node */[
-            /* l */l,
-            /* v */x,
-            /* d */d,
-            /* r */r,
-            /* h */hl >= hr ? hl + 1 | 0 : hr + 1 | 0
+    if (hr <= (hl + 2 | 0)) {
+      return /* Node */[
+              /* l */l,
+              /* v */x,
+              /* d */d,
+              /* r */r,
+              /* h */hl >= hr ? hl + 1 | 0 : hr + 1 | 0
+            ];
+    }
+    if (!r) {
+      throw [
+            Caml_builtin_exceptions.invalid_argument,
+            "Map.bal"
           ];
+    }
+    var rr = r[/* r */3];
+    var rd = r[/* d */2];
+    var rv = r[/* v */1];
+    var rl = r[/* l */0];
+    if (height(rr) >= height(rl)) {
+      return create(create(l, x, d, rl), rv, rd, rr);
+    }
+    if (rl) {
+      return create(create(l, x, d, rl[/* l */0]), rl[/* v */1], rl[/* d */2], create(rl[/* r */3], rv, rd, rr));
+    }
+    throw [
+          Caml_builtin_exceptions.invalid_argument,
+          "Map.bal"
+        ];
   }
 }
 
@@ -209,40 +206,7 @@ function is_empty(param) {
 }
 
 function add(x, data, m) {
-  if (m) {
-    var r = m[/* r */3];
-    var d = m[/* d */2];
-    var v = m[/* v */1];
-    var l = m[/* l */0];
-    var c = Caml_obj.caml_compare(x, v);
-    if (c === 0) {
-      if (d === data) {
-        return m;
-      } else {
-        return /* Node */[
-                /* l */l,
-                /* v */x,
-                /* d */data,
-                /* r */r,
-                /* h */m[/* h */4]
-              ];
-      }
-    } else if (c < 0) {
-      var ll = add(x, data, l);
-      if (l === ll) {
-        return m;
-      } else {
-        return bal(ll, v, d, r);
-      }
-    } else {
-      var rr = add(x, data, r);
-      if (r === rr) {
-        return m;
-      } else {
-        return bal(l, v, d, rr);
-      }
-    }
-  } else {
+  if (!m) {
     return /* Node */[
             /* l : Empty */0,
             /* v */x,
@@ -251,362 +215,366 @@ function add(x, data, m) {
             /* h */1
           ];
   }
+  var r = m[/* r */3];
+  var d = m[/* d */2];
+  var v = m[/* v */1];
+  var l = m[/* l */0];
+  var c = Caml_obj.caml_compare(x, v);
+  if (c === 0) {
+    if (d === data) {
+      return m;
+    } else {
+      return /* Node */[
+              /* l */l,
+              /* v */x,
+              /* d */data,
+              /* r */r,
+              /* h */m[/* h */4]
+            ];
+    }
+  }
+  if (c < 0) {
+    var ll = add(x, data, l);
+    if (l === ll) {
+      return m;
+    } else {
+      return bal(ll, v, d, r);
+    }
+  } else {
+    var rr = add(x, data, r);
+    if (r === rr) {
+      return m;
+    } else {
+      return bal(l, v, d, rr);
+    }
+  }
 }
 
 function find(x, _param) {
   while(true) {
     var param = _param;
-    if (param) {
-      var c = Caml_obj.caml_compare(x, param[/* v */1]);
-      if (c === 0) {
-        return param[/* d */2];
-      } else {
-        _param = c < 0 ? param[/* l */0] : param[/* r */3];
-        continue ;
-      }
-    } else {
+    if (!param) {
       throw Caml_builtin_exceptions.not_found;
     }
+    var c = Caml_obj.caml_compare(x, param[/* v */1]);
+    if (c === 0) {
+      return param[/* d */2];
+    }
+    _param = c < 0 ? param[/* l */0] : param[/* r */3];
+    continue ;
   };
 }
 
 function find_first(f, _param) {
   while(true) {
     var param = _param;
-    if (param) {
-      var v = param[/* v */1];
-      if (Curry._1(f, v)) {
-        var _v0 = v;
-        var _d0 = param[/* d */2];
-        var f$1 = f;
-        var _param$1 = param[/* l */0];
-        while(true) {
-          var param$1 = _param$1;
-          var d0 = _d0;
-          var v0 = _v0;
-          if (param$1) {
-            var v$1 = param$1[/* v */1];
-            if (Curry._1(f$1, v$1)) {
-              _param$1 = param$1[/* l */0];
-              _d0 = param$1[/* d */2];
-              _v0 = v$1;
-              continue ;
-            } else {
-              _param$1 = param$1[/* r */3];
-              continue ;
-            }
-          } else {
-            return /* tuple */[
-                    v0,
-                    d0
-                  ];
-          }
-        };
-      } else {
-        _param = param[/* r */3];
-        continue ;
-      }
-    } else {
+    if (!param) {
       throw Caml_builtin_exceptions.not_found;
     }
+    var v = param[/* v */1];
+    if (Curry._1(f, v)) {
+      var _v0 = v;
+      var _d0 = param[/* d */2];
+      var f$1 = f;
+      var _param$1 = param[/* l */0];
+      while(true) {
+        var param$1 = _param$1;
+        var d0 = _d0;
+        var v0 = _v0;
+        if (!param$1) {
+          return /* tuple */[
+                  v0,
+                  d0
+                ];
+        }
+        var v$1 = param$1[/* v */1];
+        if (Curry._1(f$1, v$1)) {
+          _param$1 = param$1[/* l */0];
+          _d0 = param$1[/* d */2];
+          _v0 = v$1;
+          continue ;
+        } else {
+          _param$1 = param$1[/* r */3];
+          continue ;
+        }
+      };
+    }
+    _param = param[/* r */3];
+    continue ;
   };
 }
 
 function find_first_opt(f, _param) {
   while(true) {
     var param = _param;
-    if (param) {
-      var v = param[/* v */1];
-      if (Curry._1(f, v)) {
-        var _v0 = v;
-        var _d0 = param[/* d */2];
-        var f$1 = f;
-        var _param$1 = param[/* l */0];
-        while(true) {
-          var param$1 = _param$1;
-          var d0 = _d0;
-          var v0 = _v0;
-          if (param$1) {
-            var v$1 = param$1[/* v */1];
-            if (Curry._1(f$1, v$1)) {
-              _param$1 = param$1[/* l */0];
-              _d0 = param$1[/* d */2];
-              _v0 = v$1;
-              continue ;
-            } else {
-              _param$1 = param$1[/* r */3];
-              continue ;
-            }
-          } else {
-            return /* tuple */[
-                    v0,
-                    d0
-                  ];
-          }
-        };
-      } else {
-        _param = param[/* r */3];
-        continue ;
-      }
-    } else {
+    if (!param) {
       return ;
     }
+    var v = param[/* v */1];
+    if (Curry._1(f, v)) {
+      var _v0 = v;
+      var _d0 = param[/* d */2];
+      var f$1 = f;
+      var _param$1 = param[/* l */0];
+      while(true) {
+        var param$1 = _param$1;
+        var d0 = _d0;
+        var v0 = _v0;
+        if (!param$1) {
+          return /* tuple */[
+                  v0,
+                  d0
+                ];
+        }
+        var v$1 = param$1[/* v */1];
+        if (Curry._1(f$1, v$1)) {
+          _param$1 = param$1[/* l */0];
+          _d0 = param$1[/* d */2];
+          _v0 = v$1;
+          continue ;
+        } else {
+          _param$1 = param$1[/* r */3];
+          continue ;
+        }
+      };
+    }
+    _param = param[/* r */3];
+    continue ;
   };
 }
 
 function find_last(f, _param) {
   while(true) {
     var param = _param;
-    if (param) {
-      var v = param[/* v */1];
-      if (Curry._1(f, v)) {
-        var _v0 = v;
-        var _d0 = param[/* d */2];
-        var f$1 = f;
-        var _param$1 = param[/* r */3];
-        while(true) {
-          var param$1 = _param$1;
-          var d0 = _d0;
-          var v0 = _v0;
-          if (param$1) {
-            var v$1 = param$1[/* v */1];
-            if (Curry._1(f$1, v$1)) {
-              _param$1 = param$1[/* r */3];
-              _d0 = param$1[/* d */2];
-              _v0 = v$1;
-              continue ;
-            } else {
-              _param$1 = param$1[/* l */0];
-              continue ;
-            }
-          } else {
-            return /* tuple */[
-                    v0,
-                    d0
-                  ];
-          }
-        };
-      } else {
-        _param = param[/* l */0];
-        continue ;
-      }
-    } else {
+    if (!param) {
       throw Caml_builtin_exceptions.not_found;
     }
+    var v = param[/* v */1];
+    if (Curry._1(f, v)) {
+      var _v0 = v;
+      var _d0 = param[/* d */2];
+      var f$1 = f;
+      var _param$1 = param[/* r */3];
+      while(true) {
+        var param$1 = _param$1;
+        var d0 = _d0;
+        var v0 = _v0;
+        if (!param$1) {
+          return /* tuple */[
+                  v0,
+                  d0
+                ];
+        }
+        var v$1 = param$1[/* v */1];
+        if (Curry._1(f$1, v$1)) {
+          _param$1 = param$1[/* r */3];
+          _d0 = param$1[/* d */2];
+          _v0 = v$1;
+          continue ;
+        } else {
+          _param$1 = param$1[/* l */0];
+          continue ;
+        }
+      };
+    }
+    _param = param[/* l */0];
+    continue ;
   };
 }
 
 function find_last_opt(f, _param) {
   while(true) {
     var param = _param;
-    if (param) {
-      var v = param[/* v */1];
-      if (Curry._1(f, v)) {
-        var _v0 = v;
-        var _d0 = param[/* d */2];
-        var f$1 = f;
-        var _param$1 = param[/* r */3];
-        while(true) {
-          var param$1 = _param$1;
-          var d0 = _d0;
-          var v0 = _v0;
-          if (param$1) {
-            var v$1 = param$1[/* v */1];
-            if (Curry._1(f$1, v$1)) {
-              _param$1 = param$1[/* r */3];
-              _d0 = param$1[/* d */2];
-              _v0 = v$1;
-              continue ;
-            } else {
-              _param$1 = param$1[/* l */0];
-              continue ;
-            }
-          } else {
-            return /* tuple */[
-                    v0,
-                    d0
-                  ];
-          }
-        };
-      } else {
-        _param = param[/* l */0];
-        continue ;
-      }
-    } else {
+    if (!param) {
       return ;
     }
+    var v = param[/* v */1];
+    if (Curry._1(f, v)) {
+      var _v0 = v;
+      var _d0 = param[/* d */2];
+      var f$1 = f;
+      var _param$1 = param[/* r */3];
+      while(true) {
+        var param$1 = _param$1;
+        var d0 = _d0;
+        var v0 = _v0;
+        if (!param$1) {
+          return /* tuple */[
+                  v0,
+                  d0
+                ];
+        }
+        var v$1 = param$1[/* v */1];
+        if (Curry._1(f$1, v$1)) {
+          _param$1 = param$1[/* r */3];
+          _d0 = param$1[/* d */2];
+          _v0 = v$1;
+          continue ;
+        } else {
+          _param$1 = param$1[/* l */0];
+          continue ;
+        }
+      };
+    }
+    _param = param[/* l */0];
+    continue ;
   };
 }
 
 function find_opt(x, _param) {
   while(true) {
     var param = _param;
-    if (param) {
-      var c = Caml_obj.caml_compare(x, param[/* v */1]);
-      if (c === 0) {
-        return Caml_option.some(param[/* d */2]);
-      } else {
-        _param = c < 0 ? param[/* l */0] : param[/* r */3];
-        continue ;
-      }
-    } else {
+    if (!param) {
       return ;
     }
+    var c = Caml_obj.caml_compare(x, param[/* v */1]);
+    if (c === 0) {
+      return Caml_option.some(param[/* d */2]);
+    }
+    _param = c < 0 ? param[/* l */0] : param[/* r */3];
+    continue ;
   };
 }
 
 function mem(x, _param) {
   while(true) {
     var param = _param;
-    if (param) {
-      var c = Caml_obj.caml_compare(x, param[/* v */1]);
-      if (c === 0) {
-        return true;
-      } else {
-        _param = c < 0 ? param[/* l */0] : param[/* r */3];
-        continue ;
-      }
-    } else {
+    if (!param) {
       return false;
     }
+    var c = Caml_obj.caml_compare(x, param[/* v */1]);
+    if (c === 0) {
+      return true;
+    }
+    _param = c < 0 ? param[/* l */0] : param[/* r */3];
+    continue ;
   };
 }
 
 function min_binding(_param) {
   while(true) {
     var param = _param;
-    if (param) {
-      var l = param[/* l */0];
-      if (l) {
-        _param = l;
-        continue ;
-      } else {
-        return /* tuple */[
-                param[/* v */1],
-                param[/* d */2]
-              ];
-      }
-    } else {
+    if (!param) {
       throw Caml_builtin_exceptions.not_found;
     }
+    var l = param[/* l */0];
+    if (!l) {
+      return /* tuple */[
+              param[/* v */1],
+              param[/* d */2]
+            ];
+    }
+    _param = l;
+    continue ;
   };
 }
 
 function min_binding_opt(_param) {
   while(true) {
     var param = _param;
-    if (param) {
-      var l = param[/* l */0];
-      if (l) {
-        _param = l;
-        continue ;
-      } else {
-        return /* tuple */[
-                param[/* v */1],
-                param[/* d */2]
-              ];
-      }
-    } else {
+    if (!param) {
       return ;
     }
+    var l = param[/* l */0];
+    if (!l) {
+      return /* tuple */[
+              param[/* v */1],
+              param[/* d */2]
+            ];
+    }
+    _param = l;
+    continue ;
   };
 }
 
 function max_binding(_param) {
   while(true) {
     var param = _param;
-    if (param) {
-      var r = param[/* r */3];
-      if (r) {
-        _param = r;
-        continue ;
-      } else {
-        return /* tuple */[
-                param[/* v */1],
-                param[/* d */2]
-              ];
-      }
-    } else {
+    if (!param) {
       throw Caml_builtin_exceptions.not_found;
     }
+    var r = param[/* r */3];
+    if (!r) {
+      return /* tuple */[
+              param[/* v */1],
+              param[/* d */2]
+            ];
+    }
+    _param = r;
+    continue ;
   };
 }
 
 function max_binding_opt(_param) {
   while(true) {
     var param = _param;
-    if (param) {
-      var r = param[/* r */3];
-      if (r) {
-        _param = r;
-        continue ;
-      } else {
-        return /* tuple */[
-                param[/* v */1],
-                param[/* d */2]
-              ];
-      }
-    } else {
+    if (!param) {
       return ;
     }
+    var r = param[/* r */3];
+    if (!r) {
+      return /* tuple */[
+              param[/* v */1],
+              param[/* d */2]
+            ];
+    }
+    _param = r;
+    continue ;
   };
 }
 
 function remove_min_binding(param) {
-  if (param) {
-    var l = param[/* l */0];
-    if (l) {
-      return bal(remove_min_binding(l), param[/* v */1], param[/* d */2], param[/* r */3]);
-    } else {
-      return param[/* r */3];
-    }
-  } else {
+  if (!param) {
     throw [
           Caml_builtin_exceptions.invalid_argument,
           "Map.remove_min_elt"
         ];
   }
-}
-
-function merge(t1, t2) {
-  if (t1) {
-    if (t2) {
-      var match = min_binding(t2);
-      return bal(t1, match[0], match[1], remove_min_binding(t2));
-    } else {
-      return t1;
-    }
+  var l = param[/* l */0];
+  if (l) {
+    return bal(remove_min_binding(l), param[/* v */1], param[/* d */2], param[/* r */3]);
   } else {
-    return t2;
+    return param[/* r */3];
   }
 }
 
+function merge(t1, t2) {
+  if (!t1) {
+    return t2;
+  }
+  if (!t2) {
+    return t1;
+  }
+  var match = min_binding(t2);
+  return bal(t1, match[0], match[1], remove_min_binding(t2));
+}
+
 function remove(x, m) {
-  if (m) {
-    var r = m[/* r */3];
-    var d = m[/* d */2];
-    var v = m[/* v */1];
-    var l = m[/* l */0];
-    var c = Caml_obj.caml_compare(x, v);
-    if (c === 0) {
-      return merge(l, r);
-    } else if (c < 0) {
-      var ll = remove(x, l);
-      if (l === ll) {
-        return m;
-      } else {
-        return bal(ll, v, d, r);
-      }
+  if (!m) {
+    return /* Empty */0;
+  }
+  var r = m[/* r */3];
+  var d = m[/* d */2];
+  var v = m[/* v */1];
+  var l = m[/* l */0];
+  var c = Caml_obj.caml_compare(x, v);
+  if (c === 0) {
+    return merge(l, r);
+  }
+  if (c < 0) {
+    var ll = remove(x, l);
+    if (l === ll) {
+      return m;
     } else {
-      var rr = remove(x, r);
-      if (r === rr) {
-        return m;
-      } else {
-        return bal(l, v, d, rr);
-      }
+      return bal(ll, v, d, r);
     }
   } else {
-    return /* Empty */0;
+    var rr = remove(x, r);
+    if (r === rr) {
+      return m;
+    } else {
+      return bal(l, v, d, rr);
+    }
   }
 }
 
@@ -619,21 +587,20 @@ function update(x, f, m) {
     var c = Caml_obj.caml_compare(x, v);
     if (c === 0) {
       var match = Curry._1(f, Caml_option.some(d));
-      if (match !== undefined) {
-        var data = Caml_option.valFromOption(match);
-        if (d === data) {
-          return m;
-        } else {
-          return /* Node */[
-                  /* l */l,
-                  /* v */x,
-                  /* d */data,
-                  /* r */r,
-                  /* h */m[/* h */4]
-                ];
-        }
-      } else {
+      if (match === undefined) {
         return merge(l, r);
+      }
+      var data = Caml_option.valFromOption(match);
+      if (d === data) {
+        return m;
+      } else {
+        return /* Node */[
+                /* l */l,
+                /* v */x,
+                /* d */data,
+                /* r */r,
+                /* h */m[/* h */4]
+              ];
       }
     } else if (c < 0) {
       var ll = update(x, f, l);
@@ -669,95 +636,93 @@ function update(x, f, m) {
 function iter(f, _param) {
   while(true) {
     var param = _param;
-    if (param) {
-      iter(f, param[/* l */0]);
-      Curry._2(f, param[/* v */1], param[/* d */2]);
-      _param = param[/* r */3];
-      continue ;
-    } else {
+    if (!param) {
       return /* () */0;
     }
+    iter(f, param[/* l */0]);
+    Curry._2(f, param[/* v */1], param[/* d */2]);
+    _param = param[/* r */3];
+    continue ;
   };
 }
 
 function map(f, param) {
-  if (param) {
-    var l$prime = map(f, param[/* l */0]);
-    var d$prime = Curry._1(f, param[/* d */2]);
-    var r$prime = map(f, param[/* r */3]);
-    return /* Node */[
-            /* l */l$prime,
-            /* v */param[/* v */1],
-            /* d */d$prime,
-            /* r */r$prime,
-            /* h */param[/* h */4]
-          ];
-  } else {
+  if (!param) {
     return /* Empty */0;
   }
+  var l$prime = map(f, param[/* l */0]);
+  var d$prime = Curry._1(f, param[/* d */2]);
+  var r$prime = map(f, param[/* r */3]);
+  return /* Node */[
+          /* l */l$prime,
+          /* v */param[/* v */1],
+          /* d */d$prime,
+          /* r */r$prime,
+          /* h */param[/* h */4]
+        ];
 }
 
 function mapi(f, param) {
-  if (param) {
-    var v = param[/* v */1];
-    var l$prime = mapi(f, param[/* l */0]);
-    var d$prime = Curry._2(f, v, param[/* d */2]);
-    var r$prime = mapi(f, param[/* r */3]);
-    return /* Node */[
-            /* l */l$prime,
-            /* v */v,
-            /* d */d$prime,
-            /* r */r$prime,
-            /* h */param[/* h */4]
-          ];
-  } else {
+  if (!param) {
     return /* Empty */0;
   }
+  var v = param[/* v */1];
+  var l$prime = mapi(f, param[/* l */0]);
+  var d$prime = Curry._2(f, v, param[/* d */2]);
+  var r$prime = mapi(f, param[/* r */3]);
+  return /* Node */[
+          /* l */l$prime,
+          /* v */v,
+          /* d */d$prime,
+          /* r */r$prime,
+          /* h */param[/* h */4]
+        ];
 }
 
 function fold(f, _m, _accu) {
   while(true) {
     var accu = _accu;
     var m = _m;
-    if (m) {
-      _accu = Curry._3(f, m[/* v */1], m[/* d */2], fold(f, m[/* l */0], accu));
-      _m = m[/* r */3];
-      continue ;
-    } else {
+    if (!m) {
       return accu;
     }
+    _accu = Curry._3(f, m[/* v */1], m[/* d */2], fold(f, m[/* l */0], accu));
+    _m = m[/* r */3];
+    continue ;
   };
 }
 
 function for_all(p, _param) {
   while(true) {
     var param = _param;
-    if (param) {
-      if (Curry._2(p, param[/* v */1], param[/* d */2]) && for_all(p, param[/* l */0])) {
-        _param = param[/* r */3];
-        continue ;
-      } else {
-        return false;
-      }
-    } else {
+    if (!param) {
       return true;
     }
+    if (!Curry._2(p, param[/* v */1], param[/* d */2])) {
+      return false;
+    }
+    if (!for_all(p, param[/* l */0])) {
+      return false;
+    }
+    _param = param[/* r */3];
+    continue ;
   };
 }
 
 function exists(p, _param) {
   while(true) {
     var param = _param;
-    if (param) {
-      if (Curry._2(p, param[/* v */1], param[/* d */2]) || exists(p, param[/* l */0])) {
-        return true;
-      } else {
-        _param = param[/* r */3];
-        continue ;
-      }
-    } else {
+    if (!param) {
       return false;
     }
+    if (Curry._2(p, param[/* v */1], param[/* d */2])) {
+      return true;
+    }
+    if (exists(p, param[/* l */0])) {
+      return true;
+    }
+    _param = param[/* r */3];
+    continue ;
   };
 }
 
@@ -778,36 +743,32 @@ function add_max_binding(k, x, param) {
 }
 
 function join(l, v, d, r) {
-  if (l) {
-    if (r) {
-      var rh = r[/* h */4];
-      var lh = l[/* h */4];
-      if (lh > (rh + 2 | 0)) {
-        return bal(l[/* l */0], l[/* v */1], l[/* d */2], join(l[/* r */3], v, d, r));
-      } else if (rh > (lh + 2 | 0)) {
-        return bal(join(l, v, d, r[/* l */0]), r[/* v */1], r[/* d */2], r[/* r */3]);
-      } else {
-        return create(l, v, d, r);
-      }
-    } else {
-      return add_max_binding(v, d, l);
-    }
-  } else {
+  if (!l) {
     return add_min_binding(v, d, r);
+  }
+  if (!r) {
+    return add_max_binding(v, d, l);
+  }
+  var rh = r[/* h */4];
+  var lh = l[/* h */4];
+  if (lh > (rh + 2 | 0)) {
+    return bal(l[/* l */0], l[/* v */1], l[/* d */2], join(l[/* r */3], v, d, r));
+  } else if (rh > (lh + 2 | 0)) {
+    return bal(join(l, v, d, r[/* l */0]), r[/* v */1], r[/* d */2], r[/* r */3]);
+  } else {
+    return create(l, v, d, r);
   }
 }
 
 function concat(t1, t2) {
-  if (t1) {
-    if (t2) {
-      var match = min_binding(t2);
-      return join(t1, match[0], match[1], remove_min_binding(t2));
-    } else {
-      return t1;
-    }
-  } else {
+  if (!t1) {
     return t2;
   }
+  if (!t2) {
+    return t1;
+  }
+  var match = min_binding(t2);
+  return join(t1, match[0], match[1], remove_min_binding(t2));
 }
 
 function concat_or_join(t1, v, d, t2) {
@@ -819,38 +780,38 @@ function concat_or_join(t1, v, d, t2) {
 }
 
 function split$1(x, param) {
-  if (param) {
-    var r = param[/* r */3];
-    var d = param[/* d */2];
-    var v = param[/* v */1];
-    var l = param[/* l */0];
-    var c = Caml_obj.caml_compare(x, v);
-    if (c === 0) {
-      return /* tuple */[
-              l,
-              Caml_option.some(d),
-              r
-            ];
-    } else if (c < 0) {
-      var match = split$1(x, l);
-      return /* tuple */[
-              match[0],
-              match[1],
-              join(match[2], v, d, r)
-            ];
-    } else {
-      var match$1 = split$1(x, r);
-      return /* tuple */[
-              join(l, v, d, match$1[0]),
-              match$1[1],
-              match$1[2]
-            ];
-    }
-  } else {
+  if (!param) {
     return /* tuple */[
             /* Empty */0,
             undefined,
             /* Empty */0
+          ];
+  }
+  var r = param[/* r */3];
+  var d = param[/* d */2];
+  var v = param[/* v */1];
+  var l = param[/* l */0];
+  var c = Caml_obj.caml_compare(x, v);
+  if (c === 0) {
+    return /* tuple */[
+            l,
+            Caml_option.some(d),
+            r
+          ];
+  }
+  if (c < 0) {
+    var match = split$1(x, l);
+    return /* tuple */[
+            match[0],
+            match[1],
+            join(match[2], v, d, r)
+          ];
+  } else {
+    var match$1 = split$1(x, r);
+    return /* tuple */[
+            join(l, v, d, match$1[0]),
+            match$1[1],
+            match$1[2]
           ];
   }
 }
@@ -866,11 +827,7 @@ function merge$1(f, s1, s2) {
   } else if (!s2) {
     return /* Empty */0;
   }
-  if (s2) {
-    var v2 = s2[/* v */1];
-    var match$1 = split$1(v2, s1);
-    return concat_or_join(merge$1(f, match$1[0], s2[/* l */0]), v2, Curry._3(f, v2, match$1[1], Caml_option.some(s2[/* d */2])), merge$1(f, match$1[2], s2[/* r */3]));
-  } else {
+  if (!s2) {
     throw [
           Caml_builtin_exceptions.assert_failure,
           /* tuple */[
@@ -880,93 +837,92 @@ function merge$1(f, s1, s2) {
           ]
         ];
   }
+  var v2 = s2[/* v */1];
+  var match$1 = split$1(v2, s1);
+  return concat_or_join(merge$1(f, match$1[0], s2[/* l */0]), v2, Curry._3(f, v2, match$1[1], Caml_option.some(s2[/* d */2])), merge$1(f, match$1[2], s2[/* r */3]));
 }
 
 function union(f, s1, s2) {
-  if (s1) {
-    if (s2) {
-      var d2 = s2[/* d */2];
-      var v2 = s2[/* v */1];
-      var d1 = s1[/* d */2];
-      var v1 = s1[/* v */1];
-      if (s1[/* h */4] >= s2[/* h */4]) {
-        var match = split$1(v1, s2);
-        var d2$1 = match[1];
-        var l = union(f, s1[/* l */0], match[0]);
-        var r = union(f, s1[/* r */3], match[2]);
-        if (d2$1 !== undefined) {
-          return concat_or_join(l, v1, Curry._3(f, v1, d1, Caml_option.valFromOption(d2$1)), r);
-        } else {
-          return join(l, v1, d1, r);
-        }
-      } else {
-        var match$1 = split$1(v2, s1);
-        var d1$1 = match$1[1];
-        var l$1 = union(f, match$1[0], s2[/* l */0]);
-        var r$1 = union(f, match$1[2], s2[/* r */3]);
-        if (d1$1 !== undefined) {
-          return concat_or_join(l$1, v2, Curry._3(f, v2, Caml_option.valFromOption(d1$1), d2), r$1);
-        } else {
-          return join(l$1, v2, d2, r$1);
-        }
-      }
+  if (!s1) {
+    return s2;
+  }
+  if (!s2) {
+    return s1;
+  }
+  var d2 = s2[/* d */2];
+  var v2 = s2[/* v */1];
+  var d1 = s1[/* d */2];
+  var v1 = s1[/* v */1];
+  if (s1[/* h */4] >= s2[/* h */4]) {
+    var match = split$1(v1, s2);
+    var d2$1 = match[1];
+    var l = union(f, s1[/* l */0], match[0]);
+    var r = union(f, s1[/* r */3], match[2]);
+    if (d2$1 !== undefined) {
+      return concat_or_join(l, v1, Curry._3(f, v1, d1, Caml_option.valFromOption(d2$1)), r);
     } else {
-      return s1;
+      return join(l, v1, d1, r);
     }
   } else {
-    return s2;
+    var match$1 = split$1(v2, s1);
+    var d1$1 = match$1[1];
+    var l$1 = union(f, match$1[0], s2[/* l */0]);
+    var r$1 = union(f, match$1[2], s2[/* r */3]);
+    if (d1$1 !== undefined) {
+      return concat_or_join(l$1, v2, Curry._3(f, v2, Caml_option.valFromOption(d1$1), d2), r$1);
+    } else {
+      return join(l$1, v2, d2, r$1);
+    }
   }
 }
 
 function filter(p, m) {
-  if (m) {
-    var r = m[/* r */3];
-    var d = m[/* d */2];
-    var v = m[/* v */1];
-    var l = m[/* l */0];
-    var l$prime = filter(p, l);
-    var pvd = Curry._2(p, v, d);
-    var r$prime = filter(p, r);
-    if (pvd) {
-      if (l === l$prime && r === r$prime) {
-        return m;
-      } else {
-        return join(l$prime, v, d, r$prime);
-      }
+  if (!m) {
+    return /* Empty */0;
+  }
+  var r = m[/* r */3];
+  var d = m[/* d */2];
+  var v = m[/* v */1];
+  var l = m[/* l */0];
+  var l$prime = filter(p, l);
+  var pvd = Curry._2(p, v, d);
+  var r$prime = filter(p, r);
+  if (pvd) {
+    if (l === l$prime && r === r$prime) {
+      return m;
     } else {
-      return concat(l$prime, r$prime);
+      return join(l$prime, v, d, r$prime);
     }
   } else {
-    return /* Empty */0;
+    return concat(l$prime, r$prime);
   }
 }
 
 function partition(p, param) {
-  if (param) {
-    var d = param[/* d */2];
-    var v = param[/* v */1];
-    var match = partition(p, param[/* l */0]);
-    var lf = match[1];
-    var lt = match[0];
-    var pvd = Curry._2(p, v, d);
-    var match$1 = partition(p, param[/* r */3]);
-    var rf = match$1[1];
-    var rt = match$1[0];
-    if (pvd) {
-      return /* tuple */[
-              join(lt, v, d, rt),
-              concat(lf, rf)
-            ];
-    } else {
-      return /* tuple */[
-              concat(lt, rt),
-              join(lf, v, d, rf)
-            ];
-    }
-  } else {
+  if (!param) {
     return /* tuple */[
             /* Empty */0,
             /* Empty */0
+          ];
+  }
+  var d = param[/* d */2];
+  var v = param[/* v */1];
+  var match = partition(p, param[/* l */0]);
+  var lf = match[1];
+  var lt = match[0];
+  var pvd = Curry._2(p, v, d);
+  var match$1 = partition(p, param[/* r */3]);
+  var rf = match$1[1];
+  var rt = match$1[0];
+  if (pvd) {
+    return /* tuple */[
+            join(lt, v, d, rt),
+            concat(lf, rf)
+          ];
+  } else {
+    return /* tuple */[
+            concat(lt, rt),
+            join(lf, v, d, rf)
           ];
   }
 }
@@ -975,18 +931,17 @@ function cons_enum(_m, _e) {
   while(true) {
     var e = _e;
     var m = _m;
-    if (m) {
-      _e = /* More */[
-        m[/* v */1],
-        m[/* d */2],
-        m[/* r */3],
-        e
-      ];
-      _m = m[/* l */0];
-      continue ;
-    } else {
+    if (!m) {
       return e;
     }
+    _e = /* More */[
+      m[/* v */1],
+      m[/* d */2],
+      m[/* r */3],
+      e
+    ];
+    _m = m[/* l */0];
+    continue ;
   };
 }
 
@@ -996,29 +951,27 @@ function compare(cmp, m1, m2) {
   while(true) {
     var e2 = _e2;
     var e1 = _e1;
-    if (e1) {
+    if (!e1) {
       if (e2) {
-        var c = Caml_obj.caml_compare(e1[0], e2[0]);
-        if (c !== 0) {
-          return c;
-        } else {
-          var c$1 = Curry._2(cmp, e1[1], e2[1]);
-          if (c$1 !== 0) {
-            return c$1;
-          } else {
-            _e2 = cons_enum(e2[2], e2[3]);
-            _e1 = cons_enum(e1[2], e1[3]);
-            continue ;
-          }
-        }
+        return -1;
       } else {
-        return 1;
+        return 0;
       }
-    } else if (e2) {
-      return -1;
-    } else {
-      return 0;
     }
+    if (!e2) {
+      return 1;
+    }
+    var c = Caml_obj.caml_compare(e1[0], e2[0]);
+    if (c !== 0) {
+      return c;
+    }
+    var c$1 = Curry._2(cmp, e1[1], e2[1]);
+    if (c$1 !== 0) {
+      return c$1;
+    }
+    _e2 = cons_enum(e2[2], e2[3]);
+    _e1 = cons_enum(e1[2], e1[3]);
+    continue ;
   };
 }
 
@@ -1028,19 +981,25 @@ function equal(cmp, m1, m2) {
   while(true) {
     var e2 = _e2;
     var e1 = _e1;
-    if (e1) {
-      if (e2 && Caml_obj.caml_equal(e1[0], e2[0]) && Curry._2(cmp, e1[1], e2[1])) {
-        _e2 = cons_enum(e2[2], e2[3]);
-        _e1 = cons_enum(e1[2], e1[3]);
-        continue ;
-      } else {
+    if (!e1) {
+      if (e2) {
         return false;
+      } else {
+        return true;
       }
-    } else if (e2) {
-      return false;
-    } else {
-      return true;
     }
+    if (!e2) {
+      return false;
+    }
+    if (!Caml_obj.caml_equal(e1[0], e2[0])) {
+      return false;
+    }
+    if (!Curry._2(cmp, e1[1], e2[1])) {
+      return false;
+    }
+    _e2 = cons_enum(e2[2], e2[3]);
+    _e1 = cons_enum(e1[2], e1[3]);
+    continue ;
   };
 }
 
@@ -1056,19 +1015,18 @@ function bindings_aux(_accu, _param) {
   while(true) {
     var param = _param;
     var accu = _accu;
-    if (param) {
-      _param = param[/* l */0];
-      _accu = /* :: */[
-        /* tuple */[
-          param[/* v */1],
-          param[/* d */2]
-        ],
-        bindings_aux(accu, param[/* r */3])
-      ];
-      continue ;
-    } else {
+    if (!param) {
       return accu;
     }
+    _param = param[/* l */0];
+    _accu = /* :: */[
+      /* tuple */[
+        param[/* v */1],
+        param[/* d */2]
+      ],
+      bindings_aux(accu, param[/* r */3])
+    ];
+    continue ;
   };
 }
 
@@ -1117,62 +1075,63 @@ function compute_update_sequences(all_tickers) {
   List.fold_left((function (counter, ticker) {
           var loop = function (counter, ticker) {
             var rank = ticker.rank;
-            if (typeof rank === "number" && rank === 0) {
-              ticker.rank = /* Visited */1;
-              var match = ticker.type_;
-              if (match) {
-                var match$1 = match[0];
-                var counter$1 = loop(counter, match$1.lhs);
-                var counter$2 = loop(counter$1, match$1.rhs);
-                var counter$3 = counter$2 + 1 | 0;
-                ticker.rank = /* Ranked */[counter$3];
-                return counter$3;
-              } else {
-                var counter$4 = counter + 1 | 0;
-                ticker.rank = /* Ranked */[counter$4];
-                return counter$4;
-              }
-            } else {
+            if (typeof rank !== "number") {
               return counter;
+            }
+            if (rank !== 0) {
+              return counter;
+            }
+            ticker.rank = /* Visited */1;
+            var match = ticker.type_;
+            if (match) {
+              var match$1 = match[0];
+              var counter$1 = loop(counter, match$1.lhs);
+              var counter$2 = loop(counter$1, match$1.rhs);
+              var counter$3 = counter$2 + 1 | 0;
+              ticker.rank = /* Ranked */[counter$3];
+              return counter$3;
+            } else {
+              var counter$4 = counter + 1 | 0;
+              ticker.rank = /* Ranked */[counter$4];
+              return counter$4;
             }
           };
           return loop(counter, ticker);
         }), 0, all_tickers);
   var map = List.fold_left((function (map, ticker) {
-          if (ticker.type_) {
-            var loop = function (_up, _map, _ticker) {
-              while(true) {
-                var ticker = _ticker;
-                var map = _map;
-                var up = _up;
-                var type_ = ticker.type_;
-                var ticker_name = ticker.ticker_name;
-                if (type_) {
-                  var match = type_[0];
-                  var map$1 = loop(/* :: */[
-                        ticker,
-                        up
-                      ], map, match.lhs);
-                  _ticker = match.rhs;
-                  _map = map$1;
-                  _up = /* :: */[
-                    ticker,
-                    up
-                  ];
-                  continue ;
-                } else {
-                  var l = find(ticker_name, map);
-                  return add(ticker_name, Pervasives.$at(up, l), map);
-                }
-              };
-            };
-            return loop(/* [] */0, map, ticker);
-          } else {
+          if (!ticker.type_) {
             return add(ticker.ticker_name, /* :: */[
                         ticker,
                         /* [] */0
                       ], map);
           }
+          var loop = function (_up, _map, _ticker) {
+            while(true) {
+              var ticker = _ticker;
+              var map = _map;
+              var up = _up;
+              var type_ = ticker.type_;
+              var ticker_name = ticker.ticker_name;
+              if (type_) {
+                var match = type_[0];
+                var map$1 = loop(/* :: */[
+                      ticker,
+                      up
+                    ], map, match.lhs);
+                _ticker = match.rhs;
+                _map = map$1;
+                _up = /* :: */[
+                  ticker,
+                  up
+                ];
+                continue ;
+              } else {
+                var l = find(ticker_name, map);
+                return add(ticker_name, Pervasives.$at(up, l), map);
+              }
+            };
+          };
+          return loop(/* [] */0, map, ticker);
         }), /* Empty */0, List.rev(all_tickers));
   return fold((function (k, l, map) {
                 var l$1 = List.sort_uniq((function (lhs, rhs) {
@@ -1214,10 +1173,11 @@ function process_quote(ticker_map, new_ticker, new_value) {
                   }
                   ticker.value = value;
                   return /* () */0;
-                } else if (ticker.ticker_name === new_ticker) {
-                  ticker.value = new_value;
-                  return /* () */0;
                 } else {
+                  if (ticker.ticker_name === new_ticker) {
+                    ticker.value = new_value;
+                    return /* () */0;
+                  }
                   throw [
                         Caml_builtin_exceptions.failure,
                         "Only single Market ticker should be udpated upon a new quote"
@@ -1242,153 +1202,144 @@ function process_input_line(ticker_map, all_tickers, line) {
           };
   };
   var tokens = split(/* "|" */124, line);
-  if (tokens) {
-    switch (tokens[0]) {
-      case "Q" :
-          var match = tokens[1];
-          if (match) {
-            var match$1 = match[1];
-            if (match$1) {
-              if (match$1[1]) {
+  if (!tokens) {
+    throw [
+          Caml_builtin_exceptions.failure,
+          "Invalid input line"
+        ];
+  }
+  switch (tokens[0]) {
+    case "Q" :
+        var match = tokens[1];
+        if (!match) {
+          throw [
+                Caml_builtin_exceptions.failure,
+                "Invalid input line"
+              ];
+        }
+        var match$1 = match[1];
+        if (!match$1) {
+          throw [
+                Caml_builtin_exceptions.failure,
+                "Invalid input line"
+              ];
+        }
+        if (match$1[1]) {
+          throw [
+                Caml_builtin_exceptions.failure,
+                "Invalid input line"
+              ];
+        }
+        var ticker_map$1 = ticker_map !== undefined ? Caml_option.valFromOption(ticker_map) : compute_update_sequences(all_tickers);
+        var value = Caml_format.caml_float_of_string(match$1[0]);
+        process_quote(ticker_map$1, match[0], value);
+        return /* tuple */[
+                all_tickers,
+                Caml_option.some(ticker_map$1)
+              ];
+    case "R" :
+        var match$2 = tokens[1];
+        if (!match$2) {
+          throw [
+                Caml_builtin_exceptions.failure,
+                "Invalid input line"
+              ];
+        }
+        var match$3 = match$2[1];
+        if (!match$3) {
+          throw [
+                Caml_builtin_exceptions.failure,
+                "Invalid input line"
+              ];
+        }
+        var ticker_name = match$2[0];
+        switch (match$3[0]) {
+          case "+" :
+              var match$4 = match$3[1];
+              if (!match$4) {
                 throw [
                       Caml_builtin_exceptions.failure,
                       "Invalid input line"
                     ];
               }
-              var ticker_map$1 = ticker_map !== undefined ? Caml_option.valFromOption(ticker_map) : compute_update_sequences(all_tickers);
-              var value = Caml_format.caml_float_of_string(match$1[0]);
-              process_quote(ticker_map$1, match[0], value);
-              return /* tuple */[
-                      all_tickers,
-                      Caml_option.some(ticker_map$1)
+              var match$5 = match$4[1];
+              if (!match$5) {
+                throw [
+                      Caml_builtin_exceptions.failure,
+                      "Invalid input line"
                     ];
-            } else {
-              throw [
-                    Caml_builtin_exceptions.failure,
-                    "Invalid input line"
-                  ];
-            }
-          } else {
-            throw [
-                  Caml_builtin_exceptions.failure,
-                  "Invalid input line"
-                ];
-          }
-      case "R" :
-          var match$2 = tokens[1];
-          if (match$2) {
-            var match$3 = match$2[1];
-            if (match$3) {
-              var ticker_name = match$2[0];
-              switch (match$3[0]) {
-                case "+" :
-                    var match$4 = match$3[1];
-                    if (match$4) {
-                      var match$5 = match$4[1];
-                      if (match$5) {
-                        if (match$5[1]) {
-                          throw [
-                                Caml_builtin_exceptions.failure,
-                                "Invalid input line"
-                              ];
-                        }
-                        return /* tuple */[
-                                /* :: */[
-                                  make_binary_op(ticker_name, match$4[0], match$5[0], /* PLUS */0),
-                                  all_tickers
-                                ],
-                                ticker_map
-                              ];
-                      } else {
-                        throw [
-                              Caml_builtin_exceptions.failure,
-                              "Invalid input line"
-                            ];
-                      }
-                    } else {
-                      throw [
-                            Caml_builtin_exceptions.failure,
-                            "Invalid input line"
-                          ];
-                    }
-                case "-" :
-                    var match$6 = match$3[1];
-                    if (match$6) {
-                      var match$7 = match$6[1];
-                      if (match$7) {
-                        if (match$7[1]) {
-                          throw [
-                                Caml_builtin_exceptions.failure,
-                                "Invalid input line"
-                              ];
-                        }
-                        return /* tuple */[
-                                /* :: */[
-                                  make_binary_op(ticker_name, match$6[0], match$7[0], /* MINUS */1),
-                                  all_tickers
-                                ],
-                                ticker_map
-                              ];
-                      } else {
-                        throw [
-                              Caml_builtin_exceptions.failure,
-                              "Invalid input line"
-                            ];
-                      }
-                    } else {
-                      throw [
-                            Caml_builtin_exceptions.failure,
-                            "Invalid input line"
-                          ];
-                    }
-                case "S" :
-                    if (match$3[1]) {
-                      throw [
-                            Caml_builtin_exceptions.failure,
-                            "Invalid input line"
-                          ];
-                    }
-                    return /* tuple */[
-                            /* :: */[
-                              {
-                                value: undefined,
-                                rank: /* Uninitialized */0,
-                                ticker_name: ticker_name,
-                                type_: /* Market */0
-                              },
-                              all_tickers
-                            ],
-                            ticker_map
-                          ];
-                default:
-                  throw [
-                        Caml_builtin_exceptions.failure,
-                        "Invalid input line"
-                      ];
               }
-            } else {
-              throw [
-                    Caml_builtin_exceptions.failure,
-                    "Invalid input line"
-                  ];
-            }
-          } else {
+              if (match$5[1]) {
+                throw [
+                      Caml_builtin_exceptions.failure,
+                      "Invalid input line"
+                    ];
+              }
+              return /* tuple */[
+                      /* :: */[
+                        make_binary_op(ticker_name, match$4[0], match$5[0], /* PLUS */0),
+                        all_tickers
+                      ],
+                      ticker_map
+                    ];
+          case "-" :
+              var match$6 = match$3[1];
+              if (!match$6) {
+                throw [
+                      Caml_builtin_exceptions.failure,
+                      "Invalid input line"
+                    ];
+              }
+              var match$7 = match$6[1];
+              if (!match$7) {
+                throw [
+                      Caml_builtin_exceptions.failure,
+                      "Invalid input line"
+                    ];
+              }
+              if (match$7[1]) {
+                throw [
+                      Caml_builtin_exceptions.failure,
+                      "Invalid input line"
+                    ];
+              }
+              return /* tuple */[
+                      /* :: */[
+                        make_binary_op(ticker_name, match$6[0], match$7[0], /* MINUS */1),
+                        all_tickers
+                      ],
+                      ticker_map
+                    ];
+          case "S" :
+              if (match$3[1]) {
+                throw [
+                      Caml_builtin_exceptions.failure,
+                      "Invalid input line"
+                    ];
+              }
+              return /* tuple */[
+                      /* :: */[
+                        {
+                          value: undefined,
+                          rank: /* Uninitialized */0,
+                          ticker_name: ticker_name,
+                          type_: /* Market */0
+                        },
+                        all_tickers
+                      ],
+                      ticker_map
+                    ];
+          default:
             throw [
                   Caml_builtin_exceptions.failure,
                   "Invalid input line"
                 ];
-          }
-      default:
-        throw [
-              Caml_builtin_exceptions.failure,
-              "Invalid input line"
-            ];
-    }
-  } else {
-    throw [
-          Caml_builtin_exceptions.failure,
-          "Invalid input line"
-        ];
+        }
+    default:
+      throw [
+            Caml_builtin_exceptions.failure,
+            "Invalid input line"
+          ];
   }
 }
 
@@ -1397,13 +1348,12 @@ function loop(_lines, _param) {
     var param = _param;
     var lines = _lines;
     var all_tickers = param[0];
-    if (lines) {
-      _param = process_input_line(param[1], all_tickers, lines[0]);
-      _lines = lines[1];
-      continue ;
-    } else {
+    if (!lines) {
       return print_all_composite(all_tickers);
     }
+    _param = process_input_line(param[1], all_tickers, lines[0]);
+    _lines = lines[1];
+    continue ;
   };
 }
 

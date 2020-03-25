@@ -14,17 +14,16 @@ function foo(param) {
     } else {
       return 2;
     }
-  } else {
-    switch (param.tag | 0) {
-      case /* B */0 :
-          return param[0];
-      case /* C */1 :
-          return param[0] + param[1] | 0;
-      case /* D */2 :
-          var match = param[0];
-          return match[0] + match[1] | 0;
-      
-    }
+  }
+  switch (param.tag | 0) {
+    case /* B */0 :
+        return param[0];
+    case /* C */1 :
+        return param[0] + param[1] | 0;
+    case /* D */2 :
+        var match = param[0];
+        return match[0] + match[1] | 0;
+    
   }
 }
 
@@ -88,17 +87,16 @@ function rollback_path(subst, p) {
     return "try";
   }
   catch (exn){
-    if (exn === Caml_builtin_exceptions.not_found) {
-      switch (p.tag | 0) {
-        case /* Pdot */1 :
-            return "Pdot";
-        case /* Pident */0 :
-        case /* Papply */2 :
-            return "Pident | Papply";
-        
-      }
-    } else {
+    if (exn !== Caml_builtin_exceptions.not_found) {
       throw exn;
+    }
+    switch (p.tag | 0) {
+      case /* Pdot */1 :
+          return "Pdot";
+      case /* Pident */0 :
+      case /* Papply */2 :
+          return "Pident | Papply";
+      
     }
   }
 }
@@ -121,18 +119,21 @@ function fooExn(f) {
     var exn = Caml_js_exceptions.internalToOCamlException(raw_exn);
     if (exn === EA1) {
       return 1;
-    } else if (exn === EA2) {
+    }
+    if (exn === EA2) {
       return 2;
-    } else if (exn[0] === EB) {
+    }
+    if (exn[0] === EB) {
       return exn[1];
-    } else if (exn[0] === EC) {
+    }
+    if (exn[0] === EC) {
       return exn[1] + exn[2] | 0;
-    } else if (exn[0] === ED) {
-      var match = exn[1];
-      return match[0] + match[1] | 0;
-    } else {
+    }
+    if (exn[0] !== ED) {
       throw exn;
     }
+    var match = exn[1];
+    return match[0] + match[1] | 0;
   }
 }
 

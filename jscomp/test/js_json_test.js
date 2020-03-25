@@ -55,45 +55,48 @@ var v = JSON.parse(" { \"x\" : [1, 2, 3 ] } ");
 
 add_test("File \"js_json_test.ml\", line 23, characters 11-18", (function (param) {
         var ty = Js_json.classify(v);
-        if (typeof ty === "number" || ty.tag !== /* JSONObject */2) {
+        if (typeof ty === "number") {
           return /* Ok */Block.__(4, [false]);
-        } else {
-          var match = Js_dict.get(ty[0], "x");
-          if (match !== undefined) {
-            var ty2 = Js_json.classify(Caml_option.valFromOption(match));
-            if (typeof ty2 === "number" || ty2.tag !== /* JSONArray */3) {
-              return /* Ok */Block.__(4, [false]);
-            } else {
-              ty2[0].forEach((function (x) {
-                      var ty3 = Js_json.classify(x);
-                      if (typeof ty3 === "number") {
-                        throw [
-                              Caml_builtin_exceptions.assert_failure,
-                              /* tuple */[
-                                "js_json_test.ml",
-                                37,
-                                21
-                              ]
-                            ];
-                      } else if (ty3.tag === /* JSONNumber */1) {
-                        return /* () */0;
-                      } else {
-                        throw [
-                              Caml_builtin_exceptions.assert_failure,
-                              /* tuple */[
-                                "js_json_test.ml",
-                                37,
-                                21
-                              ]
-                            ];
-                      }
-                    }));
-              return /* Ok */Block.__(4, [true]);
-            }
-          } else {
-            return /* Ok */Block.__(4, [false]);
-          }
         }
+        if (ty.tag !== /* JSONObject */2) {
+          return /* Ok */Block.__(4, [false]);
+        }
+        var match = Js_dict.get(ty[0], "x");
+        if (match === undefined) {
+          return /* Ok */Block.__(4, [false]);
+        }
+        var ty2 = Js_json.classify(Caml_option.valFromOption(match));
+        if (typeof ty2 === "number") {
+          return /* Ok */Block.__(4, [false]);
+        }
+        if (ty2.tag !== /* JSONArray */3) {
+          return /* Ok */Block.__(4, [false]);
+        }
+        ty2[0].forEach((function (x) {
+                var ty3 = Js_json.classify(x);
+                if (typeof ty3 === "number") {
+                  throw [
+                        Caml_builtin_exceptions.assert_failure,
+                        /* tuple */[
+                          "js_json_test.ml",
+                          37,
+                          21
+                        ]
+                      ];
+                }
+                if (ty3.tag === /* JSONNumber */1) {
+                  return /* () */0;
+                }
+                throw [
+                      Caml_builtin_exceptions.assert_failure,
+                      /* tuple */[
+                        "js_json_test.ml",
+                        37,
+                        21
+                      ]
+                    ];
+              }));
+        return /* Ok */Block.__(4, [true]);
       }));
 
 eq("File \"js_json_test.ml\", line 48, characters 5-12", Js_json.test(v, /* Object */2), true);
@@ -175,22 +178,21 @@ if (exit$1 === 1) {
 function test(v) {
   var json = JSON.parse(JSON.stringify(v));
   var ty = Js_json.classify(json);
-  if (typeof ty === "number") {
-    switch (ty) {
-      case /* JSONFalse */0 :
-          return eq("File \"js_json_test.ml\", line 95, characters 31-38", false, v);
-      case /* JSONTrue */1 :
-          return eq("File \"js_json_test.ml\", line 94, characters 30-37", true, v);
-      case /* JSONNull */2 :
-          return add_test("File \"js_json_test.ml\", line 96, characters 18-25", (function (param) {
-                        return /* Ok */Block.__(4, [false]);
-                      }));
-      
-    }
-  } else {
+  if (typeof ty !== "number") {
     return add_test("File \"js_json_test.ml\", line 96, characters 18-25", (function (param) {
                   return /* Ok */Block.__(4, [false]);
                 }));
+  }
+  switch (ty) {
+    case /* JSONFalse */0 :
+        return eq("File \"js_json_test.ml\", line 95, characters 31-38", false, v);
+    case /* JSONTrue */1 :
+        return eq("File \"js_json_test.ml\", line 94, characters 30-37", true, v);
+    case /* JSONNull */2 :
+        return add_test("File \"js_json_test.ml\", line 96, characters 18-25", (function (param) {
+                      return /* Ok */Block.__(4, [false]);
+                    }));
+    
   }
 }
 
@@ -201,16 +203,15 @@ test(false);
 function option_get(param) {
   if (param !== undefined) {
     return Caml_option.valFromOption(param);
-  } else {
-    throw [
-          Caml_builtin_exceptions.assert_failure,
-          /* tuple */[
-            "js_json_test.ml",
-            102,
-            36
-          ]
-        ];
   }
+  throw [
+        Caml_builtin_exceptions.assert_failure,
+        /* tuple */[
+          "js_json_test.ml",
+          102,
+          36
+        ]
+      ];
 }
 
 var dict = { };
@@ -274,97 +275,96 @@ function eq_at_i(loc, json, i, kind, expected) {
     return add_test(loc, (function (param) {
                   return /* Ok */Block.__(4, [false]);
                 }));
-  } else if (ty.tag === /* JSONArray */3) {
-    var ty$1 = Js_json.classify(Caml_array.caml_array_get(ty[0], i));
-    switch (kind) {
-      case /* String */0 :
-          if (typeof ty$1 === "number") {
-            return add_test(loc, (function (param) {
-                          return /* Ok */Block.__(4, [false]);
-                        }));
-          } else if (ty$1.tag) {
-            return add_test(loc, (function (param) {
-                          return /* Ok */Block.__(4, [false]);
-                        }));
-          } else {
-            return eq(loc, ty$1[0], expected);
-          }
-      case /* Number */1 :
-          if (typeof ty$1 === "number") {
-            return add_test(loc, (function (param) {
-                          return /* Ok */Block.__(4, [false]);
-                        }));
-          } else if (ty$1.tag === /* JSONNumber */1) {
-            return eq(loc, ty$1[0], expected);
-          } else {
-            return add_test(loc, (function (param) {
-                          return /* Ok */Block.__(4, [false]);
-                        }));
-          }
-      case /* Object */2 :
-          if (typeof ty$1 === "number") {
-            return add_test(loc, (function (param) {
-                          return /* Ok */Block.__(4, [false]);
-                        }));
-          } else if (ty$1.tag === /* JSONObject */2) {
-            return eq(loc, ty$1[0], expected);
-          } else {
-            return add_test(loc, (function (param) {
-                          return /* Ok */Block.__(4, [false]);
-                        }));
-          }
-      case /* Array */3 :
-          if (typeof ty$1 === "number") {
-            return add_test(loc, (function (param) {
-                          return /* Ok */Block.__(4, [false]);
-                        }));
-          } else if (ty$1.tag === /* JSONArray */3) {
-            return eq(loc, ty$1[0], expected);
-          } else {
-            return add_test(loc, (function (param) {
-                          return /* Ok */Block.__(4, [false]);
-                        }));
-          }
-      case /* Boolean */4 :
-          if (typeof ty$1 === "number") {
-            switch (ty$1) {
-              case /* JSONFalse */0 :
-                  return eq(loc, false, expected);
-              case /* JSONTrue */1 :
-                  return eq(loc, true, expected);
-              case /* JSONNull */2 :
-                  return add_test(loc, (function (param) {
-                                return /* Ok */Block.__(4, [false]);
-                              }));
-              
-            }
-          } else {
-            return add_test(loc, (function (param) {
-                          return /* Ok */Block.__(4, [false]);
-                        }));
-          }
-      case /* Null */5 :
-          if (typeof ty$1 === "number") {
-            if (ty$1 >= 2) {
-              return add_test(loc, (function (param) {
-                            return /* Ok */Block.__(4, [true]);
-                          }));
-            } else {
-              return add_test(loc, (function (param) {
-                            return /* Ok */Block.__(4, [false]);
-                          }));
-            }
-          } else {
-            return add_test(loc, (function (param) {
-                          return /* Ok */Block.__(4, [false]);
-                        }));
-          }
-      
-    }
-  } else {
+  }
+  if (ty.tag !== /* JSONArray */3) {
     return add_test(loc, (function (param) {
                   return /* Ok */Block.__(4, [false]);
                 }));
+  }
+  var ty$1 = Js_json.classify(Caml_array.caml_array_get(ty[0], i));
+  switch (kind) {
+    case /* String */0 :
+        if (typeof ty$1 === "number") {
+          return add_test(loc, (function (param) {
+                        return /* Ok */Block.__(4, [false]);
+                      }));
+        } else if (ty$1.tag) {
+          return add_test(loc, (function (param) {
+                        return /* Ok */Block.__(4, [false]);
+                      }));
+        } else {
+          return eq(loc, ty$1[0], expected);
+        }
+    case /* Number */1 :
+        if (typeof ty$1 === "number") {
+          return add_test(loc, (function (param) {
+                        return /* Ok */Block.__(4, [false]);
+                      }));
+        } else if (ty$1.tag === /* JSONNumber */1) {
+          return eq(loc, ty$1[0], expected);
+        } else {
+          return add_test(loc, (function (param) {
+                        return /* Ok */Block.__(4, [false]);
+                      }));
+        }
+    case /* Object */2 :
+        if (typeof ty$1 === "number") {
+          return add_test(loc, (function (param) {
+                        return /* Ok */Block.__(4, [false]);
+                      }));
+        } else if (ty$1.tag === /* JSONObject */2) {
+          return eq(loc, ty$1[0], expected);
+        } else {
+          return add_test(loc, (function (param) {
+                        return /* Ok */Block.__(4, [false]);
+                      }));
+        }
+    case /* Array */3 :
+        if (typeof ty$1 === "number") {
+          return add_test(loc, (function (param) {
+                        return /* Ok */Block.__(4, [false]);
+                      }));
+        } else if (ty$1.tag === /* JSONArray */3) {
+          return eq(loc, ty$1[0], expected);
+        } else {
+          return add_test(loc, (function (param) {
+                        return /* Ok */Block.__(4, [false]);
+                      }));
+        }
+    case /* Boolean */4 :
+        if (typeof ty$1 !== "number") {
+          return add_test(loc, (function (param) {
+                        return /* Ok */Block.__(4, [false]);
+                      }));
+        }
+        switch (ty$1) {
+          case /* JSONFalse */0 :
+              return eq(loc, false, expected);
+          case /* JSONTrue */1 :
+              return eq(loc, true, expected);
+          case /* JSONNull */2 :
+              return add_test(loc, (function (param) {
+                            return /* Ok */Block.__(4, [false]);
+                          }));
+          
+        }
+    case /* Null */5 :
+        if (typeof ty$1 === "number") {
+          if (ty$1 >= 2) {
+            return add_test(loc, (function (param) {
+                          return /* Ok */Block.__(4, [true]);
+                        }));
+          } else {
+            return add_test(loc, (function (param) {
+                          return /* Ok */Block.__(4, [false]);
+                        }));
+          }
+        } else {
+          return add_test(loc, (function (param) {
+                        return /* Ok */Block.__(4, [false]);
+                      }));
+        }
+    
   }
 }
 

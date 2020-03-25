@@ -45,9 +45,8 @@ function a1(f) {
   catch (exn){
     if (exn === E) {
       return 1;
-    } else {
-      throw exn;
     }
+    throw exn;
   }
 }
 

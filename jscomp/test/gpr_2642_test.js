@@ -13,10 +13,9 @@ function isfree(id, _param) {
       case /* Papply */2 :
           if (isfree(id, param[0])) {
             return true;
-          } else {
-            _param = param[1];
-            continue ;
           }
+          _param = param[1];
+          continue ;
       
     }
   };

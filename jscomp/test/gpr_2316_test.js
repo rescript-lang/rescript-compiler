@@ -40,11 +40,10 @@ try {
 }
 catch (raw_exn){
   var exn = Caml_js_exceptions.internalToOCamlException(raw_exn);
-  if (exn[0] === Caml_builtin_exceptions.failure) {
-    y = exn[1];
-  } else {
+  if (exn[0] !== Caml_builtin_exceptions.failure) {
     throw exn;
   }
+  y = exn[1];
 }
 
 var x;
@@ -59,11 +58,10 @@ try {
 }
 catch (raw_exn$1){
   var exn$1 = Caml_js_exceptions.internalToOCamlException(raw_exn$1);
-  if (exn$1[0] === Caml_builtin_exceptions.failure) {
-    x = exn$1[1];
-  } else {
+  if (exn$1[0] !== Caml_builtin_exceptions.failure) {
     throw exn$1;
   }
+  x = exn$1[1];
 }
 
 if (exit === 1) {

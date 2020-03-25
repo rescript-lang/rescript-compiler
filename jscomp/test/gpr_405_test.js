@@ -18,9 +18,8 @@ function Make(funarg) {
     catch (exn){
       if (exn === Caml_builtin_exceptions.not_found) {
         return false;
-      } else {
-        throw exn;
       }
+      throw exn;
     }
   };
   var min_cutset = function (gr, first_node) {
@@ -69,12 +68,7 @@ function Make(funarg) {
         var successors = _successors;
         if (successors) {
           var successor = successors[0];
-          if (find_default(already_processed, successor)) {
-            var x = find_default(on_the_stack, successor) ? Curry._2(H.find, n_labels, successor) : Curry._2(H.find, l_labels, successor);
-            Curry._3(H.add, l_labels, top$1, Caml_primitive.caml_int_max(Curry._2(H.find, l_labels, top$1), x));
-            _successors = successors[1];
-            continue ;
-          } else {
+          if (!find_default(already_processed, successor)) {
             return step2(successor, /* :: */[
                         /* tuple */[
                           top$1,
@@ -83,6 +77,10 @@ function Make(funarg) {
                         rest_of_stack$1
                       ]);
           }
+          var x = find_default(on_the_stack, successor) ? Curry._2(H.find, n_labels, successor) : Curry._2(H.find, l_labels, successor);
+          Curry._3(H.add, l_labels, top$1, Caml_primitive.caml_int_max(Curry._2(H.find, l_labels, top$1), x));
+          _successors = successors[1];
+          continue ;
         } else {
           if (Curry._2(H.find, l_labels, top$1) === Curry._2(H.find, n_labels, top$1)) {
             cut_set.contents = /* :: */[
@@ -97,18 +95,17 @@ function Make(funarg) {
                   "Graph.Mincut: graph not reducible"
                 ];
           }
-          if (rest_of_stack$1) {
-            var match = rest_of_stack$1[0];
-            var new_top = match[0];
-            Curry._3(H.add, on_the_stack, top$1, false);
-            Curry._3(H.add, l_labels, new_top, Caml_primitive.caml_int_max(Curry._2(H.find, l_labels, top$1), Curry._2(H.find, l_labels, new_top)));
-            _rest_of_stack = rest_of_stack$1[1];
-            _top = new_top;
-            _successors = match[1];
-            continue ;
-          } else {
+          if (!rest_of_stack$1) {
             return cut_set.contents;
           }
+          var match = rest_of_stack$1[0];
+          var new_top = match[0];
+          Curry._3(H.add, on_the_stack, top$1, false);
+          Curry._3(H.add, l_labels, new_top, Caml_primitive.caml_int_max(Curry._2(H.find, l_labels, top$1), Curry._2(H.find, l_labels, new_top)));
+          _rest_of_stack = rest_of_stack$1[1];
+          _top = new_top;
+          _successors = match[1];
+          continue ;
         }
       };
     };

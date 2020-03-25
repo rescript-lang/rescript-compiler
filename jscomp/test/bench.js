@@ -10,32 +10,30 @@ function map(f, a) {
   var l = a.length;
   if (l === 0) {
     return [];
-  } else {
-    var r = Caml_array.caml_make_vect(l, f$1(a[0]));
-    for(var i = 1 ,i_finish = l - 1 | 0; i <= i_finish; ++i){
-      r[i] = f$1(a[i]);
-    }
-    return r;
   }
+  var r = Caml_array.caml_make_vect(l, f$1(a[0]));
+  for(var i = 1 ,i_finish = l - 1 | 0; i <= i_finish; ++i){
+    r[i] = f$1(a[i]);
+  }
+  return r;
 }
 
 function init(l, f) {
   var f$1 = Curry.__1(f);
   if (l === 0) {
     return [];
-  } else {
-    if (l < 0) {
-      throw [
-            Caml_builtin_exceptions.invalid_argument,
-            "Array.init"
-          ];
-    }
-    var res = Caml_array.caml_make_vect(l, f$1(0));
-    for(var i = 1 ,i_finish = l - 1 | 0; i <= i_finish; ++i){
-      res[i] = f$1(i);
-    }
-    return res;
   }
+  if (l < 0) {
+    throw [
+          Caml_builtin_exceptions.invalid_argument,
+          "Array.init"
+        ];
+  }
+  var res = Caml_array.caml_make_vect(l, f$1(0));
+  for(var i = 1 ,i_finish = l - 1 | 0; i <= i_finish; ++i){
+    res[i] = f$1(i);
+  }
+  return res;
 }
 
 function fold_left(f, x, a) {

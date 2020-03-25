@@ -136,10 +136,9 @@ function even2(_n) {
     var n = _n;
     if (n === 0) {
       return true;
-    } else {
-      _n = n - 1 | 0;
-      continue ;
     }
+    _n = n - 1 | 0;
+    continue ;
   };
 }
 
@@ -152,13 +151,12 @@ function sum(_acc, _n) {
   while(true) {
     var n = _n;
     var acc = _acc;
-    if (n > 0) {
-      _n = n - 1 | 0;
-      _acc = acc + n | 0;
-      continue ;
-    } else {
+    if (n <= 0) {
       return acc;
     }
+    _n = n - 1 | 0;
+    _acc = acc + n | 0;
+    continue ;
   };
 }
 
@@ -234,21 +232,7 @@ var suites_001 = /* :: */[
     "mutual",
     (function (param) {
         var tmp;
-        if (a) {
-          var match = a[1];
-          if (match) {
-            tmp = match[0];
-          } else {
-            throw [
-                  Caml_builtin_exceptions.assert_failure,
-                  /* tuple */[
-                    "rec_value_test.ml",
-                    108,
-                    2
-                  ]
-                ];
-          }
-        } else {
+        if (!a) {
           throw [
                 Caml_builtin_exceptions.assert_failure,
                 /* tuple */[
@@ -258,6 +242,18 @@ var suites_001 = /* :: */[
                 ]
               ];
         }
+        var match = a[1];
+        if (!match) {
+          throw [
+                Caml_builtin_exceptions.assert_failure,
+                /* tuple */[
+                  "rec_value_test.ml",
+                  108,
+                  2
+                ]
+              ];
+        }
+        tmp = match[0];
         return /* Eq */Block.__(0, [
                   3,
                   tmp
@@ -386,12 +382,11 @@ var suites_001 = /* :: */[
                                   11
                                 ]
                               ];
-                        } else {
-                          return /* Eq */Block.__(0, [
-                                    Curry._1(rec_variant_b[1], /* () */0),
-                                    rec_variant_a
-                                  ]);
                         }
+                        return /* Eq */Block.__(0, [
+                                  Curry._1(rec_variant_b[1], /* () */0),
+                                  rec_variant_a
+                                ]);
                       })
                   ],
                   /* :: */[
@@ -403,16 +398,15 @@ var suites_001 = /* :: */[
                                       Curry._1(rec_variant_a[1], /* () */0),
                                       rec_variant_b
                                     ]);
-                          } else {
-                            throw [
-                                  Caml_builtin_exceptions.assert_failure,
-                                  /* tuple */[
-                                    "rec_value_test.ml",
-                                    137,
-                                    11
-                                  ]
-                                ];
                           }
+                          throw [
+                                Caml_builtin_exceptions.assert_failure,
+                                /* tuple */[
+                                  "rec_value_test.ml",
+                                  137,
+                                  11
+                                ]
+                              ];
                         })
                     ],
                     /* [] */0

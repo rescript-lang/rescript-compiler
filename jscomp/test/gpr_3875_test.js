@@ -22,24 +22,25 @@ function compilerBug(a, b, c, f) {
     exit = 2;
   }
   if (exit === 2) {
-    if (b !== undefined) {
-      if (b !== "x") {
-        if (c) {
-          result.contents = "No x, c is true";
-          return /* () */0;
-        } else {
-          result.contents = "No x, c is false";
-          return /* () */0;
-        }
+    if (b === undefined) {
+      if (c) {
+        result.contents = "No x, c is true";
+        return /* () */0;
+      } else {
+        result.contents = "No x, c is false";
+        return /* () */0;
       }
-      
-    } else if (c) {
-      result.contents = "No x, c is true";
-      return /* () */0;
-    } else {
-      result.contents = "No x, c is false";
-      return /* () */0;
     }
+    if (b !== "x") {
+      if (c) {
+        result.contents = "No x, c is true";
+        return /* () */0;
+      } else {
+        result.contents = "No x, c is false";
+        return /* () */0;
+      }
+    }
+    
   }
   if (Curry._1(f, /* () */0)) {
     result.contents = "Some x, f returns true";

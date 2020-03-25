@@ -90,16 +90,15 @@ function bench2(m) {
   }
   if (empty.size === 0) {
     return /* () */0;
-  } else {
-    throw [
-          Caml_builtin_exceptions.assert_failure,
-          /* tuple */[
-            "bs_hashtbl_string_test.ml",
-            82,
-            2
-          ]
-        ];
   }
+  throw [
+        Caml_builtin_exceptions.assert_failure,
+        /* tuple */[
+          "bs_hashtbl_string_test.ml",
+          82,
+          2
+        ]
+      ];
 }
 
 function bench3(m) {
@@ -130,16 +129,15 @@ function bench3(m) {
   }
   if (Belt_MapDict.size(table) === 0) {
     return /* () */0;
-  } else {
-    throw [
-          Caml_builtin_exceptions.assert_failure,
-          /* tuple */[
-            "bs_hashtbl_string_test.ml",
-            105,
-            2
-          ]
-        ];
   }
+  throw [
+        Caml_builtin_exceptions.assert_failure,
+        /* tuple */[
+          "bs_hashtbl_string_test.ml",
+          105,
+          2
+        ]
+      ];
 }
 
 var Sx = Belt_Id.comparable(Caml_primitive.caml_string_compare);
@@ -167,16 +165,15 @@ function bench4(param) {
   }
   if (Belt_HashMapString.isEmpty(table)) {
     return /* () */0;
-  } else {
-    throw [
-          Caml_builtin_exceptions.assert_failure,
-          /* tuple */[
-            "bs_hashtbl_string_test.ml",
-            124,
-            2
-          ]
-        ];
   }
+  throw [
+        Caml_builtin_exceptions.assert_failure,
+        /* tuple */[
+          "bs_hashtbl_string_test.ml",
+          124,
+          2
+        ]
+      ];
 }
 
 function bench5(param) {
@@ -208,16 +205,15 @@ function bench5(param) {
   console.timeEnd("test/bs_hashtbl_string_test.ml 141");
   if (Belt_HashMap.isEmpty(table)) {
     return /* () */0;
-  } else {
-    throw [
-          Caml_builtin_exceptions.assert_failure,
-          /* tuple */[
-            "bs_hashtbl_string_test.ml",
-            144,
-            2
-          ]
-        ];
   }
+  throw [
+        Caml_builtin_exceptions.assert_failure,
+        /* tuple */[
+          "bs_hashtbl_string_test.ml",
+          144,
+          2
+        ]
+      ];
 }
 
 function bench6(param) {
@@ -243,16 +239,15 @@ function bench6(param) {
   }
   if (table.size === 0) {
     return /* () */0;
-  } else {
-    throw [
-          Caml_builtin_exceptions.assert_failure,
-          /* tuple */[
-            "bs_hashtbl_string_test.ml",
-            162,
-            2
-          ]
-        ];
   }
+  throw [
+        Caml_builtin_exceptions.assert_failure,
+        /* tuple */[
+          "bs_hashtbl_string_test.ml",
+          162,
+          2
+        ]
+      ];
 }
 
 function bench7(param) {
@@ -278,16 +273,15 @@ function bench7(param) {
   }
   if (table.size === 0) {
     return /* () */0;
-  } else {
-    throw [
-          Caml_builtin_exceptions.assert_failure,
-          /* tuple */[
-            "bs_hashtbl_string_test.ml",
-            192,
-            2
-          ]
-        ];
   }
+  throw [
+        Caml_builtin_exceptions.assert_failure,
+        /* tuple */[
+          "bs_hashtbl_string_test.ml",
+          192,
+          2
+        ]
+      ];
 }
 
 console.time("test/bs_hashtbl_string_test.ml 203");

@@ -47,7 +47,8 @@ function test_js_error4(param) {
     var e = Caml_js_exceptions.internalToOCamlException(raw_e);
     if (e === Caml_builtin_exceptions.not_found) {
       return 2;
-    } else if (e[0] === Caml_builtin_exceptions.invalid_argument && e[1] === "x") {
+    }
+    if (e[0] === Caml_builtin_exceptions.invalid_argument && e[1] === "x") {
       return 3;
     }
     if (e[0] === A) {
@@ -73,9 +74,8 @@ function f(g) {
   catch (exn){
     if (exn === Caml_builtin_exceptions.not_found) {
       return 1;
-    } else {
-      throw exn;
     }
+    throw exn;
   }
 }
 

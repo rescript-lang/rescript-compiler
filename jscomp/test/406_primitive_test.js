@@ -40,9 +40,8 @@ function f(param) {
     var exn = Caml_js_exceptions.internalToOCamlException(raw_exn);
     if (exn[0] === A) {
       return /* () */0;
-    } else {
-      throw exn;
     }
+    throw exn;
   }
 }
 

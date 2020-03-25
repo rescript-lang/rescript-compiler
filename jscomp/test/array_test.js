@@ -16,23 +16,21 @@ function starts_with(xs, prefix, p) {
   var len2 = prefix.length;
   if (len2 > len1) {
     return false;
-  } else {
-    try {
-      for(var i = 0 ,i_finish = len2 - 1 | 0; i <= i_finish; ++i){
-        if (!Curry._2(p, Caml_array.caml_array_get(xs, i), Caml_array.caml_array_get(prefix, i))) {
-          throw H;
-        }
-        
+  }
+  try {
+    for(var i = 0 ,i_finish = len2 - 1 | 0; i <= i_finish; ++i){
+      if (!Curry._2(p, Caml_array.caml_array_get(xs, i), Caml_array.caml_array_get(prefix, i))) {
+        throw H;
       }
-      return true;
+      
     }
-    catch (exn){
-      if (exn === H) {
-        return false;
-      } else {
-        throw exn;
-      }
+    return true;
+  }
+  catch (exn){
+    if (exn === H) {
+      return false;
     }
+    throw exn;
   }
 }
 
@@ -43,12 +41,12 @@ function is_sorted(x) {
     var i = _i;
     if (i >= (len - 1 | 0)) {
       return true;
-    } else if (Caml_obj.caml_lessthan(Caml_array.caml_array_get(x, i), Caml_array.caml_array_get(x, i + 1 | 0))) {
-      _i = i + 1 | 0;
-      continue ;
-    } else {
+    }
+    if (!Caml_obj.caml_lessthan(Caml_array.caml_array_get(x, i), Caml_array.caml_array_get(x, i + 1 | 0))) {
       return false;
     }
+    _i = i + 1 | 0;
+    continue ;
   };
 }
 

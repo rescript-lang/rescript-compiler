@@ -15,20 +15,18 @@ function assert_fail(msg) {
 
 function is_mocha(param) {
   var match = $$Array.to_list(Process.argv);
-  if (match) {
-    var match$1 = match[1];
-    if (match$1) {
-      var exec = Path.basename(match$1[0]);
-      if (exec === "mocha") {
-        return true;
-      } else {
-        return exec === "_mocha";
-      }
-    } else {
-      return false;
-    }
-  } else {
+  if (!match) {
     return false;
+  }
+  var match$1 = match[1];
+  if (!match$1) {
+    return false;
+  }
+  var exec = Path.basename(match$1[0]);
+  if (exec === "mocha") {
+    return true;
+  } else {
+    return exec === "_mocha";
   }
 }
 
@@ -75,19 +73,19 @@ function handleCode(spec) {
     case /* Approx */5 :
         var b = spec[1];
         var a = spec[0];
-        if (close_enough(undefined, a, b)) {
+        if (!close_enough(undefined, a, b)) {
+          Assert.deepEqual(a, b);
           return /* () */0;
         } else {
-          Assert.deepEqual(a, b);
           return /* () */0;
         }
     case /* ApproxThreshold */6 :
         var b$1 = spec[2];
         var a$1 = spec[1];
-        if (close_enough(spec[0], a$1, b$1)) {
+        if (!close_enough(spec[0], a$1, b$1)) {
+          Assert.deepEqual(a$1, b$1);
           return /* () */0;
         } else {
-          Assert.deepEqual(a$1, b$1);
           return /* () */0;
         }
     case /* ThrowAny */7 :

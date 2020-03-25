@@ -37,18 +37,19 @@ function handler(e) {
   if (e[0] === Js_exn.$$Error) {
     console.log("js error");
     return Promise.resolve(0);
-  } else if (e === Caml_builtin_exceptions.not_found) {
+  } else {
+    if (e !== Caml_builtin_exceptions.not_found) {
+      throw [
+            Caml_builtin_exceptions.assert_failure,
+            /* tuple */[
+              "promise_catch_test.ml",
+              22,
+              9
+            ]
+          ];
+    }
     console.log("hi");
     return Promise.resolve(0);
-  } else {
-    throw [
-          Caml_builtin_exceptions.assert_failure,
-          /* tuple */[
-            "promise_catch_test.ml",
-            22,
-            9
-          ]
-        ];
   }
 }
 

@@ -976,20 +976,7 @@ var random_data = /* :: */[
 ];
 
 Belt_List.forEach(random_data, (function (u) {
-        if (u) {
-          if (u[1]) {
-            throw [
-                  Caml_builtin_exceptions.assert_failure,
-                  /* tuple */[
-                    "int64_string_test.ml",
-                    161,
-                    9
-                  ]
-                ];
-          }
-          var match = u[0];
-          return eq("File \"int64_string_test.ml\", line 160, characters 21-28", Caml_int64.to_string(match[0]), match[1]);
-        } else {
+        if (!u) {
           throw [
                 Caml_builtin_exceptions.assert_failure,
                 /* tuple */[
@@ -999,6 +986,18 @@ Belt_List.forEach(random_data, (function (u) {
                 ]
               ];
         }
+        if (u[1]) {
+          throw [
+                Caml_builtin_exceptions.assert_failure,
+                /* tuple */[
+                  "int64_string_test.ml",
+                  161,
+                  9
+                ]
+              ];
+        }
+        var match = u[0];
+        return eq("File \"int64_string_test.ml\", line 160, characters 21-28", Caml_int64.to_string(match[0]), match[1]);
       }));
 
 eq("File \"int64_string_test.ml\", line 164, characters 7-14", Caml_int64.to_string(Caml_int64.mk(1, -2097152)), "-9007199254740991");

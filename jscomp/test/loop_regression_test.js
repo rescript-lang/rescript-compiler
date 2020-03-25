@@ -14,11 +14,10 @@ function f(param) {
   while(true) {
     if (v.contents > n) {
       return acc.contents;
-    } else {
-      acc.contents = acc.contents + v.contents | 0;
-      v.contents = v.contents + 1 | 0;
-      continue ;
     }
+    acc.contents = acc.contents + v.contents | 0;
+    v.contents = v.contents + 1 | 0;
+    continue ;
   };
 }
 

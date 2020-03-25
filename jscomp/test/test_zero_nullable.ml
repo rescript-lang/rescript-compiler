@@ -216,9 +216,9 @@ module Test_null_def = struct
 
   let f9 x = toOption x 
 
-  let f10 x = test x 
+  let f10 x = isNullable x 
 
-  let f11 =  (test @@ return 3)
+  let f11 =  (isNullable @@ return 3)
 
 end
 

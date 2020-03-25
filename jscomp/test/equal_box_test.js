@@ -27,7 +27,7 @@ function b(loc, x) {
 }
 
 function f(param) {
-  return ;
+  
 }
 
 function shouldBeNull(param) {

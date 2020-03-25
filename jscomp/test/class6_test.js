@@ -111,17 +111,15 @@ var q = Curry._3(colored_point[0], /* () */0, 4, "blue");
 function lookup_obj(obj, _param) {
   while(true) {
     var param = _param;
-    if (param) {
-      var obj$prime = param[0];
-      if (Caml_obj.caml_equal(obj, obj$prime)) {
-        return obj$prime;
-      } else {
-        _param = param[1];
-        continue ;
-      }
-    } else {
+    if (!param) {
       throw Caml_builtin_exceptions.not_found;
     }
+    var obj$prime = param[0];
+    if (Caml_obj.caml_equal(obj, obj$prime)) {
+      return obj$prime;
+    }
+    _param = param[1];
+    continue ;
   };
 }
 

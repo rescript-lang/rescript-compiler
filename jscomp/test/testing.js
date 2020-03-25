@@ -78,9 +78,7 @@ function print_failure_test_succeed(param) {
 function test(b) {
   test_num.contents = test_num.contents + 1 | 0;
   print_test_number(/* () */0);
-  if (b) {
-    return /* () */0;
-  } else {
+  if (!b) {
     all_tests_ok.contents = false;
     return Pervasives.print_string(Curry._1(Printf.sprintf(/* Format */[
                         /* String_literal */Block.__(11, [
@@ -97,6 +95,8 @@ function test(b) {
                           ]),
                         "\n********* Test number %i failed ***********\n"
                       ]), test_num.contents));
+  } else {
+    return /* () */0;
   }
 }
 

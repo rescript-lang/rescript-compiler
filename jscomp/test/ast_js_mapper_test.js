@@ -48,10 +48,9 @@ function searchForSureExists(xs, k) {
     var match = xs$1[i];
     if (match[0] === k$1) {
       return match[1];
-    } else {
-      _i = i + 1 | 0;
-      continue ;
     }
+    _i = i + 1 | 0;
+    continue ;
   };
 }
 

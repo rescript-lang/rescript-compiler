@@ -194,9 +194,8 @@ function file_option(file_options, name) {
   catch (exn){
     if (exn === Caml_builtin_exceptions.not_found) {
       return ;
-    } else {
-      throw exn;
     }
+    throw exn;
   }
   return x;
 }
@@ -217,47 +216,43 @@ function rev_split_by_char(c, s) {
                 $$String.sub(s, i, s.length - i | 0),
                 l
               ];
-      } else {
-        throw exn;
       }
+      throw exn;
     }
   };
   return loop(0, /* [] */0);
 }
 
 function pop_last(param) {
-  if (param) {
-    var tl = param[1];
-    if (tl) {
-      return /* :: */[
-              param[0],
-              pop_last(tl)
-            ];
-    } else {
-      return /* [] */0;
-    }
-  } else {
+  if (!param) {
     throw [
           Caml_builtin_exceptions.failure,
           "Invalid argument [] for pop_last"
         ];
+  }
+  var tl = param[1];
+  if (tl) {
+    return /* :: */[
+            param[0],
+            pop_last(tl)
+          ];
+  } else {
+    return /* [] */0;
   }
 }
 
 function apply_until(f, _param) {
   while(true) {
     var param = _param;
-    if (param) {
-      var x = Curry._1(f, param[0]);
-      if (x !== undefined) {
-        return x;
-      } else {
-        _param = param[1];
-        continue ;
-      }
-    } else {
+    if (!param) {
       return ;
     }
+    var x = Curry._1(f, param[0]);
+    if (x !== undefined) {
+      return x;
+    }
+    _param = param[1];
+    continue ;
   };
 }
 
@@ -286,11 +281,10 @@ function string_fold_lefti(f, e0, s) {
     var acc = _acc;
     if (i === len) {
       return acc;
-    } else {
-      _i = i + 1 | 0;
-      _acc = Curry._3(f, acc, i, s.charCodeAt(i));
-      continue ;
     }
+    _i = i + 1 | 0;
+    _acc = Curry._3(f, acc, i, s.charCodeAt(i));
+    continue ;
   };
 }
 
@@ -375,279 +369,278 @@ function prepare_error(param) {
                   ]),
                 "Syntax error"
               ]);
-  } else {
-    switch (param.tag | 0) {
-      case /* Unresolved_type */0 :
-          var match = param[0];
-          return Curry._3(Printf.sprintf(/* Format */[
-                          /* String_literal */Block.__(11, [
-                              "unresolved type for field name : ",
-                              /* String */Block.__(2, [
-                                  /* No_padding */0,
-                                  /* String_literal */Block.__(11, [
-                                      " (type:",
-                                      /* String */Block.__(2, [
-                                          /* No_padding */0,
-                                          /* String_literal */Block.__(11, [
-                                              ", in message: ",
-                                              /* String */Block.__(2, [
-                                                  /* No_padding */0,
-                                                  /* Char_literal */Block.__(12, [
-                                                      /* ")" */41,
-                                                      /* End_of_format */0
-                                                    ])
-                                                ])
-                                            ])
-                                        ])
-                                    ])
-                                ])
-                            ]),
-                          "unresolved type for field name : %s (type:%s, in message: %s)"
-                        ]), match.field_name, match.type_, match.message_name);
-      case /* Duplicated_field_number */1 :
-          var match$1 = param[0];
-          return Curry._3(Printf.sprintf(/* Format */[
-                          /* String_literal */Block.__(11, [
-                              "duplicated field number for field name: ",
-                              /* String */Block.__(2, [
-                                  /* No_padding */0,
-                                  /* String_literal */Block.__(11, [
-                                      " (previous field name:",
-                                      /* String */Block.__(2, [
-                                          /* No_padding */0,
-                                          /* String_literal */Block.__(11, [
-                                              ", message: ",
-                                              /* String */Block.__(2, [
-                                                  /* No_padding */0,
-                                                  /* Char_literal */Block.__(12, [
-                                                      /* ")" */41,
-                                                      /* End_of_format */0
-                                                    ])
-                                                ])
-                                            ])
-                                        ])
-                                    ])
-                                ])
-                            ]),
-                          "duplicated field number for field name: %s (previous field name:%s, message: %s)"
-                        ]), match$1.field_name, match$1.previous_field_name, match$1.message_name);
-      case /* Invalid_default_value */2 :
-          var match$2 = param[0];
-          return Curry._2(Printf.sprintf(/* Format */[
-                          /* String_literal */Block.__(11, [
-                              "invalid default value for field name:",
-                              /* String */Block.__(2, [
-                                  /* No_padding */0,
-                                  /* String_literal */Block.__(11, [
-                                      " (info: ",
-                                      /* String */Block.__(2, [
-                                          /* No_padding */0,
-                                          /* Char_literal */Block.__(12, [
-                                              /* ")" */41,
-                                              /* End_of_format */0
-                                            ])
-                                        ])
-                                    ])
-                                ])
-                            ]),
-                          "invalid default value for field name:%s (info: %s)"
-                        ]), option_default("", match$2.field_name), match$2.info);
-      case /* Unsupported_field_type */3 :
-          var match$3 = param[0];
-          return Curry._3(Printf.sprintf(/* Format */[
-                          /* String_literal */Block.__(11, [
-                              "unsupported field type for field name:",
-                              /* String */Block.__(2, [
-                                  /* No_padding */0,
-                                  /* String_literal */Block.__(11, [
-                                      " with type:",
-                                      /* String */Block.__(2, [
-                                          /* No_padding */0,
-                                          /* String_literal */Block.__(11, [
-                                              " in bakend: ",
-                                              /* String */Block.__(2, [
-                                                  /* No_padding */0,
-                                                  /* End_of_format */0
-                                                ])
-                                            ])
-                                        ])
-                                    ])
-                                ])
-                            ]),
-                          "unsupported field type for field name:%s with type:%s in bakend: %s"
-                        ]), option_default("", match$3.field_name), match$3.field_type, match$3.backend_name);
-      case /* Programatic_error */4 :
-          return Curry._1(Printf.sprintf(/* Format */[
-                          /* String_literal */Block.__(11, [
-                              "programmatic error: ",
-                              /* String */Block.__(2, [
-                                  /* No_padding */0,
-                                  /* End_of_format */0
-                                ])
-                            ]),
-                          "programmatic error: %s"
-                        ]), string_of_programmatic_error(param[0]));
-      case /* Invalid_import_qualifier */5 :
-          return Curry._1(Printf.sprintf(/* Format */[
-                          /* String */Block.__(2, [
-                              /* No_padding */0,
-                              /* String_literal */Block.__(11, [
-                                  "Invalid import qualified, only 'public' supported",
-                                  /* End_of_format */0
-                                ])
-                            ]),
-                          "%sInvalid import qualified, only 'public' supported"
-                        ]), to_string(param[0]));
-      case /* Invalid_file_name */6 :
-          return Curry._1(Printf.sprintf(Pervasives.$caret$caret(/* Format */[
-                              /* String_literal */Block.__(11, [
-                                  "Invalid file name: ",
-                                  /* String */Block.__(2, [
-                                      /* No_padding */0,
-                                      /* String_literal */Block.__(11, [
-                                          ", ",
-                                          /* End_of_format */0
-                                        ])
-                                    ])
-                                ]),
-                              "Invalid file name: %s, "
-                            ], /* Format */[
-                              /* String_literal */Block.__(11, [
-                                  "format must <name>.proto",
-                                  /* End_of_format */0
-                                ]),
-                              "format must <name>.proto"
-                            ])), param[0]);
-      case /* Import_file_not_found */7 :
-          return Curry._1(Printf.sprintf(Pervasives.$caret$caret(/* Format */[
-                              /* String_literal */Block.__(11, [
-                                  "File: ",
-                                  /* String */Block.__(2, [
-                                      /* No_padding */0,
-                                      /* String_literal */Block.__(11, [
-                                          ", ",
-                                          /* End_of_format */0
-                                        ])
-                                    ])
-                                ]),
-                              "File: %s, "
-                            ], /* Format */[
-                              /* String_literal */Block.__(11, [
-                                  "could not be found.",
-                                  /* End_of_format */0
-                                ]),
-                              "could not be found."
-                            ])), param[0]);
-      case /* Invalid_packed_option */8 :
-          return Curry._1(Printf.sprintf(/* Format */[
-                          /* String_literal */Block.__(11, [
-                              "Invalid packed option for field: ",
-                              /* String */Block.__(2, [
-                                  /* No_padding */0,
-                                  /* End_of_format */0
-                                ])
-                            ]),
-                          "Invalid packed option for field: %s"
-                        ]), param[0]);
-      case /* Missing_semicolon_for_enum_value */9 :
-          return Curry._2(Printf.sprintf(/* Format */[
-                          /* String */Block.__(2, [
-                              /* No_padding */0,
-                              /* String_literal */Block.__(11, [
-                                  "Missing semicolon for enum value: ",
-                                  /* String */Block.__(2, [
-                                      /* No_padding */0,
-                                      /* End_of_format */0
-                                    ])
-                                ])
-                            ]),
-                          "%sMissing semicolon for enum value: %s"
-                        ]), to_string(param[1]), param[0]);
-      case /* Invalid_enum_specification */10 :
-          return Curry._2(Printf.sprintf(/* Format */[
-                          /* String */Block.__(2, [
-                              /* No_padding */0,
-                              /* String_literal */Block.__(11, [
-                                  "Missing enum specification (<identifier> = <id>;) for enum value: ",
-                                  /* String */Block.__(2, [
-                                      /* No_padding */0,
-                                      /* End_of_format */0
-                                    ])
-                                ])
-                            ]),
-                          "%sMissing enum specification (<identifier> = <id>;) for enum value: %s"
-                        ]), to_string(param[1]), param[0]);
-      case /* Invalid_mutable_option */11 :
-          return Curry._1(Printf.sprintf(/* Format */[
-                          /* String_literal */Block.__(11, [
-                              "Invalid mutable option for field ",
-                              /* String */Block.__(2, [
-                                  /* No_padding */0,
-                                  /* End_of_format */0
-                                ])
-                            ]),
-                          "Invalid mutable option for field %s"
-                        ]), option_default("", param[0]));
-      case /* Missing_one_of_name */12 :
-          return Curry._1(Printf.sprintf(/* Format */[
-                          /* String */Block.__(2, [
-                              /* No_padding */0,
-                              /* String_literal */Block.__(11, [
-                                  "Missing oneof name",
-                                  /* End_of_format */0
-                                ])
-                            ]),
-                          "%sMissing oneof name"
-                        ]), to_string(param[0]));
-      case /* Invalid_field_label */13 :
-          return Curry._1(Printf.sprintf(/* Format */[
-                          /* String */Block.__(2, [
-                              /* No_padding */0,
-                              /* String_literal */Block.__(11, [
-                                  "Invalid field label. [required|repeated|optional] expected",
-                                  /* End_of_format */0
-                                ])
-                            ]),
-                          "%sInvalid field label. [required|repeated|optional] expected"
-                        ]), to_string(param[0]));
-      case /* Missing_field_label */14 :
-          return Curry._1(Printf.sprintf(/* Format */[
-                          /* String */Block.__(2, [
-                              /* No_padding */0,
-                              /* String_literal */Block.__(11, [
-                                  "Missing field label. [required|repeated|optional] expected",
-                                  /* End_of_format */0
-                                ])
-                            ]),
-                          "%sMissing field label. [required|repeated|optional] expected"
-                        ]), to_string(param[0]));
-      case /* Parsing_error */15 :
-          return Curry._3(Printf.sprintf(/* Format */[
-                          /* String_literal */Block.__(11, [
-                              "File ",
-                              /* String */Block.__(2, [
-                                  /* No_padding */0,
-                                  /* String_literal */Block.__(11, [
-                                      ", line ",
-                                      /* Int */Block.__(4, [
-                                          /* Int_i */3,
-                                          /* No_padding */0,
-                                          /* No_precision */0,
-                                          /* String_literal */Block.__(11, [
-                                              ":\n",
-                                              /* String */Block.__(2, [
-                                                  /* No_padding */0,
-                                                  /* End_of_format */0
-                                                ])
-                                            ])
-                                        ])
-                                    ])
-                                ])
-                            ]),
-                          "File %s, line %i:\n%s"
-                        ]), param[0], param[1], param[2]);
-      
-    }
+  }
+  switch (param.tag | 0) {
+    case /* Unresolved_type */0 :
+        var match = param[0];
+        return Curry._3(Printf.sprintf(/* Format */[
+                        /* String_literal */Block.__(11, [
+                            "unresolved type for field name : ",
+                            /* String */Block.__(2, [
+                                /* No_padding */0,
+                                /* String_literal */Block.__(11, [
+                                    " (type:",
+                                    /* String */Block.__(2, [
+                                        /* No_padding */0,
+                                        /* String_literal */Block.__(11, [
+                                            ", in message: ",
+                                            /* String */Block.__(2, [
+                                                /* No_padding */0,
+                                                /* Char_literal */Block.__(12, [
+                                                    /* ")" */41,
+                                                    /* End_of_format */0
+                                                  ])
+                                              ])
+                                          ])
+                                      ])
+                                  ])
+                              ])
+                          ]),
+                        "unresolved type for field name : %s (type:%s, in message: %s)"
+                      ]), match.field_name, match.type_, match.message_name);
+    case /* Duplicated_field_number */1 :
+        var match$1 = param[0];
+        return Curry._3(Printf.sprintf(/* Format */[
+                        /* String_literal */Block.__(11, [
+                            "duplicated field number for field name: ",
+                            /* String */Block.__(2, [
+                                /* No_padding */0,
+                                /* String_literal */Block.__(11, [
+                                    " (previous field name:",
+                                    /* String */Block.__(2, [
+                                        /* No_padding */0,
+                                        /* String_literal */Block.__(11, [
+                                            ", message: ",
+                                            /* String */Block.__(2, [
+                                                /* No_padding */0,
+                                                /* Char_literal */Block.__(12, [
+                                                    /* ")" */41,
+                                                    /* End_of_format */0
+                                                  ])
+                                              ])
+                                          ])
+                                      ])
+                                  ])
+                              ])
+                          ]),
+                        "duplicated field number for field name: %s (previous field name:%s, message: %s)"
+                      ]), match$1.field_name, match$1.previous_field_name, match$1.message_name);
+    case /* Invalid_default_value */2 :
+        var match$2 = param[0];
+        return Curry._2(Printf.sprintf(/* Format */[
+                        /* String_literal */Block.__(11, [
+                            "invalid default value for field name:",
+                            /* String */Block.__(2, [
+                                /* No_padding */0,
+                                /* String_literal */Block.__(11, [
+                                    " (info: ",
+                                    /* String */Block.__(2, [
+                                        /* No_padding */0,
+                                        /* Char_literal */Block.__(12, [
+                                            /* ")" */41,
+                                            /* End_of_format */0
+                                          ])
+                                      ])
+                                  ])
+                              ])
+                          ]),
+                        "invalid default value for field name:%s (info: %s)"
+                      ]), option_default("", match$2.field_name), match$2.info);
+    case /* Unsupported_field_type */3 :
+        var match$3 = param[0];
+        return Curry._3(Printf.sprintf(/* Format */[
+                        /* String_literal */Block.__(11, [
+                            "unsupported field type for field name:",
+                            /* String */Block.__(2, [
+                                /* No_padding */0,
+                                /* String_literal */Block.__(11, [
+                                    " with type:",
+                                    /* String */Block.__(2, [
+                                        /* No_padding */0,
+                                        /* String_literal */Block.__(11, [
+                                            " in bakend: ",
+                                            /* String */Block.__(2, [
+                                                /* No_padding */0,
+                                                /* End_of_format */0
+                                              ])
+                                          ])
+                                      ])
+                                  ])
+                              ])
+                          ]),
+                        "unsupported field type for field name:%s with type:%s in bakend: %s"
+                      ]), option_default("", match$3.field_name), match$3.field_type, match$3.backend_name);
+    case /* Programatic_error */4 :
+        return Curry._1(Printf.sprintf(/* Format */[
+                        /* String_literal */Block.__(11, [
+                            "programmatic error: ",
+                            /* String */Block.__(2, [
+                                /* No_padding */0,
+                                /* End_of_format */0
+                              ])
+                          ]),
+                        "programmatic error: %s"
+                      ]), string_of_programmatic_error(param[0]));
+    case /* Invalid_import_qualifier */5 :
+        return Curry._1(Printf.sprintf(/* Format */[
+                        /* String */Block.__(2, [
+                            /* No_padding */0,
+                            /* String_literal */Block.__(11, [
+                                "Invalid import qualified, only 'public' supported",
+                                /* End_of_format */0
+                              ])
+                          ]),
+                        "%sInvalid import qualified, only 'public' supported"
+                      ]), to_string(param[0]));
+    case /* Invalid_file_name */6 :
+        return Curry._1(Printf.sprintf(Pervasives.$caret$caret(/* Format */[
+                            /* String_literal */Block.__(11, [
+                                "Invalid file name: ",
+                                /* String */Block.__(2, [
+                                    /* No_padding */0,
+                                    /* String_literal */Block.__(11, [
+                                        ", ",
+                                        /* End_of_format */0
+                                      ])
+                                  ])
+                              ]),
+                            "Invalid file name: %s, "
+                          ], /* Format */[
+                            /* String_literal */Block.__(11, [
+                                "format must <name>.proto",
+                                /* End_of_format */0
+                              ]),
+                            "format must <name>.proto"
+                          ])), param[0]);
+    case /* Import_file_not_found */7 :
+        return Curry._1(Printf.sprintf(Pervasives.$caret$caret(/* Format */[
+                            /* String_literal */Block.__(11, [
+                                "File: ",
+                                /* String */Block.__(2, [
+                                    /* No_padding */0,
+                                    /* String_literal */Block.__(11, [
+                                        ", ",
+                                        /* End_of_format */0
+                                      ])
+                                  ])
+                              ]),
+                            "File: %s, "
+                          ], /* Format */[
+                            /* String_literal */Block.__(11, [
+                                "could not be found.",
+                                /* End_of_format */0
+                              ]),
+                            "could not be found."
+                          ])), param[0]);
+    case /* Invalid_packed_option */8 :
+        return Curry._1(Printf.sprintf(/* Format */[
+                        /* String_literal */Block.__(11, [
+                            "Invalid packed option for field: ",
+                            /* String */Block.__(2, [
+                                /* No_padding */0,
+                                /* End_of_format */0
+                              ])
+                          ]),
+                        "Invalid packed option for field: %s"
+                      ]), param[0]);
+    case /* Missing_semicolon_for_enum_value */9 :
+        return Curry._2(Printf.sprintf(/* Format */[
+                        /* String */Block.__(2, [
+                            /* No_padding */0,
+                            /* String_literal */Block.__(11, [
+                                "Missing semicolon for enum value: ",
+                                /* String */Block.__(2, [
+                                    /* No_padding */0,
+                                    /* End_of_format */0
+                                  ])
+                              ])
+                          ]),
+                        "%sMissing semicolon for enum value: %s"
+                      ]), to_string(param[1]), param[0]);
+    case /* Invalid_enum_specification */10 :
+        return Curry._2(Printf.sprintf(/* Format */[
+                        /* String */Block.__(2, [
+                            /* No_padding */0,
+                            /* String_literal */Block.__(11, [
+                                "Missing enum specification (<identifier> = <id>;) for enum value: ",
+                                /* String */Block.__(2, [
+                                    /* No_padding */0,
+                                    /* End_of_format */0
+                                  ])
+                              ])
+                          ]),
+                        "%sMissing enum specification (<identifier> = <id>;) for enum value: %s"
+                      ]), to_string(param[1]), param[0]);
+    case /* Invalid_mutable_option */11 :
+        return Curry._1(Printf.sprintf(/* Format */[
+                        /* String_literal */Block.__(11, [
+                            "Invalid mutable option for field ",
+                            /* String */Block.__(2, [
+                                /* No_padding */0,
+                                /* End_of_format */0
+                              ])
+                          ]),
+                        "Invalid mutable option for field %s"
+                      ]), option_default("", param[0]));
+    case /* Missing_one_of_name */12 :
+        return Curry._1(Printf.sprintf(/* Format */[
+                        /* String */Block.__(2, [
+                            /* No_padding */0,
+                            /* String_literal */Block.__(11, [
+                                "Missing oneof name",
+                                /* End_of_format */0
+                              ])
+                          ]),
+                        "%sMissing oneof name"
+                      ]), to_string(param[0]));
+    case /* Invalid_field_label */13 :
+        return Curry._1(Printf.sprintf(/* Format */[
+                        /* String */Block.__(2, [
+                            /* No_padding */0,
+                            /* String_literal */Block.__(11, [
+                                "Invalid field label. [required|repeated|optional] expected",
+                                /* End_of_format */0
+                              ])
+                          ]),
+                        "%sInvalid field label. [required|repeated|optional] expected"
+                      ]), to_string(param[0]));
+    case /* Missing_field_label */14 :
+        return Curry._1(Printf.sprintf(/* Format */[
+                        /* String */Block.__(2, [
+                            /* No_padding */0,
+                            /* String_literal */Block.__(11, [
+                                "Missing field label. [required|repeated|optional] expected",
+                                /* End_of_format */0
+                              ])
+                          ]),
+                        "%sMissing field label. [required|repeated|optional] expected"
+                      ]), to_string(param[0]));
+    case /* Parsing_error */15 :
+        return Curry._3(Printf.sprintf(/* Format */[
+                        /* String_literal */Block.__(11, [
+                            "File ",
+                            /* String */Block.__(2, [
+                                /* No_padding */0,
+                                /* String_literal */Block.__(11, [
+                                    ", line ",
+                                    /* Int */Block.__(4, [
+                                        /* Int_i */3,
+                                        /* No_padding */0,
+                                        /* No_precision */0,
+                                        /* String_literal */Block.__(11, [
+                                            ":\n",
+                                            /* String */Block.__(2, [
+                                                /* No_padding */0,
+                                                /* End_of_format */0
+                                              ])
+                                          ])
+                                      ])
+                                  ])
+                              ])
+                          ]),
+                        "File %s, line %i:\n%s"
+                      ]), param[0], param[1], param[2]);
+    
   }
 }
 
@@ -1581,20 +1574,18 @@ function lexer(lexbuf) {
           return /* COMMA */24;
       case 11 :
           var match = __ocaml_lex_comment_rec(/* [] */0, lexbuf$1, 41);
-          if (match) {
-            ___ocaml_lex_state = 0;
-            continue ;
-          } else {
+          if (!match) {
             return /* EOF */25;
           }
+          ___ocaml_lex_state = 0;
+          continue ;
       case 12 :
           var match$1 = __ocaml_lex_multi_line_comment_rec(/* [] */0, lexbuf$1, 47);
-          if (match$1) {
-            ___ocaml_lex_state = 0;
-            continue ;
-          } else {
+          if (!match$1) {
             return /* EOF */25;
           }
+          ___ocaml_lex_state = 0;
+          continue ;
       case 13 :
           var match$2 = __ocaml_lex_string_rec(/* [] */0, lexbuf$1, 55);
           if (match$2) {
@@ -1906,24 +1897,23 @@ function print(scope) {
     while(true) {
       var param = _param;
       var acc = _acc;
-      if (param) {
-        var match = param[0];
-        if (match.tag) {
-          var items = match[0].items;
-          var sub = loop(/* [] */0, i + 1 | 0, items);
-          _param = param[1];
-          _acc = Pervasives.$at(sub, acc);
-          continue ;
-        } else {
-          _param = param[1];
-          _acc = /* :: */[
-            indentation_prefix(i) + match[0],
-            acc
-          ];
-          continue ;
-        }
-      } else {
+      if (!param) {
         return acc;
+      }
+      var match = param[0];
+      if (match.tag) {
+        var items = match[0].items;
+        var sub = loop(/* [] */0, i + 1 | 0, items);
+        _param = param[1];
+        _acc = Pervasives.$at(sub, acc);
+        continue ;
+      } else {
+        _param = param[1];
+        _acc = /* :: */[
+          indentation_prefix(i) + match[0],
+          acc
+        ];
+        continue ;
       }
     };
   };
@@ -1980,18 +1970,16 @@ function runtime_function(param) {
             }
         case /* Pk_bytes */2 :
             var match$2 = param[2];
-            if (match$2 !== 5) {
-              if (match$2 !== 0) {
-                throw [
-                      Caml_builtin_exceptions.failure,
-                      "Invalid encoding/OCaml type combination"
-                    ];
-              } else {
-                return "Pbrt.Encoder.string";
-              }
-            } else {
+            if (match$2 === 5) {
               return "Pbrt.Encoder.bytes";
             }
+            if (match$2 !== 0) {
+              throw [
+                    Caml_builtin_exceptions.failure,
+                    "Invalid encoding/OCaml type combination"
+                  ];
+            }
+            return "Pbrt.Encoder.string";
         
       }
     } else if (match$1[0]) {
@@ -2074,18 +2062,16 @@ function runtime_function(param) {
             }
         case /* Pk_bytes */2 :
             var match$4 = param[2];
-            if (match$4 !== 5) {
-              if (match$4 !== 0) {
-                throw [
-                      Caml_builtin_exceptions.failure,
-                      "Invalid encoding/OCaml type combination"
-                    ];
-              } else {
-                return "Pbrt.Decoder.string";
-              }
-            } else {
+            if (match$4 === 5) {
               return "Pbrt.Decoder.bytes";
             }
+            if (match$4 !== 0) {
+              throw [
+                    Caml_builtin_exceptions.failure,
+                    "Invalid encoding/OCaml type combination"
+                  ];
+            }
+            return "Pbrt.Decoder.string";
         
       }
     } else if (match$3[0]) {
@@ -2140,16 +2126,16 @@ function decode_basic_type(bt, pk) {
 function decode_field_f(field_type, pk) {
   if (typeof field_type === "number") {
     return "Pbrt.Decoder.empty_nested d";
-  } else if (field_type.tag) {
-    var t = field_type[0];
-    var f_name = function_name_of_user_defined("decode", t);
-    if (t.udt_nested) {
-      return f_name + " (Pbrt.Decoder.nested d)";
-    } else {
-      return f_name + " d";
-    }
-  } else {
+  }
+  if (!field_type.tag) {
     return decode_basic_type(field_type[0], pk) + " d";
+  }
+  var t = field_type[0];
+  var f_name = function_name_of_user_defined("decode", t);
+  if (t.udt_nested) {
+    return f_name + " (Pbrt.Decoder.nested d)";
+  } else {
+    return f_name + " d";
   }
 }
 
@@ -3234,52 +3220,7 @@ function gen_pp_variant(and_, param, sc) {
                 return List.iter((function (param) {
                               var vc_field_type = param.vc_field_type;
                               var vc_constructor = param.vc_constructor;
-                              if (vc_field_type) {
-                                var field_string_of = gen_pp_field(vc_field_type[0]);
-                                return line$1(sc, Curry._3(Printf.sprintf(/* Format */[
-                                                    /* String_literal */Block.__(11, [
-                                                        "| ",
-                                                        /* String */Block.__(2, [
-                                                            /* No_padding */0,
-                                                            /* String_literal */Block.__(11, [
-                                                                " x -> Format.fprintf fmt \"",
-                                                                /* Formatting_gen */Block.__(18, [
-                                                                    /* Open_box */Block.__(1, [/* Format */[
-                                                                          /* End_of_format */0,
-                                                                          ""
-                                                                        ]]),
-                                                                    /* String */Block.__(2, [
-                                                                        /* No_padding */0,
-                                                                        /* Char_literal */Block.__(12, [
-                                                                            /* "(" */40,
-                                                                            /* Char_literal */Block.__(12, [
-                                                                                /* "%" */37,
-                                                                                /* String_literal */Block.__(11, [
-                                                                                    "a)",
-                                                                                    /* Formatting_lit */Block.__(17, [
-                                                                                        /* Close_box */0,
-                                                                                        /* String_literal */Block.__(11, [
-                                                                                            "\" ",
-                                                                                            /* String */Block.__(2, [
-                                                                                                /* No_padding */0,
-                                                                                                /* String_literal */Block.__(11, [
-                                                                                                    " x",
-                                                                                                    /* End_of_format */0
-                                                                                                  ])
-                                                                                              ])
-                                                                                          ])
-                                                                                      ])
-                                                                                  ])
-                                                                              ])
-                                                                          ])
-                                                                      ])
-                                                                  ])
-                                                              ])
-                                                          ])
-                                                      ]),
-                                                    "| %s x -> Format.fprintf fmt \"@[%s(%%a)@]\" %s x"
-                                                  ]), vc_constructor, vc_constructor, field_string_of));
-                              } else {
+                              if (!vc_field_type) {
                                 return line$1(sc, Curry._2(Printf.sprintf(/* Format */[
                                                     /* String_literal */Block.__(11, [
                                                         "| ",
@@ -3300,6 +3241,50 @@ function gen_pp_variant(and_, param, sc) {
                                                     "| %s  -> Format.fprintf fmt \"%s\""
                                                   ]), vc_constructor, vc_constructor));
                               }
+                              var field_string_of = gen_pp_field(vc_field_type[0]);
+                              return line$1(sc, Curry._3(Printf.sprintf(/* Format */[
+                                                  /* String_literal */Block.__(11, [
+                                                      "| ",
+                                                      /* String */Block.__(2, [
+                                                          /* No_padding */0,
+                                                          /* String_literal */Block.__(11, [
+                                                              " x -> Format.fprintf fmt \"",
+                                                              /* Formatting_gen */Block.__(18, [
+                                                                  /* Open_box */Block.__(1, [/* Format */[
+                                                                        /* End_of_format */0,
+                                                                        ""
+                                                                      ]]),
+                                                                  /* String */Block.__(2, [
+                                                                      /* No_padding */0,
+                                                                      /* Char_literal */Block.__(12, [
+                                                                          /* "(" */40,
+                                                                          /* Char_literal */Block.__(12, [
+                                                                              /* "%" */37,
+                                                                              /* String_literal */Block.__(11, [
+                                                                                  "a)",
+                                                                                  /* Formatting_lit */Block.__(17, [
+                                                                                      /* Close_box */0,
+                                                                                      /* String_literal */Block.__(11, [
+                                                                                          "\" ",
+                                                                                          /* String */Block.__(2, [
+                                                                                              /* No_padding */0,
+                                                                                              /* String_literal */Block.__(11, [
+                                                                                                  " x",
+                                                                                                  /* End_of_format */0
+                                                                                                ])
+                                                                                            ])
+                                                                                        ])
+                                                                                    ])
+                                                                                ])
+                                                                            ])
+                                                                        ])
+                                                                    ])
+                                                                ])
+                                                            ])
+                                                        ])
+                                                    ]),
+                                                  "| %s x -> Format.fprintf fmt \"@[%s(%%a)@]\" %s x"
+                                                ]), vc_constructor, vc_constructor, field_string_of));
                             }), v_constructors);
               }));
 }
@@ -3454,95 +3439,61 @@ function bal(l, x, d, r) {
   var hl = l ? l[/* h */4] : 0;
   var hr = r ? r[/* h */4] : 0;
   if (hl > (hr + 2 | 0)) {
-    if (l) {
-      var lr = l[/* r */3];
-      var ld = l[/* d */2];
-      var lv = l[/* v */1];
-      var ll = l[/* l */0];
-      if (height(ll) >= height(lr)) {
-        return create(ll, lv, ld, create(lr, x, d, r));
-      } else if (lr) {
-        return create(create(ll, lv, ld, lr[/* l */0]), lr[/* v */1], lr[/* d */2], create(lr[/* r */3], x, d, r));
-      } else {
-        throw [
-              Caml_builtin_exceptions.invalid_argument,
-              "Map.bal"
-            ];
-      }
-    } else {
+    if (!l) {
       throw [
             Caml_builtin_exceptions.invalid_argument,
             "Map.bal"
           ];
     }
-  } else if (hr > (hl + 2 | 0)) {
-    if (r) {
-      var rr = r[/* r */3];
-      var rd = r[/* d */2];
-      var rv = r[/* v */1];
-      var rl = r[/* l */0];
-      if (height(rr) >= height(rl)) {
-        return create(create(l, x, d, rl), rv, rd, rr);
-      } else if (rl) {
-        return create(create(l, x, d, rl[/* l */0]), rl[/* v */1], rl[/* d */2], create(rl[/* r */3], rv, rd, rr));
-      } else {
-        throw [
-              Caml_builtin_exceptions.invalid_argument,
-              "Map.bal"
-            ];
-      }
-    } else {
-      throw [
-            Caml_builtin_exceptions.invalid_argument,
-            "Map.bal"
-          ];
+    var lr = l[/* r */3];
+    var ld = l[/* d */2];
+    var lv = l[/* v */1];
+    var ll = l[/* l */0];
+    if (height(ll) >= height(lr)) {
+      return create(ll, lv, ld, create(lr, x, d, r));
     }
+    if (lr) {
+      return create(create(ll, lv, ld, lr[/* l */0]), lr[/* v */1], lr[/* d */2], create(lr[/* r */3], x, d, r));
+    }
+    throw [
+          Caml_builtin_exceptions.invalid_argument,
+          "Map.bal"
+        ];
   } else {
-    return /* Node */[
-            /* l */l,
-            /* v */x,
-            /* d */d,
-            /* r */r,
-            /* h */hl >= hr ? hl + 1 | 0 : hr + 1 | 0
+    if (hr <= (hl + 2 | 0)) {
+      return /* Node */[
+              /* l */l,
+              /* v */x,
+              /* d */d,
+              /* r */r,
+              /* h */hl >= hr ? hl + 1 | 0 : hr + 1 | 0
+            ];
+    }
+    if (!r) {
+      throw [
+            Caml_builtin_exceptions.invalid_argument,
+            "Map.bal"
           ];
+    }
+    var rr = r[/* r */3];
+    var rd = r[/* d */2];
+    var rv = r[/* v */1];
+    var rl = r[/* l */0];
+    if (height(rr) >= height(rl)) {
+      return create(create(l, x, d, rl), rv, rd, rr);
+    }
+    if (rl) {
+      return create(create(l, x, d, rl[/* l */0]), rl[/* v */1], rl[/* d */2], create(rl[/* r */3], rv, rd, rr));
+    }
+    throw [
+          Caml_builtin_exceptions.invalid_argument,
+          "Map.bal"
+        ];
   }
 }
 
 function add(x, data, m) {
-  if (m) {
-    var r = m[/* r */3];
-    var d = m[/* d */2];
-    var v = m[/* v */1];
-    var l = m[/* l */0];
-    var c = Caml_obj.caml_compare(x, v);
-    if (c === 0) {
-      if (d === data) {
-        return m;
-      } else {
-        return /* Node */[
-                /* l */l,
-                /* v */x,
-                /* d */data,
-                /* r */r,
-                /* h */m[/* h */4]
-              ];
-      }
-    } else if (c < 0) {
-      var ll = add(x, data, l);
-      if (l === ll) {
-        return m;
-      } else {
-        return bal(ll, v, d, r);
-      }
-    } else {
-      var rr = add(x, data, r);
-      if (r === rr) {
-        return m;
-      } else {
-        return bal(l, v, d, rr);
-      }
-    }
-  } else {
+  if (!m) {
     return /* Node */[
             /* l : Empty */0,
             /* v */x,
@@ -3551,94 +3502,119 @@ function add(x, data, m) {
             /* h */1
           ];
   }
+  var r = m[/* r */3];
+  var d = m[/* d */2];
+  var v = m[/* v */1];
+  var l = m[/* l */0];
+  var c = Caml_obj.caml_compare(x, v);
+  if (c === 0) {
+    if (d === data) {
+      return m;
+    } else {
+      return /* Node */[
+              /* l */l,
+              /* v */x,
+              /* d */data,
+              /* r */r,
+              /* h */m[/* h */4]
+            ];
+    }
+  }
+  if (c < 0) {
+    var ll = add(x, data, l);
+    if (l === ll) {
+      return m;
+    } else {
+      return bal(ll, v, d, r);
+    }
+  } else {
+    var rr = add(x, data, r);
+    if (r === rr) {
+      return m;
+    } else {
+      return bal(l, v, d, rr);
+    }
+  }
 }
 
 function find(x, _param) {
   while(true) {
     var param = _param;
-    if (param) {
-      var c = Caml_obj.caml_compare(x, param[/* v */1]);
-      if (c === 0) {
-        return param[/* d */2];
-      } else {
-        _param = c < 0 ? param[/* l */0] : param[/* r */3];
-        continue ;
-      }
-    } else {
+    if (!param) {
       throw Caml_builtin_exceptions.not_found;
     }
+    var c = Caml_obj.caml_compare(x, param[/* v */1]);
+    if (c === 0) {
+      return param[/* d */2];
+    }
+    _param = c < 0 ? param[/* l */0] : param[/* r */3];
+    continue ;
   };
 }
 
 function map$1(f, param) {
-  if (param) {
-    var l$prime = map$1(f, param[/* l */0]);
-    var d$prime = Curry._1(f, param[/* d */2]);
-    var r$prime = map$1(f, param[/* r */3]);
-    return /* Node */[
-            /* l */l$prime,
-            /* v */param[/* v */1],
-            /* d */d$prime,
-            /* r */r$prime,
-            /* h */param[/* h */4]
-          ];
-  } else {
+  if (!param) {
     return /* Empty */0;
   }
+  var l$prime = map$1(f, param[/* l */0]);
+  var d$prime = Curry._1(f, param[/* d */2]);
+  var r$prime = map$1(f, param[/* r */3]);
+  return /* Node */[
+          /* l */l$prime,
+          /* v */param[/* v */1],
+          /* d */d$prime,
+          /* r */r$prime,
+          /* h */param[/* h */4]
+        ];
 }
 
 function fold(f, _m, _accu) {
   while(true) {
     var accu = _accu;
     var m = _m;
-    if (m) {
-      _accu = Curry._3(f, m[/* v */1], m[/* d */2], fold(f, m[/* l */0], accu));
-      _m = m[/* r */3];
-      continue ;
-    } else {
+    if (!m) {
       return accu;
     }
+    _accu = Curry._3(f, m[/* v */1], m[/* d */2], fold(f, m[/* l */0], accu));
+    _m = m[/* r */3];
+    continue ;
   };
 }
 
 function min_value(param) {
   var match = param[0];
-  if (match !== undefined) {
-    var match$1 = param[1];
-    if (match$1 !== undefined) {
-      return Caml_option.some(Caml_obj.caml_min(Caml_option.valFromOption(match), Caml_option.valFromOption(match$1)));
-    } else {
-      throw [
-            Caml_builtin_exceptions.failure,
-            "min_value error"
-          ];
-    }
-  } else {
+  if (match === undefined) {
     throw [
           Caml_builtin_exceptions.failure,
           "min_value error"
         ];
   }
+  var match$1 = param[1];
+  if (match$1 !== undefined) {
+    return Caml_option.some(Caml_obj.caml_min(Caml_option.valFromOption(match), Caml_option.valFromOption(match$1)));
+  }
+  throw [
+        Caml_builtin_exceptions.failure,
+        "min_value error"
+      ];
 }
 
 function eq_value(param) {
   var match = param[0];
-  if (match !== undefined) {
-    var match$1 = param[1];
-    if (match$1 !== undefined) {
-      return Caml_obj.caml_equal(Caml_option.valFromOption(match), Caml_option.valFromOption(match$1));
-    } else {
-      throw [
-            Caml_builtin_exceptions.failure,
-            "eq_value error"
-          ];
-    }
-  } else {
+  if (match === undefined) {
     throw [
           Caml_builtin_exceptions.failure,
           "eq_value error"
         ];
   }
+  var match$1 = param[1];
+  if (match$1 !== undefined) {
+    return Caml_obj.caml_equal(Caml_option.valFromOption(match), Caml_option.valFromOption(match$1));
+  }
+  throw [
+        Caml_builtin_exceptions.failure,
+        "eq_value error"
+      ];
 }
 
 function string_of_option(f, param) {
@@ -3810,65 +3786,64 @@ function strong_connect(g, sccs, stack, index, v) {
           ]), "[" + ($$String.concat(";", List.map((function (param) {
                     return String(param.core.id);
                   }), stack$2)) + "]"));
-  if (eq_value(/* tuple */[
+  if (!eq_value(/* tuple */[
           v.lowlink,
           v.index
         ])) {
-    var match$1 = List.fold_left((function (param, n) {
-            var splitted = param[2];
-            var stack = param[1];
-            var scc = param[0];
-            if (splitted) {
-              return /* tuple */[
-                      scc,
-                      /* :: */[
-                        n,
-                        stack
-                      ],
-                      splitted
-                    ];
-            } else {
-              n.on_stack = false;
-              if (n.core.id === v.core.id) {
-                return /* tuple */[
-                        /* :: */[
-                          n.core.id,
-                          scc
-                        ],
-                        stack,
-                        true
-                      ];
-              } else {
-                return /* tuple */[
-                        /* :: */[
-                          n.core.id,
-                          scc
-                        ],
-                        stack,
-                        false
-                      ];
-              }
-            }
-          }), /* tuple */[
-          /* [] */0,
-          /* [] */0,
-          false
-        ], stack$2);
-    return /* tuple */[
-            /* :: */[
-              match$1[0],
-              sccs$1
-            ],
-            List.rev(match$1[1]),
-            index$1
-          ];
-  } else {
     return /* tuple */[
             sccs$1,
             stack$2,
             index$1
           ];
   }
+  var match$1 = List.fold_left((function (param, n) {
+          var splitted = param[2];
+          var stack = param[1];
+          var scc = param[0];
+          if (splitted) {
+            return /* tuple */[
+                    scc,
+                    /* :: */[
+                      n,
+                      stack
+                    ],
+                    splitted
+                  ];
+          } else {
+            n.on_stack = false;
+            if (n.core.id === v.core.id) {
+              return /* tuple */[
+                      /* :: */[
+                        n.core.id,
+                        scc
+                      ],
+                      stack,
+                      true
+                    ];
+            } else {
+              return /* tuple */[
+                      /* :: */[
+                        n.core.id,
+                        scc
+                      ],
+                      stack,
+                      false
+                    ];
+            }
+          }
+        }), /* tuple */[
+        /* [] */0,
+        /* [] */0,
+        false
+      ], stack$2);
+  return /* tuple */[
+          /* :: */[
+            match$1[0],
+            sccs$1
+          ],
+          List.rev(match$1[1]),
+          index$1
+        ];
 }
 
 function tarjan(g) {
@@ -3926,9 +3901,8 @@ function find_field_option(field_options, option_name) {
   catch (exn){
     if (exn === Caml_builtin_exceptions.not_found) {
       return ;
-    } else {
-      throw exn;
     }
+    throw exn;
   }
   return Caml_option.some(x);
 }
@@ -3997,12 +3971,11 @@ function unresolved_of_string(s) {
             type_name: match[0],
             from_root: Caml_string.get(s, 0) === /* "." */46
           };
-  } else {
-    throw [
-          Compilation_error,
-          /* Programatic_error */Block.__(4, [/* Invalid_string_split */0])
-        ];
   }
+  throw [
+        Compilation_error,
+        /* Programatic_error */Block.__(4, [/* Invalid_string_split */0])
+      ];
 }
 
 function field_type_of_string(s) {
@@ -4046,98 +4019,98 @@ function compile_default_p2(all_types, field) {
   var field_name$1 = field_name(field);
   var field_type$1 = field_type(field);
   var field_default$1 = field_default(field);
-  if (field_default$1 !== undefined) {
-    var constant = field_default$1;
-    var exit = 0;
-    if (typeof field_type$1 === "number") {
-      switch (field_type$1) {
-        case /* Field_type_double */0 :
-        case /* Field_type_float */1 :
-            exit = 1;
-            break;
-        case /* Field_type_uint32 */4 :
-        case /* Field_type_uint64 */5 :
-            exit = 3;
-            break;
-        case /* Field_type_int32 */2 :
-        case /* Field_type_int64 */3 :
-        case /* Field_type_sint32 */6 :
-        case /* Field_type_sint64 */7 :
-        case /* Field_type_fixed32 */8 :
-        case /* Field_type_fixed64 */9 :
-        case /* Field_type_sfixed32 */10 :
-        case /* Field_type_sfixed64 */11 :
-            exit = 2;
-            break;
-        case /* Field_type_bool */12 :
-            if (constant.tag === /* Constant_bool */1) {
-              return constant;
-            } else {
-              return invalid_default_value(field_name$1, "invalid default type (bool expected)", /* () */0);
-            }
-        case /* Field_type_string */13 :
-            if (constant.tag) {
-              return invalid_default_value(field_name$1, "invalid default type (string expected)", /* () */0);
-            } else {
-              return constant;
-            }
-        case /* Field_type_bytes */14 :
-            return invalid_default_value(field_name$1, "default value not supported for bytes", /* () */0);
-        
-      }
-    } else if (constant.tag === /* Constant_litteral */4) {
-      var default_enum_value = constant[0];
-      var match = type_of_id(all_types, field_type$1[0]);
-      var spec = match.spec;
-      if (spec.tag) {
-        return invalid_default_value(field_name$1, "field of type message cannot have a default litteral value", /* () */0);
-      } else {
-        var default_enum_value$1 = apply_until((function (param) {
-                var enum_value_name = param.enum_value_name;
-                if (enum_value_name === default_enum_value) {
-                  return enum_value_name;
-                }
-                
-              }), spec[0].enum_values);
-        if (default_enum_value$1 !== undefined) {
-          return constant;
-        } else {
-          return invalid_default_value(field_name$1, "Invalid default enum value", /* () */0);
-        }
-      }
-    } else {
-      return invalid_default_value(field_name$1, "default value not supported for message", /* () */0);
-    }
-    switch (exit) {
-      case 1 :
-          switch (constant.tag | 0) {
-            case /* Constant_int */2 :
-                return /* Constant_float */Block.__(3, [constant[0]]);
-            case /* Constant_float */3 :
-                return constant;
-            default:
-              return invalid_default_value(field_name$1, "invalid default type (float/int expected)", /* () */0);
-          }
-      case 2 :
-          if (constant.tag === /* Constant_int */2) {
+  if (field_default$1 === undefined) {
+    return ;
+  }
+  var constant = field_default$1;
+  var exit = 0;
+  if (typeof field_type$1 === "number") {
+    switch (field_type$1) {
+      case /* Field_type_double */0 :
+      case /* Field_type_float */1 :
+          exit = 1;
+          break;
+      case /* Field_type_uint32 */4 :
+      case /* Field_type_uint64 */5 :
+          exit = 3;
+          break;
+      case /* Field_type_int32 */2 :
+      case /* Field_type_int64 */3 :
+      case /* Field_type_sint32 */6 :
+      case /* Field_type_sint64 */7 :
+      case /* Field_type_fixed32 */8 :
+      case /* Field_type_fixed64 */9 :
+      case /* Field_type_sfixed32 */10 :
+      case /* Field_type_sfixed64 */11 :
+          exit = 2;
+          break;
+      case /* Field_type_bool */12 :
+          if (constant.tag === /* Constant_bool */1) {
             return constant;
           } else {
-            return invalid_default_value(field_name$1, "invalid default type (int expected)", /* () */0);
+            return invalid_default_value(field_name$1, "invalid default type (bool expected)", /* () */0);
           }
-      case 3 :
-          if (constant.tag === /* Constant_int */2) {
-            if (constant[0] >= 0) {
-              return constant;
-            } else {
-              return invalid_default_value(field_name$1, "negative default value for unsigned int", /* () */0);
-            }
+      case /* Field_type_string */13 :
+          if (constant.tag) {
+            return invalid_default_value(field_name$1, "invalid default type (string expected)", /* () */0);
           } else {
-            return invalid_default_value(field_name$1, "invalid default type (int expected)", /* () */0);
+            return constant;
           }
+      case /* Field_type_bytes */14 :
+          return invalid_default_value(field_name$1, "default value not supported for bytes", /* () */0);
       
     }
+  } else {
+    if (constant.tag !== /* Constant_litteral */4) {
+      return invalid_default_value(field_name$1, "default value not supported for message", /* () */0);
+    }
+    var default_enum_value = constant[0];
+    var match = type_of_id(all_types, field_type$1[0]);
+    var spec = match.spec;
+    if (spec.tag) {
+      return invalid_default_value(field_name$1, "field of type message cannot have a default litteral value", /* () */0);
+    }
+    var default_enum_value$1 = apply_until((function (param) {
+            var enum_value_name = param.enum_value_name;
+            if (enum_value_name === default_enum_value) {
+              return enum_value_name;
+            }
+            
+          }), spec[0].enum_values);
+    if (default_enum_value$1 !== undefined) {
+      return constant;
+    } else {
+      return invalid_default_value(field_name$1, "Invalid default enum value", /* () */0);
+    }
   }
-  
+  switch (exit) {
+    case 1 :
+        switch (constant.tag | 0) {
+          case /* Constant_int */2 :
+              return /* Constant_float */Block.__(3, [constant[0]]);
+          case /* Constant_float */3 :
+              return constant;
+          default:
+            return invalid_default_value(field_name$1, "invalid default type (float/int expected)", /* () */0);
+        }
+    case 2 :
+        if (constant.tag === /* Constant_int */2) {
+          return constant;
+        } else {
+          return invalid_default_value(field_name$1, "invalid default type (int expected)", /* () */0);
+        }
+    case 3 :
+        if (constant.tag === /* Constant_int */2) {
+          if (constant[0] >= 0) {
+            return constant;
+          } else {
+            return invalid_default_value(field_name$1, "negative default value for unsigned int", /* () */0);
+          }
+        } else {
+          return invalid_default_value(field_name$1, "invalid default type (int expected)", /* () */0);
+        }
+    
+  }
 }
 
 function get_default(field_name, field_options, field_type) {
@@ -4148,9 +4121,8 @@ function get_default(field_name, field_options, field_type) {
   catch (exn){
     if (exn === Caml_builtin_exceptions.not_found) {
       return ;
-    } else {
-      throw exn;
     }
+    throw exn;
   }
   return Caml_option.some(constant);
 }
@@ -4192,26 +4164,23 @@ function not_found(f) {
   catch (exn){
     if (exn === Caml_builtin_exceptions.not_found) {
       return true;
-    } else {
-      throw exn;
     }
+    throw exn;
   }
 }
 
 function list_assoc2(x, _param) {
   while(true) {
     var param = _param;
-    if (param) {
-      var match = param[0];
-      if (Caml_obj.caml_equal(match[1], x)) {
-        return match[0];
-      } else {
-        _param = param[1];
-        continue ;
-      }
-    } else {
+    if (!param) {
       throw Caml_builtin_exceptions.not_found;
     }
+    var match = param[0];
+    if (Caml_obj.caml_equal(match[1], x)) {
+      return match[0];
+    }
+    _param = param[1];
+    continue ;
   };
 }
 
@@ -4420,28 +4389,26 @@ function compile_message_p2(types, param, message) {
               field_scope,
               /* [] */0
             ];
-    } else {
-      var loop = function (_scopes, _l) {
-        while(true) {
-          var l = _l;
-          var scopes = _scopes;
-          if (l) {
-            _l = pop_last(l);
-            _scopes = /* :: */[
-              Pervasives.$at(l, field_scope),
-              scopes
-            ];
-            continue ;
-          } else {
-            return /* :: */[
-                    field_scope,
-                    scopes
-                  ];
-          }
-        };
-      };
-      return List.rev(loop(/* [] */0, message_scope));
     }
+    var loop = function (_scopes, _l) {
+      while(true) {
+        var l = _l;
+        var scopes = _scopes;
+        if (!l) {
+          return /* :: */[
+                  field_scope,
+                  scopes
+                ];
+        }
+        _l = pop_last(l);
+        _scopes = /* :: */[
+          Pervasives.$at(l, field_scope),
+          scopes
+        ];
+        continue ;
+      };
+    };
+    return List.rev(loop(/* [] */0, message_scope));
   };
   var compile_field_p2 = function (field_name, field_type) {
     Curry._1(log(/* Format */[
@@ -4460,84 +4427,81 @@ function compile_message_p2(types, param, message) {
     if (typeof field_type === "number") {
       if (typeof field_type === "number") {
         return field_type;
-      } else {
-        throw [
-              Compilation_error,
-              /* Programatic_error */Block.__(4, [/* Unexpected_field_type */1])
-            ];
       }
+      throw [
+            Compilation_error,
+            /* Programatic_error */Block.__(4, [/* Unexpected_field_type */1])
+          ];
+    }
+    var unresolved = field_type[0];
+    var type_name = unresolved.type_name;
+    endline("[pbtt] " + string_of_unresolved(unresolved));
+    var search_scopes$1 = search_scopes(unresolved.scope, unresolved.from_root);
+    Curry._1(log(/* Format */[
+              /* String_literal */Block.__(11, [
+                  "[pbtt] message scope: ",
+                  /* String */Block.__(2, [
+                      /* No_padding */0,
+                      /* Char_literal */Block.__(12, [
+                          /* "\n" */10,
+                          /* End_of_format */0
+                        ])
+                    ])
+                ]),
+              "[pbtt] message scope: %s\n"
+            ]), string_of_string_list(message_scope));
+    List.iteri((function (i, scope) {
+            return Curry._2(log(/* Format */[
+                            /* String_literal */Block.__(11, [
+                                "[pbtt] search_scope[",
+                                /* Int */Block.__(4, [
+                                    /* Int_i */3,
+                                    /* Lit_padding */Block.__(0, [
+                                        /* Right */1,
+                                        2
+                                      ]),
+                                    /* No_precision */0,
+                                    /* String_literal */Block.__(11, [
+                                        "] : ",
+                                        /* String */Block.__(2, [
+                                            /* No_padding */0,
+                                            /* Char_literal */Block.__(12, [
+                                                /* "\n" */10,
+                                                /* End_of_format */0
+                                              ])
+                                          ])
+                                      ])
+                                  ])
+                              ]),
+                            "[pbtt] search_scope[%2i] : %s\n"
+                          ]), i, string_of_string_list(scope));
+          }), search_scopes$1);
+    var id = apply_until((function (scope) {
+            var types$1 = find_all_types_in_field_scope(types, scope);
+            try {
+              var t = List.find((function (t) {
+                      return type_name === type_name_of_type(t);
+                    }), types$1);
+              return type_id_of_type(t);
+            }
+            catch (exn){
+              if (exn === Caml_builtin_exceptions.not_found) {
+                return ;
+              }
+              throw exn;
+            }
+          }), search_scopes$1);
+    if (id !== undefined) {
+      return /* Field_type_type */[id];
     } else {
-      var unresolved = field_type[0];
-      var type_name = unresolved.type_name;
-      endline("[pbtt] " + string_of_unresolved(unresolved));
-      var search_scopes$1 = search_scopes(unresolved.scope, unresolved.from_root);
-      Curry._1(log(/* Format */[
-                /* String_literal */Block.__(11, [
-                    "[pbtt] message scope: ",
-                    /* String */Block.__(2, [
-                        /* No_padding */0,
-                        /* Char_literal */Block.__(12, [
-                            /* "\n" */10,
-                            /* End_of_format */0
-                          ])
-                      ])
-                  ]),
-                "[pbtt] message scope: %s\n"
-              ]), string_of_string_list(message_scope));
-      List.iteri((function (i, scope) {
-              return Curry._2(log(/* Format */[
-                              /* String_literal */Block.__(11, [
-                                  "[pbtt] search_scope[",
-                                  /* Int */Block.__(4, [
-                                      /* Int_i */3,
-                                      /* Lit_padding */Block.__(0, [
-                                          /* Right */1,
-                                          2
-                                        ]),
-                                      /* No_precision */0,
-                                      /* String_literal */Block.__(11, [
-                                          "] : ",
-                                          /* String */Block.__(2, [
-                                              /* No_padding */0,
-                                              /* Char_literal */Block.__(12, [
-                                                  /* "\n" */10,
-                                                  /* End_of_format */0
-                                                ])
-                                            ])
-                                        ])
-                                    ])
-                                ]),
-                              "[pbtt] search_scope[%2i] : %s\n"
-                            ]), i, string_of_string_list(scope));
-            }), search_scopes$1);
-      var id = apply_until((function (scope) {
-              var types$1 = find_all_types_in_field_scope(types, scope);
-              try {
-                var t = List.find((function (t) {
-                        return type_name === type_name_of_type(t);
-                      }), types$1);
-                return type_id_of_type(t);
-              }
-              catch (exn){
-                if (exn === Caml_builtin_exceptions.not_found) {
-                  return ;
-                } else {
-                  throw exn;
-                }
-              }
-            }), search_scopes$1);
-      if (id !== undefined) {
-        return /* Field_type_type */[id];
-      } else {
-        throw [
-              Compilation_error,
-              /* Unresolved_type */Block.__(0, [{
-                    field_name: field_name,
-                    type_: type_name,
-                    message_name: message_name
-                  }])
-            ];
-      }
+      throw [
+            Compilation_error,
+            /* Unresolved_type */Block.__(0, [{
+                  field_name: field_name,
+                  type_: type_name,
+                  message_name: message_name
+                }])
+          ];
     }
   };
   var message_body = List.fold_left((function (message_body, param) {
@@ -4624,54 +4588,53 @@ function compile_message_p2(types, param, message) {
 function node_of_proto_type(param) {
   var match = param.spec;
   var id = param.id;
-  if (match.tag) {
-    var sub = List.flatten(List.map((function (param) {
-                switch (param.tag | 0) {
-                  case /* Message_field */0 :
-                      var field_type = param[0].field_type;
-                      if (typeof field_type === "number") {
-                        return /* [] */0;
-                      } else {
-                        return /* :: */[
-                                field_type[0],
-                                /* [] */0
-                              ];
-                      }
-                  case /* Message_oneof_field */1 :
-                      return List.flatten(List.map((function (param) {
-                                        var field_type = param.field_type;
-                                        if (typeof field_type === "number") {
-                                          return /* [] */0;
-                                        } else {
-                                          return /* :: */[
-                                                  field_type[0],
-                                                  /* [] */0
-                                                ];
-                                        }
-                                      }), param[0].oneof_fields));
-                  case /* Message_map_field */2 :
-                      var map_value_type = param[0].map_value_type;
-                      if (typeof map_value_type === "number") {
-                        return /* [] */0;
-                      } else {
-                        return /* :: */[
-                                map_value_type[0],
-                                /* [] */0
-                              ];
-                      }
-                  
-                }
-              }), match[0].message_body));
-    return {
-            id: id,
-            sub: sub
-          };
-  } else {
+  if (!match.tag) {
     return {
             id: id,
             sub: /* [] */0
           };
   }
+  var sub = List.flatten(List.map((function (param) {
+              switch (param.tag | 0) {
+                case /* Message_field */0 :
+                    var field_type = param[0].field_type;
+                    if (typeof field_type === "number") {
+                      return /* [] */0;
+                    } else {
+                      return /* :: */[
+                              field_type[0],
+                              /* [] */0
+                            ];
+                    }
+                case /* Message_oneof_field */1 :
+                    return List.flatten(List.map((function (param) {
+                                      var field_type = param.field_type;
+                                      if (typeof field_type === "number") {
+                                        return /* [] */0;
+                                      } else {
+                                        return /* :: */[
+                                                field_type[0],
+                                                /* [] */0
+                                              ];
+                                      }
+                                    }), param[0].oneof_fields));
+                case /* Message_map_field */2 :
+                    var map_value_type = param[0].map_value_type;
+                    if (typeof map_value_type === "number") {
+                      return /* [] */0;
+                    } else {
+                      return /* :: */[
+                              map_value_type[0],
+                              /* [] */0
+                            ];
+                    }
+                
+              }
+            }), match[0].message_body));
+  return {
+          id: id,
+          sub: sub
+        };
 }
 
 function group(proto) {
@@ -4789,25 +4752,7 @@ function gen_type_variant(and_, variant, sc) {
                 return List.iter((function (param) {
                               var vc_field_type = param.vc_field_type;
                               var vc_constructor = param.vc_constructor;
-                              if (vc_field_type) {
-                                var type_string = string_of_field_type(vc_field_type[0]);
-                                return line$1(sc, Curry._2(Printf.sprintf(/* Format */[
-                                                    /* String_literal */Block.__(11, [
-                                                        "| ",
-                                                        /* String */Block.__(2, [
-                                                            /* No_padding */0,
-                                                            /* String_literal */Block.__(11, [
-                                                                " of ",
-                                                                /* String */Block.__(2, [
-                                                                    /* No_padding */0,
-                                                                    /* End_of_format */0
-                                                                  ])
-                                                              ])
-                                                          ])
-                                                      ]),
-                                                    "| %s of %s"
-                                                  ]), vc_constructor, type_string));
-                              } else {
+                              if (!vc_field_type) {
                                 return line$1(sc, Curry._1(Printf.sprintf(/* Format */[
                                                     /* String_literal */Block.__(11, [
                                                         "| ",
@@ -4819,6 +4764,23 @@ function gen_type_variant(and_, variant, sc) {
                                                     "| %s"
                                                   ]), vc_constructor));
                               }
+                              var type_string = string_of_field_type(vc_field_type[0]);
+                              return line$1(sc, Curry._2(Printf.sprintf(/* Format */[
+                                                  /* String_literal */Block.__(11, [
+                                                      "| ",
+                                                      /* String */Block.__(2, [
+                                                          /* No_padding */0,
+                                                          /* String_literal */Block.__(11, [
+                                                              " of ",
+                                                              /* String */Block.__(2, [
+                                                                  /* No_padding */0,
+                                                                  /* End_of_format */0
+                                                                ])
+                                                            ])
+                                                        ])
+                                                    ]),
+                                                  "| %s of %s"
+                                                ]), vc_constructor, type_string));
                             }), v_constructors);
               }));
 }
@@ -5584,130 +5546,122 @@ function default_value_of_field_type(field_name, field_type, field_default) {
     var basic_type = field_type[0];
     switch (basic_type) {
       case /* Bt_string */0 :
-          if (field_default !== undefined) {
-            var match = field_default;
-            if (match.tag) {
-              return invalid_default_value(field_name, "invalid default type", /* () */0);
-            } else {
-              return Curry._1(Printf.sprintf(/* Format */[
-                              /* Char_literal */Block.__(12, [
-                                  /* "\"" */34,
-                                  /* String */Block.__(2, [
-                                      /* No_padding */0,
-                                      /* Char_literal */Block.__(12, [
-                                          /* "\"" */34,
-                                          /* End_of_format */0
-                                        ])
-                                    ])
-                                ]),
-                              "\"%s\""
-                            ]), match[0]);
-            }
-          } else {
+          if (field_default === undefined) {
             return "\"\"";
           }
-      case /* Bt_float */1 :
-          if (field_default !== undefined) {
-            var match$1 = field_default;
-            if (match$1.tag === /* Constant_float */3) {
-              return Pervasives.string_of_float(match$1[0]);
-            } else {
-              return invalid_default_value(field_name, "invalid default type", /* () */0);
-            }
+          var match = field_default;
+          if (match.tag) {
+            return invalid_default_value(field_name, "invalid default type", /* () */0);
           } else {
+            return Curry._1(Printf.sprintf(/* Format */[
+                            /* Char_literal */Block.__(12, [
+                                /* "\"" */34,
+                                /* String */Block.__(2, [
+                                    /* No_padding */0,
+                                    /* Char_literal */Block.__(12, [
+                                        /* "\"" */34,
+                                        /* End_of_format */0
+                                      ])
+                                  ])
+                              ]),
+                            "\"%s\""
+                          ]), match[0]);
+          }
+      case /* Bt_float */1 :
+          if (field_default === undefined) {
             return "0.";
           }
-      case /* Bt_int */2 :
-          if (field_default !== undefined) {
-            var match$2 = field_default;
-            if (match$2.tag === /* Constant_int */2) {
-              return String(match$2[0]);
-            } else {
-              return invalid_default_value(field_name, "invalid default type", /* () */0);
-            }
+          var match$1 = field_default;
+          if (match$1.tag === /* Constant_float */3) {
+            return Pervasives.string_of_float(match$1[0]);
           } else {
+            return invalid_default_value(field_name, "invalid default type", /* () */0);
+          }
+      case /* Bt_int */2 :
+          if (field_default === undefined) {
             return "0";
           }
-      case /* Bt_int32 */3 :
-          if (field_default !== undefined) {
-            var match$3 = field_default;
-            if (match$3.tag === /* Constant_int */2) {
-              return Curry._1(Printf.sprintf(/* Format */[
-                              /* Int */Block.__(4, [
-                                  /* Int_i */3,
-                                  /* No_padding */0,
-                                  /* No_precision */0,
-                                  /* Char_literal */Block.__(12, [
-                                      /* "l" */108,
-                                      /* End_of_format */0
-                                    ])
-                                ]),
-                              "%il"
-                            ]), match$3[0]);
-            } else {
-              return invalid_default_value(field_name, "invalid default type", /* () */0);
-            }
+          var match$2 = field_default;
+          if (match$2.tag === /* Constant_int */2) {
+            return String(match$2[0]);
           } else {
+            return invalid_default_value(field_name, "invalid default type", /* () */0);
+          }
+      case /* Bt_int32 */3 :
+          if (field_default === undefined) {
             return "0l";
           }
-      case /* Bt_int64 */4 :
-          if (field_default !== undefined) {
-            var match$4 = field_default;
-            if (match$4.tag === /* Constant_int */2) {
-              return Curry._1(Printf.sprintf(/* Format */[
-                              /* Int */Block.__(4, [
-                                  /* Int_i */3,
-                                  /* No_padding */0,
-                                  /* No_precision */0,
-                                  /* Char_literal */Block.__(12, [
-                                      /* "L" */76,
-                                      /* End_of_format */0
-                                    ])
-                                ]),
-                              "%iL"
-                            ]), match$4[0]);
-            } else {
-              return invalid_default_value(field_name, "invalid default type", /* () */0);
-            }
+          var match$3 = field_default;
+          if (match$3.tag === /* Constant_int */2) {
+            return Curry._1(Printf.sprintf(/* Format */[
+                            /* Int */Block.__(4, [
+                                /* Int_i */3,
+                                /* No_padding */0,
+                                /* No_precision */0,
+                                /* Char_literal */Block.__(12, [
+                                    /* "l" */108,
+                                    /* End_of_format */0
+                                  ])
+                              ]),
+                            "%il"
+                          ]), match$3[0]);
           } else {
+            return invalid_default_value(field_name, "invalid default type", /* () */0);
+          }
+      case /* Bt_int64 */4 :
+          if (field_default === undefined) {
             return "0L";
           }
-      case /* Bt_bytes */5 :
-          if (field_default !== undefined) {
-            var match$5 = field_default;
-            if (match$5.tag) {
-              return invalid_default_value(field_name, "invalid default type", /* () */0);
-            } else {
-              return Curry._1(Printf.sprintf(/* Format */[
-                              /* String_literal */Block.__(11, [
-                                  "Bytes.of_string \"",
-                                  /* String */Block.__(2, [
-                                      /* No_padding */0,
-                                      /* Char_literal */Block.__(12, [
-                                          /* "\"" */34,
-                                          /* End_of_format */0
-                                        ])
-                                    ])
-                                ]),
-                              "Bytes.of_string \"%s\""
-                            ]), match$5[0]);
-            }
+          var match$4 = field_default;
+          if (match$4.tag === /* Constant_int */2) {
+            return Curry._1(Printf.sprintf(/* Format */[
+                            /* Int */Block.__(4, [
+                                /* Int_i */3,
+                                /* No_padding */0,
+                                /* No_precision */0,
+                                /* Char_literal */Block.__(12, [
+                                    /* "L" */76,
+                                    /* End_of_format */0
+                                  ])
+                              ]),
+                            "%iL"
+                          ]), match$4[0]);
           } else {
+            return invalid_default_value(field_name, "invalid default type", /* () */0);
+          }
+      case /* Bt_bytes */5 :
+          if (field_default === undefined) {
             return "Bytes.create 64";
           }
+          var match$5 = field_default;
+          if (match$5.tag) {
+            return invalid_default_value(field_name, "invalid default type", /* () */0);
+          } else {
+            return Curry._1(Printf.sprintf(/* Format */[
+                            /* String_literal */Block.__(11, [
+                                "Bytes.of_string \"",
+                                /* String */Block.__(2, [
+                                    /* No_padding */0,
+                                    /* Char_literal */Block.__(12, [
+                                        /* "\"" */34,
+                                        /* End_of_format */0
+                                      ])
+                                  ])
+                              ]),
+                            "Bytes.of_string \"%s\""
+                          ]), match$5[0]);
+          }
       case /* Bt_bool */6 :
-          if (field_default !== undefined) {
-            var match$6 = field_default;
-            if (match$6.tag === /* Constant_bool */1) {
-              var b = match$6[0];
-              if (b) {
-                return "true";
-              } else {
-                return "false";
-              }
-            } else {
-              return invalid_default_value(field_name, "invalid default type", /* () */0);
-            }
+          if (field_default === undefined) {
+            return "false";
+          }
+          var match$6 = field_default;
+          if (match$6.tag !== /* Constant_bool */1) {
+            return invalid_default_value(field_name, "invalid default type", /* () */0);
+          }
+          var b = match$6[0];
+          if (b) {
+            return "true";
           } else {
             return "false";
           }
@@ -5767,27 +5721,7 @@ function record_field_default_info(record_field) {
         break;
     case /* Rft_variant_field */4 :
         var v_constructors = rf_field_type[0].v_constructors;
-        if (v_constructors) {
-          var match$3 = v_constructors[0];
-          var vc_field_type = match$3.vc_field_type;
-          var vc_constructor = match$3.vc_constructor;
-          default_value = vc_field_type ? Curry._2(Printf.sprintf(/* Format */[
-                      /* String */Block.__(2, [
-                          /* No_padding */0,
-                          /* String_literal */Block.__(11, [
-                              " (",
-                              /* String */Block.__(2, [
-                                  /* No_padding */0,
-                                  /* Char_literal */Block.__(12, [
-                                      /* ")" */41,
-                                      /* End_of_format */0
-                                    ])
-                                ])
-                            ])
-                        ]),
-                      "%s (%s)"
-                    ]), vc_constructor, dfvft(vc_field_type[0], undefined)) : vc_constructor;
-        } else {
+        if (!v_constructors) {
           throw [
                 Caml_builtin_exceptions.assert_failure,
                 /* tuple */[
@@ -5797,6 +5731,25 @@ function record_field_default_info(record_field) {
                 ]
               ];
         }
+        var match$3 = v_constructors[0];
+        var vc_field_type = match$3.vc_field_type;
+        var vc_constructor = match$3.vc_constructor;
+        default_value = vc_field_type ? Curry._2(Printf.sprintf(/* Format */[
+                    /* String */Block.__(2, [
+                        /* No_padding */0,
+                        /* String_literal */Block.__(11, [
+                            " (",
+                            /* String */Block.__(2, [
+                                /* No_padding */0,
+                                /* Char_literal */Block.__(12, [
+                                    /* ")" */41,
+                                    /* End_of_format */0
+                                  ])
+                              ])
+                          ])
+                      ]),
+                    "%s (%s)"
+                  ]), vc_constructor, dfvft(vc_field_type[0], undefined)) : vc_constructor;
         break;
     
   }
@@ -5941,36 +5894,66 @@ function gen_default_record(mutable_, and_, param, sc) {
 function gen_default_variant(and_, param, sc) {
   var v_constructors = param.v_constructors;
   var v_name = param.v_name;
-  if (v_constructors) {
-    var match = v_constructors[0];
-    var vc_field_type = match.vc_field_type;
-    var vc_constructor = match.vc_constructor;
-    var decl = let_decl_of_and(and_);
-    if (vc_field_type) {
-      var default_value = default_value_of_field_type(v_name, vc_field_type[0], undefined);
-      return line$1(sc, Curry._5(Printf.sprintf(/* Format */[
-                          /* String */Block.__(2, [
-                              /* No_padding */0,
-                              /* String_literal */Block.__(11, [
-                                  " default_",
-                                  /* String */Block.__(2, [
-                                      /* No_padding */0,
-                                      /* String_literal */Block.__(11, [
-                                          " () : ",
-                                          /* String */Block.__(2, [
-                                              /* No_padding */0,
-                                              /* String_literal */Block.__(11, [
-                                                  " = ",
-                                                  /* String */Block.__(2, [
-                                                      /* No_padding */0,
-                                                      /* String_literal */Block.__(11, [
-                                                          " (",
-                                                          /* String */Block.__(2, [
-                                                              /* No_padding */0,
-                                                              /* Char_literal */Block.__(12, [
-                                                                  /* ")" */41,
-                                                                  /* End_of_format */0
-                                                                ])
+  if (!v_constructors) {
+    throw [
+          Caml_builtin_exceptions.failure,
+          "programmatic TODO error"
+        ];
+  }
+  var match = v_constructors[0];
+  var vc_field_type = match.vc_field_type;
+  var vc_constructor = match.vc_constructor;
+  var decl = let_decl_of_and(and_);
+  if (!vc_field_type) {
+    return line$1(sc, Curry._4(Printf.sprintf(/* Format */[
+                        /* String */Block.__(2, [
+                            /* No_padding */0,
+                            /* String_literal */Block.__(11, [
+                                " default_",
+                                /* String */Block.__(2, [
+                                    /* No_padding */0,
+                                    /* String_literal */Block.__(11, [
+                                        " (): ",
+                                        /* String */Block.__(2, [
+                                            /* No_padding */0,
+                                            /* String_literal */Block.__(11, [
+                                                " = ",
+                                                /* String */Block.__(2, [
+                                                    /* No_padding */0,
+                                                    /* End_of_format */0
+                                                  ])
+                                              ])
+                                          ])
+                                      ])
+                                  ])
+                              ])
+                          ]),
+                        "%s default_%s (): %s = %s"
+                      ]), decl, v_name, v_name, vc_constructor));
+  }
+  var default_value = default_value_of_field_type(v_name, vc_field_type[0], undefined);
+  return line$1(sc, Curry._5(Printf.sprintf(/* Format */[
+                      /* String */Block.__(2, [
+                          /* No_padding */0,
+                          /* String_literal */Block.__(11, [
+                              " default_",
+                              /* String */Block.__(2, [
+                                  /* No_padding */0,
+                                  /* String_literal */Block.__(11, [
+                                      " () : ",
+                                      /* String */Block.__(2, [
+                                          /* No_padding */0,
+                                          /* String_literal */Block.__(11, [
+                                              " = ",
+                                              /* String */Block.__(2, [
+                                                  /* No_padding */0,
+                                                  /* String_literal */Block.__(11, [
+                                                      " (",
+                                                      /* String */Block.__(2, [
+                                                          /* No_padding */0,
+                                                          /* Char_literal */Block.__(12, [
+                                                              /* ")" */41,
+                                                              /* End_of_format */0
                                                             ])
                                                         ])
                                                     ])
@@ -5979,56 +5962,23 @@ function gen_default_variant(and_, param, sc) {
                                         ])
                                     ])
                                 ])
-                            ]),
-                          "%s default_%s () : %s = %s (%s)"
-                        ]), decl, v_name, v_name, vc_constructor, default_value));
-    } else {
-      return line$1(sc, Curry._4(Printf.sprintf(/* Format */[
-                          /* String */Block.__(2, [
-                              /* No_padding */0,
-                              /* String_literal */Block.__(11, [
-                                  " default_",
-                                  /* String */Block.__(2, [
-                                      /* No_padding */0,
-                                      /* String_literal */Block.__(11, [
-                                          " (): ",
-                                          /* String */Block.__(2, [
-                                              /* No_padding */0,
-                                              /* String_literal */Block.__(11, [
-                                                  " = ",
-                                                  /* String */Block.__(2, [
-                                                      /* No_padding */0,
-                                                      /* End_of_format */0
-                                                    ])
-                                                ])
-                                            ])
-                                        ])
-                                    ])
-                                ])
-                            ]),
-                          "%s default_%s (): %s = %s"
-                        ]), decl, v_name, v_name, vc_constructor));
-    }
-  } else {
-    throw [
-          Caml_builtin_exceptions.failure,
-          "programmatic TODO error"
-        ];
-  }
+                            ])
+                        ]),
+                      "%s default_%s () : %s = %s (%s)"
+                    ]), decl, v_name, v_name, vc_constructor, default_value));
 }
 
 function gen_default_const_variant(and_, param, sc) {
   var cv_constructors = param.cv_constructors;
   var cv_name = param.cv_name;
   var first_constructor_name;
-  if (cv_constructors) {
-    first_constructor_name = cv_constructors[0][0];
-  } else {
+  if (!cv_constructors) {
     throw [
           Caml_builtin_exceptions.failure,
           "programmatic TODO error"
         ];
   }
+  first_constructor_name = cv_constructors[0][0];
   return line$1(sc, Curry._4(Printf.sprintf(/* Format */[
                       /* String */Block.__(2, [
                           /* No_padding */0,
@@ -6379,12 +6329,11 @@ function type_name(message_scope, name) {
     } else {
       return fix_ocaml_keyword_conflict(all_names$2[0]);
     }
-  } else {
-    throw [
-          Caml_builtin_exceptions.failure,
-          "Programmatic error"
-        ];
   }
+  throw [
+        Caml_builtin_exceptions.failure,
+        "Programmatic error"
+      ];
 }
 
 function encoding_info_of_field_type(all_types, field_type) {
@@ -6473,42 +6422,7 @@ function compile_field_type(field_name, all_types, file_options, field_options, 
   } else {
     int64_type = /* Ft_basic_type */Block.__(0, [/* Bt_int64 */4]);
   }
-  if (typeof field_type === "number") {
-    switch (field_type) {
-      case /* Field_type_double */0 :
-      case /* Field_type_float */1 :
-          return /* Ft_basic_type */Block.__(0, [/* Bt_float */1]);
-      case /* Field_type_int32 */2 :
-      case /* Field_type_uint32 */4 :
-      case /* Field_type_sint32 */6 :
-      case /* Field_type_fixed32 */8 :
-          if (ocaml_type !== -783406652) {
-            return int32_type;
-          } else {
-            return /* Ft_basic_type */Block.__(0, [/* Bt_int */2]);
-          }
-      case /* Field_type_int64 */3 :
-      case /* Field_type_uint64 */5 :
-      case /* Field_type_sint64 */7 :
-      case /* Field_type_fixed64 */9 :
-          if (ocaml_type !== -783406652) {
-            return int64_type;
-          } else {
-            return /* Ft_basic_type */Block.__(0, [/* Bt_int */2]);
-          }
-      case /* Field_type_sfixed32 */10 :
-          return unsupported_field_type(field_name, "sfixed32", "OCaml", /* () */0);
-      case /* Field_type_sfixed64 */11 :
-          return unsupported_field_type(field_name, "sfixed64", "OCaml", /* () */0);
-      case /* Field_type_bool */12 :
-          return /* Ft_basic_type */Block.__(0, [/* Bt_bool */6]);
-      case /* Field_type_string */13 :
-          return /* Ft_basic_type */Block.__(0, [/* Bt_string */0]);
-      case /* Field_type_bytes */14 :
-          return /* Ft_basic_type */Block.__(0, [/* Bt_bytes */5]);
-      
-    }
-  } else {
+  if (typeof field_type !== "number") {
     var i = field_type[0];
     var module_ = module_of_file_name(file_name);
     var t;
@@ -6526,55 +6440,85 @@ function compile_field_type(field_name, all_types, file_options, field_options, 
     }
     if (is_empty_message(t)) {
       return /* Ft_unit */0;
-    } else {
-      var udt_nested;
-      udt_nested = t.spec.tag ? true : false;
-      var field_type_module = module_of_file_name(t.file_name);
-      var match$6 = type_scope_of_type(t);
-      var udt_type_name = type_name(match$6.message_names, type_name_of_type(t));
-      if (field_type_module === module_) {
-        return /* Ft_user_defined_type */Block.__(1, [{
-                    udt_module: undefined,
-                    udt_type_name: udt_type_name,
-                    udt_nested: udt_nested
-                  }]);
-      } else {
-        return /* Ft_user_defined_type */Block.__(1, [{
-                    udt_module: field_type_module,
-                    udt_type_name: udt_type_name,
-                    udt_nested: udt_nested
-                  }]);
-      }
     }
+    var udt_nested;
+    udt_nested = t.spec.tag ? true : false;
+    var field_type_module = module_of_file_name(t.file_name);
+    var match$6 = type_scope_of_type(t);
+    var udt_type_name = type_name(match$6.message_names, type_name_of_type(t));
+    if (field_type_module === module_) {
+      return /* Ft_user_defined_type */Block.__(1, [{
+                  udt_module: undefined,
+                  udt_type_name: udt_type_name,
+                  udt_nested: udt_nested
+                }]);
+    } else {
+      return /* Ft_user_defined_type */Block.__(1, [{
+                  udt_module: field_type_module,
+                  udt_type_name: udt_type_name,
+                  udt_nested: udt_nested
+                }]);
+    }
+  }
+  switch (field_type) {
+    case /* Field_type_double */0 :
+    case /* Field_type_float */1 :
+        return /* Ft_basic_type */Block.__(0, [/* Bt_float */1]);
+    case /* Field_type_int32 */2 :
+    case /* Field_type_uint32 */4 :
+    case /* Field_type_sint32 */6 :
+    case /* Field_type_fixed32 */8 :
+        if (ocaml_type !== -783406652) {
+          return int32_type;
+        } else {
+          return /* Ft_basic_type */Block.__(0, [/* Bt_int */2]);
+        }
+    case /* Field_type_int64 */3 :
+    case /* Field_type_uint64 */5 :
+    case /* Field_type_sint64 */7 :
+    case /* Field_type_fixed64 */9 :
+        if (ocaml_type !== -783406652) {
+          return int64_type;
+        } else {
+          return /* Ft_basic_type */Block.__(0, [/* Bt_int */2]);
+        }
+    case /* Field_type_sfixed32 */10 :
+        return unsupported_field_type(field_name, "sfixed32", "OCaml", /* () */0);
+    case /* Field_type_sfixed64 */11 :
+        return unsupported_field_type(field_name, "sfixed64", "OCaml", /* () */0);
+    case /* Field_type_bool */12 :
+        return /* Ft_basic_type */Block.__(0, [/* Bt_bool */6]);
+    case /* Field_type_string */13 :
+        return /* Ft_basic_type */Block.__(0, [/* Bt_string */0]);
+    case /* Field_type_bytes */14 :
+        return /* Ft_basic_type */Block.__(0, [/* Bt_bytes */5]);
+    
   }
 }
 
 function is_mutable(field_name, field_options) {
   var match = find_field_option(field_options, "ocaml_mutable");
-  if (match !== undefined) {
-    var match$1 = match;
-    if (match$1.tag === /* Constant_bool */1) {
-      return match$1[0];
-    } else {
-      throw [
-            Compilation_error,
-            /* Invalid_mutable_option */Block.__(11, [field_name])
-          ];
-    }
-  } else {
+  if (match === undefined) {
     return false;
   }
+  var match$1 = match;
+  if (match$1.tag === /* Constant_bool */1) {
+    return match$1[0];
+  }
+  throw [
+        Compilation_error,
+        /* Invalid_mutable_option */Block.__(11, [field_name])
+      ];
 }
 
 function ocaml_container(field_options) {
   var match = find_field_option(field_options, "ocaml_container");
-  if (match !== undefined) {
-    var match$1 = match;
-    if (match$1.tag === /* Constant_litteral */4) {
-      return match$1[0];
-    } else {
-      return ;
-    }
+  if (match === undefined) {
+    return ;
+  }
+  var match$1 = match;
+  if (match$1.tag === /* Constant_litteral */4) {
+    return match$1[0];
   }
   
 }
@@ -6683,32 +6627,31 @@ function compile(proto_definition) {
                           var message_names = scope.message_names;
                           var message_body = message.message_body;
                           var message_name = message.message_name;
-                          if (message_body) {
-                            var match$1 = message_body[0];
-                            switch (match$1.tag | 0) {
-                              case /* Message_oneof_field */1 :
-                                  if (!message_body[1]) {
-                                    var outer_message_names = Pervasives.$at(message_names, /* :: */[
-                                          message_name,
-                                          /* [] */0
-                                        ]);
-                                    var variant = variant_of_oneof(undefined, outer_message_names, all_pbtt_msgs$1, file_options, file_name, match$1[0]);
-                                    return /* :: */[
-                                            {
-                                              module_: module_,
-                                              spec: /* Variant */Block.__(1, [variant])
-                                            },
-                                            /* [] */0
-                                          ];
-                                  }
-                                  break;
-                              case /* Message_field */0 :
-                              case /* Message_map_field */2 :
-                                  break;
-                              
-                            }
-                          } else {
+                          if (!message_body) {
                             return /* [] */0;
+                          }
+                          var match$1 = message_body[0];
+                          switch (match$1.tag | 0) {
+                            case /* Message_oneof_field */1 :
+                                if (!message_body[1]) {
+                                  var outer_message_names = Pervasives.$at(message_names, /* :: */[
+                                        message_name,
+                                        /* [] */0
+                                      ]);
+                                  var variant = variant_of_oneof(undefined, outer_message_names, all_pbtt_msgs$1, file_options, file_name, match$1[0]);
+                                  return /* :: */[
+                                          {
+                                            module_: module_,
+                                            spec: /* Variant */Block.__(1, [variant])
+                                          },
+                                          /* [] */0
+                                        ];
+                                }
+                                break;
+                            case /* Message_field */0 :
+                            case /* Message_map_field */2 :
+                                break;
+                            
                           }
                           var match$2 = List.fold_left((function (param, param$1) {
                                   var fields = param[1];
@@ -6738,14 +6681,13 @@ function compile(proto_definition) {
                                             var match$2 = ocaml_container(field_options$1);
                                             var repeated_type;
                                             if (match$2 !== undefined) {
-                                              if (match$2 === "repeated_field") {
-                                                repeated_type = /* Rt_repeated_field */1;
-                                              } else {
+                                              if (match$2 !== "repeated_field") {
                                                 throw [
                                                       Caml_builtin_exceptions.failure,
                                                       "Invalid ocaml_container attribute value"
                                                     ];
                                               }
+                                              repeated_type = /* Rt_repeated_field */1;
                                             } else {
                                               repeated_type = /* Rt_list */0;
                                             }
@@ -6831,14 +6773,14 @@ function compile(proto_definition) {
                                                 Caml_builtin_exceptions.failure,
                                                 "Only Basic Types are supported for map keys"
                                               ];
-                                        } else if (key_type.tag) {
+                                        }
+                                        if (key_type.tag) {
                                           throw [
                                                 Caml_builtin_exceptions.failure,
                                                 "Only Basic Types are supported for map keys"
                                               ];
-                                        } else {
-                                          key_type$1 = key_type[0];
                                         }
+                                        key_type$1 = key_type[0];
                                         var value_type = compile_field_type(Curry._1(Printf.sprintf(/* Format */[
                                                       /* String_literal */Block.__(11, [
                                                           "value of ",
@@ -6853,14 +6795,13 @@ function compile(proto_definition) {
                                         var match$3 = ocaml_container(map_options);
                                         var associative_type;
                                         if (match$3 !== undefined) {
-                                          if (match$3 === "hashtbl") {
-                                            associative_type = /* At_hashtable */1;
-                                          } else {
+                                          if (match$3 !== "hashtbl") {
                                             throw [
                                                   Caml_builtin_exceptions.failure,
                                                   "Invalid ocaml_container attribute value for map"
                                                 ];
                                           }
+                                          associative_type = /* At_hashtable */1;
                                         } else {
                                           associative_type = /* At_list */0;
                                         }

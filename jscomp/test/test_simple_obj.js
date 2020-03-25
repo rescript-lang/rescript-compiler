@@ -150,16 +150,15 @@ function test(param) {
   }
   if (Caml_oo_curry.js2(616641298, 7, u, 32) === 32) {
     return /* () */0;
-  } else {
-    throw [
-          Caml_builtin_exceptions.assert_failure,
-          /* tuple */[
-            "test_simple_obj.ml",
-            28,
-            4
-          ]
-        ];
   }
+  throw [
+        Caml_builtin_exceptions.assert_failure,
+        /* tuple */[
+          "test_simple_obj.ml",
+          28,
+          4
+        ]
+      ];
 }
 
 exports.u = u;

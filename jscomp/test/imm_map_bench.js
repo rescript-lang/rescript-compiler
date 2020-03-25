@@ -18,9 +18,8 @@ function fromArray(kvs) {
 function should(b) {
   if (b) {
     return /* () */0;
-  } else {
-    throw new Error("impossible");
   }
+  throw new Error("impossible");
 }
 
 var shuffledDataAdd = Belt_Array.makeByAndShuffle(1000001, (function (i) {

@@ -10,14 +10,13 @@ var Caml_builtin_exceptions = require("../../lib/js/caml_builtin_exceptions.js")
 function reverse_range(a, i, len) {
   if (len === 0) {
     return /* () */0;
-  } else {
-    for(var k = 0 ,k_finish = (len - 1 | 0) / 2 | 0; k <= k_finish; ++k){
-      var t = a[i + k | 0];
-      a[i + k | 0] = a[((i + len | 0) - 1 | 0) - k | 0];
-      a[((i + len | 0) - 1 | 0) - k | 0] = t;
-    }
-    return /* () */0;
   }
+  for(var k = 0 ,k_finish = (len - 1 | 0) / 2 | 0; k <= k_finish; ++k){
+    var t = a[i + k | 0];
+    a[i + k | 0] = a[((i + len | 0) - 1 | 0) - k | 0];
+    a[((i + len | 0) - 1 | 0) - k | 0] = t;
+  }
+  return /* () */0;
 }
 
 function reverse_in_place(a) {
@@ -28,36 +27,33 @@ function reverse(a) {
   var b_len = a.length;
   if (b_len === 0) {
     return [];
-  } else {
-    var b = $$Array.copy(a);
-    for(var i = 0 ,i_finish = b_len - 1 | 0; i <= i_finish; ++i){
-      b[i] = a[(b_len - 1 | 0) - i | 0];
-    }
-    return b;
   }
+  var b = $$Array.copy(a);
+  for(var i = 0 ,i_finish = b_len - 1 | 0; i <= i_finish; ++i){
+    b[i] = a[(b_len - 1 | 0) - i | 0];
+  }
+  return b;
 }
 
 function reverse_of_list(l) {
-  if (l) {
-    var len = List.length(l);
-    var a = Caml_array.caml_make_vect(len, l[0]);
-    var _i = 0;
-    var _param = l[1];
-    while(true) {
-      var param = _param;
-      var i = _i;
-      if (param) {
-        a[(len - i | 0) - 2 | 0] = param[0];
-        _param = param[1];
-        _i = i + 1 | 0;
-        continue ;
-      } else {
-        return a;
-      }
-    };
-  } else {
+  if (!l) {
     return [];
   }
+  var len = List.length(l);
+  var a = Caml_array.caml_make_vect(len, l[0]);
+  var _i = 0;
+  var _param = l[1];
+  while(true) {
+    var param = _param;
+    var i = _i;
+    if (!param) {
+      return a;
+    }
+    a[(len - i | 0) - 2 | 0] = param[0];
+    _param = param[1];
+    _i = i + 1 | 0;
+    continue ;
+  };
 }
 
 function filter(f, a) {
@@ -69,19 +65,18 @@ function filter(f, a) {
     var acc = _acc;
     if (i === arr_len) {
       return reverse_of_list(acc);
+    }
+    var v = a[i];
+    if (Curry._1(f, v)) {
+      _i = i + 1 | 0;
+      _acc = /* :: */[
+        v,
+        acc
+      ];
+      continue ;
     } else {
-      var v = a[i];
-      if (Curry._1(f, v)) {
-        _i = i + 1 | 0;
-        _acc = /* :: */[
-          v,
-          acc
-        ];
-        continue ;
-      } else {
-        _i = i + 1 | 0;
-        continue ;
-      }
+      _i = i + 1 | 0;
+      continue ;
     }
   };
 }
@@ -95,19 +90,18 @@ function filter_map(f, a) {
     var acc = _acc;
     if (i === arr_len) {
       return reverse_of_list(acc);
+    }
+    var v = a[i];
+    var match = Curry._1(f, v);
+    _i = i + 1 | 0;
+    if (match !== undefined) {
+      _acc = /* :: */[
+        Caml_option.valFromOption(match),
+        acc
+      ];
+      continue ;
     } else {
-      var v = a[i];
-      var match = Curry._1(f, v);
-      _i = i + 1 | 0;
-      if (match !== undefined) {
-        _acc = /* :: */[
-          Caml_option.valFromOption(match),
-          acc
-        ];
-        continue ;
-      } else {
-        continue ;
-      }
+      continue ;
     }
   };
 }
@@ -143,16 +137,15 @@ function tolist_aux(a, f, _i, _res) {
     var i = _i;
     if (i < 0) {
       return res;
-    } else {
-      var v = a[i];
-      var match = Curry._1(f, v);
-      _res = match !== undefined ? /* :: */[
-          Caml_option.valFromOption(match),
-          res
-        ] : res;
-      _i = i - 1 | 0;
-      continue ;
     }
+    var v = a[i];
+    var match = Curry._1(f, v);
+    _res = match !== undefined ? /* :: */[
+        Caml_option.valFromOption(match),
+        res
+      ] : res;
+    _i = i - 1 | 0;
+    continue ;
   };
 }
 
@@ -165,28 +158,26 @@ function to_list_map_acc(f, a, acc) {
 }
 
 function of_list_map(f, a) {
-  if (a) {
-    var tl = a[1];
-    var hd = Curry._1(f, a[0]);
-    var len = List.length(tl) + 1 | 0;
-    var arr = Caml_array.caml_make_vect(len, hd);
-    var _i = 1;
-    var _param = tl;
-    while(true) {
-      var param = _param;
-      var i = _i;
-      if (param) {
-        arr[i] = Curry._1(f, param[0]);
-        _param = param[1];
-        _i = i + 1 | 0;
-        continue ;
-      } else {
-        return arr;
-      }
-    };
-  } else {
+  if (!a) {
     return [];
   }
+  var tl = a[1];
+  var hd = Curry._1(f, a[0]);
+  var len = List.length(tl) + 1 | 0;
+  var arr = Caml_array.caml_make_vect(len, hd);
+  var _i = 1;
+  var _param = tl;
+  while(true) {
+    var param = _param;
+    var i = _i;
+    if (!param) {
+      return arr;
+    }
+    arr[i] = Curry._1(f, param[0]);
+    _param = param[1];
+    _i = i + 1 | 0;
+    continue ;
+  };
 }
 
 function rfind_with_index(arr, cmp, v) {
@@ -194,12 +185,14 @@ function rfind_with_index(arr, cmp, v) {
   var _i = len - 1 | 0;
   while(true) {
     var i = _i;
-    if (i < 0 || Curry._2(cmp, arr[i], v)) {
+    if (i < 0) {
       return i;
-    } else {
-      _i = i - 1 | 0;
-      continue ;
     }
+    if (Curry._2(cmp, arr[i], v)) {
+      return i;
+    }
+    _i = i - 1 | 0;
+    continue ;
   };
 }
 
@@ -226,12 +219,12 @@ function find_with_index(arr, cmp, v) {
     var i = _i;
     if (i >= len$1) {
       return -1;
-    } else if (Curry._2(cmp, arr[i], v)) {
-      return i;
-    } else {
-      _i = i + 1 | 0;
-      continue ;
     }
+    if (Curry._2(cmp, arr[i], v)) {
+      return i;
+    }
+    _i = i + 1 | 0;
+    continue ;
   };
 }
 
@@ -257,12 +250,12 @@ function exists(p, a) {
     var i = _i;
     if (i === n) {
       return false;
-    } else if (Curry._1(p, a[i])) {
-      return true;
-    } else {
-      _i = i + 1 | 0;
-      continue ;
     }
+    if (Curry._1(p, a[i])) {
+      return true;
+    }
+    _i = i + 1 | 0;
+    continue ;
   };
 }
 
@@ -275,12 +268,12 @@ function unsafe_loop(_index, len, p, xs, ys) {
     var index = _index;
     if (index >= len) {
       return true;
-    } else if (Curry._2(p, xs[index], ys[index])) {
-      _index = index + 1 | 0;
-      continue ;
-    } else {
+    }
+    if (!Curry._2(p, xs[index], ys[index])) {
       return false;
     }
+    _index = index + 1 | 0;
+    continue ;
   };
 }
 

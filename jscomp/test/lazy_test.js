@@ -30,24 +30,22 @@ function lazy_test(param) {
 function f(param) {
   CamlinternalLazy.force(param[0]);
   var match = param[2].contents;
-  if (match !== undefined) {
-    CamlinternalLazy.force(param[1]);
-    var match$1 = param[2].contents;
-    if (match$1 !== undefined) {
-      return 1;
-    } else {
-      throw [
-            Caml_builtin_exceptions.match_failure,
-            /* tuple */[
-              "lazy_test.ml",
-              11,
-              8
-            ]
-          ];
-    }
-  } else {
+  if (match === undefined) {
     return 0;
   }
+  CamlinternalLazy.force(param[1]);
+  var match$1 = param[2].contents;
+  if (match$1 !== undefined) {
+    return 1;
+  }
+  throw [
+        Caml_builtin_exceptions.match_failure,
+        /* tuple */[
+          "lazy_test.ml",
+          11,
+          8
+        ]
+      ];
 }
 
 var s = {
@@ -75,11 +73,10 @@ try {
 }
 catch (raw_exn){
   var exn = Caml_js_exceptions.internalToOCamlException(raw_exn);
-  if (exn[0] === Caml_builtin_exceptions.match_failure) {
-    h = 2;
-  } else {
+  if (exn[0] !== Caml_builtin_exceptions.match_failure) {
     throw exn;
   }
+  h = 2;
 }
 
 var u_v = {

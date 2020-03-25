@@ -270,7 +270,7 @@ var N0 = {
 
 Mt.from_pair_suites("Option_repr_test", suites.contents);
 
-var f7 = undefined;
+var f7;
 
 var f8 = Caml_option.some(undefined);
 
@@ -278,7 +278,7 @@ var f9 = Caml_option.some(Caml_option.some(undefined));
 
 var N = /* alias */0;
 
-var none_arg = undefined;
+var none_arg;
 
 exports.suites = suites;
 exports.test_id = test_id;

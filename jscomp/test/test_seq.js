@@ -16,17 +16,15 @@ var Stop = Caml_exceptions.create("Test_seq.Stop");
 function assoc3(x, _l) {
   while(true) {
     var l = _l;
-    if (l) {
-      var match = l[0];
-      if (Caml_obj.caml_equal(match[0], x)) {
-        return match[1];
-      } else {
-        _l = l[1];
-        continue ;
-      }
-    } else {
+    if (!l) {
       throw Caml_builtin_exceptions.not_found;
     }
+    var match = l[0];
+    if (Caml_obj.caml_equal(match[0], x)) {
+      return match[1];
+    }
+    _l = l[1];
+    continue ;
   };
 }
 
@@ -53,18 +51,17 @@ function add_help(speclist) {
     add1 = /* [] */0;
   }
   catch (exn){
-    if (exn === Caml_builtin_exceptions.not_found) {
-      add1 = /* :: */[
-        /* tuple */[
-          "-help",
-          /* Unit */Block.__(0, [help_action]),
-          " Display this list of options"
-        ],
-        /* [] */0
-      ];
-    } else {
+    if (exn !== Caml_builtin_exceptions.not_found) {
       throw exn;
     }
+    add1 = /* :: */[
+      /* tuple */[
+        "-help",
+        /* Unit */Block.__(0, [help_action]),
+        " Display this list of options"
+      ],
+      /* [] */0
+    ];
   }
   var add2;
   try {
@@ -72,18 +69,17 @@ function add_help(speclist) {
     add2 = /* [] */0;
   }
   catch (exn$1){
-    if (exn$1 === Caml_builtin_exceptions.not_found) {
-      add2 = /* :: */[
-        /* tuple */[
-          "--help",
-          /* Unit */Block.__(0, [help_action]),
-          " Display this list of options"
-        ],
-        /* [] */0
-      ];
-    } else {
+    if (exn$1 !== Caml_builtin_exceptions.not_found) {
       throw exn$1;
     }
+    add2 = /* :: */[
+      /* tuple */[
+        "--help",
+        /* Unit */Block.__(0, [help_action]),
+        " Display this list of options"
+      ],
+      /* [] */0
+    ];
   }
   return Pervasives.$at(speclist, Pervasives.$at(add1, add2));
 }

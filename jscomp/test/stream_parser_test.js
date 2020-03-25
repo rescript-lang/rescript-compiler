@@ -18,15 +18,14 @@ function parse(token) {
     last: /* Nil */0
   };
   var token$1 = function (param) {
-    if (look_ahead.length === 0) {
-      try {
-        return Curry._1(token, /* () */0);
-      }
-      catch (exn){
-        return /* Kwd */Block.__(0, ["=="]);
-      }
-    } else {
+    if (look_ahead.length !== 0) {
       return Queue.pop(look_ahead);
+    }
+    try {
+      return Curry._1(token, /* () */0);
+    }
+    catch (exn){
+      return /* Kwd */Block.__(0, ["=="]);
     }
   };
   var parse_atom = function (param) {
@@ -41,14 +40,14 @@ function parse(token) {
                     Parse_error,
                     "Unbalanced parens"
                   ];
-            } else if (match[0] === ")") {
-              return v;
-            } else {
-              throw [
-                    Parse_error,
-                    "Unbalanced parens"
-                  ];
             }
+            if (match[0] === ")") {
+              return v;
+            }
+            throw [
+                  Parse_error,
+                  "Unbalanced parens"
+                ];
           } else {
             Queue.push(e, look_ahead);
             throw [
@@ -146,15 +145,14 @@ function l_parse(token) {
     last: /* Nil */0
   };
   var token$1 = function (param) {
-    if (look_ahead.length === 0) {
-      try {
-        return Curry._1(token, /* () */0);
-      }
-      catch (exn){
-        return /* Kwd */Block.__(0, ["=="]);
-      }
-    } else {
+    if (look_ahead.length !== 0) {
       return Queue.pop(look_ahead);
+    }
+    try {
+      return Curry._1(token, /* () */0);
+    }
+    catch (exn){
+      return /* Kwd */Block.__(0, ["=="]);
     }
   };
   var parse_f_aux = function (_a) {
@@ -183,28 +181,27 @@ function l_parse(token) {
     var t = token$1(/* () */0);
     switch (t.tag | 0) {
       case /* Kwd */0 :
-          if (t[0] === "(") {
-            var v = parse_t_aux(parse_f_aux(parse_f(/* () */0)));
-            var t$1 = token$1(/* () */0);
-            if (t$1.tag) {
-              throw [
-                    Parse_error,
-                    "Unbalanced )"
-                  ];
-            } else if (t$1[0] === ")") {
-              return v;
-            } else {
-              throw [
-                    Parse_error,
-                    "Unbalanced )"
-                  ];
-            }
-          } else {
+          if (t[0] !== "(") {
             throw [
                   Parse_error,
                   "Unexpected token"
                 ];
           }
+          var v = parse_t_aux(parse_f_aux(parse_f(/* () */0)));
+          var t$1 = token$1(/* () */0);
+          if (t$1.tag) {
+            throw [
+                  Parse_error,
+                  "Unbalanced )"
+                ];
+          }
+          if (t$1[0] === ")") {
+            return v;
+          }
+          throw [
+                Parse_error,
+                "Unbalanced )"
+              ];
       case /* Int */2 :
           return t[0];
       default:

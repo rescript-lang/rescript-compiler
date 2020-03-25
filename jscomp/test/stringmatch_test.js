@@ -55,9 +55,8 @@ function tst02(s) {
               23
             ]
           ];
-    } else {
-      return 1;
     }
+    return 1;
   } else {
     if (len === 0) {
       throw [

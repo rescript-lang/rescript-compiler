@@ -78,11 +78,10 @@ var is_lazy_force = CamlinternalLazy.force;
 function fib(n) {
   if (n === 0 || n === 1) {
     return 1;
-  } else {
-    var fib1 = fib(n - 1 | 0);
-    var fib2 = fib(n - 2 | 0);
-    return (fib1 + fib2 | 0) + 3 | 0;
   }
+  var fib1 = fib(n - 1 | 0);
+  var fib2 = fib(n - 2 | 0);
+  return (fib1 + fib2 | 0) + 3 | 0;
 }
 
 var a0 = "File \"test_primitive.ml\", line 26, characters 9-16";

@@ -52,23 +52,23 @@ function is_pos_pow(n) {
       var c = _c;
       if (n$1 <= 0) {
         return -2;
-      } else if (n$1 === 1) {
+      }
+      if (n$1 === 1) {
         return c;
-      } else if ((n$1 & 1) === 0) {
-        _n = (n$1 >> 1);
-        _c = c + 1 | 0;
-        continue ;
-      } else {
+      }
+      if ((n$1 & 1) !== 0) {
         throw E;
       }
+      _n = (n$1 >> 1);
+      _c = c + 1 | 0;
+      continue ;
     };
   }
   catch (exn){
     if (exn === E) {
       return -1;
-    } else {
-      throw exn;
     }
+    throw exn;
   }
 }
 
@@ -98,141 +98,144 @@ function bad_argf(fmt) {
 function dump(r) {
   if (typeof r === "number") {
     return String(r);
-  } else {
-    var get_fields = function (_acc, _n) {
-      while(true) {
-        var n = _n;
-        var acc = _acc;
-        if (n !== 0) {
-          var n$1 = n - 1 | 0;
-          _n = n$1;
-          _acc = /* :: */[
-            r[n$1],
-            acc
-          ];
-          continue ;
-        } else {
-          return acc;
-        }
-      };
+  }
+  var get_fields = function (_acc, _n) {
+    while(true) {
+      var n = _n;
+      var acc = _acc;
+      if (n === 0) {
+        return acc;
+      }
+      var n$1 = n - 1 | 0;
+      _n = n$1;
+      _acc = /* :: */[
+        r[n$1],
+        acc
+      ];
+      continue ;
     };
-    var is_list = function (_r) {
-      while(true) {
-        var r = _r;
-        if (typeof r === "number") {
-          return Caml_obj.caml_equal(r, 0);
-        } else {
-          var s = r.length;
-          var t = r.tag | 0;
-          if (t === 0 && s === 2) {
-            _r = r[1];
-            continue ;
-          } else {
-            return false;
-          }
-        }
-      };
-    };
-    var get_list = function (r) {
+  };
+  var is_list = function (_r) {
+    while(true) {
+      var r = _r;
       if (typeof r === "number") {
-        return /* [] */0;
-      } else {
-        var h = r[0];
-        var t = get_list(r[1]);
-        return /* :: */[
-                h,
-                t
-              ];
+        return Caml_obj.caml_equal(r, 0);
       }
+      var s = r.length;
+      var t = r.tag | 0;
+      if (t !== 0) {
+        return false;
+      }
+      if (s !== 2) {
+        return false;
+      }
+      _r = r[1];
+      continue ;
     };
-    var s = r.length;
-    var t = r.tag | 0;
-    if (is_list(r)) {
-      var fields = get_list(r);
-      return "[" + ($$String.concat("; ", List.map(dump, fields)) + "]");
-    } else if (t !== 0) {
-      if (t === Obj.lazy_tag) {
-        return "<lazy>";
-      } else if (t === Obj.closure_tag) {
-        return "<closure>";
-      } else if (t === Obj.object_tag) {
-        var fields$1 = get_fields(/* [] */0, s);
-        var match;
-        if (fields$1) {
-          var match$1 = fields$1[1];
-          if (match$1) {
-            match = /* tuple */[
-              fields$1[0],
-              match$1[0],
-              match$1[1]
-            ];
-          } else {
-            throw [
-                  Caml_builtin_exceptions.assert_failure,
-                  /* tuple */[
-                    "ext_pervasives_test.ml",
-                    118,
-                    15
-                  ]
-                ];
-          }
-        } else {
-          throw [
-                Caml_builtin_exceptions.assert_failure,
-                /* tuple */[
-                  "ext_pervasives_test.ml",
-                  118,
-                  15
-                ]
-              ];
-        }
-        return "Object #" + (dump(match[1]) + (" (" + ($$String.concat(", ", List.map(dump, match[2])) + ")")));
-      } else if (t === Obj.infix_tag) {
-        return "<infix>";
-      } else if (t === Obj.forward_tag) {
-        return "<forward>";
-      } else if (t < Obj.no_scan_tag) {
-        var fields$2 = get_fields(/* [] */0, s);
-        return "Tag" + (String(t) + (" (" + ($$String.concat(", ", List.map(dump, fields$2)) + ")")));
-      } else if (t === Obj.string_tag) {
-        return "\"" + ($$String.escaped(r) + "\"");
-      } else if (t === Obj.double_tag) {
-        return Pervasives.string_of_float(r);
-      } else if (t === Obj.abstract_tag) {
-        return "<abstract>";
-      } else if (t === Obj.custom_tag) {
-        return "<custom>";
-      } else if (t === Obj.custom_tag) {
-        return "<final>";
-      } else if (t === Obj.double_array_tag) {
-        return "[|" + ($$String.concat(";", $$Array.to_list($$Array.map(Pervasives.string_of_float, r))) + "|]");
-      } else {
-        var name = Curry._2(Printf.sprintf(/* Format */[
-                  /* String_literal */Block.__(11, [
-                      "unknown: tag ",
-                      /* Int */Block.__(4, [
-                          /* Int_d */0,
-                          /* No_padding */0,
-                          /* No_precision */0,
-                          /* String_literal */Block.__(11, [
-                              " size ",
-                              /* Int */Block.__(4, [
-                                  /* Int_d */0,
-                                  /* No_padding */0,
-                                  /* No_precision */0,
-                                  /* End_of_format */0
-                                ])
-                            ])
-                        ])
-                    ]),
-                  "unknown: tag %d size %d"
-                ]), t, s);
-        return "<" + (name + ">");
-      }
-    } else {
-      var fields$3 = get_fields(/* [] */0, s);
-      return "(" + ($$String.concat(", ", List.map(dump, fields$3)) + ")");
+  };
+  var get_list = function (r) {
+    if (typeof r === "number") {
+      return /* [] */0;
     }
+    var h = r[0];
+    var t = get_list(r[1]);
+    return /* :: */[
+            h,
+            t
+          ];
+  };
+  var s = r.length;
+  var t = r.tag | 0;
+  if (is_list(r)) {
+    var fields = get_list(r);
+    return "[" + ($$String.concat("; ", List.map(dump, fields)) + "]");
+  } else if (t !== 0) {
+    if (t === Obj.lazy_tag) {
+      return "<lazy>";
+    }
+    if (t === Obj.closure_tag) {
+      return "<closure>";
+    }
+    if (t === Obj.object_tag) {
+      var fields$1 = get_fields(/* [] */0, s);
+      var match;
+      if (!fields$1) {
+        throw [
+              Caml_builtin_exceptions.assert_failure,
+              /* tuple */[
+                "ext_pervasives_test.ml",
+                118,
+                15
+              ]
+            ];
+      }
+      var match$1 = fields$1[1];
+      if (!match$1) {
+        throw [
+              Caml_builtin_exceptions.assert_failure,
+              /* tuple */[
+                "ext_pervasives_test.ml",
+                118,
+                15
+              ]
+            ];
+      }
+      match = /* tuple */[
+        fields$1[0],
+        match$1[0],
+        match$1[1]
+      ];
+      return "Object #" + (dump(match[1]) + (" (" + ($$String.concat(", ", List.map(dump, match[2])) + ")")));
+    } else {
+      if (t === Obj.infix_tag) {
+        return "<infix>";
+      }
+      if (t === Obj.forward_tag) {
+        return "<forward>";
+      }
+      if (t >= Obj.no_scan_tag) {
+        if (t === Obj.string_tag) {
+          return "\"" + ($$String.escaped(r) + "\"");
+        } else if (t === Obj.double_tag) {
+          return Pervasives.string_of_float(r);
+        } else if (t === Obj.abstract_tag) {
+          return "<abstract>";
+        } else if (t === Obj.custom_tag) {
+          return "<custom>";
+        } else if (t === Obj.custom_tag) {
+          return "<final>";
+        } else if (t === Obj.double_array_tag) {
+          return "[|" + ($$String.concat(";", $$Array.to_list($$Array.map(Pervasives.string_of_float, r))) + "|]");
+        } else {
+          var name = Curry._2(Printf.sprintf(/* Format */[
+                    /* String_literal */Block.__(11, [
+                        "unknown: tag ",
+                        /* Int */Block.__(4, [
+                            /* Int_d */0,
+                            /* No_padding */0,
+                            /* No_precision */0,
+                            /* String_literal */Block.__(11, [
+                                " size ",
+                                /* Int */Block.__(4, [
+                                    /* Int_d */0,
+                                    /* No_padding */0,
+                                    /* No_precision */0,
+                                    /* End_of_format */0
+                                  ])
+                              ])
+                          ])
+                      ]),
+                    "unknown: tag %d size %d"
+                  ]), t, s);
+          return "<" + (name + ">");
+        }
+      }
+      var fields$2 = get_fields(/* [] */0, s);
+      return "Tag" + (String(t) + (" (" + ($$String.concat(", ", List.map(dump, fields$2)) + ")")));
+    }
+  } else {
+    var fields$3 = get_fields(/* [] */0, s);
+    return "(" + ($$String.concat(", ", List.map(dump, fields$3)) + ")");
   }
 }
 

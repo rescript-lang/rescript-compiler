@@ -1,9 +1,7 @@
 'use strict';
 
 
-function u(o) {
-  return o.hi(1, 2);
-}
+var u = /* () */0;
 
 exports.u = u;
 /* No side effect */

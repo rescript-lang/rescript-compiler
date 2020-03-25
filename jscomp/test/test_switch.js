@@ -10,18 +10,17 @@ function f(param) {
     } else {
       return 5;
     }
-  } else {
-    switch (param.tag | 0) {
-      case /* A */0 :
-          return 0;
-      case /* B */1 :
-          return 1;
-      case /* C */2 :
-          return 2;
-      case /* F */3 :
-          return 3;
-      
-    }
+  }
+  switch (param.tag | 0) {
+    case /* A */0 :
+        return 0;
+    case /* B */1 :
+        return 1;
+    case /* C */2 :
+        return 2;
+    case /* F */3 :
+        return 3;
+    
   }
 }
 

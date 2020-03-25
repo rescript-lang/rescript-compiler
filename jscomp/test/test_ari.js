@@ -35,13 +35,12 @@ function length_aux(_len, _param) {
   while(true) {
     var param = _param;
     var len = _len;
-    if (param) {
-      _param = param[1];
-      _len = len + 1 | 0;
-      continue ;
-    } else {
+    if (!param) {
       return len;
     }
+    _param = param[1];
+    _len = len + 1 | 0;
+    continue ;
   };
 }
 

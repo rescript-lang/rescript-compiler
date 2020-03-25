@@ -12,9 +12,8 @@ function f(x) {
             2
           ]
         ];
-  } else {
-    return /* "a" */97;
   }
+  return /* "a" */97;
 }
 
 function f2(x) {

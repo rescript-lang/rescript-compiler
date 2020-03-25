@@ -97,9 +97,8 @@ function ff(g, x) {
     var exn$9 = Caml_js_exceptions.internalToOCamlException(raw_exn$4);
     if (exn$9[0] === Caml_builtin_exceptions.undefined_recursive_module) {
       return /* () */0;
-    } else {
-      throw exn$9;
     }
+    throw exn$9;
   }
 }
 
@@ -110,7 +109,8 @@ function u(param) {
 function f(x) {
   if (typeof x === "number") {
     return 2;
-  } else if (x.tag) {
+  }
+  if (x.tag) {
     throw [
           Caml_builtin_exceptions.assert_failure,
           /* tuple */[
@@ -119,9 +119,8 @@ function f(x) {
             9
           ]
         ];
-  } else {
-    return 1;
   }
+  return 1;
 }
 
 var u1 = "bad character decimal encoding \\";

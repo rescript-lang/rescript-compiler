@@ -36,12 +36,11 @@ function eq(loc, x, y) {
 function assert_bool(b) {
   if (b) {
     return /* () */0;
-  } else {
-    throw [
-          Caml_builtin_exceptions.invalid_argument,
-          "Assertion Failure."
-        ];
   }
+  throw [
+        Caml_builtin_exceptions.invalid_argument,
+        "Assertion Failure."
+      ];
 }
 
 function fail(param) {
@@ -77,16 +76,15 @@ function assertIsNotFound(x) {
   var match = Caml_exceptions.caml_is_extension(x) && x === Caml_builtin_exceptions.not_found ? 0 : undefined;
   if (match !== undefined) {
     return h;
-  } else {
-    throw [
-          Caml_builtin_exceptions.assert_failure,
-          /* tuple */[
-            "js_promise_basic_test.ml",
-            36,
-            9
-          ]
-        ];
   }
+  throw [
+        Caml_builtin_exceptions.assert_failure,
+        /* tuple */[
+          "js_promise_basic_test.ml",
+          36,
+          9
+        ]
+      ];
 }
 
 function catchTest(param) {
@@ -138,16 +136,15 @@ function orElseRejectedRejectTest(param) {
                 var match = Caml_exceptions.caml_is_extension(error) && error === Caml_builtin_exceptions.stack_overflow ? 0 : undefined;
                 if (match !== undefined) {
                   return h;
-                } else {
-                  throw [
-                        Caml_builtin_exceptions.assert_failure,
-                        /* tuple */[
-                          "js_promise_basic_test.ml",
-                          77,
-                          18
-                        ]
-                      ];
                 }
+                throw [
+                      Caml_builtin_exceptions.assert_failure,
+                      /* tuple */[
+                        "js_promise_basic_test.ml",
+                        77,
+                        18
+                      ]
+                    ];
               }));
 }
 

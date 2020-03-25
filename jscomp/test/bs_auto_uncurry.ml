@@ -63,7 +63,7 @@ fun (_){
 
 
 let f_0 () =  hi (fun () -> () )
-let f_01 () = hi (fun (() as x) -> if x = () then Js.log "x" )
+let f_01 () = hi (fun (() as x) -> if x = () then Js.log "x" ) (* FIXME: not inlined *)
 let f_02 xs = hi (fun (() as x) -> xs := x ;  Js.log "x" )
 let f_03 xs u = hi u
  (* arity adjust to [0] [ function (){return u (0)}] *)

@@ -8,55 +8,43 @@ var Caml_primitive = require("../../lib/js/caml_primitive.js");
 var Caml_builtin_exceptions = require("../../lib/js/caml_builtin_exceptions.js");
 
 function split(x, tree) {
-  if (tree) {
-    var r = tree[2];
-    var v = tree[1];
-    var l = tree[0];
-    var c = Caml_primitive.caml_string_compare(x, v);
-    if (c === 0) {
-      return /* tuple */[
-              l,
-              true,
-              r
-            ];
-    } else if (c < 0) {
-      var match = split(x, l);
-      return /* tuple */[
-              match[0],
-              match[1],
-              Set_gen.internal_join(match[2], v, r)
-            ];
-    } else {
-      var match$1 = split(x, r);
-      return /* tuple */[
-              Set_gen.internal_join(l, v, match$1[0]),
-              match$1[1],
-              match$1[2]
-            ];
-    }
-  } else {
+  if (!tree) {
     return /* tuple */[
             /* Empty */0,
             false,
             /* Empty */0
           ];
   }
+  var r = tree[2];
+  var v = tree[1];
+  var l = tree[0];
+  var c = Caml_primitive.caml_string_compare(x, v);
+  if (c === 0) {
+    return /* tuple */[
+            l,
+            true,
+            r
+          ];
+  }
+  if (c < 0) {
+    var match = split(x, l);
+    return /* tuple */[
+            match[0],
+            match[1],
+            Set_gen.internal_join(match[2], v, r)
+          ];
+  } else {
+    var match$1 = split(x, r);
+    return /* tuple */[
+            Set_gen.internal_join(l, v, match$1[0]),
+            match$1[1],
+            match$1[2]
+          ];
+  }
 }
 
 function add(x, tree) {
-  if (tree) {
-    var r = tree[2];
-    var v = tree[1];
-    var l = tree[0];
-    var c = Caml_primitive.caml_string_compare(x, v);
-    if (c === 0) {
-      return tree;
-    } else if (c < 0) {
-      return Set_gen.internal_bal(add(x, l), v, r);
-    } else {
-      return Set_gen.internal_bal(l, v, add(x, r));
-    }
-  } else {
+  if (!tree) {
     return /* Node */[
             /* Empty */0,
             x,
@@ -64,106 +52,112 @@ function add(x, tree) {
             1
           ];
   }
+  var r = tree[2];
+  var v = tree[1];
+  var l = tree[0];
+  var c = Caml_primitive.caml_string_compare(x, v);
+  if (c === 0) {
+    return tree;
+  } else if (c < 0) {
+    return Set_gen.internal_bal(add(x, l), v, r);
+  } else {
+    return Set_gen.internal_bal(l, v, add(x, r));
+  }
 }
 
 function union(s1, s2) {
-  if (s1) {
-    if (s2) {
-      var h2 = s2[3];
-      var v2 = s2[1];
-      var h1 = s1[3];
-      var v1 = s1[1];
-      if (h1 >= h2) {
-        if (h2 === 1) {
-          return add(v2, s1);
-        } else {
-          var match = split(v1, s2);
-          return Set_gen.internal_join(union(s1[0], match[0]), v1, union(s1[2], match[2]));
-        }
-      } else if (h1 === 1) {
-        return add(v1, s2);
-      } else {
-        var match$1 = split(v2, s1);
-        return Set_gen.internal_join(union(match$1[0], s2[0]), v2, union(match$1[2], s2[2]));
-      }
-    } else {
-      return s1;
-    }
-  } else {
+  if (!s1) {
     return s2;
+  }
+  if (!s2) {
+    return s1;
+  }
+  var h2 = s2[3];
+  var v2 = s2[1];
+  var h1 = s1[3];
+  var v1 = s1[1];
+  if (h1 >= h2) {
+    if (h2 === 1) {
+      return add(v2, s1);
+    }
+    var match = split(v1, s2);
+    return Set_gen.internal_join(union(s1[0], match[0]), v1, union(s1[2], match[2]));
+  } else {
+    if (h1 === 1) {
+      return add(v1, s2);
+    }
+    var match$1 = split(v2, s1);
+    return Set_gen.internal_join(union(match$1[0], s2[0]), v2, union(match$1[2], s2[2]));
   }
 }
 
 function inter(s1, s2) {
-  if (s1 && s2) {
-    var r1 = s1[2];
-    var v1 = s1[1];
-    var l1 = s1[0];
-    var match = split(v1, s2);
-    var l2 = match[0];
-    if (match[1]) {
-      return Set_gen.internal_join(inter(l1, l2), v1, inter(r1, match[2]));
-    } else {
-      return Set_gen.internal_concat(inter(l1, l2), inter(r1, match[2]));
-    }
-  } else {
+  if (!s1) {
     return /* Empty */0;
+  }
+  if (!s2) {
+    return /* Empty */0;
+  }
+  var r1 = s1[2];
+  var v1 = s1[1];
+  var l1 = s1[0];
+  var match = split(v1, s2);
+  var l2 = match[0];
+  if (match[1]) {
+    return Set_gen.internal_join(inter(l1, l2), v1, inter(r1, match[2]));
+  } else {
+    return Set_gen.internal_concat(inter(l1, l2), inter(r1, match[2]));
   }
 }
 
 function diff(s1, s2) {
-  if (s1) {
-    if (s2) {
-      var r1 = s1[2];
-      var v1 = s1[1];
-      var l1 = s1[0];
-      var match = split(v1, s2);
-      var l2 = match[0];
-      if (match[1]) {
-        return Set_gen.internal_concat(diff(l1, l2), diff(r1, match[2]));
-      } else {
-        return Set_gen.internal_join(diff(l1, l2), v1, diff(r1, match[2]));
-      }
-    } else {
-      return s1;
-    }
-  } else {
+  if (!s1) {
     return /* Empty */0;
+  }
+  if (!s2) {
+    return s1;
+  }
+  var r1 = s1[2];
+  var v1 = s1[1];
+  var l1 = s1[0];
+  var match = split(v1, s2);
+  var l2 = match[0];
+  if (match[1]) {
+    return Set_gen.internal_concat(diff(l1, l2), diff(r1, match[2]));
+  } else {
+    return Set_gen.internal_join(diff(l1, l2), v1, diff(r1, match[2]));
   }
 }
 
 function mem(x, _tree) {
   while(true) {
     var tree = _tree;
-    if (tree) {
-      var c = Caml_primitive.caml_string_compare(x, tree[1]);
-      if (c === 0) {
-        return true;
-      } else {
-        _tree = c < 0 ? tree[0] : tree[2];
-        continue ;
-      }
-    } else {
+    if (!tree) {
       return false;
     }
+    var c = Caml_primitive.caml_string_compare(x, tree[1]);
+    if (c === 0) {
+      return true;
+    }
+    _tree = c < 0 ? tree[0] : tree[2];
+    continue ;
   };
 }
 
 function remove(x, tree) {
-  if (tree) {
-    var r = tree[2];
-    var v = tree[1];
-    var l = tree[0];
-    var c = Caml_primitive.caml_string_compare(x, v);
-    if (c === 0) {
-      return Set_gen.internal_merge(l, r);
-    } else if (c < 0) {
-      return Set_gen.internal_bal(remove(x, l), v, r);
-    } else {
-      return Set_gen.internal_bal(l, v, remove(x, r));
-    }
-  } else {
+  if (!tree) {
     return /* Empty */0;
+  }
+  var r = tree[2];
+  var v = tree[1];
+  var l = tree[0];
+  var c = Caml_primitive.caml_string_compare(x, v);
+  if (c === 0) {
+    return Set_gen.internal_merge(l, r);
+  } else if (c < 0) {
+    return Set_gen.internal_bal(remove(x, l), v, r);
+  } else {
+    return Set_gen.internal_bal(l, v, remove(x, r));
   }
 }
 
@@ -179,50 +173,47 @@ function subset(_s1, _s2) {
   while(true) {
     var s2 = _s2;
     var s1 = _s1;
-    if (s1) {
-      if (s2) {
-        var r2 = s2[2];
-        var l2 = s2[0];
-        var r1 = s1[2];
-        var v1 = s1[1];
-        var l1 = s1[0];
-        var c = Caml_primitive.caml_string_compare(v1, s2[1]);
-        if (c === 0) {
-          if (subset(l1, l2)) {
-            _s2 = r2;
-            _s1 = r1;
-            continue ;
-          } else {
-            return false;
-          }
-        } else if (c < 0) {
-          if (subset(/* Node */[
-                  l1,
-                  v1,
-                  /* Empty */0,
-                  0
-                ], l2)) {
-            _s1 = r1;
-            continue ;
-          } else {
-            return false;
-          }
-        } else if (subset(/* Node */[
-                /* Empty */0,
-                v1,
-                r1,
-                0
-              ], r2)) {
-          _s1 = l1;
-          continue ;
-        } else {
-          return false;
-        }
-      } else {
+    if (!s1) {
+      return true;
+    }
+    if (!s2) {
+      return false;
+    }
+    var r2 = s2[2];
+    var l2 = s2[0];
+    var r1 = s1[2];
+    var v1 = s1[1];
+    var l1 = s1[0];
+    var c = Caml_primitive.caml_string_compare(v1, s2[1]);
+    if (c === 0) {
+      if (!subset(l1, l2)) {
         return false;
       }
+      _s2 = r2;
+      _s1 = r1;
+      continue ;
+    } else if (c < 0) {
+      if (!subset(/* Node */[
+              l1,
+              v1,
+              /* Empty */0,
+              0
+            ], l2)) {
+        return false;
+      }
+      _s1 = r1;
+      continue ;
     } else {
-      return true;
+      if (!subset(/* Node */[
+              /* Empty */0,
+              v1,
+              r1,
+              0
+            ], r2)) {
+        return false;
+      }
+      _s1 = l1;
+      continue ;
     }
   };
 }
@@ -230,54 +221,48 @@ function subset(_s1, _s2) {
 function find(x, _tree) {
   while(true) {
     var tree = _tree;
-    if (tree) {
-      var v = tree[1];
-      var c = Caml_primitive.caml_string_compare(x, v);
-      if (c === 0) {
-        return v;
-      } else {
-        _tree = c < 0 ? tree[0] : tree[2];
-        continue ;
-      }
-    } else {
+    if (!tree) {
       throw Caml_builtin_exceptions.not_found;
     }
+    var v = tree[1];
+    var c = Caml_primitive.caml_string_compare(x, v);
+    if (c === 0) {
+      return v;
+    }
+    _tree = c < 0 ? tree[0] : tree[2];
+    continue ;
   };
 }
 
 function of_list(l) {
-  if (l) {
-    var match = l[1];
-    var x0 = l[0];
-    if (match) {
-      var match$1 = match[1];
-      var x1 = match[0];
-      if (match$1) {
-        var match$2 = match$1[1];
-        var x2 = match$1[0];
-        if (match$2) {
-          var match$3 = match$2[1];
-          var x3 = match$2[0];
-          if (match$3) {
-            if (match$3[1]) {
-              return Set_gen.of_sorted_list(List.sort_uniq($$String.compare, l));
-            } else {
-              return add(match$3[0], add(x3, add(x2, add(x1, Set_gen.singleton(x0)))));
-            }
-          } else {
-            return add(x3, add(x2, add(x1, Set_gen.singleton(x0))));
-          }
-        } else {
-          return add(x2, add(x1, Set_gen.singleton(x0)));
-        }
-      } else {
-        return add(x1, Set_gen.singleton(x0));
-      }
+  if (!l) {
+    return /* Empty */0;
+  }
+  var match = l[1];
+  var x0 = l[0];
+  if (!match) {
+    return Set_gen.singleton(x0);
+  }
+  var match$1 = match[1];
+  var x1 = match[0];
+  if (!match$1) {
+    return add(x1, Set_gen.singleton(x0));
+  }
+  var match$2 = match$1[1];
+  var x2 = match$1[0];
+  if (!match$2) {
+    return add(x2, add(x1, Set_gen.singleton(x0)));
+  }
+  var match$3 = match$2[1];
+  var x3 = match$2[0];
+  if (match$3) {
+    if (match$3[1]) {
+      return Set_gen.of_sorted_list(List.sort_uniq($$String.compare, l));
     } else {
-      return Set_gen.singleton(x0);
+      return add(match$3[0], add(x3, add(x2, add(x1, Set_gen.singleton(x0)))));
     }
   } else {
-    return /* Empty */0;
+    return add(x3, add(x2, add(x1, Set_gen.singleton(x0))));
   }
 }
 
