@@ -58,10 +58,10 @@ function f2(param) {
           return prim + prim$1;
         }), 0, b);
   console.log(Pervasives.string_of_float(v));
-  return /* () */0;
+  
 }
 
-f2(/* () */0);
+f2(undefined);
 
 var suites = {
   contents: /* [] */0
@@ -85,7 +85,7 @@ function eq(loc, x, y) {
     ],
     suites.contents
   ];
-  return /* () */0;
+  
 }
 
 var v = {

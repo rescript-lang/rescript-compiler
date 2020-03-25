@@ -161,7 +161,7 @@ function iter_interval(f, _l, _param) {
     var l = _l;
     var stop = param[1];
     if (stop === 0) {
-      return /* () */0;
+      return ;
     }
     var start = param[0];
     var match = CamlinternalLazy.force(l);

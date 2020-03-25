@@ -28,19 +28,19 @@ function eq(loc, x, y) {
     ],
     suites.contents
   ];
-  return /* () */0;
+  
 }
 
 var class_tables = /* Cons */[
-  /* () */0,
-  /* () */0,
-  /* () */0
+  undefined,
+  undefined,
+  undefined
 ];
 
 var class_tables$1 = /* Cons */[
-  /* () */0,
-  /* () */0,
-  /* () */0
+  undefined,
+  undefined,
+  undefined
 ];
 
 function step1(param) {
@@ -57,27 +57,27 @@ function step1(param) {
                       return 33;
                     }));
               var env_init = function (env$1) {
-                var self = CamlinternalOO.create_object_opt(/* () */0, $$class);
+                var self = CamlinternalOO.create_object_opt(undefined, $$class);
                 self[env] = env$1;
                 return self;
               };
               CamlinternalOO.init_class($$class);
               class_tables$1[0] = env_init;
             }
-            return Curry._1(class_tables$1[0], /* () */0);
+            return Curry._1(class_tables$1[0], undefined);
           }));
     var env_init = function (env$1) {
-      var self = CamlinternalOO.create_object_opt(/* () */0, $$class);
+      var self = CamlinternalOO.create_object_opt(undefined, $$class);
       self[env] = env$1;
       return self;
     };
     CamlinternalOO.init_class($$class);
     class_tables[0] = env_init;
   }
-  return Curry._1(class_tables[0], /* () */0);
+  return Curry._1(class_tables[0], undefined);
 }
 
-var tmp = step1(/* () */0);
+var tmp = step1(undefined);
 
 var tmp$1 = Caml_oo_curry.js1(68057958, 1, tmp);
 

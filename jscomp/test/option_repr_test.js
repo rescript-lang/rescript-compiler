@@ -89,7 +89,7 @@ function create(randomOpt, param) {
   }
 }
 
-var ff = create(false, /* () */0);
+var ff = create(false, undefined);
 
 function f13(xOpt, yOpt, param) {
   var x = xOpt !== undefined ? xOpt : 3;
@@ -97,7 +97,7 @@ function f13(xOpt, yOpt, param) {
   return x + y | 0;
 }
 
-var a = f13(2, undefined, /* () */0);
+var a = f13(2, undefined, undefined);
 
 function f12(x) {
   return x;

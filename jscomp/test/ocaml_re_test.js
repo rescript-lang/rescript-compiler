@@ -43,7 +43,7 @@ function eq(loc, x, y) {
     ],
     suites.contents
   ];
-  return /* () */0;
+  
 }
 
 function union(_l, _l$prime) {
@@ -980,9 +980,8 @@ function mark_used_indices(tbl) {
                                   var i = param[1];
                                   if (i >= 0) {
                                     return Caml_array.caml_array_set(tbl, i, true);
-                                  } else {
-                                    return /* () */0;
                                   }
+                                  
                                 }), param[0].marks);
                   }), param);
     });
@@ -1739,12 +1738,12 @@ function split(s, cm) {
   var f = function (i, j) {
     cm[i] = /* "\001" */1;
     cm[j + 1 | 0] = /* "\001" */1;
-    return /* () */0;
+    
   };
   while(true) {
     var t = _t;
     if (!t) {
-      return /* () */0;
+      return ;
     }
     var match = t[0];
     Curry._2(f, match[0], match[1]);
@@ -1810,12 +1809,12 @@ function colorize(c, regexp) {
               return split(cword, c);
           case /* Last_end_of_line */7 :
               lnl.contents = true;
-              return /* () */0;
+              return ;
           case /* Beg_of_str */5 :
           case /* End_of_str */6 :
           case /* Start */8 :
           case /* Stop */9 :
-              return /* () */0;
+              return ;
           
         }
       } else {
@@ -3118,13 +3117,13 @@ function parse(multiline, dollar_endonly, dotall, ungreedy, s) {
           return r;
         } else {
           if (accept(/* "#" */35)) {
-            var _param = /* () */0;
+            var _param;
             while(true) {
               if (accept(/* ")" */41)) {
                 return epsilon;
               }
               i.contents = i.contents + 1 | 0;
-              _param = /* () */0;
+              _param = undefined;
               continue ;
             };
           }
@@ -3165,7 +3164,7 @@ function parse(multiline, dollar_endonly, dotall, ungreedy, s) {
         if (i.contents === l) {
           throw Parse_error;
         }
-        var c = get(/* () */0);
+        var c = get(undefined);
         switch (c) {
           case 48 :
           case 49 :
@@ -3300,7 +3299,7 @@ function parse(multiline, dollar_endonly, dotall, ungreedy, s) {
         if (i.contents === l) {
           throw Parse_error;
         }
-        var c$1 = get(/* () */0);
+        var c$1 = get(undefined);
         if (c$1 >= 64) {
           if (c$1 === 92) {
             throw Parse_error;
@@ -3327,7 +3326,7 @@ function parse(multiline, dollar_endonly, dotall, ungreedy, s) {
     if (i.contents === l) {
       return ;
     }
-    var d = get(/* () */0);
+    var d = get(undefined);
     if (d > 57 || d < 48) {
       i.contents = i.contents - 1 | 0;
       return ;
@@ -3338,7 +3337,7 @@ function parse(multiline, dollar_endonly, dotall, ungreedy, s) {
         if (i.contents === l) {
           return i$1;
         }
-        var d$1 = get(/* () */0);
+        var d$1 = get(undefined);
         if (d$1 > 57 || d$1 < 48) {
           i.contents = i.contents - 1 | 0;
           return i$1;
@@ -3360,7 +3359,7 @@ function parse(multiline, dollar_endonly, dotall, ungreedy, s) {
         return seq$2(List.rev(left));
       }
       _left = /* :: */[
-        piece(/* () */0),
+        piece(undefined),
         left
       ];
       continue ;
@@ -3388,7 +3387,7 @@ function parse(multiline, dollar_endonly, dotall, ungreedy, s) {
       if (s !== /* [] */0 && accept(/* "]" */93)) {
         return s;
       }
-      var match = $$char(/* () */0);
+      var match = $$char(undefined);
       if (match[0] >= 748194550) {
         var c = match[1];
         if (accept(/* "-" */45)) {
@@ -3407,7 +3406,7 @@ function parse(multiline, dollar_endonly, dotall, ungreedy, s) {
                     ]
                   ];
           }
-          var match$1 = $$char(/* () */0);
+          var match$1 = $$char(undefined);
           if (match$1[0] < 748194550) {
             return /* :: */[
                     /* Set */Block.__(0, [single(c)]),
@@ -3451,7 +3450,7 @@ function parse(multiline, dollar_endonly, dotall, ungreedy, s) {
     if (i.contents === l) {
       throw Parse_error;
     }
-    var c = get(/* () */0);
+    var c = get(undefined);
     if (c === /* "[" */91) {
       if (accept(/* "=" */61)) {
         throw Not_supported;
@@ -3529,7 +3528,7 @@ function parse(multiline, dollar_endonly, dotall, ungreedy, s) {
         if (i.contents === l) {
           throw Parse_error;
         }
-        var c$1 = get(/* () */0);
+        var c$1 = get(undefined);
         if (!accept(/* "." */46)) {
           throw Not_supported;
         }
@@ -3548,7 +3547,7 @@ function parse(multiline, dollar_endonly, dotall, ungreedy, s) {
                 c
               ];
       }
-      var c$2 = get(/* () */0);
+      var c$2 = get(undefined);
       if (c$2 >= 58) {
         if (c$2 >= 123) {
           return /* `Char */[
@@ -3711,7 +3710,7 @@ function parse(multiline, dollar_endonly, dotall, ungreedy, s) {
     }
   };
   var piece = function (param) {
-    var r = atom(/* () */0);
+    var r = atom(undefined);
     if (accept(/* "*" */42)) {
       return greedy_mod(repn(r, 0, undefined));
     }
@@ -3724,10 +3723,10 @@ function parse(multiline, dollar_endonly, dotall, ungreedy, s) {
     if (!accept(/* "{" */123)) {
       return r;
     }
-    var match = integer(/* () */0);
+    var match = integer(undefined);
     if (match !== undefined) {
       var i$1 = match;
-      var j = accept(/* "," */44) ? integer(/* () */0) : i$1;
+      var j = accept(/* "," */44) ? integer(undefined) : i$1;
       if (!accept(/* "}" */125)) {
         throw Parse_error;
       }

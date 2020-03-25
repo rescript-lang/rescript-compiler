@@ -26,7 +26,7 @@ function add_test(loc, test) {
     ],
     suites.contents
   ];
-  return /* () */0;
+  
 }
 
 function eq(loc, x, y) {
@@ -82,7 +82,7 @@ var C = Caml_exceptions.create("Js_exception_catch_test.C");
 
 function test(f) {
   try {
-    Curry._1(f, /* () */0);
+    Curry._1(f, undefined);
     return /* No_error */-465676758;
   }
   catch (raw_e){
@@ -118,7 +118,7 @@ function test(f) {
 }
 
 eq("File \"js_exception_catch_test.ml\", line 43, characters 5-12", test((function (param) {
-            return /* () */0;
+            
           })), /* No_error */-465676758);
 
 eq("File \"js_exception_catch_test.ml\", line 44, characters 5-12", test((function (param) {

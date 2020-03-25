@@ -14,7 +14,7 @@ var u = {
 
 var v = Caml_obj.caml_lazy_make((function (param) {
         u.contents = 32;
-        return /* () */0;
+        
       }));
 
 function lazy_test(param) {
@@ -54,12 +54,12 @@ var s = {
 
 var set_true = Caml_obj.caml_lazy_make((function (param) {
         s.contents = 1;
-        return /* () */0;
+        
       }));
 
 var set_false = Caml_obj.caml_lazy_make((function (param) {
         s.contents = undefined;
-        return /* () */0;
+        
       }));
 
 var h;
@@ -85,7 +85,7 @@ var u_v = {
 
 var u$1 = Caml_obj.caml_lazy_make((function (param) {
         u_v.contents = 2;
-        return /* () */0;
+        
       }));
 
 CamlinternalLazy.force(u$1);
@@ -126,7 +126,7 @@ Mt.from_pair_suites("Lazy_test", /* :: */[
         "simple",
         (function (param) {
             return /* Eq */Block.__(0, [
-                      lazy_test(/* () */0),
+                      lazy_test(undefined),
                       /* tuple */[
                         3,
                         32

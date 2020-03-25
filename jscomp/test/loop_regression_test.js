@@ -26,7 +26,7 @@ var suites_000 = /* tuple */[
   (function (param) {
       return /* Eq */Block.__(0, [
                 55,
-                f(/* () */0)
+                f(undefined)
               ]);
     })
 ];

@@ -42,7 +42,7 @@ function is_equal(param) {
           ]
         ];
   }
-  return /* () */0;
+  
 }
 
 function is_exception(param) {
@@ -51,7 +51,7 @@ function is_exception(param) {
   }
   catch (exn){
     if (exn === Caml_builtin_exceptions.not_found) {
-      return /* () */0;
+      return ;
     }
     throw exn;
   }
@@ -74,7 +74,7 @@ function is_normal_exception(_x) {
     if (exn[1] !== 3) {
       throw exn;
     }
-    return /* () */0;
+    return ;
   }
 }
 
@@ -84,7 +84,7 @@ function is_arbitrary_exception(param) {
     throw A;
   }
   catch (exn){
-    return /* () */0;
+    return ;
   }
 }
 

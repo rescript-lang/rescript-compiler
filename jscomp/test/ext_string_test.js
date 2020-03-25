@@ -406,7 +406,7 @@ function unsafe_concat_with_length(len, sep, l) {
           pos.contents = pos.contents + sep_len | 0;
           Caml_bytes.caml_blit_string(s, 0, r, pos.contents, s_len);
           pos.contents = pos.contents + s_len | 0;
-          return /* () */0;
+          
         }), l[1]);
   return Caml_bytes.bytes_to_string(r);
 }

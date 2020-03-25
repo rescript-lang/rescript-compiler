@@ -106,7 +106,7 @@ function to_list(xs) {
             x,
             v.contents
           ];
-          return /* () */0;
+          
         }), xs);
   return List.rev(v.contents);
 }
@@ -221,7 +221,7 @@ function eq(loc, param) {
     ],
     suites.contents
   ];
-  return /* () */0;
+  
 }
 
 List.iter((function (param) {

@@ -27,7 +27,7 @@ function eq(loc, x, y) {
     ],
     suites.contents
   ];
-  return /* () */0;
+  
 }
 
 eq("File \"limits_test.ml\", line 10, characters 5-12", Pervasives.max_int, 2147483647);

@@ -20,8 +20,8 @@ var suites_001 = /* :: */[
     "toOption - 'a",
     (function (param) {
         return /* Eq */Block.__(0, [
-                  /* () */0,
-                  Caml_option.null_to_opt(/* () */0)
+                  Caml_option.some(undefined),
+                  Caml_option.some(undefined)
                 ]);
       })
   ],
@@ -88,7 +88,7 @@ var suites_001 = /* :: */[
                     };
                     Js_null.iter(null, (function (param) {
                             hit.contents = true;
-                            return /* () */0;
+                            
                           }));
                     return /* Eq */Block.__(0, [
                               false,
@@ -105,7 +105,7 @@ var suites_001 = /* :: */[
                       };
                       Js_null.iter(2, (function (v) {
                               hit.contents = v;
-                              return /* () */0;
+                              
                             }));
                       return /* Eq */Block.__(0, [
                                 2,

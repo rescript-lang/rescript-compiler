@@ -10,7 +10,7 @@ function inOrder(v) {
   var s = {
     root: null
   };
-  var q = Belt_MutableQueue.make(/* () */0);
+  var q = Belt_MutableQueue.make(undefined);
   while(current !== undefined) {
     var v$1 = current;
     Belt_MutableStack.push(s, v$1);
@@ -35,7 +35,7 @@ function inOrder3(v) {
   var s = {
     root: null
   };
-  var q = Belt_MutableQueue.make(/* () */0);
+  var q = Belt_MutableQueue.make(undefined);
   while(current !== undefined) {
     var v$1 = current;
     Belt_MutableStack.push(s, v$1);
@@ -49,7 +49,7 @@ function inOrder3(v) {
             Belt_MutableStack.push(s, v);
             current = v.left;
           };
-          return /* () */0;
+          
         }));
   return Belt_MutableQueue.toArray(q);
 }
@@ -60,7 +60,7 @@ function inOrder2(v) {
   var s = {
     root: null
   };
-  var q = Belt_MutableQueue.make(/* () */0);
+  var q = Belt_MutableQueue.make(undefined);
   while(todo) {
     if (cursor !== undefined) {
       var v$1 = cursor;
@@ -75,7 +75,7 @@ function inOrder2(v) {
       todo = false;
     }
   };
-  return /* () */0;
+  
 }
 
 function n(l, r, a) {
@@ -95,7 +95,7 @@ function pushAllLeft(st1, s1) {
     Belt_MutableStack.push(s1, v);
     current = v.left;
   };
-  return /* () */0;
+  
 }
 
 var test2 = n(Caml_option.some(n(Caml_option.some(n(Caml_option.some(n(Caml_option.some(n(undefined, undefined, 4)), undefined, 2)), undefined, 5)), undefined, 1)), undefined, 3);

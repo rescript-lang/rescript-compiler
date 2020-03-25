@@ -7,7 +7,7 @@ function tst(param) {
   for(var i = (console.log("hi"), 0) ,i_finish = (console.log("hello"), 3); i <= i_finish; ++i){
     
   }
-  return /* () */0;
+  
 }
 
 function test2(param) {
@@ -25,7 +25,7 @@ var suites_000 = /* tuple */[
   (function (param) {
       return /* Eq */Block.__(0, [
                 10,
-                test2(/* () */0)
+                test2(undefined)
               ]);
     })
 ];

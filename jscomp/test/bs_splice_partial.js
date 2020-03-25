@@ -4,7 +4,7 @@ var Curry = require("../../lib/js/curry.js");
 
 function test(g) {
   g.xx(22, 3, "xxx", 1, 2, 3);
-  return /* () */0;
+  
 }
 
 function test_hi(x) {
@@ -34,7 +34,7 @@ function test_cb(x) {
 
 function f(x) {
   v(x);
-  return /* () */0;
+  
 }
 
 exports.test = test;

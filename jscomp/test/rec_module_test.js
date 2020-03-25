@@ -102,7 +102,7 @@ function even$1(n) {
 }
 
 function x(param) {
-  return Curry._1(BB.y, /* () */0) + 3 | 0;
+  return Curry._1(BB.y, undefined) + 3 | 0;
 }
 
 Caml_module.update_mod(/* Module */Block.__(0, [[
@@ -651,7 +651,7 @@ function iter(f, _param) {
   while(true) {
     var param = _param;
     if (!param) {
-      return /* () */0;
+      return ;
     }
     iter(f, param[/* l */0]);
     Curry._1(f, param[/* v */1]);
@@ -1179,7 +1179,7 @@ var suites_001 = /* :: */[
     "test2",
     (function (param) {
         return /* Eq */Block.__(0, [
-                  Curry._1(BB.y, /* () */0),
+                  Curry._1(BB.y, undefined),
                   32
                 ]);
       })
@@ -1189,7 +1189,7 @@ var suites_001 = /* :: */[
       "test3",
       (function (param) {
           return /* Eq */Block.__(0, [
-                    Curry._1(AA.x, /* () */0),
+                    Curry._1(AA.x, undefined),
                     35
                   ]);
         })
@@ -1258,9 +1258,9 @@ var suites = /* :: */[
 
 Mt.from_pair_suites("Rec_module_test", suites);
 
-var Even = /* () */0;
+var Even;
 
-var Odd = /* () */0;
+var Odd;
 
 exports.A = A;
 exports.B = B;

@@ -99,7 +99,7 @@ var lexer_suites_001 = /* :: */[
               t,
               v.contents
             ];
-            return /* () */0;
+            
           };
           Number_lexer.token(add, Lexing.from_string("32 + 32 ( ) * / "));
           return /* Eq */Block.__(0, [

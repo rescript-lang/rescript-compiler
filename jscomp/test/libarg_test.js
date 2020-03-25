@@ -22,7 +22,7 @@ function record(fmt) {
                   s,
                   accum.contents
                 ];
-                return /* () */0;
+                
               }), fmt);
 }
 
@@ -369,9 +369,8 @@ function error(s) {
 function check(r, v, msg) {
   if (Caml_obj.caml_notequal(r.contents, v)) {
     return error(msg);
-  } else {
-    return /* () */0;
   }
+  
 }
 
 function test(argv) {

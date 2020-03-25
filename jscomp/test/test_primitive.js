@@ -66,7 +66,7 @@ var unboxed_x = {
 
 function gg(x) {
   x.u = 0;
-  return /* () */0;
+  
 }
 
 function f(x) {

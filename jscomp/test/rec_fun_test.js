@@ -27,7 +27,7 @@ function eq(loc, x, y) {
     ],
     suites.contents
   ];
-  return /* () */0;
+  
 }
 
 var called = {
@@ -47,10 +47,10 @@ function g(param) {
         contents: next
       });
   console.log(String(next(0, true)));
-  return /* () */0;
+  
 }
 
-g(/* () */0);
+g(undefined);
 
 var x = [];
 

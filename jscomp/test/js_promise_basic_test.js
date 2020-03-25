@@ -30,12 +30,12 @@ function eq(loc, x, y) {
     ],
     suites.contents
   ];
-  return /* () */0;
+  
 }
 
 function assert_bool(b) {
   if (b) {
-    return /* () */0;
+    return ;
   }
   throw [
         Caml_builtin_exceptions.invalid_argument,
@@ -70,7 +70,7 @@ function andThenTest(param) {
               }));
 }
 
-var h = Promise.resolve(/* () */0);
+var h = Promise.resolve(undefined);
 
 function assertIsNotFound(x) {
   var match = Caml_exceptions.caml_is_extension(x) && x === Caml_builtin_exceptions.not_found ? 0 : undefined;
@@ -236,35 +236,35 @@ function createPromiseFulfillTest(param) {
                 })).catch(fail);
 }
 
-thenTest(/* () */0);
+thenTest(undefined);
 
-andThenTest(/* () */0);
+andThenTest(undefined);
 
-catchTest(/* () */0);
+catchTest(undefined);
 
-orResolvedTest(/* () */0);
+orResolvedTest(undefined);
 
-orRejectedTest(/* () */0);
+orRejectedTest(undefined);
 
-orElseResolvedTest(/* () */0);
+orElseResolvedTest(undefined);
 
-orElseRejectedResolveTest(/* () */0);
+orElseRejectedResolveTest(undefined);
 
-orElseRejectedRejectTest(/* () */0);
+orElseRejectedRejectTest(undefined);
 
-thenCatchChainResolvedTest(/* () */0);
+thenCatchChainResolvedTest(undefined);
 
-thenCatchChainRejectedTest(/* () */0);
+thenCatchChainRejectedTest(undefined);
 
-allResolvedTest(/* () */0);
+allResolvedTest(undefined);
 
-allRejectTest(/* () */0);
+allRejectTest(undefined);
 
-raceTest(/* () */0);
+raceTest(undefined);
 
-createPromiseRejectTest(/* () */0);
+createPromiseRejectTest(undefined);
 
-createPromiseFulfillTest(/* () */0);
+createPromiseFulfillTest(undefined);
 
 Promise.all(/* tuple */[
         Promise.resolve(2),
@@ -277,7 +277,7 @@ Promise.all(/* tuple */[
               2,
               3
             ]);
-        return Promise.resolve(/* () */0);
+        return Promise.resolve(undefined);
       }));
 
 console.log(List.length(suites.contents));

@@ -46,7 +46,7 @@ function neq(loc, x, y) {
     ],
     suites.contents
   ];
-  return /* () */0;
+  
 }
 
 console.log([
@@ -86,7 +86,7 @@ $$throw("File \"bs_array_test.ml\", line 28, characters 8-15", (function (param)
               0,
               1
             ], -1);
-        return /* () */0;
+        
       }));
 
 $$throw("File \"bs_array_test.ml\", line 29, characters 8-15", (function (param) {
@@ -94,7 +94,7 @@ $$throw("File \"bs_array_test.ml\", line 29, characters 8-15", (function (param)
               0,
               1
             ], 2);
-        return /* () */0;
+        
       }));
 
 var partial_arg = [
@@ -1174,7 +1174,7 @@ function sumUsingForEach(xs) {
   };
   Belt_Array.forEach(xs, (function (x) {
           v.contents = v.contents + x | 0;
-          return /* () */0;
+          
         }));
   return v.contents;
 }
@@ -1231,7 +1231,7 @@ b("File \"bs_array_test.ml\", line 275, characters 4-11", (Belt_Array.forEachWit
             1
           ], (function (i, v) {
               c$1.contents = (c$1.contents + i | 0) + v | 0;
-              return /* () */0;
+              
             })), c$1.contents === 6));
 
 function id$1(loc, x) {

@@ -21,7 +21,7 @@ function add_test(loc, test) {
     ],
     suites.contents
   ];
-  return /* () */0;
+  
 }
 
 function eq(loc, x, y) {

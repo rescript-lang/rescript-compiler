@@ -16,7 +16,7 @@ function create(param) {
 function clear(q) {
   q.length = 0;
   q.tail = undefined;
-  return /* () */0;
+  
 }
 
 function add(x, q) {
@@ -26,7 +26,7 @@ function add(x, q) {
     cell.next = cell;
     q.length = 1;
     q.tail = cell;
-    return /* () */0;
+    return ;
   } else {
     var tail = q.tail;
     var head = tail.next;
@@ -37,7 +37,7 @@ function add(x, q) {
     q.length = q.length + 1 | 0;
     tail.next = cell$1;
     q.tail = cell$1;
-    return /* () */0;
+    return ;
   }
 }
 
@@ -81,7 +81,7 @@ function copy(q) {
       var cell = _cell;
       var prev = _prev;
       if (cell === tail) {
-        return /* () */0;
+        return ;
       }
       var res = {
         content: cell.content,
@@ -110,7 +110,7 @@ function length(q) {
 
 function iter(f, q) {
   if (q.length <= 0) {
-    return /* () */0;
+    return ;
   }
   var tail = q.tail;
   var _cell = tail.next;
@@ -118,7 +118,7 @@ function iter(f, q) {
     var cell = _cell;
     Curry._1(f, cell.content);
     if (cell === tail) {
-      return /* () */0;
+      return ;
     }
     _cell = cell.next;
     continue ;
@@ -148,7 +148,7 @@ function fold(f, accu, q) {
 function transfer(q1, q2) {
   var length1 = q1.length;
   if (length1 <= 0) {
-    return /* () */0;
+    return ;
   }
   var tail1 = q1.tail;
   clear(q1);
@@ -161,7 +161,7 @@ function transfer(q1, q2) {
   }
   q2.length = q2.length + length1 | 0;
   q2.tail = tail1;
-  return /* () */0;
+  
 }
 
 var push = add;

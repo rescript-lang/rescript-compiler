@@ -25,7 +25,7 @@ function eq(loc, x, y) {
     ],
     suites.contents
   ];
-  return /* () */0;
+  
 }
 
 function f(h) {
@@ -49,7 +49,7 @@ function f4(h, x, y) {
     x,
     y
   ];
-  return /* () */0;
+  
 }
 
 eq("File \"chain_code_test.ml\", line 28, characters 5-12", 32, ({

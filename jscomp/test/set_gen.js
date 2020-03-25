@@ -110,7 +110,7 @@ function iter(f, _param) {
   while(true) {
     var param = _param;
     if (!param) {
-      return /* () */0;
+      return ;
     }
     iter(f, param[0]);
     Curry._1(f, param[1]);
@@ -211,7 +211,7 @@ function check_height_and_diff(param) {
 
 function check(tree) {
   check_height_and_diff(tree);
-  return /* () */0;
+  
 }
 
 function create(l, v, r) {

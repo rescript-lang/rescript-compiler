@@ -26,7 +26,7 @@ function eq(loc, x, y) {
     ],
     suites.contents
   ];
-  return /* () */0;
+  
 }
 
 function ok(loc, x) {
@@ -40,7 +40,7 @@ function ok(loc, x) {
     ],
     suites.contents
   ];
-  return /* () */0;
+  
 }
 
 var match = typeof ___undefined_value === "undefined" ? undefined : ___undefined_value;
@@ -51,10 +51,10 @@ function test(param) {
   var match = typeof __DEV__ === "undefined" ? undefined : __DEV__;
   if (match !== undefined) {
     console.log("dev mode");
-    return /* () */0;
+    return ;
   } else {
     console.log("producton mode");
-    return /* () */0;
+    return ;
   }
 }
 
@@ -62,20 +62,19 @@ function test2(param) {
   var match = typeof __filename === "undefined" ? undefined : __filename;
   if (match !== undefined) {
     console.log(match);
-    return /* () */0;
+    return ;
   } else {
     console.log("non node environment");
-    return /* () */0;
+    return ;
   }
 }
 
 function test3(param) {
   if (Caml_option.undefined_to_opt(typeof __DEV__ === "undefined" ? undefined : __DEV__) === undefined) {
     console.log("production mode");
-    return /* () */0;
-  } else {
-    return /* () */0;
+    return ;
   }
+  
 }
 
 function f(x) {

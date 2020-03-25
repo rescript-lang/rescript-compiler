@@ -97,7 +97,7 @@ var v_mk4 = {
 };
 
 var v_mk5 = {
-  x: /* () */0,
+  x: undefined,
   y: 3
 };
 
@@ -106,7 +106,7 @@ var v_mk6 = {
 };
 
 var v_mk6_1 = {
-  x: /* () */0,
+  x: undefined,
   y: 3
 };
 
@@ -153,23 +153,23 @@ var side_effect = {
   contents: 0
 };
 
-again4(undefined, /* () */0, 166);
+again4(undefined, undefined, 166);
 
-again4(undefined, /* () */0, 167);
+again4(undefined, undefined, 167);
 
-again4(/* () */0, /* () */0, 168);
+again4(undefined, undefined, 168);
 
-again4(/* () */0, /* () */0, 169);
+again4(undefined, undefined, 169);
 
-again4(undefined, /* () */0, 170);
+again4(undefined, undefined, 170);
 
-again4((side_effect.contents = side_effect.contents + 1 | 0, /* () */0), /* () */0, 171);
+again4((side_effect.contents = side_effect.contents + 1 | 0, undefined), undefined, 171);
 
-again4((side_effect.contents = side_effect.contents + 1 | 0, /* () */0), (side_effect.contents = side_effect.contents - 1 | 0, /* () */0), 172);
+again4((side_effect.contents = side_effect.contents + 1 | 0, undefined), (side_effect.contents = side_effect.contents - 1 | 0, undefined), 172);
 
-again4(undefined, (side_effect.contents = side_effect.contents - 1 | 0, /* () */0), 173);
+again4(undefined, (side_effect.contents = side_effect.contents - 1 | 0, undefined), 173);
 
-again4((side_effect.contents = side_effect.contents + 1 | 0, /* () */0), /* () */0, 174);
+again4((side_effect.contents = side_effect.contents + 1 | 0, undefined), undefined, 174);
 
 exports.u = u;
 exports.v_ice_cream3 = v_ice_cream3;

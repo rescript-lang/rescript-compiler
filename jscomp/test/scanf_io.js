@@ -90,7 +90,7 @@ function get_lines(fname) {
                 ],
                 l.contents
               ];
-              return /* () */0;
+              
             }));
     };
     return List.rev(l.contents);
@@ -168,11 +168,11 @@ function add_digest_ib(ob, ib) {
     while(true) {
       scan_line(ib, output_line_digest);
     };
-    return /* () */0;
+    return ;
   }
   catch (exn){
     if (exn === Caml_builtin_exceptions.end_of_file) {
-      return /* () */0;
+      return ;
     }
     throw exn;
   }

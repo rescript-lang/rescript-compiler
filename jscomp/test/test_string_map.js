@@ -143,9 +143,9 @@ function find(x, _param) {
 
 function timing(label, f) {
   console.time(label);
-  Curry._1(f, /* () */0);
+  Curry._1(f, undefined);
   console.timeEnd(label);
-  return /* () */0;
+  
 }
 
 function assertion_test(param) {
@@ -156,13 +156,13 @@ function assertion_test(param) {
           for(var i = 0; i <= 1000000; ++i){
             m.contents = add(String(i), String(i), m.contents);
           }
-          return /* () */0;
+          
         }));
   return timing("querying", (function (param) {
                 for(var i = 0; i <= 1000000; ++i){
                   find(String(i), m.contents);
                 }
-                return /* () */0;
+                
               }));
 }
 

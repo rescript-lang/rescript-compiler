@@ -28,7 +28,7 @@ function eq(loc, x, y) {
     ],
     suites.contents
   ];
-  return /* () */0;
+  
 }
 
 function b(loc, v) {
@@ -42,7 +42,7 @@ function b(loc, v) {
     ],
     suites.contents
   ];
-  return /* () */0;
+  
 }
 
 var mapOfArray = Belt_MapInt.fromArray;

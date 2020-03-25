@@ -232,7 +232,7 @@ function Make(Ord) {
     while(true) {
       var param = _param;
       if (!param) {
-        return /* () */0;
+        return ;
       }
       iter(f, param[0]);
       Curry._2(f, param[1], param[2]);
@@ -842,7 +842,7 @@ function iter(f, _param) {
   while(true) {
     var param = _param;
     if (!param) {
-      return /* () */0;
+      return ;
     }
     iter(f, param[0]);
     Curry._2(f, param[1], param[2]);
@@ -1500,7 +1500,7 @@ function iter$1(f, _param) {
   while(true) {
     var param = _param;
     if (!param) {
-      return /* () */0;
+      return ;
     }
     iter$1(f, param[0]);
     Curry._2(f, param[1], param[2]);

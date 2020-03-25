@@ -799,64 +799,64 @@ var yyact = [
   (function (__caml_parser_env) {
       var _1 = Parsing.peek_val(__caml_parser_env, 1);
       var _2 = Parsing.peek_val(__caml_parser_env, 0);
-      return proto(_1, undefined, undefined, undefined, undefined, undefined, _2, undefined, /* () */0);
+      return proto(_1, undefined, undefined, undefined, undefined, undefined, _2, undefined, undefined);
     }),
   (function (__caml_parser_env) {
       return Parsing.peek_val(__caml_parser_env, 0);
     }),
   (function (__caml_parser_env) {
       var _1 = Parsing.peek_val(__caml_parser_env, 0);
-      return proto(undefined, undefined, undefined, _1, undefined, undefined, undefined, undefined, /* () */0);
+      return proto(undefined, undefined, undefined, _1, undefined, undefined, undefined, undefined, undefined);
     }),
   (function (__caml_parser_env) {
       var _1 = Parsing.peek_val(__caml_parser_env, 0);
-      return proto(undefined, _1, undefined, undefined, undefined, undefined, undefined, undefined, /* () */0);
+      return proto(undefined, _1, undefined, undefined, undefined, undefined, undefined, undefined, undefined);
     }),
   (function (__caml_parser_env) {
       var _1 = Parsing.peek_val(__caml_parser_env, 0);
-      return proto(undefined, undefined, _1, undefined, undefined, undefined, undefined, undefined, /* () */0);
+      return proto(undefined, undefined, _1, undefined, undefined, undefined, undefined, undefined, undefined);
     }),
   (function (__caml_parser_env) {
       var _1 = Parsing.peek_val(__caml_parser_env, 0);
-      return proto(undefined, undefined, undefined, undefined, _1, undefined, undefined, undefined, /* () */0);
+      return proto(undefined, undefined, undefined, undefined, _1, undefined, undefined, undefined, undefined);
     }),
   (function (__caml_parser_env) {
       var _1 = Parsing.peek_val(__caml_parser_env, 0);
-      return proto(undefined, undefined, undefined, undefined, undefined, _1, undefined, undefined, /* () */0);
+      return proto(undefined, undefined, undefined, undefined, undefined, _1, undefined, undefined, undefined);
     }),
   (function (__caml_parser_env) {
       var _1 = Parsing.peek_val(__caml_parser_env, 0);
-      return proto(undefined, undefined, undefined, undefined, undefined, undefined, undefined, _1, /* () */0);
+      return proto(undefined, undefined, undefined, undefined, undefined, undefined, undefined, _1, undefined);
     }),
   (function (__caml_parser_env) {
       var _1 = Parsing.peek_val(__caml_parser_env, 1);
       var _2 = Parsing.peek_val(__caml_parser_env, 0);
-      return proto(undefined, undefined, undefined, _1, undefined, undefined, _2, undefined, /* () */0);
+      return proto(undefined, undefined, undefined, _1, undefined, undefined, _2, undefined, undefined);
     }),
   (function (__caml_parser_env) {
       var _1 = Parsing.peek_val(__caml_parser_env, 1);
       var _2 = Parsing.peek_val(__caml_parser_env, 0);
-      return proto(undefined, _1, undefined, undefined, undefined, undefined, _2, undefined, /* () */0);
+      return proto(undefined, _1, undefined, undefined, undefined, undefined, _2, undefined, undefined);
     }),
   (function (__caml_parser_env) {
       var _1 = Parsing.peek_val(__caml_parser_env, 1);
       var _2 = Parsing.peek_val(__caml_parser_env, 0);
-      return proto(undefined, undefined, _1, undefined, undefined, undefined, _2, undefined, /* () */0);
+      return proto(undefined, undefined, _1, undefined, undefined, undefined, _2, undefined, undefined);
     }),
   (function (__caml_parser_env) {
       var _1 = Parsing.peek_val(__caml_parser_env, 1);
       var _2 = Parsing.peek_val(__caml_parser_env, 0);
-      return proto(undefined, undefined, undefined, undefined, _1, undefined, _2, undefined, /* () */0);
+      return proto(undefined, undefined, undefined, undefined, _1, undefined, _2, undefined, undefined);
     }),
   (function (__caml_parser_env) {
       var _1 = Parsing.peek_val(__caml_parser_env, 1);
       var _2 = Parsing.peek_val(__caml_parser_env, 0);
-      return proto(undefined, undefined, undefined, undefined, undefined, _1, _2, undefined, /* () */0);
+      return proto(undefined, undefined, undefined, undefined, undefined, _1, _2, undefined, undefined);
     }),
   (function (__caml_parser_env) {
       var _1 = Parsing.peek_val(__caml_parser_env, 1);
       var _2 = Parsing.peek_val(__caml_parser_env, 0);
-      return proto(undefined, undefined, undefined, undefined, undefined, undefined, _2, _1, /* () */0);
+      return proto(undefined, undefined, undefined, undefined, undefined, undefined, _2, _1, undefined);
     }),
   (function (__caml_parser_env) {
       var _3 = Parsing.peek_val(__caml_parser_env, 1);
@@ -873,7 +873,7 @@ var yyact = [
       Parsing.peek_val(__caml_parser_env, 3);
       var _3 = Parsing.peek_val(__caml_parser_env, 1);
       Parsing.peek_val(__caml_parser_env, 0);
-      return $$import(/* () */0, _3);
+      return $$import(Caml_option.some(undefined), _3);
     }),
   (function (__caml_parser_env) {
       var _1 = Parsing.peek_val(__caml_parser_env, 3);
@@ -1319,18 +1319,18 @@ var yyact = [
       return invalid_enum_specification(_1[1], _1[0]);
     }),
   (function (__caml_parser_env) {
-      return /* () */0;
+      
     }),
   (function (__caml_parser_env) {
       Parsing.peek_val(__caml_parser_env, 1);
-      return /* () */0;
+      
     }),
   (function (__caml_parser_env) {
-      return /* () */0;
+      
     }),
   (function (__caml_parser_env) {
       Parsing.peek_val(__caml_parser_env, 1);
-      return /* () */0;
+      
     }),
   (function (__caml_parser_env) {
       throw [
@@ -1437,7 +1437,7 @@ function update_loc(lexbuf) {
     pos_bol: pos.pos_cnum,
     pos_cnum: pos.pos_cnum
   };
-  return /* () */0;
+  
 }
 
 var __ocaml_lex_tables = {
@@ -1852,7 +1852,7 @@ function line$1(scope, s) {
     /* Line */Block.__(0, [s]),
     scope.items
   ];
-  return /* () */0;
+  
 }
 
 function scope(scope$1, f) {
@@ -1864,7 +1864,7 @@ function scope(scope$1, f) {
     /* Scope */Block.__(1, [sub_scope]),
     scope$1.items
   ];
-  return /* () */0;
+  
 }
 
 function indentation_prefix(n) {
@@ -2306,7 +2306,7 @@ function gen_decode_record(and_, param, sc) {
                                       var param$1 = rf_field_type[0];
                                       var pk = param$1[2];
                                       var field_type = param$1[0];
-                                      return process_field_common(sc, param$1[1], string_of_payload_kind(/* () */0, pk, false), (function (sc) {
+                                      return process_field_common(sc, param$1[1], string_of_payload_kind(Caml_option.some(undefined), pk, false), (function (sc) {
                                                     return line$1(sc, Curry._2(Printf.sprintf(/* Format */[
                                                                         /* String_literal */Block.__(11, [
                                                                             "v.",
@@ -2331,7 +2331,7 @@ function gen_decode_record(and_, param, sc) {
                                       var param$2 = rf_field_type[0];
                                       var pk$1 = param$2[2];
                                       var field_type$1 = param$2[0];
-                                      return process_field_common(sc, param$2[1], string_of_payload_kind(/* () */0, pk$1, false), (function (sc) {
+                                      return process_field_common(sc, param$2[1], string_of_payload_kind(Caml_option.some(undefined), pk$1, false), (function (sc) {
                                                     return line$1(sc, Curry._2(Printf.sprintf(/* Format */[
                                                                         /* String_literal */Block.__(11, [
                                                                             "v.",
@@ -2386,7 +2386,7 @@ function gen_decode_record(and_, param, sc) {
                                                         return line$1(sc, ") () d;");
                                                       }));
                                         } else {
-                                          return process_field_common(sc, encoding_number, string_of_payload_kind(/* () */0, pk$2, false), (function (sc) {
+                                          return process_field_common(sc, encoding_number, string_of_payload_kind(Caml_option.some(undefined), pk$2, false), (function (sc) {
                                                         return line$1(sc, Curry._2(Printf.sprintf(/* Format */[
                                                                             /* String_literal */Block.__(11, [
                                                                                 "Pbrt.Repeated_field.add (",
@@ -2431,7 +2431,7 @@ function gen_decode_record(and_, param, sc) {
                                                                         ]), rf_label, decode_field_f(field_type$2, pk$2)));
                                                     }));
                                       } else {
-                                        return process_field_common(sc, encoding_number, string_of_payload_kind(/* () */0, pk$2, false), (function (sc) {
+                                        return process_field_common(sc, encoding_number, string_of_payload_kind(Caml_option.some(undefined), pk$2, false), (function (sc) {
                                                       return line$1(sc, Curry._3(Printf.sprintf(/* Format */[
                                                                           /* String_literal */Block.__(11, [
                                                                               "v.",
@@ -2554,7 +2554,7 @@ function gen_decode_record(and_, param, sc) {
                                                     var pk = param.vc_payload_kind;
                                                     var vc_field_type = param.vc_field_type;
                                                     var vc_constructor = param.vc_constructor;
-                                                    return process_field_common(sc, param.vc_encoding_number, string_of_payload_kind(/* () */0, pk, false), (function (sc) {
+                                                    return process_field_common(sc, param.vc_encoding_number, string_of_payload_kind(Caml_option.some(undefined), pk, false), (function (sc) {
                                                                   if (vc_field_type) {
                                                                     return line$1(sc, Curry._3(Printf.sprintf(/* Format */[
                                                                                         /* String_literal */Block.__(11, [
@@ -4048,27 +4048,27 @@ function compile_default_p2(all_types, field) {
           if (constant.tag === /* Constant_bool */1) {
             return constant;
           } else {
-            return invalid_default_value(field_name$1, "invalid default type (bool expected)", /* () */0);
+            return invalid_default_value(field_name$1, "invalid default type (bool expected)", undefined);
           }
       case /* Field_type_string */13 :
           if (constant.tag) {
-            return invalid_default_value(field_name$1, "invalid default type (string expected)", /* () */0);
+            return invalid_default_value(field_name$1, "invalid default type (string expected)", undefined);
           } else {
             return constant;
           }
       case /* Field_type_bytes */14 :
-          return invalid_default_value(field_name$1, "default value not supported for bytes", /* () */0);
+          return invalid_default_value(field_name$1, "default value not supported for bytes", undefined);
       
     }
   } else {
     if (constant.tag !== /* Constant_litteral */4) {
-      return invalid_default_value(field_name$1, "default value not supported for message", /* () */0);
+      return invalid_default_value(field_name$1, "default value not supported for message", undefined);
     }
     var default_enum_value = constant[0];
     var match = type_of_id(all_types, field_type$1[0]);
     var spec = match.spec;
     if (spec.tag) {
-      return invalid_default_value(field_name$1, "field of type message cannot have a default litteral value", /* () */0);
+      return invalid_default_value(field_name$1, "field of type message cannot have a default litteral value", undefined);
     }
     var default_enum_value$1 = apply_until((function (param) {
             var enum_value_name = param.enum_value_name;
@@ -4080,7 +4080,7 @@ function compile_default_p2(all_types, field) {
     if (default_enum_value$1 !== undefined) {
       return constant;
     } else {
-      return invalid_default_value(field_name$1, "Invalid default enum value", /* () */0);
+      return invalid_default_value(field_name$1, "Invalid default enum value", undefined);
     }
   }
   switch (exit) {
@@ -4091,23 +4091,23 @@ function compile_default_p2(all_types, field) {
           case /* Constant_float */3 :
               return constant;
           default:
-            return invalid_default_value(field_name$1, "invalid default type (float/int expected)", /* () */0);
+            return invalid_default_value(field_name$1, "invalid default type (float/int expected)", undefined);
         }
     case 2 :
         if (constant.tag === /* Constant_int */2) {
           return constant;
         } else {
-          return invalid_default_value(field_name$1, "invalid default type (int expected)", /* () */0);
+          return invalid_default_value(field_name$1, "invalid default type (int expected)", undefined);
         }
     case 3 :
         if (constant.tag === /* Constant_int */2) {
           if (constant[0] >= 0) {
             return constant;
           } else {
-            return invalid_default_value(field_name$1, "negative default value for unsigned int", /* () */0);
+            return invalid_default_value(field_name$1, "negative default value for unsigned int", undefined);
           }
         } else {
-          return invalid_default_value(field_name$1, "invalid default type (int expected)", /* () */0);
+          return invalid_default_value(field_name$1, "invalid default type (int expected)", undefined);
         }
     
   }
@@ -4158,7 +4158,7 @@ function compile_oneof_p1(param) {
 
 function not_found(f) {
   try {
-    Curry._1(f, /* () */0);
+    Curry._1(f, undefined);
     return false;
   }
   catch (exn){
@@ -4288,10 +4288,10 @@ function compile_message_p1(file_name, file_options, message_scope, param) {
     var name = field_name(field);
     if (not_found((function (param) {
               List.assoc(number, number_index);
-              return /* () */0;
+              
             })) && not_found((function (param) {
               list_assoc2(name, number_index);
-              return /* () */0;
+              
             }))) {
       return /* :: */[
               /* tuple */[
@@ -4302,6 +4302,7 @@ function compile_message_p1(file_name, file_options, message_scope, param) {
             ];
     } else {
       var previous_field_name = "";
+      var param;
       throw [
             Compilation_error,
             /* Duplicated_field_number */Block.__(1, [{
@@ -4494,6 +4495,7 @@ function compile_message_p2(types, param, message) {
     if (id !== undefined) {
       return /* Field_type_type */[id];
     } else {
+      var param;
       throw [
             Compilation_error,
             /* Unresolved_type */Block.__(0, [{
@@ -4829,7 +4831,7 @@ function gen_struct$2(and_, t, scope) {
         var r = match[0];
         gen_type_record(undefined, and_, r, scope);
         line$1(scope, "");
-        gen_type_record(/* () */0, /* () */0, r, scope);
+        gen_type_record(Caml_option.some(undefined), Caml_option.some(undefined), r, scope);
         break;
     case /* Variant */1 :
         gen_type_variant(and_, match[0], scope);
@@ -4903,9 +4905,8 @@ function gen_encode_field_type(with_key, sc, var_name, encoding_number, pk, is_p
   var encode_key = function (sc) {
     if (with_key !== undefined) {
       return gen_encode_field_key(sc, encoding_number, pk, is_packed);
-    } else {
-      return /* () */0;
     }
+    
   };
   if (typeof field_type === "number") {
     encode_key(sc);
@@ -5029,7 +5030,7 @@ function gen_encode_record(and_, param, sc) {
                                           ]),
                                         "v.%s"
                                       ]), rf_label);
-                              return gen_encode_field_type(/* () */0, sc, var_name, match[1], match[2], false, match[0]);
+                              return gen_encode_field_type(Caml_option.some(undefined), sc, var_name, match[1], match[2], false, match[0]);
                           case /* Rft_optional */1 :
                               var match$1 = rf_field_type[0];
                               var pk = match$1[2];
@@ -5058,7 +5059,7 @@ function gen_encode_record(and_, param, sc) {
                                                 "| Some x -> ("
                                               ]));
                                       scope(sc, (function (sc) {
-                                              return gen_encode_field_type(/* () */0, sc, "x", encoding_number, pk, false, field_type);
+                                              return gen_encode_field_type(Caml_option.some(undefined), sc, "x", encoding_number, pk, false, field_type);
                                             }));
                                       line$1(sc, ")");
                                       return line$1(sc, "| None -> ();");
@@ -5097,7 +5098,7 @@ function gen_encode_record(and_, param, sc) {
                                 } else {
                                   line$1(sc, "Pbrt.Repeated_field.iter (fun x -> ");
                                   scope(sc, (function (sc) {
-                                          return gen_encode_field_type(/* () */0, sc, "x", encoding_number$1, pk$1, is_packed, field_type$1);
+                                          return gen_encode_field_type(Caml_option.some(undefined), sc, "x", encoding_number$1, pk$1, is_packed, field_type$1);
                                         }));
                                   return line$1(sc, Curry._1(Printf.sprintf(/* Format */[
                                                       /* String_literal */Block.__(11, [
@@ -5139,7 +5140,7 @@ function gen_encode_record(and_, param, sc) {
                               } else {
                                 line$1(sc, "List.iter (fun x -> ");
                                 scope(sc, (function (sc) {
-                                        return gen_encode_field_type(/* () */0, sc, "x", encoding_number$1, pk$1, is_packed, field_type$1);
+                                        return gen_encode_field_type(Caml_option.some(undefined), sc, "x", encoding_number$1, pk$1, is_packed, field_type$1);
                                       }));
                                 return line$1(sc, Curry._1(Printf.sprintf(/* Format */[
                                                     /* String_literal */Block.__(11, [
@@ -5206,7 +5207,7 @@ function gen_encode_record(and_, param, sc) {
                                                           ])
                                                       ]),
                                                     "let map_entry = (k, Pbrt.%s), (v, Pbrt.%s) in"
-                                                  ]), string_of_payload_kind(/* () */0, key_pk, false), string_of_payload_kind(/* () */0, value_pk, false)));
+                                                  ]), string_of_payload_kind(Caml_option.some(undefined), key_pk, false), string_of_payload_kind(Caml_option.some(undefined), value_pk, false)));
                                       return line$1(sc, "Pbrt.Encoder.map_entry ~encode_key ~encode_value map_entry encoder");
                                     }));
                               return line$1(sc, Curry._1(Printf.sprintf(/* Format */[
@@ -5260,7 +5261,7 @@ function gen_encode_record(and_, param, sc) {
                                                                     "| %s x -> ("
                                                                   ]), vc_constructor));
                                                       scope(sc, (function (sc) {
-                                                              return gen_encode_field_type(/* () */0, sc, "x", vc_encoding_number, vc_payload_kind, false, field_type);
+                                                              return gen_encode_field_type(Caml_option.some(undefined), sc, "x", vc_encoding_number, vc_payload_kind, false, field_type);
                                                             }));
                                                       return line$1(sc, ")");
                                                     } else {
@@ -5341,7 +5342,7 @@ function gen_encode_variant(and_, variant, sc) {
                                               "| %s x -> ("
                                             ]), vc_constructor));
                                 scope(sc, (function (sc) {
-                                        return gen_encode_field_type(/* () */0, sc, "x", vc_encoding_number, vc_payload_kind, false, field_type);
+                                        return gen_encode_field_type(Caml_option.some(undefined), sc, "x", vc_encoding_number, vc_payload_kind, false, field_type);
                                       }));
                                 return line$1(sc, ")");
                               } else {
@@ -5551,7 +5552,7 @@ function default_value_of_field_type(field_name, field_type, field_default) {
           }
           var match = field_default;
           if (match.tag) {
-            return invalid_default_value(field_name, "invalid default type", /* () */0);
+            return invalid_default_value(field_name, "invalid default type", undefined);
           } else {
             return Curry._1(Printf.sprintf(/* Format */[
                             /* Char_literal */Block.__(12, [
@@ -5575,7 +5576,7 @@ function default_value_of_field_type(field_name, field_type, field_default) {
           if (match$1.tag === /* Constant_float */3) {
             return Pervasives.string_of_float(match$1[0]);
           } else {
-            return invalid_default_value(field_name, "invalid default type", /* () */0);
+            return invalid_default_value(field_name, "invalid default type", undefined);
           }
       case /* Bt_int */2 :
           if (field_default === undefined) {
@@ -5585,7 +5586,7 @@ function default_value_of_field_type(field_name, field_type, field_default) {
           if (match$2.tag === /* Constant_int */2) {
             return String(match$2[0]);
           } else {
-            return invalid_default_value(field_name, "invalid default type", /* () */0);
+            return invalid_default_value(field_name, "invalid default type", undefined);
           }
       case /* Bt_int32 */3 :
           if (field_default === undefined) {
@@ -5606,7 +5607,7 @@ function default_value_of_field_type(field_name, field_type, field_default) {
                             "%il"
                           ]), match$3[0]);
           } else {
-            return invalid_default_value(field_name, "invalid default type", /* () */0);
+            return invalid_default_value(field_name, "invalid default type", undefined);
           }
       case /* Bt_int64 */4 :
           if (field_default === undefined) {
@@ -5627,7 +5628,7 @@ function default_value_of_field_type(field_name, field_type, field_default) {
                             "%iL"
                           ]), match$4[0]);
           } else {
-            return invalid_default_value(field_name, "invalid default type", /* () */0);
+            return invalid_default_value(field_name, "invalid default type", undefined);
           }
       case /* Bt_bytes */5 :
           if (field_default === undefined) {
@@ -5635,7 +5636,7 @@ function default_value_of_field_type(field_name, field_type, field_default) {
           }
           var match$5 = field_default;
           if (match$5.tag) {
-            return invalid_default_value(field_name, "invalid default type", /* () */0);
+            return invalid_default_value(field_name, "invalid default type", undefined);
           } else {
             return Curry._1(Printf.sprintf(/* Format */[
                             /* String_literal */Block.__(11, [
@@ -5657,7 +5658,7 @@ function default_value_of_field_type(field_name, field_type, field_default) {
           }
           var match$6 = field_default;
           if (match$6.tag !== /* Constant_bool */1) {
-            return invalid_default_value(field_name, "invalid default type", /* () */0);
+            return invalid_default_value(field_name, "invalid default type", undefined);
           }
           var b = match$6[0];
           if (b) {
@@ -6016,7 +6017,7 @@ function gen_struct$4(and_, t, sc) {
     case /* Record */0 :
         var r = match[0];
         tmp = /* tuple */[
-          (gen_default_record(undefined, and_, r, sc), line$1(sc, ""), gen_default_record(/* () */0, /* () */0, r, sc)),
+          (gen_default_record(undefined, and_, r, sc), line$1(sc, ""), gen_default_record(Caml_option.some(undefined), Caml_option.some(undefined), r, sc)),
           true
         ];
         break;
@@ -6097,7 +6098,7 @@ function gen_sig_record(sc, param) {
                   ]),
                 "(** [default_%s ()] is the default value for type [%s] *)"
               ]), r_name, r_name));
-  return /* () */0;
+  
 }
 
 function gen_sig$4(and_, t, sc) {
@@ -6483,9 +6484,9 @@ function compile_field_type(field_name, all_types, file_options, field_options, 
           return /* Ft_basic_type */Block.__(0, [/* Bt_int */2]);
         }
     case /* Field_type_sfixed32 */10 :
-        return unsupported_field_type(field_name, "sfixed32", "OCaml", /* () */0);
+        return unsupported_field_type(field_name, "sfixed32", "OCaml", undefined);
     case /* Field_type_sfixed64 */11 :
-        return unsupported_field_type(field_name, "sfixed64", "OCaml", /* () */0);
+        return unsupported_field_type(field_name, "sfixed64", "OCaml", undefined);
     case /* Field_type_bool */12 :
         return /* Ft_basic_type */Block.__(0, [/* Bt_bool */6]);
     case /* Field_type_string */13 :
@@ -6726,7 +6727,7 @@ function compile(proto_definition) {
                                               message_name,
                                               /* [] */0
                                             ]);
-                                        var variant = variant_of_oneof(/* () */0, outer_message_names, all_pbtt_msgs$1, file_options, file_name, field$1);
+                                        var variant = variant_of_oneof(Caml_option.some(undefined), outer_message_names, all_pbtt_msgs$1, file_options, file_name, field$1);
                                         var record_field_rf_label$1 = label_name_of_field_name(field$1.oneof_name);
                                         var record_field_rf_field_type = /* Rft_variant_field */Block.__(4, [variant]);
                                         var record_field$1 = {
@@ -6885,7 +6886,7 @@ function compile(proto_definition) {
                   }
                   return List.iter((function (types) {
                                 List.fold_left((function (first, type_) {
-                                        var has_encoded = first ? Curry._3(f, undefined, type_, sc) : Curry._3(f, /* () */0, type_, sc);
+                                        var has_encoded = first ? Curry._3(f, undefined, type_, sc) : Curry._3(f, Caml_option.some(undefined), type_, sc);
                                         line$1(sc, "");
                                         if (first) {
                                           return !has_encoded;
@@ -6893,7 +6894,7 @@ function compile(proto_definition) {
                                           return false;
                                         }
                                       }), true, types);
-                                return /* () */0;
+                                
                               }), otypes);
                 }), fs);
   };
@@ -6962,7 +6963,7 @@ function eq(loc, x, y) {
     ],
     suites.contents
   ];
-  return /* () */0;
+  
 }
 
 eq("File \"ocaml_protc_test.ml\", line 10, characters 5-12", match[0], "(** tmp.proto Generated Types and Encoding *)\n\n(** {2 Types} *)\n\ntype t = {\n  j : int32;\n}\n\n\n(** {2 Default values} *)\n\nval default_t : \n  ?j:int32 ->\n  unit ->\n  t\n(** [default_t ()] is the default value for type [t] *)\n\n\n(** {2 Protobuf Decoding} *)\n\nval decode_t : Pbrt.Decoder.t -> t\n(** [decode_t decoder] decodes a [t] value from [decoder] *)\n\n\n(** {2 Protobuf Toding} *)\n\nval encode_t : t -> Pbrt.Encoder.t -> unit\n(** [encode_t v encoder] encodes [v] with the given [encoder] *)\n\n\n(** {2 Formatters} *)\n\nval pp_t : Format.formatter -> t -> unit \n(** [pp_t v] formats v] *)\n");

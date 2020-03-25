@@ -3,7 +3,7 @@
 
 function f(param) {
   3;
-  return /* () */0;
+  
 }
 
 exports.f = f;

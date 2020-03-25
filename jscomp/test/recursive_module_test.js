@@ -28,7 +28,7 @@ function eq(loc, x, y) {
     ],
     suites.contents
   ];
-  return /* () */0;
+  
 }
 
 function add(suite) {
@@ -36,7 +36,7 @@ function add(suite) {
     suite,
     suites.contents
   ];
-  return /* () */0;
+  
 }
 
 var Int3 = Caml_module.init_mod(/* tuple */[
@@ -91,7 +91,7 @@ add(/* tuple */[
       (function (param) {
           return /* ThrowAny */Block.__(7, [(function (param) {
                         Curry._1(Int3.u, 3);
-                        return /* () */0;
+                        
                       })]);
         })
     ]);

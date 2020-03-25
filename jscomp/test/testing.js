@@ -18,10 +18,10 @@ function finish(param) {
   var match = all_tests_ok.contents;
   if (match) {
     console.log("\nAll tests succeeded.");
-    return /* () */0;
+    return ;
   } else {
     console.log("\n\n********* Test suite failed. ***********\n");
-    return /* () */0;
+    return ;
   }
 }
 
@@ -77,8 +77,9 @@ function print_failure_test_succeed(param) {
 
 function test(b) {
   test_num.contents = test_num.contents + 1 | 0;
-  print_test_number(/* () */0);
+  print_test_number(undefined);
   if (!b) {
+    var param;
     all_tests_ok.contents = false;
     return Pervasives.print_string(Curry._1(Printf.sprintf(/* Format */[
                         /* String_literal */Block.__(11, [
@@ -95,17 +96,16 @@ function test(b) {
                           ]),
                         "\n********* Test number %i failed ***********\n"
                       ]), test_num.contents));
-  } else {
-    return /* () */0;
   }
+  
 }
 
 function test_raises_exc_p(pred, f, x) {
   test_num.contents = test_num.contents + 1 | 0;
-  print_test_number(/* () */0);
+  print_test_number(undefined);
   try {
     Curry._1(f, x);
-    print_failure_test_succeed(/* () */0);
+    print_failure_test_succeed(undefined);
     return false;
   }
   catch (raw_x){
@@ -113,7 +113,7 @@ function test_raises_exc_p(pred, f, x) {
     if (Curry._1(pred, x$1)) {
       return true;
     } else {
-      print_failure_test_fail(/* () */0);
+      print_failure_test_fail(undefined);
       return false;
     }
   }

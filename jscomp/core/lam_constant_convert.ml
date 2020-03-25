@@ -38,6 +38,8 @@ let rec convert_constant ( const : Lambda.structured_constant) : Lam_constant.t 
   | Const_base (Const_int32 i) -> (Const_int32 i)
   | Const_base (Const_int64 i) -> (Const_int64 i)
   | Const_base (Const_nativeint i) -> (Const_nativeint i)
+  | Const_pointer(0, Pt_constructor{name = "()"; cstrs = 1,0})
+    -> Const_js_undefined
   | Const_pointer(i,p) ->
     begin match p with 
     | Pt_constructor {name;cstrs} -> Const_pointer(i, Pt_constructor {name; cstrs})

@@ -532,7 +532,7 @@ function iter(f, _param) {
   while(true) {
     var param = _param;
     if (!param) {
-      return /* () */0;
+      return ;
     }
     iter(f, param[/* l */0]);
     Curry._2(f, param[/* v */1], param[/* d */2]);
@@ -974,7 +974,7 @@ function assertion_test(param) {
   for(var i$1 = 0; i$1 <= 1000000; ++i$1){
     find(i$1, m);
   }
-  return /* () */0;
+  
 }
 
 exports.IntMap = IntMap;

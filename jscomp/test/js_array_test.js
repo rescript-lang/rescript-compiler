@@ -891,7 +891,7 @@ var suites_001 = /* :: */[
                                                                                                               3
                                                                                                             ].forEach((function (n) {
                                                                                                                   sum.contents = sum.contents + n | 0;
-                                                                                                                  return /* () */0;
+                                                                                                                  
                                                                                                                 }));
                                                                                                           return /* Eq */Block.__(0, [
                                                                                                                     6,
@@ -912,7 +912,7 @@ var suites_001 = /* :: */[
                                                                                                                 3
                                                                                                               ].forEach((function (param, i) {
                                                                                                                     sum.contents = sum.contents + i | 0;
-                                                                                                                    return /* () */0;
+                                                                                                                    
                                                                                                                   }));
                                                                                                             return /* Eq */Block.__(0, [
                                                                                                                       3,

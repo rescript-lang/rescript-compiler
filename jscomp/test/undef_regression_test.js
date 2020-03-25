@@ -3,15 +3,14 @@
 
 function f(obj) {
   if (typeof obj === "function") {
-    return /* () */0;
+    return ;
   }
   var size = obj.length;
   if (size !== undefined) {
     console.log(size);
-    return /* () */0;
-  } else {
-    return /* () */0;
+    return ;
   }
+  
 }
 
 exports.f = f;

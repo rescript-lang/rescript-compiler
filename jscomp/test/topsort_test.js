@@ -133,7 +133,7 @@ if (!Caml_obj.caml_equal(dfs1(/* :: */[
       ];
 }
 
-Pervasives.print_newline(/* () */0);
+Pervasives.print_newline(undefined);
 
 if (!Caml_obj.caml_equal(dfs1(/* :: */[
             "b",
@@ -279,9 +279,8 @@ function dfs3(nodes, graph) {
       return List.iter((function (x) {
                     return aux(x, graph);
                   }), nexts(node, graph));
-    } else {
-      return /* () */0;
     }
+    
   };
   List.iter((function (node) {
           return aux(node, graph);
@@ -403,7 +402,7 @@ function unsafe_topsort(graph) {
   };
   var sort_node = function (node) {
     if (List.mem(node, visited.contents)) {
-      return /* () */0;
+      return ;
     }
     var nodes = nexts(node, graph);
     List.iter(sort_node, nodes);
@@ -411,7 +410,7 @@ function unsafe_topsort(graph) {
       node,
       visited.contents
     ];
-    return /* () */0;
+    
   };
   List.iter((function (param) {
           return sort_node(param[0]);
@@ -943,7 +942,7 @@ function iter(f, _param) {
   while(true) {
     var param = _param;
     if (!param) {
-      return /* () */0;
+      return ;
     }
     iter(f, param[/* l */0]);
     Curry._1(f, param[/* v */1]);
@@ -1467,10 +1466,9 @@ function pathsort(graph) {
         node,
         visited.contents
       ];
-      return /* () */0;
-    } else {
-      return /* () */0;
+      return ;
     }
+    
   };
   List.iter((function (param) {
           return sort_node(empty_path, param[0]);

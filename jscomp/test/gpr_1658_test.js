@@ -26,7 +26,7 @@ function eq(loc, x, y) {
     ],
     suites.contents
   ];
-  return /* () */0;
+  
 }
 
 eq("File \"gpr_1658_test.ml\", line 11, characters 7-14", null, null);

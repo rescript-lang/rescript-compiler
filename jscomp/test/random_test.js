@@ -36,14 +36,14 @@ function approx(f) {
     });
 }
 
-Mt_global.collect_neq(id, suites, "File \"random_test.ml\", line 12, characters 6-13", (Random.self_init(/* () */0), Random.$$int(10000)), (Random.self_init(/* () */0), Random.$$int(1000)));
+Mt_global.collect_neq(id, suites, "File \"random_test.ml\", line 12, characters 6-13", (Random.self_init(undefined), Random.$$int(10000)), (Random.self_init(undefined), Random.$$int(1000)));
 
 Random.init(0);
 
 var v = Caml_array.caml_make_vect(10, false);
 
 for(var i = 0; i <= 9; ++i){
-  Caml_array.caml_array_set(v, i, Random.bool(/* () */0));
+  Caml_array.caml_array_set(v, i, Random.bool(undefined));
 }
 
 Mt_global.collect_eq(id, suites, "File \"random_test.ml\", line 26, characters 5-12", v, [
@@ -63,7 +63,7 @@ var f = Random.int64(Int64.max_int);
 
 var h = Random.int64(Caml_int64.mk(3, 0));
 
-var vv = Random.bits(/* () */0);
+var vv = Random.bits(undefined);
 
 var xx = Random.$$float(3.0);
 

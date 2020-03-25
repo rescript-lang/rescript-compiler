@@ -189,7 +189,7 @@ function eq(loc, x, y) {
 }
 
 try {
-  (function (_){throw 2}(/* () */0));
+  (function (_){throw 2}(undefined));
 }
 catch (raw_e$2){
   var e = Caml_js_exceptions.internalToOCamlException(raw_e$2);
@@ -207,12 +207,12 @@ catch (raw_e$3){
 function fff0(x, g) {
   var val;
   try {
-    val = Curry._1(x, /* () */0);
+    val = Curry._1(x, undefined);
   }
   catch (exn){
     return 1;
   }
-  return Curry._1(g, /* () */0);
+  return Curry._1(g, undefined);
 }
 
 function input_lines(ic, _acc) {

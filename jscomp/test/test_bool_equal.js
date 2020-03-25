@@ -57,7 +57,7 @@ function assertions(param) {
           ]
         ];
   }
-  return /* () */0;
+  
 }
 
 function f0(x) {

@@ -18,7 +18,7 @@ function f2(g, x) {
 
 function f3(g, x) {
   Curry._1(g, x);
-  return /* () */0;
+  
 }
 
 function f4(g, x) {

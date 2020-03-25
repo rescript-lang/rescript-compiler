@@ -6,9 +6,8 @@ var Belt_MapInt = require("../../lib/js/belt_MapInt.js");
 function should(b) {
   if (!b) {
     return Js_exn.raiseError("IMPOSSIBLE");
-  } else {
-    return /* () */0;
   }
+  
 }
 
 function test(param) {
@@ -25,7 +24,7 @@ function test(param) {
   return should(Belt_MapInt.isEmpty(m));
 }
 
-test(/* () */0);
+test(undefined);
 
 var M = /* alias */0;
 

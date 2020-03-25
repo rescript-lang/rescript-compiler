@@ -103,10 +103,9 @@ function print_all_composite(all_tickers) {
   return List.iter((function (param) {
                 if (param.type_) {
                   console.log(param.ticker_name);
-                  return /* () */0;
-                } else {
-                  return /* () */0;
+                  return ;
                 }
+                
               }), all_tickers);
 }
 
@@ -637,7 +636,7 @@ function iter(f, _param) {
   while(true) {
     var param = _param;
     if (!param) {
-      return /* () */0;
+      return ;
     }
     iter(f, param[/* l */0]);
     Curry._2(f, param[/* v */1], param[/* d */2]);
@@ -1172,11 +1171,11 @@ function process_quote(ticker_map, new_ticker, new_value) {
                     value = undefined;
                   }
                   ticker.value = value;
-                  return /* () */0;
+                  return ;
                 } else {
                   if (ticker.ticker_name === new_ticker) {
                     ticker.value = new_value;
-                    return /* () */0;
+                    return ;
                   }
                   throw [
                         Caml_builtin_exceptions.failure,

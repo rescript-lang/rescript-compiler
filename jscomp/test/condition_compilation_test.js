@@ -33,7 +33,7 @@ function eq(loc, x, y) {
     ],
     suites.contents
   ];
-  return /* () */0;
+  
 }
 
 eq("File \"condition_compilation_test.ml\", line 98, characters 5-12", 3, 3);

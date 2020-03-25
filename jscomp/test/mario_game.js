@@ -667,7 +667,7 @@ function transform_enemy(enemy_typ, spr, dir) {
   img.src = params.img_src;
   spr.params = params;
   spr.img = img;
-  return /* () */0;
+  
 }
 
 function update_animation(spr) {
@@ -676,13 +676,13 @@ function update_animation(spr) {
     spr.ticks.contents = 0;
     if (spr.params.loop) {
       spr.frame.contents = Caml_int32.mod_(spr.frame.contents + 1 | 0, spr.params.max_frames);
-      return /* () */0;
+      return ;
     } else {
-      return /* () */0;
+      return ;
     }
   } else {
     spr.ticks.contents = curr_ticks + 1 | 0;
-    return /* () */0;
+    return ;
   }
 }
 
@@ -771,7 +771,7 @@ function make_score(score, pos, ctx) {
 function update_vel(part) {
   part.vel.x = part.vel.x + part.acc.x;
   part.vel.y = part.vel.y + part.acc.y;
-  return /* () */0;
+  
 }
 
 function $$process(part) {
@@ -782,7 +782,7 @@ function $$process(part) {
   update_vel(part);
   part.pos.x = part.vel.x + part.pos.x;
   part.pos.y = part.vel.y + part.pos.y;
-  return /* () */0;
+  
 }
 
 var Particle = {
@@ -809,33 +809,34 @@ function set_vel_to_speed(obj) {
   var match = obj.dir;
   if (match) {
     obj.vel.x = speed;
-    return /* () */0;
+    return ;
   } else {
     obj.vel.x = -speed;
-    return /* () */0;
+    return ;
   }
 }
 
 function make_type$2(param) {
   switch (param.tag | 0) {
     case /* SPlayer */0 :
-        return setup_obj(undefined, 2.8, /* () */0);
+        var param$1;
+        return setup_obj(undefined, 2.8, undefined);
     case /* SEnemy */1 :
-        var param$1 = param[0];
-        if (param$1 >= 3) {
-          return setup_obj(undefined, 3, /* () */0);
-        } else {
-          return setup_obj(undefined, undefined, /* () */0);
-        }
-    case /* SItem */2 :
         var param$2 = param[0];
         if (param$2 >= 3) {
-          return setup_obj(false, undefined, /* () */0);
+          return setup_obj(undefined, 3, undefined);
         } else {
-          return setup_obj(undefined, undefined, /* () */0);
+          return setup_obj(undefined, undefined, undefined);
+        }
+    case /* SItem */2 :
+        var param$3 = param[0];
+        if (param$3 >= 3) {
+          return setup_obj(false, undefined, undefined);
+        } else {
+          return setup_obj(undefined, undefined, undefined);
         }
     case /* SBlock */3 :
-        return setup_obj(false, undefined, /* () */0);
+        return setup_obj(false, undefined, undefined);
     
   }
 }
@@ -850,7 +851,7 @@ function make$2($staropt$star, $staropt$star$1, spawnable, context, param) {
   var dir = $staropt$star$1 !== undefined ? $staropt$star$1 : /* Left */0;
   var spr = make(spawnable, dir, context);
   var params = make_type$2(spawnable);
-  var id$1 = id !== undefined ? id : new_id(/* () */0);
+  var id$1 = id !== undefined ? id : new_id(undefined);
   var obj = {
     params: params,
     pos: {
@@ -949,7 +950,7 @@ function normalize_pos(pos, p1, p2) {
   var match$3 = p2.bbox_size;
   pos.x = pos.x - (match$3[0] + match$1[0]) + (match$2[0] + match[0]);
   pos.y = pos.y - (match$3[1] + match$1[1]) + (match$2[1] + match[1]);
-  return /* () */0;
+  
 }
 
 function update_player(player, keys, context) {
@@ -960,38 +961,40 @@ function update_player(player, keys, context) {
           var lr_acc = player.vel.x * 0.2;
           switch (param) {
             case /* CLeft */0 :
-                if (player.crouch) {
-                  return /* () */0;
+                if (!player.crouch) {
+                  if (player.vel.x > -player.params.speed) {
+                    player.vel.x = player.vel.x - (0.4 - lr_acc);
+                  }
+                  player.dir = /* Left */0;
+                  return ;
+                } else {
+                  return ;
                 }
-                if (player.vel.x > -player.params.speed) {
-                  player.vel.x = player.vel.x - (0.4 - lr_acc);
-                }
-                player.dir = /* Left */0;
-                return /* () */0;
             case /* CRight */1 :
-                if (player.crouch) {
-                  return /* () */0;
+                if (!player.crouch) {
+                  if (player.vel.x < player.params.speed) {
+                    player.vel.x = player.vel.x + (0.4 + lr_acc);
+                  }
+                  player.dir = /* Right */1;
+                  return ;
+                } else {
+                  return ;
                 }
-                if (player.vel.x < player.params.speed) {
-                  player.vel.x = player.vel.x + (0.4 + lr_acc);
-                }
-                player.dir = /* Right */1;
-                return /* () */0;
             case /* CUp */2 :
                 if (!player.jumping && player.grounded) {
                   player.jumping = true;
                   player.grounded = false;
                   player.vel.y = Caml_primitive.caml_float_max(player.vel.y - (5.7 + Math.abs(player.vel.x) * 0.25), -6);
-                  return /* () */0;
+                  return ;
                 } else {
-                  return /* () */0;
+                  return ;
                 }
             case /* CDown */3 :
                 if (!player.jumping && player.grounded) {
                   player.crouch = true;
-                  return /* () */0;
+                  return ;
                 } else {
-                  return /* () */0;
+                  return ;
                 }
             
           }
@@ -1048,12 +1051,12 @@ function update_player(player, keys, context) {
 function update_vel$1(obj) {
   if (obj.grounded) {
     obj.vel.y = 0;
-    return /* () */0;
+    return ;
   } else if (obj.params.has_gravity) {
     obj.vel.y = Caml_primitive.caml_float_min(obj.vel.y + 0.2 + Math.abs(obj.vel.y) * 0.01, 4.5);
-    return /* () */0;
+    return ;
   } else {
-    return /* () */0;
+    return ;
   }
 }
 
@@ -1061,10 +1064,9 @@ function update_pos(obj) {
   obj.pos.x = obj.vel.x + obj.pos.x;
   if (obj.params.has_gravity) {
     obj.pos.y = obj.vel.y + obj.pos.y;
-    return /* () */0;
-  } else {
-    return /* () */0;
+    return ;
   }
+  
 }
 
 function process_obj(obj, mapy) {
@@ -1072,10 +1074,9 @@ function process_obj(obj, mapy) {
   update_pos(obj);
   if (obj.pos.y > mapy) {
     obj.kill = true;
-    return /* () */0;
-  } else {
-    return /* () */0;
+    return ;
   }
+  
 }
 
 function normalize_origin(pos, spr) {
@@ -1084,7 +1085,7 @@ function normalize_origin(pos, spr) {
   var match$1 = p.bbox_size;
   pos.x = pos.x - match[0];
   pos.y = pos.y - (match[1] + match$1[1]);
-  return /* () */0;
+  
 }
 
 function collide_block(check_xOpt, dir, obj) {
@@ -1093,26 +1094,26 @@ function collide_block(check_xOpt, dir, obj) {
     if (dir !== 0) {
       if (check_x) {
         obj.vel.x = 0;
-        return /* () */0;
+        return ;
       } else {
-        return /* () */0;
+        return ;
       }
     } else {
       obj.vel.y = -0.001;
-      return /* () */0;
+      return ;
     }
   } else {
     obj.vel.y = 0;
     obj.grounded = true;
     obj.jumping = false;
-    return /* () */0;
+    return ;
   }
 }
 
 function reverse_left_right(obj) {
   obj.vel.x = -obj.vel.x;
   obj.dir = obj.dir ? /* Left */0 : /* Right */1;
-  return /* () */0;
+  
 }
 
 function evolve_enemy(player_dir, typ, spr, obj, context) {
@@ -1171,12 +1172,12 @@ function dec_health(obj) {
   var health = obj.health - 1 | 0;
   if (health === 0) {
     obj.kill = true;
-    return /* () */0;
+    return ;
   } else if (obj.invuln === 0) {
     obj.health = health;
-    return /* () */0;
+    return ;
   } else {
-    return /* () */0;
+    return ;
   }
 }
 
@@ -1447,7 +1448,7 @@ function clear_canvas(canvas) {
   var cwidth = canvas.width;
   var cheight = canvas.height;
   context.clearRect(0, 0, cwidth, cheight);
-  return /* () */0;
+  
 }
 
 function hud(canvas, score, coins) {
@@ -1457,14 +1458,14 @@ function hud(canvas, score, coins) {
   context.font = "10px 'Press Start 2P'";
   context.fillText("Score: " + score_string, canvas.width - 140, 18);
   context.fillText("Coins: " + coin_string, 120, 18);
-  return /* () */0;
+  
 }
 
 function fps(canvas, fps_val) {
   var fps_str = String(fps_val | 0);
   var context = canvas.getContext("2d");
   context.fillText(fps_str, 10, 18);
-  return /* () */0;
+  
 }
 
 function game_win(ctx) {
@@ -1602,7 +1603,7 @@ function calc_fps(t0, t1) {
 
 function update_score(state, i) {
   state.score = state.score + i | 0;
-  return /* () */0;
+  
 }
 
 function process_collision(dir, c1, c2, state) {
@@ -1969,19 +1970,22 @@ function process_collision(dir, c1, c2, state) {
                     undefined
                   ];
           }
+        } else {
+          dec_health(o2$2);
+          if (o1$2.health === 2) {
+            
+          } else {
+            o1$2.health = o1$2.health + 1 | 0;
+          }
+          o1$2.vel.x = 0;
+          o1$2.vel.y = 0;
+          update_score(state, 1000);
+          o2$2.score = 1000;
+          return /* tuple */[
+                  undefined,
+                  undefined
+                ];
         }
-        dec_health(o2$2);
-        if (o1$2.health !== 2) {
-          o1$2.health = o1$2.health + 1 | 0;
-        }
-        o1$2.vel.x = 0;
-        o1$2.vel.y = 0;
-        update_score(state, 1000);
-        o2$2.score = 1000;
-        return /* tuple */[
-                undefined,
-                undefined
-              ];
     
   }
 }
@@ -2138,7 +2142,7 @@ function run_update_collid(state, collid, all_collids) {
     return collid;
   } else {
     var o = collid[2];
-    var keys = translate_keys(/* () */0);
+    var keys = translate_keys(undefined);
     o.crouch = false;
     var match = update_player(o, keys, state.ctx);
     var player;
@@ -2208,7 +2212,7 @@ function update_loop(canvas, param, map_dim) {
     };
     List.iter((function (obj) {
             run_update_collid(state$1, obj, objs);
-            return /* () */0;
+            
           }), objs);
     List.iter((function (part) {
             $$process(part);
@@ -2223,17 +2227,16 @@ function update_loop(canvas, param, map_dim) {
                 part,
                 particles.contents
               ];
-              return /* () */0;
-            } else {
-              return /* () */0;
+              return ;
             }
+            
           }), parts);
     fps(canvas, fps$1);
     hud(canvas, state$1.score, state$1.coins);
     requestAnimationFrame((function (t) {
             return update_helper(t, state$1, player$1, collid_objs.contents, particles.contents);
           }));
-    return /* () */0;
+    
   };
   return update_helper(0, state, player, param[1], /* [] */0);
 }
@@ -2322,10 +2325,11 @@ function keyup(evt) {
       pressed_keys.down = false;
     }
   } else if (match >= 41) {
-    if (match === 65) {
+    if (match !== 65) {
+      
+    } else {
       pressed_keys.left = false;
     }
-    
   } else if (match >= 32) {
     switch (match - 32 | 0) {
       case 1 :
@@ -3176,7 +3180,7 @@ function generate(w, h, context) {
 }
 
 function init(param) {
-  return Random.self_init(/* () */0);
+  return Random.self_init(undefined);
 }
 
 var Procedural_generator = {
@@ -3189,7 +3193,7 @@ var loadCount = {
 };
 
 function load(param) {
-  Random.self_init(/* () */0);
+  Random.self_init(undefined);
   var canvas_id = "canvas";
   var match = document.getElementById(canvas_id);
   var canvas;
@@ -3217,22 +3221,21 @@ function load(param) {
   var context = canvas.getContext("2d");
   document.addEventListener("keydown", keydown, true);
   document.addEventListener("keyup", keyup, true);
-  Random.self_init(/* () */0);
+  Random.self_init(undefined);
   update_loop(canvas, generate(2400, 256, context), /* tuple */[
         2400,
         256
       ]);
   console.log("asd");
-  return /* () */0;
+  
 }
 
 function inc_counter(param) {
   loadCount.contents = loadCount.contents + 1 | 0;
   if (loadCount.contents === 4) {
-    return load(/* () */0);
-  } else {
-    return /* () */0;
+    return load(undefined);
   }
+  
 }
 
 function preload(param) {
@@ -3241,10 +3244,10 @@ function preload(param) {
                 var img = document.createElement("img");
                 img.src = img_src$1;
                 img.addEventListener("load", (function (ev) {
-                        inc_counter(/* () */0);
+                        inc_counter(undefined);
                         return true;
                       }), true);
-                return /* () */0;
+                
               }), /* :: */[
               "blocks.png",
               /* :: */[
@@ -3261,7 +3264,7 @@ function preload(param) {
 }
 
 window.onload = (function (param) {
-    preload(/* () */0);
+    preload(undefined);
     return true;
   });
 

@@ -27,7 +27,7 @@ function add_test(loc, test) {
     ],
     suites.contents
   ];
-  return /* () */0;
+  
 }
 
 function eq(loc, x, y) {
@@ -85,7 +85,7 @@ add_test("File \"js_json_test.ml\", line 23, characters 11-18", (function (param
                       ];
                 }
                 if (ty3.tag === /* JSONNumber */1) {
-                  return /* () */0;
+                  return ;
                 }
                 throw [
                       Caml_builtin_exceptions.assert_failure,

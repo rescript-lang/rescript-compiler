@@ -35,7 +35,7 @@ function to_list(s) {
             x,
             l.contents
           ];
-          return /* () */0;
+          
         }), s.c);
   return l.contents;
 }
@@ -359,7 +359,7 @@ var i$7 = {
 List.iter((function (j) {
         assert_("File \"stack_comp_test.ml\", line 112, characters 27-34", i$7.contents === j);
         i$7.contents = i$7.contents + 1 | 0;
-        return /* () */0;
+        
       }), s$5.c);
 
 var s1$1 = {

@@ -429,7 +429,7 @@ function Make(Ord) {
     while(true) {
       var param = _param;
       if (!param) {
-        return /* () */0;
+        return ;
       }
       iter(f, param[0]);
       Curry._1(f, param[1]);

@@ -29,7 +29,7 @@ function eq(loc, x, y) {
     ],
     suites.contents
   ];
-  return /* () */0;
+  
 }
 
 var A = Caml_exceptions.create("Exception_rebound_err_test.A");
@@ -69,7 +69,7 @@ function test_js_error4(param) {
 
 function f(g) {
   try {
-    return Curry._1(g, /* () */0);
+    return Curry._1(g, undefined);
   }
   catch (exn){
     if (exn === Caml_builtin_exceptions.not_found) {
@@ -79,7 +79,7 @@ function f(g) {
   }
 }
 
-eq("File \"exception_rebound_err_test.ml\", line 24, characters 6-13", test_js_error4(/* () */0), 7);
+eq("File \"exception_rebound_err_test.ml\", line 24, characters 6-13", test_js_error4(undefined), 7);
 
 Mt.from_pair_suites("Exception_rebound_err_test", suites.contents);
 

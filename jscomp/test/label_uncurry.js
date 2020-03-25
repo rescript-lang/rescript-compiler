@@ -13,7 +13,7 @@ function u(x, y) {
 function u1(f) {
   console.log(f(2, "x"));
   console.log(f(2, "x"));
-  return /* () */0;
+  
 }
 
 function h(unit) {

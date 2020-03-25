@@ -67,7 +67,7 @@ var Path = {
 
 function Make(M) {
   var find = function (x) {
-    return /* () */0;
+    
   };
   return {
           find: find
@@ -75,7 +75,7 @@ function Make(M) {
 }
 
 function find(x) {
-  return /* () */0;
+  
 }
 
 var M = {
@@ -113,7 +113,7 @@ var ED = Caml_exceptions.create("Variant.ED");
 
 function fooExn(f) {
   try {
-    return Curry._1(f, /* () */0);
+    return Curry._1(f, undefined);
   }
   catch (raw_exn){
     var exn = Caml_js_exceptions.internalToOCamlException(raw_exn);

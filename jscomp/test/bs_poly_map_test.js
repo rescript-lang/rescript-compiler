@@ -5,6 +5,7 @@ var Belt_Id = require("../../lib/js/belt_Id.js");
 var Belt_Map = require("../../lib/js/belt_Map.js");
 var Belt_Set = require("../../lib/js/belt_Set.js");
 var Belt_Array = require("../../lib/js/belt_Array.js");
+var Caml_option = require("../../lib/js/caml_option.js");
 var Belt_MapDict = require("../../lib/js/belt_MapDict.js");
 var Caml_primitive = require("../../lib/js/caml_primitive.js");
 var Array_data_util = require("./array_data_util.js");
@@ -45,7 +46,7 @@ function emptyMap(param) {
 function mergeInter(s1, s2) {
   var m = Belt_Map.merge(s1, s2, (function (k, v1, v2) {
           if (v1 !== undefined && v2 !== undefined) {
-            return /* () */0;
+            return Caml_option.some(undefined);
           }
           
         }));
@@ -55,7 +56,7 @@ function mergeInter(s1, s2) {
 function mergeUnion(s1, s2) {
   var m = Belt_Map.merge(s1, s2, (function (k, v1, v2) {
           if (v1 !== undefined || v2 !== undefined) {
-            return /* () */0;
+            return Caml_option.some(undefined);
           }
           
         }));
@@ -65,7 +66,7 @@ function mergeUnion(s1, s2) {
 function mergeDiff(s1, s2) {
   var m = Belt_Map.merge(s1, s2, (function (k, v1, v2) {
           if (v1 !== undefined && v2 === undefined) {
-            return /* () */0;
+            return Caml_option.some(undefined);
           }
           
         }));

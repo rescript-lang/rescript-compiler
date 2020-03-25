@@ -34,12 +34,12 @@ function f(param) {
       }
       
     }
-    return /* () */0;
+    return ;
   }
   catch (raw_exn){
     var exn = Caml_js_exceptions.internalToOCamlException(raw_exn);
     if (exn[0] === A) {
-      return /* () */0;
+      return ;
     }
     throw exn;
   }

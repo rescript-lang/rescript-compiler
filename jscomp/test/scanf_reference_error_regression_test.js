@@ -91,7 +91,7 @@ function scan_int_list(ib) {
                 /* End_of_format */0
               ]),
             " [ "
-          ]), /* () */0);
+          ]), undefined);
   return List.rev(scan_rest(ib, /* [] */0));
 }
 

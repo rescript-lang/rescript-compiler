@@ -236,7 +236,7 @@ let new_ ?comment e0 args : t =
 
 
 let unit : t = 
-  {expression_desc = Number (Int {i = 0l; c = None}) ; comment = Some "()" }
+  {expression_desc = Undefined ; comment = None}
 
 
 

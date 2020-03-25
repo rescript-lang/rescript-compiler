@@ -660,9 +660,8 @@ function rev_iter(f, xs) {
   if (xs) {
     rev_iter(f, xs[1]);
     return Curry._1(f, xs[0]);
-  } else {
-    return /* () */0;
   }
+  
 }
 
 function for_all2_no_exn(p, _l1, _l2) {
@@ -800,7 +799,7 @@ function ref_push(x, refs) {
     x,
     refs.contents
   ];
-  return /* () */0;
+  
 }
 
 function ref_pop(refs) {

@@ -15,12 +15,12 @@ function test(param) {
       var acc = _acc;
       var n = _n;
       if (n === 0) {
-        return Curry._1(acc, /* () */0);
+        return Curry._1(acc, undefined);
       }
       _acc = (function(n,acc){
       return function (param) {
         v.contents = v.contents + n | 0;
-        return Curry._1(acc, /* () */0);
+        return Curry._1(acc, undefined);
       }
       }(n,acc));
       _n = n - 1 | 0;
@@ -28,7 +28,7 @@ function test(param) {
     };
   };
   f(10, (function (param) {
-          return /* () */0;
+          
         }));
   return v.contents;
 }
@@ -49,7 +49,7 @@ function test_closure(param) {
   }
   $$Array.iter((function (i) {
           v.contents = v.contents + Curry._1(i, 0) | 0;
-          return /* () */0;
+          
         }), arr);
   return v.contents;
 }
@@ -71,7 +71,7 @@ function test_closure2(param) {
   }
   $$Array.iter((function (i) {
           v.contents = v.contents + Curry._1(i, 0) | 0;
-          return /* () */0;
+          
         }), arr);
   return v.contents;
 }
@@ -82,7 +82,7 @@ Mt.from_pair_suites("Cps_test", /* :: */[
         (function (param) {
             return /* Eq */Block.__(0, [
                       55,
-                      test(/* () */0)
+                      test(undefined)
                     ]);
           })
       ],
@@ -92,7 +92,7 @@ Mt.from_pair_suites("Cps_test", /* :: */[
           (function (param) {
               return /* Eq */Block.__(0, [
                         15,
-                        test_closure(/* () */0)
+                        test_closure(undefined)
                       ]);
             })
         ],
@@ -102,7 +102,7 @@ Mt.from_pair_suites("Cps_test", /* :: */[
             (function (param) {
                 return /* Eq */Block.__(0, [
                           30,
-                          test_closure2(/* () */0)
+                          test_closure2(undefined)
                         ]);
               })
           ],

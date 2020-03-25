@@ -32,7 +32,7 @@ function eq(loc, x, y) {
     ],
     suites.contents
   ];
-  return /* () */0;
+  
 }
 
 function fib_init($$class) {
@@ -81,7 +81,7 @@ function memo_fib_init($$class) {
 
 var memo_fib = CamlinternalOO.make_class(shared, memo_fib_init);
 
-var tmp = Curry._1(memo_fib[0], /* () */0);
+var tmp = Curry._1(memo_fib[0], undefined);
 
 eq("File \"class_fib_open_recursion_test.ml\", line 33, characters 5-12", Caml_oo_curry.js2(-1044768619, 1, tmp, 40), 165580141);
 

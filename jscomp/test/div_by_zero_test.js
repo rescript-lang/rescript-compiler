@@ -27,7 +27,7 @@ function eq(loc, x, y) {
     ],
     suites.contents
   ];
-  return /* () */0;
+  
 }
 
 function add(suite) {
@@ -35,7 +35,7 @@ function add(suite) {
     suite,
     suites.contents
   ];
-  return /* () */0;
+  
 }
 
 add(/* tuple */[
@@ -43,7 +43,7 @@ add(/* tuple */[
       (function (param) {
           return /* ThrowAny */Block.__(7, [(function (param) {
                         Caml_int32.div(3, 0);
-                        return /* () */0;
+                        
                       })]);
         })
     ]);
@@ -53,7 +53,7 @@ add(/* tuple */[
       (function (param) {
           return /* ThrowAny */Block.__(7, [(function (param) {
                         Caml_int32.mod_(3, 0);
-                        return /* () */0;
+                        
                       })]);
         })
     ]);
@@ -63,7 +63,7 @@ add(/* tuple */[
       (function (param) {
           return /* ThrowAny */Block.__(7, [(function (param) {
                         Caml_int32.div(3, 0);
-                        return /* () */0;
+                        
                       })]);
         })
     ]);
@@ -73,7 +73,7 @@ add(/* tuple */[
       (function (param) {
           return /* ThrowAny */Block.__(7, [(function (param) {
                         Caml_int32.mod_(3, 0);
-                        return /* () */0;
+                        
                       })]);
         })
     ]);
@@ -83,7 +83,7 @@ add(/* tuple */[
       (function (param) {
           return /* ThrowAny */Block.__(7, [(function (param) {
                         Caml_int64.div(Caml_int64.mk(3, 0), Caml_int64.zero);
-                        return /* () */0;
+                        
                       })]);
         })
     ]);
@@ -93,7 +93,7 @@ add(/* tuple */[
       (function (param) {
           return /* ThrowAny */Block.__(7, [(function (param) {
                         Caml_int64.mod_(Caml_int64.mk(3, 0), Caml_int64.zero);
-                        return /* () */0;
+                        
                       })]);
         })
     ]);

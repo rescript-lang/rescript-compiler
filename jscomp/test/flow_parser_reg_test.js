@@ -1360,7 +1360,7 @@ function yyback(n, lexbuf) {
     pos_bol: currp.pos_bol,
     pos_cnum: currp.pos_cnum - n | 0
   };
-  return /* () */0;
+  
 }
 
 function back(lb) {
@@ -1552,7 +1552,7 @@ function start(str) {
             c,
             todo.contents
           ];
-          return /* () */0;
+          
         }), str);
   return {
           negative: false,
@@ -1784,7 +1784,7 @@ function unicode_fix_cols(lb) {
     pos_bol: new_bol,
     pos_cnum: init.pos_cnum
   };
-  return /* () */0;
+  
 }
 
 function oct_to_int(x) {
@@ -4956,7 +4956,7 @@ function next_power_of_two(n) {
 
 function grow(t, n) {
   if (t.la_results.length >= n) {
-    return /* () */0;
+    return ;
   }
   var new_size = next_power_of_two(n);
   var filler = function (i) {
@@ -4967,7 +4967,7 @@ function grow(t, n) {
   };
   var new_arr = $$Array.init(new_size, filler);
   t.la_results = new_arr;
-  return /* () */0;
+  
 }
 
 function lex(t) {
@@ -5019,7 +5019,7 @@ function lex(t) {
         match$1[1]
       ]);
   t.la_num_lexed = t.la_num_lexed + 1 | 0;
-  return /* () */0;
+  
 }
 
 function lex_until(t, i) {
@@ -5027,7 +5027,7 @@ function lex_until(t, i) {
   while(t.la_num_lexed <= i) {
     lex(t);
   };
-  return /* () */0;
+  
 }
 
 var default_parse_options = {
@@ -5116,9 +5116,8 @@ function error_at(env, param) {
   var match = env.error_callback;
   if (match !== undefined) {
     return Curry._2(match, env, e);
-  } else {
-    return /* () */0;
   }
+  
 }
 
 function comment_list(env) {
@@ -5128,7 +5127,7 @@ function comment_list(env) {
                       c,
                       env.comments.contents
                     ];
-                    return /* () */0;
+                    
                   }), param);
     });
 }
@@ -5143,7 +5142,7 @@ function record_export(env, param) {
               ]);
   } else {
     env.exports.contents = add(export_name, env.exports.contents);
-    return /* () */0;
+    return ;
   }
 }
 
@@ -5476,9 +5475,8 @@ function error_on_decorators(env) {
 function strict_error(env, e) {
   if (env.in_strict_mode) {
     return error$1(env, e);
-  } else {
-    return /* () */0;
   }
+  
 }
 
 function strict_error_at(env, param) {
@@ -5487,9 +5485,8 @@ function strict_error_at(env, param) {
                 param[0],
                 param[1]
               ]);
-  } else {
-    return /* () */0;
   }
+  
 }
 
 function token$3(env) {
@@ -5516,7 +5513,7 @@ function token$3(env) {
   }
   Caml_array.caml_array_set(t.la_results, t.la_num_lexed - 1 | 0, undefined);
   t.la_num_lexed = t.la_num_lexed - 1 | 0;
-  return /* () */0;
+  
 }
 
 function push_lex_mode(env, mode) {
@@ -5525,7 +5522,7 @@ function push_lex_mode(env, mode) {
     env.lex_mode_stack.contents
   ];
   env.lookahead.contents = create$1(env.lex_env.contents, List.hd(env.lex_mode_stack.contents));
-  return /* () */0;
+  
 }
 
 function pop_lex_mode(env) {
@@ -5540,7 +5537,7 @@ function pop_lex_mode(env) {
   new_stack = match[1];
   env.lex_mode_stack.contents = new_stack;
   env.lookahead.contents = create$1(env.lex_env.contents, List.hd(env.lex_mode_stack.contents));
-  return /* () */0;
+  
 }
 
 function double_pop_lex_mode(env) {
@@ -5562,7 +5559,7 @@ function double_pop_lex_mode(env) {
   new_stack = match$1[1];
   env.lex_mode_stack.contents = new_stack;
   env.lookahead.contents = create$1(env.lex_env.contents, List.hd(env.lex_mode_stack.contents));
-  return /* () */0;
+  
 }
 
 function semicolon(env) {
@@ -5572,9 +5569,8 @@ function semicolon(env) {
     } else {
       return error_unexpected(env);
     }
-  } else {
-    return /* () */0;
   }
+  
 }
 
 function token$4(env, t) {
@@ -5633,16 +5629,15 @@ function save_state(env) {
 
 function reset_token_sink(flush, env, token_buffer_info) {
   if (token_buffer_info === undefined) {
-    return /* () */0;
+    return ;
   }
   var match = token_buffer_info;
   var orig_token_sink = match[0];
   env.token_sink.contents = orig_token_sink;
   if (flush) {
     return Queue.iter(orig_token_sink, match[1]);
-  } else {
-    return /* () */0;
   }
+  
 }
 
 function to_parse(env, parse) {
@@ -6742,7 +6737,7 @@ function semicolon$1(env) {
     } else if (match !== 2) {
       return error_unexpected(env);
     } else {
-      return /* () */0;
+      return ;
     }
   } else {
     return error_unexpected(env);
@@ -7351,7 +7346,7 @@ function identifier_no_dupe_check(param, param$1) {
 
 function strict_post_check(env, strict, simple, id, params) {
   if (!(strict || !simple)) {
-    return /* () */0;
+    return ;
   }
   var env$1 = strict ? with_strict(!env.in_strict_mode, env) : env;
   if (id !== undefined) {
@@ -7376,7 +7371,7 @@ function strict_post_check(env, strict, simple, id, params) {
         env$1,
         /* Empty */0
       ], params);
-  return /* () */0;
+  
 }
 
 function param$1(env) {
@@ -7946,8 +7941,11 @@ function unary(env) {
             ]);
       }
       var match$2 = argument$1[1];
-      if (typeof match$2 !== "number" && match$2.tag === /* Identifier */18 && is_restricted(match$2[0][1].name)) {
-        strict_error(env, /* StrictLHSPostfix */37);
+      if (typeof match$2 !== "number" && match$2.tag === /* Identifier */18) {
+        if (is_restricted(match$2[0][1].name)) {
+          strict_error(env, /* StrictLHSPostfix */37);
+        }
+        
       }
       var end_loc = Curry._2(Parser_env_Peek.loc, undefined, env);
       token$3(env);
@@ -7969,8 +7967,11 @@ function unary(env) {
           ]);
     }
     var match$3 = argument$2[1];
-    if (typeof match$3 !== "number" && match$3.tag === /* Identifier */18 && is_restricted(match$3[0][1].name)) {
-      strict_error(env, /* StrictLHSPrefix */38);
+    if (typeof match$3 !== "number" && match$3.tag === /* Identifier */18) {
+      if (is_restricted(match$3[0][1].name)) {
+        strict_error(env, /* StrictLHSPrefix */38);
+      }
+      
     }
     return /* tuple */[
             btwn(begin_loc, argument$2[0]),
@@ -8371,20 +8372,20 @@ function primary$1(env) {
           $$String.iter((function (c) {
                   if (c >= 110) {
                     if (c !== 121) {
-                      return /* () */0;
+                      return ;
                     } else {
                       return $$Buffer.add_char(filtered_flags, c);
                     }
                   }
                   if (c < 103) {
-                    return /* () */0;
+                    return ;
                   }
                   switch (c - 103 | 0) {
                     case 1 :
                     case 3 :
                     case 4 :
                     case 5 :
-                        return /* () */0;
+                        return ;
                     case 0 :
                     case 2 :
                     case 6 :
@@ -8613,11 +8614,14 @@ function assignment_but_not_arrow_function(env) {
         ]);
   }
   var match$1 = expr[1];
-  if (typeof match$1 !== "number" && match$1.tag === /* Identifier */18 && is_restricted(match$1[0][1].name)) {
-    strict_error_at(env, /* tuple */[
-          expr[0],
-          /* StrictLHSAssignment */36
-        ]);
+  if (typeof match$1 !== "number" && match$1.tag === /* Identifier */18) {
+    if (is_restricted(match$1[0][1].name)) {
+      strict_error_at(env, /* tuple */[
+            expr[0],
+            /* StrictLHSAssignment */36
+          ]);
+    }
+    
   }
   var left = Curry._2(Parse.pattern_from_expr, env, expr);
   var right = Curry._1(assignment, env);
@@ -9344,10 +9348,10 @@ function error_callback$1(param, param$1) {
     if (switcher !== 19) {
       throw Parser_env_Try.Rollback;
     }
-    return /* () */0;
+    return ;
   } else {
     if (switcher > 15 || switcher < 1) {
-      return /* () */0;
+      return ;
     }
     throw Parser_env_Try.Rollback;
   }
@@ -10067,11 +10071,10 @@ function init$1(env, start_loc, decorators, key, async, generator, $$static) {
     var options = env.parse_options;
     var value = Curry._2(Parser_env_Peek.token, undefined, env) === /* T_ASSIGN */75 && ($$static && options.esproposal_class_static_fields || !$$static && options.esproposal_class_instance_fields) ? (token$4(env, /* T_ASSIGN */75), Curry._1(Parse.expression, env)) : undefined;
     var end_loc = Curry._2(Parser_env_Peek.loc, undefined, env);
-    if (!maybe(env, /* T_SEMICOLON */7)) {
-      if (Curry._2(Parser_env_Peek.token, undefined, env) === /* T_LBRACKET */5 || Curry._2(Parser_env_Peek.token, undefined, env) === /* T_LPAREN */3) {
-        error_unexpected(env);
-      }
+    if (maybe(env, /* T_SEMICOLON */7) || !(Curry._2(Parser_env_Peek.token, undefined, env) === /* T_LBRACKET */5 || Curry._2(Parser_env_Peek.token, undefined, env) === /* T_LPAREN */3)) {
       
+    } else {
+      error_unexpected(env);
     }
     var loc = btwn(start_loc, end_loc);
     return /* Property */Block.__(1, [/* tuple */[
@@ -10292,16 +10295,7 @@ function _class(env) {
       undefined
     ];
   }
-  var $$implements;
-  if (Curry._2(Parser_env_Peek.token, undefined, env) === /* T_IMPLEMENTS */50) {
-    if (!env.parse_options.types) {
-      error$1(env, /* UnexpectedTypeInterface */10);
-    }
-    token$4(env, /* T_IMPLEMENTS */50);
-    $$implements = class_implements(env, /* [] */0);
-  } else {
-    $$implements = /* [] */0;
-  }
+  var $$implements = Curry._2(Parser_env_Peek.token, undefined, env) === /* T_IMPLEMENTS */50 ? (!env.parse_options.types ? error$1(env, /* UnexpectedTypeInterface */10) : undefined, token$4(env, /* T_IMPLEMENTS */50), class_implements(env, /* [] */0)) : /* [] */0;
   var body = Curry._1(class_body, env);
   return /* tuple */[
           body,
@@ -11318,13 +11312,13 @@ function assert_can_be_forin_or_forof(env, err, param) {
                   err
                 ]);
     } else {
-      return /* () */0;
+      return ;
     }
   } else {
     var match$2 = match[0];
     var declarations = match$2[1].declarations;
     if (declarations && declarations[0][1].init === undefined && !declarations[1]) {
-      return /* () */0;
+      return ;
     }
     return error_at(env, /* tuple */[
                 match$2[0],
@@ -11370,17 +11364,7 @@ function case_list(env, _param) {
     }
     var start_loc = Curry._2(Parser_env_Peek.loc, undefined, env);
     var match$1 = Curry._2(Parser_env_Peek.token, undefined, env);
-    var test;
-    if (typeof match$1 === "number" && match$1 === 34) {
-      if (seen_default) {
-        error$1(env, /* MultipleDefaultsInSwitch */19);
-      }
-      token$4(env, /* T_DEFAULT */34);
-      test = undefined;
-    } else {
-      token$4(env, /* T_CASE */31);
-      test = Curry._1(Parse.expression, env);
-    }
+    var test = typeof match$1 === "number" && match$1 === 34 ? (seen_default ? error$1(env, /* MultipleDefaultsInSwitch */19) : undefined, token$4(env, /* T_DEFAULT */34), undefined) : (token$4(env, /* T_CASE */31), Curry._1(Parse.expression, env));
     var seen_default$1 = seen_default || test === undefined;
     var end_loc = Curry._2(Parser_env_Peek.loc, undefined, env);
     token$4(env, /* T_COLON */77);
@@ -12777,39 +12761,23 @@ function module_item(env) {
         var start_loc$1 = Curry._2(Parser_env_Peek.loc, undefined, env$2);
         token$4(env$2, /* T_IMPORT */48);
         var match$14 = Curry._2(Parser_env_Peek.token, undefined, env$2);
-        var match$15;
-        if (typeof match$14 === "number") {
-          if (match$14 !== 44) {
-            if (match$14 !== 59) {
-              match$15 = /* tuple */[
-                /* ImportValue */2,
-                undefined
-              ];
-            } else {
-              if (!env$2.parse_options.types) {
-                error$1(env$2, /* UnexpectedTypeImport */8);
-              }
-              match$15 = /* tuple */[
-                /* ImportType */0,
-                Curry._2(Parse.identifier, undefined, env$2)
-              ];
-            }
-          } else {
-            if (!env$2.parse_options.types) {
-              error$1(env$2, /* UnexpectedTypeImport */8);
-            }
-            token$4(env$2, /* T_TYPEOF */44);
-            match$15 = /* tuple */[
-              /* ImportTypeof */1,
-              undefined
-            ];
-          }
-        } else {
-          match$15 = /* tuple */[
+        var match$15 = typeof match$14 === "number" ? (
+            match$14 !== 44 ? (
+                match$14 !== 59 ? /* tuple */[
+                    /* ImportValue */2,
+                    undefined
+                  ] : (!env$2.parse_options.types ? error$1(env$2, /* UnexpectedTypeImport */8) : undefined, /* tuple */[
+                      /* ImportType */0,
+                      Curry._2(Parse.identifier, undefined, env$2)
+                    ])
+              ) : (!env$2.parse_options.types ? error$1(env$2, /* UnexpectedTypeImport */8) : undefined, token$4(env$2, /* T_TYPEOF */44), /* tuple */[
+                  /* ImportTypeof */1,
+                  undefined
+                ])
+          ) : /* tuple */[
             /* ImportValue */2,
             undefined
           ];
-        }
         var type_ident = match$15[1];
         var importKind = match$15[0];
         var match$16 = Curry._2(Parser_env_Peek.token, undefined, env$2);
@@ -13645,7 +13613,7 @@ function directives(env, term_fn, item_fn) {
                           /* StrictOctalLiteral */31
                         ]);
             } else {
-              return /* () */0;
+              return ;
             }
           }
           var s = "Nooo: " + (token_to_string(token) + "\n");
@@ -13726,14 +13694,11 @@ function identifier$2(restricted_error, env) {
       token$4(env, /* T_IDENTIFIER */0);
     }
   }
-  if (restricted_error !== undefined) {
-    if (is_restricted(name)) {
-      strict_error_at(env, /* tuple */[
-            loc,
-            restricted_error
-          ]);
-    }
-    
+  if (restricted_error !== undefined && is_restricted(name)) {
+    strict_error_at(env, /* tuple */[
+          loc,
+          restricted_error
+        ]);
   }
   return /* tuple */[
           loc,
@@ -16481,7 +16446,7 @@ function eq(loc, x, y) {
     ],
     suites.contents
   ];
-  return /* () */0;
+  
 }
 
 var match = typeof __dirname === "undefined" ? undefined : __dirname;

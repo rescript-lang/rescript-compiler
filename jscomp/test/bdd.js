@@ -60,7 +60,7 @@ function resize(newSize) {
     while(true) {
       var bucket = _bucket;
       if (!bucket) {
-        return /* () */0;
+        return ;
       }
       var n = bucket[0];
       if (typeof n === "number") {
@@ -87,7 +87,7 @@ function resize(newSize) {
   }
   htab.contents = newArr;
   sz_1.contents = newSz_1;
-  return /* () */0;
+  
 }
 
 function insert(idl, idh, v, ind, bucket, newNode) {
@@ -97,7 +97,7 @@ function insert(idl, idh, v, ind, bucket, newNode) {
           bucket
         ]);
     n_items.contents = n_items.contents + 1 | 0;
-    return /* () */0;
+    return ;
   } else {
     resize((sz_1.contents + sz_1.contents | 0) + 2 | 0);
     var ind$1 = hashVal(idl, idh, v) & sz_1.contents;
@@ -113,7 +113,7 @@ function resetUnique(param) {
   htab.contents = Caml_array.caml_make_vect(sz_1.contents + 1 | 0, /* [] */0);
   n_items.contents = 0;
   nodeC.contents = 1;
-  return /* () */0;
+  
 }
 
 function mkNode(low, v, high) {
@@ -335,7 +335,7 @@ function random(param) {
 function random_vars(n) {
   var vars = Caml_array.caml_make_vect(n, false);
   for(var i = 0 ,i_finish = n - 1 | 0; i <= i_finish; ++i){
-    Caml_array.caml_array_set(vars, i, random(/* () */0));
+    Caml_array.caml_array_set(vars, i, random(undefined));
   }
   return vars;
 }
@@ -372,7 +372,7 @@ function main(param) {
     succeeded = succeeded && test_hwb(bdd, random_vars(22));
   }
   if (succeeded) {
-    return /* () */0;
+    return ;
   }
   throw [
         Caml_builtin_exceptions.assert_failure,
@@ -384,7 +384,7 @@ function main(param) {
       ];
 }
 
-main(/* () */0);
+main(undefined);
 
 var initSize_1 = 8191;
 

@@ -10,7 +10,7 @@ var v = {
 };
 
 var arr = Caml_array.caml_make_vect(10, (function (param) {
-        return /* () */0;
+        
       }));
 
 function f(param) {
@@ -20,18 +20,18 @@ function f(param) {
     Caml_array.caml_array_set(arr, j, (function(j){
         return function (param) {
           v.contents = v.contents + j | 0;
-          return /* () */0;
+          
         }
         }(j)));
     n = n + 1 | 0;
   };
-  return /* () */0;
+  
 }
 
-f(/* () */0);
+f(undefined);
 
 $$Array.iter((function (x) {
-        return Curry._1(x, /* () */0);
+        return Curry._1(x, undefined);
       }), arr);
 
 console.log(String(v.contents));

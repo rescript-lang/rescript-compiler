@@ -147,9 +147,9 @@ function test(param) {
   for(var i$1 = 0; i$1 <= 1000000; ++i$1){
     find(i$1, m);
   }
-  return /* () */0;
+  
 }
 
-test(/* () */0);
+test(undefined);
 
 /*  Not a pure module */

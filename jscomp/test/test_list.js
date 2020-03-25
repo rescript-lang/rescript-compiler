@@ -146,7 +146,7 @@ function iter(f, _param) {
   while(true) {
     var param = _param;
     if (!param) {
-      return /* () */0;
+      return ;
     }
     Curry._1(f, param[0]);
     _param = param[1];
@@ -162,7 +162,7 @@ function iteri(f, l) {
     var param = _param;
     var i = _i;
     if (!param) {
-      return /* () */0;
+      return ;
     }
     Curry._2(f$1, i, param[0]);
     _param = param[1];
@@ -272,7 +272,7 @@ function iter2(f, _l1, _l2) {
               "List.iter2"
             ];
       }
-      return /* () */0;
+      return ;
     }
   };
 }

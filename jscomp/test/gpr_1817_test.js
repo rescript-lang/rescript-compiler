@@ -26,7 +26,7 @@ function eq(loc, x, y) {
     ],
     suites.contents
   ];
-  return /* () */0;
+  
 }
 
 function f(param) {
@@ -39,7 +39,7 @@ function f(param) {
         ];
 }
 
-var match = f(/* () */0);
+var match = f(undefined);
 
 var a2 = match[2];
 

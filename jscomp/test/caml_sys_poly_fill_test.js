@@ -29,7 +29,7 @@ function eq(loc, x, y) {
     ],
     suites.contents
   ];
-  return /* () */0;
+  
 }
 
 Node_process.putEnvVar("Caml_sys_poly_fill_test", "X");
@@ -61,8 +61,8 @@ catch (exn){
 eq("File \"caml_sys_poly_fill_test.ml\", line 23, characters 5-12", "Z", tmp);
 
 console.log(/* tuple */[
-      Caml_sys.caml_sys_getcwd(/* () */0),
-      Caml_sys.caml_sys_time(/* () */0),
+      Caml_sys.caml_sys_getcwd(undefined),
+      Caml_sys.caml_sys_time(undefined),
       Sys.argv,
       Sys.executable_name
     ]);

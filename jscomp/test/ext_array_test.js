@@ -9,14 +9,14 @@ var Caml_builtin_exceptions = require("../../lib/js/caml_builtin_exceptions.js")
 
 function reverse_range(a, i, len) {
   if (len === 0) {
-    return /* () */0;
+    return ;
   }
   for(var k = 0 ,k_finish = (len - 1 | 0) / 2 | 0; k <= k_finish; ++k){
     var t = a[i + k | 0];
     a[i + k | 0] = a[((i + len | 0) - 1 | 0) - k | 0];
     a[((i + len | 0) - 1 | 0) - k | 0] = t;
   }
-  return /* () */0;
+  
 }
 
 function reverse_in_place(a) {

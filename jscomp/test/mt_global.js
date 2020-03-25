@@ -16,7 +16,7 @@ function collect_eq(test_id, suites, loc, x, y) {
     ],
     suites.contents
   ];
-  return /* () */0;
+  
 }
 
 function collect_neq(test_id, suites, loc, x, y) {
@@ -33,7 +33,7 @@ function collect_neq(test_id, suites, loc, x, y) {
     ],
     suites.contents
   ];
-  return /* () */0;
+  
 }
 
 function collect_approx(test_id, suites, loc, x, y) {
@@ -50,7 +50,7 @@ function collect_approx(test_id, suites, loc, x, y) {
     ],
     suites.contents
   ];
-  return /* () */0;
+  
 }
 
 exports.collect_eq = collect_eq;
