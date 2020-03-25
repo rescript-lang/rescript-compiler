@@ -72,7 +72,9 @@ let declare_variable ?comment  ?ident_info  ~kind (ident:Ident.t)  : t=
    comment}
 
 let define_variable ?comment  ?ident_info 
-  ~kind (v:Ident.t) exp : t=
+  ~kind (v:Ident.t) (exp : J.expression) : t=
+  if exp.expression_desc = Undefined then declare_variable ?comment ?ident_info ~kind v
+  else 
   let property : J.property =  kind in
   let ident_info  : J.ident_info  = 
     match ident_info with
@@ -224,6 +226,19 @@ let if_ ?comment  ?declaration ?else_ (e : J.expression) (then_ : J.block)   : t
         [ {statement_desc = Return {return_value = ret_ifnot; _}; _} as _ifnot_stmt]
         ->      
         return_stmt (E.econd e ret_ifso ret_ifnot ) 
+      | [{statement_desc = Return _ | Throw _}],_  
+        ->  block ({ statement_desc =
+                If (e, 
+                    ifso,
+                    []); 
+              comment } :: ifnot )
+      | _, [{statement_desc = Return _ | Throw _}]
+        ->  block ({ statement_desc =
+                       If (E.not e, 
+                           ifnot,
+                           []); 
+                     comment } :: ifso )
+
       | [ {statement_desc = 
              Exp
                {expression_desc = Bin(Eq, ({expression_desc = Var (Id var_ifso); _} as lhs_ifso), rhs_ifso); _};

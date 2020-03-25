@@ -308,17 +308,17 @@ let dummy_obj ?comment (info : Lam_tag_info.t)  : t =
 *)        
 let rec seq ?comment (e0 : t) (e1 : t) : t = 
   match e0.expression_desc, e1.expression_desc with 
-  | (Seq( a, {expression_desc = Number _ ;  })
-    | Seq( {expression_desc = Number _ ;  },a)), _
+  | (Seq( a, {expression_desc = Number _ | Undefined ;  })
+    | Seq( {expression_desc = Number _ | Undefined;  },a)), _
     -> 
     seq ?comment a e1
-  | _, ( Seq( {expression_desc = Number _ ;  }, a)) -> 
+  | _, ( Seq( {expression_desc = Number _ | Undefined;  }, a)) -> 
     (* Return value could not be changed*)
     seq ?comment e0 a
-  | _, ( Seq(a,( {expression_desc = Number _ ;  } as v ) ))-> 
+  | _, ( Seq(a,( {expression_desc = Number _ | Undefined;  } as v ) ))-> 
     (* Return value could not be changed*)
     seq ?comment (seq  e0 a) v
-  | (Number _ | Var _) , _ -> e1 
+  | (Number _ | Var _ | Undefined) , _ -> e1 
   | _ -> 
     {expression_desc = Seq(e0,e1); comment}
 
@@ -721,7 +721,10 @@ let  not ( e : t) : t =
 
 
 
-
+let not_empty_branch (x : t) = 
+    match x.expression_desc with 
+    | Number (Int {i = 0l}) | Undefined -> false
+    | _ -> true
 
 let rec econd ?comment (pred : t) (ifso : t) (ifnot : t) : t = 
   match pred.expression_desc , ifso.expression_desc, ifnot.expression_desc with
@@ -757,10 +760,9 @@ let rec econd ?comment (pred : t) (ifso : t) (ifnot : t) : t =
     when Js_analyzer.eq_expression ifso ifnot1
     ->
     econd (or_ pred (not pred1)) ifso ifso1
-
-  | Js_not e, _, _ 
+  | Js_not e, _, _  when not_empty_branch ifnot
     ->
-    econd ?comment e ifnot ifso 
+    econd ?comment e ifnot ifso  
   | _ -> 
     if Js_analyzer.eq_expression ifso ifnot then
       if no_side_effect pred then ifso else seq  ?comment pred ifso

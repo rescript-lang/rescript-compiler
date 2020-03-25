@@ -743,12 +743,7 @@ let translate loc (prim_name : string)
 
     (* End of Unix support *)
     (* bigarrary support *)
-    | "caml_ba_init"
-      -> 
-      begin match args with 
-        | [e] -> E.seq e E.unit 
-        | _ -> assert false
-      end
+
     (* call  Js_config.bigarray *)
     (* End of bigarray support *)
     | "caml_bswap16"
