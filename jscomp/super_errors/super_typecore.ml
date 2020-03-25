@@ -138,6 +138,15 @@ let print_expr_type_clash env trace ppf =
       show_extra_help ppf env trace;
     end
 
+(* Pasted from typecore.ml. Needed for some cases in report_error below *)
+(* Records *)
+let label_of_kind kind =
+  if kind = "record" then "field" else "constructor"
+
+let spellcheck ppf unbound_name valid_names =
+  Misc.did_you_mean ppf (fun () ->
+    Misc.spellcheck valid_names unbound_name
+  )
 (* taken from https://github.com/BuckleScript/ocaml/blob/d4144647d1bf9bc7dc3aadc24c25a7efa3a67915/typing/typecore.ml#L3769 *)
 (* modified branches are commented *)
 let report_error env ppf = function
@@ -244,6 +253,23 @@ let report_error env ppf = function
            fprintf ppf "Recursive local constraint when unifying")
         (function ppf ->
            fprintf ppf "with")
+  | Wrong_name (eorp, ty, kind, p, name, valid_names) ->
+      (* modified *)
+      reset_and_mark_loops ty;
+      if Path.is_constructor_typath p then begin
+        fprintf ppf "@[The field %s is not part of the record \
+                     argument for the %a constructor@]"
+          name
+          Printtyp.path p;
+      end else begin
+      fprintf ppf "@[@[<2>%s type@ @{<info>%a@}@]@ "
+        eorp type_expr ty;
+
+      fprintf ppf "The %s @{<error>%s@} does not belong to type @{<info>%a@}@]"
+        (label_of_kind kind)
+        name (*kind*) Printtyp.path p;
+       end;
+      spellcheck ppf name valid_names;
   | anythingElse ->
       Typecore.super_report_error_no_wrap_printing_env env ppf anythingElse
 
