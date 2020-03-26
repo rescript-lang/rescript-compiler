@@ -508,7 +508,7 @@ function update(x, f, m) {
     var c = Caml_primitive.caml_string_compare(x, v);
     if (c === 0) {
       var match = Curry._1(f, Caml_option.some(d));
-      if (match === void 0) {
+      if (match === undefined) {
         return merge(l, r);
       }
       var data = Caml_option.valFromOption(match);
@@ -539,8 +539,8 @@ function update(x, f, m) {
       return bal(l, v, d, rr);
     }
   }
-  var match$1 = Curry._1(f, void 0);
-  if (match$1 !== void 0) {
+  var match$1 = Curry._1(f, undefined);
+  if (match$1 !== undefined) {
     return /* Node */[
             /* l : Empty */0,
             /* v */x,
@@ -692,7 +692,7 @@ function concat(t1, t2) {
 }
 
 function concat_or_join(t1, v, d, t2) {
-  if (d !== void 0) {
+  if (d !== undefined) {
     return join(t1, v, Caml_option.valFromOption(d), t2);
   } else {
     return concat(t1, t2);
@@ -703,7 +703,7 @@ function split(x, param) {
   if (!param) {
     return /* tuple */[
             /* Empty */0,
-            void 0,
+            undefined,
             /* Empty */0
           ];
   }
@@ -777,7 +777,7 @@ function union(f, s1, s2) {
     var d2$1 = match[1];
     var l = union(f, s1[/* l */0], match[0]);
     var r = union(f, s1[/* r */3], match[2]);
-    if (d2$1 !== void 0) {
+    if (d2$1 !== undefined) {
       return concat_or_join(l, v1, Curry._3(f, v1, d1, Caml_option.valFromOption(d2$1)), r);
     } else {
       return join(l, v1, d1, r);
@@ -787,7 +787,7 @@ function union(f, s1, s2) {
   var d1$1 = match$1[1];
   var l$1 = union(f, match$1[0], s2[/* l */0]);
   var r$1 = union(f, match$1[2], s2[/* r */3]);
-  if (d1$1 !== void 0) {
+  if (d1$1 !== undefined) {
     return concat_or_join(l$1, v2, Curry._3(f, v2, Caml_option.valFromOption(d1$1), d2), r$1);
   } else {
     return join(l$1, v2, d2, r$1);
@@ -1455,7 +1455,7 @@ function update$1(x, f, m) {
     var c = Caml_primitive.caml_string_compare(x, v);
     if (c === 0) {
       var match = Curry._1(f, Caml_option.some(d));
-      if (match === void 0) {
+      if (match === undefined) {
         return merge$2(l, r);
       }
       var data = Caml_option.valFromOption(match);
@@ -1486,8 +1486,8 @@ function update$1(x, f, m) {
       return bal$1(l, v, d, rr);
     }
   }
-  var match$1 = Curry._1(f, void 0);
-  if (match$1 !== void 0) {
+  var match$1 = Curry._1(f, undefined);
+  if (match$1 !== undefined) {
     return /* Node */[
             /* l : Empty */0,
             /* v */x,
@@ -1639,7 +1639,7 @@ function concat$1(t1, t2) {
 }
 
 function concat_or_join$1(t1, v, d, t2) {
-  if (d !== void 0) {
+  if (d !== undefined) {
     return join$1(t1, v, Caml_option.valFromOption(d), t2);
   } else {
     return concat$1(t1, t2);
@@ -1650,7 +1650,7 @@ function split$1(x, param) {
   if (!param) {
     return /* tuple */[
             /* Empty */0,
-            void 0,
+            undefined,
             /* Empty */0
           ];
   }
@@ -1724,7 +1724,7 @@ function union$1(f, s1, s2) {
     var d2$1 = match[1];
     var l = union$1(f, s1[/* l */0], match[0]);
     var r = union$1(f, s1[/* r */3], match[2]);
-    if (d2$1 !== void 0) {
+    if (d2$1 !== undefined) {
       return concat_or_join$1(l, v1, Curry._3(f, v1, d1, Caml_option.valFromOption(d2$1)), r);
     } else {
       return join$1(l, v1, d1, r);
@@ -1734,7 +1734,7 @@ function union$1(f, s1, s2) {
   var d1$1 = match$1[1];
   var l$1 = union$1(f, match$1[0], s2[/* l */0]);
   var r$1 = union$1(f, match$1[2], s2[/* r */3]);
-  if (d1$1 !== void 0) {
+  if (d1$1 !== undefined) {
     return concat_or_join$1(l$1, v2, Curry._3(f, v2, Caml_option.valFromOption(d1$1), d2), r$1);
   } else {
     return join$1(l$1, v2, d2, r$1);
@@ -2402,7 +2402,7 @@ function update$2(x, f, m) {
     var c = Caml_primitive.caml_int_compare(x, v);
     if (c === 0) {
       var match = Curry._1(f, Caml_option.some(d));
-      if (match === void 0) {
+      if (match === undefined) {
         return merge$4(l, r);
       }
       var data = Caml_option.valFromOption(match);
@@ -2433,8 +2433,8 @@ function update$2(x, f, m) {
       return bal$2(l, v, d, rr);
     }
   }
-  var match$1 = Curry._1(f, void 0);
-  if (match$1 !== void 0) {
+  var match$1 = Curry._1(f, undefined);
+  if (match$1 !== undefined) {
     return /* Node */[
             /* l : Empty */0,
             /* v */x,
@@ -2586,7 +2586,7 @@ function concat$2(t1, t2) {
 }
 
 function concat_or_join$2(t1, v, d, t2) {
-  if (d !== void 0) {
+  if (d !== undefined) {
     return join$2(t1, v, Caml_option.valFromOption(d), t2);
   } else {
     return concat$2(t1, t2);
@@ -2597,7 +2597,7 @@ function split$2(x, param) {
   if (!param) {
     return /* tuple */[
             /* Empty */0,
-            void 0,
+            undefined,
             /* Empty */0
           ];
   }
@@ -2671,7 +2671,7 @@ function union$2(f, s1, s2) {
     var d2$1 = match[1];
     var l = union$2(f, s1[/* l */0], match[0]);
     var r = union$2(f, s1[/* r */3], match[2]);
-    if (d2$1 !== void 0) {
+    if (d2$1 !== undefined) {
       return concat_or_join$2(l, v1, Curry._3(f, v1, d1, Caml_option.valFromOption(d2$1)), r);
     } else {
       return join$2(l, v1, d1, r);
@@ -2681,7 +2681,7 @@ function union$2(f, s1, s2) {
   var d1$1 = match$1[1];
   var l$1 = union$2(f, match$1[0], s2[/* l */0]);
   var r$1 = union$2(f, match$1[2], s2[/* r */3]);
-  if (d1$1 !== void 0) {
+  if (d1$1 !== undefined) {
     return concat_or_join$2(l$1, v2, Curry._3(f, v2, Caml_option.valFromOption(d1$1), d2), r$1);
   } else {
     return join$2(l$1, v2, d2, r$1);
@@ -2885,7 +2885,7 @@ var Labs = {
 
 var dummy_table = {
   size: 0,
-  methods: [void 0],
+  methods: [undefined],
   methods_by_name: /* Empty */0,
   methods_by_label: /* Empty */0,
   previous_states: /* [] */0,
@@ -3529,126 +3529,126 @@ function method_impl(table, i, arr) {
     i.contents = i.contents + 1 | 0;
     return Caml_array.caml_array_get(arr, i.contents);
   };
-  var clo = next(void 0);
+  var clo = next(undefined);
   if (typeof clo !== "number") {
     return clo;
   }
   switch (clo) {
     case /* GetConst */0 :
-        var x = next(void 0);
+        var x = next(undefined);
         return (function (obj) {
             return x;
           });
     case /* GetVar */1 :
-        var n = next(void 0);
+        var n = next(undefined);
         return (function (obj) {
             return obj[n];
           });
     case /* GetEnv */2 :
-        var e = next(void 0);
-        var n$1 = next(void 0);
+        var e = next(undefined);
+        var n$1 = next(undefined);
         return get_env(e, n$1);
     case /* GetMeth */3 :
-        return get_meth(next(void 0));
+        return get_meth(next(undefined));
     case /* SetVar */4 :
-        var n$2 = next(void 0);
+        var n$2 = next(undefined);
         return (function (obj, x) {
             obj[n$2] = x;
             
           });
     case /* AppConst */5 :
-        var f = next(void 0);
-        var x$1 = next(void 0);
+        var f = next(undefined);
+        var x$1 = next(undefined);
         return (function (obj) {
             return Curry._1(f, x$1);
           });
     case /* AppVar */6 :
-        var f$1 = next(void 0);
-        var n$3 = next(void 0);
+        var f$1 = next(undefined);
+        var n$3 = next(undefined);
         return (function (obj) {
             return Curry._1(f$1, obj[n$3]);
           });
     case /* AppEnv */7 :
-        var f$2 = next(void 0);
-        var e$1 = next(void 0);
-        var n$4 = next(void 0);
+        var f$2 = next(undefined);
+        var e$1 = next(undefined);
+        var n$4 = next(undefined);
         return app_env(f$2, e$1, n$4);
     case /* AppMeth */8 :
-        var f$3 = next(void 0);
-        var n$5 = next(void 0);
+        var f$3 = next(undefined);
+        var n$5 = next(undefined);
         return app_meth(f$3, n$5);
     case /* AppConstConst */9 :
-        var f$4 = next(void 0);
-        var x$2 = next(void 0);
-        var y = next(void 0);
+        var f$4 = next(undefined);
+        var x$2 = next(undefined);
+        var y = next(undefined);
         return (function (obj) {
             return Curry._2(f$4, x$2, y);
           });
     case /* AppConstVar */10 :
-        var f$5 = next(void 0);
-        var x$3 = next(void 0);
-        var n$6 = next(void 0);
+        var f$5 = next(undefined);
+        var x$3 = next(undefined);
+        var n$6 = next(undefined);
         return app_const_var(f$5, x$3, n$6);
     case /* AppConstEnv */11 :
-        var f$6 = next(void 0);
-        var x$4 = next(void 0);
-        var e$2 = next(void 0);
-        var n$7 = next(void 0);
+        var f$6 = next(undefined);
+        var x$4 = next(undefined);
+        var e$2 = next(undefined);
+        var n$7 = next(undefined);
         return app_const_env(f$6, x$4, e$2, n$7);
     case /* AppConstMeth */12 :
-        var f$7 = next(void 0);
-        var x$5 = next(void 0);
-        var n$8 = next(void 0);
+        var f$7 = next(undefined);
+        var x$5 = next(undefined);
+        var n$8 = next(undefined);
         return app_const_meth(f$7, x$5, n$8);
     case /* AppVarConst */13 :
-        var f$8 = next(void 0);
-        var n$9 = next(void 0);
-        var x$6 = next(void 0);
+        var f$8 = next(undefined);
+        var n$9 = next(undefined);
+        var x$6 = next(undefined);
         return app_var_const(f$8, n$9, x$6);
     case /* AppEnvConst */14 :
-        var f$9 = next(void 0);
-        var e$3 = next(void 0);
-        var n$10 = next(void 0);
-        var x$7 = next(void 0);
+        var f$9 = next(undefined);
+        var e$3 = next(undefined);
+        var n$10 = next(undefined);
+        var x$7 = next(undefined);
         return app_env_const(f$9, e$3, n$10, x$7);
     case /* AppMethConst */15 :
-        var f$10 = next(void 0);
-        var n$11 = next(void 0);
-        var x$8 = next(void 0);
+        var f$10 = next(undefined);
+        var n$11 = next(undefined);
+        var x$8 = next(undefined);
         return app_meth_const(f$10, n$11, x$8);
     case /* MethAppConst */16 :
-        var n$12 = next(void 0);
-        var x$9 = next(void 0);
+        var n$12 = next(undefined);
+        var x$9 = next(undefined);
         return meth_app_const(n$12, x$9);
     case /* MethAppVar */17 :
-        var n$13 = next(void 0);
-        var m = next(void 0);
+        var n$13 = next(undefined);
+        var m = next(undefined);
         return meth_app_var(n$13, m);
     case /* MethAppEnv */18 :
-        var n$14 = next(void 0);
-        var e$4 = next(void 0);
-        var m$1 = next(void 0);
+        var n$14 = next(undefined);
+        var e$4 = next(undefined);
+        var m$1 = next(undefined);
         return meth_app_env(n$14, e$4, m$1);
     case /* MethAppMeth */19 :
-        var n$15 = next(void 0);
-        var m$2 = next(void 0);
+        var n$15 = next(undefined);
+        var m$2 = next(undefined);
         return meth_app_meth(n$15, m$2);
     case /* SendConst */20 :
-        var m$3 = next(void 0);
-        var x$10 = next(void 0);
+        var m$3 = next(undefined);
+        var x$10 = next(undefined);
         return send_const(m$3, x$10, new_cache(table));
     case /* SendVar */21 :
-        var m$4 = next(void 0);
-        var n$16 = next(void 0);
+        var m$4 = next(undefined);
+        var n$16 = next(undefined);
         return send_var(m$4, n$16, new_cache(table));
     case /* SendEnv */22 :
-        var m$5 = next(void 0);
-        var e$5 = next(void 0);
-        var n$17 = next(void 0);
+        var m$5 = next(undefined);
+        var e$5 = next(undefined);
+        var n$17 = next(undefined);
         return send_env(m$5, e$5, n$17, new_cache(table));
     case /* SendMeth */23 :
-        var m$6 = next(void 0);
-        var n$18 = next(void 0);
+        var m$6 = next(undefined);
+        var n$18 = next(undefined);
         return send_meth(m$6, n$18, new_cache(table));
     
   }

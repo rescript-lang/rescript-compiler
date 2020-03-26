@@ -42,23 +42,23 @@ function u0(x) {
   return Caml_option.some(x);
 }
 
-var u1 = Caml_option.some(void 0);
+var u1 = Caml_option.some(undefined);
 
 function u2(x) {
   return Caml_option.some(x);
 }
 
-var u3 = Caml_option.some(void 0);
+var u3 = Caml_option.some(undefined);
 
-eq("File \"unit_undefined_test.ml\", line 39, characters 6-13", Caml_option.some(void 0), Caml_option.some(void 0));
+eq("File \"unit_undefined_test.ml\", line 39, characters 6-13", Caml_option.some(undefined), Caml_option.some(undefined));
 
-eq("File \"unit_undefined_test.ml\", line 40, characters 6-13", u1, Caml_option.some(void 0));
+eq("File \"unit_undefined_test.ml\", line 40, characters 6-13", u1, Caml_option.some(undefined));
 
-eq("File \"unit_undefined_test.ml\", line 41, characters 6-13", Caml_option.some(void 0), Caml_option.some(void 0));
+eq("File \"unit_undefined_test.ml\", line 41, characters 6-13", Caml_option.some(undefined), Caml_option.some(undefined));
 
-eq("File \"unit_undefined_test.ml\", line 42, characters 6-13", u3, Caml_option.some(void 0));
+eq("File \"unit_undefined_test.ml\", line 42, characters 6-13", u3, Caml_option.some(undefined));
 
-eq("File \"unit_undefined_test.ml\", line 43, characters 6-13", void 0, void 0);
+eq("File \"unit_undefined_test.ml\", line 43, characters 6-13", undefined, undefined);
 
 Mt.from_pair_suites("unit_undefined_test.ml", suites.contents);
 

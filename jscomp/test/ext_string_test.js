@@ -12,7 +12,7 @@ var Caml_exceptions = require("../../lib/js/caml_exceptions.js");
 var Caml_builtin_exceptions = require("../../lib/js/caml_builtin_exceptions.js");
 
 function split_by(keep_emptyOpt, is_delim, str) {
-  var keep_empty = keep_emptyOpt !== void 0 ? keep_emptyOpt : false;
+  var keep_empty = keep_emptyOpt !== undefined ? keep_emptyOpt : false;
   var len = str.length;
   var _acc = /* [] */0;
   var _last_pos = len;
@@ -266,7 +266,7 @@ function unsafe_is_sub(sub, i, s, j, len) {
 var Local_exit = Caml_exceptions.create("Ext_string_test.Local_exit");
 
 function find(startOpt, sub, s) {
-  var start = startOpt !== void 0 ? startOpt : 0;
+  var start = startOpt !== undefined ? startOpt : 0;
   var n = sub.length;
   var s_len = s.length;
   var i = start;
@@ -288,7 +288,7 @@ function find(startOpt, sub, s) {
 }
 
 function contain_substring(s, sub) {
-  return find(void 0, sub, s) >= 0;
+  return find(undefined, sub, s) >= 0;
 }
 
 function non_overlap_count(sub, s) {
@@ -519,7 +519,7 @@ function is_valid_source_name(name) {
           ]
         ]
       ]);
-  if (match !== void 0) {
+  if (match !== undefined) {
     if (is_valid_module_file(match)) {
       return /* Good */0;
     } else {

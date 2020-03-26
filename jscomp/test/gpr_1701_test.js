@@ -34,12 +34,12 @@ function read_lines(inc) {
     }
     catch (exn){
       if (exn === Caml_builtin_exceptions.end_of_file) {
-        match = void 0;
+        match = undefined;
       } else {
         throw exn;
       }
     }
-    if (match === void 0) {
+    if (match === undefined) {
       return List.rev(acc);
     }
     _acc = /* :: */[

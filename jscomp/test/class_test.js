@@ -38,7 +38,7 @@ function point_init($$class) {
 
 var point = CamlinternalOO.make_class(shared$1, point_init);
 
-var p = Curry._1(point[0], void 0);
+var p = Curry._1(point[0], undefined);
 
 var zero = Caml_oo_curry.js1(291546447, 1, p);
 
@@ -76,11 +76,11 @@ function point2_init($$class) {
 
 var point2 = CamlinternalOO.make_class(shared$1, point2_init);
 
-var tmp = Curry._1(point2[0], void 0);
+var tmp = Curry._1(point2[0], undefined);
 
 var one = Caml_oo_curry.js1(291546447, 4, tmp);
 
-var tmp$1 = Curry._1(point2[0], void 0);
+var tmp$1 = Curry._1(point2[0], undefined);
 
 var two = Caml_oo_curry.js1(291546447, 5, tmp$1);
 

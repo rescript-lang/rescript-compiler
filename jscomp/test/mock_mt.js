@@ -10,7 +10,7 @@ function from_pair_suites(name, suites) {
       ]);
   return List.iter((function (param) {
                 var name = param[0];
-                var match = Curry._1(param[1], void 0);
+                var match = Curry._1(param[1], undefined);
                 switch (match.tag | 0) {
                   case /* Eq */0 :
                       console.log(/* tuple */[

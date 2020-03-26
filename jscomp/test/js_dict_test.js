@@ -39,7 +39,7 @@ var suites_001 = /* :: */[
       "get - property not in object",
       (function (param) {
           return /* Eq */Block.__(0, [
-                    void 0,
+                    undefined,
                     Js_dict.get({
                           foo: 43,
                           bar: 86

@@ -1215,14 +1215,14 @@ function tFromJs(param) {
 }
 
 function eq(x, y) {
-  if (x !== void 0) {
-    if (y !== void 0) {
+  if (x !== undefined) {
+    if (y !== undefined) {
       return x === y;
     } else {
       return false;
     }
   } else {
-    return y === void 0;
+    return y === undefined;
   }
 }
 
@@ -7826,7 +7826,7 @@ if (!eq(tFromJs("variant299"), /* variant299 */34947885)) {
       ];
 }
 
-if (!eq(tFromJs("xx"), void 0)) {
+if (!eq(tFromJs("xx"), undefined)) {
   throw [
         Caml_builtin_exceptions.assert_failure,
         /* tuple */[

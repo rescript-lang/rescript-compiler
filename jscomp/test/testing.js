@@ -77,7 +77,7 @@ function print_failure_test_succeed(param) {
 
 function test(b) {
   test_num.contents = test_num.contents + 1 | 0;
-  print_test_number(void 0);
+  print_test_number(undefined);
   if (!b) {
     all_tests_ok.contents = false;
     return Pervasives.print_string(Curry._1(Printf.sprintf(/* Format */[
@@ -101,10 +101,10 @@ function test(b) {
 
 function test_raises_exc_p(pred, f, x) {
   test_num.contents = test_num.contents + 1 | 0;
-  print_test_number(void 0);
+  print_test_number(undefined);
   try {
     Curry._1(f, x);
-    print_failure_test_succeed(void 0);
+    print_failure_test_succeed(undefined);
     return false;
   }
   catch (raw_x){
@@ -112,7 +112,7 @@ function test_raises_exc_p(pred, f, x) {
     if (Curry._1(pred, x$1)) {
       return true;
     } else {
-      print_failure_test_fail(void 0);
+      print_failure_test_fail(undefined);
       return false;
     }
   }

@@ -76,7 +76,7 @@ var suites_001 = /* :: */[
           "undefined_gadt_test",
           (function (param) {
               return /* Eq */Block.__(0, [
-                        Js_types.test(void 0, /* Undefined */0),
+                        Js_types.test(undefined, /* Undefined */0),
                         true
                       ]);
             })

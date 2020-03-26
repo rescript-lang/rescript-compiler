@@ -22,7 +22,7 @@ function compilerBug(a, b, c, f) {
     exit = 2;
   }
   if (exit === 2) {
-    if (b === void 0) {
+    if (b === undefined) {
       if (c) {
         result.contents = "No x, c is true";
         return ;
@@ -42,7 +42,7 @@ function compilerBug(a, b, c, f) {
     }
     
   }
-  if (Curry._1(f, void 0)) {
+  if (Curry._1(f, undefined)) {
     result.contents = "Some x, f returns true";
     return ;
   } else {
@@ -63,7 +63,7 @@ function eq(loc, x, y) {
   return Mt.eq_suites(test_id, suites, loc, x, y);
 }
 
-compilerBug("x", void 0, true, (function (param) {
+compilerBug("x", undefined, true, (function (param) {
         return true;
       }));
 

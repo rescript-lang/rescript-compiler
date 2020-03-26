@@ -11,7 +11,7 @@ var suites_000 = /* tuple */[
       var re = /(\d+)-(?:(\d+))?/g;
       var match = re.exec("3-");
       if (match === null) {
-        return /* Fail */Block.__(8, [void 0]);
+        return /* Fail */Block.__(8, [undefined]);
       }
       var defined = Caml_array.caml_array_get(match, 1);
       var $$undefined = Caml_array.caml_array_get(match, 2);
@@ -105,7 +105,7 @@ var suites_001 = /* :: */[
                               match.index
                             ]);
                   } else {
-                    return /* Fail */Block.__(8, [void 0]);
+                    return /* Fail */Block.__(8, [undefined]);
                   }
                 })
             ],
@@ -121,7 +121,7 @@ var suites_001 = /* :: */[
                                 match.input
                               ]);
                     } else {
-                      return /* Fail */Block.__(8, [void 0]);
+                      return /* Fail */Block.__(8, [undefined]);
                     }
                   })
               ],

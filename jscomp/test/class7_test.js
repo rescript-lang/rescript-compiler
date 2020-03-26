@@ -85,7 +85,7 @@ function point_init($$class) {
 
 var point = CamlinternalOO.make_class(shared$4, point_init);
 
-var p = Curry._2(point[0], void 0, 55);
+var p = Curry._2(point[0], undefined, 55);
 
 var q = Oo.copy(p);
 
@@ -138,13 +138,13 @@ function backup_init($$class) {
         save,
         (function (self$3) {
             var copy$1 = Caml_exceptions.caml_set_oo_id(Caml_obj.caml_obj_dup(self$3));
-            self$3[copy] = Caml_option.some((copy$1[copy] = void 0, copy$1));
+            self$3[copy] = Caml_option.some((copy$1[copy] = undefined, copy$1));
             
           }),
         restore,
         (function (self$3) {
             var match = self$3[copy];
-            if (match !== void 0) {
+            if (match !== undefined) {
               return Caml_option.valFromOption(match);
             } else {
               return self$3;
@@ -153,7 +153,7 @@ function backup_init($$class) {
       ]);
   return (function (env, self) {
       var self$1 = CamlinternalOO.create_object_opt(self, $$class);
-      self$1[copy] = void 0;
+      self$1[copy] = undefined;
       return self$1;
     });
 }
@@ -198,7 +198,7 @@ function get(_p, _n) {
   };
 }
 
-var p$1 = Curry._2(backup_ref[0], void 0, 0);
+var p$1 = Curry._2(backup_ref[0], undefined, 0);
 
 Caml_oo_curry.js1(-867333315, 8, p$1);
 
@@ -241,7 +241,7 @@ function backup2_init($$class) {
         restore,
         (function (self$5) {
             var match = self$5[copy];
-            if (match !== void 0) {
+            if (match !== undefined) {
               return Caml_option.valFromOption(match);
             } else {
               return self$5;
@@ -249,13 +249,13 @@ function backup2_init($$class) {
           }),
         clear,
         (function (self$5) {
-            self$5[copy] = void 0;
+            self$5[copy] = undefined;
             
           })
       ]);
   return (function (env, self) {
       var self$1 = CamlinternalOO.create_object_opt(self, $$class);
-      self$1[copy] = void 0;
+      self$1[copy] = undefined;
       return self$1;
     });
 }
@@ -293,7 +293,7 @@ var backup_ref2 = CamlinternalOO.make_class([
       "set"
     ], backup_ref2_init);
 
-var p$2 = Curry._2(backup_ref2[0], void 0, 0);
+var p$2 = Curry._2(backup_ref2[0], undefined, 0);
 
 Caml_oo_curry.js1(-867333315, 12, p$2);
 
@@ -326,7 +326,7 @@ function window_init($$class) {
         }));
   return (function (env, self) {
       var self$1 = CamlinternalOO.create_object_opt(self, $$class);
-      self$1[top_widget$1] = void 0;
+      self$1[top_widget$1] = undefined;
       return self$1;
     });
 }

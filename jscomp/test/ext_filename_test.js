@@ -27,7 +27,7 @@ var node_parent = "..";
 var node_current = ".";
 
 var cwd = Caml_obj.caml_lazy_make((function (param) {
-        return Caml_sys.caml_sys_getcwd(void 0);
+        return Caml_sys.caml_sys_getcwd(undefined);
       }));
 
 function path_as_directory(x) {
@@ -63,7 +63,7 @@ function absolute_path(s) {
 }
 
 function chop_extension(locOpt, name) {
-  var loc = locOpt !== void 0 ? locOpt : "";
+  var loc = locOpt !== undefined ? locOpt : "";
   try {
     return Filename.chop_extension(name);
   }
@@ -112,8 +112,8 @@ var os_path_separator_char = Filename.dir_sep.charCodeAt(0);
 function relative_path(file_or_dir_1, file_or_dir_2) {
   var relevant_dir1 = file_or_dir_1[0] >= 781515420 ? Curry._1(Filename.dirname, file_or_dir_1[1]) : file_or_dir_1[1];
   var relevant_dir2 = file_or_dir_2[0] >= 781515420 ? Curry._1(Filename.dirname, file_or_dir_2[1]) : file_or_dir_2[1];
-  var dir1 = Ext_string_test.split(void 0, relevant_dir1, os_path_separator_char);
-  var dir2 = Ext_string_test.split(void 0, relevant_dir2, os_path_separator_char);
+  var dir1 = Ext_string_test.split(undefined, relevant_dir1, os_path_separator_char);
+  var dir2 = Ext_string_test.split(undefined, relevant_dir2, os_path_separator_char);
   var go = function (_dir1, _dir2) {
     while(true) {
       var dir2 = _dir2;
@@ -141,7 +141,7 @@ function relative_path(file_or_dir_1, file_or_dir_2) {
 
 function node_relative_path(node_modules_shorten, file1, dep_file) {
   var file2 = dep_file[1];
-  var v = Ext_string_test.find(void 0, Test_literals.node_modules, file2);
+  var v = Ext_string_test.find(undefined, Test_literals.node_modules, file2);
   var len = file2.length;
   if (!(node_modules_shorten && v >= 0)) {
     return relative_path(dep_file[0] >= 781515420 ? /* `File */[

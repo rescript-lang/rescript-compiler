@@ -219,7 +219,7 @@ var suites_001 = /* :: */[
                           "pop - empty array",
                           (function (param) {
                               return /* Eq */Block.__(0, [
-                                        void 0,
+                                        undefined,
                                         Caml_option.undefined_to_opt([].pop())
                                       ]);
                             })
@@ -289,7 +289,7 @@ var suites_001 = /* :: */[
                                     "shift - empty array",
                                     (function (param) {
                                         return /* Eq */Block.__(0, [
-                                                  void 0,
+                                                  undefined,
                                                   Caml_option.undefined_to_opt([].shift())
                                                 ]);
                                       })
@@ -798,7 +798,7 @@ var suites_001 = /* :: */[
                                                                                             "find - no match",
                                                                                             (function (param) {
                                                                                                 return /* Eq */Block.__(0, [
-                                                                                                          void 0,
+                                                                                                          undefined,
                                                                                                           Caml_option.undefined_to_opt([
                                                                                                                   1,
                                                                                                                   2,
@@ -832,7 +832,7 @@ var suites_001 = /* :: */[
                                                                                                 "findi - no match",
                                                                                                 (function (param) {
                                                                                                     return /* Eq */Block.__(0, [
-                                                                                                              void 0,
+                                                                                                              undefined,
                                                                                                               Caml_option.undefined_to_opt([
                                                                                                                       1,
                                                                                                                       2,

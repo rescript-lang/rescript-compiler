@@ -27,7 +27,7 @@ var suites = {
       (function (param) {
           return /* Eq */Block.__(0, [
                     true,
-                    Caml_obj.caml_lessthan(void 0, 1)
+                    Caml_obj.caml_lessthan(undefined, 1)
                   ]);
         })
     ],
@@ -174,7 +174,7 @@ var suites = {
                       (function (param) {
                           return /* Eq */Block.__(0, [
                                     true,
-                                    Caml_obj.caml_lessthan(void 0, 1)
+                                    Caml_obj.caml_lessthan(undefined, 1)
                                   ]);
                         })
                     ],
@@ -184,7 +184,7 @@ var suites = {
                         (function (param) {
                             return /* Eq */Block.__(0, [
                                       true,
-                                      Caml_obj.caml_lessthan(void 0, [
+                                      Caml_obj.caml_lessthan(undefined, [
                                             1,
                                             30
                                           ])
@@ -200,7 +200,7 @@ var suites = {
                                         Caml_obj.caml_greaterthan([
                                               1,
                                               30
-                                            ], void 0)
+                                            ], undefined)
                                       ]);
                             })
                         ],
@@ -961,7 +961,7 @@ var suites = {
                                                                                                         "File \"caml_compare_test.ml\", line 99, characters 4-11",
                                                                                                         (function (param) {
                                                                                                             return /* Eq */Block.__(0, [
-                                                                                                                      Caml_obj.caml_compare(void 0, 0),
+                                                                                                                      Caml_obj.caml_compare(undefined, 0),
                                                                                                                       -1
                                                                                                                     ]);
                                                                                                           })
@@ -971,7 +971,7 @@ var suites = {
                                                                                                           "File \"caml_compare_test.ml\", line 102, characters 4-11",
                                                                                                           (function (param) {
                                                                                                               return /* Eq */Block.__(0, [
-                                                                                                                        Caml_obj.caml_compare(0, void 0),
+                                                                                                                        Caml_obj.caml_compare(0, undefined),
                                                                                                                         1
                                                                                                                       ]);
                                                                                                             })
@@ -1038,16 +1038,16 @@ function eq(loc, x, y) {
   return Mt.eq_suites(test_id, suites, loc, x, y);
 }
 
-eq("File \"caml_compare_test.ml\", line 112, characters 6-13", true, Caml_obj.caml_greaterthan(1, void 0));
+eq("File \"caml_compare_test.ml\", line 112, characters 6-13", true, Caml_obj.caml_greaterthan(1, undefined));
 
 eq("File \"caml_compare_test.ml\", line 113, characters 6-13", true, Caml_obj.caml_lessthan(/* [] */0, /* :: */[
           1,
           /* [] */0
         ]));
 
-eq("File \"caml_compare_test.ml\", line 114, characters 6-13", false, Caml_obj.caml_greaterthan(void 0, 1));
+eq("File \"caml_compare_test.ml\", line 114, characters 6-13", false, Caml_obj.caml_greaterthan(undefined, 1));
 
-eq("File \"caml_compare_test.ml\", line 115, characters 6-13", false, Caml_obj.caml_greaterthan(void 0, [
+eq("File \"caml_compare_test.ml\", line 115, characters 6-13", false, Caml_obj.caml_greaterthan(undefined, [
           1,
           30
         ]));
@@ -1055,7 +1055,7 @@ eq("File \"caml_compare_test.ml\", line 115, characters 6-13", false, Caml_obj.c
 eq("File \"caml_compare_test.ml\", line 116, characters 6-13", false, Caml_obj.caml_lessthan([
           1,
           30
-        ], void 0));
+        ], undefined));
 
 Mt.from_pair_suites("Caml_compare_test", suites.contents);
 

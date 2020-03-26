@@ -6,7 +6,7 @@ console.log("list");
 console.log("list");
 
 function f(param) {
-  if (param !== void 0) {
+  if (param !== undefined) {
     return "Some";
   } else {
     return "None";

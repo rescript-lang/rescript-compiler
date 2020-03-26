@@ -356,7 +356,7 @@ function Make(Ord) {
     return join(t1, match[0], match[1], remove_min_binding(t2));
   };
   var concat_or_join = function (t1, v, d, t2) {
-    if (d !== void 0) {
+    if (d !== undefined) {
       return join(t1, v, Caml_option.valFromOption(d), t2);
     } else {
       return concat(t1, t2);
@@ -366,7 +366,7 @@ function Make(Ord) {
     if (!param) {
       return /* tuple */[
               /* Empty */0,
-              void 0,
+              undefined,
               /* Empty */0
             ];
     }
@@ -974,7 +974,7 @@ function concat(t1, t2) {
 }
 
 function concat_or_join(t1, v, d, t2) {
-  if (d !== void 0) {
+  if (d !== undefined) {
     return join(t1, v, Caml_option.valFromOption(d), t2);
   } else {
     return concat(t1, t2);
@@ -985,7 +985,7 @@ function split(x, param) {
   if (!param) {
     return /* tuple */[
             /* Empty */0,
-            void 0,
+            undefined,
             /* Empty */0
           ];
   }
@@ -1630,7 +1630,7 @@ function concat$1(t1, t2) {
 }
 
 function concat_or_join$1(t1, v, d, t2) {
-  if (d !== void 0) {
+  if (d !== undefined) {
     return join$1(t1, v, Caml_option.valFromOption(d), t2);
   } else {
     return concat$1(t1, t2);
@@ -1641,7 +1641,7 @@ function split$1(x, param) {
   if (!param) {
     return /* tuple */[
             /* Empty */0,
-            void 0,
+            undefined,
             /* Empty */0
           ];
   }

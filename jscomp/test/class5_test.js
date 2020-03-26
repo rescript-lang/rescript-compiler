@@ -125,7 +125,7 @@ var printable_colored_point = CamlinternalOO.make_class([
       "get_x"
     ], printable_colored_point_init);
 
-var p = Curry._3(printable_colored_point[0], void 0, 17, "red");
+var p = Curry._3(printable_colored_point[0], undefined, 17, "red");
 
 eq("File \"class5_test.ml\", line 32, characters 12-19", Caml_oo_curry.js1(-930392019, 1, p), "(17, red)");
 
@@ -162,7 +162,7 @@ var ref = CamlinternalOO.make_class([
       "set"
     ], ref_init);
 
-var r = Curry._2(ref[0], void 0, 1);
+var r = Curry._2(ref[0], undefined, 1);
 
 Caml_oo_curry.js2(5741474, 2, r, 2);
 
@@ -194,7 +194,7 @@ function intlist_init($$class) {
 
 var intlist = CamlinternalOO.make_class(shared, intlist_init);
 
-var l = Curry._2(intlist[0], void 0, /* :: */[
+var l = Curry._2(intlist[0], undefined, /* :: */[
       1,
       /* :: */[
         2,
@@ -233,7 +233,7 @@ function intlist2_init($$class) {
 
 var intlist2 = CamlinternalOO.make_class(shared, intlist2_init);
 
-var l$1 = Curry._2(intlist2[0], void 0, /* :: */[
+var l$1 = Curry._2(intlist2[0], undefined, /* :: */[
       1,
       /* :: */[
         2,
@@ -309,11 +309,11 @@ var distance_point = CamlinternalOO.make_class([
       "get_x"
     ], distance_point_init);
 
-var p$1 = Curry._2(distance_point[0], void 0, 3);
+var p$1 = Curry._2(distance_point[0], undefined, 3);
 
-var a = Caml_oo_curry.js2(-335965387, 8, p$1, Curry._2(point[0], void 0, 8));
+var a = Caml_oo_curry.js2(-335965387, 8, p$1, Curry._2(point[0], undefined, 8));
 
-var b = Caml_oo_curry.js2(-335965387, 9, p$1, Curry._3(printable_colored_point[0], void 0, 1, "blue"));
+var b = Caml_oo_curry.js2(-335965387, 9, p$1, Curry._3(printable_colored_point[0], undefined, 1, "blue"));
 
 eq("File \"class5_test.ml\", line 94, characters 5-12", /* tuple */[
       5,

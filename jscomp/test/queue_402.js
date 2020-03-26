@@ -9,13 +9,13 @@ var Empty = Caml_exceptions.create("Queue_402.Empty");
 function create(param) {
   return {
           length: 0,
-          tail: void 0
+          tail: undefined
         };
 }
 
 function clear(q) {
   q.length = 0;
-  q.tail = void 0;
+  q.tail = undefined;
   
 }
 
@@ -55,7 +55,7 @@ function take(q) {
   var tail = q.tail;
   var head = tail.next;
   if (head === tail) {
-    q.tail = void 0;
+    q.tail = undefined;
   } else {
     tail.next = head.next;
   }
@@ -66,7 +66,7 @@ function copy(q) {
   if (q.length === 0) {
     return {
             length: 0,
-            tail: void 0
+            tail: undefined
           };
   }
   var tail = q.tail;

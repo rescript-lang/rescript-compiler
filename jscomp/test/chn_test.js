@@ -38,7 +38,7 @@ console.log("\x3f\u003f\b\t\n\v\f\r\0\"\'");
 function convert(s) {
   return $$Array.to_list(Array.from(s, (function (x) {
                     var match = x.codePointAt(0);
-                    if (match !== void 0) {
+                    if (match !== undefined) {
                       return match;
                     }
                     throw [

@@ -10,7 +10,7 @@ function f1(x) {
 }
 
 function f3(x) {
-  if (x !== void 0) {
+  if (x !== undefined) {
     return x;
   } else {
     return /* A */0;

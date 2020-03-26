@@ -2,9 +2,9 @@
 
 var Fs = require("fs");
 
-var match = typeof __filename === "undefined" ? void 0 : __filename;
+var match = typeof __filename === "undefined" ? undefined : __filename;
 
-if (match !== void 0) {
+if (match !== undefined) {
   console.log(Fs.readFileSync(match, "utf8"));
 }
 

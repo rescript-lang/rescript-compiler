@@ -29,20 +29,20 @@ var inch = {
 
 function bufferize(f) {
   var buf = {
-    contents: void 0
+    contents: undefined
   };
   return /* tuple */[
           (function (param) {
               var match = buf.contents;
-              if (match !== void 0) {
-                buf.contents = void 0;
+              if (match !== undefined) {
+                buf.contents = undefined;
                 return Caml_option.valFromOption(match);
               } else {
-                return Curry._1(f, void 0);
+                return Curry._1(f, undefined);
               }
             }),
           (function (x) {
-              if (buf.contents !== void 0) {
+              if (buf.contents !== undefined) {
                 throw [
                       Caml_builtin_exceptions.assert_failure,
                       /* tuple */[
@@ -67,7 +67,7 @@ var ungetch = match[1];
 var getch = match[0];
 
 function peekch(param) {
-  var ch = Curry._1(getch, void 0);
+  var ch = Curry._1(getch, undefined);
   Curry._1(ungetch, ch);
   return ch;
 }
@@ -129,11 +129,11 @@ var gpos = {
 var s = Caml_bytes.caml_create_bytes(100);
 
 function getq(param) {
-  var c = Curry._1(getch, void 0);
-  if (c !== 92 || peekch(void 0) !== /* "n" */110) {
+  var c = Curry._1(getch, undefined);
+  if (c !== 92 || peekch(undefined) !== /* "n" */110) {
     return c;
   } else {
-    Curry._1(getch, void 0);
+    Curry._1(getch, undefined);
     return /* "\n" */10;
   }
 }
@@ -149,41 +149,41 @@ function isid(param) {
 
 function skip(_param) {
   while(true) {
-    var ch = Curry._1(getch, void 0);
+    var ch = Curry._1(getch, undefined);
     if (ch >= 14) {
       if (ch !== 32) {
-        if (ch !== 47 || peekch(void 0) !== /* "*" */42) {
+        if (ch !== 47 || peekch(undefined) !== /* "*" */42) {
           return ch;
         } else {
-          var _param$1 = (Curry._1(getch, void 0), void 0);
+          var _param$1 = (Curry._1(getch, undefined), undefined);
           while(true) {
-            var match = Curry._1(getch, void 0);
+            var match = Curry._1(getch, undefined);
             if (match !== 42) {
-              _param$1 = void 0;
+              _param$1 = undefined;
               continue ;
             }
-            if (peekch(void 0) === /* "/" */47) {
-              return skip((Curry._1(getch, void 0), void 0));
+            if (peekch(undefined) === /* "/" */47) {
+              return skip((Curry._1(getch, undefined), undefined));
             }
-            _param$1 = void 0;
+            _param$1 = undefined;
             continue ;
           };
         }
       }
-      _param = void 0;
+      _param = undefined;
       continue ;
     }
     if (ch >= 11) {
       if (ch < 13) {
         return ch;
       }
-      _param = void 0;
+      _param = undefined;
       continue ;
     }
     if (ch < 9) {
       return ch;
     }
-    _param = void 0;
+    _param = undefined;
     continue ;
   };
 }
@@ -191,16 +191,16 @@ function skip(_param) {
 function next(param) {
   var match;
   try {
-    match = skip(void 0);
+    match = skip(undefined);
   }
   catch (exn){
     if (exn === Caml_builtin_exceptions.end_of_file) {
-      match = void 0;
+      match = undefined;
     } else {
       throw exn;
     }
   }
-  if (match === void 0) {
+  if (match === undefined) {
     return /* Op */Block.__(0, ["EOF!"]);
   }
   var c = match;
@@ -209,13 +209,13 @@ function next(param) {
     var _e = gpos.contents;
     while(true) {
       var e = _e;
-      var match$1 = peekch(void 0);
+      var match$1 = peekch(undefined);
       if (match$1 !== 34) {
-        glo[e] = getq(void 0);
+        glo[e] = getq(undefined);
         _e = e + 1 | 0;
         continue ;
       }
-      Curry._1(getch, void 0);
+      Curry._1(getch, undefined);
       gpos.contents = e + 8 & -8;
       return /* SLit */Block.__(2, [
                 (b + 232 | 0) + 4194304 | 0,
@@ -228,18 +228,18 @@ function next(param) {
       var _n = c - 48 | 0;
       while(true) {
         var n = _n;
-        var match$2 = peekch(void 0);
+        var match$2 = peekch(undefined);
         if (match$2 > 57 || match$2 < 48) {
           return /* ILit */Block.__(1, [n]);
         }
-        _n = (Caml_int32.imul(10, n) + Curry._1(getch, void 0) | 0) - 48 | 0;
+        _n = (Caml_int32.imul(10, n) + Curry._1(getch, undefined) | 0) - 48 | 0;
         continue ;
       };
     }
     
   } else if (c === 39) {
-    var ch = getq(void 0);
-    var qt = Curry._1(getch, void 0);
+    var ch = getq(undefined);
+    var qt = Curry._1(getch, undefined);
     if (qt !== /* "'" */39) {
       throw [
             Caml_builtin_exceptions.failure,
@@ -255,10 +255,10 @@ function next(param) {
       var ch$1 = _ch;
       var n$1 = _n$1;
       s[n$1] = ch$1;
-      if (!isid(peekch(void 0))) {
+      if (!isid(peekch(undefined))) {
         return /* Sym */Block.__(3, [addsym(Bytes.to_string(Bytes.sub(s, 0, n$1 + 1 | 0)))]);
       }
-      _ch = Curry._1(getch, void 0);
+      _ch = Curry._1(getch, undefined);
       _n$1 = n$1 + 1 | 0;
       continue ;
     };
@@ -300,8 +300,8 @@ function next(param) {
         return /* Op */Block.__(0, [Caml_bytes.bytes_to_string(Bytes.make(1, c))]);
       }
       var lop = param$1[0];
-      if (Caml_string.get(lop, 0) === c && Caml_string.get(lop, 1) === peekch(void 0)) {
-        Curry._1(getch, void 0);
+      if (Caml_string.get(lop, 0) === c && Caml_string.get(lop, 1) === peekch(undefined)) {
+        Curry._1(getch, undefined);
         return /* Op */Block.__(0, [lop]);
       }
       _param = param$1[1];
@@ -317,7 +317,7 @@ var unnext = match$1[1];
 var next$1 = match$1[0];
 
 function nextis(t) {
-  var nt = Curry._1(next$1, void 0);
+  var nt = Curry._1(next$1, undefined);
   Curry._1(unnext, nt);
   return Caml_obj.caml_equal(t, nt);
 }
@@ -783,7 +783,7 @@ function binary(stk, lvl) {
   var foldtst = function (_loc) {
     while(true) {
       var loc = _loc;
-      var t = Curry._1(next$1, void 0);
+      var t = Curry._1(next$1, undefined);
       if (t.tag) {
         Curry._1(unnext, t);
         return loc;
@@ -802,7 +802,7 @@ function binary(stk, lvl) {
   if (lvl < 8) {
     var _param;
     while(true) {
-      var t = Curry._1(next$1, void 0);
+      var t = Curry._1(next$1, undefined);
       if (t.tag) {
         return Curry._1(unnext, t);
       }
@@ -820,7 +820,7 @@ function binary(stk, lvl) {
       } else {
         List.iter(out, match[0]);
       }
-      _param = void 0;
+      _param = undefined;
       continue ;
     };
   }
@@ -829,24 +829,24 @@ function binary(stk, lvl) {
 }
 
 function unary(stk) {
-  var match = Curry._1(next$1, void 0);
+  var match = Curry._1(next$1, undefined);
   switch (match.tag | 0) {
     case /* Op */0 :
         var o = match[0];
         switch (o) {
           case "&" :
               unary(stk);
-              return patchlval(void 0);
+              return patchlval(undefined);
           case "(" :
               expr(stk);
-              Curry._1(next$1, void 0);
+              Curry._1(next$1, undefined);
               return postfix(stk);
           case "*" :
-              Curry._1(next$1, void 0);
-              var t = Curry._1(next$1, void 0);
+              Curry._1(next$1, undefined);
+              var t = Curry._1(next$1, undefined);
               var match$1;
               if (Caml_obj.caml_equal(t, tokint)) {
-                match$1 = Caml_obj.caml_equal(Curry._1(next$1, void 0), /* Op */Block.__(0, ["*"])) ? /* tuple */[
+                match$1 = Caml_obj.caml_equal(Curry._1(next$1, undefined), /* Op */Block.__(0, ["*"])) ? /* tuple */[
                     /* Int */0,
                     1
                   ] : /* tuple */[
@@ -865,7 +865,7 @@ function unary(stk) {
                     ];
               }
               for(var k = 1 ,k_finish = match$1[1]; k <= k_finish; ++k){
-                Curry._1(next$1, void 0);
+                Curry._1(next$1, undefined);
               }
               unary(stk);
               return read(match$1[0]);
@@ -961,7 +961,7 @@ function unary(stk) {
 }
 
 function postfix(stk) {
-  var t = Curry._1(next$1, void 0);
+  var t = Curry._1(next$1, undefined);
   if (t.tag) {
     return Curry._1(unnext, t);
   }
@@ -973,13 +973,13 @@ function postfix(stk) {
             var rl = _rl;
             var l = _l;
             if (nextis(/* Op */Block.__(0, [")"]))) {
-              Curry._1(next$1, void 0);
+              Curry._1(next$1, undefined);
               return List.iter(pop, l);
             }
             expr(stk);
             push(0);
             if (nextis(/* Op */Block.__(0, [","]))) {
-              Curry._1(next$1, void 0);
+              Curry._1(next$1, undefined);
             }
             _rl = List.tl(rl);
             _l = /* :: */[
@@ -989,7 +989,7 @@ function postfix(stk) {
             continue ;
           };
         };
-        patchlval(void 0);
+        patchlval(undefined);
         push(0);
         emitargs(/* [] */0, /* :: */[
               7,
@@ -1026,7 +1026,7 @@ function postfix(stk) {
     default:
       return Curry._1(unnext, t);
   }
-  patchlval(void 0);
+  patchlval(undefined);
   out(4753857);
   read(lval.contents[1]);
   return out(List.assoc(/* tuple */[
@@ -1075,14 +1075,14 @@ function expr(stk) {
   binary(stk, 10);
   var _param;
   while(true) {
-    var t = Curry._1(next$1, void 0);
+    var t = Curry._1(next$1, undefined);
     if (t.tag) {
       return Curry._1(unnext, t);
     }
     if (t[0] !== "=") {
       return Curry._1(unnext, t);
     }
-    patchlval(void 0);
+    patchlval(undefined);
     var ty = lval.contents[1];
     push(0);
     expr(stk);
@@ -1092,7 +1092,7 @@ function expr(stk) {
     } else {
       out(34817);
     }
-    _param = void 0;
+    _param = undefined;
     continue ;
   };
 }
@@ -1101,7 +1101,7 @@ function decl(g, _n, _stk) {
   while(true) {
     var stk = _stk;
     var n = _n;
-    var t = Curry._1(next$1, void 0);
+    var t = Curry._1(next$1, undefined);
     if (Caml_obj.caml_equal(t, tokint)) {
       var top = stk ? stk[0][1] : 0;
       var vars = (function(top){
@@ -1110,7 +1110,7 @@ function decl(g, _n, _stk) {
           var stk = _stk;
           var n = _n;
           while(nextis(/* Op */Block.__(0, ["*"]))) {
-            Curry._1(next$1, void 0);
+            Curry._1(next$1, undefined);
           };
           if (nextis(/* Op */Block.__(0, [";"]))) {
             return /* tuple */[
@@ -1118,7 +1118,7 @@ function decl(g, _n, _stk) {
                     stk
                   ];
           }
-          var match = Curry._1(next$1, void 0);
+          var match = Curry._1(next$1, undefined);
           if (match.tag === /* Sym */3) {
             var s = match[0];
             var n$prime = n + 1 | 0;
@@ -1153,7 +1153,7 @@ function decl(g, _n, _stk) {
                       stk$prime
                     ];
             }
-            Curry._1(next$1, void 0);
+            Curry._1(next$1, undefined);
             _stk = stk$prime;
             _n = n$prime;
             continue ;
@@ -1166,7 +1166,7 @@ function decl(g, _n, _stk) {
       }
       }(top));
       var match = vars(0, stk);
-      Curry._1(next$1, void 0);
+      Curry._1(next$1, undefined);
       if (dbg.contents) {
         Curry._1(Printf.eprintf(/* Format */[
                   /* String_literal */Block.__(11, [
@@ -1220,19 +1220,19 @@ var retl = {
 
 function stmt(brk, stk) {
   var pexpr = function (stk) {
-    Curry._1(next$1, void 0);
+    Curry._1(next$1, undefined);
     expr(stk);
-    Curry._1(next$1, void 0);
+    Curry._1(next$1, undefined);
     
   };
-  var t = Curry._1(next$1, void 0);
+  var t = Curry._1(next$1, undefined);
   if (Caml_obj.caml_equal(t, tokif)) {
     pexpr(stk);
     var loc = test(0, 0);
     stmt(brk, stk);
     var loc$1;
     if (nextis(tokelse)) {
-      Curry._1(next$1, void 0);
+      Curry._1(next$1, undefined);
       out(233);
       var l = opos.contents;
       le(32, 0);
@@ -1259,11 +1259,11 @@ function stmt(brk, stk) {
         loc$2
       ];
     } else {
-      Curry._1(next$1, void 0);
+      Curry._1(next$1, undefined);
       if (!nextis(/* Op */Block.__(0, [";"]))) {
         expr(stk);
       }
-      Curry._1(next$1, void 0);
+      Curry._1(next$1, undefined);
       var top = opos.contents;
       if (nextis(/* Op */Block.__(0, [";"]))) {
         bl.contents = 0;
@@ -1271,13 +1271,13 @@ function stmt(brk, stk) {
         expr(stk);
         bl.contents = test(0, 0);
       }
-      Curry._1(next$1, void 0);
+      Curry._1(next$1, undefined);
       out(233);
       var bdy = opos.contents;
       le(32, 0);
       var itr = opos.contents;
       expr(stk);
-      Curry._1(next$1, void 0);
+      Curry._1(next$1, undefined);
       out(233);
       le(32, (top - opos.contents | 0) - 4 | 0);
       match = /* tuple */[
@@ -1298,7 +1298,7 @@ function stmt(brk, stk) {
     if (!nextis(/* Op */Block.__(0, [";"]))) {
       expr(stk);
     }
-    Curry._1(next$1, void 0);
+    Curry._1(next$1, undefined);
     out(233);
     var loc$3 = opos.contents;
     le(32, retl.contents);
@@ -1306,7 +1306,7 @@ function stmt(brk, stk) {
     return ;
   }
   if (Caml_obj.caml_equal(t, tokbreak)) {
-    Curry._1(next$1, void 0);
+    Curry._1(next$1, undefined);
     var brkl = brk[0];
     var n = align.contents - brk[1] | 0;
     if (n < 0) {
@@ -1341,7 +1341,7 @@ function stmt(brk, stk) {
   }
   Curry._1(unnext, t);
   expr(stk);
-  Curry._1(next$1, void 0);
+  Curry._1(next$1, undefined);
   
 }
 
@@ -1352,7 +1352,7 @@ function block(brk, stk) {
   while(!nextis(/* Op */Block.__(0, ["}"]))) {
     stmt(brk, stk$prime);
   };
-  Curry._1(next$1, void 0);
+  Curry._1(next$1, undefined);
   if (n !== 0) {
     out(4752324);
     out((n << 3));
@@ -1369,10 +1369,10 @@ function top(_param) {
     }
     if (nextis(tokint)) {
       decl(true, 0, /* [] */0);
-      _param = void 0;
+      _param = undefined;
       continue ;
     }
-    var match = Curry._1(next$1, void 0);
+    var match = Curry._1(next$1, undefined);
     if (match.tag === /* Sym */3) {
       var f = match[0];
       var g = Caml_array.caml_array_get(globs, f);
@@ -1391,7 +1391,7 @@ function top(_param) {
           var stk = _stk;
           var n = _n;
           var regs = _regs;
-          var match = Curry._1(next$1, void 0);
+          var match = Curry._1(next$1, undefined);
           switch (match.tag | 0) {
             case /* Op */0 :
                 if (match[0] === ")") {
@@ -1411,7 +1411,7 @@ function top(_param) {
                 var r = List.hd(regs);
                 push(r);
                 if (nextis(/* Op */Block.__(0, [","]))) {
-                  Curry._1(next$1, void 0);
+                  Curry._1(next$1, undefined);
                 }
                 var stk$prime_000 = /* tuple */[
                   match[0],
@@ -1429,7 +1429,7 @@ function top(_param) {
           }
         };
       };
-      Curry._1(next$1, void 0);
+      Curry._1(next$1, undefined);
       align.contents = 0;
       out(85);
       out(4753893);
@@ -1452,7 +1452,7 @@ function top(_param) {
               ]
             ]
           ], 1, /* [] */0);
-      while(Caml_obj.caml_notequal(Curry._1(next$1, void 0), /* Op */Block.__(0, ["{"]))) {
+      while(Caml_obj.caml_notequal(Curry._1(next$1, undefined), /* Op */Block.__(0, ["{"]))) {
         
       };
       retl.contents = 0;
@@ -1479,7 +1479,7 @@ function top(_param) {
                   "done with function %s\n"
                 ]), symstr(f));
       }
-      _param = void 0;
+      _param = undefined;
       continue ;
     }
     throw [
@@ -1817,10 +1817,10 @@ function main(param) {
     case "-lex" :
         var _param;
         while(true) {
-          var tok = Curry._1(next$1, void 0);
+          var tok = Curry._1(next$1, undefined);
           if (tok.tag) {
             ppsym(tok);
-            _param = void 0;
+            _param = undefined;
             continue ;
           }
           if (tok[0] === "EOF!") {
@@ -1833,20 +1833,20 @@ function main(param) {
                       ]);
           }
           ppsym(tok);
-          _param = void 0;
+          _param = undefined;
           continue ;
         };
     default:
       var oc = Pervasives.open_out("a.out");
       inch.contents = Pervasives.open_in_bin(f);
-      top(void 0);
+      top(undefined);
       elfgen(oc);
       Caml_io.caml_ml_flush(oc);
       return Caml_external_polyfill.resolve("caml_ml_close_channel")(oc);
   }
 }
 
-main(void 0);
+main(undefined);
 
 var base = 4194304;
 

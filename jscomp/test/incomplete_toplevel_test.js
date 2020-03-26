@@ -10,7 +10,7 @@ function f(param) {
         ];
 }
 
-var match = f(void 0);
+var match = f(undefined);
 
 var a = match[0];
 

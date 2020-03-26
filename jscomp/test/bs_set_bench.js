@@ -45,7 +45,7 @@ function bench(param) {
 
 console.time("test/bs_set_bench.ml 21");
 
-bench(void 0);
+bench(undefined);
 
 console.timeEnd("test/bs_set_bench.ml 21");
 

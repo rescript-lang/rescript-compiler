@@ -29,7 +29,7 @@ var suites_000 = /* tuple */[
   "acc",
   (function (param) {
       return /* Eq */Block.__(0, [
-                f(void 0),
+                f(undefined),
                 [
                   0,
                   1,

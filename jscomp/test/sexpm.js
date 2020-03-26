@@ -296,7 +296,7 @@ function print_noindent(fmt, t) {
 function to_chan(oc, t) {
   var fmt = Format.formatter_of_out_channel(oc);
   print(fmt, t);
-  return Format.pp_print_flush(fmt, void 0);
+  return Format.pp_print_flush(fmt, undefined);
 }
 
 function to_file_seq(filename, seq) {
@@ -340,7 +340,7 @@ var ID_MONAD = {
 };
 
 function make(bufsizeOpt, refill) {
-  var bufsize = bufsizeOpt !== void 0 ? bufsizeOpt : 1024;
+  var bufsize = bufsizeOpt !== undefined ? bufsizeOpt : 1024;
   var bufsize$1 = Caml_primitive.caml_int_min(bufsize > 16 ? bufsize : 16, Sys.max_string_length);
   return {
           buf: Caml_bytes.caml_create_bytes(bufsize$1),
@@ -536,7 +536,7 @@ function expr_list(acc, k, t) {
     var switcher = c - 9 | 0;
     if (switcher > 23 || switcher < 0) {
       if (switcher === 32) {
-        return Curry._2(k, void 0, /* `List */[
+        return Curry._2(k, undefined, /* `List */[
                     848054398,
                     List.rev(acc)
                   ]);
@@ -546,7 +546,7 @@ function expr_list(acc, k, t) {
       continue ;
     }
     return expr_starting_with(c, (function (last, e) {
-                  if (last === void 0) {
+                  if (last === undefined) {
                     return expr_list(/* :: */[
                                 e,
                                 acc
@@ -560,7 +560,7 @@ function expr_list(acc, k, t) {
                                   acc
                                 ], k, t);
                     } else {
-                      return Curry._2(k, void 0, /* `List */[
+                      return Curry._2(k, undefined, /* `List */[
                                   848054398,
                                   List.rev(/* :: */[
                                         e,
@@ -595,7 +595,7 @@ function atom(k, t) {
       return _refill(t, (function (param) {
                     return atom(k, param);
                   }), (function (param) {
-                    return _return_atom(void 0, k, param);
+                    return _return_atom(undefined, k, param);
                   }));
     }
     var c = _get(t);
@@ -660,7 +660,7 @@ function quoted(k, t) {
     }
     var c = _get(t);
     if (c === 34) {
-      return _return_atom(void 0, k, t);
+      return _return_atom(undefined, k, t);
     }
     if (c === 92) {
       return escaped((function (c) {
@@ -794,7 +794,7 @@ function skip_comment(k, t) {
     }
     var match = _get(t);
     if (match === 10) {
-      return Curry._2(k, void 0, void 0);
+      return Curry._2(k, undefined, undefined);
     }
     continue ;
   };
@@ -914,20 +914,20 @@ function parse_chan_list(bufsize, ic) {
 
 function parse_file(filename) {
   return _with_in(filename, (function (ic) {
-                return parse_chan(void 0, ic);
+                return parse_chan(undefined, ic);
               }));
 }
 
 function parse_file_list(filename) {
   return _with_in(filename, (function (ic) {
-                return parse_chan_list(void 0, ic);
+                return parse_chan_list(undefined, ic);
               }));
 }
 
 function MakeDecode(funarg) {
   var $great$great$eq = funarg.$great$great$eq;
   var make = function (bufsizeOpt, refill) {
-    var bufsize = bufsizeOpt !== void 0 ? bufsizeOpt : 1024;
+    var bufsize = bufsizeOpt !== undefined ? bufsizeOpt : 1024;
     var bufsize$1 = Caml_primitive.caml_int_min(bufsize > 16 ? bufsize : 16, Sys.max_string_length);
     return {
             buf: Caml_bytes.caml_create_bytes(bufsize$1),
@@ -1116,7 +1116,7 @@ function MakeDecode(funarg) {
       var switcher = c - 9 | 0;
       if (switcher > 23 || switcher < 0) {
         if (switcher === 32) {
-          return Curry._2(k, void 0, /* `List */[
+          return Curry._2(k, undefined, /* `List */[
                       848054398,
                       List.rev(acc)
                     ]);
@@ -1126,7 +1126,7 @@ function MakeDecode(funarg) {
         continue ;
       }
       return expr_starting_with(c, (function (last, e) {
-                    if (last === void 0) {
+                    if (last === undefined) {
                       return expr_list(/* :: */[
                                   e,
                                   acc
@@ -1140,7 +1140,7 @@ function MakeDecode(funarg) {
                                     acc
                                   ], k, t);
                       } else {
-                        return Curry._2(k, void 0, /* `List */[
+                        return Curry._2(k, undefined, /* `List */[
                                     848054398,
                                     List.rev(/* :: */[
                                           e,
@@ -1173,7 +1173,7 @@ function MakeDecode(funarg) {
         return _refill(t, (function (param) {
                       return atom(k, param);
                     }), (function (param) {
-                      return _return_atom(void 0, k, param);
+                      return _return_atom(undefined, k, param);
                     }));
       }
       var c = _get(t);
@@ -1237,7 +1237,7 @@ function MakeDecode(funarg) {
       }
       var c = _get(t);
       if (c === 34) {
-        return _return_atom(void 0, k, t);
+        return _return_atom(undefined, k, t);
       }
       if (c === 92) {
         return escaped((function (c) {
@@ -1367,7 +1367,7 @@ function MakeDecode(funarg) {
       }
       var match = _get(t);
       if (match === 10) {
-        return Curry._2(k, void 0, void 0);
+        return Curry._2(k, undefined, undefined);
       }
       continue ;
     };

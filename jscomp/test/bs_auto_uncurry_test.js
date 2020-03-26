@@ -40,7 +40,7 @@ var xs = {
 
 hi((function () {
         xs.contents = /* :: */[
-          void 0,
+          undefined,
           xs.contents
         ];
         
@@ -48,16 +48,16 @@ hi((function () {
 
 hi((function () {
         xs.contents = /* :: */[
-          void 0,
+          undefined,
           xs.contents
         ];
         
       }));
 
 eq("File \"bs_auto_uncurry_test.ml\", line 27, characters 7-14", xs.contents, /* :: */[
-      void 0,
+      undefined,
       /* :: */[
-        void 0,
+        undefined,
         /* [] */0
       ]
     ]);

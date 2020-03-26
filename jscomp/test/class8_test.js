@@ -34,10 +34,10 @@ function comparable_001($$class) {
 }
 
 var comparable = /* class */[
-  void 0,
+  undefined,
   comparable_001,
-  void 0,
-  void 0
+  undefined,
+  undefined
 ];
 
 function money_init($$class) {
@@ -105,11 +105,11 @@ function min(x, y) {
   }
 }
 
-var tmp = min(Curry._2(money[0], void 0, 1.0), Curry._2(money[0], void 0, 3.0));
+var tmp = min(Curry._2(money[0], undefined, 1.0), Curry._2(money[0], undefined, 3.0));
 
 eq("File \"class8_test.ml\", line 30, characters 5-12", 1, Caml_oo_curry.js1(834174833, 3, tmp));
 
-var tmp$1 = min(Curry._2(money2[0], void 0, 5.0), Curry._2(money2[0], void 0, 3));
+var tmp$1 = min(Curry._2(money2[0], undefined, 5.0), Curry._2(money2[0], undefined, 3));
 
 eq("File \"class8_test.ml\", line 35, characters 5-12", 3, Caml_oo_curry.js1(834174833, 4, tmp$1));
 

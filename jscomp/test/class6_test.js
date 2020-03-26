@@ -104,9 +104,9 @@ function colored_point_to_point(cp) {
   return cp;
 }
 
-var p = Curry._2(point[0], void 0, 3);
+var p = Curry._2(point[0], undefined, 3);
 
-var q = Curry._3(colored_point[0], void 0, 4, "blue");
+var q = Curry._3(colored_point[0], undefined, 4, "blue");
 
 function lookup_obj(obj, _param) {
   while(true) {
@@ -171,13 +171,13 @@ var env_init = d_init(table);
 
 CamlinternalOO.init_class(table);
 
-var d_000 = Curry._1(env_init, void 0);
+var d_000 = Curry._1(env_init, undefined);
 
 var d = /* class */[
   d_000,
   d_init,
   env_init,
-  void 0
+  undefined
 ];
 
 function c2$prime_001($$class) {
@@ -188,10 +188,10 @@ function c2$prime_001($$class) {
 }
 
 var c2$prime = /* class */[
-  void 0,
+  undefined,
   c2$prime_001,
-  void 0,
-  void 0
+  undefined,
+  undefined
 ];
 
 function functional_point_init($$class) {
@@ -222,7 +222,7 @@ function functional_point_init($$class) {
 
 var functional_point = CamlinternalOO.make_class(shared$2, functional_point_init);
 
-var p$1 = Curry._2(functional_point[0], void 0, 7);
+var p$1 = Curry._2(functional_point[0], undefined, 7);
 
 var tmp = Caml_oo_curry.js2(-933174511, 2, p$1, 3);
 
@@ -249,7 +249,7 @@ function bad_functional_point_init($$class) {
           }),
         move,
         (function (self$7, d) {
-            return Curry._2(bad_functional_point[0], void 0, self$7[x] + d | 0);
+            return Curry._2(bad_functional_point[0], undefined, self$7[x] + d | 0);
           })
       ]);
   return (function (env, self, y$1) {
@@ -266,16 +266,16 @@ var env_init$1 = bad_functional_point_init(table$1);
 
 CamlinternalOO.init_class(table$1);
 
-var bad_functional_point_000 = Curry._1(env_init$1, void 0);
+var bad_functional_point_000 = Curry._1(env_init$1, undefined);
 
 var bad_functional_point = /* class */[
   bad_functional_point_000,
   bad_functional_point_init,
   env_init$1,
-  void 0
+  undefined
 ];
 
-var p$2 = Curry._2(bad_functional_point_000, void 0, 7);
+var p$2 = Curry._2(bad_functional_point_000, undefined, 7);
 
 var tmp$1 = Caml_oo_curry.js2(-933174511, 6, p$2, 3);
 

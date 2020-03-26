@@ -41,7 +41,7 @@ function badInlining(obj) {
 
 eq("File \"gpr_1728_test.ml\", line 17, characters 6-13", badInlining({
           field: "3"
-        }), void 0);
+        }), undefined);
 
 eq("File \"gpr_1728_test.ml\", line 19, characters 6-13", Caml_format.caml_int_of_string("-13"), -13);
 

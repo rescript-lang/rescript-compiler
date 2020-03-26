@@ -23,7 +23,7 @@ function b(loc, v) {
 
 function f0(x) {
   var match = x[1];
-  if (match !== void 0 && match) {
+  if (match !== undefined && match) {
     return 1;
   } else {
     return 2;
@@ -39,9 +39,9 @@ function f1(u) {
 }
 
 function f2(x, y, zOpt, param) {
-  var z = zOpt !== void 0 ? zOpt : 3;
+  var z = zOpt !== undefined ? zOpt : 3;
   console.log(x);
-  if (y !== void 0) {
+  if (y !== undefined) {
     return y + z | 0;
   } else {
     return 0;
@@ -49,7 +49,7 @@ function f2(x, y, zOpt, param) {
 }
 
 function f3(x) {
-  if (x !== void 0) {
+  if (x !== undefined) {
     return 1;
   } else {
     return 0;
@@ -57,7 +57,7 @@ function f3(x) {
 }
 
 function f4(x) {
-  if (x !== void 0) {
+  if (x !== undefined) {
     return x + 1 | 0;
   } else {
     return 0;
@@ -72,7 +72,7 @@ function f6(a) {
   return true;
 }
 
-var f10 = Caml_option.some(Caml_option.some(Caml_option.some(Caml_option.some(void 0))));
+var f10 = Caml_option.some(Caml_option.some(Caml_option.some(Caml_option.some(undefined))));
 
 var f11 = Caml_option.some(f10);
 
@@ -81,7 +81,7 @@ var randomized = {
 };
 
 function create(randomOpt, param) {
-  var random = randomOpt !== void 0 ? randomOpt : randomized.contents;
+  var random = randomOpt !== undefined ? randomOpt : randomized.contents;
   if (random) {
     return 2;
   } else {
@@ -89,15 +89,15 @@ function create(randomOpt, param) {
   }
 }
 
-var ff = create(false, void 0);
+var ff = create(false, undefined);
 
 function f13(xOpt, yOpt, param) {
-  var x = xOpt !== void 0 ? xOpt : 3;
-  var y = yOpt !== void 0 ? yOpt : 4;
+  var x = xOpt !== undefined ? xOpt : 3;
+  var y = yOpt !== undefined ? yOpt : 4;
   return x + y | 0;
 }
 
-var a = f13(2, void 0, void 0);
+var a = f13(2, undefined, undefined);
 
 function f12(x) {
   return x;
@@ -124,17 +124,17 @@ function f13$1(param) {
             ]);
 }
 
-b("File \"option_repr_test.ml\", line 94, characters 4-11", Caml_obj.caml_lessthan(void 0, null));
+b("File \"option_repr_test.ml\", line 94, characters 4-11", Caml_obj.caml_lessthan(undefined, null));
 
-b("File \"option_repr_test.ml\", line 95, characters 4-11", !Caml_obj.caml_greaterthan(void 0, null));
+b("File \"option_repr_test.ml\", line 95, characters 4-11", !Caml_obj.caml_greaterthan(undefined, null));
 
-b("File \"option_repr_test.ml\", line 96, characters 4-11", Caml_obj.caml_greaterthan(null, void 0));
+b("File \"option_repr_test.ml\", line 96, characters 4-11", Caml_obj.caml_greaterthan(null, undefined));
 
-b("File \"option_repr_test.ml\", line 97, characters 4-11", Caml_obj.caml_lessthan(void 0, Caml_option.some(void 0)));
+b("File \"option_repr_test.ml\", line 97, characters 4-11", Caml_obj.caml_lessthan(undefined, Caml_option.some(undefined)));
 
-b("File \"option_repr_test.ml\", line 98, characters 4-11", Caml_obj.caml_greaterthan(Caml_option.some(void 0), void 0));
+b("File \"option_repr_test.ml\", line 98, characters 4-11", Caml_obj.caml_greaterthan(Caml_option.some(undefined), undefined));
 
-console.log(6, void 0);
+console.log(6, undefined);
 
 function ltx(a, b) {
   if (Caml_obj.caml_lessthan(a, b)) {
@@ -174,7 +174,7 @@ function all_true(xs) {
               }));
 }
 
-var xs_000 = gtx(Caml_option.some(null), Caml_option.some(void 0));
+var xs_000 = gtx(Caml_option.some(null), Caml_option.some(undefined));
 
 var xs = /* :: */[
   xs_000,
@@ -185,26 +185,26 @@ b("File \"option_repr_test.ml\", line 121, characters 5-12", Belt_List.every(xs,
             return x;
           })));
 
-var xs_000$1 = ltx(Caml_option.some(void 0), 3);
+var xs_000$1 = ltx(Caml_option.some(undefined), 3);
 
 var xs_001 = /* :: */[
-  ltx(Caml_option.some(void 0), Caml_option.some(Caml_option.some(void 0))),
+  ltx(Caml_option.some(undefined), Caml_option.some(Caml_option.some(undefined))),
   /* :: */[
-    ltx(Caml_option.some(void 0), "3"),
+    ltx(Caml_option.some(undefined), "3"),
     /* :: */[
-      ltx(Caml_option.some(void 0), true),
+      ltx(Caml_option.some(undefined), true),
       /* :: */[
-        ltx(Caml_option.some(void 0), false),
+        ltx(Caml_option.some(undefined), false),
         /* :: */[
           ltx(false, true),
           /* :: */[
             ltx(false, true),
             /* :: */[
-              ltx(void 0, Caml_option.some(void 0)),
+              ltx(undefined, Caml_option.some(undefined)),
               /* :: */[
-                ltx(void 0, null),
+                ltx(undefined, null),
                 /* :: */[
-                  ltx(void 0, (function (x) {
+                  ltx(undefined, (function (x) {
                           return x;
                         })),
                   /* :: */[
@@ -230,16 +230,16 @@ b("File \"option_repr_test.ml\", line 127, characters 5-12", Belt_List.every(xs$
             return x;
           })));
 
-var xs_000$2 = eqx(void 0, void 0);
+var xs_000$2 = eqx(undefined, undefined);
 
 var xs_001$1 = /* :: */[
-  neqx(void 0, null),
+  neqx(undefined, null),
   /* :: */[
-    eqx(Caml_option.some(void 0), Caml_option.some(void 0)),
+    eqx(Caml_option.some(undefined), Caml_option.some(undefined)),
     /* :: */[
-      eqx(Caml_option.some(Caml_option.some(void 0)), Caml_option.some(Caml_option.some(void 0))),
+      eqx(Caml_option.some(Caml_option.some(undefined)), Caml_option.some(Caml_option.some(undefined))),
       /* :: */[
-        neqx(Caml_option.some(Caml_option.some(Caml_option.some(void 0))), Caml_option.some(Caml_option.some(void 0))),
+        neqx(Caml_option.some(Caml_option.some(Caml_option.some(undefined))), Caml_option.some(Caml_option.some(undefined))),
         /* [] */0
       ]
     ]
@@ -272,9 +272,9 @@ Mt.from_pair_suites("Option_repr_test", suites.contents);
 
 var f7;
 
-var f8 = Caml_option.some(void 0);
+var f8 = Caml_option.some(undefined);
 
-var f9 = Caml_option.some(Caml_option.some(void 0));
+var f9 = Caml_option.some(Caml_option.some(undefined));
 
 var N = /* alias */0;
 

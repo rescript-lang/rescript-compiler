@@ -85,7 +85,7 @@ function f8(x) {
   }
 }
 
-var u = f8(void 0);
+var u = f8(undefined);
 
 function f9(x) {
   if (x === null) {
@@ -116,7 +116,7 @@ var Test_null = {
 };
 
 function f1$1(x) {
-  if (x !== void 0) {
+  if (x !== undefined) {
     return x + 1 | 0;
   } else {
     return 3;
@@ -124,7 +124,7 @@ function f1$1(x) {
 }
 
 function f2$1(x) {
-  if (x !== void 0) {
+  if (x !== undefined) {
     return x + 1 | 0;
   } else {
     return 3;
@@ -133,7 +133,7 @@ function f2$1(x) {
 
 function f5$1(h, x) {
   var u = Curry._1(h, 32);
-  if (u !== void 0) {
+  if (u !== undefined) {
     return u + 1 | 0;
   } else {
     return 3;
@@ -143,7 +143,7 @@ function f5$1(h, x) {
 function f4$1(h, x) {
   var u = Curry._1(h, 32);
   var v = 32 + x | 0;
-  if (u !== void 0) {
+  if (u !== undefined) {
     return u + 1 | 0;
   } else {
     return 1 + v | 0;
@@ -159,8 +159,8 @@ function f7$1(x) {
 }
 
 function f8$1(x) {
-  if (x !== void 0) {
-    if (x !== void 0) {
+  if (x !== undefined) {
+    if (x !== undefined) {
       return 0;
     } else {
       return 1;
@@ -170,10 +170,10 @@ function f8$1(x) {
   }
 }
 
-var u$1 = f8$1(void 0);
+var u$1 = f8$1(undefined);
 
 function f9$1(x) {
-  if (x === void 0) {
+  if (x === undefined) {
     return ;
   } else {
     return Caml_option.some(x);
@@ -181,7 +181,7 @@ function f9$1(x) {
 }
 
 function f10$1(x) {
-  return x === void 0;
+  return x === undefined;
 }
 
 var f11$1 = false;
@@ -253,7 +253,7 @@ function f8$2(x) {
   }
 }
 
-var u$2 = f8$2(void 0);
+var u$2 = f8$2(undefined);
 
 function f9$2(x) {
   if (x == null) {

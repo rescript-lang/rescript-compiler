@@ -110,9 +110,9 @@ function xx(param) {
   return List;
 }
 
-eq("File \"global_module_alias_test.ml\", line 86, characters 5-12", g(void 0), 4);
+eq("File \"global_module_alias_test.ml\", line 86, characters 5-12", g(undefined), 4);
 
-var V = xx(void 0);
+var V = xx(undefined);
 
 eq("File \"global_module_alias_test.ml\", line 92, characters 5-12", Curry._1(V.length, /* :: */[
           1,
@@ -127,7 +127,7 @@ eq("File \"global_module_alias_test.ml\", line 92, characters 5-12", Curry._1(V.
 
 eq("File \"global_module_alias_test.ml\", line 93, characters 5-12", v.contents, 15);
 
-var H$1 = f(void 0);
+var H$1 = f(undefined);
 
 eq("File \"global_module_alias_test.ml\", line 95, characters 5-12", Curry._1(H$1.length, /* :: */[
           1,

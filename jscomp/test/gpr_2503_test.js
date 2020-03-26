@@ -21,7 +21,7 @@ function b(loc, b$1) {
 
 function makeWrapper(foo, param) {
   var tmp = { };
-  if (foo !== void 0) {
+  if (foo !== undefined) {
     tmp.foo = (function () {
           switch (Caml_option.valFromOption(foo)) {
             case 97 :
@@ -51,12 +51,12 @@ function makeWrapper2(foo, param) {
   
 }
 
-makeWrapper2(/* a */97, void 0);
+makeWrapper2(/* a */97, undefined);
 
 function makeWrapper3(foo, param) {
   console.log(2);
   var tmp = { };
-  if (foo !== void 0) {
+  if (foo !== undefined) {
     tmp.foo = (function () {
           switch (Caml_option.valFromOption(foo)) {
             case 97 :
@@ -73,10 +73,10 @@ function makeWrapper3(foo, param) {
 function makeWrapper4(foo, param) {
   console.log(2);
   var tmp = { };
-  var tmp$1 = foo > 100 ? void 0 : (
+  var tmp$1 = foo > 100 ? undefined : (
       foo > 10 ? /* b */98 : /* a */97
     );
-  if (tmp$1 !== void 0) {
+  if (tmp$1 !== undefined) {
     tmp.foo = (function () {
           switch (Caml_option.valFromOption(tmp$1)) {
             case 97 :
@@ -90,15 +90,15 @@ function makeWrapper4(foo, param) {
   return tmp;
 }
 
-b("File \"gpr_2503_test.ml\", line 31, characters 5-12", "a" === makeWrapper3(/* a */97, void 0).foo);
+b("File \"gpr_2503_test.ml\", line 31, characters 5-12", "a" === makeWrapper3(/* a */97, undefined).foo);
 
-b("File \"gpr_2503_test.ml\", line 34, characters 5-12", void 0 === makeWrapper3(void 0, void 0).foo);
+b("File \"gpr_2503_test.ml\", line 34, characters 5-12", undefined === makeWrapper3(undefined, undefined).foo);
 
-b("File \"gpr_2503_test.ml\", line 37, characters 5-12", "a" === makeWrapper4(1, void 0).foo);
+b("File \"gpr_2503_test.ml\", line 37, characters 5-12", "a" === makeWrapper4(1, undefined).foo);
 
-b("File \"gpr_2503_test.ml\", line 40, characters 5-12", "b" === makeWrapper4(11, void 0).foo);
+b("File \"gpr_2503_test.ml\", line 40, characters 5-12", "b" === makeWrapper4(11, undefined).foo);
 
-b("File \"gpr_2503_test.ml\", line 43, characters 5-12", void 0 === makeWrapper4(111, void 0).foo);
+b("File \"gpr_2503_test.ml\", line 43, characters 5-12", undefined === makeWrapper4(111, undefined).foo);
 
 Mt.from_pair_suites("Gpr_2503_test", suites.contents);
 

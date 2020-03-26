@@ -170,7 +170,7 @@ eq("File \"bs_mutable_set_test.ml\", line 78, characters 5-12", Belt_internalAVL
 
 Belt_internalAVLset.checkInvariantInternal(v.data);
 
-eq("File \"bs_mutable_set_test.ml\", line 80, characters 5-12", Belt_internalSetInt.get(v.data, 3), void 0);
+eq("File \"bs_mutable_set_test.ml\", line 80, characters 5-12", Belt_internalSetInt.get(v.data, 3), undefined);
 
 eq("File \"bs_mutable_set_test.ml\", line 81, characters 5-12", Belt_internalSetInt.get(v.data, 1200), 1200);
 

@@ -198,7 +198,7 @@ function open_out_bin(name) {
 }
 
 function flush_all(param) {
-  var _param = Caml_io.caml_ml_out_channels_list(void 0);
+  var _param = Caml_io.caml_ml_out_channels_list(undefined);
   while(true) {
     var param$1 = _param;
     if (!param$1) {
@@ -490,18 +490,18 @@ var exit_function = {
 function at_exit(f) {
   var g = exit_function[0];
   exit_function[0] = (function (param) {
-      Curry._1(f, void 0);
-      return Curry._1(g, void 0);
+      Curry._1(f, undefined);
+      return Curry._1(g, undefined);
     });
   
 }
 
 function do_at_exit(param) {
-  return Curry._1(exit_function[0], void 0);
+  return Curry._1(exit_function[0], undefined);
 }
 
 function exit(retcode) {
-  Curry._1(exit_function[0], void 0);
+  Curry._1(exit_function[0], undefined);
   return Caml_sys.caml_sys_exit(retcode);
 }
 

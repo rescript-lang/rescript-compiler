@@ -186,11 +186,11 @@ function eq(loc, x, y) {
 }
 
 try {
-  (function (_){throw 2}(void 0));
+  (function (_){throw 2}(undefined));
 }
 catch (raw_e$2){
   var e = Caml_js_exceptions.internalToOCamlException(raw_e$2);
-  eq("File \"exception_raise_test.ml\", line 131, characters 7-14", Caml_js_exceptions.caml_as_js_exn(e) !== void 0, true);
+  eq("File \"exception_raise_test.ml\", line 131, characters 7-14", Caml_js_exceptions.caml_as_js_exn(e) !== undefined, true);
 }
 
 try {
@@ -198,18 +198,18 @@ try {
 }
 catch (raw_e$3){
   var e$1 = Caml_js_exceptions.internalToOCamlException(raw_e$3);
-  eq("File \"exception_raise_test.ml\", line 138, characters 7-14", Caml_js_exceptions.caml_as_js_exn(e$1) !== void 0, false);
+  eq("File \"exception_raise_test.ml\", line 138, characters 7-14", Caml_js_exceptions.caml_as_js_exn(e$1) !== undefined, false);
 }
 
 function fff0(x, g) {
   var val;
   try {
-    val = Curry._1(x, void 0);
+    val = Curry._1(x, undefined);
   }
   catch (exn){
     return 1;
   }
-  return Curry._1(g, void 0);
+  return Curry._1(g, undefined);
 }
 
 function input_lines(ic, _acc) {

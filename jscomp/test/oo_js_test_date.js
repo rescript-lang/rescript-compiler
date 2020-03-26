@@ -12,7 +12,7 @@ function d2(param) {
     });
 }
 
-var d3 = d2(2016)(1, void 0);
+var d3 = d2(2016)(1, undefined);
 
 var suites_000 = /* tuple */[
   "getMonth",

@@ -62,7 +62,7 @@ function u(param) {
 
 var M = { };
 
-eq("File \"format_test.ml\", line 26, characters 5-12", Curry._1(Format.asprintf(u(void 0)), "x"), "xx xyy");
+eq("File \"format_test.ml\", line 26, characters 5-12", Curry._1(Format.asprintf(u(undefined)), "x"), "xx xyy");
 
 eq("File \"format_test.ml\", line 31, characters 5-12", 7.875, 7.875);
 

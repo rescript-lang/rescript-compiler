@@ -38,7 +38,7 @@ function uff2(f) {
 
 function uff3(f) {
   var match = f.yyyy2;
-  if (match !== void 0) {
+  if (match !== undefined) {
     return Curry._1(match, 0);
   } else {
     return 0;

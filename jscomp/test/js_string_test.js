@@ -109,7 +109,7 @@ var suites_001 = /* :: */[
                       "codePointAt - out of bounds",
                       (function (param) {
                           return /* Eq */Block.__(0, [
-                                    void 0,
+                                    undefined,
                                     "foobar".codePointAt(98)
                                   ]);
                         })
@@ -242,7 +242,7 @@ var suites_001 = /* :: */[
                                                 "match - no match",
                                                 (function (param) {
                                                     return /* Eq */Block.__(0, [
-                                                              void 0,
+                                                              undefined,
                                                               Caml_option.null_to_opt("banana".match(/nanana+/g))
                                                             ]);
                                                   })
@@ -430,7 +430,7 @@ var suites_001 = /* :: */[
                                                                                             [
                                                                                               "a",
                                                                                               "#",
-                                                                                              void 0,
+                                                                                              undefined,
                                                                                               "b",
                                                                                               "#",
                                                                                               ":",
@@ -448,7 +448,7 @@ var suites_001 = /* :: */[
                                                                                               [
                                                                                                 "a",
                                                                                                 "#",
-                                                                                                void 0
+                                                                                                undefined
                                                                                               ],
                                                                                               "a#b#:c".split(/(#)(:)?/, 3)
                                                                                             ]);

@@ -22,7 +22,7 @@ function to_list(tbl) {
 }
 
 function f(param) {
-  var tbl = Hashtbl.create(void 0, 17);
+  var tbl = Hashtbl.create(undefined, 17);
   Hashtbl.add(tbl, 1, /* "1" */49);
   Hashtbl.add(tbl, 2, /* "2" */50);
   return List.sort((function (param, param$1) {
@@ -31,7 +31,7 @@ function f(param) {
 }
 
 function g(count) {
-  var tbl = Hashtbl.create(void 0, 17);
+  var tbl = Hashtbl.create(undefined, 17);
   for(var i = 0; i <= count; ++i){
     Hashtbl.replace(tbl, (i << 1), String(i));
   }
@@ -61,7 +61,7 @@ var suites_000 = /* tuple */[
                     /* [] */0
                   ]
                 ],
-                f(void 0)
+                f(undefined)
               ]);
     })
 ];
@@ -85,7 +85,7 @@ var suites_001 = /* :: */[
     /* tuple */[
       "More_labels_regressionfix_374",
       (function (param) {
-          var tbl = Curry._2(MoreLabels.Hashtbl.create, void 0, 30);
+          var tbl = Curry._2(MoreLabels.Hashtbl.create, undefined, 30);
           Hashtbl.add(tbl, 3, 3);
           return /* Eq */Block.__(0, [
                     tbl.size,

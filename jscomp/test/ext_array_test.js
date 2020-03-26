@@ -92,7 +92,7 @@ function filter_map(f, a) {
     }
     var v = a[i];
     var match = Curry._1(f, v);
-    if (match !== void 0) {
+    if (match !== undefined) {
       _i = i + 1 | 0;
       _acc = /* :: */[
         Caml_option.valFromOption(match),
@@ -139,7 +139,7 @@ function tolist_aux(a, f, _i, _res) {
     }
     var v = a[i];
     var match = Curry._1(f, v);
-    _res = match !== void 0 ? /* :: */[
+    _res = match !== undefined ? /* :: */[
         Caml_option.valFromOption(match),
         res
       ] : res;

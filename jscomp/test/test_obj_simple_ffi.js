@@ -8,7 +8,7 @@ function v(displayName, param) {
     config: 3,
     hi: "ghos"
   };
-  if (displayName !== void 0) {
+  if (displayName !== undefined) {
     tmp.displayName = Caml_option.valFromOption(displayName);
   }
   return tmp;

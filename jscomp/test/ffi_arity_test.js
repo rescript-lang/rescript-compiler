@@ -57,7 +57,7 @@ function fff(param) {
 }
 
 function g() {
-  return fff(void 0);
+  return fff(undefined);
 }
 
 function abc(x, y, z) {
@@ -118,10 +118,10 @@ Mt.from_pair_suites("Ffi_arity_test", /* :: */[
     ]);
 
 function bar(fn) {
-  return Curry._1(fn, void 0);
+  return Curry._1(fn, undefined);
 }
 
-(Curry._1((function(){console.log("forgiving arity")}), void 0));
+(Curry._1((function(){console.log("forgiving arity")}), undefined));
 
 exports.f = f;
 exports.v = v;

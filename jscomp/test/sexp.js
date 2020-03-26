@@ -148,14 +148,14 @@ function $$return(x) {
 }
 
 function $great$pipe$eq(e, f) {
-  if (e !== void 0) {
+  if (e !== undefined) {
     return Caml_option.some(Curry._1(f, Caml_option.valFromOption(e)));
   }
   
 }
 
 function $great$great$eq(e, f) {
-  if (e !== void 0) {
+  if (e !== undefined) {
     return Curry._1(f, Caml_option.valFromOption(e));
   }
   
@@ -171,7 +171,7 @@ function map_opt(f, l) {
       return List.rev(acc);
     }
     var match = Curry._1(f, l$1[0]);
-    if (match === void 0) {
+    if (match === undefined) {
       return ;
     }
     _l = l$1[1];
@@ -192,7 +192,7 @@ function list_any(f, e) {
         return ;
       }
       var res = Curry._1(f, l[0]);
-      if (res !== void 0) {
+      if (res !== undefined) {
         return res;
       }
       _l = l[1];
@@ -214,7 +214,7 @@ function list_all(f, e) {
       }
       var tl = l[1];
       var match = Curry._1(f, l[0]);
-      if (match !== void 0) {
+      if (match !== undefined) {
         _l = tl;
         _acc = /* :: */[
           Caml_option.valFromOption(match),
@@ -483,7 +483,7 @@ function get_variant(l, e) {
 }
 
 function get_exn(e) {
-  if (e !== void 0) {
+  if (e !== undefined) {
     return Caml_option.valFromOption(e);
   }
   throw [

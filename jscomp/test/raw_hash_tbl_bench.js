@@ -4,7 +4,7 @@ var Hashtbl = require("../../lib/js/hashtbl.js");
 var Caml_builtin_exceptions = require("../../lib/js/caml_builtin_exceptions.js");
 
 function bench(param) {
-  var table = Hashtbl.create(void 0, 1000000);
+  var table = Hashtbl.create(undefined, 1000000);
   for(var i = 0; i <= 1000000; ++i){
     Hashtbl.add(table, i, i);
   }
@@ -27,7 +27,7 @@ function bench(param) {
   
 }
 
-bench(void 0);
+bench(undefined);
 
 var count = 1000000;
 

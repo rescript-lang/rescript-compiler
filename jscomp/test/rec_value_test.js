@@ -377,7 +377,7 @@ var suites_001 = /* :: */[
                     (function (param) {
                         if (!rec_variant_b.tag) {
                           return /* Eq */Block.__(0, [
-                                    Curry._1(rec_variant_b[1], void 0),
+                                    Curry._1(rec_variant_b[1], undefined),
                                     rec_variant_a
                                   ]);
                         }
@@ -397,7 +397,7 @@ var suites_001 = /* :: */[
                       (function (param) {
                           if (rec_variant_a.tag) {
                             return /* Eq */Block.__(0, [
-                                      Curry._1(rec_variant_a[1], void 0),
+                                      Curry._1(rec_variant_a[1], undefined),
                                       rec_variant_b
                                     ]);
                           }

@@ -55,7 +55,7 @@ function split(delim, s) {
 }
 
 function string_of_float_option(param) {
-  if (param !== void 0) {
+  if (param !== undefined) {
     return Pervasives.string_of_float(param);
   } else {
     return "nan";
@@ -575,7 +575,7 @@ function update(x, f, m) {
     var c = Caml_obj.caml_compare(x, v);
     if (c === 0) {
       var match = Curry._1(f, Caml_option.some(d));
-      if (match === void 0) {
+      if (match === undefined) {
         return merge(l, r);
       }
       var data = Caml_option.valFromOption(match);
@@ -606,8 +606,8 @@ function update(x, f, m) {
       return bal(l, v, d, rr);
     }
   }
-  var match$1 = Curry._1(f, void 0);
-  if (match$1 !== void 0) {
+  var match$1 = Curry._1(f, undefined);
+  if (match$1 !== undefined) {
     return /* Node */[
             /* l : Empty */0,
             /* v */x,
@@ -759,7 +759,7 @@ function concat(t1, t2) {
 }
 
 function concat_or_join(t1, v, d, t2) {
-  if (d !== void 0) {
+  if (d !== undefined) {
     return join(t1, v, Caml_option.valFromOption(d), t2);
   } else {
     return concat(t1, t2);
@@ -770,7 +770,7 @@ function split$1(x, param) {
   if (!param) {
     return /* tuple */[
             /* Empty */0,
-            void 0,
+            undefined,
             /* Empty */0
           ];
   }
@@ -844,7 +844,7 @@ function union(f, s1, s2) {
     var d2$1 = match[1];
     var l = union(f, s1[/* l */0], match[0]);
     var r = union(f, s1[/* r */3], match[2]);
-    if (d2$1 !== void 0) {
+    if (d2$1 !== undefined) {
       return concat_or_join(l, v1, Curry._3(f, v1, d1, Caml_option.valFromOption(d2$1)), r);
     } else {
       return join(l, v1, d1, r);
@@ -854,7 +854,7 @@ function union(f, s1, s2) {
   var d1$1 = match$1[1];
   var l$1 = union(f, match$1[0], s2[/* l */0]);
   var r$1 = union(f, match$1[2], s2[/* r */3]);
-  if (d1$1 !== void 0) {
+  if (d1$1 !== undefined) {
     return concat_or_join(l$1, v2, Curry._3(f, v2, Caml_option.valFromOption(d1$1), d2), r$1);
   } else {
     return join(l$1, v2, d2, r$1);
@@ -1147,12 +1147,12 @@ function process_quote(ticker_map, new_ticker, new_value) {
                   var match$2 = match$1.lhs.value;
                   var match$3 = match$1.rhs.value;
                   var value;
-                  if (match$2 !== void 0 && match$3 !== void 0) {
+                  if (match$2 !== undefined && match$3 !== undefined) {
                     var y = match$3;
                     var x = match$2;
                     value = match$1.op ? x - y : x + y;
                   } else {
-                    value = void 0;
+                    value = undefined;
                   }
                   ticker.value = value;
                   return ;
@@ -1173,7 +1173,7 @@ function process_input_line(ticker_map, all_tickers, line) {
     var lhs$1 = find_ticker_by_name(all_tickers, lhs);
     var rhs$1 = find_ticker_by_name(all_tickers, rhs);
     return {
-            value: void 0,
+            value: undefined,
             rank: /* Uninitialized */0,
             ticker_name: ticker_name,
             type_: /* Binary_op */[{
@@ -1197,7 +1197,7 @@ function process_input_line(ticker_map, all_tickers, line) {
                       "Invalid input line"
                     ];
               }
-              var ticker_map$1 = ticker_map !== void 0 ? Caml_option.valFromOption(ticker_map) : compute_update_sequences(all_tickers);
+              var ticker_map$1 = ticker_map !== undefined ? Caml_option.valFromOption(ticker_map) : compute_update_sequences(all_tickers);
               var value = Caml_format.caml_float_of_string(match$1[0]);
               process_quote(ticker_map$1, match[0], value);
               return /* tuple */[
@@ -1287,7 +1287,7 @@ function process_input_line(ticker_map, all_tickers, line) {
                     return /* tuple */[
                             /* :: */[
                               {
-                                value: void 0,
+                                value: undefined,
                                 rank: /* Uninitialized */0,
                                 ticker_name: ticker_name,
                                 type_: /* Market */0

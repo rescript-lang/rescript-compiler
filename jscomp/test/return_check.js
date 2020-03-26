@@ -15,7 +15,7 @@ function test(dom) {
 
 function f_undefined(xs, i) {
   var match = xs[i];
-  if (match !== void 0) {
+  if (match !== undefined) {
     return match;
   }
   throw [
@@ -31,7 +31,7 @@ function f_undefined(xs, i) {
 function f_escaped_not(xs, i) {
   var x = xs[i];
   console.log("hei");
-  if (x !== void 0) {
+  if (x !== undefined) {
     return x;
   } else {
     return 1;
@@ -41,7 +41,7 @@ function f_escaped_not(xs, i) {
 function f_escaped_1(xs, i) {
   var x = xs[i];
   return (function (param) {
-      if (x !== void 0) {
+      if (x !== undefined) {
         return x;
       } else {
         return 1;

@@ -114,7 +114,7 @@ var ED = Caml_exceptions.create("Variant.ED");
 
 function fooExn(f) {
   try {
-    return Curry._1(f, void 0);
+    return Curry._1(f, undefined);
   }
   catch (raw_exn){
     var exn = Caml_js_exceptions.internalToOCamlException(raw_exn);

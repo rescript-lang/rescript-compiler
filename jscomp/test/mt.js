@@ -9,7 +9,7 @@ var Assert = require("assert");
 var Process = require("process");
 
 function assert_fail(msg) {
-  Assert.fail(void 0, void 0, msg, "");
+  Assert.fail(undefined, undefined, msg, "");
   
 }
 
@@ -32,12 +32,12 @@ function is_mocha(param) {
 
 function from_suites(name, suite) {
   var match = $$Array.to_list(Process.argv);
-  if (match && is_mocha(void 0)) {
+  if (match && is_mocha(undefined)) {
     describe(name, (function () {
             return List.iter((function (param) {
                           var partial_arg = param[1];
                           it(param[0], (function () {
-                                  return Curry._1(partial_arg, void 0);
+                                  return Curry._1(partial_arg, undefined);
                                 }));
                           
                         }), suite);
@@ -48,7 +48,7 @@ function from_suites(name, suite) {
 }
 
 function close_enough(thresholdOpt, a, b) {
-  var threshold = thresholdOpt !== void 0 ? thresholdOpt : 0.0000001;
+  var threshold = thresholdOpt !== undefined ? thresholdOpt : 0.0000001;
   return Math.abs(a - b) < threshold;
 }
 
@@ -72,7 +72,7 @@ function handleCode(spec) {
     case /* Approx */5 :
         var b = spec[1];
         var a = spec[0];
-        if (!close_enough(void 0, a, b)) {
+        if (!close_enough(undefined, a, b)) {
           Assert.deepEqual(a, b);
           return ;
         } else {
@@ -101,12 +101,12 @@ function handleCode(spec) {
 function from_pair_suites(name, suites) {
   var match = $$Array.to_list(Process.argv);
   if (match) {
-    if (is_mocha(void 0)) {
+    if (is_mocha(undefined)) {
       describe(name, (function () {
               return List.iter((function (param) {
                             var code = param[1];
                             it(param[0], (function () {
-                                    return handleCode(Curry._1(code, void 0));
+                                    return handleCode(Curry._1(code, undefined));
                                   }));
                             
                           }), suites);
@@ -119,7 +119,7 @@ function from_pair_suites(name, suites) {
           ]);
       return List.iter((function (param) {
                     var name = param[0];
-                    var match = Curry._1(param[1], void 0);
+                    var match = Curry._1(param[1], undefined);
                     switch (match.tag | 0) {
                       case /* Eq */0 :
                           console.log(/* tuple */[
@@ -195,12 +195,12 @@ function from_pair_suites(name, suites) {
   
 }
 
-var val_unit = Promise.resolve(void 0);
+var val_unit = Promise.resolve(undefined);
 
 function from_promise_suites(name, suites) {
   var match = $$Array.to_list(Process.argv);
   if (match) {
-    if (is_mocha(void 0)) {
+    if (is_mocha(undefined)) {
       describe(name, (function () {
               return List.iter((function (param) {
                             var code = param[1];

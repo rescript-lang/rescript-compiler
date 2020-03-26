@@ -17,7 +17,7 @@ function f0(x) {
 
 function f1(x) {
   throw Caml_builtin_exceptions.not_found;
-  return Curry._1(void 0, x);
+  return Curry._1(undefined, x);
 }
 
 function f3(x) {

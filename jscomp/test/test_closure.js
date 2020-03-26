@@ -24,10 +24,10 @@ function f(param) {
   return arr;
 }
 
-var u = f(void 0);
+var u = f(undefined);
 
 $$Array.iter((function (x) {
-        return Curry._1(x, void 0);
+        return Curry._1(x, undefined);
       }), u);
 
 if (v.contents !== 45) {

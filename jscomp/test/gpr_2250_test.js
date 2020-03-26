@@ -32,9 +32,9 @@ function eq(loc, x, y) {
 }
 
 var class_tables = /* Cons */[
-  void 0,
-  void 0,
-  void 0
+  undefined,
+  undefined,
+  undefined
 ];
 
 function create(param) {
@@ -63,7 +63,7 @@ function create(param) {
             })
         ]);
     var env_init = function (env$1) {
-      var self = CamlinternalOO.create_object_opt(void 0, $$class);
+      var self = CamlinternalOO.create_object_opt(undefined, $$class);
       self[data] = 0;
       self[env] = env$1;
       return self;
@@ -71,24 +71,24 @@ function create(param) {
     CamlinternalOO.init_class($$class);
     class_tables[0] = env_init;
   }
-  return Curry._1(class_tables[0], void 0);
+  return Curry._1(class_tables[0], undefined);
 }
 
-var cxt1 = create(void 0);
+var cxt1 = create(undefined);
 
-var tmp = Caml_oo_curry.js2(4846113, 1, cxt1, void 0);
+var tmp = Caml_oo_curry.js2(4846113, 1, cxt1, undefined);
 
-var result = Caml_oo_curry.js2(5144726, 2, tmp, void 0);
+var result = Caml_oo_curry.js2(5144726, 2, tmp, undefined);
 
 eq("File \"gpr_2250_test.ml\", line 26, characters 5-12", result, 1);
 
-var cxt2 = create(void 0);
+var cxt2 = create(undefined);
 
-var tmp$1 = Caml_oo_curry.js2(4846113, 3, cxt2, void 0);
+var tmp$1 = Caml_oo_curry.js2(4846113, 3, cxt2, undefined);
 
-var tmp$2 = Caml_oo_curry.js2(4846113, 4, tmp$1, void 0);
+var tmp$2 = Caml_oo_curry.js2(4846113, 4, tmp$1, undefined);
 
-var result2 = Caml_oo_curry.js2(5144726, 5, tmp$2, void 0);
+var result2 = Caml_oo_curry.js2(5144726, 5, tmp$2, undefined);
 
 eq("File \"gpr_2250_test.ml\", line 37, characters 5-12", result2, 2);
 

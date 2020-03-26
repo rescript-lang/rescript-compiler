@@ -132,7 +132,7 @@ if (!Caml_obj.caml_equal(dfs1(/* :: */[
       ];
 }
 
-Pervasives.print_newline(void 0);
+Pervasives.print_newline(undefined);
 
 if (!Caml_obj.caml_equal(dfs1(/* :: */[
             "b",

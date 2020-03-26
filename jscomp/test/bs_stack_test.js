@@ -10,8 +10,8 @@ function inOrder(v) {
   var s = {
     root: null
   };
-  var q = Belt_MutableQueue.make(void 0);
-  while(current !== void 0) {
+  var q = Belt_MutableQueue.make(undefined);
+  while(current !== undefined) {
     var v$1 = current;
     Belt_MutableStack.push(s, v$1);
     current = v$1.left;
@@ -21,7 +21,7 @@ function inOrder(v) {
     var v$2 = current;
     Belt_MutableQueue.add(q, v$2.value);
     current = v$2.right;
-    while(current !== void 0) {
+    while(current !== undefined) {
       var v$3 = current;
       Belt_MutableStack.push(s, v$3);
       current = v$3.left;
@@ -35,8 +35,8 @@ function inOrder3(v) {
   var s = {
     root: null
   };
-  var q = Belt_MutableQueue.make(void 0);
-  while(current !== void 0) {
+  var q = Belt_MutableQueue.make(undefined);
+  while(current !== undefined) {
     var v$1 = current;
     Belt_MutableStack.push(s, v$1);
     current = v$1.left;
@@ -44,7 +44,7 @@ function inOrder3(v) {
   Belt_MutableStack.dynamicPopIter(s, (function (popped) {
           Belt_MutableQueue.add(q, popped.value);
           var current = popped.right;
-          while(current !== void 0) {
+          while(current !== undefined) {
             var v = current;
             Belt_MutableStack.push(s, v);
             current = v.left;
@@ -60,9 +60,9 @@ function inOrder2(v) {
   var s = {
     root: null
   };
-  var q = Belt_MutableQueue.make(void 0);
+  var q = Belt_MutableQueue.make(undefined);
   while(todo) {
-    if (cursor !== void 0) {
+    if (cursor !== undefined) {
       var v$1 = cursor;
       Belt_MutableStack.push(s, v$1);
       cursor = v$1.left;
@@ -86,11 +86,11 @@ function n(l, r, a) {
         };
 }
 
-var test1 = n(Caml_option.some(n(Caml_option.some(n(void 0, void 0, 4)), Caml_option.some(n(void 0, void 0, 5)), 2)), Caml_option.some(n(void 0, void 0, 3)), 1);
+var test1 = n(Caml_option.some(n(Caml_option.some(n(undefined, undefined, 4)), Caml_option.some(n(undefined, undefined, 5)), 2)), Caml_option.some(n(undefined, undefined, 3)), 1);
 
 function pushAllLeft(st1, s1) {
   var current = st1;
-  while(current !== void 0) {
+  while(current !== undefined) {
     var v = current;
     Belt_MutableStack.push(s1, v);
     current = v.left;
@@ -98,9 +98,9 @@ function pushAllLeft(st1, s1) {
   
 }
 
-var test2 = n(Caml_option.some(n(Caml_option.some(n(Caml_option.some(n(Caml_option.some(n(void 0, void 0, 4)), void 0, 2)), void 0, 5)), void 0, 1)), void 0, 3);
+var test2 = n(Caml_option.some(n(Caml_option.some(n(Caml_option.some(n(Caml_option.some(n(undefined, undefined, 4)), undefined, 2)), undefined, 5)), undefined, 1)), undefined, 3);
 
-var test3 = n(Caml_option.some(n(Caml_option.some(n(Caml_option.some(n(void 0, void 0, 4)), void 0, 2)), void 0, 5)), Caml_option.some(n(void 0, void 0, 3)), 1);
+var test3 = n(Caml_option.some(n(Caml_option.some(n(Caml_option.some(n(undefined, undefined, 4)), undefined, 2)), undefined, 5)), Caml_option.some(n(undefined, undefined, 3)), 1);
 
 console.log(inOrder(test1));
 

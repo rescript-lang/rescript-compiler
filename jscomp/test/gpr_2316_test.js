@@ -68,7 +68,7 @@ catch (raw_exn$1){
 
 if (exit === 1) {
   console.log("ok");
-  x = void 0;
+  x = undefined;
 }
 
 eq("File \"gpr_2316_test.ml\", line 20, characters 5-12", y, "boo");

@@ -61,7 +61,7 @@ function f2(param) {
   
 }
 
-f2(void 0);
+f2(undefined);
 
 var suites = {
   contents: /* [] */0

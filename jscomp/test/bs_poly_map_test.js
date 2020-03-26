@@ -45,8 +45,8 @@ function emptyMap(param) {
 
 function mergeInter(s1, s2) {
   var m = Belt_Map.merge(s1, s2, (function (k, v1, v2) {
-          if (v1 !== void 0 && v2 !== void 0) {
-            return Caml_option.some(void 0);
+          if (v1 !== undefined && v2 !== undefined) {
+            return Caml_option.some(undefined);
           }
           
         }));
@@ -55,8 +55,8 @@ function mergeInter(s1, s2) {
 
 function mergeUnion(s1, s2) {
   var m = Belt_Map.merge(s1, s2, (function (k, v1, v2) {
-          if (v1 !== void 0 || v2 !== void 0) {
-            return Caml_option.some(void 0);
+          if (v1 !== undefined || v2 !== undefined) {
+            return Caml_option.some(undefined);
           }
           
         }));
@@ -65,8 +65,8 @@ function mergeUnion(s1, s2) {
 
 function mergeDiff(s1, s2) {
   var m = Belt_Map.merge(s1, s2, (function (k, v1, v2) {
-          if (v1 !== void 0 && v2 === void 0) {
-            return Caml_option.some(void 0);
+          if (v1 !== undefined && v2 === undefined) {
+            return Caml_option.some(undefined);
           }
           
         }));
@@ -101,7 +101,7 @@ var a1 = Belt_Map.set(a0, 3, 33);
 var a2 = Belt_Map.remove(a1, 3);
 
 var a3 = Belt_Map.update(a2, 3, (function (k) {
-        if (k !== void 0) {
+        if (k !== undefined) {
           return k + 1 | 0;
         } else {
           return 11;
@@ -109,7 +109,7 @@ var a3 = Belt_Map.update(a2, 3, (function (k) {
       }));
 
 var a4 = Belt_Map.update(a2, 3, (function (k) {
-        if (k !== void 0) {
+        if (k !== undefined) {
           return k + 1 | 0;
         }
         
@@ -129,11 +129,11 @@ b("File \"bs_poly_map_test.ml\", line 73, characters 4-11", 3 === Belt_Map.getUn
 
 b("File \"bs_poly_map_test.ml\", line 74, characters 4-11", 33 === Belt_Map.getUndefined(a1, 3));
 
-b("File \"bs_poly_map_test.ml\", line 75, characters 4-11", Belt_Map.getUndefined(a2, 3) === void 0);
+b("File \"bs_poly_map_test.ml\", line 75, characters 4-11", Belt_Map.getUndefined(a2, 3) === undefined);
 
 b("File \"bs_poly_map_test.ml\", line 77, characters 4-11", 11 === Belt_Map.getUndefined(a3, 3));
 
-b("File \"bs_poly_map_test.ml\", line 78, characters 4-11", Belt_Map.getUndefined(a4, 3) === void 0);
+b("File \"bs_poly_map_test.ml\", line 78, characters 4-11", Belt_Map.getUndefined(a4, 3) === undefined);
 
 var a7 = Belt_Map.removeMany(a0, [
       7,
@@ -169,7 +169,7 @@ eq("File \"bs_poly_map_test.ml\", line 91, characters 5-12", Belt_Map.get(u0$1, 
 function acc(m, is) {
   return Belt_Array.reduce(is, m, (function (a, i) {
                 return Belt_Map.update(a, i, (function (n) {
-                              if (n !== void 0) {
+                              if (n !== undefined) {
                                 return n + 1 | 0;
                               } else {
                                 return 1;
@@ -218,7 +218,7 @@ b("File \"bs_poly_map_test.ml\", line 117, characters 4-11", Belt_Map.eq(v1, v2,
           })));
 
 function inc(x) {
-  if (x !== void 0) {
+  if (x !== undefined) {
     return x + 1 | 0;
   } else {
     return 0;
@@ -237,15 +237,15 @@ var match$1 = match[0];
 
 var match$2 = Belt_Map.get(v3, 10);
 
-b("File \"bs_poly_map_test.ml\", line 126, characters 4-11", match$2 !== void 0 ? match$2 === 11 : false);
+b("File \"bs_poly_map_test.ml\", line 126, characters 4-11", match$2 !== undefined ? match$2 === 11 : false);
 
 var match$3 = Belt_Map.get(v3, -10);
 
-b("File \"bs_poly_map_test.ml\", line 127, characters 4-11", match$3 === void 0);
+b("File \"bs_poly_map_test.ml\", line 127, characters 4-11", match$3 === undefined);
 
 var match$4 = Belt_Map.get(v4, -10);
 
-b("File \"bs_poly_map_test.ml\", line 128, characters 4-11", match$4 !== void 0 ? match$4 === 0 : false);
+b("File \"bs_poly_map_test.ml\", line 128, characters 4-11", match$4 !== undefined ? match$4 === 0 : false);
 
 var map = Belt_Map.remove({
       cmp: Icmp.cmp,
@@ -261,7 +261,7 @@ var map$1 = Belt_Map.removeMany({
 
 b("File \"bs_poly_map_test.ml\", line 130, characters 4-11", Belt_MapDict.isEmpty(map$1.data));
 
-b("File \"bs_poly_map_test.ml\", line 131, characters 4-11", pres !== void 0 ? pres === 5000 : false);
+b("File \"bs_poly_map_test.ml\", line 131, characters 4-11", pres !== undefined ? pres === 5000 : false);
 
 b("File \"bs_poly_map_test.ml\", line 132, characters 4-11", Belt_Array.eq(Belt_MapDict.keysToArray(match$1[0].data), Belt_Array.makeBy(5000, (function (i) {
                 return i;
@@ -281,7 +281,7 @@ var match$5 = Belt_Map.split(v7, 5000);
 
 var match$6 = match$5[0];
 
-b("File \"bs_poly_map_test.ml\", line 137, characters 4-11", match$5[1] === void 0);
+b("File \"bs_poly_map_test.ml\", line 137, characters 4-11", match$5[1] === undefined);
 
 b("File \"bs_poly_map_test.ml\", line 138, characters 4-11", Belt_Array.eq(Belt_MapDict.keysToArray(match$6[0].data), Belt_Array.makeBy(5000, (function (i) {
                 return i;

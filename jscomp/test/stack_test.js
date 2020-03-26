@@ -41,7 +41,7 @@ var suites_000 = /* tuple */[
                     ]
                   ]
                 ],
-                v(void 0)
+                v(undefined)
               ]);
     })
 ];

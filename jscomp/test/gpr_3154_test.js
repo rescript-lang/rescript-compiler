@@ -22,11 +22,11 @@ function b(loc, x) {
 
 var d = { };
 
-d["foo"] = void 0;
+d["foo"] = undefined;
 
 var match = Js_dict.get(d, "foo");
 
-if (match !== void 0 && Caml_option.valFromOption(match) === void 0) {
+if (match !== undefined && Caml_option.valFromOption(match) === undefined) {
   b("File \"gpr_3154_test.ml\", line 12, characters 19-26", true);
 } else {
   b("File \"gpr_3154_test.ml\", line 13, characters 11-18", false);
@@ -34,9 +34,9 @@ if (match !== void 0 && Caml_option.valFromOption(match) === void 0) {
 
 var d0 = { };
 
-d0["foo"] = void 0;
+d0["foo"] = undefined;
 
-eq("File \"gpr_3154_test.ml\", line 18, characters 5-12", Js_dict.get(d0, "foo"), Caml_option.some(void 0));
+eq("File \"gpr_3154_test.ml\", line 18, characters 5-12", Js_dict.get(d0, "foo"), Caml_option.some(undefined));
 
 Mt.from_pair_suites("Gpr_3154_test", suites.contents);
 

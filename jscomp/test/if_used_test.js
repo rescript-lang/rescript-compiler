@@ -35,7 +35,7 @@ function point_init($$class) {
 
 var point = CamlinternalOO.make_class(shared, point_init);
 
-var p = Curry._2(point[0], void 0, 7);
+var p = Curry._2(point[0], undefined, 7);
 
 exports.point = point;
 exports.p = p;

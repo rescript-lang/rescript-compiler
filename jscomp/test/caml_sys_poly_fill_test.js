@@ -62,8 +62,8 @@ catch (exn){
 eq("File \"caml_sys_poly_fill_test.ml\", line 23, characters 5-12", "Z", tmp);
 
 console.log(/* tuple */[
-      Caml_sys.caml_sys_getcwd(void 0),
-      Caml_sys.caml_sys_time(void 0),
+      Caml_sys.caml_sys_getcwd(undefined),
+      Caml_sys.caml_sys_time(undefined),
       Sys.argv,
       Sys.executable_name
     ]);

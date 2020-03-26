@@ -15,7 +15,7 @@ for(var i = 1; i <= 2; ++i){
     if (j !== 0) {
       var prev = delayed.contents;
       delayed.contents = (function (param) {
-          Curry._1(prev, void 0);
+          Curry._1(prev, undefined);
           return f(((n + 1 | 0) + i | 0) - i | 0, j - 1 | 0);
         });
       return ;
@@ -36,6 +36,6 @@ for(var i = 1; i <= 2; ++i){
   f(0, i);
 }
 
-Curry._1(delayed.contents, void 0);
+Curry._1(delayed.contents, undefined);
 
 /*  Not a pure module */
