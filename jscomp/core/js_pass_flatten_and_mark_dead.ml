@@ -68,34 +68,10 @@ type meta_info =
 
 
 let mark_dead_code (js : J.program) : J.program = 
-  (* 
-    HERE we are using an object , so make sure to clean it up, 
-    remove stale cache
- *)
+  let ident_use_stats : meta_info Hash_ident.t
+    = Hash_ident.create 17 in 
   let mark_dead = object (self)
-    inherit Js_fold.fold as super
-    val  ident_use_stats : meta_info Hash_ident.t
-      = Hash_ident.create 17
-
-    val mutable  export_set : Set_ident.t = Set_ident.empty    
-
-
-
-    method promote_dead = 
-      Hash_ident.iter ident_use_stats (fun _id (info : meta_info) ->
-          match info  with 
-          | Info ({used_stats = Scanning_pure} as info) -> 
-            Js_op_util.update_used_stats info Dead_pure
-          | Info ({used_stats = Scanning_non_pure} as info) -> 
-            Js_op_util.update_used_stats info Dead_non_pure
-          | _ -> ())
-      ;
-      Hash_ident.clear ident_use_stats (* clear to make it re-entrant *)
-
-    method! program x = 
-      export_set <- x.export_set ; 
-      super#program x 
-
+    inherit Js_fold.fold 
     method! ident ident = 
       (match Hash_ident.find_opt ident_use_stats ident with
        | None -> (* First time *)
@@ -105,9 +81,7 @@ let mark_dead_code (js : J.program) : J.program =
          -> ()
        | Some (Info x) ->  Js_op_util.update_used_stats x Used )
     ; self 
-
     method! variable_declaration vd = 
-
       match vd with 
       | { ident_info = {used_stats = Dead_pure } ; _}
         -> self
@@ -121,30 +95,35 @@ let mark_dead_code (js : J.program) : J.program =
           match value with 
           | None  -> false 
           | Some x -> ignore (self#expression x); Js_analyzer.no_side_effect_expression x in
-        let scan pure ident (ident_info : J.ident_info) = 
-          let is_export = Set_ident.mem export_set ident in
-          let () = 
-            if is_export (* && false *) then 
-              Js_op_util.update_used_stats ident_info Exported 
-          in
-          match Hash_ident.find_opt ident_use_stats ident with
-          | Some (Recursive) -> 
-            Js_op_util.update_used_stats ident_info Used; 
-            Hash_ident.replace ident_use_stats ident (Info ident_info)
-          | Some (Info _) ->  
-            (** check [camlinternlFormat,box_type] inlined twice 
-                FIXME: seems we have redeclared identifiers
-            *)
-            ()
-          (* assert false *)
-          | None ->  (* First time *)
-            Hash_ident.add ident_use_stats ident (Info ident_info);
-            Js_op_util.update_used_stats ident_info 
-              (if pure then Scanning_pure else Scanning_non_pure) in         
-        scan pure ident ident_info; self
+        (let is_export = Set_ident.mem js.export_set ident in
+         let () = 
+           if is_export (* && false *) then 
+             Js_op_util.update_used_stats ident_info Exported 
+         in
+         match Hash_ident.find_opt ident_use_stats ident with
+         | Some (Recursive) -> 
+           Js_op_util.update_used_stats ident_info Used; 
+           Hash_ident.replace ident_use_stats ident (Info ident_info)
+         | Some (Info _) ->  
+           (** check [camlinternlFormat,box_type] inlined twice 
+               FIXME: seems we have redeclared identifiers
+           *)
+           ()
+         (* assert false *)
+         | None ->  (* First time *)
+           Hash_ident.add ident_use_stats ident (Info ident_info);
+           Js_op_util.update_used_stats ident_info 
+             (if pure then Scanning_pure else Scanning_non_pure)); self
   end  in 
   let _ =  (mark_dead#program js) in 
-  mark_dead#promote_dead;
+  Hash_ident.iter ident_use_stats (fun _id (info : meta_info) ->
+      match info  with 
+      | Info ({used_stats = Scanning_pure} as info) -> 
+        Js_op_util.update_used_stats info Dead_pure
+      | Info ({used_stats = Scanning_non_pure} as info) -> 
+        Js_op_util.update_used_stats info Dead_non_pure
+      | _ -> ())
+  ;
   js
         
 (*
