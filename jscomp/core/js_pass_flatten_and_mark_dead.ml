@@ -61,13 +61,17 @@ end *)
     method! expression x = x (* don't go inside *)
   end   *)
 
+type meta_info =   
+  | Info of J.ident_info 
+  | Recursive
+
 (* 
     HERE we are using an object , so make sure to clean it up, 
     remove stale cache
  *)
 let mark_dead = object (self)
   inherit Js_fold.fold as super
-  val mutable ident_use_stats : [`Info of J.ident_info | `Recursive] Hash_ident.t
+  val mutable ident_use_stats : meta_info Hash_ident.t
       = Hash_ident.create 17
   
   val mutable export_set : Set_ident.t = Set_ident.empty    
@@ -75,11 +79,11 @@ let mark_dead = object (self)
   method mark_not_dead ident =
     match Hash_ident.find_opt ident_use_stats ident with
     | None -> (* First time *)
-        Hash_ident.add ident_use_stats ident `Recursive 
+        Hash_ident.add ident_use_stats ident Recursive 
         (* recursive identifiers *)
-    | Some `Recursive
+    | Some Recursive
       -> ()
-    | Some (`Info x) ->  Js_op_util.update_used_stats x Used 
+    | Some (Info x) ->  Js_op_util.update_used_stats x Used 
 
   method scan b ident (ident_info : J.ident_info) = 
     let is_export = Set_ident.mem export_set ident in
@@ -88,25 +92,25 @@ let mark_dead = object (self)
         Js_op_util.update_used_stats ident_info Exported 
     in
     match Hash_ident.find_opt ident_use_stats ident with
-    | Some (`Recursive) -> 
+    | Some (Recursive) -> 
         Js_op_util.update_used_stats ident_info Used; 
-        Hash_ident.replace ident_use_stats ident (`Info ident_info)
-    | Some (`Info _) ->  
+        Hash_ident.replace ident_use_stats ident (Info ident_info)
+    | Some (Info _) ->  
       (** check [camlinternlFormat,box_type] inlined twice 
           FIXME: seems we have redeclared identifiers
       *)
       ()
     (* assert false *)
     | None ->  (* First time *)
-        Hash_ident.add ident_use_stats ident (`Info ident_info);
+        Hash_ident.add ident_use_stats ident (Info ident_info);
         Js_op_util.update_used_stats ident_info 
           (if b then Scanning_pure else Scanning_non_pure)
   method promote_dead = 
-    Hash_ident.iter ident_use_stats (fun _id (info : [`Info of J.ident_info  | `Recursive]) ->
+    Hash_ident.iter ident_use_stats (fun _id (info : meta_info) ->
       match info  with 
-      | `Info ({used_stats = Scanning_pure} as info) -> 
+      | Info ({used_stats = Scanning_pure} as info) -> 
           Js_op_util.update_used_stats info Dead_pure
-      | `Info ({used_stats = Scanning_non_pure} as info) -> 
+      | Info ({used_stats = Scanning_non_pure} as info) -> 
           Js_op_util.update_used_stats info Dead_non_pure
       | _ -> ())
       ;
