@@ -82,22 +82,23 @@ let mark_dead_code (js : J.program) : J.program =
        | Some (Info x) ->  Js_op_util.update_used_stats x Used )
     ; self 
     method! variable_declaration vd = 
-      match vd with 
-      | { ident_info = {used_stats = Dead_pure } ; _}
+      match vd.ident_info.used_stats with 
+      |  Dead_pure 
         -> self
-      | { ident_info = {used_stats = Dead_non_pure } ; value } -> 
-        begin match value with
+      |  Dead_non_pure  -> 
+        begin match vd.value with
           | None -> self
           | Some x -> self#expression x 
         end
-      | {ident; ident_info ; value ; _} -> 
+      |  _ -> 
+        let ({ident; ident_info ; value ; _} : J.variable_declaration) = vd in 
         let pure = 
           match value with 
           | None  -> false 
           | Some x -> ignore (self#expression x); Js_analyzer.no_side_effect_expression x in
-        (let is_export = Set_ident.mem js.export_set ident in
+        (
          let () = 
-           if is_export (* && false *) then 
+           if Set_ident.mem js.export_set ident then 
              Js_op_util.update_used_stats ident_info Exported 
          in
          match Hash_ident.find_opt ident_use_stats ident with
