@@ -33,10 +33,11 @@ function read_lines(inc) {
       match = Pervasives.input_line(inc);
     }
     catch (exn){
-      if (exn !== Caml_builtin_exceptions.end_of_file) {
+      if (exn === Caml_builtin_exceptions.end_of_file) {
+        match = void 0;
+      } else {
         throw exn;
       }
-      match = void 0;
     }
     if (match === void 0) {
       return List.rev(acc);

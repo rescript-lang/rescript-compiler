@@ -46,33 +46,32 @@ if (tst01("\0\0\0\0\0\0\0\x07") !== 1) {
 function tst02(s) {
   var len = s.length;
   if (s === "") {
-    if (len < 0) {
-      throw [
-            Caml_builtin_exceptions.assert_failure,
-            /* tuple */[
-              "stringmatch_test.ml",
-              30,
-              23
-            ]
-          ];
+    if (len >= 0) {
+      return 1;
     }
-    return 1;
+    throw [
+          Caml_builtin_exceptions.assert_failure,
+          /* tuple */[
+            "stringmatch_test.ml",
+            30,
+            23
+          ]
+        ];
+  }
+  if (len === 0) {
+    throw [
+          Caml_builtin_exceptions.assert_failure,
+          /* tuple */[
+            "stringmatch_test.ml",
+            32,
+            22
+          ]
+        ];
+  }
+  if (s === "A") {
+    return 2;
   } else {
-    if (len === 0) {
-      throw [
-            Caml_builtin_exceptions.assert_failure,
-            /* tuple */[
-              "stringmatch_test.ml",
-              32,
-              22
-            ]
-          ];
-    }
-    if (s === "A") {
-      return 2;
-    } else {
-      return 3;
-    }
+    return 3;
   }
 }
 

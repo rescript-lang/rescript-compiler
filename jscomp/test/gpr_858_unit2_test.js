@@ -19,19 +19,18 @@ for(var i = 1; i <= 2; ++i){
           return f(((n + 1 | 0) + i | 0) - i | 0, j - 1 | 0);
         });
       return ;
-    } else {
-      if (i === n) {
-        return ;
-      }
-      throw [
-            Caml_builtin_exceptions.assert_failure,
-            /* tuple */[
-              "gpr_858_unit2_test.ml",
-              6,
-              13
-            ]
-          ];
     }
+    if (i === n) {
+      return ;
+    }
+    throw [
+          Caml_builtin_exceptions.assert_failure,
+          /* tuple */[
+            "gpr_858_unit2_test.ml",
+            6,
+            13
+          ]
+        ];
   }
   }(i));
   f(0, i);

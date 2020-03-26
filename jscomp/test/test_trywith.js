@@ -110,17 +110,17 @@ function f(x) {
   if (typeof x === "number") {
     return 2;
   }
-  if (x.tag) {
-    throw [
-          Caml_builtin_exceptions.assert_failure,
-          /* tuple */[
-            "test_trywith.ml",
-            51,
-            9
-          ]
-        ];
+  if (!x.tag) {
+    return 1;
   }
-  return 1;
+  throw [
+        Caml_builtin_exceptions.assert_failure,
+        /* tuple */[
+          "test_trywith.ml",
+          51,
+          9
+        ]
+      ];
 }
 
 var u1 = "bad character decimal encoding \\";

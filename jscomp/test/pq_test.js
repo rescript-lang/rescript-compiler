@@ -35,34 +35,34 @@ function insert(queue, prio, elt) {
 var Queue_is_empty = Caml_exceptions.create("Pq_test.PrioQueue.Queue_is_empty");
 
 function remove_top(param) {
-  if (!param) {
-    throw Queue_is_empty;
+  if (param) {
+    var left = param[2];
+    if (!param[3]) {
+      return left;
+    }
+    if (!left) {
+      return param[3];
+    }
+    var right = param[3];
+    var rprio = right[0];
+    var lprio = left[0];
+    if (lprio <= rprio) {
+      return /* Node */[
+              lprio,
+              left[1],
+              remove_top(left),
+              right
+            ];
+    } else {
+      return /* Node */[
+              rprio,
+              right[1],
+              left,
+              remove_top(right)
+            ];
+    }
   }
-  var left = param[2];
-  if (!param[3]) {
-    return left;
-  }
-  if (!left) {
-    return param[3];
-  }
-  var right = param[3];
-  var rprio = right[0];
-  var lprio = left[0];
-  if (lprio <= rprio) {
-    return /* Node */[
-            lprio,
-            left[1],
-            remove_top(left),
-            right
-          ];
-  } else {
-    return /* Node */[
-            rprio,
-            right[1],
-            left,
-            remove_top(right)
-          ];
-  }
+  throw Queue_is_empty;
 }
 
 function extract(queue) {

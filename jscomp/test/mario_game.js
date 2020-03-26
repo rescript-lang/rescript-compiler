@@ -1683,45 +1683,44 @@ function process_collision(dir, c1, c2, state) {
                           void 0
                         ];
                 }
-              } else {
-                if (typeof t === "number") {
-                  if (t !== 1) {
-                    if (t !== 4) {
-                      collide_block(void 0, dir, o1$3);
-                      return /* tuple */[
-                              void 0,
-                              void 0
-                            ];
-                    } else {
-                      game_win(state.ctx);
-                      return /* tuple */[
-                              void 0,
-                              void 0
-                            ];
-                    }
-                  } else if (c1[0] === /* BigM */0) {
+              }
+              if (typeof t === "number") {
+                if (t !== 1) {
+                  if (t !== 4) {
                     collide_block(void 0, dir, o1$3);
-                    dec_health(o2$4);
                     return /* tuple */[
                             void 0,
                             void 0
                           ];
                   } else {
-                    collide_block(void 0, dir, o1$3);
+                    game_win(state.ctx);
                     return /* tuple */[
                             void 0,
                             void 0
                           ];
                   }
+                } else if (c1[0] === /* BigM */0) {
+                  collide_block(void 0, dir, o1$3);
+                  dec_health(o2$4);
+                  return /* tuple */[
+                          void 0,
+                          void 0
+                        ];
+                } else {
+                  collide_block(void 0, dir, o1$3);
+                  return /* tuple */[
+                          void 0,
+                          void 0
+                        ];
                 }
-                var updated_block = evolve_block(o2$4, context);
-                var spawned_item = spawn_above(o1$3.dir, o2$4, t[0], context);
-                collide_block(void 0, dir, o1$3);
-                return /* tuple */[
-                        spawned_item,
-                        updated_block
-                      ];
               }
+              var updated_block = evolve_block(o2$4, context);
+              var spawned_item = spawn_above(o1$3.dir, o2$4, t[0], context);
+              collide_block(void 0, dir, o1$3);
+              return /* tuple */[
+                      spawned_item,
+                      updated_block
+                    ];
               break;
           
         }
@@ -1847,20 +1846,18 @@ function process_collision(dir, c1, c2, state) {
                           updated_block$1,
                           spawned_item$1
                         ];
-                } else {
-                  rev_dir(o1$4, t1, s1$3);
-                  return /* tuple */[
-                          void 0,
-                          void 0
-                        ];
                 }
-              } else {
-                collide_block(void 0, dir, o1$4);
+                rev_dir(o1$4, t1, s1$3);
                 return /* tuple */[
                         void 0,
                         void 0
                       ];
               }
+              collide_block(void 0, dir, o1$4);
+              return /* tuple */[
+                      void 0,
+                      void 0
+                    ];
           
         }
         break;
@@ -1916,27 +1913,25 @@ function process_collision(dir, c1, c2, state) {
                   void 0,
                   r2
                 ];
-        } else {
-          dec_health(o2);
-          o1.vel.y = -4;
-          if (state.multiplier === 8) {
-            update_score(state, 800);
-            o2.score = 800;
-            return /* tuple */[
-                    void 0,
-                    evolve_enemy(o1.dir, typ, s2, o2, context)
-                  ];
-          } else {
-            var score = Caml_int32.imul(100, state.multiplier);
-            update_score(state, score);
-            o2.score = score;
-            state.multiplier = (state.multiplier << 1);
-            return /* tuple */[
-                    void 0,
-                    evolve_enemy(o1.dir, typ, s2, o2, context)
-                  ];
-          }
         }
+        dec_health(o2);
+        o1.vel.y = -4;
+        if (state.multiplier === 8) {
+          update_score(state, 800);
+          o2.score = 800;
+          return /* tuple */[
+                  void 0,
+                  evolve_enemy(o1.dir, typ, s2, o2, context)
+                ];
+        }
+        var score = Caml_int32.imul(100, state.multiplier);
+        update_score(state, score);
+        o2.score = score;
+        state.multiplier = (state.multiplier << 1);
+        return /* tuple */[
+                void 0,
+                evolve_enemy(o1.dir, typ, s2, o2, context)
+              ];
     case 2 :
         if (t2 >= 3) {
           var r2$1 = o2$1.vel.x === 0 ? evolve_enemy(o1$1.dir, t2, s2$1, o2$1, context) : (dec_health(o1$1), o1$1.invuln = 60, void 0);
@@ -1944,14 +1939,13 @@ function process_collision(dir, c1, c2, state) {
                   void 0,
                   r2$1
                 ];
-        } else {
-          dec_health(o1$1);
-          o1$1.invuln = 60;
-          return /* tuple */[
-                  void 0,
-                  void 0
-                ];
         }
+        dec_health(o1$1);
+        o1$1.invuln = 60;
+        return /* tuple */[
+                void 0,
+                void 0
+              ];
     case 3 :
         if (t2$1 !== 0) {
           if (t2$1 >= 3) {
@@ -2138,28 +2132,27 @@ function run_update_collid(state, collid, all_collids) {
     var new_parts = obj.kill ? kill(collid, state.ctx) : /* [] */0;
     particles.contents = Pervasives.$at(particles.contents, new_parts);
     return collid;
-  } else {
-    var o = collid[2];
-    var keys = translate_keys(void 0);
-    o.crouch = false;
-    var match = update_player(o, keys, state.ctx);
-    var player;
-    if (match !== void 0) {
-      var match$1 = match;
-      var new_spr = match$1[1];
-      normalize_pos(o.pos, collid[1].params, new_spr.params);
-      player = /* Player */Block.__(0, [
-          match$1[0],
-          new_spr,
-          o
-        ]);
-    } else {
-      player = collid;
-    }
-    var evolved$1 = update_collidable(state, player, all_collids);
-    collid_objs.contents = Pervasives.$at(collid_objs.contents, evolved$1);
-    return player;
   }
+  var o = collid[2];
+  var keys = translate_keys(void 0);
+  o.crouch = false;
+  var match = update_player(o, keys, state.ctx);
+  var player;
+  if (match !== void 0) {
+    var match$1 = match;
+    var new_spr = match$1[1];
+    normalize_pos(o.pos, collid[1].params, new_spr.params);
+    player = /* Player */Block.__(0, [
+        match$1[0],
+        new_spr,
+        o
+      ]);
+  } else {
+    player = collid;
+  }
+  var evolved$1 = update_collidable(state, player, all_collids);
+  collid_objs.contents = Pervasives.$at(collid_objs.contents, evolved$1);
+  return player;
 }
 
 function update_loop(canvas, param, map_dim) {
@@ -2508,10 +2501,9 @@ function generate_coins(_block_coord) {
                   ],
                   /* [] */0
                 ], generate_coins(t));
-    } else {
-      _block_coord = t;
-      continue ;
     }
+    _block_coord = t;
+    continue ;
   };
 }
 
@@ -2953,32 +2945,31 @@ function generate_enemies(blockw, blockh, _cbx, _cby, acc) {
       _cby = 0;
       _cbx = cbx + 1;
       continue ;
-    } else if (mem_loc(/* tuple */[
+    }
+    if (mem_loc(/* tuple */[
             cbx,
             cby
           ], acc) || cby === 0) {
       _cby = cby + 1;
       continue ;
-    } else {
-      var prob = Random.$$int(30);
-      if (prob < 3 && blockh - 1 === cby) {
-        var enemy_000 = /* tuple */[
-          prob,
-          /* tuple */[
-            cbx * 16,
-            cby * 16
-          ]
-        ];
-        var enemy = /* :: */[
-          enemy_000,
-          /* [] */0
-        ];
-        return Pervasives.$at(enemy, generate_enemies(blockw, blockh, cbx, cby + 1, acc));
-      } else {
-        _cby = cby + 1;
-        continue ;
-      }
     }
+    var prob = Random.$$int(30);
+    if (prob < 3 && blockh - 1 === cby) {
+      var enemy_000 = /* tuple */[
+        prob,
+        /* tuple */[
+          cbx * 16,
+          cby * 16
+        ]
+      ];
+      var enemy = /* :: */[
+        enemy_000,
+        /* [] */0
+      ];
+      return Pervasives.$at(enemy, generate_enemies(blockw, blockh, cbx, cby + 1, acc));
+    }
+    _cby = cby + 1;
+    continue ;
   };
 }
 
@@ -3005,10 +2996,9 @@ function generate_block_enemies(_block_coord) {
                   ],
                   /* [] */0
                 ], generate_block_enemies(t));
-    } else {
-      _block_coord = t;
-      continue ;
     }
+    _block_coord = t;
+    continue ;
   };
 }
 
@@ -3024,26 +3014,25 @@ function generate_block_locs(blockw, blockh, _cbx, _cby, _acc) {
       _cby = 0;
       _cbx = cbx + 1;
       continue ;
-    } else if (mem_loc(/* tuple */[
+    }
+    if (mem_loc(/* tuple */[
             cbx,
             cby
           ], acc) || cby === 0) {
       _cby = cby + 1;
       continue ;
-    } else {
-      var prob = Random.$$int(100);
-      if (prob < 5) {
-        var newacc = choose_block_pattern(blockw, blockh, cbx, cby, prob);
-        var undup_lst = avoid_overlap(newacc, acc);
-        var called_acc = Pervasives.$at(acc, undup_lst);
-        _acc = called_acc;
-        _cby = cby + 1;
-        continue ;
-      } else {
-        _cby = cby + 1;
-        continue ;
-      }
     }
+    var prob = Random.$$int(100);
+    if (prob < 5) {
+      var newacc = choose_block_pattern(blockw, blockh, cbx, cby, prob);
+      var undup_lst = avoid_overlap(newacc, acc);
+      var called_acc = Pervasives.$at(acc, undup_lst);
+      _acc = called_acc;
+      _cby = cby + 1;
+      continue ;
+    }
+    _cby = cby + 1;
+    continue ;
   };
 }
 
@@ -3076,26 +3065,24 @@ function generate_ground(blockw, blockh, _inc, _acc) {
       if (skip === 7 && blockw - inc > 32) {
         _inc = inc + 1;
         continue ;
-      } else {
-        _acc = newacc;
-        _inc = inc + 1;
-        continue ;
       }
-    } else {
-      var newacc$1 = Pervasives.$at(acc, /* :: */[
-            /* tuple */[
-              4,
-              /* tuple */[
-                inc * 16,
-                blockh * 16
-              ]
-            ],
-            /* [] */0
-          ]);
-      _acc = newacc$1;
+      _acc = newacc;
       _inc = inc + 1;
       continue ;
     }
+    var newacc$1 = Pervasives.$at(acc, /* :: */[
+          /* tuple */[
+            4,
+            /* tuple */[
+              inc * 16,
+              blockh * 16
+            ]
+          ],
+          /* [] */0
+        ]);
+    _acc = newacc$1;
+    _inc = inc + 1;
+    continue ;
   };
 }
 

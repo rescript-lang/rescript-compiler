@@ -80,15 +80,15 @@ function utf8_decode(strm) {
                                   "Continuation byte expected"
                                 ];
                           }
-                          if (match.tag !== /* Cont */1) {
-                            throw [
-                                  Stream.$$Error,
-                                  "Continuation byte expected"
-                                ];
+                          if (match.tag === /* Cont */1) {
+                            _c = (c << 6) | match[0] & 63;
+                            _n = n - 1 | 0;
+                            continue ;
                           }
-                          _c = (c << 6) | match[0] & 63;
-                          _n = n - 1 | 0;
-                          continue ;
+                          throw [
+                                Stream.$$Error,
+                                "Continuation byte expected"
+                              ];
                         };
                       };
                       return Stream.icons(follow(strm, match$1[0], match$1[1]), utf8_decode(strm));
@@ -155,16 +155,16 @@ function decode(bytes, offset) {
                   "decode"
                 ];
           }
-          if (match$1.tag !== /* Cont */1) {
-            throw [
-                  Caml_builtin_exceptions.invalid_argument,
-                  "decode"
-                ];
+          if (match$1.tag === /* Cont */1) {
+            _offset = offset$1 + 1 | 0;
+            _c = (c << 6) | match$1[0] & 63;
+            _n = n - 1 | 0;
+            continue ;
           }
-          _offset = offset$1 + 1 | 0;
-          _c = (c << 6) | match$1[0] & 63;
-          _n = n - 1 | 0;
-          continue ;
+          throw [
+                Caml_builtin_exceptions.invalid_argument,
+                "decode"
+              ];
         };
     
   }

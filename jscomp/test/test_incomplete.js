@@ -3,17 +3,17 @@
 var Caml_builtin_exceptions = require("../../lib/js/caml_builtin_exceptions.js");
 
 function f(x) {
-  if (x > 3 || x < 1) {
-    throw [
-          Caml_builtin_exceptions.match_failure,
-          /* tuple */[
-            "test_incomplete.ml",
-            3,
-            2
-          ]
-        ];
+  if (!(x > 3 || x < 1)) {
+    return /* "a" */97;
   }
-  return /* "a" */97;
+  throw [
+        Caml_builtin_exceptions.match_failure,
+        /* tuple */[
+          "test_incomplete.ml",
+          3,
+          2
+        ]
+      ];
 }
 
 function f2(x) {

@@ -99,20 +99,17 @@ try {
 }
 catch (raw_exn$3){
   var exn$3 = Caml_js_exceptions.internalToOCamlException(raw_exn$3);
-  if (exn$3[0] === A) {
+  if (exn$3[0] === A || exn$3[0] === Js_exn.$$Error) {
     a0 = exn$3[1];
   } else {
-    if (exn$3[0] !== Js_exn.$$Error) {
-      throw [
-            Caml_builtin_exceptions.assert_failure,
-            /* tuple */[
-              "exception_raise_test.ml",
-              102,
-              9
-            ]
-          ];
-    }
-    a0 = exn$3[1];
+    throw [
+          Caml_builtin_exceptions.assert_failure,
+          /* tuple */[
+            "exception_raise_test.ml",
+            102,
+            9
+          ]
+        ];
   }
 }
 

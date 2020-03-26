@@ -90,49 +90,48 @@ function f_opion(x) {
     } else {
       return 0;
     }
+  }
+  var match$8 = x.lo;
+  if (!match$8) {
+    return 0;
+  }
+  if (match$8[0] !== void 0) {
+    return 0;
+  }
+  var match$9 = match$8[1];
+  if (!match$9) {
+    return 0;
+  }
+  if (match$9[0] !== void 0) {
+    return 0;
+  }
+  var match$10 = match$9[1];
+  if (!match$10) {
+    return 0;
+  }
+  var match$11 = match$10[0];
+  if (match$11 === void 0) {
+    return 0;
+  }
+  if (match$11 !== 2) {
+    return 0;
+  }
+  var match$12 = match$10[1];
+  if (!match$12) {
+    return 0;
+  }
+  var match$13 = match$12[0];
+  if (match$13 === void 0) {
+    return 0;
+  }
+  if (match$13 !== 1) {
+    return 0;
+  }
+  var match$14 = match$12[1];
+  if (match$14 && match$14[0] !== void 0) {
+    return 3;
   } else {
-    var match$8 = x.lo;
-    if (!match$8) {
-      return 0;
-    }
-    if (match$8[0] !== void 0) {
-      return 0;
-    }
-    var match$9 = match$8[1];
-    if (!match$9) {
-      return 0;
-    }
-    if (match$9[0] !== void 0) {
-      return 0;
-    }
-    var match$10 = match$9[1];
-    if (!match$10) {
-      return 0;
-    }
-    var match$11 = match$10[0];
-    if (match$11 === void 0) {
-      return 0;
-    }
-    if (match$11 !== 2) {
-      return 0;
-    }
-    var match$12 = match$10[1];
-    if (!match$12) {
-      return 0;
-    }
-    var match$13 = match$12[0];
-    if (match$13 === void 0) {
-      return 0;
-    }
-    if (match$13 !== 1) {
-      return 0;
-    }
-    var match$14 = match$12[1];
-    if (match$14 && match$14[0] !== void 0) {
-      return 3;
-    } else {
-      return 0;
-    }
+    return 0;
   }
 }
 

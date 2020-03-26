@@ -86,16 +86,16 @@ function f8(_x, _y) {
     if (x > 10) {
       _y = y + 1 | 0;
       continue ;
-    } else if (x < 5) {
+    }
+    if (x < 5) {
       _x = x - 1 | 0;
       continue ;
-    } else {
-      if (x <= 6) {
-        return f8(x, y + 1 | 0) + f8(x - 1 | 0, y) | 0;
-      }
-      _x = x - 2 | 0;
-      continue ;
     }
+    if (x <= 6) {
+      return f8(x, y + 1 | 0) + f8(x - 1 | 0, y) | 0;
+    }
+    _x = x - 2 | 0;
+    continue ;
   };
 }
 

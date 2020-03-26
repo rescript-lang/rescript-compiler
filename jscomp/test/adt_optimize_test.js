@@ -154,17 +154,17 @@ function f11(x) {
   if (typeof x === "number") {
     return 2;
   }
-  if (x.tag) {
-    throw [
-          Caml_builtin_exceptions.assert_failure,
-          /* tuple */[
-            "adt_optimize_test.ml",
-            191,
-            9
-          ]
-        ];
+  if (!x.tag) {
+    return 1;
   }
-  return 1;
+  throw [
+        Caml_builtin_exceptions.assert_failure,
+        /* tuple */[
+          "adt_optimize_test.ml",
+          191,
+          9
+        ]
+      ];
 }
 
 exports.f = f;

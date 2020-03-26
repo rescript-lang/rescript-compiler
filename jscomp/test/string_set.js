@@ -33,14 +33,13 @@ function split(x, tree) {
             match[1],
             Set_gen.internal_join(match[2], v, r)
           ];
-  } else {
-    var match$1 = split(x, r);
-    return /* tuple */[
-            Set_gen.internal_join(l, v, match$1[0]),
-            match$1[1],
-            match$1[2]
-          ];
   }
+  var match$1 = split(x, r);
+  return /* tuple */[
+          Set_gen.internal_join(l, v, match$1[0]),
+          match$1[1],
+          match$1[2]
+        ];
 }
 
 function add(x, tree) {
@@ -82,13 +81,12 @@ function union(s1, s2) {
     }
     var match = split(v1, s2);
     return Set_gen.internal_join(union(s1[0], match[0]), v1, union(s1[2], match[2]));
-  } else {
-    if (h1 === 1) {
-      return add(v1, s2);
-    }
-    var match$1 = split(v2, s1);
-    return Set_gen.internal_join(union(match$1[0], s2[0]), v2, union(match$1[2], s2[2]));
   }
+  if (h1 === 1) {
+    return add(v1, s2);
+  }
+  var match$1 = split(v2, s1);
+  return Set_gen.internal_join(union(match$1[0], s2[0]), v2, union(match$1[2], s2[2]));
 }
 
 function inter(s1, s2) {
@@ -192,7 +190,8 @@ function subset(_s1, _s2) {
       _s2 = r2;
       _s1 = r1;
       continue ;
-    } else if (c < 0) {
+    }
+    if (c < 0) {
       if (!subset(/* Node */[
               l1,
               v1,
@@ -203,34 +202,33 @@ function subset(_s1, _s2) {
       }
       _s1 = r1;
       continue ;
-    } else {
-      if (!subset(/* Node */[
-              /* Empty */0,
-              v1,
-              r1,
-              0
-            ], r2)) {
-        return false;
-      }
-      _s1 = l1;
-      continue ;
     }
+    if (!subset(/* Node */[
+            /* Empty */0,
+            v1,
+            r1,
+            0
+          ], r2)) {
+      return false;
+    }
+    _s1 = l1;
+    continue ;
   };
 }
 
 function find(x, _tree) {
   while(true) {
     var tree = _tree;
-    if (!tree) {
-      throw Caml_builtin_exceptions.not_found;
+    if (tree) {
+      var v = tree[1];
+      var c = Caml_primitive.caml_string_compare(x, v);
+      if (c === 0) {
+        return v;
+      }
+      _tree = c < 0 ? tree[0] : tree[2];
+      continue ;
     }
-    var v = tree[1];
-    var c = Caml_primitive.caml_string_compare(x, v);
-    if (c === 0) {
-      return v;
-    }
-    _tree = c < 0 ? tree[0] : tree[2];
-    continue ;
+    throw Caml_builtin_exceptions.not_found;
   };
 }
 

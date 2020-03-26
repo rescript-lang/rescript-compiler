@@ -42,10 +42,9 @@ function mem(x, _param) {
     if (x < y) {
       _param = param[1];
       continue ;
-    } else {
-      _param = param[3];
-      continue ;
     }
+    _param = param[3];
+    continue ;
   };
 }
 
@@ -490,18 +489,17 @@ function ins(x, s) {
               ins(x, b)
             ];
     }
+  }
+  var y$1 = s[2];
+  if (x === y$1) {
+    return s;
+  }
+  var b$1 = s[3];
+  var a$1 = s[1];
+  if (x < y$1) {
+    return lbalance(ins(x, a$1), y$1, b$1);
   } else {
-    var y$1 = s[2];
-    if (x === y$1) {
-      return s;
-    }
-    var b$1 = s[3];
-    var a$1 = s[1];
-    if (x < y$1) {
-      return lbalance(ins(x, a$1), y$1, b$1);
-    } else {
-      return rbalance(a$1, y$1, ins(x, b$1));
-    }
+    return rbalance(a$1, y$1, ins(x, b$1));
   }
 }
 
@@ -520,81 +518,81 @@ function add(x, s) {
 }
 
 function remove_min(param) {
-  if (!param) {
-    throw [
-          Caml_builtin_exceptions.assert_failure,
-          /* tuple */[
-            "rbset.ml",
-            115,
-            4
-          ]
-        ];
-  }
-  var c = param[0];
-  if (c) {
-    if (!param[1]) {
+  if (param) {
+    var c = param[0];
+    if (c) {
+      if (!param[1]) {
+        return /* tuple */[
+                param[3],
+                param[2],
+                false
+              ];
+      }
+      
+    } else if (!param[1]) {
+      var match = param[3];
+      var x = param[2];
+      if (!match) {
+        return /* tuple */[
+                /* Empty */0,
+                x,
+                true
+              ];
+      }
+      if (match[0]) {
+        return /* tuple */[
+                /* Node */[
+                  /* Black */0,
+                  match[1],
+                  match[2],
+                  match[3]
+                ],
+                x,
+                false
+              ];
+      }
+      throw [
+            Caml_builtin_exceptions.assert_failure,
+            /* tuple */[
+              "rbset.ml",
+              115,
+              4
+            ]
+          ];
+    }
+    var match$1 = remove_min(param[1]);
+    var y = match$1[1];
+    var s_001 = match$1[0];
+    var s_002 = param[2];
+    var s_003 = param[3];
+    var s = /* Node */[
+      c,
+      s_001,
+      s_002,
+      s_003
+    ];
+    if (!match$1[2]) {
       return /* tuple */[
-              param[3],
-              param[2],
+              s,
+              y,
               false
             ];
     }
-    
-  } else if (!param[1]) {
-    var match = param[3];
-    var x = param[2];
-    if (!match) {
-      return /* tuple */[
-              /* Empty */0,
-              x,
-              true
-            ];
-    }
-    if (match[0]) {
-      return /* tuple */[
-              /* Node */[
-                /* Black */0,
-                match[1],
-                match[2],
-                match[3]
-              ],
-              x,
-              false
-            ];
-    }
-    throw [
-          Caml_builtin_exceptions.assert_failure,
-          /* tuple */[
-            "rbset.ml",
-            115,
-            4
-          ]
-        ];
-  }
-  var match$1 = remove_min(param[1]);
-  var y = match$1[1];
-  var s_001 = match$1[0];
-  var s_002 = param[2];
-  var s_003 = param[3];
-  var s = /* Node */[
-    c,
-    s_001,
-    s_002,
-    s_003
-  ];
-  if (!match$1[2]) {
+    var match$2 = unbalanced_right(s);
     return /* tuple */[
-            s,
+            match$2[0],
             y,
-            false
+            match$2[1]
           ];
   }
-  var match$2 = unbalanced_right(s);
-  return /* tuple */[
-          match$2[0],
-          y,
-          match$2[1]
-        ];
+  throw [
+        Caml_builtin_exceptions.assert_failure,
+        /* tuple */[
+          "rbset.ml",
+          115,
+          4
+        ]
+      ];
 }
 
 function remove_aux(x, n) {
@@ -636,7 +634,8 @@ function remove_aux(x, n) {
               false
             ];
     }
-  } else if (x < y) {
+  }
+  if (x < y) {
     var match$1 = remove_aux(x, l);
     var n_001 = match$1[0];
     var n$2 = /* Node */[
@@ -653,23 +652,22 @@ function remove_aux(x, n) {
               false
             ];
     }
+  }
+  var match$2 = remove_aux(x, r);
+  var n_003$1 = match$2[0];
+  var n$3 = /* Node */[
+    c,
+    l,
+    y,
+    n_003$1
+  ];
+  if (match$2[1]) {
+    return unbalanced_left(n$3);
   } else {
-    var match$2 = remove_aux(x, r);
-    var n_003$1 = match$2[0];
-    var n$3 = /* Node */[
-      c,
-      l,
-      y,
-      n_003$1
-    ];
-    if (match$2[1]) {
-      return unbalanced_left(n$3);
-    } else {
-      return /* tuple */[
-              n$3,
-              false
-            ];
-    }
+    return /* tuple */[
+            n$3,
+            false
+          ];
   }
 }
 

@@ -259,14 +259,13 @@ function split_aux(p) {
     if (new_path === Filename.dir_sep) {
       _p = dir;
       continue ;
-    } else {
-      _acc = /* :: */[
-        new_path,
-        acc
-      ];
-      _p = dir;
-      continue ;
     }
+    _acc = /* :: */[
+      new_path,
+      acc
+    ];
+    _p = dir;
+    continue ;
   };
 }
 
@@ -299,12 +298,11 @@ function rel_normalized_absolute_path(from, to_) {
       _yss = yss[1];
       _xss = xs;
       continue ;
-    } else {
-      var start = List.fold_left((function (acc, param) {
-              return Filename.concat(acc, Ext_string_test.parent_dir_lit);
-            }), Ext_string_test.parent_dir_lit, xs);
-      return List.fold_left(Filename.concat, start, yss);
     }
+    var start = List.fold_left((function (acc, param) {
+            return Filename.concat(acc, Ext_string_test.parent_dir_lit);
+          }), Ext_string_test.parent_dir_lit, xs);
+    return List.fold_left(Filename.concat, start, yss);
   };
 }
 
@@ -325,19 +323,21 @@ function normalize_absolute_path(x) {
       }
       var xs = paths[1];
       var x = paths[0];
-      _paths = xs;
       if (x === Ext_string_test.current_dir_lit) {
-        continue ;
-      } else if (x === Ext_string_test.parent_dir_lit) {
-        _acc = drop_if_exist(acc);
-        continue ;
-      } else {
-        _acc = /* :: */[
-          x,
-          acc
-        ];
+        _paths = xs;
         continue ;
       }
+      if (x === Ext_string_test.parent_dir_lit) {
+        _paths = xs;
+        _acc = drop_if_exist(acc);
+        continue ;
+      }
+      _paths = xs;
+      _acc = /* :: */[
+        x,
+        acc
+      ];
+      continue ;
     };
   };
   var match = split_aux(x);

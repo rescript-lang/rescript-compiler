@@ -128,7 +128,8 @@ function compare(context, state, _a, _b) {
       if (b.tag === /* Neg */1) {
         _b = b[0];
         continue ;
-      } else if (a.tag === /* Sum */2) {
+      }
+      if (a.tag === /* Sum */2) {
         if (is_number(b)) {
           return 1;
         }

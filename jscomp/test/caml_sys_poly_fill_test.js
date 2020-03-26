@@ -52,10 +52,11 @@ try {
   tmp = Caml_sys.caml_sys_getenv("Caml_sys_poly_fill_test");
 }
 catch (exn){
-  if (exn !== Caml_builtin_exceptions.not_found) {
+  if (exn === Caml_builtin_exceptions.not_found) {
+    tmp = "Z";
+  } else {
     throw exn;
   }
-  tmp = "Z";
 }
 
 eq("File \"caml_sys_poly_fill_test.ml\", line 23, characters 5-12", "Z", tmp);

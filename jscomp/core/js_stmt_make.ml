@@ -168,6 +168,15 @@ let string_switch
              { statement_desc = String_switch (e,clauses, default); comment}]
     | None -> { statement_desc = String_switch (e,clauses, default); comment}
 
+let rec block_last_is_return_throw_or_continue (x : J.block) = 
+  match x with 
+  | [] -> false 
+  | [x ] ->
+    (match x.statement_desc with 
+    |  Return _ | Throw _ | Continue _ -> 
+     true 
+     | _ -> false)
+  | _ :: rest -> block_last_is_return_throw_or_continue rest 
 
 (* TODO: it also make sense  to extract some common statements 
     between those two branches, it does happen since in OCaml you 
@@ -223,22 +232,21 @@ let if_ ?comment  ?declaration ?else_ (e : J.expression) (then_ : J.block)   : t
       |  [], _ ->
          aux ?comment (E.not e) ifnot [] (*Make sure no infinite loop*)        
       | [ {statement_desc = Return {return_value = ret_ifso; _}; _}], 
-        [ {statement_desc = Return {return_value = ret_ifnot; _}; _} as _ifnot_stmt]
+        [ {statement_desc = Return {return_value = ret_ifnot; _}; _}]
         ->      
         return_stmt (E.econd e ret_ifso ret_ifnot ) 
-      | [{statement_desc = Return _ | Throw _}],_  
-        ->  block ({ statement_desc =
-                If (e, 
-                    ifso,
-                    []); 
-              comment } :: ifnot )
-      | _, [{statement_desc = Return _ | Throw _}]
+      | _, [{statement_desc = Return _ }]
         ->  block ({ statement_desc =
                        If (E.not e, 
                            ifnot,
                            []); 
                      comment } :: ifso )
-
+      | _ ,_  when block_last_is_return_throw_or_continue ifso
+        ->  block ({ statement_desc =
+                       If (e, 
+                           ifso,
+                           []); 
+                     comment } :: ifnot )
       | [ {statement_desc = 
              Exp
                {expression_desc = Bin(Eq, ({expression_desc = Var (Id var_ifso); _} as lhs_ifso), rhs_ifso); _};

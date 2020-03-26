@@ -74,10 +74,9 @@ function filter(f, a) {
         acc
       ];
       continue ;
-    } else {
-      _i = i + 1 | 0;
-      continue ;
     }
+    _i = i + 1 | 0;
+    continue ;
   };
 }
 
@@ -93,16 +92,16 @@ function filter_map(f, a) {
     }
     var v = a[i];
     var match = Curry._1(f, v);
-    _i = i + 1 | 0;
     if (match !== void 0) {
+      _i = i + 1 | 0;
       _acc = /* :: */[
         Caml_option.valFromOption(match),
         acc
       ];
       continue ;
-    } else {
-      continue ;
     }
+    _i = i + 1 | 0;
+    continue ;
   };
 }
 

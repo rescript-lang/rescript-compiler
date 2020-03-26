@@ -84,13 +84,12 @@ function find(s, _n) {
     if (n >= syms.contents) {
       syms.contents = syms.contents + 1 | 0;
       return n;
-    } else {
-      if (Caml_array.caml_array_get(symtab, n) === s) {
-        return n;
-      }
-      _n = n + 1 | 0;
-      continue ;
     }
+    if (Caml_array.caml_array_get(symtab, n) === s) {
+      return n;
+    }
+    _n = n + 1 | 0;
+    continue ;
   };
 }
 
@@ -162,31 +161,30 @@ function skip(_param) {
             if (match !== 42) {
               _param$1 = void 0;
               continue ;
-            } else {
-              if (peekch(void 0) === /* "/" */47) {
-                return skip((Curry._1(getch, void 0), void 0));
-              }
-              _param$1 = void 0;
-              continue ;
             }
+            if (peekch(void 0) === /* "/" */47) {
+              return skip((Curry._1(getch, void 0), void 0));
+            }
+            _param$1 = void 0;
+            continue ;
           };
         }
       }
       _param = void 0;
       continue ;
-    } else if (ch >= 11) {
+    }
+    if (ch >= 11) {
       if (ch < 13) {
         return ch;
       }
       _param = void 0;
       continue ;
-    } else {
-      if (ch < 9) {
-        return ch;
-      }
-      _param = void 0;
-      continue ;
     }
+    if (ch < 9) {
+      return ch;
+    }
+    _param = void 0;
+    continue ;
   };
 }
 
@@ -196,10 +194,11 @@ function next(param) {
     match = skip(void 0);
   }
   catch (exn){
-    if (exn !== Caml_builtin_exceptions.end_of_file) {
+    if (exn === Caml_builtin_exceptions.end_of_file) {
+      match = void 0;
+    } else {
       throw exn;
     }
-    match = void 0;
   }
   if (match === void 0) {
     return /* Op */Block.__(0, ["EOF!"]);
@@ -215,14 +214,13 @@ function next(param) {
         glo[e] = getq(void 0);
         _e = e + 1 | 0;
         continue ;
-      } else {
-        Curry._1(getch, void 0);
-        gpos.contents = e + 8 & -8;
-        return /* SLit */Block.__(2, [
-                  (b + 232 | 0) + 4194304 | 0,
-                  Bytes.to_string(Bytes.sub(glo, b, e - b | 0))
-                ]);
       }
+      Curry._1(getch, void 0);
+      gpos.contents = e + 8 & -8;
+      return /* SLit */Block.__(2, [
+                (b + 232 | 0) + 4194304 | 0,
+                Bytes.to_string(Bytes.sub(glo, b, e - b | 0))
+              ]);
     };
   }
   if (c >= 48) {
@@ -306,10 +304,9 @@ function next(param) {
       if (Caml_string.get(lop, 0) === c && Caml_string.get(lop, 1) === peekch(void 0)) {
         Curry._1(getch, void 0);
         return /* Op */Block.__(0, [lop]);
-      } else {
-        _param = param$2[1];
-        continue ;
       }
+      _param = param$2[1];
+      continue ;
     };
   }
 }
@@ -788,15 +785,18 @@ function binary(stk, lvl) {
     while(true) {
       var loc = _loc;
       var t = Curry._1(next$1, void 0);
-      if (t.tag || lvlof(t[0]) !== lvl) {
+      if (t.tag) {
         Curry._1(unnext, t);
         return loc;
-      } else {
+      }
+      if (lvlof(t[0]) === lvl) {
         var loc$prime = test(lvl - 8 | 0, loc);
         binary(stk, lvl - 1 | 0);
         _loc = loc$prime;
         continue ;
       }
+      Curry._1(unnext, t);
+      return loc;
     };
   };
   binary(stk, lvl - 1 | 0);
@@ -854,17 +854,16 @@ function unary(stk) {
                     /* Int */0,
                     5
                   ];
-              } else {
-                if (!Caml_obj.caml_equal(t, tokchar)) {
-                  throw [
-                        Caml_builtin_exceptions.failure,
-                        "[cast] expected"
-                      ];
-                }
+              } else if (Caml_obj.caml_equal(t, tokchar)) {
                 match$1 = /* tuple */[
                   /* Chr */1,
                   2
                 ];
+              } else {
+                throw [
+                      Caml_builtin_exceptions.failure,
+                      "[cast] expected"
+                    ];
               }
               for(var k = 1 ,k_finish = match$1[1]; k <= k_finish; ++k){
                 Curry._1(next$1, void 0);
@@ -977,19 +976,18 @@ function postfix(stk) {
             if (nextis(/* Op */Block.__(0, [")"]))) {
               Curry._1(next$1, void 0);
               return List.iter(pop, l);
-            } else {
-              expr(stk);
-              push(0);
-              if (nextis(/* Op */Block.__(0, [","]))) {
-                Curry._1(next$1, void 0);
-              }
-              _rl = List.tl(rl);
-              _l = /* :: */[
-                List.hd(rl),
-                l
-              ];
-              continue ;
             }
+            expr(stk);
+            push(0);
+            if (nextis(/* Op */Block.__(0, [","]))) {
+              Curry._1(next$1, void 0);
+            }
+            _rl = List.tl(rl);
+            _l = /* :: */[
+              List.hd(rl),
+              l
+            ];
+            continue ;
           };
         };
         patchlval(void 0);
@@ -1122,49 +1120,49 @@ function decl(g, _n, _stk) {
                   ];
           }
           var match = Curry._1(next$1, void 0);
-          if (match.tag !== /* Sym */3) {
-            throw [
-                  Caml_builtin_exceptions.failure,
-                  "[var] expected in [decl]"
-                ];
-          }
-          var s = match[0];
-          var n$prime = n + 1 | 0;
-          var stk$prime;
-          if (g) {
-            var glo = Caml_array.caml_array_get(globs, s);
-            if (glo.va >= 0) {
-              throw [
-                    Caml_builtin_exceptions.failure,
-                    "symbol defined twice"
-                  ];
+          if (match.tag === /* Sym */3) {
+            var s = match[0];
+            var n$prime = n + 1 | 0;
+            var stk$prime;
+            if (g) {
+              var glo = Caml_array.caml_array_get(globs, s);
+              if (glo.va >= 0) {
+                throw [
+                      Caml_builtin_exceptions.failure,
+                      "symbol defined twice"
+                    ];
+              }
+              var va = (gpos.contents + 232 | 0) + 4194304 | 0;
+              Caml_array.caml_array_set(globs, s, {
+                    loc: glo.loc,
+                    va: va
+                  });
+              gpos.contents = gpos.contents + 8 | 0;
+              stk$prime = stk;
+            } else {
+              stk$prime = /* :: */[
+                /* tuple */[
+                  s,
+                  top - (n$prime << 3) | 0
+                ],
+                stk
+              ];
             }
-            var va = (gpos.contents + 232 | 0) + 4194304 | 0;
-            Caml_array.caml_array_set(globs, s, {
-                  loc: glo.loc,
-                  va: va
-                });
-            gpos.contents = gpos.contents + 8 | 0;
-            stk$prime = stk;
-          } else {
-            stk$prime = /* :: */[
-              /* tuple */[
-                s,
-                top - (n$prime << 3) | 0
-              ],
-              stk
-            ];
+            if (!nextis(/* Op */Block.__(0, [","]))) {
+              return /* tuple */[
+                      n$prime,
+                      stk$prime
+                    ];
+            }
+            Curry._1(next$1, void 0);
+            _stk = stk$prime;
+            _n = n$prime;
+            continue ;
           }
-          if (!nextis(/* Op */Block.__(0, [","]))) {
-            return /* tuple */[
-                    n$prime,
-                    stk$prime
-                  ];
-          }
-          Curry._1(next$1, void 0);
-          _stk = stk$prime;
-          _n = n$prime;
-          continue ;
+          throw [
+                Caml_builtin_exceptions.failure,
+                "[var] expected in [decl]"
+              ];
         };
       }
       }(top));
@@ -1190,31 +1188,30 @@ function decl(g, _n, _stk) {
       _stk = match[1];
       _n = n + match[0] | 0;
       continue ;
-    } else {
-      Curry._1(unnext, t);
-      if (!g && n !== 0) {
-        if ((n << 3) >= 256) {
-          throw [
-                Caml_builtin_exceptions.assert_failure,
-                /* tuple */[
-                  "qcc.ml",
-                  436,
-                  6
-                ]
-              ];
-        }
-        out(4752364);
-        out((n << 3));
-        align.contents = align.contents + n | 0;
-      }
-      if (dbg.contents && !g) {
-        console.error("end of blk decls");
-      }
-      return /* tuple */[
-              n,
-              stk
-            ];
     }
+    Curry._1(unnext, t);
+    if (!g && n !== 0) {
+      if ((n << 3) >= 256) {
+        throw [
+              Caml_builtin_exceptions.assert_failure,
+              /* tuple */[
+                "qcc.ml",
+                436,
+                6
+              ]
+            ];
+      }
+      out(4752364);
+      out((n << 3));
+      align.contents = align.contents + n | 0;
+    }
+    if (dbg.contents && !g) {
+      console.error("end of blk decls");
+    }
+    return /* tuple */[
+            n,
+            stk
+          ];
   };
 }
 
@@ -1247,7 +1244,8 @@ function stmt(brk, stk) {
       loc$1 = loc;
     }
     return patch(true, loc$1, opos.contents);
-  } else if (Caml_obj.caml_equal(t, tokwhile) || Caml_obj.caml_equal(t, tokfor)) {
+  }
+  if (Caml_obj.caml_equal(t, tokwhile) || Caml_obj.caml_equal(t, tokfor)) {
     var bl = {
       contents: 0
     };
@@ -1296,7 +1294,8 @@ function stmt(brk, stk) {
     out(233);
     le(32, (match[1] - opos.contents | 0) - 4 | 0);
     return patch(true, bl.contents, opos.contents);
-  } else if (Caml_obj.caml_equal(t, tokret)) {
+  }
+  if (Caml_obj.caml_equal(t, tokret)) {
     if (!nextis(/* Op */Block.__(0, [";"]))) {
       expr(stk);
     }
@@ -1306,7 +1305,8 @@ function stmt(brk, stk) {
     le(32, retl.contents);
     retl.contents = loc$3;
     return ;
-  } else if (Caml_obj.caml_equal(t, tokbreak)) {
+  }
+  if (Caml_obj.caml_equal(t, tokbreak)) {
     Curry._1(next$1, void 0);
     var brkl = brk[0];
     var n = align.contents - brk[1] | 0;
@@ -1329,7 +1329,8 @@ function stmt(brk, stk) {
     le(32, brkl.contents);
     brkl.contents = loc$4;
     return ;
-  } else if (!t.tag) {
+  }
+  if (!t.tag) {
     switch (t[0]) {
       case ";" :
           return ;
@@ -1371,14 +1372,9 @@ function top(_param) {
       decl(true, 0, /* [] */0);
       _param = void 0;
       continue ;
-    } else {
-      var match = Curry._1(next$1, void 0);
-      if (match.tag !== /* Sym */3) {
-        throw [
-              Caml_builtin_exceptions.failure,
-              "[decl] or [fun] expected"
-            ];
-      }
+    }
+    var match = Curry._1(next$1, void 0);
+    if (match.tag === /* Sym */3) {
       var f = match[0];
       var g = Caml_array.caml_array_get(globs, f);
       if (g.va >= 0) {
@@ -1487,6 +1483,10 @@ function top(_param) {
       _param = void 0;
       continue ;
     }
+    throw [
+          Caml_builtin_exceptions.failure,
+          "[decl] or [fun] expected"
+        ];
   };
 }
 
@@ -1823,20 +1823,19 @@ function main(param) {
             ppsym(tok);
             _param = void 0;
             continue ;
-          } else {
-            if (tok[0] === "EOF!") {
-              return Printf.printf(/* Format */[
-                          /* String_literal */Block.__(11, [
-                              "End of input stream\n",
-                              /* End_of_format */0
-                            ]),
-                          "End of input stream\n"
-                        ]);
-            }
-            ppsym(tok);
-            _param = void 0;
-            continue ;
           }
+          if (tok[0] === "EOF!") {
+            return Printf.printf(/* Format */[
+                        /* String_literal */Block.__(11, [
+                            "End of input stream\n",
+                            /* End_of_format */0
+                          ]),
+                        "End of input stream\n"
+                      ]);
+          }
+          ppsym(tok);
+          _param = void 0;
+          continue ;
         };
     default:
       var oc = Pervasives.open_out("a.out");

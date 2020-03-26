@@ -38,11 +38,11 @@ function from_tokens(lst) {
   };
   return (function (param) {
       var match = l.contents;
-      if (!match) {
-        throw Caml_builtin_exceptions.end_of_file;
+      if (match) {
+        l.contents = match[1];
+        return match[0];
       }
-      l.contents = match[1];
-      return match[0];
+      throw Caml_builtin_exceptions.end_of_file;
     });
 }
 

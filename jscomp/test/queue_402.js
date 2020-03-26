@@ -27,18 +27,17 @@ function add(x, q) {
     q.length = 1;
     q.tail = cell;
     return ;
-  } else {
-    var tail = q.tail;
-    var head = tail.next;
-    var cell$1 = {
-      content: x,
-      next: head
-    };
-    q.length = q.length + 1 | 0;
-    tail.next = cell$1;
-    q.tail = cell$1;
-    return ;
   }
+  var tail = q.tail;
+  var head = tail.next;
+  var cell$1 = {
+    content: x,
+    next: head
+  };
+  q.length = q.length + 1 | 0;
+  tail.next = cell$1;
+  q.tail = cell$1;
+  
 }
 
 function peek(q) {
