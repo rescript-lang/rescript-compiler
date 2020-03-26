@@ -214,10 +214,9 @@ function rfind_and_split(arr, cmp, v) {
 function find_with_index(arr, cmp, v) {
   var len = arr.length;
   var _i = 0;
-  var len$1 = len;
   while(true) {
     var i = _i;
-    if (i >= len$1) {
+    if (i >= len) {
       return -1;
     }
     if (Curry._2(cmp, arr[i], v)) {

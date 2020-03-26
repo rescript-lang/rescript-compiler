@@ -2006,9 +2006,7 @@ function check_collisions(collid, all_collids, state) {
     return /* [] */0;
   }
   var broad = broad_phase(collid, all_collids, state);
-  var c = collid;
   var _cs = broad;
-  var state$1 = state;
   var _acc = /* [] */0;
   while(true) {
     var acc = _acc;
@@ -2017,16 +2015,16 @@ function check_collisions(collid, all_collids, state) {
       return acc;
     }
     var h = cs[0];
-    var c_obj = c[2];
+    var c_obj = collid[2];
     var new_objs;
-    if (equals(c, h)) {
+    if (equals(collid, h)) {
       new_objs = /* tuple */[
         void 0,
         void 0
       ];
     } else {
-      var match = check_collision(c, h);
-      new_objs = match !== void 0 && h[2].id !== c_obj.id ? process_collision(match, c, h, state$1) : /* tuple */[
+      var match = check_collision(collid, h);
+      new_objs = match !== void 0 && h[2].id !== c_obj.id ? process_collision(match, collid, h, state) : /* tuple */[
           void 0,
           void 0
         ];

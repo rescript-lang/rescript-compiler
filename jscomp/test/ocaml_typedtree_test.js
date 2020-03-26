@@ -21242,45 +21242,44 @@ var __ocaml_lex_tables = {
 
 function token(lexbuf) {
   lexbuf.lex_mem = Caml_array.caml_make_vect(8, -1);
-  var lexbuf$1 = lexbuf;
   var ___ocaml_lex_state = 0;
   while(true) {
     var __ocaml_lex_state = ___ocaml_lex_state;
-    var __ocaml_lex_state$1 = Lexing.new_engine(__ocaml_lex_tables, __ocaml_lex_state, lexbuf$1);
+    var __ocaml_lex_state$1 = Lexing.new_engine(__ocaml_lex_tables, __ocaml_lex_state, lexbuf);
     switch (__ocaml_lex_state$1) {
       case 0 :
           if (!escaped_newlines.contents) {
             throw [
                   $$Error$4,
-                  /* Illegal_character */Block.__(0, [Lexing.lexeme_char(lexbuf$1, 0)]),
-                  curr(lexbuf$1)
+                  /* Illegal_character */Block.__(0, [Lexing.lexeme_char(lexbuf, 0)]),
+                  curr(lexbuf)
                 ];
           }
-          update_loc(lexbuf$1, void 0, 1, false, 0);
-          return token(lexbuf$1);
+          update_loc(lexbuf, void 0, 1, false, 0);
+          return token(lexbuf);
       case 1 :
-          update_loc(lexbuf$1, void 0, 1, false, 0);
+          update_loc(lexbuf, void 0, 1, false, 0);
           return /* EOL */100;
       case 2 :
-          return token(lexbuf$1);
+          return token(lexbuf);
       case 3 :
           return /* UNDERSCORE */94;
       case 4 :
           return /* TILDE */89;
       case 5 :
-          return /* LABEL */Block.__(10, [get_label_name(lexbuf$1)]);
+          return /* LABEL */Block.__(10, [get_label_name(lexbuf)]);
       case 6 :
-          prerr_warning(curr(lexbuf$1), /* Deprecated */Block.__(0, ["ISO-Latin1 characters in identifiers"]));
-          return /* LABEL */Block.__(10, [get_label_name(lexbuf$1)]);
+          prerr_warning(curr(lexbuf), /* Deprecated */Block.__(0, ["ISO-Latin1 characters in identifiers"]));
+          return /* LABEL */Block.__(10, [get_label_name(lexbuf)]);
       case 7 :
           return /* QUESTION */76;
       case 8 :
-          return /* OPTLABEL */Block.__(13, [get_label_name(lexbuf$1)]);
+          return /* OPTLABEL */Block.__(13, [get_label_name(lexbuf)]);
       case 9 :
-          prerr_warning(curr(lexbuf$1), /* Deprecated */Block.__(0, ["ISO-Latin1 characters in identifiers"]));
-          return /* OPTLABEL */Block.__(13, [get_label_name(lexbuf$1)]);
+          prerr_warning(curr(lexbuf), /* Deprecated */Block.__(0, ["ISO-Latin1 characters in identifiers"]));
+          return /* OPTLABEL */Block.__(13, [get_label_name(lexbuf)]);
       case 10 :
-          var s = Lexing.lexeme(lexbuf$1);
+          var s = Lexing.lexeme(lexbuf);
           try {
             return Hashtbl.find(keyword_table, s);
           }
@@ -21291,16 +21290,16 @@ function token(lexbuf) {
             throw exn;
           }
       case 11 :
-          prerr_warning(curr(lexbuf$1), /* Deprecated */Block.__(0, ["ISO-Latin1 characters in identifiers"]));
-          return /* LIDENT */Block.__(11, [Lexing.lexeme(lexbuf$1)]);
+          prerr_warning(curr(lexbuf), /* Deprecated */Block.__(0, ["ISO-Latin1 characters in identifiers"]));
+          return /* LIDENT */Block.__(11, [Lexing.lexeme(lexbuf)]);
       case 12 :
-          return /* UIDENT */Block.__(17, [Lexing.lexeme(lexbuf$1)]);
+          return /* UIDENT */Block.__(17, [Lexing.lexeme(lexbuf)]);
       case 13 :
-          prerr_warning(curr(lexbuf$1), /* Deprecated */Block.__(0, ["ISO-Latin1 characters in identifiers"]));
-          return /* UIDENT */Block.__(17, [Lexing.lexeme(lexbuf$1)]);
+          prerr_warning(curr(lexbuf), /* Deprecated */Block.__(0, ["ISO-Latin1 characters in identifiers"]));
+          return /* UIDENT */Block.__(17, [Lexing.lexeme(lexbuf)]);
       case 14 :
           try {
-            return /* INT */Block.__(7, [cvt_int_literal(Lexing.lexeme(lexbuf$1))]);
+            return /* INT */Block.__(7, [cvt_int_literal(Lexing.lexeme(lexbuf))]);
           }
           catch (raw_exn){
             var exn$1 = Caml_js_exceptions.internalToOCamlException(raw_exn);
@@ -21308,16 +21307,16 @@ function token(lexbuf) {
               throw [
                     $$Error$4,
                     /* Literal_overflow */Block.__(5, ["int"]),
-                    curr(lexbuf$1)
+                    curr(lexbuf)
                   ];
             }
             throw exn$1;
           }
       case 15 :
-          return /* FLOAT */Block.__(1, [remove_underscores(Lexing.lexeme(lexbuf$1))]);
+          return /* FLOAT */Block.__(1, [remove_underscores(Lexing.lexeme(lexbuf))]);
       case 16 :
           try {
-            return /* INT32 */Block.__(8, [cvt_int32_literal(Lexing.lexeme(lexbuf$1))]);
+            return /* INT32 */Block.__(8, [cvt_int32_literal(Lexing.lexeme(lexbuf))]);
           }
           catch (raw_exn$1){
             var exn$2 = Caml_js_exceptions.internalToOCamlException(raw_exn$1);
@@ -21325,14 +21324,14 @@ function token(lexbuf) {
               throw [
                     $$Error$4,
                     /* Literal_overflow */Block.__(5, ["int32"]),
-                    curr(lexbuf$1)
+                    curr(lexbuf)
                   ];
             }
             throw exn$2;
           }
       case 17 :
           try {
-            return /* INT64 */Block.__(9, [cvt_int64_literal(Lexing.lexeme(lexbuf$1))]);
+            return /* INT64 */Block.__(9, [cvt_int64_literal(Lexing.lexeme(lexbuf))]);
           }
           catch (raw_exn$2){
             var exn$3 = Caml_js_exceptions.internalToOCamlException(raw_exn$2);
@@ -21340,14 +21339,14 @@ function token(lexbuf) {
               throw [
                     $$Error$4,
                     /* Literal_overflow */Block.__(5, ["int64"]),
-                    curr(lexbuf$1)
+                    curr(lexbuf)
                   ];
             }
             throw exn$3;
           }
       case 18 :
           try {
-            return /* NATIVEINT */Block.__(12, [cvt_nativeint_literal(Lexing.lexeme(lexbuf$1))]);
+            return /* NATIVEINT */Block.__(12, [cvt_nativeint_literal(Lexing.lexeme(lexbuf))]);
           }
           catch (raw_exn$3){
             var exn$4 = Caml_js_exceptions.internalToOCamlException(raw_exn$3);
@@ -21355,7 +21354,7 @@ function token(lexbuf) {
               throw [
                     $$Error$4,
                     /* Literal_overflow */Block.__(5, ["nativeint"]),
-                    curr(lexbuf$1)
+                    curr(lexbuf)
                   ];
             }
             throw exn$4;
@@ -21363,90 +21362,90 @@ function token(lexbuf) {
       case 19 :
           reset_string_buffer(void 0);
           is_in_string.contents = true;
-          var string_start = lexbuf$1.lex_start_p;
-          string_start_loc.contents = curr(lexbuf$1);
-          string(lexbuf$1);
+          var string_start = lexbuf.lex_start_p;
+          string_start_loc.contents = curr(lexbuf);
+          string(lexbuf);
           is_in_string.contents = false;
-          lexbuf$1.lex_start_p = string_start;
+          lexbuf.lex_start_p = string_start;
           return /* STRING */Block.__(16, [/* tuple */[
                       get_stored_string(void 0),
                       void 0
                     ]]);
       case 20 :
           reset_string_buffer(void 0);
-          var delim = Lexing.lexeme(lexbuf$1);
+          var delim = Lexing.lexeme(lexbuf);
           var delim$1 = $$String.sub(delim, 1, delim.length - 2 | 0);
           is_in_string.contents = true;
-          var string_start$1 = lexbuf$1.lex_start_p;
-          string_start_loc.contents = curr(lexbuf$1);
-          __ocaml_lex_quoted_string_rec(delim$1, lexbuf$1, 183);
+          var string_start$1 = lexbuf.lex_start_p;
+          string_start_loc.contents = curr(lexbuf);
+          __ocaml_lex_quoted_string_rec(delim$1, lexbuf, 183);
           is_in_string.contents = false;
-          lexbuf$1.lex_start_p = string_start$1;
+          lexbuf.lex_start_p = string_start$1;
           return /* STRING */Block.__(16, [/* tuple */[
                       get_stored_string(void 0),
                       delim$1
                     ]]);
       case 21 :
-          update_loc(lexbuf$1, void 0, 1, false, 1);
-          return /* CHAR */Block.__(0, [Lexing.lexeme_char(lexbuf$1, 1)]);
+          update_loc(lexbuf, void 0, 1, false, 1);
+          return /* CHAR */Block.__(0, [Lexing.lexeme_char(lexbuf, 1)]);
       case 22 :
-          return /* CHAR */Block.__(0, [Lexing.lexeme_char(lexbuf$1, 1)]);
+          return /* CHAR */Block.__(0, [Lexing.lexeme_char(lexbuf, 1)]);
       case 23 :
-          return /* CHAR */Block.__(0, [char_for_backslash(Lexing.lexeme_char(lexbuf$1, 2))]);
+          return /* CHAR */Block.__(0, [char_for_backslash(Lexing.lexeme_char(lexbuf, 2))]);
       case 24 :
-          return /* CHAR */Block.__(0, [char_for_decimal_code(lexbuf$1, 2)]);
+          return /* CHAR */Block.__(0, [char_for_decimal_code(lexbuf, 2)]);
       case 25 :
-          return /* CHAR */Block.__(0, [char_for_hexadecimal_code(lexbuf$1, 3)]);
+          return /* CHAR */Block.__(0, [char_for_hexadecimal_code(lexbuf, 3)]);
       case 26 :
-          var l = Lexing.lexeme(lexbuf$1);
+          var l = Lexing.lexeme(lexbuf);
           var esc = $$String.sub(l, 1, l.length - 1 | 0);
           throw [
                 $$Error$4,
                 /* Illegal_escape */Block.__(1, [esc]),
-                curr(lexbuf$1)
+                curr(lexbuf)
               ];
       case 27 :
-          var match = with_comment_buffer(comment, lexbuf$1);
+          var match = with_comment_buffer(comment, lexbuf);
           return /* COMMENT */Block.__(18, [/* tuple */[
                       match[0],
                       match[1]
                     ]]);
       case 28 :
-          var match$1 = with_comment_buffer(comment, lexbuf$1);
+          var match$1 = with_comment_buffer(comment, lexbuf);
           return /* DOCSTRING */Block.__(19, [docstring(match$1[0], match$1[1])]);
       case 29 :
-          var stars = Lexing.sub_lexeme(lexbuf$1, lexbuf$1.lex_start_pos, lexbuf$1.lex_curr_pos);
+          var stars = Lexing.sub_lexeme(lexbuf, lexbuf.lex_start_pos, lexbuf.lex_curr_pos);
           var match$2 = with_comment_buffer((function(stars){
               return function (lexbuf) {
                 store_string("*" + stars);
                 return __ocaml_lex_comment_rec(lexbuf, 132);
               }
-              }(stars)), lexbuf$1);
+              }(stars)), lexbuf);
           return /* COMMENT */Block.__(18, [/* tuple */[
                       match$2[0],
                       match$2[1]
                     ]]);
       case 30 :
           if (print_warnings.contents) {
-            prerr_warning(curr(lexbuf$1), /* Comment_start */0);
+            prerr_warning(curr(lexbuf), /* Comment_start */0);
           }
-          var match$3 = with_comment_buffer(comment, lexbuf$1);
+          var match$3 = with_comment_buffer(comment, lexbuf);
           return /* COMMENT */Block.__(18, [/* tuple */[
                       match$3[0],
                       match$3[1]
                     ]]);
       case 31 :
-          var stars$1 = Lexing.sub_lexeme(lexbuf$1, lexbuf$1.lex_start_pos, lexbuf$1.lex_curr_pos - 2 | 0);
+          var stars$1 = Lexing.sub_lexeme(lexbuf, lexbuf.lex_start_pos, lexbuf.lex_curr_pos - 2 | 0);
           return /* COMMENT */Block.__(18, [/* tuple */[
                       stars$1,
-                      curr(lexbuf$1)
+                      curr(lexbuf)
                     ]]);
       case 32 :
-          var loc = curr(lexbuf$1);
+          var loc = curr(lexbuf);
           prerr_warning(loc, /* Comment_not_end */1);
-          lexbuf$1.lex_curr_pos = lexbuf$1.lex_curr_pos - 1 | 0;
-          var curpos = lexbuf$1.lex_curr_p;
-          lexbuf$1.lex_curr_p = {
+          lexbuf.lex_curr_pos = lexbuf.lex_curr_pos - 1 | 0;
+          var curpos = lexbuf.lex_curr_p;
+          lexbuf.lex_curr_p = {
             pos_fname: curpos.pos_fname,
             pos_lnum: curpos.pos_lnum,
             pos_bol: curpos.pos_bol,
@@ -21454,10 +21453,10 @@ function token(lexbuf) {
           };
           return /* STAR */86;
       case 33 :
-          var num = Lexing.sub_lexeme(lexbuf$1, Caml_array.caml_array_get(lexbuf$1.lex_mem, 0), Caml_array.caml_array_get(lexbuf$1.lex_mem, 1));
-          var name = Lexing.sub_lexeme_opt(lexbuf$1, Caml_array.caml_array_get(lexbuf$1.lex_mem, 3), Caml_array.caml_array_get(lexbuf$1.lex_mem, 2));
-          update_loc(lexbuf$1, name, Caml_format.caml_int_of_string(num), true, 0);
-          return token(lexbuf$1);
+          var num = Lexing.sub_lexeme(lexbuf, Caml_array.caml_array_get(lexbuf.lex_mem, 0), Caml_array.caml_array_get(lexbuf.lex_mem, 1));
+          var name = Lexing.sub_lexeme_opt(lexbuf, Caml_array.caml_array_get(lexbuf.lex_mem, 3), Caml_array.caml_array_get(lexbuf.lex_mem, 2));
+          update_loc(lexbuf, name, Caml_format.caml_int_of_string(num), true, 0);
+          return token(lexbuf);
       case 34 :
           return /* SHARP */84;
       case 35 :
@@ -21554,21 +21553,21 @@ function token(lexbuf) {
           return /* MINUSDOT */61;
       case 81 :
       case 82 :
-          return /* PREFIXOP */Block.__(14, [Lexing.lexeme(lexbuf$1)]);
+          return /* PREFIXOP */Block.__(14, [Lexing.lexeme(lexbuf)]);
       case 83 :
-          return /* INFIXOP0 */Block.__(2, [Lexing.lexeme(lexbuf$1)]);
+          return /* INFIXOP0 */Block.__(2, [Lexing.lexeme(lexbuf)]);
       case 84 :
-          return /* INFIXOP1 */Block.__(3, [Lexing.lexeme(lexbuf$1)]);
+          return /* INFIXOP1 */Block.__(3, [Lexing.lexeme(lexbuf)]);
       case 85 :
-          return /* INFIXOP2 */Block.__(4, [Lexing.lexeme(lexbuf$1)]);
+          return /* INFIXOP2 */Block.__(4, [Lexing.lexeme(lexbuf)]);
       case 86 :
-          return /* INFIXOP4 */Block.__(6, [Lexing.lexeme(lexbuf$1)]);
+          return /* INFIXOP4 */Block.__(6, [Lexing.lexeme(lexbuf)]);
       case 87 :
           return /* PERCENT */71;
       case 88 :
-          return /* INFIXOP3 */Block.__(5, [Lexing.lexeme(lexbuf$1)]);
+          return /* INFIXOP3 */Block.__(5, [Lexing.lexeme(lexbuf)]);
       case 89 :
-          return /* SHARPOP */Block.__(15, [Lexing.lexeme(lexbuf$1)]);
+          return /* SHARPOP */Block.__(15, [Lexing.lexeme(lexbuf)]);
       case 90 :
           if (if_then_else.contents === /* Dir_out */2) {
             return /* EOF */25;
@@ -21577,22 +21576,22 @@ function token(lexbuf) {
             throw [
                   $$Error$4,
                   /* Unterminated_if */2,
-                  curr(lexbuf$1)
+                  curr(lexbuf)
                 ];
           }
           throw [
                 $$Error$4,
                 /* Unterminated_else */3,
-                curr(lexbuf$1)
+                curr(lexbuf)
               ];
       case 91 :
           throw [
                 $$Error$4,
-                /* Illegal_character */Block.__(0, [Lexing.lexeme_char(lexbuf$1, 0)]),
-                curr(lexbuf$1)
+                /* Illegal_character */Block.__(0, [Lexing.lexeme_char(lexbuf, 0)]),
+                curr(lexbuf)
               ];
       default:
-        Curry._1(lexbuf$1.refill_buff, lexbuf$1);
+        Curry._1(lexbuf.refill_buff, lexbuf);
         ___ocaml_lex_state = __ocaml_lex_state$1;
         continue ;
     }
@@ -21818,43 +21817,42 @@ function comment(lexbuf) {
 
 function string(lexbuf) {
   lexbuf.lex_mem = Caml_array.caml_make_vect(2, -1);
-  var lexbuf$1 = lexbuf;
   var ___ocaml_lex_state = 164;
   while(true) {
     var __ocaml_lex_state = ___ocaml_lex_state;
-    var __ocaml_lex_state$1 = Lexing.new_engine(__ocaml_lex_tables, __ocaml_lex_state, lexbuf$1);
+    var __ocaml_lex_state$1 = Lexing.new_engine(__ocaml_lex_tables, __ocaml_lex_state, lexbuf);
     switch (__ocaml_lex_state$1) {
       case 0 :
           return ;
       case 1 :
-          var space = Lexing.sub_lexeme(lexbuf$1, Caml_array.caml_array_get(lexbuf$1.lex_mem, 0), lexbuf$1.lex_curr_pos);
-          update_loc(lexbuf$1, void 0, 1, false, space.length);
-          return string(lexbuf$1);
+          var space = Lexing.sub_lexeme(lexbuf, Caml_array.caml_array_get(lexbuf.lex_mem, 0), lexbuf.lex_curr_pos);
+          update_loc(lexbuf, void 0, 1, false, space.length);
+          return string(lexbuf);
       case 2 :
-          store_string_char(char_for_backslash(Lexing.lexeme_char(lexbuf$1, 1)));
-          return string(lexbuf$1);
+          store_string_char(char_for_backslash(Lexing.lexeme_char(lexbuf, 1)));
+          return string(lexbuf);
       case 3 :
-          store_string_char(char_for_decimal_code(lexbuf$1, 1));
-          return string(lexbuf$1);
+          store_string_char(char_for_decimal_code(lexbuf, 1));
+          return string(lexbuf);
       case 4 :
-          store_string_char(char_for_hexadecimal_code(lexbuf$1, 2));
-          return string(lexbuf$1);
+          store_string_char(char_for_hexadecimal_code(lexbuf, 2));
+          return string(lexbuf);
       case 5 :
           if (comment_start_loc.contents !== /* [] */0) {
-            return string(lexbuf$1);
+            return string(lexbuf);
           }
-          var loc = curr(lexbuf$1);
+          var loc = curr(lexbuf);
           prerr_warning(loc, /* Illegal_backslash */7);
-          store_string_char(Lexing.lexeme_char(lexbuf$1, 0));
-          store_string_char(Lexing.lexeme_char(lexbuf$1, 1));
-          return string(lexbuf$1);
+          store_string_char(Lexing.lexeme_char(lexbuf, 0));
+          store_string_char(Lexing.lexeme_char(lexbuf, 1));
+          return string(lexbuf);
       case 6 :
           if (comment_start_loc.contents === /* [] */0) {
-            prerr_warning(curr(lexbuf$1), /* Eol_in_string */14);
+            prerr_warning(curr(lexbuf), /* Eol_in_string */14);
           }
-          update_loc(lexbuf$1, void 0, 1, false, 0);
-          store_string(Lexing.lexeme(lexbuf$1));
-          return string(lexbuf$1);
+          update_loc(lexbuf, void 0, 1, false, 0);
+          store_string(Lexing.lexeme(lexbuf));
+          return string(lexbuf);
       case 7 :
           is_in_string.contents = false;
           throw [
@@ -21863,10 +21861,10 @@ function string(lexbuf) {
                 string_start_loc.contents
               ];
       case 8 :
-          store_string_char(Lexing.lexeme_char(lexbuf$1, 0));
-          return string(lexbuf$1);
+          store_string_char(Lexing.lexeme_char(lexbuf, 0));
+          return string(lexbuf);
       default:
-        Curry._1(lexbuf$1.refill_buff, lexbuf$1);
+        Curry._1(lexbuf.refill_buff, lexbuf);
         ___ocaml_lex_state = __ocaml_lex_state$1;
         continue ;
     }
@@ -29275,10 +29273,6 @@ function unify_row(env, row1, row2) {
                   var f1 = param[1];
                   var l = param[0];
                   try {
-                    var env$1 = env;
-                    var fixed1$1 = fixed1;
-                    var fixed2$1 = fixed2;
-                    var more$1 = more;
                     var _f1 = f1;
                     var _f2 = f2;
                     while(true) {
@@ -29305,7 +29299,7 @@ function unify_row(env, row1, row2) {
                                 /* [] */0
                               ];
                         }
-                        if (fixed2$1) {
+                        if (fixed2) {
                           throw [
                                 Unify,
                                 /* [] */0
@@ -29324,7 +29318,7 @@ function unify_row(env, row1, row2) {
                                   /* [] */0
                                 ];
                           }
-                          if (fixed1$1) {
+                          if (fixed1) {
                             throw [
                                   Unify,
                                   /* [] */0
@@ -29340,7 +29334,7 @@ function unify_row(env, row1, row2) {
                           var tl2 = f2$2[1];
                           var c2 = f2$2[0];
                           var redo = false;
-                          if (m1 || m2 || fixed1$1 || fixed2$1 || rigid_variants.contents && (List.length(tl1) === 1 || List.length(tl2) === 1)) {
+                          if (m1 || m2 || fixed1 || fixed2 || rigid_variants.contents && (List.length(tl1) === 1 || List.length(tl2) === 1)) {
                             var match = Pervasives.$at(tl1, tl2);
                             var tmp;
                             if (match) {
@@ -29353,7 +29347,7 @@ function unify_row(env, row1, row2) {
                               }
                               List.iter((function(t1){
                                   return function (param) {
-                                    return unify(env$1, t1, param);
+                                    return unify(env, t1, param);
                                   }
                                   }(t1)), match[1]);
                               tmp = e1.contents !== void 0 || e2.contents !== void 0;
@@ -29389,8 +29383,8 @@ function unify_row(env, row1, row2) {
                             };
                             var tl2$prime = remq(tl2$1, tl1$1);
                             var tl1$prime = remq(tl1$1, tl2$1);
-                            var partial_arg = repr(more$1).level;
-                            var partial_arg$1 = env$1.contents;
+                            var partial_arg = repr(more).level;
+                            var partial_arg$1 = env.contents;
                             List.iter((function(partial_arg,partial_arg$1){
                                 return function (param) {
                                   return update_level(partial_arg$1, partial_arg, param);
@@ -29431,7 +29425,7 @@ function unify_row(env, row1, row2) {
                                   /* [] */0
                                 ];
                           }
-                          if (fixed1$1) {
+                          if (fixed1) {
                             throw [
                                   Unify,
                                   /* [] */0
@@ -29446,7 +29440,7 @@ function unify_row(env, row1, row2) {
                                   /* [] */0
                                 ];
                           }
-                          if (fixed1$1) {
+                          if (fixed1) {
                             throw [
                                   Unify,
                                   /* [] */0
@@ -29455,11 +29449,11 @@ function unify_row(env, row1, row2) {
                           var t2 = match$1;
                           var e1$1 = f1$2[3];
                           set_row_field(e1$1, f2$2);
-                          update_level(env$1.contents, repr(more$1).level, t2);
+                          update_level(env.contents, repr(more).level, t2);
                           try {
                             return List.iter((function(t2){
                                       return function (t1) {
-                                        return unify(env$1, t1, t2);
+                                        return unify(env, t1, t2);
                                       }
                                       }(t2)), f1$2[1]);
                           }
@@ -29485,7 +29479,7 @@ function unify_row(env, row1, row2) {
                                     /* [] */0
                                   ];
                             }
-                            if (fixed2$1) {
+                            if (fixed2) {
                               throw [
                                     Unify,
                                     /* [] */0
@@ -29493,11 +29487,11 @@ function unify_row(env, row1, row2) {
                             }
                             var e2$1 = f2$2[3];
                             set_row_field(e2$1, f1$2);
-                            update_level(env$1.contents, repr(more$1).level, t1$1);
+                            update_level(env.contents, repr(more).level, t1$1);
                             try {
                               return List.iter((function(t1$1){
                                         return function (param) {
-                                          return unify(env$1, t1$1, param);
+                                          return unify(env, t1$1, param);
                                         }
                                         }(t1$1)), f2$2[1]);
                             }
@@ -29508,7 +29502,7 @@ function unify_row(env, row1, row2) {
                           } else {
                             var match$3 = f2$2[0];
                             if (match$3 !== void 0) {
-                              return unify(env$1, t1$1, match$3);
+                              return unify(env, t1$1, match$3);
                             }
                             throw [
                                   Unify,
@@ -29535,7 +29529,7 @@ function unify_row(env, row1, row2) {
                                     /* [] */0
                                   ];
                             }
-                            if (fixed2$1) {
+                            if (fixed2) {
                               throw [
                                     Unify,
                                     /* [] */0
@@ -31821,15 +31815,11 @@ function eqtype(rename, type_pairs, subst, env, t1, t2) {
                       ];
                 }
                 if (match$3.tag === /* Tvariant */8) {
-                  var rename$1 = rename;
-                  var type_pairs$1 = type_pairs;
-                  var subst$1 = subst;
-                  var env$1 = env;
                   var row1 = match$2[0];
                   var _row2 = match$3[0];
                   while(true) {
                     var row2 = _row2;
-                    var match$4 = expand_head_rigid(env$1, row_more(row2));
+                    var match$4 = expand_head_rigid(env, row_more(row2));
                     var match$5 = match$4.desc;
                     if (typeof match$5 !== "number" && match$5.tag === /* Tvariant */8) {
                       _row2 = match$5[0];
@@ -31847,7 +31837,7 @@ function eqtype(rename, type_pairs, subst, env, t1, t2) {
                           ];
                     }
                     if (!static_row(row1$1)) {
-                      eqtype(rename$1, type_pairs$1, subst$1, env$1, row1$1.row_more, row2$1.row_more);
+                      eqtype(rename, type_pairs, subst, env, row1$1.row_more, row2$1.row_more);
                     }
                     return List.iter((function (param) {
                                   var match = row_field_repr_aux(/* [] */0, param[1]);
@@ -31930,17 +31920,17 @@ function eqtype(rename, type_pairs, subst, env, t1, t2) {
                                       }
                                       var tl2 = match$3[1];
                                       var t2 = match$3[0];
-                                      eqtype(rename$1, type_pairs$1, subst$1, env$1, t1, t2);
+                                      eqtype(rename, type_pairs, subst, env, t1, t2);
                                       if (List.length(tl1) === List.length(tl2)) {
                                         return List.iter2((function (param, param$1) {
-                                                      return eqtype(rename$1, type_pairs$1, subst$1, env$1, param, param$1);
+                                                      return eqtype(rename, type_pairs, subst, env, param, param$1);
                                                     }), tl1, tl2);
                                       } else {
                                         List.iter((function (param) {
-                                                return eqtype(rename$1, type_pairs$1, subst$1, env$1, t1, param);
+                                                return eqtype(rename, type_pairs, subst, env, t1, param);
                                               }), tl2);
                                         return List.iter((function (t1) {
-                                                      return eqtype(rename$1, type_pairs$1, subst$1, env$1, t1, t2);
+                                                      return eqtype(rename, type_pairs, subst, env, t1, t2);
                                                     }), tl1);
                                       }
                                     }
@@ -31961,7 +31951,7 @@ function eqtype(rename, type_pairs, subst, env, t1, t2) {
                                       }
                                       var match$5 = match$1[0];
                                       if (match$5 !== void 0) {
-                                        return eqtype(rename$1, type_pairs$1, subst$1, env$1, match$4, match$5);
+                                        return eqtype(rename, type_pairs, subst, env, match$4, match$5);
                                       }
                                       throw [
                                             Unify,
@@ -37544,7 +37534,6 @@ function print_out_sig_item(ppf, param) {
                                   ]),
                                 " =%a {%a@;<1 -2>}"
                               ]), print_private, td.otype_private, (function (param, param$1) {
-                              var pr = print_out_label;
                               var sep = function (ppf) {
                                 return Format.fprintf(ppf, /* Format */[
                                             /* Formatting_lit */Block.__(17, [
@@ -37558,15 +37547,14 @@ function print_out_sig_item(ppf, param) {
                                             "@ "
                                           ]);
                               };
-                              var ppf = param;
                               var _param = param$1;
                               while(true) {
                                 var param$2 = _param;
                                 if (!param$2) {
                                   return ;
                                 }
-                                Curry._1(sep, ppf);
-                                Curry._2(pr, ppf, param$2[0]);
+                                Curry._1(sep, param);
+                                Curry._2(print_out_label, param, param$2[0]);
                                 _param = param$2[1];
                                 continue ;
                               };
@@ -50474,7 +50462,6 @@ function exhaust(ext, pss, n) {
       }
     };
     if (full_match(true, false, constrs) && !should_extend(ext, constrs)) {
-      var f = try_non_omega;
       var _param = constrs;
       while(true) {
         var param = _param;
@@ -50482,7 +50469,7 @@ function exhaust(ext, pss, n) {
           return /* Rnone */0;
         }
         var match = param[0];
-        var r = Curry._1(f, /* tuple */[
+        var r = Curry._1(try_non_omega, /* tuple */[
               match[0],
               match[1]
             ]);
@@ -58004,7 +57991,6 @@ function type_approx(env, _sexp) {
 
 function list_labels(env, ty) {
   return wrap_trace_gadt_instances(env, (function (param) {
-                var env$1 = env;
                 var _visited = /* [] */0;
                 var _ls = /* [] */0;
                 var _ty_fun = param;
@@ -58012,7 +57998,7 @@ function list_labels(env, ty) {
                   var ty_fun = _ty_fun;
                   var ls = _ls;
                   var visited = _visited;
-                  var ty = expand_head(env$1, ty_fun);
+                  var ty = expand_head(env, ty_fun);
                   if (List.memq(ty, visited)) {
                     return /* tuple */[
                             List.rev(ls),
@@ -61260,7 +61246,6 @@ function type_application(env, funct, sargs) {
               ];
         }
         var _args$1 = args;
-        var omitted$2 = omitted;
         var _ty_fun$1 = ty_fun0;
         var _param = Pervasives.$at(sargs, more_sargs);
         while(true) {
@@ -61286,7 +61271,7 @@ function type_application(env, funct, sargs) {
                                     ];
                             }
                           }), List.rev(args$1)),
-                    instance(void 0, env, result_type(omitted$2, ty_fun$2))
+                    instance(void 0, env, result_type(omitted, ty_fun$2))
                   ];
           }
           var match$11 = param[0];
@@ -61348,7 +61333,7 @@ function type_application(env, funct, sargs) {
           if (exit$1 === 1) {
             var ty_fun$4;
             ty_fun$4 = typeof td === "number" || td.tag !== /* Tarrow */1 ? ty_fun$3 : newty2(current_level.contents, td);
-            var ty_res = result_type(Pervasives.$at(omitted$2, ignored.contents), ty_fun$4);
+            var ty_res = result_type(Pervasives.$at(omitted, ignored.contents), ty_fun$4);
             var match$13 = ty_res.desc;
             var exit$2 = 0;
             if (typeof match$13 === "number" || match$13.tag !== /* Tarrow */1) {
@@ -70540,8 +70525,6 @@ function unify_parents_struct(env, ty, st) {
                 if (match.tag) {
                   return ;
                 } else {
-                  var env$1 = env;
-                  var ty$1 = ty;
                   var _cl = match[1];
                   while(true) {
                     var cl = _cl;
@@ -70549,9 +70532,9 @@ function unify_parents_struct(env, ty, st) {
                     switch (match$1.tag | 0) {
                       case /* Tcl_ident */0 :
                           try {
-                            var decl = find_class(match$1[0], env$1);
-                            var match$2 = find_cltype_for_path(env$1, decl.cty_path);
-                            return unify$2(env$1, ty$1, instance(void 0, env$1, match$2[1]));
+                            var decl = find_class(match$1[0], env);
+                            var match$2 = find_cltype_for_path(env, decl.cty_path);
+                            return unify$2(env, ty, instance(void 0, env, match$2[1]));
                           }
                           catch (exn){
                             if (exn === Caml_builtin_exceptions.not_found) {
@@ -70567,7 +70550,7 @@ function unify_parents_struct(env, ty, st) {
                                 ];
                           }
                       case /* Tcl_structure */1 :
-                          return unify_parents_struct(env$1, ty$1, match$1[0]);
+                          return unify_parents_struct(env, ty, match$1[0]);
                       case /* Tcl_fun */2 :
                       case /* Tcl_let */4 :
                           _cl = match$1[3];
@@ -74714,13 +74697,12 @@ function normalize_signature(env) {
                       case /* Sig_value */0 :
                           return normalize_type(env, param[1].val_type);
                       case /* Sig_module */3 :
-                          var env$1 = env;
                           var _param = param[1].md_type;
                           while(true) {
                             var param$1 = _param;
                             switch (param$1.tag | 0) {
                               case /* Mty_signature */1 :
-                                  return normalize_signature(env$1)(param$1[0]);
+                                  return normalize_signature(env)(param$1[0]);
                               case /* Mty_functor */2 :
                                   _param = param$1[2];
                                   continue ;

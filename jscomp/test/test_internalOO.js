@@ -207,7 +207,6 @@ function find_first(f, _param) {
     if (Curry._1(f, v)) {
       var _v0 = v;
       var _d0 = param[/* d */2];
-      var f$1 = f;
       var _param$1 = param[/* l */0];
       while(true) {
         var param$1 = _param$1;
@@ -220,7 +219,7 @@ function find_first(f, _param) {
                 ];
         }
         var v$1 = param$1[/* v */1];
-        if (Curry._1(f$1, v$1)) {
+        if (Curry._1(f, v$1)) {
           _param$1 = param$1[/* l */0];
           _d0 = param$1[/* d */2];
           _v0 = v$1;
@@ -246,7 +245,6 @@ function find_first_opt(f, _param) {
     if (Curry._1(f, v)) {
       var _v0 = v;
       var _d0 = param[/* d */2];
-      var f$1 = f;
       var _param$1 = param[/* l */0];
       while(true) {
         var param$1 = _param$1;
@@ -259,7 +257,7 @@ function find_first_opt(f, _param) {
                 ];
         }
         var v$1 = param$1[/* v */1];
-        if (Curry._1(f$1, v$1)) {
+        if (Curry._1(f, v$1)) {
           _param$1 = param$1[/* l */0];
           _d0 = param$1[/* d */2];
           _v0 = v$1;
@@ -285,7 +283,6 @@ function find_last(f, _param) {
     if (Curry._1(f, v)) {
       var _v0 = v;
       var _d0 = param[/* d */2];
-      var f$1 = f;
       var _param$1 = param[/* r */3];
       while(true) {
         var param$1 = _param$1;
@@ -298,7 +295,7 @@ function find_last(f, _param) {
                 ];
         }
         var v$1 = param$1[/* v */1];
-        if (Curry._1(f$1, v$1)) {
+        if (Curry._1(f, v$1)) {
           _param$1 = param$1[/* r */3];
           _d0 = param$1[/* d */2];
           _v0 = v$1;
@@ -324,7 +321,6 @@ function find_last_opt(f, _param) {
     if (Curry._1(f, v)) {
       var _v0 = v;
       var _d0 = param[/* d */2];
-      var f$1 = f;
       var _param$1 = param[/* r */3];
       while(true) {
         var param$1 = _param$1;
@@ -337,7 +333,7 @@ function find_last_opt(f, _param) {
                 ];
         }
         var v$1 = param$1[/* v */1];
-        if (Curry._1(f$1, v$1)) {
+        if (Curry._1(f, v$1)) {
           _param$1 = param$1[/* r */3];
           _d0 = param$1[/* d */2];
           _v0 = v$1;
@@ -1168,7 +1164,6 @@ function find_first$1(f, _param) {
     if (Curry._1(f, v)) {
       var _v0 = v;
       var _d0 = param[/* d */2];
-      var f$1 = f;
       var _param$1 = param[/* l */0];
       while(true) {
         var param$1 = _param$1;
@@ -1181,7 +1176,7 @@ function find_first$1(f, _param) {
                 ];
         }
         var v$1 = param$1[/* v */1];
-        if (Curry._1(f$1, v$1)) {
+        if (Curry._1(f, v$1)) {
           _param$1 = param$1[/* l */0];
           _d0 = param$1[/* d */2];
           _v0 = v$1;
@@ -1207,7 +1202,6 @@ function find_first_opt$1(f, _param) {
     if (Curry._1(f, v)) {
       var _v0 = v;
       var _d0 = param[/* d */2];
-      var f$1 = f;
       var _param$1 = param[/* l */0];
       while(true) {
         var param$1 = _param$1;
@@ -1220,7 +1214,7 @@ function find_first_opt$1(f, _param) {
                 ];
         }
         var v$1 = param$1[/* v */1];
-        if (Curry._1(f$1, v$1)) {
+        if (Curry._1(f, v$1)) {
           _param$1 = param$1[/* l */0];
           _d0 = param$1[/* d */2];
           _v0 = v$1;
@@ -1246,7 +1240,6 @@ function find_last$1(f, _param) {
     if (Curry._1(f, v)) {
       var _v0 = v;
       var _d0 = param[/* d */2];
-      var f$1 = f;
       var _param$1 = param[/* r */3];
       while(true) {
         var param$1 = _param$1;
@@ -1259,7 +1252,7 @@ function find_last$1(f, _param) {
                 ];
         }
         var v$1 = param$1[/* v */1];
-        if (Curry._1(f$1, v$1)) {
+        if (Curry._1(f, v$1)) {
           _param$1 = param$1[/* r */3];
           _d0 = param$1[/* d */2];
           _v0 = v$1;
@@ -1285,7 +1278,6 @@ function find_last_opt$1(f, _param) {
     if (Curry._1(f, v)) {
       var _v0 = v;
       var _d0 = param[/* d */2];
-      var f$1 = f;
       var _param$1 = param[/* r */3];
       while(true) {
         var param$1 = _param$1;
@@ -1298,7 +1290,7 @@ function find_last_opt$1(f, _param) {
                 ];
         }
         var v$1 = param$1[/* v */1];
-        if (Curry._1(f$1, v$1)) {
+        if (Curry._1(f, v$1)) {
           _param$1 = param$1[/* r */3];
           _d0 = param$1[/* d */2];
           _v0 = v$1;
@@ -2129,7 +2121,6 @@ function find_first$2(f, _param) {
     if (Curry._1(f, v)) {
       var _v0 = v;
       var _d0 = param[/* d */2];
-      var f$1 = f;
       var _param$1 = param[/* l */0];
       while(true) {
         var param$1 = _param$1;
@@ -2142,7 +2133,7 @@ function find_first$2(f, _param) {
                 ];
         }
         var v$1 = param$1[/* v */1];
-        if (Curry._1(f$1, v$1)) {
+        if (Curry._1(f, v$1)) {
           _param$1 = param$1[/* l */0];
           _d0 = param$1[/* d */2];
           _v0 = v$1;
@@ -2168,7 +2159,6 @@ function find_first_opt$2(f, _param) {
     if (Curry._1(f, v)) {
       var _v0 = v;
       var _d0 = param[/* d */2];
-      var f$1 = f;
       var _param$1 = param[/* l */0];
       while(true) {
         var param$1 = _param$1;
@@ -2181,7 +2171,7 @@ function find_first_opt$2(f, _param) {
                 ];
         }
         var v$1 = param$1[/* v */1];
-        if (Curry._1(f$1, v$1)) {
+        if (Curry._1(f, v$1)) {
           _param$1 = param$1[/* l */0];
           _d0 = param$1[/* d */2];
           _v0 = v$1;
@@ -2207,7 +2197,6 @@ function find_last$2(f, _param) {
     if (Curry._1(f, v)) {
       var _v0 = v;
       var _d0 = param[/* d */2];
-      var f$1 = f;
       var _param$1 = param[/* r */3];
       while(true) {
         var param$1 = _param$1;
@@ -2220,7 +2209,7 @@ function find_last$2(f, _param) {
                 ];
         }
         var v$1 = param$1[/* v */1];
-        if (Curry._1(f$1, v$1)) {
+        if (Curry._1(f, v$1)) {
           _param$1 = param$1[/* r */3];
           _d0 = param$1[/* d */2];
           _v0 = v$1;
@@ -2246,7 +2235,6 @@ function find_last_opt$2(f, _param) {
     if (Curry._1(f, v)) {
       var _v0 = v;
       var _d0 = param[/* d */2];
-      var f$1 = f;
       var _param$1 = param[/* r */3];
       while(true) {
         var param$1 = _param$1;
@@ -2259,7 +2247,7 @@ function find_last_opt$2(f, _param) {
                 ];
         }
         var v$1 = param$1[/* v */1];
-        if (Curry._1(f$1, v$1)) {
+        if (Curry._1(f, v$1)) {
           _param$1 = param$1[/* r */3];
           _d0 = param$1[/* d */2];
           _v0 = v$1;

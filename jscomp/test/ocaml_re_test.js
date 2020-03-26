@@ -1491,8 +1491,6 @@ function loop(info, s, pos, st) {
     return st;
   }
   var st$prime = Caml_array.caml_array_get(st.next, Caml_bytes.get(info.i_cols, Caml_string.get(s, pos)));
-  var info$1 = info;
-  var s$1 = s;
   var _pos = pos;
   var _st = st;
   var _st$prime = st$prime;
@@ -1502,23 +1500,23 @@ function loop(info, s, pos, st) {
     var pos$1 = _pos;
     if (st$prime$1.idx < 0) {
       if (st$prime$1.idx === -3) {
-        Caml_array.caml_array_set(info$1.positions, st$prime$1.real_idx, pos$1 + 1 | 0);
+        Caml_array.caml_array_set(info.positions, st$prime$1.real_idx, pos$1 + 1 | 0);
         return st$prime$1;
       } else {
-        validate(info$1, s$1, pos$1, st$1);
-        return loop(info$1, s$1, pos$1, st$1);
+        validate(info, s, pos$1, st$1);
+        return loop(info, s, pos$1, st$1);
       }
     }
     var pos$2 = pos$1 + 1 | 0;
-    if (pos$2 < info$1.last) {
-      var st$prime$prime = Caml_array.caml_array_get(st$prime$1.next, Caml_bytes.get(info$1.i_cols, Caml_string.get(s$1, pos$2)));
-      Caml_array.caml_array_set(info$1.positions, st$prime$1.idx, pos$2);
+    if (pos$2 < info.last) {
+      var st$prime$prime = Caml_array.caml_array_get(st$prime$1.next, Caml_bytes.get(info.i_cols, Caml_string.get(s, pos$2)));
+      Caml_array.caml_array_set(info.positions, st$prime$1.idx, pos$2);
       _st$prime = st$prime$prime;
       _st = st$prime$1;
       _pos = pos$2;
       continue ;
     } else {
-      Caml_array.caml_array_set(info$1.positions, st$prime$1.idx, pos$2);
+      Caml_array.caml_array_set(info.positions, st$prime$1.idx, pos$2);
       return st$prime$1;
     }
   };
@@ -1591,18 +1589,15 @@ function scan_str(info, s, initial_state, groups) {
     if (groups) {
       return loop(info, s, pos, initial_state);
     } else {
-      var info$1 = info;
-      var s$1 = s;
       var _pos = pos;
-      var last$1 = last;
       var _st = initial_state;
       while(true) {
         var st = _st;
         var pos$1 = _pos;
-        if (pos$1 >= last$1) {
+        if (pos$1 >= last) {
           return st;
         }
-        var st$prime = Caml_array.caml_array_get(st.next, Caml_bytes.get(info$1.i_cols, Caml_string.get(s$1, pos$1)));
+        var st$prime = Caml_array.caml_array_get(st.next, Caml_bytes.get(info.i_cols, Caml_string.get(s, pos$1)));
         if (st$prime.idx >= 0) {
           _st = st$prime;
           _pos = pos$1 + 1 | 0;
@@ -1611,46 +1606,43 @@ function scan_str(info, s, initial_state, groups) {
           if (st$prime.idx === -3) {
             return st$prime;
           }
-          validate(info$1, s$1, pos$1, st);
+          validate(info, s, pos$1, st);
           continue ;
         }
       };
     }
   }
-  var info$2 = {
+  var info$1 = {
     re: info.re,
     i_cols: info.i_cols,
     positions: info.positions,
     pos: info.pos,
     last: last - 1 | 0
   };
-  var st$1 = scan_str(info$2, s, initial_state, groups);
+  var st$1 = scan_str(info$1, s, initial_state, groups);
   if (st$1.idx === -3) {
     return st$1;
   } else {
-    var info$3 = info$2;
     var pos$2 = last - 1 | 0;
-    var st$2 = st$1;
-    var groups$1 = groups;
     while(true) {
-      var st$prime$1 = Caml_array.caml_array_get(st$2.next, info$3.re.lnl);
+      var st$prime$1 = Caml_array.caml_array_get(st$1.next, info$1.re.lnl);
       if (st$prime$1.idx >= 0) {
-        if (groups$1) {
-          Caml_array.caml_array_set(info$3.positions, st$prime$1.idx, pos$2 + 1 | 0);
+        if (groups) {
+          Caml_array.caml_array_set(info$1.positions, st$prime$1.idx, pos$2 + 1 | 0);
         }
         return st$prime$1;
       } else if (st$prime$1.idx === -3) {
-        if (groups$1) {
-          Caml_array.caml_array_set(info$3.positions, st$prime$1.real_idx, pos$2 + 1 | 0);
+        if (groups) {
+          Caml_array.caml_array_set(info$1.positions, st$prime$1.real_idx, pos$2 + 1 | 0);
         }
         return st$prime$1;
       } else {
-        var c = info$3.re.lnl;
-        var real_c = Caml_bytes.get(info$3.i_cols, /* "\n" */10);
-        var cat = category(info$3.re, c);
-        var desc$prime = delta$1(info$3, cat, real_c, st$2);
-        var st$prime$2 = find_state(info$3.re, desc$prime);
-        Caml_array.caml_array_set(st$2.next, c, st$prime$2);
+        var c = info$1.re.lnl;
+        var real_c = Caml_bytes.get(info$1.i_cols, /* "\n" */10);
+        var cat = category(info$1.re, c);
+        var desc$prime = delta$1(info$1, cat, real_c, st$1);
+        var st$prime$2 = find_state(info$1.re, desc$prime);
+        Caml_array.caml_array_set(st$1.next, c, st$prime$2);
         continue ;
       }
     };
@@ -1672,14 +1664,13 @@ function trans_set(cache, cm, s) {
     s
   ];
   try {
-    var x = v;
     var _param = cache.contents;
     while(true) {
       var param = _param;
       if (!param) {
         throw Caml_builtin_exceptions.not_found;
       }
-      var c = compare(x, param[/* v */1]);
+      var c = compare(v, param[/* v */1]);
       if (c === 0) {
         return param[/* d */2];
       }

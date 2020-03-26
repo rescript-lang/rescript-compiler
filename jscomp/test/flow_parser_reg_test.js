@@ -2286,91 +2286,89 @@ var __ocaml_lex_tables = {
 
 function token(env, lexbuf) {
   lexbuf.lex_mem = Caml_array.caml_make_vect(8, -1);
-  var env$1 = env;
-  var lexbuf$1 = lexbuf;
   var ___ocaml_lex_state = 0;
   while(true) {
     var __ocaml_lex_state = ___ocaml_lex_state;
-    var __ocaml_lex_state$1 = Lexing.new_engine(__ocaml_lex_tables, __ocaml_lex_state, lexbuf$1);
+    var __ocaml_lex_state$1 = Lexing.new_engine(__ocaml_lex_tables, __ocaml_lex_state, lexbuf);
     switch (__ocaml_lex_state$1) {
       case 0 :
-          Lexing.new_line(lexbuf$1);
-          return token(env$1, lexbuf$1);
+          Lexing.new_line(lexbuf);
+          return token(env, lexbuf);
       case 1 :
-          var env$2 = lex_error(env$1, from_lb(env$1.lex_source, lexbuf$1), /* UnexpectedToken */Block.__(1, ["ILLEGAL"]));
-          return token(env$2, lexbuf$1);
+          var env$1 = lex_error(env, from_lb(env.lex_source, lexbuf), /* UnexpectedToken */Block.__(1, ["ILLEGAL"]));
+          return token(env$1, lexbuf);
       case 2 :
-          unicode_fix_cols(lexbuf$1);
-          return token(env$1, lexbuf$1);
+          unicode_fix_cols(lexbuf);
+          return token(env, lexbuf);
       case 3 :
-          var start = from_lb(env$1.lex_source, lexbuf$1);
+          var start = from_lb(env.lex_source, lexbuf);
           var buf = $$Buffer.create(127);
-          var match = comment(env$1, buf, lexbuf$1);
-          var env$3 = save_comment(match[0], start, match[1], buf, true);
-          return token(env$3, lexbuf$1);
+          var match = comment(env, buf, lexbuf);
+          var env$2 = save_comment(match[0], start, match[1], buf, true);
+          return token(env$2, lexbuf);
       case 4 :
-          var sp = Lexing.sub_lexeme(lexbuf$1, lexbuf$1.lex_start_pos + 2 | 0, Caml_array.caml_array_get(lexbuf$1.lex_mem, 0));
-          var escape_type = Lexing.sub_lexeme(lexbuf$1, Caml_array.caml_array_get(lexbuf$1.lex_mem, 0), lexbuf$1.lex_curr_pos);
-          var pattern = Lexing.sub_lexeme(lexbuf$1, lexbuf$1.lex_start_pos, lexbuf$1.lex_curr_pos);
-          if (env$1.lex_enable_comment_syntax) {
-            var env$4;
-            if (env$1.lex_in_comment_syntax) {
-              var loc = from_lb(env$1.lex_source, lexbuf$1);
-              env$4 = unexpected_error(env$1, loc, pattern);
+          var sp = Lexing.sub_lexeme(lexbuf, lexbuf.lex_start_pos + 2 | 0, Caml_array.caml_array_get(lexbuf.lex_mem, 0));
+          var escape_type = Lexing.sub_lexeme(lexbuf, Caml_array.caml_array_get(lexbuf.lex_mem, 0), lexbuf.lex_curr_pos);
+          var pattern = Lexing.sub_lexeme(lexbuf, lexbuf.lex_start_pos, lexbuf.lex_curr_pos);
+          if (env.lex_enable_comment_syntax) {
+            var env$3;
+            if (env.lex_in_comment_syntax) {
+              var loc = from_lb(env.lex_source, lexbuf);
+              env$3 = unexpected_error(env, loc, pattern);
             } else {
-              env$4 = env$1;
+              env$3 = env;
             }
-            var env$5 = in_comment_syntax(true, env$4);
+            var env$4 = in_comment_syntax(true, env$3);
             if (escape_type === ":") {
               return /* tuple */[
-                      env$5,
+                      env$4,
                       /* T_COLON */77
                     ];
             } else {
-              return token(env$5, lexbuf$1);
+              return token(env$4, lexbuf);
             }
           } else {
-            var start$1 = from_lb(env$1.lex_source, lexbuf$1);
+            var start$1 = from_lb(env.lex_source, lexbuf);
             var buf$1 = $$Buffer.create(127);
             $$Buffer.add_string(buf$1, sp);
             $$Buffer.add_string(buf$1, escape_type);
-            var match$1 = comment(env$1, buf$1, lexbuf$1);
-            var env$6 = save_comment(match$1[0], start$1, match$1[1], buf$1, true);
-            return token(env$6, lexbuf$1);
+            var match$1 = comment(env, buf$1, lexbuf);
+            var env$5 = save_comment(match$1[0], start$1, match$1[1], buf$1, true);
+            return token(env$5, lexbuf);
           }
       case 5 :
-          if (env$1.lex_in_comment_syntax) {
-            var env$7 = in_comment_syntax(false, env$1);
-            return token(env$7, lexbuf$1);
+          if (env.lex_in_comment_syntax) {
+            var env$6 = in_comment_syntax(false, env);
+            return token(env$6, lexbuf);
           } else {
-            yyback(1, lexbuf$1);
+            yyback(1, lexbuf);
             return /* tuple */[
-                    env$1,
+                    env,
                     /* T_MULT */97
                   ];
           }
       case 6 :
-          var start$2 = from_lb(env$1.lex_source, lexbuf$1);
+          var start$2 = from_lb(env.lex_source, lexbuf);
           var buf$2 = $$Buffer.create(127);
-          var match$2 = line_comment(env$1, buf$2, lexbuf$1);
-          var env$8 = save_comment(match$2[0], start$2, match$2[1], buf$2, false);
-          return token(env$8, lexbuf$1);
+          var match$2 = line_comment(env, buf$2, lexbuf);
+          var env$7 = save_comment(match$2[0], start$2, match$2[1], buf$2, false);
+          return token(env$7, lexbuf);
       case 7 :
-          if (lexbuf$1.lex_start_pos !== 0) {
+          if (lexbuf.lex_start_pos !== 0) {
             return /* tuple */[
-                    env$1,
+                    env,
                     /* T_ERROR */104
                   ];
           }
-          var match$3 = line_comment(env$1, $$Buffer.create(127), lexbuf$1);
-          return token(match$3[0], lexbuf$1);
+          var match$3 = line_comment(env, $$Buffer.create(127), lexbuf);
+          return token(match$3[0], lexbuf);
       case 8 :
-          var quote = Caml_bytes.get(lexbuf$1.lex_buffer, lexbuf$1.lex_start_pos);
-          var start$3 = from_lb(env$1.lex_source, lexbuf$1);
+          var quote = Caml_bytes.get(lexbuf.lex_buffer, lexbuf.lex_start_pos);
+          var start$3 = from_lb(env.lex_source, lexbuf);
           var buf$3 = $$Buffer.create(127);
           var raw = $$Buffer.create(127);
           $$Buffer.add_char(raw, quote);
-          var match$4 = string_quote(env$1, quote, buf$3, raw, false, lexbuf$1);
+          var match$4 = string_quote(env, quote, buf$3, raw, false, lexbuf);
           return /* tuple */[
                   match$4[0],
                   /* T_STRING */Block.__(1, [/* tuple */[
@@ -2384,9 +2382,9 @@ function token(env, lexbuf) {
           var cooked = $$Buffer.create(127);
           var raw$1 = $$Buffer.create(127);
           var literal = $$Buffer.create(127);
-          $$Buffer.add_string(literal, Lexing.lexeme(lexbuf$1));
-          var start$4 = from_lb(env$1.lex_source, lexbuf$1);
-          var match$5 = template_part(env$1, start$4, cooked, raw$1, literal, lexbuf$1);
+          $$Buffer.add_string(literal, Lexing.lexeme(lexbuf));
+          var start$4 = from_lb(env.lex_source, lexbuf);
+          var match$5 = template_part(env, start$4, cooked, raw$1, literal, lexbuf);
           return /* tuple */[
                   match$5[0],
                   /* T_TEMPLATE_PART */Block.__(2, [/* tuple */[
@@ -2400,27 +2398,27 @@ function token(env, lexbuf) {
                       ]])
                 ];
       case 10 :
-          var w = Lexing.sub_lexeme(lexbuf$1, Caml_array.caml_array_get(lexbuf$1.lex_mem, 0), lexbuf$1.lex_curr_pos);
-          return illegal_number(env$1, lexbuf$1, w, /* T_NUMBER */Block.__(0, [/* BINARY */0]));
+          var w = Lexing.sub_lexeme(lexbuf, Caml_array.caml_array_get(lexbuf.lex_mem, 0), lexbuf.lex_curr_pos);
+          return illegal_number(env, lexbuf, w, /* T_NUMBER */Block.__(0, [/* BINARY */0]));
       case 11 :
           return /* tuple */[
-                  env$1,
+                  env,
                   /* T_NUMBER */Block.__(0, [/* BINARY */0])
                 ];
       case 12 :
-          var w$1 = Lexing.sub_lexeme(lexbuf$1, Caml_array.caml_array_get(lexbuf$1.lex_mem, 0), lexbuf$1.lex_curr_pos);
-          return illegal_number(env$1, lexbuf$1, w$1, /* T_NUMBER */Block.__(0, [/* OCTAL */2]));
+          var w$1 = Lexing.sub_lexeme(lexbuf, Caml_array.caml_array_get(lexbuf.lex_mem, 0), lexbuf.lex_curr_pos);
+          return illegal_number(env, lexbuf, w$1, /* T_NUMBER */Block.__(0, [/* OCTAL */2]));
       case 13 :
           return /* tuple */[
-                  env$1,
+                  env,
                   /* T_NUMBER */Block.__(0, [/* OCTAL */2])
                 ];
       case 14 :
-          var w$2 = Lexing.sub_lexeme(lexbuf$1, Caml_array.caml_array_get(lexbuf$1.lex_mem, 0), lexbuf$1.lex_curr_pos);
-          return illegal_number(env$1, lexbuf$1, w$2, /* T_NUMBER */Block.__(0, [/* LEGACY_OCTAL */1]));
+          var w$2 = Lexing.sub_lexeme(lexbuf, Caml_array.caml_array_get(lexbuf.lex_mem, 0), lexbuf.lex_curr_pos);
+          return illegal_number(env, lexbuf, w$2, /* T_NUMBER */Block.__(0, [/* LEGACY_OCTAL */1]));
       case 15 :
           return /* tuple */[
-                  env$1,
+                  env,
                   /* T_NUMBER */Block.__(0, [/* LEGACY_OCTAL */1])
                 ];
       case 16 :
@@ -2431,22 +2429,22 @@ function token(env, lexbuf) {
       case 19 :
       case 21 :
           return /* tuple */[
-                  env$1,
+                  env,
                   /* T_NUMBER */Block.__(0, [/* NORMAL */3])
                 ];
       case 22 :
-          var word = Lexing.sub_lexeme(lexbuf$1, lexbuf$1.lex_start_pos, lexbuf$1.lex_curr_pos);
-          unicode_fix_cols(lexbuf$1);
+          var word = Lexing.sub_lexeme(lexbuf, lexbuf.lex_start_pos, lexbuf.lex_curr_pos);
+          unicode_fix_cols(lexbuf);
           try {
             return /* tuple */[
-                    env$1,
+                    env,
                     Hashtbl.find(keywords, word)
                   ];
           }
           catch (exn){
             if (exn === Caml_builtin_exceptions.not_found) {
               return /* tuple */[
-                      env$1,
+                      env,
                       /* T_IDENTIFIER */0
                     ];
             }
@@ -2454,353 +2452,350 @@ function token(env, lexbuf) {
           }
       case 23 :
           return /* tuple */[
-                  env$1,
+                  env,
                   /* T_LCURLY */1
                 ];
       case 24 :
           return /* tuple */[
-                  env$1,
+                  env,
                   /* T_RCURLY */2
                 ];
       case 25 :
           return /* tuple */[
-                  env$1,
+                  env,
                   /* T_LPAREN */3
                 ];
       case 26 :
           return /* tuple */[
-                  env$1,
+                  env,
                   /* T_RPAREN */4
                 ];
       case 27 :
           return /* tuple */[
-                  env$1,
+                  env,
                   /* T_LBRACKET */5
                 ];
       case 28 :
           return /* tuple */[
-                  env$1,
+                  env,
                   /* T_RBRACKET */6
                 ];
       case 29 :
           return /* tuple */[
-                  env$1,
+                  env,
                   /* T_ELLIPSIS */11
                 ];
       case 30 :
           return /* tuple */[
-                  env$1,
+                  env,
                   /* T_PERIOD */9
                 ];
       case 31 :
           return /* tuple */[
-                  env$1,
+                  env,
                   /* T_SEMICOLON */7
                 ];
       case 32 :
           return /* tuple */[
-                  env$1,
+                  env,
                   /* T_COMMA */8
                 ];
       case 33 :
           return /* tuple */[
-                  env$1,
+                  env,
                   /* T_COLON */77
                 ];
       case 34 :
           return /* tuple */[
-                  env$1,
+                  env,
                   /* T_PLING */76
                 ];
       case 35 :
           return /* tuple */[
-                  env$1,
+                  env,
                   /* T_AND */79
                 ];
       case 36 :
           return /* tuple */[
-                  env$1,
+                  env,
                   /* T_OR */78
                 ];
       case 37 :
           return /* tuple */[
-                  env$1,
+                  env,
                   /* T_STRICT_EQUAL */85
                 ];
       case 38 :
           return /* tuple */[
-                  env$1,
+                  env,
                   /* T_STRICT_NOT_EQUAL */86
                 ];
       case 39 :
           return /* tuple */[
-                  env$1,
+                  env,
                   /* T_LESS_THAN_EQUAL */87
                 ];
       case 40 :
           return /* tuple */[
-                  env$1,
+                  env,
                   /* T_GREATER_THAN_EQUAL */88
                 ];
       case 41 :
           return /* tuple */[
-                  env$1,
+                  env,
                   /* T_EQUAL */83
                 ];
       case 42 :
           return /* tuple */[
-                  env$1,
+                  env,
                   /* T_NOT_EQUAL */84
                 ];
       case 43 :
           return /* tuple */[
-                  env$1,
+                  env,
                   /* T_INCR */102
                 ];
       case 44 :
           return /* tuple */[
-                  env$1,
+                  env,
                   /* T_DECR */103
                 ];
       case 45 :
           return /* tuple */[
-                  env$1,
+                  env,
                   /* T_LSHIFT_ASSIGN */65
                 ];
       case 46 :
           return /* tuple */[
-                  env$1,
+                  env,
                   /* T_LSHIFT */91
                 ];
       case 47 :
           return /* tuple */[
-                  env$1,
+                  env,
                   /* T_RSHIFT_ASSIGN */64
                 ];
       case 48 :
           return /* tuple */[
-                  env$1,
+                  env,
                   /* T_RSHIFT3_ASSIGN */63
                 ];
       case 49 :
           return /* tuple */[
-                  env$1,
+                  env,
                   /* T_RSHIFT3 */93
                 ];
       case 50 :
           return /* tuple */[
-                  env$1,
+                  env,
                   /* T_RSHIFT */92
                 ];
       case 51 :
           return /* tuple */[
-                  env$1,
+                  env,
                   /* T_PLUS_ASSIGN */74
                 ];
       case 52 :
           return /* tuple */[
-                  env$1,
+                  env,
                   /* T_MINUS_ASSIGN */73
                 ];
       case 53 :
           return /* tuple */[
-                  env$1,
+                  env,
                   /* T_MULT_ASSIGN */71
                 ];
       case 54 :
           return /* tuple */[
-                  env$1,
+                  env,
                   /* T_EXP_ASSIGN */72
                 ];
       case 55 :
           return /* tuple */[
-                  env$1,
+                  env,
                   /* T_MOD_ASSIGN */69
                 ];
       case 56 :
           return /* tuple */[
-                  env$1,
+                  env,
                   /* T_BIT_AND_ASSIGN */68
                 ];
       case 57 :
           return /* tuple */[
-                  env$1,
+                  env,
                   /* T_BIT_OR_ASSIGN */67
                 ];
       case 58 :
           return /* tuple */[
-                  env$1,
+                  env,
                   /* T_BIT_XOR_ASSIGN */66
                 ];
       case 59 :
           return /* tuple */[
-                  env$1,
+                  env,
                   /* T_LESS_THAN */89
                 ];
       case 60 :
           return /* tuple */[
-                  env$1,
+                  env,
                   /* T_GREATER_THAN */90
                 ];
       case 61 :
           return /* tuple */[
-                  env$1,
+                  env,
                   /* T_PLUS */94
                 ];
       case 62 :
           return /* tuple */[
-                  env$1,
+                  env,
                   /* T_MINUS */95
                 ];
       case 63 :
           return /* tuple */[
-                  env$1,
+                  env,
                   /* T_MULT */97
                 ];
       case 64 :
           return /* tuple */[
-                  env$1,
+                  env,
                   /* T_EXP */98
                 ];
       case 65 :
           return /* tuple */[
-                  env$1,
+                  env,
                   /* T_MOD */99
                 ];
       case 66 :
           return /* tuple */[
-                  env$1,
+                  env,
                   /* T_BIT_OR */80
                 ];
       case 67 :
           return /* tuple */[
-                  env$1,
+                  env,
                   /* T_BIT_AND */82
                 ];
       case 68 :
           return /* tuple */[
-                  env$1,
+                  env,
                   /* T_BIT_XOR */81
                 ];
       case 69 :
           return /* tuple */[
-                  env$1,
+                  env,
                   /* T_NOT */100
                 ];
       case 70 :
           return /* tuple */[
-                  env$1,
+                  env,
                   /* T_BIT_NOT */101
                 ];
       case 71 :
           return /* tuple */[
-                  env$1,
+                  env,
                   /* T_ASSIGN */75
                 ];
       case 72 :
           return /* tuple */[
-                  env$1,
+                  env,
                   /* T_ARROW */10
                 ];
       case 73 :
           return /* tuple */[
-                  env$1,
+                  env,
                   /* T_DIV_ASSIGN */70
                 ];
       case 74 :
           return /* tuple */[
-                  env$1,
+                  env,
                   /* T_DIV */96
                 ];
       case 75 :
           return /* tuple */[
-                  env$1,
+                  env,
                   /* T_AT */12
                 ];
       case 76 :
-          var env$9;
-          if (env$1.lex_in_comment_syntax) {
-            var loc$1 = from_lb(env$1.lex_source, lexbuf$1);
-            env$9 = lex_error(env$1, loc$1, /* UnexpectedEOS */4);
+          var env$8;
+          if (env.lex_in_comment_syntax) {
+            var loc$1 = from_lb(env.lex_source, lexbuf);
+            env$8 = lex_error(env, loc$1, /* UnexpectedEOS */4);
           } else {
-            env$9 = env$1;
+            env$8 = env;
           }
           return /* tuple */[
-                  env$9,
+                  env$8,
                   /* T_EOF */105
                 ];
       case 77 :
-          var env$10 = lex_error(env$1, from_lb(env$1.lex_source, lexbuf$1), /* UnexpectedToken */Block.__(1, ["ILLEGAL"]));
+          var env$9 = lex_error(env, from_lb(env.lex_source, lexbuf), /* UnexpectedToken */Block.__(1, ["ILLEGAL"]));
           return /* tuple */[
-                  env$10,
+                  env$9,
                   /* T_ERROR */104
                 ];
       default:
-        Curry._1(lexbuf$1.refill_buff, lexbuf$1);
+        Curry._1(lexbuf.refill_buff, lexbuf);
         ___ocaml_lex_state = __ocaml_lex_state$1;
         continue ;
     }
-    var w$3 = Lexing.sub_lexeme(lexbuf$1, Caml_array.caml_array_get(lexbuf$1.lex_mem, 0), lexbuf$1.lex_curr_pos);
-    return illegal_number(env$1, lexbuf$1, w$3, /* T_NUMBER */Block.__(0, [/* NORMAL */3]));
+    var w$3 = Lexing.sub_lexeme(lexbuf, Caml_array.caml_array_get(lexbuf.lex_mem, 0), lexbuf.lex_curr_pos);
+    return illegal_number(env, lexbuf, w$3, /* T_NUMBER */Block.__(0, [/* NORMAL */3]));
   };
 }
 
 function regexp_body(env, buf, lexbuf) {
-  var env$1 = env;
-  var buf$1 = buf;
-  var lexbuf$1 = lexbuf;
   var ___ocaml_lex_state = 314;
   while(true) {
     var __ocaml_lex_state = ___ocaml_lex_state;
-    var __ocaml_lex_state$1 = Lexing.engine(__ocaml_lex_tables, __ocaml_lex_state, lexbuf$1);
+    var __ocaml_lex_state$1 = Lexing.engine(__ocaml_lex_tables, __ocaml_lex_state, lexbuf);
     switch (__ocaml_lex_state$1) {
       case 0 :
-          var loc = from_lb(env$1.lex_source, lexbuf$1);
-          var env$2 = lex_error(env$1, loc, /* UnterminatedRegExp */13);
+          var loc = from_lb(env.lex_source, lexbuf);
+          var env$1 = lex_error(env, loc, /* UnterminatedRegExp */13);
+          return /* tuple */[
+                  env$1,
+                  ""
+                ];
+      case 1 :
+          var loc$1 = from_lb(env.lex_source, lexbuf);
+          var env$2 = lex_error(env, loc$1, /* UnterminatedRegExp */13);
           return /* tuple */[
                   env$2,
                   ""
                 ];
-      case 1 :
-          var loc$1 = from_lb(env$1.lex_source, lexbuf$1);
-          var env$3 = lex_error(env$1, loc$1, /* UnterminatedRegExp */13);
-          return /* tuple */[
-                  env$3,
-                  ""
-                ];
       case 2 :
-          var s = Lexing.sub_lexeme(lexbuf$1, lexbuf$1.lex_start_pos, lexbuf$1.lex_start_pos + 2 | 0);
-          $$Buffer.add_string(buf$1, s);
-          return regexp_body(env$1, buf$1, lexbuf$1);
+          var s = Lexing.sub_lexeme(lexbuf, lexbuf.lex_start_pos, lexbuf.lex_start_pos + 2 | 0);
+          $$Buffer.add_string(buf, s);
+          return regexp_body(env, buf, lexbuf);
       case 3 :
-          var flags = Lexing.sub_lexeme(lexbuf$1, lexbuf$1.lex_start_pos + 1 | 0, lexbuf$1.lex_curr_pos);
+          var flags = Lexing.sub_lexeme(lexbuf, lexbuf.lex_start_pos + 1 | 0, lexbuf.lex_curr_pos);
           return /* tuple */[
-                  env$1,
+                  env,
                   flags
                 ];
       case 4 :
           return /* tuple */[
-                  env$1,
+                  env,
                   ""
                 ];
       case 5 :
-          var c = Caml_bytes.get(lexbuf$1.lex_buffer, lexbuf$1.lex_start_pos);
-          $$Buffer.add_char(buf$1, c);
-          var env$4 = regexp_class(env$1, buf$1, lexbuf$1);
-          return regexp_body(env$4, buf$1, lexbuf$1);
+          var c = Caml_bytes.get(lexbuf.lex_buffer, lexbuf.lex_start_pos);
+          $$Buffer.add_char(buf, c);
+          var env$3 = regexp_class(env, buf, lexbuf);
+          return regexp_body(env$3, buf, lexbuf);
       case 6 :
-          var loc$2 = from_lb(env$1.lex_source, lexbuf$1);
-          var env$5 = lex_error(env$1, loc$2, /* UnterminatedRegExp */13);
+          var loc$2 = from_lb(env.lex_source, lexbuf);
+          var env$4 = lex_error(env, loc$2, /* UnterminatedRegExp */13);
           return /* tuple */[
-                  env$5,
+                  env$4,
                   ""
                 ];
       case 7 :
-          var c$1 = Caml_bytes.get(lexbuf$1.lex_buffer, lexbuf$1.lex_start_pos);
-          $$Buffer.add_char(buf$1, c$1);
-          return regexp_body(env$1, buf$1, lexbuf$1);
+          var c$1 = Caml_bytes.get(lexbuf.lex_buffer, lexbuf.lex_start_pos);
+          $$Buffer.add_char(buf, c$1);
+          return regexp_body(env, buf, lexbuf);
       default:
-        Curry._1(lexbuf$1.refill_buff, lexbuf$1);
+        Curry._1(lexbuf.refill_buff, lexbuf);
         ___ocaml_lex_state = __ocaml_lex_state$1;
         continue ;
     }
@@ -2808,56 +2803,50 @@ function regexp_body(env, buf, lexbuf) {
 }
 
 function regexp_class(env, buf, lexbuf) {
-  var env$1 = env;
-  var buf$1 = buf;
-  var lexbuf$1 = lexbuf;
   var ___ocaml_lex_state = 326;
   while(true) {
     var __ocaml_lex_state = ___ocaml_lex_state;
-    var __ocaml_lex_state$1 = Lexing.engine(__ocaml_lex_tables, __ocaml_lex_state, lexbuf$1);
+    var __ocaml_lex_state$1 = Lexing.engine(__ocaml_lex_tables, __ocaml_lex_state, lexbuf);
     switch (__ocaml_lex_state$1) {
       case 0 :
-          return env$1;
+          return env;
       case 1 :
       case 2 :
           break;
       case 3 :
-          var c = Caml_bytes.get(lexbuf$1.lex_buffer, lexbuf$1.lex_start_pos);
-          $$Buffer.add_char(buf$1, c);
-          return env$1;
+          var c = Caml_bytes.get(lexbuf.lex_buffer, lexbuf.lex_start_pos);
+          $$Buffer.add_char(buf, c);
+          return env;
       case 4 :
-          var c$1 = Caml_bytes.get(lexbuf$1.lex_buffer, lexbuf$1.lex_start_pos);
-          $$Buffer.add_char(buf$1, c$1);
-          return regexp_class(env$1, buf$1, lexbuf$1);
+          var c$1 = Caml_bytes.get(lexbuf.lex_buffer, lexbuf.lex_start_pos);
+          $$Buffer.add_char(buf, c$1);
+          return regexp_class(env, buf, lexbuf);
       default:
-        Curry._1(lexbuf$1.refill_buff, lexbuf$1);
+        Curry._1(lexbuf.refill_buff, lexbuf);
         ___ocaml_lex_state = __ocaml_lex_state$1;
         continue ;
     }
-    var s = Lexing.sub_lexeme(lexbuf$1, lexbuf$1.lex_start_pos, lexbuf$1.lex_start_pos + 2 | 0);
-    $$Buffer.add_string(buf$1, s);
-    return regexp_class(env$1, buf$1, lexbuf$1);
+    var s = Lexing.sub_lexeme(lexbuf, lexbuf.lex_start_pos, lexbuf.lex_start_pos + 2 | 0);
+    $$Buffer.add_string(buf, s);
+    return regexp_class(env, buf, lexbuf);
   };
 }
 
 function line_comment(env, buf, lexbuf) {
-  var env$1 = env;
-  var buf$1 = buf;
-  var lexbuf$1 = lexbuf;
   var ___ocaml_lex_state = 287;
   while(true) {
     var __ocaml_lex_state = ___ocaml_lex_state;
-    var __ocaml_lex_state$1 = Lexing.engine(__ocaml_lex_tables, __ocaml_lex_state, lexbuf$1);
+    var __ocaml_lex_state$1 = Lexing.engine(__ocaml_lex_tables, __ocaml_lex_state, lexbuf);
     switch (__ocaml_lex_state$1) {
       case 0 :
           return /* tuple */[
-                  env$1,
-                  from_lb(env$1.lex_source, lexbuf$1)
+                  env,
+                  from_lb(env.lex_source, lexbuf)
                 ];
       case 1 :
-          var match = from_lb(env$1.lex_source, lexbuf$1);
+          var match = from_lb(env.lex_source, lexbuf);
           var match$1 = match._end;
-          Lexing.new_line(lexbuf$1);
+          Lexing.new_line(lexbuf);
           var _end_line = match$1.line;
           var _end_column = match$1.column - 1 | 0;
           var _end_offset = match$1.offset - 1 | 0;
@@ -2867,7 +2856,7 @@ function line_comment(env, buf, lexbuf) {
             offset: _end_offset
           };
           return /* tuple */[
-                  env$1,
+                  env,
                   {
                     source: match.source,
                     start: match.start,
@@ -2875,11 +2864,11 @@ function line_comment(env, buf, lexbuf) {
                   }
                 ];
       case 2 :
-          var c = Caml_bytes.get(lexbuf$1.lex_buffer, lexbuf$1.lex_start_pos);
-          $$Buffer.add_char(buf$1, c);
-          return line_comment(env$1, buf$1, lexbuf$1);
+          var c = Caml_bytes.get(lexbuf.lex_buffer, lexbuf.lex_start_pos);
+          $$Buffer.add_char(buf, c);
+          return line_comment(env, buf, lexbuf);
       default:
-        Curry._1(lexbuf$1.refill_buff, lexbuf$1);
+        Curry._1(lexbuf.refill_buff, lexbuf);
         ___ocaml_lex_state = __ocaml_lex_state$1;
         continue ;
     }
@@ -2887,47 +2876,44 @@ function line_comment(env, buf, lexbuf) {
 }
 
 function comment(env, buf, lexbuf) {
-  var env$1 = env;
-  var buf$1 = buf;
-  var lexbuf$1 = lexbuf;
   var ___ocaml_lex_state = 279;
   while(true) {
     var __ocaml_lex_state = ___ocaml_lex_state;
-    var __ocaml_lex_state$1 = Lexing.engine(__ocaml_lex_tables, __ocaml_lex_state, lexbuf$1);
+    var __ocaml_lex_state$1 = Lexing.engine(__ocaml_lex_tables, __ocaml_lex_state, lexbuf);
     switch (__ocaml_lex_state$1) {
       case 0 :
-          var env$2 = lex_error(env$1, from_lb(env$1.lex_source, lexbuf$1), /* UnexpectedToken */Block.__(1, ["ILLEGAL"]));
+          var env$1 = lex_error(env, from_lb(env.lex_source, lexbuf), /* UnexpectedToken */Block.__(1, ["ILLEGAL"]));
           return /* tuple */[
-                  env$2,
-                  from_lb(env$2.lex_source, lexbuf$1)
+                  env$1,
+                  from_lb(env$1.lex_source, lexbuf)
                 ];
       case 1 :
-          Lexing.new_line(lexbuf$1);
-          $$Buffer.add_char(buf$1, /* "\n" */10);
-          return comment(env$1, buf$1, lexbuf$1);
+          Lexing.new_line(lexbuf);
+          $$Buffer.add_char(buf, /* "\n" */10);
+          return comment(env, buf, lexbuf);
       case 2 :
-          var loc = from_lb(env$1.lex_source, lexbuf$1);
-          var env$3 = env$1.lex_in_comment_syntax ? unexpected_error_w_suggest(env$1, loc, "*/", "*-/") : env$1;
+          var loc = from_lb(env.lex_source, lexbuf);
+          var env$2 = env.lex_in_comment_syntax ? unexpected_error_w_suggest(env, loc, "*/", "*-/") : env;
           return /* tuple */[
-                  env$3,
+                  env$2,
                   loc
                 ];
       case 3 :
-          if (env$1.lex_in_comment_syntax) {
+          if (env.lex_in_comment_syntax) {
             return /* tuple */[
-                    env$1,
-                    from_lb(env$1.lex_source, lexbuf$1)
+                    env,
+                    from_lb(env.lex_source, lexbuf)
                   ];
           } else {
-            $$Buffer.add_string(buf$1, "*-/");
-            return comment(env$1, buf$1, lexbuf$1);
+            $$Buffer.add_string(buf, "*-/");
+            return comment(env, buf, lexbuf);
           }
       case 4 :
-          var c = Caml_bytes.get(lexbuf$1.lex_buffer, lexbuf$1.lex_start_pos);
-          $$Buffer.add_char(buf$1, c);
-          return comment(env$1, buf$1, lexbuf$1);
+          var c = Caml_bytes.get(lexbuf.lex_buffer, lexbuf.lex_start_pos);
+          $$Buffer.add_char(buf, c);
+          return comment(env, buf, lexbuf);
       default:
-        Curry._1(lexbuf$1.refill_buff, lexbuf$1);
+        Curry._1(lexbuf.refill_buff, lexbuf);
         ___ocaml_lex_state = __ocaml_lex_state$1;
         continue ;
     }
@@ -2935,68 +2921,62 @@ function comment(env, buf, lexbuf) {
 }
 
 function template_part(env, start, cooked, raw, literal, lexbuf) {
-  var env$1 = env;
-  var start$1 = start;
-  var cooked$1 = cooked;
-  var raw$1 = raw;
-  var literal$1 = literal;
-  var lexbuf$1 = lexbuf;
   var ___ocaml_lex_state = 416;
   while(true) {
     var __ocaml_lex_state = ___ocaml_lex_state;
-    var __ocaml_lex_state$1 = Lexing.engine(__ocaml_lex_tables, __ocaml_lex_state, lexbuf$1);
+    var __ocaml_lex_state$1 = Lexing.engine(__ocaml_lex_tables, __ocaml_lex_state, lexbuf);
     switch (__ocaml_lex_state$1) {
       case 0 :
-          var env$2 = lex_error(env$1, from_lb(env$1.lex_source, lexbuf$1), /* UnexpectedToken */Block.__(1, ["ILLEGAL"]));
+          var env$1 = lex_error(env, from_lb(env.lex_source, lexbuf), /* UnexpectedToken */Block.__(1, ["ILLEGAL"]));
           return /* tuple */[
-                  env$2,
-                  btwn(start$1, from_lb(env$2.lex_source, lexbuf$1)),
+                  env$1,
+                  btwn(start, from_lb(env$1.lex_source, lexbuf)),
                   true
                 ];
       case 1 :
-          $$Buffer.add_char(literal$1, /* "`" */96);
+          $$Buffer.add_char(literal, /* "`" */96);
           return /* tuple */[
-                  env$1,
-                  btwn(start$1, from_lb(env$1.lex_source, lexbuf$1)),
+                  env,
+                  btwn(start, from_lb(env.lex_source, lexbuf)),
                   true
                 ];
       case 2 :
-          $$Buffer.add_string(literal$1, "${");
+          $$Buffer.add_string(literal, "${");
           return /* tuple */[
-                  env$1,
-                  btwn(start$1, from_lb(env$1.lex_source, lexbuf$1)),
+                  env,
+                  btwn(start, from_lb(env.lex_source, lexbuf)),
                   false
                 ];
       case 3 :
-          $$Buffer.add_char(raw$1, /* "\\" */92);
-          $$Buffer.add_char(literal$1, /* "\\" */92);
-          var match = string_escape(env$1, cooked$1, lexbuf$1);
-          var str = Lexing.lexeme(lexbuf$1);
-          $$Buffer.add_string(raw$1, str);
-          $$Buffer.add_string(literal$1, str);
-          return template_part(match[0], start$1, cooked$1, raw$1, literal$1, lexbuf$1);
+          $$Buffer.add_char(raw, /* "\\" */92);
+          $$Buffer.add_char(literal, /* "\\" */92);
+          var match = string_escape(env, cooked, lexbuf);
+          var str = Lexing.lexeme(lexbuf);
+          $$Buffer.add_string(raw, str);
+          $$Buffer.add_string(literal, str);
+          return template_part(match[0], start, cooked, raw, literal, lexbuf);
       case 4 :
-          var lf = Lexing.sub_lexeme(lexbuf$1, lexbuf$1.lex_start_pos, lexbuf$1.lex_start_pos + 2 | 0);
-          $$Buffer.add_string(raw$1, lf);
-          $$Buffer.add_string(literal$1, lf);
-          $$Buffer.add_string(cooked$1, "\n");
-          Lexing.new_line(lexbuf$1);
-          return template_part(env$1, start$1, cooked$1, raw$1, literal$1, lexbuf$1);
+          var lf = Lexing.sub_lexeme(lexbuf, lexbuf.lex_start_pos, lexbuf.lex_start_pos + 2 | 0);
+          $$Buffer.add_string(raw, lf);
+          $$Buffer.add_string(literal, lf);
+          $$Buffer.add_string(cooked, "\n");
+          Lexing.new_line(lexbuf);
+          return template_part(env, start, cooked, raw, literal, lexbuf);
       case 5 :
-          var lf$1 = Caml_bytes.get(lexbuf$1.lex_buffer, lexbuf$1.lex_start_pos);
-          $$Buffer.add_char(raw$1, lf$1);
-          $$Buffer.add_char(literal$1, lf$1);
-          $$Buffer.add_char(cooked$1, /* "\n" */10);
-          Lexing.new_line(lexbuf$1);
-          return template_part(env$1, start$1, cooked$1, raw$1, literal$1, lexbuf$1);
+          var lf$1 = Caml_bytes.get(lexbuf.lex_buffer, lexbuf.lex_start_pos);
+          $$Buffer.add_char(raw, lf$1);
+          $$Buffer.add_char(literal, lf$1);
+          $$Buffer.add_char(cooked, /* "\n" */10);
+          Lexing.new_line(lexbuf);
+          return template_part(env, start, cooked, raw, literal, lexbuf);
       case 6 :
-          var c = Caml_bytes.get(lexbuf$1.lex_buffer, lexbuf$1.lex_start_pos);
-          $$Buffer.add_char(raw$1, c);
-          $$Buffer.add_char(literal$1, c);
-          $$Buffer.add_char(cooked$1, c);
-          return template_part(env$1, start$1, cooked$1, raw$1, literal$1, lexbuf$1);
+          var c = Caml_bytes.get(lexbuf.lex_buffer, lexbuf.lex_start_pos);
+          $$Buffer.add_char(raw, c);
+          $$Buffer.add_char(literal, c);
+          $$Buffer.add_char(cooked, c);
+          return template_part(env, start, cooked, raw, literal, lexbuf);
       default:
-        Curry._1(lexbuf$1.refill_buff, lexbuf$1);
+        Curry._1(lexbuf.refill_buff, lexbuf);
         ___ocaml_lex_state = __ocaml_lex_state$1;
         continue ;
     }
@@ -3004,54 +2984,48 @@ function template_part(env, start, cooked, raw, literal, lexbuf) {
 }
 
 function string_quote(env, q, buf, raw, octal, lexbuf) {
-  var env$1 = env;
-  var q$1 = q;
-  var buf$1 = buf;
-  var raw$1 = raw;
-  var octal$1 = octal;
-  var lexbuf$1 = lexbuf;
   var ___ocaml_lex_state = 247;
   while(true) {
     var __ocaml_lex_state = ___ocaml_lex_state;
-    var __ocaml_lex_state$1 = Lexing.engine(__ocaml_lex_tables, __ocaml_lex_state, lexbuf$1);
+    var __ocaml_lex_state$1 = Lexing.engine(__ocaml_lex_tables, __ocaml_lex_state, lexbuf);
     switch (__ocaml_lex_state$1) {
       case 0 :
-          var q$prime = Caml_bytes.get(lexbuf$1.lex_buffer, lexbuf$1.lex_start_pos);
-          $$Buffer.add_char(raw$1, q$prime);
-          if (q$1 === q$prime) {
+          var q$prime = Caml_bytes.get(lexbuf.lex_buffer, lexbuf.lex_start_pos);
+          $$Buffer.add_char(raw, q$prime);
+          if (q === q$prime) {
             return /* tuple */[
-                    env$1,
-                    from_lb(env$1.lex_source, lexbuf$1),
-                    octal$1
+                    env,
+                    from_lb(env.lex_source, lexbuf),
+                    octal
                   ];
           } else {
-            $$Buffer.add_char(buf$1, q$prime);
-            return string_quote(env$1, q$1, buf$1, raw$1, octal$1, lexbuf$1);
+            $$Buffer.add_char(buf, q$prime);
+            return string_quote(env, q, buf, raw, octal, lexbuf);
           }
       case 1 :
-          var e = Caml_bytes.get(lexbuf$1.lex_buffer, lexbuf$1.lex_start_pos);
-          $$Buffer.add_char(raw$1, e);
-          var match = string_escape(env$1, buf$1, lexbuf$1);
-          var octal$2 = match[1] || octal$1;
-          $$Buffer.add_string(raw$1, Lexing.lexeme(lexbuf$1));
-          return string_quote(match[0], q$1, buf$1, raw$1, octal$2, lexbuf$1);
+          var e = Caml_bytes.get(lexbuf.lex_buffer, lexbuf.lex_start_pos);
+          $$Buffer.add_char(raw, e);
+          var match = string_escape(env, buf, lexbuf);
+          var octal$1 = match[1] || octal;
+          $$Buffer.add_string(raw, Lexing.lexeme(lexbuf));
+          return string_quote(match[0], q, buf, raw, octal$1, lexbuf);
       case 2 :
-          var x = Lexing.sub_lexeme(lexbuf$1, lexbuf$1.lex_start_pos, lexbuf$1.lex_curr_pos);
-          $$Buffer.add_string(raw$1, x);
-          var env$2 = lex_error(env$1, from_lb(env$1.lex_source, lexbuf$1), /* UnexpectedToken */Block.__(1, ["ILLEGAL"]));
-          $$Buffer.add_string(buf$1, x);
+          var x = Lexing.sub_lexeme(lexbuf, lexbuf.lex_start_pos, lexbuf.lex_curr_pos);
+          $$Buffer.add_string(raw, x);
+          var env$1 = lex_error(env, from_lb(env.lex_source, lexbuf), /* UnexpectedToken */Block.__(1, ["ILLEGAL"]));
+          $$Buffer.add_string(buf, x);
           return /* tuple */[
-                  env$2,
-                  from_lb(env$2.lex_source, lexbuf$1),
-                  octal$1
+                  env$1,
+                  from_lb(env$1.lex_source, lexbuf),
+                  octal
                 ];
       case 3 :
-          var x$1 = Caml_bytes.get(lexbuf$1.lex_buffer, lexbuf$1.lex_start_pos);
-          $$Buffer.add_char(raw$1, x$1);
-          $$Buffer.add_char(buf$1, x$1);
-          return string_quote(env$1, q$1, buf$1, raw$1, octal$1, lexbuf$1);
+          var x$1 = Caml_bytes.get(lexbuf.lex_buffer, lexbuf.lex_start_pos);
+          $$Buffer.add_char(raw, x$1);
+          $$Buffer.add_char(buf, x$1);
+          return string_quote(env, q, buf, raw, octal, lexbuf);
       default:
-        Curry._1(lexbuf$1.refill_buff, lexbuf$1);
+        Curry._1(lexbuf.refill_buff, lexbuf);
         ___ocaml_lex_state = __ocaml_lex_state$1;
         continue ;
     }
@@ -3238,32 +3212,27 @@ function __ocaml_lex_jsx_tag_rec(_env, lexbuf, ___ocaml_lex_state) {
 }
 
 function jsx_text(env, mode, buf, raw, lexbuf) {
-  var env$1 = env;
-  var mode$1 = mode;
-  var buf$1 = buf;
-  var raw$1 = raw;
-  var lexbuf$1 = lexbuf;
   var ___ocaml_lex_state = 371;
   while(true) {
     var __ocaml_lex_state = ___ocaml_lex_state;
-    var __ocaml_lex_state$1 = Lexing.engine(__ocaml_lex_tables, __ocaml_lex_state, lexbuf$1);
+    var __ocaml_lex_state$1 = Lexing.engine(__ocaml_lex_tables, __ocaml_lex_state, lexbuf);
     switch (__ocaml_lex_state$1) {
       case 0 :
-          var c = Caml_bytes.get(lexbuf$1.lex_buffer, lexbuf$1.lex_start_pos);
-          switch (mode$1) {
+          var c = Caml_bytes.get(lexbuf.lex_buffer, lexbuf.lex_start_pos);
+          switch (mode) {
             case /* JSX_SINGLE_QUOTED_TEXT */0 :
                 if (c === 39) {
                   return /* tuple */[
-                          env$1,
-                          from_lb(env$1.lex_source, lexbuf$1)
+                          env,
+                          from_lb(env.lex_source, lexbuf)
                         ];
                 }
                 break;
             case /* JSX_DOUBLE_QUOTED_TEXT */1 :
                 if (c === 34) {
                   return /* tuple */[
-                          env$1,
-                          from_lb(env$1.lex_source, lexbuf$1)
+                          env,
+                          from_lb(env.lex_source, lexbuf)
                         ];
                 }
                 break;
@@ -3273,52 +3242,52 @@ function jsx_text(env, mode, buf, raw, lexbuf) {
                   exit = 2;
                 }
                 if (exit === 2) {
-                  back(lexbuf$1);
+                  back(lexbuf);
                   return /* tuple */[
-                          env$1,
-                          from_lb(env$1.lex_source, lexbuf$1)
+                          env,
+                          from_lb(env.lex_source, lexbuf)
                         ];
                 }
                 break;
             
           }
-          $$Buffer.add_char(raw$1, c);
-          $$Buffer.add_char(buf$1, c);
-          return jsx_text(env$1, mode$1, buf$1, raw$1, lexbuf$1);
+          $$Buffer.add_char(raw, c);
+          $$Buffer.add_char(buf, c);
+          return jsx_text(env, mode, buf, raw, lexbuf);
       case 1 :
-          var env$2 = lex_error(env$1, from_lb(env$1.lex_source, lexbuf$1), /* UnexpectedToken */Block.__(1, ["ILLEGAL"]));
+          var env$1 = lex_error(env, from_lb(env.lex_source, lexbuf), /* UnexpectedToken */Block.__(1, ["ILLEGAL"]));
           return /* tuple */[
-                  env$2,
-                  from_lb(env$2.lex_source, lexbuf$1)
+                  env$1,
+                  from_lb(env$1.lex_source, lexbuf)
                 ];
       case 2 :
-          var lt = Lexing.sub_lexeme(lexbuf$1, lexbuf$1.lex_start_pos, lexbuf$1.lex_curr_pos);
-          $$Buffer.add_string(raw$1, lt);
-          $$Buffer.add_string(buf$1, lt);
-          Lexing.new_line(lexbuf$1);
-          return jsx_text(env$1, mode$1, buf$1, raw$1, lexbuf$1);
+          var lt = Lexing.sub_lexeme(lexbuf, lexbuf.lex_start_pos, lexbuf.lex_curr_pos);
+          $$Buffer.add_string(raw, lt);
+          $$Buffer.add_string(buf, lt);
+          Lexing.new_line(lexbuf);
+          return jsx_text(env, mode, buf, raw, lexbuf);
       case 3 :
-          var n = Lexing.sub_lexeme(lexbuf$1, lexbuf$1.lex_start_pos + 3 | 0, lexbuf$1.lex_curr_pos - 1 | 0);
-          var s = Lexing.sub_lexeme(lexbuf$1, lexbuf$1.lex_start_pos, lexbuf$1.lex_curr_pos);
-          $$Buffer.add_string(raw$1, s);
+          var n = Lexing.sub_lexeme(lexbuf, lexbuf.lex_start_pos + 3 | 0, lexbuf.lex_curr_pos - 1 | 0);
+          var s = Lexing.sub_lexeme(lexbuf, lexbuf.lex_start_pos, lexbuf.lex_curr_pos);
+          $$Buffer.add_string(raw, s);
           var code = Caml_format.caml_int_of_string("0x" + n);
           List.iter((function (param) {
-                  return $$Buffer.add_char(buf$1, param);
+                  return $$Buffer.add_char(buf, param);
                 }), utf16to8(code));
-          return jsx_text(env$1, mode$1, buf$1, raw$1, lexbuf$1);
+          return jsx_text(env, mode, buf, raw, lexbuf);
       case 4 :
-          var n$1 = Lexing.sub_lexeme(lexbuf$1, lexbuf$1.lex_start_pos + 2 | 0, lexbuf$1.lex_curr_pos - 1 | 0);
-          var s$1 = Lexing.sub_lexeme(lexbuf$1, lexbuf$1.lex_start_pos, lexbuf$1.lex_curr_pos);
-          $$Buffer.add_string(raw$1, s$1);
+          var n$1 = Lexing.sub_lexeme(lexbuf, lexbuf.lex_start_pos + 2 | 0, lexbuf.lex_curr_pos - 1 | 0);
+          var s$1 = Lexing.sub_lexeme(lexbuf, lexbuf.lex_start_pos, lexbuf.lex_curr_pos);
+          $$Buffer.add_string(raw, s$1);
           var code$1 = Caml_format.caml_int_of_string(n$1);
           List.iter((function (param) {
-                  return $$Buffer.add_char(buf$1, param);
+                  return $$Buffer.add_char(buf, param);
                 }), utf16to8(code$1));
-          return jsx_text(env$1, mode$1, buf$1, raw$1, lexbuf$1);
+          return jsx_text(env, mode, buf, raw, lexbuf);
       case 5 :
-          var entity = Lexing.sub_lexeme(lexbuf$1, lexbuf$1.lex_start_pos + 1 | 0, lexbuf$1.lex_curr_pos - 1 | 0);
-          var s$2 = Lexing.sub_lexeme(lexbuf$1, lexbuf$1.lex_start_pos, lexbuf$1.lex_curr_pos);
-          $$Buffer.add_string(raw$1, s$2);
+          var entity = Lexing.sub_lexeme(lexbuf, lexbuf.lex_start_pos + 1 | 0, lexbuf.lex_curr_pos - 1 | 0);
+          var s$2 = Lexing.sub_lexeme(lexbuf, lexbuf.lex_start_pos, lexbuf.lex_curr_pos);
+          $$Buffer.add_string(raw, s$2);
           var code$2;
           switch (entity) {
             case "'int'" :
@@ -4085,19 +4054,19 @@ function jsx_text(env, mode, buf, raw, lexbuf) {
           }
           if (code$2 !== void 0) {
             List.iter((function (param) {
-                    return $$Buffer.add_char(buf$1, param);
+                    return $$Buffer.add_char(buf, param);
                   }), utf16to8(code$2));
           } else {
-            $$Buffer.add_string(buf$1, "&" + (entity + ";"));
+            $$Buffer.add_string(buf, "&" + (entity + ";"));
           }
-          return jsx_text(env$1, mode$1, buf$1, raw$1, lexbuf$1);
+          return jsx_text(env, mode, buf, raw, lexbuf);
       case 6 :
-          var c$1 = Caml_bytes.get(lexbuf$1.lex_buffer, lexbuf$1.lex_start_pos);
-          $$Buffer.add_char(raw$1, c$1);
-          $$Buffer.add_char(buf$1, c$1);
-          return jsx_text(env$1, mode$1, buf$1, raw$1, lexbuf$1);
+          var c$1 = Caml_bytes.get(lexbuf.lex_buffer, lexbuf.lex_start_pos);
+          $$Buffer.add_char(raw, c$1);
+          $$Buffer.add_char(buf, c$1);
+          return jsx_text(env, mode, buf, raw, lexbuf);
       default:
-        Curry._1(lexbuf$1.refill_buff, lexbuf$1);
+        Curry._1(lexbuf.refill_buff, lexbuf);
         ___ocaml_lex_state = __ocaml_lex_state$1;
         continue ;
     }
@@ -4120,79 +4089,77 @@ function type_token(env, lexbuf) {
   Caml_array.caml_array_set(lexbuf.lex_mem, 6, lexbuf.lex_curr_pos);
   Caml_array.caml_array_set(lexbuf.lex_mem, 5, lexbuf.lex_curr_pos);
   Caml_array.caml_array_set(lexbuf.lex_mem, 4, lexbuf.lex_curr_pos);
-  var env$1 = env;
-  var lexbuf$1 = lexbuf;
   var ___ocaml_lex_state = 133;
   while(true) {
     var __ocaml_lex_state = ___ocaml_lex_state;
-    var __ocaml_lex_state$1 = Lexing.new_engine(__ocaml_lex_tables, __ocaml_lex_state, lexbuf$1);
+    var __ocaml_lex_state$1 = Lexing.new_engine(__ocaml_lex_tables, __ocaml_lex_state, lexbuf);
     switch (__ocaml_lex_state$1) {
       case 0 :
-          Lexing.new_line(lexbuf$1);
-          return type_token(env$1, lexbuf$1);
+          Lexing.new_line(lexbuf);
+          return type_token(env, lexbuf);
       case 1 :
-          unicode_fix_cols(lexbuf$1);
-          return type_token(env$1, lexbuf$1);
+          unicode_fix_cols(lexbuf);
+          return type_token(env, lexbuf);
       case 2 :
-          var start = from_lb(env$1.lex_source, lexbuf$1);
+          var start = from_lb(env.lex_source, lexbuf);
           var buf = $$Buffer.create(127);
-          var match = comment(env$1, buf, lexbuf$1);
-          var env$2 = save_comment(match[0], start, match[1], buf, true);
-          return type_token(env$2, lexbuf$1);
+          var match = comment(env, buf, lexbuf);
+          var env$1 = save_comment(match[0], start, match[1], buf, true);
+          return type_token(env$1, lexbuf);
       case 3 :
-          var sp = Lexing.sub_lexeme(lexbuf$1, lexbuf$1.lex_start_pos + 2 | 0, Caml_array.caml_array_get(lexbuf$1.lex_mem, 0));
-          var escape_type = Lexing.sub_lexeme(lexbuf$1, Caml_array.caml_array_get(lexbuf$1.lex_mem, 0), lexbuf$1.lex_curr_pos);
-          var pattern = Lexing.sub_lexeme(lexbuf$1, lexbuf$1.lex_start_pos, lexbuf$1.lex_curr_pos);
-          if (env$1.lex_enable_comment_syntax) {
-            var env$3;
-            if (env$1.lex_in_comment_syntax) {
-              var loc = from_lb(env$1.lex_source, lexbuf$1);
-              env$3 = unexpected_error(env$1, loc, pattern);
+          var sp = Lexing.sub_lexeme(lexbuf, lexbuf.lex_start_pos + 2 | 0, Caml_array.caml_array_get(lexbuf.lex_mem, 0));
+          var escape_type = Lexing.sub_lexeme(lexbuf, Caml_array.caml_array_get(lexbuf.lex_mem, 0), lexbuf.lex_curr_pos);
+          var pattern = Lexing.sub_lexeme(lexbuf, lexbuf.lex_start_pos, lexbuf.lex_curr_pos);
+          if (env.lex_enable_comment_syntax) {
+            var env$2;
+            if (env.lex_in_comment_syntax) {
+              var loc = from_lb(env.lex_source, lexbuf);
+              env$2 = unexpected_error(env, loc, pattern);
             } else {
-              env$3 = env$1;
+              env$2 = env;
             }
-            var env$4 = in_comment_syntax(true, env$3);
+            var env$3 = in_comment_syntax(true, env$2);
             if (escape_type === ":") {
               return /* tuple */[
-                      env$4,
+                      env$3,
                       /* T_COLON */77
                     ];
             } else {
-              return type_token(env$4, lexbuf$1);
+              return type_token(env$3, lexbuf);
             }
           } else {
-            var start$1 = from_lb(env$1.lex_source, lexbuf$1);
+            var start$1 = from_lb(env.lex_source, lexbuf);
             var buf$1 = $$Buffer.create(127);
             $$Buffer.add_string(buf$1, sp);
             $$Buffer.add_string(buf$1, escape_type);
-            var match$1 = comment(env$1, buf$1, lexbuf$1);
-            var env$5 = save_comment(match$1[0], start$1, match$1[1], buf$1, true);
-            return type_token(env$5, lexbuf$1);
+            var match$1 = comment(env, buf$1, lexbuf);
+            var env$4 = save_comment(match$1[0], start$1, match$1[1], buf$1, true);
+            return type_token(env$4, lexbuf);
           }
       case 4 :
-          if (env$1.lex_in_comment_syntax) {
-            var env$6 = in_comment_syntax(false, env$1);
-            return type_token(env$6, lexbuf$1);
+          if (env.lex_in_comment_syntax) {
+            var env$5 = in_comment_syntax(false, env);
+            return type_token(env$5, lexbuf);
           } else {
-            yyback(1, lexbuf$1);
+            yyback(1, lexbuf);
             return /* tuple */[
-                    env$1,
+                    env,
                     /* T_MULT */97
                   ];
           }
       case 5 :
-          var start$2 = from_lb(env$1.lex_source, lexbuf$1);
+          var start$2 = from_lb(env.lex_source, lexbuf);
           var buf$2 = $$Buffer.create(127);
-          var match$2 = line_comment(env$1, buf$2, lexbuf$1);
-          var env$7 = save_comment(match$2[0], start$2, match$2[1], buf$2, true);
-          return type_token(env$7, lexbuf$1);
+          var match$2 = line_comment(env, buf$2, lexbuf);
+          var env$6 = save_comment(match$2[0], start$2, match$2[1], buf$2, true);
+          return type_token(env$6, lexbuf);
       case 6 :
-          var quote = Caml_bytes.get(lexbuf$1.lex_buffer, lexbuf$1.lex_start_pos);
-          var start$3 = from_lb(env$1.lex_source, lexbuf$1);
+          var quote = Caml_bytes.get(lexbuf.lex_buffer, lexbuf.lex_start_pos);
+          var start$3 = from_lb(env.lex_source, lexbuf);
           var buf$3 = $$Buffer.create(127);
           var raw = $$Buffer.create(127);
           $$Buffer.add_char(raw, quote);
-          var match$3 = string_quote(env$1, quote, buf$3, raw, false, lexbuf$1);
+          var match$3 = string_quote(env, quote, buf$3, raw, false, lexbuf);
           return /* tuple */[
                   match$3[0],
                   /* T_STRING */Block.__(1, [/* tuple */[
@@ -4203,49 +4170,49 @@ function type_token(env, lexbuf) {
                       ]])
                 ];
       case 7 :
-          var neg = Lexing.sub_lexeme(lexbuf$1, lexbuf$1.lex_start_pos, Caml_array.caml_array_get(lexbuf$1.lex_mem, 0));
-          var num = Lexing.sub_lexeme(lexbuf$1, Caml_array.caml_array_get(lexbuf$1.lex_mem, 0), Caml_array.caml_array_get(lexbuf$1.lex_mem, 1));
-          var w = Lexing.sub_lexeme(lexbuf$1, Caml_array.caml_array_get(lexbuf$1.lex_mem, 1), lexbuf$1.lex_curr_pos);
-          return illegal_number(env$1, lexbuf$1, w, mk_num_singleton(/* BINARY */0, num, neg));
+          var neg = Lexing.sub_lexeme(lexbuf, lexbuf.lex_start_pos, Caml_array.caml_array_get(lexbuf.lex_mem, 0));
+          var num = Lexing.sub_lexeme(lexbuf, Caml_array.caml_array_get(lexbuf.lex_mem, 0), Caml_array.caml_array_get(lexbuf.lex_mem, 1));
+          var w = Lexing.sub_lexeme(lexbuf, Caml_array.caml_array_get(lexbuf.lex_mem, 1), lexbuf.lex_curr_pos);
+          return illegal_number(env, lexbuf, w, mk_num_singleton(/* BINARY */0, num, neg));
       case 8 :
-          var neg$1 = Lexing.sub_lexeme(lexbuf$1, lexbuf$1.lex_start_pos, Caml_array.caml_array_get(lexbuf$1.lex_mem, 0));
-          var num$1 = Lexing.sub_lexeme(lexbuf$1, Caml_array.caml_array_get(lexbuf$1.lex_mem, 0), lexbuf$1.lex_curr_pos);
+          var neg$1 = Lexing.sub_lexeme(lexbuf, lexbuf.lex_start_pos, Caml_array.caml_array_get(lexbuf.lex_mem, 0));
+          var num$1 = Lexing.sub_lexeme(lexbuf, Caml_array.caml_array_get(lexbuf.lex_mem, 0), lexbuf.lex_curr_pos);
           return /* tuple */[
-                  env$1,
+                  env,
                   mk_num_singleton(/* BINARY */0, num$1, neg$1)
                 ];
       case 9 :
-          var neg$2 = Lexing.sub_lexeme(lexbuf$1, lexbuf$1.lex_start_pos, Caml_array.caml_array_get(lexbuf$1.lex_mem, 0));
-          var num$2 = Lexing.sub_lexeme(lexbuf$1, Caml_array.caml_array_get(lexbuf$1.lex_mem, 0), Caml_array.caml_array_get(lexbuf$1.lex_mem, 1));
-          var w$1 = Lexing.sub_lexeme(lexbuf$1, Caml_array.caml_array_get(lexbuf$1.lex_mem, 1), lexbuf$1.lex_curr_pos);
-          return illegal_number(env$1, lexbuf$1, w$1, mk_num_singleton(/* OCTAL */2, num$2, neg$2));
+          var neg$2 = Lexing.sub_lexeme(lexbuf, lexbuf.lex_start_pos, Caml_array.caml_array_get(lexbuf.lex_mem, 0));
+          var num$2 = Lexing.sub_lexeme(lexbuf, Caml_array.caml_array_get(lexbuf.lex_mem, 0), Caml_array.caml_array_get(lexbuf.lex_mem, 1));
+          var w$1 = Lexing.sub_lexeme(lexbuf, Caml_array.caml_array_get(lexbuf.lex_mem, 1), lexbuf.lex_curr_pos);
+          return illegal_number(env, lexbuf, w$1, mk_num_singleton(/* OCTAL */2, num$2, neg$2));
       case 10 :
-          var neg$3 = Lexing.sub_lexeme(lexbuf$1, lexbuf$1.lex_start_pos, Caml_array.caml_array_get(lexbuf$1.lex_mem, 0));
-          var num$3 = Lexing.sub_lexeme(lexbuf$1, Caml_array.caml_array_get(lexbuf$1.lex_mem, 0), lexbuf$1.lex_curr_pos);
+          var neg$3 = Lexing.sub_lexeme(lexbuf, lexbuf.lex_start_pos, Caml_array.caml_array_get(lexbuf.lex_mem, 0));
+          var num$3 = Lexing.sub_lexeme(lexbuf, Caml_array.caml_array_get(lexbuf.lex_mem, 0), lexbuf.lex_curr_pos);
           return /* tuple */[
-                  env$1,
+                  env,
                   mk_num_singleton(/* OCTAL */2, num$3, neg$3)
                 ];
       case 11 :
-          var neg$4 = Lexing.sub_lexeme(lexbuf$1, lexbuf$1.lex_start_pos, Caml_array.caml_array_get(lexbuf$1.lex_mem, 0));
-          var num$4 = Lexing.sub_lexeme(lexbuf$1, Caml_array.caml_array_get(lexbuf$1.lex_mem, 0), Caml_array.caml_array_get(lexbuf$1.lex_mem, 1));
-          var w$2 = Lexing.sub_lexeme(lexbuf$1, Caml_array.caml_array_get(lexbuf$1.lex_mem, 1), lexbuf$1.lex_curr_pos);
-          return illegal_number(env$1, lexbuf$1, w$2, mk_num_singleton(/* LEGACY_OCTAL */1, num$4, neg$4));
+          var neg$4 = Lexing.sub_lexeme(lexbuf, lexbuf.lex_start_pos, Caml_array.caml_array_get(lexbuf.lex_mem, 0));
+          var num$4 = Lexing.sub_lexeme(lexbuf, Caml_array.caml_array_get(lexbuf.lex_mem, 0), Caml_array.caml_array_get(lexbuf.lex_mem, 1));
+          var w$2 = Lexing.sub_lexeme(lexbuf, Caml_array.caml_array_get(lexbuf.lex_mem, 1), lexbuf.lex_curr_pos);
+          return illegal_number(env, lexbuf, w$2, mk_num_singleton(/* LEGACY_OCTAL */1, num$4, neg$4));
       case 12 :
-          var neg$5 = Lexing.sub_lexeme(lexbuf$1, lexbuf$1.lex_start_pos, Caml_array.caml_array_get(lexbuf$1.lex_mem, 0));
-          var num$5 = Lexing.sub_lexeme(lexbuf$1, Caml_array.caml_array_get(lexbuf$1.lex_mem, 0), lexbuf$1.lex_curr_pos);
+          var neg$5 = Lexing.sub_lexeme(lexbuf, lexbuf.lex_start_pos, Caml_array.caml_array_get(lexbuf.lex_mem, 0));
+          var num$5 = Lexing.sub_lexeme(lexbuf, Caml_array.caml_array_get(lexbuf.lex_mem, 0), lexbuf.lex_curr_pos);
           return /* tuple */[
-                  env$1,
+                  env,
                   mk_num_singleton(/* LEGACY_OCTAL */1, num$5, neg$5)
                 ];
       case 13 :
-          var neg$6 = Lexing.sub_lexeme(lexbuf$1, lexbuf$1.lex_start_pos, Caml_array.caml_array_get(lexbuf$1.lex_mem, 0));
-          var num$6 = Lexing.sub_lexeme(lexbuf$1, Caml_array.caml_array_get(lexbuf$1.lex_mem, 0), Caml_array.caml_array_get(lexbuf$1.lex_mem, 1));
-          var w$3 = Lexing.sub_lexeme(lexbuf$1, Caml_array.caml_array_get(lexbuf$1.lex_mem, 1), lexbuf$1.lex_curr_pos);
+          var neg$6 = Lexing.sub_lexeme(lexbuf, lexbuf.lex_start_pos, Caml_array.caml_array_get(lexbuf.lex_mem, 0));
+          var num$6 = Lexing.sub_lexeme(lexbuf, Caml_array.caml_array_get(lexbuf.lex_mem, 0), Caml_array.caml_array_get(lexbuf.lex_mem, 1));
+          var w$3 = Lexing.sub_lexeme(lexbuf, Caml_array.caml_array_get(lexbuf.lex_mem, 1), lexbuf.lex_curr_pos);
           var match$4;
           try {
             match$4 = /* tuple */[
-              env$1,
+              env,
               mk_num_singleton(/* NORMAL */3, num$6, neg$6)
             ];
           }
@@ -4253,23 +4220,23 @@ function type_token(env, lexbuf) {
             if (!Sys.win32) {
               throw exn;
             }
-            var loc$1 = from_lb(env$1.lex_source, lexbuf$1);
-            var env$8 = lex_error(env$1, loc$1, /* WindowsFloatOfString */59);
+            var loc$1 = from_lb(env.lex_source, lexbuf);
+            var env$7 = lex_error(env, loc$1, /* WindowsFloatOfString */59);
             match$4 = /* tuple */[
-              env$8,
+              env$7,
               /* T_NUMBER_SINGLETON_TYPE */Block.__(5, [
                   /* NORMAL */3,
                   789.0
                 ])
             ];
           }
-          return illegal_number(match$4[0], lexbuf$1, w$3, match$4[1]);
+          return illegal_number(match$4[0], lexbuf, w$3, match$4[1]);
       case 14 :
-          var neg$7 = Lexing.sub_lexeme(lexbuf$1, lexbuf$1.lex_start_pos, Caml_array.caml_array_get(lexbuf$1.lex_mem, 0));
-          var num$7 = Lexing.sub_lexeme(lexbuf$1, Caml_array.caml_array_get(lexbuf$1.lex_mem, 0), lexbuf$1.lex_curr_pos);
+          var neg$7 = Lexing.sub_lexeme(lexbuf, lexbuf.lex_start_pos, Caml_array.caml_array_get(lexbuf.lex_mem, 0));
+          var num$7 = Lexing.sub_lexeme(lexbuf, Caml_array.caml_array_get(lexbuf.lex_mem, 0), lexbuf.lex_curr_pos);
           try {
             return /* tuple */[
-                    env$1,
+                    env,
                     mk_num_singleton(/* NORMAL */3, num$7, neg$7)
                   ];
           }
@@ -4277,10 +4244,10 @@ function type_token(env, lexbuf) {
             if (!Sys.win32) {
               throw exn$1;
             }
-            var loc$2 = from_lb(env$1.lex_source, lexbuf$1);
-            var env$9 = lex_error(env$1, loc$2, /* WindowsFloatOfString */59);
+            var loc$2 = from_lb(env.lex_source, lexbuf);
+            var env$8 = lex_error(env, loc$2, /* WindowsFloatOfString */59);
             return /* tuple */[
-                    env$9,
+                    env$8,
                     /* T_NUMBER_SINGLETON_TYPE */Block.__(5, [
                         /* NORMAL */3,
                         789.0
@@ -4288,42 +4255,42 @@ function type_token(env, lexbuf) {
                   ];
           }
       case 15 :
-          var neg$8 = Lexing.sub_lexeme(lexbuf$1, lexbuf$1.lex_start_pos, Caml_array.caml_array_get(lexbuf$1.lex_mem, 0));
-          var num$8 = Lexing.sub_lexeme(lexbuf$1, Caml_array.caml_array_get(lexbuf$1.lex_mem, 0), Caml_array.caml_array_get(lexbuf$1.lex_mem, 1));
-          var w$4 = Lexing.sub_lexeme(lexbuf$1, Caml_array.caml_array_get(lexbuf$1.lex_mem, 1), lexbuf$1.lex_curr_pos);
-          return illegal_number(env$1, lexbuf$1, w$4, mk_num_singleton(/* NORMAL */3, num$8, neg$8));
+          var neg$8 = Lexing.sub_lexeme(lexbuf, lexbuf.lex_start_pos, Caml_array.caml_array_get(lexbuf.lex_mem, 0));
+          var num$8 = Lexing.sub_lexeme(lexbuf, Caml_array.caml_array_get(lexbuf.lex_mem, 0), Caml_array.caml_array_get(lexbuf.lex_mem, 1));
+          var w$4 = Lexing.sub_lexeme(lexbuf, Caml_array.caml_array_get(lexbuf.lex_mem, 1), lexbuf.lex_curr_pos);
+          return illegal_number(env, lexbuf, w$4, mk_num_singleton(/* NORMAL */3, num$8, neg$8));
       case 16 :
-          var neg$9 = Lexing.sub_lexeme(lexbuf$1, lexbuf$1.lex_start_pos, Caml_array.caml_array_get(lexbuf$1.lex_mem, 0));
-          var num$9 = Lexing.sub_lexeme(lexbuf$1, Caml_array.caml_array_get(lexbuf$1.lex_mem, 0), lexbuf$1.lex_curr_pos);
+          var neg$9 = Lexing.sub_lexeme(lexbuf, lexbuf.lex_start_pos, Caml_array.caml_array_get(lexbuf.lex_mem, 0));
+          var num$9 = Lexing.sub_lexeme(lexbuf, Caml_array.caml_array_get(lexbuf.lex_mem, 0), lexbuf.lex_curr_pos);
           return /* tuple */[
-                  env$1,
+                  env,
                   mk_num_singleton(/* NORMAL */3, num$9, neg$9)
                 ];
       case 17 :
-          var neg$10 = Lexing.sub_lexeme(lexbuf$1, lexbuf$1.lex_start_pos, Caml_array.caml_array_get(lexbuf$1.lex_mem, 0));
-          var num$10 = Lexing.sub_lexeme(lexbuf$1, Caml_array.caml_array_get(lexbuf$1.lex_mem, 0), Caml_array.caml_array_get(lexbuf$1.lex_mem, 1));
-          var w$5 = Lexing.sub_lexeme(lexbuf$1, Caml_array.caml_array_get(lexbuf$1.lex_mem, 1), lexbuf$1.lex_curr_pos);
-          return illegal_number(env$1, lexbuf$1, w$5, mk_num_singleton(/* NORMAL */3, num$10, neg$10));
+          var neg$10 = Lexing.sub_lexeme(lexbuf, lexbuf.lex_start_pos, Caml_array.caml_array_get(lexbuf.lex_mem, 0));
+          var num$10 = Lexing.sub_lexeme(lexbuf, Caml_array.caml_array_get(lexbuf.lex_mem, 0), Caml_array.caml_array_get(lexbuf.lex_mem, 1));
+          var w$5 = Lexing.sub_lexeme(lexbuf, Caml_array.caml_array_get(lexbuf.lex_mem, 1), lexbuf.lex_curr_pos);
+          return illegal_number(env, lexbuf, w$5, mk_num_singleton(/* NORMAL */3, num$10, neg$10));
       case 18 :
-          var neg$11 = Lexing.sub_lexeme(lexbuf$1, Caml_array.caml_array_get(lexbuf$1.lex_mem, 1), Caml_array.caml_array_get(lexbuf$1.lex_mem, 0));
-          var num$11 = Lexing.sub_lexeme(lexbuf$1, Caml_array.caml_array_get(lexbuf$1.lex_mem, 3), Caml_array.caml_array_get(lexbuf$1.lex_mem, 2));
+          var neg$11 = Lexing.sub_lexeme(lexbuf, Caml_array.caml_array_get(lexbuf.lex_mem, 1), Caml_array.caml_array_get(lexbuf.lex_mem, 0));
+          var num$11 = Lexing.sub_lexeme(lexbuf, Caml_array.caml_array_get(lexbuf.lex_mem, 3), Caml_array.caml_array_get(lexbuf.lex_mem, 2));
           return /* tuple */[
-                  env$1,
+                  env,
                   mk_num_singleton(/* NORMAL */3, num$11, neg$11)
                 ];
       case 19 :
-          var word = Lexing.sub_lexeme(lexbuf$1, lexbuf$1.lex_start_pos, lexbuf$1.lex_curr_pos);
-          unicode_fix_cols(lexbuf$1);
+          var word = Lexing.sub_lexeme(lexbuf, lexbuf.lex_start_pos, lexbuf.lex_curr_pos);
+          unicode_fix_cols(lexbuf);
           try {
             return /* tuple */[
-                    env$1,
+                    env,
                     Hashtbl.find(type_keywords, word)
                   ];
           }
           catch (exn$2){
             if (exn$2 === Caml_builtin_exceptions.not_found) {
               return /* tuple */[
-                      env$1,
+                      env,
                       /* T_IDENTIFIER */0
                     ];
             }
@@ -4331,138 +4298,138 @@ function type_token(env, lexbuf) {
           }
       case 22 :
           return /* tuple */[
-                  env$1,
+                  env,
                   /* T_LCURLY */1
                 ];
       case 23 :
           return /* tuple */[
-                  env$1,
+                  env,
                   /* T_RCURLY */2
                 ];
       case 24 :
           return /* tuple */[
-                  env$1,
+                  env,
                   /* T_LPAREN */3
                 ];
       case 25 :
           return /* tuple */[
-                  env$1,
+                  env,
                   /* T_RPAREN */4
                 ];
       case 26 :
           return /* tuple */[
-                  env$1,
+                  env,
                   /* T_ELLIPSIS */11
                 ];
       case 27 :
           return /* tuple */[
-                  env$1,
+                  env,
                   /* T_PERIOD */9
                 ];
       case 28 :
           return /* tuple */[
-                  env$1,
+                  env,
                   /* T_SEMICOLON */7
                 ];
       case 29 :
           return /* tuple */[
-                  env$1,
+                  env,
                   /* T_COMMA */8
                 ];
       case 20 :
       case 32 :
           return /* tuple */[
-                  env$1,
+                  env,
                   /* T_LBRACKET */5
                 ];
       case 21 :
       case 33 :
           return /* tuple */[
-                  env$1,
+                  env,
                   /* T_RBRACKET */6
                 ];
       case 34 :
           return /* tuple */[
-                  env$1,
+                  env,
                   /* T_LESS_THAN */89
                 ];
       case 35 :
           return /* tuple */[
-                  env$1,
+                  env,
                   /* T_GREATER_THAN */90
                 ];
       case 31 :
       case 37 :
           return /* tuple */[
-                  env$1,
+                  env,
                   /* T_PLING */76
                 ];
       case 38 :
           return /* tuple */[
-                  env$1,
+                  env,
                   /* T_MULT */97
                 ];
       case 30 :
       case 39 :
           return /* tuple */[
-                  env$1,
+                  env,
                   /* T_COLON */77
                 ];
       case 40 :
           return /* tuple */[
-                  env$1,
+                  env,
                   /* T_BIT_OR */80
                 ];
       case 41 :
           return /* tuple */[
-                  env$1,
+                  env,
                   /* T_BIT_AND */82
                 ];
       case 42 :
           return /* tuple */[
-                  env$1,
+                  env,
                   /* T_TYPEOF */44
                 ];
       case 43 :
           return /* tuple */[
-                  env$1,
+                  env,
                   /* T_ARROW */10
                 ];
       case 36 :
       case 44 :
           return /* tuple */[
-                  env$1,
+                  env,
                   /* T_ASSIGN */75
                 ];
       case 45 :
           return /* tuple */[
-                  env$1,
+                  env,
                   /* T_PLUS */94
                 ];
       case 46 :
           return /* tuple */[
-                  env$1,
+                  env,
                   /* T_MINUS */95
                 ];
       case 47 :
-          var env$10;
-          if (env$1.lex_in_comment_syntax) {
-            var loc$3 = from_lb(env$1.lex_source, lexbuf$1);
-            env$10 = lex_error(env$1, loc$3, /* UnexpectedEOS */4);
+          var env$9;
+          if (env.lex_in_comment_syntax) {
+            var loc$3 = from_lb(env.lex_source, lexbuf);
+            env$9 = lex_error(env, loc$3, /* UnexpectedEOS */4);
           } else {
-            env$10 = env$1;
+            env$9 = env;
           }
           return /* tuple */[
-                  env$10,
+                  env$9,
                   /* T_EOF */105
                 ];
       case 48 :
           return /* tuple */[
-                  env$1,
+                  env,
                   /* T_ERROR */104
                 ];
       default:
-        Curry._1(lexbuf$1.refill_buff, lexbuf$1);
+        Curry._1(lexbuf.refill_buff, lexbuf);
         ___ocaml_lex_state = __ocaml_lex_state$1;
         continue ;
     }
@@ -4470,166 +4437,163 @@ function type_token(env, lexbuf) {
 }
 
 function string_escape(env, buf, lexbuf) {
-  var env$1 = env;
-  var buf$1 = buf;
-  var lexbuf$1 = lexbuf;
   var ___ocaml_lex_state = 252;
   while(true) {
     var __ocaml_lex_state = ___ocaml_lex_state;
-    var __ocaml_lex_state$1 = Lexing.engine(__ocaml_lex_tables, __ocaml_lex_state, lexbuf$1);
+    var __ocaml_lex_state$1 = Lexing.engine(__ocaml_lex_tables, __ocaml_lex_state, lexbuf);
     switch (__ocaml_lex_state$1) {
       case 0 :
           return /* tuple */[
-                  env$1,
+                  env,
                   false
                 ];
       case 1 :
-          $$Buffer.add_string(buf$1, "\\");
+          $$Buffer.add_string(buf, "\\");
           return /* tuple */[
-                  env$1,
+                  env,
                   false
                 ];
       case 2 :
-          var a = Caml_bytes.get(lexbuf$1.lex_buffer, lexbuf$1.lex_start_pos + 1 | 0);
-          var b = Caml_bytes.get(lexbuf$1.lex_buffer, lexbuf$1.lex_start_pos + 2 | 0);
+          var a = Caml_bytes.get(lexbuf.lex_buffer, lexbuf.lex_start_pos + 1 | 0);
+          var b = Caml_bytes.get(lexbuf.lex_buffer, lexbuf.lex_start_pos + 2 | 0);
           var code = (hexa_to_int(a) << 4) + hexa_to_int(b) | 0;
           List.iter((function (param) {
-                  return $$Buffer.add_char(buf$1, param);
+                  return $$Buffer.add_char(buf, param);
                 }), utf16to8(code));
           return /* tuple */[
-                  env$1,
+                  env,
                   false
                 ];
       case 3 :
-          var a$1 = Caml_bytes.get(lexbuf$1.lex_buffer, lexbuf$1.lex_start_pos);
-          var b$1 = Caml_bytes.get(lexbuf$1.lex_buffer, lexbuf$1.lex_start_pos + 1 | 0);
-          var c = Caml_bytes.get(lexbuf$1.lex_buffer, lexbuf$1.lex_start_pos + 2 | 0);
+          var a$1 = Caml_bytes.get(lexbuf.lex_buffer, lexbuf.lex_start_pos);
+          var b$1 = Caml_bytes.get(lexbuf.lex_buffer, lexbuf.lex_start_pos + 1 | 0);
+          var c = Caml_bytes.get(lexbuf.lex_buffer, lexbuf.lex_start_pos + 2 | 0);
           var code$1 = ((oct_to_int(a$1) << 6) + (oct_to_int(b$1) << 3) | 0) + oct_to_int(c) | 0;
           if (code$1 < 256) {
             List.iter((function (param) {
-                    return $$Buffer.add_char(buf$1, param);
+                    return $$Buffer.add_char(buf, param);
                   }), utf16to8(code$1));
           } else {
             var code$2 = (oct_to_int(a$1) << 3) + oct_to_int(b$1) | 0;
             List.iter((function (param) {
-                    return $$Buffer.add_char(buf$1, param);
+                    return $$Buffer.add_char(buf, param);
                   }), utf16to8(code$2));
-            $$Buffer.add_char(buf$1, c);
+            $$Buffer.add_char(buf, c);
           }
           return /* tuple */[
-                  env$1,
+                  env,
                   true
                 ];
       case 4 :
-          var a$2 = Caml_bytes.get(lexbuf$1.lex_buffer, lexbuf$1.lex_start_pos);
-          var b$2 = Caml_bytes.get(lexbuf$1.lex_buffer, lexbuf$1.lex_start_pos + 1 | 0);
+          var a$2 = Caml_bytes.get(lexbuf.lex_buffer, lexbuf.lex_start_pos);
+          var b$2 = Caml_bytes.get(lexbuf.lex_buffer, lexbuf.lex_start_pos + 1 | 0);
           var code$3 = (oct_to_int(a$2) << 3) + oct_to_int(b$2) | 0;
           List.iter((function (param) {
-                  return $$Buffer.add_char(buf$1, param);
+                  return $$Buffer.add_char(buf, param);
                 }), utf16to8(code$3));
           return /* tuple */[
-                  env$1,
+                  env,
                   true
                 ];
       case 5 :
-          $$Buffer.add_char(buf$1, Char.chr(0));
+          $$Buffer.add_char(buf, Char.chr(0));
           return /* tuple */[
-                  env$1,
+                  env,
                   false
                 ];
       case 6 :
-          $$Buffer.add_char(buf$1, Char.chr(8));
+          $$Buffer.add_char(buf, Char.chr(8));
           return /* tuple */[
-                  env$1,
+                  env,
                   false
                 ];
       case 7 :
-          $$Buffer.add_char(buf$1, Char.chr(12));
+          $$Buffer.add_char(buf, Char.chr(12));
           return /* tuple */[
-                  env$1,
+                  env,
                   false
                 ];
       case 8 :
-          $$Buffer.add_char(buf$1, Char.chr(10));
+          $$Buffer.add_char(buf, Char.chr(10));
           return /* tuple */[
-                  env$1,
+                  env,
                   false
                 ];
       case 9 :
-          $$Buffer.add_char(buf$1, Char.chr(13));
+          $$Buffer.add_char(buf, Char.chr(13));
           return /* tuple */[
-                  env$1,
+                  env,
                   false
                 ];
       case 10 :
-          $$Buffer.add_char(buf$1, Char.chr(9));
+          $$Buffer.add_char(buf, Char.chr(9));
           return /* tuple */[
-                  env$1,
+                  env,
                   false
                 ];
       case 11 :
-          $$Buffer.add_char(buf$1, Char.chr(11));
+          $$Buffer.add_char(buf, Char.chr(11));
           return /* tuple */[
-                  env$1,
+                  env,
                   false
                 ];
       case 12 :
-          var a$3 = Caml_bytes.get(lexbuf$1.lex_buffer, lexbuf$1.lex_start_pos);
+          var a$3 = Caml_bytes.get(lexbuf.lex_buffer, lexbuf.lex_start_pos);
           var code$4 = oct_to_int(a$3);
           List.iter((function (param) {
-                  return $$Buffer.add_char(buf$1, param);
+                  return $$Buffer.add_char(buf, param);
                 }), utf16to8(code$4));
           return /* tuple */[
-                  env$1,
+                  env,
                   true
                 ];
       case 13 :
-          var a$4 = Caml_bytes.get(lexbuf$1.lex_buffer, lexbuf$1.lex_start_pos + 1 | 0);
-          var b$3 = Caml_bytes.get(lexbuf$1.lex_buffer, lexbuf$1.lex_start_pos + 2 | 0);
-          var c$1 = Caml_bytes.get(lexbuf$1.lex_buffer, lexbuf$1.lex_start_pos + 3 | 0);
-          var d = Caml_bytes.get(lexbuf$1.lex_buffer, lexbuf$1.lex_start_pos + 4 | 0);
+          var a$4 = Caml_bytes.get(lexbuf.lex_buffer, lexbuf.lex_start_pos + 1 | 0);
+          var b$3 = Caml_bytes.get(lexbuf.lex_buffer, lexbuf.lex_start_pos + 2 | 0);
+          var c$1 = Caml_bytes.get(lexbuf.lex_buffer, lexbuf.lex_start_pos + 3 | 0);
+          var d = Caml_bytes.get(lexbuf.lex_buffer, lexbuf.lex_start_pos + 4 | 0);
           var code$5 = (((hexa_to_int(a$4) << 12) + (hexa_to_int(b$3) << 8) | 0) + (hexa_to_int(c$1) << 4) | 0) + hexa_to_int(d) | 0;
           List.iter((function (param) {
-                  return $$Buffer.add_char(buf$1, param);
+                  return $$Buffer.add_char(buf, param);
                 }), utf16to8(code$5));
+          return /* tuple */[
+                  env,
+                  false
+                ];
+      case 14 :
+          var hex_code = Lexing.sub_lexeme(lexbuf, lexbuf.lex_start_pos + 2 | 0, lexbuf.lex_curr_pos - 1 | 0);
+          var code$6 = Caml_format.caml_int_of_string("0x" + hex_code);
+          var env$1 = code$6 > 1114111 ? lex_error(env, from_lb(env.lex_source, lexbuf), /* UnexpectedToken */Block.__(1, ["ILLEGAL"])) : env;
+          List.iter((function (param) {
+                  return $$Buffer.add_char(buf, param);
+                }), utf16to8(code$6));
           return /* tuple */[
                   env$1,
                   false
                 ];
-      case 14 :
-          var hex_code = Lexing.sub_lexeme(lexbuf$1, lexbuf$1.lex_start_pos + 2 | 0, lexbuf$1.lex_curr_pos - 1 | 0);
-          var code$6 = Caml_format.caml_int_of_string("0x" + hex_code);
-          var env$2 = code$6 > 1114111 ? lex_error(env$1, from_lb(env$1.lex_source, lexbuf$1), /* UnexpectedToken */Block.__(1, ["ILLEGAL"])) : env$1;
-          List.iter((function (param) {
-                  return $$Buffer.add_char(buf$1, param);
-                }), utf16to8(code$6));
+      case 15 :
+          var c$2 = Caml_bytes.get(lexbuf.lex_buffer, lexbuf.lex_start_pos);
+          var env$2 = lex_error(env, from_lb(env.lex_source, lexbuf), /* UnexpectedToken */Block.__(1, ["ILLEGAL"]));
+          $$Buffer.add_char(buf, c$2);
           return /* tuple */[
                   env$2,
                   false
                 ];
-      case 15 :
-          var c$2 = Caml_bytes.get(lexbuf$1.lex_buffer, lexbuf$1.lex_start_pos);
-          var env$3 = lex_error(env$1, from_lb(env$1.lex_source, lexbuf$1), /* UnexpectedToken */Block.__(1, ["ILLEGAL"]));
-          $$Buffer.add_char(buf$1, c$2);
-          return /* tuple */[
-                  env$3,
-                  false
-                ];
       case 16 :
-          Lexing.new_line(lexbuf$1);
+          Lexing.new_line(lexbuf);
           return /* tuple */[
-                  env$1,
+                  env,
                   false
                 ];
       case 17 :
-          var c$3 = Caml_bytes.get(lexbuf$1.lex_buffer, lexbuf$1.lex_start_pos);
-          $$Buffer.add_char(buf$1, c$3);
+          var c$3 = Caml_bytes.get(lexbuf.lex_buffer, lexbuf.lex_start_pos);
+          $$Buffer.add_char(buf, c$3);
           return /* tuple */[
-                  env$1,
+                  env,
                   false
                 ];
       default:
-        Curry._1(lexbuf$1.refill_buff, lexbuf$1);
+        Curry._1(lexbuf.refill_buff, lexbuf);
         ___ocaml_lex_state = __ocaml_lex_state$1;
         continue ;
     }
@@ -4701,64 +4665,59 @@ function __ocaml_lex_regexp_rec(_env, lexbuf, ___ocaml_lex_state) {
 }
 
 function jsx_child(env, start, buf, raw, lexbuf) {
-  var env$1 = env;
-  var start$1 = start;
-  var buf$1 = buf;
-  var raw$1 = raw;
-  var lexbuf$1 = lexbuf;
   var ___ocaml_lex_state = 364;
   while(true) {
     var __ocaml_lex_state = ___ocaml_lex_state;
-    var __ocaml_lex_state$1 = Lexing.engine(__ocaml_lex_tables, __ocaml_lex_state, lexbuf$1);
+    var __ocaml_lex_state$1 = Lexing.engine(__ocaml_lex_tables, __ocaml_lex_state, lexbuf);
     switch (__ocaml_lex_state$1) {
       case 0 :
-          var lt = Lexing.sub_lexeme(lexbuf$1, lexbuf$1.lex_start_pos, lexbuf$1.lex_curr_pos);
-          $$Buffer.add_string(raw$1, lt);
-          $$Buffer.add_string(buf$1, lt);
-          Lexing.new_line(lexbuf$1);
-          var match = jsx_text(env$1, /* JSX_CHILD_TEXT */2, buf$1, raw$1, lexbuf$1);
-          var value = $$Buffer.contents(buf$1);
-          var raw$2 = $$Buffer.contents(raw$1);
+          var lt = Lexing.sub_lexeme(lexbuf, lexbuf.lex_start_pos, lexbuf.lex_curr_pos);
+          $$Buffer.add_string(raw, lt);
+          $$Buffer.add_string(buf, lt);
+          Lexing.new_line(lexbuf);
+          var match = jsx_text(env, /* JSX_CHILD_TEXT */2, buf, raw, lexbuf);
+          var value = $$Buffer.contents(buf);
+          var raw$1 = $$Buffer.contents(raw);
           return /* tuple */[
                   match[0],
                   /* T_JSX_TEXT */Block.__(4, [/* tuple */[
-                        btwn(start$1, match[1]),
+                        btwn(start, match[1]),
                         value,
-                        raw$2
+                        raw$1
                       ]])
                 ];
       case 1 :
           return /* tuple */[
-                  env$1,
+                  env,
                   /* T_EOF */105
                 ];
       case 2 :
           return /* tuple */[
-                  env$1,
+                  env,
                   /* T_LESS_THAN */89
                 ];
       case 3 :
           return /* tuple */[
-                  env$1,
+                  env,
                   /* T_LCURLY */1
                 ];
       case 4 :
-          var c = Caml_bytes.get(lexbuf$1.lex_buffer, lexbuf$1.lex_start_pos);
-          $$Buffer.add_char(raw$1, c);
-          $$Buffer.add_char(buf$1, c);
-          var match$1 = jsx_text(env$1, /* JSX_CHILD_TEXT */2, buf$1, raw$1, lexbuf$1);
-          var value$1 = $$Buffer.contents(buf$1);
-          var raw$3 = $$Buffer.contents(raw$1);
+          var c = Caml_bytes.get(lexbuf.lex_buffer, lexbuf.lex_start_pos);
+          $$Buffer.add_char(raw, c);
+          $$Buffer.add_char(buf, c);
+          var match$1 = jsx_text(env, /* JSX_CHILD_TEXT */2, buf, raw, lexbuf);
+          var value$1 = $$Buffer.contents(buf);
+          var raw$2 = $$Buffer.contents(raw);
           return /* tuple */[
                   match$1[0],
                   /* T_JSX_TEXT */Block.__(4, [/* tuple */[
-                        btwn(start$1, match$1[1]),
+                        btwn(start, match$1[1]),
                         value$1,
-                        raw$3
+                        raw$2
                       ]])
                 ];
       default:
-        Curry._1(lexbuf$1.refill_buff, lexbuf$1);
+        Curry._1(lexbuf.refill_buff, lexbuf);
         ___ocaml_lex_state = __ocaml_lex_state$1;
         continue ;
     }
@@ -6612,18 +6571,17 @@ function postfix(env) {
 
 function union_with(env, left) {
   if (Curry._2(Parser_env_Peek.token, void 0, env) === /* T_BIT_OR */80) {
-    var env$1 = env;
     var _acc = /* :: */[
       left,
       /* [] */0
     ];
     while(true) {
       var acc = _acc;
-      var match = Curry._2(Parser_env_Peek.token, void 0, env$1);
+      var match = Curry._2(Parser_env_Peek.token, void 0, env);
       if (typeof match === "number" && match === 80) {
-        token$4(env$1, /* T_BIT_OR */80);
+        token$4(env, /* T_BIT_OR */80);
         _acc = /* :: */[
-          intersection(env$1),
+          intersection(env),
           acc
         ];
         continue ;
@@ -6925,11 +6883,10 @@ function param(env) {
 
 function function_param_list_without_parens(env) {
   return (function (param$1) {
-      var env$1 = env;
       var _acc = param$1;
       while(true) {
         var acc = _acc;
-        var t = Curry._2(Parser_env_Peek.token, void 0, env$1);
+        var t = Curry._2(Parser_env_Peek.token, void 0, env);
         var exit = 0;
         if (typeof t === "number") {
           var switcher = t - 4 | 0;
@@ -6943,18 +6900,18 @@ function function_param_list_without_parens(env) {
         }
         switch (exit) {
           case 1 :
-              var acc_000 = param(env$1);
+              var acc_000 = param(env);
               var acc$1 = /* :: */[
                 acc_000,
                 acc
               ];
-              if (Curry._2(Parser_env_Peek.token, void 0, env$1) !== /* T_RPAREN */4) {
-                token$4(env$1, /* T_COMMA */8);
+              if (Curry._2(Parser_env_Peek.token, void 0, env) !== /* T_RPAREN */4) {
+                token$4(env, /* T_COMMA */8);
               }
               _acc = acc$1;
               continue ;
           case 2 :
-              var rest = t === /* T_ELLIPSIS */11 ? (token$4(env$1, /* T_ELLIPSIS */11), param(env$1)) : void 0;
+              var rest = t === /* T_ELLIPSIS */11 ? (token$4(env, /* T_ELLIPSIS */11), param(env)) : void 0;
               return /* tuple */[
                       rest,
                       List.rev(acc)
@@ -7010,18 +6967,17 @@ function type_parameter_instantiation(env) {
 
 function intersection_with(env, left) {
   if (Curry._2(Parser_env_Peek.token, void 0, env) === /* T_BIT_AND */82) {
-    var env$1 = env;
     var _acc = /* :: */[
       left,
       /* [] */0
     ];
     while(true) {
       var acc = _acc;
-      var match = Curry._2(Parser_env_Peek.token, void 0, env$1);
+      var match = Curry._2(Parser_env_Peek.token, void 0, env);
       if (typeof match === "number" && match === 82) {
-        token$4(env$1, /* T_BIT_AND */82);
+        token$4(env, /* T_BIT_AND */82);
         _acc = /* :: */[
-          prefix(env$1),
+          prefix(env),
           acc
         ];
         continue ;
@@ -9021,24 +8977,23 @@ function add_to_stack(_right, _param, _rloc, _stack) {
 }
 
 function binary(env) {
-  var env$1 = env;
   var _stack = /* [] */0;
   while(true) {
     var stack = _stack;
-    var start_loc = Curry._2(Parser_env_Peek.loc, void 0, env$1);
-    var is_unary = peek_unary_op(env$1) !== void 0;
-    var right = unary(with_no_in(false, env$1));
-    var match = env$1.last_loc.contents;
+    var start_loc = Curry._2(Parser_env_Peek.loc, void 0, env);
+    var is_unary = peek_unary_op(env) !== void 0;
+    var right = unary(with_no_in(false, env));
+    var match = env.last_loc.contents;
     var end_loc = match !== void 0 ? match : right[0];
     var right_loc = btwn(start_loc, end_loc);
-    if (Curry._2(Parser_env_Peek.token, void 0, env$1) === /* T_LESS_THAN */89) {
+    if (Curry._2(Parser_env_Peek.token, void 0, env) === /* T_LESS_THAN */89) {
       var tmp = right[1];
       if (typeof tmp !== "number" && tmp.tag === /* JSXElement */22) {
-        error$1(env$1, /* AdjacentJSXElements */46);
+        error$1(env, /* AdjacentJSXElements */46);
       }
       
     }
-    var match$1 = binary_op(env$1);
+    var match$1 = binary_op(env);
     if (match$1 === void 0) {
       var _right = right;
       var _rloc = right_loc;
@@ -9061,7 +9016,7 @@ function binary(env) {
     var match$3 = match$1;
     var rop = match$3[0];
     if (is_unary && rop === /* Exp */14) {
-      error_at(env$1, /* tuple */[
+      error_at(env, /* tuple */[
             right_loc,
             /* InvalidLHSInExponentiation */15
           ]);
@@ -13484,20 +13439,18 @@ function statement(env) {
 }
 
 function module_body(term_fn, env) {
-  var env$1 = env;
-  var term_fn$1 = term_fn;
   var _acc = /* [] */0;
   while(true) {
     var acc = _acc;
-    var t = Curry._2(Parser_env_Peek.token, void 0, env$1);
+    var t = Curry._2(Parser_env_Peek.token, void 0, env);
     if (typeof t === "number" && t === 105) {
       return List.rev(acc);
     }
-    if (Curry._1(term_fn$1, t)) {
+    if (Curry._1(term_fn, t)) {
       return List.rev(acc);
     }
     _acc = /* :: */[
-      module_item(env$1),
+      module_item(env),
       acc
     ];
     continue ;
@@ -13629,20 +13582,18 @@ function directives(env, term_fn, item_fn) {
 }
 
 function statement_list$1(term_fn, env) {
-  var env$1 = env;
-  var term_fn$1 = term_fn;
   var _acc = /* [] */0;
   while(true) {
     var acc = _acc;
-    var t = Curry._2(Parser_env_Peek.token, void 0, env$1);
+    var t = Curry._2(Parser_env_Peek.token, void 0, env);
     if (typeof t === "number" && t === 105) {
       return List.rev(acc);
     }
-    if (Curry._1(term_fn$1, t)) {
+    if (Curry._1(term_fn, t)) {
       return List.rev(acc);
     }
     _acc = /* :: */[
-      statement_list_item(void 0, env$1),
+      statement_list_item(void 0, env),
       acc
     ];
     continue ;

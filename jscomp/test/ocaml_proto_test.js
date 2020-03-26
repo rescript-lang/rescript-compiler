@@ -1544,11 +1544,10 @@ function __ocaml_lex_multi_line_comment_rec(_l, lexbuf, ___ocaml_lex_state) {
 }
 
 function lexer(lexbuf) {
-  var lexbuf$1 = lexbuf;
   var ___ocaml_lex_state = 0;
   while(true) {
     var __ocaml_lex_state = ___ocaml_lex_state;
-    var __ocaml_lex_state$1 = Lexing.engine(__ocaml_lex_tables, __ocaml_lex_state, lexbuf$1);
+    var __ocaml_lex_state$1 = Lexing.engine(__ocaml_lex_tables, __ocaml_lex_state, lexbuf);
     switch (__ocaml_lex_state$1) {
       case 0 :
           return /* LBRACE */15;
@@ -1573,42 +1572,42 @@ function lexer(lexbuf) {
       case 10 :
           return /* COMMA */24;
       case 11 :
-          var match = __ocaml_lex_comment_rec(/* [] */0, lexbuf$1, 41);
+          var match = __ocaml_lex_comment_rec(/* [] */0, lexbuf, 41);
           if (!match) {
             return /* EOF */25;
           }
           ___ocaml_lex_state = 0;
           continue ;
       case 12 :
-          var match$1 = __ocaml_lex_multi_line_comment_rec(/* [] */0, lexbuf$1, 47);
+          var match$1 = __ocaml_lex_multi_line_comment_rec(/* [] */0, lexbuf, 47);
           if (!match$1) {
             return /* EOF */25;
           }
           ___ocaml_lex_state = 0;
           continue ;
       case 13 :
-          var match$2 = __ocaml_lex_string_rec(/* [] */0, lexbuf$1, 55);
+          var match$2 = __ocaml_lex_string_rec(/* [] */0, lexbuf, 55);
           if (match$2) {
             return /* STRING */Block.__(2, [match$2[0]]);
           } else {
             return /* EOF */25;
           }
       case 14 :
-          return /* INT */Block.__(3, [Caml_format.caml_int_of_string(Lexing.lexeme(lexbuf$1))]);
+          return /* INT */Block.__(3, [Caml_format.caml_int_of_string(Lexing.lexeme(lexbuf))]);
       case 15 :
-          return /* FLOAT */Block.__(4, [Caml_format.caml_float_of_string(Lexing.lexeme(lexbuf$1))]);
+          return /* FLOAT */Block.__(4, [Caml_format.caml_float_of_string(Lexing.lexeme(lexbuf))]);
       case 16 :
           return /* FLOAT */Block.__(4, [Number.NaN]);
       case 17 :
-          update_loc(lexbuf$1);
+          update_loc(lexbuf);
           ___ocaml_lex_state = 0;
           continue ;
       case 18 :
           ___ocaml_lex_state = 0;
           continue ;
       case 19 :
-          var loc = from_lexbuf(lexbuf$1);
-          var ident = Lexing.lexeme(lexbuf$1);
+          var loc = from_lexbuf(lexbuf);
+          var ident = Lexing.lexeme(lexbuf);
           switch (ident) {
             case "enum" :
                 return /* ENUM */4;
@@ -1660,13 +1659,13 @@ function lexer(lexbuf) {
                           ])
                       ]),
                     "Unknown character found %s"
-                  ]), Lexing.lexeme(lexbuf$1));
+                  ]), Lexing.lexeme(lexbuf));
           throw [
                 Caml_builtin_exceptions.failure,
                 s
               ];
       default:
-        Curry._1(lexbuf$1.refill_buff, lexbuf$1);
+        Curry._1(lexbuf.refill_buff, lexbuf);
         ___ocaml_lex_state = __ocaml_lex_state$1;
         continue ;
     }

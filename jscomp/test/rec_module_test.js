@@ -809,7 +809,6 @@ function find_first(f, _param) {
     var v = param[/* v */1];
     if (Curry._1(f, v)) {
       var _v0 = v;
-      var f$1 = f;
       var _param$1 = param[/* l */0];
       while(true) {
         var param$1 = _param$1;
@@ -818,7 +817,7 @@ function find_first(f, _param) {
           return v0;
         }
         var v$1 = param$1[/* v */1];
-        if (Curry._1(f$1, v$1)) {
+        if (Curry._1(f, v$1)) {
           _param$1 = param$1[/* l */0];
           _v0 = v$1;
           continue ;
@@ -842,7 +841,6 @@ function find_first_opt(f, _param) {
     var v = param[/* v */1];
     if (Curry._1(f, v)) {
       var _v0 = v;
-      var f$1 = f;
       var _param$1 = param[/* l */0];
       while(true) {
         var param$1 = _param$1;
@@ -851,7 +849,7 @@ function find_first_opt(f, _param) {
           return Caml_option.some(v0);
         }
         var v$1 = param$1[/* v */1];
-        if (Curry._1(f$1, v$1)) {
+        if (Curry._1(f, v$1)) {
           _param$1 = param$1[/* l */0];
           _v0 = v$1;
           continue ;
@@ -875,7 +873,6 @@ function find_last(f, _param) {
     var v = param[/* v */1];
     if (Curry._1(f, v)) {
       var _v0 = v;
-      var f$1 = f;
       var _param$1 = param[/* r */2];
       while(true) {
         var param$1 = _param$1;
@@ -884,7 +881,7 @@ function find_last(f, _param) {
           return v0;
         }
         var v$1 = param$1[/* v */1];
-        if (Curry._1(f$1, v$1)) {
+        if (Curry._1(f, v$1)) {
           _param$1 = param$1[/* r */2];
           _v0 = v$1;
           continue ;
@@ -908,7 +905,6 @@ function find_last_opt(f, _param) {
     var v = param[/* v */1];
     if (Curry._1(f, v)) {
       var _v0 = v;
-      var f$1 = f;
       var _param$1 = param[/* r */2];
       while(true) {
         var param$1 = _param$1;
@@ -917,7 +913,7 @@ function find_last_opt(f, _param) {
           return Caml_option.some(v0);
         }
         var v$1 = param$1[/* v */1];
-        if (Curry._1(f$1, v$1)) {
+        if (Curry._1(f, v$1)) {
           _param$1 = param$1[/* r */2];
           _v0 = v$1;
           continue ;

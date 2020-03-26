@@ -95,6 +95,15 @@ val fold_right2 :
   'c -> 
   ('a -> 'b -> 'c -> 'c) ->  'c
 
+val fold_right3 : 
+  'a list -> 
+  'b list -> 
+  'c list -> 
+  'd -> 
+  ('a -> 'b -> 'c -> 'd -> 'd) -> 
+  'd
+  
+  
 val map2 : 
   'a list ->
   'b list ->

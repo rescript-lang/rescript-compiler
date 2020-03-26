@@ -352,15 +352,13 @@ function tail_from(s, x) {
 function digits_of_str(s, offset, x) {
   var _i = 0;
   var _acc = 0;
-  var s$1 = s;
-  var x$1 = x;
   while(true) {
     var acc = _acc;
     var i = _i;
-    if (i >= x$1) {
+    if (i >= x) {
       return acc;
     }
-    _acc = (Caml_int32.imul(10, acc) + Caml_string.get(s$1, offset + i | 0) | 0) - 48 | 0;
+    _acc = (Caml_int32.imul(10, acc) + Caml_string.get(s, offset + i | 0) | 0) - 48 | 0;
     _i = i + 1 | 0;
     continue ;
   };

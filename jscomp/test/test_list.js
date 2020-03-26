@@ -156,7 +156,6 @@ function iter(f, _param) {
 
 function iteri(f, l) {
   var _i = 0;
-  var f$1 = f;
   var _param = l;
   while(true) {
     var param = _param;
@@ -164,7 +163,7 @@ function iteri(f, l) {
     if (!param) {
       return ;
     }
-    Curry._2(f$1, i, param[0]);
+    Curry._2(f, i, param[0]);
     _param = param[1];
     _i = i + 1 | 0;
     continue ;
