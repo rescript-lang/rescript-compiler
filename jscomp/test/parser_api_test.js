@@ -42,7 +42,7 @@ if (match) {
                 if (match$12.pos_fname === "" && !(match$12.pos_lnum !== 1 || match$12.pos_bol !== 0 || match$12.pos_cnum !== 5 || match$10.loc_ghost || match$4.ppat_attributes)) {
                   var match$13 = match$3.pvb_expr;
                   var match$14 = match$13.pexp_desc;
-                  if (match$14.tag === /* Pexp_fun */4 && match$14[0] === "" && match$14[1] === undefined) {
+                  if (match$14.tag === /* Pexp_fun */4 && match$14[0] === "" && match$14[1] === void 0) {
                     var match$15 = match$14[2];
                     var match$16 = match$15.ppat_desc;
                     if (typeof match$16 === "number" || match$16.tag) {

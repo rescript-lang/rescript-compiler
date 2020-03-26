@@ -73,7 +73,7 @@ function memo_fib_init($$class) {
         }));
   return (function (env, self) {
       var self$1 = CamlinternalOO.create_object_opt(self, $$class);
-      self$1[cache] = Hashtbl.create(undefined, 31);
+      self$1[cache] = Hashtbl.create(void 0, 31);
       Curry._1(obj_init, self$1);
       return CamlinternalOO.run_initializers_opt(self, self$1, $$class);
     });
@@ -81,7 +81,7 @@ function memo_fib_init($$class) {
 
 var memo_fib = CamlinternalOO.make_class(shared, memo_fib_init);
 
-var tmp = Curry._1(memo_fib[0], undefined);
+var tmp = Curry._1(memo_fib[0], void 0);
 
 eq("File \"class_fib_open_recursion_test.ml\", line 33, characters 5-12", Caml_oo_curry.js2(-1044768619, 1, tmp, 40), 165580141);
 

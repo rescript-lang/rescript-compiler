@@ -9,8 +9,8 @@ var suites_000 = /* tuple */[
   "toOption - null",
   (function (param) {
       return /* Eq */Block.__(0, [
-                undefined,
-                undefined
+                void 0,
+                void 0
               ]);
     })
 ];
@@ -20,8 +20,8 @@ var suites_001 = /* :: */[
     "toOption - undefined",
     (function (param) {
         return /* Eq */Block.__(0, [
-                  undefined,
-                  undefined
+                  void 0,
+                  void 0
                 ]);
       })
   ],
@@ -30,8 +30,8 @@ var suites_001 = /* :: */[
       "toOption - empty",
       (function (param) {
           return /* Eq */Block.__(0, [
-                    undefined,
-                    undefined
+                    void 0,
+                    void 0
                   ]);
         })
     ],
@@ -112,8 +112,8 @@ var suites_001 = /* :: */[
                       "bind - undefined",
                       (function (param) {
                           return /* StrictEq */Block.__(2, [
-                                    undefined,
-                                    Js_null_undefined.bind(undefined, (function (v) {
+                                    void 0,
+                                    Js_null_undefined.bind(void 0, (function (v) {
                                             return v;
                                           }))
                                   ]);
@@ -124,8 +124,8 @@ var suites_001 = /* :: */[
                         "bind - empty",
                         (function (param) {
                             return /* StrictEq */Block.__(2, [
-                                      undefined,
-                                      Js_null_undefined.bind(undefined, (function (v) {
+                                      void 0,
+                                      Js_null_undefined.bind(void 0, (function (v) {
                                               return v;
                                             }))
                                     ]);
@@ -167,7 +167,7 @@ var suites_001 = /* :: */[
                                   var hit = {
                                     contents: false
                                   };
-                                  Js_null_undefined.iter(undefined, (function (param) {
+                                  Js_null_undefined.iter(void 0, (function (param) {
                                           hit.contents = true;
                                           
                                         }));
@@ -184,7 +184,7 @@ var suites_001 = /* :: */[
                                     var hit = {
                                       contents: false
                                     };
-                                    Js_null_undefined.iter(undefined, (function (param) {
+                                    Js_null_undefined.iter(void 0, (function (param) {
                                             hit.contents = true;
                                             
                                           }));
@@ -216,8 +216,8 @@ var suites_001 = /* :: */[
                                     "fromOption - None",
                                     (function (param) {
                                         return /* Eq */Block.__(0, [
-                                                  undefined,
-                                                  Js_null_undefined.fromOption(undefined)
+                                                  void 0,
+                                                  Js_null_undefined.fromOption(void 0)
                                                 ]);
                                       })
                                   ],

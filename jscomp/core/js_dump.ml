@@ -552,7 +552,7 @@ and expression_desc cxt ~(level:int) f x : cxt  =
   | Null ->
     P.string f L.null; cxt 
   | Undefined -> 
-    P.string f L.undefined; cxt 
+    P.string f "void 0"; cxt 
   | Var v ->
     vident cxt f v
   | Bool b ->

@@ -37,7 +37,7 @@ function hey(x, y) {
   }
 ;
 
-var u = hey(undefined, 3);
+var u = hey(void 0, 3);
 
 var z = hey(5, 3);
 

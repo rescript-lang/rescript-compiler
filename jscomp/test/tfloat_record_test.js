@@ -40,7 +40,7 @@ var s = {
 
 print_float(1.0);
 
-print_newline(undefined);
+print_newline(void 0);
 
 var b = Float_array.small_float_array(12);
 
@@ -49,9 +49,9 @@ var c = Float_array.longer_float_array(34);
 function print_array(a) {
   $$Array.iter((function (f) {
           print_float(f);
-          return print_newline(undefined);
+          return print_newline(void 0);
         }), a);
-  return print_newline(undefined);
+  return print_newline(void 0);
 }
 
 print_array(b[0]);

@@ -28,10 +28,10 @@ function f(param) {
   
 }
 
-f(undefined);
+f(void 0);
 
 $$Array.iter((function (x) {
-        return Curry._1(x, undefined);
+        return Curry._1(x, void 0);
       }), arr);
 
 console.log(String(v.contents));

@@ -37,7 +37,7 @@ CamlinternalOO.set_methods($$class, [
 
 CamlinternalOO.init_class($$class);
 
-var vv = CamlinternalOO.create_object_opt(undefined, $$class);
+var vv = CamlinternalOO.create_object_opt(void 0, $$class);
 
 var $$class$1 = CamlinternalOO.create_table([
       "x",
@@ -66,7 +66,7 @@ CamlinternalOO.set_methods($$class$1, [
 
 CamlinternalOO.init_class($$class$1);
 
-var v = CamlinternalOO.create_object_opt(undefined, $$class$1);
+var v = CamlinternalOO.create_object_opt(void 0, $$class$1);
 
 var $$class$2 = CamlinternalOO.create_table([
       "hi",
@@ -111,7 +111,7 @@ CamlinternalOO.set_methods($$class$2, [
 
 CamlinternalOO.init_class($$class$2);
 
-var u = CamlinternalOO.create_object_opt(undefined, $$class$2);
+var u = CamlinternalOO.create_object_opt(void 0, $$class$2);
 
 var $$class$3 = CamlinternalOO.create_table(["id"]);
 
@@ -123,7 +123,7 @@ CamlinternalOO.set_method($$class$3, id, (function (self$4) {
 
 CamlinternalOO.init_class($$class$3);
 
-var uu = CamlinternalOO.create_object_opt(undefined, $$class$3);
+var uu = CamlinternalOO.create_object_opt(void 0, $$class$3);
 
 var $$class$4 = CamlinternalOO.create_table(["add"]);
 
@@ -135,7 +135,7 @@ CamlinternalOO.set_method($$class$4, add, (function (self$5, x, y) {
 
 CamlinternalOO.init_class($$class$4);
 
-var uuu = CamlinternalOO.create_object_opt(undefined, $$class$4);
+var uuu = CamlinternalOO.create_object_opt(void 0, $$class$4);
 
 var $$class$5 = CamlinternalOO.create_table(shared$1);
 
@@ -158,7 +158,7 @@ CamlinternalOO.set_methods($$class$5, [
 
 CamlinternalOO.init_class($$class$5);
 
-var vvvv = CamlinternalOO.create_object_opt(undefined, $$class$5);
+var vvvv = CamlinternalOO.create_object_opt(void 0, $$class$5);
 
 var suites_000 = /* tuple */[
   "single_obj",

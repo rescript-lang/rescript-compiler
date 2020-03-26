@@ -74,7 +74,7 @@ var option_suites_001 = /* :: */[
               (function (param) {
                   return /* Eq */Block.__(0, [
                             false,
-                            Js_option.isSomeValue(simpleEq, 1, undefined)
+                            Js_option.isSomeValue(simpleEq, 1, void 0)
                           ]);
                 })
             ],
@@ -114,7 +114,7 @@ var option_suites_001 = /* :: */[
                       (function (param) {
                           return /* Eq */Block.__(0, [
                                     false,
-                                    Js_option.equal(simpleEq, 1, undefined)
+                                    Js_option.equal(simpleEq, 1, void 0)
                                   ]);
                         })
                     ],
@@ -159,10 +159,10 @@ var option_suites_001 = /* :: */[
                               "option_map_None",
                               (function (param) {
                                   return /* Eq */Block.__(0, [
-                                            undefined,
+                                            void 0,
                                             Js_option.map((function (a) {
                                                     return a + 1 | 0;
-                                                  }), undefined)
+                                                  }), void 0)
                                           ]);
                                 })
                             ],
@@ -182,7 +182,7 @@ var option_suites_001 = /* :: */[
                                   (function (param) {
                                       return /* Eq */Block.__(0, [
                                                 3,
-                                                Js_option.getWithDefault(3, undefined)
+                                                Js_option.getWithDefault(3, void 0)
                                               ]);
                                     })
                                 ],
@@ -203,7 +203,7 @@ var option_suites_001 = /* :: */[
                                       "option_filter_Reject",
                                       (function (param) {
                                           return /* Eq */Block.__(0, [
-                                                    undefined,
+                                                    void 0,
                                                     Js_option.filter((function (a) {
                                                             return a % 3 === 0;
                                                           }), 2)
@@ -215,10 +215,10 @@ var option_suites_001 = /* :: */[
                                         "option_filter_None",
                                         (function (param) {
                                             return /* Eq */Block.__(0, [
-                                                      undefined,
+                                                      void 0,
                                                       Js_option.filter((function (a) {
                                                               return a % 3 === 0;
-                                                            }), undefined)
+                                                            }), void 0)
                                                     ]);
                                           })
                                       ],
@@ -238,7 +238,7 @@ var option_suites_001 = /* :: */[
                                             (function (param) {
                                                 return /* Eq */Block.__(0, [
                                                           true,
-                                                          Js_option.isSomeValue(simpleEq, 2, Js_option.firstSome(undefined, 2))
+                                                          Js_option.isSomeValue(simpleEq, 2, Js_option.firstSome(void 0, 2))
                                                         ]);
                                               })
                                           ],
@@ -247,8 +247,8 @@ var option_suites_001 = /* :: */[
                                               "option_firstSome_None",
                                               (function (param) {
                                                   return /* Eq */Block.__(0, [
-                                                            undefined,
-                                                            Js_option.firstSome(undefined, undefined)
+                                                            void 0,
+                                                            Js_option.firstSome(void 0, void 0)
                                                           ]);
                                                 })
                                             ],

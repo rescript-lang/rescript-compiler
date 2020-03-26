@@ -163,7 +163,7 @@ eq("File \"large_record_duplication_test.ml\", line 260, characters 6-13", get_x
 
 eq("File \"large_record_duplication_test.ml\", line 261, characters 6-13", get_x0$2(v3), 9);
 
-eq("File \"large_record_duplication_test.ml\", line 262, characters 6-13", get_x0$2(Caml_builtin_exceptions.not_found), undefined);
+eq("File \"large_record_duplication_test.ml\", line 262, characters 6-13", get_x0$2(Caml_builtin_exceptions.not_found), void 0);
 
 Mt.from_pair_suites("Large_record_duplication_test", suites.contents);
 

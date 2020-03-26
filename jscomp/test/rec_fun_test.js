@@ -50,7 +50,7 @@ function g(param) {
   
 }
 
-g(undefined);
+g(void 0);
 
 var x = [];
 

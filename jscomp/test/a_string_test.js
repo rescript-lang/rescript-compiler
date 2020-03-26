@@ -29,7 +29,7 @@ var suites_001 = /* :: */[
     "split_non_empty",
     (function (param) {
         return /* Eq */Block.__(0, [
-                  Ext_string_test.split(undefined, "hihi", /* "i" */105),
+                  Ext_string_test.split(void 0, "hihi", /* "i" */105),
                   /* :: */[
                     "h",
                     /* :: */[
@@ -76,7 +76,7 @@ var suites_001 = /* :: */[
               return /* Eq */Block.__(0, [
                         List.filter((function (s) {
                                   return s !== "";
-                                }))(Ext_string_test.split_by(undefined, (function (x) {
+                                }))(Ext_string_test.split_by(void 0, (function (x) {
                                     if (x === /* " " */32) {
                                       return true;
                                     } else {

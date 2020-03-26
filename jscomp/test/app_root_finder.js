@@ -21,9 +21,9 @@ function find_package_json(_dir) {
   };
 }
 
-var match = typeof __dirname === "undefined" ? undefined : __dirname;
+var match = typeof __dirname === "undefined" ? void 0 : __dirname;
 
-if (match !== undefined) {
+if (match !== void 0) {
   console.log(find_package_json(match));
 }
 

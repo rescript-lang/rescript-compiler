@@ -36,9 +36,9 @@ function read_lines(inc) {
       if (exn !== Caml_builtin_exceptions.end_of_file) {
         throw exn;
       }
-      match = undefined;
+      match = void 0;
     }
-    if (match === undefined) {
+    if (match === void 0) {
       return List.rev(acc);
     }
     _acc = /* :: */[

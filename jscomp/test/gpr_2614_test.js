@@ -26,7 +26,7 @@ function h0(param) {
   var tmp = {
     hi: 2
   };
-  if (partial_arg !== undefined) {
+  if (partial_arg !== void 0) {
     tmp["lo-x"] = Caml_option.valFromOption(partial_arg);
   }
   return tmp;
@@ -48,7 +48,7 @@ function hh(x) {
 
 function hh2(x) {
   var match = x["lo-x"];
-  if (match !== undefined) {
+  if (match !== void 0) {
     return 1;
   } else {
     return 0;
@@ -61,7 +61,7 @@ var u = {
 
 var match = u["xx-yy"];
 
-var v$1 = match !== undefined ? match : 0;
+var v$1 = match !== void 0 ? match : 0;
 
 exports.b = b;
 exports.c = c;

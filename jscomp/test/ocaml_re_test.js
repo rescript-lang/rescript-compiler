@@ -651,7 +651,7 @@ function first(f, _param) {
       return ;
     }
     var res = Curry._1(f, param[0]);
-    if (res !== undefined) {
+    if (res !== void 0) {
       return res;
     }
     _param = param[1];
@@ -916,7 +916,7 @@ var dummy = {
   idx: -1,
   category: -1,
   desc: /* [] */0,
-  status: undefined,
+  status: void 0,
   hash: -1
 };
 
@@ -929,7 +929,7 @@ function mk(idx, cat, desc) {
           idx: idx,
           category: cat,
           desc: desc,
-          status: undefined,
+          status: void 0,
           hash: hash$2(idx, cat, desc)
         };
 }
@@ -1211,7 +1211,7 @@ function delta_1(marks, c, next_cat, prev_cat, x, rem) {
                   
                 }
               }), y$prime$1);
-        var match$2 = match$1 !== undefined ? /* tuple */[
+        var match$2 = match$1 !== void 0 ? /* tuple */[
             Curry._1(remove_matches, y$prime$1),
             match$1
           ] : /* tuple */[
@@ -1305,7 +1305,7 @@ function delta_seq(c, next_cat, prev_cat, kind, y, z, rem) {
             
           }
         }), y);
-  if (match === undefined) {
+  if (match === void 0) {
     return tseq(kind, y, z, rem);
   }
   var marks = match;
@@ -1363,7 +1363,7 @@ function flatten_match(m) {
 
 function status(s) {
   var match = s.status;
-  if (match !== undefined) {
+  if (match !== void 0) {
     return match;
   }
   var match$1 = s.desc;
@@ -1663,7 +1663,7 @@ function cadd(c, s) {
 
 function trans_set(cache, cm, s) {
   var match = one_char(s);
-  if (match !== undefined) {
+  if (match !== void 0) {
     return single(Caml_bytes.get(cm, match));
   }
   var v_000 = hash_rec(s);
@@ -2311,7 +2311,7 @@ function translate(ids, kind, _ign_group, ign_case, _greedy, pos, cache, c, _par
             var kind$prime = match$1[1];
             var cr = match$1[0];
             var rem;
-            if (j !== undefined) {
+            if (j !== void 0) {
               var f = greedy >= 620821490 ? (function(cr,kind$prime){
                 return function (rem) {
                   return alt(ids, /* :: */[
@@ -2639,7 +2639,7 @@ function repn(r, i, j) {
           "Re.repn"
         ];
   }
-  if (j !== undefined && j < i) {
+  if (j !== void 0 && j < i) {
     throw [
           Caml_builtin_exceptions.invalid_argument,
           "Re.repn"
@@ -2863,7 +2863,7 @@ function compile(r) {
   var regexp = anchored(r) ? /* Group */Block.__(6, [r]) : seq$2(/* :: */[
           /* Sem */Block.__(4, [
               /* Shortest */-1034406550,
-              repn(any, 0, undefined)
+              repn(any, 0, void 0)
             ]),
           /* :: */[
             /* Group */Block.__(6, [r]),
@@ -2906,8 +2906,8 @@ function compile(r) {
 }
 
 function exec_internal(name, posOpt, lenOpt, groups, re, s) {
-  var pos = posOpt !== undefined ? posOpt : 0;
-  var len = lenOpt !== undefined ? lenOpt : -1;
+  var pos = posOpt !== void 0 ? posOpt : 0;
+  var len = lenOpt !== void 0 ? lenOpt : -1;
   if (pos < 0 || len < -1 || (pos + len | 0) > s.length) {
     throw [
           Caml_builtin_exceptions.invalid_argument,
@@ -3123,7 +3123,7 @@ function parse(multiline, dollar_endonly, dotall, ungreedy, s) {
                 return epsilon;
               }
               i.contents = i.contents + 1 | 0;
-              _param = undefined;
+              _param = void 0;
               continue ;
             };
           }
@@ -3164,7 +3164,7 @@ function parse(multiline, dollar_endonly, dotall, ungreedy, s) {
         if (i.contents === l) {
           throw Parse_error;
         }
-        var c = get(undefined);
+        var c = get(void 0);
         switch (c) {
           case 48 :
           case 49 :
@@ -3299,7 +3299,7 @@ function parse(multiline, dollar_endonly, dotall, ungreedy, s) {
         if (i.contents === l) {
           throw Parse_error;
         }
-        var c$1 = get(undefined);
+        var c$1 = get(void 0);
         if (c$1 >= 64) {
           if (c$1 === 92) {
             throw Parse_error;
@@ -3326,7 +3326,7 @@ function parse(multiline, dollar_endonly, dotall, ungreedy, s) {
     if (i.contents === l) {
       return ;
     }
-    var d = get(undefined);
+    var d = get(void 0);
     if (d > 57 || d < 48) {
       i.contents = i.contents - 1 | 0;
       return ;
@@ -3337,7 +3337,7 @@ function parse(multiline, dollar_endonly, dotall, ungreedy, s) {
         if (i.contents === l) {
           return i$1;
         }
-        var d$1 = get(undefined);
+        var d$1 = get(void 0);
         if (d$1 > 57 || d$1 < 48) {
           i.contents = i.contents - 1 | 0;
           return i$1;
@@ -3359,7 +3359,7 @@ function parse(multiline, dollar_endonly, dotall, ungreedy, s) {
         return seq$2(List.rev(left));
       }
       _left = /* :: */[
-        piece(undefined),
+        piece(void 0),
         left
       ];
       continue ;
@@ -3387,7 +3387,7 @@ function parse(multiline, dollar_endonly, dotall, ungreedy, s) {
       if (s !== /* [] */0 && accept(/* "]" */93)) {
         return s;
       }
-      var match = $$char(undefined);
+      var match = $$char(void 0);
       if (match[0] >= 748194550) {
         var c = match[1];
         if (accept(/* "-" */45)) {
@@ -3406,7 +3406,7 @@ function parse(multiline, dollar_endonly, dotall, ungreedy, s) {
                     ]
                   ];
           }
-          var match$1 = $$char(undefined);
+          var match$1 = $$char(void 0);
           if (match$1[0] < 748194550) {
             return /* :: */[
                     /* Set */Block.__(0, [single(c)]),
@@ -3450,7 +3450,7 @@ function parse(multiline, dollar_endonly, dotall, ungreedy, s) {
     if (i.contents === l) {
       throw Parse_error;
     }
-    var c = get(undefined);
+    var c = get(void 0);
     if (c === /* "[" */91) {
       if (accept(/* "=" */61)) {
         throw Not_supported;
@@ -3528,7 +3528,7 @@ function parse(multiline, dollar_endonly, dotall, ungreedy, s) {
         if (i.contents === l) {
           throw Parse_error;
         }
-        var c$1 = get(undefined);
+        var c$1 = get(void 0);
         if (!accept(/* "." */46)) {
           throw Not_supported;
         }
@@ -3547,7 +3547,7 @@ function parse(multiline, dollar_endonly, dotall, ungreedy, s) {
                 c
               ];
       }
-      var c$2 = get(undefined);
+      var c$2 = get(void 0);
       if (c$2 >= 58) {
         if (c$2 >= 123) {
           return /* `Char */[
@@ -3710,12 +3710,12 @@ function parse(multiline, dollar_endonly, dotall, ungreedy, s) {
     }
   };
   var piece = function (param) {
-    var r = atom(undefined);
+    var r = atom(void 0);
     if (accept(/* "*" */42)) {
-      return greedy_mod(repn(r, 0, undefined));
+      return greedy_mod(repn(r, 0, void 0));
     }
     if (accept(/* "+" */43)) {
-      return greedy_mod(repn(r, 1, undefined));
+      return greedy_mod(repn(r, 1, void 0));
     }
     if (accept(/* "?" */63)) {
       return greedy_mod(repn(r, 0, 1));
@@ -3723,14 +3723,14 @@ function parse(multiline, dollar_endonly, dotall, ungreedy, s) {
     if (!accept(/* "{" */123)) {
       return r;
     }
-    var match = integer(undefined);
-    if (match !== undefined) {
+    var match = integer(void 0);
+    if (match !== void 0) {
       var i$1 = match;
-      var j = accept(/* "," */44) ? integer(undefined) : i$1;
+      var j = accept(/* "," */44) ? integer(void 0) : i$1;
       if (!accept(/* "}" */125)) {
         throw Parse_error;
       }
-      if (j !== undefined && j < i$1) {
+      if (j !== void 0 && j < i$1) {
         throw Parse_error;
       }
       return greedy_mod(repn(r, i$1, j));
@@ -3747,7 +3747,7 @@ function parse(multiline, dollar_endonly, dotall, ungreedy, s) {
 }
 
 function re(flagsOpt, pat) {
-  var flags = flagsOpt !== undefined ? flagsOpt : /* [] */0;
+  var flags = flagsOpt !== void 0 ? flagsOpt : /* [] */0;
   var opts = List.map((function (param) {
           if (param !== 601676297) {
             if (param >= 613575188) {
@@ -3760,7 +3760,7 @@ function re(flagsOpt, pat) {
           }
         }), flags);
   var optsOpt = opts;
-  var opts$1 = optsOpt !== undefined ? optsOpt : /* [] */0;
+  var opts$1 = optsOpt !== void 0 ? optsOpt : /* [] */0;
   var r = parse(List.memq(/* Multiline */1071952589, opts$1), List.memq(/* Dollar_endonly */-712595228, opts$1), List.memq(/* Dotall */-424303016, opts$1), List.memq(/* Ungreedy */-243745063, opts$1), pat);
   var r$1 = List.memq(/* Anchored */616470068, opts$1) ? seq$2(/* :: */[
           /* Start */8,
@@ -3787,7 +3787,7 @@ function exec(rex, pos, s) {
 
 var s = Caml_bytes.bytes_to_string(Bytes.make(1048575, /* "a" */97)) + "b";
 
-eq("File \"xx.ml\", line 7, characters 3-10", get(exec(compile(re(undefined, "aa?b")), undefined, s), 0), "aab");
+eq("File \"xx.ml\", line 7, characters 3-10", get(exec(compile(re(void 0, "aa?b")), void 0, s), 0), "aab");
 
 Mt.from_pair_suites("Ocaml_re_test", suites.contents);
 

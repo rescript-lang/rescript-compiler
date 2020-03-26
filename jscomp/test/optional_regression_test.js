@@ -18,13 +18,13 @@ function eq(loc, x, y) {
 function make(s, b, i) {
   return (function (param) {
       var tmp = { };
-      if (s !== undefined) {
+      if (s !== void 0) {
         tmp.s = Caml_option.valFromOption(s);
       }
-      if (b !== undefined) {
+      if (b !== void 0) {
         tmp.b = Caml_option.valFromOption(b);
       }
-      if (i !== undefined) {
+      if (i !== void 0) {
         tmp.i = Caml_option.valFromOption(i);
       }
       return tmp;

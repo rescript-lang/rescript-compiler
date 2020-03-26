@@ -32,7 +32,7 @@ function foo4(x, h) {
   if (typeof x === "number" || x[0] !== 3505894 || x[1] !== 3) {
     return ;
   } else {
-    return Curry._1(h, undefined);
+    return Curry._1(h, void 0);
   }
 }
 

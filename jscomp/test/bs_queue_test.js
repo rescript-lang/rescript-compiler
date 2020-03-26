@@ -38,7 +38,7 @@ function $plus$plus(q, x) {
   return q;
 }
 
-var q = Belt_MutableQueue.make(undefined);
+var q = Belt_MutableQueue.make(void 0);
 
 if (!(Caml_obj.caml_equal(Belt_MutableQueue.toArray(q), []) && q.length === 0)) {
   throw [
@@ -213,7 +213,7 @@ if (!does_raise(Belt_MutableQueue.popExn, q)) {
       ];
 }
 
-var q$1 = Belt_MutableQueue.make(undefined);
+var q$1 = Belt_MutableQueue.make(void 0);
 
 if (Belt_MutableQueue.popExn((Belt_MutableQueue.add(q$1, 1), q$1)) !== 1) {
   throw [
@@ -270,7 +270,7 @@ if (q$1.length !== 0) {
       ];
 }
 
-var q$2 = Belt_MutableQueue.make(undefined);
+var q$2 = Belt_MutableQueue.make(void 0);
 
 if (Belt_MutableQueue.peekExn((Belt_MutableQueue.add(q$2, 1), q$2)) !== 1) {
   throw [
@@ -393,7 +393,7 @@ if (!does_raise(Belt_MutableQueue.peekExn, q$2)) {
       ];
 }
 
-var q$3 = Belt_MutableQueue.make(undefined);
+var q$3 = Belt_MutableQueue.make(void 0);
 
 for(var i = 1; i <= 10; ++i){
   Belt_MutableQueue.add(q$3, i);
@@ -423,7 +423,7 @@ if (!does_raise(Belt_MutableQueue.popExn, q$3)) {
       ];
 }
 
-if (!Caml_obj.caml_equal(q$3, Belt_MutableQueue.make(undefined))) {
+if (!Caml_obj.caml_equal(q$3, Belt_MutableQueue.make(void 0))) {
   throw [
         Caml_builtin_exceptions.assert_failure,
         /* tuple */[
@@ -447,7 +447,7 @@ if (Belt_MutableQueue.popExn(q$3) !== 42) {
       ];
 }
 
-var q1 = Belt_MutableQueue.make(undefined);
+var q1 = Belt_MutableQueue.make(void 0);
 
 for(var i$1 = 1; i$1 <= 10; ++i$1){
   Belt_MutableQueue.add(q1, i$1);
@@ -549,7 +549,7 @@ for(var i$3 = 1; i$3 <= 10; ++i$3){
   
 }
 
-var q$4 = Belt_MutableQueue.make(undefined);
+var q$4 = Belt_MutableQueue.make(void 0);
 
 if (q$4.length !== 0) {
   throw [
@@ -633,7 +633,7 @@ if (q$4.length !== 0) {
       ];
 }
 
-var q$5 = Belt_MutableQueue.make(undefined);
+var q$5 = Belt_MutableQueue.make(void 0);
 
 for(var i$6 = 1; i$6 <= 10; ++i$6){
   Belt_MutableQueue.add(q$5, i$6);
@@ -658,9 +658,9 @@ Belt_MutableQueue.forEach(q$5, (function (j) {
         
       }));
 
-var q1$1 = Belt_MutableQueue.make(undefined);
+var q1$1 = Belt_MutableQueue.make(void 0);
 
-var q2$1 = Belt_MutableQueue.make(undefined);
+var q2$1 = Belt_MutableQueue.make(void 0);
 
 if (q1$1.length !== 0) {
   throw [
@@ -752,9 +752,9 @@ if (!Caml_obj.caml_equal(Belt_MutableQueue.toArray(q2$1), [])) {
       ];
 }
 
-var q1$2 = Belt_MutableQueue.make(undefined);
+var q1$2 = Belt_MutableQueue.make(void 0);
 
-var q2$2 = Belt_MutableQueue.make(undefined);
+var q2$2 = Belt_MutableQueue.make(void 0);
 
 for(var i$8 = 1; i$8 <= 4; ++i$8){
   Belt_MutableQueue.add(q1$2, i$8);
@@ -860,9 +860,9 @@ if (!Caml_obj.caml_equal(Belt_MutableQueue.toArray(q2$2), [
       ];
 }
 
-var q1$3 = Belt_MutableQueue.make(undefined);
+var q1$3 = Belt_MutableQueue.make(void 0);
 
-var q2$3 = Belt_MutableQueue.make(undefined);
+var q2$3 = Belt_MutableQueue.make(void 0);
 
 for(var i$9 = 5; i$9 <= 8; ++i$9){
   Belt_MutableQueue.add(q2$3, i$9);
@@ -968,9 +968,9 @@ if (!Caml_obj.caml_equal(Belt_MutableQueue.toArray(q2$3), [
       ];
 }
 
-var q1$4 = Belt_MutableQueue.make(undefined);
+var q1$4 = Belt_MutableQueue.make(void 0);
 
-var q2$4 = Belt_MutableQueue.make(undefined);
+var q2$4 = Belt_MutableQueue.make(void 0);
 
 for(var i$10 = 1; i$10 <= 4; ++i$10){
   Belt_MutableQueue.add(q1$4, i$10);

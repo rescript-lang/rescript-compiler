@@ -36,7 +36,7 @@ function for_3(x) {
         }(j)));
   }
   $$Array.iter((function (x) {
-          return Curry._1(x, undefined);
+          return Curry._1(x, void 0);
         }), arr);
   return v.contents;
 }
@@ -59,7 +59,7 @@ function for_4(x) {
         }(k)));
   }
   $$Array.iter((function (x) {
-          return Curry._1(x, undefined);
+          return Curry._1(x, void 0);
         }), arr);
   return v.contents;
 }
@@ -81,7 +81,7 @@ function for_5(x, u) {
         }(k)));
   }
   $$Array.iter((function (x) {
-          return Curry._1(x, undefined);
+          return Curry._1(x, void 0);
         }), arr);
   return v.contents;
 }
@@ -120,7 +120,7 @@ function for_6(x, u) {
     }(v2));
   }
   $$Array.iter((function (x) {
-          return Curry._1(x, undefined);
+          return Curry._1(x, void 0);
         }), arr);
   return v.contents;
 }

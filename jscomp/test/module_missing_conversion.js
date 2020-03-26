@@ -43,7 +43,7 @@ var XX = {
 
 var u = [$$String];
 
-var ghh = Curry._2(MoreLabels.Hashtbl.create, undefined, 30);
+var ghh = Curry._2(MoreLabels.Hashtbl.create, void 0, 30);
 
 var hh = 1;
 

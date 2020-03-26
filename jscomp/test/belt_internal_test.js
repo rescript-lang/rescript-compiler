@@ -2,7 +2,7 @@
 
 
 function treeHeight(n) {
-  if (n !== undefined) {
+  if (n !== void 0) {
     return n.height;
   } else {
     return 0;
@@ -10,7 +10,7 @@ function treeHeight(n) {
 }
 
 function copy(n) {
-  if (n === undefined) {
+  if (n === void 0) {
     return n;
   }
   var match = n;

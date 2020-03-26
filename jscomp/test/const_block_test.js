@@ -35,7 +35,7 @@ function h(param) {
 }
 
 function g(param) {
-  f(undefined);
+  f(void 0);
   return /* Eq */Block.__(0, [
             /* tuple */[
               Caml_array.caml_array_get(a, 0),

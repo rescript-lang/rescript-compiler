@@ -2,7 +2,7 @@
 
 
 var React = {
-  $$null: undefined
+  $$null: void 0
 };
 
 function make(param, param$1) {

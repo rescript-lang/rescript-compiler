@@ -39,7 +39,7 @@ eq("File \"functor_app_test.ml\", line 23, characters 6-13", Curry._2(Y0.h, 1, 2
 
 eq("File \"functor_app_test.ml\", line 24, characters 6-13", Curry._2(Y1.h, 2, 3), 6);
 
-var v = Functor_def.$$return(undefined);
+var v = Functor_def.$$return(void 0);
 
 eq("File \"functor_app_test.ml\", line 29, characters 6-13", v, 2);
 

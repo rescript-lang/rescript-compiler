@@ -22,19 +22,19 @@ function parse(token) {
       return Queue.pop(look_ahead);
     }
     try {
-      return Curry._1(token, undefined);
+      return Curry._1(token, void 0);
     }
     catch (exn){
       return /* Kwd */Block.__(0, ["=="]);
     }
   };
   var parse_atom = function (param) {
-    var e = token$1(undefined);
+    var e = token$1(void 0);
     switch (e.tag | 0) {
       case /* Kwd */0 :
           if (e[0] === "(") {
-            var v = parse_expr_aux(parse_term_aux(parse_atom(undefined)));
-            var match = token$1(undefined);
+            var v = parse_expr_aux(parse_term_aux(parse_atom(void 0)));
+            var match = token$1(void 0);
             if (match.tag) {
               throw [
                     Parse_error,
@@ -66,16 +66,16 @@ function parse(token) {
     }
   };
   var parse_term_aux = function (e1) {
-    var e = token$1(undefined);
+    var e = token$1(void 0);
     if (e.tag) {
       Queue.push(e, look_ahead);
       return e1;
     } else {
       switch (e[0]) {
         case "*" :
-            return Caml_int32.imul(e1, parse_term_aux(parse_atom(undefined)));
+            return Caml_int32.imul(e1, parse_term_aux(parse_atom(void 0)));
         case "/" :
-            return Caml_int32.div(e1, parse_term_aux(parse_atom(undefined)));
+            return Caml_int32.div(e1, parse_term_aux(parse_atom(void 0)));
         default:
           Queue.push(e, look_ahead);
           return e1;
@@ -83,23 +83,23 @@ function parse(token) {
     }
   };
   var parse_expr_aux = function (e1) {
-    var e = token$1(undefined);
+    var e = token$1(void 0);
     if (e.tag) {
       Queue.push(e, look_ahead);
       return e1;
     } else {
       switch (e[0]) {
         case "+" :
-            return e1 + parse_expr_aux(parse_term_aux(parse_atom(undefined))) | 0;
+            return e1 + parse_expr_aux(parse_term_aux(parse_atom(void 0))) | 0;
         case "-" :
-            return e1 - parse_expr_aux(parse_term_aux(parse_atom(undefined))) | 0;
+            return e1 - parse_expr_aux(parse_term_aux(parse_atom(void 0))) | 0;
         default:
           Queue.push(e, look_ahead);
           return e1;
       }
     }
   };
-  var r = parse_expr_aux(parse_term_aux(parse_atom(undefined)));
+  var r = parse_expr_aux(parse_term_aux(parse_atom(void 0)));
   return /* tuple */[
           r,
           Queue.fold((function (acc, x) {
@@ -149,7 +149,7 @@ function l_parse(token) {
       return Queue.pop(look_ahead);
     }
     try {
-      return Curry._1(token, undefined);
+      return Curry._1(token, void 0);
     }
     catch (exn){
       return /* Kwd */Block.__(0, ["=="]);
@@ -158,17 +158,17 @@ function l_parse(token) {
   var parse_f_aux = function (_a) {
     while(true) {
       var a = _a;
-      var t = token$1(undefined);
+      var t = token$1(void 0);
       if (t.tag) {
         Queue.push(t, look_ahead);
         return a;
       } else {
         switch (t[0]) {
           case "*" :
-              _a = Caml_int32.imul(a, parse_f(undefined));
+              _a = Caml_int32.imul(a, parse_f(void 0));
               continue ;
           case "/" :
-              _a = Caml_int32.div(a, parse_f(undefined));
+              _a = Caml_int32.div(a, parse_f(void 0));
               continue ;
           default:
             Queue.push(t, look_ahead);
@@ -178,7 +178,7 @@ function l_parse(token) {
     };
   };
   var parse_f = function (param) {
-    var t = token$1(undefined);
+    var t = token$1(void 0);
     switch (t.tag | 0) {
       case /* Kwd */0 :
           if (t[0] !== "(") {
@@ -187,8 +187,8 @@ function l_parse(token) {
                   "Unexpected token"
                 ];
           }
-          var v = parse_t_aux(parse_f_aux(parse_f(undefined)));
-          var t$1 = token$1(undefined);
+          var v = parse_t_aux(parse_f_aux(parse_f(void 0)));
+          var t$1 = token$1(void 0);
           if (t$1.tag) {
             throw [
                   Parse_error,
@@ -214,17 +214,17 @@ function l_parse(token) {
   var parse_t_aux = function (_a) {
     while(true) {
       var a = _a;
-      var t = token$1(undefined);
+      var t = token$1(void 0);
       if (t.tag) {
         Queue.push(t, look_ahead);
         return a;
       } else {
         switch (t[0]) {
           case "+" :
-              _a = a + parse_f_aux(parse_f(undefined)) | 0;
+              _a = a + parse_f_aux(parse_f(void 0)) | 0;
               continue ;
           case "-" :
-              _a = a - parse_f_aux(parse_f(undefined)) | 0;
+              _a = a - parse_f_aux(parse_f(void 0)) | 0;
               continue ;
           default:
             Queue.push(t, look_ahead);
@@ -233,7 +233,7 @@ function l_parse(token) {
       }
     };
   };
-  var r = parse_t_aux(parse_f_aux(parse_f(undefined)));
+  var r = parse_t_aux(parse_f_aux(parse_f(void 0)));
   return /* tuple */[
           r,
           Queue.fold((function (acc, x) {

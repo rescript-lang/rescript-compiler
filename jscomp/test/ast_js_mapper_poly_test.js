@@ -58,14 +58,14 @@ function eqU(x, y) {
 }
 
 function eqUOpt(x, y) {
-  if (x !== undefined) {
-    if (y !== undefined) {
+  if (x !== void 0) {
+    if (y !== void 0) {
       return x === y;
     } else {
       return false;
     }
   } else {
-    return y === undefined;
+    return y === void 0;
   }
 }
 
@@ -75,7 +75,7 @@ eq("File \"ast_js_mapper_poly_test.ml\", line 26, characters 5-12", eqUOpt(uFrom
 
 eq("File \"ast_js_mapper_poly_test.ml\", line 27, characters 5-12", eqUOpt(uFromJs("C"), /* C */67), true);
 
-eq("File \"ast_js_mapper_poly_test.ml\", line 28, characters 5-12", eqUOpt(uFromJs("f"), undefined), true);
+eq("File \"ast_js_mapper_poly_test.ml\", line 28, characters 5-12", eqUOpt(uFromJs("f"), void 0), true);
 
 eq("File \"ast_js_mapper_poly_test.ml\", line 29, characters 5-12", $$Array.map(uToJs, [
           /* D */68,
@@ -107,14 +107,14 @@ function eqV(x, y) {
 }
 
 function eqVOpt(x, y) {
-  if (x !== undefined) {
-    if (y !== undefined) {
+  if (x !== void 0) {
+    if (y !== void 0) {
       return x === y;
     } else {
       return false;
     }
   } else {
-    return y === undefined;
+    return y === void 0;
   }
 }
 
@@ -154,12 +154,12 @@ eq("File \"ast_js_mapper_poly_test.ml\", line 55, characters 5-12", $$Array.map(
           6
         ]), [
       /* A0 */0,
-      undefined,
-      undefined,
+      void 0,
+      void 0,
       /* A1 */1,
       /* A2 */2,
       /* A3 */3,
-      undefined
+      void 0
     ]);
 
 function v1ToJs(param) {
@@ -199,14 +199,14 @@ eq("File \"ast_js_mapper_poly_test.ml\", line 69, characters 5-12", $$Array.map(
           5,
           6
         ]), [
-      undefined,
+      void 0,
       /* B0 */0,
       /* B1 */1,
       /* B2 */2,
       /* B3 */3,
       /* B4 */4,
       /* B5 */5,
-      undefined
+      void 0
     ]);
 
 function v2ToJs(param) {
@@ -247,8 +247,8 @@ eq("File \"ast_js_mapper_poly_test.ml\", line 89, characters 5-12", $$Array.map(
           7,
           8
         ]), $$Array.append($$Array.append([
-              undefined,
-              undefined
+              void 0,
+              void 0
             ], $$Array.map((function (x) {
                     return x;
                   }), [
@@ -258,7 +258,7 @@ eq("File \"ast_js_mapper_poly_test.ml\", line 89, characters 5-12", $$Array.map(
                   /* C3 */3,
                   /* C4 */4,
                   /* C5 */5
-                ])), [undefined]));
+                ])), [void 0]));
 
 Mt.from_pair_suites("Ast_js_mapper_poly_test", suites.contents);
 

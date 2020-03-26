@@ -77,9 +77,9 @@ function r(param) {
   return x;
 }
 
-var match = r(undefined);
+var match = r(void 0);
 
-var v = Curry._1(match[1], undefined);
+var v = Curry._1(match[1], void 0);
 
 console.log(v);
 

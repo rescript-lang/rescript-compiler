@@ -17,7 +17,7 @@ function f(x) {
 }
 
 function f2(x) {
-  if (x !== undefined) {
+  if (x !== void 0) {
     return 0;
   } else {
     return 1;

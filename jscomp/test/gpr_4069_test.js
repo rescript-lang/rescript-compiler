@@ -11,7 +11,7 @@ function f(value) {
 }
 
 function fxx(v) {
-  var match = Curry._1(v, undefined);
+  var match = Curry._1(v, void 0);
   switch (match) {
     case 1 :
         return /* "a" */97;
@@ -25,7 +25,7 @@ function fxx(v) {
 }
 
 function fxxx2(v) {
-  if (Curry._1(v, undefined)) {
+  if (Curry._1(v, void 0)) {
     return 2;
   } else {
     return 1;
@@ -33,7 +33,7 @@ function fxxx2(v) {
 }
 
 function fxxx3(v) {
-  if (Curry._1(v, undefined)) {
+  if (Curry._1(v, void 0)) {
     return 2;
   } else {
     return 1;

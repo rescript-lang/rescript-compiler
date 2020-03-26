@@ -238,7 +238,7 @@ Mt.from_pair_suites("String_test", /* :: */[
                         (function (param) {
                             return /* Eq */Block.__(0, [
                                       /* [] */0,
-                                      Ext_string_test.split(undefined, "", /* "_" */95)
+                                      Ext_string_test.split(void 0, "", /* "_" */95)
                                     ]);
                           })
                       ],
@@ -291,7 +291,7 @@ Mt.from_pair_suites("String_test", /* :: */[
                                   (function (param) {
                                       return /* Eq */Block.__(0, [
                                                 0,
-                                                Ext_string_test.find(undefined, "__", "__index__js")
+                                                Ext_string_test.find(void 0, "__", "__index__js")
                                               ]);
                                     })
                                 ],
@@ -301,7 +301,7 @@ Mt.from_pair_suites("String_test", /* :: */[
                                     (function (param) {
                                         return /* Eq */Block.__(0, [
                                                   6,
-                                                  Ext_string_test.find(undefined, "__", "_index__js")
+                                                  Ext_string_test.find(void 0, "__", "_index__js")
                                                 ]);
                                       })
                                   ],
@@ -311,7 +311,7 @@ Mt.from_pair_suites("String_test", /* :: */[
                                       (function (param) {
                                           return /* Eq */Block.__(0, [
                                                     -1,
-                                                    Ext_string_test.find(undefined, "__", "_index_js")
+                                                    Ext_string_test.find(void 0, "__", "_index_js")
                                                   ]);
                                         })
                                     ],

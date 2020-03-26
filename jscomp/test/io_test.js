@@ -3,9 +3,9 @@
 
 function f(param) {
   console.error("x");
-  console.log(undefined);
+  console.log(void 0);
   console.log("hi");
-  console.log(undefined);
+  console.log(void 0);
   
 }
 

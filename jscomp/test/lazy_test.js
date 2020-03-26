@@ -30,12 +30,12 @@ function lazy_test(param) {
 function f(param) {
   CamlinternalLazy.force(param[0]);
   var match = param[2].contents;
-  if (match === undefined) {
+  if (match === void 0) {
     return 0;
   }
   CamlinternalLazy.force(param[1]);
   var match$1 = param[2].contents;
-  if (match$1 !== undefined) {
+  if (match$1 !== void 0) {
     return 1;
   }
   throw [
@@ -49,7 +49,7 @@ function f(param) {
 }
 
 var s = {
-  contents: undefined
+  contents: void 0
 };
 
 var set_true = Caml_obj.caml_lazy_make((function (param) {
@@ -58,7 +58,7 @@ var set_true = Caml_obj.caml_lazy_make((function (param) {
       }));
 
 var set_false = Caml_obj.caml_lazy_make((function (param) {
-        s.contents = undefined;
+        s.contents = void 0;
         
       }));
 
@@ -126,7 +126,7 @@ Mt.from_pair_suites("Lazy_test", /* :: */[
         "simple",
         (function (param) {
             return /* Eq */Block.__(0, [
-                      lazy_test(undefined),
+                      lazy_test(void 0),
                       /* tuple */[
                         3,
                         32

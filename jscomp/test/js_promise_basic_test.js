@@ -70,11 +70,11 @@ function andThenTest(param) {
               }));
 }
 
-var h = Promise.resolve(undefined);
+var h = Promise.resolve(void 0);
 
 function assertIsNotFound(x) {
-  var match = Caml_exceptions.caml_is_extension(x) && x === Caml_builtin_exceptions.not_found ? 0 : undefined;
-  if (match !== undefined) {
+  var match = Caml_exceptions.caml_is_extension(x) && x === Caml_builtin_exceptions.not_found ? 0 : void 0;
+  if (match !== void 0) {
     return h;
   }
   throw [
@@ -133,8 +133,8 @@ function orElseRejectedRejectTest(param) {
   return p.catch((function (param) {
                     return Promise.reject(Caml_builtin_exceptions.stack_overflow);
                   })).then(fail).catch((function (error) {
-                var match = Caml_exceptions.caml_is_extension(error) && error === Caml_builtin_exceptions.stack_overflow ? 0 : undefined;
-                if (match !== undefined) {
+                var match = Caml_exceptions.caml_is_extension(error) && error === Caml_builtin_exceptions.stack_overflow ? 0 : void 0;
+                if (match !== void 0) {
                   return h;
                 }
                 throw [
@@ -236,35 +236,35 @@ function createPromiseFulfillTest(param) {
                 })).catch(fail);
 }
 
-thenTest(undefined);
+thenTest(void 0);
 
-andThenTest(undefined);
+andThenTest(void 0);
 
-catchTest(undefined);
+catchTest(void 0);
 
-orResolvedTest(undefined);
+orResolvedTest(void 0);
 
-orRejectedTest(undefined);
+orRejectedTest(void 0);
 
-orElseResolvedTest(undefined);
+orElseResolvedTest(void 0);
 
-orElseRejectedResolveTest(undefined);
+orElseRejectedResolveTest(void 0);
 
-orElseRejectedRejectTest(undefined);
+orElseRejectedRejectTest(void 0);
 
-thenCatchChainResolvedTest(undefined);
+thenCatchChainResolvedTest(void 0);
 
-thenCatchChainRejectedTest(undefined);
+thenCatchChainRejectedTest(void 0);
 
-allResolvedTest(undefined);
+allResolvedTest(void 0);
 
-allRejectTest(undefined);
+allRejectTest(void 0);
 
-raceTest(undefined);
+raceTest(void 0);
 
-createPromiseRejectTest(undefined);
+createPromiseRejectTest(void 0);
 
-createPromiseFulfillTest(undefined);
+createPromiseFulfillTest(void 0);
 
 Promise.all(/* tuple */[
         Promise.resolve(2),
@@ -277,7 +277,7 @@ Promise.all(/* tuple */[
               2,
               3
             ]);
-        return Promise.resolve(undefined);
+        return Promise.resolve(void 0);
       }));
 
 console.log(List.length(suites.contents));

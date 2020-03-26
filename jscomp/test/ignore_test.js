@@ -37,7 +37,7 @@ function ff(x) {
   
 }
 
-eq("File \"ignore_test.ml\", line 16, characters 5-12", undefined, undefined);
+eq("File \"ignore_test.ml\", line 16, characters 5-12", void 0, void 0);
 
 Mt.from_pair_suites("Ignore_test", suites.contents);
 

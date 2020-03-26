@@ -20,7 +20,7 @@ function eq(f, param) {
 
 var s = Curry._1(Printf.sprintf(/* Format */[
           /* Format_arg */Block.__(13, [
-              undefined,
+              void 0,
               /* String_ty */Block.__(1, [/* End_of_fmtty */0]),
               /* Char_literal */Block.__(12, [
                   /* "." */46,
@@ -52,7 +52,7 @@ var s$1 = Curry._2(Printf.sprintf(/* Format */[
               /* Char_literal */Block.__(12, [
                   /* " " */32,
                   /* Format_arg */Block.__(13, [
-                      undefined,
+                      void 0,
                       /* String_ty */Block.__(1, [/* End_of_fmtty */0]),
                       /* End_of_format */0
                     ])

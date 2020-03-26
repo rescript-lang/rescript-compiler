@@ -102,7 +102,7 @@ function even$1(n) {
 }
 
 function x(param) {
-  return Curry._1(BB.y, undefined) + 3 | 0;
+  return Curry._1(BB.y, void 0) + 3 | 0;
 }
 
 Caml_module.update_mod(/* Module */Block.__(0, [[
@@ -1179,7 +1179,7 @@ var suites_001 = /* :: */[
     "test2",
     (function (param) {
         return /* Eq */Block.__(0, [
-                  Curry._1(BB.y, undefined),
+                  Curry._1(BB.y, void 0),
                   32
                 ]);
       })
@@ -1189,7 +1189,7 @@ var suites_001 = /* :: */[
       "test3",
       (function (param) {
           return /* Eq */Block.__(0, [
-                    Curry._1(AA.x, undefined),
+                    Curry._1(AA.x, void 0),
                     35
                   ]);
         })

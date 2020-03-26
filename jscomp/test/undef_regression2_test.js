@@ -43,13 +43,13 @@ function ok(loc, x) {
   
 }
 
-var match = typeof ___undefined_value === "undefined" ? undefined : ___undefined_value;
+var match = typeof ___undefined_value === "undefined" ? void 0 : ___undefined_value;
 
-var a = match !== undefined ? 2 : 1;
+var a = match !== void 0 ? 2 : 1;
 
 function test(param) {
-  var match = typeof __DEV__ === "undefined" ? undefined : __DEV__;
-  if (match !== undefined) {
+  var match = typeof __DEV__ === "undefined" ? void 0 : __DEV__;
+  if (match !== void 0) {
     console.log("dev mode");
     return ;
   } else {
@@ -59,8 +59,8 @@ function test(param) {
 }
 
 function test2(param) {
-  var match = typeof __filename === "undefined" ? undefined : __filename;
-  if (match !== undefined) {
+  var match = typeof __filename === "undefined" ? void 0 : __filename;
+  if (match !== void 0) {
     console.log(match);
     return ;
   } else {
@@ -70,7 +70,7 @@ function test2(param) {
 }
 
 function test3(param) {
-  if (Caml_option.undefined_to_opt(typeof __DEV__ === "undefined" ? undefined : __DEV__) === undefined) {
+  if (Caml_option.undefined_to_opt(typeof __DEV__ === "undefined" ? void 0 : __DEV__) === void 0) {
     console.log("production mode");
     return ;
   }
@@ -78,7 +78,7 @@ function test3(param) {
 }
 
 function f(x) {
-  return x === undefined;
+  return x === void 0;
 }
 
 ok("File \"undef_regression2_test.ml\", line 44, characters 5-12", a > 0);

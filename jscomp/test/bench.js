@@ -59,7 +59,7 @@ function f2(param) {
   
 }
 
-f2(undefined);
+f2(void 0);
 
 exports.map = map;
 exports.init = init;

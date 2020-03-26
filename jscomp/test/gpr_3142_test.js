@@ -58,7 +58,7 @@ eq("File \"gpr_3142_test.ml\", line 32, characters 6-13", tFromJs("你"), /* b *
 
 eq("File \"gpr_3142_test.ml\", line 33, characters 6-13", tFromJs("我"), /* c */99);
 
-eq("File \"gpr_3142_test.ml\", line 34, characters 6-13", tFromJs("xx"), undefined);
+eq("File \"gpr_3142_test.ml\", line 34, characters 6-13", tFromJs("xx"), void 0);
 
 Mt.from_pair_suites("Gpr_3142_test", suites.contents);
 

@@ -15,7 +15,7 @@ function filter_map(f, _xs) {
     }
     var ys = xs[1];
     var match = Curry._1(f, xs[0]);
-    if (match !== undefined) {
+    if (match !== void 0) {
       return /* :: */[
               Caml_option.valFromOption(match),
               filter_map(f, ys)
@@ -69,7 +69,7 @@ function excludes(p, l) {
 
 function exclude_with_fact(p, l) {
   var excluded = {
-    contents: undefined
+    contents: void 0
   };
   var aux = function (_accu, _param) {
     while(true) {
@@ -97,16 +97,16 @@ function exclude_with_fact(p, l) {
   var v = aux(/* [] */0, l);
   return /* tuple */[
           excluded.contents,
-          excluded.contents !== undefined ? v : l
+          excluded.contents !== void 0 ? v : l
         ];
 }
 
 function exclude_with_fact2(p1, p2, l) {
   var excluded1 = {
-    contents: undefined
+    contents: void 0
   };
   var excluded2 = {
-    contents: undefined
+    contents: void 0
   };
   var aux = function (_accu, _param) {
     while(true) {
@@ -139,7 +139,7 @@ function exclude_with_fact2(p1, p2, l) {
   return /* tuple */[
           excluded1.contents,
           excluded2.contents,
-          excluded1.contents !== undefined && excluded2.contents !== undefined ? v : l
+          excluded1.contents !== void 0 && excluded2.contents !== void 0 ? v : l
         ];
 }
 
@@ -173,7 +173,7 @@ function filter_mapi(f, xs) {
       }
       var ys = xs[1];
       var match = Curry._2(f, i, xs[0]);
-      if (match !== undefined) {
+      if (match !== void 0) {
         return /* :: */[
                 Caml_option.valFromOption(match),
                 aux(i + 1 | 0, ys)
@@ -201,7 +201,7 @@ function filter_map2(f, _xs, _ys) {
       var vs = ys[1];
       var us = xs[1];
       var match = Curry._2(f, xs[0], ys[0]);
-      if (match !== undefined) {
+      if (match !== void 0) {
         return /* :: */[
                 Caml_option.valFromOption(match),
                 filter_map2(f, us, vs)
@@ -238,7 +238,7 @@ function filter_map2i(f, xs, ys) {
         var vs = ys[1];
         var us = xs[1];
         var match = Curry._3(f, i, xs[0], ys[0]);
-        if (match !== undefined) {
+        if (match !== void 0) {
           return /* :: */[
                   Caml_option.valFromOption(match),
                   aux(i + 1 | 0, us, vs)
@@ -613,7 +613,7 @@ function for_all_opt(p, _param) {
       return ;
     }
     var v = Curry._1(p, param[0]);
-    if (v !== undefined) {
+    if (v !== void 0) {
       return v;
     }
     _param = param[1];
@@ -709,7 +709,7 @@ function find_opt(p, _param) {
       return ;
     }
     var v = Curry._1(p, param[0]);
-    if (v !== undefined) {
+    if (v !== void 0) {
       return v;
     }
     _param = param[1];
@@ -878,7 +878,7 @@ function assoc_by_string(def, k, _lst) {
       _lst = lst[1];
       continue ;
     } else {
-      if (def !== undefined) {
+      if (def !== void 0) {
         return Caml_option.valFromOption(def);
       }
       throw [
@@ -904,7 +904,7 @@ function assoc_by_int(def, k, _lst) {
       _lst = lst[1];
       continue ;
     } else {
-      if (def !== undefined) {
+      if (def !== void 0) {
         return Caml_option.valFromOption(def);
       }
       throw [

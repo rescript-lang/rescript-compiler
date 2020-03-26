@@ -11,7 +11,7 @@ function ff(param) {
   return "cool test hello worldnothello worldnothello";
 }
 
-var a23 = ff(undefined);
+var a23 = ff(void 0);
 
 var a15 = a10;
 

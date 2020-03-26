@@ -41,7 +41,7 @@ var u = [
 
 function test_not_found(f, param) {
   try {
-    return Curry._1(f, undefined);
+    return Curry._1(f, void 0);
   }
   catch (exn){
     if (exn === Caml_builtin_exceptions.not_found) {

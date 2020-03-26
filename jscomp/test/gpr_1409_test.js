@@ -39,7 +39,7 @@ var b = {
 };
 
 function map(f, x) {
-  if (x !== undefined) {
+  if (x !== void 0) {
     return Caml_option.some(Curry._1(f, Caml_option.valFromOption(x)));
   }
   
@@ -51,16 +51,16 @@ function make(foo) {
         }), foo);
   return (function (param) {
       var tmp = { };
-      if (partial_arg !== undefined) {
+      if (partial_arg !== void 0) {
         tmp.foo = Caml_option.valFromOption(partial_arg);
       }
       return tmp;
     });
 }
 
-var a_ = make(undefined)(undefined);
+var a_ = make(void 0)(void 0);
 
-var b_ = make(42)(undefined);
+var b_ = make(42)(void 0);
 
 eq("File \"gpr_1409_test.ml\", line 30, characters 6-13", b_.foo, "42");
 
@@ -79,10 +79,10 @@ function test3(_open, xx__hi) {
   var tmp = {
     hi: 2
   };
-  if (_open !== undefined) {
+  if (_open !== void 0) {
     tmp.open = Caml_option.valFromOption(_open);
   }
-  if (xx__hi !== undefined) {
+  if (xx__hi !== void 0) {
     tmp.xx = Caml_option.valFromOption(xx__hi);
   }
   return tmp;
@@ -94,7 +94,7 @@ function test4(_open, xx__hi) {
     open: _open,
     hi: 2
   };
-  if (xx__hi !== undefined) {
+  if (xx__hi !== void 0) {
     tmp.xx = Caml_option.valFromOption(xx__hi);
   }
   return tmp;
@@ -106,11 +106,11 @@ function test5(f, x) {
     hi: 2
   };
   var tmp$1 = Curry._1(f, x);
-  if (tmp$1 !== undefined) {
+  if (tmp$1 !== void 0) {
     tmp.open = Caml_option.valFromOption(tmp$1);
   }
   var tmp$2 = Curry._1(f, x);
-  if (tmp$2 !== undefined) {
+  if (tmp$2 !== void 0) {
     tmp.xx = Caml_option.valFromOption(tmp$2);
   }
   return tmp;
@@ -125,11 +125,11 @@ function test6(f, x) {
     hi: 2
   };
   var tmp$1 = (x$1.contents = x$1.contents + 1 | 0, x$1.contents);
-  if (tmp$1 !== undefined) {
+  if (tmp$1 !== void 0) {
     tmp.open = Caml_option.valFromOption(tmp$1);
   }
   var tmp$2 = f(x$1);
-  if (tmp$2 !== undefined) {
+  if (tmp$2 !== void 0) {
     tmp.xx = Caml_option.valFromOption(tmp$2);
   }
   return tmp;
@@ -142,7 +142,7 @@ function keys(xs, ys) {
 eq("File \"gpr_1409_test.ml\", line 69, characters 6-13", keys(/* :: */[
           "hi",
           /* [] */0
-        ], Object.keys(test3(undefined, undefined))), true);
+        ], Object.keys(test3(void 0, void 0))), true);
 
 eq("File \"gpr_1409_test.ml\", line 71, characters 6-13", keys(/* :: */[
           "hi",
@@ -150,7 +150,7 @@ eq("File \"gpr_1409_test.ml\", line 71, characters 6-13", keys(/* :: */[
             "open",
             /* [] */0
           ]
-        ], Object.keys(test3(2, undefined))), true);
+        ], Object.keys(test3(2, void 0))), true);
 
 eq("File \"gpr_1409_test.ml\", line 73, characters 6-13", keys(/* :: */[
           "hi",

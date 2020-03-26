@@ -74,7 +74,7 @@ catch (raw_e){
   tmp = Caml_js_exceptions.internalToOCamlException(raw_e);
 }
 
-eq("File \"exn_error_pattern.ml\", line 38, characters 5-12", f(tmp), undefined);
+eq("File \"exn_error_pattern.ml\", line 38, characters 5-12", f(tmp), void 0);
 
 Mt.from_pair_suites("Exn_error_pattern", suites.contents);
 

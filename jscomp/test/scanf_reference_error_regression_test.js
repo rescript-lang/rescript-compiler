@@ -24,7 +24,7 @@ function eq(f, param) {
 function scan_rest(ib, accu) {
   return Curry._1(Scanf.bscanf(ib, /* Format */[
                   /* Scan_char_set */Block.__(20, [
-                      undefined,
+                      void 0,
                       "\0\0\0\0\0\0\0\0\0\0\0 \0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0",
                       /* End_of_format */0
                     ]),
@@ -91,7 +91,7 @@ function scan_int_list(ib) {
                 /* End_of_format */0
               ]),
             " [ "
-          ]), undefined);
+          ]), void 0);
   return List.rev(scan_rest(ib, /* [] */0));
 }
 

@@ -15,12 +15,12 @@ function test(param) {
       var acc = _acc;
       var n = _n;
       if (n === 0) {
-        return Curry._1(acc, undefined);
+        return Curry._1(acc, void 0);
       }
       _acc = (function(n,acc){
       return function (param) {
         v.contents = v.contents + n | 0;
-        return Curry._1(acc, undefined);
+        return Curry._1(acc, void 0);
       }
       }(n,acc));
       _n = n - 1 | 0;
@@ -82,7 +82,7 @@ Mt.from_pair_suites("Cps_test", /* :: */[
         (function (param) {
             return /* Eq */Block.__(0, [
                       55,
-                      test(undefined)
+                      test(void 0)
                     ]);
           })
       ],
@@ -92,7 +92,7 @@ Mt.from_pair_suites("Cps_test", /* :: */[
           (function (param) {
               return /* Eq */Block.__(0, [
                         15,
-                        test_closure(undefined)
+                        test_closure(void 0)
                       ]);
             })
         ],
@@ -102,7 +102,7 @@ Mt.from_pair_suites("Cps_test", /* :: */[
             (function (param) {
                 return /* Eq */Block.__(0, [
                           30,
-                          test_closure2(undefined)
+                          test_closure2(void 0)
                         ]);
               })
           ],

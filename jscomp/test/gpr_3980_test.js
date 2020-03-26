@@ -5,7 +5,7 @@ var Caml_builtin_exceptions = require("../../lib/js/caml_builtin_exceptions.js")
 
 var match = 1;
 
-if (match === undefined) {
+if (match === void 0) {
   throw [
         Caml_builtin_exceptions.assert_failure,
         /* tuple */[

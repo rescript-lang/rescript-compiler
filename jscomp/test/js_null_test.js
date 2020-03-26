@@ -9,8 +9,8 @@ var suites_000 = /* tuple */[
   "toOption - empty",
   (function (param) {
       return /* Eq */Block.__(0, [
-                undefined,
-                undefined
+                void 0,
+                void 0
               ]);
     })
 ];
@@ -20,8 +20,8 @@ var suites_001 = /* :: */[
     "toOption - 'a",
     (function (param) {
         return /* Eq */Block.__(0, [
-                  Caml_option.some(undefined),
-                  Caml_option.some(undefined)
+                  Caml_option.some(void 0),
+                  Caml_option.some(void 0)
                 ]);
       })
   ],
@@ -119,7 +119,7 @@ var suites_001 = /* :: */[
                     (function (param) {
                         return /* Eq */Block.__(0, [
                                   null,
-                                  Js_null.fromOption(undefined)
+                                  Js_null.fromOption(void 0)
                                 ]);
                       })
                   ],

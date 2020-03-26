@@ -82,7 +82,7 @@ var C = Caml_exceptions.create("Js_exception_catch_test.C");
 
 function test(f) {
   try {
-    Curry._1(f, undefined);
+    Curry._1(f, void 0);
     return /* No_error */-465676758;
   }
   catch (raw_e){

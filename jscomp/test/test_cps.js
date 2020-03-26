@@ -8,12 +8,12 @@ function f(_n, _acc) {
     var acc = _acc;
     var n = _n;
     if (n === 0) {
-      return Curry._1(acc, undefined);
+      return Curry._1(acc, void 0);
     }
     _acc = (function(n,acc){
     return function (param) {
       console.log(String(n));
-      return Curry._1(acc, undefined);
+      return Curry._1(acc, void 0);
     }
     }(n,acc));
     _n = n - 1 | 0;

@@ -31,7 +31,7 @@ function eq(loc, x, y) {
 }
 
 function foo(f) {
-  console.log(Curry._2(f, "a1", undefined));
+  console.log(Curry._2(f, "a1", void 0));
   
 }
 
@@ -42,14 +42,14 @@ foo((function (param) {
       }));
 
 function foo2(f) {
-  return Curry._2(f, "a1", undefined);
+  return Curry._2(f, "a1", void 0);
 }
 
 eq("File \"gpr_1423_app_test.ml\", line 18, characters 7-14", Curry._1((function (param) {
               return (function (param$1) {
                   return Gpr_1423_nav.busted(param, "a2", param$1);
                 });
-            })("a1"), undefined), "a1a2");
+            })("a1"), void 0), "a1a2");
 
 Mt.from_pair_suites("Gpr_1423_app_test", suites.contents);
 

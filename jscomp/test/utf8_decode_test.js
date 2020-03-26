@@ -46,7 +46,7 @@ function classify(chr) {
 function utf8_decode(strm) {
   return Stream.slazy((function (param) {
                 var match = Stream.peek(strm);
-                if (match === undefined) {
+                if (match === void 0) {
                   return ;
                 }
                 Stream.junk(strm);

@@ -48,7 +48,7 @@ function x_init($$class) {
 
 var x = CamlinternalOO.make_class(shared$1, x_init);
 
-var v = Curry._2(x[0], undefined, 3);
+var v = Curry._2(x[0], void 0, 3);
 
 var u = Oo.copy(v);
 
@@ -102,7 +102,7 @@ function xx_init($$class) {
 
 var xx = CamlinternalOO.make_class(shared$2, xx_init);
 
-var v1 = Curry._2(xx[0], undefined, 3);
+var v1 = Curry._2(xx[0], void 0, 3);
 
 var v2 = Caml_oo_curry.js1(-977586732, 3, v1);
 
@@ -163,7 +163,7 @@ var point = CamlinternalOO.make_class([
       "get_x5"
     ], point_init);
 
-var v$1 = Curry._1(point[0], undefined);
+var v$1 = Curry._1(point[0], void 0);
 
 if (Caml_oo_curry.js1(590348294, 8, v$1) !== 5) {
   throw [

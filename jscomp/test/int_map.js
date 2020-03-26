@@ -482,7 +482,7 @@ function update(x, f, m) {
     var c = Caml_primitive.caml_int_compare(x, v);
     if (c === 0) {
       var match = Curry._1(f, Caml_option.some(d));
-      if (match === undefined) {
+      if (match === void 0) {
         return merge(l, r);
       }
       var data = Caml_option.valFromOption(match);
@@ -513,8 +513,8 @@ function update(x, f, m) {
       }
     }
   } else {
-    var match$1 = Curry._1(f, undefined);
-    if (match$1 !== undefined) {
+    var match$1 = Curry._1(f, void 0);
+    if (match$1 !== void 0) {
       return /* Node */[
               /* l : Empty */0,
               /* v */x,
@@ -667,7 +667,7 @@ function concat(t1, t2) {
 }
 
 function concat_or_join(t1, v, d, t2) {
-  if (d !== undefined) {
+  if (d !== void 0) {
     return join(t1, v, Caml_option.valFromOption(d), t2);
   } else {
     return concat(t1, t2);
@@ -678,7 +678,7 @@ function split(x, param) {
   if (!param) {
     return /* tuple */[
             /* Empty */0,
-            undefined,
+            void 0,
             /* Empty */0
           ];
   }
@@ -753,7 +753,7 @@ function union(f, s1, s2) {
     var d2$1 = match[1];
     var l = union(f, s1[/* l */0], match[0]);
     var r = union(f, s1[/* r */3], match[2]);
-    if (d2$1 !== undefined) {
+    if (d2$1 !== void 0) {
       return concat_or_join(l, v1, Curry._3(f, v1, d1, Caml_option.valFromOption(d2$1)), r);
     } else {
       return join(l, v1, d1, r);
@@ -763,7 +763,7 @@ function union(f, s1, s2) {
     var d1$1 = match$1[1];
     var l$1 = union(f, match$1[0], s2[/* l */0]);
     var r$1 = union(f, match$1[2], s2[/* r */3]);
-    if (d1$1 !== undefined) {
+    if (d1$1 !== void 0) {
       return concat_or_join(l$1, v2, Curry._3(f, v2, Caml_option.valFromOption(d1$1), d2), r$1);
     } else {
       return join(l$1, v2, d2, r$1);

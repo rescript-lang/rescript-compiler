@@ -29,29 +29,29 @@ var arg_pair = /* `Pair */[
 
 console.log(arg_pair[1]);
 
-console.log(undefined);
+console.log(void 0);
 
-console.log(1, undefined);
+console.log(1, void 0);
 
 console.log(2, "hi");
 
 console.log(3, "hi");
 
-console.log(4, undefined);
+console.log(4, void 0);
 
 var some_arg = /* `Bool */[
   737456202,
   true
 ];
 
-console.log(5, some_arg !== undefined ? Caml_option.valFromOption(some_arg)[1] : undefined);
+console.log(5, some_arg !== void 0 ? Caml_option.valFromOption(some_arg)[1] : void 0);
 
-console.log(6, undefined);
+console.log(6, void 0);
 
-console.log(7, Caml_option.option_get_unwrap((console.log("trace"), undefined)));
+console.log(7, Caml_option.option_get_unwrap((console.log("trace"), void 0)));
 
 function dyn_log3(prim, prim$1, prim$2) {
-  console.log(prim[1], prim$1 !== undefined ? Caml_option.valFromOption(prim$1)[1] : undefined);
+  console.log(prim[1], prim$1 !== void 0 ? Caml_option.valFromOption(prim$1)[1] : void 0);
   
 }
 
@@ -61,7 +61,7 @@ dyn_log3(/* `Int */[
     ], /* `Bool */[
       737456202,
       true
-    ], undefined);
+    ], void 0);
 
 console.log("foo");
 
@@ -84,12 +84,12 @@ function f(x) {
 }
 
 function ff0(x, p) {
-  console.log(x !== undefined ? Caml_option.valFromOption(x)[1] : undefined, p);
+  console.log(x !== void 0 ? Caml_option.valFromOption(x)[1] : void 0, p);
   
 }
 
 function ff1(x, p) {
-  console.log(Caml_option.option_get_unwrap(Curry._1(x, undefined)), p);
+  console.log(Caml_option.option_get_unwrap(Curry._1(x, void 0)), p);
   
 }
 
@@ -97,7 +97,7 @@ function test00(param) {
   return {
           a: 1,
           b: 2,
-          x: undefined
+          x: void 0
         };
 }
 

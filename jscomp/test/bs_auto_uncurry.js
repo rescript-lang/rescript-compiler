@@ -50,7 +50,7 @@ function f_01(param) {
 
 function f_02(xs) {
   return hi((function () {
-                xs.contents = undefined;
+                xs.contents = void 0;
                 console.log("x");
                 
               }));
@@ -58,7 +58,7 @@ function f_02(xs) {
 
 function f_03(xs, u) {
   return hi((function () {
-                return Curry._1(u, undefined);
+                return Curry._1(u, void 0);
               }));
 }
 
@@ -121,7 +121,7 @@ function unit_magic(param) {
   return 3;
 }
 
-var f_unit_magic = unit_magic(undefined);
+var f_unit_magic = unit_magic(void 0);
 
 function hh(xs) {
   return (function (param) {

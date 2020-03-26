@@ -97,7 +97,7 @@ var v_mk4 = {
 };
 
 var v_mk5 = {
-  x: undefined,
+  x: void 0,
   y: 3
 };
 
@@ -106,7 +106,7 @@ var v_mk6 = {
 };
 
 var v_mk6_1 = {
-  x: undefined,
+  x: void 0,
   y: 3
 };
 
@@ -137,11 +137,11 @@ var v_mk7 = /* :: */[
 
 again("a", 3);
 
-again(undefined, 3);
+again(void 0, 3);
 
-again(undefined, 3);
+again(void 0, 3);
 
-again(undefined, 3);
+again(void 0, 3);
 
 again2("a", 3);
 
@@ -153,23 +153,23 @@ var side_effect = {
   contents: 0
 };
 
-again4(undefined, undefined, 166);
+again4(void 0, void 0, 166);
 
-again4(undefined, undefined, 167);
+again4(void 0, void 0, 167);
 
-again4(undefined, undefined, 168);
+again4(void 0, void 0, 168);
 
-again4(undefined, undefined, 169);
+again4(void 0, void 0, 169);
 
-again4(undefined, undefined, 170);
+again4(void 0, void 0, 170);
 
-again4((side_effect.contents = side_effect.contents + 1 | 0, undefined), undefined, 171);
+again4((side_effect.contents = side_effect.contents + 1 | 0, void 0), void 0, 171);
 
-again4((side_effect.contents = side_effect.contents + 1 | 0, undefined), (side_effect.contents = side_effect.contents - 1 | 0, undefined), 172);
+again4((side_effect.contents = side_effect.contents + 1 | 0, void 0), (side_effect.contents = side_effect.contents - 1 | 0, void 0), 172);
 
-again4(undefined, (side_effect.contents = side_effect.contents - 1 | 0, undefined), 173);
+again4(void 0, (side_effect.contents = side_effect.contents - 1 | 0, void 0), 173);
 
-again4((side_effect.contents = side_effect.contents + 1 | 0, undefined), undefined, 174);
+again4((side_effect.contents = side_effect.contents + 1 | 0, void 0), void 0, 174);
 
 exports.u = u;
 exports.v_ice_cream3 = v_ice_cream3;

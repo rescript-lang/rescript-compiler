@@ -16,7 +16,7 @@ Mt.from_pair_suites("Print_alpha_test", /* :: */[
             return /* Eq */Block.__(0, [
                       f((function (prim, prim$1) {
                                 return prim + prim$1 | 0;
-                              }), undefined)(1, 2),
+                              }), void 0)(1, 2),
                       3
                     ]);
           })

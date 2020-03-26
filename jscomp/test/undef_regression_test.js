@@ -6,7 +6,7 @@ function f(obj) {
     return ;
   }
   var size = obj.length;
-  if (size !== undefined) {
+  if (size !== void 0) {
     console.log(size);
     return ;
   }
