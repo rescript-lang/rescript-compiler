@@ -94,7 +94,7 @@ let mark_dead_code (js : J.program) : J.program =
         let ({ident; ident_info ; value ; _} : J.variable_declaration) = vd in 
         let pure = 
           match value with 
-          | None  -> false 
+          | None  -> true
           | Some x -> ignore (self#expression x); Js_analyzer.no_side_effect_expression x in
         (
          let () = 

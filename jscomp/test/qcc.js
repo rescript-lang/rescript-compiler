@@ -238,7 +238,6 @@ function next(param) {
     }
     
   } else if (c === 39) {
-    var param$1;
     var ch = getq(void 0);
     var qt = Curry._1(getch, void 0);
     if (qt !== /* "'" */39) {
@@ -296,16 +295,16 @@ function next(param) {
       ]
     ];
     while(true) {
-      var param$2 = _param;
-      if (!param$2) {
+      var param$1 = _param;
+      if (!param$1) {
         return /* Op */Block.__(0, [Caml_bytes.bytes_to_string(Bytes.make(1, c))]);
       }
-      var lop = param$2[0];
+      var lop = param$1[0];
       if (Caml_string.get(lop, 0) === c && Caml_string.get(lop, 1) === peekch(void 0)) {
         Curry._1(getch, void 0);
         return /* Op */Block.__(0, [lop]);
       }
-      _param = param$2[1];
+      _param = param$1[1];
       continue ;
     };
   }

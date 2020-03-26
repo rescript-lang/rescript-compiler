@@ -1633,7 +1633,6 @@ var error_prefix = "Error";
 
 function print_error(ppf, loc) {
   print$1(ppf, loc);
-  var param;
   Curry._1(Misc_Color.setup, color.contents);
   Curry._1(Format.fprintf(ppf, /* Format */[
             /* Formatting_gen */Block.__(18, [

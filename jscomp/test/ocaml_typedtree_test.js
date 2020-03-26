@@ -1911,7 +1911,6 @@ var error_prefix = "Error";
 
 function print_error(ppf, loc) {
   print$1(ppf, loc);
-  var param;
   Curry._1(Misc_Color.setup, color.contents);
   Curry._1(Format.fprintf(ppf, /* Format */[
             /* Formatting_gen */Block.__(18, [
@@ -40072,7 +40071,6 @@ function mark_loops(ty) {
 function reset(param) {
   unique_names.contents = /* Empty */0;
   reset_names(void 0);
-  var param$1;
   visited_objects.contents = /* [] */0;
   aliased.contents = /* [] */0;
   delayed.contents = /* [] */0;

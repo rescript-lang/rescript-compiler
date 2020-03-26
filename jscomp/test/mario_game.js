@@ -819,18 +819,17 @@ function set_vel_to_speed(obj) {
 function make_type$2(param) {
   switch (param.tag | 0) {
     case /* SPlayer */0 :
-        var param$1;
         return setup_obj(void 0, 2.8, void 0);
     case /* SEnemy */1 :
-        var param$2 = param[0];
-        if (param$2 >= 3) {
+        var param$1 = param[0];
+        if (param$1 >= 3) {
           return setup_obj(void 0, 3, void 0);
         } else {
           return setup_obj(void 0, void 0, void 0);
         }
     case /* SItem */2 :
-        var param$3 = param[0];
-        if (param$3 >= 3) {
+        var param$2 = param[0];
+        if (param$2 >= 3) {
           return setup_obj(false, void 0, void 0);
         } else {
           return setup_obj(void 0, void 0, void 0);

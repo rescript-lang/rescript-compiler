@@ -4297,7 +4297,6 @@ function compile_message_p1(file_name, file_options, message_scope, param) {
             ];
     } else {
       var previous_field_name = "";
-      var param;
       throw [
             Compilation_error,
             /* Duplicated_field_number */Block.__(1, [{
@@ -4490,7 +4489,6 @@ function compile_message_p2(types, param, message) {
     if (id !== void 0) {
       return /* Field_type_type */[id];
     } else {
-      var param;
       throw [
             Compilation_error,
             /* Unresolved_type */Block.__(0, [{
