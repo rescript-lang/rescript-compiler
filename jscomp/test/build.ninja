@@ -694,7 +694,7 @@ build test/uncurry_test.cmi : cc test/uncurry_test.mli | $stdlib
 build test/undef_regression2_test.cmi test/undef_regression2_test.cmj : cc test/undef_regression2_test.ml | test/mt.cmj $stdlib
 build test/undef_regression_test.cmi test/undef_regression_test.cmj : cc test/undef_regression_test.ml | $stdlib
 build test/unicode_type_error.cmi test/unicode_type_error.cmj : cc test/unicode_type_error.ml | $stdlib
-build test/unit_undefined_test.cmi test/unit_undefined_test.cmj : cc test/unit_undefined_test.ml | $stdlib
+build test/unit_undefined_test.cmi test/unit_undefined_test.cmj : cc test/unit_undefined_test.ml | test/mt.cmj $stdlib
 build test/unitest_string.cmi test/unitest_string.cmj : cc test/unitest_string.ml | $stdlib
 build test/unsafe_full_apply_primitive.cmi test/unsafe_full_apply_primitive.cmj : cc test/unsafe_full_apply_primitive.ml | $stdlib
 build test/unsafe_obj_external.cmi test/unsafe_obj_external.cmj : cc test/unsafe_obj_external.ml | $stdlib
