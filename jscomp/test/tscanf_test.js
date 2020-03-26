@@ -1523,12 +1523,11 @@ function scan_elems$2(ib, accu) {
                 "]"
               ]), undefined);
       return accu;
-    } else {
-      if (exn === Caml_builtin_exceptions.end_of_file) {
-        return accu;
-      }
-      throw exn;
     }
+    if (exn === Caml_builtin_exceptions.end_of_file) {
+      return accu;
+    }
+    throw exn;
   }
 }
 
@@ -3792,17 +3791,16 @@ function reader(ib, ob) {
                   if (s === "stop") {
                     send_string(ob, "stop");
                     return writer(ib, ob);
-                  } else {
-                    var l = s.length;
-                    count.contents = l + count.contents | 0;
-                    if (count.contents >= 100) {
-                      send_string(ob, "stop");
-                      send_string(ob, String(count.contents));
-                    } else {
-                      send_string(ob, String(l));
-                    }
-                    return writer(ib, ob);
                   }
+                  var l = s.length;
+                  count.contents = l + count.contents | 0;
+                  if (count.contents >= 100) {
+                    send_string(ob, "stop");
+                    send_string(ob, String(count.contents));
+                  } else {
+                    send_string(ob, String(l));
+                  }
+                  return writer(ib, ob);
                 }));
   }
 }

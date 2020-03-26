@@ -43,14 +43,13 @@ function excludes(p, l) {
         excluded.contents = true;
         _param = l;
         continue ;
-      } else {
-        _param = l;
-        _accu = /* :: */[
-          x,
-          accu
-        ];
-        continue ;
       }
+      _param = l;
+      _accu = /* :: */[
+        x,
+        accu
+      ];
+      continue ;
     };
   };
   var v = aux(/* [] */0, l);
@@ -84,14 +83,13 @@ function exclude_with_fact(p, l) {
         excluded.contents = Caml_option.some(x);
         _param = l;
         continue ;
-      } else {
-        _param = l;
-        _accu = /* :: */[
-          x,
-          accu
-        ];
-        continue ;
       }
+      _param = l;
+      _accu = /* :: */[
+        x,
+        accu
+      ];
+      continue ;
     };
   };
   var v = aux(/* [] */0, l);
@@ -121,18 +119,18 @@ function exclude_with_fact2(p1, p2, l) {
         excluded1.contents = Caml_option.some(x);
         _param = l;
         continue ;
-      } else if (Curry._1(p2, x)) {
+      }
+      if (Curry._1(p2, x)) {
         excluded2.contents = Caml_option.some(x);
         _param = l;
         continue ;
-      } else {
-        _param = l;
-        _accu = /* :: */[
-          x,
-          accu
-        ];
-        continue ;
       }
+      _param = l;
+      _accu = /* :: */[
+        x,
+        accu
+      ];
+      continue ;
     };
   };
   var v = aux(/* [] */0, l);
@@ -192,33 +190,32 @@ function filter_map2(f, _xs, _ys) {
     var ys = _ys;
     var xs = _xs;
     if (xs) {
-      if (!ys) {
-        throw [
-              Caml_builtin_exceptions.invalid_argument,
-              "Ext_list_test.filter_map2"
-            ];
-      }
-      var vs = ys[1];
-      var us = xs[1];
-      var match = Curry._2(f, xs[0], ys[0]);
-      if (match !== undefined) {
-        return /* :: */[
-                Caml_option.valFromOption(match),
-                filter_map2(f, us, vs)
-              ];
-      }
-      _ys = vs;
-      _xs = us;
-      continue ;
-    } else {
       if (ys) {
-        throw [
-              Caml_builtin_exceptions.invalid_argument,
-              "Ext_list_test.filter_map2"
-            ];
+        var vs = ys[1];
+        var us = xs[1];
+        var match = Curry._2(f, xs[0], ys[0]);
+        if (match !== undefined) {
+          return /* :: */[
+                  Caml_option.valFromOption(match),
+                  filter_map2(f, us, vs)
+                ];
+        }
+        _ys = vs;
+        _xs = us;
+        continue ;
       }
+      throw [
+            Caml_builtin_exceptions.invalid_argument,
+            "Ext_list_test.filter_map2"
+          ];
+    }
+    if (!ys) {
       return /* [] */0;
     }
+    throw [
+          Caml_builtin_exceptions.invalid_argument,
+          "Ext_list_test.filter_map2"
+        ];
   };
 }
 
@@ -229,34 +226,33 @@ function filter_map2i(f, xs, ys) {
       var xs = _xs;
       var i = _i;
       if (xs) {
-        if (!ys) {
-          throw [
-                Caml_builtin_exceptions.invalid_argument,
-                "Ext_list_test.filter_map2i"
-              ];
-        }
-        var vs = ys[1];
-        var us = xs[1];
-        var match = Curry._3(f, i, xs[0], ys[0]);
-        if (match !== undefined) {
-          return /* :: */[
-                  Caml_option.valFromOption(match),
-                  aux(i + 1 | 0, us, vs)
-                ];
-        }
-        _ys = vs;
-        _xs = us;
-        _i = i + 1 | 0;
-        continue ;
-      } else {
         if (ys) {
-          throw [
-                Caml_builtin_exceptions.invalid_argument,
-                "Ext_list_test.filter_map2i"
-              ];
+          var vs = ys[1];
+          var us = xs[1];
+          var match = Curry._3(f, i, xs[0], ys[0]);
+          if (match !== undefined) {
+            return /* :: */[
+                    Caml_option.valFromOption(match),
+                    aux(i + 1 | 0, us, vs)
+                  ];
+          }
+          _ys = vs;
+          _xs = us;
+          _i = i + 1 | 0;
+          continue ;
         }
+        throw [
+              Caml_builtin_exceptions.invalid_argument,
+              "Ext_list_test.filter_map2i"
+            ];
+      }
+      if (!ys) {
         return /* [] */0;
       }
+      throw [
+            Caml_builtin_exceptions.invalid_argument,
+            "Ext_list_test.filter_map2i"
+          ];
     };
   };
   return aux(0, xs, ys);
@@ -287,25 +283,24 @@ function flat_map2(f, lx, ly) {
     var lx$1 = _lx;
     var acc = _acc;
     if (lx$1) {
-      if (!ly$1) {
-        throw [
-              Caml_builtin_exceptions.invalid_argument,
-              "Ext_list_test.flat_map2"
-            ];
-      }
-      _ly = ly$1[1];
-      _lx = lx$1[1];
-      _acc = List.rev_append(Curry._2(f, lx$1[0], ly$1[0]), acc);
-      continue ;
-    } else {
       if (ly$1) {
-        throw [
-              Caml_builtin_exceptions.invalid_argument,
-              "Ext_list_test.flat_map2"
-            ];
+        _ly = ly$1[1];
+        _lx = lx$1[1];
+        _acc = List.rev_append(Curry._2(f, lx$1[0], ly$1[0]), acc);
+        continue ;
       }
-      return List.rev(acc);
+      throw [
+            Caml_builtin_exceptions.invalid_argument,
+            "Ext_list_test.flat_map2"
+          ];
     }
+    if (ly$1) {
+      throw [
+            Caml_builtin_exceptions.invalid_argument,
+            "Ext_list_test.flat_map2"
+          ];
+    }
+    return List.rev(acc);
   };
 }
 
@@ -335,40 +330,40 @@ function map2_last(f, l1, l2) {
     var l1$1 = l1[1];
     var u = l1[0];
     if (!l1$1) {
-      if (!l2) {
+      if (l2) {
+        if (!l2[1]) {
+          return /* :: */[
+                  Curry._3(f, true, u, l2[0]),
+                  /* [] */0
+                ];
+        }
+        
+      } else {
         throw [
               Caml_builtin_exceptions.invalid_argument,
               "List.map2_last"
             ];
       }
-      if (!l2[1]) {
-        return /* :: */[
-                Curry._3(f, true, u, l2[0]),
-                /* [] */0
-              ];
-      }
-      
     }
-    if (!l2) {
-      throw [
-            Caml_builtin_exceptions.invalid_argument,
-            "List.map2_last"
-          ];
-    }
-    var r = Curry._3(f, false, u, l2[0]);
-    return /* :: */[
-            r,
-            map2_last(f, l1$1, l2[1])
-          ];
-  } else {
     if (l2) {
-      throw [
-            Caml_builtin_exceptions.invalid_argument,
-            "List.map2_last"
-          ];
+      var r = Curry._3(f, false, u, l2[0]);
+      return /* :: */[
+              r,
+              map2_last(f, l1$1, l2[1])
+            ];
     }
+    throw [
+          Caml_builtin_exceptions.invalid_argument,
+          "List.map2_last"
+        ];
+  }
+  if (!l2) {
     return /* [] */0;
   }
+  throw [
+        Caml_builtin_exceptions.invalid_argument,
+        "List.map2_last"
+      ];
 }
 
 function map_last(f, l1) {
@@ -395,16 +390,17 @@ function fold_right2_last(f, l1, l2, accu) {
     var l1$1 = l1[1];
     var last1 = l1[0];
     if (!l1$1) {
-      if (!l2) {
+      if (l2) {
+        if (!l2[1]) {
+          return Curry._4(f, true, last1, l2[0], accu);
+        }
+        
+      } else {
         throw [
               Caml_builtin_exceptions.invalid_argument,
               "List.fold_right2"
             ];
       }
-      if (!l2[1]) {
-        return Curry._4(f, true, last1, l2[0], accu);
-      }
-      
     }
     if (l2) {
       return Curry._4(f, false, last1, l2[0], fold_right2_last(f, l1$1, l2[1], accu));
@@ -413,15 +409,14 @@ function fold_right2_last(f, l1, l2, accu) {
           Caml_builtin_exceptions.invalid_argument,
           "List.fold_right2"
         ];
-  } else {
-    if (l2) {
-      throw [
-            Caml_builtin_exceptions.invalid_argument,
-            "List.fold_right2"
-          ];
-    }
-    return accu;
   }
+  if (l2) {
+    throw [
+          Caml_builtin_exceptions.invalid_argument,
+          "List.fold_right2"
+        ];
+  }
+  return accu;
 }
 
 function init(n, f) {
@@ -503,26 +498,26 @@ function exclude_tail(x) {
   while(true) {
     var x$1 = _x;
     var acc = _acc;
-    if (!x$1) {
-      throw [
-            Caml_builtin_exceptions.invalid_argument,
-            "Ext_list_test.exclude_tail"
-          ];
+    if (x$1) {
+      var ys = x$1[1];
+      var x$2 = x$1[0];
+      if (!ys) {
+        return /* tuple */[
+                x$2,
+                List.rev(acc)
+              ];
+      }
+      _x = ys;
+      _acc = /* :: */[
+        x$2,
+        acc
+      ];
+      continue ;
     }
-    var ys = x$1[1];
-    var x$2 = x$1[0];
-    if (!ys) {
-      return /* tuple */[
-              x$2,
-              List.rev(acc)
-            ];
-    }
-    _x = ys;
-    _acc = /* :: */[
-      x$2,
-      acc
-    ];
-    continue ;
+    throw [
+          Caml_builtin_exceptions.invalid_argument,
+          "Ext_list_test.exclude_tail"
+        ];
   };
 }
 
@@ -804,14 +799,14 @@ function ref_push(x, refs) {
 
 function ref_pop(refs) {
   var match = refs.contents;
-  if (!match) {
-    throw [
-          Caml_builtin_exceptions.invalid_argument,
-          "Ext_list_test.ref_pop"
-        ];
+  if (match) {
+    refs.contents = match[1];
+    return match[0];
   }
-  refs.contents = match[1];
-  return match[0];
+  throw [
+        Caml_builtin_exceptions.invalid_argument,
+        "Ext_list_test.ref_pop"
+      ];
 }
 
 function rev_except_last(xs) {
@@ -820,26 +815,26 @@ function rev_except_last(xs) {
   while(true) {
     var xs$1 = _xs;
     var acc = _acc;
-    if (!xs$1) {
-      throw [
-            Caml_builtin_exceptions.invalid_argument,
-            "Ext_list_test.rev_except_last"
-          ];
+    if (xs$1) {
+      var xs$2 = xs$1[1];
+      var x = xs$1[0];
+      if (!xs$2) {
+        return /* tuple */[
+                acc,
+                x
+              ];
+      }
+      _xs = xs$2;
+      _acc = /* :: */[
+        x,
+        acc
+      ];
+      continue ;
     }
-    var xs$2 = xs$1[1];
-    var x = xs$1[0];
-    if (!xs$2) {
-      return /* tuple */[
-              acc,
-              x
-            ];
-    }
-    _xs = xs$2;
-    _acc = /* :: */[
-      x,
-      acc
-    ];
-    continue ;
+    throw [
+          Caml_builtin_exceptions.invalid_argument,
+          "Ext_list_test.rev_except_last"
+        ];
   };
 }
 
@@ -852,18 +847,18 @@ function sort_via_array(cmp, lst) {
 function last(_xs) {
   while(true) {
     var xs = _xs;
-    if (!xs) {
-      throw [
-            Caml_builtin_exceptions.invalid_argument,
-            "Ext_list_test.last"
-          ];
+    if (xs) {
+      var tl = xs[1];
+      if (!tl) {
+        return xs[0];
+      }
+      _xs = tl;
+      continue ;
     }
-    var tl = xs[1];
-    if (!tl) {
-      return xs[0];
-    }
-    _xs = tl;
-    continue ;
+    throw [
+          Caml_builtin_exceptions.invalid_argument,
+          "Ext_list_test.last"
+        ];
   };
 }
 
@@ -877,19 +872,18 @@ function assoc_by_string(def, k, _lst) {
       }
       _lst = lst[1];
       continue ;
-    } else {
-      if (def !== undefined) {
-        return Caml_option.valFromOption(def);
-      }
-      throw [
-            Caml_builtin_exceptions.assert_failure,
-            /* tuple */[
-              "ext_list_test.ml",
-              399,
-              14
-            ]
-          ];
     }
+    if (def !== undefined) {
+      return Caml_option.valFromOption(def);
+    }
+    throw [
+          Caml_builtin_exceptions.assert_failure,
+          /* tuple */[
+            "ext_list_test.ml",
+            399,
+            14
+          ]
+        ];
   };
 }
 
@@ -903,19 +897,18 @@ function assoc_by_int(def, k, _lst) {
       }
       _lst = lst[1];
       continue ;
-    } else {
-      if (def !== undefined) {
-        return Caml_option.valFromOption(def);
-      }
-      throw [
-            Caml_builtin_exceptions.assert_failure,
-            /* tuple */[
-              "ext_list_test.ml",
-              409,
-              14
-            ]
-          ];
     }
+    if (def !== undefined) {
+      return Caml_option.valFromOption(def);
+    }
+    throw [
+          Caml_builtin_exceptions.assert_failure,
+          /* tuple */[
+            "ext_list_test.ml",
+            409,
+            14
+          ]
+        ];
   };
 }
 

@@ -34,30 +34,30 @@ function height(param) {
 function min_elt(_param) {
   while(true) {
     var param = _param;
-    if (!param) {
-      throw Caml_builtin_exceptions.not_found;
+    if (param) {
+      var l = param[0];
+      if (!l) {
+        return param[1];
+      }
+      _param = l;
+      continue ;
     }
-    var l = param[0];
-    if (!l) {
-      return param[1];
-    }
-    _param = l;
-    continue ;
+    throw Caml_builtin_exceptions.not_found;
   };
 }
 
 function max_elt(_param) {
   while(true) {
     var param = _param;
-    if (!param) {
-      throw Caml_builtin_exceptions.not_found;
+    if (param) {
+      var r = param[2];
+      if (!r) {
+        return param[1];
+      }
+      _param = r;
+      continue ;
     }
-    var r = param[2];
-    if (!r) {
-      return param[1];
-    }
-    _param = r;
-    continue ;
+    throw Caml_builtin_exceptions.not_found;
   };
 }
 
@@ -229,52 +229,43 @@ function internal_bal(l, v, r) {
   var hl = l ? l[3] : 0;
   var hr = r ? r[3] : 0;
   if (hl > (hr + 2 | 0)) {
-    if (!l) {
+    if (l) {
+      var lr = l[2];
+      var lv = l[1];
+      var ll = l[0];
+      if (height(ll) >= height(lr)) {
+        return create(ll, lv, create(lr, v, r));
+      }
+      if (lr) {
+        return create(create(ll, lv, lr[0]), lr[1], create(lr[2], v, r));
+      }
       throw [
             Caml_builtin_exceptions.assert_failure,
             /* tuple */[
               "set_gen.ml",
-              225,
-              15
+              235,
+              19
             ]
           ];
-    }
-    var lr = l[2];
-    var lv = l[1];
-    var ll = l[0];
-    if (height(ll) >= height(lr)) {
-      return create(ll, lv, create(lr, v, r));
-    }
-    if (lr) {
-      return create(create(ll, lv, lr[0]), lr[1], create(lr[2], v, r));
     }
     throw [
           Caml_builtin_exceptions.assert_failure,
           /* tuple */[
             "set_gen.ml",
-            235,
-            19
+            225,
+            15
           ]
         ];
-  } else {
-    if (hr <= (hl + 2 | 0)) {
-      return /* Node */[
-              l,
-              v,
-              r,
-              hl >= hr ? hl + 1 | 0 : hr + 1 | 0
-            ];
-    }
-    if (!r) {
-      throw [
-            Caml_builtin_exceptions.assert_failure,
-            /* tuple */[
-              "set_gen.ml",
-              245,
-              15
-            ]
+  }
+  if (hr <= (hl + 2 | 0)) {
+    return /* Node */[
+            l,
+            v,
+            r,
+            hl >= hr ? hl + 1 | 0 : hr + 1 | 0
           ];
-    }
+  }
+  if (r) {
     var rr = r[2];
     var rv = r[1];
     var rl = r[0];
@@ -293,21 +284,29 @@ function internal_bal(l, v, r) {
           ]
         ];
   }
+  throw [
+        Caml_builtin_exceptions.assert_failure,
+        /* tuple */[
+          "set_gen.ml",
+          245,
+          15
+        ]
+      ];
 }
 
 function remove_min_elt(param) {
-  if (!param) {
-    throw [
-          Caml_builtin_exceptions.invalid_argument,
-          "Set.remove_min_elt"
-        ];
+  if (param) {
+    var l = param[0];
+    if (l) {
+      return internal_bal(remove_min_elt(l), param[1], param[2]);
+    } else {
+      return param[2];
+    }
   }
-  var l = param[0];
-  if (l) {
-    return internal_bal(remove_min_elt(l), param[1], param[2]);
-  } else {
-    return param[2];
-  }
+  throw [
+        Caml_builtin_exceptions.invalid_argument,
+        "Set.remove_min_elt"
+      ];
 }
 
 function singleton(x) {
@@ -500,21 +499,21 @@ function of_sorted_list(l) {
     var nl = n / 2 | 0;
     var match$3 = sub(nl, l);
     var l$1 = match$3[1];
-    if (!l$1) {
-      throw [
-            Caml_builtin_exceptions.assert_failure,
-            /* tuple */[
-              "set_gen.ml",
-              361,
-              14
-            ]
-          ];
+    if (l$1) {
+      var match$4 = sub((n - nl | 0) - 1 | 0, l$1[1]);
+      return /* tuple */[
+              create(match$3[0], l$1[0], match$4[0]),
+              match$4[1]
+            ];
     }
-    var match$4 = sub((n - nl | 0) - 1 | 0, l$1[1]);
-    return /* tuple */[
-            create(match$3[0], l$1[0], match$4[0]),
-            match$4[1]
-          ];
+    throw [
+          Caml_builtin_exceptions.assert_failure,
+          /* tuple */[
+            "set_gen.ml",
+            361,
+            14
+          ]
+        ];
   };
   return sub(List.length(l), l)[0];
 }
@@ -532,7 +531,8 @@ function of_sorted_array(l) {
               /* Empty */0,
               1
             ];
-    } else if (n === 2) {
+    }
+    if (n === 2) {
       var x0$1 = l[start];
       var x1 = l[start + 1 | 0];
       return /* Node */[
@@ -546,7 +546,8 @@ function of_sorted_array(l) {
               /* Empty */0,
               2
             ];
-    } else if (n === 3) {
+    }
+    if (n === 3) {
       var x0$2 = l[start];
       var x1$1 = l[start + 1 | 0];
       var x2 = l[start + 2 | 0];
@@ -566,14 +567,13 @@ function of_sorted_array(l) {
               ],
               2
             ];
-    } else {
-      var nl = n / 2 | 0;
-      var left = sub(start, nl, l);
-      var mid = start + nl | 0;
-      var v = l[mid];
-      var right = sub(mid + 1 | 0, (n - nl | 0) - 1 | 0, l);
-      return create(left, v, right);
     }
+    var nl = n / 2 | 0;
+    var left = sub(start, nl, l);
+    var mid = start + nl | 0;
+    var v = l[mid];
+    var right = sub(mid + 1 | 0, (n - nl | 0) - 1 | 0, l);
+    return create(left, v, right);
   };
   return sub(0, l.length, l);
 }
@@ -616,36 +616,35 @@ function is_ordered(cmp, tree) {
       } else {
         return /* No */17505;
       }
-    } else {
-      var match$3 = match[1];
-      var max_v = match$3[1];
-      var min_v = match$3[0];
-      var match$4 = is_ordered_min_max(r);
-      if (typeof match$4 === "number") {
-        if (match$4 >= 50834029 && Curry._2(cmp, max_v, v) < 0) {
-          return /* `V */[
-                  86,
-                  /* tuple */[
-                    min_v,
-                    v
-                  ]
-                ];
-        } else {
-          return /* No */17505;
-        }
-      }
-      var match$5 = match$4[1];
-      if (Curry._2(cmp, max_v, match$5[0]) < 0) {
+    }
+    var match$3 = match[1];
+    var max_v = match$3[1];
+    var min_v = match$3[0];
+    var match$4 = is_ordered_min_max(r);
+    if (typeof match$4 === "number") {
+      if (match$4 >= 50834029 && Curry._2(cmp, max_v, v) < 0) {
         return /* `V */[
                 86,
                 /* tuple */[
                   min_v,
-                  match$5[1]
+                  v
                 ]
               ];
       } else {
         return /* No */17505;
       }
+    }
+    var match$5 = match$4[1];
+    if (Curry._2(cmp, max_v, match$5[0]) < 0) {
+      return /* `V */[
+              86,
+              /* tuple */[
+                min_v,
+                match$5[1]
+              ]
+            ];
+    } else {
+      return /* No */17505;
     }
   };
   return is_ordered_min_max(tree) !== /* No */17505;

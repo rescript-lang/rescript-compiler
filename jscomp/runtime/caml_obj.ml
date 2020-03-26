@@ -137,7 +137,6 @@ let caml_update_dummy : _ -> _ -> unit= [%raw{|function(x,y){
   for (var k in y){
     x[k] = y[k]
   }
-  return 0;
   }
 |}]
   

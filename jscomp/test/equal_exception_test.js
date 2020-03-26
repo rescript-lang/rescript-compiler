@@ -68,13 +68,13 @@ function is_normal_exception(_x) {
   }
   catch (raw_exn){
     var exn = Caml_js_exceptions.internalToOCamlException(raw_exn);
-    if (exn[0] !== A) {
+    if (exn[0] === A) {
+      if (exn[1] === 3) {
+        return ;
+      }
       throw exn;
     }
-    if (exn[1] !== 3) {
-      throw exn;
-    }
-    return ;
+    throw exn;
   }
 }
 

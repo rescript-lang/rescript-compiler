@@ -13,10 +13,9 @@ function $$eval(_bdd, vars) {
     if (Caml_array.caml_array_get(vars, bdd[1])) {
       _bdd = bdd[3];
       continue ;
-    } else {
-      _bdd = bdd[0];
-      continue ;
     }
+    _bdd = bdd[0];
+    continue ;
   };
 }
 
@@ -98,14 +97,13 @@ function insert(idl, idh, v, ind, bucket, newNode) {
         ]);
     n_items.contents = n_items.contents + 1 | 0;
     return ;
-  } else {
-    resize((sz_1.contents + sz_1.contents | 0) + 2 | 0);
-    var ind$1 = hashVal(idl, idh, v) & sz_1.contents;
-    return Caml_array.caml_array_set(htab.contents, ind$1, /* :: */[
-                newNode,
-                Caml_array.caml_array_get(htab.contents, ind$1)
-              ]);
   }
+  resize((sz_1.contents + sz_1.contents | 0) + 2 | 0);
+  var ind$1 = hashVal(idl, idh, v) & sz_1.contents;
+  return Caml_array.caml_array_set(htab.contents, ind$1, /* :: */[
+              newNode,
+              Caml_array.caml_array_get(htab.contents, ind$1)
+            ]);
 }
 
 function resetUnique(param) {
@@ -144,17 +142,16 @@ function mkNode(low, v, high) {
       }
       _b = b[1];
       continue ;
-    } else {
-      var n_002 = (nodeC.contents = nodeC.contents + 1 | 0, nodeC.contents);
-      var n$1 = /* Node */[
-        low,
-        v,
-        n_002,
-        high
-      ];
-      insert(getId(low), getId(high), v, ind, bucket, n$1);
-      return n$1;
     }
+    var n_002 = (nodeC.contents = nodeC.contents + 1 | 0, nodeC.contents);
+    var n$1 = /* Node */[
+      low,
+      v,
+      n_002,
+      high
+    ];
+    insert(getId(low), getId(high), v, ind, bucket, n$1);
+    return n$1;
   };
 }
 

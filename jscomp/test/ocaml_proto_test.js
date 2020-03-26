@@ -224,21 +224,21 @@ function rev_split_by_char(c, s) {
 }
 
 function pop_last(param) {
-  if (!param) {
-    throw [
-          Caml_builtin_exceptions.failure,
-          "Invalid argument [] for pop_last"
-        ];
+  if (param) {
+    var tl = param[1];
+    if (tl) {
+      return /* :: */[
+              param[0],
+              pop_last(tl)
+            ];
+    } else {
+      return /* [] */0;
+    }
   }
-  var tl = param[1];
-  if (tl) {
-    return /* :: */[
-            param[0],
-            pop_last(tl)
-          ];
-  } else {
-    return /* [] */0;
-  }
+  throw [
+        Caml_builtin_exceptions.failure,
+        "Invalid argument [] for pop_last"
+      ];
 }
 
 function apply_until(f, _param) {
@@ -1544,11 +1544,10 @@ function __ocaml_lex_multi_line_comment_rec(_l, lexbuf, ___ocaml_lex_state) {
 }
 
 function lexer(lexbuf) {
-  var lexbuf$1 = lexbuf;
   var ___ocaml_lex_state = 0;
   while(true) {
     var __ocaml_lex_state = ___ocaml_lex_state;
-    var __ocaml_lex_state$1 = Lexing.engine(__ocaml_lex_tables, __ocaml_lex_state, lexbuf$1);
+    var __ocaml_lex_state$1 = Lexing.engine(__ocaml_lex_tables, __ocaml_lex_state, lexbuf);
     switch (__ocaml_lex_state$1) {
       case 0 :
           return /* LBRACE */15;
@@ -1573,42 +1572,42 @@ function lexer(lexbuf) {
       case 10 :
           return /* COMMA */24;
       case 11 :
-          var match = __ocaml_lex_comment_rec(/* [] */0, lexbuf$1, 41);
+          var match = __ocaml_lex_comment_rec(/* [] */0, lexbuf, 41);
           if (!match) {
             return /* EOF */25;
           }
           ___ocaml_lex_state = 0;
           continue ;
       case 12 :
-          var match$1 = __ocaml_lex_multi_line_comment_rec(/* [] */0, lexbuf$1, 47);
+          var match$1 = __ocaml_lex_multi_line_comment_rec(/* [] */0, lexbuf, 47);
           if (!match$1) {
             return /* EOF */25;
           }
           ___ocaml_lex_state = 0;
           continue ;
       case 13 :
-          var match$2 = __ocaml_lex_string_rec(/* [] */0, lexbuf$1, 55);
+          var match$2 = __ocaml_lex_string_rec(/* [] */0, lexbuf, 55);
           if (match$2) {
             return /* STRING */Block.__(2, [match$2[0]]);
           } else {
             return /* EOF */25;
           }
       case 14 :
-          return /* INT */Block.__(3, [Caml_format.caml_int_of_string(Lexing.lexeme(lexbuf$1))]);
+          return /* INT */Block.__(3, [Caml_format.caml_int_of_string(Lexing.lexeme(lexbuf))]);
       case 15 :
-          return /* FLOAT */Block.__(4, [Caml_format.caml_float_of_string(Lexing.lexeme(lexbuf$1))]);
+          return /* FLOAT */Block.__(4, [Caml_format.caml_float_of_string(Lexing.lexeme(lexbuf))]);
       case 16 :
           return /* FLOAT */Block.__(4, [Number.NaN]);
       case 17 :
-          update_loc(lexbuf$1);
+          update_loc(lexbuf);
           ___ocaml_lex_state = 0;
           continue ;
       case 18 :
           ___ocaml_lex_state = 0;
           continue ;
       case 19 :
-          var loc = from_lexbuf(lexbuf$1);
-          var ident = Lexing.lexeme(lexbuf$1);
+          var loc = from_lexbuf(lexbuf);
+          var ident = Lexing.lexeme(lexbuf);
           switch (ident) {
             case "enum" :
                 return /* ENUM */4;
@@ -1660,13 +1659,13 @@ function lexer(lexbuf) {
                           ])
                       ]),
                     "Unknown character found %s"
-                  ]), Lexing.lexeme(lexbuf$1));
+                  ]), Lexing.lexeme(lexbuf));
           throw [
                 Caml_builtin_exceptions.failure,
                 s
               ];
       default:
-        Curry._1(lexbuf$1.refill_buff, lexbuf$1);
+        Curry._1(lexbuf.refill_buff, lexbuf);
         ___ocaml_lex_state = __ocaml_lex_state$1;
         continue ;
     }
@@ -1907,14 +1906,13 @@ function print(scope) {
         _param = param[1];
         _acc = Pervasives.$at(sub, acc);
         continue ;
-      } else {
-        _param = param[1];
-        _acc = /* :: */[
-          indentation_prefix(i) + match[0],
-          acc
-        ];
-        continue ;
       }
+      _param = param[1];
+      _acc = /* :: */[
+        indentation_prefix(i) + match[0],
+        acc
+      ];
+      continue ;
     };
   };
   return $$String.concat("\n", loop(/* [] */0, 0, scope.items));
@@ -1973,13 +1971,13 @@ function runtime_function(param) {
             if (match$2 === 5) {
               return "Pbrt.Encoder.bytes";
             }
-            if (match$2 !== 0) {
-              throw [
-                    Caml_builtin_exceptions.failure,
-                    "Invalid encoding/OCaml type combination"
-                  ];
+            if (match$2 === 0) {
+              return "Pbrt.Encoder.string";
             }
-            return "Pbrt.Encoder.string";
+            throw [
+                  Caml_builtin_exceptions.failure,
+                  "Invalid encoding/OCaml type combination"
+                ];
         
       }
     } else if (match$1[0]) {
@@ -2065,13 +2063,13 @@ function runtime_function(param) {
             if (match$4 === 5) {
               return "Pbrt.Decoder.bytes";
             }
-            if (match$4 !== 0) {
-              throw [
-                    Caml_builtin_exceptions.failure,
-                    "Invalid encoding/OCaml type combination"
-                  ];
+            if (match$4 === 0) {
+              return "Pbrt.Decoder.string";
             }
-            return "Pbrt.Decoder.string";
+            throw [
+                  Caml_builtin_exceptions.failure,
+                  "Invalid encoding/OCaml type combination"
+                ];
         
       }
     } else if (match$3[0]) {
@@ -3439,42 +3437,37 @@ function bal(l, x, d, r) {
   var hl = l ? l[/* h */4] : 0;
   var hr = r ? r[/* h */4] : 0;
   if (hl > (hr + 2 | 0)) {
-    if (!l) {
+    if (l) {
+      var lr = l[/* r */3];
+      var ld = l[/* d */2];
+      var lv = l[/* v */1];
+      var ll = l[/* l */0];
+      if (height(ll) >= height(lr)) {
+        return create(ll, lv, ld, create(lr, x, d, r));
+      }
+      if (lr) {
+        return create(create(ll, lv, ld, lr[/* l */0]), lr[/* v */1], lr[/* d */2], create(lr[/* r */3], x, d, r));
+      }
       throw [
             Caml_builtin_exceptions.invalid_argument,
             "Map.bal"
           ];
-    }
-    var lr = l[/* r */3];
-    var ld = l[/* d */2];
-    var lv = l[/* v */1];
-    var ll = l[/* l */0];
-    if (height(ll) >= height(lr)) {
-      return create(ll, lv, ld, create(lr, x, d, r));
-    }
-    if (lr) {
-      return create(create(ll, lv, ld, lr[/* l */0]), lr[/* v */1], lr[/* d */2], create(lr[/* r */3], x, d, r));
     }
     throw [
           Caml_builtin_exceptions.invalid_argument,
           "Map.bal"
         ];
-  } else {
-    if (hr <= (hl + 2 | 0)) {
-      return /* Node */[
-              /* l */l,
-              /* v */x,
-              /* d */d,
-              /* r */r,
-              /* h */hl >= hr ? hl + 1 | 0 : hr + 1 | 0
-            ];
-    }
-    if (!r) {
-      throw [
-            Caml_builtin_exceptions.invalid_argument,
-            "Map.bal"
+  }
+  if (hr <= (hl + 2 | 0)) {
+    return /* Node */[
+            /* l */l,
+            /* v */x,
+            /* d */d,
+            /* r */r,
+            /* h */hl >= hr ? hl + 1 | 0 : hr + 1 | 0
           ];
-    }
+  }
+  if (r) {
     var rr = r[/* r */3];
     var rd = r[/* d */2];
     var rv = r[/* v */1];
@@ -3490,6 +3483,10 @@ function bal(l, x, d, r) {
           "Map.bal"
         ];
   }
+  throw [
+        Caml_builtin_exceptions.invalid_argument,
+        "Map.bal"
+      ];
 }
 
 function add(x, data, m) {
@@ -3527,28 +3524,27 @@ function add(x, data, m) {
     } else {
       return bal(ll, v, d, r);
     }
+  }
+  var rr = add(x, data, r);
+  if (r === rr) {
+    return m;
   } else {
-    var rr = add(x, data, r);
-    if (r === rr) {
-      return m;
-    } else {
-      return bal(l, v, d, rr);
-    }
+    return bal(l, v, d, rr);
   }
 }
 
 function find(x, _param) {
   while(true) {
     var param = _param;
-    if (!param) {
-      throw Caml_builtin_exceptions.not_found;
+    if (param) {
+      var c = Caml_obj.caml_compare(x, param[/* v */1]);
+      if (c === 0) {
+        return param[/* d */2];
+      }
+      _param = c < 0 ? param[/* l */0] : param[/* r */3];
+      continue ;
     }
-    var c = Caml_obj.caml_compare(x, param[/* v */1]);
-    if (c === 0) {
-      return param[/* d */2];
-    }
-    _param = c < 0 ? param[/* l */0] : param[/* r */3];
-    continue ;
+    throw Caml_builtin_exceptions.not_found;
   };
 }
 
@@ -3583,15 +3579,15 @@ function fold(f, _m, _accu) {
 
 function min_value(param) {
   var match = param[0];
-  if (match === undefined) {
+  if (match !== undefined) {
+    var match$1 = param[1];
+    if (match$1 !== undefined) {
+      return Caml_option.some(Caml_obj.caml_min(Caml_option.valFromOption(match), Caml_option.valFromOption(match$1)));
+    }
     throw [
           Caml_builtin_exceptions.failure,
           "min_value error"
         ];
-  }
-  var match$1 = param[1];
-  if (match$1 !== undefined) {
-    return Caml_option.some(Caml_obj.caml_min(Caml_option.valFromOption(match), Caml_option.valFromOption(match$1)));
   }
   throw [
         Caml_builtin_exceptions.failure,
@@ -3601,15 +3597,15 @@ function min_value(param) {
 
 function eq_value(param) {
   var match = param[0];
-  if (match === undefined) {
+  if (match !== undefined) {
+    var match$1 = param[1];
+    if (match$1 !== undefined) {
+      return Caml_obj.caml_equal(Caml_option.valFromOption(match), Caml_option.valFromOption(match$1));
+    }
     throw [
           Caml_builtin_exceptions.failure,
           "eq_value error"
         ];
-  }
-  var match$1 = param[1];
-  if (match$1 !== undefined) {
-    return Caml_obj.caml_equal(Caml_option.valFromOption(match), Caml_option.valFromOption(match$1));
   }
   throw [
         Caml_builtin_exceptions.failure,
@@ -3720,18 +3716,17 @@ function strong_connect(g, sccs, stack, index, v) {
                     stack,
                     index
                   ];
-          } else {
-            var match$1 = strong_connect(g, sccs, stack, index + 1 | 0, w);
-            v.lowlink = min_value(/* tuple */[
-                  v.lowlink,
-                  w.lowlink
-                ]);
-            return /* tuple */[
-                    match$1[0],
-                    match$1[1],
-                    match$1[2]
-                  ];
           }
+          var match$1 = strong_connect(g, sccs, stack, index + 1 | 0, w);
+          v.lowlink = min_value(/* tuple */[
+                v.lowlink,
+                w.lowlink
+              ]);
+          return /* tuple */[
+                  match$1[0],
+                  match$1[1],
+                  match$1[2]
+                ];
         }), /* tuple */[
         sccs,
         stack$1,
@@ -4172,15 +4167,15 @@ function not_found(f) {
 function list_assoc2(x, _param) {
   while(true) {
     var param = _param;
-    if (!param) {
-      throw Caml_builtin_exceptions.not_found;
+    if (param) {
+      var match = param[0];
+      if (Caml_obj.caml_equal(match[1], x)) {
+        return match[0];
+      }
+      _param = param[1];
+      continue ;
     }
-    var match = param[0];
-    if (Caml_obj.caml_equal(match[1], x)) {
-      return match[0];
-    }
-    _param = param[1];
-    continue ;
+    throw Caml_builtin_exceptions.not_found;
   };
 }
 
@@ -4302,7 +4297,6 @@ function compile_message_p1(file_name, file_options, message_scope, param) {
             ];
     } else {
       var previous_field_name = "";
-      var param;
       throw [
             Compilation_error,
             /* Duplicated_field_number */Block.__(1, [{
@@ -4495,7 +4489,6 @@ function compile_message_p2(types, param, message) {
     if (id !== undefined) {
       return /* Field_type_type */[id];
     } else {
-      var param;
       throw [
             Compilation_error,
             /* Unresolved_type */Block.__(0, [{
@@ -4911,7 +4904,8 @@ function gen_encode_field_type(with_key, sc, var_name, encoding_number, pk, is_p
   if (typeof field_type === "number") {
     encode_key(sc);
     return line$1(sc, "Pbrt.Encoder.empty_nested encoder;");
-  } else if (field_type.tag) {
+  }
+  if (field_type.tag) {
     var ud = field_type[0];
     encode_key(sc);
     var f_name = function_name_of_user_defined("encode", ud);
@@ -4953,26 +4947,25 @@ function gen_encode_field_type(with_key, sc, var_name, encoding_number, pk, is_p
                           "%s %s encoder;"
                         ]), f_name, var_name));
     }
-  } else {
-    encode_key(sc);
-    var rt = encode_basic_type(field_type[0], pk);
-    return line$1(sc, Curry._2(Printf.sprintf(/* Format */[
-                        /* String */Block.__(2, [
-                            /* No_padding */0,
-                            /* Char_literal */Block.__(12, [
-                                /* " " */32,
-                                /* String */Block.__(2, [
-                                    /* No_padding */0,
-                                    /* String_literal */Block.__(11, [
-                                        " encoder;",
-                                        /* End_of_format */0
-                                      ])
-                                  ])
-                              ])
-                          ]),
-                        "%s %s encoder;"
-                      ]), rt, var_name));
   }
+  encode_key(sc);
+  var rt = encode_basic_type(field_type[0], pk);
+  return line$1(sc, Curry._2(Printf.sprintf(/* Format */[
+                      /* String */Block.__(2, [
+                          /* No_padding */0,
+                          /* Char_literal */Block.__(12, [
+                              /* " " */32,
+                              /* String */Block.__(2, [
+                                  /* No_padding */0,
+                                  /* String_literal */Block.__(11, [
+                                      " encoder;",
+                                      /* End_of_format */0
+                                    ])
+                                ])
+                            ])
+                        ]),
+                      "%s %s encoder;"
+                    ]), rt, var_name));
 }
 
 function gen_encode_record(and_, param, sc) {
@@ -5264,26 +5257,25 @@ function gen_encode_record(and_, param, sc) {
                                                               return gen_encode_field_type(Caml_option.some(undefined), sc, "x", vc_encoding_number, vc_payload_kind, false, field_type);
                                                             }));
                                                       return line$1(sc, ")");
-                                                    } else {
-                                                      line$1(sc, Curry._1(Printf.sprintf(/* Format */[
-                                                                    /* String_literal */Block.__(11, [
-                                                                        "| ",
-                                                                        /* String */Block.__(2, [
-                                                                            /* No_padding */0,
-                                                                            /* String_literal */Block.__(11, [
-                                                                                " -> (",
-                                                                                /* End_of_format */0
-                                                                              ])
-                                                                          ])
-                                                                      ]),
-                                                                    "| %s -> ("
-                                                                  ]), vc_constructor));
-                                                      scope(sc, (function (sc) {
-                                                              gen_encode_field_key(sc, vc_encoding_number, vc_payload_kind, false);
-                                                              return line$1(sc, "Pbrt.Encoder.empty_nested encoder");
-                                                            }));
-                                                      return line$1(sc, ")");
                                                     }
+                                                    line$1(sc, Curry._1(Printf.sprintf(/* Format */[
+                                                                  /* String_literal */Block.__(11, [
+                                                                      "| ",
+                                                                      /* String */Block.__(2, [
+                                                                          /* No_padding */0,
+                                                                          /* String_literal */Block.__(11, [
+                                                                              " -> (",
+                                                                              /* End_of_format */0
+                                                                            ])
+                                                                        ])
+                                                                    ]),
+                                                                  "| %s -> ("
+                                                                ]), vc_constructor));
+                                                    scope(sc, (function (sc) {
+                                                            gen_encode_field_key(sc, vc_encoding_number, vc_payload_kind, false);
+                                                            return line$1(sc, "Pbrt.Encoder.empty_nested encoder");
+                                                          }));
+                                                    return line$1(sc, ")");
                                                   }), v_constructors);
                                     }));
                               return line$1(sc, ");");
@@ -5345,26 +5337,25 @@ function gen_encode_variant(and_, variant, sc) {
                                         return gen_encode_field_type(Caml_option.some(undefined), sc, "x", vc_encoding_number, vc_payload_kind, false, field_type);
                                       }));
                                 return line$1(sc, ")");
-                              } else {
-                                line$1(sc, Curry._1(Printf.sprintf(/* Format */[
-                                              /* String_literal */Block.__(11, [
-                                                  "| ",
-                                                  /* String */Block.__(2, [
-                                                      /* No_padding */0,
-                                                      /* String_literal */Block.__(11, [
-                                                          " -> (",
-                                                          /* End_of_format */0
-                                                        ])
-                                                    ])
-                                                ]),
-                                              "| %s -> ("
-                                            ]), vc_constructor));
-                                scope(sc, (function (sc) {
-                                        gen_encode_field_key(sc, vc_encoding_number, vc_payload_kind, false);
-                                        return line$1(sc, "Pbrt.Encoder.empty_nested encoder");
-                                      }));
-                                return line$1(sc, ")");
                               }
+                              line$1(sc, Curry._1(Printf.sprintf(/* Format */[
+                                            /* String_literal */Block.__(11, [
+                                                "| ",
+                                                /* String */Block.__(2, [
+                                                    /* No_padding */0,
+                                                    /* String_literal */Block.__(11, [
+                                                        " -> (",
+                                                        /* End_of_format */0
+                                                      ])
+                                                  ])
+                                              ]),
+                                            "| %s -> ("
+                                          ]), vc_constructor));
+                              scope(sc, (function (sc) {
+                                      gen_encode_field_key(sc, vc_encoding_number, vc_payload_kind, false);
+                                      return line$1(sc, "Pbrt.Encoder.empty_nested encoder");
+                                    }));
+                              return line$1(sc, ")");
                             }), v_constructors);
               }));
 }
@@ -5722,7 +5713,27 @@ function record_field_default_info(record_field) {
         break;
     case /* Rft_variant_field */4 :
         var v_constructors = rf_field_type[0].v_constructors;
-        if (!v_constructors) {
+        if (v_constructors) {
+          var match$3 = v_constructors[0];
+          var vc_field_type = match$3.vc_field_type;
+          var vc_constructor = match$3.vc_constructor;
+          default_value = vc_field_type ? Curry._2(Printf.sprintf(/* Format */[
+                      /* String */Block.__(2, [
+                          /* No_padding */0,
+                          /* String_literal */Block.__(11, [
+                              " (",
+                              /* String */Block.__(2, [
+                                  /* No_padding */0,
+                                  /* Char_literal */Block.__(12, [
+                                      /* ")" */41,
+                                      /* End_of_format */0
+                                    ])
+                                ])
+                            ])
+                        ]),
+                      "%s (%s)"
+                    ]), vc_constructor, dfvft(vc_field_type[0], undefined)) : vc_constructor;
+        } else {
           throw [
                 Caml_builtin_exceptions.assert_failure,
                 /* tuple */[
@@ -5732,25 +5743,6 @@ function record_field_default_info(record_field) {
                 ]
               ];
         }
-        var match$3 = v_constructors[0];
-        var vc_field_type = match$3.vc_field_type;
-        var vc_constructor = match$3.vc_constructor;
-        default_value = vc_field_type ? Curry._2(Printf.sprintf(/* Format */[
-                    /* String */Block.__(2, [
-                        /* No_padding */0,
-                        /* String_literal */Block.__(11, [
-                            " (",
-                            /* String */Block.__(2, [
-                                /* No_padding */0,
-                                /* Char_literal */Block.__(12, [
-                                    /* ")" */41,
-                                    /* End_of_format */0
-                                  ])
-                              ])
-                          ])
-                      ]),
-                    "%s (%s)"
-                  ]), vc_constructor, dfvft(vc_field_type[0], undefined)) : vc_constructor;
         break;
     
   }
@@ -5895,18 +5887,40 @@ function gen_default_record(mutable_, and_, param, sc) {
 function gen_default_variant(and_, param, sc) {
   var v_constructors = param.v_constructors;
   var v_name = param.v_name;
-  if (!v_constructors) {
-    throw [
-          Caml_builtin_exceptions.failure,
-          "programmatic TODO error"
-        ];
-  }
-  var match = v_constructors[0];
-  var vc_field_type = match.vc_field_type;
-  var vc_constructor = match.vc_constructor;
-  var decl = let_decl_of_and(and_);
-  if (!vc_field_type) {
-    return line$1(sc, Curry._4(Printf.sprintf(/* Format */[
+  if (v_constructors) {
+    var match = v_constructors[0];
+    var vc_field_type = match.vc_field_type;
+    var vc_constructor = match.vc_constructor;
+    var decl = let_decl_of_and(and_);
+    if (!vc_field_type) {
+      return line$1(sc, Curry._4(Printf.sprintf(/* Format */[
+                          /* String */Block.__(2, [
+                              /* No_padding */0,
+                              /* String_literal */Block.__(11, [
+                                  " default_",
+                                  /* String */Block.__(2, [
+                                      /* No_padding */0,
+                                      /* String_literal */Block.__(11, [
+                                          " (): ",
+                                          /* String */Block.__(2, [
+                                              /* No_padding */0,
+                                              /* String_literal */Block.__(11, [
+                                                  " = ",
+                                                  /* String */Block.__(2, [
+                                                      /* No_padding */0,
+                                                      /* End_of_format */0
+                                                    ])
+                                                ])
+                                            ])
+                                        ])
+                                    ])
+                                ])
+                            ]),
+                          "%s default_%s (): %s = %s"
+                        ]), decl, v_name, v_name, vc_constructor));
+    }
+    var default_value = default_value_of_field_type(v_name, vc_field_type[0], undefined);
+    return line$1(sc, Curry._5(Printf.sprintf(/* Format */[
                         /* String */Block.__(2, [
                             /* No_padding */0,
                             /* String_literal */Block.__(11, [
@@ -5914,14 +5928,23 @@ function gen_default_variant(and_, param, sc) {
                                 /* String */Block.__(2, [
                                     /* No_padding */0,
                                     /* String_literal */Block.__(11, [
-                                        " (): ",
+                                        " () : ",
                                         /* String */Block.__(2, [
                                             /* No_padding */0,
                                             /* String_literal */Block.__(11, [
                                                 " = ",
                                                 /* String */Block.__(2, [
                                                     /* No_padding */0,
-                                                    /* End_of_format */0
+                                                    /* String_literal */Block.__(11, [
+                                                        " (",
+                                                        /* String */Block.__(2, [
+                                                            /* No_padding */0,
+                                                            /* Char_literal */Block.__(12, [
+                                                                /* ")" */41,
+                                                                /* End_of_format */0
+                                                              ])
+                                                          ])
+                                                      ])
                                                   ])
                                               ])
                                           ])
@@ -5929,57 +5952,27 @@ function gen_default_variant(and_, param, sc) {
                                   ])
                               ])
                           ]),
-                        "%s default_%s (): %s = %s"
-                      ]), decl, v_name, v_name, vc_constructor));
+                        "%s default_%s () : %s = %s (%s)"
+                      ]), decl, v_name, v_name, vc_constructor, default_value));
   }
-  var default_value = default_value_of_field_type(v_name, vc_field_type[0], undefined);
-  return line$1(sc, Curry._5(Printf.sprintf(/* Format */[
-                      /* String */Block.__(2, [
-                          /* No_padding */0,
-                          /* String_literal */Block.__(11, [
-                              " default_",
-                              /* String */Block.__(2, [
-                                  /* No_padding */0,
-                                  /* String_literal */Block.__(11, [
-                                      " () : ",
-                                      /* String */Block.__(2, [
-                                          /* No_padding */0,
-                                          /* String_literal */Block.__(11, [
-                                              " = ",
-                                              /* String */Block.__(2, [
-                                                  /* No_padding */0,
-                                                  /* String_literal */Block.__(11, [
-                                                      " (",
-                                                      /* String */Block.__(2, [
-                                                          /* No_padding */0,
-                                                          /* Char_literal */Block.__(12, [
-                                                              /* ")" */41,
-                                                              /* End_of_format */0
-                                                            ])
-                                                        ])
-                                                    ])
-                                                ])
-                                            ])
-                                        ])
-                                    ])
-                                ])
-                            ])
-                        ]),
-                      "%s default_%s () : %s = %s (%s)"
-                    ]), decl, v_name, v_name, vc_constructor, default_value));
+  throw [
+        Caml_builtin_exceptions.failure,
+        "programmatic TODO error"
+      ];
 }
 
 function gen_default_const_variant(and_, param, sc) {
   var cv_constructors = param.cv_constructors;
   var cv_name = param.cv_name;
   var first_constructor_name;
-  if (!cv_constructors) {
+  if (cv_constructors) {
+    first_constructor_name = cv_constructors[0][0];
+  } else {
     throw [
           Caml_builtin_exceptions.failure,
           "programmatic TODO error"
         ];
   }
-  first_constructor_name = cv_constructors[0][0];
   return line$1(sc, Curry._4(Printf.sprintf(/* Format */[
                       /* String */Block.__(2, [
                           /* No_padding */0,
@@ -6682,13 +6675,14 @@ function compile(proto_definition) {
                                             var match$2 = ocaml_container(field_options$1);
                                             var repeated_type;
                                             if (match$2 !== undefined) {
-                                              if (match$2 !== "repeated_field") {
+                                              if (match$2 === "repeated_field") {
+                                                repeated_type = /* Rt_repeated_field */1;
+                                              } else {
                                                 throw [
                                                       Caml_builtin_exceptions.failure,
                                                       "Invalid ocaml_container attribute value"
                                                     ];
                                               }
-                                              repeated_type = /* Rt_repeated_field */1;
                                             } else {
                                               repeated_type = /* Rt_list */0;
                                             }
@@ -6796,13 +6790,14 @@ function compile(proto_definition) {
                                         var match$3 = ocaml_container(map_options);
                                         var associative_type;
                                         if (match$3 !== undefined) {
-                                          if (match$3 !== "hashtbl") {
+                                          if (match$3 === "hashtbl") {
+                                            associative_type = /* At_hashtable */1;
+                                          } else {
                                             throw [
                                                   Caml_builtin_exceptions.failure,
                                                   "Invalid ocaml_container attribute value for map"
                                                 ];
                                           }
-                                          associative_type = /* At_hashtable */1;
                                         } else {
                                           associative_type = /* At_list */0;
                                         }

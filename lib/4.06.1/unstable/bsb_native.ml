@@ -630,6 +630,15 @@ val fold_right2 :
   'c -> 
   ('a -> 'b -> 'c -> 'c) ->  'c
 
+val fold_right3 : 
+  'a list -> 
+  'b list -> 
+  'c list -> 
+  'd -> 
+  ('a -> 'b -> 'c -> 'd -> 'd) -> 
+  'd
+  
+  
 val map2 : 
   'a list ->
   'b list ->
@@ -1159,6 +1168,20 @@ let rec fold_right2 l r acc f =
   | a0::a1::a2::a3::a4::arest, b0::b1::b2::b3::b4::brest -> 
     f a0 b0 (f a1 b1 (f a2 b2 (f a3 b3 (f a4 b4 (fold_right2 arest brest acc f )))))  
   | _, _ -> invalid_arg "Ext_list.fold_right2"
+
+let rec fold_right3 l r last acc f = 
+  match l,r,last  with  
+  | [],[],[] -> acc 
+  | [a0],[b0],[c0] -> f a0 b0 c0 acc 
+  | [a0;a1],[b0;b1],[c0; c1] -> f a0 b0 c0 (f a1 b1 c1 acc)
+  | [a0;a1;a2],[b0;b1;b2],[c0;c1;c2] -> f a0 b0 c0 (f a1 b1 c1 (f a2 b2 c2 acc))
+  | [a0;a1;a2;a3],[b0;b1;b2;b3],[c0;c1;c2;c3] ->
+    f a0 b0 c0 (f a1 b1 c1 (f a2 b2 c2 (f a3 b3 c3 acc))) 
+  | [a0;a1;a2;a3;a4], [b0;b1;b2;b3;b4], [c0;c1;c2;c3;c4] -> 
+    f a0 b0 c0 (f a1 b1 c1 (f a2 b2 c2 (f a3 b3 c3 (f a4 b4 c4 acc))))
+  | a0::a1::a2::a3::a4::arest, b0::b1::b2::b3::b4::brest, c0::c1::c2::c3::c4::crest -> 
+    f a0 b0 c0 (f a1 b1 c1 (f a2 b2 c2 (f a3 b3 c3 (f a4 b4 c4 (fold_right3 arest brest crest acc f )))))  
+  | _, _, _ -> invalid_arg "Ext_list.fold_right2"
 
 let rec map2  l r f = 
   match l,r  with  

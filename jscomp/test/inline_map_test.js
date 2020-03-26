@@ -30,42 +30,37 @@ function bal(l, x, d, r) {
   var hl = l ? l[4] : 0;
   var hr = r ? r[4] : 0;
   if (hl > (hr + 2 | 0)) {
-    if (!l) {
+    if (l) {
+      var lr = l[3];
+      var ld = l[2];
+      var lv = l[1];
+      var ll = l[0];
+      if (height(ll) >= height(lr)) {
+        return create(ll, lv, ld, create(lr, x, d, r));
+      }
+      if (lr) {
+        return create(create(ll, lv, ld, lr[0]), lr[1], lr[2], create(lr[3], x, d, r));
+      }
       throw [
             Caml_builtin_exceptions.invalid_argument,
             "Map.bal"
           ];
-    }
-    var lr = l[3];
-    var ld = l[2];
-    var lv = l[1];
-    var ll = l[0];
-    if (height(ll) >= height(lr)) {
-      return create(ll, lv, ld, create(lr, x, d, r));
-    }
-    if (lr) {
-      return create(create(ll, lv, ld, lr[0]), lr[1], lr[2], create(lr[3], x, d, r));
     }
     throw [
           Caml_builtin_exceptions.invalid_argument,
           "Map.bal"
         ];
-  } else {
-    if (hr <= (hl + 2 | 0)) {
-      return /* Node */[
-              l,
-              x,
-              d,
-              r,
-              hl >= hr ? hl + 1 | 0 : hr + 1 | 0
-            ];
-    }
-    if (!r) {
-      throw [
-            Caml_builtin_exceptions.invalid_argument,
-            "Map.bal"
+  }
+  if (hr <= (hl + 2 | 0)) {
+    return /* Node */[
+            l,
+            x,
+            d,
+            r,
+            hl >= hr ? hl + 1 | 0 : hr + 1 | 0
           ];
-    }
+  }
+  if (r) {
     var rr = r[3];
     var rd = r[2];
     var rv = r[1];
@@ -81,6 +76,10 @@ function bal(l, x, d, r) {
           "Map.bal"
         ];
   }
+  throw [
+        Caml_builtin_exceptions.invalid_argument,
+        "Map.bal"
+      ];
 }
 
 function add(x, data, param) {
@@ -116,15 +115,15 @@ function add(x, data, param) {
 function find(x, _param) {
   while(true) {
     var param = _param;
-    if (!param) {
-      throw Caml_builtin_exceptions.not_found;
+    if (param) {
+      var c = Caml_primitive.caml_int_compare(x, param[1]);
+      if (c === 0) {
+        return param[2];
+      }
+      _param = c < 0 ? param[0] : param[3];
+      continue ;
     }
-    var c = Caml_primitive.caml_int_compare(x, param[1]);
-    if (c === 0) {
-      return param[2];
-    }
-    _param = c < 0 ? param[0] : param[3];
-    continue ;
+    throw Caml_builtin_exceptions.not_found;
   };
 }
 

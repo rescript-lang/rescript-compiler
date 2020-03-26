@@ -81,32 +81,31 @@ function Make(funarg) {
           Curry._3(H.add, l_labels, top$1, Caml_primitive.caml_int_max(Curry._2(H.find, l_labels, top$1), x));
           _successors = successors[1];
           continue ;
-        } else {
-          if (Curry._2(H.find, l_labels, top$1) === Curry._2(H.find, n_labels, top$1)) {
-            cut_set.contents = /* :: */[
-              top$1,
-              cut_set.contents
-            ];
-            Curry._3(H.add, l_labels, top$1, 0);
-          }
-          if (Curry._2(H.find, l_labels, top$1) > Curry._2(H.find, n_labels, top$1)) {
-            throw [
-                  Caml_builtin_exceptions.invalid_argument,
-                  "Graph.Mincut: graph not reducible"
-                ];
-          }
-          if (!rest_of_stack$1) {
-            return cut_set.contents;
-          }
-          var match = rest_of_stack$1[0];
-          var new_top = match[0];
-          Curry._3(H.add, on_the_stack, top$1, false);
-          Curry._3(H.add, l_labels, new_top, Caml_primitive.caml_int_max(Curry._2(H.find, l_labels, top$1), Curry._2(H.find, l_labels, new_top)));
-          _rest_of_stack = rest_of_stack$1[1];
-          _top = new_top;
-          _successors = match[1];
-          continue ;
         }
+        if (Curry._2(H.find, l_labels, top$1) === Curry._2(H.find, n_labels, top$1)) {
+          cut_set.contents = /* :: */[
+            top$1,
+            cut_set.contents
+          ];
+          Curry._3(H.add, l_labels, top$1, 0);
+        }
+        if (Curry._2(H.find, l_labels, top$1) > Curry._2(H.find, n_labels, top$1)) {
+          throw [
+                Caml_builtin_exceptions.invalid_argument,
+                "Graph.Mincut: graph not reducible"
+              ];
+        }
+        if (!rest_of_stack$1) {
+          return cut_set.contents;
+        }
+        var match = rest_of_stack$1[0];
+        var new_top = match[0];
+        Curry._3(H.add, on_the_stack, top$1, false);
+        Curry._3(H.add, l_labels, new_top, Caml_primitive.caml_int_max(Curry._2(H.find, l_labels, top$1), Curry._2(H.find, l_labels, new_top)));
+        _rest_of_stack = rest_of_stack$1[1];
+        _top = new_top;
+        _successors = match[1];
+        continue ;
       };
     };
     return step2(first_node, /* [] */0);

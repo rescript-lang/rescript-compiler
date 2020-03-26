@@ -60,12 +60,13 @@ try {
 }
 catch (raw_exn){
   var exn = Caml_js_exceptions.internalToOCamlException(raw_exn);
-  if (exn[0] !== Js_exn.$$Error) {
+  if (exn[0] === Js_exn.$$Error) {
+    add_test("File \"js_exception_catch_test.ml\", line 21, characters 10-17", (function (param) {
+            return /* Ok */Block.__(4, [true]);
+          }));
+  } else {
     throw exn;
   }
-  add_test("File \"js_exception_catch_test.ml\", line 21, characters 10-17", (function (param) {
-          return /* Ok */Block.__(4, [true]);
-        }));
 }
 
 if (exit === 1) {

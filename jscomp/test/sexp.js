@@ -185,14 +185,13 @@ function map_opt(f, l) {
 
 function list_any(f, e) {
   if (e[0] >= 848054398) {
-    var f$1 = f;
     var _l = e[1];
     while(true) {
       var l = _l;
       if (!l) {
         return ;
       }
-      var res = Curry._1(f$1, l[0]);
+      var res = Curry._1(f, l[0]);
       if (res !== undefined) {
         return res;
       }
@@ -205,7 +204,6 @@ function list_any(f, e) {
 
 function list_all(f, e) {
   if (e[0] >= 848054398) {
-    var f$1 = f;
     var _acc = /* [] */0;
     var _l = e[1];
     while(true) {
@@ -215,17 +213,17 @@ function list_all(f, e) {
         return List.rev(acc);
       }
       var tl = l[1];
-      var match = Curry._1(f$1, l[0]);
-      _l = tl;
+      var match = Curry._1(f, l[0]);
       if (match !== undefined) {
+        _l = tl;
         _acc = /* :: */[
           Caml_option.valFromOption(match),
           acc
         ];
         continue ;
-      } else {
-        continue ;
       }
+      _l = tl;
+      continue ;
     };
   } else {
     return /* [] */0;
@@ -357,7 +355,6 @@ function to_list_with(f, e) {
 
 function get_field(name, e) {
   if (e[0] >= 848054398) {
-    var name$1 = name;
     var _l = e[1];
     while(true) {
       var l = _l;
@@ -368,42 +365,39 @@ function get_field(name, e) {
       if (typeof match === "number") {
         _l = l[1];
         continue ;
-      } else if (match[0] !== 848054398) {
+      }
+      if (match[0] !== 848054398) {
         _l = l[1];
         continue ;
-      } else {
-        var match$1 = match[1];
-        if (match$1) {
-          var match$2 = match$1[0];
-          if (typeof match$2 === "number") {
-            _l = l[1];
-            continue ;
-          } else if (match$2[0] !== 726615281) {
-            _l = l[1];
-            continue ;
-          } else {
-            var match$3 = match$1[1];
-            if (match$3) {
-              if (match$3[1]) {
-                _l = l[1];
-                continue ;
-              } else {
-                if (Caml_obj.caml_equal(name$1, match$2[1])) {
-                  return match$3[0];
-                }
-                _l = l[1];
-                continue ;
-              }
-            } else {
-              _l = l[1];
-              continue ;
-            }
-          }
-        } else {
+      }
+      var match$1 = match[1];
+      if (match$1) {
+        var match$2 = match$1[0];
+        if (typeof match$2 === "number") {
           _l = l[1];
           continue ;
         }
+        if (match$2[0] !== 726615281) {
+          _l = l[1];
+          continue ;
+        }
+        var match$3 = match$1[1];
+        if (match$3) {
+          if (match$3[1]) {
+            _l = l[1];
+            continue ;
+          }
+          if (Caml_obj.caml_equal(name, match$2[1])) {
+            return match$3[0];
+          }
+          _l = l[1];
+          continue ;
+        }
+        _l = l[1];
+        continue ;
       }
+      _l = l[1];
+      continue ;
     };
   }
   
@@ -423,31 +417,30 @@ function _get_field_list(name, _l) {
     if (typeof match === "number") {
       _l = l[1];
       continue ;
-    } else if (match[0] !== 848054398) {
+    }
+    if (match[0] !== 848054398) {
       _l = l[1];
       continue ;
-    } else {
-      var match$1 = match[1];
-      if (match$1) {
-        var match$2 = match$1[0];
-        if (typeof match$2 === "number") {
-          _l = l[1];
-          continue ;
-        } else if (match$2[0] !== 726615281) {
-          _l = l[1];
-          continue ;
-        } else {
-          if (Caml_obj.caml_equal(name, match$2[1])) {
-            return match$1[1];
-          }
-          _l = l[1];
-          continue ;
-        }
-      } else {
+    }
+    var match$1 = match[1];
+    if (match$1) {
+      var match$2 = match$1[0];
+      if (typeof match$2 === "number") {
         _l = l[1];
         continue ;
       }
+      if (match$2[0] !== 726615281) {
+        _l = l[1];
+        continue ;
+      }
+      if (Caml_obj.caml_equal(name, match$2[1])) {
+        return match$1[1];
+      }
+      _l = l[1];
+      continue ;
     }
+    _l = l[1];
+    continue ;
   };
 }
 

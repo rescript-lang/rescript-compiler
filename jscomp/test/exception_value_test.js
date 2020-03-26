@@ -57,10 +57,10 @@ function test_js_error2(param) {
   }
   catch (raw_e){
     var e = Caml_js_exceptions.internalToOCamlException(raw_e);
-    if (e[0] !== Js_exn.$$Error) {
+    if (e[0] === Js_exn.$$Error) {
+      console.log(e[1].stack);
       throw e;
     }
-    console.log(e[1].stack);
     throw e;
   }
 }

@@ -42,15 +42,13 @@ function split_by(keep_emptyOpt, is_delim, str) {
           acc
         ];
         continue ;
-      } else {
-        _pos = pos - 1 | 0;
-        _last_pos = pos;
-        continue ;
       }
-    } else {
       _pos = pos - 1 | 0;
+      _last_pos = pos;
       continue ;
     }
+    _pos = pos - 1 | 0;
+    continue ;
   };
 }
 
@@ -189,13 +187,12 @@ function escaped(s) {
         }
         _i = i + 1 | 0;
         continue ;
-      } else {
-        if (switcher > 57 || switcher < 1) {
-          return true;
-        }
-        _i = i + 1 | 0;
-        continue ;
       }
+      if (switcher > 57 || switcher < 1) {
+        return true;
+      }
+      _i = i + 1 | 0;
+      continue ;
     };
   };
   if (needs_escape(0)) {
@@ -352,15 +349,13 @@ function tail_from(s, x) {
 function digits_of_str(s, offset, x) {
   var _i = 0;
   var _acc = 0;
-  var s$1 = s;
-  var x$1 = x;
   while(true) {
     var acc = _acc;
     var i = _i;
-    if (i >= x$1) {
+    if (i >= x) {
       return acc;
     }
-    _acc = (Caml_int32.imul(10, acc) + Caml_string.get(s$1, offset + i | 0) | 0) - 48 | 0;
+    _acc = (Caml_int32.imul(10, acc) + Caml_string.get(s, offset + i | 0) | 0) - 48 | 0;
     _i = i + 1 | 0;
     continue ;
   };

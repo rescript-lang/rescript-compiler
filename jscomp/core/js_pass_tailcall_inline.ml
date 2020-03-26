@@ -55,13 +55,21 @@ let substitue_variables (map : Ident.t Map_ident.t) =
     since we have to guarantee that the one use
     case is substituted
     we already have this? in [defined_idents]
+
+    At this time, when tailcall happened, the parameter can be assigned
+      for example {[
+     function (_x,y){
+         _x = u
+       }
+   ]}
+      if it is substitued, the assignment will align the value which is incorrect
 *)
 
 let inline_call
-  no_tailcall 
-  params (args : J.expression list) processed_blocks =  
-  if no_tailcall then   
-    let map, block =   
+    (immutable_list : bool list)
+    params (args : J.expression list) processed_blocks =    
+  let map, block =   
+    if immutable_list = [] then     
       Ext_list.fold_right2 
         params args  (Map_ident.empty,  processed_blocks)
         (fun param arg (map,acc) ->  
@@ -69,23 +77,18 @@ let inline_call
            | Var (Id id) ->  
              Map_ident.add map param id, acc 
            | _ -> 
-             map, S.define_variable ~kind:Variable param arg :: acc) in 
-    if Map_ident.is_empty map then block 
-    else (substitue_variables map) # block block        
-  else    
-  (*
-      At this time, when tailcall happened, the parameter can be assigned
-      for example {[
-        function (_x,y){
-          _x = u
-        }
-      ]}
-      if it is substitued, the assignment will align the value which is incorrect
-  *)
-    Ext_list.fold_right2 
-      params args  processed_blocks
-      (fun param arg acc ->  
-         S.define_variable ~kind:Variable param arg :: acc) 
+             map, S.define_variable ~kind:Variable param arg :: acc) 
+    else      
+      Ext_list.fold_right3 
+        params args  immutable_list (Map_ident.empty,  processed_blocks)
+        (fun param arg mask (map,acc) ->  
+           match mask, arg.expression_desc with 
+           | true, Var (Id id) ->  
+             Map_ident.add map param id, acc 
+           | _ -> 
+             map, S.define_variable ~kind:Variable param arg :: acc) in
+  if Map_ident.is_empty map then block 
+  else (substitue_variables map) # block block  
 
 (** There is a side effect when traversing dead code, since 
     we assume that substitue a node would mark a node as dead node,

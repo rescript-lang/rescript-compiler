@@ -36,11 +36,12 @@ This function will return an invalid value ([undefined]) if [key] does not exist
 will not throw an error.
 *)
 external unsafeGet : 'a t -> key -> 'a = "" [@@bs.get_index]
+let (.!()) = unsafeGet
 
 (** [get dict key] returns the value associated with [key] in [dict] *)
 let get (type u) (dict : u t) (k : key) : u option =
   if [%raw {|k in dict|}] then
-    Some (unsafeGet dict k)
+    Some dict.!(k)
   else None
 
 (** [set dict key value] sets the value of [key] in [dict] to [value] *)
@@ -55,8 +56,7 @@ external empty : unit -> 'a t = "" [@@bs.obj]
 
 let unsafeDeleteKey : string t -> string -> unit [@bs] =
   [%raw {| function (dict,key){
-     delete dict[key];
-     return 0
+      delete dict[key];
      }
   |}]
 
@@ -69,7 +69,7 @@ let entries dict =
   let values = unsafeCreate l in
   for i = 0 to l - 1 do
     let key = Js_array2.unsafe_get keys i in
-    Js_array2.unsafe_set values i (key, unsafeGet dict key)
+    Js_array2.unsafe_set values i (key, dict.!(key))
   done;
   values
 
@@ -79,7 +79,7 @@ let values dict =
   let l = Js_array2.length keys in
   let values = unsafeCreate l in
   for i = 0 to l - 1 do
-    Js_array2.unsafe_set values i (unsafeGet dict (Js_array2.unsafe_get keys i))
+    Js_array2.unsafe_set values i  dict.!(Js_array2.unsafe_get keys i)
   done;
   values
 

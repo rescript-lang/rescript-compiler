@@ -26,40 +26,35 @@ function Make(Ord) {
     var hl = l ? l[3] : 0;
     var hr = r ? r[3] : 0;
     if (hl > (hr + 2 | 0)) {
-      if (!l) {
+      if (l) {
+        var lr = l[2];
+        var lv = l[1];
+        var ll = l[0];
+        if (height(ll) >= height(lr)) {
+          return create(ll, lv, create(lr, v, r));
+        }
+        if (lr) {
+          return create(create(ll, lv, lr[0]), lr[1], create(lr[2], v, r));
+        }
         throw [
               Caml_builtin_exceptions.invalid_argument,
               "Set.bal"
             ];
-      }
-      var lr = l[2];
-      var lv = l[1];
-      var ll = l[0];
-      if (height(ll) >= height(lr)) {
-        return create(ll, lv, create(lr, v, r));
-      }
-      if (lr) {
-        return create(create(ll, lv, lr[0]), lr[1], create(lr[2], v, r));
       }
       throw [
             Caml_builtin_exceptions.invalid_argument,
             "Set.bal"
           ];
-    } else {
-      if (hr <= (hl + 2 | 0)) {
-        return /* Node */[
-                l,
-                v,
-                r,
-                hl >= hr ? hl + 1 | 0 : hr + 1 | 0
-              ];
-      }
-      if (!r) {
-        throw [
-              Caml_builtin_exceptions.invalid_argument,
-              "Set.bal"
+    }
+    if (hr <= (hl + 2 | 0)) {
+      return /* Node */[
+              l,
+              v,
+              r,
+              hl >= hr ? hl + 1 | 0 : hr + 1 | 0
             ];
-      }
+    }
+    if (r) {
       var rr = r[2];
       var rv = r[1];
       var rl = r[0];
@@ -74,6 +69,10 @@ function Make(Ord) {
             "Set.bal"
           ];
     }
+    throw [
+          Caml_builtin_exceptions.invalid_argument,
+          "Set.bal"
+        ];
   };
   var add = function (x, t) {
     if (!t) {
@@ -138,44 +137,44 @@ function Make(Ord) {
   var min_elt = function (_param) {
     while(true) {
       var param = _param;
-      if (!param) {
-        throw Caml_builtin_exceptions.not_found;
+      if (param) {
+        var l = param[0];
+        if (!l) {
+          return param[1];
+        }
+        _param = l;
+        continue ;
       }
-      var l = param[0];
-      if (!l) {
-        return param[1];
-      }
-      _param = l;
-      continue ;
+      throw Caml_builtin_exceptions.not_found;
     };
   };
   var max_elt = function (_param) {
     while(true) {
       var param = _param;
-      if (!param) {
-        throw Caml_builtin_exceptions.not_found;
+      if (param) {
+        var r = param[2];
+        if (!r) {
+          return param[1];
+        }
+        _param = r;
+        continue ;
       }
-      var r = param[2];
-      if (!r) {
-        return param[1];
-      }
-      _param = r;
-      continue ;
+      throw Caml_builtin_exceptions.not_found;
     };
   };
   var remove_min_elt = function (param) {
-    if (!param) {
-      throw [
-            Caml_builtin_exceptions.invalid_argument,
-            "Set.remove_min_elt"
-          ];
+    if (param) {
+      var l = param[0];
+      if (l) {
+        return bal(remove_min_elt(l), param[1], param[2]);
+      } else {
+        return param[2];
+      }
     }
-    var l = param[0];
-    if (l) {
-      return bal(remove_min_elt(l), param[1], param[2]);
-    } else {
-      return param[2];
-    }
+    throw [
+          Caml_builtin_exceptions.invalid_argument,
+          "Set.remove_min_elt"
+        ];
   };
   var merge = function (t1, t2) {
     if (t1) {
@@ -225,14 +224,13 @@ function Make(Ord) {
               match[1],
               join(match[2], v, r)
             ];
-    } else {
-      var match$1 = split(x, r);
-      return /* tuple */[
-              join(l, v, match$1[0]),
-              match$1[1],
-              match$1[2]
-            ];
     }
+    var match$1 = split(x, r);
+    return /* tuple */[
+            join(l, v, match$1[0]),
+            match$1[1],
+            match$1[2]
+          ];
   };
   var is_empty = function (param) {
     if (param) {
@@ -288,13 +286,12 @@ function Make(Ord) {
       }
       var match = split(v1, s2);
       return join(union(s1[0], match[0]), v1, union(s1[2], match[2]));
-    } else {
-      if (h1 === 1) {
-        return add(v1, s2);
-      }
-      var match$1 = split(v2, s1);
-      return join(union(match$1[0], s2[0]), v2, union(match$1[2], s2[2]));
     }
+    if (h1 === 1) {
+      return add(v1, s2);
+    }
+    var match$1 = split(v2, s1);
+    return join(union(match$1[0], s2[0]), v2, union(match$1[2], s2[2]));
   };
   var inter = function (s1, s2) {
     if (!s1) {
@@ -400,7 +397,8 @@ function Make(Ord) {
         _s2 = r2;
         _s1 = r1;
         continue ;
-      } else if (c < 0) {
+      }
+      if (c < 0) {
         if (!subset(/* Node */[
                 l1,
                 v1,
@@ -411,18 +409,17 @@ function Make(Ord) {
         }
         _s1 = r1;
         continue ;
-      } else {
-        if (!subset(/* Node */[
-                /* Empty */0,
-                v1,
-                r1,
-                0
-              ], r2)) {
-          return false;
-        }
-        _s1 = l1;
-        continue ;
       }
+      if (!subset(/* Node */[
+              /* Empty */0,
+              v1,
+              r1,
+              0
+            ], r2)) {
+        return false;
+      }
+      _s1 = l1;
+      continue ;
     };
   };
   var iter = function (f, _param) {
@@ -550,16 +547,16 @@ function Make(Ord) {
   var find = function (x, _param) {
     while(true) {
       var param = _param;
-      if (!param) {
-        throw Caml_builtin_exceptions.not_found;
+      if (param) {
+        var v = param[1];
+        var c = Curry._2(Ord.compare, x, v);
+        if (c === 0) {
+          return v;
+        }
+        _param = c < 0 ? param[0] : param[2];
+        continue ;
       }
-      var v = param[1];
-      var c = Curry._2(Ord.compare, x, v);
-      if (c === 0) {
-        return v;
-      }
-      _param = c < 0 ? param[0] : param[2];
-      continue ;
+      throw Caml_builtin_exceptions.not_found;
     };
   };
   var of_sorted_list = function (l) {
@@ -642,21 +639,21 @@ function Make(Ord) {
       var nl = n / 2 | 0;
       var match$3 = sub(nl, l);
       var l$1 = match$3[1];
-      if (!l$1) {
-        throw [
-              Caml_builtin_exceptions.assert_failure,
-              /* tuple */[
-                "test_set.ml",
-                372,
-                18
-              ]
-            ];
+      if (l$1) {
+        var match$4 = sub((n - nl | 0) - 1 | 0, l$1[1]);
+        return /* tuple */[
+                create(match$3[0], l$1[0], match$4[0]),
+                match$4[1]
+              ];
       }
-      var match$4 = sub((n - nl | 0) - 1 | 0, l$1[1]);
-      return /* tuple */[
-              create(match$3[0], l$1[0], match$4[0]),
-              match$4[1]
-            ];
+      throw [
+            Caml_builtin_exceptions.assert_failure,
+            /* tuple */[
+              "test_set.ml",
+              372,
+              18
+            ]
+          ];
     };
     return sub(List.length(l), l)[0];
   };

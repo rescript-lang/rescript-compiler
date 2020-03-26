@@ -16,11 +16,12 @@ try {
 }
 catch (raw_exn){
   var exn = Caml_js_exceptions.internalToOCamlException(raw_exn);
-  if (exn[0] !== Caml_builtin_exceptions.invalid_argument) {
+  if (exn[0] === Caml_builtin_exceptions.invalid_argument) {
+    console.log(exn[1]);
+    y = 0;
+  } else {
     throw exn;
   }
-  console.log(exn[1]);
-  y = 0;
 }
 
 exports.x = x;

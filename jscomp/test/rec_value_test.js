@@ -232,7 +232,21 @@ var suites_001 = /* :: */[
     "mutual",
     (function (param) {
         var tmp;
-        if (!a) {
+        if (a) {
+          var match = a[1];
+          if (match) {
+            tmp = match[0];
+          } else {
+            throw [
+                  Caml_builtin_exceptions.assert_failure,
+                  /* tuple */[
+                    "rec_value_test.ml",
+                    108,
+                    2
+                  ]
+                ];
+          }
+        } else {
           throw [
                 Caml_builtin_exceptions.assert_failure,
                 /* tuple */[
@@ -242,18 +256,6 @@ var suites_001 = /* :: */[
                 ]
               ];
         }
-        var match = a[1];
-        if (!match) {
-          throw [
-                Caml_builtin_exceptions.assert_failure,
-                /* tuple */[
-                  "rec_value_test.ml",
-                  108,
-                  2
-                ]
-              ];
-        }
-        tmp = match[0];
         return /* Eq */Block.__(0, [
                   3,
                   tmp
@@ -373,20 +375,20 @@ var suites_001 = /* :: */[
                   /* tuple */[
                     "File \"rec_value_test.ml\", line 129, characters 2-9",
                     (function (param) {
-                        if (rec_variant_b.tag) {
-                          throw [
-                                Caml_builtin_exceptions.assert_failure,
-                                /* tuple */[
-                                  "rec_value_test.ml",
-                                  132,
-                                  11
-                                ]
-                              ];
+                        if (!rec_variant_b.tag) {
+                          return /* Eq */Block.__(0, [
+                                    Curry._1(rec_variant_b[1], undefined),
+                                    rec_variant_a
+                                  ]);
                         }
-                        return /* Eq */Block.__(0, [
-                                  Curry._1(rec_variant_b[1], undefined),
-                                  rec_variant_a
-                                ]);
+                        throw [
+                              Caml_builtin_exceptions.assert_failure,
+                              /* tuple */[
+                                "rec_value_test.ml",
+                                132,
+                                11
+                              ]
+                            ];
                       })
                   ],
                   /* :: */[

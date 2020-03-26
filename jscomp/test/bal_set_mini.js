@@ -37,28 +37,27 @@ function bal(l, v, r) {
     } else {
       return /* Empty */0;
     }
+  }
+  if (hr <= (hl + 2 | 0)) {
+    return /* Node */[
+            l,
+            v,
+            r,
+            hl >= hr ? hl + 1 | 0 : hr + 1 | 0
+          ];
+  }
+  if (!r) {
+    return /* Empty */0;
+  }
+  var rr = r[2];
+  var rv = r[1];
+  var rl = r[0];
+  if (height(rr) >= height(rl)) {
+    return create(create(l, v, rl), rv, rr);
+  } else if (rl) {
+    return create(create(l, v, rl[0]), rl[1], create(rl[2], rv, rr));
   } else {
-    if (hr <= (hl + 2 | 0)) {
-      return /* Node */[
-              l,
-              v,
-              r,
-              hl >= hr ? hl + 1 | 0 : hr + 1 | 0
-            ];
-    }
-    if (!r) {
-      return /* Empty */0;
-    }
-    var rr = r[2];
-    var rv = r[1];
-    var rl = r[0];
-    if (height(rr) >= height(rl)) {
-      return create(create(l, v, rl), rv, rr);
-    } else if (rl) {
-      return create(create(l, v, rl[0]), rl[1], create(rl[2], rv, rr));
-    } else {
-      return /* Empty */0;
-    }
+    return /* Empty */0;
   }
 }
 

@@ -87,16 +87,17 @@ function rollback_path(subst, p) {
     return "try";
   }
   catch (exn){
-    if (exn !== Caml_builtin_exceptions.not_found) {
+    if (exn === Caml_builtin_exceptions.not_found) {
+      switch (p.tag | 0) {
+        case /* Pdot */1 :
+            return "Pdot";
+        case /* Pident */0 :
+        case /* Papply */2 :
+            return "Pident | Papply";
+        
+      }
+    } else {
       throw exn;
-    }
-    switch (p.tag | 0) {
-      case /* Pdot */1 :
-          return "Pdot";
-      case /* Pident */0 :
-      case /* Papply */2 :
-          return "Pident | Papply";
-      
     }
   }
 }
@@ -129,11 +130,11 @@ function fooExn(f) {
     if (exn[0] === EC) {
       return exn[1] + exn[2] | 0;
     }
-    if (exn[0] !== ED) {
-      throw exn;
+    if (exn[0] === ED) {
+      var match = exn[1];
+      return match[0] + match[1] | 0;
     }
-    var match = exn[1];
-    return match[0] + match[1] | 0;
+    throw exn;
   }
 }
 

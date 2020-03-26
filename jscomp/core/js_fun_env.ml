@@ -69,7 +69,9 @@ let make ?immutable_mask n = {
 }
 
  let no_tailcall x = 
-  x.immutable_mask = All_immutable_and_no_tail_call 
+  match x.immutable_mask with
+  | All_immutable_and_no_tail_call -> []
+  | Immutable_mask arr -> Array.to_list arr 
 
 let mark_unused  t i = 
   t.used_mask.(i) <- true

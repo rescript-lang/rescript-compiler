@@ -79,7 +79,6 @@ function test(b) {
   test_num.contents = test_num.contents + 1 | 0;
   print_test_number(undefined);
   if (!b) {
-    var param;
     all_tests_ok.contents = false;
     return Pervasives.print_string(Curry._1(Printf.sprintf(/* Format */[
                         /* String_literal */Block.__(11, [

@@ -118,10 +118,8 @@ function get_lines(fname) {
             Caml_builtin_exceptions.failure,
             s
           ];
-    } else {
-      if (exn !== Caml_builtin_exceptions.end_of_file) {
-        throw exn;
-      }
+    }
+    if (exn === Caml_builtin_exceptions.end_of_file) {
       var s$1 = Curry._1(Printf.sprintf(/* Format */[
                 /* String_literal */Block.__(11, [
                     "in file ",
@@ -140,6 +138,7 @@ function get_lines(fname) {
             s$1
           ];
     }
+    throw exn;
   }
 }
 

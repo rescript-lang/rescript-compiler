@@ -43,13 +43,15 @@ function _must_escape(s) {
       var c = s.charCodeAt(i);
       var exit = 0;
       if (c >= 42) {
-        if (c === 59) {
+        if (c !== 59) {
+          if (c !== 92) {
+            exit = 1;
+          } else {
+            throw Pervasives.Exit;
+          }
+        } else {
           throw Pervasives.Exit;
         }
-        if (c === 92) {
-          throw Pervasives.Exit;
-        }
-        exit = 1;
       } else if (c >= 11) {
         if (c >= 32) {
           switch (c - 32 | 0) {
@@ -120,25 +122,24 @@ function to_buf(b, t) {
     } else {
       return $$Buffer.add_string(b, "()");
     }
+  }
+  var s = t[1];
+  if (_must_escape(s)) {
+    return Curry._1(Printf.bprintf(b, /* Format */[
+                    /* Char_literal */Block.__(12, [
+                        /* "\"" */34,
+                        /* String */Block.__(2, [
+                            /* No_padding */0,
+                            /* Char_literal */Block.__(12, [
+                                /* "\"" */34,
+                                /* End_of_format */0
+                              ])
+                          ])
+                      ]),
+                    "\"%s\""
+                  ]), $$String.escaped(s));
   } else {
-    var s = t[1];
-    if (_must_escape(s)) {
-      return Curry._1(Printf.bprintf(b, /* Format */[
-                      /* Char_literal */Block.__(12, [
-                          /* "\"" */34,
-                          /* String */Block.__(2, [
-                              /* No_padding */0,
-                              /* Char_literal */Block.__(12, [
-                                  /* "\"" */34,
-                                  /* End_of_format */0
-                                ])
-                            ])
-                        ]),
-                      "\"%s\""
-                    ]), $$String.escaped(s));
-    } else {
-      return $$Buffer.add_string(b, s);
-    }
+    return $$Buffer.add_string(b, s);
   }
 }
 
@@ -222,25 +223,24 @@ function print(fmt, t) {
     } else {
       return Format.pp_print_string(fmt, "()");
     }
+  }
+  var s = t[1];
+  if (_must_escape(s)) {
+    return Curry._1(Format.fprintf(fmt, /* Format */[
+                    /* Char_literal */Block.__(12, [
+                        /* "\"" */34,
+                        /* String */Block.__(2, [
+                            /* No_padding */0,
+                            /* Char_literal */Block.__(12, [
+                                /* "\"" */34,
+                                /* End_of_format */0
+                              ])
+                          ])
+                      ]),
+                    "\"%s\""
+                  ]), $$String.escaped(s));
   } else {
-    var s = t[1];
-    if (_must_escape(s)) {
-      return Curry._1(Format.fprintf(fmt, /* Format */[
-                      /* Char_literal */Block.__(12, [
-                          /* "\"" */34,
-                          /* String */Block.__(2, [
-                              /* No_padding */0,
-                              /* Char_literal */Block.__(12, [
-                                  /* "\"" */34,
-                                  /* End_of_format */0
-                                ])
-                            ])
-                        ]),
-                      "\"%s\""
-                    ]), $$String.escaped(s));
-    } else {
-      return Format.pp_print_string(fmt, s);
-    }
+    return Format.pp_print_string(fmt, s);
   }
 }
 
@@ -272,25 +272,24 @@ function print_noindent(fmt, t) {
     } else {
       return Format.pp_print_string(fmt, "()");
     }
+  }
+  var s = t[1];
+  if (_must_escape(s)) {
+    return Curry._1(Format.fprintf(fmt, /* Format */[
+                    /* Char_literal */Block.__(12, [
+                        /* "\"" */34,
+                        /* String */Block.__(2, [
+                            /* No_padding */0,
+                            /* Char_literal */Block.__(12, [
+                                /* "\"" */34,
+                                /* End_of_format */0
+                              ])
+                          ])
+                      ]),
+                    "\"%s\""
+                  ]), $$String.escaped(s));
   } else {
-    var s = t[1];
-    if (_must_escape(s)) {
-      return Curry._1(Format.fprintf(fmt, /* Format */[
-                      /* Char_literal */Block.__(12, [
-                          /* "\"" */34,
-                          /* String */Block.__(2, [
-                              /* No_padding */0,
-                              /* Char_literal */Block.__(12, [
-                                  /* "\"" */34,
-                                  /* End_of_format */0
-                                ])
-                            ])
-                        ]),
-                      "\"%s\""
-                    ]), $$String.escaped(s));
-    } else {
-      return Format.pp_print_string(fmt, s);
-    }
+    return Format.pp_print_string(fmt, s);
   }
 }
 
@@ -452,12 +451,11 @@ function expr(k, t) {
         return expr_starting_with(c, k, t);
       }
       continue ;
-    } else {
-      if (c < 9) {
-        return expr_starting_with(c, k, t);
-      }
-      continue ;
     }
+    if (c < 9) {
+      return expr_starting_with(c, k, t);
+    }
+    continue ;
   };
 }
 
@@ -817,12 +815,11 @@ function expr_or_end(k, t) {
         return expr_starting_with(c, k, t);
       }
       continue ;
-    } else {
-      if (c < 9) {
-        return expr_starting_with(c, k, t);
-      }
-      continue ;
     }
+    if (c < 9) {
+      return expr_starting_with(c, k, t);
+    }
+    continue ;
   };
 }
 
@@ -1036,12 +1033,11 @@ function MakeDecode(funarg) {
           return expr_starting_with(c, k, t);
         }
         continue ;
-      } else {
-        if (c < 9) {
-          return expr_starting_with(c, k, t);
-        }
-        continue ;
       }
+      if (c < 9) {
+        return expr_starting_with(c, k, t);
+      }
+      continue ;
     };
   };
   var expr_starting_with = function (c, k, t) {
@@ -1391,12 +1387,11 @@ function MakeDecode(funarg) {
           return expr_starting_with(c, k, t);
         }
         continue ;
-      } else {
-        if (c < 9) {
-          return expr_starting_with(c, k, t);
-        }
-        continue ;
       }
+      if (c < 9) {
+        return expr_starting_with(c, k, t);
+      }
+      continue ;
     };
   };
   var next = function (t) {

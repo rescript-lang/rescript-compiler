@@ -33,10 +33,11 @@ function read_lines(inc) {
       match = Pervasives.input_line(inc);
     }
     catch (exn){
-      if (exn !== Caml_builtin_exceptions.end_of_file) {
+      if (exn === Caml_builtin_exceptions.end_of_file) {
+        match = undefined;
+      } else {
         throw exn;
       }
-      match = undefined;
     }
     if (match === undefined) {
       return List.rev(acc);

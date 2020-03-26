@@ -41,12 +41,10 @@ tFromJs({
 
 function searchForSureExists(xs, k) {
   var _i = 0;
-  var xs$1 = xs;
-  var k$1 = k;
   while(true) {
     var i = _i;
-    var match = xs$1[i];
-    if (match[0] === k$1) {
+    var match = xs[i];
+    if (match[0] === k) {
       return match[1];
     }
     _i = i + 1 | 0;

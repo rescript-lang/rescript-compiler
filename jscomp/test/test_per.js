@@ -131,13 +131,12 @@ function valid_float_lexem(s) {
       }
       _i = i + 1 | 0;
       continue ;
-    } else {
-      if (match !== 45) {
-        return s;
-      }
-      _i = i + 1 | 0;
-      continue ;
     }
+    if (match !== 45) {
+      return s;
+    }
+    _i = i + 1 | 0;
+    continue ;
   };
 }
 
@@ -362,7 +361,8 @@ function input_line(chan) {
         return build_result(Caml_bytes.caml_create_bytes(len), len, accu);
       }
       throw Caml_builtin_exceptions.end_of_file;
-    } else if (n > 0) {
+    }
+    if (n > 0) {
       var res = Caml_bytes.caml_create_bytes(n - 1 | 0);
       Caml_external_polyfill.resolve("caml_ml_input")(chan, res, 0, n - 1 | 0);
       Caml_external_polyfill.resolve("caml_ml_input_char")(chan);
@@ -374,16 +374,15 @@ function input_line(chan) {
                   res,
                   accu
                 ]);
-    } else {
-      var beg = Caml_bytes.caml_create_bytes(-n | 0);
-      Caml_external_polyfill.resolve("caml_ml_input")(chan, beg, 0, -n | 0);
-      _len = len - n | 0;
-      _accu = /* :: */[
-        beg,
-        accu
-      ];
-      continue ;
     }
+    var beg = Caml_bytes.caml_create_bytes(-n | 0);
+    Caml_external_polyfill.resolve("caml_ml_input")(chan, beg, 0, -n | 0);
+    _len = len - n | 0;
+    _accu = /* :: */[
+      beg,
+      accu
+    ];
+    continue ;
   };
 }
 

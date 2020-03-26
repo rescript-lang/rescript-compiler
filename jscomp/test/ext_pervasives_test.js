@@ -56,12 +56,12 @@ function is_pos_pow(n) {
       if (n$1 === 1) {
         return c;
       }
-      if ((n$1 & 1) !== 0) {
-        throw E;
+      if ((n$1 & 1) === 0) {
+        _n = (n$1 >> 1);
+        _c = c + 1 | 0;
+        continue ;
       }
-      _n = (n$1 >> 1);
-      _c = c + 1 | 0;
-      continue ;
+      throw E;
     };
   }
   catch (exn){
@@ -149,7 +149,8 @@ function dump(r) {
   if (is_list(r)) {
     var fields = get_list(r);
     return "[" + ($$String.concat("; ", List.map(dump, fields)) + "]");
-  } else if (t !== 0) {
+  }
+  if (t !== 0) {
     if (t === Obj.lazy_tag) {
       return "<lazy>";
     }
@@ -159,84 +160,84 @@ function dump(r) {
     if (t === Obj.object_tag) {
       var fields$1 = get_fields(/* [] */0, s);
       var match;
-      if (!fields$1) {
-        throw [
-              Caml_builtin_exceptions.assert_failure,
-              /* tuple */[
-                "ext_pervasives_test.ml",
-                118,
-                15
-              ]
-            ];
-      }
-      var match$1 = fields$1[1];
-      if (!match$1) {
-        throw [
-              Caml_builtin_exceptions.assert_failure,
-              /* tuple */[
-                "ext_pervasives_test.ml",
-                118,
-                15
-              ]
-            ];
-      }
-      match = /* tuple */[
-        fields$1[0],
-        match$1[0],
-        match$1[1]
-      ];
-      return "Object #" + (dump(match[1]) + (" (" + ($$String.concat(", ", List.map(dump, match[2])) + ")")));
-    } else {
-      if (t === Obj.infix_tag) {
-        return "<infix>";
-      }
-      if (t === Obj.forward_tag) {
-        return "<forward>";
-      }
-      if (t >= Obj.no_scan_tag) {
-        if (t === Obj.string_tag) {
-          return "\"" + ($$String.escaped(r) + "\"");
-        } else if (t === Obj.double_tag) {
-          return Pervasives.string_of_float(r);
-        } else if (t === Obj.abstract_tag) {
-          return "<abstract>";
-        } else if (t === Obj.custom_tag) {
-          return "<custom>";
-        } else if (t === Obj.custom_tag) {
-          return "<final>";
-        } else if (t === Obj.double_array_tag) {
-          return "[|" + ($$String.concat(";", $$Array.to_list($$Array.map(Pervasives.string_of_float, r))) + "|]");
+      if (fields$1) {
+        var match$1 = fields$1[1];
+        if (match$1) {
+          match = /* tuple */[
+            fields$1[0],
+            match$1[0],
+            match$1[1]
+          ];
         } else {
-          var name = Curry._2(Printf.sprintf(/* Format */[
-                    /* String_literal */Block.__(11, [
-                        "unknown: tag ",
-                        /* Int */Block.__(4, [
-                            /* Int_d */0,
-                            /* No_padding */0,
-                            /* No_precision */0,
-                            /* String_literal */Block.__(11, [
-                                " size ",
-                                /* Int */Block.__(4, [
-                                    /* Int_d */0,
-                                    /* No_padding */0,
-                                    /* No_precision */0,
-                                    /* End_of_format */0
-                                  ])
-                              ])
-                          ])
-                      ]),
-                    "unknown: tag %d size %d"
-                  ]), t, s);
-          return "<" + (name + ">");
+          throw [
+                Caml_builtin_exceptions.assert_failure,
+                /* tuple */[
+                  "ext_pervasives_test.ml",
+                  118,
+                  15
+                ]
+              ];
         }
+      } else {
+        throw [
+              Caml_builtin_exceptions.assert_failure,
+              /* tuple */[
+                "ext_pervasives_test.ml",
+                118,
+                15
+              ]
+            ];
       }
-      var fields$2 = get_fields(/* [] */0, s);
-      return "Tag" + (String(t) + (" (" + ($$String.concat(", ", List.map(dump, fields$2)) + ")")));
+      return "Object #" + (dump(match[1]) + (" (" + ($$String.concat(", ", List.map(dump, match[2])) + ")")));
     }
-  } else {
-    var fields$3 = get_fields(/* [] */0, s);
-    return "(" + ($$String.concat(", ", List.map(dump, fields$3)) + ")");
+    if (t === Obj.infix_tag) {
+      return "<infix>";
+    }
+    if (t === Obj.forward_tag) {
+      return "<forward>";
+    }
+    if (t >= Obj.no_scan_tag) {
+      if (t === Obj.string_tag) {
+        return "\"" + ($$String.escaped(r) + "\"");
+      } else if (t === Obj.double_tag) {
+        return Pervasives.string_of_float(r);
+      } else if (t === Obj.abstract_tag) {
+        return "<abstract>";
+      } else if (t === Obj.custom_tag) {
+        return "<custom>";
+      } else if (t === Obj.custom_tag) {
+        return "<final>";
+      } else if (t === Obj.double_array_tag) {
+        return "[|" + ($$String.concat(";", $$Array.to_list($$Array.map(Pervasives.string_of_float, r))) + "|]");
+      } else {
+        var name = Curry._2(Printf.sprintf(/* Format */[
+                  /* String_literal */Block.__(11, [
+                      "unknown: tag ",
+                      /* Int */Block.__(4, [
+                          /* Int_d */0,
+                          /* No_padding */0,
+                          /* No_precision */0,
+                          /* String_literal */Block.__(11, [
+                              " size ",
+                              /* Int */Block.__(4, [
+                                  /* Int_d */0,
+                                  /* No_padding */0,
+                                  /* No_precision */0,
+                                  /* End_of_format */0
+                                ])
+                            ])
+                        ])
+                    ]),
+                  "unknown: tag %d size %d"
+                ]), t, s);
+        return "<" + (name + ">");
+      }
+    }
+    var fields$2 = get_fields(/* [] */0, s);
+    return "Tag" + (String(t) + (" (" + ($$String.concat(", ", List.map(dump, fields$2)) + ")")));
   }
+  var fields$3 = get_fields(/* [] */0, s);
+  return "(" + ($$String.concat(", ", List.map(dump, fields$3)) + ")");
 }
 
 var dump$1 = dump;

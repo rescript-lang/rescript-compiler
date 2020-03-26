@@ -37,7 +37,7 @@ type t
 
 val make :  ?immutable_mask:bool array  -> int -> t
 
-val no_tailcall : t -> bool
+val no_tailcall : t -> bool list
 
 (* val is_empty : t -> bool  *)
 

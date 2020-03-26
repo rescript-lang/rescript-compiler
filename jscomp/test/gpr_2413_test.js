@@ -9,10 +9,9 @@ function f(param) {
         if (match.tag) {
           var a = match[0];
           return a - a | 0;
-        } else {
-          var a$1 = match[0];
-          return a$1 + a$1 | 0;
         }
+        var a$1 = match[0];
+        return a$1 + a$1 | 0;
     case /* B */1 :
     case /* C */2 :
         break;

@@ -74,10 +74,9 @@ function filter(f, a) {
         acc
       ];
       continue ;
-    } else {
-      _i = i + 1 | 0;
-      continue ;
     }
+    _i = i + 1 | 0;
+    continue ;
   };
 }
 
@@ -93,16 +92,16 @@ function filter_map(f, a) {
     }
     var v = a[i];
     var match = Curry._1(f, v);
-    _i = i + 1 | 0;
     if (match !== undefined) {
+      _i = i + 1 | 0;
       _acc = /* :: */[
         Caml_option.valFromOption(match),
         acc
       ];
       continue ;
-    } else {
-      continue ;
     }
+    _i = i + 1 | 0;
+    continue ;
   };
 }
 
@@ -214,10 +213,9 @@ function rfind_and_split(arr, cmp, v) {
 function find_with_index(arr, cmp, v) {
   var len = arr.length;
   var _i = 0;
-  var len$1 = len;
   while(true) {
     var i = _i;
-    if (i >= len$1) {
+    if (i >= len) {
       return -1;
     }
     if (Curry._2(cmp, arr[i], v)) {
