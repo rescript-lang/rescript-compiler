@@ -84,7 +84,7 @@ let get_runtime_module_path (dep_module_id : Lam_module_ident.t)
 let string_of_module_id (dep_module_id : Lam_module_ident.t)
     ~(output_dir : string) (module_system : Js_package_info.module_system) :
     string =
-  let current_package_info = Js_packages_state.get_packages_info () in
+  let current_package_info = Js_current_package_info.get_packages_info () in
   fix_path_for_windows
     ( match dep_module_id.kind with
     | External name -> name (* the literal string for external package *)
