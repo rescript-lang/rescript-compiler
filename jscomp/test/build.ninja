@@ -319,6 +319,7 @@ build test/gpr_4025_test.cmi test/gpr_4025_test.cmj : cc test/gpr_4025_test.ml |
 build test/gpr_405_test.cmj : cc_cmi test/gpr_405_test.ml | test/gpr_405_test.cmi $stdlib
 build test/gpr_405_test.cmi : cc test/gpr_405_test.mli | $stdlib
 build test/gpr_4069_test.cmi test/gpr_4069_test.cmj : cc test/gpr_4069_test.ml | $stdlib
+build test/gpr_4265_test.cmi test/gpr_4265_test.cmj : cc test/gpr_4265_test.re | $stdlib
 build test/gpr_441.cmi test/gpr_441.cmj : cc test/gpr_441.ml | $stdlib
 build test/gpr_459_test.cmi test/gpr_459_test.cmj : cc test/gpr_459_test.ml | test/mt.cmj $stdlib
 build test/gpr_627_test.cmi test/gpr_627_test.cmj : cc test/gpr_627_test.ml | test/mt.cmj $stdlib
