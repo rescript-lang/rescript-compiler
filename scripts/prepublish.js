@@ -7,8 +7,8 @@ var assert = require("assert");
 var root = path.join(__dirname, "..");
 try {
   // npmignore is broken let's do it
-  let file = path.join(root, process.platform, "bsc")
-  console.log(`try removing ${file}`)
+  let file = path.join(root, process.platform, "bsc");
+  console.log(`try removing ${file}`);
   fs.unlinkSync(file);
 } catch (e) {}
 
@@ -18,7 +18,6 @@ var output = p.spawnSync(`npm pack --dry-run`, {
   shell: true
   // stdio: [0, 1, 2]
 });
-
 
 /**
  *
@@ -68,7 +67,11 @@ function stat(files) {
  */
 function check(map) {
   var compilers = ["bsb", "bsb_helper", "bsc", "ninja", "refmt"];
-  for (let os of ["win32", "darwin", "linux"]) {
+  let oses = ["darwin", "linux"];
+  if (!process.argv.includes("-nowin")) {
+    oses.push("win32");
+  }
+  for (let os of oses) {
     for (let c of compilers) {
       assert(map.get(os));
       assert(map.get(os).has(`${c}.exe`));
@@ -105,6 +108,9 @@ if (!process.argv.includes("-nocheck")) {
   check(map);
 }
 
-console.log("The diff of artifacts")
-var output = p.spawnSync(`git diff jscomp/artifacts.json`,{cwd:root,encoding:'utf8'})
-console.log(output.stdout)
+console.log("The diff of artifacts");
+var output = p.spawnSync(`git diff jscomp/artifacts.json`, {
+  cwd: root,
+  encoding: "utf8"
+});
+console.log(output.stdout);
