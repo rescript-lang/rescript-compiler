@@ -150,7 +150,7 @@ function main() {
             throw new Error(`init theme ${theme} failed`);
           }
           cp.exec(
-            `npm install && npm run clean && npm run build`,
+            `npm link bs-platform && npm install && npm run clean && npm run build`,
             { cwd: path.join(themesDir, theme) },
             function(error, stdout, stderr) {
               console.log(stdout);
