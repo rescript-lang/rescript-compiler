@@ -26,7 +26,6 @@ module Int = Belt_SetInt
 module String = Belt_SetString
 module Dict = Belt_SetDict
   
-(* module A = Belt_Array *)
 
 
 type ('value, 'id) id = ('value, 'id) Belt_Id.comparable
@@ -142,13 +141,13 @@ let getExn m e =
 let has m e = 
   Dict.has ~cmp:(m.cmp) m.data e
 
-let fromSortedArrayUnsafe (type value) (type identity) xs ~(id : (value,identity) id ) =
+let fromSortedArrayUnsafe (type value identity) xs ~(id : (value,identity) id ) =
   let module M = (val id) in 
   {cmp = M.cmp; data = (Dict.fromSortedArrayUnsafe xs)}
 
 let getData m = m.data
 
-let getId (type value) (type identity) (m : (value,identity) t) : (value, identity) id =
+let getId (type value identity) (m : (value,identity) t) : (value, identity) id =
   let module T = struct
     type nonrec identity = identity
     type nonrec t = value
@@ -156,7 +155,7 @@ let getId (type value) (type identity) (m : (value,identity) t) : (value, identi
   end in
   (module T)
   
-let packIdData (type value) (type identity) ~(id : (value, identity) id) ~data  =
+let packIdData (type value identity) ~(id : (value, identity) id) ~data  =
   let module M = (val id) in 
   {cmp =  M.cmp; data}
 
