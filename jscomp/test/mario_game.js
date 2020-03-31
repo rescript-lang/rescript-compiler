@@ -2026,15 +2026,14 @@ function check_collisions(collid, all_collids, state) {
     var acc$1;
     if (match$1 !== undefined) {
       var match$2 = new_objs[1];
-      var o = match$1;
       acc$1 = match$2 !== undefined ? /* :: */[
-          o,
+          match$1,
           /* :: */[
             match$2,
             acc
           ]
         ] : /* :: */[
-          o,
+          match$1,
           acc
         ];
     } else {
@@ -2138,11 +2137,10 @@ function run_update_collid(state, collid, all_collids) {
   var match = update_player(o, keys, state.ctx);
   var player;
   if (match !== undefined) {
-    var match$1 = match;
-    var new_spr = match$1[1];
+    var new_spr = match[1];
     normalize_pos(o.pos, collid[1].params, new_spr.params);
     player = /* Player */Block.__(0, [
-        match$1[0],
+        match[0],
         new_spr,
         o
       ]);

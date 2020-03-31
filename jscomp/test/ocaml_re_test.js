@@ -1297,15 +1297,14 @@ function delta_seq(c, next_cat, prev_cat, kind, y, z, rem) {
   if (match === undefined) {
     return tseq(kind, y, z, rem);
   }
-  var marks = match;
   if (kind === -730718166) {
-    return tseq(kind, Curry._1(remove_matches, y), z, delta_1(marks, c, next_cat, prev_cat, z, rem));
+    return tseq(kind, Curry._1(remove_matches, y), z, delta_1(match, c, next_cat, prev_cat, z, rem));
   }
   if (kind < 332064784) {
-    return delta_1(marks, c, next_cat, prev_cat, z, tseq(kind, Curry._1(remove_matches, y), z, rem));
+    return delta_1(match, c, next_cat, prev_cat, z, tseq(kind, Curry._1(remove_matches, y), z, rem));
   }
   var match$1 = split_at_match_rec(/* [] */0, y);
-  return tseq(kind, match$1[0], z, delta_1(marks, c, next_cat, prev_cat, z, tseq(kind, match$1[1], z, rem)));
+  return tseq(kind, match$1[0], z, delta_1(match, c, next_cat, prev_cat, z, tseq(kind, match$1[1], z, rem)));
 }
 
 function delta_4(c, next_cat, prev_cat, l, rem) {
@@ -3693,15 +3692,14 @@ function parse(multiline, dollar_endonly, dotall, ungreedy, s) {
     }
     var match = integer(undefined);
     if (match !== undefined) {
-      var i$1 = match;
-      var j = accept(/* "," */44) ? integer(undefined) : i$1;
+      var j = accept(/* "," */44) ? integer(undefined) : match;
       if (!accept(/* "}" */125)) {
         throw Parse_error;
       }
-      if (j !== undefined && j < i$1) {
+      if (j !== undefined && j < match) {
         throw Parse_error;
       }
-      return greedy_mod(repn(r, i$1, j));
+      return greedy_mod(repn(r, match, j));
     }
     i.contents = i.contents - 1 | 0;
     return r;

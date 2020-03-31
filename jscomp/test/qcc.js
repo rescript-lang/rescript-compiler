@@ -203,8 +203,7 @@ function next(param) {
   if (match === undefined) {
     return /* Op */Block.__(0, ["EOF!"]);
   }
-  var c = match;
-  if (c === 34) {
+  if (match === 34) {
     var b = gpos.contents;
     var _e = gpos.contents;
     while(true) {
@@ -223,9 +222,9 @@ function next(param) {
               ]);
     };
   }
-  if (c >= 48) {
-    if (c < 58) {
-      var _n = c - 48 | 0;
+  if (match >= 48) {
+    if (match < 58) {
+      var _n = match - 48 | 0;
       while(true) {
         var n = _n;
         var match$2 = peekch(undefined);
@@ -237,7 +236,7 @@ function next(param) {
       };
     }
     
-  } else if (c === 39) {
+  } else if (match === 39) {
     var ch = getq(undefined);
     var qt = Curry._1(getch, undefined);
     if (qt !== /* "'" */39) {
@@ -248,9 +247,9 @@ function next(param) {
     }
     return /* ILit */Block.__(1, [ch]);
   }
-  if (isid(c)) {
+  if (isid(match)) {
     var _n$1 = 0;
-    var _ch = c;
+    var _ch = match;
     while(true) {
       var ch$1 = _ch;
       var n$1 = _n$1;
@@ -297,10 +296,10 @@ function next(param) {
     while(true) {
       var param$1 = _param;
       if (!param$1) {
-        return /* Op */Block.__(0, [Caml_bytes.bytes_to_string(Bytes.make(1, c))]);
+        return /* Op */Block.__(0, [Caml_bytes.bytes_to_string(Bytes.make(1, match))]);
       }
       var lop = param$1[0];
-      if (Caml_string.get(lop, 0) === c && Caml_string.get(lop, 1) === peekch(undefined)) {
+      if (Caml_string.get(lop, 0) === match && Caml_string.get(lop, 1) === peekch(undefined)) {
         Curry._1(getch, undefined);
         return /* Op */Block.__(0, [lop]);
       }

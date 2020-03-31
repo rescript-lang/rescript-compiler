@@ -1404,8 +1404,7 @@ function split(s, c) {
                   to_rev
                 ]);
     }
-    var pos2 = match;
-    if (pos2 === pos) {
+    if (match === pos) {
       _to_rev = /* :: */[
         "",
         to_rev
@@ -1414,10 +1413,10 @@ function split(s, c) {
       continue ;
     }
     _to_rev = /* :: */[
-      $$String.sub(s, pos, pos2 - pos | 0),
+      $$String.sub(s, pos, match - pos | 0),
       to_rev
     ];
-    _pos = pos2 + 1 | 0;
+    _pos = match + 1 | 0;
     continue ;
   };
 }

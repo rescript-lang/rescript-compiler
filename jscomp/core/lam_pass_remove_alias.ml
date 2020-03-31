@@ -56,10 +56,10 @@ let simplify_alias
         | l ->  
           Lam.prim ~primitive ~args:[l] loc 
       end
-    | Lprim {primitive = Pval_from_option | Pval_from_option_not_nest; args = [Lvar v]} as x -> 
+    | Lprim {primitive = (Pval_from_option | Pval_from_option_not_nest as p ); args = [Lvar v as lvar ]} as x -> 
       begin match Hash_ident.find_opt meta.ident_tbl v with 
         | Some (OptionalBlock (l,_)) -> l
-        | _ -> x 
+        | _ -> if p = Pval_from_option_not_nest then lvar else x 
       end 
     | Lglobal_module _ -> lam 
     | Lprim {primitive; args; loc } 
