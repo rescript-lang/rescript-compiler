@@ -47,64 +47,7 @@ let replace s env : string =
 
 let (//) = Filename.concat
 
-(* TODO: Check Ext_io.write_file may overwrite, duplicate with Bsb_config_parse *)
-let get_bs_platform_version_if_exists dir = 
-  match 
-    Ext_json_parse.parse_json_from_file 
-    (Filename.concat dir Literals.package_json) with 
-  | Obj {map} 
-    -> 
-    (match Map_string.find_exn map Bsb_build_schemas.version with 
-    | Str {str} -> str 
-    | _ -> assert false)
-  | _ -> assert false 
 
-let run_npm_link cwd dirname  =
-  let bs_platform_dir =  
-    Filename.concat Literals.node_modules Bs_version.package_name in 
-  if Sys.file_exists bs_platform_dir
-  then  
-    if get_bs_platform_version_if_exists bs_platform_dir = Bs_version.version then 
-      begin 
-        Format.fprintf Format.std_formatter 
-          "bs-platform already exists(version match), no need symlink@."
-      end 
-    else   
-      begin 
-        Format.fprintf Format.err_formatter 
-        "bs-platform already exists, but version mismatch with running bsb@.";
-        exit 2
-      end 
-  else 
-  (* if Ext_sys.is_windows_or_cygwin then *)
-    begin
-      let npm_link = "npm link bs-platform" in
-      let exit_code = Sys.command npm_link in
-      if exit_code <> 0 then
-        begin
-          prerr_endline ("failed to run : " ^ npm_link);
-          exit exit_code
-        end
-    end
-  (* else
-    begin
-      (* symlink bs-platform and bsb,bsc,bsrefmt to .bin directory
-        we did not run npm link bs-platform for efficiency reasons
-      *)
-      Format.fprintf Format.std_formatter "Symlink bs-platform in %s @."  (cwd//dirname);
-      let (//) = Filename.concat in
-      let node_bin =  "node_modules" // ".bin" in
-      Bsb_build_util.mkp node_bin;
-      let p = ".." // Bs_version.package_name // "lib" in
-      let link a =
-        Unix.symlink (p//a) (node_bin // a) in
-      link "bsb" ;
-      link "bsc" ;
-      link "bsrefmt";
-      Unix.symlink
-        (Filename.dirname (Filename.dirname Sys.executable_name))
-        (Filename.concat "node_modules" Bs_version.package_name)
-    end *)
 
 let enter_dir cwd x action =
   Unix.chdir x ;
@@ -167,8 +110,7 @@ let init_sample_project ~cwd ~theme name =
     "bsb" , Filename.current_dir_name // "node_modules" // ".bin" // "bsb"
   ];
   let action = fun _ ->
-    process_themes env  theme Filename.current_dir_name Bsb_templates.root;
-    run_npm_link cwd name
+    process_themes env  theme Filename.current_dir_name Bsb_templates.root
   in
   begin match name with
     | "." ->
