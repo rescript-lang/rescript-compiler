@@ -82,7 +82,7 @@ let mergeU s1 s2 f =
 let merge s1 s2 f =
   mergeU s1 s2 (fun [@bs] a b c -> f a b c)
 
-let make (type key) (type idx) ~(id: (key, idx) id) =
+let make (type key idx) ~(id: (key, idx) id) =
   let module M = (val id) in
   {cmp = M.cmp; data = Dict.empty}
 
@@ -113,7 +113,7 @@ let mapU m f =
   {cmp = m.cmp; data = Dict.mapU m.data f}
 let map m f = mapU m (fun [@bs] a  -> f a)
 let mapWithKeyU m  f =
-  {cmp = (m.cmp); data = (Dict.mapWithKeyU m.data f)}
+  {cmp = m.cmp; data = Dict.mapWithKeyU m.data f}
 let mapWithKey m f = mapWithKeyU m (fun [@bs] a b -> f a b)
 let size map = Dict.size map.data
 let toList map = Dict.toList map.data
@@ -157,7 +157,7 @@ let cmp m1 m2 vcmp = cmpU m1 m2 (fun [@bs] a b -> vcmp a b)
 
 let getData m = m.data
 
-let getId (type key) (type identity) (m : (key,_,identity) t) : (key, identity) id =
+let getId (type key identity) (m : (key,_,identity) t) : (key, identity) id =
   let module T = struct
     type nonrec identity = identity
     type nonrec t = key
@@ -165,7 +165,7 @@ let getId (type key) (type identity) (m : (key,_,identity) t) : (key, identity) 
   end in
   (module T )
 
-let packIdData (type key) (type idx) ~(id : (key, idx) id) ~data  =
+let packIdData (type key idx) ~(id : (key, idx) id) ~data  =
   let module M = (val id) in
   {cmp = M.cmp ; data}
 
