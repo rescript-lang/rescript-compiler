@@ -1,3 +1,7 @@
+let suites :  Mt.pair_suites ref  = ref []
+let test_id = ref 0
+let eq loc x y = Mt.eq_suites ~test_id ~suites loc x y 
+
 
 
 type node = {
@@ -13,7 +17,7 @@ and t = node Js.undefined
 module S = Belt.MutableStack
 module Q = Belt.MutableQueue 
 
-let inOrder (v : t) = 
+let inOrder (v : t) : int array = 
   let current =  ref v in 
   let s : node S.t = S.make () in 
   let q : int Q.t = Q.make () in 
@@ -35,7 +39,7 @@ let inOrder (v : t) =
   done; 
   Q.toArray q 
 
-let inOrder3 (v : t) = 
+let inOrder3 (v : t) : int array = 
   let current =  ref v in 
   let s : node S.t = S.make () in 
   let q : int Q.t = Q.make () in 
@@ -130,6 +134,11 @@ let test3 =
     )
   ~r:(n 3)
 
-let () =     
-  Js.log (inOrder (Js.Undefined.return test1));
-  Js.log (inOrder3 (Js.Undefined.return test1))
+;; eq __LOC__   
+  (inOrder (Js.Undefined.return test1))
+  [|4;2;5;1;3|]
+;; eq __LOC__   
+  (inOrder3 (Js.Undefined.return test1))
+  [|4;2;5;1;3|]
+
+;; Mt.from_pair_suites __FILE__ !suites  

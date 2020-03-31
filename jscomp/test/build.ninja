@@ -102,7 +102,7 @@ build test/bs_set_bench.cmi test/bs_set_bench.cmj : cc test/bs_set_bench.ml | $s
 build test/bs_set_int_test.cmi test/bs_set_int_test.cmj : cc test/bs_set_int_test.ml | test/array_data_util.cmj test/mt.cmj $stdlib
 build test/bs_sort_test.cmi test/bs_sort_test.cmj : cc test/bs_sort_test.ml | test/array_data_util.cmj test/mt.cmj $stdlib
 build test/bs_splice_partial.cmi test/bs_splice_partial.cmj : cc test/bs_splice_partial.ml | $stdlib
-build test/bs_stack_test.cmi test/bs_stack_test.cmj : cc test/bs_stack_test.ml | $stdlib
+build test/bs_stack_test.cmi test/bs_stack_test.cmj : cc test/bs_stack_test.ml | test/mt.cmj $stdlib
 build test/bs_string_test.cmi test/bs_string_test.cmj : cc test/bs_string_test.ml | test/mt.cmj $stdlib
 build test/bs_unwrap_test.cmi test/bs_unwrap_test.cmj : cc test/bs_unwrap_test.ml | $stdlib
 build test/buffer_test.cmi test/buffer_test.cmj : cc test/buffer_test.ml | test/mt.cmj $stdlib

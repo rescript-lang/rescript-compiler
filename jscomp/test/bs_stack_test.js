@@ -1,9 +1,22 @@
 'use strict';
 
+var Mt = require("./mt.js");
 var Caml_option = require("../../lib/js/caml_option.js");
 var Js_undefined = require("../../lib/js/js_undefined.js");
 var Belt_MutableQueue = require("../../lib/js/belt_MutableQueue.js");
 var Belt_MutableStack = require("../../lib/js/belt_MutableStack.js");
+
+var suites = {
+  contents: /* [] */0
+};
+
+var test_id = {
+  contents: 0
+};
+
+function eq(loc, x, y) {
+  return Mt.eq_suites(test_id, suites, loc, x, y);
+}
 
 function inOrder(v) {
   var current = v;
@@ -102,14 +115,31 @@ var test2 = n(Caml_option.some(n(Caml_option.some(n(Caml_option.some(n(Caml_opti
 
 var test3 = n(Caml_option.some(n(Caml_option.some(n(Caml_option.some(n(undefined, undefined, 4)), undefined, 2)), undefined, 5)), Caml_option.some(n(undefined, undefined, 3)), 1);
 
-console.log(inOrder(test1));
+eq("File \"bs_stack_test.ml\", line 137, characters 6-13", inOrder(test1), [
+      4,
+      2,
+      5,
+      1,
+      3
+    ]);
 
-console.log(inOrder3(test1));
+eq("File \"bs_stack_test.ml\", line 140, characters 6-13", inOrder3(test1), [
+      4,
+      2,
+      5,
+      1,
+      3
+    ]);
+
+Mt.from_pair_suites("bs_stack_test.ml", suites.contents);
 
 var S = /* alias */0;
 
 var Q = /* alias */0;
 
+exports.suites = suites;
+exports.test_id = test_id;
+exports.eq = eq;
 exports.S = S;
 exports.Q = Q;
 exports.inOrder = inOrder;
