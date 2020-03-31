@@ -45,7 +45,7 @@ type value = I.value
 
 type t = {
   mutable data : I.t
-} [@@bs.deriving abstract]
+} 
 (** The type of sets. *)
 
 
@@ -76,13 +76,13 @@ let rec remove0 nt (x : value)=
     end
 
 let remove d v = 
-  let oldRoot = dataGet d in 
+  let oldRoot = d.data in 
   match N.toOpt oldRoot with 
   | None -> ()
   | Some oldRoot2 -> 
   let newRoot = remove0 oldRoot2 v in 
   if newRoot != oldRoot then 
-    dataSet d newRoot       
+    d.data <- newRoot       
 
 let rec removeMany0 t xs i len  =  
   if i < len then 
@@ -95,12 +95,12 @@ let rec removeMany0 t xs i len  =
 
 
 let removeMany  (d : t) xs =  
-  let oldRoot = dataGet d in 
+  let oldRoot = d.data in 
   match N.toOpt oldRoot with 
   | None -> ()
   | Some nt -> 
     let len = A.length xs in 
-    dataSet d  (removeMany0 nt xs 0 len) 
+    d.data <- removeMany0 nt xs 0 len
     
 let rec removeCheck0  nt (x : value) removed = 
   let k = N.valueGet nt in 
@@ -132,14 +132,14 @@ let rec removeCheck0  nt (x : value) removed =
 
 
 let removeCheck  (d :  t) v =  
-  let oldRoot = dataGet d in 
+  let oldRoot = d.data in 
   match N.toOpt oldRoot with 
   | None -> false 
   | Some oldRoot2 ->
     let removed = ref false in 
     let newRoot = removeCheck0  oldRoot2 v removed in 
     if newRoot != oldRoot then  
-      dataSet d newRoot ;   
+      d.data <- newRoot ;   
     removed.contents
 
     
@@ -162,18 +162,18 @@ let rec addCheck0  t (x : value) added  =
       N.return (N.balMutate nt)
 
 let addCheck (m :  t) e = 
-  let oldRoot = dataGet m in 
+  let oldRoot = m.data in 
   let added = ref false in 
   let newRoot = addCheck0 oldRoot e added in 
   if newRoot != oldRoot then 
-    dataSet m newRoot;
+    m.data <- newRoot;
   added.contents
 
 let add d k = 
-  let oldRoot = dataGet d in 
+  let oldRoot = d.data in 
   let v = I.addMutate oldRoot k in 
   if v != oldRoot then 
-    dataSet d v   
+     d.data <- v   
 
   
 let addArrayMutate t  xs =       
@@ -184,97 +184,97 @@ let addArrayMutate t  xs =
   v.contents    
 
 let mergeMany d arr = 
-  dataSet d (addArrayMutate (dataGet d) arr)
+  d.data <- addArrayMutate (d.data) arr
     
 
 
-let make  () = t ~data:N.empty
+let make  () = {data = N.empty}
 
 let isEmpty d = 
-  N.isEmpty (dataGet d)
+  N.isEmpty (d.data)
 
 let minimum d = 
-  N.minimum (dataGet d)
+  N.minimum (d.data)
 
 let minUndefined d =
-  N.minUndefined (dataGet d)
+  N.minUndefined (d.data)
 
-let maximum d = N.maximum (dataGet d)
+let maximum d = N.maximum (d.data)
 
-let maxUndefined d = N.maxUndefined (dataGet d)
+let maxUndefined d = N.maxUndefined (d.data)
 
-let forEachU d f = N.forEachU (dataGet d) f     
+let forEachU d f = N.forEachU (d.data) f     
 let forEach d f = forEachU d (fun[@bs] a -> f a)
     
-let reduceU d acc cb = N.reduceU (dataGet d) acc cb
+let reduceU d acc cb = N.reduceU (d.data) acc cb
 let reduce d acc cb = reduceU d acc (fun[@bs] a b -> cb a b)    
 
-let everyU d p = N.everyU (dataGet d) p
+let everyU d p = N.everyU (d.data) p
 let every d p = everyU d (fun[@bs] a -> p a)    
-let someU d p = N.someU (dataGet d) p   
+let someU d p = N.someU (d.data) p   
 let some d p = someU d (fun [@bs] a -> p a)
 let size d = 
-  N.size (dataGet d)
+  N.size (d.data)
 let toList d =
-  N.toList (dataGet d)
+  N.toList (d.data)
 let toArray d = 
-  N.toArray (dataGet d)
+  N.toArray (d.data)
   
 
 let fromSortedArrayUnsafe xs =
-  t ~data:(N.fromSortedArrayUnsafe xs)    
+  {data = N.fromSortedArrayUnsafe xs}
 
 let checkInvariantInternal d = 
-  N.checkInvariantInternal (dataGet d)
+  N.checkInvariantInternal (d.data)
 
 
 
 let fromArray xs = 
-  t  ~data:(I.fromArray xs)
+  { data = I.fromArray xs}
 
 let cmp d0 d1 = 
-  I.cmp (dataGet d0) (dataGet d1)
+  I.cmp (d0.data) (d1.data)
 let eq d0 d1 = 
-  I.eq (dataGet d0) (dataGet d1)
+  I.eq (d0.data) (d1.data)
 let get d x = 
-  I.get (dataGet d) x
+  I.get (d.data) x
 let getUndefined d x =
-  I.getUndefined (dataGet d) x
+  I.getUndefined (d.data) x
 let getExn d x =
-  I.getExn (dataGet d) x 
+  I.getExn (d.data) x 
 
 let split d  key =  
-  let arr = N.toArray (dataGet d) in 
+  let arr = N.toArray (d.data) in 
   let i = S.binarySearch arr key   in   
   let len = A.length arr in 
   if i < 0 then 
     let next = - i -1 in 
-    (t
-      ~data:(N.fromSortedArrayAux arr 0 next)
+    (
+      {data = N.fromSortedArrayAux arr 0 next}
     , 
-    t
-      ~data:(N.fromSortedArrayAux arr next (len - next))
+    
+      {data = N.fromSortedArrayAux arr next (len - next)}
     ), false
   else 
-    (t
-      ~data:(N.fromSortedArrayAux arr 0 i)
+    (
+      {data = N.fromSortedArrayAux arr 0 i}
     ,
-    t
-      ~data:(N.fromSortedArrayAux arr (i+1) (len - i - 1))
+    
+      {data = (N.fromSortedArrayAux arr (i+1) (len - i - 1))}
       ), true   
   
 let keepU d p = 
-  t ~data:(N.keepCopyU (dataGet d) p )
+  {data = (N.keepCopyU (d.data) p )}
 let keep d p = keepU d (fun[@bs] a -> p a)
     
 let partitionU d p = 
-  let a , b = N.partitionCopyU (dataGet d) p in 
-  t ~data:a, t ~data:b
+  let a , b = N.partitionCopyU (d.data) p in 
+  {data = a}, {data = b}
 let partition d p = partitionU d (fun[@bs] a -> p a)
     
-let subset a b = I.subset  (dataGet a) (dataGet b)
+let subset a b = I.subset  a.data b.data
 let intersect dataa datab  = 
-  let dataa, datab = dataGet dataa, dataGet datab in
+  let dataa, datab = dataa.data, datab.data in
     match N.toOpt dataa, N.toOpt datab with 
     | None, _ -> make ()
     | _, None -> make ()
@@ -296,13 +296,13 @@ let intersect dataa datab  =
     else 
     let tmp2 = A.makeUninitializedUnsafe (Pervasives.min sizea sizeb) in 
     let k = S.intersect tmp 0 sizea tmp sizea sizeb tmp2 0  in 
-    t ~data:(N.fromSortedArrayAux tmp2 0 k)
+    {data = (N.fromSortedArrayAux tmp2 0 k)}
   
 let diff dataa datab : t = 
-  let dataa, datab = dataGet dataa, dataGet datab in
+  let dataa, datab = dataa.data, datab.data in
   match N.toOpt dataa, N.toOpt datab with 
   | None, _ -> make ()
-  | _, None -> t ~data:(N.copy dataa)
+  | _, None -> {data = N.copy dataa}
   | Some dataa0, Some datab0 -> 
     let sizea, sizeb = N.lengthNode dataa0, N.lengthNode datab0 in  
     let totalSize = sizea + sizeb in 
@@ -314,17 +314,17 @@ let diff dataa datab : t =
       ||       
       (A.getUnsafe tmp (totalSize - 1)
       < A.getUnsafe tmp 0) 
-       then t ~data:(N.copy dataa) 
+       then {data = N.copy dataa}
     else 
     let tmp2 = A.makeUninitializedUnsafe sizea in 
     let k = S.diff tmp 0 sizea tmp sizea sizeb tmp2 0  in 
-    t ~data:(N.fromSortedArrayAux tmp2 0 k)
+    {data = (N.fromSortedArrayAux tmp2 0 k)}
 
 let union (dataa : t)  (datab : t) : t = 
-  let dataa, datab = dataGet dataa, dataGet datab in
+  let dataa, datab = dataa.data, datab.data in
    match N.toOpt dataa, N.toOpt datab with 
-  | None, _ -> t ~data:(N.copy datab) 
-  | _, None -> t ~data:(N.copy dataa) 
+  | None, _ -> {data = (N.copy datab)}
+  | _, None -> {data = (N.copy dataa)} 
   | Some dataa0, Some datab0 
     -> 
     let sizea, sizeb = N.lengthNode dataa0, N.lengthNode datab0 in 
@@ -335,12 +335,12 @@ let union (dataa : t)  (datab : t) : t =
     if 
       (A.getUnsafe tmp (sizea - 1) < 
       A.getUnsafe tmp sizea)  then 
-      t  ~data:(N.fromSortedArrayAux tmp 0 totalSize) 
+      {data = (N.fromSortedArrayAux tmp 0 totalSize) }
     else   
       let tmp2 = A.makeUninitializedUnsafe totalSize in 
       let k = S.union tmp 0 sizea tmp sizea sizeb tmp2 0  in 
-      t ~data:(N.fromSortedArrayAux tmp2 0 k) 
+      {data = (N.fromSortedArrayAux tmp2 0 k) }
   
-let has d x = I.has (dataGet d) x 
+let has d x = I.has (d.data) x 
 
-let copy d = t ~data:(N.copy (dataGet d)) 
+let copy d = {data = (N.copy (d.data))}
