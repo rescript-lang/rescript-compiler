@@ -24,43 +24,43 @@
 
 
 type  'a t = { mutable root : 'a opt_cell}
-and 'a opt_cell = 'a cell Js.null
+and 'a opt_cell = 'a cell option
 and 'a cell = {
   head : 'a ; 
   tail : 'a opt_cell
 } 
 
 
-let make () = {root = Js.null}
+let make () = {root = None}
 
-let clear s =  s.root <- Js.null
+let clear s =  s.root <- None
 
 let copy (s : _ t) : _ t = {root = s.root}
 
 let push s x = 
-  s.root <- Js_null.return @@ {head = x; tail = s.root}
+  s.root <- Some {head = x; tail = s.root}
 
 let topUndefined (s : 'a t) = 
-   match Js.nullToOption s.root with  
+   match s.root with  
    | None -> Js.undefined
    | Some x -> Js.Undefined.return x.head 
 
 let top s = 
-  match Js.nullToOption s.root with 
+  match s.root with 
   | None -> None 
   | Some x -> Some x.head
 
-let isEmpty s = s.root = Js.null
+let isEmpty s = s.root = None
 
 let popUndefined s =   
-  match Js.nullToOption s.root with 
+  match s.root with 
   | None -> Js.undefined
   | Some x -> 
     s.root <- x.tail;    
     Js.Undefined.return x.head
 
 let pop s =     
-    match Js.nullToOption s.root with 
+    match s.root with 
   | None -> None
   | Some x -> 
     s.root <- x.tail;
@@ -69,17 +69,17 @@ let pop s =
 
 
 let rec lengthAux (x : _ cell) acc = 
-  match Js.nullToOption x.tail with 
+  match x.tail with 
   | None -> acc + 1 
   | Some x -> lengthAux x (acc + 1)
 
 let size s =   
-  match Js.nullToOption s.root with 
+  match s.root with 
   | None -> 0 
   | Some x -> lengthAux x 0
 
 let rec iterAux (s : _ opt_cell) f =  
-  match Js.nullToOption s with 
+  match s with 
   | None -> ()
   | Some x -> 
     f x.head [@bs];
@@ -92,8 +92,8 @@ let forEach s f = forEachU s (fun [@bs] x -> f x)
     
 let dynamicPopIterU s f =    
   let cursor = ref s.root in 
-  while cursor.contents != Js.null do 
-    let v = Js_null.getUnsafe cursor.contents in 
+  while cursor.contents != None do 
+    let v = Belt_Option.getUnsafe cursor.contents in 
     s.root <- v.tail;
     f v.head [@bs];
     cursor .contents<- s.root (* using root, [f] may change it*)

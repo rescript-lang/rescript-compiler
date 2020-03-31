@@ -8,7 +8,7 @@ var Belt_MutableStack = require("../../lib/js/belt_MutableStack.js");
 function inOrder(v) {
   var current = v;
   var s = {
-    root: null
+    root: undefined
   };
   var q = Belt_MutableQueue.make(undefined);
   while(current !== undefined) {
@@ -16,7 +16,7 @@ function inOrder(v) {
     Belt_MutableStack.push(s, v$1);
     current = v$1.left;
   };
-  while(s.root !== null) {
+  while(s.root !== undefined) {
     current = Belt_MutableStack.popUndefined(s);
     var v$2 = current;
     Belt_MutableQueue.add(q, v$2.value);
@@ -33,7 +33,7 @@ function inOrder(v) {
 function inOrder3(v) {
   var current = v;
   var s = {
-    root: null
+    root: undefined
   };
   var q = Belt_MutableQueue.make(undefined);
   while(current !== undefined) {
@@ -58,7 +58,7 @@ function inOrder2(v) {
   var todo = true;
   var cursor = v;
   var s = {
-    root: null
+    root: undefined
   };
   var q = Belt_MutableQueue.make(undefined);
   while(todo) {
@@ -66,7 +66,7 @@ function inOrder2(v) {
       var v$1 = cursor;
       Belt_MutableStack.push(s, v$1);
       cursor = v$1.left;
-    } else if (s.root !== null) {
+    } else if (s.root !== undefined) {
       cursor = Belt_MutableStack.popUndefined(s);
       var current = cursor;
       Belt_MutableQueue.add(q, current.value);
