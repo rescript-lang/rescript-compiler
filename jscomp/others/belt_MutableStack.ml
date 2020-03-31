@@ -89,15 +89,17 @@ let forEachU s f =
   iterAux s.root f 
 
 let forEach s f = forEachU s (fun [@bs] x -> f x)
-    
-let dynamicPopIterU s f =    
-  let cursor = ref s.root in 
-  while cursor.contents != None do 
-    let v = Belt_Option.getUnsafe cursor.contents in 
-    s.root <- v.tail;
-    f v.head [@bs];
-    cursor .contents<- s.root (* using root, [f] may change it*)
-  done
+
+
+let rec dynamicPopIterU s  f = 
+  match s.root with 
+  | Some {tail; head }-> 
+    s.root <- tail;
+    f head [@bs] ;
+    dynamicPopIterU s  f (* using root, [f] may change it*)
+ | None -> ()   
+
+
 
 let dynamicPopIter s f = dynamicPopIterU s (fun [@bs] x -> f x)
 
