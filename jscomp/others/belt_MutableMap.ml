@@ -33,14 +33,13 @@ module A = Belt_Array
 type ('key, 'id) id = ('key, 'id) Belt_Id.comparable
 type ('key, 'id ) cmp = ('key, 'id) Belt_Id.cmp
     
-module S = struct    
-  type ('k, 'v, 'id) t = {
-    cmp: ('k, 'id) cmp;
-    mutable data: ('k, 'v) N.t
-  } [@@bs.deriving abstract]
-end
 
-type ('k, 'v, 'id) t = ('k, 'v, 'id) S.t
+type ('k, 'v, 'id) t = {
+  cmp: ('k, 'id) cmp;
+  mutable data: ('k, 'v) N.t
+} 
+
+
 
 let rec removeMutateAux nt x ~cmp = 
   let k = N.keyGet nt in 
@@ -71,13 +70,13 @@ let rec removeMutateAux nt x ~cmp =
     end    
 
 let remove d k =  
-  let oldRoot = S.dataGet d in   
+  let oldRoot = d.data in   
   match N.toOpt oldRoot with 
   | None -> ()
   | Some oldRoot2 ->
-    let newRoot = removeMutateAux ~cmp:(S.cmpGet d) oldRoot2 k in 
+    let newRoot = removeMutateAux ~cmp:(d.cmp) oldRoot2 k in 
     if newRoot != oldRoot then 
-      S.dataSet d newRoot    
+      d.data <- newRoot    
 
 
 let rec removeArrayMutateAux t xs i len ~cmp  =  
@@ -90,14 +89,14 @@ let rec removeArrayMutateAux t xs i len ~cmp  =
   else N.return t    
 
 let removeMany d xs =  
-  let oldRoot = S.dataGet d in 
+  let oldRoot = d.data in 
   match N.toOpt oldRoot with 
   | None -> ()
   | Some nt -> 
     let len = A.length xs in 
-    let newRoot = removeArrayMutateAux nt xs 0 len ~cmp:(S.cmpGet d) in 
+    let newRoot = removeArrayMutateAux nt xs 0 len ~cmp:(d.cmp) in 
     if newRoot != oldRoot then 
-      S.dataSet d newRoot
+      d.data <- newRoot
 
 
 let rec updateDone t x   f  ~cmp =   
@@ -136,96 +135,96 @@ let rec updateDone t x   f  ~cmp =
       N.return (N.balMutate nt)  
       
 let updateU t  x f =       
-  let oldRoot = S.dataGet t in 
-  let newRoot = updateDone oldRoot x f ~cmp:(S.cmpGet t) in 
+  let oldRoot = t.data in 
+  let newRoot = updateDone oldRoot x f ~cmp:(t.cmp) in 
   if  newRoot != oldRoot then 
-    S.dataSet t newRoot 
+    t.data <- newRoot 
 let update t x f = updateU t x (fun [@bs] a -> f a)
     
 let make (type key) (type identity) ~(id : (key,identity) id) =
   let module M = (val id) in 
-  S.t ~cmp:M.cmp ~data:N.empty
+  {cmp = M.cmp ; data = N.empty}
 
-let clear m = S.dataSet m N.empty
+let clear m = m.data <- N.empty
     
 let isEmpty d = 
-  N.isEmpty (S.dataGet d)
+  N.isEmpty (d.data)
     
 
-let minKey m = N.minKey (S.dataGet m)
-let minKeyUndefined m = N.minKeyUndefined (S.dataGet m)
-let maxKey m = N.maxKey (S.dataGet m)
-let maxKeyUndefined m = N.maxKeyUndefined (S.dataGet m)
-let minimum m = N.minimum (S.dataGet m)
-let minUndefined m = N.minUndefined (S.dataGet m) 
-let maximum m = N.maximum (S.dataGet m)
-let maxUndefined m = N.maxUndefined (S.dataGet m)
+let minKey m = N.minKey (m.data)
+let minKeyUndefined m = N.minKeyUndefined (m.data)
+let maxKey m = N.maxKey (m.data)
+let maxKeyUndefined m = N.maxKeyUndefined (m.data)
+let minimum m = N.minimum (m.data)
+let minUndefined m = N.minUndefined (m.data) 
+let maximum m = N.maximum (m.data)
+let maxUndefined m = N.maxUndefined (m.data)
 
-let forEachU d f = N.forEachU (S.dataGet d) f
+let forEachU d f = N.forEachU (d.data) f
 let forEach d f = forEachU d (fun [@bs] a b -> f a b)
-let reduceU d acc cb = N.reduceU (S.dataGet d) acc cb
+let reduceU d acc cb = N.reduceU (d.data) acc cb
 let reduce d acc cb = reduceU d acc (fun[@bs] a b c -> cb a b c)
-let everyU d p = N.everyU (S.dataGet d) p
+let everyU d p = N.everyU (d.data) p
 let every d p = everyU d (fun[@bs] a b -> p a b)
-let someU d p = N.someU (S.dataGet d) p       
+let someU d p = N.someU (d.data) p       
 let some d p = someU d (fun [@bs] a b -> p a b)
 let size d = 
-  N.size (S.dataGet d)
+  N.size (d.data)
 let toList d =
-  N.toList (S.dataGet d)
+  N.toList (d.data)
 let toArray d = 
-  N.toArray (S.dataGet d)
+  N.toArray (d.data)
 let keysToArray d =   
-  N.keysToArray (S.dataGet d)
+  N.keysToArray (d.data)
 let valuesToArray d =   
-  N.valuesToArray (S.dataGet d)
+  N.valuesToArray (d.data)
     
 (* let fromSortedArrayUnsafe (type key) (type identity) ~(id : (key,identity) id) xs : _ t =
   let module M = (val id) in 
   S.t ~data:(N.fromSortedArrayUnsafe xs) ~cmp:M.cmp *)
     
 let checkInvariantInternal d = 
-  N.checkInvariantInternal (S.dataGet d)  
+  N.checkInvariantInternal (d.data)  
 
 let cmpU m1 m2 cmp = 
-  N.cmpU ~kcmp:(S.cmpGet m1) ~vcmp:cmp (S.dataGet m1) (S.dataGet m2)
+  N.cmpU ~kcmp:(m1.cmp) ~vcmp:cmp (m1.data) (m2.data)
 let cmp m1 m2 cmp = cmpU m1 m2 (fun[@bs] a b -> cmp a b)
     
 let eqU m1 m2 cmp = 
-  N.eqU ~kcmp:(S.cmpGet m1) ~veq:cmp (S.dataGet m1) (S.dataGet m2)
+  N.eqU ~kcmp:(m1.cmp) ~veq:cmp (m1.data) (m2.data)
 let eq m1 m2 cmp = eqU m1 m2 (fun[@bs] a b -> cmp a b)
 
 let mapU m f = 
-  S.t ~cmp:(S.cmpGet m) ~data:(N.mapU (S.dataGet m) f)
+  {cmp = m.cmp; data = N.mapU (m.data) f}
 let map m f = mapU m (fun[@bs] a  -> f a )    
 let mapWithKeyU m f = 
-  S.t ~cmp:(S.cmpGet m) ~data:(N.mapWithKeyU (S.dataGet m) f)
+  {cmp = m.cmp; data = N.mapWithKeyU (m.data) f}
 let mapWithKey m f = mapWithKeyU m (fun [@bs] a b -> f a b)     
 let get m x  = 
-  N.get ~cmp:(S.cmpGet m)  (S.dataGet m) x
+  N.get ~cmp:(m.cmp)  (m.data) x
     
 let getUndefined m x = 
-  N.getUndefined ~cmp:(S.cmpGet m)  (S.dataGet m) x
+  N.getUndefined ~cmp:(m.cmp)  (m.data) x
     
 let getWithDefault m x def = 
-  N.getWithDefault ~cmp:(S.cmpGet m) (S.dataGet m) x  def
+  N.getWithDefault ~cmp:(m.cmp) (m.data) x  def
     
 let getExn m x = 
-  N.getExn ~cmp:(S.cmpGet m) (S.dataGet m) x
+  N.getExn ~cmp:(m.cmp) (m.data) x
     
 let has m x = 
-  N.has ~cmp:(S.cmpGet m) (S.dataGet m) x
+  N.has ~cmp:(m.cmp) (m.data) x
     
-let fromArray (type k) (type identity) data ~(id : (k,identity) id)= 
+let fromArray (type k  identity) data ~(id : (k,identity) id)= 
   let module M = (val id ) in
   let cmp = M.cmp in 
-  S.t ~cmp  ~data:(N.fromArray ~cmp data)
+  {cmp; data = N.fromArray ~cmp data}
   
 let set  m e v = 
-  let oldRoot = S.dataGet m in 
-  let newRoot = N.updateMutate ~cmp:(S.cmpGet m) oldRoot e v in 
+  let oldRoot = m.data in 
+  let newRoot = N.updateMutate ~cmp:(m.cmp) oldRoot e v in 
   if newRoot != oldRoot then 
-    S.dataSet m newRoot
+    m.data <- newRoot
 
 let mergeManyAux t  xs ~cmp =     
   let v = ref t in 
@@ -236,9 +235,9 @@ let mergeManyAux t  xs ~cmp =
   v.contents 
 
 let mergeMany d xs =   
-  let oldRoot = S.dataGet d in 
-  let newRoot = mergeManyAux oldRoot xs ~cmp:(S.cmpGet d) in 
+  let oldRoot = d.data in 
+  let newRoot = mergeManyAux oldRoot xs ~cmp:(d.cmp) in 
   if newRoot != oldRoot then 
-    S.dataSet d newRoot
+    d.data <- newRoot
 
 
