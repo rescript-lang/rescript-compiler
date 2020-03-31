@@ -27,25 +27,25 @@ and 'a t = {
   mutable last: 'a cell
 } 
 
-let null  = None
+
 
 
 let make () =   
     {
       length = 0;
-      first = null;
-      last = null }
+      first = None;
+      last = None }
 
 
 let clear q =
   q.length <-  0;
-  q.first <-  null;
-  q.last <-  null
+  q.first <-  None;
+  q.last <-  None
 
 let add q x =
   let cell = Some {
       content = x;
-      next = null } in
+      next = None } in
   match  q.last with
   | None ->
     q.length <- 1;
@@ -127,7 +127,7 @@ let rec copyAux qRes prev cell =
   | None -> qRes.last <-  prev; qRes
   | Some x  ->
     let content = x.content in 
-    let res =  Some {content ; next = null}  in
+    let res =  Some {content ; next = None}  in
     begin match  prev with
       | None ->  qRes.first <- res
       | Some p -> p.next <-  res
@@ -135,7 +135,7 @@ let rec copyAux qRes prev cell =
     copyAux qRes res (x.next)
 
 let copy q =
-  copyAux {length = q.length; first = null;  last = null}  null q.first
+  copyAux {length = q.length; first = None;  last = None}  None q.first
 
 
       
@@ -144,7 +144,7 @@ let rec copyMapAux qRes prev cell f =
   | None ->  qRes.last <- prev; qRes
   | Some x  ->
     let content = f x.content [@bs] in 
-    let res = Some {content; next = null}  in
+    let res = Some {content; next = None}  in
     begin match  prev with (*TODO: optimize to remove such check*)
       | None -> qRes.first <- res
       | Some p -> p.next <-  res
@@ -152,7 +152,7 @@ let rec copyMapAux qRes prev cell f =
     copyMapAux qRes res x.next f
 
 let mapU q f =
-  copyMapAux {length = q.length; first = null; last = null}  null q.first f
+  copyMapAux {length = q.length; first = None; last = None}  None q.first f
     
 let map q f = mapU q (fun [@bs] a -> f a)
     
