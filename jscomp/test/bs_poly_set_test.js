@@ -186,33 +186,13 @@ b("File \"bs_poly_set_test.ml\", line 86, characters 4-11", undefined === Belt_S
 
 eq("File \"bs_poly_set_test.ml\", line 88, characters 5-12", Belt_SetDict.size(u25.data), 60);
 
-var m = {
-  cmp: IntCmp.cmp,
-  data: null
-};
+b("File \"bs_poly_set_test.ml\", line 89, characters 4-11", Belt_SetDict.minimum(null) === undefined);
 
-b("File \"bs_poly_set_test.ml\", line 89, characters 4-11", Belt_SetDict.minimum(m.data) === undefined);
+b("File \"bs_poly_set_test.ml\", line 90, characters 4-11", Belt_SetDict.maximum(null) === undefined);
 
-var m$1 = {
-  cmp: IntCmp.cmp,
-  data: null
-};
+b("File \"bs_poly_set_test.ml\", line 91, characters 4-11", Belt_SetDict.minUndefined(null) === undefined);
 
-b("File \"bs_poly_set_test.ml\", line 90, characters 4-11", Belt_SetDict.maximum(m$1.data) === undefined);
-
-var m$2 = {
-  cmp: IntCmp.cmp,
-  data: null
-};
-
-b("File \"bs_poly_set_test.ml\", line 91, characters 4-11", Belt_SetDict.minUndefined(m$2.data) === undefined);
-
-var m$3 = {
-  cmp: IntCmp.cmp,
-  data: null
-};
-
-b("File \"bs_poly_set_test.ml\", line 92, characters 4-11", Belt_SetDict.maxUndefined(m$3.data) === undefined);
+b("File \"bs_poly_set_test.ml\", line 92, characters 4-11", Belt_SetDict.maxUndefined(null) === undefined);
 
 function testIterToList(xs) {
   var v = {
@@ -395,11 +375,11 @@ Belt_List.forEach(/* :: */[
 
 var a = Belt_Set.fromArray([], IntCmp);
 
-var m$4 = Belt_Set.keep(a, (function (x) {
+var m = Belt_Set.keep(a, (function (x) {
         return x % 2 === 0;
       }));
 
-b("File \"bs_poly_set_test.ml\", line 153, characters 4-11", Belt_SetDict.isEmpty(m$4.data));
+b("File \"bs_poly_set_test.ml\", line 153, characters 4-11", Belt_SetDict.isEmpty(m.data));
 
 var match$5 = Belt_Set.split({
       cmp: IntCmp.cmp,

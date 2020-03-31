@@ -36,133 +36,130 @@ type ('value, 'id ) cmp = ('value, 'id) Belt_Id.cmp
 type ('value, 'id) t = {
     cmp: ('value, 'id) cmp;
     data: ('value, 'id) Dict.t;
-  } [@@bs.deriving abstract]
+  } 
 
 
 
     
-let fromArray (type value) (type identity) data ~(id : (value,identity) id)  = 
+let fromArray (type value identity) data ~(id : (value,identity) id)  = 
   let module M = (val id ) in
   let cmp = M.cmp in 
-  t ~cmp ~data:(Dict.fromArray ~cmp data)
+  {cmp; data = (Dict.fromArray ~cmp data)}
 
 let remove m e =      
-  let cmp, data  = cmpGet m, dataGet m  in
+  let {cmp; data}  = m  in
   let newData = Dict.remove ~cmp data e in 
   if newData == data then m 
-  else t ~cmp ~data:newData  
+  else {cmp; data = newData} 
 
 let add m e =   
-  let cmp, data = cmpGet m, dataGet m in
+  let {cmp; data} = m in
   let newData = Dict.add ~cmp  data e in 
   if newData == data then m 
   else 
-    t ~cmp ~data:newData
+    {cmp; data = newData}
 
-let mergeMany m e =
-  let cmp = cmpGet m in 
-  t ~cmp  ~data:(Dict.mergeMany ~cmp (dataGet m) e )
+let mergeMany ({cmp} as m) e =
+  {cmp;  data = Dict.mergeMany ~cmp m.data e}
 
-let removeMany  m e = 
-  let cmp = cmpGet m in 
-  t ~cmp ~data:(Dict.removeMany ~cmp (dataGet m) e)
+let removeMany  ({cmp;} as m) e = 
+  {cmp; data = Dict.removeMany ~cmp m.data e}
 
-let union m n =   
-  let cmp = cmpGet m in 
-  t ~data:(Dict.union ~cmp (dataGet m) (dataGet n)) ~cmp
+let union ({cmp;} as m) n =   
+  {data = (Dict.union ~cmp m.data n.data) ; cmp}
 
 let intersect m n =
-  let cmp = cmpGet m in 
-  t ~data:(Dict.intersect ~cmp (dataGet m) (dataGet n)) ~cmp
+  let cmp = m.cmp in 
+  {data = (Dict.intersect ~cmp m.data n.data) ;cmp}
 
 let diff m n =
-  let cmp = cmpGet m in 
-  t ~cmp ~data:(Dict.diff ~cmp (dataGet m) (dataGet n))
+  let cmp = m.cmp in 
+  {cmp; data = (Dict.diff ~cmp m.data n.data)}
 
 let subset m n =     
-  let cmp = cmpGet m in 
-  Dict.subset ~cmp (dataGet m) (dataGet n) 
+  let cmp = m.cmp in 
+  Dict.subset ~cmp m.data n.data 
 
 let split m e = 
-  let cmp = cmpGet m in  
-  let (l,  r), b = Dict.split ~cmp (dataGet m) e in 
-  (t ~cmp ~data:l, t ~cmp ~data:r), b
+  let cmp = m.cmp in  
+  let (l,  r), b = Dict.split ~cmp m.data e in 
+  ({cmp; data = l}, {cmp; data=r}), b
   
 let make (type value) (type identity) ~(id : (value, identity) id) =
   let module M = (val id) in 
-  t ~cmp:M.cmp  ~data:Dict.empty
+  {cmp = M.cmp;  data = Dict.empty}
 
-let isEmpty m = Dict.isEmpty (dataGet m)
+let isEmpty m = Dict.isEmpty m.data
 
 let cmp m n =
-  let cmp = cmpGet m in 
-  Dict.cmp ~cmp (dataGet m) (dataGet n)
+  let cmp = m.cmp in 
+  Dict.cmp ~cmp m.data n.data
 
 let eq m n =     
-  Dict.eq ~cmp:(cmpGet m) (dataGet m) (dataGet n)    
+  Dict.eq ~cmp:(m.cmp) m.data n.data    
 
-let forEachU m f  = Dict.forEachU (dataGet m) f 
+let forEachU m f  = Dict.forEachU m.data f 
 let forEach m  f = forEachU m (fun [@bs] a -> f a)
 
-let reduceU m acc f = Dict.reduceU (dataGet m) acc f
+let reduceU m acc f = Dict.reduceU m.data acc f
 let reduce m acc f = reduceU m acc (fun [@bs] a b -> f a b)
     
-let everyU m f  = Dict.everyU  (dataGet m) f
+let everyU m f  = Dict.everyU  m.data f
 let every m f  = everyU m (fun [@bs] a -> f a)
     
-let someU m f = Dict.someU  (dataGet m) f
+let someU m f = Dict.someU  m.data f
 let some m f = someU m (fun [@bs] a -> f a)
 
 let keepU m f  = 
-  t ~cmp:(cmpGet m) ~data:(Dict.keepU (dataGet m) f )
+  {cmp=(m.cmp) ; data = (Dict.keepU m.data f )}
 let keep m f = keepU m (fun [@bs] a -> f a)
     
 let partitionU m f  = 
-  let l,r = Dict.partitionU (dataGet m) f in
-  let cmp = cmpGet m in 
-  t ~data:l ~cmp, t ~data:r ~cmp
+  let l,r = Dict.partitionU m.data f in
+  let cmp = m.cmp in 
+  {data = l ; cmp}, { data = r; cmp}
 let partition m f = partitionU m (fun [@bs] a -> f a)
     
-let size m = Dict.size (dataGet m) 
-let toList m = Dict.toList (dataGet m)
-let toArray m = Dict.toArray (dataGet m)
+let size m = Dict.size m.data 
+let toList m = Dict.toList m.data
+let toArray m = Dict.toArray m.data
 
-let minimum m = Dict.minimum (dataGet m)
-let minUndefined m = Dict.minUndefined (dataGet m) 
-let maximum m = Dict.maximum (dataGet m)
-let maxUndefined m = Dict.maxUndefined (dataGet m)
+let minimum m = Dict.minimum m.data
+let minUndefined m = Dict.minUndefined m.data 
+let maximum m = Dict.maximum m.data
+let maxUndefined m = Dict.maxUndefined m.data
 
 
 let get m e =   
-  Dict.get ~cmp:(cmpGet m) (dataGet m) e
+  Dict.get ~cmp:(m.cmp) m.data e
 
 let getUndefined m e =   
-  Dict.getUndefined ~cmp:(cmpGet m) (dataGet m) e
+  Dict.getUndefined ~cmp:(m.cmp) m.data e
 
 let getExn m e =   
-  Dict.getExn ~cmp:(cmpGet m) (dataGet m) e
+  Dict.getExn ~cmp:(m.cmp) m.data e
 
 let has m e = 
-  Dict.has ~cmp:(cmpGet m) (dataGet m) e
+  Dict.has ~cmp:(m.cmp) m.data e
 
 let fromSortedArrayUnsafe (type value) (type identity) xs ~(id : (value,identity) id ) =
   let module M = (val id) in 
-  t ~cmp:M.cmp ~data:(Dict.fromSortedArrayUnsafe xs)
+  {cmp = M.cmp; data = (Dict.fromSortedArrayUnsafe xs)}
 
-let getData = dataGet
+let getData m = m.data
 
 let getId (type value) (type identity) (m : (value,identity) t) : (value, identity) id =
   let module T = struct
     type nonrec identity = identity
     type nonrec t = value
-    let cmp =  cmpGet m
+    let cmp =  m.cmp
   end in
   (module T)
   
 let packIdData (type value) (type identity) ~(id : (value, identity) id) ~data  =
   let module M = (val id) in 
-  t ~cmp:M.cmp ~data
+  {cmp =  M.cmp; data}
 
-let checkInvariantInternal d = Dict.checkInvariantInternal (dataGet d)
+let checkInvariantInternal d = Dict.checkInvariantInternal d.data
 
 

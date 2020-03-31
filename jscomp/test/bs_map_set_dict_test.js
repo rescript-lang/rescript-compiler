@@ -37,9 +37,13 @@ var m0 = {
   data: null
 };
 
+var m00_cmp = Ic3.cmp;
+
+var m00_data = null;
+
 var m00 = {
-  cmp: Ic3.cmp,
-  data: null
+  cmp: m00_cmp,
+  data: m00_data
 };
 
 var I2 = Belt_Id.comparable((function (x, y) {
@@ -79,16 +83,11 @@ var m11 = Belt_MapDict.set(null, 1, 1, Icmp.cmp);
 
 console.log(m11);
 
-var v = {
-  cmp: Icmp2.cmp,
-  data: null
-};
-
 var m_dict$1 = Belt_Map.getId(m);
 
 var cmp = m_dict$1.cmp;
 
-var data$2 = v.data;
+var data$2 = null;
 
 for(var i$1 = 0; i$1 <= 100000; ++i$1){
   data$2 = Belt_SetDict.add(data$2, i$1, cmp);
