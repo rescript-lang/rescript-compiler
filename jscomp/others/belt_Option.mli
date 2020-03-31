@@ -52,6 +52,13 @@ val getExn : 'a option -> 'a
   ]}
 *)
 
+external getUnsafe :
+  'a option -> 'a = "%identity"
+(** [getUnsafe x] returns x 
+  This is an unsafe operation, it assumes x is neither not None 
+  or (Some (None .. ))
+*)
+
 val mapWithDefaultU : 'a option -> 'b -> ('a -> 'b [@bs]) -> 'b
 (** Uncurried version of [mapWithDefault] *)
 

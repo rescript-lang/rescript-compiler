@@ -178,9 +178,13 @@ function acc(m, is) {
               }));
 }
 
+var m_cmp = Icmp.cmp;
+
+var m_data = null;
+
 var m = {
-  cmp: Icmp.cmp,
-  data: null
+  cmp: m_cmp,
+  data: m_data
 };
 
 var m1 = acc(m, Belt_Array.concat(Array_data_util.randomRange(0, 20), Array_data_util.randomRange(10, 30)));
@@ -194,9 +198,13 @@ b("File \"bs_poly_map_test.ml\", line 103, characters 4-11", Belt_Map.eq(m1, Bel
             return x === y;
           })));
 
+var v0_cmp = Icmp.cmp;
+
+var v0_data = null;
+
 var v0 = {
-  cmp: Icmp.cmp,
-  data: null
+  cmp: v0_cmp,
+  data: v0_data
 };
 
 var v1 = Belt_Map.mergeMany(v0, Belt_Array.map(Array_data_util.randomRange(0, 10000), (function (x) {
