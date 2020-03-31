@@ -32,6 +32,8 @@ let getExn = function
   | Some x -> x
   | None -> [%assert "getExn"]
 
+external getUnsafe : 'a option -> 'a = "%identity"  
+
 let mapWithDefaultU opt default f = match opt with
   | Some x -> (f x [@bs])
   | None -> default
