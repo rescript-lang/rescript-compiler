@@ -37,11 +37,12 @@ module A = Belt_Array
 
 
 let rec copy ( x : _ t) : _ t= 
-  C.container
-    ~hash:(C.hashGet x)
-    ~eq:(C.eqGet x)
-    ~size:(C.sizeGet x)
-    ~buckets:(copyBuckets (C.bucketsGet x))
+  {
+    hash = x.hash;
+    eq = x.eq;
+    size = x.size;
+    buckets = copyBuckets x.buckets
+  }
 and copyBuckets ( buckets : _ bucket C.opt array) =  
   let len = A.length buckets in 
   let newBuckets = A.makeUninitializedUnsafe len in 
@@ -85,7 +86,7 @@ let rec do_bucket_iter ~f buckets =
     f cell.key  cell.value [@bs] |. ignore ; do_bucket_iter ~f cell.next
 
 let forEachU h f =
-  let d = C.bucketsGet h in
+  let d = h.C.buckets in
   for i = 0 to A.length d - 1 do
     do_bucket_iter ~f (A.getUnsafe d i)
   done
@@ -100,7 +101,7 @@ let rec do_bucket_fold ~f b accu =
     do_bucket_fold ~f cell.next (f accu cell.key cell.value  [@bs]) 
 
 let reduceU  h init f =
-  let d = C.bucketsGet h in
+  let d =h.C.buckets in
   let accu = ref init in
   for i = 0 to A.length d - 1 do
     accu .contents<- do_bucket_fold ~f (A.getUnsafe d i) accu.contents
@@ -111,7 +112,7 @@ let reduce h init f = reduceU h init (fun [@bs] a b c -> f a b c)
 
 
 let getMaxBucketLength h =
-  A.reduceU (C.bucketsGet h) 0
+  A.reduceU h.C.buckets 0
     (fun[@bs] m b -> 
        let len = bucketLength 0 b in
        Pervasives.max m len)
@@ -119,7 +120,7 @@ let getMaxBucketLength h =
 let getBucketHistogram h =
   let mbl = getMaxBucketLength h in 
   let histo = A.makeByU (mbl + 1) (fun[@bs] _ -> 0) in
-  A.forEachU (C.bucketsGet h)
+  A.forEachU h.C.buckets
     (fun[@bs] b ->
        let l = bucketLength 0 b in
        A.setUnsafe histo l (A.getUnsafe histo l + 1)
@@ -128,8 +129,8 @@ let getBucketHistogram h =
 
 let logStats h =
   let histogram = getBucketHistogram h in 
-  Js.log [%obj{ bindings = C.sizeGet h;
-                buckets = A.length (C.bucketsGet h);
+  Js.log [%obj{ bindings = h.C.size;
+                buckets = A.length h.C.buckets;
                 histogram}]
 
 
@@ -138,19 +139,19 @@ let rec filterMapInplaceBucket f h i prec cell =
   let n = cell.next in
   begin match f cell.key cell.value [@bs] with
     | None ->
-      C.sizeSet h (C.sizeGet h - 1); (* delete *)
+      h.C.size <- (h.C.size- 1); (* delete *)
       begin match C.toOpt n with 
         | Some nextCell -> 
           filterMapInplaceBucket f h i prec nextCell
         | None -> 
           match C.toOpt prec with 
-          | None -> A.setUnsafe (C.bucketsGet h) i prec
+          | None -> A.setUnsafe h.C.buckets i prec
           | Some cell -> cell.next <- n
       end
     | Some data -> (* replace *)
       let bucket = C.return cell in 
       begin match C.toOpt prec with
-        | None -> A.setUnsafe (C.bucketsGet h) i  bucket 
+        | None -> A.setUnsafe h.C.buckets i  bucket 
         | Some _ -> cell.next <- bucket
       end;
       cell.value <- data;
@@ -161,7 +162,7 @@ let rec filterMapInplaceBucket f h i prec cell =
   end
 
 let keepMapInPlaceU h f =
-  let h_buckets = C.bucketsGet h in
+  let h_buckets = h.C.buckets in
   for i = 0 to A.length h_buckets - 1 do
     let v = A.getUnsafe h_buckets i in 
     match C.toOpt v with 
@@ -178,7 +179,7 @@ let rec fillArray i arr cell =
   | Some v -> fillArray (i + 1) arr v 
 
 (* let toArray h = 
-  let d = C.bucketsGet h in 
+  let d =h.bucketsin 
   let current = ref 0 in 
   let arr = A.makeUninitializedUnsafe (C.sizeGet h) in 
   for i = 0 to A.length d - 1 do  
@@ -197,9 +198,9 @@ let rec fillArrayMap i arr cell f =
   | Some v -> fillArrayMap (i + 1) arr v f
 
 let linear h f = 
-  let d = C.bucketsGet h in 
+  let d = h.C.buckets in 
   let current = ref 0 in 
-  let arr = A.makeUninitializedUnsafe (C.sizeGet h) in 
+  let arr = A.makeUninitializedUnsafe h.C.size in 
   for i = 0 to A.length d - 1 do  
     let cell = A.getUnsafe d i in 
     match C.toOpt cell with 

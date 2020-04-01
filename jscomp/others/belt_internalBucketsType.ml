@@ -29,7 +29,7 @@ type ('hash, 'eq, 'c) container =
     hash: 'hash;
     eq: 'eq
   }
-[@@bs.deriving abstract]
+
 
 module A = Belt_Array
 external toOpt : 'a opt -> 'a option = "#undefined_to_opt"
@@ -43,18 +43,17 @@ let rec power_2_above x n =
 
 let make  ~hash ~eq ~hintSize =
   let s = power_2_above 16 hintSize in  
-  container
-    ~size:0
-    ~buckets:(A.makeUninitialized s)
-    ~hash
-    ~eq
+  { size = 0;
+    buckets = A.makeUninitialized s;
+    hash;
+    eq }
 
 let clear h =
-  sizeSet h 0;
-  let h_buckets = bucketsGet h in 
+  h.size <- 0;
+  let h_buckets = h.buckets in 
   let len = A.length h_buckets in
   for i = 0 to len - 1 do
     A.setUnsafe h_buckets i  emptyOpt
   done
 
-let isEmpty h = sizeGet h = 0 
+let isEmpty h = h.size = 0 

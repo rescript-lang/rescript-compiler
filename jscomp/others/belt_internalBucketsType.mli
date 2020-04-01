@@ -29,7 +29,7 @@ type ('hash, 'eq, 'c) container =
     mutable buckets: 'c opt array;  (* the buckets *)
     hash: 'hash;
     eq: 'eq;
-  } [@@bs.deriving abstract]
+  } 
 
 external toOpt : 'a opt -> 'a option = "#undefined_to_opt"
 external return : 'a -> 'a opt = "%identity"
