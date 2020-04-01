@@ -53,21 +53,21 @@ let rec remove0 nt x ~cmp =
     | _, None -> l 
     | Some _,  Some nr ->  
       nt.right <- (N.removeMinAuxWithRootMutate nt nr);
-      N.return (N.balMutate nt)
+      Some (N.balMutate nt)
    else 
     begin 
       if c < 0 then 
         match nt.left with         
-        | None -> N.return nt 
+        | None -> Some nt 
         | Some l ->
           nt.left <- (remove0 ~cmp l x );
-          N.return (N.balMutate nt)
+          Some (N.balMutate nt)
       else 
         match nt.right with 
-        | None -> N.return nt 
+        | None -> Some nt 
         | Some r -> 
           nt.right <- (remove0 ~cmp r x);
-          N.return (N.balMutate nt)
+          Some (N.balMutate nt)
     end
 
 let remove  d  v =  
@@ -85,9 +85,9 @@ let rec removeMany0 t xs i len ~cmp  =
     let ele = A.getUnsafe xs i in 
     let u = remove0 t ele ~cmp in 
     match u with 
-    | None -> N.empty
+    | None -> None
     | Some t -> removeMany0 t xs (i+1) len ~cmp 
-  else N.return t    
+  else Some t    
 
 let removeMany d xs =  
   let oldRoot = d.data in 
@@ -111,21 +111,21 @@ let rec removeCheck0  nt x removed ~cmp=
     | _, None -> l  
     | Some _,  Some nr ->  
       nt.right <- (N.removeMinAuxWithRootMutate nt nr);
-      N.return (N.balMutate nt)
+      Some (N.balMutate nt)
   else 
     begin 
       if c < 0 then 
         match nt.left with         
-        | None -> N.return nt 
+        | None -> Some nt 
         | Some l ->
           nt.left <- (removeCheck0 ~cmp l x removed);
-          N.return (N.balMutate nt)
+          Some (N.balMutate nt)
       else 
         match nt.right with 
-        | None -> N.return nt 
+        | None -> Some nt 
         | Some r -> 
           nt.right <- (removeCheck0 ~cmp r x removed);
-          N.return (N.balMutate nt)
+          Some (N.balMutate nt)
     end
 
 
@@ -160,7 +160,7 @@ let rec addCheck0  t x added ~cmp  =
        else   
          nt.right <- (addCheck0 ~cmp r x added );
       );
-      N.return (N.balMutate nt)
+      Some (N.balMutate nt)
 
 let addCheck m e = 
   let oldRoot = m.data in 
@@ -189,7 +189,7 @@ let mergeMany d xs =
 
 let make (type value) (type identity) ~(id : (value, identity) id) =
   let module M = (val id) in 
-  {cmp = M.cmp ; data = N.empty}
+  {cmp = M.cmp ; data = None}
     
 let isEmpty d = 
   N.isEmpty (d.data)
@@ -288,8 +288,8 @@ let subset a b =
 let intersect a b  : _ t = 
   let cmp = a.cmp in 
   match a.data, b.data with 
-  | None, _ -> { cmp; data = N.empty}
-  | _, None -> { cmp; data = N.empty}
+  | None, _ -> { cmp; data = None}
+  | _, None -> { cmp; data = None}
   | Some dataa0, Some datab0 ->  
     let sizea, sizeb = 
       N.lengthNode dataa0, N.lengthNode datab0 in          
@@ -305,7 +305,7 @@ let intersect a b  : _ t =
           (A.getUnsafe tmp (totalSize - 1))
           (A.getUnsafe tmp 0) [@bs] < 0 
        )
-    then {cmp; data = N.empty}
+    then {cmp; data = None}
     else 
       let tmp2 = A.makeUninitializedUnsafe (Pervasives.min sizea sizeb) in 
       let k = Sort.intersectU tmp 0 sizea tmp sizea sizeb tmp2 0 p in 
@@ -316,7 +316,7 @@ let diff a b : _ t =
   let cmp = a.cmp in 
   let dataa = a.data in 
   match dataa, b.data with 
-  | None, _ -> {cmp; data = N.empty}
+  | None, _ -> {cmp; data = None}
   | _, None -> 
     {data = (N.copy dataa); cmp}
   | Some dataa0, Some datab0

@@ -141,7 +141,7 @@ var u25 = Belt_Set.add(u22, 59);
 
 var u26 = Belt_Set.add({
       cmp: IntCmp.cmp,
-      data: Belt_SetDict.empty
+      data: undefined
     }, 3);
 
 var ss = Belt_Array.makeByAndShuffle(100, (function (i) {
@@ -186,13 +186,13 @@ b("File \"bs_poly_set_test.ml\", line 86, characters 4-11", undefined === Belt_S
 
 eq("File \"bs_poly_set_test.ml\", line 88, characters 5-12", Belt_SetDict.size(u25.data), 60);
 
-b("File \"bs_poly_set_test.ml\", line 89, characters 4-11", Belt_SetDict.minimum(Belt_SetDict.empty) === undefined);
+b("File \"bs_poly_set_test.ml\", line 89, characters 4-11", Belt_SetDict.minimum(undefined) === undefined);
 
-b("File \"bs_poly_set_test.ml\", line 90, characters 4-11", Belt_SetDict.maximum(Belt_SetDict.empty) === undefined);
+b("File \"bs_poly_set_test.ml\", line 90, characters 4-11", Belt_SetDict.maximum(undefined) === undefined);
 
-b("File \"bs_poly_set_test.ml\", line 91, characters 4-11", Belt_SetDict.minUndefined(Belt_SetDict.empty) === undefined);
+b("File \"bs_poly_set_test.ml\", line 91, characters 4-11", Belt_SetDict.minUndefined(undefined) === undefined);
 
-b("File \"bs_poly_set_test.ml\", line 92, characters 4-11", Belt_SetDict.maxUndefined(Belt_SetDict.empty) === undefined);
+b("File \"bs_poly_set_test.ml\", line 92, characters 4-11", Belt_SetDict.maxUndefined(undefined) === undefined);
 
 function testIterToList(xs) {
   var v = {
@@ -383,7 +383,7 @@ b("File \"bs_poly_set_test.ml\", line 153, characters 4-11", Belt_SetDict.isEmpt
 
 var match$5 = Belt_Set.split({
       cmp: IntCmp.cmp,
-      data: Belt_SetDict.empty
+      data: undefined
     }, 0);
 
 var match$6 = match$5[0];

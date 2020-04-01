@@ -38,10 +38,6 @@ and 'value node  =  {
 } 
 
 type ('a, 'b) cmp = ('a, 'b) Belt_Id.cmp
-(* TODO: node is used in [subset] *)
-
-external return : 'a -> 'a option = "%identity"
-val empty : 'a t 
 
 
 

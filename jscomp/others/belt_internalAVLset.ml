@@ -37,8 +37,6 @@ module A = Belt_Array
 module S = Belt_SortArray
 
 
-external return : 'a -> 'a option = "%identity"
-let empty : 'a option = None
 external unsafeCoerce : 'a option -> 'a = "%identity"
 
 type ('a, 'b) cmp = ('a, 'b) Belt_Id.cmp
@@ -57,9 +55,9 @@ let rec copy n =
   | None -> n
   | Some n ->
     let l,r = n.left, n.right in
-    { left = (copy l) ; right = (copy r);
+    Some { left = (copy l) ; right = (copy r);
       value = n.value; height = n.height}
-    |. return  
+    
 (* Creates a new node with leftGet son l, value v and right son r.
    We must have all elements of l < v < all elements of r.
    l and r must be balanced and | treeHeight l - treeHeight r | <= 2.
@@ -68,10 +66,10 @@ let rec copy n =
 let create (l : _ t) v (r : _ t) =
   let hl = match l with None -> 0 | Some n -> n.height in
   let hr = match r with None -> 0 | Some n -> n.height in
-  { left = l; value = v; right = r; height = (if hl >= hr then hl + 1 else hr + 1)}
-  |. return
+  Some { left = l; value = v; right = r; height = (if hl >= hr then hl + 1 else hr + 1)}
+  
 
-let singleton x = { left = empty; value = x; right = empty; height = 1} |. return
+let singleton x = Some { left = None; value = x; right = None; height = 1} 
 
 let heightGe l r =
   match l, r with
@@ -87,27 +85,27 @@ let bal l v r =
   let hl = match l with None -> 0 | Some n -> n.height in
   let hr = match r with None -> 0 | Some n -> n.height in
   if hl > hr + 2 then begin
-    (* [l] could not be empty *)
+    (* [l] could not be None *)
     let {left = ll; value = lv; right = lr} = l |. unsafeCoerce  in
     if heightGe ll  lr then
       create ll lv (create lr v r)
     else begin
-      (* [lr] could not be empty*)
+      (* [lr] could not be None*)
       let {left = lrl; value = lrv; right = lrr} = lr |. unsafeCoerce in
       create (create ll lv lrl) lrv (create lrr v r)
     end
   end else if hr > hl + 2 then begin
-    (* [r] could not be empty *)
+    (* [r] could not be None *)
     let {left = rl; value = rv; right = rr} = r |. unsafeCoerce  in
     if heightGe rr  rl then
       create (create l v rl) rv rr
     else begin
-      (* [rl] could not be empty *)
+      (* [rl] could not be None *)
       let {left = rll; value = rlv; right = rlr} = rl |. unsafeCoerce  in
       create (create l v rll) rlv (create rlr rv rr)
     end
   end else
-    return {left = l ; value = v ; right = r; height = (if hl >= hr then hl + 1 else hr + 1)}
+    Some {left = l ; value = v ; right = r; height = (if hl >= hr then hl + 1 else hr + 1)}
 
 
 
@@ -220,7 +218,7 @@ let rec addMaxElement n v =
   | Some n  ->
     bal n.left (n.value) (addMaxElement n.right v)
 
-(* [join ln v rn] return a balanced tree simliar to [create ln v rn]
+(* [join ln v rn] Some a balanced tree simliar to [create ln v rn]
    bal, but no assumptions are made on the
    relative heights of [ln] and [rn]. *)
 
@@ -251,7 +249,7 @@ let concatShared t1 t2 =
 
 let rec partitionSharedU  n p =
   match n with
-  |  None -> (empty, empty)
+  |  None -> (None, None)
   | Some n  ->
     let value = n.value in
     let (lt, lf) = partitionSharedU n.left p in
@@ -374,18 +372,18 @@ let toArray n =
 
 let rec fromSortedArrayRevAux arr off len =
   match len with
-  | 0 -> empty
+  | 0 -> None
   | 1 -> singleton (A.getUnsafe arr off)
   | 2 ->
     let x0,x1 = A.(getUnsafe arr off, getUnsafe arr (off - 1) )
     in
-    return { left = (singleton x0) ; value = x1; height = 2; right = empty}
+    Some { left = (singleton x0) ; value = x1; height = 2; right = None}
   | 3 ->
     let x0,x1,x2 =
       A.(getUnsafe arr off,
          getUnsafe arr (off - 1),
          getUnsafe arr (off - 2)) in
-    return { left = (singleton x0);
+    Some { left = (singleton x0);
       right = (singleton x2);
       value = x1;
       height = 2}
@@ -400,18 +398,18 @@ let rec fromSortedArrayRevAux arr off len =
 
 let rec fromSortedArrayAux arr off len =
   match len with
-  | 0 -> empty
+  | 0 -> None
   | 1 -> singleton (A.getUnsafe arr off)
   | 2 ->
     let x0,x1 = A.(getUnsafe arr off, getUnsafe arr (off + 1) )
     in
-    return { left = (singleton x0); value = x1; height = 2; right = empty}
+    Some { left = (singleton x0); value = x1; height = 2; right = None}
   | 3 ->
     let x0,x1,x2 =
       A.(getUnsafe arr off,
          getUnsafe arr (off + 1),
          getUnsafe arr (off + 2)) in
-    return { left = (singleton x0);
+    Some { left = (singleton x0);
       right = (singleton x2);
       value = x1;
       height = 2}
@@ -428,7 +426,7 @@ let fromSortedArrayUnsafe arr =
 
 let rec keepSharedU n p =
   match n with
-  | None -> empty
+  | None -> None
   | Some n  ->
     let {left = l; value = v; right = r} = n in
     let newL = keepSharedU l p in
@@ -436,7 +434,7 @@ let rec keepSharedU n p =
     let newR = keepSharedU r p in
     if pv then
       (if l == newL && r == newR then
-         return n
+         Some n
        else joinShared newL v newR)
     else concatShared newL newR
 
@@ -448,7 +446,7 @@ let keepShared n p = keepSharedU  n (fun [@bs] a -> p a)
 
 let keepCopyU n p : _ t =
   match n with
-  | None -> empty
+  | None -> None
   | Some n ->
     let size = lengthNode n in
     let  v = A.makeUninitializedUnsafe size in
@@ -460,7 +458,7 @@ let keepCopy n p = keepCopyU n (fun [@bs] x -> p x)
 
 let partitionCopyU n p  =
   match n with
-  | None -> empty, empty
+  | None -> None, None
   | Some n ->
     let size = lengthNode n in
     let v = A.makeUninitializedUnsafe size in
@@ -515,10 +513,10 @@ let rec subset (s1 : _ t) (s2 : _ t) ~cmp  =
     if c = 0 then
       subset ~cmp l1 l2 && subset ~cmp r1 r2
     else if c < 0 then
-      subset ~cmp (create l1 v1 empty) l2 &&
+      subset ~cmp (create l1 v1 None) l2 &&
       subset ~cmp r1 s2
     else
-      subset ~cmp (create empty v1 r1 ) r2 &&
+      subset ~cmp (create None v1 r1 ) r2 &&
       subset ~cmp l1 s2
 
 let rec get  (n : _ t) x ~cmp =
@@ -553,12 +551,12 @@ let rec getExn  (n : _ t) x ~cmp =
 (******************************************************************)
 
 (*
-  L rotation, return root node
+  L rotation, Some root node
 *)
 let rotateWithLeftChild k2 =
   let k1 = k2 .left|. unsafeCoerce  in
   k2 .left <- (k1 .right);
-  k1 .right <-  (return k2 );
+  k1 .right <-  Some k2 ;
   let hlk2, hrk2 = k2 .left|. treeHeight , k2 .right |. treeHeight in
   k2 .height <-  (Pervasives.max hlk2 hrk2 + 1);
   let hlk1, hk2 = k1 .left|. treeHeight , k2 .height  in
@@ -568,7 +566,7 @@ let rotateWithLeftChild k2 =
 let rotateWithRightChild k1 =
   let k2 = k1 .right |. unsafeCoerce  in
   k1 .right <-   (k2 .left);
-  k2 .left <-  (return k1);
+  k2 .left <-  Some k1;
   let hlk1, hrk1 = k1 .left|. treeHeight, k1 .right |. treeHeight in
   k1 .height <-   (Pervasives.max  hlk1 hrk1 + 1);
   let hrk2, hk1 = k2 .right |. treeHeight, k1 .height in
@@ -579,13 +577,13 @@ let rotateWithRightChild k1 =
   double l rotation
 *)
 let doubleWithLeftChild k3 =
-  let v = k3 .left|. unsafeCoerce |. rotateWithRightChild |. return in
+  let v = k3 .left|. unsafeCoerce |. rotateWithRightChild |. Some in
   k3 .left <-  v;
   k3 |. rotateWithLeftChild
   (** *)
 
 let doubleWithRightChild k2 =
-  let v = k2 .right |. unsafeCoerce |. rotateWithLeftChild |. return in
+  let v = k2 .right |. unsafeCoerce |. rotateWithLeftChild |. Some in
   k2 .right <-  v;
   rotateWithRightChild k2
 
@@ -633,12 +631,12 @@ let rec addMutate ~cmp (t : _ t) x =
        else
          nt.right <- (addMutate ~cmp r x);
       );
-      return (balMutate nt)
+      Some (balMutate nt)
 
 
 let fromArray (xs : _ array) ~cmp =
   let len = A.length xs in
-  if len = 0 then empty
+  if len = 0 then None
   else
     let next = ref (S.strictlySortedLengthU xs
       (fun [@bs] x y -> (Belt_Id.getCmpInternal cmp) x y [@bs] < 0)) in
@@ -662,6 +660,6 @@ let rec removeMinAuxWithRootMutate nt n =
     rn
   | Some ln ->
     n.left <- (removeMinAuxWithRootMutate nt ln);
-    return (balMutate n)
+    Some (balMutate n)
 
 

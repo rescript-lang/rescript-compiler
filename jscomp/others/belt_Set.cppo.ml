@@ -12,7 +12,7 @@ type value = I.value
 type t = I.t 
 
 
-let empty = N.empty      
+let empty = None
 let isEmpty = N.isEmpty
 let minimum = N.minimum
 let minUndefined = N.minUndefined
@@ -111,14 +111,14 @@ let rec splitAuxNoPivot (n : _ N.node) (x : value) : t * t =
   else if x < v then
     match l with 
     | None -> 
-      N.empty , N.return n
+      None , Some n
     | Some l -> 
       let ll,  rl = splitAuxNoPivot l x in 
       ll,  N.joinShared rl v r
   else
     match r with 
     | None ->
-      N.return n,  N.empty
+      Some n,  None
     | Some r -> 
       let lr,  rr = splitAuxNoPivot r x in
       N.joinShared l v lr,  rr
@@ -133,14 +133,14 @@ let rec splitAuxPivot (n : _ N.node) (x : value) pres : t  * t =
   else if x < v then
     match l with 
     | None -> 
-      N.empty, N.return n
+      None, Some n
     | Some l -> 
       let ll,  rl = splitAuxPivot l x pres in 
       ll,  N.joinShared rl v r
   else
     match r with 
     | None ->
-      N.return n,  N.empty
+      Some n,  None
     | Some r -> 
       let lr,  rr = splitAuxPivot r x pres in
       N.joinShared l v lr,  rr
@@ -149,7 +149,7 @@ let rec splitAuxPivot (n : _ N.node) (x : value) pres : t  * t =
 let split  (t : t) (x : value) =
   match t with 
     None ->
-    (N.empty,  N.empty), false
+    (None,  None), false
   | Some n  ->    
     let pres = ref false in 
     let v = splitAuxPivot n  x pres  in 
@@ -177,7 +177,7 @@ let rec union (s1 : t) (s2 : t) =
 let  rec intersect (s1 : t) (s2 : t) =
   match s1, s2 with
     (None, _) 
-  | (_, None) -> N.empty
+  | (_, None) -> None
   | Some n1, Some n2 (* (Node(l1, v1, r1, _), t2) *) ->
     let {N.left = l1; value = v1; right  = r1} = n1 in  
     let pres = ref false in 

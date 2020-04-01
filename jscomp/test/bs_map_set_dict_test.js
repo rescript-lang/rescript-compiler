@@ -45,7 +45,7 @@ var m00_cmp = Ic3.cmp;
 
 var m00 = {
   cmp: m00_cmp,
-  data: Belt_SetDict.empty
+  data: undefined
 };
 
 var I2 = Belt_Id.comparable((function (x, y) {
@@ -99,7 +99,7 @@ var m_dict$1 = Belt_Map.getId(m);
 
 var cmp = m_dict$1.cmp;
 
-var data$2 = Belt_SetDict.empty;
+var data$2;
 
 for(var i$1 = 0; i$1 <= 100000; ++i$1){
   data$2 = Belt_SetDict.add(data$2, i$1, cmp);

@@ -102,14 +102,14 @@ let rec splitAuxNoPivot ~cmp (n : _ N.node) x : _ *  _ =
   if c < 0 then
     match l with 
     | None -> 
-      N.empty ,  N.return n
+      None ,  Some n
     | Some l -> 
       let (ll,  rl) = splitAuxNoPivot ~cmp  l x in 
       ll,  N.joinShared rl v r
   else
     match r with 
     | None ->
-      N.return n,  N.empty
+      Some n,  None
     | Some r -> 
       let lr,  rr = splitAuxNoPivot ~cmp  r x in 
       N.joinShared l v lr, rr
@@ -126,14 +126,14 @@ let rec splitAuxPivot ~cmp (n : _ N.node) x pres : _ *  _ =
   if c < 0 then
     match l with 
     | None -> 
-      N.empty , N.return n
+      None , Some n
     | Some l -> 
       let (ll, rl) = splitAuxPivot ~cmp  l x pres in 
       ll,  N.joinShared rl v r
   else
     match r with 
     | None ->
-      N.return n,  N.empty
+      Some n,  None
     | Some r -> 
       let lr, rr = splitAuxPivot ~cmp  r x pres in 
       N.joinShared l v lr,  rr
@@ -141,7 +141,7 @@ let rec splitAuxPivot ~cmp (n : _ N.node) x pres : _ *  _ =
 let split  (t : _ t) x  ~cmp  =
   match t with 
     None ->
-    (N.empty, N.empty), false
+    (None, None), false
   | Some n ->
     let pres = ref false in 
     let v = splitAuxPivot ~cmp n x  pres in 
@@ -174,7 +174,7 @@ let rec union (s1 : _ t) (s2 : _ t) ~cmp : _ t =
 let rec intersect  (s1 : _ t) (s2 : _ t) ~cmp =
   match s1, s2 with
   | None, _ 
-  | _, None -> N.empty
+  | _, None -> None
   | Some n1, Some n2  ->
     let {N.left = l1; value = v1; right = r1 } = n1 in  
     let pres = ref false in 
@@ -198,7 +198,7 @@ let rec diff s1 s2 ~cmp  =
     else N.joinShared ll v1 rr 
 
 
-let empty = N.empty     
+let empty = None     
 let fromArray = N.fromArray
 let isEmpty = N.isEmpty
 

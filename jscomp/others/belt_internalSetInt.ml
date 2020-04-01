@@ -57,9 +57,9 @@ let rec subset (s1 : t) (s2 : t) =
     if v1 = v2 then
       subset l1 l2 && subset r1 r2
     else if v1 < v2 then
-      subset N.(create l1 v1 empty ) l2 && subset r1 s2
+      subset (N.create l1 v1 None) l2 && subset r1 s2
     else
-      subset N.(create empty v1 r1 ) r2 && subset l1 s2
+      subset (N.create None v1 r1 ) r2 && subset l1 s2
 
 
 let rec get (n :t) (x : value) = 
@@ -102,13 +102,13 @@ let rec addMutate  t  (x : value)=
        else   
          nt.right <- addMutate r x;
       );
-      N.return (N.balMutate nt)
+      Some (N.balMutate nt)
 
 
 
 let fromArray (xs : value array) =   
   let len = A.length xs in 
-  if len = 0 then N.empty
+  if len = 0 then None
   else
     let next =  ref (S.strictlySortedLength xs ) in 
     let result  = 

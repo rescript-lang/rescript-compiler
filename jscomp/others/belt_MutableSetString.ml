@@ -54,21 +54,21 @@ let rec remove0 nt (x : value)=
     | _, None -> l 
     | Some _,  Some nr ->  
       nt.right <- (N.removeMinAuxWithRootMutate nt nr);
-      N.return (N.balMutate nt)
+      Some (N.balMutate nt)
   else 
     begin 
       if x < k then 
         match nt.left with         
-        | None -> N.return nt 
+        | None -> Some nt 
         | Some l ->
           nt.left <- (remove0 l x );
-          N.return (N.balMutate nt)
+          Some (N.balMutate nt)
       else 
         match nt.right with 
-        | None -> N.return nt 
+        | None -> Some nt 
         | Some r -> 
           nt.right <- (remove0 r x);
-          N.return (N.balMutate nt)
+          Some (N.balMutate nt)
     end
 
 let remove d v = 
@@ -85,9 +85,9 @@ let rec removeMany0 t xs i len  =
     let ele = A.getUnsafe xs i in 
     let u = remove0 t ele in 
     match u with 
-    | None -> N.empty
+    | None -> None
     | Some t -> removeMany0 t xs (i+1) len
-  else N.return t    
+  else Some t    
 
 
 let removeMany  (d : t) xs =  
@@ -108,21 +108,21 @@ let rec removeCheck0  nt (x : value) removed =
     | _ , None -> l 
     | Some _,  Some nr ->  
       nt.right <- (N.removeMinAuxWithRootMutate nt nr);
-      N.return (N.balMutate nt)
+      Some (N.balMutate nt)
   else 
     begin 
       if x < k then 
         match nt.left with         
-        | None -> N.return nt 
+        | None -> Some nt 
         | Some l ->
           nt.left <- (removeCheck0  l x removed);
-          N.return (N.balMutate nt)
+          Some (N.balMutate nt)
       else 
         match nt.right with 
-        | None -> N.return nt 
+        | None -> Some nt 
         | Some r -> 
           nt.right <- (removeCheck0  r x removed);
-          N.return (N.balMutate nt)
+          Some (N.balMutate nt)
     end
 
 
@@ -155,7 +155,7 @@ let rec addCheck0  t (x : value) added  =
        else   
          nt.right <- (addCheck0 r x added );
       );
-      N.return (N.balMutate nt)
+      Some (N.balMutate nt)
 
 let addCheck (m :  t) e = 
   let oldRoot = m.data in 
@@ -184,7 +184,7 @@ let mergeMany d arr =
     
 
 
-let make  () = {data = N.empty}
+let make  () = {data = None}
 
 let isEmpty d = 
   N.isEmpty (d.data)
