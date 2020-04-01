@@ -46,28 +46,28 @@ type t = {
 
 
 let rec remove0 nt (x : value)= 
-  let k = N.valueGet nt in 
+  let k = nt.N.value in 
   if x = k then 
-    let l,r = N.(leftGet nt, rightGet nt) in       
+    let {N.left = l; right = r} = nt in       
     match N.(toOpt l, toOpt r) with 
     | None, _ -> r 
     | _, None -> l 
     | Some _,  Some nr ->  
-      N.rightSet nt (N.removeMinAuxWithRootMutate nt nr);
+      nt.right <- (N.removeMinAuxWithRootMutate nt nr);
       N.return (N.balMutate nt)
   else 
     begin 
       if x < k then 
-        match N.toOpt (N.leftGet nt) with         
+        match N.toOpt nt.left with         
         | None -> N.return nt 
         | Some l ->
-          N.leftSet nt (remove0 l x );
+          nt.left <- (remove0 l x );
           N.return (N.balMutate nt)
       else 
-        match N.toOpt (N.rightGet nt) with 
+        match N.toOpt nt.right with 
         | None -> N.return nt 
         | Some r -> 
-          N.rightSet nt (remove0 r x);
+          nt.right <- (remove0 r x);
           N.return (N.balMutate nt)
     end
 
@@ -99,29 +99,29 @@ let removeMany  (d : t) xs =
     d.data <- removeMany0 nt xs 0 len
     
 let rec removeCheck0  nt (x : value) removed = 
-  let k = N.valueGet nt in 
+  let k = nt.N.value in 
   if x = k then 
     let () = removed .contents<- true in  
-    let l,r = N.(leftGet nt, rightGet nt) in       
+    let {N.left = l; right = r} = nt in       
     match N.(toOpt l, toOpt r) with 
     | None, _ -> r 
     | _ , None -> l 
     | Some _,  Some nr ->  
-      N.rightSet nt (N.removeMinAuxWithRootMutate nt nr);
+      nt.right <- (N.removeMinAuxWithRootMutate nt nr);
       N.return (N.balMutate nt)
   else 
     begin 
       if x < k then 
-        match N.toOpt (N.leftGet nt) with         
+        match N.toOpt nt.left with         
         | None -> N.return nt 
         | Some l ->
-          N.leftSet nt (removeCheck0  l x removed);
+          nt.left <- (removeCheck0  l x removed);
           N.return (N.balMutate nt)
       else 
-        match N.toOpt (N.rightGet nt) with 
+        match N.toOpt nt.right with 
         | None -> N.return nt 
         | Some r -> 
-          N.rightSet nt (removeCheck0  r x removed);
+          nt.right <- (removeCheck0  r x removed);
           N.return (N.balMutate nt)
     end
 
@@ -145,15 +145,15 @@ let rec addCheck0  t (x : value) added  =
     added .contents<- true;
     N.singleton x 
   | Some nt -> 
-    let k = N.valueGet nt in 
+    let k = nt.N.value in 
     if x = k then t 
     else
-      let l, r = N.(leftGet nt, rightGet nt) in 
+      let {N.left = l; right =  r} = nt in 
       (if x < k then                   
          let ll = addCheck0  l x added in
-         N.leftSet nt ll
+         nt.left <- ll
        else   
-         N.rightSet nt (addCheck0 r x added );
+         nt.right <- (addCheck0 r x added );
       );
       N.return (N.balMutate nt)
 

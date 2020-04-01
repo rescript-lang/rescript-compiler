@@ -30,12 +30,12 @@
   [generic set/specalized set] whether mutable or immutable depends on use cases
 *)
 type 'value t = 'value node Js.null
-and 'value node  = private {
-  value : 'value; 
-  height : int;
+and 'value node  =  {
+  mutable value : 'value; 
+  mutable height : int;
   mutable left : 'value t;
   mutable right : 'value t;
-} [@@bs.deriving abstract]
+} 
 
 type ('a, 'b) cmp = ('a, 'b) Belt_Id.cmp
 (* TODO: node is used in [subset] *)
