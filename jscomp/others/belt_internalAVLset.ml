@@ -54,8 +54,7 @@ let rec copy n =
   match n with
   | None -> n
   | Some n ->
-    let l,r = n.left, n.right in
-    Some { left = (copy l) ; right = (copy r);
+    Some { left = (copy n.left) ; right = (copy n.right);
       value = n.value; height = n.height}
     
 (* Creates a new node with leftGet son l, value v and right son r.
@@ -91,8 +90,8 @@ let bal l v r =
       create ll lv (create lr v r)
     else begin
       (* [lr] could not be None*)
-      let {left = lrl; value = lrv; right = lrr} = lr |. unsafeCoerce in
-      create (create ll lv lrl) lrv (create lrr v r)
+      let lr = lr |. unsafeCoerce in
+      create (create ll lv lr.left) lr.value (create lr.right v r)
     end
   end else if hr > hl + 2 then begin
     (* [r] could not be None *)
@@ -101,8 +100,8 @@ let bal l v r =
       create (create l v rl) rv rr
     else begin
       (* [rl] could not be None *)
-      let {left = rll; value = rlv; right = rlr} = rl |. unsafeCoerce  in
-      create (create l v rll) rlv (create rlr rv rr)
+      let rl = rl |. unsafeCoerce  in
+      create (create l v rl.left) rl.value (create rl.right rv rr)
     end
   end else
     Some {left = l ; value = v ; right = r; height = (if hl >= hr then hl + 1 else hr + 1)}
