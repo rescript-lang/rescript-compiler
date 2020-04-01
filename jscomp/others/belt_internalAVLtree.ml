@@ -429,8 +429,6 @@ let rec fillArray n i arr =
   | Some r ->
     fillArray r rnext arr
 
-type cursor =
-  { mutable forward : int; mutable backward : int } [@@bs.deriving abstract]
 
 
 (* let rec fillArrayWithPartition n cursor arr p =
