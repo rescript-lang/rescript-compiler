@@ -5,6 +5,7 @@ var Belt_Id = require("../../lib/js/belt_Id.js");
 var Belt_Map = require("../../lib/js/belt_Map.js");
 var Belt_List = require("../../lib/js/belt_List.js");
 var Belt_Array = require("../../lib/js/belt_Array.js");
+var Belt_MapInt = require("../../lib/js/belt_MapInt.js");
 var Belt_MapDict = require("../../lib/js/belt_MapDict.js");
 var Belt_SetDict = require("../../lib/js/belt_SetDict.js");
 var Caml_primitive = require("../../lib/js/caml_primitive.js");
@@ -34,11 +35,9 @@ var Ic3 = Belt_Id.comparable(Caml_primitive.caml_int_compare);
 
 var m0_cmp = Icmp.cmp;
 
-var m0_data = null;
-
 var m0 = {
   cmp: m0_cmp,
-  data: m0_data
+  data: Belt_MapDict.empty
 };
 
 var m00_cmp = Ic3.cmp;
@@ -54,23 +53,19 @@ var I2 = Belt_Id.comparable((function (x, y) {
 
 var m_cmp = Icmp2.cmp;
 
-var m_data = null;
-
 var m = {
   cmp: m_cmp,
-  data: m_data
+  data: Belt_MapDict.empty
 };
 
 var m2_cmp = I2.cmp;
 
-var m2_data = null;
-
 var m2 = {
   cmp: m2_cmp,
-  data: m2_data
+  data: Belt_MapDict.empty
 };
 
-var data = null;
+var data = Belt_MapDict.empty;
 
 Belt_Map.getId(m2);
 
@@ -91,7 +86,7 @@ var newm = {
 
 console.log(newm);
 
-var m11 = Belt_MapDict.set(null, 1, 1, Icmp.cmp);
+var m11 = Belt_MapDict.set(Belt_MapDict.empty, 1, 1, Icmp.cmp);
 
 console.log(m11);
 
@@ -182,9 +177,9 @@ var A = /* alias */0;
 
 var L = /* alias */0;
 
-var vv = null;
+var vv = Belt_MapInt.empty;
 
-var vv2 = null;
+var vv2 = Belt_MapInt.empty;
 
 var Md0 = /* alias */0;
 

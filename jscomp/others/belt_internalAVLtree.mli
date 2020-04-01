@@ -24,7 +24,7 @@
 
 
 
-type ('key, 'a) t = ('key, 'a) node Js.null
+type ('key, 'a) t = ('key, 'a) node option
 
 and ('k,  'v) node  =  {
   mutable key : 'k; 
@@ -35,9 +35,9 @@ and ('k,  'v) node  =  {
 } 
 
 
-external toOpt : 'a Js.null -> 'a option = "#null_to_opt"
-external return : 'a -> 'a Js.null = "%identity"
-external empty : _ t = "#null"
+external toOpt : 'a option -> 'a option = "%identity"
+external return : 'a -> 'a option = "%identity"
+val empty : _ t
 (* val empty : _ t *)
 type ('k, 'id) cmp = ('k, 'id) Belt_Id.cmp
     

@@ -20,17 +20,17 @@ type ('k, 'v) node  = {
   mutable left : ('k,'v) t;
   mutable right : ('k,'v) t
 }
-and ('key, 'a) t = ('key, 'a) node Js.null
+and ('key, 'a) t = ('key, 'a) node option
 
 
 type ('k, 'id) cmp = ('k, 'id) Belt_Id.cmp
 
 module A = Belt_Array
 module S = Belt_SortArray
-external toOpt : 'a Js.null -> 'a option = "#null_to_opt"
-external return : 'a -> 'a Js.null = "%identity"
-external empty : 'a Js.null = "#null"
-external unsafeCoerce : 'a Js.null -> 'a = "%identity"
+external toOpt : 'a option -> 'a option = "%identity"
+external return : 'a -> 'a option = "%identity"
+let empty = None
+external unsafeCoerce : 'a option -> 'a = "%identity"
 
 
 
