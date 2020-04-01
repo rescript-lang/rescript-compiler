@@ -38,20 +38,20 @@ module A = Belt_Array
 type 'b t = (unit, unit, key,'b) N.t
 
 
-let rec copyBucketReHash  ~h_buckets ~ndata_tail  old_bucket = 
+let rec copyBucketReHash  ~h_buckets ~ndata_tail  (old_bucket : _ N.bucket  C.opt ) = 
   match C.toOpt old_bucket with 
   | None -> ()
   | Some cell ->
-    let nidx = hash (N.keyGet cell) land (A.length h_buckets - 1) in 
+    let nidx = hash cell.key land (A.length h_buckets - 1) in 
     let v = C.return cell in 
     begin match C.toOpt (A.getUnsafe ndata_tail nidx) with
       | None -> 
         A.setUnsafe h_buckets nidx  v
       | Some tail ->
-        N.nextSet tail v  (* cell put at the end *)            
+        tail.N.next <- v  (* cell put at the end *)            
     end;          
     A.setUnsafe ndata_tail nidx  v;
-    copyBucketReHash  ~h_buckets ~ndata_tail  (N.nextGet cell)
+    copyBucketReHash  ~h_buckets ~ndata_tail  cell.next
 
 
 let resize  h =
@@ -68,20 +68,20 @@ let resize  h =
     for i = 0 to nsize - 1 do
       match C.toOpt (A.getUnsafe ndata_tail i) with
       | None -> ()
-      | Some tail -> N.nextSet tail C.emptyOpt
+      | Some tail -> tail.next <- C.emptyOpt
     done
   end
 
 
 let rec replaceInBucket  (key : key) info cell = 
-    if  N.keyGet cell = key 
+    if  cell.N.key = key 
     then
       begin
-        N.valueSet cell info;
+        cell.N.value <- info;
         false
       end
     else
-    match C.toOpt (N.nextGet cell) with 
+    match C.toOpt cell.next with 
     | None -> true 
     | Some cell -> 
       replaceInBucket key info cell
@@ -93,11 +93,11 @@ let set  h (key : key) value =
   let l = A.getUnsafe h_buckets i in  
   (match C.toOpt l with 
   | None -> 
-    A.setUnsafe h_buckets i (C.return (N.bucket ~key ~value ~next:C.emptyOpt));
+    A.setUnsafe h_buckets i (C.return {N.key; value; next = C.emptyOpt});
     C.sizeSet h (C.sizeGet h + 1);
   | Some bucket -> 
       if replaceInBucket key value bucket then begin
-        A.setUnsafe h_buckets i (C.return (N.bucket ~key ~value ~next:l));
+        A.setUnsafe h_buckets i (C.return {N.key; value; next = l});
         C.sizeSet h (C.sizeGet h + 1);
       end   
     );
@@ -109,11 +109,11 @@ let rec removeInBucket h h_buckets  i (key : key) prec buckets =
   match C.toOpt buckets with
   | None -> ()
   | Some cell  ->
-    let cell_next = N.nextGet cell in 
-    if  N.keyGet cell = key 
+    let cell_next = cell.N.next in 
+    if  cell.N.key = key 
     then 
       begin
-        N.nextSet prec cell_next;
+        prec.N.next <-cell_next;
         C.sizeSet h (C.sizeGet h - 1);        
       end
     else removeInBucket  h h_buckets i key cell cell_next
@@ -125,13 +125,13 @@ let remove  h key =
   match C.toOpt bucket with 
   | None -> ()
   | Some cell -> 
-    if N.keyGet cell = key then 
+    if cell.N.key = key then 
     begin 
-      A.setUnsafe h_buckets i (N.nextGet cell);
+      A.setUnsafe h_buckets i cell.next;
       C.sizeSet h (C.sizeGet h - 1)
     end 
     else 
-      removeInBucket  h h_buckets i key cell (N.nextGet cell)
+      removeInBucket  h h_buckets i key cell cell.next
 
 
 
@@ -140,8 +140,8 @@ let rec getAux  (key : key) buckets =
   | None ->
     None
   | Some cell ->
-    if key = N.keyGet cell  then Some (N.valueGet cell) 
-    else getAux key  (N.nextGet cell)
+    if key = cell.N.key  then Some cell.N.value 
+    else getAux key  cell.next
 
 let get  h (key : key) =
   let h_buckets = C.bucketsGet h in 
@@ -149,21 +149,21 @@ let get  h (key : key) =
   match C.toOpt @@ A.getUnsafe h_buckets nid with
   | None -> None
   | Some cell1 ->
-    if key = (N.keyGet cell1)  then Some (N.valueGet cell1) else
-      match C.toOpt (N.nextGet cell1) with
+    if key = cell1.N.key  then Some cell1.N.value else
+      match C.toOpt cell1.N.next with
       | None -> None
       | Some cell2 ->
-        if  key = (N.keyGet cell2)  then Some (N.valueGet cell2) else
-          match C.toOpt (N.nextGet cell2) with
+        if  key = cell2.N.key  then Some cell2.N.value else
+          match C.toOpt cell2.N.next with
           | None -> None
           | Some cell3 ->
-            if  key = (N.keyGet cell3)  then Some (N.valueGet cell3)
-            else getAux  key (N.nextGet cell3)
+            if  key = cell3.N.key  then Some cell3.N.value
+            else getAux  key cell3.N.next
 
 
 let rec memInBucket (key : key) cell = 
-    (N.keyGet cell)  = key  ||
-    (match C.toOpt (N.nextGet cell) with 
+    cell.N.key  = key  ||
+    (match C.toOpt cell.next with 
     | None -> false
     | Some nextCell -> memInBucket  key nextCell
      )
