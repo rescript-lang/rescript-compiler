@@ -4017,7 +4017,6 @@ function compile_default_p2(all_types, field) {
   if (field_default$1 === undefined) {
     return ;
   }
-  var constant = field_default$1;
   var exit = 0;
   if (typeof field_type$1 === "number") {
     switch (field_type$1) {
@@ -4040,26 +4039,26 @@ function compile_default_p2(all_types, field) {
           exit = 2;
           break;
       case /* Field_type_bool */12 :
-          if (constant.tag === /* Constant_bool */1) {
-            return constant;
+          if (field_default$1.tag === /* Constant_bool */1) {
+            return field_default$1;
           } else {
             return invalid_default_value(field_name$1, "invalid default type (bool expected)", undefined);
           }
       case /* Field_type_string */13 :
-          if (constant.tag) {
+          if (field_default$1.tag) {
             return invalid_default_value(field_name$1, "invalid default type (string expected)", undefined);
           } else {
-            return constant;
+            return field_default$1;
           }
       case /* Field_type_bytes */14 :
           return invalid_default_value(field_name$1, "default value not supported for bytes", undefined);
       
     }
   } else {
-    if (constant.tag !== /* Constant_litteral */4) {
+    if (field_default$1.tag !== /* Constant_litteral */4) {
       return invalid_default_value(field_name$1, "default value not supported for message", undefined);
     }
-    var default_enum_value = constant[0];
+    var default_enum_value = field_default$1[0];
     var match = type_of_id(all_types, field_type$1[0]);
     var spec = match.spec;
     if (spec.tag) {
@@ -4073,31 +4072,31 @@ function compile_default_p2(all_types, field) {
             
           }), spec[0].enum_values);
     if (default_enum_value$1 !== undefined) {
-      return constant;
+      return field_default$1;
     } else {
       return invalid_default_value(field_name$1, "Invalid default enum value", undefined);
     }
   }
   switch (exit) {
     case 1 :
-        switch (constant.tag | 0) {
+        switch (field_default$1.tag | 0) {
           case /* Constant_int */2 :
-              return /* Constant_float */Block.__(3, [constant[0]]);
+              return /* Constant_float */Block.__(3, [field_default$1[0]]);
           case /* Constant_float */3 :
-              return constant;
+              return field_default$1;
           default:
             return invalid_default_value(field_name$1, "invalid default type (float/int expected)", undefined);
         }
     case 2 :
-        if (constant.tag === /* Constant_int */2) {
-          return constant;
+        if (field_default$1.tag === /* Constant_int */2) {
+          return field_default$1;
         } else {
           return invalid_default_value(field_name$1, "invalid default type (int expected)", undefined);
         }
     case 3 :
-        if (constant.tag === /* Constant_int */2) {
-          if (constant[0] >= 0) {
-            return constant;
+        if (field_default$1.tag === /* Constant_int */2) {
+          if (field_default$1[0] >= 0) {
+            return field_default$1;
           } else {
             return invalid_default_value(field_name$1, "negative default value for unsigned int", undefined);
           }
@@ -5538,120 +5537,119 @@ function default_value_of_field_type(field_name, field_type, field_default) {
     var basic_type = field_type[0];
     switch (basic_type) {
       case /* Bt_string */0 :
-          if (field_default === undefined) {
+          if (field_default !== undefined) {
+            if (field_default.tag) {
+              return invalid_default_value(field_name, "invalid default type", undefined);
+            } else {
+              return Curry._1(Printf.sprintf(/* Format */[
+                              /* Char_literal */Block.__(12, [
+                                  /* "\"" */34,
+                                  /* String */Block.__(2, [
+                                      /* No_padding */0,
+                                      /* Char_literal */Block.__(12, [
+                                          /* "\"" */34,
+                                          /* End_of_format */0
+                                        ])
+                                    ])
+                                ]),
+                              "\"%s\""
+                            ]), field_default[0]);
+            }
+          } else {
             return "\"\"";
           }
-          var match = field_default;
-          if (match.tag) {
-            return invalid_default_value(field_name, "invalid default type", undefined);
-          } else {
-            return Curry._1(Printf.sprintf(/* Format */[
-                            /* Char_literal */Block.__(12, [
-                                /* "\"" */34,
-                                /* String */Block.__(2, [
-                                    /* No_padding */0,
-                                    /* Char_literal */Block.__(12, [
-                                        /* "\"" */34,
-                                        /* End_of_format */0
-                                      ])
-                                  ])
-                              ]),
-                            "\"%s\""
-                          ]), match[0]);
-          }
       case /* Bt_float */1 :
-          if (field_default === undefined) {
+          if (field_default !== undefined) {
+            if (field_default.tag === /* Constant_float */3) {
+              return Pervasives.string_of_float(field_default[0]);
+            } else {
+              return invalid_default_value(field_name, "invalid default type", undefined);
+            }
+          } else {
             return "0.";
           }
-          var match$1 = field_default;
-          if (match$1.tag === /* Constant_float */3) {
-            return Pervasives.string_of_float(match$1[0]);
-          } else {
-            return invalid_default_value(field_name, "invalid default type", undefined);
-          }
       case /* Bt_int */2 :
-          if (field_default === undefined) {
+          if (field_default !== undefined) {
+            if (field_default.tag === /* Constant_int */2) {
+              return String(field_default[0]);
+            } else {
+              return invalid_default_value(field_name, "invalid default type", undefined);
+            }
+          } else {
             return "0";
           }
-          var match$2 = field_default;
-          if (match$2.tag === /* Constant_int */2) {
-            return String(match$2[0]);
-          } else {
-            return invalid_default_value(field_name, "invalid default type", undefined);
-          }
       case /* Bt_int32 */3 :
-          if (field_default === undefined) {
+          if (field_default !== undefined) {
+            if (field_default.tag === /* Constant_int */2) {
+              return Curry._1(Printf.sprintf(/* Format */[
+                              /* Int */Block.__(4, [
+                                  /* Int_i */3,
+                                  /* No_padding */0,
+                                  /* No_precision */0,
+                                  /* Char_literal */Block.__(12, [
+                                      /* "l" */108,
+                                      /* End_of_format */0
+                                    ])
+                                ]),
+                              "%il"
+                            ]), field_default[0]);
+            } else {
+              return invalid_default_value(field_name, "invalid default type", undefined);
+            }
+          } else {
             return "0l";
           }
-          var match$3 = field_default;
-          if (match$3.tag === /* Constant_int */2) {
-            return Curry._1(Printf.sprintf(/* Format */[
-                            /* Int */Block.__(4, [
-                                /* Int_i */3,
-                                /* No_padding */0,
-                                /* No_precision */0,
-                                /* Char_literal */Block.__(12, [
-                                    /* "l" */108,
-                                    /* End_of_format */0
-                                  ])
-                              ]),
-                            "%il"
-                          ]), match$3[0]);
-          } else {
-            return invalid_default_value(field_name, "invalid default type", undefined);
-          }
       case /* Bt_int64 */4 :
-          if (field_default === undefined) {
+          if (field_default !== undefined) {
+            if (field_default.tag === /* Constant_int */2) {
+              return Curry._1(Printf.sprintf(/* Format */[
+                              /* Int */Block.__(4, [
+                                  /* Int_i */3,
+                                  /* No_padding */0,
+                                  /* No_precision */0,
+                                  /* Char_literal */Block.__(12, [
+                                      /* "L" */76,
+                                      /* End_of_format */0
+                                    ])
+                                ]),
+                              "%iL"
+                            ]), field_default[0]);
+            } else {
+              return invalid_default_value(field_name, "invalid default type", undefined);
+            }
+          } else {
             return "0L";
           }
-          var match$4 = field_default;
-          if (match$4.tag === /* Constant_int */2) {
-            return Curry._1(Printf.sprintf(/* Format */[
-                            /* Int */Block.__(4, [
-                                /* Int_i */3,
-                                /* No_padding */0,
-                                /* No_precision */0,
-                                /* Char_literal */Block.__(12, [
-                                    /* "L" */76,
-                                    /* End_of_format */0
-                                  ])
-                              ]),
-                            "%iL"
-                          ]), match$4[0]);
-          } else {
-            return invalid_default_value(field_name, "invalid default type", undefined);
-          }
       case /* Bt_bytes */5 :
-          if (field_default === undefined) {
-            return "Bytes.create 64";
-          }
-          var match$5 = field_default;
-          if (match$5.tag) {
-            return invalid_default_value(field_name, "invalid default type", undefined);
+          if (field_default !== undefined) {
+            if (field_default.tag) {
+              return invalid_default_value(field_name, "invalid default type", undefined);
+            } else {
+              return Curry._1(Printf.sprintf(/* Format */[
+                              /* String_literal */Block.__(11, [
+                                  "Bytes.of_string \"",
+                                  /* String */Block.__(2, [
+                                      /* No_padding */0,
+                                      /* Char_literal */Block.__(12, [
+                                          /* "\"" */34,
+                                          /* End_of_format */0
+                                        ])
+                                    ])
+                                ]),
+                              "Bytes.of_string \"%s\""
+                            ]), field_default[0]);
+            }
           } else {
-            return Curry._1(Printf.sprintf(/* Format */[
-                            /* String_literal */Block.__(11, [
-                                "Bytes.of_string \"",
-                                /* String */Block.__(2, [
-                                    /* No_padding */0,
-                                    /* Char_literal */Block.__(12, [
-                                        /* "\"" */34,
-                                        /* End_of_format */0
-                                      ])
-                                  ])
-                              ]),
-                            "Bytes.of_string \"%s\""
-                          ]), match$5[0]);
+            return "Bytes.create 64";
           }
       case /* Bt_bool */6 :
           if (field_default === undefined) {
             return "false";
           }
-          var match$6 = field_default;
-          if (match$6.tag !== /* Constant_bool */1) {
+          if (field_default.tag !== /* Constant_bool */1) {
             return invalid_default_value(field_name, "invalid default type", undefined);
           }
-          var b = match$6[0];
+          var b = field_default[0];
           if (b) {
             return "true";
           } else {
@@ -6369,9 +6367,8 @@ function encoding_of_field(all_types, field) {
   var match = field_option(field, "packed");
   var packed;
   if (match !== undefined) {
-    var match$1 = match;
-    if (match$1.tag === /* Constant_bool */1) {
-      packed = match$1[0];
+    if (match.tag === /* Constant_bool */1) {
+      packed = match[0];
     } else {
       var field_name$1 = field_name(field);
       throw [
@@ -6393,29 +6390,11 @@ function encoding_of_field(all_types, field) {
 
 function compile_field_type(field_name, all_types, file_options, field_options, file_name, field_type) {
   var match = find_field_option(field_options, "ocaml_type");
-  var ocaml_type;
-  if (match !== undefined) {
-    var match$1 = match;
-    ocaml_type = match$1.tag === /* Constant_litteral */4 && match$1[0] === "int_t" ? /* Int_t */-783406652 : /* None */870530776;
-  } else {
-    ocaml_type = /* None */870530776;
-  }
-  var match$2 = file_option(file_options, "int32_type");
-  var int32_type;
-  if (match$2 !== undefined) {
-    var match$3 = match$2;
-    int32_type = match$3.tag === /* Constant_litteral */4 && match$3[0] === "int_t" ? /* Ft_basic_type */Block.__(0, [/* Bt_int */2]) : /* Ft_basic_type */Block.__(0, [/* Bt_int32 */3]);
-  } else {
-    int32_type = /* Ft_basic_type */Block.__(0, [/* Bt_int32 */3]);
-  }
-  var match$4 = file_option(file_options, "int64_type");
-  var int64_type;
-  if (match$4 !== undefined) {
-    var match$5 = match$4;
-    int64_type = match$5.tag === /* Constant_litteral */4 && match$5[0] === "int_t" ? /* Ft_basic_type */Block.__(0, [/* Bt_int */2]) : /* Ft_basic_type */Block.__(0, [/* Bt_int64 */4]);
-  } else {
-    int64_type = /* Ft_basic_type */Block.__(0, [/* Bt_int64 */4]);
-  }
+  var ocaml_type = match !== undefined && match.tag === /* Constant_litteral */4 && match[0] === "int_t" ? /* Int_t */-783406652 : /* None */870530776;
+  var match$1 = file_option(file_options, "int32_type");
+  var int32_type = match$1 !== undefined && match$1.tag === /* Constant_litteral */4 && match$1[0] === "int_t" ? /* Ft_basic_type */Block.__(0, [/* Bt_int */2]) : /* Ft_basic_type */Block.__(0, [/* Bt_int32 */3]);
+  var match$2 = file_option(file_options, "int64_type");
+  var int64_type = match$2 !== undefined && match$2.tag === /* Constant_litteral */4 && match$2[0] === "int_t" ? /* Ft_basic_type */Block.__(0, [/* Bt_int */2]) : /* Ft_basic_type */Block.__(0, [/* Bt_int64 */4]);
   if (typeof field_type !== "number") {
     var i = field_type[0];
     var module_ = module_of_file_name(file_name);
@@ -6438,8 +6417,8 @@ function compile_field_type(field_name, all_types, file_options, field_options, 
     var udt_nested;
     udt_nested = t.spec.tag ? true : false;
     var field_type_module = module_of_file_name(t.file_name);
-    var match$6 = type_scope_of_type(t);
-    var udt_type_name = type_name(match$6.message_names, type_name_of_type(t));
+    var match$3 = type_scope_of_type(t);
+    var udt_type_name = type_name(match$3.message_names, type_name_of_type(t));
     if (field_type_module === module_) {
       return /* Ft_user_defined_type */Block.__(1, [{
                   udt_module: undefined,
@@ -6495,9 +6474,8 @@ function is_mutable(field_name, field_options) {
   if (match === undefined) {
     return false;
   }
-  var match$1 = match;
-  if (match$1.tag === /* Constant_bool */1) {
-    return match$1[0];
+  if (match.tag === /* Constant_bool */1) {
+    return match[0];
   }
   throw [
         Compilation_error,
@@ -6507,12 +6485,8 @@ function is_mutable(field_name, field_options) {
 
 function ocaml_container(field_options) {
   var match = find_field_option(field_options, "ocaml_container");
-  if (match === undefined) {
-    return ;
-  }
-  var match$1 = match;
-  if (match$1.tag === /* Constant_litteral */4) {
-    return match$1[0];
+  if (match !== undefined && match.tag === /* Constant_litteral */4) {
+    return match[0];
   }
   
 }

@@ -13,11 +13,10 @@ function copy(n) {
   if (n === undefined) {
     return n;
   }
-  var match = n;
-  var v = match.value;
-  var h = match.height;
-  var l = match.left;
-  var r = match.right;
+  var v = n.value;
+  var h = n.height;
+  var l = n.left;
+  var r = n.right;
   return {
           value: v,
           height: h,

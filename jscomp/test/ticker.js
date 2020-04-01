@@ -1146,14 +1146,9 @@ function process_quote(ticker_map, new_ticker, new_value) {
                   var match$1 = match[0];
                   var match$2 = match$1.lhs.value;
                   var match$3 = match$1.rhs.value;
-                  var value;
-                  if (match$2 !== undefined && match$3 !== undefined) {
-                    var y = match$3;
-                    var x = match$2;
-                    value = match$1.op ? x - y : x + y;
-                  } else {
-                    value = undefined;
-                  }
+                  var value = match$2 !== undefined && match$3 !== undefined ? (
+                      match$1.op ? match$2 - match$3 : match$2 + match$3
+                    ) : undefined;
                   ticker.value = value;
                   return ;
                 }

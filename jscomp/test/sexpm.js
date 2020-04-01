@@ -546,35 +546,35 @@ function expr_list(acc, k, t) {
       continue ;
     }
     return expr_starting_with(c, (function (last, e) {
-                  if (last === undefined) {
+                  if (last !== undefined) {
+                    if (last !== 40) {
+                      if (last !== 41) {
+                        return expr_list(/* :: */[
+                                    e,
+                                    acc
+                                  ], k, t);
+                      } else {
+                        return Curry._2(k, undefined, /* `List */[
+                                    848054398,
+                                    List.rev(/* :: */[
+                                          e,
+                                          acc
+                                        ])
+                                  ]);
+                      }
+                    } else {
+                      return expr_list(/* [] */0, (function (param, l) {
+                                    return expr_list(/* :: */[
+                                                l,
+                                                acc
+                                              ], k, t);
+                                  }), t);
+                    }
+                  } else {
                     return expr_list(/* :: */[
                                 e,
                                 acc
                               ], k, t);
-                  }
-                  var match = last;
-                  if (match !== 40) {
-                    if (match !== 41) {
-                      return expr_list(/* :: */[
-                                  e,
-                                  acc
-                                ], k, t);
-                    } else {
-                      return Curry._2(k, undefined, /* `List */[
-                                  848054398,
-                                  List.rev(/* :: */[
-                                        e,
-                                        acc
-                                      ])
-                                ]);
-                    }
-                  } else {
-                    return expr_list(/* [] */0, (function (param, l) {
-                                  return expr_list(/* :: */[
-                                              l,
-                                              acc
-                                            ], k, t);
-                                }), t);
                   }
                 }), t);
   };
@@ -1126,35 +1126,35 @@ function MakeDecode(funarg) {
         continue ;
       }
       return expr_starting_with(c, (function (last, e) {
-                    if (last === undefined) {
+                    if (last !== undefined) {
+                      if (last !== 40) {
+                        if (last !== 41) {
+                          return expr_list(/* :: */[
+                                      e,
+                                      acc
+                                    ], k, t);
+                        } else {
+                          return Curry._2(k, undefined, /* `List */[
+                                      848054398,
+                                      List.rev(/* :: */[
+                                            e,
+                                            acc
+                                          ])
+                                    ]);
+                        }
+                      } else {
+                        return expr_list(/* [] */0, (function (param, l) {
+                                      return expr_list(/* :: */[
+                                                  l,
+                                                  acc
+                                                ], k, t);
+                                    }), t);
+                      }
+                    } else {
                       return expr_list(/* :: */[
                                   e,
                                   acc
                                 ], k, t);
-                    }
-                    var match = last;
-                    if (match !== 40) {
-                      if (match !== 41) {
-                        return expr_list(/* :: */[
-                                    e,
-                                    acc
-                                  ], k, t);
-                      } else {
-                        return Curry._2(k, undefined, /* `List */[
-                                    848054398,
-                                    List.rev(/* :: */[
-                                          e,
-                                          acc
-                                        ])
-                                  ]);
-                      }
-                    } else {
-                      return expr_list(/* [] */0, (function (param, l) {
-                                    return expr_list(/* :: */[
-                                                l,
-                                                acc
-                                              ], k, t);
-                                  }), t);
                     }
                   }), t);
     };
