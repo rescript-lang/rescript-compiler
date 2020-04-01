@@ -29,20 +29,16 @@
   Such methods could be shared between 
   [generic set/specalized set] whether mutable or immutable depends on use cases
 *)
-type 'value t = 'value node Js.null
-and 'value node  = private {
-  value : 'value; 
-  height : int;
+type 'value t = 'value node option
+and 'value node  =  {
+  mutable value : 'value; 
+  mutable height : int;
   mutable left : 'value t;
   mutable right : 'value t;
-} [@@bs.deriving abstract]
+} 
 
 type ('a, 'b) cmp = ('a, 'b) Belt_Id.cmp
-(* TODO: node is used in [subset] *)
-external toOpt : 'a Js.null -> 'a option = "#null_to_opt"
-external return : 'a -> 'a Js.null = "%identity"
-external empty : 'a t = "#null" (* shadowed*)
-(* val empty : 'a t *)
+
 
 
 val copy : 'a t -> 'a t

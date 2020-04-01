@@ -24,21 +24,17 @@
 
 
 
-type ('key, 'a) t = ('key, 'a) node Js.null
+type ('key, 'a) t = ('key, 'a) node option
 
-and ('k,  'v) node  = private {
+and ('k,  'v) node  =  {
   mutable key : 'k; 
   mutable value : 'v; 
-  height : int; 
+  mutable height : int; 
   mutable left : ('k,'v) t;
   mutable right : ('k,'v) t
-} [@@bs.deriving abstract]
+} 
 
 
-external toOpt : 'a Js.null -> 'a option = "#null_to_opt"
-external return : 'a -> 'a Js.null = "%identity"
-external empty : _ t = "#null"
-(* val empty : _ t *)
 type ('k, 'id) cmp = ('k, 'id) Belt_Id.cmp
     
 val copy : ('k, 'v) t -> ('k, 'v) t

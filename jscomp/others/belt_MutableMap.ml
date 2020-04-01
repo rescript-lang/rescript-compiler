@@ -42,36 +42,36 @@ type ('k, 'v, 'id) t = {
 
 
 let rec removeMutateAux nt x ~cmp = 
-  let k = N.keyGet nt in 
+  let k = nt.N.key in 
   let c = (Belt_Id.getCmpInternal cmp) x k [@bs] in 
   if c = 0 then 
-    let l,r = N.(leftGet nt, rightGet nt) in       
-    match N.(toOpt l, toOpt r) with 
+    let {N.left = l; right = r} = nt in       
+    match l, r with 
     | Some _,  Some nr ->  
-      N.rightSet nt (N.removeMinAuxWithRootMutate nt nr);
-      N.return (N.balMutate nt)
+      nt.right <- (N.removeMinAuxWithRootMutate nt nr);
+      Some (N.balMutate nt)
     | None, Some _ ->
       r  
     | (Some _ | None ), None ->  l 
   else 
     begin 
       if c < 0 then 
-        match N.toOpt (N.leftGet nt) with         
-        | None -> N.return nt 
+        match  nt.N.left with         
+        | None -> Some nt 
         | Some l ->
-          N.leftSet nt (removeMutateAux ~cmp l x );
-          N.return (N.balMutate nt)
+          nt.left <- (removeMutateAux ~cmp l x );
+          Some (N.balMutate nt)
       else 
-        match N.toOpt (N.rightGet nt) with 
-        | None -> N.return nt 
+        match  nt.right with 
+        | None -> Some nt 
         | Some r -> 
-          N.rightSet nt (removeMutateAux ~cmp r x);
-          N.return (N.balMutate nt)
+          nt.right <- (removeMutateAux ~cmp r x);
+          Some (N.balMutate nt)
     end    
 
 let remove d k =  
   let oldRoot = d.data in   
-  match N.toOpt oldRoot with 
+  match  oldRoot with 
   | None -> ()
   | Some oldRoot2 ->
     let newRoot = removeMutateAux ~cmp:(d.cmp) oldRoot2 k in 
@@ -83,14 +83,14 @@ let rec removeArrayMutateAux t xs i len ~cmp  =
   if i < len then 
     let ele = A.getUnsafe xs i in 
     let u = removeMutateAux t ele ~cmp in 
-    match N.toOpt u with 
-    | None -> N.empty
+    match  u with 
+    | None -> None
     | Some t -> removeArrayMutateAux t xs (i+1) len ~cmp 
-  else N.return t    
+  else Some t    
 
 let removeMany d xs =  
   let oldRoot = d.data in 
-  match N.toOpt oldRoot with 
+  match  oldRoot with 
   | None -> ()
   | Some nt -> 
     let len = A.length xs in 
@@ -100,40 +100,38 @@ let removeMany d xs =
 
 
 let rec updateDone t x   f  ~cmp =   
-  match N.toOpt t with 
+  match  t with 
   | None ->
     (match f None [@bs] with
     | Some data -> N.singleton x data
     | None -> t)
   | Some nt -> 
-    let k = N.keyGet nt in 
+    let k = nt.N.key in 
     let  c = (Belt_Id.getCmpInternal cmp) x k [@bs] in  
     if c = 0 then begin     
-      match f (Some (N.valueGet nt)) [@bs] with
+      match f (Some nt.value) [@bs] with
       | None ->
-        let l,r = N.leftGet nt, N.rightGet nt in
-        begin match N.toOpt l, N.toOpt r with
+        let {N.left = l; right = r} = nt in
+        begin match  l,  r with
         | Some _, Some nr ->
-          N.rightSet nt (N.removeMinAuxWithRootMutate nt nr);
-          N.return (N.balMutate nt)
+          nt.right <- (N.removeMinAuxWithRootMutate nt nr);
+          Some (N.balMutate nt)
         | None, Some _ ->
           r
         | (Some _ | None), None -> l
         end
       | Some data -> 
-        N.valueSet nt data;
-        N.return nt
+        nt.value <- data;
+        Some nt
     end      
-    else
-      let l, r = N.(leftGet nt, rightGet nt) in 
-      (if c < 0 then                   
-         let ll = updateDone  l x f ~cmp in
-         N.leftSet nt ll
+    else begin       
+      (if c < 0 then                            
+         nt.left <- updateDone  nt.left x f ~cmp 
        else   
-         N.rightSet nt (updateDone  r x f ~cmp);
+         nt.right <- updateDone  nt.right x f ~cmp
       );
-      N.return (N.balMutate nt)  
-      
+      Some (N.balMutate nt)  
+    end  
 let updateU t  x f =       
   let oldRoot = t.data in 
   let newRoot = updateDone oldRoot x f ~cmp:(t.cmp) in 
@@ -143,9 +141,9 @@ let update t x f = updateU t x (fun [@bs] a -> f a)
     
 let make (type key) (type identity) ~(id : (key,identity) id) =
   let module M = (val id) in 
-  {cmp = M.cmp ; data = N.empty}
+  {cmp = M.cmp ; data = None}
 
-let clear m = m.data <- N.empty
+let clear m = m.data <- None
     
 let isEmpty d = 
   N.isEmpty (d.data)

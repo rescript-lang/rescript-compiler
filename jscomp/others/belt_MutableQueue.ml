@@ -47,7 +47,7 @@ let add q x =
       content = x;
       next = None } in
   match  q.last with
-  | None ->
+  | None -> (* TODO: better names for intermediate var *)
     q.length <- 1;
     q.first <- cell;
     q.last <- cell
@@ -59,7 +59,7 @@ let add q x =
 
   
 let peek q =
-  match  q.first with
+  match  q.first with (* same here could be v *)
   | None -> None
   | Some v -> Some v.content
 
@@ -90,8 +90,8 @@ let pop q =
       Some x.content 
     end
 
-let popExn q =
-  match  q.first with
+let popExn q = (* TO fix *)
+  match  q.first with 
   | None -> [%assert "Empty"]
   | Some x  ->
     let next = x.next in 

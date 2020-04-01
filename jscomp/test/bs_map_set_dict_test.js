@@ -34,20 +34,16 @@ var Ic3 = Belt_Id.comparable(Caml_primitive.caml_int_compare);
 
 var m0_cmp = Icmp.cmp;
 
-var m0_data = null;
-
 var m0 = {
   cmp: m0_cmp,
-  data: m0_data
+  data: undefined
 };
 
 var m00_cmp = Ic3.cmp;
 
-var m00_data = null;
-
 var m00 = {
   cmp: m00_cmp,
-  data: m00_data
+  data: undefined
 };
 
 var I2 = Belt_Id.comparable((function (x, y) {
@@ -56,23 +52,19 @@ var I2 = Belt_Id.comparable((function (x, y) {
 
 var m_cmp = Icmp2.cmp;
 
-var m_data = null;
-
 var m = {
   cmp: m_cmp,
-  data: m_data
+  data: undefined
 };
 
 var m2_cmp = I2.cmp;
 
-var m2_data = null;
-
 var m2 = {
   cmp: m2_cmp,
-  data: m2_data
+  data: undefined
 };
 
-var data = null;
+var data;
 
 Belt_Map.getId(m2);
 
@@ -93,7 +85,7 @@ var newm = {
 
 console.log(newm);
 
-var m11 = Belt_MapDict.set(null, 1, 1, Icmp.cmp);
+var m11 = Belt_MapDict.set(undefined, 1, 1, Icmp.cmp);
 
 console.log(m11);
 
@@ -101,7 +93,7 @@ var m_dict$1 = Belt_Map.getId(m);
 
 var cmp = m_dict$1.cmp;
 
-var data$2 = null;
+var data$2;
 
 for(var i$1 = 0; i$1 <= 100000; ++i$1){
   data$2 = Belt_SetDict.add(data$2, i$1, cmp);
@@ -184,9 +176,9 @@ var A = /* alias */0;
 
 var L = /* alias */0;
 
-var vv = null;
+var vv;
 
-var vv2 = null;
+var vv2;
 
 var Md0 = /* alias */0;
 

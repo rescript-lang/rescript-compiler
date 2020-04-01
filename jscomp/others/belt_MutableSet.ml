@@ -44,35 +44,35 @@ type ('value,'id) t =
 
 
 let rec remove0 nt x ~cmp = 
-  let k = N.valueGet nt in 
+  let k = nt.N.value in 
   let c = cmp x k [@bs] in 
   if c = 0 then 
-    let l,r = N.(leftGet nt, rightGet nt) in       
-    match N.(toOpt l, toOpt r) with 
+    let {N.left = l; right = r} = nt in       
+    match l, r with 
     | None, _ -> r 
     | _, None -> l 
     | Some _,  Some nr ->  
-      N.rightSet nt (N.removeMinAuxWithRootMutate nt nr);
-      N.return (N.balMutate nt)
+      nt.right <- (N.removeMinAuxWithRootMutate nt nr);
+      Some (N.balMutate nt)
    else 
     begin 
       if c < 0 then 
-        match N.toOpt (N.leftGet nt) with         
-        | None -> N.return nt 
+        match nt.left with         
+        | None -> Some nt 
         | Some l ->
-          N.leftSet nt (remove0 ~cmp l x );
-          N.return (N.balMutate nt)
+          nt.left <- (remove0 ~cmp l x );
+          Some (N.balMutate nt)
       else 
-        match N.toOpt (N.rightGet nt) with 
-        | None -> N.return nt 
+        match nt.right with 
+        | None -> Some nt 
         | Some r -> 
-          N.rightSet nt (remove0 ~cmp r x);
-          N.return (N.balMutate nt)
+          nt.right <- (remove0 ~cmp r x);
+          Some (N.balMutate nt)
     end
 
 let remove  d  v =  
   let oldRoot = d.data in 
-  match N.toOpt oldRoot with 
+  match oldRoot with 
   | None -> ()
   | Some oldRoot2 ->
     let newRoot = remove0 ~cmp:(Belt_Id.getCmpInternal d.cmp) oldRoot2 v in 
@@ -84,14 +84,14 @@ let rec removeMany0 t xs i len ~cmp  =
   if i < len then 
     let ele = A.getUnsafe xs i in 
     let u = remove0 t ele ~cmp in 
-    match N.toOpt u with 
-    | None -> N.empty
+    match u with 
+    | None -> None
     | Some t -> removeMany0 t xs (i+1) len ~cmp 
-  else N.return t    
+  else Some t    
 
 let removeMany d xs =  
   let oldRoot = d.data in 
-  match N.toOpt oldRoot with 
+  match oldRoot with 
   | None -> ()
   | Some nt -> 
     let len = A.length xs in 
@@ -101,38 +101,38 @@ let removeMany d xs =
 
 
 let rec removeCheck0  nt x removed ~cmp= 
-  let k = N.valueGet nt in 
+  let k = nt.N.value in 
   let c = (Belt_Id.getCmpInternal cmp) x k [@bs] in 
   if c = 0 then 
     let () = removed .contents<- true in  
-    let l,r = N.(leftGet nt, rightGet nt) in       
-    match N.(toOpt l, toOpt r) with 
+    let {N.left = l; right = r} = nt in       
+    match l, r with 
     | None, _ -> r 
     | _, None -> l  
     | Some _,  Some nr ->  
-      N.rightSet nt (N.removeMinAuxWithRootMutate nt nr);
-      N.return (N.balMutate nt)
+      nt.right <- (N.removeMinAuxWithRootMutate nt nr);
+      Some (N.balMutate nt)
   else 
     begin 
       if c < 0 then 
-        match N.toOpt (N.leftGet nt) with         
-        | None -> N.return nt 
+        match nt.left with         
+        | None -> Some nt 
         | Some l ->
-          N.leftSet nt (removeCheck0 ~cmp l x removed);
-          N.return (N.balMutate nt)
+          nt.left <- (removeCheck0 ~cmp l x removed);
+          Some (N.balMutate nt)
       else 
-        match N.toOpt (N.rightGet nt) with 
-        | None -> N.return nt 
+        match nt.right with 
+        | None -> Some nt 
         | Some r -> 
-          N.rightSet nt (removeCheck0 ~cmp r x removed);
-          N.return (N.balMutate nt)
+          nt.right <- (removeCheck0 ~cmp r x removed);
+          Some (N.balMutate nt)
     end
 
 
 
 let removeCheck d v =  
   let oldRoot = d.data in 
-  match N.toOpt oldRoot with 
+  match oldRoot with 
   | None -> false 
   | Some oldRoot2 ->
     let removed = ref false in 
@@ -144,23 +144,23 @@ let removeCheck d v =
 
 
 let rec addCheck0  t x added ~cmp  =   
-  match N.toOpt t with 
+  match t with 
   | None -> 
     added .contents<- true;
     N.singleton x 
   | Some nt -> 
-    let k = N.valueGet nt in 
+    let k = nt.N.value in 
     let c = cmp x k [@bs] in  
     if c = 0 then t 
     else
-      let l, r = N.(leftGet nt, rightGet nt) in 
+      let {N.left = l; right = r} = nt in 
       (if c < 0 then                   
          let ll = addCheck0 ~cmp l x added in
-         N.leftSet nt ll
+         nt.left <- ll
        else   
-         N.rightSet nt (addCheck0 ~cmp r x added );
+         nt.right <- (addCheck0 ~cmp r x added );
       );
-      N.return (N.balMutate nt)
+      Some (N.balMutate nt)
 
 let addCheck m e = 
   let oldRoot = m.data in 
@@ -189,7 +189,7 @@ let mergeMany d xs =
 
 let make (type value) (type identity) ~(id : (value, identity) id) =
   let module M = (val id) in 
-  {cmp = M.cmp ; data = N.empty}
+  {cmp = M.cmp ; data = None}
     
 let isEmpty d = 
   N.isEmpty (d.data)
@@ -287,9 +287,9 @@ let subset a b =
 
 let intersect a b  : _ t = 
   let cmp = a.cmp in 
-  match N.toOpt a.data, N.toOpt b.data with 
-  | None, _ -> { cmp; data = N.empty}
-  | _, None -> { cmp; data = N.empty}
+  match a.data, b.data with 
+  | None, _ -> { cmp; data = None}
+  | _, None -> { cmp; data = None}
   | Some dataa0, Some datab0 ->  
     let sizea, sizeb = 
       N.lengthNode dataa0, N.lengthNode datab0 in          
@@ -305,7 +305,7 @@ let intersect a b  : _ t =
           (A.getUnsafe tmp (totalSize - 1))
           (A.getUnsafe tmp 0) [@bs] < 0 
        )
-    then {cmp; data = N.empty}
+    then {cmp; data = None}
     else 
       let tmp2 = A.makeUninitializedUnsafe (Pervasives.min sizea sizeb) in 
       let k = Sort.intersectU tmp 0 sizea tmp sizea sizeb tmp2 0 p in 
@@ -315,8 +315,8 @@ let intersect a b  : _ t =
 let diff a b : _ t = 
   let cmp = a.cmp in 
   let dataa = a.data in 
-  match N.toOpt dataa, N.toOpt b.data with 
-  | None, _ -> {cmp; data = N.empty}
+  match dataa, b.data with 
+  | None, _ -> {cmp; data = None}
   | _, None -> 
     {data = (N.copy dataa); cmp}
   | Some dataa0, Some datab0
@@ -343,7 +343,7 @@ let diff a b : _ t =
 let union a b = 
   let cmp = a.cmp in 
   let dataa, datab =  a.data, b.data  in 
-  match N.toOpt dataa, N.toOpt datab with 
+  match dataa, datab with 
   | None, _ -> {data = (N.copy datab); cmp}
   | _, None -> {data = (N.copy dataa); cmp}
   | Some dataa0, Some datab0 

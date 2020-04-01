@@ -29,7 +29,7 @@ type 'a bucket = {
   mutable next : 'a bucket C.opt
 }  
 and ('hash, 'eq, 'a) t = ('hash, 'eq, 'a bucket) C.container  
-[@@bs.deriving abstract]
+
 
 val copy: ('hash, 'eq, 'a) t -> ('hash, 'eq, 'a) t
 

@@ -16,21 +16,21 @@ module A = Belt_Array
 type t = value N.t
 
 let rec has (t : t) (x : value)  =
-  match N.toOpt t with 
+  match t with 
   | None -> false
   | Some n  ->                
-    let v = N.valueGet n in 
-    x = v || has (if x < v then N.leftGet n else N.rightGet n) x
+    let v = n.value in 
+    x = v || has (if x < v then n.left else n.right) x
 
 
 let rec compareAux e1 e2  =
     match e1,e2 with 
     | h1::t1, h2::t2 ->
-        let (k1 : value) ,k2 = N.valueGet h1, N.valueGet h2 in 
+        let (k1 : value) ,k2 = h1.N.value , h2.N.value  in 
         if k1 = k2 then  
           compareAux 
-            (N.stackAllLeft (N.rightGet h1) t1 ) 
-            (N.stackAllLeft (N.rightGet h2) t2)
+            (N.stackAllLeft h1.right t1 ) 
+            (N.stackAllLeft h2.right t2)
         else if k1  < k2 then -1    
         else 1
     | _, _ -> 0   
@@ -51,69 +51,69 @@ let eq (s1 : t) s2 =
 
 (* This algorithm applies to BST, it does not need to be balanced tree *)  
 let rec subset (s1 : t) (s2 : t) =
-  match N.(toOpt s1, toOpt s2) with
+  match s1, s2 with
     None, _ ->
     true
   | _, None ->
     false
   | Some t1, Some t2 (* Node (l1, v1, r1, _), (Node (l2, v2, r2, _) as t2) *) ->
-    let l1,v1,r1 = N.(leftGet t1, valueGet t1, rightGet t1) in  
-    let l2,v2,r2 = N.(leftGet t2, valueGet t2, rightGet t2) in 
+    let {N.left = l1; value = v1; right = r1 } = t1 in  
+    let {N.left = l2; value = v2; right = r2 } = t2 in 
     if v1 = v2 then
       subset l1 l2 && subset r1 r2
     else if v1 < v2 then
-      subset N.(create l1 v1 empty ) l2 && subset r1 s2
+      subset (N.create l1 v1 None) l2 && subset r1 s2
     else
-      subset N.(create empty v1 r1 ) r2 && subset l1 s2
+      subset (N.create None v1 r1 ) r2 && subset l1 s2
 
 
 let rec get (n :t) (x : value) = 
-  match N.toOpt n with 
+  match n with 
   | None -> None
   | Some t  ->    
-    let v = N.valueGet t in     
+    let v = t.value in     
     if x = v then Some v
-    else get (if x < v then N.leftGet t else N.rightGet t) x
+    else get (if x < v then t.left else t.right) x
 
 
 
 let rec getUndefined (n :t) (x : value)   = 
-  match N.toOpt n with 
+  match n with 
   | None -> Js.undefined
   | Some t  ->    
-    let v = N.valueGet t in     
+    let v = t.value in     
     if x = v then Js.Undefined.return v
-    else getUndefined  (if x < v then N.leftGet t else N.rightGet t) x
+    else getUndefined  (if x < v then t.left else t.right) x
 
 let rec getExn  (n :t) (x : value) = 
-  match N.toOpt n with 
+  match n with 
   | None -> [%assert "getExn"]
   | Some t  ->    
-    let v = N.valueGet t in     
+    let v = t.value in     
     if x = v then  v
-    else getExn (if x < v then N.leftGet t else N.rightGet t) x
+    else getExn (if x < v then t.left else t.right) x
 
 (****************************************************************************)
 let rec addMutate  t  (x : value)=   
-  match N.toOpt t with 
+  match t with 
   | None -> N.singleton x
   | Some nt -> 
-    let k = N.valueGet nt in 
+    let k = nt.N.value in 
     if x = k then t 
     else
-      let l, r = N.(leftGet nt, rightGet nt) in 
+      let {N.left = l;  right = r} = nt in 
       (if x < k then                   
-         N.leftSet nt (addMutate l x)       
+         nt.left <- addMutate l x       
        else   
-         N.rightSet nt (addMutate r x);
+         nt.right <- addMutate r x;
       );
-      N.return (N.balMutate nt)
+      Some (N.balMutate nt)
 
 
 
 let fromArray (xs : value array) =   
   let len = A.length xs in 
-  if len = 0 then N.empty
+  if len = 0 then None
   else
     let next =  ref (S.strictlySortedLength xs ) in 
     let result  = 

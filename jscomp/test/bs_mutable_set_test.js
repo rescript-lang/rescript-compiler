@@ -145,7 +145,7 @@ eq("File \"bs_mutable_set_test.ml\", line 69, characters 5-12", indeedAded, 1000
 eq("File \"bs_mutable_set_test.ml\", line 70, characters 5-12", Belt_internalAVLset.size(v.data), 1501);
 
 b("File \"bs_mutable_set_test.ml\", line 71, characters 4-11", Belt_MutableSetInt.isEmpty({
-          data: null
+          data: undefined
         }));
 
 eq("File \"bs_mutable_set_test.ml\", line 72, characters 5-12", Belt_internalAVLset.minimum(v.data), 500);
@@ -277,7 +277,7 @@ b("File \"bs_mutable_set_test.ml\", line 114, characters 4-11", Belt_MutableSetI
             }, {
               data: Belt_internalSetInt.fromArray(xs$10)
             }), {
-          data: null
+          data: undefined
         }));
 
 var xs$11 = Array_data_util.randomRange(21, 40);
@@ -289,7 +289,7 @@ b("File \"bs_mutable_set_test.ml\", line 120, characters 4-11", Belt_MutableSetI
             }, {
               data: Belt_internalSetInt.fromArray(xs$12)
             }), {
-          data: null
+          data: undefined
         }));
 
 b("File \"bs_mutable_set_test.ml\", line 126, characters 4-11", Belt_MutableSetInt.eq(Belt_MutableSetInt.intersect({
@@ -417,7 +417,7 @@ Belt_List.forEach(/* :: */[
       }));
 
 var v$1 = {
-  data: null
+  data: undefined
 };
 
 for(var i$2 = 0; i$2 <= 100000; ++i$2){
@@ -435,7 +435,7 @@ eq("File \"bs_mutable_set_test.ml\", line 181, characters 5-12", Belt_internalAV
 var u$1 = Belt_Array.concat(Array_data_util.randomRange(30, 100), Array_data_util.randomRange(40, 120));
 
 var v$2 = {
-  data: null
+  data: undefined
 };
 
 Belt_MutableSetInt.mergeMany(v$2, u$1);
@@ -726,7 +726,7 @@ b("File \"bs_mutable_set_test.ml\", line 282, characters 4-11", Belt_MutableSetI
             }, {
               data: Belt_internalSetInt.fromArray(xs$41)
             }), {
-          data: null
+          data: undefined
         }));
 
 var xs$42 = Array_data_util.randomRange(21, 40);
@@ -738,7 +738,7 @@ b("File \"bs_mutable_set_test.ml\", line 288, characters 4-11", Belt_MutableSetI
             }, {
               data: Belt_internalSetInt.fromArray(xs$43)
             }), {
-          data: null
+          data: undefined
         }));
 
 b("File \"bs_mutable_set_test.ml\", line 294, characters 4-11", Belt_MutableSetInt.eq(Belt_MutableSetInt.intersect({

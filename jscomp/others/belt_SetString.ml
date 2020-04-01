@@ -8,7 +8,7 @@ type value = I.value
 type t = I.t 
 
 
-let empty = N.empty      
+let empty = None
 let isEmpty = N.isEmpty
 let minimum = N.minimum
 let minUndefined = N.minUndefined
@@ -35,12 +35,12 @@ let fromSortedArrayUnsafe = N.fromSortedArrayUnsafe
 let checkInvariantInternal = N.checkInvariantInternal
 
 let rec add  (t : t) (x : value) : t =
-  match N.toOpt t with 
+  match t with 
     None -> N.singleton x 
   | Some nt  ->
-    let v = N.valueGet nt in  
+    let v = nt.value in  
     if x = v then t else
-      let l, r = N.(leftGet nt , rightGet nt) in 
+      let {N.left = l; right =  r} = nt in 
       if x < v then 
         let ll = add l x in 
         if ll == l then t 
@@ -61,16 +61,16 @@ let mergeMany h arr =
 
 
 let rec remove (t : t) (x : value) : t = 
-  match N.toOpt t with 
+  match t with 
   | None -> t
   | Some n  ->
-    let l,v,r = N.(leftGet n, valueGet n, rightGet n) in 
+    let {N.left = l; value = v; right = r} = n in 
     if x = v then 
-      match N.toOpt l, N.toOpt r with 
+      match l, r with 
       | None, _ -> r 
       | _, None -> l 
       | _, Some rn -> 
-        let v = ref (N.valueGet rn) in 
+        let v = ref rn.value in 
         let r = N.removeMinAuxWithRef rn v in 
         N.bal l v.contents r
     else
@@ -102,80 +102,80 @@ let subset = I.subset
 let has = I.has
 
 let rec splitAuxNoPivot (n : _ N.node) (x : value) : t * t =   
-  let l,v,r = N.(leftGet n , valueGet n, rightGet n) in  
+  let {N.left = l; value = v; right = r} = n in  
   if x = v then l,  r
   else if x < v then
-    match N.toOpt l with 
+    match l with 
     | None -> 
-      N.empty , N.return n
+      None , Some n
     | Some l -> 
       let ll,  rl = splitAuxNoPivot l x in 
       ll,  N.joinShared rl v r
   else
-    match N.toOpt r with 
+    match r with 
     | None ->
-      N.return n,  N.empty
+      Some n,  None
     | Some r -> 
       let lr,  rr = splitAuxNoPivot r x in
       N.joinShared l v lr,  rr
 
 
 let rec splitAuxPivot (n : _ N.node) (x : value) pres : t  * t =   
-  let l,v,r = N.(leftGet n , valueGet n, rightGet n) in  
+  let {N.left = l; value = v; right = r} = n in  
   if x = v then begin 
     pres .contents<- true;
     (l, r)
   end
   else if x < v then
-    match N.toOpt l with 
+    match l with 
     | None -> 
-      N.empty, N.return n
+      None, Some n
     | Some l -> 
       let ll,  rl = splitAuxPivot l x pres in 
       ll,  N.joinShared rl v r
   else
-    match N.toOpt r with 
+    match r with 
     | None ->
-      N.return n,  N.empty
+      Some n,  None
     | Some r -> 
       let lr,  rr = splitAuxPivot r x pres in
       N.joinShared l v lr,  rr
 
 
 let split  (t : t) (x : value) =
-  match N.toOpt t with 
+  match t with 
     None ->
-    (N.empty,  N.empty), false
+    (None,  None), false
   | Some n  ->    
     let pres = ref false in 
     let v = splitAuxPivot n  x pres  in 
     v, pres.contents
 
 let rec union (s1 : t) (s2 : t) =
-  match N.(toOpt s1, toOpt s2) with
+  match s1, s2 with
     (None, _) -> s2
   | (_, None) -> s1
   | Some n1, Some n2 (* (Node(l1, v1, r1, h1), Node(l2, v2, r2, h2)) *) ->    
-    let h1, h2 = N.(heightGet n1 , heightGet n2) in             
+    let h1, h2 = n1.height, n2.height in             
     if h1 >= h2 then
-      if h2 = 1 then add  s1 (N.valueGet n2) else begin
-        let l1, v1, r1 = N.(leftGet n1, valueGet n1, rightGet n1) in      
+      if h2 = 1 then add  s1 n2.value else begin
+        let {N.left = l1; value = v1; right = r1} = n1 in      
         let (l2,  r2) = splitAuxNoPivot n2 v1 in
         N.joinShared (union l1 l2) v1 (union r1 r2)
       end
     else
-    if h1 = 1 then add  s2 (N.valueGet n1) else begin
-      let l2, v2, r2 = N.(leftGet n2 , valueGet n2, rightGet n2) in 
+    if h1 = 1 then add  s2 n1.value else begin
+      let {N.left = l2; value = v2; right = r2} = n2 in 
       let (l1, r1) = splitAuxNoPivot n1 v2 in
       N.joinShared (union l1 l2) v2 (union r1 r2)
     end
 
 let  rec intersect (s1 : t) (s2 : t) =
-  match N.(toOpt s1, toOpt s2) with
+  match s1, s2 with
     (None, _) 
-  | (_, None) -> N.empty
+  | (_, None) -> None
   | Some n1, Some n2 (* (Node(l1, v1, r1, _), t2) *) ->
-    let l1,v1,r1 = N.(leftGet n1, valueGet n1, rightGet n1) in  
+    let {N.left = l1; value = v1; right  = r1} = n1 in  
     let pres = ref false in 
     let l2,r2 =  splitAuxPivot n2 v1 pres in 
     let ll = intersect l1 l2 in 
@@ -184,11 +184,11 @@ let  rec intersect (s1 : t) (s2 : t) =
     else N.concatShared ll rr 
 
 let rec diff (s1 : t) (s2 : t) =
-  match N.(toOpt s1, toOpt s2) with
+  match s1, s2 with
   | (None, _) 
   | (_, None) -> s1
   | Some n1, Some n2 (* (Node(l1, v1, r1, _), t2) *) ->
-    let l1,v1,r1 = N.(leftGet n1, valueGet n1, rightGet n1) in
+    let {N.left = l1; value = v1; right = r1} = n1 in
     let pres = ref false in 
     let l2, r2 = splitAuxPivot  n2 v1 pres in 
     let ll = diff  l1 l2 in 

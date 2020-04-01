@@ -3,7 +3,7 @@
 var Belt_MutableSetInt = require("../../lib/js/belt_MutableSetInt.js");
 
 var mySet = {
-  data: null
+  data: undefined
 };
 
 Belt_MutableSetInt.add(mySet, 1);

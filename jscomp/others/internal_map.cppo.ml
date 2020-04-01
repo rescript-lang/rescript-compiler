@@ -15,113 +15,113 @@ module S = Belt_SortArray
 type  'a t = (key,'a) N.t
 
 let rec add  t (x : key) (data : _)  = 
-  match N.toOpt t with
+  match t with
   | None -> 
     N.singleton x data 
   | Some n  ->
-    let k = N.keyGet n in 
+    let k = n.N.key in 
     if x = k then
-      N.return (N.updateValue n data)
+      Some (N.updateValue n data)
     else
-      let v = N.valueGet n in 
+      let v = n.N.value  in 
       if x < k then
-        N.bal (add (N.leftGet n) x data ) k v (N.rightGet n)
+        N.bal (add n.N.left x data ) k v n.N.right
       else
-        N.bal (N.leftGet n) k v (add (N.rightGet n) x data )
+        N.bal n.N.left k v (add n.N.right x data )
 
 let rec get n (x : key)  =
-  match N.toOpt n with 
+  match n with 
     None -> None
   | Some n  ->
-    let v = N.keyGet n in 
-    if x = v then Some (N.valueGet n)
-    else get (if x < v then N.leftGet n else N.rightGet n) x 
+    let v = n.N.key in 
+    if x = v then Some n.N.value
+    else get (if x < v then n.N.left else n.N.right) x 
 
 let rec getUndefined n (x : key) = 
-  match N.toOpt n with 
+  match n with 
   | None ->
     Js.undefined
   | Some n  ->
-    let v = N.keyGet n in 
-    if x = v then Js.Undefined.return (N.valueGet n)
-    else getUndefined (if x < v then (N.leftGet n) else (N.rightGet n)) x 
+    let v = n.N.key in 
+    if x = v then Js.Undefined.return n.N.value
+    else getUndefined (if x < v then n.N.left else n.N.right) x 
 
 let rec getExn n (x : key) =
-  match N.toOpt n with 
+  match n with 
   | None -> [%assert "getExn"]
   | Some n -> 
-    let v = N.keyGet n in 
-    if x = v then (N.valueGet n)
-    else getExn (if x < v then (N.leftGet n) else (N.rightGet n)) x
+    let v = n.N.key in 
+    if x = v then n.N.value
+    else getExn (if x < v then n.N.left else n.N.right) x
 
 let rec getWithDefault n (x : key) def =
-  match N.toOpt n with 
+  match n with 
   | None -> def    
   | Some n -> 
-    let v = N.keyGet n in 
-    if x = v then (N.valueGet n)
-    else getWithDefault (if x < v then (N.leftGet n) else (N.rightGet n)) x def
+    let v = n.N.key in 
+    if x = v then n.N.value
+    else getWithDefault (if x < v then n.N.left else n.N.right) x def
     
 let rec has n (x : key)= 
-  match N.toOpt n with 
+  match n with 
     None -> false
   | Some n (* Node(l, v, d, r, _) *) ->
-    let v = N.keyGet n in 
-    x = v || has (if x < v then N.leftGet n else N.rightGet n) x 
+    let v = n.N.key in 
+    x = v || has (if x < v then n.N.left else n.N.right) x 
 
 let rec remove n (x : key) = 
-  match N.toOpt n with 
+  match n with 
   |  None -> n    
   |  Some n ->
-    let l,v,r = N.(leftGet n, keyGet n, rightGet n) in 
+    let {N.left = l; key = v; right = r} = n in 
     if x = v then
-      match N.toOpt l, N.toOpt r with
+      match l, r with
       | None, _ -> r 
       | _, None -> l 
       | _, Some rn -> 
-        let kr, vr = ref (N.keyGet rn), ref (N.valueGet rn) in 
+        let kr, vr = ref rn.key, ref rn.value in 
         let r = N.removeMinAuxWithRef rn kr vr in 
         N.bal l kr.contents vr.contents r 
     else if x < v then
-      N.(bal (remove l x ) v (valueGet n) r)
+      N.(bal (remove l x ) v n.value r)
     else
-      N.(bal l v (valueGet n) (remove r x ))
+      N.(bal l v n.value (remove r x ))
 
 let rec splitAux (x : key) (n : _ N.node) : _ t * _ option  * _ t =  
-  let l,v,d,r = N.(leftGet n , keyGet n, valueGet n, rightGet n) in  
+  let {N.left = l; key = v; value = d; right = r} = n in  
   if x = v then (l, Some d, r)
   else     
   if x < v then
-    match N.toOpt l with 
+    match l with 
     | None -> 
-      N.(empty , None, return n)
+      None, None, Some n
     | Some l -> 
       let (ll, pres, rl) = splitAux x l in (ll, pres, N.join rl v d r)
   else
-    match N.toOpt r with 
+    match r with 
     | None ->
-      N.(return n, None, empty)
+      Some n, None, None
     | Some r -> 
       let (lr, pres, rr) = splitAux x r in (N.join l v d lr, pres, rr)
 
 
 let split (x : key) n =
-  match N.toOpt n with 
+  match n with 
     None ->
-    N.(empty, None, empty)
+    None, None, None
   | Some n -> 
     splitAux x n 
 
 let rec mergeU s1 s2 f =
-  match N.(toOpt s1, toOpt s2) with
-    (None, None) -> N.empty
+  match s1, s2 with
+    (None, None) -> None
   | Some n (* (Node (l1, v1, d1, r1, h1), _)*), _ 
-    when N.(heightGet n >= (match N.toOpt s2 with None -> 0 | Some n -> N.heightGet n)) ->
-    let (l1,v1,d1,r1) = N.(leftGet n, keyGet n, valueGet n, rightGet n ) in 
+    when (n.N.height >= (match s2 with None -> 0 | Some n -> n.N.height)) ->
+    let {N.left = l1; key = v1; value = d1; right = r1} = n in 
     let (l2, d2, r2) = split v1 s2 in
     N.concatOrJoin (mergeU l1 l2 f) v1 (f v1 (Some d1) d2 [@bs]) (mergeU r1 r2 f)
   | (_, Some n) (* Node (l2, v2, d2, r2, h2) *)  ->
-    let (l2, v2, d2, r2) = N.(leftGet n, keyGet n, valueGet n, rightGet n) in 
+    let {N.left = l2; key = v2; value = d2; right = r2} = n in 
     let (l1, d1, r1) = split v2 s1 in
     N.concatOrJoin (mergeU l1 l2 f) v2 (f v2 d1 (Some d2) [@bs]) (mergeU r1 r2 f)
   | _ ->
@@ -132,13 +132,13 @@ let merge s1 s2 f = mergeU s1 s2 (fun [@bs] a b c -> f a b c)
 let rec compareAux e1 e2 vcmp =
   match e1,e2 with 
   | h1::t1, h2::t2 ->
-    let c = Pervasives.compare (N.keyGet h1 : key) (N.keyGet h2)  in 
+    let c = Pervasives.compare (h1.N.key : key) h2.N.key  in 
     if c = 0 then 
-      let cx = vcmp (N.valueGet h1) (N.valueGet h2) [@bs] in 
+      let cx = vcmp h1.N.value h2.N.value [@bs] in 
       if cx = 0 then
         compareAux 
-          (N.stackAllLeft  (N.rightGet h1) t1 ) 
-          (N.stackAllLeft (N.rightGet h2) t2)
+          (N.stackAllLeft  h1.N.right t1 ) 
+          (N.stackAllLeft h2.N.right t2)
           vcmp 
       else  cx
     else c 
@@ -159,11 +159,11 @@ let cmp s1 s2 f = cmpU s1 s2 (fun[@bs] a b -> f a b)
 let rec eqAux e1 e2  eq =
   match e1,e2 with 
   | h1::t1, h2::t2 ->
-    if (N.keyGet h1 : key) =  (N.keyGet h2)  && 
-       eq (N.valueGet h1) (N.valueGet h2) [@bs] then
+    if (h1.N.key : key) =  h2.N.key  && 
+       eq h1.N.value h2.N.value [@bs] then
       eqAux (
-        N.stackAllLeft  (N.rightGet h1) t1 ) 
-        (N.stackAllLeft (N.rightGet h2) t2)
+        N.stackAllLeft  h1.N.right t1 ) 
+        (N.stackAllLeft h2.N.right t2)
         eq
     else  false    
   | _, _ -> true (*end *)  
@@ -179,29 +179,29 @@ let eqU s1 s2 eq =
 let eq s1 s2 f = eqU s1 s2 (fun[@bs] a b -> f a b)
     
 let rec addMutate  (t : _ t) x data : _ t =   
-  match N.toOpt t with 
+  match t with 
   | None -> N.singleton x data
   | Some nt -> 
-    let k = N.keyGet nt in 
+    let k = nt.N.key in 
     (* let  c = (Belt_Cmp.getCmpInternal cmp) x k [@bs] in   *)
     if x = k then begin     
-      N.keySet nt x;
-      N.valueSet nt data;
-      N.return nt
+      nt.N.key <- x;
+      nt.value <- data;
+      Some nt
     end      
     else
-      let l, r = (N.leftGet nt, N.rightGet nt) in 
+      let l, r = (nt.N.left, nt.N.right) in 
       (if x < k then                   
          let ll = addMutate  l x data in
-         N.leftSet nt ll
+         nt.left <- ll
        else   
-         N.rightSet nt (addMutate r x data);
+         nt.right <- (addMutate r x data);
       );
-      N.return (N.balMutate nt)  
+      Some (N.balMutate nt)  
 
 let fromArray (xs : (key * _) array) =   
   let len = A.length xs in 
-  if len = 0 then N.empty
+  if len = 0 then None
   else
     let next = 
         ref (S.strictlySortedLengthU xs 

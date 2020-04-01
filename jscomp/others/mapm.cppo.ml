@@ -18,9 +18,9 @@ type 'a t = {
 } 
 
 
-let make () = {data = N.empty}
+let make () = {data = None}
 let isEmpty m = N.isEmpty m.data
-let clear m =  m.data<- N.empty
+let clear m =  m.data<- None
 (* let singleton k v = t ~data:(N.singleton k v) *)
 
 let minKeyUndefined m = N.minKeyUndefined m.data
@@ -60,34 +60,34 @@ let has d v = I.has d.data v
 
 
 let rec removeMutateAux nt (x : key)= 
-  let k = N.keyGet nt in 
+  let k = nt.N.key in 
   if x = k then 
-    let l,r = N.(leftGet nt, rightGet nt) in       
-    match N.(toOpt l, toOpt r) with
+    let {N.left = l; right = r} = nt in       
+    match l, r with
     | None, _ -> r  
     | _, None -> l 
     | _,  Some nr ->  
-      N.rightSet nt (N.removeMinAuxWithRootMutate nt nr);
-      N.return (N.balMutate nt)
+      nt.right <- (N.removeMinAuxWithRootMutate nt nr);
+      Some (N.balMutate nt)
   else 
     begin 
       if x < k then 
-        match N.toOpt (N.leftGet nt) with         
-        | None -> N.return nt 
+        match  nt.left with         
+        | None -> Some nt 
         | Some l ->
-          N.leftSet nt (removeMutateAux l x );
-          N.return (N.balMutate nt)
+          nt.left <- (removeMutateAux l x );
+          Some (N.balMutate nt)
       else 
-        match N.toOpt (N.rightGet nt) with 
-        | None -> N.return nt 
+        match  nt.right with 
+        | None -> Some nt 
         | Some r -> 
-          N.rightSet nt (removeMutateAux r x);
-          N.return (N.balMutate nt)
+          nt.right <- (removeMutateAux r x);
+          Some (N.balMutate nt)
     end
 
 let remove d v = 
   let oldRoot = d.data in 
-  match N.toOpt oldRoot with 
+  match  oldRoot with 
   | None -> ()
   | Some root -> 
     let newRoot = removeMutateAux root v in 
@@ -96,38 +96,38 @@ let remove d v =
 
 
 let rec updateDone t (x : key)  f  =   
-  match N.toOpt t with 
+  match  t with 
   | None ->
     (match f None [@bs] with
     | Some data -> N.singleton x data
     | None -> t)
   | Some nt -> 
-    let k = N.keyGet nt in 
+    let k = nt.N.key in 
     (* let  c = (Belt_Cmp.getCmpInternal cmp) x k [@bs] in   *)
     if k = x then begin     
-      match f (Some (N.valueGet nt)) [@bs] with
+      match f (Some nt.value) [@bs] with
       | None ->
-        let l,r = N.leftGet nt, N.rightGet nt in
-        begin match N.toOpt l, N.toOpt r with
+        let {N.left = l; right = r} = nt in
+        begin match  l,  r with
           | None,  _ -> r
           | _, None  -> l
           | _, Some nr ->
-            N.rightSet nt (N.removeMinAuxWithRootMutate nt nr);
-            N.return (N.balMutate nt)
+            nt.right <- (N.removeMinAuxWithRootMutate nt nr);
+            Some (N.balMutate nt)
         end
       | Some data -> 
-        N.valueSet nt data;
-        N.return nt
+        nt.value <- data;
+        Some nt
     end      
     else
-      let l, r = N.(leftGet nt, rightGet nt) in 
+      let {N.left = l; right = r} = nt in 
       (if x < k then                   
          let ll = updateDone  l x f in
-         N.leftSet nt ll
+         nt.left <- ll
        else   
-         N.rightSet nt (updateDone  r x f);
+         nt.right <- (updateDone  r x f);
       );
-      N.return (N.balMutate nt)
+      Some (N.balMutate nt)
         
 let updateU t x f =       
   let oldRoot = t.data in 
@@ -139,14 +139,14 @@ let rec removeArrayMutateAux t xs i len   =
   if i < len then 
     let ele = A.getUnsafe xs i in 
     let u = removeMutateAux t ele  in 
-    match N.toOpt u with 
-    | None -> N.empty
+    match  u with 
+    | None -> None
     | Some t -> removeArrayMutateAux t xs (i+1) len 
-  else N.return t    
+  else Some t    
 
 let removeMany (d : _ t) xs =  
   let oldRoot = d.data in 
-  match N.toOpt oldRoot with 
+  match  oldRoot with 
   | None -> ()
   | Some nt -> 
     let len = A.length xs in 

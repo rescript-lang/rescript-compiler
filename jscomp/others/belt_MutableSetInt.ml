@@ -46,34 +46,34 @@ type t = {
 
 
 let rec remove0 nt (x : value)= 
-  let k = N.valueGet nt in 
+  let k = nt.N.value in 
   if x = k then 
-    let l,r = N.(leftGet nt, rightGet nt) in       
-    match N.(toOpt l, toOpt r) with 
+    let {N.left = l; right = r} = nt in       
+    match l, r with 
     | None, _ -> r 
     | _, None -> l 
     | Some _,  Some nr ->  
-      N.rightSet nt (N.removeMinAuxWithRootMutate nt nr);
-      N.return (N.balMutate nt)
+      nt.right <- (N.removeMinAuxWithRootMutate nt nr);
+      Some (N.balMutate nt)
   else 
     begin 
       if x < k then 
-        match N.toOpt (N.leftGet nt) with         
-        | None -> N.return nt 
+        match nt.left with         
+        | None -> Some nt 
         | Some l ->
-          N.leftSet nt (remove0 l x );
-          N.return (N.balMutate nt)
+          nt.left <- (remove0 l x );
+          Some (N.balMutate nt)
       else 
-        match N.toOpt (N.rightGet nt) with 
-        | None -> N.return nt 
+        match nt.right with 
+        | None -> Some nt 
         | Some r -> 
-          N.rightSet nt (remove0 r x);
-          N.return (N.balMutate nt)
+          nt.right <- (remove0 r x);
+          Some (N.balMutate nt)
     end
 
 let remove d v = 
   let oldRoot = d.data in 
-  match N.toOpt oldRoot with 
+  match oldRoot with 
   | None -> ()
   | Some oldRoot2 -> 
   let newRoot = remove0 oldRoot2 v in 
@@ -84,52 +84,52 @@ let rec removeMany0 t xs i len  =
   if i < len then 
     let ele = A.getUnsafe xs i in 
     let u = remove0 t ele in 
-    match N.toOpt u with 
-    | None -> N.empty
+    match u with 
+    | None -> None
     | Some t -> removeMany0 t xs (i+1) len
-  else N.return t    
+  else Some t    
 
 
 let removeMany  (d : t) xs =  
   let oldRoot = d.data in 
-  match N.toOpt oldRoot with 
+  match oldRoot with 
   | None -> ()
   | Some nt -> 
     let len = A.length xs in 
     d.data <- removeMany0 nt xs 0 len
     
 let rec removeCheck0  nt (x : value) removed = 
-  let k = N.valueGet nt in 
+  let k = nt.N.value in 
   if x = k then 
     let () = removed .contents<- true in  
-    let l,r = N.(leftGet nt, rightGet nt) in       
-    match N.(toOpt l, toOpt r) with 
+    let {N.left = l; right = r} = nt in       
+    match l, r with 
     | None, _ -> r 
     | _ , None -> l 
     | Some _,  Some nr ->  
-      N.rightSet nt (N.removeMinAuxWithRootMutate nt nr);
-      N.return (N.balMutate nt)
+      nt.right <- (N.removeMinAuxWithRootMutate nt nr);
+      Some (N.balMutate nt)
   else 
     begin 
       if x < k then 
-        match N.toOpt (N.leftGet nt) with         
-        | None -> N.return nt 
+        match nt.left with         
+        | None -> Some nt 
         | Some l ->
-          N.leftSet nt (removeCheck0  l x removed);
-          N.return (N.balMutate nt)
+          nt.left <- (removeCheck0  l x removed);
+          Some (N.balMutate nt)
       else 
-        match N.toOpt (N.rightGet nt) with 
-        | None -> N.return nt 
+        match nt.right with 
+        | None -> Some nt 
         | Some r -> 
-          N.rightSet nt (removeCheck0  r x removed);
-          N.return (N.balMutate nt)
+          nt.right <- (removeCheck0  r x removed);
+          Some (N.balMutate nt)
     end
 
 
 
 let removeCheck  (d :  t) v =  
   let oldRoot = d.data in 
-  match N.toOpt oldRoot with 
+  match oldRoot with 
   | None -> false 
   | Some oldRoot2 ->
     let removed = ref false in 
@@ -140,22 +140,22 @@ let removeCheck  (d :  t) v =
 
     
 let rec addCheck0  t (x : value) added  =   
-  match N.toOpt t with 
+  match t with 
   | None -> 
     added .contents<- true;
     N.singleton x 
   | Some nt -> 
-    let k = N.valueGet nt in 
+    let k = nt.N.value in 
     if x = k then t 
     else
-      let l, r = N.(leftGet nt, rightGet nt) in 
+      let {N.left = l; right =  r} = nt in 
       (if x < k then                   
          let ll = addCheck0  l x added in
-         N.leftSet nt ll
+         nt.left <- ll
        else   
-         N.rightSet nt (addCheck0 r x added );
+         nt.right <- (addCheck0 r x added );
       );
-      N.return (N.balMutate nt)
+      Some (N.balMutate nt)
 
 let addCheck (m :  t) e = 
   let oldRoot = m.data in 
@@ -184,7 +184,7 @@ let mergeMany d arr =
     
 
 
-let make  () = {data = N.empty}
+let make  () = {data = None}
 
 let isEmpty d = 
   N.isEmpty (d.data)
@@ -271,7 +271,7 @@ let partition d p = partitionU d (fun[@bs] a -> p a)
 let subset a b = I.subset  a.data b.data
 let intersect dataa datab  = 
   let dataa, datab = dataa.data, datab.data in
-    match N.toOpt dataa, N.toOpt datab with 
+    match dataa, datab with 
     | None, _ -> make ()
     | _, None -> make ()
     | Some dataa0, Some datab0 ->  
@@ -296,7 +296,7 @@ let intersect dataa datab  =
   
 let diff dataa datab : t = 
   let dataa, datab = dataa.data, datab.data in
-  match N.toOpt dataa, N.toOpt datab with 
+  match dataa, datab with 
   | None, _ -> make ()
   | _, None -> {data = N.copy dataa}
   | Some dataa0, Some datab0 -> 
@@ -318,7 +318,7 @@ let diff dataa datab : t =
 
 let union (dataa : t)  (datab : t) : t = 
   let dataa, datab = dataa.data, datab.data in
-   match N.toOpt dataa, N.toOpt datab with 
+   match dataa, datab with 
   | None, _ -> {data = (N.copy datab)}
   | _, None -> {data = (N.copy dataa)} 
   | Some dataa0, Some datab0 

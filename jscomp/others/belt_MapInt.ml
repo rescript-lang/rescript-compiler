@@ -8,7 +8,7 @@ module A = Belt_Array
 
 type 'a t = (key, 'a) N.t
 
-let empty = N.empty      
+let empty = None      
 let isEmpty = N.isEmpty
 (* let singleton = N.singleton *)
 
@@ -44,22 +44,22 @@ let valuesToArray = N.valuesToArray
 let checkInvariantInternal = N.checkInvariantInternal
 
 let rec set  t (newK : key) (newD : _)  = 
-  match N.toOpt t with
+  match t with
   | None -> 
     N.singleton newK newD
   | Some n  ->
-    let k = N.keyGet n in 
+    let k = n.N.key in 
     if newK = k then
-      N.return (N.updateValue n newD)
+      Some (N.updateValue n newD)
     else
-      let v = N.valueGet n in 
+      let v = n.N.value in 
       if newK < k then
-        N.bal (set (N.leftGet n) newK newD) k v (N.rightGet n)
+        N.bal (set n.N.left newK newD) k v n.N.right
       else
-        N.bal (N.leftGet n) k v (set (N.rightGet n) newK newD)
+        N.bal n.N.left k v (set n.N.right newK newD)
         
 let rec updateU  t (x : key) f  = 
-  match N.toOpt t with
+  match t with
   | None -> 
     begin match f None [@bs] with 
     | None -> t 
@@ -67,23 +67,23 @@ let rec updateU  t (x : key) f  =
       N.singleton x data 
     end 
   | Some n  ->
-    let k = N.keyGet n in 
+    let k = n.N.key in 
     if x = k then
-      begin match f (Some (N.valueGet n)) [@bs] with 
+      begin match f (Some n.N.value) [@bs] with 
       | None ->
-        let l, r = N.leftGet n, N.rightGet n in
-        begin match N.toOpt l, N.toOpt r with
+        let {N.left = l;  right = r } = n in
+        begin match l, r with
           | None, _ -> r
           | _, None -> l
           | _, Some rn ->
-            let kr, vr = ref (N.keyGet rn), ref (N.valueGet rn) in
+            let kr, vr = ref rn.N.key, ref rn.N.value in
             let r = N.removeMinAuxWithRef rn kr vr in
             N.bal l kr.contents vr.contents r 
         end
-      | Some data -> N.return (N.updateValue n data )
+      | Some data -> Some (N.updateValue n data )
       end 
     else
-      let l,r,v = N.leftGet n, N.rightGet n , N.valueGet n in 
+      let {N.left = l; right = r; value = v} = n in 
       if x < k then
         let ll = (updateU l x f) in
         if l == ll then t 
@@ -96,48 +96,48 @@ let rec updateU  t (x : key) f  =
 let update t x f = updateU t x (fun[@bs] a -> f a)
     
 let rec removeAux n (x : key) = 
-    let l,v,r = N.(leftGet n, keyGet n, rightGet n) in 
+    let {N.left = l; key = v; right = r} = n in 
     if x = v then
-      match N.toOpt l, N.toOpt r with
+      match l, r with
       | None, _ -> r 
       | _, None -> l 
       | _, Some rn -> 
-        let kr, vr = ref (N.keyGet rn), ref (N.valueGet rn) in 
+        let kr, vr = ref rn.N.key, ref rn.N.value in 
         let r = N.removeMinAuxWithRef rn kr vr in 
         N.bal l kr.contents vr.contents r 
     else if x < v then
-      match N.toOpt l with 
-      | None -> N.return n
+      match l with 
+      | None -> Some n
       | Some left -> 
         let ll = removeAux left x in 
-        if ll == l then N.return n 
-        else N.(bal ll v (valueGet n) r)
+        if ll == l then Some n 
+        else N.(bal ll v n.value r)
     else
-      match N.toOpt r with 
-      | None -> N.return n 
+      match r with 
+      | None -> Some n 
       | Some right -> 
         let rr = removeAux right x  in 
-        N.bal l v (N.valueGet n) rr
+        N.bal l v n.N.value rr
 
 let remove n x = 
-  match N.toOpt n with 
-  | None -> N.empty
+  match n with 
+  | None -> None
   | Some n -> removeAux n x 
 
 let rec removeMany0 t xs i len  =
   if i < len then
     let ele = A.getUnsafe xs i in
     let u =  removeAux t ele  in
-    match N.toOpt u with
+    match u with
     | None -> u
     | Some t -> removeMany0 t xs (i + 1) len
   else
-    N.return t
+    Some t
       
 let removeMany t keys =
   let len = A.length keys in
-  match N.toOpt t with
-  | None -> N.empty
+  match t with
+  | None -> None
   | Some t ->  removeMany0 t keys 0 len
 
 let findFirstByU = N.findFirstByU

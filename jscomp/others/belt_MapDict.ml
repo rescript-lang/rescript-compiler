@@ -29,7 +29,7 @@ type ('key,  'a, 'id) t = ('key, 'a) N.t
 
 type ('key, 'id) cmp = ('key, 'id)  Belt_Id.cmp
 
-let empty = N.empty
+let empty = None
 let fromArray = N.fromArray
 let isEmpty = N.isEmpty
 let cmp = N.cmp
@@ -77,45 +77,45 @@ let partitionU = N.partitionSharedU
 let partition = N.partitionShared                   
 let checkInvariantInternal = N.checkInvariantInternal
 let rec set  (t : _ t) newK newD  ~cmp =
-  match N.toOpt t with 
+  match  t with 
   | None -> N.singleton newK newD 
   | Some n  ->
-    let k= N.keyGet n in 
+    let k= n.N.key in 
     let c = (Belt_Id.getCmpInternal cmp) newK k [@bs] in
     if c = 0 then
-      N.return (N.updateValue n newD) 
+      Some (N.updateValue n newD) 
     else 
-      let l,r,v = N.leftGet n, N.rightGet n, N.valueGet n in 
+      let l,r,v = n.N.left, n.N.right, n.N.value in 
       if c < 0 then (* Worth optimize for reference equality? *)
         N.bal (set ~cmp l newK newD ) k v  r
       else
         N.bal l k v (set ~cmp r newK newD )
 
 let rec updateU  (t : _ t) newK f  ~cmp :  _ t =
-  match N.toOpt t with 
+  match  t with 
   | None ->
     begin match f None [@bs] with 
       | None -> t 
       | Some newD -> N.singleton newK newD 
     end 
   | Some n  ->
-    let k= N.keyGet n in 
+    let k= n.N.key in 
     let c = (Belt_Id.getCmpInternal cmp) newK k [@bs] in
     if c = 0 then
-      match f (Some (N.valueGet n)) [@bs] with 
+      match f (Some (n.N.value)) [@bs] with 
       | None ->
-        let l, r = N.leftGet n , N.rightGet n in  
-        begin match N.toOpt l, N.toOpt r with
+        let l, r = n.N.left , n.N.right in  
+        begin match  l,  r with
         | None, _ -> r
         | _, None -> l
         | _, Some rn ->
-          let kr, vr = ref (N.keyGet rn), ref (N.valueGet rn) in
+          let kr, vr = ref rn.key, ref rn.value in
           let r = N.removeMinAuxWithRef rn kr vr in
           N.bal l kr.contents vr.contents r 
         end
-      | Some newD -> N.return (N.updateValue n newD)
+      | Some newD -> Some (N.updateValue n newD)
     else 
-      let l,r,v = N.leftGet n, N.rightGet n, N.valueGet n in 
+      let l,r,v = n.N.left, n.N.right, n.N.value in 
       if c < 0 then
         let ll = (updateU ~cmp l newK f ) in
         if l == ll then
@@ -147,35 +147,35 @@ let update t newK f ~cmp =
 
 
 let rec removeAux0  n x ~cmp = 
-  let l,v,r = N.(leftGet n, keyGet n, rightGet n ) in 
+  let {N.left = l; key = v; right = r} = n in 
   let c = (Belt_Id.getCmpInternal cmp) x v [@bs] in
   if c = 0 then
-    match N.toOpt l, N.toOpt r with 
+    match  l,  r with 
     | None, _ -> r 
     | _, None -> l 
     | _, Some rn -> 
-      let kr, vr = ref (N.keyGet rn), ref (N.valueGet rn) in 
+      let kr, vr = ref rn.key, ref rn.value in 
       let r = N.removeMinAuxWithRef rn kr vr in 
       N.bal l kr.contents vr.contents r
   else if c < 0 then
-    match N.toOpt l with 
-    | None -> N.return n (* Nothing to remove *)
+    match  l with 
+    | None -> Some n (* Nothing to remove *)
     | Some left ->
       let ll = removeAux0 left x ~cmp in 
-      if ll == l then (N.return n)
-      else N.bal ll v (N.valueGet n) r
+      if ll == l then (Some n)
+      else N.bal ll v (n.N.value) r
   else
-    match N.toOpt r with 
-    | None -> N.return n (* Nothing to remove *)
+    match  r with 
+    | None -> Some n (* Nothing to remove *)
     | Some right -> 
       let rr = removeAux0 ~cmp right x in
-      if rr == r then N.return n
-      else N.bal l v (N.valueGet n)  rr
+      if rr == r then Some n
+      else N.bal l v (n.N.value)  rr
 
 
 let remove n x ~cmp = 
-  match N.toOpt n with        
-  | None -> N.empty
+  match  n with        
+  | None -> None
   | Some n -> removeAux0 n x ~cmp 
   
 let mergeMany   h arr ~cmp =   
@@ -188,7 +188,7 @@ let mergeMany   h arr ~cmp =
   v.contents 
 
 let rec splitAuxPivot n x pres  ~cmp =  
-  let l,v,d,r = N.(leftGet n , keyGet n, valueGet n, rightGet n) in  
+  let {N.left = l; key = v; value = d; right = r} = n in  
   let c = (Belt_Id.getCmpInternal cmp) x v [@bs] in 
   if c = 0 then begin 
     pres .contents<- Some d; 
@@ -196,25 +196,25 @@ let rec splitAuxPivot n x pres  ~cmp =
   end
   else     
   if c < 0 then
-    match N.toOpt l with 
+    match  l with 
     | None -> 
-      N.empty, N.return n
+      None, Some n
     | Some l -> 
       let (ll,rl) = splitAuxPivot ~cmp l x pres in
       (ll,  N.join rl v d r)
   else
-    match N.toOpt r with 
+    match  r with 
     | None ->
-      N.return n, N.empty
+      Some n, None
     | Some r -> 
       let (lr,  rr) = splitAuxPivot ~cmp r x pres in
       (N.join l v d lr,  rr)
 
 
 let split  n x ~cmp = 
-  match N.toOpt n with 
+  match  n with 
   | None ->     
-    (N.empty, N.empty), None
+    (None, None), None
   | Some n  ->
     let pres = ref None in
     let v = splitAuxPivot ~cmp n x pres in 
@@ -224,8 +224,8 @@ let findFirstByU = N.findFirstByU
 let findFirstBy = N.findFirstBy 
 
 let rec mergeU s1 s2 f ~cmp =
-  match N.(toOpt s1, toOpt s2) with
-    (None, None) -> N.empty
+  match s1, s2 with
+    (None, None) -> None
   | Some _, None -> 
     N.keepMapU s1 (fun[@bs] k v -> 
         f k (Some v) None [@bs]
@@ -235,8 +235,8 @@ let rec mergeU s1 s2 f ~cmp =
         f k None (Some v) [@bs]
       )
   | Some s1n , Some s2n -> 
-    if N.heightGet s1n  >= N.heightGet s2n  then
-      let l1, v1, d1, r1 = N.(leftGet s1n, keyGet s1n, valueGet s1n, rightGet s1n) in 
+    if s1n.height  >= s2n.height  then
+      let {N.left = l1; key = v1; value = d1; right = r1} = s1n in 
       let d2 = ref None in 
       let (l2, r2) = splitAuxPivot ~cmp s2n v1 d2 in
       let d2 = d2.contents in 
@@ -245,7 +245,7 @@ let rec mergeU s1 s2 f ~cmp =
       let newRight = mergeU ~cmp r1 r2 f in 
       N.concatOrJoin newLeft v1 newD  newRight
     else
-      let l2,v2,d2,r2 = N.(leftGet s2n, keyGet s2n, valueGet s2n, rightGet s2n) in 
+      let {N.left  = l2; key = v2; value = d2; right = r2 } = s2n in 
       let d1 = ref None in 
       let (l1,  r1) = splitAuxPivot ~cmp s1n v2 d1 in
       let d1 = d1.contents in 
@@ -261,16 +261,16 @@ let rec removeMany0 t xs i len ~cmp =
   if i < len then
     let ele = A.getUnsafe xs i in
     let u =  removeAux0 t ele ~cmp in
-    match N.toOpt u with
+    match  u with
     | None -> u
     | Some t -> removeMany0 t xs (i + 1) len ~cmp 
   else
-    N.return t
+    Some t
       
 let removeMany t keys ~cmp =
   let len = A.length keys in
-  match N.toOpt t with
-  | None -> N.empty
+  match  t with
+  | None -> None
   | Some t ->  removeMany0 t keys 0 len ~cmp 
 
 

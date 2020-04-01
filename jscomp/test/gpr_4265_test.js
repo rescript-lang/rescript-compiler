@@ -17,7 +17,7 @@ function eq(loc, x, y) {
 }
 
 var mockMap = {
-  data: null
+  data: undefined
 };
 
 function add(id) {
