@@ -63,7 +63,7 @@ let rec removeMutateAux nt (x : key)=
   let k = nt.N.key in 
   if x = k then 
     let {N.left = l; right = r} = nt in       
-    match N.(toOpt l, toOpt r) with
+    match l, r with
     | None, _ -> r  
     | _, None -> l 
     | _,  Some nr ->  
@@ -72,13 +72,13 @@ let rec removeMutateAux nt (x : key)=
   else 
     begin 
       if x < k then 
-        match N.toOpt nt.left with         
+        match  nt.left with         
         | None -> N.return nt 
         | Some l ->
           nt.left <- (removeMutateAux l x );
           N.return (N.balMutate nt)
       else 
-        match N.toOpt nt.right with 
+        match  nt.right with 
         | None -> N.return nt 
         | Some r -> 
           nt.right <- (removeMutateAux r x);
@@ -87,7 +87,7 @@ let rec removeMutateAux nt (x : key)=
 
 let remove d v = 
   let oldRoot = d.data in 
-  match N.toOpt oldRoot with 
+  match  oldRoot with 
   | None -> ()
   | Some root -> 
     let newRoot = removeMutateAux root v in 
@@ -96,7 +96,7 @@ let remove d v =
 
 
 let rec updateDone t (x : key)  f  =   
-  match N.toOpt t with 
+  match  t with 
   | None ->
     (match f None [@bs] with
     | Some data -> N.singleton x data
@@ -108,7 +108,7 @@ let rec updateDone t (x : key)  f  =
       match f (Some nt.value) [@bs] with
       | None ->
         let {N.left = l; right = r} = nt in
-        begin match N.toOpt l, N.toOpt r with
+        begin match  l,  r with
           | None,  _ -> r
           | _, None  -> l
           | _, Some nr ->
@@ -139,14 +139,14 @@ let rec removeArrayMutateAux t xs i len   =
   if i < len then 
     let ele = A.getUnsafe xs i in 
     let u = removeMutateAux t ele  in 
-    match N.toOpt u with 
+    match  u with 
     | None -> N.empty
     | Some t -> removeArrayMutateAux t xs (i+1) len 
   else N.return t    
 
 let removeMany (d : _ t) xs =  
   let oldRoot = d.data in 
-  match N.toOpt oldRoot with 
+  match  oldRoot with 
   | None -> ()
   | Some nt -> 
     let len = A.length xs in 

@@ -35,7 +35,7 @@ and ('k,  'v) node  =  {
 } 
 
 
-external toOpt : 'a option -> 'a option = "%identity"
+
 external return : 'a -> 'a option = "%identity"
 val empty : _ t
 (* val empty : _ t *)

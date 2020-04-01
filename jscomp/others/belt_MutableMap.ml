@@ -46,7 +46,7 @@ let rec removeMutateAux nt x ~cmp =
   let c = (Belt_Id.getCmpInternal cmp) x k [@bs] in 
   if c = 0 then 
     let {N.left = l; right = r} = nt in       
-    match N.(toOpt l, toOpt r) with 
+    match l, r with 
     | Some _,  Some nr ->  
       nt.right <- (N.removeMinAuxWithRootMutate nt nr);
       N.return (N.balMutate nt)
@@ -56,13 +56,13 @@ let rec removeMutateAux nt x ~cmp =
   else 
     begin 
       if c < 0 then 
-        match N.toOpt nt.N.left with         
+        match  nt.N.left with         
         | None -> N.return nt 
         | Some l ->
           nt.left <- (removeMutateAux ~cmp l x );
           N.return (N.balMutate nt)
       else 
-        match N.toOpt nt.right with 
+        match  nt.right with 
         | None -> N.return nt 
         | Some r -> 
           nt.right <- (removeMutateAux ~cmp r x);
@@ -71,7 +71,7 @@ let rec removeMutateAux nt x ~cmp =
 
 let remove d k =  
   let oldRoot = d.data in   
-  match N.toOpt oldRoot with 
+  match  oldRoot with 
   | None -> ()
   | Some oldRoot2 ->
     let newRoot = removeMutateAux ~cmp:(d.cmp) oldRoot2 k in 
@@ -83,14 +83,14 @@ let rec removeArrayMutateAux t xs i len ~cmp  =
   if i < len then 
     let ele = A.getUnsafe xs i in 
     let u = removeMutateAux t ele ~cmp in 
-    match N.toOpt u with 
+    match  u with 
     | None -> N.empty
     | Some t -> removeArrayMutateAux t xs (i+1) len ~cmp 
   else N.return t    
 
 let removeMany d xs =  
   let oldRoot = d.data in 
-  match N.toOpt oldRoot with 
+  match  oldRoot with 
   | None -> ()
   | Some nt -> 
     let len = A.length xs in 
@@ -100,7 +100,7 @@ let removeMany d xs =
 
 
 let rec updateDone t x   f  ~cmp =   
-  match N.toOpt t with 
+  match  t with 
   | None ->
     (match f None [@bs] with
     | Some data -> N.singleton x data
@@ -112,7 +112,7 @@ let rec updateDone t x   f  ~cmp =
       match f (Some nt.value) [@bs] with
       | None ->
         let {N.left = l; right = r} = nt in
-        begin match N.toOpt l, N.toOpt r with
+        begin match  l,  r with
         | Some _, Some nr ->
           nt.right <- (N.removeMinAuxWithRootMutate nt nr);
           N.return (N.balMutate nt)

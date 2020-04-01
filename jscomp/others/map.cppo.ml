@@ -49,7 +49,7 @@ let valuesToArray = N.valuesToArray
 let checkInvariantInternal = N.checkInvariantInternal
 
 let rec set  t (newK : key) (newD : _)  = 
-  match N.toOpt t with
+  match t with
   | None -> 
     N.singleton newK newD
   | Some n  ->
@@ -64,7 +64,7 @@ let rec set  t (newK : key) (newD : _)  =
         N.bal n.N.left k v (set n.N.right newK newD)
         
 let rec updateU  t (x : key) f  = 
-  match N.toOpt t with
+  match t with
   | None -> 
     begin match f None [@bs] with 
     | None -> t 
@@ -77,7 +77,7 @@ let rec updateU  t (x : key) f  =
       begin match f (Some n.N.value) [@bs] with 
       | None ->
         let {N.left = l;  right = r } = n in
-        begin match N.toOpt l, N.toOpt r with
+        begin match l, r with
           | None, _ -> r
           | _, None -> l
           | _, Some rn ->
@@ -103,7 +103,7 @@ let update t x f = updateU t x (fun[@bs] a -> f a)
 let rec removeAux n (x : key) = 
     let {N.left = l; key = v; right = r} = n in 
     if x = v then
-      match N.toOpt l, N.toOpt r with
+      match l, r with
       | None, _ -> r 
       | _, None -> l 
       | _, Some rn -> 
@@ -111,21 +111,21 @@ let rec removeAux n (x : key) =
         let r = N.removeMinAuxWithRef rn kr vr in 
         N.bal l kr.contents vr.contents r 
     else if x < v then
-      match N.toOpt l with 
+      match l with 
       | None -> N.return n
       | Some left -> 
         let ll = removeAux left x in 
         if ll == l then N.return n 
         else N.(bal ll v n.value r)
     else
-      match N.toOpt r with 
+      match r with 
       | None -> N.return n 
       | Some right -> 
         let rr = removeAux right x  in 
         N.bal l v n.N.value rr
 
 let remove n x = 
-  match N.toOpt n with 
+  match n with 
   | None -> N.empty
   | Some n -> removeAux n x 
 
@@ -133,7 +133,7 @@ let rec removeMany0 t xs i len  =
   if i < len then
     let ele = A.getUnsafe xs i in
     let u =  removeAux t ele  in
-    match N.toOpt u with
+    match u with
     | None -> u
     | Some t -> removeMany0 t xs (i + 1) len
   else
@@ -141,7 +141,7 @@ let rec removeMany0 t xs i len  =
       
 let removeMany t keys =
   let len = A.length keys in
-  match N.toOpt t with
+  match t with
   | None -> N.empty
   | Some t ->  removeMany0 t keys 0 len
 

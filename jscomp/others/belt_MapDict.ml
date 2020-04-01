@@ -77,7 +77,7 @@ let partitionU = N.partitionSharedU
 let partition = N.partitionShared                   
 let checkInvariantInternal = N.checkInvariantInternal
 let rec set  (t : _ t) newK newD  ~cmp =
-  match N.toOpt t with 
+  match  t with 
   | None -> N.singleton newK newD 
   | Some n  ->
     let k= n.N.key in 
@@ -92,7 +92,7 @@ let rec set  (t : _ t) newK newD  ~cmp =
         N.bal l k v (set ~cmp r newK newD )
 
 let rec updateU  (t : _ t) newK f  ~cmp :  _ t =
-  match N.toOpt t with 
+  match  t with 
   | None ->
     begin match f None [@bs] with 
       | None -> t 
@@ -105,7 +105,7 @@ let rec updateU  (t : _ t) newK f  ~cmp :  _ t =
       match f (Some (n.N.value)) [@bs] with 
       | None ->
         let l, r = n.N.left , n.N.right in  
-        begin match N.toOpt l, N.toOpt r with
+        begin match  l,  r with
         | None, _ -> r
         | _, None -> l
         | _, Some rn ->
@@ -150,7 +150,7 @@ let rec removeAux0  n x ~cmp =
   let {N.left = l; key = v; right = r} = n in 
   let c = (Belt_Id.getCmpInternal cmp) x v [@bs] in
   if c = 0 then
-    match N.toOpt l, N.toOpt r with 
+    match  l,  r with 
     | None, _ -> r 
     | _, None -> l 
     | _, Some rn -> 
@@ -158,14 +158,14 @@ let rec removeAux0  n x ~cmp =
       let r = N.removeMinAuxWithRef rn kr vr in 
       N.bal l kr.contents vr.contents r
   else if c < 0 then
-    match N.toOpt l with 
+    match  l with 
     | None -> N.return n (* Nothing to remove *)
     | Some left ->
       let ll = removeAux0 left x ~cmp in 
       if ll == l then (N.return n)
       else N.bal ll v (n.N.value) r
   else
-    match N.toOpt r with 
+    match  r with 
     | None -> N.return n (* Nothing to remove *)
     | Some right -> 
       let rr = removeAux0 ~cmp right x in
@@ -174,7 +174,7 @@ let rec removeAux0  n x ~cmp =
 
 
 let remove n x ~cmp = 
-  match N.toOpt n with        
+  match  n with        
   | None -> N.empty
   | Some n -> removeAux0 n x ~cmp 
   
@@ -196,14 +196,14 @@ let rec splitAuxPivot n x pres  ~cmp =
   end
   else     
   if c < 0 then
-    match N.toOpt l with 
+    match  l with 
     | None -> 
       N.empty, N.return n
     | Some l -> 
       let (ll,rl) = splitAuxPivot ~cmp l x pres in
       (ll,  N.join rl v d r)
   else
-    match N.toOpt r with 
+    match  r with 
     | None ->
       N.return n, N.empty
     | Some r -> 
@@ -212,7 +212,7 @@ let rec splitAuxPivot n x pres  ~cmp =
 
 
 let split  n x ~cmp = 
-  match N.toOpt n with 
+  match  n with 
   | None ->     
     (N.empty, N.empty), None
   | Some n  ->
@@ -224,7 +224,7 @@ let findFirstByU = N.findFirstByU
 let findFirstBy = N.findFirstBy 
 
 let rec mergeU s1 s2 f ~cmp =
-  match N.(toOpt s1, toOpt s2) with
+  match s1, s2 with
     (None, None) -> N.empty
   | Some _, None -> 
     N.keepMapU s1 (fun[@bs] k v -> 
@@ -261,7 +261,7 @@ let rec removeMany0 t xs i len ~cmp =
   if i < len then
     let ele = A.getUnsafe xs i in
     let u =  removeAux0 t ele ~cmp in
-    match N.toOpt u with
+    match  u with
     | None -> u
     | Some t -> removeMany0 t xs (i + 1) len ~cmp 
   else
@@ -269,7 +269,7 @@ let rec removeMany0 t xs i len ~cmp =
       
 let removeMany t keys ~cmp =
   let len = A.length keys in
-  match N.toOpt t with
+  match  t with
   | None -> N.empty
   | Some t ->  removeMany0 t keys 0 len ~cmp 
 

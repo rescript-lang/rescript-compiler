@@ -15,7 +15,7 @@ module S = Belt_SortArray
 type  'a t = (key,'a) N.t
 
 let rec add  t (x : key) (data : _)  = 
-  match N.toOpt t with
+  match t with
   | None -> 
     N.singleton x data 
   | Some n  ->
@@ -30,7 +30,7 @@ let rec add  t (x : key) (data : _)  =
         N.bal n.N.left k v (add n.N.right x data )
 
 let rec get n (x : key)  =
-  match N.toOpt n with 
+  match n with 
     None -> None
   | Some n  ->
     let v = n.N.key in 
@@ -38,7 +38,7 @@ let rec get n (x : key)  =
     else get (if x < v then n.N.left else n.N.right) x 
 
 let rec getUndefined n (x : key) = 
-  match N.toOpt n with 
+  match n with 
   | None ->
     Js.undefined
   | Some n  ->
@@ -47,7 +47,7 @@ let rec getUndefined n (x : key) =
     else getUndefined (if x < v then n.N.left else n.N.right) x 
 
 let rec getExn n (x : key) =
-  match N.toOpt n with 
+  match n with 
   | None -> [%assert "getExn"]
   | Some n -> 
     let v = n.N.key in 
@@ -55,7 +55,7 @@ let rec getExn n (x : key) =
     else getExn (if x < v then n.N.left else n.N.right) x
 
 let rec getWithDefault n (x : key) def =
-  match N.toOpt n with 
+  match n with 
   | None -> def    
   | Some n -> 
     let v = n.N.key in 
@@ -63,19 +63,19 @@ let rec getWithDefault n (x : key) def =
     else getWithDefault (if x < v then n.N.left else n.N.right) x def
     
 let rec has n (x : key)= 
-  match N.toOpt n with 
+  match n with 
     None -> false
   | Some n (* Node(l, v, d, r, _) *) ->
     let v = n.N.key in 
     x = v || has (if x < v then n.N.left else n.N.right) x 
 
 let rec remove n (x : key) = 
-  match N.toOpt n with 
+  match n with 
   |  None -> n    
   |  Some n ->
     let {N.left = l; key = v; right = r} = n in 
     if x = v then
-      match N.toOpt l, N.toOpt r with
+      match l, r with
       | None, _ -> r 
       | _, None -> l 
       | _, Some rn -> 
@@ -92,13 +92,13 @@ let rec splitAux (x : key) (n : _ N.node) : _ t * _ option  * _ t =
   if x = v then (l, Some d, r)
   else     
   if x < v then
-    match N.toOpt l with 
+    match l with 
     | None -> 
       N.(empty , None, return n)
     | Some l -> 
       let (ll, pres, rl) = splitAux x l in (ll, pres, N.join rl v d r)
   else
-    match N.toOpt r with 
+    match r with 
     | None ->
       N.(return n, None, empty)
     | Some r -> 
@@ -106,17 +106,17 @@ let rec splitAux (x : key) (n : _ N.node) : _ t * _ option  * _ t =
 
 
 let split (x : key) n =
-  match N.toOpt n with 
+  match n with 
     None ->
     N.(empty, None, empty)
   | Some n -> 
     splitAux x n 
 
 let rec mergeU s1 s2 f =
-  match N.(toOpt s1, toOpt s2) with
+  match s1, s2 with
     (None, None) -> N.empty
   | Some n (* (Node (l1, v1, d1, r1, h1), _)*), _ 
-    when (n.N.height >= (match N.toOpt s2 with None -> 0 | Some n -> n.N.height)) ->
+    when (n.N.height >= (match s2 with None -> 0 | Some n -> n.N.height)) ->
     let {N.left = l1; key = v1; value = d1; right = r1} = n in 
     let (l2, d2, r2) = split v1 s2 in
     N.concatOrJoin (mergeU l1 l2 f) v1 (f v1 (Some d1) d2 [@bs]) (mergeU r1 r2 f)
@@ -179,7 +179,7 @@ let eqU s1 s2 eq =
 let eq s1 s2 f = eqU s1 s2 (fun[@bs] a b -> f a b)
     
 let rec addMutate  (t : _ t) x data : _ t =   
-  match N.toOpt t with 
+  match t with 
   | None -> N.singleton x data
   | Some nt -> 
     let k = nt.N.key in 
