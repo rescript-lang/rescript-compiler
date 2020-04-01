@@ -28,7 +28,6 @@ type ('k, 'id) cmp = ('k, 'id) Belt_Id.cmp
 module A = Belt_Array
 module S = Belt_SortArray
 
-external return : 'a -> 'a option = "%identity"
 
 external unsafeCoerce : 'a option -> 'a = "%identity"
 
@@ -44,14 +43,14 @@ let rec copy n =
   | None -> n
   | Some n ->
     let {left = l; right = r} = n  in
-    return { left = (copy l);  right = (copy r);  value = n.value; key = n.key; height = n.height}
+    Some { left = (copy l);  right = (copy r);  value = n.value; key = n.key; height = n.height}
 
 let create l x d r =
   let hl, hr  = treeHeight l,  treeHeight r in
-  return { left = l ; key = x ; value = d ; right = r ; height = (if hl >= hr then hl + 1 else hr + 1)}
+  Some { left = l ; key = x ; value = d ; right = r ; height = (if hl >= hr then hl + 1 else hr + 1)}
 
 let singleton x d =
-  return { left = None; key = x;  value = d; right = None; height = 1}
+  Some { left = None; key = x;  value = d; right = None; height = 1}
 
 let heightGe l r =
   match  l,  r with
@@ -90,7 +89,7 @@ let bal l x d r =
       create (create l x d rll) rlv rld (create rlr rv rd rr)
     end
   end else
-    return { left = l; key = x ; value = d ; right = r ; height = (if hl >= hr then hl + 1 else hr + 1)}
+    Some { left = l; key = x ; value = d ; right = r ; height = (if hl >= hr then hl + 1 else hr + 1)}
 
 
 let rec minKey0Aux n =
@@ -203,7 +202,7 @@ let rec mapU n f =
     let newLeft = n .left |. mapU  f in
     let newD = f n.value [@bs] in
     let newRight = n.right|. mapU  f in
-    return { left = newLeft; key = n.key;  value = newD; right = newRight; height = n.height}
+    Some { left = newLeft; key = n.key;  value = newD; right = newRight; height = n.height}
 
 let map n f = mapU n (fun[@bs] a -> f a)
 
@@ -216,7 +215,7 @@ let rec mapWithKeyU n f =
     let newLeft = n .left |. mapWithKeyU  f in
     let newD = f key n.value [@bs] in
     let newRight = n.right|. mapWithKeyU  f in
-    return { left = newLeft; key; value = newD; right = newRight; height = n.height}
+    Some { left = newLeft; key; value = newD; right = newRight; height = n.height}
 
 let mapWithKey n f = mapWithKeyU n (fun [@bs] a b -> f a b)
 
@@ -504,13 +503,13 @@ let rec fromSortedArrayRevAux arr off len =
   | 2 ->
     let (x0,y0),(x1,y1) = A.(getUnsafe arr off, getUnsafe arr (off - 1) )
     in
-    return { left = (singleton x0 y0);  key = x1; value = y1; height = 2; right = None}
+    Some { left = (singleton x0 y0);  key = x1; value = y1; height = 2; right = None}
   | 3 ->
     let (x0,y0),(x1,y1),(x2,y2) =
       A.(getUnsafe arr off,
          getUnsafe arr (off - 1),
          getUnsafe arr (off - 2)) in
-    return { left = (singleton x0 y0);
+    Some { left = (singleton x0 y0);
       right = (singleton x2 y2);
       key = x1;
       value = y1;
@@ -531,13 +530,13 @@ let rec fromSortedArrayAux arr off len =
   | 2 ->
     let (x0,y0),(x1,y1) = A.(getUnsafe arr off, getUnsafe arr (off + 1) )
     in
-    return {left = (singleton x0 y0);  key = x1 ; value = y1; height = 2; right = None}
+    Some {left = (singleton x0 y0);  key = x1 ; value = y1; height = 2; right = None}
   | 3 ->
     let (x0,y0),(x1,y1),(x2,y2) =
       A.(getUnsafe arr off,
          getUnsafe arr (off + 1),
          getUnsafe arr (off + 2)) in
-    return { left = (singleton x0 y0);
+    Some { left = (singleton x0 y0);
       right = (singleton x2 y2);
       key = x1; value = y1;
       height = 2}
@@ -645,12 +644,12 @@ let rec has  n x ~cmp =
 (******************************************************************)
 
 (*
-  L rotation, return root node
+  L rotation, Some root node
 *)
 let rotateWithLeftChild k2 =
   let k1 = unsafeCoerce k2.left in
   (k2.left <- k1.right);
-  (k1.right <- (return k2 ));
+  (k1.right <- (Some k2 ));
   let hlk2, hrk2 = (treeHeight k2.left, (treeHeight k2.right)) in
   (k2.height <-
      (Pervasives.max hlk2 hrk2 + 1));
@@ -661,7 +660,7 @@ let rotateWithLeftChild k2 =
 let rotateWithRightChild k1 =
   let k2 = unsafeCoerce k1.right in
   (k1.right <- k2.left);
-  (k2.left <- (return k1));
+  (k2.left <- (Some k1));
   let hlk1, hrk1 = ((treeHeight k1.left), (treeHeight k1.right)) in
   (k1.height <- (Pervasives.max  hlk1 hrk1 + 1));
   let hrk2, hk1 = (treeHeight k2.right, k1.height) in
@@ -673,12 +672,12 @@ let rotateWithRightChild k1 =
 *)
 let doubleWithLeftChild k3 =
   let v = rotateWithRightChild (unsafeCoerce k3.left) in
-  (k3.left <- (return v ));
+  (k3.left <- (Some v ));
   rotateWithLeftChild k3
 
 let doubleWithRightChild k2 =
   let v = rotateWithLeftChild (unsafeCoerce k2.right) in
-  (k2.right <- (return v));
+  (k2.right <- (Some v));
   rotateWithRightChild k2
 
 let heightUpdateMutate t =
@@ -720,7 +719,7 @@ let rec updateMutate (t : _ t) x data ~cmp =
     let  c = (Belt_Id.getCmpInternal cmp) x k [@bs] in
     if c = 0 then begin
       nt.value <- data;
-      return nt
+      Some nt
     end
     else
       let l, r = (nt.left, nt.right) in
@@ -730,7 +729,7 @@ let rec updateMutate (t : _ t) x data ~cmp =
        else
          nt.right <- (updateMutate ~cmp r x data);
       );
-      return (balMutate nt)
+      Some (balMutate nt)
 
 let fromArray (xs : _ array) ~cmp =
   let len = A.length xs in
@@ -766,4 +765,4 @@ let rec removeMinAuxWithRootMutate nt n =
     rn
   | Some ln ->
     n.left <- (removeMinAuxWithRootMutate nt ln);
-    return (balMutate n)
+    Some (balMutate n)

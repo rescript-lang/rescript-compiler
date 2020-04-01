@@ -17,7 +17,7 @@ let rec add  t (x : key) (data : _)  =
   | Some n  ->
     let k = n.N.key in 
     if x = k then
-      N.return (N.updateValue n data)
+      Some (N.updateValue n data)
     else
       let v = n.N.value  in 
       if x < k then
@@ -183,7 +183,7 @@ let rec addMutate  (t : _ t) x data : _ t =
     if x = k then begin     
       nt.N.key <- x;
       nt.value <- data;
-      N.return nt
+      Some nt
     end      
     else
       let l, r = (nt.N.left, nt.N.right) in 
@@ -193,7 +193,7 @@ let rec addMutate  (t : _ t) x data : _ t =
        else   
          nt.right <- (addMutate r x data);
       );
-      N.return (N.balMutate nt)  
+      Some (N.balMutate nt)  
 
 let fromArray (xs : (key * _) array) =   
   let len = A.length xs in 

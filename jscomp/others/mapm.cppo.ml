@@ -68,21 +68,21 @@ let rec removeMutateAux nt (x : key)=
     | _, None -> l 
     | _,  Some nr ->  
       nt.right <- (N.removeMinAuxWithRootMutate nt nr);
-      N.return (N.balMutate nt)
+      Some (N.balMutate nt)
   else 
     begin 
       if x < k then 
         match  nt.left with         
-        | None -> N.return nt 
+        | None -> Some nt 
         | Some l ->
           nt.left <- (removeMutateAux l x );
-          N.return (N.balMutate nt)
+          Some (N.balMutate nt)
       else 
         match  nt.right with 
-        | None -> N.return nt 
+        | None -> Some nt 
         | Some r -> 
           nt.right <- (removeMutateAux r x);
-          N.return (N.balMutate nt)
+          Some (N.balMutate nt)
     end
 
 let remove d v = 
@@ -113,11 +113,11 @@ let rec updateDone t (x : key)  f  =
           | _, None  -> l
           | _, Some nr ->
             nt.right <- (N.removeMinAuxWithRootMutate nt nr);
-            N.return (N.balMutate nt)
+            Some (N.balMutate nt)
         end
       | Some data -> 
         nt.value <- data;
-        N.return nt
+        Some nt
     end      
     else
       let {N.left = l; right = r} = nt in 
@@ -127,7 +127,7 @@ let rec updateDone t (x : key)  f  =
        else   
          nt.right <- (updateDone  r x f);
       );
-      N.return (N.balMutate nt)
+      Some (N.balMutate nt)
         
 let updateU t x f =       
   let oldRoot = t.data in 
@@ -142,7 +142,7 @@ let rec removeArrayMutateAux t xs i len   =
     match  u with 
     | None -> None
     | Some t -> removeArrayMutateAux t xs (i+1) len 
-  else N.return t    
+  else Some t    
 
 let removeMany (d : _ t) xs =  
   let oldRoot = d.data in 

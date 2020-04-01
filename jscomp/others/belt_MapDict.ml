@@ -83,7 +83,7 @@ let rec set  (t : _ t) newK newD  ~cmp =
     let k= n.N.key in 
     let c = (Belt_Id.getCmpInternal cmp) newK k [@bs] in
     if c = 0 then
-      N.return (N.updateValue n newD) 
+      Some (N.updateValue n newD) 
     else 
       let l,r,v = n.N.left, n.N.right, n.N.value in 
       if c < 0 then (* Worth optimize for reference equality? *)
@@ -113,7 +113,7 @@ let rec updateU  (t : _ t) newK f  ~cmp :  _ t =
           let r = N.removeMinAuxWithRef rn kr vr in
           N.bal l kr.contents vr.contents r 
         end
-      | Some newD -> N.return (N.updateValue n newD)
+      | Some newD -> Some (N.updateValue n newD)
     else 
       let l,r,v = n.N.left, n.N.right, n.N.value in 
       if c < 0 then
@@ -159,17 +159,17 @@ let rec removeAux0  n x ~cmp =
       N.bal l kr.contents vr.contents r
   else if c < 0 then
     match  l with 
-    | None -> N.return n (* Nothing to remove *)
+    | None -> Some n (* Nothing to remove *)
     | Some left ->
       let ll = removeAux0 left x ~cmp in 
-      if ll == l then (N.return n)
+      if ll == l then (Some n)
       else N.bal ll v (n.N.value) r
   else
     match  r with 
-    | None -> N.return n (* Nothing to remove *)
+    | None -> Some n (* Nothing to remove *)
     | Some right -> 
       let rr = removeAux0 ~cmp right x in
-      if rr == r then N.return n
+      if rr == r then Some n
       else N.bal l v (n.N.value)  rr
 
 
@@ -198,14 +198,14 @@ let rec splitAuxPivot n x pres  ~cmp =
   if c < 0 then
     match  l with 
     | None -> 
-      None, N.return n
+      None, Some n
     | Some l -> 
       let (ll,rl) = splitAuxPivot ~cmp l x pres in
       (ll,  N.join rl v d r)
   else
     match  r with 
     | None ->
-      N.return n, None
+      Some n, None
     | Some r -> 
       let (lr,  rr) = splitAuxPivot ~cmp r x pres in
       (N.join l v d lr,  rr)
@@ -265,7 +265,7 @@ let rec removeMany0 t xs i len ~cmp =
     | None -> u
     | Some t -> removeMany0 t xs (i + 1) len ~cmp 
   else
-    N.return t
+    Some t
       
 let removeMany t keys ~cmp =
   let len = A.length keys in

@@ -49,7 +49,7 @@ let rec removeMutateAux nt x ~cmp =
     match l, r with 
     | Some _,  Some nr ->  
       nt.right <- (N.removeMinAuxWithRootMutate nt nr);
-      N.return (N.balMutate nt)
+      Some (N.balMutate nt)
     | None, Some _ ->
       r  
     | (Some _ | None ), None ->  l 
@@ -57,16 +57,16 @@ let rec removeMutateAux nt x ~cmp =
     begin 
       if c < 0 then 
         match  nt.N.left with         
-        | None -> N.return nt 
+        | None -> Some nt 
         | Some l ->
           nt.left <- (removeMutateAux ~cmp l x );
-          N.return (N.balMutate nt)
+          Some (N.balMutate nt)
       else 
         match  nt.right with 
-        | None -> N.return nt 
+        | None -> Some nt 
         | Some r -> 
           nt.right <- (removeMutateAux ~cmp r x);
-          N.return (N.balMutate nt)
+          Some (N.balMutate nt)
     end    
 
 let remove d k =  
@@ -86,7 +86,7 @@ let rec removeArrayMutateAux t xs i len ~cmp  =
     match  u with 
     | None -> None
     | Some t -> removeArrayMutateAux t xs (i+1) len ~cmp 
-  else N.return t    
+  else Some t    
 
 let removeMany d xs =  
   let oldRoot = d.data in 
@@ -115,14 +115,14 @@ let rec updateDone t x   f  ~cmp =
         begin match  l,  r with
         | Some _, Some nr ->
           nt.right <- (N.removeMinAuxWithRootMutate nt nr);
-          N.return (N.balMutate nt)
+          Some (N.balMutate nt)
         | None, Some _ ->
           r
         | (Some _ | None), None -> l
         end
       | Some data -> 
         nt.value <- data;
-        N.return nt
+        Some nt
     end      
     else begin       
       (if c < 0 then                            
@@ -130,7 +130,7 @@ let rec updateDone t x   f  ~cmp =
        else   
          nt.right <- updateDone  nt.right x f ~cmp
       );
-      N.return (N.balMutate nt)  
+      Some (N.balMutate nt)  
     end  
 let updateU t  x f =       
   let oldRoot = t.data in 

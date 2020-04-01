@@ -50,7 +50,7 @@ let rec set  t (newK : key) (newD : _)  =
   | Some n  ->
     let k = n.N.key in 
     if newK = k then
-      N.return (N.updateValue n newD)
+      Some (N.updateValue n newD)
     else
       let v = n.N.value in 
       if newK < k then
@@ -80,7 +80,7 @@ let rec updateU  t (x : key) f  =
             let r = N.removeMinAuxWithRef rn kr vr in
             N.bal l kr.contents vr.contents r 
         end
-      | Some data -> N.return (N.updateValue n data )
+      | Some data -> Some (N.updateValue n data )
       end 
     else
       let {N.left = l; right = r; value = v} = n in 
@@ -107,14 +107,14 @@ let rec removeAux n (x : key) =
         N.bal l kr.contents vr.contents r 
     else if x < v then
       match l with 
-      | None -> N.return n
+      | None -> Some n
       | Some left -> 
         let ll = removeAux left x in 
-        if ll == l then N.return n 
+        if ll == l then Some n 
         else N.(bal ll v n.value r)
     else
       match r with 
-      | None -> N.return n 
+      | None -> Some n 
       | Some right -> 
         let rr = removeAux right x  in 
         N.bal l v n.N.value rr
@@ -132,7 +132,7 @@ let rec removeMany0 t xs i len  =
     | None -> u
     | Some t -> removeMany0 t xs (i + 1) len
   else
-    N.return t
+    Some t
       
 let removeMany t keys =
   let len = A.length keys in
