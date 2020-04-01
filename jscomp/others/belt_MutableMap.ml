@@ -124,16 +124,14 @@ let rec updateDone t x   f  ~cmp =
         nt.value <- data;
         N.return nt
     end      
-    else
-      let {N.left = l; right = r} = nt in 
-      (if c < 0 then                   
-         let ll = updateDone  l x f ~cmp in
-         nt.left <- ll
+    else begin       
+      (if c < 0 then                            
+         nt.left <- updateDone  nt.left x f ~cmp 
        else   
-         nt.right <- (updateDone  r x f ~cmp);
+         nt.right <- updateDone  nt.right x f ~cmp
       );
       N.return (N.balMutate nt)  
-      
+    end  
 let updateU t  x f =       
   let oldRoot = t.data in 
   let newRoot = updateDone oldRoot x f ~cmp:(t.cmp) in 
