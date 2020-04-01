@@ -55,28 +55,28 @@ let has d v = I.has d.data v
 
 
 let rec removeMutateAux nt (x : key)= 
-  let k = N.keyGet nt in 
+  let k = nt.N.key in 
   if x = k then 
-    let l,r = N.(leftGet nt, rightGet nt) in       
+    let {N.left = l; right = r} = nt in       
     match N.(toOpt l, toOpt r) with
     | None, _ -> r  
     | _, None -> l 
     | _,  Some nr ->  
-      N.rightSet nt (N.removeMinAuxWithRootMutate nt nr);
+      nt.right <- (N.removeMinAuxWithRootMutate nt nr);
       N.return (N.balMutate nt)
   else 
     begin 
       if x < k then 
-        match N.toOpt (N.leftGet nt) with         
+        match N.toOpt nt.left with         
         | None -> N.return nt 
         | Some l ->
-          N.leftSet nt (removeMutateAux l x );
+          nt.left <- (removeMutateAux l x );
           N.return (N.balMutate nt)
       else 
-        match N.toOpt (N.rightGet nt) with 
+        match N.toOpt nt.right with 
         | None -> N.return nt 
         | Some r -> 
-          N.rightSet nt (removeMutateAux r x);
+          nt.right <- (removeMutateAux r x);
           N.return (N.balMutate nt)
     end
 
@@ -97,30 +97,30 @@ let rec updateDone t (x : key)  f  =
     | Some data -> N.singleton x data
     | None -> t)
   | Some nt -> 
-    let k = N.keyGet nt in 
+    let k = nt.N.key in 
     (* let  c = (Belt_Cmp.getCmpInternal cmp) x k [@bs] in   *)
     if k = x then begin     
-      match f (Some (N.valueGet nt)) [@bs] with
+      match f (Some nt.value) [@bs] with
       | None ->
-        let l,r = N.leftGet nt, N.rightGet nt in
+        let {N.left = l; right = r} = nt in
         begin match N.toOpt l, N.toOpt r with
           | None,  _ -> r
           | _, None  -> l
           | _, Some nr ->
-            N.rightSet nt (N.removeMinAuxWithRootMutate nt nr);
+            nt.right <- (N.removeMinAuxWithRootMutate nt nr);
             N.return (N.balMutate nt)
         end
       | Some data -> 
-        N.valueSet nt data;
+        nt.value <- data;
         N.return nt
     end      
     else
-      let l, r = N.(leftGet nt, rightGet nt) in 
+      let {N.left = l; right = r} = nt in 
       (if x < k then                   
          let ll = updateDone  l x f in
-         N.leftSet nt ll
+         nt.left <- ll
        else   
-         N.rightSet nt (updateDone  r x f);
+         nt.right <- (updateDone  r x f);
       );
       N.return (N.balMutate nt)
         
