@@ -18,16 +18,16 @@ let rec copyBucket  ~h_buckets ~ndata_tail  old_bucket =
   match C.toOpt old_bucket with 
   | None -> ()
   | Some cell ->
-    let nidx = hash (N.keyGet cell)  land (A.length h_buckets - 1) in 
+    let nidx = hash cell.N.key  land (A.length h_buckets - 1) in 
     let v = C.return cell in 
     begin match C.toOpt (A.getUnsafe ndata_tail nidx) with
       | None -> 
         A.setUnsafe h_buckets nidx  v
       | Some tail ->
-        N.nextSet tail v  (* cell put at the end *)            
+        tail.N.next <- v  (* cell put at the end *)            
     end;          
     A.setUnsafe ndata_tail nidx  v;
-    copyBucket  ~h_buckets ~ndata_tail  (N.nextGet cell)
+    copyBucket  ~h_buckets ~ndata_tail  cell.N.next
 
 
 let tryDoubleResize  h =
@@ -44,18 +44,18 @@ let tryDoubleResize  h =
     for i = 0 to nsize - 1 do
       match C.toOpt (A.getUnsafe ndata_tail i) with
       | None -> ()
-      | Some tail -> N.nextSet tail C.emptyOpt
+      | Some tail -> tail.N.next <- C.emptyOpt
     done
   end
 
 
 
 let rec removeBucket  h h_buckets  i (key : key) prec cell =
-  let cell_next = N.nextGet cell in 
-  if  (N.keyGet cell) = key 
+  let cell_next = cell.N.next in 
+  if  cell.N.key = key 
   then 
     begin
-      N.nextSet prec cell_next;
+      prec.N.next <- cell_next;
       h.C.size <- (h.C.size - 1);        
     end
   else 
@@ -72,8 +72,8 @@ let remove h (key : key)=
   match C.toOpt l with 
   | None -> ()
   | Some cell -> 
-    let next_cell = N.nextGet cell in 
-    if  (N.keyGet cell) = key then 
+    let next_cell = cell.N.next in 
+    if  cell.N.key = key then 
       begin 
         h.C.size <- (h.C.size- 1) ;
         A.setUnsafe h_buckets i next_cell
@@ -86,12 +86,12 @@ let remove h (key : key)=
 
 
 let rec addBucket  h (key : key)  cell = 
-  if N.keyGet cell <> key then
-    let  n = N.nextGet cell in 
+  if cell.N.key <> key then
+    let  n = cell.N.next in 
     match C.toOpt n with 
     | None ->  
       h.C.size <- (h.C.size+ 1);
-      N.nextSet cell (C.return @@ N.bucket ~key ~next:C.emptyOpt);
+      cell.N.next <- (C.return {N.key;  next = C.emptyOpt});
     | Some n -> addBucket h  key  n
 
 let add h (key : key)  =
@@ -102,15 +102,15 @@ let add h (key : key)  =
   (match C.toOpt l with                                    
   | None -> 
     A.setUnsafe h_buckets i 
-      (C.return @@ N.bucket ~key ~next:C.emptyOpt);
+      (C.return {N.key ; next = C.emptyOpt});
     h.C.size <- (h.C.size + 1);  
   | Some cell -> 
     addBucket  h key cell);
   if h.C.size> buckets_len lsl 1 then tryDoubleResize  h
 
 let rec memInBucket (key : key) cell = 
-  N.keyGet cell = key  || 
-  (match C.toOpt (N.nextGet cell) with 
+  cell.N.key = key  || 
+  (match C.toOpt cell.N.next with 
    | None -> false 
    | Some nextCell -> 
      memInBucket key nextCell)
