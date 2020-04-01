@@ -322,7 +322,7 @@ let rec fillArray n i arr =
     fillArray r rnext arr
 
 type cursor =
-  { mutable forward : int; mutable backward : int } [@@bs.deriving abstract]
+  { mutable forward : int; mutable backward : int } 
 
 let rec fillArrayWithPartition n cursor arr p =
   let l,v,r = n |. (leftGet , valueGet , rightGet) in
@@ -331,14 +331,14 @@ let rec fillArrayWithPartition n cursor arr p =
    | Some l ->
      fillArrayWithPartition l cursor arr p);
   (if p v [@bs] then begin
-      let c = forwardGet cursor in
+      let c = cursor.forward in
       A.setUnsafe arr c v;
-      forwardSet cursor (c + 1)
+      cursor.forward <- (c + 1)
     end
    else begin
-     let c = backwardGet cursor in
+     let c = cursor.backward in
      A.setUnsafe arr c v ;
-     backwardSet cursor (c - 1)
+     cursor.backward <- (c - 1)
    end);
   match toOpt r with
   | None -> ()
@@ -466,9 +466,9 @@ let partitionCopyU n p  =
     let size = lengthNode n in
     let v = A.makeUninitializedUnsafe size in
     let backward = size - 1 in
-    let cursor = cursor ~forward:0 ~backward in
+    let cursor = { forward = 0; backward} in
     fillArrayWithPartition n cursor v p ;
-    let forwardLen = forwardGet cursor in
+    let forwardLen = cursor.forward in
     fromSortedArrayAux v 0 forwardLen,
     fromSortedArrayRevAux v backward (size  - forwardLen)
 
