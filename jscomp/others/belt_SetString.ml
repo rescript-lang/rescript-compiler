@@ -35,7 +35,7 @@ let fromSortedArrayUnsafe = N.fromSortedArrayUnsafe
 let checkInvariantInternal = N.checkInvariantInternal
 
 let rec add  (t : t) (x : value) : t =
-  match N.toOpt t with 
+  match t with 
     None -> N.singleton x 
   | Some nt  ->
     let v = nt.value in  
@@ -61,12 +61,12 @@ let mergeMany h arr =
 
 
 let rec remove (t : t) (x : value) : t = 
-  match N.toOpt t with 
+  match t with 
   | None -> t
   | Some n  ->
     let {N.left = l; value = v; right = r} = n in 
     if x = v then 
-      match N.toOpt l, N.toOpt r with 
+      match l, r with 
       | None, _ -> r 
       | _, None -> l 
       | _, Some rn -> 
@@ -105,14 +105,14 @@ let rec splitAuxNoPivot (n : _ N.node) (x : value) : t * t =
   let {N.left = l; value = v; right = r} = n in  
   if x = v then l,  r
   else if x < v then
-    match N.toOpt l with 
+    match l with 
     | None -> 
       N.empty , N.return n
     | Some l -> 
       let ll,  rl = splitAuxNoPivot l x in 
       ll,  N.joinShared rl v r
   else
-    match N.toOpt r with 
+    match r with 
     | None ->
       N.return n,  N.empty
     | Some r -> 
@@ -127,14 +127,14 @@ let rec splitAuxPivot (n : _ N.node) (x : value) pres : t  * t =
     (l, r)
   end
   else if x < v then
-    match N.toOpt l with 
+    match l with 
     | None -> 
       N.empty, N.return n
     | Some l -> 
       let ll,  rl = splitAuxPivot l x pres in 
       ll,  N.joinShared rl v r
   else
-    match N.toOpt r with 
+    match r with 
     | None ->
       N.return n,  N.empty
     | Some r -> 
@@ -143,7 +143,7 @@ let rec splitAuxPivot (n : _ N.node) (x : value) pres : t  * t =
 
 
 let split  (t : t) (x : value) =
-  match N.toOpt t with 
+  match t with 
     None ->
     (N.empty,  N.empty), false
   | Some n  ->    
@@ -152,7 +152,7 @@ let split  (t : t) (x : value) =
     v, pres.contents
 
 let rec union (s1 : t) (s2 : t) =
-  match N.(toOpt s1, toOpt s2) with
+  match s1, s2 with
     (None, _) -> s2
   | (_, None) -> s1
   | Some n1, Some n2 (* (Node(l1, v1, r1, h1), Node(l2, v2, r2, h2)) *) ->    
@@ -171,7 +171,7 @@ let rec union (s1 : t) (s2 : t) =
     end
 
 let  rec intersect (s1 : t) (s2 : t) =
-  match N.(toOpt s1, toOpt s2) with
+  match s1, s2 with
     (None, _) 
   | (_, None) -> N.empty
   | Some n1, Some n2 (* (Node(l1, v1, r1, _), t2) *) ->
@@ -184,7 +184,7 @@ let  rec intersect (s1 : t) (s2 : t) =
     else N.concatShared ll rr 
 
 let rec diff (s1 : t) (s2 : t) =
-  match N.(toOpt s1, toOpt s2) with
+  match s1, s2 with
   | (None, _) 
   | (_, None) -> s1
   | Some n1, Some n2 (* (Node(l1, v1, r1, _), t2) *) ->

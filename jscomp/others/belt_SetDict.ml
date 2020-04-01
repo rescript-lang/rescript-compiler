@@ -35,7 +35,7 @@ type ('key, 'id) cmp = ('key, 'id)  Belt_Id.cmp
    no need to call [bal] again
 *)  
 let rec add  (t : _ t) x  ~cmp : _ t =
-  match N.toOpt t with 
+  match t with 
   | None -> N.singleton x 
   | Some nt ->
     let k = nt.value in 
@@ -53,13 +53,13 @@ let rec add  (t : _ t) x  ~cmp : _ t =
         else N.bal l k rr 
 
 let rec remove (t : _ t) x  ~cmp : _ t = 
-  match N.toOpt t with 
+  match t with 
     None -> t
   | Some n  ->
     let {N.left = l; value = v; right = r} = n in 
     let c = (Belt_Id.getCmpInternal cmp) x v [@bs] in
     if c = 0 then 
-      match N.toOpt l, N.toOpt r with 
+      match l, r with 
       | (None, _) -> r 
       | (_, None) -> l 
       | (_, Some rn) -> 
@@ -100,14 +100,14 @@ let rec splitAuxNoPivot ~cmp (n : _ N.node) x : _ *  _ =
   if c = 0 then l,r
   else 
   if c < 0 then
-    match N.toOpt l with 
+    match l with 
     | None -> 
       N.empty ,  N.return n
     | Some l -> 
       let (ll,  rl) = splitAuxNoPivot ~cmp  l x in 
       ll,  N.joinShared rl v r
   else
-    match N.toOpt r with 
+    match r with 
     | None ->
       N.return n,  N.empty
     | Some r -> 
@@ -124,14 +124,14 @@ let rec splitAuxPivot ~cmp (n : _ N.node) x pres : _ *  _ =
     end
   else 
   if c < 0 then
-    match N.toOpt l with 
+    match l with 
     | None -> 
       N.empty , N.return n
     | Some l -> 
       let (ll, rl) = splitAuxPivot ~cmp  l x pres in 
       ll,  N.joinShared rl v r
   else
-    match N.toOpt r with 
+    match r with 
     | None ->
       N.return n,  N.empty
     | Some r -> 
@@ -139,7 +139,7 @@ let rec splitAuxPivot ~cmp (n : _ N.node) x pres : _ *  _ =
       N.joinShared l v lr,  rr
 
 let split  (t : _ t) x  ~cmp  =
-  match N.toOpt t with 
+  match t with 
     None ->
     (N.empty, N.empty), false
   | Some n ->
@@ -151,7 +151,7 @@ let split  (t : _ t) x  ~cmp  =
    Use the pivot to split the smaller collection
 *)      
 let rec union (s1 : _ t) (s2 : _ t) ~cmp : _ t =
-  match N.(toOpt s1, toOpt s2) with
+  match s1, s2 with
     (None, _) -> s2
   | (_, None) -> s1
   | Some n1, Some n2 ->
@@ -172,7 +172,7 @@ let rec union (s1 : _ t) (s2 : _ t) ~cmp : _ t =
     end
 
 let rec intersect  (s1 : _ t) (s2 : _ t) ~cmp =
-  match N.(toOpt s1, toOpt s2) with
+  match s1, s2 with
   | None, _ 
   | _, None -> N.empty
   | Some n1, Some n2  ->
@@ -185,7 +185,7 @@ let rec intersect  (s1 : _ t) (s2 : _ t) ~cmp =
     else N.concatShared ll rr 
 
 let rec diff s1 s2 ~cmp  =
-  match N.(toOpt s1, toOpt s2) with
+  match s1, s2 with
     (None, _) 
   | (_, None) -> s1
   | Some n1, Some n2  ->

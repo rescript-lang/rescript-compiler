@@ -30,16 +30,16 @@ type 'value node  = {
   mutable left : 'value t;
   mutable right : 'value t;
 }
-and 'value t =  'value node Js.null
+and 'value t =  'value node option
 
 
 module A = Belt_Array
 module S = Belt_SortArray
 
-external toOpt : 'a Js.null -> 'a option = "#null_to_opt"
-external return : 'a -> 'a Js.null = "%identity"
-external empty : 'a Js.null = "#null"
-external unsafeCoerce : 'a Js.null -> 'a = "%identity"
+
+external return : 'a -> 'a option = "%identity"
+let empty : 'a option = None
+external unsafeCoerce : 'a option -> 'a = "%identity"
 
 type ('a, 'b) cmp = ('a, 'b) Belt_Id.cmp
 
@@ -48,12 +48,12 @@ type ('a, 'b) cmp = ('a, 'b) Belt_Id.cmp
 
 
 let treeHeight (n : _ t) =
-  match toOpt n with
+  match n with
   | None -> 0
   | Some n -> n.height
 
 let rec copy n =
-  match toOpt n with
+  match n with
   | None -> n
   | Some n ->
     let l,r = n.left, n.right in
@@ -66,15 +66,15 @@ let rec copy n =
    Inline expansion of treeHeight for better speed. *)
 
 let create (l : _ t) v (r : _ t) =
-  let hl = match toOpt l with None -> 0 | Some n -> n.height in
-  let hr = match toOpt r with None -> 0 | Some n -> n.height in
+  let hl = match l with None -> 0 | Some n -> n.height in
+  let hr = match r with None -> 0 | Some n -> n.height in
   { left = l; value = v; right = r; height = (if hl >= hr then hl + 1 else hr + 1)}
   |. return
 
 let singleton x = { left = empty; value = x; right = empty; height = 1} |. return
 
 let heightGe l r =
-  match toOpt l, toOpt r with
+  match l, r with
   | _ , None -> true
   | Some hl, Some hr -> hl.height >= hr.height
   | None, Some _ -> false
@@ -84,8 +84,8 @@ let heightGe l r =
    where no rebalancing is required. *)
 (* TODO: inline all [create] operation, save duplicated [heightGet] calcuation *)
 let bal l v r =
-  let hl = match toOpt l with None -> 0 | Some n -> n.height in
-  let hr = match toOpt r with None -> 0 | Some n -> n.height in
+  let hl = match l with None -> 0 | Some n -> n.height in
+  let hr = match r with None -> 0 | Some n -> n.height in
   if hl > hr + 2 then begin
     (* [l] could not be empty *)
     let {left = ll; value = lv; right = lr} = l |. unsafeCoerce  in
@@ -113,38 +113,38 @@ let bal l v r =
 
 
 let rec min0Aux n =
-  match toOpt n.left with
+  match n.left with
   | None -> n.value
   | Some n -> min0Aux n
 
 let  minimum n =
-  match toOpt n with
+  match n with
     None -> None
   | Some n -> Some (min0Aux n)
 
 let minUndefined n =
-  match toOpt n with
+  match n with
   | None -> Js.undefined
   | Some n -> Js.Undefined.return (min0Aux n)
 
 let rec max0Aux n =
-  match toOpt n.right with
+  match n.right with
   | None -> n.value
   | Some n -> max0Aux n
 
 let maximum n =
-  match toOpt n with
+  match n with
   | None -> None
   | Some n -> Some (max0Aux n)
 
 let maxUndefined n =
-  match toOpt n with
+  match n with
   | None -> Js.undefined
   | Some n -> Js.Undefined.return (max0Aux n)
 
 let rec removeMinAuxWithRef n v =
   let {left = ln; right = rn; value = kn} = n  in
-  match toOpt ln with
+  match ln with
   | None ->  v.contents<- kn ; rn
   | Some ln -> bal (removeMinAuxWithRef ln v) kn rn
 
@@ -155,16 +155,16 @@ let rec removeMinAuxWithRef n v =
 
 
 
-let isEmpty n = match toOpt n with Some _ -> false | None -> true
+let isEmpty n = match n with Some _ -> false | None -> true
 
 let rec stackAllLeft v s =
-  match toOpt v with
+  match v with
   | None -> s
   | Some x -> stackAllLeft x.left (x::s)
 
 
 let rec forEachU n f =
-  match toOpt n with
+  match n with
   | None -> ()
   | Some n  ->
     forEachU n.left f; f (n.value) [@bs]; forEachU n.right f
@@ -172,7 +172,7 @@ let rec forEachU n f =
 let forEach n f = forEachU n (fun [@bs] a -> f a)
 
 let rec reduceU s accu f =
-  match toOpt s with
+  match s with
   | None -> accu
   | Some n  ->
     let {left = l; value = k; right = r} = n  in
@@ -183,7 +183,7 @@ let rec reduceU s accu f =
 let reduce s accu f = reduceU s accu (fun [@bs] a b -> f a b)
 
 let rec everyU n p  =
-  match toOpt n with
+  match n with
   | None -> true
   | Some n  ->
     p (n.value) [@bs] &&
@@ -193,7 +193,7 @@ let rec everyU n p  =
 let every n p = everyU n (fun [@bs] a -> p a )
 
 let rec someU n p =
-  match toOpt n with
+  match n with
   | None -> false
   | Some n  ->
     p (n.value) [@bs] ||
@@ -209,13 +209,13 @@ let some n p = someU n (fun[@bs] a -> p a )
 *)
 
 let rec addMinElement n v =
-  match toOpt n with
+  match n with
   | None -> singleton v
   | Some n  ->
     bal (addMinElement n.left v)  (n.value) n.right
 
 let rec addMaxElement n v =
-  match toOpt n with
+  match n with
   | None -> singleton v
   | Some n  ->
     bal n.left (n.value) (addMaxElement n.right v)
@@ -225,7 +225,7 @@ let rec addMaxElement n v =
    relative heights of [ln] and [rn]. *)
 
 let rec joinShared ln v rn =
-  match (toOpt ln, toOpt rn) with
+  match (ln, rn) with
     (None, _) -> addMinElement rn v
   | (_, None) -> addMaxElement ln v
   | Some l, Some r ->
@@ -239,7 +239,7 @@ let rec joinShared ln v rn =
    No assumption on the heights of l and r. *)
 
 let concatShared t1 t2 =
-  match (toOpt t1, toOpt t2) with
+  match (t1, t2) with
     (None, _) -> t2
   | (_, None) -> t1
   | (_, Some t2n) ->
@@ -250,7 +250,7 @@ let concatShared t1 t2 =
 
 
 let rec partitionSharedU  n p =
-  match toOpt n with
+  match n with
   |  None -> (empty, empty)
   | Some n  ->
     let value = n.value in
@@ -266,24 +266,24 @@ let partitionShared n p = partitionSharedU n (fun [@bs] a -> p a)
 let rec lengthNode n =
   let {left = l; right = r} = n  in
   let sizeL =
-    match toOpt l with
+    match l with
     | None -> 0
     | Some l ->
       lengthNode l  in
   let sizeR =
-    match toOpt r with
+    match r with
     | None -> 0
     | Some r -> lengthNode r in
   1 + sizeL + sizeR
 
 let  size n =
-  match toOpt n with
+  match n with
   | None -> 0
   | Some n  ->
     lengthNode n
 
 let rec toListAux n accu  =
-  match toOpt n with
+  match n with
   | None -> accu
   | Some n  ->
     toListAux
@@ -295,7 +295,7 @@ let toList s =
   toListAux s []
 
 let rec checkInvariantInternal (v : _ t) =
-  match toOpt v with
+  match v with
   | None -> ()
   | Some n ->
     let {left = l; right = r} = n   in
@@ -309,13 +309,13 @@ let rec checkInvariantInternal (v : _ t) =
 let rec fillArray n i arr =
   let {left = l; value = v; right = r} = n  in
   let next =
-    match toOpt l with
+    match l with
     | None -> i
     | Some l ->
       fillArray l i arr in
   A.setUnsafe arr next v ;
   let rnext = next + 1 in
-  match toOpt r with
+  match r with
   | None -> rnext
   | Some r ->
     fillArray r rnext arr
@@ -325,7 +325,7 @@ type cursor =
 
 let rec fillArrayWithPartition n cursor arr p =
   let {left = l; value = v; right = r} = n  in
-  (match toOpt l with
+  (match l with
    | None -> ()
    | Some l ->
      fillArrayWithPartition l cursor arr p);
@@ -339,7 +339,7 @@ let rec fillArrayWithPartition n cursor arr p =
      A.setUnsafe arr c v ;
      cursor.backward <- (c - 1)
    end);
-  match toOpt r with
+  match r with
   | None -> ()
   | Some r ->
     fillArrayWithPartition r cursor arr  p
@@ -347,7 +347,7 @@ let rec fillArrayWithPartition n cursor arr p =
 let rec fillArrayWithFilter n i arr p =
   let {left = l; value = v; right = r} = n  in
   let next =
-    match toOpt l with
+    match l with
     | None -> i
     | Some l ->
       fillArrayWithFilter l i arr p in
@@ -357,14 +357,14 @@ let rec fillArrayWithFilter n i arr p =
        next + 1
       )
     else next in
-  match toOpt r with
+  match r with
   | None -> rnext
   | Some r ->
     fillArrayWithFilter r rnext arr  p
 
 
 let toArray n =
-  match toOpt n with
+  match n with
   | None -> [||]
   | Some n ->
     let size = lengthNode n in
@@ -427,7 +427,7 @@ let fromSortedArrayUnsafe arr =
   fromSortedArrayAux arr 0 (A.length arr)
 
 let rec keepSharedU n p =
-  match toOpt n with
+  match n with
   | None -> empty
   | Some n  ->
     let {left = l; value = v; right = r} = n in
@@ -447,7 +447,7 @@ let keepShared n p = keepSharedU  n (fun [@bs] a -> p a)
 *)
 
 let keepCopyU n p : _ t =
-  match toOpt n with
+  match n with
   | None -> empty
   | Some n ->
     let size = lengthNode n in
@@ -459,7 +459,7 @@ let keepCopyU n p : _ t =
 let keepCopy n p = keepCopyU n (fun [@bs] x -> p x)
 
 let partitionCopyU n p  =
-  match toOpt n with
+  match n with
   | None -> empty, empty
   | Some n ->
     let size = lengthNode n in
@@ -474,7 +474,7 @@ let partitionCopyU n p  =
 let partitionCopy n p = partitionCopyU n (fun[@bs] a -> p a)
 
 let rec has   (t: _ t) x ~cmp =
-  match  toOpt t with
+  match  t with
   | None -> false
   | Some n ->
     let v = n.value in
@@ -505,7 +505,7 @@ let eq s1 s2 ~cmp:c =
 
 
 let rec subset (s1 : _ t) (s2 : _ t) ~cmp  =
-  match (toOpt s1, toOpt s2) with
+  match (s1, s2) with
   | None, _ -> true
   | _, None -> false
   | Some t1 , Some t2  ->
@@ -522,7 +522,7 @@ let rec subset (s1 : _ t) (s2 : _ t) ~cmp  =
       subset ~cmp l1 s2
 
 let rec get  (n : _ t) x ~cmp =
-  match toOpt n with
+  match n with
     None -> None
   | Some t (* Node(l, v, r, _) *) ->
     let v = t.value in
@@ -532,7 +532,7 @@ let rec get  (n : _ t) x ~cmp =
 
 
 let rec getUndefined (n : _ t) x ~cmp  =
-  match toOpt n with
+  match n with
     None -> Js.Undefined.empty
   | Some t (* Node(l, v, r, _) *) ->
     let v = t.value in
@@ -541,7 +541,7 @@ let rec getUndefined (n : _ t) x ~cmp  =
     else getUndefined ~cmp  (if c < 0 then t.left else t.right) x
 
 let rec getExn  (n : _ t) x ~cmp =
-  match toOpt n with
+  match n with
     None -> [%assert "getExn0"]
   | Some t (* Node(l, v, r, _) *) ->
     let v = t.value in
@@ -619,7 +619,7 @@ let balMutate nt  =
     end
 
 let rec addMutate ~cmp (t : _ t) x =
-  match toOpt t with
+  match t with
   | None -> singleton x
   | Some nt ->
     let k = nt.value in
@@ -656,7 +656,7 @@ let fromArray (xs : _ array) ~cmp =
 
 let rec removeMinAuxWithRootMutate nt n =
   let {right = rn; left = ln} = n  in
-  match toOpt ln with
+  match ln with
   | None ->
     nt.value <- (n.value);
     rn

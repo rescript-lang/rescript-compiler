@@ -48,7 +48,7 @@ let rec remove0 nt x ~cmp =
   let c = cmp x k [@bs] in 
   if c = 0 then 
     let {N.left = l; right = r} = nt in       
-    match N.(toOpt l, toOpt r) with 
+    match l, r with 
     | None, _ -> r 
     | _, None -> l 
     | Some _,  Some nr ->  
@@ -57,13 +57,13 @@ let rec remove0 nt x ~cmp =
    else 
     begin 
       if c < 0 then 
-        match N.toOpt nt.left with         
+        match nt.left with         
         | None -> N.return nt 
         | Some l ->
           nt.left <- (remove0 ~cmp l x );
           N.return (N.balMutate nt)
       else 
-        match N.toOpt nt.right with 
+        match nt.right with 
         | None -> N.return nt 
         | Some r -> 
           nt.right <- (remove0 ~cmp r x);
@@ -72,7 +72,7 @@ let rec remove0 nt x ~cmp =
 
 let remove  d  v =  
   let oldRoot = d.data in 
-  match N.toOpt oldRoot with 
+  match oldRoot with 
   | None -> ()
   | Some oldRoot2 ->
     let newRoot = remove0 ~cmp:(Belt_Id.getCmpInternal d.cmp) oldRoot2 v in 
@@ -84,14 +84,14 @@ let rec removeMany0 t xs i len ~cmp  =
   if i < len then 
     let ele = A.getUnsafe xs i in 
     let u = remove0 t ele ~cmp in 
-    match N.toOpt u with 
+    match u with 
     | None -> N.empty
     | Some t -> removeMany0 t xs (i+1) len ~cmp 
   else N.return t    
 
 let removeMany d xs =  
   let oldRoot = d.data in 
-  match N.toOpt oldRoot with 
+  match oldRoot with 
   | None -> ()
   | Some nt -> 
     let len = A.length xs in 
@@ -106,7 +106,7 @@ let rec removeCheck0  nt x removed ~cmp=
   if c = 0 then 
     let () = removed .contents<- true in  
     let {N.left = l; right = r} = nt in       
-    match N.(toOpt l, toOpt r) with 
+    match l, r with 
     | None, _ -> r 
     | _, None -> l  
     | Some _,  Some nr ->  
@@ -115,13 +115,13 @@ let rec removeCheck0  nt x removed ~cmp=
   else 
     begin 
       if c < 0 then 
-        match N.toOpt nt.left with         
+        match nt.left with         
         | None -> N.return nt 
         | Some l ->
           nt.left <- (removeCheck0 ~cmp l x removed);
           N.return (N.balMutate nt)
       else 
-        match N.toOpt nt.right with 
+        match nt.right with 
         | None -> N.return nt 
         | Some r -> 
           nt.right <- (removeCheck0 ~cmp r x removed);
@@ -132,7 +132,7 @@ let rec removeCheck0  nt x removed ~cmp=
 
 let removeCheck d v =  
   let oldRoot = d.data in 
-  match N.toOpt oldRoot with 
+  match oldRoot with 
   | None -> false 
   | Some oldRoot2 ->
     let removed = ref false in 
@@ -144,7 +144,7 @@ let removeCheck d v =
 
 
 let rec addCheck0  t x added ~cmp  =   
-  match N.toOpt t with 
+  match t with 
   | None -> 
     added .contents<- true;
     N.singleton x 
@@ -287,7 +287,7 @@ let subset a b =
 
 let intersect a b  : _ t = 
   let cmp = a.cmp in 
-  match N.toOpt a.data, N.toOpt b.data with 
+  match a.data, b.data with 
   | None, _ -> { cmp; data = N.empty}
   | _, None -> { cmp; data = N.empty}
   | Some dataa0, Some datab0 ->  
@@ -315,7 +315,7 @@ let intersect a b  : _ t =
 let diff a b : _ t = 
   let cmp = a.cmp in 
   let dataa = a.data in 
-  match N.toOpt dataa, N.toOpt b.data with 
+  match dataa, b.data with 
   | None, _ -> {cmp; data = N.empty}
   | _, None -> 
     {data = (N.copy dataa); cmp}
@@ -343,7 +343,7 @@ let diff a b : _ t =
 let union a b = 
   let cmp = a.cmp in 
   let dataa, datab =  a.data, b.data  in 
-  match N.toOpt dataa, N.toOpt datab with 
+  match dataa, datab with 
   | None, _ -> {data = (N.copy datab); cmp}
   | _, None -> {data = (N.copy dataa); cmp}
   | Some dataa0, Some datab0 

@@ -34,7 +34,7 @@ function fromArray(param) {
 function empty(param) {
   return {
           cmp: IntCmp.cmp,
-          data: null
+          data: undefined
         };
 }
 
@@ -150,7 +150,7 @@ eq("File \"bs_poly_mutable_set_test.ml\", line 68, characters 5-12", Belt_intern
 
 b("File \"bs_poly_mutable_set_test.ml\", line 69, characters 4-11", Belt_MutableSet.isEmpty({
           cmp: IntCmp.cmp,
-          data: null
+          data: undefined
         }));
 
 eq("File \"bs_poly_mutable_set_test.ml\", line 70, characters 5-12", Belt_internalAVLset.minimum(v.data), 500);
@@ -247,12 +247,12 @@ b("File \"bs_poly_mutable_set_test.ml\", line 111, characters 4-11", Belt_Mutabl
 
 b("File \"bs_poly_mutable_set_test.ml\", line 112, characters 4-11", Belt_MutableSet.eq(Belt_MutableSet.intersect(fromArray(Array_data_util.randomRange(0, 20)), fromArray(Array_data_util.randomRange(21, 40))), {
           cmp: IntCmp.cmp,
-          data: null
+          data: undefined
         }));
 
 b("File \"bs_poly_mutable_set_test.ml\", line 118, characters 4-11", Belt_MutableSet.eq(Belt_MutableSet.intersect(fromArray(Array_data_util.randomRange(21, 40)), fromArray(Array_data_util.randomRange(0, 20))), {
           cmp: IntCmp.cmp,
-          data: null
+          data: undefined
         }));
 
 b("File \"bs_poly_mutable_set_test.ml\", line 124, characters 4-11", Belt_MutableSet.eq(Belt_MutableSet.intersect(fromArray([

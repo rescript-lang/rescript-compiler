@@ -16,7 +16,7 @@ module A = Belt_Array
 type t = value N.t
 
 let rec has (t : t) (x : value)  =
-  match N.toOpt t with 
+  match t with 
   | None -> false
   | Some n  ->                
     let v = n.value in 
@@ -51,7 +51,7 @@ let eq (s1 : t) s2 =
 
 (* This algorithm applies to BST, it does not need to be balanced tree *)  
 let rec subset (s1 : t) (s2 : t) =
-  match N.(toOpt s1, toOpt s2) with
+  match s1, s2 with
     None, _ ->
     true
   | _, None ->
@@ -68,7 +68,7 @@ let rec subset (s1 : t) (s2 : t) =
 
 
 let rec get (n :t) (x : value) = 
-  match N.toOpt n with 
+  match n with 
   | None -> None
   | Some t  ->    
     let v = t.value in     
@@ -78,7 +78,7 @@ let rec get (n :t) (x : value) =
 
 
 let rec getUndefined (n :t) (x : value)   = 
-  match N.toOpt n with 
+  match n with 
   | None -> Js.undefined
   | Some t  ->    
     let v = t.value in     
@@ -86,7 +86,7 @@ let rec getUndefined (n :t) (x : value)   =
     else getUndefined  (if x < v then t.left else t.right) x
 
 let rec getExn  (n :t) (x : value) = 
-  match N.toOpt n with 
+  match n with 
   | None -> [%assert "getExn"]
   | Some t  ->    
     let v = t.value in     
@@ -95,7 +95,7 @@ let rec getExn  (n :t) (x : value) =
 
 (****************************************************************************)
 let rec addMutate  t  (x : value)=   
-  match N.toOpt t with 
+  match t with 
   | None -> N.singleton x
   | Some nt -> 
     let k = nt.N.value in 
