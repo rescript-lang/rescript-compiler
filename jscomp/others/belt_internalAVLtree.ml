@@ -41,9 +41,8 @@ let treeHeight (n : _ t) =
 let rec copy n =
   match  n with
   | None -> n
-  | Some n ->
-    let {left = l; right = r} = n  in
-    Some { left = (copy l);  right = (copy r);  value = n.value; key = n.key; height = n.height}
+  | Some n ->    
+    Some { n with left = (copy n.left);  right = (copy n.right)}
 
 let create l x d r =
   let hl, hr  = treeHeight l,  treeHeight r in
