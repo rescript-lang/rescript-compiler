@@ -8,7 +8,7 @@ module A = Belt_Array
 
 type 'a t = (key, 'a) N.t
 
-let empty = N.empty      
+let empty = None      
 let isEmpty = N.isEmpty
 (* let singleton = N.singleton *)
 
@@ -121,7 +121,7 @@ let rec removeAux n (x : key) =
 
 let remove n x = 
   match n with 
-  | None -> N.empty
+  | None -> None
   | Some n -> removeAux n x 
 
 let rec removeMany0 t xs i len  =
@@ -137,7 +137,7 @@ let rec removeMany0 t xs i len  =
 let removeMany t keys =
   let len = A.length keys in
   match t with
-  | None -> N.empty
+  | None -> None
   | Some t ->  removeMany0 t keys 0 len
 
 let findFirstByU = N.findFirstByU

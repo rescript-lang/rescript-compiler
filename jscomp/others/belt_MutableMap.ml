@@ -84,7 +84,7 @@ let rec removeArrayMutateAux t xs i len ~cmp  =
     let ele = A.getUnsafe xs i in 
     let u = removeMutateAux t ele ~cmp in 
     match  u with 
-    | None -> N.empty
+    | None -> None
     | Some t -> removeArrayMutateAux t xs (i+1) len ~cmp 
   else N.return t    
 
@@ -141,9 +141,9 @@ let update t x f = updateU t x (fun [@bs] a -> f a)
     
 let make (type key) (type identity) ~(id : (key,identity) id) =
   let module M = (val id) in 
-  {cmp = M.cmp ; data = N.empty}
+  {cmp = M.cmp ; data = None}
 
-let clear m = m.data <- N.empty
+let clear m = m.data <- None
     
 let isEmpty d = 
   N.isEmpty (d.data)

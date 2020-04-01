@@ -37,8 +37,7 @@ and ('k,  'v) node  =  {
 
 
 external return : 'a -> 'a option = "%identity"
-val empty : _ t
-(* val empty : _ t *)
+
 type ('k, 'id) cmp = ('k, 'id) Belt_Id.cmp
     
 val copy : ('k, 'v) t -> ('k, 'v) t

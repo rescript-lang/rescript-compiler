@@ -29,7 +29,7 @@ type ('key,  'a, 'id) t = ('key, 'a) N.t
 
 type ('key, 'id) cmp = ('key, 'id)  Belt_Id.cmp
 
-let empty = N.empty
+let empty = None
 let fromArray = N.fromArray
 let isEmpty = N.isEmpty
 let cmp = N.cmp
@@ -175,7 +175,7 @@ let rec removeAux0  n x ~cmp =
 
 let remove n x ~cmp = 
   match  n with        
-  | None -> N.empty
+  | None -> None
   | Some n -> removeAux0 n x ~cmp 
   
 let mergeMany   h arr ~cmp =   
@@ -198,14 +198,14 @@ let rec splitAuxPivot n x pres  ~cmp =
   if c < 0 then
     match  l with 
     | None -> 
-      N.empty, N.return n
+      None, N.return n
     | Some l -> 
       let (ll,rl) = splitAuxPivot ~cmp l x pres in
       (ll,  N.join rl v d r)
   else
     match  r with 
     | None ->
-      N.return n, N.empty
+      N.return n, None
     | Some r -> 
       let (lr,  rr) = splitAuxPivot ~cmp r x pres in
       (N.join l v d lr,  rr)
@@ -214,7 +214,7 @@ let rec splitAuxPivot n x pres  ~cmp =
 let split  n x ~cmp = 
   match  n with 
   | None ->     
-    (N.empty, N.empty), None
+    (None, None), None
   | Some n  ->
     let pres = ref None in
     let v = splitAuxPivot ~cmp n x pres in 
@@ -225,7 +225,7 @@ let findFirstBy = N.findFirstBy
 
 let rec mergeU s1 s2 f ~cmp =
   match s1, s2 with
-    (None, None) -> N.empty
+    (None, None) -> None
   | Some _, None -> 
     N.keepMapU s1 (fun[@bs] k v -> 
         f k (Some v) None [@bs]
@@ -270,7 +270,7 @@ let rec removeMany0 t xs i len ~cmp =
 let removeMany t keys ~cmp =
   let len = A.length keys in
   match  t with
-  | None -> N.empty
+  | None -> None
   | Some t ->  removeMany0 t keys 0 len ~cmp 
 
 

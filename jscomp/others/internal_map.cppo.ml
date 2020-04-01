@@ -94,13 +94,13 @@ let rec splitAux (x : key) (n : _ N.node) : _ t * _ option  * _ t =
   if x < v then
     match l with 
     | None -> 
-      N.(empty , None, return n)
+      None, None, Some n
     | Some l -> 
       let (ll, pres, rl) = splitAux x l in (ll, pres, N.join rl v d r)
   else
     match r with 
     | None ->
-      N.(return n, None, empty)
+      Some n, None, None
     | Some r -> 
       let (lr, pres, rr) = splitAux x r in (N.join l v d lr, pres, rr)
 
@@ -108,13 +108,13 @@ let rec splitAux (x : key) (n : _ N.node) : _ t * _ option  * _ t =
 let split (x : key) n =
   match n with 
     None ->
-    N.(empty, None, empty)
+    None, None, None
   | Some n -> 
     splitAux x n 
 
 let rec mergeU s1 s2 f =
   match s1, s2 with
-    (None, None) -> N.empty
+    (None, None) -> None
   | Some n (* (Node (l1, v1, d1, r1, h1), _)*), _ 
     when (n.N.height >= (match s2 with None -> 0 | Some n -> n.N.height)) ->
     let {N.left = l1; key = v1; value = d1; right = r1} = n in 
@@ -201,7 +201,7 @@ let rec addMutate  (t : _ t) x data : _ t =
 
 let fromArray (xs : (key * _) array) =   
   let len = A.length xs in 
-  if len = 0 then N.empty
+  if len = 0 then None
   else
     let next = 
         ref (S.strictlySortedLengthU xs 

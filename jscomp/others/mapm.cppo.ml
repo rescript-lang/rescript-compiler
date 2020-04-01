@@ -18,9 +18,9 @@ type 'a t = {
 } 
 
 
-let make () = {data = N.empty}
+let make () = {data = None}
 let isEmpty m = N.isEmpty m.data
-let clear m =  m.data<- N.empty
+let clear m =  m.data<- None
 (* let singleton k v = t ~data:(N.singleton k v) *)
 
 let minKeyUndefined m = N.minKeyUndefined m.data
@@ -140,7 +140,7 @@ let rec removeArrayMutateAux t xs i len   =
     let ele = A.getUnsafe xs i in 
     let u = removeMutateAux t ele  in 
     match  u with 
-    | None -> N.empty
+    | None -> None
     | Some t -> removeArrayMutateAux t xs (i+1) len 
   else N.return t    
 

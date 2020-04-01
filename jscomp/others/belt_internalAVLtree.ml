@@ -29,7 +29,7 @@ module A = Belt_Array
 module S = Belt_SortArray
 
 external return : 'a -> 'a option = "%identity"
-let empty = None
+
 external unsafeCoerce : 'a option -> 'a = "%identity"
 
 
@@ -51,7 +51,7 @@ let create l x d r =
   return { left = l ; key = x ; value = d ; right = r ; height = (if hl >= hr then hl + 1 else hr + 1)}
 
 let singleton x d =
-  return { left = empty; key = x;  value = d; right = empty; height = 1}
+  return { left = None; key = x;  value = d; right = None; height = 1}
 
 let heightGe l r =
   match  l,  r with
@@ -198,7 +198,7 @@ let forEach n f = forEachU n (fun [@bs] a b -> f a b)
 let rec mapU n f =
   match  n with
     None  ->
-    empty
+    None
   | Some n  ->
     let newLeft = n .left |. mapU  f in
     let newD = f n.value [@bs] in
@@ -210,7 +210,7 @@ let map n f = mapU n (fun[@bs] a -> f a)
 let rec mapWithKeyU n f =
   match  n with
     None ->
-    empty
+    None
   | Some n ->
     let key = n.key  in
     let newLeft = n .left |. mapWithKeyU  f in
@@ -304,7 +304,7 @@ let concatOrJoin t1 v d t2 =
 
 let rec keepSharedU n p =
   match  n with
-    None -> empty
+    None -> None
   | Some n  ->
     (* call [p] in the expected left-to-right order *)
     let  {key = v; value = d} =  n   in
@@ -317,7 +317,7 @@ let keepShared n p = keepSharedU n (fun [@bs] a b -> p a b)
 
 let rec keepMapU n p =
   match  n with
-    None -> empty
+    None -> None
   | Some n  ->
     (* call [p] in the expected left-to-right order *)
     let  {key = v; value = d} =  n  in
@@ -332,7 +332,7 @@ let keepMap n p = keepMapU n (fun[@bs] a b -> p a b)
 
 let rec partitionSharedU n p =
   match  n with
-    None -> (empty, empty)
+    None -> (None, None)
   | Some n  ->
     let  {key; value } =  n  in
     (* call [p] in the expected left-to-right order *)
@@ -499,12 +499,12 @@ let valuesToArray n =
 
 let rec fromSortedArrayRevAux arr off len =
   match len with
-  | 0 -> empty
+  | 0 -> None
   | 1 -> let k, v = (A.getUnsafe arr off) in singleton k v
   | 2 ->
     let (x0,y0),(x1,y1) = A.(getUnsafe arr off, getUnsafe arr (off - 1) )
     in
-    return { left = (singleton x0 y0);  key = x1; value = y1; height = 2; right = empty}
+    return { left = (singleton x0 y0);  key = x1; value = y1; height = 2; right = None}
   | 3 ->
     let (x0,y0),(x1,y1),(x2,y2) =
       A.(getUnsafe arr off,
@@ -526,12 +526,12 @@ let rec fromSortedArrayRevAux arr off len =
 
 let rec fromSortedArrayAux arr off len =
   match len with
-  | 0 -> empty
+  | 0 -> None
   | 1 -> let k, v = (A.getUnsafe arr off) in singleton k v
   | 2 ->
     let (x0,y0),(x1,y1) = A.(getUnsafe arr off, getUnsafe arr (off + 1) )
     in
-    return {left = (singleton x0 y0);  key = x1 ; value = y1; height = 2; right = empty}
+    return {left = (singleton x0 y0);  key = x1 ; value = y1; height = 2; right = None}
   | 3 ->
     let (x0,y0),(x1,y1),(x2,y2) =
       A.(getUnsafe arr off,
@@ -734,7 +734,7 @@ let rec updateMutate (t : _ t) x data ~cmp =
 
 let fromArray (xs : _ array) ~cmp =
   let len = A.length xs in
-  if len = 0 then empty
+  if len = 0 then None
   else
     let next =
       ref (S.strictlySortedLengthU xs
