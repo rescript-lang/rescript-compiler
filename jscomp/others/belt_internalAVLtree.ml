@@ -70,22 +70,21 @@ let bal l x d r =
   let hl = match  l with None -> 0 | Some n -> n.height in
   let hr = match  r with None -> 0 | Some n -> n.height in
   if hl > hr + 2 then begin
-    let {left = ll; key = lv; value = ld; right = lr} =
-      l |. unsafeCoerce 
+    let {left = ll; key = lv; value = ld; right = lr} = l |. unsafeCoerce 
     in
     if treeHeight ll >= treeHeight lr then
       create ll lv ld (create lr x d r)
     else begin
-      let {left = lrl; key = lrv; value = lrd; right = lrr} = lr |. unsafeCoerce in
-      create (create ll lv ld lrl) lrv lrd (create lrr x d r)
+      let lr = lr |. unsafeCoerce in
+      create (create ll lv ld lr.left) lr.key lr.value (create lr.right x d r)
     end
   end else if hr > hl + 2 then begin
     let {left = rl; key = rv; value = rd; right = rr} = r |. unsafeCoerce in
     if treeHeight rr >= treeHeight rl then
       create (create l x d rl) rv rd rr
     else begin
-      let {left = rll; key = rlv; value = rld; right = rlr} = rl |. unsafeCoerce  in
-      create (create l x d rll) rlv rld (create rlr rv rd rr)
+      let  rl = rl |. unsafeCoerce  in
+      create (create l x d rl.left) rl.key rl.value (create rl.right rv rd rr)
     end
   end else
     Some { left = l; key = x ; value = d ; right = r ; height = (if hl >= hr then hl + 1 else hr + 1)}
