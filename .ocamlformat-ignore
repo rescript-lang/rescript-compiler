@@ -1,4 +1,4 @@
 # Files containing cppo directives that ocamlformat cannot parse
-jscomp/core/js_name_of_module_id.ml
-jscomp/core/js_cmj_load.ml
-jscomp/core/lam_compile_main.ml
+#jscomp/core/js_name_of_module_id.ml
+#jscomp/core/js_cmj_load.ml
+#jscomp/core/lam_compile_main.ml

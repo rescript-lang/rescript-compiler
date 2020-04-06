@@ -41,17 +41,17 @@ type keyed_cmj_values = (string * cmj_value) array
 type t = {
   values : keyed_cmj_values;
   pure : bool;
-  npm_package_path : Js_package_info.t;
+  package_info : Js_package_info.t;
   cmj_case : cmj_case;
 }
 
 let empty_values = [||]
 
-let mk ~values ~effect ~npm_package_path ~cmj_case : t =
+let mk ~values ~effect ~package_info ~cmj_case : t =
   {
     values = Map_string.to_sorted_array values;
     pure = effect = None;
-    npm_package_path;
+    package_info;
     cmj_case;
   }
 
@@ -174,7 +174,7 @@ let query_by_name (cmj_table : t) name =
 
 let is_pure (cmj_table : t) = cmj_table.pure
 
-let get_npm_package_path (cmj_table : t) = cmj_table.npm_package_path
+let get_package_info (cmj_table : t) = cmj_table.package_info
 
 let get_cmj_case (cmj_table : t) = cmj_table.cmj_case
 
@@ -190,9 +190,9 @@ let pp_cmj_case (cmj_case : cmj_case) : unit =
   | Upper_bs -> f "case: upper, .bs.js\n"
 
 
-let pp_cmj ({ values; pure; npm_package_path; cmj_case } : t) =
+let pp_cmj ({ values; pure; package_info; cmj_case } : t) =
   f "package info: %s\n"
-    (Format.asprintf "%a" Js_package_info.dump_packages_info npm_package_path);
+    (Format.asprintf "%a" Js_package_info.dump_package_info package_info);
   pp_cmj_case cmj_case;
 
   f "effect: %s\n" (if pure then "pure" else "not pure");

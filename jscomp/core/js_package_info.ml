@@ -107,7 +107,7 @@ let dump_package_name fmt (x : package_name) =
   | Pkg_runtime -> Format.pp_print_string fmt runtime_package_name
 
 
-let dump_packages_info (fmt : Format.formatter) ({ name; locations } : t) =
+let dump_package_info (fmt : Format.formatter) ({ name; locations } : t) =
   Format.fprintf fmt "@[%a;@ @[%a@]@]" dump_package_name name
     (Format.pp_print_list
        ~pp_sep:(fun fmt () -> Format.pp_print_space fmt ())

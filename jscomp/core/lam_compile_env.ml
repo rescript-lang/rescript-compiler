@@ -95,7 +95,7 @@ let get_package_path_from_cmj (id : Lam_module_ident.t) =
   match Lam_module_ident.Hash.find_opt cached_tbl id with
   | Some (Ml { cmj_table; cmj_path }) ->
       ( cmj_path,
-        Js_cmj_format.get_npm_package_path cmj_table,
+        Js_cmj_format.get_package_info cmj_table,
         Js_cmj_format.get_cmj_case cmj_table )
   | Some (External | Runtime _) ->
       assert false
@@ -111,7 +111,7 @@ let get_package_path_from_cmj (id : Lam_module_ident.t) =
           in
           id +> Ml cmj_load_info;
           ( cmj_load_info.cmj_path,
-            Js_cmj_format.get_npm_package_path cmj_table,
+            Js_cmj_format.get_package_info cmj_table,
             Js_cmj_format.get_cmj_case cmj_table ) )
 
 

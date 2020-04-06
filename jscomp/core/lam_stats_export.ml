@@ -112,5 +112,5 @@ let export_to_cmj (meta : Lam_stats.t) effect export_map cmj_case :
   (* FIXME: make sure [-o] would not change its case *)
   (* FIXME: add test for ns/non-ns *)
   Js_cmj_format.mk ~values ~effect
-    ~npm_package_path:(Js_current_package_info.get_packages_info ())
+    ~package_info:(Js_current_package_info.get_packages_info ())
     ~cmj_case
