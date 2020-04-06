@@ -72,7 +72,7 @@ let bad_suffix_message_warn suffix =
 
 
 let supported_suffix (x : string) =
-  if not (List.mem x Literals.[ suffix_js; suffix_bs_js; suffix_bs_mjs ]) then
+  if not (List.mem x Literals.[ suffix_js; suffix_mjs; suffix_bs_js; suffix_bs_mjs ]) then
     bad_suffix_message_warn x;
   x
 
