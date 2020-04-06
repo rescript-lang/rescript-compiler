@@ -36328,7 +36328,7 @@ end
 module Bs_warnings : sig 
 #1 "bs_warnings.mli"
 (* Copyright (C) 2015-2016 Bloomberg Finance L.P.
- * 
+ *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -36346,29 +36346,25 @@ module Bs_warnings : sig
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU Lesser General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU Lesser General Public License
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
-
-type t =
-  | Unsafe_poly_variant_type
+type t = Unsafe_poly_variant_type
 
 val prerr_bs_ffi_warning : Location.t -> t -> unit
 
+val warn_missing_primitive : Location.t -> string -> unit
 
-val warn_missing_primitive : Location.t -> string -> unit 
+val warn_literal_overflow : Location.t -> unit
 
-val warn_literal_overflow : Location.t -> unit 
-
-val error_unescaped_delimiter : 
-  Location.t -> string  -> unit 
+val error_unescaped_delimiter : Location.t -> string -> unit
 
 end = struct
 #1 "bs_warnings.ml"
 (* Copyright (C) 2015-2016 Bloomberg Finance L.P.
- * 
+ *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -36386,117 +36382,98 @@ end = struct
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU Lesser General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU Lesser General Public License
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
-
-
 type t =
   | Unsafe_poly_variant_type
-  (* for users write code like this:
-     {[ external f : [`a of int ] -> string = ""]}
-     Here users forget about `[@bs.string]` or `[@bs.int]`
-  *)    
+      (** for users write code like this:
 
+          {[ external f : [ `a of int ] -> string = "" ]}
 
+          Here users forget about `[@bs.string]` or `[@bs.int]` *)
 
 let to_string t =
   match t with
-  | Unsafe_poly_variant_type 
-    -> 
-    "Here a OCaml polymorphic variant type passed into JS, probably you forgot annotations like `[@bs.int]` or `[@bs.string]`  "
+  | Unsafe_poly_variant_type ->
+      "Here a OCaml polymorphic variant type passed into JS, probably you \
+       forgot annotations like `[@bs.int]` or `[@bs.string]`  "
+
 
 let warning_formatter = Format.err_formatter
 
-let print_string_warning (loc : Location.t) x =   
-  if loc.loc_ghost then 
-    Format.fprintf warning_formatter "File %s@."  !Location.input_name      
-  else 
-    Location.print warning_formatter loc ; 
-  Format.fprintf warning_formatter "@{<error>Warning@}: %s@." x 
+let print_string_warning (loc : Location.t) x =
+  if loc.loc_ghost then
+    Format.fprintf warning_formatter "File %s@." !Location.input_name
+  else Location.print warning_formatter loc;
+  Format.fprintf warning_formatter "@{<error>Warning@}: %s@." x
 
-let prerr_bs_ffi_warning loc x =  
-    Location.prerr_warning loc (Warnings.Bs_ffi_warning (to_string x))
 
-let unimplemented_primitive = "Unimplemented primitive used:" 
-type error = 
+let prerr_bs_ffi_warning loc x =
+  Location.prerr_warning loc (Warnings.Bs_ffi_warning (to_string x))
+
+
+let unimplemented_primitive = "Unimplemented primitive used:"
+type error =
   | Uninterpreted_delimiters of string
-  | Unimplemented_primitive of string 
-exception  Error of Location.t * error
+  | Unimplemented_primitive of string
+exception Error of Location.t * error
 
 let pp_error fmt x =
-  match x with 
-  | Unimplemented_primitive str -> 
-    Format.pp_print_string fmt unimplemented_primitive;
-    Format.pp_print_string fmt str
-  
-  | Uninterpreted_delimiters str -> 
-    Format.pp_print_string fmt "Uninterpreted delimiters" ;
-    Format.pp_print_string fmt str
+  match x with
+  | Unimplemented_primitive str ->
+      Format.pp_print_string fmt unimplemented_primitive;
+      Format.pp_print_string fmt str
+  | Uninterpreted_delimiters str ->
+      Format.pp_print_string fmt "Uninterpreted delimiters";
+      Format.pp_print_string fmt str
 
 
-
-let () = 
-  Location.register_error_of_exn (function 
-      | Error (loc,err) -> 
-        Some (Location.error_of_printer loc pp_error err)
-      | _ -> None
-    )
+let () =
+  Location.register_error_of_exn (function
+    | Error (loc, err) -> Some (Location.error_of_printer loc pp_error err)
+    | _ -> None)
 
 
+let warn_missing_primitive loc txt =
+  if (not !Js_config.no_warn_unimplemented_external) && not !Clflags.bs_quiet
+  then (
+    print_string_warning loc (unimplemented_primitive ^ txt ^ " \n");
+    Format.pp_print_flush warning_formatter () )
 
 
-let warn_missing_primitive loc txt =      
-  if not !Js_config.no_warn_unimplemented_external && not !Clflags.bs_quiet then
-    begin 
-      print_string_warning loc ( unimplemented_primitive ^ txt ^ " \n" );
-      Format.pp_print_flush warning_formatter ()
-    end
-
-let warn_literal_overflow loc = 
-  if not !Clflags.bs_quiet then
-  begin 
-    print_string_warning loc 
+let warn_literal_overflow loc =
+  if not !Clflags.bs_quiet then (
+    print_string_warning loc
       "Integer literal exceeds the range of representable integers of type int";
-    Format.pp_print_flush warning_formatter ()  
-  end 
+    Format.pp_print_flush warning_formatter () )
 
 
-
-let error_unescaped_delimiter loc txt = 
-  raise (Error(loc, Uninterpreted_delimiters txt))
-
+let error_unescaped_delimiter loc txt =
+  raise (Error (loc, Uninterpreted_delimiters txt))
 
 
+(** Note the standard way of reporting error in compiler:
 
+    val Location.register_error_of_exn : (exn -> Location.error option) -> unit
+    val Location.error_of_printer : Location.t -> (Format.formatter -> error ->
+    unit) -> error -> Location.error
 
+    Define an error type
 
-(**
-   Note the standard way of reporting error in compiler:
+    type error exception Error of Location.t * error
 
-   val Location.register_error_of_exn : (exn -> Location.error option) -> unit 
-   val Location.error_of_printer : Location.t ->
-   (Format.formatter -> error -> unit) -> error -> Location.error
+    Provide a printer to error
 
-   Define an error type
-
-   type error 
-   exception Error of Location.t * error 
-
-   Provide a printer to error
-
-   {[
-     let () = 
-       Location.register_error_of_exn
-         (function 
-           | Error(loc,err) -> 
-             Some (Location.error_of_printer loc pp_error err)
-           | _ -> None
-         )
-   ]}
-*)
+    {[
+      let () =
+        Location.register_error_of_exn (function
+          | Error (loc, err) ->
+              Some (Location.error_of_printer loc pp_error err)
+          | _ -> None)
+    ]} *)
 
 end
 module Ext_util : sig 
@@ -37200,7 +37177,9 @@ val suffix_rei : string
 
 val suffix_d : string
 val suffix_js : string
+val suffix_mjs : string
 val suffix_bs_js : string
+val suffix_bs_mjs : string
 (* val suffix_re_js : string *)
 val suffix_gen_js : string
 val suffix_gen_tsx: string
@@ -37339,7 +37318,9 @@ let suffix_reiast = ".reiast"
 let suffix_mliast_simple = ".mliast_simple"
 let suffix_d = ".d"
 let suffix_js = ".js"
+let suffix_mjs = ".mjs"
 let suffix_bs_js = ".bs.js"
+let suffix_bs_mjs = ".bs.mjs"
 (* let suffix_re_js = ".re.js" *)
 let suffix_gen_js = ".gen.js"
 let suffix_gen_tsx = ".gen.tsx"

@@ -141,11 +141,12 @@ let generators = "generators"
 let command = "command"
 let edge = "edge"
 let namespace = "namespace"
+let _module = "module"
 let in_source = "in-source"
+let suffix = "suffix"
 let warnings = "warnings"
 let number = "number"
 let error = "error"
-let suffix = "suffix"
 let gentypeconfig = "gentypeconfig"
 let path = "path"
 let ignored_dirs = "ignored-dirs"
@@ -4465,7 +4466,9 @@ val suffix_rei : string
 
 val suffix_d : string
 val suffix_js : string
+val suffix_mjs : string
 val suffix_bs_js : string
+val suffix_bs_mjs : string
 (* val suffix_re_js : string *)
 val suffix_gen_js : string
 val suffix_gen_tsx: string
@@ -4604,7 +4607,9 @@ let suffix_reiast = ".reiast"
 let suffix_mliast_simple = ".mliast_simple"
 let suffix_d = ".d"
 let suffix_js = ".js"
+let suffix_mjs = ".mjs"
 let suffix_bs_js = ".bs.js"
+let suffix_bs_mjs = ".bs.mjs"
 (* let suffix_re_js = ".re.js" *)
 let suffix_gen_js = ".gen.js"
 let suffix_gen_tsx = ".gen.tsx"
@@ -5861,6 +5866,318 @@ let () =
     )
 
 end
+module Ext_color : sig 
+#1 "ext_color.mli"
+(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
+ * 
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * In addition to the permissions granted to you by the LGPL, you may combine
+ * or link a "work that uses the Library" with a publicly distributed version
+ * of this file to produce a combined library or application, then distribute
+ * that combined work under the terms of your choosing, with no requirement
+ * to comply with the obligations normally placed on you by section 4 of the
+ * LGPL version 3 (or the corresponding section of a later version of the LGPL
+ * should you choose to use a later version).
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ * 
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
+
+type color 
+  = Black
+  | Red
+  | Green
+  | Yellow
+  | Blue
+  | Magenta
+  | Cyan
+  | White
+
+type style 
+  = FG of color 
+  | BG of color 
+  | Bold
+  | Dim
+
+(** Input is the tag for example `@{<warning>@}` return escape code *)
+val ansi_of_tag : string -> string 
+
+val reset_lit : string
+
+end = struct
+#1 "ext_color.ml"
+(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
+ * 
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * In addition to the permissions granted to you by the LGPL, you may combine
+ * or link a "work that uses the Library" with a publicly distributed version
+ * of this file to produce a combined library or application, then distribute
+ * that combined work under the terms of your choosing, with no requirement
+ * to comply with the obligations normally placed on you by section 4 of the
+ * LGPL version 3 (or the corresponding section of a later version of the LGPL
+ * should you choose to use a later version).
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ * 
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
+
+
+
+
+type color 
+  = Black
+  | Red
+  | Green
+  | Yellow
+  | Blue
+  | Magenta
+  | Cyan
+  | White
+
+type style 
+  = FG of color 
+  | BG of color 
+  | Bold
+  | Dim
+
+
+let ansi_of_color = function
+  | Black -> "0"
+  | Red -> "1"
+  | Green -> "2"
+  | Yellow -> "3"
+  | Blue -> "4"
+  | Magenta -> "5"
+  | Cyan -> "6"
+  | White -> "7"
+
+let code_of_style = function
+  | FG Black -> "30"
+  | FG Red -> "31"
+  | FG Green -> "32"
+  | FG Yellow -> "33"
+  | FG Blue -> "34"
+  | FG Magenta -> "35"
+  | FG Cyan -> "36"
+  | FG White -> "37"
+  
+  | BG Black -> "40"
+  | BG Red -> "41"
+  | BG Green -> "42"
+  | BG Yellow -> "43"
+  | BG Blue -> "44"
+  | BG Magenta -> "45"
+  | BG Cyan -> "46"
+  | BG White -> "47"
+
+  | Bold -> "1"
+  | Dim -> "2"
+
+
+
+(** TODO: add more styles later *)
+let style_of_tag s = match s with
+  | "error" -> [Bold; FG Red]
+  | "warning" -> [Bold; FG Magenta]
+  | "info" -> [Bold; FG Yellow]
+  | "dim" -> [Dim]
+  | "filename" -> [FG Cyan]
+  | _ -> []
+
+let ansi_of_tag s = 
+  let l = style_of_tag s in
+  let s =  String.concat ";" (Ext_list.map l  code_of_style) in
+  "\x1b[" ^ s ^ "m"
+
+
+
+let reset_lit = "\x1b[0m" 
+
+
+
+
+
+end
+module Bsb_log : sig 
+#1 "bsb_log.mli"
+(* Copyright (C) 2017 Authors of BuckleScript
+ * 
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * In addition to the permissions granted to you by the LGPL, you may combine
+ * or link a "work that uses the Library" with a publicly distributed version
+ * of this file to produce a combined library or application, then distribute
+ * that combined work under the terms of your choosing, with no requirement
+ * to comply with the obligations normally placed on you by section 4 of the
+ * LGPL version 3 (or the corresponding section of a later version of the LGPL
+ * should you choose to use a later version).
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ * 
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
+
+
+val setup : unit -> unit 
+
+type level = 
+  | Debug
+  | Info 
+  | Warn
+  | Error 
+
+val log_level : level ref
+
+type 'a fmt = Format.formatter -> ('a, Format.formatter, unit) format -> 'a
+
+type 'a log = ('a, Format.formatter, unit) format -> 'a
+
+val verbose : unit -> unit 
+val debug  : 'a log
+val info : 'a log 
+val warn : 'a log 
+val error : 'a log
+
+val info_args : string array -> unit
+
+end = struct
+#1 "bsb_log.ml"
+(* Copyright (C) 2017- Authors of BuckleScript
+ * 
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * In addition to the permissions granted to you by the LGPL, you may combine
+ * or link a "work that uses the Library" with a publicly distributed version
+ * of this file to produce a combined library or application, then distribute
+ * that combined work under the terms of your choosing, with no requirement
+ * to comply with the obligations normally placed on you by section 4 of the
+ * LGPL version 3 (or the corresponding section of a later version of the LGPL
+ * should you choose to use a later version).
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ * 
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
+
+
+
+let ninja_ansi_forced = lazy 
+  (try Sys.getenv "NINJA_ANSI_FORCED" with 
+    Not_found  ->""
+  )  
+let color_enabled = lazy (Unix.isatty Unix.stdout)
+
+(* same logic as [ninja.exe] *)
+let get_color_enabled () = 
+  let colorful = 
+    match ninja_ansi_forced with 
+    | lazy "1" -> true     
+    | lazy ("0" | "false") -> false
+    | _ ->
+      Lazy.force color_enabled  in 
+  colorful 
+
+
+
+let color_functions : Format.formatter_tag_functions = {
+  mark_open_tag = (fun s ->  if get_color_enabled () then  Ext_color.ansi_of_tag s else Ext_string.empty) ;
+  mark_close_tag = (fun _ ->  if get_color_enabled () then Ext_color.reset_lit else Ext_string.empty);
+  print_open_tag = (fun _ -> ());
+  print_close_tag = (fun _ -> ())
+}
+
+let set_color ppf =
+  Format.pp_set_formatter_tag_functions ppf color_functions
+
+
+let setup () = 
+  begin 
+    Format.pp_set_mark_tags Format.std_formatter true ;
+    Format.pp_set_mark_tags Format.err_formatter true;
+    Format.pp_set_formatter_tag_functions 
+      Format.std_formatter color_functions;
+    Format.pp_set_formatter_tag_functions
+      Format.err_formatter color_functions
+  end
+
+type level = 
+  | Debug
+  | Info 
+  | Warn
+  | Error 
+
+let int_of_level (x : level) = 
+  match x with 
+  | Debug -> 0 
+  | Info -> 1 
+  | Warn -> 2 
+  | Error -> 3 
+
+let log_level = ref Warn
+
+let verbose () =
+   log_level := Debug
+let dfprintf level fmt = 
+  if int_of_level level >= int_of_level  !log_level then 
+    Format.fprintf fmt 
+  else Format.ifprintf fmt  
+
+type 'a fmt = 
+  Format.formatter -> ('a, Format.formatter, unit) format -> 'a
+type 'a log = 
+  ('a, Format.formatter, unit) format -> 'a
+
+let debug fmt = dfprintf  Debug Format.std_formatter fmt 
+let info fmt = dfprintf Info Format.std_formatter fmt
+let warn fmt = dfprintf Warn Format.err_formatter fmt 
+let error fmt = dfprintf Error Format.err_formatter fmt
+
+
+let info_args (args : string array) = 
+  if int_of_level Info >= int_of_level !log_level then 
+    begin
+      for i  = 0 to Array.length args - 1 do
+        Format.pp_print_string Format.std_formatter (Array.unsafe_get args i) ;
+        Format.pp_print_string Format.std_formatter Ext_string.single_space;
+      done ;
+      Format.pp_print_newline Format.std_formatter ()
+    end
+  else ()
+  
+
+end
 module Ext_buffer : sig 
 #1 "ext_buffer.mli"
 (***********************************************************************)
@@ -6493,7 +6810,10 @@ val make : ?ns:string -> string -> string
 
 val try_split_module_name : string -> (string * string) option
 
-val change_ext_ns_suffix : string -> string -> string
+val replace_namespace_with_extension : name:string -> ext:string -> string
+(** [replace_namespace_with_extension ~name ~ext] removes the part of [name]
+    after [ns_sep_char], if any; and appends [ext].
+*)
 
 type file_kind = Upper_js | Upper_bs | Little_js | Little_bs
 
@@ -6563,7 +6883,7 @@ let rec rindex_rec s i =
    #1933 when removing ns suffix, don't pass the bound of basename
 
    FIXME: micro-optimizaiton *)
-let change_ext_ns_suffix name ext =
+let replace_namespace_with_extension ~name ~ext =
   let i = rindex_rec name (String.length name - 1) in
   if i < 0 then name ^ ext else String.sub name 0 i ^ ext
 
@@ -6580,13 +6900,16 @@ type file_kind = Upper_js | Upper_bs | Little_js | Little_bs
 let js_name_of_modulename s little =
   match little with
   | Little_js ->
-      change_ext_ns_suffix (Ext_string.uncapitalize_ascii s) Literals.suffix_js
+      replace_namespace_with_extension
+        ~name:(Ext_string.uncapitalize_ascii s)
+        ~ext:Literals.suffix_js
   | Little_bs ->
-      change_ext_ns_suffix
-        (Ext_string.uncapitalize_ascii s)
-        Literals.suffix_bs_js
-  | Upper_js -> change_ext_ns_suffix s Literals.suffix_js
-  | Upper_bs -> change_ext_ns_suffix s Literals.suffix_bs_js
+      replace_namespace_with_extension
+        ~name:(Ext_string.uncapitalize_ascii s)
+        ~ext:Literals.suffix_bs_js
+  | Upper_js -> replace_namespace_with_extension ~name:s ~ext:Literals.suffix_js
+  | Upper_bs ->
+      replace_namespace_with_extension ~name:s ~ext:Literals.suffix_bs_js
 
 
 (** https://docs.npmjs.com/files/package.json
@@ -6674,7 +6997,9 @@ val default_package_specs : t
 
 val from_json : Ext_json_types.t -> t
 
-val get_list_of_output_js : t -> bool -> string -> string list
+val get_list_of_output_js : t -> string -> string list
+
+val extract_in_source_bs_suffixes : t -> string list
 
 val package_flag_of_package_specs : t -> string -> string
 (** Sample output:
@@ -6714,7 +7039,7 @@ let ( // ) = Ext_path.combine
 (* TODO: sync up with {!Js_package_info.module_system} *)
 type format = NodeJS | Es6 | Es6_global
 
-type spec = { format : format; in_source : bool }
+type spec = { format : format; in_source : bool; suffix : string }
 
 module Spec_set = Set.Make (struct
   type t = spec
@@ -6751,6 +7076,45 @@ let prefix_of_format (x : format) =
   | Es6_global -> Bsb_config.lib_es6_global
 
 
+let bad_suffix_message_warn suffix =
+  Bsb_log.warn
+    "@{<warning>UNSUPPORTED@}: package-specs: extension `%s` is unsupported@;\
+     ; consider one of: %s, %s, %s, or %s@." suffix Literals.suffix_js
+    Literals.suffix_mjs Literals.suffix_bs_js Literals.suffix_bs_mjs
+
+
+let supported_suffix (x : string) =
+  if not (List.mem x Literals.[ suffix_js; suffix_bs_js; suffix_bs_mjs ]) then
+    bad_suffix_message_warn x;
+  x
+
+
+let default_suffix format in_source =
+  (* In the absence of direction to the contrary, the suffix depends on
+   * [format] and [in_source]. *)
+  match (format, in_source) with
+  | NodeJS, false -> Literals.suffix_js
+  | NodeJS, true -> Literals.suffix_bs_js
+  | _, false -> Literals.suffix_mjs
+  | _, true -> Literals.suffix_bs_mjs
+
+
+module SS = Set.Make (String)
+
+let supported_bs_suffixes = Literals.[ suffix_bs_js; suffix_bs_mjs ]
+
+(** Produces a [list] of supported, bs-prefixed file-suffixes used in
+    [in-source] package-specs. *)
+let extract_in_source_bs_suffixes (package_specs : Spec_set.t) =
+  let f spec suffixes =
+    if spec.in_source && List.mem spec.suffix supported_bs_suffixes then
+      SS.add spec.suffix suffixes
+    else suffixes
+  in
+  let suffixes = Spec_set.fold f package_specs SS.empty in
+  SS.elements suffixes
+
+
 let rec from_array (arr : Ext_json_types.t array) : Spec_set.t =
   let spec = ref Spec_set.empty in
   let has_in_source = ref false in
@@ -6770,16 +7134,27 @@ let rec from_array (arr : Ext_json_types.t array) : Spec_set.t =
 and from_json_single (x : Ext_json_types.t) : spec =
   match x with
   | Str { str = format; loc } ->
-      { format = supported_format format loc; in_source = false }
+      let format = supported_format format loc in
+      { format; in_source = false; suffix = default_suffix format false }
   | Obj { map; loc } -> (
-      match Map_string.find_exn map "module" with
+      match Map_string.find_exn map Bsb_build_schemas._module with
       | Str { str = format } ->
+          let format = supported_format format loc in
           let in_source =
             match Map_string.find_opt map Bsb_build_schemas.in_source with
             | Some (True _) -> true
             | Some _ | None -> false
           in
-          { format = supported_format format loc; in_source }
+          let suffix =
+            match Map_string.find_opt map Bsb_build_schemas.suffix with
+            | Some (Str { str = suffix; loc }) -> supported_suffix suffix
+            | Some _ ->
+                Bsb_exception.errorf ~loc
+                  "package-specs: the `suffix` field of the configuration \
+                   object must be absent, or a string."
+            | None -> default_suffix format in_source
+          in
+          { format; in_source; suffix }
       | Arr _ ->
           Bsb_exception.errorf ~loc
             "package-specs: when the configuration is an object, `module` \
@@ -6824,17 +7199,18 @@ let package_flag_of_package_specs (package_specs : t) (dirname : string) :
 
 
 let default_package_specs =
-  Spec_set.singleton { format = NodeJS; in_source = false }
+  Spec_set.singleton
+    { format = NodeJS; in_source = false; suffix = default_suffix NodeJS false }
 
 
 (** [get_list_of_output_js specs true "src/hi/hello"] *)
-let get_list_of_output_js (package_specs : Spec_set.t) (bs_suffix : bool)
+let get_list_of_output_js (package_specs : Spec_set.t)
     (output_file_sans_extension : string) =
   Spec_set.fold
-    (fun (spec : spec) acc ->
+    (fun spec acc ->
       let basename =
-        Ext_namespace.change_ext_ns_suffix output_file_sans_extension
-          (if bs_suffix then Literals.suffix_bs_js else Literals.suffix_js)
+        Ext_namespace.replace_namespace_with_extension
+          ~name:output_file_sans_extension ~ext:spec.suffix
       in
       ( Bsb_config.proj_rel
       @@
@@ -7553,322 +7929,9 @@ type t =
     entries : entries_t list ;
     generators : command Map_string.t ;
     cut_generators : bool; (* note when used as a dev mode, we will always ignore it *)
-    bs_suffix : bool ; (* true means [.bs.js] we should pass [-bs-suffix] flag *)
     gentype_config : gentype_config option;
     number_of_dev_groups : int
   }
-
-end
-module Ext_color : sig 
-#1 "ext_color.mli"
-(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
- * 
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * In addition to the permissions granted to you by the LGPL, you may combine
- * or link a "work that uses the Library" with a publicly distributed version
- * of this file to produce a combined library or application, then distribute
- * that combined work under the terms of your choosing, with no requirement
- * to comply with the obligations normally placed on you by section 4 of the
- * LGPL version 3 (or the corresponding section of a later version of the LGPL
- * should you choose to use a later version).
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Lesser General Public License for more details.
- * 
- * You should have received a copy of the GNU Lesser General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
-
-type color 
-  = Black
-  | Red
-  | Green
-  | Yellow
-  | Blue
-  | Magenta
-  | Cyan
-  | White
-
-type style 
-  = FG of color 
-  | BG of color 
-  | Bold
-  | Dim
-
-(** Input is the tag for example `@{<warning>@}` return escape code *)
-val ansi_of_tag : string -> string 
-
-val reset_lit : string
-
-end = struct
-#1 "ext_color.ml"
-(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
- * 
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * In addition to the permissions granted to you by the LGPL, you may combine
- * or link a "work that uses the Library" with a publicly distributed version
- * of this file to produce a combined library or application, then distribute
- * that combined work under the terms of your choosing, with no requirement
- * to comply with the obligations normally placed on you by section 4 of the
- * LGPL version 3 (or the corresponding section of a later version of the LGPL
- * should you choose to use a later version).
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Lesser General Public License for more details.
- * 
- * You should have received a copy of the GNU Lesser General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
-
-
-
-
-type color 
-  = Black
-  | Red
-  | Green
-  | Yellow
-  | Blue
-  | Magenta
-  | Cyan
-  | White
-
-type style 
-  = FG of color 
-  | BG of color 
-  | Bold
-  | Dim
-
-
-let ansi_of_color = function
-  | Black -> "0"
-  | Red -> "1"
-  | Green -> "2"
-  | Yellow -> "3"
-  | Blue -> "4"
-  | Magenta -> "5"
-  | Cyan -> "6"
-  | White -> "7"
-
-let code_of_style = function
-  | FG Black -> "30"
-  | FG Red -> "31"
-  | FG Green -> "32"
-  | FG Yellow -> "33"
-  | FG Blue -> "34"
-  | FG Magenta -> "35"
-  | FG Cyan -> "36"
-  | FG White -> "37"
-  
-  | BG Black -> "40"
-  | BG Red -> "41"
-  | BG Green -> "42"
-  | BG Yellow -> "43"
-  | BG Blue -> "44"
-  | BG Magenta -> "45"
-  | BG Cyan -> "46"
-  | BG White -> "47"
-
-  | Bold -> "1"
-  | Dim -> "2"
-
-
-
-(** TODO: add more styles later *)
-let style_of_tag s = match s with
-  | "error" -> [Bold; FG Red]
-  | "warning" -> [Bold; FG Magenta]
-  | "info" -> [Bold; FG Yellow]
-  | "dim" -> [Dim]
-  | "filename" -> [FG Cyan]
-  | _ -> []
-
-let ansi_of_tag s = 
-  let l = style_of_tag s in
-  let s =  String.concat ";" (Ext_list.map l  code_of_style) in
-  "\x1b[" ^ s ^ "m"
-
-
-
-let reset_lit = "\x1b[0m" 
-
-
-
-
-
-end
-module Bsb_log : sig 
-#1 "bsb_log.mli"
-(* Copyright (C) 2017 Authors of BuckleScript
- * 
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * In addition to the permissions granted to you by the LGPL, you may combine
- * or link a "work that uses the Library" with a publicly distributed version
- * of this file to produce a combined library or application, then distribute
- * that combined work under the terms of your choosing, with no requirement
- * to comply with the obligations normally placed on you by section 4 of the
- * LGPL version 3 (or the corresponding section of a later version of the LGPL
- * should you choose to use a later version).
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Lesser General Public License for more details.
- * 
- * You should have received a copy of the GNU Lesser General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
-
-
-val setup : unit -> unit 
-
-type level = 
-  | Debug
-  | Info 
-  | Warn
-  | Error 
-
-val log_level : level ref
-
-type 'a fmt = Format.formatter -> ('a, Format.formatter, unit) format -> 'a
-
-type 'a log = ('a, Format.formatter, unit) format -> 'a
-
-val verbose : unit -> unit 
-val debug  : 'a log
-val info : 'a log 
-val warn : 'a log 
-val error : 'a log
-
-val info_args : string array -> unit
-
-end = struct
-#1 "bsb_log.ml"
-(* Copyright (C) 2017- Authors of BuckleScript
- * 
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * In addition to the permissions granted to you by the LGPL, you may combine
- * or link a "work that uses the Library" with a publicly distributed version
- * of this file to produce a combined library or application, then distribute
- * that combined work under the terms of your choosing, with no requirement
- * to comply with the obligations normally placed on you by section 4 of the
- * LGPL version 3 (or the corresponding section of a later version of the LGPL
- * should you choose to use a later version).
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Lesser General Public License for more details.
- * 
- * You should have received a copy of the GNU Lesser General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
-
-
-
-let ninja_ansi_forced = lazy 
-  (try Sys.getenv "NINJA_ANSI_FORCED" with 
-    Not_found  ->""
-  )  
-let color_enabled = lazy (Unix.isatty Unix.stdout)
-
-(* same logic as [ninja.exe] *)
-let get_color_enabled () = 
-  let colorful = 
-    match ninja_ansi_forced with 
-    | lazy "1" -> true     
-    | lazy ("0" | "false") -> false
-    | _ ->
-      Lazy.force color_enabled  in 
-  colorful 
-
-
-
-let color_functions : Format.formatter_tag_functions = {
-  mark_open_tag = (fun s ->  if get_color_enabled () then  Ext_color.ansi_of_tag s else Ext_string.empty) ;
-  mark_close_tag = (fun _ ->  if get_color_enabled () then Ext_color.reset_lit else Ext_string.empty);
-  print_open_tag = (fun _ -> ());
-  print_close_tag = (fun _ -> ())
-}
-
-let set_color ppf =
-  Format.pp_set_formatter_tag_functions ppf color_functions
-
-
-let setup () = 
-  begin 
-    Format.pp_set_mark_tags Format.std_formatter true ;
-    Format.pp_set_mark_tags Format.err_formatter true;
-    Format.pp_set_formatter_tag_functions 
-      Format.std_formatter color_functions;
-    Format.pp_set_formatter_tag_functions
-      Format.err_formatter color_functions
-  end
-
-type level = 
-  | Debug
-  | Info 
-  | Warn
-  | Error 
-
-let int_of_level (x : level) = 
-  match x with 
-  | Debug -> 0 
-  | Info -> 1 
-  | Warn -> 2 
-  | Error -> 3 
-
-let log_level = ref Warn
-
-let verbose () =
-   log_level := Debug
-let dfprintf level fmt = 
-  if int_of_level level >= int_of_level  !log_level then 
-    Format.fprintf fmt 
-  else Format.ifprintf fmt  
-
-type 'a fmt = 
-  Format.formatter -> ('a, Format.formatter, unit) format -> 'a
-type 'a log = 
-  ('a, Format.formatter, unit) format -> 'a
-
-let debug fmt = dfprintf  Debug Format.std_formatter fmt 
-let info fmt = dfprintf Info Format.std_formatter fmt
-let warn fmt = dfprintf Warn Format.err_formatter fmt 
-let error fmt = dfprintf Error Format.err_formatter fmt
-
-
-let info_args (args : string array) = 
-  if int_of_level Info >= int_of_level !log_level then 
-    begin
-      for i  = 0 to Array.length args - 1 do
-        Format.pp_print_string Format.std_formatter (Array.unsafe_get args i) ;
-        Format.pp_print_string Format.std_formatter Ext_string.single_space;
-      done ;
-      Format.pp_print_newline Format.std_formatter ()
-    end
-  else ()
-  
 
 end
 module Bsb_real_path : sig 
@@ -10233,7 +10296,7 @@ val scan :
   root:string ->
   cut_generators:bool ->
   namespace:string option ->
-  bs_suffix:bool ->
+  bs_suffixes:string list ->
   ignored_dirs:Set_string.t ->
   Ext_json_types.t ->
   Bsb_file_groups.t * int
@@ -10292,7 +10355,7 @@ type cxt = {
   cut_generators : bool;
   traverse : bool;
   namespace : string option;
-  bs_suffix : bool;
+  bs_suffixes : string list;
   ignored_dirs : Set_string.t;
 }
 
@@ -10452,6 +10515,13 @@ let classify_suffix (x : string) : suffix_kind =
         if i >= 0 then Cmti i else Not_any
 
 
+(** Attempt to delete any [.bs.m?js] files for a given artifact. *)
+let unlink_bs_suffixes context artifact =
+  List.iter
+    (fun suffix -> try_unlink (Filename.concat context.cwd (artifact ^ suffix)))
+    context.bs_suffixes
+
+
 (* This is the only place where we do some removal during scanning,
    configurably. *)
 let prune_staled_bs_js_files (context : cxt) (cur_sources : _ Map_string.t) :
@@ -10482,12 +10552,7 @@ let prune_staled_bs_js_files (context : cxt) (cur_sources : _ Map_string.t) :
                     if cmd <> "" then
                       Ext_pervasives.try_it (fun _ ->
                           Sys.command (cmd ^ " -cmt-rm " ^ filepath))
-                | Cmj _ ->
-                    (* remove .bs.js *)
-                    if context.bs_suffix then
-                      try_unlink
-                        (Filename.concat context.cwd
-                           (String.sub x 0 j ^ Literals.suffix_bs_js))
+                | Cmj _ -> unlink_bs_suffixes context (String.sub x 0 j)
                 | _ -> () );
                 try_unlink filepath )
               else ()
@@ -10647,8 +10712,8 @@ and parse_sources (cxt : cxt) (sources : Ext_json_types.t) =
   | _ -> parsing_single_source cxt sources
 
 
-let scan ~toplevel ~root ~cut_generators ~namespace ~bs_suffix ~ignored_dirs x :
-    t * int =
+let scan ~toplevel ~root ~cut_generators ~namespace ~bs_suffixes ~ignored_dirs x
+    : t * int =
   Bsb_dir_index.reset ();
   let output =
     parse_sources
@@ -10660,7 +10725,7 @@ let scan ~toplevel ~root ~cut_generators ~namespace ~bs_suffix ~ignored_dirs x :
         root;
         cut_generators;
         namespace;
-        bs_suffix;
+        bs_suffixes;
         traverse = false;
       }
       x
@@ -11273,17 +11338,6 @@ let check_stdlib (map : json_map) cwd (*built_in_package*) =
       | _ -> assert false )
 
 
-let extract_bs_suffix_exn (map : json_map) =
-  match Map_string.find_opt map Bsb_build_schemas.suffix with
-  | None -> false
-  | Some (Str { str } as config) ->
-      if str = Literals.suffix_js then false
-      else if str = Literals.suffix_bs_js then true
-      else Bsb_exception.config_error config "expect .bs.js or .js string here"
-  | Some config ->
-      Bsb_exception.config_error config "expect .bs.js or .js string here"
-
-
 let extract_gentype_config (map : json_map) cwd :
     Bsb_config_types.gentype_config option =
   match Map_string.find_opt map Bsb_build_schemas.gentypeconfig with
@@ -11489,13 +11543,15 @@ let interpret_json ~toplevel_package_specs ~(per_proj_dir : string) :
       let package_name, namespace = extract_package_name_and_namespace map in
       let refmt = extract_refmt map per_proj_dir in
       let gentype_config = extract_gentype_config map per_proj_dir in
-      let bs_suffix = extract_bs_suffix_exn map in
       (* The default situation is empty *)
       let built_in_package = check_stdlib map per_proj_dir in
       let package_specs =
         match Map_string.find_opt map Bsb_build_schemas.package_specs with
         | Some x -> Bsb_package_specs.from_json x
         | None -> Bsb_package_specs.default_package_specs
+      in
+      let bs_suffixes =
+        Bsb_package_specs.extract_in_source_bs_suffixes package_specs
       in
       let pp_flags : string option =
         extract_string map Bsb_build_schemas.pp_flags (fun p ->
@@ -11525,12 +11581,11 @@ let interpret_json ~toplevel_package_specs ~(per_proj_dir : string) :
           in
           let groups, number_of_dev_groups =
             Bsb_parse_sources.scan ~ignored_dirs:(extract_ignored_dirs map)
-              ~toplevel ~root:per_proj_dir ~cut_generators ~bs_suffix ~namespace
-              sources
+              ~toplevel ~root:per_proj_dir ~cut_generators ~bs_suffixes
+              ~namespace sources
           in
           {
             gentype_config;
-            bs_suffix;
             package_name;
             namespace;
             warning = extract_warning map;
@@ -12517,7 +12572,6 @@ val make_custom_rules :
   has_ppx:bool ->
   has_pp:bool ->
   has_builtin:bool ->
-  bs_suffix:bool ->
   reason_react_jsx:Bsb_config_types.reason_react_jsx option ->
   digest:string ->
   refmt:string option ->
@@ -12627,7 +12681,7 @@ type builtin = {
 }
 
 let make_custom_rules ~(has_gentype : bool) ~(has_postbuild : bool)
-    ~(has_ppx : bool) ~(has_pp : bool) ~(has_builtin : bool) ~(bs_suffix : bool)
+    ~(has_ppx : bool) ~(has_pp : bool) ~(has_builtin : bool)
     ~(reason_react_jsx : Bsb_config_types.reason_react_jsx option)
     ~(digest : string) ~(refmt : string option)
     (* set refmt path when needed *)
@@ -12638,7 +12692,6 @@ let make_custom_rules ~(has_gentype : bool) ~(has_postbuild : bool)
   let mk_ml_cmj_cmd ~read_cmi ~is_dev ~postbuild : string =
     Buffer.clear buf;
     Buffer.add_string buf "$bsc -nostdlib $g_pkg_flg -color always";
-    if bs_suffix then Buffer.add_string buf " -bs-suffix";
     if read_cmi then Buffer.add_string buf " -bs-read-cmi";
     if is_dev then Buffer.add_string buf " $g_dev_incls";
     Buffer.add_string buf " $g_lib_incls";
@@ -12985,7 +13038,6 @@ module Bsb_ninja_file_groups : sig
 
 val handle_files_per_dir :
   out_channel ->
-  bs_suffix:bool ->
   rules:Bsb_ninja_rule.builtin ->
   package_specs:Bsb_package_specs.t ->
   js_post_build_cmd:string option ->
@@ -13058,7 +13110,7 @@ let make_common_shadows package_specs dirname dir_index :
 
 let emit_module_build (rules : Bsb_ninja_rule.builtin)
     (package_specs : Bsb_package_specs.t) (group_dir_index : Bsb_dir_index.t) oc
-    ~bs_suffix js_post_build_cmd namespace (module_info : Bsb_db.module_info) =
+    js_post_build_cmd namespace (module_info : Bsb_db.module_info) =
   let has_intf_file = module_info.info = Ml_mli in
   let is_re = module_info.is_re in
   let filename_sans_extension = module_info.name_sans_extension in
@@ -13088,7 +13140,7 @@ let emit_module_build (rules : Bsb_ninja_rule.builtin)
   let output_cmi = output_filename_sans_extension ^ Literals.suffix_cmi in
   let output_cmj = output_filename_sans_extension ^ Literals.suffix_cmj in
   let output_js =
-    Bsb_package_specs.get_list_of_output_js package_specs bs_suffix
+    Bsb_package_specs.get_list_of_output_js package_specs
       output_filename_sans_extension
   in
   let common_shadows =
@@ -13153,8 +13205,8 @@ let emit_module_build (rules : Bsb_ninja_rule.builtin)
     ~order_only_deps:[ output_d ] ~rule
 
 
-let handle_files_per_dir oc ~bs_suffix ~(rules : Bsb_ninja_rule.builtin)
-    ~package_specs ~js_post_build_cmd ~(files_to_install : Hash_set_string.t)
+let handle_files_per_dir oc ~(rules : Bsb_ninja_rule.builtin) ~package_specs
+    ~js_post_build_cmd ~(files_to_install : Hash_set_string.t)
     ~(namespace : string option) (group : Bsb_file_groups.file_group) : unit =
   handle_generators oc group rules.customs;
   let installable =
@@ -13166,8 +13218,8 @@ let handle_files_per_dir oc ~bs_suffix ~(rules : Bsb_ninja_rule.builtin)
   Map_string.iter group.sources (fun module_name module_info ->
       if installable module_name then
         Hash_set_string.add files_to_install module_info.name_sans_extension;
-      emit_module_build rules package_specs group.dir_index oc ~bs_suffix
-        js_post_build_cmd namespace module_info)
+      emit_module_build rules package_specs group.dir_index oc js_post_build_cmd
+        namespace module_info)
 
 (* pseuduo targets per directory *)
 
@@ -13276,7 +13328,6 @@ let output_static_resources (static_resources : string list) copy_rule oc =
 
 let output_ninja_and_namespace_map ~per_proj_dir ~toplevel
     ({
-       bs_suffix;
        package_name;
        external_includes;
        bsc_flags;
@@ -13401,7 +13452,7 @@ let output_ninja_and_namespace_map ~per_proj_dir ~toplevel
       ~has_postbuild:(js_post_build_cmd <> None)
       ~has_ppx:(ppx_files <> []) ~has_pp:(pp_file <> None)
       ~has_builtin:(built_in_dependency <> None)
-      ~reason_react_jsx ~bs_suffix ~digest generators
+      ~reason_react_jsx ~digest generators
   in
 
   emit_bsc_lib_includes bs_dependencies bsc_lib_dirs external_includes namespace
@@ -13409,9 +13460,8 @@ let output_ninja_and_namespace_map ~per_proj_dir ~toplevel
   output_static_resources static_resources rules.copy_resources oc;
   (* Generate build statement for each file *)
   Ext_list.iter bs_file_groups (fun files_per_dir ->
-      Bsb_ninja_file_groups.handle_files_per_dir oc ~bs_suffix ~rules
-        ~js_post_build_cmd ~package_specs ~files_to_install ~namespace
-        files_per_dir);
+      Bsb_ninja_file_groups.handle_files_per_dir oc ~rules ~js_post_build_cmd
+        ~package_specs ~files_to_install ~namespace files_per_dir);
 
   Ext_option.iter namespace (fun ns ->
       let namespace_dir = per_proj_dir // Bsb_config.lib_bs in

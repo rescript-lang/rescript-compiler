@@ -2977,7 +2977,9 @@ val suffix_rei : string
 
 val suffix_d : string
 val suffix_js : string
+val suffix_mjs : string
 val suffix_bs_js : string
+val suffix_bs_mjs : string
 (* val suffix_re_js : string *)
 val suffix_gen_js : string
 val suffix_gen_tsx: string
@@ -3116,7 +3118,9 @@ let suffix_reiast = ".reiast"
 let suffix_mliast_simple = ".mliast_simple"
 let suffix_d = ".d"
 let suffix_js = ".js"
+let suffix_mjs = ".mjs"
 let suffix_bs_js = ".bs.js"
+let suffix_bs_mjs = ".bs.mjs"
 (* let suffix_re_js = ".re.js" *)
 let suffix_gen_js = ".gen.js"
 let suffix_gen_tsx = ".gen.tsx"
@@ -3681,7 +3685,10 @@ val make : ?ns:string -> string -> string
 
 val try_split_module_name : string -> (string * string) option
 
-val change_ext_ns_suffix : string -> string -> string
+val replace_namespace_with_extension : name:string -> ext:string -> string
+(** [replace_namespace_with_extension ~name ~ext] removes the part of [name]
+    after [ns_sep_char], if any; and appends [ext].
+*)
 
 type file_kind = Upper_js | Upper_bs | Little_js | Little_bs
 
@@ -3751,7 +3758,7 @@ let rec rindex_rec s i =
    #1933 when removing ns suffix, don't pass the bound of basename
 
    FIXME: micro-optimizaiton *)
-let change_ext_ns_suffix name ext =
+let replace_namespace_with_extension ~name ~ext =
   let i = rindex_rec name (String.length name - 1) in
   if i < 0 then name ^ ext else String.sub name 0 i ^ ext
 
@@ -3768,13 +3775,16 @@ type file_kind = Upper_js | Upper_bs | Little_js | Little_bs
 let js_name_of_modulename s little =
   match little with
   | Little_js ->
-      change_ext_ns_suffix (Ext_string.uncapitalize_ascii s) Literals.suffix_js
+      replace_namespace_with_extension
+        ~name:(Ext_string.uncapitalize_ascii s)
+        ~ext:Literals.suffix_js
   | Little_bs ->
-      change_ext_ns_suffix
-        (Ext_string.uncapitalize_ascii s)
-        Literals.suffix_bs_js
-  | Upper_js -> change_ext_ns_suffix s Literals.suffix_js
-  | Upper_bs -> change_ext_ns_suffix s Literals.suffix_bs_js
+      replace_namespace_with_extension
+        ~name:(Ext_string.uncapitalize_ascii s)
+        ~ext:Literals.suffix_bs_js
+  | Upper_js -> replace_namespace_with_extension ~name:s ~ext:Literals.suffix_js
+  | Upper_bs ->
+      replace_namespace_with_extension ~name:s ~ext:Literals.suffix_bs_js
 
 
 (** https://docs.npmjs.com/files/package.json
