@@ -70,7 +70,6 @@ let output_static_resources (static_resources : string list) copy_rule oc =
 
 let output_ninja_and_namespace_map ~per_proj_dir ~toplevel
     ({
-       bs_suffix;
        package_name;
        external_includes;
        bsc_flags;
@@ -195,7 +194,7 @@ let output_ninja_and_namespace_map ~per_proj_dir ~toplevel
       ~has_postbuild:(js_post_build_cmd <> None)
       ~has_ppx:(ppx_files <> []) ~has_pp:(pp_file <> None)
       ~has_builtin:(built_in_dependency <> None)
-      ~reason_react_jsx ~bs_suffix ~digest generators
+      ~reason_react_jsx ~digest generators
   in
 
   emit_bsc_lib_includes bs_dependencies bsc_lib_dirs external_includes namespace
@@ -203,9 +202,8 @@ let output_ninja_and_namespace_map ~per_proj_dir ~toplevel
   output_static_resources static_resources rules.copy_resources oc;
   (* Generate build statement for each file *)
   Ext_list.iter bs_file_groups (fun files_per_dir ->
-      Bsb_ninja_file_groups.handle_files_per_dir oc ~bs_suffix ~rules
-        ~js_post_build_cmd ~package_specs ~files_to_install ~namespace
-        files_per_dir);
+      Bsb_ninja_file_groups.handle_files_per_dir oc ~rules ~js_post_build_cmd
+        ~package_specs ~files_to_install ~namespace files_per_dir);
 
   Ext_option.iter namespace (fun ns ->
       let namespace_dir = per_proj_dir // Bsb_config.lib_bs in

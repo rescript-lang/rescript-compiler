@@ -60,7 +60,7 @@ let make_common_shadows package_specs dirname dir_index :
 
 let emit_module_build (rules : Bsb_ninja_rule.builtin)
     (package_specs : Bsb_package_specs.t) (group_dir_index : Bsb_dir_index.t) oc
-    ~bs_suffix js_post_build_cmd namespace (module_info : Bsb_db.module_info) =
+    js_post_build_cmd namespace (module_info : Bsb_db.module_info) =
   let has_intf_file = module_info.info = Ml_mli in
   let is_re = module_info.is_re in
   let filename_sans_extension = module_info.name_sans_extension in
@@ -90,7 +90,7 @@ let emit_module_build (rules : Bsb_ninja_rule.builtin)
   let output_cmi = output_filename_sans_extension ^ Literals.suffix_cmi in
   let output_cmj = output_filename_sans_extension ^ Literals.suffix_cmj in
   let output_js =
-    Bsb_package_specs.get_list_of_output_js package_specs bs_suffix
+    Bsb_package_specs.get_list_of_output_js package_specs
       output_filename_sans_extension
   in
   let common_shadows =
@@ -155,8 +155,8 @@ let emit_module_build (rules : Bsb_ninja_rule.builtin)
     ~order_only_deps:[ output_d ] ~rule
 
 
-let handle_files_per_dir oc ~bs_suffix ~(rules : Bsb_ninja_rule.builtin)
-    ~package_specs ~js_post_build_cmd ~(files_to_install : Hash_set_string.t)
+let handle_files_per_dir oc ~(rules : Bsb_ninja_rule.builtin) ~package_specs
+    ~js_post_build_cmd ~(files_to_install : Hash_set_string.t)
     ~(namespace : string option) (group : Bsb_file_groups.file_group) : unit =
   handle_generators oc group rules.customs;
   let installable =
@@ -168,7 +168,7 @@ let handle_files_per_dir oc ~bs_suffix ~(rules : Bsb_ninja_rule.builtin)
   Map_string.iter group.sources (fun module_name module_info ->
       if installable module_name then
         Hash_set_string.add files_to_install module_info.name_sans_extension;
-      emit_module_build rules package_specs group.dir_index oc ~bs_suffix
-        js_post_build_cmd namespace module_info)
+      emit_module_build rules package_specs group.dir_index oc js_post_build_cmd
+        namespace module_info)
 
 (* pseuduo targets per directory *)

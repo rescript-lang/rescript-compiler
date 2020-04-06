@@ -89,7 +89,7 @@ type builtin = {
 }
 
 let make_custom_rules ~(has_gentype : bool) ~(has_postbuild : bool)
-    ~(has_ppx : bool) ~(has_pp : bool) ~(has_builtin : bool) ~(bs_suffix : bool)
+    ~(has_ppx : bool) ~(has_pp : bool) ~(has_builtin : bool)
     ~(reason_react_jsx : Bsb_config_types.reason_react_jsx option)
     ~(digest : string) ~(refmt : string option)
     (* set refmt path when needed *)
@@ -100,7 +100,6 @@ let make_custom_rules ~(has_gentype : bool) ~(has_postbuild : bool)
   let mk_ml_cmj_cmd ~read_cmi ~is_dev ~postbuild : string =
     Buffer.clear buf;
     Buffer.add_string buf "$bsc -nostdlib $g_pkg_flg -color always";
-    if bs_suffix then Buffer.add_string buf " -bs-suffix";
     if read_cmi then Buffer.add_string buf " -bs-read-cmi";
     if is_dev then Buffer.add_string buf " $g_dev_incls";
     Buffer.add_string buf " $g_lib_incls";

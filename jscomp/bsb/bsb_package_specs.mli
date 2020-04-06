@@ -28,7 +28,7 @@ val default_package_specs : t
 
 val from_json : Ext_json_types.t -> t
 
-val get_list_of_output_js : t -> bool -> string -> string list
+val get_list_of_output_js : t -> string -> string list
 
 val extract_in_source_bs_suffixes : t -> string list
 

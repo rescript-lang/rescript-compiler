@@ -24,7 +24,6 @@
 
 val handle_files_per_dir :
   out_channel ->
-  bs_suffix:bool ->
   rules:Bsb_ninja_rule.builtin ->
   package_specs:Bsb_package_specs.t ->
   js_post_build_cmd:string option ->

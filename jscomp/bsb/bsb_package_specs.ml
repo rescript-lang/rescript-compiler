@@ -27,11 +27,7 @@ let ( // ) = Ext_path.combine
 (* TODO: sync up with {!Js_package_info.module_system} *)
 type format = NodeJS | Es6 | Es6_global
 
-type spec = {
-  format : format;
-  in_source : bool;
-  suffix : string
-}
+type spec = { format : format; in_source : bool; suffix : string }
 
 module Spec_set = Set.Make (struct
   type t = spec
@@ -90,13 +86,13 @@ let default_suffix format in_source =
   | _, false -> Literals.suffix_mjs
   | _, true -> Literals.suffix_bs_mjs
 
-module SS = Set.Make(String)
 
-let supported_bs_suffixes = Literals.[suffix_bs_js; suffix_bs_mjs]
+module SS = Set.Make (String)
+
+let supported_bs_suffixes = Literals.[ suffix_bs_js; suffix_bs_mjs ]
 
 (** Produces a [list] of supported, bs-prefixed file-suffixes used in
-    [in-source] package-specs.
-*)
+    [in-source] package-specs. *)
 let extract_in_source_bs_suffixes (package_specs : Spec_set.t) =
   let f spec suffixes =
     if spec.in_source && List.mem spec.suffix supported_bs_suffixes then
@@ -105,6 +101,7 @@ let extract_in_source_bs_suffixes (package_specs : Spec_set.t) =
   in
   let suffixes = Spec_set.fold f package_specs SS.empty in
   SS.elements suffixes
+
 
 let rec from_array (arr : Ext_json_types.t array) : Spec_set.t =
   let spec = ref Spec_set.empty in
@@ -195,14 +192,13 @@ let default_package_specs =
 
 
 (** [get_list_of_output_js specs true "src/hi/hello"] *)
-let get_list_of_output_js (package_specs : Spec_set.t) (bs_suffix : bool)
+let get_list_of_output_js (package_specs : Spec_set.t)
     (output_file_sans_extension : string) =
   Spec_set.fold
-    (fun (spec : spec) acc ->
+    (fun spec acc ->
       let basename =
         Ext_namespace.replace_namespace_with_extension
-          ~name:output_file_sans_extension
-          ~ext:(if bs_suffix then Literals.suffix_bs_js else Literals.suffix_js)
+          ~name:output_file_sans_extension ~ext:spec.suffix
       in
       ( Bsb_config.proj_rel
       @@

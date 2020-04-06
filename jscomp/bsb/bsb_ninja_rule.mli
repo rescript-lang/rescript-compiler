@@ -56,7 +56,6 @@ val make_custom_rules :
   has_ppx:bool ->
   has_pp:bool ->
   has_builtin:bool ->
-  bs_suffix:bool ->
   reason_react_jsx:Bsb_config_types.reason_react_jsx option ->
   digest:string ->
   refmt:string option ->
