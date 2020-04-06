@@ -34,9 +34,15 @@ module O = struct
   external isArray : 'a -> bool = "Array.isArray" [@@bs.val]
   type key = string
   let for_in : (Caml_obj_extern.t -> (key -> unit) -> unit)  = 
-    [%raw{|function(o,foo){
-        for (var x in o) { foo(x) }}
-      |}]
+    [%raw{|function (o, foo) {
+      if (Array.isArray(o)) {
+        for (var x = 0; x < o.length; x++) {
+          foo(x)
+        }
+      } else {
+        for (var x in o) { foo(x) }
+      }
+    }|}]
   external hasOwnProperty :    
     t -> key -> bool = "hasOwnProperty" [@@bs.send]
   external get_value : Caml_obj_extern.t -> key -> Caml_obj_extern.t = ""[@@bs.get_index]
@@ -133,12 +139,12 @@ let caml_lazy_make (fn : _ -> _) =
    In most cases, rec value comes from record/modules, 
    whose tag is 0, we optimize that case
 *)
-let caml_update_dummy : _ -> _ -> unit= [%raw{|function(x,y){
-  for (var k in y){
+let caml_update_dummy : _ -> _ -> unit= [%raw{|function (x, y) {
+  var set = function (k) {
     x[k] = y[k]
   }
-  }
-|}]
+  for_in(y, set)
+}|}]
   
 (* Caml_obj_extern.set_length x   (Caml_obj_extern.length y) *)
 (* [set_length] seems redundant here given that it is initialized as an array 
