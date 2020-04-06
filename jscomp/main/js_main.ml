@@ -214,8 +214,8 @@ let buckle_script_flags : (string * Arg.spec * string) list =
        " Don't print version header" )
   :: ( "-bs-package-output",
        Arg.String Js_current_package_info.append_location_descriptor_of_string,
-       " set npm-output-path: [opt_module]:path, for example: 'lib/cjs', \
-        'amdjs:lib/amdjs', 'es6:lib/es6' " )
+       " set npm-output-path: [opt_module]:path:[ext], for example: 'lib/cjs', \
+        'amdjs:lib/amdjs', 'es6:lib/es6:mjs' " )
   :: ( "-bs-no-warn-unimplemented-external",
        Arg.Set Js_config.no_warn_unimplemented_external,
        " disable warnings on unimplmented c externals" )

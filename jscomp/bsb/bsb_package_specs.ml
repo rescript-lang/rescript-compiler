@@ -172,14 +172,15 @@ let bs_package_output = "-bs-package-output"
 
 (** Assume input is valid
 
-    {[ -bs-package-output commonjs:lib/js/jscomp/test ]} *)
-let package_flag ({ format; in_source } : spec) dir =
+    {[ -bs-package-output commonjs:lib/js/jscomp/test:mjs ]} *)
+let package_flag ({ format; in_source; suffix } : spec) dir =
   Ext_string.inter2 bs_package_output
-    (Ext_string.concat3 (string_of_format format) Ext_string.single_colon
-       (if in_source then dir else prefix_of_format format // dir))
+    (Ext_string.concat5 (string_of_format format) Ext_string.single_colon
+       (if in_source then dir else prefix_of_format format // dir)
+       Ext_string.single_colon suffix)
 
 
-let package_flag_of_package_specs (package_specs : t) (dirname : string) :
+let flags_of_package_specs (package_specs : t) (dirname : string) :
     string =
   Spec_set.fold
     (fun format acc -> Ext_string.inter2 acc (package_flag format dirname))

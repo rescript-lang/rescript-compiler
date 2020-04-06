@@ -45,7 +45,7 @@ let make_common_shadows package_specs dirname dir_index :
     key = Bsb_ninja_global_vars.g_pkg_flg;
     op =
       Append
-        (Bsb_package_specs.package_flag_of_package_specs package_specs dirname);
+        (Bsb_package_specs.flags_of_package_specs package_specs dirname);
   }
   ::
   ( if Bsb_dir_index.is_lib_dir dir_index then []
