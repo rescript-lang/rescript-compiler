@@ -265,7 +265,9 @@ let pp_var_declare cxt f id =
 
 let pp_direction f (direction : J.for_direction) =   
   match direction with
+  | Up
   | Upto -> P.string f L.plus_plus
+  | Down
   | Downto -> P.string f L.minus_minus 
 
 let return_sp f = 
@@ -1171,10 +1173,18 @@ and statement_desc top cxt f (s : J.statement_desc) : cxt =
                       let (_,_,right) = Js_op_util.op_prec Le  in
                       P.string f L.le;
                       right
+                    | Up ->  
+                      let (_,_,right) = Js_op_util.op_prec Lt  in
+                      P.string f L.lt;
+                      right
                     | Downto ->
                       let (_,_,right) = Js_op_util.op_prec Ge in
                       P.string f L.ge ;
                       right
+                    | Down ->
+                      let (_,_,right) = Js_op_util.op_prec Gt in
+                      P.string f L.gt ;
+                      right                      
                   in
                   P.space f ;
                   let cxt  =

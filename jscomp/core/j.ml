@@ -94,7 +94,7 @@ and exception_ident = ident
 
 and for_ident = ident 
 
-and for_direction = Asttypes.direction_flag
+and for_direction = Js_op.direction_flag
 
 and property_map = 
     (property_name * expression) list
