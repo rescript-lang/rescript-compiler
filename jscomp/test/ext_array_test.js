@@ -29,7 +29,7 @@ function reverse(a) {
     return [];
   }
   var b = $$Array.copy(a);
-  for(var i = 0 ,i_finish = b_len - 1 | 0; i <= i_finish; ++i){
+  for(var i = 0; i < b_len; ++i){
     b[i] = a[(b_len - 1 | 0) - i | 0];
   }
   return b;

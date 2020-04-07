@@ -114,7 +114,7 @@ function symstr(n) {
 }
 
 function symitr(f) {
-  for(var i = 0 ,i_finish = syms.contents - 1 | 0; i <= i_finish; ++i){
+  for(var i = 0 ,i_finish = syms.contents; i < i_finish; ++i){
     Curry._2(f, i, Caml_array.caml_array_get(symtab, i));
   }
   
@@ -338,7 +338,7 @@ function out(x) {
 }
 
 function le(n, x) {
-  for(var i = 0 ,i_finish = (n / 8 | 0) - 1 | 0; i <= i_finish; ++i){
+  for(var i = 0 ,i_finish = n / 8 | 0; i < i_finish; ++i){
     var $$byte = (x >>> (i << 3)) & 255;
     obuf[opos.contents] = Char.chr($$byte);
     opos.contents = opos.contents + 1 | 0;

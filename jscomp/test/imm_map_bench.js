@@ -8,7 +8,7 @@ var empty = new Immutable.OrderedMap();
 
 function fromArray(kvs) {
   var v = empty;
-  for(var i = 0 ,i_finish = kvs.length - 1 | 0; i <= i_finish; ++i){
+  for(var i = 0 ,i_finish = kvs.length; i < i_finish; ++i){
     var match = kvs[i];
     v = v.set(match[0], match[1]);
   }

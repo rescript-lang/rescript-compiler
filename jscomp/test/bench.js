@@ -12,7 +12,7 @@ function map(f, a) {
     return [];
   }
   var r = Caml_array.caml_make_vect(l, f$1(a[0]));
-  for(var i = 1 ,i_finish = l - 1 | 0; i <= i_finish; ++i){
+  for(var i = 1; i < l; ++i){
     r[i] = f$1(a[i]);
   }
   return r;
@@ -39,7 +39,7 @@ function init(l, f) {
 function fold_left(f, x, a) {
   var f$1 = Curry.__2(f);
   var r = x;
-  for(var i = 0 ,i_finish = a.length - 1 | 0; i <= i_finish; ++i){
+  for(var i = 0 ,i_finish = a.length; i < i_finish; ++i){
     r = f$1(r, a[i]);
   }
   return r;

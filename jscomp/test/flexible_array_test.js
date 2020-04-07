@@ -209,7 +209,7 @@ function pop_back(param) {
 
 function pp(fmt, s) {
   var v = "[ ";
-  for(var i = 0 ,i_finish = length(s) - 1 | 0; i <= i_finish; ++i){
+  for(var i = 0 ,i_finish = length(s); i < i_finish; ++i){
     v = v + (", " + String(get(s, i)));
   }
   v = v + "]";
@@ -224,7 +224,7 @@ function pp(fmt, s) {
 
 function filter_from(i, p, s) {
   var u = empty;
-  for(var i$1 = i ,i_finish = length(s) - 1 | 0; i$1 <= i_finish; ++i$1){
+  for(var i$1 = i ,i_finish = length(s); i$1 < i_finish; ++i$1){
     var ele = get(s, i$1);
     if (Curry._1(p, ele)) {
       u = push_back(u, ele);
@@ -236,10 +236,10 @@ function filter_from(i, p, s) {
 
 function append(a, b) {
   var empty$1 = empty;
-  for(var i = 0 ,i_finish = length(a) - 1 | 0; i <= i_finish; ++i){
+  for(var i = 0 ,i_finish = length(a); i < i_finish; ++i){
     empty$1 = push_back(empty$1, get(a, i));
   }
-  for(var i$1 = 0 ,i_finish$1 = length(b) - 1 | 0; i$1 <= i_finish$1; ++i$1){
+  for(var i$1 = 0 ,i_finish$1 = length(b); i$1 < i_finish$1; ++i$1){
     empty$1 = push_back(empty$1, get(b, i$1));
   }
   return empty$1;
@@ -262,7 +262,7 @@ function sort(s) {
 
 function of_array(arr) {
   var v = empty;
-  for(var i = 0 ,i_finish = arr.length - 1 | 0; i <= i_finish; ++i){
+  for(var i = 0 ,i_finish = arr.length; i < i_finish; ++i){
     v = push_back(v, Caml_array.caml_array_get(arr, i));
   }
   return v;

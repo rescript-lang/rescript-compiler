@@ -1248,7 +1248,7 @@ function highlight_terminfo(ppf, num_lines, lb, locs) {
     throw Pervasives.Exit;
   }
   var lines = num_loc_lines.contents;
-  for(var i = pos0 ,i_finish = lb.lex_buffer_len - 1 | 0; i <= i_finish; ++i){
+  for(var i = pos0 ,i_finish = lb.lex_buffer_len; i < i_finish; ++i){
     if (Caml_bytes.get(lb.lex_buffer, i) === /* "\n" */10) {
       lines = lines + 1 | 0;
     }
@@ -1261,7 +1261,7 @@ function highlight_terminfo(ppf, num_lines, lb, locs) {
   Caml_external_polyfill.resolve("caml_terminfo_backup")(lines);
   var bol = false;
   Pervasives.print_string("# ");
-  for(var pos = 0 ,pos_finish = (lb.lex_buffer_len - pos0 | 0) - 1 | 0; pos <= pos_finish; ++pos){
+  for(var pos = 0 ,pos_finish = lb.lex_buffer_len - pos0 | 0; pos < pos_finish; ++pos){
     if (bol) {
       Pervasives.print_string("  ");
       bol = false;
@@ -1374,10 +1374,10 @@ function highlight_dumb(ppf, lb, loc) {
                 ]),
               "@.  "
             ]);
-        for(var _i = pos_at_bol ,_i_finish = loc.loc_start.pos_cnum - 1 | 0; _i <= _i_finish; ++_i){
+        for(var _i = pos_at_bol ,_i_finish = loc.loc_start.pos_cnum; _i < _i_finish; ++_i){
           Format.pp_print_char(ppf, /* " " */32);
         }
-        for(var _i$1 = loc.loc_start.pos_cnum ,_i_finish$1 = loc.loc_end.pos_cnum - 1 | 0; _i$1 <= _i_finish$1; ++_i$1){
+        for(var _i$1 = loc.loc_start.pos_cnum ,_i_finish$1 = loc.loc_end.pos_cnum; _i$1 < _i_finish$1; ++_i$1){
           Format.pp_print_char(ppf, /* "^" */94);
         }
       }
@@ -10530,7 +10530,7 @@ function store_string_char(c) {
 }
 
 function store_string(s) {
-  for(var i = 0 ,i_finish = s.length - 1 | 0; i <= i_finish; ++i){
+  for(var i = 0 ,i_finish = s.length; i < i_finish; ++i){
     store_string_char(Caml_string.get(s, i));
   }
   

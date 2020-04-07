@@ -1526,7 +1526,7 @@ function highlight_terminfo(ppf, num_lines, lb, locs) {
     throw Pervasives.Exit;
   }
   var lines = num_loc_lines.contents;
-  for(var i = pos0 ,i_finish = lb.lex_buffer_len - 1 | 0; i <= i_finish; ++i){
+  for(var i = pos0 ,i_finish = lb.lex_buffer_len; i < i_finish; ++i){
     if (Caml_bytes.get(lb.lex_buffer, i) === /* "\n" */10) {
       lines = lines + 1 | 0;
     }
@@ -1539,7 +1539,7 @@ function highlight_terminfo(ppf, num_lines, lb, locs) {
   Caml_external_polyfill.resolve("caml_terminfo_backup")(lines);
   var bol = false;
   Pervasives.print_string("# ");
-  for(var pos = 0 ,pos_finish = (lb.lex_buffer_len - pos0 | 0) - 1 | 0; pos <= pos_finish; ++pos){
+  for(var pos = 0 ,pos_finish = lb.lex_buffer_len - pos0 | 0; pos < pos_finish; ++pos){
     if (bol) {
       Pervasives.print_string("  ");
       bol = false;
@@ -1652,10 +1652,10 @@ function highlight_dumb(ppf, lb, loc) {
                 ]),
               "@.  "
             ]);
-        for(var _i = pos_at_bol ,_i_finish = loc.loc_start.pos_cnum - 1 | 0; _i <= _i_finish; ++_i){
+        for(var _i = pos_at_bol ,_i_finish = loc.loc_start.pos_cnum; _i < _i_finish; ++_i){
           Format.pp_print_char(ppf, /* " " */32);
         }
-        for(var _i$1 = loc.loc_start.pos_cnum ,_i_finish$1 = loc.loc_end.pos_cnum - 1 | 0; _i$1 <= _i_finish$1; ++_i$1){
+        for(var _i$1 = loc.loc_start.pos_cnum ,_i_finish$1 = loc.loc_end.pos_cnum; _i$1 < _i_finish$1; ++_i$1){
           Format.pp_print_char(ppf, /* "^" */94);
         }
       }
@@ -4238,7 +4238,7 @@ function static_row(row) {
 
 function hash_variant(s) {
   var accu = 0;
-  for(var i = 0 ,i_finish = s.length - 1 | 0; i <= i_finish; ++i){
+  for(var i = 0 ,i_finish = s.length; i < i_finish; ++i){
     accu = Caml_int32.imul(223, accu) + Caml_string.get(s, i) | 0;
   }
   accu = accu & 2147483647;
@@ -11877,7 +11877,7 @@ function check_value_name(name, loc) {
   if (!(name.length !== 0 && Caml_string.get(name, 0) === /* "#" */35)) {
     return ;
   }
-  for(var i = 1 ,i_finish = name.length - 1 | 0; i <= i_finish; ++i){
+  for(var i = 1 ,i_finish = name.length; i < i_finish; ++i){
     if (Caml_string.get(name, i) === /* "#" */35) {
       throw [
             $$Error$2,
@@ -20781,7 +20781,7 @@ function store_string_char(c) {
 }
 
 function store_string(s) {
-  for(var i = 0 ,i_finish = s.length - 1 | 0; i <= i_finish; ++i){
+  for(var i = 0 ,i_finish = s.length; i < i_finish; ++i){
     store_string_char(Caml_string.get(s, i));
   }
   
@@ -49597,7 +49597,7 @@ function complete_tags(nconsts, nconstrs, tags) {
           }
         }), tags);
   var r = /* [] */0;
-  for(var i = 0 ,i_finish = nconsts - 1 | 0; i <= i_finish; ++i){
+  for(var i = 0; i < nconsts; ++i){
     if (!Caml_array.caml_array_get(seen_const, i)) {
       r = /* :: */[
         /* Cstr_constant */Block.__(0, [i]),
@@ -49606,7 +49606,7 @@ function complete_tags(nconsts, nconstrs, tags) {
     }
     
   }
-  for(var i$1 = 0 ,i_finish$1 = nconstrs - 1 | 0; i$1 <= i_finish$1; ++i$1){
+  for(var i$1 = 0; i$1 < nconstrs; ++i$1){
     if (!Caml_array.caml_array_get(seen_constr, i$1)) {
       r = /* :: */[
         /* Cstr_block */Block.__(1, [i$1]),
@@ -56247,7 +56247,7 @@ function check_recordpat_labels(loc, lbl_pat_list, closed) {
     return ;
   }
   var $$undefined = /* [] */0;
-  for(var i = 0 ,i_finish = all.length - 1 | 0; i <= i_finish; ++i){
+  for(var i = 0 ,i_finish = all.length; i < i_finish; ++i){
     if (!Caml_array.caml_array_get(defined, i)) {
       $$undefined = /* :: */[
         Caml_array.caml_array_get(all, i).lbl_name,

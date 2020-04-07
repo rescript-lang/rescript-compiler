@@ -263,7 +263,7 @@ function pp_any(fmt, v) {
 
 function hash_variant(s) {
   var accu = 0;
-  for(var i = 0 ,i_finish = s.length - 1 | 0; i <= i_finish; ++i){
+  for(var i = 0 ,i_finish = s.length; i < i_finish; ++i){
     accu = Caml_int32.imul(223, accu) + Caml_string.get(s, i) | 0;
   }
   accu = accu & 2147483647;
