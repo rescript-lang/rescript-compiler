@@ -32,13 +32,13 @@ function eq(loc, param) {
   
 }
 
-var match = typeof __filename === "undefined" ? undefined : __filename;
+var x = typeof __filename === "undefined" ? undefined : __filename;
 
-var current_file = match !== undefined ? match : "<Not Node JS>";
+var current_file = x !== undefined ? x : "<Not Node JS>";
 
-var match$1 = typeof __dirname === "undefined" ? undefined : __dirname;
+var x$1 = typeof __dirname === "undefined" ? undefined : __dirname;
 
-var current_dir_name = match$1 !== undefined ? match$1 : "<Not Node Js>";
+var current_dir_name = x$1 !== undefined ? x$1 : "<Not Node Js>";
 
 Fs.readFileSync(current_file, "utf8");
 
@@ -46,12 +46,12 @@ Fs.readdirSync(current_dir_name);
 
 var pathobj = Path.parse(current_dir_name);
 
-var match$2 = typeof module === "undefined" ? undefined : module;
+var module_ = typeof module === "undefined" ? undefined : module;
 
-if (match$2 !== undefined) {
+if (module_ !== undefined) {
   console.log(/* tuple */[
-        match$2.id,
-        match$2.paths
+        module_.id,
+        module_.paths
       ]);
   eq("File \"fs_test.ml\", line 45, characters 7-14", /* tuple */[
         pathobj.name,
@@ -64,4 +64,4 @@ Mt.from_pair_suites("Fs_test", suites.contents);
 exports.suites = suites;
 exports.test_id = test_id;
 exports.eq = eq;
-/* match Not a pure module */
+/* x Not a pure module */

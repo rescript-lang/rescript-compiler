@@ -14,13 +14,13 @@ var y;
 try {
   y = Caml_array.caml_array_get(x, 3);
 }
-catch (raw_exn){
-  var exn = Caml_js_exceptions.internalToOCamlException(raw_exn);
-  if (exn[0] === Caml_builtin_exceptions.invalid_argument) {
-    console.log(exn[1]);
+catch (raw_msg){
+  var msg = Caml_js_exceptions.internalToOCamlException(raw_msg);
+  if (msg[0] === Caml_builtin_exceptions.invalid_argument) {
+    console.log(msg[1]);
     y = 0;
   } else {
-    throw exn;
+    throw msg;
   }
 }
 

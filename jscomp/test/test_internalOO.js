@@ -507,18 +507,18 @@ function update(x, f, m) {
     var l = m[/* l */0];
     var c = Caml_primitive.caml_string_compare(x, v);
     if (c === 0) {
-      var match = Curry._1(f, Caml_option.some(d));
-      if (match === undefined) {
+      var data = Curry._1(f, Caml_option.some(d));
+      if (data === undefined) {
         return merge(l, r);
       }
-      var data = Caml_option.valFromOption(match);
-      if (d === data) {
+      var data$1 = Caml_option.valFromOption(data);
+      if (d === data$1) {
         return m;
       } else {
         return /* Node */[
                 /* l */l,
                 /* v */x,
-                /* d */data,
+                /* d */data$1,
                 /* r */r,
                 /* h */m[/* h */4]
               ];
@@ -539,12 +539,12 @@ function update(x, f, m) {
       return bal(l, v, d, rr);
     }
   }
-  var match$1 = Curry._1(f, undefined);
-  if (match$1 !== undefined) {
+  var data$2 = Curry._1(f, undefined);
+  if (data$2 !== undefined) {
     return /* Node */[
             /* l : Empty */0,
             /* v */x,
-            /* d */Caml_option.valFromOption(match$1),
+            /* d */Caml_option.valFromOption(data$2),
             /* r : Empty */0,
             /* h */1
           ];
@@ -1454,18 +1454,18 @@ function update$1(x, f, m) {
     var l = m[/* l */0];
     var c = Caml_primitive.caml_string_compare(x, v);
     if (c === 0) {
-      var match = Curry._1(f, Caml_option.some(d));
-      if (match === undefined) {
+      var data = Curry._1(f, Caml_option.some(d));
+      if (data === undefined) {
         return merge$2(l, r);
       }
-      var data = Caml_option.valFromOption(match);
-      if (d === data) {
+      var data$1 = Caml_option.valFromOption(data);
+      if (d === data$1) {
         return m;
       } else {
         return /* Node */[
                 /* l */l,
                 /* v */x,
-                /* d */data,
+                /* d */data$1,
                 /* r */r,
                 /* h */m[/* h */4]
               ];
@@ -1486,12 +1486,12 @@ function update$1(x, f, m) {
       return bal$1(l, v, d, rr);
     }
   }
-  var match$1 = Curry._1(f, undefined);
-  if (match$1 !== undefined) {
+  var data$2 = Curry._1(f, undefined);
+  if (data$2 !== undefined) {
     return /* Node */[
             /* l : Empty */0,
             /* v */x,
-            /* d */Caml_option.valFromOption(match$1),
+            /* d */Caml_option.valFromOption(data$2),
             /* r : Empty */0,
             /* h */1
           ];
@@ -2401,18 +2401,18 @@ function update$2(x, f, m) {
     var l = m[/* l */0];
     var c = Caml_primitive.caml_int_compare(x, v);
     if (c === 0) {
-      var match = Curry._1(f, Caml_option.some(d));
-      if (match === undefined) {
+      var data = Curry._1(f, Caml_option.some(d));
+      if (data === undefined) {
         return merge$4(l, r);
       }
-      var data = Caml_option.valFromOption(match);
-      if (d === data) {
+      var data$1 = Caml_option.valFromOption(data);
+      if (d === data$1) {
         return m;
       } else {
         return /* Node */[
                 /* l */l,
                 /* v */x,
-                /* d */data,
+                /* d */data$1,
                 /* r */r,
                 /* h */m[/* h */4]
               ];
@@ -2433,12 +2433,12 @@ function update$2(x, f, m) {
       return bal$2(l, v, d, rr);
     }
   }
-  var match$1 = Curry._1(f, undefined);
-  if (match$1 !== undefined) {
+  var data$2 = Curry._1(f, undefined);
+  if (data$2 !== undefined) {
     return /* Node */[
             /* l : Empty */0,
             /* v */x,
-            /* d */Caml_option.valFromOption(match$1),
+            /* d */Caml_option.valFromOption(data$2),
             /* r : Empty */0,
             /* h */1
           ];

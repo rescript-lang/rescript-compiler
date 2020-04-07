@@ -816,20 +816,20 @@ function set_vel_to_speed(obj) {
   }
 }
 
-function make_type$2(param) {
-  switch (param.tag | 0) {
+function make_type$2(t) {
+  switch (t.tag | 0) {
     case /* SPlayer */0 :
         return setup_obj(undefined, 2.8, undefined);
     case /* SEnemy */1 :
-        var param$1 = param[0];
-        if (param$1 >= 3) {
+        var param = t[0];
+        if (param >= 3) {
           return setup_obj(undefined, 3, undefined);
         } else {
           return setup_obj(undefined, undefined, undefined);
         }
     case /* SItem */2 :
-        var param$2 = param[0];
-        if (param$2 >= 3) {
+        var param$1 = t[0];
+        if (param$1 >= 3) {
           return setup_obj(false, undefined, undefined);
         } else {
           return setup_obj(undefined, undefined, undefined);
@@ -2016,30 +2016,30 @@ function check_collisions(collid, all_collids, state) {
         undefined
       ];
     } else {
-      var match = check_collision(collid, h);
-      new_objs = match !== undefined && h[2].id !== c_obj.id ? process_collision(match, collid, h, state) : /* tuple */[
+      var dir = check_collision(collid, h);
+      new_objs = dir !== undefined && h[2].id !== c_obj.id ? process_collision(dir, collid, h, state) : /* tuple */[
           undefined,
           undefined
         ];
     }
-    var match$1 = new_objs[0];
+    var o = new_objs[0];
     var acc$1;
-    if (match$1 !== undefined) {
-      var match$2 = new_objs[1];
-      acc$1 = match$2 !== undefined ? /* :: */[
-          match$1,
+    if (o !== undefined) {
+      var o2 = new_objs[1];
+      acc$1 = o2 !== undefined ? /* :: */[
+          o,
           /* :: */[
-            match$2,
+            o2,
             acc
           ]
         ] : /* :: */[
-          match$1,
+          o,
           acc
         ];
     } else {
-      var match$3 = new_objs[1];
-      acc$1 = match$3 !== undefined ? /* :: */[
-          match$3,
+      var o$1 = new_objs[1];
+      acc$1 = o$1 !== undefined ? /* :: */[
+          o$1,
           acc
         ] : acc;
     }
@@ -3177,10 +3177,10 @@ var loadCount = {
 function load(param) {
   Random.self_init(undefined);
   var canvas_id = "canvas";
-  var match = document.getElementById(canvas_id);
+  var el = document.getElementById(canvas_id);
   var canvas;
-  if (match !== null) {
-    canvas = match;
+  if (el !== null) {
+    canvas = el;
   } else {
     Curry._1(Printf.printf(/* Format */[
               /* String_literal */Block.__(11, [

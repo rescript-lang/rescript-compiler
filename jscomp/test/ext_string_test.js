@@ -506,7 +506,7 @@ function is_valid_npm_package_name(s) {
 }
 
 function is_valid_source_name(name) {
-  var match = check_any_suffix_case_then_chop(name, /* :: */[
+  var x = check_any_suffix_case_then_chop(name, /* :: */[
         ".ml",
         /* :: */[
           ".re",
@@ -519,8 +519,8 @@ function is_valid_source_name(name) {
           ]
         ]
       ]);
-  if (match !== undefined) {
-    if (is_valid_module_file(match)) {
+  if (x !== undefined) {
+    if (is_valid_module_file(x)) {
       return /* Good */0;
     } else {
       return /* Invalid_module_name */1;

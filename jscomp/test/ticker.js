@@ -54,9 +54,9 @@ function split(delim, s) {
   }
 }
 
-function string_of_float_option(param) {
-  if (param !== undefined) {
-    return Pervasives.string_of_float(param);
+function string_of_float_option(x) {
+  if (x !== undefined) {
+    return Pervasives.string_of_float(x);
   } else {
     return "nan";
   }
@@ -67,9 +67,9 @@ var Util = {
   string_of_float_option: string_of_float_option
 };
 
-function string_of_rank(param) {
-  if (typeof param === "number") {
-    if (param !== 0) {
+function string_of_rank(i) {
+  if (typeof i === "number") {
+    if (i !== 0) {
       return "Visited";
     } else {
       return "Uninitialized";
@@ -89,7 +89,7 @@ function string_of_rank(param) {
                           ])
                       ]),
                     "Ranked(%i)"
-                  ]), param[0]);
+                  ]), i[0]);
   }
 }
 
@@ -574,18 +574,18 @@ function update(x, f, m) {
     var l = m[/* l */0];
     var c = Caml_obj.caml_compare(x, v);
     if (c === 0) {
-      var match = Curry._1(f, Caml_option.some(d));
-      if (match === undefined) {
+      var data = Curry._1(f, Caml_option.some(d));
+      if (data === undefined) {
         return merge(l, r);
       }
-      var data = Caml_option.valFromOption(match);
-      if (d === data) {
+      var data$1 = Caml_option.valFromOption(data);
+      if (d === data$1) {
         return m;
       } else {
         return /* Node */[
                 /* l */l,
                 /* v */x,
-                /* d */data,
+                /* d */data$1,
                 /* r */r,
                 /* h */m[/* h */4]
               ];
@@ -606,12 +606,12 @@ function update(x, f, m) {
       return bal(l, v, d, rr);
     }
   }
-  var match$1 = Curry._1(f, undefined);
-  if (match$1 !== undefined) {
+  var data$2 = Curry._1(f, undefined);
+  if (data$2 !== undefined) {
     return /* Node */[
             /* l : Empty */0,
             /* v */x,
-            /* d */Caml_option.valFromOption(match$1),
+            /* d */Caml_option.valFromOption(data$2),
             /* r : Empty */0,
             /* h */1
           ];
@@ -1118,21 +1118,21 @@ function compute_update_sequences(all_tickers) {
         }), /* Empty */0, List.rev(all_tickers));
   return fold((function (k, l, map) {
                 var l$1 = List.sort_uniq((function (lhs, rhs) {
-                        var match = lhs.rank;
-                        if (typeof match === "number") {
+                        var x = lhs.rank;
+                        if (typeof x === "number") {
                           throw [
                                 Caml_builtin_exceptions.failure,
                                 "All nodes should be ranked"
                               ];
                         }
-                        var match$1 = rhs.rank;
-                        if (typeof match$1 === "number") {
+                        var y = rhs.rank;
+                        if (typeof y === "number") {
                           throw [
                                 Caml_builtin_exceptions.failure,
                                 "All nodes should be ranked"
                               ];
                         }
-                        return Caml_primitive.caml_int_compare(match[0], match$1[0]);
+                        return Caml_primitive.caml_int_compare(x[0], y[0]);
                       }), l);
                 return add(k, l$1, map);
               }), map, map);

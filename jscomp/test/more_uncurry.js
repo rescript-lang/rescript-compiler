@@ -1,9 +1,9 @@
 'use strict';
 
 
-function f(x, y, param) {
-  if (param !== undefined) {
-    return (x + y | 0) + param | 0;
+function f(x, y, z) {
+  if (z !== undefined) {
+    return (x + y | 0) + z | 0;
   } else {
     return x + y | 0;
   }

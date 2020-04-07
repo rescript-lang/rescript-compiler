@@ -80,8 +80,8 @@ eq("File \"array_subtle_test.ml\", line 29, characters 5-12", /* tuple */[
     ]);
 
 function f(v) {
-  var match = v.pop();
-  if (match !== undefined) {
+  var x = v.pop();
+  if (x !== undefined) {
     console.log("hi");
   } else {
     console.log("hi2");

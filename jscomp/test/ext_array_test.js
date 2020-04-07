@@ -91,11 +91,11 @@ function filter_map(f, a) {
       return reverse_of_list(acc);
     }
     var v = a[i];
-    var match = Curry._1(f, v);
-    if (match !== undefined) {
+    var v$1 = Curry._1(f, v);
+    if (v$1 !== undefined) {
       _i = i + 1 | 0;
       _acc = /* :: */[
-        Caml_option.valFromOption(match),
+        Caml_option.valFromOption(v$1),
         acc
       ];
       continue ;
@@ -138,9 +138,9 @@ function tolist_aux(a, f, _i, _res) {
       return res;
     }
     var v = a[i];
-    var match = Curry._1(f, v);
-    _res = match !== undefined ? /* :: */[
-        Caml_option.valFromOption(match),
+    var v$1 = Curry._1(f, v);
+    _res = v$1 !== undefined ? /* :: */[
+        Caml_option.valFromOption(v$1),
         res
       ] : res;
     _i = i - 1 | 0;

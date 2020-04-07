@@ -151,9 +151,9 @@ function compare(loc1, loc2) {
 
 var $$Error = Caml_exceptions.create("Flow_parser_reg_test.Parse_error.Error");
 
-function error(param) {
-  if (typeof param === "number") {
-    switch (param) {
+function error(str) {
+  if (typeof str === "number") {
+    switch (str) {
       case /* UnexpectedNumber */0 :
           return "Unexpected number";
       case /* UnexpectedString */1 :
@@ -281,11 +281,11 @@ function error(param) {
       
     }
   } else {
-    switch (param.tag | 0) {
+    switch (str.tag | 0) {
       case /* Assertion */0 :
-          return "Unexpected parser state: " + param[0];
+          return "Unexpected parser state: " + str[0];
       case /* UnexpectedToken */1 :
-          return "Unexpected token " + param[0];
+          return "Unexpected token " + str[0];
       case /* UnexpectedTokenWithSuggestion */2 :
           return Curry._2(Printf.sprintf(/* Format */[
                           /* String_literal */Block.__(11, [
@@ -305,15 +305,15 @@ function error(param) {
                                 ])
                             ]),
                           "Unexpected token `%s`. Did you mean `%s`?"
-                        ]), param[0], param[1]);
+                        ]), str[0], str[1]);
       case /* InvalidRegExpFlags */3 :
-          return "Invalid flags supplied to RegExp constructor '" + (param[0] + "'");
+          return "Invalid flags supplied to RegExp constructor '" + (str[0] + "'");
       case /* UnknownLabel */4 :
-          return "Undefined label '" + (param[0] + "'");
+          return "Undefined label '" + (str[0] + "'");
       case /* Redeclaration */5 :
-          return param[0] + (" '" + (param[1] + "' has already been declared"));
+          return str[0] + (" '" + (str[1] + "' has already been declared"));
       case /* ExpectedJSXClosingTag */6 :
-          return "Expected corresponding JSX closing tag for " + param[0];
+          return "Expected corresponding JSX closing tag for " + str[0];
       case /* DuplicateExport */7 :
           return Curry._1(Printf.sprintf(/* Format */[
                           /* String_literal */Block.__(11, [
@@ -327,7 +327,7 @@ function error(param) {
                                 ])
                             ]),
                           "Duplicate export for `%s`"
-                        ]), param[0]);
+                        ]), str[0]);
       
     }
   }
@@ -1677,8 +1677,8 @@ function parse_body(_f) {
       throw No_good;
     }
     var value = c - ref_char_code | 0;
-    var match$1 = f.decimal_exponent;
-    var decimal_exponent = match$1 !== undefined ? match$1 - 4 | 0 : undefined;
+    var e = f.decimal_exponent;
+    var decimal_exponent = e !== undefined ? e - 4 | 0 : undefined;
     var mantissa = (f.mantissa << 4) + value | 0;
     var init$1 = eat(f);
     _f = {
@@ -1711,8 +1711,8 @@ function float_of_string(str) {
               ];
         }
         var ret = f.mantissa;
-        var match = f.decimal_exponent;
-        var exponent = match !== undefined ? f.exponent + match | 0 : f.exponent;
+        var decimal_exponent = f.decimal_exponent;
+        var exponent = decimal_exponent !== undefined ? f.exponent + decimal_exponent | 0 : f.exponent;
         var ret$1 = exponent === 0 ? ret : Math.pow(ret, exponent);
         if (f.negative) {
           return -ret$1;
@@ -5061,9 +5061,9 @@ function error_at(env, param) {
     ],
     env.errors.contents
   ];
-  var match = env.error_callback;
-  if (match !== undefined) {
-    return Curry._2(match, env, e);
+  var callback = env.error_callback;
+  if (callback !== undefined) {
+    return Curry._2(callback, env, e);
   }
   
 }
@@ -5283,9 +5283,9 @@ function lex_env(iOpt, env) {
 }
 
 function is_line_terminator(env) {
-  var match = env.last_loc.contents;
-  if (match !== undefined) {
-    return loc(undefined, env).start.line > match.start.line;
+  var loc$prime = env.last_loc.contents;
+  if (loc$prime !== undefined) {
+    return loc(undefined, env).start.line > loc$prime.start.line;
   } else {
     return false;
   }
@@ -5438,12 +5438,12 @@ function strict_error_at(env, param) {
 }
 
 function token$3(env) {
-  var match = env.token_sink.contents;
-  if (match !== undefined) {
+  var token_sink = env.token_sink.contents;
+  if (token_sink !== undefined) {
     var token_loc = loc(undefined, env);
     var token$4 = token$2(undefined, env);
     var token_value = value(undefined, env);
-    Curry._1(match, {
+    Curry._1(token_sink, {
           token_loc: token_loc,
           token: token$4,
           token_context: List.hd(env.lex_mode_stack.contents),
@@ -5550,9 +5550,9 @@ function contextual(env, str) {
 var Rollback = Caml_exceptions.create("Flow_parser_reg_test.Parser_env.Try.Rollback");
 
 function save_state(env) {
-  var match = env.token_sink.contents;
+  var orig_token_sink = env.token_sink.contents;
   var token_buffer;
-  if (match !== undefined) {
+  if (orig_token_sink !== undefined) {
     var buffer = {
       length: 0,
       first: /* Nil */0,
@@ -5562,7 +5562,7 @@ function save_state(env) {
         return Queue.add(token_data, buffer);
       });
     token_buffer = /* tuple */[
-      match,
+      orig_token_sink,
       buffer
     ];
   } else {
@@ -6042,8 +6042,8 @@ function filter_duplicate_errors(errs) {
 function with_loc(fn, env) {
   var start_loc = Curry._2(Parser_env_Peek.loc, undefined, env);
   var result = Curry._1(fn, env);
-  var match = env.last_loc.contents;
-  var end_loc = match !== undefined ? match : (error$1(env, /* Assertion */Block.__(0, ["did not consume any tokens"])), Curry._2(Parser_env_Peek.loc, undefined, env));
+  var loc = env.last_loc.contents;
+  var end_loc = loc !== undefined ? loc : (error$1(env, /* Assertion */Block.__(0, ["did not consume any tokens"])), Curry._2(Parser_env_Peek.loc, undefined, env));
   return /* tuple */[
           btwn(start_loc, end_loc),
           result
@@ -6179,20 +6179,20 @@ function primary(env) {
                 ];
       case /* T_LPAREN */3 :
           var start_loc = Curry._2(Parser_env_Peek.loc, undefined, env);
-          var match$2 = param_list_or_type(env);
-          if (match$2.tag) {
-            return match$2[0];
+          var _type = param_list_or_type(env);
+          if (_type.tag) {
+            return _type[0];
           }
-          var match$3 = match$2[0];
+          var match$2 = _type[0];
           token$4(env, /* T_ARROW */10);
           var returnType = union(env);
           var end_loc = returnType[0];
           return /* tuple */[
                   btwn(start_loc, end_loc),
                   /* Function */Block.__(1, [{
-                        params: match$3[1],
+                        params: match$2[1],
                         returnType: returnType,
-                        rest: match$3[0],
+                        rest: match$2[0],
                         typeParameters: undefined
                       }])
                 ];
@@ -6221,16 +6221,16 @@ function primary(env) {
       case /* T_LESS_THAN */89 :
           var start_loc$3 = Curry._2(Parser_env_Peek.loc, undefined, env);
           var typeParameters = Curry._2(type_parameter_declaration, false, env);
-          var match$4 = function_param_list(env);
+          var match$3 = function_param_list(env);
           token$4(env, /* T_ARROW */10);
           var returnType$1 = union(env);
           var end_loc$2 = returnType$1[0];
           return /* tuple */[
                   btwn(start_loc$3, end_loc$2),
                   /* Function */Block.__(1, [{
-                        params: match$4[1],
+                        params: match$3[1],
                         returnType: returnType$1,
-                        rest: match$4[0],
+                        rest: match$3[0],
                         typeParameters: typeParameters
                       }])
                 ];
@@ -6246,11 +6246,11 @@ function primary(env) {
   } else {
     switch (token$5.tag | 0) {
       case /* T_STRING */1 :
-          var match$5 = token$5[0];
-          var octal = match$5[3];
-          var raw = match$5[2];
-          var value = match$5[1];
-          var loc$1 = match$5[0];
+          var match$4 = token$5[0];
+          var octal = match$4[3];
+          var raw = match$4[2];
+          var value = match$4[1];
+          var loc$1 = match$4[0];
           if (octal) {
             strict_error(env, /* StrictOctalLiteral */31);
           }
@@ -6291,12 +6291,12 @@ function primary(env) {
   }
   switch (exit) {
     case 1 :
-        var match$6 = primitive(token$5);
-        if (match$6 !== undefined) {
+        var t$1 = primitive(token$5);
+        if (t$1 !== undefined) {
           token$4(env, token$5);
           return /* tuple */[
                   loc,
-                  match$6
+                  t$1
                 ];
         } else {
           error_unexpected(env);
@@ -7137,10 +7137,10 @@ function annotation(env) {
   var start_loc = Curry._2(Parser_env_Peek.loc, undefined, env);
   token$4(env, /* T_COLON */77);
   var typeAnnotation = union(env);
-  var match = env.last_loc.contents;
+  var loc = env.last_loc.contents;
   var end_loc;
-  if (match !== undefined) {
-    end_loc = match;
+  if (loc !== undefined) {
+    end_loc = loc;
   } else {
     throw [
           Caml_builtin_exceptions.assert_failure,
@@ -7239,11 +7239,11 @@ function object_property(check_env, param) {
     return pattern(check_env, param[0][1].argument);
   }
   var property = param[0][1];
-  var match = property.key;
+  var id = property.key;
   var check_env$1;
-  switch (match.tag | 0) {
+  switch (id.tag | 0) {
     case /* Identifier */1 :
-        check_env$1 = identifier_no_dupe_check(check_env, match[0]);
+        check_env$1 = identifier_no_dupe_check(check_env, id[0]);
         break;
     case /* Literal */0 :
     case /* Computed */2 :
@@ -7939,15 +7939,15 @@ function left_hand_side(env) {
     expr = Curry._2(Parser_env_Peek.is_function, undefined, env) ? _function$1(env) : primary$1(env);
   }
   var expr$1 = member(env, expr);
-  var match$1 = Curry._2(Parser_env_Peek.token, undefined, env);
-  if (typeof match$1 === "number") {
-    if (match$1 === /* T_LPAREN */3) {
+  var part = Curry._2(Parser_env_Peek.token, undefined, env);
+  if (typeof part === "number") {
+    if (part === /* T_LPAREN */3) {
       return call(env, expr$1);
     } else {
       return expr$1;
     }
-  } else if (match$1.tag === /* T_TEMPLATE_PART */2) {
-    return member(env, tagged_template(env, expr$1, match$1[0]));
+  } else if (part.tag === /* T_TEMPLATE_PART */2) {
+    return member(env, tagged_template(env, expr$1, part[0]));
   } else {
     return expr$1;
   }
@@ -7956,25 +7956,25 @@ function left_hand_side(env) {
 function call(env, _left) {
   while(true) {
     var left = _left;
-    var match = Curry._2(Parser_env_Peek.token, undefined, env);
-    if (typeof match !== "number") {
-      if (match.tag === /* T_TEMPLATE_PART */2) {
-        return tagged_template(env, left, match[0]);
+    var part = Curry._2(Parser_env_Peek.token, undefined, env);
+    if (typeof part !== "number") {
+      if (part.tag === /* T_TEMPLATE_PART */2) {
+        return tagged_template(env, left, part[0]);
       } else {
         return left;
       }
     }
-    switch (match) {
+    switch (part) {
       case /* T_LPAREN */3 :
           if (env.no_call) {
             return left;
           }
-          var match$1 = Curry._1($$arguments, env);
+          var match = Curry._1($$arguments, env);
           _left = /* tuple */[
-            btwn(left[0], match$1[0]),
+            btwn(left[0], match[0]),
             /* Call */Block.__(12, [{
                   callee: left,
-                  arguments: match$1[1]
+                  arguments: match[1]
                 }])
           ];
           continue ;
@@ -7995,8 +7995,8 @@ function call(env, _left) {
           continue ;
       case /* T_PERIOD */9 :
           token$4(env, /* T_PERIOD */9);
-          var match$2 = identifier_or_reserved_keyword(env);
-          var id = match$2[0];
+          var match$1 = identifier_or_reserved_keyword(env);
+          var id = match$1[0];
           _left = /* tuple */[
             btwn(left[0], id[0]),
             /* Member */Block.__(13, [{
@@ -8046,11 +8046,11 @@ function _new(env, _finish_fn) {
     Curry._2(Parser_env_Peek.token, undefined, env);
     var expr = Curry._2(Parser_env_Peek.is_function, undefined, env) ? _function$1(env) : primary$1(env);
     var callee = member(with_no_call(true, env), expr);
-    var match$1 = Curry._2(Parser_env_Peek.token, undefined, env);
+    var part = Curry._2(Parser_env_Peek.token, undefined, env);
     var callee$1;
-    callee$1 = typeof match$1 === "number" || match$1.tag !== /* T_TEMPLATE_PART */2 ? callee : tagged_template(env, callee, match$1[0]);
-    var match$2 = Curry._2(Parser_env_Peek.token, undefined, env);
-    var args = typeof match$2 === "number" && match$2 === 3 ? Curry._1($$arguments, env) : undefined;
+    callee$1 = typeof part === "number" || part.tag !== /* T_TEMPLATE_PART */2 ? callee : tagged_template(env, callee, part[0]);
+    var match$1 = Curry._2(Parser_env_Peek.token, undefined, env);
+    var args = typeof match$1 === "number" && match$1 === 3 ? Curry._1($$arguments, env) : undefined;
     return Curry._2(finish_fn, callee$1, args);
   };
 }
@@ -8176,10 +8176,10 @@ function number(env, number_type) {
 
 function primary$1(env) {
   var loc = Curry._2(Parser_env_Peek.loc, undefined, env);
-  var token$5 = Curry._2(Parser_env_Peek.token, undefined, env);
+  var number_type = Curry._2(Parser_env_Peek.token, undefined, env);
   var exit = 0;
-  if (typeof token$5 === "number") {
-    switch (token$5) {
+  if (typeof number_type === "number") {
+    switch (number_type) {
       case /* T_LCURLY */1 :
           var match = Curry._1(Parse.object_initializer, env);
           return /* tuple */[
@@ -8347,10 +8347,10 @@ function primary$1(env) {
         exit = 1;
     }
   } else {
-    switch (token$5.tag | 0) {
+    switch (number_type.tag | 0) {
       case /* T_NUMBER */0 :
           var raw$2 = Curry._2(Parser_env_Peek.value, undefined, env);
-          var value$1 = /* Number */Block.__(2, [number(env, token$5[0])]);
+          var value$1 = /* Number */Block.__(2, [number(env, number_type[0])]);
           return /* tuple */[
                   loc,
                   /* Literal */Block.__(19, [{
@@ -8359,7 +8359,7 @@ function primary$1(env) {
                       }])
                 ];
       case /* T_STRING */1 :
-          var match$7 = token$5[0];
+          var match$7 = number_type[0];
           var octal = match$7[3];
           var raw$3 = match$7[2];
           var value$2 = match$7[1];
@@ -8382,7 +8382,7 @@ function primary$1(env) {
                       }])
                 ];
       case /* T_TEMPLATE_PART */2 :
-          var match$8 = Curry._2(template_literal, env, token$5[0]);
+          var match$8 = Curry._2(template_literal, env, number_type[0]);
           return /* tuple */[
                   match$8[0],
                   /* TemplateLiteral */Block.__(20, [match$8[1]])
@@ -8401,7 +8401,7 @@ function primary$1(env) {
                 ];
         }
         error_unexpected(env);
-        if (token$5 === /* T_ERROR */104) {
+        if (number_type === /* T_ERROR */104) {
           token$3(env);
         }
         return /* tuple */[
@@ -8413,8 +8413,8 @@ function primary$1(env) {
               ];
     case 2 :
         var raw$4 = Curry._2(Parser_env_Peek.value, undefined, env);
-        token$4(env, token$5);
-        var value$4 = /* Boolean */Block.__(1, [token$5 === /* T_TRUE */29]);
+        token$4(env, number_type);
+        var value$4 = /* Boolean */Block.__(1, [number_type === /* T_TRUE */29]);
         return /* tuple */[
                 loc,
                 /* Literal */Block.__(19, [{
@@ -8537,8 +8537,8 @@ function identifier_or_reserved_keyword(env) {
 
 function assignment_but_not_arrow_function(env) {
   var expr = conditional(env);
-  var match = assignment_op(env);
-  if (match === undefined) {
+  var operator = assignment_op(env);
+  if (operator === undefined) {
     return expr;
   }
   if (!is_assignable_lhs(expr)) {
@@ -8547,9 +8547,9 @@ function assignment_but_not_arrow_function(env) {
           /* InvalidLHSInAssignment */14
         ]);
   }
-  var match$1 = expr[1];
-  if (typeof match$1 !== "number" && match$1.tag === /* Identifier */18) {
-    if (is_restricted(match$1[0][1].name)) {
+  var match = expr[1];
+  if (typeof match !== "number" && match.tag === /* Identifier */18) {
+    if (is_restricted(match[0][1].name)) {
       strict_error_at(env, /* tuple */[
             expr[0],
             /* StrictLHSAssignment */36
@@ -8563,7 +8563,7 @@ function assignment_but_not_arrow_function(env) {
   return /* tuple */[
           loc,
           /* Assignment */Block.__(7, [{
-                operator: match,
+                operator: operator,
                 left: left,
                 right: right
               }])
@@ -8637,8 +8637,8 @@ function assignment(env) {
         if (argument !== undefined) {
           end_loc = argument[0];
         } else {
-          var match$2 = Curry._2(Parser_env_Peek.semicolon_loc, undefined, env);
-          var end_loc$1 = match$2 !== undefined ? match$2 : start_loc;
+          var loc = Curry._2(Parser_env_Peek.semicolon_loc, undefined, env);
+          var end_loc$1 = loc !== undefined ? loc : start_loc;
           semicolon(env);
           end_loc = end_loc$1;
         }
@@ -8658,13 +8658,13 @@ function assignment(env) {
   if (exit === 2 && !match$1) {
     return assignment_but_not_arrow_function(env);
   }
-  var match$3 = Curry._2(Parser_env_Try.to_parse, env, try_assignment_but_not_arrow_function);
-  if (match$3) {
-    return match$3[0];
+  var expr = Curry._2(Parser_env_Try.to_parse, env, try_assignment_but_not_arrow_function);
+  if (expr) {
+    return expr[0];
   }
-  var match$4 = Curry._2(Parser_env_Try.to_parse, env, try_arrow_function);
-  if (match$4) {
-    return match$4[0];
+  var expr$1 = Curry._2(Parser_env_Try.to_parse, env, try_arrow_function);
+  if (expr$1) {
+    return expr$1[0];
   } else {
     return assignment_but_not_arrow_function(env);
   }
@@ -8962,8 +8962,8 @@ function binary(env) {
     var start_loc = Curry._2(Parser_env_Peek.loc, undefined, env);
     var is_unary = peek_unary_op(env) !== undefined;
     var right = unary(with_no_in(false, env));
-    var match = env.last_loc.contents;
-    var end_loc = match !== undefined ? match : right[0];
+    var loc = env.last_loc.contents;
+    var end_loc = loc !== undefined ? loc : right[0];
     var right_loc = btwn(start_loc, end_loc);
     if (Curry._2(Parser_env_Peek.token, undefined, env) === /* T_LESS_THAN */89) {
       var tmp = right[1];
@@ -8972,8 +8972,8 @@ function binary(env) {
       }
       
     }
-    var match$1 = binary_op(env);
-    if (match$1 === undefined) {
+    var match = binary_op(env);
+    if (match === undefined) {
       var _right = right;
       var _rloc = right_loc;
       var _param = stack;
@@ -8984,15 +8984,15 @@ function binary(env) {
         if (!param) {
           return right$1;
         }
-        var match$2 = param[0];
-        var loc = btwn(match$2[2], rloc);
+        var match$1 = param[0];
+        var loc$1 = btwn(match$1[2], rloc);
         _param = param[1];
-        _rloc = loc;
-        _right = make_binary(match$2[0], right$1, match$2[1][0], loc);
+        _rloc = loc$1;
+        _right = make_binary(match$1[0], right$1, match$1[1][0], loc$1);
         continue ;
       };
     }
-    var rop = match$1[0];
+    var rop = match[0];
     if (is_unary && rop === /* Exp */14) {
       error_at(env, /* tuple */[
             right_loc,
@@ -9001,7 +9001,7 @@ function binary(env) {
     }
     _stack = add_to_stack(right, /* tuple */[
           rop,
-          match$1[1]
+          match[1]
         ], right_loc, stack);
     continue ;
   };
@@ -9403,9 +9403,9 @@ function decorator_list(env) {
 }
 
 function key(env) {
-  var match = Curry._2(Parser_env_Peek.token, undefined, env);
-  if (typeof match === "number") {
-    if (match === /* T_LBRACKET */5) {
+  var number_type = Curry._2(Parser_env_Peek.token, undefined, env);
+  if (typeof number_type === "number") {
+    if (number_type === /* T_LBRACKET */5) {
       var start_loc = Curry._2(Parser_env_Peek.loc, undefined, env);
       token$4(env, /* T_LBRACKET */5);
       var expr = Curry._1(Parse.assignment, with_no_in(false, env));
@@ -9418,11 +9418,11 @@ function key(env) {
     }
     
   } else {
-    switch (match.tag | 0) {
+    switch (number_type.tag | 0) {
       case /* T_NUMBER */0 :
           var raw = Curry._2(Parser_env_Peek.value, undefined, env);
           var loc = Curry._2(Parser_env_Peek.loc, undefined, env);
-          var value = number(env, match[0]);
+          var value = number(env, number_type[0]);
           var value$1 = /* Number */Block.__(2, [value]);
           return /* tuple */[
                   loc,
@@ -9435,11 +9435,11 @@ function key(env) {
                       ]])
                 ];
       case /* T_STRING */1 :
-          var match$1 = match[0];
-          var octal = match$1[3];
-          var raw$1 = match$1[2];
-          var value$2 = match$1[1];
-          var loc$1 = match$1[0];
+          var match = number_type[0];
+          var octal = match[3];
+          var raw$1 = match[2];
+          var value$2 = match[1];
+          var loc$1 = match[0];
           if (octal) {
             strict_error(env, /* StrictOctalLiteral */31);
           }
@@ -9464,8 +9464,8 @@ function key(env) {
         
     }
   }
-  var match$2 = identifier_or_reserved_keyword(env);
-  var id = match$2[0];
+  var match$1 = identifier_or_reserved_keyword(env);
+  var id = match$1[0];
   return /* tuple */[
           id[0],
           /* Identifier */Block.__(1, [id])
@@ -9801,20 +9801,20 @@ function check_property(env, prop_map, prop) {
     var key;
     switch (match$1.tag | 0) {
       case /* Literal */0 :
-          var match$2 = match$1[0][1].value;
-          if (typeof match$2 === "number") {
+          var s = match$1[0][1].value;
+          if (typeof s === "number") {
             key = "null";
           } else {
-            switch (match$2.tag | 0) {
+            switch (s.tag | 0) {
               case /* String */0 :
-                  key = match$2[0];
+                  key = s[0];
                   break;
               case /* Boolean */1 :
-                  var b = match$2[0];
+                  var b = s[0];
                   key = b ? "true" : "false";
                   break;
               case /* Number */2 :
-                  key = Pervasives.string_of_float(match$2[0]);
+                  key = Pervasives.string_of_float(s[0]);
                   break;
               case /* RegExp */3 :
                   throw [
@@ -9850,9 +9850,9 @@ function check_property(env, prop_map, prop) {
         throw exn;
       }
     }
-    var match$3 = prop$1.kind;
+    var match$2 = prop$1.kind;
     var kind_string;
-    switch (match$3) {
+    switch (match$2) {
       case /* Init */0 :
           kind_string = "Init";
           break;
@@ -10363,8 +10363,8 @@ function export_source(env) {
 
 function expression(env) {
   var expression$1 = Curry._1(Parse.expression, env);
-  var match = Curry._2(Parser_env_Peek.semicolon_loc, undefined, env);
-  var end_loc = match !== undefined ? match : expression$1[0];
+  var loc = Curry._2(Parser_env_Peek.semicolon_loc, undefined, env);
+  var end_loc = loc !== undefined ? loc : expression$1[0];
   semicolon(env);
   return /* tuple */[
           btwn(expression$1[0], end_loc),
@@ -10409,11 +10409,11 @@ function declare_function(env, start_loc) {
     id_000,
     id_001
   ];
-  var match$1 = Curry._2(Parser_env_Peek.semicolon_loc, undefined, env);
-  var end_loc$1 = match$1 !== undefined ? match$1 : end_loc;
+  var end_loc$1 = Curry._2(Parser_env_Peek.semicolon_loc, undefined, env);
+  var end_loc$2 = end_loc$1 !== undefined ? end_loc$1 : end_loc;
   var predicate = Curry._1(Parse.predicate, env);
   semicolon(env);
-  var loc$1 = btwn(start_loc, end_loc$1);
+  var loc$1 = btwn(start_loc, end_loc$2);
   return /* tuple */[
           loc$1,
           {
@@ -10508,12 +10508,12 @@ function type_alias_helper(env) {
   var typeParameters = Curry._1(type_parameter_declaration_with_defaults, env);
   token$4(env, /* T_ASSIGN */75);
   var right = wrap(_type, env);
-  var match = Curry._2(Parser_env_Peek.semicolon_loc, undefined, env);
-  var end_loc = match !== undefined ? match : right[0];
+  var end_loc = Curry._2(Parser_env_Peek.semicolon_loc, undefined, env);
+  var end_loc$1 = end_loc !== undefined ? end_loc : right[0];
   semicolon(env);
   pop_lex_mode(env);
   return /* tuple */[
-          btwn(start_loc, end_loc),
+          btwn(start_loc, end_loc$1),
           {
             id: id,
             typeParameters: typeParameters,
@@ -10525,12 +10525,12 @@ function type_alias_helper(env) {
 function declare_var(env, start_loc) {
   token$4(env, /* T_VAR */22);
   var id = Curry._2(Parse.identifier_with_type, env, /* StrictVarName */27);
-  var match = Curry._2(Parser_env_Peek.semicolon_loc, undefined, env);
-  var end_loc = match !== undefined ? match : id[0];
-  var loc = btwn(start_loc, end_loc);
+  var loc = Curry._2(Parser_env_Peek.semicolon_loc, undefined, env);
+  var end_loc = loc !== undefined ? loc : id[0];
+  var loc$1 = btwn(start_loc, end_loc);
   semicolon(env);
   return /* tuple */[
-          loc,
+          loc$1,
           {
             id: id
           }
@@ -10574,8 +10574,8 @@ function declare_export_declaration(allow_export_typeOpt, env) {
               local_name
             ]);
           var source = export_source(env$1);
-          var match$1 = Curry._2(Parser_env_Peek.semicolon_loc, undefined, env$1);
-          var end_loc = match$1 !== undefined ? match$1 : source[0];
+          var loc$1 = Curry._2(Parser_env_Peek.semicolon_loc, undefined, env$1);
+          var end_loc = loc$1 !== undefined ? loc$1 : source[0];
           var source$1 = source;
           semicolon(env$1);
           return /* tuple */[
@@ -10590,16 +10590,16 @@ function declare_export_declaration(allow_export_typeOpt, env) {
         }
       } else {
         if (allow_export_type) {
-          var match$2 = type_alias_helper(env$1);
-          var alias_loc = match$2[0];
-          var loc$1 = btwn(start_loc, alias_loc);
+          var match$1 = type_alias_helper(env$1);
+          var alias_loc = match$1[0];
+          var loc$2 = btwn(start_loc, alias_loc);
           return /* tuple */[
-                  loc$1,
+                  loc$2,
                   /* DeclareExportDeclaration */Block.__(27, [{
                         default: false,
                         declaration: /* NamedType */Block.__(4, [/* tuple */[
                               alias_loc,
-                              match$2[1]
+                              match$1[1]
                             ]]),
                         specifiers: undefined,
                         source: undefined
@@ -10611,16 +10611,16 @@ function declare_export_declaration(allow_export_typeOpt, env) {
     } else if (match >= 39) {
       if (match >= 51) {
         if (allow_export_type) {
-          var match$3 = Curry._1(interface_helper, env$1);
-          var iface_loc = match$3[0];
-          var loc$2 = btwn(start_loc, iface_loc);
+          var match$2 = Curry._1(interface_helper, env$1);
+          var iface_loc = match$2[0];
+          var loc$3 = btwn(start_loc, iface_loc);
           return /* tuple */[
-                  loc$2,
+                  loc$3,
                   /* DeclareExportDeclaration */Block.__(27, [{
                         default: false,
                         declaration: /* Interface */Block.__(5, [/* tuple */[
                               iface_loc,
-                              match$3[1]
+                              match$2[1]
                             ]]),
                         specifiers: undefined,
                         source: undefined
@@ -10635,23 +10635,23 @@ function declare_export_declaration(allow_export_typeOpt, env) {
       switch (match - 13 | 0) {
         case /* T_TRY */21 :
             token$4(env$1, /* T_DEFAULT */34);
-            var match$4 = Curry._2(Parser_env_Peek.token, undefined, env$1);
-            var match$5;
+            var match$3 = Curry._2(Parser_env_Peek.token, undefined, env$1);
+            var match$4;
             var exit$1 = 0;
-            if (typeof match$4 === "number") {
-              if (match$4 !== 13) {
-                if (match$4 !== 38) {
+            if (typeof match$3 === "number") {
+              if (match$3 !== 13) {
+                if (match$3 !== 38) {
                   exit$1 = 3;
                 } else {
                   var _class = Curry._2(declare_class, env$1, start_loc);
-                  match$5 = /* tuple */[
+                  match$4 = /* tuple */[
                     _class[0],
                     /* Class */Block.__(2, [_class])
                   ];
                 }
               } else {
                 var fn = declare_function(env$1, start_loc);
-                match$5 = /* tuple */[
+                match$4 = /* tuple */[
                   fn[0],
                   /* Function */Block.__(1, [fn])
                 ];
@@ -10661,19 +10661,19 @@ function declare_export_declaration(allow_export_typeOpt, env) {
             }
             if (exit$1 === 3) {
               var _type$1 = wrap(_type, env$1);
-              var match$6 = Curry._2(Parser_env_Peek.semicolon_loc, undefined, env$1);
-              var end_loc$1 = match$6 !== undefined ? match$6 : _type$1[0];
+              var loc$4 = Curry._2(Parser_env_Peek.semicolon_loc, undefined, env$1);
+              var end_loc$1 = loc$4 !== undefined ? loc$4 : _type$1[0];
               semicolon(env$1);
-              match$5 = /* tuple */[
+              match$4 = /* tuple */[
                 end_loc$1,
                 /* DefaultType */Block.__(3, [_type$1])
               ];
             }
             return /* tuple */[
-                    btwn(start_loc, match$5[0]),
+                    btwn(start_loc, match$4[0]),
                     /* DeclareExportDeclaration */Block.__(27, [{
                           default: true,
-                          declaration: match$5[1],
+                          declaration: match$4[1],
                           specifiers: undefined,
                           source: undefined
                         }])
@@ -10717,10 +10717,10 @@ function declare_export_declaration(allow_export_typeOpt, env) {
   }
   switch (exit) {
     case 1 :
-        var match$7 = Curry._2(Parser_env_Peek.token, undefined, env$1);
-        if (typeof match$7 === "number") {
-          if (match$7 !== 51) {
-            if (match$7 !== 59) {
+        var match$5 = Curry._2(Parser_env_Peek.token, undefined, env$1);
+        if (typeof match$5 === "number") {
+          if (match$5 !== 51) {
+            if (match$5 !== 59) {
               
             } else {
               error$1(env$1, /* DeclareExportType */52);
@@ -10730,15 +10730,15 @@ function declare_export_declaration(allow_export_typeOpt, env) {
           }
         }
         token$4(env$1, /* T_LCURLY */1);
-        var match$8 = export_specifiers_and_errs(env$1, /* [] */0, /* [] */0);
-        var specifiers$1 = /* ExportSpecifiers */Block.__(0, [match$8[0]]);
+        var match$6 = export_specifiers_and_errs(env$1, /* [] */0, /* [] */0);
+        var specifiers$1 = /* ExportSpecifiers */Block.__(0, [match$6[0]]);
         var end_loc$2 = Curry._2(Parser_env_Peek.loc, undefined, env$1);
         token$4(env$1, /* T_RCURLY */2);
         var source$2 = Curry._2(Parser_env_Peek.value, undefined, env$1) === "from" ? export_source(env$1) : (List.iter((function (param) {
                     return error_at(env$1, param);
-                  }), match$8[1]), undefined);
-        var match$9 = Curry._2(Parser_env_Peek.semicolon_loc, undefined, env$1);
-        var end_loc$3 = match$9 !== undefined ? match$9 : (
+                  }), match$6[1]), undefined);
+        var loc$5 = Curry._2(Parser_env_Peek.semicolon_loc, undefined, env$1);
+        var end_loc$3 = loc$5 !== undefined ? loc$5 : (
             source$2 !== undefined ? source$2[0] : end_loc$2
           );
         semicolon(env$1);
@@ -10753,7 +10753,7 @@ function declare_export_declaration(allow_export_typeOpt, env) {
               ];
     case 2 :
         var token$5 = Curry._2(Parser_env_Peek.token, undefined, env$1);
-        var match$10;
+        var match$7;
         var exit$2 = 0;
         if (typeof token$5 === "number") {
           if (token$5 >= 23) {
@@ -10762,7 +10762,7 @@ function declare_export_declaration(allow_export_typeOpt, env) {
                 exit$2 = 3;
               } else {
                 var _class$1 = Curry._2(declare_class, env$1, start_loc);
-                match$10 = /* tuple */[
+                match$7 = /* tuple */[
                   _class$1[0],
                   /* Class */Block.__(2, [_class$1])
                 ];
@@ -10774,7 +10774,7 @@ function declare_export_declaration(allow_export_typeOpt, env) {
             exit$2 = token$5 >= 22 ? 4 : 3;
           } else {
             var fn$1 = declare_function(env$1, start_loc);
-            match$10 = /* tuple */[
+            match$7 = /* tuple */[
               fn$1[0],
               /* Function */Block.__(1, [fn$1])
             ];
@@ -10805,7 +10805,7 @@ function declare_export_declaration(allow_export_typeOpt, env) {
                 }
               }
               var $$var = declare_var(env$1, start_loc);
-              match$10 = /* tuple */[
+              match$7 = /* tuple */[
                 $$var[0],
                 /* Variable */Block.__(0, [$$var])
               ];
@@ -10813,10 +10813,10 @@ function declare_export_declaration(allow_export_typeOpt, env) {
           
         }
         return /* tuple */[
-                btwn(start_loc, match$10[0]),
+                btwn(start_loc, match$7[0]),
                 /* DeclareExportDeclaration */Block.__(27, [{
                       default: false,
-                      declaration: match$10[1],
+                      declaration: match$7[1],
                       specifiers: undefined,
                       source: undefined
                     }])
@@ -10924,37 +10924,37 @@ function declare(in_moduleOpt, env) {
           token$4(env, /* T_PERIOD */9);
           contextual(env, "exports");
           var type_annot = wrap(annotation, env);
-          var match$2 = Curry._2(Parser_env_Peek.semicolon_loc, undefined, env);
-          var end_loc = match$2 !== undefined ? match$2 : type_annot[0];
+          var loc = Curry._2(Parser_env_Peek.semicolon_loc, undefined, env);
+          var end_loc = loc !== undefined ? loc : type_annot[0];
           semicolon(env);
-          var loc = btwn(start_loc, end_loc);
+          var loc$1 = btwn(start_loc, end_loc);
           return /* tuple */[
-                  loc,
+                  loc$1,
                   /* DeclareModuleExports */Block.__(26, [type_annot])
                 ];
         } else {
-          var match$3 = Curry._2(Parser_env_Peek.token, undefined, env);
+          var match$2 = Curry._2(Parser_env_Peek.token, undefined, env);
           var id;
-          if (typeof match$3 === "number" || match$3.tag !== /* T_STRING */1) {
+          if (typeof match$2 === "number" || match$2.tag !== /* T_STRING */1) {
             id = /* Identifier */Block.__(0, [Curry._2(Parse.identifier, undefined, env)]);
           } else {
-            var match$4 = match$3[0];
-            var octal = match$4[3];
-            var raw = match$4[2];
-            var value = match$4[1];
-            var loc$1 = match$4[0];
+            var match$3 = match$2[0];
+            var octal = match$3[3];
+            var raw = match$3[2];
+            var value = match$3[1];
+            var loc$2 = match$3[0];
             if (octal) {
               strict_error(env, /* StrictOctalLiteral */31);
             }
             token$4(env, /* T_STRING */Block.__(1, [/* tuple */[
-                      loc$1,
+                      loc$2,
                       value,
                       raw,
                       octal
                     ]]));
             var value$1 = /* String */Block.__(0, [value]);
             id = /* Literal */Block.__(1, [/* tuple */[
-                  loc$1,
+                  loc$2,
                   {
                     value: value$1,
                     raw: raw
@@ -10963,22 +10963,22 @@ function declare(in_moduleOpt, env) {
           }
           var body_start_loc = Curry._2(Parser_env_Peek.loc, undefined, env);
           token$4(env, /* T_LCURLY */1);
-          var match$5 = module_items(env, undefined, /* [] */0);
-          var module_kind = match$5[0];
+          var match$4 = module_items(env, undefined, /* [] */0);
+          var module_kind = match$4[0];
           token$4(env, /* T_RCURLY */2);
           var body_end_loc = Curry._2(Parser_env_Peek.loc, undefined, env);
           var body_loc = btwn(body_start_loc, body_end_loc);
           var body_001 = {
-            body: match$5[1]
+            body: match$4[1]
           };
           var body = /* tuple */[
             body_loc,
             body_001
           ];
-          var loc$2 = btwn(start_loc, body_loc);
-          var kind = module_kind !== undefined ? module_kind : /* CommonJS */Block.__(0, [loc$2]);
+          var loc$3 = btwn(start_loc, body_loc);
+          var kind = module_kind !== undefined ? module_kind : /* CommonJS */Block.__(0, [loc$3]);
           return /* tuple */[
-                  loc$2,
+                  loc$3,
                   /* DeclareModule */Block.__(25, [{
                         id: id,
                         body: body,
@@ -11340,14 +11340,14 @@ function var_or_const(env) {
   var match = variable(env);
   var match$1 = match[0];
   var start_loc = match$1[0];
-  var match$2 = Curry._2(Parser_env_Peek.semicolon_loc, undefined, env);
-  var end_loc = match$2 !== undefined ? match$2 : start_loc;
+  var end_loc = Curry._2(Parser_env_Peek.semicolon_loc, undefined, env);
+  var end_loc$1 = end_loc !== undefined ? end_loc : start_loc;
   semicolon(env);
   List.iter((function (param) {
           return error_at(env, param);
         }), match[1]);
   return /* tuple */[
-          btwn(start_loc, end_loc),
+          btwn(start_loc, end_loc$1),
           match$1[1]
         ];
 }
@@ -11589,24 +11589,24 @@ function _object$2(restricted_error) {
                 ]]);
     }
     var match = Curry._1(Parse.object_key, env);
-    var match$1 = match[1];
+    var lit = match[1];
     var key;
-    switch (match$1.tag | 0) {
+    switch (lit.tag | 0) {
       case /* Literal */0 :
-          key = /* Literal */Block.__(0, [match$1[0]]);
+          key = /* Literal */Block.__(0, [lit[0]]);
           break;
       case /* Identifier */1 :
-          key = /* Identifier */Block.__(1, [match$1[0]]);
+          key = /* Identifier */Block.__(1, [lit[0]]);
           break;
       case /* Computed */2 :
-          key = /* Computed */Block.__(2, [match$1[0]]);
+          key = /* Computed */Block.__(2, [lit[0]]);
           break;
       
     }
-    var match$2 = Curry._2(Parser_env_Peek.token, undefined, env);
+    var match$1 = Curry._2(Parser_env_Peek.token, undefined, env);
     var prop;
     var exit = 0;
-    if (typeof match$2 === "number" && match$2 === 77) {
+    if (typeof match$1 === "number" && match$1 === 77) {
       token$4(env, /* T_COLON */77);
       prop = /* tuple */[
         pattern$1(env, restricted_error),
@@ -11642,9 +11642,9 @@ function _object$2(restricted_error) {
       return ;
     }
     var pattern$3 = prop[0];
-    var match$3 = Curry._2(Parser_env_Peek.token, undefined, env);
+    var match$2 = Curry._2(Parser_env_Peek.token, undefined, env);
     var pattern$4;
-    if (typeof match$3 === "number" && match$3 === 75) {
+    if (typeof match$2 === "number" && match$2 === 75) {
       token$4(env, /* T_ASSIGN */75);
       var $$default = Curry._1(Parse.assignment, env);
       var loc$1 = btwn(pattern$3[0], $$default[0]);
@@ -11681,13 +11681,13 @@ function _object$2(restricted_error) {
         }
         
       }
-      var match$1 = property(env);
-      if (match$1 !== undefined) {
+      var prop = property(env);
+      if (prop !== undefined) {
         if (Curry._2(Parser_env_Peek.token, undefined, env) !== /* T_RCURLY */2) {
           token$4(env, /* T_COMMA */8);
         }
         _acc = /* :: */[
-          match$1,
+          prop,
           acc
         ];
         continue ;
@@ -12197,14 +12197,14 @@ function children_and_closing(env, _acc) {
                 undefined
               ];
       }
-      var match$1 = element_or_closing(env);
-      if (!match$1.tag) {
+      var closingElement = element_or_closing(env);
+      if (!closingElement.tag) {
         return /* tuple */[
                 List.rev(acc),
-                match$1[0]
+                closingElement[0]
               ];
       }
-      var element = match$1[0];
+      var element = closingElement[0];
       var element_000 = element[0];
       var element_001 = /* Element */Block.__(0, [element[1]]);
       var element$1 = /* tuple */[
@@ -12294,33 +12294,33 @@ function statement_list_item(decoratorsOpt, env) {
               }), match$1[1]);
         token$4(env, /* T_RPAREN */4);
         var body = Curry._1(Parse.statement, env);
-        var match$2 = Curry._2(Parser_env_Peek.semicolon_loc, undefined, env);
-        var end_loc = match$2 !== undefined ? match$2 : match$1[0];
+        var end_loc = Curry._2(Parser_env_Peek.semicolon_loc, undefined, env);
+        var end_loc$1 = end_loc !== undefined ? end_loc : match$1[0];
         semicolon(env);
         List.iter((function (param) {
                 return error_at(env, param);
               }), match$1[2]);
         return /* tuple */[
-                btwn(start_loc, end_loc),
+                btwn(start_loc, end_loc$1),
                 /* Let */Block.__(17, [{
                       head: head,
                       body: body
                     }])
               ];
       }
-      var match$3 = helper(with_no_let(true, env), /* [] */0, /* [] */0);
+      var match$2 = helper(with_no_let(true, env), /* [] */0, /* [] */0);
       var declaration = /* VariableDeclaration */Block.__(19, [{
-            declarations: match$3[1],
+            declarations: match$2[1],
             kind: /* Let */1
           }]);
-      var match$4 = Curry._2(Parser_env_Peek.semicolon_loc, undefined, env);
-      var end_loc$1 = match$4 !== undefined ? match$4 : match$3[0];
+      var end_loc$2 = Curry._2(Parser_env_Peek.semicolon_loc, undefined, env);
+      var end_loc$3 = end_loc$2 !== undefined ? end_loc$2 : match$2[0];
       semicolon(env);
       List.iter((function (param) {
               return error_at(env, param);
-            }), match$3[2]);
+            }), match$2[2]);
       return /* tuple */[
-              btwn(start_loc, end_loc$1),
+              btwn(start_loc, end_loc$3),
               declaration
             ];
     }
@@ -12472,8 +12472,8 @@ function module_item(env) {
                   local_name
                 ]);
               var source$1 = export_source(env$1);
-              var match$4 = Curry._2(Parser_env_Peek.semicolon_loc, undefined, env$1);
-              var end_loc$2 = match$4 !== undefined ? match$4 : source$1[0];
+              var loc$1 = Curry._2(Parser_env_Peek.semicolon_loc, undefined, env$1);
+              var end_loc$2 = loc$1 !== undefined ? loc$1 : source$1[0];
               var source$2 = source$1;
               semicolon(env$1);
               return /* tuple */[
@@ -12495,12 +12495,12 @@ function module_item(env) {
                         btwn(start_loc, Curry._2(Parser_env_Peek.loc, undefined, env$1)),
                         "default"
                       ]);
-                  var match$5 = Curry._2(Parser_env_Peek.token, undefined, env$1);
-                  var match$6;
+                  var match$4 = Curry._2(Parser_env_Peek.token, undefined, env$1);
+                  var match$5;
                   var exit$1 = 0;
-                  if (typeof match$5 === "number" && match$5 === 13) {
+                  if (typeof match$4 === "number" && match$4 === 13) {
                     var fn = _function(env$1);
-                    match$6 = /* tuple */[
+                    match$5 = /* tuple */[
                       fn[0],
                       /* Declaration */Block.__(0, [fn])
                     ];
@@ -12510,26 +12510,26 @@ function module_item(env) {
                   if (exit$1 === 3) {
                     if (Curry._2(Parser_env_Peek.is_class, undefined, env$1)) {
                       var _class = class_declaration(env$1, decorators);
-                      match$6 = /* tuple */[
+                      match$5 = /* tuple */[
                         _class[0],
                         /* Declaration */Block.__(0, [_class])
                       ];
                     } else {
                       var expr = Curry._1(Parse.assignment, env$1);
-                      var match$7 = Curry._2(Parser_env_Peek.semicolon_loc, undefined, env$1);
-                      var end_loc$3 = match$7 !== undefined ? match$7 : expr[0];
+                      var loc$2 = Curry._2(Parser_env_Peek.semicolon_loc, undefined, env$1);
+                      var end_loc$3 = loc$2 !== undefined ? loc$2 : expr[0];
                       semicolon(env$1);
-                      match$6 = /* tuple */[
+                      match$5 = /* tuple */[
                         end_loc$3,
                         /* Expression */Block.__(1, [expr])
                       ];
                     }
                   }
                   return /* tuple */[
-                          btwn(start_loc, match$6[0]),
+                          btwn(start_loc, match$5[0]),
                           /* ExportDeclaration */Block.__(28, [{
                                 default: true,
-                                declaration: match$6[1],
+                                declaration: match$5[1],
                                 specifiers: undefined,
                                 source: undefined,
                                 exportKind: /* ExportValue */1
@@ -12574,18 +12574,18 @@ function module_item(env) {
         }
         switch (exit) {
           case 1 :
-              var match$8 = Curry._2(Parser_env_Peek.token, undefined, env$1);
-              var exportKind = typeof match$8 === "number" && match$8 === 59 ? (token$3(env$1), /* ExportType */0) : /* ExportValue */1;
+              var match$6 = Curry._2(Parser_env_Peek.token, undefined, env$1);
+              var exportKind = typeof match$6 === "number" && match$6 === 59 ? (token$3(env$1), /* ExportType */0) : /* ExportValue */1;
               token$4(env$1, /* T_LCURLY */1);
-              var match$9 = export_specifiers_and_errs(env$1, /* [] */0, /* [] */0);
-              var specifiers$1 = /* ExportSpecifiers */Block.__(0, [match$9[0]]);
+              var match$7 = export_specifiers_and_errs(env$1, /* [] */0, /* [] */0);
+              var specifiers$1 = /* ExportSpecifiers */Block.__(0, [match$7[0]]);
               var end_loc$4 = Curry._2(Parser_env_Peek.loc, undefined, env$1);
               token$4(env$1, /* T_RCURLY */2);
               var source$3 = Curry._2(Parser_env_Peek.value, undefined, env$1) === "from" ? export_source(env$1) : (List.iter((function (param) {
                           return error_at(env$1, param);
-                        }), match$9[1]), undefined);
-              var match$10 = Curry._2(Parser_env_Peek.semicolon_loc, undefined, env$1);
-              var end_loc$5 = match$10 !== undefined ? match$10 : (
+                        }), match$7[1]), undefined);
+              var loc$3 = Curry._2(Parser_env_Peek.semicolon_loc, undefined, env$1);
+              var end_loc$5 = loc$3 !== undefined ? loc$3 : (
                   source$3 !== undefined ? source$3[0] : end_loc$4
                 );
               semicolon(env$1);
@@ -12601,29 +12601,29 @@ function module_item(env) {
                     ];
           case 2 :
               var stmt = Curry._2(Parse.statement_list_item, decorators, env$1);
-              var match$11 = stmt[1];
-              var loc$1 = stmt[0];
+              var match$8 = stmt[1];
+              var loc$4 = stmt[0];
               var names;
-              if (typeof match$11 === "number") {
+              if (typeof match$8 === "number") {
                 throw [
                       Caml_builtin_exceptions.failure,
                       "Internal Flow Error! Unexpected export statement declaration!"
                     ];
               }
-              switch (match$11.tag | 0) {
+              switch (match$8.tag | 0) {
                 case /* FunctionDeclaration */18 :
-                    var match$12 = match$11[0].id;
-                    if (match$12 !== undefined) {
+                    var id = match$8[0].id;
+                    if (id !== undefined) {
                       names = /* :: */[
                         /* tuple */[
-                          loc$1,
-                          extract_ident_name(match$12)
+                          loc$4,
+                          extract_ident_name(id)
                         ],
                         /* [] */0
                       ];
                     } else {
                       error_at(env$1, /* tuple */[
-                            loc$1,
+                            loc$4,
                             /* ExportNamelessFunction */56
                           ]);
                       names = /* [] */0;
@@ -12637,21 +12637,21 @@ function module_item(env) {
                               /* [] */0
                             ];
                             return List.fold_left(fold, names, param$1);
-                          }), /* [] */0, match$11[0].declarations);
+                          }), /* [] */0, match$8[0].declarations);
                     break;
                 case /* ClassDeclaration */20 :
-                    var match$13 = match$11[0].id;
-                    if (match$13 !== undefined) {
+                    var id$1 = match$8[0].id;
+                    if (id$1 !== undefined) {
                       names = /* :: */[
                         /* tuple */[
-                          loc$1,
-                          extract_ident_name(match$13)
+                          loc$4,
+                          extract_ident_name(id$1)
                         ],
                         /* [] */0
                       ];
                     } else {
                       error_at(env$1, /* tuple */[
-                            loc$1,
+                            loc$4,
                             /* ExportNamelessClass */55
                           ]);
                       names = /* [] */0;
@@ -12684,10 +12684,10 @@ function module_item(env) {
         var env$2 = with_strict(true, env);
         var start_loc$1 = Curry._2(Parser_env_Peek.loc, undefined, env$2);
         token$4(env$2, /* T_IMPORT */48);
-        var match$14 = Curry._2(Parser_env_Peek.token, undefined, env$2);
-        var match$15 = typeof match$14 === "number" ? (
-            match$14 !== 44 ? (
-                match$14 !== 59 ? /* tuple */[
+        var match$9 = Curry._2(Parser_env_Peek.token, undefined, env$2);
+        var match$10 = typeof match$9 === "number" ? (
+            match$9 !== 44 ? (
+                match$9 !== 59 ? /* tuple */[
                     /* ImportValue */2,
                     undefined
                   ] : (!env$2.parse_options.types ? error$1(env$2, /* UnexpectedTypeImport */8) : undefined, /* tuple */[
@@ -12702,25 +12702,25 @@ function module_item(env) {
             /* ImportValue */2,
             undefined
           ];
-        var type_ident = match$15[1];
-        var importKind = match$15[0];
-        var match$16 = Curry._2(Parser_env_Peek.token, undefined, env$2);
-        var match$17 = Curry._2(Parser_env_Peek.is_identifier, undefined, env$2);
+        var type_ident = match$10[1];
+        var importKind = match$10[0];
+        var match$11 = Curry._2(Parser_env_Peek.token, undefined, env$2);
+        var match$12 = Curry._2(Parser_env_Peek.is_identifier, undefined, env$2);
         var exit$2 = 0;
         var exit$3 = 0;
-        if (typeof match$16 === "number") {
-          if (match$16 === /* T_COMMA */8) {
+        if (typeof match$11 === "number") {
+          if (match$11 === /* T_COMMA */8) {
             exit$2 = 1;
           } else {
             exit$3 = 2;
           }
-        } else if (match$16.tag === /* T_STRING */1) {
+        } else if (match$11.tag === /* T_STRING */1) {
           if (importKind === /* ImportValue */2) {
-            var match$18 = match$16[0];
-            var octal = match$18[3];
-            var raw = match$18[2];
-            var value = match$18[1];
-            var str_loc = match$18[0];
+            var match$13 = match$11[0];
+            var octal = match$13[3];
+            var raw = match$13[2];
+            var value = match$13[1];
+            var str_loc = match$13[0];
             if (octal) {
               strict_error(env$2, /* StrictOctalLiteral */31);
             }
@@ -12739,8 +12739,8 @@ function module_item(env) {
               str_loc,
               source_001
             ];
-            var match$19 = Curry._2(Parser_env_Peek.semicolon_loc, undefined, env$2);
-            var end_loc$6 = match$19 !== undefined ? match$19 : str_loc;
+            var loc$5 = Curry._2(Parser_env_Peek.semicolon_loc, undefined, env$2);
+            var end_loc$6 = loc$5 !== undefined ? loc$5 : str_loc;
             semicolon(env$2);
             return /* tuple */[
                     btwn(start_loc$1, end_loc$6),
@@ -12756,13 +12756,13 @@ function module_item(env) {
           exit$3 = 2;
         }
         if (exit$3 === 2) {
-          if (match$17) {
+          if (match$12) {
             exit$2 = 1;
           } else {
             var specifiers$2 = named_or_namespace_specifier(env$2);
             var source$5 = source(env$2);
-            var match$20 = Curry._2(Parser_env_Peek.semicolon_loc, undefined, env$2);
-            var end_loc$7 = match$20 !== undefined ? match$20 : source$5[0];
+            var loc$6 = Curry._2(Parser_env_Peek.semicolon_loc, undefined, env$2);
+            var end_loc$7 = loc$6 !== undefined ? loc$6 : source$5[0];
             semicolon(env$2);
             return /* tuple */[
                     btwn(start_loc$1, end_loc$7),
@@ -12775,12 +12775,12 @@ function module_item(env) {
           }
         }
         if (exit$2 === 1) {
-          var match$21 = Curry._2(Parser_env_Peek.token, undefined, env$2);
-          var match$22 = Curry._2(Parser_env_Peek.value, undefined, env$2);
-          var match$23;
+          var match$14 = Curry._2(Parser_env_Peek.token, undefined, env$2);
+          var match$15 = Curry._2(Parser_env_Peek.value, undefined, env$2);
+          var match$16;
           var exit$4 = 0;
-          if (type_ident !== undefined && typeof match$21 === "number" && !(match$21 !== 8 && (match$21 !== 0 || match$22 !== "from"))) {
-            match$23 = /* tuple */[
+          if (type_ident !== undefined && typeof match$14 === "number" && !(match$14 !== 8 && (match$14 !== 0 || match$15 !== "from"))) {
+            match$16 = /* tuple */[
               /* ImportValue */2,
               /* ImportDefaultSpecifier */Block.__(1, [type_ident])
             ];
@@ -12788,24 +12788,24 @@ function module_item(env) {
             exit$4 = 2;
           }
           if (exit$4 === 2) {
-            match$23 = /* tuple */[
+            match$16 = /* tuple */[
               importKind,
               /* ImportDefaultSpecifier */Block.__(1, [Curry._2(Parse.identifier, undefined, env$2)])
             ];
           }
-          var match$24 = Curry._2(Parser_env_Peek.token, undefined, env$2);
-          var additional_specifiers = typeof match$24 === "number" && match$24 === 8 ? (token$4(env$2, /* T_COMMA */8), named_or_namespace_specifier(env$2)) : /* [] */0;
+          var match$17 = Curry._2(Parser_env_Peek.token, undefined, env$2);
+          var additional_specifiers = typeof match$17 === "number" && match$17 === 8 ? (token$4(env$2, /* T_COMMA */8), named_or_namespace_specifier(env$2)) : /* [] */0;
           var source$6 = source(env$2);
-          var match$25 = Curry._2(Parser_env_Peek.semicolon_loc, undefined, env$2);
-          var end_loc$8 = match$25 !== undefined ? match$25 : source$6[0];
+          var loc$7 = Curry._2(Parser_env_Peek.semicolon_loc, undefined, env$2);
+          var end_loc$8 = loc$7 !== undefined ? loc$7 : source$6[0];
           semicolon(env$2);
           return /* tuple */[
                   btwn(start_loc$1, end_loc$8),
                   /* ImportDeclaration */Block.__(29, [{
-                        importKind: match$23[0],
+                        importKind: match$16[0],
                         source: source$6,
                         specifiers: /* :: */[
-                          match$23[1],
+                          match$16[1],
                           additional_specifiers
                         ]
                       }])
@@ -12865,8 +12865,8 @@ function statement(env) {
                 var start_loc = Curry._2(Parser_env_Peek.loc, undefined, env);
                 token$4(env, /* T_RETURN */17);
                 var argument = Curry._2(Parser_env_Peek.token, undefined, env) === /* T_SEMICOLON */7 || Curry._1(Parser_env_Peek.is_implicit_semicolon, env) ? undefined : Curry._1(Parse.expression, env);
-                var match$2 = Curry._2(Parser_env_Peek.semicolon_loc, undefined, env);
-                var end_loc = match$2 !== undefined ? match$2 : (
+                var loc$1 = Curry._2(Parser_env_Peek.semicolon_loc, undefined, env);
+                var end_loc = loc$1 !== undefined ? loc$1 : (
                     argument !== undefined ? argument[0] : start_loc
                   );
                 semicolon(env);
@@ -12907,8 +12907,8 @@ function statement(env) {
                       ]);
                 }
                 var argument$1 = Curry._1(Parse.expression, env);
-                var match$3 = Curry._2(Parser_env_Peek.semicolon_loc, undefined, env);
-                var end_loc$2 = match$3 !== undefined ? match$3 : argument$1[0];
+                var loc$2 = Curry._2(Parser_env_Peek.semicolon_loc, undefined, env);
+                var end_loc$2 = loc$2 !== undefined ? loc$2 : argument$1[0];
                 semicolon(env);
                 return /* tuple */[
                         btwn(start_loc$2, end_loc$2),
@@ -12920,9 +12920,9 @@ function statement(env) {
                 var start_loc$3 = Curry._2(Parser_env_Peek.loc, undefined, env);
                 token$4(env, /* T_TRY */21);
                 var block = Curry._1(Parse.block_body, env);
-                var match$4 = Curry._2(Parser_env_Peek.token, undefined, env);
+                var match$2 = Curry._2(Parser_env_Peek.token, undefined, env);
                 var handler;
-                if (typeof match$4 === "number" && match$4 === 32) {
+                if (typeof match$2 === "number" && match$2 === 32) {
                   var start_loc$4 = Curry._2(Parser_env_Peek.loc, undefined, env);
                   token$4(env, /* T_CATCH */32);
                   token$4(env, /* T_LPAREN */3);
@@ -12935,9 +12935,9 @@ function statement(env) {
                   ];
                   token$4(env, /* T_RPAREN */4);
                   var body = Curry._1(Parse.block_body, env);
-                  var loc$1 = btwn(start_loc$4, body[0]);
+                  var loc$3 = btwn(start_loc$4, body[0]);
                   handler = /* tuple */[
-                    loc$1,
+                    loc$3,
                     {
                       param: param,
                       guard: undefined,
@@ -12947,8 +12947,8 @@ function statement(env) {
                 } else {
                   handler = undefined;
                 }
-                var match$5 = Curry._2(Parser_env_Peek.token, undefined, env);
-                var finalizer = typeof match$5 === "number" && match$5 === 36 ? (token$4(env, /* T_FINALLY */36), Curry._1(Parse.block_body, env)) : undefined;
+                var match$3 = Curry._2(Parser_env_Peek.token, undefined, env);
+                var finalizer = typeof match$3 === "number" && match$3 === 36 ? (token$4(env, /* T_FINALLY */36), Curry._1(Parse.block_body, env)) : undefined;
                 var end_loc$3 = finalizer !== undefined ? finalizer[0] : (
                     handler !== undefined ? handler[0] : (error_at(env, /* tuple */[
                               block[0],
@@ -12987,13 +12987,13 @@ function statement(env) {
                 var _object = Curry._1(Parse.expression, env);
                 token$4(env, /* T_RPAREN */4);
                 var body$2 = Curry._1(Parse.statement, env);
-                var loc$2 = btwn(start_loc$6, body$2[0]);
+                var loc$4 = btwn(start_loc$6, body$2[0]);
                 strict_error_at(env, /* tuple */[
-                      loc$2,
+                      loc$4,
                       /* StrictModeWith */25
                     ]);
                 return /* tuple */[
-                        loc$2,
+                        loc$4,
                         /* With */Block.__(6, [{
                               _object: _object,
                               body: body$2
@@ -13013,20 +13013,20 @@ function statement(env) {
                   }
                   label = label$1;
                 }
-                var match$6 = Curry._2(Parser_env_Peek.semicolon_loc, undefined, env);
-                var end_loc$4 = match$6 !== undefined ? match$6 : (
+                var loc$5 = Curry._2(Parser_env_Peek.semicolon_loc, undefined, env);
+                var end_loc$4 = loc$5 !== undefined ? loc$5 : (
                     label !== undefined ? label[0] : start_loc$7
                   );
-                var loc$3 = btwn(start_loc$7, end_loc$4);
+                var loc$6 = btwn(start_loc$7, end_loc$4);
                 if (label === undefined && !(env.in_loop || env.in_switch)) {
                   error_at(env, /* tuple */[
-                        loc$3,
+                        loc$6,
                         /* IllegalBreak */22
                       ]);
                 }
                 semicolon(env);
                 return /* tuple */[
-                        loc$3,
+                        loc$6,
                         /* Break */Block.__(4, [{
                               label: label
                             }])
@@ -13045,20 +13045,20 @@ function statement(env) {
                   }
                   label$2 = label$3;
                 }
-                var match$7 = Curry._2(Parser_env_Peek.semicolon_loc, undefined, env);
-                var end_loc$5 = match$7 !== undefined ? match$7 : (
+                var loc$7 = Curry._2(Parser_env_Peek.semicolon_loc, undefined, env);
+                var end_loc$5 = loc$7 !== undefined ? loc$7 : (
                     label$2 !== undefined ? label$2[0] : start_loc$8
                   );
-                var loc$4 = btwn(start_loc$8, end_loc$5);
+                var loc$8 = btwn(start_loc$8, end_loc$5);
                 if (!env.in_loop) {
                   error_at(env, /* tuple */[
-                        loc$4,
+                        loc$8,
                         /* IllegalContinue */21
                       ]);
                 }
                 semicolon(env);
                 return /* tuple */[
-                        loc$4,
+                        loc$8,
                         /* Continue */Block.__(5, [{
                               label: label$2
                             }])
@@ -13072,8 +13072,8 @@ function statement(env) {
                 var test$1 = Curry._1(Parse.expression, env);
                 var end_loc$6 = Curry._2(Parser_env_Peek.loc, undefined, env);
                 token$4(env, /* T_RPAREN */4);
-                var match$8 = Curry._2(Parser_env_Peek.semicolon_loc, undefined, env);
-                var end_loc$7 = match$8 !== undefined ? match$8 : end_loc$6;
+                var loc$9 = Curry._2(Parser_env_Peek.semicolon_loc, undefined, env);
+                var end_loc$7 = loc$9 !== undefined ? loc$9 : end_loc$6;
                 if (Curry._2(Parser_env_Peek.token, undefined, env) === /* T_SEMICOLON */7) {
                   semicolon(env);
                 }
@@ -13088,20 +13088,20 @@ function statement(env) {
                 var start_loc$10 = Curry._2(Parser_env_Peek.loc, undefined, env);
                 token$4(env, /* T_FOR */37);
                 token$4(env, /* T_LPAREN */3);
-                var match$9 = Curry._2(Parser_env_Peek.token, undefined, env);
-                var match$10;
+                var match$4 = Curry._2(Parser_env_Peek.token, undefined, env);
+                var match$5;
                 var exit$1 = 0;
-                if (typeof match$9 === "number") {
-                  if (match$9 >= 22) {
-                    if (match$9 >= 27) {
+                if (typeof match$4 === "number") {
+                  if (match$4 >= 22) {
+                    if (match$4 >= 27) {
                       exit$1 = 1;
                     } else {
-                      switch (match$9 - 22 | 0) {
+                      switch (match$4 - 22 | 0) {
                         case /* T_IDENTIFIER */0 :
-                            var match$11 = declarations(/* T_VAR */22, /* Var */0, with_no_in(true, env));
-                            match$10 = /* tuple */[
-                              /* InitDeclaration */Block.__(0, [match$11[0]]),
-                              match$11[1]
+                            var match$6 = declarations(/* T_VAR */22, /* Var */0, with_no_in(true, env));
+                            match$5 = /* tuple */[
+                              /* InitDeclaration */Block.__(0, [match$6[0]]),
+                              match$6[1]
                             ];
                             break;
                         case /* T_LCURLY */1 :
@@ -13109,26 +13109,26 @@ function statement(env) {
                             exit$1 = 1;
                             break;
                         case /* T_LPAREN */3 :
-                            var match$12 = $$const(with_no_in(true, env));
-                            match$10 = /* tuple */[
-                              /* InitDeclaration */Block.__(0, [match$12[0]]),
-                              match$12[1]
+                            var match$7 = $$const(with_no_in(true, env));
+                            match$5 = /* tuple */[
+                              /* InitDeclaration */Block.__(0, [match$7[0]]),
+                              match$7[1]
                             ];
                             break;
                         case /* T_RPAREN */4 :
-                            var match$13 = _let(with_no_in(true, env));
-                            match$10 = /* tuple */[
-                              /* InitDeclaration */Block.__(0, [match$13[0]]),
-                              match$13[1]
+                            var match$8 = _let(with_no_in(true, env));
+                            match$5 = /* tuple */[
+                              /* InitDeclaration */Block.__(0, [match$8[0]]),
+                              match$8[1]
                             ];
                             break;
                         
                       }
                     }
-                  } else if (match$9 !== 7) {
+                  } else if (match$4 !== 7) {
                     exit$1 = 1;
                   } else {
-                    match$10 = /* tuple */[
+                    match$5 = /* tuple */[
                       undefined,
                       /* [] */0
                     ];
@@ -13138,16 +13138,16 @@ function statement(env) {
                 }
                 if (exit$1 === 1) {
                   var expr = Curry._1(Parse.expression, with_no_let(true, with_no_in(true, env)));
-                  match$10 = /* tuple */[
+                  match$5 = /* tuple */[
                     /* InitExpression */Block.__(1, [expr]),
                     /* [] */0
                   ];
                 }
-                var init = match$10[0];
-                var match$14 = Curry._2(Parser_env_Peek.token, undefined, env);
-                if (typeof match$14 === "number") {
-                  if (match$14 !== 15) {
-                    if (match$14 === 60) {
+                var init = match$5[0];
+                var match$9 = Curry._2(Parser_env_Peek.token, undefined, env);
+                if (typeof match$9 === "number") {
+                  if (match$9 !== 15) {
+                    if (match$9 === 60) {
                       assert_can_be_forin_or_forof(env, /* InvalidLHSInForOf */17, init);
                       var left;
                       if (init !== undefined) {
@@ -13208,13 +13208,13 @@ function statement(env) {
                 }
                 List.iter((function (param) {
                         return error_at(env, param);
-                      }), match$10[1]);
+                      }), match$5[1]);
                 token$4(env, /* T_SEMICOLON */7);
-                var match$15 = Curry._2(Parser_env_Peek.token, undefined, env);
-                var test$2 = typeof match$15 === "number" && match$15 === 7 ? undefined : Curry._1(Parse.expression, env);
+                var match$10 = Curry._2(Parser_env_Peek.token, undefined, env);
+                var test$2 = typeof match$10 === "number" && match$10 === 7 ? undefined : Curry._1(Parse.expression, env);
                 token$4(env, /* T_SEMICOLON */7);
-                var match$16 = Curry._2(Parser_env_Peek.token, undefined, env);
-                var update = typeof match$16 === "number" && match$16 === 4 ? undefined : Curry._1(Parse.expression, env);
+                var match$11 = Curry._2(Parser_env_Peek.token, undefined, env);
+                var update = typeof match$11 === "number" && match$11 === 4 ? undefined : Curry._1(Parse.expression, env);
                 token$4(env, /* T_RPAREN */4);
                 var body$6 = Curry._1(Parse.statement, with_in_loop(true, env));
                 return /* tuple */[
@@ -13274,8 +13274,8 @@ function statement(env) {
             case /* T_DEBUGGER */57 :
                 var start_loc$11 = Curry._2(Parser_env_Peek.loc, undefined, env);
                 token$4(env, /* T_DEBUGGER */57);
-                var match$17 = Curry._2(Parser_env_Peek.semicolon_loc, undefined, env);
-                var end_loc$8 = match$17 !== undefined ? match$17 : start_loc$11;
+                var loc$10 = Curry._2(Parser_env_Peek.semicolon_loc, undefined, env);
+                var end_loc$8 = loc$10 !== undefined ? loc$10 : start_loc$11;
                 semicolon(env);
                 return /* tuple */[
                         btwn(start_loc$11, end_loc$8),
@@ -13297,17 +13297,17 @@ function statement(env) {
     if (exit === 2) {
       if (Curry._2(Parser_env_Peek.is_identifier, undefined, env)) {
         var expr$1 = Curry._1(Parse.expression, env);
-        var match$18 = Curry._2(Parser_env_Peek.token, undefined, env);
-        var match$19 = expr$1[1];
-        var loc$5 = expr$1[0];
-        if (typeof match$19 !== "number" && match$19.tag === /* Identifier */18 && typeof match$18 === "number" && match$18 === 77) {
-          var label$4 = match$19[0];
-          var match$20 = label$4[1];
-          var name$2 = match$20.name;
+        var match$12 = Curry._2(Parser_env_Peek.token, undefined, env);
+        var label$4 = expr$1[1];
+        var loc$11 = expr$1[0];
+        if (typeof label$4 !== "number" && label$4.tag === /* Identifier */18 && typeof match$12 === "number" && match$12 === 77) {
+          var label$5 = label$4[0];
+          var match$13 = label$5[1];
+          var name$2 = match$13.name;
           token$4(env, /* T_COLON */77);
           if (mem$1(name$2, env.labels)) {
             error_at(env, /* tuple */[
-                  loc$5,
+                  loc$11,
                   /* Redeclaration */Block.__(5, [
                       "Label",
                       name$2
@@ -13317,15 +13317,15 @@ function statement(env) {
           var env$1 = add_label(env, name$2);
           var labeled_stmt = Curry._1(Parse.statement, env$1);
           return /* tuple */[
-                  btwn(loc$5, labeled_stmt[0]),
+                  btwn(loc$11, labeled_stmt[0]),
                   /* Labeled */Block.__(3, [{
-                        label: label$4,
+                        label: label$5,
                         body: labeled_stmt
                       }])
                 ];
         }
-        var match$21 = Curry._2(Parser_env_Peek.semicolon_loc, undefined, env);
-        var end_loc$9 = match$21 !== undefined ? match$21 : expr$1[0];
+        var loc$12 = Curry._2(Parser_env_Peek.semicolon_loc, undefined, env);
+        var end_loc$9 = loc$12 !== undefined ? loc$12 : expr$1[0];
         semicolon(env);
         return /* tuple */[
                 btwn(expr$1[0], end_loc$9),
@@ -13487,15 +13487,15 @@ function statement_list(_env, term_fn, item_fn, _param) {
               stmts$1
             ];
     }
-    var match$3 = match$2[0].value;
-    if (typeof match$3 === "number") {
+    var str = match$2[0].value;
+    if (typeof str === "number") {
       return /* tuple */[
               env,
               string_tokens,
               stmts$1
             ];
     }
-    if (match$3.tag) {
+    if (str.tag) {
       return /* tuple */[
               env,
               string_tokens,
@@ -13504,7 +13504,7 @@ function statement_list(_env, term_fn, item_fn, _param) {
     }
     var loc = match$1[0];
     var len = loc._end.column - loc.start.column | 0;
-    var strict = env.in_strict_mode || match$3[0] === "use strict" && len === 12;
+    var strict = env.in_strict_mode || str[0] === "use strict" && len === 12;
     var string_tokens$1 = /* :: */[
       string_token,
       string_tokens
@@ -13953,9 +13953,9 @@ function parse(content, options) {
     var array_of_list = function (fn, list) {
       return array($$Array.of_list(List.map(fn, list)));
     };
-    var option = function (f, param) {
-      if (param !== undefined) {
-        return Curry._1(f, Caml_option.valFromOption(param));
+    var option = function (f, v) {
+      if (v !== undefined) {
+        return Curry._1(f, Caml_option.valFromOption(v));
       } else {
         return $$null;
       }
@@ -14080,13 +14080,13 @@ function parse(content, options) {
                 t[0]
               ];
               var g = param$1[1];
-              var match = g.id;
-              var id;
-              id = match.tag ? generic_type_qualified_identifier(match[0]) : identifier(match[0]);
+              var id = g.id;
+              var id$1;
+              id$1 = id.tag ? generic_type_qualified_identifier(id[0]) : identifier(id[0]);
               return node("GenericTypeAnnotation", param$1[0], [
                           /* tuple */[
                             "id",
-                            id
+                            id$1
                           ],
                           /* tuple */[
                             "typeParameters",
@@ -14181,35 +14181,58 @@ function parse(content, options) {
         }
       }
     };
+    var function_type_param = function (param) {
+      var param$1 = param[1];
+      return node("FunctionTypeParam", param[0], [
+                  /* tuple */[
+                    "name",
+                    identifier(param$1.name)
+                  ],
+                  /* tuple */[
+                    "typeAnnotation",
+                    _type(param$1.typeAnnotation)
+                  ],
+                  /* tuple */[
+                    "optional",
+                    bool(param$1.optional)
+                  ]
+                ]);
+    };
+    var type_parameter_declaration = function (param) {
+      return node("TypeParameterDeclaration", param[0], [/* tuple */[
+                    "params",
+                    array_of_list(type_param, param[1].params)
+                  ]]);
+    };
     var expression = function (param) {
-      var match = param[1];
+      var arr = param[1];
       var loc = param[0];
-      if (typeof match === "number") {
+      if (typeof arr === "number") {
         return node("ThisExpression", loc, []);
       }
-      switch (match.tag | 0) {
+      switch (arr.tag | 0) {
         case /* Array */0 :
             return node("ArrayExpression", loc, [/* tuple */[
                           "elements",
                           array_of_list((function (param) {
                                   return option(expression_or_spread, param);
-                                }), match[0].elements)
+                                }), arr[0].elements)
                         ]]);
         case /* Object */1 :
             return node("ObjectExpression", loc, [/* tuple */[
                           "properties",
-                          array_of_list(object_property, match[0].properties)
+                          array_of_list(object_property, arr[0].properties)
                         ]]);
         case /* Function */2 :
             return function_expression(/* tuple */[
                         loc,
-                        match[0]
+                        arr[0]
                       ]);
         case /* ArrowFunction */3 :
-            var arrow = match[0];
-            var match$1 = arrow.body;
+            var arrow = arr[0];
+            var b = arrow.body;
             var body;
-            body = match$1.tag ? expression(match$1[0]) : block(match$1[0]);
+            body = b.tag ? expression(b[0]) : block(b[0]);
             return node("ArrowFunctionExpression", loc, [
                         /* tuple */[
                           "id",
@@ -14257,20 +14280,20 @@ function parse(content, options) {
         case /* Sequence */4 :
             return node("SequenceExpression", loc, [/* tuple */[
                           "expressions",
-                          array_of_list(expression, match[0].expressions)
+                          array_of_list(expression, arr[0].expressions)
                         ]]);
         case /* Unary */5 :
-            var unary = match[0];
-            var match$2 = unary.operator;
-            if (match$2 >= 7) {
+            var unary = arr[0];
+            var match = unary.operator;
+            if (match >= 7) {
               return node("AwaitExpression", loc, [/* tuple */[
                             "argument",
                             expression(unary.argument)
                           ]]);
             }
-            var match$3 = unary.operator;
+            var match$1 = unary.operator;
             var operator;
-            switch (match$3) {
+            switch (match$1) {
               case /* Minus */0 :
                   operator = "-";
                   break;
@@ -14314,10 +14337,10 @@ function parse(content, options) {
                         ]
                       ]);
         case /* Binary */6 :
-            var binary = match[0];
-            var match$4 = binary.operator;
+            var binary = arr[0];
+            var match$2 = binary.operator;
             var operator$1;
-            switch (match$4) {
+            switch (match$2) {
               case /* Equal */0 :
                   operator$1 = "==";
                   break;
@@ -14401,10 +14424,10 @@ function parse(content, options) {
                         ]
                       ]);
         case /* Assignment */7 :
-            var assignment = match[0];
-            var match$5 = assignment.operator;
+            var assignment = arr[0];
+            var match$3 = assignment.operator;
             var operator$2;
-            switch (match$5) {
+            switch (match$3) {
               case /* Assign */0 :
                   operator$2 = "=";
                   break;
@@ -14461,9 +14484,9 @@ function parse(content, options) {
                         ]
                       ]);
         case /* Update */8 :
-            var update = match[0];
-            var match$6 = update.operator;
-            var operator$3 = match$6 ? "--" : "++";
+            var update = arr[0];
+            var match$4 = update.operator;
+            var operator$3 = match$4 ? "--" : "++";
             return node("UpdateExpression", loc, [
                         /* tuple */[
                           "operator",
@@ -14479,9 +14502,9 @@ function parse(content, options) {
                         ]
                       ]);
         case /* Logical */9 :
-            var logical = match[0];
-            var match$7 = logical.operator;
-            var operator$4 = match$7 ? "&&" : "||";
+            var logical = arr[0];
+            var match$5 = logical.operator;
+            var operator$4 = match$5 ? "&&" : "||";
             return node("LogicalExpression", loc, [
                         /* tuple */[
                           "operator",
@@ -14497,7 +14520,7 @@ function parse(content, options) {
                         ]
                       ]);
         case /* Conditional */10 :
-            var conditional = match[0];
+            var conditional = arr[0];
             return node("ConditionalExpression", loc, [
                         /* tuple */[
                           "test",
@@ -14513,7 +14536,7 @@ function parse(content, options) {
                         ]
                       ]);
         case /* New */11 :
-            var _new = match[0];
+            var _new = arr[0];
             return node("NewExpression", loc, [
                         /* tuple */[
                           "callee",
@@ -14525,7 +14548,7 @@ function parse(content, options) {
                         ]
                       ]);
         case /* Call */12 :
-            var call = match[0];
+            var call = arr[0];
             return node("CallExpression", loc, [
                         /* tuple */[
                           "callee",
@@ -14537,10 +14560,10 @@ function parse(content, options) {
                         ]
                       ]);
         case /* Member */13 :
-            var member = match[0];
-            var match$8 = member.property;
+            var member = arr[0];
+            var id = member.property;
             var property;
-            property = match$8.tag ? expression(match$8[0]) : identifier(match$8[0]);
+            property = id.tag ? expression(id[0]) : identifier(id[0]);
             return node("MemberExpression", loc, [
                         /* tuple */[
                           "object",
@@ -14556,7 +14579,7 @@ function parse(content, options) {
                         ]
                       ]);
         case /* Yield */14 :
-            var $$yield = match[0];
+            var $$yield = arr[0];
             return node("YieldExpression", loc, [
                         /* tuple */[
                           "argument",
@@ -14568,7 +14591,7 @@ function parse(content, options) {
                         ]
                       ]);
         case /* Comprehension */15 :
-            var comp = match[0];
+            var comp = arr[0];
             return node("ComprehensionExpression", loc, [
                         /* tuple */[
                           "blocks",
@@ -14580,7 +14603,7 @@ function parse(content, options) {
                         ]
                       ]);
         case /* Generator */16 :
-            var gen = match[0];
+            var gen = arr[0];
             return node("GeneratorExpression", loc, [
                         /* tuple */[
                           "blocks",
@@ -14592,7 +14615,7 @@ function parse(content, options) {
                         ]
                       ]);
         case /* Let */17 :
-            var _let = match[0];
+            var _let = arr[0];
             return node("LetExpression", loc, [
                         /* tuple */[
                           "head",
@@ -14604,21 +14627,21 @@ function parse(content, options) {
                         ]
                       ]);
         case /* Identifier */18 :
-            return identifier(match[0]);
+            return identifier(arr[0]);
         case /* Literal */19 :
             return literal(/* tuple */[
                         loc,
-                        match[0]
+                        arr[0]
                       ]);
         case /* TemplateLiteral */20 :
             return template_literal(/* tuple */[
                         loc,
-                        match[0]
+                        arr[0]
                       ]);
         case /* TaggedTemplate */21 :
             var param$1 = /* tuple */[
               loc,
-              match[0]
+              arr[0]
             ];
             var tagged = param$1[1];
             return node("TaggedTemplateExpression", param$1[0], [
@@ -14634,12 +14657,12 @@ function parse(content, options) {
         case /* JSXElement */22 :
             return jsx_element(/* tuple */[
                         loc,
-                        match[0]
+                        arr[0]
                       ]);
         case /* Class */23 :
             var param$2 = /* tuple */[
               loc,
-              match[0]
+              arr[0]
             ];
             var c = param$2[1];
             return node("ClassExpression", param$2[0], [
@@ -14673,7 +14696,7 @@ function parse(content, options) {
                         ]
                       ]);
         case /* TypeCast */24 :
-            var typecast = match[0];
+            var typecast = arr[0];
             return node("TypeCastExpression", loc, [
                         /* tuple */[
                           "expression",
@@ -14687,53 +14710,16 @@ function parse(content, options) {
         
       }
     };
-    var function_expression = function (param) {
-      var _function = param[1];
-      var match = _function.body;
-      var body;
-      body = match.tag ? expression(match[0]) : block(match[0]);
-      return node("FunctionExpression", param[0], [
+    var template_literal = function (param) {
+      var value = param[1];
+      return node("TemplateLiteral", param[0], [
                   /* tuple */[
-                    "id",
-                    option(identifier, _function.id)
+                    "quasis",
+                    array_of_list(template_element, value.quasis)
                   ],
                   /* tuple */[
-                    "params",
-                    array_of_list(pattern, _function.params)
-                  ],
-                  /* tuple */[
-                    "defaults",
-                    array_of_list((function (param) {
-                            return option(expression, param);
-                          }), _function.defaults)
-                  ],
-                  /* tuple */[
-                    "rest",
-                    option(identifier, _function.rest)
-                  ],
-                  /* tuple */[
-                    "body",
-                    body
-                  ],
-                  /* tuple */[
-                    "async",
-                    bool(_function.async)
-                  ],
-                  /* tuple */[
-                    "generator",
-                    bool(_function.generator)
-                  ],
-                  /* tuple */[
-                    "expression",
-                    bool(_function.expression)
-                  ],
-                  /* tuple */[
-                    "returnType",
-                    option(type_annotation, _function.returnType)
-                  ],
-                  /* tuple */[
-                    "typeParameters",
-                    option(type_parameter_declaration, _function.typeParameters)
+                    "expressions",
+                    array_of_list(expression, value.expressions)
                   ]
                 ]);
     };
@@ -14753,6 +14739,670 @@ function parse(content, options) {
                     bool(id.optional)
                   ]
                 ]);
+    };
+    var jsx_namespaced_name = function (param) {
+      var namespaced_name = param[1];
+      return node("JSXNamespacedName", param[0], [
+                  /* tuple */[
+                    "namespace",
+                    jsx_identifier(namespaced_name.namespace)
+                  ],
+                  /* tuple */[
+                    "name",
+                    jsx_identifier(namespaced_name.name)
+                  ]
+                ]);
+    };
+    var jsx_identifier = function (param) {
+      return node("JSXIdentifier", param[0], [/* tuple */[
+                    "name",
+                    string(param[1].name)
+                  ]]);
+    };
+    var jsx_attribute_value = function (param) {
+      if (param.tag) {
+        return jsx_expression_container(/* tuple */[
+                    param[0],
+                    param[1]
+                  ]);
+      } else {
+        return literal(/* tuple */[
+                    param[0],
+                    param[1]
+                  ]);
+      }
+    };
+    var statement = function (param) {
+      var b = param[1];
+      var loc = param[0];
+      if (typeof b === "number") {
+        if (b === /* Empty */0) {
+          return node("EmptyStatement", loc, []);
+        } else {
+          return node("DebuggerStatement", loc, []);
+        }
+      }
+      switch (b.tag | 0) {
+        case /* Block */0 :
+            return block(/* tuple */[
+                        loc,
+                        b[0]
+                      ]);
+        case /* Expression */1 :
+            return node("ExpressionStatement", loc, [/* tuple */[
+                          "expression",
+                          expression(b[0].expression)
+                        ]]);
+        case /* If */2 :
+            var _if = b[0];
+            return node("IfStatement", loc, [
+                        /* tuple */[
+                          "test",
+                          expression(_if.test)
+                        ],
+                        /* tuple */[
+                          "consequent",
+                          statement(_if.consequent)
+                        ],
+                        /* tuple */[
+                          "alternate",
+                          option(statement, _if.alternate)
+                        ]
+                      ]);
+        case /* Labeled */3 :
+            var labeled = b[0];
+            return node("LabeledStatement", loc, [
+                        /* tuple */[
+                          "label",
+                          identifier(labeled.label)
+                        ],
+                        /* tuple */[
+                          "body",
+                          statement(labeled.body)
+                        ]
+                      ]);
+        case /* Break */4 :
+            return node("BreakStatement", loc, [/* tuple */[
+                          "label",
+                          option(identifier, b[0].label)
+                        ]]);
+        case /* Continue */5 :
+            return node("ContinueStatement", loc, [/* tuple */[
+                          "label",
+                          option(identifier, b[0].label)
+                        ]]);
+        case /* With */6 :
+            var _with = b[0];
+            return node("WithStatement", loc, [
+                        /* tuple */[
+                          "object",
+                          expression(_with._object)
+                        ],
+                        /* tuple */[
+                          "body",
+                          statement(_with.body)
+                        ]
+                      ]);
+        case /* TypeAlias */7 :
+            return type_alias(/* tuple */[
+                        loc,
+                        b[0]
+                      ]);
+        case /* Switch */8 :
+            var $$switch = b[0];
+            return node("SwitchStatement", loc, [
+                        /* tuple */[
+                          "discriminant",
+                          expression($$switch.discriminant)
+                        ],
+                        /* tuple */[
+                          "cases",
+                          array_of_list($$case, $$switch.cases)
+                        ],
+                        /* tuple */[
+                          "lexical",
+                          bool($$switch.lexical)
+                        ]
+                      ]);
+        case /* Return */9 :
+            return node("ReturnStatement", loc, [/* tuple */[
+                          "argument",
+                          option(expression, b[0].argument)
+                        ]]);
+        case /* Throw */10 :
+            return node("ThrowStatement", loc, [/* tuple */[
+                          "argument",
+                          expression(b[0].argument)
+                        ]]);
+        case /* Try */11 :
+            var _try = b[0];
+            return node("TryStatement", loc, [
+                        /* tuple */[
+                          "block",
+                          block(_try.block)
+                        ],
+                        /* tuple */[
+                          "handler",
+                          option($$catch, _try.handler)
+                        ],
+                        /* tuple */[
+                          "guardedHandlers",
+                          array_of_list($$catch, _try.guardedHandlers)
+                        ],
+                        /* tuple */[
+                          "finalizer",
+                          option(block, _try.finalizer)
+                        ]
+                      ]);
+        case /* While */12 :
+            var _while = b[0];
+            return node("WhileStatement", loc, [
+                        /* tuple */[
+                          "test",
+                          expression(_while.test)
+                        ],
+                        /* tuple */[
+                          "body",
+                          statement(_while.body)
+                        ]
+                      ]);
+        case /* DoWhile */13 :
+            var dowhile = b[0];
+            return node("DoWhileStatement", loc, [
+                        /* tuple */[
+                          "body",
+                          statement(dowhile.body)
+                        ],
+                        /* tuple */[
+                          "test",
+                          expression(dowhile.test)
+                        ]
+                      ]);
+        case /* For */14 :
+            var _for = b[0];
+            var init = function (init$1) {
+              if (init$1.tag) {
+                return expression(init$1[0]);
+              } else {
+                return variable_declaration(init$1[0]);
+              }
+            };
+            return node("ForStatement", loc, [
+                        /* tuple */[
+                          "init",
+                          option(init, _for.init)
+                        ],
+                        /* tuple */[
+                          "test",
+                          option(expression, _for.test)
+                        ],
+                        /* tuple */[
+                          "update",
+                          option(expression, _for.update)
+                        ],
+                        /* tuple */[
+                          "body",
+                          statement(_for.body)
+                        ]
+                      ]);
+        case /* ForIn */15 :
+            var forin = b[0];
+            var left = forin.left;
+            var left$1;
+            left$1 = left.tag ? expression(left[0]) : variable_declaration(left[0]);
+            return node("ForInStatement", loc, [
+                        /* tuple */[
+                          "left",
+                          left$1
+                        ],
+                        /* tuple */[
+                          "right",
+                          expression(forin.right)
+                        ],
+                        /* tuple */[
+                          "body",
+                          statement(forin.body)
+                        ],
+                        /* tuple */[
+                          "each",
+                          bool(forin.each)
+                        ]
+                      ]);
+        case /* ForOf */16 :
+            var forof = b[0];
+            var left$2 = forof.left;
+            var left$3;
+            left$3 = left$2.tag ? expression(left$2[0]) : variable_declaration(left$2[0]);
+            return node("ForOfStatement", loc, [
+                        /* tuple */[
+                          "left",
+                          left$3
+                        ],
+                        /* tuple */[
+                          "right",
+                          expression(forof.right)
+                        ],
+                        /* tuple */[
+                          "body",
+                          statement(forof.body)
+                        ]
+                      ]);
+        case /* Let */17 :
+            var _let = b[0];
+            return node("LetStatement", loc, [
+                        /* tuple */[
+                          "head",
+                          array_of_list(let_assignment, _let.head)
+                        ],
+                        /* tuple */[
+                          "body",
+                          statement(_let.body)
+                        ]
+                      ]);
+        case /* FunctionDeclaration */18 :
+            var fn = b[0];
+            var id = fn.id;
+            var match = id !== undefined ? /* tuple */[
+                "FunctionDeclaration",
+                identifier(id)
+              ] : /* tuple */[
+                "FunctionExpression",
+                $$null
+              ];
+            var b$1 = fn.body;
+            var body;
+            body = b$1.tag ? expression(b$1[0]) : block(b$1[0]);
+            return node(match[0], loc, [
+                        /* tuple */[
+                          "id",
+                          match[1]
+                        ],
+                        /* tuple */[
+                          "params",
+                          array_of_list(pattern, fn.params)
+                        ],
+                        /* tuple */[
+                          "defaults",
+                          array_of_list((function (param) {
+                                  return option(expression, param);
+                                }), fn.defaults)
+                        ],
+                        /* tuple */[
+                          "rest",
+                          option(identifier, fn.rest)
+                        ],
+                        /* tuple */[
+                          "body",
+                          body
+                        ],
+                        /* tuple */[
+                          "async",
+                          bool(fn.async)
+                        ],
+                        /* tuple */[
+                          "generator",
+                          bool(fn.generator)
+                        ],
+                        /* tuple */[
+                          "expression",
+                          bool(fn.expression)
+                        ],
+                        /* tuple */[
+                          "returnType",
+                          option(type_annotation, fn.returnType)
+                        ],
+                        /* tuple */[
+                          "typeParameters",
+                          option(type_parameter_declaration, fn.typeParameters)
+                        ]
+                      ]);
+        case /* VariableDeclaration */19 :
+            return variable_declaration(/* tuple */[
+                        loc,
+                        b[0]
+                      ]);
+        case /* ClassDeclaration */20 :
+            var param$1 = /* tuple */[
+              loc,
+              b[0]
+            ];
+            var c = param$1[1];
+            var id$1 = c.id;
+            var match$1 = id$1 !== undefined ? /* tuple */[
+                "ClassDeclaration",
+                identifier(id$1)
+              ] : /* tuple */[
+                "ClassExpression",
+                $$null
+              ];
+            return node(match$1[0], param$1[0], [
+                        /* tuple */[
+                          "id",
+                          match$1[1]
+                        ],
+                        /* tuple */[
+                          "body",
+                          class_body(c.body)
+                        ],
+                        /* tuple */[
+                          "superClass",
+                          option(expression, c.superClass)
+                        ],
+                        /* tuple */[
+                          "typeParameters",
+                          option(type_parameter_declaration, c.typeParameters)
+                        ],
+                        /* tuple */[
+                          "superTypeParameters",
+                          option(type_parameter_instantiation, c.superTypeParameters)
+                        ],
+                        /* tuple */[
+                          "implements",
+                          array_of_list(class_implements, c.implements)
+                        ],
+                        /* tuple */[
+                          "decorators",
+                          array_of_list(expression, c.classDecorators)
+                        ]
+                      ]);
+        case /* InterfaceDeclaration */21 :
+            return interface_declaration(/* tuple */[
+                        loc,
+                        b[0]
+                      ]);
+        case /* DeclareVariable */22 :
+            return declare_variable(/* tuple */[
+                        loc,
+                        b[0]
+                      ]);
+        case /* DeclareFunction */23 :
+            return declare_function(/* tuple */[
+                        loc,
+                        b[0]
+                      ]);
+        case /* DeclareClass */24 :
+            return declare_class(/* tuple */[
+                        loc,
+                        b[0]
+                      ]);
+        case /* DeclareModule */25 :
+            var m = b[0];
+            var lit = m.id;
+            var id$2;
+            id$2 = lit.tag ? literal(lit[0]) : identifier(lit[0]);
+            var match$2 = m.kind;
+            var tmp;
+            tmp = match$2.tag ? string("ES") : string("CommonJS");
+            return node("DeclareModule", loc, [
+                        /* tuple */[
+                          "id",
+                          id$2
+                        ],
+                        /* tuple */[
+                          "body",
+                          block(m.body)
+                        ],
+                        /* tuple */[
+                          "kind",
+                          tmp
+                        ]
+                      ]);
+        case /* DeclareModuleExports */26 :
+            return node("DeclareModuleExports", loc, [/* tuple */[
+                          "typeAnnotation",
+                          type_annotation(b[0])
+                        ]]);
+        case /* DeclareExportDeclaration */27 :
+            var $$export = b[0];
+            var match$3 = $$export.declaration;
+            var declaration;
+            if (match$3 !== undefined) {
+              switch (match$3.tag | 0) {
+                case /* Variable */0 :
+                    declaration = declare_variable(match$3[0]);
+                    break;
+                case /* Function */1 :
+                    declaration = declare_function(match$3[0]);
+                    break;
+                case /* Class */2 :
+                    declaration = declare_class(match$3[0]);
+                    break;
+                case /* DefaultType */3 :
+                    declaration = _type(match$3[0]);
+                    break;
+                case /* NamedType */4 :
+                    declaration = type_alias(match$3[0]);
+                    break;
+                case /* Interface */5 :
+                    declaration = interface_declaration(match$3[0]);
+                    break;
+                
+              }
+            } else {
+              declaration = $$null;
+            }
+            return node("DeclareExportDeclaration", loc, [
+                        /* tuple */[
+                          "default",
+                          bool($$export.default)
+                        ],
+                        /* tuple */[
+                          "declaration",
+                          declaration
+                        ],
+                        /* tuple */[
+                          "specifiers",
+                          export_specifiers($$export.specifiers)
+                        ],
+                        /* tuple */[
+                          "source",
+                          option(literal, $$export.source)
+                        ]
+                      ]);
+        case /* ExportDeclaration */28 :
+            var $$export$1 = b[0];
+            var match$4 = $$export$1.declaration;
+            var declaration$1 = match$4 !== undefined ? (
+                match$4.tag ? expression(match$4[0]) : statement(match$4[0])
+              ) : $$null;
+            return node("ExportDeclaration", loc, [
+                        /* tuple */[
+                          "default",
+                          bool($$export$1.default)
+                        ],
+                        /* tuple */[
+                          "declaration",
+                          declaration$1
+                        ],
+                        /* tuple */[
+                          "specifiers",
+                          export_specifiers($$export$1.specifiers)
+                        ],
+                        /* tuple */[
+                          "source",
+                          option(literal, $$export$1.source)
+                        ],
+                        /* tuple */[
+                          "exportKind",
+                          string($$export$1.exportKind ? "value" : "type")
+                        ]
+                      ]);
+        case /* ImportDeclaration */29 :
+            var $$import = b[0];
+            var specifiers = List.map((function (id) {
+                    switch (id.tag | 0) {
+                      case /* ImportNamedSpecifier */0 :
+                          var match = id[0];
+                          var local_id = match.local;
+                          var remote_id = match.remote;
+                          var span_loc = local_id !== undefined ? btwn(remote_id[0], local_id[0]) : remote_id[0];
+                          return node("ImportSpecifier", span_loc, [
+                                      /* tuple */[
+                                        "id",
+                                        identifier(remote_id)
+                                      ],
+                                      /* tuple */[
+                                        "name",
+                                        option(identifier, local_id)
+                                      ]
+                                    ]);
+                      case /* ImportDefaultSpecifier */1 :
+                          var id$1 = id[0];
+                          return node("ImportDefaultSpecifier", id$1[0], [/* tuple */[
+                                        "id",
+                                        identifier(id$1)
+                                      ]]);
+                      case /* ImportNamespaceSpecifier */2 :
+                          var param = id[0];
+                          return node("ImportNamespaceSpecifier", param[0], [/* tuple */[
+                                        "id",
+                                        identifier(param[1])
+                                      ]]);
+                      
+                    }
+                  }), $$import.specifiers);
+            var match$5 = $$import.importKind;
+            var import_kind;
+            switch (match$5) {
+              case /* ImportType */0 :
+                  import_kind = "type";
+                  break;
+              case /* ImportTypeof */1 :
+                  import_kind = "typeof";
+                  break;
+              case /* ImportValue */2 :
+                  import_kind = "value";
+                  break;
+              
+            }
+            return node("ImportDeclaration", loc, [
+                        /* tuple */[
+                          "specifiers",
+                          array($$Array.of_list(specifiers))
+                        ],
+                        /* tuple */[
+                          "source",
+                          literal($$import.source)
+                        ],
+                        /* tuple */[
+                          "importKind",
+                          string(import_kind)
+                        ]
+                      ]);
+        
+      }
+    };
+    var interface_declaration = function (param) {
+      var i = param[1];
+      return node("InterfaceDeclaration", param[0], [
+                  /* tuple */[
+                    "id",
+                    identifier(i.id)
+                  ],
+                  /* tuple */[
+                    "typeParameters",
+                    option(type_parameter_declaration, i.typeParameters)
+                  ],
+                  /* tuple */[
+                    "body",
+                    object_type(i.body)
+                  ],
+                  /* tuple */[
+                    "extends",
+                    array_of_list(interface_extends, i.extends)
+                  ]
+                ]);
+    };
+    var variable_declaration = function (param) {
+      var $$var = param[1];
+      var match = $$var.kind;
+      var kind;
+      switch (match) {
+        case /* Var */0 :
+            kind = "var";
+            break;
+        case /* Let */1 :
+            kind = "let";
+            break;
+        case /* Const */2 :
+            kind = "const";
+            break;
+        
+      }
+      return node("VariableDeclaration", param[0], [
+                  /* tuple */[
+                    "declarations",
+                    array_of_list(variable_declarator, $$var.declarations)
+                  ],
+                  /* tuple */[
+                    "kind",
+                    string(kind)
+                  ]
+                ]);
+    };
+    var type_alias = function (param) {
+      var alias = param[1];
+      return node("TypeAlias", param[0], [
+                  /* tuple */[
+                    "id",
+                    identifier(alias.id)
+                  ],
+                  /* tuple */[
+                    "typeParameters",
+                    option(type_parameter_declaration, alias.typeParameters)
+                  ],
+                  /* tuple */[
+                    "right",
+                    _type(alias.right)
+                  ]
+                ]);
+    };
+    var declare_function = function (param) {
+      return node("DeclareFunction", param[0], [/* tuple */[
+                    "id",
+                    identifier(param[1].id)
+                  ]]);
+    };
+    var export_specifiers = function (param) {
+      if (param !== undefined) {
+        if (param.tag) {
+          return array([node("ExportBatchSpecifier", param[0], [/* tuple */[
+                              "name",
+                              option(identifier, param[1])
+                            ]])]);
+        } else {
+          return array_of_list(export_specifier, param[0]);
+        }
+      } else {
+        return array([]);
+      }
+    };
+    var declare_class = function (param) {
+      var d = param[1];
+      return node("DeclareClass", param[0], [
+                  /* tuple */[
+                    "id",
+                    identifier(d.id)
+                  ],
+                  /* tuple */[
+                    "typeParameters",
+                    option(type_parameter_declaration, d.typeParameters)
+                  ],
+                  /* tuple */[
+                    "body",
+                    object_type(d.body)
+                  ],
+                  /* tuple */[
+                    "extends",
+                    array_of_list(interface_extends, d.extends)
+                  ]
+                ]);
+    };
+    var block = function (param) {
+      return node("BlockStatement", param[0], [/* tuple */[
+                    "body",
+                    array_of_list(statement, param[1].body)
+                  ]]);
     };
     var literal = function (param) {
       var lit = param[1];
@@ -14825,740 +15475,24 @@ function parse(content, options) {
       }
       return node("Literal", loc, props);
     };
-    var statement = function (param) {
-      var match = param[1];
-      var loc = param[0];
-      if (typeof match === "number") {
-        if (match === /* Empty */0) {
-          return node("EmptyStatement", loc, []);
-        } else {
-          return node("DebuggerStatement", loc, []);
-        }
-      }
-      switch (match.tag | 0) {
-        case /* Block */0 :
-            return block(/* tuple */[
-                        loc,
-                        match[0]
-                      ]);
-        case /* Expression */1 :
-            return node("ExpressionStatement", loc, [/* tuple */[
-                          "expression",
-                          expression(match[0].expression)
-                        ]]);
-        case /* If */2 :
-            var _if = match[0];
-            return node("IfStatement", loc, [
-                        /* tuple */[
-                          "test",
-                          expression(_if.test)
-                        ],
-                        /* tuple */[
-                          "consequent",
-                          statement(_if.consequent)
-                        ],
-                        /* tuple */[
-                          "alternate",
-                          option(statement, _if.alternate)
-                        ]
-                      ]);
-        case /* Labeled */3 :
-            var labeled = match[0];
-            return node("LabeledStatement", loc, [
-                        /* tuple */[
-                          "label",
-                          identifier(labeled.label)
-                        ],
-                        /* tuple */[
-                          "body",
-                          statement(labeled.body)
-                        ]
-                      ]);
-        case /* Break */4 :
-            return node("BreakStatement", loc, [/* tuple */[
-                          "label",
-                          option(identifier, match[0].label)
-                        ]]);
-        case /* Continue */5 :
-            return node("ContinueStatement", loc, [/* tuple */[
-                          "label",
-                          option(identifier, match[0].label)
-                        ]]);
-        case /* With */6 :
-            var _with = match[0];
-            return node("WithStatement", loc, [
-                        /* tuple */[
-                          "object",
-                          expression(_with._object)
-                        ],
-                        /* tuple */[
-                          "body",
-                          statement(_with.body)
-                        ]
-                      ]);
-        case /* TypeAlias */7 :
-            return type_alias(/* tuple */[
-                        loc,
-                        match[0]
-                      ]);
-        case /* Switch */8 :
-            var $$switch = match[0];
-            return node("SwitchStatement", loc, [
-                        /* tuple */[
-                          "discriminant",
-                          expression($$switch.discriminant)
-                        ],
-                        /* tuple */[
-                          "cases",
-                          array_of_list($$case, $$switch.cases)
-                        ],
-                        /* tuple */[
-                          "lexical",
-                          bool($$switch.lexical)
-                        ]
-                      ]);
-        case /* Return */9 :
-            return node("ReturnStatement", loc, [/* tuple */[
-                          "argument",
-                          option(expression, match[0].argument)
-                        ]]);
-        case /* Throw */10 :
-            return node("ThrowStatement", loc, [/* tuple */[
-                          "argument",
-                          expression(match[0].argument)
-                        ]]);
-        case /* Try */11 :
-            var _try = match[0];
-            return node("TryStatement", loc, [
-                        /* tuple */[
-                          "block",
-                          block(_try.block)
-                        ],
-                        /* tuple */[
-                          "handler",
-                          option($$catch, _try.handler)
-                        ],
-                        /* tuple */[
-                          "guardedHandlers",
-                          array_of_list($$catch, _try.guardedHandlers)
-                        ],
-                        /* tuple */[
-                          "finalizer",
-                          option(block, _try.finalizer)
-                        ]
-                      ]);
-        case /* While */12 :
-            var _while = match[0];
-            return node("WhileStatement", loc, [
-                        /* tuple */[
-                          "test",
-                          expression(_while.test)
-                        ],
-                        /* tuple */[
-                          "body",
-                          statement(_while.body)
-                        ]
-                      ]);
-        case /* DoWhile */13 :
-            var dowhile = match[0];
-            return node("DoWhileStatement", loc, [
-                        /* tuple */[
-                          "body",
-                          statement(dowhile.body)
-                        ],
-                        /* tuple */[
-                          "test",
-                          expression(dowhile.test)
-                        ]
-                      ]);
-        case /* For */14 :
-            var _for = match[0];
-            var init = function (param) {
-              if (param.tag) {
-                return expression(param[0]);
-              } else {
-                return variable_declaration(param[0]);
-              }
-            };
-            return node("ForStatement", loc, [
-                        /* tuple */[
-                          "init",
-                          option(init, _for.init)
-                        ],
-                        /* tuple */[
-                          "test",
-                          option(expression, _for.test)
-                        ],
-                        /* tuple */[
-                          "update",
-                          option(expression, _for.update)
-                        ],
-                        /* tuple */[
-                          "body",
-                          statement(_for.body)
-                        ]
-                      ]);
-        case /* ForIn */15 :
-            var forin = match[0];
-            var match$1 = forin.left;
-            var left;
-            left = match$1.tag ? expression(match$1[0]) : variable_declaration(match$1[0]);
-            return node("ForInStatement", loc, [
-                        /* tuple */[
-                          "left",
-                          left
-                        ],
-                        /* tuple */[
-                          "right",
-                          expression(forin.right)
-                        ],
-                        /* tuple */[
-                          "body",
-                          statement(forin.body)
-                        ],
-                        /* tuple */[
-                          "each",
-                          bool(forin.each)
-                        ]
-                      ]);
-        case /* ForOf */16 :
-            var forof = match[0];
-            var match$2 = forof.left;
-            var left$1;
-            left$1 = match$2.tag ? expression(match$2[0]) : variable_declaration(match$2[0]);
-            return node("ForOfStatement", loc, [
-                        /* tuple */[
-                          "left",
-                          left$1
-                        ],
-                        /* tuple */[
-                          "right",
-                          expression(forof.right)
-                        ],
-                        /* tuple */[
-                          "body",
-                          statement(forof.body)
-                        ]
-                      ]);
-        case /* Let */17 :
-            var _let = match[0];
-            return node("LetStatement", loc, [
-                        /* tuple */[
-                          "head",
-                          array_of_list(let_assignment, _let.head)
-                        ],
-                        /* tuple */[
-                          "body",
-                          statement(_let.body)
-                        ]
-                      ]);
-        case /* FunctionDeclaration */18 :
-            var fn = match[0];
-            var match$3 = fn.id;
-            var match$4 = match$3 !== undefined ? /* tuple */[
-                "FunctionDeclaration",
-                identifier(match$3)
-              ] : /* tuple */[
-                "FunctionExpression",
-                $$null
-              ];
-            var match$5 = fn.body;
-            var body;
-            body = match$5.tag ? expression(match$5[0]) : block(match$5[0]);
-            return node(match$4[0], loc, [
-                        /* tuple */[
-                          "id",
-                          match$4[1]
-                        ],
-                        /* tuple */[
-                          "params",
-                          array_of_list(pattern, fn.params)
-                        ],
-                        /* tuple */[
-                          "defaults",
-                          array_of_list((function (param) {
-                                  return option(expression, param);
-                                }), fn.defaults)
-                        ],
-                        /* tuple */[
-                          "rest",
-                          option(identifier, fn.rest)
-                        ],
-                        /* tuple */[
-                          "body",
-                          body
-                        ],
-                        /* tuple */[
-                          "async",
-                          bool(fn.async)
-                        ],
-                        /* tuple */[
-                          "generator",
-                          bool(fn.generator)
-                        ],
-                        /* tuple */[
-                          "expression",
-                          bool(fn.expression)
-                        ],
-                        /* tuple */[
-                          "returnType",
-                          option(type_annotation, fn.returnType)
-                        ],
-                        /* tuple */[
-                          "typeParameters",
-                          option(type_parameter_declaration, fn.typeParameters)
-                        ]
-                      ]);
-        case /* VariableDeclaration */19 :
-            return variable_declaration(/* tuple */[
-                        loc,
-                        match[0]
-                      ]);
-        case /* ClassDeclaration */20 :
-            var param$1 = /* tuple */[
-              loc,
-              match[0]
-            ];
-            var c = param$1[1];
-            var match$6 = c.id;
-            var match$7 = match$6 !== undefined ? /* tuple */[
-                "ClassDeclaration",
-                identifier(match$6)
-              ] : /* tuple */[
-                "ClassExpression",
-                $$null
-              ];
-            return node(match$7[0], param$1[0], [
-                        /* tuple */[
-                          "id",
-                          match$7[1]
-                        ],
-                        /* tuple */[
-                          "body",
-                          class_body(c.body)
-                        ],
-                        /* tuple */[
-                          "superClass",
-                          option(expression, c.superClass)
-                        ],
-                        /* tuple */[
-                          "typeParameters",
-                          option(type_parameter_declaration, c.typeParameters)
-                        ],
-                        /* tuple */[
-                          "superTypeParameters",
-                          option(type_parameter_instantiation, c.superTypeParameters)
-                        ],
-                        /* tuple */[
-                          "implements",
-                          array_of_list(class_implements, c.implements)
-                        ],
-                        /* tuple */[
-                          "decorators",
-                          array_of_list(expression, c.classDecorators)
-                        ]
-                      ]);
-        case /* InterfaceDeclaration */21 :
-            return interface_declaration(/* tuple */[
-                        loc,
-                        match[0]
-                      ]);
-        case /* DeclareVariable */22 :
-            return declare_variable(/* tuple */[
-                        loc,
-                        match[0]
-                      ]);
-        case /* DeclareFunction */23 :
-            return declare_function(/* tuple */[
-                        loc,
-                        match[0]
-                      ]);
-        case /* DeclareClass */24 :
-            return declare_class(/* tuple */[
-                        loc,
-                        match[0]
-                      ]);
-        case /* DeclareModule */25 :
-            var m = match[0];
-            var match$8 = m.id;
-            var id;
-            id = match$8.tag ? literal(match$8[0]) : identifier(match$8[0]);
-            var match$9 = m.kind;
-            var tmp;
-            tmp = match$9.tag ? string("ES") : string("CommonJS");
-            return node("DeclareModule", loc, [
-                        /* tuple */[
-                          "id",
-                          id
-                        ],
-                        /* tuple */[
-                          "body",
-                          block(m.body)
-                        ],
-                        /* tuple */[
-                          "kind",
-                          tmp
-                        ]
-                      ]);
-        case /* DeclareModuleExports */26 :
-            return node("DeclareModuleExports", loc, [/* tuple */[
-                          "typeAnnotation",
-                          type_annotation(match[0])
-                        ]]);
-        case /* DeclareExportDeclaration */27 :
-            var $$export = match[0];
-            var match$10 = $$export.declaration;
-            var declaration;
-            if (match$10 !== undefined) {
-              switch (match$10.tag | 0) {
-                case /* Variable */0 :
-                    declaration = declare_variable(match$10[0]);
-                    break;
-                case /* Function */1 :
-                    declaration = declare_function(match$10[0]);
-                    break;
-                case /* Class */2 :
-                    declaration = declare_class(match$10[0]);
-                    break;
-                case /* DefaultType */3 :
-                    declaration = _type(match$10[0]);
-                    break;
-                case /* NamedType */4 :
-                    declaration = type_alias(match$10[0]);
-                    break;
-                case /* Interface */5 :
-                    declaration = interface_declaration(match$10[0]);
-                    break;
-                
-              }
-            } else {
-              declaration = $$null;
-            }
-            return node("DeclareExportDeclaration", loc, [
-                        /* tuple */[
-                          "default",
-                          bool($$export.default)
-                        ],
-                        /* tuple */[
-                          "declaration",
-                          declaration
-                        ],
-                        /* tuple */[
-                          "specifiers",
-                          export_specifiers($$export.specifiers)
-                        ],
-                        /* tuple */[
-                          "source",
-                          option(literal, $$export.source)
-                        ]
-                      ]);
-        case /* ExportDeclaration */28 :
-            var $$export$1 = match[0];
-            var match$11 = $$export$1.declaration;
-            var declaration$1 = match$11 !== undefined ? (
-                match$11.tag ? expression(match$11[0]) : statement(match$11[0])
-              ) : $$null;
-            return node("ExportDeclaration", loc, [
-                        /* tuple */[
-                          "default",
-                          bool($$export$1.default)
-                        ],
-                        /* tuple */[
-                          "declaration",
-                          declaration$1
-                        ],
-                        /* tuple */[
-                          "specifiers",
-                          export_specifiers($$export$1.specifiers)
-                        ],
-                        /* tuple */[
-                          "source",
-                          option(literal, $$export$1.source)
-                        ],
-                        /* tuple */[
-                          "exportKind",
-                          string($$export$1.exportKind ? "value" : "type")
-                        ]
-                      ]);
-        case /* ImportDeclaration */29 :
-            var $$import = match[0];
-            var specifiers = List.map((function (param) {
-                    switch (param.tag | 0) {
-                      case /* ImportNamedSpecifier */0 :
-                          var match = param[0];
-                          var local_id = match.local;
-                          var remote_id = match.remote;
-                          var span_loc = local_id !== undefined ? btwn(remote_id[0], local_id[0]) : remote_id[0];
-                          return node("ImportSpecifier", span_loc, [
-                                      /* tuple */[
-                                        "id",
-                                        identifier(remote_id)
-                                      ],
-                                      /* tuple */[
-                                        "name",
-                                        option(identifier, local_id)
-                                      ]
-                                    ]);
-                      case /* ImportDefaultSpecifier */1 :
-                          var id = param[0];
-                          return node("ImportDefaultSpecifier", id[0], [/* tuple */[
-                                        "id",
-                                        identifier(id)
-                                      ]]);
-                      case /* ImportNamespaceSpecifier */2 :
-                          var param$1 = param[0];
-                          return node("ImportNamespaceSpecifier", param$1[0], [/* tuple */[
-                                        "id",
-                                        identifier(param$1[1])
-                                      ]]);
-                      
-                    }
-                  }), $$import.specifiers);
-            var match$12 = $$import.importKind;
-            var import_kind;
-            switch (match$12) {
-              case /* ImportType */0 :
-                  import_kind = "type";
-                  break;
-              case /* ImportTypeof */1 :
-                  import_kind = "typeof";
-                  break;
-              case /* ImportValue */2 :
-                  import_kind = "value";
-                  break;
-              
-            }
-            return node("ImportDeclaration", loc, [
-                        /* tuple */[
-                          "specifiers",
-                          array($$Array.of_list(specifiers))
-                        ],
-                        /* tuple */[
-                          "source",
-                          literal($$import.source)
-                        ],
-                        /* tuple */[
-                          "importKind",
-                          string(import_kind)
-                        ]
-                      ]);
-        
-      }
-    };
-    var variable_declarator = function (param) {
-      var declarator = param[1];
-      return node("VariableDeclarator", param[0], [
-                  /* tuple */[
-                    "id",
-                    pattern(declarator.id)
-                  ],
-                  /* tuple */[
-                    "init",
-                    option(expression, declarator.init)
-                  ]
-                ]);
-    };
-    var type_parameter_declaration = function (param) {
-      return node("TypeParameterDeclaration", param[0], [/* tuple */[
-                    "params",
-                    array_of_list(type_param, param[1].params)
-                  ]]);
-    };
-    var class_body = function (param) {
-      return node("ClassBody", param[0], [/* tuple */[
-                    "body",
-                    array_of_list(class_element, param[1].body)
-                  ]]);
-    };
-    var class_implements = function (param) {
-      var $$implements = param[1];
-      return node("ClassImplements", param[0], [
-                  /* tuple */[
-                    "id",
-                    identifier($$implements.id)
-                  ],
-                  /* tuple */[
-                    "typeParameters",
-                    option(type_parameter_instantiation, $$implements.typeParameters)
-                  ]
-                ]);
-    };
-    var type_parameter_instantiation = function (param) {
-      return node("TypeParameterInstantiation", param[0], [/* tuple */[
-                    "params",
-                    array_of_list(_type, param[1].params)
-                  ]]);
-    };
-    var jsx_child = function (param) {
-      var match = param[1];
-      var loc = param[0];
-      switch (match.tag | 0) {
-        case /* Element */0 :
-            return jsx_element(/* tuple */[
-                        loc,
-                        match[0]
-                      ]);
-        case /* ExpressionContainer */1 :
-            return jsx_expression_container(/* tuple */[
-                        loc,
-                        match[0]
-                      ]);
-        case /* Text */2 :
-            var param$1 = /* tuple */[
-              loc,
-              match[0]
-            ];
-            var text = param$1[1];
-            return node("JSXText", param$1[0], [
-                        /* tuple */[
-                          "value",
-                          string(text.value)
-                        ],
-                        /* tuple */[
-                          "raw",
-                          string(text.raw)
-                        ]
-                      ]);
-        
-      }
-    };
-    var jsx_opening = function (param) {
-      var opening = param[1];
-      return node("JSXOpeningElement", param[0], [
-                  /* tuple */[
-                    "name",
-                    jsx_name(opening.name)
-                  ],
-                  /* tuple */[
-                    "attributes",
-                    array_of_list(jsx_opening_attribute, opening.attributes)
-                  ],
-                  /* tuple */[
-                    "selfClosing",
-                    bool(opening.selfClosing)
-                  ]
-                ]);
-    };
-    var jsx_closing = function (param) {
-      return node("JSXClosingElement", param[0], [/* tuple */[
-                    "name",
-                    jsx_name(param[1].name)
-                  ]]);
-    };
-    var export_specifier = function (param) {
-      var specifier = param[1];
-      return node("ExportSpecifier", param[0], [
-                  /* tuple */[
-                    "id",
-                    identifier(specifier.id)
-                  ],
-                  /* tuple */[
-                    "name",
-                    option(identifier, specifier.name)
-                  ]
-                ]);
-    };
-    var type_annotation = function (param) {
-      return node("TypeAnnotation", param[0], [/* tuple */[
-                    "typeAnnotation",
-                    _type(param[1])
-                  ]]);
-    };
-    var jsx_identifier = function (param) {
-      return node("JSXIdentifier", param[0], [/* tuple */[
-                    "name",
-                    string(param[1].name)
-                  ]]);
-    };
-    var object_type_call_property = function (param) {
-      var callProperty = param[1];
-      return node("ObjectTypeCallProperty", param[0], [
-                  /* tuple */[
-                    "value",
-                    function_type(callProperty.value)
-                  ],
-                  /* tuple */[
-                    "static",
-                    bool(callProperty.static)
-                  ]
-                ]);
-    };
-    var object_type_indexer = function (param) {
-      var indexer = param[1];
-      return node("ObjectTypeIndexer", param[0], [
-                  /* tuple */[
-                    "id",
-                    identifier(indexer.id)
-                  ],
-                  /* tuple */[
-                    "key",
-                    _type(indexer.key)
-                  ],
-                  /* tuple */[
-                    "value",
-                    _type(indexer.value)
-                  ],
-                  /* tuple */[
-                    "static",
-                    bool(indexer.static)
-                  ]
-                ]);
-    };
-    var object_type_property = function (param) {
-      var prop = param[1];
-      var match = prop.key;
-      var key;
-      switch (match.tag | 0) {
-        case /* Literal */0 :
-            key = literal(match[0]);
-            break;
-        case /* Identifier */1 :
-            key = identifier(match[0]);
-            break;
-        case /* Computed */2 :
-            throw [
-                  Caml_builtin_exceptions.failure,
-                  "There should not be computed object type property keys"
-                ];
-        
-      }
-      return node("ObjectTypeProperty", param[0], [
-                  /* tuple */[
-                    "key",
-                    key
-                  ],
-                  /* tuple */[
-                    "value",
-                    _type(prop.value)
-                  ],
-                  /* tuple */[
-                    "optional",
-                    bool(prop.optional)
-                  ],
-                  /* tuple */[
-                    "static",
-                    bool(prop.static)
-                  ]
-                ]);
-    };
     var pattern = function (param) {
-      var match = param[1];
+      var obj = param[1];
       var loc = param[0];
-      switch (match.tag | 0) {
+      switch (obj.tag | 0) {
         case /* Object */0 :
-            var obj = match[0];
+            var obj$1 = obj[0];
             return node("ObjectPattern", loc, [
                         /* tuple */[
                           "properties",
-                          array_of_list(object_pattern_property, obj.properties)
+                          array_of_list(object_pattern_property, obj$1.properties)
                         ],
                         /* tuple */[
                           "typeAnnotation",
-                          option(type_annotation, obj.typeAnnotation)
+                          option(type_annotation, obj$1.typeAnnotation)
                         ]
                       ]);
         case /* Array */1 :
-            var arr = match[0];
+            var arr = obj[0];
             return node("ArrayPattern", loc, [
                         /* tuple */[
                           "elements",
@@ -15572,94 +15506,33 @@ function parse(content, options) {
                         ]
                       ]);
         case /* Assignment */2 :
-            var match$1 = match[0];
+            var match = obj[0];
             return node("AssignmentPattern", loc, [
                         /* tuple */[
                           "left",
-                          pattern(match$1.left)
+                          pattern(match.left)
                         ],
                         /* tuple */[
                           "right",
-                          expression(match$1.right)
+                          expression(match.right)
                         ]
                       ]);
         case /* Identifier */3 :
-            return identifier(match[0]);
+            return identifier(obj[0]);
         case /* Expression */4 :
-            return expression(match[0]);
+            return expression(obj[0]);
         
       }
     };
-    var template_element = function (param) {
-      var element = param[1];
-      var value = obj([
-            /* tuple */[
-              "raw",
-              string(element.value.raw)
-            ],
-            /* tuple */[
-              "cooked",
-              string(element.value.cooked)
-            ]
-          ]);
-      return node("TemplateElement", param[0], [
-                  /* tuple */[
-                    "value",
-                    value
-                  ],
-                  /* tuple */[
-                    "tail",
-                    bool(element.tail)
-                  ]
-                ]);
-    };
-    var block = function (param) {
-      return node("BlockStatement", param[0], [/* tuple */[
-                    "body",
-                    array_of_list(statement, param[1].body)
-                  ]]);
-    };
-    var declare_class = function (param) {
-      var d = param[1];
-      return node("DeclareClass", param[0], [
+    var let_assignment = function (assignment) {
+      return obj([
                   /* tuple */[
                     "id",
-                    identifier(d.id)
+                    pattern(assignment.id)
                   ],
                   /* tuple */[
-                    "typeParameters",
-                    option(type_parameter_declaration, d.typeParameters)
-                  ],
-                  /* tuple */[
-                    "body",
-                    object_type(d.body)
-                  ],
-                  /* tuple */[
-                    "extends",
-                    array_of_list(interface_extends, d.extends)
-                  ]
-                ]);
-    };
-    var declare_variable = function (param) {
-      return node("DeclareVariable", param[0], [/* tuple */[
-                    "id",
-                    identifier(param[1].id)
-                  ]]);
-    };
-    var type_alias = function (param) {
-      var alias = param[1];
-      return node("TypeAlias", param[0], [
-                  /* tuple */[
-                    "id",
-                    identifier(alias.id)
-                  ],
-                  /* tuple */[
-                    "typeParameters",
-                    option(type_parameter_declaration, alias.typeParameters)
-                  ],
-                  /* tuple */[
-                    "right",
-                    _type(alias.right)
+                    "init",
+                    option(expression, assignment.init)
                   ]
                 ]);
     };
@@ -15680,26 +15553,17 @@ function parse(content, options) {
                   ]
                 ]);
     };
-    var interface_declaration = function (param) {
-      var i = param[1];
-      return node("InterfaceDeclaration", param[0], [
-                  /* tuple */[
+    var type_annotation = function (param) {
+      return node("TypeAnnotation", param[0], [/* tuple */[
+                    "typeAnnotation",
+                    _type(param[1])
+                  ]]);
+    };
+    var declare_variable = function (param) {
+      return node("DeclareVariable", param[0], [/* tuple */[
                     "id",
-                    identifier(i.id)
-                  ],
-                  /* tuple */[
-                    "typeParameters",
-                    option(type_parameter_declaration, i.typeParameters)
-                  ],
-                  /* tuple */[
-                    "body",
-                    object_type(i.body)
-                  ],
-                  /* tuple */[
-                    "extends",
-                    array_of_list(interface_extends, i.extends)
-                  ]
-                ]);
+                    identifier(param[1].id)
+                  ]]);
     };
     var $$case = function (param) {
       var c = param[1];
@@ -15714,302 +15578,6 @@ function parse(content, options) {
                   ]
                 ]);
     };
-    var export_specifiers = function (param) {
-      if (param !== undefined) {
-        if (param.tag) {
-          return array([node("ExportBatchSpecifier", param[0], [/* tuple */[
-                              "name",
-                              option(identifier, param[1])
-                            ]])]);
-        } else {
-          return array_of_list(export_specifier, param[0]);
-        }
-      } else {
-        return array([]);
-      }
-    };
-    var let_assignment = function (assignment) {
-      return obj([
-                  /* tuple */[
-                    "id",
-                    pattern(assignment.id)
-                  ],
-                  /* tuple */[
-                    "init",
-                    option(expression, assignment.init)
-                  ]
-                ]);
-    };
-    var declare_function = function (param) {
-      return node("DeclareFunction", param[0], [/* tuple */[
-                    "id",
-                    identifier(param[1].id)
-                  ]]);
-    };
-    var variable_declaration = function (param) {
-      var $$var = param[1];
-      var match = $$var.kind;
-      var kind;
-      switch (match) {
-        case /* Var */0 :
-            kind = "var";
-            break;
-        case /* Let */1 :
-            kind = "let";
-            break;
-        case /* Const */2 :
-            kind = "const";
-            break;
-        
-      }
-      return node("VariableDeclaration", param[0], [
-                  /* tuple */[
-                    "declarations",
-                    array_of_list(variable_declarator, $$var.declarations)
-                  ],
-                  /* tuple */[
-                    "kind",
-                    string(kind)
-                  ]
-                ]);
-    };
-    var jsx_member_expression = function (param) {
-      var member_expression = param[1];
-      var match = member_expression._object;
-      var _object;
-      _object = match.tag ? jsx_member_expression(match[0]) : jsx_identifier(match[0]);
-      return node("JSXMemberExpression", param[0], [
-                  /* tuple */[
-                    "object",
-                    _object
-                  ],
-                  /* tuple */[
-                    "property",
-                    jsx_identifier(member_expression.property)
-                  ]
-                ]);
-    };
-    var interface_extends = function (param) {
-      var g = param[1];
-      var match = g.id;
-      var id;
-      id = match.tag ? generic_type_qualified_identifier(match[0]) : identifier(match[0]);
-      return node("InterfaceExtends", param[0], [
-                  /* tuple */[
-                    "id",
-                    id
-                  ],
-                  /* tuple */[
-                    "typeParameters",
-                    option(type_parameter_instantiation, g.typeParameters)
-                  ]
-                ]);
-    };
-    var object_type = function (param) {
-      var o = param[1];
-      return node("ObjectTypeAnnotation", param[0], [
-                  /* tuple */[
-                    "properties",
-                    array_of_list(object_type_property, o.properties)
-                  ],
-                  /* tuple */[
-                    "indexers",
-                    array_of_list(object_type_indexer, o.indexers)
-                  ],
-                  /* tuple */[
-                    "callProperties",
-                    array_of_list(object_type_call_property, o.callProperties)
-                  ]
-                ]);
-    };
-    var function_type_param = function (param) {
-      var param$1 = param[1];
-      return node("FunctionTypeParam", param[0], [
-                  /* tuple */[
-                    "name",
-                    identifier(param$1.name)
-                  ],
-                  /* tuple */[
-                    "typeAnnotation",
-                    _type(param$1.typeAnnotation)
-                  ],
-                  /* tuple */[
-                    "optional",
-                    bool(param$1.optional)
-                  ]
-                ]);
-    };
-    var function_type = function (param) {
-      var fn = param[1];
-      return node("FunctionTypeAnnotation", param[0], [
-                  /* tuple */[
-                    "params",
-                    array_of_list(function_type_param, fn.params)
-                  ],
-                  /* tuple */[
-                    "returnType",
-                    _type(fn.returnType)
-                  ],
-                  /* tuple */[
-                    "rest",
-                    option(function_type_param, fn.rest)
-                  ],
-                  /* tuple */[
-                    "typeParameters",
-                    option(type_parameter_declaration, fn.typeParameters)
-                  ]
-                ]);
-    };
-    var object_property = function (param) {
-      if (param.tag) {
-        var match = param[0];
-        return node("SpreadProperty", match[0], [/* tuple */[
-                      "argument",
-                      expression(match[1].argument)
-                    ]]);
-      }
-      var match$1 = param[0];
-      var prop = match$1[1];
-      var match$2 = prop.key;
-      var match$3;
-      switch (match$2.tag | 0) {
-        case /* Literal */0 :
-            match$3 = /* tuple */[
-              literal(match$2[0]),
-              false
-            ];
-            break;
-        case /* Identifier */1 :
-            match$3 = /* tuple */[
-              identifier(match$2[0]),
-              false
-            ];
-            break;
-        case /* Computed */2 :
-            match$3 = /* tuple */[
-              expression(match$2[0]),
-              true
-            ];
-            break;
-        
-      }
-      var match$4 = prop.kind;
-      var kind;
-      switch (match$4) {
-        case /* Init */0 :
-            kind = "init";
-            break;
-        case /* Get */1 :
-            kind = "get";
-            break;
-        case /* Set */2 :
-            kind = "set";
-            break;
-        
-      }
-      return node("Property", match$1[0], [
-                  /* tuple */[
-                    "key",
-                    match$3[0]
-                  ],
-                  /* tuple */[
-                    "value",
-                    expression(prop.value)
-                  ],
-                  /* tuple */[
-                    "kind",
-                    string(kind)
-                  ],
-                  /* tuple */[
-                    "method",
-                    bool(prop._method)
-                  ],
-                  /* tuple */[
-                    "shorthand",
-                    bool(prop.shorthand)
-                  ],
-                  /* tuple */[
-                    "computed",
-                    bool(match$3[1])
-                  ]
-                ]);
-    };
-    var template_literal = function (param) {
-      var value = param[1];
-      return node("TemplateLiteral", param[0], [
-                  /* tuple */[
-                    "quasis",
-                    array_of_list(template_element, value.quasis)
-                  ],
-                  /* tuple */[
-                    "expressions",
-                    array_of_list(expression, value.expressions)
-                  ]
-                ]);
-    };
-    var expression_or_spread = function (param) {
-      if (!param.tag) {
-        return expression(param[0]);
-      }
-      var match = param[0];
-      return node("SpreadElement", match[0], [/* tuple */[
-                    "argument",
-                    expression(match[1].argument)
-                  ]]);
-    };
-    var comprehension_block = function (param) {
-      var b = param[1];
-      return node("ComprehensionBlock", param[0], [
-                  /* tuple */[
-                    "left",
-                    pattern(b.left)
-                  ],
-                  /* tuple */[
-                    "right",
-                    expression(b.right)
-                  ],
-                  /* tuple */[
-                    "each",
-                    bool(b.each)
-                  ]
-                ]);
-    };
-    var jsx_element = function (param) {
-      var element = param[1];
-      return node("JSXElement", param[0], [
-                  /* tuple */[
-                    "openingElement",
-                    jsx_opening(element.openingElement)
-                  ],
-                  /* tuple */[
-                    "closingElement",
-                    option(jsx_closing, element.closingElement)
-                  ],
-                  /* tuple */[
-                    "children",
-                    array_of_list(jsx_child, element.children)
-                  ]
-                ]);
-    };
-    var jsx_expression_container = function (param) {
-      var match = param[1].expression;
-      var expression$1;
-      expression$1 = match.tag ? node("JSXEmptyExpression", match[0], []) : expression(match[0]);
-      return node("JSXExpressionContainer", param[0], [/* tuple */[
-                    "expression",
-                    expression$1
-                  ]]);
-    };
-    var array_pattern_element = function (param) {
-      if (!param.tag) {
-        return pattern(param[0]);
-      }
-      var match = param[0];
-      return node("SpreadElementPattern", match[0], [/* tuple */[
-                    "argument",
-                    pattern(match[1].argument)
-                  ]]);
-    };
     var object_pattern_property = function (param) {
       if (param.tag) {
         var match = param[0];
@@ -16020,24 +15588,24 @@ function parse(content, options) {
       }
       var match$1 = param[0];
       var prop = match$1[1];
-      var match$2 = prop.key;
-      var match$3;
-      switch (match$2.tag | 0) {
+      var lit = prop.key;
+      var match$2;
+      switch (lit.tag | 0) {
         case /* Literal */0 :
-            match$3 = /* tuple */[
-              literal(match$2[0]),
+            match$2 = /* tuple */[
+              literal(lit[0]),
               false
             ];
             break;
         case /* Identifier */1 :
-            match$3 = /* tuple */[
-              identifier(match$2[0]),
+            match$2 = /* tuple */[
+              identifier(lit[0]),
               false
             ];
             break;
         case /* Computed */2 :
-            match$3 = /* tuple */[
-              expression(match$2[0]),
+            match$2 = /* tuple */[
+              expression(lit[0]),
               true
             ];
             break;
@@ -16046,7 +15614,7 @@ function parse(content, options) {
       return node("PropertyPattern", match$1[0], [
                   /* tuple */[
                     "key",
-                    match$3[0]
+                    match$2[0]
                   ],
                   /* tuple */[
                     "pattern",
@@ -16054,7 +15622,7 @@ function parse(content, options) {
                   ],
                   /* tuple */[
                     "computed",
-                    bool(match$3[1])
+                    bool(match$2[1])
                   ],
                   /* tuple */[
                     "shorthand",
@@ -16062,18 +15630,15 @@ function parse(content, options) {
                   ]
                 ]);
     };
-    var jsx_namespaced_name = function (param) {
-      var namespaced_name = param[1];
-      return node("JSXNamespacedName", param[0], [
-                  /* tuple */[
-                    "namespace",
-                    jsx_identifier(namespaced_name.namespace)
-                  ],
-                  /* tuple */[
-                    "name",
-                    jsx_identifier(namespaced_name.name)
-                  ]
-                ]);
+    var array_pattern_element = function (p) {
+      if (!p.tag) {
+        return pattern(p[0]);
+      }
+      var match = p[0];
+      return node("SpreadElementPattern", match[0], [/* tuple */[
+                    "argument",
+                    pattern(match[1].argument)
+                  ]]);
     };
     var type_param = function (param) {
       var tp = param[1];
@@ -16105,9 +15670,9 @@ function parse(content, options) {
     };
     var generic_type_qualified_identifier = function (param) {
       var q = param[1];
-      var match = q.qualification;
+      var id = q.qualification;
       var qualification;
-      qualification = match.tag ? generic_type_qualified_identifier(match[0]) : identifier(match[0]);
+      qualification = id.tag ? generic_type_qualified_identifier(id[0]) : identifier(id[0]);
       return node("QualifiedTypeIdentifier", param[0], [
                   /* tuple */[
                     "qualification",
@@ -16119,48 +15684,439 @@ function parse(content, options) {
                   ]
                 ]);
     };
-    var jsx_name = function (param) {
-      switch (param.tag | 0) {
-        case /* Identifier */0 :
-            return jsx_identifier(param[0]);
-        case /* NamespacedName */1 :
-            return jsx_namespaced_name(param[0]);
-        case /* MemberExpression */2 :
-            return jsx_member_expression(param[0]);
+    var object_type = function (param) {
+      var o = param[1];
+      return node("ObjectTypeAnnotation", param[0], [
+                  /* tuple */[
+                    "properties",
+                    array_of_list(object_type_property, o.properties)
+                  ],
+                  /* tuple */[
+                    "indexers",
+                    array_of_list(object_type_indexer, o.indexers)
+                  ],
+                  /* tuple */[
+                    "callProperties",
+                    array_of_list(object_type_call_property, o.callProperties)
+                  ]
+                ]);
+    };
+    var function_type = function (param) {
+      var fn = param[1];
+      return node("FunctionTypeAnnotation", param[0], [
+                  /* tuple */[
+                    "params",
+                    array_of_list(function_type_param, fn.params)
+                  ],
+                  /* tuple */[
+                    "returnType",
+                    _type(fn.returnType)
+                  ],
+                  /* tuple */[
+                    "rest",
+                    option(function_type_param, fn.rest)
+                  ],
+                  /* tuple */[
+                    "typeParameters",
+                    option(type_parameter_declaration, fn.typeParameters)
+                  ]
+                ]);
+    };
+    var jsx_opening = function (param) {
+      var opening = param[1];
+      return node("JSXOpeningElement", param[0], [
+                  /* tuple */[
+                    "name",
+                    jsx_name(opening.name)
+                  ],
+                  /* tuple */[
+                    "attributes",
+                    array_of_list(jsx_opening_attribute, opening.attributes)
+                  ],
+                  /* tuple */[
+                    "selfClosing",
+                    bool(opening.selfClosing)
+                  ]
+                ]);
+    };
+    var jsx_child = function (param) {
+      var element = param[1];
+      var loc = param[0];
+      switch (element.tag | 0) {
+        case /* Element */0 :
+            return jsx_element(/* tuple */[
+                        loc,
+                        element[0]
+                      ]);
+        case /* ExpressionContainer */1 :
+            return jsx_expression_container(/* tuple */[
+                        loc,
+                        element[0]
+                      ]);
+        case /* Text */2 :
+            var param$1 = /* tuple */[
+              loc,
+              element[0]
+            ];
+            var text = param$1[1];
+            return node("JSXText", param$1[0], [
+                        /* tuple */[
+                          "value",
+                          string(text.value)
+                        ],
+                        /* tuple */[
+                          "raw",
+                          string(text.raw)
+                        ]
+                      ]);
         
       }
     };
-    var class_element = function (param) {
+    var jsx_closing = function (param) {
+      return node("JSXClosingElement", param[0], [/* tuple */[
+                    "name",
+                    jsx_name(param[1].name)
+                  ]]);
+    };
+    var jsx_member_expression = function (param) {
+      var member_expression = param[1];
+      var id = member_expression._object;
+      var _object;
+      _object = id.tag ? jsx_member_expression(id[0]) : jsx_identifier(id[0]);
+      return node("JSXMemberExpression", param[0], [
+                  /* tuple */[
+                    "object",
+                    _object
+                  ],
+                  /* tuple */[
+                    "property",
+                    jsx_identifier(member_expression.property)
+                  ]
+                ]);
+    };
+    var jsx_element = function (param) {
+      var element = param[1];
+      return node("JSXElement", param[0], [
+                  /* tuple */[
+                    "openingElement",
+                    jsx_opening(element.openingElement)
+                  ],
+                  /* tuple */[
+                    "closingElement",
+                    option(jsx_closing, element.closingElement)
+                  ],
+                  /* tuple */[
+                    "children",
+                    array_of_list(jsx_child, element.children)
+                  ]
+                ]);
+    };
+    var expression_or_spread = function (expr) {
+      if (!expr.tag) {
+        return expression(expr[0]);
+      }
+      var match = expr[0];
+      return node("SpreadElement", match[0], [/* tuple */[
+                    "argument",
+                    expression(match[1].argument)
+                  ]]);
+    };
+    var comprehension_block = function (param) {
+      var b = param[1];
+      return node("ComprehensionBlock", param[0], [
+                  /* tuple */[
+                    "left",
+                    pattern(b.left)
+                  ],
+                  /* tuple */[
+                    "right",
+                    expression(b.right)
+                  ],
+                  /* tuple */[
+                    "each",
+                    bool(b.each)
+                  ]
+                ]);
+    };
+    var function_expression = function (param) {
+      var _function = param[1];
+      var b = _function.body;
+      var body;
+      body = b.tag ? expression(b[0]) : block(b[0]);
+      return node("FunctionExpression", param[0], [
+                  /* tuple */[
+                    "id",
+                    option(identifier, _function.id)
+                  ],
+                  /* tuple */[
+                    "params",
+                    array_of_list(pattern, _function.params)
+                  ],
+                  /* tuple */[
+                    "defaults",
+                    array_of_list((function (param) {
+                            return option(expression, param);
+                          }), _function.defaults)
+                  ],
+                  /* tuple */[
+                    "rest",
+                    option(identifier, _function.rest)
+                  ],
+                  /* tuple */[
+                    "body",
+                    body
+                  ],
+                  /* tuple */[
+                    "async",
+                    bool(_function.async)
+                  ],
+                  /* tuple */[
+                    "generator",
+                    bool(_function.generator)
+                  ],
+                  /* tuple */[
+                    "expression",
+                    bool(_function.expression)
+                  ],
+                  /* tuple */[
+                    "returnType",
+                    option(type_annotation, _function.returnType)
+                  ],
+                  /* tuple */[
+                    "typeParameters",
+                    option(type_parameter_declaration, _function.typeParameters)
+                  ]
+                ]);
+    };
+    var object_property = function (param) {
       if (param.tag) {
-        var param$1 = param[0];
-        var prop = param$1[1];
-        var match = prop.key;
-        var match$1;
-        switch (match.tag | 0) {
+        var match = param[0];
+        return node("SpreadProperty", match[0], [/* tuple */[
+                      "argument",
+                      expression(match[1].argument)
+                    ]]);
+      }
+      var match$1 = param[0];
+      var prop = match$1[1];
+      var lit = prop.key;
+      var match$2;
+      switch (lit.tag | 0) {
+        case /* Literal */0 :
+            match$2 = /* tuple */[
+              literal(lit[0]),
+              false
+            ];
+            break;
+        case /* Identifier */1 :
+            match$2 = /* tuple */[
+              identifier(lit[0]),
+              false
+            ];
+            break;
+        case /* Computed */2 :
+            match$2 = /* tuple */[
+              expression(lit[0]),
+              true
+            ];
+            break;
+        
+      }
+      var match$3 = prop.kind;
+      var kind;
+      switch (match$3) {
+        case /* Init */0 :
+            kind = "init";
+            break;
+        case /* Get */1 :
+            kind = "get";
+            break;
+        case /* Set */2 :
+            kind = "set";
+            break;
+        
+      }
+      return node("Property", match$1[0], [
+                  /* tuple */[
+                    "key",
+                    match$2[0]
+                  ],
+                  /* tuple */[
+                    "value",
+                    expression(prop.value)
+                  ],
+                  /* tuple */[
+                    "kind",
+                    string(kind)
+                  ],
+                  /* tuple */[
+                    "method",
+                    bool(prop._method)
+                  ],
+                  /* tuple */[
+                    "shorthand",
+                    bool(prop.shorthand)
+                  ],
+                  /* tuple */[
+                    "computed",
+                    bool(match$2[1])
+                  ]
+                ]);
+    };
+    var class_implements = function (param) {
+      var $$implements = param[1];
+      return node("ClassImplements", param[0], [
+                  /* tuple */[
+                    "id",
+                    identifier($$implements.id)
+                  ],
+                  /* tuple */[
+                    "typeParameters",
+                    option(type_parameter_instantiation, $$implements.typeParameters)
+                  ]
+                ]);
+    };
+    var type_parameter_instantiation = function (param) {
+      return node("TypeParameterInstantiation", param[0], [/* tuple */[
+                    "params",
+                    array_of_list(_type, param[1].params)
+                  ]]);
+    };
+    var class_body = function (param) {
+      return node("ClassBody", param[0], [/* tuple */[
+                    "body",
+                    array_of_list(class_element, param[1].body)
+                  ]]);
+    };
+    var jsx_name = function (id) {
+      switch (id.tag | 0) {
+        case /* Identifier */0 :
+            return jsx_identifier(id[0]);
+        case /* NamespacedName */1 :
+            return jsx_namespaced_name(id[0]);
+        case /* MemberExpression */2 :
+            return jsx_member_expression(id[0]);
+        
+      }
+    };
+    var jsx_opening_attribute = function (attribute) {
+      if (attribute.tag) {
+        var param = attribute[0];
+        return node("JSXSpreadAttribute", param[0], [/* tuple */[
+                      "argument",
+                      expression(param[1].argument)
+                    ]]);
+      } else {
+        var param$1 = attribute[0];
+        var attribute$1 = param$1[1];
+        var id = attribute$1.name;
+        var name;
+        name = id.tag ? jsx_namespaced_name(id[0]) : jsx_identifier(id[0]);
+        return node("JSXAttribute", param$1[0], [
+                    /* tuple */[
+                      "name",
+                      name
+                    ],
+                    /* tuple */[
+                      "value",
+                      option(jsx_attribute_value, attribute$1.value)
+                    ]
+                  ]);
+      }
+    };
+    var comment = function (param) {
+      var c = param[1];
+      var match;
+      match = c.tag ? /* tuple */[
+          "Line",
+          c[0]
+        ] : /* tuple */[
+          "Block",
+          c[0]
+        ];
+      return node(match[0], param[0], [/* tuple */[
+                    "value",
+                    string(match[1])
+                  ]]);
+    };
+    var template_element = function (param) {
+      var element = param[1];
+      var value = obj([
+            /* tuple */[
+              "raw",
+              string(element.value.raw)
+            ],
+            /* tuple */[
+              "cooked",
+              string(element.value.cooked)
+            ]
+          ]);
+      return node("TemplateElement", param[0], [
+                  /* tuple */[
+                    "value",
+                    value
+                  ],
+                  /* tuple */[
+                    "tail",
+                    bool(element.tail)
+                  ]
+                ]);
+    };
+    var jsx_expression_container = function (param) {
+      var expr = param[1].expression;
+      var expression$1;
+      expression$1 = expr.tag ? node("JSXEmptyExpression", expr[0], []) : expression(expr[0]);
+      return node("JSXExpressionContainer", param[0], [/* tuple */[
+                    "expression",
+                    expression$1
+                  ]]);
+    };
+    var interface_extends = function (param) {
+      var g = param[1];
+      var id = g.id;
+      var id$1;
+      id$1 = id.tag ? generic_type_qualified_identifier(id[0]) : identifier(id[0]);
+      return node("InterfaceExtends", param[0], [
+                  /* tuple */[
+                    "id",
+                    id$1
+                  ],
+                  /* tuple */[
+                    "typeParameters",
+                    option(type_parameter_instantiation, g.typeParameters)
+                  ]
+                ]);
+    };
+    var class_element = function (m) {
+      if (m.tag) {
+        var param = m[0];
+        var prop = param[1];
+        var lit = prop.key;
+        var match;
+        switch (lit.tag | 0) {
           case /* Literal */0 :
-              match$1 = /* tuple */[
-                literal(match[0]),
+              match = /* tuple */[
+                literal(lit[0]),
                 false
               ];
               break;
           case /* Identifier */1 :
-              match$1 = /* tuple */[
-                identifier(match[0]),
+              match = /* tuple */[
+                identifier(lit[0]),
                 false
               ];
               break;
           case /* Computed */2 :
-              match$1 = /* tuple */[
-                expression(match[0]),
+              match = /* tuple */[
+                expression(lit[0]),
                 true
               ];
               break;
           
         }
-        return node("ClassProperty", param$1[0], [
+        return node("ClassProperty", param[0], [
                     /* tuple */[
                       "key",
-                      match$1[0]
+                      match[0]
                     ],
                     /* tuple */[
                       "value",
@@ -16172,7 +16128,7 @@ function parse(content, options) {
                     ],
                     /* tuple */[
                       "computed",
-                      bool(match$1[1])
+                      bool(match[1])
                     ],
                     /* tuple */[
                       "static",
@@ -16180,25 +16136,25 @@ function parse(content, options) {
                     ]
                   ]);
       } else {
-        var param$2 = param[0];
-        var method_ = param$2[1];
+        var param$1 = m[0];
+        var method_ = param$1[1];
         var key = method_.key;
-        var match$2;
+        var match$1;
         switch (key.tag | 0) {
           case /* Literal */0 :
-              match$2 = /* tuple */[
+              match$1 = /* tuple */[
                 literal(key[0]),
                 false
               ];
               break;
           case /* Identifier */1 :
-              match$2 = /* tuple */[
+              match$1 = /* tuple */[
                 identifier(key[0]),
                 false
               ];
               break;
           case /* Computed */2 :
-              match$2 = /* tuple */[
+              match$1 = /* tuple */[
                 expression(key[0]),
                 true
               ];
@@ -16221,10 +16177,10 @@ function parse(content, options) {
               break;
           
         }
-        return node("MethodDefinition", param$2[0], [
+        return node("MethodDefinition", param$1[0], [
                     /* tuple */[
                       "key",
-                      match$2[0]
+                      match$1[0]
                     ],
                     /* tuple */[
                       "value",
@@ -16240,7 +16196,7 @@ function parse(content, options) {
                     ],
                     /* tuple */[
                       "computed",
-                      bool(match$2[1])
+                      bool(match$1[1])
                     ],
                     /* tuple */[
                       "decorators",
@@ -16249,58 +16205,102 @@ function parse(content, options) {
                   ]);
       }
     };
-    var comment = function (param) {
-      var c = param[1];
-      var match;
-      match = c.tag ? /* tuple */[
-          "Line",
-          c[0]
-        ] : /* tuple */[
-          "Block",
-          c[0]
-        ];
-      return node(match[0], param[0], [/* tuple */[
+    var variable_declarator = function (param) {
+      var declarator = param[1];
+      return node("VariableDeclarator", param[0], [
+                  /* tuple */[
+                    "id",
+                    pattern(declarator.id)
+                  ],
+                  /* tuple */[
+                    "init",
+                    option(expression, declarator.init)
+                  ]
+                ]);
+    };
+    var object_type_indexer = function (param) {
+      var indexer = param[1];
+      return node("ObjectTypeIndexer", param[0], [
+                  /* tuple */[
+                    "id",
+                    identifier(indexer.id)
+                  ],
+                  /* tuple */[
+                    "key",
+                    _type(indexer.key)
+                  ],
+                  /* tuple */[
                     "value",
-                    string(match[1])
-                  ]]);
+                    _type(indexer.value)
+                  ],
+                  /* tuple */[
+                    "static",
+                    bool(indexer.static)
+                  ]
+                ]);
     };
-    var jsx_opening_attribute = function (param) {
-      if (param.tag) {
-        var param$1 = param[0];
-        return node("JSXSpreadAttribute", param$1[0], [/* tuple */[
-                      "argument",
-                      expression(param$1[1].argument)
-                    ]]);
-      } else {
-        var param$2 = param[0];
-        var attribute = param$2[1];
-        var match = attribute.name;
-        var name;
-        name = match.tag ? jsx_namespaced_name(match[0]) : jsx_identifier(match[0]);
-        return node("JSXAttribute", param$2[0], [
-                    /* tuple */[
-                      "name",
-                      name
-                    ],
-                    /* tuple */[
-                      "value",
-                      option(jsx_attribute_value, attribute.value)
-                    ]
-                  ]);
-      }
+    var object_type_call_property = function (param) {
+      var callProperty = param[1];
+      return node("ObjectTypeCallProperty", param[0], [
+                  /* tuple */[
+                    "value",
+                    function_type(callProperty.value)
+                  ],
+                  /* tuple */[
+                    "static",
+                    bool(callProperty.static)
+                  ]
+                ]);
     };
-    var jsx_attribute_value = function (param) {
-      if (param.tag) {
-        return jsx_expression_container(/* tuple */[
-                    param[0],
-                    param[1]
-                  ]);
-      } else {
-        return literal(/* tuple */[
-                    param[0],
-                    param[1]
-                  ]);
+    var object_type_property = function (param) {
+      var prop = param[1];
+      var lit = prop.key;
+      var key;
+      switch (lit.tag | 0) {
+        case /* Literal */0 :
+            key = literal(lit[0]);
+            break;
+        case /* Identifier */1 :
+            key = identifier(lit[0]);
+            break;
+        case /* Computed */2 :
+            throw [
+                  Caml_builtin_exceptions.failure,
+                  "There should not be computed object type property keys"
+                ];
+        
       }
+      return node("ObjectTypeProperty", param[0], [
+                  /* tuple */[
+                    "key",
+                    key
+                  ],
+                  /* tuple */[
+                    "value",
+                    _type(prop.value)
+                  ],
+                  /* tuple */[
+                    "optional",
+                    bool(prop.optional)
+                  ],
+                  /* tuple */[
+                    "static",
+                    bool(prop.static)
+                  ]
+                ]);
+    };
+    var export_specifier = function (param) {
+      var specifier = param[1];
+      return node("ExportSpecifier", param[0], [
+                  /* tuple */[
+                    "id",
+                    identifier(specifier.id)
+                  ],
+                  /* tuple */[
+                    "name",
+                    option(identifier, specifier.name)
+                  ]
+                ]);
     };
     var program$2 = function (param) {
       return node("Program", param[0], [
@@ -16319,15 +16319,15 @@ function parse(content, options) {
     ret["errors"] = errors(Pervasives.$at(match[1], translation_errors$1));
     return ret;
   }
-  catch (raw_exn){
-    var exn = Caml_js_exceptions.internalToOCamlException(raw_exn);
-    if (exn[0] === $$Error) {
-      var e = new Error(String(List.length(exn[1])) + " errors");
+  catch (raw_l){
+    var l = Caml_js_exceptions.internalToOCamlException(raw_l);
+    if (l[0] === $$Error) {
+      var e = new Error(String(List.length(l[1])) + " errors");
       e["name"] = "Parse Error";
       throw(e);
       return ({});
     }
-    throw exn;
+    throw l;
   }
 }
 
@@ -16356,11 +16356,11 @@ function eq(loc, x, y) {
   
 }
 
-var match = typeof __dirname === "undefined" ? undefined : __dirname;
+var f = typeof __dirname === "undefined" ? undefined : __dirname;
 
-if (match !== undefined) {
-  var f = Path.join(match, "flow_parser_sample.js");
-  var v = parse(Fs.readFileSync(f, "utf8"), undefined);
+if (f !== undefined) {
+  var f$1 = Path.join(f, "flow_parser_sample.js");
+  var v = parse(Fs.readFileSync(f$1, "utf8"), undefined);
   eq("File \"runParser.ml\", line 14, characters 7-14", /* tuple */[
         0,
         2842

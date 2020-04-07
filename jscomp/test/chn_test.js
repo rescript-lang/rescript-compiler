@@ -37,9 +37,9 @@ console.log("\x3f\u003f\b\t\n\v\f\r\0\"\'");
 
 function convert(s) {
   return $$Array.to_list(Array.from(s, (function (x) {
-                    var match = x.codePointAt(0);
-                    if (match !== undefined) {
-                      return match;
+                    var x$1 = x.codePointAt(0);
+                    if (x$1 !== undefined) {
+                      return x$1;
                     }
                     throw [
                           Caml_builtin_exceptions.assert_failure,

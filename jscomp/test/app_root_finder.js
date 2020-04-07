@@ -21,12 +21,12 @@ function find_package_json(_dir) {
   };
 }
 
-var match = typeof __dirname === "undefined" ? undefined : __dirname;
+var x = typeof __dirname === "undefined" ? undefined : __dirname;
 
-if (match !== undefined) {
-  console.log(find_package_json(match));
+if (x !== undefined) {
+  console.log(find_package_json(x));
 }
 
 exports.package_json = package_json;
 exports.find_package_json = find_package_json;
-/* match Not a pure module */
+/* x Not a pure module */

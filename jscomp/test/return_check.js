@@ -14,9 +14,9 @@ function test(dom) {
 }
 
 function f_undefined(xs, i) {
-  var match = xs[i];
-  if (match !== undefined) {
-    return match;
+  var k = xs[i];
+  if (k !== undefined) {
+    return k;
   }
   throw [
         Caml_builtin_exceptions.assert_failure,
@@ -55,9 +55,9 @@ function f_escaped_2(xs, i) {
 }
 
 function f_null(xs, i) {
-  var match = xs[i];
-  if (match !== null) {
-    return match;
+  var k = xs[i];
+  if (k !== null) {
+    return k;
   }
   throw [
         Caml_builtin_exceptions.assert_failure,
@@ -70,9 +70,9 @@ function f_null(xs, i) {
 }
 
 function f_null_undefined(xs, i) {
-  var match = xs[i];
-  if (!(match == null)) {
-    return match;
+  var k = xs[i];
+  if (!(k == null)) {
+    return k;
   }
   throw [
         Caml_builtin_exceptions.assert_failure,

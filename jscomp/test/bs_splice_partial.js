@@ -8,9 +8,9 @@ function test(g) {
 }
 
 function test_hi(x) {
-  var match = x.hi(1, 2, 3);
-  if (match !== null) {
-    console.log(match);
+  var y = x.hi(1, 2, 3);
+  if (y !== null) {
+    console.log(y);
     return 2;
   } else {
     return 1;

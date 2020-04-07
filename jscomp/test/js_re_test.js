@@ -9,12 +9,12 @@ var suites_000 = /* tuple */[
   "captures",
   (function (param) {
       var re = /(\d+)-(?:(\d+))?/g;
-      var match = re.exec("3-");
-      if (match === null) {
+      var result = re.exec("3-");
+      if (result === null) {
         return /* Fail */Block.__(8, [undefined]);
       }
-      var defined = Caml_array.caml_array_get(match, 1);
-      var $$undefined = Caml_array.caml_array_get(match, 2);
+      var defined = Caml_array.caml_array_get(result, 1);
+      var $$undefined = Caml_array.caml_array_get(result, 2);
       return /* Eq */Block.__(0, [
                 /* tuple */[
                   "3",
@@ -33,9 +33,9 @@ var suites_001 = /* :: */[
     "fromString",
     (function (param) {
         var contentOf = function (tag, xmlString) {
-          var param = new RegExp("<" + (tag + (">(.*?)<\\/" + (tag + ">")))).exec(xmlString);
-          if (param !== null) {
-            return Caml_option.nullable_to_opt(Caml_array.caml_array_get(param, 1));
+          var result = new RegExp("<" + (tag + (">(.*?)<\\/" + (tag + ">")))).exec(xmlString);
+          if (result !== null) {
+            return Caml_option.nullable_to_opt(Caml_array.caml_array_get(result, 1));
           }
           
         };
@@ -49,11 +49,11 @@ var suites_001 = /* :: */[
     /* tuple */[
       "exec_literal",
       (function (param) {
-          var match = /[^.]+/.exec("http://xxx.domain.com");
-          if (match !== null) {
+          var res = /[^.]+/.exec("http://xxx.domain.com");
+          if (res !== null) {
             return /* Eq */Block.__(0, [
                       "http://xxx",
-                      Caml_array.caml_array_get(match, 0)
+                      Caml_array.caml_array_get(res, 0)
                     ]);
           } else {
             return /* FailWith */Block.__(9, ["regex should match"]);
@@ -98,11 +98,11 @@ var suites_001 = /* :: */[
             /* tuple */[
               "result_index",
               (function (param) {
-                  var match = new RegExp("zbar").exec("foobarbazbar");
-                  if (match !== null) {
+                  var res = new RegExp("zbar").exec("foobarbazbar");
+                  if (res !== null) {
                     return /* Eq */Block.__(0, [
                               8,
-                              match.index
+                              res.index
                             ]);
                   } else {
                     return /* Fail */Block.__(8, [undefined]);
@@ -114,11 +114,11 @@ var suites_001 = /* :: */[
                 "result_input",
                 (function (param) {
                     var input = "foobar";
-                    var match = /foo/g.exec(input);
-                    if (match !== null) {
+                    var res = /foo/g.exec(input);
+                    if (res !== null) {
                       return /* Eq */Block.__(0, [
                                 input,
-                                match.input
+                                res.input
                               ]);
                     } else {
                       return /* Fail */Block.__(8, [undefined]);

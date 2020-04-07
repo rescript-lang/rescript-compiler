@@ -143,9 +143,9 @@ function backup_init($$class) {
           }),
         restore,
         (function (self$3) {
-            var match = self$3[copy];
-            if (match !== undefined) {
-              return Caml_option.valFromOption(match);
+            var x = self$3[copy];
+            if (x !== undefined) {
+              return Caml_option.valFromOption(x);
             } else {
               return self$3;
             }
@@ -240,9 +240,9 @@ function backup2_init($$class) {
           }),
         restore,
         (function (self$5) {
-            var match = self$5[copy];
-            if (match !== undefined) {
-              return Caml_option.valFromOption(match);
+            var x = self$5[copy];
+            if (x !== undefined) {
+              return Caml_option.valFromOption(x);
             } else {
               return self$5;
             }

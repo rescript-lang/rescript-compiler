@@ -9,10 +9,10 @@ function fix(param) {
                 }))];
 }
 
-function unfixLeak(_param) {
+function unfixLeak(_f) {
   while(true) {
-    var param = _param;
-    _param = CamlinternalLazy.force(param[0]);
+    var f = _f;
+    _f = CamlinternalLazy.force(f[0]);
     continue ;
   };
 }

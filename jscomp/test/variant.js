@@ -7,21 +7,21 @@ var Caml_exceptions = require("../../lib/js/caml_exceptions.js");
 var Caml_js_exceptions = require("../../lib/js/caml_js_exceptions.js");
 var Caml_builtin_exceptions = require("../../lib/js/caml_builtin_exceptions.js");
 
-function foo(param) {
-  if (typeof param === "number") {
-    if (param === /* A1 */0) {
+function foo(n) {
+  if (typeof n === "number") {
+    if (n === /* A1 */0) {
       return 1;
     } else {
       return 2;
     }
   }
-  switch (param.tag | 0) {
+  switch (n.tag | 0) {
     case /* B */0 :
-        return param[0];
+        return n[0];
     case /* C */1 :
-        return param[0] + param[1] | 0;
+        return n[0] + n[1] | 0;
     case /* D */2 :
-        var match = param[0];
+        var match = n[0];
         return match[0] + match[1] | 0;
     
   }
@@ -116,25 +116,25 @@ function fooExn(f) {
   try {
     return Curry._1(f, undefined);
   }
-  catch (raw_exn){
-    var exn = Caml_js_exceptions.internalToOCamlException(raw_exn);
-    if (exn === EA1) {
+  catch (raw_n){
+    var n = Caml_js_exceptions.internalToOCamlException(raw_n);
+    if (n === EA1) {
       return 1;
     }
-    if (exn === EA2) {
+    if (n === EA2) {
       return 2;
     }
-    if (exn[0] === EB) {
-      return exn[1];
+    if (n[0] === EB) {
+      return n[1];
     }
-    if (exn[0] === EC) {
-      return exn[1] + exn[2] | 0;
+    if (n[0] === EC) {
+      return n[1] + n[2] | 0;
     }
-    if (exn[0] === ED) {
-      var match = exn[1];
+    if (n[0] === ED) {
+      var match = n[1];
       return match[0] + match[1] | 0;
     }
-    throw exn;
+    throw n;
   }
 }
 

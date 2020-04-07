@@ -1436,13 +1436,13 @@ function kwd(ppf, s) {
                 ]), s);
 }
 
-function pr_exp0(ppf, lam) {
-  switch (lam.tag | 0) {
+function pr_exp0(ppf, s) {
+  switch (s.tag | 0) {
     case /* Var */1 :
         return Curry._2(Format.fprintf(ppf, /* Format */[
                         /* Alpha */Block.__(15, [/* End_of_format */0]),
                         "%a"
-                      ]), ident, lam[0]);
+                      ]), ident, s[0]);
     case /* Lambda */0 :
     case /* Apply */2 :
         break;
@@ -1469,7 +1469,7 @@ function pr_exp0(ppf, lam) {
                         ])
                     ]),
                   "@[<1>(%a)@]"
-                ]), pr_lambda, lam);
+                ]), pr_lambda, s);
 }
 
 function pr_app(ppf, e) {

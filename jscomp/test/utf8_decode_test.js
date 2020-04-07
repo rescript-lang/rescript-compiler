@@ -45,21 +45,21 @@ function classify(chr) {
 
 function utf8_decode(strm) {
   return Stream.slazy((function (param) {
-                var match = Stream.peek(strm);
-                if (match === undefined) {
+                var chr = Stream.peek(strm);
+                if (chr === undefined) {
                   return ;
                 }
                 Stream.junk(strm);
-                var match$1 = classify(match);
-                if (typeof match$1 === "number") {
+                var c = classify(chr);
+                if (typeof c === "number") {
                   throw [
                         Stream.$$Error,
                         "Invalid byte"
                       ];
                 }
-                switch (match$1.tag | 0) {
+                switch (c.tag | 0) {
                   case /* Single */0 :
-                      return Stream.icons(match$1[0], utf8_decode(strm));
+                      return Stream.icons(c[0], utf8_decode(strm));
                   case /* Cont */1 :
                       throw [
                             Stream.$$Error,
@@ -73,15 +73,15 @@ function utf8_decode(strm) {
                           if (n === 0) {
                             return c;
                           }
-                          var match = classify(Stream.next(strm));
-                          if (typeof match === "number") {
+                          var cc = classify(Stream.next(strm));
+                          if (typeof cc === "number") {
                             throw [
                                   Stream.$$Error,
                                   "Continuation byte expected"
                                 ];
                           }
-                          if (match.tag === /* Cont */1) {
-                            _c = (c << 6) | match[0] & 63;
+                          if (cc.tag === /* Cont */1) {
+                            _c = (c << 6) | cc[0] & 63;
                             _n = n - 1 | 0;
                             continue ;
                           }
@@ -91,7 +91,7 @@ function utf8_decode(strm) {
                               ];
                         };
                       };
-                      return Stream.icons(follow(strm, match$1[0], match$1[1]), utf8_decode(strm));
+                      return Stream.icons(follow(strm, c[0], c[1]), utf8_decode(strm));
                   
                 }
               }));
@@ -116,17 +116,17 @@ function utf8_list(s) {
 }
 
 function decode(bytes, offset) {
-  var match = classify(Caml_bytes.get(bytes, offset));
-  if (typeof match === "number") {
+  var c = classify(Caml_bytes.get(bytes, offset));
+  if (typeof c === "number") {
     throw [
           Caml_builtin_exceptions.invalid_argument,
           "decode"
         ];
   }
-  switch (match.tag | 0) {
+  switch (c.tag | 0) {
     case /* Single */0 :
         return /* tuple */[
-                match[0],
+                c[0],
                 offset + 1 | 0
               ];
     case /* Cont */1 :
@@ -135,29 +135,29 @@ function decode(bytes, offset) {
               "decode"
             ];
     case /* Leading */2 :
-        var _n = match[0];
-        var _c = match[1];
+        var _n = c[0];
+        var _c = c[1];
         var _offset = offset + 1 | 0;
         while(true) {
           var offset$1 = _offset;
-          var c = _c;
+          var c$1 = _c;
           var n = _n;
           if (n === 0) {
             return /* tuple */[
-                    c,
+                    c$1,
                     offset$1
                   ];
           }
-          var match$1 = classify(Caml_bytes.get(bytes, offset$1));
-          if (typeof match$1 === "number") {
+          var cc = classify(Caml_bytes.get(bytes, offset$1));
+          if (typeof cc === "number") {
             throw [
                   Caml_builtin_exceptions.invalid_argument,
                   "decode"
                 ];
           }
-          if (match$1.tag === /* Cont */1) {
+          if (cc.tag === /* Cont */1) {
             _offset = offset$1 + 1 | 0;
-            _c = (c << 6) | match$1[0] & 63;
+            _c = (c$1 << 6) | cc[0] & 63;
             _n = n - 1 | 0;
             continue ;
           }

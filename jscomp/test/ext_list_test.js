@@ -14,10 +14,10 @@ function filter_map(f, _xs) {
       return /* [] */0;
     }
     var ys = xs[1];
-    var match = Curry._1(f, xs[0]);
-    if (match !== undefined) {
+    var z = Curry._1(f, xs[0]);
+    if (z !== undefined) {
       return /* :: */[
-              Caml_option.valFromOption(match),
+              Caml_option.valFromOption(z),
               filter_map(f, ys)
             ];
     }
@@ -170,10 +170,10 @@ function filter_mapi(f, xs) {
         return /* [] */0;
       }
       var ys = xs[1];
-      var match = Curry._2(f, i, xs[0]);
-      if (match !== undefined) {
+      var z = Curry._2(f, i, xs[0]);
+      if (z !== undefined) {
         return /* :: */[
-                Caml_option.valFromOption(match),
+                Caml_option.valFromOption(z),
                 aux(i + 1 | 0, ys)
               ];
       }
@@ -193,10 +193,10 @@ function filter_map2(f, _xs, _ys) {
       if (ys) {
         var vs = ys[1];
         var us = xs[1];
-        var match = Curry._2(f, xs[0], ys[0]);
-        if (match !== undefined) {
+        var z = Curry._2(f, xs[0], ys[0]);
+        if (z !== undefined) {
           return /* :: */[
-                  Caml_option.valFromOption(match),
+                  Caml_option.valFromOption(z),
                   filter_map2(f, us, vs)
                 ];
         }
@@ -229,10 +229,10 @@ function filter_map2i(f, xs, ys) {
         if (ys) {
           var vs = ys[1];
           var us = xs[1];
-          var match = Curry._3(f, i, xs[0], ys[0]);
-          if (match !== undefined) {
+          var z = Curry._3(f, i, xs[0], ys[0]);
+          if (z !== undefined) {
             return /* :: */[
-                    Caml_option.valFromOption(match),
+                    Caml_option.valFromOption(z),
                     aux(i + 1 | 0, us, vs)
                   ];
           }
