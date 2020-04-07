@@ -31,7 +31,7 @@ var step = Sys.word_size / 16 | 0;
 
 function public_method_label(s) {
   var accu = 0;
-  for(var i = 0 ,i_finish = s.length - 1 | 0; i <= i_finish; ++i){
+  for(var i = 0 ,i_finish = s.length; i < i_finish; ++i){
     accu = Caml_int32.imul(223, accu) + Caml_string.get(s, i) | 0;
   }
   accu = accu & 2147483647;
@@ -2914,7 +2914,7 @@ function new_table(pub_labels) {
   var methods = Caml_array.caml_make_vect((len << 1) + 2 | 0, dummy_met);
   Caml_array.caml_array_set(methods, 0, len);
   Caml_array.caml_array_set(methods, 1, (Caml_int32.imul(fit_size(len), Sys.word_size) / 8 | 0) - 1 | 0);
-  for(var i = 0 ,i_finish = len - 1 | 0; i <= i_finish; ++i){
+  for(var i = 0; i < len; ++i){
     Caml_array.caml_array_set(methods, (i << 1) + 3 | 0, Caml_array.caml_array_get(pub_labels, i));
   }
   return {
@@ -3143,10 +3143,10 @@ function new_methods_variables(table, meths, vals) {
   var nmeths = meths$1.length;
   var nvals = vals.length;
   var res = Caml_array.caml_make_vect(nmeths + nvals | 0, 0);
-  for(var i = 0 ,i_finish = nmeths - 1 | 0; i <= i_finish; ++i){
+  for(var i = 0; i < nmeths; ++i){
     Caml_array.caml_array_set(res, i, get_method_label(table, Caml_array.caml_array_get(meths$1, i)));
   }
-  for(var i$1 = 0 ,i_finish$1 = nvals - 1 | 0; i$1 <= i_finish$1; ++i$1){
+  for(var i$1 = 0; i$1 < nvals; ++i$1){
     Caml_array.caml_array_set(res, i$1 + nmeths | 0, new_variable(table, Caml_array.caml_array_get(vals, i$1)));
   }
   return res;

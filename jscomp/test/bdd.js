@@ -331,7 +331,7 @@ function random(param) {
 
 function random_vars(n) {
   var vars = Caml_array.caml_make_vect(n, false);
-  for(var i = 0 ,i_finish = n - 1 | 0; i <= i_finish; ++i){
+  for(var i = 0; i < n; ++i){
     Caml_array.caml_array_set(vars, i, random(undefined));
   }
   return vars;
@@ -353,7 +353,7 @@ function bool_equal(a, b) {
 
 function test_hwb(bdd, vars) {
   var ntrue = 0;
-  for(var i = 0 ,i_finish = vars.length - 1 | 0; i <= i_finish; ++i){
+  for(var i = 0 ,i_finish = vars.length; i < i_finish; ++i){
     if (Caml_array.caml_array_get(vars, i)) {
       ntrue = ntrue + 1 | 0;
     }

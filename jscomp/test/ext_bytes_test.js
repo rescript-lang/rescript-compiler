@@ -21,7 +21,7 @@ function eq(loc, x, y) {
 
 function escaped(s) {
   var n = 0;
-  for(var i = 0 ,i_finish = s.length - 1 | 0; i <= i_finish; ++i){
+  for(var i = 0 ,i_finish = s.length; i < i_finish; ++i){
     var match = s[i];
     var tmp;
     if (match >= 32) {
@@ -45,7 +45,7 @@ function escaped(s) {
   }
   var s$prime = Caml_bytes.caml_create_bytes(n);
   n = 0;
-  for(var i$1 = 0 ,i_finish$1 = s.length - 1 | 0; i$1 <= i_finish$1; ++i$1){
+  for(var i$1 = 0 ,i_finish$1 = s.length; i$1 < i_finish$1; ++i$1){
     var c = s[i$1];
     var exit = 0;
     if (c >= 35) {
@@ -133,7 +133,7 @@ function starts_with(xs, prefix, p) {
     return false;
   }
   try {
-    for(var i = 0 ,i_finish = len2 - 1 | 0; i <= i_finish; ++i){
+    for(var i = 0; i < len2; ++i){
       if (!Curry._2(p, Caml_bytes.get(xs, i), Caml_bytes.get(prefix, i))) {
         throw H;
       }

@@ -954,7 +954,13 @@ and compile_while (predicate : Lam.t) (body : Lam.t) (lambda_cxt : Lam_compile_c
 *)
 
 and compile_for 
-    id start finish direction body (lambda_cxt : Lam_compile_context.t) = 
+    (id : J.for_ident) 
+    (start : Lam.t) 
+    (finish : Lam.t) 
+    (direction : Js_op.direction_flag) 
+    (body : Lam.t)
+    (lambda_cxt : Lam_compile_context.t) 
+    = 
     let new_cxt = {lambda_cxt with continuation = NeedValue Not_tail} in 
     let block =
       match compile_lambda new_cxt start,
@@ -1599,8 +1605,13 @@ and compile_lambda
       compile_staticcatch cur_lam lambda_cxt      
     | Lwhile(p,body) ->
       compile_while p body lambda_cxt
-    | Lfor (id,start,finish,direction,body) ->
-      compile_for id start finish direction body lambda_cxt
+    | Lfor (id,start,finish,direction,body) ->  
+      begin match direction,finish with 
+        | Upto, Lprim {primitive = Psubint ; args = [ new_finish ; Lconst (Const_int 1) ]} ->
+          compile_for id start new_finish Up body lambda_cxt
+        | _ -> 
+          compile_for id start finish (if direction = Upto then Upto else Downto) body lambda_cxt
+      end
     | Lassign(id,lambda) ->
       compile_assign id lambda lambda_cxt
     | Ltrywith(lam,id, catch) ->  (* generate documentation *)

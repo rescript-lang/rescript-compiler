@@ -621,7 +621,7 @@ function concat_array(sep, s) {
   }
   var sep_len = sep.length;
   var len = 0;
-  for(var i = 0 ,i_finish = s_len - 1 | 0; i <= i_finish; ++i){
+  for(var i = 0; i < s_len; ++i){
     len = len + s[i].length | 0;
   }
   var target = Caml_bytes.caml_create_bytes(len + Caml_int32.imul(s_len - 1 | 0, sep_len) | 0);
@@ -629,7 +629,7 @@ function concat_array(sep, s) {
   var hd_len = hd.length;
   Caml_bytes.caml_blit_string(hd, 0, target, 0, hd_len);
   var current_offset = hd_len;
-  for(var i$1 = 1 ,i_finish$1 = s_len - 1 | 0; i$1 <= i_finish$1; ++i$1){
+  for(var i$1 = 1; i$1 < s_len; ++i$1){
     Caml_bytes.caml_blit_string(sep, 0, target, current_offset, sep_len);
     var cur = s[i$1];
     var cur_len = cur.length;

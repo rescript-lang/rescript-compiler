@@ -39,7 +39,7 @@ function _with_in(filename, f) {
 
 function _must_escape(s) {
   try {
-    for(var i = 0 ,i_finish = s.length - 1 | 0; i <= i_finish; ++i){
+    for(var i = 0 ,i_finish = s.length; i < i_finish; ++i){
       var c = s.charCodeAt(i);
       var exit = 0;
       if (c >= 42) {

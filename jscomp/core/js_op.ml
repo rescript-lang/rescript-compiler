@@ -184,6 +184,10 @@ type mutable_flag =
   | Mutable
   | Immutable
   | NA
+type direction_flag = 
+  | Upto
+  | Downto
+  | Up
 
 (* 
     {[

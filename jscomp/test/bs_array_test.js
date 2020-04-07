@@ -392,9 +392,9 @@ function makeMatrixExn(sx, sy, init) {
     throw new Error("File \"bs_array_test.ml\", line 109, characters 4-10");
   }
   var res = new Array(sx);
-  for(var x = 0 ,x_finish = sx - 1 | 0; x <= x_finish; ++x){
+  for(var x = 0; x < sx; ++x){
     var initY = new Array(sy);
-    for(var y = 0 ,y_finish = sy - 1 | 0; y <= y_finish; ++y){
+    for(var y = 0; y < sy; ++y){
       initY[y] = init;
     }
     res[x] = initY;

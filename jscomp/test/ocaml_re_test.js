@@ -2629,7 +2629,7 @@ function repn(r, i, j) {
 
 function set(str) {
   var s = /* [] */0;
-  for(var i = 0 ,i_finish = str.length - 1 | 0; i <= i_finish; ++i){
+  for(var i = 0 ,i_finish = str.length; i < i_finish; ++i){
     s = union(single(Caml_string.get(str, i)), s);
   }
   return /* Set */Block.__(0, [s]);
@@ -3033,7 +3033,7 @@ function parse(multiline, dollar_endonly, dotall, ungreedy, s) {
   var accept_s = function (s$prime) {
     var len = s$prime.length;
     try {
-      for(var j = 0 ,j_finish = len - 1 | 0; j <= j_finish; ++j){
+      for(var j = 0; j < len; ++j){
         try {
           if (Caml_string.get(s$prime, j) !== Caml_string.get(s, i.contents + j | 0)) {
             throw Pervasives.Exit;
