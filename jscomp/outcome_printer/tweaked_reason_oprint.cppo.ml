@@ -626,7 +626,7 @@ and print_out_sig_item ppf =
         finished its pre/post-processing work before we get to print anything. The original
         attribute is already gone, replaced by a "BS:asdfasdfasd" thing here.
       *)
-      String.length item >= 3 && item.[0] = 'B' && item.[1] = 'S' && item.[2] = ':'
+      String.length item >= 20 && item.[0] = '\132' && item.[1] = '\149' && item.[2] = '\166'
     ) oval_prims in
     let print_right_hand_side ppf =
       function
