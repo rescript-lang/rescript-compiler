@@ -48,7 +48,7 @@ var a0 = Belt_MutableMap.fromArray(randomRange(0, 10), Icmp);
 
 Belt_MutableMap.set(a0, 3, 33);
 
-eq("File \"bs_poly_mutable_map_test.ml\", line 27, characters 7-14", Belt_MutableMap.getExn(a0, 3), 33);
+eq("File \"bs_poly_mutable_map_test.ml\", line 29, characters 5-12", Belt_MutableMap.getExn(a0, 3), 33);
 
 Belt_MutableMap.removeMany(a0, [
       7,
@@ -64,14 +64,41 @@ Belt_MutableMap.removeMany(a0, [
       6
     ]);
 
-eq("File \"bs_poly_mutable_map_test.ml\", line 29, characters 7-14", Belt_internalAVLtree.keysToArray(a0.data), [
+eq("File \"bs_poly_mutable_map_test.ml\", line 31, characters 5-12", Belt_internalAVLtree.keysToArray(a0.data), [
       9,
       10
     ]);
 
 Belt_MutableMap.removeMany(a0, Array_data_util.randomRange(0, 100));
 
-b("File \"bs_poly_mutable_map_test.ml\", line 31, characters 6-13", Belt_MutableMap.isEmpty(a0));
+b("File \"bs_poly_mutable_map_test.ml\", line 33, characters 4-11", Belt_MutableMap.isEmpty(a0));
+
+var a0$1 = Belt_MutableMap.fromArray(randomRange(0, 10000), Icmp);
+
+Belt_MutableMap.set(a0$1, 2000, 33);
+
+Belt_MutableMap.removeMany(a0$1, Belt_Array.map(randomRange(0, 1998), (function (prim) {
+            return prim[0];
+          })));
+
+Belt_MutableMap.removeMany(a0$1, Belt_Array.map(randomRange(2002, 11000), (function (prim) {
+            return prim[0];
+          })));
+
+eq("File \"bs_poly_mutable_map_test.ml\", line 41, characters 6-13", Belt_internalAVLtree.toArray(a0$1.data), [
+      /* tuple */[
+        1999,
+        1999
+      ],
+      /* tuple */[
+        2000,
+        33
+      ],
+      /* tuple */[
+        2001,
+        2001
+      ]
+    ]);
 
 Mt.from_pair_suites("Bs_poly_mutable_map_test", suites.contents);
 
