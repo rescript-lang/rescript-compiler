@@ -188,7 +188,7 @@ type direction_flag =
   | Upto
   | Downto
   | Up
-  | Down
+
 (* 
     {[
     let rec x = 1 :: y 

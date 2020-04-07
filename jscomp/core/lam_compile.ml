@@ -1606,11 +1606,11 @@ and compile_lambda
     | Lwhile(p,body) ->
       compile_while p body lambda_cxt
     | Lfor (id,start,finish,direction,body) ->  
-      begin match direction with 
-        | Upto ->                 
-          compile_for id start finish Upto body lambda_cxt
-        | Downto -> 
-          compile_for id start finish Downto body lambda_cxt
+      begin match direction,finish with 
+        | Upto, Lprim {primitive = Psubint ; args = [ new_finish ; Lconst (Const_int 1) ]} ->
+          compile_for id start new_finish Up body lambda_cxt
+        | _ -> 
+          compile_for id start finish (if direction = Upto then Upto else Downto) body lambda_cxt
       end
     | Lassign(id,lambda) ->
       compile_assign id lambda lambda_cxt
