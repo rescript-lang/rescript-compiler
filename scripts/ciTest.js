@@ -41,9 +41,7 @@ if (all) {
   bsbTest = true;
 }
 
-
 var fs = require("fs");
-
 
 function init() {
   var vendorOCamlPath = path.join(
@@ -72,14 +70,13 @@ function main() {
   // console.log('OCaml:', output)
   var binDir = path.join(__dirname, "..", "jscomp", "bin");
   if (ounitTest) {
-    
     // running tests for native code
     fs.copyFileSync(
       path.join(
         __dirname,
         "..",
         "lib",
-        '4.06.1',
+        "4.06.1",
         "unstable",
         "all_ounit_tests.ml"
       ),
@@ -95,7 +92,7 @@ function main() {
     cp.execSync(`./test.exe`, { cwd: binDir, stdio: [0, 1, 2] });
   }
 
-  // running generated js tests  
+  // running generated js tests
   if (mochaTest) {
     cp.execSync(`mocha jscomp/test/**/*test.js`, {
       cwd: path.join(__dirname, ".."),
@@ -103,7 +100,7 @@ function main() {
     });
   }
 
-  // set up global directory properly using 
+  // set up global directory properly using
   // npm config set prefix '~/.npm-global'
   if (installGlobal) {
     console.log("install bucklescript globally");
@@ -132,9 +129,9 @@ function main() {
       .filter(x => x);
     var themesDir = path.join(__dirname, "..", "themes");
 
-    if(fs.existsSync(themesDir)){
+    if (fs.existsSync(themesDir)) {
       // fs.rmdirSync(themesDir,{recursive : true})
-      cp.execSync(`rm -rf ${themesDir}`,{stdio:[0,1,2]})
+      cp.execSync(`rm -rf ${themesDir}`, { stdio: [0, 1, 2] });
       // we dont remove post-installation
       // since it is useful for debugging
     }
@@ -149,19 +146,21 @@ function main() {
           if (error !== null) {
             throw new Error(`init theme ${theme} failed`);
           }
-          cp.exec(
-            `npm link bs-platform && npm install && npm run clean && npm run build`,
-            { cwd: path.join(themesDir, theme) },
-            function(error, stdout, stderr) {
-              console.log(stdout);
-              console.log(stderr);
-              if (error !== null) {
-                throw new Error(
-                  `clean && install & build theme ${theme} failed`
-                );
-              }
-            }
-          );
+          let config = {
+            cwd: path.join(themesDir, theme),
+            encoding: "utf8"
+          };
+          var output ;
+          try {
+            output = cp.execSync(`npm link bs-platform`, config);
+            output = cp.execSync(`npm install`, config);
+            output = cp.execSync(`npm run clean`, config);
+            output = cp.execSync(`npm run build`, config);
+          } catch (err) {
+            console.error(`failed in theme ${theme}`)
+            console.log(output+"")
+            console.log(err + "")
+          }
         }
       );
     });
@@ -178,8 +177,8 @@ function main() {
     var files = fs.readdirSync(buildTestDir);
     files.forEach(function(file) {
       var testDir = path.join(buildTestDir, file);
-      if(file === 'node_modules' || !fs.lstatSync(testDir).isDirectory()){
-        return 
+      if (file === "node_modules" || !fs.lstatSync(testDir).isDirectory()) {
+        return;
       }
       if (!fs.existsSync(path.join(testDir, "input.js"))) {
         console.warn(`input.js does not exist in ${testDir}`);
