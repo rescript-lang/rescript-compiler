@@ -76,11 +76,11 @@ Belt_MapInt.checkInvariantInternal(xx);
 
 Mt.from_pair_suites("Bs_map_test", suites.contents);
 
-var M = /* alias */0;
+var M;
 
-var N = /* alias */0;
+var N;
 
-var A = /* alias */0;
+var A;
 
 exports.suites = suites;
 exports.test_id = test_id;

@@ -1,7 +1,7 @@
 'use strict';
 
 
-var A = /* alias */0;
+var A;
 
 exports.A = A;
 /* No side effect */

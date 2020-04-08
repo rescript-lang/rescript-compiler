@@ -327,13 +327,13 @@ Belt_List.forEach(/* :: */[
 
 Mt.from_pair_suites("Bs_poly_mutable_set_test", suites.contents);
 
-var N = /* alias */0;
+var N;
 
-var I = /* alias */0;
+var I;
 
-var A = /* alias */0;
+var A;
 
-var L = /* alias */0;
+var L;
 
 var $plus$plus = Belt_MutableSet.union;
 

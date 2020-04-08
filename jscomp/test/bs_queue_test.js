@@ -1202,7 +1202,7 @@ b("File \"bs_queue_test.ml\", line 156, characters 4-11", q$8.length === 0);
 
 Mt.from_pair_suites("Bs_queue_test", suites.contents);
 
-var Q = /* alias */0;
+var Q;
 
 exports.suites = suites;
 exports.test_id = test_id;

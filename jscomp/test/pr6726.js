@@ -14,7 +14,7 @@ var ExtUnixAll = {
 };
 
 var ExtUnix = {
-  All: /* alias */0
+  All: undefined
 };
 
 function test_endian_string(x) {

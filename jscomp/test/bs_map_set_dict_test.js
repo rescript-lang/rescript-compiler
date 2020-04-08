@@ -166,25 +166,25 @@ eq("File \"bs_map_set_dict_test.ml\", line 97, characters 4-11", Belt_Array.make
 
 Mt.from_pair_suites("Bs_map_set_dict_test", suites.contents);
 
-var M = /* alias */0;
+var M;
 
-var MI = /* alias */0;
+var MI;
 
-var I = /* alias */0;
+var I;
 
-var A = /* alias */0;
+var A;
 
-var L = /* alias */0;
+var L;
 
 var vv;
 
 var vv2;
 
-var Md0 = /* alias */0;
+var Md0;
 
-var ISet = /* alias */0;
+var ISet;
 
-var S0 = /* alias */0;
+var S0;
 
 exports.suites = suites;
 exports.test_id = test_id;

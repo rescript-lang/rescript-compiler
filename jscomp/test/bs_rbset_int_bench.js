@@ -51,7 +51,7 @@ console.timeEnd("test/bs_rbset_int_bench.ml 21");
 
 var count = 1000000;
 
-var V = /* alias */0;
+var V;
 
 exports.count = count;
 exports.V = V;

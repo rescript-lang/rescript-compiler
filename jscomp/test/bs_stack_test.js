@@ -145,9 +145,9 @@ eq("File \"bs_stack_test.ml\", line 140, characters 6-13", inOrder3(test1), [
 
 Mt.from_pair_suites("bs_stack_test.ml", suites.contents);
 
-var S = /* alias */0;
+var S;
 
-var Q = /* alias */0;
+var Q;
 
 exports.suites = suites;
 exports.test_id = test_id;

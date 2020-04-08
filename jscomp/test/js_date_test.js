@@ -1027,7 +1027,7 @@ var suites = /* :: */[
 
 Mt.from_pair_suites("Js_date_test", suites);
 
-var N = /* alias */0;
+var N;
 
 exports.N = N;
 exports.date = date;
