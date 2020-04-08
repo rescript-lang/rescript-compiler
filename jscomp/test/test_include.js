@@ -22,23 +22,23 @@ var U = {
   v: Test_order.compare
 };
 
-var N = /* alias */0;
+var N;
 
 var v = List.length;
 
-var N0 = /* alias */0;
+var N0;
 
-var N1 = /* alias */0;
+var N1;
 
-var N2 = /* alias */0;
+var N2;
 
-var N3 = /* alias */0;
+var N3;
 
-var N4 = /* alias */0;
+var N4;
 
-var N5 = /* alias */0;
+var N5;
 
-var N6 = /* alias */0;
+var N6;
 
 var length = List.length;
 

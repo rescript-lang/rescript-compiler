@@ -721,6 +721,7 @@ let if_ (a : t) (b : t) (c : t) : t =
         if x <> 0n then b else c
       | Const_js_false
       | Const_js_null
+      | Const_module_alias
       | Const_js_undefined -> c
       | Const_js_true
       | Const_string _

@@ -102,13 +102,13 @@ eq("File \"bs_poly_mutable_map_test.ml\", line 41, characters 6-13", Belt_intern
 
 Mt.from_pair_suites("Bs_poly_mutable_map_test", suites.contents);
 
-var M = /* alias */0;
+var M;
 
-var N = /* alias */0;
+var N;
 
-var A = /* alias */0;
+var A;
 
-var I = /* alias */0;
+var I;
 
 exports.suites = suites;
 exports.test_id = test_id;

@@ -100,7 +100,7 @@ let values_of_export
          in 
        match arity, persistent_closed_lambda with 
        | Single Arity_na, 
-        (None | Some (Lconst (Const_pointer (_, Pt_module_alias)))) -> acc
+        (None | Some (Lconst Const_module_alias)) -> acc
        | Submodule [||], None -> acc          
        | _ ->  
          let cmj_value : Js_cmj_format.cmj_value =  

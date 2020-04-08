@@ -14,7 +14,7 @@ var b = Belt_Array.eq([
         return prim === prim$1;
       }));
 
-var A = /* alias */0;
+var A;
 
 exports.A = A;
 exports.b = b;

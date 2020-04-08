@@ -85,7 +85,7 @@ eq("File \"bs_int_test.ml\", line 43, characters 5-12", 0, 0);
 
 Mt.from_pair_suites("File \"bs_int_test.ml\", line 45, characters 23-30", suites.contents);
 
-var I = /* alias */0;
+var I;
 
 exports.suites = suites;
 exports.test_id = test_id;

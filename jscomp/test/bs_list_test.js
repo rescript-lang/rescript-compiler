@@ -2517,11 +2517,11 @@ b("File \"bs_list_test.ml\", line 349, characters 4-11", Belt_List.keepMap(/* ::
 
 Mt.from_pair_suites("Bs_list_test", suites.contents);
 
-var N = /* alias */0;
+var N;
 
-var A = /* alias */0;
+var A;
 
-var J = /* alias */0;
+var J;
 
 exports.suites = suites;
 exports.test_id = test_id;

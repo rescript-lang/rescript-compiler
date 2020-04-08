@@ -35,6 +35,7 @@ module E = Js_exp_make
 let rec is_some_none_aux (x : Lam_constant.t) acc = 
   match x with 
   | Const_some v -> is_some_none_aux v (acc + 1)
+  | Const_module_alias
   | Const_js_undefined -> acc 
   | _ -> -1
 
@@ -50,6 +51,7 @@ translate_some (x : Lam_constant.t) : J.expression =
   else nested_some_none depth (E.optional_block (translate Const_js_undefined))
 and translate (x : Lam_constant.t ) : J.expression = 
   match x with 
+  | Const_module_alias -> E.undefined (*  TODO *)
   | Const_some s ->  translate_some s   
   | Const_js_true -> E.bool true 
   | Const_js_false -> E.bool false

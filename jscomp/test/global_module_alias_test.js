@@ -141,17 +141,17 @@ eq("File \"global_module_alias_test.ml\", line 96, characters 5-12", v.contents,
 
 Mt.from_pair_suites("Global_module_alias_test", suites.contents);
 
-var A = /* alias */0;
+var A;
 
-var B = /* alias */0;
+var B;
 
-var C = /* alias */0;
+var C;
 
-var D = /* alias */0;
+var D;
 
-var E = /* alias */0;
+var E;
 
-var F = /* alias */0;
+var F;
 
 exports.suites = suites;
 exports.test_id = test_id;

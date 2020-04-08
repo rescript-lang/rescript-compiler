@@ -22,6 +22,7 @@ let rec struct_const ppf (cst : Lam_constant.t) =
   | Const_js_true -> fprintf ppf "#true"
   | Const_js_false -> fprintf ppf "#false"
   | Const_js_null -> fprintf ppf "#null"
+  | Const_module_alias -> fprintf ppf "#alias"
   | Const_js_undefined -> fprintf ppf "#undefined"
   |  (Const_int n) -> fprintf ppf "%i" n
   |  (Const_char c) -> fprintf ppf "%C" c

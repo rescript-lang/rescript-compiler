@@ -822,15 +822,15 @@ b("File \"bs_mutable_set_test.ml\", line 317, characters 4-11", Belt_MutableSetI
 
 Mt.from_pair_suites("Bs_mutable_set_test", suites.contents);
 
-var N = /* alias */0;
+var N;
 
-var I = /* alias */0;
+var I;
 
-var R = /* alias */0;
+var R;
 
-var A = /* alias */0;
+var A;
 
-var L = /* alias */0;
+var L;
 
 var empty = Belt_MutableSetInt.make;
 

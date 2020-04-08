@@ -26,7 +26,7 @@ function test(param) {
 
 test(undefined);
 
-var M = /* alias */0;
+var M;
 
 exports.should = should;
 exports.M = M;

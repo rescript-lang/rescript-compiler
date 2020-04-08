@@ -9,9 +9,9 @@ var X = {
   List: List
 };
 
-var Hashtbl = /* alias */0;
+var Hashtbl;
 
-var V = /* alias */0;
+var V;
 
 exports.X = X;
 exports.Hashtbl = Hashtbl;

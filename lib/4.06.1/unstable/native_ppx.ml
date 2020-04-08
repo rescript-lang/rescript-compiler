@@ -17854,7 +17854,7 @@ module Lam_pointer_info : sig
 type t = 
   | Pt_constructor of {name : string ; cstrs : int * int}
   | Pt_variant of { name : string}
-  | Pt_module_alias
+  (* | Pt_module_alias *)
   | Pt_na 
 
 end = struct
@@ -17886,7 +17886,7 @@ end = struct
 type t = 
   | Pt_constructor of {name : string ; cstrs : int * int}
   | Pt_variant of {name : string }
-  | Pt_module_alias
+  (* | Pt_module_alias *)
   | Pt_na 
 
 end
@@ -17982,6 +17982,7 @@ type t =
     (* eventually we can remove it, since we know
       [constant] is [undefined] or not 
     *) 
+  | Const_module_alias  
 val eq_approx : t -> t -> bool
 val lam_none : t   
 end = struct
@@ -18027,6 +18028,7 @@ end = struct
   | Const_float_array of string list
   | Const_immstring of string
   | Const_some of t 
+  | Const_module_alias 
     (* eventually we can remove it, since we know
       [constant] is [undefined] or not 
     *) 
@@ -18034,6 +18036,7 @@ end = struct
 
 let rec eq_approx (x : t) (y : t) = 
   match x with 
+  | Const_module_alias -> y = Const_module_alias
   | Const_js_null -> y = Const_js_null
   | Const_js_undefined -> y =  Const_js_undefined
   | Const_js_true -> y = Const_js_true

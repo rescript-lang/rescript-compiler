@@ -53,11 +53,11 @@ eq("File \"module_alias_test.ml\", line 30, characters 6-13", a, 3);
 
 Mt.from_pair_suites("Module_alias_test", suites.contents);
 
-var N = /* alias */0;
+var N;
 
-var V = /* alias */0;
+var V;
 
-var J = /* alias */0;
+var J;
 
 exports.suites = suites;
 exports.test_id = test_id;

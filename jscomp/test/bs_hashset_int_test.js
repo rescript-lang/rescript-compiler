@@ -105,17 +105,17 @@ b("File \"bs_hashset_int_test.ml\", line 62, characters 4-11", histo.length <= 1
 
 Mt.from_pair_suites("Bs_hashset_int_test", suites.contents);
 
-var N = /* alias */0;
+var N;
 
-var S = /* alias */0;
+var S;
 
-var I = /* alias */0;
+var I;
 
 var $plus$plus = Belt_Array.concat;
 
-var A = /* alias */0;
+var A;
 
-var SI = /* alias */0;
+var SI;
 
 exports.suites = suites;
 exports.test_id = test_id;

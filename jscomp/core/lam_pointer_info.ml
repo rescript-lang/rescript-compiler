@@ -26,5 +26,5 @@
 type t = 
   | Pt_constructor of {name : string ; cstrs : int * int}
   | Pt_variant of {name : string }
-  | Pt_module_alias
+  (* | Pt_module_alias *)
   | Pt_na 
