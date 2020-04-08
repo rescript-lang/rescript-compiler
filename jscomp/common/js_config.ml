@@ -35,8 +35,6 @@ let set_diagnose b = diagnose := b
 
 let ( // ) = Filename.concat
 
-(* let get_packages_info () = !packages_info *)
-
 let no_builtin_ppx_ml = ref false
 let no_builtin_ppx_mli = ref false
 

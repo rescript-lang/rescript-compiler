@@ -11238,8 +11238,6 @@ module Js_config : sig
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
-(* val get_packages_info : unit -> Js_package_info.t *)
-
 val no_version_header : bool ref
 (** set/get header *)
 
@@ -11343,8 +11341,6 @@ let get_diagnose () = !diagnose
 let set_diagnose b = diagnose := b
 
 let ( // ) = Filename.concat
-
-(* let get_packages_info () = !packages_info *)
 
 let no_builtin_ppx_ml = ref false
 let no_builtin_ppx_mli = ref false
