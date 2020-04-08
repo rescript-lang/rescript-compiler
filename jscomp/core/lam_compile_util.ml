@@ -62,10 +62,10 @@ let comment_of_tag_info  (x : Lam_tag_info.t) =
   | Blk_extension_slot -> None
   | Blk_na s -> if s = "" then None else Some s
 
-let module_alias = Some "alias"  
+(* let module_alias = Some "alias"   *)
 let comment_of_pointer_info (x :  Lam_pointer_info.t)= 
   match x with 
   | Pt_constructor {name;_}
   | Pt_variant {name} -> Some name
-  | Pt_module_alias -> module_alias
+  (* | Pt_module_alias -> module_alias *)
   | Pt_na -> None

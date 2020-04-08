@@ -324,7 +324,7 @@ and size_constant x =
   | Const_nativeint _ 
   | Const_immstring _
   | Const_pointer _ 
-  | Const_js_null | Const_js_undefined
+  | Const_js_null | Const_js_undefined | Const_module_alias
   | Const_js_true | Const_js_false
     -> 1 
   | Const_unicode _  (* TODO: this seems to be not good heurisitives*)

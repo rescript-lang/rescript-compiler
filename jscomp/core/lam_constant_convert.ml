@@ -44,7 +44,7 @@ let rec convert_constant ( const : Lambda.structured_constant) : Lam_constant.t 
     begin match p with 
     | Pt_constructor {name;cstrs} -> Const_pointer(i, Pt_constructor {name; cstrs})
     | Pt_variant {name} -> Const_pointer(i,Pt_variant {name})
-    | Pt_module_alias -> Const_pointer(i, Pt_module_alias)
+    | Pt_module_alias -> Const_module_alias
     | Pt_builtin_boolean -> if i = 0 then Const_js_false else Const_js_true
     | Pt_shape_none ->
        Lam_constant.lam_none

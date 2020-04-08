@@ -40,6 +40,7 @@
   | Const_float_array of string list
   | Const_immstring of string
   | Const_some of t 
+  | Const_module_alias 
     (* eventually we can remove it, since we know
       [constant] is [undefined] or not 
     *) 
@@ -47,6 +48,7 @@
 
 let rec eq_approx (x : t) (y : t) = 
   match x with 
+  | Const_module_alias -> y = Const_module_alias
   | Const_js_null -> y = Const_js_null
   | Const_js_undefined -> y =  Const_js_undefined
   | Const_js_true -> y = Const_js_true

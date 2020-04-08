@@ -43,5 +43,6 @@ type t =
     (* eventually we can remove it, since we know
       [constant] is [undefined] or not 
     *) 
+  | Const_module_alias  
 val eq_approx : t -> t -> bool
 val lam_none : t   
