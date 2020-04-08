@@ -34,8 +34,8 @@ function f(param) {
     return 0;
   }
   CamlinternalLazy.force(param[1]);
-  var match$1 = param[2].contents;
-  if (match$1 !== undefined) {
+  var x = param[2].contents;
+  if (x !== undefined) {
     return 1;
   }
   throw [

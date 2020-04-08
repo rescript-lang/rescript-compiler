@@ -91,7 +91,7 @@ build others/belt_MutableMapInt.cmj : cc_cmi others/belt_MutableMapInt.ml | othe
 build others/belt_MutableMapInt.cmi : cc others/belt_MutableMapInt.mli | runtime
 build others/belt_MutableMapString.cmj : cc_cmi others/belt_MutableMapString.ml | others/belt.cmi others/belt_Array.cmj others/belt_MutableMapString.cmi others/belt_internalAVLtree.cmj others/belt_internalMapString.cmj js_pkg runtime
 build others/belt_MutableMapString.cmi : cc others/belt_MutableMapString.mli | runtime
-build others/belt_MutableQueue.cmj : cc_cmi others/belt_MutableQueue.ml | others/belt.cmi others/belt_Array.cmj others/belt_MutableQueue.cmi others/js_null.cmj js_pkg runtime
+build others/belt_MutableQueue.cmj : cc_cmi others/belt_MutableQueue.ml | others/belt.cmi others/belt_Array.cmj others/belt_MutableQueue.cmi js_pkg runtime
 build others/belt_MutableQueue.cmi : cc others/belt_MutableQueue.mli | runtime
 build others/belt_MutableSet.cmj : cc_cmi others/belt_MutableSet.ml | others/belt.cmi others/belt_Array.cmj others/belt_Id.cmj others/belt_MutableSet.cmi others/belt_MutableSetInt.cmj others/belt_MutableSetString.cmj others/belt_SortArray.cmj others/belt_internalAVLset.cmj js_pkg runtime
 build others/belt_MutableSet.cmi : cc others/belt_MutableSet.mli | others/belt.cmi others/belt_Id.cmi others/belt_MutableSetInt.cmi others/belt_MutableSetString.cmi js_pkg runtime
@@ -99,7 +99,7 @@ build others/belt_MutableSetInt.cmj : cc_cmi others/belt_MutableSetInt.ml | othe
 build others/belt_MutableSetInt.cmi : cc others/belt_MutableSetInt.mli | runtime
 build others/belt_MutableSetString.cmj : cc_cmi others/belt_MutableSetString.ml | others/belt.cmi others/belt_Array.cmj others/belt_MutableSetString.cmi others/belt_SortArrayString.cmj others/belt_internalAVLset.cmj others/belt_internalSetString.cmj js_pkg runtime
 build others/belt_MutableSetString.cmi : cc others/belt_MutableSetString.mli | runtime
-build others/belt_MutableStack.cmj : cc_cmi others/belt_MutableStack.ml | others/belt.cmi others/belt_MutableStack.cmi others/js_null.cmj js_pkg runtime
+build others/belt_MutableStack.cmj : cc_cmi others/belt_MutableStack.ml | others/belt.cmi others/belt_MutableStack.cmi js_pkg runtime
 build others/belt_MutableStack.cmi : cc others/belt_MutableStack.mli | runtime
 build others/belt_Option.cmj : cc_cmi others/belt_Option.ml | others/belt.cmi others/belt_Option.cmi js_pkg runtime
 build others/belt_Option.cmi : cc others/belt_Option.mli | runtime

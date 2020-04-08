@@ -67,9 +67,9 @@ var f;
 try {
   f = (function () {throw (new Error ("x"))} ());
 }
-catch (raw_exn){
-  var exn = Caml_js_exceptions.internalToOCamlException(raw_exn);
-  f = exn[0] === A ? exn[1] : 2;
+catch (raw_x){
+  var x = Caml_js_exceptions.internalToOCamlException(raw_x);
+  f = x[0] === A ? x[1] : 2;
 }
 
 var ff;
@@ -77,9 +77,9 @@ var ff;
 try {
   ff = (function () {throw 3} ());
 }
-catch (raw_exn$1){
-  var exn$1 = Caml_js_exceptions.internalToOCamlException(raw_exn$1);
-  ff = exn$1[0] === A ? exn$1[1] : 2;
+catch (raw_x$1){
+  var x$1 = Caml_js_exceptions.internalToOCamlException(raw_x$1);
+  ff = x$1[0] === A ? x$1[1] : 2;
 }
 
 var fff;
@@ -87,9 +87,9 @@ var fff;
 try {
   fff = (function () {throw 2} ());
 }
-catch (raw_exn$2){
-  var exn$2 = Caml_js_exceptions.internalToOCamlException(raw_exn$2);
-  fff = exn$2[0] === A ? exn$2[1] : 2;
+catch (raw_x$2){
+  var x$2 = Caml_js_exceptions.internalToOCamlException(raw_x$2);
+  fff = x$2[0] === A ? x$2[1] : 2;
 }
 
 var a0;
@@ -97,10 +97,10 @@ var a0;
 try {
   a0 = (function (){throw 2} ());
 }
-catch (raw_exn$3){
-  var exn$3 = Caml_js_exceptions.internalToOCamlException(raw_exn$3);
-  if (exn$3[0] === A || exn$3[0] === Js_exn.$$Error) {
-    a0 = exn$3[1];
+catch (raw_x$3){
+  var x$3 = Caml_js_exceptions.internalToOCamlException(raw_x$3);
+  if (x$3[0] === A || x$3[0] === Js_exn.$$Error) {
+    a0 = x$3[1];
   } else {
     throw [
           Caml_builtin_exceptions.assert_failure,

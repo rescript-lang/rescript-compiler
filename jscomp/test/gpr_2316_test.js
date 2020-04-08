@@ -38,12 +38,12 @@ try {
         "boo"
       ];
 }
-catch (raw_exn){
-  var exn = Caml_js_exceptions.internalToOCamlException(raw_exn);
-  if (exn[0] === Caml_builtin_exceptions.failure) {
-    y = exn[1];
+catch (raw_msg){
+  var msg = Caml_js_exceptions.internalToOCamlException(raw_msg);
+  if (msg[0] === Caml_builtin_exceptions.failure) {
+    y = msg[1];
   } else {
-    throw exn;
+    throw msg;
   }
 }
 
@@ -57,12 +57,12 @@ try {
         "boo"
       ];
 }
-catch (raw_exn$1){
-  var exn$1 = Caml_js_exceptions.internalToOCamlException(raw_exn$1);
-  if (exn$1[0] === Caml_builtin_exceptions.failure) {
-    x = exn$1[1];
+catch (raw_msg$1){
+  var msg$1 = Caml_js_exceptions.internalToOCamlException(raw_msg$1);
+  if (msg$1[0] === Caml_builtin_exceptions.failure) {
+    x = msg$1[1];
   } else {
-    throw exn$1;
+    throw msg$1;
   }
 }
 

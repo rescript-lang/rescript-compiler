@@ -33,8 +33,8 @@ var v = [
   v_001
 ];
 
-Printexc.register_printer((function (param) {
-        if (param[0] === A) {
+Printexc.register_printer((function (s) {
+        if (s[0] === A) {
           return "A";
         }
         

@@ -95,10 +95,10 @@ function get_lines(fname) {
     };
     return List.rev(l.contents);
   }
-  catch (raw_exn){
-    var exn = Caml_js_exceptions.internalToOCamlException(raw_exn);
-    if (exn[0] === Scanf.Scan_failure) {
-      var s = Curry._2(Printf.sprintf(/* Format */[
+  catch (raw_s){
+    var s = Caml_js_exceptions.internalToOCamlException(raw_s);
+    if (s[0] === Scanf.Scan_failure) {
+      var s$1 = Curry._2(Printf.sprintf(/* Format */[
                 /* String_literal */Block.__(11, [
                     "in file ",
                     /* String */Block.__(2, [
@@ -113,14 +113,14 @@ function get_lines(fname) {
                       ])
                   ]),
                 "in file %s, %s"
-              ]), fname, exn[1]);
+              ]), fname, s[1]);
       throw [
             Caml_builtin_exceptions.failure,
-            s
+            s$1
           ];
     }
-    if (exn === Caml_builtin_exceptions.end_of_file) {
-      var s$1 = Curry._1(Printf.sprintf(/* Format */[
+    if (s === Caml_builtin_exceptions.end_of_file) {
+      var s$2 = Curry._1(Printf.sprintf(/* Format */[
                 /* String_literal */Block.__(11, [
                     "in file ",
                     /* String */Block.__(2, [
@@ -135,10 +135,10 @@ function get_lines(fname) {
               ]), fname);
       throw [
             Caml_builtin_exceptions.failure,
-            s$1
+            s$2
           ];
     }
-    throw exn;
+    throw s;
   }
 }
 

@@ -5,20 +5,20 @@ var Caml_int32 = require("../../lib/js/caml_int32.js");
 function f(param) {
   switch (param.tag | 0) {
     case /* A */0 :
-        var match = param[0];
-        if (match.tag) {
-          var a = match[0];
-          return a - a | 0;
+        var a = param[0];
+        if (a.tag) {
+          var a$1 = a[0];
+          return a$1 - a$1 | 0;
         }
-        var a$1 = match[0];
-        return a$1 + a$1 | 0;
+        var a$2 = a[0];
+        return a$2 + a$2 | 0;
     case /* B */1 :
     case /* C */2 :
         break;
     
   }
-  var a$2 = param[0][0];
-  return Caml_int32.imul(a$2, a$2);
+  var a$3 = param[0][0];
+  return Caml_int32.imul(a$3, a$3);
 }
 
 function ff(c) {

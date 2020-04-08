@@ -28,22 +28,22 @@ function read_lines(inc) {
   var _acc = /* [] */0;
   while(true) {
     var acc = _acc;
-    var match;
+    var l;
     try {
-      match = Pervasives.input_line(inc);
+      l = Pervasives.input_line(inc);
     }
     catch (exn){
       if (exn === Caml_builtin_exceptions.end_of_file) {
-        match = undefined;
+        l = undefined;
       } else {
         throw exn;
       }
     }
-    if (match === undefined) {
+    if (l === undefined) {
       return List.rev(acc);
     }
     _acc = /* :: */[
-      match,
+      l,
       acc
     ];
     continue ;

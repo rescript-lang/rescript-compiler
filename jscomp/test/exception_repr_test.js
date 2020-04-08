@@ -39,10 +39,10 @@ var Hello = Caml_exceptions.create("Exception_repr_test.Hello");
 
 var A = Caml_exceptions.create("Exception_repr_test.A");
 
-Printexc.register_printer((function (param) {
-        if (param === Hi) {
+Printexc.register_printer((function (s) {
+        if (s === Hi) {
           return "hey";
-        } else if (param[0] === A) {
+        } else if (s[0] === A) {
           return Curry._1(Format.asprintf(/* Format */[
                           /* String_literal */Block.__(11, [
                               "A(",
@@ -57,7 +57,7 @@ Printexc.register_printer((function (param) {
                                 ])
                             ]),
                           "A(%d)"
-                        ]), param[1]);
+                        ]), s[1]);
         } else {
           return ;
         }

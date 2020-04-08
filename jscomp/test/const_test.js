@@ -11,8 +11,8 @@ function ff(x) {
 }
 
 function fff(x) {
-  var match = /* A */Block.__(0, [x]);
-  switch (match.tag | 0) {
+  var x$1 = /* A */Block.__(0, [x]);
+  switch (x$1.tag | 0) {
     case /* A */0 :
         return x;
     case /* B */1 :

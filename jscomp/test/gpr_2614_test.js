@@ -59,9 +59,9 @@ var u = {
   "xx-yy": 3
 };
 
-var match = u["xx-yy"];
+var x = u["xx-yy"];
 
-var v$1 = match !== undefined ? match : 0;
+var v$1 = x !== undefined ? x : 0;
 
 exports.b = b;
 exports.c = c;

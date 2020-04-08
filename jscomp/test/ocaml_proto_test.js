@@ -288,9 +288,9 @@ function string_fold_lefti(f, e0, s) {
   };
 }
 
-function option_default(x, param) {
-  if (param !== undefined) {
-    return Caml_option.valFromOption(param);
+function option_default(x, y) {
+  if (y !== undefined) {
+    return Caml_option.valFromOption(y);
   } else {
     return x;
   }
@@ -360,8 +360,8 @@ function string_of_programmatic_error(e) {
 
 var Compilation_error = Caml_exceptions.create("Ocaml_proto_test.Exception.Compilation_error");
 
-function prepare_error(param) {
-  if (typeof param === "number") {
+function prepare_error(e) {
+  if (typeof e === "number") {
     return Printf.sprintf(/* Format */[
                 /* String_literal */Block.__(11, [
                     "Syntax error",
@@ -370,9 +370,9 @@ function prepare_error(param) {
                 "Syntax error"
               ]);
   }
-  switch (param.tag | 0) {
+  switch (e.tag | 0) {
     case /* Unresolved_type */0 :
-        var match = param[0];
+        var match = e[0];
         return Curry._3(Printf.sprintf(/* Format */[
                         /* String_literal */Block.__(11, [
                             "unresolved type for field name : ",
@@ -399,7 +399,7 @@ function prepare_error(param) {
                         "unresolved type for field name : %s (type:%s, in message: %s)"
                       ]), match.field_name, match.type_, match.message_name);
     case /* Duplicated_field_number */1 :
-        var match$1 = param[0];
+        var match$1 = e[0];
         return Curry._3(Printf.sprintf(/* Format */[
                         /* String_literal */Block.__(11, [
                             "duplicated field number for field name: ",
@@ -426,7 +426,7 @@ function prepare_error(param) {
                         "duplicated field number for field name: %s (previous field name:%s, message: %s)"
                       ]), match$1.field_name, match$1.previous_field_name, match$1.message_name);
     case /* Invalid_default_value */2 :
-        var match$2 = param[0];
+        var match$2 = e[0];
         return Curry._2(Printf.sprintf(/* Format */[
                         /* String_literal */Block.__(11, [
                             "invalid default value for field name:",
@@ -447,7 +447,7 @@ function prepare_error(param) {
                         "invalid default value for field name:%s (info: %s)"
                       ]), option_default("", match$2.field_name), match$2.info);
     case /* Unsupported_field_type */3 :
-        var match$3 = param[0];
+        var match$3 = e[0];
         return Curry._3(Printf.sprintf(/* Format */[
                         /* String_literal */Block.__(11, [
                             "unsupported field type for field name:",
@@ -480,7 +480,7 @@ function prepare_error(param) {
                               ])
                           ]),
                         "programmatic error: %s"
-                      ]), string_of_programmatic_error(param[0]));
+                      ]), string_of_programmatic_error(e[0]));
     case /* Invalid_import_qualifier */5 :
         return Curry._1(Printf.sprintf(/* Format */[
                         /* String */Block.__(2, [
@@ -491,7 +491,7 @@ function prepare_error(param) {
                               ])
                           ]),
                         "%sInvalid import qualified, only 'public' supported"
-                      ]), to_string(param[0]));
+                      ]), to_string(e[0]));
     case /* Invalid_file_name */6 :
         return Curry._1(Printf.sprintf(Pervasives.$caret$caret(/* Format */[
                             /* String_literal */Block.__(11, [
@@ -511,7 +511,7 @@ function prepare_error(param) {
                                 /* End_of_format */0
                               ]),
                             "format must <name>.proto"
-                          ])), param[0]);
+                          ])), e[0]);
     case /* Import_file_not_found */7 :
         return Curry._1(Printf.sprintf(Pervasives.$caret$caret(/* Format */[
                             /* String_literal */Block.__(11, [
@@ -531,7 +531,7 @@ function prepare_error(param) {
                                 /* End_of_format */0
                               ]),
                             "could not be found."
-                          ])), param[0]);
+                          ])), e[0]);
     case /* Invalid_packed_option */8 :
         return Curry._1(Printf.sprintf(/* Format */[
                         /* String_literal */Block.__(11, [
@@ -542,7 +542,7 @@ function prepare_error(param) {
                               ])
                           ]),
                         "Invalid packed option for field: %s"
-                      ]), param[0]);
+                      ]), e[0]);
     case /* Missing_semicolon_for_enum_value */9 :
         return Curry._2(Printf.sprintf(/* Format */[
                         /* String */Block.__(2, [
@@ -556,7 +556,7 @@ function prepare_error(param) {
                               ])
                           ]),
                         "%sMissing semicolon for enum value: %s"
-                      ]), to_string(param[1]), param[0]);
+                      ]), to_string(e[1]), e[0]);
     case /* Invalid_enum_specification */10 :
         return Curry._2(Printf.sprintf(/* Format */[
                         /* String */Block.__(2, [
@@ -570,7 +570,7 @@ function prepare_error(param) {
                               ])
                           ]),
                         "%sMissing enum specification (<identifier> = <id>;) for enum value: %s"
-                      ]), to_string(param[1]), param[0]);
+                      ]), to_string(e[1]), e[0]);
     case /* Invalid_mutable_option */11 :
         return Curry._1(Printf.sprintf(/* Format */[
                         /* String_literal */Block.__(11, [
@@ -581,7 +581,7 @@ function prepare_error(param) {
                               ])
                           ]),
                         "Invalid mutable option for field %s"
-                      ]), option_default("", param[0]));
+                      ]), option_default("", e[0]));
     case /* Missing_one_of_name */12 :
         return Curry._1(Printf.sprintf(/* Format */[
                         /* String */Block.__(2, [
@@ -592,7 +592,7 @@ function prepare_error(param) {
                               ])
                           ]),
                         "%sMissing oneof name"
-                      ]), to_string(param[0]));
+                      ]), to_string(e[0]));
     case /* Invalid_field_label */13 :
         return Curry._1(Printf.sprintf(/* Format */[
                         /* String */Block.__(2, [
@@ -603,7 +603,7 @@ function prepare_error(param) {
                               ])
                           ]),
                         "%sInvalid field label. [required|repeated|optional] expected"
-                      ]), to_string(param[0]));
+                      ]), to_string(e[0]));
     case /* Missing_field_label */14 :
         return Curry._1(Printf.sprintf(/* Format */[
                         /* String */Block.__(2, [
@@ -614,7 +614,7 @@ function prepare_error(param) {
                               ])
                           ]),
                         "%sMissing field label. [required|repeated|optional] expected"
-                      ]), to_string(param[0]));
+                      ]), to_string(e[0]));
     case /* Parsing_error */15 :
         return Curry._3(Printf.sprintf(/* Format */[
                         /* String_literal */Block.__(11, [
@@ -639,7 +639,7 @@ function prepare_error(param) {
                               ])
                           ]),
                         "File %s, line %i:\n%s"
-                      ]), param[0], param[1], param[2]);
+                      ]), e[0], e[1], e[2]);
     
   }
 }
@@ -1586,9 +1586,9 @@ function lexer(lexbuf) {
           ___ocaml_lex_state = 0;
           continue ;
       case 13 :
-          var match$2 = __ocaml_lex_string_rec(/* [] */0, lexbuf, 55);
-          if (match$2) {
-            return /* STRING */Block.__(2, [match$2[0]]);
+          var s = __ocaml_lex_string_rec(/* [] */0, lexbuf, 55);
+          if (s) {
+            return /* STRING */Block.__(2, [s[0]]);
           } else {
             return /* EOF */25;
           }
@@ -1650,7 +1650,7 @@ function lexer(lexbuf) {
       case 20 :
           return /* EOF */25;
       case 21 :
-          var s = Curry._1(Printf.sprintf(/* Format */[
+          var s$1 = Curry._1(Printf.sprintf(/* Format */[
                     /* String_literal */Block.__(11, [
                         "Unknown character found ",
                         /* String */Block.__(2, [
@@ -1662,7 +1662,7 @@ function lexer(lexbuf) {
                   ]), Lexing.lexeme(lexbuf));
           throw [
                 Caml_builtin_exceptions.failure,
-                s
+                s$1
               ];
       default:
         Curry._1(lexbuf.refill_buff, lexbuf);
@@ -1700,19 +1700,19 @@ function string_of_basic_type(param) {
   }
 }
 
-function string_of_field_type(param) {
-  if (typeof param === "number") {
+function string_of_field_type(bt) {
+  if (typeof bt === "number") {
     return "unit";
-  } else if (param.tag) {
-    var param$1 = param[0];
-    var match = param$1.udt_module;
-    if (match !== undefined) {
-      return match + ("." + param$1.udt_type_name);
+  } else if (bt.tag) {
+    var param = bt[0];
+    var module_ = param.udt_module;
+    if (module_ !== undefined) {
+      return module_ + ("." + param.udt_type_name);
     } else {
-      return param$1.udt_type_name;
+      return param.udt_type_name;
     }
   } else {
-    return string_of_basic_type(param[0]);
+    return string_of_basic_type(bt[0]);
   }
 }
 
@@ -1783,8 +1783,8 @@ function string_of_record_field_type(param) {
 }
 
 function function_name_of_user_defined(prefix, param) {
-  var match = param.udt_module;
-  if (match !== undefined) {
+  var module_ = param.udt_module;
+  if (module_ !== undefined) {
     return Curry._3(Printf.sprintf(/* Format */[
                     /* String */Block.__(2, [
                         /* No_padding */0,
@@ -1803,7 +1803,7 @@ function function_name_of_user_defined(prefix, param) {
                           ])
                       ]),
                     "%s.%s_%s"
-                  ]), match, prefix, param.udt_type_name);
+                  ]), module_, prefix, param.udt_type_name);
   } else {
     return Curry._2(Printf.sprintf(/* Format */[
                     /* String */Block.__(2, [
@@ -1899,9 +1899,9 @@ function print(scope) {
       if (!param) {
         return acc;
       }
-      var match = param[0];
-      if (match.tag) {
-        var items = match[0].items;
+      var s = param[0];
+      if (s.tag) {
+        var items = s[0].items;
         var sub = loop(/* [] */0, i + 1 | 0, items);
         _param = param[1];
         _acc = Pervasives.$at(sub, acc);
@@ -1909,7 +1909,7 @@ function print(scope) {
       }
       _param = param[1];
       _acc = /* :: */[
-        indentation_prefix(i) + match[0],
+        indentation_prefix(i) + s[0],
         acc
       ];
       continue ;
@@ -2806,24 +2806,24 @@ function gen_decode_const_variant(and_, param, sc) {
 }
 
 function gen_struct(and_, t, sc) {
-  var match = t.spec;
+  var r = t.spec;
   var tmp;
-  switch (match.tag | 0) {
+  switch (r.tag | 0) {
     case /* Record */0 :
         tmp = /* tuple */[
-          gen_decode_record(and_, match[0], sc),
+          gen_decode_record(and_, r[0], sc),
           true
         ];
         break;
     case /* Variant */1 :
         tmp = /* tuple */[
-          gen_decode_variant(and_, match[0], sc),
+          gen_decode_variant(and_, r[0], sc),
           true
         ];
         break;
     case /* Const_variant */2 :
         tmp = /* tuple */[
-          gen_decode_const_variant(and_, match[0], sc),
+          gen_decode_const_variant(and_, r[0], sc),
           true
         ];
         break;
@@ -2907,9 +2907,9 @@ var __log__ = {
 };
 
 function log(x) {
-  var match = __log__.contents;
-  if (match !== undefined) {
-    return Printf.fprintf(Caml_option.valFromOption(match), x);
+  var oc = __log__.contents;
+  if (oc !== undefined) {
+    return Printf.fprintf(Caml_option.valFromOption(oc), x);
   } else {
     return Printf.ifprintf(Pervasives.stdout, x);
   }
@@ -3340,16 +3340,16 @@ function gen_pp_const_variant(and_, param, sc) {
 }
 
 function gen_struct$1(and_, t, sc) {
-  var match = t.spec;
-  switch (match.tag | 0) {
+  var r = t.spec;
+  switch (r.tag | 0) {
     case /* Record */0 :
-        gen_pp_record(and_, match[0], sc);
+        gen_pp_record(and_, r[0], sc);
         break;
     case /* Variant */1 :
-        gen_pp_variant(and_, match[0], sc);
+        gen_pp_variant(and_, r[0], sc);
         break;
     case /* Const_variant */2 :
-        gen_pp_const_variant(and_, match[0], sc);
+        gen_pp_const_variant(and_, r[0], sc);
         break;
     
   }
@@ -3391,16 +3391,16 @@ function gen_sig$1(and_, t, sc) {
                         "(** [pp_%s v] formats v] *)"
                       ]), type_name));
   };
-  var match = t.spec;
-  switch (match.tag | 0) {
+  var v = t.spec;
+  switch (v.tag | 0) {
     case /* Record */0 :
-        f(match[0].r_name);
+        f(v[0].r_name);
         break;
     case /* Variant */1 :
-        f(match[0].v_name);
+        f(v[0].v_name);
         break;
     case /* Const_variant */2 :
-        f(match[0].cv_name);
+        f(v[0].cv_name);
         break;
     
   }
@@ -3578,11 +3578,11 @@ function fold(f, _m, _accu) {
 }
 
 function min_value(param) {
-  var match = param[0];
-  if (match !== undefined) {
-    var match$1 = param[1];
-    if (match$1 !== undefined) {
-      return Caml_option.some(Caml_obj.caml_min(Caml_option.valFromOption(match), Caml_option.valFromOption(match$1)));
+  var x = param[0];
+  if (x !== undefined) {
+    var y = param[1];
+    if (y !== undefined) {
+      return Caml_option.some(Caml_obj.caml_min(Caml_option.valFromOption(x), Caml_option.valFromOption(y)));
     }
     throw [
           Caml_builtin_exceptions.failure,
@@ -3596,11 +3596,11 @@ function min_value(param) {
 }
 
 function eq_value(param) {
-  var match = param[0];
-  if (match !== undefined) {
-    var match$1 = param[1];
-    if (match$1 !== undefined) {
-      return Caml_obj.caml_equal(Caml_option.valFromOption(match), Caml_option.valFromOption(match$1));
+  var x = param[0];
+  if (x !== undefined) {
+    var y = param[1];
+    if (y !== undefined) {
+      return Caml_obj.caml_equal(Caml_option.valFromOption(x), Caml_option.valFromOption(y));
     }
     throw [
           Caml_builtin_exceptions.failure,
@@ -3613,8 +3613,8 @@ function eq_value(param) {
       ];
 }
 
-function string_of_option(f, param) {
-  if (param !== undefined) {
+function string_of_option(f, x) {
+  if (x !== undefined) {
     return Curry._1(Printf.sprintf(/* Format */[
                     /* String_literal */Block.__(11, [
                         "Some(",
@@ -3627,7 +3627,7 @@ function string_of_option(f, param) {
                           ])
                       ]),
                     "Some(%s)"
-                  ]), Curry._1(f, Caml_option.valFromOption(param)));
+                  ]), Curry._1(f, Caml_option.valFromOption(x)));
   } else {
     return "None";
   }
@@ -3944,10 +3944,10 @@ function string_of_unresolved(param) {
                 ]), string_of_string_list(param.scope), param.type_name, param.from_root);
 }
 
-function scope_of_package(param) {
-  if (param !== undefined) {
+function scope_of_package(s) {
+  if (s !== undefined) {
     return {
-            packages: List.rev(rev_split_by_char(/* "." */46, param)),
+            packages: List.rev(rev_split_by_char(/* "." */46, s)),
             message_names: /* [] */0
           };
   } else {
@@ -4212,13 +4212,13 @@ function compile_message_p1(file_name, file_options, message_scope, param) {
     packages: sub_scope_packages,
     message_names: sub_scope_message_names
   };
-  var match = List.fold_left((function (param, param$1) {
+  var match = List.fold_left((function (param, f) {
           var all_types = param[2];
           var extensions = param[1];
           var message_body = param[0];
-          switch (param$1.tag | 0) {
+          switch (f.tag | 0) {
             case /* Message_field */0 :
-                var field = /* Message_field */Block.__(0, [compile_field_p1(param$1[0])]);
+                var field = /* Message_field */Block.__(0, [compile_field_p1(f[0])]);
                 return /* tuple */[
                         /* :: */[
                           field,
@@ -4228,7 +4228,7 @@ function compile_message_p1(file_name, file_options, message_scope, param) {
                         all_types
                       ];
             case /* Message_map_field */1 :
-                var field$1 = /* Message_map_field */Block.__(2, [compile_map_p1(param$1[0])]);
+                var field$1 = /* Message_map_field */Block.__(2, [compile_map_p1(f[0])]);
                 return /* tuple */[
                         /* :: */[
                           field$1,
@@ -4238,7 +4238,7 @@ function compile_message_p1(file_name, file_options, message_scope, param) {
                         all_types
                       ];
             case /* Message_oneof_field */2 :
-                var field$2 = /* Message_oneof_field */Block.__(1, [compile_oneof_p1(param$1[0])]);
+                var field$2 = /* Message_oneof_field */Block.__(1, [compile_oneof_p1(f[0])]);
                 return /* tuple */[
                         /* :: */[
                           field$2,
@@ -4248,7 +4248,7 @@ function compile_message_p1(file_name, file_options, message_scope, param) {
                         all_types
                       ];
             case /* Message_sub */3 :
-                var all_sub_types = compile_message_p1(file_name, file_options, sub_scope, param$1[0]);
+                var all_sub_types = compile_message_p1(file_name, file_options, sub_scope, f[0]);
                 return /* tuple */[
                         message_body,
                         extensions,
@@ -4259,14 +4259,14 @@ function compile_message_p1(file_name, file_options, message_scope, param) {
                         message_body,
                         extensions,
                         Pervasives.$at(all_types, /* :: */[
-                              compile_enum_p1(file_name, file_options, sub_scope, param$1[0]),
+                              compile_enum_p1(file_name, file_options, sub_scope, f[0]),
                               /* [] */0
                             ])
                       ];
             case /* Message_extension */5 :
                 return /* tuple */[
                         message_body,
-                        Pervasives.$at(extensions, param$1[0]),
+                        Pervasives.$at(extensions, f[0]),
                         all_types
                       ];
             
@@ -4306,12 +4306,12 @@ function compile_message_p1(file_name, file_options, message_scope, param) {
           ];
     }
   };
-  List.fold_left((function (number_index, param) {
-          switch (param.tag | 0) {
+  List.fold_left((function (number_index, f) {
+          switch (f.tag | 0) {
             case /* Message_field */0 :
-                return validate_duplicate(number_index, param[0]);
+                return validate_duplicate(number_index, f[0]);
             case /* Message_oneof_field */1 :
-                return List.fold_left(validate_duplicate, number_index, param[0].oneof_fields);
+                return List.fold_left(validate_duplicate, number_index, f[0].oneof_fields);
             case /* Message_map_field */2 :
                 return number_index;
             
@@ -4498,17 +4498,17 @@ function compile_message_p2(types, param, message) {
           ];
     }
   };
-  var message_body = List.fold_left((function (message_body, param) {
-          switch (param.tag | 0) {
+  var message_body = List.fold_left((function (message_body, field) {
+          switch (field.tag | 0) {
             case /* Message_field */0 :
-                var field = param[0];
-                var field_name$1 = field_name(field);
-                var field_type$1 = field_type(field);
-                var field_field_parsed = field.field_parsed;
+                var field$1 = field[0];
+                var field_name$1 = field_name(field$1);
+                var field_type$1 = field_type(field$1);
+                var field_field_parsed = field$1.field_parsed;
                 var field_field_type = compile_field_p2(field_name$1, field_type$1);
-                var field_field_default = field.field_default;
-                var field_field_options = field.field_options;
-                var field$1 = {
+                var field_field_default = field$1.field_default;
+                var field_field_options = field$1.field_options;
+                var field$2 = {
                   field_parsed: field_field_parsed,
                   field_type: field_field_type,
                   field_default: field_field_default,
@@ -4516,20 +4516,20 @@ function compile_message_p2(types, param, message) {
                 };
                 var field_field_parsed$1 = field_field_parsed;
                 var field_field_type$1 = field_field_type;
-                var field_field_default$1 = compile_default_p2(types, field$1);
+                var field_field_default$1 = compile_default_p2(types, field$2);
                 var field_field_options$1 = field_field_options;
-                var field$2 = {
+                var field$3 = {
                   field_parsed: field_field_parsed$1,
                   field_type: field_field_type$1,
                   field_default: field_field_default$1,
                   field_options: field_field_options$1
                 };
                 return /* :: */[
-                        /* Message_field */Block.__(0, [field$2]),
+                        /* Message_field */Block.__(0, [field$3]),
                         message_body
                       ];
             case /* Message_oneof_field */1 :
-                var oneof = param[0];
+                var oneof = field[0];
                 var oneof_fields = List.fold_left((function (oneof_fields, field) {
                         var field_name$2 = field_name(field);
                         var field_type$2 = field_type(field);
@@ -4553,7 +4553,7 @@ function compile_message_p2(types, param, message) {
                         message_body
                       ];
             case /* Message_map_field */2 :
-                var map = param[0];
+                var map = field[0];
                 var map_name = map.map_name;
                 var map_key_type = compile_field_p2(map_name, map.map_key_type);
                 var map_value_type = compile_field_p2(map_name, map.map_value_type);
@@ -4817,19 +4817,19 @@ function gen_type_const_variant(and_, param, sc) {
 }
 
 function gen_struct$2(and_, t, scope) {
-  var match = t.spec;
-  switch (match.tag | 0) {
+  var r = t.spec;
+  switch (r.tag | 0) {
     case /* Record */0 :
-        var r = match[0];
-        gen_type_record(undefined, and_, r, scope);
+        var r$1 = r[0];
+        gen_type_record(undefined, and_, r$1, scope);
         line$1(scope, "");
-        gen_type_record(Caml_option.some(undefined), Caml_option.some(undefined), r, scope);
+        gen_type_record(Caml_option.some(undefined), Caml_option.some(undefined), r$1, scope);
         break;
     case /* Variant */1 :
-        gen_type_variant(and_, match[0], scope);
+        gen_type_variant(and_, r[0], scope);
         break;
     case /* Const_variant */2 :
-        gen_type_const_variant(and_, match[0], scope);
+        gen_type_const_variant(and_, r[0], scope);
         break;
     
   }
@@ -4837,16 +4837,16 @@ function gen_struct$2(and_, t, scope) {
 }
 
 function gen_sig$2(and_, t, scope) {
-  var match = t.spec;
-  switch (match.tag | 0) {
+  var r = t.spec;
+  switch (r.tag | 0) {
     case /* Record */0 :
-        gen_type_record(undefined, and_, match[0], scope);
+        gen_type_record(undefined, and_, r[0], scope);
         break;
     case /* Variant */1 :
-        gen_type_variant(and_, match[0], scope);
+        gen_type_variant(and_, r[0], scope);
         break;
     case /* Const_variant */2 :
-        gen_type_const_variant(and_, match[0], scope);
+        gen_type_const_variant(and_, r[0], scope);
         break;
     
   }
@@ -5435,24 +5435,24 @@ function gen_encode_const_variant(and_, param, sc) {
 }
 
 function gen_struct$3(and_, t, sc) {
-  var match = t.spec;
+  var r = t.spec;
   var tmp;
-  switch (match.tag | 0) {
+  switch (r.tag | 0) {
     case /* Record */0 :
         tmp = /* tuple */[
-          gen_encode_record(and_, match[0], sc),
+          gen_encode_record(and_, r[0], sc),
           true
         ];
         break;
     case /* Variant */1 :
         tmp = /* tuple */[
-          gen_encode_variant(and_, match[0], sc),
+          gen_encode_variant(and_, r[0], sc),
           true
         ];
         break;
     case /* Const_variant */2 :
         tmp = /* tuple */[
-          gen_encode_const_variant(and_, match[0], sc),
+          gen_encode_const_variant(and_, r[0], sc),
           true
         ];
         break;
@@ -5496,24 +5496,24 @@ function gen_sig$3(and_, t, sc) {
                         "(** [encode_%s v encoder] encodes [v] with the given [encoder] *)"
                       ]), type_name));
   };
-  var match = t.spec;
+  var v = t.spec;
   var tmp;
-  switch (match.tag | 0) {
+  switch (v.tag | 0) {
     case /* Record */0 :
         tmp = /* tuple */[
-          f(match[0].r_name),
+          f(v[0].r_name),
           true
         ];
         break;
     case /* Variant */1 :
         tmp = /* tuple */[
-          f(match[0].v_name),
+          f(v[0].v_name),
           true
         ];
         break;
     case /* Const_variant */2 :
         tmp = /* tuple */[
-          f(match[0].cv_name),
+          f(v[0].cv_name),
           true
         ];
         break;
@@ -6002,25 +6002,25 @@ function gen_default_const_variant(and_, param, sc) {
 }
 
 function gen_struct$4(and_, t, sc) {
-  var match = t.spec;
+  var r = t.spec;
   var tmp;
-  switch (match.tag | 0) {
+  switch (r.tag | 0) {
     case /* Record */0 :
-        var r = match[0];
+        var r$1 = r[0];
         tmp = /* tuple */[
-          (gen_default_record(undefined, and_, r, sc), line$1(sc, ""), gen_default_record(Caml_option.some(undefined), Caml_option.some(undefined), r, sc)),
+          (gen_default_record(undefined, and_, r$1, sc), line$1(sc, ""), gen_default_record(Caml_option.some(undefined), Caml_option.some(undefined), r$1, sc)),
           true
         ];
         break;
     case /* Variant */1 :
         tmp = /* tuple */[
-          gen_default_variant(and_, match[0], sc),
+          gen_default_variant(and_, r[0], sc),
           true
         ];
         break;
     case /* Const_variant */2 :
         tmp = /* tuple */[
-          gen_default_const_variant(undefined, match[0], sc),
+          gen_default_const_variant(undefined, r[0], sc),
           true
         ];
         break;
@@ -6130,24 +6130,24 @@ function gen_sig$4(and_, t, sc) {
                         "(** [default_%s ()] is the default value for type [%s] *)"
                       ]), type_name, type_name));
   };
-  var match = t.spec;
+  var r = t.spec;
   var tmp;
-  switch (match.tag | 0) {
+  switch (r.tag | 0) {
     case /* Record */0 :
         tmp = /* tuple */[
-          gen_sig_record(sc, match[0]),
+          gen_sig_record(sc, r[0]),
           true
         ];
         break;
     case /* Variant */1 :
         tmp = /* tuple */[
-          f(match[0].v_name),
+          f(r[0].v_name),
           true
         ];
         break;
     case /* Const_variant */2 :
         tmp = /* tuple */[
-          f(match[0].cv_name),
+          f(r[0].cv_name),
           true
         ];
         break;
@@ -6559,18 +6559,18 @@ function compile(proto_definition) {
   }
   var all_pbtt_msgs = compile_proto_p1("tmp.proto", proto);
   var all_pbtt_msgs$1 = List.map((function (param) {
-          var spec = param.spec;
+          var m = param.spec;
           var file_options = param.file_options;
           var file_name = param.file_name;
           var id = param.id;
           var scope = param.scope;
-          if (spec.tag) {
+          if (m.tag) {
             return {
                     scope: scope,
                     id: id,
                     file_name: file_name,
                     file_options: file_options,
-                    spec: /* Message */Block.__(1, [compile_message_p2(all_pbtt_msgs, scope, spec[0])])
+                    spec: /* Message */Block.__(1, [compile_message_p2(all_pbtt_msgs, scope, m[0])])
                   };
           } else {
             return {
@@ -6578,19 +6578,19 @@ function compile(proto_definition) {
                     id: id,
                     file_name: file_name,
                     file_options: file_options,
-                    spec: spec
+                    spec: m
                   };
           }
         }), all_pbtt_msgs);
   var grouped_pbtt_msgs = List.rev(group(all_pbtt_msgs$1));
   var grouped_ocaml_types = List.map((function (pbtt_msgs) {
           return List.map((function (pbtt_msg) {
-                        var match = pbtt_msg.spec;
+                        var m = pbtt_msg.spec;
                         var file_name = pbtt_msg.file_name;
                         var scope = pbtt_msg.scope;
-                        if (match.tag) {
+                        if (m.tag) {
                           var file_options = pbtt_msg.file_options;
-                          var message = match[0];
+                          var message = m[0];
                           var module_ = module_of_file_name(file_name);
                           var message_names = scope.message_names;
                           var message_body = message.message_body;
@@ -6598,15 +6598,15 @@ function compile(proto_definition) {
                           if (!message_body) {
                             return /* [] */0;
                           }
-                          var match$1 = message_body[0];
-                          switch (match$1.tag | 0) {
+                          var f = message_body[0];
+                          switch (f.tag | 0) {
                             case /* Message_oneof_field */1 :
                                 if (!message_body[1]) {
                                   var outer_message_names = Pervasives.$at(message_names, /* :: */[
                                         message_name,
                                         /* [] */0
                                       ]);
-                                  var variant = variant_of_oneof(undefined, outer_message_names, all_pbtt_msgs$1, file_options, file_name, match$1[0]);
+                                  var variant = variant_of_oneof(undefined, outer_message_names, all_pbtt_msgs$1, file_options, file_name, f[0]);
                                   return /* :: */[
                                           {
                                             module_: module_,
@@ -6621,21 +6621,21 @@ function compile(proto_definition) {
                                 break;
                             
                           }
-                          var match$2 = List.fold_left((function (param, param$1) {
+                          var match = List.fold_left((function (param, field) {
                                   var fields = param[1];
                                   var variants = param[0];
-                                  switch (param$1.tag | 0) {
+                                  switch (field.tag | 0) {
                                     case /* Message_field */0 :
-                                        var field = param$1[0];
-                                        var match = encoding_of_field(all_pbtt_msgs$1, field);
+                                        var field$1 = field[0];
+                                        var match = encoding_of_field(all_pbtt_msgs$1, field$1);
                                         var encoding_number = match[1];
                                         var pk = match[0];
-                                        var field_name$1 = field_name(field);
-                                        var field_options$1 = field_options(field);
-                                        var field_type$1 = compile_field_type(field_name$1, all_pbtt_msgs$1, file_options, field_options$1, file_name, field_type(field));
-                                        var field_default$1 = field_default(field);
+                                        var field_name$1 = field_name(field$1);
+                                        var field_options$1 = field_options(field$1);
+                                        var field_type$1 = compile_field_type(field_name$1, all_pbtt_msgs$1, file_options, field_options$1, file_name, field_type(field$1));
+                                        var field_default$1 = field_default(field$1);
                                         var mutable_ = is_mutable(field_name$1, field_options$1);
-                                        var match$1 = field_label(field);
+                                        var match$1 = field_label(field$1);
                                         var record_field_type;
                                         if (match$1 !== -132092992) {
                                           if (match$1 >= 202657151) {
@@ -6690,13 +6690,13 @@ function compile(proto_definition) {
                                                 ]
                                               ];
                                     case /* Message_oneof_field */1 :
-                                        var field$1 = param$1[0];
+                                        var field$2 = field[0];
                                         var outer_message_names = Pervasives.$at(message_names, /* :: */[
                                               message_name,
                                               /* [] */0
                                             ]);
-                                        var variant = variant_of_oneof(Caml_option.some(undefined), outer_message_names, all_pbtt_msgs$1, file_options, file_name, field$1);
-                                        var record_field_rf_label$1 = label_name_of_field_name(field$1.oneof_name);
+                                        var variant = variant_of_oneof(Caml_option.some(undefined), outer_message_names, all_pbtt_msgs$1, file_options, file_name, field$2);
+                                        var record_field_rf_label$1 = label_name_of_field_name(field$2.oneof_name);
                                         var record_field_rf_field_type = /* Rft_variant_field */Block.__(4, [variant]);
                                         var record_field$1 = {
                                           rf_label: record_field_rf_label$1,
@@ -6720,7 +6720,7 @@ function compile(proto_definition) {
                                                 fields$1
                                               ];
                                     case /* Message_map_field */2 :
-                                        var mf = param$1[0];
+                                        var mf = field[0];
                                         var map_options = mf.map_options;
                                         var map_value_type = mf.map_value_type;
                                         var map_key_type = mf.map_key_type;
@@ -6808,7 +6808,7 @@ function compile(proto_definition) {
                                 /* [] */0
                               ], message_body);
                           var record_r_name = type_name(message_names, message_name);
-                          var record_r_fields = List.rev(match$2[1]);
+                          var record_r_fields = List.rev(match[1]);
                           var record = {
                             r_name: record_r_name,
                             r_fields: record_r_fields
@@ -6820,11 +6820,11 @@ function compile(proto_definition) {
                           };
                           return List.rev(/* :: */[
                                       type_,
-                                      match$2[0]
+                                      match[0]
                                     ]);
                         } else {
                           return /* :: */[
-                                  compile_enum(file_name, scope, match[0]),
+                                  compile_enum(file_name, scope, m[0]),
                                   /* [] */0
                                 ];
                         }

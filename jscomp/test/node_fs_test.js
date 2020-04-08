@@ -2,10 +2,10 @@
 
 var Fs = require("fs");
 
-var match = typeof __filename === "undefined" ? undefined : __filename;
+var f = typeof __filename === "undefined" ? undefined : __filename;
 
-if (match !== undefined) {
-  console.log(Fs.readFileSync(match, "utf8"));
+if (f !== undefined) {
+  console.log(Fs.readFileSync(f, "utf8"));
 }
 
-/* match Not a pure module */
+/* f Not a pure module */

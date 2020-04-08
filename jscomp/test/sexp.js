@@ -170,13 +170,13 @@ function map_opt(f, l) {
     if (!l$1) {
       return List.rev(acc);
     }
-    var match = Curry._1(f, l$1[0]);
-    if (match === undefined) {
+    var y = Curry._1(f, l$1[0]);
+    if (y === undefined) {
       return ;
     }
     _l = l$1[1];
     _acc = /* :: */[
-      Caml_option.valFromOption(match),
+      Caml_option.valFromOption(y),
       acc
     ];
     continue ;
@@ -213,11 +213,11 @@ function list_all(f, e) {
         return List.rev(acc);
       }
       var tl = l[1];
-      var match = Curry._1(f, l[0]);
-      if (match !== undefined) {
+      var y = Curry._1(f, l[0]);
+      if (y !== undefined) {
         _l = tl;
         _acc = /* :: */[
-          Caml_option.valFromOption(match),
+          Caml_option.valFromOption(y),
           acc
         ];
         continue ;

@@ -59,9 +59,9 @@ function test(param) {
 }
 
 function test2(param) {
-  var match = typeof __filename === "undefined" ? undefined : __filename;
-  if (match !== undefined) {
-    console.log(match);
+  var f = typeof __filename === "undefined" ? undefined : __filename;
+  if (f !== undefined) {
+    console.log(f);
     return ;
   } else {
     console.log("non node environment");

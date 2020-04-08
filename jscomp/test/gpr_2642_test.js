@@ -1,20 +1,20 @@
 'use strict';
 
 
-function isfree(id, _param) {
+function isfree(id, _id$prime) {
   while(true) {
-    var param = _param;
-    switch (param.tag | 0) {
+    var id$prime = _id$prime;
+    switch (id$prime.tag | 0) {
       case /* Pident */0 :
-          return id === param[0];
+          return id === id$prime[0];
       case /* Pdot */1 :
-          _param = param[0];
+          _id$prime = id$prime[0];
           continue ;
       case /* Papply */2 :
-          if (isfree(id, param[0])) {
+          if (isfree(id, id$prime[0])) {
             return true;
           }
-          _param = param[1];
+          _id$prime = id$prime[1];
           continue ;
       
     }
