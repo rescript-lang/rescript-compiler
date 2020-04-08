@@ -134,10 +134,20 @@ let caml_lazy_make (fn : _ -> _) =
    whose tag is 0, we optimize that case
 *)
 let caml_update_dummy : _ -> _ -> unit= [%raw{|function(x,y){
-  for (var k in y){
-    x[k] = y[k]
+  var k  
+  if(Array.isArray(y)){
+    for(k = 0; k < y.length ; ++k){
+      x[k] = y[k]
+    }
+    if(y.tag !== undefined){
+      x.tag = y.tag
+    }
+  } else {
+    for (var k in y){
+      x[k] = y[k]
+    }
   }
-  }
+}
 |}]
   
 (* Caml_obj_extern.set_length x   (Caml_obj_extern.length y) *)
