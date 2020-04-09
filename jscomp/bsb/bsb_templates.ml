@@ -657,6 +657,7 @@ let root = OCamlRes.Res.([
            // A little extra we've put, because the ReactJS example has no styling\n\
            let leftButtonStyle = ReactDOMRe.Style.make(~borderRadius=\"4px 0px 0px 4px\", ~width=\"48px\", ());\n\
            let rightButtonStyle = ReactDOMRe.Style.make(~borderRadius=\"0px 4px 4px 0px\", ~width=\"48px\", ());\n\
+           let containerStyle = ReactDOMRe.Style.make(~display=\"flex\", ~alignItems=\"center\", ~justifyContent=\"space-between\", ());\n\
            \n\
            // Record and variant need explicit declarations.\n\
            type state = {count: int};\n\
@@ -679,8 +680,7 @@ let root = OCamlRes.Res.([
           \  let (state, dispatch) = React.useReducer(reducer, initialState);\n\
            \n\
           \  // We can use a fragment here, but we don't, because we want to style the counter\n\
-          \  <div\n\
-          \    style={ReactDOMRe.Style.make(~display=\"flex\", ~alignItems=\"center\", ~justifyContent=\"space-between\", ())}>\n\
+          \  <div style=containerStyle>\n\
           \    <div>\n\
           \      {React.string(\"Count: \")}\n\
           \      {React.string(string_of_int(state.count))}\n\
