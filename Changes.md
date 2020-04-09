@@ -1,5 +1,26 @@
 `*` means  potential break changes
 # current
+# 7.3
+- #4235 #4237 #4241 #4244 #4240 generalized uncurry work
+- #4255 #4258 code generation: compiling unit to `undefined`
+- #4288 code generation: improve module alias code generation
+- #4287 code generation: meaningful names for pattern match
+- #4286 code generation: better code generation for loops
+- #4224 #4262 code generation: eleminate intermediate variables when inlining
+- #4198 #4228 remove some long deprecated APIs, Js.Math.pow_int
+- #4257 docs: add docs about Belt.Id.comparable
+- #4256 tweaks to super error message
+- #4284 regression fix: better dumping cmi files to avoid scary names
+- #4285 #4268 turn off warning 20 by default (which produces false alarm)
+- #4283 tweak react-hooks template
+- #4270 #4273 deriving abstract free in belt, belt no longer relies on such extension
+- #4272 code generation: better handling of option unpacking
+- #4269 not rely on `npm link` for bsb templates
+- #4266 #4265 fix belt.MutableMap
+- #4259 consistent warning docs in `bsc -warn-help`
+- #4251 remove String.prototype.polyfill
+- #4250 adding `-unboxed-types` option (where @unboxed attribute may not be needed)
+- #4217 make compiler int64 encoding agnostic
 
 # 7.2
 - #4211 #4210 optimize int64 performance, Int64.to_string (10x faster), Int64.neg etc
