@@ -2,8 +2,8 @@
 [@@@bs.config {
   flags = [|
   (* "-drawlambda"; "-dlambda";  *)
-  "-dtypedtree"
-  (* "-bs-debug-unit" *)
+  "-dtypedtree";
+  (* "-bs-diagnose" *)
   |]
 }]
 
