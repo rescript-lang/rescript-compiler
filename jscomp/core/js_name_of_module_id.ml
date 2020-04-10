@@ -47,12 +47,12 @@ let get_runtime_module_path (dep_module_id : Lam_module_ident.t)
       module_system
   in
   let js_file =
-    Ext_namespace.js_name_of_modulename dep_module_id.id.name Little_js
+    Ext_namespace.js_filename_of_modulename ~name:dep_module_id.id.name
+      ~ext:".js" Lower
   in
   match loc with
   | Package_not_found -> assert false
-  | Package_script ->
-      Js_package_info.runtime_package_path module_system js_file
+  | Package_script -> Js_package_info.runtime_package_path module_system js_file
   | Package_found pkg -> (
       let dep_path =
         "lib" // Js_package_info.runtime_dir_of_module_system module_system
@@ -82,8 +82,8 @@ let get_runtime_module_path (dep_module_id : Lam_module_ident.t)
 
 (* [output_dir] is decided by the command line argument *)
 let string_of_module_id (dep_module_id : Lam_module_ident.t)
-    ~(output_dir : string) (module_system : Js_package_info.module_system) :
-    string =
+    ~(output_dir : string) ~(ext : string)
+    (module_system : Js_package_info.module_system) : string =
   let current_package_info = Js_current_package_info.get_packages_info () in
   fix_path_for_windows
     ( match dep_module_id.kind with
@@ -99,12 +99,12 @@ let string_of_module_id (dep_module_id : Lam_module_ident.t)
         get_runtime_module_path dep_module_id current_package_info module_system
     | Ml -> (
         let query = Js_package_info.query_package_location_by_module_system in
-        let current_loc = query current_package_info module_system
-        in
+        let current_loc = query current_package_info module_system in
         match Lam_compile_env.get_package_path_from_cmj dep_module_id with
-        | cmj_path, dep_package_info, little -> (
+        | cmj_path, dep_package_info, case -> (
             let js_file =
-              Ext_namespace.js_name_of_modulename dep_module_id.id.name little
+              Ext_namespace.js_filename_of_modulename
+                ~name:dep_module_id.id.name ~ext case
             in
             let dep_loc = query dep_package_info module_system in
             match (dep_loc, current_loc) with
@@ -179,6 +179,6 @@ let string_of_module_id_in_browser (x : Lam_module_ident.t) =
 
 
 let string_of_module_id (id : Lam_module_ident.t) ~output_dir:(_ : string)
-    (_module_system : Js_package_info.module_system) =
+    ~ext:(_ : string) (_module_system : Js_package_info.module_system) =
   string_of_module_id_in_browser id
 #end

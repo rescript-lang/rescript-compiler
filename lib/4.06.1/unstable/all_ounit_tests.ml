@@ -7733,7 +7733,6 @@ val syntax_only : bool ref
 val binary_ast : bool ref
 val simple_binary_ast : bool ref
 
-val bs_suffix : bool ref
 val debug : bool ref
 
 val cmi_only : bool ref
@@ -16317,12 +16316,13 @@ val replace_namespace_with_extension : name:string -> ext:string -> string
     after [ns_sep_char], if any; and appends [ext].
 *)
 
-type file_kind = Upper_js | Upper_bs | Little_js | Little_bs
+type leading_case = Upper | Lower
 
-val js_name_of_modulename : string -> file_kind -> string
+val js_filename_of_modulename :
+  name:string -> ext:string -> leading_case -> string
 (** Predicts the JavaScript filename for a given (possibly namespaced) module-
-    name; i.e. [js_name_of_modulename "AA-Ns" Little_bs] would produce
-    ["aA.bs.js"]. *)
+    name; i.e. [js_filename_of_modulename ~name:"AA-Ns" ~ext:".js" Lower] would
+    produce ["aA.bs.js"]. *)
 
 val is_valid_npm_package_name : string -> bool
 
@@ -16397,21 +16397,15 @@ let try_split_module_name name =
   else Some (String.sub name (i + 1) (len - i - 1), String.sub name 0 i)
 
 
-type file_kind = Upper_js | Upper_bs | Little_js | Little_bs
+type leading_case = Upper | Lower
 
-let js_name_of_modulename s little =
-  match little with
-  | Little_js ->
+let js_filename_of_modulename ~name ~ext (leading_case : leading_case) =
+  match leading_case with
+  | Lower ->
       replace_namespace_with_extension
-        ~name:(Ext_string.uncapitalize_ascii s)
-        ~ext:Literals.suffix_js
-  | Little_bs ->
-      replace_namespace_with_extension
-        ~name:(Ext_string.uncapitalize_ascii s)
-        ~ext:Literals.suffix_bs_js
-  | Upper_js -> replace_namespace_with_extension ~name:s ~ext:Literals.suffix_js
-  | Upper_bs ->
-      replace_namespace_with_extension ~name:s ~ext:Literals.suffix_bs_js
+        ~name:(Ext_string.uncapitalize_ascii name)
+        ~ext
+  | Upper -> replace_namespace_with_extension ~name ~ext
 
 
 (** https://docs.npmjs.com/files/package.json
@@ -16873,10 +16867,13 @@ let suites =
         ~name:"AA-b" ~ext:Literals.suffix_js =~ "AA.js";
       Ext_namespace.replace_namespace_with_extension
         ~name:"AA-b" ~ext:Literals.suffix_js =~ "AA.js";
-      Ext_namespace.js_name_of_modulename "AA-b" Little_js =~ "aA.js";
-      Ext_namespace.js_name_of_modulename "AA-b" Upper_js =~ "AA.js";
-      Ext_namespace.js_name_of_modulename "AA-b" Upper_bs =~ "AA.bs.js"
-    end;
+      Ext_namespace.js_filename_of_modulename
+        ~name:"AA-b" ~ext:Literals.suffix_js Lower =~ "aA.js";
+      Ext_namespace.js_filename_of_modulename
+        ~name:"AA-b" ~ext:Literals.suffix_js Upper =~ "AA.js";
+      Ext_namespace.js_filename_of_modulename
+        ~name:"AA-b" ~ext:Literals.suffix_bs_js Upper =~ "AA.bs.js";
+     end;
     __LOC__ >:: begin   fun _ ->
       let (=~) = OUnit.assert_equal ~printer:(fun x ->
           match x with

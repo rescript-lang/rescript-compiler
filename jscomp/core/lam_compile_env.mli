@@ -63,12 +63,15 @@ val query_external_id_info : Ident.t -> string -> ident_info
 val is_pure_module : Lam_module_ident.t -> bool
 
 val get_package_path_from_cmj :
-  Lam_module_ident.t -> string * Js_package_info.t * Js_cmj_format.cmj_case
+  Lam_module_ident.t -> string * Js_package_info.t * Ext_namespace.leading_case
 
-(* The second argument is mostly from [runtime] modules will change the input
-   [hard_dependencies] [get_required_modules extra hard_dependencies] [extra]
-   maybe removed if it is pure and not in [hard_dependencies] *)
 val get_required_modules :
   Lam_module_ident.Hash_set.t ->
   Lam_module_ident.Hash_set.t ->
   Lam_module_ident.t list
+(** The second argument is mostly from [runtime] modules
+
+    will change the input [hard_dependencies]
+
+    [get_required_modules extra hard_dependencies] - [extra] maybe removed if it
+    is pure and not in [hard_dependencies] *)

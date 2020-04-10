@@ -84,7 +84,7 @@ let implementation ?prefix ~use_super_errors ?(react_ppx_version = V3) impl str
     let buffer = Buffer.create 1000 in
     let () =
       Js_dump_program.pp_deps_program (* does not matter here *)
-        ~output_prefix:"" NodeJS
+        ~output_prefix:"" ~ext:".js" NodeJS
         (Lam_compile_main.compile "" lam)
         (Ext_pp.from_buffer buffer)
     in

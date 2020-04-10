@@ -33,12 +33,13 @@ val replace_namespace_with_extension : name:string -> ext:string -> string
     after [ns_sep_char], if any; and appends [ext].
 *)
 
-type file_kind = Upper_js | Upper_bs | Little_js | Little_bs
+type leading_case = Upper | Lower
 
-val js_name_of_modulename : string -> file_kind -> string
+val js_filename_of_modulename :
+  name:string -> ext:string -> leading_case -> string
 (** Predicts the JavaScript filename for a given (possibly namespaced) module-
-    name; i.e. [js_name_of_modulename "AA-Ns" Little_bs] would produce
-    ["aA.bs.js"]. *)
+    name; i.e. [js_filename_of_modulename ~name:"AA-Ns" ~ext:".js" Lower] would
+    produce ["aA.bs.js"]. *)
 
 val is_valid_npm_package_name : string -> bool
 

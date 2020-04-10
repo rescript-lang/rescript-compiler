@@ -96,7 +96,7 @@ let get_package_path_from_cmj (id : Lam_module_ident.t) =
   | Some (Ml { cmj_table; cmj_path }) ->
       ( cmj_path,
         Js_cmj_format.get_package_info cmj_table,
-        Js_cmj_format.get_cmj_case cmj_table )
+        Js_cmj_format.get_leading_case cmj_table )
   | Some (External | Runtime _) ->
       assert false
       (* called by {!Js_name_of_module_id.string_of_module_id} can not be
@@ -112,7 +112,7 @@ let get_package_path_from_cmj (id : Lam_module_ident.t) =
           id +> Ml cmj_load_info;
           ( cmj_load_info.cmj_path,
             Js_cmj_format.get_package_info cmj_table,
-            Js_cmj_format.get_cmj_case cmj_table ) )
+            Js_cmj_format.get_leading_case cmj_table ) )
 
 
 let add = Lam_module_ident.Hash_set.add

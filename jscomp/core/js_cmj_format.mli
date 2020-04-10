@@ -46,15 +46,13 @@ type cmj_value = {
 
 type effect = string option
 
-type cmj_case = Ext_namespace.file_kind
-
 type t
 
 val mk :
   values:cmj_value Map_string.t ->
   effect:effect ->
   package_info:Js_package_info.t ->
-  cmj_case:cmj_case ->
+  leading_case:Ext_namespace.leading_case ->
   t
 
 val query_by_name : t -> string -> arity * Lam.t option
@@ -63,7 +61,7 @@ val is_pure : t -> bool
 
 val get_package_info : t -> Js_package_info.t
 
-val get_cmj_case : t -> cmj_case
+val get_leading_case : t -> Ext_namespace.leading_case
 
 val single_na : arity
 

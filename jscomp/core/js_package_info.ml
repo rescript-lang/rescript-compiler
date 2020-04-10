@@ -49,6 +49,8 @@ type location_descriptor = {
 
 type package_name = Pkg_empty | Pkg_runtime | Pkg_normal of string
 
+let deprecated_use_bs_extension = ref false
+
 let runtime_package_name = "bs-platform"
 
 let ( // ) = Filename.concat
@@ -104,6 +106,7 @@ let dump_location_descriptor (fmt : Format.formatter)
   Format.fprintf fmt "@[%s:@ %s:@ %s@]"
     (string_of_module_system ms)
     path extension
+
 
 let dump_package_name fmt (x : package_name) =
   match x with
@@ -168,17 +171,33 @@ let get_output_dir (info : t) ~package_dir module_system =
   Filename.concat package_dir (get_js_path info module_system)
 
 
+let deprecated_set_bs_extension () =
+  Bs_warnings.warn_deprecated_bs_suffix_flag ();
+  deprecated_use_bs_extension := true
+
+
+let deprecated_get_default_extension () =
+  if !deprecated_use_bs_extension then Literals.suffix_bs_js
+  else Literals.suffix_js
+
+
+(* FIXME: The deprecated -bs-suffix will only affect -bs-package-output flags
+   passed *after* it. *)
 let append_location_descriptor_of_string (packages_info : t) (s : string) : t =
-  let module_system, path, extension = match Ext_string.split ~keep_empty:false s ':' with
-  | [ module_system; path; extension ] -> module_system, path, extension
-  | [ module_system; path ] -> module_system, path, "js"
-  | [ path ] -> "NodeJS", path, "js"
-  | _ -> Ext_arg.bad_argf "invalid value for -bs-package-output: %s" s
+  let module_system, path, extension =
+    match Ext_string.split ~keep_empty:false s ':' with
+    | [ module_system; path; extension ] -> (module_system, path, extension)
+    | [ module_system; path ] ->
+        (module_system, path, deprecated_get_default_extension ())
+    | [ path ] -> ("NodeJS", path, deprecated_get_default_extension ())
+    | _ -> Ext_arg.bad_argf "invalid value for -bs-package-output: %s" s
   in
   let module_system =
-  match module_system_of_string module_system with
+    match module_system_of_string module_system with
     | Some x -> x
-    | None -> Ext_arg.bad_argf "invalid module system in -bs-package-output: %s" module_system
+    | None ->
+        Ext_arg.bad_argf "invalid module system in -bs-package-output: %s"
+          module_system
   in
   {
     packages_info with

@@ -105,12 +105,12 @@ let get_dependent_module_effect (meta : Lam_stats.t)
    backend, we compile to js for the inliner, we try to seriaize it -- relies on
    other optimizations to make this happen {[ exports.Make = function () {.....}
    ]} TODO: check that we don't do this in browser environment *)
-let export_to_cmj (meta : Lam_stats.t) effect export_map cmj_case :
-    Js_cmj_format.t =
+let export_to_cmj (meta : Lam_stats.t) effect export_map
+    (leading_case : Ext_namespace.leading_case) : Js_cmj_format.t =
   let values = values_of_export meta export_map in
 
   (* FIXME: make sure [-o] would not change its case *)
   (* FIXME: add test for ns/non-ns *)
   Js_cmj_format.mk ~values ~effect
     ~package_info:(Js_current_package_info.get_packages_info ())
-    ~cmj_case
+    ~leading_case

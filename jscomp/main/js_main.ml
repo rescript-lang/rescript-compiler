@@ -150,7 +150,10 @@ let buckle_script_flags : (string * Arg.spec * string) list =
   :: ( "-bs-gentype",
        Arg.String (fun s -> Clflags.bs_gentype := Some s),
        " Pass gentype command" )
-  :: ("-bs-suffix", Arg.Set Js_config.bs_suffix, " Set suffix to .bs.js")
+  :: ( "-bs-suffix",
+       Arg.Unit Js_package_info.deprecated_set_bs_extension,
+       " (DEPRECATED) Set default suffix to .bs.js - use third compoment of \
+        -bs-package-output instead" )
   :: ( "-bs-no-implicit-include",
        Arg.Set Clflags.no_implicit_current_dir,
        " Don't include current dir implicitly" )

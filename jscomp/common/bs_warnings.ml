@@ -39,11 +39,11 @@ let to_string t =
 
 let warning_formatter = Format.err_formatter
 
-let print_string_warning (loc : Location.t) x =
+let print_string_warning (loc : Location.t) ?(kind = "Warning") x =
   if loc.loc_ghost then
     Format.fprintf warning_formatter "File %s@." !Location.input_name
   else Location.print warning_formatter loc;
-  Format.fprintf warning_formatter "@{<error>Warning@}: %s@." x
+  Format.fprintf warning_formatter "@{<error>%s@}: %s@." kind x
 
 
 let prerr_bs_ffi_warning loc x =
@@ -70,6 +70,14 @@ let () =
   Location.register_error_of_exn (function
     | Error (loc, err) -> Some (Location.error_of_printer loc pp_error err)
     | _ -> None)
+
+
+let warn_deprecated_bs_suffix_flag () =
+  if not !Clflags.bs_quiet then (
+    print_string_warning Location.none ~kind:"DEPRECATED"
+      "`-bs-suffix` used; consider using third field of `-bs-package-output` \
+       instead";
+    Format.pp_print_flush warning_formatter () )
 
 
 let warn_missing_primitive loc txt =

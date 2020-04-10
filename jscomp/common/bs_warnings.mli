@@ -26,6 +26,8 @@ type t = Unsafe_poly_variant_type
 
 val prerr_bs_ffi_warning : Location.t -> t -> unit
 
+val warn_deprecated_bs_suffix_flag : unit -> unit
+
 val warn_missing_primitive : Location.t -> string -> unit
 
 val warn_literal_overflow : Location.t -> unit

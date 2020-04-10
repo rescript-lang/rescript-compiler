@@ -25,13 +25,9 @@
 module E = Js_exp_make
 module S = Js_stmt_make
 
-let get_cmj_case output_prefix : Ext_namespace.file_kind =
-  let little = Ext_char.is_lower_case (Filename.basename output_prefix).[0] in
-  match (little, !Js_config.bs_suffix) with
-  | true, true -> Little_bs
-  | true, false -> Little_js
-  | false, true -> Upper_bs
-  | false, false -> Upper_js
+let get_leading_case output_prefix : Ext_namespace.leading_case =
+  if Ext_char.is_lower_case (Filename.basename output_prefix).[0] then Lower
+  else Upper
 
 
 let compile_group (meta : Lam_stats.t) (x : Lam_group.t) : Js_output.t =
@@ -244,7 +240,7 @@ let compile (output_prefix : string) (lam : Lambda.lambda) =
   in
   let v : Js_cmj_format.t =
     Lam_stats_export.export_to_cmj meta effect coerced_input.export_map
-      (get_cmj_case output_prefix)
+      (get_leading_case output_prefix)
   in
   if not @@ !Clflags.dont_write_files then
     Js_cmj_format.to_file ~check_exists:(not !Js_config.force_cmj)
@@ -257,21 +253,21 @@ let ( // ) = Filename.concat
 
 let lambda_as_module (lambda_output : J.deps_program) (output_prefix : string) :
     unit =
-  let basename =
-    Ext_namespace.replace_namespace_with_extension
-      ~name:(Filename.basename output_prefix)
-      ~ext:
-        ( if !Js_config.bs_suffix then Literals.suffix_bs_js
-        else Literals.suffix_js )
-  in
   let package_info = Js_current_package_info.get_packages_info () in
   if Js_package_info.is_empty package_info && !Js_config.js_stdout then
-    Js_dump_program.dump_deps_program ~output_prefix NodeJS lambda_output stdout
+    Js_dump_program.dump_deps_program ~ext:".js" ~output_prefix NodeJS
+      lambda_output stdout
   else
-    Js_package_info.iter package_info (fun { module_system; path = _path } ->
+    Js_package_info.iter package_info
+      (fun { module_system; path = _path; extension } ->
+        let basename =
+          Ext_namespace.replace_namespace_with_extension
+            ~name:(Filename.basename output_prefix)
+            ~ext:extension
+        in
         let output_chan chan =
-          Js_dump_program.dump_deps_program ~output_prefix module_system
-            lambda_output chan
+          Js_dump_program.dump_deps_program ~output_prefix ~ext:extension
+            module_system lambda_output chan
         in
         if not @@ !Clflags.dont_write_files then
           Ext_pervasives.with_file_as_chan

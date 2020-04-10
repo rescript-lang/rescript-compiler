@@ -29,5 +29,5 @@ val export_to_cmj :
   Lam_stats.t ->
   Js_cmj_format.effect ->
   Lam.t Map_ident.t ->
-  Js_cmj_format.cmj_case ->
+  Ext_namespace.leading_case ->
   Js_cmj_format.t

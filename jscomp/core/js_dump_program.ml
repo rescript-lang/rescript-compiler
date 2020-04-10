@@ -53,24 +53,25 @@ let dump_program (x : J.program) oc =
   ignore (program (P.from_channel oc) Ext_pp_scope.empty x)
 
 
-let node_program ~output_dir f (x : J.deps_program) =
+let node_program ~output_dir ~ext f (x : J.deps_program) =
   P.string f L.strict_directive;
   P.newline f;
   let cxt =
     Js_dump_import_export.requires L.require Ext_pp_scope.empty f
       (Ext_list.map x.modules (fun x ->
            ( Lam_module_ident.id x,
-             Js_name_of_module_id.string_of_module_id x ~output_dir NodeJS )))
+             Js_name_of_module_id.string_of_module_id x ~output_dir ~ext NodeJS
+           )))
   in
   program f cxt x.program
 
 
-let es6_program ~output_dir fmt f (x : J.deps_program) =
+let es6_program ~output_dir ~ext fmt f (x : J.deps_program) =
   let cxt =
     Js_dump_import_export.imports Ext_pp_scope.empty f
       (Ext_list.map x.modules (fun x ->
            ( Lam_module_ident.id x,
-             Js_name_of_module_id.string_of_module_id x ~output_dir fmt )))
+             Js_name_of_module_id.string_of_module_id x ~output_dir ~ext fmt )))
   in
   let () = P.force_newline f in
   let cxt = Js_dump.statement_list true cxt f x.program.block in
@@ -85,7 +86,7 @@ let es6_program ~output_dir fmt f (x : J.deps_program) =
         Linguist::FileBlob.new('jscomp/test/test_u.js').generated?
     ]} *)
 
-let pp_deps_program ~output_prefix (kind : Js_package_info.module_system)
+let pp_deps_program ~output_prefix ~ext (kind : Js_package_info.module_system)
     (program : J.deps_program) (f : Ext_pp.t) =
   if not !Js_config.no_version_header then (
     P.string f Bs_version.header;
@@ -96,8 +97,8 @@ let pp_deps_program ~output_prefix (kind : Js_package_info.module_system)
     let output_dir = Filename.dirname output_prefix in
     ignore
       ( match kind with
-      | Es6 | Es6_global -> es6_program ~output_dir kind f program
-      | NodeJS -> node_program ~output_dir f program );
+      | Es6 | Es6_global -> es6_program ~output_dir ~ext kind f program
+      | NodeJS -> node_program ~output_dir ~ext f program );
     P.newline f;
     P.string f
       ( match program.side_effect with
@@ -107,5 +108,5 @@ let pp_deps_program ~output_prefix (kind : Js_package_info.module_system)
     P.flush f ()
 
 
-let dump_deps_program ~output_prefix kind x (oc : out_channel) =
-  pp_deps_program ~output_prefix kind x (P.from_channel oc)
+let dump_deps_program ~output_prefix ~ext kind x (oc : out_channel) =
+  pp_deps_program ~output_prefix ~ext kind x (P.from_channel oc)
