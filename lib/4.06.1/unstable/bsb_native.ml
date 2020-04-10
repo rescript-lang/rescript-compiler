@@ -4467,8 +4467,10 @@ val suffix_rei : string
 val suffix_d : string
 val suffix_js : string
 val suffix_mjs : string
+val suffix_cjs : string
 val suffix_bs_js : string
 val suffix_bs_mjs : string
+val suffix_bs_cjs : string
 (* val suffix_re_js : string *)
 val suffix_gen_js : string
 val suffix_gen_tsx: string
@@ -4606,10 +4608,13 @@ let suffix_reast = ".reast"
 let suffix_reiast = ".reiast"
 let suffix_mliast_simple = ".mliast_simple"
 let suffix_d = ".d"
+
 let suffix_js = ".js"
 let suffix_mjs = ".mjs"
+let suffix_cjs = ".cjs"
 let suffix_bs_js = ".bs.js"
 let suffix_bs_mjs = ".bs.mjs"
+let suffix_bs_cjs = ".bs.cjs"
 (* let suffix_re_js = ".re.js" *)
 let suffix_gen_js = ".gen.js"
 let suffix_gen_tsx = ".gen.tsx"
@@ -7072,15 +7077,27 @@ let prefix_of_format (x : format) =
 
 
 let bad_suffix_message_warn suffix =
+  let open Literals in
   Bsb_log.warn
-    "@{<warning>UNSUPPORTED@}: package-specs: extension `%s` is unsupported@;\
-     ; consider one of: %s, %s, %s, or %s@." suffix Literals.suffix_js
-    Literals.suffix_mjs Literals.suffix_bs_js Literals.suffix_bs_mjs
+    "@{<warning>UNSUPPORTED@}: package-specs: extension `%s` is unsupported;@;\
+     consider one of: %s, %s, %s; %s, %s, or %s@." suffix suffix_js suffix_mjs
+    suffix_cjs suffix_bs_js suffix_bs_mjs suffix_bs_cjs
 
 
 let supported_suffix (x : string) =
-  if not (List.mem x Literals.[ suffix_js; suffix_mjs; suffix_bs_js; suffix_bs_mjs ]) then
-    bad_suffix_message_warn x;
+  if
+    not
+      (List.mem x
+         Literals.
+           [
+             suffix_js;
+             suffix_mjs;
+             suffix_cjs;
+             suffix_bs_js;
+             suffix_bs_mjs;
+             suffix_bs_cjs;
+           ])
+  then bad_suffix_message_warn x;
   x
 
 
@@ -7096,7 +7113,9 @@ let default_suffix format in_source =
 
 module SS = Set.Make (String)
 
-let supported_bs_suffixes = Literals.[ suffix_bs_js; suffix_bs_mjs ]
+let supported_bs_suffixes =
+  Literals.[ suffix_bs_js; suffix_bs_mjs; suffix_bs_cjs ]
+
 
 (** Produces a [list] of supported, bs-prefixed file-suffixes used in
     [in-source] package-specs. *)
@@ -7111,21 +7130,23 @@ let extract_in_source_bs_suffixes (package_specs : Spec_set.t) =
 
 
 let rec from_array (arr : Ext_json_types.t array) : Spec_set.t =
-  let spec = ref Spec_set.empty in
-  let has_in_source = ref false in
+  let specs = ref Spec_set.empty in
   Ext_array.iter arr (fun x ->
-      let result = from_json_single x in
-      if result.in_source then
-        if not !has_in_source then has_in_source := true
-        else
-          Bsb_exception.errorf ~loc:(Ext_json.loc_of x)
-            "package-specs: we've detected two module formats that are both \
-             configured to be in-source.";
-      spec := Spec_set.add result !spec);
-  !spec
+      let spec = from_json_single x in
+      if
+        Spec_set.exists
+          (fun o -> spec.in_source == o.in_source && String.equal spec.suffix o.suffix)
+          !specs
+      then
+        Bsb_exception.errorf ~loc:(Ext_json.loc_of x)
+          "package-specs: two conflicting module formats with the extension \
+           `%s` are both configured to be in-source."
+          spec.suffix
+      else specs := Spec_set.add spec !specs);
+  !specs
 
 
-(* TODO: FIXME: better API without mutating *)
+(* FIXME: better API without mutating *)
 and from_json_single (x : Ext_json_types.t) : spec =
   match x with
   | Str { str = format; loc } ->
@@ -7187,8 +7208,7 @@ let package_flag ({ format; in_source; suffix } : spec) dir =
        Ext_string.single_colon suffix)
 
 
-let flags_of_package_specs (package_specs : t) (dirname : string) :
-    string =
+let flags_of_package_specs (package_specs : t) (dirname : string) : string =
   Spec_set.fold
     (fun format acc -> Ext_string.inter2 acc (package_flag format dirname))
     package_specs Ext_string.empty
@@ -10511,7 +10531,7 @@ let classify_suffix (x : string) : suffix_kind =
         if i >= 0 then Cmti i else Not_any
 
 
-(** Attempt to delete any [.bs.m?js] files for a given artifact. *)
+(** Attempt to delete any [.bs.[cm]?js] files for a given artifact. *)
 let unlink_bs_suffixes context artifact =
   List.iter
     (fun suffix -> try_unlink (Filename.concat context.cwd (artifact ^ suffix)))

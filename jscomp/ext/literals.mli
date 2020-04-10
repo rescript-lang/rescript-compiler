@@ -100,8 +100,10 @@ val suffix_rei : string
 val suffix_d : string
 val suffix_js : string
 val suffix_mjs : string
+val suffix_cjs : string
 val suffix_bs_js : string
 val suffix_bs_mjs : string
+val suffix_bs_cjs : string
 (* val suffix_re_js : string *)
 val suffix_gen_js : string
 val suffix_gen_tsx: string

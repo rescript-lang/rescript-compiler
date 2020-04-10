@@ -204,7 +204,7 @@ let classify_suffix (x : string) : suffix_kind =
         if i >= 0 then Cmti i else Not_any
 
 
-(** Attempt to delete any [.bs.m?js] files for a given artifact. *)
+(** Attempt to delete any [.bs.[cm]?js] files for a given artifact. *)
 let unlink_bs_suffixes context artifact =
   List.iter
     (fun suffix -> try_unlink (Filename.concat context.cwd (artifact ^ suffix)))
