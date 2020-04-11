@@ -195,6 +195,17 @@ let subst (export_set : Set_ident.t) stats  =
           | (None | Some _) ->
             [self#statement st ]
         end
+
+      | [{statement_desc = 
+            Return {return_value = 
+                      {expression_desc = 
+                         Call({expression_desc = Fun (false, params, block, env)},args,_info)}} } ]
+
+            when Ext_list.same_length params args 
+            -> 
+            let no_tailcall = Js_fun_env.no_tailcall env in 
+            let processed_blocks = ( self#block block) (* see #278 before changes*) in 
+            inline_call no_tailcall params args processed_blocks
       | x :: xs 
         ->
         self#statement x :: self#block xs
