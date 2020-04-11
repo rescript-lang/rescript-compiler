@@ -275,7 +275,7 @@ let rec is_eta_conversion_exn
   | _, _, _ -> raise_notrace Not_simple_form
 
 (** FIXME: more robust inlining check later, we should inline it before we add stub code*)
-let apply fn args loc status : t =
+let rec apply fn args loc status : t =
   match fn with
   | Lfunction {
                params;
@@ -322,6 +322,10 @@ let apply fn args loc status : t =
       Ext_list.fold_right2 (fun p arg acc ->
         Llet(Strict,p,arg,acc)
       ) params args body *) (* TODO: more rigirous analysis on [let_kind] *)
+  | Llet (kind,id, e, (Lfunction _ as fn)) -> 
+    Llet (kind, id, e, apply fn args loc status)    
+  (* | Llet (kind0, id0, e0, Llet (kind,id, e, (Lfunction _ as fn))) -> 
+    Llet(kind0,id0,e0,Llet (kind, id, e, apply fn args loc status))       *)
   | _ ->
     Lapply { ap_func = fn; ap_args = args;  ap_loc = loc  ; ap_status = status }
 

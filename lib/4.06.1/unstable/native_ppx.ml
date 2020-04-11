@@ -11360,7 +11360,7 @@ module Lid : sig
   val js_meth : t 
   val js_meth_callback : t 
   val js_obj : t 
-  val hidden_field : t
+  val hidden_field : string -> t
   val ignore_id : t 
   val js_null : t 
   val js_undefined : t
@@ -11446,7 +11446,7 @@ module Lid = struct
       Ldot (js_oo, "Callback")
   let js_obj : t = Ldot (Lident "Js", "t")
   let ignore_id : t = Ldot (Lident "Pervasives", "ignore")
-  let hidden_field : t = Lident "I"
+  let hidden_field n : t = Lident ("I" ^ n)
   let js_null  : t = Ldot (Lident "Js", "null")
   let js_undefined : t = Ldot (Lident "Js", "undefined")
   let js_null_undefined : t = Ldot (Lident "Js", "null_undefined")
@@ -21279,7 +21279,7 @@ let to_method_callback  loc (self : Bs_ast_mapper.mapper)
       (Exp.constraint_ ~loc 
          (Exp.record ~loc [{
               loc ; 
-              txt = Ast_literal.Lid.hidden_field},body]
+              txt = Ast_literal.Lid.hidden_field arity_s},body]
              None) 
          (Typ.constr ~loc {loc; txt = Ldot (Ast_literal.Lid.js_meth_callback, "arity"^arity_s)} [Typ.any ~loc ()] )
          )])
@@ -21324,7 +21324,7 @@ let to_uncurry_fn  loc (self : Bs_ast_mapper.mapper) (label : Asttypes.arg_label
       Parsetree.Pexp_constraint(
         Exp.record ~loc [
           {
-            txt = Ast_literal.Lid.hidden_field;
+            txt = Ast_literal.Lid.hidden_field arity_s;
             loc
           },body] None, Typ.constr ~loc {txt = Ldot (Ast_literal.Lid.js_fn,"arity"^arity_s);loc}
           [Typ.any ~loc ()]
@@ -21782,7 +21782,7 @@ let generic_apply loc
             [(Nolabel, Exp.field ~loc 
               (Exp.constraint_ ~loc fn 
                 (Typ.constr ~loc {txt = Ldot (Ast_literal.Lid.js_fn, "arity"^arity_s);loc} 
-                  [Typ.any ~loc ()])) {txt = Ast_literal.Lid.hidden_field; loc})]) 
+                  [Typ.any ~loc ()])) {txt = Ast_literal.Lid.hidden_field arity_s; loc})]) 
          args])                        
 
 let method_apply  loc 
@@ -21816,7 +21816,7 @@ let method_apply  loc
               Exp.field ~loc
                 (Exp.constraint_ ~loc 
                   fn (Typ.constr ~loc {txt = Ldot (Ast_literal.Lid.js_meth,"arity"^arity_s);loc} [Typ.any ~loc ()]))
-                {loc; txt = Ast_literal.Lid.hidden_field})]) 
+                {loc; txt = Ast_literal.Lid.hidden_field arity_s})]) 
            args])
   
 

@@ -69287,9 +69287,7 @@ function class_expr(cl_num, val_env, met_env, _scl) {
           var cl$2 = class_expr(cl_num, val_env, met_env, cl_str[0]);
           if (principal.contents) {
             end_def(undefined);
-            ((function (param) {
-                    return generalize_class_type(generalize_structure$2, param);
-                  })(cl$2.cl_type));
+            generalize_class_type(generalize_structure$2, cl$2.cl_type);
           }
           var nonopt_labels = function (_ls, _ty_fun) {
             while(true) {
@@ -70207,9 +70205,7 @@ function type_classes(define_class, approx, kind, env, cls) {
             throw trace;
           }
           List.iter(generalize, clty.cty_params);
-          ((function (param) {
-                  return generalize_class_type(generalize, param);
-                })(clty.cty_type));
+          generalize_class_type(generalize, clty.cty_type);
           may(generalize, clty.cty_new);
           List.iter(generalize, obj_abbr.type_params);
           may(generalize, obj_abbr.type_manifest);

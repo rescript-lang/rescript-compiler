@@ -20,9 +20,7 @@ function g1(x, y) {
 
 var u = 8;
 
-var x = (function (z) {
-      return u + z | 0;
-    })(6);
+var x = u + 6 | 0;
 
 var partial_arg = g1(3, 4);
 
@@ -82,4 +80,4 @@ var suites = /* :: */[
 
 Mt.from_pair_suites("Ari_regress_test", suites);
 
-/* x Not a pure module */
+/* partial_arg Not a pure module */

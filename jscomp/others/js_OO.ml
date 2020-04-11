@@ -29,139 +29,139 @@ external unsafe_to_method : 'a -> 'a = "#fn_method"
 (**/**)
 module Callback = struct
   type 'a arity1 = {
-    i : 'a [@internal]
+    i1 : 'a [@internal]
   }
   type 'a arity2 = {
-    i : 'a [@internal]
+    i2 : 'a [@internal]
   }
   type 'a arity3 = {
-    i : 'a [@internal]
+    i3 : 'a [@internal]
   }
   type 'a arity4 = {
-    i : 'a [@internal]
+    i4 : 'a [@internal]
   }
   type 'a arity5 = {
-    i : 'a [@internal]
+    i5 : 'a [@internal]
   }
   type 'a arity6 = {
-    i : 'a [@internal]
+    i6 : 'a [@internal]
   }
   type 'a arity7 = {
-    i : 'a [@internal]
+    i7 : 'a [@internal]
   }
   type 'a arity8 = {
-    i : 'a [@internal]
+    i8 : 'a [@internal]
   }
   type 'a arity9 = {
-    i : 'a [@internal]
+    i9 : 'a [@internal]
   }
   type 'a arity10 = {
-    i : 'a [@internal]
+    i10 : 'a [@internal]
   }
   type 'a arity11 = {
-    i : 'a [@internal]
+    i11 : 'a [@internal]
   }
   type 'a arity12 = {
-    i : 'a [@internal]
+    i12 : 'a [@internal]
   }
   type 'a arity13 = {
-    i : 'a [@internal]
+    i13 : 'a [@internal]
   }
   type 'a arity14 = {
-    i : 'a [@internal]
+    i14 : 'a [@internal]
   }
   type 'a arity15 = {
-    i : 'a [@internal]
+    i15 : 'a [@internal]
   }
   type 'a arity16 = {
-    i : 'a [@internal]
+    i16 : 'a [@internal]
   }
   type 'a arity17 = {
-    i : 'a [@internal]
+    i17 : 'a [@internal]
   }
   type 'a arity18 = {
-    i : 'a [@internal]
+    i18 : 'a [@internal]
   }
   type 'a arity19 = {
-    i : 'a [@internal]
+    i19 : 'a [@internal]
   }
   type 'a arity20 = {
-    i : 'a [@internal]
+    i20 : 'a [@internal]
   }
   type 'a arity21 = {
-    i : 'a [@internal]
+    i21 : 'a [@internal]
   }
   type 'a arity22 = {
-    i : 'a [@internal]
+    i22 : 'a [@internal]
   }  
 end  
 module Meth = struct
   type + 'a arity0 
   type 'a arity1 = {
-    i : 'a [@internal]
+    i1 : 'a [@internal]
   }
   type 'a arity2 = {
-    i : 'a [@internal]
+    i2 : 'a [@internal]
   }
   type 'a arity3 = {
-    i : 'a [@internal]
+    i3 : 'a [@internal]
   }
   type 'a arity4 = {
-    i : 'a [@internal]
+    i4 : 'a [@internal]
   }
   type 'a arity5 = {
-    i : 'a [@internal]
+    i5 : 'a [@internal]
   }
   type 'a arity6 = {
-    i : 'a [@internal]
+    i6 : 'a [@internal]
   }
   type 'a arity7 = {
-    i : 'a [@internal]
+    i7 : 'a [@internal]
   }
   type 'a arity8 = {
-    i : 'a [@internal]
+    i8 : 'a [@internal]
   }
   type 'a arity9 = {
-    i : 'a [@internal]
+    i9 : 'a [@internal]
   }
   type 'a arity10 = {
-    i : 'a [@internal]
+    i10 : 'a [@internal]
   }
   type 'a arity11 = {
-    i : 'a [@internal]
+    i11 : 'a [@internal]
   }
   type 'a arity12 = {
-    i : 'a [@internal]
+    i12 : 'a [@internal]
   }
   type 'a arity13 = {
-    i : 'a [@internal]
+    i13 : 'a [@internal]
   }
   type 'a arity14 = {
-    i : 'a [@internal]
+    i14 : 'a [@internal]
   }
   type 'a arity15 = {
-    i : 'a [@internal]
+    i15 : 'a [@internal]
   }
   type 'a arity16 = {
-    i : 'a [@internal]
+    i16 : 'a [@internal]
   }
   type 'a arity17 = {
-    i : 'a [@internal]
+    i17 : 'a [@internal]
   }
   type 'a arity18 = {
-    i : 'a [@internal]
+    i18 : 'a [@internal]
   }
   type 'a arity19 = {
-    i : 'a [@internal]
+    i19 : 'a [@internal]
   }
   type 'a arity20 = {
-    i : 'a [@internal]
+    i20 : 'a [@internal]
   }
   type 'a arity21 = {
-    i : 'a [@internal]
+    i21 : 'a [@internal]
   }
   type 'a arity22 = {
-    i : 'a [@internal]
+    i22 : 'a [@internal]
   }
 end
 

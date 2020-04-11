@@ -1,10 +1,1 @@
-'use strict';
-
-
-(function (x) {
-        return (function (f) {
-            return 0;
-          });
-      })("")("");
-
-/*  Not a pure module */
+/* This output is empty. Its source's type definitions, externals and/or unused code got optimized away. */
