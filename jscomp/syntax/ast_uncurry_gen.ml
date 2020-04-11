@@ -90,23 +90,17 @@ let to_uncurry_fn  loc (self : Bs_ast_mapper.mapper) (label : Asttypes.arg_label
       Ast_pat.is_unit_cont ~yes:0 ~no:len p           
     | _ -> len 
   in 
-  if arity = 0 && label = Nolabel then 
-    let txt = 
-      Longident.Ldot (Ast_literal.Lid.js_internal, "mk0") in
-    Parsetree.Pexp_apply (Exp.ident {txt;loc} , [ Nolabel, body])
-  else 
-    begin 
-      Bs_syntaxerr.err_large_arity loc arity;
-      let arity_s = string_of_int arity in   
-      Parsetree.Pexp_constraint(
-        Exp.record ~loc [
-          {
-            txt = Ast_literal.Lid.hidden_field arity_s;
-            loc
-          },body] None, Typ.constr ~loc {txt = Ldot (Ast_literal.Lid.js_fn,"arity"^arity_s);loc}
-          [Typ.any ~loc ()]
-      )
-    end
+  Bs_syntaxerr.err_large_arity loc arity;
+  let arity_s = string_of_int arity in   
+  Parsetree.Pexp_constraint(
+    Exp.record ~loc [
+      {
+        txt = Ast_literal.Lid.hidden_field arity_s;
+        loc
+      },body] None, Typ.constr ~loc {txt = Ldot (Ast_literal.Lid.js_fn,"arity"^arity_s);loc}
+      [Typ.any ~loc ()]
+  )
+
 
 
 

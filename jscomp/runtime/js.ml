@@ -57,7 +57,9 @@ type +'a t
     Absent cmi file when looking up module alias.
 *)
 module Fn = struct
-  type + 'a arity0 
+  type 'a arity0 = {
+    i0 : unit -> 'a [@internal]  
+  }
   type 'a arity1 = {
     i1 : 'a [@internal]
   }
@@ -135,7 +137,7 @@ module Internal = struct
   (* Use opaque instead of [._n] to prevent some optimizations happening *)
   external run : 'a arity0 -> 'a = "#run" 
   external opaque : 'a -> 'a = "%opaque"
-  external mk0 : (unit -> 'a0) -> 'a0 arity0 = "#fn_mk" "0"    
+
 end    
 (**/**)
 
