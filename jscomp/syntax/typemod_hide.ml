@@ -33,14 +33,17 @@ let  should_hide ( x : Typedtree.module_binding) =
 let attrs : Parsetree.attributes = 
   [{txt = "internal.local";loc = Location.none}, PStr []]
 
-let check (x : Parsetree.structure_item) =
+let check (x : Parsetree.structure) =
+  Ext_list.iter x (fun x ->   
    match x.pstr_desc with 
    | Pstr_eval _
    | Pstr_value _
    | Pstr_primitive _
    | Pstr_typext _
    | Pstr_exception _
+   (* | Pstr_module {pmb_expr = {pmod_desc = Pmod_ident _} }  *)
      -> ()
+   
    |  _ -> 
     Location.raise_errorf ~loc:x.pstr_loc 
-      "the structure is not supported in local extension"
+      "the structure is not supported in local extension")
