@@ -27,6 +27,7 @@
 (* Clflags.keep_locs := false; *)
 let setup_env () =
   Env.Persistent_signature.load := Bs_cmi_load.load_cmi;    
+  Translcore.wrap_single_field_record := Transl_single_field_record.wrap_single_field_record;
   Typemod.should_hide := Typemod_hide.should_hide;
   Clflags.no_std_include := true;
   Warnings.parse_options false Bsc_warnings.defaults_w;

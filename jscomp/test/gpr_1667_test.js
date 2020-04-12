@@ -28,12 +28,6 @@ function eq(loc, x, y) {
   
 }
 
-(function (n) {
-      return 0;
-    })((function (q, y) {
-        return false;
-      })) === 0;
-
 eq("File \"gpr_1667_test.ml\", line 18, characters 7-14", 0, 0);
 
 Mt.from_pair_suites("Gpr_1667_test", suites.contents);

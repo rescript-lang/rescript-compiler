@@ -412,6 +412,12 @@ console.log(f21(0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18
 
 console.log(f22(0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21));
 
+function xx() {
+  while(true) {
+    continue ;
+  };
+}
+
 exports.f0 = f0;
 exports.f1 = f1;
 exports.f2 = f2;
@@ -435,4 +441,5 @@ exports.f19 = f19;
 exports.f20 = f20;
 exports.f21 = f21;
 exports.f22 = f22;
+exports.xx = xx;
 /*  Not a pure module */

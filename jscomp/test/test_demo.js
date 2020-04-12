@@ -57,15 +57,12 @@ function g1(x, y) {
 
 var u = 8;
 
-var x = (function (z) {
-      return u + z | 0;
-    })(6);
+var x = u + 6 | 0;
 
 var u$1 = 7;
 
 function v(param) {
-  var xx = 6;
-  return (xx + param | 0) + u$1 | 0;
+  return (6 + param | 0) + u$1 | 0;
 }
 
 var nil = /* Nil */0;
@@ -83,4 +80,4 @@ exports.g = g;
 exports.g1 = g1;
 exports.x = x;
 exports.v = v;
-/* x Not a pure module */
+/* No side effect */

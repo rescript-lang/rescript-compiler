@@ -438,6 +438,7 @@ build test/mt.cmi : cc test/mt.mli | $stdlib
 build test/mt_global.cmj : cc_cmi test/mt_global.ml | test/mt.cmj test/mt_global.cmi $stdlib
 build test/mt_global.cmi : cc test/mt_global.mli | test/mt.cmi $stdlib
 build test/mutable_obj_test.cmi test/mutable_obj_test.cmj : cc test/mutable_obj_test.ml | $stdlib
+build test/mutable_uncurry_test.cmi test/mutable_uncurry_test.cmj : cc test/mutable_uncurry_test.ml | test/mt.cmj $stdlib
 build test/mutual_non_recursive_type.cmi test/mutual_non_recursive_type.cmj : cc test/mutual_non_recursive_type.ml | $stdlib
 build test/name_mangle_test.cmi test/name_mangle_test.cmj : cc test/name_mangle_test.ml | test/mt.cmj $stdlib
 build test/nested_include.cmi test/nested_include.cmj : cc test/nested_include.ml | $stdlib
