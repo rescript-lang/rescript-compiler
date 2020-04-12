@@ -12817,19 +12817,22 @@ function directive_parse(token_with_comments, lexbuf) {
             if (!calc) {
               return true;
             }
-            if (typeof lhs !== "number" && lhs.tag === /* Dir_string */3) {
+            var exit$1 = 0;
+            if (typeof lhs === "number" || lhs.tag !== /* Dir_string */3) {
+              exit$1 = 2;
+            } else {
               var curr_loc = curr(lexbuf);
               var rhs = value_of_token(curr_loc, token(undefined));
-              var exit$1 = 0;
+              var exit$2 = 0;
               if (typeof rhs === "number") {
-                exit$1 = 3;
+                exit$2 = 3;
               } else {
                 if (rhs.tag === /* Dir_string */3) {
                   return semver(curr_loc, lhs[0], rhs[0]);
                 }
-                exit$1 = 3;
+                exit$2 = 3;
               }
-              if (exit$1 === 3) {
+              if (exit$2 === 3) {
                 throw [
                       $$Error$2,
                       /* Conditional_expr_expected_type */Block.__(7, [
@@ -12841,14 +12844,16 @@ function directive_parse(token_with_comments, lexbuf) {
               }
               
             }
-            throw [
-                  $$Error$2,
-                  /* Conditional_expr_expected_type */Block.__(7, [
-                      /* Dir_type_string */3,
-                      type_of_directive(lhs)
-                    ]),
-                  curr(lexbuf)
-                ];
+            if (exit$1 === 2) {
+              throw [
+                    $$Error$2,
+                    /* Conditional_expr_expected_type */Block.__(7, [
+                        /* Dir_type_string */3,
+                        type_of_directive(lhs)
+                      ]),
+                    curr(lexbuf)
+                  ];
+            }
             break;
         case "<=" :
         case "<>" :
@@ -12861,7 +12866,7 @@ function directive_parse(token_with_comments, lexbuf) {
     }
     if (exit === 1) {
       var f;
-      var exit$2 = 0;
+      var exit$3 = 0;
       if (typeof op === "number") {
         switch (op) {
           case /* EQUAL */26 :
@@ -12874,7 +12879,7 @@ function directive_parse(token_with_comments, lexbuf) {
               f = Caml_obj.caml_lessthan;
               break;
           default:
-            exit$2 = 2;
+            exit$3 = 2;
         }
       } else if (op.tag === /* INFIXOP0 */2) {
         switch (op[0]) {
@@ -12885,12 +12890,12 @@ function directive_parse(token_with_comments, lexbuf) {
               f = Caml_obj.caml_notequal;
               break;
           default:
-            exit$2 = 2;
+            exit$3 = 2;
         }
       } else {
-        exit$2 = 2;
+        exit$3 = 2;
       }
-      if (exit$2 === 2) {
+      if (exit$3 === 2) {
         throw [
               Caml_builtin_exceptions.assert_failure,
               /* tuple */[

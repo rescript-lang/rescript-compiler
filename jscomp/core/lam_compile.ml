@@ -811,8 +811,12 @@ and compile_staticcatch (lam : Lam.t) (lambda_cxt  : Lam_compile_context.t)=
                               (* place holder -- tell the compiler that
                                  we don't know if it's complete
                               *)                           
-    | EffectCall tail_type ->
-      let new_cxt = {lambda_cxt with jmp_table = jmp_table } in 
+    | EffectCall tail_type as cont ->
+      let continuation =
+        let new_tail_type = (in_staticcatch tail_type) in
+        if new_tail_type == tail_type then cont else EffectCall new_tail_type
+      in 
+      let new_cxt = {lambda_cxt with jmp_table = jmp_table ; continuation } in 
       let lbody = compile_lambda new_cxt body in
       Js_output.append_output (Js_output.make declares)
         (Js_output.append_output lbody
