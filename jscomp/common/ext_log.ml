@@ -33,25 +33,6 @@
 
 type 'a logging =  ('a, Format.formatter, unit, unit, unit, unit) format6 -> 'a
 
-let err str f  =
-  Format.fprintf Format.err_formatter ("%s " ^^ f ^^ "@.") str  
-
-let ierr b str f  =
-  if b then 
-    Format.fprintf Format.err_formatter ("%s " ^^ f) str  
-  else
-    Format.ifprintf Format.err_formatter ("%s " ^^ f) str  
-
-let warn str f  =
-  Format.fprintf Format.err_formatter ("WARN: %s " ^^ f ^^ "@.") str  
-
-
-
-let iwarn b str f  = 
-  if b then 
-    Format.fprintf Format.err_formatter ("WARN: %s " ^^ f) str  
-  else 
-    Format.ifprintf Format.err_formatter ("WARN: %s " ^^ f) str 
 
 (* TODO: add {[@.]} later for all *)
 let dwarn ?(__POS__: (string * int * int * int) option) f  = 
@@ -62,13 +43,3 @@ let dwarn ?(__POS__: (string * int * int * int) option) f  =
       Format.fprintf Format.err_formatter ("WARN: %s,%d " ^^ f ^^ "@.") file line  
   else 
     Format.ifprintf Format.err_formatter ("WARN: " ^^ f ^^ "@.") 
-
-let info str f  =
-  Format.fprintf Format.err_formatter ("INFO: %s " ^^ f) str  
-
-let iinfo b str f  =
-  if b then 
-    Format.fprintf Format.err_formatter ("INFO: %s " ^^ f) str  
-  else
-    Format.fprintf Format.err_formatter ("INFO: %s " ^^ f) str  
-

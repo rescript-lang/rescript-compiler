@@ -1661,6 +1661,7 @@ function process_collision(dir, c1, c2, state) {
               var o2$4 = c2[2];
               var t = c2[0];
               if (dir !== 0) {
+                var exit$1 = 0;
                 if (typeof t === "number" && t === 4) {
                   game_win(state.ctx);
                   return /* tuple */[
@@ -1668,58 +1669,63 @@ function process_collision(dir, c1, c2, state) {
                           undefined
                         ];
                 }
-                if (dir !== 1) {
-                  collide_block(undefined, dir, o1$3);
-                  return /* tuple */[
-                          undefined,
-                          undefined
-                        ];
-                } else {
-                  state.multiplier = 1;
-                  collide_block(undefined, dir, o1$3);
-                  return /* tuple */[
-                          undefined,
-                          undefined
-                        ];
-                }
-              }
-              if (typeof t === "number") {
-                if (t !== 1) {
-                  if (t !== 4) {
+                exit$1 = 4;
+                if (exit$1 === 4) {
+                  if (dir !== 1) {
                     collide_block(undefined, dir, o1$3);
                     return /* tuple */[
                             undefined,
                             undefined
                           ];
                   } else {
-                    game_win(state.ctx);
+                    state.multiplier = 1;
+                    collide_block(undefined, dir, o1$3);
                     return /* tuple */[
                             undefined,
                             undefined
                           ];
                   }
-                } else if (c1[0] === /* BigM */0) {
-                  collide_block(undefined, dir, o1$3);
-                  dec_health(o2$4);
-                  return /* tuple */[
-                          undefined,
-                          undefined
-                        ];
-                } else {
-                  collide_block(undefined, dir, o1$3);
-                  return /* tuple */[
-                          undefined,
-                          undefined
-                        ];
                 }
+                
+              } else {
+                if (typeof t === "number") {
+                  if (t !== 1) {
+                    if (t !== 4) {
+                      collide_block(undefined, dir, o1$3);
+                      return /* tuple */[
+                              undefined,
+                              undefined
+                            ];
+                    } else {
+                      game_win(state.ctx);
+                      return /* tuple */[
+                              undefined,
+                              undefined
+                            ];
+                    }
+                  } else if (c1[0] === /* BigM */0) {
+                    collide_block(undefined, dir, o1$3);
+                    dec_health(o2$4);
+                    return /* tuple */[
+                            undefined,
+                            undefined
+                          ];
+                  } else {
+                    collide_block(undefined, dir, o1$3);
+                    return /* tuple */[
+                            undefined,
+                            undefined
+                          ];
+                  }
+                }
+                var updated_block = evolve_block(o2$4, context);
+                var spawned_item = spawn_above(o1$3.dir, o2$4, t[0], context);
+                collide_block(undefined, dir, o1$3);
+                return /* tuple */[
+                        spawned_item,
+                        updated_block
+                      ];
               }
-              var updated_block = evolve_block(o2$4, context);
-              var spawned_item = spawn_above(o1$3.dir, o2$4, t[0], context);
-              collide_block(undefined, dir, o1$3);
-              return /* tuple */[
-                      spawned_item,
-                      updated_block
-                    ];
               break;
           
         }

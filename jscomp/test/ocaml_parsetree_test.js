@@ -9773,12 +9773,15 @@ function directive_parse(token_with_comments, lexbuf) {
             if (!calc) {
               return true;
             }
-            if (typeof lhs !== "number" && lhs.tag === /* Dir_string */3) {
+            var exit$1 = 0;
+            if (typeof lhs === "number" || lhs.tag !== /* Dir_string */3) {
+              exit$1 = 2;
+            } else {
               var curr_loc = curr(lexbuf);
               var rhs = value_of_token(curr_loc, token(undefined));
-              var exit$1 = 0;
+              var exit$2 = 0;
               if (typeof rhs === "number") {
-                exit$1 = 3;
+                exit$2 = 3;
               } else {
                 if (rhs.tag === /* Dir_string */3) {
                   var lhs$1 = lhs[0];
@@ -9793,11 +9796,11 @@ function directive_parse(token_with_comments, lexbuf) {
                   }
                   var v = str.charCodeAt(0);
                   var match;
-                  var exit$2 = 0;
+                  var exit$3 = 0;
                   if (v !== 94) {
                     if (v >= 63) {
                       if (v !== 126) {
-                        exit$2 = 1;
+                        exit$3 = 1;
                       } else {
                         match = /* tuple */[
                           /* Approximate */-617782220,
@@ -9823,7 +9826,7 @@ function directive_parse(token_with_comments, lexbuf) {
                               ];
                             break;
                         case 1 :
-                            exit$2 = 1;
+                            exit$3 = 1;
                             break;
                         case 2 :
                             if (last_index === 0) {
@@ -9844,7 +9847,7 @@ function directive_parse(token_with_comments, lexbuf) {
                         
                       }
                     } else {
-                      exit$2 = 1;
+                      exit$3 = 1;
                     }
                   } else {
                     match = /* tuple */[
@@ -9852,7 +9855,7 @@ function directive_parse(token_with_comments, lexbuf) {
                       semantic_version_parse(str, 1, last_index)
                     ];
                   }
-                  if (exit$2 === 1) {
+                  if (exit$3 === 1) {
                     match = /* tuple */[
                       /* Exact */172069535,
                       semantic_version_parse(str, 0, last_index)
@@ -9888,9 +9891,9 @@ function directive_parse(token_with_comments, lexbuf) {
                     return Caml_obj.caml_greaterequal(lversion, version);
                   }
                 }
-                exit$1 = 3;
+                exit$2 = 3;
               }
-              if (exit$1 === 3) {
+              if (exit$2 === 3) {
                 throw [
                       $$Error$2,
                       /* Conditional_expr_expected_type */Block.__(7, [
@@ -9902,14 +9905,16 @@ function directive_parse(token_with_comments, lexbuf) {
               }
               
             }
-            throw [
-                  $$Error$2,
-                  /* Conditional_expr_expected_type */Block.__(7, [
-                      /* Dir_type_string */3,
-                      type_of_directive(lhs)
-                    ]),
-                  curr(lexbuf)
-                ];
+            if (exit$1 === 2) {
+              throw [
+                    $$Error$2,
+                    /* Conditional_expr_expected_type */Block.__(7, [
+                        /* Dir_type_string */3,
+                        type_of_directive(lhs)
+                      ]),
+                    curr(lexbuf)
+                  ];
+            }
             break;
         case "<=" :
         case "<>" :
@@ -9922,7 +9927,7 @@ function directive_parse(token_with_comments, lexbuf) {
     }
     if (exit === 1) {
       var f;
-      var exit$3 = 0;
+      var exit$4 = 0;
       if (typeof op === "number") {
         switch (op) {
           case /* EQUAL */26 :
@@ -9935,7 +9940,7 @@ function directive_parse(token_with_comments, lexbuf) {
               f = Caml_obj.caml_lessthan;
               break;
           default:
-            exit$3 = 2;
+            exit$4 = 2;
         }
       } else if (op.tag === /* INFIXOP0 */2) {
         switch (op[0]) {
@@ -9946,12 +9951,12 @@ function directive_parse(token_with_comments, lexbuf) {
               f = Caml_obj.caml_notequal;
               break;
           default:
-            exit$3 = 2;
+            exit$4 = 2;
         }
       } else {
-        exit$3 = 2;
+        exit$4 = 2;
       }
-      if (exit$3 === 2) {
+      if (exit$4 === 2) {
         throw [
               Caml_builtin_exceptions.assert_failure,
               /* tuple */[

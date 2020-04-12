@@ -79,6 +79,13 @@ let change_tail_type_in_try
     Maybe_tail_is_return Tail_in_try
   | Not_tail | Maybe_tail_is_return Tail_in_try
     -> x
+let in_staticcatch (x : Lam_compile_context.tail_type) 
+  : Lam_compile_context.tail_type  =
+  match x with 
+  | Maybe_tail_is_return (Tail_with_name ({in_staticcatch = false} as x))
+    ->
+    Maybe_tail_is_return (Tail_with_name ({ x with in_staticcatch = true}))
+  | _ -> x  
 
 (* let change_tail_type_in_static
   (x : Lam_compile_context.tail_type)
@@ -745,7 +752,7 @@ and compile_staticcatch (lam : Lam.t) (lambda_cxt  : Lam_compile_context.t)=
     let code_table, body = flatten_nested_caches lam in
     let exit_id = Ext_ident.create_tmp ~name:"exit" () in
     match lambda_cxt.continuation, code_table with         
-    | EffectCall (Maybe_tail_is_return (Tail_with_name ({in_staticcatch = false} as z))),
+    | EffectCall (Maybe_tail_is_return (Tail_with_name ({in_staticcatch = false} )) as tail_type),
       [ code_table ]  
       (* tail position and only one exit code *) 
       when Lam_compile_context.no_static_raise_in_handler code_table
@@ -758,7 +765,7 @@ and compile_staticcatch (lam : Lam.t) (lambda_cxt  : Lam_compile_context.t)=
           {lambda_cxt with 
             jmp_table = jmp_table ;
             continuation = 
-            EffectCall (Maybe_tail_is_return (Tail_with_name { z with in_staticcatch = true}))
+            EffectCall (in_staticcatch tail_type)
             } in 
 
       let lbody = compile_lambda new_cxt body in
@@ -804,8 +811,12 @@ and compile_staticcatch (lam : Lam.t) (lambda_cxt  : Lam_compile_context.t)=
                               (* place holder -- tell the compiler that
                                  we don't know if it's complete
                               *)                           
-    | EffectCall tail_type ->
-      let new_cxt = {lambda_cxt with jmp_table = jmp_table } in 
+    | EffectCall tail_type as cont ->
+      let continuation =
+        let new_tail_type = (in_staticcatch tail_type) in
+        if new_tail_type == tail_type then cont else EffectCall new_tail_type
+      in 
+      let new_cxt = {lambda_cxt with jmp_table = jmp_table ; continuation } in 
       let lbody = compile_lambda new_cxt body in
       Js_output.append_output (Js_output.make declares)
         (Js_output.append_output lbody
