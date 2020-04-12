@@ -49,4 +49,6 @@ end
 
 ;; Js.log (h 1 2 [@bs])
 
+(* module%private X  = Arg  
+type x = X.spec *)
 (* [%%debugger.chrome] *)

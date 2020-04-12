@@ -344,7 +344,7 @@ let local_module_name =
 let expand_reverse  (stru : Ast_structure.t) (acc : Ast_structure.t) : Ast_structure.t = 
   if stru = [] then acc 
   else begin 
-    Ext_list.iter stru Typemod_hide.check; 
+    Typemod_hide.check stru; 
     let local_module_name = local_module_name () in 
     let last_loc = (List.hd stru).pstr_loc  in 
     let stru = List.rev stru in 
