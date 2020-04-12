@@ -22,10 +22,6 @@ function string(s) {
   
 }
 
-var React = {
-  string: string
-};
-
 function fn(authState, route) {
   var exit = 0;
   var onboardingRoute;
@@ -91,6 +87,6 @@ if (fn(/* Unauthenticated */-54822762, /* Invite */-730831383) !== 1) {
 
 exports.u = u;
 exports.div = div;
-exports.React = React;
+exports.string = string;
 exports.fn = fn;
 /*  Not a pure module */
