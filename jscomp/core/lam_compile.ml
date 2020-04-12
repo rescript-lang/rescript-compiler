@@ -1607,7 +1607,10 @@ and compile_lambda
       compile_while p body lambda_cxt
     | Lfor (id,start,finish,direction,body) ->  
       begin match direction,finish with 
-        | Upto, Lprim {primitive = Psubint ; args = [ new_finish ; Lconst (Const_int 1) ]} ->
+        | Upto, 
+          (Lprim {primitive = Psubint ; args = [ new_finish ; Lconst (Const_int 1) ]} |
+          Lprim {primitive = Poffsetint (-1); args = [ new_finish ;  ]}
+          ) ->
           compile_for id start new_finish Up body lambda_cxt
         | _ -> 
           compile_for id start finish (if direction = Upto then Upto else Downto) body lambda_cxt

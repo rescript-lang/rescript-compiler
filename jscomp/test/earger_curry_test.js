@@ -32,7 +32,7 @@ function init(l, f) {
         ];
   }
   var res = Caml_array.caml_make_vect(l, f$1(0));
-  for(var i = 1 ,i_finish = l - 1 | 0; i <= i_finish; ++i){
+  for(var i = 1; i < l; ++i){
     res[i] = f$1(i);
   }
   return res;
