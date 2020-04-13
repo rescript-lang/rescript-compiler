@@ -61,6 +61,7 @@ reason/
 man/
 lib/ocaml
 bin/*
+_opam
 
 *.exe
 odoc_gen/*.cmxs
