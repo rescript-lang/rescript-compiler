@@ -66,16 +66,17 @@ let prefix_of_format (x : format) =
 
 let deprecated_bs_suffix_message_warn () =
   Bsb_log.warn
-    "@{<warning>DEPRECATED@}: top-level 'suffix' field is deprecated;@;\
-    \ please lower your extension-configuration into 'package-specs'"
+    "@{<warning>DEPRECATED@}: @[top-level 'suffix' field is deprecated;@ \
+     please lower your extension-configuration into@ 'package-specs'.@]@."
 
 
 let bad_suffix_message_warn suffix =
   let open Literals in
   Bsb_log.warn
-    "@{<warning>UNSUPPORTED@}: package-specs: extension `%s` is unsupported;@;\
-     consider one of: %s, %s, %s; %s, %s, or %s@." suffix suffix_js suffix_mjs
-    suffix_cjs suffix_bs_js suffix_bs_mjs suffix_bs_cjs
+    "@{<warning>UNSUPPORTED@}: @[package-specs: extension `%s` is \
+     unsupported;@ consider one of: %s, %s, %s; %s, %s,@ or %s.@]@."
+    suffix suffix_js suffix_mjs suffix_cjs suffix_bs_js suffix_bs_mjs
+    suffix_bs_cjs
 
 
 let supported_suffix (x : string) =
