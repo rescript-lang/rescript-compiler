@@ -220,7 +220,11 @@ let flags_of_package_specs (package_specs : t) (dirname : string) : string =
     package_specs Ext_string.empty
 
 
-let default_package_specs ~deprecated_bs_suffix =
+let default_package_specs ?deprecated_bs_suffix () =
+  let deprecated_bs_suffix = match deprecated_bs_suffix with
+  | Some x -> deprecated_bs_suffix_message_warn (); x
+  | None -> false
+  in
   Spec_set.singleton
     {
       format = NodeJS;

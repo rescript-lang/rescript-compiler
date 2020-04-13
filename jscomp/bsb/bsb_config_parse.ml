@@ -87,10 +87,10 @@ let extract_main_entries (map : json_map) =
 
 let deprecated_extract_bs_suffix_exn (map : json_map) =
   match Map_string.find_opt map Bsb_build_schemas.suffix with
-  | None -> false
+  | None -> None
   | Some (Str { str } as config) ->
-      if str = Literals.suffix_js then false
-      else if str = Literals.suffix_bs_js then true
+      if str = Literals.suffix_js then Some false
+      else if str = Literals.suffix_bs_js then Some true
       else
         Bsb_exception.config_error config
           "DEPRECATED: This form of 'suffix' only supports either `.js` or \
@@ -103,8 +103,8 @@ let deprecated_extract_bs_suffix_exn (map : json_map) =
 let package_specs_from_obj_map (map : json_map) =
   let deprecated_bs_suffix = deprecated_extract_bs_suffix_exn map in
   match Map_string.find_opt map Bsb_build_schemas.package_specs with
-  | Some x -> Bsb_package_specs.from_json ~deprecated_bs_suffix x
-  | None -> Bsb_package_specs.default_package_specs ~deprecated_bs_suffix
+  | Some x -> Bsb_package_specs.from_json ?deprecated_bs_suffix x
+  | None -> Bsb_package_specs.default_package_specs ?deprecated_bs_suffix ()
 
 
 let package_specs_from_bsconfig () =
