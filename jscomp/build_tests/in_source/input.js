@@ -10,13 +10,11 @@ assert.throws(
     })
   },
   function (err) {
-    if (err.message.match(/detected two module formats/)) {
+    if (
+      err.message.match(/two conflicting module formats with the extension/)
+    ) {
       return true
     }
     return false
   }
 )
-
-// assert.throws(()=>{
-//     throw new Error('Wrong value')
-// }, /x/)
