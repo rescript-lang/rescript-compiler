@@ -3,8 +3,15 @@ root = true
 [*]
 charset = utf-8
 
-[*.{ml,mli,mll,mly}]
-max_line_length = 80
+[*.{ml,mli,mll,mly}, *.{js,jsx,ts,tsx,vue,json}]
+max_line_length = 92
+trim_trailing_whitespace = true
+insert_final_newline = true
+indent_style = space
+indent_size = 2
+
+[*.{js,jsx,ts,tsx,vue,json}]
+max_line_length = 92
 trim_trailing_whitespace = true
 insert_final_newline = true
 indent_style = space

@@ -1,0 +1,7 @@
+# Explicitly set to override .editorconfig with a lower value; see:
+#   <https://prettier.io/docs/en/options.html#print-width>
+printWidth: 80
+
+# Attempting to match existing style in the codebase
+semi: false
+singleQuote: true
