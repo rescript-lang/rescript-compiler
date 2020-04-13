@@ -24,9 +24,9 @@
 
 type t
 
-val default_package_specs : t
+val default_package_specs : deprecated_bs_suffix:bool -> t
 
-val from_json : Ext_json_types.t -> t
+val from_json : ?deprecated_bs_suffix:bool -> Ext_json_types.t -> t
 
 val get_list_of_output_js : t -> string -> string list
 

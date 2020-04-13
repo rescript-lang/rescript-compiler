@@ -187,6 +187,11 @@ let append_location_descriptor_of_string (packages_info : t) (s : string) : t =
   let module_system, path, extension =
     match Ext_string.split ~keep_empty:false s ':' with
     | [ module_system; path; extension ] -> (module_system, path, extension)
+    (* Note that, for most users, the default values for [module_system] and
+       [extension] come not from here, but from [bsb], which always invokes this
+       with a fully-populated [-bs-package-output].
+
+       If you're changing the default, make sure both places match! *)
     | [ module_system; path ] ->
         (module_system, path, deprecated_get_default_extension ())
     | [ path ] -> ("NodeJS", path, deprecated_get_default_extension ())
