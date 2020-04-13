@@ -1,6 +1,7 @@
 {
   "devDependencies": {
-    "mocha": "^6.2.2"
+    "mocha": "^6.2.2",
+    "prettier": "^2.0.4"
   },
   "bin": {
     "bsb": "lib/bsb",
