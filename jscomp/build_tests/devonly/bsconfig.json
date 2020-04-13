@@ -14,9 +14,9 @@
   ],
   "package-specs": {
     "module": "commonjs",
-    "in-source": true
+    "in-source": true,
+    "suffix": ".bs.js"
   },
-  "suffix": ".bs.js",
   "bs-dependencies": [],
   "warnings": {
     "error": "+101"

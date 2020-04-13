@@ -4,7 +4,8 @@
   "bsc-flags": ["-bs-cross-module-opt"],
   "package-specs": {
     "module": "commonjs",
-    "in-source": true
+    "in-source": true,
+    "suffix": ".bs.js"
   },
   "sources": [
     "src",
@@ -12,6 +13,5 @@
       "dir": "test",
       "type": "dev"
     }
-  ],
-  "suffix": ".bs.js"
+  ]
 }

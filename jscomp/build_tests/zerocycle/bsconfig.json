@@ -4,10 +4,7 @@
   "sources": ["src"],
   "package-specs": {
     "module": "commonjs",
-    "in-source": true
-  },
-  "suffix": ".bs.js",
-  "bs-dependencies": [
-    // add your bs-dependencies here
-  ]
+    "in-source": true,
+    "suffix": ".bs.js"
+  }
 }

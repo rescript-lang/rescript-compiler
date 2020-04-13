@@ -13,9 +13,9 @@
   ],
   "package-specs": {
     "module": "commonjs",
-    "in-source": true
+    "in-source": true,
+    "suffix": ".bs.js"
   },
-  "suffix": ".bs.js",
   "bs-dependencies": [],
   "bs-dev-dependencies": ["weird"],
   "warnings": {
