@@ -21285,6 +21285,7 @@ let to_method_callback  loc (self : Bs_ast_mapper.mapper)
          )])
 
 let to_uncurry_fn  loc (self : Bs_ast_mapper.mapper) (label : Asttypes.arg_label) pat body 
+    : Parsetree.expression_desc
   = 
   Bs_syntaxerr.optional_err loc label;  
   let rec aux acc (body : Parsetree.expression) = 
@@ -21315,14 +21316,11 @@ let to_uncurry_fn  loc (self : Bs_ast_mapper.mapper) (label : Asttypes.arg_label
   in 
   Bs_syntaxerr.err_large_arity loc arity;
   let arity_s = string_of_int arity in   
-  Parsetree.Pexp_constraint(
-    Exp.record ~loc [
+  Pexp_record ([
       {
-        txt = Ast_literal.Lid.hidden_field arity_s;
+        txt = Ldot (Ast_literal.Lid.js_fn, "I" ^ arity_s);
         loc
-      },body] None, Typ.constr ~loc {txt = Ldot (Ast_literal.Lid.js_fn,"arity"^arity_s);loc}
-      [Typ.any ~loc ()]
-  )
+      },body], None)
 
 
 
