@@ -1,25 +1,25 @@
 {
   "name": "devdeps",
   "version": "0.1.0",
-  "sources": [{
-    "dir" : "src",
-    "subdirs" : true
-  },
+  "sources": [
     {
-      "dir" : "test",
-      "type" : "dev"
+      "dir": "src",
+      "subdirs": true
+    },
+    {
+      "dir": "test",
+      "type": "dev"
     }
-],
+  ],
   "package-specs": {
     "module": "commonjs",
     "in-source": true
   },
   "suffix": ".bs.js",
-  "bs-dependencies": [
-  ],
+  "bs-dependencies": [],
   "bs-dev-dependencies": ["weird"],
   "warnings": {
-    "error" : "+101"
+    "error": "+101"
   },
   "refmt": 3
 }

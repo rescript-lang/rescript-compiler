@@ -1,27 +1,27 @@
 {
   "name": "a0002",
   "version": "0.1.0",
-  "sources": [{
-    "dir" : ".",
-    "subdirs" : false
-  }, {
-    "dir": "re",
-    "files" : {
-      "slow-re": "hexll\\.*.ml"
-    }},
-    {"dir":"files",
-      "files" : ["hello00.ml"]
-  
-  }],
+  "sources": [
+    {
+      "dir": ".",
+      "subdirs": false
+    },
+    {
+      "dir": "re",
+      "files": {
+        "slow-re": "hexll\\.*.ml"
+      }
+    },
+    { "dir": "files", "files": ["hello00.ml"] }
+  ],
   "package-specs": {
     "module": "commonjs",
     "in-source": true
   },
   "suffix": ".bs.js",
-  "bs-dependencies": [
-  ],
+  "bs-dependencies": [],
   "warnings": {
-    "error" : "+101"
+    "error": "+101"
   },
   "refmt": 3
 }
