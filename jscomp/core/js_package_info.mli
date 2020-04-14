@@ -53,7 +53,11 @@ val deprecated_set_bs_extension : unit -> unit
 val append_location_descriptor_of_string : t -> string -> t
 (** used by command line option e.g [-bs-package-output commonjs:xx/path:ext] *)
 
-type package_paths = { rel_path : string; pkg_rel_path : string }
+type package_paths = {
+  rel_path : string;
+  pkg_rel_path : string;
+  extension : string;
+}
 
 type query_result =
   | Package_script

@@ -102,28 +102,37 @@ let string_of_module_id (dep_module_id : Lam_module_ident.t)
         let current_loc = query current_package_info module_system in
         match Lam_compile_env.get_package_path_from_cmj dep_module_id with
         | cmj_path, dep_package_info, case -> (
-            let js_file =
-              Ext_namespace.js_filename_of_modulename
-                ~name:dep_module_id.id.name ~ext case
-            in
             let dep_loc = query dep_package_info module_system in
             match (dep_loc, current_loc) with
             | Package_not_found, _ ->
                 Bs_exception.error (Missing_ml_dependency dep_module_id.id.name)
             | Package_script, Package_found _ ->
+                let js_file =
+                  Ext_namespace.js_filename_of_modulename
+                  (* FIXME: Unsure how to infer a useful file-extension here. *)
+                    ~name:dep_module_id.id.name ~ext:"" case
+                in
                 Bs_exception.error
                   (Dependency_script_module_dependent_not js_file)
             | (Package_script | Package_found _), Package_not_found ->
                 assert false
-            | Package_found pkg, Package_script ->
+            | Package_found dep_pkg, Package_script ->
+                let js_file =
+                  Ext_namespace.js_filename_of_modulename
+                    ~name:dep_module_id.id.name ~ext:dep_pkg.extension case
+                in
 #if BS_NATIVE then
-                if Filename.is_relative pkg.rel_path then
-                  pkg.pkg_rel_path // js_file
-                else pkg.rel_path // js_file
+                if Filename.is_relative dep_pkg.rel_path then
+                  dep_pkg.pkg_rel_path // js_file
+                else dep_pkg.rel_path // js_file
 #else
-                pkg.pkg_rel_path // js_file
+                dep_pkg.pkg_rel_path // js_file
 #end
             | Package_found dep_pkg, Package_found cur_pkg -> (
+                let js_file =
+                  Ext_namespace.js_filename_of_modulename
+                    ~name:dep_module_id.id.name ~ext:dep_pkg.extension case
+                in
                 if
                   Js_package_info.same_package_by_name current_package_info
                     dep_package_info
@@ -158,6 +167,10 @@ let string_of_module_id (dep_module_id : Lam_module_ident.t)
                             (Filename.dirname (Filename.dirname cmj_path))
                         // dep_pkg.rel_path // js_file ) )
             | Package_script, Package_script -> (
+                let js_file =
+                  Ext_namespace.js_filename_of_modulename
+                    ~name:dep_module_id.id.name ~ext case
+                in
                 match Config_util.find_opt js_file with
                 | Some file ->
                     let basename = Filename.basename file in

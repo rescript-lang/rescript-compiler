@@ -123,7 +123,11 @@ let dump_package_info (fmt : Format.formatter) ({ name; locations } : t) =
     locations
 
 
-type package_paths = { rel_path : string; pkg_rel_path : string }
+type package_paths = {
+  rel_path : string;
+  pkg_rel_path : string;
+  extension : string;
+}
 type query_result =
   | Package_script
   | Package_not_found
@@ -140,20 +144,18 @@ let query_package_location_by_module_system ({ name; locations } : t)
         Ext_list.find_first locations (fun k ->
             compatible k.module_system module_system)
       with
-      | Some k ->
-          let rel_path = k.path in
+      | Some { path = rel_path; extension; module_system = _ms } ->
           let pkg_rel_path = name // rel_path in
-          Package_found { rel_path; pkg_rel_path }
+          Package_found { rel_path; pkg_rel_path; extension }
       | None -> Package_not_found )
   | Pkg_runtime -> (
       match
         Ext_list.find_first locations (fun k ->
             compatible k.module_system module_system)
       with
-      | Some k ->
-          let rel_path = k.path in
+      | Some { path = rel_path; extension; module_system = _ms } ->
           let pkg_rel_path = runtime_package_name // rel_path in
-          Package_found { rel_path; pkg_rel_path }
+          Package_found { rel_path; pkg_rel_path; extension }
       | None -> Package_not_found )
 
 
