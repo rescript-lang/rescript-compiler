@@ -390,18 +390,10 @@ let unescaped_js_delimiter = "js"
 
 let escaped = Some escaped_j_delimiter
 
-let concat_exp
-  (a : Parsetree.expression)
-  (b : Parsetree.expression) : Parsetree.expression =
-  let loc = Bs_loc.merge a.pexp_loc b.pexp_loc in
-  Ast_compatible.apply_simple ~loc
-  (Exp.ident { txt =concat_ident; loc})
-    [a ;
-     b]
 
 let border = String.length "{j|"
 
-let aux loc (segment : segment) =
+let aux loc (segment : segment) ~to_string_ident : Parsetree.expression =
   match segment with
   | {start ; finish; kind ; content}
     ->
@@ -423,6 +415,28 @@ let aux loc (segment : segment) =
           ]
     end
 
+let concat_exp
+    a_loc x 
+    ~lhs:(lhs : Parsetree.expression) : Parsetree.expression =
+  let loc = Bs_loc.merge a_loc lhs.pexp_loc in
+  Ast_compatible.apply_simple ~loc
+    (Exp.ident { txt =concat_ident; loc})
+    [
+      lhs;
+      aux loc x ~to_string_ident:(Longident.Ldot (Lident"Obj","magic")) ;]
+
+(* Invariant: the [lhs] is always of type string *)
+let rec handle_segments loc (rev_segments : segment list)=      
+    match rev_segments with
+    | [] ->
+      Ast_compatible.const_exp_string ~loc ""  ?delimiter:escaped
+    | [ segment] ->
+      aux loc segment ~to_string_ident(* string literal *)
+    | {content="";} :: rest ->
+      handle_segments loc rest  
+    | a::rest ->
+      concat_exp loc a ~lhs:(handle_segments loc rest)  
+
 
 let transform_interp loc s =
   let s_len = String.length s in
@@ -440,15 +454,7 @@ let transform_interp loc s =
       } in
 
     check_and_transform 0 s 0 cxt;
-    let rev_segments =  cxt.segments in
-    match rev_segments with
-    | [] ->
-      Ast_compatible.const_exp_string ~loc ""  ?delimiter:escaped
-    | [ segment] ->
-      aux loc segment
-    | a::rest ->
-      Ext_list.fold_left rest (aux loc a) (fun acc x ->
-          concat_exp (aux loc x) acc )        
+    handle_segments loc cxt.segments
   with
     Error (start,pos, error)
     ->

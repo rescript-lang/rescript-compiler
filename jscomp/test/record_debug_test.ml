@@ -1,5 +1,8 @@
 
-
+(* [@@@bs.config {flags = [|"-dsource"|]}] *)
+let suites :  Mt.pair_suites ref  = ref []
+let test_id = ref 0
+let eq loc x y = Mt.eq_suites ~test_id ~suites loc x y 
 
 type t = {
   a : int option; 
@@ -51,3 +54,13 @@ end
 
 let fmt,a, c = Format.std_formatter, (1,2,2,4,3) , [|1;2;3;4;5|]
 ;; Js.log {j| $fmt $a $c |j}
+
+let%private i = 3
+let%private a = 
+  {j||j},{j|a|j},{j|$i|j}, {j|$i$i|j} ,{j|$i$i$i|j}, {j| $i|j} 
+;;
+
+
+eq __LOC__ a ("","a","3","33","333"," 3")
+;;
+Mt.from_pair_suites __FILE__ !suites
