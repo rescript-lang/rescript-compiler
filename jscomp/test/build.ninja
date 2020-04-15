@@ -510,7 +510,7 @@ build test/rebind_module_test.cmi test/rebind_module_test.cmj : cc test/rebind_m
 build test/rec_fun_test.cmi test/rec_fun_test.cmj : cc test/rec_fun_test.ml | test/mt.cmj $stdlib
 build test/rec_module_test.cmi test/rec_module_test.cmj : cc test/rec_module_test.ml | test/mt.cmj $stdlib
 build test/rec_value_test.cmi test/rec_value_test.cmj : cc test/rec_value_test.ml | test/mt.cmj $stdlib
-build test/record_debug_test.cmi test/record_debug_test.cmj : cc test/record_debug_test.ml | $stdlib
+build test/record_debug_test.cmi test/record_debug_test.cmj : cc test/record_debug_test.ml | test/mt.cmj $stdlib
 build test/record_extension_test.cmi test/record_extension_test.cmj : cc test/record_extension_test.ml | test/mt.cmj $stdlib
 build test/record_name_test.cmi test/record_name_test.cmj : cc test/record_name_test.ml | $stdlib
 build test/record_with_test.cmi test/record_with_test.cmj : cc test/record_with_test.ml | test/mt.cmj $stdlib

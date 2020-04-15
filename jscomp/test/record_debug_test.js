@@ -1,7 +1,20 @@
 'use strict';
 
+var Mt = require("./mt.js");
 var Format = require("../../lib/js/format.js");
 var Caml_exceptions = require("../../lib/js/caml_exceptions.js");
+
+var suites = {
+  contents: /* [] */0
+};
+
+var test_id = {
+  contents: 0
+};
+
+function eq(loc, x, y) {
+  return Mt.eq_suites(test_id, suites, loc, x, y);
+}
 
 var v = {
   a: 3,
@@ -53,7 +66,7 @@ var N0 = {
   f: N0_f
 };
 
-console.log(" hei " + (String(v) + " "));
+console.log(" hei " + v + " ");
 
 var a = /* tuple */[
   1,
@@ -71,7 +84,39 @@ var c = [
   5
 ];
 
-console.log(" " + (String(Format.std_formatter) + (" " + (String(a) + (" " + (String(c) + " "))))));
+console.log(" " + Format.std_formatter + " " + a + " " + c + " ");
+
+var a_000 = "";
+
+var a_001 = "a";
+
+var a_002 = "" + 3;
+
+var a_003 = "" + 3 + 3;
+
+var a_004 = "" + 3 + 3 + 3;
+
+var a_005 = " " + 3;
+
+var a$1 = /* tuple */[
+  a_000,
+  a_001,
+  a_002,
+  a_003,
+  a_004,
+  a_005
+];
+
+eq("File \"record_debug_test.ml\", line 64, characters 3-10", a$1, /* tuple */[
+      "",
+      "a",
+      "3",
+      "33",
+      "333",
+      " 3"
+    ]);
+
+Mt.from_pair_suites("record_debug_test.ml", suites.contents);
 
 var h = /* :: */[
   1,
@@ -102,6 +147,9 @@ var v3 = /* `C */[
 
 var fmt = Format.std_formatter;
 
+exports.suites = suites;
+exports.test_id = test_id;
+exports.eq = eq;
 exports.v = v;
 exports.u = u;
 exports.h = h;
