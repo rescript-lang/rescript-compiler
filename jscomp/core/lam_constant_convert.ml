@@ -58,8 +58,8 @@ let rec convert_constant ( const : Lambda.structured_constant) : Lam_constant.t 
       Const_some (convert_constant (Ext_list.singleton_exn xs))
     | Blk_some -> 
       Const_some (convert_constant (Ext_list.singleton_exn xs))        
-    | Blk_constructor(a,b) ->   
-      let t : Lam_tag_info.t = Blk_constructor(a,b) in 
+    | Blk_constructor{name ; num_nonconst } ->   
+      let t : Lam_tag_info.t = Blk_constructor {name; num_nonconst} in 
       Const_block (i,t, Ext_list.map xs convert_constant )
     | Blk_tuple ->   
       let t : Lam_tag_info.t = Blk_tuple in 
@@ -96,8 +96,9 @@ let rec convert_constant ( const : Lambda.structured_constant) : Lam_constant.t 
     | Blk_na s  -> 
       let t : Lam_tag_info.t = Blk_na s in 
       Const_block (i,t, Ext_list.map xs convert_constant )      
-    | Blk_record_inlined (s,ctor,ix)  -> 
-      let t : Lam_tag_info.t = Blk_record_inlined (s, ctor,ix) in 
+      
+    | Blk_record_inlined {name;fields;num_nonconst}  -> 
+      let t : Lam_tag_info.t = Blk_record_inlined {name;fields;num_nonconst} in 
       Const_block (i,t, Ext_list.map xs convert_constant )      
     | Blk_record_ext s -> 
       let t : Lam_tag_info.t = Blk_record_ext s in 

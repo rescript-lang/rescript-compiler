@@ -58,3 +58,8 @@ let v = let (`A x) = r () in x ();;
 
 Js.log v 
 
+;; let handle_tuple x y = 
+  match x, y with 
+  | (0,1) -> 2 
+  | (1,2) -> 3 
+  | (a,b) as x  -> Js.log x ; a + b

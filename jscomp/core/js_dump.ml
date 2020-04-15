@@ -859,7 +859,7 @@ and expression_desc cxt ~(level:int) f x : cxt  =
           P.paren_group f 1 (fun _ -> arguments cxt f [ 
               E.str name;
               E.array mutable_flag el])        
-        | Blk_constructor(name,number) 
+        | Blk_constructor{name; num_nonconst = number}
 
           -> (* has to be debug mode *)          
           if number = 1 && Js_block_runtime.tag_is_zero tag then 

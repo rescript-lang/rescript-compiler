@@ -17928,7 +17928,7 @@ module Lam_tag_info
   [Blk_some], [Blk_some_not_nested]
 *)
 type t = 
-  | Blk_constructor of string * int
+  | Blk_constructor of {name : string ; num_nonconst : int}
   | Blk_tuple
   | Blk_array
   | Blk_poly_var of string 
@@ -17937,7 +17937,7 @@ type t =
   | Blk_extension_slot
   | Blk_extension
   | Blk_na of string (* for debugging *)
-  | Blk_record_inlined of string array * string * int
+  | Blk_record_inlined of { name : string ; num_nonconst : int; fields : string array }
   | Blk_record_ext of string array
   | Blk_class
   | Blk_module_export

@@ -186,7 +186,7 @@ let make_block ?comment
     | _ -> comment in
   let es = 
     match tag_info with       
-    | Blk_record_inlined (des, _,_)
+    | Blk_record_inlined {fields = des}
       -> 
       Ext_list.mapi es (fun i e  -> merge_outer_comment des.(i) e) 
     | Blk_record_ext des
