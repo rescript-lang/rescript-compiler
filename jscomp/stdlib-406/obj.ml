@@ -118,3 +118,9 @@ module Ephemeron = struct
 
 
 end
+
+let new_object_tag_block size = 
+  new_block object_tag size  
+
+let new_lazy_tag_block = fun [@bs]()  -> 
+  new_block lazy_tag 1  

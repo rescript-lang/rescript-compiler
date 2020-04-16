@@ -60,7 +60,7 @@ external force : 'a t -> 'a = "%lazy_force"
 let force_val = CamlinternalLazy.force_val
 
 let from_fun (f : unit -> 'arg) =
-  let x = Obj.new_block Obj.lazy_tag 1 in
+  let x = Obj.new_lazy_tag_block () [@bs] in
   Obj.set_field x 0 (Obj.repr f);
   (Obj.obj x : 'arg t)
 

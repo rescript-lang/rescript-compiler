@@ -57,7 +57,8 @@ end
       { tag : tag ; length : size }
     ]}
     we don't need fill fields, since it is not required by GC
-
+  This function should never be used in variant 
+  block creation
 *)
 let caml_obj_block tag size = 
   let v = Caml_obj_extern.repr (Caml_array_extern.new_uninitialized size) in 
