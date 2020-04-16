@@ -11297,44 +11297,6 @@ function token(lexbuf) {
   };
 }
 
-function __ocaml_lex_quoted_string_rec(delim, lexbuf, ___ocaml_lex_state) {
-  while(true) {
-    var __ocaml_lex_state = ___ocaml_lex_state;
-    var __ocaml_lex_state$1 = Lexing.engine(__ocaml_lex_tables, __ocaml_lex_state, lexbuf);
-    switch (__ocaml_lex_state$1) {
-      case 0 :
-          update_loc(lexbuf, undefined, 1, false, 0);
-          store_string(Lexing.lexeme(lexbuf));
-          ___ocaml_lex_state = 183;
-          continue ;
-      case 1 :
-          is_in_string.contents = false;
-          throw [
-                $$Error$2,
-                /* Unterminated_string */0,
-                string_start_loc.contents
-              ];
-      case 2 :
-          var edelim = Lexing.lexeme(lexbuf);
-          var edelim$1 = $$String.sub(edelim, 1, edelim.length - 2 | 0);
-          if (delim === edelim$1) {
-            return ;
-          }
-          store_string(Lexing.lexeme(lexbuf));
-          ___ocaml_lex_state = 183;
-          continue ;
-      case 3 :
-          store_string_char(Lexing.lexeme_char(lexbuf, 0));
-          ___ocaml_lex_state = 183;
-          continue ;
-      default:
-        Curry._1(lexbuf.refill_buff, lexbuf);
-        ___ocaml_lex_state = __ocaml_lex_state$1;
-        continue ;
-    }
-  };
-}
-
 function string(lexbuf) {
   lexbuf.lex_mem = Caml_array.caml_make_vect(2, -1);
   var ___ocaml_lex_state = 164;
@@ -11391,8 +11353,42 @@ function string(lexbuf) {
   };
 }
 
-function comment(lexbuf) {
-  return __ocaml_lex_comment_rec(lexbuf, 132);
+function __ocaml_lex_quoted_string_rec(delim, lexbuf, ___ocaml_lex_state) {
+  while(true) {
+    var __ocaml_lex_state = ___ocaml_lex_state;
+    var __ocaml_lex_state$1 = Lexing.engine(__ocaml_lex_tables, __ocaml_lex_state, lexbuf);
+    switch (__ocaml_lex_state$1) {
+      case 0 :
+          update_loc(lexbuf, undefined, 1, false, 0);
+          store_string(Lexing.lexeme(lexbuf));
+          ___ocaml_lex_state = 183;
+          continue ;
+      case 1 :
+          is_in_string.contents = false;
+          throw [
+                $$Error$2,
+                /* Unterminated_string */0,
+                string_start_loc.contents
+              ];
+      case 2 :
+          var edelim = Lexing.lexeme(lexbuf);
+          var edelim$1 = $$String.sub(edelim, 1, edelim.length - 2 | 0);
+          if (delim === edelim$1) {
+            return ;
+          }
+          store_string(Lexing.lexeme(lexbuf));
+          ___ocaml_lex_state = 183;
+          continue ;
+      case 3 :
+          store_string_char(Lexing.lexeme_char(lexbuf, 0));
+          ___ocaml_lex_state = 183;
+          continue ;
+      default:
+        Curry._1(lexbuf.refill_buff, lexbuf);
+        ___ocaml_lex_state = __ocaml_lex_state$1;
+        continue ;
+    }
+  };
 }
 
 function __ocaml_lex_comment_rec(lexbuf, ___ocaml_lex_state) {
@@ -11567,6 +11563,10 @@ function __ocaml_lex_comment_rec(lexbuf, ___ocaml_lex_state) {
         continue ;
     }
   };
+}
+
+function comment(lexbuf) {
+  return __ocaml_lex_comment_rec(lexbuf, 132);
 }
 
 function at_bol(lexbuf) {

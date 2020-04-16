@@ -1,7 +1,7 @@
 
 
 
-let empty_backtrace  = Obj.obj (Obj.new_block Obj.abstract_tag 0)
+(* let empty_backtrace  = Obj.obj (Obj.new_block Obj.abstract_tag 0) *)
 
 let is_block x = (Obj.is_block @@ Obj.repr x)
  
