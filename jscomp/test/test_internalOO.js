@@ -1,6 +1,5 @@
 'use strict';
 
-var Obj = require("../../lib/js/obj.js");
 var Sys = require("../../lib/js/sys.js");
 var List = require("../../lib/js/list.js");
 var $$Array = require("../../lib/js/array.js");
@@ -2898,8 +2897,6 @@ var table_count = {
   contents: 0
 };
 
-var dummy_met = /* obj_block */[];
-
 function fit_size(n) {
   if (n <= 2) {
     return n;
@@ -2911,7 +2908,7 @@ function fit_size(n) {
 function new_table(pub_labels) {
   table_count.contents = table_count.contents + 1 | 0;
   var len = pub_labels.length;
-  var methods = Caml_array.caml_make_vect((len << 1) + 2 | 0, dummy_met);
+  var methods = Caml_array.caml_make_vect((len << 1) + 2 | 0, /* DummyA */0);
   Caml_array.caml_array_set(methods, 0, len);
   Caml_array.caml_array_set(methods, 1, (Caml_int32.imul(fit_size(len), Sys.word_size) / 8 | 0) - 1 | 0);
   for(var i = 0; i < len; ++i){
@@ -2934,7 +2931,7 @@ function resize(array, new_size) {
   if (new_size <= old_size) {
     return ;
   }
-  var new_buck = Caml_array.caml_make_vect(new_size, dummy_met);
+  var new_buck = Caml_array.caml_make_vect(new_size, /* DummyA */0);
   $$Array.blit(array.methods, 0, new_buck, 0, old_size);
   array.methods = new_buck;
   
@@ -3264,7 +3261,7 @@ function dummy_class(loc) {
 }
 
 function create_object(table) {
-  var obj = Caml_obj.caml_obj_block(Obj.object_tag, table.size);
+  var obj = Caml_obj.caml_obj_block(248, table.size);
   obj[0] = table.methods;
   return Caml_exceptions.caml_set_oo_id(obj);
 }
@@ -3273,7 +3270,7 @@ function create_object_opt(obj_0, table) {
   if (obj_0) {
     return obj_0;
   }
-  var obj = Caml_obj.caml_obj_block(Obj.object_tag, table.size);
+  var obj = Caml_obj.caml_obj_block(248, table.size);
   obj[0] = table.methods;
   return Caml_exceptions.caml_set_oo_id(obj);
 }
@@ -3679,6 +3676,8 @@ function stats(param) {
 var initial_object_size = 2;
 
 var dummy_item;
+
+var dummy_met = /* DummyA */0;
 
 exports.copy = copy;
 exports.params = params;

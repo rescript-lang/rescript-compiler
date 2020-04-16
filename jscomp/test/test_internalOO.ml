@@ -117,7 +117,7 @@ let dummy_table =
 let table_count = ref 0
 
 (* dummy_met should be a pointer, so use an atom *)
-let dummy_met : item = obj (Obj.new_block 0 0)
+let dummy_met : item = DummyA
 (* if debugging is needed, this could be a good idea: *)
 (* let dummy_met () = failwith "Undefined method" *)
 
@@ -349,7 +349,7 @@ let dummy_class loc =
 
 let create_object table =
   (* XXX Appel de [obj_block] *)
-  let obj = Obj.new_block Obj.object_tag table.size in
+  let obj = Obj.new_object_tag_block  table.size in
   (* XXX Appel de [caml_modify] *)
   Obj.set_field obj 0 (Obj.repr table.methods);
   Obj.obj (set_id obj)
@@ -357,7 +357,7 @@ let create_object table =
 let create_object_opt obj_0 table =
   if (Obj.magic obj_0 : bool) then obj_0 else begin
     (* XXX Appel de [obj_block] *)
-    let obj = Obj.new_block Obj.object_tag table.size in
+    let obj = Obj.new_object_tag_block  table.size in
     (* XXX Appel de [caml_modify] *)
     Obj.set_field obj 0 (Obj.repr table.methods);
     Obj.obj (set_id obj)
