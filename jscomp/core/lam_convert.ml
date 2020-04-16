@@ -217,8 +217,8 @@ let lam_prim ~primitive:( p : Lambda.primitive) ~args loc : Lam.t =
     | Blk_some 
       ->    
       prim ~primitive:Psome ~args loc 
-    | Blk_constructor(xs,i) ->  
-      let info : Lam_tag_info.t = Blk_constructor(xs,i) in
+    | Blk_constructor{name ; num_nonconst } ->  
+      let info : Lam_tag_info.t = Blk_constructor {name; num_nonconst} in
       prim ~primitive:(Pmakeblock (tag,info,mutable_flag)) ~args loc
     | Blk_tuple  -> 
       let info : Lam_tag_info.t = Blk_tuple in
@@ -238,8 +238,8 @@ let lam_prim ~primitive:( p : Lambda.primitive) ~args loc : Lam.t =
     | Blk_record s -> 
       let info : Lam_tag_info.t = Blk_record s in
       prim ~primitive:(Pmakeblock (tag,info,mutable_flag)) ~args loc    
-    | Blk_record_inlined (s,ctor,i) ->
-      let info : Lam_tag_info.t = Blk_record_inlined (s, ctor,i) in
+    | Blk_record_inlined {name; fields; num_nonconst} ->
+      let info : Lam_tag_info.t = Blk_record_inlined {name; fields; num_nonconst} in
       prim ~primitive:(Pmakeblock (tag,info,mutable_flag)) ~args loc
     | Blk_record_ext s ->
       let info : Lam_tag_info.t = Blk_record_ext s in
@@ -544,7 +544,7 @@ let convert (exports : Set_ident.t) (lam : Lambda.lambda) : Lam.t * Lam_module_i
         | "#apply7"
         | "#apply8" -> Pjs_apply
         | "#makemutablelist" ->
-          Pmakeblock(0, Blk_constructor("::",1),Mutable)
+          Pmakeblock(0, Blk_constructor{name = "::"; num_nonconst = 1},Mutable)
         | "#setfield1" ->
           Psetfield(1,  Fld_set_na)
         | "#undefined_to_opt" -> Pundefined_to_opt

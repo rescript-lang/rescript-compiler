@@ -457,6 +457,7 @@ build test/obj_curry_test.cmi test/obj_curry_test.cmj : cc test/obj_curry_test.m
 build test/obj_literal_ppx.cmi test/obj_literal_ppx.cmj : cc test/obj_literal_ppx.ml | $stdlib
 build test/obj_literal_ppx_test.cmi test/obj_literal_ppx_test.cmj : cc test/obj_literal_ppx_test.ml | $stdlib
 build test/obj_magic_test.cmi test/obj_magic_test.cmj : cc test/obj_magic_test.ml | test/mt.cmj $stdlib
+build test/obj_repr_test.cmi test/obj_repr_test.cmj : cc test/obj_repr_test.ml | $stdlib
 build test/obj_test.cmi test/obj_test.cmj : cc test/obj_test.ml | test/mt.cmj $stdlib
 build test/obj_type_test.cmi test/obj_type_test.cmj : cc test/obj_type_test.ml | $stdlib
 build test/ocaml_parsetree_test.cmj : cc_cmi test/ocaml_parsetree_test.ml | test/ocaml_parsetree_test.cmi $stdlib

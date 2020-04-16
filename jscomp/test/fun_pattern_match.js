@@ -83,10 +83,27 @@ var v = Curry._1(match[1], undefined);
 
 console.log(v);
 
+function handle_tuple(x, y) {
+  if (x !== 0) {
+    if (x === 1 && y === 2) {
+      return 3;
+    }
+    
+  } else if (y === 1) {
+    return 2;
+  }
+  console.log(/* tuple */[
+        x,
+        y
+      ]);
+  return x + y | 0;
+}
+
 exports.f = f;
 exports.f2 = f2;
 exports.f3 = f3;
 exports.f4 = f4;
 exports.r = r;
 exports.v = v;
+exports.handle_tuple = handle_tuple;
 /* match Not a pure module */

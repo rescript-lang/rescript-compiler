@@ -42,12 +42,12 @@ let jsop_of_comp (cmp : Lam_compat.comparison) : Js_op.binop =
 
 let comment_of_tag_info  (x : Lam_tag_info.t) = 
   match x with 
-  | Blk_constructor (n, _) -> Some n 
+  | Blk_constructor {name = n} -> Some n 
   | Blk_tuple -> Some "tuple"
   | Blk_class -> Some "class"
   | Blk_poly_var x -> Some ("`" ^  x)
   | Blk_record _ -> None
-  | Blk_record_inlined (_,ctor,_) -> Some ctor
+  | Blk_record_inlined {name = ctor} -> Some ctor
   | Blk_record_ext _ -> None
   | Blk_array -> 
     (* so far only appears in {!Translclass} 

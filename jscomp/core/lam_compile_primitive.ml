@@ -604,7 +604,7 @@ let translate  loc
      | Backend_type  -> 
       E.make_block
         E.zero_int_literal 
-        (Blk_constructor ("Other",1))
+        (Blk_constructor {name = "Other"; num_nonconst = 1})
         [E.str "BS"] Immutable
      )
   | Pduprecord Record_regular -> 

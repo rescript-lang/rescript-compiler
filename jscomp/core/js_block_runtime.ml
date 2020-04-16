@@ -56,8 +56,8 @@ let needBlockRuntime (tag : J.expression) (tag_info : J.tag_info) =
   | Blk_extension
   | Blk_class
   | Blk_array -> false   
-  | Blk_record_inlined (_,_,1)  
-  | Blk_constructor (_, 1)      
+  | Blk_record_inlined {num_nonconst = 1}  
+  | Blk_constructor {num_nonconst = 1}        
   | Blk_na _ -> not (tag_is_zero tag)
   | Blk_record_inlined _ 
   | Blk_constructor _   -> true  

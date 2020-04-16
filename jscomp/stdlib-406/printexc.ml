@@ -267,7 +267,9 @@ let exn_slot_name x =
   let slot = exn_slot x in
   (Obj.obj (Obj.field slot 0) : string)
 
-
+#if BS then
+let set_uncaught_exception_handler _ = ()
+#else
 let uncaught_exception_handler = ref None
 
 let set_uncaught_exception_handler fn = uncaught_exception_handler := Some fn
@@ -327,3 +329,4 @@ external register_named_value : string -> 'a -> unit
 let () =
   register_named_value "Printexc.handle_uncaught_exception"
     handle_uncaught_exception
+#end
