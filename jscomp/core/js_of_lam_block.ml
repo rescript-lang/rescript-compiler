@@ -50,13 +50,15 @@ let make_block mutable_flag (tag_info : Lam_tag_info.t) tag args  =
 
 let field (field_info : Lam_compat.field_dbg_info) e i =
   match field_info with 
-  | Fld_na 
-  | Fld_tuple
+  | Fld_na _
+  | Fld_tuple  
   | Fld_poly_var_tag 
   | Fld_poly_var_content 
   | Fld_record_inline _
   | Fld_record_extension _
   | Fld_extension_slot
+  | Fld_extension
+  | Fld_variant
     -> 
     E.array_index_by_int  
       ?comment:(Lam_compat.str_of_field_info field_info) e i 
