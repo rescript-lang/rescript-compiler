@@ -32,13 +32,13 @@ function eq(loc, x, y) {
 }
 
 var class_tables = /* Cons */[
-  undefined,
-  undefined,
-  undefined
+  /* key */undefined,
+  /* data */undefined,
+  /* next */undefined
 ];
 
 function create(param) {
-  if (!class_tables[0]) {
+  if (!class_tables[/* key */0]) {
     var $$class = CamlinternalOO.create_table([
           "add",
           "get"
@@ -69,9 +69,9 @@ function create(param) {
       return self;
     };
     CamlinternalOO.init_class($$class);
-    class_tables[0] = env_init;
+    class_tables[/* key */0] = env_init;
   }
-  return Curry._1(class_tables[0], undefined);
+  return Curry._1(class_tables[/* key */0], undefined);
 }
 
 var cxt1 = create(undefined);
