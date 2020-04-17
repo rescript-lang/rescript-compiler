@@ -171,7 +171,7 @@ type meth_kind = Lambda.meth_kind
 | Cached
 
 type field_dbg_info = Lambda.field_dbg_info =
-  | Fld_na
+  | Fld_na of string
   | Fld_record of { name : string; mutable_flag : Asttypes.mutable_flag}
   | Fld_module of { name : string }
   | Fld_record_inline of { name : string}
@@ -180,10 +180,14 @@ type field_dbg_info = Lambda.field_dbg_info =
   | Fld_poly_var_tag
   | Fld_poly_var_content
   | Fld_extension_slot
+  | Fld_extension
+  | Fld_variant
 
 let str_of_field_info (x : field_dbg_info) : string option =  
   match x with 
-  | Fld_na 
+  | Fld_na  s -> Some s
+  | Fld_extension
+  | Fld_variant
   | Fld_poly_var_tag 
   | Fld_poly_var_content
   | Fld_tuple 

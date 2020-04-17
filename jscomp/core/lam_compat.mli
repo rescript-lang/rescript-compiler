@@ -73,7 +73,7 @@ type meth_kind = Lambda.meth_kind
 
 
 type field_dbg_info = Lambda.field_dbg_info =
-  | Fld_na
+  | Fld_na of string
   | Fld_record of {name : string; mutable_flag : Asttypes.mutable_flag}
   | Fld_module of {name : string }
   | Fld_record_inline of {name : string}
@@ -82,6 +82,8 @@ type field_dbg_info = Lambda.field_dbg_info =
   | Fld_poly_var_tag
   | Fld_poly_var_content
   | Fld_extension_slot
+  | Fld_extension 
+  | Fld_variant
   
 val str_of_field_info : 
   field_dbg_info -> 

@@ -53,7 +53,7 @@ let caml_get_public_method
     (obj : obj) 
     (tag : int) (cacheid  : int) : closure =
   let module Array = Caml_array_extern in 
-  let meths = get_methods obj in
+  let meths = get_methods obj in (* the first field of object is mehods *)
   let offs =  caml_methods_cache.(cacheid) in
   if (Caml_obj_extern.magic meths.(offs) : int) = tag then meths.(offs - 1)
   else
