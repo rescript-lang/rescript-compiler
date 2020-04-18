@@ -15,15 +15,15 @@ function f_js(u) {
 }
 
 var class_tables = /* Cons */[
-  undefined,
-  undefined,
-  undefined
+  /* key */undefined,
+  /* data */undefined,
+  /* next */undefined
 ];
 
 var suites_000 = /* tuple */[
   "caml_obj",
   (function (param) {
-      if (!class_tables[0]) {
+      if (!class_tables[/* key */0]) {
         var $$class = CamlinternalOO.create_table(["say"]);
         var env = CamlinternalOO.new_variable($$class, "");
         var say = CamlinternalOO.get_method_label($$class, "say");
@@ -36,11 +36,11 @@ var suites_000 = /* tuple */[
           return self;
         };
         CamlinternalOO.init_class($$class);
-        class_tables[0] = env_init;
+        class_tables[/* key */0] = env_init;
       }
       return /* Eq */Block.__(0, [
                 33,
-                f(Curry._1(class_tables[0], undefined))
+                f(Curry._1(class_tables[/* key */0], undefined))
               ]);
     })
 ];

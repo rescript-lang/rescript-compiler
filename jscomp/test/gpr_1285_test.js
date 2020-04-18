@@ -32,24 +32,24 @@ function eq(loc, x, y) {
 }
 
 var class_tables = /* Cons */[
-  undefined,
-  undefined,
-  undefined
+  /* key */undefined,
+  /* data */undefined,
+  /* next */undefined
 ];
 
 var class_tables$1 = /* Cons */[
-  undefined,
-  undefined,
-  undefined
+  /* key */undefined,
+  /* data */undefined,
+  /* next */undefined
 ];
 
 function step1(param) {
-  if (!class_tables[0]) {
+  if (!class_tables[/* key */0]) {
     var $$class = CamlinternalOO.create_table(["step2"]);
     var env = CamlinternalOO.new_variable($$class, "");
     var step2 = CamlinternalOO.get_method_label($$class, "step2");
     CamlinternalOO.set_method($$class, step2, (function (self$1) {
-            if (!class_tables$1[0]) {
+            if (!class_tables$1[/* key */0]) {
               var $$class = CamlinternalOO.create_table(["step3"]);
               var env = CamlinternalOO.new_variable($$class, "");
               var step3 = CamlinternalOO.get_method_label($$class, "step3");
@@ -62,9 +62,9 @@ function step1(param) {
                 return self;
               };
               CamlinternalOO.init_class($$class);
-              class_tables$1[0] = env_init;
+              class_tables$1[/* key */0] = env_init;
             }
-            return Curry._1(class_tables$1[0], undefined);
+            return Curry._1(class_tables$1[/* key */0], undefined);
           }));
     var env_init = function (env$1) {
       var self = CamlinternalOO.create_object_opt(undefined, $$class);
@@ -72,9 +72,9 @@ function step1(param) {
       return self;
     };
     CamlinternalOO.init_class($$class);
-    class_tables[0] = env_init;
+    class_tables[/* key */0] = env_init;
   }
-  return Curry._1(class_tables[0], undefined);
+  return Curry._1(class_tables[/* key */0], undefined);
 }
 
 var tmp = step1(undefined);
