@@ -1,0 +1,10 @@
+
+  [1;31mWe've found a bug for you![0m
+  [36m/.../fixtures/method_arity_mismatch.re[0m [2m3:8-9[0m
+  
+  1 [2m│[0m let f = ( obj ) => {
+  2 [2m│[0m     obj##hi (1,2);
+  [1;31m3[0m [2m│[0m     obj[1;31m##[0mhi (1)
+  4 [2m│[0m }
+  
+  This method has arity2 but was expected arity1
