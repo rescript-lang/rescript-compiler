@@ -3,7 +3,6 @@
 var Arg = require("../../lib/js/arg.js");
 var Obj = require("../../lib/js/obj.js");
 var List = require("../../lib/js/list.js");
-var $$Array = require("../../lib/js/array.js");
 var Block = require("../../lib/js/block.js");
 var Curry = require("../../lib/js/curry.js");
 var Format = require("../../lib/js/format.js");
@@ -153,91 +152,32 @@ function dump(r) {
   if (t !== 0) {
     if (t === Obj.lazy_tag) {
       return "<lazy>";
+    } else {
+      var name = Curry._2(Printf.sprintf(/* Format */[
+                /* String_literal */Block.__(11, [
+                    "unknown: tag ",
+                    /* Int */Block.__(4, [
+                        /* Int_d */0,
+                        /* No_padding */0,
+                        /* No_precision */0,
+                        /* String_literal */Block.__(11, [
+                            " size ",
+                            /* Int */Block.__(4, [
+                                /* Int_d */0,
+                                /* No_padding */0,
+                                /* No_precision */0,
+                                /* End_of_format */0
+                              ])
+                          ])
+                      ])
+                  ]),
+                "unknown: tag %d size %d"
+              ]), t, s);
+      return "<" + (name + ">");
     }
-    if (t === Obj.closure_tag) {
-      return "<closure>";
-    }
-    if (t === Obj.object_tag) {
-      var fields$1 = get_fields(/* [] */0, s);
-      var match;
-      if (fields$1) {
-        var match$1 = fields$1[1];
-        if (match$1) {
-          match = /* tuple */[
-            fields$1[0],
-            match$1[0],
-            match$1[1]
-          ];
-        } else {
-          throw [
-                Caml_builtin_exceptions.assert_failure,
-                /* tuple */[
-                  "ext_pervasives_test.ml",
-                  118,
-                  15
-                ]
-              ];
-        }
-      } else {
-        throw [
-              Caml_builtin_exceptions.assert_failure,
-              /* tuple */[
-                "ext_pervasives_test.ml",
-                118,
-                15
-              ]
-            ];
-      }
-      return "Object #" + (dump(match[1]) + (" (" + ($$String.concat(", ", List.map(dump, match[2])) + ")")));
-    }
-    if (t === Obj.infix_tag) {
-      return "<infix>";
-    }
-    if (t === Obj.forward_tag) {
-      return "<forward>";
-    }
-    if (t >= Obj.no_scan_tag) {
-      if (t === Obj.string_tag) {
-        return "\"" + ($$String.escaped(r) + "\"");
-      } else if (t === Obj.double_tag) {
-        return Pervasives.string_of_float(r);
-      } else if (t === Obj.abstract_tag) {
-        return "<abstract>";
-      } else if (t === Obj.custom_tag) {
-        return "<custom>";
-      } else if (t === Obj.custom_tag) {
-        return "<final>";
-      } else if (t === Obj.double_array_tag) {
-        return "[|" + ($$String.concat(";", $$Array.to_list($$Array.map(Pervasives.string_of_float, r))) + "|]");
-      } else {
-        var name = Curry._2(Printf.sprintf(/* Format */[
-                  /* String_literal */Block.__(11, [
-                      "unknown: tag ",
-                      /* Int */Block.__(4, [
-                          /* Int_d */0,
-                          /* No_padding */0,
-                          /* No_precision */0,
-                          /* String_literal */Block.__(11, [
-                              " size ",
-                              /* Int */Block.__(4, [
-                                  /* Int_d */0,
-                                  /* No_padding */0,
-                                  /* No_precision */0,
-                                  /* End_of_format */0
-                                ])
-                            ])
-                        ])
-                    ]),
-                  "unknown: tag %d size %d"
-                ]), t, s);
-        return "<" + (name + ">");
-      }
-    }
-    var fields$2 = get_fields(/* [] */0, s);
-    return "Tag" + (String(t) + (" (" + ($$String.concat(", ", List.map(dump, fields$2)) + ")")));
   }
-  var fields$3 = get_fields(/* [] */0, s);
-  return "(" + ($$String.concat(", ", List.map(dump, fields$3)) + ")");
+  var fields$1 = get_fields(/* [] */0, s);
+  return "(" + ($$String.concat(", ", List.map(dump, fields$1)) + ")");
 }
 
 var dump$1 = dump;
