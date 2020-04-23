@@ -1,4 +1,5 @@
 module Config_whole_compiler : sig 
+#1 "config_whole_compiler.mli"
 (**************************************************************************)
 (*                                                                        *)
 (*                                 OCaml                                  *)
@@ -189,6 +190,7 @@ val afl_instrument : bool
 
 
 end = struct
+#1 "config_whole_compiler.ml"
 (**************************************************************************)
 (*                                                                        *)
 (*                                 OCaml                                  *)
@@ -379,6 +381,7 @@ let print_config oc =
 end
 module Config = Config_whole_compiler 
 module Arg_helper : sig 
+#1 "arg_helper.mli"
 (**************************************************************************)
 (*                                                                        *)
 (*                                 OCaml                                  *)
@@ -444,6 +447,7 @@ end) : sig
 end
 
 end = struct
+#1 "arg_helper.ml"
 (**************************************************************************)
 (*                                                                        *)
 (*                                 OCaml                                  *)
@@ -574,6 +578,7 @@ end
 
 end
 module Misc : sig 
+#1 "misc.mli"
 (**************************************************************************)
 (*                                                                        *)
 (*                                 OCaml                                  *)
@@ -934,6 +939,7 @@ end
 module MakeHooks : functor (M : sig type t end) -> HookSig with type t = M.t
 
 end = struct
+#1 "misc.ml"
 (**************************************************************************)
 (*                                                                        *)
 (*                                 OCaml                                  *)
@@ -1698,6 +1704,7 @@ end
 
 end
 module Identifiable : sig 
+#1 "identifiable.mli"
 (**************************************************************************)
 (*                                                                        *)
 (*                                 OCaml                                  *)
@@ -1807,6 +1814,7 @@ end
 module Make (T : Thing) : S with type t := T.t
 
 end = struct
+#1 "identifiable.ml"
 (**************************************************************************)
 (*                                                                        *)
 (*                                 OCaml                                  *)
@@ -2064,6 +2072,7 @@ end
 
 end
 module Numbers : sig 
+#1 "numbers.mli"
 (**************************************************************************)
 (*                                                                        *)
 (*                                 OCaml                                  *)
@@ -2111,6 +2120,7 @@ end
 module Float : Identifiable.S with type t = float
 
 end = struct
+#1 "numbers.ml"
 (**************************************************************************)
 (*                                                                        *)
 (*                                 OCaml                                  *)
@@ -2200,6 +2210,7 @@ end
 
 end
 module Profile : sig 
+#1 "profile.mli"
 (**************************************************************************)
 (*                                                                        *)
 (*                                 OCaml                                  *)
@@ -2246,6 +2257,7 @@ val transl : string
 val typing : string
 
 end = struct
+#1 "profile.ml"
 (**************************************************************************)
 (*                                                                        *)
 (*                                 OCaml                                  *)
@@ -2583,6 +2595,7 @@ let typing = "typing"
 
 end
 module Clflags : sig 
+#1 "clflags.mli"
 (**************************************************************************)
 (*                                                                        *)
 (*                                 OCaml                                  *)
@@ -2830,6 +2843,7 @@ val dump_location : bool ref
 
 
 end = struct
+#1 "clflags.ml"
 (**************************************************************************)
 (*                                                                        *)
 (*                                 OCaml                                  *)
@@ -3254,6 +3268,7 @@ let dump_location = ref true
 
 end
 module Terminfo : sig 
+#1 "terminfo.mli"
 (**************************************************************************)
 (*                                                                        *)
 (*                                 OCaml                                  *)
@@ -3282,6 +3297,7 @@ external standout : bool -> unit = "caml_terminfo_standout";;
 external resume : int -> unit = "caml_terminfo_resume";;
 
 end = struct
+#1 "terminfo.ml"
 (**************************************************************************)
 (*                                                                        *)
 (*                                 OCaml                                  *)
@@ -3311,6 +3327,7 @@ external resume : int -> unit = "caml_terminfo_resume";;
 
 end
 module Warnings : sig 
+#1 "warnings.mli"
 (**************************************************************************)
 (*                                                                        *)
 (*                                 OCaml                                  *)
@@ -3449,6 +3466,7 @@ val super_report :
 
 
 end = struct
+#1 "warnings.ml"
 (**************************************************************************)
 (*                                                                        *)
 (*                                 OCaml                                  *)
@@ -4174,6 +4192,7 @@ let help_warnings () =
 
 end
 module Location : sig 
+#1 "location.mli"
 (**************************************************************************)
 (*                                                                        *)
 (*                                 OCaml                                  *)
@@ -4326,6 +4345,7 @@ val report_exception: formatter -> exn -> unit
 val deprecated: ?def:t -> ?use:t -> t -> string -> unit
 
 end = struct
+#1 "location.ml"
 (**************************************************************************)
 (*                                                                        *)
 (*                                 OCaml                                  *)
@@ -4825,6 +4845,7 @@ end
 (** Interface as module  *)
 module Asttypes
 = struct
+#1 "asttypes.mli"
 (**************************************************************************)
 (*                                                                        *)
 (*                                 OCaml                                  *)
@@ -4886,6 +4907,7 @@ type variance =
 
 end
 module Longident : sig 
+#1 "longident.mli"
 (**************************************************************************)
 (*                                                                        *)
 (*                                 OCaml                                  *)
@@ -4914,6 +4936,7 @@ val last: t -> string
 val parse: string -> t
 
 end = struct
+#1 "longident.ml"
 (**************************************************************************)
 (*                                                                        *)
 (*                                 OCaml                                  *)
@@ -4968,6 +4991,7 @@ end
 (** Interface as module  *)
 module Parsetree
 = struct
+#1 "parsetree.mli"
 (**************************************************************************)
 (*                                                                        *)
 (*                                 OCaml                                  *)
@@ -5846,6 +5870,7 @@ and directive_argument =
 
 end
 module Docstrings : sig 
+#1 "docstrings.mli"
 (**************************************************************************)
 (*                                                                        *)
 (*                                 OCaml                                  *)
@@ -6005,6 +6030,7 @@ val rhs_pre_extra_text : int -> text
 val rhs_post_extra_text : int -> text
 
 end = struct
+#1 "docstrings.ml"
 (**************************************************************************)
 (*                                                                        *)
 (*                                 OCaml                                  *)
@@ -6352,6 +6378,7 @@ let init () =
 end
 module Parser
 = struct
+#1 "parser.ml"
 type token =
   | AMPERAMPER
   | AMPERSAND
@@ -6478,6 +6505,7 @@ type token =
 
 end
 module Lexer : sig 
+#1 "lexer.mli"
 (**************************************************************************)
 (*                                                                        *)
 (*                                 OCaml                                  *)
@@ -6567,6 +6595,7 @@ val define_key_value : string -> string -> bool
 val list_variables : Format.formatter -> unit
 
 end = struct
+#1 "lexer.ml"
 # 18 "parsing/lexer.mll"
  
 open Lexing
@@ -10036,9 +10065,11 @@ and __ocaml_lex_skip_hash_bang_rec lexbuf __ocaml_lex_state =
 
 end
 module Bspp_main : sig 
+#1 "bspp_main.mli"
 (** *)
 
 end = struct
+#1 "bspp_main.ml"
 
 
 (*let buffer_intervals (intervals : (int * int) list) buf ic oc =

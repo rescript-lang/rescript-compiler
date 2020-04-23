@@ -1,4 +1,5 @@
 module Bs_version : sig 
+#1 "bs_version.mli"
 (* Copyright (C) 2015-2016 Bloomberg Finance L.P.
  *
  * This program is free software: you can redistribute it and/or modify
@@ -29,6 +30,7 @@ val header : string
 
 val package_name : string
 end = struct
+#1 "bs_version.ml"
 
 (* Copyright (C) 2015-2016 Bloomberg Finance L.P.
  *
@@ -61,6 +63,7 @@ let package_name = "bs-platform"
 end
 module Bsb_build_schemas
 = struct
+#1 "bsb_build_schemas.ml"
 (* Copyright (C) 2017 Authors of BuckleScript
  * 
  * This program is free software: you can redistribute it and/or modify
@@ -149,6 +152,7 @@ let ignored_dirs = "ignored-dirs"
 
 end
 module Ext_array : sig 
+#1 "ext_array.mli"
 (* Copyright (C) 2015-2016 Bloomberg Finance L.P.
  * 
  * This program is free software: you can redistribute it and/or modify
@@ -260,6 +264,7 @@ val get_or :
   (unit -> 'a) -> 
   'a
 end = struct
+#1 "ext_array.ml"
 (* Copyright (C) 2015-2016 Bloomberg Finance L.P.
  * 
  * This program is free software: you can redistribute it and/or modify
@@ -533,6 +538,7 @@ let get_or arr i cb =
   else cb ()  
 end
 module Ext_list : sig 
+#1 "ext_list.mli"
 (* Copyright (C) 2015-2016 Bloomberg Finance L.P.
  * 
  * This program is free software: you can redistribute it and/or modify
@@ -923,6 +929,7 @@ val mem_string :
     string -> 
     bool
 end = struct
+#1 "ext_list.ml"
 (* Copyright (C) 2015-2016 Bloomberg Finance L.P.
  * 
  * This program is free software: you can redistribute it and/or modify
@@ -1676,6 +1683,7 @@ let rec mem_string (xs : string list) (x : string) =
 
 end
 module Ext_bytes : sig 
+#1 "ext_bytes.mli"
 (* Copyright (C) 2015-2016 Bloomberg Finance L.P.
  * 
  * This program is free software: you can redistribute it and/or modify
@@ -1712,6 +1720,7 @@ external unsafe_blit_string : string -> int -> bytes -> int -> int -> unit
 
 
 end = struct
+#1 "ext_bytes.ml"
 (* Copyright (C) 2015-2016 Bloomberg Finance L.P.
  * 
  * This program is free software: you can redistribute it and/or modify
@@ -1749,6 +1758,7 @@ external unsafe_blit_string : string -> int -> bytes -> int -> int -> unit
 
 end
 module Ext_string : sig 
+#1 "ext_string.mli"
 (* Copyright (C) 2015-2016 Bloomberg Finance L.P.
  * 
  * This program is free software: you can redistribute it and/or modify
@@ -1962,6 +1972,7 @@ val unsafe_sub :
   int -> 
   string
 end = struct
+#1 "ext_string.ml"
 (* Copyright (C) 2015-2016 Bloomberg Finance L.P.
  * 
  * This program is free software: you can redistribute it and/or modify
@@ -2470,6 +2481,7 @@ let unsafe_sub  x offs len =
 end
 module Map_gen
 = struct
+#1 "map_gen.ml"
 (***********************************************************************)
 (*                                                                     *)
 (*                                OCaml                                *)
@@ -2893,6 +2905,7 @@ module type S =
 
 end
 module Map_string : sig 
+#1 "map_string.mli"
 (* Copyright (C) 2015-2016 Bloomberg Finance L.P.
  * 
  * This program is free software: you can redistribute it and/or modify
@@ -2921,6 +2934,7 @@ module Map_string : sig
 include Map_gen.S with type key = string
 
 end = struct
+#1 "map_string.ml"
 
 # 2 "ext/map.cppo.ml"
 (* we don't create [map_poly], since some operations require raise an exception which carries [key] *)
@@ -3086,6 +3100,7 @@ let of_array xs =
 
 end
 module Bsb_db : sig 
+#1 "bsb_db.mli"
 
 (* Copyright (C) 2015-2016 Bloomberg Finance L.P.
  * 
@@ -3155,6 +3170,7 @@ type ts = t array
 
 
 end = struct
+#1 "bsb_db.ml"
 
 (* Copyright (C) 2015-2016 Bloomberg Finance L.P.
  * 
@@ -3211,6 +3227,7 @@ type ts = t array
 
 end
 module Bsb_dir_index : sig 
+#1 "bsb_dir_index.mli"
 (* Copyright (C) 2017 Authors of BuckleScript
  * 
  * This program is free software: you can redistribute it and/or modify
@@ -3260,6 +3277,7 @@ val string_of_bsb_dev_include : t -> string
    *)
 val reset : unit -> unit
 end = struct
+#1 "bsb_dir_index.ml"
 (* Copyright (C) 2017 Authors of BuckleScript
  * 
  * This program is free software: you can redistribute it and/or modify
@@ -3332,6 +3350,7 @@ let reset () = dir_index := 0
 end
 module Set_gen
 = struct
+#1 "set_gen.ml"
 (***********************************************************************)
 (*                                                                     *)
 (*                                OCaml                                *)
@@ -3732,6 +3751,7 @@ end
 
 end
 module Set_string : sig 
+#1 "set_string.mli"
 (* Copyright (C) 2015-2016 Bloomberg Finance L.P.
  * 
  * This program is free software: you can redistribute it and/or modify
@@ -3761,6 +3781,7 @@ module Set_string : sig
 
 include Set_gen.S with type elt = string
 end = struct
+#1 "set_string.ml"
 # 1 "ext/set.cppo.ml"
 (* Copyright (C) 2015-2016 Bloomberg Finance L.P.
  * 
@@ -3961,6 +3982,7 @@ let print fmt s =
 
 end
 module Bsb_file_groups : sig 
+#1 "bsb_file_groups.mli"
 (* Copyright (C) 2018- Authors of BuckleScript
  * 
  * This program is free software: you can redistribute it and/or modify
@@ -4037,6 +4059,7 @@ val is_empty :
 
 
 end = struct
+#1 "bsb_file_groups.ml"
 (* Copyright (C) 2018- Authors of BuckleScript
  * 
  * This program is free software: you can redistribute it and/or modify
@@ -4125,6 +4148,7 @@ let is_empty (x : file_group) =
   x.generators = []    
 end
 module Ext_pervasives : sig 
+#1 "ext_pervasives.mli"
 (* Copyright (C) 2015-2016 Bloomberg Finance L.P.
  * 
  * This program is free software: you can redistribute it and/or modify
@@ -4198,6 +4222,7 @@ val parse_nat_of_string:
   int ref -> 
   int 
 end = struct
+#1 "ext_pervasives.ml"
 (* Copyright (C) 2015-2016 Bloomberg Finance L.P.
  * 
  * This program is free software: you can redistribute it and/or modify
@@ -4300,6 +4325,7 @@ let parse_nat_of_string (s : string) (cursor : int ref) =
 end
 module Ext_fmt
 = struct
+#1 "ext_fmt.ml"
 
 
 let with_file_as_pp filename f = 
@@ -4321,6 +4347,7 @@ let invalid_argf fmt = Format.ksprintf invalid_arg fmt
 
 end
 module Ext_sys : sig 
+#1 "ext_sys.mli"
 (* Copyright (C) 2015-2016 Bloomberg Finance L.P.
  * 
  * This program is free software: you can redistribute it and/or modify
@@ -4354,6 +4381,7 @@ val is_windows_or_cygwin : bool
 
 
 end = struct
+#1 "ext_sys.ml"
 (* Copyright (C) 2015-2016 Bloomberg Finance L.P.
  * 
  * This program is free software: you can redistribute it and/or modify
@@ -4389,6 +4417,7 @@ let is_windows_or_cygwin = Sys.win32 || Sys.cygwin
 
 end
 module Literals : sig 
+#1 "literals.mli"
 (* Copyright (C) 2015-2016 Bloomberg Finance L.P.
  * 
  * This program is free software: you can redistribute it and/or modify
@@ -4528,6 +4557,7 @@ val sourcedirs_meta : string
 val ns_sep_char : char
 val ns_sep : string
 end = struct
+#1 "literals.ml"
 (* Copyright (C) 2015-2016 Bloomberg Finance L.P.
  * 
  * This program is free software: you can redistribute it and/or modify
@@ -4672,6 +4702,7 @@ let ns_sep = "-"
 
 end
 module Ext_path : sig 
+#1 "ext_path.mli"
 (* Copyright (C) 2017 Authors of BuckleScript
  * 
  * This program is free software: you can redistribute it and/or modify
@@ -4774,6 +4805,7 @@ val check_suffix_case :
 val package_dir : string Lazy.t
 
 end = struct
+#1 "ext_path.ml"
 (* Copyright (C) 2017 Authors of BuckleScript
  * 
  * This program is free software: you can redistribute it and/or modify
@@ -5102,6 +5134,7 @@ let package_dir = lazy (find_package_json_dir (Lazy.force cwd))
 
 end
 module Bsb_config : sig 
+#1 "bsb_config.mli"
 (* Copyright (C) 2015-2016 Bloomberg Finance L.P.
  * 
  * This program is free software: you can redistribute it and/or modify
@@ -5145,6 +5178,7 @@ val rev_lib_bs_prefix : string -> string
 
 
 end = struct
+#1 "bsb_config.ml"
 (* Copyright (C) 2015-2016 Bloomberg Finance L.P.
  * 
  * This program is free software: you can redistribute it and/or modify
@@ -5216,6 +5250,7 @@ let proj_rel path = lazy_src_root_dir // path
 
 end
 module Bsb_pkg_types : sig 
+#1 "bsb_pkg_types.mli"
 (* Copyright (C) 2019- Authors of BuckleScript
  *
  * This program is free software: you can redistribute it and/or modify
@@ -5255,6 +5290,7 @@ val equal : t -> t -> bool
 val extract_pkg_name_and_file : string -> t * string 
 val string_as_package : string -> t 
 end = struct
+#1 "bsb_pkg_types.ml"
 
 (* Copyright (C) 2018- Authors of BuckleScript
  *
@@ -5361,6 +5397,7 @@ let string_as_package (s : string) : t =
 end
 module Ext_json_types
 = struct
+#1 "ext_json_types.ml"
 (* Copyright (C) 2015-2017 Bloomberg Finance L.P.
  * 
  * This program is free software: you can redistribute it and/or modify
@@ -5411,6 +5448,7 @@ and t =
 
 end
 module Ext_position : sig 
+#1 "ext_position.mli"
 (* Copyright (C) 2015-2016 Bloomberg Finance L.P.
  *
  * This program is free software: you can redistribute it and/or modify
@@ -5458,6 +5496,7 @@ val lexbuf_from_channel_with_fname:
 
 val print : Format.formatter -> t -> unit 
 end = struct
+#1 "ext_position.ml"
 (* Copyright (C) 2015-2016 Bloomberg Finance L.P.
  *
  * This program is free software: you can redistribute it and/or modify
@@ -5523,6 +5562,7 @@ let lexbuf_from_channel_with_fname ic fname =
 
 end
 module Ext_json : sig 
+#1 "ext_json.mli"
 (* Copyright (C) 2015-2016 Bloomberg Finance L.P.
  * 
  * This program is free software: you can redistribute it and/or modify
@@ -5583,6 +5623,7 @@ val loc_of : Ext_json_types.t -> Ext_position.t
 val equal : Ext_json_types.t -> Ext_json_types.t -> bool 
 
 end = struct
+#1 "ext_json.ml"
 (* Copyright (C) 2015-2016 Bloomberg Finance L.P.
  *
  * This program is free software: you can redistribute it and/or modify
@@ -5712,6 +5753,7 @@ let rec equal
 
 end
 module Bsb_exception : sig 
+#1 "bsb_exception.mli"
 (* Copyright (C) 2015-2016 Bloomberg Finance L.P.
  *
  * This program is free software: you can redistribute it and/or modify
@@ -5761,6 +5803,7 @@ val no_implementation : string -> 'a
 
 val not_consistent : string -> 'a
 end = struct
+#1 "bsb_exception.ml"
 (* Copyright (C) 2015-2016 Bloomberg Finance L.P.
  *
  * This program is free software: you can redistribute it and/or modify
@@ -5877,6 +5920,7 @@ let () =
 
 end
 module Ext_buffer : sig 
+#1 "ext_buffer.mli"
 (***********************************************************************)
 (*                                                                     *)
 (*                                OCaml                                *)
@@ -5994,6 +6038,7 @@ val add_char_string :
    string -> 
    unit
 end = struct
+#1 "ext_buffer.ml"
 (**************************************************************************)
 (*                                                                        *)
 (*                                 OCaml                                  *)
@@ -6208,6 +6253,7 @@ let add_int_4 (b : t ) (x : int ) =
 
 end
 module Ext_filename : sig 
+#1 "ext_filename.mli"
 (* Copyright (C) 2015-2016 Bloomberg Finance L.P.
  * 
  * This program is free software: you can redistribute it and/or modify
@@ -6294,6 +6340,7 @@ val as_module:
   basename:string -> 
   module_info option
 end = struct
+#1 "ext_filename.ml"
 (* Copyright (C) 2015-2016 Bloomberg Finance L.P.
  * 
  * This program is free software: you can redistribute it and/or modify
@@ -6472,6 +6519,7 @@ let as_module ~basename =
 end
 module Ext_js_file_kind
 = struct
+#1 "ext_js_file_kind.ml"
 (* Copyright (C) 2020- Authors of BuckleScript
  * 
  * This program is free software: you can redistribute it and/or modify
@@ -6505,6 +6553,7 @@ type t =
 
 end
 module Ext_namespace : sig 
+#1 "ext_namespace.mli"
 (* Copyright (C) 2017- Authors of BuckleScript
  * 
  * This program is free software: you can redistribute it and/or modify
@@ -6570,6 +6619,7 @@ val is_valid_npm_package_name : string -> bool
 val namespace_of_package_name : string -> string
 
 end = struct
+#1 "ext_namespace.ml"
 
 (* Copyright (C) 2015-2016 Bloomberg Finance L.P.
  * 
@@ -6689,6 +6739,7 @@ let namespace_of_package_name (s : string) : string =
 
 end
 module Bsb_package_specs : sig 
+#1 "bsb_package_specs.mli"
 (* Copyright (C) 2017 Authors of BuckleScript
  * 
  * This program is free software: you can redistribute it and/or modify
@@ -6735,6 +6786,7 @@ val list_dirs_by :
   (string -> unit) -> 
   unit
 end = struct
+#1 "bsb_package_specs.ml"
 (* Copyright (C) 2017 Authors of BuckleScript
  * 
  * This program is free software: you can redistribute it and/or modify
@@ -6915,6 +6967,7 @@ let list_dirs_by
 end
 module Bsc_warnings
 = struct
+#1 "bsc_warnings.ml"
 (* Copyright (C) 2020- Authors of BuckleScript 
  *
  * This program is free software: you can redistribute it and/or modify
@@ -6995,6 +7048,7 @@ let defaults_warn_error = "-a+5+6+101";;
 
 end
 module Bsb_warning : sig 
+#1 "bsb_warning.mli"
 (* Copyright (C) 2017 Authors of BuckleScript
  *
  * This program is free software: you can redistribute it and/or modify
@@ -7040,6 +7094,7 @@ val to_bsb_string :
 
 val use_default : t
 end = struct
+#1 "bsb_warning.ml"
 (* Copyright (C) 2017 Authors of BuckleScript
  *
  * This program is free software: you can redistribute it and/or modify
@@ -7155,6 +7210,7 @@ let to_bsb_string ~toplevel warning =
 end
 module Bs_hash_stubs
 = struct
+#1 "bs_hash_stubs.ml"
 
 
 external hash_string :  string -> int = "caml_bs_hash_string" [@@noalloc];;
@@ -7179,6 +7235,7 @@ external
 
 end
 module Ext_util : sig 
+#1 "ext_util.mli"
 (* Copyright (C) 2015-2016 Bloomberg Finance L.P.
  * 
  * This program is free software: you can redistribute it and/or modify
@@ -7210,6 +7267,7 @@ val power_2_above : int -> int -> int
 
 val stats_to_string : Hashtbl.statistics -> string 
 end = struct
+#1 "ext_util.ml"
 (* Copyright (C) 2015-2016 Bloomberg Finance L.P.
  * 
  * This program is free software: you can redistribute it and/or modify
@@ -7256,6 +7314,7 @@ let stats_to_string ({num_bindings; num_buckets; max_bucket_length; bucket_histo
 end
 module Hash_set_gen
 = struct
+#1 "hash_set_gen.ml"
 (* Copyright (C) 2015-2016 Bloomberg Finance L.P.
  * 
  * This program is free software: you can redistribute it and/or modify
@@ -7439,6 +7498,7 @@ end
 
 end
 module Hash_set_string : sig 
+#1 "hash_set_string.mli"
 (* Copyright (C) 2015-2016 Bloomberg Finance L.P.
  * 
  * This program is free software: you can redistribute it and/or modify
@@ -7467,6 +7527,7 @@ module Hash_set_string : sig
 include Hash_set_gen.S with type key = string
 
 end = struct
+#1 "hash_set_string.ml"
 # 1 "ext/hash_set.cppo.ml"
 (* Copyright (C) 2015-2016 Bloomberg Finance L.P.
  * 
@@ -7562,6 +7623,7 @@ let mem (h :  _ Hash_set_gen.t) key =
 end
 module Bsb_config_types
 = struct
+#1 "bsb_config_types.ml"
 (* Copyright (C) 2015-2016 Bloomberg Finance L.P.
  *
  * This program is free software: you can redistribute it and/or modify
@@ -7650,6 +7712,7 @@ type t =
 
 end
 module Ext_color : sig 
+#1 "ext_color.mli"
 (* Copyright (C) 2015-2016 Bloomberg Finance L.P.
  * 
  * This program is free software: you can redistribute it and/or modify
@@ -7696,6 +7759,7 @@ val ansi_of_tag : string -> string
 val reset_lit : string
 
 end = struct
+#1 "ext_color.ml"
 (* Copyright (C) 2015-2016 Bloomberg Finance L.P.
  * 
  * This program is free software: you can redistribute it and/or modify
@@ -7798,6 +7862,7 @@ let reset_lit = "\x1b[0m"
 
 end
 module Bsb_log : sig 
+#1 "bsb_log.mli"
 (* Copyright (C) 2017 Authors of BuckleScript
  * 
  * This program is free software: you can redistribute it and/or modify
@@ -7846,6 +7911,7 @@ val error : 'a log
 val info_args : string array -> unit
 
 end = struct
+#1 "bsb_log.ml"
 (* Copyright (C) 2017- Authors of BuckleScript
  * 
  * This program is free software: you can redistribute it and/or modify
@@ -7958,6 +8024,7 @@ let info_args (args : string array) =
 
 end
 module Bsb_real_path : sig 
+#1 "bsb_real_path.mli"
 
 (* Copyright (C) 2020- Authors of BuckleScript
  *
@@ -7987,6 +8054,7 @@ module Bsb_real_path : sig
 val is_same_paths_via_io : string -> string -> bool 
 
 end = struct
+#1 "bsb_real_path.ml"
 let (//) = Filename.concat
 
 let getchdir s =
@@ -8026,6 +8094,7 @@ let is_same_paths_via_io a b =
 end
 module Hash_gen
 = struct
+#1 "hash_gen.ml"
 (***********************************************************************)
 (*                                                                     *)
 (*                                OCaml                                *)
@@ -8281,11 +8350,13 @@ end
 
 end
 module Hash : sig 
+#1 "hash.mli"
 
 
 module Make (Key : Hashtbl.HashedType) : Hash_gen.S with type key = Key.t
 
 end = struct
+#1 "hash.ml"
 # 22 "ext/hash.cppo.ml"
 module Make (Key : Hashtbl.HashedType) = struct 
   type key = Key.t 
@@ -8410,6 +8481,7 @@ end
 
 end
 module Bsb_pkg : sig 
+#1 "bsb_pkg.mli"
 
 (* Copyright (C) 2015-2016 Bloomberg Finance L.P.
  * 
@@ -8456,6 +8528,7 @@ val to_list:
    'a
   ) -> 'a list
 end = struct
+#1 "bsb_pkg.ml"
 
 (* Copyright (C) 2017- Authors of BuckleScript
  *
@@ -8652,6 +8725,7 @@ let resolve_bs_package ~cwd (package : t) =
 
 end
 module Ext_json_parse : sig 
+#1 "ext_json_parse.mli"
 (* Copyright (C) 2015-2016 Bloomberg Finance L.P.
  * 
  * This program is free software: you can redistribute it and/or modify
@@ -8691,6 +8765,7 @@ val parse_json_from_file  : string -> Ext_json_types.t
 
 
 end = struct
+#1 "ext_json_parse.ml"
 # 1 "ext/ext_json_parse.mll"
  
 type error =
@@ -9381,6 +9456,7 @@ let parse_json_from_file s =
 
 end
 module Hash_string : sig 
+#1 "hash_string.mli"
 (* Copyright (C) 2015-2016 Bloomberg Finance L.P.
  * 
  * This program is free software: you can redistribute it and/or modify
@@ -9412,6 +9488,7 @@ include Hash_gen.S with type key = string
 
 
 end = struct
+#1 "hash_string.ml"
 # 9 "ext/hash.cppo.ml"
 type key = string
 type 'a t = (key, 'a)  Hash_gen.t 
@@ -9532,6 +9609,7 @@ let of_list2 ks vs =
 
 end
 module Bsb_build_util : sig 
+#1 "bsb_build_util.mli"
 (* Copyright (C) 2015-2016 Bloomberg Finance L.P.
  * 
  * This program is free software: you can redistribute it and/or modify
@@ -9640,6 +9718,7 @@ type package_context = {
 val walk_all_deps : string -> (package_context -> unit) -> unit
 
 end = struct
+#1 "bsb_build_util.ml"
 (* Copyright (C) 2015-2016 Bloomberg Finance L.P.
  * 
  * This program is free software: you can redistribute it and/or modify
@@ -9876,6 +9955,7 @@ let walk_all_deps dir cb =
 
 end
 module Bsb_global_backend : sig 
+#1 "bsb_global_backend.mli"
 (* Copyright (C) 2019 - Authors of BuckleScript
  *
  * This program is free software: you can redistribute it and/or modify
@@ -9923,6 +10003,7 @@ val set_backend : Bsb_config_types.compilation_kind_t -> unit
 
 
 end = struct
+#1 "bsb_global_backend.ml"
 (* Copyright (C) 2019 - Authors of BuckleScript
  *
  * This program is free software: you can redistribute it and/or modify
@@ -9982,6 +10063,7 @@ let set_backend b =
 
 end
 module Bsb_global_paths : sig 
+#1 "bsb_global_paths.mli"
 (* Copyright (C) 2019 - Authors of BuckleScript
  *
  * This program is free software: you can redistribute it and/or modify
@@ -10022,6 +10104,7 @@ val ocaml_dir : string
 val ocaml_lib_dir : string
 
 end = struct
+#1 "bsb_global_paths.ml"
 (* Copyright (C) 2019 - Authors of BuckleScript
  *
  * This program is free software: you can redistribute it and/or modify
@@ -10098,6 +10181,7 @@ let ocaml_lib_dir =
 
 end
 module Bsb_db_util : sig 
+#1 "bsb_db_util.mli"
 
 (* Copyright (C) 2015-2016 Bloomberg Finance L.P.
  * 
@@ -10148,6 +10232,7 @@ val add_basename:
   string -> 
   Bsb_db.t
 end = struct
+#1 "bsb_db_util.ml"
 
 (* Copyright (C) 2015-2016 Bloomberg Finance L.P.
  * 
@@ -10284,6 +10369,7 @@ let add_basename
 
 end
 module Ext_option : sig 
+#1 "ext_option.mli"
 (* Copyright (C) 2015-2016 Bloomberg Finance L.P.
  * 
  * This program is free software: you can redistribute it and/or modify
@@ -10323,6 +10409,7 @@ val iter : 'a option -> ('a -> unit) -> unit
 
 val exists : 'a option -> ('a -> bool) -> bool
 end = struct
+#1 "ext_option.ml"
 (* Copyright (C) 2015-2016 Bloomberg Finance L.P.
  * 
  * This program is free software: you can redistribute it and/or modify
@@ -10370,6 +10457,7 @@ let exists v f =
   | Some x -> f x 
 end
 module Bsb_parse_sources : sig 
+#1 "bsb_parse_sources.mli"
 (* Copyright (C) 2015-2016 Bloomberg Finance L.P.
  * 
  * This program is free software: you can redistribute it and/or modify
@@ -10419,6 +10507,7 @@ val scan :
 val clean_re_js:  
   string -> unit 
 end = struct
+#1 "bsb_parse_sources.ml"
 (* Copyright (C) 2015-2016 Bloomberg Finance L.P.
  * 
  * This program is free software: you can redistribute it and/or modify
@@ -10926,6 +11015,7 @@ let clean_re_js root =
   
 end
 module Bsb_unix : sig 
+#1 "bsb_unix.mli"
 (* Copyright (C) 2015-2016 Bloomberg Finance L.P.
  * 
  * This program is free software: you can redistribute it and/or modify
@@ -10965,6 +11055,7 @@ val run_command_execv :   command -> int
 
 val remove_dir_recursive : string -> unit 
 end = struct
+#1 "bsb_unix.ml"
 (* Copyright (C) 2015-2016 Bloomberg Finance L.P.
  * 
  * This program is free software: you can redistribute it and/or modify
@@ -11064,6 +11155,7 @@ let rec remove_dir_recursive dir =
 
 end
 module Bsb_clean : sig 
+#1 "bsb_clean.mli"
 (* Copyright (C) 2017 Authors of BuckleScript
  *
  * This program is free software: you can redistribute it and/or modify
@@ -11101,6 +11193,7 @@ val clean_self :
   unit
 
 end = struct
+#1 "bsb_clean.ml"
 (* Copyright (C) 2017 Authors of BuckleScript
  *
  * This program is free software: you can redistribute it and/or modify
@@ -11168,6 +11261,7 @@ let clean_self  proj_dir =
 
 end
 module Bsb_default : sig 
+#1 "bsb_default.mli"
 (* Copyright (C) 2015-2016 Bloomberg Finance L.P.
  *
  * This program is free software: you can redistribute it and/or modify
@@ -11203,6 +11297,7 @@ val ocaml_flags : string list
 val ocaml_dependencies : string list
 
 end = struct
+#1 "bsb_default.ml"
 (* Copyright (C) 2015-2016 Bloomberg Finance L.P.
  *
  * This program is free software: you can redistribute it and/or modify
@@ -11241,6 +11336,7 @@ let ocaml_dependencies = ["unix"; "bigarray"; ]
 
 end
 module Bsb_config_parse : sig 
+#1 "bsb_config_parse.mli"
 (* Copyright (C) 2015-2016 Bloomberg Finance L.P.
  *
  * This program is free software: you can redistribute it and/or modify
@@ -11282,6 +11378,7 @@ val interpret_json :
 
 
 end = struct
+#1 "bsb_config_parse.ml"
 (* Copyright (C) 2015-2016 Bloomberg Finance L.P.
  *
  * This program is free software: you can redistribute it and/or modify
@@ -11777,6 +11874,7 @@ let interpret_json
 
 end
 module Ext_io : sig 
+#1 "ext_io.mli"
 (* Copyright (C) 2015-2016 Bloomberg Finance L.P.
  * 
  * This program is free software: you can redistribute it and/or modify
@@ -11810,6 +11908,7 @@ val rev_lines_of_chann : in_channel -> string list
 val write_file : string -> string -> unit
 
 end = struct
+#1 "ext_io.ml"
 (* Copyright (C) 2015-2016 Bloomberg Finance L.P.
  * 
  * This program is free software: you can redistribute it and/or modify
@@ -11867,6 +11966,7 @@ let write_file f content =
 
 end
 module Bsb_merlin_gen : sig 
+#1 "bsb_merlin_gen.mli"
 (* Copyright (C) 2015-2016 Bloomberg Finance L.P.
  *
  * This program is free software: you can redistribute it and/or modify
@@ -11899,6 +11999,7 @@ val merlin_file_gen :
   Bsb_config_types.t ->  
   unit 
 end = struct
+#1 "bsb_merlin_gen.ml"
 (* Copyright (C) 2015-2016 Bloomberg Finance L.P.
  *
  * This program is free software: you can redistribute it and/or modify
@@ -12107,6 +12208,7 @@ let merlin_file_gen ~per_proj_dir:(per_proj_dir:string)
 
 end
 module Bsb_ninja_check : sig 
+#1 "bsb_ninja_check.mli"
 (* Copyright (C) 2015-2016 Bloomberg Finance L.P.
  *
  * This program is free software: you can redistribute it and/or modify
@@ -12182,6 +12284,7 @@ val check :
   check_result
 
 end = struct
+#1 "bsb_ninja_check.ml"
 (* Copyright (C) 2015-2016 Bloomberg Finance L.P.
  *
  * This program is free software: you can redistribute it and/or modify
@@ -12311,6 +12414,7 @@ let check ~(per_proj_dir:string) ~forced ~file : check_result =
 
 end
 module Bsb_db_encode : sig 
+#1 "bsb_db_encode.mli"
 (* Copyright (C) 2019 - Present Authors of BuckleScript
  * 
  * This program is free software: you can redistribute it and/or modify
@@ -12339,6 +12443,7 @@ val write_build_cache :
   dir:string -> Bsb_db.ts -> string
 
 end = struct
+#1 "bsb_db_encode.ml"
 (* Copyright (C) 2019 - Present Authors of BuckleScript
  * 
  * This program is free software: you can redistribute it and/or modify
@@ -12444,6 +12549,7 @@ let write_build_cache ~dir (bs_files : Bsb_db.ts)  : string =
 
 end
 module Ext_digest : sig 
+#1 "ext_digest.mli"
 (* Copyright (C) 2019- Authors of BuckleScript
  * 
  * This program is free software: you can redistribute it and/or modify
@@ -12473,6 +12579,7 @@ module Ext_digest : sig
 
  val hex_length : int
 end = struct
+#1 "ext_digest.ml"
 (* Copyright (C) 2019- Authors of BuckleScript
  * 
  * This program is free software: you can redistribute it and/or modify
@@ -12503,6 +12610,7 @@ end = struct
  let hex_length = 32
 end
 module Bsb_namespace_map_gen : sig 
+#1 "bsb_namespace_map_gen.mli"
 (* Copyright (C) 2017 Authors of BuckleScript
  *
  * This program is free software: you can redistribute it and/or modify
@@ -12537,6 +12645,7 @@ val output :
   Bsb_file_groups.file_groups ->
   unit 
 end = struct
+#1 "bsb_namespace_map_gen.ml"
 (* Copyright (C) 2017 Authors of BuckleScript
  *
  * This program is free software: you can redistribute it and/or modify
@@ -12610,6 +12719,7 @@ let output
 end
 module Bsb_ninja_global_vars
 = struct
+#1 "bsb_ninja_global_vars.ml"
 (* Copyright (C) 2017 Authors of BuckleScript
  * 
  * This program is free software: you can redistribute it and/or modify
@@ -12669,6 +12779,7 @@ let g_dev_incls = "g_dev_incls"
 
 end
 module Bsb_ninja_rule : sig 
+#1 "bsb_ninja_rule.mli"
 (* Copyright (C) 2015-2016 Bloomberg Finance L.P.
  *
  * This program is free software: you can redistribute it and/or modify
@@ -12754,6 +12865,7 @@ val make_custom_rules :
 
 
 end = struct
+#1 "bsb_ninja_rule.ml"
 (* Copyright (C) 2015-2016 Bloomberg Finance L.P.
  *
  * This program is free software: you can redistribute it and/or modify
@@ -13015,6 +13127,7 @@ let make_custom_rules
 
 end
 module Bsb_ninja_targets : sig 
+#1 "bsb_ninja_targets.mli"
 (* Copyright (C) 2015-2016 Bloomberg Finance L.P.
  * 
  * This program is free software: you can redistribute it and/or modify
@@ -13082,6 +13195,7 @@ val output_kvs : (string * string) array -> out_channel -> unit
 
 
 end = struct
+#1 "bsb_ninja_targets.ml"
 (* Copyright (C) 2015-2016 Bloomberg Finance L.P.
  *
  * This program is free software: you can redistribute it and/or modify
@@ -13236,6 +13350,7 @@ let output_kvs kvs oc =
 
 end
 module Ext_namespace_encode : sig 
+#1 "ext_namespace_encode.mli"
 (* Copyright (C) 2020- Authors of BuckleScript
  * 
  * This program is free software: you can redistribute it and/or modify
@@ -13268,6 +13383,7 @@ val make :
   ?ns:string -> string -> string 
  
 end = struct
+#1 "ext_namespace_encode.ml"
 (* Copyright (C) 2020- Authors of BuckleScript
  * 
  * This program is free software: you can redistribute it and/or modify
@@ -13298,6 +13414,7 @@ end = struct
   | Some ns -> cunit ^ Literals.ns_sep ^ ns 
 end
 module Bsb_ninja_file_groups : sig 
+#1 "bsb_ninja_file_groups.mli"
 (* Copyright (C) 2017 Authors of BuckleScript
  *
  * This program is free software: you can redistribute it and/or modify
@@ -13336,6 +13453,7 @@ val handle_files_per_dir :
   Bsb_file_groups.file_group -> unit
 
 end = struct
+#1 "bsb_ninja_file_groups.ml"
 (* Copyright (C) 2017 Authors of BuckleScript
  *
  * This program is free software: you can redistribute it and/or modify
@@ -13556,6 +13674,7 @@ let handle_files_per_dir
 
 end
 module Bsb_ninja_gen : sig 
+#1 "bsb_ninja_gen.mli"
 (* Copyright (C) 2015-2016 Bloomberg Finance L.P.
  *
  * This program is free software: you can redistribute it and/or modify
@@ -13589,6 +13708,7 @@ val output_ninja_and_namespace_map :
   Bsb_config_types.t -> unit 
 
 end = struct
+#1 "bsb_ninja_gen.ml"
 (* Copyright (C) 2015-2016 Bloomberg Finance L.P.
  *
  * This program is free software: you can redistribute it and/or modify
@@ -13838,6 +13958,7 @@ let output_ninja_and_namespace_map
 
 end
 module Ext_json_noloc : sig 
+#1 "ext_json_noloc.mli"
 (* Copyright (C) 2017- Authors of BuckleScript
  *
  * This program is free software: you can redistribute it and/or modify
@@ -13885,6 +14006,7 @@ val to_file :
   unit 
 
 end = struct
+#1 "ext_json_noloc.ml"
 (* Copyright (C) 2017- Authors of BuckleScript
  *
  * This program is free software: you can redistribute it and/or modify
@@ -14075,6 +14197,7 @@ let to_file name v =
   close_out ochan
 end
 module Bsb_watcher_gen : sig 
+#1 "bsb_watcher_gen.mli"
 (* Copyright (C) 2017- Authors of BuckleScript
  *
  * This program is free software: you can redistribute it and/or modify
@@ -14112,6 +14235,7 @@ val generate_sourcedirs_meta :
   Bsb_file_groups.t -> 
   unit 
 end = struct
+#1 "bsb_watcher_gen.ml"
 (* Copyright (C) 2017- Authors of BuckleScript
  *
  * This program is free software: you can redistribute it and/or modify
@@ -14172,6 +14296,7 @@ let generate_sourcedirs_meta
   
 end
 module Bsb_ninja_regen : sig 
+#1 "bsb_ninja_regen.mli"
 (* Copyright (C) 2017 Authors of BuckleScript
  *
  * This program is free software: you can redistribute it and/or modify
@@ -14209,6 +14334,7 @@ val regenerate_ninja :
   per_proj_dir:string -> 
   Bsb_config_types.t option 
 end = struct
+#1 "bsb_ninja_regen.ml"
 (* Copyright (C) 2017 Authors of BuckleScript
  *
  * This program is free software: you can redistribute it and/or modify
@@ -14308,6 +14434,7 @@ let regenerate_ninja
 
 end
 module Bsb_regex : sig 
+#1 "bsb_regex.mli"
 (* Copyright (C) 2017 Authors of BuckleScript
  *
  * This program is free software: you can redistribute it and/or modify
@@ -14340,6 +14467,7 @@ val global_substitute:
   (string -> string list -> string) -> 
   string
 end = struct
+#1 "bsb_regex.ml"
 (* Copyright (C) 2017 Authors of BuckleScript
  *
  * This program is free software: you can redistribute it and/or modify
@@ -14405,6 +14533,7 @@ let global_substitute text ~reg:expr repl_fun =
 end
 module OCamlRes
 = struct
+#1 "oCamlRes.ml"
 
 
 module Res = struct
@@ -14418,10 +14547,12 @@ end
 
 end
 module Bsb_templates : sig 
+#1 "bsb_templates.mli"
 
 
 val root : OCamlRes.Res.node list 
 end = struct
+#1 "bsb_templates.ml"
 (* This file has been generated by ocp-ocamlres *)
 let root = OCamlRes.Res.([
   Dir  ("basic", [
@@ -16231,6 +16362,7 @@ let root = OCamlRes.Res.([
 
 end
 module Bsb_theme_init : sig 
+#1 "bsb_theme_init.mli"
 
 
 (* Copyright (C) 2015-2016 Bloomberg Finance L.P.
@@ -16262,6 +16394,7 @@ val init_sample_project : cwd:string -> theme:string ->  string -> unit
 
 val list_themes : unit -> unit 
 end = struct
+#1 "bsb_theme_init.ml"
 
 (* Copyright (C) 2015-2016 Bloomberg Finance L.P.
  *
@@ -16430,6 +16563,7 @@ let init_sample_project ~cwd ~theme name =
 
 end
 module Bsb_file : sig 
+#1 "bsb_file.mli"
 
 
 
@@ -16438,6 +16572,7 @@ val install_if_exists : destdir:string -> string -> bool
 
 
 end = struct
+#1 "bsb_file.ml"
 
 
 
@@ -16486,6 +16621,7 @@ let install_if_exists ~destdir input_name =
 
 end
 module Bsb_world : sig 
+#1 "bsb_world.mli"
 (* Copyright (C) 2017- Authors of BuckleScript
  *
  * This program is free software: you can redistribute it and/or modify
@@ -16522,6 +16658,7 @@ val make_world_deps:
   string array ->
   unit  
 end = struct
+#1 "bsb_world.ml"
 (* Copyright (C) 2017- Authors of BuckleScript
  *
  * This program is free software: you can redistribute it and/or modify
@@ -16635,9 +16772,11 @@ let make_world_deps cwd (config : Bsb_config_types.t option) (ninja_args : strin
 
 end
 module Bsb_main : sig 
+#1 "bsb_main.mli"
 (* *)
 
 end = struct
+#1 "bsb_main.ml"
 (* Copyright (C) 2015-2016 Bloomberg Finance L.P.
  *
  * This program is free software: you can redistribute it and/or modify
