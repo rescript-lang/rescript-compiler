@@ -927,8 +927,15 @@ let uint32 ?comment n : J.expression =
 
 
 
-let string_comp cmp ?comment  e0 e1 = 
-  bin ?comment cmp e0 e1
+let string_comp (cmp : J.binop) ?comment  (e0: t) (e1 : t) = 
+  match e0.expression_desc ,e1.expression_desc  with 
+  | Str(_,a0),Str(_,b0) -> 
+    begin match cmp with 
+    | EqEqEq -> bool (a0 = b0)
+    | NotEqEq -> bool (a0 <> b0)
+    | _ -> bin ?comment cmp e0 e1
+    end
+  | _ -> bin ?comment cmp e0 e1
 
 let obj_length ?comment e : t = 
   to_int32 {expression_desc = Length (e, Caml_block); comment }

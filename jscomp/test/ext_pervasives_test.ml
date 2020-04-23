@@ -68,7 +68,7 @@ let bad_argf fmt = Format.ksprintf (fun x -> raise (Arg.Bad x ) ) fmt
 
 
 let rec dump r =
-  if Obj.is_int r then
+  if Js.typeof r = "number" then
     string_of_int (Obj.magic r : int)
   else (* Block. *)
     let rec get_fields acc = function
@@ -76,14 +76,14 @@ let rec dump r =
       | n -> let n = n-1 in get_fields (Obj.field r n :: acc) n
     in
     let rec is_list r =
-      if Obj.is_int r then
+      if Js.typeof r = "number" then
         r = Obj.repr 0 (* [] *)
       else
         let s = Obj.size r and t = Obj.tag r in
         t = 0 && s = 2 && is_list (Obj.field r 1) (* h :: t *)
     in
     let rec get_list r =
-      if Obj.is_int r then
+      if Js.typeof r = "number" then
         []
       else
         let h = Obj.field r 0 and t = get_list (Obj.field r 1) in
