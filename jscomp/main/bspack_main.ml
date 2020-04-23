@@ -134,7 +134,7 @@ let interface sourcefile =
       ast in
   ast, content
 
-let emit_line_directive = ref false
+let emit_line_directive = ref true
 
 let emit out_chan name =
   if !emit_line_directive then begin   
