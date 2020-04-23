@@ -28,12 +28,13 @@ let from_fun (f : unit -> 'arg ) =
     set_field (Obj.obj x) (Obj.repr f);
     (Obj.obj x : 'arg lazy_t)
 
-external make_forward : 'a -> 'a lazy_t = "caml_lazy_make_forward"
 
 let from_val (v : 'arg) =
   let t = Obj.tag (Obj.repr v) in
   if t = forward_tag || t = lazy_tag || false (* t = Obj.double_tag *) then begin
-    make_forward v
+    let x = new_block forward_tag 1 in 
+    set_field (Obj.obj x ) (Obj.repr v);
+    (Obj.obj x : 'arg lazy_t)
   end else begin
     (Obj.magic v : 'arg lazy_t)
   end    
