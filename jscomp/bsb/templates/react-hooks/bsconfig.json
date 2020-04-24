@@ -1,5 +1,5 @@
 {
-  "name": "reason-react-examples",
+  "name": "${bsb:name}",
   "reason": {
     "react-jsx": 3
   },
