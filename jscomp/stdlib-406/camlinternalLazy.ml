@@ -42,7 +42,7 @@ let from_fun (f : unit -> 'arg ) =
 
 let from_val (v : 'arg) =
   let t = tag (cast_to_lazy v) in
-  if t = forward_tag || t = lazy_tag || false (* t = Obj.double_tag *) then begin
+  if t = forward_tag || t = lazy_tag  then begin
     new_block_with_tag forward_tag v
   end else begin
     (cast_to_lazy v : 'arg lazy_t)
