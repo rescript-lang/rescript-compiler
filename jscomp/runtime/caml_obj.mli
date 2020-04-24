@@ -38,13 +38,6 @@ val caml_obj_dup : Caml_obj_extern.t -> Caml_obj_extern.t
 val caml_obj_truncate : Caml_obj_extern.t -> int -> unit
 
 
-
-val caml_lazy_make_forward : 'a -> 'a lazy_t
-
-val caml_lazy_make : 
-  (t -> t) -> 
-  t
-
 val caml_update_dummy : Caml_obj_extern.t -> Caml_obj_extern.t -> unit
 
 

@@ -263,9 +263,10 @@ let lam_prim ~primitive:( p : Lambda.primitive) ~args loc : Lam.t =
       )
     | Blk_lazy_general  
       ->       
-        prim 
-          ~primitive:(Pccall {prim_name="caml_lazy_make"; prim_arity = 1; prim_native_name = ""})
-          ~args loc          
+      Lam.apply 
+        (prim ~primitive:(Pfield (2,Fld_module {name = "from_fun"})) loc (*Invariant: hard code {from_fun} position*)
+         ~args: [Lam.global_module (Ident.create_persistent "CamlinternalLazy")] )
+        args loc App_infer_full
     | Blk_lazy_forward
       -> 
       let info : Lam_tag_info.t = Blk_na "" in

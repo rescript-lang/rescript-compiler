@@ -19,9 +19,14 @@
 
 exception Undefined
 
-val force_lazy_block : 'a lazy_t -> 'a
-
-val force_val_lazy_block : 'a lazy_t -> 'a
-
 val force : 'a lazy_t -> 'a
+(* instrumented by {!Matching} *)
+
 val force_val : 'a lazy_t -> 'a
+
+val from_fun : 
+    (unit -> 'arg) -> 
+    'arg lazy_t      
+
+val from_val : 'a -> 'a lazy_t
+val is_val : 'a lazy_t -> bool     

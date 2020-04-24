@@ -68,7 +68,7 @@ let bad_argf fmt = Format.ksprintf (fun x -> raise (Arg.Bad x ) ) fmt
 
 
 let rec dump r =
-  if Obj.is_int r then
+  if Js.typeof r = "number" then
     string_of_int (Obj.magic r : int)
   else (* Block. *)
     let rec get_fields acc = function
@@ -76,14 +76,14 @@ let rec dump r =
       | n -> let n = n-1 in get_fields (Obj.field r n :: acc) n
     in
     let rec is_list r =
-      if Obj.is_int r then
+      if Js.typeof r = "number" then
         r = Obj.repr 0 (* [] *)
       else
         let s = Obj.size r and t = Obj.tag r in
         t = 0 && s = 2 && is_list (Obj.field r 1) (* h :: t *)
     in
     let rec get_list r =
-      if Obj.is_int r then
+      if Js.typeof r = "number" then
         []
       else
         let h = Obj.field r 0 and t = get_list (Obj.field r 1) in
@@ -108,9 +108,9 @@ let rec dump r =
          * clear if very large constructed values could have the same
          * tag. XXX *)
       opaque "lazy"
-    | x when x = Obj.closure_tag ->
+    | x when false (* x = Obj.closure_tag *) ->
       opaque "closure"
-    | x when x = Obj.object_tag ->
+    | x when false (* x = Obj.object_tag *) ->
       let fields = get_fields [] s in
       let _clasz, id, slots =
         match fields with
@@ -120,25 +120,25 @@ let rec dump r =
       (* No information on decoding the class (first field).  So just print
          * out the ID and the slots. *)
       "Object #" ^ dump id ^ " (" ^ String.concat ", " (List.map dump slots) ^ ")"
-    | x when x = Obj.infix_tag ->
+    | x when false (* x = Obj.infix_tag *) ->
       opaque "infix"
-    | x when x = Obj.forward_tag ->
+    | x when false (* x = Obj.forward_tag *) ->
       opaque "forward"
-    | x when x < Obj.no_scan_tag ->
+    | x when false (* x < Obj.no_scan_tag *) ->
       let fields = get_fields [] s in
       "Tag" ^ string_of_int t ^
       " (" ^ String.concat ", " (List.map dump fields) ^ ")"
-    | x when x = Obj.string_tag ->
+    | x when false (* x = Obj.string_tag *) ->
       "\"" ^ String.escaped (Obj.magic r : string) ^ "\""
-    | x when x = Obj.double_tag ->
+    | x when false (* x = Obj.double_tag *) ->
       string_of_float (Obj.magic r : float)
-    | x when x = Obj.abstract_tag ->
+    | x when false (* x = Obj.abstract_tag *) ->
       opaque "abstract"
-    | x when x = Obj.custom_tag ->
+    | x when false (* x = Obj.custom_tag *) ->
       opaque "custom"
-    | x when x = Obj.custom_tag ->
+    | x when false (* x = Obj.custom_tag *) ->
       opaque "final"
-    | x when x = Obj.double_array_tag ->
+    | x when false (* x = Obj.double_array_tag *) ->
       "[|"^
       String.concat ";"
         (Array.to_list (Array.map string_of_float (Obj.magic r : float array))) ^

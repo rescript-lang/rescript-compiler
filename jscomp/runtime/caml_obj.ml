@@ -118,12 +118,7 @@ let caml_obj_truncate (x : Caml_obj_extern.t) (new_size : int) =
 
 
 
-let caml_lazy_make_forward x = lazy x
 
-let caml_lazy_make (fn : _ -> _) = 
-    let block = Caml_obj_extern.repr [|fn|] in 
-    Caml_obj_extern.set_tag block 246 (* Obj.lazy_tag*);
-    block
 
 
 (** 

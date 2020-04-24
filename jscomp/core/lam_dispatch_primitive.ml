@@ -686,8 +686,6 @@ let translate loc (prim_name : string)
     | "caml_obj_dup" 
     | "caml_update_dummy"
     | "caml_obj_truncate"
-    | "caml_lazy_make_forward"  
-    | "caml_lazy_make"
       -> 
       call Js_runtime_modules.obj_runtime
 

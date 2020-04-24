@@ -118,7 +118,7 @@ function pr(param) {
 }
 
 function map(f, l) {
-  return Caml_obj.caml_lazy_make((function (param) {
+  return CamlinternalLazy.from_fun((function (param) {
                 var match = CamlinternalLazy.force(l);
                 return /* Cons */[
                         Curry._1(f, match[0]),
@@ -128,7 +128,7 @@ function map(f, l) {
 }
 
 function merge(cmp, l1, l2) {
-  return Caml_obj.caml_lazy_make((function (param) {
+  return CamlinternalLazy.from_fun((function (param) {
                 var match = CamlinternalLazy.force(l1);
                 var match$1 = CamlinternalLazy.force(l2);
                 var ll2 = match$1[1];
@@ -177,22 +177,22 @@ function iter_interval(f, _l, _param) {
   };
 }
 
-var hamming = Caml_obj.caml_lazy_make((function (param) {
+var hamming = CamlinternalLazy.from_fun((function (param) {
         return /* Cons */[
                 nn1,
                 merge(cmp, ham2, merge(cmp, ham3, ham5))
               ];
       }));
 
-var ham2 = Caml_obj.caml_lazy_make((function (param) {
+var ham2 = CamlinternalLazy.from_fun((function (param) {
         return CamlinternalLazy.force(map(x2, hamming));
       }));
 
-var ham3 = Caml_obj.caml_lazy_make((function (param) {
+var ham3 = CamlinternalLazy.from_fun((function (param) {
         return CamlinternalLazy.force(map(x3, hamming));
       }));
 
-var ham5 = Caml_obj.caml_lazy_make((function (param) {
+var ham5 = CamlinternalLazy.from_fun((function (param) {
         return CamlinternalLazy.force(map(x5, hamming));
       }));
 

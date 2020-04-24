@@ -4,7 +4,6 @@ var Mt = require("./mt.js");
 var Lazy = require("../../lib/js/lazy.js");
 var Block = require("../../lib/js/block.js");
 var Curry = require("../../lib/js/curry.js");
-var Caml_obj = require("../../lib/js/caml_obj.js");
 var Caml_module = require("../../lib/js/caml_module.js");
 var CamlinternalLazy = require("../../lib/js/camlinternalLazy.js");
 var Caml_js_exceptions = require("../../lib/js/caml_js_exceptions.js");
@@ -61,7 +60,7 @@ var Intb = Caml_module.init_mod(/* tuple */[
             "a"
           ]]]));
 
-var a = Caml_obj.caml_lazy_make((function (param) {
+var a = CamlinternalLazy.from_fun((function (param) {
         return CamlinternalLazy.force(Intb.a);
       }));
 
@@ -72,7 +71,7 @@ Caml_module.update_mod(/* Module */Block.__(0, [[/* tuple */[
       a: a
     });
 
-var a$1 = Caml_obj.caml_lazy_make((function (param) {
+var a$1 = CamlinternalLazy.from_fun((function (param) {
         return CamlinternalLazy.force(Inta.a) + 1 | 0;
       }));
 
@@ -116,7 +115,7 @@ var Intb$1 = Caml_module.init_mod(/* tuple */[
             "a"
           ]]]));
 
-var a$2 = Caml_obj.caml_lazy_make((function (param) {
+var a$2 = CamlinternalLazy.from_fun((function (param) {
         return CamlinternalLazy.force(Intb$1.a) + 1 | 0;
       }));
 
