@@ -18,23 +18,32 @@
 let lazy_tag = 246
 let forward_tag = 250
 
+type 'a t = {
+  mutable tag : int ; (* Invariant: name  *)
+  mutable _0 : 'a
+}
 
 external cast_from_lazy : 'a lazy_t -> 'b = "%identity"
 external cast_to_lazy : 'b -> 'a lazy_t = "%identity"
 
-external new_block : int -> int -> 'a lazy_t = "caml_obj_block"
-external set_tag : 'a lazy_t  -> int -> unit = "caml_obj_set_tag"
-external tag : 'a lazy_t -> int = "caml_obj_tag"
+(* external new_block : int -> int -> 'a lazy_t = "caml_obj_block" *)
+let set_tag : 'a lazy_t  -> int -> unit = fun x tag -> 
+  (x |. cast_from_lazy).tag<-tag
+let tag : 'a lazy_t -> int = fun x -> 
+  (x |. cast_from_lazy). tag 
 
 let set_field (blk : 'arg lazy_t) (result : 'a) : unit = 
-  Obj.set_field (Obj.repr blk) 0 (Obj.repr result)
+  (* Obj.set_field (Obj.repr blk) 0 (Obj.repr result) *)
+  (blk |. cast_from_lazy)._0<-result
 let get_field (blk : 'arg lazy_t ) : 'a = 
-    Obj.obj (Obj.field (Obj.repr blk) 0)
+    (* Obj.obj (Obj.field (Obj.repr blk) 0) *)
+    (blk |. cast_from_lazy)._0
 
 let new_block_with_tag tag (value : 'a)  : 'arg lazy_t =
-  let x = new_block tag 1 in 
+  ({tag ; _0 = value}  |. cast_to_lazy)
+  (* let x = new_block tag 1 in 
   set_field  x  value; 
-  x 
+  x  *)
 
 let from_fun (f : unit -> 'arg ) = 
   new_block_with_tag lazy_tag f 

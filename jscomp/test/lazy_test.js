@@ -11,10 +11,13 @@ var u = {
   contents: 3
 };
 
-var v = CamlinternalLazy.from_fun((function (param) {
-        u.contents = 32;
-        
-      }));
+var v = {
+  tag: 246,
+  _0: (function (param) {
+      u.contents = 32;
+      
+    })
+};
 
 function lazy_test(param) {
   var h = u.contents;
@@ -51,15 +54,21 @@ var s = {
   contents: undefined
 };
 
-var set_true = CamlinternalLazy.from_fun((function (param) {
-        s.contents = 1;
-        
-      }));
+var set_true = {
+  tag: 246,
+  _0: (function (param) {
+      s.contents = 1;
+      
+    })
+};
 
-var set_false = CamlinternalLazy.from_fun((function (param) {
-        s.contents = undefined;
-        
-      }));
+var set_false = {
+  tag: 246,
+  _0: (function (param) {
+      s.contents = undefined;
+      
+    })
+};
 
 var h;
 
@@ -83,10 +92,13 @@ var u_v = {
   contents: 0
 };
 
-var u$1 = CamlinternalLazy.from_fun((function (param) {
-        u_v.contents = 2;
-        
-      }));
+var u$1 = {
+  tag: 246,
+  _0: (function (param) {
+      u_v.contents = 2;
+      
+    })
+};
 
 CamlinternalLazy.force(u$1);
 
@@ -96,30 +108,45 @@ var l_from_fun = Lazy.from_fun((function (param) {
         return 3;
       }));
 
-var forward_test = CamlinternalLazy.from_fun((function (param) {
-        var u = 3;
-        u = u + 1 | 0;
-        return u;
-      }));
+var forward_test = {
+  tag: 246,
+  _0: (function (param) {
+      var u = 3;
+      u = u + 1 | 0;
+      return u;
+    })
+};
 
-var f005 = CamlinternalLazy.from_fun((function (param) {
-        return 6;
-      }));
+var f005 = {
+  tag: 246,
+  _0: (function (param) {
+      return 6;
+    })
+};
 
-var f006 = CamlinternalLazy.from_fun((function (param) {
-        return (function (param) {
-            return 3;
-          });
-      }));
+var f006 = {
+  tag: 246,
+  _0: (function (param) {
+      return (function (param) {
+          return 3;
+        });
+    })
+};
 
-var f007 = CamlinternalLazy.from_fun((function (param) {
-        throw Caml_builtin_exceptions.not_found;
-      }));
+var f007 = {
+  tag: 246,
+  _0: (function (param) {
+      throw Caml_builtin_exceptions.not_found;
+    })
+};
 
-var f008 = CamlinternalLazy.from_fun((function (param) {
-        console.log("hi");
-        throw Caml_builtin_exceptions.not_found;
-      }));
+var f008 = {
+  tag: 246,
+  _0: (function (param) {
+      console.log("hi");
+      throw Caml_builtin_exceptions.not_found;
+    })
+};
 
 Mt.from_pair_suites("Lazy_test", /* :: */[
       /* tuple */[

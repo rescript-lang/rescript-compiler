@@ -60,9 +60,12 @@ var Intb = Caml_module.init_mod(/* tuple */[
             "a"
           ]]]));
 
-var a = CamlinternalLazy.from_fun((function (param) {
-        return CamlinternalLazy.force(Intb.a);
-      }));
+var a = {
+  tag: 246,
+  _0: (function (param) {
+      return CamlinternalLazy.force(Intb.a);
+    })
+};
 
 Caml_module.update_mod(/* Module */Block.__(0, [[/* tuple */[
             /* Lazy */1,
@@ -71,9 +74,12 @@ Caml_module.update_mod(/* Module */Block.__(0, [[/* tuple */[
       a: a
     });
 
-var a$1 = CamlinternalLazy.from_fun((function (param) {
-        return CamlinternalLazy.force(Inta.a) + 1 | 0;
-      }));
+var a$1 = {
+  tag: 246,
+  _0: (function (param) {
+      return CamlinternalLazy.force(Inta.a) + 1 | 0;
+    })
+};
 
 Caml_module.update_mod(/* Module */Block.__(0, [[/* tuple */[
             /* Lazy */1,
@@ -115,9 +121,12 @@ var Intb$1 = Caml_module.init_mod(/* tuple */[
             "a"
           ]]]));
 
-var a$2 = CamlinternalLazy.from_fun((function (param) {
-        return CamlinternalLazy.force(Intb$1.a) + 1 | 0;
-      }));
+var a$2 = {
+  tag: 246,
+  _0: (function (param) {
+      return CamlinternalLazy.force(Intb$1.a) + 1 | 0;
+    })
+};
 
 Caml_module.update_mod(/* Module */Block.__(0, [[/* tuple */[
             /* Lazy */1,
