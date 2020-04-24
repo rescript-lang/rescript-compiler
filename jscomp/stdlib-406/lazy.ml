@@ -57,7 +57,7 @@ external force : 'a t -> 'a = "%lazy_force"
 
 let force_val = CamlinternalLazy.force_val
 
-let from_fun = CamlinternalLazy.from_fun
+let from_fun f = CamlinternalLazy.from_fun (fun [@bs] () -> f ())
 
 let from_val = CamlinternalLazy.from_val
 

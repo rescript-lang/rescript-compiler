@@ -68,11 +68,11 @@ external add_offset : t -> Int32.t -> t = "caml_obj_add_offset"
 val first_non_constant_constructor_tag : int
 val last_non_constant_constructor_tag : int
 
-val lazy_tag : int
-val closure_tag : int
+
+
 val object_tag : int
 val infix_tag : int
-val forward_tag : int
+
 val no_scan_tag : int
 val abstract_tag : int
 val string_tag : int   (* both [string] and [bytes] *)
@@ -90,13 +90,6 @@ val extension_constructor : 'a -> extension_constructor
 val [@inline always] extension_name : extension_constructor -> string
 val [@inline always] extension_id : extension_constructor -> int
 
-(** The following two functions are deprecated.  Use module {!Marshal}
-    instead. *)
-
-val marshal : t -> bytes
-  [@@ocaml.deprecated "Use Marshal.to_bytes instead."]
-val unmarshal : bytes -> int -> t * int
-  [@@ocaml.deprecated "Use Marshal.from_bytes and Marshal.total_size instead."]
 
 module Ephemeron: sig
   (** Ephemeron with arbitrary arity and untyped *)

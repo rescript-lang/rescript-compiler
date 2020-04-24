@@ -25,7 +25,7 @@ val force : 'a lazy_t -> 'a
 val force_val : 'a lazy_t -> 'a
 
 val from_fun : 
-    (unit -> 'arg) -> 
+    (unit -> 'arg [@bs]) -> 
     'arg lazy_t      
 
 val from_val : 'a -> 'a lazy_t

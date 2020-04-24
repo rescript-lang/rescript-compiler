@@ -2368,12 +2368,15 @@ function symbol_docs(param) {
 function symbol_docs_lazy(param) {
   var p1 = Parsing.symbol_start_pos(undefined);
   var p2 = Parsing.symbol_end_pos(undefined);
-  return CamlinternalLazy.from_fun((function (param) {
-                return {
-                        docs_pre: get_pre_docs(p1),
-                        docs_post: get_post_docs(p2)
-                      };
-              }));
+  return {
+          tag: 246,
+          value: (function () {
+              return {
+                      docs_pre: get_pre_docs(p1),
+                      docs_post: get_post_docs(p2)
+                    };
+            })
+        };
 }
 
 function mark_symbol_docs(param) {
@@ -2388,9 +2391,12 @@ function mark_rhs_docs(pos1, pos2) {
 
 function symbol_text_lazy(param) {
   var pos = Parsing.symbol_start_pos(undefined);
-  return CamlinternalLazy.from_fun((function (param) {
-                return get_text(pos);
-              }));
+  return {
+          tag: 246,
+          value: (function () {
+              return get_text(pos);
+            })
+        };
 }
 
 function init(param) {
@@ -11353,42 +11359,8 @@ function string(lexbuf) {
   };
 }
 
-function __ocaml_lex_quoted_string_rec(delim, lexbuf, ___ocaml_lex_state) {
-  while(true) {
-    var __ocaml_lex_state = ___ocaml_lex_state;
-    var __ocaml_lex_state$1 = Lexing.engine(__ocaml_lex_tables, __ocaml_lex_state, lexbuf);
-    switch (__ocaml_lex_state$1) {
-      case 0 :
-          update_loc(lexbuf, undefined, 1, false, 0);
-          store_string(Lexing.lexeme(lexbuf));
-          ___ocaml_lex_state = 183;
-          continue ;
-      case 1 :
-          is_in_string.contents = false;
-          throw [
-                $$Error$2,
-                /* Unterminated_string */0,
-                string_start_loc.contents
-              ];
-      case 2 :
-          var edelim = Lexing.lexeme(lexbuf);
-          var edelim$1 = $$String.sub(edelim, 1, edelim.length - 2 | 0);
-          if (delim === edelim$1) {
-            return ;
-          }
-          store_string(Lexing.lexeme(lexbuf));
-          ___ocaml_lex_state = 183;
-          continue ;
-      case 3 :
-          store_string_char(Lexing.lexeme_char(lexbuf, 0));
-          ___ocaml_lex_state = 183;
-          continue ;
-      default:
-        Curry._1(lexbuf.refill_buff, lexbuf);
-        ___ocaml_lex_state = __ocaml_lex_state$1;
-        continue ;
-    }
-  };
+function comment(lexbuf) {
+  return __ocaml_lex_comment_rec(lexbuf, 132);
 }
 
 function __ocaml_lex_comment_rec(lexbuf, ___ocaml_lex_state) {
@@ -11565,8 +11537,42 @@ function __ocaml_lex_comment_rec(lexbuf, ___ocaml_lex_state) {
   };
 }
 
-function comment(lexbuf) {
-  return __ocaml_lex_comment_rec(lexbuf, 132);
+function __ocaml_lex_quoted_string_rec(delim, lexbuf, ___ocaml_lex_state) {
+  while(true) {
+    var __ocaml_lex_state = ___ocaml_lex_state;
+    var __ocaml_lex_state$1 = Lexing.engine(__ocaml_lex_tables, __ocaml_lex_state, lexbuf);
+    switch (__ocaml_lex_state$1) {
+      case 0 :
+          update_loc(lexbuf, undefined, 1, false, 0);
+          store_string(Lexing.lexeme(lexbuf));
+          ___ocaml_lex_state = 183;
+          continue ;
+      case 1 :
+          is_in_string.contents = false;
+          throw [
+                $$Error$2,
+                /* Unterminated_string */0,
+                string_start_loc.contents
+              ];
+      case 2 :
+          var edelim = Lexing.lexeme(lexbuf);
+          var edelim$1 = $$String.sub(edelim, 1, edelim.length - 2 | 0);
+          if (delim === edelim$1) {
+            return ;
+          }
+          store_string(Lexing.lexeme(lexbuf));
+          ___ocaml_lex_state = 183;
+          continue ;
+      case 3 :
+          store_string_char(Lexing.lexeme_char(lexbuf, 0));
+          ___ocaml_lex_state = 183;
+          continue ;
+      default:
+        Curry._1(lexbuf.refill_buff, lexbuf);
+        ___ocaml_lex_state = __ocaml_lex_state$1;
+        continue ;
+    }
+  };
 }
 
 function at_bol(lexbuf) {

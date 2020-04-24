@@ -1,7 +1,6 @@
 'use strict';
 
 var Arg = require("../../lib/js/arg.js");
-var Obj = require("../../lib/js/obj.js");
 var List = require("../../lib/js/list.js");
 var Block = require("../../lib/js/block.js");
 var Curry = require("../../lib/js/curry.js");
@@ -150,31 +149,27 @@ function dump(r) {
     return "[" + ($$String.concat("; ", List.map(dump, fields)) + "]");
   }
   if (t !== 0) {
-    if (t === Obj.lazy_tag) {
-      return "<lazy>";
-    } else {
-      var name = Curry._2(Printf.sprintf(/* Format */[
-                /* String_literal */Block.__(11, [
-                    "unknown: tag ",
-                    /* Int */Block.__(4, [
-                        /* Int_d */0,
-                        /* No_padding */0,
-                        /* No_precision */0,
-                        /* String_literal */Block.__(11, [
-                            " size ",
-                            /* Int */Block.__(4, [
-                                /* Int_d */0,
-                                /* No_padding */0,
-                                /* No_precision */0,
-                                /* End_of_format */0
-                              ])
-                          ])
-                      ])
-                  ]),
-                "unknown: tag %d size %d"
-              ]), t, s);
-      return "<" + (name + ">");
-    }
+    var name = Curry._2(Printf.sprintf(/* Format */[
+              /* String_literal */Block.__(11, [
+                  "unknown: tag ",
+                  /* Int */Block.__(4, [
+                      /* Int_d */0,
+                      /* No_padding */0,
+                      /* No_precision */0,
+                      /* String_literal */Block.__(11, [
+                          " size ",
+                          /* Int */Block.__(4, [
+                              /* Int_d */0,
+                              /* No_padding */0,
+                              /* No_precision */0,
+                              /* End_of_format */0
+                            ])
+                        ])
+                    ])
+                ]),
+              "unknown: tag %d size %d"
+            ]), t, s);
+    return "<" + (name + ">");
   }
   var fields$1 = get_fields(/* [] */0, s);
   return "(" + ($$String.concat(", ", List.map(dump, fields$1)) + ")");
