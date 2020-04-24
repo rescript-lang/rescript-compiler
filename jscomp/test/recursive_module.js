@@ -62,7 +62,7 @@ var Intb = Caml_module.init_mod(/* tuple */[
 
 var a = {
   tag: 246,
-  value: (function (param) {
+  value: (function () {
       return CamlinternalLazy.force(Intb.a);
     })
 };
@@ -76,7 +76,7 @@ Caml_module.update_mod(/* Module */Block.__(0, [[/* tuple */[
 
 var a$1 = {
   tag: 246,
-  value: (function (param) {
+  value: (function () {
       return CamlinternalLazy.force(Inta.a) + 1 | 0;
     })
 };
@@ -123,7 +123,7 @@ var Intb$1 = Caml_module.init_mod(/* tuple */[
 
 var a$2 = {
   tag: 246,
-  value: (function (param) {
+  value: (function () {
       return CamlinternalLazy.force(Intb$1.a) + 1 | 0;
     })
 };

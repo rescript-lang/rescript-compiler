@@ -5,7 +5,7 @@ var CamlinternalLazy = require("../../lib/js/camlinternalLazy.js");
 function fix(param) {
   return /* Fix */[{
             tag: 246,
-            value: (function (param) {
+            value: (function () {
                 return fix(undefined);
               })
           }];

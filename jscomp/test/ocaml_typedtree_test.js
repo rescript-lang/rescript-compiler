@@ -6537,7 +6537,7 @@ function symbol_docs_lazy(param) {
   var p2 = Parsing.symbol_end_pos(undefined);
   return {
           tag: 246,
-          value: (function (param) {
+          value: (function () {
               return {
                       docs_pre: get_pre_docs(p1),
                       docs_post: get_post_docs(p2)
@@ -6560,7 +6560,7 @@ function symbol_text_lazy(param) {
   var pos = Parsing.symbol_start_pos(undefined);
   return {
           tag: 246,
-          value: (function (param) {
+          value: (function () {
               return get_text(pos);
             })
         };
@@ -11725,7 +11725,7 @@ function prefix_idents_and_subst(root, sub, sg) {
           sub$1,
           {
             tag: 246,
-            value: (function (param) {
+            value: (function () {
                 return List.map((function (item) {
                               switch (item.tag | 0) {
                                 case /* Sig_value */0 :
@@ -26435,7 +26435,7 @@ function copy_sep(fixed, free, bound, visited, ty) {
     delayed_copy.contents = /* :: */[
       {
         tag: 246,
-        value: (function (param) {
+        value: (function () {
             t.desc = /* Tlink */Block.__(6, [copy(undefined, undefined, undefined, ty$1)]);
             
           })
@@ -68060,7 +68060,7 @@ function declare_method(val_env, meths, self_type, lab, priv, sty, loc) {
     delayed_meth_specs.contents = /* :: */[
       {
         tag: 246,
-        value: (function (param) {
+        value: (function () {
             var cty = transl_simple_type_univars(val_env, sty$prime);
             var ty = cty.ctyp_type;
             unif(ty);
@@ -68611,7 +68611,7 @@ function class_structure(cl_num, $$final, val_env, met_env, loc, param) {
                         /* :: */[
                           {
                             tag: 246,
-                            value: (function (param) {
+                            value: (function () {
                                 return mkcf(/* Tcf_inherit */Block.__(0, [
                                               ovf,
                                               parent,
@@ -68706,7 +68706,7 @@ function class_structure(cl_num, $$final, val_env, met_env, loc, param) {
                           /* :: */[
                             {
                               tag: 246,
-                              value: (function (param) {
+                              value: (function () {
                                   return mkcf(/* Tcf_val */Block.__(1, [
                                                 lab,
                                                 mut,
@@ -68747,7 +68747,7 @@ function class_structure(cl_num, $$final, val_env, met_env, loc, param) {
                         /* :: */[
                           {
                             tag: 246,
-                            value: (function (param) {
+                            value: (function () {
                                 return mkcf(/* Tcf_val */Block.__(1, [
                                               lab,
                                               mut,
@@ -68885,7 +68885,7 @@ function class_structure(cl_num, $$final, val_env, met_env, loc, param) {
                   var vars_local = vars.contents;
                   var field = {
                     tag: 246,
-                    value: (function (param) {
+                    value: (function () {
                         var meth_type = newty2(100000000, /* Tarrow */Block.__(1, [
                                 "",
                                 self_type,
@@ -68929,7 +68929,7 @@ function class_structure(cl_num, $$final, val_env, met_env, loc, param) {
                         /* :: */[
                           {
                             tag: 246,
-                            value: (function (param) {
+                            value: (function () {
                                 return mkcf(/* Tcf_method */Block.__(2, [
                                               lab$1,
                                               priv,
@@ -68957,7 +68957,7 @@ function class_structure(cl_num, $$final, val_env, met_env, loc, param) {
                         /* :: */[
                           {
                             tag: 246,
-                            value: (function (param) {
+                            value: (function () {
                                 return mkcf(/* Tcf_constraint */Block.__(3, [
                                               cty$2,
                                               cty$prime$1
@@ -68977,7 +68977,7 @@ function class_structure(cl_num, $$final, val_env, met_env, loc, param) {
                 var vars_local$1 = vars.contents;
                 var field$1 = {
                   tag: 246,
-                  value: (function (param) {
+                  value: (function () {
                       raise_nongen_level(undefined);
                       var desc_002 = instance_def(type_unit);
                       var desc = /* Tarrow */Block.__(1, [
@@ -69020,7 +69020,7 @@ function class_structure(cl_num, $$final, val_env, met_env, loc, param) {
                         /* :: */[
                           {
                             tag: 246,
-                            value: (function (param) {
+                            value: (function () {
                                 return mkcf(/* Tcf_attribute */Block.__(5, [x]));
                               })
                           },

@@ -13,7 +13,7 @@ var u = {
 
 var v = {
   tag: 246,
-  value: (function (param) {
+  value: (function () {
       u.contents = 32;
       
     })
@@ -56,7 +56,7 @@ var s = {
 
 var set_true = {
   tag: 246,
-  value: (function (param) {
+  value: (function () {
       s.contents = 1;
       
     })
@@ -64,7 +64,7 @@ var set_true = {
 
 var set_false = {
   tag: 246,
-  value: (function (param) {
+  value: (function () {
       s.contents = undefined;
       
     })
@@ -94,7 +94,7 @@ var u_v = {
 
 var u$1 = {
   tag: 246,
-  value: (function (param) {
+  value: (function () {
       u_v.contents = 2;
       
     })
@@ -104,13 +104,16 @@ CamlinternalLazy.force(u$1);
 
 var exotic = CamlinternalLazy.force;
 
-var l_from_fun = Lazy.from_fun((function (param) {
-        return 3;
-      }));
+var l_from_fun = {
+  tag: 246,
+  value: (function () {
+      return 3;
+    })
+};
 
 var forward_test = {
   tag: 246,
-  value: (function (param) {
+  value: (function () {
       var u = 3;
       u = u + 1 | 0;
       return u;
@@ -119,14 +122,14 @@ var forward_test = {
 
 var f005 = {
   tag: 246,
-  value: (function (param) {
+  value: (function () {
       return 6;
     })
 };
 
 var f006 = {
   tag: 246,
-  value: (function (param) {
+  value: (function () {
       return (function (param) {
           return 3;
         });
@@ -135,14 +138,14 @@ var f006 = {
 
 var f007 = {
   tag: 246,
-  value: (function (param) {
+  value: (function () {
       throw Caml_builtin_exceptions.not_found;
     })
 };
 
 var f008 = {
   tag: 246,
-  value: (function (param) {
+  value: (function () {
       console.log("hi");
       throw Caml_builtin_exceptions.not_found;
     })

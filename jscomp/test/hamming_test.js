@@ -120,7 +120,7 @@ function pr(param) {
 function map(f, l) {
   return {
           tag: 246,
-          value: (function (param) {
+          value: (function () {
               var match = CamlinternalLazy.force(l);
               return /* Cons */[
                       Curry._1(f, match[0]),
@@ -133,7 +133,7 @@ function map(f, l) {
 function merge(cmp, l1, l2) {
   return {
           tag: 246,
-          value: (function (param) {
+          value: (function () {
               var match = CamlinternalLazy.force(l1);
               var match$1 = CamlinternalLazy.force(l2);
               var ll2 = match$1[1];
@@ -193,7 +193,7 @@ var ham5 = { };
 
 Caml_obj.caml_update_dummy(hamming, {
       tag: 246,
-      value: (function (param) {
+      value: (function () {
           return /* Cons */[
                   nn1,
                   merge(cmp, ham2, merge(cmp, ham3, ham5))
@@ -203,21 +203,21 @@ Caml_obj.caml_update_dummy(hamming, {
 
 Caml_obj.caml_update_dummy(ham2, {
       tag: 246,
-      value: (function (param) {
+      value: (function () {
           return CamlinternalLazy.force(map(x2, hamming));
         })
     });
 
 Caml_obj.caml_update_dummy(ham3, {
       tag: 246,
-      value: (function (param) {
+      value: (function () {
           return CamlinternalLazy.force(map(x3, hamming));
         })
     });
 
 Caml_obj.caml_update_dummy(ham5, {
       tag: 246,
-      value: (function (param) {
+      value: (function () {
           return CamlinternalLazy.force(map(x5, hamming));
         })
     });

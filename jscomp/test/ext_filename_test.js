@@ -27,7 +27,7 @@ var node_current = ".";
 
 var cwd = {
   tag: 246,
-  value: (function (param) {
+  value: (function () {
       return Caml_sys.caml_sys_getcwd(undefined);
     })
 };
@@ -219,7 +219,7 @@ function find_package_json_dir(cwd) {
 
 var package_dir = {
   tag: 246,
-  value: (function (param) {
+  value: (function () {
       var cwd$1 = CamlinternalLazy.force(cwd);
       return find_root_filename(cwd$1, Test_literals.bsconfig_json);
     })
