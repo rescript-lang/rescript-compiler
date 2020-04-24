@@ -50,6 +50,15 @@ let f006 = lazy (let  x=3 in fun _ -> x)
 let f007 = lazy (raise Not_found)
 let f008 = lazy(print_endline "hi"; raise Not_found)
 
+let a2 x = lazy x 
+
+let a3  = lazy 3 
+let a4 = a2 3 
+let a5 = lazy None 
+let a6 = lazy ()
+
+let lazy a7 = a5 
+let lazy a8 = a6 
 
 ;; Mt.from_pair_suites __MODULE__ Mt.[
 "simple", (fun _ ->
@@ -61,6 +70,13 @@ let f008 = lazy(print_endline "hi"; raise Not_found)
 "lazy_from_val", (fun _ -> Eq(Lazy.force (Lazy.from_val 3) , 3));
 "lazy_from_val2", (fun _ -> Eq((Lazy.force @@ Lazy.force (Lazy.from_val (lazy  3))), 3));
 "lazy_from_val3",
-(fun _ -> Eq(( [%bs.debugger]; Lazy.force @@ Lazy.force (Lazy.from_val forward_test)), 4))
+(fun _ -> Eq(( [%bs.debugger]; Lazy.force @@ Lazy.force (Lazy.from_val forward_test)), 4));
+
+__FILE__, 
+(fun _ -> Eq(a3,a4));
+__FILE__, 
+(fun _ -> Eq(a7,None));
+__FILE__, 
+(fun _ -> Eq (a8,()))
 ]
 

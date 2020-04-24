@@ -13,7 +13,7 @@ var u = {
 
 var v = {
   tag: 246,
-  _0: (function (param) {
+  value: (function (param) {
       u.contents = 32;
       
     })
@@ -56,7 +56,7 @@ var s = {
 
 var set_true = {
   tag: 246,
-  _0: (function (param) {
+  value: (function (param) {
       s.contents = 1;
       
     })
@@ -64,7 +64,7 @@ var set_true = {
 
 var set_false = {
   tag: 246,
-  _0: (function (param) {
+  value: (function (param) {
       s.contents = undefined;
       
     })
@@ -94,7 +94,7 @@ var u_v = {
 
 var u$1 = {
   tag: 246,
-  _0: (function (param) {
+  value: (function (param) {
       u_v.contents = 2;
       
     })
@@ -110,7 +110,7 @@ var l_from_fun = Lazy.from_fun((function (param) {
 
 var forward_test = {
   tag: 246,
-  _0: (function (param) {
+  value: (function (param) {
       var u = 3;
       u = u + 1 | 0;
       return u;
@@ -119,14 +119,14 @@ var forward_test = {
 
 var f005 = {
   tag: 246,
-  _0: (function (param) {
+  value: (function (param) {
       return 6;
     })
 };
 
 var f006 = {
   tag: 246,
-  _0: (function (param) {
+  value: (function (param) {
       return (function (param) {
           return 3;
         });
@@ -135,18 +135,26 @@ var f006 = {
 
 var f007 = {
   tag: 246,
-  _0: (function (param) {
+  value: (function (param) {
       throw Caml_builtin_exceptions.not_found;
     })
 };
 
 var f008 = {
   tag: 246,
-  _0: (function (param) {
+  value: (function (param) {
       console.log("hi");
       throw Caml_builtin_exceptions.not_found;
     })
 };
+
+var a2 = CamlinternalLazy.from_val;
+
+var a4 = CamlinternalLazy.from_val(3);
+
+var a7 = CamlinternalLazy.force(undefined);
+
+var a8 = CamlinternalLazy.force(undefined);
 
 Mt.from_pair_suites("Lazy_test", /* :: */[
       /* tuple */[
@@ -222,7 +230,40 @@ Mt.from_pair_suites("Lazy_test", /* :: */[
                                 ]);
                       })
                   ],
-                  /* [] */0
+                  /* :: */[
+                    /* tuple */[
+                      "lazy_test.ml",
+                      (function (param) {
+                          return /* Eq */Block.__(0, [
+                                    3,
+                                    a4
+                                  ]);
+                        })
+                    ],
+                    /* :: */[
+                      /* tuple */[
+                        "lazy_test.ml",
+                        (function (param) {
+                            return /* Eq */Block.__(0, [
+                                      a7,
+                                      undefined
+                                    ]);
+                          })
+                      ],
+                      /* :: */[
+                        /* tuple */[
+                          "lazy_test.ml",
+                          (function (param) {
+                              return /* Eq */Block.__(0, [
+                                        a8,
+                                        undefined
+                                      ]);
+                            })
+                        ],
+                        /* [] */0
+                      ]
+                    ]
+                  ]
                 ]
               ]
             ]
@@ -230,6 +271,12 @@ Mt.from_pair_suites("Lazy_test", /* :: */[
         ]
       ]
     ]);
+
+var a3 = 3;
+
+var a5;
+
+var a6;
 
 exports.v = v;
 exports.lazy_test = lazy_test;
@@ -247,4 +294,11 @@ exports.f005 = f005;
 exports.f006 = f006;
 exports.f007 = f007;
 exports.f008 = f008;
+exports.a2 = a2;
+exports.a3 = a3;
+exports.a4 = a4;
+exports.a5 = a5;
+exports.a6 = a6;
+exports.a7 = a7;
+exports.a8 = a8;
 /* h Not a pure module */

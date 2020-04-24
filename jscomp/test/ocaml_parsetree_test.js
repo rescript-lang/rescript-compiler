@@ -2370,7 +2370,7 @@ function symbol_docs_lazy(param) {
   var p2 = Parsing.symbol_end_pos(undefined);
   return {
           tag: 246,
-          _0: (function (param) {
+          value: (function (param) {
               return {
                       docs_pre: get_pre_docs(p1),
                       docs_post: get_post_docs(p2)
@@ -2393,7 +2393,7 @@ function symbol_text_lazy(param) {
   var pos = Parsing.symbol_start_pos(undefined);
   return {
           tag: 246,
-          _0: (function (param) {
+          value: (function (param) {
               return get_text(pos);
             })
         };
