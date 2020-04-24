@@ -19,10 +19,12 @@ let lazy_tag = 246
 let forward_tag = 250
 
 
-(* external cast_from_lazy : 'a lazy_t -> 'b = "%identity"
-external cast_to_lazy : 'b -> 'a lazy_t = "%identity" *)
+external cast_from_lazy : 'a lazy_t -> 'b = "%identity"
+external cast_to_lazy : 'b -> 'a lazy_t = "%identity"
 
 external new_block : int -> int -> 'a lazy_t = "caml_obj_block"
+external set_tag : 'a lazy_t  -> int -> unit = "caml_obj_set_tag"
+external tag : 'a lazy_t -> int = "caml_obj_tag"
 
 let set_field (blk : 'arg lazy_t) (result : 'a) : unit = 
   Obj.set_field (Obj.repr blk) 0 (Obj.repr result)
@@ -39,34 +41,34 @@ let from_fun (f : unit -> 'arg ) =
 
 
 let from_val (v : 'arg) =
-  let t = Obj.tag (Obj.repr v) in
+  let t = tag (cast_to_lazy v) in
   if t = forward_tag || t = lazy_tag || false (* t = Obj.double_tag *) then begin
     new_block_with_tag forward_tag v
   end else begin
-    (Obj.magic v : 'arg lazy_t)
+    (cast_to_lazy v : 'arg lazy_t)
   end    
-external set_tag : Obj.t -> int -> unit = "caml_obj_set_tag"
+
 
 let forward_with_closure (blk : 'arg lazy_t) closure = 
   let result = closure () in
   (* do set_field BEFORE set_tag *)
   set_field blk result;
-  set_tag (Obj.repr blk) forward_tag;
+  set_tag blk forward_tag;
   result
 
 
 exception Undefined
 
-let raise_undefined = Obj.repr (fun () -> raise Undefined)
+let raise_undefined =  (fun () -> raise Undefined)
 
 (* Assume [blk] is a block with tag lazy *)
 let force_lazy_block (blk : 'arg lazy_t) =
-  let closure = (Obj.obj (Obj.field (Obj.repr blk) 0) : unit -> 'arg) in
+  let closure : unit -> 'arg = get_field blk in
   set_field blk raise_undefined;
   try
     forward_with_closure blk closure
   with e ->
-    set_field blk (Obj.repr (fun () -> raise e));
+    set_field blk (fun () -> raise e);
     raise e
 
 
@@ -81,22 +83,20 @@ let force_val_lazy_block (blk : 'arg lazy_t) =
    here for the sake of completeness, and for debugging purpose. *)
 
 let force (lzv : 'arg lazy_t) : 'arg =
-  let x = Obj.repr lzv in
-  let t = Obj.tag x in
+  let t = tag lzv in
   if t = forward_tag then get_field lzv  else
-  if t <> lazy_tag then Obj.obj x 
+  if t <> lazy_tag then cast_from_lazy lzv
   else force_lazy_block lzv
 
 
 let force_val (lzv : 'arg lazy_t) : 'arg =
-  let x = Obj.repr lzv in
-  let t = Obj.tag x in
+  let t = tag lzv in
   if t = forward_tag then get_field lzv  else
-  if t <> lazy_tag then Obj.obj x 
+  if t <> lazy_tag then cast_from_lazy lzv
   else force_val_lazy_block lzv
 
 
 
 
 
-let is_val (l : 'arg lazy_t) = Obj.tag (Obj.repr l) <> lazy_tag
+let is_val (l : 'arg lazy_t) = tag l <> lazy_tag
