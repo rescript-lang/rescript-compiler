@@ -6535,7 +6535,7 @@ function symbol_docs(param) {
 function symbol_docs_lazy(param) {
   var p1 = Parsing.symbol_start_pos(undefined);
   var p2 = Parsing.symbol_end_pos(undefined);
-  return Caml_obj.caml_lazy_make((function (param) {
+  return CamlinternalLazy.from_fun((function (param) {
                 return {
                         docs_pre: get_pre_docs(p1),
                         docs_post: get_post_docs(p2)
@@ -6555,7 +6555,7 @@ function mark_rhs_docs(pos1, pos2) {
 
 function symbol_text_lazy(param) {
   var pos = Parsing.symbol_start_pos(undefined);
-  return Caml_obj.caml_lazy_make((function (param) {
+  return CamlinternalLazy.from_fun((function (param) {
                 return get_text(pos);
               }));
 }
@@ -11717,7 +11717,7 @@ function prefix_idents_and_subst(root, sub, sg) {
   return /* tuple */[
           match[0],
           sub$1,
-          Caml_obj.caml_lazy_make((function (param) {
+          CamlinternalLazy.from_fun((function (param) {
                   return List.map((function (item) {
                                 switch (item.tag | 0) {
                                   case /* Sig_value */0 :
@@ -26424,7 +26424,7 @@ function copy_sep(fixed, free, bound, visited, ty) {
     }
     var t = newvar(undefined, undefined);
     delayed_copy.contents = /* :: */[
-      Caml_obj.caml_lazy_make((function (param) {
+      CamlinternalLazy.from_fun((function (param) {
               t.desc = /* Tlink */Block.__(6, [copy(undefined, undefined, undefined, ty$1)]);
               
             })),
@@ -68046,7 +68046,7 @@ function declare_method(val_env, meths, self_type, lab, priv, sty, loc) {
     var sty$prime = match$1[1];
     var returned_cty = ctyp(/* Ttyp_any */0, newty2(current_level.contents, /* Tnil */0), val_env, loc);
     delayed_meth_specs.contents = /* :: */[
-      Caml_obj.caml_lazy_make((function (param) {
+      CamlinternalLazy.from_fun((function (param) {
               var cty = transl_simple_type_univars(val_env, sty$prime);
               var ty = cty.ctyp_type;
               unif(ty);
@@ -68594,7 +68594,7 @@ function class_structure(cl_num, $$final, val_env, met_env, loc, param) {
                         match$3[1],
                         match$3[2],
                         /* :: */[
-                          Caml_obj.caml_lazy_make((function (param) {
+                          CamlinternalLazy.from_fun((function (param) {
                                   return mkcf(/* Tcf_inherit */Block.__(0, [
                                                 ovf,
                                                 parent,
@@ -68686,7 +68686,7 @@ function class_structure(cl_num, $$final, val_env, met_env, loc, param) {
                           met_env$prime,
                           match$7[3],
                           /* :: */[
-                            Caml_obj.caml_lazy_make((function (param) {
+                            CamlinternalLazy.from_fun((function (param) {
                                     return mkcf(/* Tcf_val */Block.__(1, [
                                                   lab,
                                                   mut,
@@ -68724,7 +68724,7 @@ function class_structure(cl_num, $$final, val_env, met_env, loc, param) {
                         met_env$prime$1,
                         match$8[3],
                         /* :: */[
-                          Caml_obj.caml_lazy_make((function (param) {
+                          CamlinternalLazy.from_fun((function (param) {
                                   return mkcf(/* Tcf_val */Block.__(1, [
                                                 lab,
                                                 mut,
@@ -68859,7 +68859,7 @@ function class_structure(cl_num, $$final, val_env, met_env, loc, param) {
                   }
                   var meth_expr = make_method(self_loc, cl_num, expr$2);
                   var vars_local = vars.contents;
-                  var field = Caml_obj.caml_lazy_make((function (param) {
+                  var field = CamlinternalLazy.from_fun((function (param) {
                           var meth_type = newty2(100000000, /* Tarrow */Block.__(1, [
                                   "",
                                   self_type,
@@ -68900,7 +68900,7 @@ function class_structure(cl_num, $$final, val_env, met_env, loc, param) {
                         met_env,
                         par_env,
                         /* :: */[
-                          Caml_obj.caml_lazy_make((function (param) {
+                          CamlinternalLazy.from_fun((function (param) {
                                   return mkcf(/* Tcf_method */Block.__(2, [
                                                 lab$1,
                                                 priv,
@@ -68925,7 +68925,7 @@ function class_structure(cl_num, $$final, val_env, met_env, loc, param) {
                         met_env,
                         par_env,
                         /* :: */[
-                          Caml_obj.caml_lazy_make((function (param) {
+                          CamlinternalLazy.from_fun((function (param) {
                                   return mkcf(/* Tcf_constraint */Block.__(3, [
                                                 cty$2,
                                                 cty$prime$1
@@ -68942,7 +68942,7 @@ function class_structure(cl_num, $$final, val_env, met_env, loc, param) {
             case /* Pcf_initializer */4 :
                 var expr$3 = make_method(self_loc, cl_num, expr[0]);
                 var vars_local$1 = vars.contents;
-                var field$1 = Caml_obj.caml_lazy_make((function (param) {
+                var field$1 = CamlinternalLazy.from_fun((function (param) {
                         raise_nongen_level(undefined);
                         var desc_002 = instance_def(type_unit);
                         var desc = /* Tarrow */Block.__(1, [
@@ -68982,7 +68982,7 @@ function class_structure(cl_num, $$final, val_env, met_env, loc, param) {
                         met_env,
                         par_env,
                         /* :: */[
-                          Caml_obj.caml_lazy_make((function (param) {
+                          CamlinternalLazy.from_fun((function (param) {
                                   return mkcf(/* Tcf_attribute */Block.__(5, [x]));
                                 })),
                           fields

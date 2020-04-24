@@ -7,7 +7,6 @@ var Bytes = require("../../lib/js/bytes.js");
 var Curry = require("../../lib/js/curry.js");
 var Format = require("../../lib/js/format.js");
 var $$String = require("../../lib/js/string.js");
-var Caml_obj = require("../../lib/js/caml_obj.js");
 var Caml_sys = require("../../lib/js/caml_sys.js");
 var Filename = require("../../lib/js/filename.js");
 var Caml_bytes = require("../../lib/js/caml_bytes.js");
@@ -26,7 +25,7 @@ var node_parent = "..";
 
 var node_current = ".";
 
-var cwd = Caml_obj.caml_lazy_make((function (param) {
+var cwd = CamlinternalLazy.from_fun((function (param) {
         return Caml_sys.caml_sys_getcwd(undefined);
       }));
 
@@ -215,7 +214,7 @@ function find_package_json_dir(cwd) {
   return find_root_filename(cwd, Test_literals.bsconfig_json);
 }
 
-var package_dir = Caml_obj.caml_lazy_make((function (param) {
+var package_dir = CamlinternalLazy.from_fun((function (param) {
         var cwd$1 = CamlinternalLazy.force(cwd);
         return find_root_filename(cwd$1, Test_literals.bsconfig_json);
       }));

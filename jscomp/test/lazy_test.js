@@ -3,7 +3,6 @@
 var Mt = require("./mt.js");
 var Lazy = require("../../lib/js/lazy.js");
 var Block = require("../../lib/js/block.js");
-var Caml_obj = require("../../lib/js/caml_obj.js");
 var CamlinternalLazy = require("../../lib/js/camlinternalLazy.js");
 var Caml_js_exceptions = require("../../lib/js/caml_js_exceptions.js");
 var Caml_builtin_exceptions = require("../../lib/js/caml_builtin_exceptions.js");
@@ -12,7 +11,7 @@ var u = {
   contents: 3
 };
 
-var v = Caml_obj.caml_lazy_make((function (param) {
+var v = CamlinternalLazy.from_fun((function (param) {
         u.contents = 32;
         
       }));
@@ -52,12 +51,12 @@ var s = {
   contents: undefined
 };
 
-var set_true = Caml_obj.caml_lazy_make((function (param) {
+var set_true = CamlinternalLazy.from_fun((function (param) {
         s.contents = 1;
         
       }));
 
-var set_false = Caml_obj.caml_lazy_make((function (param) {
+var set_false = CamlinternalLazy.from_fun((function (param) {
         s.contents = undefined;
         
       }));
@@ -84,7 +83,7 @@ var u_v = {
   contents: 0
 };
 
-var u$1 = Caml_obj.caml_lazy_make((function (param) {
+var u$1 = CamlinternalLazy.from_fun((function (param) {
         u_v.contents = 2;
         
       }));
@@ -97,27 +96,27 @@ var l_from_fun = Lazy.from_fun((function (param) {
         return 3;
       }));
 
-var forward_test = Caml_obj.caml_lazy_make((function (param) {
+var forward_test = CamlinternalLazy.from_fun((function (param) {
         var u = 3;
         u = u + 1 | 0;
         return u;
       }));
 
-var f005 = Caml_obj.caml_lazy_make((function (param) {
+var f005 = CamlinternalLazy.from_fun((function (param) {
         return 6;
       }));
 
-var f006 = Caml_obj.caml_lazy_make((function (param) {
+var f006 = CamlinternalLazy.from_fun((function (param) {
         return (function (param) {
             return 3;
           });
       }));
 
-var f007 = Caml_obj.caml_lazy_make((function (param) {
+var f007 = CamlinternalLazy.from_fun((function (param) {
         throw Caml_builtin_exceptions.not_found;
       }));
 
-var f008 = Caml_obj.caml_lazy_make((function (param) {
+var f008 = CamlinternalLazy.from_fun((function (param) {
         console.log("hi");
         throw Caml_builtin_exceptions.not_found;
       }));

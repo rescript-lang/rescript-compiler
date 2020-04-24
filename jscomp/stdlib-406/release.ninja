@@ -67,7 +67,7 @@ build stdlib-406/int32.cmj : cc_cmi stdlib-406/int32.ml | stdlib-406/int32.cmi s
 build stdlib-406/int32.cmi : cc stdlib-406/int32.mli | stdlib-406/pervasives.cmj others
 build stdlib-406/int64.cmj : cc_cmi stdlib-406/int64.ml | stdlib-406/int64.cmi stdlib-406/pervasives.cmj others
 build stdlib-406/int64.cmi : cc stdlib-406/int64.mli | stdlib-406/pervasives.cmj others
-build stdlib-406/lazy.cmj : cc_cmi stdlib-406/lazy.ml | stdlib-406/camlinternalLazy.cmj stdlib-406/lazy.cmi stdlib-406/obj.cmj others
+build stdlib-406/lazy.cmj : cc_cmi stdlib-406/lazy.ml | stdlib-406/camlinternalLazy.cmj stdlib-406/lazy.cmi others
 build stdlib-406/lazy.cmi : cc stdlib-406/lazy.mli | stdlib-406/pervasives.cmj others
 build stdlib-406/lexing.cmj : cc_cmi stdlib-406/lexing.ml | stdlib-406/array.cmj stdlib-406/bytes.cmj stdlib-406/lexing.cmi stdlib-406/string.cmj stdlib-406/sys.cmj others
 build stdlib-406/lexing.cmi : cc stdlib-406/lexing.mli | stdlib-406/pervasives.cmj others

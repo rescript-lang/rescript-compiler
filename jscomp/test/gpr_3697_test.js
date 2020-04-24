@@ -1,10 +1,9 @@
 'use strict';
 
-var Caml_obj = require("../../lib/js/caml_obj.js");
 var CamlinternalLazy = require("../../lib/js/camlinternalLazy.js");
 
 function fix(param) {
-  return /* Fix */[Caml_obj.caml_lazy_make((function (param) {
+  return /* Fix */[CamlinternalLazy.from_fun((function (param) {
                   return fix(undefined);
                 }))];
 }
