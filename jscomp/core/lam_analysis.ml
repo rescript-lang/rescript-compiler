@@ -63,7 +63,7 @@ let rec no_side_effects (lam : Lam.t) : bool =
             | "caml_obj_dup"
             | "caml_array_dup"
             | "caml_obj_block"
-            | "caml_lazy_make"
+            
             ), _  -> true 
           | "caml_ml_open_descriptor_in", [Lconst (  (Const_int 0))] -> true 
           | "caml_ml_open_descriptor_out", 
@@ -256,6 +256,10 @@ let rec no_side_effects (lam : Lam.t) : bool =
   | Lfor _ -> false 
   | Lassign _ -> false (* actually it depends ... *)
   | Lsend _ -> false 
+  | Lapply {
+      ap_func = Lprim {primitive = Pfield (_, Fld_module {name = "from_fun"})};
+     ap_args = [arg]}
+        -> no_side_effects arg 
   | Lapply _ -> false (* we need purity analysis .. *)
   
 

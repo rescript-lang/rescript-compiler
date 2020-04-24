@@ -22,19 +22,20 @@ external new_block : int -> int -> Obj.t = "caml_obj_block"
 
 let set_field (blk : 'arg lazy_t) result = 
   Obj.set_field (Obj.repr blk) 0 (Obj.repr result)
-  
+
+let new_block_with_tag tag (value : 'a)  : 'arg lazy_t =
+  let x = new_block tag 1 in 
+  set_field (Obj.obj x)  (Obj.repr value); 
+  (Obj.obj x : 'arg lazy_t)
+
 let from_fun (f : unit -> 'arg ) = 
-    let x = new_block lazy_tag 1 in 
-    set_field (Obj.obj x) (Obj.repr f);
-    (Obj.obj x : 'arg lazy_t)
+  new_block_with_tag lazy_tag f 
 
 
 let from_val (v : 'arg) =
   let t = Obj.tag (Obj.repr v) in
   if t = forward_tag || t = lazy_tag || false (* t = Obj.double_tag *) then begin
-    let x = new_block forward_tag 1 in 
-    set_field (Obj.obj x ) (Obj.repr v);
-    (Obj.obj x : 'arg lazy_t)
+    new_block_with_tag forward_tag v
   end else begin
     (Obj.magic v : 'arg lazy_t)
   end    
