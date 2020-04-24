@@ -45,19 +45,15 @@ external dup : t -> t = "caml_obj_dup"
 external truncate : t -> int -> unit = "caml_obj_truncate"
 external add_offset : t -> Int32.t -> t = "caml_obj_add_offset"
 
-let marshal (obj : t) =
-  Marshal.to_bytes obj []
-let unmarshal str pos =
-  (Marshal.from_bytes str pos, pos + Marshal.total_size str pos)
 
 let first_non_constant_constructor_tag = 0
 let last_non_constant_constructor_tag = 245
 
 let lazy_tag = 246
-let closure_tag = 247
+
 let object_tag = 248
 let infix_tag = 249
-let forward_tag = 250
+
 
 let no_scan_tag = 251
 

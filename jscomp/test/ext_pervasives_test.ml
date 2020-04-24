@@ -103,7 +103,7 @@ let rec dump r =
     | 0 ->
       let fields = get_fields [] s in
       "(" ^ String.concat ", " (List.map dump fields) ^ ")"
-    | x when x = Obj.lazy_tag ->
+    | x when false (* x = Obj.lazy_tag *) ->
       (* Note that [lazy_tag .. forward_tag] are < no_scan_tag.  Not
          * clear if very large constructed values could have the same
          * tag. XXX *)
