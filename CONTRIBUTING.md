@@ -229,22 +229,27 @@ node scripts/ninja.js config && node scripts/ninja.js build
 BS_PLAYGROUND=../playground node scripts/repl.js
 ```
 
+For the playground bundle to include the Reason parser, use the `-refmt` flag with the same script:
+```
+BS_PLAYGROUND=../playground node scripts/repl.js -refmt
+```
+
 _Troubleshooting: if ninja build step failed with `Error: cannot find file '+runtime.js'`, make sure `ocamlfind` is installed with `opam install ocamlfind`._
 
 **You should now find following files:**
 
-- `playground/exports.js` -> This is the BuckleScript compiler, which binds the BuckleScript API to the `window` object
+- `playground/exports.js` -> This is the BuckleScript compiler, which binds the BuckleScript API to the `module.exports` object
 - `playground/stdlib/*.js` -> All the BuckleScript runtime files
 
 You can now use the `exports.js` file either directly by using a `<script src="/path/to/exports.js"/>` inside a html file, use a browser bundler infrastructure to optimize it, or you can even use it with `nodejs`:
 
 ```
 $ node
-> require("./exports.js");
+> let compiler = require("./exports.js");
 undefined
-> let compile_result = ocaml.compile(`Js.log Sys.ocaml_version`); // You can change the code here
+> let compile_result = compiler.ocaml.compile(`Js.log Sys.ocaml_version`); // You can change the code here
 undefined
-> eval(compile_result);
+> eval(compile_result.js_code);
 4.06.2+BS
 undefined
 ```
@@ -253,7 +258,7 @@ undefined
 
 As soon as the bundle is loaded, you will get access to following functions (as seen in [`jsoo_main.ml`](jscomp/main/jsoo_main.ml)):
 
-- `window.ocaml`:
+- `ocaml`:
   - `compile(code: string)`: Compiles given code
   - `shake_compile(code: string)`: Compiles given code with tree-shaking
   - `compile_super_errors(code: string)`: Compiles given code and outputs `super_errors` related messages on `console.error`
@@ -367,7 +372,7 @@ You should now have the newest `refmt` binary for the actual compiler, and for t
 
 **Important:** Always verify that the updated Reason version is in sync in the
 `refmt.exe` and the playground bundle. Use `lib/bsrefmt --version` and for the
-playground API `window.reason.version` (not final) to get the bundled
+playground API `reason.version` (not final) to get the bundled
 version.
 
 ## Contributing to the Documentation

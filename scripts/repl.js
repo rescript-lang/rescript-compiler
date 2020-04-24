@@ -35,10 +35,16 @@ function prepare() {
   e(`hash hash js_of_ocaml 2>/dev/null || { echo >&2 "js_of_ocaml not found on path. Please install version 3.5.1 (with opam switch ${ocamlVersion}), and put it on your path."; exit 1; }
 `);
 
-  e(
-    `ocamlc.opt -w -30-40 -no-check-prims -I ${jsRefmtCompDir} ${jsRefmtCompDir}/js_compiler.mli ${jsRefmtCompDir}/js_compiler.ml -o jsc.byte && js_of_ocaml jsc.byte -o exports.js`
-  );
-
+  if (process.argv.includes("-refmt")) {
+    e(
+      `ocamlc.opt -w -30-40 -no-check-prims -I ${jsRefmtCompDir} ${jsRefmtCompDir}/js_refmt_compiler.mli ${jsRefmtCompDir}/js_refmt_compiler.ml -o jsc.byte && js_of_ocaml jsc.byte -o exports.js`
+    );
+  } else {
+    e(
+      `ocamlc.opt -w -30-40 -no-check-prims -I ${jsRefmtCompDir} ${jsRefmtCompDir}/js_compiler.mli ${jsRefmtCompDir}/js_compiler.ml -o jsc.byte && js_of_ocaml jsc.byte -o exports.js`
+    );
+  }
+    
   e(`cp ../lib/js/*.js ${playground}/stdlib`);
   e(`mv ./exports.js ${playground}`)
 }

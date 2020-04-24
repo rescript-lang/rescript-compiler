@@ -121,7 +121,7 @@ let shake_compile ~prefix ~use_super_errors ?react_ppx_version impl =
       cmj_name (lazy (Js_cmj_format.from_string cmj_content)) *)
 
 let export (field : string) v =
-  Js.Unsafe.set (Js.Unsafe.global) field v
+  Js.export field v
 ;;
 
 (* To add a directory to the load path *)

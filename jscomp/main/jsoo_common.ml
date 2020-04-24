@@ -19,6 +19,9 @@ module Js = struct
   external to_string : js_string t -> string = "caml_js_to_string"
   external create_file : js_string t -> js_string t -> unit = "caml_create_file"
   external to_bytestring : js_string t -> string = "caml_js_to_byte_string"
+  external get_export_var : unit -> < .. > t = "caml_js_export_var"
+  let export_js (field : js_string t) x = Unsafe.set (get_export_var ()) field x
+  let export field x = export_js (string field) x
 end
 
 let mk_js_error (loc: Location.t) (msg: string) = 

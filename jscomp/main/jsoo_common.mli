@@ -27,6 +27,7 @@ module Js :
     external create_file : js_string t -> js_string t -> unit
       = "caml_create_file"
     external to_bytestring : js_string t -> string = "caml_js_to_byte_string"
+    val export : string -> 'a -> unit
   end
 
 (*
