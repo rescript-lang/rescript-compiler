@@ -262,7 +262,8 @@ let lam_prim ~primitive:( p : Lambda.primitive) ~args loc : Lam.t =
       prim ~primitive:(Pmakeblock (tag,info,mutable_flag)) ~args loc
       )
     | Blk_lazy_general  
-      ->       
+      ->
+      let args = [ prim ~primitive:(Pjs_fn_make 0) ~args loc ] in 
       Lam.apply 
         (prim ~primitive:(Pfield (2,Fld_module {name = "from_fun"})) loc (*Invariant: hard code {from_fun} position*)
          ~args: [Lam.global_module (Ident.create_persistent "CamlinternalLazy")] )

@@ -26,6 +26,12 @@ type 'a t = {
 let%private lazy_tag = 246
 let%private forward_tag = 250
 external%private magic : 'a -> 'b = "%identity"
+external%private fnToVal : (unit -> 'a [@bs]) -> 'a = "%identity"
+external%private valToFn :  'a -> (unit -> 'a [@bs])  = "%identity"
+external%private castToLazy : 'a t ->  'a lazy_t  = "%identity"
+external%private castToConcrete : 'a lazy_t -> 'a t   = "%identity"
+external%private lazyBox : 'a -> 'a lazy_t = "%identity"
+external%private lazyUnBox : 'a lazy_t  -> 'a  = "%identity"
 
 let%private lazy_boxed (type a) (l : a ) : bool  = 
   if Js.testAny l then false 
@@ -34,61 +40,61 @@ let%private lazy_boxed (type a) (l : a ) : bool  =
     t = forward_tag || t = lazy_tag  
 
 let is_val (type a ) (l : a lazy_t) : bool = 
-  Js.testAny l || ((magic l : _ t ).tag  <> lazy_tag)
+  Js.testAny l || ((castToConcrete l ).tag  <> lazy_tag)
 
-let from_fun (type arg ) (f : unit -> arg ) : arg lazy_t = 
-  (magic {tag = lazy_tag; value = f} : arg lazy_t) 
+let from_fun (type arg ) f : arg lazy_t = 
+  castToLazy {tag = lazy_tag; value = fnToVal f}
 
 
 let from_val (type arg ) (v : arg) : arg lazy_t=
   if lazy_boxed v  then begin
-    (magic {tag = forward_tag ; value = v} : arg lazy_t )
+    castToLazy {tag = forward_tag ; value = v} 
   end else begin
-    (magic v : arg lazy_t)
+    lazyBox v 
   end    
 
 exception Undefined
 
-let%private forward_with_closure (type a ) (blk : a t) (closure : unit -> a) : a = 
-  let result = closure () in
+let%private forward_with_closure (type a ) (blk : a t) (closure : unit -> a [@bs]) : a = 
+  let result = closure () [@bs] in
   (* do set_field BEFORE set_tag *)
   blk.value <- result;
   blk.tag<- forward_tag;
   result
 
 
-let%private raise_undefined =  (fun () -> raise Undefined)
+let%private raise_undefined =  (fun [@bs] () -> raise Undefined)
 
 (* Assume [blk] is a block with tag lazy *)
 let%private force_lazy_block (type a ) (blk : a t) : a  =
-  let closure : unit -> a = magic blk.value in
-  blk.value <- magic raise_undefined;
+  let closure = valToFn blk.value in
+  blk.value <- fnToVal raise_undefined;
   try
     forward_with_closure blk closure
   with e ->
-    blk.value <- magic (fun () -> raise e);
+    blk.value <- fnToVal (fun [@bs] () -> raise e);
     raise e
 
 
 (* Assume [blk] is a block with tag lazy *)
 let%private force_val_lazy_block (type a ) (blk : a t) : a  =
-  let closure : unit -> a = magic blk.value  in
-  blk.value <-  magic raise_undefined;
+  let closure  = valToFn blk.value  in
+  blk.value <-  fnToVal raise_undefined;
   forward_with_closure blk closure
 
 
 
 let force (type a ) (lzv : a lazy_t) : a =
   if lazy_boxed  lzv then 
-    if is_val lzv then (magic lzv : _ t).value else
-      force_lazy_block (magic lzv : _ t)
-  else  magic lzv
+    if is_val lzv then (castToConcrete lzv : _ t).value else
+      force_lazy_block (castToConcrete lzv : _ t)
+  else  lazyUnBox lzv
 
 
 
 let force_val (lzv : 'arg lazy_t) : 'arg =
   if lazy_boxed  lzv then 
-    if is_val lzv then (magic lzv : _ t).value  else
-      force_val_lazy_block (magic lzv : _ t)
-  else  magic lzv
+    if is_val lzv then (castToConcrete lzv : _ t).value  else
+      force_val_lazy_block (castToConcrete lzv : _ t)
+  else  lazyUnBox lzv
 
