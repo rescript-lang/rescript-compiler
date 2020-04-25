@@ -18,6 +18,7 @@ jobs:
         with:
           ocaml-version: ${{ matrix.ocaml-version }}
       - run: opam install js_of_ocaml.3.5.1
+      - run: eval $(opam env)
       - run: git submodule update --init && ./scripts/buildocaml.js
       - run: ./scripts/ninja.js config && ./scripts/ninja.js build
       - run: mkdir playground && mkdir playground/stdlib
