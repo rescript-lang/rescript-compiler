@@ -15,18 +15,5 @@ let suites = Mt.[
 "is_block_test3", (fun _ -> Eq(true, is_block "x"));
 "is_block_test4", (fun _ -> Eq (false, is_block 3.0))
 ]
-(** 
-
-   TODO: Semantics difference 
-   {[
-   Obj.is_block (Obj.repr "x");;
-   true   
-   ]}
-
-   {[
-     Obj.is_block (Obj.repr 32.0);;
-     true
-   ]}   
-*)
 
 ;; Mt.from_pair_suites __MODULE__ suites

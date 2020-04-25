@@ -13057,24 +13057,6 @@ function directive_parse(token_with_comments, lexbuf) {
       }
     }
   };
-  var parse_and_aux = function (calc, v) {
-    var e = token(undefined);
-    if (typeof e === "number") {
-      if (e !== 0) {
-        push(e);
-        return v;
-      }
-      var calc$1 = calc && v;
-      var b = parse_and_aux(calc$1, parse_relation(calc$1));
-      if (v) {
-        return b;
-      } else {
-        return false;
-      }
-    }
-    push(e);
-    return v;
-  };
   var parse_or_aux = function (calc, v) {
     var e = token(undefined);
     if (typeof e === "number") {
@@ -13088,6 +13070,24 @@ function directive_parse(token_with_comments, lexbuf) {
         return true;
       } else {
         return b;
+      }
+    }
+    push(e);
+    return v;
+  };
+  var parse_and_aux = function (calc, v) {
+    var e = token(undefined);
+    if (typeof e === "number") {
+      if (e !== 0) {
+        push(e);
+        return v;
+      }
+      var calc$1 = calc && v;
+      var b = parse_and_aux(calc$1, parse_relation(calc$1));
+      if (v) {
+        return b;
+      } else {
+        return false;
       }
     }
     push(e);
@@ -14490,10 +14490,6 @@ function __ocaml_lex_comment_rec(lexbuf, ___ocaml_lex_state) {
   };
 }
 
-function comment(lexbuf) {
-  return __ocaml_lex_comment_rec(lexbuf, 132);
-}
-
 function __ocaml_lex_quoted_string_rec(delim, lexbuf, ___ocaml_lex_state) {
   while(true) {
     var __ocaml_lex_state = ___ocaml_lex_state;
@@ -14530,6 +14526,10 @@ function __ocaml_lex_quoted_string_rec(delim, lexbuf, ___ocaml_lex_state) {
         continue ;
     }
   };
+}
+
+function comment(lexbuf) {
+  return __ocaml_lex_comment_rec(lexbuf, 132);
 }
 
 function skip_sharp_bang(lexbuf) {
