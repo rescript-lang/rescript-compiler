@@ -1,0 +1,24 @@
+name: Build and publish playground
+on: [push, pull_request]
+jobs:
+  run:
+    name: Build
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [macos-latest, ubuntu-latest, windows-latest]
+        ocaml-version: ["4.06.1"]
+        node-version: [12.x]
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2.0.0
+      - name: Use OCaml ${{ matrix.ocaml-version }}
+        uses: avsm/setup-ocaml@v1.0
+        with:
+          ocaml-version: ${{ matrix.ocaml-version }}
+      - run: opam install js_of_ocaml.3.5.1
+      - run: git submodule update --init && ./scripts/buildocaml.js
+      - run: ./scripts/ninja.js config && ./scripts/ninja.js build
+      - run: mkdir playground && mkdir playground/stdlib
+      - run: BS_PLAYGROUND=../playground ./scripts/repl.js
