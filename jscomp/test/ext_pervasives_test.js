@@ -1,13 +1,8 @@
 'use strict';
 
 var Arg = require("../../lib/js/arg.js");
-var List = require("../../lib/js/list.js");
-var Block = require("../../lib/js/block.js");
 var Curry = require("../../lib/js/curry.js");
 var Format = require("../../lib/js/format.js");
-var Printf = require("../../lib/js/printf.js");
-var $$String = require("../../lib/js/string.js");
-var Caml_obj = require("../../lib/js/caml_obj.js");
 var Caml_int32 = require("../../lib/js/caml_int32.js");
 var Pervasives = require("../../lib/js/pervasives.js");
 var Caml_string = require("../../lib/js/caml_string.js");
@@ -93,109 +88,6 @@ function bad_argf(fmt) {
               }), fmt);
 }
 
-function dump(r) {
-  if (typeof r === "number") {
-    return String(r);
-  }
-  var get_fields = function (_acc, _n) {
-    while(true) {
-      var n = _n;
-      var acc = _acc;
-      if (n === 0) {
-        return acc;
-      }
-      var n$1 = n - 1 | 0;
-      _n = n$1;
-      _acc = /* :: */[
-        r[n$1],
-        acc
-      ];
-      continue ;
-    };
-  };
-  var is_list = function (_r) {
-    while(true) {
-      var r = _r;
-      if (typeof r === "number") {
-        return Caml_obj.caml_equal(r, 0);
-      }
-      var s = r.length;
-      var t = r.tag | 0;
-      if (t !== 0) {
-        return false;
-      }
-      if (s !== 2) {
-        return false;
-      }
-      _r = r[1];
-      continue ;
-    };
-  };
-  var get_list = function (r) {
-    if (typeof r === "number") {
-      return /* [] */0;
-    }
-    var h = r[0];
-    var t = get_list(r[1]);
-    return /* :: */[
-            h,
-            t
-          ];
-  };
-  var s = r.length;
-  var t = r.tag | 0;
-  if (is_list(r)) {
-    var fields = get_list(r);
-    return "[" + ($$String.concat("; ", List.map(dump, fields)) + "]");
-  }
-  if (t !== 0) {
-    var name = Curry._2(Printf.sprintf(/* Format */[
-              /* String_literal */Block.__(11, [
-                  "unknown: tag ",
-                  /* Int */Block.__(4, [
-                      /* Int_d */0,
-                      /* No_padding */0,
-                      /* No_precision */0,
-                      /* String_literal */Block.__(11, [
-                          " size ",
-                          /* Int */Block.__(4, [
-                              /* Int_d */0,
-                              /* No_padding */0,
-                              /* No_precision */0,
-                              /* End_of_format */0
-                            ])
-                        ])
-                    ])
-                ]),
-              "unknown: tag %d size %d"
-            ]), t, s);
-    return "<" + (name + ">");
-  }
-  var fields$1 = get_fields(/* [] */0, s);
-  return "(" + ($$String.concat(", ", List.map(dump, fields$1)) + ")");
-}
-
-var dump$1 = dump;
-
-function pp_any(fmt, v) {
-  return Curry._1(Format.fprintf(fmt, /* Format */[
-                  /* Formatting_gen */Block.__(18, [
-                      /* Open_box */Block.__(1, [/* Format */[
-                            /* End_of_format */0,
-                            ""
-                          ]]),
-                      /* String */Block.__(2, [
-                          /* No_padding */0,
-                          /* Formatting_lit */Block.__(17, [
-                              /* Close_box */0,
-                              /* End_of_format */0
-                            ])
-                        ])
-                    ]),
-                  "@[%s@]"
-                ]), dump$1(v));
-}
-
 function hash_variant(s) {
   var accu = 0;
   for(var i = 0 ,i_finish = s.length; i < i_finish; ++i){
@@ -216,7 +108,5 @@ exports.is_pos_pow = is_pos_pow;
 exports.failwithf = failwithf;
 exports.invalid_argf = invalid_argf;
 exports.bad_argf = bad_argf;
-exports.dump = dump$1;
-exports.pp_any = pp_any;
 exports.hash_variant = hash_variant;
 /* Format Not a pure module */
