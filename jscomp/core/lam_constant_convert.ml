@@ -90,9 +90,7 @@ let rec convert_constant ( const : Lambda.structured_constant) : Lam_constant.t 
       Const_block (i,t, Ext_list.map xs convert_constant )      
     | Blk_lazy_general 
     | Blk_lazy_forward 
-      -> 
-      let t : Lam_tag_info.t = Blk_na "" in 
-      Const_block (i,t, Ext_list.map xs convert_constant )      
+      -> assert false
     | Blk_na s  -> 
       let t : Lam_tag_info.t = Blk_na s in 
       Const_block (i,t, Ext_list.map xs convert_constant )      

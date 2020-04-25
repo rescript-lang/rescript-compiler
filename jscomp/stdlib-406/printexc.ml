@@ -23,9 +23,9 @@ let field x i =
   let f = Obj.field x i in
   if not (Obj.is_block f) then
     sprintf "%d" (Obj.magic f : int)           (* can also be a char *)
-  else if Obj.tag f = Obj.string_tag then
+  else if Js.typeof f = "string" then
     sprintf "%S" (Obj.magic f : string)
-  else if Obj.tag f = Obj.double_tag then
+  else if Js.typeof f = "number" then
     string_of_float (Obj.magic f : float)
   else
     "_"

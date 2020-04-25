@@ -20231,6 +20231,42 @@ function directive_parse(token_with_comments, lexbuf) {
     }
     
   };
+  var parse_and_aux = function (calc, v) {
+    var e = token(undefined);
+    if (typeof e === "number") {
+      if (e !== 0) {
+        push(e);
+        return v;
+      }
+      var calc$1 = calc && v;
+      var b = parse_and_aux(calc$1, parse_relation(calc$1));
+      if (v) {
+        return b;
+      } else {
+        return false;
+      }
+    }
+    push(e);
+    return v;
+  };
+  var parse_or_aux = function (calc, v) {
+    var e = token(undefined);
+    if (typeof e === "number") {
+      if (e !== 8) {
+        push(e);
+        return v;
+      }
+      var calc$1 = calc && !v;
+      var b = parse_or_aux(calc$1, parse_and_aux(calc$1, parse_relation(calc$1)));
+      if (v) {
+        return true;
+      } else {
+        return b;
+      }
+    }
+    push(e);
+    return v;
+  };
   var parse_relation = function (calc) {
     var curr_token = token(undefined);
     var curr_loc = curr(lexbuf);
@@ -20365,42 +20401,6 @@ function directive_parse(token_with_comments, lexbuf) {
               ];
       }
     }
-  };
-  var parse_and_aux = function (calc, v) {
-    var e = token(undefined);
-    if (typeof e === "number") {
-      if (e !== 0) {
-        push(e);
-        return v;
-      }
-      var calc$1 = calc && v;
-      var b = parse_and_aux(calc$1, parse_relation(calc$1));
-      if (v) {
-        return b;
-      } else {
-        return false;
-      }
-    }
-    push(e);
-    return v;
-  };
-  var parse_or_aux = function (calc, v) {
-    var e = token(undefined);
-    if (typeof e === "number") {
-      if (e !== 8) {
-        push(e);
-        return v;
-      }
-      var calc$1 = calc && !v;
-      var b = parse_or_aux(calc$1, parse_and_aux(calc$1, parse_relation(calc$1)));
-      if (v) {
-        return true;
-      } else {
-        return b;
-      }
-    }
-    push(e);
-    return v;
   };
   var v = parse_or_aux(true, parse_and_aux(true, parse_relation(true)));
   var match = token(undefined);
@@ -21557,6 +21557,62 @@ function token(lexbuf) {
   };
 }
 
+function string(lexbuf) {
+  lexbuf.lex_mem = Caml_array.caml_make_vect(2, -1);
+  var ___ocaml_lex_state = 164;
+  while(true) {
+    var __ocaml_lex_state = ___ocaml_lex_state;
+    var __ocaml_lex_state$1 = Lexing.new_engine(__ocaml_lex_tables, __ocaml_lex_state, lexbuf);
+    switch (__ocaml_lex_state$1) {
+      case 0 :
+          return ;
+      case 1 :
+          var space = Lexing.sub_lexeme(lexbuf, Caml_array.caml_array_get(lexbuf.lex_mem, 0), lexbuf.lex_curr_pos);
+          update_loc(lexbuf, undefined, 1, false, space.length);
+          return string(lexbuf);
+      case 2 :
+          store_string_char(char_for_backslash(Lexing.lexeme_char(lexbuf, 1)));
+          return string(lexbuf);
+      case 3 :
+          store_string_char(char_for_decimal_code(lexbuf, 1));
+          return string(lexbuf);
+      case 4 :
+          store_string_char(char_for_hexadecimal_code(lexbuf, 2));
+          return string(lexbuf);
+      case 5 :
+          if (comment_start_loc.contents !== /* [] */0) {
+            return string(lexbuf);
+          }
+          var loc = curr(lexbuf);
+          prerr_warning(loc, /* Illegal_backslash */7);
+          store_string_char(Lexing.lexeme_char(lexbuf, 0));
+          store_string_char(Lexing.lexeme_char(lexbuf, 1));
+          return string(lexbuf);
+      case 6 :
+          if (comment_start_loc.contents === /* [] */0) {
+            prerr_warning(curr(lexbuf), /* Eol_in_string */14);
+          }
+          update_loc(lexbuf, undefined, 1, false, 0);
+          store_string(Lexing.lexeme(lexbuf));
+          return string(lexbuf);
+      case 7 :
+          is_in_string.contents = false;
+          throw [
+                $$Error$4,
+                /* Unterminated_string */0,
+                string_start_loc.contents
+              ];
+      case 8 :
+          store_string_char(Lexing.lexeme_char(lexbuf, 0));
+          return string(lexbuf);
+      default:
+        Curry._1(lexbuf.refill_buff, lexbuf);
+        ___ocaml_lex_state = __ocaml_lex_state$1;
+        continue ;
+    }
+  };
+}
+
 function __ocaml_lex_quoted_string_rec(delim, lexbuf, ___ocaml_lex_state) {
   while(true) {
     var __ocaml_lex_state = ___ocaml_lex_state;
@@ -21771,62 +21827,6 @@ function __ocaml_lex_comment_rec(lexbuf, ___ocaml_lex_state) {
 
 function comment(lexbuf) {
   return __ocaml_lex_comment_rec(lexbuf, 132);
-}
-
-function string(lexbuf) {
-  lexbuf.lex_mem = Caml_array.caml_make_vect(2, -1);
-  var ___ocaml_lex_state = 164;
-  while(true) {
-    var __ocaml_lex_state = ___ocaml_lex_state;
-    var __ocaml_lex_state$1 = Lexing.new_engine(__ocaml_lex_tables, __ocaml_lex_state, lexbuf);
-    switch (__ocaml_lex_state$1) {
-      case 0 :
-          return ;
-      case 1 :
-          var space = Lexing.sub_lexeme(lexbuf, Caml_array.caml_array_get(lexbuf.lex_mem, 0), lexbuf.lex_curr_pos);
-          update_loc(lexbuf, undefined, 1, false, space.length);
-          return string(lexbuf);
-      case 2 :
-          store_string_char(char_for_backslash(Lexing.lexeme_char(lexbuf, 1)));
-          return string(lexbuf);
-      case 3 :
-          store_string_char(char_for_decimal_code(lexbuf, 1));
-          return string(lexbuf);
-      case 4 :
-          store_string_char(char_for_hexadecimal_code(lexbuf, 2));
-          return string(lexbuf);
-      case 5 :
-          if (comment_start_loc.contents !== /* [] */0) {
-            return string(lexbuf);
-          }
-          var loc = curr(lexbuf);
-          prerr_warning(loc, /* Illegal_backslash */7);
-          store_string_char(Lexing.lexeme_char(lexbuf, 0));
-          store_string_char(Lexing.lexeme_char(lexbuf, 1));
-          return string(lexbuf);
-      case 6 :
-          if (comment_start_loc.contents === /* [] */0) {
-            prerr_warning(curr(lexbuf), /* Eol_in_string */14);
-          }
-          update_loc(lexbuf, undefined, 1, false, 0);
-          store_string(Lexing.lexeme(lexbuf));
-          return string(lexbuf);
-      case 7 :
-          is_in_string.contents = false;
-          throw [
-                $$Error$4,
-                /* Unterminated_string */0,
-                string_start_loc.contents
-              ];
-      case 8 :
-          store_string_char(Lexing.lexeme_char(lexbuf, 0));
-          return string(lexbuf);
-      default:
-        Curry._1(lexbuf.refill_buff, lexbuf);
-        ___ocaml_lex_state = __ocaml_lex_state$1;
-        continue ;
-    }
-  };
 }
 
 function at_bol(lexbuf) {
@@ -22615,92 +22615,6 @@ function TypedtreeMap_MakeMap(funarg) {
                 str_final_env: str$1.str_final_env
               });
   };
-  var map_pattern = function (pat) {
-    var pat$1 = Curry._1(funarg.enter_pattern, pat);
-    var list = pat$1.pat_desc;
-    var pat_desc;
-    if (typeof list === "number") {
-      pat_desc = pat$1.pat_desc;
-    } else {
-      switch (list.tag | 0) {
-        case /* Tpat_alias */1 :
-            var pat1 = map_pattern(list[0]);
-            pat_desc = /* Tpat_alias */Block.__(1, [
-                pat1,
-                list[1],
-                list[2]
-              ]);
-            break;
-        case /* Tpat_tuple */3 :
-            pat_desc = /* Tpat_tuple */Block.__(3, [List.map(map_pattern, list[0])]);
-            break;
-        case /* Tpat_construct */4 :
-            pat_desc = /* Tpat_construct */Block.__(4, [
-                list[0],
-                list[1],
-                List.map(map_pattern, list[2])
-              ]);
-            break;
-        case /* Tpat_variant */5 :
-            var pato = list[1];
-            var pato$1 = pato !== undefined ? map_pattern(pato) : pato;
-            pat_desc = /* Tpat_variant */Block.__(5, [
-                list[0],
-                pato$1,
-                list[2]
-              ]);
-            break;
-        case /* Tpat_record */6 :
-            pat_desc = /* Tpat_record */Block.__(6, [
-                List.map((function (param) {
-                        return /* tuple */[
-                                param[0],
-                                param[1],
-                                map_pattern(param[2])
-                              ];
-                      }), list[0]),
-                list[1]
-              ]);
-            break;
-        case /* Tpat_array */7 :
-            pat_desc = /* Tpat_array */Block.__(7, [List.map(map_pattern, list[0])]);
-            break;
-        case /* Tpat_or */8 :
-            pat_desc = /* Tpat_or */Block.__(8, [
-                map_pattern(list[0]),
-                map_pattern(list[1]),
-                list[2]
-              ]);
-            break;
-        case /* Tpat_lazy */9 :
-            pat_desc = /* Tpat_lazy */Block.__(9, [map_pattern(list[0])]);
-            break;
-        default:
-          pat_desc = pat$1.pat_desc;
-      }
-    }
-    var pat_extra = List.map(map_pat_extra, pat$1.pat_extra);
-    return Curry._1(funarg.leave_pattern, {
-                pat_desc: pat_desc,
-                pat_loc: pat$1.pat_loc,
-                pat_extra: pat_extra,
-                pat_type: pat$1.pat_type,
-                pat_env: pat$1.pat_env,
-                pat_attributes: pat$1.pat_attributes
-              });
-  };
-  var map_pat_extra = function (pat_extra) {
-    var ct = pat_extra[0];
-    if (typeof ct === "number" || ct.tag) {
-      return pat_extra;
-    } else {
-      return /* tuple */[
-              /* Tpat_constraint */Block.__(0, [map_core_type(ct[0])]),
-              pat_extra[1],
-              pat_extra[2]
-            ];
-    }
-  };
   var map_core_type = function (ct) {
     var ct$1 = Curry._1(funarg.enter_core_type, ct);
     var list = ct$1.ctyp_desc;
@@ -22779,125 +22693,6 @@ function TypedtreeMap_MakeMap(funarg) {
                 ctyp_env: ct$1.ctyp_env,
                 ctyp_loc: ct$1.ctyp_loc,
                 ctyp_attributes: ct$1.ctyp_attributes
-              });
-  };
-  var map_constructor_declaration = function (cd) {
-    return {
-            cd_id: cd.cd_id,
-            cd_name: cd.cd_name,
-            cd_args: List.map(map_core_type, cd.cd_args),
-            cd_res: may_map(map_core_type, cd.cd_res),
-            cd_loc: cd.cd_loc,
-            cd_attributes: cd.cd_attributes
-          };
-  };
-  var map_type_parameter = function (param) {
-    return /* tuple */[
-            map_core_type(param[0]),
-            param[1]
-          ];
-  };
-  var map_module_type = function (mty) {
-    var mty$1 = Curry._1(funarg.enter_module_type, mty);
-    var sg = mty$1.mty_desc;
-    var mty_desc;
-    switch (sg.tag | 0) {
-      case /* Tmty_signature */1 :
-          mty_desc = /* Tmty_signature */Block.__(1, [map_signature(sg[0])]);
-          break;
-      case /* Tmty_functor */2 :
-          mty_desc = /* Tmty_functor */Block.__(2, [
-              sg[0],
-              sg[1],
-              may_map(map_module_type, sg[2]),
-              map_module_type(sg[3])
-            ]);
-          break;
-      case /* Tmty_with */3 :
-          mty_desc = /* Tmty_with */Block.__(3, [
-              map_module_type(sg[0]),
-              List.map((function (param) {
-                      return /* tuple */[
-                              param[0],
-                              param[1],
-                              map_with_constraint(param[2])
-                            ];
-                    }), sg[1])
-            ]);
-          break;
-      case /* Tmty_typeof */4 :
-          mty_desc = /* Tmty_typeof */Block.__(4, [map_module_expr(sg[0])]);
-          break;
-      case /* Tmty_ident */0 :
-      case /* Tmty_alias */5 :
-          mty_desc = mty$1.mty_desc;
-          break;
-      
-    }
-    return Curry._1(funarg.leave_module_type, {
-                mty_desc: mty_desc,
-                mty_type: mty$1.mty_type,
-                mty_env: mty$1.mty_env,
-                mty_loc: mty$1.mty_loc,
-                mty_attributes: mty$1.mty_attributes
-              });
-  };
-  var map_module_expr = function (mexpr) {
-    var mexpr$1 = Curry._1(funarg.enter_module_expr, mexpr);
-    var st = mexpr$1.mod_desc;
-    var mod_desc;
-    switch (st.tag | 0) {
-      case /* Tmod_ident */0 :
-          mod_desc = mexpr$1.mod_desc;
-          break;
-      case /* Tmod_structure */1 :
-          mod_desc = /* Tmod_structure */Block.__(1, [map_structure(st[0])]);
-          break;
-      case /* Tmod_functor */2 :
-          mod_desc = /* Tmod_functor */Block.__(2, [
-              st[0],
-              st[1],
-              may_map(map_module_type, st[2]),
-              map_module_expr(st[3])
-            ]);
-          break;
-      case /* Tmod_apply */3 :
-          mod_desc = /* Tmod_apply */Block.__(3, [
-              map_module_expr(st[0]),
-              map_module_expr(st[1]),
-              st[2]
-            ]);
-          break;
-      case /* Tmod_constraint */4 :
-          var mtype = st[2];
-          var mod_type = st[1];
-          var mexpr$2 = st[0];
-          mod_desc = mtype ? /* Tmod_constraint */Block.__(4, [
-                map_module_expr(mexpr$2),
-                mod_type,
-                /* Tmodtype_explicit */[map_module_type(mtype[0])],
-                st[3]
-              ]) : /* Tmod_constraint */Block.__(4, [
-                map_module_expr(mexpr$2),
-                mod_type,
-                /* Tmodtype_implicit */0,
-                st[3]
-              ]);
-          break;
-      case /* Tmod_unpack */5 :
-          mod_desc = /* Tmod_unpack */Block.__(5, [
-              map_expression(st[0]),
-              st[1]
-            ]);
-          break;
-      
-    }
-    return Curry._1(funarg.leave_module_expr, {
-                mod_desc: mod_desc,
-                mod_loc: mexpr$1.mod_loc,
-                mod_type: mexpr$1.mod_type,
-                mod_env: mexpr$1.mod_env,
-                mod_attributes: mexpr$1.mod_attributes
               });
   };
   var map_expression = function (exp) {
@@ -23181,75 +22976,260 @@ function TypedtreeMap_MakeMap(funarg) {
                 cl_attributes: cexpr$1.cl_attributes
               });
   };
-  var map_signature_item = function (item) {
-    var item$1 = Curry._1(funarg.enter_signature_item, item);
-    var vd = item$1.sig_desc;
-    var sig_desc;
+  var map_structure_item = function (item) {
+    var item$1 = Curry._1(funarg.enter_structure_item, item);
+    var vd = item$1.str_desc;
+    var str_desc;
     switch (vd.tag | 0) {
-      case /* Tsig_value */0 :
-          sig_desc = /* Tsig_value */Block.__(0, [map_value_description(vd[0])]);
+      case /* Tstr_eval */0 :
+          str_desc = /* Tstr_eval */Block.__(0, [
+              map_expression(vd[0]),
+              vd[1]
+            ]);
           break;
-      case /* Tsig_type */1 :
-          sig_desc = /* Tsig_type */Block.__(1, [List.map(map_type_declaration, vd[0])]);
+      case /* Tstr_value */1 :
+          var rec_flag = vd[0];
+          str_desc = /* Tstr_value */Block.__(1, [
+              rec_flag,
+              List.map(map_binding, vd[1])
+            ]);
           break;
-      case /* Tsig_typext */2 :
-          sig_desc = /* Tsig_typext */Block.__(2, [map_type_extension(vd[0])]);
+      case /* Tstr_primitive */2 :
+          str_desc = /* Tstr_primitive */Block.__(2, [map_value_description(vd[0])]);
           break;
-      case /* Tsig_exception */3 :
-          sig_desc = /* Tsig_exception */Block.__(3, [map_extension_constructor(vd[0])]);
+      case /* Tstr_type */3 :
+          str_desc = /* Tstr_type */Block.__(3, [List.map(map_type_declaration, vd[0])]);
           break;
-      case /* Tsig_module */4 :
-          var md = vd[0];
-          sig_desc = /* Tsig_module */Block.__(4, [{
-                md_id: md.md_id,
-                md_name: md.md_name,
-                md_type: map_module_type(md.md_type),
-                md_attributes: md.md_attributes,
-                md_loc: md.md_loc
-              }]);
+      case /* Tstr_typext */4 :
+          str_desc = /* Tstr_typext */Block.__(4, [map_type_extension(vd[0])]);
           break;
-      case /* Tsig_recmodule */5 :
-          sig_desc = /* Tsig_recmodule */Block.__(5, [List.map((function (md) {
-                      return {
-                              md_id: md.md_id,
-                              md_name: md.md_name,
-                              md_type: map_module_type(md.md_type),
-                              md_attributes: md.md_attributes,
-                              md_loc: md.md_loc
-                            };
-                    }), vd[0])]);
+      case /* Tstr_exception */5 :
+          str_desc = /* Tstr_exception */Block.__(5, [map_extension_constructor(vd[0])]);
           break;
-      case /* Tsig_modtype */6 :
-          sig_desc = /* Tsig_modtype */Block.__(6, [map_module_type_declaration(vd[0])]);
+      case /* Tstr_module */6 :
+          str_desc = /* Tstr_module */Block.__(6, [map_module_binding(vd[0])]);
           break;
-      case /* Tsig_open */7 :
-          sig_desc = item$1.sig_desc;
+      case /* Tstr_recmodule */7 :
+          var list = List.map(map_module_binding, vd[0]);
+          str_desc = /* Tstr_recmodule */Block.__(7, [list]);
           break;
-      case /* Tsig_include */8 :
+      case /* Tstr_modtype */8 :
+          str_desc = /* Tstr_modtype */Block.__(8, [map_module_type_declaration(vd[0])]);
+          break;
+      case /* Tstr_open */9 :
+          str_desc = /* Tstr_open */Block.__(9, [vd[0]]);
+          break;
+      case /* Tstr_class */10 :
+          var list$1 = List.map((function (param) {
+                  return /* tuple */[
+                          map_class_declaration(param[0]),
+                          param[1],
+                          param[2]
+                        ];
+                }), vd[0]);
+          str_desc = /* Tstr_class */Block.__(10, [list$1]);
+          break;
+      case /* Tstr_class_type */11 :
+          var list$2 = List.map((function (param) {
+                  return /* tuple */[
+                          param[0],
+                          param[1],
+                          map_class_type_declaration(param[2])
+                        ];
+                }), vd[0]);
+          str_desc = /* Tstr_class_type */Block.__(11, [list$2]);
+          break;
+      case /* Tstr_include */12 :
           var incl = vd[0];
-          sig_desc = /* Tsig_include */Block.__(8, [{
-                incl_mod: map_module_type(incl.incl_mod),
+          str_desc = /* Tstr_include */Block.__(12, [{
+                incl_mod: map_module_expr(incl.incl_mod),
                 incl_type: incl.incl_type,
                 incl_loc: incl.incl_loc,
                 incl_attributes: incl.incl_attributes
               }]);
           break;
-      case /* Tsig_class */9 :
-          sig_desc = /* Tsig_class */Block.__(9, [List.map(map_class_description, vd[0])]);
-          break;
-      case /* Tsig_class_type */10 :
-          sig_desc = /* Tsig_class_type */Block.__(10, [List.map(map_class_type_declaration, vd[0])]);
-          break;
-      case /* Tsig_attribute */11 :
-          sig_desc = vd;
+      case /* Tstr_attribute */13 :
+          str_desc = /* Tstr_attribute */Block.__(13, [vd[0]]);
           break;
       
     }
-    return Curry._1(funarg.leave_signature_item, {
-                sig_desc: sig_desc,
-                sig_env: item$1.sig_env,
-                sig_loc: item$1.sig_loc
+    return Curry._1(funarg.leave_structure_item, {
+                str_desc: str_desc,
+                str_loc: item$1.str_loc,
+                str_env: item$1.str_env
               });
+  };
+  var map_pattern = function (pat) {
+    var pat$1 = Curry._1(funarg.enter_pattern, pat);
+    var list = pat$1.pat_desc;
+    var pat_desc;
+    if (typeof list === "number") {
+      pat_desc = pat$1.pat_desc;
+    } else {
+      switch (list.tag | 0) {
+        case /* Tpat_alias */1 :
+            var pat1 = map_pattern(list[0]);
+            pat_desc = /* Tpat_alias */Block.__(1, [
+                pat1,
+                list[1],
+                list[2]
+              ]);
+            break;
+        case /* Tpat_tuple */3 :
+            pat_desc = /* Tpat_tuple */Block.__(3, [List.map(map_pattern, list[0])]);
+            break;
+        case /* Tpat_construct */4 :
+            pat_desc = /* Tpat_construct */Block.__(4, [
+                list[0],
+                list[1],
+                List.map(map_pattern, list[2])
+              ]);
+            break;
+        case /* Tpat_variant */5 :
+            var pato = list[1];
+            var pato$1 = pato !== undefined ? map_pattern(pato) : pato;
+            pat_desc = /* Tpat_variant */Block.__(5, [
+                list[0],
+                pato$1,
+                list[2]
+              ]);
+            break;
+        case /* Tpat_record */6 :
+            pat_desc = /* Tpat_record */Block.__(6, [
+                List.map((function (param) {
+                        return /* tuple */[
+                                param[0],
+                                param[1],
+                                map_pattern(param[2])
+                              ];
+                      }), list[0]),
+                list[1]
+              ]);
+            break;
+        case /* Tpat_array */7 :
+            pat_desc = /* Tpat_array */Block.__(7, [List.map(map_pattern, list[0])]);
+            break;
+        case /* Tpat_or */8 :
+            pat_desc = /* Tpat_or */Block.__(8, [
+                map_pattern(list[0]),
+                map_pattern(list[1]),
+                list[2]
+              ]);
+            break;
+        case /* Tpat_lazy */9 :
+            pat_desc = /* Tpat_lazy */Block.__(9, [map_pattern(list[0])]);
+            break;
+        default:
+          pat_desc = pat$1.pat_desc;
+      }
+    }
+    var pat_extra = List.map(map_pat_extra, pat$1.pat_extra);
+    return Curry._1(funarg.leave_pattern, {
+                pat_desc: pat_desc,
+                pat_loc: pat$1.pat_loc,
+                pat_extra: pat_extra,
+                pat_type: pat$1.pat_type,
+                pat_env: pat$1.pat_env,
+                pat_attributes: pat$1.pat_attributes
+              });
+  };
+  var map_pat_extra = function (pat_extra) {
+    var ct = pat_extra[0];
+    if (typeof ct === "number" || ct.tag) {
+      return pat_extra;
+    } else {
+      return /* tuple */[
+              /* Tpat_constraint */Block.__(0, [map_core_type(ct[0])]),
+              pat_extra[1],
+              pat_extra[2]
+            ];
+    }
+  };
+  var map_class_type_field = function (ctf) {
+    var ctf$1 = Curry._1(funarg.enter_class_type_field, ctf);
+    var ct = ctf$1.ctf_desc;
+    var ctf_desc;
+    switch (ct.tag | 0) {
+      case /* Tctf_inherit */0 :
+          ctf_desc = /* Tctf_inherit */Block.__(0, [map_class_type(ct[0])]);
+          break;
+      case /* Tctf_val */1 :
+          var match = ct[0];
+          ctf_desc = /* Tctf_val */Block.__(1, [/* tuple */[
+                match[0],
+                match[1],
+                match[2],
+                map_core_type(match[3])
+              ]]);
+          break;
+      case /* Tctf_method */2 :
+          var match$1 = ct[0];
+          ctf_desc = /* Tctf_method */Block.__(2, [/* tuple */[
+                match$1[0],
+                match$1[1],
+                match$1[2],
+                map_core_type(match$1[3])
+              ]]);
+          break;
+      case /* Tctf_constraint */3 :
+          var match$2 = ct[0];
+          ctf_desc = /* Tctf_constraint */Block.__(3, [/* tuple */[
+                map_core_type(match$2[0]),
+                map_core_type(match$2[1])
+              ]]);
+          break;
+      case /* Tctf_attribute */4 :
+          ctf_desc = ct;
+          break;
+      
+    }
+    return Curry._1(funarg.leave_class_type_field, {
+                ctf_desc: ctf_desc,
+                ctf_loc: ctf$1.ctf_loc,
+                ctf_attributes: ctf$1.ctf_attributes
+              });
+  };
+  var map_extension_constructor = function (ext) {
+    var ext$1 = Curry._1(funarg.enter_extension_constructor, ext);
+    var match = ext$1.ext_kind;
+    var ext_kind;
+    if (match.tag) {
+      ext_kind = /* Text_rebind */Block.__(1, [
+          match[0],
+          match[1]
+        ]);
+    } else {
+      var args = List.map(map_core_type, match[0]);
+      var ret = may_map(map_core_type, match[1]);
+      ext_kind = /* Text_decl */Block.__(0, [
+          args,
+          ret
+        ]);
+    }
+    return Curry._1(funarg.leave_extension_constructor, {
+                ext_id: ext$1.ext_id,
+                ext_name: ext$1.ext_name,
+                ext_type: ext$1.ext_type,
+                ext_kind: ext_kind,
+                ext_loc: ext$1.ext_loc,
+                ext_attributes: ext$1.ext_attributes
+              });
+  };
+  var map_type_parameter = function (param) {
+    return /* tuple */[
+            map_core_type(param[0]),
+            param[1]
+          ];
+  };
+  var map_constructor_declaration = function (cd) {
+    return {
+            cd_id: cd.cd_id,
+            cd_name: cd.cd_name,
+            cd_args: List.map(map_core_type, cd.cd_args),
+            cd_res: may_map(map_core_type, cd.cd_res),
+            cd_loc: cd.cd_loc,
+            cd_attributes: cd.cd_attributes
+          };
   };
   var map_case = function (param) {
     return {
@@ -23258,98 +23238,11 @@ function TypedtreeMap_MakeMap(funarg) {
             c_rhs: map_expression(param.c_rhs)
           };
   };
-  var map_class_type = function (ct) {
-    var ct$1 = Curry._1(funarg.enter_class_type, ct);
-    var csg = ct$1.cltyp_desc;
-    var cltyp_desc;
-    switch (csg.tag | 0) {
-      case /* Tcty_constr */0 :
-          cltyp_desc = /* Tcty_constr */Block.__(0, [
-              csg[0],
-              csg[1],
-              List.map(map_core_type, csg[2])
-            ]);
-          break;
-      case /* Tcty_signature */1 :
-          cltyp_desc = /* Tcty_signature */Block.__(1, [map_class_signature(csg[0])]);
-          break;
-      case /* Tcty_arrow */2 :
-          cltyp_desc = /* Tcty_arrow */Block.__(2, [
-              csg[0],
-              map_core_type(csg[1]),
-              map_class_type(csg[2])
-            ]);
-          break;
-      
-    }
-    return Curry._1(funarg.leave_class_type, {
-                cltyp_desc: cltyp_desc,
-                cltyp_type: ct$1.cltyp_type,
-                cltyp_env: ct$1.cltyp_env,
-                cltyp_loc: ct$1.cltyp_loc,
-                cltyp_attributes: ct$1.cltyp_attributes
-              });
-  };
-  var map_value_description = function (v) {
-    var v$1 = Curry._1(funarg.enter_value_description, v);
-    var val_desc = map_core_type(v$1.val_desc);
-    return Curry._1(funarg.leave_value_description, {
-                val_id: v$1.val_id,
-                val_name: v$1.val_name,
-                val_desc: val_desc,
-                val_val: v$1.val_val,
-                val_prim: v$1.val_prim,
-                val_loc: v$1.val_loc,
-                val_attributes: v$1.val_attributes
-              });
-  };
-  var map_module_type_declaration = function (mtd) {
-    var mtd$1 = Curry._1(funarg.enter_module_type_declaration, mtd);
-    return Curry._1(funarg.leave_module_type_declaration, {
-                mtd_id: mtd$1.mtd_id,
-                mtd_name: mtd$1.mtd_name,
-                mtd_type: may_map(map_module_type, mtd$1.mtd_type),
-                mtd_attributes: mtd$1.mtd_attributes,
-                mtd_loc: mtd$1.mtd_loc
-              });
-  };
-  var map_type_extension = function (tyext) {
-    var tyext$1 = Curry._1(funarg.enter_type_extension, tyext);
-    var tyext_params = List.map(map_type_parameter, tyext$1.tyext_params);
-    var tyext_constructors = List.map(map_extension_constructor, tyext$1.tyext_constructors);
-    return Curry._1(funarg.leave_type_extension, {
-                tyext_path: tyext$1.tyext_path,
-                tyext_txt: tyext$1.tyext_txt,
-                tyext_params: tyext_params,
-                tyext_constructors: tyext_constructors,
-                tyext_private: tyext$1.tyext_private,
-                tyext_attributes: tyext$1.tyext_attributes
-              });
-  };
-  var map_class_declaration = function (cd) {
-    var cd$1 = Curry._1(funarg.enter_class_declaration, cd);
-    var ci_params = List.map(map_type_parameter, cd$1.ci_params);
-    var ci_expr = map_class_expr(cd$1.ci_expr);
-    return Curry._1(funarg.leave_class_declaration, {
-                ci_virt: cd$1.ci_virt,
-                ci_params: ci_params,
-                ci_id_name: cd$1.ci_id_name,
-                ci_id_class: cd$1.ci_id_class,
-                ci_id_class_type: cd$1.ci_id_class_type,
-                ci_id_object: cd$1.ci_id_object,
-                ci_id_typesharp: cd$1.ci_id_typesharp,
-                ci_expr: ci_expr,
-                ci_decl: cd$1.ci_decl,
-                ci_type_decl: cd$1.ci_type_decl,
-                ci_loc: cd$1.ci_loc,
-                ci_attributes: cd$1.ci_attributes
-              });
-  };
-  var map_class_type_declaration = function (cd) {
-    var cd$1 = Curry._1(funarg.enter_class_type_declaration, cd);
+  var map_class_description = function (cd) {
+    var cd$1 = Curry._1(funarg.enter_class_description, cd);
     var ci_params = List.map(map_type_parameter, cd$1.ci_params);
     var ci_expr = map_class_type(cd$1.ci_expr);
-    return Curry._1(funarg.leave_class_type_declaration, {
+    return Curry._1(funarg.leave_class_description, {
                 ci_virt: cd$1.ci_virt,
                 ci_params: ci_params,
                 ci_id_name: cd$1.ci_id_name,
@@ -23408,54 +23301,92 @@ function TypedtreeMap_MakeMap(funarg) {
                 typ_attributes: decl$1.typ_attributes
               });
   };
-  var map_module_binding = function (x) {
-    return {
-            mb_id: x.mb_id,
-            mb_name: x.mb_name,
-            mb_expr: map_module_expr(x.mb_expr),
-            mb_attributes: x.mb_attributes,
-            mb_loc: x.mb_loc
-          };
-  };
-  var map_binding = function (vb) {
-    return {
-            vb_pat: map_pattern(vb.vb_pat),
-            vb_expr: map_expression(vb.vb_expr),
-            vb_attributes: vb.vb_attributes,
-            vb_loc: vb.vb_loc
-          };
-  };
-  var map_extension_constructor = function (ext) {
-    var ext$1 = Curry._1(funarg.enter_extension_constructor, ext);
-    var match = ext$1.ext_kind;
-    var ext_kind;
-    if (match.tag) {
-      ext_kind = /* Text_rebind */Block.__(1, [
-          match[0],
-          match[1]
-        ]);
-    } else {
-      var args = List.map(map_core_type, match[0]);
-      var ret = may_map(map_core_type, match[1]);
-      ext_kind = /* Text_decl */Block.__(0, [
-          args,
-          ret
-        ]);
-    }
-    return Curry._1(funarg.leave_extension_constructor, {
-                ext_id: ext$1.ext_id,
-                ext_name: ext$1.ext_name,
-                ext_type: ext$1.ext_type,
-                ext_kind: ext_kind,
-                ext_loc: ext$1.ext_loc,
-                ext_attributes: ext$1.ext_attributes
+  var map_type_extension = function (tyext) {
+    var tyext$1 = Curry._1(funarg.enter_type_extension, tyext);
+    var tyext_params = List.map(map_type_parameter, tyext$1.tyext_params);
+    var tyext_constructors = List.map(map_extension_constructor, tyext$1.tyext_constructors);
+    return Curry._1(funarg.leave_type_extension, {
+                tyext_path: tyext$1.tyext_path,
+                tyext_txt: tyext$1.tyext_txt,
+                tyext_params: tyext_params,
+                tyext_constructors: tyext_constructors,
+                tyext_private: tyext$1.tyext_private,
+                tyext_attributes: tyext$1.tyext_attributes
               });
   };
-  var map_class_description = function (cd) {
-    var cd$1 = Curry._1(funarg.enter_class_description, cd);
+  var map_value_description = function (v) {
+    var v$1 = Curry._1(funarg.enter_value_description, v);
+    var val_desc = map_core_type(v$1.val_desc);
+    return Curry._1(funarg.leave_value_description, {
+                val_id: v$1.val_id,
+                val_name: v$1.val_name,
+                val_desc: val_desc,
+                val_val: v$1.val_val,
+                val_prim: v$1.val_prim,
+                val_loc: v$1.val_loc,
+                val_attributes: v$1.val_attributes
+              });
+  };
+  var map_module_type_declaration = function (mtd) {
+    var mtd$1 = Curry._1(funarg.enter_module_type_declaration, mtd);
+    return Curry._1(funarg.leave_module_type_declaration, {
+                mtd_id: mtd$1.mtd_id,
+                mtd_name: mtd$1.mtd_name,
+                mtd_type: may_map(map_module_type, mtd$1.mtd_type),
+                mtd_attributes: mtd$1.mtd_attributes,
+                mtd_loc: mtd$1.mtd_loc
+              });
+  };
+  var map_module_type = function (mty) {
+    var mty$1 = Curry._1(funarg.enter_module_type, mty);
+    var sg = mty$1.mty_desc;
+    var mty_desc;
+    switch (sg.tag | 0) {
+      case /* Tmty_signature */1 :
+          mty_desc = /* Tmty_signature */Block.__(1, [map_signature(sg[0])]);
+          break;
+      case /* Tmty_functor */2 :
+          mty_desc = /* Tmty_functor */Block.__(2, [
+              sg[0],
+              sg[1],
+              may_map(map_module_type, sg[2]),
+              map_module_type(sg[3])
+            ]);
+          break;
+      case /* Tmty_with */3 :
+          mty_desc = /* Tmty_with */Block.__(3, [
+              map_module_type(sg[0]),
+              List.map((function (param) {
+                      return /* tuple */[
+                              param[0],
+                              param[1],
+                              map_with_constraint(param[2])
+                            ];
+                    }), sg[1])
+            ]);
+          break;
+      case /* Tmty_typeof */4 :
+          mty_desc = /* Tmty_typeof */Block.__(4, [map_module_expr(sg[0])]);
+          break;
+      case /* Tmty_ident */0 :
+      case /* Tmty_alias */5 :
+          mty_desc = mty$1.mty_desc;
+          break;
+      
+    }
+    return Curry._1(funarg.leave_module_type, {
+                mty_desc: mty_desc,
+                mty_type: mty$1.mty_type,
+                mty_env: mty$1.mty_env,
+                mty_loc: mty$1.mty_loc,
+                mty_attributes: mty$1.mty_attributes
+              });
+  };
+  var map_class_type_declaration = function (cd) {
+    var cd$1 = Curry._1(funarg.enter_class_type_declaration, cd);
     var ci_params = List.map(map_type_parameter, cd$1.ci_params);
     var ci_expr = map_class_type(cd$1.ci_expr);
-    return Curry._1(funarg.leave_class_description, {
+    return Curry._1(funarg.leave_class_type_declaration, {
                 ci_virt: cd$1.ci_virt,
                 ci_params: ci_params,
                 ci_id_name: cd$1.ci_id_name,
@@ -23497,54 +23428,103 @@ function TypedtreeMap_MakeMap(funarg) {
                 sig_final_env: sg$1.sig_final_env
               });
   };
-  var map_exp_extra = function (exp_extra) {
-    var attrs = exp_extra[2];
-    var loc = exp_extra[1];
-    var desc = exp_extra[0];
-    switch (desc.tag | 0) {
-      case /* Texp_constraint */0 :
-          return /* tuple */[
-                  /* Texp_constraint */Block.__(0, [map_core_type(desc[0])]),
-                  loc,
-                  attrs
-                ];
-      case /* Texp_coerce */1 :
-          var ct1 = desc[0];
-          if (ct1 !== undefined) {
-            return /* tuple */[
-                    /* Texp_coerce */Block.__(1, [
-                        map_core_type(ct1),
-                        map_core_type(desc[1])
-                      ]),
-                    loc,
-                    attrs
-                  ];
-          } else {
-            return /* tuple */[
-                    /* Texp_coerce */Block.__(1, [
-                        undefined,
-                        map_core_type(desc[1])
-                      ]),
-                    loc,
-                    attrs
-                  ];
-          }
-      case /* Texp_poly */3 :
-          var ct = desc[0];
-          if (ct !== undefined) {
-            return /* tuple */[
-                    /* Texp_poly */Block.__(3, [map_core_type(ct)]),
-                    loc,
-                    attrs
-                  ];
-          } else {
-            return exp_extra;
-          }
-      case /* Texp_open */2 :
-      case /* Texp_newtype */4 :
-          return exp_extra;
+  var map_module_expr = function (mexpr) {
+    var mexpr$1 = Curry._1(funarg.enter_module_expr, mexpr);
+    var st = mexpr$1.mod_desc;
+    var mod_desc;
+    switch (st.tag | 0) {
+      case /* Tmod_ident */0 :
+          mod_desc = mexpr$1.mod_desc;
+          break;
+      case /* Tmod_structure */1 :
+          mod_desc = /* Tmod_structure */Block.__(1, [map_structure(st[0])]);
+          break;
+      case /* Tmod_functor */2 :
+          mod_desc = /* Tmod_functor */Block.__(2, [
+              st[0],
+              st[1],
+              may_map(map_module_type, st[2]),
+              map_module_expr(st[3])
+            ]);
+          break;
+      case /* Tmod_apply */3 :
+          mod_desc = /* Tmod_apply */Block.__(3, [
+              map_module_expr(st[0]),
+              map_module_expr(st[1]),
+              st[2]
+            ]);
+          break;
+      case /* Tmod_constraint */4 :
+          var mtype = st[2];
+          var mod_type = st[1];
+          var mexpr$2 = st[0];
+          mod_desc = mtype ? /* Tmod_constraint */Block.__(4, [
+                map_module_expr(mexpr$2),
+                mod_type,
+                /* Tmodtype_explicit */[map_module_type(mtype[0])],
+                st[3]
+              ]) : /* Tmod_constraint */Block.__(4, [
+                map_module_expr(mexpr$2),
+                mod_type,
+                /* Tmodtype_implicit */0,
+                st[3]
+              ]);
+          break;
+      case /* Tmod_unpack */5 :
+          mod_desc = /* Tmod_unpack */Block.__(5, [
+              map_expression(st[0]),
+              st[1]
+            ]);
+          break;
       
     }
+    return Curry._1(funarg.leave_module_expr, {
+                mod_desc: mod_desc,
+                mod_loc: mexpr$1.mod_loc,
+                mod_type: mexpr$1.mod_type,
+                mod_env: mexpr$1.mod_env,
+                mod_attributes: mexpr$1.mod_attributes
+              });
+  };
+  var map_binding = function (vb) {
+    return {
+            vb_pat: map_pattern(vb.vb_pat),
+            vb_expr: map_expression(vb.vb_expr),
+            vb_attributes: vb.vb_attributes,
+            vb_loc: vb.vb_loc
+          };
+  };
+  var map_class_type = function (ct) {
+    var ct$1 = Curry._1(funarg.enter_class_type, ct);
+    var csg = ct$1.cltyp_desc;
+    var cltyp_desc;
+    switch (csg.tag | 0) {
+      case /* Tcty_constr */0 :
+          cltyp_desc = /* Tcty_constr */Block.__(0, [
+              csg[0],
+              csg[1],
+              List.map(map_core_type, csg[2])
+            ]);
+          break;
+      case /* Tcty_signature */1 :
+          cltyp_desc = /* Tcty_signature */Block.__(1, [map_class_signature(csg[0])]);
+          break;
+      case /* Tcty_arrow */2 :
+          cltyp_desc = /* Tcty_arrow */Block.__(2, [
+              csg[0],
+              map_core_type(csg[1]),
+              map_class_type(csg[2])
+            ]);
+          break;
+      
+    }
+    return Curry._1(funarg.leave_class_type, {
+                cltyp_desc: cltyp_desc,
+                cltyp_type: ct$1.cltyp_type,
+                cltyp_env: ct$1.cltyp_env,
+                cltyp_loc: ct$1.cltyp_loc,
+                cltyp_attributes: ct$1.cltyp_attributes
+              });
   };
   var map_class_structure = function (cs) {
     var cs$1 = Curry._1(funarg.enter_class_structure, cs);
@@ -23555,50 +23535,6 @@ function TypedtreeMap_MakeMap(funarg) {
                 cstr_fields: cstr_fields,
                 cstr_type: cs$1.cstr_type,
                 cstr_meths: cs$1.cstr_meths
-              });
-  };
-  var map_class_type_field = function (ctf) {
-    var ctf$1 = Curry._1(funarg.enter_class_type_field, ctf);
-    var ct = ctf$1.ctf_desc;
-    var ctf_desc;
-    switch (ct.tag | 0) {
-      case /* Tctf_inherit */0 :
-          ctf_desc = /* Tctf_inherit */Block.__(0, [map_class_type(ct[0])]);
-          break;
-      case /* Tctf_val */1 :
-          var match = ct[0];
-          ctf_desc = /* Tctf_val */Block.__(1, [/* tuple */[
-                match[0],
-                match[1],
-                match[2],
-                map_core_type(match[3])
-              ]]);
-          break;
-      case /* Tctf_method */2 :
-          var match$1 = ct[0];
-          ctf_desc = /* Tctf_method */Block.__(2, [/* tuple */[
-                match$1[0],
-                match$1[1],
-                match$1[2],
-                map_core_type(match$1[3])
-              ]]);
-          break;
-      case /* Tctf_constraint */3 :
-          var match$2 = ct[0];
-          ctf_desc = /* Tctf_constraint */Block.__(3, [/* tuple */[
-                map_core_type(match$2[0]),
-                map_core_type(match$2[1])
-              ]]);
-          break;
-      case /* Tctf_attribute */4 :
-          ctf_desc = ct;
-          break;
-      
-    }
-    return Curry._1(funarg.leave_class_type_field, {
-                ctf_desc: ctf_desc,
-                ctf_loc: ctf$1.ctf_loc,
-                ctf_attributes: ctf$1.ctf_attributes
               });
   };
   var map_class_field = function (cf) {
@@ -23684,16 +23620,123 @@ function TypedtreeMap_MakeMap(funarg) {
                 csig_type: cs$1.csig_type
               });
   };
-  var map_row_field = function (rf) {
-    if (rf.tag) {
-      return /* Tinherit */Block.__(1, [map_core_type(rf[0])]);
-    } else {
-      return /* Ttag */Block.__(0, [
-                rf[0],
-                rf[1],
-                rf[2],
-                List.map(map_core_type, rf[3])
-              ]);
+  var map_signature_item = function (item) {
+    var item$1 = Curry._1(funarg.enter_signature_item, item);
+    var vd = item$1.sig_desc;
+    var sig_desc;
+    switch (vd.tag | 0) {
+      case /* Tsig_value */0 :
+          sig_desc = /* Tsig_value */Block.__(0, [map_value_description(vd[0])]);
+          break;
+      case /* Tsig_type */1 :
+          sig_desc = /* Tsig_type */Block.__(1, [List.map(map_type_declaration, vd[0])]);
+          break;
+      case /* Tsig_typext */2 :
+          sig_desc = /* Tsig_typext */Block.__(2, [map_type_extension(vd[0])]);
+          break;
+      case /* Tsig_exception */3 :
+          sig_desc = /* Tsig_exception */Block.__(3, [map_extension_constructor(vd[0])]);
+          break;
+      case /* Tsig_module */4 :
+          var md = vd[0];
+          sig_desc = /* Tsig_module */Block.__(4, [{
+                md_id: md.md_id,
+                md_name: md.md_name,
+                md_type: map_module_type(md.md_type),
+                md_attributes: md.md_attributes,
+                md_loc: md.md_loc
+              }]);
+          break;
+      case /* Tsig_recmodule */5 :
+          sig_desc = /* Tsig_recmodule */Block.__(5, [List.map((function (md) {
+                      return {
+                              md_id: md.md_id,
+                              md_name: md.md_name,
+                              md_type: map_module_type(md.md_type),
+                              md_attributes: md.md_attributes,
+                              md_loc: md.md_loc
+                            };
+                    }), vd[0])]);
+          break;
+      case /* Tsig_modtype */6 :
+          sig_desc = /* Tsig_modtype */Block.__(6, [map_module_type_declaration(vd[0])]);
+          break;
+      case /* Tsig_open */7 :
+          sig_desc = item$1.sig_desc;
+          break;
+      case /* Tsig_include */8 :
+          var incl = vd[0];
+          sig_desc = /* Tsig_include */Block.__(8, [{
+                incl_mod: map_module_type(incl.incl_mod),
+                incl_type: incl.incl_type,
+                incl_loc: incl.incl_loc,
+                incl_attributes: incl.incl_attributes
+              }]);
+          break;
+      case /* Tsig_class */9 :
+          sig_desc = /* Tsig_class */Block.__(9, [List.map(map_class_description, vd[0])]);
+          break;
+      case /* Tsig_class_type */10 :
+          sig_desc = /* Tsig_class_type */Block.__(10, [List.map(map_class_type_declaration, vd[0])]);
+          break;
+      case /* Tsig_attribute */11 :
+          sig_desc = vd;
+          break;
+      
+    }
+    return Curry._1(funarg.leave_signature_item, {
+                sig_desc: sig_desc,
+                sig_env: item$1.sig_env,
+                sig_loc: item$1.sig_loc
+              });
+  };
+  var map_exp_extra = function (exp_extra) {
+    var attrs = exp_extra[2];
+    var loc = exp_extra[1];
+    var desc = exp_extra[0];
+    switch (desc.tag | 0) {
+      case /* Texp_constraint */0 :
+          return /* tuple */[
+                  /* Texp_constraint */Block.__(0, [map_core_type(desc[0])]),
+                  loc,
+                  attrs
+                ];
+      case /* Texp_coerce */1 :
+          var ct1 = desc[0];
+          if (ct1 !== undefined) {
+            return /* tuple */[
+                    /* Texp_coerce */Block.__(1, [
+                        map_core_type(ct1),
+                        map_core_type(desc[1])
+                      ]),
+                    loc,
+                    attrs
+                  ];
+          } else {
+            return /* tuple */[
+                    /* Texp_coerce */Block.__(1, [
+                        undefined,
+                        map_core_type(desc[1])
+                      ]),
+                    loc,
+                    attrs
+                  ];
+          }
+      case /* Texp_poly */3 :
+          var ct = desc[0];
+          if (ct !== undefined) {
+            return /* tuple */[
+                    /* Texp_poly */Block.__(3, [map_core_type(ct)]),
+                    loc,
+                    attrs
+                  ];
+          } else {
+            return exp_extra;
+          }
+      case /* Texp_open */2 :
+      case /* Texp_newtype */4 :
+          return exp_extra;
+      
     }
   };
   var map_package_type = function (pack) {
@@ -23711,87 +23754,44 @@ function TypedtreeMap_MakeMap(funarg) {
                 pack_txt: pack$1.pack_txt
               });
   };
-  var map_structure_item = function (item) {
-    var item$1 = Curry._1(funarg.enter_structure_item, item);
-    var vd = item$1.str_desc;
-    var str_desc;
-    switch (vd.tag | 0) {
-      case /* Tstr_eval */0 :
-          str_desc = /* Tstr_eval */Block.__(0, [
-              map_expression(vd[0]),
-              vd[1]
-            ]);
-          break;
-      case /* Tstr_value */1 :
-          var rec_flag = vd[0];
-          str_desc = /* Tstr_value */Block.__(1, [
-              rec_flag,
-              List.map(map_binding, vd[1])
-            ]);
-          break;
-      case /* Tstr_primitive */2 :
-          str_desc = /* Tstr_primitive */Block.__(2, [map_value_description(vd[0])]);
-          break;
-      case /* Tstr_type */3 :
-          str_desc = /* Tstr_type */Block.__(3, [List.map(map_type_declaration, vd[0])]);
-          break;
-      case /* Tstr_typext */4 :
-          str_desc = /* Tstr_typext */Block.__(4, [map_type_extension(vd[0])]);
-          break;
-      case /* Tstr_exception */5 :
-          str_desc = /* Tstr_exception */Block.__(5, [map_extension_constructor(vd[0])]);
-          break;
-      case /* Tstr_module */6 :
-          str_desc = /* Tstr_module */Block.__(6, [map_module_binding(vd[0])]);
-          break;
-      case /* Tstr_recmodule */7 :
-          var list = List.map(map_module_binding, vd[0]);
-          str_desc = /* Tstr_recmodule */Block.__(7, [list]);
-          break;
-      case /* Tstr_modtype */8 :
-          str_desc = /* Tstr_modtype */Block.__(8, [map_module_type_declaration(vd[0])]);
-          break;
-      case /* Tstr_open */9 :
-          str_desc = /* Tstr_open */Block.__(9, [vd[0]]);
-          break;
-      case /* Tstr_class */10 :
-          var list$1 = List.map((function (param) {
-                  return /* tuple */[
-                          map_class_declaration(param[0]),
-                          param[1],
-                          param[2]
-                        ];
-                }), vd[0]);
-          str_desc = /* Tstr_class */Block.__(10, [list$1]);
-          break;
-      case /* Tstr_class_type */11 :
-          var list$2 = List.map((function (param) {
-                  return /* tuple */[
-                          param[0],
-                          param[1],
-                          map_class_type_declaration(param[2])
-                        ];
-                }), vd[0]);
-          str_desc = /* Tstr_class_type */Block.__(11, [list$2]);
-          break;
-      case /* Tstr_include */12 :
-          var incl = vd[0];
-          str_desc = /* Tstr_include */Block.__(12, [{
-                incl_mod: map_module_expr(incl.incl_mod),
-                incl_type: incl.incl_type,
-                incl_loc: incl.incl_loc,
-                incl_attributes: incl.incl_attributes
-              }]);
-          break;
-      case /* Tstr_attribute */13 :
-          str_desc = /* Tstr_attribute */Block.__(13, [vd[0]]);
-          break;
-      
+  var map_row_field = function (rf) {
+    if (rf.tag) {
+      return /* Tinherit */Block.__(1, [map_core_type(rf[0])]);
+    } else {
+      return /* Ttag */Block.__(0, [
+                rf[0],
+                rf[1],
+                rf[2],
+                List.map(map_core_type, rf[3])
+              ]);
     }
-    return Curry._1(funarg.leave_structure_item, {
-                str_desc: str_desc,
-                str_loc: item$1.str_loc,
-                str_env: item$1.str_env
+  };
+  var map_module_binding = function (x) {
+    return {
+            mb_id: x.mb_id,
+            mb_name: x.mb_name,
+            mb_expr: map_module_expr(x.mb_expr),
+            mb_attributes: x.mb_attributes,
+            mb_loc: x.mb_loc
+          };
+  };
+  var map_class_declaration = function (cd) {
+    var cd$1 = Curry._1(funarg.enter_class_declaration, cd);
+    var ci_params = List.map(map_type_parameter, cd$1.ci_params);
+    var ci_expr = map_class_expr(cd$1.ci_expr);
+    return Curry._1(funarg.leave_class_declaration, {
+                ci_virt: cd$1.ci_virt,
+                ci_params: ci_params,
+                ci_id_name: cd$1.ci_id_name,
+                ci_id_class: cd$1.ci_id_class,
+                ci_id_class_type: cd$1.ci_id_class_type,
+                ci_id_object: cd$1.ci_id_object,
+                ci_id_typesharp: cd$1.ci_id_typesharp,
+                ci_expr: ci_expr,
+                ci_decl: cd$1.ci_decl,
+                ci_type_decl: cd$1.ci_type_decl,
+                ci_loc: cd$1.ci_loc,
+                ci_attributes: cd$1.ci_attributes
               });
   };
   return {
@@ -29094,6 +29094,737 @@ function unify(env, t1, t2) {
   }
 }
 
+function make_rowvar(level, use1, rest1, use2, rest2) {
+  var set_name = function (ty, name) {
+    var match = ty.desc;
+    if (typeof match === "number" || match.tag || match[0] !== undefined) {
+      return ;
+    } else {
+      log_type(ty);
+      ty.desc = /* Tvar */Block.__(0, [name]);
+      return ;
+    }
+  };
+  var match = rest1.desc;
+  var match$1 = rest2.desc;
+  var name;
+  var exit = 0;
+  if (typeof match === "number" || match.tag) {
+    exit = 1;
+  } else {
+    var name1 = match[0];
+    if (name1 !== undefined) {
+      var exit$1 = 0;
+      if (typeof match$1 === "number" || match$1.tag) {
+        exit$1 = 2;
+      } else {
+        var name2 = match$1[0];
+        if (name2 !== undefined) {
+          name = rest1.level <= rest2.level ? name1 : name2;
+        } else {
+          exit$1 = 2;
+        }
+      }
+      if (exit$1 === 2) {
+        if (use2) {
+          set_name(rest2, name1);
+        }
+        name = name1;
+      }
+      
+    } else {
+      exit = 1;
+    }
+  }
+  if (exit === 1) {
+    if (typeof match$1 === "number" || match$1.tag) {
+      name = undefined;
+    } else {
+      var name$1 = match$1[0];
+      if (name$1 !== undefined) {
+        if (use1) {
+          set_name(rest2, name$1);
+        }
+        name = name$1;
+      } else {
+        name = undefined;
+      }
+    }
+  }
+  if (use1) {
+    return rest1;
+  } else if (use2) {
+    return rest2;
+  } else {
+    return newty2(level, /* Tvar */Block.__(0, [name]));
+  }
+}
+
+function unify_kind(k1, k2) {
+  var k1$1 = field_kind_repr(k1);
+  var k2$1 = field_kind_repr(k2);
+  if (k1$1 === k2$1) {
+    return ;
+  }
+  if (typeof k1$1 === "number") {
+    if (k1$1 === 0) {
+      if (typeof k2$1 !== "number") {
+        return set_kind(k2$1[0], k1$1);
+      }
+      if (k2$1 === 0) {
+        return ;
+      }
+      
+    }
+    
+  } else {
+    var r = k1$1[0];
+    if (typeof k2$1 !== "number") {
+      return set_kind(r, k2$1);
+    }
+    if (k2$1 === 0) {
+      return set_kind(r, k2$1);
+    }
+    
+  }
+  throw [
+        Caml_builtin_exceptions.assert_failure,
+        /* tuple */[
+          "ctype.ml",
+          2624,
+          37
+        ]
+      ];
+}
+
+function unify2(env, t1, t2) {
+  var expand_both = function (_t1$prime$prime, _t2$prime$prime) {
+    while(true) {
+      var t2$prime$prime = _t2$prime$prime;
+      var t1$prime$prime = _t1$prime$prime;
+      var t1$prime = expand_head_unif(env.contents, t1);
+      var t2$prime = expand_head_unif(env.contents, t2);
+      if (unify_eq(env.contents, t1$prime, t1$prime$prime) && unify_eq(env.contents, t2$prime, t2$prime$prime)) {
+        return /* tuple */[
+                t1$prime,
+                t2$prime
+              ];
+      }
+      _t2$prime$prime = t2$prime;
+      _t1$prime$prime = t1$prime;
+      continue ;
+    };
+  };
+  var match = expand_both(t1, t2);
+  var t2$prime = match[1];
+  var t1$prime = match[0];
+  var lv = t1$prime.level < t2$prime.level ? t1$prime.level : t2$prime.level;
+  update_level(env.contents, lv, t2);
+  update_level(env.contents, lv, t1);
+  if (unify_eq(env.contents, t1$prime, t2$prime)) {
+    return ;
+  }
+  var t1$1 = repr(t1);
+  var t2$1 = repr(t2);
+  if (trace_gadt_instances.contents) {
+    var ilevel = function (t) {
+      var lv = gadt_instance_level(env.contents, t);
+      if (lv !== undefined) {
+        return lv;
+      } else {
+        return 0;
+      }
+    };
+    var lv1 = ilevel(t1$1);
+    var lv2 = ilevel(t2$1);
+    if (lv1 > lv2) {
+      add_gadt_instance_chain(env.contents, lv1, t2$1);
+    } else if (lv2 > lv1) {
+      add_gadt_instance_chain(env.contents, lv2, t1$1);
+    }
+    
+  }
+  var match$1;
+  if (principal.contents && (find_lowest_level(t1$prime) < lv || find_lowest_level(t2$prime) < lv)) {
+    var match$2 = t1$1.desc;
+    var tmp;
+    tmp = typeof match$2 === "number" || !(match$2.tag === /* Tconstr */3 && !match$2[1]) ? t1$1 : t1$prime;
+    var match$3 = t2$1.desc;
+    var tmp$1;
+    tmp$1 = typeof match$3 === "number" || !(match$3.tag === /* Tconstr */3 && !match$3[1]) ? t2$1 : t2$prime;
+    match$1 = /* tuple */[
+      tmp,
+      tmp$1
+    ];
+  } else {
+    match$1 = /* tuple */[
+      t1$1,
+      t2$1
+    ];
+  }
+  var t2$2 = match$1[1];
+  var t1$2 = match$1[0];
+  if (unify_eq(env.contents, t1$2, t1$prime) || !unify_eq(env.contents, t2$2, t2$prime)) {
+    return unify3(env, t1$2, t1$prime, t2$2, t2$prime);
+  }
+  try {
+    return unify3(env, t2$2, t2$prime, t1$2, t1$prime);
+  }
+  catch (raw_trace){
+    var trace = Caml_js_exceptions.internalToOCamlException(raw_trace);
+    if (trace[0] === Unify) {
+      throw [
+            Unify,
+            List.map((function (param) {
+                    return /* tuple */[
+                            param[1],
+                            param[0]
+                          ];
+                  }), trace[1])
+          ];
+    }
+    throw trace;
+  }
+}
+
+function unify_fields(env, ty1, ty2) {
+  var match = flatten_fields(ty1);
+  var rest1 = match[1];
+  var match$1 = flatten_fields(ty2);
+  var rest2 = match$1[1];
+  var match$2 = associate_fields(match[0], match$1[0]);
+  var miss2 = match$2[2];
+  var miss1 = match$2[1];
+  var l1 = repr(ty1).level;
+  var l2 = repr(ty2).level;
+  var va = make_rowvar(l1 < l2 ? l1 : l2, miss2 === /* [] */0, rest1, miss1 === /* [] */0, rest2);
+  var d1 = rest1.desc;
+  var d2 = rest2.desc;
+  try {
+    unify(env, build_fields(l1)(miss1, va), rest2);
+    unify(env, rest1, build_fields(l2)(miss2, va));
+    return List.iter((function (param) {
+                  var t2 = param[4];
+                  var k2 = param[3];
+                  var t1 = param[2];
+                  var k1 = param[1];
+                  var n = param[0];
+                  unify_kind(k1, k2);
+                  try {
+                    if (trace_gadt_instances.contents) {
+                      update_level(env.contents, va.level, t1);
+                    }
+                    return unify(env, t1, t2);
+                  }
+                  catch (raw_trace){
+                    var trace = Caml_js_exceptions.internalToOCamlException(raw_trace);
+                    if (trace[0] === Unify) {
+                      var desc_003 = newty2(current_level.contents, /* Tnil */0);
+                      var desc = /* Tfield */Block.__(5, [
+                          n,
+                          k1,
+                          t1,
+                          desc_003
+                        ]);
+                      var desc_003$1 = newty2(current_level.contents, /* Tnil */0);
+                      var desc$1 = /* Tfield */Block.__(5, [
+                          n,
+                          k2,
+                          t2,
+                          desc_003$1
+                        ]);
+                      throw [
+                            Unify,
+                            /* :: */[
+                              /* tuple */[
+                                newty2(current_level.contents, desc),
+                                newty2(current_level.contents, desc$1)
+                              ],
+                              trace[1]
+                            ]
+                          ];
+                    }
+                    throw trace;
+                  }
+                }), match$2[0]);
+  }
+  catch (exn){
+    log_type(rest1);
+    rest1.desc = d1;
+    log_type(rest2);
+    rest2.desc = d2;
+    throw exn;
+  }
+}
+
+function unify_row(env, row1, row2) {
+  var row1$1 = row_repr_aux(/* [] */0, row1);
+  var row2$1 = row_repr_aux(/* [] */0, row2);
+  var rm1 = row_more(row1$1);
+  var rm2 = row_more(row2$1);
+  if (unify_eq(env.contents, rm1, rm2)) {
+    return ;
+  }
+  var match = merge_row_fields(row1$1.row_fields, row2$1.row_fields);
+  var pairs = match[2];
+  var r2 = match[1];
+  var r1 = match[0];
+  if (r1 !== /* [] */0 && r2 !== /* [] */0) {
+    var ht = Hashtbl.create(undefined, List.length(r1));
+    List.iter((function (param) {
+            var l = param[0];
+            return Hashtbl.add(ht, hash_variant(l), l);
+          }), r1);
+    List.iter((function (param) {
+            var l = param[0];
+            try {
+              throw [
+                    Tags,
+                    l,
+                    Hashtbl.find(ht, hash_variant(l))
+                  ];
+            }
+            catch (exn){
+              if (exn === Caml_builtin_exceptions.not_found) {
+                return ;
+              }
+              throw exn;
+            }
+          }), r2);
+  }
+  var fixed1 = row_fixed(row1$1);
+  var fixed2 = row_fixed(row2$1);
+  var more = fixed1 ? rm1 : (
+      fixed2 ? rm2 : newty2(rm1.level < rm2.level ? rm1.level : rm2.level, /* Tvar */Block.__(0, [undefined]))
+    );
+  var fixed = fixed1 || fixed2;
+  var closed = row1$1.row_closed || row2$1.row_closed;
+  var keep = function ($$switch) {
+    return List.for_all((function (param) {
+                  var match = Curry._2($$switch, param[1], param[2]);
+                  if (row_field_repr_aux(/* [] */0, match[0]) === /* Rabsent */0) {
+                    return true;
+                  } else {
+                    return row_field_repr_aux(/* [] */0, match[1]) !== /* Rabsent */0;
+                  }
+                }), pairs);
+  };
+  var empty = function (fields) {
+    return List.for_all((function (param) {
+                  return row_field_repr_aux(/* [] */0, param[1]) === /* Rabsent */0;
+                }), fields);
+  };
+  if (closed && (empty(r1) || row2$1.row_closed) && (empty(r2) || row1$1.row_closed) && List.for_all((function (param) {
+            if (row_field_repr_aux(/* [] */0, param[1]) === /* Rabsent */0) {
+              return true;
+            } else {
+              return row_field_repr_aux(/* [] */0, param[2]) === /* Rabsent */0;
+            }
+          }), pairs)) {
+    throw [
+          Unify,
+          /* :: */[
+            /* tuple */[
+              mkvariant(/* [] */0, true),
+              mkvariant(/* [] */0, true)
+            ],
+            /* [] */0
+          ]
+        ];
+  }
+  var name = row1$1.row_name !== undefined && (row1$1.row_closed || empty(r2)) && (!row2$1.row_closed || keep((function (f1, f2) {
+            return /* tuple */[
+                    f1,
+                    f2
+                  ];
+          })) && empty(r1)) ? row1$1.row_name : (
+      row2$1.row_name !== undefined && (row2$1.row_closed || empty(r1)) && (!row1$1.row_closed || keep((function (f1, f2) {
+                return /* tuple */[
+                        f2,
+                        f1
+                      ];
+              })) && empty(r2)) ? row2$1.row_name : undefined
+    );
+  var set_more = function (row, rest) {
+    var rest$1 = closed ? filter_row_fields(row.row_closed, rest) : rest;
+    if (rest$1 !== /* [] */0 && (row.row_closed || row_fixed(row)) || closed && row_fixed(row) && !row.row_closed) {
+      var t1 = mkvariant(/* [] */0, true);
+      var t2 = mkvariant(rest$1, false);
+      throw [
+            Unify,
+            /* :: */[
+              row === row1$1 ? /* tuple */[
+                  t1,
+                  t2
+                ] : /* tuple */[
+                  t2,
+                  t1
+                ],
+              /* [] */0
+            ]
+          ];
+    }
+    var rm = row_more(row);
+    if (trace_gadt_instances.contents && rm.desc === /* Tnil */0 || !trace_gadt_instances.contents) {
+      
+    } else {
+      update_level(env.contents, rm.level, newty2(100000000, /* Tvariant */Block.__(8, [row])));
+    }
+    if (row_fixed(row)) {
+      if (more === rm) {
+        return ;
+      } else if (is_Tvar(rm)) {
+        return link_type(rm, more);
+      } else {
+        return unify(env, rm, more);
+      }
+    }
+    var ty = newty2(100000000, /* Tvariant */Block.__(8, [{
+              row_fields: rest$1,
+              row_more: more,
+              row_bound: undefined,
+              row_closed: closed,
+              row_fixed: fixed,
+              row_name: name
+            }]));
+    update_level(env.contents, rm.level, ty);
+    return link_type(rm, ty);
+  };
+  var md1 = rm1.desc;
+  var md2 = rm2.desc;
+  try {
+    set_more(row2$1, r1);
+    set_more(row1$1, r2);
+    return List.iter((function (param) {
+                  var f2 = param[2];
+                  var f1 = param[1];
+                  var l = param[0];
+                  try {
+                    var _f1 = f1;
+                    var _f2 = f2;
+                    while(true) {
+                      var f2$1 = _f2;
+                      var f1$1 = _f1;
+                      var f1$2 = row_field_repr_aux(/* [] */0, f1$1);
+                      var f2$2 = row_field_repr_aux(/* [] */0, f2$1);
+                      if (f1$2 === f2$2) {
+                        return ;
+                      }
+                      if (typeof f1$2 === "number") {
+                        if (typeof f2$2 === "number") {
+                          return ;
+                        }
+                        if (f2$2.tag) {
+                          if (f2$2[2]) {
+                            throw [
+                                  Unify,
+                                  /* [] */0
+                                ];
+                          }
+                          if (!fixed2) {
+                            return set_row_field(f2$2[3], f1$2);
+                          }
+                          throw [
+                                Unify,
+                                /* [] */0
+                              ];
+                        }
+                        throw [
+                              Unify,
+                              /* [] */0
+                            ];
+                      } else if (f1$2.tag) {
+                        var c1 = f1$2[0];
+                        var m1 = f1$2[2];
+                        var tl1 = f1$2[1];
+                        var e1 = f1$2[3];
+                        if (typeof f2$2 === "number") {
+                          if (m1) {
+                            throw [
+                                  Unify,
+                                  /* [] */0
+                                ];
+                          }
+                          if (!fixed1) {
+                            return set_row_field(f1$2[3], f2$2);
+                          }
+                          throw [
+                                Unify,
+                                /* [] */0
+                              ];
+                        }
+                        if (f2$2.tag) {
+                          var e2 = f2$2[3];
+                          if (e1 === e2) {
+                            return ;
+                          }
+                          var m2 = f2$2[2];
+                          var tl2 = f2$2[1];
+                          var c2 = f2$2[0];
+                          var redo = false;
+                          if (m1 || m2 || fixed1 || fixed2 || rigid_variants.contents && (List.length(tl1) === 1 || List.length(tl2) === 1)) {
+                            var match = Pervasives.$at(tl1, tl2);
+                            var tmp;
+                            if (match) {
+                              var t1 = match[0];
+                              if (c1 || c2) {
+                                throw [
+                                      Unify,
+                                      /* [] */0
+                                    ];
+                              }
+                              List.iter((function(t1){
+                                  return function (param) {
+                                    return unify(env, t1, param);
+                                  }
+                                  }(t1)), match[1]);
+                              tmp = e1.contents !== undefined || e2.contents !== undefined;
+                            } else {
+                              tmp = false;
+                            }
+                            redo = tmp;
+                          }
+                          if (redo) {
+                            _f2 = f2$2;
+                            _f1 = f1$2;
+                            continue ;
+                          }
+                          var tl1$1 = List.map(repr, tl1);
+                          var tl2$1 = List.map(repr, tl2);
+                          var remq = function (tl, _param) {
+                            while(true) {
+                              var param = _param;
+                              if (!param) {
+                                return /* [] */0;
+                              }
+                              var tl$prime = param[1];
+                              var ty = param[0];
+                              if (!List.memq(ty, tl)) {
+                                return /* :: */[
+                                        ty,
+                                        remq(tl, tl$prime)
+                                      ];
+                              }
+                              _param = tl$prime;
+                              continue ;
+                            };
+                          };
+                          var tl2$prime = remq(tl2$1, tl1$1);
+                          var tl1$prime = remq(tl1$1, tl2$1);
+                          var partial_arg = repr(more).level;
+                          var partial_arg$1 = env.contents;
+                          List.iter((function(partial_arg,partial_arg$1){
+                              return function (param) {
+                                return update_level(partial_arg$1, partial_arg, param);
+                              }
+                              }(partial_arg,partial_arg$1)), Pervasives.$at(tl1$prime, tl2$prime));
+                          var e = {
+                            contents: undefined
+                          };
+                          var f1$prime_000 = c1 || c2;
+                          var f1$prime_002 = m1 || m2;
+                          var f1$prime = /* Reither */Block.__(1, [
+                              f1$prime_000,
+                              tl1$prime,
+                              f1$prime_002,
+                              e
+                            ]);
+                          var f2$prime_000 = c1 || c2;
+                          var f2$prime_002 = m1 || m2;
+                          var f2$prime = /* Reither */Block.__(1, [
+                              f2$prime_000,
+                              tl2$prime,
+                              f2$prime_002,
+                              e
+                            ]);
+                          set_row_field(e1, f1$prime);
+                          return set_row_field(e2, f2$prime);
+                        }
+                        if (c1) {
+                          if (f1$2[1]) {
+                            throw [
+                                  Unify,
+                                  /* [] */0
+                                ];
+                          }
+                          if (f2$2[0] !== undefined) {
+                            throw [
+                                  Unify,
+                                  /* [] */0
+                                ];
+                          }
+                          if (!fixed1) {
+                            return set_row_field(f1$2[3], f2$2);
+                          }
+                          throw [
+                                Unify,
+                                /* [] */0
+                              ];
+                        }
+                        var t2 = f2$2[0];
+                        if (t2 !== undefined) {
+                          if (fixed1) {
+                            throw [
+                                  Unify,
+                                  /* [] */0
+                                ];
+                          }
+                          var e1$1 = f1$2[3];
+                          set_row_field(e1$1, f2$2);
+                          update_level(env.contents, repr(more).level, t2);
+                          try {
+                            return List.iter((function(t2){
+                                      return function (t1) {
+                                        return unify(env, t1, t2);
+                                      }
+                                      }(t2)), f1$2[1]);
+                          }
+                          catch (exn){
+                            e1$1.contents = undefined;
+                            throw exn;
+                          }
+                        } else {
+                          throw [
+                                Unify,
+                                /* [] */0
+                              ];
+                        }
+                      } else {
+                        var t1$1 = f1$2[0];
+                        if (t1$1 !== undefined) {
+                          if (typeof f2$2 === "number") {
+                            throw [
+                                  Unify,
+                                  /* [] */0
+                                ];
+                          }
+                          if (f2$2.tag) {
+                            if (f2$2[0]) {
+                              throw [
+                                    Unify,
+                                    /* [] */0
+                                  ];
+                            }
+                            if (fixed2) {
+                              throw [
+                                    Unify,
+                                    /* [] */0
+                                  ];
+                            }
+                            var e2$1 = f2$2[3];
+                            set_row_field(e2$1, f1$2);
+                            update_level(env.contents, repr(more).level, t1$1);
+                            try {
+                              return List.iter((function(t1$1){
+                                        return function (param) {
+                                          return unify(env, t1$1, param);
+                                        }
+                                        }(t1$1)), f2$2[1]);
+                            }
+                            catch (exn$1){
+                              e2$1.contents = undefined;
+                              throw exn$1;
+                            }
+                          } else {
+                            var t2$1 = f2$2[0];
+                            if (t2$1 !== undefined) {
+                              return unify(env, t1$1, t2$1);
+                            }
+                            throw [
+                                  Unify,
+                                  /* [] */0
+                                ];
+                          }
+                        } else {
+                          if (typeof f2$2 === "number") {
+                            throw [
+                                  Unify,
+                                  /* [] */0
+                                ];
+                          }
+                          if (f2$2.tag) {
+                            if (f2$2[0]) {
+                              if (f2$2[1]) {
+                                throw [
+                                      Unify,
+                                      /* [] */0
+                                    ];
+                              }
+                              if (!fixed2) {
+                                return set_row_field(f2$2[3], f1$2);
+                              }
+                              throw [
+                                    Unify,
+                                    /* [] */0
+                                  ];
+                            }
+                            throw [
+                                  Unify,
+                                  /* [] */0
+                                ];
+                          }
+                          if (f2$2[0] === undefined) {
+                            return ;
+                          }
+                          throw [
+                                Unify,
+                                /* [] */0
+                              ];
+                        }
+                      }
+                    };
+                  }
+                  catch (raw_trace){
+                    var trace = Caml_js_exceptions.internalToOCamlException(raw_trace);
+                    if (trace[0] === Unify) {
+                      throw [
+                            Unify,
+                            /* :: */[
+                              /* tuple */[
+                                mkvariant(/* :: */[
+                                      /* tuple */[
+                                        l,
+                                        f1
+                                      ],
+                                      /* [] */0
+                                    ], true),
+                                mkvariant(/* :: */[
+                                      /* tuple */[
+                                        l,
+                                        f2
+                                      ],
+                                      /* [] */0
+                                    ], true)
+                              ],
+                              trace[1]
+                            ]
+                          ];
+                    }
+                    throw trace;
+                  }
+                }), pairs);
+  }
+  catch (exn){
+    log_type(rm1);
+    rm1.desc = md1;
+    log_type(rm2);
+    rm2.desc = md2;
+    throw exn;
+  }
+}
+
+function unify_list(env, tl1, tl2) {
+  if (List.length(tl1) !== List.length(tl2)) {
+    throw [
+          Unify,
+          /* [] */0
+        ];
+  }
+  return List.iter2((function (param, param$1) {
+                return unify(env, param, param$1);
+              }), tl1, tl2);
+}
+
 function unify3(env, t1, t1$prime, t2, t2$prime) {
   var d1 = t1$prime.desc;
   var d2 = t2$prime.desc;
@@ -29706,737 +30437,6 @@ function unify3(env, t1, t1$prime, t2, t2$prime) {
     }
   }
   
-}
-
-function unify_kind(k1, k2) {
-  var k1$1 = field_kind_repr(k1);
-  var k2$1 = field_kind_repr(k2);
-  if (k1$1 === k2$1) {
-    return ;
-  }
-  if (typeof k1$1 === "number") {
-    if (k1$1 === 0) {
-      if (typeof k2$1 !== "number") {
-        return set_kind(k2$1[0], k1$1);
-      }
-      if (k2$1 === 0) {
-        return ;
-      }
-      
-    }
-    
-  } else {
-    var r = k1$1[0];
-    if (typeof k2$1 !== "number") {
-      return set_kind(r, k2$1);
-    }
-    if (k2$1 === 0) {
-      return set_kind(r, k2$1);
-    }
-    
-  }
-  throw [
-        Caml_builtin_exceptions.assert_failure,
-        /* tuple */[
-          "ctype.ml",
-          2624,
-          37
-        ]
-      ];
-}
-
-function make_rowvar(level, use1, rest1, use2, rest2) {
-  var set_name = function (ty, name) {
-    var match = ty.desc;
-    if (typeof match === "number" || match.tag || match[0] !== undefined) {
-      return ;
-    } else {
-      log_type(ty);
-      ty.desc = /* Tvar */Block.__(0, [name]);
-      return ;
-    }
-  };
-  var match = rest1.desc;
-  var match$1 = rest2.desc;
-  var name;
-  var exit = 0;
-  if (typeof match === "number" || match.tag) {
-    exit = 1;
-  } else {
-    var name1 = match[0];
-    if (name1 !== undefined) {
-      var exit$1 = 0;
-      if (typeof match$1 === "number" || match$1.tag) {
-        exit$1 = 2;
-      } else {
-        var name2 = match$1[0];
-        if (name2 !== undefined) {
-          name = rest1.level <= rest2.level ? name1 : name2;
-        } else {
-          exit$1 = 2;
-        }
-      }
-      if (exit$1 === 2) {
-        if (use2) {
-          set_name(rest2, name1);
-        }
-        name = name1;
-      }
-      
-    } else {
-      exit = 1;
-    }
-  }
-  if (exit === 1) {
-    if (typeof match$1 === "number" || match$1.tag) {
-      name = undefined;
-    } else {
-      var name$1 = match$1[0];
-      if (name$1 !== undefined) {
-        if (use1) {
-          set_name(rest2, name$1);
-        }
-        name = name$1;
-      } else {
-        name = undefined;
-      }
-    }
-  }
-  if (use1) {
-    return rest1;
-  } else if (use2) {
-    return rest2;
-  } else {
-    return newty2(level, /* Tvar */Block.__(0, [name]));
-  }
-}
-
-function unify_fields(env, ty1, ty2) {
-  var match = flatten_fields(ty1);
-  var rest1 = match[1];
-  var match$1 = flatten_fields(ty2);
-  var rest2 = match$1[1];
-  var match$2 = associate_fields(match[0], match$1[0]);
-  var miss2 = match$2[2];
-  var miss1 = match$2[1];
-  var l1 = repr(ty1).level;
-  var l2 = repr(ty2).level;
-  var va = make_rowvar(l1 < l2 ? l1 : l2, miss2 === /* [] */0, rest1, miss1 === /* [] */0, rest2);
-  var d1 = rest1.desc;
-  var d2 = rest2.desc;
-  try {
-    unify(env, build_fields(l1)(miss1, va), rest2);
-    unify(env, rest1, build_fields(l2)(miss2, va));
-    return List.iter((function (param) {
-                  var t2 = param[4];
-                  var k2 = param[3];
-                  var t1 = param[2];
-                  var k1 = param[1];
-                  var n = param[0];
-                  unify_kind(k1, k2);
-                  try {
-                    if (trace_gadt_instances.contents) {
-                      update_level(env.contents, va.level, t1);
-                    }
-                    return unify(env, t1, t2);
-                  }
-                  catch (raw_trace){
-                    var trace = Caml_js_exceptions.internalToOCamlException(raw_trace);
-                    if (trace[0] === Unify) {
-                      var desc_003 = newty2(current_level.contents, /* Tnil */0);
-                      var desc = /* Tfield */Block.__(5, [
-                          n,
-                          k1,
-                          t1,
-                          desc_003
-                        ]);
-                      var desc_003$1 = newty2(current_level.contents, /* Tnil */0);
-                      var desc$1 = /* Tfield */Block.__(5, [
-                          n,
-                          k2,
-                          t2,
-                          desc_003$1
-                        ]);
-                      throw [
-                            Unify,
-                            /* :: */[
-                              /* tuple */[
-                                newty2(current_level.contents, desc),
-                                newty2(current_level.contents, desc$1)
-                              ],
-                              trace[1]
-                            ]
-                          ];
-                    }
-                    throw trace;
-                  }
-                }), match$2[0]);
-  }
-  catch (exn){
-    log_type(rest1);
-    rest1.desc = d1;
-    log_type(rest2);
-    rest2.desc = d2;
-    throw exn;
-  }
-}
-
-function unify_list(env, tl1, tl2) {
-  if (List.length(tl1) !== List.length(tl2)) {
-    throw [
-          Unify,
-          /* [] */0
-        ];
-  }
-  return List.iter2((function (param, param$1) {
-                return unify(env, param, param$1);
-              }), tl1, tl2);
-}
-
-function unify_row(env, row1, row2) {
-  var row1$1 = row_repr_aux(/* [] */0, row1);
-  var row2$1 = row_repr_aux(/* [] */0, row2);
-  var rm1 = row_more(row1$1);
-  var rm2 = row_more(row2$1);
-  if (unify_eq(env.contents, rm1, rm2)) {
-    return ;
-  }
-  var match = merge_row_fields(row1$1.row_fields, row2$1.row_fields);
-  var pairs = match[2];
-  var r2 = match[1];
-  var r1 = match[0];
-  if (r1 !== /* [] */0 && r2 !== /* [] */0) {
-    var ht = Hashtbl.create(undefined, List.length(r1));
-    List.iter((function (param) {
-            var l = param[0];
-            return Hashtbl.add(ht, hash_variant(l), l);
-          }), r1);
-    List.iter((function (param) {
-            var l = param[0];
-            try {
-              throw [
-                    Tags,
-                    l,
-                    Hashtbl.find(ht, hash_variant(l))
-                  ];
-            }
-            catch (exn){
-              if (exn === Caml_builtin_exceptions.not_found) {
-                return ;
-              }
-              throw exn;
-            }
-          }), r2);
-  }
-  var fixed1 = row_fixed(row1$1);
-  var fixed2 = row_fixed(row2$1);
-  var more = fixed1 ? rm1 : (
-      fixed2 ? rm2 : newty2(rm1.level < rm2.level ? rm1.level : rm2.level, /* Tvar */Block.__(0, [undefined]))
-    );
-  var fixed = fixed1 || fixed2;
-  var closed = row1$1.row_closed || row2$1.row_closed;
-  var keep = function ($$switch) {
-    return List.for_all((function (param) {
-                  var match = Curry._2($$switch, param[1], param[2]);
-                  if (row_field_repr_aux(/* [] */0, match[0]) === /* Rabsent */0) {
-                    return true;
-                  } else {
-                    return row_field_repr_aux(/* [] */0, match[1]) !== /* Rabsent */0;
-                  }
-                }), pairs);
-  };
-  var empty = function (fields) {
-    return List.for_all((function (param) {
-                  return row_field_repr_aux(/* [] */0, param[1]) === /* Rabsent */0;
-                }), fields);
-  };
-  if (closed && (empty(r1) || row2$1.row_closed) && (empty(r2) || row1$1.row_closed) && List.for_all((function (param) {
-            if (row_field_repr_aux(/* [] */0, param[1]) === /* Rabsent */0) {
-              return true;
-            } else {
-              return row_field_repr_aux(/* [] */0, param[2]) === /* Rabsent */0;
-            }
-          }), pairs)) {
-    throw [
-          Unify,
-          /* :: */[
-            /* tuple */[
-              mkvariant(/* [] */0, true),
-              mkvariant(/* [] */0, true)
-            ],
-            /* [] */0
-          ]
-        ];
-  }
-  var name = row1$1.row_name !== undefined && (row1$1.row_closed || empty(r2)) && (!row2$1.row_closed || keep((function (f1, f2) {
-            return /* tuple */[
-                    f1,
-                    f2
-                  ];
-          })) && empty(r1)) ? row1$1.row_name : (
-      row2$1.row_name !== undefined && (row2$1.row_closed || empty(r1)) && (!row1$1.row_closed || keep((function (f1, f2) {
-                return /* tuple */[
-                        f2,
-                        f1
-                      ];
-              })) && empty(r2)) ? row2$1.row_name : undefined
-    );
-  var set_more = function (row, rest) {
-    var rest$1 = closed ? filter_row_fields(row.row_closed, rest) : rest;
-    if (rest$1 !== /* [] */0 && (row.row_closed || row_fixed(row)) || closed && row_fixed(row) && !row.row_closed) {
-      var t1 = mkvariant(/* [] */0, true);
-      var t2 = mkvariant(rest$1, false);
-      throw [
-            Unify,
-            /* :: */[
-              row === row1$1 ? /* tuple */[
-                  t1,
-                  t2
-                ] : /* tuple */[
-                  t2,
-                  t1
-                ],
-              /* [] */0
-            ]
-          ];
-    }
-    var rm = row_more(row);
-    if (trace_gadt_instances.contents && rm.desc === /* Tnil */0 || !trace_gadt_instances.contents) {
-      
-    } else {
-      update_level(env.contents, rm.level, newty2(100000000, /* Tvariant */Block.__(8, [row])));
-    }
-    if (row_fixed(row)) {
-      if (more === rm) {
-        return ;
-      } else if (is_Tvar(rm)) {
-        return link_type(rm, more);
-      } else {
-        return unify(env, rm, more);
-      }
-    }
-    var ty = newty2(100000000, /* Tvariant */Block.__(8, [{
-              row_fields: rest$1,
-              row_more: more,
-              row_bound: undefined,
-              row_closed: closed,
-              row_fixed: fixed,
-              row_name: name
-            }]));
-    update_level(env.contents, rm.level, ty);
-    return link_type(rm, ty);
-  };
-  var md1 = rm1.desc;
-  var md2 = rm2.desc;
-  try {
-    set_more(row2$1, r1);
-    set_more(row1$1, r2);
-    return List.iter((function (param) {
-                  var f2 = param[2];
-                  var f1 = param[1];
-                  var l = param[0];
-                  try {
-                    var _f1 = f1;
-                    var _f2 = f2;
-                    while(true) {
-                      var f2$1 = _f2;
-                      var f1$1 = _f1;
-                      var f1$2 = row_field_repr_aux(/* [] */0, f1$1);
-                      var f2$2 = row_field_repr_aux(/* [] */0, f2$1);
-                      if (f1$2 === f2$2) {
-                        return ;
-                      }
-                      if (typeof f1$2 === "number") {
-                        if (typeof f2$2 === "number") {
-                          return ;
-                        }
-                        if (f2$2.tag) {
-                          if (f2$2[2]) {
-                            throw [
-                                  Unify,
-                                  /* [] */0
-                                ];
-                          }
-                          if (!fixed2) {
-                            return set_row_field(f2$2[3], f1$2);
-                          }
-                          throw [
-                                Unify,
-                                /* [] */0
-                              ];
-                        }
-                        throw [
-                              Unify,
-                              /* [] */0
-                            ];
-                      } else if (f1$2.tag) {
-                        var c1 = f1$2[0];
-                        var m1 = f1$2[2];
-                        var tl1 = f1$2[1];
-                        var e1 = f1$2[3];
-                        if (typeof f2$2 === "number") {
-                          if (m1) {
-                            throw [
-                                  Unify,
-                                  /* [] */0
-                                ];
-                          }
-                          if (!fixed1) {
-                            return set_row_field(f1$2[3], f2$2);
-                          }
-                          throw [
-                                Unify,
-                                /* [] */0
-                              ];
-                        }
-                        if (f2$2.tag) {
-                          var e2 = f2$2[3];
-                          if (e1 === e2) {
-                            return ;
-                          }
-                          var m2 = f2$2[2];
-                          var tl2 = f2$2[1];
-                          var c2 = f2$2[0];
-                          var redo = false;
-                          if (m1 || m2 || fixed1 || fixed2 || rigid_variants.contents && (List.length(tl1) === 1 || List.length(tl2) === 1)) {
-                            var match = Pervasives.$at(tl1, tl2);
-                            var tmp;
-                            if (match) {
-                              var t1 = match[0];
-                              if (c1 || c2) {
-                                throw [
-                                      Unify,
-                                      /* [] */0
-                                    ];
-                              }
-                              List.iter((function(t1){
-                                  return function (param) {
-                                    return unify(env, t1, param);
-                                  }
-                                  }(t1)), match[1]);
-                              tmp = e1.contents !== undefined || e2.contents !== undefined;
-                            } else {
-                              tmp = false;
-                            }
-                            redo = tmp;
-                          }
-                          if (redo) {
-                            _f2 = f2$2;
-                            _f1 = f1$2;
-                            continue ;
-                          }
-                          var tl1$1 = List.map(repr, tl1);
-                          var tl2$1 = List.map(repr, tl2);
-                          var remq = function (tl, _param) {
-                            while(true) {
-                              var param = _param;
-                              if (!param) {
-                                return /* [] */0;
-                              }
-                              var tl$prime = param[1];
-                              var ty = param[0];
-                              if (!List.memq(ty, tl)) {
-                                return /* :: */[
-                                        ty,
-                                        remq(tl, tl$prime)
-                                      ];
-                              }
-                              _param = tl$prime;
-                              continue ;
-                            };
-                          };
-                          var tl2$prime = remq(tl2$1, tl1$1);
-                          var tl1$prime = remq(tl1$1, tl2$1);
-                          var partial_arg = repr(more).level;
-                          var partial_arg$1 = env.contents;
-                          List.iter((function(partial_arg,partial_arg$1){
-                              return function (param) {
-                                return update_level(partial_arg$1, partial_arg, param);
-                              }
-                              }(partial_arg,partial_arg$1)), Pervasives.$at(tl1$prime, tl2$prime));
-                          var e = {
-                            contents: undefined
-                          };
-                          var f1$prime_000 = c1 || c2;
-                          var f1$prime_002 = m1 || m2;
-                          var f1$prime = /* Reither */Block.__(1, [
-                              f1$prime_000,
-                              tl1$prime,
-                              f1$prime_002,
-                              e
-                            ]);
-                          var f2$prime_000 = c1 || c2;
-                          var f2$prime_002 = m1 || m2;
-                          var f2$prime = /* Reither */Block.__(1, [
-                              f2$prime_000,
-                              tl2$prime,
-                              f2$prime_002,
-                              e
-                            ]);
-                          set_row_field(e1, f1$prime);
-                          return set_row_field(e2, f2$prime);
-                        }
-                        if (c1) {
-                          if (f1$2[1]) {
-                            throw [
-                                  Unify,
-                                  /* [] */0
-                                ];
-                          }
-                          if (f2$2[0] !== undefined) {
-                            throw [
-                                  Unify,
-                                  /* [] */0
-                                ];
-                          }
-                          if (!fixed1) {
-                            return set_row_field(f1$2[3], f2$2);
-                          }
-                          throw [
-                                Unify,
-                                /* [] */0
-                              ];
-                        }
-                        var t2 = f2$2[0];
-                        if (t2 !== undefined) {
-                          if (fixed1) {
-                            throw [
-                                  Unify,
-                                  /* [] */0
-                                ];
-                          }
-                          var e1$1 = f1$2[3];
-                          set_row_field(e1$1, f2$2);
-                          update_level(env.contents, repr(more).level, t2);
-                          try {
-                            return List.iter((function(t2){
-                                      return function (t1) {
-                                        return unify(env, t1, t2);
-                                      }
-                                      }(t2)), f1$2[1]);
-                          }
-                          catch (exn){
-                            e1$1.contents = undefined;
-                            throw exn;
-                          }
-                        } else {
-                          throw [
-                                Unify,
-                                /* [] */0
-                              ];
-                        }
-                      } else {
-                        var t1$1 = f1$2[0];
-                        if (t1$1 !== undefined) {
-                          if (typeof f2$2 === "number") {
-                            throw [
-                                  Unify,
-                                  /* [] */0
-                                ];
-                          }
-                          if (f2$2.tag) {
-                            if (f2$2[0]) {
-                              throw [
-                                    Unify,
-                                    /* [] */0
-                                  ];
-                            }
-                            if (fixed2) {
-                              throw [
-                                    Unify,
-                                    /* [] */0
-                                  ];
-                            }
-                            var e2$1 = f2$2[3];
-                            set_row_field(e2$1, f1$2);
-                            update_level(env.contents, repr(more).level, t1$1);
-                            try {
-                              return List.iter((function(t1$1){
-                                        return function (param) {
-                                          return unify(env, t1$1, param);
-                                        }
-                                        }(t1$1)), f2$2[1]);
-                            }
-                            catch (exn$1){
-                              e2$1.contents = undefined;
-                              throw exn$1;
-                            }
-                          } else {
-                            var t2$1 = f2$2[0];
-                            if (t2$1 !== undefined) {
-                              return unify(env, t1$1, t2$1);
-                            }
-                            throw [
-                                  Unify,
-                                  /* [] */0
-                                ];
-                          }
-                        } else {
-                          if (typeof f2$2 === "number") {
-                            throw [
-                                  Unify,
-                                  /* [] */0
-                                ];
-                          }
-                          if (f2$2.tag) {
-                            if (f2$2[0]) {
-                              if (f2$2[1]) {
-                                throw [
-                                      Unify,
-                                      /* [] */0
-                                    ];
-                              }
-                              if (!fixed2) {
-                                return set_row_field(f2$2[3], f1$2);
-                              }
-                              throw [
-                                    Unify,
-                                    /* [] */0
-                                  ];
-                            }
-                            throw [
-                                  Unify,
-                                  /* [] */0
-                                ];
-                          }
-                          if (f2$2[0] === undefined) {
-                            return ;
-                          }
-                          throw [
-                                Unify,
-                                /* [] */0
-                              ];
-                        }
-                      }
-                    };
-                  }
-                  catch (raw_trace){
-                    var trace = Caml_js_exceptions.internalToOCamlException(raw_trace);
-                    if (trace[0] === Unify) {
-                      throw [
-                            Unify,
-                            /* :: */[
-                              /* tuple */[
-                                mkvariant(/* :: */[
-                                      /* tuple */[
-                                        l,
-                                        f1
-                                      ],
-                                      /* [] */0
-                                    ], true),
-                                mkvariant(/* :: */[
-                                      /* tuple */[
-                                        l,
-                                        f2
-                                      ],
-                                      /* [] */0
-                                    ], true)
-                              ],
-                              trace[1]
-                            ]
-                          ];
-                    }
-                    throw trace;
-                  }
-                }), pairs);
-  }
-  catch (exn){
-    log_type(rm1);
-    rm1.desc = md1;
-    log_type(rm2);
-    rm2.desc = md2;
-    throw exn;
-  }
-}
-
-function unify2(env, t1, t2) {
-  var expand_both = function (_t1$prime$prime, _t2$prime$prime) {
-    while(true) {
-      var t2$prime$prime = _t2$prime$prime;
-      var t1$prime$prime = _t1$prime$prime;
-      var t1$prime = expand_head_unif(env.contents, t1);
-      var t2$prime = expand_head_unif(env.contents, t2);
-      if (unify_eq(env.contents, t1$prime, t1$prime$prime) && unify_eq(env.contents, t2$prime, t2$prime$prime)) {
-        return /* tuple */[
-                t1$prime,
-                t2$prime
-              ];
-      }
-      _t2$prime$prime = t2$prime;
-      _t1$prime$prime = t1$prime;
-      continue ;
-    };
-  };
-  var match = expand_both(t1, t2);
-  var t2$prime = match[1];
-  var t1$prime = match[0];
-  var lv = t1$prime.level < t2$prime.level ? t1$prime.level : t2$prime.level;
-  update_level(env.contents, lv, t2);
-  update_level(env.contents, lv, t1);
-  if (unify_eq(env.contents, t1$prime, t2$prime)) {
-    return ;
-  }
-  var t1$1 = repr(t1);
-  var t2$1 = repr(t2);
-  if (trace_gadt_instances.contents) {
-    var ilevel = function (t) {
-      var lv = gadt_instance_level(env.contents, t);
-      if (lv !== undefined) {
-        return lv;
-      } else {
-        return 0;
-      }
-    };
-    var lv1 = ilevel(t1$1);
-    var lv2 = ilevel(t2$1);
-    if (lv1 > lv2) {
-      add_gadt_instance_chain(env.contents, lv1, t2$1);
-    } else if (lv2 > lv1) {
-      add_gadt_instance_chain(env.contents, lv2, t1$1);
-    }
-    
-  }
-  var match$1;
-  if (principal.contents && (find_lowest_level(t1$prime) < lv || find_lowest_level(t2$prime) < lv)) {
-    var match$2 = t1$1.desc;
-    var tmp;
-    tmp = typeof match$2 === "number" || !(match$2.tag === /* Tconstr */3 && !match$2[1]) ? t1$1 : t1$prime;
-    var match$3 = t2$1.desc;
-    var tmp$1;
-    tmp$1 = typeof match$3 === "number" || !(match$3.tag === /* Tconstr */3 && !match$3[1]) ? t2$1 : t2$prime;
-    match$1 = /* tuple */[
-      tmp,
-      tmp$1
-    ];
-  } else {
-    match$1 = /* tuple */[
-      t1$1,
-      t2$1
-    ];
-  }
-  var t2$2 = match$1[1];
-  var t1$2 = match$1[0];
-  if (unify_eq(env.contents, t1$2, t1$prime) || !unify_eq(env.contents, t2$2, t2$prime)) {
-    return unify3(env, t1$2, t1$prime, t2$2, t2$prime);
-  }
-  try {
-    return unify3(env, t2$2, t2$prime, t1$2, t1$prime);
-  }
-  catch (raw_trace){
-    var trace = Caml_js_exceptions.internalToOCamlException(raw_trace);
-    if (trace[0] === Unify) {
-      throw [
-            Unify,
-            List.map((function (param) {
-                    return /* tuple */[
-                            param[1],
-                            param[0]
-                          ];
-                  }), trace[1])
-          ];
-    }
-    throw trace;
-  }
 }
 
 function unify$1(env, ty1, ty2) {
@@ -36556,93 +36556,93 @@ function print_out_functor(ppf, m) {
                 ]), print_out_module_type, m);
 }
 
-function print_out_module_type(ppf, t) {
-  if (typeof t === "number") {
+function print_out_signature(ppf, param) {
+  if (!param) {
     return ;
   }
-  switch (t.tag | 0) {
-    case /* Omty_functor */0 :
-        return Curry._2(Format.fprintf(ppf, /* Format */[
-                        /* Formatting_gen */Block.__(18, [
-                            /* Open_box */Block.__(1, [/* Format */[
-                                  /* String_literal */Block.__(11, [
-                                      "<2>",
-                                      /* End_of_format */0
-                                    ]),
-                                  "<2>"
-                                ]]),
-                            /* String_literal */Block.__(11, [
-                                "functor",
-                                /* Formatting_lit */Block.__(17, [
-                                    /* Break */Block.__(0, [
-                                        "@ ",
-                                        1,
-                                        0
-                                      ]),
-                                    /* Alpha */Block.__(15, [/* Formatting_lit */Block.__(17, [
-                                            /* Close_box */0,
-                                            /* End_of_format */0
-                                          ])])
-                                  ])
-                              ])
-                          ]),
-                        "@[<2>functor@ %a@]"
-                      ]), print_out_functor, t);
-    case /* Omty_ident */1 :
-        return Curry._2(Format.fprintf(ppf, /* Format */[
-                        /* Alpha */Block.__(15, [/* End_of_format */0]),
-                        "%a"
-                      ]), print_ident, t[0]);
-    case /* Omty_signature */2 :
-        return Curry._2(Format.fprintf(ppf, /* Format */[
-                        /* Formatting_gen */Block.__(18, [
-                            /* Open_box */Block.__(1, [/* Format */[
-                                  /* String_literal */Block.__(11, [
-                                      "<hv 2>",
-                                      /* End_of_format */0
-                                    ]),
-                                  "<hv 2>"
-                                ]]),
-                            /* String_literal */Block.__(11, [
-                                "sig",
-                                /* Formatting_lit */Block.__(17, [
-                                    /* Break */Block.__(0, [
-                                        "@ ",
-                                        1,
-                                        0
-                                      ]),
-                                    /* Alpha */Block.__(15, [/* Formatting_lit */Block.__(17, [
-                                            /* Break */Block.__(0, [
-                                                "@;<1 -2>",
-                                                1,
-                                                -2
-                                              ]),
-                                            /* String_literal */Block.__(11, [
-                                                "end",
-                                                /* Formatting_lit */Block.__(17, [
-                                                    /* Close_box */0,
-                                                    /* End_of_format */0
-                                                  ])
-                                              ])
-                                          ])])
-                                  ])
-                              ])
-                          ]),
-                        "@[<hv 2>sig@ %a@;<1 -2>end@]"
-                      ]), out_signature.contents, t[0]);
-    case /* Omty_alias */3 :
-        return Curry._2(Format.fprintf(ppf, /* Format */[
-                        /* String_literal */Block.__(11, [
-                            "(module ",
-                            /* Alpha */Block.__(15, [/* Char_literal */Block.__(12, [
-                                    /* ")" */41,
-                                    /* End_of_format */0
-                                  ])])
-                          ]),
-                        "(module %a)"
-                      ]), print_ident, t[0]);
-    
+  var item = param[0];
+  if (!param[1]) {
+    return Curry._2(out_sig_item.contents, ppf, item);
   }
+  if (item.tag === /* Osig_typext */2 && item[1] === 0) {
+    var ext = item[0];
+    var gather_extensions = function (_acc, _items) {
+      while(true) {
+        var items = _items;
+        var acc = _acc;
+        if (!items) {
+          return /* tuple */[
+                  List.rev(acc),
+                  items
+                ];
+        }
+        var match = items[0];
+        if (match.tag !== /* Osig_typext */2) {
+          return /* tuple */[
+                  List.rev(acc),
+                  items
+                ];
+        }
+        if (match[1] !== 1) {
+          return /* tuple */[
+                  List.rev(acc),
+                  items
+                ];
+        }
+        var ext = match[0];
+        _items = items[1];
+        _acc = /* :: */[
+          /* tuple */[
+            ext.oext_name,
+            ext.oext_args,
+            ext.oext_ret_type
+          ],
+          acc
+        ];
+        continue ;
+      };
+    };
+    var match = gather_extensions(/* :: */[
+          /* tuple */[
+            ext.oext_name,
+            ext.oext_args,
+            ext.oext_ret_type
+          ],
+          /* [] */0
+        ], param[1]);
+    var te_otyext_name = ext.oext_type_name;
+    var te_otyext_params = ext.oext_type_params;
+    var te_otyext_constructors = match[0];
+    var te_otyext_private = ext.oext_private;
+    var te = {
+      otyext_name: te_otyext_name,
+      otyext_params: te_otyext_params,
+      otyext_constructors: te_otyext_constructors,
+      otyext_private: te_otyext_private
+    };
+    return Curry._4(Format.fprintf(ppf, /* Format */[
+                    /* Alpha */Block.__(15, [/* Formatting_lit */Block.__(17, [
+                            /* Break */Block.__(0, [
+                                "@ ",
+                                1,
+                                0
+                              ]),
+                            /* Alpha */Block.__(15, [/* End_of_format */0])
+                          ])]),
+                    "%a@ %a"
+                  ]), out_type_extension.contents, te, print_out_signature, match[1]);
+  }
+  return Curry._4(Format.fprintf(ppf, /* Format */[
+                  /* Alpha */Block.__(15, [/* Formatting_lit */Block.__(17, [
+                          /* Break */Block.__(0, [
+                              "@ ",
+                              1,
+                              0
+                            ]),
+                          /* Alpha */Block.__(15, [/* End_of_format */0])
+                        ])]),
+                  "%a@ %a"
+                ]), out_sig_item.contents, item, print_out_signature, param[1]);
 }
 
 function print_out_constr(ppf, param) {
@@ -36791,93 +36791,93 @@ function print_out_label(ppf, param) {
                 ]), param[1] ? "mutable " : "", param[0], out_type.contents, param[2]);
 }
 
-function print_out_signature(ppf, param) {
-  if (!param) {
+function print_out_module_type(ppf, t) {
+  if (typeof t === "number") {
     return ;
   }
-  var item = param[0];
-  if (!param[1]) {
-    return Curry._2(out_sig_item.contents, ppf, item);
+  switch (t.tag | 0) {
+    case /* Omty_functor */0 :
+        return Curry._2(Format.fprintf(ppf, /* Format */[
+                        /* Formatting_gen */Block.__(18, [
+                            /* Open_box */Block.__(1, [/* Format */[
+                                  /* String_literal */Block.__(11, [
+                                      "<2>",
+                                      /* End_of_format */0
+                                    ]),
+                                  "<2>"
+                                ]]),
+                            /* String_literal */Block.__(11, [
+                                "functor",
+                                /* Formatting_lit */Block.__(17, [
+                                    /* Break */Block.__(0, [
+                                        "@ ",
+                                        1,
+                                        0
+                                      ]),
+                                    /* Alpha */Block.__(15, [/* Formatting_lit */Block.__(17, [
+                                            /* Close_box */0,
+                                            /* End_of_format */0
+                                          ])])
+                                  ])
+                              ])
+                          ]),
+                        "@[<2>functor@ %a@]"
+                      ]), print_out_functor, t);
+    case /* Omty_ident */1 :
+        return Curry._2(Format.fprintf(ppf, /* Format */[
+                        /* Alpha */Block.__(15, [/* End_of_format */0]),
+                        "%a"
+                      ]), print_ident, t[0]);
+    case /* Omty_signature */2 :
+        return Curry._2(Format.fprintf(ppf, /* Format */[
+                        /* Formatting_gen */Block.__(18, [
+                            /* Open_box */Block.__(1, [/* Format */[
+                                  /* String_literal */Block.__(11, [
+                                      "<hv 2>",
+                                      /* End_of_format */0
+                                    ]),
+                                  "<hv 2>"
+                                ]]),
+                            /* String_literal */Block.__(11, [
+                                "sig",
+                                /* Formatting_lit */Block.__(17, [
+                                    /* Break */Block.__(0, [
+                                        "@ ",
+                                        1,
+                                        0
+                                      ]),
+                                    /* Alpha */Block.__(15, [/* Formatting_lit */Block.__(17, [
+                                            /* Break */Block.__(0, [
+                                                "@;<1 -2>",
+                                                1,
+                                                -2
+                                              ]),
+                                            /* String_literal */Block.__(11, [
+                                                "end",
+                                                /* Formatting_lit */Block.__(17, [
+                                                    /* Close_box */0,
+                                                    /* End_of_format */0
+                                                  ])
+                                              ])
+                                          ])])
+                                  ])
+                              ])
+                          ]),
+                        "@[<hv 2>sig@ %a@;<1 -2>end@]"
+                      ]), out_signature.contents, t[0]);
+    case /* Omty_alias */3 :
+        return Curry._2(Format.fprintf(ppf, /* Format */[
+                        /* String_literal */Block.__(11, [
+                            "(module ",
+                            /* Alpha */Block.__(15, [/* Char_literal */Block.__(12, [
+                                    /* ")" */41,
+                                    /* End_of_format */0
+                                  ])])
+                          ]),
+                        "(module %a)"
+                      ]), print_ident, t[0]);
+    
   }
-  if (item.tag === /* Osig_typext */2 && item[1] === 0) {
-    var ext = item[0];
-    var gather_extensions = function (_acc, _items) {
-      while(true) {
-        var items = _items;
-        var acc = _acc;
-        if (!items) {
-          return /* tuple */[
-                  List.rev(acc),
-                  items
-                ];
-        }
-        var match = items[0];
-        if (match.tag !== /* Osig_typext */2) {
-          return /* tuple */[
-                  List.rev(acc),
-                  items
-                ];
-        }
-        if (match[1] !== 1) {
-          return /* tuple */[
-                  List.rev(acc),
-                  items
-                ];
-        }
-        var ext = match[0];
-        _items = items[1];
-        _acc = /* :: */[
-          /* tuple */[
-            ext.oext_name,
-            ext.oext_args,
-            ext.oext_ret_type
-          ],
-          acc
-        ];
-        continue ;
-      };
-    };
-    var match = gather_extensions(/* :: */[
-          /* tuple */[
-            ext.oext_name,
-            ext.oext_args,
-            ext.oext_ret_type
-          ],
-          /* [] */0
-        ], param[1]);
-    var te_otyext_name = ext.oext_type_name;
-    var te_otyext_params = ext.oext_type_params;
-    var te_otyext_constructors = match[0];
-    var te_otyext_private = ext.oext_private;
-    var te = {
-      otyext_name: te_otyext_name,
-      otyext_params: te_otyext_params,
-      otyext_constructors: te_otyext_constructors,
-      otyext_private: te_otyext_private
-    };
-    return Curry._4(Format.fprintf(ppf, /* Format */[
-                    /* Alpha */Block.__(15, [/* Formatting_lit */Block.__(17, [
-                            /* Break */Block.__(0, [
-                                "@ ",
-                                1,
-                                0
-                              ]),
-                            /* Alpha */Block.__(15, [/* End_of_format */0])
-                          ])]),
-                    "%a@ %a"
-                  ]), out_type_extension.contents, te, print_out_signature, match[1]);
-  }
-  return Curry._4(Format.fprintf(ppf, /* Format */[
-                  /* Alpha */Block.__(15, [/* Formatting_lit */Block.__(17, [
-                          /* Break */Block.__(0, [
-                              "@ ",
-                              1,
-                              0
-                            ]),
-                          /* Alpha */Block.__(15, [/* End_of_format */0])
-                        ])]),
-                  "%a@ %a"
-                ]), out_sig_item.contents, item, print_out_signature, param[1]);
 }
 
 function print_out_sig_item(ppf, param) {
@@ -40472,6 +40472,14 @@ function filter_params(tyl) {
                   }), /* [] */0, tyl));
 }
 
+function tree_of_label(l) {
+  return /* tuple */[
+          l.ld_id.name,
+          l.ld_mutable === /* Mutable */1,
+          tree_of_typexp(false, l.ld_type)
+        ];
+}
+
 function tree_of_constructor(cd) {
   var name = cd.cd_id.name;
   var res = cd.cd_res;
@@ -40495,14 +40503,6 @@ function tree_of_constructor(cd) {
           name,
           args,
           ret
-        ];
-}
-
-function tree_of_label(l) {
-  return /* tuple */[
-          l.ld_id.name,
-          l.ld_mutable === /* Mutable */1,
-          tree_of_typexp(false, l.ld_type)
         ];
 }
 
