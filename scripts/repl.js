@@ -43,6 +43,34 @@ function prepare() {
   e(`mv ./exports.js ${playground}`)
 }
 
+function prepublish() {
+  var mainPackageJson = JSON.parse(fs.readFileSync(path.join(__dirname, '..', 'package.json')));
+  var packageJson = JSON.stringify(
+    {
+      name: "reason-js-compiler",
+      version: "0.0.1",
+      license: mainPackageJson.license,
+      description: mainPackageJson.description,
+      repository: mainPackageJson.repository,
+      author: mainPackageJson.author,
+      maintainers: mainPackageJson.maintainers,
+      bugs: mainPackageJson.bugs,
+      homepage: mainPackageJson.homepage,
+      main: "exports.js",
+    },
+    null,
+    2
+  );
+
+  fs.writeFileSync(
+    path.join(__dirname, "..", "_release", "package.json"),
+    packageJson,
+    {
+      encoding: "utf8"
+    }
+  );
+}
+
 
 prepare();
 
