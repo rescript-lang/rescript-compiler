@@ -1,4 +1,4 @@
-name: Build and publish playground
+name: Build playground
 on: [push]
 jobs:
   run:
@@ -18,7 +18,7 @@ jobs:
         uses: actions/cache@v1
         with:
           path: ~/.opam
-          key: ${{ runner.os }}-opam-4.06.1-3.5.1-v1
+          key: ${{ runner.os }}-opam-${{ matrix.ocaml-version }}-3.5.1-v1
       - name: Use OCaml ${{ matrix.ocaml-version }}
         uses: avsm/setup-ocaml@v1.0
         with:
@@ -29,7 +29,8 @@ jobs:
       - run: ./scripts/ninja.js config && ./scripts/ninja.js build
       - run: mkdir playground && mkdir playground/stdlib
       - run: BS_PLAYGROUND=../playground ./scripts/repl.js -prepublish
-      - run: node -e "require('./playground/exports.js'); eval(ocaml.compile('Js.log Sys.ocaml_version').js_code)"
+      - run: node -e "require('./exports.js'); eval(ocaml.compile('Js.log Sys.ocaml_version').js_code)"
+        working-directory: ./playground
       - name: Archive npm artifacts
         uses: actions/upload-artifact@v1
         with:
