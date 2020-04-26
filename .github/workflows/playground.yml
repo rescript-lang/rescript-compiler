@@ -4,6 +4,9 @@ jobs:
   run:
     name: Build
     runs-on: ${{ matrix.os }}
+    defaults:
+      run:
+        shell: bash
     strategy:
       fail-fast: false
       matrix:
