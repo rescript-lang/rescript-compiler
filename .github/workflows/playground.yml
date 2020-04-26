@@ -1,5 +1,5 @@
 name: Build and publish playground
-on: [push, pull_request]
+on: [push]
 jobs:
   run:
     name: Build
@@ -7,12 +7,17 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        os: [macos-latest, ubuntu-latest, windows-latest]
+        os: [macos-latest, ubuntu-latest]
         ocaml-version: ["4.06.1"]
         node-version: [12.x]
     steps:
       - name: Checkout code
         uses: actions/checkout@v2.0.0
+      - name: Cache .opam folder
+        uses: actions/cache@v1
+        with:
+          path: $HOME/.opam
+          key: ${{ runner.os }}-opam-v1
       - name: Use OCaml ${{ matrix.ocaml-version }}
         uses: avsm/setup-ocaml@v1.0
         with:
