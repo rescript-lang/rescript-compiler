@@ -63,7 +63,7 @@ function prepublish() {
   );
 
   fs.writeFileSync(
-    `${playground}/package.json`),
+    `${playground}/package.json`,
     packageJson,
     {
       encoding: "utf8"
