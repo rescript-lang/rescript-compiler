@@ -27,3 +27,9 @@ jobs:
       - run: ./scripts/ninja.js config && ./scripts/ninja.js build
       - run: mkdir playground && mkdir playground/stdlib
       - run: BS_PLAYGROUND=../playground ./scripts/repl.js
+      - name: Archive npm artifacts
+        uses: actions/upload-artifact@v1
+        with:
+          name: playground
+          path: playground
+
