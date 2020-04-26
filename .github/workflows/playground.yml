@@ -28,7 +28,7 @@ jobs:
       - run: git submodule update --init && ./scripts/buildocaml.js
       - run: ./scripts/ninja.js config && ./scripts/ninja.js build
       - run: mkdir playground && mkdir playground/stdlib
-      - run: BS_PLAYGROUND=../playground ./scripts/repl.js
+      - run: BS_PLAYGROUND=../playground ./scripts/repl.js -prepublish
       - name: Archive npm artifacts
         uses: actions/upload-artifact@v1
         with:

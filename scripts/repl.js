@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 
 var p = require("child_process");
-
+var fs = require("fs");
 var path = require("path");
 
 
@@ -36,7 +36,7 @@ function prepare() {
 `);
 
   e(
-    `opam exec -- ocamlc.opt -w -30-40 -no-check-prims -I ${jsRefmtCompDir} ${jsRefmtCompDir}/js_compiler.mli ${jsRefmtCompDir}/js_compiler.ml -o jsc.byte && opam exec -- js_of_ocaml jsc.byte -o exports.js`
+    `opam exec -- ocamlc.opt -w -30-40 -no-check-prims -I ${jsRefmtCompDir} ${jsRefmtCompDir}/js_refmt_compiler.mli ${jsRefmtCompDir}/js_refmt_compiler.ml -o jsc.byte && opam exec -- js_of_ocaml jsc.byte -o exports.js`
   );
 
   e(`cp ../lib/js/*.js ${playground}/stdlib`);
@@ -71,6 +71,7 @@ function prepublish() {
   );
 }
 
-
 prepare();
-
+if (process.argv.includes("-prepublish")) {
+  prepublish();
+}
