@@ -29,6 +29,7 @@ jobs:
       - run: ./scripts/ninja.js config && ./scripts/ninja.js build
       - run: mkdir playground && mkdir playground/stdlib
       - run: BS_PLAYGROUND=../playground ./scripts/repl.js -prepublish
+      - run: node -e "require('./playground/exports.js'); eval(ocaml.compile('Js.log Sys.ocaml_version').js_code)"
       - name: Archive npm artifacts
         uses: actions/upload-artifact@v1
         with:
