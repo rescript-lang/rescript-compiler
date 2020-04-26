@@ -63,10 +63,10 @@ function prepublish() {
   );
 
   fs.writeFileSync(
-    `${playground}/package.json`,
+    jscompDir + `/${playground}/package.json`,
     packageJson,
     {
-      encoding: "utf8"
+      encoding: "utf8",
     }
   );
 }
