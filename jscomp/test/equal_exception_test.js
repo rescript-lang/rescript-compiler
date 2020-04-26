@@ -2,6 +2,7 @@
 
 var Mt = require("./mt.js");
 var Bytes = require("../../lib/js/bytes.js");
+var Caml_obj = require("../../lib/js/caml_obj.js");
 var Caml_bytes = require("../../lib/js/caml_bytes.js");
 var Caml_exceptions = require("../../lib/js/caml_exceptions.js");
 var Caml_js_exceptions = require("../../lib/js/caml_js_exceptions.js");
@@ -118,6 +119,36 @@ var suites = /* :: */[
   suites_001
 ];
 
+var e = Caml_builtin_exceptions.not_found;
+
+function eq(param) {
+  return param === Caml_builtin_exceptions.not_found;
+}
+
+var Not_found = Caml_exceptions.create("Equal_exception_test.Not_found");
+
+if (Caml_obj.caml_equal(e, Not_found) !== false) {
+  throw [
+        Caml_builtin_exceptions.assert_failure,
+        /* tuple */[
+          "equal_exception_test.ml",
+          50,
+          3
+        ]
+      ];
+}
+
+if (Not_found === Caml_builtin_exceptions.not_found !== false) {
+  throw [
+        Caml_builtin_exceptions.assert_failure,
+        /* tuple */[
+          "equal_exception_test.ml",
+          51,
+          3
+        ]
+      ];
+}
+
 Mt.from_suites("exception", suites);
 
 exports.v = v;
@@ -126,4 +157,7 @@ exports.is_exception = is_exception;
 exports.is_normal_exception = is_normal_exception;
 exports.is_arbitrary_exception = is_arbitrary_exception;
 exports.suites = suites;
+exports.e = e;
+exports.eq = eq;
+exports.Not_found = Not_found;
 /*  Not a pure module */

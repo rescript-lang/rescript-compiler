@@ -44,6 +44,12 @@ let suites = [
   is_arbitrary_exception
 ]
 
+let e = Not_found
+let eq = function Not_found -> true | _ -> false
+exception Not_found
+;; assert  (e = Not_found = false)
+;; assert (eq Not_found = false)
+
 ;; Mt.from_suites "exception" suites
 
 
