@@ -1,5 +1,8 @@
 name: Build playground
-on: [push]
+on:
+  push:
+    tags:
+    - '*'
 jobs:
   run:
     name: Build
@@ -34,6 +37,6 @@ jobs:
       - name: Archive npm artifacts
         uses: actions/upload-artifact@v1
         with:
-          name: playground
+          name: reason-js-compiler
           path: playground
 
