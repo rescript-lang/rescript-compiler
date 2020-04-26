@@ -32,11 +32,11 @@ if (!process.env.BS_PLAYGROUND) {
 var playground = process.env.BS_PLAYGROUND;
 
 function prepare() {
-  e(`hash hash js_of_ocaml 2>/dev/null || { echo >&2 "js_of_ocaml not found on path. Please install version 3.5.1 (with opam switch ${ocamlVersion}), and put it on your path."; exit 1; }
+  e(`opam exec -- js_of_ocaml 2>/dev/null || { echo >&2 "js_of_ocaml not found on path. Please install version 3.5.1 (with opam switch ${ocamlVersion}), and put it on your path."; exit 1; }
 `);
 
   e(
-    `ocamlc.opt -w -30-40 -no-check-prims -I ${jsRefmtCompDir} ${jsRefmtCompDir}/js_compiler.mli ${jsRefmtCompDir}/js_compiler.ml -o jsc.byte && js_of_ocaml jsc.byte -o exports.js`
+    `opam exec -- ocamlc.opt -w -30-40 -no-check-prims -I ${jsRefmtCompDir} ${jsRefmtCompDir}/js_compiler.mli ${jsRefmtCompDir}/js_compiler.ml -o jsc.byte && opam exec -- js_of_ocaml jsc.byte -o exports.js`
   );
 
   e(`cp ../lib/js/*.js ${playground}/stdlib`);
@@ -48,7 +48,7 @@ function prepublish() {
   var packageJson = JSON.stringify(
     {
       name: "reason-js-compiler",
-      version: "0.0.1",
+      version: mainPackageJson.version,
       license: mainPackageJson.license,
       description: mainPackageJson.description,
       repository: mainPackageJson.repository,
@@ -63,7 +63,7 @@ function prepublish() {
   );
 
   fs.writeFileSync(
-    path.join(__dirname, "..", "_release", "package.json"),
+    `${playground}/package.json`),
     packageJson,
     {
       encoding: "utf8"
