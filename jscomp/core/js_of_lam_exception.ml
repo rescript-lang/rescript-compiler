@@ -80,5 +80,3 @@ let caml_set_oo_id args =
     (* | _ -> *)
     (* end *)
     
-let caml_fresh_oo_id args = 
-  E.runtime_call Js_runtime_modules.exceptions "caml_fresh_oo_id" args 

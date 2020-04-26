@@ -576,9 +576,6 @@ let translate loc (prim_name : string)
     *)
     (** Note we captured [exception/extension] creation in the early pass, this primitive is 
         like normal one to set the identifier *)
-    | "caml_fresh_oo_id" 
-      ->
-      Js_of_lam_exception.caml_fresh_oo_id args   
     | "caml_is_extension" ->
       call Js_runtime_modules.exceptions
     | "caml_as_js_exn" ->

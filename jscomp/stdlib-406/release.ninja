@@ -39,7 +39,7 @@ build stdlib-406/callback.cmi : cc stdlib-406/callback.mli | stdlib-406/pervasiv
 build stdlib-406/camlinternalBigarray.cmi stdlib-406/camlinternalBigarray.cmj : cc stdlib-406/camlinternalBigarray.ml | stdlib-406/complex.cmj stdlib-406/pervasives.cmj others
 build stdlib-406/camlinternalFormat.cmj : cc_cmi stdlib-406/camlinternalFormat.ml | stdlib-406/buffer.cmj stdlib-406/bytes.cmj stdlib-406/camlinternalFormat.cmi stdlib-406/camlinternalFormatBasics.cmj stdlib-406/char.cmj stdlib-406/string.cmj stdlib-406/sys.cmj others
 build stdlib-406/camlinternalFormat.cmi : cc stdlib-406/camlinternalFormat.mli | stdlib-406/buffer.cmi stdlib-406/camlinternalFormatBasics.cmi stdlib-406/pervasives.cmj others
-build stdlib-406/camlinternalLazy.cmj : cc_cmi stdlib-406/camlinternalLazy.ml | stdlib-406/camlinternalLazy.cmi stdlib-406/obj.cmj others
+build stdlib-406/camlinternalLazy.cmj : cc_cmi stdlib-406/camlinternalLazy.ml | stdlib-406/camlinternalLazy.cmi others
 build stdlib-406/camlinternalLazy.cmi : cc stdlib-406/camlinternalLazy.mli | stdlib-406/pervasives.cmj others
 build stdlib-406/camlinternalMod.cmj : cc_cmi stdlib-406/camlinternalMod.ml | stdlib-406/array.cmj stdlib-406/camlinternalMod.cmi stdlib-406/camlinternalOO.cmj stdlib-406/obj.cmj others
 build stdlib-406/camlinternalMod.cmi : cc stdlib-406/camlinternalMod.mli | stdlib-406/obj.cmi stdlib-406/pervasives.cmj others
@@ -87,8 +87,8 @@ build stdlib-406/moreLabels.cmi : cc stdlib-406/moreLabels.mli | stdlib-406/hash
     bsc_flags = $bsc_flags -nolabels
 build stdlib-406/nativeint.cmj : cc_cmi stdlib-406/nativeint.ml | stdlib-406/nativeint.cmi stdlib-406/pervasives.cmj stdlib-406/sys.cmj others
 build stdlib-406/nativeint.cmi : cc stdlib-406/nativeint.mli | stdlib-406/pervasives.cmj others
-build stdlib-406/obj.cmj : cc_cmi stdlib-406/obj.ml | stdlib-406/int32.cmj stdlib-406/marshal.cmj stdlib-406/obj.cmi others
-build stdlib-406/obj.cmi : cc stdlib-406/obj.mli | stdlib-406/int32.cmi stdlib-406/pervasives.cmj others
+build stdlib-406/obj.cmj : cc_cmi stdlib-406/obj.ml | stdlib-406/obj.cmi others
+build stdlib-406/obj.cmi : cc stdlib-406/obj.mli | stdlib-406/pervasives.cmj others
 build stdlib-406/oo.cmj : cc_cmi stdlib-406/oo.ml | stdlib-406/camlinternalOO.cmj stdlib-406/oo.cmi others
 build stdlib-406/oo.cmi : cc stdlib-406/oo.mli | stdlib-406/camlinternalOO.cmi stdlib-406/pervasives.cmj others
 build stdlib-406/parsing.cmj : cc_cmi stdlib-406/parsing.ml | stdlib-406/array.cmj stdlib-406/lexing.cmj stdlib-406/obj.cmj stdlib-406/parsing.cmi others

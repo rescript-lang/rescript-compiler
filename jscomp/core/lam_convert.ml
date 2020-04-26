@@ -251,15 +251,12 @@ let lam_prim ~primitive:( p : Lambda.primitive) ~args loc : Lam.t =
       let info : Lam_tag_info.t = Blk_module_export in
       prim ~primitive:(Pmakeblock (tag,info,mutable_flag)) ~args loc  
     | Blk_extension_slot -> 
-      let info : Lam_tag_info.t = Blk_extension_slot in
       ( 
       match args with 
-      | [ Lconst (Const_string name);
-          Lprim {primitive = Pccall {prim_name = "caml_fresh_oo_id"} ; }
-        ] -> 
+      | [ Lconst (Const_string name)] -> 
         prim ~primitive:(Pcreate_extension name) ~args:[] loc
       | _ ->
-      prim ~primitive:(Pmakeblock (tag,info,mutable_flag)) ~args loc
+        assert false
       )
     | Blk_lazy_general  
       ->

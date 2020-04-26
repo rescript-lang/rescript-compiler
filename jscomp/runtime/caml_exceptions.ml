@@ -53,13 +53,11 @@ let caml_set_oo_id (b : Caml_builtin_exceptions.exception_block)  =
   b
 
 
-let caml_fresh_oo_id () = 
-  id .contents <- Caml_nativeint_extern.add id.contents 1n; id.contents
-
 let object_tag = 248
 
 let create (str : string) : Caml_builtin_exceptions.exception_block = 
-  let v = ( str, caml_fresh_oo_id ()) in 
+  id .contents <- Caml_nativeint_extern.add id.contents 1n;  
+  let v = ( str, id.contents) in 
   Caml_obj_extern.set_tag (Caml_obj_extern.repr v) object_tag;
   v 
 
