@@ -26,12 +26,14 @@
 
 
 
-(** *)
 
+(* It is not relevant to exception, just to piggy back on uuid mechanism *)
 val caml_set_oo_id :
-  Caml_builtin_exceptions.exception_block -> Caml_builtin_exceptions.exception_block
+  Caml_obj_extern.t ->
+  Caml_obj_extern.t
 
 
-val create : string -> Caml_builtin_exceptions.exception_block
-(* val makeExtension : string -> Caml_builtin_exceptions.exception_block *)
-val caml_is_extension : 'a -> bool
+val create : string -> Caml_builtin_exceptions.t
+
+val caml_is_extension : 
+  'a -> bool

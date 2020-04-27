@@ -47,10 +47,11 @@ let id = ref 0n
      }
 
    ]}*)
-let caml_set_oo_id (b : Caml_builtin_exceptions.exception_block)  = 
+let caml_set_oo_id (b : Caml_obj_extern.t)  : Caml_obj_extern.t = 
   Caml_obj_extern.set_field (Caml_obj_extern.repr b) 1 (Caml_obj_extern.repr id.contents);
   id .contents <- Caml_nativeint_extern.add id.contents  1n; 
   b
+(* FXIME: this is only relevant to OO module now *)
 
 
 let object_tag = 248
