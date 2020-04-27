@@ -16,8 +16,8 @@ try {
 }
 catch (raw_msg){
   var msg = Caml_js_exceptions.internalToOCamlException(raw_msg);
-  if (msg[0] === Caml_builtin_exceptions.invalid_argument) {
-    console.log(msg[1]);
+  if (msg.CamlExt === Caml_builtin_exceptions.invalid_argument) {
+    console.log(msg._1);
     y = 0;
   } else {
     throw msg;

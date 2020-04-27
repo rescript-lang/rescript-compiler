@@ -136,16 +136,16 @@ function test_raises_this_exc(exc) {
 
 function failure_test(f, x, s) {
   return test_raises_exc_p((function (x) {
-                return Caml_obj.caml_equal(x, [
-                            Caml_builtin_exceptions.failure,
-                            s
-                          ]);
+                return Caml_obj.caml_equal(x, {
+                            CamlExt: Caml_builtin_exceptions.failure,
+                            _1: s
+                          });
               }), f, x);
 }
 
 function scan_failure_test(f, x) {
   return test_raises_exc_p((function (param) {
-                return param[0] === Scanf.Scan_failure;
+                return param.CamlExt === Scanf.Scan_failure;
               }), f, x);
 }
 

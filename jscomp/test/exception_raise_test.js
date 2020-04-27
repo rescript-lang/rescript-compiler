@@ -25,25 +25,26 @@ function appf(g, x) {
   }
   catch (raw_exn){
     var exn = Caml_js_exceptions.internalToOCamlException(raw_exn);
-    if (exn === Local) {
+    if (exn.CamlExt === Local) {
       return 3;
     }
-    if (exn === Caml_builtin_exceptions.not_found) {
+    if (exn.CamlExt === Caml_builtin_exceptions.not_found) {
       return 2;
     }
-    if (exn[0] === A) {
+    if (exn.CamlExt === A) {
+      exn._1 !== 32;
       return 3;
     }
-    if (exn[0] !== B) {
-      if (exn[0] === C) {
-        return exn[1];
-      } else if (exn[0] === D) {
-        return exn[1][0];
+    if (exn.CamlExt !== B) {
+      if (exn.CamlExt === C) {
+        return exn._1;
+      } else if (exn.CamlExt === D) {
+        return exn._1[0];
       } else {
         return 4;
       }
     }
-    var match = exn[1];
+    var match = exn._1;
     if (!match) {
       return 4;
     }
@@ -69,7 +70,7 @@ try {
 }
 catch (raw_x){
   var x = Caml_js_exceptions.internalToOCamlException(raw_x);
-  f = x[0] === A ? x[1] : 2;
+  f = x.CamlExt === A ? x._1 : 2;
 }
 
 var ff;
@@ -79,7 +80,7 @@ try {
 }
 catch (raw_x$1){
   var x$1 = Caml_js_exceptions.internalToOCamlException(raw_x$1);
-  ff = x$1[0] === A ? x$1[1] : 2;
+  ff = x$1.CamlExt === A ? x$1._1 : 2;
 }
 
 var fff;
@@ -89,7 +90,7 @@ try {
 }
 catch (raw_x$2){
   var x$2 = Caml_js_exceptions.internalToOCamlException(raw_x$2);
-  fff = x$2[0] === A ? x$2[1] : 2;
+  fff = x$2.CamlExt === A ? x$2._1 : 2;
 }
 
 var a0;
@@ -99,17 +100,17 @@ try {
 }
 catch (raw_x$3){
   var x$3 = Caml_js_exceptions.internalToOCamlException(raw_x$3);
-  if (x$3[0] === A || x$3[0] === Js_exn.$$Error) {
-    a0 = x$3[1];
+  if (x$3.CamlExt === A || x$3.CamlExt === Js_exn.$$Error) {
+    a0 = x$3._1;
   } else {
-    throw [
-          Caml_builtin_exceptions.assert_failure,
-          /* tuple */[
+    throw {
+          CamlExt: Caml_builtin_exceptions.assert_failure,
+          _1: /* tuple */[
             "exception_raise_test.ml",
             102,
             9
           ]
-        ];
+        };
   }
 }
 
@@ -156,20 +157,20 @@ var suites = {
       /* tuple */[
         "File \"exception_raise_test.ml\", line 116, characters 4-11",
         (function (param) {
-            if (a1[0] === Js_exn.$$Error) {
+            if (a1.CamlExt === Js_exn.$$Error) {
               return /* Eq */Block.__(0, [
-                        a1[1],
+                        a1._1,
                         2
                       ]);
             }
-            throw [
-                  Caml_builtin_exceptions.assert_failure,
-                  /* tuple */[
+            throw {
+                  CamlExt: Caml_builtin_exceptions.assert_failure,
+                  _1: /* tuple */[
                     "exception_raise_test.ml",
                     119,
                     15
                   ]
-                ];
+                };
           })
       ],
       /* [] */0
@@ -194,7 +195,9 @@ catch (raw_e$2){
 }
 
 try {
-  throw Caml_builtin_exceptions.not_found;
+  throw {
+        CamlExt: Caml_builtin_exceptions.not_found
+      };
 }
 catch (raw_e$3){
   var e$1 = Caml_js_exceptions.internalToOCamlException(raw_e$3);

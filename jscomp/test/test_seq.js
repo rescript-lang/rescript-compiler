@@ -5,6 +5,7 @@ var Curry = require("../../lib/js/curry.js");
 var Caml_obj = require("../../lib/js/caml_obj.js");
 var Pervasives = require("../../lib/js/pervasives.js");
 var Caml_exceptions = require("../../lib/js/caml_exceptions.js");
+var Caml_js_exceptions = require("../../lib/js/caml_js_exceptions.js");
 var Caml_builtin_exceptions = require("../../lib/js/caml_builtin_exceptions.js");
 
 var Bad = Caml_exceptions.create("Test_seq.Bad");
@@ -24,15 +25,17 @@ function assoc3(x, _l) {
       _l = l[1];
       continue ;
     }
-    throw Caml_builtin_exceptions.not_found;
+    throw {
+          CamlExt: Caml_builtin_exceptions.not_found
+        };
   };
 }
 
 function help_action(param) {
-  throw [
-        Stop,
-        /* Unknown */Block.__(0, ["-help"])
-      ];
+  throw {
+        CamlExt: Stop,
+        _1: /* Unknown */Block.__(0, ["-help"])
+      };
 }
 
 function v(speclist) {
@@ -50,8 +53,9 @@ function add_help(speclist) {
     assoc3("-help", speclist);
     add1 = /* [] */0;
   }
-  catch (exn){
-    if (exn === Caml_builtin_exceptions.not_found) {
+  catch (raw_exn){
+    var exn = Caml_js_exceptions.internalToOCamlException(raw_exn);
+    if (exn.CamlExt === Caml_builtin_exceptions.not_found) {
       add1 = /* :: */[
         /* tuple */[
           "-help",
@@ -69,8 +73,9 @@ function add_help(speclist) {
     assoc3("--help", speclist);
     add2 = /* [] */0;
   }
-  catch (exn$1){
-    if (exn$1 === Caml_builtin_exceptions.not_found) {
+  catch (raw_exn$1){
+    var exn$1 = Caml_js_exceptions.internalToOCamlException(raw_exn$1);
+    if (exn$1.CamlExt === Caml_builtin_exceptions.not_found) {
       add2 = /* :: */[
         /* tuple */[
           "--help",

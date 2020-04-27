@@ -46,10 +46,10 @@ var yynames_block = "NUMERAL\0IDENT\0";
 
 var yyact = [
   (function (param) {
-      throw [
-            Caml_builtin_exceptions.failure,
-            "parser"
-          ];
+      throw {
+            CamlExt: Caml_builtin_exceptions.failure,
+            _1: "parser"
+          };
     }),
   (function (__caml_parser_env) {
       return Parsing.peek_val(__caml_parser_env, 1);
@@ -102,10 +102,10 @@ var yyact = [
       return Parsing.peek_val(__caml_parser_env, 1);
     }),
   (function (__caml_parser_env) {
-      throw [
-            Parsing.YYexit,
-            Parsing.peek_val(__caml_parser_env, 0)
-          ];
+      throw {
+            CamlExt: Parsing.YYexit,
+            _1: Parsing.peek_val(__caml_parser_env, 0)
+          };
     })
 ];
 

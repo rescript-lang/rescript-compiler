@@ -9,6 +9,7 @@ var Caml_obj = require("../../lib/js/caml_obj.js");
 var Caml_array = require("../../lib/js/caml_array.js");
 var Caml_primitive = require("../../lib/js/caml_primitive.js");
 var Caml_exceptions = require("../../lib/js/caml_exceptions.js");
+var Caml_js_exceptions = require("../../lib/js/caml_js_exceptions.js");
 
 function starts_with(xs, prefix, p) {
   var H = Caml_exceptions.create("H");
@@ -20,14 +21,17 @@ function starts_with(xs, prefix, p) {
   try {
     for(var i = 0; i < len2; ++i){
       if (!Curry._2(p, Caml_array.caml_array_get(xs, i), Caml_array.caml_array_get(prefix, i))) {
-        throw H;
+        throw {
+              CamlExt: H
+            };
       }
       
     }
     return true;
   }
-  catch (exn){
-    if (exn === H) {
+  catch (raw_exn){
+    var exn = Caml_js_exceptions.internalToOCamlException(raw_exn);
+    if (exn.CamlExt === H) {
       return false;
     }
     throw exn;

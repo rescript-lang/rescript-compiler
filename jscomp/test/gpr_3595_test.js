@@ -18,14 +18,14 @@ function eq(loc, x, y) {
 var match = [1];
 
 if (match.length !== 1) {
-  throw [
-        Caml_builtin_exceptions.match_failure,
-        /* tuple */[
+  throw {
+        CamlExt: Caml_builtin_exceptions.match_failure,
+        _1: /* tuple */[
           "gpr_3595_test.ml",
           9,
           4
         ]
-      ];
+      };
 }
 
 var a = match[0];

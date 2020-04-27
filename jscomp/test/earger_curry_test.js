@@ -26,10 +26,10 @@ function init(l, f) {
     return [];
   }
   if (l < 0) {
-    throw [
-          Caml_builtin_exceptions.invalid_argument,
-          "Array.init"
-        ];
+    throw {
+          CamlExt: Caml_builtin_exceptions.invalid_argument,
+          _1: "Array.init"
+        };
   }
   var res = Caml_array.caml_make_vect(l, f$1(0));
   for(var i = 1; i < l; ++i){

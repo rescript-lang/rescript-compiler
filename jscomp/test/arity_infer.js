@@ -10,13 +10,17 @@ function f0(x) {
         return x + 1 | 0;
       });
   } else {
-    throw Caml_builtin_exceptions.not_found;
+    throw {
+          CamlExt: Caml_builtin_exceptions.not_found
+        };
   }
   return tmp(3);
 }
 
 function f1(x) {
-  throw Caml_builtin_exceptions.not_found;
+  throw {
+        CamlExt: Caml_builtin_exceptions.not_found
+      };
   return Curry._1(undefined, x);
 }
 
@@ -44,7 +48,9 @@ function f3(x) {
           });
         break;
     default:
-      throw Caml_builtin_exceptions.not_found;
+      throw {
+            CamlExt: Caml_builtin_exceptions.not_found
+          };
   }
   return tmp(3);
 }

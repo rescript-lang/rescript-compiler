@@ -18,44 +18,44 @@ function bool_equal(x, y) {
 
 function assertions(param) {
   if (!bool_equal(true, true)) {
-    throw [
-          Caml_builtin_exceptions.assert_failure,
-          /* tuple */[
+    throw {
+          CamlExt: Caml_builtin_exceptions.assert_failure,
+          _1: /* tuple */[
             "test_bool_equal.ml",
             21,
             2
           ]
-        ];
+        };
   }
   if (!bool_equal(false, false)) {
-    throw [
-          Caml_builtin_exceptions.assert_failure,
-          /* tuple */[
+    throw {
+          CamlExt: Caml_builtin_exceptions.assert_failure,
+          _1: /* tuple */[
             "test_bool_equal.ml",
             22,
             2
           ]
-        ];
+        };
   }
   if (bool_equal(true, false)) {
-    throw [
-          Caml_builtin_exceptions.assert_failure,
-          /* tuple */[
+    throw {
+          CamlExt: Caml_builtin_exceptions.assert_failure,
+          _1: /* tuple */[
             "test_bool_equal.ml",
             23,
             2
           ]
-        ];
+        };
   }
   if (bool_equal(false, true)) {
-    throw [
-          Caml_builtin_exceptions.assert_failure,
-          /* tuple */[
+    throw {
+          CamlExt: Caml_builtin_exceptions.assert_failure,
+          _1: /* tuple */[
             "test_bool_equal.ml",
             24,
             2
           ]
-        ];
+        };
   }
   
 }

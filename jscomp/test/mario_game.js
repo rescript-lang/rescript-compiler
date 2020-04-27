@@ -1474,10 +1474,10 @@ function game_win(ctx) {
   ctx.fillStyle = "white";
   ctx.font = "20px 'Press Start 2P'";
   ctx.fillText("You win!", 180, 128);
-  throw [
-        Caml_builtin_exceptions.failure,
-        "Game over."
-      ];
+  throw {
+        CamlExt: Caml_builtin_exceptions.failure,
+        _1: "Game over."
+      };
 }
 
 function game_loss(ctx) {
@@ -1487,10 +1487,10 @@ function game_loss(ctx) {
   ctx.fillStyle = "white";
   ctx.font = "20px 'Press Start 2P'";
   ctx.fillText("GAME OVER. You lose!", 60, 128);
-  throw [
-        Caml_builtin_exceptions.failure,
-        "Game over."
-      ];
+  throw {
+        CamlExt: Caml_builtin_exceptions.failure,
+        _1: "Game over."
+      };
 }
 
 var Draw = {
@@ -2396,10 +2396,10 @@ function choose_enemy_typ(typ) {
     case 2 :
         return /* Goomba */0;
     default:
-      throw [
-            Caml_builtin_exceptions.failure,
-            "Shouldn't reach here"
-          ];
+      throw {
+            CamlExt: Caml_builtin_exceptions.failure,
+            _1: "Shouldn't reach here"
+          };
   }
 }
 
@@ -2416,10 +2416,10 @@ function choose_sblock_typ(typ) {
     case 4 :
         return /* Ground */5;
     default:
-      throw [
-            Caml_builtin_exceptions.failure,
-            "Shouldn't reach here"
-          ];
+      throw {
+            CamlExt: Caml_builtin_exceptions.failure,
+            _1: "Shouldn't reach here"
+          };
   }
 }
 
@@ -2930,10 +2930,10 @@ function choose_block_pattern(blockw, blockh, cbx, cby, prob) {
                 /* [] */0
               ];
     default:
-      throw [
-            Caml_builtin_exceptions.failure,
-            "Shouldn't reach here"
-          ];
+      throw {
+            CamlExt: Caml_builtin_exceptions.failure,
+            _1: "Shouldn't reach here"
+          };
   }
 }
 
@@ -3201,10 +3201,10 @@ function load(param) {
                 ]),
               "cant find canvas %s \n"
             ]), canvas_id);
-    throw [
-          Caml_builtin_exceptions.failure,
-          "fail"
-        ];
+    throw {
+          CamlExt: Caml_builtin_exceptions.failure,
+          _1: "fail"
+        };
   }
   var context = canvas.getContext("2d");
   document.addEventListener("keydown", keydown, true);

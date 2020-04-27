@@ -7,26 +7,26 @@ var match = 1;
 
 if (match !== undefined) {
   if (match !== 1) {
-    throw [
-          Caml_builtin_exceptions.assert_failure,
-          /* tuple */[
+    throw {
+          CamlExt: Caml_builtin_exceptions.assert_failure,
+          _1: /* tuple */[
             "gpr_3980_test.ml",
             16,
             10
           ]
-        ];
+        };
   }
   var match$1 = 1;
   if (match$1 !== 1) {
     if (match$1 !== 2) {
-      throw [
-            Caml_builtin_exceptions.assert_failure,
-            /* tuple */[
+      throw {
+            CamlExt: Caml_builtin_exceptions.assert_failure,
+            _1: /* tuple */[
               "gpr_3980_test.ml",
               14,
               12
             ]
-          ];
+          };
     }
     ({
         name: "bye",
@@ -35,14 +35,14 @@ if (match !== undefined) {
   }
   
 } else {
-  throw [
-        Caml_builtin_exceptions.assert_failure,
-        /* tuple */[
+  throw {
+        CamlExt: Caml_builtin_exceptions.assert_failure,
+        _1: /* tuple */[
           "gpr_3980_test.ml",
           16,
           10
         ]
-      ];
+      };
 }
 
 /*  Not a pure module */

@@ -23,14 +23,14 @@ for(var i = 1; i <= 2; ++i){
     if (i === n) {
       return ;
     }
-    throw [
-          Caml_builtin_exceptions.assert_failure,
-          /* tuple */[
+    throw {
+          CamlExt: Caml_builtin_exceptions.assert_failure,
+          _1: /* tuple */[
             "gpr_858_unit2_test.ml",
             6,
             13
           ]
-        ];
+        };
   }
   }(i));
   f(0, i);

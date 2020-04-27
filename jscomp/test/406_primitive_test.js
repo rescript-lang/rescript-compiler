@@ -27,10 +27,10 @@ function f(param) {
   try {
     for(var i = 0; i <= 200; ++i){
       if (i === 10) {
-        throw [
-              A,
-              0
-            ];
+        throw {
+              CamlExt: A,
+              _1: 0
+            };
       }
       
     }
@@ -38,7 +38,7 @@ function f(param) {
   }
   catch (raw_exn){
     var exn = Caml_js_exceptions.internalToOCamlException(raw_exn);
-    if (exn[0] === A) {
+    if (exn.CamlExt === A) {
       return ;
     }
     throw exn;

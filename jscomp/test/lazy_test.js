@@ -40,14 +40,14 @@ function f(param) {
   if (x !== undefined) {
     return 1;
   }
-  throw [
-        Caml_builtin_exceptions.match_failure,
-        /* tuple */[
+  throw {
+        CamlExt: Caml_builtin_exceptions.match_failure,
+        _1: /* tuple */[
           "lazy_test.ml",
           11,
           8
         ]
-      ];
+      };
 }
 
 var s = {
@@ -81,7 +81,7 @@ try {
 }
 catch (raw_exn){
   var exn = Caml_js_exceptions.internalToOCamlException(raw_exn);
-  if (exn[0] === Caml_builtin_exceptions.match_failure) {
+  if (exn.CamlExt === Caml_builtin_exceptions.match_failure) {
     h = 2;
   } else {
     throw exn;
@@ -139,7 +139,9 @@ var f006 = {
 var f007 = {
   tag: 246,
   value: (function () {
-      throw Caml_builtin_exceptions.not_found;
+      throw {
+            CamlExt: Caml_builtin_exceptions.not_found
+          };
     })
 };
 
@@ -147,7 +149,9 @@ var f008 = {
   tag: 246,
   value: (function () {
       console.log("hi");
-      throw Caml_builtin_exceptions.not_found;
+      throw {
+            CamlExt: Caml_builtin_exceptions.not_found
+          };
     })
 };
 

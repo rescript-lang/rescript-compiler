@@ -37,3 +37,8 @@ val create : string -> Caml_builtin_exceptions.t
 
 val caml_is_extension : 
   'a -> bool
+
+type exn   
+
+val caml_exn_slot_id : exn -> nativeint 
+val caml_exn_slot_name : exn -> string   

@@ -52,19 +52,19 @@ function utf8_decode(strm) {
                 Stream.junk(strm);
                 var c = classify(chr);
                 if (typeof c === "number") {
-                  throw [
-                        Stream.$$Error,
-                        "Invalid byte"
-                      ];
+                  throw {
+                        CamlExt: Stream.$$Error,
+                        _1: "Invalid byte"
+                      };
                 }
                 switch (c.tag | 0) {
                   case /* Single */0 :
                       return Stream.icons(c[0], utf8_decode(strm));
                   case /* Cont */1 :
-                      throw [
-                            Stream.$$Error,
-                            "Unexpected continuation byte"
-                          ];
+                      throw {
+                            CamlExt: Stream.$$Error,
+                            _1: "Unexpected continuation byte"
+                          };
                   case /* Leading */2 :
                       var follow = function (strm, _n, _c) {
                         while(true) {
@@ -75,20 +75,20 @@ function utf8_decode(strm) {
                           }
                           var cc = classify(Stream.next(strm));
                           if (typeof cc === "number") {
-                            throw [
-                                  Stream.$$Error,
-                                  "Continuation byte expected"
-                                ];
+                            throw {
+                                  CamlExt: Stream.$$Error,
+                                  _1: "Continuation byte expected"
+                                };
                           }
                           if (cc.tag === /* Cont */1) {
                             _c = (c << 6) | cc[0] & 63;
                             _n = n - 1 | 0;
                             continue ;
                           }
-                          throw [
-                                Stream.$$Error,
-                                "Continuation byte expected"
-                              ];
+                          throw {
+                                CamlExt: Stream.$$Error,
+                                _1: "Continuation byte expected"
+                              };
                         };
                       };
                       return Stream.icons(follow(strm, c[0], c[1]), utf8_decode(strm));
@@ -118,10 +118,10 @@ function utf8_list(s) {
 function decode(bytes, offset) {
   var c = classify(Caml_bytes.get(bytes, offset));
   if (typeof c === "number") {
-    throw [
-          Caml_builtin_exceptions.invalid_argument,
-          "decode"
-        ];
+    throw {
+          CamlExt: Caml_builtin_exceptions.invalid_argument,
+          _1: "decode"
+        };
   }
   switch (c.tag | 0) {
     case /* Single */0 :
@@ -130,10 +130,10 @@ function decode(bytes, offset) {
                 offset + 1 | 0
               ];
     case /* Cont */1 :
-        throw [
-              Caml_builtin_exceptions.invalid_argument,
-              "decode"
-            ];
+        throw {
+              CamlExt: Caml_builtin_exceptions.invalid_argument,
+              _1: "decode"
+            };
     case /* Leading */2 :
         var _n = c[0];
         var _c = c[1];
@@ -150,10 +150,10 @@ function decode(bytes, offset) {
           }
           var cc = classify(Caml_bytes.get(bytes, offset$1));
           if (typeof cc === "number") {
-            throw [
-                  Caml_builtin_exceptions.invalid_argument,
-                  "decode"
-                ];
+            throw {
+                  CamlExt: Caml_builtin_exceptions.invalid_argument,
+                  _1: "decode"
+                };
           }
           if (cc.tag === /* Cont */1) {
             _offset = offset$1 + 1 | 0;
@@ -161,10 +161,10 @@ function decode(bytes, offset) {
             _n = n - 1 | 0;
             continue ;
           }
-          throw [
-                Caml_builtin_exceptions.invalid_argument,
-                "decode"
-              ];
+          throw {
+                CamlExt: Caml_builtin_exceptions.invalid_argument,
+                _1: "decode"
+              };
         };
     
   }

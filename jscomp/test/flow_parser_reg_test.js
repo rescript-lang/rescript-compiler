@@ -1538,7 +1538,9 @@ function eat(f) {
             todo: match[1]
           };
   }
-  throw No_good;
+  throw {
+        CamlExt: No_good
+      };
 }
 
 function start(str) {
@@ -1589,7 +1591,9 @@ function parse_hex_symbol(f) {
   var match = f.todo;
   if (match) {
     if (match[0] !== 48) {
-      throw No_good;
+      throw {
+            CamlExt: No_good
+          };
     }
     var match$1 = match[1];
     if (match$1) {
@@ -1598,13 +1602,19 @@ function parse_hex_symbol(f) {
         return eat(eat(f));
       }
       if (match$2 !== 120) {
-        throw No_good;
+        throw {
+              CamlExt: No_good
+            };
       }
       return eat(eat(f));
     }
-    throw No_good;
+    throw {
+          CamlExt: No_good
+        };
   }
-  throw No_good;
+  throw {
+        CamlExt: No_good
+      };
 }
 
 function parse_exponent(f) {
@@ -1615,8 +1625,10 @@ function parse_exponent(f) {
   }
   catch (raw_exn){
     var exn = Caml_js_exceptions.internalToOCamlException(raw_exn);
-    if (exn[0] === Caml_builtin_exceptions.failure) {
-      throw No_good;
+    if (exn.CamlExt === Caml_builtin_exceptions.failure) {
+      throw {
+            CamlExt: No_good
+          };
     }
     throw exn;
   }
@@ -1664,7 +1676,9 @@ function parse_body(_f) {
         };
         continue ;
       }
-      throw No_good;
+      throw {
+            CamlExt: No_good
+          };
     }
     var ref_char_code;
     if (c >= /* "0" */48 && c <= /* "9" */57) {
@@ -1674,7 +1688,9 @@ function parse_body(_f) {
     } else if (c >= /* "a" */97 && c <= /* "f" */102) {
       ref_char_code = 87;
     } else {
-      throw No_good;
+      throw {
+            CamlExt: No_good
+          };
     }
     var value = c - ref_char_code | 0;
     var e = f.decimal_exponent;
@@ -1701,14 +1717,14 @@ function float_of_string(str) {
       try {
         var f = parse_body(parse_hex_symbol(parse_sign(start(str))));
         if (f.todo !== /* [] */0) {
-          throw [
-                Caml_builtin_exceptions.assert_failure,
-                /* tuple */[
+          throw {
+                CamlExt: Caml_builtin_exceptions.assert_failure,
+                _1: /* tuple */[
                   "lexer_flow.mll",
                   546,
                   4
                 ]
-              ];
+              };
         }
         var ret = f.mantissa;
         var decimal_exponent = f.decimal_exponent;
@@ -1720,8 +1736,9 @@ function float_of_string(str) {
           return ret$1;
         }
       }
-      catch (exn){
-        if (exn === No_good) {
+      catch (raw_exn){
+        var exn = Caml_js_exceptions.internalToOCamlException(raw_exn);
+        if (exn.CamlExt === No_good) {
           throw e;
         }
         throw exn;
@@ -1787,14 +1804,14 @@ function unicode_fix_cols(lb) {
 
 function oct_to_int(x) {
   if (x > 55 || x < 48) {
-    throw [
-          Caml_builtin_exceptions.assert_failure,
-          /* tuple */[
+    throw {
+          CamlExt: Caml_builtin_exceptions.assert_failure,
+          _1: /* tuple */[
             "lexer_flow.mll",
             604,
             11
           ]
-        ];
+        };
   }
   return x - /* "0" */48 | 0;
 }
@@ -1813,14 +1830,14 @@ function hexa_to_int(x) {
   } else if (!(x > 57 || x < 48)) {
     return x - /* "0" */48 | 0;
   }
-  throw [
-        Caml_builtin_exceptions.assert_failure,
-        /* tuple */[
+  throw {
+        CamlExt: Caml_builtin_exceptions.assert_failure,
+        _1: /* tuple */[
           "lexer_flow.mll",
           610,
           11
         ]
-      ];
+      };
 }
 
 function utf16to8(code) {
@@ -2437,8 +2454,9 @@ function token(env, lexbuf) {
                     Hashtbl.find(keywords, word)
                   ];
           }
-          catch (exn){
-            if (exn === Caml_builtin_exceptions.not_found) {
+          catch (raw_exn){
+            var exn = Caml_js_exceptions.internalToOCamlException(raw_exn);
+            if (exn.CamlExt === Caml_builtin_exceptions.not_found) {
               return /* tuple */[
                       env,
                       /* T_IDENTIFIER */0
@@ -4282,8 +4300,9 @@ function type_token(env, lexbuf) {
                     Hashtbl.find(type_keywords, word)
                   ];
           }
-          catch (exn$2){
-            if (exn$2 === Caml_builtin_exceptions.not_found) {
+          catch (raw_exn){
+            var exn$2 = Caml_js_exceptions.internalToOCamlException(raw_exn);
+            if (exn$2.CamlExt === Caml_builtin_exceptions.not_found) {
               return /* tuple */[
                       env,
                       /* T_IDENTIFIER */0
@@ -4783,15 +4802,15 @@ function bal(l, v, r) {
       if (lr) {
         return create(create(ll, lv, lr[/* l */0]), lr[/* v */1], create(lr[/* r */2], v, r));
       }
-      throw [
-            Caml_builtin_exceptions.invalid_argument,
-            "Set.bal"
-          ];
+      throw {
+            CamlExt: Caml_builtin_exceptions.invalid_argument,
+            _1: "Set.bal"
+          };
     }
-    throw [
-          Caml_builtin_exceptions.invalid_argument,
-          "Set.bal"
-        ];
+    throw {
+          CamlExt: Caml_builtin_exceptions.invalid_argument,
+          _1: "Set.bal"
+        };
   }
   if (hr <= (hl + 2 | 0)) {
     return /* Node */[
@@ -4811,15 +4830,15 @@ function bal(l, v, r) {
     if (rl) {
       return create(create(l, v, rl[/* l */0]), rl[/* v */1], create(rl[/* r */2], rv, rr));
     }
-    throw [
-          Caml_builtin_exceptions.invalid_argument,
-          "Set.bal"
-        ];
+    throw {
+          CamlExt: Caml_builtin_exceptions.invalid_argument,
+          _1: "Set.bal"
+        };
   }
-  throw [
-        Caml_builtin_exceptions.invalid_argument,
-        "Set.bal"
-      ];
+  throw {
+        CamlExt: Caml_builtin_exceptions.invalid_argument,
+        _1: "Set.bal"
+      };
 }
 
 function add(x, t) {
@@ -5097,14 +5116,14 @@ function record_export(env, param) {
 function lookahead(iOpt, env) {
   var i = iOpt !== undefined ? iOpt : 0;
   if (i >= 2) {
-    throw [
-          Caml_builtin_exceptions.assert_failure,
-          /* tuple */[
+    throw {
+          CamlExt: Caml_builtin_exceptions.assert_failure,
+          _1: /* tuple */[
             "parser_env.ml",
             288,
             2
           ]
-        ];
+        };
   }
   var t = env.lookahead.contents;
   lex_until(t, i);
@@ -5112,10 +5131,10 @@ function lookahead(iOpt, env) {
   if (match !== undefined) {
     return match[1];
   }
-  throw [
-        Caml_builtin_exceptions.failure,
-        "Lookahead.peek failed"
-      ];
+  throw {
+        CamlExt: Caml_builtin_exceptions.failure,
+        _1: "Lookahead.peek failed"
+      };
 }
 
 function with_strict(in_strict_mode, env) {
@@ -5276,10 +5295,10 @@ function lex_env(iOpt, env) {
   if (match !== undefined) {
     return match[0];
   }
-  throw [
-        Caml_builtin_exceptions.failure,
-        "Lookahead.peek failed"
-      ];
+  throw {
+        CamlExt: Caml_builtin_exceptions.failure,
+        _1: "Lookahead.peek failed"
+      };
 }
 
 function is_line_terminator(env) {
@@ -5479,10 +5498,10 @@ function pop_lex_mode(env) {
   if (match) {
     new_stack = match[1];
   } else {
-    throw [
-          Caml_builtin_exceptions.failure,
-          "Popping lex mode from empty stack"
-        ];
+    throw {
+          CamlExt: Caml_builtin_exceptions.failure,
+          _1: "Popping lex mode from empty stack"
+        };
   }
   env.lex_mode_stack.contents = new_stack;
   env.lookahead.contents = create$1(env.lex_env.contents, List.hd(env.lex_mode_stack.contents));
@@ -5497,16 +5516,16 @@ function double_pop_lex_mode(env) {
     if (match$1) {
       new_stack = match$1[1];
     } else {
-      throw [
-            Caml_builtin_exceptions.failure,
-            "Popping lex mode from empty stack"
-          ];
+      throw {
+            CamlExt: Caml_builtin_exceptions.failure,
+            _1: "Popping lex mode from empty stack"
+          };
     }
   } else {
-    throw [
-          Caml_builtin_exceptions.failure,
-          "Popping lex mode from empty stack"
-        ];
+    throw {
+          CamlExt: Caml_builtin_exceptions.failure,
+          _1: "Popping lex mode from empty stack"
+        };
   }
   env.lex_mode_stack.contents = new_stack;
   env.lookahead.contents = create$1(env.lex_env.contents, List.hd(env.lex_mode_stack.contents));
@@ -5597,8 +5616,9 @@ function to_parse(env, parse) {
     reset_token_sink(true, env, saved_state.token_buffer);
     return /* ParsedSuccessfully */[result];
   }
-  catch (exn){
-    if (exn === Rollback) {
+  catch (raw_exn){
+    var exn = Caml_js_exceptions.internalToOCamlException(raw_exn);
+    if (exn.CamlExt === Rollback) {
       reset_token_sink(false, env, saved_state.token_buffer);
       env.errors.contents = saved_state.saved_errors;
       env.comments.contents = saved_state.saved_comments;
@@ -5664,15 +5684,15 @@ function bal$1(l, v, r) {
       if (lr) {
         return create$2(create$2(ll, lv, lr[/* l */0]), lr[/* v */1], create$2(lr[/* r */2], v, r));
       }
-      throw [
-            Caml_builtin_exceptions.invalid_argument,
-            "Set.bal"
-          ];
+      throw {
+            CamlExt: Caml_builtin_exceptions.invalid_argument,
+            _1: "Set.bal"
+          };
     }
-    throw [
-          Caml_builtin_exceptions.invalid_argument,
-          "Set.bal"
-        ];
+    throw {
+          CamlExt: Caml_builtin_exceptions.invalid_argument,
+          _1: "Set.bal"
+        };
   }
   if (hr <= (hl + 2 | 0)) {
     return /* Node */[
@@ -5692,15 +5712,15 @@ function bal$1(l, v, r) {
     if (rl) {
       return create$2(create$2(l, v, rl[/* l */0]), rl[/* v */1], create$2(rl[/* r */2], rv, rr));
     }
-    throw [
-          Caml_builtin_exceptions.invalid_argument,
-          "Set.bal"
-        ];
+    throw {
+          CamlExt: Caml_builtin_exceptions.invalid_argument,
+          _1: "Set.bal"
+        };
   }
-  throw [
-        Caml_builtin_exceptions.invalid_argument,
-        "Set.bal"
-      ];
+  throw {
+        CamlExt: Caml_builtin_exceptions.invalid_argument,
+        _1: "Set.bal"
+      };
 }
 
 function add$1(x, t) {
@@ -5785,15 +5805,15 @@ function bal$2(l, x, d, r) {
       if (lr) {
         return create$3(create$3(ll, lv, ld, lr[/* l */0]), lr[/* v */1], lr[/* d */2], create$3(lr[/* r */3], x, d, r));
       }
-      throw [
-            Caml_builtin_exceptions.invalid_argument,
-            "Map.bal"
-          ];
+      throw {
+            CamlExt: Caml_builtin_exceptions.invalid_argument,
+            _1: "Map.bal"
+          };
     }
-    throw [
-          Caml_builtin_exceptions.invalid_argument,
-          "Map.bal"
-        ];
+    throw {
+          CamlExt: Caml_builtin_exceptions.invalid_argument,
+          _1: "Map.bal"
+        };
   }
   if (hr <= (hl + 2 | 0)) {
     return /* Node */[
@@ -5815,15 +5835,15 @@ function bal$2(l, x, d, r) {
     if (rl) {
       return create$3(create$3(l, x, d, rl[/* l */0]), rl[/* v */1], rl[/* d */2], create$3(rl[/* r */3], rv, rd, rr));
     }
-    throw [
-          Caml_builtin_exceptions.invalid_argument,
-          "Map.bal"
-        ];
+    throw {
+          CamlExt: Caml_builtin_exceptions.invalid_argument,
+          _1: "Map.bal"
+        };
   }
-  throw [
-        Caml_builtin_exceptions.invalid_argument,
-        "Map.bal"
-      ];
+  throw {
+        CamlExt: Caml_builtin_exceptions.invalid_argument,
+        _1: "Map.bal"
+      };
 }
 
 function add$2(x, data, m) {
@@ -5881,7 +5901,9 @@ function find(x, _param) {
       _param = c < 0 ? param[/* l */0] : param[/* r */3];
       continue ;
     }
-    throw Caml_builtin_exceptions.not_found;
+    throw {
+          CamlExt: Caml_builtin_exceptions.not_found
+        };
   };
 }
 
@@ -5927,15 +5949,15 @@ function bal$3(l, v, r) {
       if (lr) {
         return create$4(create$4(ll, lv, lr[/* l */0]), lr[/* v */1], create$4(lr[/* r */2], v, r));
       }
-      throw [
-            Caml_builtin_exceptions.invalid_argument,
-            "Set.bal"
-          ];
+      throw {
+            CamlExt: Caml_builtin_exceptions.invalid_argument,
+            _1: "Set.bal"
+          };
     }
-    throw [
-          Caml_builtin_exceptions.invalid_argument,
-          "Set.bal"
-        ];
+    throw {
+          CamlExt: Caml_builtin_exceptions.invalid_argument,
+          _1: "Set.bal"
+        };
   }
   if (hr <= (hl + 2 | 0)) {
     return /* Node */[
@@ -5955,15 +5977,15 @@ function bal$3(l, v, r) {
     if (rl) {
       return create$4(create$4(l, v, rl[/* l */0]), rl[/* v */1], create$4(rl[/* r */2], rv, rr));
     }
-    throw [
-          Caml_builtin_exceptions.invalid_argument,
-          "Set.bal"
-        ];
+    throw {
+          CamlExt: Caml_builtin_exceptions.invalid_argument,
+          _1: "Set.bal"
+        };
   }
-  throw [
-        Caml_builtin_exceptions.invalid_argument,
-        "Set.bal"
-      ];
+  throw {
+        CamlExt: Caml_builtin_exceptions.invalid_argument,
+        _1: "Set.bal"
+      };
 }
 
 function add$3(x, t) {
@@ -6438,28 +6460,28 @@ function rev_nonempty_acc(acc) {
   if (acc) {
     end_loc = acc[0][0];
   } else {
-    throw [
-          Caml_builtin_exceptions.assert_failure,
-          /* tuple */[
+    throw {
+          CamlExt: Caml_builtin_exceptions.assert_failure,
+          _1: /* tuple */[
             "parser_flow.ml",
             127,
             13
           ]
-        ];
+        };
   }
   var acc$1 = List.rev(acc);
   var start_loc;
   if (acc$1) {
     start_loc = acc$1[0][0];
   } else {
-    throw [
-          Caml_builtin_exceptions.assert_failure,
-          /* tuple */[
+    throw {
+          CamlExt: Caml_builtin_exceptions.assert_failure,
+          _1: /* tuple */[
             "parser_flow.ml",
             131,
             13
           ]
-        ];
+        };
   }
   return /* tuple */[
           btwn(start_loc, end_loc),
@@ -7142,14 +7164,14 @@ function annotation(env) {
   if (loc !== undefined) {
     end_loc = loc;
   } else {
-    throw [
-          Caml_builtin_exceptions.assert_failure,
-          /* tuple */[
+    throw {
+          CamlExt: Caml_builtin_exceptions.assert_failure,
+          _1: /* tuple */[
             "parser_flow.ml",
             121,
             16
           ]
-        ];
+        };
   }
   return /* tuple */[
           btwn(start_loc, end_loc),
@@ -8273,14 +8295,14 @@ function primary$1(env) {
           var match$4 = Curry._2(Parser_env_Peek.token, undefined, env);
           var match$5;
           if (typeof match$4 === "number") {
-            throw [
-                  Caml_builtin_exceptions.assert_failure,
-                  /* tuple */[
+            throw {
+                  CamlExt: Caml_builtin_exceptions.assert_failure,
+                  _1: /* tuple */[
                     "parser_flow.ml",
                     1699,
                     15
                   ]
-                ];
+                };
           }
           if (match$4.tag === /* T_REGEXP */3) {
             var match$6 = match$4[0];
@@ -8292,14 +8314,14 @@ function primary$1(env) {
               match$6[2]
             ];
           } else {
-            throw [
-                  Caml_builtin_exceptions.assert_failure,
-                  /* tuple */[
+            throw {
+                  CamlExt: Caml_builtin_exceptions.assert_failure,
+                  _1: /* tuple */[
                     "parser_flow.ml",
                     1699,
                     15
                   ]
-                ];
+                };
           }
           var raw_flags = match$5[2];
           pop_lex_mode(env);
@@ -8571,7 +8593,9 @@ function assignment_but_not_arrow_function(env) {
 }
 
 function error_callback(param, param$1) {
-  throw Parser_env_Try.Rollback;
+  throw {
+        CamlExt: Parser_env_Try.Rollback
+      };
 }
 
 function try_assignment_but_not_arrow_function(env) {
@@ -8581,18 +8605,24 @@ function try_assignment_but_not_arrow_function(env) {
   if (typeof match === "number") {
     if (match !== 10) {
       if (match === 77) {
-        throw Parser_env_Try.Rollback;
+        throw {
+              CamlExt: Parser_env_Try.Rollback
+            };
       }
       
     } else {
-      throw Parser_env_Try.Rollback;
+      throw {
+            CamlExt: Parser_env_Try.Rollback
+          };
     }
   }
   if (!Curry._2(Parser_env_Peek.is_identifier, undefined, env$1)) {
     return ret;
   }
   if (Curry._2(Parser_env_Peek.value, undefined, env$1) === "checks") {
-    throw Parser_env_Try.Rollback;
+    throw {
+          CamlExt: Parser_env_Try.Rollback
+        };
   }
   var match$1 = ret[1];
   if (typeof match$1 === "number") {
@@ -8605,7 +8635,9 @@ function try_assignment_but_not_arrow_function(env) {
     return ret;
   }
   if (!Curry._1(Parser_env_Peek.is_line_terminator, env$1)) {
-    throw Parser_env_Try.Rollback;
+    throw {
+          CamlExt: Parser_env_Try.Rollback
+        };
   }
   return ret;
 }
@@ -9080,14 +9112,14 @@ function template_parts(env, _quasis, _expressions) {
       var match$1 = Curry._2(Parser_env_Peek.token, undefined, env);
       var match$2;
       if (typeof match$1 === "number") {
-        throw [
-              Caml_builtin_exceptions.assert_failure,
-              /* tuple */[
+        throw {
+              CamlExt: Caml_builtin_exceptions.assert_failure,
+              _1: /* tuple */[
                 "parser_flow.ml",
                 1602,
                 19
               ]
-            ];
+            };
       }
       if (match$1.tag === /* T_TEMPLATE_PART */2) {
         var match$3 = match$1[0];
@@ -9106,14 +9138,14 @@ function template_parts(env, _quasis, _expressions) {
           tail
         ];
       } else {
-        throw [
-              Caml_builtin_exceptions.assert_failure,
-              /* tuple */[
+        throw {
+              CamlExt: Caml_builtin_exceptions.assert_failure,
+              _1: /* tuple */[
                 "parser_flow.ml",
                 1602,
                 19
               ]
-            ];
+            };
       }
       var loc = match$2[0];
       pop_lex_mode(env);
@@ -9280,14 +9312,20 @@ function error_callback$1(param, param$1) {
       if (switcher === 19) {
         return ;
       }
-      throw Parser_env_Try.Rollback;
+      throw {
+            CamlExt: Parser_env_Try.Rollback
+          };
     }
     if (switcher > 15 || switcher < 1) {
       return ;
     }
-    throw Parser_env_Try.Rollback;
+    throw {
+          CamlExt: Parser_env_Try.Rollback
+        };
   }
-  throw Parser_env_Try.Rollback;
+  throw {
+        CamlExt: Parser_env_Try.Rollback
+      };
 }
 
 function try_arrow_function(env) {
@@ -9480,14 +9518,14 @@ function _method(env, kind) {
   var params;
   switch (kind) {
     case /* Init */0 :
-        throw [
-              Caml_builtin_exceptions.assert_failure,
-              /* tuple */[
+        throw {
+              CamlExt: Caml_builtin_exceptions.assert_failure,
+              _1: /* tuple */[
                 "parser_flow.ml",
                 1954,
                 16
               ]
-            ];
+            };
     case /* Get */1 :
         params = /* [] */0;
         break;
@@ -9817,10 +9855,10 @@ function check_property(env, prop_map, prop) {
                   key = Pervasives.string_of_float(s[0]);
                   break;
               case /* RegExp */3 :
-                  throw [
-                        Caml_builtin_exceptions.failure,
-                        "RegExp cannot be property key"
-                      ];
+                  throw {
+                        CamlExt: Caml_builtin_exceptions.failure,
+                        _1: "RegExp cannot be property key"
+                      };
               
             }
           }
@@ -9829,22 +9867,23 @@ function check_property(env, prop_map, prop) {
           key = match$1[0][1].name;
           break;
       case /* Computed */2 :
-          throw [
-                Caml_builtin_exceptions.assert_failure,
-                /* tuple */[
+          throw {
+                CamlExt: Caml_builtin_exceptions.assert_failure,
+                _1: /* tuple */[
                   "parser_flow.ml",
                   2103,
                   30
                 ]
-              ];
+              };
       
     }
     var prev_kinds;
     try {
       prev_kinds = find(key, prop_map);
     }
-    catch (exn){
-      if (exn === Caml_builtin_exceptions.not_found) {
+    catch (raw_exn){
+      var exn = Caml_js_exceptions.internalToOCamlException(raw_exn);
+      if (exn.CamlExt === Caml_builtin_exceptions.not_found) {
         prev_kinds = /* Empty */0;
       } else {
         throw exn;
@@ -10784,14 +10823,14 @@ function declare_export_declaration(allow_export_typeOpt, env) {
         }
         switch (exit$2) {
           case 3 :
-              throw [
-                    Caml_builtin_exceptions.assert_failure,
-                    /* tuple */[
+              throw {
+                    CamlExt: Caml_builtin_exceptions.assert_failure,
+                    _1: /* tuple */[
                       "parser_flow.ml",
                       3480,
                       17
                     ]
-                  ];
+                  };
           case 4 :
               if (typeof token$5 === "number") {
                 if (token$5 !== 25) {
@@ -11223,10 +11262,10 @@ function fold(acc, _param) {
                   acc
                 ];
       case /* Expression */4 :
-          throw [
-                Caml_builtin_exceptions.failure,
-                "Parser error: No such thing as an expression pattern!"
-              ];
+          throw {
+                CamlExt: Caml_builtin_exceptions.failure,
+                _1: "Parser error: No such thing as an expression pattern!"
+              };
       
     }
   };
@@ -12381,10 +12420,10 @@ function module_item(env) {
                       var $$interface$1 = $$interface(env$1);
                       var match$2 = $$interface$1[1];
                       if (typeof match$2 === "number") {
-                        throw [
-                              Caml_builtin_exceptions.failure,
-                              "Internal Flow Error! Parsed `export interface` into something other than an interface declaration!"
-                            ];
+                        throw {
+                              CamlExt: Caml_builtin_exceptions.failure,
+                              _1: "Internal Flow Error! Parsed `export interface` into something other than an interface declaration!"
+                            };
                       }
                       if (match$2.tag === /* InterfaceDeclaration */21) {
                         record_export(env$1, /* tuple */[
@@ -12392,10 +12431,10 @@ function module_item(env) {
                               extract_ident_name(match$2[0].id)
                             ]);
                       } else {
-                        throw [
-                              Caml_builtin_exceptions.failure,
-                              "Internal Flow Error! Parsed `export interface` into something other than an interface declaration!"
-                            ];
+                        throw {
+                              CamlExt: Caml_builtin_exceptions.failure,
+                              _1: "Internal Flow Error! Parsed `export interface` into something other than an interface declaration!"
+                            };
                       }
                       var end_loc = $$interface$1[0];
                       return /* tuple */[
@@ -12416,10 +12455,10 @@ function module_item(env) {
                         var type_alias$1 = type_alias(env$1);
                         var match$3 = type_alias$1[1];
                         if (typeof match$3 === "number") {
-                          throw [
-                                Caml_builtin_exceptions.failure,
-                                "Internal Flow Error! Parsed `export type` into something other than a type alias!"
-                              ];
+                          throw {
+                                CamlExt: Caml_builtin_exceptions.failure,
+                                _1: "Internal Flow Error! Parsed `export type` into something other than a type alias!"
+                              };
                         }
                         if (match$3.tag === /* TypeAlias */7) {
                           record_export(env$1, /* tuple */[
@@ -12427,10 +12466,10 @@ function module_item(env) {
                                 extract_ident_name(match$3[0].id)
                               ]);
                         } else {
-                          throw [
-                                Caml_builtin_exceptions.failure,
-                                "Internal Flow Error! Parsed `export type` into something other than a type alias!"
-                              ];
+                          throw {
+                                CamlExt: Caml_builtin_exceptions.failure,
+                                _1: "Internal Flow Error! Parsed `export type` into something other than a type alias!"
+                              };
                         }
                         var end_loc$1 = type_alias$1[0];
                         return /* tuple */[
@@ -12605,10 +12644,10 @@ function module_item(env) {
               var loc$4 = stmt[0];
               var names;
               if (typeof match$8 === "number") {
-                throw [
-                      Caml_builtin_exceptions.failure,
-                      "Internal Flow Error! Unexpected export statement declaration!"
-                    ];
+                throw {
+                      CamlExt: Caml_builtin_exceptions.failure,
+                      _1: "Internal Flow Error! Unexpected export statement declaration!"
+                    };
               }
               switch (match$8.tag | 0) {
                 case /* FunctionDeclaration */18 :
@@ -12658,10 +12697,10 @@ function module_item(env) {
                     }
                     break;
                 default:
-                  throw [
-                        Caml_builtin_exceptions.failure,
-                        "Internal Flow Error! Unexpected export statement declaration!"
-                      ];
+                  throw {
+                        CamlExt: Caml_builtin_exceptions.failure,
+                        _1: "Internal Flow Error! Unexpected export statement declaration!"
+                      };
               }
               List.iter((function (param) {
                       return record_export(env$1, param);
@@ -13153,14 +13192,14 @@ function statement(env) {
                       if (init !== undefined) {
                         left = init.tag ? /* LeftExpression */Block.__(1, [init[0]]) : /* LeftDeclaration */Block.__(0, [init[0]]);
                       } else {
-                        throw [
-                              Caml_builtin_exceptions.assert_failure,
-                              /* tuple */[
+                        throw {
+                              CamlExt: Caml_builtin_exceptions.assert_failure,
+                              _1: /* tuple */[
                                 "parser_flow.ml",
                                 2573,
                                 22
                               ]
-                            ];
+                            };
                       }
                       token$4(env, /* T_OF */60);
                       var right = Curry._1(Parse.assignment, env);
@@ -13182,14 +13221,14 @@ function statement(env) {
                     if (init !== undefined) {
                       left$1 = init.tag ? /* LeftExpression */Block.__(1, [init[0]]) : /* LeftDeclaration */Block.__(0, [init[0]]);
                     } else {
-                      throw [
-                            Caml_builtin_exceptions.assert_failure,
-                            /* tuple */[
+                      throw {
+                            CamlExt: Caml_builtin_exceptions.assert_failure,
+                            _1: /* tuple */[
                               "parser_flow.ml",
                               2556,
                               22
                             ]
-                          ];
+                          };
                     }
                     token$4(env, /* T_IN */15);
                     var right$1 = Curry._1(Parse.expression, env);
@@ -13537,10 +13576,10 @@ function directives(env, term_fn, item_fn) {
             }
           }
           var s = "Nooo: " + (token_to_string(token) + "\n");
-          throw [
-                Caml_builtin_exceptions.failure,
-                s
-              ];
+          throw {
+                CamlExt: Caml_builtin_exceptions.failure,
+                _1: s
+              };
         }), List.rev(match[1]));
   return /* tuple */[
           env$1,
@@ -13903,10 +13942,10 @@ function program$1(failOpt, token_sinkOpt, parse_optionsOpt, content) {
   var ast = Curry._1(parser, env);
   var error_list = filter_duplicate_errors(env.errors.contents);
   if (fail && error_list !== /* [] */0) {
-    throw [
-          $$Error,
-          error_list
-        ];
+    throw {
+          CamlExt: $$Error,
+          _1: error_list
+        };
   }
   return /* tuple */[
           ast,
@@ -14181,6 +14220,213 @@ function parse(content, options) {
         }
       }
     };
+    var literal = function (param) {
+      var lit = param[1];
+      var raw = lit.raw;
+      var value = lit.value;
+      var loc = param[0];
+      var value_;
+      if (typeof value === "number") {
+        value_ = $$null;
+      } else {
+        switch (value.tag | 0) {
+          case /* String */0 :
+              value_ = string(value[0]);
+              break;
+          case /* Boolean */1 :
+              value_ = bool(value[0]);
+              break;
+          case /* Number */2 :
+              value_ = number$1(value[0]);
+              break;
+          case /* RegExp */3 :
+              var match = value[0];
+              value_ = regexp$1(loc, match.pattern, match.flags);
+              break;
+          
+        }
+      }
+      var props;
+      var exit = 0;
+      if (typeof value === "number" || value.tag !== /* RegExp */3) {
+        exit = 1;
+      } else {
+        var match$1 = value[0];
+        var regex = obj([
+              /* tuple */[
+                "pattern",
+                string(match$1.pattern)
+              ],
+              /* tuple */[
+                "flags",
+                string(match$1.flags)
+              ]
+            ]);
+        props = [
+          /* tuple */[
+            "value",
+            value_
+          ],
+          /* tuple */[
+            "raw",
+            string(raw)
+          ],
+          /* tuple */[
+            "regex",
+            regex
+          ]
+        ];
+      }
+      if (exit === 1) {
+        props = [
+          /* tuple */[
+            "value",
+            value_
+          ],
+          /* tuple */[
+            "raw",
+            string(raw)
+          ]
+        ];
+      }
+      return node("Literal", loc, props);
+    };
+    var jsx_expression_container = function (param) {
+      var expr = param[1].expression;
+      var expression$1;
+      expression$1 = expr.tag ? node("JSXEmptyExpression", expr[0], []) : expression(expr[0]);
+      return node("JSXExpressionContainer", param[0], [/* tuple */[
+                    "expression",
+                    expression$1
+                  ]]);
+    };
+    var function_type = function (param) {
+      var fn = param[1];
+      return node("FunctionTypeAnnotation", param[0], [
+                  /* tuple */[
+                    "params",
+                    array_of_list(function_type_param, fn.params)
+                  ],
+                  /* tuple */[
+                    "returnType",
+                    _type(fn.returnType)
+                  ],
+                  /* tuple */[
+                    "rest",
+                    option(function_type_param, fn.rest)
+                  ],
+                  /* tuple */[
+                    "typeParameters",
+                    option(type_parameter_declaration, fn.typeParameters)
+                  ]
+                ]);
+    };
+    var type_parameter_declaration = function (param) {
+      return node("TypeParameterDeclaration", param[0], [/* tuple */[
+                    "params",
+                    array_of_list(type_param, param[1].params)
+                  ]]);
+    };
+    var object_type = function (param) {
+      var o = param[1];
+      return node("ObjectTypeAnnotation", param[0], [
+                  /* tuple */[
+                    "properties",
+                    array_of_list(object_type_property, o.properties)
+                  ],
+                  /* tuple */[
+                    "indexers",
+                    array_of_list(object_type_indexer, o.indexers)
+                  ],
+                  /* tuple */[
+                    "callProperties",
+                    array_of_list(object_type_call_property, o.callProperties)
+                  ]
+                ]);
+    };
+    var identifier = function (param) {
+      var id = param[1];
+      return node("Identifier", param[0], [
+                  /* tuple */[
+                    "name",
+                    string(id.name)
+                  ],
+                  /* tuple */[
+                    "typeAnnotation",
+                    option(type_annotation, id.typeAnnotation)
+                  ],
+                  /* tuple */[
+                    "optional",
+                    bool(id.optional)
+                  ]
+                ]);
+    };
+    var interface_extends = function (param) {
+      var g = param[1];
+      var id = g.id;
+      var id$1;
+      id$1 = id.tag ? generic_type_qualified_identifier(id[0]) : identifier(id[0]);
+      return node("InterfaceExtends", param[0], [
+                  /* tuple */[
+                    "id",
+                    id$1
+                  ],
+                  /* tuple */[
+                    "typeParameters",
+                    option(type_parameter_instantiation, g.typeParameters)
+                  ]
+                ]);
+    };
+    var function_expression = function (param) {
+      var _function = param[1];
+      var b = _function.body;
+      var body;
+      body = b.tag ? expression(b[0]) : block(b[0]);
+      return node("FunctionExpression", param[0], [
+                  /* tuple */[
+                    "id",
+                    option(identifier, _function.id)
+                  ],
+                  /* tuple */[
+                    "params",
+                    array_of_list(pattern, _function.params)
+                  ],
+                  /* tuple */[
+                    "defaults",
+                    array_of_list((function (param) {
+                            return option(expression, param);
+                          }), _function.defaults)
+                  ],
+                  /* tuple */[
+                    "rest",
+                    option(identifier, _function.rest)
+                  ],
+                  /* tuple */[
+                    "body",
+                    body
+                  ],
+                  /* tuple */[
+                    "async",
+                    bool(_function.async)
+                  ],
+                  /* tuple */[
+                    "generator",
+                    bool(_function.generator)
+                  ],
+                  /* tuple */[
+                    "expression",
+                    bool(_function.expression)
+                  ],
+                  /* tuple */[
+                    "returnType",
+                    option(type_annotation, _function.returnType)
+                  ],
+                  /* tuple */[
+                    "typeParameters",
+                    option(type_parameter_declaration, _function.typeParameters)
+                  ]
+                ]);
+    };
     var expression = function (param) {
       var arr = param[1];
       var loc = param[0];
@@ -14293,10 +14539,10 @@ function parse(content, options) {
                   operator = "delete";
                   break;
               case /* Await */7 :
-                  throw [
-                        Caml_builtin_exceptions.failure,
-                        "matched above"
-                      ];
+                  throw {
+                        CamlExt: Caml_builtin_exceptions.failure,
+                        _1: "matched above"
+                      };
               
             }
             return node("UnaryExpression", loc, [
@@ -14687,143 +14933,323 @@ function parse(content, options) {
         
       }
     };
-    var function_expression = function (param) {
-      var _function = param[1];
-      var b = _function.body;
-      var body;
-      body = b.tag ? expression(b[0]) : block(b[0]);
-      return node("FunctionExpression", param[0], [
+    var pattern = function (param) {
+      var obj = param[1];
+      var loc = param[0];
+      switch (obj.tag | 0) {
+        case /* Object */0 :
+            var obj$1 = obj[0];
+            return node("ObjectPattern", loc, [
+                        /* tuple */[
+                          "properties",
+                          array_of_list(object_pattern_property, obj$1.properties)
+                        ],
+                        /* tuple */[
+                          "typeAnnotation",
+                          option(type_annotation, obj$1.typeAnnotation)
+                        ]
+                      ]);
+        case /* Array */1 :
+            var arr = obj[0];
+            return node("ArrayPattern", loc, [
+                        /* tuple */[
+                          "elements",
+                          array_of_list((function (param) {
+                                  return option(array_pattern_element, param);
+                                }), arr.elements)
+                        ],
+                        /* tuple */[
+                          "typeAnnotation",
+                          option(type_annotation, arr.typeAnnotation)
+                        ]
+                      ]);
+        case /* Assignment */2 :
+            var match = obj[0];
+            return node("AssignmentPattern", loc, [
+                        /* tuple */[
+                          "left",
+                          pattern(match.left)
+                        ],
+                        /* tuple */[
+                          "right",
+                          expression(match.right)
+                        ]
+                      ]);
+        case /* Identifier */3 :
+            return identifier(obj[0]);
+        case /* Expression */4 :
+            return expression(obj[0]);
+        
+      }
+    };
+    var block = function (param) {
+      return node("BlockStatement", param[0], [/* tuple */[
+                    "body",
+                    array_of_list(statement, param[1].body)
+                  ]]);
+    };
+    var variable_declarator = function (param) {
+      var declarator = param[1];
+      return node("VariableDeclarator", param[0], [
                   /* tuple */[
                     "id",
-                    option(identifier, _function.id)
+                    pattern(declarator.id)
                   ],
                   /* tuple */[
-                    "params",
-                    array_of_list(pattern, _function.params)
-                  ],
-                  /* tuple */[
-                    "defaults",
-                    array_of_list((function (param) {
-                            return option(expression, param);
-                          }), _function.defaults)
-                  ],
-                  /* tuple */[
-                    "rest",
-                    option(identifier, _function.rest)
-                  ],
-                  /* tuple */[
-                    "body",
-                    body
-                  ],
-                  /* tuple */[
-                    "async",
-                    bool(_function.async)
-                  ],
-                  /* tuple */[
-                    "generator",
-                    bool(_function.generator)
-                  ],
-                  /* tuple */[
-                    "expression",
-                    bool(_function.expression)
-                  ],
-                  /* tuple */[
-                    "returnType",
-                    option(type_annotation, _function.returnType)
-                  ],
-                  /* tuple */[
-                    "typeParameters",
-                    option(type_parameter_declaration, _function.typeParameters)
+                    "init",
+                    option(expression, declarator.init)
                   ]
                 ]);
     };
-    var identifier = function (param) {
-      var id = param[1];
-      return node("Identifier", param[0], [
-                  /* tuple */[
-                    "name",
-                    string(id.name)
-                  ],
-                  /* tuple */[
+    var type_annotation = function (param) {
+      return node("TypeAnnotation", param[0], [/* tuple */[
                     "typeAnnotation",
-                    option(type_annotation, id.typeAnnotation)
-                  ],
-                  /* tuple */[
-                    "optional",
-                    bool(id.optional)
-                  ]
-                ]);
+                    _type(param[1])
+                  ]]);
     };
-    var literal = function (param) {
-      var lit = param[1];
-      var raw = lit.raw;
-      var value = lit.value;
-      var loc = param[0];
-      var value_;
-      if (typeof value === "number") {
-        value_ = $$null;
-      } else {
-        switch (value.tag | 0) {
-          case /* String */0 :
-              value_ = string(value[0]);
+    var comment = function (param) {
+      var c = param[1];
+      var match;
+      match = c.tag ? /* tuple */[
+          "Line",
+          c[0]
+        ] : /* tuple */[
+          "Block",
+          c[0]
+        ];
+      return node(match[0], param[0], [/* tuple */[
+                    "value",
+                    string(match[1])
+                  ]]);
+    };
+    var class_element = function (m) {
+      if (m.tag) {
+        var param = m[0];
+        var prop = param[1];
+        var lit = prop.key;
+        var match;
+        switch (lit.tag | 0) {
+          case /* Literal */0 :
+              match = /* tuple */[
+                literal(lit[0]),
+                false
+              ];
               break;
-          case /* Boolean */1 :
-              value_ = bool(value[0]);
+          case /* Identifier */1 :
+              match = /* tuple */[
+                identifier(lit[0]),
+                false
+              ];
               break;
-          case /* Number */2 :
-              value_ = number$1(value[0]);
-              break;
-          case /* RegExp */3 :
-              var match = value[0];
-              value_ = regexp$1(loc, match.pattern, match.flags);
+          case /* Computed */2 :
+              match = /* tuple */[
+                expression(lit[0]),
+                true
+              ];
               break;
           
         }
-      }
-      var props;
-      var exit = 0;
-      if (typeof value === "number" || value.tag !== /* RegExp */3) {
-        exit = 1;
+        return node("ClassProperty", param[0], [
+                    /* tuple */[
+                      "key",
+                      match[0]
+                    ],
+                    /* tuple */[
+                      "value",
+                      option(expression, prop.value)
+                    ],
+                    /* tuple */[
+                      "typeAnnotation",
+                      option(type_annotation, prop.typeAnnotation)
+                    ],
+                    /* tuple */[
+                      "computed",
+                      bool(match[1])
+                    ],
+                    /* tuple */[
+                      "static",
+                      bool(prop.static)
+                    ]
+                  ]);
       } else {
-        var match$1 = value[0];
-        var regex = obj([
-              /* tuple */[
-                "pattern",
-                string(match$1.pattern)
-              ],
-              /* tuple */[
-                "flags",
-                string(match$1.flags)
-              ]
-            ]);
-        props = [
-          /* tuple */[
-            "value",
-            value_
-          ],
-          /* tuple */[
-            "raw",
-            string(raw)
-          ],
-          /* tuple */[
-            "regex",
-            regex
-          ]
-        ];
+        var param$1 = m[0];
+        var method_ = param$1[1];
+        var key = method_.key;
+        var match$1;
+        switch (key.tag | 0) {
+          case /* Literal */0 :
+              match$1 = /* tuple */[
+                literal(key[0]),
+                false
+              ];
+              break;
+          case /* Identifier */1 :
+              match$1 = /* tuple */[
+                identifier(key[0]),
+                false
+              ];
+              break;
+          case /* Computed */2 :
+              match$1 = /* tuple */[
+                expression(key[0]),
+                true
+              ];
+              break;
+          
+        }
+        var kind;
+        switch (method_.kind) {
+          case /* Constructor */0 :
+              kind = "constructor";
+              break;
+          case /* Method */1 :
+              kind = "method";
+              break;
+          case /* Get */2 :
+              kind = "get";
+              break;
+          case /* Set */3 :
+              kind = "set";
+              break;
+          
+        }
+        return node("MethodDefinition", param$1[0], [
+                    /* tuple */[
+                      "key",
+                      match$1[0]
+                    ],
+                    /* tuple */[
+                      "value",
+                      function_expression(method_.value)
+                    ],
+                    /* tuple */[
+                      "kind",
+                      string(kind)
+                    ],
+                    /* tuple */[
+                      "static",
+                      bool(method_.static)
+                    ],
+                    /* tuple */[
+                      "computed",
+                      bool(match$1[1])
+                    ],
+                    /* tuple */[
+                      "decorators",
+                      array_of_list(expression, method_.decorators)
+                    ]
+                  ]);
       }
-      if (exit === 1) {
-        props = [
-          /* tuple */[
-            "value",
-            value_
-          ],
-          /* tuple */[
-            "raw",
-            string(raw)
-          ]
-        ];
+    };
+    var type_parameter_instantiation = function (param) {
+      return node("TypeParameterInstantiation", param[0], [/* tuple */[
+                    "params",
+                    array_of_list(_type, param[1].params)
+                  ]]);
+    };
+    var function_type_param = function (param) {
+      var param$1 = param[1];
+      return node("FunctionTypeParam", param[0], [
+                  /* tuple */[
+                    "name",
+                    identifier(param$1.name)
+                  ],
+                  /* tuple */[
+                    "typeAnnotation",
+                    _type(param$1.typeAnnotation)
+                  ],
+                  /* tuple */[
+                    "optional",
+                    bool(param$1.optional)
+                  ]
+                ]);
+    };
+    var jsx_name = function (id) {
+      switch (id.tag | 0) {
+        case /* Identifier */0 :
+            return jsx_identifier(id[0]);
+        case /* NamespacedName */1 :
+            return jsx_namespaced_name(id[0]);
+        case /* MemberExpression */2 :
+            return jsx_member_expression(id[0]);
+        
       }
-      return node("Literal", loc, props);
+    };
+    var class_body = function (param) {
+      return node("ClassBody", param[0], [/* tuple */[
+                    "body",
+                    array_of_list(class_element, param[1].body)
+                  ]]);
+    };
+    var class_implements = function (param) {
+      var $$implements = param[1];
+      return node("ClassImplements", param[0], [
+                  /* tuple */[
+                    "id",
+                    identifier($$implements.id)
+                  ],
+                  /* tuple */[
+                    "typeParameters",
+                    option(type_parameter_instantiation, $$implements.typeParameters)
+                  ]
+                ]);
+    };
+    var generic_type_qualified_identifier = function (param) {
+      var q = param[1];
+      var id = q.qualification;
+      var qualification;
+      qualification = id.tag ? generic_type_qualified_identifier(id[0]) : identifier(id[0]);
+      return node("QualifiedTypeIdentifier", param[0], [
+                  /* tuple */[
+                    "qualification",
+                    qualification
+                  ],
+                  /* tuple */[
+                    "id",
+                    identifier(q.id)
+                  ]
+                ]);
+    };
+    var export_specifiers = function (param) {
+      if (param !== undefined) {
+        if (param.tag) {
+          return array([node("ExportBatchSpecifier", param[0], [/* tuple */[
+                              "name",
+                              option(identifier, param[1])
+                            ]])]);
+        } else {
+          return array_of_list(export_specifier, param[0]);
+        }
+      } else {
+        return array([]);
+      }
+    };
+    var declare_variable = function (param) {
+      return node("DeclareVariable", param[0], [/* tuple */[
+                    "id",
+                    identifier(param[1].id)
+                  ]]);
+    };
+    var interface_declaration = function (param) {
+      var i = param[1];
+      return node("InterfaceDeclaration", param[0], [
+                  /* tuple */[
+                    "id",
+                    identifier(i.id)
+                  ],
+                  /* tuple */[
+                    "typeParameters",
+                    option(type_parameter_declaration, i.typeParameters)
+                  ],
+                  /* tuple */[
+                    "body",
+                    object_type(i.body)
+                  ],
+                  /* tuple */[
+                    "extends",
+                    array_of_list(interface_extends, i.extends)
+                  ]
+                ]);
     };
     var statement = function (param) {
       var b = param[1];
@@ -15345,49 +15771,319 @@ function parse(content, options) {
         
       }
     };
-    var variable_declarator = function (param) {
-      var declarator = param[1];
-      return node("VariableDeclarator", param[0], [
-                  /* tuple */[
+    var declare_function = function (param) {
+      return node("DeclareFunction", param[0], [/* tuple */[
                     "id",
-                    pattern(declarator.id)
+                    identifier(param[1].id)
+                  ]]);
+    };
+    var variable_declaration = function (param) {
+      var $$var = param[1];
+      var match = $$var.kind;
+      var kind;
+      switch (match) {
+        case /* Var */0 :
+            kind = "var";
+            break;
+        case /* Let */1 :
+            kind = "let";
+            break;
+        case /* Const */2 :
+            kind = "const";
+            break;
+        
+      }
+      return node("VariableDeclaration", param[0], [
+                  /* tuple */[
+                    "declarations",
+                    array_of_list(variable_declarator, $$var.declarations)
                   ],
                   /* tuple */[
-                    "init",
-                    option(expression, declarator.init)
+                    "kind",
+                    string(kind)
                   ]
                 ]);
     };
-    var type_parameter_declaration = function (param) {
-      return node("TypeParameterDeclaration", param[0], [/* tuple */[
-                    "params",
-                    array_of_list(type_param, param[1].params)
-                  ]]);
+    var $$case = function (param) {
+      var c = param[1];
+      return node("SwitchCase", param[0], [
+                  /* tuple */[
+                    "test",
+                    option(expression, c.test)
+                  ],
+                  /* tuple */[
+                    "consequent",
+                    array_of_list(statement, c.consequent)
+                  ]
+                ]);
     };
-    var class_body = function (param) {
-      return node("ClassBody", param[0], [/* tuple */[
-                    "body",
-                    array_of_list(class_element, param[1].body)
-                  ]]);
-    };
-    var class_implements = function (param) {
-      var $$implements = param[1];
-      return node("ClassImplements", param[0], [
+    var type_alias = function (param) {
+      var alias = param[1];
+      return node("TypeAlias", param[0], [
                   /* tuple */[
                     "id",
-                    identifier($$implements.id)
+                    identifier(alias.id)
                   ],
                   /* tuple */[
                     "typeParameters",
-                    option(type_parameter_instantiation, $$implements.typeParameters)
+                    option(type_parameter_declaration, alias.typeParameters)
+                  ],
+                  /* tuple */[
+                    "right",
+                    _type(alias.right)
                   ]
                 ]);
     };
-    var type_parameter_instantiation = function (param) {
-      return node("TypeParameterInstantiation", param[0], [/* tuple */[
-                    "params",
-                    array_of_list(_type, param[1].params)
+    var declare_class = function (param) {
+      var d = param[1];
+      return node("DeclareClass", param[0], [
+                  /* tuple */[
+                    "id",
+                    identifier(d.id)
+                  ],
+                  /* tuple */[
+                    "typeParameters",
+                    option(type_parameter_declaration, d.typeParameters)
+                  ],
+                  /* tuple */[
+                    "body",
+                    object_type(d.body)
+                  ],
+                  /* tuple */[
+                    "extends",
+                    array_of_list(interface_extends, d.extends)
+                  ]
+                ]);
+    };
+    var $$catch = function (param) {
+      var c = param[1];
+      return node("CatchClause", param[0], [
+                  /* tuple */[
+                    "param",
+                    pattern(c.param)
+                  ],
+                  /* tuple */[
+                    "guard",
+                    option(expression, c.guard)
+                  ],
+                  /* tuple */[
+                    "body",
+                    block(c.body)
+                  ]
+                ]);
+    };
+    var let_assignment = function (assignment) {
+      return obj([
+                  /* tuple */[
+                    "id",
+                    pattern(assignment.id)
+                  ],
+                  /* tuple */[
+                    "init",
+                    option(expression, assignment.init)
+                  ]
+                ]);
+    };
+    var template_element = function (param) {
+      var element = param[1];
+      var value = obj([
+            /* tuple */[
+              "raw",
+              string(element.value.raw)
+            ],
+            /* tuple */[
+              "cooked",
+              string(element.value.cooked)
+            ]
+          ]);
+      return node("TemplateElement", param[0], [
+                  /* tuple */[
+                    "value",
+                    value
+                  ],
+                  /* tuple */[
+                    "tail",
+                    bool(element.tail)
+                  ]
+                ]);
+    };
+    var object_type_call_property = function (param) {
+      var callProperty = param[1];
+      return node("ObjectTypeCallProperty", param[0], [
+                  /* tuple */[
+                    "value",
+                    function_type(callProperty.value)
+                  ],
+                  /* tuple */[
+                    "static",
+                    bool(callProperty.static)
+                  ]
+                ]);
+    };
+    var object_type_indexer = function (param) {
+      var indexer = param[1];
+      return node("ObjectTypeIndexer", param[0], [
+                  /* tuple */[
+                    "id",
+                    identifier(indexer.id)
+                  ],
+                  /* tuple */[
+                    "key",
+                    _type(indexer.key)
+                  ],
+                  /* tuple */[
+                    "value",
+                    _type(indexer.value)
+                  ],
+                  /* tuple */[
+                    "static",
+                    bool(indexer.static)
+                  ]
+                ]);
+    };
+    var object_type_property = function (param) {
+      var prop = param[1];
+      var lit = prop.key;
+      var key;
+      switch (lit.tag | 0) {
+        case /* Literal */0 :
+            key = literal(lit[0]);
+            break;
+        case /* Identifier */1 :
+            key = identifier(lit[0]);
+            break;
+        case /* Computed */2 :
+            throw {
+                  CamlExt: Caml_builtin_exceptions.failure,
+                  _1: "There should not be computed object type property keys"
+                };
+        
+      }
+      return node("ObjectTypeProperty", param[0], [
+                  /* tuple */[
+                    "key",
+                    key
+                  ],
+                  /* tuple */[
+                    "value",
+                    _type(prop.value)
+                  ],
+                  /* tuple */[
+                    "optional",
+                    bool(prop.optional)
+                  ],
+                  /* tuple */[
+                    "static",
+                    bool(prop.static)
+                  ]
+                ]);
+    };
+    var jsx_element = function (param) {
+      var element = param[1];
+      return node("JSXElement", param[0], [
+                  /* tuple */[
+                    "openingElement",
+                    jsx_opening(element.openingElement)
+                  ],
+                  /* tuple */[
+                    "closingElement",
+                    option(jsx_closing, element.closingElement)
+                  ],
+                  /* tuple */[
+                    "children",
+                    array_of_list(jsx_child, element.children)
+                  ]
+                ]);
+    };
+    var array_pattern_element = function (p) {
+      if (!p.tag) {
+        return pattern(p[0]);
+      }
+      var match = p[0];
+      return node("SpreadElementPattern", match[0], [/* tuple */[
+                    "argument",
+                    pattern(match[1].argument)
                   ]]);
+    };
+    var object_pattern_property = function (param) {
+      if (param.tag) {
+        var match = param[0];
+        return node("SpreadPropertyPattern", match[0], [/* tuple */[
+                      "argument",
+                      pattern(match[1].argument)
+                    ]]);
+      }
+      var match$1 = param[0];
+      var prop = match$1[1];
+      var lit = prop.key;
+      var match$2;
+      switch (lit.tag | 0) {
+        case /* Literal */0 :
+            match$2 = /* tuple */[
+              literal(lit[0]),
+              false
+            ];
+            break;
+        case /* Identifier */1 :
+            match$2 = /* tuple */[
+              identifier(lit[0]),
+              false
+            ];
+            break;
+        case /* Computed */2 :
+            match$2 = /* tuple */[
+              expression(lit[0]),
+              true
+            ];
+            break;
+        
+      }
+      return node("PropertyPattern", match$1[0], [
+                  /* tuple */[
+                    "key",
+                    match$2[0]
+                  ],
+                  /* tuple */[
+                    "pattern",
+                    pattern(prop.pattern)
+                  ],
+                  /* tuple */[
+                    "computed",
+                    bool(match$2[1])
+                  ],
+                  /* tuple */[
+                    "shorthand",
+                    bool(prop.shorthand)
+                  ]
+                ]);
+    };
+    var type_param = function (param) {
+      var tp = param[1];
+      var variance = function (param) {
+        if (param) {
+          return string("minus");
+        } else {
+          return string("plus");
+        }
+      };
+      return node("TypeParameter", param[0], [
+                  /* tuple */[
+                    "name",
+                    string(tp.name)
+                  ],
+                  /* tuple */[
+                    "bound",
+                    option(type_annotation, tp.bound)
+                  ],
+                  /* tuple */[
+                    "variance",
+                    option(variance, tp.variance)
+                  ],
+                  /* tuple */[
+                    "default",
+                    option(_type, tp.default)
+                  ]
+                ]);
     };
     var jsx_child = function (param) {
       var element = param[1];
@@ -15458,320 +16154,36 @@ function parse(content, options) {
                   ]
                 ]);
     };
-    var type_annotation = function (param) {
-      return node("TypeAnnotation", param[0], [/* tuple */[
-                    "typeAnnotation",
-                    _type(param[1])
-                  ]]);
-    };
     var jsx_identifier = function (param) {
       return node("JSXIdentifier", param[0], [/* tuple */[
                     "name",
                     string(param[1].name)
                   ]]);
     };
-    var object_type_call_property = function (param) {
-      var callProperty = param[1];
-      return node("ObjectTypeCallProperty", param[0], [
-                  /* tuple */[
-                    "value",
-                    function_type(callProperty.value)
-                  ],
-                  /* tuple */[
-                    "static",
-                    bool(callProperty.static)
-                  ]
-                ]);
-    };
-    var object_type_indexer = function (param) {
-      var indexer = param[1];
-      return node("ObjectTypeIndexer", param[0], [
-                  /* tuple */[
-                    "id",
-                    identifier(indexer.id)
-                  ],
-                  /* tuple */[
-                    "key",
-                    _type(indexer.key)
-                  ],
-                  /* tuple */[
-                    "value",
-                    _type(indexer.value)
-                  ],
-                  /* tuple */[
-                    "static",
-                    bool(indexer.static)
-                  ]
-                ]);
-    };
-    var object_type_property = function (param) {
-      var prop = param[1];
-      var lit = prop.key;
-      var key;
-      switch (lit.tag | 0) {
-        case /* Literal */0 :
-            key = literal(lit[0]);
-            break;
-        case /* Identifier */1 :
-            key = identifier(lit[0]);
-            break;
-        case /* Computed */2 :
-            throw [
-                  Caml_builtin_exceptions.failure,
-                  "There should not be computed object type property keys"
-                ];
-        
-      }
-      return node("ObjectTypeProperty", param[0], [
-                  /* tuple */[
-                    "key",
-                    key
-                  ],
-                  /* tuple */[
-                    "value",
-                    _type(prop.value)
-                  ],
-                  /* tuple */[
-                    "optional",
-                    bool(prop.optional)
-                  ],
-                  /* tuple */[
-                    "static",
-                    bool(prop.static)
-                  ]
-                ]);
-    };
-    var pattern = function (param) {
-      var obj = param[1];
-      var loc = param[0];
-      switch (obj.tag | 0) {
-        case /* Object */0 :
-            var obj$1 = obj[0];
-            return node("ObjectPattern", loc, [
-                        /* tuple */[
-                          "properties",
-                          array_of_list(object_pattern_property, obj$1.properties)
-                        ],
-                        /* tuple */[
-                          "typeAnnotation",
-                          option(type_annotation, obj$1.typeAnnotation)
-                        ]
-                      ]);
-        case /* Array */1 :
-            var arr = obj[0];
-            return node("ArrayPattern", loc, [
-                        /* tuple */[
-                          "elements",
-                          array_of_list((function (param) {
-                                  return option(array_pattern_element, param);
-                                }), arr.elements)
-                        ],
-                        /* tuple */[
-                          "typeAnnotation",
-                          option(type_annotation, arr.typeAnnotation)
-                        ]
-                      ]);
-        case /* Assignment */2 :
-            var match = obj[0];
-            return node("AssignmentPattern", loc, [
-                        /* tuple */[
-                          "left",
-                          pattern(match.left)
-                        ],
-                        /* tuple */[
-                          "right",
-                          expression(match.right)
-                        ]
-                      ]);
-        case /* Identifier */3 :
-            return identifier(obj[0]);
-        case /* Expression */4 :
-            return expression(obj[0]);
-        
-      }
-    };
-    var template_element = function (param) {
-      var element = param[1];
-      var value = obj([
-            /* tuple */[
-              "raw",
-              string(element.value.raw)
-            ],
-            /* tuple */[
-              "cooked",
-              string(element.value.cooked)
-            ]
-          ]);
-      return node("TemplateElement", param[0], [
-                  /* tuple */[
-                    "value",
-                    value
-                  ],
-                  /* tuple */[
-                    "tail",
-                    bool(element.tail)
-                  ]
-                ]);
-    };
-    var block = function (param) {
-      return node("BlockStatement", param[0], [/* tuple */[
-                    "body",
-                    array_of_list(statement, param[1].body)
-                  ]]);
-    };
-    var declare_class = function (param) {
-      var d = param[1];
-      return node("DeclareClass", param[0], [
-                  /* tuple */[
-                    "id",
-                    identifier(d.id)
-                  ],
-                  /* tuple */[
-                    "typeParameters",
-                    option(type_parameter_declaration, d.typeParameters)
-                  ],
-                  /* tuple */[
-                    "body",
-                    object_type(d.body)
-                  ],
-                  /* tuple */[
-                    "extends",
-                    array_of_list(interface_extends, d.extends)
-                  ]
-                ]);
-    };
-    var declare_variable = function (param) {
-      return node("DeclareVariable", param[0], [/* tuple */[
-                    "id",
-                    identifier(param[1].id)
-                  ]]);
-    };
-    var type_alias = function (param) {
-      var alias = param[1];
-      return node("TypeAlias", param[0], [
-                  /* tuple */[
-                    "id",
-                    identifier(alias.id)
-                  ],
-                  /* tuple */[
-                    "typeParameters",
-                    option(type_parameter_declaration, alias.typeParameters)
-                  ],
-                  /* tuple */[
-                    "right",
-                    _type(alias.right)
-                  ]
-                ]);
-    };
-    var $$catch = function (param) {
-      var c = param[1];
-      return node("CatchClause", param[0], [
-                  /* tuple */[
-                    "param",
-                    pattern(c.param)
-                  ],
-                  /* tuple */[
-                    "guard",
-                    option(expression, c.guard)
-                  ],
-                  /* tuple */[
-                    "body",
-                    block(c.body)
-                  ]
-                ]);
-    };
-    var interface_declaration = function (param) {
-      var i = param[1];
-      return node("InterfaceDeclaration", param[0], [
-                  /* tuple */[
-                    "id",
-                    identifier(i.id)
-                  ],
-                  /* tuple */[
-                    "typeParameters",
-                    option(type_parameter_declaration, i.typeParameters)
-                  ],
-                  /* tuple */[
-                    "body",
-                    object_type(i.body)
-                  ],
-                  /* tuple */[
-                    "extends",
-                    array_of_list(interface_extends, i.extends)
-                  ]
-                ]);
-    };
-    var $$case = function (param) {
-      var c = param[1];
-      return node("SwitchCase", param[0], [
-                  /* tuple */[
-                    "test",
-                    option(expression, c.test)
-                  ],
-                  /* tuple */[
-                    "consequent",
-                    array_of_list(statement, c.consequent)
-                  ]
-                ]);
-    };
-    var export_specifiers = function (param) {
-      if (param !== undefined) {
-        if (param.tag) {
-          return array([node("ExportBatchSpecifier", param[0], [/* tuple */[
-                              "name",
-                              option(identifier, param[1])
-                            ]])]);
-        } else {
-          return array_of_list(export_specifier, param[0]);
-        }
+    var jsx_opening_attribute = function (attribute) {
+      if (attribute.tag) {
+        var param = attribute[0];
+        return node("JSXSpreadAttribute", param[0], [/* tuple */[
+                      "argument",
+                      expression(param[1].argument)
+                    ]]);
       } else {
-        return array([]);
+        var param$1 = attribute[0];
+        var attribute$1 = param$1[1];
+        var id = attribute$1.name;
+        var name;
+        name = id.tag ? jsx_namespaced_name(id[0]) : jsx_identifier(id[0]);
+        return node("JSXAttribute", param$1[0], [
+                    /* tuple */[
+                      "name",
+                      name
+                    ],
+                    /* tuple */[
+                      "value",
+                      option(jsx_attribute_value, attribute$1.value)
+                    ]
+                  ]);
       }
-    };
-    var let_assignment = function (assignment) {
-      return obj([
-                  /* tuple */[
-                    "id",
-                    pattern(assignment.id)
-                  ],
-                  /* tuple */[
-                    "init",
-                    option(expression, assignment.init)
-                  ]
-                ]);
-    };
-    var declare_function = function (param) {
-      return node("DeclareFunction", param[0], [/* tuple */[
-                    "id",
-                    identifier(param[1].id)
-                  ]]);
-    };
-    var variable_declaration = function (param) {
-      var $$var = param[1];
-      var match = $$var.kind;
-      var kind;
-      switch (match) {
-        case /* Var */0 :
-            kind = "var";
-            break;
-        case /* Let */1 :
-            kind = "let";
-            break;
-        case /* Const */2 :
-            kind = "const";
-            break;
-        
-      }
-      return node("VariableDeclaration", param[0], [
-                  /* tuple */[
-                    "declarations",
-                    array_of_list(variable_declarator, $$var.declarations)
-                  ],
-                  /* tuple */[
-                    "kind",
-                    string(kind)
-                  ]
-                ]);
     };
     var jsx_member_expression = function (param) {
       var member_expression = param[1];
@@ -15789,76 +16201,44 @@ function parse(content, options) {
                   ]
                 ]);
     };
-    var interface_extends = function (param) {
-      var g = param[1];
-      var id = g.id;
-      var id$1;
-      id$1 = id.tag ? generic_type_qualified_identifier(id[0]) : identifier(id[0]);
-      return node("InterfaceExtends", param[0], [
+    var jsx_namespaced_name = function (param) {
+      var namespaced_name = param[1];
+      return node("JSXNamespacedName", param[0], [
                   /* tuple */[
-                    "id",
-                    id$1
+                    "namespace",
+                    jsx_identifier(namespaced_name.namespace)
                   ],
-                  /* tuple */[
-                    "typeParameters",
-                    option(type_parameter_instantiation, g.typeParameters)
-                  ]
-                ]);
-    };
-    var object_type = function (param) {
-      var o = param[1];
-      return node("ObjectTypeAnnotation", param[0], [
-                  /* tuple */[
-                    "properties",
-                    array_of_list(object_type_property, o.properties)
-                  ],
-                  /* tuple */[
-                    "indexers",
-                    array_of_list(object_type_indexer, o.indexers)
-                  ],
-                  /* tuple */[
-                    "callProperties",
-                    array_of_list(object_type_call_property, o.callProperties)
-                  ]
-                ]);
-    };
-    var function_type_param = function (param) {
-      var param$1 = param[1];
-      return node("FunctionTypeParam", param[0], [
                   /* tuple */[
                     "name",
-                    identifier(param$1.name)
-                  ],
-                  /* tuple */[
-                    "typeAnnotation",
-                    _type(param$1.typeAnnotation)
-                  ],
-                  /* tuple */[
-                    "optional",
-                    bool(param$1.optional)
+                    jsx_identifier(namespaced_name.name)
                   ]
                 ]);
     };
-    var function_type = function (param) {
-      var fn = param[1];
-      return node("FunctionTypeAnnotation", param[0], [
+    var template_literal = function (param) {
+      var value = param[1];
+      return node("TemplateLiteral", param[0], [
                   /* tuple */[
-                    "params",
-                    array_of_list(function_type_param, fn.params)
+                    "quasis",
+                    array_of_list(template_element, value.quasis)
                   ],
                   /* tuple */[
-                    "returnType",
-                    _type(fn.returnType)
-                  ],
-                  /* tuple */[
-                    "rest",
-                    option(function_type_param, fn.rest)
-                  ],
-                  /* tuple */[
-                    "typeParameters",
-                    option(type_parameter_declaration, fn.typeParameters)
+                    "expressions",
+                    array_of_list(expression, value.expressions)
                   ]
                 ]);
+    };
+    var jsx_attribute_value = function (param) {
+      if (param.tag) {
+        return jsx_expression_container(/* tuple */[
+                    param[0],
+                    param[1]
+                  ]);
+      } else {
+        return literal(/* tuple */[
+                    param[0],
+                    param[1]
+                  ]);
+      }
     };
     var object_property = function (param) {
       if (param.tag) {
@@ -15934,19 +16314,6 @@ function parse(content, options) {
                   ]
                 ]);
     };
-    var template_literal = function (param) {
-      var value = param[1];
-      return node("TemplateLiteral", param[0], [
-                  /* tuple */[
-                    "quasis",
-                    array_of_list(template_element, value.quasis)
-                  ],
-                  /* tuple */[
-                    "expressions",
-                    array_of_list(expression, value.expressions)
-                  ]
-                ]);
-    };
     var expression_or_spread = function (expr) {
       if (!expr.tag) {
         return expression(expr[0]);
@@ -15974,334 +16341,6 @@ function parse(content, options) {
                   ]
                 ]);
     };
-    var jsx_element = function (param) {
-      var element = param[1];
-      return node("JSXElement", param[0], [
-                  /* tuple */[
-                    "openingElement",
-                    jsx_opening(element.openingElement)
-                  ],
-                  /* tuple */[
-                    "closingElement",
-                    option(jsx_closing, element.closingElement)
-                  ],
-                  /* tuple */[
-                    "children",
-                    array_of_list(jsx_child, element.children)
-                  ]
-                ]);
-    };
-    var jsx_expression_container = function (param) {
-      var expr = param[1].expression;
-      var expression$1;
-      expression$1 = expr.tag ? node("JSXEmptyExpression", expr[0], []) : expression(expr[0]);
-      return node("JSXExpressionContainer", param[0], [/* tuple */[
-                    "expression",
-                    expression$1
-                  ]]);
-    };
-    var array_pattern_element = function (p) {
-      if (!p.tag) {
-        return pattern(p[0]);
-      }
-      var match = p[0];
-      return node("SpreadElementPattern", match[0], [/* tuple */[
-                    "argument",
-                    pattern(match[1].argument)
-                  ]]);
-    };
-    var object_pattern_property = function (param) {
-      if (param.tag) {
-        var match = param[0];
-        return node("SpreadPropertyPattern", match[0], [/* tuple */[
-                      "argument",
-                      pattern(match[1].argument)
-                    ]]);
-      }
-      var match$1 = param[0];
-      var prop = match$1[1];
-      var lit = prop.key;
-      var match$2;
-      switch (lit.tag | 0) {
-        case /* Literal */0 :
-            match$2 = /* tuple */[
-              literal(lit[0]),
-              false
-            ];
-            break;
-        case /* Identifier */1 :
-            match$2 = /* tuple */[
-              identifier(lit[0]),
-              false
-            ];
-            break;
-        case /* Computed */2 :
-            match$2 = /* tuple */[
-              expression(lit[0]),
-              true
-            ];
-            break;
-        
-      }
-      return node("PropertyPattern", match$1[0], [
-                  /* tuple */[
-                    "key",
-                    match$2[0]
-                  ],
-                  /* tuple */[
-                    "pattern",
-                    pattern(prop.pattern)
-                  ],
-                  /* tuple */[
-                    "computed",
-                    bool(match$2[1])
-                  ],
-                  /* tuple */[
-                    "shorthand",
-                    bool(prop.shorthand)
-                  ]
-                ]);
-    };
-    var jsx_namespaced_name = function (param) {
-      var namespaced_name = param[1];
-      return node("JSXNamespacedName", param[0], [
-                  /* tuple */[
-                    "namespace",
-                    jsx_identifier(namespaced_name.namespace)
-                  ],
-                  /* tuple */[
-                    "name",
-                    jsx_identifier(namespaced_name.name)
-                  ]
-                ]);
-    };
-    var type_param = function (param) {
-      var tp = param[1];
-      var variance = function (param) {
-        if (param) {
-          return string("minus");
-        } else {
-          return string("plus");
-        }
-      };
-      return node("TypeParameter", param[0], [
-                  /* tuple */[
-                    "name",
-                    string(tp.name)
-                  ],
-                  /* tuple */[
-                    "bound",
-                    option(type_annotation, tp.bound)
-                  ],
-                  /* tuple */[
-                    "variance",
-                    option(variance, tp.variance)
-                  ],
-                  /* tuple */[
-                    "default",
-                    option(_type, tp.default)
-                  ]
-                ]);
-    };
-    var generic_type_qualified_identifier = function (param) {
-      var q = param[1];
-      var id = q.qualification;
-      var qualification;
-      qualification = id.tag ? generic_type_qualified_identifier(id[0]) : identifier(id[0]);
-      return node("QualifiedTypeIdentifier", param[0], [
-                  /* tuple */[
-                    "qualification",
-                    qualification
-                  ],
-                  /* tuple */[
-                    "id",
-                    identifier(q.id)
-                  ]
-                ]);
-    };
-    var jsx_name = function (id) {
-      switch (id.tag | 0) {
-        case /* Identifier */0 :
-            return jsx_identifier(id[0]);
-        case /* NamespacedName */1 :
-            return jsx_namespaced_name(id[0]);
-        case /* MemberExpression */2 :
-            return jsx_member_expression(id[0]);
-        
-      }
-    };
-    var class_element = function (m) {
-      if (m.tag) {
-        var param = m[0];
-        var prop = param[1];
-        var lit = prop.key;
-        var match;
-        switch (lit.tag | 0) {
-          case /* Literal */0 :
-              match = /* tuple */[
-                literal(lit[0]),
-                false
-              ];
-              break;
-          case /* Identifier */1 :
-              match = /* tuple */[
-                identifier(lit[0]),
-                false
-              ];
-              break;
-          case /* Computed */2 :
-              match = /* tuple */[
-                expression(lit[0]),
-                true
-              ];
-              break;
-          
-        }
-        return node("ClassProperty", param[0], [
-                    /* tuple */[
-                      "key",
-                      match[0]
-                    ],
-                    /* tuple */[
-                      "value",
-                      option(expression, prop.value)
-                    ],
-                    /* tuple */[
-                      "typeAnnotation",
-                      option(type_annotation, prop.typeAnnotation)
-                    ],
-                    /* tuple */[
-                      "computed",
-                      bool(match[1])
-                    ],
-                    /* tuple */[
-                      "static",
-                      bool(prop.static)
-                    ]
-                  ]);
-      } else {
-        var param$1 = m[0];
-        var method_ = param$1[1];
-        var key = method_.key;
-        var match$1;
-        switch (key.tag | 0) {
-          case /* Literal */0 :
-              match$1 = /* tuple */[
-                literal(key[0]),
-                false
-              ];
-              break;
-          case /* Identifier */1 :
-              match$1 = /* tuple */[
-                identifier(key[0]),
-                false
-              ];
-              break;
-          case /* Computed */2 :
-              match$1 = /* tuple */[
-                expression(key[0]),
-                true
-              ];
-              break;
-          
-        }
-        var kind;
-        switch (method_.kind) {
-          case /* Constructor */0 :
-              kind = "constructor";
-              break;
-          case /* Method */1 :
-              kind = "method";
-              break;
-          case /* Get */2 :
-              kind = "get";
-              break;
-          case /* Set */3 :
-              kind = "set";
-              break;
-          
-        }
-        return node("MethodDefinition", param$1[0], [
-                    /* tuple */[
-                      "key",
-                      match$1[0]
-                    ],
-                    /* tuple */[
-                      "value",
-                      function_expression(method_.value)
-                    ],
-                    /* tuple */[
-                      "kind",
-                      string(kind)
-                    ],
-                    /* tuple */[
-                      "static",
-                      bool(method_.static)
-                    ],
-                    /* tuple */[
-                      "computed",
-                      bool(match$1[1])
-                    ],
-                    /* tuple */[
-                      "decorators",
-                      array_of_list(expression, method_.decorators)
-                    ]
-                  ]);
-      }
-    };
-    var comment = function (param) {
-      var c = param[1];
-      var match;
-      match = c.tag ? /* tuple */[
-          "Line",
-          c[0]
-        ] : /* tuple */[
-          "Block",
-          c[0]
-        ];
-      return node(match[0], param[0], [/* tuple */[
-                    "value",
-                    string(match[1])
-                  ]]);
-    };
-    var jsx_opening_attribute = function (attribute) {
-      if (attribute.tag) {
-        var param = attribute[0];
-        return node("JSXSpreadAttribute", param[0], [/* tuple */[
-                      "argument",
-                      expression(param[1].argument)
-                    ]]);
-      } else {
-        var param$1 = attribute[0];
-        var attribute$1 = param$1[1];
-        var id = attribute$1.name;
-        var name;
-        name = id.tag ? jsx_namespaced_name(id[0]) : jsx_identifier(id[0]);
-        return node("JSXAttribute", param$1[0], [
-                    /* tuple */[
-                      "name",
-                      name
-                    ],
-                    /* tuple */[
-                      "value",
-                      option(jsx_attribute_value, attribute$1.value)
-                    ]
-                  ]);
-      }
-    };
-    var jsx_attribute_value = function (param) {
-      if (param.tag) {
-        return jsx_expression_container(/* tuple */[
-                    param[0],
-                    param[1]
-                  ]);
-      } else {
-        return literal(/* tuple */[
-                    param[0],
-                    param[1]
-                  ]);
-      }
-    };
     var program$2 = function (param) {
       return node("Program", param[0], [
                   /* tuple */[
@@ -16321,8 +16360,8 @@ function parse(content, options) {
   }
   catch (raw_l){
     var l = Caml_js_exceptions.internalToOCamlException(raw_l);
-    if (l[0] === $$Error) {
-      var e = new Error(String(List.length(l[1])) + " errors");
+    if (l.CamlExt === $$Error) {
+      var e = new Error(String(List.length(l._1)) + " errors");
       e["name"] = "Parse Error";
       throw(e);
       return ({});
@@ -16366,14 +16405,14 @@ if (f !== undefined) {
         2842
       ], v.range);
 } else {
-  throw [
-        Caml_builtin_exceptions.assert_failure,
-        /* tuple */[
+  throw {
+        CamlExt: Caml_builtin_exceptions.assert_failure,
+        _1: /* tuple */[
           "runParser.ml",
           15,
           12
         ]
-      ];
+      };
 }
 
 Mt.from_pair_suites("Flow_parser_reg_test", suites.contents);

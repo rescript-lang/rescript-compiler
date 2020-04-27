@@ -253,14 +253,14 @@ function unbalanced_left(param) {
       
     }
   }
-  throw [
-        Caml_builtin_exceptions.assert_failure,
-        /* tuple */[
+  throw {
+        CamlExt: Caml_builtin_exceptions.assert_failure,
+        _1: /* tuple */[
           "rbset.ml",
           57,
           9
         ]
-      ];
+      };
 }
 
 function unbalanced_right(param) {
@@ -317,14 +317,14 @@ function unbalanced_right(param) {
       
     }
   }
-  throw [
-        Caml_builtin_exceptions.assert_failure,
-        /* tuple */[
+  throw {
+        CamlExt: Caml_builtin_exceptions.assert_failure,
+        _1: /* tuple */[
           "rbset.ml",
           63,
           9
         ]
-      ];
+      };
 }
 
 function lbalance(x1, x2, x3) {
@@ -551,14 +551,14 @@ function remove_min(param) {
                 false
               ];
       }
-      throw [
-            Caml_builtin_exceptions.assert_failure,
-            /* tuple */[
+      throw {
+            CamlExt: Caml_builtin_exceptions.assert_failure,
+            _1: /* tuple */[
               "rbset.ml",
               115,
               4
             ]
-          ];
+          };
     }
     var match$1 = remove_min(param[1]);
     var y = match$1[1];
@@ -585,14 +585,14 @@ function remove_min(param) {
             match$2[1]
           ];
   }
-  throw [
-        Caml_builtin_exceptions.assert_failure,
-        /* tuple */[
+  throw {
+        CamlExt: Caml_builtin_exceptions.assert_failure,
+        _1: /* tuple */[
           "rbset.ml",
           115,
           4
         ]
-      ];
+      };
 }
 
 function remove_aux(x, n) {

@@ -11,14 +11,14 @@ function f(param) {
     case "bbbb" :
         return 1;
     default:
-      throw [
-            Caml_builtin_exceptions.assert_failure,
-            /* tuple */[
+      throw {
+            CamlExt: Caml_builtin_exceptions.assert_failure,
+            _1: /* tuple */[
               "test_string.ml",
               4,
               18
             ]
-          ];
+          };
   }
 }
 

@@ -4,47 +4,47 @@ var Curry = require("../../lib/js/curry.js");
 var Caml_builtin_exceptions = require("../../lib/js/caml_builtin_exceptions.js");
 
 function peek_queue(param) {
-  throw [
-        Caml_builtin_exceptions.assert_failure,
-        /* tuple */[
+  throw {
+        CamlExt: Caml_builtin_exceptions.assert_failure,
+        _1: /* tuple */[
           "format_regression.ml",
           10,
           19
         ]
-      ];
+      };
 }
 
 function int_of_size(param) {
-  throw [
-        Caml_builtin_exceptions.assert_failure,
-        /* tuple */[
+  throw {
+        CamlExt: Caml_builtin_exceptions.assert_failure,
+        _1: /* tuple */[
           "format_regression.ml",
           11,
           20
         ]
-      ];
+      };
 }
 
 function take_queue(param) {
-  throw [
-        Caml_builtin_exceptions.assert_failure,
-        /* tuple */[
+  throw {
+        CamlExt: Caml_builtin_exceptions.assert_failure,
+        _1: /* tuple */[
           "format_regression.ml",
           12,
           19
         ]
-      ];
+      };
 }
 
 function format_pp_token(param, param$1) {
-  throw [
-        Caml_builtin_exceptions.assert_failure,
-        /* tuple */[
+  throw {
+        CamlExt: Caml_builtin_exceptions.assert_failure,
+        _1: /* tuple */[
           "format_regression.ml",
           13,
           26
         ]
-      ];
+      };
 }
 
 function advance_loop(state) {

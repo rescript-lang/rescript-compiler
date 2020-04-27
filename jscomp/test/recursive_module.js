@@ -93,8 +93,9 @@ var tmp;
 try {
   tmp = CamlinternalLazy.force(Intb.a);
 }
-catch (exn){
-  if (exn === Lazy.Undefined) {
+catch (raw_exn){
+  var exn = Caml_js_exceptions.internalToOCamlException(raw_exn);
+  if (exn.CamlExt === Lazy.Undefined) {
     tmp = -1;
   } else {
     throw exn;
@@ -155,9 +156,9 @@ try {
   Curry._1(Int3.u, 3);
   tmp$1 = 3;
 }
-catch (raw_exn){
-  var exn$1 = Caml_js_exceptions.internalToOCamlException(raw_exn);
-  if (exn$1[0] === Caml_builtin_exceptions.undefined_recursive_module) {
+catch (raw_exn$1){
+  var exn$1 = Caml_js_exceptions.internalToOCamlException(raw_exn$1);
+  if (exn$1.CamlExt === Caml_builtin_exceptions.undefined_recursive_module) {
     tmp$1 = 4;
   } else {
     throw exn$1;

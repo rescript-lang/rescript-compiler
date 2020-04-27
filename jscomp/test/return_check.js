@@ -18,14 +18,14 @@ function f_undefined(xs, i) {
   if (k !== undefined) {
     return k;
   }
-  throw [
-        Caml_builtin_exceptions.assert_failure,
-        /* tuple */[
+  throw {
+        CamlExt: Caml_builtin_exceptions.assert_failure,
+        _1: /* tuple */[
           "return_check.ml",
           31,
           14
         ]
-      ];
+      };
 }
 
 function f_escaped_not(xs, i) {
@@ -59,14 +59,14 @@ function f_null(xs, i) {
   if (k !== null) {
     return k;
   }
-  throw [
-        Caml_builtin_exceptions.assert_failure,
-        /* tuple */[
+  throw {
+        CamlExt: Caml_builtin_exceptions.assert_failure,
+        _1: /* tuple */[
           "return_check.ml",
           59,
           14
         ]
-      ];
+      };
 }
 
 function f_null_undefined(xs, i) {
@@ -74,14 +74,14 @@ function f_null_undefined(xs, i) {
   if (!(k == null)) {
     return k;
   }
-  throw [
-        Caml_builtin_exceptions.assert_failure,
-        /* tuple */[
+  throw {
+        CamlExt: Caml_builtin_exceptions.assert_failure,
+        _1: /* tuple */[
           "return_check.ml",
           68,
           14
         ]
-      ];
+      };
 }
 
 exports.test = test;

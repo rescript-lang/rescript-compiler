@@ -86,8 +86,9 @@ function rollback_path(subst, p) {
   try {
     return "try";
   }
-  catch (exn){
-    if (exn === Caml_builtin_exceptions.not_found) {
+  catch (raw_exn){
+    var exn = Caml_js_exceptions.internalToOCamlException(raw_exn);
+    if (exn.CamlExt === Caml_builtin_exceptions.not_found) {
       switch (p.tag | 0) {
         case /* Pdot */1 :
             return "Pdot";
@@ -118,20 +119,20 @@ function fooExn(f) {
   }
   catch (raw_n){
     var n = Caml_js_exceptions.internalToOCamlException(raw_n);
-    if (n === EA1) {
+    if (n.CamlExt === EA1) {
       return 1;
     }
-    if (n === EA2) {
+    if (n.CamlExt === EA2) {
       return 2;
     }
-    if (n[0] === EB) {
-      return n[1];
+    if (n.CamlExt === EB) {
+      return n._1;
     }
-    if (n[0] === EC) {
-      return n[1] + n[2] | 0;
+    if (n.CamlExt === EC) {
+      return n._1 + n._2 | 0;
     }
-    if (n[0] === ED) {
-      var match = n[1];
+    if (n.CamlExt === ED) {
+      var match = n._1;
       return match[0] + match[1] | 0;
     }
     throw n;

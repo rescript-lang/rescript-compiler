@@ -104,3 +104,8 @@ let caml_is_extension = [%raw {|function (e){
   return typeof e.CamlExt.CamlId === "number"
 }    
 |}]
+
+type exn = { exn : Caml_builtin_exceptions.t [@bs.as "CamlExt"]}
+
+let caml_exn_slot_id x = x.exn.id
+let caml_exn_slot_name x = x.exn.name

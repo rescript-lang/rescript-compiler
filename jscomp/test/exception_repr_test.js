@@ -40,9 +40,9 @@ var Hello = Caml_exceptions.create("Exception_repr_test.Hello");
 var A = Caml_exceptions.create("Exception_repr_test.A");
 
 Printexc.register_printer((function (s) {
-        if (s === Hi) {
+        if (s.CamlExt === Hi) {
           return "hey";
-        } else if (s[0] === A) {
+        } else if (s.CamlExt === A) {
           return Curry._1(Format.asprintf(/* Format */[
                           /* String_literal */Block.__(11, [
                               "A(",
@@ -57,25 +57,29 @@ Printexc.register_printer((function (s) {
                                 ])
                             ]),
                           "A(%d)"
-                        ]), s[1]);
+                        ]), s._1);
         } else {
           return ;
         }
       }));
 
-eq("File \"exception_repr_test.ml\", line 24, characters 7-14", "hey", Printexc.to_string(Hi));
+eq("File \"exception_repr_test.ml\", line 24, characters 7-14", "hey", Printexc.to_string({
+          CamlExt: Hi
+        }));
 
-eq("File \"exception_repr_test.ml\", line 25, characters 7-14", "A(1)", Printexc.to_string([
-          A,
-          1
-        ]));
+eq("File \"exception_repr_test.ml\", line 25, characters 7-14", "A(1)", Printexc.to_string({
+          CamlExt: A,
+          _1: 1
+        }));
 
-eq("File \"exception_repr_test.ml\", line 26, characters 7-14", "Exception_repr_test.Hello", Printexc.to_string(Hello));
+eq("File \"exception_repr_test.ml\", line 26, characters 7-14", "Exception_repr_test.Hello", Printexc.to_string({
+          CamlExt: Hello
+        }));
 
-eq("File \"exception_repr_test.ml\", line 27, characters 7-14", "A", Printexc.to_string([
-          Exception_def.A,
-          3
-        ]));
+eq("File \"exception_repr_test.ml\", line 27, characters 7-14", "A", Printexc.to_string({
+          CamlExt: Exception_def.A,
+          _1: 3
+        }));
 
 Mt.from_pair_suites("Exception_repr_test", suites.contents);
 

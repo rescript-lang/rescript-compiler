@@ -37,14 +37,14 @@ $$Array.iter((function (x) {
 console.log(String(v.contents));
 
 if (v.contents !== 45) {
-  throw [
-        Caml_builtin_exceptions.assert_failure,
-        /* tuple */[
+  throw {
+        CamlExt: Caml_builtin_exceptions.assert_failure,
+        _1: /* tuple */[
           "test_while_closure.ml",
           63,
           4
         ]
-      ];
+      };
 }
 
 var count = 10;

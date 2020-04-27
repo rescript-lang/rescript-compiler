@@ -23,14 +23,14 @@ function ff(x) {
     case "c" :
         return /* c */99;
     default:
-      throw [
-            Caml_builtin_exceptions.assert_failure,
-            /* tuple */[
+      throw {
+            CamlExt: Caml_builtin_exceptions.assert_failure,
+            _1: /* tuple */[
               "bb.ml",
               17,
               9
             ]
-          ];
+          };
   }
 }
 
@@ -47,14 +47,14 @@ function test(x) {
         match = /* c */99;
         break;
     default:
-      throw [
-            Caml_builtin_exceptions.assert_failure,
-            /* tuple */[
+      throw {
+            CamlExt: Caml_builtin_exceptions.assert_failure,
+            _1: /* tuple */[
               "bb.ml",
               26,
               13
             ]
-          ];
+          };
   }
   if (match !== 98) {
     if (match >= 99) {

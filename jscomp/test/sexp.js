@@ -486,10 +486,10 @@ function get_exn(e) {
   if (e !== undefined) {
     return Caml_option.valFromOption(e);
   }
-  throw [
-        Caml_builtin_exceptions.failure,
-        "CCSexp.Traverse.get_exn"
-      ];
+  throw {
+        CamlExt: Caml_builtin_exceptions.failure,
+        _1: "CCSexp.Traverse.get_exn"
+      };
 }
 
 var of_unit = /* `List */[

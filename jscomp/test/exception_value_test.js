@@ -7,25 +7,29 @@ var Caml_js_exceptions = require("../../lib/js/caml_js_exceptions.js");
 var Caml_builtin_exceptions = require("../../lib/js/caml_builtin_exceptions.js");
 
 function f(param) {
-  throw Caml_builtin_exceptions.not_found;
+  throw {
+        CamlExt: Caml_builtin_exceptions.not_found
+      };
 }
 
 function assert_f(x) {
   if (x <= 3) {
-    throw [
-          Caml_builtin_exceptions.assert_failure,
-          /* tuple */[
+    throw {
+          CamlExt: Caml_builtin_exceptions.assert_failure,
+          _1: /* tuple */[
             "exception_value_test.ml",
             9,
             12
           ]
-        ];
+        };
   }
   return 3;
 }
 
 function hh(param) {
-  throw Caml_builtin_exceptions.not_found;
+  throw {
+        CamlExt: Caml_builtin_exceptions.not_found
+      };
 }
 
 var A = Caml_exceptions.create("Exception_value_test.A");
@@ -34,17 +38,18 @@ var B = Caml_exceptions.create("Exception_value_test.B");
 
 var C = Caml_exceptions.create("Exception_value_test.C");
 
-var u = [
-  A,
-  3
-];
+var u = {
+  CamlExt: A,
+  _1: 3
+};
 
 function test_not_found(f, param) {
   try {
     return Curry._1(f, undefined);
   }
-  catch (exn){
-    if (exn === Caml_builtin_exceptions.not_found) {
+  catch (raw_exn){
+    var exn = Caml_js_exceptions.internalToOCamlException(raw_exn);
+    if (exn.CamlExt === Caml_builtin_exceptions.not_found) {
       return 2;
     }
     throw exn;
@@ -57,8 +62,8 @@ function test_js_error2(param) {
   }
   catch (raw_e){
     var e = Caml_js_exceptions.internalToOCamlException(raw_e);
-    if (e[0] === Js_exn.$$Error) {
-      console.log(e[1].stack);
+    if (e.CamlExt === Js_exn.$$Error) {
+      console.log(e._1.stack);
       throw e;
     }
     throw e;

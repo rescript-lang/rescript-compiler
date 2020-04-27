@@ -71,7 +71,7 @@ function chop_extension(locOpt, name) {
   }
   catch (raw_exn){
     var exn = Caml_js_exceptions.internalToOCamlException(raw_exn);
-    if (exn[0] === Caml_builtin_exceptions.invalid_argument) {
+    if (exn.CamlExt === Caml_builtin_exceptions.invalid_argument) {
       return Curry._2(Format.ksprintf(Pervasives.invalid_arg, /* Format */[
                       /* String_literal */Block.__(11, [
                           "Filename.chop_extension ( ",
@@ -102,7 +102,7 @@ function chop_extension_if_any(fname) {
   }
   catch (raw_exn){
     var exn = Caml_js_exceptions.internalToOCamlException(raw_exn);
-    if (exn[0] === Caml_builtin_exceptions.invalid_argument) {
+    if (exn.CamlExt === Caml_builtin_exceptions.invalid_argument) {
       return fname;
     }
     throw exn;
@@ -385,10 +385,10 @@ if (Sys.unix) {
   simple_convert_node_path_to_os_path = Ext_string_test.replace_slash_backward;
 } else {
   var s = "Unknown OS : " + Sys.os_type;
-  throw [
-        Caml_builtin_exceptions.failure,
-        s
-      ];
+  throw {
+        CamlExt: Caml_builtin_exceptions.failure,
+        _1: s
+      };
 }
 
 var $slash$slash = Filename.concat;

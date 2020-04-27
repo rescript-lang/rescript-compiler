@@ -53,25 +53,25 @@ var v = Curry._2(x[0], undefined, 3);
 var u = Oo.copy(v);
 
 if (Caml_oo_curry.js1(291546447, 1, v) !== 3) {
-  throw [
-        Caml_builtin_exceptions.assert_failure,
-        /* tuple */[
+  throw {
+        CamlExt: Caml_builtin_exceptions.assert_failure,
+        _1: /* tuple */[
           "class_repr.ml",
           30,
           9
         ]
-      ];
+      };
 }
 
 if (Caml_oo_curry.js1(291546447, 2, u) !== 3) {
-  throw [
-        Caml_builtin_exceptions.assert_failure,
-        /* tuple */[
+  throw {
+        CamlExt: Caml_builtin_exceptions.assert_failure,
+        _1: /* tuple */[
           "class_repr.ml",
           32,
           9
         ]
-      ];
+      };
 }
 
 function xx_init($$class) {
@@ -107,14 +107,14 @@ var v1 = Curry._2(xx[0], undefined, 3);
 var v2 = Caml_oo_curry.js1(-977586732, 3, v1);
 
 if (Caml_oo_curry.js1(-804710761, 4, v1) !== 3) {
-  throw [
-        Caml_builtin_exceptions.assert_failure,
-        /* tuple */[
+  throw {
+        CamlExt: Caml_builtin_exceptions.assert_failure,
+        _1: /* tuple */[
           "class_repr.ml",
           44,
           9
         ]
-      ];
+      };
 }
 
 console.log(/* tuple */[
@@ -123,14 +123,14 @@ console.log(/* tuple */[
     ]);
 
 if (Caml_oo_curry.js1(-804710761, 7, v2) !== 9) {
-  throw [
-        Caml_builtin_exceptions.assert_failure,
-        /* tuple */[
+  throw {
+        CamlExt: Caml_builtin_exceptions.assert_failure,
+        _1: /* tuple */[
           "class_repr.ml",
           52,
           9
         ]
-      ];
+      };
 }
 
 function point_init($$class) {
@@ -166,14 +166,14 @@ var point = CamlinternalOO.make_class([
 var v$1 = Curry._1(point[0], undefined);
 
 if (Caml_oo_curry.js1(590348294, 8, v$1) !== 5) {
-  throw [
-        Caml_builtin_exceptions.assert_failure,
-        /* tuple */[
+  throw {
+        CamlExt: Caml_builtin_exceptions.assert_failure,
+        _1: /* tuple */[
           "class_repr.ml",
           99,
           2
         ]
-      ];
+      };
 }
 
 function xx0_init($$class) {

@@ -12,46 +12,49 @@ var v = "gso";
 
 function is_equal(param) {
   if (Caml_bytes.get(Bytes.make(3, /* "a" */97), 0) !== /* "a" */97) {
-    throw [
-          Caml_builtin_exceptions.assert_failure,
-          /* tuple */[
+    throw {
+          CamlExt: Caml_builtin_exceptions.assert_failure,
+          _1: /* tuple */[
             "equal_exception_test.ml",
             9,
             4
           ]
-        ];
+        };
   }
   if (Bytes.make(3, /* "a" */97)[0] !== /* "a" */97) {
-    throw [
-          Caml_builtin_exceptions.assert_failure,
-          /* tuple */[
+    throw {
+          CamlExt: Caml_builtin_exceptions.assert_failure,
+          _1: /* tuple */[
             "equal_exception_test.ml",
             10,
             4
           ]
-        ];
+        };
   }
   var u = Bytes.make(3, /* "a" */97);
   u[0] = /* "b" */98;
   if (u[0] !== /* "b" */98) {
-    throw [
-          Caml_builtin_exceptions.assert_failure,
-          /* tuple */[
+    throw {
+          CamlExt: Caml_builtin_exceptions.assert_failure,
+          _1: /* tuple */[
             "equal_exception_test.ml",
             13,
             4
           ]
-        ];
+        };
   }
   
 }
 
 function is_exception(param) {
   try {
-    throw Caml_builtin_exceptions.not_found;
+    throw {
+          CamlExt: Caml_builtin_exceptions.not_found
+        };
   }
-  catch (exn){
-    if (exn === Caml_builtin_exceptions.not_found) {
+  catch (raw_exn){
+    var exn = Caml_js_exceptions.internalToOCamlException(raw_exn);
+    if (exn.CamlExt === Caml_builtin_exceptions.not_found) {
       return ;
     }
     throw exn;
@@ -60,17 +63,17 @@ function is_exception(param) {
 
 function is_normal_exception(_x) {
   var A = Caml_exceptions.create("A");
-  var v = [
-    A,
-    3
-  ];
+  var v = {
+    CamlExt: A,
+    _1: 3
+  };
   try {
     throw v;
   }
   catch (raw_exn){
     var exn = Caml_js_exceptions.internalToOCamlException(raw_exn);
-    if (exn[0] === A) {
-      if (exn[1] === 3) {
+    if (exn.CamlExt === A) {
+      if (exn._1 === 3) {
         return ;
       }
       throw exn;
@@ -82,7 +85,9 @@ function is_normal_exception(_x) {
 function is_arbitrary_exception(param) {
   var A = Caml_exceptions.create("A");
   try {
-    throw A;
+    throw {
+          CamlExt: A
+        };
   }
   catch (exn){
     return ;
@@ -119,34 +124,40 @@ var suites = /* :: */[
   suites_001
 ];
 
-var e = Caml_builtin_exceptions.not_found;
+var e = {
+  CamlExt: Caml_builtin_exceptions.not_found
+};
 
 function eq(param) {
-  return param === Caml_builtin_exceptions.not_found;
+  return param.CamlExt === Caml_builtin_exceptions.not_found;
 }
 
 var Not_found = Caml_exceptions.create("Equal_exception_test.Not_found");
 
-if (Caml_obj.caml_equal(e, Not_found) !== false) {
-  throw [
-        Caml_builtin_exceptions.assert_failure,
-        /* tuple */[
+if (Caml_obj.caml_equal(e, {
+        CamlExt: Not_found
+      }) !== false) {
+  throw {
+        CamlExt: Caml_builtin_exceptions.assert_failure,
+        _1: /* tuple */[
           "equal_exception_test.ml",
           50,
           3
         ]
-      ];
+      };
 }
 
-if (Not_found === Caml_builtin_exceptions.not_found !== false) {
-  throw [
-        Caml_builtin_exceptions.assert_failure,
-        /* tuple */[
+if (eq({
+        CamlExt: Not_found
+      }) !== false) {
+  throw {
+        CamlExt: Caml_builtin_exceptions.assert_failure,
+        _1: /* tuple */[
           "equal_exception_test.ml",
           51,
           3
         ]
-      ];
+      };
 }
 
 Mt.from_suites("exception", suites);

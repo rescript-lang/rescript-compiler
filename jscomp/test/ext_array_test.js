@@ -107,10 +107,10 @@ function filter_map(f, a) {
 
 function range(from, to_) {
   if (from > to_) {
-    throw [
-          Caml_builtin_exceptions.invalid_argument,
-          "Ext_array_test.range"
-        ];
+    throw {
+          CamlExt: Caml_builtin_exceptions.invalid_argument,
+          _1: "Ext_array_test.range"
+        };
   }
   return $$Array.init((to_ - from | 0) + 1 | 0, (function (i) {
                 return i + from | 0;
@@ -120,10 +120,10 @@ function range(from, to_) {
 function map2i(f, a, b) {
   var len = a.length;
   if (len !== b.length) {
-    throw [
-          Caml_builtin_exceptions.invalid_argument,
-          "Ext_array_test.map2i"
-        ];
+    throw {
+          CamlExt: Caml_builtin_exceptions.invalid_argument,
+          _1: "Ext_array_test.map2i"
+        };
   }
   return $$Array.mapi((function (i, a) {
                 return Curry._3(f, i, a, b[i]);

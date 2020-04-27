@@ -139,14 +139,14 @@ var v$1 = [
 ];
 
 if (!Belt_Array.set(v$1, 0, 0)) {
-  throw [
-        Caml_builtin_exceptions.assert_failure,
-        /* tuple */[
+  throw {
+        CamlExt: Caml_builtin_exceptions.assert_failure,
+        _1: /* tuple */[
           "bs_array_test.ml",
           34,
           33
         ]
-      ];
+      };
 }
 
 b("File \"bs_array_test.ml\", line 34, characters 4-11", Belt_Array.getExn(v$1, 0) === 0);
@@ -157,14 +157,14 @@ var v$2 = [
 ];
 
 if (!Belt_Array.set(v$2, 1, 0)) {
-  throw [
-        Caml_builtin_exceptions.assert_failure,
-        /* tuple */[
+  throw {
+        CamlExt: Caml_builtin_exceptions.assert_failure,
+        _1: /* tuple */[
           "bs_array_test.ml",
           35,
           32
         ]
-      ];
+      };
 }
 
 b("File \"bs_array_test.ml\", line 35, characters 4-11", Belt_Array.getExn(v$2, 1) === 0);

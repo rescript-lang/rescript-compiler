@@ -7,6 +7,7 @@ var Bytes = require("../../lib/js/bytes.js");
 var $$String = require("../../lib/js/string.js");
 var Caml_bytes = require("../../lib/js/caml_bytes.js");
 var Ext_string_test = require("./ext_string_test.js");
+var Caml_js_exceptions = require("../../lib/js/caml_js_exceptions.js");
 var Caml_builtin_exceptions = require("../../lib/js/caml_builtin_exceptions.js");
 
 function ff(x) {
@@ -70,8 +71,9 @@ function rev_split_by_char(c, s) {
                     l
                   ]);
     }
-    catch (exn){
-      if (exn === Caml_builtin_exceptions.not_found) {
+    catch (raw_exn){
+      var exn = Caml_js_exceptions.internalToOCamlException(raw_exn);
+      if (exn.CamlExt === Caml_builtin_exceptions.not_found) {
         return /* :: */[
                 $$String.sub(s, i, s.length - i | 0),
                 l
@@ -98,8 +100,9 @@ function xsplit(delim, s) {
       try {
         i$prime = $$String.rindex_from(s, i - 1 | 0, delim);
       }
-      catch (exn){
-        if (exn === Caml_builtin_exceptions.not_found) {
+      catch (raw_exn){
+        var exn = Caml_js_exceptions.internalToOCamlException(raw_exn);
+        if (exn.CamlExt === Caml_builtin_exceptions.not_found) {
           return /* :: */[
                   $$String.sub(s, 0, i),
                   l

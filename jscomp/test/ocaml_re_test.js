@@ -19,6 +19,7 @@ var Caml_option = require("../../lib/js/caml_option.js");
 var Caml_string = require("../../lib/js/caml_string.js");
 var Caml_primitive = require("../../lib/js/caml_primitive.js");
 var Caml_exceptions = require("../../lib/js/caml_exceptions.js");
+var Caml_js_exceptions = require("../../lib/js/caml_js_exceptions.js");
 var Caml_builtin_exceptions = require("../../lib/js/caml_builtin_exceptions.js");
 
 var suites = {
@@ -330,15 +331,15 @@ function bal(l, x, d, r) {
       if (lr) {
         return create(create(ll, lv, ld, lr[/* l */0]), lr[/* v */1], lr[/* d */2], create(lr[/* r */3], x, d, r));
       }
-      throw [
-            Caml_builtin_exceptions.invalid_argument,
-            "Map.bal"
-          ];
+      throw {
+            CamlExt: Caml_builtin_exceptions.invalid_argument,
+            _1: "Map.bal"
+          };
     }
-    throw [
-          Caml_builtin_exceptions.invalid_argument,
-          "Map.bal"
-        ];
+    throw {
+          CamlExt: Caml_builtin_exceptions.invalid_argument,
+          _1: "Map.bal"
+        };
   }
   if (hr <= (hl + 2 | 0)) {
     return /* Node */[
@@ -360,15 +361,15 @@ function bal(l, x, d, r) {
     if (rl) {
       return create(create(l, x, d, rl[/* l */0]), rl[/* v */1], rl[/* d */2], create(rl[/* r */3], rv, rd, rr));
     }
-    throw [
-          Caml_builtin_exceptions.invalid_argument,
-          "Map.bal"
-        ];
+    throw {
+          CamlExt: Caml_builtin_exceptions.invalid_argument,
+          _1: "Map.bal"
+        };
   }
-  throw [
-        Caml_builtin_exceptions.invalid_argument,
-        "Map.bal"
-      ];
+  throw {
+        CamlExt: Caml_builtin_exceptions.invalid_argument,
+        _1: "Map.bal"
+      };
 }
 
 function add(x, data, m) {
@@ -514,15 +515,15 @@ function bal$1(l, v, r) {
       if (lr) {
         return create$1(create$1(ll, lv, lr[/* l */0]), lr[/* v */1], create$1(lr[/* r */2], v, r));
       }
-      throw [
-            Caml_builtin_exceptions.invalid_argument,
-            "Set.bal"
-          ];
+      throw {
+            CamlExt: Caml_builtin_exceptions.invalid_argument,
+            _1: "Set.bal"
+          };
     }
-    throw [
-          Caml_builtin_exceptions.invalid_argument,
-          "Set.bal"
-        ];
+    throw {
+          CamlExt: Caml_builtin_exceptions.invalid_argument,
+          _1: "Set.bal"
+        };
   }
   if (hr <= (hl + 2 | 0)) {
     return /* Node */[
@@ -542,15 +543,15 @@ function bal$1(l, v, r) {
     if (rl) {
       return create$1(create$1(l, v, rl[/* l */0]), rl[/* v */1], create$1(rl[/* r */2], rv, rr));
     }
-    throw [
-          Caml_builtin_exceptions.invalid_argument,
-          "Set.bal"
-        ];
+    throw {
+          CamlExt: Caml_builtin_exceptions.invalid_argument,
+          _1: "Set.bal"
+        };
   }
-  throw [
-        Caml_builtin_exceptions.invalid_argument,
-        "Set.bal"
-      ];
+  throw {
+        CamlExt: Caml_builtin_exceptions.invalid_argument,
+        _1: "Set.bal"
+      };
 }
 
 function add$1(x, t) {
@@ -1035,14 +1036,14 @@ function split_at_match_rec(_l$prime, _param) {
         
       }
     } else {
-      throw [
-            Caml_builtin_exceptions.assert_failure,
-            /* tuple */[
+      throw {
+            CamlExt: Caml_builtin_exceptions.assert_failure,
+            _1: /* tuple */[
               "re_automata.ml",
               429,
               21
             ]
-          ];
+          };
     }
   };
 }
@@ -1445,8 +1446,9 @@ function find_state(re, desc) {
   try {
     return Curry._2(Re_automata_State.Table.find, re.states, desc);
   }
-  catch (exn){
-    if (exn === Caml_builtin_exceptions.not_found) {
+  catch (raw_exn){
+    var exn = Caml_js_exceptions.internalToOCamlException(raw_exn);
+    if (exn.CamlExt === Caml_builtin_exceptions.not_found) {
       var st = mk_state(re.ncol, desc);
       Curry._3(Re_automata_State.Table.add, re.states, desc, st);
       return st;
@@ -1513,8 +1515,9 @@ function $$final(info, st, cat) {
   try {
     return List.assq(cat, st.final);
   }
-  catch (exn){
-    if (exn === Caml_builtin_exceptions.not_found) {
+  catch (raw_exn){
+    var exn = Caml_js_exceptions.internalToOCamlException(raw_exn);
+    if (exn.CamlExt === Caml_builtin_exceptions.not_found) {
       var st$prime = delta$1(info, cat, -1, st);
       var res_000 = st$prime.idx;
       var res_001 = status(st$prime);
@@ -1539,8 +1542,9 @@ function find_initial_state(re, cat) {
   try {
     return List.assq(cat, re.initial_states);
   }
-  catch (exn){
-    if (exn === Caml_builtin_exceptions.not_found) {
+  catch (raw_exn){
+    var exn = Caml_js_exceptions.internalToOCamlException(raw_exn);
+    if (exn.CamlExt === Caml_builtin_exceptions.not_found) {
       var st = find_state(re, Curry._2(Re_automata_State.create, cat, re.initial));
       re.initial_states = /* :: */[
         /* tuple */[
@@ -1661,11 +1665,14 @@ function trans_set(cache, cm, s) {
         _param = c < 0 ? param[/* l */0] : param[/* r */3];
         continue ;
       }
-      throw Caml_builtin_exceptions.not_found;
+      throw {
+            CamlExt: Caml_builtin_exceptions.not_found
+          };
     };
   }
-  catch (exn){
-    if (exn === Caml_builtin_exceptions.not_found) {
+  catch (raw_exn){
+    var exn = Caml_js_exceptions.internalToOCamlException(raw_exn);
+    if (exn.CamlExt === Caml_builtin_exceptions.not_found) {
       var l = List.fold_right((function (param, l) {
               return union(seq(Caml_bytes.get(cm, param[0]), Caml_bytes.get(cm, param[1])), l);
             }), s, /* [] */0);
@@ -1813,14 +1820,14 @@ function colorize(c, regexp) {
               _regexp = regexp[1];
               continue ;
           default:
-            throw [
-                  Caml_builtin_exceptions.assert_failure,
-                  /* tuple */[
+            throw {
+                  CamlExt: Caml_builtin_exceptions.assert_failure,
+                  _1: /* tuple */[
                     "re.ml",
                     502,
                     35
                   ]
-                ];
+                };
         }
       }
     };
@@ -2374,14 +2381,14 @@ function translate(ids, kind, _ign_group, ign_case, _greedy, pos, cache, c, _s) 
                     match$5[1]
                   ];
         default:
-          throw [
-                Caml_builtin_exceptions.assert_failure,
-                /* tuple */[
+          throw {
+                CamlExt: Caml_builtin_exceptions.assert_failure,
+                _1: /* tuple */[
                   "re.ml",
                   714,
                   4
                 ]
-              ];
+              };
       }
     }
   };
@@ -2415,26 +2422,26 @@ function case_insens(s) {
 
 function as_set(s) {
   if (typeof s === "number") {
-    throw [
-          Caml_builtin_exceptions.assert_failure,
-          /* tuple */[
+    throw {
+          CamlExt: Caml_builtin_exceptions.assert_failure,
+          _1: /* tuple */[
             "re.ml",
             747,
             13
           ]
-        ];
+        };
   }
   if (!s.tag) {
     return s[0];
   }
-  throw [
-        Caml_builtin_exceptions.assert_failure,
-        /* tuple */[
+  throw {
+        CamlExt: Caml_builtin_exceptions.assert_failure,
+        _1: /* tuple */[
           "re.ml",
           747,
           13
         ]
-      ];
+      };
 }
 
 function handle_case(_ign_case, _s) {
@@ -2609,16 +2616,16 @@ var epsilon = /* Sequence */Block.__(1, [/* [] */0]);
 
 function repn(r, i, j) {
   if (i < 0) {
-    throw [
-          Caml_builtin_exceptions.invalid_argument,
-          "Re.repn"
-        ];
+    throw {
+          CamlExt: Caml_builtin_exceptions.invalid_argument,
+          _1: "Re.repn"
+        };
   }
   if (j !== undefined && j < i) {
-    throw [
-          Caml_builtin_exceptions.invalid_argument,
-          "Re.repn"
-        ];
+    throw {
+          CamlExt: Caml_builtin_exceptions.invalid_argument,
+          _1: "Re.repn"
+        };
   }
   return /* Repeat */Block.__(3, [
             r,
@@ -2640,10 +2647,10 @@ function compl(l) {
   if (is_charset(r)) {
     return r;
   }
-  throw [
-        Caml_builtin_exceptions.invalid_argument,
-        "Re.compl"
-      ];
+  throw {
+        CamlExt: Caml_builtin_exceptions.invalid_argument,
+        _1: "Re.compl"
+      };
 }
 
 var any = /* Set */Block.__(0, [cany]);
@@ -2884,10 +2891,10 @@ function exec_internal(name, posOpt, lenOpt, groups, re, s) {
   var pos = posOpt !== undefined ? posOpt : 0;
   var len = lenOpt !== undefined ? lenOpt : -1;
   if (pos < 0 || len < -1 || (pos + len | 0) > s.length) {
-    throw [
-          Caml_builtin_exceptions.invalid_argument,
-          name
-        ];
+    throw {
+          CamlExt: Caml_builtin_exceptions.invalid_argument,
+          _1: name
+        };
   }
   var partial = false;
   var slen = s.length;
@@ -2950,11 +2957,15 @@ function exec_internal(name, posOpt, lenOpt, groups, re, s) {
 
 function offset$1(t, i) {
   if (((i << 1) + 1 | 0) >= t.marks.length) {
-    throw Caml_builtin_exceptions.not_found;
+    throw {
+          CamlExt: Caml_builtin_exceptions.not_found
+        };
   }
   var m1 = Caml_array.caml_array_get(t.marks, (i << 1));
   if (m1 === -1) {
-    throw Caml_builtin_exceptions.not_found;
+    throw {
+          CamlExt: Caml_builtin_exceptions.not_found
+        };
   }
   var p1 = Caml_array.caml_array_get(t.gpos, m1) - 1 | 0;
   var p2 = Caml_array.caml_array_get(t.gpos, Caml_array.caml_array_get(t.marks, (i << 1) + 1 | 0)) - 1 | 0;
@@ -3004,10 +3015,10 @@ function posix_class_of_string(class_) {
         return xdigit;
     default:
       var s = "Invalid pcre class: " + class_;
-      throw [
-            Caml_builtin_exceptions.invalid_argument,
-            s
-          ];
+      throw {
+            CamlExt: Caml_builtin_exceptions.invalid_argument,
+            _1: s
+          };
   }
 }
 
@@ -3036,19 +3047,24 @@ function parse(multiline, dollar_endonly, dotall, ungreedy, s) {
       for(var j = 0; j < len; ++j){
         try {
           if (Caml_string.get(s$prime, j) !== Caml_string.get(s, i.contents + j | 0)) {
-            throw Pervasives.Exit;
+            throw {
+                  CamlExt: Pervasives.Exit
+                };
           }
           
         }
         catch (exn){
-          throw Pervasives.Exit;
+          throw {
+                CamlExt: Pervasives.Exit
+              };
         }
       }
       i.contents = i.contents + len | 0;
       return true;
     }
-    catch (exn$1){
-      if (exn$1 === Pervasives.Exit) {
+    catch (raw_exn){
+      var exn$1 = Caml_js_exceptions.internalToOCamlException(raw_exn);
+      if (exn$1.CamlExt === Pervasives.Exit) {
         return false;
       }
       throw exn$1;
@@ -3105,10 +3121,14 @@ function parse(multiline, dollar_endonly, dotall, ungreedy, s) {
     if (i$1 !== undefined) {
       var j = accept(/* "," */44) ? integer(undefined) : i$1;
       if (!accept(/* "}" */125)) {
-        throw Parse_error;
+        throw {
+              CamlExt: Parse_error
+            };
       }
       if (j !== undefined && j < i$1) {
-        throw Parse_error;
+        throw {
+              CamlExt: Parse_error
+            };
       }
       return greedy_mod(repn(r, i$1, j));
     }
@@ -3144,7 +3164,9 @@ function parse(multiline, dollar_endonly, dotall, ungreedy, s) {
         if (accept(/* ":" */58)) {
           var r = regexp$prime(branch$prime(/* [] */0));
           if (!accept(/* ")" */41)) {
-            throw Parse_error;
+            throw {
+                  CamlExt: Parse_error
+                };
           }
           return r;
         }
@@ -3159,11 +3181,15 @@ function parse(multiline, dollar_endonly, dotall, ungreedy, s) {
             continue ;
           };
         }
-        throw Parse_error;
+        throw {
+              CamlExt: Parse_error
+            };
       }
       var r$1 = regexp$prime(branch$prime(/* [] */0));
       if (!accept(/* ")" */41)) {
-        throw Parse_error;
+        throw {
+              CamlExt: Parse_error
+            };
       }
       return /* Group */Block.__(6, [r$1]);
     }
@@ -3192,7 +3218,9 @@ function parse(multiline, dollar_endonly, dotall, ungreedy, s) {
     }
     if (accept(/* "\\" */92)) {
       if (i.contents === l) {
-        throw Parse_error;
+        throw {
+              CamlExt: Parse_error
+            };
       }
       var c = get(undefined);
       switch (c) {
@@ -3206,7 +3234,9 @@ function parse(multiline, dollar_endonly, dotall, ungreedy, s) {
         case 55 :
         case 56 :
         case 57 :
-            throw Not_supported;
+            throw {
+                  CamlExt: Not_supported
+                };
         case 65 :
             return /* Beg_of_str */5;
         case 66 :
@@ -3319,7 +3349,9 @@ function parse(multiline, dollar_endonly, dotall, ungreedy, s) {
         case 118 :
         case 120 :
         case 121 :
-            throw Parse_error;
+            throw {
+                  CamlExt: Parse_error
+                };
         case 122 :
             return /* End_of_str */6;
         default:
@@ -3327,7 +3359,9 @@ function parse(multiline, dollar_endonly, dotall, ungreedy, s) {
       }
     } else {
       if (i.contents === l) {
-        throw Parse_error;
+        throw {
+              CamlExt: Parse_error
+            };
       }
       var c$1 = get(undefined);
       if (c$1 >= 64) {
@@ -3335,18 +3369,26 @@ function parse(multiline, dollar_endonly, dotall, ungreedy, s) {
           if (c$1 !== 123) {
             return /* Set */Block.__(0, [single(c$1)]);
           }
-          throw Parse_error;
+          throw {
+                CamlExt: Parse_error
+              };
         }
-        throw Parse_error;
+        throw {
+              CamlExt: Parse_error
+            };
       }
       if (c$1 >= 44) {
         if (c$1 >= 63) {
-          throw Parse_error;
+          throw {
+                CamlExt: Parse_error
+              };
         }
         return /* Set */Block.__(0, [single(c$1)]);
       }
       if (c$1 >= 42) {
-        throw Parse_error;
+        throw {
+              CamlExt: Parse_error
+            };
       }
       return /* Set */Block.__(0, [single(c$1)]);
     }
@@ -3373,7 +3415,9 @@ function parse(multiline, dollar_endonly, dotall, ungreedy, s) {
         }
         var i$prime = Caml_int32.imul(10, i$1) + (d$1 - /* "0" */48 | 0) | 0;
         if (i$prime < i$1) {
-          throw Parse_error;
+          throw {
+                CamlExt: Parse_error
+              };
         }
         _i = i$prime;
         continue ;
@@ -3382,12 +3426,16 @@ function parse(multiline, dollar_endonly, dotall, ungreedy, s) {
   };
   var $$char = function (param) {
     if (i.contents === l) {
-      throw Parse_error;
+      throw {
+            CamlExt: Parse_error
+          };
     }
     var c = get(undefined);
     if (c === /* "[" */91) {
       if (accept(/* "=" */61)) {
-        throw Not_supported;
+        throw {
+              CamlExt: Not_supported
+            };
       }
       if (accept(/* ":" */58)) {
         var compl$1 = accept(/* "^" */94);
@@ -3434,14 +3482,19 @@ function parse(multiline, dollar_endonly, dotall, ungreedy, s) {
                 ]
               ]);
         }
-        catch (exn){
-          if (exn === Caml_builtin_exceptions.not_found) {
-            throw Parse_error;
+        catch (raw_exn){
+          var exn = Caml_js_exceptions.internalToOCamlException(raw_exn);
+          if (exn.CamlExt === Caml_builtin_exceptions.not_found) {
+            throw {
+                  CamlExt: Parse_error
+                };
           }
           throw exn;
         }
         if (!accept_s(":]")) {
-          throw Parse_error;
+          throw {
+                CamlExt: Parse_error
+              };
         }
         var posix_class = posix_class_of_string(cls);
         var re = compl$1 ? compl(/* :: */[
@@ -3460,14 +3513,20 @@ function parse(multiline, dollar_endonly, dotall, ungreedy, s) {
               ];
       }
       if (i.contents === l) {
-        throw Parse_error;
+        throw {
+              CamlExt: Parse_error
+            };
       }
       var c$1 = get(undefined);
       if (!accept(/* "." */46)) {
-        throw Not_supported;
+        throw {
+              CamlExt: Not_supported
+            };
       }
       if (!accept(/* "]" */93)) {
-        throw Parse_error;
+        throw {
+              CamlExt: Parse_error
+            };
       }
       return /* `Char */[
               748194550,
@@ -3628,12 +3687,16 @@ function parse(multiline, dollar_endonly, dotall, ungreedy, s) {
         case 62 :
         case 63 :
         case 64 :
-            throw Parse_error;
+            throw {
+                  CamlExt: Parse_error
+                };
         
       }
     } else {
       if (c$2 >= 48) {
-        throw Not_supported;
+        throw {
+              CamlExt: Not_supported
+            };
       }
       return /* `Char */[
               748194550,
@@ -3706,7 +3769,9 @@ function parse(multiline, dollar_endonly, dotall, ungreedy, s) {
   };
   var res = regexp$prime(branch$prime(/* [] */0));
   if (i.contents !== l) {
-    throw Parse_error;
+    throw {
+          CamlExt: Parse_error
+        };
   }
   return res;
 }
@@ -3745,7 +3810,9 @@ function exec(rex, pos, s) {
   var len;
   var substr = exec_internal("Re.exec", pos, len, true, rex, s);
   if (typeof substr === "number") {
-    throw Caml_builtin_exceptions.not_found;
+    throw {
+          CamlExt: Caml_builtin_exceptions.not_found
+        };
   }
   return substr[0];
 }

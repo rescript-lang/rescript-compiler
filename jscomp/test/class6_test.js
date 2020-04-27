@@ -119,7 +119,9 @@ function lookup_obj(obj, _param) {
       _param = param[1];
       continue ;
     }
-    throw Caml_builtin_exceptions.not_found;
+    throw {
+          CamlExt: Caml_builtin_exceptions.not_found
+        };
   };
 }
 

@@ -42,14 +42,18 @@ function add(x, q) {
 
 function peek(q) {
   if (q.length === 0) {
-    throw Empty;
+    throw {
+          CamlExt: Empty
+        };
   }
   return q.tail.next.content;
 }
 
 function take(q) {
   if (q.length === 0) {
-    throw Empty;
+    throw {
+          CamlExt: Empty
+        };
   }
   q.length = q.length - 1 | 0;
   var tail = q.tail;

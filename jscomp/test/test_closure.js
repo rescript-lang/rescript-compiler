@@ -31,14 +31,14 @@ $$Array.iter((function (x) {
       }), u);
 
 if (v.contents !== 45) {
-  throw [
-        Caml_builtin_exceptions.assert_failure,
-        /* tuple */[
+  throw {
+        CamlExt: Caml_builtin_exceptions.assert_failure,
+        _1: /* tuple */[
           "test_closure.ml",
           53,
           2
         ]
-      ];
+      };
 }
 
 exports.v = v;

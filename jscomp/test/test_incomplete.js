@@ -6,14 +6,14 @@ function f(x) {
   if (!(x > 3 || x < 1)) {
     return /* "a" */97;
   }
-  throw [
-        Caml_builtin_exceptions.match_failure,
-        /* tuple */[
+  throw {
+        CamlExt: Caml_builtin_exceptions.match_failure,
+        _1: /* tuple */[
           "test_incomplete.ml",
           3,
           2
         ]
-      ];
+      };
 }
 
 function f2(x) {

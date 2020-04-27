@@ -7,10 +7,10 @@ var A = Caml_exceptions.create("Test_exception_escape.N.A");
 var f;
 
 try {
-  throw [
-        A,
-        3
-      ];
+  throw {
+        CamlExt: A,
+        _1: 3
+      };
 }
 catch (exn){
   f = 3;

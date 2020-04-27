@@ -36,15 +36,15 @@ function Make(Ord) {
         if (lr) {
           return create(create(ll, lv, lr[0]), lr[1], create(lr[2], v, r));
         }
-        throw [
-              Caml_builtin_exceptions.invalid_argument,
-              "Set.bal"
-            ];
+        throw {
+              CamlExt: Caml_builtin_exceptions.invalid_argument,
+              _1: "Set.bal"
+            };
       }
-      throw [
-            Caml_builtin_exceptions.invalid_argument,
-            "Set.bal"
-          ];
+      throw {
+            CamlExt: Caml_builtin_exceptions.invalid_argument,
+            _1: "Set.bal"
+          };
     }
     if (hr <= (hl + 2 | 0)) {
       return /* Node */[
@@ -64,15 +64,15 @@ function Make(Ord) {
       if (rl) {
         return create(create(l, v, rl[0]), rl[1], create(rl[2], rv, rr));
       }
-      throw [
-            Caml_builtin_exceptions.invalid_argument,
-            "Set.bal"
-          ];
+      throw {
+            CamlExt: Caml_builtin_exceptions.invalid_argument,
+            _1: "Set.bal"
+          };
     }
-    throw [
-          Caml_builtin_exceptions.invalid_argument,
-          "Set.bal"
-        ];
+    throw {
+          CamlExt: Caml_builtin_exceptions.invalid_argument,
+          _1: "Set.bal"
+        };
   };
   var add = function (x, t) {
     if (!t) {
@@ -145,7 +145,9 @@ function Make(Ord) {
         _param = l;
         continue ;
       }
-      throw Caml_builtin_exceptions.not_found;
+      throw {
+            CamlExt: Caml_builtin_exceptions.not_found
+          };
     };
   };
   var max_elt = function (_param) {
@@ -159,7 +161,9 @@ function Make(Ord) {
         _param = r;
         continue ;
       }
-      throw Caml_builtin_exceptions.not_found;
+      throw {
+            CamlExt: Caml_builtin_exceptions.not_found
+          };
     };
   };
   var remove_min_elt = function (param) {
@@ -171,10 +175,10 @@ function Make(Ord) {
         return param[2];
       }
     }
-    throw [
-          Caml_builtin_exceptions.invalid_argument,
-          "Set.remove_min_elt"
-        ];
+    throw {
+          CamlExt: Caml_builtin_exceptions.invalid_argument,
+          _1: "Set.remove_min_elt"
+        };
   };
   var merge = function (t1, t2) {
     if (t1) {
@@ -556,7 +560,9 @@ function Make(Ord) {
         _param = c < 0 ? param[0] : param[2];
         continue ;
       }
-      throw Caml_builtin_exceptions.not_found;
+      throw {
+            CamlExt: Caml_builtin_exceptions.not_found
+          };
     };
   };
   var of_sorted_list = function (l) {
@@ -646,14 +652,14 @@ function Make(Ord) {
                 match$4[1]
               ];
       }
-      throw [
-            Caml_builtin_exceptions.assert_failure,
-            /* tuple */[
+      throw {
+            CamlExt: Caml_builtin_exceptions.assert_failure,
+            _1: /* tuple */[
               "test_set.ml",
               372,
               18
             ]
-          ];
+          };
     };
     return sub(List.length(l), l)[0];
   };

@@ -6,6 +6,7 @@ var Curry = require("../../lib/js/curry.js");
 var Stack = require("../../lib/js/stack.js");
 var Caml_obj = require("../../lib/js/caml_obj.js");
 var Mt_global = require("./mt_global.js");
+var Caml_js_exceptions = require("../../lib/js/caml_js_exceptions.js");
 
 var suites = {
   contents: /* [] */0
@@ -60,8 +61,9 @@ function does_raise(f, s) {
     Curry._1(f, s);
     return false;
   }
-  catch (exn){
-    if (exn === Stack.Empty) {
+  catch (raw_exn){
+    var exn = Caml_js_exceptions.internalToOCamlException(raw_exn);
+    if (exn.CamlExt === Stack.Empty) {
       return true;
     }
     throw exn;

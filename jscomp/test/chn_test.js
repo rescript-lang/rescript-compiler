@@ -41,14 +41,14 @@ function convert(s) {
                     if (x$1 !== undefined) {
                       return x$1;
                     }
-                    throw [
-                          Caml_builtin_exceptions.assert_failure,
-                          /* tuple */[
+                    throw {
+                          CamlExt: Caml_builtin_exceptions.assert_failure,
+                          _1: /* tuple */[
                             "chn_test.ml",
                             20,
                             18
                           ]
-                        ];
+                        };
                   })));
 }
 

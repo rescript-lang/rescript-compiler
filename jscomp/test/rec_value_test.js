@@ -59,14 +59,14 @@ var three = {
 
 var v = {
   contents: (function (param) {
-      throw [
-            Caml_builtin_exceptions.assert_failure,
-            /* tuple */[
+      throw {
+            CamlExt: Caml_builtin_exceptions.assert_failure,
+            _1: /* tuple */[
               "rec_value_test.ml",
               23,
               24
             ]
-          ];
+          };
     })
 };
 
@@ -237,24 +237,24 @@ var suites_001 = /* :: */[
           if (match) {
             tmp = match[0];
           } else {
-            throw [
-                  Caml_builtin_exceptions.assert_failure,
-                  /* tuple */[
+            throw {
+                  CamlExt: Caml_builtin_exceptions.assert_failure,
+                  _1: /* tuple */[
                     "rec_value_test.ml",
                     108,
                     2
                   ]
-                ];
+                };
           }
         } else {
-          throw [
-                Caml_builtin_exceptions.assert_failure,
-                /* tuple */[
+          throw {
+                CamlExt: Caml_builtin_exceptions.assert_failure,
+                _1: /* tuple */[
                   "rec_value_test.ml",
                   108,
                   2
                 ]
-              ];
+              };
         }
         return /* Eq */Block.__(0, [
                   3,
@@ -381,14 +381,14 @@ var suites_001 = /* :: */[
                                     rec_variant_a
                                   ]);
                         }
-                        throw [
-                              Caml_builtin_exceptions.assert_failure,
-                              /* tuple */[
+                        throw {
+                              CamlExt: Caml_builtin_exceptions.assert_failure,
+                              _1: /* tuple */[
                                 "rec_value_test.ml",
                                 132,
                                 11
                               ]
-                            ];
+                            };
                       })
                   ],
                   /* :: */[
@@ -401,14 +401,14 @@ var suites_001 = /* :: */[
                                       rec_variant_b
                                     ]);
                           }
-                          throw [
-                                Caml_builtin_exceptions.assert_failure,
-                                /* tuple */[
+                          throw {
+                                CamlExt: Caml_builtin_exceptions.assert_failure,
+                                _1: /* tuple */[
                                   "rec_value_test.ml",
                                   137,
                                   11
                                 ]
-                              ];
+                              };
                         })
                     ],
                     /* [] */0

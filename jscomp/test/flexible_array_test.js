@@ -25,7 +25,9 @@ function sub(_tr, _k) {
       _tr = tr[2];
       continue ;
     }
-    throw Caml_builtin_exceptions.not_found;
+    throw {
+          CamlExt: Caml_builtin_exceptions.not_found
+        };
   };
 }
 
@@ -62,7 +64,9 @@ function update(tr, k, w) {
             /* Lf */0
           ];
   }
-  throw Caml_builtin_exceptions.not_found;
+  throw {
+        CamlExt: Caml_builtin_exceptions.not_found
+      };
 }
 
 function $$delete(tr, n) {
@@ -87,7 +91,9 @@ function $$delete(tr, n) {
             ];
     }
   }
-  throw Caml_builtin_exceptions.not_found;
+  throw {
+        CamlExt: Caml_builtin_exceptions.not_found
+      };
 }
 
 function loext(tr, w) {
@@ -119,16 +125,18 @@ function lorem(tr) {
     if (!tr[2]) {
       return /* Lf */0;
     }
-    throw [
-          Caml_builtin_exceptions.assert_failure,
-          /* tuple */[
+    throw {
+          CamlExt: Caml_builtin_exceptions.assert_failure,
+          _1: /* tuple */[
             "flexible_array_test.ml",
             66,
             9
           ]
-        ];
+        };
   }
-  throw Caml_builtin_exceptions.not_found;
+  throw {
+        CamlExt: Caml_builtin_exceptions.not_found
+      };
 }
 
 var empty = /* tuple */[
@@ -144,10 +152,10 @@ function get(param, i) {
   if (i >= 0 && i < param[1]) {
     return sub(param[0], i + 1 | 0);
   }
-  throw [
-        Caml_builtin_exceptions.invalid_argument,
-        "Array.get"
-      ];
+  throw {
+        CamlExt: Caml_builtin_exceptions.invalid_argument,
+        _1: "Array.get"
+      };
 }
 
 function set(param, i, v) {
@@ -158,10 +166,10 @@ function set(param, i, v) {
             k
           ];
   }
-  throw [
-        Caml_builtin_exceptions.invalid_argument,
-        "Array.set"
-      ];
+  throw {
+        CamlExt: Caml_builtin_exceptions.invalid_argument,
+        _1: "Array.set"
+      };
 }
 
 function push_front(param, v) {
@@ -179,10 +187,10 @@ function pop_front(param) {
             k - 1 | 0
           ];
   }
-  throw [
-        Caml_builtin_exceptions.invalid_argument,
-        "Array.pop_front"
-      ];
+  throw {
+        CamlExt: Caml_builtin_exceptions.invalid_argument,
+        _1: "Array.pop_front"
+      };
 }
 
 function push_back(param, v) {
@@ -201,10 +209,10 @@ function pop_back(param) {
             k - 1 | 0
           ];
   }
-  throw [
-        Caml_builtin_exceptions.invalid_argument,
-        "Array.pop_back"
-      ];
+  throw {
+        CamlExt: Caml_builtin_exceptions.invalid_argument,
+        _1: "Array.pop_back"
+      };
 }
 
 function pp(fmt, s) {
@@ -308,14 +316,14 @@ if (!Caml_obj.caml_equal(x, of_array([
             5,
             6
           ]))) {
-  throw [
-        Caml_builtin_exceptions.assert_failure,
-        /* tuple */[
+  throw {
+        CamlExt: Caml_builtin_exceptions.assert_failure,
+        _1: /* tuple */[
           "flexible_array_test.ml",
           166,
           4
         ]
-      ];
+      };
 }
 
 var v = $$Array.init(500, (function (i) {

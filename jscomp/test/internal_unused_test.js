@@ -7,7 +7,9 @@ console.log(3);
 var A = Caml_exceptions.create("Internal_unused_test.P1.A");
 
 function f(param) {
-  throw A;
+  throw {
+        CamlExt: A
+      };
 }
 
 var c = 5;

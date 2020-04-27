@@ -13,14 +13,14 @@ function bench(param) {
   console.time("test/bs_set_bench.ml 11");
   for(var i$1 = 0; i$1 <= 1000000; ++i$1){
     if (!Belt_SetInt.has(data, i$1)) {
-      throw [
-            Caml_builtin_exceptions.assert_failure,
-            /* tuple */[
+      throw {
+            CamlExt: Caml_builtin_exceptions.assert_failure,
+            _1: /* tuple */[
               "bs_set_bench.ml",
               12,
               4
             ]
-          ];
+          };
     }
     
   }
@@ -33,14 +33,14 @@ function bench(param) {
   if (Belt_SetInt.size(data) === 0) {
     return ;
   }
-  throw [
-        Caml_builtin_exceptions.assert_failure,
-        /* tuple */[
+  throw {
+        CamlExt: Caml_builtin_exceptions.assert_failure,
+        _1: /* tuple */[
           "bs_set_bench.ml",
           17,
           2
         ]
-      ];
+      };
 }
 
 console.time("test/bs_set_bench.ml 21");

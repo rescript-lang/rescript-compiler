@@ -50,14 +50,14 @@ function compare(context, state, _a, _b) {
                 exit$2 = 4;
                 break;
             case /* Frac */4 :
-                throw [
-                      Caml_builtin_exceptions.assert_failure,
-                      /* tuple */[
+                throw {
+                      CamlExt: Caml_builtin_exceptions.assert_failure,
+                      _1: /* tuple */[
                         "gpr_1698_test.ml",
                         45,
                         10
                       ]
-                    ];
+                    };
             case /* Pow */3 :
             case /* Gcd */5 :
                 exit = 1;
@@ -75,14 +75,14 @@ function compare(context, state, _a, _b) {
       case /* Frac */4 :
           switch (b.tag | 0) {
             case /* Val */0 :
-                throw [
-                      Caml_builtin_exceptions.assert_failure,
-                      /* tuple */[
+                throw {
+                      CamlExt: Caml_builtin_exceptions.assert_failure,
+                      _1: /* tuple */[
                         "gpr_1698_test.ml",
                         45,
                         10
                       ]
-                    ];
+                    };
             case /* Neg */1 :
                 exit$3 = 5;
                 break;
