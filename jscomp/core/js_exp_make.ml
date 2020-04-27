@@ -189,11 +189,7 @@ let make_block ?comment
     | Blk_record_inlined {fields = des}
       -> 
       Ext_list.mapi es (fun i e  -> merge_outer_comment des.(i) e) 
-    | Blk_record_ext des
-      -> 
-      Ext_list.mapi es (fun i e  -> 
-        if i <> 0 then merge_outer_comment des.(i-1) e else e) 
-    (* TODO: may overriden its previous comments *)
+    | Blk_record_ext _
     | Blk_record _ 
     | Blk_module _
     | Blk_module_export
@@ -407,6 +403,24 @@ let record_access (e : t) (name : string) (pos : int32) =
     )
   | _ -> { expression_desc = Static_index (e, name, Some pos); comment = None} 
     
+let extension_access (e : t) name (pos : int32)  : t  = 
+  match e.expression_desc with
+  | Array (l,_) (* Float i -- should not appear here *)
+  | Caml_block (l,_, _, _) when no_side_effect e
+    -> 
+    (match Ext_list.nth_opt l  (Int32.to_int pos)  with
+     | Some x-> x 
+     | None -> 
+      let name = 
+        match name with Some n -> n | None ->   
+        if pos = 0l then "CamlExt" else "_" ^ Int32.to_string pos in 
+       { expression_desc = Static_index (e, name, Some pos); comment = None}     
+    )
+  | _ -> 
+    let name = 
+      match name with Some n -> n | None ->     
+      if pos = 0l then "CamlExt" else "_" ^ Int32.to_string pos in 
+    { expression_desc = Static_index (e, name, Some pos); comment = None} 
 
 let string_index ?comment (e0 : t)  (e1 : t) : t = 
   match e0.expression_desc, e1.expression_desc with
@@ -471,6 +485,24 @@ let record_assign
         Static_index (e, name, Some pos); comment = None} value  
 
 
+let extension_assign  
+    (e : t)     
+    (pos : int32) 
+    name
+    (value : t) = 
+  match e.expression_desc with
+  | Array _  (*
+           Temporary block -- address not held
+           Optimize cases like this which is really 
+           rare {[
+                  (ref x) :=  3
+                ]}
+             *)
+  | Caml_block _ when no_side_effect e  -> 
+    value
+  | _ ->  
+    assign { expression_desc = 
+               Static_index (e, name, Some pos); comment = None} value  
 
 
 (* This is a property access not external module *)

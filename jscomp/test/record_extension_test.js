@@ -20,19 +20,19 @@ function eq(loc, x, y) {
 var Inline_record = Caml_exceptions.create("Record_extension_test.Inline_record");
 
 function f(x) {
-  if (x[0] === Inline_record) {
-    return x[/* x */1] + Caml_format.caml_int_of_string(x[/* y */2]) | 0;
+  if (x.CamlExt === Inline_record) {
+    return x.x + Caml_format.caml_int_of_string(x.y) | 0;
   }
   
 }
 
-var v0 = [
-  Inline_record,
-  /* x */3,
-  /* y */"4"
-];
+var v0 = {
+  CamlExt: Inline_record,
+  x: 3,
+  y: "4"
+};
 
-eq("File \"record_extension_test.ml\", line 18, characters 6-13", f(v0), 7);
+eq("File \"record_extension_test.ml\", line 19, characters 6-13", f(v0), 7);
 
 function f2(x) {
   if (typeof x === "number" || x.tag) {
@@ -53,7 +53,7 @@ function f2_with(x) {
   }
 }
 
-Mt.from_pair_suites("File \"record_extension_test.ml\", line 43, characters 22-29", suites.contents);
+Mt.from_pair_suites("File \"record_extension_test.ml\", line 44, characters 22-29", suites.contents);
 
 exports.suites = suites;
 exports.test_id = test_id;

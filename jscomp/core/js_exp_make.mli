@@ -188,12 +188,25 @@ val record_access :
   Int32.t -> 
   t 
 
+val extension_access : 
+  t ->
+  string option -> 
+  Int32.t -> 
+  t 
+
 val record_assign :   
   t -> 
   int32 ->
   string ->
   t -> 
   t 
+
+val extension_assign : 
+  t -> 
+  int32 -> 
+  string  -> 
+  t -> 
+  t    
 (** 
     [assign_by_int  e i v]
     if the expression [e] is a temporay block 

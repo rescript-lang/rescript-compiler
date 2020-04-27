@@ -215,14 +215,14 @@ function f(children) {
           ];
   }
   if (children$15[1]) {
-    throw [
-          Caml_builtin_exceptions.assert_failure,
-          /* tuple */[
+    throw {
+          CamlExt: Caml_builtin_exceptions.assert_failure,
+          _1: /* tuple */[
             "gpr_1150.ml",
             56,
             34
           ]
-        ];
+        };
   }
   return [
           a0,

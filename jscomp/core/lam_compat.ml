@@ -179,7 +179,6 @@ type field_dbg_info = Lambda.field_dbg_info =
   | Fld_tuple
   | Fld_poly_var_tag
   | Fld_poly_var_content
-  | Fld_extension_slot
   | Fld_extension
   | Fld_variant
 
@@ -191,7 +190,7 @@ let str_of_field_info (x : field_dbg_info) : string option =
   | Fld_poly_var_tag 
   | Fld_poly_var_content
   | Fld_tuple 
-  | Fld_extension_slot -> None   
+     -> None   
   | Fld_record {name ; _} 
   | Fld_module {name ; _}
   | Fld_record_inline {name}

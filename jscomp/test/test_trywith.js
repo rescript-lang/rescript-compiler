@@ -8,8 +8,9 @@ function ff(g, x) {
   try {
     Curry._1(g, x);
   }
-  catch (exn){
-    if (exn !== Caml_builtin_exceptions.not_found) {
+  catch (raw_exn){
+    var exn = Caml_js_exceptions.internalToOCamlException(raw_exn);
+    if (exn.CamlExt !== Caml_builtin_exceptions.not_found) {
       throw exn;
     }
     
@@ -17,8 +18,9 @@ function ff(g, x) {
   try {
     Curry._1(g, x);
   }
-  catch (exn$1){
-    if (exn$1 !== Caml_builtin_exceptions.out_of_memory) {
+  catch (raw_exn$1){
+    var exn$1 = Caml_js_exceptions.internalToOCamlException(raw_exn$1);
+    if (exn$1.CamlExt !== Caml_builtin_exceptions.out_of_memory) {
       throw exn$1;
     }
     
@@ -26,9 +28,9 @@ function ff(g, x) {
   try {
     Curry._1(g, x);
   }
-  catch (raw_exn){
-    var exn$2 = Caml_js_exceptions.internalToOCamlException(raw_exn);
-    if (exn$2[0] !== Caml_builtin_exceptions.sys_error) {
+  catch (raw_exn$2){
+    var exn$2 = Caml_js_exceptions.internalToOCamlException(raw_exn$2);
+    if (exn$2.CamlExt !== Caml_builtin_exceptions.sys_error) {
       throw exn$2;
     }
     
@@ -36,9 +38,9 @@ function ff(g, x) {
   try {
     Curry._1(g, x);
   }
-  catch (raw_exn$1){
-    var exn$3 = Caml_js_exceptions.internalToOCamlException(raw_exn$1);
-    if (exn$3[0] !== Caml_builtin_exceptions.invalid_argument) {
+  catch (raw_exn$3){
+    var exn$3 = Caml_js_exceptions.internalToOCamlException(raw_exn$3);
+    if (exn$3.CamlExt !== Caml_builtin_exceptions.invalid_argument) {
       throw exn$3;
     }
     
@@ -46,8 +48,9 @@ function ff(g, x) {
   try {
     Curry._1(g, x);
   }
-  catch (exn$4){
-    if (exn$4 !== Caml_builtin_exceptions.end_of_file) {
+  catch (raw_exn$4){
+    var exn$4 = Caml_js_exceptions.internalToOCamlException(raw_exn$4);
+    if (exn$4.CamlExt !== Caml_builtin_exceptions.end_of_file) {
       throw exn$4;
     }
     
@@ -55,9 +58,9 @@ function ff(g, x) {
   try {
     Curry._1(g, x);
   }
-  catch (raw_exn$2){
-    var exn$5 = Caml_js_exceptions.internalToOCamlException(raw_exn$2);
-    if (exn$5[0] !== Caml_builtin_exceptions.match_failure) {
+  catch (raw_exn$5){
+    var exn$5 = Caml_js_exceptions.internalToOCamlException(raw_exn$5);
+    if (exn$5.CamlExt !== Caml_builtin_exceptions.match_failure) {
       throw exn$5;
     }
     
@@ -65,8 +68,9 @@ function ff(g, x) {
   try {
     Curry._1(g, x);
   }
-  catch (exn$6){
-    if (exn$6 !== Caml_builtin_exceptions.stack_overflow) {
+  catch (raw_exn$6){
+    var exn$6 = Caml_js_exceptions.internalToOCamlException(raw_exn$6);
+    if (exn$6.CamlExt !== Caml_builtin_exceptions.stack_overflow) {
       throw exn$6;
     }
     
@@ -74,8 +78,9 @@ function ff(g, x) {
   try {
     Curry._1(g, x);
   }
-  catch (exn$7){
-    if (exn$7 !== Caml_builtin_exceptions.sys_blocked_io) {
+  catch (raw_exn$7){
+    var exn$7 = Caml_js_exceptions.internalToOCamlException(raw_exn$7);
+    if (exn$7.CamlExt !== Caml_builtin_exceptions.sys_blocked_io) {
       throw exn$7;
     }
     
@@ -83,9 +88,9 @@ function ff(g, x) {
   try {
     Curry._1(g, x);
   }
-  catch (raw_exn$3){
-    var exn$8 = Caml_js_exceptions.internalToOCamlException(raw_exn$3);
-    if (exn$8[0] !== Caml_builtin_exceptions.assert_failure) {
+  catch (raw_exn$8){
+    var exn$8 = Caml_js_exceptions.internalToOCamlException(raw_exn$8);
+    if (exn$8.CamlExt !== Caml_builtin_exceptions.assert_failure) {
       throw exn$8;
     }
     
@@ -93,9 +98,9 @@ function ff(g, x) {
   try {
     return Curry._1(g, x);
   }
-  catch (raw_exn$4){
-    var exn$9 = Caml_js_exceptions.internalToOCamlException(raw_exn$4);
-    if (exn$9[0] === Caml_builtin_exceptions.undefined_recursive_module) {
+  catch (raw_exn$9){
+    var exn$9 = Caml_js_exceptions.internalToOCamlException(raw_exn$9);
+    if (exn$9.CamlExt === Caml_builtin_exceptions.undefined_recursive_module) {
       return ;
     }
     throw exn$9;
@@ -103,7 +108,9 @@ function ff(g, x) {
 }
 
 function u(param) {
-  throw Caml_builtin_exceptions.not_found;
+  throw {
+        CamlExt: Caml_builtin_exceptions.not_found
+      };
 }
 
 function f(x) {
@@ -113,14 +120,14 @@ function f(x) {
   if (!x.tag) {
     return 1;
   }
-  throw [
-        Caml_builtin_exceptions.assert_failure,
-        /* tuple */[
+  throw {
+        CamlExt: Caml_builtin_exceptions.assert_failure,
+        _1: /* tuple */[
           "test_trywith.ml",
           51,
           9
         ]
-      ];
+      };
 }
 
 var u1 = "bad character decimal encoding \\";

@@ -47,10 +47,14 @@ function _must_escape(s) {
           if (c !== 92) {
             exit = 1;
           } else {
-            throw Pervasives.Exit;
+            throw {
+                  CamlExt: Pervasives.Exit
+                };
           }
         } else {
-          throw Pervasives.Exit;
+          throw {
+                CamlExt: Pervasives.Exit
+              };
         }
       } else if (c >= 11) {
         if (c >= 32) {
@@ -67,7 +71,9 @@ function _must_escape(s) {
             case 2 :
             case 8 :
             case 9 :
-                throw Pervasives.Exit;
+                throw {
+                      CamlExt: Pervasives.Exit
+                    };
             
           }
         } else {
@@ -75,19 +81,24 @@ function _must_escape(s) {
         }
       } else {
         if (c >= 9) {
-          throw Pervasives.Exit;
+          throw {
+                CamlExt: Pervasives.Exit
+              };
         }
         exit = 1;
       }
       if (exit === 1 && c > 127) {
-        throw Pervasives.Exit;
+        throw {
+              CamlExt: Pervasives.Exit
+            };
       }
       
     }
     return false;
   }
-  catch (exn){
-    if (exn === Pervasives.Exit) {
+  catch (raw_exn){
+    var exn = Caml_js_exceptions.internalToOCamlException(raw_exn);
+    if (exn.CamlExt === Pervasives.Exit) {
       return true;
     }
     throw exn;
@@ -374,14 +385,14 @@ function _refill(t, k_succ, k_fail) {
 
 function _get(t) {
   if (t.i >= t.len) {
-    throw [
-          Caml_builtin_exceptions.assert_failure,
-          /* tuple */[
+    throw {
+          CamlExt: Caml_builtin_exceptions.assert_failure,
+          _1: /* tuple */[
             "sexpm.ml",
             152,
             4
           ]
-        ];
+        };
   }
   var c = Caml_bytes.get(t.buf, t.i);
   t.i = t.i + 1 | 0;
@@ -480,14 +491,14 @@ function expr_starting_with(c, k, t) {
     if (c >= 32) {
       switch (c - 32 | 0) {
         case 0 :
-            throw [
-                  Caml_builtin_exceptions.assert_failure,
-                  /* tuple */[
+            throw {
+                  CamlExt: Caml_builtin_exceptions.assert_failure,
+                  _1: /* tuple */[
                     "sexpm.ml",
                     183,
                     27
                   ]
-                ];
+                };
         case 2 :
             return quoted(k, t);
         case 1 :
@@ -512,14 +523,14 @@ function expr_starting_with(c, k, t) {
     }
     
   } else if (c >= 9) {
-    throw [
-          Caml_builtin_exceptions.assert_failure,
-          /* tuple */[
+    throw {
+          CamlExt: Caml_builtin_exceptions.assert_failure,
+          _1: /* tuple */[
             "sexpm.ml",
             183,
             27
           ]
-        ];
+        };
   }
   $$Buffer.add_char(t.atom, c);
   return atom(k, t);
@@ -959,14 +970,14 @@ function MakeDecode(funarg) {
   };
   var _get = function (t) {
     if (t.i >= t.len) {
-      throw [
-            Caml_builtin_exceptions.assert_failure,
-            /* tuple */[
+      throw {
+            CamlExt: Caml_builtin_exceptions.assert_failure,
+            _1: /* tuple */[
               "sexpm.ml",
               152,
               4
             ]
-          ];
+          };
     }
     var c = Caml_bytes.get(t.buf, t.i);
     t.i = t.i + 1 | 0;
@@ -1061,14 +1072,14 @@ function MakeDecode(funarg) {
       if (c >= 32) {
         switch (c - 32 | 0) {
           case 0 :
-              throw [
-                    Caml_builtin_exceptions.assert_failure,
-                    /* tuple */[
+              throw {
+                    CamlExt: Caml_builtin_exceptions.assert_failure,
+                    _1: /* tuple */[
                       "sexpm.ml",
                       183,
                       27
                     ]
-                  ];
+                  };
           case 2 :
               return quoted(k, t);
           case 1 :
@@ -1093,14 +1104,14 @@ function MakeDecode(funarg) {
       }
       
     } else if (c >= 9) {
-      throw [
-            Caml_builtin_exceptions.assert_failure,
-            /* tuple */[
+      throw {
+            CamlExt: Caml_builtin_exceptions.assert_failure,
+            _1: /* tuple */[
               "sexpm.ml",
               183,
               27
             ]
-          ];
+          };
     }
     $$Buffer.add_char(t.atom, c);
     return atom(k, t);

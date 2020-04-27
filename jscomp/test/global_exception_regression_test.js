@@ -4,11 +4,17 @@ var Mt = require("./mt.js");
 var Block = require("../../lib/js/block.js");
 var Caml_builtin_exceptions = require("../../lib/js/caml_builtin_exceptions.js");
 
-var v = Caml_builtin_exceptions.not_found;
+var v = {
+  CamlExt: Caml_builtin_exceptions.not_found
+};
 
-var u = Caml_builtin_exceptions.not_found;
+var u = {
+  CamlExt: Caml_builtin_exceptions.not_found
+};
 
-var s = Caml_builtin_exceptions.end_of_file;
+var s = {
+  CamlExt: Caml_builtin_exceptions.end_of_file
+};
 
 var suites_000 = /* tuple */[
   "not_found_equal",

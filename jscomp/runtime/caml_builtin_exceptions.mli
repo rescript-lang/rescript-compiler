@@ -22,24 +22,24 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
+type t = {
+  mutable id : nativeint [@bs.as "CamlId"];
+  name : string  ;
+} 
 
-
-
-(** *)
-
-type exception_block =  string * nativeint
-val out_of_memory : exception_block              
-val sys_error  : exception_block                                
-val failure : exception_block                                  
-val invalid_argument : exception_block                         
-val end_of_file : exception_block                              
-val division_by_zero : exception_block                         
-val not_found : exception_block                                
-val match_failure : exception_block                            
-val stack_overflow : exception_block                           
-val sys_blocked_io : exception_block                           
-val assert_failure : exception_block                          
-val undefined_recursive_module : exception_block              
+val make : string -> nativeint -> t 
+val out_of_memory : t              
+val sys_error  : t                                
+val failure : t                                  
+val invalid_argument : t                         
+val end_of_file : t                              
+val division_by_zero : t                         
+val not_found : t                                
+val match_failure : t                            
+val stack_overflow : t                           
+val sys_blocked_io : t                           
+val assert_failure : t                          
+val undefined_recursive_module : t              
 
 
  

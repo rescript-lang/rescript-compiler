@@ -75,26 +75,26 @@ add_test("File \"js_json_test.ml\", line 23, characters 11-18", (function (param
         ty2[0].forEach((function (x) {
                 var ty3 = Js_json.classify(x);
                 if (typeof ty3 === "number") {
-                  throw [
-                        Caml_builtin_exceptions.assert_failure,
-                        /* tuple */[
+                  throw {
+                        CamlExt: Caml_builtin_exceptions.assert_failure,
+                        _1: /* tuple */[
                           "js_json_test.ml",
                           37,
                           21
                         ]
-                      ];
+                      };
                 }
                 if (ty3.tag === /* JSONNumber */1) {
                   return ;
                 }
-                throw [
-                      Caml_builtin_exceptions.assert_failure,
-                      /* tuple */[
+                throw {
+                      CamlExt: Caml_builtin_exceptions.assert_failure,
+                      _1: /* tuple */[
                         "js_json_test.ml",
                         37,
                         21
                       ]
-                    ];
+                    };
               }));
         return /* Ok */Block.__(4, [true]);
       }));
@@ -204,14 +204,14 @@ function option_get(x) {
   if (x !== undefined) {
     return Caml_option.valFromOption(x);
   }
-  throw [
-        Caml_builtin_exceptions.assert_failure,
-        /* tuple */[
+  throw {
+        CamlExt: Caml_builtin_exceptions.assert_failure,
+        _1: /* tuple */[
           "js_json_test.ml",
           102,
           36
         ]
-      ];
+      };
 }
 
 var dict = { };

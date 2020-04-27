@@ -16,6 +16,7 @@ var Caml_int32 = require("../../lib/js/caml_int32.js");
 var Pervasives = require("../../lib/js/pervasives.js");
 var Caml_option = require("../../lib/js/caml_option.js");
 var Caml_string = require("../../lib/js/caml_string.js");
+var Caml_js_exceptions = require("../../lib/js/caml_js_exceptions.js");
 var Caml_external_polyfill = require("../../lib/js/caml_external_polyfill.js");
 var Caml_builtin_exceptions = require("../../lib/js/caml_builtin_exceptions.js");
 
@@ -43,14 +44,14 @@ function bufferize(f) {
             }),
           (function (x) {
               if (buf.contents !== undefined) {
-                throw [
-                      Caml_builtin_exceptions.assert_failure,
-                      /* tuple */[
+                throw {
+                      CamlExt: Caml_builtin_exceptions.assert_failure,
+                      _1: /* tuple */[
                         "qcc.ml",
                         17,
                         4
                       ]
-                    ];
+                    };
               }
               buf.contents = Caml_option.some(x);
               
@@ -101,14 +102,14 @@ function addsym(s) {
 
 function symstr(n) {
   if (n >= syms.contents) {
-    throw [
-          Caml_builtin_exceptions.assert_failure,
-          /* tuple */[
+    throw {
+          CamlExt: Caml_builtin_exceptions.assert_failure,
+          _1: /* tuple */[
             "qcc.ml",
             40,
             4
           ]
-        ];
+        };
   }
   return Caml_array.caml_array_get(symtab, n);
 }
@@ -193,8 +194,9 @@ function next(param) {
   try {
     c = skip(undefined);
   }
-  catch (exn){
-    if (exn === Caml_builtin_exceptions.end_of_file) {
+  catch (raw_exn){
+    var exn = Caml_js_exceptions.internalToOCamlException(raw_exn);
+    if (exn.CamlExt === Caml_builtin_exceptions.end_of_file) {
       c = undefined;
     } else {
       throw exn;
@@ -240,10 +242,10 @@ function next(param) {
     var ch = getq(undefined);
     var qt = Curry._1(getch, undefined);
     if (qt !== /* "'" */39) {
-      throw [
-            Caml_builtin_exceptions.failure,
-            "syntax error"
-          ];
+      throw {
+            CamlExt: Caml_builtin_exceptions.failure,
+            _1: "syntax error"
+          };
     }
     return /* ILit */Block.__(1, [ch]);
   }
@@ -352,14 +354,14 @@ function get32(l) {
 
 function patch(rel, loc, n) {
   if (n >= 0) {
-    throw [
-          Caml_builtin_exceptions.assert_failure,
-          /* tuple */[
+    throw {
+          CamlExt: Caml_builtin_exceptions.assert_failure,
+          _1: /* tuple */[
             "qcc.ml",
             157,
             2
           ]
-        ];
+        };
   }
   if (loc === 0) {
     return ;
@@ -858,10 +860,10 @@ function unary(stk) {
                   2
                 ];
               } else {
-                throw [
-                      Caml_builtin_exceptions.failure,
-                      "[cast] expected"
-                    ];
+                throw {
+                      CamlExt: Caml_builtin_exceptions.failure,
+                      _1: "[cast] expected"
+                    };
               }
               for(var k = 1 ,k_finish = match[1]; k <= k_finish; ++k){
                 Curry._1(next$1, undefined);
@@ -906,10 +908,10 @@ function unary(stk) {
                           ]),
                         "unknown operator %s"
                       ]), o);
-              throw [
-                    Caml_builtin_exceptions.failure,
-                    s
-                  ];
+              throw {
+                    CamlExt: Caml_builtin_exceptions.failure,
+                    _1: s
+                  };
             }
             out(List.assoc(o, unops));
             if (o === "!") {
@@ -928,14 +930,14 @@ function unary(stk) {
         if (List.mem_assoc(i$1, stk)) {
           var l = List.assoc(i$1, stk);
           if (l <= -256) {
-            throw [
-                  Caml_builtin_exceptions.assert_failure,
-                  /* tuple */[
+            throw {
+                  CamlExt: Caml_builtin_exceptions.assert_failure,
+                  _1: /* tuple */[
                     "qcc.ml",
                     295,
                     6
                   ]
-                ];
+                };
           }
           out(4754245);
           out(l & 255);
@@ -1125,10 +1127,10 @@ function decl(g, _n, _stk) {
             if (g) {
               var glo = Caml_array.caml_array_get(globs, s$1);
               if (glo.va >= 0) {
-                throw [
-                      Caml_builtin_exceptions.failure,
-                      "symbol defined twice"
-                    ];
+                throw {
+                      CamlExt: Caml_builtin_exceptions.failure,
+                      _1: "symbol defined twice"
+                    };
               }
               var va = (gpos.contents + 232 | 0) + 4194304 | 0;
               Caml_array.caml_array_set(globs, s$1, {
@@ -1157,10 +1159,10 @@ function decl(g, _n, _stk) {
             _n = n$prime;
             continue ;
           }
-          throw [
-                Caml_builtin_exceptions.failure,
-                "[var] expected in [decl]"
-              ];
+          throw {
+                CamlExt: Caml_builtin_exceptions.failure,
+                _1: "[var] expected in [decl]"
+              };
         };
       }
       }(top));
@@ -1190,14 +1192,14 @@ function decl(g, _n, _stk) {
     Curry._1(unnext, t);
     if (!g && n !== 0) {
       if ((n << 3) >= 256) {
-        throw [
-              Caml_builtin_exceptions.assert_failure,
-              /* tuple */[
+        throw {
+              CamlExt: Caml_builtin_exceptions.assert_failure,
+              _1: /* tuple */[
                 "qcc.ml",
                 436,
                 6
               ]
-            ];
+            };
       }
       out(4752364);
       out((n << 3));
@@ -1309,14 +1311,14 @@ function stmt(brk, stk) {
     var brkl = brk[0];
     var n = align.contents - brk[1] | 0;
     if (n < 0) {
-      throw [
-            Caml_builtin_exceptions.assert_failure,
-            /* tuple */[
+      throw {
+            CamlExt: Caml_builtin_exceptions.assert_failure,
+            _1: /* tuple */[
               "qcc.ml",
               515,
               4
             ]
-          ];
+          };
     }
     if (n !== 0) {
       out(4752324);
@@ -1376,10 +1378,10 @@ function top(_param) {
       var f$1 = f[0];
       var g = Caml_array.caml_array_get(globs, f$1);
       if (g.va >= 0) {
-        throw [
-              Caml_builtin_exceptions.failure,
-              "symbol defined twice"
-            ];
+        throw {
+              CamlExt: Caml_builtin_exceptions.failure,
+              _1: "symbol defined twice"
+            };
       }
       Caml_array.caml_array_set(globs, f$1, {
             loc: g.loc,
@@ -1396,16 +1398,16 @@ function top(_param) {
                 if (i[0] === ")") {
                   return stk;
                 }
-                throw [
-                      Caml_builtin_exceptions.failure,
-                      "[var] or ) expected"
-                    ];
+                throw {
+                      CamlExt: Caml_builtin_exceptions.failure,
+                      _1: "[var] or ) expected"
+                    };
             case /* ILit */1 :
             case /* SLit */2 :
-                throw [
-                      Caml_builtin_exceptions.failure,
-                      "[var] or ) expected"
-                    ];
+                throw {
+                      CamlExt: Caml_builtin_exceptions.failure,
+                      _1: "[var] or ) expected"
+                    };
             case /* Sym */3 :
                 var r = List.hd(regs);
                 push(r);
@@ -1481,10 +1483,10 @@ function top(_param) {
       _param = undefined;
       continue ;
     }
-    throw [
-          Caml_builtin_exceptions.failure,
-          "[decl] or [fun] expected"
-        ];
+    throw {
+          CamlExt: Caml_builtin_exceptions.failure,
+          _1: "[decl] or [fun] expected"
+        };
   };
 }
 
@@ -1710,14 +1712,14 @@ function elfgen(outf) {
   elfphdr(1, 0, tend + off | 0, 2097152);
   elfphdr(2, dyn + off | 0, tend - dyn | 0, 8);
   if (opos.contents !== 232) {
-    throw [
-          Caml_builtin_exceptions.assert_failure,
-          /* tuple */[
+    throw {
+          CamlExt: Caml_builtin_exceptions.assert_failure,
+          _1: /* tuple */[
             "qcc.ml",
             698,
             2
           ]
-        ];
+        };
   }
   patch(false, 24, va(entry));
   return Pervasives.output_bytes(outf, Bytes.sub(obuf, 0, tend + off | 0));

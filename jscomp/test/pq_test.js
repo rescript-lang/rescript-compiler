@@ -62,7 +62,9 @@ function remove_top(param) {
             ];
     }
   }
-  throw Queue_is_empty;
+  throw {
+        CamlExt: Queue_is_empty
+      };
 }
 
 function extract(queue) {
@@ -73,7 +75,9 @@ function extract(queue) {
             remove_top(queue)
           ];
   }
-  throw Queue_is_empty;
+  throw {
+        CamlExt: Queue_is_empty
+      };
 }
 
 var PrioQueue = {

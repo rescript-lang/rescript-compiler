@@ -13,14 +13,14 @@ function bench(param) {
   console.time("test/bs_rbset_int_bench.ml 11");
   for(var i$1 = 0; i$1 <= 1000000; ++i$1){
     if (!Rbset.mem(i$1, data)) {
-      throw [
-            Caml_builtin_exceptions.assert_failure,
-            /* tuple */[
+      throw {
+            CamlExt: Caml_builtin_exceptions.assert_failure,
+            _1: /* tuple */[
               "bs_rbset_int_bench.ml",
               12,
               4
             ]
-          ];
+          };
     }
     
   }
@@ -33,14 +33,14 @@ function bench(param) {
   if (Rbset.cardinal(data) === 0) {
     return ;
   }
-  throw [
-        Caml_builtin_exceptions.assert_failure,
-        /* tuple */[
+  throw {
+        CamlExt: Caml_builtin_exceptions.assert_failure,
+        _1: /* tuple */[
           "bs_rbset_int_bench.ml",
           17,
           2
         ]
-      ];
+      };
 }
 
 console.time("test/bs_rbset_int_bench.ml 21");

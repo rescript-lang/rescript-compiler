@@ -189,15 +189,15 @@ function bal(l, v, r) {
       if (lr) {
         return create(create(ll, lv, lr[/* l */0]), lr[/* v */1], create(lr[/* r */2], v, r));
       }
-      throw [
-            Caml_builtin_exceptions.invalid_argument,
-            "Set.bal"
-          ];
+      throw {
+            CamlExt: Caml_builtin_exceptions.invalid_argument,
+            _1: "Set.bal"
+          };
     }
-    throw [
-          Caml_builtin_exceptions.invalid_argument,
-          "Set.bal"
-        ];
+    throw {
+          CamlExt: Caml_builtin_exceptions.invalid_argument,
+          _1: "Set.bal"
+        };
   }
   if (hr <= (hl + 2 | 0)) {
     return /* Node */[
@@ -217,15 +217,15 @@ function bal(l, v, r) {
     if (rl) {
       return create(create(l, v, rl[/* l */0]), rl[/* v */1], create(rl[/* r */2], rv, rr));
     }
-    throw [
-          Caml_builtin_exceptions.invalid_argument,
-          "Set.bal"
-        ];
+    throw {
+          CamlExt: Caml_builtin_exceptions.invalid_argument,
+          _1: "Set.bal"
+        };
   }
-  throw [
-        Caml_builtin_exceptions.invalid_argument,
-        "Set.bal"
-      ];
+  throw {
+        CamlExt: Caml_builtin_exceptions.invalid_argument,
+        _1: "Set.bal"
+      };
 }
 
 function add(x, t) {
@@ -314,7 +314,9 @@ function min_elt(_param) {
       _param = l;
       continue ;
     }
-    throw Caml_builtin_exceptions.not_found;
+    throw {
+          CamlExt: Caml_builtin_exceptions.not_found
+        };
   };
 }
 
@@ -344,7 +346,9 @@ function max_elt(_param) {
       _param = r;
       continue ;
     }
-    throw Caml_builtin_exceptions.not_found;
+    throw {
+          CamlExt: Caml_builtin_exceptions.not_found
+        };
   };
 }
 
@@ -372,10 +376,10 @@ function remove_min_elt(param) {
       return param[/* r */2];
     }
   }
-  throw [
-        Caml_builtin_exceptions.invalid_argument,
-        "Set.remove_min_elt"
-      ];
+  throw {
+        CamlExt: Caml_builtin_exceptions.invalid_argument,
+        _1: "Set.remove_min_elt"
+      };
 }
 
 function concat(t1, t2) {
@@ -791,7 +795,9 @@ function find(x, _param) {
       _param = c < 0 ? param[/* l */0] : param[/* r */2];
       continue ;
     }
-    throw Caml_builtin_exceptions.not_found;
+    throw {
+          CamlExt: Caml_builtin_exceptions.not_found
+        };
   };
 }
 
@@ -822,7 +828,9 @@ function find_first(f, _param) {
       _param = param[/* r */2];
       continue ;
     }
-    throw Caml_builtin_exceptions.not_found;
+    throw {
+          CamlExt: Caml_builtin_exceptions.not_found
+        };
   };
 }
 
@@ -884,7 +892,9 @@ function find_last(f, _param) {
       _param = param[/* l */0];
       continue ;
     }
-    throw Caml_builtin_exceptions.not_found;
+    throw {
+          CamlExt: Caml_builtin_exceptions.not_found
+        };
   };
 }
 
@@ -1064,14 +1074,14 @@ function of_list(l) {
                   match$4[1]
                 ];
         }
-        throw [
-              Caml_builtin_exceptions.assert_failure,
-              /* tuple */[
+        throw {
+              CamlExt: Caml_builtin_exceptions.assert_failure,
+              _1: /* tuple */[
                 "set.ml",
                 510,
                 18
               ]
-            ];
+            };
       };
       return sub(List.length(l$1), l$1)[0];
     } else {

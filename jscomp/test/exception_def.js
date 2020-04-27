@@ -16,6 +16,10 @@ var H = { };
 
 var Bx = Caml_exceptions.create("Exception_def.Bx");
 
+var u = {
+  CamlExt: Bx
+};
+
 var Ax = Caml_exceptions.create("Exception_def.Ax");
 
 var XXX = Caml_exceptions.create("Exception_def.XXX");
@@ -28,21 +32,19 @@ var v_001 = /* tuple */[
   0
 ];
 
-var v = [
-  Aa,
-  v_001
-];
+var v = {
+  CamlExt: Aa,
+  _1: v_001
+};
 
 Printexc.register_printer((function (s) {
-        if (s[0] === A) {
+        if (s.CamlExt === A) {
           return "A";
         }
         
       }));
 
 var a = 3;
-
-var u = Bx;
 
 exports.A = A;
 exports.U = U;

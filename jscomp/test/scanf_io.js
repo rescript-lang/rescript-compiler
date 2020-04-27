@@ -97,7 +97,7 @@ function get_lines(fname) {
   }
   catch (raw_s){
     var s = Caml_js_exceptions.internalToOCamlException(raw_s);
-    if (s[0] === Scanf.Scan_failure) {
+    if (s.CamlExt === Scanf.Scan_failure) {
       var s$1 = Curry._2(Printf.sprintf(/* Format */[
                 /* String_literal */Block.__(11, [
                     "in file ",
@@ -113,13 +113,13 @@ function get_lines(fname) {
                       ])
                   ]),
                 "in file %s, %s"
-              ]), fname, s[1]);
-      throw [
-            Caml_builtin_exceptions.failure,
-            s$1
-          ];
+              ]), fname, s._1);
+      throw {
+            CamlExt: Caml_builtin_exceptions.failure,
+            _1: s$1
+          };
     }
-    if (s === Caml_builtin_exceptions.end_of_file) {
+    if (s.CamlExt === Caml_builtin_exceptions.end_of_file) {
       var s$2 = Curry._1(Printf.sprintf(/* Format */[
                 /* String_literal */Block.__(11, [
                     "in file ",
@@ -133,10 +133,10 @@ function get_lines(fname) {
                   ]),
                 "in file %s, unexpected end of file"
               ]), fname);
-      throw [
-            Caml_builtin_exceptions.failure,
-            s$2
-          ];
+      throw {
+            CamlExt: Caml_builtin_exceptions.failure,
+            _1: s$2
+          };
     }
     throw s;
   }
@@ -169,8 +169,9 @@ function add_digest_ib(ob, ib) {
     };
     return ;
   }
-  catch (exn){
-    if (exn === Caml_builtin_exceptions.end_of_file) {
+  catch (raw_exn){
+    var exn = Caml_js_exceptions.internalToOCamlException(raw_exn);
+    if (exn.CamlExt === Caml_builtin_exceptions.end_of_file) {
       return ;
     }
     throw exn;

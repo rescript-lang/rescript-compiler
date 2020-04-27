@@ -29,7 +29,6 @@ external size : t -> int = "%obj_size"
 external field : t -> int -> t = "%obj_field"
 external set_field : t -> int -> t -> unit = "%obj_set_field"
  
-external new_block : int -> int -> t = "caml_obj_block"
 external dup : t -> t = "caml_obj_dup"
 external truncate : t -> int -> unit = "caml_obj_truncate"
 
@@ -38,26 +37,8 @@ external truncate : t -> int -> unit = "caml_obj_truncate"
 
 
 
-let object_tag = 248
 
-let extension_constructor x =
-  let x = repr x in
-  let slot =
-    if (is_block x) && (tag x) <> object_tag && (size x) >= 1 then field x 0
-    else x
-  in
-  let name =
-    if (is_block slot) && (tag slot) = object_tag then field slot 0
-    else invalid_arg "Obj.extension_constructor"
-  in
-    if Js.typeof name = "string" then (obj slot : extension_constructor)
-    else invalid_arg "Obj.extension_constructor"
 
-let [@inline always] extension_name (slot : extension_constructor) =
-  (obj (field (repr slot) 0) : string)
-
-let [@inline always] extension_id (slot : extension_constructor) =
-  (obj (field (repr slot) 1) : int)
 
 module Ephemeron = struct
   type obj_t = t
@@ -85,7 +66,4 @@ module Ephemeron = struct
 
 
 end
-
-let new_object_tag_block size = 
-  new_block object_tag size  
 

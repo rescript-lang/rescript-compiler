@@ -157,14 +157,14 @@ function f11(x) {
   if (!x.tag) {
     return 1;
   }
-  throw [
-        Caml_builtin_exceptions.assert_failure,
-        /* tuple */[
+  throw {
+        CamlExt: Caml_builtin_exceptions.assert_failure,
+        _1: /* tuple */[
           "adt_optimize_test.ml",
           191,
           9
         ]
-      ];
+      };
 }
 
 exports.f = f;

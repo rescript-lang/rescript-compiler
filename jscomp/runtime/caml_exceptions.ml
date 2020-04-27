@@ -47,19 +47,17 @@ let id = ref 0n
      }
 
    ]}*)
-let caml_set_oo_id (b : Caml_builtin_exceptions.exception_block)  = 
+let caml_set_oo_id (b : Caml_obj_extern.t)  : Caml_obj_extern.t = 
   Caml_obj_extern.set_field (Caml_obj_extern.repr b) 1 (Caml_obj_extern.repr id.contents);
   id .contents <- Caml_nativeint_extern.add id.contents  1n; 
   b
+(* FXIME: this is only relevant to OO module now *)
 
+(* let object_tag = 248 *)
 
-let object_tag = 248
-
-let create (str : string) : Caml_builtin_exceptions.exception_block = 
+let create (str : string) : Caml_builtin_exceptions.t = 
   id .contents <- Caml_nativeint_extern.add id.contents 1n;  
-  let v = ( str, id.contents) in 
-  Caml_obj_extern.set_tag (Caml_obj_extern.repr v) object_tag;
-  v 
+  Caml_builtin_exceptions.make str id.contents
 
 (* let makeExtension (str : string) : Caml_builtin_exceptions.exception_block =  *)
 (*   let v = ( str, get_id ()) in  *)
@@ -99,13 +97,15 @@ let create (str : string) : Caml_builtin_exceptions.exception_block =
 
    This is not a problem in `try .. with` since the logic above is not expressible, see more design in [destruct_exn.md]
 *)
-let caml_is_extension e = 
-  if  Obj.magic e = Js.undefined then false 
-  else 
-    Caml_obj_extern.tag (Caml_obj_extern.repr e) = object_tag  (* nullary exception *)
-    ||
-    let slot = Caml_obj_extern.field (Caml_obj_extern.repr e) 0 in 
-    not (Obj.magic slot = Js.undefined) &&
-    (Caml_obj_extern.tag slot = object_tag)
+let caml_is_extension = [%raw {|function (e){
+  if(e == null || e.CamlExt == null) {
+    return false 
+  }
+  return typeof e.CamlExt.CamlId === "number"
+}    
+|}]
 
+type exn = { exn : Caml_builtin_exceptions.t [@bs.as "CamlExt"]}
 
+let caml_exn_slot_id x = x.exn.id
+let caml_exn_slot_name x = x.exn.name

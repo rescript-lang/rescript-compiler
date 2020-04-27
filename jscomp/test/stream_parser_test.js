@@ -36,32 +36,32 @@ function parse(token) {
             var v = parse_expr_aux(parse_term_aux(parse_atom(undefined)));
             var match = token$1(undefined);
             if (match.tag) {
-              throw [
-                    Parse_error,
-                    "Unbalanced parens"
-                  ];
+              throw {
+                    CamlExt: Parse_error,
+                    _1: "Unbalanced parens"
+                  };
             }
             if (match[0] === ")") {
               return v;
             }
-            throw [
-                  Parse_error,
-                  "Unbalanced parens"
-                ];
+            throw {
+                  CamlExt: Parse_error,
+                  _1: "Unbalanced parens"
+                };
           }
           Queue.push(n, look_ahead);
-          throw [
-                Parse_error,
-                "unexpected token"
-              ];
+          throw {
+                CamlExt: Parse_error,
+                _1: "unexpected token"
+              };
       case /* Int */2 :
           return n[0];
       default:
         Queue.push(n, look_ahead);
-        throw [
-              Parse_error,
-              "unexpected token"
-            ];
+        throw {
+              CamlExt: Parse_error,
+              _1: "unexpected token"
+            };
     }
   };
   var parse_term_aux = function (e1) {
@@ -181,30 +181,30 @@ function l_parse(token) {
             var v = parse_t_aux(parse_f_aux(parse_f(undefined)));
             var t = token$1(undefined);
             if (t.tag) {
-              throw [
-                    Parse_error,
-                    "Unbalanced )"
-                  ];
+              throw {
+                    CamlExt: Parse_error,
+                    _1: "Unbalanced )"
+                  };
             }
             if (t[0] === ")") {
               return v;
             }
-            throw [
-                  Parse_error,
-                  "Unbalanced )"
-                ];
+            throw {
+                  CamlExt: Parse_error,
+                  _1: "Unbalanced )"
+                };
           }
-          throw [
-                Parse_error,
-                "Unexpected token"
-              ];
+          throw {
+                CamlExt: Parse_error,
+                _1: "Unexpected token"
+              };
       case /* Int */2 :
           return i[0];
       default:
-        throw [
-              Parse_error,
-              "Unexpected token"
-            ];
+        throw {
+              CamlExt: Parse_error,
+              _1: "Unexpected token"
+            };
     }
   };
   var parse_t_aux = function (_a) {

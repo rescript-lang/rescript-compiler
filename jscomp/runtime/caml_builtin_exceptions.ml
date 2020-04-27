@@ -26,38 +26,36 @@
 
 
 
-(** *)
+type t = {
+    mutable id : nativeint [@bs.as "CamlId"];
+    name : string ;
+} 
 
-type exception_block = string * nativeint 
 
-let object_tag = 248
+let make name id = { 
+  name ; id }
 
-let out_of_memory =  "Out_of_memory", 0n 
-let sys_error = "Sys_error", -1n
-let failure =  "Failure", -2n
-let invalid_argument =  "Invalid_argument", -3n
-let end_of_file = "End_of_file",-4n
-let division_by_zero =  "Division_by_zero", -5n
-let not_found = "Not_found", -6n
-let match_failure =  "Match_failure", -7n
-let stack_overflow =  "Stack_overflow",-8n
-let sys_blocked_io =  "Sys_blocked_io", -9n
-let assert_failure =  "Assert_failure", -10n
-let undefined_recursive_module =  "Undefined_recursive_module", -11n
 
-let () =
-    Caml_obj_extern.set_tag (Caml_obj_extern.repr out_of_memory ) object_tag;
-    Caml_obj_extern.set_tag (Caml_obj_extern.repr sys_error) object_tag;
-    Caml_obj_extern.set_tag (Caml_obj_extern.repr failure) object_tag;
-    Caml_obj_extern.set_tag (Caml_obj_extern.repr invalid_argument) object_tag;
-    Caml_obj_extern.set_tag (Caml_obj_extern.repr end_of_file) object_tag;
-    Caml_obj_extern.set_tag (Caml_obj_extern.repr division_by_zero) object_tag;
-    Caml_obj_extern.set_tag (Caml_obj_extern.repr not_found) object_tag ; 
-    Caml_obj_extern.set_tag (Caml_obj_extern.repr match_failure) object_tag;
-    Caml_obj_extern.set_tag (Caml_obj_extern.repr stack_overflow) object_tag;
-    Caml_obj_extern.set_tag (Caml_obj_extern.repr sys_blocked_io) object_tag;
-    Caml_obj_extern.set_tag (Caml_obj_extern.repr assert_failure) object_tag;
-    Caml_obj_extern.set_tag (Caml_obj_extern.repr undefined_recursive_module) object_tag
+let out_of_memory = make "Out_of_memory" 0n
+let sys_error = make  "Sys_error" (-1n)
+let failure =  make "Failure" (-2n)
+let invalid_argument =  make  "Invalid_argument"  (-3n)
+let end_of_file = make "End_of_file" (-4n)
+let division_by_zero =  
+        make "Division_by_zero" (-5n)
+let not_found = 
+        make "Not_found" (-6n)
+let match_failure =  
+        make "Match_failure" (-7n)
+let stack_overflow = 
+        make "Stack_overflow" (-8n)
+let sys_blocked_io =  
+        make "Sys_blocked_io" (-9n)
+let assert_failure =  
+    make "Assert_failure"   (-10n)
+let undefined_recursive_module =  
+    make "Undefined_recursive_module"  (-11n)
+
 
 (**: 
    1. Is it necessary to tag [248] here

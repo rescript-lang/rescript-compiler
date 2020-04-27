@@ -9,6 +9,7 @@ var Caml_int32 = require("../../lib/js/caml_int32.js");
 var Caml_string = require("../../lib/js/caml_string.js");
 var Ext_bytes_test = require("./ext_bytes_test.js");
 var Caml_exceptions = require("../../lib/js/caml_exceptions.js");
+var Caml_js_exceptions = require("../../lib/js/caml_js_exceptions.js");
 var Caml_builtin_exceptions = require("../../lib/js/caml_builtin_exceptions.js");
 
 function split_by(keep_emptyOpt, is_delim, str) {
@@ -219,10 +220,10 @@ function unsafe_for_all_range(s, _start, finish, p) {
 function for_all_range(s, start, finish, p) {
   var len = s.length;
   if (start < 0 || finish >= len) {
-    throw [
-          Caml_builtin_exceptions.invalid_argument,
-          "Ext_string_test.for_all_range"
-        ];
+    throw {
+          CamlExt: Caml_builtin_exceptions.invalid_argument,
+          _1: "Ext_string_test.for_all_range"
+        };
   }
   return unsafe_for_all_range(s, start, finish, p);
 }
@@ -273,14 +274,17 @@ function find(startOpt, sub, s) {
   try {
     while((i + n | 0) <= s_len) {
       if (unsafe_is_sub(sub, 0, s, i, n)) {
-        throw Local_exit;
+        throw {
+              CamlExt: Local_exit
+            };
       }
       i = i + 1 | 0;
     };
     return -1;
   }
-  catch (exn){
-    if (exn === Local_exit) {
+  catch (raw_exn){
+    var exn = Caml_js_exceptions.internalToOCamlException(raw_exn);
+    if (exn.CamlExt === Local_exit) {
       return i;
     }
     throw exn;
@@ -294,10 +298,10 @@ function contain_substring(s, sub) {
 function non_overlap_count(sub, s) {
   var sub_len = sub.length;
   if (sub.length === 0) {
-    throw [
-          Caml_builtin_exceptions.invalid_argument,
-          "Ext_string_test.non_overlap_count"
-        ];
+    throw {
+          CamlExt: Caml_builtin_exceptions.invalid_argument,
+          _1: "Ext_string_test.non_overlap_count"
+        };
   }
   var _acc = 0;
   var _off = 0;
@@ -320,14 +324,17 @@ function rfind(sub, s) {
   try {
     while(i >= 0) {
       if (unsafe_is_sub(sub, 0, s, i, n)) {
-        throw Local_exit;
+        throw {
+              CamlExt: Local_exit
+            };
       }
       i = i - 1 | 0;
     };
     return -1;
   }
-  catch (exn){
-    if (exn === Local_exit) {
+  catch (raw_exn){
+    var exn = Caml_js_exceptions.internalToOCamlException(raw_exn);
+    if (exn.CamlExt === Local_exit) {
       return i;
     }
     throw exn;
@@ -340,10 +347,10 @@ function tail_from(s, x) {
     return $$String.sub(s, x, len - x | 0);
   }
   var s$1 = "Ext_string_test.tail_from " + (s + (" : " + String(x)));
-  throw [
-        Caml_builtin_exceptions.invalid_argument,
-        s$1
-      ];
+  throw {
+        CamlExt: Caml_builtin_exceptions.invalid_argument,
+        _1: s$1
+      };
 }
 
 function digits_of_str(s, offset, x) {
@@ -561,10 +568,10 @@ function unsafe_no_char_idx(x, ch, _i, last_idx) {
 function no_char(x, ch, i, len) {
   var str_len = x.length;
   if (i < 0 || i >= str_len || len >= str_len) {
-    throw [
-          Caml_builtin_exceptions.invalid_argument,
-          "Ext_string_test.no_char"
-        ];
+    throw {
+          CamlExt: Caml_builtin_exceptions.invalid_argument,
+          _1: "Ext_string_test.no_char"
+        };
   }
   return unsafe_no_char(x, ch, i, len);
 }

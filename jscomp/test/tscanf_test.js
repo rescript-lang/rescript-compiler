@@ -706,14 +706,14 @@ function verify_read(c) {
             ]), id) === c) {
     return ;
   }
-  throw [
-        Caml_builtin_exceptions.assert_failure,
-        /* tuple */[
+  throw {
+        CamlExt: Caml_builtin_exceptions.assert_failure,
+        _1: /* tuple */[
           "tscanf_test.ml",
           174,
           2
         ]
-      ];
+      };
 }
 
 function verify_scan_Chars(param) {
@@ -1422,10 +1422,10 @@ function scan_elems$1(ib, accu) {
                             ]);
                 }
                 if (c !== 93) {
-                  throw [
-                        Caml_builtin_exceptions.failure,
-                        "scan_elems"
-                      ];
+                  throw {
+                        CamlExt: Caml_builtin_exceptions.failure,
+                        _1: "scan_elems"
+                      };
                 }
                 return List.rev(/* :: */[
                             i,
@@ -1506,15 +1506,15 @@ function scan_elems$2(ib, accu) {
                               ]);
                   }
                   console.log(Caml_bytes.bytes_to_string(Bytes.make(1, c)));
-                  throw [
-                        Caml_builtin_exceptions.failure,
-                        "scan_elems"
-                      ];
+                  throw {
+                        CamlExt: Caml_builtin_exceptions.failure,
+                        _1: "scan_elems"
+                      };
                 }));
   }
   catch (raw_exn){
     var exn = Caml_js_exceptions.internalToOCamlException(raw_exn);
-    if (exn[0] === Scanf.Scan_failure) {
+    if (exn.CamlExt === Scanf.Scan_failure) {
       Curry._1(Scanf.bscanf(ib, /* Format */[
                 /* Char_literal */Block.__(12, [
                     /* "]" */93,
@@ -1524,7 +1524,7 @@ function scan_elems$2(ib, accu) {
               ]), undefined);
       return accu;
     }
-    if (exn === Caml_builtin_exceptions.end_of_file) {
+    if (exn.CamlExt === Caml_builtin_exceptions.end_of_file) {
       return accu;
     }
     throw exn;
@@ -1718,10 +1718,10 @@ function scan_rest(ib, accu) {
                               }));
                 }
                 if (c !== 93) {
-                  throw [
-                        Caml_builtin_exceptions.failure,
-                        "scan_rest"
-                      ];
+                  throw {
+                        CamlExt: Caml_builtin_exceptions.failure,
+                        _1: "scan_rest"
+                      };
                 }
                 return accu;
               }));
@@ -1739,10 +1739,10 @@ function scan_elems$4(ib, accu) {
                   " %c "
                 ]), (function (c) {
                 if (c !== 91) {
-                  throw [
-                        Caml_builtin_exceptions.failure,
-                        "scan_elems"
-                      ];
+                  throw {
+                        CamlExt: Caml_builtin_exceptions.failure,
+                        _1: "scan_elems"
+                      };
                 }
                 if (accu === /* [] */0) {
                   return Curry._1(Scanf.bscanf(ib, /* Format */[
@@ -1779,10 +1779,10 @@ function scan_elems$4(ib, accu) {
                                 }
                               }));
                 }
-                throw [
-                      Caml_builtin_exceptions.failure,
-                      "scan_elems"
-                    ];
+                throw {
+                      CamlExt: Caml_builtin_exceptions.failure,
+                      _1: "scan_elems"
+                    };
               }));
 }
 
@@ -1903,10 +1903,10 @@ function scan_rest$1(ib, accu) {
                                                           ]),
                                                         "scan_int_list"
                                                       ]);
-                                                  throw [
-                                                        Caml_builtin_exceptions.failure,
-                                                        s
-                                                      ];
+                                                  throw {
+                                                        CamlExt: Caml_builtin_exceptions.failure,
+                                                        _1: s
+                                                      };
                                               }
                                             }));
                               }));
@@ -1978,7 +1978,7 @@ function scan_elems$5(ib, scan_elem, accu) {
   }
   catch (raw_exn){
     var exn = Caml_js_exceptions.internalToOCamlException(raw_exn);
-    if (exn[0] === Scanf.Scan_failure) {
+    if (exn.CamlExt === Scanf.Scan_failure) {
       return accu;
     }
     throw exn;
@@ -3241,7 +3241,11 @@ function test44(param) {
               }));
 }
 
-Testing.test_raises_this_exc(Caml_builtin_exceptions.end_of_file)(test43, undefined) && Testing.test_raises_this_exc(Caml_builtin_exceptions.end_of_file)(test44, undefined);
+Testing.test_raises_this_exc({
+        CamlExt: Caml_builtin_exceptions.end_of_file
+      })(test43, undefined) && Testing.test_raises_this_exc({
+        CamlExt: Caml_builtin_exceptions.end_of_file
+      })(test44, undefined);
 
 function test45(param) {
   var ib = Scanf.Scanning.from_string("12.2");
@@ -3715,7 +3719,9 @@ function next_char(ob, param) {
   var s = $$Buffer.contents(ob);
   var len = s.length;
   if (len === 0) {
-    throw Caml_builtin_exceptions.end_of_file;
+    throw {
+          CamlExt: Caml_builtin_exceptions.end_of_file
+        };
   }
   var c = Caml_string.get(s, 0);
   ob.position = 0;

@@ -34,29 +34,29 @@ function eq(loc, x, y) {
 }
 
 function handler(e) {
-  if (e[0] === Js_exn.$$Error) {
+  if (e.CamlExt === Js_exn.$$Error) {
     console.log("js error");
     return Promise.resolve(0);
   }
-  if (e === Caml_builtin_exceptions.not_found) {
+  if (e.CamlExt === Caml_builtin_exceptions.not_found) {
     console.log("hi");
     return Promise.resolve(0);
   }
-  throw [
-        Caml_builtin_exceptions.assert_failure,
-        /* tuple */[
+  throw {
+        CamlExt: Caml_builtin_exceptions.assert_failure,
+        _1: /* tuple */[
           "promise_catch_test.ml",
           22,
           9
         ]
-      ];
+      };
 }
 
 function myHandler(match) {
   if (Caml_exceptions.caml_is_extension(match)) {
-    if (match === Caml_builtin_exceptions.not_found) {
+    if (match.CamlExt === Caml_builtin_exceptions.not_found) {
       return 1;
-    } else if (match[0] === Js_exn.$$Error) {
+    } else if (match.CamlExt === Js_exn.$$Error) {
       return 2;
     } else {
       return ;
@@ -85,14 +85,14 @@ catch (raw_e){
 }
 
 if (exit === 1) {
-  throw [
-        Caml_builtin_exceptions.assert_failure,
-        /* tuple */[
+  throw {
+        CamlExt: Caml_builtin_exceptions.assert_failure,
+        _1: /* tuple */[
           "promise_catch_test.ml",
           39,
           9
         ]
-      ];
+      };
 }
 
 Mt.from_pair_suites("Promise_catch_test", suites.contents);

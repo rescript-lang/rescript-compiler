@@ -73,10 +73,10 @@ function scan_rest(ib, accu) {
                                                           ]),
                                                         "scan_int_list"
                                                       ]);
-                                                  throw [
-                                                        Caml_builtin_exceptions.failure,
-                                                        s
-                                                      ];
+                                                  throw {
+                                                        CamlExt: Caml_builtin_exceptions.failure,
+                                                        _1: s
+                                                      };
                                               }
                                             }));
                               }));

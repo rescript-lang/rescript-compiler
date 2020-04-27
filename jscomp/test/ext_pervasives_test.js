@@ -7,6 +7,7 @@ var Caml_int32 = require("../../lib/js/caml_int32.js");
 var Pervasives = require("../../lib/js/pervasives.js");
 var Caml_string = require("../../lib/js/caml_string.js");
 var Caml_exceptions = require("../../lib/js/caml_exceptions.js");
+var Caml_js_exceptions = require("../../lib/js/caml_js_exceptions.js");
 var Caml_builtin_exceptions = require("../../lib/js/caml_builtin_exceptions.js");
 
 function $$finally(v, action, f) {
@@ -54,11 +55,14 @@ function is_pos_pow(n) {
         _c = c + 1 | 0;
         continue ;
       }
-      throw E;
+      throw {
+            CamlExt: E
+          };
     };
   }
-  catch (exn){
-    if (exn === E) {
+  catch (raw_exn){
+    var exn = Caml_js_exceptions.internalToOCamlException(raw_exn);
+    if (exn.CamlExt === E) {
       return -1;
     }
     throw exn;
@@ -68,10 +72,10 @@ function is_pos_pow(n) {
 function failwithf(loc, fmt) {
   return Format.ksprintf((function (s) {
                 var s$1 = loc + s;
-                throw [
-                      Caml_builtin_exceptions.failure,
-                      s$1
-                    ];
+                throw {
+                      CamlExt: Caml_builtin_exceptions.failure,
+                      _1: s$1
+                    };
               }), fmt);
 }
 
@@ -81,10 +85,10 @@ function invalid_argf(fmt) {
 
 function bad_argf(fmt) {
   return Format.ksprintf((function (x) {
-                throw [
-                      Arg.Bad,
-                      x
-                    ];
+                throw {
+                      CamlExt: Arg.Bad,
+                      _1: x
+                    };
               }), fmt);
 }
 

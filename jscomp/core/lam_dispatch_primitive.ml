@@ -576,6 +576,8 @@ let translate loc (prim_name : string)
     *)
     (** Note we captured [exception/extension] creation in the early pass, this primitive is 
         like normal one to set the identifier *)
+    | "caml_exn_slot_id"
+    | "caml_exn_slot_name"    
     | "caml_is_extension" ->
       call Js_runtime_modules.exceptions
     | "caml_as_js_exn" ->
@@ -583,6 +585,7 @@ let translate loc (prim_name : string)
     | "caml_set_oo_id" (* needed in {!camlinternalOO.set_id} *)
       ->
       Js_of_lam_exception.caml_set_oo_id args 
+
     | "caml_sys_get_argv" 
     (** TODO: refine
         Inlined here is helpful for DCE

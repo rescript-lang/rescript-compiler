@@ -63,14 +63,14 @@ function resize(newSize) {
       }
       var n = bucket[0];
       if (typeof n === "number") {
-        throw [
-              Caml_builtin_exceptions.assert_failure,
-              /* tuple */[
+        throw {
+              CamlExt: Caml_builtin_exceptions.assert_failure,
+              _1: /* tuple */[
                 "bdd.ml",
                 54,
                 27
               ]
-            ];
+            };
       }
       var ind = hashVal(getId(n[0]), getId(n[3]), n[1]) & newSz_1;
       Caml_array.caml_array_set(newArr, ind, /* :: */[
@@ -128,14 +128,14 @@ function mkNode(low, v, high) {
     if (b) {
       var n = b[0];
       if (typeof n === "number") {
-        throw [
-              Caml_builtin_exceptions.assert_failure,
-              /* tuple */[
+        throw {
+              CamlExt: Caml_builtin_exceptions.assert_failure,
+              _1: /* tuple */[
                 "bdd.ml",
                 99,
                 31
               ]
-            ];
+            };
       }
       if (v === n[1] && idl === getId(n[0]) && idh === getId(n[3])) {
         return n;
@@ -371,14 +371,14 @@ function main(param) {
   if (succeeded) {
     return ;
   }
-  throw [
-        Caml_builtin_exceptions.assert_failure,
-        /* tuple */[
+  throw {
+        CamlExt: Caml_builtin_exceptions.assert_failure,
+        _1: /* tuple */[
           "bdd.ml",
           233,
           2
         ]
-      ];
+      };
 }
 
 main(undefined);

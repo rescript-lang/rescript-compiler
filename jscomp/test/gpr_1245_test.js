@@ -2,6 +2,7 @@
 
 var Curry = require("../../lib/js/curry.js");
 var Caml_exceptions = require("../../lib/js/caml_exceptions.js");
+var Caml_js_exceptions = require("../../lib/js/caml_js_exceptions.js");
 
 var x = {
   contents: 1
@@ -42,8 +43,9 @@ function a1(f) {
   try {
     return Curry._1(f, undefined);
   }
-  catch (exn){
-    if (exn === E) {
+  catch (raw_exn){
+    var exn = Caml_js_exceptions.internalToOCamlException(raw_exn);
+    if (exn.CamlExt === E) {
       return 1;
     }
     throw exn;

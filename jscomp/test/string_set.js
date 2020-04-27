@@ -228,7 +228,9 @@ function find(x, _tree) {
       _tree = c < 0 ? tree[0] : tree[2];
       continue ;
     }
-    throw Caml_builtin_exceptions.not_found;
+    throw {
+          CamlExt: Caml_builtin_exceptions.not_found
+        };
   };
 }
 

@@ -33,15 +33,15 @@ function eq(loc, x, y) {
 var y;
 
 try {
-  throw [
-        Caml_builtin_exceptions.failure,
-        "boo"
-      ];
+  throw {
+        CamlExt: Caml_builtin_exceptions.failure,
+        _1: "boo"
+      };
 }
 catch (raw_msg){
   var msg = Caml_js_exceptions.internalToOCamlException(raw_msg);
-  if (msg[0] === Caml_builtin_exceptions.failure) {
-    y = msg[1];
+  if (msg.CamlExt === Caml_builtin_exceptions.failure) {
+    y = msg._1;
   } else {
     throw msg;
   }
@@ -52,15 +52,15 @@ var x;
 var exit = 0;
 
 try {
-  throw [
-        Caml_builtin_exceptions.failure,
-        "boo"
-      ];
+  throw {
+        CamlExt: Caml_builtin_exceptions.failure,
+        _1: "boo"
+      };
 }
 catch (raw_msg$1){
   var msg$1 = Caml_js_exceptions.internalToOCamlException(raw_msg$1);
-  if (msg$1[0] === Caml_builtin_exceptions.failure) {
-    x = msg$1[1];
+  if (msg$1.CamlExt === Caml_builtin_exceptions.failure) {
+    x = msg$1._1;
   } else {
     throw msg$1;
   }

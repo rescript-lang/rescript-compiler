@@ -607,11 +607,11 @@ let translate  loc
         (Blk_constructor {name = "Other"; num_nonconst = 1})
         [E.str "BS"] Immutable
      )
-  | Pduprecord Record_regular -> 
+  | Pduprecord (Record_regular| Record_extension) -> 
       Lam_dispatch_primitive.translate loc "caml_obj_dup" args
   | Pduprecord ((
                  Record_inlined {tag = 0; num_nonconsts = 1}
-                | Record_extension
+                
                 )) -> 
     (* _size is the length of all_lables*)
     (* TODO: In debug mode, need switch to  *)

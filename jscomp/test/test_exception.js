@@ -7,37 +7,43 @@ var Caml_builtin_exceptions = require("../../lib/js/caml_builtin_exceptions.js")
 var Local = Caml_exceptions.create("Test_exception.Local");
 
 function f(param) {
-  throw [
-        Local,
-        3
-      ];
+  throw {
+        CamlExt: Local,
+        _1: 3
+      };
 }
 
 function g(param) {
-  throw Caml_builtin_exceptions.not_found;
+  throw {
+        CamlExt: Caml_builtin_exceptions.not_found
+      };
 }
 
 function h(param) {
-  throw [
-        Test_common.U,
-        3
-      ];
+  throw {
+        CamlExt: Test_common.U,
+        _1: 3
+      };
 }
 
 function x(param) {
-  throw Test_common.H;
+  throw {
+        CamlExt: Test_common.H
+      };
 }
 
 function xx(param) {
-  throw [
-        Caml_builtin_exceptions.invalid_argument,
-        "x"
-      ];
+  throw {
+        CamlExt: Caml_builtin_exceptions.invalid_argument,
+        _1: "x"
+      };
 }
 
 var Nullary = Caml_exceptions.create("Test_exception.Nullary");
 
-var a = Nullary;
+var a = {
+  CamlExt: Nullary
+};
 
 exports.Local = Local;
 exports.f = f;

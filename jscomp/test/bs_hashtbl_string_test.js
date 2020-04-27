@@ -53,14 +53,14 @@ function bench(param) {
   }
   for(var i$1 = 0; i$1 <= 1000000; ++i$1){
     if (!Belt_HashMap.has(empty, i$1)) {
-      throw [
-            Caml_builtin_exceptions.assert_failure,
-            /* tuple */[
+      throw {
+            CamlExt: Caml_builtin_exceptions.assert_failure,
+            _1: /* tuple */[
               "bs_hashtbl_string_test.ml",
               50,
               4
             ]
-          ];
+          };
     }
     
   }
@@ -74,14 +74,14 @@ function bench2(m) {
   }
   for(var i$1 = 0; i$1 <= 1000000; ++i$1){
     if (!Belt_HashMap.has(empty, String(i$1))) {
-      throw [
-            Caml_builtin_exceptions.assert_failure,
-            /* tuple */[
+      throw {
+            CamlExt: Caml_builtin_exceptions.assert_failure,
+            _1: /* tuple */[
               "bs_hashtbl_string_test.ml",
               76,
               4
             ]
-          ];
+          };
     }
     
   }
@@ -91,14 +91,14 @@ function bench2(m) {
   if (empty.size === 0) {
     return ;
   }
-  throw [
-        Caml_builtin_exceptions.assert_failure,
-        /* tuple */[
+  throw {
+        CamlExt: Caml_builtin_exceptions.assert_failure,
+        _1: /* tuple */[
           "bs_hashtbl_string_test.ml",
           82,
           2
         ]
-      ];
+      };
 }
 
 function bench3(m) {
@@ -110,14 +110,14 @@ function bench3(m) {
   }
   for(var i$1 = 0; i$1 <= 1000000; ++i$1){
     if (!Belt_MapDict.has(table, String(i$1), cmp)) {
-      throw [
-            Caml_builtin_exceptions.assert_failure,
-            /* tuple */[
+      throw {
+            CamlExt: Caml_builtin_exceptions.assert_failure,
+            _1: /* tuple */[
               "bs_hashtbl_string_test.ml",
               98,
               4
             ]
-          ];
+          };
     }
     
   }
@@ -127,14 +127,14 @@ function bench3(m) {
   if (Belt_MapDict.size(table) === 0) {
     return ;
   }
-  throw [
-        Caml_builtin_exceptions.assert_failure,
-        /* tuple */[
+  throw {
+        CamlExt: Caml_builtin_exceptions.assert_failure,
+        _1: /* tuple */[
           "bs_hashtbl_string_test.ml",
           105,
           2
         ]
-      ];
+      };
 }
 
 var Sx = Belt_Id.comparable(Caml_primitive.caml_string_compare);
@@ -146,14 +146,14 @@ function bench4(param) {
   }
   for(var i$1 = 0; i$1 <= 1000000; ++i$1){
     if (!Belt_HashMapString.has(table, String(i$1))) {
-      throw [
-            Caml_builtin_exceptions.assert_failure,
-            /* tuple */[
+      throw {
+            CamlExt: Caml_builtin_exceptions.assert_failure,
+            _1: /* tuple */[
               "bs_hashtbl_string_test.ml",
               118,
               4
             ]
-          ];
+          };
     }
     
   }
@@ -163,14 +163,14 @@ function bench4(param) {
   if (Belt_HashMapString.isEmpty(table)) {
     return ;
   }
-  throw [
-        Caml_builtin_exceptions.assert_failure,
-        /* tuple */[
+  throw {
+        CamlExt: Caml_builtin_exceptions.assert_failure,
+        _1: /* tuple */[
           "bs_hashtbl_string_test.ml",
           124,
           2
         ]
-      ];
+      };
 }
 
 function bench5(param) {
@@ -183,14 +183,14 @@ function bench5(param) {
   console.time("test/bs_hashtbl_string_test.ml 137");
   for(var i$1 = 0; i$1 <= 1000000; ++i$1){
     if (!Belt_HashMap.has(table, i$1)) {
-      throw [
-            Caml_builtin_exceptions.assert_failure,
-            /* tuple */[
+      throw {
+            CamlExt: Caml_builtin_exceptions.assert_failure,
+            _1: /* tuple */[
               "bs_hashtbl_string_test.ml",
               138,
               6
             ]
-          ];
+          };
     }
     
   }
@@ -203,14 +203,14 @@ function bench5(param) {
   if (Belt_HashMap.isEmpty(table)) {
     return ;
   }
-  throw [
-        Caml_builtin_exceptions.assert_failure,
-        /* tuple */[
+  throw {
+        CamlExt: Caml_builtin_exceptions.assert_failure,
+        _1: /* tuple */[
           "bs_hashtbl_string_test.ml",
           144,
           2
         ]
-      ];
+      };
 }
 
 function bench6(param) {
@@ -220,14 +220,14 @@ function bench6(param) {
   }
   for(var i$1 = 0; i$1 <= 1000000; ++i$1){
     if (!Belt_HashMapInt.has(table, i$1)) {
-      throw [
-            Caml_builtin_exceptions.assert_failure,
-            /* tuple */[
+      throw {
+            CamlExt: Caml_builtin_exceptions.assert_failure,
+            _1: /* tuple */[
               "bs_hashtbl_string_test.ml",
               156,
               4
             ]
-          ];
+          };
     }
     
   }
@@ -237,14 +237,14 @@ function bench6(param) {
   if (table.size === 0) {
     return ;
   }
-  throw [
-        Caml_builtin_exceptions.assert_failure,
-        /* tuple */[
+  throw {
+        CamlExt: Caml_builtin_exceptions.assert_failure,
+        _1: /* tuple */[
           "bs_hashtbl_string_test.ml",
           162,
           2
         ]
-      ];
+      };
 }
 
 function bench7(param) {
@@ -254,14 +254,14 @@ function bench7(param) {
   }
   for(var i$1 = 0; i$1 <= 1000000; ++i$1){
     if (!Belt_HashSetInt.has(table, i$1)) {
-      throw [
-            Caml_builtin_exceptions.assert_failure,
-            /* tuple */[
+      throw {
+            CamlExt: Caml_builtin_exceptions.assert_failure,
+            _1: /* tuple */[
               "bs_hashtbl_string_test.ml",
               181,
               4
             ]
-          ];
+          };
     }
     
   }
@@ -271,14 +271,14 @@ function bench7(param) {
   if (table.size === 0) {
     return ;
   }
-  throw [
-        Caml_builtin_exceptions.assert_failure,
-        /* tuple */[
+  throw {
+        CamlExt: Caml_builtin_exceptions.assert_failure,
+        _1: /* tuple */[
           "bs_hashtbl_string_test.ml",
           192,
           2
         ]
-      ];
+      };
 }
 
 console.time("test/bs_hashtbl_string_test.ml 203");

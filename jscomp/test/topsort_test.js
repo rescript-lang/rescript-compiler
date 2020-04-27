@@ -122,14 +122,14 @@ if (!Caml_obj.caml_equal(dfs1(/* :: */[
           ]
         ]
       ])) {
-  throw [
-        Caml_builtin_exceptions.assert_failure,
-        /* tuple */[
+  throw {
+        CamlExt: Caml_builtin_exceptions.assert_failure,
+        _1: /* tuple */[
           "topsort_test.ml",
           29,
           2
         ]
-      ];
+      };
 }
 
 Pervasives.print_newline(undefined);
@@ -159,14 +159,14 @@ if (!Caml_obj.caml_equal(dfs1(/* :: */[
           ]
         ]
       ])) {
-  throw [
-        Caml_builtin_exceptions.assert_failure,
-        /* tuple */[
+  throw {
+        CamlExt: Caml_builtin_exceptions.assert_failure,
+        _1: /* tuple */[
           "topsort_test.ml",
           32,
           2
         ]
-      ];
+      };
 }
 
 function dfs2(nodes, graph, visited) {
@@ -219,14 +219,14 @@ if (!Caml_obj.caml_equal(dfs2(/* :: */[
           ]
         ]
       ])) {
-  throw [
-        Caml_builtin_exceptions.assert_failure,
-        /* tuple */[
+  throw {
+        CamlExt: Caml_builtin_exceptions.assert_failure,
+        _1: /* tuple */[
           "topsort_test.ml",
           47,
           2
         ]
-      ];
+      };
 }
 
 if (!Caml_obj.caml_equal(dfs2(/* :: */[
@@ -254,14 +254,14 @@ if (!Caml_obj.caml_equal(dfs2(/* :: */[
           ]
         ]
       ])) {
-  throw [
-        Caml_builtin_exceptions.assert_failure,
-        /* tuple */[
+  throw {
+        CamlExt: Caml_builtin_exceptions.assert_failure,
+        _1: /* tuple */[
           "topsort_test.ml",
           48,
           2
         ]
-      ];
+      };
 }
 
 function dfs3(nodes, graph) {
@@ -311,14 +311,14 @@ if (!Caml_obj.caml_equal(dfs3(/* :: */[
           ]
         ]
       ])) {
-  throw [
-        Caml_builtin_exceptions.assert_failure,
-        /* tuple */[
+  throw {
+        CamlExt: Caml_builtin_exceptions.assert_failure,
+        _1: /* tuple */[
           "topsort_test.ml",
           65,
           2
         ]
-      ];
+      };
 }
 
 if (!Caml_obj.caml_equal(dfs3(/* :: */[
@@ -346,14 +346,14 @@ if (!Caml_obj.caml_equal(dfs3(/* :: */[
           ]
         ]
       ])) {
-  throw [
-        Caml_builtin_exceptions.assert_failure,
-        /* tuple */[
+  throw {
+        CamlExt: Caml_builtin_exceptions.assert_failure,
+        _1: /* tuple */[
           "topsort_test.ml",
           66,
           2
         ]
-      ];
+      };
 }
 
 var grwork = /* :: */[
@@ -435,14 +435,14 @@ if (!Caml_obj.caml_equal(unsafe_topsort(grwork), /* :: */[
           ]
         ]
       ])) {
-  throw [
-        Caml_builtin_exceptions.assert_failure,
-        /* tuple */[
+  throw {
+        CamlExt: Caml_builtin_exceptions.assert_failure,
+        _1: /* tuple */[
           "topsort_test.ml",
           110,
           2
         ]
-      ];
+      };
 }
 
 function height(param) {
@@ -478,15 +478,15 @@ function bal(l, v, r) {
       if (lr) {
         return create(create(ll, lv, lr[/* l */0]), lr[/* v */1], create(lr[/* r */2], v, r));
       }
-      throw [
-            Caml_builtin_exceptions.invalid_argument,
-            "Set.bal"
-          ];
+      throw {
+            CamlExt: Caml_builtin_exceptions.invalid_argument,
+            _1: "Set.bal"
+          };
     }
-    throw [
-          Caml_builtin_exceptions.invalid_argument,
-          "Set.bal"
-        ];
+    throw {
+          CamlExt: Caml_builtin_exceptions.invalid_argument,
+          _1: "Set.bal"
+        };
   }
   if (hr <= (hl + 2 | 0)) {
     return /* Node */[
@@ -506,15 +506,15 @@ function bal(l, v, r) {
     if (rl) {
       return create(create(l, v, rl[/* l */0]), rl[/* v */1], create(rl[/* r */2], rv, rr));
     }
-    throw [
-          Caml_builtin_exceptions.invalid_argument,
-          "Set.bal"
-        ];
+    throw {
+          CamlExt: Caml_builtin_exceptions.invalid_argument,
+          _1: "Set.bal"
+        };
   }
-  throw [
-        Caml_builtin_exceptions.invalid_argument,
-        "Set.bal"
-      ];
+  throw {
+        CamlExt: Caml_builtin_exceptions.invalid_argument,
+        _1: "Set.bal"
+      };
 }
 
 function add(x, t) {
@@ -603,7 +603,9 @@ function min_elt(_param) {
       _param = l;
       continue ;
     }
-    throw Caml_builtin_exceptions.not_found;
+    throw {
+          CamlExt: Caml_builtin_exceptions.not_found
+        };
   };
 }
 
@@ -633,7 +635,9 @@ function max_elt(_param) {
       _param = r;
       continue ;
     }
-    throw Caml_builtin_exceptions.not_found;
+    throw {
+          CamlExt: Caml_builtin_exceptions.not_found
+        };
   };
 }
 
@@ -661,10 +665,10 @@ function remove_min_elt(param) {
       return param[/* r */2];
     }
   }
-  throw [
-        Caml_builtin_exceptions.invalid_argument,
-        "Set.remove_min_elt"
-      ];
+  throw {
+        CamlExt: Caml_builtin_exceptions.invalid_argument,
+        _1: "Set.remove_min_elt"
+      };
 }
 
 function concat(t1, t2) {
@@ -1080,7 +1084,9 @@ function find(x, _param) {
       _param = c < 0 ? param[/* l */0] : param[/* r */2];
       continue ;
     }
-    throw Caml_builtin_exceptions.not_found;
+    throw {
+          CamlExt: Caml_builtin_exceptions.not_found
+        };
   };
 }
 
@@ -1111,7 +1117,9 @@ function find_first(f, _param) {
       _param = param[/* r */2];
       continue ;
     }
-    throw Caml_builtin_exceptions.not_found;
+    throw {
+          CamlExt: Caml_builtin_exceptions.not_found
+        };
   };
 }
 
@@ -1173,7 +1181,9 @@ function find_last(f, _param) {
       _param = param[/* l */0];
       continue ;
     }
-    throw Caml_builtin_exceptions.not_found;
+    throw {
+          CamlExt: Caml_builtin_exceptions.not_found
+        };
   };
 }
 
@@ -1353,14 +1363,14 @@ function of_list(l) {
                   match$4[1]
                 ];
         }
-        throw [
-              Caml_builtin_exceptions.assert_failure,
-              /* tuple */[
+        throw {
+              CamlExt: Caml_builtin_exceptions.assert_failure,
+              _1: /* tuple */[
                 "set.ml",
                 510,
                 18
               ]
-            ];
+            };
       };
       return sub(List.length(l$1), l$1)[0];
     } else {
@@ -1423,13 +1433,13 @@ function pathsort(graph) {
     var stack = param[1];
     var set = param[0];
     if (mem(node, set)) {
-      throw [
-            Cycle,
-            /* :: */[
+      throw {
+            CamlExt: Cycle,
+            _1: /* :: */[
               node,
               stack
             ]
-          ];
+          };
     }
     return /* tuple */[
             add(node, set),
@@ -1480,14 +1490,14 @@ if (!Caml_obj.caml_equal(pathsort(grwork), /* :: */[
           ]
         ]
       ])) {
-  throw [
-        Caml_builtin_exceptions.assert_failure,
-        /* tuple */[
+  throw {
+        CamlExt: Caml_builtin_exceptions.assert_failure,
+        _1: /* tuple */[
           "topsort_test.ml",
           150,
           4
         ]
-      ];
+      };
 }
 
 try {
@@ -1498,20 +1508,20 @@ try {
         ],
         grwork
       ]);
-  throw [
-        Caml_builtin_exceptions.assert_failure,
-        /* tuple */[
+  throw {
+        CamlExt: Caml_builtin_exceptions.assert_failure,
+        _1: /* tuple */[
           "topsort_test.ml",
           156,
           8
         ]
-      ];
+      };
 }
 catch (raw_exn){
   var exn = Caml_js_exceptions.internalToOCamlException(raw_exn);
   var exit = 0;
-  if (exn[0] === Cycle) {
-    var match = exn[1];
+  if (exn.CamlExt === Cycle) {
+    var match = exn._1;
     if (match && match[0] === "go") {
       var match$1 = match[1];
       if (match$1 && match$1[0] === "washup") {
@@ -1535,14 +1545,14 @@ catch (raw_exn){
     exit = 1;
   }
   if (exit === 1) {
-    throw [
-          Caml_builtin_exceptions.assert_failure,
-          /* tuple */[
+    throw {
+          CamlExt: Caml_builtin_exceptions.assert_failure,
+          _1: /* tuple */[
             "topsort_test.ml",
             159,
             11
           ]
-        ];
+        };
   }
   
 }

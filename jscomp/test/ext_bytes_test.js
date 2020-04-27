@@ -6,6 +6,7 @@ var Bytes = require("../../lib/js/bytes.js");
 var Curry = require("../../lib/js/curry.js");
 var Caml_bytes = require("../../lib/js/caml_bytes.js");
 var Caml_exceptions = require("../../lib/js/caml_exceptions.js");
+var Caml_js_exceptions = require("../../lib/js/caml_js_exceptions.js");
 
 var suites = {
   contents: /* [] */0
@@ -135,14 +136,17 @@ function starts_with(xs, prefix, p) {
   try {
     for(var i = 0; i < len2; ++i){
       if (!Curry._2(p, Caml_bytes.get(xs, i), Caml_bytes.get(prefix, i))) {
-        throw H;
+        throw {
+              CamlExt: H
+            };
       }
       
     }
     return true;
   }
-  catch (exn){
-    if (exn === H) {
+  catch (raw_exn){
+    var exn = Caml_js_exceptions.internalToOCamlException(raw_exn);
+    if (exn.CamlExt === H) {
       return false;
     }
     throw exn;

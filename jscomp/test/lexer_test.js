@@ -42,7 +42,9 @@ function from_tokens(lst) {
         l.contents = match[1];
         return match[0];
       }
-      throw Caml_builtin_exceptions.end_of_file;
+      throw {
+            CamlExt: Caml_builtin_exceptions.end_of_file
+          };
     });
 }
 

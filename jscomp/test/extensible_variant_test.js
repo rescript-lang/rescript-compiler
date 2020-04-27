@@ -16,23 +16,23 @@ var N = {
 var Int$1 = Caml_exceptions.create("Extensible_variant_test.Int");
 
 function to_int(x) {
-  if (x[0] === Str) {
+  if (x.CamlExt === Str) {
     return -1;
   }
-  if (x[0] === Int) {
-    return x[1];
+  if (x.CamlExt === Int) {
+    return x._1;
   }
-  if (x[0] === Int$1) {
-    return x[2];
+  if (x.CamlExt === Int$1) {
+    return x._2;
   }
-  throw [
-        Caml_builtin_exceptions.assert_failure,
-        /* tuple */[
+  throw {
+        CamlExt: Caml_builtin_exceptions.assert_failure,
+        _1: /* tuple */[
           "extensible_variant_test.ml",
           16,
           9
         ]
-      ];
+      };
 }
 
 var suites_000 = /* tuple */[
@@ -40,11 +40,11 @@ var suites_000 = /* tuple */[
   (function (param) {
       return /* Eq */Block.__(0, [
                 3,
-                to_int([
-                      Int,
-                      3,
-                      0
-                    ])
+                to_int({
+                      CamlExt: Int,
+                      _1: 3,
+                      _2: 0
+                    })
               ]);
     })
 ];
@@ -55,11 +55,11 @@ var suites_001 = /* :: */[
     (function (param) {
         return /* Eq */Block.__(0, [
                   0,
-                  to_int([
-                        Int$1,
-                        3,
-                        0
-                      ])
+                  to_int({
+                        CamlExt: Int$1,
+                        _1: 3,
+                        _2: 0
+                      })
                 ]);
       })
   ],
@@ -69,10 +69,10 @@ var suites_001 = /* :: */[
       (function (param) {
           return /* Eq */Block.__(0, [
                     -1,
-                    to_int([
-                          Str,
-                          "x"
-                        ])
+                    to_int({
+                          CamlExt: Str,
+                          _1: "x"
+                        })
                   ]);
         })
     ],

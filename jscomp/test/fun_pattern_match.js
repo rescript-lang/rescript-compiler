@@ -17,24 +17,24 @@ function f3(param) {
   return (function (param) {
       var rhs = param.rank;
       if (typeof lhs === "number") {
-        throw [
-              Caml_builtin_exceptions.assert_failure,
-              /* tuple */[
+        throw {
+              CamlExt: Caml_builtin_exceptions.assert_failure,
+              _1: /* tuple */[
                 "fun_pattern_match.ml",
                 44,
                 9
               ]
-            ];
+            };
       }
       if (typeof rhs === "number") {
-        throw [
-              Caml_builtin_exceptions.assert_failure,
-              /* tuple */[
+        throw {
+              CamlExt: Caml_builtin_exceptions.assert_failure,
+              _1: /* tuple */[
                 "fun_pattern_match.ml",
                 44,
                 9
               ]
-            ];
+            };
       }
       return Caml_primitive.caml_int_compare(lhs[0], rhs[0]);
     });
@@ -45,24 +45,24 @@ function f4(param) {
   return (function (param) {
       var rhs = param.rank;
       if (typeof lhs === "number") {
-        throw [
-              Caml_builtin_exceptions.assert_failure,
-              /* tuple */[
+        throw {
+              CamlExt: Caml_builtin_exceptions.assert_failure,
+              _1: /* tuple */[
                 "fun_pattern_match.ml",
                 52,
                 9
               ]
-            ];
+            };
       }
       if (typeof rhs === "number") {
-        throw [
-              Caml_builtin_exceptions.assert_failure,
-              /* tuple */[
+        throw {
+              CamlExt: Caml_builtin_exceptions.assert_failure,
+              _1: /* tuple */[
                 "fun_pattern_match.ml",
                 52,
                 9
               ]
-            ];
+            };
       }
       return Caml_primitive.caml_int_compare(lhs[0], rhs[0]);
     });

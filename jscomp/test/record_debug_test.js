@@ -40,16 +40,16 @@ var A = Caml_exceptions.create("Record_debug_test.A");
 
 var B = Caml_exceptions.create("Record_debug_test.B");
 
-var v0 = [
-  A,
-  3
-];
+var v0 = {
+  CamlExt: A,
+  _1: 3
+};
 
-var v1 = [
-  B,
-  3,
-  2
-];
+var v1 = {
+  CamlExt: B,
+  _1: 3,
+  _2: 2
+};
 
 var N = {
   a: 0,

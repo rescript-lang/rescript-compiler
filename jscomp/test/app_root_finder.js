@@ -14,7 +14,9 @@ function find_package_json(_dir) {
     }
     var new_dir = Path.dirname(dir);
     if (new_dir === dir) {
-      throw Caml_builtin_exceptions.not_found;
+      throw {
+            CamlExt: Caml_builtin_exceptions.not_found
+          };
     }
     _dir = new_dir;
     continue ;

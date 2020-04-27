@@ -51,15 +51,15 @@ function Make(Ord) {
         if (lr) {
           return create(create(ll, lv, ld, lr[0]), lr[1], lr[2], create(lr[3], x, d, r));
         }
-        throw [
-              Caml_builtin_exceptions.invalid_argument,
-              "Map.bal"
-            ];
+        throw {
+              CamlExt: Caml_builtin_exceptions.invalid_argument,
+              _1: "Map.bal"
+            };
       }
-      throw [
-            Caml_builtin_exceptions.invalid_argument,
-            "Map.bal"
-          ];
+      throw {
+            CamlExt: Caml_builtin_exceptions.invalid_argument,
+            _1: "Map.bal"
+          };
     }
     if (hr <= (hl + 2 | 0)) {
       return /* Node */[
@@ -81,15 +81,15 @@ function Make(Ord) {
       if (rl) {
         return create(create(l, x, d, rl[0]), rl[1], rl[2], create(rl[3], rv, rd, rr));
       }
-      throw [
-            Caml_builtin_exceptions.invalid_argument,
-            "Map.bal"
-          ];
+      throw {
+            CamlExt: Caml_builtin_exceptions.invalid_argument,
+            _1: "Map.bal"
+          };
     }
-    throw [
-          Caml_builtin_exceptions.invalid_argument,
-          "Map.bal"
-        ];
+    throw {
+          CamlExt: Caml_builtin_exceptions.invalid_argument,
+          _1: "Map.bal"
+        };
   };
   var is_empty = function (param) {
     if (param) {
@@ -138,7 +138,9 @@ function Make(Ord) {
         _param = c < 0 ? param[0] : param[3];
         continue ;
       }
-      throw Caml_builtin_exceptions.not_found;
+      throw {
+            CamlExt: Caml_builtin_exceptions.not_found
+          };
     };
   };
   var mem = function (x, _param) {
@@ -169,7 +171,9 @@ function Make(Ord) {
         _param = l;
         continue ;
       }
-      throw Caml_builtin_exceptions.not_found;
+      throw {
+            CamlExt: Caml_builtin_exceptions.not_found
+          };
     };
   };
   var max_binding = function (_param) {
@@ -186,7 +190,9 @@ function Make(Ord) {
         _param = r;
         continue ;
       }
-      throw Caml_builtin_exceptions.not_found;
+      throw {
+            CamlExt: Caml_builtin_exceptions.not_found
+          };
     };
   };
   var remove_min_binding = function (param) {
@@ -198,10 +204,10 @@ function Make(Ord) {
         return param[3];
       }
     }
-    throw [
-          Caml_builtin_exceptions.invalid_argument,
-          "Map.remove_min_elt"
-        ];
+    throw {
+          CamlExt: Caml_builtin_exceptions.invalid_argument,
+          _1: "Map.remove_min_elt"
+        };
   };
   var remove = function (x, param) {
     if (!param) {
@@ -413,14 +419,14 @@ function Make(Ord) {
       var match$1 = split(v2, s1);
       return concat_or_join(merge(f, match$1[0], s2[0]), v2, Curry._3(f, v2, match$1[1], Caml_option.some(s2[2])), merge(f, match$1[2], s2[3]));
     }
-    throw [
-          Caml_builtin_exceptions.assert_failure,
-          /* tuple */[
+    throw {
+          CamlExt: Caml_builtin_exceptions.assert_failure,
+          _1: /* tuple */[
             "inline_map2_test.ml",
             270,
             10
           ]
-        ];
+        };
   };
   var filter = function (p, param) {
     if (!param) {
@@ -650,15 +656,15 @@ function bal(l, x, d, r) {
       if (lr) {
         return create(create(ll, lv, ld, lr[0]), lr[1], lr[2], create(lr[3], x, d, r));
       }
-      throw [
-            Caml_builtin_exceptions.invalid_argument,
-            "Map.bal"
-          ];
+      throw {
+            CamlExt: Caml_builtin_exceptions.invalid_argument,
+            _1: "Map.bal"
+          };
     }
-    throw [
-          Caml_builtin_exceptions.invalid_argument,
-          "Map.bal"
-        ];
+    throw {
+          CamlExt: Caml_builtin_exceptions.invalid_argument,
+          _1: "Map.bal"
+        };
   }
   if (hr <= (hl + 2 | 0)) {
     return /* Node */[
@@ -680,15 +686,15 @@ function bal(l, x, d, r) {
     if (rl) {
       return create(create(l, x, d, rl[0]), rl[1], rl[2], create(rl[3], rv, rd, rr));
     }
-    throw [
-          Caml_builtin_exceptions.invalid_argument,
-          "Map.bal"
-        ];
+    throw {
+          CamlExt: Caml_builtin_exceptions.invalid_argument,
+          _1: "Map.bal"
+        };
   }
-  throw [
-        Caml_builtin_exceptions.invalid_argument,
-        "Map.bal"
-      ];
+  throw {
+        CamlExt: Caml_builtin_exceptions.invalid_argument,
+        _1: "Map.bal"
+      };
 }
 
 function is_empty(param) {
@@ -740,7 +746,9 @@ function find(x, _param) {
       _param = c < 0 ? param[0] : param[3];
       continue ;
     }
-    throw Caml_builtin_exceptions.not_found;
+    throw {
+          CamlExt: Caml_builtin_exceptions.not_found
+        };
   };
 }
 
@@ -773,7 +781,9 @@ function min_binding(_param) {
       _param = l;
       continue ;
     }
-    throw Caml_builtin_exceptions.not_found;
+    throw {
+          CamlExt: Caml_builtin_exceptions.not_found
+        };
   };
 }
 
@@ -791,7 +801,9 @@ function max_binding(_param) {
       _param = r;
       continue ;
     }
-    throw Caml_builtin_exceptions.not_found;
+    throw {
+          CamlExt: Caml_builtin_exceptions.not_found
+        };
   };
 }
 
@@ -804,10 +816,10 @@ function remove_min_binding(param) {
       return param[3];
     }
   }
-  throw [
-        Caml_builtin_exceptions.invalid_argument,
-        "Map.remove_min_elt"
-      ];
+  throw {
+        CamlExt: Caml_builtin_exceptions.invalid_argument,
+        _1: "Map.remove_min_elt"
+      };
 }
 
 function remove(x, param) {
@@ -1033,14 +1045,14 @@ function merge(f, s1, s2) {
     var match$1 = split(v2, s1);
     return concat_or_join(merge(f, match$1[0], s2[0]), v2, Curry._3(f, v2, match$1[1], Caml_option.some(s2[2])), merge(f, match$1[2], s2[3]));
   }
-  throw [
-        Caml_builtin_exceptions.assert_failure,
-        /* tuple */[
+  throw {
+        CamlExt: Caml_builtin_exceptions.assert_failure,
+        _1: /* tuple */[
           "inline_map2_test.ml",
           270,
           10
         ]
-      ];
+      };
 }
 
 function filter(p, param) {
@@ -1306,15 +1318,15 @@ function bal$1(l, x, d, r) {
       if (lr) {
         return create$1(create$1(ll, lv, ld, lr[0]), lr[1], lr[2], create$1(lr[3], x, d, r));
       }
-      throw [
-            Caml_builtin_exceptions.invalid_argument,
-            "Map.bal"
-          ];
+      throw {
+            CamlExt: Caml_builtin_exceptions.invalid_argument,
+            _1: "Map.bal"
+          };
     }
-    throw [
-          Caml_builtin_exceptions.invalid_argument,
-          "Map.bal"
-        ];
+    throw {
+          CamlExt: Caml_builtin_exceptions.invalid_argument,
+          _1: "Map.bal"
+        };
   }
   if (hr <= (hl + 2 | 0)) {
     return /* Node */[
@@ -1336,15 +1348,15 @@ function bal$1(l, x, d, r) {
     if (rl) {
       return create$1(create$1(l, x, d, rl[0]), rl[1], rl[2], create$1(rl[3], rv, rd, rr));
     }
-    throw [
-          Caml_builtin_exceptions.invalid_argument,
-          "Map.bal"
-        ];
+    throw {
+          CamlExt: Caml_builtin_exceptions.invalid_argument,
+          _1: "Map.bal"
+        };
   }
-  throw [
-        Caml_builtin_exceptions.invalid_argument,
-        "Map.bal"
-      ];
+  throw {
+        CamlExt: Caml_builtin_exceptions.invalid_argument,
+        _1: "Map.bal"
+      };
 }
 
 function is_empty$1(param) {
@@ -1396,7 +1408,9 @@ function find$1(x, _param) {
       _param = c < 0 ? param[0] : param[3];
       continue ;
     }
-    throw Caml_builtin_exceptions.not_found;
+    throw {
+          CamlExt: Caml_builtin_exceptions.not_found
+        };
   };
 }
 
@@ -1429,7 +1443,9 @@ function min_binding$1(_param) {
       _param = l;
       continue ;
     }
-    throw Caml_builtin_exceptions.not_found;
+    throw {
+          CamlExt: Caml_builtin_exceptions.not_found
+        };
   };
 }
 
@@ -1447,7 +1463,9 @@ function max_binding$1(_param) {
       _param = r;
       continue ;
     }
-    throw Caml_builtin_exceptions.not_found;
+    throw {
+          CamlExt: Caml_builtin_exceptions.not_found
+        };
   };
 }
 
@@ -1460,10 +1478,10 @@ function remove_min_binding$1(param) {
       return param[3];
     }
   }
-  throw [
-        Caml_builtin_exceptions.invalid_argument,
-        "Map.remove_min_elt"
-      ];
+  throw {
+        CamlExt: Caml_builtin_exceptions.invalid_argument,
+        _1: "Map.remove_min_elt"
+      };
 }
 
 function remove$1(x, param) {
@@ -1689,14 +1707,14 @@ function merge$1(f, s1, s2) {
     var match$1 = split$1(v2, s1);
     return concat_or_join$1(merge$1(f, match$1[0], s2[0]), v2, Curry._3(f, v2, match$1[1], Caml_option.some(s2[2])), merge$1(f, match$1[2], s2[3]));
   }
-  throw [
-        Caml_builtin_exceptions.assert_failure,
-        /* tuple */[
+  throw {
+        CamlExt: Caml_builtin_exceptions.assert_failure,
+        _1: /* tuple */[
           "inline_map2_test.ml",
           270,
           10
         ]
-      ];
+      };
 }
 
 function filter$1(p, param) {

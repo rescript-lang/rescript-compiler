@@ -7,11 +7,11 @@ var Caml_builtin_exceptions = require("../../lib/js/caml_builtin_exceptions.js")
 
 function f(match) {
   if (Caml_exceptions.caml_is_extension(match)) {
-    if (match === Caml_builtin_exceptions.not_found) {
+    if (match.CamlExt === Caml_builtin_exceptions.not_found) {
       return 0;
-    } else if (match[0] === Caml_builtin_exceptions.invalid_argument || match === Caml_builtin_exceptions.stack_overflow) {
+    } else if (match.CamlExt === Caml_builtin_exceptions.invalid_argument || match.CamlExt === Caml_builtin_exceptions.stack_overflow) {
       return 1;
-    } else if (match[0] === Caml_builtin_exceptions.sys_error) {
+    } else if (match.CamlExt === Caml_builtin_exceptions.sys_error) {
       return 2;
     } else {
       return ;
@@ -26,12 +26,12 @@ var B = Caml_exceptions.create("Exn_error_pattern.B");
 
 function g(match) {
   if (Caml_exceptions.caml_is_extension(match)) {
-    if (match === Caml_builtin_exceptions.not_found || match[0] === Caml_builtin_exceptions.invalid_argument) {
+    if (match.CamlExt === Caml_builtin_exceptions.not_found || match.CamlExt === Caml_builtin_exceptions.invalid_argument) {
       return 0;
-    } else if (match[0] === Caml_builtin_exceptions.sys_error) {
+    } else if (match.CamlExt === Caml_builtin_exceptions.sys_error) {
       return 2;
-    } else if (match[0] === A || match[0] === B) {
-      return match[1];
+    } else if (match.CamlExt === A || match.CamlExt === B) {
+      return match._1;
     } else {
       return ;
     }
@@ -51,19 +51,23 @@ function eq(loc, x, y) {
   return Mt.eq_suites(test_id, suites, loc, x, y);
 }
 
-eq("File \"exn_error_pattern.ml\", line 34, characters 5-12", f(Caml_builtin_exceptions.not_found), 0);
+eq("File \"exn_error_pattern.ml\", line 34, characters 5-12", f({
+          CamlExt: Caml_builtin_exceptions.not_found
+        }), 0);
 
-eq("File \"exn_error_pattern.ml\", line 35, characters 5-12", f([
-          Caml_builtin_exceptions.invalid_argument,
-          ""
-        ]), 1);
+eq("File \"exn_error_pattern.ml\", line 35, characters 5-12", f({
+          CamlExt: Caml_builtin_exceptions.invalid_argument,
+          _1: ""
+        }), 1);
 
-eq("File \"exn_error_pattern.ml\", line 36, characters 5-12", f(Caml_builtin_exceptions.stack_overflow), 1);
+eq("File \"exn_error_pattern.ml\", line 36, characters 5-12", f({
+          CamlExt: Caml_builtin_exceptions.stack_overflow
+        }), 1);
 
-eq("File \"exn_error_pattern.ml\", line 37, characters 5-12", f([
-          Caml_builtin_exceptions.sys_error,
-          ""
-        ]), 2);
+eq("File \"exn_error_pattern.ml\", line 37, characters 5-12", f({
+          CamlExt: Caml_builtin_exceptions.sys_error,
+          _1: ""
+        }), 2);
 
 var tmp;
 

@@ -9,14 +9,14 @@ function f(param) {
     case "bcde" :
         return 1;
     default:
-      throw [
-            Caml_builtin_exceptions.assert_failure,
-            /* tuple */[
+      throw {
+            CamlExt: Caml_builtin_exceptions.assert_failure,
+            _1: /* tuple */[
               "test_string_case.ml",
               4,
               9
             ]
-          ];
+          };
   }
 }
 

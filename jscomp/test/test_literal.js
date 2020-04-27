@@ -4,11 +4,11 @@ var Caml_exceptions = require("../../lib/js/caml_exceptions.js");
 
 var Custom_inline = Caml_exceptions.create("Test_literal.Custom_inline");
 
-var v = [
-  Custom_inline,
-  1,
-  2
-];
+var v = {
+  CamlExt: Custom_inline,
+  _1: 1,
+  _2: 2
+};
 
 var vv = [
   1,

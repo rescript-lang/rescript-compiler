@@ -6,6 +6,7 @@ var Curry = require("../../lib/js/curry.js");
 var Hashtbl = require("../../lib/js/hashtbl.js");
 var Caml_oo_curry = require("../../lib/js/caml_oo_curry.js");
 var CamlinternalOO = require("../../lib/js/camlinternalOO.js");
+var Caml_js_exceptions = require("../../lib/js/caml_js_exceptions.js");
 var Caml_builtin_exceptions = require("../../lib/js/caml_builtin_exceptions.js");
 
 var shared = ["calc"];
@@ -62,8 +63,9 @@ function memo_fib_init($$class) {
           try {
             return Hashtbl.find(self$2[cache], x);
           }
-          catch (exn){
-            if (exn === Caml_builtin_exceptions.not_found) {
+          catch (raw_exn){
+            var exn = Caml_js_exceptions.internalToOCamlException(raw_exn);
+            if (exn.CamlExt === Caml_builtin_exceptions.not_found) {
               var v = Curry._2(calc$1, self$2, x);
               Hashtbl.add(self$2[cache], x, v);
               return v;

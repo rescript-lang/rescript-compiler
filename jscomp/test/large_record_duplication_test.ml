@@ -61,6 +61,17 @@ let v0 : t = {
 let f0  (x : t) = 
   {x with x0 = 1}
 
+exception Small of { x : int ; y  : string }
+
+let f_small = function 
+  | Small u -> Small { u with x = 2}
+  | _ -> Not_found
+
+
+let h = Small {x = 1; y = "" }  
+;; eq __LOC__ (f_small h) (Small {x = 2 ; y = ""})
+
+;; eq __LOC__ (h =(Small {x = 2 ; y = ""})) false
 #if OCAML_VERSION =~ ">4.03.0"  then
 
 type t1 = A0 of {
