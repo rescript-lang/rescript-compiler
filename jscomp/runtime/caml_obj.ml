@@ -87,6 +87,7 @@ let caml_obj_block tag size =
        var new_record = u.slice ()
 
    ]}
+   `caml_obj_dup` is a superset of `caml_array_dup`
 *)
 
 let caml_obj_dup : Caml_obj_extern.t -> Caml_obj_extern.t = [%raw{|function(x){

@@ -189,11 +189,7 @@ let make_block ?comment
     | Blk_record_inlined {fields = des}
       -> 
       Ext_list.mapi es (fun i e  -> merge_outer_comment des.(i) e) 
-    | Blk_record_ext des
-      -> 
-      Ext_list.mapi es (fun i e  -> 
-        if i <> 0 then merge_outer_comment des.(i-1) e else e) 
-    (* TODO: may overriden its previous comments *)
+    | Blk_record_ext _
     | Blk_record _ 
     | Blk_module _
     | Blk_module_export
@@ -407,8 +403,7 @@ let record_access (e : t) (name : string) (pos : int32) =
     )
   | _ -> { expression_desc = Static_index (e, name, Some pos); comment = None} 
     
-let extension_access (e : t)  (pos : int32) = 
-  (* let name = Ext_ident.convert name in  *)
+let extension_access (e : t) name (pos : int32)  : t  = 
   match e.expression_desc with
   | Array (l,_) (* Float i -- should not appear here *)
   | Caml_block (l,_, _, _) when no_side_effect e
@@ -416,11 +411,15 @@ let extension_access (e : t)  (pos : int32) =
     (match Ext_list.nth_opt l  (Int32.to_int pos)  with
      | Some x-> x 
      | None -> 
-      let name = if pos = 0l then "CamlExt" else "_" ^ Int32.to_string pos in 
+      let name = 
+        match name with Some n -> n | None ->   
+        if pos = 0l then "CamlExt" else "_" ^ Int32.to_string pos in 
        { expression_desc = Static_index (e, name, Some pos); comment = None}     
     )
   | _ -> 
-    let name = if pos = 0l then "CamlExt" else "_" ^ Int32.to_string pos in 
+    let name = 
+      match name with Some n -> n | None ->     
+      if pos = 0l then "CamlExt" else "_" ^ Int32.to_string pos in 
     { expression_desc = Static_index (e, name, Some pos); comment = None} 
 
 let string_index ?comment (e0 : t)  (e1 : t) : t = 
@@ -487,8 +486,9 @@ let record_assign
 
 
 let extension_assign  
-    (e : t) 
+    (e : t)     
     (pos : int32) 
+    name
     (value : t) = 
   match e.expression_desc with
   | Array _  (*
@@ -501,7 +501,6 @@ let extension_assign
   | Caml_block _ when no_side_effect e  -> 
     value
   | _ ->  
-    let name = "_" ^ Int32.to_string pos in 
     assign { expression_desc = 
                Static_index (e, name, Some pos); comment = None} value  
 

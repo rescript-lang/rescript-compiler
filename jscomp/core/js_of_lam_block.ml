@@ -55,13 +55,14 @@ let field (field_info : Lam_compat.field_dbg_info) e i =
   | Fld_poly_var_tag 
   | Fld_poly_var_content 
   | Fld_record_inline _
-  | Fld_record_extension _
-  | Fld_extension_slot
-  | Fld_extension
   | Fld_variant
     -> 
     E.array_index_by_int  
       ?comment:(Lam_compat.str_of_field_info field_info) e i 
+  | Fld_record_extension {name} -> 
+    E.extension_access e (Some name) i
+  | Fld_extension -> 
+    E.extension_access e  None i    
   | Fld_record {name}
     -> E.record_access e name i
   | Fld_module {name}
@@ -75,9 +76,12 @@ let set_field (field_info : Lam_compat.set_field_dbg_info) e i e0 =
     | Fld_set_na 
       -> E.assign_by_int e i e0
     | Fld_record_inline_set comment
-    | Fld_record_extension_set comment
+
       -> (* see GPR#631*)
       E.assign_by_int ~comment e i e0 
+    | Fld_record_extension_set name
+      -> 
+      E.extension_assign e i name e0
     | Fld_record_set name -> 
       E.record_assign e i name e0
   

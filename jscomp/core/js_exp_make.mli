@@ -190,6 +190,7 @@ val record_access :
 
 val extension_access : 
   t ->
+  string option -> 
   Int32.t -> 
   t 
 
@@ -203,6 +204,7 @@ val record_assign :
 val extension_assign : 
   t -> 
   int32 -> 
+  string  -> 
   t -> 
   t    
 (** 
