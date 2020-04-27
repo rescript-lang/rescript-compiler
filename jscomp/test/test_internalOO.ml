@@ -347,9 +347,9 @@ let dummy_class loc =
 
 (**** Objects ****)
 
-let create_object table =
+(* let create_object table =
   (* XXX Appel de [obj_block] *)
-  let obj = Obj.new_object_tag_block  table.size in
+  let obj = new_object_tag_block  table.size in
   (* XXX Appel de [caml_modify] *)
   Obj.set_field obj 0 (Obj.repr table.methods);
   Obj.obj (set_id obj)
@@ -361,7 +361,7 @@ let create_object_opt obj_0 table =
     (* XXX Appel de [caml_modify] *)
     Obj.set_field obj 0 (Obj.repr table.methods);
     Obj.obj (set_id obj)
-  end
+  end *)
 
 let rec iter_f obj =
   function
@@ -380,12 +380,12 @@ let run_initializers_opt obj_0 obj table =
     obj
   end
 
-let create_object_and_run_initializers obj_0 table =
+(* let create_object_and_run_initializers obj_0 table =
   if (Obj.magic obj_0 : bool) then obj_0 else begin
     let obj = create_object table in
     run_initializers obj table;
     obj
-  end
+  end *)
 
 (* Equivalent primitive below
 let sendself obj lab =

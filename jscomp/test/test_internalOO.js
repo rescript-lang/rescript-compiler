@@ -3296,21 +3296,6 @@ function dummy_class(loc) {
         ];
 }
 
-function create_object(table) {
-  var obj = Caml_obj.caml_obj_block(248, table.size);
-  obj[0] = table.methods;
-  return Caml_exceptions.caml_set_oo_id(obj);
-}
-
-function create_object_opt(obj_0, table) {
-  if (obj_0) {
-    return obj_0;
-  }
-  var obj = Caml_obj.caml_obj_block(248, table.size);
-  obj[0] = table.methods;
-  return Caml_exceptions.caml_set_oo_id(obj);
-}
-
 function iter_f(obj, _param) {
   while(true) {
     var param = _param;
@@ -3339,15 +3324,6 @@ function run_initializers_opt(obj_0, obj, table) {
   if (inits !== /* [] */0) {
     iter_f(obj, inits);
   }
-  return obj;
-}
-
-function create_object_and_run_initializers(obj_0, table) {
-  if (obj_0) {
-    return obj_0;
-  }
-  var obj = create_object(table);
-  run_initializers(obj, table);
   return obj;
 }
 
@@ -3754,12 +3730,9 @@ exports.inherits = inherits;
 exports.make_class = make_class;
 exports.make_class_store = make_class_store;
 exports.dummy_class = dummy_class;
-exports.create_object = create_object;
-exports.create_object_opt = create_object_opt;
 exports.iter_f = iter_f;
 exports.run_initializers = run_initializers;
 exports.run_initializers_opt = run_initializers_opt;
-exports.create_object_and_run_initializers = create_object_and_run_initializers;
 exports.build_path = build_path;
 exports.lookup_keys = lookup_keys;
 exports.lookup_tables = lookup_tables;

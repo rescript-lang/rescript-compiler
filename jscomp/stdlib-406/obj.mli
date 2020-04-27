@@ -57,10 +57,6 @@ external set_field : t -> int -> t -> unit = "%obj_set_field"
 external dup : t -> t = "caml_obj_dup"
 external truncate : t -> int -> unit = "caml_obj_truncate"
 
-val extension_constructor : 'a -> extension_constructor
-val [@inline always] extension_name : extension_constructor -> string
-val [@inline always] extension_id : extension_constructor -> int
-
 
 module Ephemeron: sig
   (** Ephemeron with arbitrary arity and untyped *)
@@ -115,6 +111,4 @@ module Ephemeron: sig
   (** Same as {!Ephemeron.K1.blit_data} *)
 end
 
-val new_object_tag_block : 
-  int -> t 
 
