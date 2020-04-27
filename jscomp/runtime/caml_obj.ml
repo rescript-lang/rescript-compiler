@@ -40,9 +40,7 @@ module O = struct
   external hasOwnProperty :    
     t -> key -> bool = "hasOwnProperty" [@@bs.send]
   external get_value : Caml_obj_extern.t -> key -> Caml_obj_extern.t = ""[@@bs.get_index]
-  external shallowCopy :
-    (_ [@bs.as {json|{}|json}]) -> t -> t = "assign" 
-    [@@bs.scope "Object"] [@@bs.val]
+
 end
 
 
@@ -91,16 +89,22 @@ let caml_obj_block tag size =
    ]}
 *)
 
-let caml_obj_dup (x : Caml_obj_extern.t) =
-  if O.isArray x then 
-  let len = Caml_obj_extern.length x in
-  let v = Caml_array_extern.new_uninitialized  len in
-  for i = 0 to len - 1 do
-    Caml_array_extern.unsafe_set v i (Caml_obj_extern.field x i)
-  done;
-  Caml_obj_extern.set_tag (Caml_obj_extern.repr v) (Caml_obj_extern.tag x );
-  Caml_obj_extern.repr v
-  else O.shallowCopy x
+let caml_obj_dup : Caml_obj_extern.t -> Caml_obj_extern.t = [%raw{|function(x){
+  if(Array.isArray(x)){
+    var len = x.length  
+    var v = new Array(len)
+    for(var i = 0 ; i < len ; ++i){
+      v[i] = x[i]
+    }
+    if(x.tag !== undefined){
+      v.tag = x.tag 
+    }  
+    return v 
+  } 
+  return Object.assign({},x)    
+}|}]
+  
+
 
 
 let caml_obj_truncate (x : Caml_obj_extern.t) (new_size : int) =

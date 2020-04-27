@@ -1,4 +1,5 @@
 
+(* for o in jscomp/test/*test.js ; do npx mocha  $o ; done *)
 #if OCAML_VERSION =~ ">4.3.0" then
 let suites :  Mt.pair_suites ref  = ref []
 let test_id = ref 0
