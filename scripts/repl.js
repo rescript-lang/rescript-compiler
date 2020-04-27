@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 
 var p = require("child_process");
-
+var fs = require("fs");
 var path = require("path");
 
 
@@ -32,17 +32,46 @@ if (!process.env.BS_PLAYGROUND) {
 var playground = process.env.BS_PLAYGROUND;
 
 function prepare() {
-  e(`hash hash js_of_ocaml 2>/dev/null || { echo >&2 "js_of_ocaml not found on path. Please install version 3.5.1 (with opam switch ${ocamlVersion}), and put it on your path."; exit 1; }
+  e(`opam exec -- js_of_ocaml 2>/dev/null || { echo >&2 "js_of_ocaml not found on path. Please install version 3.5.1 (with opam switch ${ocamlVersion}), and put it on your path."; exit 1; }
 `);
 
   e(
-    `ocamlc.opt -w -30-40 -no-check-prims -I ${jsRefmtCompDir} ${jsRefmtCompDir}/js_compiler.mli ${jsRefmtCompDir}/js_compiler.ml -o jsc.byte && js_of_ocaml jsc.byte -o exports.js`
+    `opam exec -- ocamlc.opt -w -30-40 -no-check-prims -I ${jsRefmtCompDir} ${jsRefmtCompDir}/js_refmt_compiler.mli ${jsRefmtCompDir}/js_refmt_compiler.ml -o jsc.byte && opam exec -- js_of_ocaml jsc.byte -o exports.js`
   );
 
   e(`cp ../lib/js/*.js ${playground}/stdlib`);
   e(`mv ./exports.js ${playground}`)
 }
 
+function prepublish() {
+  var mainPackageJson = JSON.parse(fs.readFileSync(path.join(__dirname, '..', 'package.json')));
+  var packageJson = JSON.stringify(
+    {
+      name: "reason-js-compiler",
+      version: mainPackageJson.version,
+      license: mainPackageJson.license,
+      description: mainPackageJson.description,
+      repository: mainPackageJson.repository,
+      author: mainPackageJson.author,
+      maintainers: mainPackageJson.maintainers,
+      bugs: mainPackageJson.bugs,
+      homepage: mainPackageJson.homepage,
+      main: "exports.js",
+    },
+    null,
+    2
+  );
+
+  fs.writeFileSync(
+    jscompDir + `/${playground}/package.json`,
+    packageJson,
+    {
+      encoding: "utf8",
+    }
+  );
+}
 
 prepare();
-
+if (process.argv.includes("-prepublish")) {
+  prepublish();
+}
