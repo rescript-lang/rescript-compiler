@@ -284,7 +284,7 @@ function find(startOpt, sub, s) {
   }
   catch (raw_exn){
     var exn = Caml_js_exceptions.internalToOCamlException(raw_exn);
-    if (exn.CamlExt === Local_exit) {
+    if (exn.CamlExt.CamlId === Local_exit.CamlId) {
       return i;
     }
     throw exn;
@@ -334,7 +334,7 @@ function rfind(sub, s) {
   }
   catch (raw_exn){
     var exn = Caml_js_exceptions.internalToOCamlException(raw_exn);
-    if (exn.CamlExt === Local_exit) {
+    if (exn.CamlExt.CamlId === Local_exit.CamlId) {
       return i;
     }
     throw exn;

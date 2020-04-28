@@ -40,7 +40,7 @@ try {
 }
 catch (raw_msg){
   var msg = Caml_js_exceptions.internalToOCamlException(raw_msg);
-  if (msg.CamlExt === Caml_builtin_exceptions.failure) {
+  if (msg.CamlExt.CamlId === Caml_builtin_exceptions.failure.CamlId) {
     y = msg._1;
   } else {
     throw msg;
@@ -59,7 +59,7 @@ try {
 }
 catch (raw_msg$1){
   var msg$1 = Caml_js_exceptions.internalToOCamlException(raw_msg$1);
-  if (msg$1.CamlExt === Caml_builtin_exceptions.failure) {
+  if (msg$1.CamlExt.CamlId === Caml_builtin_exceptions.failure.CamlId) {
     x = msg$1._1;
   } else {
     throw msg$1;

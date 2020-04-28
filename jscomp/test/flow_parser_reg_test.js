@@ -1625,7 +1625,7 @@ function parse_exponent(f) {
   }
   catch (raw_exn){
     var exn = Caml_js_exceptions.internalToOCamlException(raw_exn);
-    if (exn.CamlExt === Caml_builtin_exceptions.failure) {
+    if (exn.CamlExt.CamlId === Caml_builtin_exceptions.failure.CamlId) {
       throw {
             CamlExt: No_good
           };
@@ -1738,7 +1738,7 @@ function float_of_string(str) {
       }
       catch (raw_exn){
         var exn = Caml_js_exceptions.internalToOCamlException(raw_exn);
-        if (exn.CamlExt === No_good) {
+        if (exn.CamlExt.CamlId === No_good.CamlId) {
           throw e;
         }
         throw exn;
@@ -2456,7 +2456,7 @@ function token(env, lexbuf) {
           }
           catch (raw_exn){
             var exn = Caml_js_exceptions.internalToOCamlException(raw_exn);
-            if (exn.CamlExt === Caml_builtin_exceptions.not_found) {
+            if (exn.CamlExt.CamlId === Caml_builtin_exceptions.not_found.CamlId) {
               return /* tuple */[
                       env,
                       /* T_IDENTIFIER */0
@@ -4302,7 +4302,7 @@ function type_token(env, lexbuf) {
           }
           catch (raw_exn){
             var exn$2 = Caml_js_exceptions.internalToOCamlException(raw_exn);
-            if (exn$2.CamlExt === Caml_builtin_exceptions.not_found) {
+            if (exn$2.CamlExt.CamlId === Caml_builtin_exceptions.not_found.CamlId) {
               return /* tuple */[
                       env,
                       /* T_IDENTIFIER */0
@@ -5618,7 +5618,7 @@ function to_parse(env, parse) {
   }
   catch (raw_exn){
     var exn = Caml_js_exceptions.internalToOCamlException(raw_exn);
-    if (exn.CamlExt === Rollback) {
+    if (exn.CamlExt.CamlId === Rollback.CamlId) {
       reset_token_sink(false, env, saved_state.token_buffer);
       env.errors.contents = saved_state.saved_errors;
       env.comments.contents = saved_state.saved_comments;
@@ -9883,7 +9883,7 @@ function check_property(env, prop_map, prop) {
     }
     catch (raw_exn){
       var exn = Caml_js_exceptions.internalToOCamlException(raw_exn);
-      if (exn.CamlExt === Caml_builtin_exceptions.not_found) {
+      if (exn.CamlExt.CamlId === Caml_builtin_exceptions.not_found.CamlId) {
         prev_kinds = /* Empty */0;
       } else {
         throw exn;
@@ -16360,7 +16360,7 @@ function parse(content, options) {
   }
   catch (raw_l){
     var l = Caml_js_exceptions.internalToOCamlException(raw_l);
-    if (l.CamlExt === $$Error) {
+    if (l.CamlExt.CamlId === $$Error.CamlId) {
       var e = new Error(String(List.length(l._1)) + " errors");
       e["name"] = "Parse Error";
       throw(e);

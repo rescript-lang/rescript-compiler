@@ -193,7 +193,7 @@ function file_option(file_options, name) {
   }
   catch (raw_exn){
     var exn = Caml_js_exceptions.internalToOCamlException(raw_exn);
-    if (exn.CamlExt === Caml_builtin_exceptions.not_found) {
+    if (exn.CamlExt.CamlId === Caml_builtin_exceptions.not_found.CamlId) {
       return ;
     }
     throw exn;
@@ -213,7 +213,7 @@ function rev_split_by_char(c, s) {
     }
     catch (raw_exn){
       var exn = Caml_js_exceptions.internalToOCamlException(raw_exn);
-      if (exn.CamlExt === Caml_builtin_exceptions.not_found) {
+      if (exn.CamlExt.CamlId === Caml_builtin_exceptions.not_found.CamlId) {
         return /* :: */[
                 $$String.sub(s, i, s.length - i | 0),
                 l
@@ -647,7 +647,7 @@ function prepare_error(e) {
 }
 
 function add_loc(loc, exn) {
-  if (exn.CamlExt === Compilation_error) {
+  if (exn.CamlExt.CamlId === Compilation_error.CamlId) {
     var tmp = exn._1;
     if (typeof tmp !== "number") {
       switch (tmp.tag | 0) {
@@ -678,7 +678,7 @@ function add_loc(loc, exn) {
 }
 
 Printexc.register_printer((function (exn) {
-        if (exn.CamlExt === Compilation_error) {
+        if (exn.CamlExt.CamlId === Compilation_error.CamlId) {
           return prepare_error(exn._1);
         }
         
@@ -3899,7 +3899,7 @@ function find_field_option(field_options, option_name) {
   }
   catch (raw_exn){
     var exn = Caml_js_exceptions.internalToOCamlException(raw_exn);
-    if (exn.CamlExt === Caml_builtin_exceptions.not_found) {
+    if (exn.CamlExt.CamlId === Caml_builtin_exceptions.not_found.CamlId) {
       return ;
     }
     throw exn;
@@ -4119,7 +4119,7 @@ function get_default(field_name, field_options, field_type) {
   }
   catch (raw_exn){
     var exn = Caml_js_exceptions.internalToOCamlException(raw_exn);
-    if (exn.CamlExt === Caml_builtin_exceptions.not_found) {
+    if (exn.CamlExt.CamlId === Caml_builtin_exceptions.not_found.CamlId) {
       return ;
     }
     throw exn;
@@ -4163,7 +4163,7 @@ function not_found(f) {
   }
   catch (raw_exn){
     var exn = Caml_js_exceptions.internalToOCamlException(raw_exn);
-    if (exn.CamlExt === Caml_builtin_exceptions.not_found) {
+    if (exn.CamlExt.CamlId === Caml_builtin_exceptions.not_found.CamlId) {
       return true;
     }
     throw exn;
@@ -4489,7 +4489,7 @@ function compile_message_p2(types, param, message) {
             }
             catch (raw_exn){
               var exn = Caml_js_exceptions.internalToOCamlException(raw_exn);
-              if (exn.CamlExt === Caml_builtin_exceptions.not_found) {
+              if (exn.CamlExt.CamlId === Caml_builtin_exceptions.not_found.CamlId) {
                 return ;
               }
               throw exn;
@@ -6306,7 +6306,7 @@ function module_of_file_name(file_name) {
   }
   catch (raw_exn){
     var exn = Caml_js_exceptions.internalToOCamlException(raw_exn);
-    if (exn.CamlExt === Caml_builtin_exceptions.not_found) {
+    if (exn.CamlExt.CamlId === Caml_builtin_exceptions.not_found.CamlId) {
       throw {
             CamlExt: Compilation_error,
             _1: /* Invalid_file_name */Block.__(6, [file_name$1])
@@ -6415,7 +6415,7 @@ function compile_field_type(field_name, all_types, file_options, field_options, 
     }
     catch (raw_exn){
       var exn = Caml_js_exceptions.internalToOCamlException(raw_exn);
-      if (exn.CamlExt === Caml_builtin_exceptions.not_found) {
+      if (exn.CamlExt.CamlId === Caml_builtin_exceptions.not_found.CamlId) {
         throw {
               CamlExt: Compilation_error,
               _1: /* Programatic_error */Block.__(4, [/* No_type_found_for_id */2])

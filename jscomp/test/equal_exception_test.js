@@ -54,7 +54,7 @@ function is_exception(param) {
   }
   catch (raw_exn){
     var exn = Caml_js_exceptions.internalToOCamlException(raw_exn);
-    if (exn.CamlExt === Caml_builtin_exceptions.not_found) {
+    if (exn.CamlExt.CamlId === Caml_builtin_exceptions.not_found.CamlId) {
       return ;
     }
     throw exn;
@@ -72,7 +72,7 @@ function is_normal_exception(_x) {
   }
   catch (raw_exn){
     var exn = Caml_js_exceptions.internalToOCamlException(raw_exn);
-    if (exn.CamlExt === A) {
+    if (exn.CamlExt.CamlId === A.CamlId) {
       if (exn._1 === 3) {
         return ;
       }
@@ -129,7 +129,7 @@ var e = {
 };
 
 function eq(param) {
-  return param.CamlExt === Caml_builtin_exceptions.not_found;
+  return param.CamlExt.CamlId === Caml_builtin_exceptions.not_found.CamlId;
 }
 
 var Not_found = Caml_exceptions.create("Equal_exception_test.Not_found");

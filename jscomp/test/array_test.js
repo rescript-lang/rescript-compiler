@@ -31,7 +31,7 @@ function starts_with(xs, prefix, p) {
   }
   catch (raw_exn){
     var exn = Caml_js_exceptions.internalToOCamlException(raw_exn);
-    if (exn.CamlExt === H) {
+    if (exn.CamlExt.CamlId === H.CamlId) {
       return false;
     }
     throw exn;

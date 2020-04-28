@@ -7,11 +7,11 @@ var Caml_builtin_exceptions = require("../../lib/js/caml_builtin_exceptions.js")
 
 function f(match) {
   if (Caml_exceptions.caml_is_extension(match)) {
-    if (match.CamlExt === Caml_builtin_exceptions.not_found) {
+    if (match.CamlExt.CamlId === Caml_builtin_exceptions.not_found.CamlId) {
       return 0;
-    } else if (match.CamlExt === Caml_builtin_exceptions.invalid_argument || match.CamlExt === Caml_builtin_exceptions.stack_overflow) {
+    } else if (match.CamlExt.CamlId === Caml_builtin_exceptions.invalid_argument.CamlId || match.CamlExt.CamlId === Caml_builtin_exceptions.stack_overflow.CamlId) {
       return 1;
-    } else if (match.CamlExt === Caml_builtin_exceptions.sys_error) {
+    } else if (match.CamlExt.CamlId === Caml_builtin_exceptions.sys_error.CamlId) {
       return 2;
     } else {
       return ;
@@ -26,11 +26,11 @@ var B = Caml_exceptions.create("Exn_error_pattern.B");
 
 function g(match) {
   if (Caml_exceptions.caml_is_extension(match)) {
-    if (match.CamlExt === Caml_builtin_exceptions.not_found || match.CamlExt === Caml_builtin_exceptions.invalid_argument) {
+    if (match.CamlExt.CamlId === Caml_builtin_exceptions.not_found.CamlId || match.CamlExt.CamlId === Caml_builtin_exceptions.invalid_argument.CamlId) {
       return 0;
-    } else if (match.CamlExt === Caml_builtin_exceptions.sys_error) {
+    } else if (match.CamlExt.CamlId === Caml_builtin_exceptions.sys_error.CamlId) {
       return 2;
-    } else if (match.CamlExt === A || match.CamlExt === B) {
+    } else if (match.CamlExt.CamlId === A.CamlId || match.CamlExt.CamlId === B.CamlId) {
       return match._1;
     } else {
       return ;

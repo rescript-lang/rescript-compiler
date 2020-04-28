@@ -54,7 +54,7 @@ try {
 }
 catch (raw_exn){
   var exn = Caml_js_exceptions.internalToOCamlException(raw_exn);
-  if (exn.CamlExt === Caml_builtin_exceptions.not_found) {
+  if (exn.CamlExt.CamlId === Caml_builtin_exceptions.not_found.CamlId) {
     tmp = "Z";
   } else {
     throw exn;

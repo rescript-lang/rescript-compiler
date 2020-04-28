@@ -97,7 +97,7 @@ function get_lines(fname) {
   }
   catch (raw_s){
     var s = Caml_js_exceptions.internalToOCamlException(raw_s);
-    if (s.CamlExt === Scanf.Scan_failure) {
+    if (s.CamlExt.CamlId === Scanf.Scan_failure.CamlId) {
       var s$1 = Curry._2(Printf.sprintf(/* Format */[
                 /* String_literal */Block.__(11, [
                     "in file ",
@@ -119,7 +119,7 @@ function get_lines(fname) {
             _1: s$1
           };
     }
-    if (s.CamlExt === Caml_builtin_exceptions.end_of_file) {
+    if (s.CamlExt.CamlId === Caml_builtin_exceptions.end_of_file.CamlId) {
       var s$2 = Curry._1(Printf.sprintf(/* Format */[
                 /* String_literal */Block.__(11, [
                     "in file ",
@@ -171,7 +171,7 @@ function add_digest_ib(ob, ib) {
   }
   catch (raw_exn){
     var exn = Caml_js_exceptions.internalToOCamlException(raw_exn);
-    if (exn.CamlExt === Caml_builtin_exceptions.end_of_file) {
+    if (exn.CamlExt.CamlId === Caml_builtin_exceptions.end_of_file.CamlId) {
       return ;
     }
     throw exn;

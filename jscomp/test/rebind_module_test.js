@@ -3,7 +3,7 @@
 var Rebind_module = require("./rebind_module.js");
 
 function x(v) {
-  if (v.CamlExt === Rebind_module.AA) {
+  if (v.CamlExt.CamlId === Rebind_module.AA.CamlId) {
     return 0;
   } else {
     return 1;

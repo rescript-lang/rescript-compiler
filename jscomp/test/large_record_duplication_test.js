@@ -28,7 +28,7 @@ function f0(x) {
 var Small = Caml_exceptions.create("Large_record_duplication_test.Small");
 
 function f_small(u) {
-  if (u.CamlExt === Small) {
+  if (u.CamlExt.CamlId === Small.CamlId) {
     return {
             CamlExt: Small,
             x: 2,
@@ -151,7 +151,7 @@ eq("File \"large_record_duplication_test.ml\", line 205, characters 6-13", get_x
 var A0 = Caml_exceptions.create("Large_record_duplication_test.A0");
 
 function f3(x) {
-  if (x.CamlExt !== A0) {
+  if (x.CamlExt.CamlId !== A0.CamlId) {
     return x;
   }
   var newrecord = Caml_obj.caml_obj_dup(x);
@@ -160,7 +160,7 @@ function f3(x) {
 }
 
 function get_x0$2(x) {
-  if (x.CamlExt === A0) {
+  if (x.CamlExt.CamlId === A0.CamlId) {
     return x.x0;
   }
   

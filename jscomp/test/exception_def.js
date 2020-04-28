@@ -38,7 +38,7 @@ var v = {
 };
 
 Printexc.register_printer((function (s) {
-        if (s.CamlExt === A) {
+        if (s.CamlExt.CamlId === A.CamlId) {
           return "A";
         }
         

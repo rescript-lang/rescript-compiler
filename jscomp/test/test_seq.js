@@ -55,7 +55,7 @@ function add_help(speclist) {
   }
   catch (raw_exn){
     var exn = Caml_js_exceptions.internalToOCamlException(raw_exn);
-    if (exn.CamlExt === Caml_builtin_exceptions.not_found) {
+    if (exn.CamlExt.CamlId === Caml_builtin_exceptions.not_found.CamlId) {
       add1 = /* :: */[
         /* tuple */[
           "-help",
@@ -75,7 +75,7 @@ function add_help(speclist) {
   }
   catch (raw_exn$1){
     var exn$1 = Caml_js_exceptions.internalToOCamlException(raw_exn$1);
-    if (exn$1.CamlExt === Caml_builtin_exceptions.not_found) {
+    if (exn$1.CamlExt.CamlId === Caml_builtin_exceptions.not_found.CamlId) {
       add2 = /* :: */[
         /* tuple */[
           "--help",

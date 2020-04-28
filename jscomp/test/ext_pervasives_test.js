@@ -62,7 +62,7 @@ function is_pos_pow(n) {
   }
   catch (raw_exn){
     var exn = Caml_js_exceptions.internalToOCamlException(raw_exn);
-    if (exn.CamlExt === E) {
+    if (exn.CamlExt.CamlId === E.CamlId) {
       return -1;
     }
     throw exn;

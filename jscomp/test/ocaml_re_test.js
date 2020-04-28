@@ -1448,7 +1448,7 @@ function find_state(re, desc) {
   }
   catch (raw_exn){
     var exn = Caml_js_exceptions.internalToOCamlException(raw_exn);
-    if (exn.CamlExt === Caml_builtin_exceptions.not_found) {
+    if (exn.CamlExt.CamlId === Caml_builtin_exceptions.not_found.CamlId) {
       var st = mk_state(re.ncol, desc);
       Curry._3(Re_automata_State.Table.add, re.states, desc, st);
       return st;
@@ -1517,7 +1517,7 @@ function $$final(info, st, cat) {
   }
   catch (raw_exn){
     var exn = Caml_js_exceptions.internalToOCamlException(raw_exn);
-    if (exn.CamlExt === Caml_builtin_exceptions.not_found) {
+    if (exn.CamlExt.CamlId === Caml_builtin_exceptions.not_found.CamlId) {
       var st$prime = delta$1(info, cat, -1, st);
       var res_000 = st$prime.idx;
       var res_001 = status(st$prime);
@@ -1544,7 +1544,7 @@ function find_initial_state(re, cat) {
   }
   catch (raw_exn){
     var exn = Caml_js_exceptions.internalToOCamlException(raw_exn);
-    if (exn.CamlExt === Caml_builtin_exceptions.not_found) {
+    if (exn.CamlExt.CamlId === Caml_builtin_exceptions.not_found.CamlId) {
       var st = find_state(re, Curry._2(Re_automata_State.create, cat, re.initial));
       re.initial_states = /* :: */[
         /* tuple */[
@@ -1672,7 +1672,7 @@ function trans_set(cache, cm, s) {
   }
   catch (raw_exn){
     var exn = Caml_js_exceptions.internalToOCamlException(raw_exn);
-    if (exn.CamlExt === Caml_builtin_exceptions.not_found) {
+    if (exn.CamlExt.CamlId === Caml_builtin_exceptions.not_found.CamlId) {
       var l = List.fold_right((function (param, l) {
               return union(seq(Caml_bytes.get(cm, param[0]), Caml_bytes.get(cm, param[1])), l);
             }), s, /* [] */0);
@@ -3064,7 +3064,7 @@ function parse(multiline, dollar_endonly, dotall, ungreedy, s) {
     }
     catch (raw_exn){
       var exn$1 = Caml_js_exceptions.internalToOCamlException(raw_exn);
-      if (exn$1.CamlExt === Pervasives.Exit) {
+      if (exn$1.CamlExt.CamlId === Pervasives.Exit.CamlId) {
         return false;
       }
       throw exn$1;
@@ -3484,7 +3484,7 @@ function parse(multiline, dollar_endonly, dotall, ungreedy, s) {
         }
         catch (raw_exn){
           var exn = Caml_js_exceptions.internalToOCamlException(raw_exn);
-          if (exn.CamlExt === Caml_builtin_exceptions.not_found) {
+          if (exn.CamlExt.CamlId === Caml_builtin_exceptions.not_found.CamlId) {
             throw {
                   CamlExt: Parse_error
                 };

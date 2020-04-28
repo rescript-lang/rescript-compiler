@@ -73,7 +73,7 @@ function rev_split_by_char(c, s) {
     }
     catch (raw_exn){
       var exn = Caml_js_exceptions.internalToOCamlException(raw_exn);
-      if (exn.CamlExt === Caml_builtin_exceptions.not_found) {
+      if (exn.CamlExt.CamlId === Caml_builtin_exceptions.not_found.CamlId) {
         return /* :: */[
                 $$String.sub(s, i, s.length - i | 0),
                 l
@@ -102,7 +102,7 @@ function xsplit(delim, s) {
       }
       catch (raw_exn){
         var exn = Caml_js_exceptions.internalToOCamlException(raw_exn);
-        if (exn.CamlExt === Caml_builtin_exceptions.not_found) {
+        if (exn.CamlExt.CamlId === Caml_builtin_exceptions.not_found.CamlId) {
           return /* :: */[
                   $$String.sub(s, 0, i),
                   l

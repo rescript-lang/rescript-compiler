@@ -49,7 +49,7 @@ function test_not_found(f, param) {
   }
   catch (raw_exn){
     var exn = Caml_js_exceptions.internalToOCamlException(raw_exn);
-    if (exn.CamlExt === Caml_builtin_exceptions.not_found) {
+    if (exn.CamlExt.CamlId === Caml_builtin_exceptions.not_found.CamlId) {
       return 2;
     }
     throw exn;
@@ -62,7 +62,7 @@ function test_js_error2(param) {
   }
   catch (raw_e){
     var e = Caml_js_exceptions.internalToOCamlException(raw_e);
-    if (e.CamlExt === Js_exn.$$Error) {
+    if (e.CamlExt.CamlId === Js_exn.$$Error.CamlId) {
       console.log(e._1.stack);
       throw e;
     }

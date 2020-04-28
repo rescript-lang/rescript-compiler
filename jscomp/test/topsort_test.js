@@ -1520,7 +1520,7 @@ try {
 catch (raw_exn){
   var exn = Caml_js_exceptions.internalToOCamlException(raw_exn);
   var exit = 0;
-  if (exn.CamlExt === Cycle) {
+  if (exn.CamlExt.CamlId === Cycle.CamlId) {
     var match = exn._1;
     if (match && match[0] === "go") {
       var match$1 = match[1];

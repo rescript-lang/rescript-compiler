@@ -10,7 +10,7 @@ function ff(g, x) {
   }
   catch (raw_exn){
     var exn = Caml_js_exceptions.internalToOCamlException(raw_exn);
-    if (exn.CamlExt !== Caml_builtin_exceptions.not_found) {
+    if (exn.CamlExt.CamlId !== Caml_builtin_exceptions.not_found.CamlId) {
       throw exn;
     }
     
@@ -20,7 +20,7 @@ function ff(g, x) {
   }
   catch (raw_exn$1){
     var exn$1 = Caml_js_exceptions.internalToOCamlException(raw_exn$1);
-    if (exn$1.CamlExt !== Caml_builtin_exceptions.out_of_memory) {
+    if (exn$1.CamlExt.CamlId !== Caml_builtin_exceptions.out_of_memory.CamlId) {
       throw exn$1;
     }
     
@@ -30,7 +30,7 @@ function ff(g, x) {
   }
   catch (raw_exn$2){
     var exn$2 = Caml_js_exceptions.internalToOCamlException(raw_exn$2);
-    if (exn$2.CamlExt !== Caml_builtin_exceptions.sys_error) {
+    if (exn$2.CamlExt.CamlId !== Caml_builtin_exceptions.sys_error.CamlId) {
       throw exn$2;
     }
     
@@ -40,7 +40,7 @@ function ff(g, x) {
   }
   catch (raw_exn$3){
     var exn$3 = Caml_js_exceptions.internalToOCamlException(raw_exn$3);
-    if (exn$3.CamlExt !== Caml_builtin_exceptions.invalid_argument) {
+    if (exn$3.CamlExt.CamlId !== Caml_builtin_exceptions.invalid_argument.CamlId) {
       throw exn$3;
     }
     
@@ -50,7 +50,7 @@ function ff(g, x) {
   }
   catch (raw_exn$4){
     var exn$4 = Caml_js_exceptions.internalToOCamlException(raw_exn$4);
-    if (exn$4.CamlExt !== Caml_builtin_exceptions.end_of_file) {
+    if (exn$4.CamlExt.CamlId !== Caml_builtin_exceptions.end_of_file.CamlId) {
       throw exn$4;
     }
     
@@ -60,7 +60,7 @@ function ff(g, x) {
   }
   catch (raw_exn$5){
     var exn$5 = Caml_js_exceptions.internalToOCamlException(raw_exn$5);
-    if (exn$5.CamlExt !== Caml_builtin_exceptions.match_failure) {
+    if (exn$5.CamlExt.CamlId !== Caml_builtin_exceptions.match_failure.CamlId) {
       throw exn$5;
     }
     
@@ -70,7 +70,7 @@ function ff(g, x) {
   }
   catch (raw_exn$6){
     var exn$6 = Caml_js_exceptions.internalToOCamlException(raw_exn$6);
-    if (exn$6.CamlExt !== Caml_builtin_exceptions.stack_overflow) {
+    if (exn$6.CamlExt.CamlId !== Caml_builtin_exceptions.stack_overflow.CamlId) {
       throw exn$6;
     }
     
@@ -80,7 +80,7 @@ function ff(g, x) {
   }
   catch (raw_exn$7){
     var exn$7 = Caml_js_exceptions.internalToOCamlException(raw_exn$7);
-    if (exn$7.CamlExt !== Caml_builtin_exceptions.sys_blocked_io) {
+    if (exn$7.CamlExt.CamlId !== Caml_builtin_exceptions.sys_blocked_io.CamlId) {
       throw exn$7;
     }
     
@@ -90,7 +90,7 @@ function ff(g, x) {
   }
   catch (raw_exn$8){
     var exn$8 = Caml_js_exceptions.internalToOCamlException(raw_exn$8);
-    if (exn$8.CamlExt !== Caml_builtin_exceptions.assert_failure) {
+    if (exn$8.CamlExt.CamlId !== Caml_builtin_exceptions.assert_failure.CamlId) {
       throw exn$8;
     }
     
@@ -100,7 +100,7 @@ function ff(g, x) {
   }
   catch (raw_exn$9){
     var exn$9 = Caml_js_exceptions.internalToOCamlException(raw_exn$9);
-    if (exn$9.CamlExt === Caml_builtin_exceptions.undefined_recursive_module) {
+    if (exn$9.CamlExt.CamlId === Caml_builtin_exceptions.undefined_recursive_module.CamlId) {
       return ;
     }
     throw exn$9;

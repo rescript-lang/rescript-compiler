@@ -2,8 +2,10 @@
 
 var Mt = require("./mt.js");
 var Block = require("../../lib/js/block.js");
+var Curry = require("../../lib/js/curry.js");
 var Caml_format = require("../../lib/js/caml_format.js");
 var Caml_exceptions = require("../../lib/js/caml_exceptions.js");
+var Caml_js_exceptions = require("../../lib/js/caml_js_exceptions.js");
 
 var suites = {
   contents: /* [] */0
@@ -20,7 +22,7 @@ function eq(loc, x, y) {
 var Inline_record = Caml_exceptions.create("Record_extension_test.Inline_record");
 
 function f(x) {
-  if (x.CamlExt === Inline_record) {
+  if (x.CamlExt.CamlId === Inline_record.CamlId) {
     return x.x + Caml_format.caml_int_of_string(x.y) | 0;
   }
   
@@ -53,7 +55,31 @@ function f2_with(x) {
   }
 }
 
-Mt.from_pair_suites("File \"record_extension_test.ml\", line 44, characters 22-29", suites.contents);
+var A = Caml_exceptions.create("Record_extension_test.A");
+
+var B = Caml_exceptions.create("Record_extension_test.B");
+
+var C = Caml_exceptions.create("Record_extension_test.C");
+
+function u(f) {
+  try {
+    return Curry._1(f, undefined);
+  }
+  catch (raw_x){
+    var x = Caml_js_exceptions.internalToOCamlException(raw_x);
+    if (x.CamlExt.CamlId === A.CamlId) {
+      return x.name + x.x | 0;
+    } else if (x.CamlExt.CamlId === B.CamlId) {
+      return x._1 + x._2 | 0;
+    } else if (x.CamlExt.CamlId === C.CamlId) {
+      return x.name;
+    } else {
+      return -1;
+    }
+  }
+}
+
+Mt.from_pair_suites("File \"record_extension_test.ml\", line 56, characters 22-29", suites.contents);
 
 exports.suites = suites;
 exports.test_id = test_id;
@@ -63,4 +89,8 @@ exports.f = f;
 exports.v0 = v0;
 exports.f2 = f2;
 exports.f2_with = f2_with;
+exports.A = A;
+exports.B = B;
+exports.C = C;
+exports.u = u;
 /*  Not a pure module */

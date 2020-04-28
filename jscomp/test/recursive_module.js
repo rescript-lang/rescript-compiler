@@ -95,7 +95,7 @@ try {
 }
 catch (raw_exn){
   var exn = Caml_js_exceptions.internalToOCamlException(raw_exn);
-  if (exn.CamlExt === Lazy.Undefined) {
+  if (exn.CamlExt.CamlId === Lazy.Undefined.CamlId) {
     tmp = -1;
   } else {
     throw exn;
@@ -158,7 +158,7 @@ try {
 }
 catch (raw_exn$1){
   var exn$1 = Caml_js_exceptions.internalToOCamlException(raw_exn$1);
-  if (exn$1.CamlExt === Caml_builtin_exceptions.undefined_recursive_module) {
+  if (exn$1.CamlExt.CamlId === Caml_builtin_exceptions.undefined_recursive_module.CamlId) {
     tmp$1 = 4;
   } else {
     throw exn$1;

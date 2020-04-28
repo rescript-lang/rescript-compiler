@@ -48,7 +48,7 @@ try {
 }
 catch (raw_exn){
   var exn = Caml_js_exceptions.internalToOCamlException(raw_exn);
-  if (exn.CamlExt !== Caml_builtin_exceptions.not_found) {
+  if (exn.CamlExt.CamlId !== Caml_builtin_exceptions.not_found.CamlId) {
     throw exn;
   }
   
@@ -303,7 +303,7 @@ function remove_file(filename) {
   }
   catch (raw_msg){
     var msg = Caml_js_exceptions.internalToOCamlException(raw_msg);
-    if (msg.CamlExt === Caml_builtin_exceptions.sys_error) {
+    if (msg.CamlExt.CamlId === Caml_builtin_exceptions.sys_error.CamlId) {
       return ;
     }
     throw msg;
@@ -324,7 +324,7 @@ function chop_extension_if_any(fname) {
   }
   catch (raw_exn){
     var exn = Caml_js_exceptions.internalToOCamlException(raw_exn);
-    if (exn.CamlExt === Caml_builtin_exceptions.invalid_argument) {
+    if (exn.CamlExt.CamlId === Caml_builtin_exceptions.invalid_argument.CamlId) {
       return fname;
     }
     throw exn;
@@ -502,7 +502,7 @@ function set_color_tag_handling(ppf) {
     }
     catch (raw_exn){
       var exn = Caml_js_exceptions.internalToOCamlException(raw_exn);
-      if (exn.CamlExt === Caml_builtin_exceptions.not_found) {
+      if (exn.CamlExt.CamlId === Caml_builtin_exceptions.not_found.CamlId) {
         return Curry._1(partial_arg, param);
       }
       throw exn;
@@ -522,7 +522,7 @@ function set_color_tag_handling(ppf) {
     }
     catch (raw_exn){
       var exn = Caml_js_exceptions.internalToOCamlException(raw_exn);
-      if (exn.CamlExt === Caml_builtin_exceptions.not_found) {
+      if (exn.CamlExt.CamlId === Caml_builtin_exceptions.not_found.CamlId) {
         return Curry._1(partial_arg$1, param);
       }
       throw exn;
@@ -1719,7 +1719,7 @@ function highlight_locations(ppf, locs) {
         }
         catch (raw_exn){
           var exn = Caml_js_exceptions.internalToOCamlException(raw_exn);
-          if (exn.CamlExt === Caml_builtin_exceptions.not_found) {
+          if (exn.CamlExt.CamlId === Caml_builtin_exceptions.not_found.CamlId) {
             norepeat = false;
           } else {
             throw exn;
@@ -1735,7 +1735,7 @@ function highlight_locations(ppf, locs) {
         }
         catch (raw_exn$1){
           var exn$1 = Caml_js_exceptions.internalToOCamlException(raw_exn$1);
-          if (exn$1.CamlExt === Pervasives.Exit) {
+          if (exn$1.CamlExt.CamlId === Pervasives.Exit.CamlId) {
             return false;
           }
           throw exn$1;
@@ -1755,7 +1755,7 @@ function highlight_locations(ppf, locs) {
       }
       catch (raw_exn$2){
         var exn$2 = Caml_js_exceptions.internalToOCamlException(raw_exn$2);
-        if (exn$2.CamlExt === Pervasives.Exit) {
+        if (exn$2.CamlExt.CamlId === Pervasives.Exit.CamlId) {
           return false;
         }
         throw exn$2;
@@ -2110,7 +2110,7 @@ function error_of_printer_file(print, x) {
 }
 
 register_error_of_exn((function (msg) {
-        if (msg.CamlExt === Caml_builtin_exceptions.sys_error) {
+        if (msg.CamlExt.CamlId === Caml_builtin_exceptions.sys_error.CamlId) {
           return Curry._1(errorf(in_file(input_name.contents), undefined, undefined, /* Format */[
                           /* String_literal */Block.__(11, [
                               "I/O error: ",
@@ -2121,7 +2121,7 @@ register_error_of_exn((function (msg) {
                             ]),
                           "I/O error: %s"
                         ]), msg._1);
-        } else if (msg.CamlExt === Errors) {
+        } else if (msg.CamlExt.CamlId === Errors.CamlId) {
           return Curry._1(errorf(in_file(input_name.contents), undefined, undefined, /* Format */[
                           /* String_literal */Block.__(11, [
                               "Some fatal warnings were triggered (",
@@ -2145,7 +2145,7 @@ register_error_of_exn((function (msg) {
 var $$Error = Caml_exceptions.create("Ocaml_typedtree_test.Location.Error");
 
 register_error_of_exn((function (e) {
-        if (e.CamlExt === $$Error) {
+        if (e.CamlExt.CamlId === $$Error.CamlId) {
           return e._1;
         }
         
@@ -5097,7 +5097,7 @@ function forget_abbrev(mem, path) {
   }
   catch (raw_exn){
     var exn = Caml_js_exceptions.internalToOCamlException(raw_exn);
-    if (exn.CamlExt === Pervasives.Exit) {
+    if (exn.CamlExt.CamlId === Pervasives.Exit.CamlId) {
       return ;
     }
     throw exn;
@@ -5406,21 +5406,21 @@ function read_cmi(filename) {
   }
   catch (raw_e){
     var e = Caml_js_exceptions.internalToOCamlException(raw_e);
-    if (e.CamlExt === Caml_builtin_exceptions.end_of_file) {
+    if (e.CamlExt.CamlId === Caml_builtin_exceptions.end_of_file.CamlId) {
       Caml_external_polyfill.resolve("caml_ml_close_channel")(ic);
       throw {
             CamlExt: $$Error$1,
             _1: /* Corrupted_interface */Block.__(2, [filename])
           };
     }
-    if (e.CamlExt === Caml_builtin_exceptions.failure) {
+    if (e.CamlExt.CamlId === Caml_builtin_exceptions.failure.CamlId) {
       Caml_external_polyfill.resolve("caml_ml_close_channel")(ic);
       throw {
             CamlExt: $$Error$1,
             _1: /* Corrupted_interface */Block.__(2, [filename])
           };
     }
-    if (e.CamlExt === $$Error$1) {
+    if (e.CamlExt.CamlId === $$Error$1.CamlId) {
       Caml_external_polyfill.resolve("caml_ml_close_channel")(ic);
       throw {
             CamlExt: $$Error$1,
@@ -5517,7 +5517,7 @@ function report_error(ppf, filename) {
 }
 
 register_error_of_exn((function (err) {
-        if (err.CamlExt === $$Error$1) {
+        if (err.CamlExt.CamlId === $$Error$1.CamlId) {
           return error_of_printer_file(report_error, err._1);
         }
         
@@ -5547,7 +5547,7 @@ function extract(l, tbl) {
                 }
                 catch (raw_exn){
                   var exn = Caml_js_exceptions.internalToOCamlException(raw_exn);
-                  if (exn.CamlExt === Caml_builtin_exceptions.not_found) {
+                  if (exn.CamlExt.CamlId === Caml_builtin_exceptions.not_found.CamlId) {
                     return /* :: */[
                             /* tuple */[
                               name,
@@ -6444,7 +6444,7 @@ function get_pre_docs(pos) {
   }
   catch (raw_exn){
     var exn = Caml_js_exceptions.internalToOCamlException(raw_exn);
-    if (exn.CamlExt === Caml_builtin_exceptions.not_found) {
+    if (exn.CamlExt.CamlId === Caml_builtin_exceptions.not_found.CamlId) {
       return ;
     }
     throw exn;
@@ -6457,7 +6457,7 @@ function mark_pre_docs(pos) {
   }
   catch (raw_exn){
     var exn = Caml_js_exceptions.internalToOCamlException(raw_exn);
-    if (exn.CamlExt === Caml_builtin_exceptions.not_found) {
+    if (exn.CamlExt.CamlId === Caml_builtin_exceptions.not_found.CamlId) {
       return ;
     }
     throw exn;
@@ -6481,7 +6481,7 @@ function get_post_docs(pos) {
   }
   catch (raw_exn){
     var exn = Caml_js_exceptions.internalToOCamlException(raw_exn);
-    if (exn.CamlExt === Caml_builtin_exceptions.not_found) {
+    if (exn.CamlExt.CamlId === Caml_builtin_exceptions.not_found.CamlId) {
       return ;
     }
     throw exn;
@@ -6494,7 +6494,7 @@ function mark_post_docs(pos) {
   }
   catch (raw_exn){
     var exn = Caml_js_exceptions.internalToOCamlException(raw_exn);
-    if (exn.CamlExt === Caml_builtin_exceptions.not_found) {
+    if (exn.CamlExt.CamlId === Caml_builtin_exceptions.not_found.CamlId) {
       return ;
     }
     throw exn;
@@ -6508,7 +6508,7 @@ function get_info(pos) {
   }
   catch (raw_exn){
     var exn = Caml_js_exceptions.internalToOCamlException(raw_exn);
-    if (exn.CamlExt === Caml_builtin_exceptions.not_found) {
+    if (exn.CamlExt.CamlId === Caml_builtin_exceptions.not_found.CamlId) {
       return ;
     }
     throw exn;
@@ -6530,7 +6530,7 @@ function get_text(pos) {
   }
   catch (raw_exn){
     var exn = Caml_js_exceptions.internalToOCamlException(raw_exn);
-    if (exn.CamlExt === Caml_builtin_exceptions.not_found) {
+    if (exn.CamlExt.CamlId === Caml_builtin_exceptions.not_found.CamlId) {
       return /* [] */0;
     }
     throw exn;
@@ -6552,7 +6552,7 @@ function get_pre_extra_text(pos) {
   }
   catch (raw_exn){
     var exn = Caml_js_exceptions.internalToOCamlException(raw_exn);
-    if (exn.CamlExt === Caml_builtin_exceptions.not_found) {
+    if (exn.CamlExt.CamlId === Caml_builtin_exceptions.not_found.CamlId) {
       return /* [] */0;
     }
     throw exn;
@@ -6574,7 +6574,7 @@ function get_post_extra_text(pos) {
   }
   catch (raw_exn){
     var exn = Caml_js_exceptions.internalToOCamlException(raw_exn);
-    if (exn.CamlExt === Caml_builtin_exceptions.not_found) {
+    if (exn.CamlExt.CamlId === Caml_builtin_exceptions.not_found.CamlId) {
       return /* [] */0;
     }
     throw exn;
@@ -8791,7 +8791,7 @@ function module_path(s, p) {
         }
         catch (raw_exn){
           var exn = Caml_js_exceptions.internalToOCamlException(raw_exn);
-          if (exn.CamlExt === Caml_builtin_exceptions.not_found) {
+          if (exn.CamlExt.CamlId === Caml_builtin_exceptions.not_found.CamlId) {
             return p;
           }
           throw exn;
@@ -8824,7 +8824,7 @@ function modtype_path(s, p) {
         }
         catch (raw_exn){
           var exn = Caml_js_exceptions.internalToOCamlException(raw_exn);
-          if (exn.CamlExt === Caml_builtin_exceptions.not_found) {
+          if (exn.CamlExt.CamlId === Caml_builtin_exceptions.not_found.CamlId) {
             return p;
           }
           throw exn;
@@ -8849,7 +8849,7 @@ function type_path(s, p) {
         }
         catch (raw_exn){
           var exn = Caml_js_exceptions.internalToOCamlException(raw_exn);
-          if (exn.CamlExt === Caml_builtin_exceptions.not_found) {
+          if (exn.CamlExt.CamlId === Caml_builtin_exceptions.not_found.CamlId) {
             return p;
           }
           throw exn;
@@ -9360,7 +9360,7 @@ function modtype(s, mty) {
               }
               catch (raw_exn){
                 var exn = Caml_js_exceptions.internalToOCamlException(raw_exn);
-                if (exn.CamlExt === Caml_builtin_exceptions.not_found) {
+                if (exn.CamlExt.CamlId === Caml_builtin_exceptions.not_found.CamlId) {
                   return mty;
                 }
                 throw exn;
@@ -9544,7 +9544,7 @@ function already_defined(s, tbl) {
   }
   catch (raw_exn){
     var exn = Caml_js_exceptions.internalToOCamlException(raw_exn);
-    if (exn.CamlExt === Caml_builtin_exceptions.not_found) {
+    if (exn.CamlExt.CamlId === Caml_builtin_exceptions.not_found.CamlId) {
       return false;
     }
     throw exn;
@@ -9917,7 +9917,7 @@ function check_consistency(ps) {
             }
             catch (raw_exn){
               var exn = Caml_js_exceptions.internalToOCamlException(raw_exn);
-              if (exn.CamlExt === Caml_builtin_exceptions.not_found) {
+              if (exn.CamlExt.CamlId === Caml_builtin_exceptions.not_found.CamlId) {
                 return Hashtbl.add(crc_units, name, /* tuple */[
                             crco,
                             source
@@ -9931,7 +9931,7 @@ function check_consistency(ps) {
   }
   catch (raw_exn){
     var exn = Caml_js_exceptions.internalToOCamlException(raw_exn);
-    if (exn.CamlExt === Inconsistency) {
+    if (exn.CamlExt.CamlId === Inconsistency.CamlId) {
       throw {
             CamlExt: $$Error$2,
             _1: /* Inconsistent_import */Block.__(1, [
@@ -10012,7 +10012,7 @@ function find_pers_struct(checkOpt, name) {
   }
   catch (raw_exn){
     var exn = Caml_js_exceptions.internalToOCamlException(raw_exn);
-    if (exn.CamlExt === Caml_builtin_exceptions.not_found) {
+    if (exn.CamlExt.CamlId === Caml_builtin_exceptions.not_found.CamlId) {
       r = undefined;
     } else {
       throw exn;
@@ -10036,7 +10036,7 @@ function find_pers_struct(checkOpt, name) {
     }
     catch (raw_exn$1){
       var exn$1 = Caml_js_exceptions.internalToOCamlException(raw_exn$1);
-      if (exn$1.CamlExt === Caml_builtin_exceptions.not_found) {
+      if (exn$1.CamlExt.CamlId === Caml_builtin_exceptions.not_found.CamlId) {
         Hashtbl.add(persistent_structures, name, undefined);
         throw {
               CamlExt: Caml_builtin_exceptions.not_found
@@ -10061,7 +10061,7 @@ function find_module_descr(path, env) {
         }
         catch (raw_exn){
           var exn = Caml_js_exceptions.internalToOCamlException(raw_exn);
-          if (exn.CamlExt === Caml_builtin_exceptions.not_found) {
+          if (exn.CamlExt.CamlId === Caml_builtin_exceptions.not_found.CamlId) {
             if (id.stamp === 0 && id.name !== current_unit.contents) {
               return find_pers_struct(undefined, id.name).ps_comps;
             }
@@ -10153,7 +10153,7 @@ function find_module(alias, path, env) {
         }
         catch (raw_exn){
           var exn = Caml_js_exceptions.internalToOCamlException(raw_exn);
-          if (exn.CamlExt === Caml_builtin_exceptions.not_found) {
+          if (exn.CamlExt.CamlId === Caml_builtin_exceptions.not_found.CamlId) {
             if (id.stamp === 0 && id.name !== current_unit.contents) {
               var ps = find_pers_struct(undefined, id.name);
               return {
@@ -10200,7 +10200,7 @@ function find_module(alias, path, env) {
             }
             catch (raw_exn$1){
               var exn$1 = Caml_js_exceptions.internalToOCamlException(raw_exn$1);
-              if (exn$1.CamlExt === Caml_builtin_exceptions.not_found) {
+              if (exn$1.CamlExt.CamlId === Caml_builtin_exceptions.not_found.CamlId) {
                 var mty = modtype(add_module(f$1.fcomp_param, p2, f$1.fcomp_subst), f$1.fcomp_res);
                 Hashtbl.add(f$1.fcomp_subst_cache, p2, mty);
                 md_type$1 = mty;
@@ -10278,7 +10278,7 @@ function normalize_path(lax, env, path) {
   }
   catch (raw_exn){
     var exn = Caml_js_exceptions.internalToOCamlException(raw_exn);
-    if (exn.CamlExt === Caml_builtin_exceptions.not_found) {
+    if (exn.CamlExt.CamlId === Caml_builtin_exceptions.not_found.CamlId) {
       var tmp = true;
       if (!lax) {
         var tmp$1;
@@ -10310,7 +10310,7 @@ function normalize_path$1(oloc, env, path) {
   }
   catch (raw_exn){
     var exn = Caml_js_exceptions.internalToOCamlException(raw_exn);
-    if (exn.CamlExt === Caml_builtin_exceptions.not_found) {
+    if (exn.CamlExt.CamlId === Caml_builtin_exceptions.not_found.CamlId) {
       if (oloc !== undefined) {
         throw {
               CamlExt: $$Error$2,
@@ -10421,7 +10421,7 @@ function is_functor_arg(_path, env) {
           }
           catch (raw_exn){
             var exn = Caml_js_exceptions.internalToOCamlException(raw_exn);
-            if (exn.CamlExt === Caml_builtin_exceptions.not_found) {
+            if (exn.CamlExt.CamlId === Caml_builtin_exceptions.not_found.CamlId) {
               return false;
             }
             throw exn;
@@ -10447,7 +10447,7 @@ function lookup_module_descr(lid, env) {
         }
         catch (raw_exn){
           var exn = Caml_js_exceptions.internalToOCamlException(raw_exn);
-          if (exn.CamlExt === Caml_builtin_exceptions.not_found) {
+          if (exn.CamlExt.CamlId === Caml_builtin_exceptions.not_found.CamlId) {
             if (s === current_unit.contents) {
               throw {
                     CamlExt: Caml_builtin_exceptions.not_found
@@ -10534,7 +10534,7 @@ function lookup_module(load, lid, env) {
         }
         catch (raw_exn){
           var exn = Caml_js_exceptions.internalToOCamlException(raw_exn);
-          if (exn.CamlExt === Caml_builtin_exceptions.not_found) {
+          if (exn.CamlExt.CamlId === Caml_builtin_exceptions.not_found.CamlId) {
             if (s === current_unit.contents) {
               throw {
                     CamlExt: Caml_builtin_exceptions.not_found
@@ -10546,7 +10546,7 @@ function lookup_module(load, lid, env) {
               }
               catch (raw_exn$1){
                 var exn$1 = Caml_js_exceptions.internalToOCamlException(raw_exn$1);
-                if (exn$1.CamlExt === Caml_builtin_exceptions.not_found) {
+                if (exn$1.CamlExt.CamlId === Caml_builtin_exceptions.not_found.CamlId) {
                   prerr_warning(none, /* No_cmi_file */Block.__(32, [s]));
                 } else {
                   throw exn$1;
@@ -10664,7 +10664,7 @@ function lookup_all_simple(proj1, proj2, shadow, lid, env) {
         }
         catch (raw_exn){
           var exn = Caml_js_exceptions.internalToOCamlException(raw_exn);
-          if (exn.CamlExt === Caml_builtin_exceptions.not_found) {
+          if (exn.CamlExt.CamlId === Caml_builtin_exceptions.not_found.CamlId) {
             comps = /* [] */0;
           } else {
             throw exn;
@@ -10778,7 +10778,7 @@ function mark_value_used(env, name, vd) {
   }
   catch (raw_exn){
     var exn = Caml_js_exceptions.internalToOCamlException(raw_exn);
-    if (exn.CamlExt === Caml_builtin_exceptions.not_found) {
+    if (exn.CamlExt.CamlId === Caml_builtin_exceptions.not_found.CamlId) {
       return ;
     }
     throw exn;
@@ -10797,7 +10797,7 @@ function mark_type_used(env, name, vd) {
   }
   catch (raw_exn){
     var exn = Caml_js_exceptions.internalToOCamlException(raw_exn);
-    if (exn.CamlExt === Caml_builtin_exceptions.not_found) {
+    if (exn.CamlExt.CamlId === Caml_builtin_exceptions.not_found.CamlId) {
       return ;
     }
     throw exn;
@@ -10817,7 +10817,7 @@ function mark_constructor_used(usage, env, name, vd, constr) {
   }
   catch (raw_exn){
     var exn = Caml_js_exceptions.internalToOCamlException(raw_exn);
-    if (exn.CamlExt === Caml_builtin_exceptions.not_found) {
+    if (exn.CamlExt.CamlId === Caml_builtin_exceptions.not_found.CamlId) {
       return ;
     }
     throw exn;
@@ -10838,7 +10838,7 @@ function mark_extension_used(usage, env, ext, name) {
   }
   catch (raw_exn){
     var exn = Caml_js_exceptions.internalToOCamlException(raw_exn);
-    if (exn.CamlExt === Caml_builtin_exceptions.not_found) {
+    if (exn.CamlExt.CamlId === Caml_builtin_exceptions.not_found.CamlId) {
       return ;
     }
     throw exn;
@@ -10860,7 +10860,7 @@ function set_type_used_callback(name, td, callback) {
   }
   catch (raw_exn){
     var exn = Caml_js_exceptions.internalToOCamlException(raw_exn);
-    if (exn.CamlExt === Caml_builtin_exceptions.not_found) {
+    if (exn.CamlExt.CamlId === Caml_builtin_exceptions.not_found.CamlId) {
       throw {
             CamlExt: Caml_builtin_exceptions.assert_failure,
             _1: /* tuple */[
@@ -10900,7 +10900,7 @@ function mark_type_path(env, path) {
   }
   catch (raw_exn){
     var exn = Caml_js_exceptions.internalToOCamlException(raw_exn);
-    if (exn.CamlExt === Caml_builtin_exceptions.not_found) {
+    if (exn.CamlExt.CamlId === Caml_builtin_exceptions.not_found.CamlId) {
       return ;
     }
     throw exn;
@@ -10975,7 +10975,7 @@ function lookup_all_constructors$1(lid, env) {
   }
   catch (raw_exn){
     var exn = Caml_js_exceptions.internalToOCamlException(raw_exn);
-    if (exn.CamlExt === Caml_builtin_exceptions.not_found) {
+    if (exn.CamlExt.CamlId === Caml_builtin_exceptions.not_found.CamlId) {
       if (is_lident(lid)) {
         return /* [] */0;
       }
@@ -11006,7 +11006,7 @@ function mark_constructor(usage, env, name, desc) {
         }
         catch (raw_exn){
           var exn = Caml_js_exceptions.internalToOCamlException(raw_exn);
-          if (exn.CamlExt === Caml_builtin_exceptions.not_found) {
+          if (exn.CamlExt.CamlId === Caml_builtin_exceptions.not_found.CamlId) {
             return ;
           }
           throw exn;
@@ -11020,7 +11020,7 @@ function mark_constructor(usage, env, name, desc) {
   }
   catch (raw_exn$1){
     var exn$1 = Caml_js_exceptions.internalToOCamlException(raw_exn$1);
-    if (exn$1.CamlExt === Caml_builtin_exceptions.not_found) {
+    if (exn$1.CamlExt.CamlId === Caml_builtin_exceptions.not_found.CamlId) {
       throw {
             CamlExt: Caml_builtin_exceptions.assert_failure,
             _1: /* tuple */[
@@ -11053,7 +11053,7 @@ function lookup_all_labels$1(lid, env) {
   }
   catch (raw_exn){
     var exn = Caml_js_exceptions.internalToOCamlException(raw_exn);
-    if (exn.CamlExt === Caml_builtin_exceptions.not_found) {
+    if (exn.CamlExt.CamlId === Caml_builtin_exceptions.not_found.CamlId) {
       if (is_lident(lid)) {
         return /* [] */0;
       }
@@ -11144,7 +11144,7 @@ function iter_types(f) {
             }
             catch (raw_exn){
               var exn = Caml_js_exceptions.internalToOCamlException(raw_exn);
-              if (exn.CamlExt === Caml_builtin_exceptions.not_found) {
+              if (exn.CamlExt.CamlId === Caml_builtin_exceptions.not_found.CamlId) {
                 safe = false;
               } else {
                 throw exn;
@@ -11259,7 +11259,7 @@ function find_all_comps(proj, s, param) {
   }
   catch (raw_exn){
     var exn = Caml_js_exceptions.internalToOCamlException(raw_exn);
-    if (exn.CamlExt === Caml_builtin_exceptions.not_found) {
+    if (exn.CamlExt.CamlId === Caml_builtin_exceptions.not_found.CamlId) {
       return /* [] */0;
     }
     throw exn;
@@ -11383,7 +11383,7 @@ function add_gadt_instances(env, lv, tl) {
   }
   catch (raw_exn){
     var exn = Caml_js_exceptions.internalToOCamlException(raw_exn);
-    if (exn.CamlExt === Caml_builtin_exceptions.not_found) {
+    if (exn.CamlExt.CamlId === Caml_builtin_exceptions.not_found.CamlId) {
       throw {
             CamlExt: Caml_builtin_exceptions.assert_failure,
             _1: /* tuple */[
@@ -11405,7 +11405,7 @@ function add_gadt_instance_chain(env, lv, t) {
   }
   catch (raw_exn){
     var exn = Caml_js_exceptions.internalToOCamlException(raw_exn);
-    if (exn.CamlExt === Caml_builtin_exceptions.not_found) {
+    if (exn.CamlExt.CamlId === Caml_builtin_exceptions.not_found.CamlId) {
       throw {
             CamlExt: Caml_builtin_exceptions.assert_failure,
             _1: /* tuple */[
@@ -11441,7 +11441,7 @@ function scrape_alias(env, path, mty) {
         }
         catch (raw_exn){
           var exn = Caml_js_exceptions.internalToOCamlException(raw_exn);
-          if (exn.CamlExt === Caml_builtin_exceptions.not_found) {
+          if (exn.CamlExt.CamlId === Caml_builtin_exceptions.not_found.CamlId) {
             return mty;
           }
           throw exn;
@@ -11456,7 +11456,7 @@ function scrape_alias(env, path, mty) {
         }
         catch (raw_exn$1){
           var exn$1 = Caml_js_exceptions.internalToOCamlException(raw_exn$1);
-          if (exn$1.CamlExt === Caml_builtin_exceptions.not_found) {
+          if (exn$1.CamlExt.CamlId === Caml_builtin_exceptions.not_found.CamlId) {
             return mty;
           }
           throw exn$1;
@@ -11930,7 +11930,7 @@ function prefix_idents_and_subst$1(root, sub, sg) {
   }
   catch (raw_exn){
     var exn = Caml_js_exceptions.internalToOCamlException(raw_exn);
-    if (exn.CamlExt === Caml_builtin_exceptions.not_found) {
+    if (exn.CamlExt.CamlId === Caml_builtin_exceptions.not_found.CamlId) {
       var sgs$1 = {
         contents: /* [] */0
       };
@@ -11945,7 +11945,7 @@ function prefix_idents_and_subst$1(root, sub, sg) {
   }
   catch (raw_exn$1){
     var exn$1 = Caml_js_exceptions.internalToOCamlException(raw_exn$1);
-    if (exn$1.CamlExt === Caml_builtin_exceptions.not_found) {
+    if (exn$1.CamlExt.CamlId === Caml_builtin_exceptions.not_found.CamlId) {
       var r = prefix_idents_and_subst(root, sub, sg);
       sgs.contents = /* :: */[
         /* tuple */[
@@ -11967,7 +11967,7 @@ function add_to_tbl(id, decl, tbl) {
   }
   catch (raw_exn){
     var exn = Caml_js_exceptions.internalToOCamlException(raw_exn);
-    if (exn.CamlExt === Caml_builtin_exceptions.not_found) {
+    if (exn.CamlExt.CamlId === Caml_builtin_exceptions.not_found.CamlId) {
       decls = /* [] */0;
     } else {
       throw exn;
@@ -12539,7 +12539,7 @@ function components_of_functor_appl(f, p1, p2) {
   }
   catch (raw_exn){
     var exn = Caml_js_exceptions.internalToOCamlException(raw_exn);
-    if (exn.CamlExt === Caml_builtin_exceptions.not_found) {
+    if (exn.CamlExt.CamlId === Caml_builtin_exceptions.not_found.CamlId) {
       var p = /* Papply */Block.__(2, [
           p1,
           p2
@@ -13429,7 +13429,7 @@ function report_error$1(ppf, param) {
 }
 
 register_error_of_exn((function (err) {
-        if (err.CamlExt !== $$Error$2) {
+        if (err.CamlExt.CamlId !== $$Error$2.CamlId) {
           return ;
         }
         var err$1 = err._1;
@@ -13753,7 +13753,7 @@ function prepare_error(loc) {
 }
 
 register_error_of_exn((function (err) {
-        if (err.CamlExt === $$Error$3) {
+        if (err.CamlExt.CamlId === $$Error$3.CamlId) {
           return prepare_error(err._1);
         }
         
@@ -19956,7 +19956,7 @@ try {
 }
 catch (raw_exn$1){
   var exn$2 = Caml_js_exceptions.internalToOCamlException(raw_exn$1);
-  if (exn$2.CamlExt === Caml_builtin_exceptions.not_found) {
+  if (exn$2.CamlExt.CamlId === Caml_builtin_exceptions.not_found.CamlId) {
     tmp = "";
   } else {
     throw exn$2;
@@ -20048,7 +20048,7 @@ function query(loc, str) {
   }
   catch (raw_exn){
     var exn = Caml_js_exceptions.internalToOCamlException(raw_exn);
-    if (exn.CamlExt === Caml_builtin_exceptions.not_found) {
+    if (exn.CamlExt.CamlId === Caml_builtin_exceptions.not_found.CamlId) {
       var exit = 0;
       var v$1;
       try {
@@ -20057,7 +20057,7 @@ function query(loc, str) {
       }
       catch (raw_exn$1){
         var exn$1 = Caml_js_exceptions.internalToOCamlException(raw_exn$1);
-        if (exn$1.CamlExt === Caml_builtin_exceptions.not_found) {
+        if (exn$1.CamlExt.CamlId === Caml_builtin_exceptions.not_found.CamlId) {
           return /* Dir_bool */Block.__(0, [false]);
         }
         throw exn$1;
@@ -21352,7 +21352,7 @@ function report_error$2(ppf, c) {
 }
 
 register_error_of_exn((function (param) {
-        if (param.CamlExt === $$Error$4) {
+        if (param.CamlExt.CamlId === $$Error$4.CamlId) {
           return error_of_printer(param._2, report_error$2, param._1);
         }
         
@@ -21417,7 +21417,7 @@ function token(lexbuf) {
           }
           catch (raw_exn){
             var exn = Caml_js_exceptions.internalToOCamlException(raw_exn);
-            if (exn.CamlExt === Caml_builtin_exceptions.not_found) {
+            if (exn.CamlExt.CamlId === Caml_builtin_exceptions.not_found.CamlId) {
               return /* LIDENT */Block.__(11, [s]);
             }
             throw exn;
@@ -21436,7 +21436,7 @@ function token(lexbuf) {
           }
           catch (raw_exn$1){
             var exn$1 = Caml_js_exceptions.internalToOCamlException(raw_exn$1);
-            if (exn$1.CamlExt === Caml_builtin_exceptions.failure) {
+            if (exn$1.CamlExt.CamlId === Caml_builtin_exceptions.failure.CamlId) {
               throw {
                     CamlExt: $$Error$4,
                     _1: /* Literal_overflow */Block.__(5, ["int"]),
@@ -21453,7 +21453,7 @@ function token(lexbuf) {
           }
           catch (raw_exn$2){
             var exn$2 = Caml_js_exceptions.internalToOCamlException(raw_exn$2);
-            if (exn$2.CamlExt === Caml_builtin_exceptions.failure) {
+            if (exn$2.CamlExt.CamlId === Caml_builtin_exceptions.failure.CamlId) {
               throw {
                     CamlExt: $$Error$4,
                     _1: /* Literal_overflow */Block.__(5, ["int32"]),
@@ -21468,7 +21468,7 @@ function token(lexbuf) {
           }
           catch (raw_exn$3){
             var exn$3 = Caml_js_exceptions.internalToOCamlException(raw_exn$3);
-            if (exn$3.CamlExt === Caml_builtin_exceptions.failure) {
+            if (exn$3.CamlExt.CamlId === Caml_builtin_exceptions.failure.CamlId) {
               throw {
                     CamlExt: $$Error$4,
                     _1: /* Literal_overflow */Block.__(5, ["int64"]),
@@ -21483,7 +21483,7 @@ function token(lexbuf) {
           }
           catch (raw_exn$4){
             var exn$4 = Caml_js_exceptions.internalToOCamlException(raw_exn$4);
-            if (exn$4.CamlExt === Caml_builtin_exceptions.failure) {
+            if (exn$4.CamlExt.CamlId === Caml_builtin_exceptions.failure.CamlId) {
               throw {
                     CamlExt: $$Error$4,
                     _1: /* Literal_overflow */Block.__(5, ["nativeint"]),
@@ -21834,7 +21834,7 @@ function __ocaml_lex_comment_rec(lexbuf, ___ocaml_lex_state) {
           }
           catch (raw_exn){
             var exn = Caml_js_exceptions.internalToOCamlException(raw_exn);
-            if (exn.CamlExt === $$Error$4) {
+            if (exn.CamlExt.CamlId === $$Error$4.CamlId) {
               var match$1 = exn._1;
               if (typeof match$1 === "number") {
                 if (match$1 !== 0) {
@@ -21881,7 +21881,7 @@ function __ocaml_lex_comment_rec(lexbuf, ___ocaml_lex_state) {
           }
           catch (raw_exn$1){
             var exn$1 = Caml_js_exceptions.internalToOCamlException(raw_exn$1);
-            if (exn$1.CamlExt === $$Error$4) {
+            if (exn$1.CamlExt.CamlId === $$Error$4.CamlId) {
               var match$3 = exn$1._1;
               if (typeof match$3 === "number") {
                 if (match$3 !== 0) {
@@ -22331,7 +22331,7 @@ function skip_phrase(lexbuf) {
     }
     catch (raw_exn){
       var exn = Caml_js_exceptions.internalToOCamlException(raw_exn);
-      if (exn.CamlExt === $$Error$4) {
+      if (exn.CamlExt.CamlId === $$Error$4.CamlId) {
         var tmp = exn._1;
         if (typeof tmp === "number") {
           if (tmp === /* Unterminated_string */0) {
@@ -22374,7 +22374,7 @@ function wrap$1(parsing_fun, lexbuf) {
   }
   catch (raw_err){
     var err = Caml_js_exceptions.internalToOCamlException(raw_err);
-    if (err.CamlExt === $$Error$4) {
+    if (err.CamlExt.CamlId === $$Error$4.CamlId) {
       var tmp = err._1;
       if (typeof tmp === "number") {
         throw err;
@@ -22388,14 +22388,14 @@ function wrap$1(parsing_fun, lexbuf) {
       }
       throw err;
     } else {
-      if (err.CamlExt === $$Error$3) {
+      if (err.CamlExt.CamlId === $$Error$3.CamlId) {
         if (input_name.contents === "//toplevel//") {
           maybe_skip_phrase(lexbuf);
           throw err;
         }
         throw err;
       }
-      if (err.CamlExt !== Parsing.Parse_error && err.CamlExt !== Escape_error) {
+      if (err.CamlExt.CamlId !== Parsing.Parse_error.CamlId && err.CamlExt.CamlId !== Escape_error.CamlId) {
         throw err;
       }
       
@@ -22572,7 +22572,7 @@ function alpha_pat(env, p) {
           }
           catch (raw_exn){
             var exn = Caml_js_exceptions.internalToOCamlException(raw_exn);
-            if (exn.CamlExt === Caml_builtin_exceptions.not_found) {
+            if (exn.CamlExt.CamlId === Caml_builtin_exceptions.not_found.CamlId) {
               tmp = /* Tpat_any */0;
             } else {
               throw exn;
@@ -22604,7 +22604,7 @@ function alpha_pat(env, p) {
           }
           catch (raw_exn$1){
             var exn$1 = Caml_js_exceptions.internalToOCamlException(raw_exn$1);
-            if (exn$1.CamlExt === Caml_builtin_exceptions.not_found) {
+            if (exn$1.CamlExt.CamlId === Caml_builtin_exceptions.not_found.CamlId) {
               return new_p;
             }
             throw exn$1;
@@ -23990,7 +23990,7 @@ try {
 }
 catch (raw_exn$2){
   var exn$3 = Caml_js_exceptions.internalToOCamlException(raw_exn$2);
-  if (exn$3.CamlExt === Caml_builtin_exceptions.not_found) {
+  if (exn$3.CamlExt.CamlId === Caml_builtin_exceptions.not_found.CamlId) {
     need_to_clear_env = true;
   } else {
     throw exn$3;
@@ -24323,7 +24323,7 @@ var Unify = Caml_exceptions.create("Ocaml_typedtree_test.Ctype.Unify");
 var Tags = Caml_exceptions.create("Ocaml_typedtree_test.Ctype.Tags");
 
 register_error_of_exn((function (param) {
-        if (param.CamlExt === Tags) {
+        if (param.CamlExt.CamlId === Tags.CamlId) {
           return Curry._2(errorf(in_file(input_name.contents), undefined, undefined, /* Format */[
                           /* String_literal */Block.__(11, [
                               "In this program,",
@@ -24635,7 +24635,7 @@ function in_pervasives(p) {
   }
   catch (raw_exn){
     var exn = Caml_js_exceptions.internalToOCamlException(raw_exn);
-    if (exn.CamlExt === Caml_builtin_exceptions.not_found) {
+    if (exn.CamlExt.CamlId === Caml_builtin_exceptions.not_found.CamlId) {
       return false;
     }
     throw exn;
@@ -25242,7 +25242,7 @@ function closed_schema(ty) {
   }
   catch (raw_exn){
     var exn = Caml_js_exceptions.internalToOCamlException(raw_exn);
-    if (exn.CamlExt === Non_closed0) {
+    if (exn.CamlExt.CamlId === Non_closed0.CamlId) {
       unmark_type(ty);
       return false;
     }
@@ -25307,7 +25307,7 @@ function free_vars_rec(_real, _ty) {
           }
           catch (raw_exn){
             var exn = Caml_js_exceptions.internalToOCamlException(raw_exn);
-            if (exn.CamlExt !== Caml_builtin_exceptions.not_found) {
+            if (exn.CamlExt.CamlId !== Caml_builtin_exceptions.not_found.CamlId) {
               throw exn;
             }
             
@@ -25383,7 +25383,7 @@ function closed_parameterized_type(params, ty) {
   }
   catch (raw_exn){
     var exn = Caml_js_exceptions.internalToOCamlException(raw_exn);
-    if (exn.CamlExt === Non_closed) {
+    if (exn.CamlExt.CamlId === Non_closed.CamlId) {
       ok = false;
     } else {
       throw exn;
@@ -25422,7 +25422,7 @@ function closed_type_decl(decl) {
   }
   catch (raw_exn){
     var exn = Caml_js_exceptions.internalToOCamlException(raw_exn);
-    if (exn.CamlExt === Non_closed) {
+    if (exn.CamlExt.CamlId === Non_closed.CamlId) {
       it_type_declaration(unmark_iterators, decl);
       return exn._1;
     }
@@ -25444,7 +25444,7 @@ function closed_extension_constructor(ext) {
   }
   catch (raw_exn){
     var exn = Caml_js_exceptions.internalToOCamlException(raw_exn);
-    if (exn.CamlExt === Non_closed) {
+    if (exn.CamlExt.CamlId === Non_closed.CamlId) {
       unmark_extension_constructor(ext);
       return exn._1;
     }
@@ -25478,7 +25478,7 @@ function closed_class(params, sign) {
             }
             catch (raw_exn){
               var exn = Caml_js_exceptions.internalToOCamlException(raw_exn);
-              if (exn.CamlExt === Non_closed) {
+              if (exn.CamlExt.CamlId === Non_closed.CamlId) {
                 throw {
                       CamlExt: CCFailure,
                       _1: /* CC_Method */Block.__(0, [
@@ -25499,7 +25499,7 @@ function closed_class(params, sign) {
   }
   catch (raw_reason){
     var reason = Caml_js_exceptions.internalToOCamlException(raw_reason);
-    if (reason.CamlExt === CCFailure) {
+    if (reason.CamlExt.CamlId === CCFailure.CamlId) {
       iter_type_expr(mark_type, repr(sign.csig_self));
       List.iter(unmark_type, params);
       unmark_class_signature(sign);
@@ -25630,7 +25630,7 @@ function get_level(env, p) {
   }
   catch (raw_exn){
     var exn = Caml_js_exceptions.internalToOCamlException(raw_exn);
-    if (exn.CamlExt === Caml_builtin_exceptions.not_found) {
+    if (exn.CamlExt.CamlId === Caml_builtin_exceptions.not_found.CamlId) {
       return binding_time(p);
     }
     throw exn;
@@ -25646,7 +25646,7 @@ function normalize_package_path(env, _p) {
     }
     catch (raw_exn){
       var exn = Caml_js_exceptions.internalToOCamlException(raw_exn);
-      if (exn.CamlExt === Caml_builtin_exceptions.not_found) {
+      if (exn.CamlExt.CamlId === Caml_builtin_exceptions.not_found.CamlId) {
         t = undefined;
       } else {
         throw exn;
@@ -25695,7 +25695,7 @@ function update_level(env, level, _ty) {
               }
               catch (raw_exn){
                 var exn = Caml_js_exceptions.internalToOCamlException(raw_exn);
-                if (exn.CamlExt === Cannot_expand) {
+                if (exn.CamlExt.CamlId === Cannot_expand.CamlId) {
                   if (level < get_level(env, p)) {
                     throw {
                           CamlExt: Unify,
@@ -25835,7 +25835,7 @@ function generalize_expansive(env, var_level, _ty) {
           }
           catch (raw_exn){
             var exn = Caml_js_exceptions.internalToOCamlException(raw_exn);
-            if (exn.CamlExt === Caml_builtin_exceptions.not_found) {
+            if (exn.CamlExt.CamlId === Caml_builtin_exceptions.not_found.CamlId) {
               variance = List.map((function (param) {
                       return Types_Variance.may_inv;
                     }), tyl);
@@ -25873,7 +25873,7 @@ function generalize_expansive$1(env, ty) {
   }
   catch (raw_tr){
     var tr = Caml_js_exceptions.internalToOCamlException(raw_tr);
-    if (tr.CamlExt === Unify) {
+    if (tr.CamlExt.CamlId === Unify.CamlId) {
       var tr$1 = tr._1;
       if (tr$1) {
         if (tr$1[1]) {
@@ -25988,7 +25988,7 @@ function inv_type(hash, pty, ty) {
   }
   catch (raw_exn){
     var exn = Caml_js_exceptions.internalToOCamlException(raw_exn);
-    if (exn.CamlExt === Caml_builtin_exceptions.not_found) {
+    if (exn.CamlExt.CamlId === Caml_builtin_exceptions.not_found.CamlId) {
       var inv$1 = {
         inv_type: ty$1,
         inv_parents: pty
@@ -26028,7 +26028,7 @@ function compute_univars(ty) {
     }
     catch (raw_exn){
       var exn = Caml_js_exceptions.internalToOCamlException(raw_exn);
-      if (exn.CamlExt === Caml_builtin_exceptions.not_found) {
+      if (exn.CamlExt.CamlId === Caml_builtin_exceptions.not_found.CamlId) {
         Curry._3(TypeHash.add, node_univars, inv.inv_type, {
               contents: singleton$1(univ)
             });
@@ -26051,7 +26051,7 @@ function compute_univars(ty) {
       }
       catch (raw_exn){
         var exn = Caml_js_exceptions.internalToOCamlException(raw_exn);
-        if (exn.CamlExt === Caml_builtin_exceptions.not_found) {
+        if (exn.CamlExt.CamlId === Caml_builtin_exceptions.not_found.CamlId) {
           return /* Empty */0;
         }
         throw exn;
@@ -26392,7 +26392,7 @@ function get_new_abstract_name(s) {
   }
   catch (raw_exn){
     var exn = Caml_js_exceptions.internalToOCamlException(raw_exn);
-    if (exn.CamlExt === Caml_builtin_exceptions.not_found) {
+    if (exn.CamlExt.CamlId === Caml_builtin_exceptions.not_found.CamlId) {
       index = 0;
     } else {
       throw exn;
@@ -26648,7 +26648,7 @@ function copy_sep(fixed, free, bound, visited, ty) {
   }
   catch (raw_exn){
     var exn = Caml_js_exceptions.internalToOCamlException(raw_exn);
-    if (exn.CamlExt === Caml_builtin_exceptions.not_found) {
+    if (exn.CamlExt.CamlId === Caml_builtin_exceptions.not_found.CamlId) {
       var t$1 = newvar(undefined, undefined);
       var match$1 = ty$1.desc;
       var visited$1;
@@ -26867,7 +26867,7 @@ function subst(env, level, priv, abbrev, ty, params, args, body) {
   }
   catch (raw_exn){
     var exn = Caml_js_exceptions.internalToOCamlException(raw_exn);
-    if (exn.CamlExt === Unify) {
+    if (exn.CamlExt.CamlId === Unify.CamlId) {
       current_level.contents = old_level;
       throw exn;
     }
@@ -26915,7 +26915,7 @@ function expand_abbrev_gen(kind, find_type_expansion, env, ty) {
         }
         catch (raw_exn){
           var exn = Caml_js_exceptions.internalToOCamlException(raw_exn);
-          if (exn.CamlExt !== Unify) {
+          if (exn.CamlExt.CamlId !== Unify.CamlId) {
             throw exn;
           }
           
@@ -26929,7 +26929,7 @@ function expand_abbrev_gen(kind, find_type_expansion, env, ty) {
     }
     catch (raw_exn$1){
       var exn$1 = Caml_js_exceptions.internalToOCamlException(raw_exn$1);
-      if (exn$1.CamlExt === Caml_builtin_exceptions.not_found) {
+      if (exn$1.CamlExt.CamlId === Caml_builtin_exceptions.not_found.CamlId) {
         throw {
               CamlExt: Cannot_expand
             };
@@ -27005,7 +27005,7 @@ function expand_head_once(env, ty) {
   }
   catch (raw_exn){
     var exn = Caml_js_exceptions.internalToOCamlException(raw_exn);
-    if (exn.CamlExt === Cannot_expand) {
+    if (exn.CamlExt.CamlId === Cannot_expand.CamlId) {
       throw {
             CamlExt: Caml_builtin_exceptions.assert_failure,
             _1: /* tuple */[
@@ -27027,11 +27027,11 @@ function safe_abbrev(env, ty) {
   }
   catch (raw_exn){
     var exn = Caml_js_exceptions.internalToOCamlException(raw_exn);
-    if (exn.CamlExt === Cannot_expand) {
+    if (exn.CamlExt.CamlId === Cannot_expand.CamlId) {
       backtrack(snap);
       return false;
     }
-    if (exn.CamlExt === Unify) {
+    if (exn.CamlExt.CamlId === Unify.CamlId) {
       backtrack(snap);
       return false;
     }
@@ -27062,7 +27062,7 @@ function try_expand_safe(env, ty) {
   }
   catch (raw_exn){
     var exn = Caml_js_exceptions.internalToOCamlException(raw_exn);
-    if (exn.CamlExt === Unify) {
+    if (exn.CamlExt.CamlId === Unify.CamlId) {
       backtrack(snap);
       throw {
             CamlExt: Cannot_expand
@@ -27079,7 +27079,7 @@ function try_expand_head(try_once, env, ty) {
   }
   catch (raw_exn){
     var exn = Caml_js_exceptions.internalToOCamlException(raw_exn);
-    if (exn.CamlExt === Cannot_expand) {
+    if (exn.CamlExt.CamlId === Cannot_expand.CamlId) {
       return ty$prime;
     }
     throw exn;
@@ -27101,7 +27101,7 @@ function expand_head_unif(env, ty) {
   }
   catch (raw_exn){
     var exn = Caml_js_exceptions.internalToOCamlException(raw_exn);
-    if (exn.CamlExt === Cannot_expand) {
+    if (exn.CamlExt.CamlId === Cannot_expand.CamlId) {
       return repr(ty);
     }
     throw exn;
@@ -27114,7 +27114,7 @@ function expand_head(env, ty) {
   }
   catch (raw_exn){
     var exn = Caml_js_exceptions.internalToOCamlException(raw_exn);
-    if (exn.CamlExt === Cannot_expand) {
+    if (exn.CamlExt.CamlId === Cannot_expand.CamlId) {
       return repr(ty);
     }
     throw exn;
@@ -27147,7 +27147,7 @@ function extract_concrete_typedecl(env, ty) {
     }
     catch (raw_exn){
       var exn = Caml_js_exceptions.internalToOCamlException(raw_exn);
-      if (exn.CamlExt === Cannot_expand) {
+      if (exn.CamlExt.CamlId === Cannot_expand.CamlId) {
         throw {
               CamlExt: Caml_builtin_exceptions.not_found
             };
@@ -27193,7 +27193,7 @@ function try_expand_head_opt(env, ty) {
   }
   catch (raw_exn){
     var exn = Caml_js_exceptions.internalToOCamlException(raw_exn);
-    if (exn.CamlExt === Cannot_expand) {
+    if (exn.CamlExt.CamlId === Cannot_expand.CamlId) {
       return ty$prime;
     }
     throw exn;
@@ -27207,11 +27207,11 @@ function expand_head_opt(env, ty) {
   }
   catch (raw_exn){
     var exn = Caml_js_exceptions.internalToOCamlException(raw_exn);
-    if (exn.CamlExt === Cannot_expand) {
+    if (exn.CamlExt.CamlId === Cannot_expand.CamlId) {
       backtrack(snap);
       return repr(ty);
     }
-    if (exn.CamlExt === Unify) {
+    if (exn.CamlExt.CamlId === Unify.CamlId) {
       backtrack(snap);
       return repr(ty);
     }
@@ -27242,7 +27242,7 @@ function enforce_constraints(env, ty) {
     }
     catch (raw_exn){
       var exn = Caml_js_exceptions.internalToOCamlException(raw_exn);
-      if (exn.CamlExt === Caml_builtin_exceptions.not_found) {
+      if (exn.CamlExt.CamlId === Caml_builtin_exceptions.not_found.CamlId) {
         return ;
       }
       throw exn;
@@ -27292,7 +27292,7 @@ function generic_abbrev(env, path) {
   }
   catch (raw_exn){
     var exn = Caml_js_exceptions.internalToOCamlException(raw_exn);
-    if (exn.CamlExt === Caml_builtin_exceptions.not_found) {
+    if (exn.CamlExt.CamlId === Caml_builtin_exceptions.not_found.CamlId) {
       return false;
     }
     throw exn;
@@ -27321,7 +27321,7 @@ function generic_private_abbrev(env, path) {
   }
   catch (raw_exn){
     var exn = Caml_js_exceptions.internalToOCamlException(raw_exn);
-    if (exn.CamlExt === Caml_builtin_exceptions.not_found) {
+    if (exn.CamlExt.CamlId === Caml_builtin_exceptions.not_found.CamlId) {
       return false;
     }
     throw exn;
@@ -27345,7 +27345,7 @@ function is_contractive(env, ty) {
   }
   catch (raw_exn){
     var exn = Caml_js_exceptions.internalToOCamlException(raw_exn);
-    if (exn.CamlExt === Caml_builtin_exceptions.not_found) {
+    if (exn.CamlExt.CamlId === Caml_builtin_exceptions.not_found.CamlId) {
       return false;
     }
     throw exn;
@@ -27381,7 +27381,7 @@ function occur_rec(env, visited, ty0, ty) {
           }
           catch (raw_exn){
             var exn = Caml_js_exceptions.internalToOCamlException(raw_exn);
-            if (exn.CamlExt === Occur) {
+            if (exn.CamlExt.CamlId === Occur.CamlId) {
               try {
                 var ty$prime = try_expand_head$1(try_expand_once, env, ty);
                 if (ty$prime === ty0 || List.memq(ty$prime, visited)) {
@@ -27418,7 +27418,7 @@ function occur_rec(env, visited, ty0, ty) {
               }
               catch (raw_exn$1){
                 var exn$1 = Caml_js_exceptions.internalToOCamlException(raw_exn$1);
-                if (exn$1.CamlExt === Cannot_expand) {
+                if (exn$1.CamlExt.CamlId === Cannot_expand.CamlId) {
                   if (occur_ok) {
                     return ;
                   }
@@ -27471,7 +27471,7 @@ function occur(env, ty0, ty) {
   catch (raw_exn){
     var exn = Caml_js_exceptions.internalToOCamlException(raw_exn);
     merge(type_changed, old);
-    throw exn.CamlExt === Occur ? ({
+    throw exn.CamlExt.CamlId === Occur.CamlId ? ({
               CamlExt: Unify,
               _1: /* [] */0
             }) : exn;
@@ -27485,7 +27485,7 @@ function occur_in(env, ty0, t) {
   }
   catch (raw_exn){
     var exn = Caml_js_exceptions.internalToOCamlException(raw_exn);
-    if (exn.CamlExt === Unify) {
+    if (exn.CamlExt.CamlId === Unify.CamlId) {
       return true;
     }
     throw exn;
@@ -27506,7 +27506,7 @@ function unify_univar(t1, t2, _param) {
         }
         catch (raw_exn){
           var exn = Caml_js_exceptions.internalToOCamlException(raw_exn);
-          if (exn.CamlExt === Caml_builtin_exceptions.not_found) {
+          if (exn.CamlExt.CamlId === Caml_builtin_exceptions.not_found.CamlId) {
             return ;
           }
           throw exn;
@@ -27594,7 +27594,7 @@ function occur_univar(env, ty) {
           }
           catch (raw_exn){
             var exn = Caml_js_exceptions.internalToOCamlException(raw_exn);
-            if (exn.CamlExt === Caml_builtin_exceptions.not_found) {
+            if (exn.CamlExt.CamlId === Caml_builtin_exceptions.not_found.CamlId) {
               visited.contents = add$4(ty$1, bound, visited.contents);
               tmp$1 = true;
             } else {
@@ -27634,7 +27634,7 @@ function occur_univar(env, ty) {
             }
             catch (raw_exn$1){
               var exn$1 = Caml_js_exceptions.internalToOCamlException(raw_exn$1);
-              if (exn$1.CamlExt === Caml_builtin_exceptions.not_found) {
+              if (exn$1.CamlExt.CamlId === Caml_builtin_exceptions.not_found.CamlId) {
                 return List.iter((function(bound){
                           return function (param) {
                             return occur_rec(bound, param);
@@ -27739,7 +27739,7 @@ function univars_escape(env, univar_pairs, vl, ty) {
             }
             catch (raw_exn){
               var exn = Caml_js_exceptions.internalToOCamlException(raw_exn);
-              if (exn.CamlExt === Caml_builtin_exceptions.not_found) {
+              if (exn.CamlExt.CamlId === Caml_builtin_exceptions.not_found.CamlId) {
                 return List.iter(occur, tl);
               }
               throw exn;
@@ -27770,7 +27770,7 @@ function univars_escape(env, univar_pairs, vl, ty) {
   }
   catch (raw_exn){
     var exn = Caml_js_exceptions.internalToOCamlException(raw_exn);
-    if (exn.CamlExt === Occur) {
+    if (exn.CamlExt.CamlId === Occur.CamlId) {
       return true;
     }
     throw exn;
@@ -27918,7 +27918,7 @@ function deep_occur(t0, ty) {
   }
   catch (raw_exn){
     var exn = Caml_js_exceptions.internalToOCamlException(raw_exn);
-    if (exn.CamlExt === Occur) {
+    if (exn.CamlExt.CamlId === Occur.CamlId) {
       unmark_type(ty);
       return true;
     }
@@ -28053,7 +28053,7 @@ function is_newtype(env, p) {
   }
   catch (raw_exn){
     var exn = Caml_js_exceptions.internalToOCamlException(raw_exn);
-    if (exn.CamlExt === Caml_builtin_exceptions.not_found) {
+    if (exn.CamlExt.CamlId === Caml_builtin_exceptions.not_found.CamlId) {
       return false;
     }
     throw exn;
@@ -28086,10 +28086,10 @@ function expands_to_datatype(env, ty) {
   }
   catch (raw_exn){
     var exn = Caml_js_exceptions.internalToOCamlException(raw_exn);
-    if (exn.CamlExt === Caml_builtin_exceptions.not_found) {
+    if (exn.CamlExt.CamlId === Caml_builtin_exceptions.not_found.CamlId) {
       return false;
     }
-    if (exn.CamlExt === Cannot_expand) {
+    if (exn.CamlExt.CamlId === Cannot_expand.CamlId) {
       return false;
     }
     throw exn;
@@ -28173,7 +28173,7 @@ function mcomp(type_pairs, env, _t1, _t2) {
       }
       catch (raw_exn){
         var exn = Caml_js_exceptions.internalToOCamlException(raw_exn);
-        if (exn.CamlExt === Caml_builtin_exceptions.not_found) {
+        if (exn.CamlExt.CamlId === Caml_builtin_exceptions.not_found.CamlId) {
           Curry._3(TypePairs.add, type_pairs, /* tuple */[
                 t1$prime$1,
                 t2$prime$1
@@ -28295,7 +28295,7 @@ function mcomp(type_pairs, env, _t1, _t2) {
                           }
                           catch (raw_exn$1){
                             var exn$1 = Caml_js_exceptions.internalToOCamlException(raw_exn$1);
-                            if (exn$1.CamlExt === Caml_builtin_exceptions.not_found) {
+                            if (exn$1.CamlExt.CamlId === Caml_builtin_exceptions.not_found.CamlId) {
                               inj = List.map((function (param) {
                                       return false;
                                     }), tl1);
@@ -28453,7 +28453,7 @@ function mcomp(type_pairs, env, _t1, _t2) {
                       }
                       catch (raw_exn$2){
                         var exn$2 = Caml_js_exceptions.internalToOCamlException(raw_exn$2);
-                        if (exn$2.CamlExt === Caml_builtin_exceptions.not_found) {
+                        if (exn$2.CamlExt.CamlId === Caml_builtin_exceptions.not_found.CamlId) {
                           return ;
                         }
                         throw exn$2;
@@ -28800,7 +28800,7 @@ function mcomp(type_pairs, env, _t1, _t2) {
             }
             catch (raw_exn$3){
               var exn$3 = Caml_js_exceptions.internalToOCamlException(raw_exn$3);
-              if (exn$3.CamlExt === Caml_builtin_exceptions.not_found) {
+              if (exn$3.CamlExt.CamlId === Caml_builtin_exceptions.not_found.CamlId) {
                 return ;
               }
               throw exn$3;
@@ -28985,7 +28985,7 @@ function find_newtype_level(env, path) {
   }
   catch (raw_exn){
     var exn = Caml_js_exceptions.internalToOCamlException(raw_exn);
-    if (exn.CamlExt === Caml_builtin_exceptions.not_found) {
+    if (exn.CamlExt.CamlId === Caml_builtin_exceptions.not_found.CamlId) {
       throw {
             CamlExt: Caml_builtin_exceptions.assert_failure,
             _1: /* tuple */[
@@ -29166,7 +29166,7 @@ function complete_type_list(allow_absentOpt, env, nl1, lv2, mty2, nl2, tl2) {
         catch (raw_exn){
           var exn = Caml_js_exceptions.internalToOCamlException(raw_exn);
           var exit$1 = 0;
-          if (exn.CamlExt === Caml_builtin_exceptions.not_found) {
+          if (exn.CamlExt.CamlId === Caml_builtin_exceptions.not_found.CamlId) {
             if (allow_absent) {
               _nl1 = nl;
               continue ;
@@ -29176,7 +29176,7 @@ function complete_type_list(allow_absentOpt, env, nl1, lv2, mty2, nl2, tl2) {
             exit$1 = 2;
           }
           if (exit$1 === 2) {
-            if (exn.CamlExt === Pervasives.Exit) {
+            if (exn.CamlExt.CamlId === Pervasives.Exit.CamlId) {
               throw {
                     CamlExt: Caml_builtin_exceptions.not_found
                   };
@@ -29222,7 +29222,7 @@ function unify_eq(env, t1, t2) {
   }
   catch (raw_exn){
     var exn = Caml_js_exceptions.internalToOCamlException(raw_exn);
-    if (exn.CamlExt === Caml_builtin_exceptions.not_found) {
+    if (exn.CamlExt.CamlId === Caml_builtin_exceptions.not_found.CamlId) {
       return false;
     }
     throw exn;
@@ -29293,7 +29293,7 @@ function unify(env, t1, t2) {
                         }
                         catch (raw_exn){
                           var exn = Caml_js_exceptions.internalToOCamlException(raw_exn);
-                          if (exn.CamlExt === Cannot_expand) {
+                          if (exn.CamlExt.CamlId === Cannot_expand.CamlId) {
                             unify2(env, t1$1, t2$1);
                           } else {
                             throw exn;
@@ -29345,7 +29345,7 @@ function unify(env, t1, t2) {
   }
   catch (raw_trace){
     var trace = Caml_js_exceptions.internalToOCamlException(raw_trace);
-    if (trace.CamlExt === Unify) {
+    if (trace.CamlExt.CamlId === Unify.CamlId) {
       reset_trace_gadt_instances(reset_tracing);
       throw {
             CamlExt: Unify,
@@ -29437,7 +29437,7 @@ function unify2(env, t1, t2) {
   }
   catch (raw_trace){
     var trace = Caml_js_exceptions.internalToOCamlException(raw_trace);
-    if (trace.CamlExt === Unify) {
+    if (trace.CamlExt.CamlId === Unify.CamlId) {
       throw {
             CamlExt: Unify,
             _1: List.map((function (param) {
@@ -29586,7 +29586,7 @@ function unify_fields(env, ty1, ty2) {
                   }
                   catch (raw_trace){
                     var trace = Caml_js_exceptions.internalToOCamlException(raw_trace);
-                    if (trace.CamlExt === Unify) {
+                    if (trace.CamlExt.CamlId === Unify.CamlId) {
                       var desc_003 = newty2(current_level.contents, /* Tnil */0);
                       var desc = /* Tfield */Block.__(5, [
                           n,
@@ -29654,7 +29654,7 @@ function unify_row(env, row1, row2) {
             }
             catch (raw_exn){
               var exn = Caml_js_exceptions.internalToOCamlException(raw_exn);
-              if (exn.CamlExt === Caml_builtin_exceptions.not_found) {
+              if (exn.CamlExt.CamlId === Caml_builtin_exceptions.not_found.CamlId) {
                 return ;
               }
               throw exn;
@@ -30045,7 +30045,7 @@ function unify_row(env, row1, row2) {
                   }
                   catch (raw_trace){
                     var trace = Caml_js_exceptions.internalToOCamlException(raw_trace);
-                    if (trace.CamlExt === Unify) {
+                    if (trace.CamlExt.CamlId === Unify.CamlId) {
                       throw {
                             CamlExt: Unify,
                             _1: /* :: */[
@@ -30293,7 +30293,7 @@ function unify3(env, t1, t1$prime, t2, t2$prime) {
                       }
                       catch (raw_exn){
                         var exn = Caml_js_exceptions.internalToOCamlException(raw_exn);
-                        if (exn.CamlExt === Caml_builtin_exceptions.not_found) {
+                        if (exn.CamlExt.CamlId === Caml_builtin_exceptions.not_found.CamlId) {
                           inj = List.map((function (param) {
                                   return false;
                                 }), tl1);
@@ -30314,7 +30314,7 @@ function unify3(env, t1, t1$prime, t2, t2$prime) {
                                               }
                                               catch (raw_exn){
                                                 var exn = Caml_js_exceptions.internalToOCamlException(raw_exn);
-                                                if (exn.CamlExt === Unify) {
+                                                if (exn.CamlExt.CamlId === Unify.CamlId) {
                                                   backtrack(snap);
                                                   reify(env, t1);
                                                   return reify(env, t2);
@@ -30476,7 +30476,7 @@ function unify3(env, t1, t1$prime, t2, t2$prime) {
                       }
                       catch (raw_exn$1){
                         var exn$1 = Caml_js_exceptions.internalToOCamlException(raw_exn$1);
-                        if (exn$1.CamlExt === Unify) {
+                        if (exn$1.CamlExt.CamlId === Unify.CamlId) {
                           backtrack(snap);
                           reify(env, t1$prime);
                           reify(env, t2$prime);
@@ -30573,7 +30573,7 @@ function unify3(env, t1, t1$prime, t2, t2$prime) {
                     }
                     catch (raw_exn$2){
                       var exn$2 = Caml_js_exceptions.internalToOCamlException(raw_exn$2);
-                      if (exn$2.CamlExt === Caml_builtin_exceptions.not_found) {
+                      if (exn$2.CamlExt.CamlId === Caml_builtin_exceptions.not_found.CamlId) {
                         if (umode.contents === /* Expression */0) {
                           throw {
                                 CamlExt: Unify,
@@ -30697,7 +30697,7 @@ function unify3(env, t1, t1$prime, t2, t2$prime) {
     }
     catch (raw_trace){
       var trace = Caml_js_exceptions.internalToOCamlException(raw_trace);
-      if (trace.CamlExt === Unify) {
+      if (trace.CamlExt.CamlId === Unify.CamlId) {
         t1$prime.desc = d1;
         throw {
               CamlExt: Unify,
@@ -30716,13 +30716,13 @@ function unify$1(env, ty1, ty2) {
   }
   catch (raw_trace){
     var trace = Caml_js_exceptions.internalToOCamlException(raw_trace);
-    if (trace.CamlExt === Unify) {
+    if (trace.CamlExt.CamlId === Unify.CamlId) {
       throw {
             CamlExt: Unify,
             _1: expand_trace(env.contents, trace._1)
           };
     }
-    if (trace.CamlExt === Recursive_abbrev) {
+    if (trace.CamlExt.CamlId === Recursive_abbrev.CamlId) {
       throw {
             CamlExt: Unification_recursive_abbrev,
             _1: expand_trace(env.contents, /* :: */[
@@ -30764,7 +30764,7 @@ function unify_var(env, t1, t2) {
   }
   catch (raw_trace){
     var trace = Caml_js_exceptions.internalToOCamlException(raw_trace);
-    if (trace.CamlExt === Unify) {
+    if (trace.CamlExt.CamlId === Unify.CamlId) {
       reset_trace_gadt_instances(reset_tracing);
       var expanded_trace = expand_trace(env, /* :: */[
             /* tuple */[
@@ -30925,7 +30925,7 @@ function filter_self_method(env, lab, priv, meths, ty) {
   }
   catch (raw_exn){
     var exn = Caml_js_exceptions.internalToOCamlException(raw_exn);
-    if (exn.CamlExt === Caml_builtin_exceptions.not_found) {
+    if (exn.CamlExt.CamlId === Caml_builtin_exceptions.not_found.CamlId) {
       var pair_000 = create(lab);
       var pair = /* tuple */[
         pair_000,
@@ -30970,7 +30970,7 @@ function moregen_occur(env, level, ty) {
   }
   catch (raw_exn){
     var exn = Caml_js_exceptions.internalToOCamlException(raw_exn);
-    if (exn.CamlExt === Occur) {
+    if (exn.CamlExt.CamlId === Occur.CamlId) {
       unmark_type(ty);
       throw {
             CamlExt: Unify,
@@ -31046,7 +31046,7 @@ function moregen(inst_nongen, type_pairs, env, t1, t2) {
       }
       catch (raw_exn){
         var exn = Caml_js_exceptions.internalToOCamlException(raw_exn);
-        if (exn.CamlExt === Caml_builtin_exceptions.not_found) {
+        if (exn.CamlExt.CamlId === Caml_builtin_exceptions.not_found.CamlId) {
           Curry._3(TypePairs.add, type_pairs, /* tuple */[
                 t1$prime$1,
                 t2$prime$1
@@ -31504,7 +31504,7 @@ function moregen(inst_nongen, type_pairs, env, t1, t2) {
                   }
                   catch (raw_exn$1){
                     var exn$1 = Caml_js_exceptions.internalToOCamlException(raw_exn$1);
-                    if (exn$1.CamlExt === Caml_builtin_exceptions.not_found) {
+                    if (exn$1.CamlExt.CamlId === Caml_builtin_exceptions.not_found.CamlId) {
                       throw {
                             CamlExt: Unify,
                             _1: /* [] */0
@@ -31529,7 +31529,7 @@ function moregen(inst_nongen, type_pairs, env, t1, t2) {
   }
   catch (raw_trace){
     var trace = Caml_js_exceptions.internalToOCamlException(raw_trace);
-    if (trace.CamlExt === Unify) {
+    if (trace.CamlExt.CamlId === Unify.CamlId) {
       throw {
             CamlExt: Unify,
             _1: /* :: */[
@@ -31581,7 +31581,7 @@ function moregen_fields(inst_nongen, type_pairs, env, ty1, ty2) {
                 }
                 catch (raw_trace){
                   var trace = Caml_js_exceptions.internalToOCamlException(raw_trace);
-                  if (trace.CamlExt === Unify) {
+                  if (trace.CamlExt.CamlId === Unify.CamlId) {
                     throw {
                           CamlExt: Unify,
                           _1: /* :: */[
@@ -31667,7 +31667,7 @@ function moregeneral(env, inst_nongen, pat_sch, subj_sch) {
   }
   catch (raw_exn){
     var exn = Caml_js_exceptions.internalToOCamlException(raw_exn);
-    if (exn.CamlExt === Unify) {
+    if (exn.CamlExt.CamlId === Unify.CamlId) {
       res = false;
     } else {
       throw exn;
@@ -31774,7 +31774,7 @@ function matches(env, ty, ty$prime) {
   }
   catch (raw_exn){
     var exn = Caml_js_exceptions.internalToOCamlException(raw_exn);
-    if (exn.CamlExt === Unify) {
+    if (exn.CamlExt.CamlId === Unify.CamlId) {
       ok = false;
     } else {
       throw exn;
@@ -31845,7 +31845,7 @@ function eqtype(rename, type_pairs, subst, env, t1, t2) {
               }
               catch (raw_exn){
                 var exn = Caml_js_exceptions.internalToOCamlException(raw_exn);
-                if (exn.CamlExt === Caml_builtin_exceptions.not_found) {
+                if (exn.CamlExt.CamlId === Caml_builtin_exceptions.not_found.CamlId) {
                   if (List.exists((function (param) {
                             return param[1] === t2$1;
                           }), subst.contents)) {
@@ -31897,7 +31897,7 @@ function eqtype(rename, type_pairs, subst, env, t1, t2) {
       }
       catch (raw_exn$1){
         var exn$1 = Caml_js_exceptions.internalToOCamlException(raw_exn$1);
-        if (exn$1.CamlExt === Caml_builtin_exceptions.not_found) {
+        if (exn$1.CamlExt.CamlId === Caml_builtin_exceptions.not_found.CamlId) {
           Curry._3(TypePairs.add, type_pairs, /* tuple */[
                 t1$prime$1,
                 t2$prime$1
@@ -31940,7 +31940,7 @@ function eqtype(rename, type_pairs, subst, env, t1, t2) {
                   }
                   catch (raw_exn$2){
                     var exn$2 = Caml_js_exceptions.internalToOCamlException(raw_exn$2);
-                    if (exn$2.CamlExt === Caml_builtin_exceptions.not_found) {
+                    if (exn$2.CamlExt.CamlId === Caml_builtin_exceptions.not_found.CamlId) {
                       if (List.exists((function (param) {
                                 return param[1] === t2$prime$1;
                               }), subst.contents)) {
@@ -32310,7 +32310,7 @@ function eqtype(rename, type_pairs, subst, env, t1, t2) {
                   }
                   catch (raw_exn$3){
                     var exn$3 = Caml_js_exceptions.internalToOCamlException(raw_exn$3);
-                    if (exn$3.CamlExt === Caml_builtin_exceptions.not_found) {
+                    if (exn$3.CamlExt.CamlId === Caml_builtin_exceptions.not_found.CamlId) {
                       throw {
                             CamlExt: Unify,
                             _1: /* [] */0
@@ -32335,7 +32335,7 @@ function eqtype(rename, type_pairs, subst, env, t1, t2) {
   }
   catch (raw_trace){
     var trace = Caml_js_exceptions.internalToOCamlException(raw_trace);
-    if (trace.CamlExt === Unify) {
+    if (trace.CamlExt.CamlId === Unify.CamlId) {
       throw {
             CamlExt: Unify,
             _1: /* :: */[
@@ -32407,7 +32407,7 @@ function eqtype_fields(rename, type_pairs, subst, env, ty1, _ty2) {
                 }
                 catch (raw_trace){
                   var trace = Caml_js_exceptions.internalToOCamlException(raw_trace);
-                  if (trace.CamlExt === Unify) {
+                  if (trace.CamlExt.CamlId === Unify.CamlId) {
                     throw {
                           CamlExt: Unify,
                           _1: /* :: */[
@@ -32479,7 +32479,7 @@ function equal$4(env, rename, tyl1, tyl2) {
   }
   catch (raw_exn){
     var exn = Caml_js_exceptions.internalToOCamlException(raw_exn);
-    if (exn.CamlExt === Unify) {
+    if (exn.CamlExt.CamlId === Unify.CamlId) {
       return false;
     }
     throw exn;
@@ -32518,7 +32518,7 @@ function moregen_clty(trace, type_pairs, env, cty1, cty2) {
                         }
                         catch (raw_trace){
                           var trace = Caml_js_exceptions.internalToOCamlException(raw_trace);
-                          if (trace.CamlExt === Unify) {
+                          if (trace.CamlExt.CamlId === Unify.CamlId) {
                             throw {
                                   CamlExt: Failure,
                                   _1: /* :: */[
@@ -32541,7 +32541,7 @@ function moregen_clty(trace, type_pairs, env, cty1, cty2) {
                               }
                               catch (raw_trace){
                                 var trace = Caml_js_exceptions.internalToOCamlException(raw_trace);
-                                if (trace.CamlExt === Unify) {
+                                if (trace.CamlExt.CamlId === Unify.CamlId) {
                                   throw {
                                         CamlExt: Failure,
                                         _1: /* :: */[
@@ -32582,7 +32582,7 @@ function moregen_clty(trace, type_pairs, env, cty1, cty2) {
                   }
                   catch (raw_trace){
                     var trace$1 = Caml_js_exceptions.internalToOCamlException(raw_trace);
-                    if (trace$1.CamlExt === Unify) {
+                    if (trace$1.CamlExt.CamlId === Unify.CamlId) {
                       throw {
                             CamlExt: Failure,
                             _1: /* :: */[
@@ -32614,7 +32614,7 @@ function moregen_clty(trace, type_pairs, env, cty1, cty2) {
   }
   catch (raw_error){
     var error = Caml_js_exceptions.internalToOCamlException(raw_error);
-    if (error.CamlExt === Failure) {
+    if (error.CamlExt.CamlId === Failure.CamlId) {
       var error$1 = error._1;
       if (trace || error$1 === /* [] */0) {
         throw {
@@ -32689,7 +32689,7 @@ function match_class_types(traceOpt, env, pat_sch, subj_sch) {
           }
           catch (raw_exn){
             var exn = Caml_js_exceptions.internalToOCamlException(raw_exn);
-            if (exn.CamlExt === Unify) {
+            if (exn.CamlExt.CamlId === Unify.CamlId) {
               return /* :: */[
                       /* CM_Public_method */Block.__(12, [param[0]]),
                       err
@@ -32717,7 +32717,7 @@ function match_class_types(traceOpt, env, pat_sch, subj_sch) {
           }
           catch (raw_exn){
             var exn = Caml_js_exceptions.internalToOCamlException(raw_exn);
-            if (exn.CamlExt === Caml_builtin_exceptions.not_found) {
+            if (exn.CamlExt.CamlId === Caml_builtin_exceptions.not_found.CamlId) {
               return /* :: */[
                       /* CM_Missing_value */Block.__(8, [lab]),
                       err
@@ -32766,7 +32766,7 @@ function match_class_types(traceOpt, env, pat_sch, subj_sch) {
     }
     catch (raw_r){
       var r = Caml_js_exceptions.internalToOCamlException(raw_r);
-      if (r.CamlExt === Failure) {
+      if (r.CamlExt.CamlId === Failure.CamlId) {
         res = r._1;
       } else {
         throw r;
@@ -32816,7 +32816,7 @@ function equal_clty(trace, type_pairs, subst, env, cty1, cty2) {
                         }
                         catch (raw_trace){
                           var trace = Caml_js_exceptions.internalToOCamlException(raw_trace);
-                          if (trace.CamlExt === Unify) {
+                          if (trace.CamlExt.CamlId === Unify.CamlId) {
                             throw {
                                   CamlExt: Failure,
                                   _1: /* :: */[
@@ -32839,7 +32839,7 @@ function equal_clty(trace, type_pairs, subst, env, cty1, cty2) {
                               }
                               catch (raw_trace){
                                 var trace = Caml_js_exceptions.internalToOCamlException(raw_trace);
-                                if (trace.CamlExt === Unify) {
+                                if (trace.CamlExt.CamlId === Unify.CamlId) {
                                   throw {
                                         CamlExt: Failure,
                                         _1: /* :: */[
@@ -32876,7 +32876,7 @@ function equal_clty(trace, type_pairs, subst, env, cty1, cty2) {
                   }
                   catch (raw_trace){
                     var trace$1 = Caml_js_exceptions.internalToOCamlException(raw_trace);
-                    if (trace$1.CamlExt === Unify) {
+                    if (trace$1.CamlExt.CamlId === Unify.CamlId) {
                       throw {
                             CamlExt: Failure,
                             _1: /* :: */[
@@ -32919,7 +32919,7 @@ function equal_clty(trace, type_pairs, subst, env, cty1, cty2) {
   }
   catch (raw_error){
     var error = Caml_js_exceptions.internalToOCamlException(raw_error);
-    if (error.CamlExt === Failure) {
+    if (error.CamlExt.CamlId === Failure.CamlId) {
       if (trace) {
         throw {
               CamlExt: Failure,
@@ -33039,7 +33039,7 @@ function match_class_declarations(env, patt_params, patt_type, subj_params, subj
           }
           catch (raw_exn){
             var exn = Caml_js_exceptions.internalToOCamlException(raw_exn);
-            if (exn.CamlExt === Caml_builtin_exceptions.not_found) {
+            if (exn.CamlExt.CamlId === Caml_builtin_exceptions.not_found.CamlId) {
               return /* :: */[
                       /* CM_Missing_value */Block.__(8, [lab]),
                       err
@@ -33095,7 +33095,7 @@ function match_class_declarations(env, patt_params, patt_type, subj_params, subj
             }
             catch (raw_trace){
               var trace = Caml_js_exceptions.internalToOCamlException(raw_trace);
-              if (trace.CamlExt === Unify) {
+              if (trace.CamlExt.CamlId === Unify.CamlId) {
                 throw {
                       CamlExt: Failure,
                       _1: /* :: */[
@@ -33124,7 +33124,7 @@ function match_class_declarations(env, patt_params, patt_type, subj_params, subj
   }
   catch (raw_r){
     var r = Caml_js_exceptions.internalToOCamlException(raw_r);
-    if (r.CamlExt === Failure) {
+    if (r.CamlExt.CamlId === Failure.CamlId) {
       return r._1;
     }
     throw r;
@@ -33285,7 +33285,7 @@ function build_subtype(env, visited, loops, posi, level, t) {
         }
         catch (raw_exn){
           var exn = Caml_js_exceptions.internalToOCamlException(raw_exn);
-          if (exn.CamlExt === Caml_builtin_exceptions.not_found) {
+          if (exn.CamlExt.CamlId === Caml_builtin_exceptions.not_found.CamlId) {
             return /* tuple */[
                     t$1,
                     /* Unchanged */0
@@ -33447,7 +33447,7 @@ function build_subtype(env, visited, loops, posi, level, t) {
                 }
                 catch (raw_exn$1){
                   var exn$1 = Caml_js_exceptions.internalToOCamlException(raw_exn$1);
-                  if (exn$1.CamlExt === Unify) {
+                  if (exn$1.CamlExt.CamlId === Unify.CamlId) {
                     throw {
                           CamlExt: Caml_builtin_exceptions.assert_failure,
                           _1: /* tuple */[
@@ -33474,7 +33474,7 @@ function build_subtype(env, visited, loops, posi, level, t) {
           }
           catch (raw_exn$2){
             var exn$2 = Caml_js_exceptions.internalToOCamlException(raw_exn$2);
-            if (exn$2.CamlExt === Caml_builtin_exceptions.not_found) {
+            if (exn$2.CamlExt.CamlId === Caml_builtin_exceptions.not_found.CamlId) {
               var match$8 = build_subtype(env, visited, loops, posi, level$prime, t$prime$1);
               var c$2 = match$8[1];
               if (c$2 > /* Unchanged */0) {
@@ -33545,7 +33545,7 @@ function build_subtype(env, visited, loops, posi, level, t) {
           }
           catch (raw_exn$3){
             var exn$3 = Caml_js_exceptions.internalToOCamlException(raw_exn$3);
-            if (exn$3.CamlExt === Caml_builtin_exceptions.not_found) {
+            if (exn$3.CamlExt.CamlId === Caml_builtin_exceptions.not_found.CamlId) {
               return /* tuple */[
                       t$1,
                       /* Unchanged */0
@@ -33783,7 +33783,7 @@ function subtype_rec(env, _trace, _t1, _t2, _cstrs) {
     }
     catch (raw_exn){
       var exn = Caml_js_exceptions.internalToOCamlException(raw_exn);
-      if (exn.CamlExt === Caml_builtin_exceptions.not_found) {
+      if (exn.CamlExt.CamlId === Caml_builtin_exceptions.not_found.CamlId) {
         Curry._3(TypePairs.add, subtypes, /* tuple */[
               t1$1,
               t2$1
@@ -34313,7 +34313,7 @@ function subtype_rec(env, _trace, _t1, _t2, _cstrs) {
                         }
                         catch (raw_exn$1){
                           var exn$1 = Caml_js_exceptions.internalToOCamlException(raw_exn$1);
-                          if (exn$1.CamlExt === Pervasives.Exit) {
+                          if (exn$1.CamlExt.CamlId === Pervasives.Exit.CamlId) {
                             return /* :: */[
                                     /* tuple */[
                                       trace,
@@ -34384,7 +34384,7 @@ function subtype_rec(env, _trace, _t1, _t2, _cstrs) {
                             }
                             catch (raw_exn$2){
                               var exn$2 = Caml_js_exceptions.internalToOCamlException(raw_exn$2);
-                              if (exn$2.CamlExt === Unify) {
+                              if (exn$2.CamlExt.CamlId === Unify.CamlId) {
                                 return /* :: */[
                                         /* tuple */[
                                           trace,
@@ -34459,7 +34459,7 @@ function subtype_rec(env, _trace, _t1, _t2, _cstrs) {
                           }
                           catch (raw_exn$3){
                             var exn$3 = Caml_js_exceptions.internalToOCamlException(raw_exn$3);
-                            if (exn$3.CamlExt === Unify) {
+                            if (exn$3.CamlExt.CamlId === Unify.CamlId) {
                               backtrack(snap);
                               throw {
                                     CamlExt: Caml_builtin_exceptions.not_found
@@ -34470,7 +34470,7 @@ function subtype_rec(env, _trace, _t1, _t2, _cstrs) {
                         }
                         catch (raw_exn$4){
                           var exn$4 = Caml_js_exceptions.internalToOCamlException(raw_exn$4);
-                          if (exn$4.CamlExt === Caml_builtin_exceptions.not_found) {
+                          if (exn$4.CamlExt.CamlId === Caml_builtin_exceptions.not_found.CamlId) {
                             return /* :: */[
                                     /* tuple */[
                                       trace,
@@ -34582,7 +34582,7 @@ function subtype_rec(env, _trace, _t1, _t2, _cstrs) {
               }
               catch (raw_exn$5){
                 var exn$5 = Caml_js_exceptions.internalToOCamlException(raw_exn$5);
-                if (exn$5.CamlExt === Caml_builtin_exceptions.not_found) {
+                if (exn$5.CamlExt.CamlId === Caml_builtin_exceptions.not_found.CamlId) {
                   return /* :: */[
                           /* tuple */[
                             trace,
@@ -34648,7 +34648,7 @@ function subtype(env, ty1, ty2) {
                     }
                     catch (raw_trace){
                       var trace = Caml_js_exceptions.internalToOCamlException(raw_trace);
-                      if (trace.CamlExt === Unify) {
+                      if (trace.CamlExt.CamlId === Unify.CamlId) {
                         throw {
                               CamlExt: Subtype,
                               _1: expand_trace(env, List.rev(param[0])),
@@ -34758,10 +34758,10 @@ function cyclic_abbrev(env, id, ty) {
     }
     catch (raw_exn){
       var exn = Caml_js_exceptions.internalToOCamlException(raw_exn);
-      if (exn.CamlExt === Cannot_expand) {
+      if (exn.CamlExt.CamlId === Cannot_expand.CamlId) {
         return false;
       }
-      if (exn.CamlExt === Unify) {
+      if (exn.CamlExt.CamlId === Unify.CamlId) {
         return true;
       }
       throw exn;
@@ -34950,7 +34950,7 @@ function nondep_type_rec(env, id, _ty) {
       }
       catch (raw_exn){
         var exn = Caml_js_exceptions.internalToOCamlException(raw_exn);
-        if (exn.CamlExt === Caml_builtin_exceptions.not_found) {
+        if (exn.CamlExt.CamlId === Caml_builtin_exceptions.not_found.CamlId) {
           var ty$prime = newty2(100000000, /* Tvar */Block.__(0, [undefined]));
           Curry._3(TypeHash.add, nondep_hash, ty, ty$prime);
           var row = ty.desc;
@@ -34968,12 +34968,12 @@ function nondep_type_rec(env, id, _ty) {
                     }
                     catch (raw_exn$1){
                       var exn$1 = Caml_js_exceptions.internalToOCamlException(raw_exn$1);
-                      if (exn$1.CamlExt === Cannot_expand) {
+                      if (exn$1.CamlExt.CamlId === Cannot_expand.CamlId) {
                         throw {
                               CamlExt: Caml_builtin_exceptions.not_found
                             };
                       }
-                      if (exn$1.CamlExt === Unify) {
+                      if (exn$1.CamlExt.CamlId === Unify.CamlId) {
                         throw {
                               CamlExt: Caml_builtin_exceptions.not_found
                             };
@@ -35023,7 +35023,7 @@ function nondep_type_rec(env, id, _ty) {
                   }
                   catch (raw_exn$2){
                     var exn$2 = Caml_js_exceptions.internalToOCamlException(raw_exn$2);
-                    if (exn$2.CamlExt === Caml_builtin_exceptions.not_found) {
+                    if (exn$2.CamlExt.CamlId === Caml_builtin_exceptions.not_found.CamlId) {
                       Curry._3(TypeHash.add, nondep_variants, more, ty$prime);
                       var $$static = static_row(row$1);
                       var more$prime = $$static ? newty2(100000000, /* Tnil */0) : more;
@@ -35092,7 +35092,7 @@ function nondep_type(env, id, ty) {
   }
   catch (raw_exn){
     var exn = Caml_js_exceptions.internalToOCamlException(raw_exn);
-    if (exn.CamlExt === Caml_builtin_exceptions.not_found) {
+    if (exn.CamlExt.CamlId === Caml_builtin_exceptions.not_found.CamlId) {
       Curry._1(TypeHash.clear, nondep_hash);
       Curry._1(TypeHash.clear, nondep_variants);
       throw {
@@ -35163,7 +35163,7 @@ function nondep_type_decl(env, mid, id, is_covariant, decl) {
     }
     catch (raw_exn){
       var exn = Caml_js_exceptions.internalToOCamlException(raw_exn);
-      if (exn.CamlExt === Caml_builtin_exceptions.not_found) {
+      if (exn.CamlExt.CamlId === Caml_builtin_exceptions.not_found.CamlId) {
         if (is_covariant) {
           tk = /* Type_abstract */0;
         } else {
@@ -35180,7 +35180,7 @@ function nondep_type_decl(env, mid, id, is_covariant, decl) {
     }
     catch (raw_exn$1){
       var exn$1 = Caml_js_exceptions.internalToOCamlException(raw_exn$1);
-      if (exn$1.CamlExt === Caml_builtin_exceptions.not_found) {
+      if (exn$1.CamlExt.CamlId === Caml_builtin_exceptions.not_found.CamlId) {
         if (is_covariant) {
           tm = undefined;
         } else {
@@ -35207,7 +35207,7 @@ function nondep_type_decl(env, mid, id, is_covariant, decl) {
   }
   catch (raw_exn$2){
     var exn$2 = Caml_js_exceptions.internalToOCamlException(raw_exn$2);
-    if (exn$2.CamlExt === Caml_builtin_exceptions.not_found) {
+    if (exn$2.CamlExt.CamlId === Caml_builtin_exceptions.not_found.CamlId) {
       Curry._1(TypeHash.clear, nondep_hash);
       Curry._1(TypeHash.clear, nondep_variants);
       throw {
@@ -35275,7 +35275,7 @@ function nondep_extension_constructor(env, mid, ext) {
   }
   catch (raw_exn){
     var exn = Caml_js_exceptions.internalToOCamlException(raw_exn);
-    if (exn.CamlExt === Caml_builtin_exceptions.not_found) {
+    if (exn.CamlExt.CamlId === Caml_builtin_exceptions.not_found.CamlId) {
       Curry._1(TypeHash.clear, nondep_hash);
       Curry._1(TypeHash.clear, nondep_variants);
       throw {
@@ -38351,7 +38351,7 @@ function ident_name(id) {
   }
   catch (raw_exn){
     var exn = Caml_js_exceptions.internalToOCamlException(raw_exn);
-    if (exn.CamlExt === Caml_builtin_exceptions.not_found) {
+    if (exn.CamlExt.CamlId === Caml_builtin_exceptions.not_found.CamlId) {
       return id.name;
     }
     throw exn;
@@ -38365,7 +38365,7 @@ function add_unique(id) {
   }
   catch (raw_exn){
     var exn = Caml_js_exceptions.internalToOCamlException(raw_exn);
-    if (exn.CamlExt === Caml_builtin_exceptions.not_found) {
+    if (exn.CamlExt.CamlId === Caml_builtin_exceptions.not_found.CamlId) {
       unique_names.contents = add(id, unique_toplevel_name(id), unique_names.contents);
       return ;
     }
@@ -39894,7 +39894,7 @@ function normalize_type_path(cacheOpt, env, p) {
   }
   catch (raw_exn){
     var exn = Caml_js_exceptions.internalToOCamlException(raw_exn);
-    if (exn.CamlExt === Caml_builtin_exceptions.not_found) {
+    if (exn.CamlExt.CamlId === Caml_builtin_exceptions.not_found.CamlId) {
       return /* tuple */[
               p,
               /* Id */0
@@ -39975,7 +39975,7 @@ function set_printing_env(env) {
           }
           catch (raw_exn){
             var exn = Caml_js_exceptions.internalToOCamlException(raw_exn);
-            if (exn.CamlExt === Caml_builtin_exceptions.not_found) {
+            if (exn.CamlExt.CamlId === Caml_builtin_exceptions.not_found.CamlId) {
               printing_map.contents = add$8(p1, {
                     contents: /* Paths */Block.__(0, [/* :: */[
                           p,
@@ -40082,7 +40082,7 @@ function best_type_path(p) {
             }
             catch (raw_exn){
               var exn = Caml_js_exceptions.internalToOCamlException(raw_exn);
-              if (exn.CamlExt === Caml_builtin_exceptions.not_found) {
+              if (exn.CamlExt.CamlId === Caml_builtin_exceptions.not_found.CamlId) {
                 tmp$1 = true;
               } else {
                 throw exn;
@@ -40103,7 +40103,7 @@ function best_type_path(p) {
   }
   catch (raw_exn){
     var exn = Caml_js_exceptions.internalToOCamlException(raw_exn);
-    if (exn.CamlExt === Caml_builtin_exceptions.not_found) {
+    if (exn.CamlExt.CamlId === Caml_builtin_exceptions.not_found.CamlId) {
       p$prime$prime = p$prime;
     } else {
       throw exn;
@@ -40186,7 +40186,7 @@ function name_of_type(t) {
   }
   catch (raw_exn){
     var exn = Caml_js_exceptions.internalToOCamlException(raw_exn);
-    if (exn.CamlExt === Caml_builtin_exceptions.not_found) {
+    if (exn.CamlExt.CamlId === Caml_builtin_exceptions.not_found.CamlId) {
       var match = t.desc;
       var name;
       var exit = 0;
@@ -43926,7 +43926,7 @@ function type_manifest(env, ty1, params1, ty2, params2, priv2) {
     }
     catch (raw_exn){
       var exn = Caml_js_exceptions.internalToOCamlException(raw_exn);
-      if (exn.CamlExt === Cannot_expand) {
+      if (exn.CamlExt.CamlId === Cannot_expand.CamlId) {
         return false;
       }
       throw exn;
@@ -44519,7 +44519,7 @@ function scrape(env, mty) {
   }
   catch (raw_exn){
     var exn = Caml_js_exceptions.internalToOCamlException(raw_exn);
-    if (exn.CamlExt === Caml_builtin_exceptions.not_found) {
+    if (exn.CamlExt.CamlId === Caml_builtin_exceptions.not_found.CamlId) {
       return mty;
     }
     throw exn;
@@ -44784,7 +44784,7 @@ function nondep_supertype(env, mid, mty) {
           }
           catch (raw_exn){
             var exn = Caml_js_exceptions.internalToOCamlException(raw_exn);
-            if (exn.CamlExt === Caml_builtin_exceptions.not_found) {
+            if (exn.CamlExt.CamlId === Caml_builtin_exceptions.not_found.CamlId) {
               if (va !== 0) {
                 throw {
                       CamlExt: Caml_builtin_exceptions.not_found
@@ -44868,7 +44868,7 @@ function enrich_typedecl(env, p, decl) {
   }
   catch (raw_exn){
     var exn = Caml_js_exceptions.internalToOCamlException(raw_exn);
-    if (exn.CamlExt === Caml_builtin_exceptions.not_found) {
+    if (exn.CamlExt.CamlId === Caml_builtin_exceptions.not_found.CamlId) {
       return decl;
     }
     throw exn;
@@ -44992,7 +44992,7 @@ function contains_type(env, _path) {
           }
           catch (raw_exn){
             var exn = Caml_js_exceptions.internalToOCamlException(raw_exn);
-            if (exn.CamlExt === Caml_builtin_exceptions.not_found) {
+            if (exn.CamlExt.CamlId === Caml_builtin_exceptions.not_found.CamlId) {
               throw {
                     CamlExt: Pervasives.Exit
                   };
@@ -45055,7 +45055,7 @@ function contains_type$1(env, mty) {
   }
   catch (raw_exn){
     var exn = Caml_js_exceptions.internalToOCamlException(raw_exn);
-    if (exn.CamlExt === Pervasives.Exit) {
+    if (exn.CamlExt.CamlId === Pervasives.Exit.CamlId) {
       return true;
     }
     throw exn;
@@ -45687,7 +45687,7 @@ function rollback_path(subst, _p) {
     }
     catch (raw_exn){
       var exn = Caml_js_exceptions.internalToOCamlException(raw_exn);
-      if (exn.CamlExt === Caml_builtin_exceptions.not_found) {
+      if (exn.CamlExt.CamlId === Caml_builtin_exceptions.not_found.CamlId) {
         switch (p.tag | 0) {
           case /* Pdot */1 :
               var p1 = p[0];
@@ -45724,7 +45724,7 @@ function collect_ids(subst, bindings, p) {
         }
         catch (raw_exn){
           var exn = Caml_js_exceptions.internalToOCamlException(raw_exn);
-          if (exn.CamlExt === Caml_builtin_exceptions.not_found) {
+          if (exn.CamlExt.CamlId === Caml_builtin_exceptions.not_found.CamlId) {
             ids = /* Empty */0;
           } else {
             throw exn;
@@ -45925,7 +45925,7 @@ function value_descriptions(env, cxt, subst, id, vd1, vd2) {
   }
   catch (raw_exn){
     var exn = Caml_js_exceptions.internalToOCamlException(raw_exn);
-    if (exn.CamlExt === Dont_match) {
+    if (exn.CamlExt.CamlId === Dont_match.CamlId) {
       throw {
             CamlExt: $$Error$5,
             _1: /* :: */[
@@ -46051,7 +46051,7 @@ function may_expand_module_path(env, path) {
   }
   catch (raw_exn){
     var exn = Caml_js_exceptions.internalToOCamlException(raw_exn);
-    if (exn.CamlExt === Caml_builtin_exceptions.not_found) {
+    if (exn.CamlExt.CamlId === Caml_builtin_exceptions.not_found.CamlId) {
       return false;
     }
     throw exn;
@@ -46064,7 +46064,7 @@ function expand_module_path(env, cxt, path) {
   }
   catch (raw_exn){
     var exn = Caml_js_exceptions.internalToOCamlException(raw_exn);
-    if (exn.CamlExt === Caml_builtin_exceptions.not_found) {
+    if (exn.CamlExt.CamlId === Caml_builtin_exceptions.not_found.CamlId) {
       throw {
             CamlExt: $$Error$5,
             _1: /* :: */[
@@ -46087,7 +46087,7 @@ function expand_module_alias(env, cxt, path) {
   }
   catch (raw_exn){
     var exn = Caml_js_exceptions.internalToOCamlException(raw_exn);
-    if (exn.CamlExt === Caml_builtin_exceptions.not_found) {
+    if (exn.CamlExt.CamlId === Caml_builtin_exceptions.not_found.CamlId) {
       throw {
             CamlExt: $$Error$5,
             _1: /* :: */[
@@ -46203,7 +46203,7 @@ function modtypes(env, cxt, subst, mty1, mty2) {
   }
   catch (raw_err){
     var err = Caml_js_exceptions.internalToOCamlException(raw_err);
-    if (err.CamlExt === Dont_match$1) {
+    if (err.CamlExt.CamlId === Dont_match$1.CamlId) {
       throw {
             CamlExt: $$Error$5,
             _1: /* :: */[
@@ -46219,7 +46219,7 @@ function modtypes(env, cxt, subst, mty1, mty2) {
             ]
           };
     }
-    if (err.CamlExt === $$Error$5) {
+    if (err.CamlExt.CamlId === $$Error$5.CamlId) {
       if (mty1.tag === /* Mty_alias */3) {
         throw err;
       }
@@ -46374,7 +46374,7 @@ function try_modtypes(env, cxt, subst, _mty1, mty2) {
           }
           catch (raw_exn){
             var exn = Caml_js_exceptions.internalToOCamlException(raw_exn);
-            if (exn.CamlExt === $$Error$2) {
+            if (exn.CamlExt.CamlId === $$Error$2.CamlId) {
               var match = exn._1;
               if (match.tag === /* Missing_module */3) {
                 throw {
@@ -46554,7 +46554,7 @@ function signatures(env, cxt, subst, sig1, sig2) {
         }
         catch (raw_exn){
           var exn = Caml_js_exceptions.internalToOCamlException(raw_exn);
-          if (exn.CamlExt === Caml_builtin_exceptions.not_found) {
+          if (exn.CamlExt.CamlId === Caml_builtin_exceptions.not_found.CamlId) {
             var unpaired$1 = match$1[1] ? /* :: */[
                 /* tuple */[
                   cxt,
@@ -46752,7 +46752,7 @@ function modtype_infos(env, cxt, subst, id, info1, info2) {
   }
   catch (raw_reasons){
     var reasons = Caml_js_exceptions.internalToOCamlException(raw_reasons);
-    if (reasons.CamlExt === $$Error$5) {
+    if (reasons.CamlExt.CamlId === $$Error$5.CamlId) {
       throw {
             CamlExt: $$Error$5,
             _1: /* :: */[
@@ -46799,7 +46799,7 @@ function check_modtype_inclusion$1(env, mty1, path1, mty2) {
   }
   catch (raw_reasons){
     var reasons = Caml_js_exceptions.internalToOCamlException(raw_reasons);
-    if (reasons.CamlExt === $$Error$5) {
+    if (reasons.CamlExt.CamlId === $$Error$5.CamlId) {
       throw {
             CamlExt: Caml_builtin_exceptions.not_found
           };
@@ -46816,7 +46816,7 @@ function compunit(env, impl_name, impl_sig, intf_name, intf_sig) {
   }
   catch (raw_reasons){
     var reasons = Caml_js_exceptions.internalToOCamlException(raw_reasons);
-    if (reasons.CamlExt === $$Error$5) {
+    if (reasons.CamlExt.CamlId === $$Error$5.CamlId) {
       throw {
             CamlExt: $$Error$5,
             _1: /* :: */[
@@ -47832,7 +47832,7 @@ function report_error$4(ppf, errs) {
 }
 
 register_error_of_exn((function (err) {
-        if (err.CamlExt === $$Error$5) {
+        if (err.CamlExt.CamlId === $$Error$5.CamlId) {
           return error_of_printer_file(report_error$4, err._1);
         }
         
@@ -49193,7 +49193,7 @@ function simple_match_args(p1, _p2) {
                         }
                         catch (raw_exn){
                           var exn = Caml_js_exceptions.internalToOCamlException(raw_exn);
-                          if (exn.CamlExt === Caml_builtin_exceptions.not_found) {
+                          if (exn.CamlExt.CamlId === Caml_builtin_exceptions.not_found.CamlId) {
                             return omega;
                           }
                           throw exn;
@@ -49358,7 +49358,7 @@ function discr_pat(q, pss) {
                     }
                     catch (raw_exn){
                       var exn = Caml_js_exceptions.internalToOCamlException(raw_exn);
-                      if (exn.CamlExt === Caml_builtin_exceptions.not_found) {
+                      if (exn.CamlExt.CamlId === Caml_builtin_exceptions.not_found.CamlId) {
                         return /* :: */[
                                 /* tuple */[
                                   param[0],
@@ -50410,7 +50410,7 @@ function build_other(ext, env) {
                 }
                 catch (raw_exn){
                   var exn = Caml_js_exceptions.internalToOCamlException(raw_exn);
-                  if (exn.CamlExt === Caml_builtin_exceptions.not_found) {
+                  if (exn.CamlExt.CamlId === Caml_builtin_exceptions.not_found.CamlId) {
                     _param = param[1];
                     continue ;
                   }
@@ -50970,7 +50970,7 @@ function exhaust(ext, pss, n) {
     }
     catch (raw_exn){
       var exn = Caml_js_exceptions.internalToOCamlException(raw_exn);
-      if (exn.CamlExt === Empty) {
+      if (exn.CamlExt.CamlId === Empty.CamlId) {
         return fatal_error("Parmatch.exhaust");
       }
       throw exn;
@@ -51060,7 +51060,7 @@ function exhaust_gadt(ext, pss, n) {
     }
     catch (raw_exn){
       var exn = Caml_js_exceptions.internalToOCamlException(raw_exn);
-      if (exn.CamlExt === Empty) {
+      if (exn.CamlExt.CamlId === Empty.CamlId) {
         return fatal_error("Parmatch.exhaust");
       }
       throw exn;
@@ -52079,7 +52079,7 @@ function check_partial_all(v, casel) {
   }
   catch (raw_exn){
     var exn = Caml_js_exceptions.internalToOCamlException(raw_exn);
-    if (exn.CamlExt === NoGuard) {
+    if (exn.CamlExt.CamlId === NoGuard.CamlId) {
       return ;
     }
     throw exn;
@@ -52737,7 +52737,7 @@ function warning_attribute(attrs) {
     }
     catch (raw_exn){
       var exn = Caml_js_exceptions.internalToOCamlException(raw_exn);
-      if (exn.CamlExt === Arg.Bad) {
+      if (exn.CamlExt.CamlId === Arg.Bad.CamlId) {
         return prerr_warning(loc, /* Attribute_payload */Block.__(30, [
                       txt,
                       "Ill-formed list of warnings"
@@ -52780,12 +52780,12 @@ function narrow_unbound_lid_error(env, loc, lid, make_error) {
     }
     catch (raw_exn){
       var exn = Caml_js_exceptions.internalToOCamlException(raw_exn);
-      if (exn.CamlExt === Caml_builtin_exceptions.not_found) {
+      if (exn.CamlExt.CamlId === Caml_builtin_exceptions.not_found.CamlId) {
         return narrow_unbound_lid_error(env, loc, mlid, (function (lid) {
                       return /* Unbound_module */Block.__(20, [lid]);
                     }));
       }
-      if (exn.CamlExt === Recmodule) {
+      if (exn.CamlExt.CamlId === Recmodule.CamlId) {
         throw {
               CamlExt: $$Error$6,
               _1: loc,
@@ -52857,10 +52857,10 @@ function find_component(lookup, make_error, env, loc, lid) {
   }
   catch (raw_exn){
     var exn = Caml_js_exceptions.internalToOCamlException(raw_exn);
-    if (exn.CamlExt === Caml_builtin_exceptions.not_found) {
+    if (exn.CamlExt.CamlId === Caml_builtin_exceptions.not_found.CamlId) {
       return narrow_unbound_lid_error(env, loc, lid, make_error);
     }
-    if (exn.CamlExt === Recmodule) {
+    if (exn.CamlExt.CamlId === Recmodule.CamlId) {
       throw {
             CamlExt: $$Error$6,
             _1: loc,
@@ -53134,7 +53134,7 @@ function transl_type_param(env, styp) {
   }
   catch (raw_exn){
     var exn = Caml_js_exceptions.internalToOCamlException(raw_exn);
-    if (exn.CamlExt === Caml_builtin_exceptions.not_found) {
+    if (exn.CamlExt.CamlId === Caml_builtin_exceptions.not_found.CamlId) {
       var v = new_global_var(validate_name(name$1), undefined);
       type_variables.contents = add$5(name$1, v, type_variables.contents);
       ty$1 = v;
@@ -53224,13 +53224,13 @@ function transl_type(env, policy, styp) {
         }
         catch (raw_exn){
           var exn = Caml_js_exceptions.internalToOCamlException(raw_exn);
-          if (exn.CamlExt === Caml_builtin_exceptions.not_found) {
+          if (exn.CamlExt.CamlId === Caml_builtin_exceptions.not_found.CamlId) {
             try {
               ty$1 = instance(undefined, env, find$2(name$1, used_variables.contents)[0]);
             }
             catch (raw_exn$1){
               var exn$1 = Caml_js_exceptions.internalToOCamlException(raw_exn$1);
-              if (exn$1.CamlExt === Caml_builtin_exceptions.not_found) {
+              if (exn$1.CamlExt.CamlId === Caml_builtin_exceptions.not_found.CamlId) {
                 var v = policy === /* Univars */2 ? new_pre_univar(name$1, undefined) : newvar(validate_name(name$1), undefined);
                 used_variables.contents = add$5(name$1, /* tuple */[
                       v,
@@ -53313,7 +53313,7 @@ function transl_type(env, policy, styp) {
                 }
                 catch (raw_trace){
                   var trace = Caml_js_exceptions.internalToOCamlException(raw_trace);
-                  if (trace.CamlExt === Unify) {
+                  if (trace.CamlExt.CamlId === Unify.CamlId) {
                     throw {
                           CamlExt: $$Error$6,
                           _1: param[0].ptyp_loc,
@@ -53332,7 +53332,7 @@ function transl_type(env, policy, styp) {
         }
         catch (raw_trace){
           var trace = Caml_js_exceptions.internalToOCamlException(raw_trace);
-          if (trace.CamlExt === Unify) {
+          if (trace.CamlExt.CamlId === Unify.CamlId) {
             throw {
                   CamlExt: $$Error$6,
                   _1: styp.ptyp_loc,
@@ -53412,7 +53412,7 @@ function transl_type(env, policy, styp) {
         }
         catch (raw_exn$2){
           var exn$2 = Caml_js_exceptions.internalToOCamlException(raw_exn$2);
-          if (exn$2.CamlExt === Caml_builtin_exceptions.not_found) {
+          if (exn$2.CamlExt.CamlId === Caml_builtin_exceptions.not_found.CamlId) {
             try {
               var s = lid$1.txt;
               var lid2;
@@ -53440,7 +53440,7 @@ function transl_type(env, policy, styp) {
             }
             catch (raw_exn$3){
               var exn$3 = Caml_js_exceptions.internalToOCamlException(raw_exn$3);
-              if (exn$3.CamlExt === Caml_builtin_exceptions.not_found) {
+              if (exn$3.CamlExt.CamlId === Caml_builtin_exceptions.not_found.CamlId) {
                 find_class$1(env, styp.ptyp_loc, lid$1.txt);
                 throw {
                       CamlExt: Caml_builtin_exceptions.assert_failure,
@@ -53481,7 +53481,7 @@ function transl_type(env, policy, styp) {
                 }
                 catch (raw_trace){
                   var trace = Caml_js_exceptions.internalToOCamlException(raw_trace);
-                  if (trace.CamlExt === Unify) {
+                  if (trace.CamlExt.CamlId === Unify.CamlId) {
                     throw {
                           CamlExt: $$Error$6,
                           _1: param[0].ptyp_loc,
@@ -53501,7 +53501,7 @@ function transl_type(env, policy, styp) {
         }
         catch (raw_trace$1){
           var trace$1 = Caml_js_exceptions.internalToOCamlException(raw_trace$1);
-          if (trace$1.CamlExt === Unify) {
+          if (trace$1.CamlExt.CamlId === Unify.CamlId) {
             throw {
                   CamlExt: $$Error$6,
                   _1: styp.ptyp_loc,
@@ -53627,7 +53627,7 @@ function transl_type(env, policy, styp) {
           }
           catch (raw_exn$4){
             var exn$4 = Caml_js_exceptions.internalToOCamlException(raw_exn$4);
-            if (exn$4.CamlExt === Caml_builtin_exceptions.not_found) {
+            if (exn$4.CamlExt.CamlId === Caml_builtin_exceptions.not_found.CamlId) {
               t$1 = instance(undefined, env, find$2(alias, used_variables.contents)[0]);
             } else {
               throw exn$4;
@@ -53639,7 +53639,7 @@ function transl_type(env, policy, styp) {
           }
           catch (raw_trace$2){
             var trace$2 = Caml_js_exceptions.internalToOCamlException(raw_trace$2);
-            if (trace$2.CamlExt === Unify) {
+            if (trace$2.CamlExt.CamlId === Unify.CamlId) {
               var trace$3 = swap_list(trace$2._1);
               throw {
                     CamlExt: $$Error$6,
@@ -53654,7 +53654,7 @@ function transl_type(env, policy, styp) {
         }
         catch (raw_exn$5){
           var exn$5 = Caml_js_exceptions.internalToOCamlException(raw_exn$5);
-          if (exn$5.CamlExt === Caml_builtin_exceptions.not_found) {
+          if (exn$5.CamlExt.CamlId === Caml_builtin_exceptions.not_found.CamlId) {
             if (principal.contents) {
               begin_def(undefined);
             }
@@ -53669,7 +53669,7 @@ function transl_type(env, policy, styp) {
             }
             catch (raw_trace$3){
               var trace$4 = Caml_js_exceptions.internalToOCamlException(raw_trace$3);
-              if (trace$4.CamlExt === Unify) {
+              if (trace$4.CamlExt.CamlId === Unify.CamlId) {
                 var trace$5 = swap_list(trace$4._1);
                 throw {
                       CamlExt: $$Error$6,
@@ -53780,7 +53780,7 @@ function transl_type(env, policy, styp) {
             }
             catch (raw_trace){
               var trace = Caml_js_exceptions.internalToOCamlException(raw_trace);
-              if (trace.CamlExt === Unify) {
+              if (trace.CamlExt.CamlId === Unify.CamlId) {
                 throw {
                       CamlExt: $$Error$6,
                       _1: loc,
@@ -53796,7 +53796,7 @@ function transl_type(env, policy, styp) {
           }
           catch (raw_exn){
             var exn = Caml_js_exceptions.internalToOCamlException(raw_exn);
-            if (exn.CamlExt === Caml_builtin_exceptions.not_found) {
+            if (exn.CamlExt.CamlId === Caml_builtin_exceptions.not_found.CamlId) {
               return Hashtbl.add(hfields, h, /* tuple */[
                           l,
                           f
@@ -53827,7 +53827,7 @@ function transl_type(env, policy, styp) {
             }
             catch (raw_exn){
               var exn = Caml_js_exceptions.internalToOCamlException(raw_exn);
-              if (exn.CamlExt === Pervasives.Exit) {
+              if (exn.CamlExt.CamlId === Pervasives.Exit.CamlId) {
                 name$2.contents = undefined;
               } else {
                 throw exn;
@@ -54231,7 +54231,7 @@ function globalize_used_variables(env, fixed) {
           }
           catch (raw_exn){
             var exn$1 = Caml_js_exceptions.internalToOCamlException(raw_exn);
-            if (exn$1.CamlExt === Caml_builtin_exceptions.not_found) {
+            if (exn$1.CamlExt.CamlId === Caml_builtin_exceptions.not_found.CamlId) {
               if (fixed && is_Tvar(repr(ty))) {
                 throw {
                       CamlExt: $$Error$6,
@@ -54263,7 +54263,7 @@ function globalize_used_variables(env, fixed) {
                     }
                     catch (raw_trace){
                       var trace = Caml_js_exceptions.internalToOCamlException(raw_trace);
-                      if (trace.CamlExt === Unify) {
+                      if (trace.CamlExt.CamlId === Unify.CamlId) {
                         throw {
                               CamlExt: $$Error$6,
                               _1: param[0],
@@ -54470,8 +54470,8 @@ function spellcheck$1(ppf, fold) {
 }
 
 register_error_of_exn((function (err) {
-        if (err.CamlExt !== $$Error$6) {
-          if (err.CamlExt === Error_forward) {
+        if (err.CamlExt.CamlId !== $$Error$6.CamlId) {
+          if (err.CamlExt.CamlId === Error_forward.CamlId) {
             return err._1;
           } else {
             return ;
@@ -55462,7 +55462,7 @@ function extract_label_names(sexp, env, ty) {
   }
   catch (raw_exn){
     var exn = Caml_js_exceptions.internalToOCamlException(raw_exn);
-    if (exn.CamlExt === Caml_builtin_exceptions.not_found) {
+    if (exn.CamlExt.CamlId === Caml_builtin_exceptions.not_found.CamlId) {
       throw {
             CamlExt: Caml_builtin_exceptions.assert_failure,
             _1: /* tuple */[
@@ -55494,7 +55494,7 @@ function unify_pat_types(loc, env, ty, ty$prime) {
   }
   catch (raw_trace){
     var trace = Caml_js_exceptions.internalToOCamlException(raw_trace);
-    if (trace.CamlExt === Unify) {
+    if (trace.CamlExt.CamlId === Unify.CamlId) {
       throw {
             CamlExt: $$Error$7,
             _1: loc,
@@ -55502,7 +55502,7 @@ function unify_pat_types(loc, env, ty, ty$prime) {
             _3: /* Pattern_type_clash */Block.__(3, [trace._1])
           };
     }
-    if (trace.CamlExt === Tags) {
+    if (trace.CamlExt.CamlId === Tags.CamlId) {
       throw {
             CamlExt: $$Error$6,
             _1: loc,
@@ -55523,7 +55523,7 @@ function unify_exp_types(loc, env, ty, expected_ty) {
   }
   catch (raw_trace){
     var trace = Caml_js_exceptions.internalToOCamlException(raw_trace);
-    if (trace.CamlExt === Unify) {
+    if (trace.CamlExt.CamlId === Unify.CamlId) {
       throw {
             CamlExt: $$Error$7,
             _1: loc,
@@ -55531,7 +55531,7 @@ function unify_exp_types(loc, env, ty, expected_ty) {
             _3: /* Expr_type_clash */Block.__(7, [trace._1])
           };
     }
-    if (trace.CamlExt === Tags) {
+    if (trace.CamlExt.CamlId === Tags.CamlId) {
       throw {
             CamlExt: $$Error$6,
             _1: loc,
@@ -55593,7 +55593,7 @@ function unify_pat_types_gadt(loc, env, ty, ty$prime) {
     catch (raw_e){
       var e = Caml_js_exceptions.internalToOCamlException(raw_e);
       Curry._1(TypePairs.clear, unify_eq_set);
-      if (e.CamlExt === Unify) {
+      if (e.CamlExt.CamlId === Unify.CamlId) {
         throw {
               CamlExt: Unify,
               _1: e._1
@@ -55605,7 +55605,7 @@ function unify_pat_types_gadt(loc, env, ty, ty$prime) {
   }
   catch (raw_trace){
     var trace = Caml_js_exceptions.internalToOCamlException(raw_trace);
-    if (trace.CamlExt === Unify) {
+    if (trace.CamlExt.CamlId === Unify.CamlId) {
       throw {
             CamlExt: $$Error$7,
             _1: loc,
@@ -55613,7 +55613,7 @@ function unify_pat_types_gadt(loc, env, ty, ty$prime) {
             _3: /* Pattern_type_clash */Block.__(3, [trace._1])
           };
     }
-    if (trace.CamlExt === Tags) {
+    if (trace.CamlExt.CamlId === Tags.CamlId) {
       throw {
             CamlExt: $$Error$6,
             _1: loc,
@@ -55624,7 +55624,7 @@ function unify_pat_types_gadt(loc, env, ty, ty$prime) {
               ])
           };
     }
-    if (trace.CamlExt === Unification_recursive_abbrev) {
+    if (trace.CamlExt.CamlId === Unification_recursive_abbrev.CamlId) {
       throw {
             CamlExt: $$Error$7,
             _1: loc,
@@ -55752,7 +55752,7 @@ function has_variants(p) {
   }
   catch (raw_exn){
     var exn = Caml_js_exceptions.internalToOCamlException(raw_exn);
-    if (exn.CamlExt === Pervasives.Exit) {
+    if (exn.CamlExt.CamlId === Pervasives.Exit.CamlId) {
       return true;
     }
     throw exn;
@@ -55872,7 +55872,7 @@ function enter_orpat_variables(loc, env, p1_vs, p2_vs) {
             }
             catch (raw_trace){
               var trace = Caml_js_exceptions.internalToOCamlException(raw_trace);
-              if (trace.CamlExt === Unify) {
+              if (trace.CamlExt.CamlId === Unify.CamlId) {
                 throw {
                       CamlExt: $$Error$7,
                       _1: loc,
@@ -56275,7 +56275,7 @@ function expand_path(env, _p) {
     }
     catch (raw_exn){
       var exn = Caml_js_exceptions.internalToOCamlException(raw_exn);
-      if (exn.CamlExt === Caml_builtin_exceptions.not_found) {
+      if (exn.CamlExt.CamlId === Caml_builtin_exceptions.not_found.CamlId) {
         decl = undefined;
       } else {
         throw exn;
@@ -56316,7 +56316,7 @@ function wrap_disambiguate(kind, ty, f, x) {
   }
   catch (raw_exn){
     var exn = Caml_js_exceptions.internalToOCamlException(raw_exn);
-    if (exn.CamlExt === $$Error$7) {
+    if (exn.CamlExt.CamlId === $$Error$7.CamlId) {
       var match = exn._3;
       if (typeof match === "number") {
         throw exn;
@@ -56383,7 +56383,7 @@ function lookup_from_type(env, tpath, lid) {
         }
         catch (raw_exn){
           var exn = Caml_js_exceptions.internalToOCamlException(raw_exn);
-          if (exn.CamlExt === Caml_builtin_exceptions.not_found) {
+          if (exn.CamlExt.CamlId === Caml_builtin_exceptions.not_found.CamlId) {
             throw {
                   CamlExt: $$Error$7,
                   _1: lid.loc,
@@ -56501,7 +56501,7 @@ function disambiguate(warnOpt, check_lkOpt, scope, lid, env, opath, lbls) {
     }
     catch (raw_exn){
       var exn = Caml_js_exceptions.internalToOCamlException(raw_exn);
-      if (exn.CamlExt === Caml_builtin_exceptions.not_found) {
+      if (exn.CamlExt.CamlId === Caml_builtin_exceptions.not_found.CamlId) {
         try {
           var lbl$2 = lookup_from_type(env, tpath, lid);
           Curry._2(check_lk, tpath, lbl$2);
@@ -56521,7 +56521,7 @@ function disambiguate(warnOpt, check_lkOpt, scope, lid, env, opath, lbls) {
         }
         catch (raw_exn$1){
           var exn$1 = Caml_js_exceptions.internalToOCamlException(raw_exn$1);
-          if (exn$1.CamlExt === Caml_builtin_exceptions.not_found) {
+          if (exn$1.CamlExt.CamlId === Caml_builtin_exceptions.not_found.CamlId) {
             if (lbls === /* [] */0) {
               lbl = unbound_label_error(env, lid);
             } else {
@@ -56934,7 +56934,7 @@ function lookup_from_type$1(env, tpath, lid) {
         }
         catch (raw_exn){
           var exn = Caml_js_exceptions.internalToOCamlException(raw_exn);
-          if (exn.CamlExt === Caml_builtin_exceptions.not_found) {
+          if (exn.CamlExt.CamlId === Caml_builtin_exceptions.not_found.CamlId) {
             throw {
                   CamlExt: $$Error$7,
                   _1: lid.loc,
@@ -57052,7 +57052,7 @@ function disambiguate$1(warnOpt, check_lkOpt, scope, lid, env, opath, lbls) {
     }
     catch (raw_exn){
       var exn = Caml_js_exceptions.internalToOCamlException(raw_exn);
-      if (exn.CamlExt === Caml_builtin_exceptions.not_found) {
+      if (exn.CamlExt.CamlId === Caml_builtin_exceptions.not_found.CamlId) {
         try {
           var lbl$2 = lookup_from_type$1(env, tpath, lid);
           Curry._2(check_lk, tpath, lbl$2);
@@ -57072,7 +57072,7 @@ function disambiguate$1(warnOpt, check_lkOpt, scope, lid, env, opath, lbls) {
         }
         catch (raw_exn$1){
           var exn$1 = Caml_js_exceptions.internalToOCamlException(raw_exn$1);
-          if (exn$1.CamlExt === Caml_builtin_exceptions.not_found) {
+          if (exn$1.CamlExt.CamlId === Caml_builtin_exceptions.not_found.CamlId) {
             if (lbls === /* [] */0) {
               lbl = unbound_constructor_error(env, lid);
             } else {
@@ -57325,7 +57325,7 @@ function type_pat(constrs, labels, no_existentials, mode, env, sp, expected_ty) 
         }
         catch (raw_exn){
           var exn = Caml_js_exceptions.internalToOCamlException(raw_exn);
-          if (exn.CamlExt === Caml_builtin_exceptions.not_found) {
+          if (exn.CamlExt.CamlId === Caml_builtin_exceptions.not_found.CamlId) {
             opath = undefined;
           } else {
             throw exn;
@@ -57531,7 +57531,7 @@ function type_pat(constrs, labels, no_existentials, mode, env, sp, expected_ty) 
         }
         catch (raw_exn$1){
           var exn$1 = Caml_js_exceptions.internalToOCamlException(raw_exn$1);
-          if (exn$1.CamlExt === Caml_builtin_exceptions.not_found) {
+          if (exn$1.CamlExt.CamlId === Caml_builtin_exceptions.not_found.CamlId) {
             match$3 = /* tuple */[
               undefined,
               newvar(undefined, undefined)
@@ -57557,7 +57557,7 @@ function type_pat(constrs, labels, no_existentials, mode, env, sp, expected_ty) 
           }
           catch (raw_trace){
             var trace = Caml_js_exceptions.internalToOCamlException(raw_trace);
-            if (trace.CamlExt === Unify) {
+            if (trace.CamlExt.CamlId === Unify.CamlId) {
               throw {
                     CamlExt: $$Error$7,
                     _1: label_lid.loc,
@@ -58402,7 +58402,7 @@ function approx_type(env, _sty) {
           }
           catch (raw_exn){
             var exn = Caml_js_exceptions.internalToOCamlException(raw_exn);
-            if (exn.CamlExt === Caml_builtin_exceptions.not_found) {
+            if (exn.CamlExt.CamlId === Caml_builtin_exceptions.not_found.CamlId) {
               return newvar(undefined, undefined);
             }
             throw exn;
@@ -58488,7 +58488,7 @@ function type_approx(env, _sexp) {
           }
           catch (raw_trace){
             var trace = Caml_js_exceptions.internalToOCamlException(raw_trace);
-            if (trace.CamlExt === Unify) {
+            if (trace.CamlExt.CamlId === Unify.CamlId) {
               throw {
                     CamlExt: $$Error$7,
                     _1: sexp.pexp_loc,
@@ -58515,7 +58515,7 @@ function type_approx(env, _sexp) {
           }
           catch (raw_trace$1){
             var trace$1 = Caml_js_exceptions.internalToOCamlException(raw_trace$1);
-            if (trace$1.CamlExt === Unify) {
+            if (trace$1.CamlExt.CamlId === Unify.CamlId) {
               throw {
                     CamlExt: $$Error$7,
                     _1: sexp.pexp_loc,
@@ -58675,7 +58675,7 @@ function generalizable(level, ty) {
   }
   catch (raw_exn){
     var exn = Caml_js_exceptions.internalToOCamlException(raw_exn);
-    if (exn.CamlExt === Pervasives.Exit) {
+    if (exn.CamlExt.CamlId === Pervasives.Exit.CamlId) {
       unmark_type(ty);
       return false;
     }
@@ -58735,7 +58735,7 @@ function contains_variant_either(ty) {
   }
   catch (raw_exn){
     var exn = Caml_js_exceptions.internalToOCamlException(raw_exn);
-    if (exn.CamlExt === Pervasives.Exit) {
+    if (exn.CamlExt.CamlId === Pervasives.Exit.CamlId) {
       unmark_type(ty);
       return true;
     }
@@ -58794,7 +58794,7 @@ function contains_polymorphic_variant(p) {
   }
   catch (raw_exn){
     var exn = Caml_js_exceptions.internalToOCamlException(raw_exn);
-    if (exn.CamlExt === Pervasives.Exit) {
+    if (exn.CamlExt.CamlId === Pervasives.Exit.CamlId) {
       return true;
     }
     throw exn;
@@ -58823,7 +58823,7 @@ function contains_gadt(env, p) {
     }
     catch (raw_exn){
       var exn = Caml_js_exceptions.internalToOCamlException(raw_exn);
-      if (exn.CamlExt !== Caml_builtin_exceptions.not_found) {
+      if (exn.CamlExt.CamlId !== Caml_builtin_exceptions.not_found.CamlId) {
         throw exn;
       }
       
@@ -58836,7 +58836,7 @@ function contains_gadt(env, p) {
   }
   catch (raw_exn){
     var exn = Caml_js_exceptions.internalToOCamlException(raw_exn);
-    if (exn.CamlExt === Pervasives.Exit) {
+    if (exn.CamlExt.CamlId === Pervasives.Exit.CamlId) {
       return true;
     }
     throw exn;
@@ -58935,7 +58935,7 @@ function duplicate_ident_types(loc, caselist, env) {
                 }
                 catch (raw_exn){
                   var exn = Caml_js_exceptions.internalToOCamlException(raw_exn);
-                  if (exn.CamlExt === Caml_builtin_exceptions.not_found) {
+                  if (exn.CamlExt.CamlId === Caml_builtin_exceptions.not_found.CamlId) {
                     return env;
                   }
                   throw exn;
@@ -59285,7 +59285,7 @@ function type_expect_(in_function, env, sexp, ty_expected) {
                   }
                   catch (raw_exn){
                     var exn = Caml_js_exceptions.internalToOCamlException(raw_exn);
-                    if (exn.CamlExt === Unify) {
+                    if (exn.CamlExt.CamlId === Unify.CamlId) {
                       throw {
                             CamlExt: Caml_builtin_exceptions.assert_failure,
                             _1: /* tuple */[
@@ -59443,7 +59443,7 @@ function type_expect_(in_function, env, sexp, ty_expected) {
         }
         catch (raw_exn){
           var exn = Caml_js_exceptions.internalToOCamlException(raw_exn);
-          if (exn.CamlExt === Caml_builtin_exceptions.not_found) {
+          if (exn.CamlExt.CamlId === Caml_builtin_exceptions.not_found.CamlId) {
             opath = undefined;
           } else {
             throw exn;
@@ -59660,7 +59660,7 @@ function type_expect_(in_function, env, sexp, ty_expected) {
         }
         catch (raw_exn$1){
           var exn$1 = Caml_js_exceptions.internalToOCamlException(raw_exn$1);
-          if (exn$1.CamlExt === Caml_builtin_exceptions.not_found) {
+          if (exn$1.CamlExt.CamlId === Caml_builtin_exceptions.not_found.CamlId) {
             var arg$2 = may_map((function (param) {
                     return type_exp(env, param);
                   }), sarg$1);
@@ -59726,7 +59726,7 @@ function type_expect_(in_function, env, sexp, ty_expected) {
           }
           catch (raw_exn){
             var exn = Caml_js_exceptions.internalToOCamlException(raw_exn);
-            if (exn.CamlExt === Caml_builtin_exceptions.not_found) {
+            if (exn.CamlExt.CamlId === Caml_builtin_exceptions.not_found.CamlId) {
               return ;
             }
             throw exn;
@@ -60115,7 +60115,7 @@ function type_expect_(in_function, env, sexp, ty_expected) {
           }
           catch (raw_exn$2){
             var exn$2 = Caml_js_exceptions.internalToOCamlException(raw_exn$2);
-            if (exn$2.CamlExt === Subtype) {
+            if (exn$2.CamlExt.CamlId === Subtype.CamlId) {
               throw {
                     CamlExt: $$Error$7,
                     _1: loc,
@@ -60187,7 +60187,7 @@ function type_expect_(in_function, env, sexp, ty_expected) {
                 }
                 catch (raw_exn$3){
                   var exn$3 = Caml_js_exceptions.internalToOCamlException(raw_exn$3);
-                  if (exn$3.CamlExt === Unify) {
+                  if (exn$3.CamlExt.CamlId === Unify.CamlId) {
                     backtrack(snap);
                     tmp$4 = false;
                   } else {
@@ -60208,7 +60208,7 @@ function type_expect_(in_function, env, sexp, ty_expected) {
                 }
                 catch (raw_exn$4){
                   var exn$4 = Caml_js_exceptions.internalToOCamlException(raw_exn$4);
-                  if (exn$4.CamlExt === Subtype) {
+                  if (exn$4.CamlExt.CamlId === Subtype.CamlId) {
                     throw {
                           CamlExt: $$Error$7,
                           _1: loc,
@@ -60231,7 +60231,7 @@ function type_expect_(in_function, env, sexp, ty_expected) {
               }
               catch (raw_trace){
                 var trace = Caml_js_exceptions.internalToOCamlException(raw_trace);
-                if (trace.CamlExt === Unify) {
+                if (trace.CamlExt.CamlId === Unify.CamlId) {
                   throw {
                         CamlExt: $$Error$7,
                         _1: sarg$3.pexp_loc,
@@ -60314,7 +60314,7 @@ function type_expect_(in_function, env, sexp, ty_expected) {
                     }
                     catch (raw_exn$5){
                       var exn$5 = Caml_js_exceptions.internalToOCamlException(raw_exn$5);
-                      if (exn$5.CamlExt === Caml_builtin_exceptions.not_found) {
+                      if (exn$5.CamlExt.CamlId === Caml_builtin_exceptions.not_found.CamlId) {
                         throw {
                               CamlExt: $$Error$7,
                               _1: e.pexp_loc,
@@ -60485,7 +60485,7 @@ function type_expect_(in_function, env, sexp, ty_expected) {
         }
         catch (raw_exn$6){
           var exn$6 = Caml_js_exceptions.internalToOCamlException(raw_exn$6);
-          if (exn$6.CamlExt === Unify) {
+          if (exn$6.CamlExt.CamlId === Unify.CamlId) {
             throw {
                   CamlExt: $$Error$7,
                   _1: e.pexp_loc,
@@ -60579,7 +60579,7 @@ function type_expect_(in_function, env, sexp, ty_expected) {
         }
         catch (raw_exn$7){
           var exn$7 = Caml_js_exceptions.internalToOCamlException(raw_exn$7);
-          if (exn$7.CamlExt === Caml_builtin_exceptions.not_found) {
+          if (exn$7.CamlExt.CamlId === Caml_builtin_exceptions.not_found.CamlId) {
             throw {
                   CamlExt: $$Error$7,
                   _1: loc,
@@ -60618,7 +60618,7 @@ function type_expect_(in_function, env, sexp, ty_expected) {
         }
         catch (raw_exn$8){
           var exn$8 = Caml_js_exceptions.internalToOCamlException(raw_exn$8);
-          if (exn$8.CamlExt === Caml_builtin_exceptions.not_found) {
+          if (exn$8.CamlExt.CamlId === Caml_builtin_exceptions.not_found.CamlId) {
             throw {
                   CamlExt: $$Error$7,
                   _1: loc,
@@ -60654,7 +60654,7 @@ function type_expect_(in_function, env, sexp, ty_expected) {
             }
             catch (raw_exn){
               var exn = Caml_js_exceptions.internalToOCamlException(raw_exn);
-              if (exn.CamlExt === Caml_builtin_exceptions.not_found) {
+              if (exn.CamlExt.CamlId === Caml_builtin_exceptions.not_found.CamlId) {
                 throw {
                       CamlExt: $$Error$7,
                       _1: loc,
@@ -60704,7 +60704,7 @@ function type_expect_(in_function, env, sexp, ty_expected) {
         }
         catch (raw_exn$9){
           var exn$9 = Caml_js_exceptions.internalToOCamlException(raw_exn$9);
-          if (exn$9.CamlExt === Unify) {
+          if (exn$9.CamlExt.CamlId === Unify.CamlId) {
             throw {
                   CamlExt: $$Error$7,
                   _1: loc,
@@ -61069,7 +61069,7 @@ function type_function(in_function, loc, attrs, env, ty_expected, l, caselist) {
   }
   catch (raw_exn){
     var exn = Caml_js_exceptions.internalToOCamlException(raw_exn);
-    if (exn.CamlExt === Unify) {
+    if (exn.CamlExt.CamlId === Unify.CamlId) {
       var ty = expand_head(env, ty_expected);
       var match$2 = ty.desc;
       var exit = 0;
@@ -61115,7 +61115,7 @@ function type_function(in_function, loc, attrs, env, ty_expected, l, caselist) {
     }
     catch (raw_exn$1){
       var exn$1 = Caml_js_exceptions.internalToOCamlException(raw_exn$1);
-      if (exn$1.CamlExt === Unify) {
+      if (exn$1.CamlExt.CamlId === Unify.CamlId) {
         throw {
               CamlExt: Caml_builtin_exceptions.assert_failure,
               _1: /* tuple */[
@@ -61192,7 +61192,7 @@ function type_label_access(env, loc, srecord, lid) {
   }
   catch (raw_exn){
     var exn = Caml_js_exceptions.internalToOCamlException(raw_exn);
-    if (exn.CamlExt === Caml_builtin_exceptions.not_found) {
+    if (exn.CamlExt.CamlId === Caml_builtin_exceptions.not_found.CamlId) {
       opath = undefined;
     } else {
       throw exn;
@@ -61244,7 +61244,7 @@ function type_label_exp(create, env, loc, ty_expected, param) {
   }
   catch (raw_trace){
     var trace = Caml_js_exceptions.internalToOCamlException(raw_trace);
-    if (trace.CamlExt === Unify) {
+    if (trace.CamlExt.CamlId === Unify.CamlId) {
       throw {
             CamlExt: $$Error$7,
             _1: lid.loc,
@@ -61305,7 +61305,7 @@ function type_label_exp(create, env, loc, ty_expected, param) {
     }
     catch (raw_e){
       var e = Caml_js_exceptions.internalToOCamlException(raw_e);
-      if (e.CamlExt === $$Error$7) {
+      if (e.CamlExt.CamlId === $$Error$7.CamlId) {
         var tmp = e._3;
         if (typeof tmp === "number") {
           throw exn;
@@ -61743,7 +61743,7 @@ function type_application(env, funct, sargs) {
                 }
                 catch (raw_exn){
                   var exn = Caml_js_exceptions.internalToOCamlException(raw_exn);
-                  if (exn.CamlExt === Caml_builtin_exceptions.not_found) {
+                  if (exn.CamlExt.CamlId === Caml_builtin_exceptions.not_found.CamlId) {
                     var match$9 = extract_label_aux(/* [] */0, name, more_sargs);
                     var sargs1$1 = match$9[2];
                     var sarg0$2 = match$9[1];
@@ -61781,7 +61781,7 @@ function type_application(env, funct, sargs) {
               }
               catch (raw_exn$1){
                 var exn$1 = Caml_js_exceptions.internalToOCamlException(raw_exn$1);
-                if (exn$1.CamlExt === Caml_builtin_exceptions.not_found) {
+                if (exn$1.CamlExt.CamlId === Caml_builtin_exceptions.not_found.CamlId) {
                   match$4 = /* tuple */[
                     sargs,
                     more_sargs,
@@ -62297,7 +62297,7 @@ function type_cases(in_function, env, ty_arg, ty_res, partial_flag, loc, caselis
             catch (raw_exn){
               var exn = Caml_js_exceptions.internalToOCamlException(raw_exn);
               var exit = 0;
-              if (exn.CamlExt === Empty || exn.CamlExt === Caml_builtin_exceptions.not_found || exn.CamlExt === NoGuard) {
+              if (exn.CamlExt.CamlId === Empty.CamlId || exn.CamlExt.CamlId === Caml_builtin_exceptions.not_found.CamlId || exn.CamlExt.CamlId === NoGuard.CamlId) {
                 exit = 1;
               } else {
                 throw exn;
@@ -62528,7 +62528,7 @@ function type_let(checkOpt, check_strictOpt, env, rec_flag, spat_sexp_list, scop
                   }
                   catch (raw_exn){
                     var exn = Caml_js_exceptions.internalToOCamlException(raw_exn);
-                    if (exn.CamlExt === Caml_builtin_exceptions.not_found) {
+                    if (exn.CamlExt.CamlId === Caml_builtin_exceptions.not_found.CamlId) {
                       return Hashtbl.add(value_declarations, key, callback);
                     }
                     throw exn;
@@ -62671,8 +62671,8 @@ function type_expression(env, sexp) {
 }
 
 register_error_of_exn((function (err) {
-        if (err.CamlExt !== $$Error$7) {
-          if (err.CamlExt === Error_forward$1) {
+        if (err.CamlExt.CamlId !== $$Error$7.CamlId) {
+          if (err.CamlExt.CamlId === Error_forward$1.CamlId) {
             return err._1;
           } else {
             return ;
@@ -64414,7 +64414,7 @@ function make_params(env, params) {
     }
     catch (raw_exn){
       var exn = Caml_js_exceptions.internalToOCamlException(raw_exn);
-      if (exn.CamlExt === Already_bound) {
+      if (exn.CamlExt.CamlId === Already_bound.CamlId) {
         throw {
               CamlExt: $$Error$8,
               _1: sty.ptyp_loc,
@@ -64529,7 +64529,7 @@ function check_constraints_rec(env, loc, visited, _ty) {
           }
           catch (raw_exn){
             var exn = Caml_js_exceptions.internalToOCamlException(raw_exn);
-            if (exn.CamlExt === Unify) {
+            if (exn.CamlExt.CamlId === Unify.CamlId) {
               throw {
                     CamlExt: Caml_builtin_exceptions.assert_failure,
                     _1: /* tuple */[
@@ -64539,7 +64539,7 @@ function check_constraints_rec(env, loc, visited, _ty) {
                     ]
                   };
             }
-            if (exn.CamlExt === Caml_builtin_exceptions.not_found) {
+            if (exn.CamlExt.CamlId === Caml_builtin_exceptions.not_found.CamlId) {
               throw {
                     CamlExt: $$Error$8,
                     _1: loc,
@@ -64758,7 +64758,7 @@ function check_coherence(env, loc, id, decl) {
     }
     catch (raw_exn){
       var exn = Caml_js_exceptions.internalToOCamlException(raw_exn);
-      if (exn.CamlExt === Caml_builtin_exceptions.not_found) {
+      if (exn.CamlExt.CamlId === Caml_builtin_exceptions.not_found.CamlId) {
         throw {
               CamlExt: $$Error$8,
               _1: loc,
@@ -64818,7 +64818,7 @@ function check_well_founded(env, loc, path, to_check, ty) {
     }
     catch (raw_exn){
       var exn = Caml_js_exceptions.internalToOCamlException(raw_exn);
-      if (exn.CamlExt === Caml_builtin_exceptions.not_found) {
+      if (exn.CamlExt.CamlId === Caml_builtin_exceptions.not_found.CamlId) {
         match$1 = /* tuple */[
           false,
           exp_nodes
@@ -64860,7 +64860,7 @@ function check_well_founded(env, loc, path, to_check, ty) {
     }
     catch (raw_exn$1){
       var exn$1 = Caml_js_exceptions.internalToOCamlException(raw_exn$1);
-      if (exn$1.CamlExt === Cannot_expand) {
+      if (exn$1.CamlExt.CamlId === Cannot_expand.CamlId) {
         var tmp$1 = true;
         if (!(recursive_types.contents && is_contractive(env, ty$1))) {
           var match$3 = ty$1.desc;
@@ -64884,7 +64884,7 @@ function check_well_founded(env, loc, path, to_check, ty) {
                       return check(ty0, nodes, param);
                     }), ty$1);
       }
-      if (exn$1.CamlExt === Unify) {
+      if (exn$1.CamlExt.CamlId === Unify.CamlId) {
         return backtrack(snap);
       }
       throw exn$1;
@@ -64974,7 +64974,7 @@ function check_recursion(env, loc, path, decl, to_check) {
                 }
                 catch (raw_exn){
                   var exn = Caml_js_exceptions.internalToOCamlException(raw_exn);
-                  if (exn.CamlExt === Unify) {
+                  if (exn.CamlExt.CamlId === Unify.CamlId) {
                     throw {
                           CamlExt: $$Error$8,
                           _1: loc,
@@ -64993,7 +64993,7 @@ function check_recursion(env, loc, path, decl, to_check) {
               }
               catch (raw_exn$1){
                 var exn$1 = Caml_js_exceptions.internalToOCamlException(raw_exn$1);
-                if (exn$1.CamlExt !== Caml_builtin_exceptions.not_found) {
+                if (exn$1.CamlExt.CamlId !== Caml_builtin_exceptions.not_found.CamlId) {
                   throw exn$1;
                 }
                 
@@ -65025,7 +65025,7 @@ function get_variance(ty, visited) {
   }
   catch (raw_exn){
     var exn = Caml_js_exceptions.internalToOCamlException(raw_exn);
-    if (exn.CamlExt === Caml_builtin_exceptions.not_found) {
+    if (exn.CamlExt.CamlId === Caml_builtin_exceptions.not_found.CamlId) {
       return Types_Variance.$$null;
     }
     throw exn;
@@ -65087,7 +65087,7 @@ function compute_variance(env, visited, vari, ty) {
             }
             catch (raw_exn){
               var exn = Caml_js_exceptions.internalToOCamlException(raw_exn);
-              if (exn.CamlExt === Caml_builtin_exceptions.not_found) {
+              if (exn.CamlExt.CamlId === Caml_builtin_exceptions.not_found.CamlId) {
                 return List.iter((function (param) {
                               return compute_variance_rec(Types_Variance.may_inv, param);
                             }), tl$1);
@@ -65719,7 +65719,7 @@ function check_duplicates(sdecl_list) {
                                 }
                                 catch (raw_exn){
                                   var exn = Caml_js_exceptions.internalToOCamlException(raw_exn);
-                                  if (exn.CamlExt === Caml_builtin_exceptions.not_found) {
+                                  if (exn.CamlExt.CamlId === Caml_builtin_exceptions.not_found.CamlId) {
                                     return Hashtbl.add(labels, cname.txt, sdecl.ptype_name.txt);
                                   }
                                   throw exn;
@@ -65738,7 +65738,7 @@ function check_duplicates(sdecl_list) {
                                 }
                                 catch (raw_exn){
                                   var exn = Caml_js_exceptions.internalToOCamlException(raw_exn);
-                                  if (exn.CamlExt === Caml_builtin_exceptions.not_found) {
+                                  if (exn.CamlExt.CamlId === Caml_builtin_exceptions.not_found.CamlId) {
                                     return Hashtbl.add(constrs, pcd.pcd_name.txt, sdecl.ptype_name.txt);
                                   }
                                   throw exn;
@@ -66065,7 +66065,7 @@ function transl_type_decl(env, rec_flag, sdecl_list) {
             }
             catch (raw_tr){
               var tr = Caml_js_exceptions.internalToOCamlException(raw_tr);
-              if (tr.CamlExt === Unify) {
+              if (tr.CamlExt.CamlId === Unify.CamlId) {
                 throw {
                       CamlExt: $$Error$8,
                       _1: param[2],
@@ -66086,7 +66086,7 @@ function transl_type_decl(env, rec_flag, sdecl_list) {
       }
       catch (raw_exn){
         var exn = Caml_js_exceptions.internalToOCamlException(raw_exn);
-        if (exn.CamlExt === Caml_builtin_exceptions.not_found) {
+        if (exn.CamlExt.CamlId === Caml_builtin_exceptions.not_found.CamlId) {
           throw {
                 CamlExt: Caml_builtin_exceptions.assert_failure,
                 _1: /* tuple */[
@@ -66149,7 +66149,7 @@ function transl_type_decl(env, rec_flag, sdecl_list) {
             }
             catch (raw_trace){
               var trace = Caml_js_exceptions.internalToOCamlException(raw_trace);
-              if (trace.CamlExt === Unify) {
+              if (trace.CamlExt.CamlId === Unify.CamlId) {
                 throw {
                       CamlExt: $$Error$8,
                       _1: loc,
@@ -66267,7 +66267,7 @@ function transl_type_decl(env, rec_flag, sdecl_list) {
                     }
                     catch (raw_exn){
                       var exn = Caml_js_exceptions.internalToOCamlException(raw_exn);
-                      if (exn.CamlExt === Caml_builtin_exceptions.not_found) {
+                      if (exn.CamlExt.CamlId === Caml_builtin_exceptions.not_found.CamlId) {
                         throw {
                               CamlExt: Caml_builtin_exceptions.assert_failure,
                               _1: /* tuple */[
@@ -66430,7 +66430,7 @@ function transl_extension_constructor(env, check_open, type_path, type_params, t
     }
     catch (raw_trace){
       var trace = Caml_js_exceptions.internalToOCamlException(raw_trace);
-      if (trace.CamlExt === Unify) {
+      if (trace.CamlExt.CamlId === Unify.CamlId) {
         throw {
               CamlExt: $$Error$8,
               _1: lid$1.loc,
@@ -66618,7 +66618,7 @@ function transl_type_extension(check_open, env, loc, styext) {
       }
       catch (raw_exn){
         var exn = Caml_js_exceptions.internalToOCamlException(raw_exn);
-        if (exn.CamlExt !== Caml_builtin_exceptions.not_found) {
+        if (exn.CamlExt.CamlId !== Caml_builtin_exceptions.not_found.CamlId) {
           throw exn;
         }
         
@@ -66892,7 +66892,7 @@ function transl_with_constraint(env, id, row_path, orig_decl, sdecl) {
           }
           catch (raw_tr){
             var tr = Caml_js_exceptions.internalToOCamlException(raw_tr);
-            if (tr.CamlExt === Unify) {
+            if (tr.CamlExt.CamlId === Unify.CamlId) {
               throw {
                     CamlExt: $$Error$8,
                     _1: loc,
@@ -67109,7 +67109,7 @@ function explain_unbound(ppf, tv, tl, typ, kwd, lab) {
   }
   catch (raw_exn){
     var exn = Caml_js_exceptions.internalToOCamlException(raw_exn);
-    if (exn.CamlExt === Caml_builtin_exceptions.not_found) {
+    if (exn.CamlExt.CamlId === Caml_builtin_exceptions.not_found.CamlId) {
       return ;
     }
     throw exn;
@@ -68145,7 +68145,7 @@ function report_error$5(ppf, s) {
 }
 
 register_error_of_exn((function (param) {
-        if (param.CamlExt === $$Error$8) {
+        if (param.CamlExt.CamlId === $$Error$8.CamlId) {
           return error_of_printer(param._1, report_error$5, param._2);
         }
         
@@ -68428,7 +68428,7 @@ function enter_val(cl_num, vars, inh, lab, mut, virt, ty, val_env, met_env, par_
   }
   catch (raw_tr){
     var tr = Caml_js_exceptions.internalToOCamlException(raw_tr);
-    if (tr.CamlExt === Unify) {
+    if (tr.CamlExt.CamlId === Unify.CamlId) {
       throw {
             CamlExt: $$Error$9,
             _1: loc,
@@ -68440,7 +68440,7 @@ function enter_val(cl_num, vars, inh, lab, mut, virt, ty, val_env, met_env, par_
               ])
           };
     }
-    if (tr.CamlExt === Caml_builtin_exceptions.not_found) {
+    if (tr.CamlExt.CamlId === Caml_builtin_exceptions.not_found.CamlId) {
       match = /* tuple */[
         undefined,
         virt
@@ -68488,7 +68488,7 @@ function inheritance(self_type, env, ovf, concr_meths, warn_vals, loc, parent) {
         }
         catch (raw_trace){
           var trace = Caml_js_exceptions.internalToOCamlException(raw_trace);
-          if (trace.CamlExt === Unify) {
+          if (trace.CamlExt.CamlId === Unify.CamlId) {
             var trace$1 = trace._1;
             var exit = 0;
             if (trace$1) {
@@ -68622,7 +68622,7 @@ function virtual_method(val_env, meths, self_type, lab, priv, sty, loc) {
   }
   catch (raw_trace){
     var trace = Caml_js_exceptions.internalToOCamlException(raw_trace);
-    if (trace.CamlExt === Unify) {
+    if (trace.CamlExt.CamlId === Unify.CamlId) {
       throw {
             CamlExt: $$Error$9,
             _1: loc,
@@ -68652,7 +68652,7 @@ function declare_method(val_env, meths, self_type, lab, priv, sty, loc) {
     }
     catch (raw_trace){
       var trace = Caml_js_exceptions.internalToOCamlException(raw_trace);
-      if (trace.CamlExt === Unify) {
+      if (trace.CamlExt.CamlId === Unify.CamlId) {
         throw {
               CamlExt: $$Error$9,
               _1: loc,
@@ -68707,7 +68707,7 @@ function type_constraint(val_env, sty, sty$prime, loc) {
   }
   catch (raw_trace){
     var trace = Caml_js_exceptions.internalToOCamlException(raw_trace);
-    if (trace.CamlExt === Unify) {
+    if (trace.CamlExt.CamlId === Unify.CamlId) {
       throw {
             CamlExt: $$Error$9,
             _1: loc,
@@ -68743,7 +68743,7 @@ function add_val(env, loc, lab, param, val_sig) {
   }
   catch (raw_exn){
     var exn = Caml_js_exceptions.internalToOCamlException(raw_exn);
-    if (exn.CamlExt === Caml_builtin_exceptions.not_found) {
+    if (exn.CamlExt.CamlId === Caml_builtin_exceptions.not_found.CamlId) {
       virt$1 = virt;
     } else {
       throw exn;
@@ -68777,7 +68777,7 @@ function class_signature$1(env, param) {
   }
   catch (raw_exn){
     var exn = Caml_js_exceptions.internalToOCamlException(raw_exn);
-    if (exn.CamlExt === Unify) {
+    if (exn.CamlExt.CamlId === Unify.CamlId) {
       throw {
             CamlExt: $$Error$9,
             _1: sty.ptyp_loc,
@@ -68992,7 +68992,7 @@ function class_type$3(env, scty) {
                 }
                 catch (raw_trace){
                   var trace = Caml_js_exceptions.internalToOCamlException(raw_trace);
-                  if (trace.CamlExt === Unify) {
+                  if (trace.CamlExt.CamlId === Unify.CamlId) {
                     throw {
                           CamlExt: $$Error$9,
                           _1: sty.ptyp_loc,
@@ -69090,7 +69090,7 @@ function class_structure(cl_num, $$final, val_env, met_env, loc, param) {
   }
   catch (raw_exn){
     var exn = Caml_js_exceptions.internalToOCamlException(raw_exn);
-    if (exn.CamlExt === Unify) {
+    if (exn.CamlExt.CamlId === Unify.CamlId) {
       throw {
             CamlExt: $$Error$9,
             _1: spat.ppat_loc,
@@ -69291,7 +69291,7 @@ function class_structure(cl_num, $$final, val_env, met_env, loc, param) {
                   }
                   catch (raw_exn){
                     var exn = Caml_js_exceptions.internalToOCamlException(raw_exn);
-                    if (exn.CamlExt === Unify) {
+                    if (exn.CamlExt.CamlId === Unify.CamlId) {
                       var match$6 = exn._1;
                       if (match$6) {
                         if (match$6[1]) {
@@ -69483,7 +69483,7 @@ function class_structure(cl_num, $$final, val_env, met_env, loc, param) {
                   }
                   catch (raw_trace){
                     var trace = Caml_js_exceptions.internalToOCamlException(raw_trace);
-                    if (trace.CamlExt === Unify) {
+                    if (trace.CamlExt.CamlId === Unify.CamlId) {
                       throw {
                             CamlExt: $$Error$9,
                             _1: loc,
@@ -69751,7 +69751,7 @@ function class_structure(cl_num, $$final, val_env, met_env, loc, param) {
     }
     catch (raw_trace){
       var trace = Caml_js_exceptions.internalToOCamlException(raw_trace);
-      if (trace.CamlExt === Unify) {
+      if (trace.CamlExt.CamlId === Unify.CamlId) {
         throw {
               CamlExt: $$Error$9,
               _1: loc,
@@ -69853,7 +69853,7 @@ function class_expr(cl_num, val_env, met_env, _scl) {
                   }
                   catch (raw_trace){
                     var trace = Caml_js_exceptions.internalToOCamlException(raw_trace);
-                    if (trace.CamlExt === Unify) {
+                    if (trace.CamlExt.CamlId === Unify.CamlId) {
                       throw {
                             CamlExt: $$Error$9,
                             _1: cty$prime.ctyp_loc,
@@ -70154,7 +70154,7 @@ function class_expr(cl_num, val_env, met_env, _scl) {
                                 }
                                 catch (raw_exn){
                                   var exn = Caml_js_exceptions.internalToOCamlException(raw_exn);
-                                  if (exn.CamlExt === Caml_builtin_exceptions.not_found) {
+                                  if (exn.CamlExt.CamlId === Caml_builtin_exceptions.not_found.CamlId) {
                                     var match$5 = extract_label_aux(/* [] */0, name, more_sargs);
                                     match$3 = /* tuple */[
                                       match$5[0],
@@ -70188,7 +70188,7 @@ function class_expr(cl_num, val_env, met_env, _scl) {
                               }
                               catch (raw_exn$1){
                                 var exn$1 = Caml_js_exceptions.internalToOCamlException(raw_exn$1);
-                                if (exn$1.CamlExt === Caml_builtin_exceptions.not_found) {
+                                if (exn$1.CamlExt.CamlId === Caml_builtin_exceptions.not_found.CamlId) {
                                   match = /* tuple */[
                                     sargs,
                                     more_sargs,
@@ -70280,7 +70280,7 @@ function class_expr(cl_num, val_env, met_env, _scl) {
           }
           catch (raw_exn){
             var exn = Caml_js_exceptions.internalToOCamlException(raw_exn);
-            if (exn.CamlExt === Unify) {
+            if (exn.CamlExt.CamlId === Unify.CamlId) {
               var match$8 = exn._1;
               if (match$8) {
                 if (match$8[1]) {
@@ -70616,7 +70616,7 @@ function type_classes(define_class, approx, kind, env, cls) {
             }
             catch (raw_exn){
               var exn = Caml_js_exceptions.internalToOCamlException(raw_exn);
-              if (exn.CamlExt === Already_bound) {
+              if (exn.CamlExt.CamlId === Already_bound.CamlId) {
                 throw {
                       CamlExt: $$Error$9,
                       _1: sty.ptyp_loc,
@@ -70682,7 +70682,7 @@ function type_classes(define_class, approx, kind, env, cls) {
           }
           catch (raw_exn){
             var exn$1 = Caml_js_exceptions.internalToOCamlException(raw_exn);
-            if (exn$1.CamlExt === Unify) {
+            if (exn$1.CamlExt.CamlId === Unify.CamlId) {
               throw {
                     CamlExt: $$Error$9,
                     _1: cl.pci_loc,
@@ -70701,7 +70701,7 @@ function type_classes(define_class, approx, kind, env, cls) {
           }
           catch (raw_exn$1){
             var exn$2 = Caml_js_exceptions.internalToOCamlException(raw_exn$1);
-            if (exn$2.CamlExt === Unify) {
+            if (exn$2.CamlExt.CamlId === Unify.CamlId) {
               throw {
                     CamlExt: $$Error$9,
                     _1: cl.pci_loc,
@@ -70727,7 +70727,7 @@ function type_classes(define_class, approx, kind, env, cls) {
           }
           catch (raw_exn$2){
             var exn$3 = Caml_js_exceptions.internalToOCamlException(raw_exn$2);
-            if (exn$3.CamlExt === Unify) {
+            if (exn$3.CamlExt.CamlId === Unify.CamlId) {
               throw {
                     CamlExt: $$Error$9,
                     _1: cl.pci_loc,
@@ -70746,7 +70746,7 @@ function type_classes(define_class, approx, kind, env, cls) {
           }
           catch (raw_exn$3){
             var exn$4 = Caml_js_exceptions.internalToOCamlException(raw_exn$3);
-            if (exn$4.CamlExt === Unify) {
+            if (exn$4.CamlExt.CamlId === Unify.CamlId) {
               var constr$1 = newconstr(/* Pident */Block.__(0, [cl_id]), params);
               throw {
                     CamlExt: $$Error$9,
@@ -70766,7 +70766,7 @@ function type_classes(define_class, approx, kind, env, cls) {
           }
           catch (raw_trace){
             var trace = Caml_js_exceptions.internalToOCamlException(raw_trace);
-            if (trace.CamlExt === Unify) {
+            if (trace.CamlExt.CamlId === Unify.CamlId) {
               throw {
                     CamlExt: $$Error$9,
                     _1: cl.pci_loc,
@@ -70947,7 +70947,7 @@ function type_classes(define_class, approx, kind, env, cls) {
           }
           catch (raw_trace){
             var trace = Caml_js_exceptions.internalToOCamlException(raw_trace);
-            if (trace.CamlExt === Unify) {
+            if (trace.CamlExt.CamlId === Unify.CamlId) {
               throw {
                     CamlExt: $$Error$9,
                     _1: cl.pci_loc,
@@ -71079,7 +71079,7 @@ function type_classes(define_class, approx, kind, env, cls) {
             }
             catch (raw_exn){
               var exn = Caml_js_exceptions.internalToOCamlException(raw_exn);
-              if (exn.CamlExt === Subtype) {
+              if (exn.CamlExt.CamlId === Subtype.CamlId) {
                 throw {
                       CamlExt: $$Error$7,
                       _1: loc,
@@ -71190,7 +71190,7 @@ function unify_parents_struct(env, ty, st) {
                           }
                           catch (raw_exn){
                             var exn = Caml_js_exceptions.internalToOCamlException(raw_exn);
-                            if (exn.CamlExt === Caml_builtin_exceptions.not_found) {
+                            if (exn.CamlExt.CamlId === Caml_builtin_exceptions.not_found.CamlId) {
                               return ;
                             }
                             throw {
@@ -71261,8 +71261,8 @@ function approx_class_declarations(env, sdecls) {
 }
 
 register_error_of_exn((function (err) {
-        if (err.CamlExt !== $$Error$9) {
-          if (err.CamlExt === Error_forward$2) {
+        if (err.CamlExt.CamlId !== $$Error$9.CamlId) {
+          if (err.CamlExt.CamlId === Error_forward$2.CamlId) {
             return err._1;
           } else {
             return ;
@@ -72920,7 +72920,7 @@ function merge_constraint(initial_env, loc, sg, constr) {
             }
             catch (raw_exn){
               var exn = Caml_js_exceptions.internalToOCamlException(raw_exn);
-              if (exn.CamlExt === Pervasives.Exit) {
+              if (exn.CamlExt.CamlId === Pervasives.Exit.CamlId) {
                 throw {
                       CamlExt: $$Error$10,
                       _1: sdecl.ptype_loc,
@@ -72936,7 +72936,7 @@ function merge_constraint(initial_env, loc, sg, constr) {
             }
             catch (raw_exn$1){
               var exn$1 = Caml_js_exceptions.internalToOCamlException(raw_exn$1);
-              if (exn$1.CamlExt === Caml_builtin_exceptions.not_found) {
+              if (exn$1.CamlExt.CamlId === Caml_builtin_exceptions.not_found.CamlId) {
                 throw {
                       CamlExt: Caml_builtin_exceptions.assert_failure,
                       _1: /* tuple */[
@@ -72982,7 +72982,7 @@ function merge_constraint(initial_env, loc, sg, constr) {
   }
   catch (raw_explanation){
     var explanation = Caml_js_exceptions.internalToOCamlException(raw_explanation);
-    if (explanation.CamlExt === $$Error$5) {
+    if (explanation.CamlExt.CamlId === $$Error$5.CamlId) {
       throw {
             CamlExt: $$Error$10,
             _1: loc,
@@ -74195,7 +74195,7 @@ function path_of_module$1(mexp) {
   }
   catch (raw_exn){
     var exn = Caml_js_exceptions.internalToOCamlException(raw_exn);
-    if (exn.CamlExt === Not_a_path) {
+    if (exn.CamlExt.CamlId === Not_a_path.CamlId) {
       return ;
     }
     throw exn;
@@ -74320,7 +74320,7 @@ function check_recmodule_inclusion(env, bindings) {
       }
       catch (raw_msg){
         var msg = Caml_js_exceptions.internalToOCamlException(raw_msg);
-        if (msg.CamlExt === $$Error$5) {
+        if (msg.CamlExt.CamlId === $$Error$5.CamlId) {
           throw {
                 CamlExt: $$Error$10,
                 _1: modl.mod_loc,
@@ -74476,7 +74476,7 @@ function modtype_of_package(env, loc, p, nl, tl) {
   }
   catch (raw_exn){
     var exn = Caml_js_exceptions.internalToOCamlException(raw_exn);
-    if (exn.CamlExt === Caml_builtin_exceptions.not_found) {
+    if (exn.CamlExt.CamlId === Caml_builtin_exceptions.not_found.CamlId) {
       var error = /* Unbound_modtype */Block.__(22, [lid_of_path(undefined, p)]);
       throw {
             CamlExt: $$Error$6,
@@ -74504,7 +74504,7 @@ function package_subtype$1(env, p1, nl1, tl1, p2, nl2, tl2) {
   }
   catch (raw_msg){
     var msg = Caml_js_exceptions.internalToOCamlException(raw_msg);
-    if (msg.CamlExt === $$Error$5) {
+    if (msg.CamlExt.CamlId === $$Error$5.CamlId) {
       return false;
     }
     throw msg;
@@ -74520,7 +74520,7 @@ function wrap_constraint(env, arg, mty, explicit) {
   }
   catch (raw_msg){
     var msg = Caml_js_exceptions.internalToOCamlException(raw_msg);
-    if (msg.CamlExt === $$Error$5) {
+    if (msg.CamlExt.CamlId === $$Error$5.CamlId) {
       throw {
             CamlExt: $$Error$10,
             _1: arg.mod_loc,
@@ -74709,7 +74709,7 @@ function type_module$1(aliasOpt, sttn, funct_body, anchor, env, smod) {
           }
           catch (raw_msg){
             var msg = Caml_js_exceptions.internalToOCamlException(raw_msg);
-            if (msg.CamlExt === $$Error$5) {
+            if (msg.CamlExt.CamlId === $$Error$5.CamlId) {
               throw {
                     CamlExt: $$Error$10,
                     _1: sarg.pmod_loc,
@@ -74730,7 +74730,7 @@ function type_module$1(aliasOpt, sttn, funct_body, anchor, env, smod) {
             }
             catch (raw_exn){
               var exn = Caml_js_exceptions.internalToOCamlException(raw_exn);
-              if (exn.CamlExt === Caml_builtin_exceptions.not_found) {
+              if (exn.CamlExt.CamlId === Caml_builtin_exceptions.not_found.CamlId) {
                 throw {
                       CamlExt: $$Error$10,
                       _1: smod.pmod_loc,
@@ -75517,7 +75517,7 @@ function type_package$1(env, m, p, nl, tl) {
           }
           catch (raw_exn){
             var exn = Caml_js_exceptions.internalToOCamlException(raw_exn);
-            if (exn.CamlExt === Unify) {
+            if (exn.CamlExt.CamlId === Unify.CamlId) {
               throw {
                     CamlExt: $$Error$10,
                     _1: m.pmod_loc,
@@ -75588,7 +75588,7 @@ function type_implementation_more(sourcefile, outputprefix, modulename, initial_
       }
       catch (raw_exn){
         var exn = Caml_js_exceptions.internalToOCamlException(raw_exn);
-        if (exn.CamlExt === Caml_builtin_exceptions.not_found) {
+        if (exn.CamlExt.CamlId === Caml_builtin_exceptions.not_found.CamlId) {
           throw {
                 CamlExt: $$Error$10,
                 _1: in_file(sourcefile),
@@ -75669,8 +75669,8 @@ function type_implementation(sourcefile, outputprefix, modulename, initial_env, 
 }
 
 register_error_of_exn((function (err) {
-        if (err.CamlExt !== $$Error$10) {
-          if (err.CamlExt === Error_forward$3) {
+        if (err.CamlExt.CamlId !== $$Error$10.CamlId) {
+          if (err.CamlExt.CamlId === Error_forward$3.CamlId) {
             return err._1;
           } else {
             return ;

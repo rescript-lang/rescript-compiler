@@ -45,21 +45,21 @@ function test_js_error4(param) {
   }
   catch (raw_e){
     var e = Caml_js_exceptions.internalToOCamlException(raw_e);
-    if (e.CamlExt === Caml_builtin_exceptions.not_found) {
+    if (e.CamlExt.CamlId === Caml_builtin_exceptions.not_found.CamlId) {
       return 2;
     }
-    if (e.CamlExt === Caml_builtin_exceptions.invalid_argument && e._1 === "x") {
+    if (e.CamlExt.CamlId === Caml_builtin_exceptions.invalid_argument.CamlId && e._1 === "x") {
       return 3;
     }
-    if (e.CamlExt === A) {
+    if (e.CamlExt.CamlId === A.CamlId) {
       if (e._1 !== 2) {
         return 7;
       } else {
         return 4;
       }
-    } else if (e.CamlExt === B) {
+    } else if (e.CamlExt.CamlId === B.CamlId) {
       return 5;
-    } else if (e.CamlExt === C && !(e._1 !== 1 || e._2 !== 2)) {
+    } else if (e.CamlExt.CamlId === C.CamlId && !(e._1 !== 1 || e._2 !== 2)) {
       return 6;
     } else {
       return 7;
@@ -73,7 +73,7 @@ function f(g) {
   }
   catch (raw_exn){
     var exn = Caml_js_exceptions.internalToOCamlException(raw_exn);
-    if (exn.CamlExt === Caml_builtin_exceptions.not_found) {
+    if (exn.CamlExt.CamlId === Caml_builtin_exceptions.not_found.CamlId) {
       return 1;
     }
     throw exn;

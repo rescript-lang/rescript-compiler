@@ -2993,7 +2993,7 @@ function get_method_label(table, name) {
   }
   catch (raw_exn){
     var exn = Caml_js_exceptions.internalToOCamlException(raw_exn);
-    if (exn.CamlExt === Caml_builtin_exceptions.not_found) {
+    if (exn.CamlExt.CamlId === Caml_builtin_exceptions.not_found.CamlId) {
       var label = new_method(table);
       table.methods_by_name = add$1(name, label, table.methods_by_name);
       table.methods_by_label = add$2(label, true, table.methods_by_label);
@@ -3031,7 +3031,7 @@ function get_method(table, label) {
   }
   catch (raw_exn){
     var exn = Caml_js_exceptions.internalToOCamlException(raw_exn);
-    if (exn.CamlExt === Caml_builtin_exceptions.not_found) {
+    if (exn.CamlExt.CamlId === Caml_builtin_exceptions.not_found.CamlId) {
       return Caml_array.caml_array_get(table.methods, label);
     }
     throw exn;
@@ -3088,7 +3088,7 @@ function narrow(table, vars, virt_meths, concr_meths) {
           }
           catch (raw_exn){
             var exn = Caml_js_exceptions.internalToOCamlException(raw_exn);
-            if (exn.CamlExt === Caml_builtin_exceptions.not_found) {
+            if (exn.CamlExt.CamlId === Caml_builtin_exceptions.not_found.CamlId) {
               tmp = true;
             } else {
               throw exn;
@@ -3151,7 +3151,7 @@ function new_variable(table, name) {
   }
   catch (raw_exn){
     var exn = Caml_js_exceptions.internalToOCamlException(raw_exn);
-    if (exn.CamlExt === Caml_builtin_exceptions.not_found) {
+    if (exn.CamlExt.CamlId === Caml_builtin_exceptions.not_found.CamlId) {
       var index = new_slot(table);
       if (name !== "") {
         table.vars = add(name, index, table.vars);
@@ -3190,7 +3190,7 @@ function get_variable(table, name) {
   }
   catch (raw_exn){
     var exn = Caml_js_exceptions.internalToOCamlException(raw_exn);
-    if (exn.CamlExt === Caml_builtin_exceptions.not_found) {
+    if (exn.CamlExt.CamlId === Caml_builtin_exceptions.not_found.CamlId) {
       throw {
             CamlExt: Caml_builtin_exceptions.assert_failure,
             _1: /* tuple */[

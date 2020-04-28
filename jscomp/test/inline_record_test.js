@@ -61,7 +61,7 @@ var v3 = {
 
 var tmp;
 
-if (A0 === A0) {
+if (A0.CamlId === A0.CamlId) {
   tmp = 3;
 } else {
   throw {
@@ -143,7 +143,7 @@ var v6 = {
 };
 
 function ff0(x) {
-  if (x.CamlExt === A4) {
+  if (x.CamlExt.CamlId === A4.CamlId) {
     x.x = x.x + 1 | 0;
     x.z = x.z + 1 | 0;
     return ;
@@ -157,7 +157,7 @@ for(var i$1 = 0; i$1 <= 10; ++i$1){
 
 var tmp$3;
 
-if (v6.CamlExt === A4) {
+if (v6.CamlExt.CamlId === A4.CamlId) {
   tmp$3 = v6.x;
 } else {
   throw {

@@ -40,9 +40,9 @@ var Hello = Caml_exceptions.create("Exception_repr_test.Hello");
 var A = Caml_exceptions.create("Exception_repr_test.A");
 
 Printexc.register_printer((function (s) {
-        if (s.CamlExt === Hi) {
+        if (s.CamlExt.CamlId === Hi.CamlId) {
           return "hey";
-        } else if (s.CamlExt === A) {
+        } else if (s.CamlExt.CamlId === A.CamlId) {
           return Curry._1(Format.asprintf(/* Format */[
                           /* String_literal */Block.__(11, [
                               "A(",

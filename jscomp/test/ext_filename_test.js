@@ -71,7 +71,7 @@ function chop_extension(locOpt, name) {
   }
   catch (raw_exn){
     var exn = Caml_js_exceptions.internalToOCamlException(raw_exn);
-    if (exn.CamlExt === Caml_builtin_exceptions.invalid_argument) {
+    if (exn.CamlExt.CamlId === Caml_builtin_exceptions.invalid_argument.CamlId) {
       return Curry._2(Format.ksprintf(Pervasives.invalid_arg, /* Format */[
                       /* String_literal */Block.__(11, [
                           "Filename.chop_extension ( ",
@@ -102,7 +102,7 @@ function chop_extension_if_any(fname) {
   }
   catch (raw_exn){
     var exn = Caml_js_exceptions.internalToOCamlException(raw_exn);
-    if (exn.CamlExt === Caml_builtin_exceptions.invalid_argument) {
+    if (exn.CamlExt.CamlId === Caml_builtin_exceptions.invalid_argument.CamlId) {
       return fname;
     }
     throw exn;

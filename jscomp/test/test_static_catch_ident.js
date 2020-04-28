@@ -7,7 +7,7 @@ var Scan_failure = Caml_exceptions.create("Test_static_catch_ident.Scan_failure"
 
 function scanf_bad_input(ib, x) {
   var s;
-  if (x.CamlExt === Scan_failure || x.CamlExt === Caml_builtin_exceptions.failure) {
+  if (x.CamlExt.CamlId === Scan_failure.CamlId || x.CamlExt.CamlId === Caml_builtin_exceptions.failure.CamlId) {
     s = x._1;
   } else {
     throw x;

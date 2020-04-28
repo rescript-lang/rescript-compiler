@@ -34,11 +34,11 @@ function eq(loc, x, y) {
 }
 
 function handler(e) {
-  if (e.CamlExt === Js_exn.$$Error) {
+  if (e.CamlExt.CamlId === Js_exn.$$Error.CamlId) {
     console.log("js error");
     return Promise.resolve(0);
   }
-  if (e.CamlExt === Caml_builtin_exceptions.not_found) {
+  if (e.CamlExt.CamlId === Caml_builtin_exceptions.not_found.CamlId) {
     console.log("hi");
     return Promise.resolve(0);
   }
@@ -54,9 +54,9 @@ function handler(e) {
 
 function myHandler(match) {
   if (Caml_exceptions.caml_is_extension(match)) {
-    if (match.CamlExt === Caml_builtin_exceptions.not_found) {
+    if (match.CamlExt.CamlId === Caml_builtin_exceptions.not_found.CamlId) {
       return 1;
-    } else if (match.CamlExt === Js_exn.$$Error) {
+    } else if (match.CamlExt.CamlId === Js_exn.$$Error.CamlId) {
       return 2;
     } else {
       return ;

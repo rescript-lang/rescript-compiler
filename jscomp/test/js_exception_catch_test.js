@@ -60,7 +60,7 @@ try {
 }
 catch (raw_x){
   var x = Caml_js_exceptions.internalToOCamlException(raw_x);
-  if (x.CamlExt === Js_exn.$$Error) {
+  if (x.CamlExt.CamlId === Js_exn.$$Error.CamlId) {
     add_test("File \"js_exception_catch_test.ml\", line 21, characters 10-17", (function (param) {
             return /* Ok */Block.__(4, [true]);
           }));
@@ -88,29 +88,29 @@ function test(f) {
   }
   catch (raw_e){
     var e = Caml_js_exceptions.internalToOCamlException(raw_e);
-    if (e.CamlExt === Caml_builtin_exceptions.not_found) {
+    if (e.CamlExt.CamlId === Caml_builtin_exceptions.not_found.CamlId) {
       return /* Not_found */-358247754;
-    } else if (e.CamlExt === Caml_builtin_exceptions.invalid_argument) {
+    } else if (e.CamlExt.CamlId === Caml_builtin_exceptions.invalid_argument.CamlId) {
       if (e._1 === "x") {
         return /* Invalid_argument */-50278363;
       } else {
         return /* Invalid_any */545126980;
       }
-    } else if (e.CamlExt === A) {
+    } else if (e.CamlExt.CamlId === A.CamlId) {
       if (e._1 !== 2) {
         return /* A_any */740357294;
       } else {
         return /* A2 */14545;
       }
-    } else if (e.CamlExt === B) {
+    } else if (e.CamlExt.CamlId === B.CamlId) {
       return /* B */66;
-    } else if (e.CamlExt === C) {
+    } else if (e.CamlExt.CamlId === C.CamlId) {
       if (e._1 !== 1 || e._2 !== 2) {
         return /* C_any */-756146768;
       } else {
         return /* C */67;
       }
-    } else if (e.CamlExt === Js_exn.$$Error) {
+    } else if (e.CamlExt.CamlId === Js_exn.$$Error.CamlId) {
       return /* Js_error */634022066;
     } else {
       return /* Any */3257036;

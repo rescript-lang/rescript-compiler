@@ -25,20 +25,20 @@ function appf(g, x) {
   }
   catch (raw_exn){
     var exn = Caml_js_exceptions.internalToOCamlException(raw_exn);
-    if (exn.CamlExt === Local) {
+    if (exn.CamlExt.CamlId === Local.CamlId) {
       return 3;
     }
-    if (exn.CamlExt === Caml_builtin_exceptions.not_found) {
+    if (exn.CamlExt.CamlId === Caml_builtin_exceptions.not_found.CamlId) {
       return 2;
     }
-    if (exn.CamlExt === A) {
+    if (exn.CamlExt.CamlId === A.CamlId) {
       exn._1 !== 32;
       return 3;
     }
-    if (exn.CamlExt !== B) {
-      if (exn.CamlExt === C) {
+    if (exn.CamlExt.CamlId !== B.CamlId) {
+      if (exn.CamlExt.CamlId === C.CamlId) {
         return exn._1;
-      } else if (exn.CamlExt === D) {
+      } else if (exn.CamlExt.CamlId === D.CamlId) {
         return exn._1[0];
       } else {
         return 4;
@@ -70,7 +70,7 @@ try {
 }
 catch (raw_x){
   var x = Caml_js_exceptions.internalToOCamlException(raw_x);
-  f = x.CamlExt === A ? x._1 : 2;
+  f = x.CamlExt.CamlId === A.CamlId ? x._1 : 2;
 }
 
 var ff;
@@ -80,7 +80,7 @@ try {
 }
 catch (raw_x$1){
   var x$1 = Caml_js_exceptions.internalToOCamlException(raw_x$1);
-  ff = x$1.CamlExt === A ? x$1._1 : 2;
+  ff = x$1.CamlExt.CamlId === A.CamlId ? x$1._1 : 2;
 }
 
 var fff;
@@ -90,7 +90,7 @@ try {
 }
 catch (raw_x$2){
   var x$2 = Caml_js_exceptions.internalToOCamlException(raw_x$2);
-  fff = x$2.CamlExt === A ? x$2._1 : 2;
+  fff = x$2.CamlExt.CamlId === A.CamlId ? x$2._1 : 2;
 }
 
 var a0;
@@ -100,7 +100,7 @@ try {
 }
 catch (raw_x$3){
   var x$3 = Caml_js_exceptions.internalToOCamlException(raw_x$3);
-  if (x$3.CamlExt === A || x$3.CamlExt === Js_exn.$$Error) {
+  if (x$3.CamlExt.CamlId === A.CamlId || x$3.CamlExt.CamlId === Js_exn.$$Error.CamlId) {
     a0 = x$3._1;
   } else {
     throw {
@@ -157,7 +157,7 @@ var suites = {
       /* tuple */[
         "File \"exception_raise_test.ml\", line 116, characters 4-11",
         (function (param) {
-            if (a1.CamlExt === Js_exn.$$Error) {
+            if (a1.CamlExt.CamlId === Js_exn.$$Error.CamlId) {
               return /* Eq */Block.__(0, [
                         a1._1,
                         2

@@ -38,7 +38,7 @@ function f(param) {
   }
   catch (raw_exn){
     var exn = Caml_js_exceptions.internalToOCamlException(raw_exn);
-    if (exn.CamlExt === A) {
+    if (exn.CamlExt.CamlId === A.CamlId) {
       return ;
     }
     throw exn;

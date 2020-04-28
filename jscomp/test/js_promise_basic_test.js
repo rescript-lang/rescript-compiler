@@ -73,7 +73,7 @@ function andThenTest(param) {
 var h = Promise.resolve(undefined);
 
 function assertIsNotFound(x) {
-  var match = Caml_exceptions.caml_is_extension(x) && x.CamlExt === Caml_builtin_exceptions.not_found ? 0 : undefined;
+  var match = Caml_exceptions.caml_is_extension(x) && x.CamlExt.CamlId === Caml_builtin_exceptions.not_found.CamlId ? 0 : undefined;
   if (match !== undefined) {
     return h;
   }
@@ -143,7 +143,7 @@ function orElseRejectedRejectTest(param) {
                                 CamlExt: Caml_builtin_exceptions.stack_overflow
                               });
                   })).then(fail).catch((function (error) {
-                var match = Caml_exceptions.caml_is_extension(error) && error.CamlExt === Caml_builtin_exceptions.stack_overflow ? 0 : undefined;
+                var match = Caml_exceptions.caml_is_extension(error) && error.CamlExt.CamlId === Caml_builtin_exceptions.stack_overflow.CamlId ? 0 : undefined;
                 if (match !== undefined) {
                   return h;
                 }

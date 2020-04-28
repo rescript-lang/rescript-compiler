@@ -11,7 +11,7 @@ try {
 }
 catch (raw_e){
   var e = Caml_js_exceptions.internalToOCamlException(raw_e);
-  if (e.CamlExt === Caml_builtin_exceptions.invalid_argument) {
+  if (e.CamlExt.CamlId === Caml_builtin_exceptions.invalid_argument.CamlId) {
     console.log(e._1);
     hh = /* "a" */97;
   } else {

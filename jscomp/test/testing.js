@@ -145,7 +145,7 @@ function failure_test(f, x, s) {
 
 function scan_failure_test(f, x) {
   return test_raises_exc_p((function (param) {
-                return param.CamlExt === Scanf.Scan_failure;
+                return param.CamlExt.CamlId === Scanf.Scan_failure.CamlId;
               }), f, x);
 }
 

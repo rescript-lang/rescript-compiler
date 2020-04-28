@@ -1514,7 +1514,7 @@ function scan_elems$2(ib, accu) {
   }
   catch (raw_exn){
     var exn = Caml_js_exceptions.internalToOCamlException(raw_exn);
-    if (exn.CamlExt === Scanf.Scan_failure) {
+    if (exn.CamlExt.CamlId === Scanf.Scan_failure.CamlId) {
       Curry._1(Scanf.bscanf(ib, /* Format */[
                 /* Char_literal */Block.__(12, [
                     /* "]" */93,
@@ -1524,7 +1524,7 @@ function scan_elems$2(ib, accu) {
               ]), undefined);
       return accu;
     }
-    if (exn.CamlExt === Caml_builtin_exceptions.end_of_file) {
+    if (exn.CamlExt.CamlId === Caml_builtin_exceptions.end_of_file.CamlId) {
       return accu;
     }
     throw exn;
@@ -1978,7 +1978,7 @@ function scan_elems$5(ib, scan_elem, accu) {
   }
   catch (raw_exn){
     var exn = Caml_js_exceptions.internalToOCamlException(raw_exn);
-    if (exn.CamlExt === Scanf.Scan_failure) {
+    if (exn.CamlExt.CamlId === Scanf.Scan_failure.CamlId) {
       return accu;
     }
     throw exn;

@@ -17,7 +17,7 @@ try {
 }
 catch (raw_exn){
   var exn = Caml_js_exceptions.internalToOCamlException(raw_exn);
-  function_equal_test = exn.CamlExt === Caml_builtin_exceptions.invalid_argument && exn._1 === "equal: functional value" ? true : false;
+  function_equal_test = exn.CamlExt.CamlId === Caml_builtin_exceptions.invalid_argument.CamlId && exn._1 === "equal: functional value" ? true : false;
 }
 
 var suites = {

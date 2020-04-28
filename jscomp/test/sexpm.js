@@ -98,7 +98,7 @@ function _must_escape(s) {
   }
   catch (raw_exn){
     var exn = Caml_js_exceptions.internalToOCamlException(raw_exn);
-    if (exn.CamlExt === Pervasives.Exit) {
+    if (exn.CamlExt.CamlId === Pervasives.Exit.CamlId) {
       return true;
     }
     throw exn;

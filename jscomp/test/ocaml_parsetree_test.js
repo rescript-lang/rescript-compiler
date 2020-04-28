@@ -42,7 +42,7 @@ try {
 }
 catch (raw_exn){
   var exn = Caml_js_exceptions.internalToOCamlException(raw_exn);
-  if (exn.CamlExt !== Caml_builtin_exceptions.not_found) {
+  if (exn.CamlExt.CamlId !== Caml_builtin_exceptions.not_found.CamlId) {
     throw exn;
   }
   
@@ -222,7 +222,7 @@ function set_color_tag_handling(ppf) {
     }
     catch (raw_exn){
       var exn = Caml_js_exceptions.internalToOCamlException(raw_exn);
-      if (exn.CamlExt === Caml_builtin_exceptions.not_found) {
+      if (exn.CamlExt.CamlId === Caml_builtin_exceptions.not_found.CamlId) {
         return Curry._1(partial_arg, param);
       }
       throw exn;
@@ -242,7 +242,7 @@ function set_color_tag_handling(ppf) {
     }
     catch (raw_exn){
       var exn = Caml_js_exceptions.internalToOCamlException(raw_exn);
-      if (exn.CamlExt === Caml_builtin_exceptions.not_found) {
+      if (exn.CamlExt.CamlId === Caml_builtin_exceptions.not_found.CamlId) {
         return Curry._1(partial_arg$1, param);
       }
       throw exn;
@@ -1439,7 +1439,7 @@ function highlight_locations(ppf, locs) {
         }
         catch (raw_exn){
           var exn = Caml_js_exceptions.internalToOCamlException(raw_exn);
-          if (exn.CamlExt === Caml_builtin_exceptions.not_found) {
+          if (exn.CamlExt.CamlId === Caml_builtin_exceptions.not_found.CamlId) {
             norepeat = false;
           } else {
             throw exn;
@@ -1455,7 +1455,7 @@ function highlight_locations(ppf, locs) {
         }
         catch (raw_exn$1){
           var exn$1 = Caml_js_exceptions.internalToOCamlException(raw_exn$1);
-          if (exn$1.CamlExt === Pervasives.Exit) {
+          if (exn$1.CamlExt.CamlId === Pervasives.Exit.CamlId) {
             return false;
           }
           throw exn$1;
@@ -1475,7 +1475,7 @@ function highlight_locations(ppf, locs) {
       }
       catch (raw_exn$2){
         var exn$2 = Caml_js_exceptions.internalToOCamlException(raw_exn$2);
-        if (exn$2.CamlExt === Pervasives.Exit) {
+        if (exn$2.CamlExt.CamlId === Pervasives.Exit.CamlId) {
           return false;
         }
         throw exn$2;
@@ -1814,7 +1814,7 @@ function error_of_printer(loc, print, x) {
 }
 
 register_error_of_exn((function (msg) {
-        if (msg.CamlExt === Caml_builtin_exceptions.sys_error) {
+        if (msg.CamlExt.CamlId === Caml_builtin_exceptions.sys_error.CamlId) {
           return Curry._1(errorf(in_file(input_name.contents), undefined, undefined, /* Format */[
                           /* String_literal */Block.__(11, [
                               "I/O error: ",
@@ -1825,7 +1825,7 @@ register_error_of_exn((function (msg) {
                             ]),
                           "I/O error: %s"
                         ]), msg._1);
-        } else if (msg.CamlExt === Errors) {
+        } else if (msg.CamlExt.CamlId === Errors.CamlId) {
           return Curry._1(errorf(in_file(input_name.contents), undefined, undefined, /* Format */[
                           /* String_literal */Block.__(11, [
                               "Some fatal warnings were triggered (",
@@ -1849,7 +1849,7 @@ register_error_of_exn((function (msg) {
 var $$Error = Caml_exceptions.create("Ocaml_parsetree_test.Location.Error");
 
 register_error_of_exn((function (e) {
-        if (e.CamlExt === $$Error) {
+        if (e.CamlExt.CamlId === $$Error.CamlId) {
           return e._1;
         }
         
@@ -2255,7 +2255,7 @@ function get_pre_docs(pos) {
   }
   catch (raw_exn){
     var exn = Caml_js_exceptions.internalToOCamlException(raw_exn);
-    if (exn.CamlExt === Caml_builtin_exceptions.not_found) {
+    if (exn.CamlExt.CamlId === Caml_builtin_exceptions.not_found.CamlId) {
       return ;
     }
     throw exn;
@@ -2268,7 +2268,7 @@ function mark_pre_docs(pos) {
   }
   catch (raw_exn){
     var exn = Caml_js_exceptions.internalToOCamlException(raw_exn);
-    if (exn.CamlExt === Caml_builtin_exceptions.not_found) {
+    if (exn.CamlExt.CamlId === Caml_builtin_exceptions.not_found.CamlId) {
       return ;
     }
     throw exn;
@@ -2292,7 +2292,7 @@ function get_post_docs(pos) {
   }
   catch (raw_exn){
     var exn = Caml_js_exceptions.internalToOCamlException(raw_exn);
-    if (exn.CamlExt === Caml_builtin_exceptions.not_found) {
+    if (exn.CamlExt.CamlId === Caml_builtin_exceptions.not_found.CamlId) {
       return ;
     }
     throw exn;
@@ -2305,7 +2305,7 @@ function mark_post_docs(pos) {
   }
   catch (raw_exn){
     var exn = Caml_js_exceptions.internalToOCamlException(raw_exn);
-    if (exn.CamlExt === Caml_builtin_exceptions.not_found) {
+    if (exn.CamlExt.CamlId === Caml_builtin_exceptions.not_found.CamlId) {
       return ;
     }
     throw exn;
@@ -2319,7 +2319,7 @@ function get_info(pos) {
   }
   catch (raw_exn){
     var exn = Caml_js_exceptions.internalToOCamlException(raw_exn);
-    if (exn.CamlExt === Caml_builtin_exceptions.not_found) {
+    if (exn.CamlExt.CamlId === Caml_builtin_exceptions.not_found.CamlId) {
       return ;
     }
     throw exn;
@@ -2341,7 +2341,7 @@ function get_text(pos) {
   }
   catch (raw_exn){
     var exn = Caml_js_exceptions.internalToOCamlException(raw_exn);
-    if (exn.CamlExt === Caml_builtin_exceptions.not_found) {
+    if (exn.CamlExt.CamlId === Caml_builtin_exceptions.not_found.CamlId) {
       return /* [] */0;
     }
     throw exn;
@@ -2363,7 +2363,7 @@ function get_pre_extra_text(pos) {
   }
   catch (raw_exn){
     var exn = Caml_js_exceptions.internalToOCamlException(raw_exn);
-    if (exn.CamlExt === Caml_builtin_exceptions.not_found) {
+    if (exn.CamlExt.CamlId === Caml_builtin_exceptions.not_found.CamlId) {
       return /* [] */0;
     }
     throw exn;
@@ -2385,7 +2385,7 @@ function get_post_extra_text(pos) {
   }
   catch (raw_exn){
     var exn = Caml_js_exceptions.internalToOCamlException(raw_exn);
-    if (exn.CamlExt === Caml_builtin_exceptions.not_found) {
+    if (exn.CamlExt.CamlId === Caml_builtin_exceptions.not_found.CamlId) {
       return /* [] */0;
     }
     throw exn;
@@ -3400,7 +3400,7 @@ function prepare_error(loc) {
 }
 
 register_error_of_exn((function (err) {
-        if (err.CamlExt === $$Error$1) {
+        if (err.CamlExt.CamlId === $$Error$1.CamlId) {
           return prepare_error(err._1);
         }
         
@@ -9593,7 +9593,7 @@ try {
 }
 catch (raw_exn$1){
   var exn$2 = Caml_js_exceptions.internalToOCamlException(raw_exn$1);
-  if (exn$2.CamlExt === Caml_builtin_exceptions.not_found) {
+  if (exn$2.CamlExt.CamlId === Caml_builtin_exceptions.not_found.CamlId) {
     tmp = "";
   } else {
     throw exn$2;
@@ -9685,7 +9685,7 @@ function query(loc, str) {
   }
   catch (raw_exn){
     var exn = Caml_js_exceptions.internalToOCamlException(raw_exn);
-    if (exn.CamlExt === Caml_builtin_exceptions.not_found) {
+    if (exn.CamlExt.CamlId === Caml_builtin_exceptions.not_found.CamlId) {
       var exit = 0;
       var v$1;
       try {
@@ -9694,7 +9694,7 @@ function query(loc, str) {
       }
       catch (raw_exn$1){
         var exn$1 = Caml_js_exceptions.internalToOCamlException(raw_exn$1);
-        if (exn$1.CamlExt === Caml_builtin_exceptions.not_found) {
+        if (exn$1.CamlExt.CamlId === Caml_builtin_exceptions.not_found.CamlId) {
           return /* Dir_bool */Block.__(0, [false]);
         }
         throw exn$1;
@@ -10984,7 +10984,7 @@ function report_error(ppf, c) {
 }
 
 register_error_of_exn((function (param) {
-        if (param.CamlExt === $$Error$2) {
+        if (param.CamlExt.CamlId === $$Error$2.CamlId) {
           return error_of_printer(param._2, report_error, param._1);
         }
         
@@ -11049,7 +11049,7 @@ function token(lexbuf) {
           }
           catch (raw_exn){
             var exn = Caml_js_exceptions.internalToOCamlException(raw_exn);
-            if (exn.CamlExt === Caml_builtin_exceptions.not_found) {
+            if (exn.CamlExt.CamlId === Caml_builtin_exceptions.not_found.CamlId) {
               return /* LIDENT */Block.__(11, [s]);
             }
             throw exn;
@@ -11068,7 +11068,7 @@ function token(lexbuf) {
           }
           catch (raw_exn$1){
             var exn$1 = Caml_js_exceptions.internalToOCamlException(raw_exn$1);
-            if (exn$1.CamlExt === Caml_builtin_exceptions.failure) {
+            if (exn$1.CamlExt.CamlId === Caml_builtin_exceptions.failure.CamlId) {
               throw {
                     CamlExt: $$Error$2,
                     _1: /* Literal_overflow */Block.__(5, ["int"]),
@@ -11085,7 +11085,7 @@ function token(lexbuf) {
           }
           catch (raw_exn$2){
             var exn$2 = Caml_js_exceptions.internalToOCamlException(raw_exn$2);
-            if (exn$2.CamlExt === Caml_builtin_exceptions.failure) {
+            if (exn$2.CamlExt.CamlId === Caml_builtin_exceptions.failure.CamlId) {
               throw {
                     CamlExt: $$Error$2,
                     _1: /* Literal_overflow */Block.__(5, ["int32"]),
@@ -11100,7 +11100,7 @@ function token(lexbuf) {
           }
           catch (raw_exn$3){
             var exn$3 = Caml_js_exceptions.internalToOCamlException(raw_exn$3);
-            if (exn$3.CamlExt === Caml_builtin_exceptions.failure) {
+            if (exn$3.CamlExt.CamlId === Caml_builtin_exceptions.failure.CamlId) {
               throw {
                     CamlExt: $$Error$2,
                     _1: /* Literal_overflow */Block.__(5, ["int64"]),
@@ -11115,7 +11115,7 @@ function token(lexbuf) {
           }
           catch (raw_exn$4){
             var exn$4 = Caml_js_exceptions.internalToOCamlException(raw_exn$4);
-            if (exn$4.CamlExt === Caml_builtin_exceptions.failure) {
+            if (exn$4.CamlExt.CamlId === Caml_builtin_exceptions.failure.CamlId) {
               throw {
                     CamlExt: $$Error$2,
                     _1: /* Literal_overflow */Block.__(5, ["nativeint"]),
@@ -11406,7 +11406,7 @@ function __ocaml_lex_comment_rec(lexbuf, ___ocaml_lex_state) {
           }
           catch (raw_exn){
             var exn = Caml_js_exceptions.internalToOCamlException(raw_exn);
-            if (exn.CamlExt === $$Error$2) {
+            if (exn.CamlExt.CamlId === $$Error$2.CamlId) {
               var match$1 = exn._1;
               if (typeof match$1 === "number") {
                 if (match$1 !== 0) {
@@ -11453,7 +11453,7 @@ function __ocaml_lex_comment_rec(lexbuf, ___ocaml_lex_state) {
           }
           catch (raw_exn$1){
             var exn$1 = Caml_js_exceptions.internalToOCamlException(raw_exn$1);
-            if (exn$1.CamlExt === $$Error$2) {
+            if (exn$1.CamlExt.CamlId === $$Error$2.CamlId) {
               var match$3 = exn$1._1;
               if (typeof match$3 === "number") {
                 if (match$3 !== 0) {
@@ -11963,7 +11963,7 @@ function skip_phrase(lexbuf) {
     }
     catch (raw_exn){
       var exn = Caml_js_exceptions.internalToOCamlException(raw_exn);
-      if (exn.CamlExt === $$Error$2) {
+      if (exn.CamlExt.CamlId === $$Error$2.CamlId) {
         var tmp = exn._1;
         if (typeof tmp === "number") {
           if (tmp === /* Unterminated_string */0) {
@@ -12006,7 +12006,7 @@ function wrap(parsing_fun, lexbuf) {
   }
   catch (raw_err){
     var err = Caml_js_exceptions.internalToOCamlException(raw_err);
-    if (err.CamlExt === $$Error$2) {
+    if (err.CamlExt.CamlId === $$Error$2.CamlId) {
       var tmp = err._1;
       if (typeof tmp === "number") {
         throw err;
@@ -12020,14 +12020,14 @@ function wrap(parsing_fun, lexbuf) {
       }
       throw err;
     } else {
-      if (err.CamlExt === $$Error$1) {
+      if (err.CamlExt.CamlId === $$Error$1.CamlId) {
         if (input_name.contents === "//toplevel//") {
           maybe_skip_phrase(lexbuf);
           throw err;
         }
         throw err;
       }
-      if (err.CamlExt !== Parsing.Parse_error && err.CamlExt !== Escape_error) {
+      if (err.CamlExt.CamlId !== Parsing.Parse_error.CamlId && err.CamlExt.CamlId !== Escape_error.CamlId) {
         throw err;
       }
       

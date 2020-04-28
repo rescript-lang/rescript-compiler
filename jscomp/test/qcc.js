@@ -196,7 +196,7 @@ function next(param) {
   }
   catch (raw_exn){
     var exn = Caml_js_exceptions.internalToOCamlException(raw_exn);
-    if (exn.CamlExt === Caml_builtin_exceptions.end_of_file) {
+    if (exn.CamlExt.CamlId === Caml_builtin_exceptions.end_of_file.CamlId) {
       c = undefined;
     } else {
       throw exn;

@@ -65,7 +65,7 @@ function memo_fib_init($$class) {
           }
           catch (raw_exn){
             var exn = Caml_js_exceptions.internalToOCamlException(raw_exn);
-            if (exn.CamlExt === Caml_builtin_exceptions.not_found) {
+            if (exn.CamlExt.CamlId === Caml_builtin_exceptions.not_found.CamlId) {
               var v = Curry._2(calc$1, self$2, x);
               Hashtbl.add(self$2[cache], x, v);
               return v;

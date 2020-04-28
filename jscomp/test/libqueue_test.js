@@ -42,7 +42,7 @@ function does_raise(f, q) {
   }
   catch (raw_exn){
     var exn = Caml_js_exceptions.internalToOCamlException(raw_exn);
-    if (exn.CamlExt === Queue.Empty) {
+    if (exn.CamlExt.CamlId === Queue.Empty.CamlId) {
       return true;
     }
     throw exn;

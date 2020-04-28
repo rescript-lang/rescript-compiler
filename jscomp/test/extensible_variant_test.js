@@ -16,13 +16,13 @@ var N = {
 var Int$1 = Caml_exceptions.create("Extensible_variant_test.Int");
 
 function to_int(x) {
-  if (x.CamlExt === Str) {
+  if (x.CamlExt.CamlId === Str.CamlId) {
     return -1;
   }
-  if (x.CamlExt === Int) {
+  if (x.CamlExt.CamlId === Int.CamlId) {
     return x._1;
   }
-  if (x.CamlExt === Int$1) {
+  if (x.CamlExt.CamlId === Int$1.CamlId) {
     return x._2;
   }
   throw {
