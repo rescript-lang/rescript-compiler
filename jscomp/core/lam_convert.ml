@@ -22,6 +22,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
+let caml_id_field_info : Lam_primitive.t = (Pfield (0, Fld_record {name = "CamlId"; mutable_flag = Mutable;}))
 
 (** A conservative approach to avoid packing exceptions
     for lambda expression like {[
@@ -63,15 +64,15 @@ let exception_id_destructed (l : Lam.t) (fv : Ident.t): bool  =
   and hit_list xs = Ext_list.exists xs hit 
   and hit (l : Lam.t) =
     match l  with
-    | Lprim {primitive = Pintcomp _ ;
+    (* | Lprim {primitive = Pintcomp _ ;
              args = ([x;y ])  } ->
       begin match x,y with
         | Lvar _, Lvar _ -> false
         | Lvar _, _ -> hit y
         | _, Lvar _ -> hit x
         | _, _  -> hit x || hit y
-      end
-    | Lprim {primitive = Praise ; args = [Lvar _]} -> false
+      end *) (* FIXME: this can be uncovered after we do the unboxing *)
+    | Lprim {primitive = Praise ; args = [Lvar _]} -> false 
     | Lprim {primitive ; args; _} ->
       hit_list args
     | Lvar id ->    
@@ -532,6 +533,14 @@ let convert (exports : Set_ident.t) (lam : Lambda.lambda) : Lam.t * Lam_module_i
         -> Lam.unit
       | _ -> prim ~primitive:Pupdate_mod ~args loc
       end
+    | _ when s = "#extension_slot_eq" -> 
+      begin match Ext_list.map args convert_aux with 
+      | [lhs; rhs] -> 
+        prim ~primitive:(Pintcomp Ceq) 
+          ~args:[prim ~primitive:caml_id_field_info ~args:[lhs] loc ;
+                 prim ~primitive:caml_id_field_info ~args:[rhs] loc ;
+                ] loc
+      | _ -> assert false end  
     | _ ->
       let primitive : Lam_primitive.t =
         match s with
