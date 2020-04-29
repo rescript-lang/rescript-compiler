@@ -527,8 +527,8 @@ let convert (exports : Set_ident.t) (lam : Lambda.lambda) : Lam.t * Lam_module_i
       begin match Ext_list.map args convert_aux with 
       | [lhs; rhs] -> 
         prim ~primitive:(Pintcomp Ceq) 
-          ~args:[prim ~primitive:caml_id_field_info ~args:[lhs] loc ;
-                 prim ~primitive:caml_id_field_info ~args:[rhs] loc ;
+          ~args:[lam_extension_id loc lhs ;
+                 lam_extension_id loc rhs;
                 ] loc
       | _ -> assert false end  
     | _ ->
