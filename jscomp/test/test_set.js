@@ -2,7 +2,6 @@
 
 var List = require("../../lib/js/list.js");
 var Curry = require("../../lib/js/curry.js");
-var Caml_builtin_exceptions = require("../../lib/js/caml_builtin_exceptions.js");
 
 function Make(Ord) {
   var height = function (param) {
@@ -37,13 +36,15 @@ function Make(Ord) {
           return create(create(ll, lv, lr[0]), lr[1], create(lr[2], v, r));
         }
         throw {
-              CamlExt: Caml_builtin_exceptions.invalid_argument,
-              _1: "Set.bal"
+              ExceptionID: -3,
+              _1: "Set.bal",
+              Debug: "Invalid_argument"
             };
       }
       throw {
-            CamlExt: Caml_builtin_exceptions.invalid_argument,
-            _1: "Set.bal"
+            ExceptionID: -3,
+            _1: "Set.bal",
+            Debug: "Invalid_argument"
           };
     }
     if (hr <= (hl + 2 | 0)) {
@@ -65,13 +66,15 @@ function Make(Ord) {
         return create(create(l, v, rl[0]), rl[1], create(rl[2], rv, rr));
       }
       throw {
-            CamlExt: Caml_builtin_exceptions.invalid_argument,
-            _1: "Set.bal"
+            ExceptionID: -3,
+            _1: "Set.bal",
+            Debug: "Invalid_argument"
           };
     }
     throw {
-          CamlExt: Caml_builtin_exceptions.invalid_argument,
-          _1: "Set.bal"
+          ExceptionID: -3,
+          _1: "Set.bal",
+          Debug: "Invalid_argument"
         };
   };
   var add = function (x, t) {
@@ -146,7 +149,8 @@ function Make(Ord) {
         continue ;
       }
       throw {
-            CamlExt: Caml_builtin_exceptions.not_found
+            ExceptionID: -6,
+            Debug: "Not_found"
           };
     };
   };
@@ -162,7 +166,8 @@ function Make(Ord) {
         continue ;
       }
       throw {
-            CamlExt: Caml_builtin_exceptions.not_found
+            ExceptionID: -6,
+            Debug: "Not_found"
           };
     };
   };
@@ -176,8 +181,9 @@ function Make(Ord) {
       }
     }
     throw {
-          CamlExt: Caml_builtin_exceptions.invalid_argument,
-          _1: "Set.remove_min_elt"
+          ExceptionID: -3,
+          _1: "Set.remove_min_elt",
+          Debug: "Invalid_argument"
         };
   };
   var merge = function (t1, t2) {
@@ -561,7 +567,8 @@ function Make(Ord) {
         continue ;
       }
       throw {
-            CamlExt: Caml_builtin_exceptions.not_found
+            ExceptionID: -6,
+            Debug: "Not_found"
           };
     };
   };
@@ -653,12 +660,13 @@ function Make(Ord) {
               ];
       }
       throw {
-            CamlExt: Caml_builtin_exceptions.assert_failure,
+            ExceptionID: -9,
             _1: /* tuple */[
               "test_set.ml",
               372,
               18
-            ]
+            ],
+            Debug: "Assert_failure"
           };
     };
     return sub(List.length(l), l)[0];

@@ -5,7 +5,6 @@ var Block = require("../../lib/js/block.js");
 var Caml_obj = require("../../lib/js/caml_obj.js");
 var Caml_array = require("../../lib/js/caml_array.js");
 var Caml_exceptions = require("../../lib/js/caml_exceptions.js");
-var Caml_builtin_exceptions = require("../../lib/js/caml_builtin_exceptions.js");
 
 var suites = {
   contents: /* [] */0
@@ -28,35 +27,44 @@ function f0(x) {
 var Small = Caml_exceptions.create("Large_record_duplication_test.Small");
 
 function f_small(u) {
-  if (u.CamlExt.CamlId === Small.CamlId) {
+  if (u.ExceptionID === Small.ExceptionID) {
     return {
-            CamlExt: Small,
+            ExceptionID: Small.ExceptionID,
             x: 2,
-            y: u.y
+            y: u.y,
+            Debug: Small.Debug
           };
   } else {
     return {
-            CamlExt: Caml_builtin_exceptions.not_found
+            ExceptionID: -6,
+            Debug: "Not_found"
           };
   }
 }
 
+var h_000 = Small.ExceptionID;
+
+var h_003 = Small.Debug;
+
 var h = {
-  CamlExt: Small,
+  ExceptionID: h_000,
   x: 1,
-  y: ""
+  y: "",
+  Debug: h_003
 };
 
 eq("File \"large_record_duplication_test.ml\", line 72, characters 6-13", f_small(h), {
-      CamlExt: Small,
+      ExceptionID: Small.ExceptionID,
       x: 2,
-      y: ""
+      y: "",
+      Debug: Small.Debug
     });
 
 eq("File \"large_record_duplication_test.ml\", line 74, characters 6-13", Caml_obj.caml_equal(h, {
-          CamlExt: Small,
+          ExceptionID: Small.ExceptionID,
           x: 2,
-          y: ""
+          y: "",
+          Debug: Small.Debug
         }), false);
 
 var v1 = /* A0 */[
@@ -151,7 +159,7 @@ eq("File \"large_record_duplication_test.ml\", line 205, characters 6-13", get_x
 var A0 = Caml_exceptions.create("Large_record_duplication_test.A0");
 
 function f3(x) {
-  if (x.CamlExt.CamlId !== A0.CamlId) {
+  if (x.ExceptionID !== A0.ExceptionID) {
     return x;
   }
   var newrecord = Caml_obj.caml_obj_dup(x);
@@ -160,14 +168,18 @@ function f3(x) {
 }
 
 function get_x0$2(x) {
-  if (x.CamlExt.CamlId === A0.CamlId) {
+  if (x.ExceptionID === A0.ExceptionID) {
     return x.x0;
   }
   
 }
 
+var v3_000 = A0.ExceptionID;
+
+var v3_024 = A0.Debug;
+
 var v3 = {
-  CamlExt: A0,
+  ExceptionID: v3_000,
   x0: 9,
   x1: 9,
   x2: 9,
@@ -190,7 +202,8 @@ var v3 = {
   x19: 9,
   x20: 9,
   x21: 9,
-  x22: 9
+  x22: 9,
+  Debug: v3_024
 };
 
 eq("File \"large_record_duplication_test.ml\", line 271, characters 6-13", get_x0$2(f3(v3)), 1);
@@ -198,7 +211,8 @@ eq("File \"large_record_duplication_test.ml\", line 271, characters 6-13", get_x
 eq("File \"large_record_duplication_test.ml\", line 272, characters 6-13", get_x0$2(v3), 9);
 
 eq("File \"large_record_duplication_test.ml\", line 273, characters 6-13", get_x0$2({
-          CamlExt: Caml_builtin_exceptions.not_found
+          ExceptionID: -6,
+          Debug: "Not_found"
         }), undefined);
 
 Mt.from_pair_suites("Large_record_duplication_test", suites.contents);

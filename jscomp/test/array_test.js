@@ -22,7 +22,8 @@ function starts_with(xs, prefix, p) {
     for(var i = 0; i < len2; ++i){
       if (!Curry._2(p, Caml_array.caml_array_get(xs, i), Caml_array.caml_array_get(prefix, i))) {
         throw {
-              CamlExt: H
+              ExceptionID: H.ExceptionID,
+              Debug: H.Debug
             };
       }
       
@@ -31,7 +32,7 @@ function starts_with(xs, prefix, p) {
   }
   catch (raw_exn){
     var exn = Caml_js_exceptions.internalToOCamlException(raw_exn);
-    if (exn.CamlExt.CamlId === H.CamlId) {
+    if (exn.ExceptionID === H.ExceptionID) {
       return false;
     }
     throw exn;

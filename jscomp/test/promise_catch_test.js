@@ -6,7 +6,6 @@ var Js_exn = require("../../lib/js/js_exn.js");
 var Js_option = require("../../lib/js/js_option.js");
 var Caml_exceptions = require("../../lib/js/caml_exceptions.js");
 var Caml_js_exceptions = require("../../lib/js/caml_js_exceptions.js");
-var Caml_builtin_exceptions = require("../../lib/js/caml_builtin_exceptions.js");
 
 var suites = {
   contents: /* [] */0
@@ -34,29 +33,30 @@ function eq(loc, x, y) {
 }
 
 function handler(e) {
-  if (e.CamlExt.CamlId === Js_exn.$$Error.CamlId) {
+  if (e.ExceptionID === Js_exn.$$Error.ExceptionID) {
     console.log("js error");
     return Promise.resolve(0);
   }
-  if (e.CamlExt.CamlId === Caml_builtin_exceptions.not_found.CamlId) {
+  if (e.ExceptionID === /* Not_found */-6) {
     console.log("hi");
     return Promise.resolve(0);
   }
   throw {
-        CamlExt: Caml_builtin_exceptions.assert_failure,
+        ExceptionID: -9,
         _1: /* tuple */[
           "promise_catch_test.ml",
           22,
           9
-        ]
+        ],
+        Debug: "Assert_failure"
       };
 }
 
 function myHandler(match) {
   if (Caml_exceptions.caml_is_extension(match)) {
-    if (match.CamlExt.CamlId === Caml_builtin_exceptions.not_found.CamlId) {
+    if (match.ExceptionID === /* Not_found */-6) {
       return 1;
-    } else if (match.CamlExt.CamlId === Js_exn.$$Error.CamlId) {
+    } else if (match.ExceptionID === Js_exn.$$Error.ExceptionID) {
       return 2;
     } else {
       return ;
@@ -86,12 +86,13 @@ catch (raw_e){
 
 if (exit === 1) {
   throw {
-        CamlExt: Caml_builtin_exceptions.assert_failure,
+        ExceptionID: -9,
         _1: /* tuple */[
           "promise_catch_test.ml",
           39,
           9
-        ]
+        ],
+        Debug: "Assert_failure"
       };
 }
 

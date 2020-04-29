@@ -1,31 +1,32 @@
 'use strict';
 
 var Js_math = require("../../lib/js/js_math.js");
-var Caml_builtin_exceptions = require("../../lib/js/caml_builtin_exceptions.js");
 
 var match = 1;
 
 if (match !== undefined) {
   if (match !== 1) {
     throw {
-          CamlExt: Caml_builtin_exceptions.assert_failure,
+          ExceptionID: -9,
           _1: /* tuple */[
             "gpr_3980_test.ml",
             16,
             10
-          ]
+          ],
+          Debug: "Assert_failure"
         };
   }
   var match$1 = 1;
   if (match$1 !== 1) {
     if (match$1 !== 2) {
       throw {
-            CamlExt: Caml_builtin_exceptions.assert_failure,
+            ExceptionID: -9,
             _1: /* tuple */[
               "gpr_3980_test.ml",
               14,
               12
-            ]
+            ],
+            Debug: "Assert_failure"
           };
     }
     ({
@@ -36,12 +37,13 @@ if (match !== undefined) {
   
 } else {
   throw {
-        CamlExt: Caml_builtin_exceptions.assert_failure,
+        ExceptionID: -9,
         _1: /* tuple */[
           "gpr_3980_test.ml",
           16,
           10
-        ]
+        ],
+        Debug: "Assert_failure"
       };
 }
 

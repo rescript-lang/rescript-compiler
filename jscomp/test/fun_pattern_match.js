@@ -2,7 +2,6 @@
 
 var Curry = require("../../lib/js/curry.js");
 var Caml_primitive = require("../../lib/js/caml_primitive.js");
-var Caml_builtin_exceptions = require("../../lib/js/caml_builtin_exceptions.js");
 
 function f(param, v) {
   return ((((param.x0 + param.x1 | 0) + param.x2 | 0) + param.x3 | 0) + param.x4 | 0) + v | 0;
@@ -18,22 +17,24 @@ function f3(param) {
       var rhs = param.rank;
       if (typeof lhs === "number") {
         throw {
-              CamlExt: Caml_builtin_exceptions.assert_failure,
+              ExceptionID: -9,
               _1: /* tuple */[
                 "fun_pattern_match.ml",
                 44,
                 9
-              ]
+              ],
+              Debug: "Assert_failure"
             };
       }
       if (typeof rhs === "number") {
         throw {
-              CamlExt: Caml_builtin_exceptions.assert_failure,
+              ExceptionID: -9,
               _1: /* tuple */[
                 "fun_pattern_match.ml",
                 44,
                 9
-              ]
+              ],
+              Debug: "Assert_failure"
             };
       }
       return Caml_primitive.caml_int_compare(lhs[0], rhs[0]);
@@ -46,22 +47,24 @@ function f4(param) {
       var rhs = param.rank;
       if (typeof lhs === "number") {
         throw {
-              CamlExt: Caml_builtin_exceptions.assert_failure,
+              ExceptionID: -9,
               _1: /* tuple */[
                 "fun_pattern_match.ml",
                 52,
                 9
-              ]
+              ],
+              Debug: "Assert_failure"
             };
       }
       if (typeof rhs === "number") {
         throw {
-              CamlExt: Caml_builtin_exceptions.assert_failure,
+              ExceptionID: -9,
               _1: /* tuple */[
                 "fun_pattern_match.ml",
                 52,
                 9
-              ]
+              ],
+              Debug: "Assert_failure"
             };
       }
       return Caml_primitive.caml_int_compare(lhs[0], rhs[0]);

@@ -7,7 +7,6 @@ var Curry = require("../../lib/js/curry.js");
 var Scanf = require("../../lib/js/scanf.js");
 var Printf = require("../../lib/js/printf.js");
 var Mt_global = require("./mt_global.js");
-var Caml_builtin_exceptions = require("../../lib/js/caml_builtin_exceptions.js");
 
 var suites = {
   contents: /* [] */0
@@ -74,8 +73,9 @@ function scan_rest(ib, accu) {
                                                         "scan_int_list"
                                                       ]);
                                                   throw {
-                                                        CamlExt: Caml_builtin_exceptions.failure,
-                                                        _1: s
+                                                        ExceptionID: -2,
+                                                        _1: s,
+                                                        Debug: "Failure"
                                                       };
                                               }
                                             }));

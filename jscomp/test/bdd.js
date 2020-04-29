@@ -2,7 +2,6 @@
 
 var Caml_array = require("../../lib/js/caml_array.js");
 var Caml_int32 = require("../../lib/js/caml_int32.js");
-var Caml_builtin_exceptions = require("../../lib/js/caml_builtin_exceptions.js");
 
 function $$eval(_bdd, vars) {
   while(true) {
@@ -64,12 +63,13 @@ function resize(newSize) {
       var n = bucket[0];
       if (typeof n === "number") {
         throw {
-              CamlExt: Caml_builtin_exceptions.assert_failure,
+              ExceptionID: -9,
               _1: /* tuple */[
                 "bdd.ml",
                 54,
                 27
-              ]
+              ],
+              Debug: "Assert_failure"
             };
       }
       var ind = hashVal(getId(n[0]), getId(n[3]), n[1]) & newSz_1;
@@ -129,12 +129,13 @@ function mkNode(low, v, high) {
       var n = b[0];
       if (typeof n === "number") {
         throw {
-              CamlExt: Caml_builtin_exceptions.assert_failure,
+              ExceptionID: -9,
               _1: /* tuple */[
                 "bdd.ml",
                 99,
                 31
-              ]
+              ],
+              Debug: "Assert_failure"
             };
       }
       if (v === n[1] && idl === getId(n[0]) && idh === getId(n[3])) {
@@ -372,12 +373,13 @@ function main(param) {
     return ;
   }
   throw {
-        CamlExt: Caml_builtin_exceptions.assert_failure,
+        ExceptionID: -9,
         _1: /* tuple */[
           "bdd.ml",
           233,
           2
-        ]
+        ],
+        Debug: "Assert_failure"
       };
 }
 

@@ -6,7 +6,6 @@ var Block = require("../../lib/js/block.js");
 var Caml_sys = require("../../lib/js/caml_sys.js");
 var Node_process = require("../../lib/js/node_process.js");
 var Caml_js_exceptions = require("../../lib/js/caml_js_exceptions.js");
-var Caml_builtin_exceptions = require("../../lib/js/caml_builtin_exceptions.js");
 
 var suites = {
   contents: /* [] */0
@@ -54,7 +53,7 @@ try {
 }
 catch (raw_exn){
   var exn = Caml_js_exceptions.internalToOCamlException(raw_exn);
-  if (exn.CamlExt.CamlId === Caml_builtin_exceptions.not_found.CamlId) {
+  if (exn.ExceptionID === /* Not_found */-6) {
     tmp = "Z";
   } else {
     throw exn;

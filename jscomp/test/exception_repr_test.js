@@ -40,9 +40,9 @@ var Hello = Caml_exceptions.create("Exception_repr_test.Hello");
 var A = Caml_exceptions.create("Exception_repr_test.A");
 
 Printexc.register_printer((function (s) {
-        if (s.CamlExt.CamlId === Hi.CamlId) {
+        if (s.ExceptionID === Hi.ExceptionID) {
           return "hey";
-        } else if (s.CamlExt.CamlId === A.CamlId) {
+        } else if (s.ExceptionID === A.ExceptionID) {
           return Curry._1(Format.asprintf(/* Format */[
                           /* String_literal */Block.__(11, [
                               "A(",
@@ -64,21 +64,25 @@ Printexc.register_printer((function (s) {
       }));
 
 eq("File \"exception_repr_test.ml\", line 24, characters 7-14", "hey", Printexc.to_string({
-          CamlExt: Hi
+          ExceptionID: Hi.ExceptionID,
+          Debug: Hi.Debug
         }));
 
 eq("File \"exception_repr_test.ml\", line 25, characters 7-14", "A(1)", Printexc.to_string({
-          CamlExt: A,
-          _1: 1
+          ExceptionID: A.ExceptionID,
+          _1: 1,
+          Debug: A.Debug
         }));
 
 eq("File \"exception_repr_test.ml\", line 26, characters 7-14", "Exception_repr_test.Hello", Printexc.to_string({
-          CamlExt: Hello
+          ExceptionID: Hello.ExceptionID,
+          Debug: Hello.Debug
         }));
 
 eq("File \"exception_repr_test.ml\", line 27, characters 7-14", "A", Printexc.to_string({
-          CamlExt: Exception_def.A,
-          _1: 3
+          ExceptionID: Exception_def.A.ExceptionID,
+          _1: 3,
+          Debug: Exception_def.A.Debug
         }));
 
 Mt.from_pair_suites("Exception_repr_test", suites.contents);

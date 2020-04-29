@@ -9,7 +9,6 @@ var Arith_lexer = require("./arith_lexer.js");
 var Arith_parser = require("./arith_parser.js");
 var Arith_syntax = require("./arith_syntax.js");
 var Number_lexer = require("./number_lexer.js");
-var Caml_builtin_exceptions = require("../../lib/js/caml_builtin_exceptions.js");
 
 function get_tokens(lex, str) {
   var buf = Lexing.from_string(str);
@@ -43,7 +42,8 @@ function from_tokens(lst) {
         return match[0];
       }
       throw {
-            CamlExt: Caml_builtin_exceptions.end_of_file
+            ExceptionID: -4,
+            Debug: "End_of_file"
           };
     });
 }

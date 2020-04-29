@@ -1,6 +1,5 @@
 'use strict';
 
-var Caml_builtin_exceptions = require("../../lib/js/caml_builtin_exceptions.js");
 
 function f(x) {
   return x + 1 | 0;
@@ -9,8 +8,9 @@ function f(x) {
 function chr(n) {
   if (n < 0 || n > 255) {
     throw {
-          CamlExt: Caml_builtin_exceptions.invalid_argument,
-          _1: "Char.chr"
+          ExceptionID: -3,
+          _1: "Char.chr",
+          Debug: "Invalid_argument"
         };
   }
   return n;

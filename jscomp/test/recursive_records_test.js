@@ -4,7 +4,6 @@ var Mt = require("./mt.js");
 var List = require("../../lib/js/list.js");
 var Caml_obj = require("../../lib/js/caml_obj.js");
 var Caml_int32 = require("../../lib/js/caml_int32.js");
-var Caml_builtin_exceptions = require("../../lib/js/caml_builtin_exceptions.js");
 
 var suites = {
   contents: /* [] */0
@@ -69,12 +68,13 @@ function tl_exn(x) {
     return x[/* next */1];
   }
   throw {
-        CamlExt: Caml_builtin_exceptions.assert_failure,
+        ExceptionID: -9,
         _1: /* tuple */[
           "recursive_records_test.ml",
           52,
           11
-        ]
+        ],
+        Debug: "Assert_failure"
       };
 }
 

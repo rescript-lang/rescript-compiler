@@ -8,7 +8,6 @@ var Js_exn = require("../../lib/js/js_exn.js");
 var Pervasives = require("../../lib/js/pervasives.js");
 var Caml_exceptions = require("../../lib/js/caml_exceptions.js");
 var Caml_js_exceptions = require("../../lib/js/caml_js_exceptions.js");
-var Caml_builtin_exceptions = require("../../lib/js/caml_builtin_exceptions.js");
 
 var Local = Caml_exceptions.create("Exception_raise_test.Local");
 
@@ -25,20 +24,20 @@ function appf(g, x) {
   }
   catch (raw_exn){
     var exn = Caml_js_exceptions.internalToOCamlException(raw_exn);
-    if (exn.CamlExt.CamlId === Local.CamlId) {
+    if (exn.ExceptionID === Local.ExceptionID) {
       return 3;
     }
-    if (exn.CamlExt.CamlId === Caml_builtin_exceptions.not_found.CamlId) {
+    if (exn.ExceptionID === /* Not_found */-6) {
       return 2;
     }
-    if (exn.CamlExt.CamlId === A.CamlId) {
+    if (exn.ExceptionID === A.ExceptionID) {
       exn._1 !== 32;
       return 3;
     }
-    if (exn.CamlExt.CamlId !== B.CamlId) {
-      if (exn.CamlExt.CamlId === C.CamlId) {
+    if (exn.ExceptionID !== B.ExceptionID) {
+      if (exn.ExceptionID === C.ExceptionID) {
         return exn._1;
-      } else if (exn.CamlExt.CamlId === D.CamlId) {
+      } else if (exn.ExceptionID === D.ExceptionID) {
         return exn._1[0];
       } else {
         return 4;
@@ -70,7 +69,7 @@ try {
 }
 catch (raw_x){
   var x = Caml_js_exceptions.internalToOCamlException(raw_x);
-  f = x.CamlExt.CamlId === A.CamlId ? x._1 : 2;
+  f = x.ExceptionID === A.ExceptionID ? x._1 : 2;
 }
 
 var ff;
@@ -80,7 +79,7 @@ try {
 }
 catch (raw_x$1){
   var x$1 = Caml_js_exceptions.internalToOCamlException(raw_x$1);
-  ff = x$1.CamlExt.CamlId === A.CamlId ? x$1._1 : 2;
+  ff = x$1.ExceptionID === A.ExceptionID ? x$1._1 : 2;
 }
 
 var fff;
@@ -90,7 +89,7 @@ try {
 }
 catch (raw_x$2){
   var x$2 = Caml_js_exceptions.internalToOCamlException(raw_x$2);
-  fff = x$2.CamlExt.CamlId === A.CamlId ? x$2._1 : 2;
+  fff = x$2.ExceptionID === A.ExceptionID ? x$2._1 : 2;
 }
 
 var a0;
@@ -100,16 +99,17 @@ try {
 }
 catch (raw_x$3){
   var x$3 = Caml_js_exceptions.internalToOCamlException(raw_x$3);
-  if (x$3.CamlExt.CamlId === A.CamlId || x$3.CamlExt.CamlId === Js_exn.$$Error.CamlId) {
+  if (x$3.ExceptionID === A.ExceptionID || x$3.ExceptionID === Js_exn.$$Error.ExceptionID) {
     a0 = x$3._1;
   } else {
     throw {
-          CamlExt: Caml_builtin_exceptions.assert_failure,
+          ExceptionID: -9,
           _1: /* tuple */[
             "exception_raise_test.ml",
             102,
             9
-          ]
+          ],
+          Debug: "Assert_failure"
         };
   }
 }
@@ -157,19 +157,20 @@ var suites = {
       /* tuple */[
         "File \"exception_raise_test.ml\", line 116, characters 4-11",
         (function (param) {
-            if (a1.CamlExt.CamlId === Js_exn.$$Error.CamlId) {
+            if (a1.ExceptionID === Js_exn.$$Error.ExceptionID) {
               return /* Eq */Block.__(0, [
                         a1._1,
                         2
                       ]);
             }
             throw {
-                  CamlExt: Caml_builtin_exceptions.assert_failure,
+                  ExceptionID: -9,
                   _1: /* tuple */[
                     "exception_raise_test.ml",
                     119,
                     15
-                  ]
+                  ],
+                  Debug: "Assert_failure"
                 };
           })
       ],
@@ -196,7 +197,8 @@ catch (raw_e$2){
 
 try {
   throw {
-        CamlExt: Caml_builtin_exceptions.not_found
+        ExceptionID: -6,
+        Debug: "Not_found"
       };
 }
 catch (raw_e$3){

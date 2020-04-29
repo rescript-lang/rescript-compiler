@@ -11,7 +11,6 @@ var Caml_format = require("../../lib/js/caml_format.js");
 var Caml_option = require("../../lib/js/caml_option.js");
 var Caml_primitive = require("../../lib/js/caml_primitive.js");
 var Caml_js_exceptions = require("../../lib/js/caml_js_exceptions.js");
-var Caml_builtin_exceptions = require("../../lib/js/caml_builtin_exceptions.js");
 
 function split(delim, s) {
   var len = s.length;
@@ -30,7 +29,7 @@ function split(delim, s) {
       }
       catch (raw_exn){
         var exn = Caml_js_exceptions.internalToOCamlException(raw_exn);
-        if (exn.CamlExt.CamlId === Caml_builtin_exceptions.not_found.CamlId) {
+        if (exn.ExceptionID === /* Not_found */-6) {
           return /* :: */[
                   $$String.sub(s, 0, i),
                   l
@@ -157,13 +156,15 @@ function bal(l, x, d, r) {
         return create(create(ll, lv, ld, lr[/* l */0]), lr[/* v */1], lr[/* d */2], create(lr[/* r */3], x, d, r));
       }
       throw {
-            CamlExt: Caml_builtin_exceptions.invalid_argument,
-            _1: "Map.bal"
+            ExceptionID: -3,
+            _1: "Map.bal",
+            Debug: "Invalid_argument"
           };
     }
     throw {
-          CamlExt: Caml_builtin_exceptions.invalid_argument,
-          _1: "Map.bal"
+          ExceptionID: -3,
+          _1: "Map.bal",
+          Debug: "Invalid_argument"
         };
   }
   if (hr <= (hl + 2 | 0)) {
@@ -187,13 +188,15 @@ function bal(l, x, d, r) {
       return create(create(l, x, d, rl[/* l */0]), rl[/* v */1], rl[/* d */2], create(rl[/* r */3], rv, rd, rr));
     }
     throw {
-          CamlExt: Caml_builtin_exceptions.invalid_argument,
-          _1: "Map.bal"
+          ExceptionID: -3,
+          _1: "Map.bal",
+          Debug: "Invalid_argument"
         };
   }
   throw {
-        CamlExt: Caml_builtin_exceptions.invalid_argument,
-        _1: "Map.bal"
+        ExceptionID: -3,
+        _1: "Map.bal",
+        Debug: "Invalid_argument"
       };
 }
 
@@ -261,7 +264,8 @@ function find(x, _param) {
       continue ;
     }
     throw {
-          CamlExt: Caml_builtin_exceptions.not_found
+          ExceptionID: -6,
+          Debug: "Not_found"
         };
   };
 }
@@ -300,7 +304,8 @@ function find_first(f, _param) {
       continue ;
     }
     throw {
-          CamlExt: Caml_builtin_exceptions.not_found
+          ExceptionID: -6,
+          Debug: "Not_found"
         };
   };
 }
@@ -376,7 +381,8 @@ function find_last(f, _param) {
       continue ;
     }
     throw {
-          CamlExt: Caml_builtin_exceptions.not_found
+          ExceptionID: -6,
+          Debug: "Not_found"
         };
   };
 }
@@ -463,7 +469,8 @@ function min_binding(_param) {
       continue ;
     }
     throw {
-          CamlExt: Caml_builtin_exceptions.not_found
+          ExceptionID: -6,
+          Debug: "Not_found"
         };
   };
 }
@@ -501,7 +508,8 @@ function max_binding(_param) {
       continue ;
     }
     throw {
-          CamlExt: Caml_builtin_exceptions.not_found
+          ExceptionID: -6,
+          Debug: "Not_found"
         };
   };
 }
@@ -534,8 +542,9 @@ function remove_min_binding(param) {
     }
   }
   throw {
-        CamlExt: Caml_builtin_exceptions.invalid_argument,
-        _1: "Map.remove_min_elt"
+        ExceptionID: -3,
+        _1: "Map.remove_min_elt",
+        Debug: "Invalid_argument"
       };
 }
 
@@ -831,12 +840,13 @@ function merge$1(f, s1, s2) {
     return concat_or_join(merge$1(f, match$1[0], s2[/* l */0]), v2, Curry._3(f, v2, match$1[1], Caml_option.some(s2[/* d */2])), merge$1(f, match$1[2], s2[/* r */3]));
   }
   throw {
-        CamlExt: Caml_builtin_exceptions.assert_failure,
+        ExceptionID: -9,
         _1: /* tuple */[
           "map.ml",
           393,
           10
-        ]
+        ],
+        Debug: "Assert_failure"
       };
 }
 
@@ -1133,15 +1143,17 @@ function compute_update_sequences(all_tickers) {
                         var x = lhs.rank;
                         if (typeof x === "number") {
                           throw {
-                                CamlExt: Caml_builtin_exceptions.failure,
-                                _1: "All nodes should be ranked"
+                                ExceptionID: -2,
+                                _1: "All nodes should be ranked",
+                                Debug: "Failure"
                               };
                         }
                         var y = rhs.rank;
                         if (typeof y === "number") {
                           throw {
-                                CamlExt: Caml_builtin_exceptions.failure,
-                                _1: "All nodes should be ranked"
+                                ExceptionID: -2,
+                                _1: "All nodes should be ranked",
+                                Debug: "Failure"
                               };
                         }
                         return Caml_primitive.caml_int_compare(x[0], y[0]);
@@ -1169,8 +1181,9 @@ function process_quote(ticker_map, new_ticker, new_value) {
                   return ;
                 }
                 throw {
-                      CamlExt: Caml_builtin_exceptions.failure,
-                      _1: "Only single Market ticker should be udpated upon a new quote"
+                      ExceptionID: -2,
+                      _1: "Only single Market ticker should be udpated upon a new quote",
+                      Debug: "Failure"
                     };
               }), update_sequence);
 }
@@ -1200,8 +1213,9 @@ function process_input_line(ticker_map, all_tickers, line) {
             if (match$1) {
               if (match$1[1]) {
                 throw {
-                      CamlExt: Caml_builtin_exceptions.failure,
-                      _1: "Invalid input line"
+                      ExceptionID: -2,
+                      _1: "Invalid input line",
+                      Debug: "Failure"
                     };
               }
               var ticker_map$1 = ticker_map !== undefined ? Caml_option.valFromOption(ticker_map) : compute_update_sequences(all_tickers);
@@ -1213,13 +1227,15 @@ function process_input_line(ticker_map, all_tickers, line) {
                     ];
             }
             throw {
-                  CamlExt: Caml_builtin_exceptions.failure,
-                  _1: "Invalid input line"
+                  ExceptionID: -2,
+                  _1: "Invalid input line",
+                  Debug: "Failure"
                 };
           }
           throw {
-                CamlExt: Caml_builtin_exceptions.failure,
-                _1: "Invalid input line"
+                ExceptionID: -2,
+                _1: "Invalid input line",
+                Debug: "Failure"
               };
       case "R" :
           var match$2 = tokens[1];
@@ -1235,8 +1251,9 @@ function process_input_line(ticker_map, all_tickers, line) {
                       if (match$5) {
                         if (match$5[1]) {
                           throw {
-                                CamlExt: Caml_builtin_exceptions.failure,
-                                _1: "Invalid input line"
+                                ExceptionID: -2,
+                                _1: "Invalid input line",
+                                Debug: "Failure"
                               };
                         }
                         return /* tuple */[
@@ -1248,13 +1265,15 @@ function process_input_line(ticker_map, all_tickers, line) {
                               ];
                       }
                       throw {
-                            CamlExt: Caml_builtin_exceptions.failure,
-                            _1: "Invalid input line"
+                            ExceptionID: -2,
+                            _1: "Invalid input line",
+                            Debug: "Failure"
                           };
                     }
                     throw {
-                          CamlExt: Caml_builtin_exceptions.failure,
-                          _1: "Invalid input line"
+                          ExceptionID: -2,
+                          _1: "Invalid input line",
+                          Debug: "Failure"
                         };
                 case "-" :
                     var match$6 = match$3[1];
@@ -1263,8 +1282,9 @@ function process_input_line(ticker_map, all_tickers, line) {
                       if (match$7) {
                         if (match$7[1]) {
                           throw {
-                                CamlExt: Caml_builtin_exceptions.failure,
-                                _1: "Invalid input line"
+                                ExceptionID: -2,
+                                _1: "Invalid input line",
+                                Debug: "Failure"
                               };
                         }
                         return /* tuple */[
@@ -1276,19 +1296,22 @@ function process_input_line(ticker_map, all_tickers, line) {
                               ];
                       }
                       throw {
-                            CamlExt: Caml_builtin_exceptions.failure,
-                            _1: "Invalid input line"
+                            ExceptionID: -2,
+                            _1: "Invalid input line",
+                            Debug: "Failure"
                           };
                     }
                     throw {
-                          CamlExt: Caml_builtin_exceptions.failure,
-                          _1: "Invalid input line"
+                          ExceptionID: -2,
+                          _1: "Invalid input line",
+                          Debug: "Failure"
                         };
                 case "S" :
                     if (match$3[1]) {
                       throw {
-                            CamlExt: Caml_builtin_exceptions.failure,
-                            _1: "Invalid input line"
+                            ExceptionID: -2,
+                            _1: "Invalid input line",
+                            Debug: "Failure"
                           };
                     }
                     return /* tuple */[
@@ -1305,32 +1328,37 @@ function process_input_line(ticker_map, all_tickers, line) {
                           ];
                 default:
                   throw {
-                        CamlExt: Caml_builtin_exceptions.failure,
-                        _1: "Invalid input line"
+                        ExceptionID: -2,
+                        _1: "Invalid input line",
+                        Debug: "Failure"
                       };
               }
             } else {
               throw {
-                    CamlExt: Caml_builtin_exceptions.failure,
-                    _1: "Invalid input line"
+                    ExceptionID: -2,
+                    _1: "Invalid input line",
+                    Debug: "Failure"
                   };
             }
           } else {
             throw {
-                  CamlExt: Caml_builtin_exceptions.failure,
-                  _1: "Invalid input line"
+                  ExceptionID: -2,
+                  _1: "Invalid input line",
+                  Debug: "Failure"
                 };
           }
       default:
         throw {
-              CamlExt: Caml_builtin_exceptions.failure,
-              _1: "Invalid input line"
+              ExceptionID: -2,
+              _1: "Invalid input line",
+              Debug: "Failure"
             };
     }
   } else {
     throw {
-          CamlExt: Caml_builtin_exceptions.failure,
-          _1: "Invalid input line"
+          ExceptionID: -2,
+          _1: "Invalid input line",
+          Debug: "Failure"
         };
   }
 }

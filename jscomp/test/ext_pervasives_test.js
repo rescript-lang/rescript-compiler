@@ -8,7 +8,6 @@ var Pervasives = require("../../lib/js/pervasives.js");
 var Caml_string = require("../../lib/js/caml_string.js");
 var Caml_exceptions = require("../../lib/js/caml_exceptions.js");
 var Caml_js_exceptions = require("../../lib/js/caml_js_exceptions.js");
-var Caml_builtin_exceptions = require("../../lib/js/caml_builtin_exceptions.js");
 
 function $$finally(v, action, f) {
   var e;
@@ -56,13 +55,14 @@ function is_pos_pow(n) {
         continue ;
       }
       throw {
-            CamlExt: E
+            ExceptionID: E.ExceptionID,
+            Debug: E.Debug
           };
     };
   }
   catch (raw_exn){
     var exn = Caml_js_exceptions.internalToOCamlException(raw_exn);
-    if (exn.CamlExt.CamlId === E.CamlId) {
+    if (exn.ExceptionID === E.ExceptionID) {
       return -1;
     }
     throw exn;
@@ -73,8 +73,9 @@ function failwithf(loc, fmt) {
   return Format.ksprintf((function (s) {
                 var s$1 = loc + s;
                 throw {
-                      CamlExt: Caml_builtin_exceptions.failure,
-                      _1: s$1
+                      ExceptionID: -2,
+                      _1: s$1,
+                      Debug: "Failure"
                     };
               }), fmt);
 }
@@ -86,8 +87,9 @@ function invalid_argf(fmt) {
 function bad_argf(fmt) {
   return Format.ksprintf((function (x) {
                 throw {
-                      CamlExt: Arg.Bad,
-                      _1: x
+                      ExceptionID: Arg.Bad.ExceptionID,
+                      _1: x,
+                      Debug: Arg.Bad.Debug
                     };
               }), fmt);
 }

@@ -4,7 +4,6 @@ var List = require("../../lib/js/list.js");
 var Curry = require("../../lib/js/curry.js");
 var Caml_obj = require("../../lib/js/caml_obj.js");
 var Pervasives = require("../../lib/js/pervasives.js");
-var Caml_builtin_exceptions = require("../../lib/js/caml_builtin_exceptions.js");
 
 function length_aux(_len, _param) {
   while(true) {
@@ -28,8 +27,9 @@ function hd(param) {
     return param[0];
   }
   throw {
-        CamlExt: Caml_builtin_exceptions.failure,
-        _1: "hd"
+        ExceptionID: -2,
+        _1: "hd",
+        Debug: "Failure"
       };
 }
 
@@ -38,16 +38,18 @@ function tl(param) {
     return param[1];
   }
   throw {
-        CamlExt: Caml_builtin_exceptions.failure,
-        _1: "tl"
+        ExceptionID: -2,
+        _1: "tl",
+        Debug: "Failure"
       };
 }
 
 function nth(l, n) {
   if (n < 0) {
     throw {
-          CamlExt: Caml_builtin_exceptions.invalid_argument,
-          _1: "List.nth"
+          ExceptionID: -3,
+          _1: "List.nth",
+          Debug: "Invalid_argument"
         };
   }
   var _l = l;
@@ -64,8 +66,9 @@ function nth(l, n) {
       continue ;
     }
     throw {
-          CamlExt: Caml_builtin_exceptions.failure,
-          _1: "nth"
+          ExceptionID: -2,
+          _1: "nth",
+          Debug: "Failure"
         };
   };
 }
@@ -201,16 +204,18 @@ function map2(f, l1, l2) {
             ];
     }
     throw {
-          CamlExt: Caml_builtin_exceptions.invalid_argument,
-          _1: "List.map2"
+          ExceptionID: -3,
+          _1: "List.map2",
+          Debug: "Invalid_argument"
         };
   }
   if (!l2) {
     return /* [] */0;
   }
   throw {
-        CamlExt: Caml_builtin_exceptions.invalid_argument,
-        _1: "List.map2"
+        ExceptionID: -3,
+        _1: "List.map2",
+        Debug: "Invalid_argument"
       };
 }
 
@@ -233,14 +238,16 @@ function rev_map2(f, l1, l2) {
         continue ;
       }
       throw {
-            CamlExt: Caml_builtin_exceptions.invalid_argument,
-            _1: "List.rev_map2"
+            ExceptionID: -3,
+            _1: "List.rev_map2",
+            Debug: "Invalid_argument"
           };
     }
     if (l2$1) {
       throw {
-            CamlExt: Caml_builtin_exceptions.invalid_argument,
-            _1: "List.rev_map2"
+            ExceptionID: -3,
+            _1: "List.rev_map2",
+            Debug: "Invalid_argument"
           };
     }
     return accu;
@@ -259,16 +266,18 @@ function iter2(f, _l1, _l2) {
         continue ;
       }
       throw {
-            CamlExt: Caml_builtin_exceptions.invalid_argument,
-            _1: "List.iter2"
+            ExceptionID: -3,
+            _1: "List.iter2",
+            Debug: "Invalid_argument"
           };
     }
     if (!l2) {
       return ;
     }
     throw {
-          CamlExt: Caml_builtin_exceptions.invalid_argument,
-          _1: "List.iter2"
+          ExceptionID: -3,
+          _1: "List.iter2",
+          Debug: "Invalid_argument"
         };
   };
 }
@@ -286,14 +295,16 @@ function fold_left2(f, _accu, _l1, _l2) {
         continue ;
       }
       throw {
-            CamlExt: Caml_builtin_exceptions.invalid_argument,
-            _1: "List.fold_left2"
+            ExceptionID: -3,
+            _1: "List.fold_left2",
+            Debug: "Invalid_argument"
           };
     }
     if (l2) {
       throw {
-            CamlExt: Caml_builtin_exceptions.invalid_argument,
-            _1: "List.fold_left2"
+            ExceptionID: -3,
+            _1: "List.fold_left2",
+            Debug: "Invalid_argument"
           };
     }
     return accu;
@@ -306,14 +317,16 @@ function fold_right2(f, l1, l2, accu) {
       return Curry._3(f, l1[0], l2[0], fold_right2(f, l1[1], l2[1], accu));
     }
     throw {
-          CamlExt: Caml_builtin_exceptions.invalid_argument,
-          _1: "List.fold_right2"
+          ExceptionID: -3,
+          _1: "List.fold_right2",
+          Debug: "Invalid_argument"
         };
   }
   if (l2) {
     throw {
-          CamlExt: Caml_builtin_exceptions.invalid_argument,
-          _1: "List.fold_right2"
+          ExceptionID: -3,
+          _1: "List.fold_right2",
+          Debug: "Invalid_argument"
         };
   }
   return accu;
@@ -361,16 +374,18 @@ function for_all2(p, _l1, _l2) {
         continue ;
       }
       throw {
-            CamlExt: Caml_builtin_exceptions.invalid_argument,
-            _1: "List.for_all2"
+            ExceptionID: -3,
+            _1: "List.for_all2",
+            Debug: "Invalid_argument"
           };
     }
     if (!l2) {
       return true;
     }
     throw {
-          CamlExt: Caml_builtin_exceptions.invalid_argument,
-          _1: "List.for_all2"
+          ExceptionID: -3,
+          _1: "List.for_all2",
+          Debug: "Invalid_argument"
         };
   };
 }
@@ -389,16 +404,18 @@ function exists2(p, _l1, _l2) {
         continue ;
       }
       throw {
-            CamlExt: Caml_builtin_exceptions.invalid_argument,
-            _1: "List.exists2"
+            ExceptionID: -3,
+            _1: "List.exists2",
+            Debug: "Invalid_argument"
           };
     }
     if (!l2) {
       return false;
     }
     throw {
-          CamlExt: Caml_builtin_exceptions.invalid_argument,
-          _1: "List.exists2"
+          ExceptionID: -3,
+          _1: "List.exists2",
+          Debug: "Invalid_argument"
         };
   };
 }
@@ -443,7 +460,8 @@ function assoc(x, _param) {
       continue ;
     }
     throw {
-          CamlExt: Caml_builtin_exceptions.not_found
+          ExceptionID: -6,
+          Debug: "Not_found"
         };
   };
 }
@@ -460,7 +478,8 @@ function assq(x, _param) {
       continue ;
     }
     throw {
-          CamlExt: Caml_builtin_exceptions.not_found
+          ExceptionID: -6,
+          Debug: "Not_found"
         };
   };
 }
@@ -537,7 +556,8 @@ function find(p, _param) {
       continue ;
     }
     throw {
-          CamlExt: Caml_builtin_exceptions.not_found
+          ExceptionID: -6,
+          Debug: "Not_found"
         };
   };
 }
@@ -634,16 +654,18 @@ function combine(l1, l2) {
             ];
     }
     throw {
-          CamlExt: Caml_builtin_exceptions.invalid_argument,
-          _1: "List.combine"
+          ExceptionID: -3,
+          _1: "List.combine",
+          Debug: "Invalid_argument"
         };
   }
   if (!l2) {
     return /* [] */0;
   }
   throw {
-        CamlExt: Caml_builtin_exceptions.invalid_argument,
-        _1: "List.combine"
+        ExceptionID: -3,
+        _1: "List.combine",
+        Debug: "Invalid_argument"
       };
 }
 
@@ -682,12 +704,13 @@ function chop(_k, _l) {
       continue ;
     }
     throw {
-          CamlExt: Caml_builtin_exceptions.assert_failure,
+          ExceptionID: -9,
           _1: /* tuple */[
             "test_list.ml",
             224,
             11
-          ]
+          ],
+          Debug: "Assert_failure"
         };
   };
 }

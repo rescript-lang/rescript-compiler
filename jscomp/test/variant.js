@@ -5,7 +5,6 @@ var Curry = require("../../lib/js/curry.js");
 var Caml_obj = require("../../lib/js/caml_obj.js");
 var Caml_exceptions = require("../../lib/js/caml_exceptions.js");
 var Caml_js_exceptions = require("../../lib/js/caml_js_exceptions.js");
-var Caml_builtin_exceptions = require("../../lib/js/caml_builtin_exceptions.js");
 
 function foo(n) {
   if (typeof n === "number") {
@@ -88,7 +87,7 @@ function rollback_path(subst, p) {
   }
   catch (raw_exn){
     var exn = Caml_js_exceptions.internalToOCamlException(raw_exn);
-    if (exn.CamlExt.CamlId === Caml_builtin_exceptions.not_found.CamlId) {
+    if (exn.ExceptionID === /* Not_found */-6) {
       switch (p.tag | 0) {
         case /* Pdot */1 :
             return "Pdot";
@@ -119,19 +118,19 @@ function fooExn(f) {
   }
   catch (raw_n){
     var n = Caml_js_exceptions.internalToOCamlException(raw_n);
-    if (n.CamlExt.CamlId === EA1.CamlId) {
+    if (n.ExceptionID === EA1.ExceptionID) {
       return 1;
     }
-    if (n.CamlExt.CamlId === EA2.CamlId) {
+    if (n.ExceptionID === EA2.ExceptionID) {
       return 2;
     }
-    if (n.CamlExt.CamlId === EB.CamlId) {
+    if (n.ExceptionID === EB.ExceptionID) {
       return n._1;
     }
-    if (n.CamlExt.CamlId === EC.CamlId) {
+    if (n.ExceptionID === EC.ExceptionID) {
       return n._1 + n._2 | 0;
     }
-    if (n.CamlExt.CamlId === ED.CamlId) {
+    if (n.ExceptionID === ED.ExceptionID) {
       var match = n._1;
       return match[0] + match[1] | 0;
     }

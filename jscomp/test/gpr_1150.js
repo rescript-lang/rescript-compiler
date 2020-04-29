@@ -1,6 +1,5 @@
 'use strict';
 
-var Caml_builtin_exceptions = require("../../lib/js/caml_builtin_exceptions.js");
 
 function f(children) {
   if (!children) {
@@ -216,12 +215,13 @@ function f(children) {
   }
   if (children$15[1]) {
     throw {
-          CamlExt: Caml_builtin_exceptions.assert_failure,
+          ExceptionID: -9,
           _1: /* tuple */[
             "gpr_1150.ml",
             56,
             34
-          ]
+          ],
+          Debug: "Assert_failure"
         };
   }
   return [

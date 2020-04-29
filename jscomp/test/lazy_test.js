@@ -5,7 +5,6 @@ var Lazy = require("../../lib/js/lazy.js");
 var Block = require("../../lib/js/block.js");
 var CamlinternalLazy = require("../../lib/js/camlinternalLazy.js");
 var Caml_js_exceptions = require("../../lib/js/caml_js_exceptions.js");
-var Caml_builtin_exceptions = require("../../lib/js/caml_builtin_exceptions.js");
 
 var u = {
   contents: 3
@@ -41,12 +40,13 @@ function f(param) {
     return 1;
   }
   throw {
-        CamlExt: Caml_builtin_exceptions.match_failure,
+        ExceptionID: -7,
         _1: /* tuple */[
           "lazy_test.ml",
           11,
           8
-        ]
+        ],
+        Debug: "Match_failure"
       };
 }
 
@@ -81,7 +81,7 @@ try {
 }
 catch (raw_exn){
   var exn = Caml_js_exceptions.internalToOCamlException(raw_exn);
-  if (exn.CamlExt.CamlId === Caml_builtin_exceptions.match_failure.CamlId) {
+  if (exn.ExceptionID === /* Match_failure */-7) {
     h = 2;
   } else {
     throw exn;
@@ -140,7 +140,8 @@ var f007 = {
   tag: 246,
   value: (function () {
       throw {
-            CamlExt: Caml_builtin_exceptions.not_found
+            ExceptionID: -6,
+            Debug: "Not_found"
           };
     })
 };
@@ -150,7 +151,8 @@ var f008 = {
   value: (function () {
       console.log("hi");
       throw {
-            CamlExt: Caml_builtin_exceptions.not_found
+            ExceptionID: -6,
+            Debug: "Not_found"
           };
     })
 };

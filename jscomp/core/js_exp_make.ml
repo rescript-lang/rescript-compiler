@@ -413,13 +413,13 @@ let extension_access (e : t) name (pos : int32)  : t  =
      | None -> 
       let name = 
         match name with Some n -> n | None ->   
-        if pos = 0l then "CamlExt" else "_" ^ Int32.to_string pos in 
+         "_" ^ Int32.to_string pos in 
        { expression_desc = Static_index (e, name, Some pos); comment = None}     
     )
   | _ -> 
     let name = 
       match name with Some n -> n | None ->     
-      if pos = 0l then "CamlExt" else "_" ^ Int32.to_string pos in 
+       "_" ^ Int32.to_string pos in 
     { expression_desc = Static_index (e, name, Some pos); comment = None} 
 
 let string_index ?comment (e0 : t)  (e1 : t) : t = 

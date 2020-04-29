@@ -1,6 +1,5 @@
 'use strict';
 
-var Caml_builtin_exceptions = require("../../lib/js/caml_builtin_exceptions.js");
 
 function f(x) {
   return x + 1 | 0;
@@ -158,12 +157,13 @@ function f11(x) {
     return 1;
   }
   throw {
-        CamlExt: Caml_builtin_exceptions.assert_failure,
+        ExceptionID: -9,
         _1: /* tuple */[
           "adt_optimize_test.ml",
           191,
           9
-        ]
+        ],
+        Debug: "Assert_failure"
       };
 }
 

@@ -8,8 +8,9 @@ var f;
 
 try {
   throw {
-        CamlExt: A,
-        _1: 3
+        ExceptionID: A.ExceptionID,
+        _1: 3,
+        Debug: A.Debug
       };
 }
 catch (exn){

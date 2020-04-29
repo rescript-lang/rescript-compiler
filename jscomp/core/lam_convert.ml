@@ -22,8 +22,55 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
-let caml_id_field_info : Lam_primitive.t = (Pfield (0, Fld_record {name = "CamlId"; mutable_flag = Mutable;}))
+
+let caml_id_field_info : Lambda.field_dbg_info = Fld_record {name = Literals.exception_id; mutable_flag = Mutable;}
+let name_info : Lambda.field_dbg_info = Fld_record {name = Literals.exception_debug; mutable_flag = Immutable;}
+let lam_caml_id : Lam_primitive.t = Pfield(0, caml_id_field_info)
+let lam_name : Lam_primitive.t = Pfield (1, name_info) 
 let prim = Lam.prim 
+
+
+let num_of_ident name = 
+  begin match name with 
+  | "Out_of_memory" -> 0
+  | "Sys_error" -> -1 
+  | "Failure" -> -2
+  | "Invalid_argument" -> -3 
+  | "End_of_file" -> -4
+  | "Division_by_zero" -> -5 
+  | "Not_found" -> -6
+  | "Match_failure" -> -7
+  | "Stack_overflow" -> -8
+  | "Assert_failure" -> -9
+  | "Sys_blocked_io" -> -10
+  | "Undefined_recursive_module" -> -11
+  | _ -> assert false
+  end   
+
+
+let lam_extension_id loc (head : Lam.t) =
+  match head with 
+  | Lprim {primitive = Pglobal_exception id} -> 
+    Lam.const (Const_int {value = num_of_ident id.name; comment = Some id.name} )
+  | _ -> prim ~primitive:lam_caml_id ~args:[head] loc    
+
+
+let unbox_extension info (args : Lam.t list) mutable_flag loc =
+  begin match args with 
+  | head :: rest -> 
+    let args = 
+      match head with 
+      | Lprim {primitive = Pglobal_exception id}  -> 
+        let name = Ident.name id in 
+        let id = num_of_ident name in 
+        Lam.const (Const_int {value = id; comment = None}) 
+        :: (Ext_list.append_one rest (Lam.const (Const_string (name)))) 
+      | _ -> 
+        prim ~primitive:lam_caml_id ~args:[head] loc :: 
+        (Ext_list.append_one rest (prim ~primitive:lam_name ~args:[head] loc))        
+    in 
+    prim ~primitive:(Pmakeblock (0,info,mutable_flag)) ~args loc
+  | _ -> assert false end    
 
 (** A conservative approach to avoid packing exceptions
     for lambda expression like {[
@@ -227,7 +274,19 @@ let lam_prim ~primitive:( p : Lambda.primitive) ~args loc : Lam.t =
       prim ~primitive:(Pmakeblock (tag,info,mutable_flag)) ~args loc
     | Blk_extension  -> 
       let info : Lam_tag_info.t = Blk_extension in
-      prim ~primitive:(Pmakeblock (tag,info,mutable_flag)) ~args loc  
+      unbox_extension info args mutable_flag loc 
+    | Blk_record_ext s ->
+      let info : Lam_tag_info.t = Blk_record_ext s in
+      unbox_extension info args mutable_flag loc 
+    | Blk_extension_slot -> 
+      ( 
+        match args with 
+        | [ Lconst (Const_string name)] -> 
+          prim ~primitive:(Pcreate_extension name) ~args:[] loc
+        | _ ->
+          assert false
+      )
+
     | Blk_class  -> 
       let info : Lam_tag_info.t = Blk_class in
       prim ~primitive:(Pmakeblock (tag,info,mutable_flag)) ~args loc  

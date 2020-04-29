@@ -1,7 +1,6 @@
 'use strict';
 
 var Caml_option = require("../../lib/js/caml_option.js");
-var Caml_builtin_exceptions = require("../../lib/js/caml_builtin_exceptions.js");
 
 function test(dom) {
   var elem = dom.getElementById("haha");
@@ -19,12 +18,13 @@ function f_undefined(xs, i) {
     return k;
   }
   throw {
-        CamlExt: Caml_builtin_exceptions.assert_failure,
+        ExceptionID: -9,
         _1: /* tuple */[
           "return_check.ml",
           31,
           14
-        ]
+        ],
+        Debug: "Assert_failure"
       };
 }
 
@@ -60,12 +60,13 @@ function f_null(xs, i) {
     return k;
   }
   throw {
-        CamlExt: Caml_builtin_exceptions.assert_failure,
+        ExceptionID: -9,
         _1: /* tuple */[
           "return_check.ml",
           59,
           14
-        ]
+        ],
+        Debug: "Assert_failure"
       };
 }
 
@@ -75,12 +76,13 @@ function f_null_undefined(xs, i) {
     return k;
   }
   throw {
-        CamlExt: Caml_builtin_exceptions.assert_failure,
+        ExceptionID: -9,
         _1: /* tuple */[
           "return_check.ml",
           68,
           14
-        ]
+        ],
+        Debug: "Assert_failure"
       };
 }
 

@@ -1,49 +1,52 @@
 'use strict';
 
 var Curry = require("../../lib/js/curry.js");
-var Caml_builtin_exceptions = require("../../lib/js/caml_builtin_exceptions.js");
 
 function peek_queue(param) {
   throw {
-        CamlExt: Caml_builtin_exceptions.assert_failure,
+        ExceptionID: -9,
         _1: /* tuple */[
           "format_regression.ml",
           10,
           19
-        ]
+        ],
+        Debug: "Assert_failure"
       };
 }
 
 function int_of_size(param) {
   throw {
-        CamlExt: Caml_builtin_exceptions.assert_failure,
+        ExceptionID: -9,
         _1: /* tuple */[
           "format_regression.ml",
           11,
           20
-        ]
+        ],
+        Debug: "Assert_failure"
       };
 }
 
 function take_queue(param) {
   throw {
-        CamlExt: Caml_builtin_exceptions.assert_failure,
+        ExceptionID: -9,
         _1: /* tuple */[
           "format_regression.ml",
           12,
           19
-        ]
+        ],
+        Debug: "Assert_failure"
       };
 }
 
 function format_pp_token(param, param$1) {
   throw {
-        CamlExt: Caml_builtin_exceptions.assert_failure,
+        ExceptionID: -9,
         _1: /* tuple */[
           "format_regression.ml",
           13,
           26
-        ]
+        ],
+        Debug: "Assert_failure"
       };
 }
 

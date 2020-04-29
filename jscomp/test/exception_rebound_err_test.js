@@ -5,7 +5,6 @@ var Block = require("../../lib/js/block.js");
 var Curry = require("../../lib/js/curry.js");
 var Caml_exceptions = require("../../lib/js/caml_exceptions.js");
 var Caml_js_exceptions = require("../../lib/js/caml_js_exceptions.js");
-var Caml_builtin_exceptions = require("../../lib/js/caml_builtin_exceptions.js");
 
 var suites = {
   contents: /* [] */0
@@ -45,21 +44,21 @@ function test_js_error4(param) {
   }
   catch (raw_e){
     var e = Caml_js_exceptions.internalToOCamlException(raw_e);
-    if (e.CamlExt.CamlId === Caml_builtin_exceptions.not_found.CamlId) {
+    if (e.ExceptionID === /* Not_found */-6) {
       return 2;
     }
-    if (e.CamlExt.CamlId === Caml_builtin_exceptions.invalid_argument.CamlId && e._1 === "x") {
+    if (e.ExceptionID === /* Invalid_argument */-3 && e._1 === "x") {
       return 3;
     }
-    if (e.CamlExt.CamlId === A.CamlId) {
+    if (e.ExceptionID === A.ExceptionID) {
       if (e._1 !== 2) {
         return 7;
       } else {
         return 4;
       }
-    } else if (e.CamlExt.CamlId === B.CamlId) {
+    } else if (e.ExceptionID === B.ExceptionID) {
       return 5;
-    } else if (e.CamlExt.CamlId === C.CamlId && !(e._1 !== 1 || e._2 !== 2)) {
+    } else if (e.ExceptionID === C.ExceptionID && !(e._1 !== 1 || e._2 !== 2)) {
       return 6;
     } else {
       return 7;
@@ -73,7 +72,7 @@ function f(g) {
   }
   catch (raw_exn){
     var exn = Caml_js_exceptions.internalToOCamlException(raw_exn);
-    if (exn.CamlExt.CamlId === Caml_builtin_exceptions.not_found.CamlId) {
+    if (exn.ExceptionID === /* Not_found */-6) {
       return 1;
     }
     throw exn;

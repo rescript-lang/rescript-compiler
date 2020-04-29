@@ -63,7 +63,8 @@ function remove_top(param) {
     }
   }
   throw {
-        CamlExt: Queue_is_empty
+        ExceptionID: Queue_is_empty.ExceptionID,
+        Debug: Queue_is_empty.Debug
       };
 }
 
@@ -76,7 +77,8 @@ function extract(queue) {
           ];
   }
   throw {
-        CamlExt: Queue_is_empty
+        ExceptionID: Queue_is_empty.ExceptionID,
+        Debug: Queue_is_empty.Debug
       };
 }
 

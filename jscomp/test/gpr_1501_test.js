@@ -4,7 +4,6 @@ var Mt = require("./mt.js");
 var Block = require("../../lib/js/block.js");
 var Printexc = require("../../lib/js/printexc.js");
 var Caml_exceptions = require("../../lib/js/caml_exceptions.js");
-var Caml_builtin_exceptions = require("../../lib/js/caml_builtin_exceptions.js");
 
 var suites = {
   contents: /* [] */0
@@ -36,16 +35,19 @@ var A = Caml_exceptions.create("Gpr_1501_test.A");
 var B = Caml_exceptions.create("Gpr_1501_test.B");
 
 eq("File \"gpr_1501_test.ml\", line 15, characters 7-14", "Not_found", Printexc.to_string({
-          CamlExt: Caml_builtin_exceptions.not_found
+          ExceptionID: -6,
+          Debug: "Not_found"
         }));
 
 eq("File \"gpr_1501_test.ml\", line 16, characters 7-14", "Gpr_1501_test.A", Printexc.to_string({
-          CamlExt: A
+          ExceptionID: A.ExceptionID,
+          Debug: A.Debug
         }));
 
 eq("File \"gpr_1501_test.ml\", line 17, characters 7-14", "Gpr_1501_test.B(1)", Printexc.to_string({
-          CamlExt: B,
-          _1: 1
+          ExceptionID: B.ExceptionID,
+          _1: 1,
+          Debug: B.Debug
         }));
 
 Mt.from_pair_suites("Gpr_1501_test", suites.contents);

@@ -3,7 +3,6 @@
 var Curry = require("../../lib/js/curry.js");
 var Caml_option = require("../../lib/js/caml_option.js");
 var Caml_primitive = require("../../lib/js/caml_primitive.js");
-var Caml_builtin_exceptions = require("../../lib/js/caml_builtin_exceptions.js");
 
 function height(param) {
   if (param) {
@@ -51,13 +50,15 @@ function bal(l, x, d, r) {
         return create(create(ll, lv, ld, lr[/* l */0]), lr[/* v */1], lr[/* d */2], create(lr[/* r */3], x, d, r));
       }
       throw {
-            CamlExt: Caml_builtin_exceptions.invalid_argument,
-            _1: "Map.bal"
+            ExceptionID: -3,
+            _1: "Map.bal",
+            Debug: "Invalid_argument"
           };
     }
     throw {
-          CamlExt: Caml_builtin_exceptions.invalid_argument,
-          _1: "Map.bal"
+          ExceptionID: -3,
+          _1: "Map.bal",
+          Debug: "Invalid_argument"
         };
   }
   if (hr <= (hl + 2 | 0)) {
@@ -81,13 +82,15 @@ function bal(l, x, d, r) {
       return create(create(l, x, d, rl[/* l */0]), rl[/* v */1], rl[/* d */2], create(rl[/* r */3], rv, rd, rr));
     }
     throw {
-          CamlExt: Caml_builtin_exceptions.invalid_argument,
-          _1: "Map.bal"
+          ExceptionID: -3,
+          _1: "Map.bal",
+          Debug: "Invalid_argument"
         };
   }
   throw {
-        CamlExt: Caml_builtin_exceptions.invalid_argument,
-        _1: "Map.bal"
+        ExceptionID: -3,
+        _1: "Map.bal",
+        Debug: "Invalid_argument"
       };
 }
 
@@ -155,7 +158,8 @@ function find(x, _param) {
       continue ;
     }
     throw {
-          CamlExt: Caml_builtin_exceptions.not_found
+          ExceptionID: -6,
+          Debug: "Not_found"
         };
   };
 }
@@ -194,7 +198,8 @@ function find_first(f, _param) {
       continue ;
     }
     throw {
-          CamlExt: Caml_builtin_exceptions.not_found
+          ExceptionID: -6,
+          Debug: "Not_found"
         };
   };
 }
@@ -270,7 +275,8 @@ function find_last(f, _param) {
       continue ;
     }
     throw {
-          CamlExt: Caml_builtin_exceptions.not_found
+          ExceptionID: -6,
+          Debug: "Not_found"
         };
   };
 }
@@ -357,7 +363,8 @@ function min_binding(_param) {
       continue ;
     }
     throw {
-          CamlExt: Caml_builtin_exceptions.not_found
+          ExceptionID: -6,
+          Debug: "Not_found"
         };
   };
 }
@@ -395,7 +402,8 @@ function max_binding(_param) {
       continue ;
     }
     throw {
-          CamlExt: Caml_builtin_exceptions.not_found
+          ExceptionID: -6,
+          Debug: "Not_found"
         };
   };
 }
@@ -428,8 +436,9 @@ function remove_min_binding(param) {
     }
   }
   throw {
-        CamlExt: Caml_builtin_exceptions.invalid_argument,
-        _1: "Map.remove_min_elt"
+        ExceptionID: -3,
+        _1: "Map.remove_min_elt",
+        Debug: "Invalid_argument"
       };
 }
 
@@ -725,12 +734,13 @@ function merge$1(f, s1, s2) {
     return concat_or_join(merge$1(f, match$1[0], s2[/* l */0]), v2, Curry._3(f, v2, match$1[1], Caml_option.some(s2[/* d */2])), merge$1(f, match$1[2], s2[/* r */3]));
   }
   throw {
-        CamlExt: Caml_builtin_exceptions.assert_failure,
+        ExceptionID: -9,
         _1: /* tuple */[
           "map.ml",
           393,
           10
-        ]
+        ],
+        Debug: "Assert_failure"
       };
 }
 

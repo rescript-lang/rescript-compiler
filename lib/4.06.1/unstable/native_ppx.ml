@@ -14353,8 +14353,8 @@ let check_bs_attributes_inclusion =
       None
     )  
 
-let check_duplicated_labels = ref (fun _lbls -> 
-  failwith "check_duplicated_label not implemented"
+let check_duplicated_labels : (_ -> _ option ) ref = ref (fun _lbls -> 
+  None
 )
 
 let rec deprecated_of_sig = function
@@ -15223,6 +15223,9 @@ val sourcedirs_meta : string
 
 val ns_sep_char : char
 val ns_sep : string
+
+val exception_id : string
+val exception_debug : string
 end = struct
 #1 "literals.ml"
 (* Copyright (C) 2015-2016 Bloomberg Finance L.P.
@@ -15366,7 +15369,8 @@ let sourcedirs_meta = ".sourcedirs.json"
 *)
 let ns_sep_char = '-'
 let ns_sep = "-"
-
+let exception_id = "ExceptionID"
+let exception_debug = "Debug"
 end
 module Ast_attributes : sig 
 #1 "ast_attributes.mli"
@@ -18076,7 +18080,7 @@ type t =
   | Const_js_undefined
   | Const_js_true
   | Const_js_false
-  | Const_int of int
+  | Const_int of {value : int; comment : string option}
   | Const_char of char
   | Const_string of string  (* use record later *)
   | Const_unicode of string
@@ -18126,7 +18130,7 @@ end = struct
   | Const_js_undefined
   | Const_js_true
   | Const_js_false
-  | Const_int of int
+  | Const_int of {value : int; comment : string option}
   | Const_char of char
   | Const_string of string  (* use record later *)
   | Const_unicode of string
@@ -18153,7 +18157,7 @@ let rec eq_approx (x : t) (y : t) =
   | Const_js_true -> y = Const_js_true
   | Const_js_false -> y =  Const_js_false
   | Const_int ix -> 
-    (match y with Const_int iy -> ix = iy | _ -> false)
+    (match y with Const_int iy -> ix.value = iy.value | _ -> false)
   | Const_char ix ->   
     (match y with Const_char iy -> ix = iy | _ -> false)
   | Const_string ix -> 

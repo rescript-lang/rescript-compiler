@@ -22,7 +22,15 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
-(** *)
+ type t = {
+  mutable id : nativeint [@bs.as "ExceptionID"];
+  name : string [@bs.as "Debug"];
+} 
+
+
+let make name id = { 
+name ; id }
+
 
 
 
@@ -55,9 +63,9 @@ let caml_set_oo_id (b : Caml_obj_extern.t)  : Caml_obj_extern.t =
 
 (* let object_tag = 248 *)
 
-let create (str : string) : Caml_builtin_exceptions.t = 
+let create (str : string) : t = 
   id .contents <- Caml_nativeint_extern.add id.contents 1n;  
-  Caml_builtin_exceptions.make str id.contents
+  make str id.contents
 
 (* let makeExtension (str : string) : Caml_builtin_exceptions.exception_block =  *)
 (*   let v = ( str, get_id ()) in  *)
@@ -98,14 +106,14 @@ let create (str : string) : Caml_builtin_exceptions.t =
    This is not a problem in `try .. with` since the logic above is not expressible, see more design in [destruct_exn.md]
 *)
 let caml_is_extension = [%raw {|function (e){
-  if(e == null || e.CamlExt == null) {
+  if(e == null ) {
     return false 
   }
-  return typeof e.CamlExt.CamlId === "number"
+  return typeof e.ExceptionID === "number" 
 }    
 |}]
 
-type exn = { exn : Caml_builtin_exceptions.t [@bs.as "CamlExt"]}
+(* type exn = { exn : Caml_builtin_exceptions.t [@bs.as "CamlExt"]} *)
 
-let caml_exn_slot_id x = x.exn.id
-let caml_exn_slot_name x = x.exn.name
+let caml_exn_slot_id (x : t) = x.id
+let caml_exn_slot_name (x : t) = x.name

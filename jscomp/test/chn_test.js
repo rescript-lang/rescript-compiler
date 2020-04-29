@@ -4,7 +4,6 @@ var Mt = require("./mt.js");
 var $$Array = require("../../lib/js/array.js");
 var Block = require("../../lib/js/block.js");
 var Caml_string = require("../../lib/js/caml_string.js");
-var Caml_builtin_exceptions = require("../../lib/js/caml_builtin_exceptions.js");
 
 var suites = {
   contents: /* [] */0
@@ -42,12 +41,13 @@ function convert(s) {
                       return x$1;
                     }
                     throw {
-                          CamlExt: Caml_builtin_exceptions.assert_failure,
+                          ExceptionID: -9,
                           _1: /* tuple */[
                             "chn_test.ml",
                             20,
                             18
-                          ]
+                          ],
+                          Debug: "Assert_failure"
                         };
                   })));
 }

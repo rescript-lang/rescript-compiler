@@ -4,7 +4,6 @@ var Curry = require("../../lib/js/curry.js");
 var Hashtbl = require("../../lib/js/hashtbl.js");
 var Caml_primitive = require("../../lib/js/caml_primitive.js");
 var Caml_js_exceptions = require("../../lib/js/caml_js_exceptions.js");
-var Caml_builtin_exceptions = require("../../lib/js/caml_builtin_exceptions.js");
 
 function Make(funarg) {
   var $$let = funarg.V;
@@ -18,7 +17,7 @@ function Make(funarg) {
     }
     catch (raw_exn){
       var exn = Caml_js_exceptions.internalToOCamlException(raw_exn);
-      if (exn.CamlExt.CamlId === Caml_builtin_exceptions.not_found.CamlId) {
+      if (exn.ExceptionID === /* Not_found */-6) {
         return false;
       }
       throw exn;
@@ -38,22 +37,24 @@ function Make(funarg) {
     var step2 = function (top, rest_of_stack) {
       if (find_default(already_processed, top)) {
         throw {
-              CamlExt: Caml_builtin_exceptions.assert_failure,
+              ExceptionID: -9,
               _1: /* tuple */[
                 "gpr_405_test.ml",
                 43,
                 6
-              ]
+              ],
+              Debug: "Assert_failure"
             };
       }
       if (find_default(on_the_stack, top)) {
         throw {
-              CamlExt: Caml_builtin_exceptions.assert_failure,
+              ExceptionID: -9,
               _1: /* tuple */[
                 "gpr_405_test.ml",
                 44,
                 6
-              ]
+              ],
+              Debug: "Assert_failure"
             };
       }
       Curry._3(H.add, on_the_stack, top, true);
@@ -93,8 +94,9 @@ function Make(funarg) {
         }
         if (Curry._2(H.find, l_labels, top$1) > Curry._2(H.find, n_labels, top$1)) {
           throw {
-                CamlExt: Caml_builtin_exceptions.invalid_argument,
-                _1: "Graph.Mincut: graph not reducible"
+                ExceptionID: -3,
+                _1: "Graph.Mincut: graph not reducible",
+                Debug: "Invalid_argument"
               };
         }
         if (!rest_of_stack$1) {

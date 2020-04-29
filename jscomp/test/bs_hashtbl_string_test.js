@@ -9,7 +9,6 @@ var Belt_HashMapInt = require("../../lib/js/belt_HashMapInt.js");
 var Belt_HashSetInt = require("../../lib/js/belt_HashSetInt.js");
 var Belt_HashMapString = require("../../lib/js/belt_HashMapString.js");
 var Caml_hash_primitive = require("../../lib/js/caml_hash_primitive.js");
-var Caml_builtin_exceptions = require("../../lib/js/caml_builtin_exceptions.js");
 var Belt_internalBucketsType = require("../../lib/js/belt_internalBucketsType.js");
 
 function hash_string(s) {
@@ -54,12 +53,13 @@ function bench(param) {
   for(var i$1 = 0; i$1 <= 1000000; ++i$1){
     if (!Belt_HashMap.has(empty, i$1)) {
       throw {
-            CamlExt: Caml_builtin_exceptions.assert_failure,
+            ExceptionID: -9,
             _1: /* tuple */[
               "bs_hashtbl_string_test.ml",
               50,
               4
-            ]
+            ],
+            Debug: "Assert_failure"
           };
     }
     
@@ -75,12 +75,13 @@ function bench2(m) {
   for(var i$1 = 0; i$1 <= 1000000; ++i$1){
     if (!Belt_HashMap.has(empty, String(i$1))) {
       throw {
-            CamlExt: Caml_builtin_exceptions.assert_failure,
+            ExceptionID: -9,
             _1: /* tuple */[
               "bs_hashtbl_string_test.ml",
               76,
               4
-            ]
+            ],
+            Debug: "Assert_failure"
           };
     }
     
@@ -92,12 +93,13 @@ function bench2(m) {
     return ;
   }
   throw {
-        CamlExt: Caml_builtin_exceptions.assert_failure,
+        ExceptionID: -9,
         _1: /* tuple */[
           "bs_hashtbl_string_test.ml",
           82,
           2
-        ]
+        ],
+        Debug: "Assert_failure"
       };
 }
 
@@ -111,12 +113,13 @@ function bench3(m) {
   for(var i$1 = 0; i$1 <= 1000000; ++i$1){
     if (!Belt_MapDict.has(table, String(i$1), cmp)) {
       throw {
-            CamlExt: Caml_builtin_exceptions.assert_failure,
+            ExceptionID: -9,
             _1: /* tuple */[
               "bs_hashtbl_string_test.ml",
               98,
               4
-            ]
+            ],
+            Debug: "Assert_failure"
           };
     }
     
@@ -128,12 +131,13 @@ function bench3(m) {
     return ;
   }
   throw {
-        CamlExt: Caml_builtin_exceptions.assert_failure,
+        ExceptionID: -9,
         _1: /* tuple */[
           "bs_hashtbl_string_test.ml",
           105,
           2
-        ]
+        ],
+        Debug: "Assert_failure"
       };
 }
 
@@ -147,12 +151,13 @@ function bench4(param) {
   for(var i$1 = 0; i$1 <= 1000000; ++i$1){
     if (!Belt_HashMapString.has(table, String(i$1))) {
       throw {
-            CamlExt: Caml_builtin_exceptions.assert_failure,
+            ExceptionID: -9,
             _1: /* tuple */[
               "bs_hashtbl_string_test.ml",
               118,
               4
-            ]
+            ],
+            Debug: "Assert_failure"
           };
     }
     
@@ -164,12 +169,13 @@ function bench4(param) {
     return ;
   }
   throw {
-        CamlExt: Caml_builtin_exceptions.assert_failure,
+        ExceptionID: -9,
         _1: /* tuple */[
           "bs_hashtbl_string_test.ml",
           124,
           2
-        ]
+        ],
+        Debug: "Assert_failure"
       };
 }
 
@@ -184,12 +190,13 @@ function bench5(param) {
   for(var i$1 = 0; i$1 <= 1000000; ++i$1){
     if (!Belt_HashMap.has(table, i$1)) {
       throw {
-            CamlExt: Caml_builtin_exceptions.assert_failure,
+            ExceptionID: -9,
             _1: /* tuple */[
               "bs_hashtbl_string_test.ml",
               138,
               6
-            ]
+            ],
+            Debug: "Assert_failure"
           };
     }
     
@@ -204,12 +211,13 @@ function bench5(param) {
     return ;
   }
   throw {
-        CamlExt: Caml_builtin_exceptions.assert_failure,
+        ExceptionID: -9,
         _1: /* tuple */[
           "bs_hashtbl_string_test.ml",
           144,
           2
-        ]
+        ],
+        Debug: "Assert_failure"
       };
 }
 
@@ -221,12 +229,13 @@ function bench6(param) {
   for(var i$1 = 0; i$1 <= 1000000; ++i$1){
     if (!Belt_HashMapInt.has(table, i$1)) {
       throw {
-            CamlExt: Caml_builtin_exceptions.assert_failure,
+            ExceptionID: -9,
             _1: /* tuple */[
               "bs_hashtbl_string_test.ml",
               156,
               4
-            ]
+            ],
+            Debug: "Assert_failure"
           };
     }
     
@@ -238,12 +247,13 @@ function bench6(param) {
     return ;
   }
   throw {
-        CamlExt: Caml_builtin_exceptions.assert_failure,
+        ExceptionID: -9,
         _1: /* tuple */[
           "bs_hashtbl_string_test.ml",
           162,
           2
-        ]
+        ],
+        Debug: "Assert_failure"
       };
 }
 
@@ -255,12 +265,13 @@ function bench7(param) {
   for(var i$1 = 0; i$1 <= 1000000; ++i$1){
     if (!Belt_HashSetInt.has(table, i$1)) {
       throw {
-            CamlExt: Caml_builtin_exceptions.assert_failure,
+            ExceptionID: -9,
             _1: /* tuple */[
               "bs_hashtbl_string_test.ml",
               181,
               4
-            ]
+            ],
+            Debug: "Assert_failure"
           };
     }
     
@@ -272,12 +283,13 @@ function bench7(param) {
     return ;
   }
   throw {
-        CamlExt: Caml_builtin_exceptions.assert_failure,
+        ExceptionID: -9,
         _1: /* tuple */[
           "bs_hashtbl_string_test.ml",
           192,
           2
-        ]
+        ],
+        Debug: "Assert_failure"
       };
 }
 

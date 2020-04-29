@@ -20,7 +20,6 @@ var Caml_option = require("../../lib/js/caml_option.js");
 var Caml_string = require("../../lib/js/caml_string.js");
 var Caml_exceptions = require("../../lib/js/caml_exceptions.js");
 var Caml_js_exceptions = require("../../lib/js/caml_js_exceptions.js");
-var Caml_builtin_exceptions = require("../../lib/js/caml_builtin_exceptions.js");
 
 function field(optionsOpt, label, number, type_, name) {
   var options = optionsOpt !== undefined ? optionsOpt : /* [] */0;
@@ -193,7 +192,7 @@ function file_option(file_options, name) {
   }
   catch (raw_exn){
     var exn = Caml_js_exceptions.internalToOCamlException(raw_exn);
-    if (exn.CamlExt.CamlId === Caml_builtin_exceptions.not_found.CamlId) {
+    if (exn.ExceptionID === /* Not_found */-6) {
       return ;
     }
     throw exn;
@@ -213,7 +212,7 @@ function rev_split_by_char(c, s) {
     }
     catch (raw_exn){
       var exn = Caml_js_exceptions.internalToOCamlException(raw_exn);
-      if (exn.CamlExt.CamlId === Caml_builtin_exceptions.not_found.CamlId) {
+      if (exn.ExceptionID === /* Not_found */-6) {
         return /* :: */[
                 $$String.sub(s, i, s.length - i | 0),
                 l
@@ -238,8 +237,9 @@ function pop_last(param) {
     }
   }
   throw {
-        CamlExt: Caml_builtin_exceptions.failure,
-        _1: "Invalid argument [] for pop_last"
+        ExceptionID: -2,
+        _1: "Invalid argument [] for pop_last",
+        Debug: "Failure"
       };
 }
 
@@ -647,7 +647,7 @@ function prepare_error(e) {
 }
 
 function add_loc(loc, exn) {
-  if (exn.CamlExt.CamlId === Compilation_error.CamlId) {
+  if (exn.ExceptionID === Compilation_error.ExceptionID) {
     var tmp = exn._1;
     if (typeof tmp !== "number") {
       switch (tmp.tag | 0) {
@@ -668,17 +668,18 @@ function add_loc(loc, exn) {
   var line$1 = line(loc);
   var detail = Printexc.to_string(exn);
   return {
-          CamlExt: Compilation_error,
+          ExceptionID: Compilation_error.ExceptionID,
           _1: /* Parsing_error */Block.__(15, [
               file_name$1,
               line$1,
               detail
-            ])
+            ]),
+          Debug: Compilation_error.Debug
         };
 }
 
 Printexc.register_printer((function (exn) {
-        if (exn.CamlExt.CamlId === Compilation_error.CamlId) {
+        if (exn.ExceptionID === Compilation_error.ExceptionID) {
           return prepare_error(exn._1);
         }
         
@@ -686,32 +687,59 @@ Printexc.register_printer((function (exn) {
 
 function invalid_default_value(field_name, info, param) {
   throw {
-        CamlExt: Compilation_error,
+        ExceptionID: Compilation_error.ExceptionID,
         _1: /* Invalid_default_value */Block.__(2, [{
               field_name: field_name,
               info: info
-            }])
+            }]),
+        Debug: Compilation_error.Debug
       };
 }
 
 function unsupported_field_type(field_name, field_type, backend_name, param) {
   throw {
-        CamlExt: Compilation_error,
+        ExceptionID: Compilation_error.ExceptionID,
         _1: /* Unsupported_field_type */Block.__(3, [{
               field_name: field_name,
               field_type: field_type,
               backend_name: backend_name
-            }])
+            }]),
+        Debug: Compilation_error.Debug
+      };
+}
+
+function programmatic_error(e) {
+  throw {
+        ExceptionID: Compilation_error.ExceptionID,
+        _1: /* Programatic_error */Block.__(4, [e]),
+        Debug: Compilation_error.Debug
+      };
+}
+
+function invalid_packed_option(field_name) {
+  throw {
+        ExceptionID: Compilation_error.ExceptionID,
+        _1: /* Invalid_packed_option */Block.__(8, [field_name]),
+        Debug: Compilation_error.Debug
       };
 }
 
 function invalid_enum_specification(enum_name, loc) {
   throw {
-        CamlExt: Compilation_error,
+        ExceptionID: Compilation_error.ExceptionID,
         _1: /* Invalid_enum_specification */Block.__(10, [
             enum_name,
             loc
-          ])
+          ]),
+        Debug: Compilation_error.Debug
+      };
+}
+
+function missing_field_label(loc) {
+  throw {
+        ExceptionID: Compilation_error.ExceptionID,
+        _1: /* Missing_field_label */Block.__(14, [loc]),
+        Debug: Compilation_error.Debug
       };
 }
 
@@ -758,8 +786,9 @@ var yytransl_block = [
 var yyact = [
   (function (param) {
       throw {
-            CamlExt: Caml_builtin_exceptions.failure,
-            _1: "parser"
+            ExceptionID: -2,
+            _1: "parser",
+            Debug: "Failure"
           };
     }),
   (function (__caml_parser_env) {
@@ -883,8 +912,9 @@ var yyact = [
       Parsing.peek_val(__caml_parser_env, 1);
       Parsing.peek_val(__caml_parser_env, 0);
       throw {
-            CamlExt: Compilation_error,
-            _1: /* Invalid_import_qualifier */Block.__(5, [_1])
+            ExceptionID: Compilation_error.ExceptionID,
+            _1: /* Invalid_import_qualifier */Block.__(5, [_1]),
+            Debug: Compilation_error.Debug
           };
     }),
   (function (__caml_parser_env) {
@@ -938,8 +968,9 @@ var yyact = [
     }),
   (function (__caml_parser_env) {
       throw {
-            CamlExt: Compilation_error,
-            _1: /* Syntax_error */0
+            ExceptionID: Compilation_error.ExceptionID,
+            _1: /* Syntax_error */0,
+            Debug: Compilation_error.Debug
           };
     }),
   (function (__caml_parser_env) {
@@ -1018,8 +1049,9 @@ var yyact = [
       Parsing.peek_val(__caml_parser_env, 1);
       Parsing.peek_val(__caml_parser_env, 0);
       throw {
-            CamlExt: Compilation_error,
-            _1: /* Missing_one_of_name */Block.__(12, [_1])
+            ExceptionID: Compilation_error.ExceptionID,
+            _1: /* Missing_one_of_name */Block.__(12, [_1]),
+            Debug: Compilation_error.Debug
           };
     }),
   (function (__caml_parser_env) {
@@ -1088,20 +1120,14 @@ var yyact = [
       Parsing.peek_val(__caml_parser_env, 2);
       Parsing.peek_val(__caml_parser_env, 1);
       Parsing.peek_val(__caml_parser_env, 0);
-      throw {
-            CamlExt: Compilation_error,
-            _1: /* Missing_field_label */Block.__(14, [_1[0]])
-          };
+      return missing_field_label(_1[0]);
     }),
   (function (__caml_parser_env) {
       var _1 = Parsing.peek_val(__caml_parser_env, 4);
       Parsing.peek_val(__caml_parser_env, 3);
       Parsing.peek_val(__caml_parser_env, 1);
       Parsing.peek_val(__caml_parser_env, 0);
-      throw {
-            CamlExt: Compilation_error,
-            _1: /* Missing_field_label */Block.__(14, [_1[0]])
-          };
+      return missing_field_label(_1[0]);
     }),
   (function (__caml_parser_env) {
       return Parsing.peek_val(__caml_parser_env, 0)[1];
@@ -1167,9 +1193,11 @@ var yyact = [
     }),
   (function (__caml_parser_env) {
       var _1 = Parsing.peek_val(__caml_parser_env, 0);
+      var loc = _1[0];
       throw {
-            CamlExt: Compilation_error,
-            _1: /* Invalid_field_label */Block.__(13, [_1[0]])
+            ExceptionID: Compilation_error.ExceptionID,
+            _1: /* Invalid_field_label */Block.__(13, [loc]),
+            Debug: Compilation_error.Debug
           };
     }),
   (function (__caml_parser_env) {
@@ -1296,11 +1324,12 @@ var yyact = [
       var enum_value = _1[1];
       var loc = _1[0];
       throw {
-            CamlExt: Compilation_error,
+            ExceptionID: Compilation_error.ExceptionID,
             _1: /* Missing_semicolon_for_enum_value */Block.__(9, [
                 enum_value,
                 loc
-              ])
+              ]),
+            Debug: Compilation_error.Debug
           };
     }),
   (function (__caml_parser_env) {
@@ -1336,74 +1365,86 @@ var yyact = [
     }),
   (function (__caml_parser_env) {
       throw {
-            CamlExt: Parsing.YYexit,
-            _1: Parsing.peek_val(__caml_parser_env, 0)
+            ExceptionID: Parsing.YYexit.ExceptionID,
+            _1: Parsing.peek_val(__caml_parser_env, 0),
+            Debug: Parsing.YYexit.Debug
           };
     }),
   (function (__caml_parser_env) {
       throw {
-            CamlExt: Parsing.YYexit,
-            _1: Parsing.peek_val(__caml_parser_env, 0)
+            ExceptionID: Parsing.YYexit.ExceptionID,
+            _1: Parsing.peek_val(__caml_parser_env, 0),
+            Debug: Parsing.YYexit.Debug
           };
     }),
   (function (__caml_parser_env) {
       throw {
-            CamlExt: Parsing.YYexit,
-            _1: Parsing.peek_val(__caml_parser_env, 0)
+            ExceptionID: Parsing.YYexit.ExceptionID,
+            _1: Parsing.peek_val(__caml_parser_env, 0),
+            Debug: Parsing.YYexit.Debug
           };
     }),
   (function (__caml_parser_env) {
       throw {
-            CamlExt: Parsing.YYexit,
-            _1: Parsing.peek_val(__caml_parser_env, 0)
+            ExceptionID: Parsing.YYexit.ExceptionID,
+            _1: Parsing.peek_val(__caml_parser_env, 0),
+            Debug: Parsing.YYexit.Debug
           };
     }),
   (function (__caml_parser_env) {
       throw {
-            CamlExt: Parsing.YYexit,
-            _1: Parsing.peek_val(__caml_parser_env, 0)
+            ExceptionID: Parsing.YYexit.ExceptionID,
+            _1: Parsing.peek_val(__caml_parser_env, 0),
+            Debug: Parsing.YYexit.Debug
           };
     }),
   (function (__caml_parser_env) {
       throw {
-            CamlExt: Parsing.YYexit,
-            _1: Parsing.peek_val(__caml_parser_env, 0)
+            ExceptionID: Parsing.YYexit.ExceptionID,
+            _1: Parsing.peek_val(__caml_parser_env, 0),
+            Debug: Parsing.YYexit.Debug
           };
     }),
   (function (__caml_parser_env) {
       throw {
-            CamlExt: Parsing.YYexit,
-            _1: Parsing.peek_val(__caml_parser_env, 0)
+            ExceptionID: Parsing.YYexit.ExceptionID,
+            _1: Parsing.peek_val(__caml_parser_env, 0),
+            Debug: Parsing.YYexit.Debug
           };
     }),
   (function (__caml_parser_env) {
       throw {
-            CamlExt: Parsing.YYexit,
-            _1: Parsing.peek_val(__caml_parser_env, 0)
+            ExceptionID: Parsing.YYexit.ExceptionID,
+            _1: Parsing.peek_val(__caml_parser_env, 0),
+            Debug: Parsing.YYexit.Debug
           };
     }),
   (function (__caml_parser_env) {
       throw {
-            CamlExt: Parsing.YYexit,
-            _1: Parsing.peek_val(__caml_parser_env, 0)
+            ExceptionID: Parsing.YYexit.ExceptionID,
+            _1: Parsing.peek_val(__caml_parser_env, 0),
+            Debug: Parsing.YYexit.Debug
           };
     }),
   (function (__caml_parser_env) {
       throw {
-            CamlExt: Parsing.YYexit,
-            _1: Parsing.peek_val(__caml_parser_env, 0)
+            ExceptionID: Parsing.YYexit.ExceptionID,
+            _1: Parsing.peek_val(__caml_parser_env, 0),
+            Debug: Parsing.YYexit.Debug
           };
     }),
   (function (__caml_parser_env) {
       throw {
-            CamlExt: Parsing.YYexit,
-            _1: Parsing.peek_val(__caml_parser_env, 0)
+            ExceptionID: Parsing.YYexit.ExceptionID,
+            _1: Parsing.peek_val(__caml_parser_env, 0),
+            Debug: Parsing.YYexit.Debug
           };
     }),
   (function (__caml_parser_env) {
       throw {
-            CamlExt: Parsing.YYexit,
-            _1: Parsing.peek_val(__caml_parser_env, 0)
+            ExceptionID: Parsing.YYexit.ExceptionID,
+            _1: Parsing.peek_val(__caml_parser_env, 0),
+            Debug: Parsing.YYexit.Debug
           };
     })
 ];
@@ -1663,8 +1704,9 @@ function lexer(lexbuf) {
                     "Unknown character found %s"
                   ]), Lexing.lexeme(lexbuf));
           throw {
-                CamlExt: Caml_builtin_exceptions.failure,
-                _1: s$1
+                ExceptionID: -2,
+                _1: s$1,
+                Debug: "Failure"
               };
       default:
         Curry._1(lexbuf.refill_buff, lexbuf);
@@ -1925,8 +1967,9 @@ function runtime_function(param) {
   if (match !== 427938126) {
     if (match !== 779642422) {
       throw {
-            CamlExt: Caml_builtin_exceptions.failure,
-            _1: "Invalid encoding/OCaml type combination"
+            ExceptionID: -2,
+            _1: "Invalid encoding/OCaml type combination",
+            Debug: "Failure"
           };
     }
     var match$1 = param[1];
@@ -1945,8 +1988,9 @@ function runtime_function(param) {
               case /* Bt_bytes */5 :
               case /* Bt_bool */6 :
                   throw {
-                        CamlExt: Caml_builtin_exceptions.failure,
-                        _1: "Invalid encoding/OCaml type combination"
+                        ExceptionID: -2,
+                        _1: "Invalid encoding/OCaml type combination",
+                        Debug: "Failure"
                       };
               
             }
@@ -1963,8 +2007,9 @@ function runtime_function(param) {
               case /* Bt_bytes */5 :
               case /* Bt_bool */6 :
                   throw {
-                        CamlExt: Caml_builtin_exceptions.failure,
-                        _1: "Invalid encoding/OCaml type combination"
+                        ExceptionID: -2,
+                        _1: "Invalid encoding/OCaml type combination",
+                        Debug: "Failure"
                       };
               
             }
@@ -1977,8 +2022,9 @@ function runtime_function(param) {
               return "Pbrt.Encoder.string";
             }
             throw {
-                  CamlExt: Caml_builtin_exceptions.failure,
-                  _1: "Invalid encoding/OCaml type combination"
+                  ExceptionID: -2,
+                  _1: "Invalid encoding/OCaml type combination",
+                  Debug: "Failure"
                 };
         
       }
@@ -1995,8 +2041,9 @@ function runtime_function(param) {
         case /* Bt_bytes */5 :
         case /* Bt_bool */6 :
             throw {
-                  CamlExt: Caml_builtin_exceptions.failure,
-                  _1: "Invalid encoding/OCaml type combination"
+                  ExceptionID: -2,
+                  _1: "Invalid encoding/OCaml type combination",
+                  Debug: "Failure"
                 };
         
       }
@@ -2012,8 +2059,9 @@ function runtime_function(param) {
         case /* Bt_float */1 :
         case /* Bt_bytes */5 :
             throw {
-                  CamlExt: Caml_builtin_exceptions.failure,
-                  _1: "Invalid encoding/OCaml type combination"
+                  ExceptionID: -2,
+                  _1: "Invalid encoding/OCaml type combination",
+                  Debug: "Failure"
                 };
         case /* Bt_bool */6 :
             return "Pbrt.Encoder.bool";
@@ -2037,8 +2085,9 @@ function runtime_function(param) {
               case /* Bt_bytes */5 :
               case /* Bt_bool */6 :
                   throw {
-                        CamlExt: Caml_builtin_exceptions.failure,
-                        _1: "Invalid encoding/OCaml type combination"
+                        ExceptionID: -2,
+                        _1: "Invalid encoding/OCaml type combination",
+                        Debug: "Failure"
                       };
               
             }
@@ -2055,8 +2104,9 @@ function runtime_function(param) {
               case /* Bt_bytes */5 :
               case /* Bt_bool */6 :
                   throw {
-                        CamlExt: Caml_builtin_exceptions.failure,
-                        _1: "Invalid encoding/OCaml type combination"
+                        ExceptionID: -2,
+                        _1: "Invalid encoding/OCaml type combination",
+                        Debug: "Failure"
                       };
               
             }
@@ -2069,8 +2119,9 @@ function runtime_function(param) {
               return "Pbrt.Decoder.string";
             }
             throw {
-                  CamlExt: Caml_builtin_exceptions.failure,
-                  _1: "Invalid encoding/OCaml type combination"
+                  ExceptionID: -2,
+                  _1: "Invalid encoding/OCaml type combination",
+                  Debug: "Failure"
                 };
         
       }
@@ -2087,8 +2138,9 @@ function runtime_function(param) {
         case /* Bt_bytes */5 :
         case /* Bt_bool */6 :
             throw {
-                  CamlExt: Caml_builtin_exceptions.failure,
-                  _1: "Invalid encoding/OCaml type combination"
+                  ExceptionID: -2,
+                  _1: "Invalid encoding/OCaml type combination",
+                  Debug: "Failure"
                 };
         
       }
@@ -2104,8 +2156,9 @@ function runtime_function(param) {
         case /* Bt_float */1 :
         case /* Bt_bytes */5 :
             throw {
-                  CamlExt: Caml_builtin_exceptions.failure,
-                  _1: "Invalid encoding/OCaml type combination"
+                  ExceptionID: -2,
+                  _1: "Invalid encoding/OCaml type combination",
+                  Debug: "Failure"
                 };
         case /* Bt_bool */6 :
             return "Pbrt.Decoder.bool";
@@ -3451,13 +3504,15 @@ function bal(l, x, d, r) {
         return create(create(ll, lv, ld, lr[/* l */0]), lr[/* v */1], lr[/* d */2], create(lr[/* r */3], x, d, r));
       }
       throw {
-            CamlExt: Caml_builtin_exceptions.invalid_argument,
-            _1: "Map.bal"
+            ExceptionID: -3,
+            _1: "Map.bal",
+            Debug: "Invalid_argument"
           };
     }
     throw {
-          CamlExt: Caml_builtin_exceptions.invalid_argument,
-          _1: "Map.bal"
+          ExceptionID: -3,
+          _1: "Map.bal",
+          Debug: "Invalid_argument"
         };
   }
   if (hr <= (hl + 2 | 0)) {
@@ -3481,13 +3536,15 @@ function bal(l, x, d, r) {
       return create(create(l, x, d, rl[/* l */0]), rl[/* v */1], rl[/* d */2], create(rl[/* r */3], rv, rd, rr));
     }
     throw {
-          CamlExt: Caml_builtin_exceptions.invalid_argument,
-          _1: "Map.bal"
+          ExceptionID: -3,
+          _1: "Map.bal",
+          Debug: "Invalid_argument"
         };
   }
   throw {
-        CamlExt: Caml_builtin_exceptions.invalid_argument,
-        _1: "Map.bal"
+        ExceptionID: -3,
+        _1: "Map.bal",
+        Debug: "Invalid_argument"
       };
 }
 
@@ -3547,7 +3604,8 @@ function find(x, _param) {
       continue ;
     }
     throw {
-          CamlExt: Caml_builtin_exceptions.not_found
+          ExceptionID: -6,
+          Debug: "Not_found"
         };
   };
 }
@@ -3589,13 +3647,15 @@ function min_value(param) {
       return Caml_option.some(Caml_obj.caml_min(Caml_option.valFromOption(x), Caml_option.valFromOption(y)));
     }
     throw {
-          CamlExt: Caml_builtin_exceptions.failure,
-          _1: "min_value error"
+          ExceptionID: -2,
+          _1: "min_value error",
+          Debug: "Failure"
         };
   }
   throw {
-        CamlExt: Caml_builtin_exceptions.failure,
-        _1: "min_value error"
+        ExceptionID: -2,
+        _1: "min_value error",
+        Debug: "Failure"
       };
 }
 
@@ -3607,13 +3667,15 @@ function eq_value(param) {
       return Caml_obj.caml_equal(Caml_option.valFromOption(x), Caml_option.valFromOption(y));
     }
     throw {
-          CamlExt: Caml_builtin_exceptions.failure,
-          _1: "eq_value error"
+          ExceptionID: -2,
+          _1: "eq_value error",
+          Debug: "Failure"
         };
   }
   throw {
-        CamlExt: Caml_builtin_exceptions.failure,
-        _1: "eq_value error"
+        ExceptionID: -2,
+        _1: "eq_value error",
+        Debug: "Failure"
       };
 }
 
@@ -3899,7 +3961,7 @@ function find_field_option(field_options, option_name) {
   }
   catch (raw_exn){
     var exn = Caml_js_exceptions.internalToOCamlException(raw_exn);
-    if (exn.CamlExt.CamlId === Caml_builtin_exceptions.not_found.CamlId) {
+    if (exn.ExceptionID === /* Not_found */-6) {
       return ;
     }
     throw exn;
@@ -3971,11 +4033,9 @@ function unresolved_of_string(s) {
             type_name: match[0],
             from_root: Caml_string.get(s, 0) === /* "." */46
           };
+  } else {
+    return programmatic_error(/* Invalid_string_split */0);
   }
-  throw {
-        CamlExt: Compilation_error,
-        _1: /* Programatic_error */Block.__(4, [/* Invalid_string_split */0])
-      };
 }
 
 function field_type_of_string(s) {
@@ -4119,7 +4179,7 @@ function get_default(field_name, field_options, field_type) {
   }
   catch (raw_exn){
     var exn = Caml_js_exceptions.internalToOCamlException(raw_exn);
-    if (exn.CamlExt.CamlId === Caml_builtin_exceptions.not_found.CamlId) {
+    if (exn.ExceptionID === /* Not_found */-6) {
       return ;
     }
     throw exn;
@@ -4163,7 +4223,7 @@ function not_found(f) {
   }
   catch (raw_exn){
     var exn = Caml_js_exceptions.internalToOCamlException(raw_exn);
-    if (exn.CamlExt.CamlId === Caml_builtin_exceptions.not_found.CamlId) {
+    if (exn.ExceptionID === /* Not_found */-6) {
       return true;
     }
     throw exn;
@@ -4182,7 +4242,8 @@ function list_assoc2(x, _param) {
       continue ;
     }
     throw {
-          CamlExt: Caml_builtin_exceptions.not_found
+          ExceptionID: -6,
+          Debug: "Not_found"
         };
   };
 }
@@ -4306,12 +4367,13 @@ function compile_message_p1(file_name, file_options, message_scope, param) {
     } else {
       var previous_field_name = "";
       throw {
-            CamlExt: Compilation_error,
+            ExceptionID: Compilation_error.ExceptionID,
             _1: /* Duplicated_field_number */Block.__(1, [{
                   field_name: name,
                   previous_field_name: previous_field_name,
                   message_name: message_name
-                }])
+                }]),
+            Debug: Compilation_error.Debug
           };
     }
   };
@@ -4430,11 +4492,9 @@ function compile_message_p2(types, param, message) {
     if (typeof field_type === "number") {
       if (typeof field_type === "number") {
         return field_type;
+      } else {
+        return programmatic_error(/* Unexpected_field_type */1);
       }
-      throw {
-            CamlExt: Compilation_error,
-            _1: /* Programatic_error */Block.__(4, [/* Unexpected_field_type */1])
-          };
     }
     var unresolved = field_type[0];
     var type_name = unresolved.type_name;
@@ -4489,7 +4549,7 @@ function compile_message_p2(types, param, message) {
             }
             catch (raw_exn){
               var exn = Caml_js_exceptions.internalToOCamlException(raw_exn);
-              if (exn.CamlExt.CamlId === Caml_builtin_exceptions.not_found.CamlId) {
+              if (exn.ExceptionID === /* Not_found */-6) {
                 return ;
               }
               throw exn;
@@ -4499,12 +4559,13 @@ function compile_message_p2(types, param, message) {
       return /* Field_type_type */[id];
     } else {
       throw {
-            CamlExt: Compilation_error,
+            ExceptionID: Compilation_error.ExceptionID,
             _1: /* Unresolved_type */Block.__(0, [{
                   field_name: field_name,
                   type_: type_name,
                   message_name: message_name
-                }])
+                }]),
+            Debug: Compilation_error.Debug
           };
     }
   };
@@ -5743,12 +5804,13 @@ function record_field_default_info(record_field) {
                     ]), vc_constructor, dfvft(vc_field_type[0], undefined)) : vc_constructor;
         } else {
           throw {
-                CamlExt: Caml_builtin_exceptions.assert_failure,
+                ExceptionID: -9,
                 _1: /* tuple */[
                   "codegen_default.ml",
                   74,
                   15
-                ]
+                ],
+                Debug: "Assert_failure"
               };
         }
         break;
@@ -5964,8 +6026,9 @@ function gen_default_variant(and_, param, sc) {
                       ]), decl, v_name, v_name, vc_constructor, default_value));
   }
   throw {
-        CamlExt: Caml_builtin_exceptions.failure,
-        _1: "programmatic TODO error"
+        ExceptionID: -2,
+        _1: "programmatic TODO error",
+        Debug: "Failure"
       };
 }
 
@@ -5977,8 +6040,9 @@ function gen_default_const_variant(and_, param, sc) {
     first_constructor_name = cv_constructors[0][0];
   } else {
     throw {
-          CamlExt: Caml_builtin_exceptions.failure,
-          _1: "programmatic TODO error"
+          ExceptionID: -2,
+          _1: "programmatic TODO error",
+          Debug: "Failure"
         };
   }
   return line$1(sc, Curry._4(Printf.sprintf(/* Format */[
@@ -6306,10 +6370,11 @@ function module_of_file_name(file_name) {
   }
   catch (raw_exn){
     var exn = Caml_js_exceptions.internalToOCamlException(raw_exn);
-    if (exn.CamlExt.CamlId === Caml_builtin_exceptions.not_found.CamlId) {
+    if (exn.ExceptionID === /* Not_found */-6) {
       throw {
-            CamlExt: Compilation_error,
-            _1: /* Invalid_file_name */Block.__(6, [file_name$1])
+            ExceptionID: Compilation_error.ExceptionID,
+            _1: /* Invalid_file_name */Block.__(6, [file_name$1]),
+            Debug: Compilation_error.Debug
           };
     }
     throw exn;
@@ -6334,8 +6399,9 @@ function type_name(message_scope, name) {
     }
   }
   throw {
-        CamlExt: Caml_builtin_exceptions.failure,
-        _1: "Programmatic error"
+        ExceptionID: -2,
+        _1: "Programmatic error",
+        Debug: "Failure"
       };
 }
 
@@ -6376,20 +6442,9 @@ function encoding_info_of_field_type(all_types, field_type) {
 
 function encoding_of_field(all_types, field) {
   var match = field_option(field, "packed");
-  var packed;
-  if (match !== undefined) {
-    if (match.tag === /* Constant_bool */1) {
-      packed = match[0];
-    } else {
-      var field_name$1 = field_name(field);
-      throw {
-            CamlExt: Compilation_error,
-            _1: /* Invalid_packed_option */Block.__(8, [field_name$1])
-          };
-    }
-  } else {
-    packed = false;
-  }
+  var packed = match !== undefined ? (
+      match.tag === /* Constant_bool */1 ? match[0] : invalid_packed_option(field_name(field))
+    ) : false;
   var pk = encoding_info_of_field_type(all_types, field_type(field));
   return /* tuple */[
           pk,
@@ -6415,11 +6470,8 @@ function compile_field_type(field_name, all_types, file_options, field_options, 
     }
     catch (raw_exn){
       var exn = Caml_js_exceptions.internalToOCamlException(raw_exn);
-      if (exn.CamlExt.CamlId === Caml_builtin_exceptions.not_found.CamlId) {
-        throw {
-              CamlExt: Compilation_error,
-              _1: /* Programatic_error */Block.__(4, [/* No_type_found_for_id */2])
-            };
+      if (exn.ExceptionID === /* Not_found */-6) {
+        return programmatic_error(/* No_type_found_for_id */2);
       }
       throw exn;
     }
@@ -6483,16 +6535,19 @@ function compile_field_type(field_name, all_types, file_options, field_options, 
 
 function is_mutable(field_name, field_options) {
   var match = find_field_option(field_options, "ocaml_mutable");
-  if (match === undefined) {
+  if (match !== undefined) {
+    if (match.tag === /* Constant_bool */1) {
+      return match[0];
+    } else {
+      throw {
+            ExceptionID: Compilation_error.ExceptionID,
+            _1: /* Invalid_mutable_option */Block.__(11, [field_name]),
+            Debug: Compilation_error.Debug
+          };
+    }
+  } else {
     return false;
   }
-  if (match.tag === /* Constant_bool */1) {
-    return match[0];
-  }
-  throw {
-        CamlExt: Compilation_error,
-        _1: /* Invalid_mutable_option */Block.__(11, [field_name])
-      };
 }
 
 function ocaml_container(field_options) {
@@ -6665,8 +6720,9 @@ function compile(proto_definition) {
                                                 repeated_type = /* Rt_repeated_field */1;
                                               } else {
                                                 throw {
-                                                      CamlExt: Caml_builtin_exceptions.failure,
-                                                      _1: "Invalid ocaml_container attribute value"
+                                                      ExceptionID: -2,
+                                                      _1: "Invalid ocaml_container attribute value",
+                                                      Debug: "Failure"
                                                     };
                                               }
                                             } else {
@@ -6751,14 +6807,16 @@ function compile(proto_definition) {
                                         var key_type$1;
                                         if (typeof key_type === "number") {
                                           throw {
-                                                CamlExt: Caml_builtin_exceptions.failure,
-                                                _1: "Only Basic Types are supported for map keys"
+                                                ExceptionID: -2,
+                                                _1: "Only Basic Types are supported for map keys",
+                                                Debug: "Failure"
                                               };
                                         }
                                         if (key_type.tag) {
                                           throw {
-                                                CamlExt: Caml_builtin_exceptions.failure,
-                                                _1: "Only Basic Types are supported for map keys"
+                                                ExceptionID: -2,
+                                                _1: "Only Basic Types are supported for map keys",
+                                                Debug: "Failure"
                                               };
                                         }
                                         key_type$1 = key_type[0];
@@ -6780,8 +6838,9 @@ function compile(proto_definition) {
                                             associative_type = /* At_hashtable */1;
                                           } else {
                                             throw {
-                                                  CamlExt: Caml_builtin_exceptions.failure,
-                                                  _1: "Invalid ocaml_container attribute value for map"
+                                                  ExceptionID: -2,
+                                                  _1: "Invalid ocaml_container attribute value for map",
+                                                  Debug: "Failure"
                                                 };
                                           }
                                         } else {

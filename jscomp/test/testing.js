@@ -8,7 +8,6 @@ var Caml_io = require("../../lib/js/caml_io.js");
 var Caml_obj = require("../../lib/js/caml_obj.js");
 var Pervasives = require("../../lib/js/pervasives.js");
 var Caml_js_exceptions = require("../../lib/js/caml_js_exceptions.js");
-var Caml_builtin_exceptions = require("../../lib/js/caml_builtin_exceptions.js");
 
 var all_tests_ok = {
   contents: true
@@ -137,15 +136,16 @@ function test_raises_this_exc(exc) {
 function failure_test(f, x, s) {
   return test_raises_exc_p((function (x) {
                 return Caml_obj.caml_equal(x, {
-                            CamlExt: Caml_builtin_exceptions.failure,
-                            _1: s
+                            ExceptionID: -2,
+                            _1: s,
+                            Debug: "Failure"
                           });
               }), f, x);
 }
 
 function scan_failure_test(f, x) {
   return test_raises_exc_p((function (param) {
-                return param.CamlExt.CamlId === Scanf.Scan_failure.CamlId;
+                return param.ExceptionID === Scanf.Scan_failure.ExceptionID;
               }), f, x);
 }
 

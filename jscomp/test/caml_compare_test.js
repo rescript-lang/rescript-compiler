@@ -4,7 +4,6 @@ var Mt = require("./mt.js");
 var Block = require("../../lib/js/block.js");
 var Caml_obj = require("../../lib/js/caml_obj.js");
 var Caml_js_exceptions = require("../../lib/js/caml_js_exceptions.js");
-var Caml_builtin_exceptions = require("../../lib/js/caml_builtin_exceptions.js");
 
 var function_equal_test;
 
@@ -17,7 +16,7 @@ try {
 }
 catch (raw_exn){
   var exn = Caml_js_exceptions.internalToOCamlException(raw_exn);
-  function_equal_test = exn.CamlExt.CamlId === Caml_builtin_exceptions.invalid_argument.CamlId && exn._1 === "equal: functional value" ? true : false;
+  function_equal_test = exn.ExceptionID === /* Invalid_argument */-3 && exn._1 === "equal: functional value" ? true : false;
 }
 
 var suites = {

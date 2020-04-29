@@ -6,7 +6,6 @@ var Block = require("../../lib/js/block.js");
 var Curry = require("../../lib/js/curry.js");
 var Caml_obj = require("../../lib/js/caml_obj.js");
 var CamlinternalLazy = require("../../lib/js/camlinternalLazy.js");
-var Caml_builtin_exceptions = require("../../lib/js/caml_builtin_exceptions.js");
 
 var x = [];
 
@@ -60,12 +59,13 @@ var three = {
 var v = {
   contents: (function (param) {
       throw {
-            CamlExt: Caml_builtin_exceptions.assert_failure,
+            ExceptionID: -9,
             _1: /* tuple */[
               "rec_value_test.ml",
               23,
               24
-            ]
+            ],
+            Debug: "Assert_failure"
           };
     })
 };
@@ -238,22 +238,24 @@ var suites_001 = /* :: */[
             tmp = match[0];
           } else {
             throw {
-                  CamlExt: Caml_builtin_exceptions.assert_failure,
+                  ExceptionID: -9,
                   _1: /* tuple */[
                     "rec_value_test.ml",
                     108,
                     2
-                  ]
+                  ],
+                  Debug: "Assert_failure"
                 };
           }
         } else {
           throw {
-                CamlExt: Caml_builtin_exceptions.assert_failure,
+                ExceptionID: -9,
                 _1: /* tuple */[
                   "rec_value_test.ml",
                   108,
                   2
-                ]
+                ],
+                Debug: "Assert_failure"
               };
         }
         return /* Eq */Block.__(0, [
@@ -382,12 +384,13 @@ var suites_001 = /* :: */[
                                   ]);
                         }
                         throw {
-                              CamlExt: Caml_builtin_exceptions.assert_failure,
+                              ExceptionID: -9,
                               _1: /* tuple */[
                                 "rec_value_test.ml",
                                 132,
                                 11
-                              ]
+                              ],
+                              Debug: "Assert_failure"
                             };
                       })
                   ],
@@ -402,12 +405,13 @@ var suites_001 = /* :: */[
                                     ]);
                           }
                           throw {
-                                CamlExt: Caml_builtin_exceptions.assert_failure,
+                                ExceptionID: -9,
                                 _1: /* tuple */[
                                   "rec_value_test.ml",
                                   137,
                                   11
-                                ]
+                                ],
+                                Debug: "Assert_failure"
                               };
                         })
                     ],

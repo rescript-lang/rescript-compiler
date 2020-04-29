@@ -1,6 +1,5 @@
 'use strict';
 
-var Caml_builtin_exceptions = require("../../lib/js/caml_builtin_exceptions.js");
 
 function f(param) {
   switch (param) {
@@ -10,12 +9,13 @@ function f(param) {
         return 1;
     default:
       throw {
-            CamlExt: Caml_builtin_exceptions.assert_failure,
+            ExceptionID: -9,
             _1: /* tuple */[
               "test_string_case.ml",
               4,
               9
-            ]
+            ],
+            Debug: "Assert_failure"
           };
   }
 }

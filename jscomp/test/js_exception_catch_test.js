@@ -6,7 +6,6 @@ var Curry = require("../../lib/js/curry.js");
 var Js_exn = require("../../lib/js/js_exn.js");
 var Caml_exceptions = require("../../lib/js/caml_exceptions.js");
 var Caml_js_exceptions = require("../../lib/js/caml_js_exceptions.js");
-var Caml_builtin_exceptions = require("../../lib/js/caml_builtin_exceptions.js");
 
 var suites = {
   contents: /* [] */0
@@ -60,7 +59,7 @@ try {
 }
 catch (raw_x){
   var x = Caml_js_exceptions.internalToOCamlException(raw_x);
-  if (x.CamlExt.CamlId === Js_exn.$$Error.CamlId) {
+  if (x.ExceptionID === Js_exn.$$Error.ExceptionID) {
     add_test("File \"js_exception_catch_test.ml\", line 21, characters 10-17", (function (param) {
             return /* Ok */Block.__(4, [true]);
           }));
@@ -88,29 +87,29 @@ function test(f) {
   }
   catch (raw_e){
     var e = Caml_js_exceptions.internalToOCamlException(raw_e);
-    if (e.CamlExt.CamlId === Caml_builtin_exceptions.not_found.CamlId) {
+    if (e.ExceptionID === /* Not_found */-6) {
       return /* Not_found */-358247754;
-    } else if (e.CamlExt.CamlId === Caml_builtin_exceptions.invalid_argument.CamlId) {
+    } else if (e.ExceptionID === /* Invalid_argument */-3) {
       if (e._1 === "x") {
         return /* Invalid_argument */-50278363;
       } else {
         return /* Invalid_any */545126980;
       }
-    } else if (e.CamlExt.CamlId === A.CamlId) {
+    } else if (e.ExceptionID === A.ExceptionID) {
       if (e._1 !== 2) {
         return /* A_any */740357294;
       } else {
         return /* A2 */14545;
       }
-    } else if (e.CamlExt.CamlId === B.CamlId) {
+    } else if (e.ExceptionID === B.ExceptionID) {
       return /* B */66;
-    } else if (e.CamlExt.CamlId === C.CamlId) {
+    } else if (e.ExceptionID === C.ExceptionID) {
       if (e._1 !== 1 || e._2 !== 2) {
         return /* C_any */-756146768;
       } else {
         return /* C */67;
       }
-    } else if (e.CamlExt.CamlId === Js_exn.$$Error.CamlId) {
+    } else if (e.ExceptionID === Js_exn.$$Error.ExceptionID) {
       return /* Js_error */634022066;
     } else {
       return /* Any */3257036;
@@ -124,57 +123,65 @@ eq("File \"js_exception_catch_test.ml\", line 43, characters 5-12", test((functi
 
 eq("File \"js_exception_catch_test.ml\", line 44, characters 5-12", test((function (param) {
             throw {
-                  CamlExt: Caml_builtin_exceptions.not_found
+                  ExceptionID: -6,
+                  Debug: "Not_found"
                 };
           })), /* Not_found */-358247754);
 
 eq("File \"js_exception_catch_test.ml\", line 45, characters 5-12", test((function (param) {
             throw {
-                  CamlExt: Caml_builtin_exceptions.invalid_argument,
-                  _1: "x"
+                  ExceptionID: -3,
+                  _1: "x",
+                  Debug: "Invalid_argument"
                 };
           })), /* Invalid_argument */-50278363);
 
 eq("File \"js_exception_catch_test.ml\", line 46, characters 5-12", test((function (param) {
             throw {
-                  CamlExt: Caml_builtin_exceptions.invalid_argument,
-                  _1: ""
+                  ExceptionID: -3,
+                  _1: "",
+                  Debug: "Invalid_argument"
                 };
           })), /* Invalid_any */545126980);
 
 eq("File \"js_exception_catch_test.ml\", line 47, characters 5-12", test((function (param) {
             throw {
-                  CamlExt: A,
-                  _1: 2
+                  ExceptionID: A.ExceptionID,
+                  _1: 2,
+                  Debug: A.Debug
                 };
           })), /* A2 */14545);
 
 eq("File \"js_exception_catch_test.ml\", line 48, characters 5-12", test((function (param) {
             throw {
-                  CamlExt: A,
-                  _1: 3
+                  ExceptionID: A.ExceptionID,
+                  _1: 3,
+                  Debug: A.Debug
                 };
           })), /* A_any */740357294);
 
 eq("File \"js_exception_catch_test.ml\", line 49, characters 5-12", test((function (param) {
             throw {
-                  CamlExt: B
+                  ExceptionID: B.ExceptionID,
+                  Debug: B.Debug
                 };
           })), /* B */66);
 
 eq("File \"js_exception_catch_test.ml\", line 50, characters 5-12", test((function (param) {
             throw {
-                  CamlExt: C,
+                  ExceptionID: C.ExceptionID,
                   _1: 1,
-                  _2: 2
+                  _2: 2,
+                  Debug: C.Debug
                 };
           })), /* C */67);
 
 eq("File \"js_exception_catch_test.ml\", line 51, characters 5-12", test((function (param) {
             throw {
-                  CamlExt: C,
+                  ExceptionID: C.ExceptionID,
                   _1: 0,
-                  _2: 2
+                  _2: 2,
+                  Debug: C.Debug
                 };
           })), /* C_any */-756146768);
 
@@ -184,8 +191,9 @@ eq("File \"js_exception_catch_test.ml\", line 52, characters 5-12", test((functi
 
 eq("File \"js_exception_catch_test.ml\", line 53, characters 5-12", test((function (param) {
             throw {
-                  CamlExt: Caml_builtin_exceptions.failure,
-                  _1: "x"
+                  ExceptionID: -2,
+                  _1: "x",
+                  Debug: "Failure"
                 };
           })), /* Any */3257036);
 

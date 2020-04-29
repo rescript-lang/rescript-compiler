@@ -8,7 +8,6 @@ var Caml_module = require("../../lib/js/caml_module.js");
 var CamlinternalLazy = require("../../lib/js/camlinternalLazy.js");
 var Caml_js_exceptions = require("../../lib/js/caml_js_exceptions.js");
 var Caml_external_polyfill = require("../../lib/js/caml_external_polyfill.js");
-var Caml_builtin_exceptions = require("../../lib/js/caml_builtin_exceptions.js");
 
 var suites = {
   contents: /* [] */0
@@ -95,7 +94,7 @@ try {
 }
 catch (raw_exn){
   var exn = Caml_js_exceptions.internalToOCamlException(raw_exn);
-  if (exn.CamlExt.CamlId === Lazy.Undefined.CamlId) {
+  if (exn.ExceptionID === Lazy.Undefined.ExceptionID) {
     tmp = -1;
   } else {
     throw exn;
@@ -158,7 +157,7 @@ try {
 }
 catch (raw_exn$1){
   var exn$1 = Caml_js_exceptions.internalToOCamlException(raw_exn$1);
-  if (exn$1.CamlExt.CamlId === Caml_builtin_exceptions.undefined_recursive_module.CamlId) {
+  if (exn$1.ExceptionID === /* Undefined_recursive_module */-11) {
     tmp$1 = 4;
   } else {
     throw exn$1;
