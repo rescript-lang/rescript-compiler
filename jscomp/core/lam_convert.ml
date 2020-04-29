@@ -23,6 +23,7 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
 let caml_id_field_info : Lam_primitive.t = (Pfield (0, Fld_record {name = "CamlId"; mutable_flag = Mutable;}))
+let prim = Lam.prim 
 
 (** A conservative approach to avoid packing exceptions
     for lambda expression like {[
@@ -157,7 +158,7 @@ let happens_to_be_diff
   | _ -> None 
 
 
-let prim = Lam.prim 
+
 
 (* type required_modules = Lam_module_ident.Hash_set.t *)
 
@@ -242,23 +243,12 @@ let lam_prim ~primitive:( p : Lambda.primitive) ~args loc : Lam.t =
     | Blk_record_inlined {name; fields; num_nonconst} ->
       let info : Lam_tag_info.t = Blk_record_inlined {name; fields; num_nonconst} in
       prim ~primitive:(Pmakeblock (tag,info,mutable_flag)) ~args loc
-    | Blk_record_ext s ->
-      let info : Lam_tag_info.t = Blk_record_ext s in
-      prim ~primitive:(Pmakeblock (tag,info,mutable_flag)) ~args loc
     | Blk_module s -> 
       let info : Lam_tag_info.t = Blk_module s in
       prim ~primitive:(Pmakeblock (tag,info,mutable_flag)) ~args loc
     | Blk_module_export _ -> 
       let info : Lam_tag_info.t = Blk_module_export in
       prim ~primitive:(Pmakeblock (tag,info,mutable_flag)) ~args loc  
-    | Blk_extension_slot -> 
-      ( 
-      match args with 
-      | [ Lconst (Const_string name)] -> 
-        prim ~primitive:(Pcreate_extension name) ~args:[] loc
-      | _ ->
-        assert false
-      )
     | Blk_lazy_general  
       ->
       let args = [ prim ~primitive:(Pjs_fn_make 0) ~args loc ] in 
@@ -382,8 +372,8 @@ let lam_prim ~primitive:( p : Lambda.primitive) ~args loc : Lam.t =
   | Pctconst x ->
     begin match x with
       | Word_size 
-      | Int_size -> Lam.const(Const_int 32)  
-      | Max_wosize -> Lam.const (Const_int 2147483647)
+      | Int_size -> Lam.const(Const_int {value = 32; comment = None})  
+      | Max_wosize -> Lam.const (Const_int {value = 2147483647; comment = Some "Max_wosize"})
       | Big_endian
         -> prim ~primitive:(Pctconst Big_endian) ~args loc
       | Ostype_unix
@@ -798,7 +788,7 @@ let convert (exports : Set_ident.t) (lam : Lambda.lambda) : Lam.t * Lam_module_i
             | Some i ->
               prim
                 ~primitive:Paddint
-                ~args:[e; Lam.const(Const_int i)]
+                ~args:[e; Lam.const(Const_int {value = i; comment = None})]
                 Location.none
             | None ->
               Lam.switch e
