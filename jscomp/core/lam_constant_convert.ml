@@ -24,7 +24,7 @@
 
 let rec convert_constant ( const : Lambda.structured_constant) : Lam_constant.t =
   match const with
-  | Const_base (Const_int i) -> (Const_int i)
+  | Const_base (Const_int i) -> Const_int {value = i; comment = None}
   | Const_base (Const_char i) -> (Const_char i)
   | Const_base (Const_string(i,opt)) ->
       (match opt with

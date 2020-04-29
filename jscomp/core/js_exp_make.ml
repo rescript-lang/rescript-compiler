@@ -607,24 +607,6 @@ let float_mod ?comment e1 e2 : J.expression =
   }
 
 
-(** Here we have to use JS [===], and therefore, we are introducing 
-    Js boolean, so be sure to convert it back to OCaml bool
-    TODO:
-    {[
-      if (A0 === A0) {
-        tmp = 3;
-      } else {
-        throw [
-        Caml_builtin_exceptions.assert_failure,
-        /* tuple */[
-          "inline_record_test.ml",
-          51,
-          52
-        ]
-        ];
-      }
-    ]}
-*)
 let rec triple_equal ?comment (e0 : t) (e1 : t ) : t =
   match e0.expression_desc, e1.expression_desc with
   | (Null| Undefined), 

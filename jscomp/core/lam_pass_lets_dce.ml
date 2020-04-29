@@ -205,7 +205,7 @@ let lets_helper (count_var : Ident.t -> Lam_pass_count.used_info) lam : Lam.t =
       | None -> Lam.prim ~primitive ~args:[l';r'] loc 
       | Some l_s -> 
         match r with 
-        |Lconst((Const_int i)) -> 
+        |Lconst((Const_int {value = i})) -> 
           if i < String.length l_s && i >=0  then
             Lam.const ((Const_char l_s.[i]))
           else 

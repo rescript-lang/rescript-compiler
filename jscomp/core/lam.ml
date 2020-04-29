@@ -386,7 +386,7 @@ and eq_approx_list ls ls1 =  Ext_list.for_all2_no_exn ls ls1 eq_approx
 
 let switch lam (lam_switch : lambda_switch) : t =
   match lam with
-  | Lconst ((Const_pointer (i,_) |  (Const_int i)))
+  | Lconst ((Const_pointer (i,_) |  (Const_int {value = i})))
     ->
     Ext_list.assoc_by_int   lam_switch.sw_consts i lam_switch.sw_failaction
   | Lconst (Const_block (i,_,_)) ->
@@ -453,7 +453,7 @@ let staticraise a b : t = Lstaticraise(a,b)
 
 module Lift = struct
   let int i : t =
-    Lconst ((Const_int i))
+    Lconst ((Const_int {value = i; comment = None}))
 
 
   (* let int32 i : t =
@@ -488,7 +488,7 @@ let prim ~primitive:(prim : Lam_primitive.t) ~args loc  : t =
   match args with
   | [Lconst a] ->
     begin match prim, a  with
-      | Pnegint, ((Const_int a))
+      | Pnegint, Const_int {value = a}
         -> Lift.int (- a)
       (* | Pfloatofint, ( (Const_int a)) *)
       (*   -> Lift.float (float_of_int a) *)
@@ -529,8 +529,8 @@ let prim ~primitive:(prim : Lam_primitive.t) ~args loc  : t =
         -> (** FIXME: could raise? *)
           Lift.bool (Lam_compat.cmp_float  cmp (float_of_string a) (float_of_string b))
       | Pintcomp cmp ,
-        ( (Const_int a) | Const_pointer (a,_)),
-        ( (Const_int b) | Const_pointer (b,_))
+        ( (Const_int {value = a}) | Const_pointer (a,_)),
+        ( (Const_int {value = b}) | Const_pointer (b,_))
         -> Lift.bool (Lam_compat.cmp_int cmp a b)
       | (Paddint
         | Psubint
@@ -542,7 +542,7 @@ let prim ~primitive:(prim : Lam_primitive.t) ~args loc  : t =
         | Pxorint
         | Plslint
         | Plsrint
-        | Pasrint), (Const_int a),   (Const_int b)
+        | Pasrint), (Const_int {value = a}),   (Const_int {value = b})
         ->
         (* WE SHOULD keep it as [int], to preserve types *)
         let aa,bb = Int32.of_int a, Int32.of_int  b in
@@ -586,11 +586,11 @@ let prim ~primitive:(prim : Lam_primitive.t) ~args loc  : t =
           | Pxorbint _ -> Lift.int32 (Int32.logxor aa bb)
           | _ -> default ()
         end
-      | Plslbint Pint32,  (Const_int32 aa),  (Const_int b)
+      | Plslbint Pint32,  (Const_int32 aa),  (Const_int {value = b})
         -> Lift.int32 (Int32.shift_left  aa b )
-      | Plsrbint Pint32,  (Const_int32 aa),  (Const_int b)
+      | Plsrbint Pint32,  (Const_int32 aa),  (Const_int {value = b})
         -> Lift.int32 (Int32.shift_right_logical  aa b )
-      | Pasrbint Pint32,  (Const_int32 aa),  (Const_int b)
+      | Pasrbint Pint32,  (Const_int32 aa),  (Const_int {value = b})
         -> Lift.int32 (Int32.shift_right  aa b )
 
       | (Paddbint Pint64
@@ -614,11 +614,11 @@ let prim ~primitive:(prim : Lam_primitive.t) ~args loc  : t =
           | Pxorbint _ -> Lift.int64 (Int64.logxor aa bb)
           | _ -> default ()
         end
-      | Plslbint Pint64,  (Const_int64 aa),  (Const_int b)
+      | Plslbint Pint64,  (Const_int64 aa),  (Const_int {value = b})
         -> Lift.int64 (Int64.shift_left  aa b )
-      | Plsrbint Pint64,  (Const_int64 aa),  (Const_int b)
+      | Plsrbint Pint64,  (Const_int64 aa),  (Const_int {value = b})
         -> Lift.int64 (Int64.shift_right_logical  aa b )
-      | Pasrbint Pint64,  (Const_int64 aa),  (Const_int b)
+      | Pasrbint Pint64,  (Const_int64 aa),  (Const_int {value = b})
         -> Lift.int64 (Int64.shift_right  aa b )
 
       | Psequand, Const_js_false, 
@@ -637,7 +637,7 @@ let prim ~primitive:(prim : Lam_primitive.t) ~args loc  : t =
         ->
         Lift.string (a ^ b)
       | (Pstringrefs | Pstringrefu), (Const_string(a)),
-        ((Const_int b)| Const_pointer (b,_))
+        ((Const_int {value = b})| Const_pointer (b,_))
         ->
         begin try Lift.char (String.get a b)
           with  _ -> default ()
@@ -712,7 +712,7 @@ let if_ (a : t) (b : t) (c : t) : t =
   match a with
   | Lconst v ->
     begin match v with
-      | Const_pointer (x, _)  | (Const_int x)
+      | Const_pointer (x, _)  | (Const_int {value = x})
         ->
         if x <> 0 then b else c
       | (Const_char x) ->
@@ -755,7 +755,7 @@ let if_ (a : t) (b : t) (c : t) : t =
       end 
     | _ -> 
       (match a with 
-       | Lprim {primitive = Pisout; args = [Lconst(Const_int range); Lvar xx] } 
+       | Lprim {primitive = Pisout; args = [Lconst(Const_int {value = range}); Lvar xx] } 
          -> 
          begin match c with 
            | Lswitch ( Lvar yy as switch_arg, 
