@@ -1538,7 +1538,8 @@ function eat(f) {
           };
   }
   throw {
-        RE_EXN_ID: No_good
+        RE_EXN_ID: No_good,
+        Error: new Error()
       };
 }
 
@@ -1591,7 +1592,8 @@ function parse_hex_symbol(f) {
   if (match) {
     if (match[0] !== 48) {
       throw {
-            RE_EXN_ID: No_good
+            RE_EXN_ID: No_good,
+            Error: new Error()
           };
     }
     var match$1 = match[1];
@@ -1602,17 +1604,20 @@ function parse_hex_symbol(f) {
       }
       if (match$2 !== 120) {
         throw {
-              RE_EXN_ID: No_good
+              RE_EXN_ID: No_good,
+              Error: new Error()
             };
       }
       return eat(eat(f));
     }
     throw {
-          RE_EXN_ID: No_good
+          RE_EXN_ID: No_good,
+          Error: new Error()
         };
   }
   throw {
-        RE_EXN_ID: No_good
+        RE_EXN_ID: No_good,
+        Error: new Error()
       };
 }
 
@@ -1626,7 +1631,8 @@ function parse_exponent(f) {
     var exn = Caml_js_exceptions.internalToOCamlException(raw_exn);
     if (exn.RE_EXN_ID === "Failure") {
       throw {
-            RE_EXN_ID: No_good
+            RE_EXN_ID: No_good,
+            Error: new Error()
           };
     }
     throw exn;
@@ -1676,7 +1682,8 @@ function parse_body(_f) {
         continue ;
       }
       throw {
-            RE_EXN_ID: No_good
+            RE_EXN_ID: No_good,
+            Error: new Error()
           };
     }
     var ref_char_code;
@@ -1688,7 +1695,8 @@ function parse_body(_f) {
       ref_char_code = 87;
     } else {
       throw {
-            RE_EXN_ID: No_good
+            RE_EXN_ID: No_good,
+            Error: new Error()
           };
     }
     var value = c - ref_char_code | 0;
@@ -1722,7 +1730,8 @@ function float_of_string(str) {
                   "lexer_flow.mll",
                   546,
                   4
-                ]
+                ],
+                Error: new Error()
               };
         }
         var ret = f.mantissa;
@@ -1809,7 +1818,8 @@ function oct_to_int(x) {
             "lexer_flow.mll",
             604,
             11
-          ]
+          ],
+          Error: new Error()
         };
   }
   return x - /* "0" */48 | 0;
@@ -1835,7 +1845,8 @@ function hexa_to_int(x) {
           "lexer_flow.mll",
           610,
           11
-        ]
+        ],
+        Error: new Error()
       };
 }
 
@@ -4803,12 +4814,14 @@ function bal(l, v, r) {
       }
       throw {
             RE_EXN_ID: "Invalid_argument",
-            _1: "Set.bal"
+            _1: "Set.bal",
+            Error: new Error()
           };
     }
     throw {
           RE_EXN_ID: "Invalid_argument",
-          _1: "Set.bal"
+          _1: "Set.bal",
+          Error: new Error()
         };
   }
   if (hr <= (hl + 2 | 0)) {
@@ -4831,12 +4844,14 @@ function bal(l, v, r) {
     }
     throw {
           RE_EXN_ID: "Invalid_argument",
-          _1: "Set.bal"
+          _1: "Set.bal",
+          Error: new Error()
         };
   }
   throw {
         RE_EXN_ID: "Invalid_argument",
-        _1: "Set.bal"
+        _1: "Set.bal",
+        Error: new Error()
       };
 }
 
@@ -5121,7 +5136,8 @@ function lookahead(iOpt, env) {
             "parser_env.ml",
             288,
             2
-          ]
+          ],
+          Error: new Error()
         };
   }
   var t = env.lookahead.contents;
@@ -5132,7 +5148,8 @@ function lookahead(iOpt, env) {
   }
   throw {
         RE_EXN_ID: "Failure",
-        _1: "Lookahead.peek failed"
+        _1: "Lookahead.peek failed",
+        Error: new Error()
       };
 }
 
@@ -5296,7 +5313,8 @@ function lex_env(iOpt, env) {
   }
   throw {
         RE_EXN_ID: "Failure",
-        _1: "Lookahead.peek failed"
+        _1: "Lookahead.peek failed",
+        Error: new Error()
       };
 }
 
@@ -5499,7 +5517,8 @@ function pop_lex_mode(env) {
   } else {
     throw {
           RE_EXN_ID: "Failure",
-          _1: "Popping lex mode from empty stack"
+          _1: "Popping lex mode from empty stack",
+          Error: new Error()
         };
   }
   env.lex_mode_stack.contents = new_stack;
@@ -5517,13 +5536,15 @@ function double_pop_lex_mode(env) {
     } else {
       throw {
             RE_EXN_ID: "Failure",
-            _1: "Popping lex mode from empty stack"
+            _1: "Popping lex mode from empty stack",
+            Error: new Error()
           };
     }
   } else {
     throw {
           RE_EXN_ID: "Failure",
-          _1: "Popping lex mode from empty stack"
+          _1: "Popping lex mode from empty stack",
+          Error: new Error()
         };
   }
   env.lex_mode_stack.contents = new_stack;
@@ -5685,12 +5706,14 @@ function bal$1(l, v, r) {
       }
       throw {
             RE_EXN_ID: "Invalid_argument",
-            _1: "Set.bal"
+            _1: "Set.bal",
+            Error: new Error()
           };
     }
     throw {
           RE_EXN_ID: "Invalid_argument",
-          _1: "Set.bal"
+          _1: "Set.bal",
+          Error: new Error()
         };
   }
   if (hr <= (hl + 2 | 0)) {
@@ -5713,12 +5736,14 @@ function bal$1(l, v, r) {
     }
     throw {
           RE_EXN_ID: "Invalid_argument",
-          _1: "Set.bal"
+          _1: "Set.bal",
+          Error: new Error()
         };
   }
   throw {
         RE_EXN_ID: "Invalid_argument",
-        _1: "Set.bal"
+        _1: "Set.bal",
+        Error: new Error()
       };
 }
 
@@ -5806,12 +5831,14 @@ function bal$2(l, x, d, r) {
       }
       throw {
             RE_EXN_ID: "Invalid_argument",
-            _1: "Map.bal"
+            _1: "Map.bal",
+            Error: new Error()
           };
     }
     throw {
           RE_EXN_ID: "Invalid_argument",
-          _1: "Map.bal"
+          _1: "Map.bal",
+          Error: new Error()
         };
   }
   if (hr <= (hl + 2 | 0)) {
@@ -5836,12 +5863,14 @@ function bal$2(l, x, d, r) {
     }
     throw {
           RE_EXN_ID: "Invalid_argument",
-          _1: "Map.bal"
+          _1: "Map.bal",
+          Error: new Error()
         };
   }
   throw {
         RE_EXN_ID: "Invalid_argument",
-        _1: "Map.bal"
+        _1: "Map.bal",
+        Error: new Error()
       };
 }
 
@@ -5901,7 +5930,8 @@ function find(x, _param) {
       continue ;
     }
     throw {
-          RE_EXN_ID: "Not_found"
+          RE_EXN_ID: "Not_found",
+          Error: new Error()
         };
   };
 }
@@ -5950,12 +5980,14 @@ function bal$3(l, v, r) {
       }
       throw {
             RE_EXN_ID: "Invalid_argument",
-            _1: "Set.bal"
+            _1: "Set.bal",
+            Error: new Error()
           };
     }
     throw {
           RE_EXN_ID: "Invalid_argument",
-          _1: "Set.bal"
+          _1: "Set.bal",
+          Error: new Error()
         };
   }
   if (hr <= (hl + 2 | 0)) {
@@ -5978,12 +6010,14 @@ function bal$3(l, v, r) {
     }
     throw {
           RE_EXN_ID: "Invalid_argument",
-          _1: "Set.bal"
+          _1: "Set.bal",
+          Error: new Error()
         };
   }
   throw {
         RE_EXN_ID: "Invalid_argument",
-        _1: "Set.bal"
+        _1: "Set.bal",
+        Error: new Error()
       };
 }
 
@@ -6465,7 +6499,8 @@ function rev_nonempty_acc(acc) {
             "parser_flow.ml",
             127,
             13
-          ]
+          ],
+          Error: new Error()
         };
   }
   var acc$1 = List.rev(acc);
@@ -6479,7 +6514,8 @@ function rev_nonempty_acc(acc) {
             "parser_flow.ml",
             131,
             13
-          ]
+          ],
+          Error: new Error()
         };
   }
   return /* tuple */[
@@ -7169,7 +7205,8 @@ function annotation(env) {
             "parser_flow.ml",
             121,
             16
-          ]
+          ],
+          Error: new Error()
         };
   }
   return /* tuple */[
@@ -8300,7 +8337,8 @@ function primary$1(env) {
                     "parser_flow.ml",
                     1699,
                     15
-                  ]
+                  ],
+                  Error: new Error()
                 };
           }
           if (match$4.tag === /* T_REGEXP */3) {
@@ -8319,7 +8357,8 @@ function primary$1(env) {
                     "parser_flow.ml",
                     1699,
                     15
-                  ]
+                  ],
+                  Error: new Error()
                 };
           }
           var raw_flags = match$5[2];
@@ -8593,7 +8632,8 @@ function assignment_but_not_arrow_function(env) {
 
 function error_callback(param, param$1) {
   throw {
-        RE_EXN_ID: Parser_env_Try.Rollback
+        RE_EXN_ID: Parser_env_Try.Rollback,
+        Error: new Error()
       };
 }
 
@@ -8605,13 +8645,15 @@ function try_assignment_but_not_arrow_function(env) {
     if (match !== 10) {
       if (match === 77) {
         throw {
-              RE_EXN_ID: Parser_env_Try.Rollback
+              RE_EXN_ID: Parser_env_Try.Rollback,
+              Error: new Error()
             };
       }
       
     } else {
       throw {
-            RE_EXN_ID: Parser_env_Try.Rollback
+            RE_EXN_ID: Parser_env_Try.Rollback,
+            Error: new Error()
           };
     }
   }
@@ -8620,7 +8662,8 @@ function try_assignment_but_not_arrow_function(env) {
   }
   if (Curry._2(Parser_env_Peek.value, undefined, env$1) === "checks") {
     throw {
-          RE_EXN_ID: Parser_env_Try.Rollback
+          RE_EXN_ID: Parser_env_Try.Rollback,
+          Error: new Error()
         };
   }
   var match$1 = ret[1];
@@ -8635,7 +8678,8 @@ function try_assignment_but_not_arrow_function(env) {
   }
   if (!Curry._1(Parser_env_Peek.is_line_terminator, env$1)) {
     throw {
-          RE_EXN_ID: Parser_env_Try.Rollback
+          RE_EXN_ID: Parser_env_Try.Rollback,
+          Error: new Error()
         };
   }
   return ret;
@@ -9117,7 +9161,8 @@ function template_parts(env, _quasis, _expressions) {
                 "parser_flow.ml",
                 1602,
                 19
-              ]
+              ],
+              Error: new Error()
             };
       }
       if (match$1.tag === /* T_TEMPLATE_PART */2) {
@@ -9143,7 +9188,8 @@ function template_parts(env, _quasis, _expressions) {
                 "parser_flow.ml",
                 1602,
                 19
-              ]
+              ],
+              Error: new Error()
             };
       }
       var loc = match$2[0];
@@ -9312,18 +9358,21 @@ function error_callback$1(param, param$1) {
         return ;
       }
       throw {
-            RE_EXN_ID: Parser_env_Try.Rollback
+            RE_EXN_ID: Parser_env_Try.Rollback,
+            Error: new Error()
           };
     }
     if (switcher > 15 || switcher < 1) {
       return ;
     }
     throw {
-          RE_EXN_ID: Parser_env_Try.Rollback
+          RE_EXN_ID: Parser_env_Try.Rollback,
+          Error: new Error()
         };
   }
   throw {
-        RE_EXN_ID: Parser_env_Try.Rollback
+        RE_EXN_ID: Parser_env_Try.Rollback,
+        Error: new Error()
       };
 }
 
@@ -9523,7 +9572,8 @@ function _method(env, kind) {
                 "parser_flow.ml",
                 1954,
                 16
-              ]
+              ],
+              Error: new Error()
             };
     case /* Get */1 :
         params = /* [] */0;
@@ -9856,7 +9906,8 @@ function check_property(env, prop_map, prop) {
               case /* RegExp */3 :
                   throw {
                         RE_EXN_ID: "Failure",
-                        _1: "RegExp cannot be property key"
+                        _1: "RegExp cannot be property key",
+                        Error: new Error()
                       };
               
             }
@@ -9872,7 +9923,8 @@ function check_property(env, prop_map, prop) {
                   "parser_flow.ml",
                   2103,
                   30
-                ]
+                ],
+                Error: new Error()
               };
       
     }
@@ -10828,7 +10880,8 @@ function declare_export_declaration(allow_export_typeOpt, env) {
                       "parser_flow.ml",
                       3480,
                       17
-                    ]
+                    ],
+                    Error: new Error()
                   };
           case 4 :
               if (typeof token$5 === "number") {
@@ -11263,7 +11316,8 @@ function fold(acc, _param) {
       case /* Expression */4 :
           throw {
                 RE_EXN_ID: "Failure",
-                _1: "Parser error: No such thing as an expression pattern!"
+                _1: "Parser error: No such thing as an expression pattern!",
+                Error: new Error()
               };
       
     }
@@ -12421,7 +12475,8 @@ function module_item(env) {
                       if (typeof match$2 === "number") {
                         throw {
                               RE_EXN_ID: "Failure",
-                              _1: "Internal Flow Error! Parsed `export interface` into something other than an interface declaration!"
+                              _1: "Internal Flow Error! Parsed `export interface` into something other than an interface declaration!",
+                              Error: new Error()
                             };
                       }
                       if (match$2.tag === /* InterfaceDeclaration */21) {
@@ -12432,7 +12487,8 @@ function module_item(env) {
                       } else {
                         throw {
                               RE_EXN_ID: "Failure",
-                              _1: "Internal Flow Error! Parsed `export interface` into something other than an interface declaration!"
+                              _1: "Internal Flow Error! Parsed `export interface` into something other than an interface declaration!",
+                              Error: new Error()
                             };
                       }
                       var end_loc = $$interface$1[0];
@@ -12456,7 +12512,8 @@ function module_item(env) {
                         if (typeof match$3 === "number") {
                           throw {
                                 RE_EXN_ID: "Failure",
-                                _1: "Internal Flow Error! Parsed `export type` into something other than a type alias!"
+                                _1: "Internal Flow Error! Parsed `export type` into something other than a type alias!",
+                                Error: new Error()
                               };
                         }
                         if (match$3.tag === /* TypeAlias */7) {
@@ -12467,7 +12524,8 @@ function module_item(env) {
                         } else {
                           throw {
                                 RE_EXN_ID: "Failure",
-                                _1: "Internal Flow Error! Parsed `export type` into something other than a type alias!"
+                                _1: "Internal Flow Error! Parsed `export type` into something other than a type alias!",
+                                Error: new Error()
                               };
                         }
                         var end_loc$1 = type_alias$1[0];
@@ -12645,7 +12703,8 @@ function module_item(env) {
               if (typeof match$8 === "number") {
                 throw {
                       RE_EXN_ID: "Failure",
-                      _1: "Internal Flow Error! Unexpected export statement declaration!"
+                      _1: "Internal Flow Error! Unexpected export statement declaration!",
+                      Error: new Error()
                     };
               }
               switch (match$8.tag | 0) {
@@ -12698,7 +12757,8 @@ function module_item(env) {
                 default:
                   throw {
                         RE_EXN_ID: "Failure",
-                        _1: "Internal Flow Error! Unexpected export statement declaration!"
+                        _1: "Internal Flow Error! Unexpected export statement declaration!",
+                        Error: new Error()
                       };
               }
               List.iter((function (param) {
@@ -13197,7 +13257,8 @@ function statement(env) {
                                 "parser_flow.ml",
                                 2573,
                                 22
-                              ]
+                              ],
+                              Error: new Error()
                             };
                       }
                       token$4(env, /* T_OF */60);
@@ -13226,7 +13287,8 @@ function statement(env) {
                               "parser_flow.ml",
                               2556,
                               22
-                            ]
+                            ],
+                            Error: new Error()
                           };
                     }
                     token$4(env, /* T_IN */15);
@@ -13577,7 +13639,8 @@ function directives(env, term_fn, item_fn) {
           var s = "Nooo: " + (token_to_string(token) + "\n");
           throw {
                 RE_EXN_ID: "Failure",
-                _1: s
+                _1: s,
+                Error: new Error()
               };
         }), List.rev(match[1]));
   return /* tuple */[
@@ -13943,7 +14006,8 @@ function program$1(failOpt, token_sinkOpt, parse_optionsOpt, content) {
   if (fail && error_list !== /* [] */0) {
     throw {
           RE_EXN_ID: $$Error,
-          _1: error_list
+          _1: error_list,
+          Error: new Error()
         };
   }
   return /* tuple */[
@@ -14540,7 +14604,8 @@ function parse(content, options) {
               case /* Await */7 :
                   throw {
                         RE_EXN_ID: "Failure",
-                        _1: "matched above"
+                        _1: "matched above",
+                        Error: new Error()
                       };
               
             }
@@ -15954,7 +16019,8 @@ function parse(content, options) {
         case /* Computed */2 :
             throw {
                   RE_EXN_ID: "Failure",
-                  _1: "There should not be computed object type property keys"
+                  _1: "There should not be computed object type property keys",
+                  Error: new Error()
                 };
         
       }
@@ -16410,7 +16476,8 @@ if (f !== undefined) {
           "runParser.ml",
           15,
           12
-        ]
+        ],
+        Error: new Error()
       };
 }
 

@@ -23,7 +23,8 @@ if (match.length !== 1) {
           "gpr_3595_test.ml",
           9,
           4
-        ]
+        ],
+        Error: new Error()
       };
 }
 

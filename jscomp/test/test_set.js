@@ -37,12 +37,14 @@ function Make(Ord) {
         }
         throw {
               RE_EXN_ID: "Invalid_argument",
-              _1: "Set.bal"
+              _1: "Set.bal",
+              Error: new Error()
             };
       }
       throw {
             RE_EXN_ID: "Invalid_argument",
-            _1: "Set.bal"
+            _1: "Set.bal",
+            Error: new Error()
           };
     }
     if (hr <= (hl + 2 | 0)) {
@@ -65,12 +67,14 @@ function Make(Ord) {
       }
       throw {
             RE_EXN_ID: "Invalid_argument",
-            _1: "Set.bal"
+            _1: "Set.bal",
+            Error: new Error()
           };
     }
     throw {
           RE_EXN_ID: "Invalid_argument",
-          _1: "Set.bal"
+          _1: "Set.bal",
+          Error: new Error()
         };
   };
   var add = function (x, t) {
@@ -145,7 +149,8 @@ function Make(Ord) {
         continue ;
       }
       throw {
-            RE_EXN_ID: "Not_found"
+            RE_EXN_ID: "Not_found",
+            Error: new Error()
           };
     };
   };
@@ -161,7 +166,8 @@ function Make(Ord) {
         continue ;
       }
       throw {
-            RE_EXN_ID: "Not_found"
+            RE_EXN_ID: "Not_found",
+            Error: new Error()
           };
     };
   };
@@ -176,7 +182,8 @@ function Make(Ord) {
     }
     throw {
           RE_EXN_ID: "Invalid_argument",
-          _1: "Set.remove_min_elt"
+          _1: "Set.remove_min_elt",
+          Error: new Error()
         };
   };
   var merge = function (t1, t2) {
@@ -560,7 +567,8 @@ function Make(Ord) {
         continue ;
       }
       throw {
-            RE_EXN_ID: "Not_found"
+            RE_EXN_ID: "Not_found",
+            Error: new Error()
           };
     };
   };
@@ -657,7 +665,8 @@ function Make(Ord) {
               "test_set.ml",
               372,
               18
-            ]
+            ],
+            Error: new Error()
           };
     };
     return sub(List.length(l), l)[0];

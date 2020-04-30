@@ -45,7 +45,8 @@ function f(param) {
           "lazy_test.ml",
           11,
           8
-        ]
+        ],
+        Error: new Error()
       };
 }
 
@@ -139,7 +140,8 @@ var f007 = {
   tag: 246,
   value: (function () {
       throw {
-            RE_EXN_ID: "Not_found"
+            RE_EXN_ID: "Not_found",
+            Error: new Error()
           };
     })
 };
@@ -149,7 +151,8 @@ var f008 = {
   value: (function () {
       console.log("hi");
       throw {
-            RE_EXN_ID: "Not_found"
+            RE_EXN_ID: "Not_found",
+            Error: new Error()
           };
     })
 };

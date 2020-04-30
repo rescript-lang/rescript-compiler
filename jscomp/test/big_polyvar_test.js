@@ -1232,7 +1232,8 @@ if (tToJs(/* variant0 */-384420853) !== "variant0") {
           "big_polyvar_test.ml",
           310,
           2
-        ]
+        ],
+        Error: new Error()
       };
 }
 
@@ -1243,7 +1244,8 @@ if (tToJs(/* variant1 */-384420852) !== "variant1") {
           "big_polyvar_test.ml",
           311,
           2
-        ]
+        ],
+        Error: new Error()
       };
 }
 
@@ -1254,7 +1256,8 @@ if (tToJs(/* variant2 */-384420851) !== "variant2") {
           "big_polyvar_test.ml",
           312,
           2
-        ]
+        ],
+        Error: new Error()
       };
 }
 
@@ -1265,7 +1268,8 @@ if (tToJs(/* variant3 */-384420850) !== "variant3") {
           "big_polyvar_test.ml",
           313,
           2
-        ]
+        ],
+        Error: new Error()
       };
 }
 
@@ -1276,7 +1280,8 @@ if (tToJs(/* variant4 */-384420849) !== "variant4") {
           "big_polyvar_test.ml",
           314,
           2
-        ]
+        ],
+        Error: new Error()
       };
 }
 
@@ -1287,7 +1292,8 @@ if (tToJs(/* variant5 */-384420848) !== "variant5") {
           "big_polyvar_test.ml",
           315,
           2
-        ]
+        ],
+        Error: new Error()
       };
 }
 
@@ -1298,7 +1304,8 @@ if (tToJs(/* variant6 */-384420847) !== "variant6") {
           "big_polyvar_test.ml",
           316,
           2
-        ]
+        ],
+        Error: new Error()
       };
 }
 
@@ -1309,7 +1316,8 @@ if (tToJs(/* variant7 */-384420846) !== "variant7") {
           "big_polyvar_test.ml",
           317,
           2
-        ]
+        ],
+        Error: new Error()
       };
 }
 
@@ -1320,7 +1328,8 @@ if (tToJs(/* variant8 */-384420845) !== "variant8") {
           "big_polyvar_test.ml",
           318,
           2
-        ]
+        ],
+        Error: new Error()
       };
 }
 
@@ -1331,7 +1340,8 @@ if (tToJs(/* variant9 */-384420844) !== "variant9") {
           "big_polyvar_test.ml",
           319,
           2
-        ]
+        ],
+        Error: new Error()
       };
 }
 
@@ -1342,7 +1352,8 @@ if (tToJs(/* variant10 */173495972) !== "variant10") {
           "big_polyvar_test.ml",
           320,
           2
-        ]
+        ],
+        Error: new Error()
       };
 }
 
@@ -1353,7 +1364,8 @@ if (tToJs(/* variant11 */173495973) !== "variant11") {
           "big_polyvar_test.ml",
           321,
           2
-        ]
+        ],
+        Error: new Error()
       };
 }
 
@@ -1364,7 +1376,8 @@ if (tToJs(/* variant12 */173495974) !== "variant12") {
           "big_polyvar_test.ml",
           322,
           2
-        ]
+        ],
+        Error: new Error()
       };
 }
 
@@ -1375,7 +1388,8 @@ if (tToJs(/* variant13 */173495975) !== "variant13") {
           "big_polyvar_test.ml",
           323,
           2
-        ]
+        ],
+        Error: new Error()
       };
 }
 
@@ -1386,7 +1400,8 @@ if (tToJs(/* variant14 */173495976) !== "variant14") {
           "big_polyvar_test.ml",
           324,
           2
-        ]
+        ],
+        Error: new Error()
       };
 }
 
@@ -1397,7 +1412,8 @@ if (tToJs(/* variant15 */173495977) !== "variant15") {
           "big_polyvar_test.ml",
           325,
           2
-        ]
+        ],
+        Error: new Error()
       };
 }
 
@@ -1408,7 +1424,8 @@ if (tToJs(/* variant16 */173495978) !== "variant16") {
           "big_polyvar_test.ml",
           326,
           2
-        ]
+        ],
+        Error: new Error()
       };
 }
 
@@ -1419,7 +1436,8 @@ if (tToJs(/* variant17 */173495979) !== "variant17") {
           "big_polyvar_test.ml",
           327,
           2
-        ]
+        ],
+        Error: new Error()
       };
 }
 
@@ -1430,7 +1448,8 @@ if (tToJs(/* variant18 */173495980) !== "variant18") {
           "big_polyvar_test.ml",
           328,
           2
-        ]
+        ],
+        Error: new Error()
       };
 }
 
@@ -1441,7 +1460,8 @@ if (tToJs(/* variant19 */173495981) !== "variant19") {
           "big_polyvar_test.ml",
           329,
           2
-        ]
+        ],
+        Error: new Error()
       };
 }
 
@@ -1452,7 +1472,8 @@ if (tToJs(/* variant20 */173496195) !== "variant20") {
           "big_polyvar_test.ml",
           330,
           2
-        ]
+        ],
+        Error: new Error()
       };
 }
 
@@ -1463,7 +1484,8 @@ if (tToJs(/* variant21 */173496196) !== "variant21") {
           "big_polyvar_test.ml",
           331,
           2
-        ]
+        ],
+        Error: new Error()
       };
 }
 
@@ -1474,7 +1496,8 @@ if (tToJs(/* variant22 */173496197) !== "variant22") {
           "big_polyvar_test.ml",
           332,
           2
-        ]
+        ],
+        Error: new Error()
       };
 }
 
@@ -1485,7 +1508,8 @@ if (tToJs(/* variant23 */173496198) !== "variant23") {
           "big_polyvar_test.ml",
           333,
           2
-        ]
+        ],
+        Error: new Error()
       };
 }
 
@@ -1496,7 +1520,8 @@ if (tToJs(/* variant24 */173496199) !== "variant24") {
           "big_polyvar_test.ml",
           334,
           2
-        ]
+        ],
+        Error: new Error()
       };
 }
 
@@ -1507,7 +1532,8 @@ if (tToJs(/* variant25 */173496200) !== "variant25") {
           "big_polyvar_test.ml",
           335,
           2
-        ]
+        ],
+        Error: new Error()
       };
 }
 
@@ -1518,7 +1544,8 @@ if (tToJs(/* variant26 */173496201) !== "variant26") {
           "big_polyvar_test.ml",
           336,
           2
-        ]
+        ],
+        Error: new Error()
       };
 }
 
@@ -1529,7 +1556,8 @@ if (tToJs(/* variant27 */173496202) !== "variant27") {
           "big_polyvar_test.ml",
           337,
           2
-        ]
+        ],
+        Error: new Error()
       };
 }
 
@@ -1540,7 +1568,8 @@ if (tToJs(/* variant28 */173496203) !== "variant28") {
           "big_polyvar_test.ml",
           338,
           2
-        ]
+        ],
+        Error: new Error()
       };
 }
 
@@ -1551,7 +1580,8 @@ if (tToJs(/* variant29 */173496204) !== "variant29") {
           "big_polyvar_test.ml",
           339,
           2
-        ]
+        ],
+        Error: new Error()
       };
 }
 
@@ -1562,7 +1592,8 @@ if (tToJs(/* variant30 */173496418) !== "variant30") {
           "big_polyvar_test.ml",
           340,
           2
-        ]
+        ],
+        Error: new Error()
       };
 }
 
@@ -1573,7 +1604,8 @@ if (tToJs(/* variant31 */173496419) !== "variant31") {
           "big_polyvar_test.ml",
           341,
           2
-        ]
+        ],
+        Error: new Error()
       };
 }
 
@@ -1584,7 +1616,8 @@ if (tToJs(/* variant32 */173496420) !== "variant32") {
           "big_polyvar_test.ml",
           342,
           2
-        ]
+        ],
+        Error: new Error()
       };
 }
 
@@ -1595,7 +1628,8 @@ if (tToJs(/* variant33 */173496421) !== "variant33") {
           "big_polyvar_test.ml",
           343,
           2
-        ]
+        ],
+        Error: new Error()
       };
 }
 
@@ -1606,7 +1640,8 @@ if (tToJs(/* variant34 */173496422) !== "variant34") {
           "big_polyvar_test.ml",
           344,
           2
-        ]
+        ],
+        Error: new Error()
       };
 }
 
@@ -1617,7 +1652,8 @@ if (tToJs(/* variant35 */173496423) !== "variant35") {
           "big_polyvar_test.ml",
           345,
           2
-        ]
+        ],
+        Error: new Error()
       };
 }
 
@@ -1628,7 +1664,8 @@ if (tToJs(/* variant36 */173496424) !== "variant36") {
           "big_polyvar_test.ml",
           346,
           2
-        ]
+        ],
+        Error: new Error()
       };
 }
 
@@ -1639,7 +1676,8 @@ if (tToJs(/* variant37 */173496425) !== "variant37") {
           "big_polyvar_test.ml",
           347,
           2
-        ]
+        ],
+        Error: new Error()
       };
 }
 
@@ -1650,7 +1688,8 @@ if (tToJs(/* variant38 */173496426) !== "variant38") {
           "big_polyvar_test.ml",
           348,
           2
-        ]
+        ],
+        Error: new Error()
       };
 }
 
@@ -1661,7 +1700,8 @@ if (tToJs(/* variant39 */173496427) !== "variant39") {
           "big_polyvar_test.ml",
           349,
           2
-        ]
+        ],
+        Error: new Error()
       };
 }
 
@@ -1672,7 +1712,8 @@ if (tToJs(/* variant40 */173496641) !== "variant40") {
           "big_polyvar_test.ml",
           350,
           2
-        ]
+        ],
+        Error: new Error()
       };
 }
 
@@ -1683,7 +1724,8 @@ if (tToJs(/* variant41 */173496642) !== "variant41") {
           "big_polyvar_test.ml",
           351,
           2
-        ]
+        ],
+        Error: new Error()
       };
 }
 
@@ -1694,7 +1736,8 @@ if (tToJs(/* variant42 */173496643) !== "variant42") {
           "big_polyvar_test.ml",
           352,
           2
-        ]
+        ],
+        Error: new Error()
       };
 }
 
@@ -1705,7 +1748,8 @@ if (tToJs(/* variant43 */173496644) !== "variant43") {
           "big_polyvar_test.ml",
           353,
           2
-        ]
+        ],
+        Error: new Error()
       };
 }
 
@@ -1716,7 +1760,8 @@ if (tToJs(/* variant44 */173496645) !== "variant44") {
           "big_polyvar_test.ml",
           354,
           2
-        ]
+        ],
+        Error: new Error()
       };
 }
 
@@ -1727,7 +1772,8 @@ if (tToJs(/* variant45 */173496646) !== "variant45") {
           "big_polyvar_test.ml",
           355,
           2
-        ]
+        ],
+        Error: new Error()
       };
 }
 
@@ -1738,7 +1784,8 @@ if (tToJs(/* variant46 */173496647) !== "variant46") {
           "big_polyvar_test.ml",
           356,
           2
-        ]
+        ],
+        Error: new Error()
       };
 }
 
@@ -1749,7 +1796,8 @@ if (tToJs(/* variant47 */173496648) !== "variant47") {
           "big_polyvar_test.ml",
           357,
           2
-        ]
+        ],
+        Error: new Error()
       };
 }
 
@@ -1760,7 +1808,8 @@ if (tToJs(/* variant48 */173496649) !== "variant48") {
           "big_polyvar_test.ml",
           358,
           2
-        ]
+        ],
+        Error: new Error()
       };
 }
 
@@ -1771,7 +1820,8 @@ if (tToJs(/* variant49 */173496650) !== "variant49") {
           "big_polyvar_test.ml",
           359,
           2
-        ]
+        ],
+        Error: new Error()
       };
 }
 
@@ -1782,7 +1832,8 @@ if (tToJs(/* variant50 */173496864) !== "variant50") {
           "big_polyvar_test.ml",
           360,
           2
-        ]
+        ],
+        Error: new Error()
       };
 }
 
@@ -1793,7 +1844,8 @@ if (tToJs(/* variant51 */173496865) !== "variant51") {
           "big_polyvar_test.ml",
           361,
           2
-        ]
+        ],
+        Error: new Error()
       };
 }
 
@@ -1804,7 +1856,8 @@ if (tToJs(/* variant52 */173496866) !== "variant52") {
           "big_polyvar_test.ml",
           362,
           2
-        ]
+        ],
+        Error: new Error()
       };
 }
 
@@ -1815,7 +1868,8 @@ if (tToJs(/* variant53 */173496867) !== "variant53") {
           "big_polyvar_test.ml",
           363,
           2
-        ]
+        ],
+        Error: new Error()
       };
 }
 
@@ -1826,7 +1880,8 @@ if (tToJs(/* variant54 */173496868) !== "variant54") {
           "big_polyvar_test.ml",
           364,
           2
-        ]
+        ],
+        Error: new Error()
       };
 }
 
@@ -1837,7 +1892,8 @@ if (tToJs(/* variant55 */173496869) !== "variant55") {
           "big_polyvar_test.ml",
           365,
           2
-        ]
+        ],
+        Error: new Error()
       };
 }
 
@@ -1848,7 +1904,8 @@ if (tToJs(/* variant56 */173496870) !== "variant56") {
           "big_polyvar_test.ml",
           366,
           2
-        ]
+        ],
+        Error: new Error()
       };
 }
 
@@ -1859,7 +1916,8 @@ if (tToJs(/* variant57 */173496871) !== "variant57") {
           "big_polyvar_test.ml",
           367,
           2
-        ]
+        ],
+        Error: new Error()
       };
 }
 
@@ -1870,7 +1928,8 @@ if (tToJs(/* variant58 */173496872) !== "variant58") {
           "big_polyvar_test.ml",
           368,
           2
-        ]
+        ],
+        Error: new Error()
       };
 }
 
@@ -1881,7 +1940,8 @@ if (tToJs(/* variant59 */173496873) !== "variant59") {
           "big_polyvar_test.ml",
           369,
           2
-        ]
+        ],
+        Error: new Error()
       };
 }
 
@@ -1892,7 +1952,8 @@ if (tToJs(/* variant60 */173497087) !== "variant60") {
           "big_polyvar_test.ml",
           370,
           2
-        ]
+        ],
+        Error: new Error()
       };
 }
 
@@ -1903,7 +1964,8 @@ if (tToJs(/* variant61 */173497088) !== "variant61") {
           "big_polyvar_test.ml",
           371,
           2
-        ]
+        ],
+        Error: new Error()
       };
 }
 
@@ -1914,7 +1976,8 @@ if (tToJs(/* variant62 */173497089) !== "variant62") {
           "big_polyvar_test.ml",
           372,
           2
-        ]
+        ],
+        Error: new Error()
       };
 }
 
@@ -1925,7 +1988,8 @@ if (tToJs(/* variant63 */173497090) !== "variant63") {
           "big_polyvar_test.ml",
           373,
           2
-        ]
+        ],
+        Error: new Error()
       };
 }
 
@@ -1936,7 +2000,8 @@ if (tToJs(/* variant64 */173497091) !== "variant64") {
           "big_polyvar_test.ml",
           374,
           2
-        ]
+        ],
+        Error: new Error()
       };
 }
 
@@ -1947,7 +2012,8 @@ if (tToJs(/* variant65 */173497092) !== "variant65") {
           "big_polyvar_test.ml",
           375,
           2
-        ]
+        ],
+        Error: new Error()
       };
 }
 
@@ -1958,7 +2024,8 @@ if (tToJs(/* variant66 */173497093) !== "variant66") {
           "big_polyvar_test.ml",
           376,
           2
-        ]
+        ],
+        Error: new Error()
       };
 }
 
@@ -1969,7 +2036,8 @@ if (tToJs(/* variant67 */173497094) !== "variant67") {
           "big_polyvar_test.ml",
           377,
           2
-        ]
+        ],
+        Error: new Error()
       };
 }
 
@@ -1980,7 +2048,8 @@ if (tToJs(/* variant68 */173497095) !== "variant68") {
           "big_polyvar_test.ml",
           378,
           2
-        ]
+        ],
+        Error: new Error()
       };
 }
 
@@ -1991,7 +2060,8 @@ if (tToJs(/* variant69 */173497096) !== "variant69") {
           "big_polyvar_test.ml",
           379,
           2
-        ]
+        ],
+        Error: new Error()
       };
 }
 
@@ -2002,7 +2072,8 @@ if (tToJs(/* variant70 */173497310) !== "variant70") {
           "big_polyvar_test.ml",
           380,
           2
-        ]
+        ],
+        Error: new Error()
       };
 }
 
@@ -2013,7 +2084,8 @@ if (tToJs(/* variant71 */173497311) !== "variant71") {
           "big_polyvar_test.ml",
           381,
           2
-        ]
+        ],
+        Error: new Error()
       };
 }
 
@@ -2024,7 +2096,8 @@ if (tToJs(/* variant72 */173497312) !== "variant72") {
           "big_polyvar_test.ml",
           382,
           2
-        ]
+        ],
+        Error: new Error()
       };
 }
 
@@ -2035,7 +2108,8 @@ if (tToJs(/* variant73 */173497313) !== "variant73") {
           "big_polyvar_test.ml",
           383,
           2
-        ]
+        ],
+        Error: new Error()
       };
 }
 
@@ -2046,7 +2120,8 @@ if (tToJs(/* variant74 */173497314) !== "variant74") {
           "big_polyvar_test.ml",
           384,
           2
-        ]
+        ],
+        Error: new Error()
       };
 }
 
@@ -2057,7 +2132,8 @@ if (tToJs(/* variant75 */173497315) !== "variant75") {
           "big_polyvar_test.ml",
           385,
           2
-        ]
+        ],
+        Error: new Error()
       };
 }
 
@@ -2068,7 +2144,8 @@ if (tToJs(/* variant76 */173497316) !== "variant76") {
           "big_polyvar_test.ml",
           386,
           2
-        ]
+        ],
+        Error: new Error()
       };
 }
 
@@ -2079,7 +2156,8 @@ if (tToJs(/* variant77 */173497317) !== "variant77") {
           "big_polyvar_test.ml",
           387,
           2
-        ]
+        ],
+        Error: new Error()
       };
 }
 
@@ -2090,7 +2168,8 @@ if (tToJs(/* variant78 */173497318) !== "variant78") {
           "big_polyvar_test.ml",
           388,
           2
-        ]
+        ],
+        Error: new Error()
       };
 }
 
@@ -2101,7 +2180,8 @@ if (tToJs(/* variant79 */173497319) !== "variant79") {
           "big_polyvar_test.ml",
           389,
           2
-        ]
+        ],
+        Error: new Error()
       };
 }
 
@@ -2112,7 +2192,8 @@ if (tToJs(/* variant80 */173497533) !== "variant80") {
           "big_polyvar_test.ml",
           390,
           2
-        ]
+        ],
+        Error: new Error()
       };
 }
 
@@ -2123,7 +2204,8 @@ if (tToJs(/* variant81 */173497534) !== "variant81") {
           "big_polyvar_test.ml",
           391,
           2
-        ]
+        ],
+        Error: new Error()
       };
 }
 
@@ -2134,7 +2216,8 @@ if (tToJs(/* variant82 */173497535) !== "variant82") {
           "big_polyvar_test.ml",
           392,
           2
-        ]
+        ],
+        Error: new Error()
       };
 }
 
@@ -2145,7 +2228,8 @@ if (tToJs(/* variant83 */173497536) !== "variant83") {
           "big_polyvar_test.ml",
           393,
           2
-        ]
+        ],
+        Error: new Error()
       };
 }
 
@@ -2156,7 +2240,8 @@ if (tToJs(/* variant84 */173497537) !== "variant84") {
           "big_polyvar_test.ml",
           394,
           2
-        ]
+        ],
+        Error: new Error()
       };
 }
 
@@ -2167,7 +2252,8 @@ if (tToJs(/* variant85 */173497538) !== "variant85") {
           "big_polyvar_test.ml",
           395,
           2
-        ]
+        ],
+        Error: new Error()
       };
 }
 
@@ -2178,7 +2264,8 @@ if (tToJs(/* variant86 */173497539) !== "variant86") {
           "big_polyvar_test.ml",
           396,
           2
-        ]
+        ],
+        Error: new Error()
       };
 }
 
@@ -2189,7 +2276,8 @@ if (tToJs(/* variant87 */173497540) !== "variant87") {
           "big_polyvar_test.ml",
           397,
           2
-        ]
+        ],
+        Error: new Error()
       };
 }
 
@@ -2200,7 +2288,8 @@ if (tToJs(/* variant88 */173497541) !== "variant88") {
           "big_polyvar_test.ml",
           398,
           2
-        ]
+        ],
+        Error: new Error()
       };
 }
 
@@ -2211,7 +2300,8 @@ if (tToJs(/* variant89 */173497542) !== "variant89") {
           "big_polyvar_test.ml",
           399,
           2
-        ]
+        ],
+        Error: new Error()
       };
 }
 
@@ -2222,7 +2312,8 @@ if (tToJs(/* variant90 */173497756) !== "variant90") {
           "big_polyvar_test.ml",
           400,
           2
-        ]
+        ],
+        Error: new Error()
       };
 }
 
@@ -2233,7 +2324,8 @@ if (tToJs(/* variant91 */173497757) !== "variant91") {
           "big_polyvar_test.ml",
           401,
           2
-        ]
+        ],
+        Error: new Error()
       };
 }
 
@@ -2244,7 +2336,8 @@ if (tToJs(/* variant92 */173497758) !== "variant92") {
           "big_polyvar_test.ml",
           402,
           2
-        ]
+        ],
+        Error: new Error()
       };
 }
 
@@ -2255,7 +2348,8 @@ if (tToJs(/* variant93 */173497759) !== "variant93") {
           "big_polyvar_test.ml",
           403,
           2
-        ]
+        ],
+        Error: new Error()
       };
 }
 
@@ -2266,7 +2360,8 @@ if (tToJs(/* variant94 */173497760) !== "variant94") {
           "big_polyvar_test.ml",
           404,
           2
-        ]
+        ],
+        Error: new Error()
       };
 }
 
@@ -2277,7 +2372,8 @@ if (tToJs(/* variant95 */173497761) !== "variant95") {
           "big_polyvar_test.ml",
           405,
           2
-        ]
+        ],
+        Error: new Error()
       };
 }
 
@@ -2288,7 +2384,8 @@ if (tToJs(/* variant96 */173497762) !== "variant96") {
           "big_polyvar_test.ml",
           406,
           2
-        ]
+        ],
+        Error: new Error()
       };
 }
 
@@ -2299,7 +2396,8 @@ if (tToJs(/* variant97 */173497763) !== "variant97") {
           "big_polyvar_test.ml",
           407,
           2
-        ]
+        ],
+        Error: new Error()
       };
 }
 
@@ -2310,7 +2408,8 @@ if (tToJs(/* variant98 */173497764) !== "variant98") {
           "big_polyvar_test.ml",
           408,
           2
-        ]
+        ],
+        Error: new Error()
       };
 }
 
@@ -2321,7 +2420,8 @@ if (tToJs(/* variant99 */173497765) !== "variant99") {
           "big_polyvar_test.ml",
           409,
           2
-        ]
+        ],
+        Error: new Error()
       };
 }
 
@@ -2332,7 +2432,8 @@ if (tToJs(/* variant100 */34896140) !== "variant100") {
           "big_polyvar_test.ml",
           410,
           2
-        ]
+        ],
+        Error: new Error()
       };
 }
 
@@ -2343,7 +2444,8 @@ if (tToJs(/* variant101 */34896141) !== "variant101") {
           "big_polyvar_test.ml",
           411,
           2
-        ]
+        ],
+        Error: new Error()
       };
 }
 
@@ -2354,7 +2456,8 @@ if (tToJs(/* variant102 */34896142) !== "variant102") {
           "big_polyvar_test.ml",
           412,
           2
-        ]
+        ],
+        Error: new Error()
       };
 }
 
@@ -2365,7 +2468,8 @@ if (tToJs(/* variant103 */34896143) !== "variant103") {
           "big_polyvar_test.ml",
           413,
           2
-        ]
+        ],
+        Error: new Error()
       };
 }
 
@@ -2376,7 +2480,8 @@ if (tToJs(/* variant104 */34896144) !== "variant104") {
           "big_polyvar_test.ml",
           414,
           2
-        ]
+        ],
+        Error: new Error()
       };
 }
 
@@ -2387,7 +2492,8 @@ if (tToJs(/* variant105 */34896145) !== "variant105") {
           "big_polyvar_test.ml",
           415,
           2
-        ]
+        ],
+        Error: new Error()
       };
 }
 
@@ -2398,7 +2504,8 @@ if (tToJs(/* variant106 */34896146) !== "variant106") {
           "big_polyvar_test.ml",
           416,
           2
-        ]
+        ],
+        Error: new Error()
       };
 }
 
@@ -2409,7 +2516,8 @@ if (tToJs(/* variant107 */34896147) !== "variant107") {
           "big_polyvar_test.ml",
           417,
           2
-        ]
+        ],
+        Error: new Error()
       };
 }
 
@@ -2420,7 +2528,8 @@ if (tToJs(/* variant108 */34896148) !== "variant108") {
           "big_polyvar_test.ml",
           418,
           2
-        ]
+        ],
+        Error: new Error()
       };
 }
 
@@ -2431,7 +2540,8 @@ if (tToJs(/* variant109 */34896149) !== "variant109") {
           "big_polyvar_test.ml",
           419,
           2
-        ]
+        ],
+        Error: new Error()
       };
 }
 
@@ -2442,7 +2552,8 @@ if (tToJs(/* variant110 */34896363) !== "variant110") {
           "big_polyvar_test.ml",
           420,
           2
-        ]
+        ],
+        Error: new Error()
       };
 }
 
@@ -2453,7 +2564,8 @@ if (tToJs(/* variant111 */34896364) !== "variant111") {
           "big_polyvar_test.ml",
           421,
           2
-        ]
+        ],
+        Error: new Error()
       };
 }
 
@@ -2464,7 +2576,8 @@ if (tToJs(/* variant112 */34896365) !== "variant112") {
           "big_polyvar_test.ml",
           422,
           2
-        ]
+        ],
+        Error: new Error()
       };
 }
 
@@ -2475,7 +2588,8 @@ if (tToJs(/* variant113 */34896366) !== "variant113") {
           "big_polyvar_test.ml",
           423,
           2
-        ]
+        ],
+        Error: new Error()
       };
 }
 
@@ -2486,7 +2600,8 @@ if (tToJs(/* variant114 */34896367) !== "variant114") {
           "big_polyvar_test.ml",
           424,
           2
-        ]
+        ],
+        Error: new Error()
       };
 }
 
@@ -2497,7 +2612,8 @@ if (tToJs(/* variant115 */34896368) !== "variant115") {
           "big_polyvar_test.ml",
           425,
           2
-        ]
+        ],
+        Error: new Error()
       };
 }
 
@@ -2508,7 +2624,8 @@ if (tToJs(/* variant116 */34896369) !== "variant116") {
           "big_polyvar_test.ml",
           426,
           2
-        ]
+        ],
+        Error: new Error()
       };
 }
 
@@ -2519,7 +2636,8 @@ if (tToJs(/* variant117 */34896370) !== "variant117") {
           "big_polyvar_test.ml",
           427,
           2
-        ]
+        ],
+        Error: new Error()
       };
 }
 
@@ -2530,7 +2648,8 @@ if (tToJs(/* variant118 */34896371) !== "variant118") {
           "big_polyvar_test.ml",
           428,
           2
-        ]
+        ],
+        Error: new Error()
       };
 }
 
@@ -2541,7 +2660,8 @@ if (tToJs(/* variant119 */34896372) !== "variant119") {
           "big_polyvar_test.ml",
           429,
           2
-        ]
+        ],
+        Error: new Error()
       };
 }
 
@@ -2552,7 +2672,8 @@ if (tToJs(/* variant120 */34896586) !== "variant120") {
           "big_polyvar_test.ml",
           430,
           2
-        ]
+        ],
+        Error: new Error()
       };
 }
 
@@ -2563,7 +2684,8 @@ if (tToJs(/* variant121 */34896587) !== "variant121") {
           "big_polyvar_test.ml",
           431,
           2
-        ]
+        ],
+        Error: new Error()
       };
 }
 
@@ -2574,7 +2696,8 @@ if (tToJs(/* variant122 */34896588) !== "variant122") {
           "big_polyvar_test.ml",
           432,
           2
-        ]
+        ],
+        Error: new Error()
       };
 }
 
@@ -2585,7 +2708,8 @@ if (tToJs(/* variant123 */34896589) !== "variant123") {
           "big_polyvar_test.ml",
           433,
           2
-        ]
+        ],
+        Error: new Error()
       };
 }
 
@@ -2596,7 +2720,8 @@ if (tToJs(/* variant124 */34896590) !== "variant124") {
           "big_polyvar_test.ml",
           434,
           2
-        ]
+        ],
+        Error: new Error()
       };
 }
 
@@ -2607,7 +2732,8 @@ if (tToJs(/* variant125 */34896591) !== "variant125") {
           "big_polyvar_test.ml",
           435,
           2
-        ]
+        ],
+        Error: new Error()
       };
 }
 
@@ -2618,7 +2744,8 @@ if (tToJs(/* variant126 */34896592) !== "variant126") {
           "big_polyvar_test.ml",
           436,
           2
-        ]
+        ],
+        Error: new Error()
       };
 }
 
@@ -2629,7 +2756,8 @@ if (tToJs(/* variant127 */34896593) !== "variant127") {
           "big_polyvar_test.ml",
           437,
           2
-        ]
+        ],
+        Error: new Error()
       };
 }
 
@@ -2640,7 +2768,8 @@ if (tToJs(/* variant128 */34896594) !== "variant128") {
           "big_polyvar_test.ml",
           438,
           2
-        ]
+        ],
+        Error: new Error()
       };
 }
 
@@ -2651,7 +2780,8 @@ if (tToJs(/* variant129 */34896595) !== "variant129") {
           "big_polyvar_test.ml",
           439,
           2
-        ]
+        ],
+        Error: new Error()
       };
 }
 
@@ -2662,7 +2792,8 @@ if (tToJs(/* variant130 */34896809) !== "variant130") {
           "big_polyvar_test.ml",
           440,
           2
-        ]
+        ],
+        Error: new Error()
       };
 }
 
@@ -2673,7 +2804,8 @@ if (tToJs(/* variant131 */34896810) !== "variant131") {
           "big_polyvar_test.ml",
           441,
           2
-        ]
+        ],
+        Error: new Error()
       };
 }
 
@@ -2684,7 +2816,8 @@ if (tToJs(/* variant132 */34896811) !== "variant132") {
           "big_polyvar_test.ml",
           442,
           2
-        ]
+        ],
+        Error: new Error()
       };
 }
 
@@ -2695,7 +2828,8 @@ if (tToJs(/* variant133 */34896812) !== "variant133") {
           "big_polyvar_test.ml",
           443,
           2
-        ]
+        ],
+        Error: new Error()
       };
 }
 
@@ -2706,7 +2840,8 @@ if (tToJs(/* variant134 */34896813) !== "variant134") {
           "big_polyvar_test.ml",
           444,
           2
-        ]
+        ],
+        Error: new Error()
       };
 }
 
@@ -2717,7 +2852,8 @@ if (tToJs(/* variant135 */34896814) !== "variant135") {
           "big_polyvar_test.ml",
           445,
           2
-        ]
+        ],
+        Error: new Error()
       };
 }
 
@@ -2728,7 +2864,8 @@ if (tToJs(/* variant136 */34896815) !== "variant136") {
           "big_polyvar_test.ml",
           446,
           2
-        ]
+        ],
+        Error: new Error()
       };
 }
 
@@ -2739,7 +2876,8 @@ if (tToJs(/* variant137 */34896816) !== "variant137") {
           "big_polyvar_test.ml",
           447,
           2
-        ]
+        ],
+        Error: new Error()
       };
 }
 
@@ -2750,7 +2888,8 @@ if (tToJs(/* variant138 */34896817) !== "variant138") {
           "big_polyvar_test.ml",
           448,
           2
-        ]
+        ],
+        Error: new Error()
       };
 }
 
@@ -2761,7 +2900,8 @@ if (tToJs(/* variant139 */34896818) !== "variant139") {
           "big_polyvar_test.ml",
           449,
           2
-        ]
+        ],
+        Error: new Error()
       };
 }
 
@@ -2772,7 +2912,8 @@ if (tToJs(/* variant140 */34897032) !== "variant140") {
           "big_polyvar_test.ml",
           450,
           2
-        ]
+        ],
+        Error: new Error()
       };
 }
 
@@ -2783,7 +2924,8 @@ if (tToJs(/* variant141 */34897033) !== "variant141") {
           "big_polyvar_test.ml",
           451,
           2
-        ]
+        ],
+        Error: new Error()
       };
 }
 
@@ -2794,7 +2936,8 @@ if (tToJs(/* variant142 */34897034) !== "variant142") {
           "big_polyvar_test.ml",
           452,
           2
-        ]
+        ],
+        Error: new Error()
       };
 }
 
@@ -2805,7 +2948,8 @@ if (tToJs(/* variant143 */34897035) !== "variant143") {
           "big_polyvar_test.ml",
           453,
           2
-        ]
+        ],
+        Error: new Error()
       };
 }
 
@@ -2816,7 +2960,8 @@ if (tToJs(/* variant144 */34897036) !== "variant144") {
           "big_polyvar_test.ml",
           454,
           2
-        ]
+        ],
+        Error: new Error()
       };
 }
 
@@ -2827,7 +2972,8 @@ if (tToJs(/* variant145 */34897037) !== "variant145") {
           "big_polyvar_test.ml",
           455,
           2
-        ]
+        ],
+        Error: new Error()
       };
 }
 
@@ -2838,7 +2984,8 @@ if (tToJs(/* variant146 */34897038) !== "variant146") {
           "big_polyvar_test.ml",
           456,
           2
-        ]
+        ],
+        Error: new Error()
       };
 }
 
@@ -2849,7 +2996,8 @@ if (tToJs(/* variant147 */34897039) !== "variant147") {
           "big_polyvar_test.ml",
           457,
           2
-        ]
+        ],
+        Error: new Error()
       };
 }
 
@@ -2860,7 +3008,8 @@ if (tToJs(/* variant148 */34897040) !== "variant148") {
           "big_polyvar_test.ml",
           458,
           2
-        ]
+        ],
+        Error: new Error()
       };
 }
 
@@ -2871,7 +3020,8 @@ if (tToJs(/* variant149 */34897041) !== "variant149") {
           "big_polyvar_test.ml",
           459,
           2
-        ]
+        ],
+        Error: new Error()
       };
 }
 
@@ -2882,7 +3032,8 @@ if (tToJs(/* variant150 */34897255) !== "variant150") {
           "big_polyvar_test.ml",
           460,
           2
-        ]
+        ],
+        Error: new Error()
       };
 }
 
@@ -2893,7 +3044,8 @@ if (tToJs(/* variant151 */34897256) !== "variant151") {
           "big_polyvar_test.ml",
           461,
           2
-        ]
+        ],
+        Error: new Error()
       };
 }
 
@@ -2904,7 +3056,8 @@ if (tToJs(/* variant152 */34897257) !== "variant152") {
           "big_polyvar_test.ml",
           462,
           2
-        ]
+        ],
+        Error: new Error()
       };
 }
 
@@ -2915,7 +3068,8 @@ if (tToJs(/* variant153 */34897258) !== "variant153") {
           "big_polyvar_test.ml",
           463,
           2
-        ]
+        ],
+        Error: new Error()
       };
 }
 
@@ -2926,7 +3080,8 @@ if (tToJs(/* variant154 */34897259) !== "variant154") {
           "big_polyvar_test.ml",
           464,
           2
-        ]
+        ],
+        Error: new Error()
       };
 }
 
@@ -2937,7 +3092,8 @@ if (tToJs(/* variant155 */34897260) !== "variant155") {
           "big_polyvar_test.ml",
           465,
           2
-        ]
+        ],
+        Error: new Error()
       };
 }
 
@@ -2948,7 +3104,8 @@ if (tToJs(/* variant156 */34897261) !== "variant156") {
           "big_polyvar_test.ml",
           466,
           2
-        ]
+        ],
+        Error: new Error()
       };
 }
 
@@ -2959,7 +3116,8 @@ if (tToJs(/* variant157 */34897262) !== "variant157") {
           "big_polyvar_test.ml",
           467,
           2
-        ]
+        ],
+        Error: new Error()
       };
 }
 
@@ -2970,7 +3128,8 @@ if (tToJs(/* variant158 */34897263) !== "variant158") {
           "big_polyvar_test.ml",
           468,
           2
-        ]
+        ],
+        Error: new Error()
       };
 }
 
@@ -2981,7 +3140,8 @@ if (tToJs(/* variant159 */34897264) !== "variant159") {
           "big_polyvar_test.ml",
           469,
           2
-        ]
+        ],
+        Error: new Error()
       };
 }
 
@@ -2992,7 +3152,8 @@ if (tToJs(/* variant160 */34897478) !== "variant160") {
           "big_polyvar_test.ml",
           470,
           2
-        ]
+        ],
+        Error: new Error()
       };
 }
 
@@ -3003,7 +3164,8 @@ if (tToJs(/* variant161 */34897479) !== "variant161") {
           "big_polyvar_test.ml",
           471,
           2
-        ]
+        ],
+        Error: new Error()
       };
 }
 
@@ -3014,7 +3176,8 @@ if (tToJs(/* variant162 */34897480) !== "variant162") {
           "big_polyvar_test.ml",
           472,
           2
-        ]
+        ],
+        Error: new Error()
       };
 }
 
@@ -3025,7 +3188,8 @@ if (tToJs(/* variant163 */34897481) !== "variant163") {
           "big_polyvar_test.ml",
           473,
           2
-        ]
+        ],
+        Error: new Error()
       };
 }
 
@@ -3036,7 +3200,8 @@ if (tToJs(/* variant164 */34897482) !== "variant164") {
           "big_polyvar_test.ml",
           474,
           2
-        ]
+        ],
+        Error: new Error()
       };
 }
 
@@ -3047,7 +3212,8 @@ if (tToJs(/* variant165 */34897483) !== "variant165") {
           "big_polyvar_test.ml",
           475,
           2
-        ]
+        ],
+        Error: new Error()
       };
 }
 
@@ -3058,7 +3224,8 @@ if (tToJs(/* variant166 */34897484) !== "variant166") {
           "big_polyvar_test.ml",
           476,
           2
-        ]
+        ],
+        Error: new Error()
       };
 }
 
@@ -3069,7 +3236,8 @@ if (tToJs(/* variant167 */34897485) !== "variant167") {
           "big_polyvar_test.ml",
           477,
           2
-        ]
+        ],
+        Error: new Error()
       };
 }
 
@@ -3080,7 +3248,8 @@ if (tToJs(/* variant168 */34897486) !== "variant168") {
           "big_polyvar_test.ml",
           478,
           2
-        ]
+        ],
+        Error: new Error()
       };
 }
 
@@ -3091,7 +3260,8 @@ if (tToJs(/* variant169 */34897487) !== "variant169") {
           "big_polyvar_test.ml",
           479,
           2
-        ]
+        ],
+        Error: new Error()
       };
 }
 
@@ -3102,7 +3272,8 @@ if (tToJs(/* variant170 */34897701) !== "variant170") {
           "big_polyvar_test.ml",
           480,
           2
-        ]
+        ],
+        Error: new Error()
       };
 }
 
@@ -3113,7 +3284,8 @@ if (tToJs(/* variant171 */34897702) !== "variant171") {
           "big_polyvar_test.ml",
           481,
           2
-        ]
+        ],
+        Error: new Error()
       };
 }
 
@@ -3124,7 +3296,8 @@ if (tToJs(/* variant172 */34897703) !== "variant172") {
           "big_polyvar_test.ml",
           482,
           2
-        ]
+        ],
+        Error: new Error()
       };
 }
 
@@ -3135,7 +3308,8 @@ if (tToJs(/* variant173 */34897704) !== "variant173") {
           "big_polyvar_test.ml",
           483,
           2
-        ]
+        ],
+        Error: new Error()
       };
 }
 
@@ -3146,7 +3320,8 @@ if (tToJs(/* variant174 */34897705) !== "variant174") {
           "big_polyvar_test.ml",
           484,
           2
-        ]
+        ],
+        Error: new Error()
       };
 }
 
@@ -3157,7 +3332,8 @@ if (tToJs(/* variant175 */34897706) !== "variant175") {
           "big_polyvar_test.ml",
           485,
           2
-        ]
+        ],
+        Error: new Error()
       };
 }
 
@@ -3168,7 +3344,8 @@ if (tToJs(/* variant176 */34897707) !== "variant176") {
           "big_polyvar_test.ml",
           486,
           2
-        ]
+        ],
+        Error: new Error()
       };
 }
 
@@ -3179,7 +3356,8 @@ if (tToJs(/* variant177 */34897708) !== "variant177") {
           "big_polyvar_test.ml",
           487,
           2
-        ]
+        ],
+        Error: new Error()
       };
 }
 
@@ -3190,7 +3368,8 @@ if (tToJs(/* variant178 */34897709) !== "variant178") {
           "big_polyvar_test.ml",
           488,
           2
-        ]
+        ],
+        Error: new Error()
       };
 }
 
@@ -3201,7 +3380,8 @@ if (tToJs(/* variant179 */34897710) !== "variant179") {
           "big_polyvar_test.ml",
           489,
           2
-        ]
+        ],
+        Error: new Error()
       };
 }
 
@@ -3212,7 +3392,8 @@ if (tToJs(/* variant180 */34897924) !== "variant180") {
           "big_polyvar_test.ml",
           490,
           2
-        ]
+        ],
+        Error: new Error()
       };
 }
 
@@ -3223,7 +3404,8 @@ if (tToJs(/* variant181 */34897925) !== "variant181") {
           "big_polyvar_test.ml",
           491,
           2
-        ]
+        ],
+        Error: new Error()
       };
 }
 
@@ -3234,7 +3416,8 @@ if (tToJs(/* variant182 */34897926) !== "variant182") {
           "big_polyvar_test.ml",
           492,
           2
-        ]
+        ],
+        Error: new Error()
       };
 }
 
@@ -3245,7 +3428,8 @@ if (tToJs(/* variant183 */34897927) !== "variant183") {
           "big_polyvar_test.ml",
           493,
           2
-        ]
+        ],
+        Error: new Error()
       };
 }
 
@@ -3256,7 +3440,8 @@ if (tToJs(/* variant184 */34897928) !== "variant184") {
           "big_polyvar_test.ml",
           494,
           2
-        ]
+        ],
+        Error: new Error()
       };
 }
 
@@ -3267,7 +3452,8 @@ if (tToJs(/* variant185 */34897929) !== "variant185") {
           "big_polyvar_test.ml",
           495,
           2
-        ]
+        ],
+        Error: new Error()
       };
 }
 
@@ -3278,7 +3464,8 @@ if (tToJs(/* variant186 */34897930) !== "variant186") {
           "big_polyvar_test.ml",
           496,
           2
-        ]
+        ],
+        Error: new Error()
       };
 }
 
@@ -3289,7 +3476,8 @@ if (tToJs(/* variant187 */34897931) !== "variant187") {
           "big_polyvar_test.ml",
           497,
           2
-        ]
+        ],
+        Error: new Error()
       };
 }
 
@@ -3300,7 +3488,8 @@ if (tToJs(/* variant188 */34897932) !== "variant188") {
           "big_polyvar_test.ml",
           498,
           2
-        ]
+        ],
+        Error: new Error()
       };
 }
 
@@ -3311,7 +3500,8 @@ if (tToJs(/* variant189 */34897933) !== "variant189") {
           "big_polyvar_test.ml",
           499,
           2
-        ]
+        ],
+        Error: new Error()
       };
 }
 
@@ -3322,7 +3512,8 @@ if (tToJs(/* variant190 */34898147) !== "variant190") {
           "big_polyvar_test.ml",
           500,
           2
-        ]
+        ],
+        Error: new Error()
       };
 }
 
@@ -3333,7 +3524,8 @@ if (tToJs(/* variant191 */34898148) !== "variant191") {
           "big_polyvar_test.ml",
           501,
           2
-        ]
+        ],
+        Error: new Error()
       };
 }
 
@@ -3344,7 +3536,8 @@ if (tToJs(/* variant192 */34898149) !== "variant192") {
           "big_polyvar_test.ml",
           502,
           2
-        ]
+        ],
+        Error: new Error()
       };
 }
 
@@ -3355,7 +3548,8 @@ if (tToJs(/* variant193 */34898150) !== "variant193") {
           "big_polyvar_test.ml",
           503,
           2
-        ]
+        ],
+        Error: new Error()
       };
 }
 
@@ -3366,7 +3560,8 @@ if (tToJs(/* variant194 */34898151) !== "variant194") {
           "big_polyvar_test.ml",
           504,
           2
-        ]
+        ],
+        Error: new Error()
       };
 }
 
@@ -3377,7 +3572,8 @@ if (tToJs(/* variant195 */34898152) !== "variant195") {
           "big_polyvar_test.ml",
           505,
           2
-        ]
+        ],
+        Error: new Error()
       };
 }
 
@@ -3388,7 +3584,8 @@ if (tToJs(/* variant196 */34898153) !== "variant196") {
           "big_polyvar_test.ml",
           506,
           2
-        ]
+        ],
+        Error: new Error()
       };
 }
 
@@ -3399,7 +3596,8 @@ if (tToJs(/* variant197 */34898154) !== "variant197") {
           "big_polyvar_test.ml",
           507,
           2
-        ]
+        ],
+        Error: new Error()
       };
 }
 
@@ -3410,7 +3608,8 @@ if (tToJs(/* variant198 */34898155) !== "variant198") {
           "big_polyvar_test.ml",
           508,
           2
-        ]
+        ],
+        Error: new Error()
       };
 }
 
@@ -3421,7 +3620,8 @@ if (tToJs(/* variant199 */34898156) !== "variant199") {
           "big_polyvar_test.ml",
           509,
           2
-        ]
+        ],
+        Error: new Error()
       };
 }
 
@@ -3432,7 +3632,8 @@ if (tToJs(/* variant200 */34945869) !== "variant200") {
           "big_polyvar_test.ml",
           510,
           2
-        ]
+        ],
+        Error: new Error()
       };
 }
 
@@ -3443,7 +3644,8 @@ if (tToJs(/* variant201 */34945870) !== "variant201") {
           "big_polyvar_test.ml",
           511,
           2
-        ]
+        ],
+        Error: new Error()
       };
 }
 
@@ -3454,7 +3656,8 @@ if (tToJs(/* variant202 */34945871) !== "variant202") {
           "big_polyvar_test.ml",
           512,
           2
-        ]
+        ],
+        Error: new Error()
       };
 }
 
@@ -3465,7 +3668,8 @@ if (tToJs(/* variant203 */34945872) !== "variant203") {
           "big_polyvar_test.ml",
           513,
           2
-        ]
+        ],
+        Error: new Error()
       };
 }
 
@@ -3476,7 +3680,8 @@ if (tToJs(/* variant204 */34945873) !== "variant204") {
           "big_polyvar_test.ml",
           514,
           2
-        ]
+        ],
+        Error: new Error()
       };
 }
 
@@ -3487,7 +3692,8 @@ if (tToJs(/* variant205 */34945874) !== "variant205") {
           "big_polyvar_test.ml",
           515,
           2
-        ]
+        ],
+        Error: new Error()
       };
 }
 
@@ -3498,7 +3704,8 @@ if (tToJs(/* variant206 */34945875) !== "variant206") {
           "big_polyvar_test.ml",
           516,
           2
-        ]
+        ],
+        Error: new Error()
       };
 }
 
@@ -3509,7 +3716,8 @@ if (tToJs(/* variant207 */34945876) !== "variant207") {
           "big_polyvar_test.ml",
           517,
           2
-        ]
+        ],
+        Error: new Error()
       };
 }
 
@@ -3520,7 +3728,8 @@ if (tToJs(/* variant208 */34945877) !== "variant208") {
           "big_polyvar_test.ml",
           518,
           2
-        ]
+        ],
+        Error: new Error()
       };
 }
 
@@ -3531,7 +3740,8 @@ if (tToJs(/* variant209 */34945878) !== "variant209") {
           "big_polyvar_test.ml",
           519,
           2
-        ]
+        ],
+        Error: new Error()
       };
 }
 
@@ -3542,7 +3752,8 @@ if (tToJs(/* variant210 */34946092) !== "variant210") {
           "big_polyvar_test.ml",
           520,
           2
-        ]
+        ],
+        Error: new Error()
       };
 }
 
@@ -3553,7 +3764,8 @@ if (tToJs(/* variant211 */34946093) !== "variant211") {
           "big_polyvar_test.ml",
           521,
           2
-        ]
+        ],
+        Error: new Error()
       };
 }
 
@@ -3564,7 +3776,8 @@ if (tToJs(/* variant212 */34946094) !== "variant212") {
           "big_polyvar_test.ml",
           522,
           2
-        ]
+        ],
+        Error: new Error()
       };
 }
 
@@ -3575,7 +3788,8 @@ if (tToJs(/* variant213 */34946095) !== "variant213") {
           "big_polyvar_test.ml",
           523,
           2
-        ]
+        ],
+        Error: new Error()
       };
 }
 
@@ -3586,7 +3800,8 @@ if (tToJs(/* variant214 */34946096) !== "variant214") {
           "big_polyvar_test.ml",
           524,
           2
-        ]
+        ],
+        Error: new Error()
       };
 }
 
@@ -3597,7 +3812,8 @@ if (tToJs(/* variant215 */34946097) !== "variant215") {
           "big_polyvar_test.ml",
           525,
           2
-        ]
+        ],
+        Error: new Error()
       };
 }
 
@@ -3608,7 +3824,8 @@ if (tToJs(/* variant216 */34946098) !== "variant216") {
           "big_polyvar_test.ml",
           526,
           2
-        ]
+        ],
+        Error: new Error()
       };
 }
 
@@ -3619,7 +3836,8 @@ if (tToJs(/* variant217 */34946099) !== "variant217") {
           "big_polyvar_test.ml",
           527,
           2
-        ]
+        ],
+        Error: new Error()
       };
 }
 
@@ -3630,7 +3848,8 @@ if (tToJs(/* variant218 */34946100) !== "variant218") {
           "big_polyvar_test.ml",
           528,
           2
-        ]
+        ],
+        Error: new Error()
       };
 }
 
@@ -3641,7 +3860,8 @@ if (tToJs(/* variant219 */34946101) !== "variant219") {
           "big_polyvar_test.ml",
           529,
           2
-        ]
+        ],
+        Error: new Error()
       };
 }
 
@@ -3652,7 +3872,8 @@ if (tToJs(/* variant220 */34946315) !== "variant220") {
           "big_polyvar_test.ml",
           530,
           2
-        ]
+        ],
+        Error: new Error()
       };
 }
 
@@ -3663,7 +3884,8 @@ if (tToJs(/* variant221 */34946316) !== "variant221") {
           "big_polyvar_test.ml",
           531,
           2
-        ]
+        ],
+        Error: new Error()
       };
 }
 
@@ -3674,7 +3896,8 @@ if (tToJs(/* variant222 */34946317) !== "variant222") {
           "big_polyvar_test.ml",
           532,
           2
-        ]
+        ],
+        Error: new Error()
       };
 }
 
@@ -3685,7 +3908,8 @@ if (tToJs(/* variant223 */34946318) !== "variant223") {
           "big_polyvar_test.ml",
           533,
           2
-        ]
+        ],
+        Error: new Error()
       };
 }
 
@@ -3696,7 +3920,8 @@ if (tToJs(/* variant224 */34946319) !== "variant224") {
           "big_polyvar_test.ml",
           534,
           2
-        ]
+        ],
+        Error: new Error()
       };
 }
 
@@ -3707,7 +3932,8 @@ if (tToJs(/* variant225 */34946320) !== "variant225") {
           "big_polyvar_test.ml",
           535,
           2
-        ]
+        ],
+        Error: new Error()
       };
 }
 
@@ -3718,7 +3944,8 @@ if (tToJs(/* variant226 */34946321) !== "variant226") {
           "big_polyvar_test.ml",
           536,
           2
-        ]
+        ],
+        Error: new Error()
       };
 }
 
@@ -3729,7 +3956,8 @@ if (tToJs(/* variant227 */34946322) !== "variant227") {
           "big_polyvar_test.ml",
           537,
           2
-        ]
+        ],
+        Error: new Error()
       };
 }
 
@@ -3740,7 +3968,8 @@ if (tToJs(/* variant228 */34946323) !== "variant228") {
           "big_polyvar_test.ml",
           538,
           2
-        ]
+        ],
+        Error: new Error()
       };
 }
 
@@ -3751,7 +3980,8 @@ if (tToJs(/* variant229 */34946324) !== "variant229") {
           "big_polyvar_test.ml",
           539,
           2
-        ]
+        ],
+        Error: new Error()
       };
 }
 
@@ -3762,7 +3992,8 @@ if (tToJs(/* variant230 */34946538) !== "variant230") {
           "big_polyvar_test.ml",
           540,
           2
-        ]
+        ],
+        Error: new Error()
       };
 }
 
@@ -3773,7 +4004,8 @@ if (tToJs(/* variant231 */34946539) !== "variant231") {
           "big_polyvar_test.ml",
           541,
           2
-        ]
+        ],
+        Error: new Error()
       };
 }
 
@@ -3784,7 +4016,8 @@ if (tToJs(/* variant232 */34946540) !== "variant232") {
           "big_polyvar_test.ml",
           542,
           2
-        ]
+        ],
+        Error: new Error()
       };
 }
 
@@ -3795,7 +4028,8 @@ if (tToJs(/* variant233 */34946541) !== "variant233") {
           "big_polyvar_test.ml",
           543,
           2
-        ]
+        ],
+        Error: new Error()
       };
 }
 
@@ -3806,7 +4040,8 @@ if (tToJs(/* variant234 */34946542) !== "variant234") {
           "big_polyvar_test.ml",
           544,
           2
-        ]
+        ],
+        Error: new Error()
       };
 }
 
@@ -3817,7 +4052,8 @@ if (tToJs(/* variant235 */34946543) !== "variant235") {
           "big_polyvar_test.ml",
           545,
           2
-        ]
+        ],
+        Error: new Error()
       };
 }
 
@@ -3828,7 +4064,8 @@ if (tToJs(/* variant236 */34946544) !== "variant236") {
           "big_polyvar_test.ml",
           546,
           2
-        ]
+        ],
+        Error: new Error()
       };
 }
 
@@ -3839,7 +4076,8 @@ if (tToJs(/* variant237 */34946545) !== "variant237") {
           "big_polyvar_test.ml",
           547,
           2
-        ]
+        ],
+        Error: new Error()
       };
 }
 
@@ -3850,7 +4088,8 @@ if (tToJs(/* variant238 */34946546) !== "variant238") {
           "big_polyvar_test.ml",
           548,
           2
-        ]
+        ],
+        Error: new Error()
       };
 }
 
@@ -3861,7 +4100,8 @@ if (tToJs(/* variant239 */34946547) !== "variant239") {
           "big_polyvar_test.ml",
           549,
           2
-        ]
+        ],
+        Error: new Error()
       };
 }
 
@@ -3872,7 +4112,8 @@ if (tToJs(/* variant240 */34946761) !== "variant240") {
           "big_polyvar_test.ml",
           550,
           2
-        ]
+        ],
+        Error: new Error()
       };
 }
 
@@ -3883,7 +4124,8 @@ if (tToJs(/* variant241 */34946762) !== "variant241") {
           "big_polyvar_test.ml",
           551,
           2
-        ]
+        ],
+        Error: new Error()
       };
 }
 
@@ -3894,7 +4136,8 @@ if (tToJs(/* variant242 */34946763) !== "variant242") {
           "big_polyvar_test.ml",
           552,
           2
-        ]
+        ],
+        Error: new Error()
       };
 }
 
@@ -3905,7 +4148,8 @@ if (tToJs(/* variant243 */34946764) !== "variant243") {
           "big_polyvar_test.ml",
           553,
           2
-        ]
+        ],
+        Error: new Error()
       };
 }
 
@@ -3916,7 +4160,8 @@ if (tToJs(/* variant244 */34946765) !== "variant244") {
           "big_polyvar_test.ml",
           554,
           2
-        ]
+        ],
+        Error: new Error()
       };
 }
 
@@ -3927,7 +4172,8 @@ if (tToJs(/* variant245 */34946766) !== "variant245") {
           "big_polyvar_test.ml",
           555,
           2
-        ]
+        ],
+        Error: new Error()
       };
 }
 
@@ -3938,7 +4184,8 @@ if (tToJs(/* variant246 */34946767) !== "variant246") {
           "big_polyvar_test.ml",
           556,
           2
-        ]
+        ],
+        Error: new Error()
       };
 }
 
@@ -3949,7 +4196,8 @@ if (tToJs(/* variant247 */34946768) !== "variant247") {
           "big_polyvar_test.ml",
           557,
           2
-        ]
+        ],
+        Error: new Error()
       };
 }
 
@@ -3960,7 +4208,8 @@ if (tToJs(/* variant248 */34946769) !== "variant248") {
           "big_polyvar_test.ml",
           558,
           2
-        ]
+        ],
+        Error: new Error()
       };
 }
 
@@ -3971,7 +4220,8 @@ if (tToJs(/* variant249 */34946770) !== "variant249") {
           "big_polyvar_test.ml",
           559,
           2
-        ]
+        ],
+        Error: new Error()
       };
 }
 
@@ -3982,7 +4232,8 @@ if (tToJs(/* variant250 */34946984) !== "variant250") {
           "big_polyvar_test.ml",
           560,
           2
-        ]
+        ],
+        Error: new Error()
       };
 }
 
@@ -3993,7 +4244,8 @@ if (tToJs(/* variant251 */34946985) !== "variant251") {
           "big_polyvar_test.ml",
           561,
           2
-        ]
+        ],
+        Error: new Error()
       };
 }
 
@@ -4004,7 +4256,8 @@ if (tToJs(/* variant252 */34946986) !== "variant252") {
           "big_polyvar_test.ml",
           562,
           2
-        ]
+        ],
+        Error: new Error()
       };
 }
 
@@ -4015,7 +4268,8 @@ if (tToJs(/* variant253 */34946987) !== "variant253") {
           "big_polyvar_test.ml",
           563,
           2
-        ]
+        ],
+        Error: new Error()
       };
 }
 
@@ -4026,7 +4280,8 @@ if (tToJs(/* variant254 */34946988) !== "variant254") {
           "big_polyvar_test.ml",
           564,
           2
-        ]
+        ],
+        Error: new Error()
       };
 }
 
@@ -4037,7 +4292,8 @@ if (tToJs(/* variant255 */34946989) !== "variant255") {
           "big_polyvar_test.ml",
           565,
           2
-        ]
+        ],
+        Error: new Error()
       };
 }
 
@@ -4048,7 +4304,8 @@ if (tToJs(/* variant256 */34946990) !== "variant256") {
           "big_polyvar_test.ml",
           566,
           2
-        ]
+        ],
+        Error: new Error()
       };
 }
 
@@ -4059,7 +4316,8 @@ if (tToJs(/* variant257 */34946991) !== "variant257") {
           "big_polyvar_test.ml",
           567,
           2
-        ]
+        ],
+        Error: new Error()
       };
 }
 
@@ -4070,7 +4328,8 @@ if (tToJs(/* variant258 */34946992) !== "variant258") {
           "big_polyvar_test.ml",
           568,
           2
-        ]
+        ],
+        Error: new Error()
       };
 }
 
@@ -4081,7 +4340,8 @@ if (tToJs(/* variant259 */34946993) !== "variant259") {
           "big_polyvar_test.ml",
           569,
           2
-        ]
+        ],
+        Error: new Error()
       };
 }
 
@@ -4092,7 +4352,8 @@ if (tToJs(/* variant260 */34947207) !== "variant260") {
           "big_polyvar_test.ml",
           570,
           2
-        ]
+        ],
+        Error: new Error()
       };
 }
 
@@ -4103,7 +4364,8 @@ if (tToJs(/* variant261 */34947208) !== "variant261") {
           "big_polyvar_test.ml",
           571,
           2
-        ]
+        ],
+        Error: new Error()
       };
 }
 
@@ -4114,7 +4376,8 @@ if (tToJs(/* variant262 */34947209) !== "variant262") {
           "big_polyvar_test.ml",
           572,
           2
-        ]
+        ],
+        Error: new Error()
       };
 }
 
@@ -4125,7 +4388,8 @@ if (tToJs(/* variant263 */34947210) !== "variant263") {
           "big_polyvar_test.ml",
           573,
           2
-        ]
+        ],
+        Error: new Error()
       };
 }
 
@@ -4136,7 +4400,8 @@ if (tToJs(/* variant264 */34947211) !== "variant264") {
           "big_polyvar_test.ml",
           574,
           2
-        ]
+        ],
+        Error: new Error()
       };
 }
 
@@ -4147,7 +4412,8 @@ if (tToJs(/* variant265 */34947212) !== "variant265") {
           "big_polyvar_test.ml",
           575,
           2
-        ]
+        ],
+        Error: new Error()
       };
 }
 
@@ -4158,7 +4424,8 @@ if (tToJs(/* variant266 */34947213) !== "variant266") {
           "big_polyvar_test.ml",
           576,
           2
-        ]
+        ],
+        Error: new Error()
       };
 }
 
@@ -4169,7 +4436,8 @@ if (tToJs(/* variant267 */34947214) !== "variant267") {
           "big_polyvar_test.ml",
           577,
           2
-        ]
+        ],
+        Error: new Error()
       };
 }
 
@@ -4180,7 +4448,8 @@ if (tToJs(/* variant268 */34947215) !== "variant268") {
           "big_polyvar_test.ml",
           578,
           2
-        ]
+        ],
+        Error: new Error()
       };
 }
 
@@ -4191,7 +4460,8 @@ if (tToJs(/* variant269 */34947216) !== "variant269") {
           "big_polyvar_test.ml",
           579,
           2
-        ]
+        ],
+        Error: new Error()
       };
 }
 
@@ -4202,7 +4472,8 @@ if (tToJs(/* variant270 */34947430) !== "variant270") {
           "big_polyvar_test.ml",
           580,
           2
-        ]
+        ],
+        Error: new Error()
       };
 }
 
@@ -4213,7 +4484,8 @@ if (tToJs(/* variant271 */34947431) !== "variant271") {
           "big_polyvar_test.ml",
           581,
           2
-        ]
+        ],
+        Error: new Error()
       };
 }
 
@@ -4224,7 +4496,8 @@ if (tToJs(/* variant272 */34947432) !== "variant272") {
           "big_polyvar_test.ml",
           582,
           2
-        ]
+        ],
+        Error: new Error()
       };
 }
 
@@ -4235,7 +4508,8 @@ if (tToJs(/* variant273 */34947433) !== "variant273") {
           "big_polyvar_test.ml",
           583,
           2
-        ]
+        ],
+        Error: new Error()
       };
 }
 
@@ -4246,7 +4520,8 @@ if (tToJs(/* variant274 */34947434) !== "variant274") {
           "big_polyvar_test.ml",
           584,
           2
-        ]
+        ],
+        Error: new Error()
       };
 }
 
@@ -4257,7 +4532,8 @@ if (tToJs(/* variant275 */34947435) !== "variant275") {
           "big_polyvar_test.ml",
           585,
           2
-        ]
+        ],
+        Error: new Error()
       };
 }
 
@@ -4268,7 +4544,8 @@ if (tToJs(/* variant276 */34947436) !== "variant276") {
           "big_polyvar_test.ml",
           586,
           2
-        ]
+        ],
+        Error: new Error()
       };
 }
 
@@ -4279,7 +4556,8 @@ if (tToJs(/* variant277 */34947437) !== "variant277") {
           "big_polyvar_test.ml",
           587,
           2
-        ]
+        ],
+        Error: new Error()
       };
 }
 
@@ -4290,7 +4568,8 @@ if (tToJs(/* variant278 */34947438) !== "variant278") {
           "big_polyvar_test.ml",
           588,
           2
-        ]
+        ],
+        Error: new Error()
       };
 }
 
@@ -4301,7 +4580,8 @@ if (tToJs(/* variant279 */34947439) !== "variant279") {
           "big_polyvar_test.ml",
           589,
           2
-        ]
+        ],
+        Error: new Error()
       };
 }
 
@@ -4312,7 +4592,8 @@ if (tToJs(/* variant280 */34947653) !== "variant280") {
           "big_polyvar_test.ml",
           590,
           2
-        ]
+        ],
+        Error: new Error()
       };
 }
 
@@ -4323,7 +4604,8 @@ if (tToJs(/* variant281 */34947654) !== "variant281") {
           "big_polyvar_test.ml",
           591,
           2
-        ]
+        ],
+        Error: new Error()
       };
 }
 
@@ -4334,7 +4616,8 @@ if (tToJs(/* variant282 */34947655) !== "variant282") {
           "big_polyvar_test.ml",
           592,
           2
-        ]
+        ],
+        Error: new Error()
       };
 }
 
@@ -4345,7 +4628,8 @@ if (tToJs(/* variant283 */34947656) !== "variant283") {
           "big_polyvar_test.ml",
           593,
           2
-        ]
+        ],
+        Error: new Error()
       };
 }
 
@@ -4356,7 +4640,8 @@ if (tToJs(/* variant284 */34947657) !== "variant284") {
           "big_polyvar_test.ml",
           594,
           2
-        ]
+        ],
+        Error: new Error()
       };
 }
 
@@ -4367,7 +4652,8 @@ if (tToJs(/* variant285 */34947658) !== "variant285") {
           "big_polyvar_test.ml",
           595,
           2
-        ]
+        ],
+        Error: new Error()
       };
 }
 
@@ -4378,7 +4664,8 @@ if (tToJs(/* variant286 */34947659) !== "variant286") {
           "big_polyvar_test.ml",
           596,
           2
-        ]
+        ],
+        Error: new Error()
       };
 }
 
@@ -4389,7 +4676,8 @@ if (tToJs(/* variant287 */34947660) !== "variant287") {
           "big_polyvar_test.ml",
           597,
           2
-        ]
+        ],
+        Error: new Error()
       };
 }
 
@@ -4400,7 +4688,8 @@ if (tToJs(/* variant288 */34947661) !== "variant288") {
           "big_polyvar_test.ml",
           598,
           2
-        ]
+        ],
+        Error: new Error()
       };
 }
 
@@ -4411,7 +4700,8 @@ if (tToJs(/* variant289 */34947662) !== "variant289") {
           "big_polyvar_test.ml",
           599,
           2
-        ]
+        ],
+        Error: new Error()
       };
 }
 
@@ -4422,7 +4712,8 @@ if (tToJs(/* variant290 */34947876) !== "variant290") {
           "big_polyvar_test.ml",
           600,
           2
-        ]
+        ],
+        Error: new Error()
       };
 }
 
@@ -4433,7 +4724,8 @@ if (tToJs(/* variant291 */34947877) !== "variant291") {
           "big_polyvar_test.ml",
           601,
           2
-        ]
+        ],
+        Error: new Error()
       };
 }
 
@@ -4444,7 +4736,8 @@ if (tToJs(/* variant292 */34947878) !== "variant292") {
           "big_polyvar_test.ml",
           602,
           2
-        ]
+        ],
+        Error: new Error()
       };
 }
 
@@ -4455,7 +4748,8 @@ if (tToJs(/* variant293 */34947879) !== "variant293") {
           "big_polyvar_test.ml",
           603,
           2
-        ]
+        ],
+        Error: new Error()
       };
 }
 
@@ -4466,7 +4760,8 @@ if (tToJs(/* variant294 */34947880) !== "variant294") {
           "big_polyvar_test.ml",
           604,
           2
-        ]
+        ],
+        Error: new Error()
       };
 }
 
@@ -4477,7 +4772,8 @@ if (tToJs(/* variant295 */34947881) !== "variant295") {
           "big_polyvar_test.ml",
           605,
           2
-        ]
+        ],
+        Error: new Error()
       };
 }
 
@@ -4488,7 +4784,8 @@ if (tToJs(/* variant296 */34947882) !== "variant296") {
           "big_polyvar_test.ml",
           606,
           2
-        ]
+        ],
+        Error: new Error()
       };
 }
 
@@ -4499,7 +4796,8 @@ if (tToJs(/* variant297 */34947883) !== "variant297") {
           "big_polyvar_test.ml",
           607,
           2
-        ]
+        ],
+        Error: new Error()
       };
 }
 
@@ -4510,7 +4808,8 @@ if (tToJs(/* variant298 */34947884) !== "variant298") {
           "big_polyvar_test.ml",
           608,
           2
-        ]
+        ],
+        Error: new Error()
       };
 }
 
@@ -4521,7 +4820,8 @@ if (tToJs(/* variant299 */34947885) !== "variant299") {
           "big_polyvar_test.ml",
           609,
           2
-        ]
+        ],
+        Error: new Error()
       };
 }
 
@@ -4532,7 +4832,8 @@ if (!eq(tFromJs("variant0"), /* variant0 */-384420853)) {
           "big_polyvar_test.ml",
           610,
           2
-        ]
+        ],
+        Error: new Error()
       };
 }
 
@@ -4543,7 +4844,8 @@ if (!eq(tFromJs("variant1"), /* variant1 */-384420852)) {
           "big_polyvar_test.ml",
           611,
           2
-        ]
+        ],
+        Error: new Error()
       };
 }
 
@@ -4554,7 +4856,8 @@ if (!eq(tFromJs("variant2"), /* variant2 */-384420851)) {
           "big_polyvar_test.ml",
           612,
           2
-        ]
+        ],
+        Error: new Error()
       };
 }
 
@@ -4565,7 +4868,8 @@ if (!eq(tFromJs("variant3"), /* variant3 */-384420850)) {
           "big_polyvar_test.ml",
           613,
           2
-        ]
+        ],
+        Error: new Error()
       };
 }
 
@@ -4576,7 +4880,8 @@ if (!eq(tFromJs("variant4"), /* variant4 */-384420849)) {
           "big_polyvar_test.ml",
           614,
           2
-        ]
+        ],
+        Error: new Error()
       };
 }
 
@@ -4587,7 +4892,8 @@ if (!eq(tFromJs("variant5"), /* variant5 */-384420848)) {
           "big_polyvar_test.ml",
           615,
           2
-        ]
+        ],
+        Error: new Error()
       };
 }
 
@@ -4598,7 +4904,8 @@ if (!eq(tFromJs("variant6"), /* variant6 */-384420847)) {
           "big_polyvar_test.ml",
           616,
           2
-        ]
+        ],
+        Error: new Error()
       };
 }
 
@@ -4609,7 +4916,8 @@ if (!eq(tFromJs("variant7"), /* variant7 */-384420846)) {
           "big_polyvar_test.ml",
           617,
           2
-        ]
+        ],
+        Error: new Error()
       };
 }
 
@@ -4620,7 +4928,8 @@ if (!eq(tFromJs("variant8"), /* variant8 */-384420845)) {
           "big_polyvar_test.ml",
           618,
           2
-        ]
+        ],
+        Error: new Error()
       };
 }
 
@@ -4631,7 +4940,8 @@ if (!eq(tFromJs("variant9"), /* variant9 */-384420844)) {
           "big_polyvar_test.ml",
           619,
           2
-        ]
+        ],
+        Error: new Error()
       };
 }
 
@@ -4642,7 +4952,8 @@ if (!eq(tFromJs("variant10"), /* variant10 */173495972)) {
           "big_polyvar_test.ml",
           620,
           2
-        ]
+        ],
+        Error: new Error()
       };
 }
 
@@ -4653,7 +4964,8 @@ if (!eq(tFromJs("variant11"), /* variant11 */173495973)) {
           "big_polyvar_test.ml",
           621,
           2
-        ]
+        ],
+        Error: new Error()
       };
 }
 
@@ -4664,7 +4976,8 @@ if (!eq(tFromJs("variant12"), /* variant12 */173495974)) {
           "big_polyvar_test.ml",
           622,
           2
-        ]
+        ],
+        Error: new Error()
       };
 }
 
@@ -4675,7 +4988,8 @@ if (!eq(tFromJs("variant13"), /* variant13 */173495975)) {
           "big_polyvar_test.ml",
           623,
           2
-        ]
+        ],
+        Error: new Error()
       };
 }
 
@@ -4686,7 +5000,8 @@ if (!eq(tFromJs("variant14"), /* variant14 */173495976)) {
           "big_polyvar_test.ml",
           624,
           2
-        ]
+        ],
+        Error: new Error()
       };
 }
 
@@ -4697,7 +5012,8 @@ if (!eq(tFromJs("variant15"), /* variant15 */173495977)) {
           "big_polyvar_test.ml",
           625,
           2
-        ]
+        ],
+        Error: new Error()
       };
 }
 
@@ -4708,7 +5024,8 @@ if (!eq(tFromJs("variant16"), /* variant16 */173495978)) {
           "big_polyvar_test.ml",
           626,
           2
-        ]
+        ],
+        Error: new Error()
       };
 }
 
@@ -4719,7 +5036,8 @@ if (!eq(tFromJs("variant17"), /* variant17 */173495979)) {
           "big_polyvar_test.ml",
           627,
           2
-        ]
+        ],
+        Error: new Error()
       };
 }
 
@@ -4730,7 +5048,8 @@ if (!eq(tFromJs("variant18"), /* variant18 */173495980)) {
           "big_polyvar_test.ml",
           628,
           2
-        ]
+        ],
+        Error: new Error()
       };
 }
 
@@ -4741,7 +5060,8 @@ if (!eq(tFromJs("variant19"), /* variant19 */173495981)) {
           "big_polyvar_test.ml",
           629,
           2
-        ]
+        ],
+        Error: new Error()
       };
 }
 
@@ -4752,7 +5072,8 @@ if (!eq(tFromJs("variant20"), /* variant20 */173496195)) {
           "big_polyvar_test.ml",
           630,
           2
-        ]
+        ],
+        Error: new Error()
       };
 }
 
@@ -4763,7 +5084,8 @@ if (!eq(tFromJs("variant21"), /* variant21 */173496196)) {
           "big_polyvar_test.ml",
           631,
           2
-        ]
+        ],
+        Error: new Error()
       };
 }
 
@@ -4774,7 +5096,8 @@ if (!eq(tFromJs("variant22"), /* variant22 */173496197)) {
           "big_polyvar_test.ml",
           632,
           2
-        ]
+        ],
+        Error: new Error()
       };
 }
 
@@ -4785,7 +5108,8 @@ if (!eq(tFromJs("variant23"), /* variant23 */173496198)) {
           "big_polyvar_test.ml",
           633,
           2
-        ]
+        ],
+        Error: new Error()
       };
 }
 
@@ -4796,7 +5120,8 @@ if (!eq(tFromJs("variant24"), /* variant24 */173496199)) {
           "big_polyvar_test.ml",
           634,
           2
-        ]
+        ],
+        Error: new Error()
       };
 }
 
@@ -4807,7 +5132,8 @@ if (!eq(tFromJs("variant25"), /* variant25 */173496200)) {
           "big_polyvar_test.ml",
           635,
           2
-        ]
+        ],
+        Error: new Error()
       };
 }
 
@@ -4818,7 +5144,8 @@ if (!eq(tFromJs("variant26"), /* variant26 */173496201)) {
           "big_polyvar_test.ml",
           636,
           2
-        ]
+        ],
+        Error: new Error()
       };
 }
 
@@ -4829,7 +5156,8 @@ if (!eq(tFromJs("variant27"), /* variant27 */173496202)) {
           "big_polyvar_test.ml",
           637,
           2
-        ]
+        ],
+        Error: new Error()
       };
 }
 
@@ -4840,7 +5168,8 @@ if (!eq(tFromJs("variant28"), /* variant28 */173496203)) {
           "big_polyvar_test.ml",
           638,
           2
-        ]
+        ],
+        Error: new Error()
       };
 }
 
@@ -4851,7 +5180,8 @@ if (!eq(tFromJs("variant29"), /* variant29 */173496204)) {
           "big_polyvar_test.ml",
           639,
           2
-        ]
+        ],
+        Error: new Error()
       };
 }
 
@@ -4862,7 +5192,8 @@ if (!eq(tFromJs("variant30"), /* variant30 */173496418)) {
           "big_polyvar_test.ml",
           640,
           2
-        ]
+        ],
+        Error: new Error()
       };
 }
 
@@ -4873,7 +5204,8 @@ if (!eq(tFromJs("variant31"), /* variant31 */173496419)) {
           "big_polyvar_test.ml",
           641,
           2
-        ]
+        ],
+        Error: new Error()
       };
 }
 
@@ -4884,7 +5216,8 @@ if (!eq(tFromJs("variant32"), /* variant32 */173496420)) {
           "big_polyvar_test.ml",
           642,
           2
-        ]
+        ],
+        Error: new Error()
       };
 }
 
@@ -4895,7 +5228,8 @@ if (!eq(tFromJs("variant33"), /* variant33 */173496421)) {
           "big_polyvar_test.ml",
           643,
           2
-        ]
+        ],
+        Error: new Error()
       };
 }
 
@@ -4906,7 +5240,8 @@ if (!eq(tFromJs("variant34"), /* variant34 */173496422)) {
           "big_polyvar_test.ml",
           644,
           2
-        ]
+        ],
+        Error: new Error()
       };
 }
 
@@ -4917,7 +5252,8 @@ if (!eq(tFromJs("variant35"), /* variant35 */173496423)) {
           "big_polyvar_test.ml",
           645,
           2
-        ]
+        ],
+        Error: new Error()
       };
 }
 
@@ -4928,7 +5264,8 @@ if (!eq(tFromJs("variant36"), /* variant36 */173496424)) {
           "big_polyvar_test.ml",
           646,
           2
-        ]
+        ],
+        Error: new Error()
       };
 }
 
@@ -4939,7 +5276,8 @@ if (!eq(tFromJs("variant37"), /* variant37 */173496425)) {
           "big_polyvar_test.ml",
           647,
           2
-        ]
+        ],
+        Error: new Error()
       };
 }
 
@@ -4950,7 +5288,8 @@ if (!eq(tFromJs("variant38"), /* variant38 */173496426)) {
           "big_polyvar_test.ml",
           648,
           2
-        ]
+        ],
+        Error: new Error()
       };
 }
 
@@ -4961,7 +5300,8 @@ if (!eq(tFromJs("variant39"), /* variant39 */173496427)) {
           "big_polyvar_test.ml",
           649,
           2
-        ]
+        ],
+        Error: new Error()
       };
 }
 
@@ -4972,7 +5312,8 @@ if (!eq(tFromJs("variant40"), /* variant40 */173496641)) {
           "big_polyvar_test.ml",
           650,
           2
-        ]
+        ],
+        Error: new Error()
       };
 }
 
@@ -4983,7 +5324,8 @@ if (!eq(tFromJs("variant41"), /* variant41 */173496642)) {
           "big_polyvar_test.ml",
           651,
           2
-        ]
+        ],
+        Error: new Error()
       };
 }
 
@@ -4994,7 +5336,8 @@ if (!eq(tFromJs("variant42"), /* variant42 */173496643)) {
           "big_polyvar_test.ml",
           652,
           2
-        ]
+        ],
+        Error: new Error()
       };
 }
 
@@ -5005,7 +5348,8 @@ if (!eq(tFromJs("variant43"), /* variant43 */173496644)) {
           "big_polyvar_test.ml",
           653,
           2
-        ]
+        ],
+        Error: new Error()
       };
 }
 
@@ -5016,7 +5360,8 @@ if (!eq(tFromJs("variant44"), /* variant44 */173496645)) {
           "big_polyvar_test.ml",
           654,
           2
-        ]
+        ],
+        Error: new Error()
       };
 }
 
@@ -5027,7 +5372,8 @@ if (!eq(tFromJs("variant45"), /* variant45 */173496646)) {
           "big_polyvar_test.ml",
           655,
           2
-        ]
+        ],
+        Error: new Error()
       };
 }
 
@@ -5038,7 +5384,8 @@ if (!eq(tFromJs("variant46"), /* variant46 */173496647)) {
           "big_polyvar_test.ml",
           656,
           2
-        ]
+        ],
+        Error: new Error()
       };
 }
 
@@ -5049,7 +5396,8 @@ if (!eq(tFromJs("variant47"), /* variant47 */173496648)) {
           "big_polyvar_test.ml",
           657,
           2
-        ]
+        ],
+        Error: new Error()
       };
 }
 
@@ -5060,7 +5408,8 @@ if (!eq(tFromJs("variant48"), /* variant48 */173496649)) {
           "big_polyvar_test.ml",
           658,
           2
-        ]
+        ],
+        Error: new Error()
       };
 }
 
@@ -5071,7 +5420,8 @@ if (!eq(tFromJs("variant49"), /* variant49 */173496650)) {
           "big_polyvar_test.ml",
           659,
           2
-        ]
+        ],
+        Error: new Error()
       };
 }
 
@@ -5082,7 +5432,8 @@ if (!eq(tFromJs("variant50"), /* variant50 */173496864)) {
           "big_polyvar_test.ml",
           660,
           2
-        ]
+        ],
+        Error: new Error()
       };
 }
 
@@ -5093,7 +5444,8 @@ if (!eq(tFromJs("variant51"), /* variant51 */173496865)) {
           "big_polyvar_test.ml",
           661,
           2
-        ]
+        ],
+        Error: new Error()
       };
 }
 
@@ -5104,7 +5456,8 @@ if (!eq(tFromJs("variant52"), /* variant52 */173496866)) {
           "big_polyvar_test.ml",
           662,
           2
-        ]
+        ],
+        Error: new Error()
       };
 }
 
@@ -5115,7 +5468,8 @@ if (!eq(tFromJs("variant53"), /* variant53 */173496867)) {
           "big_polyvar_test.ml",
           663,
           2
-        ]
+        ],
+        Error: new Error()
       };
 }
 
@@ -5126,7 +5480,8 @@ if (!eq(tFromJs("variant54"), /* variant54 */173496868)) {
           "big_polyvar_test.ml",
           664,
           2
-        ]
+        ],
+        Error: new Error()
       };
 }
 
@@ -5137,7 +5492,8 @@ if (!eq(tFromJs("variant55"), /* variant55 */173496869)) {
           "big_polyvar_test.ml",
           665,
           2
-        ]
+        ],
+        Error: new Error()
       };
 }
 
@@ -5148,7 +5504,8 @@ if (!eq(tFromJs("variant56"), /* variant56 */173496870)) {
           "big_polyvar_test.ml",
           666,
           2
-        ]
+        ],
+        Error: new Error()
       };
 }
 
@@ -5159,7 +5516,8 @@ if (!eq(tFromJs("variant57"), /* variant57 */173496871)) {
           "big_polyvar_test.ml",
           667,
           2
-        ]
+        ],
+        Error: new Error()
       };
 }
 
@@ -5170,7 +5528,8 @@ if (!eq(tFromJs("variant58"), /* variant58 */173496872)) {
           "big_polyvar_test.ml",
           668,
           2
-        ]
+        ],
+        Error: new Error()
       };
 }
 
@@ -5181,7 +5540,8 @@ if (!eq(tFromJs("variant59"), /* variant59 */173496873)) {
           "big_polyvar_test.ml",
           669,
           2
-        ]
+        ],
+        Error: new Error()
       };
 }
 
@@ -5192,7 +5552,8 @@ if (!eq(tFromJs("variant60"), /* variant60 */173497087)) {
           "big_polyvar_test.ml",
           670,
           2
-        ]
+        ],
+        Error: new Error()
       };
 }
 
@@ -5203,7 +5564,8 @@ if (!eq(tFromJs("variant61"), /* variant61 */173497088)) {
           "big_polyvar_test.ml",
           671,
           2
-        ]
+        ],
+        Error: new Error()
       };
 }
 
@@ -5214,7 +5576,8 @@ if (!eq(tFromJs("variant62"), /* variant62 */173497089)) {
           "big_polyvar_test.ml",
           672,
           2
-        ]
+        ],
+        Error: new Error()
       };
 }
 
@@ -5225,7 +5588,8 @@ if (!eq(tFromJs("variant63"), /* variant63 */173497090)) {
           "big_polyvar_test.ml",
           673,
           2
-        ]
+        ],
+        Error: new Error()
       };
 }
 
@@ -5236,7 +5600,8 @@ if (!eq(tFromJs("variant64"), /* variant64 */173497091)) {
           "big_polyvar_test.ml",
           674,
           2
-        ]
+        ],
+        Error: new Error()
       };
 }
 
@@ -5247,7 +5612,8 @@ if (!eq(tFromJs("variant65"), /* variant65 */173497092)) {
           "big_polyvar_test.ml",
           675,
           2
-        ]
+        ],
+        Error: new Error()
       };
 }
 
@@ -5258,7 +5624,8 @@ if (!eq(tFromJs("variant66"), /* variant66 */173497093)) {
           "big_polyvar_test.ml",
           676,
           2
-        ]
+        ],
+        Error: new Error()
       };
 }
 
@@ -5269,7 +5636,8 @@ if (!eq(tFromJs("variant67"), /* variant67 */173497094)) {
           "big_polyvar_test.ml",
           677,
           2
-        ]
+        ],
+        Error: new Error()
       };
 }
 
@@ -5280,7 +5648,8 @@ if (!eq(tFromJs("variant68"), /* variant68 */173497095)) {
           "big_polyvar_test.ml",
           678,
           2
-        ]
+        ],
+        Error: new Error()
       };
 }
 
@@ -5291,7 +5660,8 @@ if (!eq(tFromJs("variant69"), /* variant69 */173497096)) {
           "big_polyvar_test.ml",
           679,
           2
-        ]
+        ],
+        Error: new Error()
       };
 }
 
@@ -5302,7 +5672,8 @@ if (!eq(tFromJs("variant70"), /* variant70 */173497310)) {
           "big_polyvar_test.ml",
           680,
           2
-        ]
+        ],
+        Error: new Error()
       };
 }
 
@@ -5313,7 +5684,8 @@ if (!eq(tFromJs("variant71"), /* variant71 */173497311)) {
           "big_polyvar_test.ml",
           681,
           2
-        ]
+        ],
+        Error: new Error()
       };
 }
 
@@ -5324,7 +5696,8 @@ if (!eq(tFromJs("variant72"), /* variant72 */173497312)) {
           "big_polyvar_test.ml",
           682,
           2
-        ]
+        ],
+        Error: new Error()
       };
 }
 
@@ -5335,7 +5708,8 @@ if (!eq(tFromJs("variant73"), /* variant73 */173497313)) {
           "big_polyvar_test.ml",
           683,
           2
-        ]
+        ],
+        Error: new Error()
       };
 }
 
@@ -5346,7 +5720,8 @@ if (!eq(tFromJs("variant74"), /* variant74 */173497314)) {
           "big_polyvar_test.ml",
           684,
           2
-        ]
+        ],
+        Error: new Error()
       };
 }
 
@@ -5357,7 +5732,8 @@ if (!eq(tFromJs("variant75"), /* variant75 */173497315)) {
           "big_polyvar_test.ml",
           685,
           2
-        ]
+        ],
+        Error: new Error()
       };
 }
 
@@ -5368,7 +5744,8 @@ if (!eq(tFromJs("variant76"), /* variant76 */173497316)) {
           "big_polyvar_test.ml",
           686,
           2
-        ]
+        ],
+        Error: new Error()
       };
 }
 
@@ -5379,7 +5756,8 @@ if (!eq(tFromJs("variant77"), /* variant77 */173497317)) {
           "big_polyvar_test.ml",
           687,
           2
-        ]
+        ],
+        Error: new Error()
       };
 }
 
@@ -5390,7 +5768,8 @@ if (!eq(tFromJs("variant78"), /* variant78 */173497318)) {
           "big_polyvar_test.ml",
           688,
           2
-        ]
+        ],
+        Error: new Error()
       };
 }
 
@@ -5401,7 +5780,8 @@ if (!eq(tFromJs("variant79"), /* variant79 */173497319)) {
           "big_polyvar_test.ml",
           689,
           2
-        ]
+        ],
+        Error: new Error()
       };
 }
 
@@ -5412,7 +5792,8 @@ if (!eq(tFromJs("variant80"), /* variant80 */173497533)) {
           "big_polyvar_test.ml",
           690,
           2
-        ]
+        ],
+        Error: new Error()
       };
 }
 
@@ -5423,7 +5804,8 @@ if (!eq(tFromJs("variant81"), /* variant81 */173497534)) {
           "big_polyvar_test.ml",
           691,
           2
-        ]
+        ],
+        Error: new Error()
       };
 }
 
@@ -5434,7 +5816,8 @@ if (!eq(tFromJs("variant82"), /* variant82 */173497535)) {
           "big_polyvar_test.ml",
           692,
           2
-        ]
+        ],
+        Error: new Error()
       };
 }
 
@@ -5445,7 +5828,8 @@ if (!eq(tFromJs("variant83"), /* variant83 */173497536)) {
           "big_polyvar_test.ml",
           693,
           2
-        ]
+        ],
+        Error: new Error()
       };
 }
 
@@ -5456,7 +5840,8 @@ if (!eq(tFromJs("variant84"), /* variant84 */173497537)) {
           "big_polyvar_test.ml",
           694,
           2
-        ]
+        ],
+        Error: new Error()
       };
 }
 
@@ -5467,7 +5852,8 @@ if (!eq(tFromJs("variant85"), /* variant85 */173497538)) {
           "big_polyvar_test.ml",
           695,
           2
-        ]
+        ],
+        Error: new Error()
       };
 }
 
@@ -5478,7 +5864,8 @@ if (!eq(tFromJs("variant86"), /* variant86 */173497539)) {
           "big_polyvar_test.ml",
           696,
           2
-        ]
+        ],
+        Error: new Error()
       };
 }
 
@@ -5489,7 +5876,8 @@ if (!eq(tFromJs("variant87"), /* variant87 */173497540)) {
           "big_polyvar_test.ml",
           697,
           2
-        ]
+        ],
+        Error: new Error()
       };
 }
 
@@ -5500,7 +5888,8 @@ if (!eq(tFromJs("variant88"), /* variant88 */173497541)) {
           "big_polyvar_test.ml",
           698,
           2
-        ]
+        ],
+        Error: new Error()
       };
 }
 
@@ -5511,7 +5900,8 @@ if (!eq(tFromJs("variant89"), /* variant89 */173497542)) {
           "big_polyvar_test.ml",
           699,
           2
-        ]
+        ],
+        Error: new Error()
       };
 }
 
@@ -5522,7 +5912,8 @@ if (!eq(tFromJs("variant90"), /* variant90 */173497756)) {
           "big_polyvar_test.ml",
           700,
           2
-        ]
+        ],
+        Error: new Error()
       };
 }
 
@@ -5533,7 +5924,8 @@ if (!eq(tFromJs("variant91"), /* variant91 */173497757)) {
           "big_polyvar_test.ml",
           701,
           2
-        ]
+        ],
+        Error: new Error()
       };
 }
 
@@ -5544,7 +5936,8 @@ if (!eq(tFromJs("variant92"), /* variant92 */173497758)) {
           "big_polyvar_test.ml",
           702,
           2
-        ]
+        ],
+        Error: new Error()
       };
 }
 
@@ -5555,7 +5948,8 @@ if (!eq(tFromJs("variant93"), /* variant93 */173497759)) {
           "big_polyvar_test.ml",
           703,
           2
-        ]
+        ],
+        Error: new Error()
       };
 }
 
@@ -5566,7 +5960,8 @@ if (!eq(tFromJs("variant94"), /* variant94 */173497760)) {
           "big_polyvar_test.ml",
           704,
           2
-        ]
+        ],
+        Error: new Error()
       };
 }
 
@@ -5577,7 +5972,8 @@ if (!eq(tFromJs("variant95"), /* variant95 */173497761)) {
           "big_polyvar_test.ml",
           705,
           2
-        ]
+        ],
+        Error: new Error()
       };
 }
 
@@ -5588,7 +5984,8 @@ if (!eq(tFromJs("variant96"), /* variant96 */173497762)) {
           "big_polyvar_test.ml",
           706,
           2
-        ]
+        ],
+        Error: new Error()
       };
 }
 
@@ -5599,7 +5996,8 @@ if (!eq(tFromJs("variant97"), /* variant97 */173497763)) {
           "big_polyvar_test.ml",
           707,
           2
-        ]
+        ],
+        Error: new Error()
       };
 }
 
@@ -5610,7 +6008,8 @@ if (!eq(tFromJs("variant98"), /* variant98 */173497764)) {
           "big_polyvar_test.ml",
           708,
           2
-        ]
+        ],
+        Error: new Error()
       };
 }
 
@@ -5621,7 +6020,8 @@ if (!eq(tFromJs("variant99"), /* variant99 */173497765)) {
           "big_polyvar_test.ml",
           709,
           2
-        ]
+        ],
+        Error: new Error()
       };
 }
 
@@ -5632,7 +6032,8 @@ if (!eq(tFromJs("variant100"), /* variant100 */34896140)) {
           "big_polyvar_test.ml",
           710,
           2
-        ]
+        ],
+        Error: new Error()
       };
 }
 
@@ -5643,7 +6044,8 @@ if (!eq(tFromJs("variant101"), /* variant101 */34896141)) {
           "big_polyvar_test.ml",
           711,
           2
-        ]
+        ],
+        Error: new Error()
       };
 }
 
@@ -5654,7 +6056,8 @@ if (!eq(tFromJs("variant102"), /* variant102 */34896142)) {
           "big_polyvar_test.ml",
           712,
           2
-        ]
+        ],
+        Error: new Error()
       };
 }
 
@@ -5665,7 +6068,8 @@ if (!eq(tFromJs("variant103"), /* variant103 */34896143)) {
           "big_polyvar_test.ml",
           713,
           2
-        ]
+        ],
+        Error: new Error()
       };
 }
 
@@ -5676,7 +6080,8 @@ if (!eq(tFromJs("variant104"), /* variant104 */34896144)) {
           "big_polyvar_test.ml",
           714,
           2
-        ]
+        ],
+        Error: new Error()
       };
 }
 
@@ -5687,7 +6092,8 @@ if (!eq(tFromJs("variant105"), /* variant105 */34896145)) {
           "big_polyvar_test.ml",
           715,
           2
-        ]
+        ],
+        Error: new Error()
       };
 }
 
@@ -5698,7 +6104,8 @@ if (!eq(tFromJs("variant106"), /* variant106 */34896146)) {
           "big_polyvar_test.ml",
           716,
           2
-        ]
+        ],
+        Error: new Error()
       };
 }
 
@@ -5709,7 +6116,8 @@ if (!eq(tFromJs("variant107"), /* variant107 */34896147)) {
           "big_polyvar_test.ml",
           717,
           2
-        ]
+        ],
+        Error: new Error()
       };
 }
 
@@ -5720,7 +6128,8 @@ if (!eq(tFromJs("variant108"), /* variant108 */34896148)) {
           "big_polyvar_test.ml",
           718,
           2
-        ]
+        ],
+        Error: new Error()
       };
 }
 
@@ -5731,7 +6140,8 @@ if (!eq(tFromJs("variant109"), /* variant109 */34896149)) {
           "big_polyvar_test.ml",
           719,
           2
-        ]
+        ],
+        Error: new Error()
       };
 }
 
@@ -5742,7 +6152,8 @@ if (!eq(tFromJs("variant110"), /* variant110 */34896363)) {
           "big_polyvar_test.ml",
           720,
           2
-        ]
+        ],
+        Error: new Error()
       };
 }
 
@@ -5753,7 +6164,8 @@ if (!eq(tFromJs("variant111"), /* variant111 */34896364)) {
           "big_polyvar_test.ml",
           721,
           2
-        ]
+        ],
+        Error: new Error()
       };
 }
 
@@ -5764,7 +6176,8 @@ if (!eq(tFromJs("variant112"), /* variant112 */34896365)) {
           "big_polyvar_test.ml",
           722,
           2
-        ]
+        ],
+        Error: new Error()
       };
 }
 
@@ -5775,7 +6188,8 @@ if (!eq(tFromJs("variant113"), /* variant113 */34896366)) {
           "big_polyvar_test.ml",
           723,
           2
-        ]
+        ],
+        Error: new Error()
       };
 }
 
@@ -5786,7 +6200,8 @@ if (!eq(tFromJs("variant114"), /* variant114 */34896367)) {
           "big_polyvar_test.ml",
           724,
           2
-        ]
+        ],
+        Error: new Error()
       };
 }
 
@@ -5797,7 +6212,8 @@ if (!eq(tFromJs("variant115"), /* variant115 */34896368)) {
           "big_polyvar_test.ml",
           725,
           2
-        ]
+        ],
+        Error: new Error()
       };
 }
 
@@ -5808,7 +6224,8 @@ if (!eq(tFromJs("variant116"), /* variant116 */34896369)) {
           "big_polyvar_test.ml",
           726,
           2
-        ]
+        ],
+        Error: new Error()
       };
 }
 
@@ -5819,7 +6236,8 @@ if (!eq(tFromJs("variant117"), /* variant117 */34896370)) {
           "big_polyvar_test.ml",
           727,
           2
-        ]
+        ],
+        Error: new Error()
       };
 }
 
@@ -5830,7 +6248,8 @@ if (!eq(tFromJs("variant118"), /* variant118 */34896371)) {
           "big_polyvar_test.ml",
           728,
           2
-        ]
+        ],
+        Error: new Error()
       };
 }
 
@@ -5841,7 +6260,8 @@ if (!eq(tFromJs("variant119"), /* variant119 */34896372)) {
           "big_polyvar_test.ml",
           729,
           2
-        ]
+        ],
+        Error: new Error()
       };
 }
 
@@ -5852,7 +6272,8 @@ if (!eq(tFromJs("variant120"), /* variant120 */34896586)) {
           "big_polyvar_test.ml",
           730,
           2
-        ]
+        ],
+        Error: new Error()
       };
 }
 
@@ -5863,7 +6284,8 @@ if (!eq(tFromJs("variant121"), /* variant121 */34896587)) {
           "big_polyvar_test.ml",
           731,
           2
-        ]
+        ],
+        Error: new Error()
       };
 }
 
@@ -5874,7 +6296,8 @@ if (!eq(tFromJs("variant122"), /* variant122 */34896588)) {
           "big_polyvar_test.ml",
           732,
           2
-        ]
+        ],
+        Error: new Error()
       };
 }
 
@@ -5885,7 +6308,8 @@ if (!eq(tFromJs("variant123"), /* variant123 */34896589)) {
           "big_polyvar_test.ml",
           733,
           2
-        ]
+        ],
+        Error: new Error()
       };
 }
 
@@ -5896,7 +6320,8 @@ if (!eq(tFromJs("variant124"), /* variant124 */34896590)) {
           "big_polyvar_test.ml",
           734,
           2
-        ]
+        ],
+        Error: new Error()
       };
 }
 
@@ -5907,7 +6332,8 @@ if (!eq(tFromJs("variant125"), /* variant125 */34896591)) {
           "big_polyvar_test.ml",
           735,
           2
-        ]
+        ],
+        Error: new Error()
       };
 }
 
@@ -5918,7 +6344,8 @@ if (!eq(tFromJs("variant126"), /* variant126 */34896592)) {
           "big_polyvar_test.ml",
           736,
           2
-        ]
+        ],
+        Error: new Error()
       };
 }
 
@@ -5929,7 +6356,8 @@ if (!eq(tFromJs("variant127"), /* variant127 */34896593)) {
           "big_polyvar_test.ml",
           737,
           2
-        ]
+        ],
+        Error: new Error()
       };
 }
 
@@ -5940,7 +6368,8 @@ if (!eq(tFromJs("variant128"), /* variant128 */34896594)) {
           "big_polyvar_test.ml",
           738,
           2
-        ]
+        ],
+        Error: new Error()
       };
 }
 
@@ -5951,7 +6380,8 @@ if (!eq(tFromJs("variant129"), /* variant129 */34896595)) {
           "big_polyvar_test.ml",
           739,
           2
-        ]
+        ],
+        Error: new Error()
       };
 }
 
@@ -5962,7 +6392,8 @@ if (!eq(tFromJs("variant130"), /* variant130 */34896809)) {
           "big_polyvar_test.ml",
           740,
           2
-        ]
+        ],
+        Error: new Error()
       };
 }
 
@@ -5973,7 +6404,8 @@ if (!eq(tFromJs("variant131"), /* variant131 */34896810)) {
           "big_polyvar_test.ml",
           741,
           2
-        ]
+        ],
+        Error: new Error()
       };
 }
 
@@ -5984,7 +6416,8 @@ if (!eq(tFromJs("variant132"), /* variant132 */34896811)) {
           "big_polyvar_test.ml",
           742,
           2
-        ]
+        ],
+        Error: new Error()
       };
 }
 
@@ -5995,7 +6428,8 @@ if (!eq(tFromJs("variant133"), /* variant133 */34896812)) {
           "big_polyvar_test.ml",
           743,
           2
-        ]
+        ],
+        Error: new Error()
       };
 }
 
@@ -6006,7 +6440,8 @@ if (!eq(tFromJs("variant134"), /* variant134 */34896813)) {
           "big_polyvar_test.ml",
           744,
           2
-        ]
+        ],
+        Error: new Error()
       };
 }
 
@@ -6017,7 +6452,8 @@ if (!eq(tFromJs("variant135"), /* variant135 */34896814)) {
           "big_polyvar_test.ml",
           745,
           2
-        ]
+        ],
+        Error: new Error()
       };
 }
 
@@ -6028,7 +6464,8 @@ if (!eq(tFromJs("variant136"), /* variant136 */34896815)) {
           "big_polyvar_test.ml",
           746,
           2
-        ]
+        ],
+        Error: new Error()
       };
 }
 
@@ -6039,7 +6476,8 @@ if (!eq(tFromJs("variant137"), /* variant137 */34896816)) {
           "big_polyvar_test.ml",
           747,
           2
-        ]
+        ],
+        Error: new Error()
       };
 }
 
@@ -6050,7 +6488,8 @@ if (!eq(tFromJs("variant138"), /* variant138 */34896817)) {
           "big_polyvar_test.ml",
           748,
           2
-        ]
+        ],
+        Error: new Error()
       };
 }
 
@@ -6061,7 +6500,8 @@ if (!eq(tFromJs("variant139"), /* variant139 */34896818)) {
           "big_polyvar_test.ml",
           749,
           2
-        ]
+        ],
+        Error: new Error()
       };
 }
 
@@ -6072,7 +6512,8 @@ if (!eq(tFromJs("variant140"), /* variant140 */34897032)) {
           "big_polyvar_test.ml",
           750,
           2
-        ]
+        ],
+        Error: new Error()
       };
 }
 
@@ -6083,7 +6524,8 @@ if (!eq(tFromJs("variant141"), /* variant141 */34897033)) {
           "big_polyvar_test.ml",
           751,
           2
-        ]
+        ],
+        Error: new Error()
       };
 }
 
@@ -6094,7 +6536,8 @@ if (!eq(tFromJs("variant142"), /* variant142 */34897034)) {
           "big_polyvar_test.ml",
           752,
           2
-        ]
+        ],
+        Error: new Error()
       };
 }
 
@@ -6105,7 +6548,8 @@ if (!eq(tFromJs("variant143"), /* variant143 */34897035)) {
           "big_polyvar_test.ml",
           753,
           2
-        ]
+        ],
+        Error: new Error()
       };
 }
 
@@ -6116,7 +6560,8 @@ if (!eq(tFromJs("variant144"), /* variant144 */34897036)) {
           "big_polyvar_test.ml",
           754,
           2
-        ]
+        ],
+        Error: new Error()
       };
 }
 
@@ -6127,7 +6572,8 @@ if (!eq(tFromJs("variant145"), /* variant145 */34897037)) {
           "big_polyvar_test.ml",
           755,
           2
-        ]
+        ],
+        Error: new Error()
       };
 }
 
@@ -6138,7 +6584,8 @@ if (!eq(tFromJs("variant146"), /* variant146 */34897038)) {
           "big_polyvar_test.ml",
           756,
           2
-        ]
+        ],
+        Error: new Error()
       };
 }
 
@@ -6149,7 +6596,8 @@ if (!eq(tFromJs("variant147"), /* variant147 */34897039)) {
           "big_polyvar_test.ml",
           757,
           2
-        ]
+        ],
+        Error: new Error()
       };
 }
 
@@ -6160,7 +6608,8 @@ if (!eq(tFromJs("variant148"), /* variant148 */34897040)) {
           "big_polyvar_test.ml",
           758,
           2
-        ]
+        ],
+        Error: new Error()
       };
 }
 
@@ -6171,7 +6620,8 @@ if (!eq(tFromJs("variant149"), /* variant149 */34897041)) {
           "big_polyvar_test.ml",
           759,
           2
-        ]
+        ],
+        Error: new Error()
       };
 }
 
@@ -6182,7 +6632,8 @@ if (!eq(tFromJs("variant150"), /* variant150 */34897255)) {
           "big_polyvar_test.ml",
           760,
           2
-        ]
+        ],
+        Error: new Error()
       };
 }
 
@@ -6193,7 +6644,8 @@ if (!eq(tFromJs("variant151"), /* variant151 */34897256)) {
           "big_polyvar_test.ml",
           761,
           2
-        ]
+        ],
+        Error: new Error()
       };
 }
 
@@ -6204,7 +6656,8 @@ if (!eq(tFromJs("variant152"), /* variant152 */34897257)) {
           "big_polyvar_test.ml",
           762,
           2
-        ]
+        ],
+        Error: new Error()
       };
 }
 
@@ -6215,7 +6668,8 @@ if (!eq(tFromJs("variant153"), /* variant153 */34897258)) {
           "big_polyvar_test.ml",
           763,
           2
-        ]
+        ],
+        Error: new Error()
       };
 }
 
@@ -6226,7 +6680,8 @@ if (!eq(tFromJs("variant154"), /* variant154 */34897259)) {
           "big_polyvar_test.ml",
           764,
           2
-        ]
+        ],
+        Error: new Error()
       };
 }
 
@@ -6237,7 +6692,8 @@ if (!eq(tFromJs("variant155"), /* variant155 */34897260)) {
           "big_polyvar_test.ml",
           765,
           2
-        ]
+        ],
+        Error: new Error()
       };
 }
 
@@ -6248,7 +6704,8 @@ if (!eq(tFromJs("variant156"), /* variant156 */34897261)) {
           "big_polyvar_test.ml",
           766,
           2
-        ]
+        ],
+        Error: new Error()
       };
 }
 
@@ -6259,7 +6716,8 @@ if (!eq(tFromJs("variant157"), /* variant157 */34897262)) {
           "big_polyvar_test.ml",
           767,
           2
-        ]
+        ],
+        Error: new Error()
       };
 }
 
@@ -6270,7 +6728,8 @@ if (!eq(tFromJs("variant158"), /* variant158 */34897263)) {
           "big_polyvar_test.ml",
           768,
           2
-        ]
+        ],
+        Error: new Error()
       };
 }
 
@@ -6281,7 +6740,8 @@ if (!eq(tFromJs("variant159"), /* variant159 */34897264)) {
           "big_polyvar_test.ml",
           769,
           2
-        ]
+        ],
+        Error: new Error()
       };
 }
 
@@ -6292,7 +6752,8 @@ if (!eq(tFromJs("variant160"), /* variant160 */34897478)) {
           "big_polyvar_test.ml",
           770,
           2
-        ]
+        ],
+        Error: new Error()
       };
 }
 
@@ -6303,7 +6764,8 @@ if (!eq(tFromJs("variant161"), /* variant161 */34897479)) {
           "big_polyvar_test.ml",
           771,
           2
-        ]
+        ],
+        Error: new Error()
       };
 }
 
@@ -6314,7 +6776,8 @@ if (!eq(tFromJs("variant162"), /* variant162 */34897480)) {
           "big_polyvar_test.ml",
           772,
           2
-        ]
+        ],
+        Error: new Error()
       };
 }
 
@@ -6325,7 +6788,8 @@ if (!eq(tFromJs("variant163"), /* variant163 */34897481)) {
           "big_polyvar_test.ml",
           773,
           2
-        ]
+        ],
+        Error: new Error()
       };
 }
 
@@ -6336,7 +6800,8 @@ if (!eq(tFromJs("variant164"), /* variant164 */34897482)) {
           "big_polyvar_test.ml",
           774,
           2
-        ]
+        ],
+        Error: new Error()
       };
 }
 
@@ -6347,7 +6812,8 @@ if (!eq(tFromJs("variant165"), /* variant165 */34897483)) {
           "big_polyvar_test.ml",
           775,
           2
-        ]
+        ],
+        Error: new Error()
       };
 }
 
@@ -6358,7 +6824,8 @@ if (!eq(tFromJs("variant166"), /* variant166 */34897484)) {
           "big_polyvar_test.ml",
           776,
           2
-        ]
+        ],
+        Error: new Error()
       };
 }
 
@@ -6369,7 +6836,8 @@ if (!eq(tFromJs("variant167"), /* variant167 */34897485)) {
           "big_polyvar_test.ml",
           777,
           2
-        ]
+        ],
+        Error: new Error()
       };
 }
 
@@ -6380,7 +6848,8 @@ if (!eq(tFromJs("variant168"), /* variant168 */34897486)) {
           "big_polyvar_test.ml",
           778,
           2
-        ]
+        ],
+        Error: new Error()
       };
 }
 
@@ -6391,7 +6860,8 @@ if (!eq(tFromJs("variant169"), /* variant169 */34897487)) {
           "big_polyvar_test.ml",
           779,
           2
-        ]
+        ],
+        Error: new Error()
       };
 }
 
@@ -6402,7 +6872,8 @@ if (!eq(tFromJs("variant170"), /* variant170 */34897701)) {
           "big_polyvar_test.ml",
           780,
           2
-        ]
+        ],
+        Error: new Error()
       };
 }
 
@@ -6413,7 +6884,8 @@ if (!eq(tFromJs("variant171"), /* variant171 */34897702)) {
           "big_polyvar_test.ml",
           781,
           2
-        ]
+        ],
+        Error: new Error()
       };
 }
 
@@ -6424,7 +6896,8 @@ if (!eq(tFromJs("variant172"), /* variant172 */34897703)) {
           "big_polyvar_test.ml",
           782,
           2
-        ]
+        ],
+        Error: new Error()
       };
 }
 
@@ -6435,7 +6908,8 @@ if (!eq(tFromJs("variant173"), /* variant173 */34897704)) {
           "big_polyvar_test.ml",
           783,
           2
-        ]
+        ],
+        Error: new Error()
       };
 }
 
@@ -6446,7 +6920,8 @@ if (!eq(tFromJs("variant174"), /* variant174 */34897705)) {
           "big_polyvar_test.ml",
           784,
           2
-        ]
+        ],
+        Error: new Error()
       };
 }
 
@@ -6457,7 +6932,8 @@ if (!eq(tFromJs("variant175"), /* variant175 */34897706)) {
           "big_polyvar_test.ml",
           785,
           2
-        ]
+        ],
+        Error: new Error()
       };
 }
 
@@ -6468,7 +6944,8 @@ if (!eq(tFromJs("variant176"), /* variant176 */34897707)) {
           "big_polyvar_test.ml",
           786,
           2
-        ]
+        ],
+        Error: new Error()
       };
 }
 
@@ -6479,7 +6956,8 @@ if (!eq(tFromJs("variant177"), /* variant177 */34897708)) {
           "big_polyvar_test.ml",
           787,
           2
-        ]
+        ],
+        Error: new Error()
       };
 }
 
@@ -6490,7 +6968,8 @@ if (!eq(tFromJs("variant178"), /* variant178 */34897709)) {
           "big_polyvar_test.ml",
           788,
           2
-        ]
+        ],
+        Error: new Error()
       };
 }
 
@@ -6501,7 +6980,8 @@ if (!eq(tFromJs("variant179"), /* variant179 */34897710)) {
           "big_polyvar_test.ml",
           789,
           2
-        ]
+        ],
+        Error: new Error()
       };
 }
 
@@ -6512,7 +6992,8 @@ if (!eq(tFromJs("variant180"), /* variant180 */34897924)) {
           "big_polyvar_test.ml",
           790,
           2
-        ]
+        ],
+        Error: new Error()
       };
 }
 
@@ -6523,7 +7004,8 @@ if (!eq(tFromJs("variant181"), /* variant181 */34897925)) {
           "big_polyvar_test.ml",
           791,
           2
-        ]
+        ],
+        Error: new Error()
       };
 }
 
@@ -6534,7 +7016,8 @@ if (!eq(tFromJs("variant182"), /* variant182 */34897926)) {
           "big_polyvar_test.ml",
           792,
           2
-        ]
+        ],
+        Error: new Error()
       };
 }
 
@@ -6545,7 +7028,8 @@ if (!eq(tFromJs("variant183"), /* variant183 */34897927)) {
           "big_polyvar_test.ml",
           793,
           2
-        ]
+        ],
+        Error: new Error()
       };
 }
 
@@ -6556,7 +7040,8 @@ if (!eq(tFromJs("variant184"), /* variant184 */34897928)) {
           "big_polyvar_test.ml",
           794,
           2
-        ]
+        ],
+        Error: new Error()
       };
 }
 
@@ -6567,7 +7052,8 @@ if (!eq(tFromJs("variant185"), /* variant185 */34897929)) {
           "big_polyvar_test.ml",
           795,
           2
-        ]
+        ],
+        Error: new Error()
       };
 }
 
@@ -6578,7 +7064,8 @@ if (!eq(tFromJs("variant186"), /* variant186 */34897930)) {
           "big_polyvar_test.ml",
           796,
           2
-        ]
+        ],
+        Error: new Error()
       };
 }
 
@@ -6589,7 +7076,8 @@ if (!eq(tFromJs("variant187"), /* variant187 */34897931)) {
           "big_polyvar_test.ml",
           797,
           2
-        ]
+        ],
+        Error: new Error()
       };
 }
 
@@ -6600,7 +7088,8 @@ if (!eq(tFromJs("variant188"), /* variant188 */34897932)) {
           "big_polyvar_test.ml",
           798,
           2
-        ]
+        ],
+        Error: new Error()
       };
 }
 
@@ -6611,7 +7100,8 @@ if (!eq(tFromJs("variant189"), /* variant189 */34897933)) {
           "big_polyvar_test.ml",
           799,
           2
-        ]
+        ],
+        Error: new Error()
       };
 }
 
@@ -6622,7 +7112,8 @@ if (!eq(tFromJs("variant190"), /* variant190 */34898147)) {
           "big_polyvar_test.ml",
           800,
           2
-        ]
+        ],
+        Error: new Error()
       };
 }
 
@@ -6633,7 +7124,8 @@ if (!eq(tFromJs("variant191"), /* variant191 */34898148)) {
           "big_polyvar_test.ml",
           801,
           2
-        ]
+        ],
+        Error: new Error()
       };
 }
 
@@ -6644,7 +7136,8 @@ if (!eq(tFromJs("variant192"), /* variant192 */34898149)) {
           "big_polyvar_test.ml",
           802,
           2
-        ]
+        ],
+        Error: new Error()
       };
 }
 
@@ -6655,7 +7148,8 @@ if (!eq(tFromJs("variant193"), /* variant193 */34898150)) {
           "big_polyvar_test.ml",
           803,
           2
-        ]
+        ],
+        Error: new Error()
       };
 }
 
@@ -6666,7 +7160,8 @@ if (!eq(tFromJs("variant194"), /* variant194 */34898151)) {
           "big_polyvar_test.ml",
           804,
           2
-        ]
+        ],
+        Error: new Error()
       };
 }
 
@@ -6677,7 +7172,8 @@ if (!eq(tFromJs("variant195"), /* variant195 */34898152)) {
           "big_polyvar_test.ml",
           805,
           2
-        ]
+        ],
+        Error: new Error()
       };
 }
 
@@ -6688,7 +7184,8 @@ if (!eq(tFromJs("variant196"), /* variant196 */34898153)) {
           "big_polyvar_test.ml",
           806,
           2
-        ]
+        ],
+        Error: new Error()
       };
 }
 
@@ -6699,7 +7196,8 @@ if (!eq(tFromJs("variant197"), /* variant197 */34898154)) {
           "big_polyvar_test.ml",
           807,
           2
-        ]
+        ],
+        Error: new Error()
       };
 }
 
@@ -6710,7 +7208,8 @@ if (!eq(tFromJs("variant198"), /* variant198 */34898155)) {
           "big_polyvar_test.ml",
           808,
           2
-        ]
+        ],
+        Error: new Error()
       };
 }
 
@@ -6721,7 +7220,8 @@ if (!eq(tFromJs("variant199"), /* variant199 */34898156)) {
           "big_polyvar_test.ml",
           809,
           2
-        ]
+        ],
+        Error: new Error()
       };
 }
 
@@ -6732,7 +7232,8 @@ if (!eq(tFromJs("variant200"), /* variant200 */34945869)) {
           "big_polyvar_test.ml",
           810,
           2
-        ]
+        ],
+        Error: new Error()
       };
 }
 
@@ -6743,7 +7244,8 @@ if (!eq(tFromJs("variant201"), /* variant201 */34945870)) {
           "big_polyvar_test.ml",
           811,
           2
-        ]
+        ],
+        Error: new Error()
       };
 }
 
@@ -6754,7 +7256,8 @@ if (!eq(tFromJs("variant202"), /* variant202 */34945871)) {
           "big_polyvar_test.ml",
           812,
           2
-        ]
+        ],
+        Error: new Error()
       };
 }
 
@@ -6765,7 +7268,8 @@ if (!eq(tFromJs("variant203"), /* variant203 */34945872)) {
           "big_polyvar_test.ml",
           813,
           2
-        ]
+        ],
+        Error: new Error()
       };
 }
 
@@ -6776,7 +7280,8 @@ if (!eq(tFromJs("variant204"), /* variant204 */34945873)) {
           "big_polyvar_test.ml",
           814,
           2
-        ]
+        ],
+        Error: new Error()
       };
 }
 
@@ -6787,7 +7292,8 @@ if (!eq(tFromJs("variant205"), /* variant205 */34945874)) {
           "big_polyvar_test.ml",
           815,
           2
-        ]
+        ],
+        Error: new Error()
       };
 }
 
@@ -6798,7 +7304,8 @@ if (!eq(tFromJs("variant206"), /* variant206 */34945875)) {
           "big_polyvar_test.ml",
           816,
           2
-        ]
+        ],
+        Error: new Error()
       };
 }
 
@@ -6809,7 +7316,8 @@ if (!eq(tFromJs("variant207"), /* variant207 */34945876)) {
           "big_polyvar_test.ml",
           817,
           2
-        ]
+        ],
+        Error: new Error()
       };
 }
 
@@ -6820,7 +7328,8 @@ if (!eq(tFromJs("variant208"), /* variant208 */34945877)) {
           "big_polyvar_test.ml",
           818,
           2
-        ]
+        ],
+        Error: new Error()
       };
 }
 
@@ -6831,7 +7340,8 @@ if (!eq(tFromJs("variant209"), /* variant209 */34945878)) {
           "big_polyvar_test.ml",
           819,
           2
-        ]
+        ],
+        Error: new Error()
       };
 }
 
@@ -6842,7 +7352,8 @@ if (!eq(tFromJs("variant210"), /* variant210 */34946092)) {
           "big_polyvar_test.ml",
           820,
           2
-        ]
+        ],
+        Error: new Error()
       };
 }
 
@@ -6853,7 +7364,8 @@ if (!eq(tFromJs("variant211"), /* variant211 */34946093)) {
           "big_polyvar_test.ml",
           821,
           2
-        ]
+        ],
+        Error: new Error()
       };
 }
 
@@ -6864,7 +7376,8 @@ if (!eq(tFromJs("variant212"), /* variant212 */34946094)) {
           "big_polyvar_test.ml",
           822,
           2
-        ]
+        ],
+        Error: new Error()
       };
 }
 
@@ -6875,7 +7388,8 @@ if (!eq(tFromJs("variant213"), /* variant213 */34946095)) {
           "big_polyvar_test.ml",
           823,
           2
-        ]
+        ],
+        Error: new Error()
       };
 }
 
@@ -6886,7 +7400,8 @@ if (!eq(tFromJs("variant214"), /* variant214 */34946096)) {
           "big_polyvar_test.ml",
           824,
           2
-        ]
+        ],
+        Error: new Error()
       };
 }
 
@@ -6897,7 +7412,8 @@ if (!eq(tFromJs("variant215"), /* variant215 */34946097)) {
           "big_polyvar_test.ml",
           825,
           2
-        ]
+        ],
+        Error: new Error()
       };
 }
 
@@ -6908,7 +7424,8 @@ if (!eq(tFromJs("variant216"), /* variant216 */34946098)) {
           "big_polyvar_test.ml",
           826,
           2
-        ]
+        ],
+        Error: new Error()
       };
 }
 
@@ -6919,7 +7436,8 @@ if (!eq(tFromJs("variant217"), /* variant217 */34946099)) {
           "big_polyvar_test.ml",
           827,
           2
-        ]
+        ],
+        Error: new Error()
       };
 }
 
@@ -6930,7 +7448,8 @@ if (!eq(tFromJs("variant218"), /* variant218 */34946100)) {
           "big_polyvar_test.ml",
           828,
           2
-        ]
+        ],
+        Error: new Error()
       };
 }
 
@@ -6941,7 +7460,8 @@ if (!eq(tFromJs("variant219"), /* variant219 */34946101)) {
           "big_polyvar_test.ml",
           829,
           2
-        ]
+        ],
+        Error: new Error()
       };
 }
 
@@ -6952,7 +7472,8 @@ if (!eq(tFromJs("variant220"), /* variant220 */34946315)) {
           "big_polyvar_test.ml",
           830,
           2
-        ]
+        ],
+        Error: new Error()
       };
 }
 
@@ -6963,7 +7484,8 @@ if (!eq(tFromJs("variant221"), /* variant221 */34946316)) {
           "big_polyvar_test.ml",
           831,
           2
-        ]
+        ],
+        Error: new Error()
       };
 }
 
@@ -6974,7 +7496,8 @@ if (!eq(tFromJs("variant222"), /* variant222 */34946317)) {
           "big_polyvar_test.ml",
           832,
           2
-        ]
+        ],
+        Error: new Error()
       };
 }
 
@@ -6985,7 +7508,8 @@ if (!eq(tFromJs("variant223"), /* variant223 */34946318)) {
           "big_polyvar_test.ml",
           833,
           2
-        ]
+        ],
+        Error: new Error()
       };
 }
 
@@ -6996,7 +7520,8 @@ if (!eq(tFromJs("variant224"), /* variant224 */34946319)) {
           "big_polyvar_test.ml",
           834,
           2
-        ]
+        ],
+        Error: new Error()
       };
 }
 
@@ -7007,7 +7532,8 @@ if (!eq(tFromJs("variant225"), /* variant225 */34946320)) {
           "big_polyvar_test.ml",
           835,
           2
-        ]
+        ],
+        Error: new Error()
       };
 }
 
@@ -7018,7 +7544,8 @@ if (!eq(tFromJs("variant226"), /* variant226 */34946321)) {
           "big_polyvar_test.ml",
           836,
           2
-        ]
+        ],
+        Error: new Error()
       };
 }
 
@@ -7029,7 +7556,8 @@ if (!eq(tFromJs("variant227"), /* variant227 */34946322)) {
           "big_polyvar_test.ml",
           837,
           2
-        ]
+        ],
+        Error: new Error()
       };
 }
 
@@ -7040,7 +7568,8 @@ if (!eq(tFromJs("variant228"), /* variant228 */34946323)) {
           "big_polyvar_test.ml",
           838,
           2
-        ]
+        ],
+        Error: new Error()
       };
 }
 
@@ -7051,7 +7580,8 @@ if (!eq(tFromJs("variant229"), /* variant229 */34946324)) {
           "big_polyvar_test.ml",
           839,
           2
-        ]
+        ],
+        Error: new Error()
       };
 }
 
@@ -7062,7 +7592,8 @@ if (!eq(tFromJs("variant230"), /* variant230 */34946538)) {
           "big_polyvar_test.ml",
           840,
           2
-        ]
+        ],
+        Error: new Error()
       };
 }
 
@@ -7073,7 +7604,8 @@ if (!eq(tFromJs("variant231"), /* variant231 */34946539)) {
           "big_polyvar_test.ml",
           841,
           2
-        ]
+        ],
+        Error: new Error()
       };
 }
 
@@ -7084,7 +7616,8 @@ if (!eq(tFromJs("variant232"), /* variant232 */34946540)) {
           "big_polyvar_test.ml",
           842,
           2
-        ]
+        ],
+        Error: new Error()
       };
 }
 
@@ -7095,7 +7628,8 @@ if (!eq(tFromJs("variant233"), /* variant233 */34946541)) {
           "big_polyvar_test.ml",
           843,
           2
-        ]
+        ],
+        Error: new Error()
       };
 }
 
@@ -7106,7 +7640,8 @@ if (!eq(tFromJs("variant234"), /* variant234 */34946542)) {
           "big_polyvar_test.ml",
           844,
           2
-        ]
+        ],
+        Error: new Error()
       };
 }
 
@@ -7117,7 +7652,8 @@ if (!eq(tFromJs("variant235"), /* variant235 */34946543)) {
           "big_polyvar_test.ml",
           845,
           2
-        ]
+        ],
+        Error: new Error()
       };
 }
 
@@ -7128,7 +7664,8 @@ if (!eq(tFromJs("variant236"), /* variant236 */34946544)) {
           "big_polyvar_test.ml",
           846,
           2
-        ]
+        ],
+        Error: new Error()
       };
 }
 
@@ -7139,7 +7676,8 @@ if (!eq(tFromJs("variant237"), /* variant237 */34946545)) {
           "big_polyvar_test.ml",
           847,
           2
-        ]
+        ],
+        Error: new Error()
       };
 }
 
@@ -7150,7 +7688,8 @@ if (!eq(tFromJs("variant238"), /* variant238 */34946546)) {
           "big_polyvar_test.ml",
           848,
           2
-        ]
+        ],
+        Error: new Error()
       };
 }
 
@@ -7161,7 +7700,8 @@ if (!eq(tFromJs("variant239"), /* variant239 */34946547)) {
           "big_polyvar_test.ml",
           849,
           2
-        ]
+        ],
+        Error: new Error()
       };
 }
 
@@ -7172,7 +7712,8 @@ if (!eq(tFromJs("variant240"), /* variant240 */34946761)) {
           "big_polyvar_test.ml",
           850,
           2
-        ]
+        ],
+        Error: new Error()
       };
 }
 
@@ -7183,7 +7724,8 @@ if (!eq(tFromJs("variant241"), /* variant241 */34946762)) {
           "big_polyvar_test.ml",
           851,
           2
-        ]
+        ],
+        Error: new Error()
       };
 }
 
@@ -7194,7 +7736,8 @@ if (!eq(tFromJs("variant242"), /* variant242 */34946763)) {
           "big_polyvar_test.ml",
           852,
           2
-        ]
+        ],
+        Error: new Error()
       };
 }
 
@@ -7205,7 +7748,8 @@ if (!eq(tFromJs("variant243"), /* variant243 */34946764)) {
           "big_polyvar_test.ml",
           853,
           2
-        ]
+        ],
+        Error: new Error()
       };
 }
 
@@ -7216,7 +7760,8 @@ if (!eq(tFromJs("variant244"), /* variant244 */34946765)) {
           "big_polyvar_test.ml",
           854,
           2
-        ]
+        ],
+        Error: new Error()
       };
 }
 
@@ -7227,7 +7772,8 @@ if (!eq(tFromJs("variant245"), /* variant245 */34946766)) {
           "big_polyvar_test.ml",
           855,
           2
-        ]
+        ],
+        Error: new Error()
       };
 }
 
@@ -7238,7 +7784,8 @@ if (!eq(tFromJs("variant246"), /* variant246 */34946767)) {
           "big_polyvar_test.ml",
           856,
           2
-        ]
+        ],
+        Error: new Error()
       };
 }
 
@@ -7249,7 +7796,8 @@ if (!eq(tFromJs("variant247"), /* variant247 */34946768)) {
           "big_polyvar_test.ml",
           857,
           2
-        ]
+        ],
+        Error: new Error()
       };
 }
 
@@ -7260,7 +7808,8 @@ if (!eq(tFromJs("variant248"), /* variant248 */34946769)) {
           "big_polyvar_test.ml",
           858,
           2
-        ]
+        ],
+        Error: new Error()
       };
 }
 
@@ -7271,7 +7820,8 @@ if (!eq(tFromJs("variant249"), /* variant249 */34946770)) {
           "big_polyvar_test.ml",
           859,
           2
-        ]
+        ],
+        Error: new Error()
       };
 }
 
@@ -7282,7 +7832,8 @@ if (!eq(tFromJs("variant250"), /* variant250 */34946984)) {
           "big_polyvar_test.ml",
           860,
           2
-        ]
+        ],
+        Error: new Error()
       };
 }
 
@@ -7293,7 +7844,8 @@ if (!eq(tFromJs("variant251"), /* variant251 */34946985)) {
           "big_polyvar_test.ml",
           861,
           2
-        ]
+        ],
+        Error: new Error()
       };
 }
 
@@ -7304,7 +7856,8 @@ if (!eq(tFromJs("variant252"), /* variant252 */34946986)) {
           "big_polyvar_test.ml",
           862,
           2
-        ]
+        ],
+        Error: new Error()
       };
 }
 
@@ -7315,7 +7868,8 @@ if (!eq(tFromJs("variant253"), /* variant253 */34946987)) {
           "big_polyvar_test.ml",
           863,
           2
-        ]
+        ],
+        Error: new Error()
       };
 }
 
@@ -7326,7 +7880,8 @@ if (!eq(tFromJs("variant254"), /* variant254 */34946988)) {
           "big_polyvar_test.ml",
           864,
           2
-        ]
+        ],
+        Error: new Error()
       };
 }
 
@@ -7337,7 +7892,8 @@ if (!eq(tFromJs("variant255"), /* variant255 */34946989)) {
           "big_polyvar_test.ml",
           865,
           2
-        ]
+        ],
+        Error: new Error()
       };
 }
 
@@ -7348,7 +7904,8 @@ if (!eq(tFromJs("variant256"), /* variant256 */34946990)) {
           "big_polyvar_test.ml",
           866,
           2
-        ]
+        ],
+        Error: new Error()
       };
 }
 
@@ -7359,7 +7916,8 @@ if (!eq(tFromJs("variant257"), /* variant257 */34946991)) {
           "big_polyvar_test.ml",
           867,
           2
-        ]
+        ],
+        Error: new Error()
       };
 }
 
@@ -7370,7 +7928,8 @@ if (!eq(tFromJs("variant258"), /* variant258 */34946992)) {
           "big_polyvar_test.ml",
           868,
           2
-        ]
+        ],
+        Error: new Error()
       };
 }
 
@@ -7381,7 +7940,8 @@ if (!eq(tFromJs("variant259"), /* variant259 */34946993)) {
           "big_polyvar_test.ml",
           869,
           2
-        ]
+        ],
+        Error: new Error()
       };
 }
 
@@ -7392,7 +7952,8 @@ if (!eq(tFromJs("variant260"), /* variant260 */34947207)) {
           "big_polyvar_test.ml",
           870,
           2
-        ]
+        ],
+        Error: new Error()
       };
 }
 
@@ -7403,7 +7964,8 @@ if (!eq(tFromJs("variant261"), /* variant261 */34947208)) {
           "big_polyvar_test.ml",
           871,
           2
-        ]
+        ],
+        Error: new Error()
       };
 }
 
@@ -7414,7 +7976,8 @@ if (!eq(tFromJs("variant262"), /* variant262 */34947209)) {
           "big_polyvar_test.ml",
           872,
           2
-        ]
+        ],
+        Error: new Error()
       };
 }
 
@@ -7425,7 +7988,8 @@ if (!eq(tFromJs("variant263"), /* variant263 */34947210)) {
           "big_polyvar_test.ml",
           873,
           2
-        ]
+        ],
+        Error: new Error()
       };
 }
 
@@ -7436,7 +8000,8 @@ if (!eq(tFromJs("variant264"), /* variant264 */34947211)) {
           "big_polyvar_test.ml",
           874,
           2
-        ]
+        ],
+        Error: new Error()
       };
 }
 
@@ -7447,7 +8012,8 @@ if (!eq(tFromJs("variant265"), /* variant265 */34947212)) {
           "big_polyvar_test.ml",
           875,
           2
-        ]
+        ],
+        Error: new Error()
       };
 }
 
@@ -7458,7 +8024,8 @@ if (!eq(tFromJs("variant266"), /* variant266 */34947213)) {
           "big_polyvar_test.ml",
           876,
           2
-        ]
+        ],
+        Error: new Error()
       };
 }
 
@@ -7469,7 +8036,8 @@ if (!eq(tFromJs("variant267"), /* variant267 */34947214)) {
           "big_polyvar_test.ml",
           877,
           2
-        ]
+        ],
+        Error: new Error()
       };
 }
 
@@ -7480,7 +8048,8 @@ if (!eq(tFromJs("variant268"), /* variant268 */34947215)) {
           "big_polyvar_test.ml",
           878,
           2
-        ]
+        ],
+        Error: new Error()
       };
 }
 
@@ -7491,7 +8060,8 @@ if (!eq(tFromJs("variant269"), /* variant269 */34947216)) {
           "big_polyvar_test.ml",
           879,
           2
-        ]
+        ],
+        Error: new Error()
       };
 }
 
@@ -7502,7 +8072,8 @@ if (!eq(tFromJs("variant270"), /* variant270 */34947430)) {
           "big_polyvar_test.ml",
           880,
           2
-        ]
+        ],
+        Error: new Error()
       };
 }
 
@@ -7513,7 +8084,8 @@ if (!eq(tFromJs("variant271"), /* variant271 */34947431)) {
           "big_polyvar_test.ml",
           881,
           2
-        ]
+        ],
+        Error: new Error()
       };
 }
 
@@ -7524,7 +8096,8 @@ if (!eq(tFromJs("variant272"), /* variant272 */34947432)) {
           "big_polyvar_test.ml",
           882,
           2
-        ]
+        ],
+        Error: new Error()
       };
 }
 
@@ -7535,7 +8108,8 @@ if (!eq(tFromJs("variant273"), /* variant273 */34947433)) {
           "big_polyvar_test.ml",
           883,
           2
-        ]
+        ],
+        Error: new Error()
       };
 }
 
@@ -7546,7 +8120,8 @@ if (!eq(tFromJs("variant274"), /* variant274 */34947434)) {
           "big_polyvar_test.ml",
           884,
           2
-        ]
+        ],
+        Error: new Error()
       };
 }
 
@@ -7557,7 +8132,8 @@ if (!eq(tFromJs("variant275"), /* variant275 */34947435)) {
           "big_polyvar_test.ml",
           885,
           2
-        ]
+        ],
+        Error: new Error()
       };
 }
 
@@ -7568,7 +8144,8 @@ if (!eq(tFromJs("variant276"), /* variant276 */34947436)) {
           "big_polyvar_test.ml",
           886,
           2
-        ]
+        ],
+        Error: new Error()
       };
 }
 
@@ -7579,7 +8156,8 @@ if (!eq(tFromJs("variant277"), /* variant277 */34947437)) {
           "big_polyvar_test.ml",
           887,
           2
-        ]
+        ],
+        Error: new Error()
       };
 }
 
@@ -7590,7 +8168,8 @@ if (!eq(tFromJs("variant278"), /* variant278 */34947438)) {
           "big_polyvar_test.ml",
           888,
           2
-        ]
+        ],
+        Error: new Error()
       };
 }
 
@@ -7601,7 +8180,8 @@ if (!eq(tFromJs("variant279"), /* variant279 */34947439)) {
           "big_polyvar_test.ml",
           889,
           2
-        ]
+        ],
+        Error: new Error()
       };
 }
 
@@ -7612,7 +8192,8 @@ if (!eq(tFromJs("variant280"), /* variant280 */34947653)) {
           "big_polyvar_test.ml",
           890,
           2
-        ]
+        ],
+        Error: new Error()
       };
 }
 
@@ -7623,7 +8204,8 @@ if (!eq(tFromJs("variant281"), /* variant281 */34947654)) {
           "big_polyvar_test.ml",
           891,
           2
-        ]
+        ],
+        Error: new Error()
       };
 }
 
@@ -7634,7 +8216,8 @@ if (!eq(tFromJs("variant282"), /* variant282 */34947655)) {
           "big_polyvar_test.ml",
           892,
           2
-        ]
+        ],
+        Error: new Error()
       };
 }
 
@@ -7645,7 +8228,8 @@ if (!eq(tFromJs("variant283"), /* variant283 */34947656)) {
           "big_polyvar_test.ml",
           893,
           2
-        ]
+        ],
+        Error: new Error()
       };
 }
 
@@ -7656,7 +8240,8 @@ if (!eq(tFromJs("variant284"), /* variant284 */34947657)) {
           "big_polyvar_test.ml",
           894,
           2
-        ]
+        ],
+        Error: new Error()
       };
 }
 
@@ -7667,7 +8252,8 @@ if (!eq(tFromJs("variant285"), /* variant285 */34947658)) {
           "big_polyvar_test.ml",
           895,
           2
-        ]
+        ],
+        Error: new Error()
       };
 }
 
@@ -7678,7 +8264,8 @@ if (!eq(tFromJs("variant286"), /* variant286 */34947659)) {
           "big_polyvar_test.ml",
           896,
           2
-        ]
+        ],
+        Error: new Error()
       };
 }
 
@@ -7689,7 +8276,8 @@ if (!eq(tFromJs("variant287"), /* variant287 */34947660)) {
           "big_polyvar_test.ml",
           897,
           2
-        ]
+        ],
+        Error: new Error()
       };
 }
 
@@ -7700,7 +8288,8 @@ if (!eq(tFromJs("variant288"), /* variant288 */34947661)) {
           "big_polyvar_test.ml",
           898,
           2
-        ]
+        ],
+        Error: new Error()
       };
 }
 
@@ -7711,7 +8300,8 @@ if (!eq(tFromJs("variant289"), /* variant289 */34947662)) {
           "big_polyvar_test.ml",
           899,
           2
-        ]
+        ],
+        Error: new Error()
       };
 }
 
@@ -7722,7 +8312,8 @@ if (!eq(tFromJs("variant290"), /* variant290 */34947876)) {
           "big_polyvar_test.ml",
           900,
           2
-        ]
+        ],
+        Error: new Error()
       };
 }
 
@@ -7733,7 +8324,8 @@ if (!eq(tFromJs("variant291"), /* variant291 */34947877)) {
           "big_polyvar_test.ml",
           901,
           2
-        ]
+        ],
+        Error: new Error()
       };
 }
 
@@ -7744,7 +8336,8 @@ if (!eq(tFromJs("variant292"), /* variant292 */34947878)) {
           "big_polyvar_test.ml",
           902,
           2
-        ]
+        ],
+        Error: new Error()
       };
 }
 
@@ -7755,7 +8348,8 @@ if (!eq(tFromJs("variant293"), /* variant293 */34947879)) {
           "big_polyvar_test.ml",
           903,
           2
-        ]
+        ],
+        Error: new Error()
       };
 }
 
@@ -7766,7 +8360,8 @@ if (!eq(tFromJs("variant294"), /* variant294 */34947880)) {
           "big_polyvar_test.ml",
           904,
           2
-        ]
+        ],
+        Error: new Error()
       };
 }
 
@@ -7777,7 +8372,8 @@ if (!eq(tFromJs("variant295"), /* variant295 */34947881)) {
           "big_polyvar_test.ml",
           905,
           2
-        ]
+        ],
+        Error: new Error()
       };
 }
 
@@ -7788,7 +8384,8 @@ if (!eq(tFromJs("variant296"), /* variant296 */34947882)) {
           "big_polyvar_test.ml",
           906,
           2
-        ]
+        ],
+        Error: new Error()
       };
 }
 
@@ -7799,7 +8396,8 @@ if (!eq(tFromJs("variant297"), /* variant297 */34947883)) {
           "big_polyvar_test.ml",
           907,
           2
-        ]
+        ],
+        Error: new Error()
       };
 }
 
@@ -7810,7 +8408,8 @@ if (!eq(tFromJs("variant298"), /* variant298 */34947884)) {
           "big_polyvar_test.ml",
           908,
           2
-        ]
+        ],
+        Error: new Error()
       };
 }
 
@@ -7821,7 +8420,8 @@ if (!eq(tFromJs("variant299"), /* variant299 */34947885)) {
           "big_polyvar_test.ml",
           909,
           2
-        ]
+        ],
+        Error: new Error()
       };
 }
 
@@ -7832,7 +8432,8 @@ if (!eq(tFromJs("xx"), undefined)) {
           "big_polyvar_test.ml",
           910,
           2
-        ]
+        ],
+        Error: new Error()
       };
 }
 

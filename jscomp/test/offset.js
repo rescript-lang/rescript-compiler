@@ -41,12 +41,14 @@ function bal(l, v, r) {
       }
       throw {
             RE_EXN_ID: "Invalid_argument",
-            _1: "Set.bal"
+            _1: "Set.bal",
+            Error: new Error()
           };
     }
     throw {
           RE_EXN_ID: "Invalid_argument",
-          _1: "Set.bal"
+          _1: "Set.bal",
+          Error: new Error()
         };
   }
   if (hr <= (hl + 2 | 0)) {
@@ -69,12 +71,14 @@ function bal(l, v, r) {
     }
     throw {
           RE_EXN_ID: "Invalid_argument",
-          _1: "Set.bal"
+          _1: "Set.bal",
+          Error: new Error()
         };
   }
   throw {
         RE_EXN_ID: "Invalid_argument",
-        _1: "Set.bal"
+        _1: "Set.bal",
+        Error: new Error()
       };
 }
 
@@ -165,7 +169,8 @@ function min_elt(_param) {
       continue ;
     }
     throw {
-          RE_EXN_ID: "Not_found"
+          RE_EXN_ID: "Not_found",
+          Error: new Error()
         };
   };
 }
@@ -197,7 +202,8 @@ function max_elt(_param) {
       continue ;
     }
     throw {
-          RE_EXN_ID: "Not_found"
+          RE_EXN_ID: "Not_found",
+          Error: new Error()
         };
   };
 }
@@ -228,7 +234,8 @@ function remove_min_elt(param) {
   }
   throw {
         RE_EXN_ID: "Invalid_argument",
-        _1: "Set.remove_min_elt"
+        _1: "Set.remove_min_elt",
+        Error: new Error()
       };
 }
 
@@ -646,7 +653,8 @@ function find(x, _param) {
       continue ;
     }
     throw {
-          RE_EXN_ID: "Not_found"
+          RE_EXN_ID: "Not_found",
+          Error: new Error()
         };
   };
 }
@@ -679,7 +687,8 @@ function find_first(f, _param) {
       continue ;
     }
     throw {
-          RE_EXN_ID: "Not_found"
+          RE_EXN_ID: "Not_found",
+          Error: new Error()
         };
   };
 }
@@ -743,7 +752,8 @@ function find_last(f, _param) {
       continue ;
     }
     throw {
-          RE_EXN_ID: "Not_found"
+          RE_EXN_ID: "Not_found",
+          Error: new Error()
         };
   };
 }
@@ -930,7 +940,8 @@ function of_list(l) {
                 "set.ml",
                 510,
                 18
-              ]
+              ],
+              Error: new Error()
             };
       };
       return sub(List.length(l$1), l$1)[0];

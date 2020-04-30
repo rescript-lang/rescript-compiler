@@ -157,12 +157,14 @@ function bal(l, x, d, r) {
       }
       throw {
             RE_EXN_ID: "Invalid_argument",
-            _1: "Map.bal"
+            _1: "Map.bal",
+            Error: new Error()
           };
     }
     throw {
           RE_EXN_ID: "Invalid_argument",
-          _1: "Map.bal"
+          _1: "Map.bal",
+          Error: new Error()
         };
   }
   if (hr <= (hl + 2 | 0)) {
@@ -187,12 +189,14 @@ function bal(l, x, d, r) {
     }
     throw {
           RE_EXN_ID: "Invalid_argument",
-          _1: "Map.bal"
+          _1: "Map.bal",
+          Error: new Error()
         };
   }
   throw {
         RE_EXN_ID: "Invalid_argument",
-        _1: "Map.bal"
+        _1: "Map.bal",
+        Error: new Error()
       };
 }
 
@@ -260,7 +264,8 @@ function find(x, _param) {
       continue ;
     }
     throw {
-          RE_EXN_ID: "Not_found"
+          RE_EXN_ID: "Not_found",
+          Error: new Error()
         };
   };
 }
@@ -299,7 +304,8 @@ function find_first(f, _param) {
       continue ;
     }
     throw {
-          RE_EXN_ID: "Not_found"
+          RE_EXN_ID: "Not_found",
+          Error: new Error()
         };
   };
 }
@@ -375,7 +381,8 @@ function find_last(f, _param) {
       continue ;
     }
     throw {
-          RE_EXN_ID: "Not_found"
+          RE_EXN_ID: "Not_found",
+          Error: new Error()
         };
   };
 }
@@ -462,7 +469,8 @@ function min_binding(_param) {
       continue ;
     }
     throw {
-          RE_EXN_ID: "Not_found"
+          RE_EXN_ID: "Not_found",
+          Error: new Error()
         };
   };
 }
@@ -500,7 +508,8 @@ function max_binding(_param) {
       continue ;
     }
     throw {
-          RE_EXN_ID: "Not_found"
+          RE_EXN_ID: "Not_found",
+          Error: new Error()
         };
   };
 }
@@ -534,7 +543,8 @@ function remove_min_binding(param) {
   }
   throw {
         RE_EXN_ID: "Invalid_argument",
-        _1: "Map.remove_min_elt"
+        _1: "Map.remove_min_elt",
+        Error: new Error()
       };
 }
 
@@ -835,7 +845,8 @@ function merge$1(f, s1, s2) {
           "map.ml",
           393,
           10
-        ]
+        ],
+        Error: new Error()
       };
 }
 
@@ -1133,14 +1144,16 @@ function compute_update_sequences(all_tickers) {
                         if (typeof x === "number") {
                           throw {
                                 RE_EXN_ID: "Failure",
-                                _1: "All nodes should be ranked"
+                                _1: "All nodes should be ranked",
+                                Error: new Error()
                               };
                         }
                         var y = rhs.rank;
                         if (typeof y === "number") {
                           throw {
                                 RE_EXN_ID: "Failure",
-                                _1: "All nodes should be ranked"
+                                _1: "All nodes should be ranked",
+                                Error: new Error()
                               };
                         }
                         return Caml_primitive.caml_int_compare(x[0], y[0]);
@@ -1169,7 +1182,8 @@ function process_quote(ticker_map, new_ticker, new_value) {
                 }
                 throw {
                       RE_EXN_ID: "Failure",
-                      _1: "Only single Market ticker should be udpated upon a new quote"
+                      _1: "Only single Market ticker should be udpated upon a new quote",
+                      Error: new Error()
                     };
               }), update_sequence);
 }
@@ -1200,7 +1214,8 @@ function process_input_line(ticker_map, all_tickers, line) {
               if (match$1[1]) {
                 throw {
                       RE_EXN_ID: "Failure",
-                      _1: "Invalid input line"
+                      _1: "Invalid input line",
+                      Error: new Error()
                     };
               }
               var ticker_map$1 = ticker_map !== undefined ? Caml_option.valFromOption(ticker_map) : compute_update_sequences(all_tickers);
@@ -1213,12 +1228,14 @@ function process_input_line(ticker_map, all_tickers, line) {
             }
             throw {
                   RE_EXN_ID: "Failure",
-                  _1: "Invalid input line"
+                  _1: "Invalid input line",
+                  Error: new Error()
                 };
           }
           throw {
                 RE_EXN_ID: "Failure",
-                _1: "Invalid input line"
+                _1: "Invalid input line",
+                Error: new Error()
               };
       case "R" :
           var match$2 = tokens[1];
@@ -1235,7 +1252,8 @@ function process_input_line(ticker_map, all_tickers, line) {
                         if (match$5[1]) {
                           throw {
                                 RE_EXN_ID: "Failure",
-                                _1: "Invalid input line"
+                                _1: "Invalid input line",
+                                Error: new Error()
                               };
                         }
                         return /* tuple */[
@@ -1248,12 +1266,14 @@ function process_input_line(ticker_map, all_tickers, line) {
                       }
                       throw {
                             RE_EXN_ID: "Failure",
-                            _1: "Invalid input line"
+                            _1: "Invalid input line",
+                            Error: new Error()
                           };
                     }
                     throw {
                           RE_EXN_ID: "Failure",
-                          _1: "Invalid input line"
+                          _1: "Invalid input line",
+                          Error: new Error()
                         };
                 case "-" :
                     var match$6 = match$3[1];
@@ -1263,7 +1283,8 @@ function process_input_line(ticker_map, all_tickers, line) {
                         if (match$7[1]) {
                           throw {
                                 RE_EXN_ID: "Failure",
-                                _1: "Invalid input line"
+                                _1: "Invalid input line",
+                                Error: new Error()
                               };
                         }
                         return /* tuple */[
@@ -1276,18 +1297,21 @@ function process_input_line(ticker_map, all_tickers, line) {
                       }
                       throw {
                             RE_EXN_ID: "Failure",
-                            _1: "Invalid input line"
+                            _1: "Invalid input line",
+                            Error: new Error()
                           };
                     }
                     throw {
                           RE_EXN_ID: "Failure",
-                          _1: "Invalid input line"
+                          _1: "Invalid input line",
+                          Error: new Error()
                         };
                 case "S" :
                     if (match$3[1]) {
                       throw {
                             RE_EXN_ID: "Failure",
-                            _1: "Invalid input line"
+                            _1: "Invalid input line",
+                            Error: new Error()
                           };
                     }
                     return /* tuple */[
@@ -1305,31 +1329,36 @@ function process_input_line(ticker_map, all_tickers, line) {
                 default:
                   throw {
                         RE_EXN_ID: "Failure",
-                        _1: "Invalid input line"
+                        _1: "Invalid input line",
+                        Error: new Error()
                       };
               }
             } else {
               throw {
                     RE_EXN_ID: "Failure",
-                    _1: "Invalid input line"
+                    _1: "Invalid input line",
+                    Error: new Error()
                   };
             }
           } else {
             throw {
                   RE_EXN_ID: "Failure",
-                  _1: "Invalid input line"
+                  _1: "Invalid input line",
+                  Error: new Error()
                 };
           }
       default:
         throw {
               RE_EXN_ID: "Failure",
-              _1: "Invalid input line"
+              _1: "Invalid input line",
+              Error: new Error()
             };
     }
   } else {
     throw {
           RE_EXN_ID: "Failure",
-          _1: "Invalid input line"
+          _1: "Invalid input line",
+          Error: new Error()
         };
   }
 }

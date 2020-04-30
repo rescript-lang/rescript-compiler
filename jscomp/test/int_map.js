@@ -51,12 +51,14 @@ function bal(l, x, d, r) {
       }
       throw {
             RE_EXN_ID: "Invalid_argument",
-            _1: "Map.bal"
+            _1: "Map.bal",
+            Error: new Error()
           };
     }
     throw {
           RE_EXN_ID: "Invalid_argument",
-          _1: "Map.bal"
+          _1: "Map.bal",
+          Error: new Error()
         };
   }
   if (hr <= (hl + 2 | 0)) {
@@ -81,12 +83,14 @@ function bal(l, x, d, r) {
     }
     throw {
           RE_EXN_ID: "Invalid_argument",
-          _1: "Map.bal"
+          _1: "Map.bal",
+          Error: new Error()
         };
   }
   throw {
         RE_EXN_ID: "Invalid_argument",
-        _1: "Map.bal"
+        _1: "Map.bal",
+        Error: new Error()
       };
 }
 
@@ -154,7 +158,8 @@ function find(x, _param) {
       continue ;
     }
     throw {
-          RE_EXN_ID: "Not_found"
+          RE_EXN_ID: "Not_found",
+          Error: new Error()
         };
   };
 }
@@ -193,7 +198,8 @@ function find_first(f, _param) {
       continue ;
     }
     throw {
-          RE_EXN_ID: "Not_found"
+          RE_EXN_ID: "Not_found",
+          Error: new Error()
         };
   };
 }
@@ -269,7 +275,8 @@ function find_last(f, _param) {
       continue ;
     }
     throw {
-          RE_EXN_ID: "Not_found"
+          RE_EXN_ID: "Not_found",
+          Error: new Error()
         };
   };
 }
@@ -356,7 +363,8 @@ function min_binding(_param) {
       continue ;
     }
     throw {
-          RE_EXN_ID: "Not_found"
+          RE_EXN_ID: "Not_found",
+          Error: new Error()
         };
   };
 }
@@ -394,7 +402,8 @@ function max_binding(_param) {
       continue ;
     }
     throw {
-          RE_EXN_ID: "Not_found"
+          RE_EXN_ID: "Not_found",
+          Error: new Error()
         };
   };
 }
@@ -428,7 +437,8 @@ function remove_min_binding(param) {
   }
   throw {
         RE_EXN_ID: "Invalid_argument",
-        _1: "Map.remove_min_elt"
+        _1: "Map.remove_min_elt",
+        Error: new Error()
       };
 }
 
@@ -729,7 +739,8 @@ function merge$1(f, s1, s2) {
           "map.ml",
           393,
           10
-        ]
+        ],
+        Error: new Error()
       };
 }
 

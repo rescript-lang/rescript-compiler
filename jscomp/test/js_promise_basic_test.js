@@ -38,7 +38,8 @@ function assert_bool(b) {
   }
   throw {
         RE_EXN_ID: "Invalid_argument",
-        _1: "Assertion Failure."
+        _1: "Assertion Failure.",
+        Error: new Error()
       };
 }
 
@@ -49,7 +50,8 @@ function fail(param) {
           "js_promise_basic_test.ml",
           19,
           2
-        ]
+        ],
+        Error: new Error()
       };
 }
 
@@ -82,7 +84,8 @@ function assertIsNotFound(x) {
           "js_promise_basic_test.ml",
           36,
           9
-        ]
+        ],
+        Error: new Error()
       };
 }
 
@@ -152,7 +155,8 @@ function orElseRejectedRejectTest(param) {
                         "js_promise_basic_test.ml",
                         77,
                         18
-                      ]
+                      ],
+                      Error: new Error()
                     };
               }));
 }

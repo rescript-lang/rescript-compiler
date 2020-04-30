@@ -7,7 +7,8 @@ throw {
         "gpr_2474.ml",
         6,
         4
-      ]
+      ],
+      Error: new Error()
     };
 
 exports.coordinates = coordinates;

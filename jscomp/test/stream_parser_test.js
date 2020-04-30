@@ -38,7 +38,8 @@ function parse(token) {
             if (match.tag) {
               throw {
                     RE_EXN_ID: Parse_error,
-                    _1: "Unbalanced parens"
+                    _1: "Unbalanced parens",
+                    Error: new Error()
                   };
             }
             if (match[0] === ")") {
@@ -46,13 +47,15 @@ function parse(token) {
             }
             throw {
                   RE_EXN_ID: Parse_error,
-                  _1: "Unbalanced parens"
+                  _1: "Unbalanced parens",
+                  Error: new Error()
                 };
           }
           Queue.push(n, look_ahead);
           throw {
                 RE_EXN_ID: Parse_error,
-                _1: "unexpected token"
+                _1: "unexpected token",
+                Error: new Error()
               };
       case /* Int */2 :
           return n[0];
@@ -60,7 +63,8 @@ function parse(token) {
         Queue.push(n, look_ahead);
         throw {
               RE_EXN_ID: Parse_error,
-              _1: "unexpected token"
+              _1: "unexpected token",
+              Error: new Error()
             };
     }
   };
@@ -183,7 +187,8 @@ function l_parse(token) {
             if (t.tag) {
               throw {
                     RE_EXN_ID: Parse_error,
-                    _1: "Unbalanced )"
+                    _1: "Unbalanced )",
+                    Error: new Error()
                   };
             }
             if (t[0] === ")") {
@@ -191,19 +196,22 @@ function l_parse(token) {
             }
             throw {
                   RE_EXN_ID: Parse_error,
-                  _1: "Unbalanced )"
+                  _1: "Unbalanced )",
+                  Error: new Error()
                 };
           }
           throw {
                 RE_EXN_ID: Parse_error,
-                _1: "Unexpected token"
+                _1: "Unexpected token",
+                Error: new Error()
               };
       case /* Int */2 :
           return i[0];
       default:
         throw {
               RE_EXN_ID: Parse_error,
-              _1: "Unexpected token"
+              _1: "Unexpected token",
+              Error: new Error()
             };
     }
   };

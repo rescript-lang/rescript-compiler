@@ -55,7 +55,8 @@ function compare(context, state, _a, _b) {
                         "gpr_1698_test.ml",
                         45,
                         10
-                      ]
+                      ],
+                      Error: new Error()
                     };
             case /* Pow */3 :
             case /* Gcd */5 :
@@ -80,7 +81,8 @@ function compare(context, state, _a, _b) {
                         "gpr_1698_test.ml",
                         45,
                         10
-                      ]
+                      ],
+                      Error: new Error()
                     };
             case /* Neg */1 :
                 exit$3 = 5;

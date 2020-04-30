@@ -9,7 +9,8 @@ function peek_queue(param) {
           "format_regression.ml",
           10,
           19
-        ]
+        ],
+        Error: new Error()
       };
 }
 
@@ -20,7 +21,8 @@ function int_of_size(param) {
           "format_regression.ml",
           11,
           20
-        ]
+        ],
+        Error: new Error()
       };
 }
 
@@ -31,7 +33,8 @@ function take_queue(param) {
           "format_regression.ml",
           12,
           19
-        ]
+        ],
+        Error: new Error()
       };
 }
 
@@ -42,7 +45,8 @@ function format_pp_token(param, param$1) {
           "format_regression.ml",
           13,
           26
-        ]
+        ],
+        Error: new Error()
       };
 }
 

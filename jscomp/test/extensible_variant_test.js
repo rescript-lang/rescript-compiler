@@ -30,7 +30,8 @@ function to_int(x) {
           "extensible_variant_test.ml",
           16,
           9
-        ]
+        ],
+        Error: new Error()
       };
 }
 

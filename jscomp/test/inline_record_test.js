@@ -69,7 +69,8 @@ if (A0 === A0) {
           "inline_record_test.ml",
           51,
           52
-        ]
+        ],
+        Error: new Error()
       };
 }
 
@@ -107,7 +108,8 @@ if (v4.tag) {
           "inline_record_test.ml",
           69,
           48
-        ]
+        ],
+        Error: new Error()
       };
 }
 
@@ -126,7 +128,8 @@ if (v5.tag) {
           "inline_record_test.ml",
           71,
           48
-        ]
+        ],
+        Error: new Error()
       };
 }
 
@@ -165,7 +168,8 @@ if (v6.RE_EXN_ID === A4) {
           "inline_record_test.ml",
           87,
           49
-        ]
+        ],
+        Error: new Error()
       };
 }
 

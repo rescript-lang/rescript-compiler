@@ -22,7 +22,8 @@ function starts_with(xs, prefix, p) {
     for(var i = 0; i < len2; ++i){
       if (!Curry._2(p, Caml_array.caml_array_get(xs, i), Caml_array.caml_array_get(prefix, i))) {
         throw {
-              RE_EXN_ID: H
+              RE_EXN_ID: H,
+              Error: new Error()
             };
       }
       

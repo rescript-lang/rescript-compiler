@@ -73,7 +73,8 @@ function tl_exn(x) {
           "recursive_records_test.ml",
           52,
           11
-        ]
+        ],
+        Error: new Error()
       };
 }
 

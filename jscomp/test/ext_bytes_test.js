@@ -137,7 +137,8 @@ function starts_with(xs, prefix, p) {
     for(var i = 0; i < len2; ++i){
       if (!Curry._2(p, Caml_bytes.get(xs, i), Caml_bytes.get(prefix, i))) {
         throw {
-              RE_EXN_ID: H
+              RE_EXN_ID: H,
+              Error: new Error()
             };
       }
       

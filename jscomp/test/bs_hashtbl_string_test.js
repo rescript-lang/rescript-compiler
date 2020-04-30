@@ -58,7 +58,8 @@ function bench(param) {
               "bs_hashtbl_string_test.ml",
               50,
               4
-            ]
+            ],
+            Error: new Error()
           };
     }
     
@@ -79,7 +80,8 @@ function bench2(m) {
               "bs_hashtbl_string_test.ml",
               76,
               4
-            ]
+            ],
+            Error: new Error()
           };
     }
     
@@ -96,7 +98,8 @@ function bench2(m) {
           "bs_hashtbl_string_test.ml",
           82,
           2
-        ]
+        ],
+        Error: new Error()
       };
 }
 
@@ -115,7 +118,8 @@ function bench3(m) {
               "bs_hashtbl_string_test.ml",
               98,
               4
-            ]
+            ],
+            Error: new Error()
           };
     }
     
@@ -132,7 +136,8 @@ function bench3(m) {
           "bs_hashtbl_string_test.ml",
           105,
           2
-        ]
+        ],
+        Error: new Error()
       };
 }
 
@@ -151,7 +156,8 @@ function bench4(param) {
               "bs_hashtbl_string_test.ml",
               118,
               4
-            ]
+            ],
+            Error: new Error()
           };
     }
     
@@ -168,7 +174,8 @@ function bench4(param) {
           "bs_hashtbl_string_test.ml",
           124,
           2
-        ]
+        ],
+        Error: new Error()
       };
 }
 
@@ -188,7 +195,8 @@ function bench5(param) {
               "bs_hashtbl_string_test.ml",
               138,
               6
-            ]
+            ],
+            Error: new Error()
           };
     }
     
@@ -208,7 +216,8 @@ function bench5(param) {
           "bs_hashtbl_string_test.ml",
           144,
           2
-        ]
+        ],
+        Error: new Error()
       };
 }
 
@@ -225,7 +234,8 @@ function bench6(param) {
               "bs_hashtbl_string_test.ml",
               156,
               4
-            ]
+            ],
+            Error: new Error()
           };
     }
     
@@ -242,7 +252,8 @@ function bench6(param) {
           "bs_hashtbl_string_test.ml",
           162,
           2
-        ]
+        ],
+        Error: new Error()
       };
 }
 
@@ -259,7 +270,8 @@ function bench7(param) {
               "bs_hashtbl_string_test.ml",
               181,
               4
-            ]
+            ],
+            Error: new Error()
           };
     }
     
@@ -276,7 +288,8 @@ function bench7(param) {
           "bs_hashtbl_string_test.ml",
           192,
           2
-        ]
+        ],
+        Error: new Error()
       };
 }
 

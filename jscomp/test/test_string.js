@@ -16,7 +16,8 @@ function f(param) {
               "test_string.ml",
               4,
               18
-            ]
+            ],
+            Error: new Error()
           };
   }
 }

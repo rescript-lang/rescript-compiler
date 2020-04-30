@@ -12,7 +12,8 @@ if (match !== undefined) {
             "gpr_3980_test.ml",
             16,
             10
-          ]
+          ],
+          Error: new Error()
         };
   }
   var match$1 = 1;
@@ -24,7 +25,8 @@ if (match !== undefined) {
               "gpr_3980_test.ml",
               14,
               12
-            ]
+            ],
+            Error: new Error()
           };
     }
     ({
@@ -40,7 +42,8 @@ if (match !== undefined) {
           "gpr_3980_test.ml",
           16,
           10
-        ]
+        ],
+        Error: new Error()
       };
 }
 

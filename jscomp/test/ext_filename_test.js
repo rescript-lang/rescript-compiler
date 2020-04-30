@@ -386,7 +386,8 @@ if (Sys.unix) {
   var s = "Unknown OS : " + Sys.os_type;
   throw {
         RE_EXN_ID: "Failure",
-        _1: s
+        _1: s,
+        Error: new Error()
       };
 }
 

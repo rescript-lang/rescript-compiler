@@ -487,7 +487,8 @@ function get_exn(e) {
   }
   throw {
         RE_EXN_ID: "Failure",
-        _1: "CCSexp.Traverse.get_exn"
+        _1: "CCSexp.Traverse.get_exn",
+        Error: new Error()
       };
 }
 

@@ -53,7 +53,8 @@ function utf8_decode(strm) {
                 if (typeof c === "number") {
                   throw {
                         RE_EXN_ID: Stream.$$Error,
-                        _1: "Invalid byte"
+                        _1: "Invalid byte",
+                        Error: new Error()
                       };
                 }
                 switch (c.tag | 0) {
@@ -62,7 +63,8 @@ function utf8_decode(strm) {
                   case /* Cont */1 :
                       throw {
                             RE_EXN_ID: Stream.$$Error,
-                            _1: "Unexpected continuation byte"
+                            _1: "Unexpected continuation byte",
+                            Error: new Error()
                           };
                   case /* Leading */2 :
                       var follow = function (strm, _n, _c) {
@@ -76,7 +78,8 @@ function utf8_decode(strm) {
                           if (typeof cc === "number") {
                             throw {
                                   RE_EXN_ID: Stream.$$Error,
-                                  _1: "Continuation byte expected"
+                                  _1: "Continuation byte expected",
+                                  Error: new Error()
                                 };
                           }
                           if (cc.tag === /* Cont */1) {
@@ -86,7 +89,8 @@ function utf8_decode(strm) {
                           }
                           throw {
                                 RE_EXN_ID: Stream.$$Error,
-                                _1: "Continuation byte expected"
+                                _1: "Continuation byte expected",
+                                Error: new Error()
                               };
                         };
                       };
@@ -119,7 +123,8 @@ function decode(bytes, offset) {
   if (typeof c === "number") {
     throw {
           RE_EXN_ID: "Invalid_argument",
-          _1: "decode"
+          _1: "decode",
+          Error: new Error()
         };
   }
   switch (c.tag | 0) {
@@ -131,7 +136,8 @@ function decode(bytes, offset) {
     case /* Cont */1 :
         throw {
               RE_EXN_ID: "Invalid_argument",
-              _1: "decode"
+              _1: "decode",
+              Error: new Error()
             };
     case /* Leading */2 :
         var _n = c[0];
@@ -151,7 +157,8 @@ function decode(bytes, offset) {
           if (typeof cc === "number") {
             throw {
                   RE_EXN_ID: "Invalid_argument",
-                  _1: "decode"
+                  _1: "decode",
+                  Error: new Error()
                 };
           }
           if (cc.tag === /* Cont */1) {
@@ -162,7 +169,8 @@ function decode(bytes, offset) {
           }
           throw {
                 RE_EXN_ID: "Invalid_argument",
-                _1: "decode"
+                _1: "decode",
+                Error: new Error()
               };
         };
     

@@ -711,7 +711,8 @@ function verify_read(c) {
           "tscanf_test.ml",
           174,
           2
-        ]
+        ],
+        Error: new Error()
       };
 }
 
@@ -1423,7 +1424,8 @@ function scan_elems$1(ib, accu) {
                 if (c !== 93) {
                   throw {
                         RE_EXN_ID: "Failure",
-                        _1: "scan_elems"
+                        _1: "scan_elems",
+                        Error: new Error()
                       };
                 }
                 return List.rev(/* :: */[
@@ -1507,7 +1509,8 @@ function scan_elems$2(ib, accu) {
                   console.log(Caml_bytes.bytes_to_string(Bytes.make(1, c)));
                   throw {
                         RE_EXN_ID: "Failure",
-                        _1: "scan_elems"
+                        _1: "scan_elems",
+                        Error: new Error()
                       };
                 }));
   }
@@ -1719,7 +1722,8 @@ function scan_rest(ib, accu) {
                 if (c !== 93) {
                   throw {
                         RE_EXN_ID: "Failure",
-                        _1: "scan_rest"
+                        _1: "scan_rest",
+                        Error: new Error()
                       };
                 }
                 return accu;
@@ -1740,7 +1744,8 @@ function scan_elems$4(ib, accu) {
                 if (c !== 91) {
                   throw {
                         RE_EXN_ID: "Failure",
-                        _1: "scan_elems"
+                        _1: "scan_elems",
+                        Error: new Error()
                       };
                 }
                 if (accu === /* [] */0) {
@@ -1780,7 +1785,8 @@ function scan_elems$4(ib, accu) {
                 }
                 throw {
                       RE_EXN_ID: "Failure",
-                      _1: "scan_elems"
+                      _1: "scan_elems",
+                      Error: new Error()
                     };
               }));
 }
@@ -1904,7 +1910,8 @@ function scan_rest$1(ib, accu) {
                                                       ]);
                                                   throw {
                                                         RE_EXN_ID: "Failure",
-                                                        _1: s
+                                                        _1: s,
+                                                        Error: new Error()
                                                       };
                                               }
                                             }));
@@ -3719,7 +3726,8 @@ function next_char(ob, param) {
   var len = s.length;
   if (len === 0) {
     throw {
-          RE_EXN_ID: "End_of_file"
+          RE_EXN_ID: "End_of_file",
+          Error: new Error()
         };
   }
   var c = Caml_string.get(s, 0);

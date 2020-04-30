@@ -75,7 +75,8 @@ function fatal_error(msg) {
   Pervasives.prerr_string(">> Fatal error: ");
   console.error(msg);
   throw {
-        RE_EXN_ID: Fatal_error
+        RE_EXN_ID: Fatal_error,
+        Error: new Error()
       };
 }
 
@@ -197,7 +198,8 @@ function style_of_tag(s) {
         return cur_styles.contents.warning;
     default:
       throw {
-            RE_EXN_ID: "Not_found"
+            RE_EXN_ID: "Not_found",
+            Error: new Error()
           };
   }
 }
@@ -603,7 +605,8 @@ function letter(param) {
               "warnings.ml",
               176,
               9
-            ]
+            ],
+            Error: new Error()
           };
   }
 }
@@ -668,7 +671,8 @@ function parse_opt(error, active, flags, s) {
     if (n2 < n1) {
       throw {
             RE_EXN_ID: Arg.Bad,
-            _1: "Ill-formed list of warnings"
+            _1: "Ill-formed list of warnings",
+            Error: new Error()
           };
     }
     return /* tuple */[
@@ -689,7 +693,8 @@ function parse_opt(error, active, flags, s) {
           if (c >= 123) {
             throw {
                   RE_EXN_ID: Arg.Bad,
-                  _1: "Ill-formed list of warnings"
+                  _1: "Ill-formed list of warnings",
+                  Error: new Error()
                 };
           }
           List.iter(clear, letter(Caml_string.get(s, i)));
@@ -699,7 +704,8 @@ function parse_opt(error, active, flags, s) {
         if (c >= 91) {
           throw {
                 RE_EXN_ID: Arg.Bad,
-                _1: "Ill-formed list of warnings"
+                _1: "Ill-formed list of warnings",
+                Error: new Error()
               };
         }
         List.iter(set, letter(Char.lowercase(Caml_string.get(s, i))));
@@ -712,7 +718,8 @@ function parse_opt(error, active, flags, s) {
         }
         throw {
               RE_EXN_ID: Arg.Bad,
-              _1: "Ill-formed list of warnings"
+              _1: "Ill-formed list of warnings",
+              Error: new Error()
             };
       }
       if (c >= 43) {
@@ -722,7 +729,8 @@ function parse_opt(error, active, flags, s) {
           case 1 :
               throw {
                     RE_EXN_ID: Arg.Bad,
-                    _1: "Ill-formed list of warnings"
+                    _1: "Ill-formed list of warnings",
+                    Error: new Error()
                   };
           case 2 :
               return loop_letter_num(clear, i + 1 | 0);
@@ -731,7 +739,8 @@ function parse_opt(error, active, flags, s) {
       } else {
         throw {
               RE_EXN_ID: Arg.Bad,
-              _1: "Ill-formed list of warnings"
+              _1: "Ill-formed list of warnings",
+              Error: new Error()
             };
       }
     };
@@ -740,7 +749,8 @@ function parse_opt(error, active, flags, s) {
     if (i >= s.length) {
       throw {
             RE_EXN_ID: Arg.Bad,
-            _1: "Ill-formed list of warnings"
+            _1: "Ill-formed list of warnings",
+            Error: new Error()
           };
     }
     var match = Caml_string.get(s, i);
@@ -749,7 +759,8 @@ function parse_opt(error, active, flags, s) {
         if (match >= 123) {
           throw {
                 RE_EXN_ID: Arg.Bad,
-                _1: "Ill-formed list of warnings"
+                _1: "Ill-formed list of warnings",
+                Error: new Error()
               };
         }
         List.iter(myset, letter(Caml_string.get(s, i)));
@@ -758,7 +769,8 @@ function parse_opt(error, active, flags, s) {
       if (match >= 91) {
         throw {
               RE_EXN_ID: Arg.Bad,
-              _1: "Ill-formed list of warnings"
+              _1: "Ill-formed list of warnings",
+              Error: new Error()
             };
       }
       List.iter(myset, letter(Char.lowercase(Caml_string.get(s, i))));
@@ -767,7 +779,8 @@ function parse_opt(error, active, flags, s) {
     if (match > 57 || match < 48) {
       throw {
             RE_EXN_ID: Arg.Bad,
-            _1: "Ill-formed list of warnings"
+            _1: "Ill-formed list of warnings",
+            Error: new Error()
           };
     }
     var match$1 = get_range(i);
@@ -870,7 +883,8 @@ function message(s) {
                   "warnings.ml",
                   283,
                   26
-                ]
+                ],
+                Error: new Error()
               };
       case /* Partial_match */3 :
           var s$2 = s[0];
@@ -907,7 +921,8 @@ function message(s) {
                   "warnings.ml",
                   303,
                   37
-                ]
+                ],
+                Error: new Error()
               };
       case /* Implicit_public_methods */6 :
           return "the following private methods were made public implicitly:\n " + ($$String.concat(" ", s[0]) + ".");
@@ -1022,7 +1037,8 @@ function message(s) {
                   "warnings.ml",
                   365,
                   39
-                ]
+                ],
+                Error: new Error()
               };
           break;
       case /* Ambiguous_name */24 :
@@ -1039,7 +1055,8 @@ function message(s) {
                   "warnings.ml",
                   374,
                   36
-                ]
+                ],
+                Error: new Error()
               };
           break;
       case /* Disambiguated_name */25 :
@@ -1262,7 +1279,8 @@ function highlight_terminfo(ppf, num_lines, lb, locs) {
   var pos0 = -lb.lex_abs_pos | 0;
   if (pos0 < 0) {
     throw {
-          RE_EXN_ID: Pervasives.Exit
+          RE_EXN_ID: Pervasives.Exit,
+          Error: new Error()
         };
   }
   var lines = num_loc_lines.contents;
@@ -1274,7 +1292,8 @@ function highlight_terminfo(ppf, num_lines, lb, locs) {
   }
   if (lines >= (num_lines - 2 | 0)) {
     throw {
-          RE_EXN_ID: Pervasives.Exit
+          RE_EXN_ID: Pervasives.Exit,
+          Error: new Error()
         };
   }
   Caml_io.caml_ml_flush(Pervasives.stdout);
@@ -1313,7 +1332,8 @@ function highlight_dumb(ppf, lb, loc) {
   var pos0 = -lb.lex_abs_pos | 0;
   if (pos0 < 0) {
     throw {
-          RE_EXN_ID: Pervasives.Exit
+          RE_EXN_ID: Pervasives.Exit,
+          Error: new Error()
         };
   }
   var end_pos = (lb.lex_buffer_len - pos0 | 0) - 1 | 0;
@@ -3687,7 +3707,8 @@ function mkexp_constraint(e, param) {
           "parser.mly",
           153,
           18
-        ]
+        ],
+        Error: new Error()
       };
 }
 
@@ -3709,7 +3730,8 @@ function unclosed(opening_name, opening_num, closing_name, closing_num) {
             opening_name,
             rhs_loc(closing_num),
             closing_name
-          ])
+          ]),
+        Error: new Error()
       };
 }
 
@@ -3719,7 +3741,8 @@ function expecting(pos, nonterm) {
         _1: /* Expecting */Block.__(1, [
             rhs_loc(pos),
             nonterm
-          ])
+          ]),
+        Error: new Error()
       };
 }
 
@@ -3729,7 +3752,8 @@ function not_expecting(pos, nonterm) {
         _1: /* Not_expecting */Block.__(2, [
             rhs_loc(pos),
             nonterm
-          ])
+          ]),
+        Error: new Error()
       };
 }
 
@@ -3783,7 +3807,8 @@ function check_variable(vl, loc, v) {
         _1: /* Variable_in_scope */Block.__(4, [
             loc,
             v
-          ])
+          ]),
+        Error: new Error()
       };
 }
 
@@ -4153,7 +4178,8 @@ var yyact = [
   (function (param) {
       throw {
             RE_EXN_ID: "Failure",
-            _1: "parser"
+            _1: "parser",
+            Error: new Error()
           };
     }),
   (function (__caml_parser_env) {
@@ -4173,7 +4199,8 @@ var yyact = [
     }),
   (function (__caml_parser_env) {
       throw {
-            RE_EXN_ID: "End_of_file"
+            RE_EXN_ID: "End_of_file",
+            Error: new Error()
           };
     }),
   (function (__caml_parser_env) {
@@ -4507,7 +4534,8 @@ var yyact = [
                 _1: /* Not_expecting */Block.__(2, [
                     lbs.lbs_loc,
                     "attributes"
-                  ])
+                  ]),
+                Error: new Error()
               };
         }
         var bindings$1 = List.map((function (lb) {
@@ -5011,7 +5039,8 @@ var yyact = [
                       _1: /* Not_expecting */Block.__(2, [
                           lb.lb_loc,
                           "item attribute"
-                        ])
+                        ]),
+                      Error: new Error()
                     };
               }
               return mk$17(lb.lb_loc, undefined, undefined, undefined, lb.lb_pattern, lb.lb_expression);
@@ -5022,7 +5051,8 @@ var yyact = [
               _1: /* Not_expecting */Block.__(2, [
                   _1.lbs_loc,
                   "extension"
-                ])
+                ]),
+              Error: new Error()
             };
       }
       if (_1.lbs_attributes !== /* [] */0) {
@@ -5031,7 +5061,8 @@ var yyact = [
               _1: /* Not_expecting */Block.__(2, [
                   _1.lbs_loc,
                   "attributes"
-                ])
+                ]),
+              Error: new Error()
             };
       }
       return mkclass(/* Pcl_let */Block.__(4, [
@@ -5184,7 +5215,8 @@ var yyact = [
       var _6 = Parsing.peek_val(__caml_parser_env, 0);
       if (_1 === /* Override */0) {
         throw {
-              RE_EXN_ID: Escape_error
+              RE_EXN_ID: Escape_error,
+              Error: new Error()
             };
       }
       return /* tuple */[
@@ -5251,7 +5283,8 @@ var yyact = [
       var _6 = Parsing.peek_val(__caml_parser_env, 0);
       if (_1 === /* Override */0) {
         throw {
-              RE_EXN_ID: Escape_error
+              RE_EXN_ID: Escape_error,
+              Error: new Error()
             };
       }
       return /* tuple */[
@@ -5270,7 +5303,8 @@ var yyact = [
       var _6 = Parsing.peek_val(__caml_parser_env, 0);
       if (_1 === /* Override */0) {
         throw {
-              RE_EXN_ID: Escape_error
+              RE_EXN_ID: Escape_error,
+              Error: new Error()
             };
       }
       return /* tuple */[
@@ -5766,7 +5800,8 @@ var yyact = [
                       _1: /* Not_expecting */Block.__(2, [
                           lb.lb_loc,
                           "item attribute"
-                        ])
+                        ]),
+                      Error: new Error()
                     };
               }
               return mk$17(lb.lb_loc, undefined, undefined, undefined, lb.lb_pattern, lb.lb_expression);
@@ -5870,7 +5905,8 @@ var yyact = [
       Parsing.peek_val(__caml_parser_env, 3);
       Parsing.peek_val(__caml_parser_env, 2);
       throw {
-            RE_EXN_ID: Escape_error
+            RE_EXN_ID: Escape_error,
+            Error: new Error()
           };
     }),
   (function (__caml_parser_env) {
@@ -7244,12 +7280,14 @@ var yyact = [
     }),
   (function (__caml_parser_env) {
       throw {
-            RE_EXN_ID: Escape_error
+            RE_EXN_ID: Escape_error,
+            Error: new Error()
           };
     }),
   (function (__caml_parser_env) {
       throw {
-            RE_EXN_ID: Escape_error
+            RE_EXN_ID: Escape_error,
+            Error: new Error()
           };
     }),
   (function (__caml_parser_env) {
@@ -8301,13 +8339,15 @@ var yyact = [
       if (_2) {
         if (_2[1]) {
           throw {
-                RE_EXN_ID: Parsing.Parse_error
+                RE_EXN_ID: Parsing.Parse_error,
+                Error: new Error()
               };
         }
         return _2[0];
       }
       throw {
-            RE_EXN_ID: Parsing.Parse_error
+            RE_EXN_ID: Parsing.Parse_error,
+            Error: new Error()
           };
     }),
   (function (__caml_parser_env) {
@@ -8318,13 +8358,15 @@ var yyact = [
       if (_2) {
         if (_2[1]) {
           throw {
-                RE_EXN_ID: Parsing.Parse_error
+                RE_EXN_ID: Parsing.Parse_error,
+                Error: new Error()
               };
         }
         return _2[0];
       }
       throw {
-            RE_EXN_ID: Parsing.Parse_error
+            RE_EXN_ID: Parsing.Parse_error,
+            Error: new Error()
           };
     }),
   (function (__caml_parser_env) {
@@ -8992,7 +9034,8 @@ var yyact = [
       }
       throw {
             RE_EXN_ID: $$Error$1,
-            _1: /* Applicative_path */Block.__(3, [symbol_rloc(undefined)])
+            _1: /* Applicative_path */Block.__(3, [symbol_rloc(undefined)]),
+            Error: new Error()
           };
     }),
   (function (__caml_parser_env) {
@@ -9461,43 +9504,50 @@ var yyact = [
   (function (__caml_parser_env) {
       throw {
             RE_EXN_ID: Parsing.YYexit,
-            _1: Parsing.peek_val(__caml_parser_env, 0)
+            _1: Parsing.peek_val(__caml_parser_env, 0),
+            Error: new Error()
           };
     }),
   (function (__caml_parser_env) {
       throw {
             RE_EXN_ID: Parsing.YYexit,
-            _1: Parsing.peek_val(__caml_parser_env, 0)
+            _1: Parsing.peek_val(__caml_parser_env, 0),
+            Error: new Error()
           };
     }),
   (function (__caml_parser_env) {
       throw {
             RE_EXN_ID: Parsing.YYexit,
-            _1: Parsing.peek_val(__caml_parser_env, 0)
+            _1: Parsing.peek_val(__caml_parser_env, 0),
+            Error: new Error()
           };
     }),
   (function (__caml_parser_env) {
       throw {
             RE_EXN_ID: Parsing.YYexit,
-            _1: Parsing.peek_val(__caml_parser_env, 0)
+            _1: Parsing.peek_val(__caml_parser_env, 0),
+            Error: new Error()
           };
     }),
   (function (__caml_parser_env) {
       throw {
             RE_EXN_ID: Parsing.YYexit,
-            _1: Parsing.peek_val(__caml_parser_env, 0)
+            _1: Parsing.peek_val(__caml_parser_env, 0),
+            Error: new Error()
           };
     }),
   (function (__caml_parser_env) {
       throw {
             RE_EXN_ID: Parsing.YYexit,
-            _1: Parsing.peek_val(__caml_parser_env, 0)
+            _1: Parsing.peek_val(__caml_parser_env, 0),
+            Error: new Error()
           };
     }),
   (function (__caml_parser_env) {
       throw {
             RE_EXN_ID: Parsing.YYexit,
-            _1: Parsing.peek_val(__caml_parser_env, 0)
+            _1: Parsing.peek_val(__caml_parser_env, 0),
+            Error: new Error()
           };
     })
 ];
@@ -9570,7 +9620,8 @@ function assert_same_type(lexbuf, x, y) {
               lhs,
               rhs
             ]),
-          _2: curr(lexbuf)
+          _2: curr(lexbuf),
+          Error: new Error()
         };
   }
   return y;
@@ -9739,7 +9790,8 @@ function value_of_token(loc, t) {
         throw {
               RE_EXN_ID: $$Error$2,
               _1: /* Unexpected_token_in_conditional */4,
-              _2: loc
+              _2: loc,
+              Error: new Error()
             };
     }
   } else {
@@ -9756,7 +9808,8 @@ function value_of_token(loc, t) {
         throw {
               RE_EXN_ID: $$Error$2,
               _1: /* Unexpected_token_in_conditional */4,
-              _2: loc
+              _2: loc,
+              Error: new Error()
             };
     }
   }
@@ -9781,7 +9834,8 @@ function directive_parse(token_with_comments, lexbuf) {
               throw {
                     RE_EXN_ID: $$Error$2,
                     _1: /* Unterminated_if */2,
-                    _2: curr(lexbuf)
+                    _2: curr(lexbuf),
+                    Error: new Error()
                   };
           case /* EOL */100 :
               _param = undefined;
@@ -9809,7 +9863,8 @@ function directive_parse(token_with_comments, lexbuf) {
               "lexer.mll",
               312,
               4
-            ]
+            ],
+            Error: new Error()
           };
     }
     look_ahead.contents = e;
@@ -9855,7 +9910,8 @@ function directive_parse(token_with_comments, lexbuf) {
                     throw {
                           RE_EXN_ID: $$Error$2,
                           _1: /* Illegal_semver */Block.__(6, [str]),
-                          _2: curr_loc
+                          _2: curr_loc,
+                          Error: new Error()
                         };
                   }
                   var v = str.charCodeAt(0);
@@ -9878,7 +9934,8 @@ function directive_parse(token_with_comments, lexbuf) {
                               throw {
                                     RE_EXN_ID: $$Error$2,
                                     _1: /* Illegal_semver */Block.__(6, [str]),
-                                    _2: curr_loc
+                                    _2: curr_loc,
+                                    Error: new Error()
                                   };
                             }
                             match = str[1] === "=" ? /* tuple */[
@@ -9897,7 +9954,8 @@ function directive_parse(token_with_comments, lexbuf) {
                               throw {
                                     RE_EXN_ID: $$Error$2,
                                     _1: /* Illegal_semver */Block.__(6, [str]),
-                                    _2: curr_loc
+                                    _2: curr_loc,
+                                    Error: new Error()
                                   };
                             }
                             match = str[1] === "=" ? /* tuple */[
@@ -9964,7 +10022,8 @@ function directive_parse(token_with_comments, lexbuf) {
                           /* Dir_type_string */3,
                           type_of_directive(lhs)
                         ]),
-                      _2: curr(lexbuf)
+                      _2: curr(lexbuf),
+                      Error: new Error()
                     };
               }
               
@@ -9976,7 +10035,8 @@ function directive_parse(token_with_comments, lexbuf) {
                         /* Dir_type_string */3,
                         type_of_directive(lhs)
                       ]),
-                    _2: curr(lexbuf)
+                    _2: curr(lexbuf),
+                    Error: new Error()
                   };
             }
             break;
@@ -10027,7 +10087,8 @@ function directive_parse(token_with_comments, lexbuf) {
                 "lexer.mll",
                 331,
                 17
-              ]
+              ],
+              Error: new Error()
             };
       }
       var curr_loc$1 = curr(lexbuf);
@@ -10055,7 +10116,8 @@ function directive_parse(token_with_comments, lexbuf) {
                 throw {
                       RE_EXN_ID: $$Error$2,
                       _1: /* Unterminated_paren_in_conditional */1,
-                      _2: curr(lexbuf)
+                      _2: curr(lexbuf),
+                      Error: new Error()
                     };
               }
               return v;
@@ -10063,7 +10125,8 @@ function directive_parse(token_with_comments, lexbuf) {
             throw {
                   RE_EXN_ID: $$Error$2,
                   _1: /* Unterminated_paren_in_conditional */1,
-                  _2: curr(lexbuf)
+                  _2: curr(lexbuf),
+                  Error: new Error()
                 };
         case /* TRUE */91 :
             return true;
@@ -10071,7 +10134,8 @@ function directive_parse(token_with_comments, lexbuf) {
           throw {
                 RE_EXN_ID: $$Error$2,
                 _1: /* Unexpected_token_in_conditional */4,
-                _2: curr_loc
+                _2: curr_loc,
+                Error: new Error()
               };
       }
     } else {
@@ -10084,7 +10148,8 @@ function directive_parse(token_with_comments, lexbuf) {
                                     /* Dir_type_bool */0,
                                     /* Dir_type_float */1
                                   ]),
-                                _2: curr_loc
+                                _2: curr_loc,
+                                Error: new Error()
                               };
                         }), /* Dir_float */Block.__(1, [Caml_format.caml_float_of_string(curr_token[0])]));
         case /* INT */7 :
@@ -10103,7 +10168,8 @@ function directive_parse(token_with_comments, lexbuf) {
                 throw {
                       RE_EXN_ID: $$Error$2,
                       _1: /* Unexpected_token_in_conditional */4,
-                      _2: curr_loc
+                      _2: curr_loc,
+                      Error: new Error()
                     };
             }
             var t = token(undefined);
@@ -10112,7 +10178,8 @@ function directive_parse(token_with_comments, lexbuf) {
               throw {
                     RE_EXN_ID: $$Error$2,
                     _1: /* Unexpected_token_in_conditional */4,
-                    _2: loc
+                    _2: loc,
+                    Error: new Error()
                   };
             }
             if (t.tag === /* UIDENT */17) {
@@ -10130,7 +10197,8 @@ function directive_parse(token_with_comments, lexbuf) {
             throw {
                   RE_EXN_ID: $$Error$2,
                   _1: /* Unexpected_token_in_conditional */4,
-                  _2: loc
+                  _2: loc,
+                  Error: new Error()
                 };
             break;
         case /* STRING */16 :
@@ -10141,7 +10209,8 @@ function directive_parse(token_with_comments, lexbuf) {
                                     /* Dir_type_bool */0,
                                     /* Dir_type_string */3
                                   ]),
-                                _2: curr_loc
+                                _2: curr_loc,
+                                Error: new Error()
                               };
                         }), /* Dir_string */Block.__(3, [curr_token[0][0]]));
         case /* UIDENT */17 :
@@ -10158,14 +10227,16 @@ function directive_parse(token_with_comments, lexbuf) {
                                     /* Dir_type_bool */0,
                                     ty
                                   ]),
-                                _2: curr_loc
+                                _2: curr_loc,
+                                Error: new Error()
                               };
                         }), value_v);
         default:
           throw {
                 RE_EXN_ID: $$Error$2,
                 _1: /* Unexpected_token_in_conditional */4,
-                _2: curr_loc
+                _2: curr_loc,
+                Error: new Error()
               };
       }
     }
@@ -10213,7 +10284,8 @@ function directive_parse(token_with_comments, lexbuf) {
       throw {
             RE_EXN_ID: $$Error$2,
             _1: /* Expect_hash_then_in_conditional */5,
-            _2: curr(lexbuf)
+            _2: curr(lexbuf),
+            Error: new Error()
           };
     }
     return v;
@@ -10221,7 +10293,8 @@ function directive_parse(token_with_comments, lexbuf) {
   throw {
         RE_EXN_ID: $$Error$2,
         _1: /* Expect_hash_then_in_conditional */5,
-        _2: curr(lexbuf)
+        _2: curr(lexbuf),
+        Error: new Error()
       };
 }
 
@@ -10697,7 +10770,8 @@ function char_for_decimal_code(lexbuf, i) {
   throw {
         RE_EXN_ID: $$Error$2,
         _1: /* Illegal_escape */Block.__(1, [Lexing.lexeme(lexbuf)]),
-        _2: curr(lexbuf)
+        _2: curr(lexbuf),
+        Error: new Error()
       };
 }
 
@@ -10763,7 +10837,8 @@ function get_label_name(lexbuf) {
     throw {
           RE_EXN_ID: $$Error$2,
           _1: /* Keyword_as_label */Block.__(4, [name]),
-          _2: curr(lexbuf)
+          _2: curr(lexbuf),
+          Error: new Error()
         };
   }
   return name;
@@ -11015,7 +11090,8 @@ function token(lexbuf) {
             throw {
                   RE_EXN_ID: $$Error$2,
                   _1: /* Illegal_character */Block.__(0, [Lexing.lexeme_char(lexbuf, 0)]),
-                  _2: curr(lexbuf)
+                  _2: curr(lexbuf),
+                  Error: new Error()
                 };
           }
           update_loc(lexbuf, undefined, 1, false, 0);
@@ -11071,7 +11147,8 @@ function token(lexbuf) {
               throw {
                     RE_EXN_ID: $$Error$2,
                     _1: /* Literal_overflow */Block.__(5, ["int"]),
-                    _2: curr(lexbuf)
+                    _2: curr(lexbuf),
+                    Error: new Error()
                   };
             }
             throw exn$1;
@@ -11088,7 +11165,8 @@ function token(lexbuf) {
               throw {
                     RE_EXN_ID: $$Error$2,
                     _1: /* Literal_overflow */Block.__(5, ["int32"]),
-                    _2: curr(lexbuf)
+                    _2: curr(lexbuf),
+                    Error: new Error()
                   };
             }
             throw exn$2;
@@ -11103,7 +11181,8 @@ function token(lexbuf) {
               throw {
                     RE_EXN_ID: $$Error$2,
                     _1: /* Literal_overflow */Block.__(5, ["int64"]),
-                    _2: curr(lexbuf)
+                    _2: curr(lexbuf),
+                    Error: new Error()
                   };
             }
             throw exn$3;
@@ -11118,7 +11197,8 @@ function token(lexbuf) {
               throw {
                     RE_EXN_ID: $$Error$2,
                     _1: /* Literal_overflow */Block.__(5, ["nativeint"]),
-                    _2: curr(lexbuf)
+                    _2: curr(lexbuf),
+                    Error: new Error()
                   };
             }
             throw exn$4;
@@ -11166,7 +11246,8 @@ function token(lexbuf) {
           throw {
                 RE_EXN_ID: $$Error$2,
                 _1: /* Illegal_escape */Block.__(1, [esc]),
-                _2: curr(lexbuf)
+                _2: curr(lexbuf),
+                Error: new Error()
               };
       case 27 :
           var match = with_comment_buffer(comment, lexbuf);
@@ -11340,19 +11421,22 @@ function token(lexbuf) {
             throw {
                   RE_EXN_ID: $$Error$2,
                   _1: /* Unterminated_if */2,
-                  _2: curr(lexbuf)
+                  _2: curr(lexbuf),
+                  Error: new Error()
                 };
           }
           throw {
                 RE_EXN_ID: $$Error$2,
                 _1: /* Unterminated_else */3,
-                _2: curr(lexbuf)
+                _2: curr(lexbuf),
+                Error: new Error()
               };
       case 91 :
           throw {
                 RE_EXN_ID: $$Error$2,
                 _1: /* Illegal_character */Block.__(0, [Lexing.lexeme_char(lexbuf, 0)]),
-                _2: curr(lexbuf)
+                _2: curr(lexbuf),
+                Error: new Error()
               };
       default:
         Curry._1(lexbuf.refill_buff, lexbuf);
@@ -11394,7 +11478,8 @@ function __ocaml_lex_comment_rec(lexbuf, ___ocaml_lex_state) {
                   "lexer.mll",
                   992,
                   16
-                ]
+                ],
+                Error: new Error()
               };
       case 2 :
           string_start_loc.contents = curr(lexbuf);
@@ -11421,7 +11506,8 @@ function __ocaml_lex_comment_rec(lexbuf, ___ocaml_lex_state) {
                             start,
                             exn._2
                           ]),
-                        _2: match$2[0]
+                        _2: match$2[0],
+                        Error: new Error()
                       };
                 }
                 throw {
@@ -11430,7 +11516,8 @@ function __ocaml_lex_comment_rec(lexbuf, ___ocaml_lex_state) {
                         "lexer.mll",
                         1006,
                         18
-                      ]
+                      ],
+                      Error: new Error()
                     };
               }
               throw exn;
@@ -11468,7 +11555,8 @@ function __ocaml_lex_comment_rec(lexbuf, ___ocaml_lex_state) {
                             start$1,
                             exn$1._2
                           ]),
-                        _2: match$4[0]
+                        _2: match$4[0],
+                        Error: new Error()
                       };
                 }
                 throw {
@@ -11477,7 +11565,8 @@ function __ocaml_lex_comment_rec(lexbuf, ___ocaml_lex_state) {
                         "lexer.mll",
                         1026,
                         18
-                      ]
+                      ],
+                      Error: new Error()
                     };
               }
               throw exn$1;
@@ -11503,7 +11592,8 @@ function __ocaml_lex_comment_rec(lexbuf, ___ocaml_lex_state) {
             throw {
                   RE_EXN_ID: $$Error$2,
                   _1: /* Unterminated_comment */Block.__(2, [start$2]),
-                  _2: match$5[0]
+                  _2: match$5[0],
+                  Error: new Error()
                 };
           }
           throw {
@@ -11512,7 +11602,8 @@ function __ocaml_lex_comment_rec(lexbuf, ___ocaml_lex_state) {
                   "lexer.mll",
                   1056,
                   16
-                ]
+                ],
+                Error: new Error()
               };
       case 11 :
           update_loc(lexbuf, undefined, 1, false, 0);
@@ -11583,7 +11674,8 @@ function string(lexbuf) {
           throw {
                 RE_EXN_ID: $$Error$2,
                 _1: /* Unterminated_string */0,
-                _2: string_start_loc.contents
+                _2: string_start_loc.contents,
+                Error: new Error()
               };
       case 8 :
           store_string_char(Lexing.lexeme_char(lexbuf, 0));
@@ -11611,7 +11703,8 @@ function __ocaml_lex_quoted_string_rec(delim, lexbuf, ___ocaml_lex_state) {
           throw {
                 RE_EXN_ID: $$Error$2,
                 _1: /* Unterminated_string */0,
-                _2: string_start_loc.contents
+                _2: string_start_loc.contents,
+                Error: new Error()
               };
       case 2 :
           var edelim = Lexing.lexeme(lexbuf);
@@ -11707,7 +11800,8 @@ function token$1(lexbuf) {
                           throw {
                                 RE_EXN_ID: $$Error$2,
                                 _1: /* Unexpected_directive */6,
-                                _2: curr(lexbuf)
+                                _2: curr(lexbuf),
+                                Error: new Error()
                               };
                         }
                         break;
@@ -11716,7 +11810,8 @@ function token$1(lexbuf) {
                           throw {
                                 RE_EXN_ID: $$Error$2,
                                 _1: /* Unexpected_directive */6,
-                                _2: curr(lexbuf)
+                                _2: curr(lexbuf),
+                                Error: new Error()
                               };
                         }
                         if_then_else.contents = /* Dir_out */2;
@@ -11734,7 +11829,8 @@ function token$1(lexbuf) {
                                 throw {
                                       RE_EXN_ID: $$Error$2,
                                       _1: /* Unterminated_if */2,
-                                      _2: curr(lexbuf)
+                                      _2: curr(lexbuf),
+                                      Error: new Error()
                                     };
                               }
                               if (token === /* SHARP */84 && at_bol(lexbuf)) {
@@ -11754,7 +11850,8 @@ function token$1(lexbuf) {
                                     throw {
                                           RE_EXN_ID: $$Error$2,
                                           _1: /* Unexpected_directive */6,
-                                          _2: curr(lexbuf)
+                                          _2: curr(lexbuf),
+                                          Error: new Error()
                                         };
                                   }
                                   
@@ -11774,7 +11871,8 @@ function token$1(lexbuf) {
                         throw {
                               RE_EXN_ID: $$Error$2,
                               _1: /* Unexpected_directive */6,
-                              _2: curr(lexbuf)
+                              _2: curr(lexbuf),
+                              Error: new Error()
                             };
                     default:
                       return Curry._1(look_ahead, match);
@@ -11790,7 +11888,8 @@ function token$1(lexbuf) {
                     throw {
                           RE_EXN_ID: $$Error$2,
                           _1: /* Unexpected_directive */6,
-                          _2: curr(lexbuf)
+                          _2: curr(lexbuf),
+                          Error: new Error()
                         };
                   }
                   
@@ -11806,7 +11905,8 @@ function token$1(lexbuf) {
                     throw {
                           RE_EXN_ID: $$Error$2,
                           _1: /* Unterminated_else */3,
-                          _2: curr(lexbuf)
+                          _2: curr(lexbuf),
+                          Error: new Error()
                         };
                   }
                   if (token$2 === /* SHARP */84 && at_bol(lexbuf)) {
@@ -11822,7 +11922,8 @@ function token$1(lexbuf) {
                           throw {
                                 RE_EXN_ID: $$Error$2,
                                 _1: /* Unexpected_directive */6,
-                                _2: curr(lexbuf)
+                                _2: curr(lexbuf),
+                                Error: new Error()
                               };
                         }
                         _else_seen = true;
@@ -11832,7 +11933,8 @@ function token$1(lexbuf) {
                         throw {
                               RE_EXN_ID: $$Error$2,
                               _1: /* Unexpected_directive */6,
-                              _2: curr(lexbuf)
+                              _2: curr(lexbuf),
+                              Error: new Error()
                             };
                       }
                       
@@ -11841,7 +11943,8 @@ function token$1(lexbuf) {
                       throw {
                             RE_EXN_ID: $$Error$2,
                             _1: /* Unexpected_directive */6,
-                            _2: curr(lexbuf)
+                            _2: curr(lexbuf),
+                            Error: new Error()
                           };
                     }
                     continue ;
@@ -12037,7 +12140,8 @@ function wrap(parsing_fun, lexbuf) {
     }
     throw {
           RE_EXN_ID: $$Error$1,
-          _1: /* Other */Block.__(5, [loc])
+          _1: /* Other */Block.__(5, [loc]),
+          Error: new Error()
         };
   }
 }

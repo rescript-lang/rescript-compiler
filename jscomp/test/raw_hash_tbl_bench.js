@@ -15,7 +15,8 @@ function bench(param) {
               "raw_hash_tbl_bench.ml",
               9,
               4
-            ]
+            ],
+            Error: new Error()
           };
     }
     

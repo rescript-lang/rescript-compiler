@@ -42,7 +42,8 @@ function from_tokens(lst) {
         return match[0];
       }
       throw {
-            RE_EXN_ID: "End_of_file"
+            RE_EXN_ID: "End_of_file",
+            Error: new Error()
           };
     });
 }

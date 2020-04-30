@@ -127,7 +127,8 @@ if (!Caml_obj.caml_equal(dfs1(/* :: */[
           "topsort_test.ml",
           29,
           2
-        ]
+        ],
+        Error: new Error()
       };
 }
 
@@ -164,7 +165,8 @@ if (!Caml_obj.caml_equal(dfs1(/* :: */[
           "topsort_test.ml",
           32,
           2
-        ]
+        ],
+        Error: new Error()
       };
 }
 
@@ -224,7 +226,8 @@ if (!Caml_obj.caml_equal(dfs2(/* :: */[
           "topsort_test.ml",
           47,
           2
-        ]
+        ],
+        Error: new Error()
       };
 }
 
@@ -259,7 +262,8 @@ if (!Caml_obj.caml_equal(dfs2(/* :: */[
           "topsort_test.ml",
           48,
           2
-        ]
+        ],
+        Error: new Error()
       };
 }
 
@@ -316,7 +320,8 @@ if (!Caml_obj.caml_equal(dfs3(/* :: */[
           "topsort_test.ml",
           65,
           2
-        ]
+        ],
+        Error: new Error()
       };
 }
 
@@ -351,7 +356,8 @@ if (!Caml_obj.caml_equal(dfs3(/* :: */[
           "topsort_test.ml",
           66,
           2
-        ]
+        ],
+        Error: new Error()
       };
 }
 
@@ -440,7 +446,8 @@ if (!Caml_obj.caml_equal(unsafe_topsort(grwork), /* :: */[
           "topsort_test.ml",
           110,
           2
-        ]
+        ],
+        Error: new Error()
       };
 }
 
@@ -479,12 +486,14 @@ function bal(l, v, r) {
       }
       throw {
             RE_EXN_ID: "Invalid_argument",
-            _1: "Set.bal"
+            _1: "Set.bal",
+            Error: new Error()
           };
     }
     throw {
           RE_EXN_ID: "Invalid_argument",
-          _1: "Set.bal"
+          _1: "Set.bal",
+          Error: new Error()
         };
   }
   if (hr <= (hl + 2 | 0)) {
@@ -507,12 +516,14 @@ function bal(l, v, r) {
     }
     throw {
           RE_EXN_ID: "Invalid_argument",
-          _1: "Set.bal"
+          _1: "Set.bal",
+          Error: new Error()
         };
   }
   throw {
         RE_EXN_ID: "Invalid_argument",
-        _1: "Set.bal"
+        _1: "Set.bal",
+        Error: new Error()
       };
 }
 
@@ -603,7 +614,8 @@ function min_elt(_param) {
       continue ;
     }
     throw {
-          RE_EXN_ID: "Not_found"
+          RE_EXN_ID: "Not_found",
+          Error: new Error()
         };
   };
 }
@@ -635,7 +647,8 @@ function max_elt(_param) {
       continue ;
     }
     throw {
-          RE_EXN_ID: "Not_found"
+          RE_EXN_ID: "Not_found",
+          Error: new Error()
         };
   };
 }
@@ -666,7 +679,8 @@ function remove_min_elt(param) {
   }
   throw {
         RE_EXN_ID: "Invalid_argument",
-        _1: "Set.remove_min_elt"
+        _1: "Set.remove_min_elt",
+        Error: new Error()
       };
 }
 
@@ -1084,7 +1098,8 @@ function find(x, _param) {
       continue ;
     }
     throw {
-          RE_EXN_ID: "Not_found"
+          RE_EXN_ID: "Not_found",
+          Error: new Error()
         };
   };
 }
@@ -1117,7 +1132,8 @@ function find_first(f, _param) {
       continue ;
     }
     throw {
-          RE_EXN_ID: "Not_found"
+          RE_EXN_ID: "Not_found",
+          Error: new Error()
         };
   };
 }
@@ -1181,7 +1197,8 @@ function find_last(f, _param) {
       continue ;
     }
     throw {
-          RE_EXN_ID: "Not_found"
+          RE_EXN_ID: "Not_found",
+          Error: new Error()
         };
   };
 }
@@ -1368,7 +1385,8 @@ function of_list(l) {
                 "set.ml",
                 510,
                 18
-              ]
+              ],
+              Error: new Error()
             };
       };
       return sub(List.length(l$1), l$1)[0];
@@ -1437,7 +1455,8 @@ function pathsort(graph) {
             _1: /* :: */[
               node,
               stack
-            ]
+            ],
+            Error: new Error()
           };
     }
     return /* tuple */[
@@ -1495,7 +1514,8 @@ if (!Caml_obj.caml_equal(pathsort(grwork), /* :: */[
           "topsort_test.ml",
           150,
           4
-        ]
+        ],
+        Error: new Error()
       };
 }
 
@@ -1513,7 +1533,8 @@ try {
           "topsort_test.ml",
           156,
           8
-        ]
+        ],
+        Error: new Error()
       };
 }
 catch (raw_exn){
@@ -1550,7 +1571,8 @@ catch (raw_exn){
             "topsort_test.ml",
             159,
             11
-          ]
+          ],
+          Error: new Error()
         };
   }
   

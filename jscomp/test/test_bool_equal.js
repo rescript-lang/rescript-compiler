@@ -23,7 +23,8 @@ function assertions(param) {
             "test_bool_equal.ml",
             21,
             2
-          ]
+          ],
+          Error: new Error()
         };
   }
   if (!bool_equal(false, false)) {
@@ -33,7 +34,8 @@ function assertions(param) {
             "test_bool_equal.ml",
             22,
             2
-          ]
+          ],
+          Error: new Error()
         };
   }
   if (bool_equal(true, false)) {
@@ -43,7 +45,8 @@ function assertions(param) {
             "test_bool_equal.ml",
             23,
             2
-          ]
+          ],
+          Error: new Error()
         };
   }
   if (bool_equal(false, true)) {
@@ -53,7 +56,8 @@ function assertions(param) {
             "test_bool_equal.ml",
             24,
             2
-          ]
+          ],
+          Error: new Error()
         };
   }
   

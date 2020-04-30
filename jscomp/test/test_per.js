@@ -15,14 +15,16 @@ var CamlinternalFormatBasics = require("../../lib/js/camlinternalFormatBasics.js
 function failwith(s) {
   throw {
         RE_EXN_ID: "Failure",
-        _1: s
+        _1: s,
+        Error: new Error()
       };
 }
 
 function invalid_arg(s) {
   throw {
         RE_EXN_ID: "Invalid_argument",
-        _1: s
+        _1: s,
+        Error: new Error()
       };
 }
 
@@ -83,7 +85,8 @@ function char_of_int(n) {
   if (n < 0 || n > 255) {
     throw {
           RE_EXN_ID: "Invalid_argument",
-          _1: "char_of_int"
+          _1: "char_of_int",
+          Error: new Error()
         };
   }
   return n;
@@ -106,7 +109,8 @@ function bool_of_string(param) {
     default:
       throw {
             RE_EXN_ID: "Invalid_argument",
-            _1: "bool_of_string"
+            _1: "bool_of_string",
+            Error: new Error()
           };
   }
 }
@@ -226,7 +230,8 @@ function output(oc, s, ofs, len) {
   if (ofs < 0 || len < 0 || ofs > (s.length - len | 0)) {
     throw {
           RE_EXN_ID: "Invalid_argument",
-          _1: "output"
+          _1: "output",
+          Error: new Error()
         };
   }
   return Caml_io.caml_ml_output(oc, s, ofs, len);
@@ -236,7 +241,8 @@ function output_substring(oc, s, ofs, len) {
   if (ofs < 0 || len < 0 || ofs > (s.length - len | 0)) {
     throw {
           RE_EXN_ID: "Invalid_argument",
-          _1: "output_substring"
+          _1: "output_substring",
+          Error: new Error()
         };
   }
   return Caml_io.caml_ml_output(oc, s, ofs, len);
@@ -294,7 +300,8 @@ function input(ic, s, ofs, len) {
   if (ofs < 0 || len < 0 || ofs > (s.length - len | 0)) {
     throw {
           RE_EXN_ID: "Invalid_argument",
-          _1: "input"
+          _1: "input",
+          Error: new Error()
         };
   }
   return Caml_external_polyfill.resolve("caml_ml_input")(ic, s, ofs, len);
@@ -310,7 +317,8 @@ function unsafe_really_input(ic, s, _ofs, _len) {
     var r = Caml_external_polyfill.resolve("caml_ml_input")(ic, s, ofs, len);
     if (r === 0) {
       throw {
-            RE_EXN_ID: "End_of_file"
+            RE_EXN_ID: "End_of_file",
+            Error: new Error()
           };
     }
     _len = len - r | 0;
@@ -323,7 +331,8 @@ function really_input(ic, s, ofs, len) {
   if (ofs < 0 || len < 0 || ofs > (s.length - len | 0)) {
     throw {
           RE_EXN_ID: "Invalid_argument",
-          _1: "really_input"
+          _1: "really_input",
+          Error: new Error()
         };
   }
   return unsafe_really_input(ic, s, ofs, len);
@@ -362,7 +371,8 @@ function input_line(chan) {
         return build_result(Caml_bytes.caml_create_bytes(len), len, accu);
       }
       throw {
-            RE_EXN_ID: "End_of_file"
+            RE_EXN_ID: "End_of_file",
+            Error: new Error()
           };
     }
     if (n > 0) {

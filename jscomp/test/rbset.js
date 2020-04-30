@@ -258,7 +258,8 @@ function unbalanced_left(param) {
           "rbset.ml",
           57,
           9
-        ]
+        ],
+        Error: new Error()
       };
 }
 
@@ -322,7 +323,8 @@ function unbalanced_right(param) {
           "rbset.ml",
           63,
           9
-        ]
+        ],
+        Error: new Error()
       };
 }
 
@@ -556,7 +558,8 @@ function remove_min(param) {
               "rbset.ml",
               115,
               4
-            ]
+            ],
+            Error: new Error()
           };
     }
     var match$1 = remove_min(param[1]);
@@ -590,7 +593,8 @@ function remove_min(param) {
           "rbset.ml",
           115,
           4
-        ]
+        ],
+        Error: new Error()
       };
 }
 

@@ -23,7 +23,8 @@ function f_undefined(xs, i) {
           "return_check.ml",
           31,
           14
-        ]
+        ],
+        Error: new Error()
       };
 }
 
@@ -64,7 +65,8 @@ function f_null(xs, i) {
           "return_check.ml",
           59,
           14
-        ]
+        ],
+        Error: new Error()
       };
 }
 
@@ -79,7 +81,8 @@ function f_null_undefined(xs, i) {
           "return_check.ml",
           68,
           14
-        ]
+        ],
+        Error: new Error()
       };
 }
 

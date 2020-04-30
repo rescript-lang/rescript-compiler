@@ -144,7 +144,8 @@ if (!Belt_Array.set(v$1, 0, 0)) {
           "bs_array_test.ml",
           34,
           33
-        ]
+        ],
+        Error: new Error()
       };
 }
 
@@ -162,7 +163,8 @@ if (!Belt_Array.set(v$2, 1, 0)) {
           "bs_array_test.ml",
           35,
           32
-        ]
+        ],
+        Error: new Error()
       };
 }
 

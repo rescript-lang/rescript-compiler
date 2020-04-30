@@ -115,7 +115,8 @@ function get_lines(fname) {
               ]), fname, s._1);
       throw {
             RE_EXN_ID: "Failure",
-            _1: s$1
+            _1: s$1,
+            Error: new Error()
           };
     }
     if (s.RE_EXN_ID === "End_of_file") {
@@ -134,7 +135,8 @@ function get_lines(fname) {
               ]), fname);
       throw {
             RE_EXN_ID: "Failure",
-            _1: s$2
+            _1: s$2,
+            Error: new Error()
           };
     }
     throw s;

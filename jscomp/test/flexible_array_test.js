@@ -25,7 +25,8 @@ function sub(_tr, _k) {
       continue ;
     }
     throw {
-          RE_EXN_ID: "Not_found"
+          RE_EXN_ID: "Not_found",
+          Error: new Error()
         };
   };
 }
@@ -64,7 +65,8 @@ function update(tr, k, w) {
           ];
   }
   throw {
-        RE_EXN_ID: "Not_found"
+        RE_EXN_ID: "Not_found",
+        Error: new Error()
       };
 }
 
@@ -91,7 +93,8 @@ function $$delete(tr, n) {
     }
   }
   throw {
-        RE_EXN_ID: "Not_found"
+        RE_EXN_ID: "Not_found",
+        Error: new Error()
       };
 }
 
@@ -130,11 +133,13 @@ function lorem(tr) {
             "flexible_array_test.ml",
             66,
             9
-          ]
+          ],
+          Error: new Error()
         };
   }
   throw {
-        RE_EXN_ID: "Not_found"
+        RE_EXN_ID: "Not_found",
+        Error: new Error()
       };
 }
 
@@ -153,7 +158,8 @@ function get(param, i) {
   }
   throw {
         RE_EXN_ID: "Invalid_argument",
-        _1: "Array.get"
+        _1: "Array.get",
+        Error: new Error()
       };
 }
 
@@ -167,7 +173,8 @@ function set(param, i, v) {
   }
   throw {
         RE_EXN_ID: "Invalid_argument",
-        _1: "Array.set"
+        _1: "Array.set",
+        Error: new Error()
       };
 }
 
@@ -188,7 +195,8 @@ function pop_front(param) {
   }
   throw {
         RE_EXN_ID: "Invalid_argument",
-        _1: "Array.pop_front"
+        _1: "Array.pop_front",
+        Error: new Error()
       };
 }
 
@@ -210,7 +218,8 @@ function pop_back(param) {
   }
   throw {
         RE_EXN_ID: "Invalid_argument",
-        _1: "Array.pop_back"
+        _1: "Array.pop_back",
+        Error: new Error()
       };
 }
 
@@ -321,7 +330,8 @@ if (!Caml_obj.caml_equal(x, of_array([
           "flexible_array_test.ml",
           166,
           4
-        ]
+        ],
+        Error: new Error()
       };
 }
 

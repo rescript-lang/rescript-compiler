@@ -42,7 +42,8 @@ if (v.contents !== 45) {
           "test_while_closure.ml",
           63,
           4
-        ]
+        ],
+        Error: new Error()
       };
 }
 

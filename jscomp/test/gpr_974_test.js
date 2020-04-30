@@ -10,7 +10,8 @@ if (!Caml_obj.caml_equal(Caml_option.nullable_to_opt(""), "")) {
           "gpr_974_test.ml",
           5,
           4
-        ]
+        ],
+        Error: new Error()
       };
 }
 
@@ -21,7 +22,8 @@ if (!Caml_obj.caml_equal(Caml_option.undefined_to_opt(""), "")) {
           "gpr_974_test.ml",
           6,
           4
-        ]
+        ],
+        Error: new Error()
       };
 }
 
@@ -32,7 +34,8 @@ if (!Caml_obj.caml_equal(Caml_option.null_to_opt(""), "")) {
           "gpr_974_test.ml",
           7,
           4
-        ]
+        ],
+        Error: new Error()
       };
 }
 

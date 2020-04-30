@@ -9,7 +9,8 @@ var f;
 try {
   throw {
         RE_EXN_ID: A,
-        _1: 3
+        _1: 3,
+        Error: new Error()
       };
 }
 catch (exn){

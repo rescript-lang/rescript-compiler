@@ -94,7 +94,8 @@ function test(param) {
             "test_simple_obj.ml",
             21,
             4
-          ]
+          ],
+          Error: new Error()
         };
   }
   if (Caml_oo_curry.js3(4846113, 2, uuu, 1, 20) !== 21) {
@@ -104,7 +105,8 @@ function test(param) {
             "test_simple_obj.ml",
             22,
             4
-          ]
+          ],
+          Error: new Error()
         };
   }
   if (Caml_oo_curry.js3(4846113, 3, v, 3, 7) !== 10) {
@@ -114,7 +116,8 @@ function test(param) {
             "test_simple_obj.ml",
             23,
             4
-          ]
+          ],
+          Error: new Error()
         };
   }
   if (Caml_oo_curry.js1(5243894, 4, u) !== 3) {
@@ -124,7 +127,8 @@ function test(param) {
             "test_simple_obj.ml",
             25,
             4
-          ]
+          ],
+          Error: new Error()
         };
   }
   if (Caml_oo_curry.js1(5243895, 5, u) !== 4) {
@@ -134,7 +138,8 @@ function test(param) {
             "test_simple_obj.ml",
             26,
             4
-          ]
+          ],
+          Error: new Error()
         };
   }
   if (Caml_oo_curry.js3(23297, 6, u, 1, 2) !== 3) {
@@ -144,7 +149,8 @@ function test(param) {
             "test_simple_obj.ml",
             27,
             4
-          ]
+          ],
+          Error: new Error()
         };
   }
   if (Caml_oo_curry.js2(616641298, 7, u, 32) === 32) {
@@ -156,7 +162,8 @@ function test(param) {
           "test_simple_obj.ml",
           28,
           4
-        ]
+        ],
+        Error: new Error()
       };
 }
 

@@ -58,7 +58,8 @@ if (Caml_oo_curry.js1(291546447, 1, v) !== 3) {
           "class_repr.ml",
           30,
           9
-        ]
+        ],
+        Error: new Error()
       };
 }
 
@@ -69,7 +70,8 @@ if (Caml_oo_curry.js1(291546447, 2, u) !== 3) {
           "class_repr.ml",
           32,
           9
-        ]
+        ],
+        Error: new Error()
       };
 }
 
@@ -112,7 +114,8 @@ if (Caml_oo_curry.js1(-804710761, 4, v1) !== 3) {
           "class_repr.ml",
           44,
           9
-        ]
+        ],
+        Error: new Error()
       };
 }
 
@@ -128,7 +131,8 @@ if (Caml_oo_curry.js1(-804710761, 7, v2) !== 9) {
           "class_repr.ml",
           52,
           9
-        ]
+        ],
+        Error: new Error()
       };
 }
 
@@ -171,7 +175,8 @@ if (Caml_oo_curry.js1(590348294, 8, v$1) !== 5) {
           "class_repr.ml",
           99,
           2
-        ]
+        ],
+        Error: new Error()
       };
 }
 

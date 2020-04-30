@@ -29,7 +29,8 @@ function f(param) {
       if (i === 10) {
         throw {
               RE_EXN_ID: A,
-              _1: 0
+              _1: 0,
+              Error: new Error()
             };
       }
       

@@ -412,6 +412,7 @@ build test/lib_js_test.cmi test/lib_js_test.cmj : cc test/lib_js_test.ml | test/
 build test/libarg_test.cmi test/libarg_test.cmj : cc test/libarg_test.ml | test/mt.cmj $stdlib
 build test/libqueue_test.cmi test/libqueue_test.cmj : cc test/libqueue_test.ml | $stdlib
 build test/limits_test.cmi test/limits_test.cmj : cc test/limits_test.ml | test/mt.cmj $stdlib
+build test/list_stack.cmi test/list_stack.cmj : cc test/list_stack.ml | $stdlib
 build test/list_test.cmi test/list_test.cmj : cc test/list_test.ml | test/mt.cmj $stdlib
 build test/local_class_type.cmi test/local_class_type.cmj : cc test/local_class_type.ml | $stdlib
 build test/local_exception_test.cmi test/local_exception_test.cmj : cc test/local_exception_test.ml | $stdlib

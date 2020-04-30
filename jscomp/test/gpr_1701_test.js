@@ -10,7 +10,8 @@ var Foo = Caml_exceptions.create("Gpr_1701_test.Foo");
 function test(n) {
   if (n === 0) {
     throw {
-          RE_EXN_ID: Foo
+          RE_EXN_ID: Foo,
+          Error: new Error()
         };
   }
   try {

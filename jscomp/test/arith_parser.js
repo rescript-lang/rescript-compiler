@@ -47,7 +47,8 @@ var yyact = [
   (function (param) {
       throw {
             RE_EXN_ID: "Failure",
-            _1: "parser"
+            _1: "parser",
+            Error: new Error()
           };
     }),
   (function (__caml_parser_env) {
@@ -103,7 +104,8 @@ var yyact = [
   (function (__caml_parser_env) {
       throw {
             RE_EXN_ID: Parsing.YYexit,
-            _1: Parsing.peek_val(__caml_parser_env, 0)
+            _1: Parsing.peek_val(__caml_parser_env, 0),
+            Error: new Error()
           };
     })
 ];
