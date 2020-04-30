@@ -25,7 +25,8 @@ function assoc3(x, _l) {
       continue ;
     }
     throw {
-          RE_EXN_ID: "Not_found"
+          RE_EXN_ID: "Not_found",
+          Error: new Error()
         };
   };
 }
@@ -33,7 +34,8 @@ function assoc3(x, _l) {
 function help_action(param) {
   throw {
         RE_EXN_ID: Stop,
-        _1: /* Unknown */Block.__(0, ["-help"])
+        _1: /* Unknown */Block.__(0, ["-help"]),
+        Error: new Error()
       };
 }
 

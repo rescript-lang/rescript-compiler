@@ -46,7 +46,8 @@ function convert(s) {
                             "chn_test.ml",
                             20,
                             18
-                          ]
+                          ],
+                          Error: new Error()
                         };
                   })));
 }

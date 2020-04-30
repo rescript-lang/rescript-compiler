@@ -597,7 +597,8 @@ if (Caml_oo_curry.js1(291536124, 1, raw_object) !== 34) {
           "large_obj_test.ml",
           124,
           10
-        ]
+        ],
+        Error: new Error()
       };
 }
 
@@ -924,7 +925,8 @@ if (Caml_oo_curry.js1(291536121, 2, v) !== 56) {
           "large_obj_test.ml",
           251,
           2
-        ]
+        ],
+        Error: new Error()
       };
 }
 

@@ -28,7 +28,8 @@ function ff(x) {
               "bb.ml",
               17,
               9
-            ]
+            ],
+            Error: new Error()
           };
   }
 }
@@ -52,7 +53,8 @@ function test(x) {
               "bb.ml",
               26,
               13
-            ]
+            ],
+            Error: new Error()
           };
   }
   if (match !== 98) {

@@ -108,7 +108,8 @@ catch (raw_x$3){
             "exception_raise_test.ml",
             102,
             9
-          ]
+          ],
+          Error: new Error()
         };
   }
 }
@@ -168,7 +169,8 @@ var suites = {
                     "exception_raise_test.ml",
                     119,
                     15
-                  ]
+                  ],
+                  Error: new Error()
                 };
           })
       ],
@@ -195,7 +197,8 @@ catch (raw_e$2){
 
 try {
   throw {
-        RE_EXN_ID: "Not_found"
+        RE_EXN_ID: "Not_found",
+        Error: new Error()
       };
 }
 catch (raw_e$3){

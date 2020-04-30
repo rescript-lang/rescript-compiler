@@ -221,7 +221,8 @@ function for_all_range(s, start, finish, p) {
   if (start < 0 || finish >= len) {
     throw {
           RE_EXN_ID: "Invalid_argument",
-          _1: "Ext_string_test.for_all_range"
+          _1: "Ext_string_test.for_all_range",
+          Error: new Error()
         };
   }
   return unsafe_for_all_range(s, start, finish, p);
@@ -274,7 +275,8 @@ function find(startOpt, sub, s) {
     while((i + n | 0) <= s_len) {
       if (unsafe_is_sub(sub, 0, s, i, n)) {
         throw {
-              RE_EXN_ID: Local_exit
+              RE_EXN_ID: Local_exit,
+              Error: new Error()
             };
       }
       i = i + 1 | 0;
@@ -299,7 +301,8 @@ function non_overlap_count(sub, s) {
   if (sub.length === 0) {
     throw {
           RE_EXN_ID: "Invalid_argument",
-          _1: "Ext_string_test.non_overlap_count"
+          _1: "Ext_string_test.non_overlap_count",
+          Error: new Error()
         };
   }
   var _acc = 0;
@@ -324,7 +327,8 @@ function rfind(sub, s) {
     while(i >= 0) {
       if (unsafe_is_sub(sub, 0, s, i, n)) {
         throw {
-              RE_EXN_ID: Local_exit
+              RE_EXN_ID: Local_exit,
+              Error: new Error()
             };
       }
       i = i - 1 | 0;
@@ -348,7 +352,8 @@ function tail_from(s, x) {
   var s$1 = "Ext_string_test.tail_from " + (s + (" : " + String(x)));
   throw {
         RE_EXN_ID: "Invalid_argument",
-        _1: s$1
+        _1: s$1,
+        Error: new Error()
       };
 }
 
@@ -569,7 +574,8 @@ function no_char(x, ch, i, len) {
   if (i < 0 || i >= str_len || len >= str_len) {
     throw {
           RE_EXN_ID: "Invalid_argument",
-          _1: "Ext_string_test.no_char"
+          _1: "Ext_string_test.no_char",
+          Error: new Error()
         };
   }
   return unsafe_no_char(x, ch, i, len);

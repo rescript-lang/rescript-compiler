@@ -18,7 +18,8 @@ function bench(param) {
               "bs_rbset_int_bench.ml",
               12,
               4
-            ]
+            ],
+            Error: new Error()
           };
     }
     
@@ -38,7 +39,8 @@ function bench(param) {
           "bs_rbset_int_bench.ml",
           17,
           2
-        ]
+        ],
+        Error: new Error()
       };
 }
 

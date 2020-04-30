@@ -55,7 +55,8 @@ function is_pos_pow(n) {
         continue ;
       }
       throw {
-            RE_EXN_ID: E
+            RE_EXN_ID: E,
+            Error: new Error()
           };
     };
   }
@@ -73,7 +74,8 @@ function failwithf(loc, fmt) {
                 var s$1 = loc + s;
                 throw {
                       RE_EXN_ID: "Failure",
-                      _1: s$1
+                      _1: s$1,
+                      Error: new Error()
                     };
               }), fmt);
 }
@@ -86,7 +88,8 @@ function bad_argf(fmt) {
   return Format.ksprintf((function (x) {
                 throw {
                       RE_EXN_ID: Arg.Bad,
-                      _1: x
+                      _1: x,
+                      Error: new Error()
                     };
               }), fmt);
 }

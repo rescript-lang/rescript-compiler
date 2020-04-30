@@ -61,7 +61,8 @@ if (!(to_list(q) === /* [] */0 && q.length === 0)) {
           "libqueue_test.ml",
           28,
           25
-        ]
+        ],
+        Error: new Error()
       };
 }
 
@@ -77,7 +78,8 @@ if (!(Caml_obj.caml_equal(to_list(q), /* :: */[
           "libqueue_test.ml",
           29,
           25
-        ]
+        ],
+        Error: new Error()
       };
 }
 
@@ -96,7 +98,8 @@ if (!(Caml_obj.caml_equal(to_list(q), /* :: */[
           "libqueue_test.ml",
           30,
           25
-        ]
+        ],
+        Error: new Error()
       };
 }
 
@@ -118,7 +121,8 @@ if (!(Caml_obj.caml_equal(to_list(q), /* :: */[
           "libqueue_test.ml",
           31,
           25
-        ]
+        ],
+        Error: new Error()
       };
 }
 
@@ -143,7 +147,8 @@ if (!(Caml_obj.caml_equal(to_list(q), /* :: */[
           "libqueue_test.ml",
           32,
           25
-        ]
+        ],
+        Error: new Error()
       };
 }
 
@@ -154,7 +159,8 @@ if (Queue.take(q) !== 1) {
           "libqueue_test.ml",
           33,
           2
-        ]
+        ],
+        Error: new Error()
       };
 }
 
@@ -174,7 +180,8 @@ if (!(Caml_obj.caml_equal(to_list(q), /* :: */[
           "libqueue_test.ml",
           33,
           25
-        ]
+        ],
+        Error: new Error()
       };
 }
 
@@ -185,7 +192,8 @@ if (Queue.take(q) !== 2) {
           "libqueue_test.ml",
           34,
           2
-        ]
+        ],
+        Error: new Error()
       };
 }
 
@@ -202,7 +210,8 @@ if (!(Caml_obj.caml_equal(to_list(q), /* :: */[
           "libqueue_test.ml",
           34,
           25
-        ]
+        ],
+        Error: new Error()
       };
 }
 
@@ -213,7 +222,8 @@ if (Queue.take(q) !== 3) {
           "libqueue_test.ml",
           35,
           2
-        ]
+        ],
+        Error: new Error()
       };
 }
 
@@ -227,7 +237,8 @@ if (!(Caml_obj.caml_equal(to_list(q), /* :: */[
           "libqueue_test.ml",
           35,
           25
-        ]
+        ],
+        Error: new Error()
       };
 }
 
@@ -238,7 +249,8 @@ if (Queue.take(q) !== 4) {
           "libqueue_test.ml",
           36,
           2
-        ]
+        ],
+        Error: new Error()
       };
 }
 
@@ -249,7 +261,8 @@ if (!(to_list(q) === /* [] */0 && q.length === 0)) {
           "libqueue_test.ml",
           36,
           25
-        ]
+        ],
+        Error: new Error()
       };
 }
 
@@ -260,7 +273,8 @@ if (!does_raise(Queue.take, q)) {
           "libqueue_test.ml",
           37,
           2
-        ]
+        ],
+        Error: new Error()
       };
 }
 
@@ -279,7 +293,8 @@ if (Queue.take(q$1) !== 1) {
           "libqueue_test.ml",
           42,
           13
-        ]
+        ],
+        Error: new Error()
       };
 }
 
@@ -290,7 +305,8 @@ if (!does_raise(Queue.take, q$1)) {
           "libqueue_test.ml",
           42,
           36
-        ]
+        ],
+        Error: new Error()
       };
 }
 
@@ -303,7 +319,8 @@ if (Queue.take(q$1) !== 2) {
           "libqueue_test.ml",
           43,
           13
-        ]
+        ],
+        Error: new Error()
       };
 }
 
@@ -314,7 +331,8 @@ if (!does_raise(Queue.take, q$1)) {
           "libqueue_test.ml",
           43,
           36
-        ]
+        ],
+        Error: new Error()
       };
 }
 
@@ -325,7 +343,8 @@ if (q$1.length !== 0) {
           "libqueue_test.ml",
           44,
           2
-        ]
+        ],
+        Error: new Error()
       };
 }
 
@@ -344,7 +363,8 @@ if (Queue.peek(q$2) !== 1) {
           "libqueue_test.ml",
           49,
           13
-        ]
+        ],
+        Error: new Error()
       };
 }
 
@@ -357,7 +377,8 @@ if (Queue.peek(q$2) !== 1) {
           "libqueue_test.ml",
           50,
           13
-        ]
+        ],
+        Error: new Error()
       };
 }
 
@@ -370,7 +391,8 @@ if (Queue.peek(q$2) !== 1) {
           "libqueue_test.ml",
           51,
           13
-        ]
+        ],
+        Error: new Error()
       };
 }
 
@@ -381,7 +403,8 @@ if (Queue.peek(q$2) !== 1) {
           "libqueue_test.ml",
           52,
           2
-        ]
+        ],
+        Error: new Error()
       };
 }
 
@@ -392,7 +415,8 @@ if (Queue.take(q$2) !== 1) {
           "libqueue_test.ml",
           52,
           25
-        ]
+        ],
+        Error: new Error()
       };
 }
 
@@ -403,7 +427,8 @@ if (Queue.peek(q$2) !== 2) {
           "libqueue_test.ml",
           53,
           2
-        ]
+        ],
+        Error: new Error()
       };
 }
 
@@ -414,7 +439,8 @@ if (Queue.take(q$2) !== 2) {
           "libqueue_test.ml",
           53,
           25
-        ]
+        ],
+        Error: new Error()
       };
 }
 
@@ -425,7 +451,8 @@ if (Queue.peek(q$2) !== 3) {
           "libqueue_test.ml",
           54,
           2
-        ]
+        ],
+        Error: new Error()
       };
 }
 
@@ -436,7 +463,8 @@ if (Queue.take(q$2) !== 3) {
           "libqueue_test.ml",
           54,
           25
-        ]
+        ],
+        Error: new Error()
       };
 }
 
@@ -447,7 +475,8 @@ if (!does_raise(Queue.peek, q$2)) {
           "libqueue_test.ml",
           55,
           2
-        ]
+        ],
+        Error: new Error()
       };
 }
 
@@ -458,7 +487,8 @@ if (!does_raise(Queue.peek, q$2)) {
           "libqueue_test.ml",
           56,
           2
-        ]
+        ],
+        Error: new Error()
       };
 }
 
@@ -481,7 +511,8 @@ if (q$3.length !== 0) {
           "libqueue_test.ml",
           63,
           2
-        ]
+        ],
+        Error: new Error()
       };
 }
 
@@ -492,7 +523,8 @@ if (!does_raise(Queue.take, q$3)) {
           "libqueue_test.ml",
           64,
           2
-        ]
+        ],
+        Error: new Error()
       };
 }
 
@@ -507,7 +539,8 @@ if (!Caml_obj.caml_equal(q$3, {
           "libqueue_test.ml",
           65,
           2
-        ]
+        ],
+        Error: new Error()
       };
 }
 
@@ -520,7 +553,8 @@ if (Queue.take(q$3) !== 42) {
           "libqueue_test.ml",
           67,
           2
-        ]
+        ],
+        Error: new Error()
       };
 }
 
@@ -573,7 +607,8 @@ if (!Caml_obj.caml_equal(to_list(q1), /* :: */[
           "libqueue_test.ml",
           74,
           2
-        ]
+        ],
+        Error: new Error()
       };
 }
 
@@ -614,7 +649,8 @@ if (!Caml_obj.caml_equal(to_list(q2), /* :: */[
           "libqueue_test.ml",
           75,
           2
-        ]
+        ],
+        Error: new Error()
       };
 }
 
@@ -625,7 +661,8 @@ if (q1.length !== 10) {
           "libqueue_test.ml",
           76,
           2
-        ]
+        ],
+        Error: new Error()
       };
 }
 
@@ -636,7 +673,8 @@ if (q2.length !== 10) {
           "libqueue_test.ml",
           77,
           2
-        ]
+        ],
+        Error: new Error()
       };
 }
 
@@ -648,7 +686,8 @@ for(var i$2 = 1; i$2 <= 10; ++i$2){
             "libqueue_test.ml",
             79,
             4
-          ]
+          ],
+          Error: new Error()
         };
   }
   
@@ -662,7 +701,8 @@ for(var i$3 = 1; i$3 <= 10; ++i$3){
             "libqueue_test.ml",
             82,
             4
-          ]
+          ],
+          Error: new Error()
         };
   }
   
@@ -681,7 +721,8 @@ if (q$4.length !== 0) {
           "libqueue_test.ml",
           88,
           2
-        ]
+        ],
+        Error: new Error()
       };
 }
 
@@ -694,7 +735,8 @@ for(var i$4 = 1; i$4 <= 10; ++i$4){
             "libqueue_test.ml",
             91,
             4
-          ]
+          ],
+          Error: new Error()
         };
   }
   if (q$4.length === 0) {
@@ -704,7 +746,8 @@ for(var i$4 = 1; i$4 <= 10; ++i$4){
             "libqueue_test.ml",
             92,
             4
-          ]
+          ],
+          Error: new Error()
         };
   }
   
@@ -718,7 +761,8 @@ for(var i$5 = 10; i$5 >= 1; --i$5){
             "libqueue_test.ml",
             95,
             4
-          ]
+          ],
+          Error: new Error()
         };
   }
   if (q$4.length === 0) {
@@ -728,7 +772,8 @@ for(var i$5 = 10; i$5 >= 1; --i$5){
             "libqueue_test.ml",
             96,
             4
-          ]
+          ],
+          Error: new Error()
         };
   }
   Queue.take(q$4);
@@ -741,7 +786,8 @@ if (q$4.length !== 0) {
           "libqueue_test.ml",
           99,
           2
-        ]
+        ],
+        Error: new Error()
       };
 }
 
@@ -752,7 +798,8 @@ if (q$4.length !== 0) {
           "libqueue_test.ml",
           100,
           2
-        ]
+        ],
+        Error: new Error()
       };
 }
 
@@ -778,7 +825,8 @@ Queue.iter((function (j) {
                   "libqueue_test.ml",
                   107,
                   19
-                ]
+                ],
+                Error: new Error()
               };
         }
         i$7.contents = i$7.contents + 1 | 0;
@@ -804,7 +852,8 @@ if (q1$1.length !== 0) {
           "libqueue_test.ml",
           112,
           2
-        ]
+        ],
+        Error: new Error()
       };
 }
 
@@ -815,7 +864,8 @@ if (to_list(q1$1) !== /* [] */0) {
           "libqueue_test.ml",
           112,
           28
-        ]
+        ],
+        Error: new Error()
       };
 }
 
@@ -826,7 +876,8 @@ if (q2$1.length !== 0) {
           "libqueue_test.ml",
           113,
           2
-        ]
+        ],
+        Error: new Error()
       };
 }
 
@@ -837,7 +888,8 @@ if (to_list(q2$1) !== /* [] */0) {
           "libqueue_test.ml",
           113,
           28
-        ]
+        ],
+        Error: new Error()
       };
 }
 
@@ -850,7 +902,8 @@ if (q1$1.length !== 0) {
           "libqueue_test.ml",
           115,
           2
-        ]
+        ],
+        Error: new Error()
       };
 }
 
@@ -861,7 +914,8 @@ if (to_list(q1$1) !== /* [] */0) {
           "libqueue_test.ml",
           115,
           28
-        ]
+        ],
+        Error: new Error()
       };
 }
 
@@ -872,7 +926,8 @@ if (q2$1.length !== 0) {
           "libqueue_test.ml",
           116,
           2
-        ]
+        ],
+        Error: new Error()
       };
 }
 
@@ -883,7 +938,8 @@ if (to_list(q2$1) !== /* [] */0) {
           "libqueue_test.ml",
           116,
           28
-        ]
+        ],
+        Error: new Error()
       };
 }
 
@@ -910,7 +966,8 @@ if (q1$2.length !== 4) {
           "libqueue_test.ml",
           122,
           2
-        ]
+        ],
+        Error: new Error()
       };
 }
 
@@ -933,7 +990,8 @@ if (!Caml_obj.caml_equal(to_list(q1$2), /* :: */[
           "libqueue_test.ml",
           122,
           28
-        ]
+        ],
+        Error: new Error()
       };
 }
 
@@ -944,7 +1002,8 @@ if (q2$2.length !== 0) {
           "libqueue_test.ml",
           123,
           2
-        ]
+        ],
+        Error: new Error()
       };
 }
 
@@ -955,7 +1014,8 @@ if (to_list(q2$2) !== /* [] */0) {
           "libqueue_test.ml",
           123,
           28
-        ]
+        ],
+        Error: new Error()
       };
 }
 
@@ -968,7 +1028,8 @@ if (q1$2.length !== 0) {
           "libqueue_test.ml",
           125,
           2
-        ]
+        ],
+        Error: new Error()
       };
 }
 
@@ -979,7 +1040,8 @@ if (to_list(q1$2) !== /* [] */0) {
           "libqueue_test.ml",
           125,
           28
-        ]
+        ],
+        Error: new Error()
       };
 }
 
@@ -990,7 +1052,8 @@ if (q2$2.length !== 4) {
           "libqueue_test.ml",
           126,
           2
-        ]
+        ],
+        Error: new Error()
       };
 }
 
@@ -1013,7 +1076,8 @@ if (!Caml_obj.caml_equal(to_list(q2$2), /* :: */[
           "libqueue_test.ml",
           126,
           28
-        ]
+        ],
+        Error: new Error()
       };
 }
 
@@ -1040,7 +1104,8 @@ if (q1$3.length !== 0) {
           "libqueue_test.ml",
           132,
           2
-        ]
+        ],
+        Error: new Error()
       };
 }
 
@@ -1051,7 +1116,8 @@ if (to_list(q1$3) !== /* [] */0) {
           "libqueue_test.ml",
           132,
           28
-        ]
+        ],
+        Error: new Error()
       };
 }
 
@@ -1062,7 +1128,8 @@ if (q2$3.length !== 4) {
           "libqueue_test.ml",
           133,
           2
-        ]
+        ],
+        Error: new Error()
       };
 }
 
@@ -1085,7 +1152,8 @@ if (!Caml_obj.caml_equal(to_list(q2$3), /* :: */[
           "libqueue_test.ml",
           133,
           28
-        ]
+        ],
+        Error: new Error()
       };
 }
 
@@ -1098,7 +1166,8 @@ if (q1$3.length !== 0) {
           "libqueue_test.ml",
           135,
           2
-        ]
+        ],
+        Error: new Error()
       };
 }
 
@@ -1109,7 +1178,8 @@ if (to_list(q1$3) !== /* [] */0) {
           "libqueue_test.ml",
           135,
           28
-        ]
+        ],
+        Error: new Error()
       };
 }
 
@@ -1120,7 +1190,8 @@ if (q2$3.length !== 4) {
           "libqueue_test.ml",
           136,
           2
-        ]
+        ],
+        Error: new Error()
       };
 }
 
@@ -1143,7 +1214,8 @@ if (!Caml_obj.caml_equal(to_list(q2$3), /* :: */[
           "libqueue_test.ml",
           136,
           28
-        ]
+        ],
+        Error: new Error()
       };
 }
 
@@ -1174,7 +1246,8 @@ if (q1$4.length !== 4) {
           "libqueue_test.ml",
           143,
           2
-        ]
+        ],
+        Error: new Error()
       };
 }
 
@@ -1197,7 +1270,8 @@ if (!Caml_obj.caml_equal(to_list(q1$4), /* :: */[
           "libqueue_test.ml",
           143,
           28
-        ]
+        ],
+        Error: new Error()
       };
 }
 
@@ -1208,7 +1282,8 @@ if (q2$4.length !== 4) {
           "libqueue_test.ml",
           144,
           2
-        ]
+        ],
+        Error: new Error()
       };
 }
 
@@ -1231,7 +1306,8 @@ if (!Caml_obj.caml_equal(to_list(q2$4), /* :: */[
           "libqueue_test.ml",
           144,
           28
-        ]
+        ],
+        Error: new Error()
       };
 }
 
@@ -1244,7 +1320,8 @@ if (q1$4.length !== 0) {
           "libqueue_test.ml",
           146,
           2
-        ]
+        ],
+        Error: new Error()
       };
 }
 
@@ -1255,7 +1332,8 @@ if (to_list(q1$4) !== /* [] */0) {
           "libqueue_test.ml",
           146,
           28
-        ]
+        ],
+        Error: new Error()
       };
 }
 
@@ -1266,7 +1344,8 @@ if (q2$4.length !== 8) {
           "libqueue_test.ml",
           147,
           2
-        ]
+        ],
+        Error: new Error()
       };
 }
 
@@ -1301,7 +1380,8 @@ if (!Caml_obj.caml_equal(to_list(q2$4), /* :: */[
           "libqueue_test.ml",
           147,
           28
-        ]
+        ],
+        Error: new Error()
       };
 }
 

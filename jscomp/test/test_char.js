@@ -9,7 +9,8 @@ function chr(n) {
   if (n < 0 || n > 255) {
     throw {
           RE_EXN_ID: "Invalid_argument",
-          _1: "Char.chr"
+          _1: "Char.chr",
+          Error: new Error()
         };
   }
   return n;

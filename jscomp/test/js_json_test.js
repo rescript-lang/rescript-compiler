@@ -80,7 +80,8 @@ add_test("File \"js_json_test.ml\", line 23, characters 11-18", (function (param
                           "js_json_test.ml",
                           37,
                           21
-                        ]
+                        ],
+                        Error: new Error()
                       };
                 }
                 if (ty3.tag === /* JSONNumber */1) {
@@ -92,7 +93,8 @@ add_test("File \"js_json_test.ml\", line 23, characters 11-18", (function (param
                         "js_json_test.ml",
                         37,
                         21
-                      ]
+                      ],
+                      Error: new Error()
                     };
               }));
         return /* Ok */Block.__(4, [true]);
@@ -209,7 +211,8 @@ function option_get(x) {
           "js_json_test.ml",
           102,
           36
-        ]
+        ],
+        Error: new Error()
       };
 }
 

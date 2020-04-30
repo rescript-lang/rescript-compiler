@@ -42,7 +42,8 @@ function Make(funarg) {
                 "gpr_405_test.ml",
                 43,
                 6
-              ]
+              ],
+              Error: new Error()
             };
       }
       if (find_default(on_the_stack, top)) {
@@ -52,7 +53,8 @@ function Make(funarg) {
                 "gpr_405_test.ml",
                 44,
                 6
-              ]
+              ],
+              Error: new Error()
             };
       }
       Curry._3(H.add, on_the_stack, top, true);
@@ -93,7 +95,8 @@ function Make(funarg) {
         if (Curry._2(H.find, l_labels, top$1) > Curry._2(H.find, n_labels, top$1)) {
           throw {
                 RE_EXN_ID: "Invalid_argument",
-                _1: "Graph.Mincut: graph not reducible"
+                _1: "Graph.Mincut: graph not reducible",
+                Error: new Error()
               };
         }
         if (!rest_of_stack$1) {

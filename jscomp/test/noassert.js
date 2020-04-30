@@ -8,7 +8,8 @@ function f(param) {
           "noassert.ml",
           5,
           11
-        ]
+        ],
+        Error: new Error()
       };
 }
 

@@ -22,7 +22,8 @@ function f3(param) {
                 "fun_pattern_match.ml",
                 44,
                 9
-              ]
+              ],
+              Error: new Error()
             };
       }
       if (typeof rhs === "number") {
@@ -32,7 +33,8 @@ function f3(param) {
                 "fun_pattern_match.ml",
                 44,
                 9
-              ]
+              ],
+              Error: new Error()
             };
       }
       return Caml_primitive.caml_int_compare(lhs[0], rhs[0]);
@@ -50,7 +52,8 @@ function f4(param) {
                 "fun_pattern_match.ml",
                 52,
                 9
-              ]
+              ],
+              Error: new Error()
             };
       }
       if (typeof rhs === "number") {
@@ -60,7 +63,8 @@ function f4(param) {
                 "fun_pattern_match.ml",
                 52,
                 9
-              ]
+              ],
+              Error: new Error()
             };
       }
       return Caml_primitive.caml_int_compare(lhs[0], rhs[0]);

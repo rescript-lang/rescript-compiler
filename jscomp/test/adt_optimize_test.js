@@ -162,7 +162,8 @@ function f11(x) {
           "adt_optimize_test.ml",
           191,
           9
-        ]
+        ],
+        Error: new Error()
       };
 }
 

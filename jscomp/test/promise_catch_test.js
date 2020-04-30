@@ -47,7 +47,8 @@ function handler(e) {
           "promise_catch_test.ml",
           22,
           9
-        ]
+        ],
+        Error: new Error()
       };
 }
 
@@ -90,7 +91,8 @@ if (exit === 1) {
           "promise_catch_test.ml",
           39,
           9
-        ]
+        ],
+        Error: new Error()
       };
 }
 

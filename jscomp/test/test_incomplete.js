@@ -11,7 +11,8 @@ function f(x) {
           "test_incomplete.ml",
           3,
           2
-        ]
+        ],
+        Error: new Error()
       };
 }
 

@@ -332,12 +332,14 @@ function bal(l, x, d, r) {
       }
       throw {
             RE_EXN_ID: "Invalid_argument",
-            _1: "Map.bal"
+            _1: "Map.bal",
+            Error: new Error()
           };
     }
     throw {
           RE_EXN_ID: "Invalid_argument",
-          _1: "Map.bal"
+          _1: "Map.bal",
+          Error: new Error()
         };
   }
   if (hr <= (hl + 2 | 0)) {
@@ -362,12 +364,14 @@ function bal(l, x, d, r) {
     }
     throw {
           RE_EXN_ID: "Invalid_argument",
-          _1: "Map.bal"
+          _1: "Map.bal",
+          Error: new Error()
         };
   }
   throw {
         RE_EXN_ID: "Invalid_argument",
-        _1: "Map.bal"
+        _1: "Map.bal",
+        Error: new Error()
       };
 }
 
@@ -516,12 +520,14 @@ function bal$1(l, v, r) {
       }
       throw {
             RE_EXN_ID: "Invalid_argument",
-            _1: "Set.bal"
+            _1: "Set.bal",
+            Error: new Error()
           };
     }
     throw {
           RE_EXN_ID: "Invalid_argument",
-          _1: "Set.bal"
+          _1: "Set.bal",
+          Error: new Error()
         };
   }
   if (hr <= (hl + 2 | 0)) {
@@ -544,12 +550,14 @@ function bal$1(l, v, r) {
     }
     throw {
           RE_EXN_ID: "Invalid_argument",
-          _1: "Set.bal"
+          _1: "Set.bal",
+          Error: new Error()
         };
   }
   throw {
         RE_EXN_ID: "Invalid_argument",
-        _1: "Set.bal"
+        _1: "Set.bal",
+        Error: new Error()
       };
 }
 
@@ -1041,7 +1049,8 @@ function split_at_match_rec(_l$prime, _param) {
               "re_automata.ml",
               429,
               21
-            ]
+            ],
+            Error: new Error()
           };
     }
   };
@@ -1665,7 +1674,8 @@ function trans_set(cache, cm, s) {
         continue ;
       }
       throw {
-            RE_EXN_ID: "Not_found"
+            RE_EXN_ID: "Not_found",
+            Error: new Error()
           };
     };
   }
@@ -1825,7 +1835,8 @@ function colorize(c, regexp) {
                     "re.ml",
                     502,
                     35
-                  ]
+                  ],
+                  Error: new Error()
                 };
         }
       }
@@ -2386,7 +2397,8 @@ function translate(ids, kind, _ign_group, ign_case, _greedy, pos, cache, c, _s) 
                   "re.ml",
                   714,
                   4
-                ]
+                ],
+                Error: new Error()
               };
       }
     }
@@ -2427,7 +2439,8 @@ function as_set(s) {
             "re.ml",
             747,
             13
-          ]
+          ],
+          Error: new Error()
         };
   }
   if (!s.tag) {
@@ -2439,7 +2452,8 @@ function as_set(s) {
           "re.ml",
           747,
           13
-        ]
+        ],
+        Error: new Error()
       };
 }
 
@@ -2617,13 +2631,15 @@ function repn(r, i, j) {
   if (i < 0) {
     throw {
           RE_EXN_ID: "Invalid_argument",
-          _1: "Re.repn"
+          _1: "Re.repn",
+          Error: new Error()
         };
   }
   if (j !== undefined && j < i) {
     throw {
           RE_EXN_ID: "Invalid_argument",
-          _1: "Re.repn"
+          _1: "Re.repn",
+          Error: new Error()
         };
   }
   return /* Repeat */Block.__(3, [
@@ -2648,7 +2664,8 @@ function compl(l) {
   }
   throw {
         RE_EXN_ID: "Invalid_argument",
-        _1: "Re.compl"
+        _1: "Re.compl",
+        Error: new Error()
       };
 }
 
@@ -2892,7 +2909,8 @@ function exec_internal(name, posOpt, lenOpt, groups, re, s) {
   if (pos < 0 || len < -1 || (pos + len | 0) > s.length) {
     throw {
           RE_EXN_ID: "Invalid_argument",
-          _1: name
+          _1: name,
+          Error: new Error()
         };
   }
   var partial = false;
@@ -2957,13 +2975,15 @@ function exec_internal(name, posOpt, lenOpt, groups, re, s) {
 function offset$1(t, i) {
   if (((i << 1) + 1 | 0) >= t.marks.length) {
     throw {
-          RE_EXN_ID: "Not_found"
+          RE_EXN_ID: "Not_found",
+          Error: new Error()
         };
   }
   var m1 = Caml_array.caml_array_get(t.marks, (i << 1));
   if (m1 === -1) {
     throw {
-          RE_EXN_ID: "Not_found"
+          RE_EXN_ID: "Not_found",
+          Error: new Error()
         };
   }
   var p1 = Caml_array.caml_array_get(t.gpos, m1) - 1 | 0;
@@ -3016,7 +3036,8 @@ function posix_class_of_string(class_) {
       var s = "Invalid pcre class: " + class_;
       throw {
             RE_EXN_ID: "Invalid_argument",
-            _1: s
+            _1: s,
+            Error: new Error()
           };
   }
 }
@@ -3047,14 +3068,16 @@ function parse(multiline, dollar_endonly, dotall, ungreedy, s) {
         try {
           if (Caml_string.get(s$prime, j) !== Caml_string.get(s, i.contents + j | 0)) {
             throw {
-                  RE_EXN_ID: Pervasives.Exit
+                  RE_EXN_ID: Pervasives.Exit,
+                  Error: new Error()
                 };
           }
           
         }
         catch (exn){
           throw {
-                RE_EXN_ID: Pervasives.Exit
+                RE_EXN_ID: Pervasives.Exit,
+                Error: new Error()
               };
         }
       }
@@ -3121,12 +3144,14 @@ function parse(multiline, dollar_endonly, dotall, ungreedy, s) {
       var j = accept(/* "," */44) ? integer(undefined) : i$1;
       if (!accept(/* "}" */125)) {
         throw {
-              RE_EXN_ID: Parse_error
+              RE_EXN_ID: Parse_error,
+              Error: new Error()
             };
       }
       if (j !== undefined && j < i$1) {
         throw {
-              RE_EXN_ID: Parse_error
+              RE_EXN_ID: Parse_error,
+              Error: new Error()
             };
       }
       return greedy_mod(repn(r, i$1, j));
@@ -3164,7 +3189,8 @@ function parse(multiline, dollar_endonly, dotall, ungreedy, s) {
           var r = regexp$prime(branch$prime(/* [] */0));
           if (!accept(/* ")" */41)) {
             throw {
-                  RE_EXN_ID: Parse_error
+                  RE_EXN_ID: Parse_error,
+                  Error: new Error()
                 };
           }
           return r;
@@ -3181,13 +3207,15 @@ function parse(multiline, dollar_endonly, dotall, ungreedy, s) {
           };
         }
         throw {
-              RE_EXN_ID: Parse_error
+              RE_EXN_ID: Parse_error,
+              Error: new Error()
             };
       }
       var r$1 = regexp$prime(branch$prime(/* [] */0));
       if (!accept(/* ")" */41)) {
         throw {
-              RE_EXN_ID: Parse_error
+              RE_EXN_ID: Parse_error,
+              Error: new Error()
             };
       }
       return /* Group */Block.__(6, [r$1]);
@@ -3218,7 +3246,8 @@ function parse(multiline, dollar_endonly, dotall, ungreedy, s) {
     if (accept(/* "\\" */92)) {
       if (i.contents === l) {
         throw {
-              RE_EXN_ID: Parse_error
+              RE_EXN_ID: Parse_error,
+              Error: new Error()
             };
       }
       var c = get(undefined);
@@ -3234,7 +3263,8 @@ function parse(multiline, dollar_endonly, dotall, ungreedy, s) {
         case 56 :
         case 57 :
             throw {
-                  RE_EXN_ID: Not_supported
+                  RE_EXN_ID: Not_supported,
+                  Error: new Error()
                 };
         case 65 :
             return /* Beg_of_str */5;
@@ -3349,7 +3379,8 @@ function parse(multiline, dollar_endonly, dotall, ungreedy, s) {
         case 120 :
         case 121 :
             throw {
-                  RE_EXN_ID: Parse_error
+                  RE_EXN_ID: Parse_error,
+                  Error: new Error()
                 };
         case 122 :
             return /* End_of_str */6;
@@ -3359,7 +3390,8 @@ function parse(multiline, dollar_endonly, dotall, ungreedy, s) {
     } else {
       if (i.contents === l) {
         throw {
-              RE_EXN_ID: Parse_error
+              RE_EXN_ID: Parse_error,
+              Error: new Error()
             };
       }
       var c$1 = get(undefined);
@@ -3369,24 +3401,28 @@ function parse(multiline, dollar_endonly, dotall, ungreedy, s) {
             return /* Set */Block.__(0, [single(c$1)]);
           }
           throw {
-                RE_EXN_ID: Parse_error
+                RE_EXN_ID: Parse_error,
+                Error: new Error()
               };
         }
         throw {
-              RE_EXN_ID: Parse_error
+              RE_EXN_ID: Parse_error,
+              Error: new Error()
             };
       }
       if (c$1 >= 44) {
         if (c$1 >= 63) {
           throw {
-                RE_EXN_ID: Parse_error
+                RE_EXN_ID: Parse_error,
+                Error: new Error()
               };
         }
         return /* Set */Block.__(0, [single(c$1)]);
       }
       if (c$1 >= 42) {
         throw {
-              RE_EXN_ID: Parse_error
+              RE_EXN_ID: Parse_error,
+              Error: new Error()
             };
       }
       return /* Set */Block.__(0, [single(c$1)]);
@@ -3415,7 +3451,8 @@ function parse(multiline, dollar_endonly, dotall, ungreedy, s) {
         var i$prime = Caml_int32.imul(10, i$1) + (d$1 - /* "0" */48 | 0) | 0;
         if (i$prime < i$1) {
           throw {
-                RE_EXN_ID: Parse_error
+                RE_EXN_ID: Parse_error,
+                Error: new Error()
               };
         }
         _i = i$prime;
@@ -3426,14 +3463,16 @@ function parse(multiline, dollar_endonly, dotall, ungreedy, s) {
   var $$char = function (param) {
     if (i.contents === l) {
       throw {
-            RE_EXN_ID: Parse_error
+            RE_EXN_ID: Parse_error,
+            Error: new Error()
           };
     }
     var c = get(undefined);
     if (c === /* "[" */91) {
       if (accept(/* "=" */61)) {
         throw {
-              RE_EXN_ID: Not_supported
+              RE_EXN_ID: Not_supported,
+              Error: new Error()
             };
       }
       if (accept(/* ":" */58)) {
@@ -3485,14 +3524,16 @@ function parse(multiline, dollar_endonly, dotall, ungreedy, s) {
           var exn = Caml_js_exceptions.internalToOCamlException(raw_exn);
           if (exn.RE_EXN_ID === "Not_found") {
             throw {
-                  RE_EXN_ID: Parse_error
+                  RE_EXN_ID: Parse_error,
+                  Error: new Error()
                 };
           }
           throw exn;
         }
         if (!accept_s(":]")) {
           throw {
-                RE_EXN_ID: Parse_error
+                RE_EXN_ID: Parse_error,
+                Error: new Error()
               };
         }
         var posix_class = posix_class_of_string(cls);
@@ -3513,18 +3554,21 @@ function parse(multiline, dollar_endonly, dotall, ungreedy, s) {
       }
       if (i.contents === l) {
         throw {
-              RE_EXN_ID: Parse_error
+              RE_EXN_ID: Parse_error,
+              Error: new Error()
             };
       }
       var c$1 = get(undefined);
       if (!accept(/* "." */46)) {
         throw {
-              RE_EXN_ID: Not_supported
+              RE_EXN_ID: Not_supported,
+              Error: new Error()
             };
       }
       if (!accept(/* "]" */93)) {
         throw {
-              RE_EXN_ID: Parse_error
+              RE_EXN_ID: Parse_error,
+              Error: new Error()
             };
       }
       return /* `Char */[
@@ -3687,14 +3731,16 @@ function parse(multiline, dollar_endonly, dotall, ungreedy, s) {
         case 63 :
         case 64 :
             throw {
-                  RE_EXN_ID: Parse_error
+                  RE_EXN_ID: Parse_error,
+                  Error: new Error()
                 };
         
       }
     } else {
       if (c$2 >= 48) {
         throw {
-              RE_EXN_ID: Not_supported
+              RE_EXN_ID: Not_supported,
+              Error: new Error()
             };
       }
       return /* `Char */[
@@ -3769,7 +3815,8 @@ function parse(multiline, dollar_endonly, dotall, ungreedy, s) {
   var res = regexp$prime(branch$prime(/* [] */0));
   if (i.contents !== l) {
     throw {
-          RE_EXN_ID: Parse_error
+          RE_EXN_ID: Parse_error,
+          Error: new Error()
         };
   }
   return res;
@@ -3810,7 +3857,8 @@ function exec(rex, pos, s) {
   var substr = exec_internal("Re.exec", pos, len, true, rex, s);
   if (typeof substr === "number") {
     throw {
-          RE_EXN_ID: "Not_found"
+          RE_EXN_ID: "Not_found",
+          Error: new Error()
         };
   }
   return substr[0];

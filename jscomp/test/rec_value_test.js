@@ -64,7 +64,8 @@ var v = {
               "rec_value_test.ml",
               23,
               24
-            ]
+            ],
+            Error: new Error()
           };
     })
 };
@@ -242,7 +243,8 @@ var suites_001 = /* :: */[
                     "rec_value_test.ml",
                     108,
                     2
-                  ]
+                  ],
+                  Error: new Error()
                 };
           }
         } else {
@@ -252,7 +254,8 @@ var suites_001 = /* :: */[
                   "rec_value_test.ml",
                   108,
                   2
-                ]
+                ],
+                Error: new Error()
               };
         }
         return /* Eq */Block.__(0, [
@@ -386,7 +389,8 @@ var suites_001 = /* :: */[
                                 "rec_value_test.ml",
                                 132,
                                 11
-                              ]
+                              ],
+                              Error: new Error()
                             };
                       })
                   ],
@@ -406,7 +410,8 @@ var suites_001 = /* :: */[
                                   "rec_value_test.ml",
                                   137,
                                   11
-                                ]
+                                ],
+                                Error: new Error()
                               };
                         })
                     ],

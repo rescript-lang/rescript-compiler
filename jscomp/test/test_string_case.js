@@ -14,7 +14,8 @@ function f(param) {
               "test_string_case.ml",
               4,
               9
-            ]
+            ],
+            Error: new Error()
           };
   }
 }

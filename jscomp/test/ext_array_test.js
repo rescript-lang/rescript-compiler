@@ -108,7 +108,8 @@ function range(from, to_) {
   if (from > to_) {
     throw {
           RE_EXN_ID: "Invalid_argument",
-          _1: "Ext_array_test.range"
+          _1: "Ext_array_test.range",
+          Error: new Error()
         };
   }
   return $$Array.init((to_ - from | 0) + 1 | 0, (function (i) {
@@ -121,7 +122,8 @@ function map2i(f, a, b) {
   if (len !== b.length) {
     throw {
           RE_EXN_ID: "Invalid_argument",
-          _1: "Ext_array_test.map2i"
+          _1: "Ext_array_test.map2i",
+          Error: new Error()
         };
   }
   return $$Array.mapi((function (i, a) {

@@ -10,7 +10,8 @@ function f0(x) {
       });
   } else {
     throw {
-          RE_EXN_ID: "Not_found"
+          RE_EXN_ID: "Not_found",
+          Error: new Error()
         };
   }
   return tmp(3);
@@ -18,7 +19,8 @@ function f0(x) {
 
 function f1(x) {
   throw {
-        RE_EXN_ID: "Not_found"
+        RE_EXN_ID: "Not_found",
+        Error: new Error()
       };
   return Curry._1(undefined, x);
 }
@@ -48,7 +50,8 @@ function f3(x) {
         break;
     default:
       throw {
-            RE_EXN_ID: "Not_found"
+            RE_EXN_ID: "Not_found",
+            Error: new Error()
           };
   }
   return tmp(3);

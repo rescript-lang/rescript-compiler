@@ -17,7 +17,8 @@ function is_equal(param) {
             "equal_exception_test.ml",
             9,
             4
-          ]
+          ],
+          Error: new Error()
         };
   }
   if (Bytes.make(3, /* "a" */97)[0] !== /* "a" */97) {
@@ -27,7 +28,8 @@ function is_equal(param) {
             "equal_exception_test.ml",
             10,
             4
-          ]
+          ],
+          Error: new Error()
         };
   }
   var u = Bytes.make(3, /* "a" */97);
@@ -39,7 +41,8 @@ function is_equal(param) {
             "equal_exception_test.ml",
             13,
             4
-          ]
+          ],
+          Error: new Error()
         };
   }
   
@@ -48,7 +51,8 @@ function is_equal(param) {
 function is_exception(param) {
   try {
     throw {
-          RE_EXN_ID: "Not_found"
+          RE_EXN_ID: "Not_found",
+          Error: new Error()
         };
   }
   catch (raw_exn){
@@ -85,7 +89,8 @@ function is_arbitrary_exception(param) {
   var A = Caml_exceptions.create("A");
   try {
     throw {
-          RE_EXN_ID: A
+          RE_EXN_ID: A,
+          Error: new Error()
         };
   }
   catch (exn){
@@ -142,7 +147,8 @@ if (Caml_obj.caml_equal(e, {
           "equal_exception_test.ml",
           50,
           3
-        ]
+        ],
+        Error: new Error()
       };
 }
 
@@ -153,7 +159,8 @@ if (Not_found === "Not_found" !== false) {
           "equal_exception_test.ml",
           51,
           3
-        ]
+        ],
+        Error: new Error()
       };
 }
 

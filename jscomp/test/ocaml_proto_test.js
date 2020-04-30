@@ -238,7 +238,8 @@ function pop_last(param) {
   }
   throw {
         RE_EXN_ID: "Failure",
-        _1: "Invalid argument [] for pop_last"
+        _1: "Invalid argument [] for pop_last",
+        Error: new Error()
       };
 }
 
@@ -689,7 +690,8 @@ function invalid_default_value(field_name, info, param) {
         _1: /* Invalid_default_value */Block.__(2, [{
               field_name: field_name,
               info: info
-            }])
+            }]),
+        Error: new Error()
       };
 }
 
@@ -700,7 +702,8 @@ function unsupported_field_type(field_name, field_type, backend_name, param) {
               field_name: field_name,
               field_type: field_type,
               backend_name: backend_name
-            }])
+            }]),
+        Error: new Error()
       };
 }
 
@@ -710,7 +713,8 @@ function invalid_enum_specification(enum_name, loc) {
         _1: /* Invalid_enum_specification */Block.__(10, [
             enum_name,
             loc
-          ])
+          ]),
+        Error: new Error()
       };
 }
 
@@ -758,7 +762,8 @@ var yyact = [
   (function (param) {
       throw {
             RE_EXN_ID: "Failure",
-            _1: "parser"
+            _1: "parser",
+            Error: new Error()
           };
     }),
   (function (__caml_parser_env) {
@@ -883,7 +888,8 @@ var yyact = [
       Parsing.peek_val(__caml_parser_env, 0);
       throw {
             RE_EXN_ID: Compilation_error,
-            _1: /* Invalid_import_qualifier */Block.__(5, [_1])
+            _1: /* Invalid_import_qualifier */Block.__(5, [_1]),
+            Error: new Error()
           };
     }),
   (function (__caml_parser_env) {
@@ -938,7 +944,8 @@ var yyact = [
   (function (__caml_parser_env) {
       throw {
             RE_EXN_ID: Compilation_error,
-            _1: /* Syntax_error */0
+            _1: /* Syntax_error */0,
+            Error: new Error()
           };
     }),
   (function (__caml_parser_env) {
@@ -1018,7 +1025,8 @@ var yyact = [
       Parsing.peek_val(__caml_parser_env, 0);
       throw {
             RE_EXN_ID: Compilation_error,
-            _1: /* Missing_one_of_name */Block.__(12, [_1])
+            _1: /* Missing_one_of_name */Block.__(12, [_1]),
+            Error: new Error()
           };
     }),
   (function (__caml_parser_env) {
@@ -1089,7 +1097,8 @@ var yyact = [
       Parsing.peek_val(__caml_parser_env, 0);
       throw {
             RE_EXN_ID: Compilation_error,
-            _1: /* Missing_field_label */Block.__(14, [_1[0]])
+            _1: /* Missing_field_label */Block.__(14, [_1[0]]),
+            Error: new Error()
           };
     }),
   (function (__caml_parser_env) {
@@ -1099,7 +1108,8 @@ var yyact = [
       Parsing.peek_val(__caml_parser_env, 0);
       throw {
             RE_EXN_ID: Compilation_error,
-            _1: /* Missing_field_label */Block.__(14, [_1[0]])
+            _1: /* Missing_field_label */Block.__(14, [_1[0]]),
+            Error: new Error()
           };
     }),
   (function (__caml_parser_env) {
@@ -1168,7 +1178,8 @@ var yyact = [
       var _1 = Parsing.peek_val(__caml_parser_env, 0);
       throw {
             RE_EXN_ID: Compilation_error,
-            _1: /* Invalid_field_label */Block.__(13, [_1[0]])
+            _1: /* Invalid_field_label */Block.__(13, [_1[0]]),
+            Error: new Error()
           };
     }),
   (function (__caml_parser_env) {
@@ -1299,7 +1310,8 @@ var yyact = [
             _1: /* Missing_semicolon_for_enum_value */Block.__(9, [
                 enum_value,
                 loc
-              ])
+              ]),
+            Error: new Error()
           };
     }),
   (function (__caml_parser_env) {
@@ -1336,73 +1348,85 @@ var yyact = [
   (function (__caml_parser_env) {
       throw {
             RE_EXN_ID: Parsing.YYexit,
-            _1: Parsing.peek_val(__caml_parser_env, 0)
+            _1: Parsing.peek_val(__caml_parser_env, 0),
+            Error: new Error()
           };
     }),
   (function (__caml_parser_env) {
       throw {
             RE_EXN_ID: Parsing.YYexit,
-            _1: Parsing.peek_val(__caml_parser_env, 0)
+            _1: Parsing.peek_val(__caml_parser_env, 0),
+            Error: new Error()
           };
     }),
   (function (__caml_parser_env) {
       throw {
             RE_EXN_ID: Parsing.YYexit,
-            _1: Parsing.peek_val(__caml_parser_env, 0)
+            _1: Parsing.peek_val(__caml_parser_env, 0),
+            Error: new Error()
           };
     }),
   (function (__caml_parser_env) {
       throw {
             RE_EXN_ID: Parsing.YYexit,
-            _1: Parsing.peek_val(__caml_parser_env, 0)
+            _1: Parsing.peek_val(__caml_parser_env, 0),
+            Error: new Error()
           };
     }),
   (function (__caml_parser_env) {
       throw {
             RE_EXN_ID: Parsing.YYexit,
-            _1: Parsing.peek_val(__caml_parser_env, 0)
+            _1: Parsing.peek_val(__caml_parser_env, 0),
+            Error: new Error()
           };
     }),
   (function (__caml_parser_env) {
       throw {
             RE_EXN_ID: Parsing.YYexit,
-            _1: Parsing.peek_val(__caml_parser_env, 0)
+            _1: Parsing.peek_val(__caml_parser_env, 0),
+            Error: new Error()
           };
     }),
   (function (__caml_parser_env) {
       throw {
             RE_EXN_ID: Parsing.YYexit,
-            _1: Parsing.peek_val(__caml_parser_env, 0)
+            _1: Parsing.peek_val(__caml_parser_env, 0),
+            Error: new Error()
           };
     }),
   (function (__caml_parser_env) {
       throw {
             RE_EXN_ID: Parsing.YYexit,
-            _1: Parsing.peek_val(__caml_parser_env, 0)
+            _1: Parsing.peek_val(__caml_parser_env, 0),
+            Error: new Error()
           };
     }),
   (function (__caml_parser_env) {
       throw {
             RE_EXN_ID: Parsing.YYexit,
-            _1: Parsing.peek_val(__caml_parser_env, 0)
+            _1: Parsing.peek_val(__caml_parser_env, 0),
+            Error: new Error()
           };
     }),
   (function (__caml_parser_env) {
       throw {
             RE_EXN_ID: Parsing.YYexit,
-            _1: Parsing.peek_val(__caml_parser_env, 0)
+            _1: Parsing.peek_val(__caml_parser_env, 0),
+            Error: new Error()
           };
     }),
   (function (__caml_parser_env) {
       throw {
             RE_EXN_ID: Parsing.YYexit,
-            _1: Parsing.peek_val(__caml_parser_env, 0)
+            _1: Parsing.peek_val(__caml_parser_env, 0),
+            Error: new Error()
           };
     }),
   (function (__caml_parser_env) {
       throw {
             RE_EXN_ID: Parsing.YYexit,
-            _1: Parsing.peek_val(__caml_parser_env, 0)
+            _1: Parsing.peek_val(__caml_parser_env, 0),
+            Error: new Error()
           };
     })
 ];
@@ -1663,7 +1687,8 @@ function lexer(lexbuf) {
                   ]), Lexing.lexeme(lexbuf));
           throw {
                 RE_EXN_ID: "Failure",
-                _1: s$1
+                _1: s$1,
+                Error: new Error()
               };
       default:
         Curry._1(lexbuf.refill_buff, lexbuf);
@@ -1925,7 +1950,8 @@ function runtime_function(param) {
     if (match !== 779642422) {
       throw {
             RE_EXN_ID: "Failure",
-            _1: "Invalid encoding/OCaml type combination"
+            _1: "Invalid encoding/OCaml type combination",
+            Error: new Error()
           };
     }
     var match$1 = param[1];
@@ -1945,7 +1971,8 @@ function runtime_function(param) {
               case /* Bt_bool */6 :
                   throw {
                         RE_EXN_ID: "Failure",
-                        _1: "Invalid encoding/OCaml type combination"
+                        _1: "Invalid encoding/OCaml type combination",
+                        Error: new Error()
                       };
               
             }
@@ -1963,7 +1990,8 @@ function runtime_function(param) {
               case /* Bt_bool */6 :
                   throw {
                         RE_EXN_ID: "Failure",
-                        _1: "Invalid encoding/OCaml type combination"
+                        _1: "Invalid encoding/OCaml type combination",
+                        Error: new Error()
                       };
               
             }
@@ -1977,7 +2005,8 @@ function runtime_function(param) {
             }
             throw {
                   RE_EXN_ID: "Failure",
-                  _1: "Invalid encoding/OCaml type combination"
+                  _1: "Invalid encoding/OCaml type combination",
+                  Error: new Error()
                 };
         
       }
@@ -1995,7 +2024,8 @@ function runtime_function(param) {
         case /* Bt_bool */6 :
             throw {
                   RE_EXN_ID: "Failure",
-                  _1: "Invalid encoding/OCaml type combination"
+                  _1: "Invalid encoding/OCaml type combination",
+                  Error: new Error()
                 };
         
       }
@@ -2012,7 +2042,8 @@ function runtime_function(param) {
         case /* Bt_bytes */5 :
             throw {
                   RE_EXN_ID: "Failure",
-                  _1: "Invalid encoding/OCaml type combination"
+                  _1: "Invalid encoding/OCaml type combination",
+                  Error: new Error()
                 };
         case /* Bt_bool */6 :
             return "Pbrt.Encoder.bool";
@@ -2037,7 +2068,8 @@ function runtime_function(param) {
               case /* Bt_bool */6 :
                   throw {
                         RE_EXN_ID: "Failure",
-                        _1: "Invalid encoding/OCaml type combination"
+                        _1: "Invalid encoding/OCaml type combination",
+                        Error: new Error()
                       };
               
             }
@@ -2055,7 +2087,8 @@ function runtime_function(param) {
               case /* Bt_bool */6 :
                   throw {
                         RE_EXN_ID: "Failure",
-                        _1: "Invalid encoding/OCaml type combination"
+                        _1: "Invalid encoding/OCaml type combination",
+                        Error: new Error()
                       };
               
             }
@@ -2069,7 +2102,8 @@ function runtime_function(param) {
             }
             throw {
                   RE_EXN_ID: "Failure",
-                  _1: "Invalid encoding/OCaml type combination"
+                  _1: "Invalid encoding/OCaml type combination",
+                  Error: new Error()
                 };
         
       }
@@ -2087,7 +2121,8 @@ function runtime_function(param) {
         case /* Bt_bool */6 :
             throw {
                   RE_EXN_ID: "Failure",
-                  _1: "Invalid encoding/OCaml type combination"
+                  _1: "Invalid encoding/OCaml type combination",
+                  Error: new Error()
                 };
         
       }
@@ -2104,7 +2139,8 @@ function runtime_function(param) {
         case /* Bt_bytes */5 :
             throw {
                   RE_EXN_ID: "Failure",
-                  _1: "Invalid encoding/OCaml type combination"
+                  _1: "Invalid encoding/OCaml type combination",
+                  Error: new Error()
                 };
         case /* Bt_bool */6 :
             return "Pbrt.Decoder.bool";
@@ -3451,12 +3487,14 @@ function bal(l, x, d, r) {
       }
       throw {
             RE_EXN_ID: "Invalid_argument",
-            _1: "Map.bal"
+            _1: "Map.bal",
+            Error: new Error()
           };
     }
     throw {
           RE_EXN_ID: "Invalid_argument",
-          _1: "Map.bal"
+          _1: "Map.bal",
+          Error: new Error()
         };
   }
   if (hr <= (hl + 2 | 0)) {
@@ -3481,12 +3519,14 @@ function bal(l, x, d, r) {
     }
     throw {
           RE_EXN_ID: "Invalid_argument",
-          _1: "Map.bal"
+          _1: "Map.bal",
+          Error: new Error()
         };
   }
   throw {
         RE_EXN_ID: "Invalid_argument",
-        _1: "Map.bal"
+        _1: "Map.bal",
+        Error: new Error()
       };
 }
 
@@ -3546,7 +3586,8 @@ function find(x, _param) {
       continue ;
     }
     throw {
-          RE_EXN_ID: "Not_found"
+          RE_EXN_ID: "Not_found",
+          Error: new Error()
         };
   };
 }
@@ -3589,12 +3630,14 @@ function min_value(param) {
     }
     throw {
           RE_EXN_ID: "Failure",
-          _1: "min_value error"
+          _1: "min_value error",
+          Error: new Error()
         };
   }
   throw {
         RE_EXN_ID: "Failure",
-        _1: "min_value error"
+        _1: "min_value error",
+        Error: new Error()
       };
 }
 
@@ -3607,12 +3650,14 @@ function eq_value(param) {
     }
     throw {
           RE_EXN_ID: "Failure",
-          _1: "eq_value error"
+          _1: "eq_value error",
+          Error: new Error()
         };
   }
   throw {
         RE_EXN_ID: "Failure",
-        _1: "eq_value error"
+        _1: "eq_value error",
+        Error: new Error()
       };
 }
 
@@ -3973,7 +4018,8 @@ function unresolved_of_string(s) {
   }
   throw {
         RE_EXN_ID: Compilation_error,
-        _1: /* Programatic_error */Block.__(4, [/* Invalid_string_split */0])
+        _1: /* Programatic_error */Block.__(4, [/* Invalid_string_split */0]),
+        Error: new Error()
       };
 }
 
@@ -4181,7 +4227,8 @@ function list_assoc2(x, _param) {
       continue ;
     }
     throw {
-          RE_EXN_ID: "Not_found"
+          RE_EXN_ID: "Not_found",
+          Error: new Error()
         };
   };
 }
@@ -4310,7 +4357,8 @@ function compile_message_p1(file_name, file_options, message_scope, param) {
                   field_name: name,
                   previous_field_name: previous_field_name,
                   message_name: message_name
-                }])
+                }]),
+            Error: new Error()
           };
     }
   };
@@ -4432,7 +4480,8 @@ function compile_message_p2(types, param, message) {
       }
       throw {
             RE_EXN_ID: Compilation_error,
-            _1: /* Programatic_error */Block.__(4, [/* Unexpected_field_type */1])
+            _1: /* Programatic_error */Block.__(4, [/* Unexpected_field_type */1]),
+            Error: new Error()
           };
     }
     var unresolved = field_type[0];
@@ -4503,7 +4552,8 @@ function compile_message_p2(types, param, message) {
                   field_name: field_name,
                   type_: type_name,
                   message_name: message_name
-                }])
+                }]),
+            Error: new Error()
           };
     }
   };
@@ -5747,7 +5797,8 @@ function record_field_default_info(record_field) {
                   "codegen_default.ml",
                   74,
                   15
-                ]
+                ],
+                Error: new Error()
               };
         }
         break;
@@ -5964,7 +6015,8 @@ function gen_default_variant(and_, param, sc) {
   }
   throw {
         RE_EXN_ID: "Failure",
-        _1: "programmatic TODO error"
+        _1: "programmatic TODO error",
+        Error: new Error()
       };
 }
 
@@ -5977,7 +6029,8 @@ function gen_default_const_variant(and_, param, sc) {
   } else {
     throw {
           RE_EXN_ID: "Failure",
-          _1: "programmatic TODO error"
+          _1: "programmatic TODO error",
+          Error: new Error()
         };
   }
   return line$1(sc, Curry._4(Printf.sprintf(/* Format */[
@@ -6308,7 +6361,8 @@ function module_of_file_name(file_name) {
     if (exn.RE_EXN_ID === "Not_found") {
       throw {
             RE_EXN_ID: Compilation_error,
-            _1: /* Invalid_file_name */Block.__(6, [file_name$1])
+            _1: /* Invalid_file_name */Block.__(6, [file_name$1]),
+            Error: new Error()
           };
     }
     throw exn;
@@ -6334,7 +6388,8 @@ function type_name(message_scope, name) {
   }
   throw {
         RE_EXN_ID: "Failure",
-        _1: "Programmatic error"
+        _1: "Programmatic error",
+        Error: new Error()
       };
 }
 
@@ -6383,7 +6438,8 @@ function encoding_of_field(all_types, field) {
       var field_name$1 = field_name(field);
       throw {
             RE_EXN_ID: Compilation_error,
-            _1: /* Invalid_packed_option */Block.__(8, [field_name$1])
+            _1: /* Invalid_packed_option */Block.__(8, [field_name$1]),
+            Error: new Error()
           };
     }
   } else {
@@ -6417,7 +6473,8 @@ function compile_field_type(field_name, all_types, file_options, field_options, 
       if (exn.RE_EXN_ID === "Not_found") {
         throw {
               RE_EXN_ID: Compilation_error,
-              _1: /* Programatic_error */Block.__(4, [/* No_type_found_for_id */2])
+              _1: /* Programatic_error */Block.__(4, [/* No_type_found_for_id */2]),
+              Error: new Error()
             };
       }
       throw exn;
@@ -6490,7 +6547,8 @@ function is_mutable(field_name, field_options) {
   }
   throw {
         RE_EXN_ID: Compilation_error,
-        _1: /* Invalid_mutable_option */Block.__(11, [field_name])
+        _1: /* Invalid_mutable_option */Block.__(11, [field_name]),
+        Error: new Error()
       };
 }
 
@@ -6665,7 +6723,8 @@ function compile(proto_definition) {
                                               } else {
                                                 throw {
                                                       RE_EXN_ID: "Failure",
-                                                      _1: "Invalid ocaml_container attribute value"
+                                                      _1: "Invalid ocaml_container attribute value",
+                                                      Error: new Error()
                                                     };
                                               }
                                             } else {
@@ -6751,13 +6810,15 @@ function compile(proto_definition) {
                                         if (typeof key_type === "number") {
                                           throw {
                                                 RE_EXN_ID: "Failure",
-                                                _1: "Only Basic Types are supported for map keys"
+                                                _1: "Only Basic Types are supported for map keys",
+                                                Error: new Error()
                                               };
                                         }
                                         if (key_type.tag) {
                                           throw {
                                                 RE_EXN_ID: "Failure",
-                                                _1: "Only Basic Types are supported for map keys"
+                                                _1: "Only Basic Types are supported for map keys",
+                                                Error: new Error()
                                               };
                                         }
                                         key_type$1 = key_type[0];
@@ -6780,7 +6841,8 @@ function compile(proto_definition) {
                                           } else {
                                             throw {
                                                   RE_EXN_ID: "Failure",
-                                                  _1: "Invalid ocaml_container attribute value for map"
+                                                  _1: "Invalid ocaml_container attribute value for map",
+                                                  Error: new Error()
                                                 };
                                           }
                                         } else {

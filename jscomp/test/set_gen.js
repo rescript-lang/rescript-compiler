@@ -42,7 +42,8 @@ function min_elt(_param) {
       continue ;
     }
     throw {
-          RE_EXN_ID: "Not_found"
+          RE_EXN_ID: "Not_found",
+          Error: new Error()
         };
   };
 }
@@ -59,7 +60,8 @@ function max_elt(_param) {
       continue ;
     }
     throw {
-          RE_EXN_ID: "Not_found"
+          RE_EXN_ID: "Not_found",
+          Error: new Error()
         };
   };
 }
@@ -204,13 +206,15 @@ function check_height_and_diff(param) {
   var hr = check_height_and_diff(param[2]);
   if (h !== (max_int_2(hl, hr) + 1 | 0)) {
     throw {
-          RE_EXN_ID: Height_invariant_broken
+          RE_EXN_ID: Height_invariant_broken,
+          Error: new Error()
         };
   }
   var diff = Pervasives.abs(hl - hr | 0);
   if (diff > 2) {
     throw {
-          RE_EXN_ID: Height_diff_borken
+          RE_EXN_ID: Height_diff_borken,
+          Error: new Error()
         };
   }
   return h;
@@ -252,7 +256,8 @@ function internal_bal(l, v, r) {
               "set_gen.ml",
               235,
               19
-            ]
+            ],
+            Error: new Error()
           };
     }
     throw {
@@ -261,7 +266,8 @@ function internal_bal(l, v, r) {
             "set_gen.ml",
             225,
             15
-          ]
+          ],
+          Error: new Error()
         };
   }
   if (hr <= (hl + 2 | 0)) {
@@ -288,7 +294,8 @@ function internal_bal(l, v, r) {
             "set_gen.ml",
             251,
             19
-          ]
+          ],
+          Error: new Error()
         };
   }
   throw {
@@ -297,7 +304,8 @@ function internal_bal(l, v, r) {
           "set_gen.ml",
           245,
           15
-        ]
+        ],
+        Error: new Error()
       };
 }
 
@@ -312,7 +320,8 @@ function remove_min_elt(param) {
   }
   throw {
         RE_EXN_ID: "Invalid_argument",
-        _1: "Set.remove_min_elt"
+        _1: "Set.remove_min_elt",
+        Error: new Error()
       };
 }
 
@@ -519,7 +528,8 @@ function of_sorted_list(l) {
             "set_gen.ml",
             361,
             14
-          ]
+          ],
+          Error: new Error()
         };
   };
   return sub(List.length(l), l)[0];

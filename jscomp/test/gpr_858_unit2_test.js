@@ -28,7 +28,8 @@ for(var i = 1; i <= 2; ++i){
             "gpr_858_unit2_test.ml",
             6,
             13
-          ]
+          ],
+          Error: new Error()
         };
   }
   }(i));

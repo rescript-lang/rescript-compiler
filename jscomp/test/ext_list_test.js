@@ -205,7 +205,8 @@ function filter_map2(f, _xs, _ys) {
       }
       throw {
             RE_EXN_ID: "Invalid_argument",
-            _1: "Ext_list_test.filter_map2"
+            _1: "Ext_list_test.filter_map2",
+            Error: new Error()
           };
     }
     if (!ys) {
@@ -213,7 +214,8 @@ function filter_map2(f, _xs, _ys) {
     }
     throw {
           RE_EXN_ID: "Invalid_argument",
-          _1: "Ext_list_test.filter_map2"
+          _1: "Ext_list_test.filter_map2",
+          Error: new Error()
         };
   };
 }
@@ -242,7 +244,8 @@ function filter_map2i(f, xs, ys) {
         }
         throw {
               RE_EXN_ID: "Invalid_argument",
-              _1: "Ext_list_test.filter_map2i"
+              _1: "Ext_list_test.filter_map2i",
+              Error: new Error()
             };
       }
       if (!ys) {
@@ -250,7 +253,8 @@ function filter_map2i(f, xs, ys) {
       }
       throw {
             RE_EXN_ID: "Invalid_argument",
-            _1: "Ext_list_test.filter_map2i"
+            _1: "Ext_list_test.filter_map2i",
+            Error: new Error()
           };
     };
   };
@@ -290,13 +294,15 @@ function flat_map2(f, lx, ly) {
       }
       throw {
             RE_EXN_ID: "Invalid_argument",
-            _1: "Ext_list_test.flat_map2"
+            _1: "Ext_list_test.flat_map2",
+            Error: new Error()
           };
     }
     if (ly$1) {
       throw {
             RE_EXN_ID: "Invalid_argument",
-            _1: "Ext_list_test.flat_map2"
+            _1: "Ext_list_test.flat_map2",
+            Error: new Error()
           };
     }
     return List.rev(acc);
@@ -340,7 +346,8 @@ function map2_last(f, l1, l2) {
       } else {
         throw {
               RE_EXN_ID: "Invalid_argument",
-              _1: "List.map2_last"
+              _1: "List.map2_last",
+              Error: new Error()
             };
       }
     }
@@ -353,7 +360,8 @@ function map2_last(f, l1, l2) {
     }
     throw {
           RE_EXN_ID: "Invalid_argument",
-          _1: "List.map2_last"
+          _1: "List.map2_last",
+          Error: new Error()
         };
   }
   if (!l2) {
@@ -361,7 +369,8 @@ function map2_last(f, l1, l2) {
   }
   throw {
         RE_EXN_ID: "Invalid_argument",
-        _1: "List.map2_last"
+        _1: "List.map2_last",
+        Error: new Error()
       };
 }
 
@@ -397,7 +406,8 @@ function fold_right2_last(f, l1, l2, accu) {
       } else {
         throw {
               RE_EXN_ID: "Invalid_argument",
-              _1: "List.fold_right2"
+              _1: "List.fold_right2",
+              Error: new Error()
             };
       }
     }
@@ -406,13 +416,15 @@ function fold_right2_last(f, l1, l2, accu) {
     }
     throw {
           RE_EXN_ID: "Invalid_argument",
-          _1: "List.fold_right2"
+          _1: "List.fold_right2",
+          Error: new Error()
         };
   }
   if (l2) {
     throw {
           RE_EXN_ID: "Invalid_argument",
-          _1: "List.fold_right2"
+          _1: "List.fold_right2",
+          Error: new Error()
         };
   }
   return accu;
@@ -428,7 +440,8 @@ function take(n, l) {
   if (arr_length < n) {
     throw {
           RE_EXN_ID: "Invalid_argument",
-          _1: "Ext_list_test.take"
+          _1: "Ext_list_test.take",
+          Error: new Error()
         };
   }
   return /* tuple */[
@@ -515,7 +528,8 @@ function exclude_tail(x) {
     }
     throw {
           RE_EXN_ID: "Invalid_argument",
-          _1: "Ext_list_test.exclude_tail"
+          _1: "Ext_list_test.exclude_tail",
+          Error: new Error()
         };
   };
 }
@@ -567,7 +581,8 @@ function drop(_n, _h) {
     if (n < 0) {
       throw {
             RE_EXN_ID: "Invalid_argument",
-            _1: "Ext_list_test.drop"
+            _1: "Ext_list_test.drop",
+            Error: new Error()
           };
     }
     if (n === 0) {
@@ -576,7 +591,8 @@ function drop(_n, _h) {
     if (h === /* [] */0) {
       throw {
             RE_EXN_ID: "Invalid_argument",
-            _1: "Ext_list_test.drop"
+            _1: "Ext_list_test.drop",
+            Error: new Error()
           };
     }
     _h = List.tl(h);
@@ -748,7 +764,8 @@ function reduce_from_right(fn, lst) {
   }
   throw {
         RE_EXN_ID: "Invalid_argument",
-        _1: "Ext_list_test.reduce"
+        _1: "Ext_list_test.reduce",
+        Error: new Error()
       };
 }
 
@@ -758,7 +775,8 @@ function reduce_from_left(fn, lst) {
   }
   throw {
         RE_EXN_ID: "Invalid_argument",
-        _1: "Ext_list_test.reduce_from_left"
+        _1: "Ext_list_test.reduce_from_left",
+        Error: new Error()
       };
 }
 
@@ -775,7 +793,8 @@ function ref_top(x) {
   }
   throw {
         RE_EXN_ID: "Invalid_argument",
-        _1: "Ext_list_test.ref_top"
+        _1: "Ext_list_test.ref_top",
+        Error: new Error()
       };
 }
 
@@ -804,7 +823,8 @@ function ref_pop(refs) {
   }
   throw {
         RE_EXN_ID: "Invalid_argument",
-        _1: "Ext_list_test.ref_pop"
+        _1: "Ext_list_test.ref_pop",
+        Error: new Error()
       };
 }
 
@@ -832,7 +852,8 @@ function rev_except_last(xs) {
     }
     throw {
           RE_EXN_ID: "Invalid_argument",
-          _1: "Ext_list_test.rev_except_last"
+          _1: "Ext_list_test.rev_except_last",
+          Error: new Error()
         };
   };
 }
@@ -856,7 +877,8 @@ function last(_xs) {
     }
     throw {
           RE_EXN_ID: "Invalid_argument",
-          _1: "Ext_list_test.last"
+          _1: "Ext_list_test.last",
+          Error: new Error()
         };
   };
 }
@@ -881,7 +903,8 @@ function assoc_by_string(def, k, _lst) {
             "ext_list_test.ml",
             399,
             14
-          ]
+          ],
+          Error: new Error()
         };
   };
 }
@@ -906,7 +929,8 @@ function assoc_by_int(def, k, _lst) {
             "ext_list_test.ml",
             409,
             14
-          ]
+          ],
+          Error: new Error()
         };
   };
 }

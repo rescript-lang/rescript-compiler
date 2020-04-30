@@ -983,7 +983,8 @@ Belt_List.forEach(random_data, (function (u) {
                     "int64_string_test.ml",
                     161,
                     9
-                  ]
+                  ],
+                  Error: new Error()
                 };
           }
           var match = u[0];
@@ -995,7 +996,8 @@ Belt_List.forEach(random_data, (function (u) {
                 "int64_string_test.ml",
                 161,
                 9
-              ]
+              ],
+              Error: new Error()
             };
       }));
 

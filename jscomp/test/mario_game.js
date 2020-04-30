@@ -1475,7 +1475,8 @@ function game_win(ctx) {
   ctx.fillText("You win!", 180, 128);
   throw {
         RE_EXN_ID: "Failure",
-        _1: "Game over."
+        _1: "Game over.",
+        Error: new Error()
       };
 }
 
@@ -1488,7 +1489,8 @@ function game_loss(ctx) {
   ctx.fillText("GAME OVER. You lose!", 60, 128);
   throw {
         RE_EXN_ID: "Failure",
-        _1: "Game over."
+        _1: "Game over.",
+        Error: new Error()
       };
 }
 
@@ -2397,7 +2399,8 @@ function choose_enemy_typ(typ) {
     default:
       throw {
             RE_EXN_ID: "Failure",
-            _1: "Shouldn't reach here"
+            _1: "Shouldn't reach here",
+            Error: new Error()
           };
   }
 }
@@ -2417,7 +2420,8 @@ function choose_sblock_typ(typ) {
     default:
       throw {
             RE_EXN_ID: "Failure",
-            _1: "Shouldn't reach here"
+            _1: "Shouldn't reach here",
+            Error: new Error()
           };
   }
 }
@@ -2931,7 +2935,8 @@ function choose_block_pattern(blockw, blockh, cbx, cby, prob) {
     default:
       throw {
             RE_EXN_ID: "Failure",
-            _1: "Shouldn't reach here"
+            _1: "Shouldn't reach here",
+            Error: new Error()
           };
   }
 }
@@ -3202,7 +3207,8 @@ function load(param) {
             ]), canvas_id);
     throw {
           RE_EXN_ID: "Failure",
-          _1: "fail"
+          _1: "fail",
+          Error: new Error()
         };
   }
   var context = canvas.getContext("2d");

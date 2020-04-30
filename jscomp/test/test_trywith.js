@@ -108,7 +108,8 @@ function ff(g, x) {
 
 function u(param) {
   throw {
-        RE_EXN_ID: "Not_found"
+        RE_EXN_ID: "Not_found",
+        Error: new Error()
       };
 }
 
@@ -125,7 +126,8 @@ function f(x) {
           "test_trywith.ml",
           51,
           9
-        ]
+        ],
+        Error: new Error()
       };
 }
 

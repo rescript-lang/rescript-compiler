@@ -2,7 +2,8 @@
 
 
 throw {
-      RE_EXN_ID: "Not_found"
+      RE_EXN_ID: "Not_found",
+      Error: new Error()
     };
 
 /*  Not a pure module */

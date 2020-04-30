@@ -49,7 +49,8 @@ function bufferize(f) {
                         "qcc.ml",
                         17,
                         4
-                      ]
+                      ],
+                      Error: new Error()
                     };
               }
               buf.contents = Caml_option.some(x);
@@ -107,7 +108,8 @@ function symstr(n) {
             "qcc.ml",
             40,
             4
-          ]
+          ],
+          Error: new Error()
         };
   }
   return Caml_array.caml_array_get(symtab, n);
@@ -243,7 +245,8 @@ function next(param) {
     if (qt !== /* "'" */39) {
       throw {
             RE_EXN_ID: "Failure",
-            _1: "syntax error"
+            _1: "syntax error",
+            Error: new Error()
           };
     }
     return /* ILit */Block.__(1, [ch]);
@@ -359,7 +362,8 @@ function patch(rel, loc, n) {
             "qcc.ml",
             157,
             2
-          ]
+          ],
+          Error: new Error()
         };
   }
   if (loc === 0) {
@@ -861,7 +865,8 @@ function unary(stk) {
               } else {
                 throw {
                       RE_EXN_ID: "Failure",
-                      _1: "[cast] expected"
+                      _1: "[cast] expected",
+                      Error: new Error()
                     };
               }
               for(var k = 1 ,k_finish = match[1]; k <= k_finish; ++k){
@@ -909,7 +914,8 @@ function unary(stk) {
                       ]), o);
               throw {
                     RE_EXN_ID: "Failure",
-                    _1: s
+                    _1: s,
+                    Error: new Error()
                   };
             }
             out(List.assoc(o, unops));
@@ -935,7 +941,8 @@ function unary(stk) {
                     "qcc.ml",
                     295,
                     6
-                  ]
+                  ],
+                  Error: new Error()
                 };
           }
           out(4754245);
@@ -1128,7 +1135,8 @@ function decl(g, _n, _stk) {
               if (glo.va >= 0) {
                 throw {
                       RE_EXN_ID: "Failure",
-                      _1: "symbol defined twice"
+                      _1: "symbol defined twice",
+                      Error: new Error()
                     };
               }
               var va = (gpos.contents + 232 | 0) + 4194304 | 0;
@@ -1160,7 +1168,8 @@ function decl(g, _n, _stk) {
           }
           throw {
                 RE_EXN_ID: "Failure",
-                _1: "[var] expected in [decl]"
+                _1: "[var] expected in [decl]",
+                Error: new Error()
               };
         };
       }
@@ -1197,7 +1206,8 @@ function decl(g, _n, _stk) {
                 "qcc.ml",
                 436,
                 6
-              ]
+              ],
+              Error: new Error()
             };
       }
       out(4752364);
@@ -1316,7 +1326,8 @@ function stmt(brk, stk) {
               "qcc.ml",
               515,
               4
-            ]
+            ],
+            Error: new Error()
           };
     }
     if (n !== 0) {
@@ -1379,7 +1390,8 @@ function top(_param) {
       if (g.va >= 0) {
         throw {
               RE_EXN_ID: "Failure",
-              _1: "symbol defined twice"
+              _1: "symbol defined twice",
+              Error: new Error()
             };
       }
       Caml_array.caml_array_set(globs, f$1, {
@@ -1399,13 +1411,15 @@ function top(_param) {
                 }
                 throw {
                       RE_EXN_ID: "Failure",
-                      _1: "[var] or ) expected"
+                      _1: "[var] or ) expected",
+                      Error: new Error()
                     };
             case /* ILit */1 :
             case /* SLit */2 :
                 throw {
                       RE_EXN_ID: "Failure",
-                      _1: "[var] or ) expected"
+                      _1: "[var] or ) expected",
+                      Error: new Error()
                     };
             case /* Sym */3 :
                 var r = List.hd(regs);
@@ -1484,7 +1498,8 @@ function top(_param) {
     }
     throw {
           RE_EXN_ID: "Failure",
-          _1: "[decl] or [fun] expected"
+          _1: "[decl] or [fun] expected",
+          Error: new Error()
         };
   };
 }
@@ -1717,7 +1732,8 @@ function elfgen(outf) {
             "qcc.ml",
             698,
             2
-          ]
+          ],
+          Error: new Error()
         };
   }
   patch(false, 24, va(entry));

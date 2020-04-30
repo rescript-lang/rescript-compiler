@@ -220,7 +220,8 @@ function f(children) {
             "gpr_1150.ml",
             56,
             34
-          ]
+          ],
+          Error: new Error()
         };
   }
   return [

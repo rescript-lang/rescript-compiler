@@ -36,7 +36,8 @@ if (v.contents !== 45) {
           "test_closure.ml",
           53,
           2
-        ]
+        ],
+        Error: new Error()
       };
 }
 

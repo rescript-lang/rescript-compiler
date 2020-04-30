@@ -34,7 +34,8 @@ var y;
 try {
   throw {
         RE_EXN_ID: "Failure",
-        _1: "boo"
+        _1: "boo",
+        Error: new Error()
       };
 }
 catch (raw_msg){
@@ -53,7 +54,8 @@ var exit = 0;
 try {
   throw {
         RE_EXN_ID: "Failure",
-        _1: "boo"
+        _1: "boo",
+        Error: new Error()
       };
 }
 catch (raw_msg$1){

@@ -68,7 +68,8 @@ function resize(newSize) {
                 "bdd.ml",
                 54,
                 27
-              ]
+              ],
+              Error: new Error()
             };
       }
       var ind = hashVal(getId(n[0]), getId(n[3]), n[1]) & newSz_1;
@@ -133,7 +134,8 @@ function mkNode(low, v, high) {
                 "bdd.ml",
                 99,
                 31
-              ]
+              ],
+              Error: new Error()
             };
       }
       if (v === n[1] && idl === getId(n[0]) && idh === getId(n[3])) {
@@ -376,7 +378,8 @@ function main(param) {
           "bdd.ml",
           233,
           2
-        ]
+        ],
+        Error: new Error()
       };
 }
 

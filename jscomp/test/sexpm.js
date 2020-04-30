@@ -47,12 +47,14 @@ function _must_escape(s) {
             exit = 1;
           } else {
             throw {
-                  RE_EXN_ID: Pervasives.Exit
+                  RE_EXN_ID: Pervasives.Exit,
+                  Error: new Error()
                 };
           }
         } else {
           throw {
-                RE_EXN_ID: Pervasives.Exit
+                RE_EXN_ID: Pervasives.Exit,
+                Error: new Error()
               };
         }
       } else if (c >= 11) {
@@ -71,7 +73,8 @@ function _must_escape(s) {
             case 8 :
             case 9 :
                 throw {
-                      RE_EXN_ID: Pervasives.Exit
+                      RE_EXN_ID: Pervasives.Exit,
+                      Error: new Error()
                     };
             
           }
@@ -81,14 +84,16 @@ function _must_escape(s) {
       } else {
         if (c >= 9) {
           throw {
-                RE_EXN_ID: Pervasives.Exit
+                RE_EXN_ID: Pervasives.Exit,
+                Error: new Error()
               };
         }
         exit = 1;
       }
       if (exit === 1 && c > 127) {
         throw {
-              RE_EXN_ID: Pervasives.Exit
+              RE_EXN_ID: Pervasives.Exit,
+              Error: new Error()
             };
       }
       
@@ -390,7 +395,8 @@ function _get(t) {
             "sexpm.ml",
             152,
             4
-          ]
+          ],
+          Error: new Error()
         };
   }
   var c = Caml_bytes.get(t.buf, t.i);
@@ -496,7 +502,8 @@ function expr_starting_with(c, k, t) {
                     "sexpm.ml",
                     183,
                     27
-                  ]
+                  ],
+                  Error: new Error()
                 };
         case 2 :
             return quoted(k, t);
@@ -528,7 +535,8 @@ function expr_starting_with(c, k, t) {
             "sexpm.ml",
             183,
             27
-          ]
+          ],
+          Error: new Error()
         };
   }
   $$Buffer.add_char(t.atom, c);
@@ -975,7 +983,8 @@ function MakeDecode(funarg) {
               "sexpm.ml",
               152,
               4
-            ]
+            ],
+            Error: new Error()
           };
     }
     var c = Caml_bytes.get(t.buf, t.i);
@@ -1077,7 +1086,8 @@ function MakeDecode(funarg) {
                       "sexpm.ml",
                       183,
                       27
-                    ]
+                    ],
+                    Error: new Error()
                   };
           case 2 :
               return quoted(k, t);
@@ -1109,7 +1119,8 @@ function MakeDecode(funarg) {
               "sexpm.ml",
               183,
               27
-            ]
+            ],
+            Error: new Error()
           };
     }
     $$Buffer.add_char(t.atom, c);

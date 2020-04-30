@@ -7,7 +7,8 @@ var Caml_js_exceptions = require("../../lib/js/caml_js_exceptions.js");
 
 function f(param) {
   throw {
-        RE_EXN_ID: "Not_found"
+        RE_EXN_ID: "Not_found",
+        Error: new Error()
       };
 }
 
@@ -19,7 +20,8 @@ function assert_f(x) {
             "exception_value_test.ml",
             9,
             12
-          ]
+          ],
+          Error: new Error()
         };
   }
   return 3;
@@ -27,7 +29,8 @@ function assert_f(x) {
 
 function hh(param) {
   throw {
-        RE_EXN_ID: "Not_found"
+        RE_EXN_ID: "Not_found",
+        Error: new Error()
       };
 }
 
