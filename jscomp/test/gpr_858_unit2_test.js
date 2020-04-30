@@ -23,13 +23,12 @@ for(var i = 1; i <= 2; ++i){
       return ;
     }
     throw {
-          ExceptionID: -9,
+          ExceptionID: "Assert_failure",
           _1: /* tuple */[
             "gpr_858_unit2_test.ml",
             6,
             13
-          ],
-          Debug: "Assert_failure"
+          ]
         };
   }
   }(i));

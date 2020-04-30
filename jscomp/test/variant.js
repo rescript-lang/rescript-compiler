@@ -87,7 +87,7 @@ function rollback_path(subst, p) {
   }
   catch (raw_exn){
     var exn = Caml_js_exceptions.internalToOCamlException(raw_exn);
-    if (exn.ExceptionID === /* Not_found */-6) {
+    if (exn.ExceptionID === "Not_found") {
       switch (p.tag | 0) {
         case /* Pdot */1 :
             return "Pdot";
@@ -118,19 +118,19 @@ function fooExn(f) {
   }
   catch (raw_n){
     var n = Caml_js_exceptions.internalToOCamlException(raw_n);
-    if (n.ExceptionID === EA1.ExceptionID) {
+    if (n.ExceptionID === EA1) {
       return 1;
     }
-    if (n.ExceptionID === EA2.ExceptionID) {
+    if (n.ExceptionID === EA2) {
       return 2;
     }
-    if (n.ExceptionID === EB.ExceptionID) {
+    if (n.ExceptionID === EB) {
       return n._1;
     }
-    if (n.ExceptionID === EC.ExceptionID) {
+    if (n.ExceptionID === EC) {
       return n._1 + n._2 | 0;
     }
-    if (n.ExceptionID === ED.ExceptionID) {
+    if (n.ExceptionID === ED) {
       var match = n._1;
       return match[0] + match[1] | 0;
     }

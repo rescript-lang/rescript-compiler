@@ -24,20 +24,20 @@ function appf(g, x) {
   }
   catch (raw_exn){
     var exn = Caml_js_exceptions.internalToOCamlException(raw_exn);
-    if (exn.ExceptionID === Local.ExceptionID) {
+    if (exn.ExceptionID === Local) {
       return 3;
     }
-    if (exn.ExceptionID === /* Not_found */-6) {
+    if (exn.ExceptionID === "Not_found") {
       return 2;
     }
-    if (exn.ExceptionID === A.ExceptionID) {
+    if (exn.ExceptionID === A) {
       exn._1 !== 32;
       return 3;
     }
-    if (exn.ExceptionID !== B.ExceptionID) {
-      if (exn.ExceptionID === C.ExceptionID) {
+    if (exn.ExceptionID !== B) {
+      if (exn.ExceptionID === C) {
         return exn._1;
-      } else if (exn.ExceptionID === D.ExceptionID) {
+      } else if (exn.ExceptionID === D) {
         return exn._1[0];
       } else {
         return 4;
@@ -69,7 +69,7 @@ try {
 }
 catch (raw_x){
   var x = Caml_js_exceptions.internalToOCamlException(raw_x);
-  f = x.ExceptionID === A.ExceptionID ? x._1 : 2;
+  f = x.ExceptionID === A ? x._1 : 2;
 }
 
 var ff;
@@ -79,7 +79,7 @@ try {
 }
 catch (raw_x$1){
   var x$1 = Caml_js_exceptions.internalToOCamlException(raw_x$1);
-  ff = x$1.ExceptionID === A.ExceptionID ? x$1._1 : 2;
+  ff = x$1.ExceptionID === A ? x$1._1 : 2;
 }
 
 var fff;
@@ -89,7 +89,7 @@ try {
 }
 catch (raw_x$2){
   var x$2 = Caml_js_exceptions.internalToOCamlException(raw_x$2);
-  fff = x$2.ExceptionID === A.ExceptionID ? x$2._1 : 2;
+  fff = x$2.ExceptionID === A ? x$2._1 : 2;
 }
 
 var a0;
@@ -99,17 +99,16 @@ try {
 }
 catch (raw_x$3){
   var x$3 = Caml_js_exceptions.internalToOCamlException(raw_x$3);
-  if (x$3.ExceptionID === A.ExceptionID || x$3.ExceptionID === Js_exn.$$Error.ExceptionID) {
+  if (x$3.ExceptionID === A || x$3.ExceptionID === Js_exn.$$Error) {
     a0 = x$3._1;
   } else {
     throw {
-          ExceptionID: -9,
+          ExceptionID: "Assert_failure",
           _1: /* tuple */[
             "exception_raise_test.ml",
             102,
             9
-          ],
-          Debug: "Assert_failure"
+          ]
         };
   }
 }
@@ -157,20 +156,19 @@ var suites = {
       /* tuple */[
         "File \"exception_raise_test.ml\", line 116, characters 4-11",
         (function (param) {
-            if (a1.ExceptionID === Js_exn.$$Error.ExceptionID) {
+            if (a1.ExceptionID === Js_exn.$$Error) {
               return /* Eq */Block.__(0, [
                         a1._1,
                         2
                       ]);
             }
             throw {
-                  ExceptionID: -9,
+                  ExceptionID: "Assert_failure",
                   _1: /* tuple */[
                     "exception_raise_test.ml",
                     119,
                     15
-                  ],
-                  Debug: "Assert_failure"
+                  ]
                 };
           })
       ],
@@ -197,8 +195,7 @@ catch (raw_e$2){
 
 try {
   throw {
-        ExceptionID: -6,
-        Debug: "Not_found"
+        ExceptionID: "Not_found"
       };
 }
 catch (raw_e$3){

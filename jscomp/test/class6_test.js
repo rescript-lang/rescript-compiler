@@ -119,8 +119,7 @@ function lookup_obj(obj, _param) {
       continue ;
     }
     throw {
-          ExceptionID: -6,
-          Debug: "Not_found"
+          ExceptionID: "Not_found"
         };
   };
 }

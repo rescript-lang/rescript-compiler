@@ -2,13 +2,12 @@
 
 
 throw {
-      ExceptionID: -7,
+      ExceptionID: "Match_failure",
       _1: /* tuple */[
         "gpr_2474.ml",
         6,
         4
-      ],
-      Debug: "Match_failure"
+      ]
     };
 
 exports.coordinates = coordinates;

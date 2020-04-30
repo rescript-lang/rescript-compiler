@@ -10,7 +10,7 @@ try {
 }
 catch (raw_e){
   var e = Caml_js_exceptions.internalToOCamlException(raw_e);
-  if (e.ExceptionID === /* Invalid_argument */-3) {
+  if (e.ExceptionID === "Invalid_argument") {
     console.log(e._1);
     hh = /* "a" */97;
   } else {

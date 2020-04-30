@@ -8,9 +8,8 @@ function f(x) {
 function chr(n) {
   if (n < 0 || n > 255) {
     throw {
-          ExceptionID: -3,
-          _1: "Char.chr",
-          Debug: "Invalid_argument"
+          ExceptionID: "Invalid_argument",
+          _1: "Char.chr"
         };
   }
   return n;

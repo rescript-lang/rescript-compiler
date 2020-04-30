@@ -37,13 +37,12 @@ console.log(String(v.contents));
 
 if (v.contents !== 45) {
   throw {
-        ExceptionID: -9,
+        ExceptionID: "Assert_failure",
         _1: /* tuple */[
           "test_while_closure.ml",
           63,
           4
-        ],
-        Debug: "Assert_failure"
+        ]
       };
 }
 

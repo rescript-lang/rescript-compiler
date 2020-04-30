@@ -73,9 +73,8 @@ function scan_rest(ib, accu) {
                                                         "scan_int_list"
                                                       ]);
                                                   throw {
-                                                        ExceptionID: -2,
-                                                        _1: s,
-                                                        Debug: "Failure"
+                                                        ExceptionID: "Failure",
+                                                        _1: s
                                                       };
                                               }
                                             }));

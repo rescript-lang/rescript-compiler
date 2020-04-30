@@ -3,8 +3,7 @@
 var List = require("../../lib/js/list.js");
 
 var a0 = {
-  ExceptionID: -6,
-  Debug: "Not_found"
+  ExceptionID: "Not_found"
 };
 
 var b = List.length(/* :: */[

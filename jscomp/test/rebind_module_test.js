@@ -3,7 +3,7 @@
 var Rebind_module = require("./rebind_module.js");
 
 function x(v) {
-  if (v.ExceptionID === Rebind_module.AA.ExceptionID) {
+  if (v.ExceptionID === Rebind_module.AA) {
     return 0;
   } else {
     return 1;

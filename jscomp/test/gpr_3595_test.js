@@ -18,13 +18,12 @@ var match = [1];
 
 if (match.length !== 1) {
   throw {
-        ExceptionID: -7,
+        ExceptionID: "Match_failure",
         _1: /* tuple */[
           "gpr_3595_test.ml",
           9,
           4
-        ],
-        Debug: "Match_failure"
+        ]
       };
 }
 

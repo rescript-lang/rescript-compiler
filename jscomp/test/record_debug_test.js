@@ -40,25 +40,15 @@ var A = Caml_exceptions.create("Record_debug_test.A");
 
 var B = Caml_exceptions.create("Record_debug_test.B");
 
-var v0_000 = A.ExceptionID;
-
-var v0_002 = A.Debug;
-
 var v0 = {
-  ExceptionID: v0_000,
-  _1: 3,
-  Debug: v0_002
+  ExceptionID: A,
+  _1: 3
 };
 
-var v1_000 = B.ExceptionID;
-
-var v1_003 = B.Debug;
-
 var v1 = {
-  ExceptionID: v1_000,
+  ExceptionID: B,
   _1: 3,
-  _2: 2,
-  Debug: v1_003
+  _2: 2
 };
 
 var N = {

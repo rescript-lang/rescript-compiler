@@ -6,13 +6,12 @@ function f(x) {
     return /* "a" */97;
   }
   throw {
-        ExceptionID: -7,
+        ExceptionID: "Match_failure",
         _1: /* tuple */[
           "test_incomplete.ml",
           3,
           2
-        ],
-        Debug: "Match_failure"
+        ]
       };
 }
 

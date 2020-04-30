@@ -706,13 +706,12 @@ function verify_read(c) {
     return ;
   }
   throw {
-        ExceptionID: -9,
+        ExceptionID: "Assert_failure",
         _1: /* tuple */[
           "tscanf_test.ml",
           174,
           2
-        ],
-        Debug: "Assert_failure"
+        ]
       };
 }
 
@@ -1423,9 +1422,8 @@ function scan_elems$1(ib, accu) {
                 }
                 if (c !== 93) {
                   throw {
-                        ExceptionID: -2,
-                        _1: "scan_elems",
-                        Debug: "Failure"
+                        ExceptionID: "Failure",
+                        _1: "scan_elems"
                       };
                 }
                 return List.rev(/* :: */[
@@ -1508,15 +1506,14 @@ function scan_elems$2(ib, accu) {
                   }
                   console.log(Caml_bytes.bytes_to_string(Bytes.make(1, c)));
                   throw {
-                        ExceptionID: -2,
-                        _1: "scan_elems",
-                        Debug: "Failure"
+                        ExceptionID: "Failure",
+                        _1: "scan_elems"
                       };
                 }));
   }
   catch (raw_exn){
     var exn = Caml_js_exceptions.internalToOCamlException(raw_exn);
-    if (exn.ExceptionID === Scanf.Scan_failure.ExceptionID) {
+    if (exn.ExceptionID === Scanf.Scan_failure) {
       Curry._1(Scanf.bscanf(ib, /* Format */[
                 /* Char_literal */Block.__(12, [
                     /* "]" */93,
@@ -1526,7 +1523,7 @@ function scan_elems$2(ib, accu) {
               ]), undefined);
       return accu;
     }
-    if (exn.ExceptionID === /* End_of_file */-4) {
+    if (exn.ExceptionID === "End_of_file") {
       return accu;
     }
     throw exn;
@@ -1721,9 +1718,8 @@ function scan_rest(ib, accu) {
                 }
                 if (c !== 93) {
                   throw {
-                        ExceptionID: -2,
-                        _1: "scan_rest",
-                        Debug: "Failure"
+                        ExceptionID: "Failure",
+                        _1: "scan_rest"
                       };
                 }
                 return accu;
@@ -1743,9 +1739,8 @@ function scan_elems$4(ib, accu) {
                 ]), (function (c) {
                 if (c !== 91) {
                   throw {
-                        ExceptionID: -2,
-                        _1: "scan_elems",
-                        Debug: "Failure"
+                        ExceptionID: "Failure",
+                        _1: "scan_elems"
                       };
                 }
                 if (accu === /* [] */0) {
@@ -1784,9 +1779,8 @@ function scan_elems$4(ib, accu) {
                               }));
                 }
                 throw {
-                      ExceptionID: -2,
-                      _1: "scan_elems",
-                      Debug: "Failure"
+                      ExceptionID: "Failure",
+                      _1: "scan_elems"
                     };
               }));
 }
@@ -1909,9 +1903,8 @@ function scan_rest$1(ib, accu) {
                                                         "scan_int_list"
                                                       ]);
                                                   throw {
-                                                        ExceptionID: -2,
-                                                        _1: s,
-                                                        Debug: "Failure"
+                                                        ExceptionID: "Failure",
+                                                        _1: s
                                                       };
                                               }
                                             }));
@@ -1984,7 +1977,7 @@ function scan_elems$5(ib, scan_elem, accu) {
   }
   catch (raw_exn){
     var exn = Caml_js_exceptions.internalToOCamlException(raw_exn);
-    if (exn.ExceptionID === Scanf.Scan_failure.ExceptionID) {
+    if (exn.ExceptionID === Scanf.Scan_failure) {
       return accu;
     }
     throw exn;
@@ -3248,11 +3241,9 @@ function test44(param) {
 }
 
 Testing.test_raises_this_exc({
-        ExceptionID: -4,
-        Debug: "End_of_file"
+        ExceptionID: "End_of_file"
       })(test43, undefined) && Testing.test_raises_this_exc({
-        ExceptionID: -4,
-        Debug: "End_of_file"
+        ExceptionID: "End_of_file"
       })(test44, undefined);
 
 function test45(param) {
@@ -3728,8 +3719,7 @@ function next_char(ob, param) {
   var len = s.length;
   if (len === 0) {
     throw {
-          ExceptionID: -4,
-          Debug: "End_of_file"
+          ExceptionID: "End_of_file"
         };
   }
   var c = Caml_string.get(s, 0);

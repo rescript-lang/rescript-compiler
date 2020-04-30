@@ -11,13 +11,12 @@ function f(param) {
         return 1;
     default:
       throw {
-            ExceptionID: -9,
+            ExceptionID: "Assert_failure",
             _1: /* tuple */[
               "test_string.ml",
               4,
               18
-            ],
-            Debug: "Assert_failure"
+            ]
           };
   }
 }

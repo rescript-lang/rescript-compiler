@@ -157,13 +157,12 @@ function f11(x) {
     return 1;
   }
   throw {
-        ExceptionID: -9,
+        ExceptionID: "Assert_failure",
         _1: /* tuple */[
           "adt_optimize_test.ml",
           191,
           9
-        ],
-        Debug: "Assert_failure"
+        ]
       };
 }
 

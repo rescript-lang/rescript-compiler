@@ -43,8 +43,7 @@ function add(x, q) {
 function peek(q) {
   if (q.length === 0) {
     throw {
-          ExceptionID: Empty.ExceptionID,
-          Debug: Empty.Debug
+          ExceptionID: Empty
         };
   }
   return q.tail.next.content;
@@ -53,8 +52,7 @@ function peek(q) {
 function take(q) {
   if (q.length === 0) {
     throw {
-          ExceptionID: Empty.ExceptionID,
-          Debug: Empty.Debug
+          ExceptionID: Empty
         };
   }
   q.length = q.length - 1 | 0;

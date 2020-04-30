@@ -18,46 +18,42 @@ function bool_equal(x, y) {
 function assertions(param) {
   if (!bool_equal(true, true)) {
     throw {
-          ExceptionID: -9,
+          ExceptionID: "Assert_failure",
           _1: /* tuple */[
             "test_bool_equal.ml",
             21,
             2
-          ],
-          Debug: "Assert_failure"
+          ]
         };
   }
   if (!bool_equal(false, false)) {
     throw {
-          ExceptionID: -9,
+          ExceptionID: "Assert_failure",
           _1: /* tuple */[
             "test_bool_equal.ml",
             22,
             2
-          ],
-          Debug: "Assert_failure"
+          ]
         };
   }
   if (bool_equal(true, false)) {
     throw {
-          ExceptionID: -9,
+          ExceptionID: "Assert_failure",
           _1: /* tuple */[
             "test_bool_equal.ml",
             23,
             2
-          ],
-          Debug: "Assert_failure"
+          ]
         };
   }
   if (bool_equal(false, true)) {
     throw {
-          ExceptionID: -9,
+          ExceptionID: "Assert_failure",
           _1: /* tuple */[
             "test_bool_equal.ml",
             24,
             2
-          ],
-          Debug: "Assert_failure"
+          ]
         };
   }
   

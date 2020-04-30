@@ -10,13 +10,12 @@ function bench(param) {
   for(var i$1 = 0; i$1 <= 1000000; ++i$1){
     if (!Hashtbl.mem(table, i$1)) {
       throw {
-            ExceptionID: -9,
+            ExceptionID: "Assert_failure",
             _1: /* tuple */[
               "raw_hash_tbl_bench.ml",
               9,
               4
-            ],
-            Debug: "Assert_failure"
+            ]
           };
     }
     

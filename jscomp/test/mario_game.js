@@ -1474,9 +1474,8 @@ function game_win(ctx) {
   ctx.font = "20px 'Press Start 2P'";
   ctx.fillText("You win!", 180, 128);
   throw {
-        ExceptionID: -2,
-        _1: "Game over.",
-        Debug: "Failure"
+        ExceptionID: "Failure",
+        _1: "Game over."
       };
 }
 
@@ -1488,9 +1487,8 @@ function game_loss(ctx) {
   ctx.font = "20px 'Press Start 2P'";
   ctx.fillText("GAME OVER. You lose!", 60, 128);
   throw {
-        ExceptionID: -2,
-        _1: "Game over.",
-        Debug: "Failure"
+        ExceptionID: "Failure",
+        _1: "Game over."
       };
 }
 
@@ -2398,9 +2396,8 @@ function choose_enemy_typ(typ) {
         return /* Goomba */0;
     default:
       throw {
-            ExceptionID: -2,
-            _1: "Shouldn't reach here",
-            Debug: "Failure"
+            ExceptionID: "Failure",
+            _1: "Shouldn't reach here"
           };
   }
 }
@@ -2419,9 +2416,8 @@ function choose_sblock_typ(typ) {
         return /* Ground */5;
     default:
       throw {
-            ExceptionID: -2,
-            _1: "Shouldn't reach here",
-            Debug: "Failure"
+            ExceptionID: "Failure",
+            _1: "Shouldn't reach here"
           };
   }
 }
@@ -2934,9 +2930,8 @@ function choose_block_pattern(blockw, blockh, cbx, cby, prob) {
               ];
     default:
       throw {
-            ExceptionID: -2,
-            _1: "Shouldn't reach here",
-            Debug: "Failure"
+            ExceptionID: "Failure",
+            _1: "Shouldn't reach here"
           };
   }
 }
@@ -3206,9 +3201,8 @@ function load(param) {
               "cant find canvas %s \n"
             ]), canvas_id);
     throw {
-          ExceptionID: -2,
-          _1: "fail",
-          Debug: "Failure"
+          ExceptionID: "Failure",
+          _1: "fail"
         };
   }
   var context = canvas.getContext("2d");

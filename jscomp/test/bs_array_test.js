@@ -139,13 +139,12 @@ var v$1 = [
 
 if (!Belt_Array.set(v$1, 0, 0)) {
   throw {
-        ExceptionID: -9,
+        ExceptionID: "Assert_failure",
         _1: /* tuple */[
           "bs_array_test.ml",
           34,
           33
-        ],
-        Debug: "Assert_failure"
+        ]
       };
 }
 
@@ -158,13 +157,12 @@ var v$2 = [
 
 if (!Belt_Array.set(v$2, 1, 0)) {
   throw {
-        ExceptionID: -9,
+        ExceptionID: "Assert_failure",
         _1: /* tuple */[
           "bs_array_test.ml",
           35,
           32
-        ],
-        Debug: "Assert_failure"
+        ]
       };
 }
 

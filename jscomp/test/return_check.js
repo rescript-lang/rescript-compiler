@@ -18,13 +18,12 @@ function f_undefined(xs, i) {
     return k;
   }
   throw {
-        ExceptionID: -9,
+        ExceptionID: "Assert_failure",
         _1: /* tuple */[
           "return_check.ml",
           31,
           14
-        ],
-        Debug: "Assert_failure"
+        ]
       };
 }
 
@@ -60,13 +59,12 @@ function f_null(xs, i) {
     return k;
   }
   throw {
-        ExceptionID: -9,
+        ExceptionID: "Assert_failure",
         _1: /* tuple */[
           "return_check.ml",
           59,
           14
-        ],
-        Debug: "Assert_failure"
+        ]
       };
 }
 
@@ -76,13 +74,12 @@ function f_null_undefined(xs, i) {
     return k;
   }
   throw {
-        ExceptionID: -9,
+        ExceptionID: "Assert_failure",
         _1: /* tuple */[
           "return_check.ml",
           68,
           14
-        ],
-        Debug: "Assert_failure"
+        ]
       };
 }
 

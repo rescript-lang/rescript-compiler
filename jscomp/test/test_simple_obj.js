@@ -89,81 +89,74 @@ var v = CamlinternalOO.create_object_opt(undefined, $$class$3);
 function test(param) {
   if (Caml_oo_curry.js1(23515, 1, uu) !== "uu") {
     throw {
-          ExceptionID: -9,
+          ExceptionID: "Assert_failure",
           _1: /* tuple */[
             "test_simple_obj.ml",
             21,
             4
-          ],
-          Debug: "Assert_failure"
+          ]
         };
   }
   if (Caml_oo_curry.js3(4846113, 2, uuu, 1, 20) !== 21) {
     throw {
-          ExceptionID: -9,
+          ExceptionID: "Assert_failure",
           _1: /* tuple */[
             "test_simple_obj.ml",
             22,
             4
-          ],
-          Debug: "Assert_failure"
+          ]
         };
   }
   if (Caml_oo_curry.js3(4846113, 3, v, 3, 7) !== 10) {
     throw {
-          ExceptionID: -9,
+          ExceptionID: "Assert_failure",
           _1: /* tuple */[
             "test_simple_obj.ml",
             23,
             4
-          ],
-          Debug: "Assert_failure"
+          ]
         };
   }
   if (Caml_oo_curry.js1(5243894, 4, u) !== 3) {
     throw {
-          ExceptionID: -9,
+          ExceptionID: "Assert_failure",
           _1: /* tuple */[
             "test_simple_obj.ml",
             25,
             4
-          ],
-          Debug: "Assert_failure"
+          ]
         };
   }
   if (Caml_oo_curry.js1(5243895, 5, u) !== 4) {
     throw {
-          ExceptionID: -9,
+          ExceptionID: "Assert_failure",
           _1: /* tuple */[
             "test_simple_obj.ml",
             26,
             4
-          ],
-          Debug: "Assert_failure"
+          ]
         };
   }
   if (Caml_oo_curry.js3(23297, 6, u, 1, 2) !== 3) {
     throw {
-          ExceptionID: -9,
+          ExceptionID: "Assert_failure",
           _1: /* tuple */[
             "test_simple_obj.ml",
             27,
             4
-          ],
-          Debug: "Assert_failure"
+          ]
         };
   }
   if (Caml_oo_curry.js2(616641298, 7, u, 32) === 32) {
     return ;
   }
   throw {
-        ExceptionID: -9,
+        ExceptionID: "Assert_failure",
         _1: /* tuple */[
           "test_simple_obj.ml",
           28,
           4
-        ],
-        Debug: "Assert_failure"
+        ]
       };
 }
 

@@ -42,8 +42,7 @@ function min_elt(_param) {
       continue ;
     }
     throw {
-          ExceptionID: -6,
-          Debug: "Not_found"
+          ExceptionID: "Not_found"
         };
   };
 }
@@ -60,8 +59,7 @@ function max_elt(_param) {
       continue ;
     }
     throw {
-          ExceptionID: -6,
-          Debug: "Not_found"
+          ExceptionID: "Not_found"
         };
   };
 }
@@ -206,15 +204,13 @@ function check_height_and_diff(param) {
   var hr = check_height_and_diff(param[2]);
   if (h !== (max_int_2(hl, hr) + 1 | 0)) {
     throw {
-          ExceptionID: Height_invariant_broken.ExceptionID,
-          Debug: Height_invariant_broken.Debug
+          ExceptionID: Height_invariant_broken
         };
   }
   var diff = Pervasives.abs(hl - hr | 0);
   if (diff > 2) {
     throw {
-          ExceptionID: Height_diff_borken.ExceptionID,
-          Debug: Height_diff_borken.Debug
+          ExceptionID: Height_diff_borken
         };
   }
   return h;
@@ -251,23 +247,21 @@ function internal_bal(l, v, r) {
         return create(create(ll, lv, lr[0]), lr[1], create(lr[2], v, r));
       }
       throw {
-            ExceptionID: -9,
+            ExceptionID: "Assert_failure",
             _1: /* tuple */[
               "set_gen.ml",
               235,
               19
-            ],
-            Debug: "Assert_failure"
+            ]
           };
     }
     throw {
-          ExceptionID: -9,
+          ExceptionID: "Assert_failure",
           _1: /* tuple */[
             "set_gen.ml",
             225,
             15
-          ],
-          Debug: "Assert_failure"
+          ]
         };
   }
   if (hr <= (hl + 2 | 0)) {
@@ -289,23 +283,21 @@ function internal_bal(l, v, r) {
       return create(create(l, v, rl[0]), rl[1], create(rl[2], rv, rr));
     }
     throw {
-          ExceptionID: -9,
+          ExceptionID: "Assert_failure",
           _1: /* tuple */[
             "set_gen.ml",
             251,
             19
-          ],
-          Debug: "Assert_failure"
+          ]
         };
   }
   throw {
-        ExceptionID: -9,
+        ExceptionID: "Assert_failure",
         _1: /* tuple */[
           "set_gen.ml",
           245,
           15
-        ],
-        Debug: "Assert_failure"
+        ]
       };
 }
 
@@ -319,9 +311,8 @@ function remove_min_elt(param) {
     }
   }
   throw {
-        ExceptionID: -3,
-        _1: "Set.remove_min_elt",
-        Debug: "Invalid_argument"
+        ExceptionID: "Invalid_argument",
+        _1: "Set.remove_min_elt"
       };
 }
 
@@ -523,13 +514,12 @@ function of_sorted_list(l) {
             ];
     }
     throw {
-          ExceptionID: -9,
+          ExceptionID: "Assert_failure",
           _1: /* tuple */[
             "set_gen.ml",
             361,
             14
-          ],
-          Debug: "Assert_failure"
+          ]
         };
   };
   return sub(List.length(l), l)[0];

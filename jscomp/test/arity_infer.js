@@ -10,8 +10,7 @@ function f0(x) {
       });
   } else {
     throw {
-          ExceptionID: -6,
-          Debug: "Not_found"
+          ExceptionID: "Not_found"
         };
   }
   return tmp(3);
@@ -19,8 +18,7 @@ function f0(x) {
 
 function f1(x) {
   throw {
-        ExceptionID: -6,
-        Debug: "Not_found"
+        ExceptionID: "Not_found"
       };
   return Curry._1(undefined, x);
 }
@@ -50,8 +48,7 @@ function f3(x) {
         break;
     default:
       throw {
-            ExceptionID: -6,
-            Debug: "Not_found"
+            ExceptionID: "Not_found"
           };
   }
   return tmp(3);

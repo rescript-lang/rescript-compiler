@@ -9,7 +9,7 @@ function f(g, x) {
   }
   catch (raw_exn){
     var exn = Caml_js_exceptions.internalToOCamlException(raw_exn);
-    if (exn.ExceptionID === /* Not_found */-6) {
+    if (exn.ExceptionID === "Not_found") {
       return 3;
     }
     throw exn;

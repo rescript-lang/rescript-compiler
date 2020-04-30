@@ -55,14 +55,13 @@ function is_pos_pow(n) {
         continue ;
       }
       throw {
-            ExceptionID: E.ExceptionID,
-            Debug: E.Debug
+            ExceptionID: E
           };
     };
   }
   catch (raw_exn){
     var exn = Caml_js_exceptions.internalToOCamlException(raw_exn);
-    if (exn.ExceptionID === E.ExceptionID) {
+    if (exn.ExceptionID === E) {
       return -1;
     }
     throw exn;
@@ -73,9 +72,8 @@ function failwithf(loc, fmt) {
   return Format.ksprintf((function (s) {
                 var s$1 = loc + s;
                 throw {
-                      ExceptionID: -2,
-                      _1: s$1,
-                      Debug: "Failure"
+                      ExceptionID: "Failure",
+                      _1: s$1
                     };
               }), fmt);
 }
@@ -87,9 +85,8 @@ function invalid_argf(fmt) {
 function bad_argf(fmt) {
   return Format.ksprintf((function (x) {
                 throw {
-                      ExceptionID: Arg.Bad.ExceptionID,
-                      _1: x,
-                      Debug: Arg.Bad.Debug
+                      ExceptionID: Arg.Bad,
+                      _1: x
                     };
               }), fmt);
 }

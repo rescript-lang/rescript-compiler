@@ -978,26 +978,24 @@ Belt_List.forEach(random_data, (function (u) {
         if (u) {
           if (u[1]) {
             throw {
-                  ExceptionID: -9,
+                  ExceptionID: "Assert_failure",
                   _1: /* tuple */[
                     "int64_string_test.ml",
                     161,
                     9
-                  ],
-                  Debug: "Assert_failure"
+                  ]
                 };
           }
           var match = u[0];
           return eq("File \"int64_string_test.ml\", line 160, characters 21-28", Caml_int64.to_string(match[0]), match[1]);
         }
         throw {
-              ExceptionID: -9,
+              ExceptionID: "Assert_failure",
               _1: /* tuple */[
                 "int64_string_test.ml",
                 161,
                 9
-              ],
-              Debug: "Assert_failure"
+              ]
             };
       }));
 

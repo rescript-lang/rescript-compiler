@@ -41,13 +41,12 @@ function convert(s) {
                       return x$1;
                     }
                     throw {
-                          ExceptionID: -9,
+                          ExceptionID: "Assert_failure",
                           _1: /* tuple */[
                             "chn_test.ml",
                             20,
                             18
-                          ],
-                          Debug: "Assert_failure"
+                          ]
                         };
                   })));
 }

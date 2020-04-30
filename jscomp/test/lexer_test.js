@@ -42,8 +42,7 @@ function from_tokens(lst) {
         return match[0];
       }
       throw {
-            ExceptionID: -4,
-            Debug: "End_of_file"
+            ExceptionID: "End_of_file"
           };
     });
 }

@@ -14,8 +14,7 @@ function find_package_json(_dir) {
     var new_dir = Path.dirname(dir);
     if (new_dir === dir) {
       throw {
-            ExceptionID: -6,
-            Debug: "Not_found"
+            ExceptionID: "Not_found"
           };
     }
     _dir = new_dir;

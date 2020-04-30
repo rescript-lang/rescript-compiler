@@ -68,13 +68,12 @@ function tl_exn(x) {
     return x[/* next */1];
   }
   throw {
-        ExceptionID: -9,
+        ExceptionID: "Assert_failure",
         _1: /* tuple */[
           "recursive_records_test.ml",
           52,
           11
-        ],
-        Debug: "Assert_failure"
+        ]
       };
 }
 

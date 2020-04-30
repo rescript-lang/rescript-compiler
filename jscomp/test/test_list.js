@@ -27,9 +27,8 @@ function hd(param) {
     return param[0];
   }
   throw {
-        ExceptionID: -2,
-        _1: "hd",
-        Debug: "Failure"
+        ExceptionID: "Failure",
+        _1: "hd"
       };
 }
 
@@ -38,18 +37,16 @@ function tl(param) {
     return param[1];
   }
   throw {
-        ExceptionID: -2,
-        _1: "tl",
-        Debug: "Failure"
+        ExceptionID: "Failure",
+        _1: "tl"
       };
 }
 
 function nth(l, n) {
   if (n < 0) {
     throw {
-          ExceptionID: -3,
-          _1: "List.nth",
-          Debug: "Invalid_argument"
+          ExceptionID: "Invalid_argument",
+          _1: "List.nth"
         };
   }
   var _l = l;
@@ -66,9 +63,8 @@ function nth(l, n) {
       continue ;
     }
     throw {
-          ExceptionID: -2,
-          _1: "nth",
-          Debug: "Failure"
+          ExceptionID: "Failure",
+          _1: "nth"
         };
   };
 }
@@ -204,18 +200,16 @@ function map2(f, l1, l2) {
             ];
     }
     throw {
-          ExceptionID: -3,
-          _1: "List.map2",
-          Debug: "Invalid_argument"
+          ExceptionID: "Invalid_argument",
+          _1: "List.map2"
         };
   }
   if (!l2) {
     return /* [] */0;
   }
   throw {
-        ExceptionID: -3,
-        _1: "List.map2",
-        Debug: "Invalid_argument"
+        ExceptionID: "Invalid_argument",
+        _1: "List.map2"
       };
 }
 
@@ -238,16 +232,14 @@ function rev_map2(f, l1, l2) {
         continue ;
       }
       throw {
-            ExceptionID: -3,
-            _1: "List.rev_map2",
-            Debug: "Invalid_argument"
+            ExceptionID: "Invalid_argument",
+            _1: "List.rev_map2"
           };
     }
     if (l2$1) {
       throw {
-            ExceptionID: -3,
-            _1: "List.rev_map2",
-            Debug: "Invalid_argument"
+            ExceptionID: "Invalid_argument",
+            _1: "List.rev_map2"
           };
     }
     return accu;
@@ -266,18 +258,16 @@ function iter2(f, _l1, _l2) {
         continue ;
       }
       throw {
-            ExceptionID: -3,
-            _1: "List.iter2",
-            Debug: "Invalid_argument"
+            ExceptionID: "Invalid_argument",
+            _1: "List.iter2"
           };
     }
     if (!l2) {
       return ;
     }
     throw {
-          ExceptionID: -3,
-          _1: "List.iter2",
-          Debug: "Invalid_argument"
+          ExceptionID: "Invalid_argument",
+          _1: "List.iter2"
         };
   };
 }
@@ -295,16 +285,14 @@ function fold_left2(f, _accu, _l1, _l2) {
         continue ;
       }
       throw {
-            ExceptionID: -3,
-            _1: "List.fold_left2",
-            Debug: "Invalid_argument"
+            ExceptionID: "Invalid_argument",
+            _1: "List.fold_left2"
           };
     }
     if (l2) {
       throw {
-            ExceptionID: -3,
-            _1: "List.fold_left2",
-            Debug: "Invalid_argument"
+            ExceptionID: "Invalid_argument",
+            _1: "List.fold_left2"
           };
     }
     return accu;
@@ -317,16 +305,14 @@ function fold_right2(f, l1, l2, accu) {
       return Curry._3(f, l1[0], l2[0], fold_right2(f, l1[1], l2[1], accu));
     }
     throw {
-          ExceptionID: -3,
-          _1: "List.fold_right2",
-          Debug: "Invalid_argument"
+          ExceptionID: "Invalid_argument",
+          _1: "List.fold_right2"
         };
   }
   if (l2) {
     throw {
-          ExceptionID: -3,
-          _1: "List.fold_right2",
-          Debug: "Invalid_argument"
+          ExceptionID: "Invalid_argument",
+          _1: "List.fold_right2"
         };
   }
   return accu;
@@ -374,18 +360,16 @@ function for_all2(p, _l1, _l2) {
         continue ;
       }
       throw {
-            ExceptionID: -3,
-            _1: "List.for_all2",
-            Debug: "Invalid_argument"
+            ExceptionID: "Invalid_argument",
+            _1: "List.for_all2"
           };
     }
     if (!l2) {
       return true;
     }
     throw {
-          ExceptionID: -3,
-          _1: "List.for_all2",
-          Debug: "Invalid_argument"
+          ExceptionID: "Invalid_argument",
+          _1: "List.for_all2"
         };
   };
 }
@@ -404,18 +388,16 @@ function exists2(p, _l1, _l2) {
         continue ;
       }
       throw {
-            ExceptionID: -3,
-            _1: "List.exists2",
-            Debug: "Invalid_argument"
+            ExceptionID: "Invalid_argument",
+            _1: "List.exists2"
           };
     }
     if (!l2) {
       return false;
     }
     throw {
-          ExceptionID: -3,
-          _1: "List.exists2",
-          Debug: "Invalid_argument"
+          ExceptionID: "Invalid_argument",
+          _1: "List.exists2"
         };
   };
 }
@@ -460,8 +442,7 @@ function assoc(x, _param) {
       continue ;
     }
     throw {
-          ExceptionID: -6,
-          Debug: "Not_found"
+          ExceptionID: "Not_found"
         };
   };
 }
@@ -478,8 +459,7 @@ function assq(x, _param) {
       continue ;
     }
     throw {
-          ExceptionID: -6,
-          Debug: "Not_found"
+          ExceptionID: "Not_found"
         };
   };
 }
@@ -556,8 +536,7 @@ function find(p, _param) {
       continue ;
     }
     throw {
-          ExceptionID: -6,
-          Debug: "Not_found"
+          ExceptionID: "Not_found"
         };
   };
 }
@@ -654,18 +633,16 @@ function combine(l1, l2) {
             ];
     }
     throw {
-          ExceptionID: -3,
-          _1: "List.combine",
-          Debug: "Invalid_argument"
+          ExceptionID: "Invalid_argument",
+          _1: "List.combine"
         };
   }
   if (!l2) {
     return /* [] */0;
   }
   throw {
-        ExceptionID: -3,
-        _1: "List.combine",
-        Debug: "Invalid_argument"
+        ExceptionID: "Invalid_argument",
+        _1: "List.combine"
       };
 }
 
@@ -704,13 +681,12 @@ function chop(_k, _l) {
       continue ;
     }
     throw {
-          ExceptionID: -9,
+          ExceptionID: "Assert_failure",
           _1: /* tuple */[
             "test_list.ml",
             224,
             11
-          ],
-          Debug: "Assert_failure"
+          ]
         };
   };
 }

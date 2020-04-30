@@ -37,32 +37,32 @@ function parse(token) {
             var match = token$1(undefined);
             if (match.tag) {
               throw {
-                    ExceptionID: Parse_error.ExceptionID,
-                    _1: "Unbalanced parens",
-                    Debug: Parse_error.Debug
+                    ExceptionID: Parse_error,
+                    _1: "Unbalanced parens"
                   };
             }
             if (match[0] === ")") {
               return v;
             }
             throw {
-                  ExceptionID: Parse_error.ExceptionID,
-                  _1: "Unbalanced parens",
-                  Debug: Parse_error.Debug
+                  ExceptionID: Parse_error,
+                  _1: "Unbalanced parens"
                 };
           }
-          break;
+          Queue.push(n, look_ahead);
+          throw {
+                ExceptionID: Parse_error,
+                _1: "unexpected token"
+              };
       case /* Int */2 :
           return n[0];
       default:
-        
+        Queue.push(n, look_ahead);
+        throw {
+              ExceptionID: Parse_error,
+              _1: "unexpected token"
+            };
     }
-    Queue.push(n, look_ahead);
-    throw {
-          ExceptionID: Parse_error.ExceptionID,
-          _1: "unexpected token",
-          Debug: Parse_error.Debug
-        };
   };
   var parse_term_aux = function (e1) {
     var e = token$1(undefined);
@@ -182,32 +182,28 @@ function l_parse(token) {
             var t = token$1(undefined);
             if (t.tag) {
               throw {
-                    ExceptionID: Parse_error.ExceptionID,
-                    _1: "Unbalanced )",
-                    Debug: Parse_error.Debug
+                    ExceptionID: Parse_error,
+                    _1: "Unbalanced )"
                   };
             }
             if (t[0] === ")") {
               return v;
             }
             throw {
-                  ExceptionID: Parse_error.ExceptionID,
-                  _1: "Unbalanced )",
-                  Debug: Parse_error.Debug
+                  ExceptionID: Parse_error,
+                  _1: "Unbalanced )"
                 };
           }
           throw {
-                ExceptionID: Parse_error.ExceptionID,
-                _1: "Unexpected token",
-                Debug: Parse_error.Debug
+                ExceptionID: Parse_error,
+                _1: "Unexpected token"
               };
       case /* Int */2 :
           return i[0];
       default:
         throw {
-              ExceptionID: Parse_error.ExceptionID,
-              _1: "Unexpected token",
-              Debug: Parse_error.Debug
+              ExceptionID: Parse_error,
+              _1: "Unexpected token"
             };
     }
   };

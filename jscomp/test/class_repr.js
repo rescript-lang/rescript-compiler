@@ -53,25 +53,23 @@ var u = Oo.copy(v);
 
 if (Caml_oo_curry.js1(291546447, 1, v) !== 3) {
   throw {
-        ExceptionID: -9,
+        ExceptionID: "Assert_failure",
         _1: /* tuple */[
           "class_repr.ml",
           30,
           9
-        ],
-        Debug: "Assert_failure"
+        ]
       };
 }
 
 if (Caml_oo_curry.js1(291546447, 2, u) !== 3) {
   throw {
-        ExceptionID: -9,
+        ExceptionID: "Assert_failure",
         _1: /* tuple */[
           "class_repr.ml",
           32,
           9
-        ],
-        Debug: "Assert_failure"
+        ]
       };
 }
 
@@ -109,13 +107,12 @@ var v2 = Caml_oo_curry.js1(-977586732, 3, v1);
 
 if (Caml_oo_curry.js1(-804710761, 4, v1) !== 3) {
   throw {
-        ExceptionID: -9,
+        ExceptionID: "Assert_failure",
         _1: /* tuple */[
           "class_repr.ml",
           44,
           9
-        ],
-        Debug: "Assert_failure"
+        ]
       };
 }
 
@@ -126,13 +123,12 @@ console.log(/* tuple */[
 
 if (Caml_oo_curry.js1(-804710761, 7, v2) !== 9) {
   throw {
-        ExceptionID: -9,
+        ExceptionID: "Assert_failure",
         _1: /* tuple */[
           "class_repr.ml",
           52,
           9
-        ],
-        Debug: "Assert_failure"
+        ]
       };
 }
 
@@ -170,13 +166,12 @@ var v$1 = Curry._1(point[0], undefined);
 
 if (Caml_oo_curry.js1(590348294, 8, v$1) !== 5) {
   throw {
-        ExceptionID: -9,
+        ExceptionID: "Assert_failure",
         _1: /* tuple */[
           "class_repr.ml",
           99,
           2
-        ],
-        Debug: "Assert_failure"
+        ]
       };
 }
 

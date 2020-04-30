@@ -2,7 +2,6 @@
 
 var Printexc = require("../../lib/js/printexc.js");
 var Caml_exceptions = require("../../lib/js/caml_exceptions.js");
-var Caml_builtin_exceptions = require("../../lib/js/caml_builtin_exceptions.js");
 
 var A = Caml_exceptions.create("Exception_def.A");
 
@@ -16,22 +15,15 @@ var H = { };
 
 var Bx = Caml_exceptions.create("Exception_def.Bx");
 
-var u_000 = Bx.ExceptionID;
-
-var u_001 = Bx.Debug;
-
 var u = {
-  ExceptionID: u_000,
-  Debug: u_001
+  ExceptionID: Bx
 };
 
 var Ax = Caml_exceptions.create("Exception_def.Ax");
 
 var XXX = Caml_exceptions.create("Exception_def.XXX");
 
-var Aa = Caml_builtin_exceptions.match_failure;
-
-var v_000 = Aa.ExceptionID;
+var Aa = "Match_failure";
 
 var v_001 = /* tuple */[
   "",
@@ -39,61 +31,38 @@ var v_001 = /* tuple */[
   0
 ];
 
-var v_002 = Aa.Debug;
-
 var v = {
-  ExceptionID: v_000,
-  _1: v_001,
-  Debug: v_002
+  ExceptionID: Aa,
+  _1: v_001
 };
 
-var H0 = Caml_builtin_exceptions.not_found;
+var H0 = "Not_found";
 
 var H1 = Caml_exceptions.create("Exception_def.H1");
 
 var H2 = Caml_exceptions.create("Exception_def.H2");
 
-var h2_000 = H2.ExceptionID;
-
-var h2_001 = H2.Debug;
-
 var h2 = {
-  ExceptionID: h2_000,
-  Debug: h2_001
+  ExceptionID: H2
 };
-
-var h3_000 = H2.ExceptionID;
-
-var h3_001 = H2.Debug;
 
 var h3 = {
-  ExceptionID: h3_000,
-  Debug: h3_001
+  ExceptionID: H2
 };
-
-var h4_000 = H0.ExceptionID;
-
-var h4_001 = H0.Debug;
 
 var h4 = {
-  ExceptionID: h4_000,
-  Debug: h4_001
+  ExceptionID: H0
 };
 
-var H4 = Caml_builtin_exceptions.invalid_argument;
-
-var h5_000 = H4.ExceptionID;
-
-var h5_002 = H4.Debug;
+var H4 = "Invalid_argument";
 
 var h5 = {
-  ExceptionID: h5_000,
-  _1: "xx",
-  Debug: h5_002
+  ExceptionID: H4,
+  _1: "xx"
 };
 
 Printexc.register_printer((function (s) {
-        if (s.ExceptionID === A.ExceptionID) {
+        if (s.ExceptionID === A) {
           return "A";
         }
         

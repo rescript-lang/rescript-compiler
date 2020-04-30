@@ -3,13 +3,12 @@
 
 function f(param) {
   throw {
-        ExceptionID: -9,
+        ExceptionID: "Assert_failure",
         _1: /* tuple */[
           "noassert.ml",
           5,
           11
-        ],
-        Debug: "Assert_failure"
+        ]
       };
 }
 

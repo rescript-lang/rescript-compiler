@@ -8,9 +8,8 @@ var f;
 
 try {
   throw {
-        ExceptionID: A.ExceptionID,
-        _1: 3,
-        Debug: A.Debug
+        ExceptionID: A,
+        _1: 3
       };
 }
 catch (exn){
