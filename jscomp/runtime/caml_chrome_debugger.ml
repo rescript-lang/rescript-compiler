@@ -145,7 +145,7 @@ let setupChromeDebugger : unit -> unit = [%raw{|
     window.devtoolsFormatters = window.devtoolsFormatters || [];
     window.devtoolsFormatters.push(Formatter);
   }
-|}]
+}|}]
 
 
 let setup = ref false
