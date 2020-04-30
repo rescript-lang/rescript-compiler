@@ -100,7 +100,6 @@ let rec no_side_effects (lam : Lam.t) : bool =
         (** TODO: check *)      
       | Pbytes_to_string 
       | Pbytes_of_string 
-      | Pglobal_exception _
       | Pmakeblock _  (* whether it's mutable or not *)
       | Pfield _
       | Pfield_computed
@@ -221,25 +220,6 @@ let rec no_side_effects (lam : Lam.t) : bool =
   | Lstringswitch (_,_,_) -> false
   | Lstaticraise _ -> false
   | Lstaticcatch _ -> false 
-
-  (* | "caml_sys_getenv" , [Lconst( (Const_string _))] *)
-  (*         -> true *)
-  (** not enough, we need know that 
-      if it [Not_found], there are no other exceptions 
-      can be thrown
-  *)
-  | Ltrywith (Lprim { primitive = Pccall{prim_name = "caml_sys_getenv"};
-                    args = [Lconst _]; _},exn,
-              Lifthenelse(Lprim{args =  
-                                  [Lvar exn1; 
-                                   Lprim {primitive = Pglobal_exception ({name="Not_found"}); args = []; _}]
-                               ; _},
-                          then_, _)) when Ident.same exn1 exn
-    (** we might put this in an optimization pass 
-        also make sure when we wrap this in [js] we 
-        should follow the same patten, raise [Not_found] 
-    *)
-    -> no_side_effects then_
   (** It would be nice that we can also analysis some small functions 
       for example [String.contains], 
       [Format.make_queue_elem]

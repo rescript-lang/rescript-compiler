@@ -23,17 +23,8 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
 
-
-
-
-
-  
-val get_builtin_by_name : string -> J.expression
-
-
 val caml_set_oo_id : 
   J.expression list -> J.expression
 
 
 val make : J.expression  -> J.expression
-(* val make_extension : J.expression  -> J.expression *)

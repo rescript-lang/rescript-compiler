@@ -23,54 +23,19 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
 
-let caml_id_field_info : Lambda.field_dbg_info = Fld_record {name = Literals.exception_id; mutable_flag = Mutable;}
-let name_info : Lambda.field_dbg_info = Fld_record {name = Literals.exception_debug; mutable_flag = Immutable;}
+let caml_id_field_info : Lambda.field_dbg_info = Fld_record {name = Literals.exception_id; mutable_flag = Immutable;}
 let lam_caml_id : Lam_primitive.t = Pfield(0, caml_id_field_info)
-let lam_name : Lam_primitive.t = Pfield (1, name_info) 
+
 let prim = Lam.prim 
 
 
-let num_of_ident name = 
-  begin match name with 
-  | "Out_of_memory" -> 0
-  | "Sys_error" -> -1 
-  | "Failure" -> -2
-  | "Invalid_argument" -> -3 
-  | "End_of_file" -> -4
-  | "Division_by_zero" -> -5 
-  | "Not_found" -> -6
-  | "Match_failure" -> -7
-  | "Stack_overflow" -> -8
-  | "Assert_failure" -> -9
-  | "Sys_blocked_io" -> -10
-  | "Undefined_recursive_module" -> -11
-  | _ -> assert false
-  end   
-
-
 let lam_extension_id loc (head : Lam.t) =
-  match head with 
-  | Lprim {primitive = Pglobal_exception id} -> 
-    Lam.const (Const_int {value = num_of_ident id.name; comment = Some id.name} )
-  | _ -> prim ~primitive:lam_caml_id ~args:[head] loc    
+  prim ~primitive:lam_caml_id ~args:[head] loc    
 
 
 let unbox_extension info (args : Lam.t list) mutable_flag loc =
-  begin match args with 
-  | head :: rest -> 
-    let args = 
-      match head with 
-      | Lprim {primitive = Pglobal_exception id}  -> 
-        let name = Ident.name id in 
-        let id = num_of_ident name in 
-        Lam.const (Const_int {value = id; comment = None}) 
-        :: (Ext_list.append_one rest (Lam.const (Const_string (name)))) 
-      | _ -> 
-        prim ~primitive:lam_caml_id ~args:[head] loc :: 
-        (Ext_list.append_one rest (prim ~primitive:lam_name ~args:[head] loc))        
-    in 
-    prim ~primitive:(Pmakeblock (0,info,mutable_flag)) ~args loc
-  | _ -> assert false end    
+    prim ~primitive:(Pmakeblock (0,info,mutable_flag)) ~args loc 
+
 
 (** A conservative approach to avoid packing exceptions
     for lambda expression like {[
@@ -488,7 +453,7 @@ let convert (exports : Set_ident.t) (lam : Lambda.lambda) : Lam.t * Lam_module_i
   let may_depends = Lam_module_ident.Hash_set.create 0 in
 
   let rec
-    convert_ccall (a_prim : Primitive_compat.t)  (args : Lambda.lambda list) loc : Lam.t =
+    convert_ccall (a_prim : Primitive.description)  (args : Lambda.lambda list) loc : Lam.t =
     let prim_name = a_prim.prim_name in
     let prim_name_len  = String.length prim_name in
     match External_ffi_types.from_string a_prim.prim_native_name with
@@ -496,14 +461,8 @@ let convert (exports : Set_ident.t) (lam : Lambda.lambda) : Lam.t * Lam_module_i
       if prim_name_len > 0 && String.unsafe_get prim_name 0 = '#' then
         convert_js_primitive a_prim args loc
       else
-        (* COMPILER CHECK *)
-        (* Here the invariant we should keep is that all exception
-           created should be captured
-        *)
-          (
-            let args = Ext_list.map args convert_aux in
-            prim ~primitive:(Pccall a_prim) ~args loc
-          )
+        let args = Ext_list.map args convert_aux in
+        prim ~primitive:(Pccall {prim_name }) ~args loc
     | Ffi_obj_create labels ->
       let args = Ext_list.map args  convert_aux in
       prim ~primitive:(Pjs_object_create labels) ~args loc
@@ -516,7 +475,7 @@ let convert (exports : Set_ident.t) (lam : Lambda.lambda) : Lam.t * Lam_module_i
       Lam.handle_bs_non_obj_ffi arg_types result_type ffi args loc prim_name
     | Ffi_inline_const i -> Lam.const i
 
-  and convert_js_primitive (p: Primitive_compat.t) (args : Lambda.lambda list) loc =
+  and convert_js_primitive (p: Primitive.description) (args : Lambda.lambda list) loc =
     let s = p.prim_name in
     match () with
     | _ when s = "#is_not_none" -> 
@@ -585,9 +544,10 @@ let convert (exports : Set_ident.t) (lam : Lambda.lambda) : Lam.t * Lam_module_i
     | _ when s = "#extension_slot_eq" -> 
       begin match Ext_list.map args convert_aux with 
       | [lhs; rhs] -> 
-        prim ~primitive:(Pintcomp Ceq) 
+        prim 
+          ~primitive:(Pccall {prim_name = "caml_string_equal"})
           ~args:[lam_extension_id loc lhs ;
-                 lam_extension_id loc rhs;
+                 rhs;
                 ] loc
       | _ -> assert false end  
     | _ ->
@@ -688,11 +648,11 @@ let convert (exports : Set_ident.t) (lam : Lambda.lambda) : Lam.t * Lam_module_i
     | Lprim (Prevapply, _, _ ) -> assert false
     | Lprim(Pdirapply, _, _) -> assert false
     | Lprim(Pccall a, args, loc)  ->
-      convert_ccall (Primitive_compat.of_primitive_description a) args loc
+      convert_ccall a  args loc
     | Lprim (Pgetglobal id, args, loc) ->
       let args = Ext_list.map args convert_aux in
       if Ident.is_predef_exn id then
-        Lam.prim ~primitive:(Pglobal_exception id) ~args loc 
+        Lam.const (Const_string id.name)
       else
         begin
           may_depend may_depends (Lam_module_ident.of_ml id);

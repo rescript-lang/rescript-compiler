@@ -43,29 +43,7 @@ module E = Js_exp_make
 let make exception_str  : J.expression = 
   E.runtime_call Js_runtime_modules.exceptions Literals.create [exception_str]
 
-(* let make_extension exception_str  : J.expression =  *)
-(*   E.runtime_call Js_config.exceptions "makeExtension" [exception_str] *)
 
-
-let get_builtin_by_name name = 
-  E.runtime_ref Js_runtime_modules.builtin_exceptions (Ext_string.lowercase_ascii name)
-
-
-(* let match_exception_def (args : J.expression list) =  *)
-(*   match args with    *)
-(*   | [{ expression_desc  =  *)
-(*                Caml_block ( *)
-(*                  [ exception_str;  *)
-(*                    {expression_desc = J.Number (Int { i = 0l; _}); _} *)
-(*                  ], *)
-(*                  mutable_flag,  *)
-(*                  {expression_desc = J.Number (Int {i = object_tag; _}); _}, _ ); *)
-(*               _} ] ->  *)
-(*     if object_tag = 248l (\* Obj.object_tag *\) then *)
-(*       Some ( exception_str, mutable_flag)     *)
-(*     else *)
-(*       None *)
-(*   | _ -> None *)
 
 let caml_set_oo_id args = 
       (**

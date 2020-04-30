@@ -126,8 +126,6 @@ let translate  loc
   | Pjs_fn_make _
     -> assert false (* already handled by {!Lam_compile} *)
   | Pjs_fn_method -> assert false
-  | Pglobal_exception id ->
-    Js_of_lam_exception.get_builtin_by_name id.name    
   | Pstringadd ->
     begin match args with      
       | [a;b] ->

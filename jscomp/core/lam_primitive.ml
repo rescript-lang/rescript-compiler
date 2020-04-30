@@ -34,7 +34,6 @@ type record_representation =
 type t =
   | Pbytes_to_string
   | Pbytes_of_string
-  | Pglobal_exception of ident
   (* Operations on heap blocks *)
   | Pmakeblock of int * Lam_tag_info.t * Asttypes.mutable_flag
   | Pfield of int * Lam_compat.field_dbg_info
@@ -44,7 +43,7 @@ type t =
   (* Force lazy values *)
   | Plazyforce
   (* External call *)
-  | Pccall of  Primitive_compat.t
+  | Pccall of  {prim_name : string}
   | Pjs_call of
       { prim_name : string ;
         arg_types : External_arg_spec.params ;
@@ -268,10 +267,10 @@ let eq_primitive_approx ( lhs : t) (rhs : t) =
   (* | Pjs_is_instance_array -> rhs = Pjs_is_instance_array *)
   | Pcaml_obj_length -> rhs = Pcaml_obj_length
   (* | Pcaml_obj_set_length -> rhs = Pcaml_obj_set_length *)
-  | Pccall {prim_name = n0 ;  prim_native_name = nn0; _} -> 
+  | Pccall {prim_name = n0 } -> 
    (match rhs with 
-   | Pccall {prim_name = n1; prim_native_name = nn1; _} 
-    -> n0 = n1 && nn0 = nn1 
+   | Pccall {prim_name = n1} 
+    -> n0 = n1 
    | _ -> false )    
   | Pfield (n0, info0) ->  
     (match rhs with Pfield (n1, info1) ->  n0 = n1 && eq_field_dbg_info info0 info1 | _ -> false )    
@@ -280,8 +279,6 @@ let eq_primitive_approx ( lhs : t) (rhs : t) =
   | Pmakeblock (i0, info0, flag0) -> 
     (match rhs with Pmakeblock(i1,info1,flag1) ->  
       i0 = i1 && flag0 = flag1 && eq_tag_info info0 info1 | _ -> false)  
-  
-  | Pglobal_exception ident -> (match rhs with Pglobal_exception ident2 ->  Ident.same ident ident2 | _ -> false )
   | Pduprecord record_repesentation0 -> (match rhs with Pduprecord record_repesentation1 ->  eq_record_representation record_repesentation0 record_repesentation1  | _ -> false)
   | Pjs_call {prim_name; arg_types; ffi} ->  ( match rhs with Pjs_call rhs -> prim_name = rhs.prim_name && arg_types = rhs.arg_types && ffi = rhs.ffi | _ -> false)
   | Pjs_object_create obj_create -> (match rhs with Pjs_object_create obj_create1 -> obj_create = obj_create1 | _ -> false )
