@@ -49,7 +49,13 @@ val mapi :
   'a list -> 
   (int -> 'a -> 'b) -> 
   'b list 
-  
+
+val mapi_append :
+  'a list -> 
+  (int -> 'a -> 'b) -> 
+  'b list -> 
+  'b list 
+
 val map_snd : ('a * 'b) list -> ('b -> 'c) -> ('a * 'c) list 
 
 (** [map_last f xs ]

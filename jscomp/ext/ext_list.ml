@@ -148,14 +148,14 @@ let rec map_last l f=
     let y4 = f false x4 in
     y1::y2::y3::y4::(map_last tail f)
 
-let rec mapi_aux lst i f = 
+let rec mapi_aux lst i f tail = 
   match lst with
-    [] -> []
+    [] -> tail
   | a::l -> 
-    let r = f i a in r :: mapi_aux l (i + 1) f 
+    let r = f i a in r :: mapi_aux l (i + 1) f tail
 
-let mapi lst f = mapi_aux lst 0 f
-
+let mapi lst f = mapi_aux lst 0 f []
+let mapi_append lst f tail = mapi_aux lst 0 f tail
 let rec last xs =
   match xs with 
   | [x] -> x 
