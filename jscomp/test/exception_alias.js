@@ -3,7 +3,7 @@
 var List = require("../../lib/js/list.js");
 
 var a0 = {
-  ExceptionID: "Not_found"
+  RE_EXN_ID: "Not_found"
 };
 
 var b = List.length(/* :: */[

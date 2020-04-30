@@ -75,7 +75,7 @@ add_test("File \"js_json_test.ml\", line 23, characters 11-18", (function (param
                 var ty3 = Js_json.classify(x);
                 if (typeof ty3 === "number") {
                   throw {
-                        ExceptionID: "Assert_failure",
+                        RE_EXN_ID: "Assert_failure",
                         _1: /* tuple */[
                           "js_json_test.ml",
                           37,
@@ -87,7 +87,7 @@ add_test("File \"js_json_test.ml\", line 23, characters 11-18", (function (param
                   return ;
                 }
                 throw {
-                      ExceptionID: "Assert_failure",
+                      RE_EXN_ID: "Assert_failure",
                       _1: /* tuple */[
                         "js_json_test.ml",
                         37,
@@ -204,7 +204,7 @@ function option_get(x) {
     return Caml_option.valFromOption(x);
   }
   throw {
-        ExceptionID: "Assert_failure",
+        RE_EXN_ID: "Assert_failure",
         _1: /* tuple */[
           "js_json_test.ml",
           102,

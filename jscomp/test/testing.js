@@ -136,7 +136,7 @@ function test_raises_this_exc(exc) {
 function failure_test(f, x, s) {
   return test_raises_exc_p((function (x) {
                 return Caml_obj.caml_equal(x, {
-                            ExceptionID: "Failure",
+                            RE_EXN_ID: "Failure",
                             _1: s
                           });
               }), f, x);
@@ -144,7 +144,7 @@ function failure_test(f, x, s) {
 
 function scan_failure_test(f, x) {
   return test_raises_exc_p((function (param) {
-                return param.ExceptionID === Scanf.Scan_failure;
+                return param.RE_EXN_ID === Scanf.Scan_failure;
               }), f, x);
 }
 

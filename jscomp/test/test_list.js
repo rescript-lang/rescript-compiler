@@ -27,7 +27,7 @@ function hd(param) {
     return param[0];
   }
   throw {
-        ExceptionID: "Failure",
+        RE_EXN_ID: "Failure",
         _1: "hd"
       };
 }
@@ -37,7 +37,7 @@ function tl(param) {
     return param[1];
   }
   throw {
-        ExceptionID: "Failure",
+        RE_EXN_ID: "Failure",
         _1: "tl"
       };
 }
@@ -45,7 +45,7 @@ function tl(param) {
 function nth(l, n) {
   if (n < 0) {
     throw {
-          ExceptionID: "Invalid_argument",
+          RE_EXN_ID: "Invalid_argument",
           _1: "List.nth"
         };
   }
@@ -63,7 +63,7 @@ function nth(l, n) {
       continue ;
     }
     throw {
-          ExceptionID: "Failure",
+          RE_EXN_ID: "Failure",
           _1: "nth"
         };
   };
@@ -200,7 +200,7 @@ function map2(f, l1, l2) {
             ];
     }
     throw {
-          ExceptionID: "Invalid_argument",
+          RE_EXN_ID: "Invalid_argument",
           _1: "List.map2"
         };
   }
@@ -208,7 +208,7 @@ function map2(f, l1, l2) {
     return /* [] */0;
   }
   throw {
-        ExceptionID: "Invalid_argument",
+        RE_EXN_ID: "Invalid_argument",
         _1: "List.map2"
       };
 }
@@ -232,13 +232,13 @@ function rev_map2(f, l1, l2) {
         continue ;
       }
       throw {
-            ExceptionID: "Invalid_argument",
+            RE_EXN_ID: "Invalid_argument",
             _1: "List.rev_map2"
           };
     }
     if (l2$1) {
       throw {
-            ExceptionID: "Invalid_argument",
+            RE_EXN_ID: "Invalid_argument",
             _1: "List.rev_map2"
           };
     }
@@ -258,7 +258,7 @@ function iter2(f, _l1, _l2) {
         continue ;
       }
       throw {
-            ExceptionID: "Invalid_argument",
+            RE_EXN_ID: "Invalid_argument",
             _1: "List.iter2"
           };
     }
@@ -266,7 +266,7 @@ function iter2(f, _l1, _l2) {
       return ;
     }
     throw {
-          ExceptionID: "Invalid_argument",
+          RE_EXN_ID: "Invalid_argument",
           _1: "List.iter2"
         };
   };
@@ -285,13 +285,13 @@ function fold_left2(f, _accu, _l1, _l2) {
         continue ;
       }
       throw {
-            ExceptionID: "Invalid_argument",
+            RE_EXN_ID: "Invalid_argument",
             _1: "List.fold_left2"
           };
     }
     if (l2) {
       throw {
-            ExceptionID: "Invalid_argument",
+            RE_EXN_ID: "Invalid_argument",
             _1: "List.fold_left2"
           };
     }
@@ -305,13 +305,13 @@ function fold_right2(f, l1, l2, accu) {
       return Curry._3(f, l1[0], l2[0], fold_right2(f, l1[1], l2[1], accu));
     }
     throw {
-          ExceptionID: "Invalid_argument",
+          RE_EXN_ID: "Invalid_argument",
           _1: "List.fold_right2"
         };
   }
   if (l2) {
     throw {
-          ExceptionID: "Invalid_argument",
+          RE_EXN_ID: "Invalid_argument",
           _1: "List.fold_right2"
         };
   }
@@ -360,7 +360,7 @@ function for_all2(p, _l1, _l2) {
         continue ;
       }
       throw {
-            ExceptionID: "Invalid_argument",
+            RE_EXN_ID: "Invalid_argument",
             _1: "List.for_all2"
           };
     }
@@ -368,7 +368,7 @@ function for_all2(p, _l1, _l2) {
       return true;
     }
     throw {
-          ExceptionID: "Invalid_argument",
+          RE_EXN_ID: "Invalid_argument",
           _1: "List.for_all2"
         };
   };
@@ -388,7 +388,7 @@ function exists2(p, _l1, _l2) {
         continue ;
       }
       throw {
-            ExceptionID: "Invalid_argument",
+            RE_EXN_ID: "Invalid_argument",
             _1: "List.exists2"
           };
     }
@@ -396,7 +396,7 @@ function exists2(p, _l1, _l2) {
       return false;
     }
     throw {
-          ExceptionID: "Invalid_argument",
+          RE_EXN_ID: "Invalid_argument",
           _1: "List.exists2"
         };
   };
@@ -442,7 +442,7 @@ function assoc(x, _param) {
       continue ;
     }
     throw {
-          ExceptionID: "Not_found"
+          RE_EXN_ID: "Not_found"
         };
   };
 }
@@ -459,7 +459,7 @@ function assq(x, _param) {
       continue ;
     }
     throw {
-          ExceptionID: "Not_found"
+          RE_EXN_ID: "Not_found"
         };
   };
 }
@@ -536,7 +536,7 @@ function find(p, _param) {
       continue ;
     }
     throw {
-          ExceptionID: "Not_found"
+          RE_EXN_ID: "Not_found"
         };
   };
 }
@@ -633,7 +633,7 @@ function combine(l1, l2) {
             ];
     }
     throw {
-          ExceptionID: "Invalid_argument",
+          RE_EXN_ID: "Invalid_argument",
           _1: "List.combine"
         };
   }
@@ -641,7 +641,7 @@ function combine(l1, l2) {
     return /* [] */0;
   }
   throw {
-        ExceptionID: "Invalid_argument",
+        RE_EXN_ID: "Invalid_argument",
         _1: "List.combine"
       };
 }
@@ -681,7 +681,7 @@ function chop(_k, _l) {
       continue ;
     }
     throw {
-          ExceptionID: "Assert_failure",
+          RE_EXN_ID: "Assert_failure",
           _1: /* tuple */[
             "test_list.ml",
             224,

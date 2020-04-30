@@ -59,7 +59,7 @@ var three = {
 var v = {
   contents: (function (param) {
       throw {
-            ExceptionID: "Assert_failure",
+            RE_EXN_ID: "Assert_failure",
             _1: /* tuple */[
               "rec_value_test.ml",
               23,
@@ -237,7 +237,7 @@ var suites_001 = /* :: */[
             tmp = match[0];
           } else {
             throw {
-                  ExceptionID: "Assert_failure",
+                  RE_EXN_ID: "Assert_failure",
                   _1: /* tuple */[
                     "rec_value_test.ml",
                     108,
@@ -247,7 +247,7 @@ var suites_001 = /* :: */[
           }
         } else {
           throw {
-                ExceptionID: "Assert_failure",
+                RE_EXN_ID: "Assert_failure",
                 _1: /* tuple */[
                   "rec_value_test.ml",
                   108,
@@ -381,7 +381,7 @@ var suites_001 = /* :: */[
                                   ]);
                         }
                         throw {
-                              ExceptionID: "Assert_failure",
+                              RE_EXN_ID: "Assert_failure",
                               _1: /* tuple */[
                                 "rec_value_test.ml",
                                 132,
@@ -401,7 +401,7 @@ var suites_001 = /* :: */[
                                     ]);
                           }
                           throw {
-                                ExceptionID: "Assert_failure",
+                                RE_EXN_ID: "Assert_failure",
                                 _1: /* tuple */[
                                   "rec_value_test.ml",
                                   137,

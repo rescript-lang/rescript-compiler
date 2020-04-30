@@ -157,7 +157,7 @@ function f11(x) {
     return 1;
   }
   throw {
-        ExceptionID: "Assert_failure",
+        RE_EXN_ID: "Assert_failure",
         _1: /* tuple */[
           "adt_optimize_test.ml",
           191,

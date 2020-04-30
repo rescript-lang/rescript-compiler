@@ -44,7 +44,7 @@ function bufferize(f) {
           (function (x) {
               if (buf.contents !== undefined) {
                 throw {
-                      ExceptionID: "Assert_failure",
+                      RE_EXN_ID: "Assert_failure",
                       _1: /* tuple */[
                         "qcc.ml",
                         17,
@@ -102,7 +102,7 @@ function addsym(s) {
 function symstr(n) {
   if (n >= syms.contents) {
     throw {
-          ExceptionID: "Assert_failure",
+          RE_EXN_ID: "Assert_failure",
           _1: /* tuple */[
             "qcc.ml",
             40,
@@ -195,7 +195,7 @@ function next(param) {
   }
   catch (raw_exn){
     var exn = Caml_js_exceptions.internalToOCamlException(raw_exn);
-    if (exn.ExceptionID === "End_of_file") {
+    if (exn.RE_EXN_ID === "End_of_file") {
       c = undefined;
     } else {
       throw exn;
@@ -242,7 +242,7 @@ function next(param) {
     var qt = Curry._1(getch, undefined);
     if (qt !== /* "'" */39) {
       throw {
-            ExceptionID: "Failure",
+            RE_EXN_ID: "Failure",
             _1: "syntax error"
           };
     }
@@ -354,7 +354,7 @@ function get32(l) {
 function patch(rel, loc, n) {
   if (n >= 0) {
     throw {
-          ExceptionID: "Assert_failure",
+          RE_EXN_ID: "Assert_failure",
           _1: /* tuple */[
             "qcc.ml",
             157,
@@ -860,7 +860,7 @@ function unary(stk) {
                 ];
               } else {
                 throw {
-                      ExceptionID: "Failure",
+                      RE_EXN_ID: "Failure",
                       _1: "[cast] expected"
                     };
               }
@@ -908,7 +908,7 @@ function unary(stk) {
                         "unknown operator %s"
                       ]), o);
               throw {
-                    ExceptionID: "Failure",
+                    RE_EXN_ID: "Failure",
                     _1: s
                   };
             }
@@ -930,7 +930,7 @@ function unary(stk) {
           var l = List.assoc(i$1, stk);
           if (l <= -256) {
             throw {
-                  ExceptionID: "Assert_failure",
+                  RE_EXN_ID: "Assert_failure",
                   _1: /* tuple */[
                     "qcc.ml",
                     295,
@@ -1127,7 +1127,7 @@ function decl(g, _n, _stk) {
               var glo = Caml_array.caml_array_get(globs, s$1);
               if (glo.va >= 0) {
                 throw {
-                      ExceptionID: "Failure",
+                      RE_EXN_ID: "Failure",
                       _1: "symbol defined twice"
                     };
               }
@@ -1159,7 +1159,7 @@ function decl(g, _n, _stk) {
             continue ;
           }
           throw {
-                ExceptionID: "Failure",
+                RE_EXN_ID: "Failure",
                 _1: "[var] expected in [decl]"
               };
         };
@@ -1192,7 +1192,7 @@ function decl(g, _n, _stk) {
     if (!g && n !== 0) {
       if ((n << 3) >= 256) {
         throw {
-              ExceptionID: "Assert_failure",
+              RE_EXN_ID: "Assert_failure",
               _1: /* tuple */[
                 "qcc.ml",
                 436,
@@ -1311,7 +1311,7 @@ function stmt(brk, stk) {
     var n = align.contents - brk[1] | 0;
     if (n < 0) {
       throw {
-            ExceptionID: "Assert_failure",
+            RE_EXN_ID: "Assert_failure",
             _1: /* tuple */[
               "qcc.ml",
               515,
@@ -1378,7 +1378,7 @@ function top(_param) {
       var g = Caml_array.caml_array_get(globs, f$1);
       if (g.va >= 0) {
         throw {
-              ExceptionID: "Failure",
+              RE_EXN_ID: "Failure",
               _1: "symbol defined twice"
             };
       }
@@ -1398,13 +1398,13 @@ function top(_param) {
                   return stk;
                 }
                 throw {
-                      ExceptionID: "Failure",
+                      RE_EXN_ID: "Failure",
                       _1: "[var] or ) expected"
                     };
             case /* ILit */1 :
             case /* SLit */2 :
                 throw {
-                      ExceptionID: "Failure",
+                      RE_EXN_ID: "Failure",
                       _1: "[var] or ) expected"
                     };
             case /* Sym */3 :
@@ -1483,7 +1483,7 @@ function top(_param) {
       continue ;
     }
     throw {
-          ExceptionID: "Failure",
+          RE_EXN_ID: "Failure",
           _1: "[decl] or [fun] expected"
         };
   };
@@ -1712,7 +1712,7 @@ function elfgen(outf) {
   elfphdr(2, dyn + off | 0, tend - dyn | 0, 8);
   if (opos.contents !== 232) {
     throw {
-          ExceptionID: "Assert_failure",
+          RE_EXN_ID: "Assert_failure",
           _1: /* tuple */[
             "qcc.ml",
             698,

@@ -51,12 +51,12 @@ function Make(Ord) {
           return create(create(ll, lv, ld, lr[0]), lr[1], lr[2], create(lr[3], x, d, r));
         }
         throw {
-              ExceptionID: "Invalid_argument",
+              RE_EXN_ID: "Invalid_argument",
               _1: "Map.bal"
             };
       }
       throw {
-            ExceptionID: "Invalid_argument",
+            RE_EXN_ID: "Invalid_argument",
             _1: "Map.bal"
           };
     }
@@ -81,12 +81,12 @@ function Make(Ord) {
         return create(create(l, x, d, rl[0]), rl[1], rl[2], create(rl[3], rv, rd, rr));
       }
       throw {
-            ExceptionID: "Invalid_argument",
+            RE_EXN_ID: "Invalid_argument",
             _1: "Map.bal"
           };
     }
     throw {
-          ExceptionID: "Invalid_argument",
+          RE_EXN_ID: "Invalid_argument",
           _1: "Map.bal"
         };
   };
@@ -138,7 +138,7 @@ function Make(Ord) {
         continue ;
       }
       throw {
-            ExceptionID: "Not_found"
+            RE_EXN_ID: "Not_found"
           };
     };
   };
@@ -171,7 +171,7 @@ function Make(Ord) {
         continue ;
       }
       throw {
-            ExceptionID: "Not_found"
+            RE_EXN_ID: "Not_found"
           };
     };
   };
@@ -190,7 +190,7 @@ function Make(Ord) {
         continue ;
       }
       throw {
-            ExceptionID: "Not_found"
+            RE_EXN_ID: "Not_found"
           };
     };
   };
@@ -204,7 +204,7 @@ function Make(Ord) {
       }
     }
     throw {
-          ExceptionID: "Invalid_argument",
+          RE_EXN_ID: "Invalid_argument",
           _1: "Map.remove_min_elt"
         };
   };
@@ -419,7 +419,7 @@ function Make(Ord) {
       return concat_or_join(merge(f, match$1[0], s2[0]), v2, Curry._3(f, v2, match$1[1], Caml_option.some(s2[2])), merge(f, match$1[2], s2[3]));
     }
     throw {
-          ExceptionID: "Assert_failure",
+          RE_EXN_ID: "Assert_failure",
           _1: /* tuple */[
             "inline_map2_test.ml",
             270,
@@ -656,12 +656,12 @@ function bal(l, x, d, r) {
         return create(create(ll, lv, ld, lr[0]), lr[1], lr[2], create(lr[3], x, d, r));
       }
       throw {
-            ExceptionID: "Invalid_argument",
+            RE_EXN_ID: "Invalid_argument",
             _1: "Map.bal"
           };
     }
     throw {
-          ExceptionID: "Invalid_argument",
+          RE_EXN_ID: "Invalid_argument",
           _1: "Map.bal"
         };
   }
@@ -686,12 +686,12 @@ function bal(l, x, d, r) {
       return create(create(l, x, d, rl[0]), rl[1], rl[2], create(rl[3], rv, rd, rr));
     }
     throw {
-          ExceptionID: "Invalid_argument",
+          RE_EXN_ID: "Invalid_argument",
           _1: "Map.bal"
         };
   }
   throw {
-        ExceptionID: "Invalid_argument",
+        RE_EXN_ID: "Invalid_argument",
         _1: "Map.bal"
       };
 }
@@ -746,7 +746,7 @@ function find(x, _param) {
       continue ;
     }
     throw {
-          ExceptionID: "Not_found"
+          RE_EXN_ID: "Not_found"
         };
   };
 }
@@ -781,7 +781,7 @@ function min_binding(_param) {
       continue ;
     }
     throw {
-          ExceptionID: "Not_found"
+          RE_EXN_ID: "Not_found"
         };
   };
 }
@@ -801,7 +801,7 @@ function max_binding(_param) {
       continue ;
     }
     throw {
-          ExceptionID: "Not_found"
+          RE_EXN_ID: "Not_found"
         };
   };
 }
@@ -816,7 +816,7 @@ function remove_min_binding(param) {
     }
   }
   throw {
-        ExceptionID: "Invalid_argument",
+        RE_EXN_ID: "Invalid_argument",
         _1: "Map.remove_min_elt"
       };
 }
@@ -1045,7 +1045,7 @@ function merge(f, s1, s2) {
     return concat_or_join(merge(f, match$1[0], s2[0]), v2, Curry._3(f, v2, match$1[1], Caml_option.some(s2[2])), merge(f, match$1[2], s2[3]));
   }
   throw {
-        ExceptionID: "Assert_failure",
+        RE_EXN_ID: "Assert_failure",
         _1: /* tuple */[
           "inline_map2_test.ml",
           270,
@@ -1318,12 +1318,12 @@ function bal$1(l, x, d, r) {
         return create$1(create$1(ll, lv, ld, lr[0]), lr[1], lr[2], create$1(lr[3], x, d, r));
       }
       throw {
-            ExceptionID: "Invalid_argument",
+            RE_EXN_ID: "Invalid_argument",
             _1: "Map.bal"
           };
     }
     throw {
-          ExceptionID: "Invalid_argument",
+          RE_EXN_ID: "Invalid_argument",
           _1: "Map.bal"
         };
   }
@@ -1348,12 +1348,12 @@ function bal$1(l, x, d, r) {
       return create$1(create$1(l, x, d, rl[0]), rl[1], rl[2], create$1(rl[3], rv, rd, rr));
     }
     throw {
-          ExceptionID: "Invalid_argument",
+          RE_EXN_ID: "Invalid_argument",
           _1: "Map.bal"
         };
   }
   throw {
-        ExceptionID: "Invalid_argument",
+        RE_EXN_ID: "Invalid_argument",
         _1: "Map.bal"
       };
 }
@@ -1408,7 +1408,7 @@ function find$1(x, _param) {
       continue ;
     }
     throw {
-          ExceptionID: "Not_found"
+          RE_EXN_ID: "Not_found"
         };
   };
 }
@@ -1443,7 +1443,7 @@ function min_binding$1(_param) {
       continue ;
     }
     throw {
-          ExceptionID: "Not_found"
+          RE_EXN_ID: "Not_found"
         };
   };
 }
@@ -1463,7 +1463,7 @@ function max_binding$1(_param) {
       continue ;
     }
     throw {
-          ExceptionID: "Not_found"
+          RE_EXN_ID: "Not_found"
         };
   };
 }
@@ -1478,7 +1478,7 @@ function remove_min_binding$1(param) {
     }
   }
   throw {
-        ExceptionID: "Invalid_argument",
+        RE_EXN_ID: "Invalid_argument",
         _1: "Map.remove_min_elt"
       };
 }
@@ -1707,7 +1707,7 @@ function merge$1(f, s1, s2) {
     return concat_or_join$1(merge$1(f, match$1[0], s2[0]), v2, Curry._3(f, v2, match$1[1], Caml_option.some(s2[2])), merge$1(f, match$1[2], s2[3]));
   }
   throw {
-        ExceptionID: "Assert_failure",
+        RE_EXN_ID: "Assert_failure",
         _1: /* tuple */[
           "inline_map2_test.ml",
           270,

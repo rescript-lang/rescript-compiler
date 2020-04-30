@@ -50,12 +50,12 @@ function bal(l, x, d, r) {
         return create(create(ll, lv, ld, lr[/* l */0]), lr[/* v */1], lr[/* d */2], create(lr[/* r */3], x, d, r));
       }
       throw {
-            ExceptionID: "Invalid_argument",
+            RE_EXN_ID: "Invalid_argument",
             _1: "Map.bal"
           };
     }
     throw {
-          ExceptionID: "Invalid_argument",
+          RE_EXN_ID: "Invalid_argument",
           _1: "Map.bal"
         };
   }
@@ -80,12 +80,12 @@ function bal(l, x, d, r) {
       return create(create(l, x, d, rl[/* l */0]), rl[/* v */1], rl[/* d */2], create(rl[/* r */3], rv, rd, rr));
     }
     throw {
-          ExceptionID: "Invalid_argument",
+          RE_EXN_ID: "Invalid_argument",
           _1: "Map.bal"
         };
   }
   throw {
-        ExceptionID: "Invalid_argument",
+        RE_EXN_ID: "Invalid_argument",
         _1: "Map.bal"
       };
 }
@@ -154,7 +154,7 @@ function find(x, _param) {
       continue ;
     }
     throw {
-          ExceptionID: "Not_found"
+          RE_EXN_ID: "Not_found"
         };
   };
 }
@@ -193,7 +193,7 @@ function find_first(f, _param) {
       continue ;
     }
     throw {
-          ExceptionID: "Not_found"
+          RE_EXN_ID: "Not_found"
         };
   };
 }
@@ -269,7 +269,7 @@ function find_last(f, _param) {
       continue ;
     }
     throw {
-          ExceptionID: "Not_found"
+          RE_EXN_ID: "Not_found"
         };
   };
 }
@@ -356,7 +356,7 @@ function min_binding(_param) {
       continue ;
     }
     throw {
-          ExceptionID: "Not_found"
+          RE_EXN_ID: "Not_found"
         };
   };
 }
@@ -394,7 +394,7 @@ function max_binding(_param) {
       continue ;
     }
     throw {
-          ExceptionID: "Not_found"
+          RE_EXN_ID: "Not_found"
         };
   };
 }
@@ -427,7 +427,7 @@ function remove_min_binding(param) {
     }
   }
   throw {
-        ExceptionID: "Invalid_argument",
+        RE_EXN_ID: "Invalid_argument",
         _1: "Map.remove_min_elt"
       };
 }
@@ -724,7 +724,7 @@ function merge$1(f, s1, s2) {
     return concat_or_join(merge$1(f, match$1[0], s2[/* l */0]), v2, Curry._3(f, v2, match$1[1], Caml_option.some(s2[/* d */2])), merge$1(f, match$1[2], s2[/* r */3]));
   }
   throw {
-        ExceptionID: "Assert_failure",
+        RE_EXN_ID: "Assert_failure",
         _1: /* tuple */[
           "map.ml",
           393,

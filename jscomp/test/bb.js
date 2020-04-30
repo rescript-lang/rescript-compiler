@@ -23,7 +23,7 @@ function ff(x) {
         return /* c */99;
     default:
       throw {
-            ExceptionID: "Assert_failure",
+            RE_EXN_ID: "Assert_failure",
             _1: /* tuple */[
               "bb.ml",
               17,
@@ -47,7 +47,7 @@ function test(x) {
         break;
     default:
       throw {
-            ExceptionID: "Assert_failure",
+            RE_EXN_ID: "Assert_failure",
             _1: /* tuple */[
               "bb.ml",
               26,

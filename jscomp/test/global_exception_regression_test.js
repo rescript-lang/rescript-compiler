@@ -4,15 +4,15 @@ var Mt = require("./mt.js");
 var Block = require("../../lib/js/block.js");
 
 var v = {
-  ExceptionID: "Not_found"
+  RE_EXN_ID: "Not_found"
 };
 
 var u = {
-  ExceptionID: "Not_found"
+  RE_EXN_ID: "Not_found"
 };
 
 var s = {
-  ExceptionID: "End_of_file"
+  RE_EXN_ID: "End_of_file"
 };
 
 var suites_000 = /* tuple */[

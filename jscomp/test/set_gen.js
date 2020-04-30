@@ -42,7 +42,7 @@ function min_elt(_param) {
       continue ;
     }
     throw {
-          ExceptionID: "Not_found"
+          RE_EXN_ID: "Not_found"
         };
   };
 }
@@ -59,7 +59,7 @@ function max_elt(_param) {
       continue ;
     }
     throw {
-          ExceptionID: "Not_found"
+          RE_EXN_ID: "Not_found"
         };
   };
 }
@@ -204,13 +204,13 @@ function check_height_and_diff(param) {
   var hr = check_height_and_diff(param[2]);
   if (h !== (max_int_2(hl, hr) + 1 | 0)) {
     throw {
-          ExceptionID: Height_invariant_broken
+          RE_EXN_ID: Height_invariant_broken
         };
   }
   var diff = Pervasives.abs(hl - hr | 0);
   if (diff > 2) {
     throw {
-          ExceptionID: Height_diff_borken
+          RE_EXN_ID: Height_diff_borken
         };
   }
   return h;
@@ -247,7 +247,7 @@ function internal_bal(l, v, r) {
         return create(create(ll, lv, lr[0]), lr[1], create(lr[2], v, r));
       }
       throw {
-            ExceptionID: "Assert_failure",
+            RE_EXN_ID: "Assert_failure",
             _1: /* tuple */[
               "set_gen.ml",
               235,
@@ -256,7 +256,7 @@ function internal_bal(l, v, r) {
           };
     }
     throw {
-          ExceptionID: "Assert_failure",
+          RE_EXN_ID: "Assert_failure",
           _1: /* tuple */[
             "set_gen.ml",
             225,
@@ -283,7 +283,7 @@ function internal_bal(l, v, r) {
       return create(create(l, v, rl[0]), rl[1], create(rl[2], rv, rr));
     }
     throw {
-          ExceptionID: "Assert_failure",
+          RE_EXN_ID: "Assert_failure",
           _1: /* tuple */[
             "set_gen.ml",
             251,
@@ -292,7 +292,7 @@ function internal_bal(l, v, r) {
         };
   }
   throw {
-        ExceptionID: "Assert_failure",
+        RE_EXN_ID: "Assert_failure",
         _1: /* tuple */[
           "set_gen.ml",
           245,
@@ -311,7 +311,7 @@ function remove_min_elt(param) {
     }
   }
   throw {
-        ExceptionID: "Invalid_argument",
+        RE_EXN_ID: "Invalid_argument",
         _1: "Set.remove_min_elt"
       };
 }
@@ -514,7 +514,7 @@ function of_sorted_list(l) {
             ];
     }
     throw {
-          ExceptionID: "Assert_failure",
+          RE_EXN_ID: "Assert_failure",
           _1: /* tuple */[
             "set_gen.ml",
             361,

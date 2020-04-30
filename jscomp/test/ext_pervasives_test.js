@@ -55,13 +55,13 @@ function is_pos_pow(n) {
         continue ;
       }
       throw {
-            ExceptionID: E
+            RE_EXN_ID: E
           };
     };
   }
   catch (raw_exn){
     var exn = Caml_js_exceptions.internalToOCamlException(raw_exn);
-    if (exn.ExceptionID === E) {
+    if (exn.RE_EXN_ID === E) {
       return -1;
     }
     throw exn;
@@ -72,7 +72,7 @@ function failwithf(loc, fmt) {
   return Format.ksprintf((function (s) {
                 var s$1 = loc + s;
                 throw {
-                      ExceptionID: "Failure",
+                      RE_EXN_ID: "Failure",
                       _1: s$1
                     };
               }), fmt);
@@ -85,7 +85,7 @@ function invalid_argf(fmt) {
 function bad_argf(fmt) {
   return Format.ksprintf((function (x) {
                 throw {
-                      ExceptionID: Arg.Bad,
+                      RE_EXN_ID: Arg.Bad,
                       _1: x
                     };
               }), fmt);

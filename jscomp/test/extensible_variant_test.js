@@ -15,17 +15,17 @@ var N = {
 var Int$1 = Caml_exceptions.create("Extensible_variant_test.Int");
 
 function to_int(x) {
-  if (x.ExceptionID === Str) {
+  if (x.RE_EXN_ID === Str) {
     return -1;
   }
-  if (x.ExceptionID === Int) {
+  if (x.RE_EXN_ID === Int) {
     return x._1;
   }
-  if (x.ExceptionID === Int$1) {
+  if (x.RE_EXN_ID === Int$1) {
     return x._2;
   }
   throw {
-        ExceptionID: "Assert_failure",
+        RE_EXN_ID: "Assert_failure",
         _1: /* tuple */[
           "extensible_variant_test.ml",
           16,
@@ -40,7 +40,7 @@ var suites_000 = /* tuple */[
       return /* Eq */Block.__(0, [
                 3,
                 to_int({
-                      ExceptionID: Int,
+                      RE_EXN_ID: Int,
                       _1: 3,
                       _2: 0
                     })
@@ -55,7 +55,7 @@ var suites_001 = /* :: */[
         return /* Eq */Block.__(0, [
                   0,
                   to_int({
-                        ExceptionID: Int$1,
+                        RE_EXN_ID: Int$1,
                         _1: 3,
                         _2: 0
                       })
@@ -69,7 +69,7 @@ var suites_001 = /* :: */[
           return /* Eq */Block.__(0, [
                     -1,
                     to_int({
-                          ExceptionID: Str,
+                          RE_EXN_ID: Str,
                           _1: "x"
                         })
                   ]);

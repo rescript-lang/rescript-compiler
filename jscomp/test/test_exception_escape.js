@@ -8,7 +8,7 @@ var f;
 
 try {
   throw {
-        ExceptionID: A,
+        RE_EXN_ID: A,
         _1: 3
       };
 }

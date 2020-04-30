@@ -228,7 +228,7 @@ function find(x, _tree) {
       continue ;
     }
     throw {
-          ExceptionID: "Not_found"
+          RE_EXN_ID: "Not_found"
         };
   };
 }

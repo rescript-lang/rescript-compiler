@@ -41,12 +41,12 @@ function bal(l, x, d, r) {
         return create(create(ll, lv, ld, lr[0]), lr[1], lr[2], create(lr[3], x, d, r));
       }
       throw {
-            ExceptionID: "Invalid_argument",
+            RE_EXN_ID: "Invalid_argument",
             _1: "Map.bal"
           };
     }
     throw {
-          ExceptionID: "Invalid_argument",
+          RE_EXN_ID: "Invalid_argument",
           _1: "Map.bal"
         };
   }
@@ -71,12 +71,12 @@ function bal(l, x, d, r) {
       return create(create(l, x, d, rl[0]), rl[1], rl[2], create(rl[3], rv, rd, rr));
     }
     throw {
-          ExceptionID: "Invalid_argument",
+          RE_EXN_ID: "Invalid_argument",
           _1: "Map.bal"
         };
   }
   throw {
-        ExceptionID: "Invalid_argument",
+        RE_EXN_ID: "Invalid_argument",
         _1: "Map.bal"
       };
 }
@@ -123,7 +123,7 @@ function find(x, _param) {
       continue ;
     }
     throw {
-          ExceptionID: "Not_found"
+          RE_EXN_ID: "Not_found"
         };
   };
 }

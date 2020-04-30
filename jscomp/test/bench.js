@@ -24,7 +24,7 @@ function init(l, f) {
   }
   if (l < 0) {
     throw {
-          ExceptionID: "Invalid_argument",
+          RE_EXN_ID: "Invalid_argument",
           _1: "Array.init"
         };
   }

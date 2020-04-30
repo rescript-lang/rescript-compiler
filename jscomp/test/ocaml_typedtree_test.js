@@ -47,7 +47,7 @@ try {
 }
 catch (raw_exn){
   var exn = Caml_js_exceptions.internalToOCamlException(raw_exn);
-  if (exn.ExceptionID !== "Not_found") {
+  if (exn.RE_EXN_ID !== "Not_found") {
     throw exn;
   }
   
@@ -167,7 +167,7 @@ function fatal_error(msg) {
   Pervasives.prerr_string(">> Fatal error: ");
   console.error(msg);
   throw {
-        ExceptionID: Fatal_error
+        RE_EXN_ID: Fatal_error
       };
 }
 
@@ -249,7 +249,7 @@ function split_last(param) {
           ];
   }
   throw {
-        ExceptionID: "Assert_failure",
+        RE_EXN_ID: "Assert_failure",
         _1: /* tuple */[
           "misc.ml",
           54,
@@ -291,7 +291,7 @@ function find_in_path_uncap(path, name) {
       continue ;
     }
     throw {
-          ExceptionID: "Not_found"
+          RE_EXN_ID: "Not_found"
         };
   };
 }
@@ -302,7 +302,7 @@ function remove_file(filename) {
   }
   catch (raw_msg){
     var msg = Caml_js_exceptions.internalToOCamlException(raw_msg);
-    if (msg.ExceptionID === "Sys_error") {
+    if (msg.RE_EXN_ID === "Sys_error") {
       return ;
     }
     throw msg;
@@ -323,7 +323,7 @@ function chop_extension_if_any(fname) {
   }
   catch (raw_exn){
     var exn = Caml_js_exceptions.internalToOCamlException(raw_exn);
-    if (exn.ExceptionID === "Invalid_argument") {
+    if (exn.RE_EXN_ID === "Invalid_argument") {
       return fname;
     }
     throw exn;
@@ -477,7 +477,7 @@ function style_of_tag(s) {
         return cur_styles.contents.warning;
     default:
       throw {
-            ExceptionID: "Not_found"
+            RE_EXN_ID: "Not_found"
           };
   }
 }
@@ -501,7 +501,7 @@ function set_color_tag_handling(ppf) {
     }
     catch (raw_exn){
       var exn = Caml_js_exceptions.internalToOCamlException(raw_exn);
-      if (exn.ExceptionID === "Not_found") {
+      if (exn.RE_EXN_ID === "Not_found") {
         return Curry._1(partial_arg, param);
       }
       throw exn;
@@ -521,7 +521,7 @@ function set_color_tag_handling(ppf) {
     }
     catch (raw_exn){
       var exn = Caml_js_exceptions.internalToOCamlException(raw_exn);
-      if (exn.ExceptionID === "Not_found") {
+      if (exn.RE_EXN_ID === "Not_found") {
         return Curry._1(partial_arg$1, param);
       }
       throw exn;
@@ -878,7 +878,7 @@ function letter(param) {
               ];
     default:
       throw {
-            ExceptionID: "Assert_failure",
+            RE_EXN_ID: "Assert_failure",
             _1: /* tuple */[
               "warnings.ml",
               176,
@@ -947,7 +947,7 @@ function parse_opt(error, active, flags, s) {
     var n2 = match$1[1];
     if (n2 < n1) {
       throw {
-            ExceptionID: Arg.Bad,
+            RE_EXN_ID: Arg.Bad,
             _1: "Ill-formed list of warnings"
           };
     }
@@ -968,7 +968,7 @@ function parse_opt(error, active, flags, s) {
         if (c >= 97) {
           if (c >= 123) {
             throw {
-                  ExceptionID: Arg.Bad,
+                  RE_EXN_ID: Arg.Bad,
                   _1: "Ill-formed list of warnings"
                 };
           }
@@ -978,7 +978,7 @@ function parse_opt(error, active, flags, s) {
         }
         if (c >= 91) {
           throw {
-                ExceptionID: Arg.Bad,
+                RE_EXN_ID: Arg.Bad,
                 _1: "Ill-formed list of warnings"
               };
         }
@@ -991,7 +991,7 @@ function parse_opt(error, active, flags, s) {
           return loop_letter_num(set_all, i + 1 | 0);
         }
         throw {
-              ExceptionID: Arg.Bad,
+              RE_EXN_ID: Arg.Bad,
               _1: "Ill-formed list of warnings"
             };
       }
@@ -1001,7 +1001,7 @@ function parse_opt(error, active, flags, s) {
               return loop_letter_num(set, i + 1 | 0);
           case 1 :
               throw {
-                    ExceptionID: Arg.Bad,
+                    RE_EXN_ID: Arg.Bad,
                     _1: "Ill-formed list of warnings"
                   };
           case 2 :
@@ -1010,7 +1010,7 @@ function parse_opt(error, active, flags, s) {
         }
       } else {
         throw {
-              ExceptionID: Arg.Bad,
+              RE_EXN_ID: Arg.Bad,
               _1: "Ill-formed list of warnings"
             };
       }
@@ -1019,7 +1019,7 @@ function parse_opt(error, active, flags, s) {
   var loop_letter_num = function (myset, i) {
     if (i >= s.length) {
       throw {
-            ExceptionID: Arg.Bad,
+            RE_EXN_ID: Arg.Bad,
             _1: "Ill-formed list of warnings"
           };
     }
@@ -1028,7 +1028,7 @@ function parse_opt(error, active, flags, s) {
       if (match >= 97) {
         if (match >= 123) {
           throw {
-                ExceptionID: Arg.Bad,
+                RE_EXN_ID: Arg.Bad,
                 _1: "Ill-formed list of warnings"
               };
         }
@@ -1037,7 +1037,7 @@ function parse_opt(error, active, flags, s) {
       }
       if (match >= 91) {
         throw {
-              ExceptionID: Arg.Bad,
+              RE_EXN_ID: Arg.Bad,
               _1: "Ill-formed list of warnings"
             };
       }
@@ -1046,7 +1046,7 @@ function parse_opt(error, active, flags, s) {
     }
     if (match > 57 || match < 48) {
       throw {
-            ExceptionID: Arg.Bad,
+            RE_EXN_ID: Arg.Bad,
             _1: "Ill-formed list of warnings"
           };
     }
@@ -1145,7 +1145,7 @@ function message(s) {
             }
           }
           throw {
-                ExceptionID: "Assert_failure",
+                RE_EXN_ID: "Assert_failure",
                 _1: /* tuple */[
                   "warnings.ml",
                   283,
@@ -1182,7 +1182,7 @@ function message(s) {
             }
           }
           throw {
-                ExceptionID: "Assert_failure",
+                RE_EXN_ID: "Assert_failure",
                 _1: /* tuple */[
                   "warnings.ml",
                   303,
@@ -1297,7 +1297,7 @@ function message(s) {
             return "this record of type " + (ty + (" contains fields that are \nnot visible in the current scope: " + ($$String.concat(" ", slist$2) + ".\nThey will not be selected if the type becomes unknown.")));
           }
           throw {
-                ExceptionID: "Assert_failure",
+                RE_EXN_ID: "Assert_failure",
                 _1: /* tuple */[
                   "warnings.ml",
                   365,
@@ -1314,7 +1314,7 @@ function message(s) {
             return "these field labels belong to several types: " + ($$String.concat(" ", s[1]) + "\nThe first one was selected. Please disambiguate if this is wrong.");
           }
           throw {
-                ExceptionID: "Assert_failure",
+                RE_EXN_ID: "Assert_failure",
                 _1: /* tuple */[
                   "warnings.ml",
                   374,
@@ -1542,7 +1542,7 @@ function highlight_terminfo(ppf, num_lines, lb, locs) {
   var pos0 = -lb.lex_abs_pos | 0;
   if (pos0 < 0) {
     throw {
-          ExceptionID: Pervasives.Exit
+          RE_EXN_ID: Pervasives.Exit
         };
   }
   var lines = num_loc_lines.contents;
@@ -1554,7 +1554,7 @@ function highlight_terminfo(ppf, num_lines, lb, locs) {
   }
   if (lines >= (num_lines - 2 | 0)) {
     throw {
-          ExceptionID: Pervasives.Exit
+          RE_EXN_ID: Pervasives.Exit
         };
   }
   Caml_io.caml_ml_flush(Pervasives.stdout);
@@ -1593,7 +1593,7 @@ function highlight_dumb(ppf, lb, loc) {
   var pos0 = -lb.lex_abs_pos | 0;
   if (pos0 < 0) {
     throw {
-          ExceptionID: Pervasives.Exit
+          RE_EXN_ID: Pervasives.Exit
         };
   }
   var end_pos = (lb.lex_buffer_len - pos0 | 0) - 1 | 0;
@@ -1718,7 +1718,7 @@ function highlight_locations(ppf, locs) {
         }
         catch (raw_exn){
           var exn = Caml_js_exceptions.internalToOCamlException(raw_exn);
-          if (exn.ExceptionID === "Not_found") {
+          if (exn.RE_EXN_ID === "Not_found") {
             norepeat = false;
           } else {
             throw exn;
@@ -1734,7 +1734,7 @@ function highlight_locations(ppf, locs) {
         }
         catch (raw_exn$1){
           var exn$1 = Caml_js_exceptions.internalToOCamlException(raw_exn$1);
-          if (exn$1.ExceptionID === Pervasives.Exit) {
+          if (exn$1.RE_EXN_ID === Pervasives.Exit) {
             return false;
           }
           throw exn$1;
@@ -1754,7 +1754,7 @@ function highlight_locations(ppf, locs) {
       }
       catch (raw_exn$2){
         var exn$2 = Caml_js_exceptions.internalToOCamlException(raw_exn$2);
-        if (exn$2.ExceptionID === Pervasives.Exit) {
+        if (exn$2.RE_EXN_ID === Pervasives.Exit) {
           return false;
         }
         throw exn$2;
@@ -2109,7 +2109,7 @@ function error_of_printer_file(print, x) {
 }
 
 register_error_of_exn((function (msg) {
-        if (msg.ExceptionID === "Sys_error") {
+        if (msg.RE_EXN_ID === "Sys_error") {
           return Curry._1(errorf(in_file(input_name.contents), undefined, undefined, /* Format */[
                           /* String_literal */Block.__(11, [
                               "I/O error: ",
@@ -2120,7 +2120,7 @@ register_error_of_exn((function (msg) {
                             ]),
                           "I/O error: %s"
                         ]), msg._1);
-        } else if (msg.ExceptionID === Errors) {
+        } else if (msg.RE_EXN_ID === Errors) {
           return Curry._1(errorf(in_file(input_name.contents), undefined, undefined, /* Format */[
                           /* String_literal */Block.__(11, [
                               "Some fatal warnings were triggered (",
@@ -2144,7 +2144,7 @@ register_error_of_exn((function (msg) {
 var $$Error = Caml_exceptions.create("Ocaml_typedtree_test.Location.Error");
 
 register_error_of_exn((function (e) {
-        if (e.ExceptionID === $$Error) {
+        if (e.RE_EXN_ID === $$Error) {
           return e._1;
         }
         
@@ -2289,7 +2289,7 @@ function balance(l, d, r) {
         return mknode(mknode(ll, ld, lr[0]), lr[1], mknode(lr[2], d, r));
       }
       throw {
-            ExceptionID: "Assert_failure",
+            RE_EXN_ID: "Assert_failure",
             _1: /* tuple */[
               "ident.ml",
               120,
@@ -2298,7 +2298,7 @@ function balance(l, d, r) {
           };
     }
     throw {
-          ExceptionID: "Assert_failure",
+          RE_EXN_ID: "Assert_failure",
           _1: /* tuple */[
             "ident.ml",
             120,
@@ -2323,7 +2323,7 @@ function balance(l, d, r) {
       return mknode(mknode(l, d, rl[0]), rl[1], mknode(rl[2], r[1], r[2]));
     }
     throw {
-          ExceptionID: "Assert_failure",
+          RE_EXN_ID: "Assert_failure",
           _1: /* tuple */[
             "ident.ml",
             129,
@@ -2332,7 +2332,7 @@ function balance(l, d, r) {
         };
   }
   throw {
-        ExceptionID: "Assert_failure",
+        RE_EXN_ID: "Assert_failure",
         _1: /* tuple */[
           "ident.ml",
           129,
@@ -2398,7 +2398,7 @@ function find_same(id, _param) {
               continue ;
             }
             throw {
-                  ExceptionID: "Not_found"
+                  RE_EXN_ID: "Not_found"
                 };
           };
         }
@@ -2407,7 +2407,7 @@ function find_same(id, _param) {
       continue ;
     }
     throw {
-          ExceptionID: "Not_found"
+          RE_EXN_ID: "Not_found"
         };
   };
 }
@@ -2425,7 +2425,7 @@ function find_name(name, _param) {
       continue ;
     }
     throw {
-          ExceptionID: "Not_found"
+          RE_EXN_ID: "Not_found"
         };
   };
 }
@@ -2588,7 +2588,7 @@ function head(_id) {
           continue ;
       case /* Papply */2 :
           throw {
-                ExceptionID: "Assert_failure",
+                RE_EXN_ID: "Assert_failure",
                 _1: /* tuple */[
                   "path.ml",
                   49,
@@ -2796,12 +2796,12 @@ function bal(l, x, d, r) {
         return create$1(create$1(ll, lv, ld, lr[/* l */0]), lr[/* v */1], lr[/* d */2], create$1(lr[/* r */3], x, d, r));
       }
       throw {
-            ExceptionID: "Invalid_argument",
+            RE_EXN_ID: "Invalid_argument",
             _1: "Map.bal"
           };
     }
     throw {
-          ExceptionID: "Invalid_argument",
+          RE_EXN_ID: "Invalid_argument",
           _1: "Map.bal"
         };
   }
@@ -2826,12 +2826,12 @@ function bal(l, x, d, r) {
       return create$1(create$1(l, x, d, rl[/* l */0]), rl[/* v */1], rl[/* d */2], create$1(rl[/* r */3], rv, rd, rr));
     }
     throw {
-          ExceptionID: "Invalid_argument",
+          RE_EXN_ID: "Invalid_argument",
           _1: "Map.bal"
         };
   }
   throw {
-        ExceptionID: "Invalid_argument",
+        RE_EXN_ID: "Invalid_argument",
         _1: "Map.bal"
       };
 }
@@ -2892,7 +2892,7 @@ function find(x, _param) {
       continue ;
     }
     throw {
-          ExceptionID: "Not_found"
+          RE_EXN_ID: "Not_found"
         };
   };
 }
@@ -3060,12 +3060,12 @@ function bal$1(l, v, r) {
         return create$2(create$2(ll, lv, lr[/* l */0]), lr[/* v */1], create$2(lr[/* r */2], v, r));
       }
       throw {
-            ExceptionID: "Invalid_argument",
+            RE_EXN_ID: "Invalid_argument",
             _1: "Set.bal"
           };
     }
     throw {
-          ExceptionID: "Invalid_argument",
+          RE_EXN_ID: "Invalid_argument",
           _1: "Set.bal"
         };
   }
@@ -3088,12 +3088,12 @@ function bal$1(l, v, r) {
       return create$2(create$2(l, v, rl[/* l */0]), rl[/* v */1], create$2(rl[/* r */2], rv, rr));
     }
     throw {
-          ExceptionID: "Invalid_argument",
+          RE_EXN_ID: "Invalid_argument",
           _1: "Set.bal"
         };
   }
   throw {
-        ExceptionID: "Invalid_argument",
+        RE_EXN_ID: "Invalid_argument",
         _1: "Set.bal"
       };
 }
@@ -3185,7 +3185,7 @@ function min_elt(_param) {
       continue ;
     }
     throw {
-          ExceptionID: "Not_found"
+          RE_EXN_ID: "Not_found"
         };
   };
 }
@@ -3200,7 +3200,7 @@ function remove_min_elt(param) {
     }
   }
   throw {
-        ExceptionID: "Invalid_argument",
+        RE_EXN_ID: "Invalid_argument",
         _1: "Set.remove_min_elt"
       };
 }
@@ -3500,12 +3500,12 @@ function bal$2(l, v, r) {
         return create$3(create$3(ll, lv, lr[/* l */0]), lr[/* v */1], create$3(lr[/* r */2], v, r));
       }
       throw {
-            ExceptionID: "Invalid_argument",
+            RE_EXN_ID: "Invalid_argument",
             _1: "Set.bal"
           };
     }
     throw {
-          ExceptionID: "Invalid_argument",
+          RE_EXN_ID: "Invalid_argument",
           _1: "Set.bal"
         };
   }
@@ -3528,12 +3528,12 @@ function bal$2(l, v, r) {
       return create$3(create$3(l, v, rl[/* l */0]), rl[/* v */1], create$3(rl[/* r */2], rv, rr));
     }
     throw {
-          ExceptionID: "Invalid_argument",
+          RE_EXN_ID: "Invalid_argument",
           _1: "Set.bal"
         };
   }
   throw {
-        ExceptionID: "Invalid_argument",
+        RE_EXN_ID: "Invalid_argument",
         _1: "Set.bal"
       };
 }
@@ -3625,7 +3625,7 @@ function min_elt$1(_param) {
       continue ;
     }
     throw {
-          ExceptionID: "Not_found"
+          RE_EXN_ID: "Not_found"
         };
   };
 }
@@ -3640,7 +3640,7 @@ function remove_min_elt$1(param) {
     }
   }
   throw {
-        ExceptionID: "Invalid_argument",
+        RE_EXN_ID: "Invalid_argument",
         _1: "Set.remove_min_elt"
       };
 }
@@ -3903,12 +3903,12 @@ function bal$3(l, x, d, r) {
         return create$4(create$4(ll, lv, ld, lr[/* l */0]), lr[/* v */1], lr[/* d */2], create$4(lr[/* r */3], x, d, r));
       }
       throw {
-            ExceptionID: "Invalid_argument",
+            RE_EXN_ID: "Invalid_argument",
             _1: "Map.bal"
           };
     }
     throw {
-          ExceptionID: "Invalid_argument",
+          RE_EXN_ID: "Invalid_argument",
           _1: "Map.bal"
         };
   }
@@ -3933,12 +3933,12 @@ function bal$3(l, x, d, r) {
       return create$4(create$4(l, x, d, rl[/* l */0]), rl[/* v */1], rl[/* d */2], create$4(rl[/* r */3], rv, rd, rr));
     }
     throw {
-          ExceptionID: "Invalid_argument",
+          RE_EXN_ID: "Invalid_argument",
           _1: "Map.bal"
         };
   }
   throw {
-        ExceptionID: "Invalid_argument",
+        RE_EXN_ID: "Invalid_argument",
         _1: "Map.bal"
       };
 }
@@ -3999,7 +3999,7 @@ function find$1(x, _param) {
       continue ;
     }
     throw {
-          ExceptionID: "Not_found"
+          RE_EXN_ID: "Not_found"
         };
   };
 }
@@ -4026,7 +4026,7 @@ var TypeHash = Hashtbl.Make({
 
 function print_raw(param) {
   throw {
-        ExceptionID: "Assert_failure",
+        RE_EXN_ID: "Assert_failure",
         _1: /* tuple */[
           "btype.ml",
           27,
@@ -4251,7 +4251,7 @@ function row_fixed(row) {
         return true;
     default:
       throw {
-            ExceptionID: "Assert_failure",
+            RE_EXN_ID: "Assert_failure",
             _1: /* tuple */[
               "btype.ml",
               137,
@@ -4318,7 +4318,7 @@ function proxy(ty) {
                 return ty$1;
             default:
               throw {
-                    ExceptionID: "Assert_failure",
+                    RE_EXN_ID: "Assert_failure",
                     _1: /* tuple */[
                       "btype.ml",
                       167,
@@ -4435,7 +4435,7 @@ function iter_row(f, _row) {
             break;
         default:
           throw {
-                ExceptionID: "Assert_failure",
+                RE_EXN_ID: "Assert_failure",
                 _1: /* tuple */[
                   "btype.ml",
                   214,
@@ -4707,7 +4707,7 @@ function copy_kind(_param) {
         return /* Fpresent */0;
       }
       throw {
-            ExceptionID: "Assert_failure",
+            RE_EXN_ID: "Assert_failure",
             _1: /* tuple */[
               "btype.ml",
               363,
@@ -4802,7 +4802,7 @@ function copy_type_desc(_keep_namesOpt, f, _ty) {
           continue ;
       case /* Tsubst */7 :
           throw {
-                ExceptionID: "Assert_failure",
+                RE_EXN_ID: "Assert_failure",
                 _1: /* tuple */[
                   "btype.ml",
                   390,
@@ -4811,7 +4811,7 @@ function copy_type_desc(_keep_namesOpt, f, _ty) {
               };
       case /* Tvariant */8 :
           throw {
-                ExceptionID: "Assert_failure",
+                RE_EXN_ID: "Assert_failure",
                 _1: /* tuple */[
                   "btype.ml",
                   385,
@@ -4846,7 +4846,7 @@ function copy_type_desc(_keep_namesOpt, f, _ty) {
                       }
                     }
                     throw {
-                          ExceptionID: "Assert_failure",
+                          RE_EXN_ID: "Assert_failure",
                           _1: /* tuple */[
                             "btype.ml",
                             375,
@@ -4897,7 +4897,7 @@ function dup_kind(r) {
   var match = r.contents;
   if (match !== undefined) {
     throw {
-          ExceptionID: "Assert_failure",
+          RE_EXN_ID: "Assert_failure",
           _1: /* tuple */[
             "btype.ml",
             408,
@@ -5059,7 +5059,7 @@ function memorize_abbrev(mem, priv, path, v, v$prime) {
 function forget_abbrev_rec(mem, path) {
   if (typeof mem === "number") {
     throw {
-          ExceptionID: "Assert_failure",
+          RE_EXN_ID: "Assert_failure",
           _1: /* tuple */[
             "btype.ml",
             520,
@@ -5071,7 +5071,7 @@ function forget_abbrev_rec(mem, path) {
     var mem$prime = mem[0];
     mem$prime.contents = forget_abbrev_rec(mem$prime.contents, path);
     throw {
-          ExceptionID: Pervasives.Exit
+          RE_EXN_ID: Pervasives.Exit
         };
   }
   var rem = mem[4];
@@ -5096,7 +5096,7 @@ function forget_abbrev(mem, path) {
   }
   catch (raw_exn){
     var exn = Caml_js_exceptions.internalToOCamlException(raw_exn);
-    if (exn.ExceptionID === Pervasives.Exit) {
+    if (exn.RE_EXN_ID === Pervasives.Exit) {
       return ;
     }
     throw exn;
@@ -5151,7 +5151,7 @@ function extract_label_aux(_hd, l, _param) {
       continue ;
     }
     throw {
-          ExceptionID: "Not_found"
+          RE_EXN_ID: "Not_found"
         };
   };
 }
@@ -5319,7 +5319,7 @@ function rev_log(_accu, _param) {
     if (typeof param === "number") {
       if (param !== 0) {
         throw {
-              ExceptionID: "Assert_failure",
+              RE_EXN_ID: "Assert_failure",
               _1: /* tuple */[
                 "btype.ml",
                 656,
@@ -5348,7 +5348,7 @@ function backtrack(param) {
   if (typeof change === "number") {
     if (change !== 0) {
       throw {
-            ExceptionID: "Failure",
+            RE_EXN_ID: "Failure",
             _1: "Btype.backtrack"
           };
     }
@@ -5387,7 +5387,7 @@ function read_cmi(filename) {
       if ($$String.sub(buffer, 0, pre_len) === $$String.sub(cmi_magic_number, 0, pre_len)) {
         var msg = buffer < cmi_magic_number ? "an older" : "a newer";
         throw {
-              ExceptionID: $$Error$1,
+              RE_EXN_ID: $$Error$1,
               _1: /* Wrong_version_interface */Block.__(1, [
                   filename,
                   msg
@@ -5395,7 +5395,7 @@ function read_cmi(filename) {
             };
       }
       throw {
-            ExceptionID: $$Error$1,
+            RE_EXN_ID: $$Error$1,
             _1: /* Not_an_interface */Block.__(0, [filename])
           };
     }
@@ -5405,24 +5405,24 @@ function read_cmi(filename) {
   }
   catch (raw_e){
     var e = Caml_js_exceptions.internalToOCamlException(raw_e);
-    if (e.ExceptionID === "End_of_file") {
+    if (e.RE_EXN_ID === "End_of_file") {
       Caml_external_polyfill.resolve("caml_ml_close_channel")(ic);
       throw {
-            ExceptionID: $$Error$1,
+            RE_EXN_ID: $$Error$1,
             _1: /* Corrupted_interface */Block.__(2, [filename])
           };
     }
-    if (e.ExceptionID === "Failure") {
+    if (e.RE_EXN_ID === "Failure") {
       Caml_external_polyfill.resolve("caml_ml_close_channel")(ic);
       throw {
-            ExceptionID: $$Error$1,
+            RE_EXN_ID: $$Error$1,
             _1: /* Corrupted_interface */Block.__(2, [filename])
           };
     }
-    if (e.ExceptionID === $$Error$1) {
+    if (e.RE_EXN_ID === $$Error$1) {
       Caml_external_polyfill.resolve("caml_ml_close_channel")(ic);
       throw {
-            ExceptionID: $$Error$1,
+            RE_EXN_ID: $$Error$1,
             _1: e._1
           };
     }
@@ -5516,7 +5516,7 @@ function report_error(ppf, filename) {
 }
 
 register_error_of_exn((function (err) {
-        if (err.ExceptionID === $$Error$1) {
+        if (err.RE_EXN_ID === $$Error$1) {
           return error_of_printer_file(report_error, err._1);
         }
         
@@ -5546,7 +5546,7 @@ function extract(l, tbl) {
                 }
                 catch (raw_exn){
                   var exn = Caml_js_exceptions.internalToOCamlException(raw_exn);
-                  if (exn.ExceptionID === "Not_found") {
+                  if (exn.RE_EXN_ID === "Not_found") {
                     return /* :: */[
                             /* tuple */[
                               name,
@@ -6443,7 +6443,7 @@ function get_pre_docs(pos) {
   }
   catch (raw_exn){
     var exn = Caml_js_exceptions.internalToOCamlException(raw_exn);
-    if (exn.ExceptionID === "Not_found") {
+    if (exn.RE_EXN_ID === "Not_found") {
       return ;
     }
     throw exn;
@@ -6456,7 +6456,7 @@ function mark_pre_docs(pos) {
   }
   catch (raw_exn){
     var exn = Caml_js_exceptions.internalToOCamlException(raw_exn);
-    if (exn.ExceptionID === "Not_found") {
+    if (exn.RE_EXN_ID === "Not_found") {
       return ;
     }
     throw exn;
@@ -6480,7 +6480,7 @@ function get_post_docs(pos) {
   }
   catch (raw_exn){
     var exn = Caml_js_exceptions.internalToOCamlException(raw_exn);
-    if (exn.ExceptionID === "Not_found") {
+    if (exn.RE_EXN_ID === "Not_found") {
       return ;
     }
     throw exn;
@@ -6493,7 +6493,7 @@ function mark_post_docs(pos) {
   }
   catch (raw_exn){
     var exn = Caml_js_exceptions.internalToOCamlException(raw_exn);
-    if (exn.ExceptionID === "Not_found") {
+    if (exn.RE_EXN_ID === "Not_found") {
       return ;
     }
     throw exn;
@@ -6507,7 +6507,7 @@ function get_info(pos) {
   }
   catch (raw_exn){
     var exn = Caml_js_exceptions.internalToOCamlException(raw_exn);
-    if (exn.ExceptionID === "Not_found") {
+    if (exn.RE_EXN_ID === "Not_found") {
       return ;
     }
     throw exn;
@@ -6529,7 +6529,7 @@ function get_text(pos) {
   }
   catch (raw_exn){
     var exn = Caml_js_exceptions.internalToOCamlException(raw_exn);
-    if (exn.ExceptionID === "Not_found") {
+    if (exn.RE_EXN_ID === "Not_found") {
       return /* [] */0;
     }
     throw exn;
@@ -6551,7 +6551,7 @@ function get_pre_extra_text(pos) {
   }
   catch (raw_exn){
     var exn = Caml_js_exceptions.internalToOCamlException(raw_exn);
-    if (exn.ExceptionID === "Not_found") {
+    if (exn.RE_EXN_ID === "Not_found") {
       return /* [] */0;
     }
     throw exn;
@@ -6573,7 +6573,7 @@ function get_post_extra_text(pos) {
   }
   catch (raw_exn){
     var exn = Caml_js_exceptions.internalToOCamlException(raw_exn);
-    if (exn.ExceptionID === "Not_found") {
+    if (exn.RE_EXN_ID === "Not_found") {
       return /* [] */0;
     }
     throw exn;
@@ -8568,7 +8568,7 @@ function bal$4(l, x, d, r) {
         return create$5(create$5(ll, lv, ld, lr[0]), lr[1], lr[2], create$5(lr[3], x, d, r));
       }
       throw {
-            ExceptionID: "Assert_failure",
+            RE_EXN_ID: "Assert_failure",
             _1: /* tuple */[
               "tbl.ml",
               35,
@@ -8577,7 +8577,7 @@ function bal$4(l, x, d, r) {
           };
     }
     throw {
-          ExceptionID: "Assert_failure",
+          RE_EXN_ID: "Assert_failure",
           _1: /* tuple */[
             "tbl.ml",
             35,
@@ -8598,7 +8598,7 @@ function bal$4(l, x, d, r) {
       return create$5(create$5(l, x, d, rl[0]), rl[1], rl[2], create$5(rl[3], r[1], r[2], r[3]));
     }
     throw {
-          ExceptionID: "Assert_failure",
+          RE_EXN_ID: "Assert_failure",
           _1: /* tuple */[
             "tbl.ml",
             42,
@@ -8607,7 +8607,7 @@ function bal$4(l, x, d, r) {
         };
   }
   throw {
-        ExceptionID: "Assert_failure",
+        RE_EXN_ID: "Assert_failure",
         _1: /* tuple */[
           "tbl.ml",
           42,
@@ -8658,7 +8658,7 @@ function find$2(x, _param) {
       continue ;
     }
     throw {
-          ExceptionID: "Not_found"
+          RE_EXN_ID: "Not_found"
         };
   };
 }
@@ -8790,7 +8790,7 @@ function module_path(s, p) {
         }
         catch (raw_exn){
           var exn = Caml_js_exceptions.internalToOCamlException(raw_exn);
-          if (exn.ExceptionID === "Not_found") {
+          if (exn.RE_EXN_ID === "Not_found") {
             return p;
           }
           throw exn;
@@ -8823,7 +8823,7 @@ function modtype_path(s, p) {
         }
         catch (raw_exn){
           var exn = Caml_js_exceptions.internalToOCamlException(raw_exn);
-          if (exn.ExceptionID === "Not_found") {
+          if (exn.RE_EXN_ID === "Not_found") {
             return p;
           }
           throw exn;
@@ -8848,7 +8848,7 @@ function type_path(s, p) {
         }
         catch (raw_exn){
           var exn = Caml_js_exceptions.internalToOCamlException(raw_exn);
-          if (exn.ExceptionID === "Not_found") {
+          if (exn.RE_EXN_ID === "Not_found") {
             return p;
           }
           throw exn;
@@ -9034,7 +9034,7 @@ function typexp(s, ty) {
                           break;
                       default:
                         throw {
-                              ExceptionID: "Assert_failure",
+                              RE_EXN_ID: "Assert_failure",
                               _1: /* tuple */[
                                 "subst.ml",
                                 170,
@@ -9359,7 +9359,7 @@ function modtype(s, mty) {
               }
               catch (raw_exn){
                 var exn = Caml_js_exceptions.internalToOCamlException(raw_exn);
-                if (exn.ExceptionID === "Not_found") {
+                if (exn.RE_EXN_ID === "Not_found") {
                   return mty;
                 }
                 throw exn;
@@ -9463,7 +9463,7 @@ function modtype_declaration(s, decl) {
 var add_delayed_check_forward = {
   contents: (function (param) {
       throw {
-            ExceptionID: "Assert_failure",
+            RE_EXN_ID: "Assert_failure",
             _1: /* tuple */[
               "env.ml",
               24,
@@ -9543,7 +9543,7 @@ function already_defined(s, tbl) {
   }
   catch (raw_exn){
     var exn = Caml_js_exceptions.internalToOCamlException(raw_exn);
-    if (exn.ExceptionID === "Not_found") {
+    if (exn.RE_EXN_ID === "Not_found") {
       return false;
     }
     throw exn;
@@ -9677,7 +9677,7 @@ function is_implicit_coercion(env) {
 var components_of_module$prime = {
   contents: (function (env, sub, path, mty) {
       throw {
-            ExceptionID: "Assert_failure",
+            RE_EXN_ID: "Assert_failure",
             _1: /* tuple */[
               "env.ml",
               272,
@@ -9690,7 +9690,7 @@ var components_of_module$prime = {
 var components_of_module_maker$prime = {
   contents: (function (param) {
       throw {
-            ExceptionID: "Assert_failure",
+            RE_EXN_ID: "Assert_failure",
             _1: /* tuple */[
               "env.ml",
               275,
@@ -9703,7 +9703,7 @@ var components_of_module_maker$prime = {
 var components_of_functor_appl$prime = {
   contents: (function (f, p1, p2) {
       throw {
-            ExceptionID: "Assert_failure",
+            RE_EXN_ID: "Assert_failure",
             _1: /* tuple */[
               "env.ml",
               278,
@@ -9716,7 +9716,7 @@ var components_of_functor_appl$prime = {
 var check_modtype_inclusion = {
   contents: (function (env, mty1, path1, mty2) {
       throw {
-            ExceptionID: "Assert_failure",
+            RE_EXN_ID: "Assert_failure",
             _1: /* tuple */[
               "env.ml",
               282,
@@ -9729,7 +9729,7 @@ var check_modtype_inclusion = {
 var strengthen = {
   contents: (function (env, mty, path) {
       throw {
-            ExceptionID: "Assert_failure",
+            RE_EXN_ID: "Assert_failure",
             _1: /* tuple */[
               "env.ml",
               286,
@@ -9781,12 +9781,12 @@ function bal$5(l, v, r) {
         return create$6(create$6(ll, lv, lr[/* l */0]), lr[/* v */1], create$6(lr[/* r */2], v, r));
       }
       throw {
-            ExceptionID: "Invalid_argument",
+            RE_EXN_ID: "Invalid_argument",
             _1: "Set.bal"
           };
     }
     throw {
-          ExceptionID: "Invalid_argument",
+          RE_EXN_ID: "Invalid_argument",
           _1: "Set.bal"
         };
   }
@@ -9809,12 +9809,12 @@ function bal$5(l, v, r) {
       return create$6(create$6(l, v, rl[/* l */0]), rl[/* v */1], create$6(rl[/* r */2], rv, rr));
     }
     throw {
-          ExceptionID: "Invalid_argument",
+          RE_EXN_ID: "Invalid_argument",
           _1: "Set.bal"
         };
   }
   throw {
-        ExceptionID: "Invalid_argument",
+        RE_EXN_ID: "Invalid_argument",
         _1: "Set.bal"
       };
 }
@@ -9908,7 +9908,7 @@ function check_consistency(ps) {
                 return ;
               }
               throw {
-                    ExceptionID: Inconsistency,
+                    RE_EXN_ID: Inconsistency,
                     _1: name,
                     _2: source,
                     _3: match[1]
@@ -9916,7 +9916,7 @@ function check_consistency(ps) {
             }
             catch (raw_exn){
               var exn = Caml_js_exceptions.internalToOCamlException(raw_exn);
-              if (exn.ExceptionID === "Not_found") {
+              if (exn.RE_EXN_ID === "Not_found") {
                 return Hashtbl.add(crc_units, name, /* tuple */[
                             crco,
                             source
@@ -9930,9 +9930,9 @@ function check_consistency(ps) {
   }
   catch (raw_exn){
     var exn = Caml_js_exceptions.internalToOCamlException(raw_exn);
-    if (exn.ExceptionID === Inconsistency) {
+    if (exn.RE_EXN_ID === Inconsistency) {
       throw {
-            ExceptionID: $$Error$2,
+            RE_EXN_ID: $$Error$2,
             _1: /* Inconsistent_import */Block.__(1, [
                 exn._1,
                 exn._3,
@@ -9973,7 +9973,7 @@ function read_pers_struct(modname, filename) {
   };
   if (ps.ps_name !== modname) {
     throw {
-          ExceptionID: $$Error$2,
+          RE_EXN_ID: $$Error$2,
           _1: /* Illegal_renaming */Block.__(0, [
               modname,
               ps.ps_name,
@@ -9987,7 +9987,7 @@ function read_pers_struct(modname, filename) {
             return ;
           }
           throw {
-                ExceptionID: $$Error$2,
+                RE_EXN_ID: $$Error$2,
                 _1: /* Need_recursive_types */Block.__(2, [
                     ps.ps_name,
                     current_unit.contents
@@ -10002,7 +10002,7 @@ function find_pers_struct(checkOpt, name) {
   var check = checkOpt !== undefined ? checkOpt : true;
   if (name === "*predef*") {
     throw {
-          ExceptionID: "Not_found"
+          RE_EXN_ID: "Not_found"
         };
   }
   var r;
@@ -10011,7 +10011,7 @@ function find_pers_struct(checkOpt, name) {
   }
   catch (raw_exn){
     var exn = Caml_js_exceptions.internalToOCamlException(raw_exn);
-    if (exn.ExceptionID === "Not_found") {
+    if (exn.RE_EXN_ID === "Not_found") {
       r = undefined;
     } else {
       throw exn;
@@ -10024,7 +10024,7 @@ function find_pers_struct(checkOpt, name) {
       ps = sg;
     } else {
       throw {
-            ExceptionID: "Not_found"
+            RE_EXN_ID: "Not_found"
           };
     }
   } else {
@@ -10035,10 +10035,10 @@ function find_pers_struct(checkOpt, name) {
     }
     catch (raw_exn$1){
       var exn$1 = Caml_js_exceptions.internalToOCamlException(raw_exn$1);
-      if (exn$1.ExceptionID === "Not_found") {
+      if (exn$1.RE_EXN_ID === "Not_found") {
         Hashtbl.add(persistent_structures, name, undefined);
         throw {
-              ExceptionID: "Not_found"
+              RE_EXN_ID: "Not_found"
             };
       }
       throw exn$1;
@@ -10060,12 +10060,12 @@ function find_module_descr(path, env) {
         }
         catch (raw_exn){
           var exn = Caml_js_exceptions.internalToOCamlException(raw_exn);
-          if (exn.ExceptionID === "Not_found") {
+          if (exn.RE_EXN_ID === "Not_found") {
             if (id.stamp === 0 && id.name !== current_unit.contents) {
               return find_pers_struct(undefined, id.name).ps_comps;
             }
             throw {
-                  ExceptionID: "Not_found"
+                  RE_EXN_ID: "Not_found"
                 };
           }
           throw exn;
@@ -10076,7 +10076,7 @@ function find_module_descr(path, env) {
           return find$2(path[1], c[0].comp_components)[0];
         }
         throw {
-              ExceptionID: "Not_found"
+              RE_EXN_ID: "Not_found"
             };
     case /* Papply */2 :
         var p1 = path[0];
@@ -10085,7 +10085,7 @@ function find_module_descr(path, env) {
           return Curry._3(components_of_functor_appl$prime.contents, f[0], p1, path[1]);
         }
         throw {
-              ExceptionID: "Not_found"
+              RE_EXN_ID: "Not_found"
             };
     
   }
@@ -10101,11 +10101,11 @@ function find$3(proj1, proj2, path, env) {
           return find$2(path[1], Curry._1(proj2, c[0]))[0];
         }
         throw {
-              ExceptionID: "Not_found"
+              RE_EXN_ID: "Not_found"
             };
     case /* Papply */2 :
         throw {
-              ExceptionID: "Not_found"
+              RE_EXN_ID: "Not_found"
             };
     
   }
@@ -10152,7 +10152,7 @@ function find_module(alias, path, env) {
         }
         catch (raw_exn){
           var exn = Caml_js_exceptions.internalToOCamlException(raw_exn);
-          if (exn.ExceptionID === "Not_found") {
+          if (exn.RE_EXN_ID === "Not_found") {
             if (id.stamp === 0 && id.name !== current_unit.contents) {
               var ps = find_pers_struct(undefined, id.name);
               return {
@@ -10162,7 +10162,7 @@ function find_module(alias, path, env) {
                     };
             }
             throw {
-                  ExceptionID: "Not_found"
+                  RE_EXN_ID: "Not_found"
                 };
           }
           throw exn;
@@ -10171,7 +10171,7 @@ function find_module(alias, path, env) {
         var c = force(components_of_module_maker$prime.contents, find_module_descr(path[0], env));
         if (c.tag) {
           throw {
-                ExceptionID: "Not_found"
+                RE_EXN_ID: "Not_found"
               };
         }
         var match = find$2(path[1], c[0].comp_modules);
@@ -10199,7 +10199,7 @@ function find_module(alias, path, env) {
             }
             catch (raw_exn$1){
               var exn$1 = Caml_js_exceptions.internalToOCamlException(raw_exn$1);
-              if (exn$1.ExceptionID === "Not_found") {
+              if (exn$1.RE_EXN_ID === "Not_found") {
                 var mty = modtype(add_module(f$1.fcomp_param, p2, f$1.fcomp_subst), f$1.fcomp_res);
                 Hashtbl.add(f$1.fcomp_subst_cache, p2, mty);
                 md_type$1 = mty;
@@ -10215,7 +10215,7 @@ function find_module(alias, path, env) {
                 };
         }
         throw {
-              ExceptionID: "Not_found"
+              RE_EXN_ID: "Not_found"
             };
     
   }
@@ -10277,7 +10277,7 @@ function normalize_path(lax, env, path) {
   }
   catch (raw_exn){
     var exn = Caml_js_exceptions.internalToOCamlException(raw_exn);
-    if (exn.ExceptionID === "Not_found") {
+    if (exn.RE_EXN_ID === "Not_found") {
       var tmp = true;
       if (!lax) {
         var tmp$1;
@@ -10309,10 +10309,10 @@ function normalize_path$1(oloc, env, path) {
   }
   catch (raw_exn){
     var exn = Caml_js_exceptions.internalToOCamlException(raw_exn);
-    if (exn.ExceptionID === "Not_found") {
+    if (exn.RE_EXN_ID === "Not_found") {
       if (oloc !== undefined) {
         throw {
-              ExceptionID: $$Error$2,
+              RE_EXN_ID: $$Error$2,
               _1: /* Missing_module */Block.__(3, [
                   oloc,
                   path,
@@ -10321,7 +10321,7 @@ function normalize_path$1(oloc, env, path) {
             };
       }
       throw {
-            ExceptionID: "Assert_failure",
+            RE_EXN_ID: "Assert_failure",
             _1: /* tuple */[
               "env.ml",
               579,
@@ -10348,7 +10348,7 @@ function find_type_expansion(path, env) {
   var path$prime = normalize_path$1(undefined, env, path);
   if (same(path, path$prime)) {
     throw {
-          ExceptionID: "Not_found"
+          RE_EXN_ID: "Not_found"
         };
   }
   return /* tuple */[
@@ -10381,7 +10381,7 @@ function find_type_expansion_opt(path, env) {
   var path$prime = normalize_path$1(undefined, env, path);
   if (same(path, path$prime)) {
     throw {
-          ExceptionID: "Not_found"
+          RE_EXN_ID: "Not_found"
         };
   }
   return /* tuple */[
@@ -10405,7 +10405,7 @@ function find_modtype_expansion(path, env) {
     return mty;
   }
   throw {
-        ExceptionID: "Not_found"
+        RE_EXN_ID: "Not_found"
       };
 }
 
@@ -10420,7 +10420,7 @@ function is_functor_arg(_path, env) {
           }
           catch (raw_exn){
             var exn = Caml_js_exceptions.internalToOCamlException(raw_exn);
-            if (exn.ExceptionID === "Not_found") {
+            if (exn.RE_EXN_ID === "Not_found") {
               return false;
             }
             throw exn;
@@ -10446,10 +10446,10 @@ function lookup_module_descr(lid, env) {
         }
         catch (raw_exn){
           var exn = Caml_js_exceptions.internalToOCamlException(raw_exn);
-          if (exn.ExceptionID === "Not_found") {
+          if (exn.RE_EXN_ID === "Not_found") {
             if (s === current_unit.contents) {
               throw {
-                    ExceptionID: "Not_found"
+                    RE_EXN_ID: "Not_found"
                   };
             }
             var ps = find_pers_struct(undefined, s);
@@ -10470,7 +10470,7 @@ function lookup_module_descr(lid, env) {
         var c = force(components_of_module_maker$prime.contents, match[1]);
         if (c.tag) {
           throw {
-                ExceptionID: "Not_found"
+                RE_EXN_ID: "Not_found"
               };
         }
         var match$1 = find$2(s$1, c[0].comp_components);
@@ -10500,7 +10500,7 @@ function lookup_module_descr(lid, env) {
                 ];
         }
         throw {
-              ExceptionID: "Not_found"
+              RE_EXN_ID: "Not_found"
             };
     
   }
@@ -10519,7 +10519,7 @@ function lookup_module(load, lid, env) {
               case /* Pident */0 :
                   if (id[0].name === "#recmod#") {
                     throw {
-                          ExceptionID: Recmodule
+                          RE_EXN_ID: Recmodule
                         };
                   }
                   break;
@@ -10533,10 +10533,10 @@ function lookup_module(load, lid, env) {
         }
         catch (raw_exn){
           var exn = Caml_js_exceptions.internalToOCamlException(raw_exn);
-          if (exn.ExceptionID === "Not_found") {
+          if (exn.RE_EXN_ID === "Not_found") {
             if (s === current_unit.contents) {
               throw {
-                    ExceptionID: "Not_found"
+                    RE_EXN_ID: "Not_found"
                   };
             }
             if (transparent_modules.contents && !load) {
@@ -10545,7 +10545,7 @@ function lookup_module(load, lid, env) {
               }
               catch (raw_exn$1){
                 var exn$1 = Caml_js_exceptions.internalToOCamlException(raw_exn$1);
-                if (exn$1.ExceptionID === "Not_found") {
+                if (exn$1.RE_EXN_ID === "Not_found") {
                   prerr_warning(none, /* No_cmi_file */Block.__(32, [s]));
                 } else {
                   throw exn$1;
@@ -10568,7 +10568,7 @@ function lookup_module(load, lid, env) {
         var c = force(components_of_module_maker$prime.contents, match[1]);
         if (c.tag) {
           throw {
-                ExceptionID: "Not_found"
+                RE_EXN_ID: "Not_found"
               };
         }
         var match$1 = find$2(s$1, c[0].comp_modules);
@@ -10592,7 +10592,7 @@ function lookup_module(load, lid, env) {
           return p;
         }
         throw {
-              ExceptionID: "Not_found"
+              RE_EXN_ID: "Not_found"
             };
     
   }
@@ -10608,7 +10608,7 @@ function lookup(proj1, proj2, lid, env) {
         var c = force(components_of_module_maker$prime.contents, match[1]);
         if (c.tag) {
           throw {
-                ExceptionID: "Not_found"
+                RE_EXN_ID: "Not_found"
               };
         }
         var match$1 = find$2(s, Curry._1(proj2, c[0]));
@@ -10622,7 +10622,7 @@ function lookup(proj1, proj2, lid, env) {
               ];
     case /* Lapply */2 :
         throw {
-              ExceptionID: "Not_found"
+              RE_EXN_ID: "Not_found"
             };
     
   }
@@ -10654,7 +10654,7 @@ function lookup_all_simple(proj1, proj2, shadow, lid, env) {
         var c = force(components_of_module_maker$prime.contents, match[1]);
         if (c.tag) {
           throw {
-                ExceptionID: "Not_found"
+                RE_EXN_ID: "Not_found"
               };
         }
         var comps;
@@ -10663,7 +10663,7 @@ function lookup_all_simple(proj1, proj2, shadow, lid, env) {
         }
         catch (raw_exn){
           var exn = Caml_js_exceptions.internalToOCamlException(raw_exn);
-          if (exn.ExceptionID === "Not_found") {
+          if (exn.RE_EXN_ID === "Not_found") {
             comps = /* [] */0;
           } else {
             throw exn;
@@ -10679,7 +10679,7 @@ function lookup_all_simple(proj1, proj2, shadow, lid, env) {
                     }), comps);
     case /* Lapply */2 :
         throw {
-              ExceptionID: "Not_found"
+              RE_EXN_ID: "Not_found"
             };
     
   }
@@ -10777,7 +10777,7 @@ function mark_value_used(env, name, vd) {
   }
   catch (raw_exn){
     var exn = Caml_js_exceptions.internalToOCamlException(raw_exn);
-    if (exn.ExceptionID === "Not_found") {
+    if (exn.RE_EXN_ID === "Not_found") {
       return ;
     }
     throw exn;
@@ -10796,7 +10796,7 @@ function mark_type_used(env, name, vd) {
   }
   catch (raw_exn){
     var exn = Caml_js_exceptions.internalToOCamlException(raw_exn);
-    if (exn.ExceptionID === "Not_found") {
+    if (exn.RE_EXN_ID === "Not_found") {
       return ;
     }
     throw exn;
@@ -10816,7 +10816,7 @@ function mark_constructor_used(usage, env, name, vd, constr) {
   }
   catch (raw_exn){
     var exn = Caml_js_exceptions.internalToOCamlException(raw_exn);
-    if (exn.ExceptionID === "Not_found") {
+    if (exn.RE_EXN_ID === "Not_found") {
       return ;
     }
     throw exn;
@@ -10837,7 +10837,7 @@ function mark_extension_used(usage, env, ext, name) {
   }
   catch (raw_exn){
     var exn = Caml_js_exceptions.internalToOCamlException(raw_exn);
-    if (exn.ExceptionID === "Not_found") {
+    if (exn.RE_EXN_ID === "Not_found") {
       return ;
     }
     throw exn;
@@ -10859,9 +10859,9 @@ function set_type_used_callback(name, td, callback) {
   }
   catch (raw_exn){
     var exn = Caml_js_exceptions.internalToOCamlException(raw_exn);
-    if (exn.ExceptionID === "Not_found") {
+    if (exn.RE_EXN_ID === "Not_found") {
       throw {
-            ExceptionID: "Assert_failure",
+            RE_EXN_ID: "Assert_failure",
             _1: /* tuple */[
               "env.ml",
               841,
@@ -10899,7 +10899,7 @@ function mark_type_path(env, path) {
   }
   catch (raw_exn){
     var exn = Caml_js_exceptions.internalToOCamlException(raw_exn);
-    if (exn.ExceptionID === "Not_found") {
+    if (exn.RE_EXN_ID === "Not_found") {
       return ;
     }
     throw exn;
@@ -10911,7 +10911,7 @@ function ty_path(t) {
   var match$1 = match.desc;
   if (typeof match$1 === "number") {
     throw {
-          ExceptionID: "Assert_failure",
+          RE_EXN_ID: "Assert_failure",
           _1: /* tuple */[
             "env.ml",
             871,
@@ -10923,7 +10923,7 @@ function ty_path(t) {
     return match$1[0];
   }
   throw {
-        ExceptionID: "Assert_failure",
+        RE_EXN_ID: "Assert_failure",
         _1: /* tuple */[
           "env.ml",
           871,
@@ -10942,7 +10942,7 @@ function lookup_constructor(lid, env) {
     return desc;
   }
   throw {
-        ExceptionID: "Not_found"
+        RE_EXN_ID: "Not_found"
       };
 }
 
@@ -10974,7 +10974,7 @@ function lookup_all_constructors$1(lid, env) {
   }
   catch (raw_exn){
     var exn = Caml_js_exceptions.internalToOCamlException(raw_exn);
-    if (exn.ExceptionID === "Not_found") {
+    if (exn.RE_EXN_ID === "Not_found") {
       if (is_lident(lid)) {
         return /* [] */0;
       }
@@ -11005,7 +11005,7 @@ function mark_constructor(usage, env, name, desc) {
         }
         catch (raw_exn){
           var exn = Caml_js_exceptions.internalToOCamlException(raw_exn);
-          if (exn.ExceptionID === "Not_found") {
+          if (exn.RE_EXN_ID === "Not_found") {
             return ;
           }
           throw exn;
@@ -11019,9 +11019,9 @@ function mark_constructor(usage, env, name, desc) {
   }
   catch (raw_exn$1){
     var exn$1 = Caml_js_exceptions.internalToOCamlException(raw_exn$1);
-    if (exn$1.ExceptionID === "Not_found") {
+    if (exn$1.RE_EXN_ID === "Not_found") {
       throw {
-            ExceptionID: "Assert_failure",
+            RE_EXN_ID: "Assert_failure",
             _1: /* tuple */[
               "env.ml",
               908,
@@ -11052,7 +11052,7 @@ function lookup_all_labels$1(lid, env) {
   }
   catch (raw_exn){
     var exn = Caml_js_exceptions.internalToOCamlException(raw_exn);
-    if (exn.ExceptionID === "Not_found") {
+    if (exn.RE_EXN_ID === "Not_found") {
       if (is_lident(lid)) {
         return /* [] */0;
       }
@@ -11143,7 +11143,7 @@ function iter_types(f) {
             }
             catch (raw_exn){
               var exn = Caml_js_exceptions.internalToOCamlException(raw_exn);
-              if (exn.ExceptionID === "Not_found") {
+              if (exn.RE_EXN_ID === "Not_found") {
                 safe = false;
               } else {
                 throw exn;
@@ -11258,7 +11258,7 @@ function find_all_comps(proj, s, param) {
   }
   catch (raw_exn){
     var exn = Caml_js_exceptions.internalToOCamlException(raw_exn);
-    if (exn.ExceptionID === "Not_found") {
+    if (exn.RE_EXN_ID === "Not_found") {
       return /* [] */0;
     }
     throw exn;
@@ -11382,9 +11382,9 @@ function add_gadt_instances(env, lv, tl) {
   }
   catch (raw_exn){
     var exn = Caml_js_exceptions.internalToOCamlException(raw_exn);
-    if (exn.ExceptionID === "Not_found") {
+    if (exn.RE_EXN_ID === "Not_found") {
       throw {
-            ExceptionID: "Assert_failure",
+            RE_EXN_ID: "Assert_failure",
             _1: /* tuple */[
               "env.ml",
               1066,
@@ -11404,9 +11404,9 @@ function add_gadt_instance_chain(env, lv, t) {
   }
   catch (raw_exn){
     var exn = Caml_js_exceptions.internalToOCamlException(raw_exn);
-    if (exn.ExceptionID === "Not_found") {
+    if (exn.RE_EXN_ID === "Not_found") {
       throw {
-            ExceptionID: "Assert_failure",
+            RE_EXN_ID: "Assert_failure",
             _1: /* tuple */[
               "env.ml",
               1075,
@@ -11440,7 +11440,7 @@ function scrape_alias(env, path, mty) {
         }
         catch (raw_exn){
           var exn = Caml_js_exceptions.internalToOCamlException(raw_exn);
-          if (exn.ExceptionID === "Not_found") {
+          if (exn.RE_EXN_ID === "Not_found") {
             return mty;
           }
           throw exn;
@@ -11455,7 +11455,7 @@ function scrape_alias(env, path, mty) {
         }
         catch (raw_exn$1){
           var exn$1 = Caml_js_exceptions.internalToOCamlException(raw_exn$1);
-          if (exn$1.ExceptionID === "Not_found") {
+          if (exn$1.RE_EXN_ID === "Not_found") {
             return mty;
           }
           throw exn$1;
@@ -11929,7 +11929,7 @@ function prefix_idents_and_subst$1(root, sub, sg) {
   }
   catch (raw_exn){
     var exn = Caml_js_exceptions.internalToOCamlException(raw_exn);
-    if (exn.ExceptionID === "Not_found") {
+    if (exn.RE_EXN_ID === "Not_found") {
       var sgs$1 = {
         contents: /* [] */0
       };
@@ -11944,7 +11944,7 @@ function prefix_idents_and_subst$1(root, sub, sg) {
   }
   catch (raw_exn$1){
     var exn$1 = Caml_js_exceptions.internalToOCamlException(raw_exn$1);
-    if (exn$1.ExceptionID === "Not_found") {
+    if (exn$1.RE_EXN_ID === "Not_found") {
       var r = prefix_idents_and_subst(root, sub, sg);
       sgs.contents = /* :: */[
         /* tuple */[
@@ -11966,7 +11966,7 @@ function add_to_tbl(id, decl, tbl) {
   }
   catch (raw_exn){
     var exn = Caml_js_exceptions.internalToOCamlException(raw_exn);
-    if (exn.ExceptionID === "Not_found") {
+    if (exn.RE_EXN_ID === "Not_found") {
       decls = /* [] */0;
     } else {
       throw exn;
@@ -12079,7 +12079,7 @@ function store_module(slot, id, path, md, env, renv) {
 function check_value_name(name, loc) {
   if (bs_only.contents && name === "|.") {
     throw {
-          ExceptionID: $$Error$2,
+          RE_EXN_ID: $$Error$2,
           _1: /* Illegal_value_name */Block.__(4, [
               loc,
               name
@@ -12092,7 +12092,7 @@ function check_value_name(name, loc) {
   for(var i = 1 ,i_finish = name.length; i < i_finish; ++i){
     if (Caml_string.get(name, i) === /* "#" */35) {
       throw {
-            ExceptionID: $$Error$2,
+            RE_EXN_ID: $$Error$2,
             _1: /* Illegal_value_name */Block.__(4, [
                 loc,
                 name
@@ -12538,7 +12538,7 @@ function components_of_functor_appl(f, p1, p2) {
   }
   catch (raw_exn){
     var exn = Caml_js_exceptions.internalToOCamlException(raw_exn);
-    if (exn.ExceptionID === "Not_found") {
+    if (exn.RE_EXN_ID === "Not_found") {
       var p = /* Papply */Block.__(2, [
           p1,
           p2
@@ -12655,7 +12655,7 @@ function add_local_constraint(id, info, elv, env) {
             };
     }
     throw {
-          ExceptionID: "Assert_failure",
+          RE_EXN_ID: "Assert_failure",
           _1: /* tuple */[
             "env.ml",
             1538,
@@ -12664,7 +12664,7 @@ function add_local_constraint(id, info, elv, env) {
         };
   }
   throw {
-        ExceptionID: "Assert_failure",
+        RE_EXN_ID: "Assert_failure",
         _1: /* tuple */[
           "env.ml",
           1538,
@@ -13428,7 +13428,7 @@ function report_error$1(ppf, param) {
 }
 
 register_error_of_exn((function (err) {
-        if (err.ExceptionID !== $$Error$2) {
+        if (err.RE_EXN_ID !== $$Error$2) {
           return ;
         }
         var err$1 = err._1;
@@ -13752,7 +13752,7 @@ function prepare_error(loc) {
 }
 
 register_error_of_exn((function (err) {
-        if (err.ExceptionID === $$Error$3) {
+        if (err.RE_EXN_ID === $$Error$3) {
           return prepare_error(err._1);
         }
         
@@ -13760,7 +13760,7 @@ register_error_of_exn((function (err) {
 
 function ill_formed_ast(loc, s) {
   throw {
-        ExceptionID: $$Error$3,
+        RE_EXN_ID: $$Error$3,
         _1: /* Ill_formed_ast */Block.__(6, [
             loc,
             s
@@ -14045,7 +14045,7 @@ function mkexp_constraint(e, param) {
                 ]));
   }
   throw {
-        ExceptionID: "Assert_failure",
+        RE_EXN_ID: "Assert_failure",
         _1: /* tuple */[
           "parser.mly",
           153,
@@ -14066,7 +14066,7 @@ function array_function(str, name) {
 
 function unclosed(opening_name, opening_num, closing_name, closing_num) {
   throw {
-        ExceptionID: $$Error$3,
+        RE_EXN_ID: $$Error$3,
         _1: /* Unclosed */Block.__(0, [
             rhs_loc(opening_num),
             opening_name,
@@ -14078,7 +14078,7 @@ function unclosed(opening_name, opening_num, closing_name, closing_num) {
 
 function expecting(pos, nonterm) {
   throw {
-        ExceptionID: $$Error$3,
+        RE_EXN_ID: $$Error$3,
         _1: /* Expecting */Block.__(1, [
             rhs_loc(pos),
             nonterm
@@ -14088,7 +14088,7 @@ function expecting(pos, nonterm) {
 
 function not_expecting(pos, nonterm) {
   throw {
-        ExceptionID: $$Error$3,
+        RE_EXN_ID: $$Error$3,
         _1: /* Not_expecting */Block.__(2, [
             rhs_loc(pos),
             nonterm
@@ -14142,7 +14142,7 @@ function check_variable(vl, loc, v) {
     return ;
   }
   throw {
-        ExceptionID: $$Error$3,
+        RE_EXN_ID: $$Error$3,
         _1: /* Variable_in_scope */Block.__(4, [
             loc,
             v
@@ -14515,7 +14515,7 @@ var yytransl_block = [
 var yyact = [
   (function (param) {
       throw {
-            ExceptionID: "Failure",
+            RE_EXN_ID: "Failure",
             _1: "parser"
           };
     }),
@@ -14536,7 +14536,7 @@ var yyact = [
     }),
   (function (__caml_parser_env) {
       throw {
-            ExceptionID: "End_of_file"
+            RE_EXN_ID: "End_of_file"
           };
     }),
   (function (__caml_parser_env) {
@@ -14866,7 +14866,7 @@ var yyact = [
       if (exit === 1) {
         if (lbs.lbs_attributes !== /* [] */0) {
           throw {
-                ExceptionID: $$Error$3,
+                RE_EXN_ID: $$Error$3,
                 _1: /* Not_expecting */Block.__(2, [
                     lbs.lbs_loc,
                     "attributes"
@@ -15370,7 +15370,7 @@ var yyact = [
       var bindings = List.map((function (lb) {
               if (lb.lb_attributes !== /* [] */0) {
                 throw {
-                      ExceptionID: $$Error$3,
+                      RE_EXN_ID: $$Error$3,
                       _1: /* Not_expecting */Block.__(2, [
                           lb.lb_loc,
                           "item attribute"
@@ -15381,7 +15381,7 @@ var yyact = [
             }), _1.lbs_bindings);
       if (_1.lbs_extension !== undefined) {
         throw {
-              ExceptionID: $$Error$3,
+              RE_EXN_ID: $$Error$3,
               _1: /* Not_expecting */Block.__(2, [
                   _1.lbs_loc,
                   "extension"
@@ -15390,7 +15390,7 @@ var yyact = [
       }
       if (_1.lbs_attributes !== /* [] */0) {
         throw {
-              ExceptionID: $$Error$3,
+              RE_EXN_ID: $$Error$3,
               _1: /* Not_expecting */Block.__(2, [
                   _1.lbs_loc,
                   "attributes"
@@ -15547,7 +15547,7 @@ var yyact = [
       var _6 = Parsing.peek_val(__caml_parser_env, 0);
       if (_1 === /* Override */0) {
         throw {
-              ExceptionID: Escape_error
+              RE_EXN_ID: Escape_error
             };
       }
       return /* tuple */[
@@ -15614,7 +15614,7 @@ var yyact = [
       var _6 = Parsing.peek_val(__caml_parser_env, 0);
       if (_1 === /* Override */0) {
         throw {
-              ExceptionID: Escape_error
+              RE_EXN_ID: Escape_error
             };
       }
       return /* tuple */[
@@ -15633,7 +15633,7 @@ var yyact = [
       var _6 = Parsing.peek_val(__caml_parser_env, 0);
       if (_1 === /* Override */0) {
         throw {
-              ExceptionID: Escape_error
+              RE_EXN_ID: Escape_error
             };
       }
       return /* tuple */[
@@ -16125,7 +16125,7 @@ var yyact = [
       var bindings = List.map((function (lb) {
               if (lb.lb_attributes !== /* [] */0) {
                 throw {
-                      ExceptionID: $$Error$3,
+                      RE_EXN_ID: $$Error$3,
                       _1: /* Not_expecting */Block.__(2, [
                           lb.lb_loc,
                           "item attribute"
@@ -16233,7 +16233,7 @@ var yyact = [
       Parsing.peek_val(__caml_parser_env, 3);
       Parsing.peek_val(__caml_parser_env, 2);
       throw {
-            ExceptionID: Escape_error
+            RE_EXN_ID: Escape_error
           };
     }),
   (function (__caml_parser_env) {
@@ -17607,12 +17607,12 @@ var yyact = [
     }),
   (function (__caml_parser_env) {
       throw {
-            ExceptionID: Escape_error
+            RE_EXN_ID: Escape_error
           };
     }),
   (function (__caml_parser_env) {
       throw {
-            ExceptionID: Escape_error
+            RE_EXN_ID: Escape_error
           };
     }),
   (function (__caml_parser_env) {
@@ -18664,13 +18664,13 @@ var yyact = [
       if (_2) {
         if (_2[1]) {
           throw {
-                ExceptionID: Parsing.Parse_error
+                RE_EXN_ID: Parsing.Parse_error
               };
         }
         return _2[0];
       }
       throw {
-            ExceptionID: Parsing.Parse_error
+            RE_EXN_ID: Parsing.Parse_error
           };
     }),
   (function (__caml_parser_env) {
@@ -18681,13 +18681,13 @@ var yyact = [
       if (_2) {
         if (_2[1]) {
           throw {
-                ExceptionID: Parsing.Parse_error
+                RE_EXN_ID: Parsing.Parse_error
               };
         }
         return _2[0];
       }
       throw {
-            ExceptionID: Parsing.Parse_error
+            RE_EXN_ID: Parsing.Parse_error
           };
     }),
   (function (__caml_parser_env) {
@@ -19354,7 +19354,7 @@ var yyact = [
                 ]);
       }
       throw {
-            ExceptionID: $$Error$3,
+            RE_EXN_ID: $$Error$3,
             _1: /* Applicative_path */Block.__(3, [symbol_rloc(undefined)])
           };
     }),
@@ -19823,43 +19823,43 @@ var yyact = [
     }),
   (function (__caml_parser_env) {
       throw {
-            ExceptionID: Parsing.YYexit,
+            RE_EXN_ID: Parsing.YYexit,
             _1: Parsing.peek_val(__caml_parser_env, 0)
           };
     }),
   (function (__caml_parser_env) {
       throw {
-            ExceptionID: Parsing.YYexit,
+            RE_EXN_ID: Parsing.YYexit,
             _1: Parsing.peek_val(__caml_parser_env, 0)
           };
     }),
   (function (__caml_parser_env) {
       throw {
-            ExceptionID: Parsing.YYexit,
+            RE_EXN_ID: Parsing.YYexit,
             _1: Parsing.peek_val(__caml_parser_env, 0)
           };
     }),
   (function (__caml_parser_env) {
       throw {
-            ExceptionID: Parsing.YYexit,
+            RE_EXN_ID: Parsing.YYexit,
             _1: Parsing.peek_val(__caml_parser_env, 0)
           };
     }),
   (function (__caml_parser_env) {
       throw {
-            ExceptionID: Parsing.YYexit,
+            RE_EXN_ID: Parsing.YYexit,
             _1: Parsing.peek_val(__caml_parser_env, 0)
           };
     }),
   (function (__caml_parser_env) {
       throw {
-            ExceptionID: Parsing.YYexit,
+            RE_EXN_ID: Parsing.YYexit,
             _1: Parsing.peek_val(__caml_parser_env, 0)
           };
     }),
   (function (__caml_parser_env) {
       throw {
-            ExceptionID: Parsing.YYexit,
+            RE_EXN_ID: Parsing.YYexit,
             _1: Parsing.peek_val(__caml_parser_env, 0)
           };
     })
@@ -19928,7 +19928,7 @@ function assert_same_type(lexbuf, x, y) {
   var rhs = type_of_directive(y);
   if (lhs !== rhs) {
     throw {
-          ExceptionID: $$Error$4,
+          RE_EXN_ID: $$Error$4,
           _1: /* Conditional_expr_expected_type */Block.__(7, [
               lhs,
               rhs
@@ -19955,7 +19955,7 @@ try {
 }
 catch (raw_exn$1){
   var exn$2 = Caml_js_exceptions.internalToOCamlException(raw_exn$1);
-  if (exn$2.ExceptionID === "Not_found") {
+  if (exn$2.RE_EXN_ID === "Not_found") {
     tmp = "";
   } else {
     throw exn$2;
@@ -20047,7 +20047,7 @@ function query(loc, str) {
   }
   catch (raw_exn){
     var exn = Caml_js_exceptions.internalToOCamlException(raw_exn);
-    if (exn.ExceptionID === "Not_found") {
+    if (exn.RE_EXN_ID === "Not_found") {
       var exit = 0;
       var v$1;
       try {
@@ -20056,7 +20056,7 @@ function query(loc, str) {
       }
       catch (raw_exn$1){
         var exn$1 = Caml_js_exceptions.internalToOCamlException(raw_exn$1);
-        if (exn$1.ExceptionID === "Not_found") {
+        if (exn$1.RE_EXN_ID === "Not_found") {
           return /* Dir_bool */Block.__(0, [false]);
         }
         throw exn$1;
@@ -20100,7 +20100,7 @@ function value_of_token(loc, t) {
           return /* Dir_bool */Block.__(0, [true]);
       default:
         throw {
-              ExceptionID: $$Error$4,
+              RE_EXN_ID: $$Error$4,
               _1: /* Unexpected_token_in_conditional */4,
               _2: loc
             };
@@ -20117,7 +20117,7 @@ function value_of_token(loc, t) {
           return query(loc, t[0]);
       default:
         throw {
-              ExceptionID: $$Error$4,
+              RE_EXN_ID: $$Error$4,
               _1: /* Unexpected_token_in_conditional */4,
               _2: loc
             };
@@ -20142,7 +20142,7 @@ function directive_parse(token_with_comments, lexbuf) {
         switch (t) {
           case /* EOF */25 :
               throw {
-                    ExceptionID: $$Error$4,
+                    RE_EXN_ID: $$Error$4,
                     _1: /* Unterminated_if */2,
                     _2: curr(lexbuf)
                   };
@@ -20167,7 +20167,7 @@ function directive_parse(token_with_comments, lexbuf) {
   var push = function (e) {
     if (look_ahead.contents !== undefined) {
       throw {
-            ExceptionID: "Assert_failure",
+            RE_EXN_ID: "Assert_failure",
             _1: /* tuple */[
               "lexer.mll",
               312,
@@ -20216,7 +20216,7 @@ function directive_parse(token_with_comments, lexbuf) {
                   var last_index = str.length - 1 | 0;
                   if (last_index < 0) {
                     throw {
-                          ExceptionID: $$Error$4,
+                          RE_EXN_ID: $$Error$4,
                           _1: /* Illegal_semver */Block.__(6, [str]),
                           _2: curr_loc
                         };
@@ -20239,7 +20239,7 @@ function directive_parse(token_with_comments, lexbuf) {
                         case 0 :
                             if (last_index === 0) {
                               throw {
-                                    ExceptionID: $$Error$4,
+                                    RE_EXN_ID: $$Error$4,
                                     _1: /* Illegal_semver */Block.__(6, [str]),
                                     _2: curr_loc
                                   };
@@ -20258,7 +20258,7 @@ function directive_parse(token_with_comments, lexbuf) {
                         case 2 :
                             if (last_index === 0) {
                               throw {
-                                    ExceptionID: $$Error$4,
+                                    RE_EXN_ID: $$Error$4,
                                     _1: /* Illegal_semver */Block.__(6, [str]),
                                     _2: curr_loc
                                   };
@@ -20322,7 +20322,7 @@ function directive_parse(token_with_comments, lexbuf) {
               }
               if (exit$2 === 3) {
                 throw {
-                      ExceptionID: $$Error$4,
+                      RE_EXN_ID: $$Error$4,
                       _1: /* Conditional_expr_expected_type */Block.__(7, [
                           /* Dir_type_string */3,
                           type_of_directive(lhs)
@@ -20334,7 +20334,7 @@ function directive_parse(token_with_comments, lexbuf) {
             }
             if (exit$1 === 2) {
               throw {
-                    ExceptionID: $$Error$4,
+                    RE_EXN_ID: $$Error$4,
                     _1: /* Conditional_expr_expected_type */Block.__(7, [
                         /* Dir_type_string */3,
                         type_of_directive(lhs)
@@ -20385,7 +20385,7 @@ function directive_parse(token_with_comments, lexbuf) {
       }
       if (exit$4 === 2) {
         throw {
-              ExceptionID: "Assert_failure",
+              RE_EXN_ID: "Assert_failure",
               _1: /* tuple */[
                 "lexer.mll",
                 331,
@@ -20452,7 +20452,7 @@ function directive_parse(token_with_comments, lexbuf) {
             if (typeof match === "number") {
               if (match !== 81) {
                 throw {
-                      ExceptionID: $$Error$4,
+                      RE_EXN_ID: $$Error$4,
                       _1: /* Unterminated_paren_in_conditional */1,
                       _2: curr(lexbuf)
                     };
@@ -20460,7 +20460,7 @@ function directive_parse(token_with_comments, lexbuf) {
               return v;
             }
             throw {
-                  ExceptionID: $$Error$4,
+                  RE_EXN_ID: $$Error$4,
                   _1: /* Unterminated_paren_in_conditional */1,
                   _2: curr(lexbuf)
                 };
@@ -20468,7 +20468,7 @@ function directive_parse(token_with_comments, lexbuf) {
             return true;
         default:
           throw {
-                ExceptionID: $$Error$4,
+                RE_EXN_ID: $$Error$4,
                 _1: /* Unexpected_token_in_conditional */4,
                 _2: curr_loc
               };
@@ -20478,7 +20478,7 @@ function directive_parse(token_with_comments, lexbuf) {
         case /* FLOAT */1 :
             return token_op(calc, (function (e) {
                           throw {
-                                ExceptionID: $$Error$4,
+                                RE_EXN_ID: $$Error$4,
                                 _1: /* Conditional_expr_expected_type */Block.__(7, [
                                     /* Dir_type_bool */0,
                                     /* Dir_type_float */1
@@ -20489,7 +20489,7 @@ function directive_parse(token_with_comments, lexbuf) {
         case /* INT */7 :
             return token_op(calc, (function (e) {
                           throw {
-                                ExceptionID: $$Error$4,
+                                RE_EXN_ID: $$Error$4,
                                 _1: /* Conditional_expr_expected_type */Block.__(7, [
                                     /* Dir_type_bool */0,
                                     /* Dir_type_int */2
@@ -20505,7 +20505,7 @@ function directive_parse(token_with_comments, lexbuf) {
                   break;
               default:
                 throw {
-                      ExceptionID: $$Error$4,
+                      RE_EXN_ID: $$Error$4,
                       _1: /* Unexpected_token_in_conditional */4,
                       _2: curr_loc
                     };
@@ -20514,7 +20514,7 @@ function directive_parse(token_with_comments, lexbuf) {
             var loc = curr(lexbuf);
             if (typeof t === "number") {
               throw {
-                    ExceptionID: $$Error$4,
+                    RE_EXN_ID: $$Error$4,
                     _1: /* Unexpected_token_in_conditional */4,
                     _2: loc
                   };
@@ -20532,7 +20532,7 @@ function directive_parse(token_with_comments, lexbuf) {
               }
             }
             throw {
-                  ExceptionID: $$Error$4,
+                  RE_EXN_ID: $$Error$4,
                   _1: /* Unexpected_token_in_conditional */4,
                   _2: loc
                 };
@@ -20540,7 +20540,7 @@ function directive_parse(token_with_comments, lexbuf) {
         case /* STRING */16 :
             return token_op(calc, (function (e) {
                           throw {
-                                ExceptionID: $$Error$4,
+                                RE_EXN_ID: $$Error$4,
                                 _1: /* Conditional_expr_expected_type */Block.__(7, [
                                     /* Dir_type_bool */0,
                                     /* Dir_type_string */3
@@ -20557,7 +20557,7 @@ function directive_parse(token_with_comments, lexbuf) {
                           }
                           var ty = type_of_directive(value_v);
                           throw {
-                                ExceptionID: $$Error$4,
+                                RE_EXN_ID: $$Error$4,
                                 _1: /* Conditional_expr_expected_type */Block.__(7, [
                                     /* Dir_type_bool */0,
                                     ty
@@ -20567,7 +20567,7 @@ function directive_parse(token_with_comments, lexbuf) {
                         }), value_v);
         default:
           throw {
-                ExceptionID: $$Error$4,
+                RE_EXN_ID: $$Error$4,
                 _1: /* Unexpected_token_in_conditional */4,
                 _2: curr_loc
               };
@@ -20579,7 +20579,7 @@ function directive_parse(token_with_comments, lexbuf) {
   if (typeof match === "number") {
     if (match !== 88) {
       throw {
-            ExceptionID: $$Error$4,
+            RE_EXN_ID: $$Error$4,
             _1: /* Expect_hash_then_in_conditional */5,
             _2: curr(lexbuf)
           };
@@ -20587,7 +20587,7 @@ function directive_parse(token_with_comments, lexbuf) {
     return v;
   }
   throw {
-        ExceptionID: $$Error$4,
+        RE_EXN_ID: $$Error$4,
         _1: /* Expect_hash_then_in_conditional */5,
         _2: curr(lexbuf)
       };
@@ -21063,7 +21063,7 @@ function char_for_decimal_code(lexbuf, i) {
     return /* "x" */120;
   }
   throw {
-        ExceptionID: $$Error$4,
+        RE_EXN_ID: $$Error$4,
         _1: /* Illegal_escape */Block.__(1, [Lexing.lexeme(lexbuf)]),
         _2: curr(lexbuf)
       };
@@ -21129,7 +21129,7 @@ function get_label_name(lexbuf) {
   var name = $$String.sub(s, 1, s.length - 2 | 0);
   if (Hashtbl.mem(keyword_table, name)) {
     throw {
-          ExceptionID: $$Error$4,
+          RE_EXN_ID: $$Error$4,
           _1: /* Keyword_as_label */Block.__(4, [name]),
           _2: curr(lexbuf)
         };
@@ -21351,7 +21351,7 @@ function report_error$2(ppf, c) {
 }
 
 register_error_of_exn((function (param) {
-        if (param.ExceptionID === $$Error$4) {
+        if (param.RE_EXN_ID === $$Error$4) {
           return error_of_printer(param._2, report_error$2, param._1);
         }
         
@@ -21381,7 +21381,7 @@ function token(lexbuf) {
       case 0 :
           if (!escaped_newlines.contents) {
             throw {
-                  ExceptionID: $$Error$4,
+                  RE_EXN_ID: $$Error$4,
                   _1: /* Illegal_character */Block.__(0, [Lexing.lexeme_char(lexbuf, 0)]),
                   _2: curr(lexbuf)
                 };
@@ -21416,7 +21416,7 @@ function token(lexbuf) {
           }
           catch (raw_exn){
             var exn = Caml_js_exceptions.internalToOCamlException(raw_exn);
-            if (exn.ExceptionID === "Not_found") {
+            if (exn.RE_EXN_ID === "Not_found") {
               return /* LIDENT */Block.__(11, [s]);
             }
             throw exn;
@@ -21435,9 +21435,9 @@ function token(lexbuf) {
           }
           catch (raw_exn$1){
             var exn$1 = Caml_js_exceptions.internalToOCamlException(raw_exn$1);
-            if (exn$1.ExceptionID === "Failure") {
+            if (exn$1.RE_EXN_ID === "Failure") {
               throw {
-                    ExceptionID: $$Error$4,
+                    RE_EXN_ID: $$Error$4,
                     _1: /* Literal_overflow */Block.__(5, ["int"]),
                     _2: curr(lexbuf)
                   };
@@ -21452,9 +21452,9 @@ function token(lexbuf) {
           }
           catch (raw_exn$2){
             var exn$2 = Caml_js_exceptions.internalToOCamlException(raw_exn$2);
-            if (exn$2.ExceptionID === "Failure") {
+            if (exn$2.RE_EXN_ID === "Failure") {
               throw {
-                    ExceptionID: $$Error$4,
+                    RE_EXN_ID: $$Error$4,
                     _1: /* Literal_overflow */Block.__(5, ["int32"]),
                     _2: curr(lexbuf)
                   };
@@ -21467,9 +21467,9 @@ function token(lexbuf) {
           }
           catch (raw_exn$3){
             var exn$3 = Caml_js_exceptions.internalToOCamlException(raw_exn$3);
-            if (exn$3.ExceptionID === "Failure") {
+            if (exn$3.RE_EXN_ID === "Failure") {
               throw {
-                    ExceptionID: $$Error$4,
+                    RE_EXN_ID: $$Error$4,
                     _1: /* Literal_overflow */Block.__(5, ["int64"]),
                     _2: curr(lexbuf)
                   };
@@ -21482,9 +21482,9 @@ function token(lexbuf) {
           }
           catch (raw_exn$4){
             var exn$4 = Caml_js_exceptions.internalToOCamlException(raw_exn$4);
-            if (exn$4.ExceptionID === "Failure") {
+            if (exn$4.RE_EXN_ID === "Failure") {
               throw {
-                    ExceptionID: $$Error$4,
+                    RE_EXN_ID: $$Error$4,
                     _1: /* Literal_overflow */Block.__(5, ["nativeint"]),
                     _2: curr(lexbuf)
                   };
@@ -21532,7 +21532,7 @@ function token(lexbuf) {
           var l = Lexing.lexeme(lexbuf);
           var esc = $$String.sub(l, 1, l.length - 1 | 0);
           throw {
-                ExceptionID: $$Error$4,
+                RE_EXN_ID: $$Error$4,
                 _1: /* Illegal_escape */Block.__(1, [esc]),
                 _2: curr(lexbuf)
               };
@@ -21706,19 +21706,19 @@ function token(lexbuf) {
           }
           if (if_then_else.contents === /* Dir_if_true */0) {
             throw {
-                  ExceptionID: $$Error$4,
+                  RE_EXN_ID: $$Error$4,
                   _1: /* Unterminated_if */2,
                   _2: curr(lexbuf)
                 };
           }
           throw {
-                ExceptionID: $$Error$4,
+                RE_EXN_ID: $$Error$4,
                 _1: /* Unterminated_else */3,
                 _2: curr(lexbuf)
               };
       case 91 :
           throw {
-                ExceptionID: $$Error$4,
+                RE_EXN_ID: $$Error$4,
                 _1: /* Illegal_character */Block.__(0, [Lexing.lexeme_char(lexbuf, 0)]),
                 _2: curr(lexbuf)
               };
@@ -21775,7 +21775,7 @@ function string(lexbuf) {
       case 7 :
           is_in_string.contents = false;
           throw {
-                ExceptionID: $$Error$4,
+                RE_EXN_ID: $$Error$4,
                 _1: /* Unterminated_string */0,
                 _2: string_start_loc.contents
               };
@@ -21817,7 +21817,7 @@ function __ocaml_lex_comment_rec(lexbuf, ___ocaml_lex_state) {
             return curr(lexbuf);
           }
           throw {
-                ExceptionID: "Assert_failure",
+                RE_EXN_ID: "Assert_failure",
                 _1: /* tuple */[
                   "lexer.mll",
                   989,
@@ -21833,7 +21833,7 @@ function __ocaml_lex_comment_rec(lexbuf, ___ocaml_lex_state) {
           }
           catch (raw_exn){
             var exn = Caml_js_exceptions.internalToOCamlException(raw_exn);
-            if (exn.ExceptionID === $$Error$4) {
+            if (exn.RE_EXN_ID === $$Error$4) {
               var match$1 = exn._1;
               if (typeof match$1 === "number") {
                 if (match$1 !== 0) {
@@ -21844,7 +21844,7 @@ function __ocaml_lex_comment_rec(lexbuf, ___ocaml_lex_state) {
                   var start = List.hd(List.rev(comment_start_loc.contents));
                   comment_start_loc.contents = /* [] */0;
                   throw {
-                        ExceptionID: $$Error$4,
+                        RE_EXN_ID: $$Error$4,
                         _1: /* Unterminated_string_in_comment */Block.__(3, [
                             start,
                             exn._2
@@ -21853,7 +21853,7 @@ function __ocaml_lex_comment_rec(lexbuf, ___ocaml_lex_state) {
                       };
                 }
                 throw {
-                      ExceptionID: "Assert_failure",
+                      RE_EXN_ID: "Assert_failure",
                       _1: /* tuple */[
                         "lexer.mll",
                         1003,
@@ -21880,7 +21880,7 @@ function __ocaml_lex_comment_rec(lexbuf, ___ocaml_lex_state) {
           }
           catch (raw_exn$1){
             var exn$1 = Caml_js_exceptions.internalToOCamlException(raw_exn$1);
-            if (exn$1.ExceptionID === $$Error$4) {
+            if (exn$1.RE_EXN_ID === $$Error$4) {
               var match$3 = exn$1._1;
               if (typeof match$3 === "number") {
                 if (match$3 !== 0) {
@@ -21891,7 +21891,7 @@ function __ocaml_lex_comment_rec(lexbuf, ___ocaml_lex_state) {
                   var start$1 = List.hd(List.rev(comment_start_loc.contents));
                   comment_start_loc.contents = /* [] */0;
                   throw {
-                        ExceptionID: $$Error$4,
+                        RE_EXN_ID: $$Error$4,
                         _1: /* Unterminated_string_in_comment */Block.__(3, [
                             start$1,
                             exn$1._2
@@ -21900,7 +21900,7 @@ function __ocaml_lex_comment_rec(lexbuf, ___ocaml_lex_state) {
                       };
                 }
                 throw {
-                      ExceptionID: "Assert_failure",
+                      RE_EXN_ID: "Assert_failure",
                       _1: /* tuple */[
                         "lexer.mll",
                         1023,
@@ -21929,13 +21929,13 @@ function __ocaml_lex_comment_rec(lexbuf, ___ocaml_lex_state) {
             var start$2 = List.hd(List.rev(comment_start_loc.contents));
             comment_start_loc.contents = /* [] */0;
             throw {
-                  ExceptionID: $$Error$4,
+                  RE_EXN_ID: $$Error$4,
                   _1: /* Unterminated_comment */Block.__(2, [start$2]),
                   _2: match$5[0]
                 };
           }
           throw {
-                ExceptionID: "Assert_failure",
+                RE_EXN_ID: "Assert_failure",
                 _1: /* tuple */[
                   "lexer.mll",
                   1053,
@@ -21977,7 +21977,7 @@ function __ocaml_lex_quoted_string_rec(delim, lexbuf, ___ocaml_lex_state) {
       case 1 :
           is_in_string.contents = false;
           throw {
-                ExceptionID: $$Error$4,
+                RE_EXN_ID: $$Error$4,
                 _1: /* Unterminated_string */0,
                 _2: string_start_loc.contents
               };
@@ -22073,7 +22073,7 @@ function token$1(lexbuf) {
                     case /* ELSE */23 :
                         if (if_then_else$1 !== 0) {
                           throw {
-                                ExceptionID: $$Error$4,
+                                RE_EXN_ID: $$Error$4,
                                 _1: /* Unexpected_directive */6,
                                 _2: curr(lexbuf)
                               };
@@ -22082,7 +22082,7 @@ function token$1(lexbuf) {
                     case /* END */24 :
                         if (if_then_else$1 >= 2) {
                           throw {
-                                ExceptionID: $$Error$4,
+                                RE_EXN_ID: $$Error$4,
                                 _1: /* Unexpected_directive */6,
                                 _2: curr(lexbuf)
                               };
@@ -22100,7 +22100,7 @@ function token$1(lexbuf) {
                               var token = token_with_comments(lexbuf);
                               if (token === /* EOF */25) {
                                 throw {
-                                      ExceptionID: $$Error$4,
+                                      RE_EXN_ID: $$Error$4,
                                       _1: /* Unterminated_if */2,
                                       _2: curr(lexbuf)
                                     };
@@ -22120,7 +22120,7 @@ function token$1(lexbuf) {
                                   }
                                   if (switcher === 14) {
                                     throw {
-                                          ExceptionID: $$Error$4,
+                                          RE_EXN_ID: $$Error$4,
                                           _1: /* Unexpected_directive */6,
                                           _2: curr(lexbuf)
                                         };
@@ -22140,7 +22140,7 @@ function token$1(lexbuf) {
                           }
                         }
                         throw {
-                              ExceptionID: $$Error$4,
+                              RE_EXN_ID: $$Error$4,
                               _1: /* Unexpected_directive */6,
                               _2: curr(lexbuf)
                             };
@@ -22156,7 +22156,7 @@ function token$1(lexbuf) {
                   }
                   if (if_then_else$1 !== 0) {
                     throw {
-                          ExceptionID: $$Error$4,
+                          RE_EXN_ID: $$Error$4,
                           _1: /* Unexpected_directive */6,
                           _2: curr(lexbuf)
                         };
@@ -22172,7 +22172,7 @@ function token$1(lexbuf) {
                   var token$2 = token_with_comments(lexbuf);
                   if (token$2 === /* EOF */25) {
                     throw {
-                          ExceptionID: $$Error$4,
+                          RE_EXN_ID: $$Error$4,
                           _1: /* Unterminated_else */3,
                           _2: curr(lexbuf)
                         };
@@ -22188,7 +22188,7 @@ function token$1(lexbuf) {
                         }
                         if (else_seen) {
                           throw {
-                                ExceptionID: $$Error$4,
+                                RE_EXN_ID: $$Error$4,
                                 _1: /* Unexpected_directive */6,
                                 _2: curr(lexbuf)
                               };
@@ -22198,7 +22198,7 @@ function token$1(lexbuf) {
                       }
                       if (switcher$1 === 14) {
                         throw {
-                              ExceptionID: $$Error$4,
+                              RE_EXN_ID: $$Error$4,
                               _1: /* Unexpected_directive */6,
                               _2: curr(lexbuf)
                             };
@@ -22207,7 +22207,7 @@ function token$1(lexbuf) {
                     }
                     if (else_seen && is_elif(token$3)) {
                       throw {
-                            ExceptionID: $$Error$4,
+                            RE_EXN_ID: $$Error$4,
                             _1: /* Unexpected_directive */6,
                             _2: curr(lexbuf)
                           };
@@ -22330,7 +22330,7 @@ function skip_phrase(lexbuf) {
     }
     catch (raw_exn){
       var exn = Caml_js_exceptions.internalToOCamlException(raw_exn);
-      if (exn.ExceptionID === $$Error$4) {
+      if (exn.RE_EXN_ID === $$Error$4) {
         var tmp = exn._1;
         if (typeof tmp === "number") {
           if (tmp === /* Unterminated_string */0) {
@@ -22373,7 +22373,7 @@ function wrap$1(parsing_fun, lexbuf) {
   }
   catch (raw_err){
     var err = Caml_js_exceptions.internalToOCamlException(raw_err);
-    if (err.ExceptionID === $$Error$4) {
+    if (err.RE_EXN_ID === $$Error$4) {
       var tmp = err._1;
       if (typeof tmp === "number") {
         throw err;
@@ -22387,14 +22387,14 @@ function wrap$1(parsing_fun, lexbuf) {
       }
       throw err;
     } else {
-      if (err.ExceptionID === $$Error$3) {
+      if (err.RE_EXN_ID === $$Error$3) {
         if (input_name.contents === "//toplevel//") {
           maybe_skip_phrase(lexbuf);
           throw err;
         }
         throw err;
       }
-      if (err.ExceptionID !== Parsing.Parse_error && err.ExceptionID !== Escape_error) {
+      if (err.RE_EXN_ID !== Parsing.Parse_error && err.RE_EXN_ID !== Escape_error) {
         throw err;
       }
       
@@ -22404,7 +22404,7 @@ function wrap$1(parsing_fun, lexbuf) {
       maybe_skip_phrase(lexbuf);
     }
     throw {
-          ExceptionID: $$Error$3,
+          RE_EXN_ID: $$Error$3,
           _1: /* Other */Block.__(5, [loc])
         };
   }
@@ -22571,7 +22571,7 @@ function alpha_pat(env, p) {
           }
           catch (raw_exn){
             var exn = Caml_js_exceptions.internalToOCamlException(raw_exn);
-            if (exn.ExceptionID === "Not_found") {
+            if (exn.RE_EXN_ID === "Not_found") {
               tmp = /* Tpat_any */0;
             } else {
               throw exn;
@@ -22603,7 +22603,7 @@ function alpha_pat(env, p) {
           }
           catch (raw_exn$1){
             var exn$1 = Caml_js_exceptions.internalToOCamlException(raw_exn$1);
-            if (exn$1.ExceptionID === "Not_found") {
+            if (exn$1.RE_EXN_ID === "Not_found") {
               return new_p;
             }
             throw exn$1;
@@ -23989,7 +23989,7 @@ try {
 }
 catch (raw_exn$2){
   var exn$3 = Caml_js_exceptions.internalToOCamlException(raw_exn$2);
-  if (exn$3.ExceptionID === "Not_found") {
+  if (exn$3.RE_EXN_ID === "Not_found") {
     need_to_clear_env = true;
   } else {
     throw exn$3;
@@ -24322,7 +24322,7 @@ var Unify = Caml_exceptions.create("Ocaml_typedtree_test.Ctype.Unify");
 var Tags = Caml_exceptions.create("Ocaml_typedtree_test.Ctype.Tags");
 
 register_error_of_exn((function (param) {
-        if (param.ExceptionID === Tags) {
+        if (param.RE_EXN_ID === Tags) {
           return Curry._2(errorf(in_file(input_name.contents), undefined, undefined, /* Format */[
                           /* String_literal */Block.__(11, [
                               "In this program,",
@@ -24480,7 +24480,7 @@ function is_object_type(path) {
         break;
     case /* Papply */2 :
         throw {
-              ExceptionID: "Assert_failure",
+              RE_EXN_ID: "Assert_failure",
               _1: /* tuple */[
                 "ctype.ml",
                 149,
@@ -24634,7 +24634,7 @@ function in_pervasives(p) {
   }
   catch (raw_exn){
     var exn = Caml_js_exceptions.internalToOCamlException(raw_exn);
-    if (exn.ExceptionID === "Not_found") {
+    if (exn.RE_EXN_ID === "Not_found") {
       return false;
     }
     throw exn;
@@ -24654,7 +24654,7 @@ function object_fields(ty) {
   var match = repr(ty).desc;
   if (typeof match === "number") {
     throw {
-          ExceptionID: "Assert_failure",
+          RE_EXN_ID: "Assert_failure",
           _1: /* tuple */[
             "ctype.ml",
             284,
@@ -24666,7 +24666,7 @@ function object_fields(ty) {
     return match[0];
   }
   throw {
-        ExceptionID: "Assert_failure",
+        RE_EXN_ID: "Assert_failure",
         _1: /* tuple */[
           "ctype.ml",
           284,
@@ -24864,7 +24864,7 @@ function close_object(ty) {
   var match = repr(ty).desc;
   if (typeof match === "number") {
     throw {
-          ExceptionID: "Assert_failure",
+          RE_EXN_ID: "Assert_failure",
           _1: /* tuple */[
             "ctype.ml",
             351,
@@ -24880,7 +24880,7 @@ function close_object(ty) {
       var match$1 = ty$2.desc;
       if (typeof match$1 === "number") {
         throw {
-              ExceptionID: "Assert_failure",
+              RE_EXN_ID: "Assert_failure",
               _1: /* tuple */[
                 "ctype.ml",
                 347,
@@ -24896,7 +24896,7 @@ function close_object(ty) {
             continue ;
         default:
           throw {
-                ExceptionID: "Assert_failure",
+                RE_EXN_ID: "Assert_failure",
                 _1: /* tuple */[
                   "ctype.ml",
                   347,
@@ -24907,7 +24907,7 @@ function close_object(ty) {
     };
   }
   throw {
-        ExceptionID: "Assert_failure",
+        RE_EXN_ID: "Assert_failure",
         _1: /* tuple */[
           "ctype.ml",
           351,
@@ -24920,7 +24920,7 @@ function row_variable(ty) {
   var match = repr(ty).desc;
   if (typeof match === "number") {
     throw {
-          ExceptionID: "Assert_failure",
+          RE_EXN_ID: "Assert_failure",
           _1: /* tuple */[
             "ctype.ml",
             365,
@@ -24936,7 +24936,7 @@ function row_variable(ty) {
       var match$1 = ty$2.desc;
       if (typeof match$1 === "number") {
         throw {
-              ExceptionID: "Assert_failure",
+              RE_EXN_ID: "Assert_failure",
               _1: /* tuple */[
                 "ctype.ml",
                 361,
@@ -24952,7 +24952,7 @@ function row_variable(ty) {
             continue ;
         default:
           throw {
-                ExceptionID: "Assert_failure",
+                RE_EXN_ID: "Assert_failure",
                 _1: /* tuple */[
                   "ctype.ml",
                   361,
@@ -24963,7 +24963,7 @@ function row_variable(ty) {
     };
   }
   throw {
-        ExceptionID: "Assert_failure",
+        RE_EXN_ID: "Assert_failure",
         _1: /* tuple */[
           "ctype.ml",
           365,
@@ -24976,7 +24976,7 @@ function set_object_name(id, rv, params, ty) {
   var match = repr(ty).desc;
   if (typeof match === "number") {
     throw {
-          ExceptionID: "Assert_failure",
+          RE_EXN_ID: "Assert_failure",
           _1: /* tuple */[
             "ctype.ml",
             375,
@@ -24994,7 +24994,7 @@ function set_object_name(id, rv, params, ty) {
               ]);
   }
   throw {
-        ExceptionID: "Assert_failure",
+        RE_EXN_ID: "Assert_failure",
         _1: /* tuple */[
           "ctype.ml",
           375,
@@ -25007,7 +25007,7 @@ function hide_private_methods(ty) {
   var match = repr(ty).desc;
   if (typeof match === "number") {
     throw {
-          ExceptionID: "Assert_failure",
+          RE_EXN_ID: "Assert_failure",
           _1: /* tuple */[
             "ctype.ml",
             397,
@@ -25028,7 +25028,7 @@ function hide_private_methods(ty) {
                 }), match$1[0]);
   }
   throw {
-        ExceptionID: "Assert_failure",
+        RE_EXN_ID: "Assert_failure",
         _1: /* tuple */[
           "ctype.ml",
           397,
@@ -25209,7 +25209,7 @@ function closed_schema_rec(_ty) {
       case /* Tvar */0 :
           if (level !== 100000000) {
             throw {
-                  ExceptionID: Non_closed0
+                  RE_EXN_ID: Non_closed0
                 };
           }
           return iter_type_expr(closed_schema_rec, ty$1);
@@ -25241,7 +25241,7 @@ function closed_schema(ty) {
   }
   catch (raw_exn){
     var exn = Caml_js_exceptions.internalToOCamlException(raw_exn);
-    if (exn.ExceptionID === Non_closed0) {
+    if (exn.RE_EXN_ID === Non_closed0) {
       unmark_type(ty);
       return false;
     }
@@ -25306,7 +25306,7 @@ function free_vars_rec(_real, _ty) {
           }
           catch (raw_exn){
             var exn = Caml_js_exceptions.internalToOCamlException(raw_exn);
-            if (exn.ExceptionID !== "Not_found") {
+            if (exn.RE_EXN_ID !== "Not_found") {
               throw exn;
             }
             
@@ -25367,7 +25367,7 @@ function closed_type(ty) {
   }
   var match$1 = match[0];
   throw {
-        ExceptionID: Non_closed,
+        RE_EXN_ID: Non_closed,
         _1: match$1[0],
         _2: match$1[1]
       };
@@ -25382,7 +25382,7 @@ function closed_parameterized_type(params, ty) {
   }
   catch (raw_exn){
     var exn = Caml_js_exceptions.internalToOCamlException(raw_exn);
-    if (exn.ExceptionID === Non_closed) {
+    if (exn.RE_EXN_ID === Non_closed) {
       ok = false;
     } else {
       throw exn;
@@ -25421,7 +25421,7 @@ function closed_type_decl(decl) {
   }
   catch (raw_exn){
     var exn = Caml_js_exceptions.internalToOCamlException(raw_exn);
-    if (exn.ExceptionID === Non_closed) {
+    if (exn.RE_EXN_ID === Non_closed) {
       it_type_declaration(unmark_iterators, decl);
       return exn._1;
     }
@@ -25443,7 +25443,7 @@ function closed_extension_constructor(ext) {
   }
   catch (raw_exn){
     var exn = Caml_js_exceptions.internalToOCamlException(raw_exn);
-    if (exn.ExceptionID === Non_closed) {
+    if (exn.RE_EXN_ID === Non_closed) {
       unmark_extension_constructor(ext);
       return exn._1;
     }
@@ -25477,9 +25477,9 @@ function closed_class(params, sign) {
             }
             catch (raw_exn){
               var exn = Caml_js_exceptions.internalToOCamlException(raw_exn);
-              if (exn.ExceptionID === Non_closed) {
+              if (exn.RE_EXN_ID === Non_closed) {
                 throw {
-                      ExceptionID: CCFailure,
+                      RE_EXN_ID: CCFailure,
                       _1: /* CC_Method */Block.__(0, [
                           exn._1,
                           exn._2,
@@ -25498,7 +25498,7 @@ function closed_class(params, sign) {
   }
   catch (raw_reason){
     var reason = Caml_js_exceptions.internalToOCamlException(raw_reason);
-    if (reason.ExceptionID === CCFailure) {
+    if (reason.RE_EXN_ID === CCFailure) {
       iter_type_expr(mark_type, repr(sign.csig_self));
       List.iter(unmark_type, params);
       unmark_class_signature(sign);
@@ -25613,7 +25613,7 @@ function generalize_spine(_ty) {
 var forward_try_expand_once = {
   contents: (function (env, ty) {
       throw {
-            ExceptionID: Cannot_expand
+            RE_EXN_ID: Cannot_expand
           };
     })
 };
@@ -25629,7 +25629,7 @@ function get_level(env, p) {
   }
   catch (raw_exn){
     var exn = Caml_js_exceptions.internalToOCamlException(raw_exn);
-    if (exn.ExceptionID === "Not_found") {
+    if (exn.RE_EXN_ID === "Not_found") {
       return binding_time(p);
     }
     throw exn;
@@ -25645,7 +25645,7 @@ function normalize_package_path(env, _p) {
     }
     catch (raw_exn){
       var exn = Caml_js_exceptions.internalToOCamlException(raw_exn);
-      if (exn.ExceptionID === "Not_found") {
+      if (exn.RE_EXN_ID === "Not_found") {
         t = undefined;
       } else {
         throw exn;
@@ -25672,7 +25672,7 @@ function update_level(env, level, _ty) {
     var lv = gadt_instance_level(env, ty$1);
     if (lv !== undefined && level < lv) {
       throw {
-            ExceptionID: Unify,
+            RE_EXN_ID: Unify,
             _1: /* :: */[
               /* tuple */[
                 ty$1,
@@ -25694,10 +25694,10 @@ function update_level(env, level, _ty) {
               }
               catch (raw_exn){
                 var exn = Caml_js_exceptions.internalToOCamlException(raw_exn);
-                if (exn.ExceptionID === Cannot_expand) {
+                if (exn.RE_EXN_ID === Cannot_expand) {
                   if (level < get_level(env, p)) {
                     throw {
-                          ExceptionID: Unify,
+                          RE_EXN_ID: Unify,
                           _1: /* :: */[
                             /* tuple */[
                               ty$1,
@@ -25728,7 +25728,7 @@ function update_level(env, level, _ty) {
             var ty1 = row[2];
             if (row[0] === dummy_method && repr(ty1).level > level) {
               throw {
-                    ExceptionID: Unify,
+                    RE_EXN_ID: Unify,
                     _1: /* :: */[
                       /* tuple */[
                         ty1,
@@ -25763,7 +25763,7 @@ function update_level(env, level, _ty) {
               var p$prime = normalize_package_path(env, p$1);
               if (same(p$1, p$prime)) {
                 throw {
-                      ExceptionID: Unify,
+                      RE_EXN_ID: Unify,
                       _1: /* :: */[
                         /* tuple */[
                           ty$1,
@@ -25834,7 +25834,7 @@ function generalize_expansive(env, var_level, _ty) {
           }
           catch (raw_exn){
             var exn = Caml_js_exceptions.internalToOCamlException(raw_exn);
-            if (exn.ExceptionID === "Not_found") {
+            if (exn.RE_EXN_ID === "Not_found") {
               variance = List.map((function (param) {
                       return Types_Variance.may_inv;
                     }), tyl);
@@ -25872,14 +25872,14 @@ function generalize_expansive$1(env, ty) {
   }
   catch (raw_tr){
     var tr = Caml_js_exceptions.internalToOCamlException(raw_tr);
-    if (tr.ExceptionID === Unify) {
+    if (tr.RE_EXN_ID === Unify) {
       var tr$1 = tr._1;
       if (tr$1) {
         if (tr$1[1]) {
           throw tr;
         }
         throw {
-              ExceptionID: Unify,
+              RE_EXN_ID: Unify,
               _1: /* :: */[
                 /* tuple */[
                   ty,
@@ -25987,7 +25987,7 @@ function inv_type(hash, pty, ty) {
   }
   catch (raw_exn){
     var exn = Caml_js_exceptions.internalToOCamlException(raw_exn);
-    if (exn.ExceptionID === "Not_found") {
+    if (exn.RE_EXN_ID === "Not_found") {
       var inv$1 = {
         inv_type: ty$1,
         inv_parents: pty
@@ -26027,7 +26027,7 @@ function compute_univars(ty) {
     }
     catch (raw_exn){
       var exn = Caml_js_exceptions.internalToOCamlException(raw_exn);
-      if (exn.ExceptionID === "Not_found") {
+      if (exn.RE_EXN_ID === "Not_found") {
         Curry._3(TypeHash.add, node_univars, inv.inv_type, {
               contents: singleton$1(univ)
             });
@@ -26050,7 +26050,7 @@ function compute_univars(ty) {
       }
       catch (raw_exn){
         var exn = Caml_js_exceptions.internalToOCamlException(raw_exn);
-        if (exn.ExceptionID === "Not_found") {
+        if (exn.RE_EXN_ID === "Not_found") {
           return /* Empty */0;
         }
         throw exn;
@@ -26118,7 +26118,7 @@ function copy(env, partial, keep_names, ty) {
         ) : 100000000;
     } else {
       throw {
-            ExceptionID: "Assert_failure",
+            RE_EXN_ID: "Assert_failure",
             _1: /* tuple */[
               "ctype.ml",
               984,
@@ -26241,7 +26241,7 @@ function copy(env, partial, keep_names, ty) {
                       break;
                   default:
                     throw {
-                          ExceptionID: "Assert_failure",
+                          RE_EXN_ID: "Assert_failure",
                           _1: /* tuple */[
                             "ctype.ml",
                             1047,
@@ -26391,7 +26391,7 @@ function get_new_abstract_name(s) {
   }
   catch (raw_exn){
     var exn = Caml_js_exceptions.internalToOCamlException(raw_exn);
-    if (exn.ExceptionID === "Not_found") {
+    if (exn.RE_EXN_ID === "Not_found") {
       index = 0;
     } else {
       throw exn;
@@ -26459,7 +26459,7 @@ function instance_constructor(in_pattern, cstr) {
       var tv = copy(undefined, undefined, undefined, existential);
       if (!is_Tvar(tv)) {
         throw {
-              ExceptionID: "Assert_failure",
+              RE_EXN_ID: "Assert_failure",
               _1: /* tuple */[
                 "ctype.ml",
                 1170,
@@ -26599,7 +26599,7 @@ function diff_list(l1, l2) {
           ];
   }
   throw {
-        ExceptionID: "Invalid_argument",
+        RE_EXN_ID: "Invalid_argument",
         _1: "Ctype.diff_list"
       };
 }
@@ -26640,14 +26640,14 @@ function copy_sep(fixed, free, bound, visited, ty) {
     var dl = is_Tunivar(ty$1) ? /* [] */0 : diff_list(bound, match[1]);
     if (dl !== /* [] */0 && conflicts(univars, dl)) {
       throw {
-            ExceptionID: "Not_found"
+            RE_EXN_ID: "Not_found"
           };
     }
     return match[0];
   }
   catch (raw_exn){
     var exn = Caml_js_exceptions.internalToOCamlException(raw_exn);
-    if (exn.ExceptionID === "Not_found") {
+    if (exn.RE_EXN_ID === "Not_found") {
       var t$1 = newvar(undefined, undefined);
       var match$1 = ty$1.desc;
       var visited$1;
@@ -26736,7 +26736,7 @@ function instance_poly(keep_namesOpt, fixed, univars, sch) {
     var name = ty.desc;
     if (typeof name === "number") {
       throw {
-            ExceptionID: "Assert_failure",
+            RE_EXN_ID: "Assert_failure",
             _1: /* tuple */[
               "ctype.ml",
               1307,
@@ -26752,7 +26752,7 @@ function instance_poly(keep_namesOpt, fixed, univars, sch) {
       }
     }
     throw {
-          ExceptionID: "Assert_failure",
+          RE_EXN_ID: "Assert_failure",
           _1: /* tuple */[
             "ctype.ml",
             1307,
@@ -26809,7 +26809,7 @@ function instance_label(fixed, lbl) {
 var unify$prime = {
   contents: (function (env, ty1, ty2) {
       throw {
-            ExceptionID: Unify,
+            RE_EXN_ID: Unify,
             _1: /* [] */0
           };
     })
@@ -26818,7 +26818,7 @@ var unify$prime = {
 function subst(env, level, priv, abbrev, ty, params, args, body) {
   if (List.length(params) !== List.length(args)) {
     throw {
-          ExceptionID: Unify,
+          RE_EXN_ID: Unify,
           _1: /* [] */0
         };
   }
@@ -26830,7 +26830,7 @@ function subst(env, level, priv, abbrev, ty, params, args, body) {
       var match = ty.desc;
       if (typeof match === "number") {
         throw {
-              ExceptionID: "Assert_failure",
+              RE_EXN_ID: "Assert_failure",
               _1: /* tuple */[
                 "ctype.ml",
                 1347,
@@ -26844,7 +26844,7 @@ function subst(env, level, priv, abbrev, ty, params, args, body) {
         memorize_abbrev(abbrev$1, priv, path, ty, body0);
       } else {
         throw {
-              ExceptionID: "Assert_failure",
+              RE_EXN_ID: "Assert_failure",
               _1: /* tuple */[
                 "ctype.ml",
                 1347,
@@ -26866,7 +26866,7 @@ function subst(env, level, priv, abbrev, ty, params, args, body) {
   }
   catch (raw_exn){
     var exn = Caml_js_exceptions.internalToOCamlException(raw_exn);
-    if (exn.ExceptionID === Unify) {
+    if (exn.RE_EXN_ID === Unify) {
       current_level.contents = old_level;
       throw exn;
     }
@@ -26892,7 +26892,7 @@ function expand_abbrev_gen(kind, find_type_expansion, env, ty) {
   var match = ty.desc;
   if (typeof match === "number") {
     throw {
-          ExceptionID: "Assert_failure",
+          RE_EXN_ID: "Assert_failure",
           _1: /* tuple */[
             "ctype.ml",
             1456,
@@ -26914,7 +26914,7 @@ function expand_abbrev_gen(kind, find_type_expansion, env, ty) {
         }
         catch (raw_exn){
           var exn = Caml_js_exceptions.internalToOCamlException(raw_exn);
-          if (exn.ExceptionID !== Unify) {
+          if (exn.RE_EXN_ID !== Unify) {
             throw exn;
           }
           
@@ -26928,9 +26928,9 @@ function expand_abbrev_gen(kind, find_type_expansion, env, ty) {
     }
     catch (raw_exn$1){
       var exn$1 = Caml_js_exceptions.internalToOCamlException(raw_exn$1);
-      if (exn$1.ExceptionID === "Not_found") {
+      if (exn$1.RE_EXN_ID === "Not_found") {
         throw {
-              ExceptionID: Cannot_expand
+              RE_EXN_ID: Cannot_expand
             };
       }
       throw exn$1;
@@ -26960,7 +26960,7 @@ function expand_abbrev_gen(kind, find_type_expansion, env, ty) {
       if (lv !== undefined) {
         if (level < lv) {
           throw {
-                ExceptionID: Unify,
+                RE_EXN_ID: Unify,
                 _1: /* :: */[
                   /* tuple */[
                     ty,
@@ -26983,7 +26983,7 @@ function expand_abbrev_gen(kind, find_type_expansion, env, ty) {
     return ty$prime;
   }
   throw {
-        ExceptionID: "Assert_failure",
+        RE_EXN_ID: "Assert_failure",
         _1: /* tuple */[
           "ctype.ml",
           1456,
@@ -27004,9 +27004,9 @@ function expand_head_once(env, ty) {
   }
   catch (raw_exn){
     var exn = Caml_js_exceptions.internalToOCamlException(raw_exn);
-    if (exn.ExceptionID === Cannot_expand) {
+    if (exn.RE_EXN_ID === Cannot_expand) {
       throw {
-            ExceptionID: "Assert_failure",
+            RE_EXN_ID: "Assert_failure",
             _1: /* tuple */[
               "ctype.ml",
               1464,
@@ -27026,11 +27026,11 @@ function safe_abbrev(env, ty) {
   }
   catch (raw_exn){
     var exn = Caml_js_exceptions.internalToOCamlException(raw_exn);
-    if (exn.ExceptionID === Cannot_expand) {
+    if (exn.RE_EXN_ID === Cannot_expand) {
       backtrack(snap);
       return false;
     }
-    if (exn.ExceptionID === Unify) {
+    if (exn.RE_EXN_ID === Unify) {
       backtrack(snap);
       return false;
     }
@@ -27043,14 +27043,14 @@ function try_expand_once(env, ty) {
   var match = ty$1.desc;
   if (typeof match === "number") {
     throw {
-          ExceptionID: Cannot_expand
+          RE_EXN_ID: Cannot_expand
         };
   }
   if (match.tag === /* Tconstr */3) {
     return repr(expand_abbrev(env)(ty$1));
   }
   throw {
-        ExceptionID: Cannot_expand
+        RE_EXN_ID: Cannot_expand
       };
 }
 
@@ -27061,10 +27061,10 @@ function try_expand_safe(env, ty) {
   }
   catch (raw_exn){
     var exn = Caml_js_exceptions.internalToOCamlException(raw_exn);
-    if (exn.ExceptionID === Unify) {
+    if (exn.RE_EXN_ID === Unify) {
       backtrack(snap);
       throw {
-            ExceptionID: Cannot_expand
+            RE_EXN_ID: Cannot_expand
           };
     }
     throw exn;
@@ -27078,7 +27078,7 @@ function try_expand_head(try_once, env, ty) {
   }
   catch (raw_exn){
     var exn = Caml_js_exceptions.internalToOCamlException(raw_exn);
-    if (exn.ExceptionID === Cannot_expand) {
+    if (exn.RE_EXN_ID === Cannot_expand) {
       return ty$prime;
     }
     throw exn;
@@ -27100,7 +27100,7 @@ function expand_head_unif(env, ty) {
   }
   catch (raw_exn){
     var exn = Caml_js_exceptions.internalToOCamlException(raw_exn);
-    if (exn.ExceptionID === Cannot_expand) {
+    if (exn.RE_EXN_ID === Cannot_expand) {
       return repr(ty);
     }
     throw exn;
@@ -27113,7 +27113,7 @@ function expand_head(env, ty) {
   }
   catch (raw_exn){
     var exn = Caml_js_exceptions.internalToOCamlException(raw_exn);
-    if (exn.ExceptionID === Cannot_expand) {
+    if (exn.RE_EXN_ID === Cannot_expand) {
       return repr(ty);
     }
     throw exn;
@@ -27127,7 +27127,7 @@ function extract_concrete_typedecl(env, ty) {
   var match = ty$1.desc;
   if (typeof match === "number") {
     throw {
-          ExceptionID: "Not_found"
+          RE_EXN_ID: "Not_found"
         };
   }
   if (match.tag === /* Tconstr */3) {
@@ -27146,9 +27146,9 @@ function extract_concrete_typedecl(env, ty) {
     }
     catch (raw_exn){
       var exn = Caml_js_exceptions.internalToOCamlException(raw_exn);
-      if (exn.ExceptionID === Cannot_expand) {
+      if (exn.RE_EXN_ID === Cannot_expand) {
         throw {
-              ExceptionID: "Not_found"
+              RE_EXN_ID: "Not_found"
             };
       }
       throw exn;
@@ -27161,7 +27161,7 @@ function extract_concrete_typedecl(env, ty) {
           ];
   }
   throw {
-        ExceptionID: "Not_found"
+        RE_EXN_ID: "Not_found"
       };
 }
 
@@ -27174,14 +27174,14 @@ function try_expand_once_opt(env, ty) {
   var match = ty$1.desc;
   if (typeof match === "number") {
     throw {
-          ExceptionID: Cannot_expand
+          RE_EXN_ID: Cannot_expand
         };
   }
   if (match.tag === /* Tconstr */3) {
     return repr(expand_abbrev_opt(env, ty$1));
   }
   throw {
-        ExceptionID: Cannot_expand
+        RE_EXN_ID: Cannot_expand
       };
 }
 
@@ -27192,7 +27192,7 @@ function try_expand_head_opt(env, ty) {
   }
   catch (raw_exn){
     var exn = Caml_js_exceptions.internalToOCamlException(raw_exn);
-    if (exn.ExceptionID === Cannot_expand) {
+    if (exn.RE_EXN_ID === Cannot_expand) {
       return ty$prime;
     }
     throw exn;
@@ -27206,11 +27206,11 @@ function expand_head_opt(env, ty) {
   }
   catch (raw_exn){
     var exn = Caml_js_exceptions.internalToOCamlException(raw_exn);
-    if (exn.ExceptionID === Cannot_expand) {
+    if (exn.RE_EXN_ID === Cannot_expand) {
       backtrack(snap);
       return repr(ty);
     }
-    if (exn.ExceptionID === Unify) {
+    if (exn.RE_EXN_ID === Unify) {
       backtrack(snap);
       return repr(ty);
     }
@@ -27222,7 +27222,7 @@ function enforce_constraints(env, ty) {
   var match = ty.desc;
   if (typeof match === "number") {
     throw {
-          ExceptionID: "Assert_failure",
+          RE_EXN_ID: "Assert_failure",
           _1: /* tuple */[
             "ctype.ml",
             1574,
@@ -27241,14 +27241,14 @@ function enforce_constraints(env, ty) {
     }
     catch (raw_exn){
       var exn = Caml_js_exceptions.internalToOCamlException(raw_exn);
-      if (exn.ExceptionID === "Not_found") {
+      if (exn.RE_EXN_ID === "Not_found") {
         return ;
       }
       throw exn;
     }
   } else {
     throw {
-          ExceptionID: "Assert_failure",
+          RE_EXN_ID: "Assert_failure",
           _1: /* tuple */[
             "ctype.ml",
             1574,
@@ -27291,7 +27291,7 @@ function generic_abbrev(env, path) {
   }
   catch (raw_exn){
     var exn = Caml_js_exceptions.internalToOCamlException(raw_exn);
-    if (exn.ExceptionID === "Not_found") {
+    if (exn.RE_EXN_ID === "Not_found") {
       return false;
     }
     throw exn;
@@ -27320,7 +27320,7 @@ function generic_private_abbrev(env, path) {
   }
   catch (raw_exn){
     var exn = Caml_js_exceptions.internalToOCamlException(raw_exn);
-    if (exn.ExceptionID === "Not_found") {
+    if (exn.RE_EXN_ID === "Not_found") {
       return false;
     }
     throw exn;
@@ -27344,7 +27344,7 @@ function is_contractive(env, ty) {
   }
   catch (raw_exn){
     var exn = Caml_js_exceptions.internalToOCamlException(raw_exn);
-    if (exn.ExceptionID === "Not_found") {
+    if (exn.RE_EXN_ID === "Not_found") {
       return false;
     }
     throw exn;
@@ -27356,7 +27356,7 @@ var Occur = Caml_exceptions.create("Ocaml_typedtree_test.Ctype.Occur");
 function occur_rec(env, visited, ty0, ty) {
   if (ty === ty0) {
     throw {
-          ExceptionID: Occur
+          RE_EXN_ID: Occur
         };
   }
   var occur_ok = recursive_types.contents && is_contractive(env, ty);
@@ -27367,7 +27367,7 @@ function occur_rec(env, visited, ty0, ty) {
           try {
             if (occur_ok || List.memq(ty, visited)) {
               throw {
-                    ExceptionID: Occur
+                    RE_EXN_ID: Occur
                   };
             }
             var partial_arg = /* :: */[
@@ -27380,12 +27380,12 @@ function occur_rec(env, visited, ty0, ty) {
           }
           catch (raw_exn){
             var exn = Caml_js_exceptions.internalToOCamlException(raw_exn);
-            if (exn.ExceptionID === Occur) {
+            if (exn.RE_EXN_ID === Occur) {
               try {
                 var ty$prime = try_expand_head$1(try_expand_once, env, ty);
                 if (ty$prime === ty0 || List.memq(ty$prime, visited)) {
                   throw {
-                        ExceptionID: Occur
+                        RE_EXN_ID: Occur
                       };
                 }
                 var match$1 = ty$prime.desc;
@@ -27417,12 +27417,12 @@ function occur_rec(env, visited, ty0, ty) {
               }
               catch (raw_exn$1){
                 var exn$1 = Caml_js_exceptions.internalToOCamlException(raw_exn$1);
-                if (exn$1.ExceptionID === Cannot_expand) {
+                if (exn$1.RE_EXN_ID === Cannot_expand) {
                   if (occur_ok) {
                     return ;
                   }
                   throw {
-                        ExceptionID: Occur
+                        RE_EXN_ID: Occur
                       };
                 }
                 throw exn$1;
@@ -27470,8 +27470,8 @@ function occur(env, ty0, ty) {
   catch (raw_exn){
     var exn = Caml_js_exceptions.internalToOCamlException(raw_exn);
     merge(type_changed, old);
-    throw exn.ExceptionID === Occur ? ({
-              ExceptionID: Unify,
+    throw exn.RE_EXN_ID === Occur ? ({
+              RE_EXN_ID: Unify,
               _1: /* [] */0
             }) : exn;
   }
@@ -27484,7 +27484,7 @@ function occur_in(env, ty0, t) {
   }
   catch (raw_exn){
     var exn = Caml_js_exceptions.internalToOCamlException(raw_exn);
-    if (exn.ExceptionID === Unify) {
+    if (exn.RE_EXN_ID === Unify) {
       return true;
     }
     throw exn;
@@ -27505,7 +27505,7 @@ function unify_univar(t1, t2, _param) {
         }
         catch (raw_exn){
           var exn = Caml_js_exceptions.internalToOCamlException(raw_exn);
-          if (exn.ExceptionID === "Not_found") {
+          if (exn.RE_EXN_ID === "Not_found") {
             return ;
           }
           throw exn;
@@ -27521,12 +27521,12 @@ function unify_univar(t1, t2, _param) {
               return ;
             }
             throw {
-                  ExceptionID: Unify,
+                  RE_EXN_ID: Unify,
                   _1: /* [] */0
                 };
           }
           throw {
-                ExceptionID: Unify,
+                RE_EXN_ID: Unify,
                 _1: /* [] */0
               };
         }
@@ -27534,7 +27534,7 @@ function unify_univar(t1, t2, _param) {
           var match$3 = match$2.contents;
           if (match$3 !== undefined) {
             throw {
-                  ExceptionID: Unify,
+                  RE_EXN_ID: Unify,
                   _1: /* [] */0
                 };
           }
@@ -27542,13 +27542,13 @@ function unify_univar(t1, t2, _param) {
           return set_univar(match$2, t1);
         }
         throw {
-              ExceptionID: Unify,
+              RE_EXN_ID: Unify,
               _1: /* [] */0
             };
       }
       if (match$2 !== undefined) {
         throw {
-              ExceptionID: Unify,
+              RE_EXN_ID: Unify,
               _1: /* [] */0
             };
       }
@@ -27556,7 +27556,7 @@ function unify_univar(t1, t2, _param) {
       continue ;
     }
     throw {
-          ExceptionID: Unify,
+          RE_EXN_ID: Unify,
           _1: /* [] */0
         };
   };
@@ -27593,7 +27593,7 @@ function occur_univar(env, ty) {
           }
           catch (raw_exn){
             var exn = Caml_js_exceptions.internalToOCamlException(raw_exn);
-            if (exn.ExceptionID === "Not_found") {
+            if (exn.RE_EXN_ID === "Not_found") {
               visited.contents = add$4(ty$1, bound, visited.contents);
               tmp$1 = true;
             } else {
@@ -27633,7 +27633,7 @@ function occur_univar(env, ty) {
             }
             catch (raw_exn$1){
               var exn$1 = Caml_js_exceptions.internalToOCamlException(raw_exn$1);
-              if (exn$1.ExceptionID === "Not_found") {
+              if (exn$1.RE_EXN_ID === "Not_found") {
                 return List.iter((function(bound){
                           return function (param) {
                             return occur_rec(bound, param);
@@ -27647,7 +27647,7 @@ function occur_univar(env, ty) {
               return ;
             }
             throw {
-                  ExceptionID: Unify,
+                  RE_EXN_ID: Unify,
                   _1: /* :: */[
                     /* tuple */[
                       ty$1,
@@ -27738,7 +27738,7 @@ function univars_escape(env, univar_pairs, vl, ty) {
             }
             catch (raw_exn){
               var exn = Caml_js_exceptions.internalToOCamlException(raw_exn);
-              if (exn.ExceptionID === "Not_found") {
+              if (exn.RE_EXN_ID === "Not_found") {
                 return List.iter(occur, tl);
               }
               throw exn;
@@ -27748,7 +27748,7 @@ function univars_escape(env, univar_pairs, vl, ty) {
               return ;
             }
             throw {
-                  ExceptionID: Occur
+                  RE_EXN_ID: Occur
                 };
         case /* Tpoly */10 :
             if (List.exists((function (t) {
@@ -27769,7 +27769,7 @@ function univars_escape(env, univar_pairs, vl, ty) {
   }
   catch (raw_exn){
     var exn = Caml_js_exceptions.internalToOCamlException(raw_exn);
-    if (exn.ExceptionID === Occur) {
+    if (exn.RE_EXN_ID === Occur) {
       return true;
     }
     throw exn;
@@ -27795,7 +27795,7 @@ function enter_poly(env, univar_pairs, t1, tl1, t2, tl2, f) {
                 tl1$1
               ])))) {
     throw {
-          ExceptionID: Unify,
+          RE_EXN_ID: Unify,
           _1: /* [] */0
         };
   }
@@ -27904,7 +27904,7 @@ function deep_occur(t0, ty) {
     }
     if (ty$1 === t0) {
       throw {
-            ExceptionID: Occur
+            RE_EXN_ID: Occur
           };
     }
     ty$1.level = pivot_level - ty$1.level | 0;
@@ -27917,7 +27917,7 @@ function deep_occur(t0, ty) {
   }
   catch (raw_exn){
     var exn = Caml_js_exceptions.internalToOCamlException(raw_exn);
-    if (exn.ExceptionID === Occur) {
+    if (exn.RE_EXN_ID === Occur) {
       unmark_type(ty);
       return true;
     }
@@ -27935,7 +27935,7 @@ function get_newtype_level(param) {
     return x;
   }
   throw {
-        ExceptionID: "Assert_failure",
+        RE_EXN_ID: "Assert_failure",
         _1: /* tuple */[
           "ctype.ml",
           1949,
@@ -27998,7 +27998,7 @@ function reify(env, t) {
               var o$2 = m.desc;
               if (typeof o$2 === "number") {
                 throw {
-                      ExceptionID: "Assert_failure",
+                      RE_EXN_ID: "Assert_failure",
                       _1: /* tuple */[
                         "ctype.ml",
                         1987,
@@ -28008,7 +28008,7 @@ function reify(env, t) {
               }
               if (o$2.tag) {
                 throw {
-                      ExceptionID: "Assert_failure",
+                      RE_EXN_ID: "Assert_failure",
                       _1: /* tuple */[
                         "ctype.ml",
                         1987,
@@ -28052,7 +28052,7 @@ function is_newtype(env, p) {
   }
   catch (raw_exn){
     var exn = Caml_js_exceptions.internalToOCamlException(raw_exn);
-    if (exn.ExceptionID === "Not_found") {
+    if (exn.RE_EXN_ID === "Not_found") {
       return false;
     }
     throw exn;
@@ -28085,10 +28085,10 @@ function expands_to_datatype(env, ty) {
   }
   catch (raw_exn){
     var exn = Caml_js_exceptions.internalToOCamlException(raw_exn);
-    if (exn.ExceptionID === "Not_found") {
+    if (exn.RE_EXN_ID === "Not_found") {
       return false;
     }
-    if (exn.ExceptionID === Cannot_expand) {
+    if (exn.RE_EXN_ID === Cannot_expand) {
       return false;
     }
     throw exn;
@@ -28172,7 +28172,7 @@ function mcomp(type_pairs, env, _t1, _t2) {
       }
       catch (raw_exn){
         var exn = Caml_js_exceptions.internalToOCamlException(raw_exn);
-        if (exn.ExceptionID === "Not_found") {
+        if (exn.RE_EXN_ID === "Not_found") {
           Curry._3(TypePairs.add, type_pairs, /* tuple */[
                 t1$prime$1,
                 t2$prime$1
@@ -28190,7 +28190,7 @@ function mcomp(type_pairs, env, _t1, _t2) {
               exit$3 = 3;
             } else {
               throw {
-                    ExceptionID: Unify,
+                    RE_EXN_ID: Unify,
                     _1: /* [] */0
                   };
             }
@@ -28199,14 +28199,14 @@ function mcomp(type_pairs, env, _t1, _t2) {
               case /* Tvar */0 :
                   if (typeof match$3 === "number") {
                     throw {
-                          ExceptionID: Unify,
+                          RE_EXN_ID: Unify,
                           _1: /* [] */0
                         };
                   }
                   switch (match$3.tag | 0) {
                     case /* Tvar */0 :
                         throw {
-                              ExceptionID: "Assert_failure",
+                              RE_EXN_ID: "Assert_failure",
                               _1: /* tuple */[
                                 "ctype.ml",
                                 2051,
@@ -28218,7 +28218,7 @@ function mcomp(type_pairs, env, _t1, _t2) {
                         break;
                     default:
                       throw {
-                            ExceptionID: Unify,
+                            RE_EXN_ID: Unify,
                             _1: /* [] */0
                           };
                   }
@@ -28227,7 +28227,7 @@ function mcomp(type_pairs, env, _t1, _t2) {
                   var l1 = match$2[0];
                   if (typeof match$3 === "number") {
                     throw {
-                          ExceptionID: Unify,
+                          RE_EXN_ID: Unify,
                           _1: /* [] */0
                         };
                   }
@@ -28241,7 +28241,7 @@ function mcomp(type_pairs, env, _t1, _t2) {
                           continue ;
                         }
                         throw {
-                              ExceptionID: Unify,
+                              RE_EXN_ID: Unify,
                               _1: /* [] */0
                             };
                     case /* Tconstr */3 :
@@ -28249,7 +28249,7 @@ function mcomp(type_pairs, env, _t1, _t2) {
                         break;
                     default:
                       throw {
-                            ExceptionID: Unify,
+                            RE_EXN_ID: Unify,
                             _1: /* [] */0
                           };
                   }
@@ -28257,7 +28257,7 @@ function mcomp(type_pairs, env, _t1, _t2) {
               case /* Ttuple */2 :
                   if (typeof match$3 === "number") {
                     throw {
-                          ExceptionID: Unify,
+                          RE_EXN_ID: Unify,
                           _1: /* [] */0
                         };
                   }
@@ -28269,7 +28269,7 @@ function mcomp(type_pairs, env, _t1, _t2) {
                         break;
                     default:
                       throw {
-                            ExceptionID: Unify,
+                            RE_EXN_ID: Unify,
                             _1: /* [] */0
                           };
                   }
@@ -28294,7 +28294,7 @@ function mcomp(type_pairs, env, _t1, _t2) {
                           }
                           catch (raw_exn$1){
                             var exn$1 = Caml_js_exceptions.internalToOCamlException(raw_exn$1);
-                            if (exn$1.ExceptionID === "Not_found") {
+                            if (exn$1.RE_EXN_ID === "Not_found") {
                               inj = List.map((function (param) {
                                       return false;
                                     }), tl1);
@@ -28311,7 +28311,7 @@ function mcomp(type_pairs, env, _t1, _t2) {
                         }
                         if (non_aliasable(p1, decl) && non_aliasable(p2, decl$prime)) {
                           throw {
-                                ExceptionID: Unify,
+                                RE_EXN_ID: Unify,
                                 _1: /* [] */0
                               };
                         }
@@ -28343,7 +28343,7 @@ function mcomp(type_pairs, env, _t1, _t2) {
                             exit$4 = 1;
                           } else {
                             throw {
-                                  ExceptionID: Unify,
+                                  RE_EXN_ID: Unify,
                                   _1: /* [] */0
                                 };
                           }
@@ -28353,7 +28353,7 @@ function mcomp(type_pairs, env, _t1, _t2) {
                               exit$4 = 1;
                             } else {
                               throw {
-                                    ExceptionID: Unify,
+                                    RE_EXN_ID: Unify,
                                     _1: /* [] */0
                                   };
                             }
@@ -28379,12 +28379,12 @@ function mcomp(type_pairs, env, _t1, _t2) {
                                       continue ;
                                     }
                                     throw {
-                                          ExceptionID: Unify,
+                                          RE_EXN_ID: Unify,
                                           _1: /* [] */0
                                         };
                                   }
                                   throw {
-                                        ExceptionID: Unify,
+                                        RE_EXN_ID: Unify,
                                         _1: /* [] */0
                                       };
                                 }
@@ -28392,13 +28392,13 @@ function mcomp(type_pairs, env, _t1, _t2) {
                                   return ;
                                 }
                                 throw {
-                                      ExceptionID: Unify,
+                                      RE_EXN_ID: Unify,
                                       _1: /* [] */0
                                     };
                               };
                             }
                             throw {
-                                  ExceptionID: Unify,
+                                  RE_EXN_ID: Unify,
                                   _1: /* [] */0
                                 };
                           }
@@ -28407,14 +28407,14 @@ function mcomp(type_pairs, env, _t1, _t2) {
                             exit$4 = 1;
                           } else {
                             throw {
-                                  ExceptionID: Unify,
+                                  RE_EXN_ID: Unify,
                                   _1: /* [] */0
                                 };
                           }
                         } else {
                           if (match$5.tag) {
                             throw {
-                                  ExceptionID: Unify,
+                                  RE_EXN_ID: Unify,
                                   _1: /* [] */0
                                 };
                           }
@@ -28423,7 +28423,7 @@ function mcomp(type_pairs, env, _t1, _t2) {
                             return mcomp_record_description(type_pairs, env)(match$4[0], match$5[0]);
                           }
                           throw {
-                                ExceptionID: Unify,
+                                RE_EXN_ID: Unify,
                                 _1: /* [] */0
                               };
                         }
@@ -28431,7 +28431,7 @@ function mcomp(type_pairs, env, _t1, _t2) {
                           if (typeof match$5 === "number") {
                             if (match$5 !== 0) {
                               throw {
-                                    ExceptionID: Unify,
+                                    RE_EXN_ID: Unify,
                                     _1: /* [] */0
                                   };
                             }
@@ -28439,12 +28439,12 @@ function mcomp(type_pairs, env, _t1, _t2) {
                               return ;
                             }
                             throw {
-                                  ExceptionID: Unify,
+                                  RE_EXN_ID: Unify,
                                   _1: /* [] */0
                                 };
                           }
                           throw {
-                                ExceptionID: Unify,
+                                RE_EXN_ID: Unify,
                                 _1: /* [] */0
                               };
                         }
@@ -28452,7 +28452,7 @@ function mcomp(type_pairs, env, _t1, _t2) {
                       }
                       catch (raw_exn$2){
                         var exn$2 = Caml_js_exceptions.internalToOCamlException(raw_exn$2);
-                        if (exn$2.ExceptionID === "Not_found") {
+                        if (exn$2.RE_EXN_ID === "Not_found") {
                           return ;
                         }
                         throw exn$2;
@@ -28465,7 +28465,7 @@ function mcomp(type_pairs, env, _t1, _t2) {
               case /* Tobject */4 :
                   if (typeof match$3 === "number") {
                     throw {
-                          ExceptionID: Unify,
+                          RE_EXN_ID: Unify,
                           _1: /* [] */0
                         };
                   }
@@ -28477,7 +28477,7 @@ function mcomp(type_pairs, env, _t1, _t2) {
                         return mcomp_fields(type_pairs, env, match$2[0], match$3[0]);
                     default:
                       throw {
-                            ExceptionID: Unify,
+                            RE_EXN_ID: Unify,
                             _1: /* [] */0
                           };
                   }
@@ -28485,7 +28485,7 @@ function mcomp(type_pairs, env, _t1, _t2) {
               case /* Tfield */5 :
                   if (typeof match$3 === "number") {
                     throw {
-                          ExceptionID: Unify,
+                          RE_EXN_ID: Unify,
                           _1: /* [] */0
                         };
                   }
@@ -28497,7 +28497,7 @@ function mcomp(type_pairs, env, _t1, _t2) {
                         return mcomp_fields(type_pairs, env, t1$prime$1, t2$prime$1);
                     default:
                       throw {
-                            ExceptionID: Unify,
+                            RE_EXN_ID: Unify,
                             _1: /* [] */0
                           };
                   }
@@ -28509,7 +28509,7 @@ function mcomp(type_pairs, env, _t1, _t2) {
               case /* Tvariant */8 :
                   if (typeof match$3 === "number") {
                     throw {
-                          ExceptionID: Unify,
+                          RE_EXN_ID: Unify,
                           _1: /* [] */0
                         };
                   }
@@ -28533,7 +28533,7 @@ function mcomp(type_pairs, env, _t1, _t2) {
                         };
                         if (row1$1.row_closed && List.exists(cannot_erase, match$6[1]) || row2$1.row_closed && List.exists(cannot_erase, match$6[0])) {
                           throw {
-                                ExceptionID: Unify,
+                                RE_EXN_ID: Unify,
                                 _1: /* [] */0
                               };
                         }
@@ -28570,14 +28570,14 @@ function mcomp(type_pairs, env, _t1, _t2) {
                                         if (t1 !== undefined) {
                                           if (typeof match$1 === "number") {
                                             throw {
-                                                  ExceptionID: Unify,
+                                                  RE_EXN_ID: Unify,
                                                   _1: /* [] */0
                                                 };
                                           }
                                           if (match$1.tag) {
                                             if (match$1[0]) {
                                               throw {
-                                                    ExceptionID: Unify,
+                                                    RE_EXN_ID: Unify,
                                                     _1: /* [] */0
                                                   };
                                             }
@@ -28590,13 +28590,13 @@ function mcomp(type_pairs, env, _t1, _t2) {
                                             return mcomp(type_pairs, env, t1, t2$1);
                                           }
                                           throw {
-                                                ExceptionID: Unify,
+                                                RE_EXN_ID: Unify,
                                                 _1: /* [] */0
                                               };
                                         } else {
                                           if (typeof match$1 === "number") {
                                             throw {
-                                                  ExceptionID: Unify,
+                                                  RE_EXN_ID: Unify,
                                                   _1: /* [] */0
                                                 };
                                           }
@@ -28605,7 +28605,7 @@ function mcomp(type_pairs, env, _t1, _t2) {
                                               return ;
                                             }
                                             throw {
-                                                  ExceptionID: Unify,
+                                                  RE_EXN_ID: Unify,
                                                   _1: /* [] */0
                                                 };
                                           }
@@ -28613,7 +28613,7 @@ function mcomp(type_pairs, env, _t1, _t2) {
                                             return ;
                                           }
                                           throw {
-                                                ExceptionID: Unify,
+                                                RE_EXN_ID: Unify,
                                                 _1: /* [] */0
                                               };
                                         }
@@ -28629,7 +28629,7 @@ function mcomp(type_pairs, env, _t1, _t2) {
                                           exit = 1;
                                         } else {
                                           throw {
-                                                ExceptionID: Unify,
+                                                RE_EXN_ID: Unify,
                                                 _1: /* [] */0
                                               };
                                         }
@@ -28655,7 +28655,7 @@ function mcomp(type_pairs, env, _t1, _t2) {
                                             return ;
                                           }
                                           throw {
-                                                ExceptionID: Unify,
+                                                RE_EXN_ID: Unify,
                                                 _1: /* [] */0
                                               };
                                         }
@@ -28665,7 +28665,7 @@ function mcomp(type_pairs, env, _t1, _t2) {
                                     }), match$6[2]);
                     default:
                       throw {
-                            ExceptionID: Unify,
+                            RE_EXN_ID: Unify,
                             _1: /* [] */0
                           };
                   }
@@ -28673,7 +28673,7 @@ function mcomp(type_pairs, env, _t1, _t2) {
               case /* Tunivar */9 :
                   if (typeof match$3 === "number") {
                     throw {
-                          ExceptionID: Unify,
+                          RE_EXN_ID: Unify,
                           _1: /* [] */0
                         };
                   }
@@ -28685,7 +28685,7 @@ function mcomp(type_pairs, env, _t1, _t2) {
                         return unify_univar(t1$prime$1, t2$prime$1, univar_pairs.contents);
                     default:
                       throw {
-                            ExceptionID: Unify,
+                            RE_EXN_ID: Unify,
                             _1: /* [] */0
                           };
                   }
@@ -28699,7 +28699,7 @@ function mcomp(type_pairs, env, _t1, _t2) {
                   } else {
                     if (typeof match$3 === "number") {
                       throw {
-                            ExceptionID: Unify,
+                            RE_EXN_ID: Unify,
                             _1: /* [] */0
                           };
                     }
@@ -28718,7 +28718,7 @@ function mcomp(type_pairs, env, _t1, _t2) {
                           break;
                       default:
                         throw {
-                              ExceptionID: Unify,
+                              RE_EXN_ID: Unify,
                               _1: /* [] */0
                             };
                     }
@@ -28726,7 +28726,7 @@ function mcomp(type_pairs, env, _t1, _t2) {
                   if (exit$6 === 4) {
                     if (typeof match$3 === "number") {
                       throw {
-                            ExceptionID: Unify,
+                            RE_EXN_ID: Unify,
                             _1: /* [] */0
                           };
                     }
@@ -28740,7 +28740,7 @@ function mcomp(type_pairs, env, _t1, _t2) {
                                       }));
                       default:
                         throw {
-                              ExceptionID: Unify,
+                              RE_EXN_ID: Unify,
                               _1: /* [] */0
                             };
                     }
@@ -28749,7 +28749,7 @@ function mcomp(type_pairs, env, _t1, _t2) {
               case /* Tpackage */11 :
                   if (typeof match$3 === "number") {
                     throw {
-                          ExceptionID: Unify,
+                          RE_EXN_ID: Unify,
                           _1: /* [] */0
                         };
                   }
@@ -28761,7 +28761,7 @@ function mcomp(type_pairs, env, _t1, _t2) {
                         return ;
                     default:
                       throw {
-                            ExceptionID: Unify,
+                            RE_EXN_ID: Unify,
                             _1: /* [] */0
                           };
                   }
@@ -28772,7 +28772,7 @@ function mcomp(type_pairs, env, _t1, _t2) {
           if (exit$3 === 3) {
             if (typeof match$3 === "number") {
               throw {
-                    ExceptionID: Unify,
+                    RE_EXN_ID: Unify,
                     _1: /* [] */0
                   };
             }
@@ -28781,7 +28781,7 @@ function mcomp(type_pairs, env, _t1, _t2) {
               exit$2 = 2;
             } else {
               throw {
-                    ExceptionID: Unify,
+                    RE_EXN_ID: Unify,
                     _1: /* [] */0
                   };
             }
@@ -28793,13 +28793,13 @@ function mcomp(type_pairs, env, _t1, _t2) {
                 return ;
               }
               throw {
-                    ExceptionID: Unify,
+                    RE_EXN_ID: Unify,
                     _1: /* [] */0
                   };
             }
             catch (raw_exn$3){
               var exn$3 = Caml_js_exceptions.internalToOCamlException(raw_exn$3);
-              if (exn$3.ExceptionID === "Not_found") {
+              if (exn$3.RE_EXN_ID === "Not_found") {
                 return ;
               }
               throw exn$3;
@@ -28818,7 +28818,7 @@ function mcomp(type_pairs, env, _t1, _t2) {
 function mcomp_list(type_pairs, env, tl1, tl2) {
   if (List.length(tl1) !== List.length(tl2)) {
     throw {
-          ExceptionID: Unify,
+          RE_EXN_ID: Unify,
           _1: /* [] */0
         };
   }
@@ -28830,7 +28830,7 @@ function mcomp_list(type_pairs, env, tl1, tl2) {
 function mcomp_fields(type_pairs, env, ty1, ty2) {
   if (!(concrete_object(ty1) && concrete_object(ty2))) {
     throw {
-          ExceptionID: "Assert_failure",
+          RE_EXN_ID: "Assert_failure",
           _1: /* tuple */[
             "ctype.ml",
             2096,
@@ -28844,7 +28844,7 @@ function mcomp_fields(type_pairs, env, ty1, ty2) {
   mcomp(type_pairs, env, match$1[1], match[1]);
   if (match$2[1] !== /* [] */0 && object_row(ty1).desc === /* Tnil */0 || match$2[2] !== /* [] */0 && object_row(ty2).desc === /* Tnil */0) {
     throw {
-          ExceptionID: Unify,
+          RE_EXN_ID: Unify,
           _1: /* [] */0
         };
   }
@@ -28860,7 +28860,7 @@ function mcomp_kind(k1, k2) {
   if (typeof k1$1 === "number") {
     if (k1$1 !== 0) {
       throw {
-            ExceptionID: Unify,
+            RE_EXN_ID: Unify,
             _1: /* [] */0
           };
     }
@@ -28869,18 +28869,18 @@ function mcomp_kind(k1, k2) {
         return ;
       }
       throw {
-            ExceptionID: Unify,
+            RE_EXN_ID: Unify,
             _1: /* [] */0
           };
     }
     throw {
-          ExceptionID: Unify,
+          RE_EXN_ID: Unify,
           _1: /* [] */0
         };
   }
   if (typeof k2$1 === "number") {
     throw {
-          ExceptionID: Unify,
+          RE_EXN_ID: Unify,
           _1: /* [] */0
         };
   }
@@ -28893,7 +28893,7 @@ function mcomp_type_option(type_pairs, env, t, t$prime) {
       return mcomp(type_pairs, env, t, t$prime);
     }
     throw {
-          ExceptionID: Unify,
+          RE_EXN_ID: Unify,
           _1: /* [] */0
         };
   }
@@ -28901,7 +28901,7 @@ function mcomp_type_option(type_pairs, env, t, t$prime) {
     return ;
   }
   throw {
-        ExceptionID: Unify,
+        RE_EXN_ID: Unify,
         _1: /* [] */0
       };
 }
@@ -28922,12 +28922,12 @@ function mcomp_record_description(type_pairs, env) {
             continue ;
           }
           throw {
-                ExceptionID: Unify,
+                RE_EXN_ID: Unify,
                 _1: /* [] */0
               };
         }
         throw {
-              ExceptionID: Unify,
+              RE_EXN_ID: Unify,
               _1: /* [] */0
             };
       }
@@ -28935,7 +28935,7 @@ function mcomp_record_description(type_pairs, env) {
         return ;
       }
       throw {
-            ExceptionID: Unify,
+            RE_EXN_ID: Unify,
             _1: /* [] */0
           };
     };
@@ -28974,7 +28974,7 @@ function find_newtype_level(env, path) {
       return x;
     }
     throw {
-          ExceptionID: "Assert_failure",
+          RE_EXN_ID: "Assert_failure",
           _1: /* tuple */[
             "ctype.ml",
             2227,
@@ -28984,9 +28984,9 @@ function find_newtype_level(env, path) {
   }
   catch (raw_exn){
     var exn = Caml_js_exceptions.internalToOCamlException(raw_exn);
-    if (exn.ExceptionID === "Not_found") {
+    if (exn.RE_EXN_ID === "Not_found") {
       throw {
-            ExceptionID: "Assert_failure",
+            RE_EXN_ID: "Assert_failure",
             _1: /* tuple */[
               "ctype.ml",
               2228,
@@ -29038,7 +29038,7 @@ function eq_package_path(env, p1, p2) {
 var nondep_type$prime = {
   contents: (function (param, param$1, param$2) {
       throw {
-            ExceptionID: "Assert_failure",
+            RE_EXN_ID: "Assert_failure",
             _1: /* tuple */[
               "ctype.ml",
               2250,
@@ -29051,7 +29051,7 @@ var nondep_type$prime = {
 var package_subtype = {
   contents: (function (param, param$1, param$2, param$3, param$4, param$5, param$6) {
       throw {
-            ExceptionID: "Assert_failure",
+            RE_EXN_ID: "Assert_failure",
             _1: /* tuple */[
               "ctype.ml",
               2251,
@@ -29126,14 +29126,14 @@ function complete_type_list(allow_absentOpt, env, nl1, lv2, mty2, nl2, tl2) {
           var decl = match[1];
           if (decl.type_arity !== 0) {
             throw {
-                  ExceptionID: Pervasives.Exit
+                  RE_EXN_ID: Pervasives.Exit
                 };
           }
           var match$1 = decl.type_kind;
           if (typeof match$1 === "number") {
             if (match$1 !== 0) {
               throw {
-                    ExceptionID: Pervasives.Exit
+                    RE_EXN_ID: Pervasives.Exit
                   };
             }
             if (decl.type_private) {
@@ -29151,21 +29151,21 @@ function complete_type_list(allow_absentOpt, env, nl1, lv2, mty2, nl2, tl2) {
                 return complete(nl, ntl2);
               }
               throw {
-                    ExceptionID: Pervasives.Exit
+                    RE_EXN_ID: Pervasives.Exit
                   };
             }
             throw {
-                  ExceptionID: Pervasives.Exit
+                  RE_EXN_ID: Pervasives.Exit
                 };
           }
           throw {
-                ExceptionID: Pervasives.Exit
+                RE_EXN_ID: Pervasives.Exit
               };
         }
         catch (raw_exn){
           var exn = Caml_js_exceptions.internalToOCamlException(raw_exn);
           var exit$1 = 0;
-          if (exn.ExceptionID === "Not_found") {
+          if (exn.RE_EXN_ID === "Not_found") {
             if (allow_absent) {
               _nl1 = nl;
               continue ;
@@ -29175,9 +29175,9 @@ function complete_type_list(allow_absentOpt, env, nl1, lv2, mty2, nl2, tl2) {
             exit$1 = 2;
           }
           if (exit$1 === 2) {
-            if (exn.ExceptionID === Pervasives.Exit) {
+            if (exn.RE_EXN_ID === Pervasives.Exit) {
               throw {
-                    ExceptionID: "Not_found"
+                    RE_EXN_ID: "Not_found"
                   };
             }
             throw exn;
@@ -29203,7 +29203,7 @@ function unify_package(env, unify_list, lv1, p1, n1, tl1, lv2, p2, n2, tl2) {
     return ;
   }
   throw {
-        ExceptionID: "Not_found"
+        RE_EXN_ID: "Not_found"
       };
 }
 
@@ -29221,7 +29221,7 @@ function unify_eq(env, t1, t2) {
   }
   catch (raw_exn){
     var exn = Caml_js_exceptions.internalToOCamlException(raw_exn);
-    if (exn.ExceptionID === "Not_found") {
+    if (exn.RE_EXN_ID === "Not_found") {
       return false;
     }
     throw exn;
@@ -29292,7 +29292,7 @@ function unify(env, t1, t2) {
                         }
                         catch (raw_exn){
                           var exn = Caml_js_exceptions.internalToOCamlException(raw_exn);
-                          if (exn.ExceptionID === Cannot_expand) {
+                          if (exn.RE_EXN_ID === Cannot_expand) {
                             unify2(env, t1$1, t2$1);
                           } else {
                             throw exn;
@@ -29344,10 +29344,10 @@ function unify(env, t1, t2) {
   }
   catch (raw_trace){
     var trace = Caml_js_exceptions.internalToOCamlException(raw_trace);
-    if (trace.ExceptionID === Unify) {
+    if (trace.RE_EXN_ID === Unify) {
       reset_trace_gadt_instances(reset_tracing);
       throw {
-            ExceptionID: Unify,
+            RE_EXN_ID: Unify,
             _1: /* :: */[
               /* tuple */[
                 t1$1,
@@ -29436,9 +29436,9 @@ function unify2(env, t1, t2) {
   }
   catch (raw_trace){
     var trace = Caml_js_exceptions.internalToOCamlException(raw_trace);
-    if (trace.ExceptionID === Unify) {
+    if (trace.RE_EXN_ID === Unify) {
       throw {
-            ExceptionID: Unify,
+            RE_EXN_ID: Unify,
             _1: List.map((function (param) {
                     return /* tuple */[
                             param[1],
@@ -29545,7 +29545,7 @@ function unify_kind(k1, k2) {
     
   }
   throw {
-        ExceptionID: "Assert_failure",
+        RE_EXN_ID: "Assert_failure",
         _1: /* tuple */[
           "ctype.ml",
           2624,
@@ -29585,7 +29585,7 @@ function unify_fields(env, ty1, ty2) {
                   }
                   catch (raw_trace){
                     var trace = Caml_js_exceptions.internalToOCamlException(raw_trace);
-                    if (trace.ExceptionID === Unify) {
+                    if (trace.RE_EXN_ID === Unify) {
                       var desc_003 = newty2(current_level.contents, /* Tnil */0);
                       var desc = /* Tfield */Block.__(5, [
                           n,
@@ -29601,7 +29601,7 @@ function unify_fields(env, ty1, ty2) {
                           desc_003$1
                         ]);
                       throw {
-                            ExceptionID: Unify,
+                            RE_EXN_ID: Unify,
                             _1: /* :: */[
                               /* tuple */[
                                 newty2(current_level.contents, desc),
@@ -29646,14 +29646,14 @@ function unify_row(env, row1, row2) {
             var l = param[0];
             try {
               throw {
-                    ExceptionID: Tags,
+                    RE_EXN_ID: Tags,
                     _1: l,
                     _2: Hashtbl.find(ht, hash_variant(l))
                   };
             }
             catch (raw_exn){
               var exn = Caml_js_exceptions.internalToOCamlException(raw_exn);
-              if (exn.ExceptionID === "Not_found") {
+              if (exn.RE_EXN_ID === "Not_found") {
                 return ;
               }
               throw exn;
@@ -29690,7 +29690,7 @@ function unify_row(env, row1, row2) {
             }
           }), pairs)) {
     throw {
-          ExceptionID: Unify,
+          RE_EXN_ID: Unify,
           _1: /* :: */[
             /* tuple */[
               mkvariant(/* [] */0, true),
@@ -29719,7 +29719,7 @@ function unify_row(env, row1, row2) {
       var t1 = mkvariant(/* [] */0, true);
       var t2 = mkvariant(rest$1, false);
       throw {
-            ExceptionID: Unify,
+            RE_EXN_ID: Unify,
             _1: /* :: */[
               row === row1$1 ? /* tuple */[
                   t1,
@@ -29785,7 +29785,7 @@ function unify_row(env, row1, row2) {
                         if (f2$2.tag) {
                           if (f2$2[2]) {
                             throw {
-                                  ExceptionID: Unify,
+                                  RE_EXN_ID: Unify,
                                   _1: /* [] */0
                                 };
                           }
@@ -29793,12 +29793,12 @@ function unify_row(env, row1, row2) {
                             return set_row_field(f2$2[3], f1$2);
                           }
                           throw {
-                                ExceptionID: Unify,
+                                RE_EXN_ID: Unify,
                                 _1: /* [] */0
                               };
                         }
                         throw {
-                              ExceptionID: Unify,
+                              RE_EXN_ID: Unify,
                               _1: /* [] */0
                             };
                       } else if (f1$2.tag) {
@@ -29809,7 +29809,7 @@ function unify_row(env, row1, row2) {
                         if (typeof f2$2 === "number") {
                           if (m1) {
                             throw {
-                                  ExceptionID: Unify,
+                                  RE_EXN_ID: Unify,
                                   _1: /* [] */0
                                 };
                           }
@@ -29817,7 +29817,7 @@ function unify_row(env, row1, row2) {
                             return set_row_field(f1$2[3], f2$2);
                           }
                           throw {
-                                ExceptionID: Unify,
+                                RE_EXN_ID: Unify,
                                 _1: /* [] */0
                               };
                         }
@@ -29837,7 +29837,7 @@ function unify_row(env, row1, row2) {
                               var t1 = match[0];
                               if (c1 || c2) {
                                 throw {
-                                      ExceptionID: Unify,
+                                      RE_EXN_ID: Unify,
                                       _1: /* [] */0
                                     };
                               }
@@ -29911,13 +29911,13 @@ function unify_row(env, row1, row2) {
                         if (c1) {
                           if (f1$2[1]) {
                             throw {
-                                  ExceptionID: Unify,
+                                  RE_EXN_ID: Unify,
                                   _1: /* [] */0
                                 };
                           }
                           if (f2$2[0] !== undefined) {
                             throw {
-                                  ExceptionID: Unify,
+                                  RE_EXN_ID: Unify,
                                   _1: /* [] */0
                                 };
                           }
@@ -29925,7 +29925,7 @@ function unify_row(env, row1, row2) {
                             return set_row_field(f1$2[3], f2$2);
                           }
                           throw {
-                                ExceptionID: Unify,
+                                RE_EXN_ID: Unify,
                                 _1: /* [] */0
                               };
                         }
@@ -29933,7 +29933,7 @@ function unify_row(env, row1, row2) {
                         if (t2 !== undefined) {
                           if (fixed1) {
                             throw {
-                                  ExceptionID: Unify,
+                                  RE_EXN_ID: Unify,
                                   _1: /* [] */0
                                 };
                           }
@@ -29953,7 +29953,7 @@ function unify_row(env, row1, row2) {
                           }
                         } else {
                           throw {
-                                ExceptionID: Unify,
+                                RE_EXN_ID: Unify,
                                 _1: /* [] */0
                               };
                         }
@@ -29962,20 +29962,20 @@ function unify_row(env, row1, row2) {
                         if (t1$1 !== undefined) {
                           if (typeof f2$2 === "number") {
                             throw {
-                                  ExceptionID: Unify,
+                                  RE_EXN_ID: Unify,
                                   _1: /* [] */0
                                 };
                           }
                           if (f2$2.tag) {
                             if (f2$2[0]) {
                               throw {
-                                    ExceptionID: Unify,
+                                    RE_EXN_ID: Unify,
                                     _1: /* [] */0
                                   };
                             }
                             if (fixed2) {
                               throw {
-                                    ExceptionID: Unify,
+                                    RE_EXN_ID: Unify,
                                     _1: /* [] */0
                                   };
                             }
@@ -29999,14 +29999,14 @@ function unify_row(env, row1, row2) {
                               return unify(env, t1$1, t2$1);
                             }
                             throw {
-                                  ExceptionID: Unify,
+                                  RE_EXN_ID: Unify,
                                   _1: /* [] */0
                                 };
                           }
                         } else {
                           if (typeof f2$2 === "number") {
                             throw {
-                                  ExceptionID: Unify,
+                                  RE_EXN_ID: Unify,
                                   _1: /* [] */0
                                 };
                           }
@@ -30014,7 +30014,7 @@ function unify_row(env, row1, row2) {
                             if (f2$2[0]) {
                               if (f2$2[1]) {
                                 throw {
-                                      ExceptionID: Unify,
+                                      RE_EXN_ID: Unify,
                                       _1: /* [] */0
                                     };
                               }
@@ -30022,12 +30022,12 @@ function unify_row(env, row1, row2) {
                                 return set_row_field(f2$2[3], f1$2);
                               }
                               throw {
-                                    ExceptionID: Unify,
+                                    RE_EXN_ID: Unify,
                                     _1: /* [] */0
                                   };
                             }
                             throw {
-                                  ExceptionID: Unify,
+                                  RE_EXN_ID: Unify,
                                   _1: /* [] */0
                                 };
                           }
@@ -30035,7 +30035,7 @@ function unify_row(env, row1, row2) {
                             return ;
                           }
                           throw {
-                                ExceptionID: Unify,
+                                RE_EXN_ID: Unify,
                                 _1: /* [] */0
                               };
                         }
@@ -30044,9 +30044,9 @@ function unify_row(env, row1, row2) {
                   }
                   catch (raw_trace){
                     var trace = Caml_js_exceptions.internalToOCamlException(raw_trace);
-                    if (trace.ExceptionID === Unify) {
+                    if (trace.RE_EXN_ID === Unify) {
                       throw {
-                            ExceptionID: Unify,
+                            RE_EXN_ID: Unify,
                             _1: /* :: */[
                               /* tuple */[
                                 mkvariant(/* :: */[
@@ -30084,7 +30084,7 @@ function unify_row(env, row1, row2) {
 function unify_list(env, tl1, tl2) {
   if (List.length(tl1) !== List.length(tl2)) {
     throw {
-          ExceptionID: Unify,
+          RE_EXN_ID: Unify,
           _1: /* [] */0
         };
   }
@@ -30180,7 +30180,7 @@ function unify3(env, t1, t1$prime, t2, t2$prime) {
                 break;
             default:
               throw {
-                    ExceptionID: Unify,
+                    RE_EXN_ID: Unify,
                     _1: /* [] */0
                   };
           }
@@ -30192,7 +30192,7 @@ function unify3(env, t1, t1$prime, t2, t2$prime) {
               var l1 = d1[0];
               if (typeof d2 === "number") {
                 throw {
-                      ExceptionID: Unify,
+                      RE_EXN_ID: Unify,
                       _1: /* [] */0
                     };
               }
@@ -30215,7 +30215,7 @@ function unify3(env, t1, t1$prime, t2, t2$prime) {
                       }
                     } else {
                       throw {
-                            ExceptionID: Unify,
+                            RE_EXN_ID: Unify,
                             _1: /* [] */0
                           };
                     }
@@ -30225,7 +30225,7 @@ function unify3(env, t1, t1$prime, t2, t2$prime) {
                     break;
                 default:
                   throw {
-                        ExceptionID: Unify,
+                        RE_EXN_ID: Unify,
                         _1: /* [] */0
                       };
               }
@@ -30233,7 +30233,7 @@ function unify3(env, t1, t1$prime, t2, t2$prime) {
           case /* Ttuple */2 :
               if (typeof d2 === "number") {
                 throw {
-                      ExceptionID: Unify,
+                      RE_EXN_ID: Unify,
                       _1: /* [] */0
                     };
               }
@@ -30246,7 +30246,7 @@ function unify3(env, t1, t1$prime, t2, t2$prime) {
                     break;
                 default:
                   throw {
-                        ExceptionID: Unify,
+                        RE_EXN_ID: Unify,
                         _1: /* [] */0
                       };
               }
@@ -30292,7 +30292,7 @@ function unify3(env, t1, t1$prime, t2, t2$prime) {
                       }
                       catch (raw_exn){
                         var exn = Caml_js_exceptions.internalToOCamlException(raw_exn);
-                        if (exn.ExceptionID === "Not_found") {
+                        if (exn.RE_EXN_ID === "Not_found") {
                           inj = List.map((function (param) {
                                   return false;
                                 }), tl1);
@@ -30313,7 +30313,7 @@ function unify3(env, t1, t1$prime, t2, t2$prime) {
                                               }
                                               catch (raw_exn){
                                                 var exn = Caml_js_exceptions.internalToOCamlException(raw_exn);
-                                                if (exn.ExceptionID === Unify) {
+                                                if (exn.RE_EXN_ID === Unify) {
                                                   backtrack(snap);
                                                   reify(env, t1);
                                                   return reify(env, t2);
@@ -30386,7 +30386,7 @@ function unify3(env, t1, t1$prime, t2, t2$prime) {
               var nm1 = d1[1];
               if (typeof d2 === "number") {
                 throw {
-                      ExceptionID: Unify,
+                      RE_EXN_ID: Unify,
                       _1: /* [] */0
                     };
               }
@@ -30432,7 +30432,7 @@ function unify3(env, t1, t1$prime, t2, t2$prime) {
                     break;
                 default:
                   throw {
-                        ExceptionID: Unify,
+                        RE_EXN_ID: Unify,
                         _1: /* [] */0
                       };
               }
@@ -30447,7 +30447,7 @@ function unify3(env, t1, t1$prime, t2, t2$prime) {
                 exit$4 = 5;
               } else {
                 throw {
-                      ExceptionID: Unify,
+                      RE_EXN_ID: Unify,
                       _1: /* [] */0
                     };
               }
@@ -30456,7 +30456,7 @@ function unify3(env, t1, t1$prime, t2, t2$prime) {
               var row1 = d1[0];
               if (typeof d2 === "number") {
                 throw {
-                      ExceptionID: Unify,
+                      RE_EXN_ID: Unify,
                       _1: /* [] */0
                     };
               }
@@ -30475,7 +30475,7 @@ function unify3(env, t1, t1$prime, t2, t2$prime) {
                       }
                       catch (raw_exn$1){
                         var exn$1 = Caml_js_exceptions.internalToOCamlException(raw_exn$1);
-                        if (exn$1.ExceptionID === Unify) {
+                        if (exn$1.RE_EXN_ID === Unify) {
                           backtrack(snap);
                           reify(env, t1$prime);
                           reify(env, t2$prime);
@@ -30491,7 +30491,7 @@ function unify3(env, t1, t1$prime, t2, t2$prime) {
                     break;
                 default:
                   throw {
-                        ExceptionID: Unify,
+                        RE_EXN_ID: Unify,
                         _1: /* [] */0
                       };
               }
@@ -30505,7 +30505,7 @@ function unify3(env, t1, t1$prime, t2, t2$prime) {
               } else {
                 if (typeof d2 === "number") {
                   throw {
-                        ExceptionID: Unify,
+                        RE_EXN_ID: Unify,
                         _1: /* [] */0
                       };
                 }
@@ -30522,7 +30522,7 @@ function unify3(env, t1, t1$prime, t2, t2$prime) {
                       break;
                   default:
                     throw {
-                          ExceptionID: Unify,
+                          RE_EXN_ID: Unify,
                           _1: /* [] */0
                         };
                 }
@@ -30530,7 +30530,7 @@ function unify3(env, t1, t1$prime, t2, t2$prime) {
               if (exit$7 === 6) {
                 if (typeof d2 === "number") {
                   throw {
-                        ExceptionID: Unify,
+                        RE_EXN_ID: Unify,
                         _1: /* [] */0
                       };
                 }
@@ -30545,7 +30545,7 @@ function unify3(env, t1, t1$prime, t2, t2$prime) {
                       break;
                   default:
                     throw {
-                          ExceptionID: Unify,
+                          RE_EXN_ID: Unify,
                           _1: /* [] */0
                         };
                 }
@@ -30555,7 +30555,7 @@ function unify3(env, t1, t1$prime, t2, t2$prime) {
               var tl1$2 = d1[2];
               if (typeof d2 === "number") {
                 throw {
-                      ExceptionID: Unify,
+                      RE_EXN_ID: Unify,
                       _1: /* [] */0
                     };
               }
@@ -30572,10 +30572,10 @@ function unify3(env, t1, t1$prime, t2, t2$prime) {
                     }
                     catch (raw_exn$2){
                       var exn$2 = Caml_js_exceptions.internalToOCamlException(raw_exn$2);
-                      if (exn$2.ExceptionID === "Not_found") {
+                      if (exn$2.RE_EXN_ID === "Not_found") {
                         if (umode.contents === /* Expression */0) {
                           throw {
-                                ExceptionID: Unify,
+                                RE_EXN_ID: Unify,
                                 _1: /* [] */0
                               };
                         }
@@ -30589,7 +30589,7 @@ function unify3(env, t1, t1$prime, t2, t2$prime) {
                     break;
                 default:
                   throw {
-                        ExceptionID: Unify,
+                        RE_EXN_ID: Unify,
                         _1: /* [] */0
                       };
               }
@@ -30623,7 +30623,7 @@ function unify3(env, t1, t1$prime, t2, t2$prime) {
       if (exit$3 === 4) {
         if (typeof d1 === "number") {
           throw {
-                ExceptionID: Unify,
+                RE_EXN_ID: Unify,
                 _1: /* [] */0
               };
         }
@@ -30631,7 +30631,7 @@ function unify3(env, t1, t1$prime, t2, t2$prime) {
           exit$2 = 2;
         } else {
           throw {
-                ExceptionID: Unify,
+                RE_EXN_ID: Unify,
                 _1: /* [] */0
               };
         }
@@ -30647,7 +30647,7 @@ function unify3(env, t1, t1$prime, t2, t2$prime) {
               
             } else {
               throw {
-                    ExceptionID: Unify,
+                    RE_EXN_ID: Unify,
                     _1: /* [] */0
                   };
             }
@@ -30656,7 +30656,7 @@ function unify3(env, t1, t1$prime, t2, t2$prime) {
             var r = field_kind_repr(kind);
             if (typeof r === "number") {
               throw {
-                    ExceptionID: Unify,
+                    RE_EXN_ID: Unify,
                     _1: /* [] */0
                   };
             }
@@ -30669,7 +30669,7 @@ function unify3(env, t1, t1$prime, t2, t2$prime) {
               }
             } else {
               throw {
-                    ExceptionID: Unify,
+                    RE_EXN_ID: Unify,
                     _1: /* [] */0
                   };
             }
@@ -30696,10 +30696,10 @@ function unify3(env, t1, t1$prime, t2, t2$prime) {
     }
     catch (raw_trace){
       var trace = Caml_js_exceptions.internalToOCamlException(raw_trace);
-      if (trace.ExceptionID === Unify) {
+      if (trace.RE_EXN_ID === Unify) {
         t1$prime.desc = d1;
         throw {
-              ExceptionID: Unify,
+              RE_EXN_ID: Unify,
               _1: trace._1
             };
       }
@@ -30715,15 +30715,15 @@ function unify$1(env, ty1, ty2) {
   }
   catch (raw_trace){
     var trace = Caml_js_exceptions.internalToOCamlException(raw_trace);
-    if (trace.ExceptionID === Unify) {
+    if (trace.RE_EXN_ID === Unify) {
       throw {
-            ExceptionID: Unify,
+            RE_EXN_ID: Unify,
             _1: expand_trace(env.contents, trace._1)
           };
     }
-    if (trace.ExceptionID === Recursive_abbrev) {
+    if (trace.RE_EXN_ID === Recursive_abbrev) {
       throw {
-            ExceptionID: Unification_recursive_abbrev,
+            RE_EXN_ID: Unification_recursive_abbrev,
             _1: expand_trace(env.contents, /* :: */[
                   /* tuple */[
                     ty1,
@@ -30763,7 +30763,7 @@ function unify_var(env, t1, t2) {
   }
   catch (raw_trace){
     var trace = Caml_js_exceptions.internalToOCamlException(raw_trace);
-    if (trace.ExceptionID === Unify) {
+    if (trace.RE_EXN_ID === Unify) {
       reset_trace_gadt_instances(reset_tracing);
       var expanded_trace = expand_trace(env, /* :: */[
             /* tuple */[
@@ -30773,7 +30773,7 @@ function unify_var(env, t1, t2) {
             trace._1
           ]);
       throw {
-            ExceptionID: Unify,
+            RE_EXN_ID: Unify,
             _1: expanded_trace
           };
     }
@@ -30806,7 +30806,7 @@ function filter_arrow(env, t, l) {
   var match = t$1.desc;
   if (typeof match === "number") {
     throw {
-          ExceptionID: Unify,
+          RE_EXN_ID: Unify,
           _1: /* [] */0
         };
   }
@@ -30835,12 +30835,12 @@ function filter_arrow(env, t, l) {
                 ];
         }
         throw {
-              ExceptionID: Unify,
+              RE_EXN_ID: Unify,
               _1: /* [] */0
             };
     default:
       throw {
-            ExceptionID: Unify,
+            RE_EXN_ID: Unify,
             _1: /* [] */0
           };
   }
@@ -30853,7 +30853,7 @@ function filter_method_field(env, name, priv, _ty) {
     var match = ty$1.desc;
     if (typeof match === "number") {
       throw {
-            ExceptionID: Unify,
+            RE_EXN_ID: Unify,
             _1: /* [] */0
           };
     }
@@ -30884,7 +30884,7 @@ function filter_method_field(env, name, priv, _ty) {
           continue ;
       default:
         throw {
-              ExceptionID: Unify,
+              RE_EXN_ID: Unify,
               _1: /* [] */0
             };
     }
@@ -30896,7 +30896,7 @@ function filter_method(env, name, priv, ty) {
   var match = ty$1.desc;
   if (typeof match === "number") {
     throw {
-          ExceptionID: Unify,
+          RE_EXN_ID: Unify,
           _1: /* [] */0
         };
   }
@@ -30911,7 +30911,7 @@ function filter_method(env, name, priv, ty) {
         return filter_method_field(env, name, priv, match[0]);
     default:
       throw {
-            ExceptionID: Unify,
+            RE_EXN_ID: Unify,
             _1: /* [] */0
           };
   }
@@ -30924,7 +30924,7 @@ function filter_self_method(env, lab, priv, meths, ty) {
   }
   catch (raw_exn){
     var exn = Caml_js_exceptions.internalToOCamlException(raw_exn);
-    if (exn.ExceptionID === "Not_found") {
+    if (exn.RE_EXN_ID === "Not_found") {
       var pair_000 = create(lab);
       var pair = /* tuple */[
         pair_000,
@@ -30945,7 +30945,7 @@ function moregen_occur(env, level, ty) {
     }
     if (is_Tvar(ty$1) && ty$1.level >= 99999999) {
       throw {
-            ExceptionID: Occur
+            RE_EXN_ID: Occur
           };
     }
     ty$1.level = pivot_level - ty$1.level | 0;
@@ -30969,10 +30969,10 @@ function moregen_occur(env, level, ty) {
   }
   catch (raw_exn){
     var exn = Caml_js_exceptions.internalToOCamlException(raw_exn);
-    if (exn.ExceptionID === Occur) {
+    if (exn.RE_EXN_ID === Occur) {
       unmark_type(ty);
       throw {
-            ExceptionID: Unify,
+            RE_EXN_ID: Unify,
             _1: /* [] */0
           };
     }
@@ -31045,7 +31045,7 @@ function moregen(inst_nongen, type_pairs, env, t1, t2) {
       }
       catch (raw_exn){
         var exn = Caml_js_exceptions.internalToOCamlException(raw_exn);
-        if (exn.ExceptionID === "Not_found") {
+        if (exn.RE_EXN_ID === "Not_found") {
           Curry._3(TypePairs.add, type_pairs, /* tuple */[
                 t1$prime$1,
                 t2$prime$1
@@ -31057,7 +31057,7 @@ function moregen(inst_nongen, type_pairs, env, t1, t2) {
               return ;
             }
             throw {
-                  ExceptionID: Unify,
+                  RE_EXN_ID: Unify,
                   _1: /* [] */0
                 };
           }
@@ -31068,13 +31068,13 @@ function moregen(inst_nongen, type_pairs, env, t1, t2) {
                   return link_type(t1$prime$1, t2$1);
                 }
                 throw {
-                      ExceptionID: Unify,
+                      RE_EXN_ID: Unify,
                       _1: /* [] */0
                     };
             case /* Tarrow */1 :
                 if (typeof match$3 === "number") {
                   throw {
-                        ExceptionID: Unify,
+                        RE_EXN_ID: Unify,
                         _1: /* [] */0
                       };
                 }
@@ -31086,18 +31086,18 @@ function moregen(inst_nongen, type_pairs, env, t1, t2) {
                     return moregen(inst_nongen, type_pairs, env, match$2[2], match$3[2]);
                   }
                   throw {
-                        ExceptionID: Unify,
+                        RE_EXN_ID: Unify,
                         _1: /* [] */0
                       };
                 }
                 throw {
-                      ExceptionID: Unify,
+                      RE_EXN_ID: Unify,
                       _1: /* [] */0
                     };
             case /* Ttuple */2 :
                 if (typeof match$3 === "number") {
                   throw {
-                        ExceptionID: Unify,
+                        RE_EXN_ID: Unify,
                         _1: /* [] */0
                       };
                 }
@@ -31105,13 +31105,13 @@ function moregen(inst_nongen, type_pairs, env, t1, t2) {
                   return moregen_list(inst_nongen, type_pairs, env, match$2[0], match$3[0]);
                 }
                 throw {
-                      ExceptionID: Unify,
+                      RE_EXN_ID: Unify,
                       _1: /* [] */0
                     };
             case /* Tconstr */3 :
                 if (typeof match$3 === "number") {
                   throw {
-                        ExceptionID: Unify,
+                        RE_EXN_ID: Unify,
                         _1: /* [] */0
                       };
                 }
@@ -31120,18 +31120,18 @@ function moregen(inst_nongen, type_pairs, env, t1, t2) {
                     return moregen_list(inst_nongen, type_pairs, env, match$2[1], match$3[1]);
                   }
                   throw {
-                        ExceptionID: Unify,
+                        RE_EXN_ID: Unify,
                         _1: /* [] */0
                       };
                 }
                 throw {
-                      ExceptionID: Unify,
+                      RE_EXN_ID: Unify,
                       _1: /* [] */0
                     };
             case /* Tobject */4 :
                 if (typeof match$3 === "number") {
                   throw {
-                        ExceptionID: Unify,
+                        RE_EXN_ID: Unify,
                         _1: /* [] */0
                       };
                 }
@@ -31139,13 +31139,13 @@ function moregen(inst_nongen, type_pairs, env, t1, t2) {
                   return moregen_fields(inst_nongen, type_pairs, env, match$2[0], match$3[0]);
                 }
                 throw {
-                      ExceptionID: Unify,
+                      RE_EXN_ID: Unify,
                       _1: /* [] */0
                     };
             case /* Tfield */5 :
                 if (typeof match$3 === "number") {
                   throw {
-                        ExceptionID: Unify,
+                        RE_EXN_ID: Unify,
                         _1: /* [] */0
                       };
                 }
@@ -31153,19 +31153,19 @@ function moregen(inst_nongen, type_pairs, env, t1, t2) {
                   return moregen_fields(inst_nongen, type_pairs, env, t1$prime$1, t2$prime$1);
                 }
                 throw {
-                      ExceptionID: Unify,
+                      RE_EXN_ID: Unify,
                       _1: /* [] */0
                     };
             case /* Tlink */6 :
             case /* Tsubst */7 :
                 throw {
-                      ExceptionID: Unify,
+                      RE_EXN_ID: Unify,
                       _1: /* [] */0
                     };
             case /* Tvariant */8 :
                 if (typeof match$3 === "number") {
                   throw {
-                        ExceptionID: Unify,
+                        RE_EXN_ID: Unify,
                         _1: /* [] */0
                       };
                 }
@@ -31193,7 +31193,7 @@ function moregen(inst_nongen, type_pairs, env, t1, t2) {
                   var r2$1 = match$5[1];
                   if (match$5[0] !== /* [] */0 || row1$1.row_closed && (!row2$1.row_closed || r2$1 !== /* [] */0)) {
                     throw {
-                          ExceptionID: Unify,
+                          RE_EXN_ID: Unify,
                           _1: /* [] */0
                         };
                   }
@@ -31206,7 +31206,7 @@ function moregen(inst_nongen, type_pairs, env, t1, t2) {
                   } else {
                     if (typeof match$7 === "number") {
                       throw {
-                            ExceptionID: Unify,
+                            RE_EXN_ID: Unify,
                             _1: /* [] */0
                           };
                     }
@@ -31214,7 +31214,7 @@ function moregen(inst_nongen, type_pairs, env, t1, t2) {
                       unify_univar(rm1, rm2, univar_pairs.contents);
                     } else {
                       throw {
-                            ExceptionID: Unify,
+                            RE_EXN_ID: Unify,
                             _1: /* [] */0
                           };
                     }
@@ -31225,7 +31225,7 @@ function moregen(inst_nongen, type_pairs, env, t1, t2) {
                     } else {
                       if (match$7.tag === /* Tunivar */9) {
                         throw {
-                              ExceptionID: Unify,
+                              RE_EXN_ID: Unify,
                               _1: /* [] */0
                             };
                       }
@@ -31247,14 +31247,14 @@ function moregen(inst_nongen, type_pairs, env, t1, t2) {
                     } else {
                       if (typeof match$6 === "number") {
                         throw {
-                              ExceptionID: Unify,
+                              RE_EXN_ID: Unify,
                               _1: /* [] */0
                             };
                       }
                       if (match$6.tag === /* Tconstr */3) {
                         if (typeof match$7 === "number") {
                           throw {
-                                ExceptionID: Unify,
+                                RE_EXN_ID: Unify,
                                 _1: /* [] */0
                               };
                         }
@@ -31262,13 +31262,13 @@ function moregen(inst_nongen, type_pairs, env, t1, t2) {
                           moregen(inst_nongen, type_pairs, env, rm1, rm2);
                         } else {
                           throw {
-                                ExceptionID: Unify,
+                                RE_EXN_ID: Unify,
                                 _1: /* [] */0
                               };
                         }
                       } else {
                         throw {
-                              ExceptionID: Unify,
+                              RE_EXN_ID: Unify,
                               _1: /* [] */0
                             };
                       }
@@ -31285,7 +31285,7 @@ function moregen(inst_nongen, type_pairs, env, t1, t2) {
                                     return ;
                                   }
                                   throw {
-                                        ExceptionID: Unify,
+                                        RE_EXN_ID: Unify,
                                         _1: /* [] */0
                                       };
                                 }
@@ -31295,7 +31295,7 @@ function moregen(inst_nongen, type_pairs, env, t1, t2) {
                                     if (!f1[1] && typeof f2 !== "number" && !f2.tag) {
                                       if (f2[0] !== undefined) {
                                         throw {
-                                              ExceptionID: Unify,
+                                              RE_EXN_ID: Unify,
                                               _1: /* [] */0
                                             };
                                       }
@@ -31303,7 +31303,7 @@ function moregen(inst_nongen, type_pairs, env, t1, t2) {
                                         return set_row_field(f1[3], f2);
                                       }
                                       throw {
-                                            ExceptionID: Unify,
+                                            RE_EXN_ID: Unify,
                                             _1: /* [] */0
                                           };
                                     }
@@ -31318,12 +31318,12 @@ function moregen(inst_nongen, type_pairs, env, t1, t2) {
                                                     }), f1[1]);
                                       }
                                       throw {
-                                            ExceptionID: Unify,
+                                            RE_EXN_ID: Unify,
                                             _1: /* [] */0
                                           };
                                     }
                                     throw {
-                                          ExceptionID: Unify,
+                                          RE_EXN_ID: Unify,
                                           _1: /* [] */0
                                         };
                                   }
@@ -31334,7 +31334,7 @@ function moregen(inst_nongen, type_pairs, env, t1, t2) {
                                       return set_row_field(e1, f2);
                                     }
                                     throw {
-                                          ExceptionID: Unify,
+                                          RE_EXN_ID: Unify,
                                           _1: /* [] */0
                                         };
                                   }
@@ -31347,7 +31347,7 @@ function moregen(inst_nongen, type_pairs, env, t1, t2) {
                                     var c2 = f2[0];
                                     if (c1 && !c2) {
                                       throw {
-                                            ExceptionID: Unify,
+                                            RE_EXN_ID: Unify,
                                             _1: /* [] */0
                                           };
                                     }
@@ -31372,12 +31372,12 @@ function moregen(inst_nongen, type_pairs, env, t1, t2) {
                                       return ;
                                     }
                                     throw {
-                                          ExceptionID: Unify,
+                                          RE_EXN_ID: Unify,
                                           _1: /* [] */0
                                         };
                                   }
                                   throw {
-                                        ExceptionID: Unify,
+                                        RE_EXN_ID: Unify,
                                         _1: /* [] */0
                                       };
                                 } else {
@@ -31385,13 +31385,13 @@ function moregen(inst_nongen, type_pairs, env, t1, t2) {
                                   if (t1 !== undefined) {
                                     if (typeof f2 === "number") {
                                       throw {
-                                            ExceptionID: Unify,
+                                            RE_EXN_ID: Unify,
                                             _1: /* [] */0
                                           };
                                     }
                                     if (f2.tag) {
                                       throw {
-                                            ExceptionID: Unify,
+                                            RE_EXN_ID: Unify,
                                             _1: /* [] */0
                                           };
                                     }
@@ -31400,19 +31400,19 @@ function moregen(inst_nongen, type_pairs, env, t1, t2) {
                                       return moregen(inst_nongen, type_pairs, env, t1, t2$2);
                                     }
                                     throw {
-                                          ExceptionID: Unify,
+                                          RE_EXN_ID: Unify,
                                           _1: /* [] */0
                                         };
                                   } else {
                                     if (typeof f2 === "number") {
                                       throw {
-                                            ExceptionID: Unify,
+                                            RE_EXN_ID: Unify,
                                             _1: /* [] */0
                                           };
                                     }
                                     if (f2.tag) {
                                       throw {
-                                            ExceptionID: Unify,
+                                            RE_EXN_ID: Unify,
                                             _1: /* [] */0
                                           };
                                     }
@@ -31420,7 +31420,7 @@ function moregen(inst_nongen, type_pairs, env, t1, t2) {
                                       return ;
                                     }
                                     throw {
-                                          ExceptionID: Unify,
+                                          RE_EXN_ID: Unify,
                                           _1: /* [] */0
                                         };
                                   }
@@ -31428,13 +31428,13 @@ function moregen(inst_nongen, type_pairs, env, t1, t2) {
                               }), match$4[2]);
                 }
                 throw {
-                      ExceptionID: Unify,
+                      RE_EXN_ID: Unify,
                       _1: /* [] */0
                     };
             case /* Tunivar */9 :
                 if (typeof match$3 === "number") {
                   throw {
-                        ExceptionID: Unify,
+                        RE_EXN_ID: Unify,
                         _1: /* [] */0
                       };
                 }
@@ -31442,7 +31442,7 @@ function moregen(inst_nongen, type_pairs, env, t1, t2) {
                   return unify_univar(t1$prime$1, t2$prime$1, univar_pairs.contents);
                 }
                 throw {
-                      ExceptionID: Unify,
+                      RE_EXN_ID: Unify,
                       _1: /* [] */0
                     };
             case /* Tpoly */10 :
@@ -31454,7 +31454,7 @@ function moregen(inst_nongen, type_pairs, env, t1, t2) {
                 } else {
                   if (typeof match$3 === "number") {
                     throw {
-                          ExceptionID: Unify,
+                          RE_EXN_ID: Unify,
                           _1: /* [] */0
                         };
                   }
@@ -31465,7 +31465,7 @@ function moregen(inst_nongen, type_pairs, env, t1, t2) {
                     exit$3 = 2;
                   } else {
                     throw {
-                          ExceptionID: Unify,
+                          RE_EXN_ID: Unify,
                           _1: /* [] */0
                         };
                   }
@@ -31473,7 +31473,7 @@ function moregen(inst_nongen, type_pairs, env, t1, t2) {
                 if (exit$3 === 2) {
                   if (typeof match$3 === "number") {
                     throw {
-                          ExceptionID: Unify,
+                          RE_EXN_ID: Unify,
                           _1: /* [] */0
                         };
                   }
@@ -31483,7 +31483,7 @@ function moregen(inst_nongen, type_pairs, env, t1, t2) {
                                 }));
                   }
                   throw {
-                        ExceptionID: Unify,
+                        RE_EXN_ID: Unify,
                         _1: /* [] */0
                       };
                 }
@@ -31491,7 +31491,7 @@ function moregen(inst_nongen, type_pairs, env, t1, t2) {
             case /* Tpackage */11 :
                 if (typeof match$3 === "number") {
                   throw {
-                        ExceptionID: Unify,
+                        RE_EXN_ID: Unify,
                         _1: /* [] */0
                       };
                 }
@@ -31503,9 +31503,9 @@ function moregen(inst_nongen, type_pairs, env, t1, t2) {
                   }
                   catch (raw_exn$1){
                     var exn$1 = Caml_js_exceptions.internalToOCamlException(raw_exn$1);
-                    if (exn$1.ExceptionID === "Not_found") {
+                    if (exn$1.RE_EXN_ID === "Not_found") {
                       throw {
-                            ExceptionID: Unify,
+                            RE_EXN_ID: Unify,
                             _1: /* [] */0
                           };
                     }
@@ -31513,7 +31513,7 @@ function moregen(inst_nongen, type_pairs, env, t1, t2) {
                   }
                 } else {
                   throw {
-                        ExceptionID: Unify,
+                        RE_EXN_ID: Unify,
                         _1: /* [] */0
                       };
                 }
@@ -31528,9 +31528,9 @@ function moregen(inst_nongen, type_pairs, env, t1, t2) {
   }
   catch (raw_trace){
     var trace = Caml_js_exceptions.internalToOCamlException(raw_trace);
-    if (trace.ExceptionID === Unify) {
+    if (trace.RE_EXN_ID === Unify) {
       throw {
-            ExceptionID: Unify,
+            RE_EXN_ID: Unify,
             _1: /* :: */[
               /* tuple */[
                 t1$1,
@@ -31547,7 +31547,7 @@ function moregen(inst_nongen, type_pairs, env, t1, t2) {
 function moregen_list(inst_nongen, type_pairs, env, tl1, tl2) {
   if (List.length(tl1) !== List.length(tl2)) {
     throw {
-          ExceptionID: Unify,
+          RE_EXN_ID: Unify,
           _1: /* [] */0
         };
   }
@@ -31563,7 +31563,7 @@ function moregen_fields(inst_nongen, type_pairs, env, ty1, ty2) {
   var match$2 = associate_fields(match[0], match$1[0]);
   if (match$2[1] !== /* [] */0) {
     throw {
-          ExceptionID: Unify,
+          RE_EXN_ID: Unify,
           _1: /* [] */0
         };
   }
@@ -31580,9 +31580,9 @@ function moregen_fields(inst_nongen, type_pairs, env, ty1, ty2) {
                 }
                 catch (raw_trace){
                   var trace = Caml_js_exceptions.internalToOCamlException(raw_trace);
-                  if (trace.ExceptionID === Unify) {
+                  if (trace.RE_EXN_ID === Unify) {
                     throw {
-                          ExceptionID: Unify,
+                          RE_EXN_ID: Unify,
                           _1: /* :: */[
                             /* tuple */[
                               newty2(current_level.contents, /* Tfield */Block.__(5, [
@@ -31616,7 +31616,7 @@ function moregen_kind(k1, k2) {
   if (typeof k1$1 === "number") {
     if (k1$1 !== 0) {
       throw {
-            ExceptionID: Unify,
+            RE_EXN_ID: Unify,
             _1: /* [] */0
           };
     }
@@ -31625,12 +31625,12 @@ function moregen_kind(k1, k2) {
         return ;
       }
       throw {
-            ExceptionID: Unify,
+            RE_EXN_ID: Unify,
             _1: /* [] */0
           };
     }
     throw {
-          ExceptionID: Unify,
+          RE_EXN_ID: Unify,
           _1: /* [] */0
         };
   }
@@ -31640,7 +31640,7 @@ function moregen_kind(k1, k2) {
   }
   if (k2$1 !== 0) {
     throw {
-          ExceptionID: Unify,
+          RE_EXN_ID: Unify,
           _1: /* [] */0
         };
   }
@@ -31666,7 +31666,7 @@ function moregeneral(env, inst_nongen, pat_sch, subj_sch) {
   }
   catch (raw_exn){
     var exn = Caml_js_exceptions.internalToOCamlException(raw_exn);
-    if (exn.ExceptionID === Unify) {
+    if (exn.RE_EXN_ID === Unify) {
       res = false;
     } else {
       throw exn;
@@ -31773,7 +31773,7 @@ function matches(env, ty, ty$prime) {
   }
   catch (raw_exn){
     var exn = Caml_js_exceptions.internalToOCamlException(raw_exn);
-    if (exn.ExceptionID === Unify) {
+    if (exn.RE_EXN_ID === Unify) {
       ok = false;
     } else {
       throw exn;
@@ -31838,18 +31838,18 @@ function eqtype(rename, type_pairs, subst, env, t1, t2) {
                   return ;
                 }
                 throw {
-                      ExceptionID: Unify,
+                      RE_EXN_ID: Unify,
                       _1: /* [] */0
                     };
               }
               catch (raw_exn){
                 var exn = Caml_js_exceptions.internalToOCamlException(raw_exn);
-                if (exn.ExceptionID === "Not_found") {
+                if (exn.RE_EXN_ID === "Not_found") {
                   if (List.exists((function (param) {
                             return param[1] === t2$1;
                           }), subst.contents)) {
                     throw {
-                          ExceptionID: Unify,
+                          RE_EXN_ID: Unify,
                           _1: /* [] */0
                         };
                   }
@@ -31896,7 +31896,7 @@ function eqtype(rename, type_pairs, subst, env, t1, t2) {
       }
       catch (raw_exn$1){
         var exn$1 = Caml_js_exceptions.internalToOCamlException(raw_exn$1);
-        if (exn$1.ExceptionID === "Not_found") {
+        if (exn$1.RE_EXN_ID === "Not_found") {
           Curry._3(TypePairs.add, type_pairs, /* tuple */[
                 t1$prime$1,
                 t2$prime$1
@@ -31908,7 +31908,7 @@ function eqtype(rename, type_pairs, subst, env, t1, t2) {
               return ;
             }
             throw {
-                  ExceptionID: Unify,
+                  RE_EXN_ID: Unify,
                   _1: /* [] */0
                 };
           }
@@ -31916,13 +31916,13 @@ function eqtype(rename, type_pairs, subst, env, t1, t2) {
             case /* Tvar */0 :
                 if (typeof match$3 === "number") {
                   throw {
-                        ExceptionID: Unify,
+                        RE_EXN_ID: Unify,
                         _1: /* [] */0
                       };
                 }
                 if (match$3.tag) {
                   throw {
-                        ExceptionID: Unify,
+                        RE_EXN_ID: Unify,
                         _1: /* [] */0
                       };
                 }
@@ -31933,18 +31933,18 @@ function eqtype(rename, type_pairs, subst, env, t1, t2) {
                       return ;
                     }
                     throw {
-                          ExceptionID: Unify,
+                          RE_EXN_ID: Unify,
                           _1: /* [] */0
                         };
                   }
                   catch (raw_exn$2){
                     var exn$2 = Caml_js_exceptions.internalToOCamlException(raw_exn$2);
-                    if (exn$2.ExceptionID === "Not_found") {
+                    if (exn$2.RE_EXN_ID === "Not_found") {
                       if (List.exists((function (param) {
                                 return param[1] === t2$prime$1;
                               }), subst.contents)) {
                         throw {
-                              ExceptionID: Unify,
+                              RE_EXN_ID: Unify,
                               _1: /* [] */0
                             };
                       }
@@ -31961,14 +31961,14 @@ function eqtype(rename, type_pairs, subst, env, t1, t2) {
                   }
                 } else {
                   throw {
-                        ExceptionID: Unify,
+                        RE_EXN_ID: Unify,
                         _1: /* [] */0
                       };
                 }
             case /* Tarrow */1 :
                 if (typeof match$3 === "number") {
                   throw {
-                        ExceptionID: Unify,
+                        RE_EXN_ID: Unify,
                         _1: /* [] */0
                       };
                 }
@@ -31980,18 +31980,18 @@ function eqtype(rename, type_pairs, subst, env, t1, t2) {
                     return eqtype(rename, type_pairs, subst, env, match$2[2], match$3[2]);
                   }
                   throw {
-                        ExceptionID: Unify,
+                        RE_EXN_ID: Unify,
                         _1: /* [] */0
                       };
                 }
                 throw {
-                      ExceptionID: Unify,
+                      RE_EXN_ID: Unify,
                       _1: /* [] */0
                     };
             case /* Ttuple */2 :
                 if (typeof match$3 === "number") {
                   throw {
-                        ExceptionID: Unify,
+                        RE_EXN_ID: Unify,
                         _1: /* [] */0
                       };
                 }
@@ -31999,13 +31999,13 @@ function eqtype(rename, type_pairs, subst, env, t1, t2) {
                   return eqtype_list(rename, type_pairs, subst, env, match$2[0], match$3[0]);
                 }
                 throw {
-                      ExceptionID: Unify,
+                      RE_EXN_ID: Unify,
                       _1: /* [] */0
                     };
             case /* Tconstr */3 :
                 if (typeof match$3 === "number") {
                   throw {
-                        ExceptionID: Unify,
+                        RE_EXN_ID: Unify,
                         _1: /* [] */0
                       };
                 }
@@ -32014,18 +32014,18 @@ function eqtype(rename, type_pairs, subst, env, t1, t2) {
                     return eqtype_list(rename, type_pairs, subst, env, match$2[1], match$3[1]);
                   }
                   throw {
-                        ExceptionID: Unify,
+                        RE_EXN_ID: Unify,
                         _1: /* [] */0
                       };
                 }
                 throw {
-                      ExceptionID: Unify,
+                      RE_EXN_ID: Unify,
                       _1: /* [] */0
                     };
             case /* Tobject */4 :
                 if (typeof match$3 === "number") {
                   throw {
-                        ExceptionID: Unify,
+                        RE_EXN_ID: Unify,
                         _1: /* [] */0
                       };
                 }
@@ -32033,13 +32033,13 @@ function eqtype(rename, type_pairs, subst, env, t1, t2) {
                   return eqtype_fields(rename, type_pairs, subst, env, match$2[0], match$3[0]);
                 }
                 throw {
-                      ExceptionID: Unify,
+                      RE_EXN_ID: Unify,
                       _1: /* [] */0
                     };
             case /* Tfield */5 :
                 if (typeof match$3 === "number") {
                   throw {
-                        ExceptionID: Unify,
+                        RE_EXN_ID: Unify,
                         _1: /* [] */0
                       };
                 }
@@ -32047,19 +32047,19 @@ function eqtype(rename, type_pairs, subst, env, t1, t2) {
                   return eqtype_fields(rename, type_pairs, subst, env, t1$prime$1, t2$prime$1);
                 }
                 throw {
-                      ExceptionID: Unify,
+                      RE_EXN_ID: Unify,
                       _1: /* [] */0
                     };
             case /* Tlink */6 :
             case /* Tsubst */7 :
                 throw {
-                      ExceptionID: Unify,
+                      RE_EXN_ID: Unify,
                       _1: /* [] */0
                     };
             case /* Tvariant */8 :
                 if (typeof match$3 === "number") {
                   throw {
-                        ExceptionID: Unify,
+                        RE_EXN_ID: Unify,
                         _1: /* [] */0
                       };
                 }
@@ -32081,7 +32081,7 @@ function eqtype(rename, type_pairs, subst, env, t1, t2) {
                     var r1 = match$5[0];
                     if (row1$1.row_closed !== row2$2.row_closed || !row1$1.row_closed && (r1 !== /* [] */0 || r2 !== /* [] */0) || filter_row_fields(false, Pervasives.$at(r1, r2)) !== /* [] */0) {
                       throw {
-                            ExceptionID: Unify,
+                            RE_EXN_ID: Unify,
                             _1: /* [] */0
                           };
                     }
@@ -32096,7 +32096,7 @@ function eqtype(rename, type_pairs, subst, env, t1, t2) {
                                       return ;
                                     }
                                     throw {
-                                          ExceptionID: Unify,
+                                          RE_EXN_ID: Unify,
                                           _1: /* [] */0
                                         };
                                   }
@@ -32104,13 +32104,13 @@ function eqtype(rename, type_pairs, subst, env, t1, t2) {
                                     if (match[0]) {
                                       if (match[1]) {
                                         throw {
-                                              ExceptionID: Unify,
+                                              RE_EXN_ID: Unify,
                                               _1: /* [] */0
                                             };
                                       }
                                       if (typeof match$1 === "number") {
                                         throw {
-                                              ExceptionID: Unify,
+                                              RE_EXN_ID: Unify,
                                               _1: /* [] */0
                                             };
                                       }
@@ -32118,19 +32118,19 @@ function eqtype(rename, type_pairs, subst, env, t1, t2) {
                                         if (match$1[0]) {
                                           if (match$1[1]) {
                                             throw {
-                                                  ExceptionID: Unify,
+                                                  RE_EXN_ID: Unify,
                                                   _1: /* [] */0
                                                 };
                                           }
                                           return ;
                                         }
                                         throw {
-                                              ExceptionID: Unify,
+                                              RE_EXN_ID: Unify,
                                               _1: /* [] */0
                                             };
                                       }
                                       throw {
-                                            ExceptionID: Unify,
+                                            RE_EXN_ID: Unify,
                                             _1: /* [] */0
                                           };
                                     } else {
@@ -32140,14 +32140,14 @@ function eqtype(rename, type_pairs, subst, env, t1, t2) {
                                         var t1 = match$2[0];
                                         if (typeof match$1 === "number") {
                                           throw {
-                                                ExceptionID: Unify,
+                                                RE_EXN_ID: Unify,
                                                 _1: /* [] */0
                                               };
                                         }
                                         if (match$1.tag) {
                                           if (match$1[0]) {
                                             throw {
-                                                  ExceptionID: Unify,
+                                                  RE_EXN_ID: Unify,
                                                   _1: /* [] */0
                                                 };
                                           }
@@ -32170,17 +32170,17 @@ function eqtype(rename, type_pairs, subst, env, t1, t2) {
                                             }
                                           }
                                           throw {
-                                                ExceptionID: Unify,
+                                                RE_EXN_ID: Unify,
                                                 _1: /* [] */0
                                               };
                                         }
                                         throw {
-                                              ExceptionID: Unify,
+                                              RE_EXN_ID: Unify,
                                               _1: /* [] */0
                                             };
                                       } else {
                                         throw {
-                                              ExceptionID: Unify,
+                                              RE_EXN_ID: Unify,
                                               _1: /* [] */0
                                             };
                                       }
@@ -32190,13 +32190,13 @@ function eqtype(rename, type_pairs, subst, env, t1, t2) {
                                     if (t1$1 !== undefined) {
                                       if (typeof match$1 === "number") {
                                         throw {
-                                              ExceptionID: Unify,
+                                              RE_EXN_ID: Unify,
                                               _1: /* [] */0
                                             };
                                       }
                                       if (match$1.tag) {
                                         throw {
-                                              ExceptionID: Unify,
+                                              RE_EXN_ID: Unify,
                                               _1: /* [] */0
                                             };
                                       }
@@ -32205,19 +32205,19 @@ function eqtype(rename, type_pairs, subst, env, t1, t2) {
                                         return eqtype(rename, type_pairs, subst, env, t1$1, t2$1);
                                       }
                                       throw {
-                                            ExceptionID: Unify,
+                                            RE_EXN_ID: Unify,
                                             _1: /* [] */0
                                           };
                                     } else {
                                       if (typeof match$1 === "number") {
                                         throw {
-                                              ExceptionID: Unify,
+                                              RE_EXN_ID: Unify,
                                               _1: /* [] */0
                                             };
                                       }
                                       if (match$1.tag) {
                                         throw {
-                                              ExceptionID: Unify,
+                                              RE_EXN_ID: Unify,
                                               _1: /* [] */0
                                             };
                                       }
@@ -32225,7 +32225,7 @@ function eqtype(rename, type_pairs, subst, env, t1, t2) {
                                         return ;
                                       }
                                       throw {
-                                            ExceptionID: Unify,
+                                            RE_EXN_ID: Unify,
                                             _1: /* [] */0
                                           };
                                     }
@@ -32234,13 +32234,13 @@ function eqtype(rename, type_pairs, subst, env, t1, t2) {
                   };
                 }
                 throw {
-                      ExceptionID: Unify,
+                      RE_EXN_ID: Unify,
                       _1: /* [] */0
                     };
             case /* Tunivar */9 :
                 if (typeof match$3 === "number") {
                   throw {
-                        ExceptionID: Unify,
+                        RE_EXN_ID: Unify,
                         _1: /* [] */0
                       };
                 }
@@ -32248,7 +32248,7 @@ function eqtype(rename, type_pairs, subst, env, t1, t2) {
                   return unify_univar(t1$prime$1, t2$prime$1, univar_pairs.contents);
                 }
                 throw {
-                      ExceptionID: Unify,
+                      RE_EXN_ID: Unify,
                       _1: /* [] */0
                     };
             case /* Tpoly */10 :
@@ -32260,7 +32260,7 @@ function eqtype(rename, type_pairs, subst, env, t1, t2) {
                 } else {
                   if (typeof match$3 === "number") {
                     throw {
-                          ExceptionID: Unify,
+                          RE_EXN_ID: Unify,
                           _1: /* [] */0
                         };
                   }
@@ -32271,7 +32271,7 @@ function eqtype(rename, type_pairs, subst, env, t1, t2) {
                     exit$1 = 2;
                   } else {
                     throw {
-                          ExceptionID: Unify,
+                          RE_EXN_ID: Unify,
                           _1: /* [] */0
                         };
                   }
@@ -32279,7 +32279,7 @@ function eqtype(rename, type_pairs, subst, env, t1, t2) {
                 if (exit$1 === 2) {
                   if (typeof match$3 === "number") {
                     throw {
-                          ExceptionID: Unify,
+                          RE_EXN_ID: Unify,
                           _1: /* [] */0
                         };
                   }
@@ -32289,7 +32289,7 @@ function eqtype(rename, type_pairs, subst, env, t1, t2) {
                                 }));
                   }
                   throw {
-                        ExceptionID: Unify,
+                        RE_EXN_ID: Unify,
                         _1: /* [] */0
                       };
                 }
@@ -32297,7 +32297,7 @@ function eqtype(rename, type_pairs, subst, env, t1, t2) {
             case /* Tpackage */11 :
                 if (typeof match$3 === "number") {
                   throw {
-                        ExceptionID: Unify,
+                        RE_EXN_ID: Unify,
                         _1: /* [] */0
                       };
                 }
@@ -32309,9 +32309,9 @@ function eqtype(rename, type_pairs, subst, env, t1, t2) {
                   }
                   catch (raw_exn$3){
                     var exn$3 = Caml_js_exceptions.internalToOCamlException(raw_exn$3);
-                    if (exn$3.ExceptionID === "Not_found") {
+                    if (exn$3.RE_EXN_ID === "Not_found") {
                       throw {
-                            ExceptionID: Unify,
+                            RE_EXN_ID: Unify,
                             _1: /* [] */0
                           };
                     }
@@ -32319,7 +32319,7 @@ function eqtype(rename, type_pairs, subst, env, t1, t2) {
                   }
                 } else {
                   throw {
-                        ExceptionID: Unify,
+                        RE_EXN_ID: Unify,
                         _1: /* [] */0
                       };
                 }
@@ -32334,9 +32334,9 @@ function eqtype(rename, type_pairs, subst, env, t1, t2) {
   }
   catch (raw_trace){
     var trace = Caml_js_exceptions.internalToOCamlException(raw_trace);
-    if (trace.ExceptionID === Unify) {
+    if (trace.RE_EXN_ID === Unify) {
       throw {
-            ExceptionID: Unify,
+            RE_EXN_ID: Unify,
             _1: /* :: */[
               /* tuple */[
                 t1$1,
@@ -32353,7 +32353,7 @@ function eqtype(rename, type_pairs, subst, env, t1, t2) {
 function eqtype_list(rename, type_pairs, subst, env, tl1, tl2) {
   if (List.length(tl1) !== List.length(tl2)) {
     throw {
-          ExceptionID: Unify,
+          RE_EXN_ID: Unify,
           _1: /* [] */0
         };
   }
@@ -32389,7 +32389,7 @@ function eqtype_fields(rename, type_pairs, subst, env, ty1, _ty2) {
     eqtype(rename, type_pairs, subst, env, rest1, rest2);
     if (match$4[1] !== /* [] */0 || match$4[2] !== /* [] */0) {
       throw {
-            ExceptionID: Unify,
+            RE_EXN_ID: Unify,
             _1: /* [] */0
           };
     }
@@ -32406,9 +32406,9 @@ function eqtype_fields(rename, type_pairs, subst, env, ty1, _ty2) {
                 }
                 catch (raw_trace){
                   var trace = Caml_js_exceptions.internalToOCamlException(raw_trace);
-                  if (trace.ExceptionID === Unify) {
+                  if (trace.RE_EXN_ID === Unify) {
                     throw {
-                          ExceptionID: Unify,
+                          RE_EXN_ID: Unify,
                           _1: /* :: */[
                             /* tuple */[
                               newty2(current_level.contents, /* Tfield */Block.__(5, [
@@ -32441,7 +32441,7 @@ function eqtype_kind(k1, k2) {
   if (typeof k1$1 === "number") {
     if (k1$1 !== 0) {
       throw {
-            ExceptionID: Unify,
+            RE_EXN_ID: Unify,
             _1: /* [] */0
           };
     }
@@ -32450,18 +32450,18 @@ function eqtype_kind(k1, k2) {
         return ;
       }
       throw {
-            ExceptionID: Unify,
+            RE_EXN_ID: Unify,
             _1: /* [] */0
           };
     }
     throw {
-          ExceptionID: Unify,
+          RE_EXN_ID: Unify,
           _1: /* [] */0
         };
   }
   if (typeof k2$1 === "number") {
     throw {
-          ExceptionID: Unify,
+          RE_EXN_ID: Unify,
           _1: /* [] */0
         };
   }
@@ -32478,7 +32478,7 @@ function equal$4(env, rename, tyl1, tyl2) {
   }
   catch (raw_exn){
     var exn = Caml_js_exceptions.internalToOCamlException(raw_exn);
-    if (exn.ExceptionID === Unify) {
+    if (exn.RE_EXN_ID === Unify) {
       return false;
     }
     throw exn;
@@ -32517,9 +32517,9 @@ function moregen_clty(trace, type_pairs, env, cty1, cty2) {
                         }
                         catch (raw_trace){
                           var trace = Caml_js_exceptions.internalToOCamlException(raw_trace);
-                          if (trace.ExceptionID === Unify) {
+                          if (trace.RE_EXN_ID === Unify) {
                             throw {
-                                  ExceptionID: Failure,
+                                  RE_EXN_ID: Failure,
                                   _1: /* :: */[
                                     /* CM_Meth_type_mismatch */Block.__(5, [
                                         param[0],
@@ -32540,9 +32540,9 @@ function moregen_clty(trace, type_pairs, env, cty1, cty2) {
                               }
                               catch (raw_trace){
                                 var trace = Caml_js_exceptions.internalToOCamlException(raw_trace);
-                                if (trace.ExceptionID === Unify) {
+                                if (trace.RE_EXN_ID === Unify) {
                                   throw {
-                                        ExceptionID: Failure,
+                                        RE_EXN_ID: Failure,
                                         _1: /* :: */[
                                           /* CM_Val_type_mismatch */Block.__(4, [
                                               lab,
@@ -32558,7 +32558,7 @@ function moregen_clty(trace, type_pairs, env, cty1, cty2) {
                             }), sign2.csig_vars);
             case /* Cty_arrow */2 :
                 throw {
-                      ExceptionID: Failure,
+                      RE_EXN_ID: Failure,
                       _1: /* [] */0
                     };
             
@@ -32571,7 +32571,7 @@ function moregen_clty(trace, type_pairs, env, cty1, cty2) {
                 break;
             case /* Cty_signature */1 :
                 throw {
-                      ExceptionID: Failure,
+                      RE_EXN_ID: Failure,
                       _1: /* [] */0
                     };
             case /* Cty_arrow */2 :
@@ -32581,9 +32581,9 @@ function moregen_clty(trace, type_pairs, env, cty1, cty2) {
                   }
                   catch (raw_trace){
                     var trace$1 = Caml_js_exceptions.internalToOCamlException(raw_trace);
-                    if (trace$1.ExceptionID === Unify) {
+                    if (trace$1.RE_EXN_ID === Unify) {
                       throw {
-                            ExceptionID: Failure,
+                            RE_EXN_ID: Failure,
                             _1: /* :: */[
                               /* CM_Parameter_mismatch */Block.__(3, [
                                   env,
@@ -32598,7 +32598,7 @@ function moregen_clty(trace, type_pairs, env, cty1, cty2) {
                   return moregen_clty(false, type_pairs, env, cty1[2], cty2[2]);
                 }
                 throw {
-                      ExceptionID: Failure,
+                      RE_EXN_ID: Failure,
                       _1: /* [] */0
                     };
             
@@ -32613,11 +32613,11 @@ function moregen_clty(trace, type_pairs, env, cty1, cty2) {
   }
   catch (raw_error){
     var error = Caml_js_exceptions.internalToOCamlException(raw_error);
-    if (error.ExceptionID === Failure) {
+    if (error.RE_EXN_ID === Failure) {
       var error$1 = error._1;
       if (trace || error$1 === /* [] */0) {
         throw {
-              ExceptionID: Failure,
+              RE_EXN_ID: Failure,
               _1: /* :: */[
                 /* CM_Class_type_mismatch */Block.__(2, [
                     env,
@@ -32688,7 +32688,7 @@ function match_class_types(traceOpt, env, pat_sch, subj_sch) {
           }
           catch (raw_exn){
             var exn = Caml_js_exceptions.internalToOCamlException(raw_exn);
-            if (exn.ExceptionID === Unify) {
+            if (exn.RE_EXN_ID === Unify) {
               return /* :: */[
                       /* CM_Public_method */Block.__(12, [param[0]]),
                       err
@@ -32716,7 +32716,7 @@ function match_class_types(traceOpt, env, pat_sch, subj_sch) {
           }
           catch (raw_exn){
             var exn = Caml_js_exceptions.internalToOCamlException(raw_exn);
-            if (exn.ExceptionID === "Not_found") {
+            if (exn.RE_EXN_ID === "Not_found") {
               return /* :: */[
                       /* CM_Missing_value */Block.__(8, [lab]),
                       err
@@ -32765,7 +32765,7 @@ function match_class_types(traceOpt, env, pat_sch, subj_sch) {
     }
     catch (raw_r){
       var r = Caml_js_exceptions.internalToOCamlException(raw_r);
-      if (r.ExceptionID === Failure) {
+      if (r.RE_EXN_ID === Failure) {
         res = r._1;
       } else {
         throw r;
@@ -32815,9 +32815,9 @@ function equal_clty(trace, type_pairs, subst, env, cty1, cty2) {
                         }
                         catch (raw_trace){
                           var trace = Caml_js_exceptions.internalToOCamlException(raw_trace);
-                          if (trace.ExceptionID === Unify) {
+                          if (trace.RE_EXN_ID === Unify) {
                             throw {
-                                  ExceptionID: Failure,
+                                  RE_EXN_ID: Failure,
                                   _1: /* :: */[
                                     /* CM_Meth_type_mismatch */Block.__(5, [
                                         param[0],
@@ -32838,9 +32838,9 @@ function equal_clty(trace, type_pairs, subst, env, cty1, cty2) {
                               }
                               catch (raw_trace){
                                 var trace = Caml_js_exceptions.internalToOCamlException(raw_trace);
-                                if (trace.ExceptionID === Unify) {
+                                if (trace.RE_EXN_ID === Unify) {
                                   throw {
-                                        ExceptionID: Failure,
+                                        RE_EXN_ID: Failure,
                                         _1: /* :: */[
                                           /* CM_Val_type_mismatch */Block.__(4, [
                                               lab,
@@ -32875,9 +32875,9 @@ function equal_clty(trace, type_pairs, subst, env, cty1, cty2) {
                   }
                   catch (raw_trace){
                     var trace$1 = Caml_js_exceptions.internalToOCamlException(raw_trace);
-                    if (trace$1.ExceptionID === Unify) {
+                    if (trace$1.RE_EXN_ID === Unify) {
                       throw {
-                            ExceptionID: Failure,
+                            RE_EXN_ID: Failure,
                             _1: /* :: */[
                               /* CM_Parameter_mismatch */Block.__(3, [
                                   env,
@@ -32903,7 +32903,7 @@ function equal_clty(trace, type_pairs, subst, env, cty1, cty2) {
           return equal_clty(true, type_pairs, subst, env, cty1, cty2[2]);
       case 2 :
           throw {
-                ExceptionID: Failure,
+                RE_EXN_ID: Failure,
                 _1: trace ? /* [] */0 : /* :: */[
                     /* CM_Class_type_mismatch */Block.__(2, [
                         env,
@@ -32918,10 +32918,10 @@ function equal_clty(trace, type_pairs, subst, env, cty1, cty2) {
   }
   catch (raw_error){
     var error = Caml_js_exceptions.internalToOCamlException(raw_error);
-    if (error.ExceptionID === Failure) {
+    if (error.RE_EXN_ID === Failure) {
       if (trace) {
         throw {
-              ExceptionID: Failure,
+              RE_EXN_ID: Failure,
               _1: /* :: */[
                 /* CM_Class_type_mismatch */Block.__(2, [
                     env,
@@ -33011,7 +33011,7 @@ function match_class_declarations(env, patt_params, patt_type, subj_params, subj
             
           }
           throw {
-                ExceptionID: "Assert_failure",
+                RE_EXN_ID: "Assert_failure",
                 _1: /* tuple */[
                   "ctype.ml",
                   3600,
@@ -33038,7 +33038,7 @@ function match_class_declarations(env, patt_params, patt_type, subj_params, subj
           }
           catch (raw_exn){
             var exn = Caml_js_exceptions.internalToOCamlException(raw_exn);
-            if (exn.ExceptionID === "Not_found") {
+            if (exn.RE_EXN_ID === "Not_found") {
               return /* :: */[
                       /* CM_Missing_value */Block.__(8, [lab]),
                       err
@@ -33078,7 +33078,7 @@ function match_class_declarations(env, patt_params, patt_type, subj_params, subj
     var ls = List.length(subj_params);
     if (lp !== ls) {
       throw {
-            ExceptionID: Failure,
+            RE_EXN_ID: Failure,
             _1: /* :: */[
               /* CM_Parameter_arity_mismatch */Block.__(0, [
                   lp,
@@ -33094,9 +33094,9 @@ function match_class_declarations(env, patt_params, patt_type, subj_params, subj
             }
             catch (raw_trace){
               var trace = Caml_js_exceptions.internalToOCamlException(raw_trace);
-              if (trace.ExceptionID === Unify) {
+              if (trace.RE_EXN_ID === Unify) {
                 throw {
-                      ExceptionID: Failure,
+                      RE_EXN_ID: Failure,
                       _1: /* :: */[
                         /* CM_Type_parameter_mismatch */Block.__(1, [
                             env,
@@ -33123,7 +33123,7 @@ function match_class_declarations(env, patt_params, patt_type, subj_params, subj
   }
   catch (raw_r){
     var r = Caml_js_exceptions.internalToOCamlException(raw_r);
-    if (r.ExceptionID === Failure) {
+    if (r.RE_EXN_ID === Failure) {
       return r._1;
     }
     throw r;
@@ -33214,7 +33214,7 @@ function find_cltype_for_path(env, p) {
     var match$1 = repr(ty).desc;
     if (typeof match$1 === "number") {
       throw {
-            ExceptionID: "Not_found"
+            RE_EXN_ID: "Not_found"
           };
     }
     if (match$1.tag === /* Tobject */4) {
@@ -33227,19 +33227,19 @@ function find_cltype_for_path(env, p) {
                 ];
         }
         throw {
-              ExceptionID: "Not_found"
+              RE_EXN_ID: "Not_found"
             };
       }
       throw {
-            ExceptionID: "Not_found"
+            RE_EXN_ID: "Not_found"
           };
     }
     throw {
-          ExceptionID: "Not_found"
+          RE_EXN_ID: "Not_found"
         };
   } else {
     throw {
-          ExceptionID: "Assert_failure",
+          RE_EXN_ID: "Assert_failure",
           _1: /* tuple */[
             "ctype.ml",
             3707,
@@ -33284,7 +33284,7 @@ function build_subtype(env, visited, loops, posi, level, t) {
         }
         catch (raw_exn){
           var exn = Caml_js_exceptions.internalToOCamlException(raw_exn);
-          if (exn.ExceptionID === "Not_found") {
+          if (exn.RE_EXN_ID === "Not_found") {
             return /* tuple */[
                     t$1,
                     /* Unchanged */0
@@ -33360,7 +33360,7 @@ function build_subtype(env, visited, loops, posi, level, t) {
             var match$2 = t$prime$1.desc;
             if (typeof match$2 === "number") {
               throw {
-                    ExceptionID: "Not_found"
+                    RE_EXN_ID: "Not_found"
                   };
             }
             if (match$2.tag === /* Tobject */4) {
@@ -33372,7 +33372,7 @@ function build_subtype(env, visited, loops, posi, level, t) {
                 var match$5;
                 if (typeof match$4 === "number") {
                   throw {
-                        ExceptionID: "Not_found"
+                        RE_EXN_ID: "Not_found"
                       };
                 }
                 if (match$4.tag === /* Tobject */4) {
@@ -33385,17 +33385,17 @@ function build_subtype(env, visited, loops, posi, level, t) {
                       ];
                     } else {
                       throw {
-                            ExceptionID: "Not_found"
+                            RE_EXN_ID: "Not_found"
                           };
                     }
                   } else {
                     throw {
-                          ExceptionID: "Not_found"
+                          RE_EXN_ID: "Not_found"
                         };
                   }
                 } else {
                   throw {
-                        ExceptionID: "Not_found"
+                        RE_EXN_ID: "Not_found"
                       };
                 }
                 var tl1 = match$5[1];
@@ -33403,7 +33403,7 @@ function build_subtype(env, visited, loops, posi, level, t) {
                           return deep_occur(ty$1, param);
                         }), tl1)) {
                   throw {
-                        ExceptionID: "Not_found"
+                        RE_EXN_ID: "Not_found"
                       };
                 }
                 ty$1.desc = /* Tvar */Block.__(0, [undefined]);
@@ -33423,7 +33423,7 @@ function build_subtype(env, visited, loops, posi, level, t) {
                 var ty1$prime = match$7[0];
                 if (!is_Tvar(t$prime$prime)) {
                   throw {
-                        ExceptionID: "Assert_failure",
+                        RE_EXN_ID: "Assert_failure",
                         _1: /* tuple */[
                           "ctype.ml",
                           3770,
@@ -33446,9 +33446,9 @@ function build_subtype(env, visited, loops, posi, level, t) {
                 }
                 catch (raw_exn$1){
                   var exn$1 = Caml_js_exceptions.internalToOCamlException(raw_exn$1);
-                  if (exn$1.ExceptionID === Unify) {
+                  if (exn$1.RE_EXN_ID === Unify) {
                     throw {
-                          ExceptionID: "Assert_failure",
+                          RE_EXN_ID: "Assert_failure",
                           _1: /* tuple */[
                             "ctype.ml",
                             3774,
@@ -33464,16 +33464,16 @@ function build_subtype(env, visited, loops, posi, level, t) {
                       ];
               }
               throw {
-                    ExceptionID: "Not_found"
+                    RE_EXN_ID: "Not_found"
                   };
             }
             throw {
-                  ExceptionID: "Not_found"
+                  RE_EXN_ID: "Not_found"
                 };
           }
           catch (raw_exn$2){
             var exn$2 = Caml_js_exceptions.internalToOCamlException(raw_exn$2);
-            if (exn$2.ExceptionID === "Not_found") {
+            if (exn$2.RE_EXN_ID === "Not_found") {
               var match$8 = build_subtype(env, visited, loops, posi, level$prime, t$prime$1);
               var c$2 = match$8[1];
               if (c$2 > /* Unchanged */0) {
@@ -33544,7 +33544,7 @@ function build_subtype(env, visited, loops, posi, level, t) {
           }
           catch (raw_exn$3){
             var exn$3 = Caml_js_exceptions.internalToOCamlException(raw_exn$3);
-            if (exn$3.ExceptionID === "Not_found") {
+            if (exn$3.RE_EXN_ID === "Not_found") {
               return /* tuple */[
                       t$1,
                       /* Unchanged */0
@@ -33608,7 +33608,7 @@ function build_subtype(env, visited, loops, posi, level, t) {
     case /* Tlink */6 :
     case /* Tsubst */7 :
         throw {
-              ExceptionID: "Assert_failure",
+              RE_EXN_ID: "Assert_failure",
               _1: /* tuple */[
                 "ctype.ml",
                 3865,
@@ -33635,7 +33635,7 @@ function build_subtype(env, visited, loops, posi, level, t) {
                 var match = row_field_repr_aux(/* [] */0, orig[1]);
                 if (typeof match === "number") {
                   throw {
-                        ExceptionID: "Assert_failure",
+                        RE_EXN_ID: "Assert_failure",
                         _1: /* tuple */[
                           "ctype.ml",
                           3832,
@@ -33645,7 +33645,7 @@ function build_subtype(env, visited, loops, posi, level, t) {
                 }
                 if (match.tag) {
                   throw {
-                        ExceptionID: "Assert_failure",
+                        RE_EXN_ID: "Assert_failure",
                         _1: /* tuple */[
                           "ctype.ml",
                           3832,
@@ -33756,7 +33756,7 @@ var subtypes = Curry._1(TypePairs.create, 17);
 
 function subtype_error(env, trace) {
   throw {
-        ExceptionID: Subtype,
+        RE_EXN_ID: Subtype,
         _1: expand_trace(env, List.rev(trace)),
         _2: /* [] */0
       };
@@ -33782,7 +33782,7 @@ function subtype_rec(env, _trace, _t1, _t2, _cstrs) {
     }
     catch (raw_exn){
       var exn = Caml_js_exceptions.internalToOCamlException(raw_exn);
-      if (exn.ExceptionID === "Not_found") {
+      if (exn.RE_EXN_ID === "Not_found") {
         Curry._3(TypePairs.add, subtypes, /* tuple */[
               t1$1,
               t2$1
@@ -34032,7 +34032,7 @@ function subtype_rec(env, _trace, _t1, _t2, _cstrs) {
                               case /* Tunivar */9 :
                                   if (typeof match$7 === "number") {
                                     throw {
-                                          ExceptionID: Pervasives.Exit
+                                          RE_EXN_ID: Pervasives.Exit
                                         };
                                   }
                                   if (match$7.tag === /* Tunivar */9) {
@@ -34055,78 +34055,78 @@ function subtype_rec(env, _trace, _t1, _t2, _cstrs) {
                                                       return cstrs;
                                                     }
                                                     throw {
-                                                          ExceptionID: Pervasives.Exit
+                                                          RE_EXN_ID: Pervasives.Exit
                                                         };
                                                   }
                                                   if (match.tag) {
                                                     if (match[0]) {
                                                       if (match[1]) {
                                                         throw {
-                                                              ExceptionID: Pervasives.Exit
+                                                              RE_EXN_ID: Pervasives.Exit
                                                             };
                                                       }
                                                       if (typeof match$1 === "number") {
                                                         throw {
-                                                              ExceptionID: Pervasives.Exit
+                                                              RE_EXN_ID: Pervasives.Exit
                                                             };
                                                       }
                                                       if (match$1.tag) {
                                                         if (match$1[0]) {
                                                           if (match$1[1]) {
                                                             throw {
-                                                                  ExceptionID: Pervasives.Exit
+                                                                  RE_EXN_ID: Pervasives.Exit
                                                                 };
                                                           }
                                                           return cstrs;
                                                         }
                                                         throw {
-                                                              ExceptionID: Pervasives.Exit
+                                                              RE_EXN_ID: Pervasives.Exit
                                                             };
                                                       }
                                                       throw {
-                                                            ExceptionID: Pervasives.Exit
+                                                            RE_EXN_ID: Pervasives.Exit
                                                           };
                                                     } else {
                                                       var match$2 = match[1];
                                                       if (match$2) {
                                                         if (match$2[1]) {
                                                           throw {
-                                                                ExceptionID: Pervasives.Exit
+                                                                RE_EXN_ID: Pervasives.Exit
                                                               };
                                                         }
                                                         if (typeof match$1 === "number") {
                                                           throw {
-                                                                ExceptionID: Pervasives.Exit
+                                                                RE_EXN_ID: Pervasives.Exit
                                                               };
                                                         }
                                                         if (match$1.tag) {
                                                           if (match$1[0]) {
                                                             throw {
-                                                                  ExceptionID: Pervasives.Exit
+                                                                  RE_EXN_ID: Pervasives.Exit
                                                                 };
                                                           }
                                                           var match$3 = match$1[1];
                                                           if (match$3) {
                                                             if (match$3[1]) {
                                                               throw {
-                                                                    ExceptionID: Pervasives.Exit
+                                                                    RE_EXN_ID: Pervasives.Exit
                                                                   };
                                                             }
                                                             t1 = match$2[0];
                                                             t2 = match$3[0];
                                                           } else {
                                                             throw {
-                                                                  ExceptionID: Pervasives.Exit
+                                                                  RE_EXN_ID: Pervasives.Exit
                                                                 };
                                                           }
                                                         } else {
                                                           throw {
-                                                                ExceptionID: Pervasives.Exit
+                                                                RE_EXN_ID: Pervasives.Exit
                                                               };
                                                         }
                                                       } else {
                                                         throw {
-                                                              ExceptionID: Pervasives.Exit
+                                                              RE_EXN_ID: Pervasives.Exit
                                                             };
                                                       }
                                                     }
@@ -34135,12 +34135,12 @@ function subtype_rec(env, _trace, _t1, _t2, _cstrs) {
                                                     if (t1$1 !== undefined) {
                                                       if (typeof match$1 === "number") {
                                                         throw {
-                                                              ExceptionID: Pervasives.Exit
+                                                              RE_EXN_ID: Pervasives.Exit
                                                             };
                                                       }
                                                       if (match$1.tag) {
                                                         throw {
-                                                              ExceptionID: Pervasives.Exit
+                                                              RE_EXN_ID: Pervasives.Exit
                                                             };
                                                       }
                                                       var t2$1 = match$1[0];
@@ -34149,23 +34149,23 @@ function subtype_rec(env, _trace, _t1, _t2, _cstrs) {
                                                         t2 = t2$1;
                                                       } else {
                                                         throw {
-                                                              ExceptionID: Pervasives.Exit
+                                                              RE_EXN_ID: Pervasives.Exit
                                                             };
                                                       }
                                                     } else {
                                                       if (typeof match$1 === "number") {
                                                         throw {
-                                                              ExceptionID: Pervasives.Exit
+                                                              RE_EXN_ID: Pervasives.Exit
                                                             };
                                                       }
                                                       if (match$1.tag) {
                                                         throw {
-                                                              ExceptionID: Pervasives.Exit
+                                                              RE_EXN_ID: Pervasives.Exit
                                                             };
                                                       }
                                                       if (match$1[0] !== undefined) {
                                                         throw {
-                                                              ExceptionID: Pervasives.Exit
+                                                              RE_EXN_ID: Pervasives.Exit
                                                             };
                                                       }
                                                       return cstrs;
@@ -34182,15 +34182,15 @@ function subtype_rec(env, _trace, _t1, _t2, _cstrs) {
                                                 }(trace)), cstrs$4, pairs);
                                     }
                                     throw {
-                                          ExceptionID: Pervasives.Exit
+                                          RE_EXN_ID: Pervasives.Exit
                                         };
                                   }
                                   throw {
-                                        ExceptionID: Pervasives.Exit
+                                        RE_EXN_ID: Pervasives.Exit
                                       };
                               default:
                                 throw {
-                                      ExceptionID: Pervasives.Exit
+                                      RE_EXN_ID: Pervasives.Exit
                                     };
                             }
                           }
@@ -34206,7 +34206,7 @@ function subtype_rec(env, _trace, _t1, _t2, _cstrs) {
                                     break;
                                 default:
                                   throw {
-                                        ExceptionID: Pervasives.Exit
+                                        RE_EXN_ID: Pervasives.Exit
                                       };
                               }
                             }
@@ -34226,12 +34226,12 @@ function subtype_rec(env, _trace, _t1, _t2, _cstrs) {
                                                   var t1 = match$2[0];
                                                   if (typeof match$1 === "number") {
                                                     throw {
-                                                          ExceptionID: Pervasives.Exit
+                                                          RE_EXN_ID: Pervasives.Exit
                                                         };
                                                   }
                                                   if (match$1.tag) {
                                                     throw {
-                                                          ExceptionID: Pervasives.Exit
+                                                          RE_EXN_ID: Pervasives.Exit
                                                         };
                                                   }
                                                   var t2 = match$1[0];
@@ -34245,11 +34245,11 @@ function subtype_rec(env, _trace, _t1, _t2, _cstrs) {
                                                               ], t1, t2, cstrs);
                                                   }
                                                   throw {
-                                                        ExceptionID: Pervasives.Exit
+                                                        RE_EXN_ID: Pervasives.Exit
                                                       };
                                                 } else {
                                                   throw {
-                                                        ExceptionID: Pervasives.Exit
+                                                        RE_EXN_ID: Pervasives.Exit
                                                       };
                                                 }
                                               }
@@ -34259,12 +34259,12 @@ function subtype_rec(env, _trace, _t1, _t2, _cstrs) {
                                               if (t1$1 !== undefined) {
                                                 if (typeof match$1 === "number") {
                                                   throw {
-                                                        ExceptionID: Pervasives.Exit
+                                                        RE_EXN_ID: Pervasives.Exit
                                                       };
                                                 }
                                                 if (match$1.tag) {
                                                   throw {
-                                                        ExceptionID: Pervasives.Exit
+                                                        RE_EXN_ID: Pervasives.Exit
                                                       };
                                                 }
                                                 var t2$1 = match$1[0];
@@ -34278,24 +34278,24 @@ function subtype_rec(env, _trace, _t1, _t2, _cstrs) {
                                                             ], t1$1, t2$1, cstrs);
                                                 }
                                                 throw {
-                                                      ExceptionID: Pervasives.Exit
+                                                      RE_EXN_ID: Pervasives.Exit
                                                     };
                                               }
                                               
                                             }
                                             if (typeof match$1 === "number") {
                                               throw {
-                                                    ExceptionID: Pervasives.Exit
+                                                    RE_EXN_ID: Pervasives.Exit
                                                   };
                                             }
                                             if (match$1.tag) {
                                               throw {
-                                                    ExceptionID: Pervasives.Exit
+                                                    RE_EXN_ID: Pervasives.Exit
                                                   };
                                             }
                                             if (match$1[0] !== undefined) {
                                               throw {
-                                                    ExceptionID: Pervasives.Exit
+                                                    RE_EXN_ID: Pervasives.Exit
                                                   };
                                             }
                                             return cstrs;
@@ -34303,7 +34303,7 @@ function subtype_rec(env, _trace, _t1, _t2, _cstrs) {
                                           }(trace)), cstrs, pairs);
                               }
                               throw {
-                                    ExceptionID: Pervasives.Exit
+                                    RE_EXN_ID: Pervasives.Exit
                                   };
                             }
                             
@@ -34312,7 +34312,7 @@ function subtype_rec(env, _trace, _t1, _t2, _cstrs) {
                         }
                         catch (raw_exn$1){
                           var exn$1 = Caml_js_exceptions.internalToOCamlException(raw_exn$1);
-                          if (exn$1.ExceptionID === Pervasives.Exit) {
+                          if (exn$1.RE_EXN_ID === Pervasives.Exit) {
                             return /* :: */[
                                     /* tuple */[
                                       trace,
@@ -34383,7 +34383,7 @@ function subtype_rec(env, _trace, _t1, _t2, _cstrs) {
                             }
                             catch (raw_exn$2){
                               var exn$2 = Caml_js_exceptions.internalToOCamlException(raw_exn$2);
-                              if (exn$2.ExceptionID === Unify) {
+                              if (exn$2.RE_EXN_ID === Unify) {
                                 return /* :: */[
                                         /* tuple */[
                                           trace,
@@ -34452,16 +34452,16 @@ function subtype_rec(env, _trace, _t1, _t2, _cstrs) {
                               return Pervasives.$at(cstrs$prime, cstrs);
                             }
                             throw {
-                                  ExceptionID: Unify,
+                                  RE_EXN_ID: Unify,
                                   _1: /* [] */0
                                 };
                           }
                           catch (raw_exn$3){
                             var exn$3 = Caml_js_exceptions.internalToOCamlException(raw_exn$3);
-                            if (exn$3.ExceptionID === Unify) {
+                            if (exn$3.RE_EXN_ID === Unify) {
                               backtrack(snap);
                               throw {
-                                    ExceptionID: "Not_found"
+                                    RE_EXN_ID: "Not_found"
                                   };
                             }
                             throw exn$3;
@@ -34469,7 +34469,7 @@ function subtype_rec(env, _trace, _t1, _t2, _cstrs) {
                         }
                         catch (raw_exn$4){
                           var exn$4 = Caml_js_exceptions.internalToOCamlException(raw_exn$4);
-                          if (exn$4.ExceptionID === "Not_found") {
+                          if (exn$4.RE_EXN_ID === "Not_found") {
                             return /* :: */[
                                     /* tuple */[
                                       trace,
@@ -34581,7 +34581,7 @@ function subtype_rec(env, _trace, _t1, _t2, _cstrs) {
               }
               catch (raw_exn$5){
                 var exn$5 = Caml_js_exceptions.internalToOCamlException(raw_exn$5);
-                if (exn$5.ExceptionID === "Not_found") {
+                if (exn$5.RE_EXN_ID === "Not_found") {
                   return /* :: */[
                           /* tuple */[
                             trace,
@@ -34647,9 +34647,9 @@ function subtype(env, ty1, ty2) {
                     }
                     catch (raw_trace){
                       var trace = Caml_js_exceptions.internalToOCamlException(raw_trace);
-                      if (trace.ExceptionID === Unify) {
+                      if (trace.RE_EXN_ID === Unify) {
                         throw {
-                              ExceptionID: Subtype,
+                              RE_EXN_ID: Subtype,
                               _1: expand_trace(env, List.rev(param[0])),
                               _2: List.tl(List.tl(trace._1))
                             };
@@ -34682,7 +34682,7 @@ function unalias_object(ty) {
         return ty$1;
     default:
       throw {
-            ExceptionID: "Assert_failure",
+            RE_EXN_ID: "Assert_failure",
             _1: /* tuple */[
               "ctype.ml",
               4129,
@@ -34757,10 +34757,10 @@ function cyclic_abbrev(env, id, ty) {
     }
     catch (raw_exn){
       var exn = Caml_js_exceptions.internalToOCamlException(raw_exn);
-      if (exn.ExceptionID === Cannot_expand) {
+      if (exn.RE_EXN_ID === Cannot_expand) {
         return false;
       }
-      if (exn.ExceptionID === Unify) {
+      if (exn.RE_EXN_ID === Unify) {
         return true;
       }
       throw exn;
@@ -34949,7 +34949,7 @@ function nondep_type_rec(env, id, _ty) {
       }
       catch (raw_exn){
         var exn = Caml_js_exceptions.internalToOCamlException(raw_exn);
-        if (exn.ExceptionID === "Not_found") {
+        if (exn.RE_EXN_ID === "Not_found") {
           var ty$prime = newty2(100000000, /* Tvar */Block.__(0, [undefined]));
           Curry._3(TypeHash.add, nondep_hash, ty, ty$prime);
           var row = ty.desc;
@@ -34967,14 +34967,14 @@ function nondep_type_rec(env, id, _ty) {
                     }
                     catch (raw_exn$1){
                       var exn$1 = Caml_js_exceptions.internalToOCamlException(raw_exn$1);
-                      if (exn$1.ExceptionID === Cannot_expand) {
+                      if (exn$1.RE_EXN_ID === Cannot_expand) {
                         throw {
-                              ExceptionID: "Not_found"
+                              RE_EXN_ID: "Not_found"
                             };
                       }
-                      if (exn$1.ExceptionID === Unify) {
+                      if (exn$1.RE_EXN_ID === Unify) {
                         throw {
-                              ExceptionID: "Not_found"
+                              RE_EXN_ID: "Not_found"
                             };
                       }
                       throw exn$1;
@@ -35022,7 +35022,7 @@ function nondep_type_rec(env, id, _ty) {
                   }
                   catch (raw_exn$2){
                     var exn$2 = Caml_js_exceptions.internalToOCamlException(raw_exn$2);
-                    if (exn$2.ExceptionID === "Not_found") {
+                    if (exn$2.RE_EXN_ID === "Not_found") {
                       Curry._3(TypeHash.add, nondep_variants, more, ty$prime);
                       var $$static = static_row(row$1);
                       var more$prime = $$static ? newty2(100000000, /* Tnil */0) : more;
@@ -35049,7 +35049,7 @@ function nondep_type_rec(env, id, _ty) {
                     var p$prime = normalize_package_path(env, p$2);
                     if (isfree(id, p$prime)) {
                       throw {
-                            ExceptionID: "Not_found"
+                            RE_EXN_ID: "Not_found"
                           };
                     }
                     tmp = /* Tpackage */Block.__(11, [
@@ -35091,11 +35091,11 @@ function nondep_type(env, id, ty) {
   }
   catch (raw_exn){
     var exn = Caml_js_exceptions.internalToOCamlException(raw_exn);
-    if (exn.ExceptionID === "Not_found") {
+    if (exn.RE_EXN_ID === "Not_found") {
       Curry._1(TypeHash.clear, nondep_hash);
       Curry._1(TypeHash.clear, nondep_variants);
       throw {
-            ExceptionID: "Not_found"
+            RE_EXN_ID: "Not_found"
           };
     }
     throw exn;
@@ -35162,7 +35162,7 @@ function nondep_type_decl(env, mid, id, is_covariant, decl) {
     }
     catch (raw_exn){
       var exn = Caml_js_exceptions.internalToOCamlException(raw_exn);
-      if (exn.ExceptionID === "Not_found") {
+      if (exn.RE_EXN_ID === "Not_found") {
         if (is_covariant) {
           tk = /* Type_abstract */0;
         } else {
@@ -35179,7 +35179,7 @@ function nondep_type_decl(env, mid, id, is_covariant, decl) {
     }
     catch (raw_exn$1){
       var exn$1 = Caml_js_exceptions.internalToOCamlException(raw_exn$1);
-      if (exn$1.ExceptionID === "Not_found") {
+      if (exn$1.RE_EXN_ID === "Not_found") {
         if (is_covariant) {
           tm = undefined;
         } else {
@@ -35206,11 +35206,11 @@ function nondep_type_decl(env, mid, id, is_covariant, decl) {
   }
   catch (raw_exn$2){
     var exn$2 = Caml_js_exceptions.internalToOCamlException(raw_exn$2);
-    if (exn$2.ExceptionID === "Not_found") {
+    if (exn$2.RE_EXN_ID === "Not_found") {
       Curry._1(TypeHash.clear, nondep_hash);
       Curry._1(TypeHash.clear, nondep_variants);
       throw {
-            ExceptionID: "Not_found"
+            RE_EXN_ID: "Not_found"
           };
     }
     throw exn$2;
@@ -35232,7 +35232,7 @@ function nondep_extension_constructor(env, mid, ext) {
       var match$1 = repr(ty$prime).desc;
       if (typeof match$1 === "number") {
         throw {
-              ExceptionID: "Not_found"
+              RE_EXN_ID: "Not_found"
             };
       }
       if (match$1.tag === /* Tconstr */3) {
@@ -35242,7 +35242,7 @@ function nondep_extension_constructor(env, mid, ext) {
         ];
       } else {
         throw {
-              ExceptionID: "Not_found"
+              RE_EXN_ID: "Not_found"
             };
       }
     } else {
@@ -35274,11 +35274,11 @@ function nondep_extension_constructor(env, mid, ext) {
   }
   catch (raw_exn){
     var exn = Caml_js_exceptions.internalToOCamlException(raw_exn);
-    if (exn.ExceptionID === "Not_found") {
+    if (exn.RE_EXN_ID === "Not_found") {
       Curry._1(TypeHash.clear, nondep_hash);
       Curry._1(TypeHash.clear, nondep_variants);
       throw {
-            ExceptionID: "Not_found"
+            RE_EXN_ID: "Not_found"
           };
     }
     throw exn;
@@ -35341,7 +35341,7 @@ function nondep_class_type(env, id, _sign) {
 function nondep_class_declaration(env, id, decl) {
   if (isfree(id, decl.cty_path)) {
     throw {
-          ExceptionID: "Assert_failure",
+          RE_EXN_ID: "Assert_failure",
           _1: /* tuple */[
             "ctype.ml",
             4449,
@@ -35369,7 +35369,7 @@ function nondep_class_declaration(env, id, decl) {
 function nondep_cltype_declaration(env, id, decl) {
   if (isfree(id, decl.clty_path)) {
     throw {
-          ExceptionID: "Assert_failure",
+          RE_EXN_ID: "Assert_failure",
           _1: /* tuple */[
             "ctype.ml",
             4468,
@@ -35825,7 +35825,7 @@ function print_simple_out_type(ppf, s) {
                                     if (typeof single !== "number" && single.tag === /* Otyp_tuple */9) {
                                       if (tys[1]) {
                                         throw {
-                                              ExceptionID: "Not_found"
+                                              RE_EXN_ID: "Not_found"
                                             };
                                       }
                                       if (variant === "Arity_1") {
@@ -35846,7 +35846,7 @@ function print_simple_out_type(ppf, s) {
                                     }
                                     if (tys[1]) {
                                       throw {
-                                            ExceptionID: "Not_found"
+                                            RE_EXN_ID: "Not_found"
                                           };
                                     }
                                     return /* Otyp_arrow */Block.__(1, [
@@ -35856,7 +35856,7 @@ function print_simple_out_type(ppf, s) {
                                             ]);
                                   }
                                   throw {
-                                        ExceptionID: "Not_found"
+                                        RE_EXN_ID: "Not_found"
                                       };
                                 };
                                 var exit$3 = 0;
@@ -35957,7 +35957,7 @@ function print_simple_out_type(ppf, s) {
                                 if (typeof single !== "number" && single.tag === /* Otyp_tuple */9) {
                                   if (tys[1]) {
                                     throw {
-                                          ExceptionID: "Not_found"
+                                          RE_EXN_ID: "Not_found"
                                         };
                                   }
                                   if (variant$1 === "Arity_1") {
@@ -35978,7 +35978,7 @@ function print_simple_out_type(ppf, s) {
                                 }
                                 if (tys[1]) {
                                   throw {
-                                        ExceptionID: "Not_found"
+                                        RE_EXN_ID: "Not_found"
                                       };
                                 }
                                 return /* Otyp_arrow */Block.__(1, [
@@ -35988,7 +35988,7 @@ function print_simple_out_type(ppf, s) {
                                         ]);
                               }
                               throw {
-                                    ExceptionID: "Not_found"
+                                    RE_EXN_ID: "Not_found"
                                   };
                             };
                             var exit$4 = 0;
@@ -36079,7 +36079,7 @@ function print_simple_out_type(ppf, s) {
                                                   ]), print_out_type_1, res$1);
                                 default:
                                   throw {
-                                        ExceptionID: "Assert_failure",
+                                        RE_EXN_ID: "Assert_failure",
                                         _1: /* tuple */[
                                           "oprint.ml",
                                           229,
@@ -36897,7 +36897,7 @@ var out_class_type = {
 var out_module_type = {
   contents: (function (param) {
       throw {
-            ExceptionID: "Failure",
+            RE_EXN_ID: "Failure",
             _1: "Oprint.out_module_type"
           };
     })
@@ -36906,7 +36906,7 @@ var out_module_type = {
 var out_sig_item = {
   contents: (function (param) {
       throw {
-            ExceptionID: "Failure",
+            RE_EXN_ID: "Failure",
             _1: "Oprint.out_sig_item"
           };
     })
@@ -36915,7 +36915,7 @@ var out_sig_item = {
 var out_signature = {
   contents: (function (param) {
       throw {
-            ExceptionID: "Failure",
+            RE_EXN_ID: "Failure",
             _1: "Oprint.out_signature"
           };
     })
@@ -36924,7 +36924,7 @@ var out_signature = {
 var out_type_extension = {
   contents: (function (param) {
       throw {
-            ExceptionID: "Failure",
+            RE_EXN_ID: "Failure",
             _1: "Oprint.out_type_extension"
           };
     })
@@ -38350,7 +38350,7 @@ function ident_name(id) {
   }
   catch (raw_exn){
     var exn = Caml_js_exceptions.internalToOCamlException(raw_exn);
-    if (exn.ExceptionID === "Not_found") {
+    if (exn.RE_EXN_ID === "Not_found") {
       return id.name;
     }
     throw exn;
@@ -38364,7 +38364,7 @@ function add_unique(id) {
   }
   catch (raw_exn){
     var exn = Caml_js_exceptions.internalToOCamlException(raw_exn);
-    if (exn.ExceptionID === "Not_found") {
+    if (exn.RE_EXN_ID === "Not_found") {
       unique_names.contents = add(id, unique_toplevel_name(id), unique_names.contents);
       return ;
     }
@@ -39713,12 +39713,12 @@ function bal$6(l, x, d, r) {
         return create$7(create$7(ll, lv, ld, lr[/* l */0]), lr[/* v */1], lr[/* d */2], create$7(lr[/* r */3], x, d, r));
       }
       throw {
-            ExceptionID: "Invalid_argument",
+            RE_EXN_ID: "Invalid_argument",
             _1: "Map.bal"
           };
     }
     throw {
-          ExceptionID: "Invalid_argument",
+          RE_EXN_ID: "Invalid_argument",
           _1: "Map.bal"
         };
   }
@@ -39743,12 +39743,12 @@ function bal$6(l, x, d, r) {
       return create$7(create$7(l, x, d, rl[/* l */0]), rl[/* v */1], rl[/* d */2], create$7(rl[/* r */3], rv, rd, rr));
     }
     throw {
-          ExceptionID: "Invalid_argument",
+          RE_EXN_ID: "Invalid_argument",
           _1: "Map.bal"
         };
   }
   throw {
-        ExceptionID: "Invalid_argument",
+        RE_EXN_ID: "Invalid_argument",
         _1: "Map.bal"
       };
 }
@@ -39809,7 +39809,7 @@ function find$4(x, _param) {
       continue ;
     }
     throw {
-          ExceptionID: "Not_found"
+          RE_EXN_ID: "Not_found"
         };
   };
 }
@@ -39831,7 +39831,7 @@ function index(l, x) {
     }
   }
   throw {
-        ExceptionID: "Not_found"
+        RE_EXN_ID: "Not_found"
       };
 }
 
@@ -39893,7 +39893,7 @@ function normalize_type_path(cacheOpt, env, p) {
   }
   catch (raw_exn){
     var exn = Caml_js_exceptions.internalToOCamlException(raw_exn);
-    if (exn.ExceptionID === "Not_found") {
+    if (exn.RE_EXN_ID === "Not_found") {
       return /* tuple */[
               p,
               /* Id */0
@@ -39974,7 +39974,7 @@ function set_printing_env(env) {
           }
           catch (raw_exn){
             var exn = Caml_js_exceptions.internalToOCamlException(raw_exn);
-            if (exn.ExceptionID === "Not_found") {
+            if (exn.RE_EXN_ID === "Not_found") {
               printing_map.contents = add$8(p1, {
                     contents: /* Paths */Block.__(0, [/* :: */[
                           p,
@@ -40067,7 +40067,7 @@ function best_type_path(p) {
         continue ;
       }
       throw {
-            ExceptionID: "Not_found"
+            RE_EXN_ID: "Not_found"
           };
     };
   };
@@ -40081,7 +40081,7 @@ function best_type_path(p) {
             }
             catch (raw_exn){
               var exn = Caml_js_exceptions.internalToOCamlException(raw_exn);
-              if (exn.ExceptionID === "Not_found") {
+              if (exn.RE_EXN_ID === "Not_found") {
                 tmp$1 = true;
               } else {
                 throw exn;
@@ -40102,7 +40102,7 @@ function best_type_path(p) {
   }
   catch (raw_exn){
     var exn = Caml_js_exceptions.internalToOCamlException(raw_exn);
-    if (exn.ExceptionID === "Not_found") {
+    if (exn.RE_EXN_ID === "Not_found") {
       p$prime$prime = p$prime;
     } else {
       throw exn;
@@ -40185,7 +40185,7 @@ function name_of_type(t) {
   }
   catch (raw_exn){
     var exn = Caml_js_exceptions.internalToOCamlException(raw_exn);
-    if (exn.ExceptionID === "Not_found") {
+    if (exn.RE_EXN_ID === "Not_found") {
       var match = t.desc;
       var name;
       var exit = 0;
@@ -40760,7 +40760,7 @@ function tree_of_typobject(sch, fi, nm) {
     var match$1 = best_type_path(nm[0]);
     if (match$1[1] !== /* Id */0) {
       throw {
-            ExceptionID: "Assert_failure",
+            RE_EXN_ID: "Assert_failure",
             _1: /* tuple */[
               "printtyp.ml",
               688,
@@ -42310,7 +42310,7 @@ function mismatch(unif, param) {
     }
   }
   throw {
-        ExceptionID: "Assert_failure",
+        RE_EXN_ID: "Assert_failure",
         _1: /* tuple */[
           "printtyp.ml",
           1339,
@@ -43201,7 +43201,7 @@ function report_unification_error(ppf, env, unifOpt, tr, txt1, txt2) {
                     }
                   } else {
                     throw {
-                          ExceptionID: "Assert_failure",
+                          RE_EXN_ID: "Assert_failure",
                           _1: /* tuple */[
                             "printtyp.ml",
                             1438,
@@ -43211,7 +43211,7 @@ function report_unification_error(ppf, env, unifOpt, tr, txt1, txt2) {
                   }
                 } else {
                   throw {
-                        ExceptionID: "Assert_failure",
+                        RE_EXN_ID: "Assert_failure",
                         _1: /* tuple */[
                           "printtyp.ml",
                           1438,
@@ -43925,7 +43925,7 @@ function type_manifest(env, ty1, params1, ty2, params2, priv2) {
     }
     catch (raw_exn){
       var exn = Caml_js_exceptions.internalToOCamlException(raw_exn);
-      if (exn.ExceptionID === Cannot_expand) {
+      if (exn.RE_EXN_ID === Cannot_expand) {
         return false;
       }
       throw exn;
@@ -44518,7 +44518,7 @@ function scrape(env, mty) {
   }
   catch (raw_exn){
     var exn = Caml_js_exceptions.internalToOCamlException(raw_exn);
-    if (exn.ExceptionID === "Not_found") {
+    if (exn.RE_EXN_ID === "Not_found") {
       return mty;
     }
     throw exn;
@@ -44783,10 +44783,10 @@ function nondep_supertype(env, mid, mty) {
           }
           catch (raw_exn){
             var exn = Caml_js_exceptions.internalToOCamlException(raw_exn);
-            if (exn.ExceptionID === "Not_found") {
+            if (exn.RE_EXN_ID === "Not_found") {
               if (va !== 0) {
                 throw {
-                      ExceptionID: "Not_found"
+                      RE_EXN_ID: "Not_found"
                     };
               }
               return /* :: */[
@@ -44867,7 +44867,7 @@ function enrich_typedecl(env, p, decl) {
   }
   catch (raw_exn){
     var exn = Caml_js_exceptions.internalToOCamlException(raw_exn);
-    if (exn.ExceptionID === "Not_found") {
+    if (exn.RE_EXN_ID === "Not_found") {
       return decl;
     }
     throw exn;
@@ -44986,14 +44986,14 @@ function contains_type(env, _path) {
               return contains_type(env, mty);
             }
             throw {
-                  ExceptionID: Pervasives.Exit
+                  RE_EXN_ID: Pervasives.Exit
                 };
           }
           catch (raw_exn){
             var exn = Caml_js_exceptions.internalToOCamlException(raw_exn);
-            if (exn.ExceptionID === "Not_found") {
+            if (exn.RE_EXN_ID === "Not_found") {
               throw {
-                    ExceptionID: Pervasives.Exit
+                    RE_EXN_ID: Pervasives.Exit
                   };
             }
             throw exn;
@@ -45028,17 +45028,17 @@ function contains_type_sig(env) {
                               return ;
                             }
                             throw {
-                                  ExceptionID: Pervasives.Exit
+                                  RE_EXN_ID: Pervasives.Exit
                                 };
                           }
                           throw {
-                                ExceptionID: Pervasives.Exit
+                                RE_EXN_ID: Pervasives.Exit
                               };
                       case /* Sig_module */3 :
                           return contains_type(env, param[1].md_type);
                       case /* Sig_modtype */4 :
                           throw {
-                                ExceptionID: Pervasives.Exit
+                                RE_EXN_ID: Pervasives.Exit
                               };
                       default:
                         return ;
@@ -45054,7 +45054,7 @@ function contains_type$1(env, mty) {
   }
   catch (raw_exn){
     var exn = Caml_js_exceptions.internalToOCamlException(raw_exn);
-    if (exn.ExceptionID === Pervasives.Exit) {
+    if (exn.RE_EXN_ID === Pervasives.Exit) {
       return true;
     }
     throw exn;
@@ -45103,12 +45103,12 @@ function bal$7(l, v, r) {
         return create$8(create$8(ll, lv, lr[/* l */0]), lr[/* v */1], create$8(lr[/* r */2], v, r));
       }
       throw {
-            ExceptionID: "Invalid_argument",
+            RE_EXN_ID: "Invalid_argument",
             _1: "Set.bal"
           };
     }
     throw {
-          ExceptionID: "Invalid_argument",
+          RE_EXN_ID: "Invalid_argument",
           _1: "Set.bal"
         };
   }
@@ -45131,12 +45131,12 @@ function bal$7(l, v, r) {
       return create$8(create$8(l, v, rl[/* l */0]), rl[/* v */1], create$8(rl[/* r */2], rv, rr));
     }
     throw {
-          ExceptionID: "Invalid_argument",
+          RE_EXN_ID: "Invalid_argument",
           _1: "Set.bal"
         };
   }
   throw {
-        ExceptionID: "Invalid_argument",
+        RE_EXN_ID: "Invalid_argument",
         _1: "Set.bal"
       };
 }
@@ -45325,12 +45325,12 @@ function bal$8(l, x, d, r) {
         return create$9(create$9(ll, lv, ld, lr[/* l */0]), lr[/* v */1], lr[/* d */2], create$9(lr[/* r */3], x, d, r));
       }
       throw {
-            ExceptionID: "Invalid_argument",
+            RE_EXN_ID: "Invalid_argument",
             _1: "Map.bal"
           };
     }
     throw {
-          ExceptionID: "Invalid_argument",
+          RE_EXN_ID: "Invalid_argument",
           _1: "Map.bal"
         };
   }
@@ -45355,12 +45355,12 @@ function bal$8(l, x, d, r) {
       return create$9(create$9(l, x, d, rl[/* l */0]), rl[/* v */1], rl[/* d */2], create$9(rl[/* r */3], rv, rd, rr));
     }
     throw {
-          ExceptionID: "Invalid_argument",
+          RE_EXN_ID: "Invalid_argument",
           _1: "Map.bal"
         };
   }
   throw {
-        ExceptionID: "Invalid_argument",
+        RE_EXN_ID: "Invalid_argument",
         _1: "Map.bal"
       };
 }
@@ -45421,7 +45421,7 @@ function find$5(x, _param) {
       continue ;
     }
     throw {
-          ExceptionID: "Not_found"
+          RE_EXN_ID: "Not_found"
         };
   };
 }
@@ -45460,12 +45460,12 @@ function bal$9(l, v, r) {
         return create$10(create$10(ll, lv, lr[/* l */0]), lr[/* v */1], create$10(lr[/* r */2], v, r));
       }
       throw {
-            ExceptionID: "Invalid_argument",
+            RE_EXN_ID: "Invalid_argument",
             _1: "Set.bal"
           };
     }
     throw {
-          ExceptionID: "Invalid_argument",
+          RE_EXN_ID: "Invalid_argument",
           _1: "Set.bal"
         };
   }
@@ -45488,12 +45488,12 @@ function bal$9(l, v, r) {
       return create$10(create$10(l, v, rl[/* l */0]), rl[/* v */1], create$10(rl[/* r */2], rv, rr));
     }
     throw {
-          ExceptionID: "Invalid_argument",
+          RE_EXN_ID: "Invalid_argument",
           _1: "Set.bal"
         };
   }
   throw {
-        ExceptionID: "Invalid_argument",
+        RE_EXN_ID: "Invalid_argument",
         _1: "Set.bal"
       };
 }
@@ -45686,7 +45686,7 @@ function rollback_path(subst, _p) {
     }
     catch (raw_exn){
       var exn = Caml_js_exceptions.internalToOCamlException(raw_exn);
-      if (exn.ExceptionID === "Not_found") {
+      if (exn.RE_EXN_ID === "Not_found") {
         switch (p.tag | 0) {
           case /* Pdot */1 :
               var p1 = p[0];
@@ -45723,7 +45723,7 @@ function collect_ids(subst, bindings, p) {
         }
         catch (raw_exn){
           var exn = Caml_js_exceptions.internalToOCamlException(raw_exn);
-          if (exn.ExceptionID === "Not_found") {
+          if (exn.RE_EXN_ID === "Not_found") {
             ids = /* Empty */0;
           } else {
             throw exn;
@@ -45904,7 +45904,7 @@ function value_descriptions(env, cxt, subst, id, vd1, vd2) {
           return /* Tcoerce_none */0;
         }
         throw {
-              ExceptionID: Dont_match
+              RE_EXN_ID: Dont_match
             };
       }
       if (typeof match$1 === "number") {
@@ -45914,19 +45914,19 @@ function value_descriptions(env, cxt, subst, id, vd1, vd2) {
         return /* Tcoerce_none */0;
       }
       throw {
-            ExceptionID: Dont_match
+            RE_EXN_ID: Dont_match
           };
     } else {
       throw {
-            ExceptionID: Dont_match
+            RE_EXN_ID: Dont_match
           };
     }
   }
   catch (raw_exn){
     var exn = Caml_js_exceptions.internalToOCamlException(raw_exn);
-    if (exn.ExceptionID === Dont_match) {
+    if (exn.RE_EXN_ID === Dont_match) {
       throw {
-            ExceptionID: $$Error$5,
+            RE_EXN_ID: $$Error$5,
             _1: /* :: */[
               /* tuple */[
                 cxt,
@@ -45954,7 +45954,7 @@ function type_declarations$2(env, old_envOpt, cxt, subst, id, decl1, decl2) {
     return ;
   }
   throw {
-        ExceptionID: $$Error$5,
+        RE_EXN_ID: $$Error$5,
         _1: /* :: */[
           /* tuple */[
             cxt,
@@ -45977,7 +45977,7 @@ function extension_constructors$1(env, cxt, subst, id, ext1, ext2) {
     return ;
   }
   throw {
-        ExceptionID: $$Error$5,
+        RE_EXN_ID: $$Error$5,
         _1: /* :: */[
           /* tuple */[
             cxt,
@@ -46000,7 +46000,7 @@ function class_type_declarations$1(old_env, env, cxt, subst, id, decl1, decl2) {
     return ;
   }
   throw {
-        ExceptionID: $$Error$5,
+        RE_EXN_ID: $$Error$5,
         _1: /* :: */[
           /* tuple */[
             cxt,
@@ -46024,7 +46024,7 @@ function class_declarations$1(old_env, env, cxt, subst, id, decl1, decl2) {
     return ;
   }
   throw {
-        ExceptionID: $$Error$5,
+        RE_EXN_ID: $$Error$5,
         _1: /* :: */[
           /* tuple */[
             cxt,
@@ -46050,7 +46050,7 @@ function may_expand_module_path(env, path) {
   }
   catch (raw_exn){
     var exn = Caml_js_exceptions.internalToOCamlException(raw_exn);
-    if (exn.ExceptionID === "Not_found") {
+    if (exn.RE_EXN_ID === "Not_found") {
       return false;
     }
     throw exn;
@@ -46063,9 +46063,9 @@ function expand_module_path(env, cxt, path) {
   }
   catch (raw_exn){
     var exn = Caml_js_exceptions.internalToOCamlException(raw_exn);
-    if (exn.ExceptionID === "Not_found") {
+    if (exn.RE_EXN_ID === "Not_found") {
       throw {
-            ExceptionID: $$Error$5,
+            RE_EXN_ID: $$Error$5,
             _1: /* :: */[
               /* tuple */[
                 cxt,
@@ -46086,9 +46086,9 @@ function expand_module_alias(env, cxt, path) {
   }
   catch (raw_exn){
     var exn = Caml_js_exceptions.internalToOCamlException(raw_exn);
-    if (exn.ExceptionID === "Not_found") {
+    if (exn.RE_EXN_ID === "Not_found") {
       throw {
-            ExceptionID: $$Error$5,
+            RE_EXN_ID: $$Error$5,
             _1: /* :: */[
               /* tuple */[
                 cxt,
@@ -46202,9 +46202,9 @@ function modtypes(env, cxt, subst, mty1, mty2) {
   }
   catch (raw_err){
     var err = Caml_js_exceptions.internalToOCamlException(raw_err);
-    if (err.ExceptionID === Dont_match$1) {
+    if (err.RE_EXN_ID === Dont_match$1) {
       throw {
-            ExceptionID: $$Error$5,
+            RE_EXN_ID: $$Error$5,
             _1: /* :: */[
               /* tuple */[
                 cxt,
@@ -46218,7 +46218,7 @@ function modtypes(env, cxt, subst, mty1, mty2) {
             ]
           };
     }
-    if (err.ExceptionID === $$Error$5) {
+    if (err.RE_EXN_ID === $$Error$5) {
       if (mty1.tag === /* Mty_alias */3) {
         throw err;
       }
@@ -46226,7 +46226,7 @@ function modtypes(env, cxt, subst, mty1, mty2) {
         throw err;
       }
       throw {
-            ExceptionID: $$Error$5,
+            RE_EXN_ID: $$Error$5,
             _1: /* :: */[
               /* tuple */[
                 cxt,
@@ -46264,7 +46264,7 @@ function try_modtypes(env, cxt, subst, _mty1, mty2) {
             case /* Mty_functor */2 :
             case /* Mty_alias */3 :
                 throw {
-                      ExceptionID: Dont_match$1
+                      RE_EXN_ID: Dont_match$1
                     };
             
           }
@@ -46298,12 +46298,12 @@ function try_modtypes(env, cxt, subst, _mty1, mty2) {
                     }
                   }
                   throw {
-                        ExceptionID: Dont_match$1
+                        RE_EXN_ID: Dont_match$1
                       };
               case /* Mty_signature */1 :
               case /* Mty_alias */3 :
                   throw {
-                        ExceptionID: Dont_match$1
+                        RE_EXN_ID: Dont_match$1
                       };
               
             }
@@ -46314,7 +46314,7 @@ function try_modtypes(env, cxt, subst, _mty1, mty2) {
               case /* Mty_functor */2 :
                   if (mty2[1] !== undefined) {
                     throw {
-                          ExceptionID: Dont_match$1
+                          RE_EXN_ID: Dont_match$1
                         };
                   }
                   var cc = modtypes(env, /* :: */[
@@ -46332,7 +46332,7 @@ function try_modtypes(env, cxt, subst, _mty1, mty2) {
               case /* Mty_signature */1 :
               case /* Mty_alias */3 :
                   throw {
-                        ExceptionID: Dont_match$1
+                        RE_EXN_ID: Dont_match$1
                       };
               
             }
@@ -46344,7 +46344,7 @@ function try_modtypes(env, cxt, subst, _mty1, mty2) {
             var p2 = mty2[0];
             if (is_functor_arg(p2, env)) {
               throw {
-                    ExceptionID: $$Error$5,
+                    RE_EXN_ID: $$Error$5,
                     _1: /* :: */[
                       /* tuple */[
                         cxt,
@@ -46364,7 +46364,7 @@ function try_modtypes(env, cxt, subst, _mty1, mty2) {
               return /* Tcoerce_none */0;
             }
             throw {
-                  ExceptionID: Dont_match$1
+                  RE_EXN_ID: Dont_match$1
                 };
           }
           var p1$3;
@@ -46373,11 +46373,11 @@ function try_modtypes(env, cxt, subst, _mty1, mty2) {
           }
           catch (raw_exn){
             var exn = Caml_js_exceptions.internalToOCamlException(raw_exn);
-            if (exn.ExceptionID === $$Error$2) {
+            if (exn.RE_EXN_ID === $$Error$2) {
               var match = exn._1;
               if (match.tag === /* Missing_module */3) {
                 throw {
-                      ExceptionID: $$Error$5,
+                      RE_EXN_ID: $$Error$5,
                       _1: /* :: */[
                         /* tuple */[
                           cxt,
@@ -46404,7 +46404,7 @@ function try_modtypes(env, cxt, subst, _mty1, mty2) {
       if (!mty1.tag) {
         if (mty2$1.tag) {
           throw {
-                ExceptionID: "Assert_failure",
+                RE_EXN_ID: "Assert_failure",
                 _1: /* tuple */[
                   "includemod.ml",
                   275,
@@ -46421,7 +46421,7 @@ function try_modtypes(env, cxt, subst, _mty1, mty2) {
         return try_modtypes(env, cxt, identity, mty1, expand_module_path(env, cxt, mty2$1[0]));
       }
       throw {
-            ExceptionID: "Assert_failure",
+            RE_EXN_ID: "Assert_failure",
             _1: /* tuple */[
               "includemod.ml",
               275,
@@ -46430,7 +46430,7 @@ function try_modtypes(env, cxt, subst, _mty1, mty2) {
           };
     }
     throw {
-          ExceptionID: Dont_match$1
+          RE_EXN_ID: Dont_match$1
         };
   };
 }
@@ -46553,7 +46553,7 @@ function signatures(env, cxt, subst, sig1, sig2) {
         }
         catch (raw_exn){
           var exn = Caml_js_exceptions.internalToOCamlException(raw_exn);
-          if (exn.ExceptionID === "Not_found") {
+          if (exn.RE_EXN_ID === "Not_found") {
             var unpaired$1 = match$1[1] ? /* :: */[
                 /* tuple */[
                   cxt,
@@ -46575,7 +46575,7 @@ function signatures(env, cxt, subst, sig1, sig2) {
       } else {
         if (unpaired) {
           throw {
-                ExceptionID: $$Error$5,
+                RE_EXN_ID: $$Error$5,
                 _1: unpaired
               };
         }
@@ -46718,7 +46718,7 @@ function signature_components(old_env, env, cxt, subst, paired) {
     
   }
   throw {
-        ExceptionID: "Assert_failure",
+        RE_EXN_ID: "Assert_failure",
         _1: /* tuple */[
           "includemod.ml",
           400,
@@ -46751,9 +46751,9 @@ function modtype_infos(env, cxt, subst, id, info1, info2) {
   }
   catch (raw_reasons){
     var reasons = Caml_js_exceptions.internalToOCamlException(raw_reasons);
-    if (reasons.ExceptionID === $$Error$5) {
+    if (reasons.RE_EXN_ID === $$Error$5) {
       throw {
-            ExceptionID: $$Error$5,
+            RE_EXN_ID: $$Error$5,
             _1: /* :: */[
               /* tuple */[
                 cxt,
@@ -46779,7 +46779,7 @@ function check_modtype_equiv(env, cxt, mty1, mty2) {
     return ;
   }
   throw {
-        ExceptionID: $$Error$5,
+        RE_EXN_ID: $$Error$5,
         _1: /* :: */[
           /* tuple */[
             cxt,
@@ -46798,9 +46798,9 @@ function check_modtype_inclusion$1(env, mty1, path1, mty2) {
   }
   catch (raw_reasons){
     var reasons = Caml_js_exceptions.internalToOCamlException(raw_reasons);
-    if (reasons.ExceptionID === $$Error$5) {
+    if (reasons.RE_EXN_ID === $$Error$5) {
       throw {
-            ExceptionID: "Not_found"
+            RE_EXN_ID: "Not_found"
           };
     }
     throw reasons;
@@ -46815,9 +46815,9 @@ function compunit(env, impl_name, impl_sig, intf_name, intf_sig) {
   }
   catch (raw_reasons){
     var reasons = Caml_js_exceptions.internalToOCamlException(raw_reasons);
-    if (reasons.ExceptionID === $$Error$5) {
+    if (reasons.RE_EXN_ID === $$Error$5) {
       throw {
-            ExceptionID: $$Error$5,
+            RE_EXN_ID: $$Error$5,
             _1: /* :: */[
               /* tuple */[
                 /* [] */0,
@@ -47614,7 +47614,7 @@ function path_of_context(param) {
     var id = param[0];
     if (id.tag) {
       throw {
-            ExceptionID: "Assert_failure",
+            RE_EXN_ID: "Assert_failure",
             _1: /* tuple */[
               "includemod.ml",
               573,
@@ -47633,7 +47633,7 @@ function path_of_context(param) {
       var id$1 = param$1[0];
       if (id$1.tag) {
         throw {
-              ExceptionID: "Assert_failure",
+              RE_EXN_ID: "Assert_failure",
               _1: /* tuple */[
                 "includemod.ml",
                 571,
@@ -47651,7 +47651,7 @@ function path_of_context(param) {
     };
   }
   throw {
-        ExceptionID: "Assert_failure",
+        RE_EXN_ID: "Assert_failure",
         _1: /* tuple */[
           "includemod.ml",
           573,
@@ -47831,7 +47831,7 @@ function report_error$4(ppf, errs) {
 }
 
 register_error_of_exn((function (err) {
-        if (err.ExceptionID === $$Error$5) {
+        if (err.RE_EXN_ID === $$Error$5) {
           return error_of_printer_file(report_error$4, err._1);
         }
         
@@ -48256,7 +48256,7 @@ function compat(_p, _q) {
           continue ;
       case 3 :
           throw {
-                ExceptionID: "Assert_failure",
+                RE_EXN_ID: "Assert_failure",
                 _1: /* tuple */[
                   "parmatch.ml",
                   106,
@@ -48282,7 +48282,7 @@ function compats(_ps, _qs) {
         continue ;
       }
       throw {
-            ExceptionID: "Assert_failure",
+            RE_EXN_ID: "Assert_failure",
             _1: /* tuple */[
               "parmatch.ml",
               111,
@@ -48294,7 +48294,7 @@ function compats(_ps, _qs) {
       return true;
     }
     throw {
-          ExceptionID: "Assert_failure",
+          RE_EXN_ID: "Assert_failure",
           _1: /* tuple */[
             "parmatch.ml",
             111,
@@ -49192,7 +49192,7 @@ function simple_match_args(p1, _p2) {
                         }
                         catch (raw_exn){
                           var exn = Caml_js_exceptions.internalToOCamlException(raw_exn);
-                          if (exn.ExceptionID === "Not_found") {
+                          if (exn.RE_EXN_ID === "Not_found") {
                             return omega;
                           }
                           throw exn;
@@ -49357,7 +49357,7 @@ function discr_pat(q, pss) {
                     }
                     catch (raw_exn){
                       var exn = Caml_js_exceptions.internalToOCamlException(raw_exn);
-                      if (exn.ExceptionID === "Not_found") {
+                      if (exn.RE_EXN_ID === "Not_found") {
                         return /* :: */[
                                 /* tuple */[
                                   param[0],
@@ -49464,7 +49464,7 @@ function do_set_args(erase_mutable, q, r) {
             ];
           } else {
             throw {
-                  ExceptionID: "Assert_failure",
+                  RE_EXN_ID: "Assert_failure",
                   _1: /* tuple */[
                     "parmatch.ml",
                     450,
@@ -49939,7 +49939,7 @@ function row_of_pat(pat) {
   var row = match.desc;
   if (typeof row === "number") {
     throw {
-          ExceptionID: "Assert_failure",
+          RE_EXN_ID: "Assert_failure",
           _1: /* tuple */[
             "parmatch.ml",
             602,
@@ -49951,7 +49951,7 @@ function row_of_pat(pat) {
     return row_repr_aux(/* [] */0, row[0]);
   }
   throw {
-        ExceptionID: "Assert_failure",
+        RE_EXN_ID: "Assert_failure",
         _1: /* tuple */[
           "parmatch.ml",
           602,
@@ -49964,7 +49964,7 @@ function generalized_constructor(x) {
   var match = x[0].pat_desc;
   if (typeof match === "number") {
     throw {
-          ExceptionID: "Assert_failure",
+          RE_EXN_ID: "Assert_failure",
           _1: /* tuple */[
             "parmatch.ml",
             613,
@@ -49976,7 +49976,7 @@ function generalized_constructor(x) {
     return match[1].cstr_generalized;
   }
   throw {
-        ExceptionID: "Assert_failure",
+        RE_EXN_ID: "Assert_failure",
         _1: /* tuple */[
           "parmatch.ml",
           613,
@@ -50038,7 +50038,7 @@ function full_match(ignore_generalized, closing, env) {
                 var match = param[0].pat_desc;
                 if (typeof match === "number") {
                   throw {
-                        ExceptionID: "Assert_failure",
+                        RE_EXN_ID: "Assert_failure",
                         _1: /* tuple */[
                           "parmatch.ml",
                           640,
@@ -50050,7 +50050,7 @@ function full_match(ignore_generalized, closing, env) {
                   return match[0];
                 }
                 throw {
-                      ExceptionID: "Assert_failure",
+                      RE_EXN_ID: "Assert_failure",
                       _1: /* tuple */[
                         "parmatch.ml",
                         640,
@@ -50144,7 +50144,7 @@ function complete_tags(nconsts, nconstrs, tags) {
                 return Caml_array.caml_array_set(seen_constr, i[0], true);
             case /* Cstr_extension */2 :
                 throw {
-                      ExceptionID: "Assert_failure",
+                      RE_EXN_ID: "Assert_failure",
                       _1: /* tuple */[
                         "parmatch.ml",
                         703,
@@ -50216,7 +50216,7 @@ function pat_of_constrs(ex_pat, param) {
     }
   }
   throw {
-        ExceptionID: Empty
+        RE_EXN_ID: Empty
       };
 }
 
@@ -50321,7 +50321,7 @@ function build_other(ext, env) {
                               
                             }
                             throw {
-                                  ExceptionID: "Assert_failure",
+                                  RE_EXN_ID: "Assert_failure",
                                   _1: /* tuple */[
                                     "parmatch.ml",
                                     857,
@@ -50344,7 +50344,7 @@ function build_other(ext, env) {
                         
                       }
                       throw {
-                            ExceptionID: "Assert_failure",
+                            RE_EXN_ID: "Assert_failure",
                             _1: /* tuple */[
                               "parmatch.ml",
                               832,
@@ -50396,7 +50396,7 @@ function build_other(ext, env) {
                     var i = _i;
                     if (i > imax) {
                       throw {
-                            ExceptionID: "Not_found"
+                            RE_EXN_ID: "Not_found"
                           };
                     }
                     var ci = Char.chr(i);
@@ -50409,7 +50409,7 @@ function build_other(ext, env) {
                 }
                 catch (raw_exn){
                   var exn = Caml_js_exceptions.internalToOCamlException(raw_exn);
-                  if (exn.ExceptionID === "Not_found") {
+                  if (exn.RE_EXN_ID === "Not_found") {
                     _param = param[1];
                     continue ;
                   }
@@ -50426,7 +50426,7 @@ function build_other(ext, env) {
                               
                             }
                             throw {
-                                  ExceptionID: "Assert_failure",
+                                  RE_EXN_ID: "Assert_failure",
                                   _1: /* tuple */[
                                     "parmatch.ml",
                                     878,
@@ -50451,7 +50451,7 @@ function build_other(ext, env) {
                               
                             }
                             throw {
-                                  ExceptionID: "Assert_failure",
+                                  RE_EXN_ID: "Assert_failure",
                                   _1: /* tuple */[
                                     "parmatch.ml",
                                     884,
@@ -50473,7 +50473,7 @@ function build_other(ext, env) {
                               
                             }
                             throw {
-                                  ExceptionID: "Assert_failure",
+                                  RE_EXN_ID: "Assert_failure",
                                   _1: /* tuple */[
                                     "parmatch.ml",
                                     862,
@@ -50493,7 +50493,7 @@ function build_other(ext, env) {
                               
                             }
                             throw {
-                                  ExceptionID: "Assert_failure",
+                                  RE_EXN_ID: "Assert_failure",
                                   _1: /* tuple */[
                                     "parmatch.ml",
                                     867,
@@ -50513,7 +50513,7 @@ function build_other(ext, env) {
                               
                             }
                             throw {
-                                  ExceptionID: "Assert_failure",
+                                  RE_EXN_ID: "Assert_failure",
                                   _1: /* tuple */[
                                     "parmatch.ml",
                                     872,
@@ -50599,7 +50599,7 @@ function build_other(ext, env) {
                 var match = param[0].pat_desc;
                 if (typeof match === "number") {
                   throw {
-                        ExceptionID: "Assert_failure",
+                        RE_EXN_ID: "Assert_failure",
                         _1: /* tuple */[
                           "parmatch.ml",
                           801,
@@ -50611,7 +50611,7 @@ function build_other(ext, env) {
                   return match[0];
                 }
                 throw {
-                      ExceptionID: "Assert_failure",
+                      RE_EXN_ID: "Assert_failure",
                       _1: /* tuple */[
                         "parmatch.ml",
                         801,
@@ -50664,7 +50664,7 @@ function build_other(ext, env) {
                 var args = param[0].pat_desc;
                 if (typeof args === "number") {
                   throw {
-                        ExceptionID: "Assert_failure",
+                        RE_EXN_ID: "Assert_failure",
                         _1: /* tuple */[
                           "parmatch.ml",
                           893,
@@ -50676,7 +50676,7 @@ function build_other(ext, env) {
                   return List.length(args[0]);
                 }
                 throw {
-                      ExceptionID: "Assert_failure",
+                      RE_EXN_ID: "Assert_failure",
                       _1: /* tuple */[
                         "parmatch.ml",
                         893,
@@ -50720,7 +50720,7 @@ function build_other_gadt(ext, env) {
     
   }
   throw {
-        ExceptionID: "Assert_failure",
+        RE_EXN_ID: "Assert_failure",
         _1: /* tuple */[
           "parmatch.ml",
           917,
@@ -50886,7 +50886,7 @@ function orify_many(param) {
     }
   }
   throw {
-        ExceptionID: "Assert_failure",
+        RE_EXN_ID: "Assert_failure",
         _1: /* tuple */[
           "parmatch.ml",
           989,
@@ -50969,7 +50969,7 @@ function exhaust(ext, pss, n) {
     }
     catch (raw_exn){
       var exn = Caml_js_exceptions.internalToOCamlException(raw_exn);
-      if (exn.ExceptionID === Empty) {
+      if (exn.RE_EXN_ID === Empty) {
         return fatal_error("Parmatch.exhaust");
       }
       throw exn;
@@ -51059,7 +51059,7 @@ function exhaust_gadt(ext, pss, n) {
     }
     catch (raw_exn){
       var exn = Caml_js_exceptions.internalToOCamlException(raw_exn);
-      if (exn.ExceptionID === Empty) {
+      if (exn.RE_EXN_ID === Empty) {
         return fatal_error("Parmatch.exhaust");
       }
       throw exn;
@@ -51092,7 +51092,7 @@ function exhaust_gadt$1(ext, pss, n) {
           if (param) {
             if (param[1]) {
               throw {
-                    ExceptionID: "Assert_failure",
+                    RE_EXN_ID: "Assert_failure",
                     _1: /* tuple */[
                       "parmatch.ml",
                       1165,
@@ -51103,7 +51103,7 @@ function exhaust_gadt$1(ext, pss, n) {
             return param[0];
           }
           throw {
-                ExceptionID: "Assert_failure",
+                RE_EXN_ID: "Assert_failure",
                 _1: /* tuple */[
                   "parmatch.ml",
                   1165,
@@ -51209,7 +51209,7 @@ function is_var_column(rs) {
                   }
                 }
                 throw {
-                      ExceptionID: "Assert_failure",
+                      RE_EXN_ID: "Assert_failure",
                       _1: /* tuple */[
                         "parmatch.ml",
                         1274,
@@ -51225,7 +51225,7 @@ function or_args(_p) {
     var match = p.pat_desc;
     if (typeof match === "number") {
       throw {
-            ExceptionID: "Assert_failure",
+            RE_EXN_ID: "Assert_failure",
             _1: /* tuple */[
               "parmatch.ml",
               1281,
@@ -51244,7 +51244,7 @@ function or_args(_p) {
                 ];
       default:
         throw {
-              ExceptionID: "Assert_failure",
+              RE_EXN_ID: "Assert_failure",
               _1: /* tuple */[
                 "parmatch.ml",
                 1281,
@@ -51265,7 +51265,7 @@ function remove(r) {
           };
   }
   throw {
-        ExceptionID: "Assert_failure",
+        RE_EXN_ID: "Assert_failure",
         _1: /* tuple */[
           "parmatch.ml",
           1286,
@@ -51287,7 +51287,7 @@ function push_no_or(r) {
           };
   }
   throw {
-        ExceptionID: "Assert_failure",
+        RE_EXN_ID: "Assert_failure",
         _1: /* tuple */[
           "parmatch.ml",
           1293,
@@ -51309,7 +51309,7 @@ function push_or(r) {
           };
   }
   throw {
-        ExceptionID: "Assert_failure",
+        RE_EXN_ID: "Assert_failure",
         _1: /* tuple */[
           "parmatch.ml",
           1297,
@@ -51394,7 +51394,7 @@ function filter_one$1(q, rs) {
         continue ;
       }
       throw {
-            ExceptionID: "Assert_failure",
+            RE_EXN_ID: "Assert_failure",
             _1: /* tuple */[
               "parmatch.ml",
               1314,
@@ -51455,7 +51455,7 @@ function extract_columns(pss, qs) {
                   }), i, rs[1]);
     }
     throw {
-          ExceptionID: "Assert_failure",
+          RE_EXN_ID: "Assert_failure",
           _1: /* tuple */[
             "parmatch.ml",
             1357,
@@ -51537,7 +51537,7 @@ function every_satisfiables(_pss, _qs) {
                       if (match) {
                         if (match[1]) {
                           throw {
-                                ExceptionID: "Assert_failure",
+                                RE_EXN_ID: "Assert_failure",
                                 _1: /* tuple */[
                                   "parmatch.ml",
                                   1394,
@@ -51568,7 +51568,7 @@ function every_satisfiables(_pss, _qs) {
                         }
                       }
                       throw {
-                            ExceptionID: "Assert_failure",
+                            RE_EXN_ID: "Assert_failure",
                             _1: /* tuple */[
                               "parmatch.ml",
                               1394,
@@ -51928,7 +51928,7 @@ function initial_all(no_guard, param) {
     return /* [] */0;
   }
   throw {
-        ExceptionID: NoGuard
+        RE_EXN_ID: NoGuard
       };
 }
 
@@ -52078,7 +52078,7 @@ function check_partial_all(v, casel) {
   }
   catch (raw_exn){
     var exn = Caml_js_exceptions.internalToOCamlException(raw_exn);
-    if (exn.ExceptionID === NoGuard) {
+    if (exn.RE_EXN_ID === NoGuard) {
       return ;
     }
     throw exn;
@@ -52181,7 +52181,7 @@ function conv(typed) {
                             arg = lst[1] ? mk$1(undefined, undefined, /* Ppat_tuple */Block.__(4, [lst])) : lst[0];
                           } else {
                             throw {
-                                  ExceptionID: "Assert_failure",
+                                  RE_EXN_ID: "Assert_failure",
                                   _1: /* tuple */[
                                     "parmatch.ml",
                                     1729,
@@ -52713,7 +52713,7 @@ function warning_leave_scope(param) {
     return ;
   }
   throw {
-        ExceptionID: "Assert_failure",
+        RE_EXN_ID: "Assert_failure",
         _1: /* tuple */[
           "typetexp.ml",
           146,
@@ -52736,7 +52736,7 @@ function warning_attribute(attrs) {
     }
     catch (raw_exn){
       var exn = Caml_js_exceptions.internalToOCamlException(raw_exn);
-      if (exn.ExceptionID === Arg.Bad) {
+      if (exn.RE_EXN_ID === Arg.Bad) {
         return prerr_warning(loc, /* Attribute_payload */Block.__(30, [
                       txt,
                       "Ill-formed list of warnings"
@@ -52779,14 +52779,14 @@ function narrow_unbound_lid_error(env, loc, lid, make_error) {
     }
     catch (raw_exn){
       var exn = Caml_js_exceptions.internalToOCamlException(raw_exn);
-      if (exn.ExceptionID === "Not_found") {
+      if (exn.RE_EXN_ID === "Not_found") {
         return narrow_unbound_lid_error(env, loc, mlid, (function (lid) {
                       return /* Unbound_module */Block.__(20, [lid]);
                     }));
       }
-      if (exn.ExceptionID === Recmodule) {
+      if (exn.RE_EXN_ID === Recmodule) {
         throw {
-              ExceptionID: $$Error$6,
+              RE_EXN_ID: $$Error$6,
               _1: loc,
               _2: env,
               _3: /* Illegal_reference_to_recursive_module */1
@@ -52805,7 +52805,7 @@ function narrow_unbound_lid_error(env, loc, lid, make_error) {
         var match = scrape_alias(env, undefined, md.md_type);
         if (match.tag === /* Mty_functor */2) {
           throw {
-                ExceptionID: $$Error$6,
+                RE_EXN_ID: $$Error$6,
                 _1: loc,
                 _2: env,
                 _3: /* Access_functor_as_structure */Block.__(25, [mlid])
@@ -52816,7 +52816,7 @@ function narrow_unbound_lid_error(env, loc, lid, make_error) {
         check_module(lid[0]);
         check_module(lid[1]);
         throw {
-              ExceptionID: $$Error$6,
+              RE_EXN_ID: $$Error$6,
               _1: loc,
               _2: env,
               _3: /* Ill_typed_functor_application */Block.__(24, [lid])
@@ -52824,7 +52824,7 @@ function narrow_unbound_lid_error(env, loc, lid, make_error) {
     
   }
   throw {
-        ExceptionID: $$Error$6,
+        RE_EXN_ID: $$Error$6,
         _1: loc,
         _2: env,
         _3: Curry._1(make_error, lid)
@@ -52856,12 +52856,12 @@ function find_component(lookup, make_error, env, loc, lid) {
   }
   catch (raw_exn){
     var exn = Caml_js_exceptions.internalToOCamlException(raw_exn);
-    if (exn.ExceptionID === "Not_found") {
+    if (exn.RE_EXN_ID === "Not_found") {
       return narrow_unbound_lid_error(env, loc, lid, make_error);
     }
-    if (exn.ExceptionID === Recmodule) {
+    if (exn.RE_EXN_ID === Recmodule) {
       throw {
-            ExceptionID: $$Error$6,
+            RE_EXN_ID: $$Error$6,
             _1: loc,
             _2: env,
             _3: /* Illegal_reference_to_recursive_module */1
@@ -52967,7 +52967,7 @@ function unbound_label_error(env, lid) {
 var transl_modtype_longident = {
   contents: (function (param) {
       throw {
-            ExceptionID: "Assert_failure",
+            RE_EXN_ID: "Assert_failure",
             _1: /* tuple */[
               "typetexp.ml",
               293,
@@ -52980,7 +52980,7 @@ var transl_modtype_longident = {
 var transl_modtype = {
   contents: (function (param) {
       throw {
-            ExceptionID: "Assert_failure",
+            RE_EXN_ID: "Assert_failure",
             _1: /* tuple */[
               "typetexp.ml",
               294,
@@ -52996,7 +52996,7 @@ function create_package_mty(fake, loc, env, param) {
           var s1 = param[0];
           if (Caml_obj.caml_equal(s1.txt, s2.txt)) {
             throw {
-                  ExceptionID: $$Error$6,
+                  RE_EXN_ID: $$Error$6,
                   _1: loc,
                   _2: env,
                   _3: /* Multiple_constraints_on_type */Block.__(15, [s1.txt])
@@ -53107,7 +53107,7 @@ function transl_type_param(env, styp) {
   }
   if (name.tag) {
     throw {
-          ExceptionID: "Assert_failure",
+          RE_EXN_ID: "Assert_failure",
           _1: /* tuple */[
             "typetexp.ml",
             379,
@@ -53120,7 +53120,7 @@ function transl_type_param(env, styp) {
   try {
     if (name$1 !== "" && Caml_string.get(name$1, 0) === /* "_" */95) {
       throw {
-            ExceptionID: $$Error$6,
+            RE_EXN_ID: $$Error$6,
             _1: loc,
             _2: empty,
             _3: /* Invalid_variable_name */Block.__(13, ["'" + name$1])
@@ -53128,12 +53128,12 @@ function transl_type_param(env, styp) {
     }
     find$2(name$1, type_variables.contents);
     throw {
-          ExceptionID: Already_bound
+          RE_EXN_ID: Already_bound
         };
   }
   catch (raw_exn){
     var exn = Caml_js_exceptions.internalToOCamlException(raw_exn);
-    if (exn.ExceptionID === "Not_found") {
+    if (exn.RE_EXN_ID === "Not_found") {
       var v = new_global_var(validate_name(name$1), undefined);
       type_variables.contents = add$5(name$1, v, type_variables.contents);
       ty$1 = v;
@@ -53196,7 +53196,7 @@ function transl_type(env, policy, styp) {
     } else {
       if (policy === /* Fixed */0) {
         throw {
-              ExceptionID: $$Error$6,
+              RE_EXN_ID: $$Error$6,
               _1: styp.ptyp_loc,
               _2: env,
               _3: /* Unbound_type_variable */Block.__(0, ["_"])
@@ -53211,7 +53211,7 @@ function transl_type(env, policy, styp) {
         var name$1 = name[0];
         if (name$1 !== "" && Caml_string.get(name$1, 0) === /* "_" */95) {
           throw {
-                ExceptionID: $$Error$6,
+                RE_EXN_ID: $$Error$6,
                 _1: styp.ptyp_loc,
                 _2: env,
                 _3: /* Invalid_variable_name */Block.__(13, ["'" + name$1])
@@ -53223,13 +53223,13 @@ function transl_type(env, policy, styp) {
         }
         catch (raw_exn){
           var exn = Caml_js_exceptions.internalToOCamlException(raw_exn);
-          if (exn.ExceptionID === "Not_found") {
+          if (exn.RE_EXN_ID === "Not_found") {
             try {
               ty$1 = instance(undefined, env, find$2(name$1, used_variables.contents)[0]);
             }
             catch (raw_exn$1){
               var exn$1 = Caml_js_exceptions.internalToOCamlException(raw_exn$1);
-              if (exn$1.ExceptionID === "Not_found") {
+              if (exn$1.RE_EXN_ID === "Not_found") {
                 var v = policy === /* Univars */2 ? new_pre_univar(name$1, undefined) : newvar(validate_name(name$1), undefined);
                 used_variables.contents = add$5(name$1, /* tuple */[
                       v,
@@ -53290,7 +53290,7 @@ function transl_type(env, policy, styp) {
         }
         if (List.length(stl$2) !== decl.type_arity) {
           throw {
-                ExceptionID: $$Error$6,
+                RE_EXN_ID: $$Error$6,
                 _1: styp.ptyp_loc,
                 _2: env,
                 _3: /* Type_arity_mismatch */Block.__(3, [
@@ -53312,9 +53312,9 @@ function transl_type(env, policy, styp) {
                 }
                 catch (raw_trace){
                   var trace = Caml_js_exceptions.internalToOCamlException(raw_trace);
-                  if (trace.ExceptionID === Unify) {
+                  if (trace.RE_EXN_ID === Unify) {
                     throw {
-                          ExceptionID: $$Error$6,
+                          RE_EXN_ID: $$Error$6,
                           _1: param[0].ptyp_loc,
                           _2: env,
                           _3: /* Type_mismatch */Block.__(6, [swap_list(trace._1)])
@@ -53331,9 +53331,9 @@ function transl_type(env, policy, styp) {
         }
         catch (raw_trace){
           var trace = Caml_js_exceptions.internalToOCamlException(raw_trace);
-          if (trace.ExceptionID === Unify) {
+          if (trace.RE_EXN_ID === Unify) {
             throw {
-                  ExceptionID: $$Error$6,
+                  RE_EXN_ID: $$Error$6,
                   _1: styp.ptyp_loc,
                   _2: env,
                   _3: /* Type_mismatch */Block.__(6, [trace._1])
@@ -53375,7 +53375,7 @@ function transl_type(env, policy, styp) {
                 var row = repr(ty).desc;
                 if (typeof row === "number") {
                   throw {
-                        ExceptionID: "Not_found"
+                        RE_EXN_ID: "Not_found"
                       };
                 }
                 switch (row.tag | 0) {
@@ -53387,16 +53387,16 @@ function transl_type(env, policy, styp) {
                         return ;
                       }
                       throw {
-                            ExceptionID: "Not_found"
+                            RE_EXN_ID: "Not_found"
                           };
                   default:
                     throw {
-                          ExceptionID: "Not_found"
+                          RE_EXN_ID: "Not_found"
                         };
                 }
               } else {
                 throw {
-                      ExceptionID: "Not_found"
+                      RE_EXN_ID: "Not_found"
                     };
               }
             };
@@ -53411,7 +53411,7 @@ function transl_type(env, policy, styp) {
         }
         catch (raw_exn$2){
           var exn$2 = Caml_js_exceptions.internalToOCamlException(raw_exn$2);
-          if (exn$2.ExceptionID === "Not_found") {
+          if (exn$2.RE_EXN_ID === "Not_found") {
             try {
               var s = lid$1.txt;
               var lid2;
@@ -53439,10 +53439,10 @@ function transl_type(env, policy, styp) {
             }
             catch (raw_exn$3){
               var exn$3 = Caml_js_exceptions.internalToOCamlException(raw_exn$3);
-              if (exn$3.ExceptionID === "Not_found") {
+              if (exn$3.RE_EXN_ID === "Not_found") {
                 find_class$1(env, styp.ptyp_loc, lid$1.txt);
                 throw {
-                      ExceptionID: "Assert_failure",
+                      RE_EXN_ID: "Assert_failure",
                       _1: /* tuple */[
                         "typetexp.ml",
                         505,
@@ -53460,7 +53460,7 @@ function transl_type(env, policy, styp) {
         var path$1 = match$1[0];
         if (List.length(stl$3) !== decl$2.type_arity) {
           throw {
-                ExceptionID: $$Error$6,
+                RE_EXN_ID: $$Error$6,
                 _1: styp.ptyp_loc,
                 _2: env,
                 _3: /* Type_arity_mismatch */Block.__(3, [
@@ -53480,9 +53480,9 @@ function transl_type(env, policy, styp) {
                 }
                 catch (raw_trace){
                   var trace = Caml_js_exceptions.internalToOCamlException(raw_trace);
-                  if (trace.ExceptionID === Unify) {
+                  if (trace.RE_EXN_ID === Unify) {
                     throw {
-                          ExceptionID: $$Error$6,
+                          RE_EXN_ID: $$Error$6,
                           _1: param[0].ptyp_loc,
                           _2: env,
                           _3: /* Type_mismatch */Block.__(6, [swap_list(trace._1)])
@@ -53500,9 +53500,9 @@ function transl_type(env, policy, styp) {
         }
         catch (raw_trace$1){
           var trace$1 = Caml_js_exceptions.internalToOCamlException(raw_trace$1);
-          if (trace$1.ExceptionID === Unify) {
+          if (trace$1.RE_EXN_ID === Unify) {
             throw {
-                  ExceptionID: $$Error$6,
+                  RE_EXN_ID: $$Error$6,
                   _1: styp.ptyp_loc,
                   _2: env,
                   _3: /* Type_mismatch */Block.__(6, [trace$1._1])
@@ -53514,7 +53514,7 @@ function transl_type(env, policy, styp) {
         var ty$7;
         if (typeof row === "number") {
           throw {
-                ExceptionID: "Assert_failure",
+                RE_EXN_ID: "Assert_failure",
                 _1: /* tuple */[
                   "typetexp.ml",
                   553,
@@ -53602,7 +53602,7 @@ function transl_type(env, policy, styp) {
               break;
           default:
             throw {
-                  ExceptionID: "Assert_failure",
+                  RE_EXN_ID: "Assert_failure",
                   _1: /* tuple */[
                     "typetexp.ml",
                     553,
@@ -53626,7 +53626,7 @@ function transl_type(env, policy, styp) {
           }
           catch (raw_exn$4){
             var exn$4 = Caml_js_exceptions.internalToOCamlException(raw_exn$4);
-            if (exn$4.ExceptionID === "Not_found") {
+            if (exn$4.RE_EXN_ID === "Not_found") {
               t$1 = instance(undefined, env, find$2(alias, used_variables.contents)[0]);
             } else {
               throw exn$4;
@@ -53638,10 +53638,10 @@ function transl_type(env, policy, styp) {
           }
           catch (raw_trace$2){
             var trace$2 = Caml_js_exceptions.internalToOCamlException(raw_trace$2);
-            if (trace$2.ExceptionID === Unify) {
+            if (trace$2.RE_EXN_ID === Unify) {
               var trace$3 = swap_list(trace$2._1);
               throw {
-                    ExceptionID: $$Error$6,
+                    RE_EXN_ID: $$Error$6,
                     _1: styp.ptyp_loc,
                     _2: env,
                     _3: /* Alias_type_mismatch */Block.__(7, [trace$3])
@@ -53653,7 +53653,7 @@ function transl_type(env, policy, styp) {
         }
         catch (raw_exn$5){
           var exn$5 = Caml_js_exceptions.internalToOCamlException(raw_exn$5);
-          if (exn$5.ExceptionID === "Not_found") {
+          if (exn$5.RE_EXN_ID === "Not_found") {
             if (principal.contents) {
               begin_def(undefined);
             }
@@ -53668,10 +53668,10 @@ function transl_type(env, policy, styp) {
             }
             catch (raw_trace$3){
               var trace$4 = Caml_js_exceptions.internalToOCamlException(raw_trace$3);
-              if (trace$4.ExceptionID === Unify) {
+              if (trace$4.RE_EXN_ID === Unify) {
                 var trace$5 = swap_list(trace$4._1);
                 throw {
-                      ExceptionID: $$Error$6,
+                      RE_EXN_ID: $$Error$6,
                       _1: styp.ptyp_loc,
                       _2: env,
                       _3: /* Alias_type_mismatch */Block.__(7, [trace$5])
@@ -53754,7 +53754,7 @@ function transl_type(env, policy, styp) {
             var l$prime = match[0];
             if (l !== l$prime) {
               throw {
-                    ExceptionID: $$Error$6,
+                    RE_EXN_ID: $$Error$6,
                     _1: styp.ptyp_loc,
                     _2: env,
                     _3: /* Variant_tags */Block.__(12, [
@@ -53779,9 +53779,9 @@ function transl_type(env, policy, styp) {
             }
             catch (raw_trace){
               var trace = Caml_js_exceptions.internalToOCamlException(raw_trace);
-              if (trace.ExceptionID === Unify) {
+              if (trace.RE_EXN_ID === Unify) {
                 throw {
-                      ExceptionID: $$Error$6,
+                      RE_EXN_ID: $$Error$6,
                       _1: loc,
                       _2: env,
                       _3: /* Constructor_mismatch */Block.__(10, [
@@ -53795,7 +53795,7 @@ function transl_type(env, policy, styp) {
           }
           catch (raw_exn){
             var exn = Caml_js_exceptions.internalToOCamlException(raw_exn);
-            if (exn.ExceptionID === "Not_found") {
+            if (exn.RE_EXN_ID === "Not_found") {
               return Hashtbl.add(hfields, h, /* tuple */[
                           l,
                           f
@@ -53819,14 +53819,14 @@ function transl_type(env, policy, styp) {
             try {
               Hashtbl.iter((function (param, param$1) {
                       throw {
-                            ExceptionID: Pervasives.Exit
+                            RE_EXN_ID: Pervasives.Exit
                           };
                     }), hfields);
               name$2.contents = nm;
             }
             catch (raw_exn){
               var exn = Caml_js_exceptions.internalToOCamlException(raw_exn);
-              if (exn.ExceptionID === Pervasives.Exit) {
+              if (exn.RE_EXN_ID === Pervasives.Exit) {
                 name$2.contents = undefined;
               } else {
                 throw exn;
@@ -53843,7 +53843,7 @@ function transl_type(env, policy, styp) {
                 case /* Tvar */0 :
                     if (nm !== undefined) {
                       throw {
-                            ExceptionID: $$Error$6,
+                            RE_EXN_ID: $$Error$6,
                             _1: sty$1.ptyp_loc,
                             _2: env,
                             _3: /* Unbound_type_constructor_2 */Block.__(2, [nm[0]])
@@ -53865,7 +53865,7 @@ function transl_type(env, policy, styp) {
             }
             if (exit === 1) {
               throw {
-                    ExceptionID: $$Error$6,
+                    RE_EXN_ID: $$Error$6,
                     _1: sty$1.ptyp_loc,
                     _2: env,
                     _3: /* Not_a_variant */Block.__(11, [ty])
@@ -53878,7 +53878,7 @@ function transl_type(env, policy, styp) {
                     if (present !== undefined && !List.mem(l, present)) {
                       if (typeof f === "number") {
                         throw {
-                              ExceptionID: "Assert_failure",
+                              RE_EXN_ID: "Assert_failure",
                               _1: /* tuple */[
                                 "typetexp.ml",
                                 666,
@@ -53888,7 +53888,7 @@ function transl_type(env, policy, styp) {
                       }
                       if (f.tag) {
                         throw {
-                              ExceptionID: "Assert_failure",
+                              RE_EXN_ID: "Assert_failure",
                               _1: /* tuple */[
                                 "typetexp.ml",
                                 666,
@@ -53949,7 +53949,7 @@ function transl_type(env, policy, styp) {
           if (exit$1 === 1) {
             if (List.length(stl) > 1 || c && stl !== /* [] */0) {
               throw {
-                    ExceptionID: $$Error$6,
+                    RE_EXN_ID: $$Error$6,
                     _1: styp.ptyp_loc,
                     _2: env,
                     _3: /* Present_has_conjunction */Block.__(8, [l])
@@ -53978,7 +53978,7 @@ function transl_type(env, policy, styp) {
                     return ;
                   }
                   throw {
-                        ExceptionID: $$Error$6,
+                        RE_EXN_ID: $$Error$6,
                         _1: styp.ptyp_loc,
                         _2: env,
                         _3: /* Present_has_no_type */Block.__(9, [l])
@@ -54053,7 +54053,7 @@ function transl_type(env, policy, styp) {
                         ];
                 }
                 throw {
-                      ExceptionID: $$Error$6,
+                      RE_EXN_ID: $$Error$6,
                       _1: styp.ptyp_loc,
                       _2: env,
                       _3: /* Cannot_quantify */Block.__(14, [
@@ -54109,7 +54109,7 @@ function transl_type(env, policy, styp) {
                       }]), ty$12);
     case /* Ptyp_extension */10 :
         throw {
-              ExceptionID: Error_forward,
+              RE_EXN_ID: Error_forward,
               _1: error_of_extension(name[0])
             };
     
@@ -54136,7 +54136,7 @@ function transl_fields(loc, env, policy, seen, o, param) {
   var s = match[0];
   if (List.mem(s, seen)) {
     throw {
-          ExceptionID: $$Error$6,
+          RE_EXN_ID: $$Error$6,
           _1: loc,
           _2: env,
           _3: /* Repeated_method_label */Block.__(16, [s])
@@ -54230,10 +54230,10 @@ function globalize_used_variables(env, fixed) {
           }
           catch (raw_exn){
             var exn$1 = Caml_js_exceptions.internalToOCamlException(raw_exn);
-            if (exn$1.ExceptionID === "Not_found") {
+            if (exn$1.RE_EXN_ID === "Not_found") {
               if (fixed && is_Tvar(repr(ty))) {
                 throw {
-                      ExceptionID: $$Error$6,
+                      RE_EXN_ID: $$Error$6,
                       _1: loc,
                       _2: env,
                       _3: /* Unbound_type_variable */Block.__(0, ["'" + name])
@@ -54262,9 +54262,9 @@ function globalize_used_variables(env, fixed) {
                     }
                     catch (raw_trace){
                       var trace = Caml_js_exceptions.internalToOCamlException(raw_trace);
-                      if (trace.ExceptionID === Unify) {
+                      if (trace.RE_EXN_ID === Unify) {
                         throw {
-                              ExceptionID: $$Error$6,
+                              RE_EXN_ID: $$Error$6,
                               _1: param[0],
                               _2: env,
                               _3: /* Type_mismatch */Block.__(6, [trace._1])
@@ -54469,8 +54469,8 @@ function spellcheck$1(ppf, fold) {
 }
 
 register_error_of_exn((function (err) {
-        if (err.ExceptionID !== $$Error$6) {
-          if (err.ExceptionID === Error_forward) {
+        if (err.RE_EXN_ID !== $$Error$6) {
+          if (err.RE_EXN_ID === Error_forward) {
             return err._1;
           } else {
             return ;
@@ -55012,7 +55012,7 @@ var Error_forward$1 = Caml_exceptions.create("Ocaml_typedtree_test.Typecore.Erro
 var type_module = {
   contents: (function (env, md) {
       throw {
-            ExceptionID: "Assert_failure",
+            RE_EXN_ID: "Assert_failure",
             _1: /* tuple */[
               "typecore.ml",
               77,
@@ -55025,7 +55025,7 @@ var type_module = {
 var type_open = {
   contents: (function (param) {
       throw {
-            ExceptionID: "Assert_failure",
+            RE_EXN_ID: "Assert_failure",
             _1: /* tuple */[
               "typecore.ml",
               83,
@@ -55038,7 +55038,7 @@ var type_open = {
 var type_package = {
   contents: (function (param) {
       throw {
-            ExceptionID: "Assert_failure",
+            RE_EXN_ID: "Assert_failure",
             _1: /* tuple */[
               "typecore.ml",
               88,
@@ -55051,7 +55051,7 @@ var type_package = {
 var type_object = {
   contents: (function (env, s) {
       throw {
-            ExceptionID: "Assert_failure",
+            RE_EXN_ID: "Assert_failure",
             _1: /* tuple */[
               "typecore.ml",
               92,
@@ -55393,7 +55393,7 @@ function extract_option_type(env, ty) {
     
   }
   throw {
-        ExceptionID: "Assert_failure",
+        RE_EXN_ID: "Assert_failure",
         _1: /* tuple */[
           "typecore.ml",
           275,
@@ -55407,7 +55407,7 @@ function extract_concrete_record(env, ty) {
   var match$1 = match[2].type_kind;
   if (typeof match$1 === "number") {
     throw {
-          ExceptionID: "Not_found"
+          RE_EXN_ID: "Not_found"
         };
   }
   if (!match$1.tag) {
@@ -55418,7 +55418,7 @@ function extract_concrete_record(env, ty) {
           ];
   }
   throw {
-        ExceptionID: "Not_found"
+        RE_EXN_ID: "Not_found"
       };
 }
 
@@ -55436,7 +55436,7 @@ function extract_concrete_variant(env, ty) {
             ];
     }
     throw {
-          ExceptionID: "Not_found"
+          RE_EXN_ID: "Not_found"
         };
   } else {
     if (cstrs.tag) {
@@ -55447,7 +55447,7 @@ function extract_concrete_variant(env, ty) {
             ];
     }
     throw {
-          ExceptionID: "Not_found"
+          RE_EXN_ID: "Not_found"
         };
   }
 }
@@ -55461,9 +55461,9 @@ function extract_label_names(sexp, env, ty) {
   }
   catch (raw_exn){
     var exn = Caml_js_exceptions.internalToOCamlException(raw_exn);
-    if (exn.ExceptionID === "Not_found") {
+    if (exn.RE_EXN_ID === "Not_found") {
       throw {
-            ExceptionID: "Assert_failure",
+            RE_EXN_ID: "Assert_failure",
             _1: /* tuple */[
               "typecore.ml",
               293,
@@ -55493,17 +55493,17 @@ function unify_pat_types(loc, env, ty, ty$prime) {
   }
   catch (raw_trace){
     var trace = Caml_js_exceptions.internalToOCamlException(raw_trace);
-    if (trace.ExceptionID === Unify) {
+    if (trace.RE_EXN_ID === Unify) {
       throw {
-            ExceptionID: $$Error$7,
+            RE_EXN_ID: $$Error$7,
             _1: loc,
             _2: env,
             _3: /* Pattern_type_clash */Block.__(3, [trace._1])
           };
     }
-    if (trace.ExceptionID === Tags) {
+    if (trace.RE_EXN_ID === Tags) {
       throw {
-            ExceptionID: $$Error$6,
+            RE_EXN_ID: $$Error$6,
             _1: loc,
             _2: env,
             _3: /* Variant_tags */Block.__(12, [
@@ -55522,17 +55522,17 @@ function unify_exp_types(loc, env, ty, expected_ty) {
   }
   catch (raw_trace){
     var trace = Caml_js_exceptions.internalToOCamlException(raw_trace);
-    if (trace.ExceptionID === Unify) {
+    if (trace.RE_EXN_ID === Unify) {
       throw {
-            ExceptionID: $$Error$7,
+            RE_EXN_ID: $$Error$7,
             _1: loc,
             _2: env,
             _3: /* Expr_type_clash */Block.__(7, [trace._1])
           };
     }
-    if (trace.ExceptionID === Tags) {
+    if (trace.RE_EXN_ID === Tags) {
       throw {
-            ExceptionID: $$Error$6,
+            RE_EXN_ID: $$Error$6,
             _1: loc,
             _2: env,
             _3: /* Variant_tags */Block.__(12, [
@@ -55555,7 +55555,7 @@ function get_newtype_level$1(param) {
     return y;
   }
   throw {
-        ExceptionID: "Assert_failure",
+        RE_EXN_ID: "Assert_failure",
         _1: /* tuple */[
           "typecore.ml",
           331,
@@ -55571,7 +55571,7 @@ function unify_pat_types_gadt(loc, env, ty, ty$prime) {
     newtype_level$2 = x;
   } else {
     throw {
-          ExceptionID: "Assert_failure",
+          RE_EXN_ID: "Assert_failure",
           _1: /* tuple */[
             "typecore.ml",
             336,
@@ -55592,9 +55592,9 @@ function unify_pat_types_gadt(loc, env, ty, ty$prime) {
     catch (raw_e){
       var e = Caml_js_exceptions.internalToOCamlException(raw_e);
       Curry._1(TypePairs.clear, unify_eq_set);
-      if (e.ExceptionID === Unify) {
+      if (e.RE_EXN_ID === Unify) {
         throw {
-              ExceptionID: Unify,
+              RE_EXN_ID: Unify,
               _1: e._1
             };
       }
@@ -55604,17 +55604,17 @@ function unify_pat_types_gadt(loc, env, ty, ty$prime) {
   }
   catch (raw_trace){
     var trace = Caml_js_exceptions.internalToOCamlException(raw_trace);
-    if (trace.ExceptionID === Unify) {
+    if (trace.RE_EXN_ID === Unify) {
       throw {
-            ExceptionID: $$Error$7,
+            RE_EXN_ID: $$Error$7,
             _1: loc,
             _2: env.contents,
             _3: /* Pattern_type_clash */Block.__(3, [trace._1])
           };
     }
-    if (trace.ExceptionID === Tags) {
+    if (trace.RE_EXN_ID === Tags) {
       throw {
-            ExceptionID: $$Error$6,
+            RE_EXN_ID: $$Error$6,
             _1: loc,
             _2: env.contents,
             _3: /* Variant_tags */Block.__(12, [
@@ -55623,9 +55623,9 @@ function unify_pat_types_gadt(loc, env, ty, ty$prime) {
               ])
           };
     }
-    if (trace.ExceptionID === Unification_recursive_abbrev) {
+    if (trace.RE_EXN_ID === Unification_recursive_abbrev) {
       throw {
-            ExceptionID: $$Error$7,
+            RE_EXN_ID: $$Error$7,
             _1: loc,
             _2: env.contents,
             _3: /* Recursive_local_constraint */Block.__(33, [trace._1])
@@ -55653,7 +55653,7 @@ function finalize_variant(pat) {
   var row$1;
   if (typeof row === "number") {
     throw {
-          ExceptionID: "Assert_failure",
+          RE_EXN_ID: "Assert_failure",
           _1: /* tuple */[
             "typecore.ml",
             362,
@@ -55667,7 +55667,7 @@ function finalize_variant(pat) {
     row$1 = row_repr_aux(/* [] */0, row$2);
   } else {
     throw {
-          ExceptionID: "Assert_failure",
+          RE_EXN_ID: "Assert_failure",
           _1: /* tuple */[
             "typecore.ml",
             362,
@@ -55703,7 +55703,7 @@ function finalize_variant(pat) {
                   ]);
       }
       throw {
-            ExceptionID: "Assert_failure",
+            RE_EXN_ID: "Assert_failure",
             _1: /* tuple */[
               "typecore.ml",
               370,
@@ -55744,14 +55744,14 @@ function has_variants(p) {
               return ;
             }
             throw {
-                  ExceptionID: Pervasives.Exit
+                  RE_EXN_ID: Pervasives.Exit
                 };
           }), p);
     return false;
   }
   catch (raw_exn){
     var exn = Caml_js_exceptions.internalToOCamlException(raw_exn);
-    if (exn.ExceptionID === Pervasives.Exit) {
+    if (exn.RE_EXN_ID === Pervasives.Exit) {
       return true;
     }
     throw exn;
@@ -55794,7 +55794,7 @@ function enter_variable(is_moduleOpt, is_as_variableOpt, loc, name, ty) {
             return param[0].name === name.txt;
           }), pattern_variables.contents)) {
     throw {
-          ExceptionID: $$Error$7,
+          RE_EXN_ID: $$Error$7,
           _1: loc,
           _2: empty,
           _3: /* Multiply_bound_variable */Block.__(5, [name.txt])
@@ -55814,7 +55814,7 @@ function enter_variable(is_moduleOpt, is_as_variableOpt, loc, name, ty) {
   if (is_module) {
     if (!allow_modules.contents) {
       throw {
-            ExceptionID: $$Error$7,
+            RE_EXN_ID: $$Error$7,
             _1: loc,
             _2: empty,
             _3: /* Modules_not_allowed */2
@@ -55871,9 +55871,9 @@ function enter_orpat_variables(loc, env, p1_vs, p2_vs) {
             }
             catch (raw_trace){
               var trace = Caml_js_exceptions.internalToOCamlException(raw_trace);
-              if (trace.ExceptionID === Unify) {
+              if (trace.RE_EXN_ID === Unify) {
                 throw {
-                      ExceptionID: $$Error$7,
+                      RE_EXN_ID: $$Error$7,
                       _1: loc,
                       _2: env,
                       _3: /* Or_pattern_type_clash */Block.__(4, [
@@ -55894,14 +55894,14 @@ function enter_orpat_variables(loc, env, p1_vs, p2_vs) {
           }
           var min_var = x1.name < x2.name ? x1 : x2;
           throw {
-                ExceptionID: $$Error$7,
+                RE_EXN_ID: $$Error$7,
                 _1: loc,
                 _2: env,
                 _3: /* Orpat_vars */Block.__(6, [min_var])
               };
         }
         throw {
-              ExceptionID: $$Error$7,
+              RE_EXN_ID: $$Error$7,
               _1: loc,
               _2: env,
               _3: /* Orpat_vars */Block.__(6, [x1])
@@ -55911,7 +55911,7 @@ function enter_orpat_variables(loc, env, p1_vs, p2_vs) {
         return /* [] */0;
       }
       throw {
-            ExceptionID: $$Error$7,
+            RE_EXN_ID: $$Error$7,
             _1: loc,
             _2: env,
             _3: /* Orpat_vars */Block.__(6, [p2_vs[0][0]])
@@ -56096,7 +56096,7 @@ function build_or_pat(env, loc, lid) {
   }
   if (exit === 1) {
     throw {
-          ExceptionID: $$Error$7,
+          RE_EXN_ID: $$Error$7,
           _1: loc,
           _2: env,
           _3: /* Not_a_variant_type */Block.__(30, [lid])
@@ -56258,7 +56258,7 @@ function build_or_pat(env, loc, lid) {
           ];
   }
   throw {
-        ExceptionID: $$Error$7,
+        RE_EXN_ID: $$Error$7,
         _1: loc,
         _2: env,
         _3: /* Not_a_variant_type */Block.__(30, [lid])
@@ -56274,7 +56274,7 @@ function expand_path(env, _p) {
     }
     catch (raw_exn){
       var exn = Caml_js_exceptions.internalToOCamlException(raw_exn);
-      if (exn.ExceptionID === "Not_found") {
+      if (exn.RE_EXN_ID === "Not_found") {
         decl = undefined;
       } else {
         throw exn;
@@ -56315,14 +56315,14 @@ function wrap_disambiguate(kind, ty, f, x) {
   }
   catch (raw_exn){
     var exn = Caml_js_exceptions.internalToOCamlException(raw_exn);
-    if (exn.ExceptionID === $$Error$7) {
+    if (exn.RE_EXN_ID === $$Error$7) {
       var match = exn._3;
       if (typeof match === "number") {
         throw exn;
       }
       if (match.tag === /* Wrong_name */13) {
         throw {
-              ExceptionID: $$Error$7,
+              RE_EXN_ID: $$Error$7,
               _1: exn._1,
               _2: exn._2,
               _3: /* Wrong_name */Block.__(13, [
@@ -56347,7 +56347,7 @@ function get_type_path$1(env, d) {
   var match = d.lbl_res.desc;
   if (typeof match === "number") {
     throw {
-          ExceptionID: "Assert_failure",
+          RE_EXN_ID: "Assert_failure",
           _1: /* tuple */[
             "typecore.ml",
             602,
@@ -56359,7 +56359,7 @@ function get_type_path$1(env, d) {
     return match[0];
   }
   throw {
-        ExceptionID: "Assert_failure",
+        RE_EXN_ID: "Assert_failure",
         _1: /* tuple */[
           "typecore.ml",
           602,
@@ -56382,9 +56382,9 @@ function lookup_from_type(env, tpath, lid) {
         }
         catch (raw_exn){
           var exn = Caml_js_exceptions.internalToOCamlException(raw_exn);
-          if (exn.ExceptionID === "Not_found") {
+          if (exn.RE_EXN_ID === "Not_found") {
             throw {
-                  ExceptionID: $$Error$7,
+                  RE_EXN_ID: $$Error$7,
                   _1: lid.loc,
                   _2: env,
                   _3: /* Wrong_name */Block.__(13, [
@@ -56401,7 +56401,7 @@ function lookup_from_type(env, tpath, lid) {
     case /* Ldot */1 :
     case /* Lapply */2 :
         throw {
-              ExceptionID: "Not_found"
+              RE_EXN_ID: "Not_found"
             };
     
   }
@@ -56500,7 +56500,7 @@ function disambiguate(warnOpt, check_lkOpt, scope, lid, env, opath, lbls) {
     }
     catch (raw_exn){
       var exn = Caml_js_exceptions.internalToOCamlException(raw_exn);
-      if (exn.ExceptionID === "Not_found") {
+      if (exn.RE_EXN_ID === "Not_found") {
         try {
           var lbl$2 = lookup_from_type(env, tpath, lid);
           Curry._2(check_lk, tpath, lbl$2);
@@ -56520,7 +56520,7 @@ function disambiguate(warnOpt, check_lkOpt, scope, lid, env, opath, lbls) {
         }
         catch (raw_exn$1){
           var exn$1 = Caml_js_exceptions.internalToOCamlException(raw_exn$1);
-          if (exn$1.ExceptionID === "Not_found") {
+          if (exn$1.RE_EXN_ID === "Not_found") {
             if (lbls === /* [] */0) {
               lbl = unbound_label_error(env, lid);
             } else {
@@ -56539,7 +56539,7 @@ function disambiguate(warnOpt, check_lkOpt, scope, lid, env, opath, lbls) {
                             ];
                     }), lbls);
               throw {
-                    ExceptionID: $$Error$7,
+                    RE_EXN_ID: $$Error$7,
                     _1: lid.loc,
                     _2: env,
                     _3: /* Name_type_mismatch */Block.__(14, [
@@ -56796,7 +56796,7 @@ function type_label_a_list(labels, loc, closed, env, type_lbl_a, opath, lid_a_li
                         case /* Ldot */1 :
                         case /* Lapply */2 :
                             throw {
-                                  ExceptionID: "Assert_failure",
+                                  RE_EXN_ID: "Assert_failure",
                                   _1: /* tuple */[
                                     "typecore.ml",
                                     819,
@@ -56863,7 +56863,7 @@ function check_recordpat_labels(loc, lbl_pat_list, closed) {
     var label = param[1];
     if (Caml_array.caml_array_get(defined, label.lbl_pos)) {
       throw {
-            ExceptionID: $$Error$7,
+            RE_EXN_ID: $$Error$7,
             _1: loc,
             _2: empty,
             _3: /* Label_multiply_defined */Block.__(10, [label.lbl_name])
@@ -56898,7 +56898,7 @@ function get_type_path$2(env, d) {
   var match = d.cstr_res.desc;
   if (typeof match === "number") {
     throw {
-          ExceptionID: "Assert_failure",
+          RE_EXN_ID: "Assert_failure",
           _1: /* tuple */[
             "typecore.ml",
             602,
@@ -56910,7 +56910,7 @@ function get_type_path$2(env, d) {
     return match[0];
   }
   throw {
-        ExceptionID: "Assert_failure",
+        RE_EXN_ID: "Assert_failure",
         _1: /* tuple */[
           "typecore.ml",
           602,
@@ -56933,9 +56933,9 @@ function lookup_from_type$1(env, tpath, lid) {
         }
         catch (raw_exn){
           var exn = Caml_js_exceptions.internalToOCamlException(raw_exn);
-          if (exn.ExceptionID === "Not_found") {
+          if (exn.RE_EXN_ID === "Not_found") {
             throw {
-                  ExceptionID: $$Error$7,
+                  RE_EXN_ID: $$Error$7,
                   _1: lid.loc,
                   _2: env,
                   _3: /* Wrong_name */Block.__(13, [
@@ -56952,7 +56952,7 @@ function lookup_from_type$1(env, tpath, lid) {
     case /* Ldot */1 :
     case /* Lapply */2 :
         throw {
-              ExceptionID: "Not_found"
+              RE_EXN_ID: "Not_found"
             };
     
   }
@@ -57051,7 +57051,7 @@ function disambiguate$1(warnOpt, check_lkOpt, scope, lid, env, opath, lbls) {
     }
     catch (raw_exn){
       var exn = Caml_js_exceptions.internalToOCamlException(raw_exn);
-      if (exn.ExceptionID === "Not_found") {
+      if (exn.RE_EXN_ID === "Not_found") {
         try {
           var lbl$2 = lookup_from_type$1(env, tpath, lid);
           Curry._2(check_lk, tpath, lbl$2);
@@ -57071,7 +57071,7 @@ function disambiguate$1(warnOpt, check_lkOpt, scope, lid, env, opath, lbls) {
         }
         catch (raw_exn$1){
           var exn$1 = Caml_js_exceptions.internalToOCamlException(raw_exn$1);
-          if (exn$1.ExceptionID === "Not_found") {
+          if (exn$1.RE_EXN_ID === "Not_found") {
             if (lbls === /* [] */0) {
               lbl = unbound_constructor_error(env, lid);
             } else {
@@ -57090,7 +57090,7 @@ function disambiguate$1(warnOpt, check_lkOpt, scope, lid, env, opath, lbls) {
                             ];
                     }), lbls);
               throw {
-                    ExceptionID: $$Error$7,
+                    RE_EXN_ID: $$Error$7,
                     _1: lid.loc,
                     _2: env,
                     _3: /* Name_type_mismatch */Block.__(14, [
@@ -57142,7 +57142,7 @@ function unify_head_only(loc, env, ty, constr) {
   var match$1 = repr(ty_res).desc;
   if (typeof match$1 === "number") {
     throw {
-          ExceptionID: "Assert_failure",
+          RE_EXN_ID: "Assert_failure",
           _1: /* tuple */[
             "typecore.ml",
             892,
@@ -57162,7 +57162,7 @@ function unify_head_only(loc, env, ty, constr) {
     return unify_pat_types(loc, env, ty_res, ty);
   }
   throw {
-        ExceptionID: "Assert_failure",
+        RE_EXN_ID: "Assert_failure",
         _1: /* tuple */[
           "typecore.ml",
           892,
@@ -57271,14 +57271,14 @@ function type_pat(constrs, labels, no_existentials, mode, env, sp, expected_ty) 
             return type_pat$1(undefined, undefined)(p$1, expected_ty);
           }
           throw {
-                ExceptionID: $$Error$7,
+                RE_EXN_ID: $$Error$7,
                 _1: loc,
                 _2: env.contents,
                 _3: /* Invalid_interval */5
               };
         }
         throw {
-              ExceptionID: $$Error$7,
+              RE_EXN_ID: $$Error$7,
               _1: loc,
               _2: env.contents,
               _3: /* Invalid_interval */5
@@ -57324,7 +57324,7 @@ function type_pat(constrs, labels, no_existentials, mode, env, sp, expected_ty) 
         }
         catch (raw_exn){
           var exn = Caml_js_exceptions.internalToOCamlException(raw_exn);
-          if (exn.ExceptionID === "Not_found") {
+          if (exn.RE_EXN_ID === "Not_found") {
             opath = undefined;
           } else {
             throw exn;
@@ -57369,7 +57369,7 @@ function type_pat(constrs, labels, no_existentials, mode, env, sp, expected_ty) 
             return ;
           }
           throw {
-                ExceptionID: $$Error$7,
+                RE_EXN_ID: $$Error$7,
                 _1: lid.loc,
                 _2: env.contents,
                 _3: /* Unqualified_gadt_pattern */Block.__(34, [
@@ -57387,7 +57387,7 @@ function type_pat(constrs, labels, no_existentials, mode, env, sp, expected_ty) 
         check_deprecated(loc, constr.cstr_attributes, constr.cstr_name);
         if (no_existentials && constr.cstr_existentials !== /* [] */0) {
           throw {
-                ExceptionID: $$Error$7,
+                RE_EXN_ID: $$Error$7,
                 _1: loc,
                 _2: env.contents,
                 _3: /* Unexpected_existential */4
@@ -57422,7 +57422,7 @@ function type_pat(constrs, labels, no_existentials, mode, env, sp, expected_ty) 
         }
         if (List.length(sargs) !== constr.cstr_arity) {
           throw {
-                ExceptionID: $$Error$7,
+                RE_EXN_ID: $$Error$7,
                 _1: loc,
                 _2: env.contents,
                 _3: /* Constructor_arity_mismatch */Block.__(1, [
@@ -57530,7 +57530,7 @@ function type_pat(constrs, labels, no_existentials, mode, env, sp, expected_ty) 
         }
         catch (raw_exn$1){
           var exn$1 = Caml_js_exceptions.internalToOCamlException(raw_exn$1);
-          if (exn$1.ExceptionID === "Not_found") {
+          if (exn$1.RE_EXN_ID === "Not_found") {
             match$3 = /* tuple */[
               undefined,
               newvar(undefined, undefined)
@@ -57556,9 +57556,9 @@ function type_pat(constrs, labels, no_existentials, mode, env, sp, expected_ty) 
           }
           catch (raw_trace){
             var trace = Caml_js_exceptions.internalToOCamlException(raw_trace);
-            if (trace.ExceptionID === Unify) {
+            if (trace.RE_EXN_ID === Unify) {
               throw {
-                    ExceptionID: $$Error$7,
+                    RE_EXN_ID: $$Error$7,
                     _1: label_lid.loc,
                     _2: env.contents,
                     _3: /* Label_mismatch */Block.__(2, [
@@ -57586,7 +57586,7 @@ function type_pat(constrs, labels, no_existentials, mode, env, sp, expected_ty) 
             };
             if (List.exists(instantiated, vars)) {
               throw {
-                    ExceptionID: $$Error$7,
+                    RE_EXN_ID: $$Error$7,
                     _1: label_lid.loc,
                     _2: env.contents,
                     _3: /* Polymorphic_label */Block.__(0, [label_lid.txt])
@@ -57683,7 +57683,7 @@ function type_pat(constrs, labels, no_existentials, mode, env, sp, expected_ty) 
             var match$6 = ty$1.desc;
             if (typeof match$6 === "number") {
               throw {
-                    ExceptionID: "Assert_failure",
+                    RE_EXN_ID: "Assert_failure",
                     _1: /* tuple */[
                       "typecore.ml",
                       955,
@@ -57720,7 +57720,7 @@ function type_pat(constrs, labels, no_existentials, mode, env, sp, expected_ty) 
                         });
             }
             throw {
-                  ExceptionID: "Assert_failure",
+                  RE_EXN_ID: "Assert_failure",
                   _1: /* tuple */[
                     "typecore.ml",
                     955,
@@ -57857,14 +57857,14 @@ function type_pat(constrs, labels, no_existentials, mode, env, sp, expected_ty) 
                   });
     case /* Ppat_exception */14 :
         throw {
-              ExceptionID: $$Error$7,
+              RE_EXN_ID: $$Error$7,
               _1: loc,
               _2: env.contents,
               _3: /* Exception_pattern_below_toplevel */8
             };
     case /* Ppat_extension */15 :
         throw {
-              ExceptionID: Error_forward$1,
+              RE_EXN_ID: Error_forward$1,
               _1: error_of_extension(name[0])
             };
     
@@ -58391,7 +58391,7 @@ function approx_type(env, _sty) {
             var match = lookup_type$1(args[0].txt, env);
             if (List.length(ctl) !== match[1].type_arity) {
               throw {
-                    ExceptionID: "Not_found"
+                    RE_EXN_ID: "Not_found"
                   };
             }
             var tyl = List.map((function (param) {
@@ -58401,7 +58401,7 @@ function approx_type(env, _sty) {
           }
           catch (raw_exn){
             var exn = Caml_js_exceptions.internalToOCamlException(raw_exn);
-            if (exn.ExceptionID === "Not_found") {
+            if (exn.RE_EXN_ID === "Not_found") {
               return newvar(undefined, undefined);
             }
             throw exn;
@@ -58487,9 +58487,9 @@ function type_approx(env, _sexp) {
           }
           catch (raw_trace){
             var trace = Caml_js_exceptions.internalToOCamlException(raw_trace);
-            if (trace.ExceptionID === Unify) {
+            if (trace.RE_EXN_ID === Unify) {
               throw {
-                    ExceptionID: $$Error$7,
+                    RE_EXN_ID: $$Error$7,
                     _1: sexp.pexp_loc,
                     _2: env,
                     _3: /* Expr_type_clash */Block.__(7, [trace._1])
@@ -58514,9 +58514,9 @@ function type_approx(env, _sexp) {
           }
           catch (raw_trace$1){
             var trace$1 = Caml_js_exceptions.internalToOCamlException(raw_trace$1);
-            if (trace$1.ExceptionID === Unify) {
+            if (trace$1.RE_EXN_ID === Unify) {
               throw {
-                    ExceptionID: $$Error$7,
+                    RE_EXN_ID: $$Error$7,
                     _1: sexp.pexp_loc,
                     _2: env,
                     _3: /* Expr_type_clash */Block.__(7, [trace$1._1])
@@ -58607,7 +58607,7 @@ function check_univars(env, expans, kind, exp, ty_expected, vars) {
         ]));
   var ty_expected$1 = repr(ty_expected);
   throw {
-        ExceptionID: $$Error$7,
+        RE_EXN_ID: $$Error$7,
         _1: exp.exp_loc,
         _2: env,
         _3: /* Less_general */Block.__(31, [
@@ -58661,7 +58661,7 @@ function generalizable(level, ty) {
     }
     if (ty$1.level <= level) {
       throw {
-            ExceptionID: Pervasives.Exit
+            RE_EXN_ID: Pervasives.Exit
           };
     }
     mark_type_node(ty$1);
@@ -58674,7 +58674,7 @@ function generalizable(level, ty) {
   }
   catch (raw_exn){
     var exn = Caml_js_exceptions.internalToOCamlException(raw_exn);
-    if (exn.ExceptionID === Pervasives.Exit) {
+    if (exn.RE_EXN_ID === Pervasives.Exit) {
       unmark_type(ty);
       return false;
     }
@@ -58721,7 +58721,7 @@ function contains_variant_either(ty) {
                 return ;
               }
               throw {
-                    ExceptionID: Pervasives.Exit
+                    RE_EXN_ID: Pervasives.Exit
                   };
             }), row$1.row_fields);
     }
@@ -58734,7 +58734,7 @@ function contains_variant_either(ty) {
   }
   catch (raw_exn){
     var exn = Caml_js_exceptions.internalToOCamlException(raw_exn);
-    if (exn.ExceptionID === Pervasives.Exit) {
+    if (exn.RE_EXN_ID === Pervasives.Exit) {
       unmark_type(ty);
       return true;
     }
@@ -58781,7 +58781,7 @@ function contains_polymorphic_variant(p) {
       case /* Ppat_variant */6 :
       case /* Ppat_type */11 :
           throw {
-                ExceptionID: Pervasives.Exit
+                RE_EXN_ID: Pervasives.Exit
               };
       default:
         return iter_ppat(loop, p);
@@ -58793,7 +58793,7 @@ function contains_polymorphic_variant(p) {
   }
   catch (raw_exn){
     var exn = Caml_js_exceptions.internalToOCamlException(raw_exn);
-    if (exn.ExceptionID === Pervasives.Exit) {
+    if (exn.RE_EXN_ID === Pervasives.Exit) {
       return true;
     }
     throw exn;
@@ -58816,13 +58816,13 @@ function contains_gadt(env, p) {
                 return ;
               }
               throw {
-                    ExceptionID: Pervasives.Exit
+                    RE_EXN_ID: Pervasives.Exit
                   };
             }), cstrs);
     }
     catch (raw_exn){
       var exn = Caml_js_exceptions.internalToOCamlException(raw_exn);
-      if (exn.ExceptionID !== "Not_found") {
+      if (exn.RE_EXN_ID !== "Not_found") {
         throw exn;
       }
       
@@ -58835,7 +58835,7 @@ function contains_gadt(env, p) {
   }
   catch (raw_exn){
     var exn = Caml_js_exceptions.internalToOCamlException(raw_exn);
-    if (exn.ExceptionID === Pervasives.Exit) {
+    if (exn.RE_EXN_ID === Pervasives.Exit) {
       return true;
     }
     throw exn;
@@ -58934,7 +58934,7 @@ function duplicate_ident_types(loc, caselist, env) {
                 }
                 catch (raw_exn){
                   var exn = Caml_js_exceptions.internalToOCamlException(raw_exn);
-                  if (exn.ExceptionID === "Not_found") {
+                  if (exn.RE_EXN_ID === "Not_found") {
                     return env;
                   }
                   throw exn;
@@ -58991,7 +58991,7 @@ function type_expect_(in_function, env, sexp, ty_expected) {
         if (typeof match$1 === "number") {
           if (match$1 === /* Val_unbound */1) {
             throw {
-                  ExceptionID: $$Error$7,
+                  RE_EXN_ID: $$Error$7,
                   _1: loc,
                   _2: env,
                   _3: /* Masked_instance_variable */Block.__(29, [lid$1.txt])
@@ -59018,7 +59018,7 @@ function type_expect_(in_function, env, sexp, ty_expected) {
                   case /* Ldot */1 :
                   case /* Lapply */2 :
                       throw {
-                            ExceptionID: "Assert_failure",
+                            RE_EXN_ID: "Assert_failure",
                             _1: /* tuple */[
                               "typecore.ml",
                               1773,
@@ -59179,7 +59179,7 @@ function type_expect_(in_function, env, sexp, ty_expected) {
         if ($$default !== undefined) {
           if (!is_optional(l)) {
             throw {
-                  ExceptionID: "Assert_failure",
+                  RE_EXN_ID: "Assert_failure",
                   _1: /* tuple */[
                     "typecore.ml",
                     1852,
@@ -59284,9 +59284,9 @@ function type_expect_(in_function, env, sexp, ty_expected) {
                   }
                   catch (raw_exn){
                     var exn = Caml_js_exceptions.internalToOCamlException(raw_exn);
-                    if (exn.ExceptionID === Unify) {
+                    if (exn.RE_EXN_ID === Unify) {
                       throw {
-                            ExceptionID: "Assert_failure",
+                            RE_EXN_ID: "Assert_failure",
                             _1: /* tuple */[
                               "typecore.ml",
                               1903,
@@ -59368,7 +59368,7 @@ function type_expect_(in_function, env, sexp, ty_expected) {
         var val_caselist = match$10[0];
         if (val_caselist === /* [] */0 && exn_caselist !== /* [] */0) {
           throw {
-                ExceptionID: $$Error$7,
+                RE_EXN_ID: $$Error$7,
                 _1: loc,
                 _2: env,
                 _3: /* No_value_clauses */7
@@ -59442,7 +59442,7 @@ function type_expect_(in_function, env, sexp, ty_expected) {
         }
         catch (raw_exn){
           var exn = Caml_js_exceptions.internalToOCamlException(raw_exn);
-          if (exn.ExceptionID === "Not_found") {
+          if (exn.RE_EXN_ID === "Not_found") {
             opath = undefined;
           } else {
             throw exn;
@@ -59466,7 +59466,7 @@ function type_expect_(in_function, env, sexp, ty_expected) {
         }
         if (List.length(sargs$1) !== constr.cstr_arity) {
           throw {
-                ExceptionID: $$Error$7,
+                RE_EXN_ID: $$Error$7,
                 _1: loc,
                 _2: env,
                 _3: /* Constructor_arity_mismatch */Block.__(1, [
@@ -59523,7 +59523,7 @@ function type_expect_(in_function, env, sexp, ty_expected) {
           ];
         } else {
           throw {
-                ExceptionID: "Assert_failure",
+                RE_EXN_ID: "Assert_failure",
                 _1: /* tuple */[
                   "typecore.ml",
                   3375,
@@ -59553,7 +59553,7 @@ function type_expect_(in_function, env, sexp, ty_expected) {
               }), sargs$1, List.combine(ty_args, match$17[0]));
         if (constr.cstr_private === /* Private */0) {
           throw {
-                ExceptionID: $$Error$7,
+                RE_EXN_ID: $$Error$7,
                 _1: loc,
                 _2: env,
                 _3: /* Private_type */Block.__(19, [ty_res$1])
@@ -59582,14 +59582,14 @@ function type_expect_(in_function, env, sexp, ty_expected) {
             var row = match$18.desc;
             if (typeof row === "number") {
               throw {
-                    ExceptionID: "Not_found"
+                    RE_EXN_ID: "Not_found"
                   };
             }
             if (row.tag === /* Tvariant */8) {
               var row0 = match$19.desc;
               if (typeof row0 === "number") {
                 throw {
-                      ExceptionID: "Not_found"
+                      RE_EXN_ID: "Not_found"
                     };
               }
               if (row0.tag === /* Tvariant */8) {
@@ -59598,24 +59598,24 @@ function type_expect_(in_function, env, sexp, ty_expected) {
                 var match$21 = row_field_repr_aux(/* [] */0, List.assoc(l$1, row0[0].row_fields));
                 if (typeof match$20 === "number") {
                   throw {
-                        ExceptionID: "Not_found"
+                        RE_EXN_ID: "Not_found"
                       };
                 }
                 if (match$20.tag) {
                   throw {
-                        ExceptionID: "Not_found"
+                        RE_EXN_ID: "Not_found"
                       };
                 }
                 var ty$1 = match$20[0];
                 if (ty$1 !== undefined) {
                   if (typeof match$21 === "number") {
                     throw {
-                          ExceptionID: "Not_found"
+                          RE_EXN_ID: "Not_found"
                         };
                   }
                   if (match$21.tag) {
                     throw {
-                          ExceptionID: "Not_found"
+                          RE_EXN_ID: "Not_found"
                         };
                   }
                   var ty0 = match$21[0];
@@ -59634,32 +59634,32 @@ function type_expect_(in_function, env, sexp, ty_expected) {
                               });
                   }
                   throw {
-                        ExceptionID: "Not_found"
+                        RE_EXN_ID: "Not_found"
                       };
                 } else {
                   throw {
-                        ExceptionID: "Not_found"
+                        RE_EXN_ID: "Not_found"
                       };
                 }
               } else {
                 throw {
-                      ExceptionID: "Not_found"
+                      RE_EXN_ID: "Not_found"
                     };
               }
             } else {
               throw {
-                    ExceptionID: "Not_found"
+                    RE_EXN_ID: "Not_found"
                   };
             }
           } else {
             throw {
-                  ExceptionID: "Not_found"
+                  RE_EXN_ID: "Not_found"
                 };
           }
         }
         catch (raw_exn$1){
           var exn$1 = Caml_js_exceptions.internalToOCamlException(raw_exn$1);
-          if (exn$1.ExceptionID === "Not_found") {
+          if (exn$1.RE_EXN_ID === "Not_found") {
             var arg$2 = may_map((function (param) {
                     return type_exp(env, param);
                   }), sarg$1);
@@ -59725,7 +59725,7 @@ function type_expect_(in_function, env, sexp, ty_expected) {
           }
           catch (raw_exn){
             var exn = Caml_js_exceptions.internalToOCamlException(raw_exn);
-            if (exn.ExceptionID === "Not_found") {
+            if (exn.RE_EXN_ID === "Not_found") {
               return ;
             }
             throw exn;
@@ -59783,7 +59783,7 @@ function type_expect_(in_function, env, sexp, ty_expected) {
             if (rem) {
               if (lbl1.lbl_pos === rem[0][1].lbl_pos) {
                 throw {
-                      ExceptionID: $$Error$7,
+                      RE_EXN_ID: $$Error$7,
                       _1: loc,
                       _2: env,
                       _3: /* Label_multiply_defined */Block.__(10, [lbl1.lbl_name])
@@ -59824,7 +59824,7 @@ function type_expect_(in_function, env, sexp, ty_expected) {
             };
           } else {
             throw {
-                  ExceptionID: "Assert_failure",
+                  RE_EXN_ID: "Assert_failure",
                   _1: /* tuple */[
                     "typecore.ml",
                     2092,
@@ -59840,7 +59840,7 @@ function type_expect_(in_function, env, sexp, ty_expected) {
           num_fields = lbl_exp_list[0][1].lbl_all.length;
         } else {
           throw {
-                ExceptionID: "Assert_failure",
+                RE_EXN_ID: "Assert_failure",
                 _1: /* tuple */[
                   "typecore.ml",
                   2095,
@@ -59874,7 +59874,7 @@ function type_expect_(in_function, env, sexp, ty_expected) {
           };
           var missing = missing_labels(0, label_names);
           throw {
-                ExceptionID: $$Error$7,
+                RE_EXN_ID: $$Error$7,
                 _1: loc,
                 _2: env,
                 _3: /* Label_missing */Block.__(11, [missing])
@@ -59927,7 +59927,7 @@ function type_expect_(in_function, env, sexp, ty_expected) {
         unify_exp(env, record$4, ty_record$1);
         if (label$1.lbl_mut === /* Immutable */0) {
           throw {
-                ExceptionID: $$Error$7,
+                RE_EXN_ID: $$Error$7,
                 _1: loc,
                 _2: env,
                 _3: /* Label_not_mutable */Block.__(12, [lid$4.txt])
@@ -60037,7 +60037,7 @@ function type_expect_(in_function, env, sexp, ty_expected) {
         } else {
           if (match$27.tag) {
             throw {
-                  ExceptionID: $$Error$7,
+                  RE_EXN_ID: $$Error$7,
                   _1: param.ppat_loc,
                   _2: env,
                   _3: /* Invalid_for_loop_index */6
@@ -60114,9 +60114,9 @@ function type_expect_(in_function, env, sexp, ty_expected) {
           }
           catch (raw_exn$2){
             var exn$2 = Caml_js_exceptions.internalToOCamlException(raw_exn$2);
-            if (exn$2.ExceptionID === Subtype) {
+            if (exn$2.RE_EXN_ID === Subtype) {
               throw {
-                    ExceptionID: $$Error$7,
+                    RE_EXN_ID: $$Error$7,
                     _1: loc,
                     _2: env,
                     _3: /* Not_subtype */Block.__(23, [
@@ -60186,7 +60186,7 @@ function type_expect_(in_function, env, sexp, ty_expected) {
                 }
                 catch (raw_exn$3){
                   var exn$3 = Caml_js_exceptions.internalToOCamlException(raw_exn$3);
-                  if (exn$3.ExceptionID === Unify) {
+                  if (exn$3.RE_EXN_ID === Unify) {
                     backtrack(snap);
                     tmp$4 = false;
                   } else {
@@ -60207,9 +60207,9 @@ function type_expect_(in_function, env, sexp, ty_expected) {
                 }
                 catch (raw_exn$4){
                   var exn$4 = Caml_js_exceptions.internalToOCamlException(raw_exn$4);
-                  if (exn$4.ExceptionID === Subtype) {
+                  if (exn$4.RE_EXN_ID === Subtype) {
                     throw {
-                          ExceptionID: $$Error$7,
+                          RE_EXN_ID: $$Error$7,
                           _1: loc,
                           _2: env,
                           _3: /* Not_subtype */Block.__(23, [
@@ -60230,9 +60230,9 @@ function type_expect_(in_function, env, sexp, ty_expected) {
               }
               catch (raw_trace){
                 var trace = Caml_js_exceptions.internalToOCamlException(raw_trace);
-                if (trace.ExceptionID === Unify) {
+                if (trace.RE_EXN_ID === Unify) {
                   throw {
-                        ExceptionID: $$Error$7,
+                        RE_EXN_ID: $$Error$7,
                         _1: sarg$3.pexp_loc,
                         _2: env,
                         _3: /* Coercion_failure */Block.__(25, [
@@ -60313,9 +60313,9 @@ function type_expect_(in_function, env, sexp, ty_expected) {
                     }
                     catch (raw_exn$5){
                       var exn$5 = Caml_js_exceptions.internalToOCamlException(raw_exn$5);
-                      if (exn$5.ExceptionID === "Not_found") {
+                      if (exn$5.RE_EXN_ID === "Not_found") {
                         throw {
-                              ExceptionID: $$Error$7,
+                              RE_EXN_ID: $$Error$7,
                               _1: e.pexp_loc,
                               _2: env,
                               _3: /* Undefined_inherited_method */Block.__(17, [met])
@@ -60329,7 +60329,7 @@ function type_expect_(in_function, env, sexp, ty_expected) {
                     var match$45 = desc$3.val_kind;
                     if (typeof match$45 === "number") {
                       throw {
-                            ExceptionID: "Assert_failure",
+                            RE_EXN_ID: "Assert_failure",
                             _1: /* tuple */[
                               "typecore.ml",
                               2384,
@@ -60398,7 +60398,7 @@ function type_expect_(in_function, env, sexp, ty_expected) {
                       ];
                     } else {
                       throw {
-                            ExceptionID: "Assert_failure",
+                            RE_EXN_ID: "Assert_failure",
                             _1: /* tuple */[
                               "typecore.ml",
                               2384,
@@ -60429,7 +60429,7 @@ function type_expect_(in_function, env, sexp, ty_expected) {
           var typ$3;
           if (typeof match$48 === "number") {
             throw {
-                  ExceptionID: "Assert_failure",
+                  RE_EXN_ID: "Assert_failure",
                   _1: /* tuple */[
                     "typecore.ml",
                     2410,
@@ -60461,7 +60461,7 @@ function type_expect_(in_function, env, sexp, ty_expected) {
                 break;
             default:
               throw {
-                    ExceptionID: "Assert_failure",
+                    RE_EXN_ID: "Assert_failure",
                     _1: /* tuple */[
                       "typecore.ml",
                       2410,
@@ -60484,9 +60484,9 @@ function type_expect_(in_function, env, sexp, ty_expected) {
         }
         catch (raw_exn$6){
           var exn$6 = Caml_js_exceptions.internalToOCamlException(raw_exn$6);
-          if (exn$6.ExceptionID === Unify) {
+          if (exn$6.RE_EXN_ID === Unify) {
             throw {
-                  ExceptionID: $$Error$7,
+                  RE_EXN_ID: $$Error$7,
                   _1: e.pexp_loc,
                   _2: env,
                   _3: /* Undefined_method */Block.__(16, [
@@ -60518,7 +60518,7 @@ function type_expect_(in_function, env, sexp, ty_expected) {
                     });
         }
         throw {
-              ExceptionID: $$Error$7,
+              RE_EXN_ID: $$Error$7,
               _1: loc,
               _2: env,
               _3: /* Virtual_class */Block.__(18, [cl.txt])
@@ -60552,7 +60552,7 @@ function type_expect_(in_function, env, sexp, ty_expected) {
                           });
               }
               throw {
-                    ExceptionID: $$Error$7,
+                    RE_EXN_ID: $$Error$7,
                     _1: loc,
                     _2: env,
                     _3: /* Instance_variable_not_mutable */Block.__(22, [
@@ -60565,7 +60565,7 @@ function type_expect_(in_function, env, sexp, ty_expected) {
           }
           if (exit$4 === 1) {
             throw {
-                  ExceptionID: $$Error$7,
+                  RE_EXN_ID: $$Error$7,
                   _1: loc,
                   _2: env,
                   _3: /* Instance_variable_not_mutable */Block.__(22, [
@@ -60578,9 +60578,9 @@ function type_expect_(in_function, env, sexp, ty_expected) {
         }
         catch (raw_exn$7){
           var exn$7 = Caml_js_exceptions.internalToOCamlException(raw_exn$7);
-          if (exn$7.ExceptionID === "Not_found") {
+          if (exn$7.RE_EXN_ID === "Not_found") {
             throw {
-                  ExceptionID: $$Error$7,
+                  RE_EXN_ID: $$Error$7,
                   _1: loc,
                   _2: env,
                   _3: /* Unbound_instance_variable */Block.__(21, [lab.txt])
@@ -60597,7 +60597,7 @@ function type_expect_(in_function, env, sexp, ty_expected) {
                           return l.txt === lab.txt;
                         }), l)) {
                   throw {
-                        ExceptionID: $$Error$7,
+                        RE_EXN_ID: $$Error$7,
                         _1: loc,
                         _2: env,
                         _3: /* Value_multiply_overridden */Block.__(24, [lab.txt])
@@ -60617,9 +60617,9 @@ function type_expect_(in_function, env, sexp, ty_expected) {
         }
         catch (raw_exn$8){
           var exn$8 = Caml_js_exceptions.internalToOCamlException(raw_exn$8);
-          if (exn$8.ExceptionID === "Not_found") {
+          if (exn$8.RE_EXN_ID === "Not_found") {
             throw {
-                  ExceptionID: $$Error$7,
+                  RE_EXN_ID: $$Error$7,
                   _1: loc,
                   _2: env,
                   _3: /* Outside_class */0
@@ -60631,7 +60631,7 @@ function type_expect_(in_function, env, sexp, ty_expected) {
         var match$55 = match$54.val_kind;
         if (typeof match$55 === "number") {
           throw {
-                ExceptionID: "Assert_failure",
+                RE_EXN_ID: "Assert_failure",
                 _1: /* tuple */[
                   "typecore.ml",
                   2494,
@@ -60653,9 +60653,9 @@ function type_expect_(in_function, env, sexp, ty_expected) {
             }
             catch (raw_exn){
               var exn = Caml_js_exceptions.internalToOCamlException(raw_exn);
-              if (exn.ExceptionID === "Not_found") {
+              if (exn.RE_EXN_ID === "Not_found") {
                 throw {
-                      ExceptionID: $$Error$7,
+                      RE_EXN_ID: $$Error$7,
                       _1: loc,
                       _2: env,
                       _3: /* Unbound_instance_variable */Block.__(21, [lab.txt])
@@ -60678,7 +60678,7 @@ function type_expect_(in_function, env, sexp, ty_expected) {
                     });
         }
         throw {
-              ExceptionID: "Assert_failure",
+              RE_EXN_ID: "Assert_failure",
               _1: /* tuple */[
                 "typecore.ml",
                 2494,
@@ -60703,9 +60703,9 @@ function type_expect_(in_function, env, sexp, ty_expected) {
         }
         catch (raw_exn$9){
           var exn$9 = Caml_js_exceptions.internalToOCamlException(raw_exn$9);
-          if (exn$9.ExceptionID === Unify) {
+          if (exn$9.RE_EXN_ID === Unify) {
             throw {
-                  ExceptionID: $$Error$7,
+                  RE_EXN_ID: $$Error$7,
                   _1: loc,
                   _2: env,
                   _3: /* Scoping_let_module */Block.__(28, [
@@ -60787,7 +60787,7 @@ function type_expect_(in_function, env, sexp, ty_expected) {
         var exp$2;
         if (typeof match$59 === "number") {
           throw {
-                ExceptionID: "Assert_failure",
+                RE_EXN_ID: "Assert_failure",
                 _1: /* tuple */[
                   "typecore.ml",
                   2600,
@@ -60857,7 +60857,7 @@ function type_expect_(in_function, env, sexp, ty_expected) {
               break;
           default:
             throw {
-                  ExceptionID: "Assert_failure",
+                  RE_EXN_ID: "Assert_failure",
                   _1: /* tuple */[
                     "typecore.ml",
                     2600,
@@ -60969,7 +60969,7 @@ function type_expect_(in_function, env, sexp, ty_expected) {
         var match$65;
         if (typeof match$64 === "number") {
           throw {
-                ExceptionID: $$Error$7,
+                RE_EXN_ID: $$Error$7,
                 _1: loc,
                 _2: env,
                 _3: /* Not_a_packed_module */Block.__(32, [ty_expected])
@@ -60978,7 +60978,7 @@ function type_expect_(in_function, env, sexp, ty_expected) {
         switch (match$64.tag | 0) {
           case /* Tvar */0 :
               throw {
-                    ExceptionID: $$Error$7,
+                    RE_EXN_ID: $$Error$7,
                     _1: loc,
                     _2: env,
                     _3: /* Cannot_infer_signature */3
@@ -60995,7 +60995,7 @@ function type_expect_(in_function, env, sexp, ty_expected) {
               break;
           default:
             throw {
-                  ExceptionID: $$Error$7,
+                  RE_EXN_ID: $$Error$7,
                   _1: loc,
                   _2: env,
                   _3: /* Not_a_packed_module */Block.__(32, [ty_expected])
@@ -61044,7 +61044,7 @@ function type_expect_(in_function, env, sexp, ty_expected) {
               };
     case /* Pexp_extension */33 :
         throw {
-              ExceptionID: Error_forward$1,
+              RE_EXN_ID: Error_forward$1,
               _1: error_of_extension(lid[0])
             };
     
@@ -61068,7 +61068,7 @@ function type_function(in_function, loc, attrs, env, ty_expected, l, caselist) {
   }
   catch (raw_exn){
     var exn = Caml_js_exceptions.internalToOCamlException(raw_exn);
-    if (exn.ExceptionID === Unify) {
+    if (exn.RE_EXN_ID === Unify) {
       var ty = expand_head(env, ty_expected);
       var match$2 = ty.desc;
       var exit = 0;
@@ -61077,7 +61077,7 @@ function type_function(in_function, loc, attrs, env, ty_expected, l, caselist) {
       } else {
         if (match$2.tag === /* Tarrow */1) {
           throw {
-                ExceptionID: $$Error$7,
+                RE_EXN_ID: $$Error$7,
                 _1: loc,
                 _2: env,
                 _3: /* Abstract_wrong_label */Block.__(27, [
@@ -61090,7 +61090,7 @@ function type_function(in_function, loc, attrs, env, ty_expected, l, caselist) {
       }
       if (exit === 1) {
         throw {
-              ExceptionID: $$Error$7,
+              RE_EXN_ID: $$Error$7,
               _1: loc_fun,
               _2: env,
               _3: /* Too_many_arguments */Block.__(26, [
@@ -61114,9 +61114,9 @@ function type_function(in_function, loc, attrs, env, ty_expected, l, caselist) {
     }
     catch (raw_exn$1){
       var exn$1 = Caml_js_exceptions.internalToOCamlException(raw_exn$1);
-      if (exn$1.ExceptionID === Unify) {
+      if (exn$1.RE_EXN_ID === Unify) {
         throw {
-              ExceptionID: "Assert_failure",
+              RE_EXN_ID: "Assert_failure",
               _1: /* tuple */[
                 "typecore.ml",
                 2706,
@@ -61191,7 +61191,7 @@ function type_label_access(env, loc, srecord, lid) {
   }
   catch (raw_exn){
     var exn = Caml_js_exceptions.internalToOCamlException(raw_exn);
-    if (exn.ExceptionID === "Not_found") {
+    if (exn.RE_EXN_ID === "Not_found") {
       opath = undefined;
     } else {
       throw exn;
@@ -61210,7 +61210,7 @@ function type_label_access(env, loc, srecord, lid) {
 
 function type_format(loc, str, env) {
   throw {
-        ExceptionID: "Assert_failure",
+        RE_EXN_ID: "Assert_failure",
         _1: /* tuple */[
           "typecore.ml",
           2759,
@@ -61243,9 +61243,9 @@ function type_label_exp(create, env, loc, ty_expected, param) {
   }
   catch (raw_trace){
     var trace = Caml_js_exceptions.internalToOCamlException(raw_trace);
-    if (trace.ExceptionID === Unify) {
+    if (trace.RE_EXN_ID === Unify) {
       throw {
-            ExceptionID: $$Error$7,
+            RE_EXN_ID: $$Error$7,
             _1: lid.loc,
             _2: env,
             _3: /* Label_mismatch */Block.__(2, [
@@ -61264,14 +61264,14 @@ function type_label_exp(create, env, loc, ty_expected, param) {
   if (label.lbl_private === /* Private */0) {
     if (create) {
       throw {
-            ExceptionID: $$Error$7,
+            RE_EXN_ID: $$Error$7,
             _1: loc,
             _2: env,
             _3: /* Private_type */Block.__(19, [ty_expected])
           };
     }
     throw {
-          ExceptionID: $$Error$7,
+          RE_EXN_ID: $$Error$7,
           _1: lid.loc,
           _2: env,
           _3: /* Private_label */Block.__(20, [
@@ -61304,7 +61304,7 @@ function type_label_exp(create, env, loc, ty_expected, param) {
     }
     catch (raw_e){
       var e = Caml_js_exceptions.internalToOCamlException(raw_e);
-      if (e.ExceptionID === $$Error$7) {
+      if (e.RE_EXN_ID === $$Error$7) {
         var tmp = e._3;
         if (typeof tmp === "number") {
           throw exn;
@@ -61680,7 +61680,7 @@ function type_application(env, funct, sargs) {
               if (sargs) {
                 var match$5 = sargs[0];
                 throw {
-                      ExceptionID: $$Error$7,
+                      RE_EXN_ID: $$Error$7,
                       _1: match$5[1].pexp_loc,
                       _2: env,
                       _3: /* Apply_wrong_label */Block.__(9, [
@@ -61695,7 +61695,7 @@ function type_application(env, funct, sargs) {
                 var l$prime = match$6[0];
                 if (l !== l$prime && l$prime !== "") {
                   throw {
-                        ExceptionID: $$Error$7,
+                        RE_EXN_ID: $$Error$7,
                         _1: sarg0.pexp_loc,
                         _2: env,
                         _3: /* Apply_wrong_label */Block.__(9, [
@@ -61715,7 +61715,7 @@ function type_application(env, funct, sargs) {
                 ];
               } else {
                 throw {
-                      ExceptionID: "Assert_failure",
+                      RE_EXN_ID: "Assert_failure",
                       _1: /* tuple */[
                         "typecore.ml",
                         3250,
@@ -61742,7 +61742,7 @@ function type_application(env, funct, sargs) {
                 }
                 catch (raw_exn){
                   var exn = Caml_js_exceptions.internalToOCamlException(raw_exn);
-                  if (exn.ExceptionID === "Not_found") {
+                  if (exn.RE_EXN_ID === "Not_found") {
                     var match$9 = extract_label_aux(/* [] */0, name, more_sargs);
                     var sargs1$1 = match$9[2];
                     var sarg0$2 = match$9[1];
@@ -61780,7 +61780,7 @@ function type_application(env, funct, sargs) {
               }
               catch (raw_exn$1){
                 var exn$1 = Caml_js_exceptions.internalToOCamlException(raw_exn$1);
-                if (exn$1.ExceptionID === "Not_found") {
+                if (exn$1.RE_EXN_ID === "Not_found") {
                   match$4 = /* tuple */[
                     sargs,
                     more_sargs,
@@ -61838,7 +61838,7 @@ function type_application(env, funct, sargs) {
           if (ignore_labels) {
             var match$10 = sargs[0];
             throw {
-                  ExceptionID: $$Error$7,
+                  RE_EXN_ID: $$Error$7,
                   _1: match$10[1].pexp_loc,
                   _2: env,
                   _3: /* Apply_wrong_label */Block.__(9, [
@@ -61949,7 +61949,7 @@ function type_application(env, funct, sargs) {
                 if (match$13.tag === /* Tarrow */1) {
                   if (classic.contents || !has_label(l1, ty_fun$4)) {
                     throw {
-                          ExceptionID: $$Error$7,
+                          RE_EXN_ID: $$Error$7,
                           _1: sarg1.pexp_loc,
                           _2: env,
                           _3: /* Apply_wrong_label */Block.__(9, [
@@ -61959,7 +61959,7 @@ function type_application(env, funct, sargs) {
                         };
                   }
                   throw {
-                        ExceptionID: $$Error$7,
+                        RE_EXN_ID: $$Error$7,
                         _1: funct.exp_loc,
                         _2: env,
                         _3: /* Incoherent_label_order */1
@@ -61969,7 +61969,7 @@ function type_application(env, funct, sargs) {
               }
               if (exit$3 === 2) {
                 throw {
-                      ExceptionID: $$Error$7,
+                      RE_EXN_ID: $$Error$7,
                       _1: funct.exp_loc,
                       _2: env,
                       _3: /* Apply_non_function */Block.__(8, [expand_head(env, funct.exp_type)])
@@ -62296,14 +62296,14 @@ function type_cases(in_function, env, ty_arg, ty_res, partial_flag, loc, caselis
             catch (raw_exn){
               var exn = Caml_js_exceptions.internalToOCamlException(raw_exn);
               var exit = 0;
-              if (exn.ExceptionID === Empty || exn.ExceptionID === "Not_found" || exn.ExceptionID === NoGuard) {
+              if (exn.RE_EXN_ID === Empty || exn.RE_EXN_ID === "Not_found" || exn.RE_EXN_ID === NoGuard) {
                 exit = 1;
               } else {
                 throw exn;
               }
               if (exit === 1) {
                 throw {
-                      ExceptionID: "Assert_failure",
+                      RE_EXN_ID: "Assert_failure",
                       _1: /* tuple */[
                         "parmatch.ml",
                         1947,
@@ -62527,7 +62527,7 @@ function type_let(checkOpt, check_strictOpt, env, rec_flag, spat_sexp_list, scop
                   }
                   catch (raw_exn){
                     var exn = Caml_js_exceptions.internalToOCamlException(raw_exn);
-                    if (exn.ExceptionID === "Not_found") {
+                    if (exn.RE_EXN_ID === "Not_found") {
                       return Hashtbl.add(value_declarations, key, callback);
                     }
                     throw exn;
@@ -62670,8 +62670,8 @@ function type_expression(env, sexp) {
 }
 
 register_error_of_exn((function (err) {
-        if (err.ExceptionID !== $$Error$7) {
-          if (err.ExceptionID === Error_forward$1) {
+        if (err.RE_EXN_ID !== $$Error$7) {
+          if (err.RE_EXN_ID === Error_forward$1) {
             return err._1;
           } else {
             return ;
@@ -63550,7 +63550,7 @@ register_error_of_exn((function (err) {
                                                                         }), tp0$prime);
                                                           }
                                                           throw {
-                                                                ExceptionID: "Assert_failure",
+                                                                RE_EXN_ID: "Assert_failure",
                                                                 _1: /* tuple */[
                                                                   "printtyp.ml",
                                                                   1585,
@@ -64226,7 +64226,7 @@ function set_fixed_row(env, loc, p, decl) {
     tm = expand_head(env, t);
   } else {
     throw {
-          ExceptionID: "Assert_failure",
+          RE_EXN_ID: "Assert_failure",
           _1: /* tuple */[
             "typedecl.ml",
             113,
@@ -64238,7 +64238,7 @@ function set_fixed_row(env, loc, p, decl) {
   var rv;
   if (typeof row === "number") {
     throw {
-          ExceptionID: $$Error$8,
+          RE_EXN_ID: $$Error$8,
           _1: loc,
           _2: /* Bad_fixed_type */Block.__(18, ["is not an object or variant"])
         };
@@ -64261,14 +64261,14 @@ function set_fixed_row(env, loc, p, decl) {
         break;
     default:
       throw {
-            ExceptionID: $$Error$8,
+            RE_EXN_ID: $$Error$8,
             _1: loc,
             _2: /* Bad_fixed_type */Block.__(18, ["is not an object or variant"])
           };
   }
   if (!is_Tvar(rv)) {
     throw {
-          ExceptionID: $$Error$8,
+          RE_EXN_ID: $$Error$8,
           _1: loc,
           _2: /* Bad_fixed_type */Block.__(18, ["has no row variable"])
         };
@@ -64317,12 +64317,12 @@ function bal$10(l, v, r) {
         return create$11(create$11(ll, lv, lr[/* l */0]), lr[/* v */1], create$11(lr[/* r */2], v, r));
       }
       throw {
-            ExceptionID: "Invalid_argument",
+            RE_EXN_ID: "Invalid_argument",
             _1: "Set.bal"
           };
     }
     throw {
-          ExceptionID: "Invalid_argument",
+          RE_EXN_ID: "Invalid_argument",
           _1: "Set.bal"
         };
   }
@@ -64345,12 +64345,12 @@ function bal$10(l, v, r) {
       return create$11(create$11(l, v, rl[/* l */0]), rl[/* v */1], create$11(rl[/* r */2], rv, rr));
     }
     throw {
-          ExceptionID: "Invalid_argument",
+          RE_EXN_ID: "Invalid_argument",
           _1: "Set.bal"
         };
   }
   throw {
-        ExceptionID: "Invalid_argument",
+        RE_EXN_ID: "Invalid_argument",
         _1: "Set.bal"
       };
 }
@@ -64413,9 +64413,9 @@ function make_params(env, params) {
     }
     catch (raw_exn){
       var exn = Caml_js_exceptions.internalToOCamlException(raw_exn);
-      if (exn.ExceptionID === Already_bound) {
+      if (exn.RE_EXN_ID === Already_bound) {
         throw {
-              ExceptionID: $$Error$8,
+              RE_EXN_ID: $$Error$8,
               _1: sty.ptyp_loc,
               _2: /* Repeated_parameter */0
             };
@@ -64445,7 +64445,7 @@ function make_constructor(env, type_path, type_params, sargs, sret_type) {
     }
     if (exit === 1) {
       throw {
-            ExceptionID: $$Error$8,
+            RE_EXN_ID: $$Error$8,
             _1: sret_type.ptyp_loc,
             _2: /* Constraint_failed */Block.__(5, [
                 ret_type,
@@ -64528,9 +64528,9 @@ function check_constraints_rec(env, loc, visited, _ty) {
           }
           catch (raw_exn){
             var exn = Caml_js_exceptions.internalToOCamlException(raw_exn);
-            if (exn.ExceptionID === Unify) {
+            if (exn.RE_EXN_ID === Unify) {
               throw {
-                    ExceptionID: "Assert_failure",
+                    RE_EXN_ID: "Assert_failure",
                     _1: /* tuple */[
                       "typedecl.ml",
                       360,
@@ -64538,9 +64538,9 @@ function check_constraints_rec(env, loc, visited, _ty) {
                     ]
                   };
             }
-            if (exn.ExceptionID === "Not_found") {
+            if (exn.RE_EXN_ID === "Not_found") {
               throw {
-                    ExceptionID: $$Error$8,
+                    RE_EXN_ID: $$Error$8,
                     _1: loc,
                     _2: /* Unavailable_type_constructor */Block.__(17, [path])
                   };
@@ -64549,7 +64549,7 @@ function check_constraints_rec(env, loc, visited, _ty) {
           }
           if (!matches(env, ty$1, ty$prime)) {
             throw {
-                  ExceptionID: $$Error$8,
+                  RE_EXN_ID: $$Error$8,
                   _1: loc,
                   _2: /* Constraint_failed */Block.__(5, [
                       ty$1,
@@ -64608,12 +64608,12 @@ function bal$11(l, x, d, r) {
         return create$12(create$12(ll, lv, ld, lr[/* l */0]), lr[/* v */1], lr[/* d */2], create$12(lr[/* r */3], x, d, r));
       }
       throw {
-            ExceptionID: "Invalid_argument",
+            RE_EXN_ID: "Invalid_argument",
             _1: "Map.bal"
           };
     }
     throw {
-          ExceptionID: "Invalid_argument",
+          RE_EXN_ID: "Invalid_argument",
           _1: "Map.bal"
         };
   }
@@ -64638,12 +64638,12 @@ function bal$11(l, x, d, r) {
       return create$12(create$12(l, x, d, rl[/* l */0]), rl[/* v */1], rl[/* d */2], create$12(rl[/* r */3], rv, rd, rr));
     }
     throw {
-          ExceptionID: "Invalid_argument",
+          RE_EXN_ID: "Invalid_argument",
           _1: "Map.bal"
         };
   }
   throw {
-        ExceptionID: "Invalid_argument",
+        RE_EXN_ID: "Invalid_argument",
         _1: "Map.bal"
       };
 }
@@ -64704,7 +64704,7 @@ function find$6(x, _param) {
       continue ;
     }
     throw {
-          ExceptionID: "Not_found"
+          RE_EXN_ID: "Not_found"
         };
   };
 }
@@ -64721,7 +64721,7 @@ function check_coherence(env, loc, id, decl) {
   var match$1 = repr(ty).desc;
   if (typeof match$1 === "number") {
     throw {
-          ExceptionID: $$Error$8,
+          RE_EXN_ID: $$Error$8,
           _1: loc,
           _2: /* Definition_mismatch */Block.__(4, [
               ty,
@@ -64747,7 +64747,7 @@ function check_coherence(env, loc, id, decl) {
         return ;
       }
       throw {
-            ExceptionID: $$Error$8,
+            RE_EXN_ID: $$Error$8,
             _1: loc,
             _2: /* Definition_mismatch */Block.__(4, [
                 ty,
@@ -64757,9 +64757,9 @@ function check_coherence(env, loc, id, decl) {
     }
     catch (raw_exn){
       var exn = Caml_js_exceptions.internalToOCamlException(raw_exn);
-      if (exn.ExceptionID === "Not_found") {
+      if (exn.RE_EXN_ID === "Not_found") {
         throw {
-              ExceptionID: $$Error$8,
+              RE_EXN_ID: $$Error$8,
               _1: loc,
               _2: /* Unavailable_type_constructor */Block.__(17, [path])
             };
@@ -64768,7 +64768,7 @@ function check_coherence(env, loc, id, decl) {
     }
   } else {
     throw {
-          ExceptionID: $$Error$8,
+          RE_EXN_ID: $$Error$8,
           _1: loc,
           _2: /* Definition_mismatch */Block.__(4, [
               ty,
@@ -64790,13 +64790,13 @@ function check_well_founded(env, loc, path, to_check, ty) {
       tmp = typeof match === "number" || match.tag !== /* Tconstr */3 ? false : same(match[0], path);
       if (tmp) {
         throw {
-              ExceptionID: $$Error$8,
+              RE_EXN_ID: $$Error$8,
               _1: loc,
               _2: /* Recursive_abbrev */Block.__(2, [name(undefined, path)])
             };
       }
       throw {
-            ExceptionID: $$Error$8,
+            RE_EXN_ID: $$Error$8,
             _1: loc,
             _2: /* Cycle_in_def */Block.__(3, [
                 name(undefined, path),
@@ -64817,7 +64817,7 @@ function check_well_founded(env, loc, path, to_check, ty) {
     }
     catch (raw_exn){
       var exn = Caml_js_exceptions.internalToOCamlException(raw_exn);
-      if (exn.ExceptionID === "Not_found") {
+      if (exn.RE_EXN_ID === "Not_found") {
         match$1 = /* tuple */[
           false,
           exp_nodes
@@ -64836,7 +64836,7 @@ function check_well_founded(env, loc, path, to_check, ty) {
       var match$2 = ty$1.desc;
       if (typeof match$2 === "number") {
         throw {
-              ExceptionID: Cannot_expand
+              RE_EXN_ID: Cannot_expand
             };
       }
       if (match$2.tag === /* Tconstr */3) {
@@ -64850,16 +64850,16 @@ function check_well_founded(env, loc, path, to_check, ty) {
           return check(ty0$1, add$3(ty$1, exp_nodes$1), ty$prime);
         }
         throw {
-              ExceptionID: Cannot_expand
+              RE_EXN_ID: Cannot_expand
             };
       }
       throw {
-            ExceptionID: Cannot_expand
+            RE_EXN_ID: Cannot_expand
           };
     }
     catch (raw_exn$1){
       var exn$1 = Caml_js_exceptions.internalToOCamlException(raw_exn$1);
-      if (exn$1.ExceptionID === Cannot_expand) {
+      if (exn$1.RE_EXN_ID === Cannot_expand) {
         var tmp$1 = true;
         if (!(recursive_types.contents && is_contractive(env, ty$1))) {
           var match$3 = ty$1.desc;
@@ -64883,7 +64883,7 @@ function check_well_founded(env, loc, path, to_check, ty) {
                       return check(ty0, nodes, param);
                     }), ty$1);
       }
-      if (exn$1.ExceptionID === Unify) {
+      if (exn$1.RE_EXN_ID === Unify) {
         return backtrack(snap);
       }
       throw exn$1;
@@ -64951,7 +64951,7 @@ function check_recursion(env, loc, path, decl, to_check) {
             if (same(path, path$prime)) {
               if (!equal$4(env, false, args, args$prime)) {
                 throw {
-                      ExceptionID: $$Error$8,
+                      RE_EXN_ID: $$Error$8,
                       _1: loc,
                       _2: /* Parameters_differ */Block.__(8, [
                           cpath,
@@ -64973,9 +64973,9 @@ function check_recursion(env, loc, path, decl, to_check) {
                 }
                 catch (raw_exn){
                   var exn = Caml_js_exceptions.internalToOCamlException(raw_exn);
-                  if (exn.ExceptionID === Unify) {
+                  if (exn.RE_EXN_ID === Unify) {
                     throw {
-                          ExceptionID: $$Error$8,
+                          RE_EXN_ID: $$Error$8,
                           _1: loc,
                           _2: /* Constraint_failed */Block.__(5, [
                               ty$1,
@@ -64992,7 +64992,7 @@ function check_recursion(env, loc, path, decl, to_check) {
               }
               catch (raw_exn$1){
                 var exn$1 = Caml_js_exceptions.internalToOCamlException(raw_exn$1);
-                if (exn$1.ExceptionID !== "Not_found") {
+                if (exn$1.RE_EXN_ID !== "Not_found") {
                   throw exn$1;
                 }
                 
@@ -65024,7 +65024,7 @@ function get_variance(ty, visited) {
   }
   catch (raw_exn){
     var exn = Caml_js_exceptions.internalToOCamlException(raw_exn);
-    if (exn.ExceptionID === "Not_found") {
+    if (exn.RE_EXN_ID === "Not_found") {
       return Types_Variance.$$null;
     }
     throw exn;
@@ -65086,7 +65086,7 @@ function compute_variance(env, visited, vari, ty) {
             }
             catch (raw_exn){
               var exn = Caml_js_exceptions.internalToOCamlException(raw_exn);
-              if (exn.ExceptionID === "Not_found") {
+              if (exn.RE_EXN_ID === "Not_found") {
                 return List.iter((function (param) {
                               return compute_variance_rec(Types_Variance.may_inv, param);
                             }), tl$1);
@@ -65204,7 +65204,7 @@ function compute_variance_type(env, check, param, decl, tyl) {
               return ;
             }
             throw {
-                  ExceptionID: $$Error$8,
+                  RE_EXN_ID: $$Error$8,
                   _1: loc,
                   _2: /* Bad_variance */Block.__(16, [
                       pos.contents,
@@ -65281,7 +65281,7 @@ function compute_variance_type(env, check, param, decl, tyl) {
             c2 || n2 ? -1 : -3
           ) : -2;
         throw {
-              ExceptionID: $$Error$8,
+              RE_EXN_ID: $$Error$8,
               _1: loc,
               _2: /* Bad_variance */Block.__(16, [
                   code,
@@ -65375,7 +65375,7 @@ function compute_variance_gadt(env, check, rloc, decl, param) {
   var match$1 = match.desc;
   if (typeof match$1 === "number") {
     throw {
-          ExceptionID: "Assert_failure",
+          RE_EXN_ID: "Assert_failure",
           _1: /* tuple */[
             "typedecl.ml",
             809,
@@ -65395,7 +65395,7 @@ function compute_variance_gadt(env, check, rloc, decl, param) {
               var fv1 = param[0];
               if ((param$1[0] || param$1[1]) && constrained(env, Pervasives.$at(fv1, fv2$1), ty)) {
                 throw {
-                      ExceptionID: $$Error$8,
+                      RE_EXN_ID: $$Error$8,
                       _1: loc,
                       _2: /* Varying_anonymous */4
                     };
@@ -65409,7 +65409,7 @@ function compute_variance_gadt(env, check, rloc, decl, param) {
                     ];
             }
             throw {
-                  ExceptionID: "Assert_failure",
+                  RE_EXN_ID: "Assert_failure",
                   _1: /* tuple */[
                     "typedecl.ml",
                     798,
@@ -65433,7 +65433,7 @@ function compute_variance_gadt(env, check, rloc, decl, param) {
               }, add_false(tl));
   }
   throw {
-        ExceptionID: "Assert_failure",
+        RE_EXN_ID: "Assert_failure",
         _1: /* tuple */[
           "typedecl.ml",
           809,
@@ -65524,7 +65524,7 @@ function compute_variance_decl(env, check, decl, rloc) {
                 }), varl);
   }
   throw {
-        ExceptionID: "Assert_failure",
+        RE_EXN_ID: "Assert_failure",
         _1: /* tuple */[
           "typedecl.ml",
           848,
@@ -65718,7 +65718,7 @@ function check_duplicates(sdecl_list) {
                                 }
                                 catch (raw_exn){
                                   var exn = Caml_js_exceptions.internalToOCamlException(raw_exn);
-                                  if (exn.ExceptionID === "Not_found") {
+                                  if (exn.RE_EXN_ID === "Not_found") {
                                     return Hashtbl.add(labels, cname.txt, sdecl.ptype_name.txt);
                                   }
                                   throw exn;
@@ -65737,7 +65737,7 @@ function check_duplicates(sdecl_list) {
                                 }
                                 catch (raw_exn){
                                   var exn = Caml_js_exceptions.internalToOCamlException(raw_exn);
-                                  if (exn.ExceptionID === "Not_found") {
+                                  if (exn.RE_EXN_ID === "Not_found") {
                                     return Hashtbl.add(constrs, pcd.pcd_name.txt, sdecl.ptype_name.txt);
                                   }
                                   throw exn;
@@ -65903,7 +65903,7 @@ function transl_type_decl(env, rec_flag, sdecl_list) {
               var name = param.pld_name.txt;
               if (mem$6(name, all_labels.contents)) {
                 throw {
-                      ExceptionID: $$Error$8,
+                      RE_EXN_ID: $$Error$8,
                       _1: name_sdecl.ptype_loc,
                       _2: /* Duplicate_label */Block.__(1, [name])
                     };
@@ -65966,7 +65966,7 @@ function transl_type_decl(env, rec_flag, sdecl_list) {
               var name = param.pcd_name.txt;
               if (mem$6(name, all_constrs.contents)) {
                 throw {
-                      ExceptionID: $$Error$8,
+                      RE_EXN_ID: $$Error$8,
                       _1: name_sdecl.ptype_loc,
                       _2: /* Duplicate_constructor */Block.__(0, [name])
                     };
@@ -65978,7 +65978,7 @@ function transl_type_decl(env, rec_flag, sdecl_list) {
                       return cd.pcd_args !== /* [] */0;
                     }))(scstrs$1)) > 246) {
         throw {
-              ExceptionID: $$Error$8,
+              RE_EXN_ID: $$Error$8,
               _1: name_sdecl.ptype_loc,
               _2: /* Too_many_constructors */1
             };
@@ -66064,9 +66064,9 @@ function transl_type_decl(env, rec_flag, sdecl_list) {
             }
             catch (raw_tr){
               var tr = Caml_js_exceptions.internalToOCamlException(raw_tr);
-              if (tr.ExceptionID === Unify) {
+              if (tr.RE_EXN_ID === Unify) {
                 throw {
-                      ExceptionID: $$Error$8,
+                      RE_EXN_ID: $$Error$8,
                       _1: param[2],
                       _2: /* Inconsistent_constraint */Block.__(6, [
                           temp_env,
@@ -66085,9 +66085,9 @@ function transl_type_decl(env, rec_flag, sdecl_list) {
       }
       catch (raw_exn){
         var exn = Caml_js_exceptions.internalToOCamlException(raw_exn);
-        if (exn.ExceptionID === "Not_found") {
+        if (exn.RE_EXN_ID === "Not_found") {
           throw {
-                ExceptionID: "Assert_failure",
+                RE_EXN_ID: "Assert_failure",
                 _1: /* tuple */[
                   "typedecl.ml",
                   301,
@@ -66101,7 +66101,7 @@ function transl_type_decl(env, rec_flag, sdecl_list) {
     }
     if (man !== undefined && cyclic_abbrev(temp_env, id, man)) {
       throw {
-            ExceptionID: $$Error$8,
+            RE_EXN_ID: $$Error$8,
             _1: name_sdecl.ptype_loc,
             _2: /* Recursive_abbrev */Block.__(2, [name_sdecl.ptype_name.txt])
           };
@@ -66148,9 +66148,9 @@ function transl_type_decl(env, rec_flag, sdecl_list) {
             }
             catch (raw_trace){
               var trace = Caml_js_exceptions.internalToOCamlException(raw_trace);
-              if (trace.ExceptionID === Unify) {
+              if (trace.RE_EXN_ID === Unify) {
                 throw {
-                      ExceptionID: $$Error$8,
+                      RE_EXN_ID: $$Error$8,
                       _1: loc,
                       _2: /* Type_clash */Block.__(7, [
                           newenv,
@@ -66213,7 +66213,7 @@ function transl_type_decl(env, rec_flag, sdecl_list) {
             return ;
           }
           throw {
-                ExceptionID: $$Error$8,
+                RE_EXN_ID: $$Error$8,
                 _1: sdecl.ptype_loc,
                 _2: /* Unbound_type_var */Block.__(9, [
                     ty,
@@ -66233,7 +66233,7 @@ function transl_type_decl(env, rec_flag, sdecl_list) {
             var find_pl = function (pl) {
               if (typeof pl === "number") {
                 throw {
-                      ExceptionID: "Assert_failure",
+                      RE_EXN_ID: "Assert_failure",
                       _1: /* tuple */[
                         "typedecl.ml",
                         382,
@@ -66245,7 +66245,7 @@ function transl_type_decl(env, rec_flag, sdecl_list) {
                 return pl[0];
               }
               throw {
-                    ExceptionID: "Assert_failure",
+                    RE_EXN_ID: "Assert_failure",
                     _1: /* tuple */[
                       "typedecl.ml",
                       382,
@@ -66266,9 +66266,9 @@ function transl_type_decl(env, rec_flag, sdecl_list) {
                     }
                     catch (raw_exn){
                       var exn = Caml_js_exceptions.internalToOCamlException(raw_exn);
-                      if (exn.ExceptionID === "Not_found") {
+                      if (exn.RE_EXN_ID === "Not_found") {
                         throw {
-                              ExceptionID: "Assert_failure",
+                              RE_EXN_ID: "Assert_failure",
                               _1: /* tuple */[
                                 "typedecl.ml",
                                 395,
@@ -66291,7 +66291,7 @@ function transl_type_decl(env, rec_flag, sdecl_list) {
             var find_pl$1 = function (pl) {
               if (typeof pl === "number") {
                 throw {
-                      ExceptionID: "Assert_failure",
+                      RE_EXN_ID: "Assert_failure",
                       _1: /* tuple */[
                         "typedecl.ml",
                         409,
@@ -66303,7 +66303,7 @@ function transl_type_decl(env, rec_flag, sdecl_list) {
                 return pl[0];
               }
               throw {
-                    ExceptionID: "Assert_failure",
+                    RE_EXN_ID: "Assert_failure",
                     _1: /* tuple */[
                       "typedecl.ml",
                       409,
@@ -66324,7 +66324,7 @@ function transl_type_decl(env, rec_flag, sdecl_list) {
                   continue ;
                 }
                 throw {
-                      ExceptionID: "Assert_failure",
+                      RE_EXN_ID: "Assert_failure",
                       _1: /* tuple */[
                         "typedecl.ml",
                         413,
@@ -66347,7 +66347,7 @@ function transl_type_decl(env, rec_flag, sdecl_list) {
             sty$1 = sty;
           } else {
             throw {
-                  ExceptionID: "Assert_failure",
+                  RE_EXN_ID: "Assert_failure",
                   _1: /* tuple */[
                     "typedecl.ml",
                     428,
@@ -66429,9 +66429,9 @@ function transl_extension_constructor(env, check_open, type_path, type_params, t
     }
     catch (raw_trace){
       var trace = Caml_js_exceptions.internalToOCamlException(raw_trace);
-      if (trace.ExceptionID === Unify) {
+      if (trace.RE_EXN_ID === Unify) {
         throw {
-              ExceptionID: $$Error$8,
+              RE_EXN_ID: $$Error$8,
               _1: lid$1.loc,
               _2: /* Rebind_wrong_type */Block.__(13, [
                   lid$1.txt,
@@ -66464,7 +66464,7 @@ function transl_extension_constructor(env, check_open, type_path, type_params, t
     var match$4;
     if (typeof match$3 === "number") {
       throw {
-            ExceptionID: "Assert_failure",
+            RE_EXN_ID: "Assert_failure",
             _1: /* tuple */[
               "typedecl.ml",
               1162,
@@ -66481,7 +66481,7 @@ function transl_extension_constructor(env, check_open, type_path, type_params, t
       ];
     } else {
       throw {
-            ExceptionID: "Assert_failure",
+            RE_EXN_ID: "Assert_failure",
             _1: /* tuple */[
               "typedecl.ml",
               1162,
@@ -66515,7 +66515,7 @@ function transl_extension_constructor(env, check_open, type_path, type_params, t
     ];
     if (!equal$4(env, true, cstr_types, ext_types)) {
       throw {
-            ExceptionID: $$Error$8,
+            RE_EXN_ID: $$Error$8,
             _1: lid$1.loc,
             _2: /* Rebind_mismatch */Block.__(14, [
                 lid$1.txt,
@@ -66527,7 +66527,7 @@ function transl_extension_constructor(env, check_open, type_path, type_params, t
     var match$5 = cdescr.cstr_private;
     if (!match$5 && priv) {
       throw {
-            ExceptionID: $$Error$8,
+            RE_EXN_ID: $$Error$8,
             _1: lid$1.loc,
             _2: /* Rebind_private */Block.__(15, [lid$1.txt])
           };
@@ -66538,7 +66538,7 @@ function transl_extension_constructor(env, check_open, type_path, type_params, t
       case /* Cstr_constant */0 :
       case /* Cstr_block */1 :
           throw {
-                ExceptionID: "Assert_failure",
+                RE_EXN_ID: "Assert_failure",
                 _1: /* tuple */[
                   "typedecl.ml",
                   1187,
@@ -66610,14 +66610,14 @@ function transl_type_extension(check_open, env, loc, styext) {
                 }
               }), styext.ptyext_constructors);
         throw {
-              ExceptionID: $$Error$8,
+              RE_EXN_ID: $$Error$8,
               _1: match$2.pext_loc,
               _2: /* Not_open_type */Block.__(10, [type_path])
             };
       }
       catch (raw_exn){
         var exn = Caml_js_exceptions.internalToOCamlException(raw_exn);
-        if (exn.ExceptionID !== "Not_found") {
+        if (exn.RE_EXN_ID !== "Not_found") {
           throw exn;
         }
         
@@ -66626,7 +66626,7 @@ function transl_type_extension(check_open, env, loc, styext) {
     
   } else {
     throw {
-          ExceptionID: $$Error$8,
+          RE_EXN_ID: $$Error$8,
           _1: loc,
           _2: /* Not_extensible_type */Block.__(11, [type_path])
         };
@@ -66662,7 +66662,7 @@ function transl_type_extension(check_open, env, loc, styext) {
     );
   if (err !== /* [] */0) {
     throw {
-          ExceptionID: $$Error$8,
+          RE_EXN_ID: $$Error$8,
           _1: loc,
           _2: /* Extension_mismatch */Block.__(12, [
               type_path,
@@ -66694,7 +66694,7 @@ function transl_type_extension(check_open, env, loc, styext) {
             return ;
           }
           throw {
-                ExceptionID: $$Error$8,
+                RE_EXN_ID: $$Error$8,
                 _1: ext.ext_loc,
                 _2: /* Unbound_type_var_ext */Block.__(19, [
                     ty,
@@ -66739,7 +66739,7 @@ function transl_exception(env, sext) {
   var ty = closed_extension_constructor(ext.ext_type);
   if (ty !== undefined) {
     throw {
-          ExceptionID: $$Error$8,
+          RE_EXN_ID: $$Error$8,
           _1: ext.ext_loc,
           _2: /* Unbound_type_var_ext */Block.__(19, [
               ty,
@@ -66811,14 +66811,14 @@ function transl_value_decl(env, loc, valdecl) {
     var prim_native_name = prim.prim_native_name;
     if (arity$1 === 0 && !(prim_native_name.length > 3 && prim_native_name[0] === "B" && prim_native_name[1] === "S" && prim_native_name[2] === ":") && (prim.prim_name.length === 0 || Caml_string.get(prim.prim_name, 0) !== /* "%" */37 && Caml_string.get(prim.prim_name, 0) !== /* "#" */35)) {
       throw {
-            ExceptionID: $$Error$8,
+            RE_EXN_ID: $$Error$8,
             _1: valdecl.pval_type.ptyp_loc,
             _2: /* Null_arity_external */2
           };
     }
     if (native_code.contents && prim.prim_arity > 5 && prim_native_name === "") {
       throw {
-            ExceptionID: $$Error$8,
+            RE_EXN_ID: $$Error$8,
             _1: valdecl.pval_type.ptyp_loc,
             _2: /* Missing_native_external */3
           };
@@ -66891,9 +66891,9 @@ function transl_with_constraint(env, id, row_path, orig_decl, sdecl) {
           }
           catch (raw_tr){
             var tr = Caml_js_exceptions.internalToOCamlException(raw_tr);
-            if (tr.ExceptionID === Unify) {
+            if (tr.RE_EXN_ID === Unify) {
               throw {
-                    ExceptionID: $$Error$8,
+                    RE_EXN_ID: $$Error$8,
                     _1: loc,
                     _2: /* Inconsistent_constraint */Block.__(6, [
                         env,
@@ -66947,7 +66947,7 @@ function transl_with_constraint(env, id, row_path, orig_decl, sdecl) {
   var ty = closed_type_decl(decl);
   if (ty !== undefined) {
     throw {
-          ExceptionID: $$Error$8,
+          RE_EXN_ID: $$Error$8,
           _1: sdecl.ptype_loc,
           _2: /* Unbound_type_var */Block.__(9, [
               ty,
@@ -67108,7 +67108,7 @@ function explain_unbound(ppf, tv, tl, typ, kwd, lab) {
   }
   catch (raw_exn){
     var exn = Caml_js_exceptions.internalToOCamlException(raw_exn);
-    if (exn.ExceptionID === "Not_found") {
+    if (exn.RE_EXN_ID === "Not_found") {
       return ;
     }
     throw exn;
@@ -68144,7 +68144,7 @@ function report_error$5(ppf, s) {
 }
 
 register_error_of_exn((function (param) {
-        if (param.ExceptionID === $$Error$8) {
+        if (param.RE_EXN_ID === $$Error$8) {
           return error_of_printer(param._1, report_error$5, param._2);
         }
         
@@ -68410,7 +68410,7 @@ function enter_val(cl_num, vars, inh, lab, mut, virt, ty, val_env, met_env, par_
     var virt$prime = match$1[2];
     if (match$1[1] !== mut) {
       throw {
-            ExceptionID: $$Error$9,
+            RE_EXN_ID: $$Error$9,
             _1: loc,
             _2: val_env,
             _3: /* Mutability_mismatch */Block.__(22, [
@@ -68427,9 +68427,9 @@ function enter_val(cl_num, vars, inh, lab, mut, virt, ty, val_env, met_env, par_
   }
   catch (raw_tr){
     var tr = Caml_js_exceptions.internalToOCamlException(raw_tr);
-    if (tr.ExceptionID === Unify) {
+    if (tr.RE_EXN_ID === Unify) {
       throw {
-            ExceptionID: $$Error$9,
+            RE_EXN_ID: $$Error$9,
             _1: loc,
             _2: val_env,
             _3: /* Field_type_mismatch */Block.__(1, [
@@ -68439,7 +68439,7 @@ function enter_val(cl_num, vars, inh, lab, mut, virt, ty, val_env, met_env, par_
               ])
           };
     }
-    if (tr.ExceptionID === "Not_found") {
+    if (tr.RE_EXN_ID === "Not_found") {
       match = /* tuple */[
         undefined,
         virt
@@ -68487,7 +68487,7 @@ function inheritance(self_type, env, ovf, concr_meths, warn_vals, loc, parent) {
         }
         catch (raw_trace){
           var trace = Caml_js_exceptions.internalToOCamlException(raw_trace);
-          if (trace.ExceptionID === Unify) {
+          if (trace.RE_EXN_ID === Unify) {
             var trace$1 = trace._1;
             var exit = 0;
             if (trace$1) {
@@ -68503,7 +68503,7 @@ function inheritance(self_type, env, ovf, concr_meths, warn_vals, loc, parent) {
                     } else {
                       if (match$3.tag === /* Tfield */5) {
                         throw {
-                              ExceptionID: $$Error$9,
+                              RE_EXN_ID: $$Error$9,
                               _1: loc,
                               _2: env,
                               _3: /* Field_type_mismatch */Block.__(1, [
@@ -68529,7 +68529,7 @@ function inheritance(self_type, env, ovf, concr_meths, warn_vals, loc, parent) {
             }
             if (exit === 1) {
               throw {
-                    ExceptionID: "Assert_failure",
+                    RE_EXN_ID: "Assert_failure",
                     _1: /* tuple */[
                       "typeclass.ml",
                       261,
@@ -68581,7 +68581,7 @@ function inheritance(self_type, env, ovf, concr_meths, warn_vals, loc, parent) {
               over_vals ? false : true
             )) {
             throw {
-                  ExceptionID: $$Error$9,
+                  RE_EXN_ID: $$Error$9,
                   _1: loc,
                   _2: env,
                   _3: /* No_overriding */Block.__(23, [
@@ -68602,7 +68602,7 @@ function inheritance(self_type, env, ovf, concr_meths, warn_vals, loc, parent) {
     case /* Cty_constr */0 :
     case /* Cty_arrow */2 :
         throw {
-              ExceptionID: $$Error$9,
+              RE_EXN_ID: $$Error$9,
               _1: loc,
               _2: env,
               _3: /* Structure_expected */Block.__(2, [parent])
@@ -68621,9 +68621,9 @@ function virtual_method(val_env, meths, self_type, lab, priv, sty, loc) {
   }
   catch (raw_trace){
     var trace = Caml_js_exceptions.internalToOCamlException(raw_trace);
-    if (trace.ExceptionID === Unify) {
+    if (trace.RE_EXN_ID === Unify) {
       throw {
-            ExceptionID: $$Error$9,
+            RE_EXN_ID: $$Error$9,
             _1: loc,
             _2: val_env,
             _3: /* Field_type_mismatch */Block.__(1, [
@@ -68651,9 +68651,9 @@ function declare_method(val_env, meths, self_type, lab, priv, sty, loc) {
     }
     catch (raw_trace){
       var trace = Caml_js_exceptions.internalToOCamlException(raw_trace);
-      if (trace.ExceptionID === Unify) {
+      if (trace.RE_EXN_ID === Unify) {
         throw {
-              ExceptionID: $$Error$9,
+              RE_EXN_ID: $$Error$9,
               _1: loc,
               _2: val_env,
               _3: /* Field_type_mismatch */Block.__(1, [
@@ -68706,9 +68706,9 @@ function type_constraint(val_env, sty, sty$prime, loc) {
   }
   catch (raw_trace){
     var trace = Caml_js_exceptions.internalToOCamlException(raw_trace);
-    if (trace.ExceptionID === Unify) {
+    if (trace.RE_EXN_ID === Unify) {
       throw {
-            ExceptionID: $$Error$9,
+            RE_EXN_ID: $$Error$9,
             _1: loc,
             _2: val_env,
             _3: /* Unconsistent_constraint */Block.__(0, [trace._1])
@@ -68742,7 +68742,7 @@ function add_val(env, loc, lab, param, val_sig) {
   }
   catch (raw_exn){
     var exn = Caml_js_exceptions.internalToOCamlException(raw_exn);
-    if (exn.ExceptionID === "Not_found") {
+    if (exn.RE_EXN_ID === "Not_found") {
       virt$1 = virt;
     } else {
       throw exn;
@@ -68776,9 +68776,9 @@ function class_signature$1(env, param) {
   }
   catch (raw_exn){
     var exn = Caml_js_exceptions.internalToOCamlException(raw_exn);
-    if (exn.ExceptionID === Unify) {
+    if (exn.RE_EXN_ID === Unify) {
       throw {
-            ExceptionID: $$Error$9,
+            RE_EXN_ID: $$Error$9,
             _1: sty.ptyp_loc,
             _2: env,
             _3: /* Pattern_type_clash */Block.__(5, [self_type])
@@ -68915,7 +68915,7 @@ function class_signature$1(env, param) {
                       ];
             case /* Pctf_extension */5 :
                 throw {
-                      ExceptionID: Error_forward$2,
+                      RE_EXN_ID: Error_forward$2,
                       _1: error_of_extension(sparent[0])
                     };
             
@@ -68963,7 +68963,7 @@ function class_type$3(env, scty) {
         var path = match[0];
         if (same(decl.clty_path, unbound_class)) {
           throw {
-                ExceptionID: $$Error$9,
+                RE_EXN_ID: $$Error$9,
                 _1: scty.pcty_loc,
                 _2: env,
                 _3: /* Unbound_class_type_2 */Block.__(7, [lid.txt])
@@ -68973,7 +68973,7 @@ function class_type$3(env, scty) {
         var params = match$1[0];
         if (List.length(params) !== List.length(styl)) {
           throw {
-                ExceptionID: $$Error$9,
+                RE_EXN_ID: $$Error$9,
                 _1: scty.pcty_loc,
                 _2: env,
                 _3: /* Parameter_arity_mismatch */Block.__(11, [
@@ -68991,9 +68991,9 @@ function class_type$3(env, scty) {
                 }
                 catch (raw_trace){
                   var trace = Caml_js_exceptions.internalToOCamlException(raw_trace);
-                  if (trace.ExceptionID === Unify) {
+                  if (trace.RE_EXN_ID === Unify) {
                     throw {
-                          ExceptionID: $$Error$9,
+                          RE_EXN_ID: $$Error$9,
                           _1: sty.ptyp_loc,
                           _2: env,
                           _3: /* Parameter_mismatch */Block.__(12, [trace._1])
@@ -69036,7 +69036,7 @@ function class_type$3(env, scty) {
                     ]), typ$2);
     case /* Pcty_extension */3 :
         throw {
-              ExceptionID: Error_forward$2,
+              RE_EXN_ID: Error_forward$2,
               _1: error_of_extension(pcsig[0])
             };
     
@@ -69089,9 +69089,9 @@ function class_structure(cl_num, $$final, val_env, met_env, loc, param) {
   }
   catch (raw_exn){
     var exn = Caml_js_exceptions.internalToOCamlException(raw_exn);
-    if (exn.ExceptionID === Unify) {
+    if (exn.RE_EXN_ID === Unify) {
       throw {
-            ExceptionID: $$Error$9,
+            RE_EXN_ID: $$Error$9,
             _1: spat.ppat_loc,
             _2: val_env$1,
             _3: /* Pattern_type_clash */Block.__(5, [public_self])
@@ -69110,7 +69110,7 @@ function class_structure(cl_num, $$final, val_env, met_env, loc, param) {
             }
             catch (exn){
               throw {
-                    ExceptionID: "Assert_failure",
+                    RE_EXN_ID: "Assert_failure",
                     _1: /* tuple */[
                       "typeclass.ml",
                       760,
@@ -69253,7 +69253,7 @@ function class_structure(cl_num, $$final, val_env, met_env, loc, param) {
                   var ovf$1 = styp[0];
                   if (mem$2(lab.txt, local_vals)) {
                     throw {
-                          ExceptionID: $$Error$9,
+                          RE_EXN_ID: $$Error$9,
                           _1: loc,
                           _2: val_env,
                           _3: /* Duplicate */Block.__(24, [
@@ -69272,7 +69272,7 @@ function class_structure(cl_num, $$final, val_env, met_env, loc, param) {
                     
                   } else if (ovf$1 === /* Override */0) {
                     throw {
-                          ExceptionID: $$Error$9,
+                          RE_EXN_ID: $$Error$9,
                           _1: loc,
                           _2: val_env,
                           _3: /* No_overriding */Block.__(23, [
@@ -69290,14 +69290,14 @@ function class_structure(cl_num, $$final, val_env, met_env, loc, param) {
                   }
                   catch (raw_exn){
                     var exn = Caml_js_exceptions.internalToOCamlException(raw_exn);
-                    if (exn.ExceptionID === Unify) {
+                    if (exn.RE_EXN_ID === Unify) {
                       var match$6 = exn._1;
                       if (match$6) {
                         if (match$6[1]) {
                           throw exn;
                         }
                         throw {
-                              ExceptionID: $$Error$9,
+                              RE_EXN_ID: $$Error$9,
                               _1: loc,
                               _2: val_env,
                               _3: /* Make_nongen_seltype */Block.__(17, [match$6[0][0]])
@@ -69393,7 +69393,7 @@ function class_structure(cl_num, $$final, val_env, met_env, loc, param) {
                   expr$2 = match$10.tag === /* Pexp_poly */28 ? expr$1 : Curry._4(Ast_helper_Exp.poly, expr$1.pexp_loc, undefined, expr$1, undefined);
                   if (mem$2(lab$1.txt, local_meths)) {
                     throw {
-                          ExceptionID: $$Error$9,
+                          RE_EXN_ID: $$Error$9,
                           _1: loc,
                           _2: val_env,
                           _3: /* Duplicate */Block.__(24, [
@@ -69412,7 +69412,7 @@ function class_structure(cl_num, $$final, val_env, met_env, loc, param) {
                     
                   } else if (ovf$2 === /* Override */0) {
                     throw {
-                          ExceptionID: $$Error$9,
+                          RE_EXN_ID: $$Error$9,
                           _1: loc,
                           _2: val_env,
                           _3: /* No_overriding */Block.__(23, [
@@ -69437,7 +69437,7 @@ function class_structure(cl_num, $$final, val_env, met_env, loc, param) {
                       var match$13 = repr(ty$1).desc;
                       if (typeof match$13 === "number") {
                         throw {
-                              ExceptionID: "Assert_failure",
+                              RE_EXN_ID: "Assert_failure",
                               _1: /* tuple */[
                                 "typeclass.ml",
                                 662,
@@ -69461,7 +69461,7 @@ function class_structure(cl_num, $$final, val_env, met_env, loc, param) {
                             break;
                         default:
                           throw {
-                                ExceptionID: "Assert_failure",
+                                RE_EXN_ID: "Assert_failure",
                                 _1: /* tuple */[
                                   "typeclass.ml",
                                   662,
@@ -69471,7 +69471,7 @@ function class_structure(cl_num, $$final, val_env, met_env, loc, param) {
                       }
                     } else {
                       throw {
-                            ExceptionID: "Assert_failure",
+                            RE_EXN_ID: "Assert_failure",
                             _1: /* tuple */[
                               "typeclass.ml",
                               664,
@@ -69482,9 +69482,9 @@ function class_structure(cl_num, $$final, val_env, met_env, loc, param) {
                   }
                   catch (raw_trace){
                     var trace = Caml_js_exceptions.internalToOCamlException(raw_trace);
-                    if (trace.ExceptionID === Unify) {
+                    if (trace.RE_EXN_ID === Unify) {
                       throw {
-                            ExceptionID: $$Error$9,
+                            RE_EXN_ID: $$Error$9,
                             _1: loc,
                             _2: val_env,
                             _3: /* Field_type_mismatch */Block.__(1, [
@@ -69649,7 +69649,7 @@ function class_structure(cl_num, $$final, val_env, met_env, loc, param) {
                       ];
             case /* Pcf_extension */6 :
                 throw {
-                      ExceptionID: Error_forward$2,
+                      RE_EXN_ID: Error_forward$2,
                       _1: error_of_extension(expr[0])
                     };
             
@@ -69706,7 +69706,7 @@ function class_structure(cl_num, $$final, val_env, met_env, loc, param) {
           }), sign_csig_vars, /* [] */0);
     if (mets !== /* [] */0 || vals !== /* [] */0) {
       throw {
-            ExceptionID: $$Error$9,
+            RE_EXN_ID: $$Error$9,
             _1: loc,
             _2: val_env$1,
             _3: /* Virtual_class */Block.__(10, [
@@ -69750,9 +69750,9 @@ function class_structure(cl_num, $$final, val_env, met_env, loc, param) {
     }
     catch (raw_trace){
       var trace = Caml_js_exceptions.internalToOCamlException(raw_trace);
-      if (trace.ExceptionID === Unify) {
+      if (trace.RE_EXN_ID === Unify) {
         throw {
-              ExceptionID: $$Error$9,
+              RE_EXN_ID: $$Error$9,
               _1: loc,
               _2: val_env$1,
               _3: /* Final_self_clash */Block.__(21, [trace._1])
@@ -69820,7 +69820,7 @@ function class_expr(cl_num, val_env, met_env, _scl) {
           var path = match[0];
           if (same(decl.cty_path, unbound_class)) {
             throw {
-                  ExceptionID: $$Error$9,
+                  RE_EXN_ID: $$Error$9,
                   _1: scl.pcl_loc,
                   _2: val_env,
                   _3: /* Unbound_class_2 */Block.__(6, [lid.txt])
@@ -69835,7 +69835,7 @@ function class_expr(cl_num, val_env, met_env, _scl) {
           var clty$prime = abbreviate_class_type(path, params, clty);
           if (List.length(params) !== List.length(tyl)) {
             throw {
-                  ExceptionID: $$Error$9,
+                  RE_EXN_ID: $$Error$9,
                   _1: scl.pcl_loc,
                   _2: val_env,
                   _3: /* Parameter_arity_mismatch */Block.__(11, [
@@ -69852,9 +69852,9 @@ function class_expr(cl_num, val_env, met_env, _scl) {
                   }
                   catch (raw_trace){
                     var trace = Caml_js_exceptions.internalToOCamlException(raw_trace);
-                    if (trace.ExceptionID === Unify) {
+                    if (trace.RE_EXN_ID === Unify) {
                       throw {
-                            ExceptionID: $$Error$9,
+                            RE_EXN_ID: $$Error$9,
                             _1: cty$prime.ctyp_loc,
                             _2: val_env,
                             _3: /* Parameter_mismatch */Block.__(12, [trace._1])
@@ -70106,7 +70106,7 @@ function class_expr(cl_num, val_env, met_env, _scl) {
                               if (sargs) {
                                 var match$1 = sargs[0];
                                 throw {
-                                      ExceptionID: $$Error$9,
+                                      RE_EXN_ID: $$Error$9,
                                       _1: match$1[1].pexp_loc,
                                       _2: val_env,
                                       _3: /* Apply_wrong_label */Block.__(4, [match$1[0]])
@@ -70118,7 +70118,7 @@ function class_expr(cl_num, val_env, met_env, _scl) {
                                 var l$prime = match$2[0];
                                 if (l !== l$prime && l$prime !== "") {
                                   throw {
-                                        ExceptionID: $$Error$9,
+                                        RE_EXN_ID: $$Error$9,
                                         _1: sarg0.pexp_loc,
                                         _2: val_env,
                                         _3: /* Apply_wrong_label */Block.__(4, [l$prime])
@@ -70131,7 +70131,7 @@ function class_expr(cl_num, val_env, met_env, _scl) {
                                 ];
                               } else {
                                 throw {
-                                      ExceptionID: "Assert_failure",
+                                      RE_EXN_ID: "Assert_failure",
                                       _1: /* tuple */[
                                         "typeclass.ml",
                                         1017,
@@ -70153,7 +70153,7 @@ function class_expr(cl_num, val_env, met_env, _scl) {
                                 }
                                 catch (raw_exn){
                                   var exn = Caml_js_exceptions.internalToOCamlException(raw_exn);
-                                  if (exn.ExceptionID === "Not_found") {
+                                  if (exn.RE_EXN_ID === "Not_found") {
                                     var match$5 = extract_label_aux(/* [] */0, name, more_sargs);
                                     match$3 = /* tuple */[
                                       match$5[0],
@@ -70187,7 +70187,7 @@ function class_expr(cl_num, val_env, met_env, _scl) {
                               }
                               catch (raw_exn$1){
                                 var exn$1 = Caml_js_exceptions.internalToOCamlException(raw_exn$1);
-                                if (exn$1.ExceptionID === "Not_found") {
+                                if (exn$1.RE_EXN_ID === "Not_found") {
                                   match = /* tuple */[
                                     sargs,
                                     more_sargs,
@@ -70243,14 +70243,14 @@ function class_expr(cl_num, val_env, met_env, _scl) {
               if (omitted !== /* [] */0) {
                 var match$7 = match$6[0];
                 throw {
-                      ExceptionID: $$Error$9,
+                      RE_EXN_ID: $$Error$9,
                       _1: match$7[1].pexp_loc,
                       _2: val_env,
                       _3: /* Apply_wrong_label */Block.__(4, [match$7[0]])
                     };
               }
               throw {
-                    ExceptionID: $$Error$9,
+                    RE_EXN_ID: $$Error$9,
                     _1: cl$2.cl_loc,
                     _2: val_env,
                     _3: /* Cannot_apply */Block.__(3, [cl$2.cl_type])
@@ -70279,14 +70279,14 @@ function class_expr(cl_num, val_env, met_env, _scl) {
           }
           catch (raw_exn){
             var exn = Caml_js_exceptions.internalToOCamlException(raw_exn);
-            if (exn.ExceptionID === Unify) {
+            if (exn.RE_EXN_ID === Unify) {
               var match$8 = exn._1;
               if (match$8) {
                 if (match$8[1]) {
                   throw exn;
                 }
                 throw {
-                      ExceptionID: $$Error$9,
+                      RE_EXN_ID: $$Error$9,
                       _1: scl.pcl_loc,
                       _2: val_env,
                       _3: /* Make_nongen_seltype */Block.__(17, [match$8[0][0]])
@@ -70381,7 +70381,7 @@ function class_expr(cl_num, val_env, met_env, _scl) {
           var error = class_types(val_env, cl$4.cl_type, clty$1.cltyp_type);
           if (error) {
             throw {
-                  ExceptionID: $$Error$9,
+                  RE_EXN_ID: $$Error$9,
                   _1: cl$4.cl_loc,
                   _2: val_env,
                   _3: /* Class_match_failure */Block.__(14, [error])
@@ -70403,7 +70403,7 @@ function class_expr(cl_num, val_env, met_env, _scl) {
                     });
       case /* Pcl_extension */6 :
           throw {
-                ExceptionID: Error_forward$2,
+                RE_EXN_ID: Error_forward$2,
                 _1: error_of_extension(cl_str[0])
               };
       
@@ -70615,9 +70615,9 @@ function type_classes(define_class, approx, kind, env, cls) {
             }
             catch (raw_exn){
               var exn = Caml_js_exceptions.internalToOCamlException(raw_exn);
-              if (exn.ExceptionID === Already_bound) {
+              if (exn.RE_EXN_ID === Already_bound) {
                 throw {
-                      ExceptionID: $$Error$9,
+                      RE_EXN_ID: $$Error$9,
                       _1: sty.ptyp_loc,
                       _2: env,
                       _3: /* Repeated_parameter */0
@@ -70681,9 +70681,9 @@ function type_classes(define_class, approx, kind, env, cls) {
           }
           catch (raw_exn){
             var exn$1 = Caml_js_exceptions.internalToOCamlException(raw_exn);
-            if (exn$1.ExceptionID === Unify) {
+            if (exn$1.RE_EXN_ID === Unify) {
               throw {
-                    ExceptionID: $$Error$9,
+                    RE_EXN_ID: $$Error$9,
                     _1: cl.pci_loc,
                     _2: env,
                     _3: /* Bad_parameters */Block.__(13, [
@@ -70700,9 +70700,9 @@ function type_classes(define_class, approx, kind, env, cls) {
           }
           catch (raw_exn$1){
             var exn$2 = Caml_js_exceptions.internalToOCamlException(raw_exn$1);
-            if (exn$2.ExceptionID === Unify) {
+            if (exn$2.RE_EXN_ID === Unify) {
               throw {
-                    ExceptionID: $$Error$9,
+                    RE_EXN_ID: $$Error$9,
                     _1: cl.pci_loc,
                     _2: env,
                     _3: /* Abbrev_type_clash */Block.__(8, [
@@ -70726,9 +70726,9 @@ function type_classes(define_class, approx, kind, env, cls) {
           }
           catch (raw_exn$2){
             var exn$3 = Caml_js_exceptions.internalToOCamlException(raw_exn$2);
-            if (exn$3.ExceptionID === Unify) {
+            if (exn$3.RE_EXN_ID === Unify) {
               throw {
-                    ExceptionID: $$Error$9,
+                    RE_EXN_ID: $$Error$9,
                     _1: cl.pci_loc,
                     _2: env,
                     _3: /* Bad_parameters */Block.__(13, [
@@ -70745,10 +70745,10 @@ function type_classes(define_class, approx, kind, env, cls) {
           }
           catch (raw_exn$3){
             var exn$4 = Caml_js_exceptions.internalToOCamlException(raw_exn$3);
-            if (exn$4.ExceptionID === Unify) {
+            if (exn$4.RE_EXN_ID === Unify) {
               var constr$1 = newconstr(/* Pident */Block.__(0, [cl_id]), params);
               throw {
-                    ExceptionID: $$Error$9,
+                    RE_EXN_ID: $$Error$9,
                     _1: cl.pci_loc,
                     _2: env,
                     _3: /* Abbrev_type_clash */Block.__(8, [
@@ -70765,9 +70765,9 @@ function type_classes(define_class, approx, kind, env, cls) {
           }
           catch (raw_trace){
             var trace = Caml_js_exceptions.internalToOCamlException(raw_trace);
-            if (trace.ExceptionID === Unify) {
+            if (trace.RE_EXN_ID === Unify) {
               throw {
-                    ExceptionID: $$Error$9,
+                    RE_EXN_ID: $$Error$9,
                     _1: cl.pci_loc,
                     _2: env,
                     _3: /* Constructor_type_mismatch */Block.__(9, [
@@ -70820,7 +70820,7 @@ function type_classes(define_class, approx, kind, env, cls) {
                   }), sign.csig_vars, /* [] */0);
             if (mets !== /* [] */0 || vals !== /* [] */0) {
               throw {
-                    ExceptionID: $$Error$9,
+                    RE_EXN_ID: $$Error$9,
                     _1: cl.pci_loc,
                     _2: env$1,
                     _3: /* Virtual_class */Block.__(10, [
@@ -70946,9 +70946,9 @@ function type_classes(define_class, approx, kind, env, cls) {
           }
           catch (raw_trace){
             var trace = Caml_js_exceptions.internalToOCamlException(raw_trace);
-            if (trace.ExceptionID === Unify) {
+            if (trace.RE_EXN_ID === Unify) {
               throw {
-                    ExceptionID: $$Error$9,
+                    RE_EXN_ID: $$Error$9,
                     _1: cl.pci_loc,
                     _2: env$1,
                     _3: /* Non_collapsable_conjunction */Block.__(20, [
@@ -70969,7 +70969,7 @@ function type_classes(define_class, approx, kind, env, cls) {
           may(generalize, cl_abbr.type_manifest);
           if (!closed_class$1(clty)) {
             throw {
-                  ExceptionID: $$Error$9,
+                  RE_EXN_ID: $$Error$9,
                   _1: cl.pci_loc,
                   _2: env$1,
                   _3: /* Non_generalizable_class */Block.__(18, [
@@ -70986,7 +70986,7 @@ function type_classes(define_class, approx, kind, env, cls) {
                   return cltype_declaration$1(id, ppf, cltydef);
                 });
             throw {
-                  ExceptionID: $$Error$9,
+                  RE_EXN_ID: $$Error$9,
                   _1: cl.pci_loc,
                   _2: env$1,
                   _3: /* Unbound_type_var */Block.__(16, [
@@ -71053,7 +71053,7 @@ function type_classes(define_class, approx, kind, env, cls) {
                 ];
               } else {
                 throw {
-                      ExceptionID: "Assert_failure",
+                      RE_EXN_ID: "Assert_failure",
                       _1: /* tuple */[
                         "typeclass.ml",
                         1562,
@@ -71063,7 +71063,7 @@ function type_classes(define_class, approx, kind, env, cls) {
               }
             } else {
               throw {
-                    ExceptionID: "Assert_failure",
+                    RE_EXN_ID: "Assert_failure",
                     _1: /* tuple */[
                       "typeclass.ml",
                       1562,
@@ -71078,9 +71078,9 @@ function type_classes(define_class, approx, kind, env, cls) {
             }
             catch (raw_exn){
               var exn = Caml_js_exceptions.internalToOCamlException(raw_exn);
-              if (exn.ExceptionID === Subtype) {
+              if (exn.RE_EXN_ID === Subtype) {
                 throw {
-                      ExceptionID: $$Error$7,
+                      RE_EXN_ID: $$Error$7,
                       _1: loc,
                       _2: env$2,
                       _3: /* Not_subtype */Block.__(23, [
@@ -71093,7 +71093,7 @@ function type_classes(define_class, approx, kind, env, cls) {
             }
             if (!opened_object(cl_ty)) {
               throw {
-                    ExceptionID: $$Error$9,
+                    RE_EXN_ID: $$Error$9,
                     _1: loc,
                     _2: env$2,
                     _3: /* Cannot_coerce_self */Block.__(19, [obj_ty])
@@ -71189,11 +71189,11 @@ function unify_parents_struct(env, ty, st) {
                           }
                           catch (raw_exn){
                             var exn = Caml_js_exceptions.internalToOCamlException(raw_exn);
-                            if (exn.ExceptionID === "Not_found") {
+                            if (exn.RE_EXN_ID === "Not_found") {
                               return ;
                             }
                             throw {
-                                  ExceptionID: "Assert_failure",
+                                  RE_EXN_ID: "Assert_failure",
                                   _1: /* tuple */[
                                     "typeclass.ml",
                                     1639,
@@ -71260,8 +71260,8 @@ function approx_class_declarations(env, sdecls) {
 }
 
 register_error_of_exn((function (err) {
-        if (err.ExceptionID !== $$Error$9) {
-          if (err.ExceptionID === Error_forward$2) {
+        if (err.RE_EXN_ID !== $$Error$9) {
+          if (err.RE_EXN_ID === Error_forward$2) {
             return err._1;
           } else {
             return ;
@@ -72355,7 +72355,7 @@ function path_concat(head, p) {
                 ]);
     case /* Papply */2 :
         throw {
-              ExceptionID: "Assert_failure",
+              RE_EXN_ID: "Assert_failure",
               _1: /* tuple */[
                 "typemod.ml",
                 54,
@@ -72372,7 +72372,7 @@ function extract_sig(env, loc, mty) {
     return sg[0];
   }
   throw {
-        ExceptionID: $$Error$10,
+        RE_EXN_ID: $$Error$10,
         _1: loc,
         _2: env,
         _3: /* Signature_expected */0
@@ -72385,7 +72385,7 @@ function extract_sig_open(env, loc, mty) {
     return sg[0];
   }
   throw {
-        ExceptionID: $$Error$10,
+        RE_EXN_ID: $$Error$10,
         _1: loc,
         _2: env,
         _3: /* Structure_expected */Block.__(3, [mty])
@@ -72426,7 +72426,7 @@ function type_open$1(toplevel, env, sod) {
 var type_module_type_of_fwd = {
   contents: (function (env, m) {
       throw {
-            ExceptionID: "Assert_failure",
+            RE_EXN_ID: "Assert_failure",
             _1: /* tuple */[
               "typemod.ml",
               99,
@@ -72823,7 +72823,7 @@ function merge_constraint(initial_env, loc, sg, constr) {
               ];
       }
       throw {
-            ExceptionID: $$Error$10,
+            RE_EXN_ID: $$Error$10,
             _1: loc,
             _2: env,
             _3: /* With_no_component */Block.__(4, [lid.txt])
@@ -72849,7 +72849,7 @@ function merge_constraint(initial_env, loc, sg, constr) {
               id$1 = id;
             } else {
               throw {
-                    ExceptionID: "Assert_failure",
+                    RE_EXN_ID: "Assert_failure",
                     _1: /* tuple */[
                       "typemod.ml",
                       246,
@@ -72864,7 +72864,7 @@ function merge_constraint(initial_env, loc, sg, constr) {
                 var match$2 = match$1.ptyp_desc;
                 if (typeof match$2 === "number") {
                   throw {
-                        ExceptionID: Pervasives.Exit
+                        RE_EXN_ID: Pervasives.Exit
                       };
                 }
                 if (match$2.tag === /* Ptyp_constr */3) {
@@ -72874,54 +72874,54 @@ function merge_constraint(initial_env, loc, sg, constr) {
                             var sx = x.ptyp_desc;
                             if (typeof sx === "number") {
                               throw {
-                                    ExceptionID: Pervasives.Exit
+                                    RE_EXN_ID: Pervasives.Exit
                                   };
                             }
                             if (sx.tag) {
                               throw {
-                                    ExceptionID: Pervasives.Exit
+                                    RE_EXN_ID: Pervasives.Exit
                                   };
                             }
                             var sy = param[0].ptyp_desc;
                             if (typeof sy === "number") {
                               throw {
-                                    ExceptionID: Pervasives.Exit
+                                    RE_EXN_ID: Pervasives.Exit
                                   };
                             }
                             if (sy.tag) {
                               throw {
-                                    ExceptionID: Pervasives.Exit
+                                    RE_EXN_ID: Pervasives.Exit
                                   };
                             }
                             if (sx[0] === sy[0]) {
                               return ;
                             }
                             throw {
-                                  ExceptionID: Pervasives.Exit
+                                  RE_EXN_ID: Pervasives.Exit
                                 };
                           }), stl, sdecl.ptype_params);
                     lid$1 = match$2[0];
                   } else {
                     throw {
-                          ExceptionID: Pervasives.Exit
+                          RE_EXN_ID: Pervasives.Exit
                         };
                   }
                 } else {
                   throw {
-                        ExceptionID: Pervasives.Exit
+                        RE_EXN_ID: Pervasives.Exit
                       };
                 }
               } else {
                 throw {
-                      ExceptionID: Pervasives.Exit
+                      RE_EXN_ID: Pervasives.Exit
                     };
               }
             }
             catch (raw_exn){
               var exn = Caml_js_exceptions.internalToOCamlException(raw_exn);
-              if (exn.ExceptionID === Pervasives.Exit) {
+              if (exn.RE_EXN_ID === Pervasives.Exit) {
                 throw {
-                      ExceptionID: $$Error$10,
+                      RE_EXN_ID: $$Error$10,
                       _1: sdecl.ptype_loc,
                       _2: initial_env,
                       _3: /* With_need_typeconstr */2
@@ -72935,9 +72935,9 @@ function merge_constraint(initial_env, loc, sg, constr) {
             }
             catch (raw_exn$1){
               var exn$1 = Caml_js_exceptions.internalToOCamlException(raw_exn$1);
-              if (exn$1.ExceptionID === "Not_found") {
+              if (exn$1.RE_EXN_ID === "Not_found") {
                 throw {
-                      ExceptionID: "Assert_failure",
+                      RE_EXN_ID: "Assert_failure",
                       _1: /* tuple */[
                         "typemod.ml",
                         263,
@@ -72957,7 +72957,7 @@ function merge_constraint(initial_env, loc, sg, constr) {
               id$3 = id$2;
             } else {
               throw {
-                    ExceptionID: "Assert_failure",
+                    RE_EXN_ID: "Assert_failure",
                     _1: /* tuple */[
                       "typemod.ml",
                       269,
@@ -72981,9 +72981,9 @@ function merge_constraint(initial_env, loc, sg, constr) {
   }
   catch (raw_explanation){
     var explanation = Caml_js_exceptions.internalToOCamlException(raw_explanation);
-    if (explanation.ExceptionID === $$Error$5) {
+    if (explanation.RE_EXN_ID === $$Error$5) {
       throw {
-            ExceptionID: $$Error$10,
+            RE_EXN_ID: $$Error$10,
             _1: loc,
             _2: initial_env,
             _3: /* With_mismatch */Block.__(5, [
@@ -73085,7 +73085,7 @@ function approx_modtype(env, _smty) {
           return Curry._2(type_module_type_of_fwd.contents, env, lid[0])[1];
       case /* Pmty_extension */5 :
           throw {
-                ExceptionID: Error_forward$3,
+                RE_EXN_ID: Error_forward$3,
                 _1: error_of_extension(lid[0])
               };
       case /* Pmty_alias */6 :
@@ -73280,12 +73280,12 @@ function bal$12(l, v, r) {
         return create$13(create$13(ll, lv, lr[/* l */0]), lr[/* v */1], create$13(lr[/* r */2], v, r));
       }
       throw {
-            ExceptionID: "Invalid_argument",
+            RE_EXN_ID: "Invalid_argument",
             _1: "Set.bal"
           };
     }
     throw {
-          ExceptionID: "Invalid_argument",
+          RE_EXN_ID: "Invalid_argument",
           _1: "Set.bal"
         };
   }
@@ -73308,12 +73308,12 @@ function bal$12(l, v, r) {
       return create$13(create$13(l, v, rl[/* l */0]), rl[/* v */1], create$13(rl[/* r */2], rv, rr));
     }
     throw {
-          ExceptionID: "Invalid_argument",
+          RE_EXN_ID: "Invalid_argument",
           _1: "Set.bal"
         };
   }
   throw {
-        ExceptionID: "Invalid_argument",
+        RE_EXN_ID: "Invalid_argument",
         _1: "Set.bal"
       };
 }
@@ -73368,7 +73368,7 @@ function mem$7(x, _param) {
 function check(cl, loc, set_ref, name) {
   if (mem$7(name, set_ref.contents)) {
     throw {
-          ExceptionID: $$Error$10,
+          RE_EXN_ID: $$Error$10,
           _1: loc,
           _2: empty,
           _3: /* Repeated_name */Block.__(6, [
@@ -73597,7 +73597,7 @@ function transl_modtype$1(env, smty) {
         return mkmty$1(/* Tmty_typeof */Block.__(4, [match$2[0]]), match$2[1], env, loc, smty.pmty_attributes);
     case /* Pmty_extension */5 :
         throw {
-              ExceptionID: Error_forward$3,
+              RE_EXN_ID: Error_forward$3,
               _1: error_of_extension(lid[0])
             };
     case /* Pmty_alias */6 :
@@ -73961,7 +73961,7 @@ function transl_signature(env, sg) {
                 ];
       case /* Psig_extension */12 :
           throw {
-                ExceptionID: Error_forward$3,
+                RE_EXN_ID: Error_forward$3,
                 _1: error_of_extension(sdesc[0])
               };
       
@@ -74175,14 +74175,14 @@ function path_of_module(_mexp) {
                     ]);
           }
           throw {
-                ExceptionID: Not_a_path
+                RE_EXN_ID: Not_a_path
               };
       case /* Tmod_constraint */4 :
           _mexp = match[0];
           continue ;
       default:
         throw {
-              ExceptionID: Not_a_path
+              RE_EXN_ID: Not_a_path
             };
     }
   };
@@ -74194,7 +74194,7 @@ function path_of_module$1(mexp) {
   }
   catch (raw_exn){
     var exn = Caml_js_exceptions.internalToOCamlException(raw_exn);
-    if (exn.ExceptionID === Not_a_path) {
+    if (exn.RE_EXN_ID === Not_a_path) {
       return ;
     }
     throw exn;
@@ -74319,9 +74319,9 @@ function check_recmodule_inclusion(env, bindings) {
       }
       catch (raw_msg){
         var msg = Caml_js_exceptions.internalToOCamlException(raw_msg);
-        if (msg.ExceptionID === $$Error$5) {
+        if (msg.RE_EXN_ID === $$Error$5) {
           throw {
-                ExceptionID: $$Error$10,
+                RE_EXN_ID: $$Error$10,
                 _1: modl.mod_loc,
                 _2: env$1,
                 _3: /* Not_included */Block.__(1, [msg._1])
@@ -74465,7 +74465,7 @@ function modtype_of_package(env, loc, p, nl, tl) {
         return /* Mty_ident */Block.__(0, [p]);
       }
       throw {
-            ExceptionID: $$Error$10,
+            RE_EXN_ID: $$Error$10,
             _1: loc,
             _2: env,
             _3: /* Signature_expected */0
@@ -74475,10 +74475,10 @@ function modtype_of_package(env, loc, p, nl, tl) {
   }
   catch (raw_exn){
     var exn = Caml_js_exceptions.internalToOCamlException(raw_exn);
-    if (exn.ExceptionID === "Not_found") {
+    if (exn.RE_EXN_ID === "Not_found") {
       var error = /* Unbound_modtype */Block.__(22, [lid_of_path(undefined, p)]);
       throw {
-            ExceptionID: $$Error$6,
+            RE_EXN_ID: $$Error$6,
             _1: loc,
             _2: env,
             _3: error
@@ -74503,7 +74503,7 @@ function package_subtype$1(env, p1, nl1, tl1, p2, nl2, tl2) {
   }
   catch (raw_msg){
     var msg = Caml_js_exceptions.internalToOCamlException(raw_msg);
-    if (msg.ExceptionID === $$Error$5) {
+    if (msg.RE_EXN_ID === $$Error$5) {
       return false;
     }
     throw msg;
@@ -74519,9 +74519,9 @@ function wrap_constraint(env, arg, mty, explicit) {
   }
   catch (raw_msg){
     var msg = Caml_js_exceptions.internalToOCamlException(raw_msg);
-    if (msg.ExceptionID === $$Error$5) {
+    if (msg.RE_EXN_ID === $$Error$5) {
       throw {
-            ExceptionID: $$Error$10,
+            RE_EXN_ID: $$Error$10,
             _1: arg.mod_loc,
             _2: env,
             _3: /* Not_included */Block.__(1, [msg._1])
@@ -74686,7 +74686,7 @@ function type_module$1(aliasOpt, sttn, funct_body, anchor, env, smod) {
           if (generative) {
             if (Caml_obj.caml_notequal(sarg.pmod_desc, /* Pmod_structure */Block.__(1, [/* [] */0]))) {
               throw {
-                    ExceptionID: $$Error$10,
+                    RE_EXN_ID: $$Error$10,
                     _1: sfunct.pmod_loc,
                     _2: env,
                     _3: /* Apply_generative */4
@@ -74694,7 +74694,7 @@ function type_module$1(aliasOpt, sttn, funct_body, anchor, env, smod) {
             }
             if (funct_body && contains_type$1(env, funct.mod_type)) {
               throw {
-                    ExceptionID: $$Error$10,
+                    RE_EXN_ID: $$Error$10,
                     _1: smod.pmod_loc,
                     _2: env,
                     _3: /* Not_allowed_in_functor_body */1
@@ -74708,9 +74708,9 @@ function type_module$1(aliasOpt, sttn, funct_body, anchor, env, smod) {
           }
           catch (raw_msg){
             var msg = Caml_js_exceptions.internalToOCamlException(raw_msg);
-            if (msg.ExceptionID === $$Error$5) {
+            if (msg.RE_EXN_ID === $$Error$5) {
               throw {
-                    ExceptionID: $$Error$10,
+                    RE_EXN_ID: $$Error$10,
                     _1: sarg.pmod_loc,
                     _2: env,
                     _3: /* Not_included */Block.__(1, [msg._1])
@@ -74729,9 +74729,9 @@ function type_module$1(aliasOpt, sttn, funct_body, anchor, env, smod) {
             }
             catch (raw_exn){
               var exn = Caml_js_exceptions.internalToOCamlException(raw_exn);
-              if (exn.ExceptionID === "Not_found") {
+              if (exn.RE_EXN_ID === "Not_found") {
                 throw {
-                      ExceptionID: $$Error$10,
+                      RE_EXN_ID: $$Error$10,
                       _1: smod.pmod_loc,
                       _2: env,
                       _3: /* Cannot_eliminate_dependency */Block.__(2, [mty_functor])
@@ -74758,7 +74758,7 @@ function type_module$1(aliasOpt, sttn, funct_body, anchor, env, smod) {
           return node$3;
         }
         throw {
-              ExceptionID: $$Error$10,
+              RE_EXN_ID: $$Error$10,
               _1: sfunct.pmod_loc,
               _2: env,
               _3: /* Cannot_apply */Block.__(0, [funct.mod_type])
@@ -74800,7 +74800,7 @@ function type_module$1(aliasOpt, sttn, funct_body, anchor, env, smod) {
           switch (match$4.tag | 0) {
             case /* Tvar */0 :
                 throw {
-                      ExceptionID: $$Error$7,
+                      RE_EXN_ID: $$Error$7,
                       _1: smod.pmod_loc,
                       _2: env,
                       _3: /* Cannot_infer_signature */3
@@ -74811,7 +74811,7 @@ function type_module$1(aliasOpt, sttn, funct_body, anchor, env, smod) {
                           return free_variables$1(undefined, t) !== /* [] */0;
                         }), tl)) {
                   throw {
-                        ExceptionID: $$Error$10,
+                        RE_EXN_ID: $$Error$10,
                         _1: smod.pmod_loc,
                         _2: env,
                         _3: /* Incomplete_packed_module */Block.__(13, [exp.exp_type])
@@ -74828,7 +74828,7 @@ function type_module$1(aliasOpt, sttn, funct_body, anchor, env, smod) {
         }
         if (exit$1 === 1) {
           throw {
-                ExceptionID: $$Error$10,
+                RE_EXN_ID: $$Error$10,
                 _1: smod.pmod_loc,
                 _2: env,
                 _3: /* Not_a_packed_module */Block.__(12, [exp.exp_type])
@@ -74836,7 +74836,7 @@ function type_module$1(aliasOpt, sttn, funct_body, anchor, env, smod) {
         }
         if (funct_body && contains_type$1(env, mty$4)) {
           throw {
-                ExceptionID: $$Error$10,
+                RE_EXN_ID: $$Error$10,
                 _1: smod.pmod_loc,
                 _2: env,
                 _3: /* Not_allowed_in_functor_body */1
@@ -74859,7 +74859,7 @@ function type_module$1(aliasOpt, sttn, funct_body, anchor, env, smod) {
         return node$5;
     case /* Pmod_extension */6 :
         throw {
-              ExceptionID: Error_forward$3,
+              RE_EXN_ID: Error_forward$3,
               _1: error_of_extension(lid[0])
             };
     
@@ -75036,7 +75036,7 @@ function type_structure(toplevelOpt, funct_body, anchor, env, sstr, scope) {
                           ];
                   }
                   throw {
-                        ExceptionID: $$Error$10,
+                        RE_EXN_ID: $$Error$10,
                         _1: mb.pmb_expr.pmod_loc,
                         _2: env,
                         _3: /* Recursive_module_require_explicit_type */3
@@ -75289,7 +75289,7 @@ function type_structure(toplevelOpt, funct_body, anchor, env, sstr, scope) {
                 ];
       case /* Pstr_extension */14 :
           throw {
-                ExceptionID: Error_forward$3,
+                RE_EXN_ID: Error_forward$3,
                 _1: error_of_extension(desc[0])
               };
       
@@ -75431,7 +75431,7 @@ function type_module_type_of(env, smod) {
   var mty$1 = remove_aliases$1(env, mty);
   if (!closed_modtype(mty$1)) {
     throw {
-          ExceptionID: $$Error$10,
+          RE_EXN_ID: $$Error$10,
           _1: smod.pmod_loc,
           _2: env,
           _3: /* Non_generalizable_module */Block.__(9, [mty$1])
@@ -75483,7 +75483,7 @@ function type_package$1(env, m, p, nl, tl) {
                   ]);
       case /* Lapply */2 :
           throw {
-                ExceptionID: "Assert_failure",
+                RE_EXN_ID: "Assert_failure",
                 _1: /* tuple */[
                   "typemod.ml",
                   1565,
@@ -75516,9 +75516,9 @@ function type_package$1(env, m, p, nl, tl) {
           }
           catch (raw_exn){
             var exn = Caml_js_exceptions.internalToOCamlException(raw_exn);
-            if (exn.ExceptionID === Unify) {
+            if (exn.RE_EXN_ID === Unify) {
               throw {
-                    ExceptionID: $$Error$10,
+                    RE_EXN_ID: $$Error$10,
                     _1: m.pmod_loc,
                     _2: env$1,
                     _3: /* Scoping_pack */Block.__(14, [
@@ -75587,9 +75587,9 @@ function type_implementation_more(sourcefile, outputprefix, modulename, initial_
       }
       catch (raw_exn){
         var exn = Caml_js_exceptions.internalToOCamlException(raw_exn);
-        if (exn.ExceptionID === "Not_found") {
+        if (exn.RE_EXN_ID === "Not_found") {
           throw {
-                ExceptionID: $$Error$10,
+                RE_EXN_ID: $$Error$10,
                 _1: in_file(sourcefile),
                 _2: empty,
                 _3: /* Interface_not_compiled */Block.__(11, [sourceintf])
@@ -75618,7 +75618,7 @@ function type_implementation_more(sourcefile, outputprefix, modulename, initial_
                                   return ;
                                 }
                                 throw {
-                                      ExceptionID: $$Error$10,
+                                      RE_EXN_ID: $$Error$10,
                                       _1: exp.exp_loc,
                                       _2: finalenv,
                                       _3: /* Non_generalizable */Block.__(7, [exp.exp_type])
@@ -75630,7 +75630,7 @@ function type_implementation_more(sourcefile, outputprefix, modulename, initial_
                     return ;
                   }
                   throw {
-                        ExceptionID: $$Error$10,
+                        RE_EXN_ID: $$Error$10,
                         _1: md.mod_loc,
                         _2: finalenv,
                         _3: /* Non_generalizable_module */Block.__(9, [md.mod_type])
@@ -75668,8 +75668,8 @@ function type_implementation(sourcefile, outputprefix, modulename, initial_env, 
 }
 
 register_error_of_exn((function (err) {
-        if (err.ExceptionID !== $$Error$10) {
-          if (err.ExceptionID === Error_forward$3) {
+        if (err.RE_EXN_ID !== $$Error$10) {
+          if (err.RE_EXN_ID === Error_forward$3) {
             return err._1;
           } else {
             return ;

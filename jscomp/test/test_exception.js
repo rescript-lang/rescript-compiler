@@ -7,33 +7,33 @@ var Local = Caml_exceptions.create("Test_exception.Local");
 
 function f(param) {
   throw {
-        ExceptionID: Local,
+        RE_EXN_ID: Local,
         _1: 3
       };
 }
 
 function g(param) {
   throw {
-        ExceptionID: "Not_found"
+        RE_EXN_ID: "Not_found"
       };
 }
 
 function h(param) {
   throw {
-        ExceptionID: Test_common.U,
+        RE_EXN_ID: Test_common.U,
         _1: 3
       };
 }
 
 function x(param) {
   throw {
-        ExceptionID: Test_common.H
+        RE_EXN_ID: Test_common.H
       };
 }
 
 function xx(param) {
   throw {
-        ExceptionID: "Invalid_argument",
+        RE_EXN_ID: "Invalid_argument",
         _1: "x"
       };
 }
@@ -41,7 +41,7 @@ function xx(param) {
 var Nullary = Caml_exceptions.create("Test_exception.Nullary");
 
 var a = {
-  ExceptionID: Nullary
+  RE_EXN_ID: Nullary
 };
 
 exports.Local = Local;

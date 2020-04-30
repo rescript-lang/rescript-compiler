@@ -253,7 +253,7 @@ function unbalanced_left(param) {
     }
   }
   throw {
-        ExceptionID: "Assert_failure",
+        RE_EXN_ID: "Assert_failure",
         _1: /* tuple */[
           "rbset.ml",
           57,
@@ -317,7 +317,7 @@ function unbalanced_right(param) {
     }
   }
   throw {
-        ExceptionID: "Assert_failure",
+        RE_EXN_ID: "Assert_failure",
         _1: /* tuple */[
           "rbset.ml",
           63,
@@ -551,7 +551,7 @@ function remove_min(param) {
               ];
       }
       throw {
-            ExceptionID: "Assert_failure",
+            RE_EXN_ID: "Assert_failure",
             _1: /* tuple */[
               "rbset.ml",
               115,
@@ -585,7 +585,7 @@ function remove_min(param) {
           ];
   }
   throw {
-        ExceptionID: "Assert_failure",
+        RE_EXN_ID: "Assert_failure",
         _1: /* tuple */[
           "rbset.ml",
           115,

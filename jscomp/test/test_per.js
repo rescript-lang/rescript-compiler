@@ -14,14 +14,14 @@ var CamlinternalFormatBasics = require("../../lib/js/camlinternalFormatBasics.js
 
 function failwith(s) {
   throw {
-        ExceptionID: "Failure",
+        RE_EXN_ID: "Failure",
         _1: s
       };
 }
 
 function invalid_arg(s) {
   throw {
-        ExceptionID: "Invalid_argument",
+        RE_EXN_ID: "Invalid_argument",
         _1: s
       };
 }
@@ -82,7 +82,7 @@ function $caret(s1, s2) {
 function char_of_int(n) {
   if (n < 0 || n > 255) {
     throw {
-          ExceptionID: "Invalid_argument",
+          RE_EXN_ID: "Invalid_argument",
           _1: "char_of_int"
         };
   }
@@ -105,7 +105,7 @@ function bool_of_string(param) {
         return true;
     default:
       throw {
-            ExceptionID: "Invalid_argument",
+            RE_EXN_ID: "Invalid_argument",
             _1: "bool_of_string"
           };
   }
@@ -225,7 +225,7 @@ function output_string(oc, s) {
 function output(oc, s, ofs, len) {
   if (ofs < 0 || len < 0 || ofs > (s.length - len | 0)) {
     throw {
-          ExceptionID: "Invalid_argument",
+          RE_EXN_ID: "Invalid_argument",
           _1: "output"
         };
   }
@@ -235,7 +235,7 @@ function output(oc, s, ofs, len) {
 function output_substring(oc, s, ofs, len) {
   if (ofs < 0 || len < 0 || ofs > (s.length - len | 0)) {
     throw {
-          ExceptionID: "Invalid_argument",
+          RE_EXN_ID: "Invalid_argument",
           _1: "output_substring"
         };
   }
@@ -293,7 +293,7 @@ function open_in_bin(name) {
 function input(ic, s, ofs, len) {
   if (ofs < 0 || len < 0 || ofs > (s.length - len | 0)) {
     throw {
-          ExceptionID: "Invalid_argument",
+          RE_EXN_ID: "Invalid_argument",
           _1: "input"
         };
   }
@@ -310,7 +310,7 @@ function unsafe_really_input(ic, s, _ofs, _len) {
     var r = Caml_external_polyfill.resolve("caml_ml_input")(ic, s, ofs, len);
     if (r === 0) {
       throw {
-            ExceptionID: "End_of_file"
+            RE_EXN_ID: "End_of_file"
           };
     }
     _len = len - r | 0;
@@ -322,7 +322,7 @@ function unsafe_really_input(ic, s, _ofs, _len) {
 function really_input(ic, s, ofs, len) {
   if (ofs < 0 || len < 0 || ofs > (s.length - len | 0)) {
     throw {
-          ExceptionID: "Invalid_argument",
+          RE_EXN_ID: "Invalid_argument",
           _1: "really_input"
         };
   }
@@ -362,7 +362,7 @@ function input_line(chan) {
         return build_result(Caml_bytes.caml_create_bytes(len), len, accu);
       }
       throw {
-            ExceptionID: "End_of_file"
+            RE_EXN_ID: "End_of_file"
           };
     }
     if (n > 0) {

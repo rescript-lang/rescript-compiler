@@ -3,7 +3,7 @@
 
 function f(param) {
   throw {
-        ExceptionID: "Assert_failure",
+        RE_EXN_ID: "Assert_failure",
         _1: /* tuple */[
           "noassert.ml",
           5,

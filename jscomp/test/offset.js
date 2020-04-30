@@ -40,12 +40,12 @@ function bal(l, v, r) {
         return create(create(ll, lv, lr[/* l */0]), lr[/* v */1], create(lr[/* r */2], v, r));
       }
       throw {
-            ExceptionID: "Invalid_argument",
+            RE_EXN_ID: "Invalid_argument",
             _1: "Set.bal"
           };
     }
     throw {
-          ExceptionID: "Invalid_argument",
+          RE_EXN_ID: "Invalid_argument",
           _1: "Set.bal"
         };
   }
@@ -68,12 +68,12 @@ function bal(l, v, r) {
       return create(create(l, v, rl[/* l */0]), rl[/* v */1], create(rl[/* r */2], rv, rr));
     }
     throw {
-          ExceptionID: "Invalid_argument",
+          RE_EXN_ID: "Invalid_argument",
           _1: "Set.bal"
         };
   }
   throw {
-        ExceptionID: "Invalid_argument",
+        RE_EXN_ID: "Invalid_argument",
         _1: "Set.bal"
       };
 }
@@ -165,7 +165,7 @@ function min_elt(_param) {
       continue ;
     }
     throw {
-          ExceptionID: "Not_found"
+          RE_EXN_ID: "Not_found"
         };
   };
 }
@@ -197,7 +197,7 @@ function max_elt(_param) {
       continue ;
     }
     throw {
-          ExceptionID: "Not_found"
+          RE_EXN_ID: "Not_found"
         };
   };
 }
@@ -227,7 +227,7 @@ function remove_min_elt(param) {
     }
   }
   throw {
-        ExceptionID: "Invalid_argument",
+        RE_EXN_ID: "Invalid_argument",
         _1: "Set.remove_min_elt"
       };
 }
@@ -646,7 +646,7 @@ function find(x, _param) {
       continue ;
     }
     throw {
-          ExceptionID: "Not_found"
+          RE_EXN_ID: "Not_found"
         };
   };
 }
@@ -679,7 +679,7 @@ function find_first(f, _param) {
       continue ;
     }
     throw {
-          ExceptionID: "Not_found"
+          RE_EXN_ID: "Not_found"
         };
   };
 }
@@ -743,7 +743,7 @@ function find_last(f, _param) {
       continue ;
     }
     throw {
-          ExceptionID: "Not_found"
+          RE_EXN_ID: "Not_found"
         };
   };
 }
@@ -925,7 +925,7 @@ function of_list(l) {
                 ];
         }
         throw {
-              ExceptionID: "Assert_failure",
+              RE_EXN_ID: "Assert_failure",
               _1: /* tuple */[
                 "set.ml",
                 510,

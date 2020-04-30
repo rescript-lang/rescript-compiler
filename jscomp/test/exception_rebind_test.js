@@ -18,17 +18,17 @@ var A0 = Caml_exceptions.create("Exception_rebind_test.A0");
 var H0 = "Invalid_argument";
 
 var u0 = {
-  ExceptionID: H0,
+  RE_EXN_ID: H0,
   _1: "x"
 };
 
 var u1 = {
-  ExceptionID: "Invalid_argument",
+  RE_EXN_ID: "Invalid_argument",
   _1: "x"
 };
 
 var u2 = {
-  ExceptionID: "Not_found"
+  RE_EXN_ID: "Not_found"
 };
 
 var H = Exception_def.A;

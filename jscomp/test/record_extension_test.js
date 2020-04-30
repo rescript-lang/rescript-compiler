@@ -22,14 +22,14 @@ function eq(loc, x, y) {
 var Inline_record = Caml_exceptions.create("Record_extension_test.Inline_record");
 
 function f(x) {
-  if (x.ExceptionID === Inline_record) {
+  if (x.RE_EXN_ID === Inline_record) {
     return x.x + Caml_format.caml_int_of_string(x.y) | 0;
   }
   
 }
 
 var v0 = {
-  ExceptionID: Inline_record,
+  RE_EXN_ID: Inline_record,
   x: 3,
   y: "4"
 };
@@ -67,11 +67,11 @@ function u(f) {
   }
   catch (raw_x){
     var x = Caml_js_exceptions.internalToOCamlException(raw_x);
-    if (x.ExceptionID === A) {
+    if (x.RE_EXN_ID === A) {
       return x.name + x.x | 0;
-    } else if (x.ExceptionID === B) {
+    } else if (x.RE_EXN_ID === B) {
       return x._1 + x._2 | 0;
-    } else if (x.ExceptionID === C) {
+    } else if (x.RE_EXN_ID === C) {
       return x.name;
     } else {
       return -1;

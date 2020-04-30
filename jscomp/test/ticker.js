@@ -29,7 +29,7 @@ function split(delim, s) {
       }
       catch (raw_exn){
         var exn = Caml_js_exceptions.internalToOCamlException(raw_exn);
-        if (exn.ExceptionID === "Not_found") {
+        if (exn.RE_EXN_ID === "Not_found") {
           return /* :: */[
                   $$String.sub(s, 0, i),
                   l
@@ -156,12 +156,12 @@ function bal(l, x, d, r) {
         return create(create(ll, lv, ld, lr[/* l */0]), lr[/* v */1], lr[/* d */2], create(lr[/* r */3], x, d, r));
       }
       throw {
-            ExceptionID: "Invalid_argument",
+            RE_EXN_ID: "Invalid_argument",
             _1: "Map.bal"
           };
     }
     throw {
-          ExceptionID: "Invalid_argument",
+          RE_EXN_ID: "Invalid_argument",
           _1: "Map.bal"
         };
   }
@@ -186,12 +186,12 @@ function bal(l, x, d, r) {
       return create(create(l, x, d, rl[/* l */0]), rl[/* v */1], rl[/* d */2], create(rl[/* r */3], rv, rd, rr));
     }
     throw {
-          ExceptionID: "Invalid_argument",
+          RE_EXN_ID: "Invalid_argument",
           _1: "Map.bal"
         };
   }
   throw {
-        ExceptionID: "Invalid_argument",
+        RE_EXN_ID: "Invalid_argument",
         _1: "Map.bal"
       };
 }
@@ -260,7 +260,7 @@ function find(x, _param) {
       continue ;
     }
     throw {
-          ExceptionID: "Not_found"
+          RE_EXN_ID: "Not_found"
         };
   };
 }
@@ -299,7 +299,7 @@ function find_first(f, _param) {
       continue ;
     }
     throw {
-          ExceptionID: "Not_found"
+          RE_EXN_ID: "Not_found"
         };
   };
 }
@@ -375,7 +375,7 @@ function find_last(f, _param) {
       continue ;
     }
     throw {
-          ExceptionID: "Not_found"
+          RE_EXN_ID: "Not_found"
         };
   };
 }
@@ -462,7 +462,7 @@ function min_binding(_param) {
       continue ;
     }
     throw {
-          ExceptionID: "Not_found"
+          RE_EXN_ID: "Not_found"
         };
   };
 }
@@ -500,7 +500,7 @@ function max_binding(_param) {
       continue ;
     }
     throw {
-          ExceptionID: "Not_found"
+          RE_EXN_ID: "Not_found"
         };
   };
 }
@@ -533,7 +533,7 @@ function remove_min_binding(param) {
     }
   }
   throw {
-        ExceptionID: "Invalid_argument",
+        RE_EXN_ID: "Invalid_argument",
         _1: "Map.remove_min_elt"
       };
 }
@@ -830,7 +830,7 @@ function merge$1(f, s1, s2) {
     return concat_or_join(merge$1(f, match$1[0], s2[/* l */0]), v2, Curry._3(f, v2, match$1[1], Caml_option.some(s2[/* d */2])), merge$1(f, match$1[2], s2[/* r */3]));
   }
   throw {
-        ExceptionID: "Assert_failure",
+        RE_EXN_ID: "Assert_failure",
         _1: /* tuple */[
           "map.ml",
           393,
@@ -1132,14 +1132,14 @@ function compute_update_sequences(all_tickers) {
                         var x = lhs.rank;
                         if (typeof x === "number") {
                           throw {
-                                ExceptionID: "Failure",
+                                RE_EXN_ID: "Failure",
                                 _1: "All nodes should be ranked"
                               };
                         }
                         var y = rhs.rank;
                         if (typeof y === "number") {
                           throw {
-                                ExceptionID: "Failure",
+                                RE_EXN_ID: "Failure",
                                 _1: "All nodes should be ranked"
                               };
                         }
@@ -1168,7 +1168,7 @@ function process_quote(ticker_map, new_ticker, new_value) {
                   return ;
                 }
                 throw {
-                      ExceptionID: "Failure",
+                      RE_EXN_ID: "Failure",
                       _1: "Only single Market ticker should be udpated upon a new quote"
                     };
               }), update_sequence);
@@ -1199,7 +1199,7 @@ function process_input_line(ticker_map, all_tickers, line) {
             if (match$1) {
               if (match$1[1]) {
                 throw {
-                      ExceptionID: "Failure",
+                      RE_EXN_ID: "Failure",
                       _1: "Invalid input line"
                     };
               }
@@ -1212,12 +1212,12 @@ function process_input_line(ticker_map, all_tickers, line) {
                     ];
             }
             throw {
-                  ExceptionID: "Failure",
+                  RE_EXN_ID: "Failure",
                   _1: "Invalid input line"
                 };
           }
           throw {
-                ExceptionID: "Failure",
+                RE_EXN_ID: "Failure",
                 _1: "Invalid input line"
               };
       case "R" :
@@ -1234,7 +1234,7 @@ function process_input_line(ticker_map, all_tickers, line) {
                       if (match$5) {
                         if (match$5[1]) {
                           throw {
-                                ExceptionID: "Failure",
+                                RE_EXN_ID: "Failure",
                                 _1: "Invalid input line"
                               };
                         }
@@ -1247,12 +1247,12 @@ function process_input_line(ticker_map, all_tickers, line) {
                               ];
                       }
                       throw {
-                            ExceptionID: "Failure",
+                            RE_EXN_ID: "Failure",
                             _1: "Invalid input line"
                           };
                     }
                     throw {
-                          ExceptionID: "Failure",
+                          RE_EXN_ID: "Failure",
                           _1: "Invalid input line"
                         };
                 case "-" :
@@ -1262,7 +1262,7 @@ function process_input_line(ticker_map, all_tickers, line) {
                       if (match$7) {
                         if (match$7[1]) {
                           throw {
-                                ExceptionID: "Failure",
+                                RE_EXN_ID: "Failure",
                                 _1: "Invalid input line"
                               };
                         }
@@ -1275,18 +1275,18 @@ function process_input_line(ticker_map, all_tickers, line) {
                               ];
                       }
                       throw {
-                            ExceptionID: "Failure",
+                            RE_EXN_ID: "Failure",
                             _1: "Invalid input line"
                           };
                     }
                     throw {
-                          ExceptionID: "Failure",
+                          RE_EXN_ID: "Failure",
                           _1: "Invalid input line"
                         };
                 case "S" :
                     if (match$3[1]) {
                       throw {
-                            ExceptionID: "Failure",
+                            RE_EXN_ID: "Failure",
                             _1: "Invalid input line"
                           };
                     }
@@ -1304,31 +1304,31 @@ function process_input_line(ticker_map, all_tickers, line) {
                           ];
                 default:
                   throw {
-                        ExceptionID: "Failure",
+                        RE_EXN_ID: "Failure",
                         _1: "Invalid input line"
                       };
               }
             } else {
               throw {
-                    ExceptionID: "Failure",
+                    RE_EXN_ID: "Failure",
                     _1: "Invalid input line"
                   };
             }
           } else {
             throw {
-                  ExceptionID: "Failure",
+                  RE_EXN_ID: "Failure",
                   _1: "Invalid input line"
                 };
           }
       default:
         throw {
-              ExceptionID: "Failure",
+              RE_EXN_ID: "Failure",
               _1: "Invalid input line"
             };
     }
   } else {
     throw {
-          ExceptionID: "Failure",
+          RE_EXN_ID: "Failure",
           _1: "Invalid input line"
         };
   }

@@ -17,7 +17,7 @@ function f3(param) {
       var rhs = param.rank;
       if (typeof lhs === "number") {
         throw {
-              ExceptionID: "Assert_failure",
+              RE_EXN_ID: "Assert_failure",
               _1: /* tuple */[
                 "fun_pattern_match.ml",
                 44,
@@ -27,7 +27,7 @@ function f3(param) {
       }
       if (typeof rhs === "number") {
         throw {
-              ExceptionID: "Assert_failure",
+              RE_EXN_ID: "Assert_failure",
               _1: /* tuple */[
                 "fun_pattern_match.ml",
                 44,
@@ -45,7 +45,7 @@ function f4(param) {
       var rhs = param.rank;
       if (typeof lhs === "number") {
         throw {
-              ExceptionID: "Assert_failure",
+              RE_EXN_ID: "Assert_failure",
               _1: /* tuple */[
                 "fun_pattern_match.ml",
                 52,
@@ -55,7 +55,7 @@ function f4(param) {
       }
       if (typeof rhs === "number") {
         throw {
-              ExceptionID: "Assert_failure",
+              RE_EXN_ID: "Assert_failure",
               _1: /* tuple */[
                 "fun_pattern_match.ml",
                 52,

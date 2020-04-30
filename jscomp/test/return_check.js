@@ -18,7 +18,7 @@ function f_undefined(xs, i) {
     return k;
   }
   throw {
-        ExceptionID: "Assert_failure",
+        RE_EXN_ID: "Assert_failure",
         _1: /* tuple */[
           "return_check.ml",
           31,
@@ -59,7 +59,7 @@ function f_null(xs, i) {
     return k;
   }
   throw {
-        ExceptionID: "Assert_failure",
+        RE_EXN_ID: "Assert_failure",
         _1: /* tuple */[
           "return_check.ml",
           59,
@@ -74,7 +74,7 @@ function f_null_undefined(xs, i) {
     return k;
   }
   throw {
-        ExceptionID: "Assert_failure",
+        RE_EXN_ID: "Assert_failure",
         _1: /* tuple */[
           "return_check.ml",
           68,

@@ -8,7 +8,7 @@ var A = Caml_exceptions.create("Internal_unused_test.P1.A");
 
 function f(param) {
   throw {
-        ExceptionID: A
+        RE_EXN_ID: A
       };
 }
 

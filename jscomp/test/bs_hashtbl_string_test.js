@@ -53,7 +53,7 @@ function bench(param) {
   for(var i$1 = 0; i$1 <= 1000000; ++i$1){
     if (!Belt_HashMap.has(empty, i$1)) {
       throw {
-            ExceptionID: "Assert_failure",
+            RE_EXN_ID: "Assert_failure",
             _1: /* tuple */[
               "bs_hashtbl_string_test.ml",
               50,
@@ -74,7 +74,7 @@ function bench2(m) {
   for(var i$1 = 0; i$1 <= 1000000; ++i$1){
     if (!Belt_HashMap.has(empty, String(i$1))) {
       throw {
-            ExceptionID: "Assert_failure",
+            RE_EXN_ID: "Assert_failure",
             _1: /* tuple */[
               "bs_hashtbl_string_test.ml",
               76,
@@ -91,7 +91,7 @@ function bench2(m) {
     return ;
   }
   throw {
-        ExceptionID: "Assert_failure",
+        RE_EXN_ID: "Assert_failure",
         _1: /* tuple */[
           "bs_hashtbl_string_test.ml",
           82,
@@ -110,7 +110,7 @@ function bench3(m) {
   for(var i$1 = 0; i$1 <= 1000000; ++i$1){
     if (!Belt_MapDict.has(table, String(i$1), cmp)) {
       throw {
-            ExceptionID: "Assert_failure",
+            RE_EXN_ID: "Assert_failure",
             _1: /* tuple */[
               "bs_hashtbl_string_test.ml",
               98,
@@ -127,7 +127,7 @@ function bench3(m) {
     return ;
   }
   throw {
-        ExceptionID: "Assert_failure",
+        RE_EXN_ID: "Assert_failure",
         _1: /* tuple */[
           "bs_hashtbl_string_test.ml",
           105,
@@ -146,7 +146,7 @@ function bench4(param) {
   for(var i$1 = 0; i$1 <= 1000000; ++i$1){
     if (!Belt_HashMapString.has(table, String(i$1))) {
       throw {
-            ExceptionID: "Assert_failure",
+            RE_EXN_ID: "Assert_failure",
             _1: /* tuple */[
               "bs_hashtbl_string_test.ml",
               118,
@@ -163,7 +163,7 @@ function bench4(param) {
     return ;
   }
   throw {
-        ExceptionID: "Assert_failure",
+        RE_EXN_ID: "Assert_failure",
         _1: /* tuple */[
           "bs_hashtbl_string_test.ml",
           124,
@@ -183,7 +183,7 @@ function bench5(param) {
   for(var i$1 = 0; i$1 <= 1000000; ++i$1){
     if (!Belt_HashMap.has(table, i$1)) {
       throw {
-            ExceptionID: "Assert_failure",
+            RE_EXN_ID: "Assert_failure",
             _1: /* tuple */[
               "bs_hashtbl_string_test.ml",
               138,
@@ -203,7 +203,7 @@ function bench5(param) {
     return ;
   }
   throw {
-        ExceptionID: "Assert_failure",
+        RE_EXN_ID: "Assert_failure",
         _1: /* tuple */[
           "bs_hashtbl_string_test.ml",
           144,
@@ -220,7 +220,7 @@ function bench6(param) {
   for(var i$1 = 0; i$1 <= 1000000; ++i$1){
     if (!Belt_HashMapInt.has(table, i$1)) {
       throw {
-            ExceptionID: "Assert_failure",
+            RE_EXN_ID: "Assert_failure",
             _1: /* tuple */[
               "bs_hashtbl_string_test.ml",
               156,
@@ -237,7 +237,7 @@ function bench6(param) {
     return ;
   }
   throw {
-        ExceptionID: "Assert_failure",
+        RE_EXN_ID: "Assert_failure",
         _1: /* tuple */[
           "bs_hashtbl_string_test.ml",
           162,
@@ -254,7 +254,7 @@ function bench7(param) {
   for(var i$1 = 0; i$1 <= 1000000; ++i$1){
     if (!Belt_HashSetInt.has(table, i$1)) {
       throw {
-            ExceptionID: "Assert_failure",
+            RE_EXN_ID: "Assert_failure",
             _1: /* tuple */[
               "bs_hashtbl_string_test.ml",
               181,
@@ -271,7 +271,7 @@ function bench7(param) {
     return ;
   }
   throw {
-        ExceptionID: "Assert_failure",
+        RE_EXN_ID: "Assert_failure",
         _1: /* tuple */[
           "bs_hashtbl_string_test.ml",
           192,

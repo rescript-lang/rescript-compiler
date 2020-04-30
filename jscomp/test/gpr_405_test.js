@@ -17,7 +17,7 @@ function Make(funarg) {
     }
     catch (raw_exn){
       var exn = Caml_js_exceptions.internalToOCamlException(raw_exn);
-      if (exn.ExceptionID === "Not_found") {
+      if (exn.RE_EXN_ID === "Not_found") {
         return false;
       }
       throw exn;
@@ -37,7 +37,7 @@ function Make(funarg) {
     var step2 = function (top, rest_of_stack) {
       if (find_default(already_processed, top)) {
         throw {
-              ExceptionID: "Assert_failure",
+              RE_EXN_ID: "Assert_failure",
               _1: /* tuple */[
                 "gpr_405_test.ml",
                 43,
@@ -47,7 +47,7 @@ function Make(funarg) {
       }
       if (find_default(on_the_stack, top)) {
         throw {
-              ExceptionID: "Assert_failure",
+              RE_EXN_ID: "Assert_failure",
               _1: /* tuple */[
                 "gpr_405_test.ml",
                 44,
@@ -92,7 +92,7 @@ function Make(funarg) {
         }
         if (Curry._2(H.find, l_labels, top$1) > Curry._2(H.find, n_labels, top$1)) {
           throw {
-                ExceptionID: "Invalid_argument",
+                RE_EXN_ID: "Invalid_argument",
                 _1: "Graph.Mincut: graph not reducible"
               };
         }

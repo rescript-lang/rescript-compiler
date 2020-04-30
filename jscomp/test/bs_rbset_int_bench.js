@@ -13,7 +13,7 @@ function bench(param) {
   for(var i$1 = 0; i$1 <= 1000000; ++i$1){
     if (!Rbset.mem(i$1, data)) {
       throw {
-            ExceptionID: "Assert_failure",
+            RE_EXN_ID: "Assert_failure",
             _1: /* tuple */[
               "bs_rbset_int_bench.ml",
               12,
@@ -33,7 +33,7 @@ function bench(param) {
     return ;
   }
   throw {
-        ExceptionID: "Assert_failure",
+        RE_EXN_ID: "Assert_failure",
         _1: /* tuple */[
           "bs_rbset_int_bench.ml",
           17,

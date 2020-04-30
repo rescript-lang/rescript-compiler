@@ -12,7 +12,7 @@ var v = "gso";
 function is_equal(param) {
   if (Caml_bytes.get(Bytes.make(3, /* "a" */97), 0) !== /* "a" */97) {
     throw {
-          ExceptionID: "Assert_failure",
+          RE_EXN_ID: "Assert_failure",
           _1: /* tuple */[
             "equal_exception_test.ml",
             9,
@@ -22,7 +22,7 @@ function is_equal(param) {
   }
   if (Bytes.make(3, /* "a" */97)[0] !== /* "a" */97) {
     throw {
-          ExceptionID: "Assert_failure",
+          RE_EXN_ID: "Assert_failure",
           _1: /* tuple */[
             "equal_exception_test.ml",
             10,
@@ -34,7 +34,7 @@ function is_equal(param) {
   u[0] = /* "b" */98;
   if (u[0] !== /* "b" */98) {
     throw {
-          ExceptionID: "Assert_failure",
+          RE_EXN_ID: "Assert_failure",
           _1: /* tuple */[
             "equal_exception_test.ml",
             13,
@@ -48,12 +48,12 @@ function is_equal(param) {
 function is_exception(param) {
   try {
     throw {
-          ExceptionID: "Not_found"
+          RE_EXN_ID: "Not_found"
         };
   }
   catch (raw_exn){
     var exn = Caml_js_exceptions.internalToOCamlException(raw_exn);
-    if (exn.ExceptionID === "Not_found") {
+    if (exn.RE_EXN_ID === "Not_found") {
       return ;
     }
     throw exn;
@@ -63,7 +63,7 @@ function is_exception(param) {
 function is_normal_exception(_x) {
   var A = Caml_exceptions.create("A");
   var v = {
-    ExceptionID: A,
+    RE_EXN_ID: A,
     _1: 3
   };
   try {
@@ -71,7 +71,7 @@ function is_normal_exception(_x) {
   }
   catch (raw_exn){
     var exn = Caml_js_exceptions.internalToOCamlException(raw_exn);
-    if (exn.ExceptionID === A) {
+    if (exn.RE_EXN_ID === A) {
       if (exn._1 === 3) {
         return ;
       }
@@ -85,7 +85,7 @@ function is_arbitrary_exception(param) {
   var A = Caml_exceptions.create("A");
   try {
     throw {
-          ExceptionID: A
+          RE_EXN_ID: A
         };
   }
   catch (exn){
@@ -124,20 +124,20 @@ var suites = /* :: */[
 ];
 
 var e = {
-  ExceptionID: "Not_found"
+  RE_EXN_ID: "Not_found"
 };
 
 function eq(param) {
-  return param.ExceptionID === "Not_found";
+  return param.RE_EXN_ID === "Not_found";
 }
 
 var Not_found = Caml_exceptions.create("Equal_exception_test.Not_found");
 
 if (Caml_obj.caml_equal(e, {
-        ExceptionID: Not_found
+        RE_EXN_ID: Not_found
       }) !== false) {
   throw {
-        ExceptionID: "Assert_failure",
+        RE_EXN_ID: "Assert_failure",
         _1: /* tuple */[
           "equal_exception_test.ml",
           50,
@@ -148,7 +148,7 @@ if (Caml_obj.caml_equal(e, {
 
 if (Not_found === "Not_found" !== false) {
   throw {
-        ExceptionID: "Assert_failure",
+        RE_EXN_ID: "Assert_failure",
         _1: /* tuple */[
           "equal_exception_test.ml",
           51,

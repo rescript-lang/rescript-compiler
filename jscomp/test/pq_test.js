@@ -63,7 +63,7 @@ function remove_top(param) {
     }
   }
   throw {
-        ExceptionID: Queue_is_empty
+        RE_EXN_ID: Queue_is_empty
       };
 }
 
@@ -76,7 +76,7 @@ function extract(queue) {
           ];
   }
   throw {
-        ExceptionID: Queue_is_empty
+        RE_EXN_ID: Queue_is_empty
       };
 }
 

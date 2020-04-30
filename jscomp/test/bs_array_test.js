@@ -139,7 +139,7 @@ var v$1 = [
 
 if (!Belt_Array.set(v$1, 0, 0)) {
   throw {
-        ExceptionID: "Assert_failure",
+        RE_EXN_ID: "Assert_failure",
         _1: /* tuple */[
           "bs_array_test.ml",
           34,
@@ -157,7 +157,7 @@ var v$2 = [
 
 if (!Belt_Array.set(v$2, 1, 0)) {
   throw {
-        ExceptionID: "Assert_failure",
+        RE_EXN_ID: "Assert_failure",
         _1: /* tuple */[
           "bs_array_test.ml",
           35,

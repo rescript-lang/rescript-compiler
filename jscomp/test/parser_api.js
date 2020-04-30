@@ -42,7 +42,7 @@ try {
 }
 catch (raw_exn){
   var exn = Caml_js_exceptions.internalToOCamlException(raw_exn);
-  if (exn.ExceptionID === "Not_found") {
+  if (exn.RE_EXN_ID === "Not_found") {
     standard_library = standard_library_default;
   } else {
     throw exn;
@@ -770,7 +770,7 @@ function fatal_error(msg) {
   Pervasives.prerr_string(">> Fatal error: ");
   console.error(msg);
   throw {
-        ExceptionID: Fatal_error
+        RE_EXN_ID: Fatal_error
       };
 }
 
@@ -879,7 +879,7 @@ function split_last(param) {
           ];
   }
   throw {
-        ExceptionID: "Assert_failure",
+        RE_EXN_ID: "Assert_failure",
         _1: /* tuple */[
           "misc.ml",
           54,
@@ -939,7 +939,7 @@ function find_in_path(path, name) {
         continue ;
       }
       throw {
-            ExceptionID: "Not_found"
+            RE_EXN_ID: "Not_found"
           };
     };
   }
@@ -947,7 +947,7 @@ function find_in_path(path, name) {
     return name;
   }
   throw {
-        ExceptionID: "Not_found"
+        RE_EXN_ID: "Not_found"
       };
 }
 
@@ -979,7 +979,7 @@ function find_in_path_rel(path, name) {
       continue ;
     }
     throw {
-          ExceptionID: "Not_found"
+          RE_EXN_ID: "Not_found"
         };
   };
 }
@@ -1003,7 +1003,7 @@ function find_in_path_uncap(path, name) {
       continue ;
     }
     throw {
-          ExceptionID: "Not_found"
+          RE_EXN_ID: "Not_found"
         };
   };
 }
@@ -1014,7 +1014,7 @@ function remove_file(filename) {
   }
   catch (raw_msg){
     var msg = Caml_js_exceptions.internalToOCamlException(raw_msg);
-    if (msg.ExceptionID === "Sys_error") {
+    if (msg.RE_EXN_ID === "Sys_error") {
       return ;
     }
     throw msg;
@@ -1062,7 +1062,7 @@ function copy_file_chunk(ic, oc, len) {
     var r = Pervasives.input(ic, buff, 0, n < 4096 ? n : 4096);
     if (r === 0) {
       throw {
-            ExceptionID: "End_of_file"
+            RE_EXN_ID: "End_of_file"
           };
     }
     Pervasives.output(oc, buff, 0, r);
@@ -1124,7 +1124,7 @@ function chop_extension_if_any(fname) {
   }
   catch (raw_exn){
     var exn = Caml_js_exceptions.internalToOCamlException(raw_exn);
-    if (exn.ExceptionID === "Invalid_argument") {
+    if (exn.RE_EXN_ID === "Invalid_argument") {
       return fname;
     }
     throw exn;
@@ -1145,7 +1145,7 @@ function chop_extensions(file) {
   }
   catch (raw_exn){
     var exn = Caml_js_exceptions.internalToOCamlException(raw_exn);
-    if (exn.ExceptionID === "Not_found") {
+    if (exn.RE_EXN_ID === "Not_found") {
       return file;
     }
     throw exn;
@@ -1163,7 +1163,7 @@ function search_substring(pat, str, start) {
     }
     if ((i + j | 0) >= str.length) {
       throw {
-            ExceptionID: "Not_found"
+            RE_EXN_ID: "Not_found"
           };
     }
     if (Caml_string.get(str, i + j | 0) === Caml_string.get(pat, j)) {
@@ -1187,7 +1187,7 @@ function replace_substring(before, after, str) {
       }
       catch (raw_exn){
         var exn = Caml_js_exceptions.internalToOCamlException(raw_exn);
-        if (exn.ExceptionID === "Not_found") {
+        if (exn.RE_EXN_ID === "Not_found") {
           var suffix = $$String.sub(str, curr, str.length - curr | 0);
           return List.rev(/* :: */[
                       suffix,
@@ -1409,7 +1409,7 @@ function split(s, c) {
     }
     catch (raw_exn){
       var exn = Caml_js_exceptions.internalToOCamlException(raw_exn);
-      if (exn.ExceptionID === "Not_found") {
+      if (exn.RE_EXN_ID === "Not_found") {
         pos2 = undefined;
       } else {
         throw exn;
@@ -1556,7 +1556,7 @@ function style_of_tag(s) {
         return cur_styles.contents.warning;
     default:
       throw {
-            ExceptionID: "Not_found"
+            RE_EXN_ID: "Not_found"
           };
   }
 }
@@ -1580,7 +1580,7 @@ function set_color_tag_handling(ppf) {
     }
     catch (raw_exn){
       var exn = Caml_js_exceptions.internalToOCamlException(raw_exn);
-      if (exn.ExceptionID === "Not_found") {
+      if (exn.RE_EXN_ID === "Not_found") {
         return Curry._1(partial_arg, param);
       }
       throw exn;
@@ -1600,7 +1600,7 @@ function set_color_tag_handling(ppf) {
     }
     catch (raw_exn){
       var exn = Caml_js_exceptions.internalToOCamlException(raw_exn);
-      if (exn.ExceptionID === "Not_found") {
+      if (exn.RE_EXN_ID === "Not_found") {
         return Curry._1(partial_arg$1, param);
       }
       throw exn;
@@ -2006,7 +2006,7 @@ function letter(param) {
               ];
     default:
       throw {
-            ExceptionID: "Assert_failure",
+            RE_EXN_ID: "Assert_failure",
             _1: /* tuple */[
               "warnings.ml",
               176,
@@ -2088,7 +2088,7 @@ function parse_opt(error, active, flags, s) {
     var n2 = match$1[1];
     if (n2 < n1) {
       throw {
-            ExceptionID: Arg.Bad,
+            RE_EXN_ID: Arg.Bad,
             _1: "Ill-formed list of warnings"
           };
     }
@@ -2109,7 +2109,7 @@ function parse_opt(error, active, flags, s) {
         if (c >= 97) {
           if (c >= 123) {
             throw {
-                  ExceptionID: Arg.Bad,
+                  RE_EXN_ID: Arg.Bad,
                   _1: "Ill-formed list of warnings"
                 };
           }
@@ -2119,7 +2119,7 @@ function parse_opt(error, active, flags, s) {
         }
         if (c >= 91) {
           throw {
-                ExceptionID: Arg.Bad,
+                RE_EXN_ID: Arg.Bad,
                 _1: "Ill-formed list of warnings"
               };
         }
@@ -2132,7 +2132,7 @@ function parse_opt(error, active, flags, s) {
           return loop_letter_num(set_all, i + 1 | 0);
         }
         throw {
-              ExceptionID: Arg.Bad,
+              RE_EXN_ID: Arg.Bad,
               _1: "Ill-formed list of warnings"
             };
       }
@@ -2142,7 +2142,7 @@ function parse_opt(error, active, flags, s) {
               return loop_letter_num(set, i + 1 | 0);
           case 1 :
               throw {
-                    ExceptionID: Arg.Bad,
+                    RE_EXN_ID: Arg.Bad,
                     _1: "Ill-formed list of warnings"
                   };
           case 2 :
@@ -2151,7 +2151,7 @@ function parse_opt(error, active, flags, s) {
         }
       } else {
         throw {
-              ExceptionID: Arg.Bad,
+              RE_EXN_ID: Arg.Bad,
               _1: "Ill-formed list of warnings"
             };
       }
@@ -2160,7 +2160,7 @@ function parse_opt(error, active, flags, s) {
   var loop_letter_num = function (myset, i) {
     if (i >= s.length) {
       throw {
-            ExceptionID: Arg.Bad,
+            RE_EXN_ID: Arg.Bad,
             _1: "Ill-formed list of warnings"
           };
     }
@@ -2169,7 +2169,7 @@ function parse_opt(error, active, flags, s) {
       if (match >= 97) {
         if (match >= 123) {
           throw {
-                ExceptionID: Arg.Bad,
+                RE_EXN_ID: Arg.Bad,
                 _1: "Ill-formed list of warnings"
               };
         }
@@ -2178,7 +2178,7 @@ function parse_opt(error, active, flags, s) {
       }
       if (match >= 91) {
         throw {
-              ExceptionID: Arg.Bad,
+              RE_EXN_ID: Arg.Bad,
               _1: "Ill-formed list of warnings"
             };
       }
@@ -2187,7 +2187,7 @@ function parse_opt(error, active, flags, s) {
     }
     if (match > 57 || match < 48) {
       throw {
-            ExceptionID: Arg.Bad,
+            RE_EXN_ID: Arg.Bad,
             _1: "Ill-formed list of warnings"
           };
     }
@@ -2290,7 +2290,7 @@ function message(s) {
             }
           }
           throw {
-                ExceptionID: "Assert_failure",
+                RE_EXN_ID: "Assert_failure",
                 _1: /* tuple */[
                   "warnings.ml",
                   283,
@@ -2327,7 +2327,7 @@ function message(s) {
             }
           }
           throw {
-                ExceptionID: "Assert_failure",
+                RE_EXN_ID: "Assert_failure",
                 _1: /* tuple */[
                   "warnings.ml",
                   303,
@@ -2442,7 +2442,7 @@ function message(s) {
             return "this record of type " + (ty + (" contains fields that are \nnot visible in the current scope: " + ($$String.concat(" ", slist$2) + ".\nThey will not be selected if the type becomes unknown.")));
           }
           throw {
-                ExceptionID: "Assert_failure",
+                RE_EXN_ID: "Assert_failure",
                 _1: /* tuple */[
                   "warnings.ml",
                   365,
@@ -2459,7 +2459,7 @@ function message(s) {
             return "these field labels belong to several types: " + ($$String.concat(" ", s[1]) + "\nThe first one was selected. Please disambiguate if this is wrong.");
           }
           throw {
-                ExceptionID: "Assert_failure",
+                RE_EXN_ID: "Assert_failure",
                 _1: /* tuple */[
                   "warnings.ml",
                   374,
@@ -2638,7 +2638,7 @@ function check_fatal(param) {
   }
   var e_001 = nerrors.contents;
   var e = {
-    ExceptionID: Errors,
+    RE_EXN_ID: Errors,
     _1: e_001
   };
   nerrors.contents = 0;
@@ -3159,7 +3159,7 @@ function highlight_terminfo(ppf, num_lines, lb, locs) {
   var pos0 = -lb.lex_abs_pos | 0;
   if (pos0 < 0) {
     throw {
-          ExceptionID: Pervasives.Exit
+          RE_EXN_ID: Pervasives.Exit
         };
   }
   var lines = num_loc_lines.contents;
@@ -3171,7 +3171,7 @@ function highlight_terminfo(ppf, num_lines, lb, locs) {
   }
   if (lines >= (num_lines - 2 | 0)) {
     throw {
-          ExceptionID: Pervasives.Exit
+          RE_EXN_ID: Pervasives.Exit
         };
   }
   Caml_io.caml_ml_flush(Pervasives.stdout);
@@ -3210,7 +3210,7 @@ function highlight_dumb(ppf, lb, loc) {
   var pos0 = -lb.lex_abs_pos | 0;
   if (pos0 < 0) {
     throw {
-          ExceptionID: Pervasives.Exit
+          RE_EXN_ID: Pervasives.Exit
         };
   }
   var end_pos = (lb.lex_buffer_len - pos0 | 0) - 1 | 0;
@@ -3335,7 +3335,7 @@ function highlight_locations(ppf, locs) {
         }
         catch (raw_exn){
           var exn = Caml_js_exceptions.internalToOCamlException(raw_exn);
-          if (exn.ExceptionID === "Not_found") {
+          if (exn.RE_EXN_ID === "Not_found") {
             norepeat = false;
           } else {
             throw exn;
@@ -3351,7 +3351,7 @@ function highlight_locations(ppf, locs) {
         }
         catch (raw_exn$1){
           var exn$1 = Caml_js_exceptions.internalToOCamlException(raw_exn$1);
-          if (exn$1.ExceptionID === Pervasives.Exit) {
+          if (exn$1.RE_EXN_ID === Pervasives.Exit) {
             return false;
           }
           throw exn$1;
@@ -3371,7 +3371,7 @@ function highlight_locations(ppf, locs) {
       }
       catch (raw_exn$2){
         var exn$2 = Caml_js_exceptions.internalToOCamlException(raw_exn$2);
-        if (exn$2.ExceptionID === Pervasives.Exit) {
+        if (exn$2.RE_EXN_ID === Pervasives.Exit) {
           return false;
         }
         throw exn$2;
@@ -3811,7 +3811,7 @@ function error_of_printer_file(print, x) {
 }
 
 register_error_of_exn((function (msg) {
-        if (msg.ExceptionID === "Sys_error") {
+        if (msg.RE_EXN_ID === "Sys_error") {
           return Curry._1(errorf(in_file(input_name.contents), undefined, undefined, /* Format */[
                           /* String_literal */Block.__(11, [
                               "I/O error: ",
@@ -3822,7 +3822,7 @@ register_error_of_exn((function (msg) {
                             ]),
                           "I/O error: %s"
                         ]), msg._1);
-        } else if (msg.ExceptionID === Errors) {
+        } else if (msg.RE_EXN_ID === Errors) {
           return Curry._1(errorf(in_file(input_name.contents), undefined, undefined, /* Format */[
                           /* String_literal */Block.__(11, [
                               "Some fatal warnings were triggered (",
@@ -3886,7 +3886,7 @@ function report_exception(ppf, exn) {
 var $$Error = Caml_exceptions.create("Parser_api.Location.Error");
 
 register_error_of_exn((function (e) {
-        if (e.ExceptionID === $$Error) {
+        if (e.RE_EXN_ID === $$Error) {
           return e._1;
         }
         
@@ -3900,7 +3900,7 @@ function raise_errorf(locOpt, subOpt, if_highlightOpt) {
   return (function (param) {
       return pp_ksprintf(partial_arg, (function (msg) {
                     throw {
-                          ExceptionID: $$Error,
+                          RE_EXN_ID: $$Error,
                           _1: {
                             loc: loc,
                             msg: msg,
@@ -4007,7 +4007,7 @@ function split_at_dots(s, pos) {
   }
   catch (raw_exn){
     var exn = Caml_js_exceptions.internalToOCamlException(raw_exn);
-    if (exn.ExceptionID === "Not_found") {
+    if (exn.RE_EXN_ID === "Not_found") {
       return /* :: */[
               $$String.sub(s, pos, s.length - pos | 0),
               /* [] */0
@@ -4266,7 +4266,7 @@ function get_pre_docs(pos) {
   }
   catch (raw_exn){
     var exn = Caml_js_exceptions.internalToOCamlException(raw_exn);
-    if (exn.ExceptionID === "Not_found") {
+    if (exn.RE_EXN_ID === "Not_found") {
       return ;
     }
     throw exn;
@@ -4279,7 +4279,7 @@ function mark_pre_docs(pos) {
   }
   catch (raw_exn){
     var exn = Caml_js_exceptions.internalToOCamlException(raw_exn);
-    if (exn.ExceptionID === "Not_found") {
+    if (exn.RE_EXN_ID === "Not_found") {
       return ;
     }
     throw exn;
@@ -4303,7 +4303,7 @@ function get_post_docs(pos) {
   }
   catch (raw_exn){
     var exn = Caml_js_exceptions.internalToOCamlException(raw_exn);
-    if (exn.ExceptionID === "Not_found") {
+    if (exn.RE_EXN_ID === "Not_found") {
       return ;
     }
     throw exn;
@@ -4316,7 +4316,7 @@ function mark_post_docs(pos) {
   }
   catch (raw_exn){
     var exn = Caml_js_exceptions.internalToOCamlException(raw_exn);
-    if (exn.ExceptionID === "Not_found") {
+    if (exn.RE_EXN_ID === "Not_found") {
       return ;
     }
     throw exn;
@@ -4330,7 +4330,7 @@ function get_info(pos) {
   }
   catch (raw_exn){
     var exn = Caml_js_exceptions.internalToOCamlException(raw_exn);
-    if (exn.ExceptionID === "Not_found") {
+    if (exn.RE_EXN_ID === "Not_found") {
       return ;
     }
     throw exn;
@@ -4352,7 +4352,7 @@ function get_text(pos) {
   }
   catch (raw_exn){
     var exn = Caml_js_exceptions.internalToOCamlException(raw_exn);
-    if (exn.ExceptionID === "Not_found") {
+    if (exn.RE_EXN_ID === "Not_found") {
       return /* [] */0;
     }
     throw exn;
@@ -4374,7 +4374,7 @@ function get_pre_extra_text(pos) {
   }
   catch (raw_exn){
     var exn = Caml_js_exceptions.internalToOCamlException(raw_exn);
-    if (exn.ExceptionID === "Not_found") {
+    if (exn.RE_EXN_ID === "Not_found") {
       return /* [] */0;
     }
     throw exn;
@@ -4396,7 +4396,7 @@ function get_post_extra_text(pos) {
   }
   catch (raw_exn){
     var exn = Caml_js_exceptions.internalToOCamlException(raw_exn);
-    if (exn.ExceptionID === "Not_found") {
+    if (exn.RE_EXN_ID === "Not_found") {
       return /* [] */0;
     }
     throw exn;
@@ -6193,7 +6193,7 @@ function prepare_error(loc) {
 }
 
 register_error_of_exn((function (err) {
-        if (err.ExceptionID === $$Error$1) {
+        if (err.RE_EXN_ID === $$Error$1) {
           return prepare_error(err._1);
         }
         
@@ -6209,7 +6209,7 @@ function location_of_error(param) {
 
 function ill_formed_ast(loc, s) {
   throw {
-        ExceptionID: $$Error$1,
+        RE_EXN_ID: $$Error$1,
         _1: /* Ill_formed_ast */Block.__(6, [
             loc,
             s
@@ -6502,7 +6502,7 @@ function mkexp_constraint(e, param) {
                 ]));
   }
   throw {
-        ExceptionID: "Assert_failure",
+        RE_EXN_ID: "Assert_failure",
         _1: /* tuple */[
           "parser.mly",
           153,
@@ -6523,7 +6523,7 @@ function array_function(str, name) {
 
 function unclosed(opening_name, opening_num, closing_name, closing_num) {
   throw {
-        ExceptionID: $$Error$1,
+        RE_EXN_ID: $$Error$1,
         _1: /* Unclosed */Block.__(0, [
             rhs_loc(opening_num),
             opening_name,
@@ -6535,7 +6535,7 @@ function unclosed(opening_name, opening_num, closing_name, closing_num) {
 
 function expecting(pos, nonterm) {
   throw {
-        ExceptionID: $$Error$1,
+        RE_EXN_ID: $$Error$1,
         _1: /* Expecting */Block.__(1, [
             rhs_loc(pos),
             nonterm
@@ -6545,7 +6545,7 @@ function expecting(pos, nonterm) {
 
 function not_expecting(pos, nonterm) {
   throw {
-        ExceptionID: $$Error$1,
+        RE_EXN_ID: $$Error$1,
         _1: /* Not_expecting */Block.__(2, [
             rhs_loc(pos),
             nonterm
@@ -6599,7 +6599,7 @@ function check_variable(vl, loc, v) {
     return ;
   }
   throw {
-        ExceptionID: $$Error$1,
+        RE_EXN_ID: $$Error$1,
         _1: /* Variable_in_scope */Block.__(4, [
             loc,
             v
@@ -6972,7 +6972,7 @@ var yytransl_block = [
 var yyact = [
   (function (param) {
       throw {
-            ExceptionID: "Failure",
+            RE_EXN_ID: "Failure",
             _1: "parser"
           };
     }),
@@ -6993,7 +6993,7 @@ var yyact = [
     }),
   (function (__caml_parser_env) {
       throw {
-            ExceptionID: "End_of_file"
+            RE_EXN_ID: "End_of_file"
           };
     }),
   (function (__caml_parser_env) {
@@ -7323,7 +7323,7 @@ var yyact = [
       if (exit === 1) {
         if (lbs.lbs_attributes !== /* [] */0) {
           throw {
-                ExceptionID: $$Error$1,
+                RE_EXN_ID: $$Error$1,
                 _1: /* Not_expecting */Block.__(2, [
                     lbs.lbs_loc,
                     "attributes"
@@ -7827,7 +7827,7 @@ var yyact = [
       var bindings = List.map((function (lb) {
               if (lb.lb_attributes !== /* [] */0) {
                 throw {
-                      ExceptionID: $$Error$1,
+                      RE_EXN_ID: $$Error$1,
                       _1: /* Not_expecting */Block.__(2, [
                           lb.lb_loc,
                           "item attribute"
@@ -7838,7 +7838,7 @@ var yyact = [
             }), _1.lbs_bindings);
       if (_1.lbs_extension !== undefined) {
         throw {
-              ExceptionID: $$Error$1,
+              RE_EXN_ID: $$Error$1,
               _1: /* Not_expecting */Block.__(2, [
                   _1.lbs_loc,
                   "extension"
@@ -7847,7 +7847,7 @@ var yyact = [
       }
       if (_1.lbs_attributes !== /* [] */0) {
         throw {
-              ExceptionID: $$Error$1,
+              RE_EXN_ID: $$Error$1,
               _1: /* Not_expecting */Block.__(2, [
                   _1.lbs_loc,
                   "attributes"
@@ -8004,7 +8004,7 @@ var yyact = [
       var _6 = Parsing.peek_val(__caml_parser_env, 0);
       if (_1 === /* Override */0) {
         throw {
-              ExceptionID: Escape_error
+              RE_EXN_ID: Escape_error
             };
       }
       return /* tuple */[
@@ -8071,7 +8071,7 @@ var yyact = [
       var _6 = Parsing.peek_val(__caml_parser_env, 0);
       if (_1 === /* Override */0) {
         throw {
-              ExceptionID: Escape_error
+              RE_EXN_ID: Escape_error
             };
       }
       return /* tuple */[
@@ -8090,7 +8090,7 @@ var yyact = [
       var _6 = Parsing.peek_val(__caml_parser_env, 0);
       if (_1 === /* Override */0) {
         throw {
-              ExceptionID: Escape_error
+              RE_EXN_ID: Escape_error
             };
       }
       return /* tuple */[
@@ -8582,7 +8582,7 @@ var yyact = [
       var bindings = List.map((function (lb) {
               if (lb.lb_attributes !== /* [] */0) {
                 throw {
-                      ExceptionID: $$Error$1,
+                      RE_EXN_ID: $$Error$1,
                       _1: /* Not_expecting */Block.__(2, [
                           lb.lb_loc,
                           "item attribute"
@@ -8690,7 +8690,7 @@ var yyact = [
       Parsing.peek_val(__caml_parser_env, 3);
       Parsing.peek_val(__caml_parser_env, 2);
       throw {
-            ExceptionID: Escape_error
+            RE_EXN_ID: Escape_error
           };
     }),
   (function (__caml_parser_env) {
@@ -10064,12 +10064,12 @@ var yyact = [
     }),
   (function (__caml_parser_env) {
       throw {
-            ExceptionID: Escape_error
+            RE_EXN_ID: Escape_error
           };
     }),
   (function (__caml_parser_env) {
       throw {
-            ExceptionID: Escape_error
+            RE_EXN_ID: Escape_error
           };
     }),
   (function (__caml_parser_env) {
@@ -11121,13 +11121,13 @@ var yyact = [
       if (_2) {
         if (_2[1]) {
           throw {
-                ExceptionID: Parsing.Parse_error
+                RE_EXN_ID: Parsing.Parse_error
               };
         }
         return _2[0];
       }
       throw {
-            ExceptionID: Parsing.Parse_error
+            RE_EXN_ID: Parsing.Parse_error
           };
     }),
   (function (__caml_parser_env) {
@@ -11138,13 +11138,13 @@ var yyact = [
       if (_2) {
         if (_2[1]) {
           throw {
-                ExceptionID: Parsing.Parse_error
+                RE_EXN_ID: Parsing.Parse_error
               };
         }
         return _2[0];
       }
       throw {
-            ExceptionID: Parsing.Parse_error
+            RE_EXN_ID: Parsing.Parse_error
           };
     }),
   (function (__caml_parser_env) {
@@ -11811,7 +11811,7 @@ var yyact = [
                 ]);
       }
       throw {
-            ExceptionID: $$Error$1,
+            RE_EXN_ID: $$Error$1,
             _1: /* Applicative_path */Block.__(3, [symbol_rloc(undefined)])
           };
     }),
@@ -12280,43 +12280,43 @@ var yyact = [
     }),
   (function (__caml_parser_env) {
       throw {
-            ExceptionID: Parsing.YYexit,
+            RE_EXN_ID: Parsing.YYexit,
             _1: Parsing.peek_val(__caml_parser_env, 0)
           };
     }),
   (function (__caml_parser_env) {
       throw {
-            ExceptionID: Parsing.YYexit,
+            RE_EXN_ID: Parsing.YYexit,
             _1: Parsing.peek_val(__caml_parser_env, 0)
           };
     }),
   (function (__caml_parser_env) {
       throw {
-            ExceptionID: Parsing.YYexit,
+            RE_EXN_ID: Parsing.YYexit,
             _1: Parsing.peek_val(__caml_parser_env, 0)
           };
     }),
   (function (__caml_parser_env) {
       throw {
-            ExceptionID: Parsing.YYexit,
+            RE_EXN_ID: Parsing.YYexit,
             _1: Parsing.peek_val(__caml_parser_env, 0)
           };
     }),
   (function (__caml_parser_env) {
       throw {
-            ExceptionID: Parsing.YYexit,
+            RE_EXN_ID: Parsing.YYexit,
             _1: Parsing.peek_val(__caml_parser_env, 0)
           };
     }),
   (function (__caml_parser_env) {
       throw {
-            ExceptionID: Parsing.YYexit,
+            RE_EXN_ID: Parsing.YYexit,
             _1: Parsing.peek_val(__caml_parser_env, 0)
           };
     }),
   (function (__caml_parser_env) {
       throw {
-            ExceptionID: Parsing.YYexit,
+            RE_EXN_ID: Parsing.YYexit,
             _1: Parsing.peek_val(__caml_parser_env, 0)
           };
     })
@@ -12419,7 +12419,7 @@ function assert_same_type(lexbuf, x, y) {
   var rhs = type_of_directive(y);
   if (lhs !== rhs) {
     throw {
-          ExceptionID: $$Error$2,
+          RE_EXN_ID: $$Error$2,
           _1: /* Conditional_expr_expected_type */Block.__(7, [
               lhs,
               rhs
@@ -12462,7 +12462,7 @@ try {
 }
 catch (raw_exn$1){
   var exn$2 = Caml_js_exceptions.internalToOCamlException(raw_exn$1);
-  if (exn$2.ExceptionID === "Not_found") {
+  if (exn$2.RE_EXN_ID === "Not_found") {
     tmp = "";
   } else {
     throw exn$2;
@@ -12530,7 +12530,7 @@ function semver(loc, lhs, str) {
   var last_index = str.length - 1 | 0;
   if (last_index < 0) {
     throw {
-          ExceptionID: $$Error$2,
+          RE_EXN_ID: $$Error$2,
           _1: /* Illegal_semver */Block.__(6, [str]),
           _2: loc
         };
@@ -12553,7 +12553,7 @@ function semver(loc, lhs, str) {
         case 0 :
             if (last_index === 0) {
               throw {
-                    ExceptionID: $$Error$2,
+                    RE_EXN_ID: $$Error$2,
                     _1: /* Illegal_semver */Block.__(6, [str]),
                     _2: loc
                   };
@@ -12572,7 +12572,7 @@ function semver(loc, lhs, str) {
         case 2 :
             if (last_index === 0) {
               throw {
-                    ExceptionID: $$Error$2,
+                    RE_EXN_ID: $$Error$2,
                     _1: /* Illegal_semver */Block.__(6, [str]),
                     _2: loc
                   };
@@ -12715,7 +12715,7 @@ function query(loc, str) {
   }
   catch (raw_exn){
     var exn = Caml_js_exceptions.internalToOCamlException(raw_exn);
-    if (exn.ExceptionID === "Not_found") {
+    if (exn.RE_EXN_ID === "Not_found") {
       var exit = 0;
       var v$1;
       try {
@@ -12724,7 +12724,7 @@ function query(loc, str) {
       }
       catch (raw_exn$1){
         var exn$1 = Caml_js_exceptions.internalToOCamlException(raw_exn$1);
-        if (exn$1.ExceptionID === "Not_found") {
+        if (exn$1.RE_EXN_ID === "Not_found") {
           return /* Dir_bool */Block.__(0, [false]);
         }
         throw exn$1;
@@ -12793,7 +12793,7 @@ function value_of_token(loc, t) {
           return /* Dir_bool */Block.__(0, [true]);
       default:
         throw {
-              ExceptionID: $$Error$2,
+              RE_EXN_ID: $$Error$2,
               _1: /* Unexpected_token_in_conditional */4,
               _2: loc
             };
@@ -12810,7 +12810,7 @@ function value_of_token(loc, t) {
           return query(loc, t[0]);
       default:
         throw {
-              ExceptionID: $$Error$2,
+              RE_EXN_ID: $$Error$2,
               _1: /* Unexpected_token_in_conditional */4,
               _2: loc
             };
@@ -12835,7 +12835,7 @@ function directive_parse(token_with_comments, lexbuf) {
         switch (t) {
           case /* EOF */25 :
               throw {
-                    ExceptionID: $$Error$2,
+                    RE_EXN_ID: $$Error$2,
                     _1: /* Unterminated_if */2,
                     _2: curr(lexbuf)
                   };
@@ -12860,7 +12860,7 @@ function directive_parse(token_with_comments, lexbuf) {
   var push = function (e) {
     if (look_ahead.contents !== undefined) {
       throw {
-            ExceptionID: "Assert_failure",
+            RE_EXN_ID: "Assert_failure",
             _1: /* tuple */[
               "lexer.mll",
               312,
@@ -12910,7 +12910,7 @@ function directive_parse(token_with_comments, lexbuf) {
               }
               if (exit$2 === 3) {
                 throw {
-                      ExceptionID: $$Error$2,
+                      RE_EXN_ID: $$Error$2,
                       _1: /* Conditional_expr_expected_type */Block.__(7, [
                           /* Dir_type_string */3,
                           type_of_directive(lhs)
@@ -12922,7 +12922,7 @@ function directive_parse(token_with_comments, lexbuf) {
             }
             if (exit$1 === 2) {
               throw {
-                    ExceptionID: $$Error$2,
+                    RE_EXN_ID: $$Error$2,
                     _1: /* Conditional_expr_expected_type */Block.__(7, [
                         /* Dir_type_string */3,
                         type_of_directive(lhs)
@@ -12973,7 +12973,7 @@ function directive_parse(token_with_comments, lexbuf) {
       }
       if (exit$3 === 2) {
         throw {
-              ExceptionID: "Assert_failure",
+              RE_EXN_ID: "Assert_failure",
               _1: /* tuple */[
                 "lexer.mll",
                 331,
@@ -13022,7 +13022,7 @@ function directive_parse(token_with_comments, lexbuf) {
             if (typeof match === "number") {
               if (match !== 81) {
                 throw {
-                      ExceptionID: $$Error$2,
+                      RE_EXN_ID: $$Error$2,
                       _1: /* Unterminated_paren_in_conditional */1,
                       _2: curr(lexbuf)
                     };
@@ -13030,7 +13030,7 @@ function directive_parse(token_with_comments, lexbuf) {
               return v;
             }
             throw {
-                  ExceptionID: $$Error$2,
+                  RE_EXN_ID: $$Error$2,
                   _1: /* Unterminated_paren_in_conditional */1,
                   _2: curr(lexbuf)
                 };
@@ -13038,7 +13038,7 @@ function directive_parse(token_with_comments, lexbuf) {
             return true;
         default:
           throw {
-                ExceptionID: $$Error$2,
+                RE_EXN_ID: $$Error$2,
                 _1: /* Unexpected_token_in_conditional */4,
                 _2: curr_loc
               };
@@ -13048,7 +13048,7 @@ function directive_parse(token_with_comments, lexbuf) {
         case /* FLOAT */1 :
             return token_op(calc, (function (e) {
                           throw {
-                                ExceptionID: $$Error$2,
+                                RE_EXN_ID: $$Error$2,
                                 _1: /* Conditional_expr_expected_type */Block.__(7, [
                                     /* Dir_type_bool */0,
                                     /* Dir_type_float */1
@@ -13070,7 +13070,7 @@ function directive_parse(token_with_comments, lexbuf) {
                   break;
               default:
                 throw {
-                      ExceptionID: $$Error$2,
+                      RE_EXN_ID: $$Error$2,
                       _1: /* Unexpected_token_in_conditional */4,
                       _2: curr_loc
                     };
@@ -13079,7 +13079,7 @@ function directive_parse(token_with_comments, lexbuf) {
             var loc = curr(lexbuf);
             if (typeof t === "number") {
               throw {
-                    ExceptionID: $$Error$2,
+                    RE_EXN_ID: $$Error$2,
                     _1: /* Unexpected_token_in_conditional */4,
                     _2: loc
                   };
@@ -13097,7 +13097,7 @@ function directive_parse(token_with_comments, lexbuf) {
               }
             }
             throw {
-                  ExceptionID: $$Error$2,
+                  RE_EXN_ID: $$Error$2,
                   _1: /* Unexpected_token_in_conditional */4,
                   _2: loc
                 };
@@ -13105,7 +13105,7 @@ function directive_parse(token_with_comments, lexbuf) {
         case /* STRING */16 :
             return token_op(calc, (function (e) {
                           throw {
-                                ExceptionID: $$Error$2,
+                                RE_EXN_ID: $$Error$2,
                                 _1: /* Conditional_expr_expected_type */Block.__(7, [
                                     /* Dir_type_bool */0,
                                     /* Dir_type_string */3
@@ -13122,7 +13122,7 @@ function directive_parse(token_with_comments, lexbuf) {
                           }
                           var ty = type_of_directive(value_v);
                           throw {
-                                ExceptionID: $$Error$2,
+                                RE_EXN_ID: $$Error$2,
                                 _1: /* Conditional_expr_expected_type */Block.__(7, [
                                     /* Dir_type_bool */0,
                                     ty
@@ -13132,7 +13132,7 @@ function directive_parse(token_with_comments, lexbuf) {
                         }), value_v);
         default:
           throw {
-                ExceptionID: $$Error$2,
+                RE_EXN_ID: $$Error$2,
                 _1: /* Unexpected_token_in_conditional */4,
                 _2: curr_loc
               };
@@ -13162,7 +13162,7 @@ function directive_parse(token_with_comments, lexbuf) {
   if (typeof match === "number") {
     if (match !== 88) {
       throw {
-            ExceptionID: $$Error$2,
+            RE_EXN_ID: $$Error$2,
             _1: /* Expect_hash_then_in_conditional */5,
             _2: curr(lexbuf)
           };
@@ -13170,7 +13170,7 @@ function directive_parse(token_with_comments, lexbuf) {
     return v;
   }
   throw {
-        ExceptionID: $$Error$2,
+        RE_EXN_ID: $$Error$2,
         _1: /* Expect_hash_then_in_conditional */5,
         _2: curr(lexbuf)
       };
@@ -13654,7 +13654,7 @@ function char_for_decimal_code(lexbuf, i) {
     return /* "x" */120;
   }
   throw {
-        ExceptionID: $$Error$2,
+        RE_EXN_ID: $$Error$2,
         _1: /* Illegal_escape */Block.__(1, [Lexing.lexeme(lexbuf)]),
         _2: curr(lexbuf)
       };
@@ -13720,7 +13720,7 @@ function get_label_name(lexbuf) {
   var name = $$String.sub(s, 1, s.length - 2 | 0);
   if (Hashtbl.mem(keyword_table, name)) {
     throw {
-          ExceptionID: $$Error$2,
+          RE_EXN_ID: $$Error$2,
           _1: /* Keyword_as_label */Block.__(4, [name]),
           _2: curr(lexbuf)
         };
@@ -13946,7 +13946,7 @@ function report_error$2(ppf, c) {
 }
 
 register_error_of_exn((function (param) {
-        if (param.ExceptionID === $$Error$2) {
+        if (param.RE_EXN_ID === $$Error$2) {
           return error_of_printer(param._2, report_error$2, param._1);
         }
         
@@ -13976,7 +13976,7 @@ function token(lexbuf) {
       case 0 :
           if (!escaped_newlines.contents) {
             throw {
-                  ExceptionID: $$Error$2,
+                  RE_EXN_ID: $$Error$2,
                   _1: /* Illegal_character */Block.__(0, [Lexing.lexeme_char(lexbuf, 0)]),
                   _2: curr(lexbuf)
                 };
@@ -14011,7 +14011,7 @@ function token(lexbuf) {
           }
           catch (raw_exn){
             var exn = Caml_js_exceptions.internalToOCamlException(raw_exn);
-            if (exn.ExceptionID === "Not_found") {
+            if (exn.RE_EXN_ID === "Not_found") {
               return /* LIDENT */Block.__(11, [s]);
             }
             throw exn;
@@ -14030,9 +14030,9 @@ function token(lexbuf) {
           }
           catch (raw_exn$1){
             var exn$1 = Caml_js_exceptions.internalToOCamlException(raw_exn$1);
-            if (exn$1.ExceptionID === "Failure") {
+            if (exn$1.RE_EXN_ID === "Failure") {
               throw {
-                    ExceptionID: $$Error$2,
+                    RE_EXN_ID: $$Error$2,
                     _1: /* Literal_overflow */Block.__(5, ["int"]),
                     _2: curr(lexbuf)
                   };
@@ -14047,9 +14047,9 @@ function token(lexbuf) {
           }
           catch (raw_exn$2){
             var exn$2 = Caml_js_exceptions.internalToOCamlException(raw_exn$2);
-            if (exn$2.ExceptionID === "Failure") {
+            if (exn$2.RE_EXN_ID === "Failure") {
               throw {
-                    ExceptionID: $$Error$2,
+                    RE_EXN_ID: $$Error$2,
                     _1: /* Literal_overflow */Block.__(5, ["int32"]),
                     _2: curr(lexbuf)
                   };
@@ -14062,9 +14062,9 @@ function token(lexbuf) {
           }
           catch (raw_exn$3){
             var exn$3 = Caml_js_exceptions.internalToOCamlException(raw_exn$3);
-            if (exn$3.ExceptionID === "Failure") {
+            if (exn$3.RE_EXN_ID === "Failure") {
               throw {
-                    ExceptionID: $$Error$2,
+                    RE_EXN_ID: $$Error$2,
                     _1: /* Literal_overflow */Block.__(5, ["int64"]),
                     _2: curr(lexbuf)
                   };
@@ -14077,9 +14077,9 @@ function token(lexbuf) {
           }
           catch (raw_exn$4){
             var exn$4 = Caml_js_exceptions.internalToOCamlException(raw_exn$4);
-            if (exn$4.ExceptionID === "Failure") {
+            if (exn$4.RE_EXN_ID === "Failure") {
               throw {
-                    ExceptionID: $$Error$2,
+                    RE_EXN_ID: $$Error$2,
                     _1: /* Literal_overflow */Block.__(5, ["nativeint"]),
                     _2: curr(lexbuf)
                   };
@@ -14127,7 +14127,7 @@ function token(lexbuf) {
           var l = Lexing.lexeme(lexbuf);
           var esc = $$String.sub(l, 1, l.length - 1 | 0);
           throw {
-                ExceptionID: $$Error$2,
+                RE_EXN_ID: $$Error$2,
                 _1: /* Illegal_escape */Block.__(1, [esc]),
                 _2: curr(lexbuf)
               };
@@ -14301,19 +14301,19 @@ function token(lexbuf) {
           }
           if (if_then_else.contents === /* Dir_if_true */0) {
             throw {
-                  ExceptionID: $$Error$2,
+                  RE_EXN_ID: $$Error$2,
                   _1: /* Unterminated_if */2,
                   _2: curr(lexbuf)
                 };
           }
           throw {
-                ExceptionID: $$Error$2,
+                RE_EXN_ID: $$Error$2,
                 _1: /* Unterminated_else */3,
                 _2: curr(lexbuf)
               };
       case 91 :
           throw {
-                ExceptionID: $$Error$2,
+                RE_EXN_ID: $$Error$2,
                 _1: /* Illegal_character */Block.__(0, [Lexing.lexeme_char(lexbuf, 0)]),
                 _2: curr(lexbuf)
               };
@@ -14352,7 +14352,7 @@ function __ocaml_lex_comment_rec(lexbuf, ___ocaml_lex_state) {
             return curr(lexbuf);
           }
           throw {
-                ExceptionID: "Assert_failure",
+                RE_EXN_ID: "Assert_failure",
                 _1: /* tuple */[
                   "lexer.mll",
                   992,
@@ -14368,7 +14368,7 @@ function __ocaml_lex_comment_rec(lexbuf, ___ocaml_lex_state) {
           }
           catch (raw_exn){
             var exn = Caml_js_exceptions.internalToOCamlException(raw_exn);
-            if (exn.ExceptionID === $$Error$2) {
+            if (exn.RE_EXN_ID === $$Error$2) {
               var match$1 = exn._1;
               if (typeof match$1 === "number") {
                 if (match$1 !== 0) {
@@ -14379,7 +14379,7 @@ function __ocaml_lex_comment_rec(lexbuf, ___ocaml_lex_state) {
                   var start = List.hd(List.rev(comment_start_loc.contents));
                   comment_start_loc.contents = /* [] */0;
                   throw {
-                        ExceptionID: $$Error$2,
+                        RE_EXN_ID: $$Error$2,
                         _1: /* Unterminated_string_in_comment */Block.__(3, [
                             start,
                             exn._2
@@ -14388,7 +14388,7 @@ function __ocaml_lex_comment_rec(lexbuf, ___ocaml_lex_state) {
                       };
                 }
                 throw {
-                      ExceptionID: "Assert_failure",
+                      RE_EXN_ID: "Assert_failure",
                       _1: /* tuple */[
                         "lexer.mll",
                         1006,
@@ -14415,7 +14415,7 @@ function __ocaml_lex_comment_rec(lexbuf, ___ocaml_lex_state) {
           }
           catch (raw_exn$1){
             var exn$1 = Caml_js_exceptions.internalToOCamlException(raw_exn$1);
-            if (exn$1.ExceptionID === $$Error$2) {
+            if (exn$1.RE_EXN_ID === $$Error$2) {
               var match$3 = exn$1._1;
               if (typeof match$3 === "number") {
                 if (match$3 !== 0) {
@@ -14426,7 +14426,7 @@ function __ocaml_lex_comment_rec(lexbuf, ___ocaml_lex_state) {
                   var start$1 = List.hd(List.rev(comment_start_loc.contents));
                   comment_start_loc.contents = /* [] */0;
                   throw {
-                        ExceptionID: $$Error$2,
+                        RE_EXN_ID: $$Error$2,
                         _1: /* Unterminated_string_in_comment */Block.__(3, [
                             start$1,
                             exn$1._2
@@ -14435,7 +14435,7 @@ function __ocaml_lex_comment_rec(lexbuf, ___ocaml_lex_state) {
                       };
                 }
                 throw {
-                      ExceptionID: "Assert_failure",
+                      RE_EXN_ID: "Assert_failure",
                       _1: /* tuple */[
                         "lexer.mll",
                         1026,
@@ -14464,13 +14464,13 @@ function __ocaml_lex_comment_rec(lexbuf, ___ocaml_lex_state) {
             var start$2 = List.hd(List.rev(comment_start_loc.contents));
             comment_start_loc.contents = /* [] */0;
             throw {
-                  ExceptionID: $$Error$2,
+                  RE_EXN_ID: $$Error$2,
                   _1: /* Unterminated_comment */Block.__(2, [start$2]),
                   _2: match$5[0]
                 };
           }
           throw {
-                ExceptionID: "Assert_failure",
+                RE_EXN_ID: "Assert_failure",
                 _1: /* tuple */[
                   "lexer.mll",
                   1056,
@@ -14544,7 +14544,7 @@ function string(lexbuf) {
       case 7 :
           is_in_string.contents = false;
           throw {
-                ExceptionID: $$Error$2,
+                RE_EXN_ID: $$Error$2,
                 _1: /* Unterminated_string */0,
                 _2: string_start_loc.contents
               };
@@ -14572,7 +14572,7 @@ function __ocaml_lex_quoted_string_rec(delim, lexbuf, ___ocaml_lex_state) {
       case 1 :
           is_in_string.contents = false;
           throw {
-                ExceptionID: $$Error$2,
+                RE_EXN_ID: $$Error$2,
                 _1: /* Unterminated_string */0,
                 _2: string_start_loc.contents
               };
@@ -14639,7 +14639,7 @@ function interpret_directive(lexbuf, cont, look_ahead) {
       case /* ELSE */23 :
           if (if_then_else$1 !== 0) {
             throw {
-                  ExceptionID: $$Error$2,
+                  RE_EXN_ID: $$Error$2,
                   _1: /* Unexpected_directive */6,
                   _2: curr(lexbuf)
                 };
@@ -14648,7 +14648,7 @@ function interpret_directive(lexbuf, cont, look_ahead) {
       case /* END */24 :
           if (if_then_else$1 >= 2) {
             throw {
-                  ExceptionID: $$Error$2,
+                  RE_EXN_ID: $$Error$2,
                   _1: /* Unexpected_directive */6,
                   _2: curr(lexbuf)
                 };
@@ -14666,7 +14666,7 @@ function interpret_directive(lexbuf, cont, look_ahead) {
                 var token = token_with_comments(lexbuf);
                 if (token === /* EOF */25) {
                   throw {
-                        ExceptionID: $$Error$2,
+                        RE_EXN_ID: $$Error$2,
                         _1: /* Unterminated_if */2,
                         _2: curr(lexbuf)
                       };
@@ -14686,7 +14686,7 @@ function interpret_directive(lexbuf, cont, look_ahead) {
                     }
                     if (switcher === 14) {
                       throw {
-                            ExceptionID: $$Error$2,
+                            RE_EXN_ID: $$Error$2,
                             _1: /* Unexpected_directive */6,
                             _2: curr(lexbuf)
                           };
@@ -14706,7 +14706,7 @@ function interpret_directive(lexbuf, cont, look_ahead) {
             }
           }
           throw {
-                ExceptionID: $$Error$2,
+                RE_EXN_ID: $$Error$2,
                 _1: /* Unexpected_directive */6,
                 _2: curr(lexbuf)
               };
@@ -14722,7 +14722,7 @@ function interpret_directive(lexbuf, cont, look_ahead) {
     }
     if (if_then_else$1 !== 0) {
       throw {
-            ExceptionID: $$Error$2,
+            RE_EXN_ID: $$Error$2,
             _1: /* Unexpected_directive */6,
             _2: curr(lexbuf)
           };
@@ -14738,7 +14738,7 @@ function interpret_directive(lexbuf, cont, look_ahead) {
     var token$2 = token_with_comments(lexbuf);
     if (token$2 === /* EOF */25) {
       throw {
-            ExceptionID: $$Error$2,
+            RE_EXN_ID: $$Error$2,
             _1: /* Unterminated_else */3,
             _2: curr(lexbuf)
           };
@@ -14754,7 +14754,7 @@ function interpret_directive(lexbuf, cont, look_ahead) {
           }
           if (else_seen) {
             throw {
-                  ExceptionID: $$Error$2,
+                  RE_EXN_ID: $$Error$2,
                   _1: /* Unexpected_directive */6,
                   _2: curr(lexbuf)
                 };
@@ -14764,7 +14764,7 @@ function interpret_directive(lexbuf, cont, look_ahead) {
         }
         if (switcher$1 === 14) {
           throw {
-                ExceptionID: $$Error$2,
+                RE_EXN_ID: $$Error$2,
                 _1: /* Unexpected_directive */6,
                 _2: curr(lexbuf)
               };
@@ -14773,7 +14773,7 @@ function interpret_directive(lexbuf, cont, look_ahead) {
       }
       if (else_seen && is_elif(token$3)) {
         throw {
-              ExceptionID: $$Error$2,
+              RE_EXN_ID: $$Error$2,
               _1: /* Unexpected_directive */6,
               _2: curr(lexbuf)
             };
@@ -15020,7 +15020,7 @@ function skip_phrase(lexbuf) {
     }
     catch (raw_exn){
       var exn = Caml_js_exceptions.internalToOCamlException(raw_exn);
-      if (exn.ExceptionID === $$Error$2) {
+      if (exn.RE_EXN_ID === $$Error$2) {
         var tmp = exn._1;
         if (typeof tmp === "number") {
           if (tmp === /* Unterminated_string */0) {
@@ -15063,7 +15063,7 @@ function wrap(parsing_fun, lexbuf) {
   }
   catch (raw_err){
     var err = Caml_js_exceptions.internalToOCamlException(raw_err);
-    if (err.ExceptionID === $$Error$2) {
+    if (err.RE_EXN_ID === $$Error$2) {
       var tmp = err._1;
       if (typeof tmp === "number") {
         throw err;
@@ -15077,14 +15077,14 @@ function wrap(parsing_fun, lexbuf) {
       }
       throw err;
     } else {
-      if (err.ExceptionID === $$Error$1) {
+      if (err.RE_EXN_ID === $$Error$1) {
         if (input_name.contents === "//toplevel//") {
           maybe_skip_phrase(lexbuf);
           throw err;
         }
         throw err;
       }
-      if (err.ExceptionID !== Parsing.Parse_error && err.ExceptionID !== Escape_error) {
+      if (err.RE_EXN_ID !== Parsing.Parse_error && err.RE_EXN_ID !== Escape_error) {
         throw err;
       }
       
@@ -15094,7 +15094,7 @@ function wrap(parsing_fun, lexbuf) {
       maybe_skip_phrase(lexbuf);
     }
     throw {
-          ExceptionID: $$Error$1,
+          RE_EXN_ID: $$Error$1,
           _1: /* Other */Block.__(5, [loc])
         };
   }

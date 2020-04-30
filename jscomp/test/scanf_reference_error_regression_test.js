@@ -73,7 +73,7 @@ function scan_rest(ib, accu) {
                                                         "scan_int_list"
                                                       ]);
                                                   throw {
-                                                        ExceptionID: "Failure",
+                                                        RE_EXN_ID: "Failure",
                                                         _1: s
                                                       };
                                               }

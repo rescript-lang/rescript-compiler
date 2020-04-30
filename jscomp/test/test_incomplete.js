@@ -6,7 +6,7 @@ function f(x) {
     return /* "a" */97;
   }
   throw {
-        ExceptionID: "Match_failure",
+        RE_EXN_ID: "Match_failure",
         _1: /* tuple */[
           "test_incomplete.ml",
           3,

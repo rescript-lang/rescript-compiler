@@ -36,12 +36,12 @@ function Make(Ord) {
           return create(create(ll, lv, lr[0]), lr[1], create(lr[2], v, r));
         }
         throw {
-              ExceptionID: "Invalid_argument",
+              RE_EXN_ID: "Invalid_argument",
               _1: "Set.bal"
             };
       }
       throw {
-            ExceptionID: "Invalid_argument",
+            RE_EXN_ID: "Invalid_argument",
             _1: "Set.bal"
           };
     }
@@ -64,12 +64,12 @@ function Make(Ord) {
         return create(create(l, v, rl[0]), rl[1], create(rl[2], rv, rr));
       }
       throw {
-            ExceptionID: "Invalid_argument",
+            RE_EXN_ID: "Invalid_argument",
             _1: "Set.bal"
           };
     }
     throw {
-          ExceptionID: "Invalid_argument",
+          RE_EXN_ID: "Invalid_argument",
           _1: "Set.bal"
         };
   };
@@ -145,7 +145,7 @@ function Make(Ord) {
         continue ;
       }
       throw {
-            ExceptionID: "Not_found"
+            RE_EXN_ID: "Not_found"
           };
     };
   };
@@ -161,7 +161,7 @@ function Make(Ord) {
         continue ;
       }
       throw {
-            ExceptionID: "Not_found"
+            RE_EXN_ID: "Not_found"
           };
     };
   };
@@ -175,7 +175,7 @@ function Make(Ord) {
       }
     }
     throw {
-          ExceptionID: "Invalid_argument",
+          RE_EXN_ID: "Invalid_argument",
           _1: "Set.remove_min_elt"
         };
   };
@@ -560,7 +560,7 @@ function Make(Ord) {
         continue ;
       }
       throw {
-            ExceptionID: "Not_found"
+            RE_EXN_ID: "Not_found"
           };
     };
   };
@@ -652,7 +652,7 @@ function Make(Ord) {
               ];
       }
       throw {
-            ExceptionID: "Assert_failure",
+            RE_EXN_ID: "Assert_failure",
             _1: /* tuple */[
               "test_set.ml",
               372,

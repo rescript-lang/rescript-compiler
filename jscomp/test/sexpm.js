@@ -47,12 +47,12 @@ function _must_escape(s) {
             exit = 1;
           } else {
             throw {
-                  ExceptionID: Pervasives.Exit
+                  RE_EXN_ID: Pervasives.Exit
                 };
           }
         } else {
           throw {
-                ExceptionID: Pervasives.Exit
+                RE_EXN_ID: Pervasives.Exit
               };
         }
       } else if (c >= 11) {
@@ -71,7 +71,7 @@ function _must_escape(s) {
             case 8 :
             case 9 :
                 throw {
-                      ExceptionID: Pervasives.Exit
+                      RE_EXN_ID: Pervasives.Exit
                     };
             
           }
@@ -81,14 +81,14 @@ function _must_escape(s) {
       } else {
         if (c >= 9) {
           throw {
-                ExceptionID: Pervasives.Exit
+                RE_EXN_ID: Pervasives.Exit
               };
         }
         exit = 1;
       }
       if (exit === 1 && c > 127) {
         throw {
-              ExceptionID: Pervasives.Exit
+              RE_EXN_ID: Pervasives.Exit
             };
       }
       
@@ -97,7 +97,7 @@ function _must_escape(s) {
   }
   catch (raw_exn){
     var exn = Caml_js_exceptions.internalToOCamlException(raw_exn);
-    if (exn.ExceptionID === Pervasives.Exit) {
+    if (exn.RE_EXN_ID === Pervasives.Exit) {
       return true;
     }
     throw exn;
@@ -385,7 +385,7 @@ function _refill(t, k_succ, k_fail) {
 function _get(t) {
   if (t.i >= t.len) {
     throw {
-          ExceptionID: "Assert_failure",
+          RE_EXN_ID: "Assert_failure",
           _1: /* tuple */[
             "sexpm.ml",
             152,
@@ -491,7 +491,7 @@ function expr_starting_with(c, k, t) {
       switch (c - 32 | 0) {
         case 0 :
             throw {
-                  ExceptionID: "Assert_failure",
+                  RE_EXN_ID: "Assert_failure",
                   _1: /* tuple */[
                     "sexpm.ml",
                     183,
@@ -523,7 +523,7 @@ function expr_starting_with(c, k, t) {
     
   } else if (c >= 9) {
     throw {
-          ExceptionID: "Assert_failure",
+          RE_EXN_ID: "Assert_failure",
           _1: /* tuple */[
             "sexpm.ml",
             183,
@@ -970,7 +970,7 @@ function MakeDecode(funarg) {
   var _get = function (t) {
     if (t.i >= t.len) {
       throw {
-            ExceptionID: "Assert_failure",
+            RE_EXN_ID: "Assert_failure",
             _1: /* tuple */[
               "sexpm.ml",
               152,
@@ -1072,7 +1072,7 @@ function MakeDecode(funarg) {
         switch (c - 32 | 0) {
           case 0 :
               throw {
-                    ExceptionID: "Assert_failure",
+                    RE_EXN_ID: "Assert_failure",
                     _1: /* tuple */[
                       "sexpm.ml",
                       183,
@@ -1104,7 +1104,7 @@ function MakeDecode(funarg) {
       
     } else if (c >= 9) {
       throw {
-            ExceptionID: "Assert_failure",
+            RE_EXN_ID: "Assert_failure",
             _1: /* tuple */[
               "sexpm.ml",
               183,

@@ -215,7 +215,7 @@ function f(children) {
   }
   if (children$15[1]) {
     throw {
-          ExceptionID: "Assert_failure",
+          RE_EXN_ID: "Assert_failure",
           _1: /* tuple */[
             "gpr_1150.ml",
             56,

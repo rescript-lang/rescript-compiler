@@ -40,7 +40,7 @@ function f(param) {
     return 1;
   }
   throw {
-        ExceptionID: "Match_failure",
+        RE_EXN_ID: "Match_failure",
         _1: /* tuple */[
           "lazy_test.ml",
           11,
@@ -80,7 +80,7 @@ try {
 }
 catch (raw_exn){
   var exn = Caml_js_exceptions.internalToOCamlException(raw_exn);
-  if (exn.ExceptionID === "Match_failure") {
+  if (exn.RE_EXN_ID === "Match_failure") {
     h = 2;
   } else {
     throw exn;
@@ -139,7 +139,7 @@ var f007 = {
   tag: 246,
   value: (function () {
       throw {
-            ExceptionID: "Not_found"
+            RE_EXN_ID: "Not_found"
           };
     })
 };
@@ -149,7 +149,7 @@ var f008 = {
   value: (function () {
       console.log("hi");
       throw {
-            ExceptionID: "Not_found"
+            RE_EXN_ID: "Not_found"
           };
     })
 };

@@ -486,7 +486,7 @@ function get_exn(e) {
     return Caml_option.valFromOption(e);
   }
   throw {
-        ExceptionID: "Failure",
+        RE_EXN_ID: "Failure",
         _1: "CCSexp.Traverse.get_exn"
       };
 }

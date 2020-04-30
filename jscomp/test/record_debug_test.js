@@ -41,12 +41,12 @@ var A = Caml_exceptions.create("Record_debug_test.A");
 var B = Caml_exceptions.create("Record_debug_test.B");
 
 var v0 = {
-  ExceptionID: A,
+  RE_EXN_ID: A,
   _1: 3
 };
 
 var v1 = {
-  ExceptionID: B,
+  RE_EXN_ID: B,
   _1: 3,
   _2: 2
 };

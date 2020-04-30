@@ -63,7 +63,7 @@ function does_raise(f, s) {
   }
   catch (raw_exn){
     var exn = Caml_js_exceptions.internalToOCamlException(raw_exn);
-    if (exn.ExceptionID === Stack.Empty) {
+    if (exn.RE_EXN_ID === Stack.Empty) {
       return true;
     }
     throw exn;

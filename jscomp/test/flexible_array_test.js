@@ -25,7 +25,7 @@ function sub(_tr, _k) {
       continue ;
     }
     throw {
-          ExceptionID: "Not_found"
+          RE_EXN_ID: "Not_found"
         };
   };
 }
@@ -64,7 +64,7 @@ function update(tr, k, w) {
           ];
   }
   throw {
-        ExceptionID: "Not_found"
+        RE_EXN_ID: "Not_found"
       };
 }
 
@@ -91,7 +91,7 @@ function $$delete(tr, n) {
     }
   }
   throw {
-        ExceptionID: "Not_found"
+        RE_EXN_ID: "Not_found"
       };
 }
 
@@ -125,7 +125,7 @@ function lorem(tr) {
       return /* Lf */0;
     }
     throw {
-          ExceptionID: "Assert_failure",
+          RE_EXN_ID: "Assert_failure",
           _1: /* tuple */[
             "flexible_array_test.ml",
             66,
@@ -134,7 +134,7 @@ function lorem(tr) {
         };
   }
   throw {
-        ExceptionID: "Not_found"
+        RE_EXN_ID: "Not_found"
       };
 }
 
@@ -152,7 +152,7 @@ function get(param, i) {
     return sub(param[0], i + 1 | 0);
   }
   throw {
-        ExceptionID: "Invalid_argument",
+        RE_EXN_ID: "Invalid_argument",
         _1: "Array.get"
       };
 }
@@ -166,7 +166,7 @@ function set(param, i, v) {
           ];
   }
   throw {
-        ExceptionID: "Invalid_argument",
+        RE_EXN_ID: "Invalid_argument",
         _1: "Array.set"
       };
 }
@@ -187,7 +187,7 @@ function pop_front(param) {
           ];
   }
   throw {
-        ExceptionID: "Invalid_argument",
+        RE_EXN_ID: "Invalid_argument",
         _1: "Array.pop_front"
       };
 }
@@ -209,7 +209,7 @@ function pop_back(param) {
           ];
   }
   throw {
-        ExceptionID: "Invalid_argument",
+        RE_EXN_ID: "Invalid_argument",
         _1: "Array.pop_back"
       };
 }
@@ -316,7 +316,7 @@ if (!Caml_obj.caml_equal(x, of_array([
             6
           ]))) {
   throw {
-        ExceptionID: "Assert_failure",
+        RE_EXN_ID: "Assert_failure",
         _1: /* tuple */[
           "flexible_array_test.ml",
           166,

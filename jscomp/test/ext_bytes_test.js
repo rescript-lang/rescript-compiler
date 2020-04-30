@@ -137,7 +137,7 @@ function starts_with(xs, prefix, p) {
     for(var i = 0; i < len2; ++i){
       if (!Curry._2(p, Caml_bytes.get(xs, i), Caml_bytes.get(prefix, i))) {
         throw {
-              ExceptionID: H
+              RE_EXN_ID: H
             };
       }
       
@@ -146,7 +146,7 @@ function starts_with(xs, prefix, p) {
   }
   catch (raw_exn){
     var exn = Caml_js_exceptions.internalToOCamlException(raw_exn);
-    if (exn.ExceptionID === H) {
+    if (exn.RE_EXN_ID === H) {
       return false;
     }
     throw exn;

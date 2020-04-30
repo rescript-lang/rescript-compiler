@@ -63,7 +63,7 @@ function resize(newSize) {
       var n = bucket[0];
       if (typeof n === "number") {
         throw {
-              ExceptionID: "Assert_failure",
+              RE_EXN_ID: "Assert_failure",
               _1: /* tuple */[
                 "bdd.ml",
                 54,
@@ -128,7 +128,7 @@ function mkNode(low, v, high) {
       var n = b[0];
       if (typeof n === "number") {
         throw {
-              ExceptionID: "Assert_failure",
+              RE_EXN_ID: "Assert_failure",
               _1: /* tuple */[
                 "bdd.ml",
                 99,
@@ -371,7 +371,7 @@ function main(param) {
     return ;
   }
   throw {
-        ExceptionID: "Assert_failure",
+        RE_EXN_ID: "Assert_failure",
         _1: /* tuple */[
           "bdd.ml",
           233,

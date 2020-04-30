@@ -15,7 +15,7 @@ try {
 }
 catch (raw_msg){
   var msg = Caml_js_exceptions.internalToOCamlException(raw_msg);
-  if (msg.ExceptionID === "Invalid_argument") {
+  if (msg.RE_EXN_ID === "Invalid_argument") {
     console.log(msg._1);
     y = 0;
   } else {

@@ -40,9 +40,9 @@ var Hello = Caml_exceptions.create("Exception_repr_test.Hello");
 var A = Caml_exceptions.create("Exception_repr_test.A");
 
 Printexc.register_printer((function (s) {
-        if (s.ExceptionID === Hi) {
+        if (s.RE_EXN_ID === Hi) {
           return "hey";
-        } else if (s.ExceptionID === A) {
+        } else if (s.RE_EXN_ID === A) {
           return Curry._1(Format.asprintf(/* Format */[
                           /* String_literal */Block.__(11, [
                               "A(",
@@ -64,20 +64,20 @@ Printexc.register_printer((function (s) {
       }));
 
 eq("File \"exception_repr_test.ml\", line 24, characters 7-14", "hey", Printexc.to_string({
-          ExceptionID: Hi
+          RE_EXN_ID: Hi
         }));
 
 eq("File \"exception_repr_test.ml\", line 25, characters 7-14", "A(1)", Printexc.to_string({
-          ExceptionID: A,
+          RE_EXN_ID: A,
           _1: 1
         }));
 
 eq("File \"exception_repr_test.ml\", line 26, characters 7-14", Printexc.to_string({
-            ExceptionID: Hello
+            RE_EXN_ID: Hello
           }).startsWith("Exception_repr_test.Hello"), true);
 
 eq("File \"exception_repr_test.ml\", line 27, characters 7-14", "A", Printexc.to_string({
-          ExceptionID: Exception_def.A,
+          RE_EXN_ID: Exception_def.A,
           _1: 3
         }));
 

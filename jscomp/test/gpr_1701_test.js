@@ -10,7 +10,7 @@ var Foo = Caml_exceptions.create("Gpr_1701_test.Foo");
 function test(n) {
   if (n === 0) {
     throw {
-          ExceptionID: Foo
+          RE_EXN_ID: Foo
         };
   }
   try {
@@ -18,7 +18,7 @@ function test(n) {
   }
   catch (raw_exn){
     var exn = Caml_js_exceptions.internalToOCamlException(raw_exn);
-    if (exn.ExceptionID === Foo) {
+    if (exn.RE_EXN_ID === Foo) {
       return ;
     }
     throw exn;
@@ -37,7 +37,7 @@ function read_lines(inc) {
     }
     catch (raw_exn){
       var exn = Caml_js_exceptions.internalToOCamlException(raw_exn);
-      if (exn.ExceptionID === "End_of_file") {
+      if (exn.RE_EXN_ID === "End_of_file") {
         l = undefined;
       } else {
         throw exn;
@@ -64,7 +64,7 @@ function read_lines2(inc) {
     }
     catch (raw_exn){
       var exn = Caml_js_exceptions.internalToOCamlException(raw_exn);
-      if (exn.ExceptionID === "End_of_file") {
+      if (exn.RE_EXN_ID === "End_of_file") {
         return List.rev(acc);
       }
       throw exn;
@@ -88,7 +88,7 @@ function read_lines3(inc) {
     }
     catch (raw_exn){
       var exn = Caml_js_exceptions.internalToOCamlException(raw_exn);
-      if (exn.ExceptionID === "End_of_file") {
+      if (exn.RE_EXN_ID === "End_of_file") {
         return List.rev(acc);
       }
       throw exn;

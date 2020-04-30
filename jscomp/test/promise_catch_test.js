@@ -33,16 +33,16 @@ function eq(loc, x, y) {
 }
 
 function handler(e) {
-  if (e.ExceptionID === Js_exn.$$Error) {
+  if (e.RE_EXN_ID === Js_exn.$$Error) {
     console.log("js error");
     return Promise.resolve(0);
   }
-  if (e.ExceptionID === "Not_found") {
+  if (e.RE_EXN_ID === "Not_found") {
     console.log("hi");
     return Promise.resolve(0);
   }
   throw {
-        ExceptionID: "Assert_failure",
+        RE_EXN_ID: "Assert_failure",
         _1: /* tuple */[
           "promise_catch_test.ml",
           22,
@@ -53,9 +53,9 @@ function handler(e) {
 
 function myHandler(match) {
   if (Caml_exceptions.caml_is_extension(match)) {
-    if (match.ExceptionID === "Not_found") {
+    if (match.RE_EXN_ID === "Not_found") {
       return 1;
-    } else if (match.ExceptionID === Js_exn.$$Error) {
+    } else if (match.RE_EXN_ID === Js_exn.$$Error) {
       return 2;
     } else {
       return ;
@@ -85,7 +85,7 @@ catch (raw_e){
 
 if (exit === 1) {
   throw {
-        ExceptionID: "Assert_failure",
+        RE_EXN_ID: "Assert_failure",
         _1: /* tuple */[
           "promise_catch_test.ml",
           39,

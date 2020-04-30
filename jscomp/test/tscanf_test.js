@@ -706,7 +706,7 @@ function verify_read(c) {
     return ;
   }
   throw {
-        ExceptionID: "Assert_failure",
+        RE_EXN_ID: "Assert_failure",
         _1: /* tuple */[
           "tscanf_test.ml",
           174,
@@ -1422,7 +1422,7 @@ function scan_elems$1(ib, accu) {
                 }
                 if (c !== 93) {
                   throw {
-                        ExceptionID: "Failure",
+                        RE_EXN_ID: "Failure",
                         _1: "scan_elems"
                       };
                 }
@@ -1506,14 +1506,14 @@ function scan_elems$2(ib, accu) {
                   }
                   console.log(Caml_bytes.bytes_to_string(Bytes.make(1, c)));
                   throw {
-                        ExceptionID: "Failure",
+                        RE_EXN_ID: "Failure",
                         _1: "scan_elems"
                       };
                 }));
   }
   catch (raw_exn){
     var exn = Caml_js_exceptions.internalToOCamlException(raw_exn);
-    if (exn.ExceptionID === Scanf.Scan_failure) {
+    if (exn.RE_EXN_ID === Scanf.Scan_failure) {
       Curry._1(Scanf.bscanf(ib, /* Format */[
                 /* Char_literal */Block.__(12, [
                     /* "]" */93,
@@ -1523,7 +1523,7 @@ function scan_elems$2(ib, accu) {
               ]), undefined);
       return accu;
     }
-    if (exn.ExceptionID === "End_of_file") {
+    if (exn.RE_EXN_ID === "End_of_file") {
       return accu;
     }
     throw exn;
@@ -1718,7 +1718,7 @@ function scan_rest(ib, accu) {
                 }
                 if (c !== 93) {
                   throw {
-                        ExceptionID: "Failure",
+                        RE_EXN_ID: "Failure",
                         _1: "scan_rest"
                       };
                 }
@@ -1739,7 +1739,7 @@ function scan_elems$4(ib, accu) {
                 ]), (function (c) {
                 if (c !== 91) {
                   throw {
-                        ExceptionID: "Failure",
+                        RE_EXN_ID: "Failure",
                         _1: "scan_elems"
                       };
                 }
@@ -1779,7 +1779,7 @@ function scan_elems$4(ib, accu) {
                               }));
                 }
                 throw {
-                      ExceptionID: "Failure",
+                      RE_EXN_ID: "Failure",
                       _1: "scan_elems"
                     };
               }));
@@ -1903,7 +1903,7 @@ function scan_rest$1(ib, accu) {
                                                         "scan_int_list"
                                                       ]);
                                                   throw {
-                                                        ExceptionID: "Failure",
+                                                        RE_EXN_ID: "Failure",
                                                         _1: s
                                                       };
                                               }
@@ -1977,7 +1977,7 @@ function scan_elems$5(ib, scan_elem, accu) {
   }
   catch (raw_exn){
     var exn = Caml_js_exceptions.internalToOCamlException(raw_exn);
-    if (exn.ExceptionID === Scanf.Scan_failure) {
+    if (exn.RE_EXN_ID === Scanf.Scan_failure) {
       return accu;
     }
     throw exn;
@@ -3241,9 +3241,9 @@ function test44(param) {
 }
 
 Testing.test_raises_this_exc({
-        ExceptionID: "End_of_file"
+        RE_EXN_ID: "End_of_file"
       })(test43, undefined) && Testing.test_raises_this_exc({
-        ExceptionID: "End_of_file"
+        RE_EXN_ID: "End_of_file"
       })(test44, undefined);
 
 function test45(param) {
@@ -3719,7 +3719,7 @@ function next_char(ob, param) {
   var len = s.length;
   if (len === 0) {
     throw {
-          ExceptionID: "End_of_file"
+          RE_EXN_ID: "End_of_file"
         };
   }
   var c = Caml_string.get(s, 0);

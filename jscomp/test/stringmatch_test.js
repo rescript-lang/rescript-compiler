@@ -11,7 +11,7 @@ function tst01(s) {
 
 if (tst01("") !== 0) {
   throw {
-        ExceptionID: "Assert_failure",
+        RE_EXN_ID: "Assert_failure",
         _1: /* tuple */[
           "stringmatch_test.ml",
           20,
@@ -22,7 +22,7 @@ if (tst01("") !== 0) {
 
 if (tst01("\0\0\0\x03") !== 1) {
   throw {
-        ExceptionID: "Assert_failure",
+        RE_EXN_ID: "Assert_failure",
         _1: /* tuple */[
           "stringmatch_test.ml",
           21,
@@ -33,7 +33,7 @@ if (tst01("\0\0\0\x03") !== 1) {
 
 if (tst01("\0\0\0\0\0\0\0\x07") !== 1) {
   throw {
-        ExceptionID: "Assert_failure",
+        RE_EXN_ID: "Assert_failure",
         _1: /* tuple */[
           "stringmatch_test.ml",
           22,
@@ -49,7 +49,7 @@ function tst02(s) {
       return 1;
     }
     throw {
-          ExceptionID: "Assert_failure",
+          RE_EXN_ID: "Assert_failure",
           _1: /* tuple */[
             "stringmatch_test.ml",
             30,
@@ -59,7 +59,7 @@ function tst02(s) {
   }
   if (len === 0) {
     throw {
-          ExceptionID: "Assert_failure",
+          RE_EXN_ID: "Assert_failure",
           _1: /* tuple */[
             "stringmatch_test.ml",
             32,
@@ -76,7 +76,7 @@ function tst02(s) {
 
 if (tst02("") !== 1) {
   throw {
-        ExceptionID: "Assert_failure",
+        RE_EXN_ID: "Assert_failure",
         _1: /* tuple */[
           "stringmatch_test.ml",
           37,
@@ -87,7 +87,7 @@ if (tst02("") !== 1) {
 
 if (tst02("A") !== 2) {
   throw {
-        ExceptionID: "Assert_failure",
+        RE_EXN_ID: "Assert_failure",
         _1: /* tuple */[
           "stringmatch_test.ml",
           38,
@@ -98,7 +98,7 @@ if (tst02("A") !== 2) {
 
 if (tst02("B") !== 3) {
   throw {
-        ExceptionID: "Assert_failure",
+        RE_EXN_ID: "Assert_failure",
         _1: /* tuple */[
           "stringmatch_test.ml",
           39,
@@ -109,7 +109,7 @@ if (tst02("B") !== 3) {
 
 if (tst02("\0\0\0\0\0\0\0\x07") !== 3) {
   throw {
-        ExceptionID: "Assert_failure",
+        RE_EXN_ID: "Assert_failure",
         _1: /* tuple */[
           "stringmatch_test.ml",
           40,
@@ -120,7 +120,7 @@ if (tst02("\0\0\0\0\0\0\0\x07") !== 3) {
 
 if (tst02("\0\0\0\x03") !== 3) {
   throw {
-        ExceptionID: "Assert_failure",
+        RE_EXN_ID: "Assert_failure",
         _1: /* tuple */[
           "stringmatch_test.ml",
           41,
@@ -186,7 +186,7 @@ function tst03(s) {
 
 if (tst03("get_const") !== 0) {
   throw {
-        ExceptionID: "Assert_failure",
+        RE_EXN_ID: "Assert_failure",
         _1: /* tuple */[
           "stringmatch_test.ml",
           123,
@@ -197,7 +197,7 @@ if (tst03("get_const") !== 0) {
 
 if (tst03("set_congt") !== -1) {
   throw {
-        ExceptionID: "Assert_failure",
+        RE_EXN_ID: "Assert_failure",
         _1: /* tuple */[
           "stringmatch_test.ml",
           124,
@@ -208,7 +208,7 @@ if (tst03("set_congt") !== -1) {
 
 if (tst03("get_var") !== 1) {
   throw {
-        ExceptionID: "Assert_failure",
+        RE_EXN_ID: "Assert_failure",
         _1: /* tuple */[
           "stringmatch_test.ml",
           125,
@@ -219,7 +219,7 @@ if (tst03("get_var") !== 1) {
 
 if (tst03("gat_ver") !== -1) {
   throw {
-        ExceptionID: "Assert_failure",
+        RE_EXN_ID: "Assert_failure",
         _1: /* tuple */[
           "stringmatch_test.ml",
           126,
@@ -230,7 +230,7 @@ if (tst03("gat_ver") !== -1) {
 
 if (tst03("get_env") !== 2) {
   throw {
-        ExceptionID: "Assert_failure",
+        RE_EXN_ID: "Assert_failure",
         _1: /* tuple */[
           "stringmatch_test.ml",
           127,
@@ -241,7 +241,7 @@ if (tst03("get_env") !== 2) {
 
 if (tst03("get_env") !== 2) {
   throw {
-        ExceptionID: "Assert_failure",
+        RE_EXN_ID: "Assert_failure",
         _1: /* tuple */[
           "stringmatch_test.ml",
           128,
@@ -252,7 +252,7 @@ if (tst03("get_env") !== 2) {
 
 if (tst03("get_meth") !== 3) {
   throw {
-        ExceptionID: "Assert_failure",
+        RE_EXN_ID: "Assert_failure",
         _1: /* tuple */[
           "stringmatch_test.ml",
           129,
@@ -263,7 +263,7 @@ if (tst03("get_meth") !== 3) {
 
 if (tst03("met_geth") !== -1) {
   throw {
-        ExceptionID: "Assert_failure",
+        RE_EXN_ID: "Assert_failure",
         _1: /* tuple */[
           "stringmatch_test.ml",
           130,
@@ -274,7 +274,7 @@ if (tst03("met_geth") !== -1) {
 
 if (tst03("set_var") !== 4) {
   throw {
-        ExceptionID: "Assert_failure",
+        RE_EXN_ID: "Assert_failure",
         _1: /* tuple */[
           "stringmatch_test.ml",
           131,
@@ -285,7 +285,7 @@ if (tst03("set_var") !== 4) {
 
 if (tst03("sev_tar") !== -1) {
   throw {
-        ExceptionID: "Assert_failure",
+        RE_EXN_ID: "Assert_failure",
         _1: /* tuple */[
           "stringmatch_test.ml",
           132,
@@ -296,7 +296,7 @@ if (tst03("sev_tar") !== -1) {
 
 if (tst03("app_const") !== 5) {
   throw {
-        ExceptionID: "Assert_failure",
+        RE_EXN_ID: "Assert_failure",
         _1: /* tuple */[
           "stringmatch_test.ml",
           133,
@@ -307,7 +307,7 @@ if (tst03("app_const") !== 5) {
 
 if (tst03("ppa_const") !== -1) {
   throw {
-        ExceptionID: "Assert_failure",
+        RE_EXN_ID: "Assert_failure",
         _1: /* tuple */[
           "stringmatch_test.ml",
           134,
@@ -318,7 +318,7 @@ if (tst03("ppa_const") !== -1) {
 
 if (tst03("app_var") !== 6) {
   throw {
-        ExceptionID: "Assert_failure",
+        RE_EXN_ID: "Assert_failure",
         _1: /* tuple */[
           "stringmatch_test.ml",
           135,
@@ -329,7 +329,7 @@ if (tst03("app_var") !== 6) {
 
 if (tst03("app_var") !== 6) {
   throw {
-        ExceptionID: "Assert_failure",
+        RE_EXN_ID: "Assert_failure",
         _1: /* tuple */[
           "stringmatch_test.ml",
           136,
@@ -340,7 +340,7 @@ if (tst03("app_var") !== 6) {
 
 if (tst03("app_env") !== 7) {
   throw {
-        ExceptionID: "Assert_failure",
+        RE_EXN_ID: "Assert_failure",
         _1: /* tuple */[
           "stringmatch_test.ml",
           137,
@@ -351,7 +351,7 @@ if (tst03("app_env") !== 7) {
 
 if (tst03("epp_anv") !== -1) {
   throw {
-        ExceptionID: "Assert_failure",
+        RE_EXN_ID: "Assert_failure",
         _1: /* tuple */[
           "stringmatch_test.ml",
           138,
@@ -362,7 +362,7 @@ if (tst03("epp_anv") !== -1) {
 
 if (tst03("app_meth") !== 8) {
   throw {
-        ExceptionID: "Assert_failure",
+        RE_EXN_ID: "Assert_failure",
         _1: /* tuple */[
           "stringmatch_test.ml",
           139,
@@ -373,7 +373,7 @@ if (tst03("app_meth") !== 8) {
 
 if (tst03("atp_meph") !== -1) {
   throw {
-        ExceptionID: "Assert_failure",
+        RE_EXN_ID: "Assert_failure",
         _1: /* tuple */[
           "stringmatch_test.ml",
           140,
@@ -384,7 +384,7 @@ if (tst03("atp_meph") !== -1) {
 
 if (tst03("app_const_const") !== 9) {
   throw {
-        ExceptionID: "Assert_failure",
+        RE_EXN_ID: "Assert_failure",
         _1: /* tuple */[
           "stringmatch_test.ml",
           141,
@@ -395,7 +395,7 @@ if (tst03("app_const_const") !== 9) {
 
 if (tst03("app_const_const") !== 9) {
   throw {
-        ExceptionID: "Assert_failure",
+        RE_EXN_ID: "Assert_failure",
         _1: /* tuple */[
           "stringmatch_test.ml",
           142,
@@ -406,7 +406,7 @@ if (tst03("app_const_const") !== 9) {
 
 if (tst03("app_const_var") !== 10) {
   throw {
-        ExceptionID: "Assert_failure",
+        RE_EXN_ID: "Assert_failure",
         _1: /* tuple */[
           "stringmatch_test.ml",
           143,
@@ -417,7 +417,7 @@ if (tst03("app_const_var") !== 10) {
 
 if (tst03("atp_consp_var") !== -1) {
   throw {
-        ExceptionID: "Assert_failure",
+        RE_EXN_ID: "Assert_failure",
         _1: /* tuple */[
           "stringmatch_test.ml",
           144,
@@ -428,7 +428,7 @@ if (tst03("atp_consp_var") !== -1) {
 
 if (tst03("app_const_env") !== 11) {
   throw {
-        ExceptionID: "Assert_failure",
+        RE_EXN_ID: "Assert_failure",
         _1: /* tuple */[
           "stringmatch_test.ml",
           145,
@@ -439,7 +439,7 @@ if (tst03("app_const_env") !== 11) {
 
 if (tst03("app_constne_v") !== -1) {
   throw {
-        ExceptionID: "Assert_failure",
+        RE_EXN_ID: "Assert_failure",
         _1: /* tuple */[
           "stringmatch_test.ml",
           146,
@@ -450,7 +450,7 @@ if (tst03("app_constne_v") !== -1) {
 
 if (tst03("app_const_meth") !== 12) {
   throw {
-        ExceptionID: "Assert_failure",
+        RE_EXN_ID: "Assert_failure",
         _1: /* tuple */[
           "stringmatch_test.ml",
           147,
@@ -461,7 +461,7 @@ if (tst03("app_const_meth") !== 12) {
 
 if (tst03("spp_conat_meth") !== -1) {
   throw {
-        ExceptionID: "Assert_failure",
+        RE_EXN_ID: "Assert_failure",
         _1: /* tuple */[
           "stringmatch_test.ml",
           148,
@@ -472,7 +472,7 @@ if (tst03("spp_conat_meth") !== -1) {
 
 if (tst03("app_var_const") !== 13) {
   throw {
-        ExceptionID: "Assert_failure",
+        RE_EXN_ID: "Assert_failure",
         _1: /* tuple */[
           "stringmatch_test.ml",
           149,
@@ -483,7 +483,7 @@ if (tst03("app_var_const") !== 13) {
 
 if (tst03("app_va_rconst") !== -1) {
   throw {
-        ExceptionID: "Assert_failure",
+        RE_EXN_ID: "Assert_failure",
         _1: /* tuple */[
           "stringmatch_test.ml",
           150,
@@ -494,7 +494,7 @@ if (tst03("app_va_rconst") !== -1) {
 
 if (tst03("app_env_const") !== 14) {
   throw {
-        ExceptionID: "Assert_failure",
+        RE_EXN_ID: "Assert_failure",
         _1: /* tuple */[
           "stringmatch_test.ml",
           151,
@@ -505,7 +505,7 @@ if (tst03("app_env_const") !== 14) {
 
 if (tst03("app_env_const") !== 14) {
   throw {
-        ExceptionID: "Assert_failure",
+        RE_EXN_ID: "Assert_failure",
         _1: /* tuple */[
           "stringmatch_test.ml",
           152,
@@ -516,7 +516,7 @@ if (tst03("app_env_const") !== 14) {
 
 if (tst03("app_meth_const") !== 15) {
   throw {
-        ExceptionID: "Assert_failure",
+        RE_EXN_ID: "Assert_failure",
         _1: /* tuple */[
           "stringmatch_test.ml",
           153,
@@ -527,7 +527,7 @@ if (tst03("app_meth_const") !== 15) {
 
 if (tst03("app_teth_consm") !== -1) {
   throw {
-        ExceptionID: "Assert_failure",
+        RE_EXN_ID: "Assert_failure",
         _1: /* tuple */[
           "stringmatch_test.ml",
           154,
@@ -538,7 +538,7 @@ if (tst03("app_teth_consm") !== -1) {
 
 if (tst03("meth_app_const") !== 16) {
   throw {
-        ExceptionID: "Assert_failure",
+        RE_EXN_ID: "Assert_failure",
         _1: /* tuple */[
           "stringmatch_test.ml",
           155,
@@ -549,7 +549,7 @@ if (tst03("meth_app_const") !== 16) {
 
 if (tst03("math_epp_const") !== -1) {
   throw {
-        ExceptionID: "Assert_failure",
+        RE_EXN_ID: "Assert_failure",
         _1: /* tuple */[
           "stringmatch_test.ml",
           156,
@@ -560,7 +560,7 @@ if (tst03("math_epp_const") !== -1) {
 
 if (tst03("meth_app_var") !== 17) {
   throw {
-        ExceptionID: "Assert_failure",
+        RE_EXN_ID: "Assert_failure",
         _1: /* tuple */[
           "stringmatch_test.ml",
           157,
@@ -571,7 +571,7 @@ if (tst03("meth_app_var") !== 17) {
 
 if (tst03("meth_app_var") !== 17) {
   throw {
-        ExceptionID: "Assert_failure",
+        RE_EXN_ID: "Assert_failure",
         _1: /* tuple */[
           "stringmatch_test.ml",
           158,
@@ -582,7 +582,7 @@ if (tst03("meth_app_var") !== 17) {
 
 if (tst03("meth_app_env") !== 18) {
   throw {
-        ExceptionID: "Assert_failure",
+        RE_EXN_ID: "Assert_failure",
         _1: /* tuple */[
           "stringmatch_test.ml",
           159,
@@ -593,7 +593,7 @@ if (tst03("meth_app_env") !== 18) {
 
 if (tst03("eeth_app_mnv") !== -1) {
   throw {
-        ExceptionID: "Assert_failure",
+        RE_EXN_ID: "Assert_failure",
         _1: /* tuple */[
           "stringmatch_test.ml",
           160,
@@ -604,7 +604,7 @@ if (tst03("eeth_app_mnv") !== -1) {
 
 if (tst03("meth_app_meth") !== 19) {
   throw {
-        ExceptionID: "Assert_failure",
+        RE_EXN_ID: "Assert_failure",
         _1: /* tuple */[
           "stringmatch_test.ml",
           161,
@@ -615,7 +615,7 @@ if (tst03("meth_app_meth") !== 19) {
 
 if (tst03("meth_apt_meph") !== -1) {
   throw {
-        ExceptionID: "Assert_failure",
+        RE_EXN_ID: "Assert_failure",
         _1: /* tuple */[
           "stringmatch_test.ml",
           162,
@@ -626,7 +626,7 @@ if (tst03("meth_apt_meph") !== -1) {
 
 if (tst03("send_const") !== 20) {
   throw {
-        ExceptionID: "Assert_failure",
+        RE_EXN_ID: "Assert_failure",
         _1: /* tuple */[
           "stringmatch_test.ml",
           163,
@@ -637,7 +637,7 @@ if (tst03("send_const") !== 20) {
 
 if (tst03("tend_conss") !== -1) {
   throw {
-        ExceptionID: "Assert_failure",
+        RE_EXN_ID: "Assert_failure",
         _1: /* tuple */[
           "stringmatch_test.ml",
           164,
@@ -648,7 +648,7 @@ if (tst03("tend_conss") !== -1) {
 
 if (tst03("send_var") !== 21) {
   throw {
-        ExceptionID: "Assert_failure",
+        RE_EXN_ID: "Assert_failure",
         _1: /* tuple */[
           "stringmatch_test.ml",
           165,
@@ -659,7 +659,7 @@ if (tst03("send_var") !== 21) {
 
 if (tst03("serd_van") !== -1) {
   throw {
-        ExceptionID: "Assert_failure",
+        RE_EXN_ID: "Assert_failure",
         _1: /* tuple */[
           "stringmatch_test.ml",
           166,
@@ -670,7 +670,7 @@ if (tst03("serd_van") !== -1) {
 
 if (tst03("send_env") !== 22) {
   throw {
-        ExceptionID: "Assert_failure",
+        RE_EXN_ID: "Assert_failure",
         _1: /* tuple */[
           "stringmatch_test.ml",
           167,
@@ -681,7 +681,7 @@ if (tst03("send_env") !== 22) {
 
 if (tst03("sen_denv") !== -1) {
   throw {
-        ExceptionID: "Assert_failure",
+        RE_EXN_ID: "Assert_failure",
         _1: /* tuple */[
           "stringmatch_test.ml",
           168,
@@ -692,7 +692,7 @@ if (tst03("sen_denv") !== -1) {
 
 if (tst03("send_meth") !== 23) {
   throw {
-        ExceptionID: "Assert_failure",
+        RE_EXN_ID: "Assert_failure",
         _1: /* tuple */[
           "stringmatch_test.ml",
           169,
@@ -703,7 +703,7 @@ if (tst03("send_meth") !== 23) {
 
 if (tst03("tend_mesh") !== -1) {
   throw {
-        ExceptionID: "Assert_failure",
+        RE_EXN_ID: "Assert_failure",
         _1: /* tuple */[
           "stringmatch_test.ml",
           170,
@@ -745,7 +745,7 @@ function tst04(s) {
 
 if (tst04("AAAAAAAA") !== 0) {
   throw {
-        ExceptionID: "Assert_failure",
+        RE_EXN_ID: "Assert_failure",
         _1: /* tuple */[
           "stringmatch_test.ml",
           204,
@@ -756,7 +756,7 @@ if (tst04("AAAAAAAA") !== 0) {
 
 if (tst04("AAAAAAAAAAAAAAAA") !== 1) {
   throw {
-        ExceptionID: "Assert_failure",
+        RE_EXN_ID: "Assert_failure",
         _1: /* tuple */[
           "stringmatch_test.ml",
           205,
@@ -767,7 +767,7 @@ if (tst04("AAAAAAAAAAAAAAAA") !== 1) {
 
 if (tst04("AAAAAAAAAAAAAAAAAAAAAAAA") !== 2) {
   throw {
-        ExceptionID: "Assert_failure",
+        RE_EXN_ID: "Assert_failure",
         _1: /* tuple */[
           "stringmatch_test.ml",
           206,
@@ -778,7 +778,7 @@ if (tst04("AAAAAAAAAAAAAAAAAAAAAAAA") !== 2) {
 
 if (tst04("AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA") !== 3) {
   throw {
-        ExceptionID: "Assert_failure",
+        RE_EXN_ID: "Assert_failure",
         _1: /* tuple */[
           "stringmatch_test.ml",
           207,
@@ -789,7 +789,7 @@ if (tst04("AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA") !== 3) {
 
 if (tst04("BBBBBBBB") !== 4) {
   throw {
-        ExceptionID: "Assert_failure",
+        RE_EXN_ID: "Assert_failure",
         _1: /* tuple */[
           "stringmatch_test.ml",
           208,
@@ -800,7 +800,7 @@ if (tst04("BBBBBBBB") !== 4) {
 
 if (tst04("BBBBBBBBBBBBBBBB") !== 5) {
   throw {
-        ExceptionID: "Assert_failure",
+        RE_EXN_ID: "Assert_failure",
         _1: /* tuple */[
           "stringmatch_test.ml",
           209,
@@ -811,7 +811,7 @@ if (tst04("BBBBBBBBBBBBBBBB") !== 5) {
 
 if (tst04("BBBBBBBBBBBBBBBBBBBBBBBB") !== 6) {
   throw {
-        ExceptionID: "Assert_failure",
+        RE_EXN_ID: "Assert_failure",
         _1: /* tuple */[
           "stringmatch_test.ml",
           210,
@@ -822,7 +822,7 @@ if (tst04("BBBBBBBBBBBBBBBBBBBBBBBB") !== 6) {
 
 if (tst04("BBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBB") !== 7) {
   throw {
-        ExceptionID: "Assert_failure",
+        RE_EXN_ID: "Assert_failure",
         _1: /* tuple */[
           "stringmatch_test.ml",
           211,
@@ -833,7 +833,7 @@ if (tst04("BBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBB") !== 7) {
 
 if (tst04("CCCCCCCC") !== 8) {
   throw {
-        ExceptionID: "Assert_failure",
+        RE_EXN_ID: "Assert_failure",
         _1: /* tuple */[
           "stringmatch_test.ml",
           212,
@@ -844,7 +844,7 @@ if (tst04("CCCCCCCC") !== 8) {
 
 if (tst04("CCCCCCCCCCCCCCCC") !== 9) {
   throw {
-        ExceptionID: "Assert_failure",
+        RE_EXN_ID: "Assert_failure",
         _1: /* tuple */[
           "stringmatch_test.ml",
           213,
@@ -855,7 +855,7 @@ if (tst04("CCCCCCCCCCCCCCCC") !== 9) {
 
 if (tst04("CCCCCCCCCCCCCCCCCCCCCCCC") !== 10) {
   throw {
-        ExceptionID: "Assert_failure",
+        RE_EXN_ID: "Assert_failure",
         _1: /* tuple */[
           "stringmatch_test.ml",
           214,
@@ -866,7 +866,7 @@ if (tst04("CCCCCCCCCCCCCCCCCCCCCCCC") !== 10) {
 
 if (tst04("CCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCC") !== 11) {
   throw {
-        ExceptionID: "Assert_failure",
+        RE_EXN_ID: "Assert_failure",
         _1: /* tuple */[
           "stringmatch_test.ml",
           215,
@@ -877,7 +877,7 @@ if (tst04("CCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCC") !== 11) {
 
 if (tst04("") !== -1) {
   throw {
-        ExceptionID: "Assert_failure",
+        RE_EXN_ID: "Assert_failure",
         _1: /* tuple */[
           "stringmatch_test.ml",
           216,
@@ -888,7 +888,7 @@ if (tst04("") !== -1) {
 
 if (tst04("DDD") !== -1) {
   throw {
-        ExceptionID: "Assert_failure",
+        RE_EXN_ID: "Assert_failure",
         _1: /* tuple */[
           "stringmatch_test.ml",
           217,
@@ -899,7 +899,7 @@ if (tst04("DDD") !== -1) {
 
 if (tst04("DDDDDDD") !== -1) {
   throw {
-        ExceptionID: "Assert_failure",
+        RE_EXN_ID: "Assert_failure",
         _1: /* tuple */[
           "stringmatch_test.ml",
           218,
@@ -910,7 +910,7 @@ if (tst04("DDDDDDD") !== -1) {
 
 if (tst04("AAADDDD") !== -1) {
   throw {
-        ExceptionID: "Assert_failure",
+        RE_EXN_ID: "Assert_failure",
         _1: /* tuple */[
           "stringmatch_test.ml",
           219,
@@ -921,7 +921,7 @@ if (tst04("AAADDDD") !== -1) {
 
 if (tst04("AAAAAAADDDDDDDD") !== -1) {
   throw {
-        ExceptionID: "Assert_failure",
+        RE_EXN_ID: "Assert_failure",
         _1: /* tuple */[
           "stringmatch_test.ml",
           220,
@@ -932,7 +932,7 @@ if (tst04("AAAAAAADDDDDDDD") !== -1) {
 
 if (tst04("AAAAAAADDDD") !== -1) {
   throw {
-        ExceptionID: "Assert_failure",
+        RE_EXN_ID: "Assert_failure",
         _1: /* tuple */[
           "stringmatch_test.ml",
           221,
@@ -943,7 +943,7 @@ if (tst04("AAAAAAADDDD") !== -1) {
 
 if (tst04("AAAAAAAAAAAAAAADDDD") !== -1) {
   throw {
-        ExceptionID: "Assert_failure",
+        RE_EXN_ID: "Assert_failure",
         _1: /* tuple */[
           "stringmatch_test.ml",
           222,
@@ -987,7 +987,7 @@ function tst05(s) {
 
 if (tst05("AAA") !== 0) {
   throw {
-        ExceptionID: "Assert_failure",
+        RE_EXN_ID: "Assert_failure",
         _1: /* tuple */[
           "stringmatch_test.ml",
           258,
@@ -998,7 +998,7 @@ if (tst05("AAA") !== 0) {
 
 if (tst05("AAAA") !== 1) {
   throw {
-        ExceptionID: "Assert_failure",
+        RE_EXN_ID: "Assert_failure",
         _1: /* tuple */[
           "stringmatch_test.ml",
           259,
@@ -1009,7 +1009,7 @@ if (tst05("AAAA") !== 1) {
 
 if (tst05("AAAAA") !== 2) {
   throw {
-        ExceptionID: "Assert_failure",
+        RE_EXN_ID: "Assert_failure",
         _1: /* tuple */[
           "stringmatch_test.ml",
           260,
@@ -1020,7 +1020,7 @@ if (tst05("AAAAA") !== 2) {
 
 if (tst05("AAAAAA") !== 3) {
   throw {
-        ExceptionID: "Assert_failure",
+        RE_EXN_ID: "Assert_failure",
         _1: /* tuple */[
           "stringmatch_test.ml",
           261,
@@ -1031,7 +1031,7 @@ if (tst05("AAAAAA") !== 3) {
 
 if (tst05("AAAAAAA") !== 4) {
   throw {
-        ExceptionID: "Assert_failure",
+        RE_EXN_ID: "Assert_failure",
         _1: /* tuple */[
           "stringmatch_test.ml",
           262,
@@ -1042,7 +1042,7 @@ if (tst05("AAAAAAA") !== 4) {
 
 if (tst05("AAAAAAAAAAAA") !== 5) {
   throw {
-        ExceptionID: "Assert_failure",
+        RE_EXN_ID: "Assert_failure",
         _1: /* tuple */[
           "stringmatch_test.ml",
           263,
@@ -1053,7 +1053,7 @@ if (tst05("AAAAAAAAAAAA") !== 5) {
 
 if (tst05("AAAAAAAAAAAAAAAA") !== 6) {
   throw {
-        ExceptionID: "Assert_failure",
+        RE_EXN_ID: "Assert_failure",
         _1: /* tuple */[
           "stringmatch_test.ml",
           264,
@@ -1064,7 +1064,7 @@ if (tst05("AAAAAAAAAAAAAAAA") !== 6) {
 
 if (tst05("AAAAAAAAAAAAAAAAAAAA") !== 7) {
   throw {
-        ExceptionID: "Assert_failure",
+        RE_EXN_ID: "Assert_failure",
         _1: /* tuple */[
           "stringmatch_test.ml",
           265,
@@ -1075,7 +1075,7 @@ if (tst05("AAAAAAAAAAAAAAAAAAAA") !== 7) {
 
 if (tst05("BBB") !== 8) {
   throw {
-        ExceptionID: "Assert_failure",
+        RE_EXN_ID: "Assert_failure",
         _1: /* tuple */[
           "stringmatch_test.ml",
           266,
@@ -1086,7 +1086,7 @@ if (tst05("BBB") !== 8) {
 
 if (tst05("BBBB") !== 9) {
   throw {
-        ExceptionID: "Assert_failure",
+        RE_EXN_ID: "Assert_failure",
         _1: /* tuple */[
           "stringmatch_test.ml",
           267,
@@ -1097,7 +1097,7 @@ if (tst05("BBBB") !== 9) {
 
 if (tst05("BBBBB") !== 10) {
   throw {
-        ExceptionID: "Assert_failure",
+        RE_EXN_ID: "Assert_failure",
         _1: /* tuple */[
           "stringmatch_test.ml",
           268,
@@ -1108,7 +1108,7 @@ if (tst05("BBBBB") !== 10) {
 
 if (tst05("BBBBBB") !== 11) {
   throw {
-        ExceptionID: "Assert_failure",
+        RE_EXN_ID: "Assert_failure",
         _1: /* tuple */[
           "stringmatch_test.ml",
           269,
@@ -1119,7 +1119,7 @@ if (tst05("BBBBBB") !== 11) {
 
 if (tst05("BBBBBBB") !== 12) {
   throw {
-        ExceptionID: "Assert_failure",
+        RE_EXN_ID: "Assert_failure",
         _1: /* tuple */[
           "stringmatch_test.ml",
           270,
@@ -1130,7 +1130,7 @@ if (tst05("BBBBBBB") !== 12) {
 
 if (tst05("") !== -1) {
   throw {
-        ExceptionID: "Assert_failure",
+        RE_EXN_ID: "Assert_failure",
         _1: /* tuple */[
           "stringmatch_test.ml",
           271,
@@ -1141,7 +1141,7 @@ if (tst05("") !== -1) {
 
 if (tst05("AAD") !== -1) {
   throw {
-        ExceptionID: "Assert_failure",
+        RE_EXN_ID: "Assert_failure",
         _1: /* tuple */[
           "stringmatch_test.ml",
           272,
@@ -1152,7 +1152,7 @@ if (tst05("AAD") !== -1) {
 
 if (tst05("AAAD") !== -1) {
   throw {
-        ExceptionID: "Assert_failure",
+        RE_EXN_ID: "Assert_failure",
         _1: /* tuple */[
           "stringmatch_test.ml",
           273,
@@ -1163,7 +1163,7 @@ if (tst05("AAAD") !== -1) {
 
 if (tst05("AAAAAAD") !== -1) {
   throw {
-        ExceptionID: "Assert_failure",
+        RE_EXN_ID: "Assert_failure",
         _1: /* tuple */[
           "stringmatch_test.ml",
           274,
@@ -1174,7 +1174,7 @@ if (tst05("AAAAAAD") !== -1) {
 
 if (tst05("AAAAAAAD") !== -1) {
   throw {
-        ExceptionID: "Assert_failure",
+        RE_EXN_ID: "Assert_failure",
         _1: /* tuple */[
           "stringmatch_test.ml",
           275,
@@ -1185,7 +1185,7 @@ if (tst05("AAAAAAAD") !== -1) {
 
 if (tst05("BBD") !== -1) {
   throw {
-        ExceptionID: "Assert_failure",
+        RE_EXN_ID: "Assert_failure",
         _1: /* tuple */[
           "stringmatch_test.ml",
           276,
@@ -1196,7 +1196,7 @@ if (tst05("BBD") !== -1) {
 
 if (tst05("BBBD") !== -1) {
   throw {
-        ExceptionID: "Assert_failure",
+        RE_EXN_ID: "Assert_failure",
         _1: /* tuple */[
           "stringmatch_test.ml",
           277,
@@ -1207,7 +1207,7 @@ if (tst05("BBBD") !== -1) {
 
 if (tst05("BBBBBBD") !== -1) {
   throw {
-        ExceptionID: "Assert_failure",
+        RE_EXN_ID: "Assert_failure",
         _1: /* tuple */[
           "stringmatch_test.ml",
           278,
@@ -1218,7 +1218,7 @@ if (tst05("BBBBBBD") !== -1) {
 
 if (tst05("BBBBBBBD") !== -1) {
   throw {
-        ExceptionID: "Assert_failure",
+        RE_EXN_ID: "Assert_failure",
         _1: /* tuple */[
           "stringmatch_test.ml",
           279,
@@ -1788,7 +1788,7 @@ function tst06(s) {
 
 if (tst06(s00) !== 0) {
   throw {
-        ExceptionID: "Assert_failure",
+        RE_EXN_ID: "Assert_failure",
         _1: /* tuple */[
           "stringmatch_test.ml",
           565,
@@ -1799,7 +1799,7 @@ if (tst06(s00) !== 0) {
 
 if (tst06(t00) !== -1) {
   throw {
-        ExceptionID: "Assert_failure",
+        RE_EXN_ID: "Assert_failure",
         _1: /* tuple */[
           "stringmatch_test.ml",
           566,
@@ -1810,7 +1810,7 @@ if (tst06(t00) !== -1) {
 
 if (tst06(s01) !== 1) {
   throw {
-        ExceptionID: "Assert_failure",
+        RE_EXN_ID: "Assert_failure",
         _1: /* tuple */[
           "stringmatch_test.ml",
           567,
@@ -1821,7 +1821,7 @@ if (tst06(s01) !== 1) {
 
 if (tst06(t01) !== -1) {
   throw {
-        ExceptionID: "Assert_failure",
+        RE_EXN_ID: "Assert_failure",
         _1: /* tuple */[
           "stringmatch_test.ml",
           568,
@@ -1832,7 +1832,7 @@ if (tst06(t01) !== -1) {
 
 if (tst06(s02) !== 2) {
   throw {
-        ExceptionID: "Assert_failure",
+        RE_EXN_ID: "Assert_failure",
         _1: /* tuple */[
           "stringmatch_test.ml",
           569,
@@ -1843,7 +1843,7 @@ if (tst06(s02) !== 2) {
 
 if (tst06(t02) !== -1) {
   throw {
-        ExceptionID: "Assert_failure",
+        RE_EXN_ID: "Assert_failure",
         _1: /* tuple */[
           "stringmatch_test.ml",
           570,
@@ -1854,7 +1854,7 @@ if (tst06(t02) !== -1) {
 
 if (tst06(s03) !== 3) {
   throw {
-        ExceptionID: "Assert_failure",
+        RE_EXN_ID: "Assert_failure",
         _1: /* tuple */[
           "stringmatch_test.ml",
           571,
@@ -1865,7 +1865,7 @@ if (tst06(s03) !== 3) {
 
 if (tst06(t03) !== -1) {
   throw {
-        ExceptionID: "Assert_failure",
+        RE_EXN_ID: "Assert_failure",
         _1: /* tuple */[
           "stringmatch_test.ml",
           572,
@@ -1876,7 +1876,7 @@ if (tst06(t03) !== -1) {
 
 if (tst06(s04) !== 4) {
   throw {
-        ExceptionID: "Assert_failure",
+        RE_EXN_ID: "Assert_failure",
         _1: /* tuple */[
           "stringmatch_test.ml",
           573,
@@ -1887,7 +1887,7 @@ if (tst06(s04) !== 4) {
 
 if (tst06(t04) !== -1) {
   throw {
-        ExceptionID: "Assert_failure",
+        RE_EXN_ID: "Assert_failure",
         _1: /* tuple */[
           "stringmatch_test.ml",
           574,
@@ -1898,7 +1898,7 @@ if (tst06(t04) !== -1) {
 
 if (tst06(s05) !== 5) {
   throw {
-        ExceptionID: "Assert_failure",
+        RE_EXN_ID: "Assert_failure",
         _1: /* tuple */[
           "stringmatch_test.ml",
           575,
@@ -1909,7 +1909,7 @@ if (tst06(s05) !== 5) {
 
 if (tst06(t05) !== -1) {
   throw {
-        ExceptionID: "Assert_failure",
+        RE_EXN_ID: "Assert_failure",
         _1: /* tuple */[
           "stringmatch_test.ml",
           576,
@@ -1920,7 +1920,7 @@ if (tst06(t05) !== -1) {
 
 if (tst06(s06) !== 6) {
   throw {
-        ExceptionID: "Assert_failure",
+        RE_EXN_ID: "Assert_failure",
         _1: /* tuple */[
           "stringmatch_test.ml",
           577,
@@ -1931,7 +1931,7 @@ if (tst06(s06) !== 6) {
 
 if (tst06(t06) !== -1) {
   throw {
-        ExceptionID: "Assert_failure",
+        RE_EXN_ID: "Assert_failure",
         _1: /* tuple */[
           "stringmatch_test.ml",
           578,
@@ -1942,7 +1942,7 @@ if (tst06(t06) !== -1) {
 
 if (tst06(s07) !== 7) {
   throw {
-        ExceptionID: "Assert_failure",
+        RE_EXN_ID: "Assert_failure",
         _1: /* tuple */[
           "stringmatch_test.ml",
           579,
@@ -1953,7 +1953,7 @@ if (tst06(s07) !== 7) {
 
 if (tst06(t07) !== -1) {
   throw {
-        ExceptionID: "Assert_failure",
+        RE_EXN_ID: "Assert_failure",
         _1: /* tuple */[
           "stringmatch_test.ml",
           580,
@@ -1964,7 +1964,7 @@ if (tst06(t07) !== -1) {
 
 if (tst06(s08) !== 8) {
   throw {
-        ExceptionID: "Assert_failure",
+        RE_EXN_ID: "Assert_failure",
         _1: /* tuple */[
           "stringmatch_test.ml",
           581,
@@ -1975,7 +1975,7 @@ if (tst06(s08) !== 8) {
 
 if (tst06(t08) !== -1) {
   throw {
-        ExceptionID: "Assert_failure",
+        RE_EXN_ID: "Assert_failure",
         _1: /* tuple */[
           "stringmatch_test.ml",
           582,
@@ -1986,7 +1986,7 @@ if (tst06(t08) !== -1) {
 
 if (tst06(s09) !== 9) {
   throw {
-        ExceptionID: "Assert_failure",
+        RE_EXN_ID: "Assert_failure",
         _1: /* tuple */[
           "stringmatch_test.ml",
           583,
@@ -1997,7 +1997,7 @@ if (tst06(s09) !== 9) {
 
 if (tst06(t09) !== -1) {
   throw {
-        ExceptionID: "Assert_failure",
+        RE_EXN_ID: "Assert_failure",
         _1: /* tuple */[
           "stringmatch_test.ml",
           584,
@@ -2008,7 +2008,7 @@ if (tst06(t09) !== -1) {
 
 if (tst06(s10) !== 10) {
   throw {
-        ExceptionID: "Assert_failure",
+        RE_EXN_ID: "Assert_failure",
         _1: /* tuple */[
           "stringmatch_test.ml",
           585,
@@ -2019,7 +2019,7 @@ if (tst06(s10) !== 10) {
 
 if (tst06(t10) !== -1) {
   throw {
-        ExceptionID: "Assert_failure",
+        RE_EXN_ID: "Assert_failure",
         _1: /* tuple */[
           "stringmatch_test.ml",
           586,
@@ -2030,7 +2030,7 @@ if (tst06(t10) !== -1) {
 
 if (tst06(s11) !== 11) {
   throw {
-        ExceptionID: "Assert_failure",
+        RE_EXN_ID: "Assert_failure",
         _1: /* tuple */[
           "stringmatch_test.ml",
           587,
@@ -2041,7 +2041,7 @@ if (tst06(s11) !== 11) {
 
 if (tst06(t11) !== 11) {
   throw {
-        ExceptionID: "Assert_failure",
+        RE_EXN_ID: "Assert_failure",
         _1: /* tuple */[
           "stringmatch_test.ml",
           588,
@@ -2052,7 +2052,7 @@ if (tst06(t11) !== 11) {
 
 if (tst06(s12) !== 12) {
   throw {
-        ExceptionID: "Assert_failure",
+        RE_EXN_ID: "Assert_failure",
         _1: /* tuple */[
           "stringmatch_test.ml",
           589,
@@ -2063,7 +2063,7 @@ if (tst06(s12) !== 12) {
 
 if (tst06(t12) !== 12) {
   throw {
-        ExceptionID: "Assert_failure",
+        RE_EXN_ID: "Assert_failure",
         _1: /* tuple */[
           "stringmatch_test.ml",
           590,
@@ -2074,7 +2074,7 @@ if (tst06(t12) !== 12) {
 
 if (tst06(s13) !== 13) {
   throw {
-        ExceptionID: "Assert_failure",
+        RE_EXN_ID: "Assert_failure",
         _1: /* tuple */[
           "stringmatch_test.ml",
           591,
@@ -2085,7 +2085,7 @@ if (tst06(s13) !== 13) {
 
 if (tst06(t13) !== -1) {
   throw {
-        ExceptionID: "Assert_failure",
+        RE_EXN_ID: "Assert_failure",
         _1: /* tuple */[
           "stringmatch_test.ml",
           592,
@@ -2096,7 +2096,7 @@ if (tst06(t13) !== -1) {
 
 if (tst06(s14) !== 14) {
   throw {
-        ExceptionID: "Assert_failure",
+        RE_EXN_ID: "Assert_failure",
         _1: /* tuple */[
           "stringmatch_test.ml",
           593,
@@ -2107,7 +2107,7 @@ if (tst06(s14) !== 14) {
 
 if (tst06(t14) !== -1) {
   throw {
-        ExceptionID: "Assert_failure",
+        RE_EXN_ID: "Assert_failure",
         _1: /* tuple */[
           "stringmatch_test.ml",
           594,
@@ -2118,7 +2118,7 @@ if (tst06(t14) !== -1) {
 
 if (tst06(s15) !== 15) {
   throw {
-        ExceptionID: "Assert_failure",
+        RE_EXN_ID: "Assert_failure",
         _1: /* tuple */[
           "stringmatch_test.ml",
           595,
@@ -2129,7 +2129,7 @@ if (tst06(s15) !== 15) {
 
 if (tst06(t15) !== -1) {
   throw {
-        ExceptionID: "Assert_failure",
+        RE_EXN_ID: "Assert_failure",
         _1: /* tuple */[
           "stringmatch_test.ml",
           596,
@@ -2140,7 +2140,7 @@ if (tst06(t15) !== -1) {
 
 if (tst06(s16) !== 16) {
   throw {
-        ExceptionID: "Assert_failure",
+        RE_EXN_ID: "Assert_failure",
         _1: /* tuple */[
           "stringmatch_test.ml",
           597,
@@ -2151,7 +2151,7 @@ if (tst06(s16) !== 16) {
 
 if (tst06(t16) !== 16) {
   throw {
-        ExceptionID: "Assert_failure",
+        RE_EXN_ID: "Assert_failure",
         _1: /* tuple */[
           "stringmatch_test.ml",
           598,
@@ -2162,7 +2162,7 @@ if (tst06(t16) !== 16) {
 
 if (tst06(s17) !== 17) {
   throw {
-        ExceptionID: "Assert_failure",
+        RE_EXN_ID: "Assert_failure",
         _1: /* tuple */[
           "stringmatch_test.ml",
           599,
@@ -2173,7 +2173,7 @@ if (tst06(s17) !== 17) {
 
 if (tst06(t17) !== -1) {
   throw {
-        ExceptionID: "Assert_failure",
+        RE_EXN_ID: "Assert_failure",
         _1: /* tuple */[
           "stringmatch_test.ml",
           600,
@@ -2184,7 +2184,7 @@ if (tst06(t17) !== -1) {
 
 if (tst06(s18) !== 18) {
   throw {
-        ExceptionID: "Assert_failure",
+        RE_EXN_ID: "Assert_failure",
         _1: /* tuple */[
           "stringmatch_test.ml",
           601,
@@ -2195,7 +2195,7 @@ if (tst06(s18) !== 18) {
 
 if (tst06(t18) !== -1) {
   throw {
-        ExceptionID: "Assert_failure",
+        RE_EXN_ID: "Assert_failure",
         _1: /* tuple */[
           "stringmatch_test.ml",
           602,
@@ -2206,7 +2206,7 @@ if (tst06(t18) !== -1) {
 
 if (tst06(s19) !== 19) {
   throw {
-        ExceptionID: "Assert_failure",
+        RE_EXN_ID: "Assert_failure",
         _1: /* tuple */[
           "stringmatch_test.ml",
           603,
@@ -2217,7 +2217,7 @@ if (tst06(s19) !== 19) {
 
 if (tst06(t19) !== 19) {
   throw {
-        ExceptionID: "Assert_failure",
+        RE_EXN_ID: "Assert_failure",
         _1: /* tuple */[
           "stringmatch_test.ml",
           604,
@@ -2228,7 +2228,7 @@ if (tst06(t19) !== 19) {
 
 if (tst06(s20) !== 20) {
   throw {
-        ExceptionID: "Assert_failure",
+        RE_EXN_ID: "Assert_failure",
         _1: /* tuple */[
           "stringmatch_test.ml",
           605,
@@ -2239,7 +2239,7 @@ if (tst06(s20) !== 20) {
 
 if (tst06(t20) !== -1) {
   throw {
-        ExceptionID: "Assert_failure",
+        RE_EXN_ID: "Assert_failure",
         _1: /* tuple */[
           "stringmatch_test.ml",
           606,
@@ -2250,7 +2250,7 @@ if (tst06(t20) !== -1) {
 
 if (tst06(s21) !== 21) {
   throw {
-        ExceptionID: "Assert_failure",
+        RE_EXN_ID: "Assert_failure",
         _1: /* tuple */[
           "stringmatch_test.ml",
           607,
@@ -2261,7 +2261,7 @@ if (tst06(s21) !== 21) {
 
 if (tst06(t21) !== -1) {
   throw {
-        ExceptionID: "Assert_failure",
+        RE_EXN_ID: "Assert_failure",
         _1: /* tuple */[
           "stringmatch_test.ml",
           608,
@@ -2272,7 +2272,7 @@ if (tst06(t21) !== -1) {
 
 if (tst06(s22) !== 22) {
   throw {
-        ExceptionID: "Assert_failure",
+        RE_EXN_ID: "Assert_failure",
         _1: /* tuple */[
           "stringmatch_test.ml",
           609,
@@ -2283,7 +2283,7 @@ if (tst06(s22) !== 22) {
 
 if (tst06(t22) !== -1) {
   throw {
-        ExceptionID: "Assert_failure",
+        RE_EXN_ID: "Assert_failure",
         _1: /* tuple */[
           "stringmatch_test.ml",
           610,
@@ -2294,7 +2294,7 @@ if (tst06(t22) !== -1) {
 
 if (tst06(s23) !== 23) {
   throw {
-        ExceptionID: "Assert_failure",
+        RE_EXN_ID: "Assert_failure",
         _1: /* tuple */[
           "stringmatch_test.ml",
           611,
@@ -2305,7 +2305,7 @@ if (tst06(s23) !== 23) {
 
 if (tst06(t23) !== -1) {
   throw {
-        ExceptionID: "Assert_failure",
+        RE_EXN_ID: "Assert_failure",
         _1: /* tuple */[
           "stringmatch_test.ml",
           612,
@@ -2316,7 +2316,7 @@ if (tst06(t23) !== -1) {
 
 if (tst06(s24) !== 24) {
   throw {
-        ExceptionID: "Assert_failure",
+        RE_EXN_ID: "Assert_failure",
         _1: /* tuple */[
           "stringmatch_test.ml",
           613,
@@ -2327,7 +2327,7 @@ if (tst06(s24) !== 24) {
 
 if (tst06(t24) !== -1) {
   throw {
-        ExceptionID: "Assert_failure",
+        RE_EXN_ID: "Assert_failure",
         _1: /* tuple */[
           "stringmatch_test.ml",
           614,
@@ -2338,7 +2338,7 @@ if (tst06(t24) !== -1) {
 
 if (tst06(s25) !== 25) {
   throw {
-        ExceptionID: "Assert_failure",
+        RE_EXN_ID: "Assert_failure",
         _1: /* tuple */[
           "stringmatch_test.ml",
           615,
@@ -2349,7 +2349,7 @@ if (tst06(s25) !== 25) {
 
 if (tst06(t25) !== 25) {
   throw {
-        ExceptionID: "Assert_failure",
+        RE_EXN_ID: "Assert_failure",
         _1: /* tuple */[
           "stringmatch_test.ml",
           616,
@@ -2360,7 +2360,7 @@ if (tst06(t25) !== 25) {
 
 if (tst06(s26) !== 26) {
   throw {
-        ExceptionID: "Assert_failure",
+        RE_EXN_ID: "Assert_failure",
         _1: /* tuple */[
           "stringmatch_test.ml",
           617,
@@ -2371,7 +2371,7 @@ if (tst06(s26) !== 26) {
 
 if (tst06(t26) !== -1) {
   throw {
-        ExceptionID: "Assert_failure",
+        RE_EXN_ID: "Assert_failure",
         _1: /* tuple */[
           "stringmatch_test.ml",
           618,
@@ -2382,7 +2382,7 @@ if (tst06(t26) !== -1) {
 
 if (tst06(s27) !== 27) {
   throw {
-        ExceptionID: "Assert_failure",
+        RE_EXN_ID: "Assert_failure",
         _1: /* tuple */[
           "stringmatch_test.ml",
           619,
@@ -2393,7 +2393,7 @@ if (tst06(s27) !== 27) {
 
 if (tst06(t27) !== -1) {
   throw {
-        ExceptionID: "Assert_failure",
+        RE_EXN_ID: "Assert_failure",
         _1: /* tuple */[
           "stringmatch_test.ml",
           620,
@@ -2404,7 +2404,7 @@ if (tst06(t27) !== -1) {
 
 if (tst06(s28) !== 28) {
   throw {
-        ExceptionID: "Assert_failure",
+        RE_EXN_ID: "Assert_failure",
         _1: /* tuple */[
           "stringmatch_test.ml",
           621,
@@ -2415,7 +2415,7 @@ if (tst06(s28) !== 28) {
 
 if (tst06(t28) !== -1) {
   throw {
-        ExceptionID: "Assert_failure",
+        RE_EXN_ID: "Assert_failure",
         _1: /* tuple */[
           "stringmatch_test.ml",
           622,
@@ -2426,7 +2426,7 @@ if (tst06(t28) !== -1) {
 
 if (tst06(s29) !== 29) {
   throw {
-        ExceptionID: "Assert_failure",
+        RE_EXN_ID: "Assert_failure",
         _1: /* tuple */[
           "stringmatch_test.ml",
           623,
@@ -2437,7 +2437,7 @@ if (tst06(s29) !== 29) {
 
 if (tst06(t29) !== -1) {
   throw {
-        ExceptionID: "Assert_failure",
+        RE_EXN_ID: "Assert_failure",
         _1: /* tuple */[
           "stringmatch_test.ml",
           624,
@@ -2448,7 +2448,7 @@ if (tst06(t29) !== -1) {
 
 if (tst06(s30) !== 30) {
   throw {
-        ExceptionID: "Assert_failure",
+        RE_EXN_ID: "Assert_failure",
         _1: /* tuple */[
           "stringmatch_test.ml",
           625,
@@ -2459,7 +2459,7 @@ if (tst06(s30) !== 30) {
 
 if (tst06(t30) !== -1) {
   throw {
-        ExceptionID: "Assert_failure",
+        RE_EXN_ID: "Assert_failure",
         _1: /* tuple */[
           "stringmatch_test.ml",
           626,
@@ -2470,7 +2470,7 @@ if (tst06(t30) !== -1) {
 
 if (tst06(s31) !== 31) {
   throw {
-        ExceptionID: "Assert_failure",
+        RE_EXN_ID: "Assert_failure",
         _1: /* tuple */[
           "stringmatch_test.ml",
           627,
@@ -2481,7 +2481,7 @@ if (tst06(s31) !== 31) {
 
 if (tst06(t31) !== 31) {
   throw {
-        ExceptionID: "Assert_failure",
+        RE_EXN_ID: "Assert_failure",
         _1: /* tuple */[
           "stringmatch_test.ml",
           628,
@@ -2492,7 +2492,7 @@ if (tst06(t31) !== 31) {
 
 if (tst06(s32) !== 32) {
   throw {
-        ExceptionID: "Assert_failure",
+        RE_EXN_ID: "Assert_failure",
         _1: /* tuple */[
           "stringmatch_test.ml",
           629,
@@ -2503,7 +2503,7 @@ if (tst06(s32) !== 32) {
 
 if (tst06(t32) !== -1) {
   throw {
-        ExceptionID: "Assert_failure",
+        RE_EXN_ID: "Assert_failure",
         _1: /* tuple */[
           "stringmatch_test.ml",
           630,
@@ -2514,7 +2514,7 @@ if (tst06(t32) !== -1) {
 
 if (tst06(s33) !== 33) {
   throw {
-        ExceptionID: "Assert_failure",
+        RE_EXN_ID: "Assert_failure",
         _1: /* tuple */[
           "stringmatch_test.ml",
           631,
@@ -2525,7 +2525,7 @@ if (tst06(s33) !== 33) {
 
 if (tst06(t33) !== -1) {
   throw {
-        ExceptionID: "Assert_failure",
+        RE_EXN_ID: "Assert_failure",
         _1: /* tuple */[
           "stringmatch_test.ml",
           632,
@@ -2536,7 +2536,7 @@ if (tst06(t33) !== -1) {
 
 if (tst06(s34) !== 34) {
   throw {
-        ExceptionID: "Assert_failure",
+        RE_EXN_ID: "Assert_failure",
         _1: /* tuple */[
           "stringmatch_test.ml",
           633,
@@ -2547,7 +2547,7 @@ if (tst06(s34) !== 34) {
 
 if (tst06(t34) !== -1) {
   throw {
-        ExceptionID: "Assert_failure",
+        RE_EXN_ID: "Assert_failure",
         _1: /* tuple */[
           "stringmatch_test.ml",
           634,
@@ -2558,7 +2558,7 @@ if (tst06(t34) !== -1) {
 
 if (tst06(s35) !== 35) {
   throw {
-        ExceptionID: "Assert_failure",
+        RE_EXN_ID: "Assert_failure",
         _1: /* tuple */[
           "stringmatch_test.ml",
           635,
@@ -2569,7 +2569,7 @@ if (tst06(s35) !== 35) {
 
 if (tst06(t35) !== 35) {
   throw {
-        ExceptionID: "Assert_failure",
+        RE_EXN_ID: "Assert_failure",
         _1: /* tuple */[
           "stringmatch_test.ml",
           636,
@@ -2580,7 +2580,7 @@ if (tst06(t35) !== 35) {
 
 if (tst06(s36) !== 36) {
   throw {
-        ExceptionID: "Assert_failure",
+        RE_EXN_ID: "Assert_failure",
         _1: /* tuple */[
           "stringmatch_test.ml",
           637,
@@ -2591,7 +2591,7 @@ if (tst06(s36) !== 36) {
 
 if (tst06(t36) !== -1) {
   throw {
-        ExceptionID: "Assert_failure",
+        RE_EXN_ID: "Assert_failure",
         _1: /* tuple */[
           "stringmatch_test.ml",
           638,
@@ -2602,7 +2602,7 @@ if (tst06(t36) !== -1) {
 
 if (tst06(s37) !== 37) {
   throw {
-        ExceptionID: "Assert_failure",
+        RE_EXN_ID: "Assert_failure",
         _1: /* tuple */[
           "stringmatch_test.ml",
           639,
@@ -2613,7 +2613,7 @@ if (tst06(s37) !== 37) {
 
 if (tst06(t37) !== -1) {
   throw {
-        ExceptionID: "Assert_failure",
+        RE_EXN_ID: "Assert_failure",
         _1: /* tuple */[
           "stringmatch_test.ml",
           640,
@@ -2624,7 +2624,7 @@ if (tst06(t37) !== -1) {
 
 if (tst06(s38) !== 38) {
   throw {
-        ExceptionID: "Assert_failure",
+        RE_EXN_ID: "Assert_failure",
         _1: /* tuple */[
           "stringmatch_test.ml",
           641,
@@ -2635,7 +2635,7 @@ if (tst06(s38) !== 38) {
 
 if (tst06(t38) !== -1) {
   throw {
-        ExceptionID: "Assert_failure",
+        RE_EXN_ID: "Assert_failure",
         _1: /* tuple */[
           "stringmatch_test.ml",
           642,
@@ -2646,7 +2646,7 @@ if (tst06(t38) !== -1) {
 
 if (tst06(s39) !== 39) {
   throw {
-        ExceptionID: "Assert_failure",
+        RE_EXN_ID: "Assert_failure",
         _1: /* tuple */[
           "stringmatch_test.ml",
           643,
@@ -2657,7 +2657,7 @@ if (tst06(s39) !== 39) {
 
 if (tst06(t39) !== 39) {
   throw {
-        ExceptionID: "Assert_failure",
+        RE_EXN_ID: "Assert_failure",
         _1: /* tuple */[
           "stringmatch_test.ml",
           644,
@@ -2668,7 +2668,7 @@ if (tst06(t39) !== 39) {
 
 if (tst06(s40) !== 40) {
   throw {
-        ExceptionID: "Assert_failure",
+        RE_EXN_ID: "Assert_failure",
         _1: /* tuple */[
           "stringmatch_test.ml",
           645,
@@ -2679,7 +2679,7 @@ if (tst06(s40) !== 40) {
 
 if (tst06(t40) !== -1) {
   throw {
-        ExceptionID: "Assert_failure",
+        RE_EXN_ID: "Assert_failure",
         _1: /* tuple */[
           "stringmatch_test.ml",
           646,
@@ -2690,7 +2690,7 @@ if (tst06(t40) !== -1) {
 
 if (tst06(s41) !== 41) {
   throw {
-        ExceptionID: "Assert_failure",
+        RE_EXN_ID: "Assert_failure",
         _1: /* tuple */[
           "stringmatch_test.ml",
           647,
@@ -2701,7 +2701,7 @@ if (tst06(s41) !== 41) {
 
 if (tst06(t41) !== 41) {
   throw {
-        ExceptionID: "Assert_failure",
+        RE_EXN_ID: "Assert_failure",
         _1: /* tuple */[
           "stringmatch_test.ml",
           648,
@@ -2712,7 +2712,7 @@ if (tst06(t41) !== 41) {
 
 if (tst06(s42) !== 42) {
   throw {
-        ExceptionID: "Assert_failure",
+        RE_EXN_ID: "Assert_failure",
         _1: /* tuple */[
           "stringmatch_test.ml",
           649,
@@ -2723,7 +2723,7 @@ if (tst06(s42) !== 42) {
 
 if (tst06(t42) !== -1) {
   throw {
-        ExceptionID: "Assert_failure",
+        RE_EXN_ID: "Assert_failure",
         _1: /* tuple */[
           "stringmatch_test.ml",
           650,
@@ -2734,7 +2734,7 @@ if (tst06(t42) !== -1) {
 
 if (tst06(s43) !== 43) {
   throw {
-        ExceptionID: "Assert_failure",
+        RE_EXN_ID: "Assert_failure",
         _1: /* tuple */[
           "stringmatch_test.ml",
           651,
@@ -2745,7 +2745,7 @@ if (tst06(s43) !== 43) {
 
 if (tst06(t43) !== 43) {
   throw {
-        ExceptionID: "Assert_failure",
+        RE_EXN_ID: "Assert_failure",
         _1: /* tuple */[
           "stringmatch_test.ml",
           652,
@@ -2756,7 +2756,7 @@ if (tst06(t43) !== 43) {
 
 if (tst06(s44) !== 44) {
   throw {
-        ExceptionID: "Assert_failure",
+        RE_EXN_ID: "Assert_failure",
         _1: /* tuple */[
           "stringmatch_test.ml",
           653,
@@ -2767,7 +2767,7 @@ if (tst06(s44) !== 44) {
 
 if (tst06(t44) !== -1) {
   throw {
-        ExceptionID: "Assert_failure",
+        RE_EXN_ID: "Assert_failure",
         _1: /* tuple */[
           "stringmatch_test.ml",
           654,
@@ -2778,7 +2778,7 @@ if (tst06(t44) !== -1) {
 
 if (tst06(s45) !== 45) {
   throw {
-        ExceptionID: "Assert_failure",
+        RE_EXN_ID: "Assert_failure",
         _1: /* tuple */[
           "stringmatch_test.ml",
           655,
@@ -2789,7 +2789,7 @@ if (tst06(s45) !== 45) {
 
 if (tst06(t45) !== -1) {
   throw {
-        ExceptionID: "Assert_failure",
+        RE_EXN_ID: "Assert_failure",
         _1: /* tuple */[
           "stringmatch_test.ml",
           656,
@@ -2800,7 +2800,7 @@ if (tst06(t45) !== -1) {
 
 if (tst06(s46) !== 46) {
   throw {
-        ExceptionID: "Assert_failure",
+        RE_EXN_ID: "Assert_failure",
         _1: /* tuple */[
           "stringmatch_test.ml",
           657,
@@ -2811,7 +2811,7 @@ if (tst06(s46) !== 46) {
 
 if (tst06(t46) !== -1) {
   throw {
-        ExceptionID: "Assert_failure",
+        RE_EXN_ID: "Assert_failure",
         _1: /* tuple */[
           "stringmatch_test.ml",
           658,
@@ -2822,7 +2822,7 @@ if (tst06(t46) !== -1) {
 
 if (tst06(s47) !== 47) {
   throw {
-        ExceptionID: "Assert_failure",
+        RE_EXN_ID: "Assert_failure",
         _1: /* tuple */[
           "stringmatch_test.ml",
           659,
@@ -2833,7 +2833,7 @@ if (tst06(s47) !== 47) {
 
 if (tst06(t47) !== -1) {
   throw {
-        ExceptionID: "Assert_failure",
+        RE_EXN_ID: "Assert_failure",
         _1: /* tuple */[
           "stringmatch_test.ml",
           660,
@@ -2844,7 +2844,7 @@ if (tst06(t47) !== -1) {
 
 if (tst06(s48) !== 48) {
   throw {
-        ExceptionID: "Assert_failure",
+        RE_EXN_ID: "Assert_failure",
         _1: /* tuple */[
           "stringmatch_test.ml",
           661,
@@ -2855,7 +2855,7 @@ if (tst06(s48) !== 48) {
 
 if (tst06(t48) !== 48) {
   throw {
-        ExceptionID: "Assert_failure",
+        RE_EXN_ID: "Assert_failure",
         _1: /* tuple */[
           "stringmatch_test.ml",
           662,
@@ -2866,7 +2866,7 @@ if (tst06(t48) !== 48) {
 
 if (tst06(s49) !== 49) {
   throw {
-        ExceptionID: "Assert_failure",
+        RE_EXN_ID: "Assert_failure",
         _1: /* tuple */[
           "stringmatch_test.ml",
           663,
@@ -2877,7 +2877,7 @@ if (tst06(s49) !== 49) {
 
 if (tst06(t49) !== -1) {
   throw {
-        ExceptionID: "Assert_failure",
+        RE_EXN_ID: "Assert_failure",
         _1: /* tuple */[
           "stringmatch_test.ml",
           664,
@@ -2888,7 +2888,7 @@ if (tst06(t49) !== -1) {
 
 if (tst06(s50) !== 50) {
   throw {
-        ExceptionID: "Assert_failure",
+        RE_EXN_ID: "Assert_failure",
         _1: /* tuple */[
           "stringmatch_test.ml",
           665,
@@ -2899,7 +2899,7 @@ if (tst06(s50) !== 50) {
 
 if (tst06(t50) !== -1) {
   throw {
-        ExceptionID: "Assert_failure",
+        RE_EXN_ID: "Assert_failure",
         _1: /* tuple */[
           "stringmatch_test.ml",
           666,
@@ -2910,7 +2910,7 @@ if (tst06(t50) !== -1) {
 
 if (tst06(s51) !== 51) {
   throw {
-        ExceptionID: "Assert_failure",
+        RE_EXN_ID: "Assert_failure",
         _1: /* tuple */[
           "stringmatch_test.ml",
           667,
@@ -2921,7 +2921,7 @@ if (tst06(s51) !== 51) {
 
 if (tst06(t51) !== 51) {
   throw {
-        ExceptionID: "Assert_failure",
+        RE_EXN_ID: "Assert_failure",
         _1: /* tuple */[
           "stringmatch_test.ml",
           668,
@@ -2932,7 +2932,7 @@ if (tst06(t51) !== 51) {
 
 if (tst06(s52) !== 52) {
   throw {
-        ExceptionID: "Assert_failure",
+        RE_EXN_ID: "Assert_failure",
         _1: /* tuple */[
           "stringmatch_test.ml",
           669,
@@ -2943,7 +2943,7 @@ if (tst06(s52) !== 52) {
 
 if (tst06(t52) !== 52) {
   throw {
-        ExceptionID: "Assert_failure",
+        RE_EXN_ID: "Assert_failure",
         _1: /* tuple */[
           "stringmatch_test.ml",
           670,
@@ -2954,7 +2954,7 @@ if (tst06(t52) !== 52) {
 
 if (tst06(s53) !== 53) {
   throw {
-        ExceptionID: "Assert_failure",
+        RE_EXN_ID: "Assert_failure",
         _1: /* tuple */[
           "stringmatch_test.ml",
           671,
@@ -2965,7 +2965,7 @@ if (tst06(s53) !== 53) {
 
 if (tst06(t53) !== 53) {
   throw {
-        ExceptionID: "Assert_failure",
+        RE_EXN_ID: "Assert_failure",
         _1: /* tuple */[
           "stringmatch_test.ml",
           672,
@@ -2976,7 +2976,7 @@ if (tst06(t53) !== 53) {
 
 if (tst06(s54) !== 54) {
   throw {
-        ExceptionID: "Assert_failure",
+        RE_EXN_ID: "Assert_failure",
         _1: /* tuple */[
           "stringmatch_test.ml",
           673,
@@ -2987,7 +2987,7 @@ if (tst06(s54) !== 54) {
 
 if (tst06(t54) !== -1) {
   throw {
-        ExceptionID: "Assert_failure",
+        RE_EXN_ID: "Assert_failure",
         _1: /* tuple */[
           "stringmatch_test.ml",
           674,
@@ -2998,7 +2998,7 @@ if (tst06(t54) !== -1) {
 
 if (tst06(s55) !== 55) {
   throw {
-        ExceptionID: "Assert_failure",
+        RE_EXN_ID: "Assert_failure",
         _1: /* tuple */[
           "stringmatch_test.ml",
           675,
@@ -3009,7 +3009,7 @@ if (tst06(s55) !== 55) {
 
 if (tst06(t55) !== 55) {
   throw {
-        ExceptionID: "Assert_failure",
+        RE_EXN_ID: "Assert_failure",
         _1: /* tuple */[
           "stringmatch_test.ml",
           676,
@@ -3020,7 +3020,7 @@ if (tst06(t55) !== 55) {
 
 if (tst06(s56) !== 56) {
   throw {
-        ExceptionID: "Assert_failure",
+        RE_EXN_ID: "Assert_failure",
         _1: /* tuple */[
           "stringmatch_test.ml",
           677,
@@ -3031,7 +3031,7 @@ if (tst06(s56) !== 56) {
 
 if (tst06(t56) !== 56) {
   throw {
-        ExceptionID: "Assert_failure",
+        RE_EXN_ID: "Assert_failure",
         _1: /* tuple */[
           "stringmatch_test.ml",
           678,
@@ -3042,7 +3042,7 @@ if (tst06(t56) !== 56) {
 
 if (tst06(s57) !== 57) {
   throw {
-        ExceptionID: "Assert_failure",
+        RE_EXN_ID: "Assert_failure",
         _1: /* tuple */[
           "stringmatch_test.ml",
           679,
@@ -3053,7 +3053,7 @@ if (tst06(s57) !== 57) {
 
 if (tst06(t57) !== 57) {
   throw {
-        ExceptionID: "Assert_failure",
+        RE_EXN_ID: "Assert_failure",
         _1: /* tuple */[
           "stringmatch_test.ml",
           680,
@@ -3064,7 +3064,7 @@ if (tst06(t57) !== 57) {
 
 if (tst06(s58) !== 58) {
   throw {
-        ExceptionID: "Assert_failure",
+        RE_EXN_ID: "Assert_failure",
         _1: /* tuple */[
           "stringmatch_test.ml",
           681,
@@ -3075,7 +3075,7 @@ if (tst06(s58) !== 58) {
 
 if (tst06(t58) !== 58) {
   throw {
-        ExceptionID: "Assert_failure",
+        RE_EXN_ID: "Assert_failure",
         _1: /* tuple */[
           "stringmatch_test.ml",
           682,
@@ -3086,7 +3086,7 @@ if (tst06(t58) !== 58) {
 
 if (tst06(s59) !== 59) {
   throw {
-        ExceptionID: "Assert_failure",
+        RE_EXN_ID: "Assert_failure",
         _1: /* tuple */[
           "stringmatch_test.ml",
           683,
@@ -3097,7 +3097,7 @@ if (tst06(s59) !== 59) {
 
 if (tst06(t59) !== 59) {
   throw {
-        ExceptionID: "Assert_failure",
+        RE_EXN_ID: "Assert_failure",
         _1: /* tuple */[
           "stringmatch_test.ml",
           684,
@@ -3108,7 +3108,7 @@ if (tst06(t59) !== 59) {
 
 if (tst06(s60) !== 60) {
   throw {
-        ExceptionID: "Assert_failure",
+        RE_EXN_ID: "Assert_failure",
         _1: /* tuple */[
           "stringmatch_test.ml",
           685,
@@ -3119,7 +3119,7 @@ if (tst06(s60) !== 60) {
 
 if (tst06(t60) !== 60) {
   throw {
-        ExceptionID: "Assert_failure",
+        RE_EXN_ID: "Assert_failure",
         _1: /* tuple */[
           "stringmatch_test.ml",
           686,
@@ -3130,7 +3130,7 @@ if (tst06(t60) !== 60) {
 
 if (tst06(s61) !== 61) {
   throw {
-        ExceptionID: "Assert_failure",
+        RE_EXN_ID: "Assert_failure",
         _1: /* tuple */[
           "stringmatch_test.ml",
           687,
@@ -3141,7 +3141,7 @@ if (tst06(s61) !== 61) {
 
 if (tst06(t61) !== 61) {
   throw {
-        ExceptionID: "Assert_failure",
+        RE_EXN_ID: "Assert_failure",
         _1: /* tuple */[
           "stringmatch_test.ml",
           688,
@@ -3152,7 +3152,7 @@ if (tst06(t61) !== 61) {
 
 if (tst06(s62) !== 62) {
   throw {
-        ExceptionID: "Assert_failure",
+        RE_EXN_ID: "Assert_failure",
         _1: /* tuple */[
           "stringmatch_test.ml",
           689,
@@ -3163,7 +3163,7 @@ if (tst06(s62) !== 62) {
 
 if (tst06(t62) !== 62) {
   throw {
-        ExceptionID: "Assert_failure",
+        RE_EXN_ID: "Assert_failure",
         _1: /* tuple */[
           "stringmatch_test.ml",
           690,
@@ -3174,7 +3174,7 @@ if (tst06(t62) !== 62) {
 
 if (tst06(s63) !== 63) {
   throw {
-        ExceptionID: "Assert_failure",
+        RE_EXN_ID: "Assert_failure",
         _1: /* tuple */[
           "stringmatch_test.ml",
           691,
@@ -3185,7 +3185,7 @@ if (tst06(s63) !== 63) {
 
 if (tst06(t63) !== 63) {
   throw {
-        ExceptionID: "Assert_failure",
+        RE_EXN_ID: "Assert_failure",
         _1: /* tuple */[
           "stringmatch_test.ml",
           692,
@@ -3196,7 +3196,7 @@ if (tst06(t63) !== 63) {
 
 if (tst06(s64) !== 64) {
   throw {
-        ExceptionID: "Assert_failure",
+        RE_EXN_ID: "Assert_failure",
         _1: /* tuple */[
           "stringmatch_test.ml",
           693,
@@ -3207,7 +3207,7 @@ if (tst06(s64) !== 64) {
 
 if (tst06(t64) !== 64) {
   throw {
-        ExceptionID: "Assert_failure",
+        RE_EXN_ID: "Assert_failure",
         _1: /* tuple */[
           "stringmatch_test.ml",
           694,
@@ -3218,7 +3218,7 @@ if (tst06(t64) !== 64) {
 
 if (tst06(s65) !== 65) {
   throw {
-        ExceptionID: "Assert_failure",
+        RE_EXN_ID: "Assert_failure",
         _1: /* tuple */[
           "stringmatch_test.ml",
           695,
@@ -3229,7 +3229,7 @@ if (tst06(s65) !== 65) {
 
 if (tst06(t65) !== 65) {
   throw {
-        ExceptionID: "Assert_failure",
+        RE_EXN_ID: "Assert_failure",
         _1: /* tuple */[
           "stringmatch_test.ml",
           696,
@@ -3240,7 +3240,7 @@ if (tst06(t65) !== 65) {
 
 if (tst06(s66) !== 66) {
   throw {
-        ExceptionID: "Assert_failure",
+        RE_EXN_ID: "Assert_failure",
         _1: /* tuple */[
           "stringmatch_test.ml",
           697,
@@ -3251,7 +3251,7 @@ if (tst06(s66) !== 66) {
 
 if (tst06(t66) !== 66) {
   throw {
-        ExceptionID: "Assert_failure",
+        RE_EXN_ID: "Assert_failure",
         _1: /* tuple */[
           "stringmatch_test.ml",
           698,
@@ -3262,7 +3262,7 @@ if (tst06(t66) !== 66) {
 
 if (tst06(s67) !== 67) {
   throw {
-        ExceptionID: "Assert_failure",
+        RE_EXN_ID: "Assert_failure",
         _1: /* tuple */[
           "stringmatch_test.ml",
           699,
@@ -3273,7 +3273,7 @@ if (tst06(s67) !== 67) {
 
 if (tst06(t67) !== 67) {
   throw {
-        ExceptionID: "Assert_failure",
+        RE_EXN_ID: "Assert_failure",
         _1: /* tuple */[
           "stringmatch_test.ml",
           700,
@@ -3284,7 +3284,7 @@ if (tst06(t67) !== 67) {
 
 if (tst06(s68) !== 68) {
   throw {
-        ExceptionID: "Assert_failure",
+        RE_EXN_ID: "Assert_failure",
         _1: /* tuple */[
           "stringmatch_test.ml",
           701,
@@ -3295,7 +3295,7 @@ if (tst06(s68) !== 68) {
 
 if (tst06(t68) !== 68) {
   throw {
-        ExceptionID: "Assert_failure",
+        RE_EXN_ID: "Assert_failure",
         _1: /* tuple */[
           "stringmatch_test.ml",
           702,
@@ -3306,7 +3306,7 @@ if (tst06(t68) !== 68) {
 
 if (tst06(s69) !== 69) {
   throw {
-        ExceptionID: "Assert_failure",
+        RE_EXN_ID: "Assert_failure",
         _1: /* tuple */[
           "stringmatch_test.ml",
           703,
@@ -3317,7 +3317,7 @@ if (tst06(s69) !== 69) {
 
 if (tst06(t69) !== 69) {
   throw {
-        ExceptionID: "Assert_failure",
+        RE_EXN_ID: "Assert_failure",
         _1: /* tuple */[
           "stringmatch_test.ml",
           704,
@@ -3328,7 +3328,7 @@ if (tst06(t69) !== 69) {
 
 if (tst06(s70) !== 70) {
   throw {
-        ExceptionID: "Assert_failure",
+        RE_EXN_ID: "Assert_failure",
         _1: /* tuple */[
           "stringmatch_test.ml",
           705,
@@ -3339,7 +3339,7 @@ if (tst06(s70) !== 70) {
 
 if (tst06(t70) !== 70) {
   throw {
-        ExceptionID: "Assert_failure",
+        RE_EXN_ID: "Assert_failure",
         _1: /* tuple */[
           "stringmatch_test.ml",
           706,
@@ -3350,7 +3350,7 @@ if (tst06(t70) !== 70) {
 
 if (tst06(s71) !== 71) {
   throw {
-        ExceptionID: "Assert_failure",
+        RE_EXN_ID: "Assert_failure",
         _1: /* tuple */[
           "stringmatch_test.ml",
           707,
@@ -3361,7 +3361,7 @@ if (tst06(s71) !== 71) {
 
 if (tst06(t71) !== 71) {
   throw {
-        ExceptionID: "Assert_failure",
+        RE_EXN_ID: "Assert_failure",
         _1: /* tuple */[
           "stringmatch_test.ml",
           708,
@@ -3372,7 +3372,7 @@ if (tst06(t71) !== 71) {
 
 if (tst06(s72) !== 72) {
   throw {
-        ExceptionID: "Assert_failure",
+        RE_EXN_ID: "Assert_failure",
         _1: /* tuple */[
           "stringmatch_test.ml",
           709,
@@ -3383,7 +3383,7 @@ if (tst06(s72) !== 72) {
 
 if (tst06(t72) !== 72) {
   throw {
-        ExceptionID: "Assert_failure",
+        RE_EXN_ID: "Assert_failure",
         _1: /* tuple */[
           "stringmatch_test.ml",
           710,
@@ -3394,7 +3394,7 @@ if (tst06(t72) !== 72) {
 
 if (tst06(s73) !== 73) {
   throw {
-        ExceptionID: "Assert_failure",
+        RE_EXN_ID: "Assert_failure",
         _1: /* tuple */[
           "stringmatch_test.ml",
           711,
@@ -3405,7 +3405,7 @@ if (tst06(s73) !== 73) {
 
 if (tst06(t73) !== 73) {
   throw {
-        ExceptionID: "Assert_failure",
+        RE_EXN_ID: "Assert_failure",
         _1: /* tuple */[
           "stringmatch_test.ml",
           712,
@@ -3416,7 +3416,7 @@ if (tst06(t73) !== 73) {
 
 if (tst06(s74) !== 74) {
   throw {
-        ExceptionID: "Assert_failure",
+        RE_EXN_ID: "Assert_failure",
         _1: /* tuple */[
           "stringmatch_test.ml",
           713,
@@ -3427,7 +3427,7 @@ if (tst06(s74) !== 74) {
 
 if (tst06(t74) !== 74) {
   throw {
-        ExceptionID: "Assert_failure",
+        RE_EXN_ID: "Assert_failure",
         _1: /* tuple */[
           "stringmatch_test.ml",
           714,
@@ -3438,7 +3438,7 @@ if (tst06(t74) !== 74) {
 
 if (tst06(s75) !== 75) {
   throw {
-        ExceptionID: "Assert_failure",
+        RE_EXN_ID: "Assert_failure",
         _1: /* tuple */[
           "stringmatch_test.ml",
           715,
@@ -3449,7 +3449,7 @@ if (tst06(s75) !== 75) {
 
 if (tst06(t75) !== 75) {
   throw {
-        ExceptionID: "Assert_failure",
+        RE_EXN_ID: "Assert_failure",
         _1: /* tuple */[
           "stringmatch_test.ml",
           716,
@@ -3460,7 +3460,7 @@ if (tst06(t75) !== 75) {
 
 if (tst06(s76) !== 76) {
   throw {
-        ExceptionID: "Assert_failure",
+        RE_EXN_ID: "Assert_failure",
         _1: /* tuple */[
           "stringmatch_test.ml",
           717,
@@ -3471,7 +3471,7 @@ if (tst06(s76) !== 76) {
 
 if (tst06(t76) !== 76) {
   throw {
-        ExceptionID: "Assert_failure",
+        RE_EXN_ID: "Assert_failure",
         _1: /* tuple */[
           "stringmatch_test.ml",
           718,
@@ -3482,7 +3482,7 @@ if (tst06(t76) !== 76) {
 
 if (tst06(s77) !== 77) {
   throw {
-        ExceptionID: "Assert_failure",
+        RE_EXN_ID: "Assert_failure",
         _1: /* tuple */[
           "stringmatch_test.ml",
           719,
@@ -3493,7 +3493,7 @@ if (tst06(s77) !== 77) {
 
 if (tst06(t77) !== 77) {
   throw {
-        ExceptionID: "Assert_failure",
+        RE_EXN_ID: "Assert_failure",
         _1: /* tuple */[
           "stringmatch_test.ml",
           720,
@@ -3504,7 +3504,7 @@ if (tst06(t77) !== 77) {
 
 if (tst06(s78) !== 78) {
   throw {
-        ExceptionID: "Assert_failure",
+        RE_EXN_ID: "Assert_failure",
         _1: /* tuple */[
           "stringmatch_test.ml",
           721,
@@ -3515,7 +3515,7 @@ if (tst06(s78) !== 78) {
 
 if (tst06(t78) !== 78) {
   throw {
-        ExceptionID: "Assert_failure",
+        RE_EXN_ID: "Assert_failure",
         _1: /* tuple */[
           "stringmatch_test.ml",
           722,
@@ -3526,7 +3526,7 @@ if (tst06(t78) !== 78) {
 
 if (tst06(s79) !== 79) {
   throw {
-        ExceptionID: "Assert_failure",
+        RE_EXN_ID: "Assert_failure",
         _1: /* tuple */[
           "stringmatch_test.ml",
           723,
@@ -3537,7 +3537,7 @@ if (tst06(s79) !== 79) {
 
 if (tst06(t79) !== 79) {
   throw {
-        ExceptionID: "Assert_failure",
+        RE_EXN_ID: "Assert_failure",
         _1: /* tuple */[
           "stringmatch_test.ml",
           724,
@@ -3548,7 +3548,7 @@ if (tst06(t79) !== 79) {
 
 if (tst06(s80) !== 80) {
   throw {
-        ExceptionID: "Assert_failure",
+        RE_EXN_ID: "Assert_failure",
         _1: /* tuple */[
           "stringmatch_test.ml",
           725,
@@ -3559,7 +3559,7 @@ if (tst06(s80) !== 80) {
 
 if (tst06(t80) !== 80) {
   throw {
-        ExceptionID: "Assert_failure",
+        RE_EXN_ID: "Assert_failure",
         _1: /* tuple */[
           "stringmatch_test.ml",
           726,
@@ -3570,7 +3570,7 @@ if (tst06(t80) !== 80) {
 
 if (tst06(s81) !== 81) {
   throw {
-        ExceptionID: "Assert_failure",
+        RE_EXN_ID: "Assert_failure",
         _1: /* tuple */[
           "stringmatch_test.ml",
           727,
@@ -3581,7 +3581,7 @@ if (tst06(s81) !== 81) {
 
 if (tst06(t81) !== 81) {
   throw {
-        ExceptionID: "Assert_failure",
+        RE_EXN_ID: "Assert_failure",
         _1: /* tuple */[
           "stringmatch_test.ml",
           728,
@@ -3592,7 +3592,7 @@ if (tst06(t81) !== 81) {
 
 if (tst06(s82) !== 82) {
   throw {
-        ExceptionID: "Assert_failure",
+        RE_EXN_ID: "Assert_failure",
         _1: /* tuple */[
           "stringmatch_test.ml",
           729,
@@ -3603,7 +3603,7 @@ if (tst06(s82) !== 82) {
 
 if (tst06(t82) !== 82) {
   throw {
-        ExceptionID: "Assert_failure",
+        RE_EXN_ID: "Assert_failure",
         _1: /* tuple */[
           "stringmatch_test.ml",
           730,
@@ -3614,7 +3614,7 @@ if (tst06(t82) !== 82) {
 
 if (tst06(s83) !== 83) {
   throw {
-        ExceptionID: "Assert_failure",
+        RE_EXN_ID: "Assert_failure",
         _1: /* tuple */[
           "stringmatch_test.ml",
           731,
@@ -3625,7 +3625,7 @@ if (tst06(s83) !== 83) {
 
 if (tst06(t83) !== 83) {
   throw {
-        ExceptionID: "Assert_failure",
+        RE_EXN_ID: "Assert_failure",
         _1: /* tuple */[
           "stringmatch_test.ml",
           732,
@@ -3636,7 +3636,7 @@ if (tst06(t83) !== 83) {
 
 if (tst06(s84) !== 84) {
   throw {
-        ExceptionID: "Assert_failure",
+        RE_EXN_ID: "Assert_failure",
         _1: /* tuple */[
           "stringmatch_test.ml",
           733,
@@ -3647,7 +3647,7 @@ if (tst06(s84) !== 84) {
 
 if (tst06(t84) !== 84) {
   throw {
-        ExceptionID: "Assert_failure",
+        RE_EXN_ID: "Assert_failure",
         _1: /* tuple */[
           "stringmatch_test.ml",
           734,
@@ -3658,7 +3658,7 @@ if (tst06(t84) !== 84) {
 
 if (tst06(s85) !== 85) {
   throw {
-        ExceptionID: "Assert_failure",
+        RE_EXN_ID: "Assert_failure",
         _1: /* tuple */[
           "stringmatch_test.ml",
           735,
@@ -3669,7 +3669,7 @@ if (tst06(s85) !== 85) {
 
 if (tst06(t85) !== 85) {
   throw {
-        ExceptionID: "Assert_failure",
+        RE_EXN_ID: "Assert_failure",
         _1: /* tuple */[
           "stringmatch_test.ml",
           736,
@@ -3680,7 +3680,7 @@ if (tst06(t85) !== 85) {
 
 if (tst06(s86) !== 86) {
   throw {
-        ExceptionID: "Assert_failure",
+        RE_EXN_ID: "Assert_failure",
         _1: /* tuple */[
           "stringmatch_test.ml",
           737,
@@ -3691,7 +3691,7 @@ if (tst06(s86) !== 86) {
 
 if (tst06(t86) !== 86) {
   throw {
-        ExceptionID: "Assert_failure",
+        RE_EXN_ID: "Assert_failure",
         _1: /* tuple */[
           "stringmatch_test.ml",
           738,
@@ -3702,7 +3702,7 @@ if (tst06(t86) !== 86) {
 
 if (tst06(s87) !== 87) {
   throw {
-        ExceptionID: "Assert_failure",
+        RE_EXN_ID: "Assert_failure",
         _1: /* tuple */[
           "stringmatch_test.ml",
           739,
@@ -3713,7 +3713,7 @@ if (tst06(s87) !== 87) {
 
 if (tst06(t87) !== 87) {
   throw {
-        ExceptionID: "Assert_failure",
+        RE_EXN_ID: "Assert_failure",
         _1: /* tuple */[
           "stringmatch_test.ml",
           740,
@@ -3724,7 +3724,7 @@ if (tst06(t87) !== 87) {
 
 if (tst06(s88) !== 88) {
   throw {
-        ExceptionID: "Assert_failure",
+        RE_EXN_ID: "Assert_failure",
         _1: /* tuple */[
           "stringmatch_test.ml",
           741,
@@ -3735,7 +3735,7 @@ if (tst06(s88) !== 88) {
 
 if (tst06(t88) !== 88) {
   throw {
-        ExceptionID: "Assert_failure",
+        RE_EXN_ID: "Assert_failure",
         _1: /* tuple */[
           "stringmatch_test.ml",
           742,
@@ -3746,7 +3746,7 @@ if (tst06(t88) !== 88) {
 
 if (tst06(s89) !== 89) {
   throw {
-        ExceptionID: "Assert_failure",
+        RE_EXN_ID: "Assert_failure",
         _1: /* tuple */[
           "stringmatch_test.ml",
           743,
@@ -3757,7 +3757,7 @@ if (tst06(s89) !== 89) {
 
 if (tst06(t89) !== 89) {
   throw {
-        ExceptionID: "Assert_failure",
+        RE_EXN_ID: "Assert_failure",
         _1: /* tuple */[
           "stringmatch_test.ml",
           744,
@@ -3768,7 +3768,7 @@ if (tst06(t89) !== 89) {
 
 if (tst06(s90) !== 90) {
   throw {
-        ExceptionID: "Assert_failure",
+        RE_EXN_ID: "Assert_failure",
         _1: /* tuple */[
           "stringmatch_test.ml",
           745,
@@ -3779,7 +3779,7 @@ if (tst06(s90) !== 90) {
 
 if (tst06(t90) !== 90) {
   throw {
-        ExceptionID: "Assert_failure",
+        RE_EXN_ID: "Assert_failure",
         _1: /* tuple */[
           "stringmatch_test.ml",
           746,
@@ -3790,7 +3790,7 @@ if (tst06(t90) !== 90) {
 
 if (tst06(s91) !== 91) {
   throw {
-        ExceptionID: "Assert_failure",
+        RE_EXN_ID: "Assert_failure",
         _1: /* tuple */[
           "stringmatch_test.ml",
           747,
@@ -3801,7 +3801,7 @@ if (tst06(s91) !== 91) {
 
 if (tst06(t91) !== 91) {
   throw {
-        ExceptionID: "Assert_failure",
+        RE_EXN_ID: "Assert_failure",
         _1: /* tuple */[
           "stringmatch_test.ml",
           748,
@@ -3812,7 +3812,7 @@ if (tst06(t91) !== 91) {
 
 if (tst06("") !== -1) {
   throw {
-        ExceptionID: "Assert_failure",
+        RE_EXN_ID: "Assert_failure",
         _1: /* tuple */[
           "stringmatch_test.ml",
           749,

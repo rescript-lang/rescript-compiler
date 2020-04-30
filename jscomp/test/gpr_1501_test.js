@@ -35,15 +35,15 @@ var A = Caml_exceptions.create("Gpr_1501_test.A");
 var B = Caml_exceptions.create("Gpr_1501_test.B");
 
 eq("File \"gpr_1501_test.ml\", line 15, characters 7-14", "Not_found", Printexc.to_string({
-          ExceptionID: "Not_found"
+          RE_EXN_ID: "Not_found"
         }));
 
 eq("File \"gpr_1501_test.ml\", line 16, characters 7-14", /Gpr_1501_test.A\/[0-9]+/.test(Printexc.to_string({
-              ExceptionID: A
+              RE_EXN_ID: A
             })), true);
 
 eq("File \"gpr_1501_test.ml\", line 19, characters 7-14", /Gpr_1501_test.B\/[0-9]+\(1\)/.test(Printexc.to_string({
-              ExceptionID: B,
+              RE_EXN_ID: B,
               _1: 1
             })), true);
 

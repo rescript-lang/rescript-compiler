@@ -37,7 +37,7 @@ function parse(token) {
             var match = token$1(undefined);
             if (match.tag) {
               throw {
-                    ExceptionID: Parse_error,
+                    RE_EXN_ID: Parse_error,
                     _1: "Unbalanced parens"
                   };
             }
@@ -45,13 +45,13 @@ function parse(token) {
               return v;
             }
             throw {
-                  ExceptionID: Parse_error,
+                  RE_EXN_ID: Parse_error,
                   _1: "Unbalanced parens"
                 };
           }
           Queue.push(n, look_ahead);
           throw {
-                ExceptionID: Parse_error,
+                RE_EXN_ID: Parse_error,
                 _1: "unexpected token"
               };
       case /* Int */2 :
@@ -59,7 +59,7 @@ function parse(token) {
       default:
         Queue.push(n, look_ahead);
         throw {
-              ExceptionID: Parse_error,
+              RE_EXN_ID: Parse_error,
               _1: "unexpected token"
             };
     }
@@ -182,7 +182,7 @@ function l_parse(token) {
             var t = token$1(undefined);
             if (t.tag) {
               throw {
-                    ExceptionID: Parse_error,
+                    RE_EXN_ID: Parse_error,
                     _1: "Unbalanced )"
                   };
             }
@@ -190,19 +190,19 @@ function l_parse(token) {
               return v;
             }
             throw {
-                  ExceptionID: Parse_error,
+                  RE_EXN_ID: Parse_error,
                   _1: "Unbalanced )"
                 };
           }
           throw {
-                ExceptionID: Parse_error,
+                RE_EXN_ID: Parse_error,
                 _1: "Unexpected token"
               };
       case /* Int */2 :
           return i[0];
       default:
         throw {
-              ExceptionID: Parse_error,
+              RE_EXN_ID: Parse_error,
               _1: "Unexpected token"
             };
     }

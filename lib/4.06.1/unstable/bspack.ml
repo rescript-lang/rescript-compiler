@@ -10209,7 +10209,7 @@ let sourcedirs_meta = ".sourcedirs.json"
 *)
 let ns_sep_char = '-'
 let ns_sep = "-"
-let exception_id = "ExceptionID"
+let exception_id = "RE_EXN_ID"
 
 end
 module Ext_path : sig 

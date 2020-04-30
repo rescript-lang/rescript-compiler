@@ -1474,7 +1474,7 @@ function game_win(ctx) {
   ctx.font = "20px 'Press Start 2P'";
   ctx.fillText("You win!", 180, 128);
   throw {
-        ExceptionID: "Failure",
+        RE_EXN_ID: "Failure",
         _1: "Game over."
       };
 }
@@ -1487,7 +1487,7 @@ function game_loss(ctx) {
   ctx.font = "20px 'Press Start 2P'";
   ctx.fillText("GAME OVER. You lose!", 60, 128);
   throw {
-        ExceptionID: "Failure",
+        RE_EXN_ID: "Failure",
         _1: "Game over."
       };
 }
@@ -2396,7 +2396,7 @@ function choose_enemy_typ(typ) {
         return /* Goomba */0;
     default:
       throw {
-            ExceptionID: "Failure",
+            RE_EXN_ID: "Failure",
             _1: "Shouldn't reach here"
           };
   }
@@ -2416,7 +2416,7 @@ function choose_sblock_typ(typ) {
         return /* Ground */5;
     default:
       throw {
-            ExceptionID: "Failure",
+            RE_EXN_ID: "Failure",
             _1: "Shouldn't reach here"
           };
   }
@@ -2930,7 +2930,7 @@ function choose_block_pattern(blockw, blockh, cbx, cby, prob) {
               ];
     default:
       throw {
-            ExceptionID: "Failure",
+            RE_EXN_ID: "Failure",
             _1: "Shouldn't reach here"
           };
   }
@@ -3201,7 +3201,7 @@ function load(param) {
               "cant find canvas %s \n"
             ]), canvas_id);
     throw {
-          ExceptionID: "Failure",
+          RE_EXN_ID: "Failure",
           _1: "fail"
         };
   }

@@ -5,7 +5,7 @@ var Caml_exceptions = require("../../lib/js/caml_exceptions.js");
 var A = Caml_exceptions.create("Local_exception_test.A");
 
 var v = {
-  ExceptionID: A,
+  RE_EXN_ID: A,
   _1: 3,
   _2: true
 };
@@ -13,13 +13,13 @@ var v = {
 var B = Caml_exceptions.create("Local_exception_test.B");
 
 var u = {
-  ExceptionID: B
+  RE_EXN_ID: B
 };
 
 var D = Caml_exceptions.create("Local_exception_test.D");
 
 var d = {
-  ExceptionID: D,
+  RE_EXN_ID: D,
   _1: 3
 };
 

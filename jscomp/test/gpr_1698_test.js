@@ -50,7 +50,7 @@ function compare(context, state, _a, _b) {
                 break;
             case /* Frac */4 :
                 throw {
-                      ExceptionID: "Assert_failure",
+                      RE_EXN_ID: "Assert_failure",
                       _1: /* tuple */[
                         "gpr_1698_test.ml",
                         45,
@@ -75,7 +75,7 @@ function compare(context, state, _a, _b) {
           switch (b.tag | 0) {
             case /* Val */0 :
                 throw {
-                      ExceptionID: "Assert_failure",
+                      RE_EXN_ID: "Assert_failure",
                       _1: /* tuple */[
                         "gpr_1698_test.ml",
                         45,

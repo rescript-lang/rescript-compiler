@@ -70,7 +70,7 @@ function chop_extension(locOpt, name) {
   }
   catch (raw_exn){
     var exn = Caml_js_exceptions.internalToOCamlException(raw_exn);
-    if (exn.ExceptionID === "Invalid_argument") {
+    if (exn.RE_EXN_ID === "Invalid_argument") {
       return Curry._2(Format.ksprintf(Pervasives.invalid_arg, /* Format */[
                       /* String_literal */Block.__(11, [
                           "Filename.chop_extension ( ",
@@ -101,7 +101,7 @@ function chop_extension_if_any(fname) {
   }
   catch (raw_exn){
     var exn = Caml_js_exceptions.internalToOCamlException(raw_exn);
-    if (exn.ExceptionID === "Invalid_argument") {
+    if (exn.RE_EXN_ID === "Invalid_argument") {
       return fname;
     }
     throw exn;
@@ -385,7 +385,7 @@ if (Sys.unix) {
 } else {
   var s = "Unknown OS : " + Sys.os_type;
   throw {
-        ExceptionID: "Failure",
+        RE_EXN_ID: "Failure",
         _1: s
       };
 }
