@@ -1,8 +1,9 @@
 
 
-type t 
+type  t = 
+    | Any : 'a ->  t [@@unboxed]
 
-exception Error of t 
+exception Error of  t 
 
 
 (**
@@ -18,10 +19,10 @@ exception Error of t
 let internalToOCamlException (e : Caml_obj_extern.t) =
   if Caml_exceptions.caml_is_extension e  then
     (Obj.magic e  : exn)
-  else Error (Obj.magic (e : Caml_obj_extern.t) : t) 
+  else Error (Any e)
 
 let caml_as_js_exn exn =   
   match exn with 
   | Error t ->  
-    Some t 
+    Some t
   | _ -> None 

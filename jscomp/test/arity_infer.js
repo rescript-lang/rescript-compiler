@@ -1,7 +1,6 @@
 'use strict';
 
 var Curry = require("../../lib/js/curry.js");
-var Caml_builtin_exceptions = require("../../lib/js/caml_builtin_exceptions.js");
 
 function f0(x) {
   var tmp;
@@ -11,7 +10,8 @@ function f0(x) {
       });
   } else {
     throw {
-          CamlExt: Caml_builtin_exceptions.not_found
+          ExceptionID: -6,
+          Debug: "Not_found"
         };
   }
   return tmp(3);
@@ -19,7 +19,8 @@ function f0(x) {
 
 function f1(x) {
   throw {
-        CamlExt: Caml_builtin_exceptions.not_found
+        ExceptionID: -6,
+        Debug: "Not_found"
       };
   return Curry._1(undefined, x);
 }
@@ -49,7 +50,8 @@ function f3(x) {
         break;
     default:
       throw {
-            CamlExt: Caml_builtin_exceptions.not_found
+            ExceptionID: -6,
+            Debug: "Not_found"
           };
   }
   return tmp(3);

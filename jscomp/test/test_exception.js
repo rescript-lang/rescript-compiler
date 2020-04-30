@@ -2,47 +2,56 @@
 
 var Test_common = require("./test_common.js");
 var Caml_exceptions = require("../../lib/js/caml_exceptions.js");
-var Caml_builtin_exceptions = require("../../lib/js/caml_builtin_exceptions.js");
 
 var Local = Caml_exceptions.create("Test_exception.Local");
 
 function f(param) {
   throw {
-        CamlExt: Local,
-        _1: 3
+        ExceptionID: Local.ExceptionID,
+        _1: 3,
+        Debug: Local.Debug
       };
 }
 
 function g(param) {
   throw {
-        CamlExt: Caml_builtin_exceptions.not_found
+        ExceptionID: -6,
+        Debug: "Not_found"
       };
 }
 
 function h(param) {
   throw {
-        CamlExt: Test_common.U,
-        _1: 3
+        ExceptionID: Test_common.U.ExceptionID,
+        _1: 3,
+        Debug: Test_common.U.Debug
       };
 }
 
 function x(param) {
   throw {
-        CamlExt: Test_common.H
+        ExceptionID: Test_common.H.ExceptionID,
+        Debug: Test_common.H.Debug
       };
 }
 
 function xx(param) {
   throw {
-        CamlExt: Caml_builtin_exceptions.invalid_argument,
-        _1: "x"
+        ExceptionID: -3,
+        _1: "x",
+        Debug: "Invalid_argument"
       };
 }
 
 var Nullary = Caml_exceptions.create("Test_exception.Nullary");
 
+var a_000 = Nullary.ExceptionID;
+
+var a_001 = Nullary.Debug;
+
 var a = {
-  CamlExt: Nullary
+  ExceptionID: a_000,
+  Debug: a_001
 };
 
 exports.Local = Local;

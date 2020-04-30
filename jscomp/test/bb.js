@@ -1,6 +1,5 @@
 'use strict';
 
-var Caml_builtin_exceptions = require("../../lib/js/caml_builtin_exceptions.js");
 
 function f(x) {
   if (x !== 98) {
@@ -24,12 +23,13 @@ function ff(x) {
         return /* c */99;
     default:
       throw {
-            CamlExt: Caml_builtin_exceptions.assert_failure,
+            ExceptionID: -9,
             _1: /* tuple */[
               "bb.ml",
               17,
               9
-            ]
+            ],
+            Debug: "Assert_failure"
           };
   }
 }
@@ -48,12 +48,13 @@ function test(x) {
         break;
     default:
       throw {
-            CamlExt: Caml_builtin_exceptions.assert_failure,
+            ExceptionID: -9,
             _1: /* tuple */[
               "bb.ml",
               26,
               13
-            ]
+            ],
+            Debug: "Assert_failure"
           };
   }
   if (match !== 98) {

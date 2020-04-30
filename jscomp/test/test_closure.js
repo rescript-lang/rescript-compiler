@@ -3,7 +3,6 @@
 var $$Array = require("../../lib/js/array.js");
 var Curry = require("../../lib/js/curry.js");
 var Caml_array = require("../../lib/js/caml_array.js");
-var Caml_builtin_exceptions = require("../../lib/js/caml_builtin_exceptions.js");
 
 var v = {
   contents: 0
@@ -32,12 +31,13 @@ $$Array.iter((function (x) {
 
 if (v.contents !== 45) {
   throw {
-        CamlExt: Caml_builtin_exceptions.assert_failure,
+        ExceptionID: -9,
         _1: /* tuple */[
           "test_closure.ml",
           53,
           2
-        ]
+        ],
+        Debug: "Assert_failure"
       };
 }
 

@@ -413,13 +413,13 @@ let extension_access (e : t) name (pos : int32)  : t  =
      | None -> 
       let name = 
         match name with Some n -> n | None ->   
-        if pos = 0l then "CamlExt" else "_" ^ Int32.to_string pos in 
+         "_" ^ Int32.to_string pos in 
        { expression_desc = Static_index (e, name, Some pos); comment = None}     
     )
   | _ -> 
     let name = 
       match name with Some n -> n | None ->     
-      if pos = 0l then "CamlExt" else "_" ^ Int32.to_string pos in 
+       "_" ^ Int32.to_string pos in 
     { expression_desc = Static_index (e, name, Some pos); comment = None} 
 
 let string_index ?comment (e0 : t)  (e1 : t) : t = 
@@ -607,24 +607,6 @@ let float_mod ?comment e1 e2 : J.expression =
   }
 
 
-(** Here we have to use JS [===], and therefore, we are introducing 
-    Js boolean, so be sure to convert it back to OCaml bool
-    TODO:
-    {[
-      if (A0 === A0) {
-        tmp = 3;
-      } else {
-        throw [
-        Caml_builtin_exceptions.assert_failure,
-        /* tuple */[
-          "inline_record_test.ml",
-          51,
-          52
-        ]
-        ];
-      }
-    ]}
-*)
 let rec triple_equal ?comment (e0 : t) (e1 : t ) : t =
   match e0.expression_desc, e1.expression_desc with
   | (Null| Undefined), 

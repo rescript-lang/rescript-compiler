@@ -6,7 +6,6 @@ var Curry = require("../../lib/js/curry.js");
 var Format = require("../../lib/js/format.js");
 var Caml_obj = require("../../lib/js/caml_obj.js");
 var Caml_array = require("../../lib/js/caml_array.js");
-var Caml_builtin_exceptions = require("../../lib/js/caml_builtin_exceptions.js");
 
 function sub(_tr, _k) {
   while(true) {
@@ -26,7 +25,8 @@ function sub(_tr, _k) {
       continue ;
     }
     throw {
-          CamlExt: Caml_builtin_exceptions.not_found
+          ExceptionID: -6,
+          Debug: "Not_found"
         };
   };
 }
@@ -65,7 +65,8 @@ function update(tr, k, w) {
           ];
   }
   throw {
-        CamlExt: Caml_builtin_exceptions.not_found
+        ExceptionID: -6,
+        Debug: "Not_found"
       };
 }
 
@@ -92,7 +93,8 @@ function $$delete(tr, n) {
     }
   }
   throw {
-        CamlExt: Caml_builtin_exceptions.not_found
+        ExceptionID: -6,
+        Debug: "Not_found"
       };
 }
 
@@ -126,16 +128,18 @@ function lorem(tr) {
       return /* Lf */0;
     }
     throw {
-          CamlExt: Caml_builtin_exceptions.assert_failure,
+          ExceptionID: -9,
           _1: /* tuple */[
             "flexible_array_test.ml",
             66,
             9
-          ]
+          ],
+          Debug: "Assert_failure"
         };
   }
   throw {
-        CamlExt: Caml_builtin_exceptions.not_found
+        ExceptionID: -6,
+        Debug: "Not_found"
       };
 }
 
@@ -153,8 +157,9 @@ function get(param, i) {
     return sub(param[0], i + 1 | 0);
   }
   throw {
-        CamlExt: Caml_builtin_exceptions.invalid_argument,
-        _1: "Array.get"
+        ExceptionID: -3,
+        _1: "Array.get",
+        Debug: "Invalid_argument"
       };
 }
 
@@ -167,8 +172,9 @@ function set(param, i, v) {
           ];
   }
   throw {
-        CamlExt: Caml_builtin_exceptions.invalid_argument,
-        _1: "Array.set"
+        ExceptionID: -3,
+        _1: "Array.set",
+        Debug: "Invalid_argument"
       };
 }
 
@@ -188,8 +194,9 @@ function pop_front(param) {
           ];
   }
   throw {
-        CamlExt: Caml_builtin_exceptions.invalid_argument,
-        _1: "Array.pop_front"
+        ExceptionID: -3,
+        _1: "Array.pop_front",
+        Debug: "Invalid_argument"
       };
 }
 
@@ -210,8 +217,9 @@ function pop_back(param) {
           ];
   }
   throw {
-        CamlExt: Caml_builtin_exceptions.invalid_argument,
-        _1: "Array.pop_back"
+        ExceptionID: -3,
+        _1: "Array.pop_back",
+        Debug: "Invalid_argument"
       };
 }
 
@@ -317,12 +325,13 @@ if (!Caml_obj.caml_equal(x, of_array([
             6
           ]))) {
   throw {
-        CamlExt: Caml_builtin_exceptions.assert_failure,
+        ExceptionID: -9,
         _1: /* tuple */[
           "flexible_array_test.ml",
           166,
           4
-        ]
+        ],
+        Debug: "Assert_failure"
       };
 }
 

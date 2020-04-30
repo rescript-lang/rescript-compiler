@@ -1,6 +1,5 @@
 'use strict';
 
-var Caml_builtin_exceptions = require("../../lib/js/caml_builtin_exceptions.js");
 
 function blackify(s) {
   if (s && s[0]) {
@@ -254,12 +253,13 @@ function unbalanced_left(param) {
     }
   }
   throw {
-        CamlExt: Caml_builtin_exceptions.assert_failure,
+        ExceptionID: -9,
         _1: /* tuple */[
           "rbset.ml",
           57,
           9
-        ]
+        ],
+        Debug: "Assert_failure"
       };
 }
 
@@ -318,12 +318,13 @@ function unbalanced_right(param) {
     }
   }
   throw {
-        CamlExt: Caml_builtin_exceptions.assert_failure,
+        ExceptionID: -9,
         _1: /* tuple */[
           "rbset.ml",
           63,
           9
-        ]
+        ],
+        Debug: "Assert_failure"
       };
 }
 
@@ -552,12 +553,13 @@ function remove_min(param) {
               ];
       }
       throw {
-            CamlExt: Caml_builtin_exceptions.assert_failure,
+            ExceptionID: -9,
             _1: /* tuple */[
               "rbset.ml",
               115,
               4
-            ]
+            ],
+            Debug: "Assert_failure"
           };
     }
     var match$1 = remove_min(param[1]);
@@ -586,12 +588,13 @@ function remove_min(param) {
           ];
   }
   throw {
-        CamlExt: Caml_builtin_exceptions.assert_failure,
+        ExceptionID: -9,
         _1: /* tuple */[
           "rbset.ml",
           115,
           4
-        ]
+        ],
+        Debug: "Assert_failure"
       };
 }
 

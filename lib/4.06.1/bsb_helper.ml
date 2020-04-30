@@ -3174,6 +3174,9 @@ val sourcedirs_meta : string
 
 val ns_sep_char : char
 val ns_sep : string
+
+val exception_id : string
+val exception_debug : string
 end = struct
 #1 "literals.ml"
 (* Copyright (C) 2015-2016 Bloomberg Finance L.P.
@@ -3317,7 +3320,8 @@ let sourcedirs_meta = ".sourcedirs.json"
 *)
 let ns_sep_char = '-'
 let ns_sep = "-"
-
+let exception_id = "ExceptionID"
+let exception_debug = "Debug"
 end
 module Bsb_db_decode : sig 
 #1 "bsb_db_decode.mli"

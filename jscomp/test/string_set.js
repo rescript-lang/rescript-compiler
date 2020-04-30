@@ -5,7 +5,6 @@ var $$Array = require("../../lib/js/array.js");
 var $$String = require("../../lib/js/string.js");
 var Set_gen = require("./set_gen.js");
 var Caml_primitive = require("../../lib/js/caml_primitive.js");
-var Caml_builtin_exceptions = require("../../lib/js/caml_builtin_exceptions.js");
 
 function split(x, tree) {
   if (!tree) {
@@ -229,7 +228,8 @@ function find(x, _tree) {
       continue ;
     }
     throw {
-          CamlExt: Caml_builtin_exceptions.not_found
+          ExceptionID: -6,
+          Debug: "Not_found"
         };
   };
 }

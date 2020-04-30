@@ -136,3 +136,6 @@ val sourcedirs_meta : string
 
 val ns_sep_char : char
 val ns_sep : string
+
+val exception_id : string
+val exception_debug : string

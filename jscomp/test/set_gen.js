@@ -4,7 +4,6 @@ var List = require("../../lib/js/list.js");
 var Curry = require("../../lib/js/curry.js");
 var Pervasives = require("../../lib/js/pervasives.js");
 var Caml_exceptions = require("../../lib/js/caml_exceptions.js");
-var Caml_builtin_exceptions = require("../../lib/js/caml_builtin_exceptions.js");
 
 function cons_enum(_s, _e) {
   while(true) {
@@ -43,7 +42,8 @@ function min_elt(_param) {
       continue ;
     }
     throw {
-          CamlExt: Caml_builtin_exceptions.not_found
+          ExceptionID: -6,
+          Debug: "Not_found"
         };
   };
 }
@@ -60,7 +60,8 @@ function max_elt(_param) {
       continue ;
     }
     throw {
-          CamlExt: Caml_builtin_exceptions.not_found
+          ExceptionID: -6,
+          Debug: "Not_found"
         };
   };
 }
@@ -205,13 +206,15 @@ function check_height_and_diff(param) {
   var hr = check_height_and_diff(param[2]);
   if (h !== (max_int_2(hl, hr) + 1 | 0)) {
     throw {
-          CamlExt: Height_invariant_broken
+          ExceptionID: Height_invariant_broken.ExceptionID,
+          Debug: Height_invariant_broken.Debug
         };
   }
   var diff = Pervasives.abs(hl - hr | 0);
   if (diff > 2) {
     throw {
-          CamlExt: Height_diff_borken
+          ExceptionID: Height_diff_borken.ExceptionID,
+          Debug: Height_diff_borken.Debug
         };
   }
   return h;
@@ -248,21 +251,23 @@ function internal_bal(l, v, r) {
         return create(create(ll, lv, lr[0]), lr[1], create(lr[2], v, r));
       }
       throw {
-            CamlExt: Caml_builtin_exceptions.assert_failure,
+            ExceptionID: -9,
             _1: /* tuple */[
               "set_gen.ml",
               235,
               19
-            ]
+            ],
+            Debug: "Assert_failure"
           };
     }
     throw {
-          CamlExt: Caml_builtin_exceptions.assert_failure,
+          ExceptionID: -9,
           _1: /* tuple */[
             "set_gen.ml",
             225,
             15
-          ]
+          ],
+          Debug: "Assert_failure"
         };
   }
   if (hr <= (hl + 2 | 0)) {
@@ -284,21 +289,23 @@ function internal_bal(l, v, r) {
       return create(create(l, v, rl[0]), rl[1], create(rl[2], rv, rr));
     }
     throw {
-          CamlExt: Caml_builtin_exceptions.assert_failure,
+          ExceptionID: -9,
           _1: /* tuple */[
             "set_gen.ml",
             251,
             19
-          ]
+          ],
+          Debug: "Assert_failure"
         };
   }
   throw {
-        CamlExt: Caml_builtin_exceptions.assert_failure,
+        ExceptionID: -9,
         _1: /* tuple */[
           "set_gen.ml",
           245,
           15
-        ]
+        ],
+        Debug: "Assert_failure"
       };
 }
 
@@ -312,8 +319,9 @@ function remove_min_elt(param) {
     }
   }
   throw {
-        CamlExt: Caml_builtin_exceptions.invalid_argument,
-        _1: "Set.remove_min_elt"
+        ExceptionID: -3,
+        _1: "Set.remove_min_elt",
+        Debug: "Invalid_argument"
       };
 }
 
@@ -515,12 +523,13 @@ function of_sorted_list(l) {
             ];
     }
     throw {
-          CamlExt: Caml_builtin_exceptions.assert_failure,
+          ExceptionID: -9,
           _1: /* tuple */[
             "set_gen.ml",
             361,
             14
-          ]
+          ],
+          Debug: "Assert_failure"
         };
   };
   return sub(List.length(l), l)[0];

@@ -17,7 +17,6 @@ var CamlinternalLazy = require("../../lib/js/camlinternalLazy.js");
 var Caml_js_exceptions = require("../../lib/js/caml_js_exceptions.js");
 var Ext_pervasives_test = require("./ext_pervasives_test.js");
 var Caml_external_polyfill = require("../../lib/js/caml_external_polyfill.js");
-var Caml_builtin_exceptions = require("../../lib/js/caml_builtin_exceptions.js");
 
 var node_sep = "/";
 
@@ -71,7 +70,7 @@ function chop_extension(locOpt, name) {
   }
   catch (raw_exn){
     var exn = Caml_js_exceptions.internalToOCamlException(raw_exn);
-    if (exn.CamlExt === Caml_builtin_exceptions.invalid_argument) {
+    if (exn.ExceptionID === /* Invalid_argument */-3) {
       return Curry._2(Format.ksprintf(Pervasives.invalid_arg, /* Format */[
                       /* String_literal */Block.__(11, [
                           "Filename.chop_extension ( ",
@@ -102,7 +101,7 @@ function chop_extension_if_any(fname) {
   }
   catch (raw_exn){
     var exn = Caml_js_exceptions.internalToOCamlException(raw_exn);
-    if (exn.CamlExt === Caml_builtin_exceptions.invalid_argument) {
+    if (exn.ExceptionID === /* Invalid_argument */-3) {
       return fname;
     }
     throw exn;
@@ -386,8 +385,9 @@ if (Sys.unix) {
 } else {
   var s = "Unknown OS : " + Sys.os_type;
   throw {
-        CamlExt: Caml_builtin_exceptions.failure,
-        _1: s
+        ExceptionID: -2,
+        _1: s,
+        Debug: "Failure"
       };
 }
 

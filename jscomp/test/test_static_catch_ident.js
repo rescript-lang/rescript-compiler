@@ -1,13 +1,12 @@
 'use strict';
 
 var Caml_exceptions = require("../../lib/js/caml_exceptions.js");
-var Caml_builtin_exceptions = require("../../lib/js/caml_builtin_exceptions.js");
 
 var Scan_failure = Caml_exceptions.create("Test_static_catch_ident.Scan_failure");
 
 function scanf_bad_input(ib, x) {
   var s;
-  if (x.CamlExt === Scan_failure || x.CamlExt === Caml_builtin_exceptions.failure) {
+  if (x.ExceptionID === Scan_failure.ExceptionID || x.ExceptionID === /* Failure */-2) {
     s = x._1;
   } else {
     throw x;

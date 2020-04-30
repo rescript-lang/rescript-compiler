@@ -3,7 +3,6 @@
 var Mt = require("./mt.js");
 var Block = require("../../lib/js/block.js");
 var Caml_js_exceptions = require("../../lib/js/caml_js_exceptions.js");
-var Caml_builtin_exceptions = require("../../lib/js/caml_builtin_exceptions.js");
 
 var suites = {
   contents: /* [] */0
@@ -34,13 +33,14 @@ var y;
 
 try {
   throw {
-        CamlExt: Caml_builtin_exceptions.failure,
-        _1: "boo"
+        ExceptionID: -2,
+        _1: "boo",
+        Debug: "Failure"
       };
 }
 catch (raw_msg){
   var msg = Caml_js_exceptions.internalToOCamlException(raw_msg);
-  if (msg.CamlExt === Caml_builtin_exceptions.failure) {
+  if (msg.ExceptionID === /* Failure */-2) {
     y = msg._1;
   } else {
     throw msg;
@@ -53,13 +53,14 @@ var exit = 0;
 
 try {
   throw {
-        CamlExt: Caml_builtin_exceptions.failure,
-        _1: "boo"
+        ExceptionID: -2,
+        _1: "boo",
+        Debug: "Failure"
       };
 }
 catch (raw_msg$1){
   var msg$1 = Caml_js_exceptions.internalToOCamlException(raw_msg$1);
-  if (msg$1.CamlExt === Caml_builtin_exceptions.failure) {
+  if (msg$1.ExceptionID === /* Failure */-2) {
     x = msg$1._1;
   } else {
     throw msg$1;

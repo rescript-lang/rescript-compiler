@@ -4,23 +4,38 @@ var Caml_exceptions = require("../../lib/js/caml_exceptions.js");
 
 var A = Caml_exceptions.create("Local_exception_test.A");
 
+var v_000 = A.ExceptionID;
+
+var v_003 = A.Debug;
+
 var v = {
-  CamlExt: A,
+  ExceptionID: v_000,
   _1: 3,
-  _2: true
+  _2: true,
+  Debug: v_003
 };
 
 var B = Caml_exceptions.create("Local_exception_test.B");
 
+var u_000 = B.ExceptionID;
+
+var u_001 = B.Debug;
+
 var u = {
-  CamlExt: B
+  ExceptionID: u_000,
+  Debug: u_001
 };
 
 var D = Caml_exceptions.create("Local_exception_test.D");
 
+var d_000 = D.ExceptionID;
+
+var d_002 = D.Debug;
+
 var d = {
-  CamlExt: D,
-  _1: 3
+  ExceptionID: d_000,
+  _1: 3,
+  Debug: d_002
 };
 
 exports.A = A;

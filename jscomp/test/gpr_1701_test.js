@@ -4,14 +4,14 @@ var List = require("../../lib/js/list.js");
 var Pervasives = require("../../lib/js/pervasives.js");
 var Caml_exceptions = require("../../lib/js/caml_exceptions.js");
 var Caml_js_exceptions = require("../../lib/js/caml_js_exceptions.js");
-var Caml_builtin_exceptions = require("../../lib/js/caml_builtin_exceptions.js");
 
 var Foo = Caml_exceptions.create("Gpr_1701_test.Foo");
 
 function test(n) {
   if (n === 0) {
     throw {
-          CamlExt: Foo
+          ExceptionID: Foo.ExceptionID,
+          Debug: Foo.Debug
         };
   }
   try {
@@ -19,7 +19,7 @@ function test(n) {
   }
   catch (raw_exn){
     var exn = Caml_js_exceptions.internalToOCamlException(raw_exn);
-    if (exn.CamlExt === Foo) {
+    if (exn.ExceptionID === Foo.ExceptionID) {
       return ;
     }
     throw exn;
@@ -38,7 +38,7 @@ function read_lines(inc) {
     }
     catch (raw_exn){
       var exn = Caml_js_exceptions.internalToOCamlException(raw_exn);
-      if (exn.CamlExt === Caml_builtin_exceptions.end_of_file) {
+      if (exn.ExceptionID === /* End_of_file */-4) {
         l = undefined;
       } else {
         throw exn;
@@ -65,7 +65,7 @@ function read_lines2(inc) {
     }
     catch (raw_exn){
       var exn = Caml_js_exceptions.internalToOCamlException(raw_exn);
-      if (exn.CamlExt === Caml_builtin_exceptions.end_of_file) {
+      if (exn.ExceptionID === /* End_of_file */-4) {
         return List.rev(acc);
       }
       throw exn;
@@ -89,7 +89,7 @@ function read_lines3(inc) {
     }
     catch (raw_exn){
       var exn = Caml_js_exceptions.internalToOCamlException(raw_exn);
-      if (exn.CamlExt === Caml_builtin_exceptions.end_of_file) {
+      if (exn.ExceptionID === /* End_of_file */-4) {
         return List.rev(acc);
       }
       throw exn;

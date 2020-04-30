@@ -1,15 +1,15 @@
 'use strict';
 
-var Caml_builtin_exceptions = require("../../lib/js/caml_builtin_exceptions.js");
 
 function f(param) {
   throw {
-        CamlExt: Caml_builtin_exceptions.assert_failure,
+        ExceptionID: -9,
         _1: /* tuple */[
           "noassert.ml",
           5,
           11
-        ]
+        ],
+        Debug: "Assert_failure"
       };
 }
 

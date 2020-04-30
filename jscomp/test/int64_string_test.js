@@ -5,7 +5,6 @@ var Int64 = require("../../lib/js/int64.js");
 var Belt_List = require("../../lib/js/belt_List.js");
 var Caml_int32 = require("../../lib/js/caml_int32.js");
 var Caml_int64 = require("../../lib/js/caml_int64.js");
-var Caml_builtin_exceptions = require("../../lib/js/caml_builtin_exceptions.js");
 
 var suites = {
   contents: /* [] */0
@@ -979,24 +978,26 @@ Belt_List.forEach(random_data, (function (u) {
         if (u) {
           if (u[1]) {
             throw {
-                  CamlExt: Caml_builtin_exceptions.assert_failure,
+                  ExceptionID: -9,
                   _1: /* tuple */[
                     "int64_string_test.ml",
                     161,
                     9
-                  ]
+                  ],
+                  Debug: "Assert_failure"
                 };
           }
           var match = u[0];
           return eq("File \"int64_string_test.ml\", line 160, characters 21-28", Caml_int64.to_string(match[0]), match[1]);
         }
         throw {
-              CamlExt: Caml_builtin_exceptions.assert_failure,
+              ExceptionID: -9,
               _1: /* tuple */[
                 "int64_string_test.ml",
                 161,
                 9
-              ]
+              ],
+              Debug: "Assert_failure"
             };
       }));
 

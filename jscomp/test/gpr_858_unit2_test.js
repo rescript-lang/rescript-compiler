@@ -1,7 +1,6 @@
 'use strict';
 
 var Curry = require("../../lib/js/curry.js");
-var Caml_builtin_exceptions = require("../../lib/js/caml_builtin_exceptions.js");
 
 var delayed = {
   contents: (function (param) {
@@ -24,12 +23,13 @@ for(var i = 1; i <= 2; ++i){
       return ;
     }
     throw {
-          CamlExt: Caml_builtin_exceptions.assert_failure,
+          ExceptionID: -9,
           _1: /* tuple */[
             "gpr_858_unit2_test.ml",
             6,
             13
-          ]
+          ],
+          Debug: "Assert_failure"
         };
   }
   }(i));

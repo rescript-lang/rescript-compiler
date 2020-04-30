@@ -28,8 +28,9 @@ function f(param) {
     for(var i = 0; i <= 200; ++i){
       if (i === 10) {
         throw {
-              CamlExt: A,
-              _1: 0
+              ExceptionID: A.ExceptionID,
+              _1: 0,
+              Debug: A.Debug
             };
       }
       
@@ -38,7 +39,7 @@ function f(param) {
   }
   catch (raw_exn){
     var exn = Caml_js_exceptions.internalToOCamlException(raw_exn);
-    if (exn.CamlExt === A) {
+    if (exn.ExceptionID === A.ExceptionID) {
       return ;
     }
     throw exn;
@@ -49,7 +50,7 @@ Mt.from_pair_suites("406_primitive_test", suites.contents);
 
 var v = 32;
 
-var max_array_length = 2147483647;
+var max_array_length = /* Max_wosize */2147483647;
 
 exports.suites = suites;
 exports.test_id = test_id;

@@ -6,7 +6,6 @@ var Block = require("../../lib/js/block.js");
 var Curry = require("../../lib/js/curry.js");
 var Caml_array = require("../../lib/js/caml_array.js");
 var Caml_exceptions = require("../../lib/js/caml_exceptions.js");
-var Caml_builtin_exceptions = require("../../lib/js/caml_builtin_exceptions.js");
 
 var suites = {
   contents: /* [] */0
@@ -38,19 +37,21 @@ function assert_bool(b) {
     return ;
   }
   throw {
-        CamlExt: Caml_builtin_exceptions.invalid_argument,
-        _1: "Assertion Failure."
+        ExceptionID: -3,
+        _1: "Assertion Failure.",
+        Debug: "Invalid_argument"
       };
 }
 
 function fail(param) {
   throw {
-        CamlExt: Caml_builtin_exceptions.assert_failure,
+        ExceptionID: -9,
         _1: /* tuple */[
           "js_promise_basic_test.ml",
           19,
           2
-        ]
+        ],
+        Debug: "Assert_failure"
       };
 }
 
@@ -73,23 +74,25 @@ function andThenTest(param) {
 var h = Promise.resolve(undefined);
 
 function assertIsNotFound(x) {
-  var match = Caml_exceptions.caml_is_extension(x) && x.CamlExt === Caml_builtin_exceptions.not_found ? 0 : undefined;
+  var match = Caml_exceptions.caml_is_extension(x) && x.ExceptionID === /* Not_found */-6 ? 0 : undefined;
   if (match !== undefined) {
     return h;
   }
   throw {
-        CamlExt: Caml_builtin_exceptions.assert_failure,
+        ExceptionID: -9,
         _1: /* tuple */[
           "js_promise_basic_test.ml",
           36,
           9
-        ]
+        ],
+        Debug: "Assert_failure"
       };
 }
 
 function catchTest(param) {
   var p = Promise.reject({
-        CamlExt: Caml_builtin_exceptions.not_found
+        ExceptionID: -6,
+        Debug: "Not_found"
       });
   return p.then(fail).catch(assertIsNotFound);
 }
@@ -105,7 +108,8 @@ function orResolvedTest(param) {
 
 function orRejectedTest(param) {
   var p = Promise.reject({
-        CamlExt: Caml_builtin_exceptions.not_found
+        ExceptionID: -6,
+        Debug: "Not_found"
       });
   return p.catch((function (param) {
                     return Promise.resolve(22);
@@ -125,7 +129,8 @@ function orElseResolvedTest(param) {
 
 function orElseRejectedResolveTest(param) {
   var p = Promise.reject({
-        CamlExt: Caml_builtin_exceptions.not_found
+        ExceptionID: -6,
+        Debug: "Not_found"
       });
   return p.catch((function (param) {
                     return Promise.resolve(22);
@@ -136,24 +141,27 @@ function orElseRejectedResolveTest(param) {
 
 function orElseRejectedRejectTest(param) {
   var p = Promise.reject({
-        CamlExt: Caml_builtin_exceptions.not_found
+        ExceptionID: -6,
+        Debug: "Not_found"
       });
   return p.catch((function (param) {
                     return Promise.reject({
-                                CamlExt: Caml_builtin_exceptions.stack_overflow
+                                ExceptionID: -8,
+                                Debug: "Stack_overflow"
                               });
                   })).then(fail).catch((function (error) {
-                var match = Caml_exceptions.caml_is_extension(error) && error.CamlExt === Caml_builtin_exceptions.stack_overflow ? 0 : undefined;
+                var match = Caml_exceptions.caml_is_extension(error) && error.ExceptionID === /* Stack_overflow */-8 ? 0 : undefined;
                 if (match !== undefined) {
                   return h;
                 }
                 throw {
-                      CamlExt: Caml_builtin_exceptions.assert_failure,
+                      ExceptionID: -9,
                       _1: /* tuple */[
                         "js_promise_basic_test.ml",
                         77,
                         18
-                      ]
+                      ],
+                      Debug: "Assert_failure"
                     };
               }));
 }
@@ -167,7 +175,8 @@ function resolveTest(param) {
 
 function rejectTest(param) {
   var p = Promise.reject({
-        CamlExt: Caml_builtin_exceptions.not_found
+        ExceptionID: -6,
+        Debug: "Not_found"
       });
   return p.catch(assertIsNotFound);
 }
@@ -181,7 +190,8 @@ function thenCatchChainResolvedTest(param) {
 
 function thenCatchChainRejectedTest(param) {
   var p = Promise.reject({
-        CamlExt: Caml_builtin_exceptions.not_found
+        ExceptionID: -6,
+        Debug: "Not_found"
       });
   return p.then(fail).catch(assertIsNotFound);
 }
@@ -207,7 +217,8 @@ function allRejectTest(param) {
   var p1 = Promise.resolve(1);
   var p2 = Promise.resolve(3);
   var p3 = Promise.reject({
-        CamlExt: Caml_builtin_exceptions.not_found
+        ExceptionID: -6,
+        Debug: "Not_found"
       });
   var promises = [
     p1,
@@ -216,7 +227,8 @@ function allRejectTest(param) {
   ];
   return Promise.all(promises).then(fail).catch((function (error) {
                 assert_bool(error === ({
-                        CamlExt: Caml_builtin_exceptions.not_found
+                        ExceptionID: -6,
+                        Debug: "Not_found"
                       }));
                 return h;
               }));
@@ -239,11 +251,13 @@ function raceTest(param) {
 function createPromiseRejectTest(param) {
   return new Promise((function (resolve, reject) {
                   return reject({
-                              CamlExt: Caml_builtin_exceptions.not_found
+                              ExceptionID: -6,
+                              Debug: "Not_found"
                             });
                 })).catch((function (error) {
                 assert_bool(error === ({
-                        CamlExt: Caml_builtin_exceptions.not_found
+                        ExceptionID: -6,
+                        Debug: "Not_found"
                       }));
                 return h;
               }));

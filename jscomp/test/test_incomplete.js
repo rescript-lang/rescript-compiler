@@ -1,18 +1,18 @@
 'use strict';
 
-var Caml_builtin_exceptions = require("../../lib/js/caml_builtin_exceptions.js");
 
 function f(x) {
   if (!(x > 3 || x < 1)) {
     return /* "a" */97;
   }
   throw {
-        CamlExt: Caml_builtin_exceptions.match_failure,
+        ExceptionID: -7,
         _1: /* tuple */[
           "test_incomplete.ml",
           3,
           2
-        ]
+        ],
+        Debug: "Match_failure"
       };
 }
 

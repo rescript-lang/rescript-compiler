@@ -10,7 +10,6 @@ var Caml_int32 = require("../../lib/js/caml_int32.js");
 var Pervasives = require("../../lib/js/pervasives.js");
 var Caml_option = require("../../lib/js/caml_option.js");
 var Caml_primitive = require("../../lib/js/caml_primitive.js");
-var Caml_builtin_exceptions = require("../../lib/js/caml_builtin_exceptions.js");
 
 var Actors = { };
 
@@ -1475,8 +1474,9 @@ function game_win(ctx) {
   ctx.font = "20px 'Press Start 2P'";
   ctx.fillText("You win!", 180, 128);
   throw {
-        CamlExt: Caml_builtin_exceptions.failure,
-        _1: "Game over."
+        ExceptionID: -2,
+        _1: "Game over.",
+        Debug: "Failure"
       };
 }
 
@@ -1488,8 +1488,9 @@ function game_loss(ctx) {
   ctx.font = "20px 'Press Start 2P'";
   ctx.fillText("GAME OVER. You lose!", 60, 128);
   throw {
-        CamlExt: Caml_builtin_exceptions.failure,
-        _1: "Game over."
+        ExceptionID: -2,
+        _1: "Game over.",
+        Debug: "Failure"
       };
 }
 
@@ -2397,8 +2398,9 @@ function choose_enemy_typ(typ) {
         return /* Goomba */0;
     default:
       throw {
-            CamlExt: Caml_builtin_exceptions.failure,
-            _1: "Shouldn't reach here"
+            ExceptionID: -2,
+            _1: "Shouldn't reach here",
+            Debug: "Failure"
           };
   }
 }
@@ -2417,8 +2419,9 @@ function choose_sblock_typ(typ) {
         return /* Ground */5;
     default:
       throw {
-            CamlExt: Caml_builtin_exceptions.failure,
-            _1: "Shouldn't reach here"
+            ExceptionID: -2,
+            _1: "Shouldn't reach here",
+            Debug: "Failure"
           };
   }
 }
@@ -2931,8 +2934,9 @@ function choose_block_pattern(blockw, blockh, cbx, cby, prob) {
               ];
     default:
       throw {
-            CamlExt: Caml_builtin_exceptions.failure,
-            _1: "Shouldn't reach here"
+            ExceptionID: -2,
+            _1: "Shouldn't reach here",
+            Debug: "Failure"
           };
   }
 }
@@ -3202,8 +3206,9 @@ function load(param) {
               "cant find canvas %s \n"
             ]), canvas_id);
     throw {
-          CamlExt: Caml_builtin_exceptions.failure,
-          _1: "fail"
+          ExceptionID: -2,
+          _1: "fail",
+          Debug: "Failure"
         };
   }
   var context = canvas.getContext("2d");

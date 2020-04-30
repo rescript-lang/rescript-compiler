@@ -6,7 +6,6 @@ var Block = require("../../lib/js/block.js");
 var Curry = require("../../lib/js/curry.js");
 var Stream = require("../../lib/js/stream.js");
 var Caml_bytes = require("../../lib/js/caml_bytes.js");
-var Caml_builtin_exceptions = require("../../lib/js/caml_builtin_exceptions.js");
 
 function classify(chr) {
   if ((chr & 128) === 0) {
@@ -53,8 +52,9 @@ function utf8_decode(strm) {
                 var c = classify(chr);
                 if (typeof c === "number") {
                   throw {
-                        CamlExt: Stream.$$Error,
-                        _1: "Invalid byte"
+                        ExceptionID: Stream.$$Error.ExceptionID,
+                        _1: "Invalid byte",
+                        Debug: Stream.$$Error.Debug
                       };
                 }
                 switch (c.tag | 0) {
@@ -62,8 +62,9 @@ function utf8_decode(strm) {
                       return Stream.icons(c[0], utf8_decode(strm));
                   case /* Cont */1 :
                       throw {
-                            CamlExt: Stream.$$Error,
-                            _1: "Unexpected continuation byte"
+                            ExceptionID: Stream.$$Error.ExceptionID,
+                            _1: "Unexpected continuation byte",
+                            Debug: Stream.$$Error.Debug
                           };
                   case /* Leading */2 :
                       var follow = function (strm, _n, _c) {
@@ -76,8 +77,9 @@ function utf8_decode(strm) {
                           var cc = classify(Stream.next(strm));
                           if (typeof cc === "number") {
                             throw {
-                                  CamlExt: Stream.$$Error,
-                                  _1: "Continuation byte expected"
+                                  ExceptionID: Stream.$$Error.ExceptionID,
+                                  _1: "Continuation byte expected",
+                                  Debug: Stream.$$Error.Debug
                                 };
                           }
                           if (cc.tag === /* Cont */1) {
@@ -86,8 +88,9 @@ function utf8_decode(strm) {
                             continue ;
                           }
                           throw {
-                                CamlExt: Stream.$$Error,
-                                _1: "Continuation byte expected"
+                                ExceptionID: Stream.$$Error.ExceptionID,
+                                _1: "Continuation byte expected",
+                                Debug: Stream.$$Error.Debug
                               };
                         };
                       };
@@ -119,8 +122,9 @@ function decode(bytes, offset) {
   var c = classify(Caml_bytes.get(bytes, offset));
   if (typeof c === "number") {
     throw {
-          CamlExt: Caml_builtin_exceptions.invalid_argument,
-          _1: "decode"
+          ExceptionID: -3,
+          _1: "decode",
+          Debug: "Invalid_argument"
         };
   }
   switch (c.tag | 0) {
@@ -131,8 +135,9 @@ function decode(bytes, offset) {
               ];
     case /* Cont */1 :
         throw {
-              CamlExt: Caml_builtin_exceptions.invalid_argument,
-              _1: "decode"
+              ExceptionID: -3,
+              _1: "decode",
+              Debug: "Invalid_argument"
             };
     case /* Leading */2 :
         var _n = c[0];
@@ -151,8 +156,9 @@ function decode(bytes, offset) {
           var cc = classify(Caml_bytes.get(bytes, offset$1));
           if (typeof cc === "number") {
             throw {
-                  CamlExt: Caml_builtin_exceptions.invalid_argument,
-                  _1: "decode"
+                  ExceptionID: -3,
+                  _1: "decode",
+                  Debug: "Invalid_argument"
                 };
           }
           if (cc.tag === /* Cont */1) {
@@ -162,8 +168,9 @@ function decode(bytes, offset) {
             continue ;
           }
           throw {
-                CamlExt: Caml_builtin_exceptions.invalid_argument,
-                _1: "decode"
+                ExceptionID: -3,
+                _1: "decode",
+                Debug: "Invalid_argument"
               };
         };
     

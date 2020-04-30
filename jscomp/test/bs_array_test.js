@@ -10,7 +10,6 @@ var Js_vector = require("../../lib/js/js_vector.js");
 var Belt_Array = require("../../lib/js/belt_Array.js");
 var Caml_array = require("../../lib/js/caml_array.js");
 var Caml_primitive = require("../../lib/js/caml_primitive.js");
-var Caml_builtin_exceptions = require("../../lib/js/caml_builtin_exceptions.js");
 
 var suites = {
   contents: /* [] */0
@@ -140,12 +139,13 @@ var v$1 = [
 
 if (!Belt_Array.set(v$1, 0, 0)) {
   throw {
-        CamlExt: Caml_builtin_exceptions.assert_failure,
+        ExceptionID: -9,
         _1: /* tuple */[
           "bs_array_test.ml",
           34,
           33
-        ]
+        ],
+        Debug: "Assert_failure"
       };
 }
 
@@ -158,12 +158,13 @@ var v$2 = [
 
 if (!Belt_Array.set(v$2, 1, 0)) {
   throw {
-        CamlExt: Caml_builtin_exceptions.assert_failure,
+        ExceptionID: -9,
         _1: /* tuple */[
           "bs_array_test.ml",
           35,
           32
-        ]
+        ],
+        Debug: "Assert_failure"
       };
 }
 

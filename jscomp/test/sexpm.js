@@ -18,7 +18,6 @@ var Pervasives = require("../../lib/js/pervasives.js");
 var Caml_primitive = require("../../lib/js/caml_primitive.js");
 var Caml_js_exceptions = require("../../lib/js/caml_js_exceptions.js");
 var Caml_external_polyfill = require("../../lib/js/caml_external_polyfill.js");
-var Caml_builtin_exceptions = require("../../lib/js/caml_builtin_exceptions.js");
 
 function _with_in(filename, f) {
   var ic = Pervasives.open_in_bin(filename);
@@ -43,19 +42,7 @@ function _must_escape(s) {
       var c = s.charCodeAt(i);
       var exit = 0;
       if (c >= 42) {
-        if (c !== 59) {
-          if (c !== 92) {
-            exit = 1;
-          } else {
-            throw {
-                  CamlExt: Pervasives.Exit
-                };
-          }
-        } else {
-          throw {
-                CamlExt: Pervasives.Exit
-              };
-        }
+        exit = c !== 59 && c !== 92 ? 1 : 2;
       } else if (c >= 11) {
         if (c >= 32) {
           switch (c - 32 | 0) {
@@ -71,34 +58,38 @@ function _must_escape(s) {
             case 2 :
             case 8 :
             case 9 :
-                throw {
-                      CamlExt: Pervasives.Exit
-                    };
+                exit = 2;
+                break;
             
           }
         } else {
           exit = 1;
         }
       } else {
-        if (c >= 9) {
-          throw {
-                CamlExt: Pervasives.Exit
-              };
-        }
-        exit = 1;
+        exit = c >= 9 ? 2 : 1;
       }
-      if (exit === 1 && c > 127) {
-        throw {
-              CamlExt: Pervasives.Exit
-            };
+      switch (exit) {
+        case 1 :
+            if (c > 127) {
+              throw {
+                    ExceptionID: Pervasives.Exit.ExceptionID,
+                    Debug: Pervasives.Exit.Debug
+                  };
+            }
+            break;
+        case 2 :
+            throw {
+                  ExceptionID: Pervasives.Exit.ExceptionID,
+                  Debug: Pervasives.Exit.Debug
+                };
+        
       }
-      
     }
     return false;
   }
   catch (raw_exn){
     var exn = Caml_js_exceptions.internalToOCamlException(raw_exn);
-    if (exn.CamlExt === Pervasives.Exit) {
+    if (exn.ExceptionID === Pervasives.Exit.ExceptionID) {
       return true;
     }
     throw exn;
@@ -386,12 +377,13 @@ function _refill(t, k_succ, k_fail) {
 function _get(t) {
   if (t.i >= t.len) {
     throw {
-          CamlExt: Caml_builtin_exceptions.assert_failure,
+          ExceptionID: -9,
           _1: /* tuple */[
             "sexpm.ml",
             152,
             4
-          ]
+          ],
+          Debug: "Assert_failure"
         };
   }
   var c = Caml_bytes.get(t.buf, t.i);
@@ -492,12 +484,13 @@ function expr_starting_with(c, k, t) {
       switch (c - 32 | 0) {
         case 0 :
             throw {
-                  CamlExt: Caml_builtin_exceptions.assert_failure,
+                  ExceptionID: -9,
                   _1: /* tuple */[
                     "sexpm.ml",
                     183,
                     27
-                  ]
+                  ],
+                  Debug: "Assert_failure"
                 };
         case 2 :
             return quoted(k, t);
@@ -524,12 +517,13 @@ function expr_starting_with(c, k, t) {
     
   } else if (c >= 9) {
     throw {
-          CamlExt: Caml_builtin_exceptions.assert_failure,
+          ExceptionID: -9,
           _1: /* tuple */[
             "sexpm.ml",
             183,
             27
-          ]
+          ],
+          Debug: "Assert_failure"
         };
   }
   $$Buffer.add_char(t.atom, c);
@@ -971,12 +965,13 @@ function MakeDecode(funarg) {
   var _get = function (t) {
     if (t.i >= t.len) {
       throw {
-            CamlExt: Caml_builtin_exceptions.assert_failure,
+            ExceptionID: -9,
             _1: /* tuple */[
               "sexpm.ml",
               152,
               4
-            ]
+            ],
+            Debug: "Assert_failure"
           };
     }
     var c = Caml_bytes.get(t.buf, t.i);
@@ -1073,12 +1068,13 @@ function MakeDecode(funarg) {
         switch (c - 32 | 0) {
           case 0 :
               throw {
-                    CamlExt: Caml_builtin_exceptions.assert_failure,
+                    ExceptionID: -9,
                     _1: /* tuple */[
                       "sexpm.ml",
                       183,
                       27
-                    ]
+                    ],
+                    Debug: "Assert_failure"
                   };
           case 2 :
               return quoted(k, t);
@@ -1105,12 +1101,13 @@ function MakeDecode(funarg) {
       
     } else if (c >= 9) {
       throw {
-            CamlExt: Caml_builtin_exceptions.assert_failure,
+            ExceptionID: -9,
             _1: /* tuple */[
               "sexpm.ml",
               183,
               27
-            ]
+            ],
+            Debug: "Assert_failure"
           };
     }
     $$Buffer.add_char(t.atom, c);

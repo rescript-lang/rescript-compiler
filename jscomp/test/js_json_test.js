@@ -7,7 +7,6 @@ var Js_dict = require("../../lib/js/js_dict.js");
 var Js_json = require("../../lib/js/js_json.js");
 var Caml_array = require("../../lib/js/caml_array.js");
 var Caml_option = require("../../lib/js/caml_option.js");
-var Caml_builtin_exceptions = require("../../lib/js/caml_builtin_exceptions.js");
 
 var suites = {
   contents: /* [] */0
@@ -76,24 +75,26 @@ add_test("File \"js_json_test.ml\", line 23, characters 11-18", (function (param
                 var ty3 = Js_json.classify(x);
                 if (typeof ty3 === "number") {
                   throw {
-                        CamlExt: Caml_builtin_exceptions.assert_failure,
+                        ExceptionID: -9,
                         _1: /* tuple */[
                           "js_json_test.ml",
                           37,
                           21
-                        ]
+                        ],
+                        Debug: "Assert_failure"
                       };
                 }
                 if (ty3.tag === /* JSONNumber */1) {
                   return ;
                 }
                 throw {
-                      CamlExt: Caml_builtin_exceptions.assert_failure,
+                      ExceptionID: -9,
                       _1: /* tuple */[
                         "js_json_test.ml",
                         37,
                         21
-                      ]
+                      ],
+                      Debug: "Assert_failure"
                     };
               }));
         return /* Ok */Block.__(4, [true]);
@@ -205,12 +206,13 @@ function option_get(x) {
     return Caml_option.valFromOption(x);
   }
   throw {
-        CamlExt: Caml_builtin_exceptions.assert_failure,
+        ExceptionID: -9,
         _1: /* tuple */[
           "js_json_test.ml",
           102,
           36
-        ]
+        ],
+        Debug: "Assert_failure"
       };
 }
 

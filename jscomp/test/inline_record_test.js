@@ -4,7 +4,6 @@ var Mt = require("./mt.js");
 var List = require("../../lib/js/list.js");
 var Block = require("../../lib/js/block.js");
 var Caml_exceptions = require("../../lib/js/caml_exceptions.js");
-var Caml_builtin_exceptions = require("../../lib/js/caml_builtin_exceptions.js");
 
 var suites = {
   contents: /* [] */0
@@ -53,24 +52,30 @@ console.log(f(v1));
 
 var A0 = Caml_exceptions.create("Inline_record_test.A0");
 
+var v3_000 = A0.ExceptionID;
+
+var v3_003 = A0.Debug;
+
 var v3 = {
-  CamlExt: A0,
+  ExceptionID: v3_000,
   lbl: 3,
-  more: /* [] */0
+  more: /* [] */0,
+  Debug: v3_003
 };
 
 var tmp;
 
-if (A0 === A0) {
+if (v3_000 === A0.ExceptionID) {
   tmp = 3;
 } else {
   throw {
-        CamlExt: Caml_builtin_exceptions.assert_failure,
+        ExceptionID: -9,
         _1: /* tuple */[
           "inline_record_test.ml",
           51,
           52
-        ]
+        ],
+        Debug: "Assert_failure"
       };
 }
 
@@ -103,12 +108,13 @@ var tmp$1;
 
 if (v4.tag) {
   throw {
-        CamlExt: Caml_builtin_exceptions.assert_failure,
+        ExceptionID: -9,
         _1: /* tuple */[
           "inline_record_test.ml",
           69,
           48
-        ]
+        ],
+        Debug: "Assert_failure"
       };
 }
 
@@ -122,12 +128,13 @@ if (v5.tag) {
   tmp$2 = v5[/* z */0];
 } else {
   throw {
-        CamlExt: Caml_builtin_exceptions.assert_failure,
+        ExceptionID: -9,
         _1: /* tuple */[
           "inline_record_test.ml",
           71,
           48
-        ]
+        ],
+        Debug: "Assert_failure"
       };
 }
 
@@ -136,14 +143,15 @@ eq("File \"inline_record_test.ml\", line 71, characters 6-13", tmp$2, 22);
 var A4 = Caml_exceptions.create("Inline_record_test.A4");
 
 var v6 = {
-  CamlExt: A4,
+  ExceptionID: A4.ExceptionID,
   x: 0,
   y: 0,
-  z: 0
+  z: 0,
+  Debug: A4.Debug
 };
 
 function ff0(x) {
-  if (x.CamlExt === A4) {
+  if (x.ExceptionID === A4.ExceptionID) {
     x.x = x.x + 1 | 0;
     x.z = x.z + 1 | 0;
     return ;
@@ -157,16 +165,17 @@ for(var i$1 = 0; i$1 <= 10; ++i$1){
 
 var tmp$3;
 
-if (v6.CamlExt === A4) {
+if (v6.ExceptionID === A4.ExceptionID) {
   tmp$3 = v6.x;
 } else {
   throw {
-        CamlExt: Caml_builtin_exceptions.assert_failure,
+        ExceptionID: -9,
         _1: /* tuple */[
           "inline_record_test.ml",
           87,
           49
-        ]
+        ],
+        Debug: "Assert_failure"
       };
 }
 

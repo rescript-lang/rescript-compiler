@@ -1,7 +1,6 @@
 'use strict';
 
 var Rbset = require("./rbset.js");
-var Caml_builtin_exceptions = require("../../lib/js/caml_builtin_exceptions.js");
 
 function bench(param) {
   var data = /* Empty */0;
@@ -14,12 +13,13 @@ function bench(param) {
   for(var i$1 = 0; i$1 <= 1000000; ++i$1){
     if (!Rbset.mem(i$1, data)) {
       throw {
-            CamlExt: Caml_builtin_exceptions.assert_failure,
+            ExceptionID: -9,
             _1: /* tuple */[
               "bs_rbset_int_bench.ml",
               12,
               4
-            ]
+            ],
+            Debug: "Assert_failure"
           };
     }
     
@@ -34,12 +34,13 @@ function bench(param) {
     return ;
   }
   throw {
-        CamlExt: Caml_builtin_exceptions.assert_failure,
+        ExceptionID: -9,
         _1: /* tuple */[
           "bs_rbset_int_bench.ml",
           17,
           2
-        ]
+        ],
+        Debug: "Assert_failure"
       };
 }
 

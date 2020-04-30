@@ -43,7 +43,7 @@ function to_list(s) {
     }
     catch (raw_exn){
       var exn = Caml_js_exceptions.internalToOCamlException(raw_exn);
-      if (exn.CamlExt === Stream.Failure) {
+      if (exn.ExceptionID === Stream.Failure.ExceptionID) {
         return List.rev(acc);
       }
       throw exn;

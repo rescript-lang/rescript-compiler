@@ -1,6 +1,6 @@
 
 (* for o in jscomp/test/*test.js ; do npx mocha  $o ; done *)
-#if OCAML_VERSION =~ ">4.3.0" then
+
 let suites :  Mt.pair_suites ref  = ref []
 let test_id = ref 0
 let eq loc x y = Mt.eq_suites ~test_id ~suites loc x y 
@@ -40,6 +40,18 @@ let f2_with x =
   | B -> x 
   | C u -> C {u with x = 0}
 
+
+exception A of {name : int; x : int}  
+exception B of int * int
+exception C of {name : int }
+
+let u f = 
+  try f () with
+  | A {name ; x} -> name + x 
+  | B (a,b) -> a + b
+  | C x -> x.name
+  | _ -> -1
+
 let () = 
   Mt.from_pair_suites __LOC__ !suites
-#end
+

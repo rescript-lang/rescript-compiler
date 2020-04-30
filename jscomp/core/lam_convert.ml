@@ -23,6 +23,55 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
 
+let caml_id_field_info : Lambda.field_dbg_info = Fld_record {name = Literals.exception_id; mutable_flag = Mutable;}
+let name_info : Lambda.field_dbg_info = Fld_record {name = Literals.exception_debug; mutable_flag = Immutable;}
+let lam_caml_id : Lam_primitive.t = Pfield(0, caml_id_field_info)
+let lam_name : Lam_primitive.t = Pfield (1, name_info) 
+let prim = Lam.prim 
+
+
+let num_of_ident name = 
+  begin match name with 
+  | "Out_of_memory" -> 0
+  | "Sys_error" -> -1 
+  | "Failure" -> -2
+  | "Invalid_argument" -> -3 
+  | "End_of_file" -> -4
+  | "Division_by_zero" -> -5 
+  | "Not_found" -> -6
+  | "Match_failure" -> -7
+  | "Stack_overflow" -> -8
+  | "Assert_failure" -> -9
+  | "Sys_blocked_io" -> -10
+  | "Undefined_recursive_module" -> -11
+  | _ -> assert false
+  end   
+
+
+let lam_extension_id loc (head : Lam.t) =
+  match head with 
+  | Lprim {primitive = Pglobal_exception id} -> 
+    Lam.const (Const_int {value = num_of_ident id.name; comment = Some id.name} )
+  | _ -> prim ~primitive:lam_caml_id ~args:[head] loc    
+
+
+let unbox_extension info (args : Lam.t list) mutable_flag loc =
+  begin match args with 
+  | head :: rest -> 
+    let args = 
+      match head with 
+      | Lprim {primitive = Pglobal_exception id}  -> 
+        let name = Ident.name id in 
+        let id = num_of_ident name in 
+        Lam.const (Const_int {value = id; comment = None}) 
+        :: (Ext_list.append_one rest (Lam.const (Const_string (name)))) 
+      | _ -> 
+        prim ~primitive:lam_caml_id ~args:[head] loc :: 
+        (Ext_list.append_one rest (prim ~primitive:lam_name ~args:[head] loc))        
+    in 
+    prim ~primitive:(Pmakeblock (0,info,mutable_flag)) ~args loc
+  | _ -> assert false end    
+
 (** A conservative approach to avoid packing exceptions
     for lambda expression like {[
       try { ... }catch(id){body}
@@ -63,15 +112,15 @@ let exception_id_destructed (l : Lam.t) (fv : Ident.t): bool  =
   and hit_list xs = Ext_list.exists xs hit 
   and hit (l : Lam.t) =
     match l  with
-    | Lprim {primitive = Pintcomp _ ;
+    (* | Lprim {primitive = Pintcomp _ ;
              args = ([x;y ])  } ->
       begin match x,y with
         | Lvar _, Lvar _ -> false
         | Lvar _, _ -> hit y
         | _, Lvar _ -> hit x
         | _, _  -> hit x || hit y
-      end
-    | Lprim {primitive = Praise ; args = [Lvar _]} -> false
+      end *) (* FIXME: this can be uncovered after we do the unboxing *)
+    | Lprim {primitive = Praise ; args = [Lvar _]} -> false 
     | Lprim {primitive ; args; _} ->
       hit_list args
     | Lvar id ->    
@@ -156,7 +205,7 @@ let happens_to_be_diff
   | _ -> None 
 
 
-let prim = Lam.prim 
+
 
 (* type required_modules = Lam_module_ident.Hash_set.t *)
 
@@ -225,7 +274,19 @@ let lam_prim ~primitive:( p : Lambda.primitive) ~args loc : Lam.t =
       prim ~primitive:(Pmakeblock (tag,info,mutable_flag)) ~args loc
     | Blk_extension  -> 
       let info : Lam_tag_info.t = Blk_extension in
-      prim ~primitive:(Pmakeblock (tag,info,mutable_flag)) ~args loc  
+      unbox_extension info args mutable_flag loc 
+    | Blk_record_ext s ->
+      let info : Lam_tag_info.t = Blk_record_ext s in
+      unbox_extension info args mutable_flag loc 
+    | Blk_extension_slot -> 
+      ( 
+        match args with 
+        | [ Lconst (Const_string name)] -> 
+          prim ~primitive:(Pcreate_extension name) ~args:[] loc
+        | _ ->
+          assert false
+      )
+
     | Blk_class  -> 
       let info : Lam_tag_info.t = Blk_class in
       prim ~primitive:(Pmakeblock (tag,info,mutable_flag)) ~args loc  
@@ -241,23 +302,12 @@ let lam_prim ~primitive:( p : Lambda.primitive) ~args loc : Lam.t =
     | Blk_record_inlined {name; fields; num_nonconst} ->
       let info : Lam_tag_info.t = Blk_record_inlined {name; fields; num_nonconst} in
       prim ~primitive:(Pmakeblock (tag,info,mutable_flag)) ~args loc
-    | Blk_record_ext s ->
-      let info : Lam_tag_info.t = Blk_record_ext s in
-      prim ~primitive:(Pmakeblock (tag,info,mutable_flag)) ~args loc
     | Blk_module s -> 
       let info : Lam_tag_info.t = Blk_module s in
       prim ~primitive:(Pmakeblock (tag,info,mutable_flag)) ~args loc
     | Blk_module_export _ -> 
       let info : Lam_tag_info.t = Blk_module_export in
       prim ~primitive:(Pmakeblock (tag,info,mutable_flag)) ~args loc  
-    | Blk_extension_slot -> 
-      ( 
-      match args with 
-      | [ Lconst (Const_string name)] -> 
-        prim ~primitive:(Pcreate_extension name) ~args:[] loc
-      | _ ->
-        assert false
-      )
     | Blk_lazy_general  
       ->
       let args = [ prim ~primitive:(Pjs_fn_make 0) ~args loc ] in 
@@ -381,8 +431,8 @@ let lam_prim ~primitive:( p : Lambda.primitive) ~args loc : Lam.t =
   | Pctconst x ->
     begin match x with
       | Word_size 
-      | Int_size -> Lam.const(Const_int 32)  
-      | Max_wosize -> Lam.const (Const_int 2147483647)
+      | Int_size -> Lam.const(Const_int {value = 32; comment = None})  
+      | Max_wosize -> Lam.const (Const_int {value = 2147483647; comment = Some "Max_wosize"})
       | Big_endian
         -> prim ~primitive:(Pctconst Big_endian) ~args loc
       | Ostype_unix
@@ -532,6 +582,14 @@ let convert (exports : Set_ident.t) (lam : Lambda.lambda) : Lam.t * Lam_module_i
         -> Lam.unit
       | _ -> prim ~primitive:Pupdate_mod ~args loc
       end
+    | _ when s = "#extension_slot_eq" -> 
+      begin match Ext_list.map args convert_aux with 
+      | [lhs; rhs] -> 
+        prim ~primitive:(Pintcomp Ceq) 
+          ~args:[lam_extension_id loc lhs ;
+                 lam_extension_id loc rhs;
+                ] loc
+      | _ -> assert false end  
     | _ ->
       let primitive : Lam_primitive.t =
         match s with
@@ -789,7 +847,7 @@ let convert (exports : Set_ident.t) (lam : Lambda.lambda) : Lam.t * Lam_module_i
             | Some i ->
               prim
                 ~primitive:Paddint
-                ~args:[e; Lam.const(Const_int i)]
+                ~args:[e; Lam.const(Const_int {value = i; comment = None})]
                 Location.none
             | None ->
               Lam.switch e

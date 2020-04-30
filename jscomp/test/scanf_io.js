@@ -14,7 +14,6 @@ var Caml_bytes = require("../../lib/js/caml_bytes.js");
 var Pervasives = require("../../lib/js/pervasives.js");
 var Caml_js_exceptions = require("../../lib/js/caml_js_exceptions.js");
 var Caml_external_polyfill = require("../../lib/js/caml_external_polyfill.js");
-var Caml_builtin_exceptions = require("../../lib/js/caml_builtin_exceptions.js");
 
 var tscanf_data_file = "tscanf_data";
 
@@ -97,7 +96,7 @@ function get_lines(fname) {
   }
   catch (raw_s){
     var s = Caml_js_exceptions.internalToOCamlException(raw_s);
-    if (s.CamlExt === Scanf.Scan_failure) {
+    if (s.ExceptionID === Scanf.Scan_failure.ExceptionID) {
       var s$1 = Curry._2(Printf.sprintf(/* Format */[
                 /* String_literal */Block.__(11, [
                     "in file ",
@@ -115,11 +114,12 @@ function get_lines(fname) {
                 "in file %s, %s"
               ]), fname, s._1);
       throw {
-            CamlExt: Caml_builtin_exceptions.failure,
-            _1: s$1
+            ExceptionID: -2,
+            _1: s$1,
+            Debug: "Failure"
           };
     }
-    if (s.CamlExt === Caml_builtin_exceptions.end_of_file) {
+    if (s.ExceptionID === /* End_of_file */-4) {
       var s$2 = Curry._1(Printf.sprintf(/* Format */[
                 /* String_literal */Block.__(11, [
                     "in file ",
@@ -134,8 +134,9 @@ function get_lines(fname) {
                 "in file %s, unexpected end of file"
               ]), fname);
       throw {
-            CamlExt: Caml_builtin_exceptions.failure,
-            _1: s$2
+            ExceptionID: -2,
+            _1: s$2,
+            Debug: "Failure"
           };
     }
     throw s;
@@ -171,7 +172,7 @@ function add_digest_ib(ob, ib) {
   }
   catch (raw_exn){
     var exn = Caml_js_exceptions.internalToOCamlException(raw_exn);
-    if (exn.CamlExt === Caml_builtin_exceptions.end_of_file) {
+    if (exn.ExceptionID === /* End_of_file */-4) {
       return ;
     }
     throw exn;

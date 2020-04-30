@@ -6203,8 +6203,8 @@ let check_bs_attributes_inclusion =
       None
     )  
 
-let check_duplicated_labels = ref (fun _lbls -> 
-  failwith "check_duplicated_label not implemented"
+let check_duplicated_labels : (_ -> _ option ) ref = ref (fun _lbls -> 
+  None
 )
 
 let rec deprecated_of_sig = function
@@ -10063,6 +10063,9 @@ val sourcedirs_meta : string
 
 val ns_sep_char : char
 val ns_sep : string
+
+val exception_id : string
+val exception_debug : string
 end = struct
 #1 "literals.ml"
 (* Copyright (C) 2015-2016 Bloomberg Finance L.P.
@@ -10206,7 +10209,8 @@ let sourcedirs_meta = ".sourcedirs.json"
 *)
 let ns_sep_char = '-'
 let ns_sep = "-"
-
+let exception_id = "ExceptionID"
+let exception_debug = "Debug"
 end
 module Ext_path : sig 
 #1 "ext_path.mli"

@@ -5,7 +5,6 @@ var $$Array = require("../../lib/js/array.js");
 var Curry = require("../../lib/js/curry.js");
 var Caml_array = require("../../lib/js/caml_array.js");
 var Caml_option = require("../../lib/js/caml_option.js");
-var Caml_builtin_exceptions = require("../../lib/js/caml_builtin_exceptions.js");
 
 function reverse_range(a, i, len) {
   if (len === 0) {
@@ -108,8 +107,9 @@ function filter_map(f, a) {
 function range(from, to_) {
   if (from > to_) {
     throw {
-          CamlExt: Caml_builtin_exceptions.invalid_argument,
-          _1: "Ext_array_test.range"
+          ExceptionID: -3,
+          _1: "Ext_array_test.range",
+          Debug: "Invalid_argument"
         };
   }
   return $$Array.init((to_ - from | 0) + 1 | 0, (function (i) {
@@ -121,8 +121,9 @@ function map2i(f, a, b) {
   var len = a.length;
   if (len !== b.length) {
     throw {
-          CamlExt: Caml_builtin_exceptions.invalid_argument,
-          _1: "Ext_array_test.map2i"
+          ExceptionID: -3,
+          _1: "Ext_array_test.map2i",
+          Debug: "Invalid_argument"
         };
   }
   return $$Array.mapi((function (i, a) {

@@ -4,7 +4,6 @@ var Curry = require("../../lib/js/curry.js");
 var Caml_int32 = require("../../lib/js/caml_int32.js");
 var Caml_oo_curry = require("../../lib/js/caml_oo_curry.js");
 var CamlinternalOO = require("../../lib/js/camlinternalOO.js");
-var Caml_builtin_exceptions = require("../../lib/js/caml_builtin_exceptions.js");
 
 var shared = [
   "get0",
@@ -593,12 +592,13 @@ var raw_object = obj_init(undefined);
 
 if (Caml_oo_curry.js1(291536124, 1, raw_object) !== 34) {
   throw {
-        CamlExt: Caml_builtin_exceptions.assert_failure,
+        ExceptionID: -9,
         _1: /* tuple */[
           "large_obj_test.ml",
           124,
           10
-        ]
+        ],
+        Debug: "Assert_failure"
       };
 }
 
@@ -920,12 +920,13 @@ var v = Curry._2(raw_class[0], undefined, 3);
 
 if (Caml_oo_curry.js1(291536121, 2, v) !== 56) {
   throw {
-        CamlExt: Caml_builtin_exceptions.assert_failure,
+        ExceptionID: -9,
         _1: /* tuple */[
           "large_obj_test.ml",
           251,
           2
-        ]
+        ],
+        Debug: "Assert_failure"
       };
 }
 

@@ -1,7 +1,6 @@
 'use strict';
 
 var Hashtbl = require("../../lib/js/hashtbl.js");
-var Caml_builtin_exceptions = require("../../lib/js/caml_builtin_exceptions.js");
 
 function bench(param) {
   var table = Hashtbl.create(undefined, 1000000);
@@ -11,12 +10,13 @@ function bench(param) {
   for(var i$1 = 0; i$1 <= 1000000; ++i$1){
     if (!Hashtbl.mem(table, i$1)) {
       throw {
-            CamlExt: Caml_builtin_exceptions.assert_failure,
+            ExceptionID: -9,
             _1: /* tuple */[
               "raw_hash_tbl_bench.ml",
               9,
               4
-            ]
+            ],
+            Debug: "Assert_failure"
           };
     }
     

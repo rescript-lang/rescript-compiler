@@ -25,16 +25,10 @@
 
 
 
-
-type t = {
-    mutable id : nativeint [@bs.as "CamlId"];
-    name : string ;
-} 
-
-
-let make name id = { 
-  name ; id }
-
+(** This runtime module is not needed in most cases 
+     it gets inlined in most cases untile global exception get rebinded   
+*)
+open Caml_exceptions
 
 let out_of_memory = make "Out_of_memory" 0n
 let sys_error = make  "Sys_error" (-1n)
@@ -57,14 +51,3 @@ let undefined_recursive_module =
     make "Undefined_recursive_module"  (-11n)
 
 
-(**: 
-   1. Is it necessary to tag [248] here
-   For compatibility reasons: tag [248] will make 
-   `Printexc.to_string` happy see #1501
-   2. Is it okay to remove the negative value
-   For marshalling? 
-   3. Global exception is encoded the same as user defined exception 
-   (for nullary and non-nullary), except
-   - time stamp
-   - its name is not qualified
-*)

@@ -2,7 +2,6 @@
 
 var Fs = require("fs");
 var Path = require("path");
-var Caml_builtin_exceptions = require("../../lib/js/caml_builtin_exceptions.js");
 
 var package_json = "package.json";
 
@@ -15,7 +14,8 @@ function find_package_json(_dir) {
     var new_dir = Path.dirname(dir);
     if (new_dir === dir) {
       throw {
-            CamlExt: Caml_builtin_exceptions.not_found
+            ExceptionID: -6,
+            Debug: "Not_found"
           };
     }
     _dir = new_dir;
