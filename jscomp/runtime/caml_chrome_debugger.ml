@@ -36,7 +36,7 @@ let setupChromeDebugger : unit -> unit = [%raw{|
   // object-properties-section-separator
   var colonStyle = { style: "flex-shrink: 0; padding-right: 5px" };
 
-  var showObject = function (value) {
+  var renderObject = function (value) {
     if (value == undefined) {
       return value + "";
     } else {
@@ -54,7 +54,7 @@ let setupChromeDebugger : unit -> unit = [%raw{|
         {},
         ["span", { style: "color: rgb(227, 110, 236)" }, index],
         ["span", colonStyle, ":"],
-        showObject(cur[0]),
+        renderObject(cur[0]),
       ]);
       cur = cur[1];
       index++;
@@ -62,7 +62,7 @@ let setupChromeDebugger : unit -> unit = [%raw{|
     return result;
   };
 
-  var variantCustomFormatter = function (data, recordVariant) {
+  var renderRecord = function (data, recordVariant) {
     if (recordVariant === "::") {
       return ["ol", olStyle, ...listToArray(data)];
     } else {
@@ -71,14 +71,14 @@ let setupChromeDebugger : unit -> unit = [%raw{|
         spacedData.push([
           "span",
           { style: "margin-right: 12px" },
-          showObject(cur),
+          renderObject(cur),
         ]);
       });
       return ["ol", olStyle, ...spacedData];
     }
   };
 
-  var variantPreview = function (x, recordVariant) {
+  var renderVariant = function (x, recordVariant) {
     if (recordVariant === "::") {
       // show the length, just like for array
       var length = listToArray(x).length;
@@ -86,9 +86,11 @@ let setupChromeDebugger : unit -> unit = [%raw{|
     }
     return ["span", {}, `${recordVariant}(…)`];
   };
+
   var isOCamlExceptionOrExtensionHead = function (x) {
     return Array.isArray(x) && x.tag === 248 && typeof x[0] === "string";
   };
+
   var isOCamlExceptionOrExtension = function (x) {
     return (
       Array.isArray(x) &&
@@ -96,40 +98,42 @@ let setupChromeDebugger : unit -> unit = [%raw{|
       isOCamlExceptionOrExtensionHead(x[0])
     );
   };
+
   var Formatter = {
-    header: function (x) {
-      var recordVariant = x[Symbol.for("BsVariant")];
-      var polyVariant = x[Symbol.for("BsPolyVar")];
+    header: function (data) {
+      var recordVariant = data[Symbol.for("BsVariant")];
+      var polyVariant = data[Symbol.for("BsPolyVar")];
+
       if (recordVariant !== undefined) {
-        return variantPreview(x, recordVariant);
-      } else if (isOCamlExceptionOrExtension(x)) {
-        return ["div", {}, `${x[0][0]}(…)`];
+        return renderVariant(data, recordVariant);
+      } else if (isOCamlExceptionOrExtension(data)) {
+        return ["div", {}, `${data[0][0]}(…)`];
       } else if (polyVariant !== undefined) {
-        return ["div", {}, `\`${recordPolyVar}#${x[0]}`];
+        return ["div", {}, `\`${recordPolyVar}#${data[0]}`];
       }
       return null;
     },
-    hasBody: function (x) {
-      var recordVariant = x[Symbol.for("BsVariant")];
-      var polyVariant = x[Symbol.for("BsPolyVar")];
+    hasBody: function (data) {
+      var recordVariant = data[Symbol.for("BsVariant")];
+      var polyVariant = data[Symbol.for("BsPolyVar")];
 
       return (
         recordVariant !== undefined ||
-        isOCamlExceptionOrExtension(x) ||
+        isOCamlExceptionOrExtension(data) ||
         polyVariant !== undefined ||
         false
       );
     },
-    body: function (x) {
-      var recordVariant = x[Symbol.for("BsVariant")];
-      var polyVariant = x[Symbol.for("BsPolyVar")];
+    body: function (data) {
+      var recordVariant = data[Symbol.for("BsVariant")];
+      var polyVariant = data[Symbol.for("BsPolyVar")];
 
       if (recordVariant !== undefined) {
-        return variantCustomFormatter(x, recordVariant);
+        return renderRecord(data, recordVariant);
       } else if (polyVariant !== undefined) {
-        return showObject(x[1]);
+        return renderObject(data[1]);
       } else if (isOCamlExceptionOrExtension(x)) {
-        return ["ol", olStyle, ...x.slice(1).map((cur) => showObject(cur))];
+        return ["ol", olStyle, ...data.slice(1).map(renderObject)];
       }
     },
   };
