@@ -392,7 +392,7 @@ try {
   }
 catch(e){
   var e = unpackError(e)
-  if (e === Caml_builtin_exceptions.Not_found ){
+  if (e === "Not_found"){
     ...
   } else {
     throw packError(e) // re-raise
