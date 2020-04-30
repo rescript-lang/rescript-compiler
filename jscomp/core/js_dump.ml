@@ -136,6 +136,26 @@ type cxt = Ext_pp_scope.t
 let semi f = P.string f L.semi
 let comma f = P.string f L.comma
 
+let exn_block_as_obj (el : J.expression list) (ext : J.tag_info) : J.expression_desc =
+  let field_name  = 
+    match ext with 
+    | Blk_extension -> (fun i -> 
+      match i with 
+      | 0 ->  Literals.exception_id
+      | i ->  
+         "_" ^ string_of_int i
+        )
+    | Blk_record_ext ss ->   
+      (fun i ->  
+      match i with 
+      | 0 -> Literals.exception_id
+      | i ->   ss.(i-1))
+    | _ -> assert false in   
+  Object (
+    Ext_list.mapi  el (fun i e -> field_name i, e)
+  )
+(* @ ["Error", {expression_desc = New ({expression_desc = Var (Id (Ext_ident .(create_js "Error")));comment = None},None); comment = None}]    *)
+
 let rec iter_lst cxt (f : P.t) ls element inter = 
   match ls with 
   | [] -> cxt 
@@ -818,24 +838,8 @@ and expression_desc cxt ~(level:int) f x : cxt  =
         (List.combine (Array.to_list fields) el )))      
         (* name convention of Record is slight different from modules 
         *)
-  | Caml_block(el,_, _, (Blk_extension | Blk_record_ext _ as ext )) ->       
-      let field_name  = 
-        match ext with 
-        | Blk_extension -> (fun i -> 
-          match i with 
-          | 0 ->  Literals.exception_id
-          | i ->  
-             "_" ^ string_of_int i
-            )
-        | Blk_record_ext ss ->   
-          (fun i ->  
-          match i with 
-          | 0 -> Literals.exception_id
-          | i ->   ss.(i-1))
-        | _ -> assert false in   
-    expression_desc cxt ~level f (Object (
-        (Ext_list.mapi  el (fun i e -> field_name i, e
-        ))))      
+  | Caml_block(el,_, _, (Blk_extension | Blk_record_ext _ as ext )) ->             
+    expression_desc cxt ~level f (exn_block_as_obj el ext)      
   | Caml_block( el, mutable_flag, tag, tag_info)
     ->
     (* Note that, if we ignore more than tag [0] we loose some information
