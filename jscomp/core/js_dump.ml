@@ -136,7 +136,7 @@ type cxt = Ext_pp_scope.t
 let semi f = P.string f L.semi
 let comma f = P.string f L.comma
 
-let exn_block_as_obj (el : J.expression list) (ext : J.tag_info) : J.expression_desc =
+let exn_block_as_obj ~stack (el : J.expression list) (ext : J.tag_info) : J.expression_desc =
   let field_name  = 
     match ext with 
     | Blk_extension -> (fun i -> 
@@ -152,9 +152,13 @@ let exn_block_as_obj (el : J.expression list) (ext : J.tag_info) : J.expression_
       | i ->   ss.(i-1))
     | _ -> assert false in   
   Object (
-    Ext_list.mapi  el (fun i e -> field_name i, e)
+    if stack then   
+      Ext_list.mapi_append el (fun i e -> field_name i, e)
+        ["Error", 
+          E.new_ (E.js_global "Error") []
+        ]
+    else Ext_list.mapi  el (fun i e -> field_name i, e)
   )
-(* @ ["Error", {expression_desc = New ({expression_desc = Var (Id (Ext_ident .(create_js "Error")));comment = None},None); comment = None}]    *)
 
 let rec iter_lst cxt (f : P.t) ls element inter = 
   match ls with 
@@ -839,7 +843,7 @@ and expression_desc cxt ~(level:int) f x : cxt  =
         (* name convention of Record is slight different from modules 
         *)
   | Caml_block(el,_, _, (Blk_extension | Blk_record_ext _ as ext )) ->             
-    expression_desc cxt ~level f (exn_block_as_obj el ext)      
+    expression_desc cxt ~level f (exn_block_as_obj ~stack:false el ext)      
   | Caml_block( el, mutable_flag, tag, tag_info)
     ->
     (* Note that, if we ignore more than tag [0] we loose some information
@@ -1292,6 +1296,10 @@ and statement_desc top cxt f (s : J.statement_desc) : cxt =
           P.newline f;
           statement_list  false cxt  f def ))
   | Throw e ->
+    let e = match e.expression_desc with 
+      | Caml_block (el,_,_,(Blk_extension | Blk_record_ext _ as ext)) -> 
+        {e with expression_desc = exn_block_as_obj ~stack:true el ext} 
+      | _ -> e in 
     P.string f L.throw;
     P.space f ;
     P.group f throw_indent  (fun _ ->
