@@ -42,7 +42,19 @@ function _must_escape(s) {
       var c = s.charCodeAt(i);
       var exit = 0;
       if (c >= 42) {
-        exit = c !== 59 && c !== 92 ? 1 : 2;
+        if (c !== 59) {
+          if (c !== 92) {
+            exit = 1;
+          } else {
+            throw {
+                  RE_EXN_ID: Pervasives.Exit
+                };
+          }
+        } else {
+          throw {
+                RE_EXN_ID: Pervasives.Exit
+              };
+        }
       } else if (c >= 11) {
         if (c >= 32) {
           switch (c - 32 | 0) {
@@ -58,38 +70,34 @@ function _must_escape(s) {
             case 2 :
             case 8 :
             case 9 :
-                exit = 2;
-                break;
+                throw {
+                      RE_EXN_ID: Pervasives.Exit
+                    };
             
           }
         } else {
           exit = 1;
         }
       } else {
-        exit = c >= 9 ? 2 : 1;
+        if (c >= 9) {
+          throw {
+                RE_EXN_ID: Pervasives.Exit
+              };
+        }
+        exit = 1;
       }
-      switch (exit) {
-        case 1 :
-            if (c > 127) {
-              throw {
-                    ExceptionID: Pervasives.Exit.ExceptionID,
-                    Debug: Pervasives.Exit.Debug
-                  };
-            }
-            break;
-        case 2 :
-            throw {
-                  ExceptionID: Pervasives.Exit.ExceptionID,
-                  Debug: Pervasives.Exit.Debug
-                };
-        
+      if (exit === 1 && c > 127) {
+        throw {
+              RE_EXN_ID: Pervasives.Exit
+            };
       }
+      
     }
     return false;
   }
   catch (raw_exn){
     var exn = Caml_js_exceptions.internalToOCamlException(raw_exn);
-    if (exn.ExceptionID === Pervasives.Exit.ExceptionID) {
+    if (exn.RE_EXN_ID === Pervasives.Exit) {
       return true;
     }
     throw exn;
@@ -377,13 +385,12 @@ function _refill(t, k_succ, k_fail) {
 function _get(t) {
   if (t.i >= t.len) {
     throw {
-          ExceptionID: -9,
+          RE_EXN_ID: "Assert_failure",
           _1: /* tuple */[
             "sexpm.ml",
             152,
             4
-          ],
-          Debug: "Assert_failure"
+          ]
         };
   }
   var c = Caml_bytes.get(t.buf, t.i);
@@ -484,13 +491,12 @@ function expr_starting_with(c, k, t) {
       switch (c - 32 | 0) {
         case 0 :
             throw {
-                  ExceptionID: -9,
+                  RE_EXN_ID: "Assert_failure",
                   _1: /* tuple */[
                     "sexpm.ml",
                     183,
                     27
-                  ],
-                  Debug: "Assert_failure"
+                  ]
                 };
         case 2 :
             return quoted(k, t);
@@ -517,13 +523,12 @@ function expr_starting_with(c, k, t) {
     
   } else if (c >= 9) {
     throw {
-          ExceptionID: -9,
+          RE_EXN_ID: "Assert_failure",
           _1: /* tuple */[
             "sexpm.ml",
             183,
             27
-          ],
-          Debug: "Assert_failure"
+          ]
         };
   }
   $$Buffer.add_char(t.atom, c);
@@ -965,13 +970,12 @@ function MakeDecode(funarg) {
   var _get = function (t) {
     if (t.i >= t.len) {
       throw {
-            ExceptionID: -9,
+            RE_EXN_ID: "Assert_failure",
             _1: /* tuple */[
               "sexpm.ml",
               152,
               4
-            ],
-            Debug: "Assert_failure"
+            ]
           };
     }
     var c = Caml_bytes.get(t.buf, t.i);
@@ -1068,13 +1072,12 @@ function MakeDecode(funarg) {
         switch (c - 32 | 0) {
           case 0 :
               throw {
-                    ExceptionID: -9,
+                    RE_EXN_ID: "Assert_failure",
                     _1: /* tuple */[
                       "sexpm.ml",
                       183,
                       27
-                    ],
-                    Debug: "Assert_failure"
+                    ]
                   };
           case 2 :
               return quoted(k, t);
@@ -1101,13 +1104,12 @@ function MakeDecode(funarg) {
       
     } else if (c >= 9) {
       throw {
-            ExceptionID: -9,
+            RE_EXN_ID: "Assert_failure",
             _1: /* tuple */[
               "sexpm.ml",
               183,
               27
-            ],
-            Debug: "Assert_failure"
+            ]
           };
     }
     $$Buffer.add_char(t.atom, c);

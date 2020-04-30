@@ -59,13 +59,12 @@ var three = {
 var v = {
   contents: (function (param) {
       throw {
-            ExceptionID: -9,
+            RE_EXN_ID: "Assert_failure",
             _1: /* tuple */[
               "rec_value_test.ml",
               23,
               24
-            ],
-            Debug: "Assert_failure"
+            ]
           };
     })
 };
@@ -238,24 +237,22 @@ var suites_001 = /* :: */[
             tmp = match[0];
           } else {
             throw {
-                  ExceptionID: -9,
+                  RE_EXN_ID: "Assert_failure",
                   _1: /* tuple */[
                     "rec_value_test.ml",
                     108,
                     2
-                  ],
-                  Debug: "Assert_failure"
+                  ]
                 };
           }
         } else {
           throw {
-                ExceptionID: -9,
+                RE_EXN_ID: "Assert_failure",
                 _1: /* tuple */[
                   "rec_value_test.ml",
                   108,
                   2
-                ],
-                Debug: "Assert_failure"
+                ]
               };
         }
         return /* Eq */Block.__(0, [
@@ -384,13 +381,12 @@ var suites_001 = /* :: */[
                                   ]);
                         }
                         throw {
-                              ExceptionID: -9,
+                              RE_EXN_ID: "Assert_failure",
                               _1: /* tuple */[
                                 "rec_value_test.ml",
                                 132,
                                 11
-                              ],
-                              Debug: "Assert_failure"
+                              ]
                             };
                       })
                   ],
@@ -405,13 +401,12 @@ var suites_001 = /* :: */[
                                     ]);
                           }
                           throw {
-                                ExceptionID: -9,
+                                RE_EXN_ID: "Assert_failure",
                                 _1: /* tuple */[
                                   "rec_value_test.ml",
                                   137,
                                   11
-                                ],
-                                Debug: "Assert_failure"
+                                ]
                               };
                         })
                     ],

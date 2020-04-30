@@ -204,18 +204,16 @@ function filter_map2(f, _xs, _ys) {
         continue ;
       }
       throw {
-            ExceptionID: -3,
-            _1: "Ext_list_test.filter_map2",
-            Debug: "Invalid_argument"
+            RE_EXN_ID: "Invalid_argument",
+            _1: "Ext_list_test.filter_map2"
           };
     }
     if (!ys) {
       return /* [] */0;
     }
     throw {
-          ExceptionID: -3,
-          _1: "Ext_list_test.filter_map2",
-          Debug: "Invalid_argument"
+          RE_EXN_ID: "Invalid_argument",
+          _1: "Ext_list_test.filter_map2"
         };
   };
 }
@@ -243,18 +241,16 @@ function filter_map2i(f, xs, ys) {
           continue ;
         }
         throw {
-              ExceptionID: -3,
-              _1: "Ext_list_test.filter_map2i",
-              Debug: "Invalid_argument"
+              RE_EXN_ID: "Invalid_argument",
+              _1: "Ext_list_test.filter_map2i"
             };
       }
       if (!ys) {
         return /* [] */0;
       }
       throw {
-            ExceptionID: -3,
-            _1: "Ext_list_test.filter_map2i",
-            Debug: "Invalid_argument"
+            RE_EXN_ID: "Invalid_argument",
+            _1: "Ext_list_test.filter_map2i"
           };
     };
   };
@@ -293,16 +289,14 @@ function flat_map2(f, lx, ly) {
         continue ;
       }
       throw {
-            ExceptionID: -3,
-            _1: "Ext_list_test.flat_map2",
-            Debug: "Invalid_argument"
+            RE_EXN_ID: "Invalid_argument",
+            _1: "Ext_list_test.flat_map2"
           };
     }
     if (ly$1) {
       throw {
-            ExceptionID: -3,
-            _1: "Ext_list_test.flat_map2",
-            Debug: "Invalid_argument"
+            RE_EXN_ID: "Invalid_argument",
+            _1: "Ext_list_test.flat_map2"
           };
     }
     return List.rev(acc);
@@ -345,9 +339,8 @@ function map2_last(f, l1, l2) {
         
       } else {
         throw {
-              ExceptionID: -3,
-              _1: "List.map2_last",
-              Debug: "Invalid_argument"
+              RE_EXN_ID: "Invalid_argument",
+              _1: "List.map2_last"
             };
       }
     }
@@ -359,18 +352,16 @@ function map2_last(f, l1, l2) {
             ];
     }
     throw {
-          ExceptionID: -3,
-          _1: "List.map2_last",
-          Debug: "Invalid_argument"
+          RE_EXN_ID: "Invalid_argument",
+          _1: "List.map2_last"
         };
   }
   if (!l2) {
     return /* [] */0;
   }
   throw {
-        ExceptionID: -3,
-        _1: "List.map2_last",
-        Debug: "Invalid_argument"
+        RE_EXN_ID: "Invalid_argument",
+        _1: "List.map2_last"
       };
 }
 
@@ -405,9 +396,8 @@ function fold_right2_last(f, l1, l2, accu) {
         
       } else {
         throw {
-              ExceptionID: -3,
-              _1: "List.fold_right2",
-              Debug: "Invalid_argument"
+              RE_EXN_ID: "Invalid_argument",
+              _1: "List.fold_right2"
             };
       }
     }
@@ -415,16 +405,14 @@ function fold_right2_last(f, l1, l2, accu) {
       return Curry._4(f, false, last1, l2[0], fold_right2_last(f, l1$1, l2[1], accu));
     }
     throw {
-          ExceptionID: -3,
-          _1: "List.fold_right2",
-          Debug: "Invalid_argument"
+          RE_EXN_ID: "Invalid_argument",
+          _1: "List.fold_right2"
         };
   }
   if (l2) {
     throw {
-          ExceptionID: -3,
-          _1: "List.fold_right2",
-          Debug: "Invalid_argument"
+          RE_EXN_ID: "Invalid_argument",
+          _1: "List.fold_right2"
         };
   }
   return accu;
@@ -439,9 +427,8 @@ function take(n, l) {
   var arr_length = arr.length;
   if (arr_length < n) {
     throw {
-          ExceptionID: -3,
-          _1: "Ext_list_test.take",
-          Debug: "Invalid_argument"
+          RE_EXN_ID: "Invalid_argument",
+          _1: "Ext_list_test.take"
         };
   }
   return /* tuple */[
@@ -527,9 +514,8 @@ function exclude_tail(x) {
       continue ;
     }
     throw {
-          ExceptionID: -3,
-          _1: "Ext_list_test.exclude_tail",
-          Debug: "Invalid_argument"
+          RE_EXN_ID: "Invalid_argument",
+          _1: "Ext_list_test.exclude_tail"
         };
   };
 }
@@ -580,9 +566,8 @@ function drop(_n, _h) {
     var n = _n;
     if (n < 0) {
       throw {
-            ExceptionID: -3,
-            _1: "Ext_list_test.drop",
-            Debug: "Invalid_argument"
+            RE_EXN_ID: "Invalid_argument",
+            _1: "Ext_list_test.drop"
           };
     }
     if (n === 0) {
@@ -590,9 +575,8 @@ function drop(_n, _h) {
     }
     if (h === /* [] */0) {
       throw {
-            ExceptionID: -3,
-            _1: "Ext_list_test.drop",
-            Debug: "Invalid_argument"
+            RE_EXN_ID: "Invalid_argument",
+            _1: "Ext_list_test.drop"
           };
     }
     _h = List.tl(h);
@@ -763,9 +747,8 @@ function reduce_from_right(fn, lst) {
                 }), match[0], match[1]);
   }
   throw {
-        ExceptionID: -3,
-        _1: "Ext_list_test.reduce",
-        Debug: "Invalid_argument"
+        RE_EXN_ID: "Invalid_argument",
+        _1: "Ext_list_test.reduce"
       };
 }
 
@@ -774,9 +757,8 @@ function reduce_from_left(fn, lst) {
     return List.fold_left(fn, lst[0], lst[1]);
   }
   throw {
-        ExceptionID: -3,
-        _1: "Ext_list_test.reduce_from_left",
-        Debug: "Invalid_argument"
+        RE_EXN_ID: "Invalid_argument",
+        _1: "Ext_list_test.reduce_from_left"
       };
 }
 
@@ -792,9 +774,8 @@ function ref_top(x) {
     return match[0];
   }
   throw {
-        ExceptionID: -3,
-        _1: "Ext_list_test.ref_top",
-        Debug: "Invalid_argument"
+        RE_EXN_ID: "Invalid_argument",
+        _1: "Ext_list_test.ref_top"
       };
 }
 
@@ -822,9 +803,8 @@ function ref_pop(refs) {
     return match[0];
   }
   throw {
-        ExceptionID: -3,
-        _1: "Ext_list_test.ref_pop",
-        Debug: "Invalid_argument"
+        RE_EXN_ID: "Invalid_argument",
+        _1: "Ext_list_test.ref_pop"
       };
 }
 
@@ -851,9 +831,8 @@ function rev_except_last(xs) {
       continue ;
     }
     throw {
-          ExceptionID: -3,
-          _1: "Ext_list_test.rev_except_last",
-          Debug: "Invalid_argument"
+          RE_EXN_ID: "Invalid_argument",
+          _1: "Ext_list_test.rev_except_last"
         };
   };
 }
@@ -876,9 +855,8 @@ function last(_xs) {
       continue ;
     }
     throw {
-          ExceptionID: -3,
-          _1: "Ext_list_test.last",
-          Debug: "Invalid_argument"
+          RE_EXN_ID: "Invalid_argument",
+          _1: "Ext_list_test.last"
         };
   };
 }
@@ -898,13 +876,12 @@ function assoc_by_string(def, k, _lst) {
       return Caml_option.valFromOption(def);
     }
     throw {
-          ExceptionID: -9,
+          RE_EXN_ID: "Assert_failure",
           _1: /* tuple */[
             "ext_list_test.ml",
             399,
             14
-          ],
-          Debug: "Assert_failure"
+          ]
         };
   };
 }
@@ -924,13 +901,12 @@ function assoc_by_int(def, k, _lst) {
       return Caml_option.valFromOption(def);
     }
     throw {
-          ExceptionID: -9,
+          RE_EXN_ID: "Assert_failure",
           _1: /* tuple */[
             "ext_list_test.ml",
             409,
             14
-          ],
-          Debug: "Assert_failure"
+          ]
         };
   };
 }

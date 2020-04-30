@@ -7,26 +7,24 @@ var match = 1;
 if (match !== undefined) {
   if (match !== 1) {
     throw {
-          ExceptionID: -9,
+          RE_EXN_ID: "Assert_failure",
           _1: /* tuple */[
             "gpr_3980_test.ml",
             16,
             10
-          ],
-          Debug: "Assert_failure"
+          ]
         };
   }
   var match$1 = 1;
   if (match$1 !== 1) {
     if (match$1 !== 2) {
       throw {
-            ExceptionID: -9,
+            RE_EXN_ID: "Assert_failure",
             _1: /* tuple */[
               "gpr_3980_test.ml",
               14,
               12
-            ],
-            Debug: "Assert_failure"
+            ]
           };
     }
     ({
@@ -37,13 +35,12 @@ if (match !== undefined) {
   
 } else {
   throw {
-        ExceptionID: -9,
+        RE_EXN_ID: "Assert_failure",
         _1: /* tuple */[
           "gpr_3980_test.ml",
           16,
           10
-        ],
-        Debug: "Assert_failure"
+        ]
       };
 }
 

@@ -6,11 +6,11 @@ var Caml_js_exceptions = require("../../lib/js/caml_js_exceptions.js");
 
 function f(match) {
   if (Caml_exceptions.caml_is_extension(match)) {
-    if (match.ExceptionID === /* Not_found */-6) {
+    if (match.RE_EXN_ID === "Not_found") {
       return 0;
-    } else if (match.ExceptionID === /* Invalid_argument */-3 || match.ExceptionID === /* Stack_overflow */-8) {
+    } else if (match.RE_EXN_ID === "Invalid_argument" || match.RE_EXN_ID === "Stack_overflow") {
       return 1;
-    } else if (match.ExceptionID === /* Sys_error */-1) {
+    } else if (match.RE_EXN_ID === "Sys_error") {
       return 2;
     } else {
       return ;
@@ -25,11 +25,11 @@ var B = Caml_exceptions.create("Exn_error_pattern.B");
 
 function g(match) {
   if (Caml_exceptions.caml_is_extension(match)) {
-    if (match.ExceptionID === /* Not_found */-6 || match.ExceptionID === /* Invalid_argument */-3) {
+    if (match.RE_EXN_ID === "Not_found" || match.RE_EXN_ID === "Invalid_argument") {
       return 0;
-    } else if (match.ExceptionID === /* Sys_error */-1) {
+    } else if (match.RE_EXN_ID === "Sys_error") {
       return 2;
-    } else if (match.ExceptionID === A.ExceptionID || match.ExceptionID === B.ExceptionID) {
+    } else if (match.RE_EXN_ID === A || match.RE_EXN_ID === B) {
       return match._1;
     } else {
       return ;
@@ -51,25 +51,21 @@ function eq(loc, x, y) {
 }
 
 eq("File \"exn_error_pattern.ml\", line 34, characters 5-12", f({
-          ExceptionID: -6,
-          Debug: "Not_found"
+          RE_EXN_ID: "Not_found"
         }), 0);
 
 eq("File \"exn_error_pattern.ml\", line 35, characters 5-12", f({
-          ExceptionID: -3,
-          _1: "",
-          Debug: "Invalid_argument"
+          RE_EXN_ID: "Invalid_argument",
+          _1: ""
         }), 1);
 
 eq("File \"exn_error_pattern.ml\", line 36, characters 5-12", f({
-          ExceptionID: -8,
-          Debug: "Stack_overflow"
+          RE_EXN_ID: "Stack_overflow"
         }), 1);
 
 eq("File \"exn_error_pattern.ml\", line 37, characters 5-12", f({
-          ExceptionID: -1,
-          _1: "",
-          Debug: "Sys_error"
+          RE_EXN_ID: "Sys_error",
+          _1: ""
         }), 2);
 
 var tmp;

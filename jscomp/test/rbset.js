@@ -253,13 +253,12 @@ function unbalanced_left(param) {
     }
   }
   throw {
-        ExceptionID: -9,
+        RE_EXN_ID: "Assert_failure",
         _1: /* tuple */[
           "rbset.ml",
           57,
           9
-        ],
-        Debug: "Assert_failure"
+        ]
       };
 }
 
@@ -318,13 +317,12 @@ function unbalanced_right(param) {
     }
   }
   throw {
-        ExceptionID: -9,
+        RE_EXN_ID: "Assert_failure",
         _1: /* tuple */[
           "rbset.ml",
           63,
           9
-        ],
-        Debug: "Assert_failure"
+        ]
       };
 }
 
@@ -553,13 +551,12 @@ function remove_min(param) {
               ];
       }
       throw {
-            ExceptionID: -9,
+            RE_EXN_ID: "Assert_failure",
             _1: /* tuple */[
               "rbset.ml",
               115,
               4
-            ],
-            Debug: "Assert_failure"
+            ]
           };
     }
     var match$1 = remove_min(param[1]);
@@ -588,13 +585,12 @@ function remove_min(param) {
           ];
   }
   throw {
-        ExceptionID: -9,
+        RE_EXN_ID: "Assert_failure",
         _1: /* tuple */[
           "rbset.ml",
           115,
           4
-        ],
-        Debug: "Assert_failure"
+        ]
       };
 }
 

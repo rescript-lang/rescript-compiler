@@ -107,9 +107,8 @@ function filter_map(f, a) {
 function range(from, to_) {
   if (from > to_) {
     throw {
-          ExceptionID: -3,
-          _1: "Ext_array_test.range",
-          Debug: "Invalid_argument"
+          RE_EXN_ID: "Invalid_argument",
+          _1: "Ext_array_test.range"
         };
   }
   return $$Array.init((to_ - from | 0) + 1 | 0, (function (i) {
@@ -121,9 +120,8 @@ function map2i(f, a, b) {
   var len = a.length;
   if (len !== b.length) {
     throw {
-          ExceptionID: -3,
-          _1: "Ext_array_test.map2i",
-          Debug: "Invalid_argument"
+          RE_EXN_ID: "Invalid_argument",
+          _1: "Ext_array_test.map2i"
         };
   }
   return $$Array.mapi((function (i, a) {

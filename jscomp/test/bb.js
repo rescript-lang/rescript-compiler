@@ -23,13 +23,12 @@ function ff(x) {
         return /* c */99;
     default:
       throw {
-            ExceptionID: -9,
+            RE_EXN_ID: "Assert_failure",
             _1: /* tuple */[
               "bb.ml",
               17,
               9
-            ],
-            Debug: "Assert_failure"
+            ]
           };
   }
 }
@@ -48,13 +47,12 @@ function test(x) {
         break;
     default:
       throw {
-            ExceptionID: -9,
+            RE_EXN_ID: "Assert_failure",
             _1: /* tuple */[
               "bb.ml",
               26,
               13
-            ],
-            Debug: "Assert_failure"
+            ]
           };
   }
   if (match !== 98) {

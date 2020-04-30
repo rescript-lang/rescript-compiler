@@ -36,7 +36,7 @@ let fields : exn -> string = [%raw{|function(x){
 
 
 
-external exn_slot_id :  exn -> int  = "caml_exn_slot_id"
+(* external exn_slot_id :  exn -> int  = "caml_exn_slot_id" *)
 
 external exn_slot_name : exn -> string = "caml_exn_slot_name"
 

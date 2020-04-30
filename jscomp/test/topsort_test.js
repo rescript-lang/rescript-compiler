@@ -122,13 +122,12 @@ if (!Caml_obj.caml_equal(dfs1(/* :: */[
         ]
       ])) {
   throw {
-        ExceptionID: -9,
+        RE_EXN_ID: "Assert_failure",
         _1: /* tuple */[
           "topsort_test.ml",
           29,
           2
-        ],
-        Debug: "Assert_failure"
+        ]
       };
 }
 
@@ -160,13 +159,12 @@ if (!Caml_obj.caml_equal(dfs1(/* :: */[
         ]
       ])) {
   throw {
-        ExceptionID: -9,
+        RE_EXN_ID: "Assert_failure",
         _1: /* tuple */[
           "topsort_test.ml",
           32,
           2
-        ],
-        Debug: "Assert_failure"
+        ]
       };
 }
 
@@ -221,13 +219,12 @@ if (!Caml_obj.caml_equal(dfs2(/* :: */[
         ]
       ])) {
   throw {
-        ExceptionID: -9,
+        RE_EXN_ID: "Assert_failure",
         _1: /* tuple */[
           "topsort_test.ml",
           47,
           2
-        ],
-        Debug: "Assert_failure"
+        ]
       };
 }
 
@@ -257,13 +254,12 @@ if (!Caml_obj.caml_equal(dfs2(/* :: */[
         ]
       ])) {
   throw {
-        ExceptionID: -9,
+        RE_EXN_ID: "Assert_failure",
         _1: /* tuple */[
           "topsort_test.ml",
           48,
           2
-        ],
-        Debug: "Assert_failure"
+        ]
       };
 }
 
@@ -315,13 +311,12 @@ if (!Caml_obj.caml_equal(dfs3(/* :: */[
         ]
       ])) {
   throw {
-        ExceptionID: -9,
+        RE_EXN_ID: "Assert_failure",
         _1: /* tuple */[
           "topsort_test.ml",
           65,
           2
-        ],
-        Debug: "Assert_failure"
+        ]
       };
 }
 
@@ -351,13 +346,12 @@ if (!Caml_obj.caml_equal(dfs3(/* :: */[
         ]
       ])) {
   throw {
-        ExceptionID: -9,
+        RE_EXN_ID: "Assert_failure",
         _1: /* tuple */[
           "topsort_test.ml",
           66,
           2
-        ],
-        Debug: "Assert_failure"
+        ]
       };
 }
 
@@ -441,13 +435,12 @@ if (!Caml_obj.caml_equal(unsafe_topsort(grwork), /* :: */[
         ]
       ])) {
   throw {
-        ExceptionID: -9,
+        RE_EXN_ID: "Assert_failure",
         _1: /* tuple */[
           "topsort_test.ml",
           110,
           2
-        ],
-        Debug: "Assert_failure"
+        ]
       };
 }
 
@@ -485,15 +478,13 @@ function bal(l, v, r) {
         return create(create(ll, lv, lr[/* l */0]), lr[/* v */1], create(lr[/* r */2], v, r));
       }
       throw {
-            ExceptionID: -3,
-            _1: "Set.bal",
-            Debug: "Invalid_argument"
+            RE_EXN_ID: "Invalid_argument",
+            _1: "Set.bal"
           };
     }
     throw {
-          ExceptionID: -3,
-          _1: "Set.bal",
-          Debug: "Invalid_argument"
+          RE_EXN_ID: "Invalid_argument",
+          _1: "Set.bal"
         };
   }
   if (hr <= (hl + 2 | 0)) {
@@ -515,15 +506,13 @@ function bal(l, v, r) {
       return create(create(l, v, rl[/* l */0]), rl[/* v */1], create(rl[/* r */2], rv, rr));
     }
     throw {
-          ExceptionID: -3,
-          _1: "Set.bal",
-          Debug: "Invalid_argument"
+          RE_EXN_ID: "Invalid_argument",
+          _1: "Set.bal"
         };
   }
   throw {
-        ExceptionID: -3,
-        _1: "Set.bal",
-        Debug: "Invalid_argument"
+        RE_EXN_ID: "Invalid_argument",
+        _1: "Set.bal"
       };
 }
 
@@ -614,8 +603,7 @@ function min_elt(_param) {
       continue ;
     }
     throw {
-          ExceptionID: -6,
-          Debug: "Not_found"
+          RE_EXN_ID: "Not_found"
         };
   };
 }
@@ -647,8 +635,7 @@ function max_elt(_param) {
       continue ;
     }
     throw {
-          ExceptionID: -6,
-          Debug: "Not_found"
+          RE_EXN_ID: "Not_found"
         };
   };
 }
@@ -678,9 +665,8 @@ function remove_min_elt(param) {
     }
   }
   throw {
-        ExceptionID: -3,
-        _1: "Set.remove_min_elt",
-        Debug: "Invalid_argument"
+        RE_EXN_ID: "Invalid_argument",
+        _1: "Set.remove_min_elt"
       };
 }
 
@@ -1098,8 +1084,7 @@ function find(x, _param) {
       continue ;
     }
     throw {
-          ExceptionID: -6,
-          Debug: "Not_found"
+          RE_EXN_ID: "Not_found"
         };
   };
 }
@@ -1132,8 +1117,7 @@ function find_first(f, _param) {
       continue ;
     }
     throw {
-          ExceptionID: -6,
-          Debug: "Not_found"
+          RE_EXN_ID: "Not_found"
         };
   };
 }
@@ -1197,8 +1181,7 @@ function find_last(f, _param) {
       continue ;
     }
     throw {
-          ExceptionID: -6,
-          Debug: "Not_found"
+          RE_EXN_ID: "Not_found"
         };
   };
 }
@@ -1380,13 +1363,12 @@ function of_list(l) {
                 ];
         }
         throw {
-              ExceptionID: -9,
+              RE_EXN_ID: "Assert_failure",
               _1: /* tuple */[
                 "set.ml",
                 510,
                 18
-              ],
-              Debug: "Assert_failure"
+              ]
             };
       };
       return sub(List.length(l$1), l$1)[0];
@@ -1451,12 +1433,11 @@ function pathsort(graph) {
     var set = param[0];
     if (mem(node, set)) {
       throw {
-            ExceptionID: Cycle.ExceptionID,
+            RE_EXN_ID: Cycle,
             _1: /* :: */[
               node,
               stack
-            ],
-            Debug: Cycle.Debug
+            ]
           };
     }
     return /* tuple */[
@@ -1509,13 +1490,12 @@ if (!Caml_obj.caml_equal(pathsort(grwork), /* :: */[
         ]
       ])) {
   throw {
-        ExceptionID: -9,
+        RE_EXN_ID: "Assert_failure",
         _1: /* tuple */[
           "topsort_test.ml",
           150,
           4
-        ],
-        Debug: "Assert_failure"
+        ]
       };
 }
 
@@ -1528,19 +1508,18 @@ try {
         grwork
       ]);
   throw {
-        ExceptionID: -9,
+        RE_EXN_ID: "Assert_failure",
         _1: /* tuple */[
           "topsort_test.ml",
           156,
           8
-        ],
-        Debug: "Assert_failure"
+        ]
       };
 }
 catch (raw_exn){
   var exn = Caml_js_exceptions.internalToOCamlException(raw_exn);
   var exit = 0;
-  if (exn.ExceptionID === Cycle.ExceptionID) {
+  if (exn.RE_EXN_ID === Cycle) {
     var match = exn._1;
     if (match && match[0] === "go") {
       var match$1 = match[1];
@@ -1566,13 +1545,12 @@ catch (raw_exn){
   }
   if (exit === 1) {
     throw {
-          ExceptionID: -9,
+          RE_EXN_ID: "Assert_failure",
           _1: /* tuple */[
             "topsort_test.ml",
             159,
             11
-          ],
-          Debug: "Assert_failure"
+          ]
         };
   }
   

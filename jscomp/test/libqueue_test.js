@@ -41,7 +41,7 @@ function does_raise(f, q) {
   }
   catch (raw_exn){
     var exn = Caml_js_exceptions.internalToOCamlException(raw_exn);
-    if (exn.ExceptionID === Queue.Empty.ExceptionID) {
+    if (exn.RE_EXN_ID === Queue.Empty) {
       return true;
     }
     throw exn;
@@ -56,13 +56,12 @@ var q = {
 
 if (!(to_list(q) === /* [] */0 && q.length === 0)) {
   throw {
-        ExceptionID: -9,
+        RE_EXN_ID: "Assert_failure",
         _1: /* tuple */[
           "libqueue_test.ml",
           28,
           25
-        ],
-        Debug: "Assert_failure"
+        ]
       };
 }
 
@@ -73,13 +72,12 @@ if (!(Caml_obj.caml_equal(to_list(q), /* :: */[
           /* [] */0
         ]) && q.length === 1)) {
   throw {
-        ExceptionID: -9,
+        RE_EXN_ID: "Assert_failure",
         _1: /* tuple */[
           "libqueue_test.ml",
           29,
           25
-        ],
-        Debug: "Assert_failure"
+        ]
       };
 }
 
@@ -93,13 +91,12 @@ if (!(Caml_obj.caml_equal(to_list(q), /* :: */[
           ]
         ]) && q.length === 2)) {
   throw {
-        ExceptionID: -9,
+        RE_EXN_ID: "Assert_failure",
         _1: /* tuple */[
           "libqueue_test.ml",
           30,
           25
-        ],
-        Debug: "Assert_failure"
+        ]
       };
 }
 
@@ -116,13 +113,12 @@ if (!(Caml_obj.caml_equal(to_list(q), /* :: */[
           ]
         ]) && q.length === 3)) {
   throw {
-        ExceptionID: -9,
+        RE_EXN_ID: "Assert_failure",
         _1: /* tuple */[
           "libqueue_test.ml",
           31,
           25
-        ],
-        Debug: "Assert_failure"
+        ]
       };
 }
 
@@ -142,25 +138,23 @@ if (!(Caml_obj.caml_equal(to_list(q), /* :: */[
           ]
         ]) && q.length === 4)) {
   throw {
-        ExceptionID: -9,
+        RE_EXN_ID: "Assert_failure",
         _1: /* tuple */[
           "libqueue_test.ml",
           32,
           25
-        ],
-        Debug: "Assert_failure"
+        ]
       };
 }
 
 if (Queue.take(q) !== 1) {
   throw {
-        ExceptionID: -9,
+        RE_EXN_ID: "Assert_failure",
         _1: /* tuple */[
           "libqueue_test.ml",
           33,
           2
-        ],
-        Debug: "Assert_failure"
+        ]
       };
 }
 
@@ -175,25 +169,23 @@ if (!(Caml_obj.caml_equal(to_list(q), /* :: */[
           ]
         ]) && q.length === 3)) {
   throw {
-        ExceptionID: -9,
+        RE_EXN_ID: "Assert_failure",
         _1: /* tuple */[
           "libqueue_test.ml",
           33,
           25
-        ],
-        Debug: "Assert_failure"
+        ]
       };
 }
 
 if (Queue.take(q) !== 2) {
   throw {
-        ExceptionID: -9,
+        RE_EXN_ID: "Assert_failure",
         _1: /* tuple */[
           "libqueue_test.ml",
           34,
           2
-        ],
-        Debug: "Assert_failure"
+        ]
       };
 }
 
@@ -205,25 +197,23 @@ if (!(Caml_obj.caml_equal(to_list(q), /* :: */[
           ]
         ]) && q.length === 2)) {
   throw {
-        ExceptionID: -9,
+        RE_EXN_ID: "Assert_failure",
         _1: /* tuple */[
           "libqueue_test.ml",
           34,
           25
-        ],
-        Debug: "Assert_failure"
+        ]
       };
 }
 
 if (Queue.take(q) !== 3) {
   throw {
-        ExceptionID: -9,
+        RE_EXN_ID: "Assert_failure",
         _1: /* tuple */[
           "libqueue_test.ml",
           35,
           2
-        ],
-        Debug: "Assert_failure"
+        ]
       };
 }
 
@@ -232,49 +222,45 @@ if (!(Caml_obj.caml_equal(to_list(q), /* :: */[
           /* [] */0
         ]) && q.length === 1)) {
   throw {
-        ExceptionID: -9,
+        RE_EXN_ID: "Assert_failure",
         _1: /* tuple */[
           "libqueue_test.ml",
           35,
           25
-        ],
-        Debug: "Assert_failure"
+        ]
       };
 }
 
 if (Queue.take(q) !== 4) {
   throw {
-        ExceptionID: -9,
+        RE_EXN_ID: "Assert_failure",
         _1: /* tuple */[
           "libqueue_test.ml",
           36,
           2
-        ],
-        Debug: "Assert_failure"
+        ]
       };
 }
 
 if (!(to_list(q) === /* [] */0 && q.length === 0)) {
   throw {
-        ExceptionID: -9,
+        RE_EXN_ID: "Assert_failure",
         _1: /* tuple */[
           "libqueue_test.ml",
           36,
           25
-        ],
-        Debug: "Assert_failure"
+        ]
       };
 }
 
 if (!does_raise(Queue.take, q)) {
   throw {
-        ExceptionID: -9,
+        RE_EXN_ID: "Assert_failure",
         _1: /* tuple */[
           "libqueue_test.ml",
           37,
           2
-        ],
-        Debug: "Assert_failure"
+        ]
       };
 }
 
@@ -288,25 +274,23 @@ Queue.add(1, q$1);
 
 if (Queue.take(q$1) !== 1) {
   throw {
-        ExceptionID: -9,
+        RE_EXN_ID: "Assert_failure",
         _1: /* tuple */[
           "libqueue_test.ml",
           42,
           13
-        ],
-        Debug: "Assert_failure"
+        ]
       };
 }
 
 if (!does_raise(Queue.take, q$1)) {
   throw {
-        ExceptionID: -9,
+        RE_EXN_ID: "Assert_failure",
         _1: /* tuple */[
           "libqueue_test.ml",
           42,
           36
-        ],
-        Debug: "Assert_failure"
+        ]
       };
 }
 
@@ -314,37 +298,34 @@ Queue.add(2, q$1);
 
 if (Queue.take(q$1) !== 2) {
   throw {
-        ExceptionID: -9,
+        RE_EXN_ID: "Assert_failure",
         _1: /* tuple */[
           "libqueue_test.ml",
           43,
           13
-        ],
-        Debug: "Assert_failure"
+        ]
       };
 }
 
 if (!does_raise(Queue.take, q$1)) {
   throw {
-        ExceptionID: -9,
+        RE_EXN_ID: "Assert_failure",
         _1: /* tuple */[
           "libqueue_test.ml",
           43,
           36
-        ],
-        Debug: "Assert_failure"
+        ]
       };
 }
 
 if (q$1.length !== 0) {
   throw {
-        ExceptionID: -9,
+        RE_EXN_ID: "Assert_failure",
         _1: /* tuple */[
           "libqueue_test.ml",
           44,
           2
-        ],
-        Debug: "Assert_failure"
+        ]
       };
 }
 
@@ -358,13 +339,12 @@ Queue.add(1, q$2);
 
 if (Queue.peek(q$2) !== 1) {
   throw {
-        ExceptionID: -9,
+        RE_EXN_ID: "Assert_failure",
         _1: /* tuple */[
           "libqueue_test.ml",
           49,
           13
-        ],
-        Debug: "Assert_failure"
+        ]
       };
 }
 
@@ -372,13 +352,12 @@ Queue.add(2, q$2);
 
 if (Queue.peek(q$2) !== 1) {
   throw {
-        ExceptionID: -9,
+        RE_EXN_ID: "Assert_failure",
         _1: /* tuple */[
           "libqueue_test.ml",
           50,
           13
-        ],
-        Debug: "Assert_failure"
+        ]
       };
 }
 
@@ -386,109 +365,100 @@ Queue.add(3, q$2);
 
 if (Queue.peek(q$2) !== 1) {
   throw {
-        ExceptionID: -9,
+        RE_EXN_ID: "Assert_failure",
         _1: /* tuple */[
           "libqueue_test.ml",
           51,
           13
-        ],
-        Debug: "Assert_failure"
+        ]
       };
 }
 
 if (Queue.peek(q$2) !== 1) {
   throw {
-        ExceptionID: -9,
+        RE_EXN_ID: "Assert_failure",
         _1: /* tuple */[
           "libqueue_test.ml",
           52,
           2
-        ],
-        Debug: "Assert_failure"
+        ]
       };
 }
 
 if (Queue.take(q$2) !== 1) {
   throw {
-        ExceptionID: -9,
+        RE_EXN_ID: "Assert_failure",
         _1: /* tuple */[
           "libqueue_test.ml",
           52,
           25
-        ],
-        Debug: "Assert_failure"
+        ]
       };
 }
 
 if (Queue.peek(q$2) !== 2) {
   throw {
-        ExceptionID: -9,
+        RE_EXN_ID: "Assert_failure",
         _1: /* tuple */[
           "libqueue_test.ml",
           53,
           2
-        ],
-        Debug: "Assert_failure"
+        ]
       };
 }
 
 if (Queue.take(q$2) !== 2) {
   throw {
-        ExceptionID: -9,
+        RE_EXN_ID: "Assert_failure",
         _1: /* tuple */[
           "libqueue_test.ml",
           53,
           25
-        ],
-        Debug: "Assert_failure"
+        ]
       };
 }
 
 if (Queue.peek(q$2) !== 3) {
   throw {
-        ExceptionID: -9,
+        RE_EXN_ID: "Assert_failure",
         _1: /* tuple */[
           "libqueue_test.ml",
           54,
           2
-        ],
-        Debug: "Assert_failure"
+        ]
       };
 }
 
 if (Queue.take(q$2) !== 3) {
   throw {
-        ExceptionID: -9,
+        RE_EXN_ID: "Assert_failure",
         _1: /* tuple */[
           "libqueue_test.ml",
           54,
           25
-        ],
-        Debug: "Assert_failure"
+        ]
       };
 }
 
 if (!does_raise(Queue.peek, q$2)) {
   throw {
-        ExceptionID: -9,
+        RE_EXN_ID: "Assert_failure",
         _1: /* tuple */[
           "libqueue_test.ml",
           55,
           2
-        ],
-        Debug: "Assert_failure"
+        ]
       };
 }
 
 if (!does_raise(Queue.peek, q$2)) {
   throw {
-        ExceptionID: -9,
+        RE_EXN_ID: "Assert_failure",
         _1: /* tuple */[
           "libqueue_test.ml",
           56,
           2
-        ],
-        Debug: "Assert_failure"
+        ]
       };
 }
 
@@ -506,25 +476,23 @@ Queue.clear(q$3);
 
 if (q$3.length !== 0) {
   throw {
-        ExceptionID: -9,
+        RE_EXN_ID: "Assert_failure",
         _1: /* tuple */[
           "libqueue_test.ml",
           63,
           2
-        ],
-        Debug: "Assert_failure"
+        ]
       };
 }
 
 if (!does_raise(Queue.take, q$3)) {
   throw {
-        ExceptionID: -9,
+        RE_EXN_ID: "Assert_failure",
         _1: /* tuple */[
           "libqueue_test.ml",
           64,
           2
-        ],
-        Debug: "Assert_failure"
+        ]
       };
 }
 
@@ -534,13 +502,12 @@ if (!Caml_obj.caml_equal(q$3, {
         last: /* Nil */0
       })) {
   throw {
-        ExceptionID: -9,
+        RE_EXN_ID: "Assert_failure",
         _1: /* tuple */[
           "libqueue_test.ml",
           65,
           2
-        ],
-        Debug: "Assert_failure"
+        ]
       };
 }
 
@@ -548,13 +515,12 @@ Queue.add(42, q$3);
 
 if (Queue.take(q$3) !== 42) {
   throw {
-        ExceptionID: -9,
+        RE_EXN_ID: "Assert_failure",
         _1: /* tuple */[
           "libqueue_test.ml",
           67,
           2
-        ],
-        Debug: "Assert_failure"
+        ]
       };
 }
 
@@ -602,13 +568,12 @@ if (!Caml_obj.caml_equal(to_list(q1), /* :: */[
         ]
       ])) {
   throw {
-        ExceptionID: -9,
+        RE_EXN_ID: "Assert_failure",
         _1: /* tuple */[
           "libqueue_test.ml",
           74,
           2
-        ],
-        Debug: "Assert_failure"
+        ]
       };
 }
 
@@ -644,50 +609,46 @@ if (!Caml_obj.caml_equal(to_list(q2), /* :: */[
         ]
       ])) {
   throw {
-        ExceptionID: -9,
+        RE_EXN_ID: "Assert_failure",
         _1: /* tuple */[
           "libqueue_test.ml",
           75,
           2
-        ],
-        Debug: "Assert_failure"
+        ]
       };
 }
 
 if (q1.length !== 10) {
   throw {
-        ExceptionID: -9,
+        RE_EXN_ID: "Assert_failure",
         _1: /* tuple */[
           "libqueue_test.ml",
           76,
           2
-        ],
-        Debug: "Assert_failure"
+        ]
       };
 }
 
 if (q2.length !== 10) {
   throw {
-        ExceptionID: -9,
+        RE_EXN_ID: "Assert_failure",
         _1: /* tuple */[
           "libqueue_test.ml",
           77,
           2
-        ],
-        Debug: "Assert_failure"
+        ]
       };
 }
 
 for(var i$2 = 1; i$2 <= 10; ++i$2){
   if (Queue.take(q1) !== i$2) {
     throw {
-          ExceptionID: -9,
+          RE_EXN_ID: "Assert_failure",
           _1: /* tuple */[
             "libqueue_test.ml",
             79,
             4
-          ],
-          Debug: "Assert_failure"
+          ]
         };
   }
   
@@ -696,13 +657,12 @@ for(var i$2 = 1; i$2 <= 10; ++i$2){
 for(var i$3 = 1; i$3 <= 10; ++i$3){
   if (Queue.take(q2) !== i$3) {
     throw {
-          ExceptionID: -9,
+          RE_EXN_ID: "Assert_failure",
           _1: /* tuple */[
             "libqueue_test.ml",
             82,
             4
-          ],
-          Debug: "Assert_failure"
+          ]
         };
   }
   
@@ -716,13 +676,12 @@ var q$4 = {
 
 if (q$4.length !== 0) {
   throw {
-        ExceptionID: -9,
+        RE_EXN_ID: "Assert_failure",
         _1: /* tuple */[
           "libqueue_test.ml",
           88,
           2
-        ],
-        Debug: "Assert_failure"
+        ]
       };
 }
 
@@ -730,24 +689,22 @@ for(var i$4 = 1; i$4 <= 10; ++i$4){
   Queue.add(i$4, q$4);
   if (q$4.length !== i$4) {
     throw {
-          ExceptionID: -9,
+          RE_EXN_ID: "Assert_failure",
           _1: /* tuple */[
             "libqueue_test.ml",
             91,
             4
-          ],
-          Debug: "Assert_failure"
+          ]
         };
   }
   if (q$4.length === 0) {
     throw {
-          ExceptionID: -9,
+          RE_EXN_ID: "Assert_failure",
           _1: /* tuple */[
             "libqueue_test.ml",
             92,
             4
-          ],
-          Debug: "Assert_failure"
+          ]
         };
   }
   
@@ -756,24 +713,22 @@ for(var i$4 = 1; i$4 <= 10; ++i$4){
 for(var i$5 = 10; i$5 >= 1; --i$5){
   if (q$4.length !== i$5) {
     throw {
-          ExceptionID: -9,
+          RE_EXN_ID: "Assert_failure",
           _1: /* tuple */[
             "libqueue_test.ml",
             95,
             4
-          ],
-          Debug: "Assert_failure"
+          ]
         };
   }
   if (q$4.length === 0) {
     throw {
-          ExceptionID: -9,
+          RE_EXN_ID: "Assert_failure",
           _1: /* tuple */[
             "libqueue_test.ml",
             96,
             4
-          ],
-          Debug: "Assert_failure"
+          ]
         };
   }
   Queue.take(q$4);
@@ -781,25 +736,23 @@ for(var i$5 = 10; i$5 >= 1; --i$5){
 
 if (q$4.length !== 0) {
   throw {
-        ExceptionID: -9,
+        RE_EXN_ID: "Assert_failure",
         _1: /* tuple */[
           "libqueue_test.ml",
           99,
           2
-        ],
-        Debug: "Assert_failure"
+        ]
       };
 }
 
 if (q$4.length !== 0) {
   throw {
-        ExceptionID: -9,
+        RE_EXN_ID: "Assert_failure",
         _1: /* tuple */[
           "libqueue_test.ml",
           100,
           2
-        ],
-        Debug: "Assert_failure"
+        ]
       };
 }
 
@@ -820,13 +773,12 @@ var i$7 = {
 Queue.iter((function (j) {
         if (i$7.contents !== j) {
           throw {
-                ExceptionID: -9,
+                RE_EXN_ID: "Assert_failure",
                 _1: /* tuple */[
                   "libqueue_test.ml",
                   107,
                   19
-                ],
-                Debug: "Assert_failure"
+                ]
               };
         }
         i$7.contents = i$7.contents + 1 | 0;
@@ -847,49 +799,45 @@ var q2$1 = {
 
 if (q1$1.length !== 0) {
   throw {
-        ExceptionID: -9,
+        RE_EXN_ID: "Assert_failure",
         _1: /* tuple */[
           "libqueue_test.ml",
           112,
           2
-        ],
-        Debug: "Assert_failure"
+        ]
       };
 }
 
 if (to_list(q1$1) !== /* [] */0) {
   throw {
-        ExceptionID: -9,
+        RE_EXN_ID: "Assert_failure",
         _1: /* tuple */[
           "libqueue_test.ml",
           112,
           28
-        ],
-        Debug: "Assert_failure"
+        ]
       };
 }
 
 if (q2$1.length !== 0) {
   throw {
-        ExceptionID: -9,
+        RE_EXN_ID: "Assert_failure",
         _1: /* tuple */[
           "libqueue_test.ml",
           113,
           2
-        ],
-        Debug: "Assert_failure"
+        ]
       };
 }
 
 if (to_list(q2$1) !== /* [] */0) {
   throw {
-        ExceptionID: -9,
+        RE_EXN_ID: "Assert_failure",
         _1: /* tuple */[
           "libqueue_test.ml",
           113,
           28
-        ],
-        Debug: "Assert_failure"
+        ]
       };
 }
 
@@ -897,49 +845,45 @@ Queue.transfer(q1$1, q2$1);
 
 if (q1$1.length !== 0) {
   throw {
-        ExceptionID: -9,
+        RE_EXN_ID: "Assert_failure",
         _1: /* tuple */[
           "libqueue_test.ml",
           115,
           2
-        ],
-        Debug: "Assert_failure"
+        ]
       };
 }
 
 if (to_list(q1$1) !== /* [] */0) {
   throw {
-        ExceptionID: -9,
+        RE_EXN_ID: "Assert_failure",
         _1: /* tuple */[
           "libqueue_test.ml",
           115,
           28
-        ],
-        Debug: "Assert_failure"
+        ]
       };
 }
 
 if (q2$1.length !== 0) {
   throw {
-        ExceptionID: -9,
+        RE_EXN_ID: "Assert_failure",
         _1: /* tuple */[
           "libqueue_test.ml",
           116,
           2
-        ],
-        Debug: "Assert_failure"
+        ]
       };
 }
 
 if (to_list(q2$1) !== /* [] */0) {
   throw {
-        ExceptionID: -9,
+        RE_EXN_ID: "Assert_failure",
         _1: /* tuple */[
           "libqueue_test.ml",
           116,
           28
-        ],
-        Debug: "Assert_failure"
+        ]
       };
 }
 
@@ -961,13 +905,12 @@ for(var i$8 = 1; i$8 <= 4; ++i$8){
 
 if (q1$2.length !== 4) {
   throw {
-        ExceptionID: -9,
+        RE_EXN_ID: "Assert_failure",
         _1: /* tuple */[
           "libqueue_test.ml",
           122,
           2
-        ],
-        Debug: "Assert_failure"
+        ]
       };
 }
 
@@ -985,37 +928,34 @@ if (!Caml_obj.caml_equal(to_list(q1$2), /* :: */[
         ]
       ])) {
   throw {
-        ExceptionID: -9,
+        RE_EXN_ID: "Assert_failure",
         _1: /* tuple */[
           "libqueue_test.ml",
           122,
           28
-        ],
-        Debug: "Assert_failure"
+        ]
       };
 }
 
 if (q2$2.length !== 0) {
   throw {
-        ExceptionID: -9,
+        RE_EXN_ID: "Assert_failure",
         _1: /* tuple */[
           "libqueue_test.ml",
           123,
           2
-        ],
-        Debug: "Assert_failure"
+        ]
       };
 }
 
 if (to_list(q2$2) !== /* [] */0) {
   throw {
-        ExceptionID: -9,
+        RE_EXN_ID: "Assert_failure",
         _1: /* tuple */[
           "libqueue_test.ml",
           123,
           28
-        ],
-        Debug: "Assert_failure"
+        ]
       };
 }
 
@@ -1023,37 +963,34 @@ Queue.transfer(q1$2, q2$2);
 
 if (q1$2.length !== 0) {
   throw {
-        ExceptionID: -9,
+        RE_EXN_ID: "Assert_failure",
         _1: /* tuple */[
           "libqueue_test.ml",
           125,
           2
-        ],
-        Debug: "Assert_failure"
+        ]
       };
 }
 
 if (to_list(q1$2) !== /* [] */0) {
   throw {
-        ExceptionID: -9,
+        RE_EXN_ID: "Assert_failure",
         _1: /* tuple */[
           "libqueue_test.ml",
           125,
           28
-        ],
-        Debug: "Assert_failure"
+        ]
       };
 }
 
 if (q2$2.length !== 4) {
   throw {
-        ExceptionID: -9,
+        RE_EXN_ID: "Assert_failure",
         _1: /* tuple */[
           "libqueue_test.ml",
           126,
           2
-        ],
-        Debug: "Assert_failure"
+        ]
       };
 }
 
@@ -1071,13 +1008,12 @@ if (!Caml_obj.caml_equal(to_list(q2$2), /* :: */[
         ]
       ])) {
   throw {
-        ExceptionID: -9,
+        RE_EXN_ID: "Assert_failure",
         _1: /* tuple */[
           "libqueue_test.ml",
           126,
           28
-        ],
-        Debug: "Assert_failure"
+        ]
       };
 }
 
@@ -1099,37 +1035,34 @@ for(var i$9 = 5; i$9 <= 8; ++i$9){
 
 if (q1$3.length !== 0) {
   throw {
-        ExceptionID: -9,
+        RE_EXN_ID: "Assert_failure",
         _1: /* tuple */[
           "libqueue_test.ml",
           132,
           2
-        ],
-        Debug: "Assert_failure"
+        ]
       };
 }
 
 if (to_list(q1$3) !== /* [] */0) {
   throw {
-        ExceptionID: -9,
+        RE_EXN_ID: "Assert_failure",
         _1: /* tuple */[
           "libqueue_test.ml",
           132,
           28
-        ],
-        Debug: "Assert_failure"
+        ]
       };
 }
 
 if (q2$3.length !== 4) {
   throw {
-        ExceptionID: -9,
+        RE_EXN_ID: "Assert_failure",
         _1: /* tuple */[
           "libqueue_test.ml",
           133,
           2
-        ],
-        Debug: "Assert_failure"
+        ]
       };
 }
 
@@ -1147,13 +1080,12 @@ if (!Caml_obj.caml_equal(to_list(q2$3), /* :: */[
         ]
       ])) {
   throw {
-        ExceptionID: -9,
+        RE_EXN_ID: "Assert_failure",
         _1: /* tuple */[
           "libqueue_test.ml",
           133,
           28
-        ],
-        Debug: "Assert_failure"
+        ]
       };
 }
 
@@ -1161,37 +1093,34 @@ Queue.transfer(q1$3, q2$3);
 
 if (q1$3.length !== 0) {
   throw {
-        ExceptionID: -9,
+        RE_EXN_ID: "Assert_failure",
         _1: /* tuple */[
           "libqueue_test.ml",
           135,
           2
-        ],
-        Debug: "Assert_failure"
+        ]
       };
 }
 
 if (to_list(q1$3) !== /* [] */0) {
   throw {
-        ExceptionID: -9,
+        RE_EXN_ID: "Assert_failure",
         _1: /* tuple */[
           "libqueue_test.ml",
           135,
           28
-        ],
-        Debug: "Assert_failure"
+        ]
       };
 }
 
 if (q2$3.length !== 4) {
   throw {
-        ExceptionID: -9,
+        RE_EXN_ID: "Assert_failure",
         _1: /* tuple */[
           "libqueue_test.ml",
           136,
           2
-        ],
-        Debug: "Assert_failure"
+        ]
       };
 }
 
@@ -1209,13 +1138,12 @@ if (!Caml_obj.caml_equal(to_list(q2$3), /* :: */[
         ]
       ])) {
   throw {
-        ExceptionID: -9,
+        RE_EXN_ID: "Assert_failure",
         _1: /* tuple */[
           "libqueue_test.ml",
           136,
           28
-        ],
-        Debug: "Assert_failure"
+        ]
       };
 }
 
@@ -1241,13 +1169,12 @@ for(var i$11 = 5; i$11 <= 8; ++i$11){
 
 if (q1$4.length !== 4) {
   throw {
-        ExceptionID: -9,
+        RE_EXN_ID: "Assert_failure",
         _1: /* tuple */[
           "libqueue_test.ml",
           143,
           2
-        ],
-        Debug: "Assert_failure"
+        ]
       };
 }
 
@@ -1265,25 +1192,23 @@ if (!Caml_obj.caml_equal(to_list(q1$4), /* :: */[
         ]
       ])) {
   throw {
-        ExceptionID: -9,
+        RE_EXN_ID: "Assert_failure",
         _1: /* tuple */[
           "libqueue_test.ml",
           143,
           28
-        ],
-        Debug: "Assert_failure"
+        ]
       };
 }
 
 if (q2$4.length !== 4) {
   throw {
-        ExceptionID: -9,
+        RE_EXN_ID: "Assert_failure",
         _1: /* tuple */[
           "libqueue_test.ml",
           144,
           2
-        ],
-        Debug: "Assert_failure"
+        ]
       };
 }
 
@@ -1301,13 +1226,12 @@ if (!Caml_obj.caml_equal(to_list(q2$4), /* :: */[
         ]
       ])) {
   throw {
-        ExceptionID: -9,
+        RE_EXN_ID: "Assert_failure",
         _1: /* tuple */[
           "libqueue_test.ml",
           144,
           28
-        ],
-        Debug: "Assert_failure"
+        ]
       };
 }
 
@@ -1315,37 +1239,34 @@ Queue.transfer(q1$4, q2$4);
 
 if (q1$4.length !== 0) {
   throw {
-        ExceptionID: -9,
+        RE_EXN_ID: "Assert_failure",
         _1: /* tuple */[
           "libqueue_test.ml",
           146,
           2
-        ],
-        Debug: "Assert_failure"
+        ]
       };
 }
 
 if (to_list(q1$4) !== /* [] */0) {
   throw {
-        ExceptionID: -9,
+        RE_EXN_ID: "Assert_failure",
         _1: /* tuple */[
           "libqueue_test.ml",
           146,
           28
-        ],
-        Debug: "Assert_failure"
+        ]
       };
 }
 
 if (q2$4.length !== 8) {
   throw {
-        ExceptionID: -9,
+        RE_EXN_ID: "Assert_failure",
         _1: /* tuple */[
           "libqueue_test.ml",
           147,
           2
-        ],
-        Debug: "Assert_failure"
+        ]
       };
 }
 
@@ -1375,13 +1296,12 @@ if (!Caml_obj.caml_equal(to_list(q2$4), /* :: */[
         ]
       ])) {
   throw {
-        ExceptionID: -9,
+        RE_EXN_ID: "Assert_failure",
         _1: /* tuple */[
           "libqueue_test.ml",
           147,
           28
-        ],
-        Debug: "Assert_failure"
+        ]
       };
 }
 

@@ -7,51 +7,41 @@ var Local = Caml_exceptions.create("Test_exception.Local");
 
 function f(param) {
   throw {
-        ExceptionID: Local.ExceptionID,
-        _1: 3,
-        Debug: Local.Debug
+        RE_EXN_ID: Local,
+        _1: 3
       };
 }
 
 function g(param) {
   throw {
-        ExceptionID: -6,
-        Debug: "Not_found"
+        RE_EXN_ID: "Not_found"
       };
 }
 
 function h(param) {
   throw {
-        ExceptionID: Test_common.U.ExceptionID,
-        _1: 3,
-        Debug: Test_common.U.Debug
+        RE_EXN_ID: Test_common.U,
+        _1: 3
       };
 }
 
 function x(param) {
   throw {
-        ExceptionID: Test_common.H.ExceptionID,
-        Debug: Test_common.H.Debug
+        RE_EXN_ID: Test_common.H
       };
 }
 
 function xx(param) {
   throw {
-        ExceptionID: -3,
-        _1: "x",
-        Debug: "Invalid_argument"
+        RE_EXN_ID: "Invalid_argument",
+        _1: "x"
       };
 }
 
 var Nullary = Caml_exceptions.create("Test_exception.Nullary");
 
-var a_000 = Nullary.ExceptionID;
-
-var a_001 = Nullary.Debug;
-
 var a = {
-  ExceptionID: a_000,
-  Debug: a_001
+  RE_EXN_ID: Nullary
 };
 
 exports.Local = Local;

@@ -22,17 +22,10 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
- type t = {
-  mutable id : nativeint [@bs.as "ExceptionID"];
-  name : string [@bs.as "Debug"];
+type t = {
+  id : string [@bs.as "RE_EXN_ID"];
+
 } 
-
-
-let make name id = { 
-name ; id }
-
-
-
 
 
 (** 
@@ -43,7 +36,7 @@ name ; id }
    {[ a = caml_set_oo_id([248,"tag", caml_oo_last_id++]) ]}
 *)
 
-let id = ref 0n
+let%private id = ref 0
 
 
 (* see  #251
@@ -57,20 +50,15 @@ let id = ref 0n
    ]}*)
 let caml_set_oo_id (b : Caml_obj_extern.t)  : Caml_obj_extern.t = 
   Caml_obj_extern.set_field (Caml_obj_extern.repr b) 1 (Caml_obj_extern.repr id.contents);
-  id .contents <- Caml_nativeint_extern.add id.contents  1n; 
+  id .contents <-  id.contents  + 1; 
   b
 (* FXIME: this is only relevant to OO module now *)
 
-(* let object_tag = 248 *)
 
-let create (str : string) : t = 
-  id .contents <- Caml_nativeint_extern.add id.contents 1n;  
-  make str id.contents
+let create (str : string) : string = 
+  id .contents <-  id.contents + 1;  
+  str ^ "/" ^(Obj.magic (id.contents : int) : string)
 
-(* let makeExtension (str : string) : Caml_builtin_exceptions.exception_block =  *)
-(*   let v = ( str, get_id ()) in  *)
-(*   Caml_obj_extern.set_tag (Caml_obj_extern.repr v) object_tag; *)
-(*   v  *)
 
 
 
@@ -105,15 +93,12 @@ let create (str : string) : t =
 
    This is not a problem in `try .. with` since the logic above is not expressible, see more design in [destruct_exn.md]
 *)
-let caml_is_extension = [%raw {|function (e){
-  if(e == null ) {
-    return false 
-  }
-  return typeof e.ExceptionID === "number" 
-}    
-|}]
+let caml_is_extension (type a ) (e : a) :  bool  =
+  if Js.testAny e then false 
+  else Js.typeof (Obj.magic e : t) .id = "string"
 
-(* type exn = { exn : Caml_builtin_exceptions.t [@bs.as "CamlExt"]} *)
 
-let caml_exn_slot_id (x : t) = x.id
-let caml_exn_slot_name (x : t) = x.name
+
+
+(**FIXME: remove the trailing `/` *)
+let caml_exn_slot_name (x : t) : string = x.id

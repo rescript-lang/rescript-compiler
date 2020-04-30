@@ -63,13 +63,12 @@ function resize(newSize) {
       var n = bucket[0];
       if (typeof n === "number") {
         throw {
-              ExceptionID: -9,
+              RE_EXN_ID: "Assert_failure",
               _1: /* tuple */[
                 "bdd.ml",
                 54,
                 27
-              ],
-              Debug: "Assert_failure"
+              ]
             };
       }
       var ind = hashVal(getId(n[0]), getId(n[3]), n[1]) & newSz_1;
@@ -129,13 +128,12 @@ function mkNode(low, v, high) {
       var n = b[0];
       if (typeof n === "number") {
         throw {
-              ExceptionID: -9,
+              RE_EXN_ID: "Assert_failure",
               _1: /* tuple */[
                 "bdd.ml",
                 99,
                 31
-              ],
-              Debug: "Assert_failure"
+              ]
             };
       }
       if (v === n[1] && idl === getId(n[0]) && idh === getId(n[3])) {
@@ -373,13 +371,12 @@ function main(param) {
     return ;
   }
   throw {
-        ExceptionID: -9,
+        RE_EXN_ID: "Assert_failure",
         _1: /* tuple */[
           "bdd.ml",
           233,
           2
-        ],
-        Debug: "Assert_failure"
+        ]
       };
 }
 

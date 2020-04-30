@@ -131,8 +131,6 @@ let primitive ppf (prim : Lam_primitive.t) = match prim with
   | Pdebugger -> fprintf ppf "debugger"
   | Praw_js_function _ -> fprintf ppf "[raw.fun]"
   | Praw_js_code _ -> fprintf ppf "[raw]"
-  | Pglobal_exception id ->
-    fprintf ppf "global exception %a" Ident.print id       
   | Pjs_typeof -> fprintf ppf "[typeof]"
   | Pnull_to_opt -> fprintf ppf "[null->opt]"              
   | Pundefined_to_opt -> fprintf ppf "[undefined->opt]"     

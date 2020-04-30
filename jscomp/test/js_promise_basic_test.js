@@ -37,21 +37,19 @@ function assert_bool(b) {
     return ;
   }
   throw {
-        ExceptionID: -3,
-        _1: "Assertion Failure.",
-        Debug: "Invalid_argument"
+        RE_EXN_ID: "Invalid_argument",
+        _1: "Assertion Failure."
       };
 }
 
 function fail(param) {
   throw {
-        ExceptionID: -9,
+        RE_EXN_ID: "Assert_failure",
         _1: /* tuple */[
           "js_promise_basic_test.ml",
           19,
           2
-        ],
-        Debug: "Assert_failure"
+        ]
       };
 }
 
@@ -74,25 +72,23 @@ function andThenTest(param) {
 var h = Promise.resolve(undefined);
 
 function assertIsNotFound(x) {
-  var match = Caml_exceptions.caml_is_extension(x) && x.ExceptionID === /* Not_found */-6 ? 0 : undefined;
+  var match = Caml_exceptions.caml_is_extension(x) && x.RE_EXN_ID === "Not_found" ? 0 : undefined;
   if (match !== undefined) {
     return h;
   }
   throw {
-        ExceptionID: -9,
+        RE_EXN_ID: "Assert_failure",
         _1: /* tuple */[
           "js_promise_basic_test.ml",
           36,
           9
-        ],
-        Debug: "Assert_failure"
+        ]
       };
 }
 
 function catchTest(param) {
   var p = Promise.reject({
-        ExceptionID: -6,
-        Debug: "Not_found"
+        RE_EXN_ID: "Not_found"
       });
   return p.then(fail).catch(assertIsNotFound);
 }
@@ -108,8 +104,7 @@ function orResolvedTest(param) {
 
 function orRejectedTest(param) {
   var p = Promise.reject({
-        ExceptionID: -6,
-        Debug: "Not_found"
+        RE_EXN_ID: "Not_found"
       });
   return p.catch((function (param) {
                     return Promise.resolve(22);
@@ -129,8 +124,7 @@ function orElseResolvedTest(param) {
 
 function orElseRejectedResolveTest(param) {
   var p = Promise.reject({
-        ExceptionID: -6,
-        Debug: "Not_found"
+        RE_EXN_ID: "Not_found"
       });
   return p.catch((function (param) {
                     return Promise.resolve(22);
@@ -141,27 +135,24 @@ function orElseRejectedResolveTest(param) {
 
 function orElseRejectedRejectTest(param) {
   var p = Promise.reject({
-        ExceptionID: -6,
-        Debug: "Not_found"
+        RE_EXN_ID: "Not_found"
       });
   return p.catch((function (param) {
                     return Promise.reject({
-                                ExceptionID: -8,
-                                Debug: "Stack_overflow"
+                                RE_EXN_ID: "Stack_overflow"
                               });
                   })).then(fail).catch((function (error) {
-                var match = Caml_exceptions.caml_is_extension(error) && error.ExceptionID === /* Stack_overflow */-8 ? 0 : undefined;
+                var match = Caml_exceptions.caml_is_extension(error) && error.RE_EXN_ID === "Stack_overflow" ? 0 : undefined;
                 if (match !== undefined) {
                   return h;
                 }
                 throw {
-                      ExceptionID: -9,
+                      RE_EXN_ID: "Assert_failure",
                       _1: /* tuple */[
                         "js_promise_basic_test.ml",
                         77,
                         18
-                      ],
-                      Debug: "Assert_failure"
+                      ]
                     };
               }));
 }
@@ -175,8 +166,7 @@ function resolveTest(param) {
 
 function rejectTest(param) {
   var p = Promise.reject({
-        ExceptionID: -6,
-        Debug: "Not_found"
+        RE_EXN_ID: "Not_found"
       });
   return p.catch(assertIsNotFound);
 }
@@ -190,8 +180,7 @@ function thenCatchChainResolvedTest(param) {
 
 function thenCatchChainRejectedTest(param) {
   var p = Promise.reject({
-        ExceptionID: -6,
-        Debug: "Not_found"
+        RE_EXN_ID: "Not_found"
       });
   return p.then(fail).catch(assertIsNotFound);
 }
@@ -217,8 +206,7 @@ function allRejectTest(param) {
   var p1 = Promise.resolve(1);
   var p2 = Promise.resolve(3);
   var p3 = Promise.reject({
-        ExceptionID: -6,
-        Debug: "Not_found"
+        RE_EXN_ID: "Not_found"
       });
   var promises = [
     p1,
@@ -227,8 +215,7 @@ function allRejectTest(param) {
   ];
   return Promise.all(promises).then(fail).catch((function (error) {
                 assert_bool(error === ({
-                        ExceptionID: -6,
-                        Debug: "Not_found"
+                        RE_EXN_ID: "Not_found"
                       }));
                 return h;
               }));
@@ -251,13 +238,11 @@ function raceTest(param) {
 function createPromiseRejectTest(param) {
   return new Promise((function (resolve, reject) {
                   return reject({
-                              ExceptionID: -6,
-                              Debug: "Not_found"
+                              RE_EXN_ID: "Not_found"
                             });
                 })).catch((function (error) {
                 assert_bool(error === ({
-                        ExceptionID: -6,
-                        Debug: "Not_found"
+                        RE_EXN_ID: "Not_found"
                       }));
                 return h;
               }));

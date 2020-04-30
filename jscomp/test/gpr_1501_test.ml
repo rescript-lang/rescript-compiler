@@ -13,8 +13,11 @@ exception B of int
 let () = 
 
     eq __LOC__ "Not_found" (Printexc.to_string Not_found);
-    eq __LOC__ "Gpr_1501_test.A" (Printexc.to_string A);
-    eq __LOC__ "Gpr_1501_test.B(1)" (Printexc.to_string (B 1))
+    eq __LOC__ 
+      (Js.Re.test_ [%re{|/Gpr_1501_test.A\/[0-9]+/|}] (Printexc.to_string A)) 
+      true;
+    eq __LOC__ 
+    (Js.Re.test_ [%re{|/Gpr_1501_test.B\/[0-9]+\(1\)/|}] (Printexc.to_string (B 1))) true
 
 let () =     
     Mt.from_pair_suites __MODULE__ !suites

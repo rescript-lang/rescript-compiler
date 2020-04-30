@@ -4,49 +4,45 @@ var Curry = require("../../lib/js/curry.js");
 
 function peek_queue(param) {
   throw {
-        ExceptionID: -9,
+        RE_EXN_ID: "Assert_failure",
         _1: /* tuple */[
           "format_regression.ml",
           10,
           19
-        ],
-        Debug: "Assert_failure"
+        ]
       };
 }
 
 function int_of_size(param) {
   throw {
-        ExceptionID: -9,
+        RE_EXN_ID: "Assert_failure",
         _1: /* tuple */[
           "format_regression.ml",
           11,
           20
-        ],
-        Debug: "Assert_failure"
+        ]
       };
 }
 
 function take_queue(param) {
   throw {
-        ExceptionID: -9,
+        RE_EXN_ID: "Assert_failure",
         _1: /* tuple */[
           "format_regression.ml",
           12,
           19
-        ],
-        Debug: "Assert_failure"
+        ]
       };
 }
 
 function format_pp_token(param, param$1) {
   throw {
-        ExceptionID: -9,
+        RE_EXN_ID: "Assert_failure",
         _1: /* tuple */[
           "format_regression.ml",
           13,
           26
-        ],
-        Debug: "Assert_failure"
+        ]
       };
 }
 

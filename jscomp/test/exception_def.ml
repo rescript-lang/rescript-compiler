@@ -1,4 +1,7 @@
-[@@@bs.config{flags = [|"-drawlambda"|]}]
+
+let suites :  Mt.pair_suites ref  = ref []
+let test_id = ref 0
+let eq loc x y = Mt.eq_suites ~test_id ~suites loc x y 
 
 
 exception A of int 
@@ -37,3 +40,21 @@ let h5 = H4 "xx"
     | A s -> Some "A"
     | _ -> None
 )
+
+let p e = 
+  match e with 
+  | H4 x -> 0
+  | H3 -> 1 
+  | H2 -> 2 
+  | H0 -> 4 
+  | Not_found -> 3
+  | _ -> -1
+
+
+;; eq __LOC__ (p h5) 0
+;; eq __LOC__ (p Not_found) 4  
+;; eq __LOC__ (p H0) 4  
+;; eq __LOC__ (p H3) 1 
+;; eq __LOC__ (p H2 ) 1 (* aliased to H3 *)
+;; eq __LOC__ (p (Invalid_argument "")) 0
+;; Mt.from_pair_suites __FILE__ !suites  

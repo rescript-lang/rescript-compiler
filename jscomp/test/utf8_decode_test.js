@@ -52,9 +52,8 @@ function utf8_decode(strm) {
                 var c = classify(chr);
                 if (typeof c === "number") {
                   throw {
-                        ExceptionID: Stream.$$Error.ExceptionID,
-                        _1: "Invalid byte",
-                        Debug: Stream.$$Error.Debug
+                        RE_EXN_ID: Stream.$$Error,
+                        _1: "Invalid byte"
                       };
                 }
                 switch (c.tag | 0) {
@@ -62,9 +61,8 @@ function utf8_decode(strm) {
                       return Stream.icons(c[0], utf8_decode(strm));
                   case /* Cont */1 :
                       throw {
-                            ExceptionID: Stream.$$Error.ExceptionID,
-                            _1: "Unexpected continuation byte",
-                            Debug: Stream.$$Error.Debug
+                            RE_EXN_ID: Stream.$$Error,
+                            _1: "Unexpected continuation byte"
                           };
                   case /* Leading */2 :
                       var follow = function (strm, _n, _c) {
@@ -77,9 +75,8 @@ function utf8_decode(strm) {
                           var cc = classify(Stream.next(strm));
                           if (typeof cc === "number") {
                             throw {
-                                  ExceptionID: Stream.$$Error.ExceptionID,
-                                  _1: "Continuation byte expected",
-                                  Debug: Stream.$$Error.Debug
+                                  RE_EXN_ID: Stream.$$Error,
+                                  _1: "Continuation byte expected"
                                 };
                           }
                           if (cc.tag === /* Cont */1) {
@@ -88,9 +85,8 @@ function utf8_decode(strm) {
                             continue ;
                           }
                           throw {
-                                ExceptionID: Stream.$$Error.ExceptionID,
-                                _1: "Continuation byte expected",
-                                Debug: Stream.$$Error.Debug
+                                RE_EXN_ID: Stream.$$Error,
+                                _1: "Continuation byte expected"
                               };
                         };
                       };
@@ -122,9 +118,8 @@ function decode(bytes, offset) {
   var c = classify(Caml_bytes.get(bytes, offset));
   if (typeof c === "number") {
     throw {
-          ExceptionID: -3,
-          _1: "decode",
-          Debug: "Invalid_argument"
+          RE_EXN_ID: "Invalid_argument",
+          _1: "decode"
         };
   }
   switch (c.tag | 0) {
@@ -135,9 +130,8 @@ function decode(bytes, offset) {
               ];
     case /* Cont */1 :
         throw {
-              ExceptionID: -3,
-              _1: "decode",
-              Debug: "Invalid_argument"
+              RE_EXN_ID: "Invalid_argument",
+              _1: "decode"
             };
     case /* Leading */2 :
         var _n = c[0];
@@ -156,9 +150,8 @@ function decode(bytes, offset) {
           var cc = classify(Caml_bytes.get(bytes, offset$1));
           if (typeof cc === "number") {
             throw {
-                  ExceptionID: -3,
-                  _1: "decode",
-                  Debug: "Invalid_argument"
+                  RE_EXN_ID: "Invalid_argument",
+                  _1: "decode"
                 };
           }
           if (cc.tag === /* Cont */1) {
@@ -168,9 +161,8 @@ function decode(bytes, offset) {
             continue ;
           }
           throw {
-                ExceptionID: -3,
-                _1: "decode",
-                Debug: "Invalid_argument"
+                RE_EXN_ID: "Invalid_argument",
+                _1: "decode"
               };
         };
     

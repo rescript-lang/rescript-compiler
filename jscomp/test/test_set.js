@@ -36,15 +36,13 @@ function Make(Ord) {
           return create(create(ll, lv, lr[0]), lr[1], create(lr[2], v, r));
         }
         throw {
-              ExceptionID: -3,
-              _1: "Set.bal",
-              Debug: "Invalid_argument"
+              RE_EXN_ID: "Invalid_argument",
+              _1: "Set.bal"
             };
       }
       throw {
-            ExceptionID: -3,
-            _1: "Set.bal",
-            Debug: "Invalid_argument"
+            RE_EXN_ID: "Invalid_argument",
+            _1: "Set.bal"
           };
     }
     if (hr <= (hl + 2 | 0)) {
@@ -66,15 +64,13 @@ function Make(Ord) {
         return create(create(l, v, rl[0]), rl[1], create(rl[2], rv, rr));
       }
       throw {
-            ExceptionID: -3,
-            _1: "Set.bal",
-            Debug: "Invalid_argument"
+            RE_EXN_ID: "Invalid_argument",
+            _1: "Set.bal"
           };
     }
     throw {
-          ExceptionID: -3,
-          _1: "Set.bal",
-          Debug: "Invalid_argument"
+          RE_EXN_ID: "Invalid_argument",
+          _1: "Set.bal"
         };
   };
   var add = function (x, t) {
@@ -149,8 +145,7 @@ function Make(Ord) {
         continue ;
       }
       throw {
-            ExceptionID: -6,
-            Debug: "Not_found"
+            RE_EXN_ID: "Not_found"
           };
     };
   };
@@ -166,8 +161,7 @@ function Make(Ord) {
         continue ;
       }
       throw {
-            ExceptionID: -6,
-            Debug: "Not_found"
+            RE_EXN_ID: "Not_found"
           };
     };
   };
@@ -181,9 +175,8 @@ function Make(Ord) {
       }
     }
     throw {
-          ExceptionID: -3,
-          _1: "Set.remove_min_elt",
-          Debug: "Invalid_argument"
+          RE_EXN_ID: "Invalid_argument",
+          _1: "Set.remove_min_elt"
         };
   };
   var merge = function (t1, t2) {
@@ -567,8 +560,7 @@ function Make(Ord) {
         continue ;
       }
       throw {
-            ExceptionID: -6,
-            Debug: "Not_found"
+            RE_EXN_ID: "Not_found"
           };
     };
   };
@@ -660,13 +652,12 @@ function Make(Ord) {
               ];
       }
       throw {
-            ExceptionID: -9,
+            RE_EXN_ID: "Assert_failure",
             _1: /* tuple */[
               "test_set.ml",
               372,
               18
-            ],
-            Debug: "Assert_failure"
+            ]
           };
     };
     return sub(List.length(l), l)[0];

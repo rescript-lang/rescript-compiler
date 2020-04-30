@@ -119,8 +119,7 @@ function lookup_obj(obj, _param) {
       continue ;
     }
     throw {
-          ExceptionID: -6,
-          Debug: "Not_found"
+          RE_EXN_ID: "Not_found"
         };
   };
 }

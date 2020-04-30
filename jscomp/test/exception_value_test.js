@@ -7,21 +7,19 @@ var Caml_js_exceptions = require("../../lib/js/caml_js_exceptions.js");
 
 function f(param) {
   throw {
-        ExceptionID: -6,
-        Debug: "Not_found"
+        RE_EXN_ID: "Not_found"
       };
 }
 
 function assert_f(x) {
   if (x <= 3) {
     throw {
-          ExceptionID: -9,
+          RE_EXN_ID: "Assert_failure",
           _1: /* tuple */[
             "exception_value_test.ml",
             9,
             12
-          ],
-          Debug: "Assert_failure"
+          ]
         };
   }
   return 3;
@@ -29,8 +27,7 @@ function assert_f(x) {
 
 function hh(param) {
   throw {
-        ExceptionID: -6,
-        Debug: "Not_found"
+        RE_EXN_ID: "Not_found"
       };
 }
 
@@ -40,14 +37,9 @@ var B = Caml_exceptions.create("Exception_value_test.B");
 
 var C = Caml_exceptions.create("Exception_value_test.C");
 
-var u_000 = A.ExceptionID;
-
-var u_002 = A.Debug;
-
 var u = {
-  ExceptionID: u_000,
-  _1: 3,
-  Debug: u_002
+  RE_EXN_ID: A,
+  _1: 3
 };
 
 function test_not_found(f, param) {
@@ -56,7 +48,7 @@ function test_not_found(f, param) {
   }
   catch (raw_exn){
     var exn = Caml_js_exceptions.internalToOCamlException(raw_exn);
-    if (exn.ExceptionID === /* Not_found */-6) {
+    if (exn.RE_EXN_ID === "Not_found") {
       return 2;
     }
     throw exn;
@@ -69,7 +61,7 @@ function test_js_error2(param) {
   }
   catch (raw_e){
     var e = Caml_js_exceptions.internalToOCamlException(raw_e);
-    if (e.ExceptionID === Js_exn.$$Error.ExceptionID) {
+    if (e.RE_EXN_ID === Js_exn.$$Error) {
       console.log(e._1.stack);
       throw e;
     }

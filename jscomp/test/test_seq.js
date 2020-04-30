@@ -25,17 +25,15 @@ function assoc3(x, _l) {
       continue ;
     }
     throw {
-          ExceptionID: -6,
-          Debug: "Not_found"
+          RE_EXN_ID: "Not_found"
         };
   };
 }
 
 function help_action(param) {
   throw {
-        ExceptionID: Stop.ExceptionID,
-        _1: /* Unknown */Block.__(0, ["-help"]),
-        Debug: Stop.Debug
+        RE_EXN_ID: Stop,
+        _1: /* Unknown */Block.__(0, ["-help"])
       };
 }
 
@@ -56,7 +54,7 @@ function add_help(speclist) {
   }
   catch (raw_exn){
     var exn = Caml_js_exceptions.internalToOCamlException(raw_exn);
-    if (exn.ExceptionID === /* Not_found */-6) {
+    if (exn.RE_EXN_ID === "Not_found") {
       add1 = /* :: */[
         /* tuple */[
           "-help",
@@ -76,7 +74,7 @@ function add_help(speclist) {
   }
   catch (raw_exn$1){
     var exn$1 = Caml_js_exceptions.internalToOCamlException(raw_exn$1);
-    if (exn$1.ExceptionID === /* Not_found */-6) {
+    if (exn$1.RE_EXN_ID === "Not_found") {
       add2 = /* :: */[
         /* tuple */[
           "--help",

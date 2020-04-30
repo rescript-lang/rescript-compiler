@@ -1332,7 +1332,6 @@ function checkEffect() {
     });
 
   var black_list = new Set([
-    "caml_builtin_exceptions.js",
     "caml_int32.js",
     "caml_int64.js",
     "caml_lexer.js",

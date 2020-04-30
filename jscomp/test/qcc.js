@@ -44,13 +44,12 @@ function bufferize(f) {
           (function (x) {
               if (buf.contents !== undefined) {
                 throw {
-                      ExceptionID: -9,
+                      RE_EXN_ID: "Assert_failure",
                       _1: /* tuple */[
                         "qcc.ml",
                         17,
                         4
-                      ],
-                      Debug: "Assert_failure"
+                      ]
                     };
               }
               buf.contents = Caml_option.some(x);
@@ -103,13 +102,12 @@ function addsym(s) {
 function symstr(n) {
   if (n >= syms.contents) {
     throw {
-          ExceptionID: -9,
+          RE_EXN_ID: "Assert_failure",
           _1: /* tuple */[
             "qcc.ml",
             40,
             4
-          ],
-          Debug: "Assert_failure"
+          ]
         };
   }
   return Caml_array.caml_array_get(symtab, n);
@@ -197,7 +195,7 @@ function next(param) {
   }
   catch (raw_exn){
     var exn = Caml_js_exceptions.internalToOCamlException(raw_exn);
-    if (exn.ExceptionID === /* End_of_file */-4) {
+    if (exn.RE_EXN_ID === "End_of_file") {
       c = undefined;
     } else {
       throw exn;
@@ -244,9 +242,8 @@ function next(param) {
     var qt = Curry._1(getch, undefined);
     if (qt !== /* "'" */39) {
       throw {
-            ExceptionID: -2,
-            _1: "syntax error",
-            Debug: "Failure"
+            RE_EXN_ID: "Failure",
+            _1: "syntax error"
           };
     }
     return /* ILit */Block.__(1, [ch]);
@@ -357,13 +354,12 @@ function get32(l) {
 function patch(rel, loc, n) {
   if (n >= 0) {
     throw {
-          ExceptionID: -9,
+          RE_EXN_ID: "Assert_failure",
           _1: /* tuple */[
             "qcc.ml",
             157,
             2
-          ],
-          Debug: "Assert_failure"
+          ]
         };
   }
   if (loc === 0) {
@@ -864,9 +860,8 @@ function unary(stk) {
                 ];
               } else {
                 throw {
-                      ExceptionID: -2,
-                      _1: "[cast] expected",
-                      Debug: "Failure"
+                      RE_EXN_ID: "Failure",
+                      _1: "[cast] expected"
                     };
               }
               for(var k = 1 ,k_finish = match[1]; k <= k_finish; ++k){
@@ -913,9 +908,8 @@ function unary(stk) {
                         "unknown operator %s"
                       ]), o);
               throw {
-                    ExceptionID: -2,
-                    _1: s,
-                    Debug: "Failure"
+                    RE_EXN_ID: "Failure",
+                    _1: s
                   };
             }
             out(List.assoc(o, unops));
@@ -936,13 +930,12 @@ function unary(stk) {
           var l = List.assoc(i$1, stk);
           if (l <= -256) {
             throw {
-                  ExceptionID: -9,
+                  RE_EXN_ID: "Assert_failure",
                   _1: /* tuple */[
                     "qcc.ml",
                     295,
                     6
-                  ],
-                  Debug: "Assert_failure"
+                  ]
                 };
           }
           out(4754245);
@@ -1134,9 +1127,8 @@ function decl(g, _n, _stk) {
               var glo = Caml_array.caml_array_get(globs, s$1);
               if (glo.va >= 0) {
                 throw {
-                      ExceptionID: -2,
-                      _1: "symbol defined twice",
-                      Debug: "Failure"
+                      RE_EXN_ID: "Failure",
+                      _1: "symbol defined twice"
                     };
               }
               var va = (gpos.contents + 232 | 0) + 4194304 | 0;
@@ -1167,9 +1159,8 @@ function decl(g, _n, _stk) {
             continue ;
           }
           throw {
-                ExceptionID: -2,
-                _1: "[var] expected in [decl]",
-                Debug: "Failure"
+                RE_EXN_ID: "Failure",
+                _1: "[var] expected in [decl]"
               };
         };
       }
@@ -1201,13 +1192,12 @@ function decl(g, _n, _stk) {
     if (!g && n !== 0) {
       if ((n << 3) >= 256) {
         throw {
-              ExceptionID: -9,
+              RE_EXN_ID: "Assert_failure",
               _1: /* tuple */[
                 "qcc.ml",
                 436,
                 6
-              ],
-              Debug: "Assert_failure"
+              ]
             };
       }
       out(4752364);
@@ -1321,13 +1311,12 @@ function stmt(brk, stk) {
     var n = align.contents - brk[1] | 0;
     if (n < 0) {
       throw {
-            ExceptionID: -9,
+            RE_EXN_ID: "Assert_failure",
             _1: /* tuple */[
               "qcc.ml",
               515,
               4
-            ],
-            Debug: "Assert_failure"
+            ]
           };
     }
     if (n !== 0) {
@@ -1389,9 +1378,8 @@ function top(_param) {
       var g = Caml_array.caml_array_get(globs, f$1);
       if (g.va >= 0) {
         throw {
-              ExceptionID: -2,
-              _1: "symbol defined twice",
-              Debug: "Failure"
+              RE_EXN_ID: "Failure",
+              _1: "symbol defined twice"
             };
       }
       Caml_array.caml_array_set(globs, f$1, {
@@ -1410,16 +1398,14 @@ function top(_param) {
                   return stk;
                 }
                 throw {
-                      ExceptionID: -2,
-                      _1: "[var] or ) expected",
-                      Debug: "Failure"
+                      RE_EXN_ID: "Failure",
+                      _1: "[var] or ) expected"
                     };
             case /* ILit */1 :
             case /* SLit */2 :
                 throw {
-                      ExceptionID: -2,
-                      _1: "[var] or ) expected",
-                      Debug: "Failure"
+                      RE_EXN_ID: "Failure",
+                      _1: "[var] or ) expected"
                     };
             case /* Sym */3 :
                 var r = List.hd(regs);
@@ -1497,9 +1483,8 @@ function top(_param) {
       continue ;
     }
     throw {
-          ExceptionID: -2,
-          _1: "[decl] or [fun] expected",
-          Debug: "Failure"
+          RE_EXN_ID: "Failure",
+          _1: "[decl] or [fun] expected"
         };
   };
 }
@@ -1727,13 +1712,12 @@ function elfgen(outf) {
   elfphdr(2, dyn + off | 0, tend - dyn | 0, 8);
   if (opos.contents !== 232) {
     throw {
-          ExceptionID: -9,
+          RE_EXN_ID: "Assert_failure",
           _1: /* tuple */[
             "qcc.ml",
             698,
             2
-          ],
-          Debug: "Assert_failure"
+          ]
         };
   }
   patch(false, 24, va(entry));

@@ -22,21 +22,16 @@ function eq(loc, x, y) {
 var Inline_record = Caml_exceptions.create("Record_extension_test.Inline_record");
 
 function f(x) {
-  if (x.ExceptionID === Inline_record.ExceptionID) {
+  if (x.RE_EXN_ID === Inline_record) {
     return x.x + Caml_format.caml_int_of_string(x.y) | 0;
   }
   
 }
 
-var v0_000 = Inline_record.ExceptionID;
-
-var v0_003 = Inline_record.Debug;
-
 var v0 = {
-  ExceptionID: v0_000,
+  RE_EXN_ID: Inline_record,
   x: 3,
-  y: "4",
-  Debug: v0_003
+  y: "4"
 };
 
 eq("File \"record_extension_test.ml\", line 19, characters 6-13", f(v0), 7);
@@ -72,11 +67,11 @@ function u(f) {
   }
   catch (raw_x){
     var x = Caml_js_exceptions.internalToOCamlException(raw_x);
-    if (x.ExceptionID === A.ExceptionID) {
+    if (x.RE_EXN_ID === A) {
       return x.name + x.x | 0;
-    } else if (x.ExceptionID === B.ExceptionID) {
+    } else if (x.RE_EXN_ID === B) {
       return x._1 + x._2 | 0;
-    } else if (x.ExceptionID === C.ExceptionID) {
+    } else if (x.RE_EXN_ID === C) {
       return x.name;
     } else {
       return -1;

@@ -9,13 +9,12 @@ function f(param) {
         return 1;
     default:
       throw {
-            ExceptionID: -9,
+            RE_EXN_ID: "Assert_failure",
             _1: /* tuple */[
               "test_string_case.ml",
               4,
               9
-            ],
-            Debug: "Assert_failure"
+            ]
           };
   }
 }

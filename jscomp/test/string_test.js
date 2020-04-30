@@ -72,7 +72,7 @@ function rev_split_by_char(c, s) {
     }
     catch (raw_exn){
       var exn = Caml_js_exceptions.internalToOCamlException(raw_exn);
-      if (exn.ExceptionID === /* Not_found */-6) {
+      if (exn.RE_EXN_ID === "Not_found") {
         return /* :: */[
                 $$String.sub(s, i, s.length - i | 0),
                 l
@@ -101,7 +101,7 @@ function xsplit(delim, s) {
       }
       catch (raw_exn){
         var exn = Caml_js_exceptions.internalToOCamlException(raw_exn);
-        if (exn.ExceptionID === /* Not_found */-6) {
+        if (exn.RE_EXN_ID === "Not_found") {
           return /* :: */[
                   $$String.sub(s, 0, i),
                   l

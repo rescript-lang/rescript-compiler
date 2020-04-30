@@ -325,7 +325,8 @@ val get_raw_backtrace_next_slot :
 *)
 
 (** {1 Exception slots} *)
-
+#if BS then
+#else
 val exn_slot_id: exn -> int
 (** [Printexc.exn_slot_id] returns an integer which uniquely identifies
     the constructor used to create the exception value [exn]
@@ -340,3 +341,4 @@ val exn_slot_name: exn -> string
 
     @since 4.02.0
 *)
+#end

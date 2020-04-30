@@ -24,9 +24,8 @@ function init(l, f) {
   }
   if (l < 0) {
     throw {
-          ExceptionID: -3,
-          _1: "Array.init",
-          Debug: "Invalid_argument"
+          RE_EXN_ID: "Invalid_argument",
+          _1: "Array.init"
         };
   }
   var res = Caml_array.caml_make_vect(l, f$1(0));

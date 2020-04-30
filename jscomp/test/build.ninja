@@ -172,7 +172,7 @@ build test/escape_esmodule.cmi test/escape_esmodule.cmj : cc test/escape_esmodul
 build test/esmodule_ref.cmi test/esmodule_ref.cmj : cc test/esmodule_ref.ml | test/escape_esmodule.cmj $stdlib
 build test/event_ffi.cmi test/event_ffi.cmj : cc test/event_ffi.ml | $stdlib
 build test/exception_alias.cmi test/exception_alias.cmj : cc test/exception_alias.ml | $stdlib
-build test/exception_def.cmi test/exception_def.cmj : cc test/exception_def.ml | test/test_other_exn.cmj $stdlib
+build test/exception_def.cmi test/exception_def.cmj : cc test/exception_def.ml | test/mt.cmj test/test_other_exn.cmj $stdlib
 build test/exception_raise_test.cmi test/exception_raise_test.cmj : cc test/exception_raise_test.ml | test/mt.cmj $stdlib
 build test/exception_rebind_test.cmi test/exception_rebind_test.cmj : cc test/exception_rebind_test.ml | test/exception_def.cmj $stdlib
 build test/exception_rebound_err_test.cmi test/exception_rebound_err_test.cmj : cc test/exception_rebound_err_test.ml | test/mt.cmj $stdlib

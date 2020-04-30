@@ -50,13 +50,12 @@ function compare(context, state, _a, _b) {
                 break;
             case /* Frac */4 :
                 throw {
-                      ExceptionID: -9,
+                      RE_EXN_ID: "Assert_failure",
                       _1: /* tuple */[
                         "gpr_1698_test.ml",
                         45,
                         10
-                      ],
-                      Debug: "Assert_failure"
+                      ]
                     };
             case /* Pow */3 :
             case /* Gcd */5 :
@@ -76,13 +75,12 @@ function compare(context, state, _a, _b) {
           switch (b.tag | 0) {
             case /* Val */0 :
                 throw {
-                      ExceptionID: -9,
+                      RE_EXN_ID: "Assert_failure",
                       _1: /* tuple */[
                         "gpr_1698_test.ml",
                         45,
                         10
-                      ],
-                      Debug: "Assert_failure"
+                      ]
                     };
             case /* Neg */1 :
                 exit$3 = 5;

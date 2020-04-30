@@ -75,26 +75,24 @@ add_test("File \"js_json_test.ml\", line 23, characters 11-18", (function (param
                 var ty3 = Js_json.classify(x);
                 if (typeof ty3 === "number") {
                   throw {
-                        ExceptionID: -9,
+                        RE_EXN_ID: "Assert_failure",
                         _1: /* tuple */[
                           "js_json_test.ml",
                           37,
                           21
-                        ],
-                        Debug: "Assert_failure"
+                        ]
                       };
                 }
                 if (ty3.tag === /* JSONNumber */1) {
                   return ;
                 }
                 throw {
-                      ExceptionID: -9,
+                      RE_EXN_ID: "Assert_failure",
                       _1: /* tuple */[
                         "js_json_test.ml",
                         37,
                         21
-                      ],
-                      Debug: "Assert_failure"
+                      ]
                     };
               }));
         return /* Ok */Block.__(4, [true]);
@@ -206,13 +204,12 @@ function option_get(x) {
     return Caml_option.valFromOption(x);
   }
   throw {
-        ExceptionID: -9,
+        RE_EXN_ID: "Assert_failure",
         _1: /* tuple */[
           "js_json_test.ml",
           102,
           36
-        ],
-        Debug: "Assert_failure"
+        ]
       };
 }
 

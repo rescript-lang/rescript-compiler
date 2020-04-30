@@ -87,15 +87,13 @@ function bal(l, x, d, r) {
         return create(create(ll, lv, ld, lr[/* l */0]), lr[/* v */1], lr[/* d */2], create(lr[/* r */3], x, d, r));
       }
       throw {
-            ExceptionID: -3,
-            _1: "Map.bal",
-            Debug: "Invalid_argument"
+            RE_EXN_ID: "Invalid_argument",
+            _1: "Map.bal"
           };
     }
     throw {
-          ExceptionID: -3,
-          _1: "Map.bal",
-          Debug: "Invalid_argument"
+          RE_EXN_ID: "Invalid_argument",
+          _1: "Map.bal"
         };
   }
   if (hr <= (hl + 2 | 0)) {
@@ -119,15 +117,13 @@ function bal(l, x, d, r) {
       return create(create(l, x, d, rl[/* l */0]), rl[/* v */1], rl[/* d */2], create(rl[/* r */3], rv, rd, rr));
     }
     throw {
-          ExceptionID: -3,
-          _1: "Map.bal",
-          Debug: "Invalid_argument"
+          RE_EXN_ID: "Invalid_argument",
+          _1: "Map.bal"
         };
   }
   throw {
-        ExceptionID: -3,
-        _1: "Map.bal",
-        Debug: "Invalid_argument"
+        RE_EXN_ID: "Invalid_argument",
+        _1: "Map.bal"
       };
 }
 
@@ -195,8 +191,7 @@ function find(x, _param) {
       continue ;
     }
     throw {
-          ExceptionID: -6,
-          Debug: "Not_found"
+          RE_EXN_ID: "Not_found"
         };
   };
 }
@@ -235,8 +230,7 @@ function find_first(f, _param) {
       continue ;
     }
     throw {
-          ExceptionID: -6,
-          Debug: "Not_found"
+          RE_EXN_ID: "Not_found"
         };
   };
 }
@@ -312,8 +306,7 @@ function find_last(f, _param) {
       continue ;
     }
     throw {
-          ExceptionID: -6,
-          Debug: "Not_found"
+          RE_EXN_ID: "Not_found"
         };
   };
 }
@@ -400,8 +393,7 @@ function min_binding(_param) {
       continue ;
     }
     throw {
-          ExceptionID: -6,
-          Debug: "Not_found"
+          RE_EXN_ID: "Not_found"
         };
   };
 }
@@ -439,8 +431,7 @@ function max_binding(_param) {
       continue ;
     }
     throw {
-          ExceptionID: -6,
-          Debug: "Not_found"
+          RE_EXN_ID: "Not_found"
         };
   };
 }
@@ -473,9 +464,8 @@ function remove_min_binding(param) {
     }
   }
   throw {
-        ExceptionID: -3,
-        _1: "Map.remove_min_elt",
-        Debug: "Invalid_argument"
+        RE_EXN_ID: "Invalid_argument",
+        _1: "Map.remove_min_elt"
       };
 }
 
@@ -771,13 +761,12 @@ function merge$1(f, s1, s2) {
     return concat_or_join(merge$1(f, match$1[0], s2[/* l */0]), v2, Curry._3(f, v2, match$1[1], Caml_option.some(s2[/* d */2])), merge$1(f, match$1[2], s2[/* r */3]));
   }
   throw {
-        ExceptionID: -9,
+        RE_EXN_ID: "Assert_failure",
         _1: /* tuple */[
           "map.ml",
           393,
           10
-        ],
-        Debug: "Assert_failure"
+        ]
       };
 }
 
@@ -1055,15 +1044,13 @@ function bal$1(l, x, d, r) {
         return create$1(create$1(ll, lv, ld, lr[/* l */0]), lr[/* v */1], lr[/* d */2], create$1(lr[/* r */3], x, d, r));
       }
       throw {
-            ExceptionID: -3,
-            _1: "Map.bal",
-            Debug: "Invalid_argument"
+            RE_EXN_ID: "Invalid_argument",
+            _1: "Map.bal"
           };
     }
     throw {
-          ExceptionID: -3,
-          _1: "Map.bal",
-          Debug: "Invalid_argument"
+          RE_EXN_ID: "Invalid_argument",
+          _1: "Map.bal"
         };
   }
   if (hr <= (hl + 2 | 0)) {
@@ -1087,15 +1074,13 @@ function bal$1(l, x, d, r) {
       return create$1(create$1(l, x, d, rl[/* l */0]), rl[/* v */1], rl[/* d */2], create$1(rl[/* r */3], rv, rd, rr));
     }
     throw {
-          ExceptionID: -3,
-          _1: "Map.bal",
-          Debug: "Invalid_argument"
+          RE_EXN_ID: "Invalid_argument",
+          _1: "Map.bal"
         };
   }
   throw {
-        ExceptionID: -3,
-        _1: "Map.bal",
-        Debug: "Invalid_argument"
+        RE_EXN_ID: "Invalid_argument",
+        _1: "Map.bal"
       };
 }
 
@@ -1163,8 +1148,7 @@ function find$1(x, _param) {
       continue ;
     }
     throw {
-          ExceptionID: -6,
-          Debug: "Not_found"
+          RE_EXN_ID: "Not_found"
         };
   };
 }
@@ -1203,8 +1187,7 @@ function find_first$1(f, _param) {
       continue ;
     }
     throw {
-          ExceptionID: -6,
-          Debug: "Not_found"
+          RE_EXN_ID: "Not_found"
         };
   };
 }
@@ -1280,8 +1263,7 @@ function find_last$1(f, _param) {
       continue ;
     }
     throw {
-          ExceptionID: -6,
-          Debug: "Not_found"
+          RE_EXN_ID: "Not_found"
         };
   };
 }
@@ -1368,8 +1350,7 @@ function min_binding$1(_param) {
       continue ;
     }
     throw {
-          ExceptionID: -6,
-          Debug: "Not_found"
+          RE_EXN_ID: "Not_found"
         };
   };
 }
@@ -1407,8 +1388,7 @@ function max_binding$1(_param) {
       continue ;
     }
     throw {
-          ExceptionID: -6,
-          Debug: "Not_found"
+          RE_EXN_ID: "Not_found"
         };
   };
 }
@@ -1441,9 +1421,8 @@ function remove_min_binding$1(param) {
     }
   }
   throw {
-        ExceptionID: -3,
-        _1: "Map.remove_min_elt",
-        Debug: "Invalid_argument"
+        RE_EXN_ID: "Invalid_argument",
+        _1: "Map.remove_min_elt"
       };
 }
 
@@ -1739,13 +1718,12 @@ function merge$3(f, s1, s2) {
     return concat_or_join$1(merge$3(f, match$1[0], s2[/* l */0]), v2, Curry._3(f, v2, match$1[1], Caml_option.some(s2[/* d */2])), merge$3(f, match$1[2], s2[/* r */3]));
   }
   throw {
-        ExceptionID: -9,
+        RE_EXN_ID: "Assert_failure",
         _1: /* tuple */[
           "map.ml",
           393,
           10
-        ],
-        Debug: "Assert_failure"
+        ]
       };
 }
 
@@ -2023,15 +2001,13 @@ function bal$2(l, x, d, r) {
         return create$2(create$2(ll, lv, ld, lr[/* l */0]), lr[/* v */1], lr[/* d */2], create$2(lr[/* r */3], x, d, r));
       }
       throw {
-            ExceptionID: -3,
-            _1: "Map.bal",
-            Debug: "Invalid_argument"
+            RE_EXN_ID: "Invalid_argument",
+            _1: "Map.bal"
           };
     }
     throw {
-          ExceptionID: -3,
-          _1: "Map.bal",
-          Debug: "Invalid_argument"
+          RE_EXN_ID: "Invalid_argument",
+          _1: "Map.bal"
         };
   }
   if (hr <= (hl + 2 | 0)) {
@@ -2055,15 +2031,13 @@ function bal$2(l, x, d, r) {
       return create$2(create$2(l, x, d, rl[/* l */0]), rl[/* v */1], rl[/* d */2], create$2(rl[/* r */3], rv, rd, rr));
     }
     throw {
-          ExceptionID: -3,
-          _1: "Map.bal",
-          Debug: "Invalid_argument"
+          RE_EXN_ID: "Invalid_argument",
+          _1: "Map.bal"
         };
   }
   throw {
-        ExceptionID: -3,
-        _1: "Map.bal",
-        Debug: "Invalid_argument"
+        RE_EXN_ID: "Invalid_argument",
+        _1: "Map.bal"
       };
 }
 
@@ -2131,8 +2105,7 @@ function find$2(x, _param) {
       continue ;
     }
     throw {
-          ExceptionID: -6,
-          Debug: "Not_found"
+          RE_EXN_ID: "Not_found"
         };
   };
 }
@@ -2171,8 +2144,7 @@ function find_first$2(f, _param) {
       continue ;
     }
     throw {
-          ExceptionID: -6,
-          Debug: "Not_found"
+          RE_EXN_ID: "Not_found"
         };
   };
 }
@@ -2248,8 +2220,7 @@ function find_last$2(f, _param) {
       continue ;
     }
     throw {
-          ExceptionID: -6,
-          Debug: "Not_found"
+          RE_EXN_ID: "Not_found"
         };
   };
 }
@@ -2336,8 +2307,7 @@ function min_binding$2(_param) {
       continue ;
     }
     throw {
-          ExceptionID: -6,
-          Debug: "Not_found"
+          RE_EXN_ID: "Not_found"
         };
   };
 }
@@ -2375,8 +2345,7 @@ function max_binding$2(_param) {
       continue ;
     }
     throw {
-          ExceptionID: -6,
-          Debug: "Not_found"
+          RE_EXN_ID: "Not_found"
         };
   };
 }
@@ -2409,9 +2378,8 @@ function remove_min_binding$2(param) {
     }
   }
   throw {
-        ExceptionID: -3,
-        _1: "Map.remove_min_elt",
-        Debug: "Invalid_argument"
+        RE_EXN_ID: "Invalid_argument",
+        _1: "Map.remove_min_elt"
       };
 }
 
@@ -2707,13 +2675,12 @@ function merge$5(f, s1, s2) {
     return concat_or_join$2(merge$5(f, match$1[0], s2[/* l */0]), v2, Curry._3(f, v2, match$1[1], Caml_option.some(s2[/* d */2])), merge$5(f, match$1[2], s2[/* r */3]));
   }
   throw {
-        ExceptionID: -9,
+        RE_EXN_ID: "Assert_failure",
         _1: /* tuple */[
           "map.ml",
           393,
           10
-        ],
-        Debug: "Assert_failure"
+        ]
       };
 }
 
@@ -3025,7 +2992,7 @@ function get_method_label(table, name) {
   }
   catch (raw_exn){
     var exn = Caml_js_exceptions.internalToOCamlException(raw_exn);
-    if (exn.ExceptionID === /* Not_found */-6) {
+    if (exn.RE_EXN_ID === "Not_found") {
       var label = new_method(table);
       table.methods_by_name = add$1(name, label, table.methods_by_name);
       table.methods_by_label = add$2(label, true, table.methods_by_label);
@@ -3063,7 +3030,7 @@ function get_method(table, label) {
   }
   catch (raw_exn){
     var exn = Caml_js_exceptions.internalToOCamlException(raw_exn);
-    if (exn.ExceptionID === /* Not_found */-6) {
+    if (exn.RE_EXN_ID === "Not_found") {
       return Caml_array.caml_array_get(table.methods, label);
     }
     throw exn;
@@ -3120,7 +3087,7 @@ function narrow(table, vars, virt_meths, concr_meths) {
           }
           catch (raw_exn){
             var exn = Caml_js_exceptions.internalToOCamlException(raw_exn);
-            if (exn.ExceptionID === /* Not_found */-6) {
+            if (exn.RE_EXN_ID === "Not_found") {
               tmp = true;
             } else {
               throw exn;
@@ -3183,7 +3150,7 @@ function new_variable(table, name) {
   }
   catch (raw_exn){
     var exn = Caml_js_exceptions.internalToOCamlException(raw_exn);
-    if (exn.ExceptionID === /* Not_found */-6) {
+    if (exn.RE_EXN_ID === "Not_found") {
       var index = new_slot(table);
       if (name !== "") {
         table.vars = add(name, index, table.vars);
@@ -3222,15 +3189,14 @@ function get_variable(table, name) {
   }
   catch (raw_exn){
     var exn = Caml_js_exceptions.internalToOCamlException(raw_exn);
-    if (exn.ExceptionID === /* Not_found */-6) {
+    if (exn.RE_EXN_ID === "Not_found") {
       throw {
-            ExceptionID: -9,
+            RE_EXN_ID: "Assert_failure",
             _1: /* tuple */[
               "test_internalOO.ml",
               280,
               50
-            ],
-            Debug: "Assert_failure"
+            ]
           };
     }
     throw exn;
@@ -3317,9 +3283,8 @@ function make_class_store(pub_meths, class_init, init_table) {
 function dummy_class(loc) {
   var undef = function (param) {
     throw {
-          ExceptionID: -11,
-          _1: loc,
-          Debug: "Undefined_recursive_module"
+          RE_EXN_ID: "Undefined_recursive_module",
+          _1: loc
         };
   };
   return /* tuple */[

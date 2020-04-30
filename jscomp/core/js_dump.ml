@@ -818,21 +818,20 @@ and expression_desc cxt ~(level:int) f x : cxt  =
         (List.combine (Array.to_list fields) el )))      
         (* name convention of Record is slight different from modules 
         *)
-  | Caml_block(el,_, _, (Blk_extension | Blk_record_ext _ as ext )) ->        
-      let len = List.length el in       
+  | Caml_block(el,_, _, (Blk_extension | Blk_record_ext _ as ext )) ->       
       let field_name  = 
         match ext with 
         | Blk_extension -> (fun i -> 
           match i with 
           | 0 ->  Literals.exception_id
           | i ->  
-            if i < len - 1 then "_" ^ string_of_int i
-            else Literals.exception_debug)
+             "_" ^ string_of_int i
+            )
         | Blk_record_ext ss ->   
           (fun i ->  
           match i with 
           | 0 -> Literals.exception_id
-          | i ->  if i < len - 1 then ss.(i-1) else Literals.exception_debug)
+          | i ->   ss.(i-1))
         | _ -> assert false in   
     expression_desc cxt ~level f (Object (
         (Ext_list.mapi  el (fun i e -> field_name i, e

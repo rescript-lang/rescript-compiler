@@ -33,14 +33,13 @@ var y;
 
 try {
   throw {
-        ExceptionID: -2,
-        _1: "boo",
-        Debug: "Failure"
+        RE_EXN_ID: "Failure",
+        _1: "boo"
       };
 }
 catch (raw_msg){
   var msg = Caml_js_exceptions.internalToOCamlException(raw_msg);
-  if (msg.ExceptionID === /* Failure */-2) {
+  if (msg.RE_EXN_ID === "Failure") {
     y = msg._1;
   } else {
     throw msg;
@@ -53,14 +52,13 @@ var exit = 0;
 
 try {
   throw {
-        ExceptionID: -2,
-        _1: "boo",
-        Debug: "Failure"
+        RE_EXN_ID: "Failure",
+        _1: "boo"
       };
 }
 catch (raw_msg$1){
   var msg$1 = Caml_js_exceptions.internalToOCamlException(raw_msg$1);
-  if (msg$1.ExceptionID === /* Failure */-2) {
+  if (msg$1.RE_EXN_ID === "Failure") {
     x = msg$1._1;
   } else {
     throw msg$1;
