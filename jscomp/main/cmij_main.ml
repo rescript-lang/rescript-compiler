@@ -24,7 +24,9 @@
 
 
  
-
+type mode = 
+| Native
+| Playground of string list (* 3rd party libraries folders paths *)
 
 
 let get_files ext dir = 
@@ -48,7 +50,7 @@ let check_digest output_file digest : bool =
     | _ -> false
   else false   
 let (+>) = Ext_buffer.add_string
-let from_cmj (files : string list) (output_file : string) : unit = 
+let from_cmj ~mode (files : string list) (output_file : string) : unit = 
   let cmp = Ext_filename.module_name in     
   let files = List.sort (fun filea fileb  ->
       Ext_string_array.cmp (cmp filea) (cmp fileb)) files in 
@@ -58,8 +60,12 @@ let from_cmj (files : string list) (output_file : string) : unit =
     Ext_list.map files (fun file -> 
         let module_name = (cmp file) in 
         let content : Js_cmj_format.t = Js_cmj_format.from_file file in 
-        (* assert (content.js_file_kind = Little_js); *)
-        (* assert (content.package_spec = Js_packages_info.runtime_package_specs); *)
+        let () = match mode with
+        | Native ->
+          assert (content.js_file_kind = Little_js);
+          assert (content.package_spec = Js_packages_info.runtime_package_specs);
+        | Playground _ -> ()
+        in
         (* prerr_endline (Ext_obj.dump content.package_spec); *)
         let c = 
           Marshal.to_string (content.values, content.pure) []
@@ -142,25 +148,31 @@ let () =
     try Sys.remove cmi_target_file with _ -> 
       Format.fprintf Format.err_formatter "failed to remove %s@." cmi_target_file
   end 
-let playground_folders = 
+let mode = 
   match Sys.argv with
-  | [|_; folders |] 
+  | [|_; "-playground"; folders |] 
     -> 
-      folders
+      Playground (folders
       |> String.split_on_char ','
-      |> List.filter (fun s -> s <> "")
-  | _ -> []
+      |> List.filter (fun s -> s <> ""))
+  | _ -> Native
 let () = 
-  let playground_cmj_files = List.fold_left (fun acc folder -> acc @ get_files Literals.suffix_cmj folder) [] playground_folders in
+  let third_party_cmj_files = match mode with
+  | Native -> []
+  | Playground folders -> List.fold_left (fun acc folder -> acc @ get_files Literals.suffix_cmj folder) [] folders
+  in
   let cmj_files = 
     ( 
       (Filename.dirname Sys.argv.(0) // ".." // "runtime" // "js.cmj") ::
       get_files Literals.suffix_cmj (Filename.dirname Sys.argv.(0) // ".." // stdlib) @             
       get_files Literals.suffix_cmj (Filename.dirname Sys.argv.(0) // ".." // "others") @
-      playground_cmj_files) in 
-  from_cmj cmj_files
+      third_party_cmj_files) in 
+  from_cmj ~mode cmj_files
     (Filename.dirname Sys.argv.(0) // ".." // "main" // "builtin_cmj_datasets.ml");
-  let playground_cmi_files = List.fold_left (fun acc folder -> acc @ get_files Literals.suffix_cmi folder) [] playground_folders in
+  let third_party_cmi_files = match mode with
+  | Native -> []
+  | Playground folders -> List.fold_left (fun acc folder -> acc @ get_files Literals.suffix_cmi folder) [] folders
+  in
   let cmi_files = 
     if release_cmi then   
       get_files Literals.suffix_cmi (".."//"lib"//"ocaml")  
@@ -168,7 +180,7 @@ let () =
      (Filename.dirname Sys.argv.(0) // ".." // "runtime" // "js.cmi") ::       
      (get_files Literals.suffix_cmi (Filename.dirname Sys.argv.(0) // ".." // stdlib) @
       get_files Literals.suffix_cmi (Filename.dirname Sys.argv.(0) // ".." // "others") @
-      playground_cmi_files)
+      third_party_cmi_files)
      |> List.filter (fun x -> 
          x|~ "js_OO" ||
          x|~  "camlinternal" ||
