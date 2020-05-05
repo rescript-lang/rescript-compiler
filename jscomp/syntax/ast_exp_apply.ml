@@ -102,6 +102,7 @@ let app_exp_mapper
         a |. (g |. b)
         a |. M.Some
         a |. `Variant
+        a |. (b |. f c [@bs])
       *)
        let new_obj_arg = self.expr self obj_arg in
        let fn = self.expr self fn in 
