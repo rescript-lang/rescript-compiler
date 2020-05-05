@@ -12829,7 +12829,6 @@ val get_name : t  -> out_channel -> string
 type builtin = {
   
   build_ast : t;
-  build_ast_from_re : t ;
 
   (** platform dependent, on Win32,
       invoking cmd.exe
@@ -12961,10 +12960,6 @@ type command = string
 
 type builtin = {
   build_ast : t;
-  (** TODO: Implement it on top of pp_flags *)
-  build_ast_from_re : t ;
-  (* build_ast_from_rei : t ; *)
-
 
   (** platform dependent, on Win32,
       invoking cmd.exe
@@ -13027,7 +13022,7 @@ let make_custom_rules
       Buffer.add_string buf " $postbuild";
     Buffer.contents buf
   in   
-  let mk_ast ~(has_pp : bool) ~has_ppx ~has_reason_react_jsx : string =
+  let mk_ast ~(has_pp : bool) ~has_ppx : string =
     Buffer.clear buf ; 
     Buffer.add_string buf "$bsc  $warnings -color always";
     (match refmt with 
@@ -13038,12 +13033,11 @@ let make_custom_rules
     );
     if has_pp then
       Buffer.add_string buf " $pp_flags";
-    (match has_reason_react_jsx, reason_react_jsx with
-     | false, _ 
-     | _, None -> ()
-     | _, Some Jsx_v2
+    (match reason_react_jsx with
+     | None -> ()
+     | Some Jsx_v2
        -> Buffer.add_string buf " -bs-jsx 2"
-     | _, Some Jsx_v3 
+     | Some Jsx_v3 
        -> Buffer.add_string buf " -bs-jsx 3"
     );
     if has_ppx then 
@@ -13053,12 +13047,8 @@ let make_custom_rules
   in  
   let build_ast =
     define
-      ~command:(mk_ast ~has_pp ~has_ppx ~has_reason_react_jsx:false )
+      ~command:(mk_ast ~has_pp ~has_ppx )
       "build_ast" in
-  let build_ast_from_re =
-    define
-      ~command:(mk_ast ~has_pp ~has_ppx ~has_reason_react_jsx:true)
-      "build_ast_from_re" in 
  
   let copy_resources =    
     define 
@@ -13110,7 +13100,6 @@ let make_custom_rules
   in 
   {
     build_ast ;
-    build_ast_from_re  ;
     (** platform dependent, on Win32,
         invoking cmd.exe
     *)
@@ -13572,11 +13561,7 @@ let emit_module_build
     make_common_shadows package_specs
       (Filename.dirname output_cmi)
       group_dir_index in  
-  let ast_rule =     
-    if is_re then 
-      rules.build_ast_from_re
-    else
-      rules.build_ast in 
+  let ast_rule = rules.build_ast in 
   Bsb_ninja_targets.output_build oc
     ~outputs:[output_mlast]
     ~inputs:[input_impl]

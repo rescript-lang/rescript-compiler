@@ -37,7 +37,6 @@ val get_name : t  -> out_channel -> string
 type builtin = {
   
   build_ast : t;
-  build_ast_from_re : t ;
 
   (** platform dependent, on Win32,
       invoking cmd.exe

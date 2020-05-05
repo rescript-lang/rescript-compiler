@@ -106,11 +106,7 @@ let emit_module_build
     make_common_shadows package_specs
       (Filename.dirname output_cmi)
       group_dir_index in  
-  let ast_rule =     
-    if is_re then 
-      rules.build_ast_from_re
-    else
-      rules.build_ast in 
+  let ast_rule = rules.build_ast in 
   Bsb_ninja_targets.output_build oc
     ~outputs:[output_mlast]
     ~inputs:[input_impl]
