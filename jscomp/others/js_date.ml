@@ -124,7 +124,7 @@ external setUTCMonth : t -> float -> float = "setUTCMonth" [@@bs.send]
 external setUTCMonthD : t -> month:float -> date:float -> unit -> float = "setUTCMonth" [@@bs.send]
 external setUTCSeconds : t -> float -> float = "setUTCSeconds" [@@bs.send]
 external setUTCSecondsMs : t -> seconds:float -> milliseconds:float -> unit -> float = "setUTCSeconds" [@@bs.send]
-external setUTCTime : t -> float -> float = "setUTCTime" [@@bs.send]
+external setUTCTime : t -> float -> float = "setTime" [@@bs.send]
 external setYear : t -> float -> float = "setYear" [@@bs.send]
 [@@deprecated "use `setFullYear` instead"]
 
