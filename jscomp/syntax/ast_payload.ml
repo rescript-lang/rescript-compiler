@@ -112,13 +112,15 @@ let raw_as_string_exp_exn
            pexp_loc = loc} as e ,_);
       _}] -> 
     check_flow_errors ~loc deli (match kind with 
-        |  Raw_re -> 
-          let l s = 
-            Flow_lexer.regexp (Lex_env.new_lex_env None (Sedlexing.Utf8.from_string s) ~enable_types_in_comments:false) 
-          in  
-          (snd (l str)).lex_errors 
+        | Raw_re 
         | Raw_exp ->  
-          snd (Parser_flow.parse_expression (Parser_env.init_env None str) false)
+          let (_loc,e),errors =  (Parser_flow.parse_expression (Parser_env.init_env None str) false) in 
+          if kind = Raw_re then 
+            (match e with 
+            | Literal {value = RegExp _} -> ()
+            | _ -> Location.raise_errorf ~loc "Syntax error: a valid JS regex literal expected"
+            );
+          errors
         | Raw_program ->  
           snd (Parser_flow.parse_program false None str)
       );
@@ -173,8 +175,8 @@ let ident_or_record_as_config
     begin match with_obj with
       | None ->
         Ext_list.map label_exprs
-          (fun ((x,y) : (Longident.t Asttypes.loc * _) ) -> 
-             match (x,y) with 
+          (fun u  -> 
+             match u with 
              | ({txt = Lident name; loc} ) , 
                ({Parsetree.pexp_desc = Pexp_ident{txt = Lident name2}} )
                when name2 = name -> 
