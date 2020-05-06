@@ -657,6 +657,9 @@ let jsxMapper () =
       let fileName = filenameFromLoc pstr_loc in
       let emptyLoc = Location.in_file fileName in
       let mapBinding binding = if (hasAttrOnBinding binding) then
+        let bindingLoc = binding.pvb_loc in
+        let bindingPatLoc = binding.pvb_pat.ppat_loc in
+        let binding = { binding with pvb_pat = { binding.pvb_pat with ppat_loc = emptyLoc}; pvb_loc = emptyLoc} in
         let fnName = getFnName binding in
         let internalFnName = fnName ^ "$Internal" in
         let fullModuleName = makeModuleName fileName !nestedModules fnName in
@@ -687,7 +690,11 @@ let jsxMapper () =
           spelunkForFunExpression expression
         in
         let modifiedBinding binding =
-          let wrapExpressionWithBinding expressionFn expression = Vb.mk ~attrs:(List.filter otherAttrsPure binding.pvb_attributes) (Pat.var {loc = emptyLoc; txt = fnName}) (expressionFn expression) in
+          let wrapExpressionWithBinding expressionFn expression =
+            Vb.mk
+              ~loc:bindingLoc
+              ~attrs:(List.filter otherAttrsPure binding.pvb_attributes)
+              (Pat.var ~loc:bindingPatLoc {loc = bindingPatLoc; txt = fnName}) (expressionFn expression) in
           let expression = binding.pvb_expr in
           let unerasableIgnoreExp exp = { exp with pexp_attributes = (unerasableIgnore emptyLoc) :: exp.pexp_attributes } in
           (* TODO: there is a long-tail of unsupported features inside of blocks - Pexp_letmodule , Pexp_letexception , Pexp_ifthenelse *)
