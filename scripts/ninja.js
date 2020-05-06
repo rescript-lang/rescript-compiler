@@ -1762,6 +1762,7 @@ build ../odoc_gen/generator.cmxs : mk_shared ../odoc_gen/generator.mli ../odoc_g
 
 function main() {
   var emptyCount = 2;
+  var isPlayground = false;
   if (require.main === module) {
     if (process.argv.includes("-env")) {
       useEnv = true;
@@ -1774,6 +1775,10 @@ function main() {
       process.env.BS_NATIVE = "true"
       emptyCount++;
     }
+    if (process.argv.includes("-playground")) {
+      isPlayground = true;
+      emptyCount++;
+    }
 
     var subcommand = process.argv[2];
     switch (subcommand) {
@@ -1784,14 +1789,16 @@ function main() {
             cwd: jscompDir,
             stdio: [0, 1, 2]
           });
-          cp.execFileSync(
-            path.join(__dirname, "..", "jscomp", "bin", "cmij.exe"),
-            {
-              encoding: "utf8",
-              cwd: jscompDir,
-              stdio: [0, 1, 2]
-            }
-          );
+          if (!isPlayground) {
+            cp.execFileSync(
+              path.join(__dirname, "..", "jscomp", "bin", "cmij.exe"),
+              {
+                encoding: "utf8",
+                cwd: jscompDir,
+                stdio: [0, 1, 2]
+              }
+            );
+          }
           cp.execFileSync(vendorNinjaPath, ["-f", "snapshot.ninja"], {
             encoding: "utf8",
             cwd: jscompDir,
