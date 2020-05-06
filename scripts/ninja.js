@@ -59,7 +59,7 @@ function generateVisitorPattern() {
     return visitorPattern;
   } else {
     console.warn(
-      `camlp4of not found, your changes to j.ml will not be meaningful, but in most cases you don't touch this file`
+      `camlp4of ignored`
     );
     return ``;
   }
