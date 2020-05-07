@@ -320,7 +320,7 @@ and print_simple_out_type ppf =
 
   | Otyp_constr (
       Oide_dot (Oide_dot (
-          Oide_ident "Js_OO", "Callback" ), name),
+          Oide_ident "Js_OO", "Callback" ), _),
       [res]
     ) ->
     fprintf ppf "@[<0>(%a)@ [@bs.this]@]" (print_out_type_1 ~uncurried:false) res

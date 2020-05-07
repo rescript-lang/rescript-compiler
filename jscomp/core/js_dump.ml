@@ -1086,8 +1086,8 @@ and statement_desc top cxt f (s : J.statement_desc) : cxt =
       | Raw_js_code {code = s; code_info =  Stmt (Js_stmt_comment)} -> 
         P.string f s;
         cxt
-      | Raw_js_code {code = s; code_info =  Exp (Js_literal {comment})} -> 
-        (match comment with 
+      | Raw_js_code {code_info =  Exp (Js_literal {comment})} -> 
+        (match comment with (* The %raw is just a comment *)
         | Some s ->
           P.string f s;
         | None -> ());

@@ -42,7 +42,7 @@ module S = Js_stmt_make
 
 
 let substitue_variables (map : Ident.t Map_ident.t) = 
-    object (self)  
+    object
       inherit Js_map.map
       method! ident id =
          Map_ident.find_default map id id 
