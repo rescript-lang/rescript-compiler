@@ -180,20 +180,22 @@ function readIntervals(file, showAll, outputFile) {
       }
 
       let [start, end, _, name, cmdHash] = lineTrim.split("\t");
+      cmdHash += "/" + end;
       if (+end < lastEndSeen) {
+        // This is a guess
+        // it could be wrong, when there's multiple small compilation
         if (showAll) {
-          console.log(`new session starting from: ${name}`)  
           offset += lastEndSeen + 1000;
+          console.log(`new session starting from: ${name} : ${offset}`);
         } else {
           targets = new Map();
         }
       }
-
-      lastEndSeen = +end;
+      lastEndSeen = +end; // new mark
       setDefault(
         targets,
         cmdHash,
-        new Interval(+start + offset, +end + offset)
+        new Interval(Number(start) + offset, Number(end) + offset)
       ).targets.push(name);
     },
     () => {
