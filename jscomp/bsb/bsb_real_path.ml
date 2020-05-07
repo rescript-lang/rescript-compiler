@@ -1,11 +1,13 @@
 let (//) = Filename.concat
 
-let getchdir s =
-  let p = Sys.getcwd () in
-  Unix.chdir s;
-  p
 
-let normalize s = getchdir (getchdir s)
+
+let normalize (s : string) : string = 
+  let getchdir s =
+    let p = Sys.getcwd () in
+    Unix.chdir s;
+    p in 
+  getchdir (getchdir s)
 
 let real_path p =
   match (try Some (Sys.is_directory p) with Sys_error _ -> None) with
