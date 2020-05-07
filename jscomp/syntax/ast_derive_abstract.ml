@@ -35,11 +35,11 @@ type abstractKind =
 
 let  isAbstract (xs :Ast_payload.action list) = 
   match xs with 
-  | [{loc; txt = "abstract"}, 
+  | [{ txt = "abstract"}, 
     (None 
     )]  -> 
     Complex_abstract
-  | [{loc; txt = "abstract"}, 
+  | [{ txt = "abstract"}, 
     Some {pexp_desc = Pexp_ident {txt = Lident "light"}}  
     ] -> Light_abstract
   | [{loc; txt = "abstract"}, Some _ ]
@@ -94,8 +94,8 @@ let handleTdcl
   | Ptype_record label_declarations ->
     let is_private = tdcl.ptype_private = Private in
     let has_optional_field =
-      Ext_list.exists label_declarations (fun {pld_type; pld_attributes} ->
-          Ast_attributes.has_bs_optional pld_attributes
+      Ext_list.exists label_declarations (fun x ->
+          Ast_attributes.has_bs_optional x.pld_attributes
         )  in
     let setter_accessor, makeType, labels =
       Ext_list.fold_right
