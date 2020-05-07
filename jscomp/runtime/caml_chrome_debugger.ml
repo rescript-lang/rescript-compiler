@@ -25,7 +25,7 @@
 
 type obj = Caml_obj_extern.t
 
-let setupChromeDebugger : unit -> unit = [%raw{|
+let setupChromeDebugger : unit -> unit [@bs]= [%raw{|
   function () {
   // I don't know how to directly refer to the classes that chrome's built-in
   // formatters use. adding "class": "foo" doesn't seem to work
@@ -153,7 +153,7 @@ let setupOnce () =
   if not setup.contents then
     begin
       setup.contents<- true;
-      setupChromeDebugger ()
+      setupChromeDebugger () [@bs]
     end
 
 type symbol
