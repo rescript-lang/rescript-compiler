@@ -10,7 +10,7 @@ let normalize_exn (s : string) : string =
   normalized
 
 let real_path p =
-  match (try Some (Sys.is_directory p) with Sys_error _ -> None) with
+  match (try Some (Sys.is_directory p) with  _ -> None) with
   | None ->
     let rec resolve dir =
       if Sys.file_exists dir then normalize_exn dir else
