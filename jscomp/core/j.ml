@@ -29,13 +29,18 @@
 
 
 
-(** Javascript IR
+(* Javascript IR
   
     It's a subset of Javascript AST specialized for OCaml lambda backend
 
     Note it's not exactly the same as Javascript, the AST itself follows lexical
     convention and [Block] is just a sequence of statements, which means it does 
     not introduce new scope
+*)
+
+(* TODO: it seems that camlp4of supports very limited structures
+   it does not even support attributes like `[@@@warning "-30"]
+   we should get rid of such dependency ASAP
 *)
 
 type label = string
