@@ -22,7 +22,7 @@ let rec eliminate_ref id (lam : Lam.t) =
     if Ident.same v id then raise_notrace Real_reference else lam
   | Lprim {primitive = Pfield (0,_); args =  [Lvar v]} when Ident.same v id ->
     Lam.var id
-  | Lfunction{params; body} as lam ->
+  | Lfunction _  ->
     if Set_ident.mem (Lam_free_variables.pass_free_variables  lam) id (*TODO: optmization: no need construct*)
     then raise_notrace Real_reference
     else lam

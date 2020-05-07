@@ -35,7 +35,7 @@ let alpha_conversion (meta : Lam_stats.t) (lam : Lam.t) : Lam.t =
     match args_arity with 
     | 0 :: _ 
     | [] -> Lam.apply (simpl fn) (Ext_list.map args simpl)  loc status
-    | x :: xs -> 
+    | x :: _ -> 
       if x = len 
       then 
         Lam.apply (simpl fn) (Ext_list.map args simpl) loc App_infer_full

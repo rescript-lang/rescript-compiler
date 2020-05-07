@@ -63,7 +63,6 @@ let annotate (meta : Lam_stats.t)  rec_flag  (k:Ident.t) (arity : Lam_arity.t) l
 *)
 let collect_info  (meta : Lam_stats.t) (lam : Lam.t)  = 
   let rec collect_bind rec_flag
-      (kind : Lam_compat.let_kind) 
       (ident : Ident.t)
       (lam : Lam.t) = 
     match lam with 
@@ -99,12 +98,12 @@ let collect_info  (meta : Lam_stats.t) (lam : Lam.t)  =
         (OptionalBlock(l, Null_undefined))
     | Lglobal_module v  
       -> 
-      Lam_util.alias_ident_or_global meta  ident v (Module  v) kind; 
+      Lam_util.alias_ident_or_global meta  ident v (Module  v) ; 
     | Lvar v 
       -> 
       (
         (* if Ident.global v then  *)
-        Lam_util.alias_ident_or_global meta  ident v NA kind
+        Lam_util.alias_ident_or_global meta  ident v NA 
         (* enven for not subsitution, it still propogate some properties *)
         (* else () *)
       )
@@ -135,14 +134,14 @@ let collect_info  (meta : Lam_stats.t) (lam : Lam.t)  =
     | Lfunction { params; body =  l} -> (* functor ? *)
       List.iter (fun p -> Hash_ident.add meta.ident_tbl p Parameter ) params;
       collect  l
-    | Llet (kind,ident,arg,body) -> 
-      collect_bind Lam_non_rec kind ident arg ; collect body
+    | Llet (_kind,ident,arg,body) -> 
+      collect_bind Lam_non_rec  ident arg ; collect body
     | Lletrec (bindings, body) -> 
       (match bindings with 
-       | [ident, arg] -> collect_bind Lam_self_rec Strict ident arg
+       | [ident, arg] -> collect_bind Lam_self_rec  ident arg
        | _ -> 
          Ext_list.iter bindings
-           (fun (ident,arg) -> collect_bind Lam_rec  Strict ident arg )) ;
+           (fun (ident,arg) -> collect_bind Lam_rec  ident arg )) ;
       collect body
     | Lglobal_module _ -> ()
     | Lprim {args; _} -> List.iter collect  args
@@ -155,15 +154,15 @@ let collect_info  (meta : Lam_stats.t) (lam : Lam.t)  =
       collect  l ;
       Ext_list.iter_snd sw  collect;
       Ext_option.iter d collect
-    | Lstaticraise (code,ls) -> 
+    | Lstaticraise (_code,ls) -> 
       List.iter collect  ls
     | Lstaticcatch(l1, (_,_), l2) -> collect  l1; collect  l2
     | Ltrywith(l1, _, l2) -> collect  l1; collect  l2
     | Lifthenelse(l1, l2, l3) -> collect  l1; collect  l2; collect  l3
     | Lsequence(l1, l2) -> collect  l1; collect  l2
     | Lwhile(l1, l2) -> collect  l1; collect l2
-    | Lfor(_, l1, l2, dir, l3) -> collect  l1; collect  l2; collect  l3
-    | Lassign(v, l) ->
+    | Lfor(_, l1, l2, _dir, l3) -> collect  l1; collect  l2; collect  l3
+    | Lassign(_v, l) ->
       (* Lalias-bound variables are never assigned, so don't increase
          v's refcollect *)
       collect  l

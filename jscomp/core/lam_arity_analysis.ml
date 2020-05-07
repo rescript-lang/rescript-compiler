@@ -108,7 +108,7 @@ let rec get_arity (meta : Lam_stats.t) (lam : Lam.t) :  Lam_arity.t =
     end
   | Lfunction {arity;  body} -> 
     Lam_arity.merge arity  (get_arity meta body)
-  | Lswitch(l, {sw_failaction; 
+  | Lswitch(_, {sw_failaction; 
                 sw_consts; 
                 sw_blocks;
                 sw_numblocks = _;
@@ -119,7 +119,7 @@ let rec get_arity (meta : Lam_stats.t) (lam : Lam.t) :  Lam_arity.t =
         Ext_list.map_append sw_consts
           (Ext_list.map sw_blocks snd) snd  in
       match sw_failaction with None -> rest | Some x -> x::rest )
-  | Lstringswitch(l, sw, d) -> 
+  | Lstringswitch(_, sw, d) -> 
     begin match d with 
       | None -> all_lambdas meta (Ext_list.map sw snd )
       | Some v -> all_lambdas meta (v:: Ext_list.map sw snd)
@@ -127,7 +127,7 @@ let rec get_arity (meta : Lam_stats.t) (lam : Lam.t) :  Lam_arity.t =
   | Lstaticcatch(_, _, handler) -> get_arity meta handler
   | Ltrywith(l1, _, l2) -> 
     all_lambdas meta [l1;l2]
-  | Lifthenelse(l1, l2, l3) ->
+  | Lifthenelse(_, l2, l3) ->
     all_lambdas meta [l2;l3]
   | Lsequence(_, l2) -> get_arity meta l2 
   | Lstaticraise _ (* since it will not be in tail position *)

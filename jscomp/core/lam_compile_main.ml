@@ -275,7 +275,7 @@ let compile
       Warnings.check_fatal ();  
       let effect = 
         Lam_stats_export.get_dependent_module_effect
-        meta maybe_pure external_module_ids in 
+        maybe_pure external_module_ids in 
       let v : Js_cmj_format.t = 
         Lam_stats_export.export_to_cmj 
           meta  

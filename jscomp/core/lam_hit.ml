@@ -41,18 +41,18 @@ let hit_variables (fv : Set_ident.t) (l : t) : bool  =
       | Lvar id -> hit_var id 
       | Lassign(id, e) ->
         hit_var id || hit e
-      | Lstaticcatch(e1, (_,vars), e2) ->
+      | Lstaticcatch(e1, (_,_vars), e2) ->
         hit e1 || hit e2
-      | Ltrywith(e1, exn, e2) ->
+      | Ltrywith(e1, _exn, e2) ->
         hit e1 || hit e2
-      | Lfunction{body;params} ->
+      | Lfunction{body;params=_} ->
         hit body;
-      | Llet(str, id, arg, body) ->
+      | Llet(_str, _id, arg, body) ->
         hit arg || hit body
       | Lletrec(decl, body) ->
         hit body ||
         hit_list_snd decl 
-      | Lfor(v, e1, e2, dir, e3) ->
+      | Lfor(_v, e1, e2, _dir, e3) ->
         hit e1 || hit e2 || hit e3
       | Lconst _ -> false
       | Lapply{ap_func; ap_args; _} ->
@@ -78,7 +78,7 @@ let hit_variables (fv : Set_ident.t) (l : t) : bool  =
         hit e1 || hit e2
       | Lwhile(e1, e2) ->
         hit e1 || hit e2
-      | Lsend (k, met, obj, args, _) ->
+      | Lsend (_k, met, obj, args, _) ->
         hit met || hit obj ||  hit_list args
     end
   in hit l
@@ -100,18 +100,18 @@ let hit_variable (fv : Ident.t) (l : t) : bool  =
       | Lvar id -> hit_var id 
       | Lassign(id, e) ->
         hit_var id || hit e
-      | Lstaticcatch(e1, (_,vars), e2) ->
+      | Lstaticcatch(e1, (_,_vars), e2) ->
         hit e1 || hit e2
-      | Ltrywith(e1, exn, e2) ->
+      | Ltrywith(e1, _exn, e2) ->
         hit e1 || hit e2
-      | Lfunction{body;params} ->
+      | Lfunction{body; params = _} ->
         hit body;
-      | Llet(str, id, arg, body) ->
+      | Llet(_str, _id, arg, body) ->
         hit arg || hit body
       | Lletrec(decl, body) ->
         hit body ||
         hit_list_snd decl 
-      | Lfor(v, e1, e2, dir, e3) ->
+      | Lfor(_v, e1, e2, _dir, e3) ->
         hit e1 || hit e2 || hit e3
       | Lconst _ -> false
       | Lapply{ap_func; ap_args; _} ->
@@ -137,7 +137,7 @@ let hit_variable (fv : Ident.t) (l : t) : bool  =
         hit e1 || hit e2
       | Lwhile(e1, e2) ->
         hit e1 || hit e2
-      | Lsend (k, met, obj, args, _) ->
+      | Lsend (_k, met, obj, args, _) ->
         hit met || hit obj ||  hit_list args
     end
   in hit l

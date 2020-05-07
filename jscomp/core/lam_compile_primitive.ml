@@ -571,7 +571,7 @@ let translate  loc
     Lam_dispatch_primitive.translate loc prim.prim_name  args
   (* Lam_compile_external_call.translate loc cxt prim args *)
   (* Test if the argument is a block or an immediate integer *)
-  | Pjs_object_create labels
+  | Pjs_object_create _
     -> 
     assert false 
 

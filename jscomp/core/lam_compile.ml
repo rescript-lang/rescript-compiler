@@ -477,7 +477,7 @@ and compile_general_cases
     | [], Default lam ->
       Js_output.output_as_block (compile_lambda cxt lam)
     | [], (Complete | NonComplete) ->  []
-    | [(id,lam)],Complete ->
+    | [(_,lam)],Complete ->
       (* To take advantage of such optimizations,
           when we generate code using switch,
           we should always have a default,
@@ -646,7 +646,7 @@ and compile_switch switch_arg sw (lambda_cxt : Lam_compile_context.t) =
 
 and compile_string_cases cxt switch_exp table default =
   compile_general_cases
-    (fun s -> None)
+    (fun _ -> None)
     E.str
     E.string_equal
     cxt
@@ -1122,7 +1122,7 @@ and compile_trywith lam id catch (lambda_cxt : Lam_compile_context.t) =
 *)
 and compile_send  (meth_kind : Lam_compat.meth_kind)
     (met : Lam.t) 
-    (obj : Lam.t) (args : Lam.t list) loc 
+    (obj : Lam.t) (args : Lam.t list) 
     (lambda_cxt : Lam_compile_context.t) =       
     let new_cxt = {lambda_cxt with continuation = NeedValue Not_tail} in 
     match Ext_list.split_map (met :: obj :: args) (fun x  ->
@@ -1236,7 +1236,7 @@ and compile_ifthenelse
                      compile_lambda {lambda_cxt with continuation = Assign id}  t_branch)
                     ~else_:(Js_output.output_as_block @@
                             (compile_lambda {lambda_cxt with continuation = Assign id} f_branch)))))
-      | Assign id ->
+      | Assign _ ->
         let then_output =
           Js_output.output_as_block (compile_lambda lambda_cxt  t_branch) in
         let else_output =
@@ -1418,7 +1418,7 @@ and compile_prim (prim_info : Lam.prim_info) (lambda_cxt : Lam_compile_context.t
        we need mark something that such eta-conversion can not be simplified in some cases
     *)
 
-    |  {primitive = Pjs_unsafe_downgrade {name = property;loc; setter }; args = [obj]}
+    |  {primitive = Pjs_unsafe_downgrade {name = property; setter }; args = [obj]}
       
       ->
       (**
@@ -1440,7 +1440,7 @@ and compile_prim (prim_info : Lam.prim_info) (lambda_cxt : Lam_compile_context.t
          Js_output.output_of_block_and_expression lambda_cxt.continuation blocks ret)
     | {primitive =  Pfull_apply;  args = [Lprim{
         primitive =
-          Pjs_unsafe_downgrade {name = property; loc; setter = true};
+          Pjs_unsafe_downgrade {name = property;  setter = true};
         args = [obj]} ;
        setter_val]} ->        
        let need_value_no_return_cxt = {lambda_cxt with continuation = NeedValue Not_tail} in
@@ -1470,7 +1470,7 @@ and compile_prim (prim_info : Lam.prim_info) (lambda_cxt : Lam_compile_context.t
        )
     | {primitive = Pfull_apply;  args = Lprim{
         primitive =
-          Pjs_unsafe_downgrade {name = property; loc; setter = true};
+          Pjs_unsafe_downgrade {setter = true};
         } :: _
        } -> assert false        
     | {primitive = 
@@ -1492,7 +1492,7 @@ and compile_prim (prim_info : Lam.prim_info) (lambda_cxt : Lam_compile_context.t
       
     | {primitive = Pjs_fn_method;  args = args_lambda} ->
       (match args_lambda with
-       | [Lfunction{arity = len; params; body} ]
+       | [Lfunction{ params; body} ]
           ->
          Js_output.output_of_block_and_expression
            lambda_cxt.continuation
@@ -1511,10 +1511,10 @@ and compile_prim (prim_info : Lam.prim_info) (lambda_cxt : Lam_compile_context.t
     |  {primitive = Pjs_fn_make arity;  args = [fn]; loc } ->
       compile_lambda lambda_cxt (Lam_eta_conversion.unsafe_adjust_to_arity loc ~to_:arity ?from:None fn)
 
-    |  {primitive = Pjs_fn_make arity; args = [] | _::_::_ } ->
+    |  {primitive = Pjs_fn_make _; args = [] | _::_::_ } ->
       assert false
 
-    | { primitive = Pjs_object_create labels ; args ; loc}
+    | { primitive = Pjs_object_create labels ; args ; }
       ->
       let args_block, args_expr =
         if args = [] then [], []
@@ -1630,5 +1630,5 @@ and compile_lambda
       compile_assign id lambda lambda_cxt
     | Ltrywith(lam,id, catch) ->  (* generate documentation *)
       compile_trywith lam id catch lambda_cxt
-    | Lsend(meth_kind,met, obj, args,loc) ->
-      compile_send meth_kind met obj args loc lambda_cxt
+    | Lsend(meth_kind,met, obj, args,_loc) ->
+      compile_send meth_kind met obj args  lambda_cxt

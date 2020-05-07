@@ -45,14 +45,14 @@
     | Lfunction{body;params} ->
       free body;
       Ext_list.iter params (fun param -> fv := Set_ident.remove !fv param) 
-    | Llet(str, id, arg, body) ->
+    | Llet(_str, id, arg, body) ->
       free arg; free body;
       fv := Set_ident.remove !fv id
     | Lletrec(decl, body) ->
       free body;
       free_list_snd decl;
-      Ext_list.iter decl (fun (id, exp) -> fv := Set_ident.remove !fv id) 
-    | Lfor(v, e1, e2, dir, e3) ->
+      Ext_list.iter decl (fun (id, _exp) -> fv := Set_ident.remove !fv id) 
+    | Lfor(v, e1, e2, _dir, e3) ->
       free e1; free e2; free e3;
       fv := Set_ident.remove !fv v 
     | Lconst _ -> ()
@@ -81,7 +81,7 @@
       free e1; free e2
     | Lwhile(e1, e2) ->
       free e1; free e2
-    | Lsend (k, met, obj, args, _) ->
+    | Lsend (_k, met, obj, args, _) ->
       free met; free obj;  free_list args
   in free l;
   !fv
