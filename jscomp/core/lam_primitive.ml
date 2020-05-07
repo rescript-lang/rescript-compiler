@@ -114,15 +114,6 @@ type t =
   | Pbigarrayset of bool * int * Lam_compat.bigarray_kind * Lam_compat.bigarray_layout
   (* size of the nth dimension of a big array *)
   | Pbigarraydim of int
-  (* load/set 16,32,64 bits from a string: (unsafe)*)
-  (* | Pstring_load_16 of bool
-  | Pstring_load_32 of bool
-  | Pstring_load_64 of bool *)
-  (* | Pstring_set_16 of bool
-  | Pstring_set_32 of bool
-  | Pstring_set_64 of bool *)
-  (* load/set 16,32,64 bits from a
-     (char, int8_unsigned_elt, c_layout) Bigarray.Array1.t : (unsafe) *)
   | Pbigstring_load_16 of bool
   | Pbigstring_load_32 of bool
   | Pbigstring_load_64 of bool

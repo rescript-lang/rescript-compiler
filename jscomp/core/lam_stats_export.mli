@@ -26,7 +26,6 @@
 
 
 val get_dependent_module_effect:
-  Lam_stats.t -> 
   string option ->
   Lam_module_ident.t list ->
   string option

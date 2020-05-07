@@ -120,7 +120,7 @@ let refine_let
     Lam.let_ Strict param arg  l *)
 
 let alias_ident_or_global (meta : Lam_stats.t) (k:Ident.t) (v:Ident.t) 
-    (v_kind : Lam_id_kind.t) (let_kind : Lam_compat.let_kind) =
+    (v_kind : Lam_id_kind.t)  =
   (** treat rec as Strict, k is assigned to v 
       {[ let k = v ]}
   *)

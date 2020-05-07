@@ -128,7 +128,7 @@ let free_variables
       iter sink_pos  e1; 
       local_add_list vars;       
       iter sink_pos e2
-    | Ltrywith(e1, exn, e2) ->
+    | Ltrywith(e1, _exn, e2) ->
       iter top  e1; iter sink_pos  e2
     | Lifthenelse(e1, e2, e3) ->
       iter top e1; 
@@ -138,7 +138,7 @@ let free_variables
       iter top e1; iter sink_pos e2
     | Lwhile(e1, e2) ->
       iter sink_pos e1; iter sink_pos e2 (* in the loop, no substitution any way *)
-    | Lfor(v, e1, e2, dir, e3) ->
+    | Lfor(v, e1, e2, _dir, e3) ->
       local_add v ; 
       iter sink_pos e1; iter sink_pos e2; iter sink_pos e3
     | Lassign(id, e) ->

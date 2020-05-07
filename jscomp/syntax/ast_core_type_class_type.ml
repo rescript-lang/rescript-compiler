@@ -145,14 +145,14 @@ let typ_mapper
      *)     
      ptyp_loc = loc
     } ->
-    begin match  Ast_attributes.process_attributes_rev ptyp_attributes with 
-      | Uncurry _, ptyp_attributes ->
+    begin match  fst (Ast_attributes.process_attributes_rev ptyp_attributes) with 
+      | Uncurry _ ->
         Ast_typ_uncurry.to_uncurry_type loc self label args body 
-      | Meth_callback _, ptyp_attributes ->
+      | Meth_callback _ ->
         Ast_typ_uncurry.to_method_callback_type loc self label args body
-      | Method _, ptyp_attributes ->
+      | Method _ ->
         Ast_typ_uncurry.to_method_type loc self label args body
-      | Nothing , _ -> 
+      | Nothing -> 
         Bs_ast_mapper.default_mapper.typ self ty
     end
   | {

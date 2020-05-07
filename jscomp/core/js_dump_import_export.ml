@@ -26,8 +26,9 @@ module P = Ext_pp
 module L = Js_dump_lit
 let default_export = "default"
 let esModule  = "__esModule", "true"
-(** Exports printer *)
-(** Print exports in Google module format, CommonJS format *)
+(* Exports printer *)
+
+(* Print exports in Google module format, CommonJS format *)
 let exports cxt f (idents : Ident.t list) = 
   let outer_cxt, reversed_list = 
     Ext_list.fold_left idents (cxt, []) (fun (cxt, acc) id -> 

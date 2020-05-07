@@ -43,7 +43,7 @@ let check_digest output_file digest : bool =
       List.filter (fun x -> x <> "")
         (String.split_on_char ' ' 
            ((Ext_io.load_file output_file))) with         
-    | head :: old_digest :: tail->
+    | _head :: old_digest :: _tail->
 
       Digest.equal digest old_digest
 

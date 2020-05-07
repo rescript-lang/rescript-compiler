@@ -55,7 +55,7 @@ let rec
     no_bounded_variables e1 && no_bounded_variables e2
   | Lwhile(e1, e2) ->
     no_bounded_variables e1 && no_bounded_variables e2
-  | Lsend (k, met, obj, args, _) ->
+  | Lsend (_k, met, obj, args, _) ->
     no_bounded_variables met  &&
     no_bounded_variables obj &&
     no_list args

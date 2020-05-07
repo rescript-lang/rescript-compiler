@@ -163,7 +163,7 @@ let process_derive_type (attrs : t) : derive_attr * t =
       match  st, txt  with
       |  {bs_deriving = None}, "bs.deriving"
         ->
-        {st with
+        {
          bs_deriving = Some
              (Ast_payload.ident_or_record_as_config loc payload)}, acc
       | {bs_deriving = Some _}, "bs.deriving"

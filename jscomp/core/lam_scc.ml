@@ -46,23 +46,23 @@ let hit_mask ( mask : Hash_set_ident_mask.t) (l : Lam.t) : bool =
     | Lvar id -> hit_var id
     | Lassign(id, e) ->
       hit_var id || hit e
-    | Lstaticcatch(e1, (_,vars), e2) ->
+    | Lstaticcatch(e1, (_,_), e2) ->
       hit e1 || hit e2
-    | Ltrywith(e1, exn, e2) ->
+    | Ltrywith(e1, _exn, e2) ->
       hit e1 || hit e2
-    | Lfunction{body;params} ->
+    | Lfunction{body;params = _} ->
       hit body
-    | Llet(str, id, arg, body) ->
+    | Llet(_str, _id, arg, body) ->
       hit arg || hit body
     | Lletrec(decl, body) ->
       hit body ||
       hit_list_snd decl
-    | Lfor(v, e1, e2, dir, e3) ->
+    | Lfor(_v, e1, e2, _dir, e3) ->
       hit e1 || hit e2 || hit e3
     | Lconst _ -> false
     | Lapply{ap_func; ap_args; _} ->
       hit ap_func || hit_list ap_args
-    | Lglobal_module id (* playsafe *)
+    | Lglobal_module _ (* playsafe *)
       -> false
     | Lprim {args; _} ->
       hit_list args
@@ -83,7 +83,7 @@ let hit_mask ( mask : Hash_set_ident_mask.t) (l : Lam.t) : bool =
       hit e1 || hit e2
     | Lwhile(e1, e2) ->
       hit e1 || hit e2
-    | Lsend (k, met, obj, args, _) ->
+    | Lsend (_k, met, obj, args, _) ->
       hit met || hit obj || hit_list args  
   in hit l
 
@@ -103,7 +103,7 @@ let preprocess_deps (groups : bindings) : _ * Ident.t array * Vec_int.t array   
     )  ;
   let int_mapping = Ordered_hash_map_local_ident.to_sorted_array domain in
   let node_vec = Array.make (Array.length int_mapping) (Vec_int.empty ()) in
-  Ordered_hash_map_local_ident.iter domain ( fun id lam key_index ->
+  Ordered_hash_map_local_ident.iter domain ( fun _id lam key_index ->
       let base_key =  node_vec.(key_index) in
       ignore (hit_mask mask lam) ;
       Hash_set_ident_mask.iter_and_unmask mask (fun ident hit  ->

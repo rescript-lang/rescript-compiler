@@ -9404,8 +9404,8 @@ let rec length_ge l n =
     | _ :: tl -> length_ge tl (n - 1)
     | [] -> false
   else true
+  
 (**
-
    {[length xs = length ys + n ]}
 *)
 let rec length_larger_than_n xs ys n =
@@ -11819,10 +11819,12 @@ module type S =
     val add: 'a t -> key -> 'a -> 'a t
     (** [add x y m] 
         If [x] was already bound in [m], its previous binding disappears. *)
+
     val adjust: 'a t -> key -> ('a option->  'a) ->  'a t 
     (** [adjust acc k replace ] if not exist [add (replace None ], otherwise 
         [add k v (replace (Some old))]
     *)
+    
     val singleton: key -> 'a -> 'a t
 
     val remove: 'a t -> key -> 'a t

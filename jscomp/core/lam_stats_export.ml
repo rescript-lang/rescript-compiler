@@ -112,7 +112,6 @@ let values_of_export
   it should be okay to not reference it 
 *)
 let get_dependent_module_effect 
-  (meta : Lam_stats.t) 
   (maybe_pure : string option) 
   (external_ids : Lam_module_ident.t list) = 
   if maybe_pure = None then

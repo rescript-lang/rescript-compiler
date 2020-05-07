@@ -39,7 +39,7 @@ let expr_mapper (self : mapper) ( e : Parsetree.expression) =
     (s, (Some delim)))
   ->
     Ast_utf8_string_interp.transform e s delim
-  | Pexp_fun (Nolabel, _, pat , body)
+  | Pexp_fun (Nolabel, _, _pat , _body)
     ->
     begin match Ext_list.exclude_with_val
           e.pexp_attributes
@@ -52,8 +52,8 @@ let expr_mapper (self : mapper) ( e : Parsetree.expression) =
 let typ_mapper (self : mapper) (typ : Parsetree.core_type) =
   match typ with
   | {ptyp_attributes ;
-     ptyp_desc = Ptyp_arrow (label, args, body);
-     ptyp_loc = loc
+     ptyp_desc = Ptyp_arrow (_label, _args, _body);
+     ptyp_loc = _loc
     } ->
     begin match Ext_list.exclude_with_val
           ptyp_attributes

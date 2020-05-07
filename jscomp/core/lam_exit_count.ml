@@ -79,11 +79,11 @@ let count_helper  (lam : Lam.t) : collection =
       count l;
       Ext_list.iter_snd sw.sw_consts count;
       Ext_list.iter_snd sw.sw_blocks count
-    | Ltrywith(l1, v, l2) -> count l1; count l2
+    | Ltrywith(l1, _v, l2) -> count l1; count l2
     | Lifthenelse(l1, l2, l3) -> count l1; count l2; count l3
     | Lsequence(l1, l2) -> count l1; count l2
     | Lwhile(l1, l2) -> count l1; count l2
-    | Lfor(_, l1, l2, dir, l3) -> count l1; count l2; count l3
+    | Lfor(_, l1, l2, _dir, l3) -> count l1; count l2; count l3
     | Lassign(_, l) -> count l
     | Lsend(_, m, o, ll, _) -> count m; count o; List.iter count ll
   and count_default sw =

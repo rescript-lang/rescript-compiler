@@ -45,16 +45,7 @@ let make exception_str  : J.expression =
 
 
 
+(* TODO: only used in camlinternalOO, split it off as a separate module? *)
 let caml_set_oo_id args = 
-      (**
-         If we can guarantee this code path is never hit, we can do 
-         a better job for encoding of exception and extension?
-      *)
-      E.runtime_call Js_runtime_modules.exceptions "caml_set_oo_id" args 
-    (* begin match match_exception_def args with  *)
-    (* | Some ( exception_str, mutable_flag) *)
-    (*   ->  *)
-    (*   make_exception exception_str  *)
-    (* | _ -> *)
-    (* end *)
+   E.runtime_call Js_runtime_modules.exceptions "caml_set_oo_id" args 
     

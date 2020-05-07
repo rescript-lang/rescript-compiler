@@ -167,7 +167,7 @@ type exprs = E.t list
    Invariant : Array encoding
    @return arguments and effect
 *)
-let assemble_args_no_splice call_loc ffi  
+let assemble_args_no_splice 
   (arg_types : specs) 
   (args : exprs) : exprs * E.t option = 
   let rec aux (labels : specs) (args : exprs) : exprs * exprs = 
@@ -195,7 +195,7 @@ let assemble_args_no_splice call_loc ffi
     | x::xs ->  (** FIXME: the order of effects? *)
       Some (E.fuse_to_seq x xs) 
   end
-let assemble_args_has_splice call_loc ffi (arg_types : specs) (args : exprs) 
+let assemble_args_has_splice  (arg_types : specs) (args : exprs) 
   : exprs * E.t option * bool = 
   let dynamic = ref false in 
   let rec aux (labels : specs) (args : exprs) = 
@@ -258,7 +258,6 @@ let translate_scoped_access scopes obj =
     Ext_list.fold_left xs (E.dot obj x) E.dot
   
 let translate_ffi 
-    call_loc 
     (cxt  : Lam_compile_context.t)
     arg_types 
     (ffi : External_ffi_types.external_spec ) 
@@ -271,12 +270,12 @@ let translate_ffi
     let fn =  translate_scoped_module_val module_name fn scopes in 
     if splice then 
       let args, eff, dynamic  = 
-          assemble_args_has_splice   call_loc ffi  arg_types args in 
+          assemble_args_has_splice    arg_types args in 
       add_eff eff 
         (if dynamic then splice_fn_apply fn args
          else E.call ~info:{arity=Full; call_info = Call_na} fn args)
     else 
-      let args, eff  = assemble_args_no_splice   call_loc ffi  arg_types args in 
+      let args, eff  = assemble_args_no_splice     arg_types args in 
       add_eff eff @@              
       E.call ~info:{arity=Full; call_info = Call_na} fn args
 
@@ -287,7 +286,7 @@ let translate_ffi
     in           
     if splice then 
       let args, eff, dynamic = 
-          assemble_args_has_splice   call_loc ffi  arg_types args in 
+          assemble_args_has_splice  arg_types args in 
       (* TODO: fix in rest calling convention *)          
       add_eff eff (
         if dynamic then
@@ -296,7 +295,7 @@ let translate_ffi
           E.call ~info:{arity=Full; call_info = Call_na} fn args
       )              
     else 
-      let args, eff = assemble_args_no_splice  call_loc ffi  arg_types args in 
+      let args, eff = assemble_args_no_splice    arg_types args in 
       (* TODO: fix in rest calling convention *)          
       add_eff eff (E.call ~info:{arity=Full; call_info = Call_na} fn args)
 
@@ -312,7 +311,7 @@ let translate_ffi
        TODO: we should propagate this property 
        as much as we can(in alias table)
     *)
-    let args, eff = assemble_args_no_splice call_loc ffi  arg_types args in
+    let args, eff = assemble_args_no_splice   arg_types args in
     let fn =  translate_scoped_module_val module_name fn scopes in 
     add_eff eff 
       begin 
@@ -331,8 +330,8 @@ let translate_ffi
       (* assert (js_splice = false) ;  *)
       if splice then 
         let args, self = Ext_list.split_at_last args in
-        let arg_types, self_type = Ext_list.split_at_last arg_types in
-        let args, eff, dynamic = assemble_args_has_splice call_loc ffi arg_types args in
+        let arg_types, _ = Ext_list.split_at_last arg_types in
+        let args, eff, dynamic = assemble_args_has_splice  arg_types args in
         add_eff eff (          
           let self = translate_scoped_access js_send_scopes self in 
           if dynamic then
@@ -341,8 +340,8 @@ let translate_ffi
             E.call ~info:{arity=Full; call_info = Call_na}  (E.dot self name) args)
       else 
         let args, self = Ext_list.split_at_last args in
-        let arg_types, self_type = Ext_list.split_at_last arg_types in
-        let args, eff = assemble_args_no_splice call_loc ffi  arg_types args in
+        let arg_types, _ = Ext_list.split_at_last arg_types in
+        let args, eff = assemble_args_no_splice   arg_types args in
         add_eff eff (
           let self = translate_scoped_access js_send_scopes self in 
           E.call ~info:{arity=Full; call_info = Call_na}  (E.dot self name) args)
@@ -354,7 +353,7 @@ let translate_ffi
           let [@warning"-8"] ( _self_type::arg_types )
             = arg_types in
           if splice then   
-            let args, eff, dynamic = assemble_args_has_splice  call_loc ffi arg_types args in
+            let args, eff, dynamic = assemble_args_has_splice   arg_types args in
             add_eff eff ( 
               let self = translate_scoped_access js_send_scopes self in 
               if dynamic then 
@@ -362,7 +361,7 @@ let translate_ffi
               else               
                 E.call ~info:{arity=Full; call_info = Call_na}  (E.dot self name) args)
           else 
-            let args, eff = assemble_args_no_splice call_loc ffi  arg_types args in
+            let args, eff = assemble_args_no_splice   arg_types args in
             add_eff eff ( 
               let self = translate_scoped_access js_send_scopes self in 
               E.call ~info:{arity=Full; call_info = Call_na}  (E.dot self name) args)
@@ -388,7 +387,7 @@ let translate_ffi
     let fn =
       let (id,name) = handle_external  module_name in
       E.external_var_dot id ~external_name:name  in           
-    let args,eff = assemble_args_no_splice call_loc  ffi  arg_types args in 
+    let args,eff = assemble_args_no_splice  arg_types args in 
     (* TODO: fix in rest calling convention *)   
     add_eff eff        
       begin 
@@ -402,7 +401,7 @@ let translate_ffi
       end            
   
   | Js_get {js_get_name = name; js_get_scopes = scopes } -> 
-    let args,cur_eff = assemble_args_no_splice call_loc ffi  arg_types args in 
+    let args,cur_eff = assemble_args_no_splice   arg_types args in 
     add_eff cur_eff @@ 
     begin match args with 
       | [obj] ->
@@ -412,7 +411,7 @@ let translate_ffi
     end  
   | Js_set {js_set_name = name; js_set_scopes = scopes  } -> 
     (* assert (js_splice = false) ;  *)
-    let args,cur_eff = assemble_args_no_splice call_loc ffi  arg_types args in 
+    let args,cur_eff = assemble_args_no_splice   arg_types args in 
     add_eff cur_eff @@
     begin match args, arg_types with 
       | [obj; v], _ -> 
@@ -423,7 +422,7 @@ let translate_ffi
     end
   | Js_get_index { js_get_index_scopes = scopes }
     -> 
-    let args,cur_eff = assemble_args_no_splice call_loc ffi  arg_types args in 
+    let args,cur_eff = assemble_args_no_splice   arg_types args in 
     add_eff cur_eff @@ 
     begin match args with
       | [obj; v ] -> 
@@ -432,7 +431,7 @@ let translate_ffi
     end
   | Js_set_index { js_set_index_scopes = scopes }
     -> 
-    let args,cur_eff = assemble_args_no_splice call_loc ffi arg_types args in 
+    let args,cur_eff = assemble_args_no_splice  arg_types args in 
     add_eff cur_eff @@ 
     begin match args with 
       | [obj; v ; value] -> 

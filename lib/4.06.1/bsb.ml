@@ -1430,8 +1430,8 @@ let rec length_ge l n =
     | _ :: tl -> length_ge tl (n - 1)
     | [] -> false
   else true
+  
 (**
-
    {[length xs = length ys + n ]}
 *)
 let rec length_larger_than_n xs ys n =
@@ -2794,10 +2794,12 @@ module type S =
     val add: 'a t -> key -> 'a -> 'a t
     (** [add x y m] 
         If [x] was already bound in [m], its previous binding disappears. *)
+
     val adjust: 'a t -> key -> ('a option->  'a) ->  'a t 
     (** [adjust acc k replace ] if not exist [add (replace None ], otherwise 
         [add k v (replace (Some old))]
     *)
+    
     val singleton: key -> 'a -> 'a t
 
     val remove: 'a t -> key -> 'a t
@@ -8061,18 +8063,20 @@ end = struct
 #1 "bsb_real_path.ml"
 let (//) = Filename.concat
 
-let getchdir s =
-  let p = Sys.getcwd () in
-  Unix.chdir s;
-  p
 
-let normalize s = getchdir (getchdir s)
+
+let normalize_exn (s : string) : string = 
+  let old_cwd = Sys.getcwd () in 
+  Unix.chdir s ;
+  let normalized = Sys.getcwd () in 
+  Unix.chdir old_cwd; 
+  normalized
 
 let real_path p =
-  match (try Some (Sys.is_directory p) with Sys_error _ -> None) with
+  match (try Some (Sys.is_directory p) with  _ -> None) with
   | None ->
     let rec resolve dir =
-      if Sys.file_exists dir then normalize dir else
+      if Sys.file_exists dir then normalize_exn dir else
       let parent = Filename.dirname dir in
       if dir = parent then dir
       else  (resolve parent) // (Filename.basename dir)
@@ -8082,9 +8086,9 @@ let real_path p =
       else p
     in
     resolve p
-  | Some true -> normalize p
+  | Some true -> normalize_exn p
   | Some false ->
-    let dir = normalize (Filename.dirname p) in
+    let dir = normalize_exn (Filename.dirname p) in
     match Filename.basename p with
     | "." -> dir
     | base -> dir // base

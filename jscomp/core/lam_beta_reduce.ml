@@ -92,8 +92,7 @@ let propogate_beta_reduce_with_map
          match arg with          
          | Lconst _
          | Lvar _  -> rest_bindings , arg :: acc 
-         | Lglobal_module ident 
-           (* We can pass Global, but you also need keep track of it*)
+         | Lglobal_module _ 
            ->
            let p = Ident.rename old_param in 
            (p,arg) :: rest_bindings , (Lam.var p) :: acc 
@@ -101,7 +100,6 @@ let propogate_beta_reduce_with_map
          | _ -> 
            if  Lam_analysis.no_side_effects arg then
              match Map_ident.find_exn map old_param with 
-             | exception Not_found -> assert false 
              | stat -> 
                if Lam_var_stats.top_and_used_zero_or_one stat then 
                  rest_bindings, arg :: acc                
