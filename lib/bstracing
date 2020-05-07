@@ -170,6 +170,7 @@ function readIntervals(file, showAll, outputFile) {
    * @type {Map<string,Interval>}
    */
   let targets = new Map();
+  let offset = 0;
   processEntry(
     file,
     (line) => {
@@ -179,14 +180,21 @@ function readIntervals(file, showAll, outputFile) {
       }
 
       let [start, end, _, name, cmdHash] = lineTrim.split("\t");
-      if (!showAll && +end < lastEndSeen) {
-        targets = new Map();
+      if (+end < lastEndSeen) {
+        if (showAll) {
+          console.log(`new session starting from: ${name}`)  
+          offset += lastEndSeen + 1000;
+        } else {
+          targets = new Map();
+        }
       }
 
       lastEndSeen = +end;
-      setDefault(targets, cmdHash, new Interval(+start, +end)).targets.push(
-        name
-      );
+      setDefault(
+        targets,
+        cmdHash,
+        new Interval(+start + offset, +end + offset)
+      ).targets.push(name);
     },
     () => {
       let sorted = [...targets.values()].sort((a, b) => {
@@ -250,9 +258,9 @@ let outputFile = `tracing_${curDate.getHours()}_${curDate.getMinutes()}_${curDat
   if (process.argv.includes("-all")) {
     showAll = true;
   }
-  index = process.argv.indexOf(`-o`)
-  if(index >= 0){
-    outputFile = process.argv[index + 1]
+  index = process.argv.indexOf(`-o`);
+  if (index >= 0) {
+    outputFile = process.argv[index + 1];
   }
 }
 
