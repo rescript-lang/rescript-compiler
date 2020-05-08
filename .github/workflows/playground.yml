@@ -27,7 +27,7 @@ jobs:
         uses: actions/cache@v1
         with:
           path: ~/.esy/source
-          key: source-${{ hashFiles('**/playground/_esy/index.json') }}
+          key: source-${{ hashFiles('**/playground/esy.lock/index.json') }}
 
       - name: Install
         run: esy install
