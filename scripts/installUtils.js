@@ -3,6 +3,7 @@
 var fs = require("fs");
 var path = require("path");
 var assert = require("assert");
+var cp = require("child_process");
 /**
  *
  * @param {string} src
@@ -17,7 +18,7 @@ function installDirBy(src, dest, filter) {
           var x = path.join(src, file);
           var y = path.join(dest, file);
           // console.log(x, '----->', y )
-          fs.copyFile(x, y, err => assert.equal(err, null));
+          cp.execSync("cp " + x + " " + y);
         }
       });
     } else {

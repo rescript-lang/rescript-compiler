@@ -41,7 +41,8 @@
       ["node", "./scripts/ninja.js", "build"]
     ],
     "buildEnv": {
-      "ESY": "true"
+      "ESY": "true",
+      "BS_TRAVIS_CI": "1"
     },
     "exportedEnv": {
       "CAML_LD_LIBRARY_PATH": {

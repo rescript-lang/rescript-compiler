@@ -47,7 +47,7 @@ function provideNinja() {
       cwd: ninja_source_dir,
       stdio: [0, 1, 2]
     });
-    fs.copyFileSync(path.join(ninja_source_dir, "ninja"), ninja_bin_output);
+    cp.execSync("cp " + path.join(ninja_source_dir, "ninja") + " " + ninja_bin_output);
     console.log("ninja binary is ready: ", ninja_bin_output);
   }
 
