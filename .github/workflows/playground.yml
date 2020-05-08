@@ -35,9 +35,7 @@ jobs:
 
       - name: Print esy cache
         id: print_esy_cache
-        run: |
-          cd ..
-          node .github/workflows/print_esy_cache.js
+        run: node .github/workflows/print_esy_cache.js
 
       - name: Try to restore build cache
         uses: actions/cache@v1
