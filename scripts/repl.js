@@ -39,6 +39,7 @@ function prepare() {
     `opam exec -- ocamlc.opt -w -30-40 -no-check-prims -I ${jsRefmtCompDir} ${jsRefmtCompDir}/js_refmt_compiler.mli ${jsRefmtCompDir}/js_refmt_compiler.ml -o jsc.byte && opam exec -- js_of_ocaml jsc.byte -o exports.js`
   );
 
+  e(`mkdir -p ${playground}/stdlib`);
   e(`cp ../lib/js/*.js ${playground}/stdlib`);
   e(`mv ./exports.js ${playground}`)
 }

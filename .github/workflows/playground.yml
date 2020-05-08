@@ -39,7 +39,6 @@ jobs:
       - run: ../scripts/ninja.js build -playground
         working-directory: playground
       - run: BS_PLAYGROUND=../playground ./scripts/repl.js -prepublish
-        working-directory: playground
       - run: node -e "require('./exports.js'); eval(ocaml.compile('Js.log Sys.ocaml_version').js_code); eval(reason.compile('let t = ReactDOMRe.renderToElementWithId(<div />);').js_code)"
         working-directory: playground
       - name: Archive npm artifacts
