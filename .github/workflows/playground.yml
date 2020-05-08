@@ -33,6 +33,30 @@ jobs:
         run: esy install
         working-directory: playground
 
+      - name: Print esy cache
+        id: print_esy_cache
+        run: |
+          cd ..
+          node .github/workflows/print_esy_cache.js
+
+      - name: Try to restore build cache
+        uses: actions/cache@v1
+        with:
+          path: ${{ steps.print_esy_cache.outputs.esy_cache }}
+          key: build-${{ matrix.os }}-${{ hashFiles('**/playground/esy.lock/index.json') }}
+          restore-keys: build-${{ matrix.os }}-
+
+      - name: Get yarn cache directory path
+        id: yarn-cache-dir-path
+        run: echo "::set-output name=dir::$(yarn cache dir)"
+
+      - uses: actions/cache@v1
+        with:
+          path: ${{ steps.yarn-cache-dir-path.outputs.dir }}
+          key: ${{ runner.os }}-yarn-${{ hashFiles('**/playground/yarn.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-yarn-
+
       - run: git submodule update --init && ./scripts/buildocaml.js
 
       - run: ./scripts/ninja.js config && ./scripts/ninja.js build
