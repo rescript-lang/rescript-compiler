@@ -23,7 +23,7 @@ jobs:
 
       - run: npm install -g esy
 
-      - name: Try to restore install cache
+      - name: Try to restore esy install cache
         uses: actions/cache@v1
         with:
           path: ~/.esy/source
@@ -37,7 +37,7 @@ jobs:
         id: print_esy_cache
         run: node .github/workflows/print_esy_cache.js
 
-      - name: Try to restore build cache
+      - name: Try to restore esy build cache
         uses: actions/cache@v1
         with:
           path: ${{ steps.print_esy_cache.outputs.esy_cache }}
@@ -48,6 +48,7 @@ jobs:
         id: yarn-cache-dir-path
         run: echo "::set-output name=dir::$(yarn cache dir)"
 
+      - name: Try to restore yarn cache
       - uses: actions/cache@v1
         with:
           path: ${{ steps.yarn-cache-dir-path.outputs.dir }}
