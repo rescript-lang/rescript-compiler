@@ -1,6 +1,9 @@
 name: Main workflow
 
-on: []
+on:
+  push:
+    branches-ignore:
+      - '**' # this workflow is temporarily disabled until it can be as fast as travis
 
 jobs:
   test:
