@@ -1777,7 +1777,6 @@ function main() {
     }
     if (process.argv.includes("-playground")) {
       isPlayground = true;
-      emptyCount++;
     }
 
     var subcommand = process.argv[2];

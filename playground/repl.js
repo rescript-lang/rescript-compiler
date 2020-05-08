@@ -7,7 +7,7 @@ var path = require("path");
 
 var ocamlVersion = "4.06.1";
 var jscompDir = path.join(__dirname, "..", "jscomp");
-var jsRefmtCompDir = path.join(__dirname, "node_modules", "bs-platform", "lib", ocamlVersion, "unstable");
+var jsRefmtCompDir = path.join(__dirname, "..", "lib", ocamlVersion, "unstable");
 
 var config = {
   cwd: jscompDir,

@@ -60,8 +60,6 @@ jobs:
 
       - run: ./scripts/ninja.js config && ./scripts/ninja.js build
 
-      - run: BS_TRAVIS_CI=true node scripts/install.js
-
       - run: yarn # installs all bucklescript packages that we'll get cmij files for
         working-directory: playground
 
