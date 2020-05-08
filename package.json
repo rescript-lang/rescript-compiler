@@ -18,7 +18,7 @@
     "coverage": "nyc --timeout=3000 --reporter=html mocha jscomp/test/*test.js && open ./coverage/index.html"
   },
   "name": "bs-platform",
-  "version": "7.3.1",
+  "version": "7.3.2",
   "description": "bucklescript compiler, ocaml standard libary by bucklescript and its required runtime support",
   "repository": {
     "type": "git",
