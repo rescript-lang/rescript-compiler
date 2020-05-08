@@ -713,7 +713,7 @@ let root = OCamlRes.Res.([
        };") ;
     File  ("bsconfig.json",
       "{\n\
-      \  \"name\": \"reason-react-examples\",\n\
+      \  \"name\": \"${bsb:name}\",\n\
       \  \"reason\": {\n\
       \    \"react-jsx\": 3\n\
       \  },\n\
@@ -796,7 +796,7 @@ let root = OCamlRes.Res.([
       \  \"dependencies\": {\n\
       \    \"react\": \"^16.8.1\",\n\
       \    \"react-dom\": \"^16.8.1\",\n\
-      \    \"reason-react\": \">=0.7.0\"\n\
+      \    \"reason-react\": \">=0.7.1\"\n\
       \  },\n\
       \  \"devDependencies\": {\n\
       \    \"bs-platform\": \"^${bsb:bs-version}\",\n\
@@ -1028,7 +1028,7 @@ let root = OCamlRes.Res.([
       \  \"dependencies\": {\n\
       \    \"react\": \"^16.8.1\",\n\
       \    \"react-dom\": \"^16.8.1\",\n\
-      \    \"reason-react\": \">=0.7.0\"\n\
+      \    \"reason-react\": \">=0.7.1\"\n\
       \  },\n\
       \  \"devDependencies\": {\n\
       \    \"bs-platform\": \"^${bsb:bs-version}\",\n\
