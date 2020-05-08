@@ -4010,7 +4010,9 @@ let message = function
 
 
   | Bs_unused_attribute s ->
-      "Unused BuckleScript attribute: " ^ s
+      "Unused BuckleScript attribute: " ^ s ^ "\n\
+      This means such annotation is not annotated properly. \n\
+      for example, some annotations is only meaningful in externals \n"
   | Bs_polymorphic_comparison ->
       "polymorphic comparison introduced (maybe unsafe)"
   | Bs_ffi_warning s ->
@@ -8410,8 +8412,8 @@ let rec length_ge l n =
     | _ :: tl -> length_ge tl (n - 1)
     | [] -> false
   else true
+  
 (**
-
    {[length xs = length ys + n ]}
 *)
 let rec length_larger_than_n xs ys n =
@@ -10701,10 +10703,12 @@ module type S =
     val add: 'a t -> key -> 'a -> 'a t
     (** [add x y m] 
         If [x] was already bound in [m], its previous binding disappears. *)
+
     val adjust: 'a t -> key -> ('a option->  'a) ->  'a t 
     (** [adjust acc k replace ] if not exist [add (replace None ], otherwise 
         [add k v (replace (Some old))]
     *)
+    
     val singleton: key -> 'a -> 'a t
 
     val remove: 'a t -> key -> 'a t
@@ -15661,7 +15665,7 @@ let process_derive_type (attrs : t) : derive_attr * t =
       match  st, txt  with
       |  {bs_deriving = None}, "bs.deriving"
         ->
-        {st with
+        {
          bs_deriving = Some
              (Ast_payload.ident_or_record_as_config loc payload)}, acc
       | {bs_deriving = Some _}, "bs.deriving"
@@ -19133,7 +19137,7 @@ let rec variant_can_unwrap_aux (row_fields : Parsetree.row_field list) : bool =
   match row_fields with 
   | [] -> true 
   | Rtag(_,_,false,[_]) :: rest  -> variant_can_unwrap_aux rest 
-  | _ :: rest -> false  
+  | _ :: _ -> false  
 
 let variant_unwrap (row_fields : Parsetree.row_field list) : bool =
   match row_fields with 
@@ -19656,8 +19660,8 @@ let external_desc_of_non_obj
      set_name = `Nm_na ;
      get_name = `Nm_na ;
      set_index = false;
-     mk_obj;
-     return_wrapper ;
+     mk_obj = _;
+     return_wrapper = _;
     } ->
     if arg_type_specs_length = 2 then
       Js_get_index {js_get_index_scopes = scopes}
@@ -19697,7 +19701,7 @@ let external_desc_of_non_obj
         Location.raise_errorf ~loc
           "Incorrect FFI attribute found: (bs.new should not carry a payload here)"
     end
-  | {module_as_val = Some x; _} ->
+  | {module_as_val = Some _; _} ->
     Bs_syntaxerr.err loc (Conflict_ffi_attribute "Attribute found that conflicts with [@@bs.module].")
   | {call_name = (`Nm_val lazy name | `Nm_external name | `Nm_payload name) ;
      splice;
@@ -19807,7 +19811,7 @@ let external_desc_of_non_obj
     end
   | {val_send = #bundle_source; _ }
     -> Location.raise_errorf ~loc "You used a FFI attribute that can't be used with [@@bs.send]"
-  | {val_send_pipe = Some typ;
+  | {val_send_pipe = Some _;
      (* splice = (false as splice); *)
      val_send = `Nm_na;
      val_name = `Nm_na  ;
@@ -20006,9 +20010,9 @@ let handle_attributes
                  | _ ->
                    Arg_optional, arg_type,
                    param_type :: arg_types end
-             | Labelled s  ->
+             | Labelled _  ->
                begin match refine_arg_type ~nolabel:false ty with
-                 | new_ty, (Arg_cst _ as arg_type)  ->
+                 | _, (Arg_cst _ as arg_type)  ->
                    Arg_label , arg_type, arg_types
                  | new_ty, arg_type ->
                    Arg_label , arg_type, 
@@ -20016,7 +20020,7 @@ let handle_attributes
                end
              | Nolabel ->
                begin match refine_arg_type ~nolabel:true ty with
-                 | new_ty , (Arg_cst _ as arg_type) ->
+                 | _ , (Arg_cst _ as arg_type) ->
                    Arg_empty , arg_type,  arg_types
                  | new_ty , arg_type ->
                    Arg_empty, arg_type, {param_type with ty = new_ty} :: arg_types
@@ -20066,11 +20070,11 @@ let handle_attributes_as_string
 let pval_prim_of_labels (labels : string Asttypes.loc list) =
   let arg_kinds =
     Ext_list.fold_right labels ([] : External_arg_spec.obj_params ) 
-      (fun {loc ; txt } arg_kinds
+      (fun p arg_kinds
         ->
           let obj_arg_label =
             External_arg_spec.obj_label
-              (Lam_methname.translate txt)  in
+              (Lam_methname.translate p.txt)  in
           {obj_arg_type = Nothing ;
            obj_arg_label  } :: arg_kinds
       ) in
@@ -20086,9 +20090,9 @@ let pval_prim_of_option_labels
       (if ends_with_unit then
          [External_arg_spec.empty_kind Extern_unit]
        else [])
-      (fun (is_option,{loc ; txt }) arg_kinds
+      (fun (is_option,p) arg_kinds
         ->
-          let label_name = Lam_methname.translate  txt in
+          let label_name = Lam_methname.translate  p.txt in
           let obj_arg_label =
             if is_option then
               External_arg_spec.optional label_name
@@ -21449,7 +21453,7 @@ let to_uncurry_fn  loc (self : Bs_ast_mapper.mapper) (label : Asttypes.arg_label
   let len = List.length rev_extra_args in   
   let arity = 
     match rev_extra_args with 
-    | [ l,p]
+    | [ _,p]
       ->
       Ast_pat.is_unit_cont ~yes:0 ~no:len p           
     | _ -> len 
@@ -21654,15 +21658,15 @@ let ocaml_obj_as_js_object
             | _ ->
               Location.raise_errorf ~loc "Unsupported syntax in js object"               
           end
-        | Pcf_val (label, mutable_flag, Cfk_concrete(Fresh, val_exp)) ->
-          let  label_type, label_attr  = 
+        | Pcf_val (label, mutable_flag, Cfk_concrete(Fresh, _)) ->
+          let  _, label_attr  = 
             generate_val_method_pair x.pcf_loc mapper label
               (mutable_flag = Mutable )
           in
           (Ext_list.append label_attr  label_attr_types, public_label_attr_types)
-        | Pcf_val (label, mutable_flag, Cfk_concrete(Override, val_exp)) -> 
+        | Pcf_val (_, _, Cfk_concrete(Override, _)) -> 
           Location.raise_errorf ~loc "override flag not support currently"
-        | Pcf_val (label, mutable_flag, Cfk_virtual _) -> 
+        | Pcf_val (_, _, Cfk_virtual _) -> 
           Location.raise_errorf ~loc "virtual flag not support currently"
 
         | Pcf_method (_, _, Cfk_concrete(Override, _) ) -> 
@@ -21727,7 +21731,7 @@ let ocaml_obj_as_js_object
               Location.raise_errorf ~loc "Unsupported syntax in js object"               
           end
         | Pcf_val (label, mutable_flag, Cfk_concrete(Fresh, val_exp)) ->
-          let  label_type, label_attr  = 
+          let  label_type, _  = 
             generate_val_method_pair x.pcf_loc mapper label
               (mutable_flag = Mutable )
           in
@@ -21737,9 +21741,9 @@ let ocaml_obj_as_js_object
            aliased 
           )
 
-        | Pcf_val (label, mutable_flag, Cfk_concrete(Override, val_exp)) -> 
+        | Pcf_val (_, _, Cfk_concrete(Override, _)) -> 
           Location.raise_errorf ~loc "override flag not support currently"
-        | Pcf_val (label, mutable_flag, Cfk_virtual _) -> 
+        | Pcf_val (_, _, Cfk_virtual _) -> 
           Location.raise_errorf ~loc "virtual flag not support currently"
 
         | Pcf_method (_, _, Cfk_concrete(Override, _) ) -> 
@@ -22104,19 +22108,20 @@ let app_exp_mapper
         a |. (g |. b)
         a |. M.Some
         a |. `Variant
+        a |. (b |. f c [@bs])
       *)
        let new_obj_arg = self.expr self obj_arg in
        let fn = self.expr self fn in 
-       begin match fn with
-         | {pexp_desc = Pexp_apply (fn, args); pexp_loc; pexp_attributes} ->
-           Bs_ast_invariant.warn_discarded_unused_attributes pexp_attributes;
+       begin match fn.pexp_desc with
+         | Pexp_variant(label,None) -> 
+           {fn with pexp_desc = Pexp_variant(label, Some new_obj_arg)}
+         | Pexp_construct(ctor,None) -> 
+           {fn with pexp_desc = Pexp_construct(ctor, Some new_obj_arg)}
+         | Pexp_apply (fn, args) ->
+           Bs_ast_invariant.warn_discarded_unused_attributes fn.pexp_attributes;
            { pexp_desc = Pexp_apply(fn, (Nolabel, new_obj_arg) :: args);
              pexp_attributes = [];
-             pexp_loc = pexp_loc}
-         | {pexp_desc = Pexp_variant(label,None); pexp_loc; pexp_attributes} -> 
-           {fn with pexp_desc = Pexp_variant(label, Some new_obj_arg)}
-         | {pexp_desc = Pexp_construct(ctor,None); pexp_loc; pexp_attributes} -> 
-           {fn with pexp_desc = Pexp_construct(ctor, Some new_obj_arg)}
+             pexp_loc = fn.pexp_loc}
          | _ ->
            begin match Ast_open_cxt.destruct fn [] with             
              | {pexp_desc = Pexp_tuple xs; pexp_attributes = tuple_attrs}, wholes ->  
@@ -22125,16 +22130,16 @@ let app_exp_mapper
                      pexp_desc =
                        Pexp_tuple (
                          Ext_list.map xs (fun fn ->
-                             match fn with
-                             | {pexp_desc = Pexp_apply (fn,args); pexp_loc; pexp_attributes }
-                               ->
-                               Bs_ast_invariant.warn_discarded_unused_attributes pexp_attributes;
-                               { Parsetree.pexp_desc = Pexp_apply(fn, (Nolabel, bounded_obj_arg) :: args);
-                                 pexp_attributes = [];
-                                 pexp_loc = pexp_loc}
-                             | {pexp_desc = Pexp_construct(ctor,None); pexp_loc; pexp_attributes}    
+                             match fn.pexp_desc with
+                             | Pexp_construct(ctor,None)
                                -> 
                                {fn with pexp_desc = Pexp_construct(ctor, Some bounded_obj_arg)}
+                             | Pexp_apply (fn,args)
+                               ->
+                               Bs_ast_invariant.warn_discarded_unused_attributes fn.pexp_attributes;
+                               { Parsetree.pexp_desc = Pexp_apply(fn, (Nolabel, bounded_obj_arg) :: args);
+                                 pexp_attributes = [];
+                                 pexp_loc = fn.pexp_loc}
                              | _ ->
                                Ast_compatible.app1 ~loc:fn.pexp_loc fn bounded_obj_arg
                            ));
@@ -22809,11 +22814,11 @@ type abstractKind =
 
 let  isAbstract (xs :Ast_payload.action list) = 
   match xs with 
-  | [{loc; txt = "abstract"}, 
+  | [{ txt = "abstract"}, 
     (None 
     )]  -> 
     Complex_abstract
-  | [{loc; txt = "abstract"}, 
+  | [{ txt = "abstract"}, 
     Some {pexp_desc = Pexp_ident {txt = Lident "light"}}  
     ] -> Light_abstract
   | [{loc; txt = "abstract"}, Some _ ]
@@ -22868,8 +22873,8 @@ let handleTdcl
   | Ptype_record label_declarations ->
     let is_private = tdcl.ptype_private = Private in
     let has_optional_field =
-      Ext_list.exists label_declarations (fun {pld_type; pld_attributes} ->
-          Ast_attributes.has_bs_optional pld_attributes
+      Ext_list.exists label_declarations (fun x ->
+          Ast_attributes.has_bs_optional x.pld_attributes
         )  in
     let setter_accessor, makeType, labels =
       Ext_list.fold_right
@@ -23593,7 +23598,7 @@ let expr_mapper (self : mapper) ( e : Parsetree.expression) =
     (s, (Some delim)))
   ->
     Ast_utf8_string_interp.transform e s delim
-  | Pexp_fun (Nolabel, _, pat , body)
+  | Pexp_fun (Nolabel, _, _pat , _body)
     ->
     begin match Ext_list.exclude_with_val
           e.pexp_attributes
@@ -23606,8 +23611,8 @@ let expr_mapper (self : mapper) ( e : Parsetree.expression) =
 let typ_mapper (self : mapper) (typ : Parsetree.core_type) =
   match typ with
   | {ptyp_attributes ;
-     ptyp_desc = Ptyp_arrow (label, args, body);
-     ptyp_loc = loc
+     ptyp_desc = Ptyp_arrow (_label, _args, _body);
+     ptyp_loc = _loc
     } ->
     begin match Ext_list.exclude_with_val
           ptyp_attributes

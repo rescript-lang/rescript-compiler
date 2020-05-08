@@ -26,7 +26,7 @@
 let  should_hide ( x : Typedtree.module_binding) = 
     match x.mb_attributes with 
     | [] -> false
-    | ({txt = "internal.local";_},_) :: rest -> true
+    | ({txt = "internal.local";_},_) :: _ -> true
     | _ :: rest -> 
       Ext_list.exists rest (fun (x,_) -> x.txt = "internal.local")
 

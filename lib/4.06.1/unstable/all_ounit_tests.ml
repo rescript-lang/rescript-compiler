@@ -6110,8 +6110,8 @@ let rec length_ge l n =
     | _ :: tl -> length_ge tl (n - 1)
     | [] -> false
   else true
+  
 (**
-
    {[length xs = length ys + n ]}
 *)
 let rec length_larger_than_n xs ys n =
@@ -8236,10 +8236,12 @@ module type S =
     val add: 'a t -> key -> 'a -> 'a t
     (** [add x y m] 
         If [x] was already bound in [m], its previous binding disappears. *)
+
     val adjust: 'a t -> key -> ('a option->  'a) ->  'a t 
     (** [adjust acc k replace ] if not exist [add (replace None ], otherwise 
         [add k v (replace (Some old))]
     *)
+    
     val singleton: key -> 'a -> 'a t
 
     val remove: 'a t -> key -> 'a t
@@ -15341,6 +15343,8 @@ module Ext_scc : sig
 
 
 type node = Vec_int.t
+
+
 (** Assume input is int array with offset from 0 
     Typical input 
     {[
@@ -15386,6 +15390,7 @@ end = struct
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
  
 type node = Vec_int.t 
+
 (** 
    [int] as data for this algorithm
    Pros:

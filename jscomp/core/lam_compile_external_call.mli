@@ -37,7 +37,6 @@ val ocaml_to_js_eff :
   Js_of_lam_variant.arg_expression * J.expression list  
 
 val translate_ffi :
-  Location.t -> 
   Lam_compile_context.t -> 
   External_arg_spec.params -> 
   External_ffi_types.external_spec -> 

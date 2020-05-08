@@ -117,15 +117,15 @@ let ocaml_obj_as_js_object
             | _ ->
               Location.raise_errorf ~loc "Unsupported syntax in js object"               
           end
-        | Pcf_val (label, mutable_flag, Cfk_concrete(Fresh, val_exp)) ->
-          let  label_type, label_attr  = 
+        | Pcf_val (label, mutable_flag, Cfk_concrete(Fresh, _)) ->
+          let  _, label_attr  = 
             generate_val_method_pair x.pcf_loc mapper label
               (mutable_flag = Mutable )
           in
           (Ext_list.append label_attr  label_attr_types, public_label_attr_types)
-        | Pcf_val (label, mutable_flag, Cfk_concrete(Override, val_exp)) -> 
+        | Pcf_val (_, _, Cfk_concrete(Override, _)) -> 
           Location.raise_errorf ~loc "override flag not support currently"
-        | Pcf_val (label, mutable_flag, Cfk_virtual _) -> 
+        | Pcf_val (_, _, Cfk_virtual _) -> 
           Location.raise_errorf ~loc "virtual flag not support currently"
 
         | Pcf_method (_, _, Cfk_concrete(Override, _) ) -> 
@@ -190,7 +190,7 @@ let ocaml_obj_as_js_object
               Location.raise_errorf ~loc "Unsupported syntax in js object"               
           end
         | Pcf_val (label, mutable_flag, Cfk_concrete(Fresh, val_exp)) ->
-          let  label_type, label_attr  = 
+          let  label_type, _  = 
             generate_val_method_pair x.pcf_loc mapper label
               (mutable_flag = Mutable )
           in
@@ -200,9 +200,9 @@ let ocaml_obj_as_js_object
            aliased 
           )
 
-        | Pcf_val (label, mutable_flag, Cfk_concrete(Override, val_exp)) -> 
+        | Pcf_val (_, _, Cfk_concrete(Override, _)) -> 
           Location.raise_errorf ~loc "override flag not support currently"
-        | Pcf_val (label, mutable_flag, Cfk_virtual _) -> 
+        | Pcf_val (_, _, Cfk_virtual _) -> 
           Location.raise_errorf ~loc "virtual flag not support currently"
 
         | Pcf_method (_, _, Cfk_concrete(Override, _) ) -> 

@@ -91,7 +91,7 @@ let handle_exports (meta : Lam_stats.t)
   let (original_export_set : Set_ident.t) = meta.export_idents in
   let len = List.length original_exports in
   let tbl = Hash_set_string.create len in
-  let ({export_list ; export_set  ;  groups = coercion_groups } as result)  =
+  let ({export_list ; export_set  ;  } as result)  =
     Ext_list.fold_right2 original_exports
       lambda_exports
       {export_list = []; export_set = original_export_set; export_map = Map_ident.empty; groups = []}
@@ -112,7 +112,7 @@ let handle_exports (meta : Lam_stats.t)
             else
              let newid = Ident.rename original_export_id in
              let kind : Lam_compat.let_kind = Alias in
-             Lam_util.alias_ident_or_global meta newid id NA kind;
+             Lam_util.alias_ident_or_global meta newid id NA ;
               { acc with
               export_list = newid :: acc.export_list;
               export_map = Map_ident.add acc.export_map newid lam ;

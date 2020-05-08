@@ -61,15 +61,15 @@ let check file lam =
       | Lapply{ap_func; ap_args; _} ->
         check_list (ap_func::ap_args) cxt
         (* check invariant that staticfaill does not cross function/while/for loop*)
-      | Lfunction{body;params} ->        
+      | Lfunction{body;params = _} ->        
         check_staticfails body Set_int.empty
       | Lwhile(e1, e2) ->
         check_staticfails e1 cxt;
         check_staticfails e2 Set_int.empty
-      | Lfor(v, e1, e2, dir, e3) ->
+      | Lfor(_v, e1, e2, _dir, e3) ->
         check_staticfails e1 cxt; check_staticfails e2 cxt;        
         check_staticfails e3 Set_int.empty;                
-      | Llet(str, id, arg, body) ->
+      | Llet(_str, _id, arg, body) ->
         check_list [arg;body] cxt 
       | Lletrec(decl, body) ->
         check_list_snd  decl cxt;
@@ -86,10 +86,10 @@ let check file lam =
       | Lstaticraise (i,args) ->
         if Set_int.mem cxt i  then  check_list args cxt 
         else failwith ("exit " ^ string_of_int i ^ " unbound")
-      | Lstaticcatch(e1, (j,vars), e2) ->
+      | Lstaticcatch(e1, (j,_vars), e2) ->
         check_staticfails e1 (Set_int.add cxt j);        
         check_staticfails e2 cxt
-      | Ltrywith(e1, exn, e2) ->
+      | Ltrywith(e1, _exn, e2) ->
         check_staticfails e1 cxt;
         check_staticfails e2 cxt
       | Lifthenelse(e1, e2, e3) ->
@@ -97,9 +97,9 @@ let check file lam =
       | Lsequence(e1, e2) ->
         check_list [e1;e2] cxt
 
-      | Lassign(id, e) ->
+      | Lassign(_id, e) ->
         check_staticfails e cxt
-      | Lsend (k, met, obj, args, _) ->
+      | Lsend (_k, met, obj, args, _) ->
         check_list (met::obj::args) cxt
   in
   let rec 
@@ -118,7 +118,7 @@ let check file lam =
       | Lfunction{body;params} ->
         List.iter def params;
         iter body
-      | Llet(str, id, arg, body) ->
+      | Llet(_str, id, arg, body) ->
         iter arg;
         def id;
         iter body
@@ -153,14 +153,14 @@ let check file lam =
         iter e1; iter e2
       | Lwhile(e1, e2) ->
         iter e1; iter e2
-      | Lfor(v, e1, e2, dir, e3) ->
+      | Lfor(v, e1, e2, _dir, e3) ->
         iter e1; iter e2;
         def v;
         iter e3;
       | Lassign(id, e) ->
         use id ;
         iter e
-      | Lsend (k, met, obj, args, _) ->
+      | Lsend (_k, met, obj, args, _) ->
         iter met; iter obj;
         iter_list args
 

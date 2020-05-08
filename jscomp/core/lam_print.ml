@@ -168,7 +168,7 @@ let primitive ppf (prim : Lam_primitive.t) = match prim with
   | Pccall p -> fprintf ppf "%s" p.prim_name
   | Pjs_call {prim_name} -> 
     fprintf ppf  "%s[js]" prim_name 
-  | Pjs_object_create obj_create -> 
+  | Pjs_object_create _ -> 
     fprintf ppf "[js.obj]"
   | Praise  -> fprintf ppf "raise"
   | Psequand -> fprintf ppf "&&"
@@ -264,29 +264,11 @@ let primitive ppf (prim : Lam_primitive.t) = match prim with
   | Pbintcomp(bi, Cgt) -> print_boxed_integer ">" ppf bi
   | Pbintcomp(bi, Cle) -> print_boxed_integer "<=" ppf bi
   | Pbintcomp(bi, Cge) -> print_boxed_integer ">=" ppf bi
-  | Pbigarrayref(unsafe, n, kind, layout) ->
+  | Pbigarrayref(unsafe, _, kind, layout) ->
     print_bigarray "get" unsafe kind ppf layout
-  | Pbigarrayset(unsafe, n, kind, layout) ->
+  | Pbigarrayset(unsafe, _, kind, layout) ->
     print_bigarray "set" unsafe kind ppf layout
   | Pbigarraydim(n) -> fprintf ppf "Bigarray.dim_%i" n
-  (* | Pstring_load_16(unsafe) ->
-    if unsafe then fprintf ppf "string.unsafe_get16"
-    else fprintf ppf "string.get16"
-  | Pstring_load_32(unsafe) ->
-    if unsafe then fprintf ppf "string.unsafe_get32"
-    else fprintf ppf "string.get32"
-  | Pstring_load_64(unsafe) ->
-    if unsafe then fprintf ppf "string.unsafe_get64"
-    else fprintf ppf "string.get64"
-  (* | Pstring_set_16(unsafe) -> *)
-    if unsafe then fprintf ppf "string.unsafe_set16"
-    else fprintf ppf "string.set16"
-  | Pstring_set_32(unsafe) ->
-    if unsafe then fprintf ppf "string.unsafe_set32"
-    else fprintf ppf "string.set32"
-  | Pstring_set_64(unsafe) ->
-    if unsafe then fprintf ppf "string.unsafe_set64"
-    else fprintf ppf "string.set64" *)
   | Pbigstring_load_16(unsafe) ->
     if unsafe then fprintf ppf "bigarray.array1.unsafe_get16"
     else fprintf ppf "bigarray.array1.get16"

@@ -86,24 +86,24 @@ let exception_id_destructed (l : Lam.t) (fv : Ident.t): bool  =
         | _, _  -> hit x || hit y
       end *) (* FIXME: this can be uncovered after we do the unboxing *)
     | Lprim {primitive = Praise ; args = [Lvar _]} -> false 
-    | Lprim {primitive ; args; _} ->
+    | Lprim {primitive = _; args; _} ->
       hit_list args
     | Lvar id ->    
       Ident.same id fv
     | Lassign(id, e) ->
       Ident.same id fv || hit e
-    | Lstaticcatch(e1, (_,vars), e2) ->
+    | Lstaticcatch(e1, (_,_vars), e2) ->
       hit e1 || hit e2
-    | Ltrywith(e1, exn, e2) ->
+    | Ltrywith(e1, _exn, e2) ->
       hit e1 || hit e2
-    | Lfunction{body;params} ->
+    | Lfunction{body;params=_} ->
       hit body;
-    | Llet(str, id, arg, body) ->
+    | Llet(_str, _id, arg, body) ->
       hit arg || hit body
     | Lletrec(decl, body) ->
       hit body ||
       hit_list_snd decl
-    | Lfor(v, e1, e2, dir, e3) ->
+    | Lfor(_v, e1, e2, _dir, e3) ->
       hit e1 || hit e2 || hit e3
     | Lconst _ -> false
     | Lapply{ap_func; ap_args; _} ->
@@ -127,7 +127,7 @@ let exception_id_destructed (l : Lam.t) (fv : Ident.t): bool  =
       hit e1 || hit e2
     | Lwhile(e1, e2) ->
       hit e1 || hit e2
-    | Lsend (k, met, obj, args, _) ->
+    | Lsend (_k, met, obj, args, _) ->
       hit met || hit obj || hit_list args
   in hit l
 
@@ -181,7 +181,7 @@ let happens_to_be_diff
 *)
 let rec drop_global_marker (lam : Lam.t) =
   match lam with
-  | Lsequence (Lglobal_module id, rest) ->
+  | Lsequence (Lglobal_module _, rest) ->
     drop_global_marker rest
   | _ -> lam
 
@@ -207,16 +207,16 @@ let lam_prim ~primitive:( p : Lambda.primitive) ~args loc : Lam.t =
   | Pccall _ -> assert false
   | Prevapply -> assert false
   | Pdirapply -> assert false
-  | Ploc loc -> assert false (* already compiled away here*)
+  | Ploc _ -> assert false (* already compiled away here*)
 
   | Pbytes_to_string (* handled very early *)
     -> prim ~primitive:Pbytes_to_string ~args loc
   | Pbytes_of_string -> prim ~primitive:Pbytes_of_string ~args loc
   | Pignore -> (* Pignore means return unit, it is not an nop *)
     seq (Ext_list.singleton_exn args) unit 
-  | Pgetglobal id ->
+  | Pgetglobal _ ->
     assert false
-  | Psetglobal id ->
+  | Psetglobal _ ->
     (* we discard [Psetglobal] in the beginning*)
     drop_global_marker (Ext_list.singleton_exn args)
   (* prim ~primitive:(Psetglobal id) ~args loc *)
@@ -293,7 +293,7 @@ let lam_prim ~primitive:( p : Lambda.primitive) ~args loc : Lam.t =
   | Pfield (id,info)
     -> prim ~primitive:(Pfield (id,info)) ~args loc
 
-  | Psetfield (id,b,
+  | Psetfield (id, _,
     _initialization_or_assignment,
       info)
     -> prim ~primitive:(Psetfield (id,info)) ~args loc
@@ -367,11 +367,11 @@ let lam_prim ~primitive:( p : Lambda.primitive) ~args loc : Lam.t =
   | Psubbint x -> prim ~primitive:(Psubbint x) ~args loc
   | Pmulbint x -> prim ~primitive:(Pmulbint x) ~args loc
   | Pdivbint 
-    {size = x; is_safe } (*FIXME*)
+    {size = x; is_safe = _} (*FIXME*)
     ->
      prim ~primitive:(Pdivbint x) ~args loc
   | Pmodbint 
-    {size = x; is_safe } (*FIXME*)
+    {size = x; is_safe = _} (*FIXME*)
     -> prim ~primitive:(Pmodbint x) ~args loc
   | Pandbint x -> prim ~primitive:(Pandbint x) ~args loc
   | Porbint x -> prim ~primitive:(Porbint x) ~args loc
@@ -649,7 +649,7 @@ let convert (exports : Set_ident.t) (lam : Lambda.lambda) : Lam.t * Lam_module_i
     | Lprim(Pdirapply, _, _) -> assert false
     | Lprim(Pccall a, args, loc)  ->
       convert_ccall a  args loc
-    | Lprim (Pgetglobal id, args, loc) ->
+    | Lprim (Pgetglobal id, args, _) ->
       let args = Ext_list.map args convert_aux in
       if Ident.is_predef_exn id then
         Lam.const (Const_string id.name)
@@ -724,10 +724,10 @@ let convert (exports : Set_ident.t) (lam : Lambda.lambda) : Lam.t * Lam_module_i
         | b ->
           Lam.send kind (convert_aux a)  b (Ext_list.map ls convert_aux) loc)
       
-    | Levent (e, event) ->
+    | Levent _ ->
       (* disabled by upstream*)
       assert false
-    | Lifused (id, e) -> convert_aux e (* TODO: remove it ASAP *)
+    | Lifused (_, e) -> convert_aux e (* TODO: remove it ASAP *)
 
   and convert_let (kind : Lam_compat.let_kind) id (e : Lambda.lambda) body : Lam.t = 
     match kind, e with
@@ -780,7 +780,7 @@ let convert (exports : Set_ident.t) (lam : Lambda.lambda) : Lam.t * Lam_module_i
       let x  = convert_aux x in
       let f =  convert_aux f in
       match  f with
-      | Lfunction {params = [param]; body = Lprim{primitive; args = [Lvar inner_arg]; loc }}
+      | Lfunction {params = [param]; body = Lprim{primitive; args = [Lvar inner_arg];  }}
         when Ident.same param inner_arg -> 
         Lam.prim ~primitive ~args:[x] outer_loc
       | Lapply {ap_func = Lfunction{params; body = Lprim{primitive; args = inner_args}}; ap_args=args}

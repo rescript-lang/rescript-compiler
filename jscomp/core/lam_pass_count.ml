@@ -111,7 +111,7 @@ let collect_occurs  lam : occ_tbl =
         carried over, since the parameters are never rebound, 
         so it is fine to kep it empty
     *)
-    | Lfor(_, l1, l2, dir, l3) -> 
+    | Lfor(_, l1, l2, _dir, l3) -> 
       count bv l1;
       count bv l2; 
       count Map_ident.empty l3
@@ -135,7 +135,7 @@ let collect_occurs  lam : occ_tbl =
     | Lglobal_module _ -> ()
     | Lprim {args; _} -> List.iter (count bv ) args
     | Lletrec(bindings, body) ->
-      List.iter (fun (v, l) -> count bv l) bindings;
+      List.iter (fun (_v, l) -> count bv l) bindings;
       count bv body
         (** Note there is a difference here when do beta reduction for *)
     | Lapply{ap_func = Lfunction{params; body};  ap_args = args; _}
@@ -147,7 +147,7 @@ let collect_occurs  lam : occ_tbl =
     (*   count bv (Lam_beta_reduce.beta_reduce   params body args) *)
     | Lapply{ap_func = l1; ap_args= ll; _} ->
       count bv l1; List.iter (count bv) ll 
-    | Lconst cst -> ()
+    | Lconst _cst -> ()
     | Lswitch(l, sw) ->
       count_default bv sw ;
       count bv l;
@@ -165,9 +165,9 @@ let collect_occurs  lam : occ_tbl =
     (* | []|[_] -> count bv d *)
     (* | _ -> count bv d ; count bv d *)
     (* end *)      
-    | Lstaticraise (i,ls) -> List.iter (count bv) ls
-    | Lstaticcatch(l1, (i,_), l2) -> count bv l1; count bv l2
-    | Ltrywith(l1, v, l2) -> count bv l1; count bv l2
+    | Lstaticraise (_i,ls) -> List.iter (count bv) ls
+    | Lstaticcatch(l1, (_i,_), l2) -> count bv l1; count bv l2
+    | Ltrywith(l1, _v, l2) -> count bv l1; count bv l2
     | Lifthenelse(l1, l2, l3) -> count bv l1; count bv l2; count bv l3
     | Lsequence(l1, l2) -> count bv l1; count bv l2 
     | Lsend(_, m, o, ll, _) -> 

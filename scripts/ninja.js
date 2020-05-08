@@ -59,7 +59,7 @@ function generateVisitorPattern() {
     return visitorPattern;
   } else {
     console.warn(
-      `camlp4of not found, your changes to j.ml will not be meaningful, but in most cases you don't touch this file`
+      `camlp4of ignored`
     );
     return ``;
   }
@@ -1597,7 +1597,7 @@ function nativeNinja() {
   var templateNative = `
 subninja ${getPreprocessorFileName()}
 rule optc
-    command = BS_NATIVE=${!!process.env.BS_NATIVE} $ocamlopt -safe-string -I +compiler-libs -opaque ${includes} -g -linscan -w A-4-9-27-29-40..42-48-50+6-40-30-23 -warn-error A -absname -c $in
+    command = BS_NATIVE=${!!process.env.BS_NATIVE} $ocamlopt -safe-string -I +compiler-libs -opaque ${includes} -g -linscan -w A-4-9-40..42-30-48-50 -warn-error A -absname -c $in
     description = $out : $in
 rule archive
     command = $ocamlopt -a $in -o $out
@@ -1762,6 +1762,7 @@ build ../odoc_gen/generator.cmxs : mk_shared ../odoc_gen/generator.mli ../odoc_g
 
 function main() {
   var emptyCount = 2;
+  var isPlayground = false;
   if (require.main === module) {
     if (process.argv.includes("-env")) {
       useEnv = true;
@@ -1774,6 +1775,10 @@ function main() {
       process.env.BS_NATIVE = "true"
       emptyCount++;
     }
+    if (process.argv.includes("-playground")) {
+      isPlayground = true;
+      emptyCount++;
+    }
 
     var subcommand = process.argv[2];
     switch (subcommand) {
@@ -1784,14 +1789,16 @@ function main() {
             cwd: jscompDir,
             stdio: [0, 1, 2]
           });
-          cp.execFileSync(
-            path.join(__dirname, "..", "jscomp", "bin", "cmij.exe"),
-            {
-              encoding: "utf8",
-              cwd: jscompDir,
-              stdio: [0, 1, 2]
-            }
-          );
+          if (!isPlayground) {
+            cp.execFileSync(
+              path.join(__dirname, "..", "jscomp", "bin", "cmij.exe"),
+              {
+                encoding: "utf8",
+                cwd: jscompDir,
+                stdio: [0, 1, 2]
+              }
+            );
+          }
           cp.execFileSync(vendorNinjaPath, ["-f", "snapshot.ninja"], {
             encoding: "utf8",
             cwd: jscompDir,

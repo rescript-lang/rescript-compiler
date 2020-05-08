@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 "use strict";
-// @ts-check
+//@ts-check
 
 const fs = require("fs");
 const readline = require("readline");
@@ -14,7 +14,7 @@ const path = require("path");
  */
 function processEntry(file, lineCb, finish) {
   let input = fs.createReadStream(file);
-  input.on("error", function(error) {
+  input.on("error", function (error) {
     console.error(error.message);
     console.error(
       "make sure you are running after bsb building and in the top directory"
@@ -23,14 +23,14 @@ function processEntry(file, lineCb, finish) {
   });
   const rl = readline.createInterface({
     input: input,
-    crlfDelay: Infinity
+    crlfDelay: Infinity,
   });
 
   rl.on("line", lineCb);
   rl.on("close", finish);
 }
 
-class Target {
+class Interval {
   /**
    *
    * @param {number} start
@@ -70,9 +70,9 @@ class Threads {
 }
 /**
  *
- * @param {Map<string,Target>} map
+ * @param {Map<string,Interval>} map
  * @param {string} key
- * @param {Target} def
+ * @param {Interval} def
  *
  * */
 function setDefault(map, key, def) {
@@ -118,7 +118,7 @@ const colors = [
   "cq_build_abandoned",
   "cq_build_attempt_runnig",
   "cq_build_attempt_passed",
-  "cq_build_attempt_failed"
+  "cq_build_attempt_failed",
 ];
 
 let allocated = new Map();
@@ -136,7 +136,7 @@ function getColorName(obj, cat) {
 }
 /**
  *
- * @param {Target} target
+ * @param {Interval} target
  */
 function category(target, obj) {
   let targets = target.targets;
@@ -156,31 +156,47 @@ function category(target, obj) {
   } else {
     getColorName(obj, "cmj");
   }
-  obj.name = target.targets.map(x => path.parse(x).base).join(",");
+  obj.name = target.targets.map((x) => path.parse(x).base).join(",");
   return obj;
 }
 /**
  * @param {string} file
  * @param {boolean} showAll
+ * @param {string} outputFile
  */
-function readTargets(file, showAll) {
+function readIntervals(file, showAll, outputFile) {
   let lastEndSeen = 0;
+  /**
+   * @type {Map<string,Interval>}
+   */
   let targets = new Map();
+  let offset = 0;
   processEntry(
     file,
-    line => {
+    (line) => {
       let lineTrim = line.trim();
       if (lineTrim.startsWith("#")) {
         return;
       }
 
       let [start, end, _, name, cmdHash] = lineTrim.split("\t");
-      if (!showAll && +end < lastEndSeen) {
-        targets = new Map();
+      cmdHash += "/" + end;
+      if (+end < lastEndSeen) {
+        // This is a guess
+        // it could be wrong, when there's multiple small compilation
+        if (showAll) {
+          offset += lastEndSeen + 1000;
+          console.log(`new session starting from: ${name} : ${offset}`);
+        } else {
+          targets = new Map();
+        }
       }
-
-      lastEndSeen = +end;
-      setDefault(targets, cmdHash, new Target(+start, +end)).targets.push(name);
+      lastEndSeen = +end; // new mark
+      setDefault(
+        targets,
+        cmdHash,
+        new Interval(Number(start) + offset, Number(end) + offset)
+      ).targets.push(name);
     },
     () => {
       let sorted = [...targets.values()].sort((a, b) => {
@@ -196,14 +212,12 @@ function readTargets(file, showAll) {
             dur: (target.end - target.start) * 1000,
             ts: target.start * 1000,
             tid: threads.alloc(target),
-            args: {}
+            args: {},
           })
         );
       }
-      let curDate = new Date();
-      let file = `tracing_${curDate.getHours()}_${curDate.getMinutes()}_${curDate.getSeconds()}.json`;
-      console.log(` ${file} is produced, loade it via chrome://tracing/`);
-      fs.writeFileSync(file, JSON.stringify(jsonArray), "utf8");
+      console.log(` ${outputFile} is produced, loade it via chrome://tracing/`);
+      fs.writeFileSync(outputFile, JSON.stringify(jsonArray), "utf8");
     }
   );
 }
@@ -230,6 +244,11 @@ function tryLocation(ps) {
   );
   process.exit(2);
 }
+
+let showAll = false;
+let curDate = new Date();
+let outputFile = `tracing_${curDate.getHours()}_${curDate.getMinutes()}_${curDate.getSeconds()}.json`;
+
 {
   let index = process.argv.indexOf(`-C`);
   if (index >= 0) {
@@ -238,6 +257,14 @@ function tryLocation(ps) {
   } else {
     tryLocation([".", path.join("lib", "bs")]);
   }
+  if (process.argv.includes("-all")) {
+    showAll = true;
+  }
+  index = process.argv.indexOf(`-o`);
+  if (index >= 0) {
+    outputFile = process.argv[index + 1];
+  }
 }
+
 console.log("loading build log", file, "is used");
-readTargets(file, false);
+readIntervals(file, showAll, outputFile);

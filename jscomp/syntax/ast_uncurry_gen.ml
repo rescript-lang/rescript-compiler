@@ -86,7 +86,7 @@ let to_uncurry_fn  loc (self : Bs_ast_mapper.mapper) (label : Asttypes.arg_label
   let len = List.length rev_extra_args in   
   let arity = 
     match rev_extra_args with 
-    | [ l,p]
+    | [ _,p]
       ->
       Ast_pat.is_unit_cont ~yes:0 ~no:len p           
     | _ -> len 

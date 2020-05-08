@@ -115,7 +115,7 @@ let simplify_alias
       return [0, $$let[5],... $$let[16]]}
     *)      
     | Lapply{ap_func = 
-               Lprim {primitive = Pfield (index, Fld_module {name = fld_name}) ;
+               Lprim {primitive = Pfield (_, Fld_module {name = fld_name}) ;
                       args = [ Lglobal_module ident ];
                       _} as l1;
              ap_args = args; ap_loc = loc ; ap_status = status} ->

@@ -31,7 +31,7 @@ let rec variant_can_unwrap_aux (row_fields : Parsetree.row_field list) : bool =
   match row_fields with 
   | [] -> true 
   | Rtag(_,_,false,[_]) :: rest  -> variant_can_unwrap_aux rest 
-  | _ :: rest -> false  
+  | _ :: _ -> false  
 
 let variant_unwrap (row_fields : Parsetree.row_field list) : bool =
   match row_fields with 
@@ -554,8 +554,8 @@ let external_desc_of_non_obj
      set_name = `Nm_na ;
      get_name = `Nm_na ;
      set_index = false;
-     mk_obj;
-     return_wrapper ;
+     mk_obj = _;
+     return_wrapper = _;
     } ->
     if arg_type_specs_length = 2 then
       Js_get_index {js_get_index_scopes = scopes}
@@ -595,7 +595,7 @@ let external_desc_of_non_obj
         Location.raise_errorf ~loc
           "Incorrect FFI attribute found: (bs.new should not carry a payload here)"
     end
-  | {module_as_val = Some x; _} ->
+  | {module_as_val = Some _; _} ->
     Bs_syntaxerr.err loc (Conflict_ffi_attribute "Attribute found that conflicts with [@@bs.module].")
   | {call_name = (`Nm_val lazy name | `Nm_external name | `Nm_payload name) ;
      splice;
@@ -705,7 +705,7 @@ let external_desc_of_non_obj
     end
   | {val_send = #bundle_source; _ }
     -> Location.raise_errorf ~loc "You used a FFI attribute that can't be used with [@@bs.send]"
-  | {val_send_pipe = Some typ;
+  | {val_send_pipe = Some _;
      (* splice = (false as splice); *)
      val_send = `Nm_na;
      val_name = `Nm_na  ;
@@ -904,9 +904,9 @@ let handle_attributes
                  | _ ->
                    Arg_optional, arg_type,
                    param_type :: arg_types end
-             | Labelled s  ->
+             | Labelled _  ->
                begin match refine_arg_type ~nolabel:false ty with
-                 | new_ty, (Arg_cst _ as arg_type)  ->
+                 | _, (Arg_cst _ as arg_type)  ->
                    Arg_label , arg_type, arg_types
                  | new_ty, arg_type ->
                    Arg_label , arg_type, 
@@ -914,7 +914,7 @@ let handle_attributes
                end
              | Nolabel ->
                begin match refine_arg_type ~nolabel:true ty with
-                 | new_ty , (Arg_cst _ as arg_type) ->
+                 | _ , (Arg_cst _ as arg_type) ->
                    Arg_empty , arg_type,  arg_types
                  | new_ty , arg_type ->
                    Arg_empty, arg_type, {param_type with ty = new_ty} :: arg_types
@@ -964,11 +964,11 @@ let handle_attributes_as_string
 let pval_prim_of_labels (labels : string Asttypes.loc list) =
   let arg_kinds =
     Ext_list.fold_right labels ([] : External_arg_spec.obj_params ) 
-      (fun {loc ; txt } arg_kinds
+      (fun p arg_kinds
         ->
           let obj_arg_label =
             External_arg_spec.obj_label
-              (Lam_methname.translate txt)  in
+              (Lam_methname.translate p.txt)  in
           {obj_arg_type = Nothing ;
            obj_arg_label  } :: arg_kinds
       ) in
@@ -984,9 +984,9 @@ let pval_prim_of_option_labels
       (if ends_with_unit then
          [External_arg_spec.empty_kind Extern_unit]
        else [])
-      (fun (is_option,{loc ; txt }) arg_kinds
+      (fun (is_option,p) arg_kinds
         ->
-          let label_name = Lam_methname.translate  txt in
+          let label_name = Lam_methname.translate  p.txt in
           let obj_arg_label =
             if is_option then
               External_arg_spec.optional label_name

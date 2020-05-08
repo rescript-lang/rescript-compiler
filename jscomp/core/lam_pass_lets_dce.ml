@@ -24,7 +24,7 @@ let lets_helper (count_var : Ident.t -> Lam_pass_count.used_info) lam : Lam.t =
       Hash_ident.add subst v (simplif (Lam.var w));
       simplif l2
     | Llet(Strict as kind,
-           v, (Lprim {primitive = (Pmakeblock(0, tag_info, Mutable) 
+           v, (Lprim {primitive = (Pmakeblock(0, _, Mutable) 
                                    as primitive); 
                       args = [linit] ; loc}), lbody)
       ->
@@ -91,11 +91,11 @@ let lets_helper (count_var : Ident.t -> Lam_pass_count.used_info) lam : Lam.t =
           If the code which should be removed is not removed, it will hold references 
           to other variables which is already removed.
       *)
-      if not @@ used v 
+      if not (used v) 
       then simplif lbody (* GPR #1476 *)
       else
         begin match l1 with 
-        | (Lprim {primitive = (Pmakeblock(0, tag_info, Mutable) 
+        | (Lprim {primitive = (Pmakeblock(0, _, Mutable) 
                                     as primitive); 
                        args = [linit] ; loc})
           -> 

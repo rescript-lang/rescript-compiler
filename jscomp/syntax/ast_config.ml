@@ -51,7 +51,7 @@ let rec iter_on_bs_config_stru (x :Parsetree.structure) =
       (Ast_payload.table_dispatch !structural_config_table)
   | {pstr_desc = Pstr_attribute _} :: rest -> 
     iter_on_bs_config_stru rest 
-  | non_attr :: _ -> ()    
+  | _ :: _ -> ()    
 
 let rec iter_on_bs_config_sigi (x :Parsetree.signature) =   
   match x with 
@@ -62,4 +62,4 @@ let rec iter_on_bs_config_sigi (x :Parsetree.signature) =
       (Ast_payload.table_dispatch !signature_config_table)
   | {psig_desc = Psig_attribute _} :: rest -> 
     iter_on_bs_config_sigi rest 
-  | non_attr :: _ -> ()      
+  | _ :: _ -> ()      

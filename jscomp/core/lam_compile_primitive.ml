@@ -571,13 +571,13 @@ let translate  loc
     Lam_dispatch_primitive.translate loc prim.prim_name  args
   (* Lam_compile_external_call.translate loc cxt prim args *)
   (* Test if the argument is a block or an immediate integer *)
-  | Pjs_object_create labels
+  | Pjs_object_create _
     -> 
     assert false 
 
   | Pjs_call {arg_types; ffi} -> 
     Lam_compile_external_call.translate_ffi 
-      loc cxt arg_types ffi args 
+       cxt arg_types ffi args 
   (** FIXME, this can be removed later *)
   | Pisint -> 
     E.is_type_number (Ext_list.singleton_exn args)

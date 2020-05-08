@@ -118,7 +118,7 @@ let extractChildren ?(removeLastPositionUnit=false) ~loc propsAndChildren =
   let rec allButLast_ lst acc = match lst with
     | [] -> []
     | (Nolabel, {pexp_desc = Pexp_construct ({txt = Lident "()"}, None)})::[] -> acc
-    | (Nolabel, _)::rest -> raise (Invalid_argument "JSX: found non-labelled argument before the last position")
+    | (Nolabel, _) :: _rest -> raise (Invalid_argument "JSX: found non-labelled argument before the last position")
     | arg::rest -> allButLast_ rest (arg::acc)
   in
   let allButLast lst = allButLast_ lst [] |> List.rev in
@@ -158,7 +158,7 @@ let getFnName binding =
 let makeNewBinding binding expression newName =
   match binding with
   | {pvb_pat = {
-      ppat_desc = Ppat_var ({txt} as ppat_var)
+      ppat_desc = Ppat_var ( ppat_var)
     } as pvb_pat} ->{ binding with pvb_pat = {
         pvb_pat with
         ppat_desc = Ppat_var {ppat_var with txt = newName};
@@ -237,7 +237,7 @@ let rec recursivelyMakeNamedArgsForExternal list args =
       ptyp_attributes = [];
     }
     (* ~foo: int=1 *)
-    | (label, Some type_, Some _) ->
+    | (_label, Some type_, Some _) ->
     type_
 
     (* ~foo: option(int)=? *)
@@ -261,7 +261,7 @@ let rec recursivelyMakeNamedArgsForExternal list args =
       ptyp_loc = loc;
       ptyp_attributes = [];
     }
-    | (label, Some type_, _) ->
+    | (_label, Some type_, _) ->
     type_
     )
     args)
@@ -527,7 +527,7 @@ let jsxMapper () =
       (match (isOptional arg, pattern, default) with
       | (true, { ppat_desc = Ppat_constraint (_, { ptyp_desc })}, None) ->
         (match ptyp_desc with
-         | Ptyp_constr({txt=(Lident "option")}, [{ ptyp_desc }]) -> ()
+         | Ptyp_constr({txt=(Lident "option")}, [_]) -> ()
          | _ ->
              let currentType = (match ptyp_desc with
              | Ptyp_constr({txt}, []) -> String.concat "." (Longident.flatten txt)
@@ -547,9 +547,9 @@ let jsxMapper () =
       | _ -> None) in
 
       recursivelyTransformNamedArgsForMake mapper expression ((arg, default, pattern, alias, pattern.ppat_loc, type_) :: list)
-    | Pexp_fun (Nolabel, _, { ppat_desc = (Ppat_construct ({txt = Lident "()"}, _) | Ppat_any)}, expression) ->
+    | Pexp_fun (Nolabel, _, { ppat_desc = (Ppat_construct ({txt = Lident "()"}, _) | Ppat_any)}, _expression) ->
         (list, None)
-    | Pexp_fun (Nolabel, _, { ppat_desc = Ppat_var ({txt})}, expression) ->
+    | Pexp_fun (Nolabel, _, { ppat_desc = Ppat_var ({txt})}, _expression) ->
         (list, Some txt)
 
     | _ -> (list, None)
@@ -657,6 +657,9 @@ let jsxMapper () =
       let fileName = filenameFromLoc pstr_loc in
       let emptyLoc = Location.in_file fileName in
       let mapBinding binding = if (hasAttrOnBinding binding) then
+        let bindingLoc = binding.pvb_loc in
+        let bindingPatLoc = binding.pvb_pat.ppat_loc in
+        let binding = { binding with pvb_pat = { binding.pvb_pat with ppat_loc = emptyLoc}; pvb_loc = emptyLoc} in
         let fnName = getFnName binding in
         let internalFnName = fnName ^ "$Internal" in
         let fullModuleName = makeModuleName fileName !nestedModules fnName in
@@ -670,16 +673,16 @@ let jsxMapper () =
           } -> expression
           (* let make = {let foo = bar in (~prop) => ...} *)
           | {
-              pexp_desc = Pexp_let (recursive, vbs, returnExpression)
+              pexp_desc = Pexp_let (_recursive, _vbs, returnExpression)
             } ->
             (* here's where we spelunk! *)
             spelunkForFunExpression returnExpression
           (* let make = React.forwardRef((~prop) => ...) *)
 
-          | { pexp_desc = Pexp_apply (wrapperExpression, [(Nolabel, innerFunctionExpression)]) } ->
+          | { pexp_desc = Pexp_apply (_wrapperExpression, [(Nolabel, innerFunctionExpression)]) } ->
             spelunkForFunExpression innerFunctionExpression
           | {
-              pexp_desc = Pexp_sequence (wrapperExpression, innerFunctionExpression)
+              pexp_desc = Pexp_sequence (_wrapperExpression, innerFunctionExpression)
             } ->
             spelunkForFunExpression innerFunctionExpression
           | _ -> raise (Invalid_argument "react.component calls can only be on function definitions or component wrappers (forwardRef, memo).")
@@ -687,7 +690,11 @@ let jsxMapper () =
           spelunkForFunExpression expression
         in
         let modifiedBinding binding =
-          let wrapExpressionWithBinding expressionFn expression = Vb.mk ~attrs:(List.filter otherAttrsPure binding.pvb_attributes) (Pat.var {loc = emptyLoc; txt = fnName}) (expressionFn expression) in
+          let wrapExpressionWithBinding expressionFn expression =
+            Vb.mk
+              ~loc:bindingLoc
+              ~attrs:(List.filter otherAttrsPure binding.pvb_attributes)
+              (Pat.var ~loc:bindingPatLoc {loc = bindingPatLoc; txt = fnName}) (expressionFn expression) in
           let expression = binding.pvb_expr in
           let unerasableIgnoreExp exp = { exp with pexp_attributes = (unerasableIgnore emptyLoc) :: exp.pexp_attributes } in
           (* TODO: there is a long-tail of unsupported features inside of blocks - Pexp_letmodule , Pexp_letexception , Pexp_ifthenelse *)
@@ -701,11 +708,11 @@ let jsxMapper () =
           (* let make = (()) => ... *)
           (* let make = (_) => ... *)
           | {
-            pexp_desc = Pexp_fun (Nolabel, default, { ppat_desc = Ppat_construct ({txt = Lident "()"}, _) | Ppat_any}, internalExpression)
+            pexp_desc = Pexp_fun (Nolabel, _default, { ppat_desc = Ppat_construct ({txt = Lident "()"}, _) | Ppat_any}, _internalExpression)
             } -> ((fun a -> a), true, expression)
           (* let make = (~prop) => ... *)
           | {
-            pexp_desc = Pexp_fun ((Labelled(_) | Optional(_)), default, pattern, internalExpression)
+            pexp_desc = Pexp_fun ((Labelled(_) | Optional(_)), _default, _pattern, _internalExpression)
           } -> ((fun a -> a), false, unerasableIgnoreExp  expression)
           (* let make = (prop) => ... *)
           | {
@@ -736,7 +743,7 @@ let jsxMapper () =
         let reactComponentAttribute = try
           Some(List.find hasAttr binding.pvb_attributes)
         with | Not_found -> None in
-        let (attr_loc, payload) = match reactComponentAttribute with
+        let (_attr_loc, payload) = match reactComponentAttribute with
         | Some (loc, payload) -> (loc.loc, Some payload)
         | None -> (emptyLoc, None) in
         let props = getPropsAttr payload in
@@ -1012,7 +1019,7 @@ let jsxMapper () =
           (* no file-level jsx config found *)
           | ([], _) -> default_mapper.structure mapper structure
           (* {jsx: 2} *)
-          | ((_, {pexp_desc = Pexp_constant (Pconst_integer (version, None))})::rest, recordFieldsWithoutJsx) -> begin
+          | ((_, {pexp_desc = Pexp_constant (Pconst_integer (version, None))})::_rest, recordFieldsWithoutJsx) -> begin
               (match version with
               | "2" -> jsxVersion := Some 2
               | "3" -> jsxVersion := Some 3
