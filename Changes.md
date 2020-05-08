@@ -1,5 +1,11 @@
 `*` means  potential break changes
 # current
+
+# 7.3.2
+- #4315 synup super_errors for better uncurry error message
+- #4335 fix js_date.setUTCTime
+- #4343 fix regex syntax checking for empty or comment string
+- #4351 precie binding location for reasonreact jsx
 # 7.3
 - #4235 #4237 #4241 #4244 #4240 generalized uncurry work
 - #4255 #4258 #3953 code generation: compiling unit to `undefined`

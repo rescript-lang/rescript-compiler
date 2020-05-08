@@ -713,7 +713,7 @@ let root = OCamlRes.Res.([
        };") ;
     File  ("bsconfig.json",
       "{\n\
-      \  \"name\": \"reason-react-examples\",\n\
+      \  \"name\": \"${bsb:name}\",\n\
       \  \"reason\": {\n\
       \    \"react-jsx\": 3\n\
       \  },\n\
