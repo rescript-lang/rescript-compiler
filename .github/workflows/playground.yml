@@ -3,19 +3,23 @@ on:
   push:
     tags:
     - '*'
+
+defaults:
+  run:
+    shell: bash
+
 jobs:
   run:
     name: Build
     runs-on: ${{ matrix.os }}
     strategy:
-      fail-fast: false
       matrix:
-        os: [macos-latest, ubuntu-latest]
-        ocaml-version: ["4.06.1"]
-        node-version: [12.x]
+        os: [ubuntu-latest, macos-latest, windows-latest]
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v2.0.0
+      - uses: actions/setup-node@v1
+        with:
+          node-version: 12
+      - uses: actions/checkout@v2
 
       - run: npm install -g esy
 
@@ -23,7 +27,7 @@ jobs:
         uses: actions/cache@v1
         with:
           path: ~/.esy/source
-          key: source-${{ hashFiles('**/index.json') }}
+          key: source-${{ hashFiles('**/playground/_esy/index.json') }}
 
       - name: Install
         run: esy install
