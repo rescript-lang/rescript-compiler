@@ -60,6 +60,8 @@ jobs:
 
       - run: ./scripts/ninja.js config && ./scripts/ninja.js build
 
+      - run: BS_TRAVIS_CI=true node scripts/install.js
+
       - run: yarn # installs all bucklescript packages that we'll get cmij files for
         working-directory: playground
 
@@ -78,7 +80,7 @@ jobs:
       - run: node -e "require('./exports.js'); eval(ocaml.compile('Js.log Sys.ocaml_version').js_code);"
         working-directory: playground
   
-      - run: node -e "require('./exports.js'); console.log(reason.compile('let t = ReactDOMRe.renderToElementWithId(<div />);').js_code)"
+      - run: node -e "require('./exports.js'); var assert = require('assert'); assert(reason.compile('let t = ReactDOMRe.renderToElementWithId(<div />);').js_code.indexOf('ReactDOMRe.renderToElementWithId') > 0);"
         working-directory: playground
   
       - run: rm -rf _esy esy.lock node_modules

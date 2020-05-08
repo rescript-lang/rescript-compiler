@@ -9,7 +9,7 @@ from existing third party libraries (like `reason-react` or `bs-webapi`).
 # from project root folder
 git submodule update --init && node scripts/buildocaml.js
 ./scripts/ninja.js config && ./scripts/ninja.js build
-node scripts/install.js
+BS_TRAVIS_CI=true node scripts/install.js
 
 cd playground
 
