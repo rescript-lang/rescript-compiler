@@ -16,36 +16,48 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v2.0.0
-      - name: Cache .opam folder
-        id: cache-opam
+
+      - run: npm install -g esy
+
+      - name: Try to restore install cache
         uses: actions/cache@v1
         with:
-          path: ~/.opam
-          key: ${{ runner.os }}-opam-${{ matrix.ocaml-version }}-3.5.1-v1
-      - name: Use OCaml ${{ matrix.ocaml-version }}
-        uses: avsm/setup-ocaml@v1.0
-        with:
-          ocaml-version: ${{ matrix.ocaml-version }}
-      - if: steps.cache-opam.outputs.cache-hit != 'true'
-        run: opam install js_of_ocaml.3.5.1
+          path: ~/.esy/source
+          key: source-${{ hashFiles('**/index.json') }}
+
+      - name: Install
+        run: esy install
+
       - run: git submodule update --init && ./scripts/buildocaml.js
+
       - run: ./scripts/ninja.js config && ./scripts/ninja.js build
+
       - run: yarn # installs all bucklescript packages that we'll get cmij files for
         working-directory: playground
+
       - run: yarn build # get some fresh cmi and cmijs for reason-react
         working-directory: playground
+
       - run: ../jscomp/bin/cmij.exe -playground node_modules/reason-react/lib/ocaml
         working-directory: playground
+  
       - run: ../scripts/ninja.js build -playground
         working-directory: playground
-      - run: BS_PLAYGROUND=../playground ./scripts/repl.js -prepublish
+  
+      - run: esy build-playground-prepublish
+  
       - run: node -e "require('./exports.js'); eval(ocaml.compile('Js.log Sys.ocaml_version').js_code);"
         working-directory: playground
+  
       - run: node -e "require('./exports.js'); console.log(reason.compile('let t = ReactDOMRe.renderToElementWithId(<div />);').js_code)"
         working-directory: playground
+  
+      - run: rm -rf _esy esy.lock node_modules
+        working-directory: playground
+      
       - name: Archive npm artifacts
         uses: actions/upload-artifact@v1
         with:
-          name: reason-js-compiler
+          name: bs-platform-playground
           path: playground
 

@@ -1,0 +1,16 @@
+{
+  "name": "bs-platform-playground",
+  "scripts": {
+    "build-playground": "esy node repl.js",
+    "build-playground-prepublish": "esy node repl.js -prepublish"
+  },
+  "esy": {
+    "build": [["echo", "\"noop\""]]
+  },
+  "devDependencies": {
+    "@opam/js_of_ocaml": "3.5.1",
+    "@opam/ocamlfind": "1.8.1",
+    "@opam/dune": "1.11.4",
+    "ocaml": "~4.6.1000"
+  }
+}
