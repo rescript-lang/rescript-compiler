@@ -1085,7 +1085,6 @@
     "prebuilt.js",
     "prepublish.js",
     "release.js",
-    "repl.js",
     "shake.js",
     "tasks.js",
     "tmp.js",

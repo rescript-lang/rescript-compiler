@@ -200,36 +200,24 @@ It is useful for building tools where you want to compile and execute arbitrary 
 
 The BuckleScript source code is compiled with a tool called [JSOO (js_of_ocaml)](https://ocsigen.org/js_of_ocaml/3.5.1/manual/overview), which uses OCaml
 bytecode to compile to JavaScript and is part of the bigger OCaml ecosystem. Before we can compile anything, we need to install the required
-tools (requires [`opam`](https://opam.ocaml.org/doc/Install.html) to be installed):
+tools (requires [`esy`](esy.sh/) to be installed):
 
 ```
-# Create the right switch, if not created yet (first install)
-opam switch create 4.06.1
-
-# Makes sure to be on the right switch
-opam switch 4.06.1
-eval `opam config env`
-
-opam install js_of_ocaml.3.5.1
+npm install -g esy
 ```
 
 ### Building the bundle
 
-The entry point of the JSOO bundle is located in `jscomp/main/jsoo_main.ml` and the script for running JSOO can be found in `scripts/repl.js`.
+The entry point of the JSOO bundle is located in `jscomp/main/jsoo_main.ml` and the script for running JSOO can be found in `playground/repl.js`.
 A full clean build can be done like this:
 
 ```
-# We create a target directory for storing the bundle / stdlib files
-mkdir playground && mkdir playground/stdlib
-
-# We build the BuckleScript source code and also the bytecode for jsoo_main.ml
+# We build the BuckleScript source code and produce a single .ml file with the whole compiler
 node scripts/ninja.js config && node scripts/ninja.js build
 
-# Now we run the repl.js script pointing to our playground directory (note how it needs to be relative to the repl.js file)
-BS_PLAYGROUND=../playground node scripts/repl.js
+# Now we build the bytecode and convert it to JavaScript with js_of_ocaml
+cd playground && esy && esy build-playground
 ```
-
-_Troubleshooting: if ninja build step failed with `Error: cannot find file '+runtime.js'`, make sure `ocamlfind` is installed with `opam install ocamlfind`._
 
 **You should now find following files:**
 
@@ -259,8 +247,7 @@ As soon as the bundle is loaded, you will get access to following functions (as 
   - `compile_super_errors(code: string)`: Compiles given code and outputs `super_errors` related messages on `console.error`
   - `compile_super_errors_ppx_v2(code: string)`: Compiles given code with the React v2 syntax
   - `compile_super_errors_ppx_v3(code: string)`: Compiles given code with the React v3 syntax
-  - `load_module(cmi_path: string, cmi_content: string, cmj_name: string, cmj_content: string)`: Loads a module into the compiler (see notes on `cmj` / `cmi` below) 
-
+  
 For each compile every successful operation will return `{js_code: string}`.
 On compile errors, the returned object will be `{js_error_msg: string}`.
 
@@ -270,7 +257,8 @@ Whenever you are modifying any files in the BuckleScript compiler, or in the `js
 
 ```
 node scripts/ninja.js config && node scripts/ninja.js build
-BS_PLAYGROUND=../playground node scripts/repl.js
+cd playground
+esy build-playground
 ```
 
 **.cmj files in the Web**
@@ -296,9 +284,8 @@ those modules listed in the `jsoo` call in `scripts/repl.js`. As you probably
 noticed, the generated `playground` files are all plain `.js`, so how are the `cmj` /
 `cmi` files embedded?
 
-`repl.js` calls an executable called `cmjbrowser.exe` on every build, which is a
-compile artifact from `jscomp/main/jscmj_main.ml`. It is used to serialize `cmj`
-/ `cmi` artifacts into two files called `jscomp/core/js_cmj_datasets.ml`. These files are only linked for the browser
+When `ninja.js build` is called, a binary called `cmij.exe` is used to serialize `cmj`
+/ `cmi` artifacts into two files called `jscomp/core/js_cmj_datasets.ml`. These files are linked for the browser
 target, where BuckleScript doesn't have access to the filesystem. When working
 on BS, you'll see diffs on those files whenever there are changes on core
 modules, e.g. stdlib modules or when the ocaml version was changed. We usually
@@ -306,12 +293,9 @@ check in these files to keep it in sync with the most recent compiler
 implementation. JSOO will pick up those files to encode them into the `exports.js`
 bundle.
 
-For any other dependency needed in the playground, such as `ReasonReact`, you
-will be required to serialize your `.cmi` / `.cmt` files accordingly from binary
-to hex encoded strings so that BS Playground's `ocaml.load` function can
-load the data. Right now we don't provide any instructions inside here yet, but
-[here's how the official ReasonML playground did
-it](https://github.com/reasonml/reasonml.github.io/blob/source/website/setupSomeArtifacts.js#L65).
+For any other dependency needed in the playground, such as `ReasonReact`, we can "inject" new `cmi`
+and `cmj` artifacts in the resulting data sets by using the flag `-playground`. To see more details, check
+the [readme in the `playground` folder](./playground/README.md).
 
 ## Upgrading the Reason version within BuckleScript
 
@@ -360,7 +344,7 @@ cp build/refmt_binary.ml ../../bucklescript/lib/4.06.1/refmt_main3.ml
 node scripts/ninja.js config && node scripts/ninja.js build
 
 # Build the playground
-BS_PLAYGROUND=../playground node scripts/repl.js
+cd playground && esy && esy build-playground
 ```
 
 You should now have the newest `refmt` binary for the actual compiler, and for the playground, a new `playground/exports.js` file with the new Reason version included.
