@@ -49,6 +49,7 @@ jobs:
         working-directory: playground
   
       - run: esy build-playground-prepublish
+        working-directory: playground
   
       - run: node -e "require('./exports.js'); eval(ocaml.compile('Js.log Sys.ocaml_version').js_code);"
         working-directory: playground
