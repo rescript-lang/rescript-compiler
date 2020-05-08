@@ -20,11 +20,9 @@ yarn build # get some fresh cmi and cmijs
 # pass any folders we want to include, separated by commas
 ../jscomp/bin/cmij.exe -playground node_modules/reason-react/lib/ocaml,node_modules/bs-webapi/lib/ocaml
 
-../scripts/ninja.js build -playground
+../scripts/ninja.js build -playground # generates js_refmt_compiler.ml with everything in it
 
-# back to project root
-cd ..
-BS_PLAYGROUND=../playground node scripts/repl.js
+esy build-playground # calls ocamlc.opt to convert js_refmt_compiler.ml to bytecode, then js_of_ocaml to convert bytecode to exports.js
 ```
 
 ### Creating a bundle with some custom node module
@@ -35,7 +33,5 @@ yarn add some-package
 yarn build
 ../jscomp/bin/cmij.exe node_modules/my-project/lib/ocaml
 ../scripts/ninja.js build -playground
-# back to project root
-cd ..
-BS_PLAYGROUND=../playground node scripts/repl.js
+esy build-playground
 ```

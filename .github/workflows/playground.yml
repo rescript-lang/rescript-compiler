@@ -31,6 +31,7 @@ jobs:
 
       - name: Install
         run: esy install
+        working-directory: playground
 
       - run: git submodule update --init && ./scripts/buildocaml.js
 
