@@ -87,17 +87,6 @@ let setupChromeDebugger : unit -> unit [@bs]= [%raw{|
     return ["span", {}, `${recordVariant}(…)`];
   };
 
-  var isOCamlExceptionOrExtensionHead = function (x) {
-    return Array.isArray(x) && x.tag === 248 && typeof x[0] === "string";
-  };
-
-  var isOCamlExceptionOrExtension = function (x) {
-    return (
-      Array.isArray(x) &&
-      x[0] !== undefined &&
-      isOCamlExceptionOrExtensionHead(x[0])
-    );
-  };
 
   var Formatter = {
     header: function (data) {
@@ -106,8 +95,6 @@ let setupChromeDebugger : unit -> unit [@bs]= [%raw{|
 
       if (recordVariant !== undefined) {
         return renderVariant(data, recordVariant);
-      } else if (isOCamlExceptionOrExtension(data)) {
-        return ["div", {}, `${data[0][0]}(…)`];
       } else if (polyVariant !== undefined) {
         return ["div", {}, `\`${recordPolyVar}#${data[0]}`];
       }
@@ -119,9 +106,7 @@ let setupChromeDebugger : unit -> unit [@bs]= [%raw{|
 
       return (
         recordVariant !== undefined ||
-        isOCamlExceptionOrExtension(data) ||
-        polyVariant !== undefined ||
-        false
+        polyVariant !== undefined 
       );
     },
     body: function (data) {
@@ -132,9 +117,7 @@ let setupChromeDebugger : unit -> unit [@bs]= [%raw{|
         return renderRecord(data, recordVariant);
       } else if (polyVariant !== undefined) {
         return renderObject(data[1]);
-      } else if (isOCamlExceptionOrExtension(x)) {
-        return ["ol", olStyle, ...data.slice(1).map(renderObject)];
-      }
+      } 
     },
   };
 
@@ -149,7 +132,7 @@ let setupChromeDebugger : unit -> unit [@bs]= [%raw{|
 
 
 let setup = ref false
-let setupOnce () =
+let setupOnce  = fun [@bs] () -> 
   if not setup.contents then
     begin
       setup.contents<- true;
@@ -170,17 +153,17 @@ let __ = Block.__
 (* It won't affect [Object.keys] using [Object.defineProperty*)
 
 let variant meta tag xs =
-  setupOnce ();
+  setupOnce () [@bs];
   xs |. Caml_obj_extern.set_tag tag;
   xs |. addProp (cacheSymbol "BsVariant") {value = meta }
 
 let simpleVariant meta xs =
-  setupOnce ();
+  setupOnce () [@bs];
   xs |. addProp (cacheSymbol "BsVariant") {value = meta }
 
 
 let polyVar meta xs =
-  setupOnce ();
+  setupOnce () [@bs];
   xs |. addProp (cacheSymbol "BsPolyVar") {value = meta}
 
 
