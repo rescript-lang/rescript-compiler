@@ -559,7 +559,7 @@ let translate  loc
      | _ -> assert false)    
   | Parrayrefs ->
     Lam_dispatch_primitive.translate loc "caml_array_get" args
-  | Pmakearray _kind -> 
+  | Pmakearray  -> 
     Js_of_lam_array.make_array Mutable  args 
   | Parraysetu  -> 
       (match args with (* wrong*)

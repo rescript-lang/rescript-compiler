@@ -75,7 +75,7 @@ type t =
   | Pbytesrefs
   | Pbytessets
   (* Array operations *)
-  | Pmakearray of Lam_compat.array_kind
+  | Pmakearray 
   | Parraylength 
   | Parrayrefu 
   | Parraysetu 

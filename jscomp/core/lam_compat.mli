@@ -23,9 +23,6 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
 
- type array_kind = Lambda.array_kind = 
-      Pgenarray | Paddrarray | Pintarray | Pfloatarray
-  (*TODO: only [Pfloatarray] makes sense *)
 
 
 type boxed_integer = Lambda.boxed_integer = 
@@ -102,6 +99,5 @@ val cmp_float : comparison -> float -> float -> bool
 val cmp_int : comparison -> int -> int -> bool 
 
 val eq_comparison : comparison -> comparison -> bool
-val eq_array_kind : array_kind -> array_kind -> bool
 val eq_boxed_integer: boxed_integer -> boxed_integer -> bool
 val eq_compile_time_constant : compile_time_constant -> compile_time_constant -> bool

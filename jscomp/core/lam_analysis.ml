@@ -130,7 +130,7 @@ let rec no_side_effects (lam : Lam.t) : bool =
       | Pbyteslength
       | Pbytesrefu
       | Pbytesrefs
-      | Pmakearray _ 
+      | Pmakearray 
       | Parraylength  
       | Parrayrefu 
       | Parrayrefs  

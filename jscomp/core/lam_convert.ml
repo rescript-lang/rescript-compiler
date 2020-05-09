@@ -353,8 +353,8 @@ let lam_prim ~primitive:( p : Lambda.primitive) ~args loc : Lam.t =
   | Poffsetref x -> prim ~primitive:(Poffsetref x) ~args  loc
   | Pfloatcomp x -> prim ~primitive:(Pfloatcomp x) ~args loc
   | Pmakearray 
-    (x, _mutable_flag) (*FIXME*)
-    -> prim ~primitive:(Pmakearray x) ~args  loc
+    (_, _mutable_flag) (*FIXME*)
+    -> prim ~primitive:Pmakearray ~args  loc
   | Parraylength _ -> prim ~primitive:Parraylength ~args loc
   | Parrayrefu _ -> prim ~primitive:(Parrayrefu ) ~args loc
   | Parraysetu _ -> prim ~primitive:(Parraysetu ) ~args loc

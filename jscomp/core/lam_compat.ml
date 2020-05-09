@@ -23,16 +23,6 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
 
-type array_kind = Lambda.array_kind = 
-      Pgenarray | Paddrarray | Pintarray | Pfloatarray
-
-
-let eq_array_kind (p : array_kind) (p1 : array_kind) = 
-  match p with 
-  | Pgenarray -> p1 = Pgenarray
-  | Paddrarray -> p1 = Paddrarray 
-  | Pintarray -> p1 = Pintarray
-  | Pfloatarray -> p1 = Pfloatarray       
 
 type boxed_integer = Lambda.boxed_integer = 
     Pnativeint | Pint32 | Pint64

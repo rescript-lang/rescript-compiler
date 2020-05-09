@@ -80,7 +80,7 @@ type t =
   | Pbytesrefs
   | Pbytessets
   (* Array operations *)
-  | Pmakearray of Lam_compat.array_kind
+  | Pmakearray
   | Parraylength 
   | Parrayrefu
   | Parraysetu
@@ -265,7 +265,7 @@ let eq_primitive_approx ( lhs : t) (rhs : t) =
   | Pjscomp comparison ->  (match rhs with  Pjscomp comparison1 -> Lam_compat.eq_comparison comparison  comparison1  | _ -> false )    
   | Poffsetint i0 ->   (match rhs with  Poffsetint i1 -> i0 = i1 | _ -> false )   
   | Poffsetref i0 ->  (match rhs with Poffsetref i1 -> i0 = i1   | _ -> false)
-  | Pmakearray array_kind -> (match rhs with Pmakearray array_kind1 -> Lam_compat.eq_array_kind array_kind array_kind1 | _ -> false  )
+  | Pmakearray  -> rhs = Pmakearray
   | Parraylength  -> rhs = Parraylength
   | Parrayrefu  -> rhs = Parrayrefu
   | Parraysetu  -> rhs = Parraysetu
