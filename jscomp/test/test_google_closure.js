@@ -8,9 +8,9 @@ function f(a, b, param) {
 }
 
 function f2(a) {
-  return (function (param) {
-      return a + 1 | 0;
-    });
+  return function (param) {
+    return a + 1 | 0;
+  };
 }
 
 var a = String(3);

@@ -7,13 +7,13 @@ var Caml_int32 = require("../../lib/js/caml_int32.js");
 
 function f(v) {
   if (v % 2 === 0) {
-    return (function (v) {
-        return Caml_int32.imul(v, v);
-      });
+    return function (v) {
+      return Caml_int32.imul(v, v);
+    };
   } else {
-    return (function (v) {
-        return v + v | 0;
-      });
+    return function (v) {
+      return v + v | 0;
+    };
   }
 }
 

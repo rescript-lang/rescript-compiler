@@ -6,10 +6,10 @@ var Block = require("../../lib/js/block.js");
 var d = new Date(2016, 2);
 
 function d2(param) {
-  return (function (param$1, param$2) {
-      var prim = 2;
-      return new Date(param, prim, param$1);
-    });
+  return function (param$1, param$2) {
+    var prim = 2;
+    return new Date(param, prim, param$1);
+  };
 }
 
 var d3 = d2(2016)(1, undefined);

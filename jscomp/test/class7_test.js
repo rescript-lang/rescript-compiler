@@ -75,12 +75,12 @@ function point_init($$class) {
             
           })
       ]);
-  return (function (env, self, x_init$1) {
-      var self$1 = CamlinternalOO.create_object_opt(self, $$class);
-      self$1[x_init] = x_init$1;
-      self$1[x] = x_init$1;
-      return self$1;
-    });
+  return function (env, self, x_init$1) {
+    var self$1 = CamlinternalOO.create_object_opt(self, $$class);
+    self$1[x_init] = x_init$1;
+    self$1[x] = x_init$1;
+    return self$1;
+  };
 }
 
 var point = CamlinternalOO.make_class(shared$4, point_init);
@@ -119,12 +119,12 @@ function ref_init($$class) {
             
           })
       ]);
-  return (function (env, self, x_init$1) {
-      var self$1 = CamlinternalOO.create_object_opt(self, $$class);
-      self$1[x_init] = x_init$1;
-      self$1[x] = x_init$1;
-      return self$1;
-    });
+  return function (env, self, x_init$1) {
+    var self$1 = CamlinternalOO.create_object_opt(self, $$class);
+    self$1[x_init] = x_init$1;
+    self$1[x] = x_init$1;
+    return self$1;
+  };
 }
 
 var ref = CamlinternalOO.make_class(shared$6, ref_init);
@@ -151,11 +151,11 @@ function backup_init($$class) {
             }
           })
       ]);
-  return (function (env, self) {
-      var self$1 = CamlinternalOO.create_object_opt(self, $$class);
-      self$1[copy] = undefined;
-      return self$1;
-    });
+  return function (env, self) {
+    var self$1 = CamlinternalOO.create_object_opt(self, $$class);
+    self$1[copy] = undefined;
+    return self$1;
+  };
 }
 
 var backup = CamlinternalOO.make_class(shared$5, backup_init);
@@ -169,13 +169,13 @@ function backup_ref_init($$class) {
         "save"
       ], backup, true);
   var obj_init$1 = inh$1[0];
-  return (function (env, self, x$1) {
-      var self$1 = CamlinternalOO.create_object_opt(self, $$class);
-      self$1[x] = x$1;
-      Curry._2(obj_init, self$1, x$1);
-      Curry._1(obj_init$1, self$1);
-      return CamlinternalOO.run_initializers_opt(self, self$1, $$class);
-    });
+  return function (env, self, x$1) {
+    var self$1 = CamlinternalOO.create_object_opt(self, $$class);
+    self$1[x] = x$1;
+    Curry._2(obj_init, self$1, x$1);
+    Curry._1(obj_init$1, self$1);
+    return CamlinternalOO.run_initializers_opt(self, self$1, $$class);
+  };
 }
 
 var backup_ref = CamlinternalOO.make_class([
@@ -253,11 +253,11 @@ function backup2_init($$class) {
             
           })
       ]);
-  return (function (env, self) {
-      var self$1 = CamlinternalOO.create_object_opt(self, $$class);
-      self$1[copy] = undefined;
-      return self$1;
-    });
+  return function (env, self) {
+    var self$1 = CamlinternalOO.create_object_opt(self, $$class);
+    self$1[copy] = undefined;
+    return self$1;
+  };
 }
 
 var backup2 = CamlinternalOO.make_class([
@@ -276,13 +276,13 @@ function backup_ref2_init($$class) {
         "save"
       ], backup2, true);
   var obj_init$1 = inh$1[0];
-  return (function (env, self, x$1) {
-      var self$1 = CamlinternalOO.create_object_opt(self, $$class);
-      self$1[x] = x$1;
-      Curry._2(obj_init, self$1, x$1);
-      Curry._1(obj_init$1, self$1);
-      return CamlinternalOO.run_initializers_opt(self, self$1, $$class);
-    });
+  return function (env, self, x$1) {
+    var self$1 = CamlinternalOO.create_object_opt(self, $$class);
+    self$1[x] = x$1;
+    Curry._2(obj_init, self$1, x$1);
+    Curry._1(obj_init$1, self$1);
+    return CamlinternalOO.run_initializers_opt(self, self$1, $$class);
+  };
 }
 
 var backup_ref2 = CamlinternalOO.make_class([
@@ -324,11 +324,11 @@ function window_init($$class) {
   CamlinternalOO.set_method($$class, top_widget, (function (self$7) {
           return self$7[top_widget$1];
         }));
-  return (function (env, self) {
-      var self$1 = CamlinternalOO.create_object_opt(self, $$class);
-      self$1[top_widget$1] = undefined;
-      return self$1;
-    });
+  return function (env, self) {
+    var self$1 = CamlinternalOO.create_object_opt(self, $$class);
+    self$1[top_widget$1] = undefined;
+    return self$1;
+  };
 }
 
 var $$window = CamlinternalOO.make_class(shared$1, window_init);
@@ -341,12 +341,12 @@ function widget_init($$class) {
   CamlinternalOO.set_method($$class, $$window, (function (self$8) {
           return self$8[$$window$1];
         }));
-  return (function (env, self, w$1) {
-      var self$1 = CamlinternalOO.create_object_opt(self, $$class);
-      self$1[w] = w$1;
-      self$1[$$window$1] = w$1;
-      return self$1;
-    });
+  return function (env, self, w$1) {
+    var self$1 = CamlinternalOO.create_object_opt(self, $$class);
+    self$1[w] = w$1;
+    self$1[$$window$1] = w$1;
+    return self$1;
+  };
 }
 
 var widget = CamlinternalOO.make_class(shared, widget_init);

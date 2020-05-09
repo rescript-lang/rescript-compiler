@@ -30,9 +30,9 @@ var xs = Array.prototype.map.call([
       1,
       2
     ], (function (x) {
-        return (function (y) {
-            return (y + x | 0) + 1 | 0;
-          });
+        return function (y) {
+          return (y + x | 0) + 1 | 0;
+        };
       }));
 
 function f_0(param) {
@@ -124,13 +124,13 @@ function unit_magic(param) {
 var f_unit_magic = unit_magic(undefined);
 
 function hh(xs) {
-  return (function (param) {
-      Caml_splice_call.spliceApply(f_0002, [
-            xs,
-            param
-          ]);
-      
-    });
+  return function (param) {
+    Caml_splice_call.spliceApply(f_0002, [
+          xs,
+          param
+        ]);
+    
+  };
 }
 
 exports.Curry = Curry$1;

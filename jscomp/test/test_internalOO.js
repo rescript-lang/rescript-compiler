@@ -3413,151 +3413,151 @@ function lookup_tables(root, keys) {
 }
 
 function get_const(x) {
-  return (function (obj) {
-      return x;
-    });
+  return function (obj) {
+    return x;
+  };
 }
 
 function get_var(n) {
-  return (function (obj) {
-      return obj[n];
-    });
+  return function (obj) {
+    return obj[n];
+  };
 }
 
 function get_env(e, n) {
-  return (function (obj) {
-      return obj[e][n];
-    });
+  return function (obj) {
+    return obj[e][n];
+  };
 }
 
 function get_meth(n) {
-  return (function (obj) {
-      return Curry._1(obj[0][n], obj);
-    });
+  return function (obj) {
+    return Curry._1(obj[0][n], obj);
+  };
 }
 
 function set_var(n) {
-  return (function (obj, x) {
-      obj[n] = x;
-      
-    });
+  return function (obj, x) {
+    obj[n] = x;
+    
+  };
 }
 
 function app_const(f, x) {
-  return (function (obj) {
-      return Curry._1(f, x);
-    });
+  return function (obj) {
+    return Curry._1(f, x);
+  };
 }
 
 function app_var(f, n) {
-  return (function (obj) {
-      return Curry._1(f, obj[n]);
-    });
+  return function (obj) {
+    return Curry._1(f, obj[n]);
+  };
 }
 
 function app_env(f, e, n) {
-  return (function (obj) {
-      return Curry._1(f, obj[e][n]);
-    });
+  return function (obj) {
+    return Curry._1(f, obj[e][n]);
+  };
 }
 
 function app_meth(f, n) {
-  return (function (obj) {
-      return Curry._1(f, Curry._1(obj[0][n], obj));
-    });
+  return function (obj) {
+    return Curry._1(f, Curry._1(obj[0][n], obj));
+  };
 }
 
 function app_const_const(f, x, y) {
-  return (function (obj) {
-      return Curry._2(f, x, y);
-    });
+  return function (obj) {
+    return Curry._2(f, x, y);
+  };
 }
 
 function app_const_var(f, x, n) {
-  return (function (obj) {
-      return Curry._2(f, x, obj[n]);
-    });
+  return function (obj) {
+    return Curry._2(f, x, obj[n]);
+  };
 }
 
 function app_const_meth(f, x, n) {
-  return (function (obj) {
-      return Curry._2(f, x, Curry._1(obj[0][n], obj));
-    });
+  return function (obj) {
+    return Curry._2(f, x, Curry._1(obj[0][n], obj));
+  };
 }
 
 function app_var_const(f, n, x) {
-  return (function (obj) {
-      return Curry._2(f, obj[n], x);
-    });
+  return function (obj) {
+    return Curry._2(f, obj[n], x);
+  };
 }
 
 function app_meth_const(f, n, x) {
-  return (function (obj) {
-      return Curry._2(f, Curry._1(obj[0][n], obj), x);
-    });
+  return function (obj) {
+    return Curry._2(f, Curry._1(obj[0][n], obj), x);
+  };
 }
 
 function app_const_env(f, x, e, n) {
-  return (function (obj) {
-      return Curry._2(f, x, obj[e][n]);
-    });
+  return function (obj) {
+    return Curry._2(f, x, obj[e][n]);
+  };
 }
 
 function app_env_const(f, e, n, x) {
-  return (function (obj) {
-      return Curry._2(f, obj[e][n], x);
-    });
+  return function (obj) {
+    return Curry._2(f, obj[e][n], x);
+  };
 }
 
 function meth_app_const(n, x) {
-  return (function (obj) {
-      return Curry._2(obj[0][n], obj, x);
-    });
+  return function (obj) {
+    return Curry._2(obj[0][n], obj, x);
+  };
 }
 
 function meth_app_var(n, m) {
-  return (function (obj) {
-      return Curry._2(obj[0][n], obj, obj[m]);
-    });
+  return function (obj) {
+    return Curry._2(obj[0][n], obj, obj[m]);
+  };
 }
 
 function meth_app_env(n, e, m) {
-  return (function (obj) {
-      return Curry._2(obj[0][n], obj, obj[e][m]);
-    });
+  return function (obj) {
+    return Curry._2(obj[0][n], obj, obj[e][m]);
+  };
 }
 
 function meth_app_meth(n, m) {
-  return (function (obj) {
-      return Curry._2(obj[0][n], obj, Curry._1(obj[0][m], obj));
-    });
+  return function (obj) {
+    return Curry._2(obj[0][n], obj, Curry._1(obj[0][m], obj));
+  };
 }
 
 function send_const(m, x, c) {
-  return (function (obj) {
-      return Curry._1(Curry._3(Caml_oo.caml_get_public_method, x, m, 1), x);
-    });
+  return function (obj) {
+    return Curry._1(Curry._3(Caml_oo.caml_get_public_method, x, m, 1), x);
+  };
 }
 
 function send_var(m, n, c) {
-  return (function (obj) {
-      var tmp = obj[n];
-      return Curry._1(Curry._3(Caml_oo.caml_get_public_method, tmp, m, 2), tmp);
-    });
+  return function (obj) {
+    var tmp = obj[n];
+    return Curry._1(Curry._3(Caml_oo.caml_get_public_method, tmp, m, 2), tmp);
+  };
 }
 
 function send_env(m, e, n, c) {
-  return (function (obj) {
-      var tmp = obj[e][n];
-      return Curry._1(Curry._3(Caml_oo.caml_get_public_method, tmp, m, 3), tmp);
-    });
+  return function (obj) {
+    var tmp = obj[e][n];
+    return Curry._1(Curry._3(Caml_oo.caml_get_public_method, tmp, m, 3), tmp);
+  };
 }
 
 function send_meth(m, n, c) {
-  return (function (obj) {
-      var tmp = Curry._1(obj[0][n], obj);
-      return Curry._1(Curry._3(Caml_oo.caml_get_public_method, tmp, m, 4), tmp);
-    });
+  return function (obj) {
+    var tmp = Curry._1(obj[0][n], obj);
+    return Curry._1(Curry._3(Caml_oo.caml_get_public_method, tmp, m, 4), tmp);
+  };
 }
 
 function new_cache(table) {
@@ -3579,14 +3579,14 @@ function method_impl(table, i, arr) {
   switch (clo) {
     case /* GetConst */0 :
         var x = next(undefined);
-        return (function (obj) {
-            return x;
-          });
+        return function (obj) {
+          return x;
+        };
     case /* GetVar */1 :
         var n = next(undefined);
-        return (function (obj) {
-            return obj[n];
-          });
+        return function (obj) {
+          return obj[n];
+        };
     case /* GetEnv */2 :
         var e = next(undefined);
         var n$1 = next(undefined);
@@ -3595,22 +3595,22 @@ function method_impl(table, i, arr) {
         return get_meth(next(undefined));
     case /* SetVar */4 :
         var n$2 = next(undefined);
-        return (function (obj, x) {
-            obj[n$2] = x;
-            
-          });
+        return function (obj, x) {
+          obj[n$2] = x;
+          
+        };
     case /* AppConst */5 :
         var f = next(undefined);
         var x$1 = next(undefined);
-        return (function (obj) {
-            return Curry._1(f, x$1);
-          });
+        return function (obj) {
+          return Curry._1(f, x$1);
+        };
     case /* AppVar */6 :
         var f$1 = next(undefined);
         var n$3 = next(undefined);
-        return (function (obj) {
-            return Curry._1(f$1, obj[n$3]);
-          });
+        return function (obj) {
+          return Curry._1(f$1, obj[n$3]);
+        };
     case /* AppEnv */7 :
         var f$2 = next(undefined);
         var e$1 = next(undefined);
@@ -3624,9 +3624,9 @@ function method_impl(table, i, arr) {
         var f$4 = next(undefined);
         var x$2 = next(undefined);
         var y = next(undefined);
-        return (function (obj) {
-            return Curry._2(f$4, x$2, y);
-          });
+        return function (obj) {
+          return Curry._2(f$4, x$2, y);
+        };
     case /* AppConstVar */10 :
         var f$5 = next(undefined);
         var x$3 = next(undefined);

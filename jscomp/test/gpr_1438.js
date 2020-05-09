@@ -33,9 +33,9 @@ function actionKey(key, a, b, c, d, e) {
     default:
       
   }
-  return (function (param) {
-      
-    });
+  return function (param) {
+    
+  };
 }
 
 exports.actionKey = actionKey;

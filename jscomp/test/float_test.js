@@ -20,15 +20,15 @@ var suites = {
 };
 
 function eq(loc) {
-  return (function (param, param$1) {
-      return Mt_global.collect_eq(test_id, suites, loc, param, param$1);
-    });
+  return function (param, param$1) {
+    return Mt_global.collect_eq(test_id, suites, loc, param, param$1);
+  };
 }
 
 function approx(loc) {
-  return (function (param, param$1) {
-      return Mt_global.collect_approx(test_id, suites, loc, param, param$1);
-    });
+  return function (param, param$1) {
+    return Mt_global.collect_approx(test_id, suites, loc, param, param$1);
+  };
 }
 
 var epsilon_float = Caml_int64.float_of_bits(Caml_int64.mk(0, 1018167296));

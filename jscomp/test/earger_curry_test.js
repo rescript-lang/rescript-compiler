@@ -116,9 +116,9 @@ function f(x) {
   var partial_arg = 2;
   v.contents = v.contents + 1 | 0;
   var partial_arg$1 = 1;
-  return (function (param, param$1) {
-      return add5(x, partial_arg$1, partial_arg, param, param$1);
-    });
+  return function (param, param$1) {
+    return add5(x, partial_arg$1, partial_arg, param, param$1);
+  };
 }
 
 function g(x) {

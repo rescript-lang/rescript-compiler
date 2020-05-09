@@ -11,9 +11,9 @@ var v = {
 function f(h) {
   v.contents = v.contents + 1 | 0;
   var partial_arg = 3;
-  return (function (param) {
-      return Curry._2(h, partial_arg, param);
-    });
+  return function (param) {
+    return Curry._2(h, partial_arg, param);
+  };
 }
 
 f(function (prim, prim$1) {
@@ -33,9 +33,9 @@ var v$1 = {
 function f$1(h) {
   v$1.contents = v$1.contents + 1 | 0;
   var partial_arg = 3;
-  return (function (param) {
-      return Curry._2(h, partial_arg, param);
-    });
+  return function (param) {
+    return Curry._2(h, partial_arg, param);
+  };
 }
 
 f$1(function (prim, prim$1) {
@@ -73,9 +73,9 @@ var v$3 = {
 function f$3(h, g) {
   v$3.contents = v$3.contents + 1 | 0;
   var partial_arg = 9;
-  return (function (param) {
-      return Curry._2(h, partial_arg, param);
-    });
+  return function (param) {
+    return Curry._2(h, partial_arg, param);
+  };
 }
 
 f$3((function (prim, prim$1) {

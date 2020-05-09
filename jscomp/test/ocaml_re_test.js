@@ -965,25 +965,25 @@ function reset_table(a) {
 }
 
 function mark_used_indices(tbl) {
-  return (function (param) {
-      return List.iter((function (param) {
-                    switch (param.tag | 0) {
-                      case /* TSeq */0 :
-                          return mark_used_indices(tbl)(param[0]);
-                      case /* TExp */1 :
-                      case /* TMatch */2 :
-                          break;
-                      
-                    }
-                    return List.iter((function (param) {
-                                  var i = param[1];
-                                  if (i >= 0) {
-                                    return Caml_array.caml_array_set(tbl, i, true);
-                                  }
-                                  
-                                }), param[0].marks);
-                  }), param);
-    });
+  return function (param) {
+    return List.iter((function (param) {
+                  switch (param.tag | 0) {
+                    case /* TSeq */0 :
+                        return mark_used_indices(tbl)(param[0]);
+                    case /* TExp */1 :
+                    case /* TMatch */2 :
+                        break;
+                    
+                  }
+                  return List.iter((function (param) {
+                                var i = param[1];
+                                if (i >= 0) {
+                                  return Caml_array.caml_array_set(tbl, i, true);
+                                }
+                                
+                              }), param[0].marks);
+                }), param);
+  };
 }
 
 function find_free(tbl, _idx, len) {

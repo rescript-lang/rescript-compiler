@@ -118,19 +118,19 @@ function test_raises_exc_p(pred, f, x) {
 }
 
 function test_raises_some_exc(f) {
-  return (function (param) {
-      return test_raises_exc_p((function (param) {
-                    return true;
-                  }), f, param);
-    });
+  return function (param) {
+    return test_raises_exc_p((function (param) {
+                  return true;
+                }), f, param);
+  };
 }
 
 function test_raises_this_exc(exc) {
-  return (function (param, param$1) {
-      return test_raises_exc_p((function (x) {
-                    return Caml_obj.caml_equal(x, exc);
-                  }), param, param$1);
-    });
+  return function (param, param$1) {
+    return test_raises_exc_p((function (x) {
+                  return Caml_obj.caml_equal(x, exc);
+                }), param, param$1);
+  };
 }
 
 function failure_test(f, x, s) {

@@ -36,9 +36,9 @@ function foo(f) {
 }
 
 foo(function (param) {
-      return (function (param$1) {
-          return Gpr_1423_nav.busted(param, "a2", param$1);
-        });
+      return function (param$1) {
+        return Gpr_1423_nav.busted(param, "a2", param$1);
+      };
     });
 
 function foo2(f) {

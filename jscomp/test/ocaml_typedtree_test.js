@@ -3031,9 +3031,9 @@ function set(x, b, v) {
 
 function mem$1(x) {
   var partial_arg = single(x);
-  return (function (param) {
-      return subset(partial_arg, param);
-    });
+  return function (param) {
+    return subset(partial_arg, param);
+  };
 }
 
 function swap(f1, f2, v) {
@@ -4567,9 +4567,9 @@ function iter_abbrev(f, _rem) {
 
 function it_signature(it) {
   var partial_arg = Curry._1(it.it_signature_item, it);
-  return (function (param) {
-      return List.iter(partial_arg, param);
-    });
+  return function (param) {
+    return List.iter(partial_arg, param);
+  };
 }
 
 function it_signature_item(it, param) {
@@ -8461,23 +8461,23 @@ function default_mapper_cases($$this, l) {
 
 function default_mapper_class_declaration($$this) {
   var partial_arg = Curry._1($$this.class_expr, $$this);
-  return (function (param) {
-      return class_infos($$this, partial_arg, param);
-    });
+  return function (param) {
+    return class_infos($$this, partial_arg, param);
+  };
 }
 
 function default_mapper_class_description($$this) {
   var partial_arg = Curry._1($$this.class_type, $$this);
-  return (function (param) {
-      return class_infos($$this, partial_arg, param);
-    });
+  return function (param) {
+    return class_infos($$this, partial_arg, param);
+  };
 }
 
 function default_mapper_class_type_declaration($$this) {
   var partial_arg = Curry._1($$this.class_type, $$this);
-  return (function (param) {
-      return class_infos($$this, partial_arg, param);
-    });
+  return function (param) {
+    return class_infos($$this, partial_arg, param);
+  };
 }
 
 function default_mapper_constructor_declaration($$this, param) {
@@ -9646,37 +9646,37 @@ function find_name$1(s, tbl) {
 }
 
 function fold_name(f) {
-  return (function (param, param$1) {
-      var f$1 = function (k, param) {
-        return Curry._2(f, k, param[0]);
-      };
-      var f$2 = function (k) {
-        return Curry._2(f$1, k.ident, k.data);
-      };
-      var _stack = /* [] */0;
-      var _accu = param$1;
-      var _param = param;
-      while(true) {
-        var param$2 = _param;
-        var accu = _accu;
-        var stack = _stack;
-        if (param$2) {
-          _param = param$2[2];
-          _accu = Curry._2(f$2, param$2[1], accu);
-          _stack = /* :: */[
-            param$2[0],
-            stack
-          ];
-          continue ;
-        }
-        if (!stack) {
-          return accu;
-        }
-        _param = stack[0];
-        _stack = stack[1];
+  return function (param, param$1) {
+    var f$1 = function (k, param) {
+      return Curry._2(f, k, param[0]);
+    };
+    var f$2 = function (k) {
+      return Curry._2(f$1, k.ident, k.data);
+    };
+    var _stack = /* [] */0;
+    var _accu = param$1;
+    var _param = param;
+    while(true) {
+      var param$2 = _param;
+      var accu = _accu;
+      var stack = _stack;
+      if (param$2) {
+        _param = param$2[2];
+        _accu = Curry._2(f$2, param$2[1], accu);
+        _stack = /* :: */[
+          param$2[0],
+          stack
+        ];
         continue ;
-      };
-    });
+      }
+      if (!stack) {
+        return accu;
+      }
+      _param = stack[0];
+      _stack = stack[1];
+      continue ;
+    };
+  };
 }
 
 function subst_modtype_maker(param) {
@@ -11240,96 +11240,96 @@ function run_iter_cont(l) {
 }
 
 function iter_types(f) {
-  return (function (param, param$1) {
-      var proj1 = function (env) {
-        return env.types;
-      };
-      var proj2 = function (sc) {
-        return sc.comp_types;
-      };
-      iter((function (id, param) {
-              return Curry._2(f, /* Pident */Block.__(0, [id]), param[0]);
-            }), Curry._1(proj1, param));
-      var iter_components = function (path, path$prime, mcomps) {
-        var cont = function (param) {
-          var match = get_arg(mcomps);
-          var safe;
-          if (match !== undefined) {
-            try {
-              safe = scrape_alias_safe(match[0], match[3]);
+  return function (param, param$1) {
+    var proj1 = function (env) {
+      return env.types;
+    };
+    var proj2 = function (sc) {
+      return sc.comp_types;
+    };
+    iter((function (id, param) {
+            return Curry._2(f, /* Pident */Block.__(0, [id]), param[0]);
+          }), Curry._1(proj1, param));
+    var iter_components = function (path, path$prime, mcomps) {
+      var cont = function (param) {
+        var match = get_arg(mcomps);
+        var safe;
+        if (match !== undefined) {
+          try {
+            safe = scrape_alias_safe(match[0], match[3]);
+          }
+          catch (raw_exn){
+            var exn = Caml_js_exceptions.internalToOCamlException(raw_exn);
+            if (exn.RE_EXN_ID === "Not_found") {
+              safe = false;
+            } else {
+              throw exn;
             }
-            catch (raw_exn){
-              var exn = Caml_js_exceptions.internalToOCamlException(raw_exn);
-              if (exn.RE_EXN_ID === "Not_found") {
-                safe = false;
-              } else {
-                throw exn;
-              }
-            }
-          } else {
-            safe = true;
           }
-          if (!safe) {
-            return ;
-          }
-          var comps = force(components_of_module_maker$prime.contents, mcomps);
-          if (comps.tag) {
-            return ;
-          }
-          var comps$1 = comps[0];
-          iter$2((function (s, param) {
-                  var n = param[1];
-                  return Curry._2(f, /* Pdot */Block.__(1, [
-                                path,
+        } else {
+          safe = true;
+        }
+        if (!safe) {
+          return ;
+        }
+        var comps = force(components_of_module_maker$prime.contents, mcomps);
+        if (comps.tag) {
+          return ;
+        }
+        var comps$1 = comps[0];
+        iter$2((function (s, param) {
+                var n = param[1];
+                return Curry._2(f, /* Pdot */Block.__(1, [
+                              path,
+                              s,
+                              n
+                            ]), /* tuple */[
+                            /* Pdot */Block.__(1, [
+                                path$prime,
                                 s,
                                 n
-                              ]), /* tuple */[
-                              /* Pdot */Block.__(1, [
-                                  path$prime,
-                                  s,
-                                  n
-                                ]),
-                              param[0]
-                            ]);
-                }), Curry._1(proj2, comps$1));
-          return iter$2((function (s, param) {
-                        var n = param[1];
-                        return iter_components(/* Pdot */Block.__(1, [
-                                      path,
-                                      s,
-                                      n
-                                    ]), /* Pdot */Block.__(1, [
-                                      path$prime,
-                                      s,
-                                      n
-                                    ]), param[0]);
-                      }), comps$1.comp_components);
-        };
-        iter_env_cont.contents = /* :: */[
-          /* tuple */[
-            path,
-            cont
-          ],
-          iter_env_cont.contents
-        ];
-        
+                              ]),
+                            param[0]
+                          ]);
+              }), Curry._1(proj2, comps$1));
+        return iter$2((function (s, param) {
+                      var n = param[1];
+                      return iter_components(/* Pdot */Block.__(1, [
+                                    path,
+                                    s,
+                                    n
+                                  ]), /* Pdot */Block.__(1, [
+                                    path$prime,
+                                    s,
+                                    n
+                                  ]), param[0]);
+                    }), comps$1.comp_components);
       };
-      Hashtbl.iter((function (s, pso) {
-              if (pso === undefined) {
-                return ;
-              }
-              var id = /* Pident */Block.__(0, [{
-                    stamp: 0,
-                    name: s,
-                    flags: 1
-                  }]);
-              return iter_components(id, id, pso.ps_comps);
-            }), persistent_structures);
-      return iter((function (id, param) {
-                    var match = param[0];
-                    return iter_components(/* Pident */Block.__(0, [id]), match[0], match[1]);
-                  }), param.components);
-    });
+      iter_env_cont.contents = /* :: */[
+        /* tuple */[
+          path,
+          cont
+        ],
+        iter_env_cont.contents
+      ];
+      
+    };
+    Hashtbl.iter((function (s, pso) {
+            if (pso === undefined) {
+              return ;
+            }
+            var id = /* Pident */Block.__(0, [{
+                  stamp: 0,
+                  name: s,
+                  flags: 1
+                }]);
+            return iter_components(id, id, pso.ps_comps);
+          }), persistent_structures);
+    return iter((function (id, param) {
+                  var match = param[0];
+                  return iter_components(/* Pident */Block.__(0, [id]), match[0], match[1]);
+                }), param.components);
+  };
 }
 
 function same_types(env1, env2) {
@@ -11479,9 +11479,9 @@ function gadt_instance_level(env, t) {
     if (exists(is_Tlink, r.contents)) {
       r.contents = fold$2((function (ty) {
               var partial_arg = repr(ty);
-              return (function (param) {
-                  return add$3(partial_arg, param);
-                });
+              return function (param) {
+                return add$3(partial_arg, param);
+              };
             }), r.contents, /* Empty */0);
     }
     if (mem$3(t, r.contents)) {
@@ -12802,11 +12802,11 @@ function enter(store_fun, name, data, env) {
 }
 
 function enter_value(check) {
-  return (function (param, param$1, param$2) {
-      return enter((function (param, param$1, param$2, param$3, param$4, param$5) {
-                    return store_value(check, param, param$1, param$2, param$3, param$4, param$5);
-                  }), param, param$1, param$2);
-    });
+  return function (param, param$1, param$2) {
+    return enter((function (param, param$1, param$2, param$3, param$4, param$5) {
+                  return store_value(check, param, param$1, param$2, param$3, param$4, param$5);
+                }), param, param$1, param$2);
+  };
 }
 
 function enter_type(param, param$1, param$2) {
@@ -13131,73 +13131,73 @@ function fold_modules(f, lid, env, acc) {
 }
 
 function fold_values(f) {
-  return (function (param, param$1, param$2) {
-      return find_all$1((function (env) {
-                    return env.values;
-                  }), (function (sc) {
-                    return sc.comp_values;
-                  }), f, param, param$1, param$2);
-    });
+  return function (param, param$1, param$2) {
+    return find_all$1((function (env) {
+                  return env.values;
+                }), (function (sc) {
+                  return sc.comp_values;
+                }), f, param, param$1, param$2);
+  };
 }
 
 function fold_constructors(f) {
-  return (function (param, param$1, param$2) {
-      return find_all_simple_list((function (env) {
-                    return env.constrs;
-                  }), (function (sc) {
-                    return sc.comp_constrs;
-                  }), f, param, param$1, param$2);
-    });
+  return function (param, param$1, param$2) {
+    return find_all_simple_list((function (env) {
+                  return env.constrs;
+                }), (function (sc) {
+                  return sc.comp_constrs;
+                }), f, param, param$1, param$2);
+  };
 }
 
 function fold_labels(f) {
-  return (function (param, param$1, param$2) {
-      return find_all_simple_list((function (env) {
-                    return env.labels;
-                  }), (function (sc) {
-                    return sc.comp_labels;
-                  }), f, param, param$1, param$2);
-    });
+  return function (param, param$1, param$2) {
+    return find_all_simple_list((function (env) {
+                  return env.labels;
+                }), (function (sc) {
+                  return sc.comp_labels;
+                }), f, param, param$1, param$2);
+  };
 }
 
 function fold_types(f) {
-  return (function (param, param$1, param$2) {
-      return find_all$1((function (env) {
-                    return env.types;
-                  }), (function (sc) {
-                    return sc.comp_types;
-                  }), f, param, param$1, param$2);
-    });
+  return function (param, param$1, param$2) {
+    return find_all$1((function (env) {
+                  return env.types;
+                }), (function (sc) {
+                  return sc.comp_types;
+                }), f, param, param$1, param$2);
+  };
 }
 
 function fold_modtypes(f) {
-  return (function (param, param$1, param$2) {
-      return find_all$1((function (env) {
-                    return env.modtypes;
-                  }), (function (sc) {
-                    return sc.comp_modtypes;
-                  }), f, param, param$1, param$2);
-    });
+  return function (param, param$1, param$2) {
+    return find_all$1((function (env) {
+                  return env.modtypes;
+                }), (function (sc) {
+                  return sc.comp_modtypes;
+                }), f, param, param$1, param$2);
+  };
 }
 
 function fold_classs(f) {
-  return (function (param, param$1, param$2) {
-      return find_all$1((function (env) {
-                    return env.classes;
-                  }), (function (sc) {
-                    return sc.comp_classes;
-                  }), f, param, param$1, param$2);
-    });
+  return function (param, param$1, param$2) {
+    return find_all$1((function (env) {
+                  return env.classes;
+                }), (function (sc) {
+                  return sc.comp_classes;
+                }), f, param, param$1, param$2);
+  };
 }
 
 function fold_cltypes(f) {
-  return (function (param, param$1, param$2) {
-      return find_all$1((function (env) {
-                    return env.cltypes;
-                  }), (function (sc) {
-                    return sc.comp_cltypes;
-                  }), f, param, param$1, param$2);
-    });
+  return function (param, param$1, param$2) {
+    return find_all$1((function (env) {
+                  return env.cltypes;
+                }), (function (sc) {
+                  return sc.comp_cltypes;
+                }), f, param, param$1, param$2);
+  };
 }
 
 var match = build_initial_env((function (param, param$1, param$2) {
@@ -24925,16 +24925,16 @@ function flatten_fields(ty) {
 }
 
 function build_fields(level) {
-  return (function (param, param$1) {
-      return List.fold_right((function (param, ty2) {
-                    return newty2(level, /* Tfield */Block.__(5, [
-                                  param[0],
-                                  param[1],
-                                  param[2],
-                                  ty2
-                                ]));
-                  }), param, param$1);
-    });
+  return function (param, param$1) {
+    return List.fold_right((function (param, ty2) {
+                  return newty2(level, /* Tfield */Block.__(5, [
+                                param[0],
+                                param[1],
+                                param[2],
+                                ty2
+                              ]));
+                }), param, param$1);
+  };
 }
 
 function associate_fields(fields1, fields2) {
@@ -26027,9 +26027,9 @@ function generalize_contravariant(env) {
   if (principal.contents) {
     return generalize_structure$1;
   } else {
-    return (function (param, param$1) {
-        return update_level(env, param, param$1);
-      });
+    return function (param, param$1) {
+      return update_level(env, param, param$1);
+    };
   }
 }
 
@@ -26274,18 +26274,18 @@ function compute_univars(ty) {
           }
           
         }), inverted);
-  return (function (ty) {
-      try {
-        return Curry._2(TypeHash.find, node_univars, ty).contents;
+  return function (ty) {
+    try {
+      return Curry._2(TypeHash.find, node_univars, ty).contents;
+    }
+    catch (raw_exn){
+      var exn = Caml_js_exceptions.internalToOCamlException(raw_exn);
+      if (exn.RE_EXN_ID === "Not_found") {
+        return /* Empty */0;
       }
-      catch (raw_exn){
-        var exn = Caml_js_exceptions.internalToOCamlException(raw_exn);
-        if (exn.RE_EXN_ID === "Not_found") {
-          return /* Empty */0;
-        }
-        throw exn;
-      }
-    });
+      throw exn;
+    }
+  };
 }
 
 function find_repr(p1, _param) {
@@ -27235,9 +27235,9 @@ function expand_abbrev_gen(kind, find_type_expansion, env, ty) {
 }
 
 function expand_abbrev(ty) {
-  return (function (param) {
-      return expand_abbrev_gen(/* Public */1, find_type_expansion, ty, param);
-    });
+  return function (param) {
+    return expand_abbrev_gen(/* Public */1, find_type_expansion, ty, param);
+  };
 }
 
 function expand_head_once(env, ty) {
@@ -35230,27 +35230,27 @@ function subtype(env, ty1, ty2) {
         /* [] */0
       ], ty1, ty2, /* [] */0);
   Curry._1(TypePairs.clear, subtypes);
-  return (function (param) {
-      return List.iter((function (param) {
-                    try {
-                      return unify_pairs({
-                                  contents: env
-                                }, param[1], param[2], param[3]);
+  return function (param) {
+    return List.iter((function (param) {
+                  try {
+                    return unify_pairs({
+                                contents: env
+                              }, param[1], param[2], param[3]);
+                  }
+                  catch (raw_trace){
+                    var trace = Caml_js_exceptions.internalToOCamlException(raw_trace);
+                    if (trace.RE_EXN_ID === Unify) {
+                      throw {
+                            RE_EXN_ID: Subtype,
+                            _1: expand_trace(env, List.rev(param[0])),
+                            _2: List.tl(List.tl(trace._1)),
+                            Error: new Error()
+                          };
                     }
-                    catch (raw_trace){
-                      var trace = Caml_js_exceptions.internalToOCamlException(raw_trace);
-                      if (trace.RE_EXN_ID === Unify) {
-                        throw {
-                              RE_EXN_ID: Subtype,
-                              _1: expand_trace(env, List.rev(param[0])),
-                              _2: List.tl(List.tl(trace._1)),
-                              Error: new Error()
-                            };
-                      }
-                      throw trace;
-                    }
-                  }), List.rev(cstrs));
-    });
+                    throw trace;
+                  }
+                }), List.rev(cstrs));
+  };
 }
 
 function unalias_object(ty) {
@@ -39342,9 +39342,9 @@ function raw_type(ppf, ty) {
 }
 
 function raw_type_list(tl) {
-  return (function (param) {
-      return raw_list(raw_type, tl, param);
-    });
+  return function (param) {
+    return raw_list(raw_type, tl, param);
+  };
 }
 
 function raw_type_desc(ppf, name) {
@@ -42223,9 +42223,9 @@ function hide_rec_items(param) {
   ];
   return set_printing_env(List.fold_right((function (id) {
                     var partial_arg = rename(id);
-                    return (function (param) {
-                        return add_type$1(false, partial_arg, dummy, param);
-                      });
+                    return function (param) {
+                      return add_type$1(false, partial_arg, dummy, param);
+                    };
                   }), ids, printing_env.contents));
 }
 
@@ -44561,200 +44561,200 @@ function type_manifest(env, ty1, params1, ty2, params2, priv2) {
 }
 
 function report_type_mismatch(first, second, decl, ppf) {
-  return (function (param) {
-      return List.iter((function (err) {
-                    if (err === /* Manifest */4) {
-                      return ;
-                    } else {
-                      return Curry._2(Format.fprintf(ppf, /* Format */[
-                                      /* Formatting_lit */Block.__(17, [
-                                          /* Break */Block.__(0, [
-                                              "@ ",
-                                              1,
-                                              0
-                                            ]),
-                                          /* Alpha */Block.__(15, [/* Char_literal */Block.__(12, [
-                                                  /* "." */46,
-                                                  /* End_of_format */0
-                                                ])])
-                                        ]),
-                                      "@ %a."
-                                    ]), (function (param, param$1) {
-                                    if (typeof param$1 === "number") {
-                                      switch (param$1) {
-                                        case /* Arity */0 :
-                                            return Format.fprintf(param, /* Format */[
-                                                        /* String_literal */Block.__(11, [
-                                                            "They have different arities",
-                                                            /* End_of_format */0
-                                                          ]),
-                                                        "They have different arities"
-                                                      ]);
-                                        case /* Privacy */1 :
-                                            return Format.fprintf(param, /* Format */[
-                                                        /* String_literal */Block.__(11, [
-                                                            "A private type would be revealed",
-                                                            /* End_of_format */0
-                                                          ]),
-                                                        "A private type would be revealed"
-                                                      ]);
-                                        case /* Kind */2 :
-                                            return Format.fprintf(param, /* Format */[
-                                                        /* String_literal */Block.__(11, [
-                                                            "Their kinds differ",
-                                                            /* End_of_format */0
-                                                          ]),
-                                                        "Their kinds differ"
-                                                      ]);
-                                        case /* Constraint */3 :
-                                            return Format.fprintf(param, /* Format */[
-                                                        /* String_literal */Block.__(11, [
-                                                            "Their constraints differ",
-                                                            /* End_of_format */0
-                                                          ]),
-                                                        "Their constraints differ"
-                                                      ]);
-                                        case /* Manifest */4 :
-                                            return ;
-                                        case /* Variance */5 :
-                                            return Format.fprintf(param, /* Format */[
-                                                        /* String_literal */Block.__(11, [
-                                                            "Their variances do not agree",
-                                                            /* End_of_format */0
-                                                          ]),
-                                                        "Their variances do not agree"
-                                                      ]);
-                                        
-                                      }
-                                    } else {
-                                      switch (param$1.tag | 0) {
-                                        case /* Field_type */0 :
-                                            return Curry._1(Format.fprintf(param, /* Format */[
-                                                            /* String_literal */Block.__(11, [
-                                                                "The types for field ",
-                                                                /* String */Block.__(2, [
-                                                                    /* No_padding */0,
-                                                                    /* String_literal */Block.__(11, [
-                                                                        " are not equal",
-                                                                        /* End_of_format */0
-                                                                      ])
-                                                                  ])
-                                                              ]),
-                                                            "The types for field %s are not equal"
-                                                          ]), param$1[0].name);
-                                        case /* Field_mutable */1 :
-                                            return Curry._1(Format.fprintf(param, /* Format */[
-                                                            /* String_literal */Block.__(11, [
-                                                                "The mutability of field ",
-                                                                /* String */Block.__(2, [
-                                                                    /* No_padding */0,
-                                                                    /* String_literal */Block.__(11, [
-                                                                        " is different",
-                                                                        /* End_of_format */0
-                                                                      ])
-                                                                  ])
-                                                              ]),
-                                                            "The mutability of field %s is different"
-                                                          ]), param$1[0].name);
-                                        case /* Field_arity */2 :
-                                            return Curry._1(Format.fprintf(param, /* Format */[
-                                                            /* String_literal */Block.__(11, [
-                                                                "The arities for field ",
-                                                                /* String */Block.__(2, [
-                                                                    /* No_padding */0,
-                                                                    /* String_literal */Block.__(11, [
-                                                                        " differ",
-                                                                        /* End_of_format */0
-                                                                      ])
-                                                                  ])
-                                                              ]),
-                                                            "The arities for field %s differ"
-                                                          ]), param$1[0].name);
-                                        case /* Field_names */3 :
-                                            return Curry._3(Format.fprintf(param, /* Format */[
-                                                            /* String_literal */Block.__(11, [
-                                                                "Fields number ",
-                                                                /* Int */Block.__(4, [
-                                                                    /* Int_i */3,
-                                                                    /* No_padding */0,
-                                                                    /* No_precision */0,
-                                                                    /* String_literal */Block.__(11, [
-                                                                        " have different names, ",
-                                                                        /* String */Block.__(2, [
-                                                                            /* No_padding */0,
-                                                                            /* String_literal */Block.__(11, [
-                                                                                " and ",
-                                                                                /* String */Block.__(2, [
-                                                                                    /* No_padding */0,
-                                                                                    /* End_of_format */0
-                                                                                  ])
-                                                                              ])
-                                                                          ])
-                                                                      ])
-                                                                  ])
-                                                              ]),
-                                                            "Fields number %i have different names, %s and %s"
-                                                          ]), param$1[0], param$1[1].name, param$1[2].name);
-                                        case /* Field_missing */4 :
-                                            return Curry._3(Format.fprintf(param, /* Format */[
-                                                            /* String_literal */Block.__(11, [
-                                                                "The field ",
-                                                                /* String */Block.__(2, [
-                                                                    /* No_padding */0,
-                                                                    /* String_literal */Block.__(11, [
-                                                                        " is only present in ",
-                                                                        /* String */Block.__(2, [
-                                                                            /* No_padding */0,
-                                                                            /* Char_literal */Block.__(12, [
-                                                                                /* " " */32,
-                                                                                /* String */Block.__(2, [
-                                                                                    /* No_padding */0,
-                                                                                    /* End_of_format */0
-                                                                                  ])
-                                                                              ])
-                                                                          ])
-                                                                      ])
-                                                                  ])
-                                                              ]),
-                                                            "The field %s is only present in %s %s"
-                                                          ]), param$1[1].name, param$1[0] ? second : first, decl);
-                                        case /* Record_representation */5 :
-                                            return Curry._3(Format.fprintf(param, /* Format */[
-                                                            /* String_literal */Block.__(11, [
-                                                                "Their internal representations differ:",
-                                                                /* Formatting_lit */Block.__(17, [
-                                                                    /* Break */Block.__(0, [
-                                                                        "@ ",
-                                                                        1,
-                                                                        0
-                                                                      ]),
-                                                                    /* String */Block.__(2, [
-                                                                        /* No_padding */0,
-                                                                        /* Char_literal */Block.__(12, [
-                                                                            /* " " */32,
-                                                                            /* String */Block.__(2, [
-                                                                                /* No_padding */0,
-                                                                                /* Char_literal */Block.__(12, [
-                                                                                    /* " " */32,
-                                                                                    /* String */Block.__(2, [
-                                                                                        /* No_padding */0,
-                                                                                        /* End_of_format */0
-                                                                                      ])
-                                                                                  ])
-                                                                              ])
-                                                                          ])
-                                                                      ])
-                                                                  ])
-                                                              ]),
-                                                            "Their internal representations differ:@ %s %s %s"
-                                                          ]), param$1[0] ? second : first, decl, "uses unboxed float representation");
-                                        
-                                      }
+  return function (param) {
+    return List.iter((function (err) {
+                  if (err === /* Manifest */4) {
+                    return ;
+                  } else {
+                    return Curry._2(Format.fprintf(ppf, /* Format */[
+                                    /* Formatting_lit */Block.__(17, [
+                                        /* Break */Block.__(0, [
+                                            "@ ",
+                                            1,
+                                            0
+                                          ]),
+                                        /* Alpha */Block.__(15, [/* Char_literal */Block.__(12, [
+                                                /* "." */46,
+                                                /* End_of_format */0
+                                              ])])
+                                      ]),
+                                    "@ %a."
+                                  ]), (function (param, param$1) {
+                                  if (typeof param$1 === "number") {
+                                    switch (param$1) {
+                                      case /* Arity */0 :
+                                          return Format.fprintf(param, /* Format */[
+                                                      /* String_literal */Block.__(11, [
+                                                          "They have different arities",
+                                                          /* End_of_format */0
+                                                        ]),
+                                                      "They have different arities"
+                                                    ]);
+                                      case /* Privacy */1 :
+                                          return Format.fprintf(param, /* Format */[
+                                                      /* String_literal */Block.__(11, [
+                                                          "A private type would be revealed",
+                                                          /* End_of_format */0
+                                                        ]),
+                                                      "A private type would be revealed"
+                                                    ]);
+                                      case /* Kind */2 :
+                                          return Format.fprintf(param, /* Format */[
+                                                      /* String_literal */Block.__(11, [
+                                                          "Their kinds differ",
+                                                          /* End_of_format */0
+                                                        ]),
+                                                      "Their kinds differ"
+                                                    ]);
+                                      case /* Constraint */3 :
+                                          return Format.fprintf(param, /* Format */[
+                                                      /* String_literal */Block.__(11, [
+                                                          "Their constraints differ",
+                                                          /* End_of_format */0
+                                                        ]),
+                                                      "Their constraints differ"
+                                                    ]);
+                                      case /* Manifest */4 :
+                                          return ;
+                                      case /* Variance */5 :
+                                          return Format.fprintf(param, /* Format */[
+                                                      /* String_literal */Block.__(11, [
+                                                          "Their variances do not agree",
+                                                          /* End_of_format */0
+                                                        ]),
+                                                      "Their variances do not agree"
+                                                    ]);
+                                      
                                     }
-                                  }), err);
-                    }
-                  }), param);
-    });
+                                  } else {
+                                    switch (param$1.tag | 0) {
+                                      case /* Field_type */0 :
+                                          return Curry._1(Format.fprintf(param, /* Format */[
+                                                          /* String_literal */Block.__(11, [
+                                                              "The types for field ",
+                                                              /* String */Block.__(2, [
+                                                                  /* No_padding */0,
+                                                                  /* String_literal */Block.__(11, [
+                                                                      " are not equal",
+                                                                      /* End_of_format */0
+                                                                    ])
+                                                                ])
+                                                            ]),
+                                                          "The types for field %s are not equal"
+                                                        ]), param$1[0].name);
+                                      case /* Field_mutable */1 :
+                                          return Curry._1(Format.fprintf(param, /* Format */[
+                                                          /* String_literal */Block.__(11, [
+                                                              "The mutability of field ",
+                                                              /* String */Block.__(2, [
+                                                                  /* No_padding */0,
+                                                                  /* String_literal */Block.__(11, [
+                                                                      " is different",
+                                                                      /* End_of_format */0
+                                                                    ])
+                                                                ])
+                                                            ]),
+                                                          "The mutability of field %s is different"
+                                                        ]), param$1[0].name);
+                                      case /* Field_arity */2 :
+                                          return Curry._1(Format.fprintf(param, /* Format */[
+                                                          /* String_literal */Block.__(11, [
+                                                              "The arities for field ",
+                                                              /* String */Block.__(2, [
+                                                                  /* No_padding */0,
+                                                                  /* String_literal */Block.__(11, [
+                                                                      " differ",
+                                                                      /* End_of_format */0
+                                                                    ])
+                                                                ])
+                                                            ]),
+                                                          "The arities for field %s differ"
+                                                        ]), param$1[0].name);
+                                      case /* Field_names */3 :
+                                          return Curry._3(Format.fprintf(param, /* Format */[
+                                                          /* String_literal */Block.__(11, [
+                                                              "Fields number ",
+                                                              /* Int */Block.__(4, [
+                                                                  /* Int_i */3,
+                                                                  /* No_padding */0,
+                                                                  /* No_precision */0,
+                                                                  /* String_literal */Block.__(11, [
+                                                                      " have different names, ",
+                                                                      /* String */Block.__(2, [
+                                                                          /* No_padding */0,
+                                                                          /* String_literal */Block.__(11, [
+                                                                              " and ",
+                                                                              /* String */Block.__(2, [
+                                                                                  /* No_padding */0,
+                                                                                  /* End_of_format */0
+                                                                                ])
+                                                                            ])
+                                                                        ])
+                                                                    ])
+                                                                ])
+                                                            ]),
+                                                          "Fields number %i have different names, %s and %s"
+                                                        ]), param$1[0], param$1[1].name, param$1[2].name);
+                                      case /* Field_missing */4 :
+                                          return Curry._3(Format.fprintf(param, /* Format */[
+                                                          /* String_literal */Block.__(11, [
+                                                              "The field ",
+                                                              /* String */Block.__(2, [
+                                                                  /* No_padding */0,
+                                                                  /* String_literal */Block.__(11, [
+                                                                      " is only present in ",
+                                                                      /* String */Block.__(2, [
+                                                                          /* No_padding */0,
+                                                                          /* Char_literal */Block.__(12, [
+                                                                              /* " " */32,
+                                                                              /* String */Block.__(2, [
+                                                                                  /* No_padding */0,
+                                                                                  /* End_of_format */0
+                                                                                ])
+                                                                            ])
+                                                                        ])
+                                                                    ])
+                                                                ])
+                                                            ]),
+                                                          "The field %s is only present in %s %s"
+                                                        ]), param$1[1].name, param$1[0] ? second : first, decl);
+                                      case /* Record_representation */5 :
+                                          return Curry._3(Format.fprintf(param, /* Format */[
+                                                          /* String_literal */Block.__(11, [
+                                                              "Their internal representations differ:",
+                                                              /* Formatting_lit */Block.__(17, [
+                                                                  /* Break */Block.__(0, [
+                                                                      "@ ",
+                                                                      1,
+                                                                      0
+                                                                    ]),
+                                                                  /* String */Block.__(2, [
+                                                                      /* No_padding */0,
+                                                                      /* Char_literal */Block.__(12, [
+                                                                          /* " " */32,
+                                                                          /* String */Block.__(2, [
+                                                                              /* No_padding */0,
+                                                                              /* Char_literal */Block.__(12, [
+                                                                                  /* " " */32,
+                                                                                  /* String */Block.__(2, [
+                                                                                      /* No_padding */0,
+                                                                                      /* End_of_format */0
+                                                                                    ])
+                                                                                ])
+                                                                            ])
+                                                                        ])
+                                                                    ])
+                                                                ])
+                                                            ]),
+                                                          "Their internal representations differ:@ %s %s %s"
+                                                        ]), param$1[0] ? second : first, decl, "uses unboxed float representation");
+                                      
+                                    }
+                                  }
+                                }), err);
+                  }
+                }), param);
+  };
 }
 
 function compare_variants(env, decl1, decl2, _n, _cstrs1, _cstrs2) {
@@ -45640,43 +45640,43 @@ function contains_type(env, _path) {
 }
 
 function contains_type_sig(env) {
-  return (function (param) {
-      return List.iter((function (param) {
-                    switch (param.tag | 0) {
-                      case /* Sig_type */1 :
-                          var match = param[1];
-                          var match$1 = match.type_kind;
-                          if (match.type_manifest !== undefined) {
-                            if (typeof match$1 !== "number") {
-                              return ;
-                            }
-                            if (match$1 !== 0) {
-                              return ;
-                            }
-                            if (match.type_private) {
-                              return ;
-                            }
-                            throw {
-                                  RE_EXN_ID: Pervasives.Exit,
-                                  Error: new Error()
-                                };
+  return function (param) {
+    return List.iter((function (param) {
+                  switch (param.tag | 0) {
+                    case /* Sig_type */1 :
+                        var match = param[1];
+                        var match$1 = match.type_kind;
+                        if (match.type_manifest !== undefined) {
+                          if (typeof match$1 !== "number") {
+                            return ;
+                          }
+                          if (match$1 !== 0) {
+                            return ;
+                          }
+                          if (match.type_private) {
+                            return ;
                           }
                           throw {
                                 RE_EXN_ID: Pervasives.Exit,
                                 Error: new Error()
                               };
-                      case /* Sig_module */3 :
-                          return contains_type(env, param[1].md_type);
-                      case /* Sig_modtype */4 :
-                          throw {
-                                RE_EXN_ID: Pervasives.Exit,
-                                Error: new Error()
-                              };
-                      default:
-                        return ;
-                    }
-                  }), param);
-    });
+                        }
+                        throw {
+                              RE_EXN_ID: Pervasives.Exit,
+                              Error: new Error()
+                            };
+                    case /* Sig_module */3 :
+                        return contains_type(env, param[1].md_type);
+                    case /* Sig_modtype */4 :
+                        throw {
+                              RE_EXN_ID: Pervasives.Exit,
+                              Error: new Error()
+                            };
+                    default:
+                      return ;
+                  }
+                }), param);
+  };
 }
 
 function contains_type$1(env, mty) {
@@ -46447,9 +46447,9 @@ function collect_arg_paths(mty) {
   it_module_type(unmark_iterators, mty);
   return fold$6((function (p) {
                 var partial_arg = collect_ids(subst.contents, bindings.contents, p);
-                return (function (param) {
-                    return union$4(partial_arg, param);
-                  });
+                return function (param) {
+                  return union$4(partial_arg, param);
+                };
               }), paths.contents, /* Empty */0);
 }
 
@@ -48450,44 +48450,44 @@ function report_error$4(ppf, errs) {
     contents: true
   };
   var print_errs = function (ppf) {
-    return (function (param) {
-        return List.iter((function (param) {
-                      if (is_big(param[2])) {
-                        if (pe.contents) {
-                          Format.fprintf(ppf, /* Format */[
-                                /* String_literal */Block.__(11, [
-                                    "...",
-                                    /* Formatting_lit */Block.__(17, [
-                                        /* Break */Block.__(0, [
-                                            "@ ",
-                                            1,
-                                            0
-                                          ]),
-                                        /* End_of_format */0
-                                      ])
-                                  ]),
-                                "...@ "
-                              ]);
-                          pe.contents = false;
-                          return ;
-                        } else {
-                          return ;
-                        }
+    return function (param) {
+      return List.iter((function (param) {
+                    if (is_big(param[2])) {
+                      if (pe.contents) {
+                        Format.fprintf(ppf, /* Format */[
+                              /* String_literal */Block.__(11, [
+                                  "...",
+                                  /* Formatting_lit */Block.__(17, [
+                                      /* Break */Block.__(0, [
+                                          "@ ",
+                                          1,
+                                          0
+                                        ]),
+                                      /* End_of_format */0
+                                    ])
+                                ]),
+                              "...@ "
+                            ]);
+                        pe.contents = false;
+                        return ;
                       } else {
-                        return Curry._2(Format.fprintf(ppf, /* Format */[
-                                        /* Alpha */Block.__(15, [/* Formatting_lit */Block.__(17, [
-                                                /* Break */Block.__(0, [
-                                                    "@ ",
-                                                    1,
-                                                    0
-                                                  ]),
-                                                /* End_of_format */0
-                                              ])]),
-                                        "%a@ "
-                                      ]), include_err$2, param);
+                        return ;
                       }
-                    }), param);
-      });
+                    } else {
+                      return Curry._2(Format.fprintf(ppf, /* Format */[
+                                      /* Alpha */Block.__(15, [/* Formatting_lit */Block.__(17, [
+                                              /* Break */Block.__(0, [
+                                                  "@ ",
+                                                  1,
+                                                  0
+                                                ]),
+                                              /* End_of_format */0
+                                            ])]),
+                                      "%a@ "
+                                    ]), include_err$2, param);
+                    }
+                  }), param);
+    };
   };
   return Curry._4(Format.fprintf(ppf, /* Format */[
                   /* Formatting_gen */Block.__(18, [
@@ -55014,26 +55014,26 @@ function globalize_used_variables(env, fixed) {
           }
         }), used_variables.contents);
   used_variables.contents = /* Empty */0;
-  return (function (param) {
-      return List.iter((function (param) {
-                    try {
-                      return unify$2(env, param[1], param[2]);
+  return function (param) {
+    return List.iter((function (param) {
+                  try {
+                    return unify$2(env, param[1], param[2]);
+                  }
+                  catch (raw_trace){
+                    var trace = Caml_js_exceptions.internalToOCamlException(raw_trace);
+                    if (trace.RE_EXN_ID === Unify) {
+                      throw {
+                            RE_EXN_ID: $$Error$6,
+                            _1: param[0],
+                            _2: env,
+                            _3: /* Type_mismatch */Block.__(6, [trace._1]),
+                            Error: new Error()
+                          };
                     }
-                    catch (raw_trace){
-                      var trace = Caml_js_exceptions.internalToOCamlException(raw_trace);
-                      if (trace.RE_EXN_ID === Unify) {
-                        throw {
-                              RE_EXN_ID: $$Error$6,
-                              _1: param[0],
-                              _2: env,
-                              _3: /* Type_mismatch */Block.__(6, [trace._1]),
-                              Error: new Error()
-                            };
-                      }
-                      throw trace;
-                    }
-                  }), r.contents);
-    });
+                    throw trace;
+                  }
+                }), r.contents);
+  };
 }
 
 function transl_simple_type(env, fixed, styp) {
@@ -55209,23 +55209,23 @@ function spellcheck(ppf, fold, env, lid) {
 }
 
 function spellcheck_simple(ppf, fold, extr) {
-  return (function (param, param$1) {
-      return spellcheck(ppf, (function (f) {
-                    return Curry._1(fold, (function (decl, x) {
-                                  return Curry._2(f, Curry._1(extr, decl), x);
-                                }));
-                  }), param, param$1);
-    });
+  return function (param, param$1) {
+    return spellcheck(ppf, (function (f) {
+                  return Curry._1(fold, (function (decl, x) {
+                                return Curry._2(f, Curry._1(extr, decl), x);
+                              }));
+                }), param, param$1);
+  };
 }
 
 function spellcheck$1(ppf, fold) {
-  return (function (param, param$1) {
-      return spellcheck(ppf, (function (f) {
-                    return Curry._1(fold, (function (s, param, param$1, x) {
-                                  return Curry._2(f, s, x);
-                                }));
-                  }), param, param$1);
-    });
+  return function (param, param$1) {
+    return spellcheck(ppf, (function (f) {
+                  return Curry._1(fold, (function (s, param, param$1, x) {
+                                return Curry._2(f, s, x);
+                              }));
+                }), param, param$1);
+  };
 }
 
 register_error_of_exn(function (err) {
@@ -56748,9 +56748,9 @@ function build_as_type(env, _p) {
                     pat_env: p.pat_env,
                     pat_attributes: p.pat_attributes
                   };
-                  return (function (param) {
-                      return unify_pat(env, partial_arg, param);
-                    });
+                  return function (param) {
+                    return unify_pat(env, partial_arg, param);
+                  };
                 }), List.combine(pl$1, tyl$1), match[0]);
           return match[1];
       case /* Tpat_variant */5 :
@@ -57982,9 +57982,9 @@ function type_pat(constrs, labels, no_existentials, mode, env, sp, expected_ty) 
   var type_pat$1 = function (modeOpt, envOpt) {
     var mode$1 = modeOpt !== undefined ? modeOpt : mode;
     var env$1 = envOpt !== undefined ? envOpt : env;
-    return (function (param, param$1) {
-        return type_pat(constrs, labels, no_existentials, mode$1, env$1, param, param$1);
-      });
+    return function (param, param$1) {
+      return type_pat(constrs, labels, no_existentials, mode$1, env$1, param, param$1);
+    };
   };
   var loc = sp.ppat_loc;
   var name = sp.ppat_desc;
@@ -58726,19 +58726,19 @@ function partial_pred(lev, env, expected_ty, constrs, labels, p) {
 
 function check_partial$1(levOpt, env, expected_ty) {
   var lev = levOpt !== undefined ? levOpt : current_level.contents;
-  return (function (param, param$1) {
-      var pred = function (param, param$1, param$2) {
-        return partial_pred(lev, env, expected_ty, param, param$1, param$2);
-      };
-      var first_check = check_partial(param, param$1);
-      if (first_check) {
-        return check_partial_param((function (param, param$1, param$2) {
-                      return do_check_partial(pred, exhaust_gadt$1, param, param$1, param$2);
-                    }), do_check_fragile_gadt, param, param$1);
-      } else {
-        return /* Partial */0;
-      }
-    });
+  return function (param, param$1) {
+    var pred = function (param, param$1, param$2) {
+      return partial_pred(lev, env, expected_ty, param, param$1, param$2);
+    };
+    var first_check = check_partial(param, param$1);
+    if (first_check) {
+      return check_partial_param((function (param, param$1, param$2) {
+                    return do_check_partial(pred, exhaust_gadt$1, param, param$1, param$2);
+                  }), do_check_fragile_gadt, param, param$1);
+    } else {
+      return /* Partial */0;
+    }
+  };
 }
 
 function add_pattern_variables(check, check_as, env) {
@@ -59669,64 +59669,64 @@ function contains_gadt(env, p) {
 }
 
 function check_absent_variant(env) {
-  return (function (param) {
-      return iter_pattern((function (pat) {
-                    var match = pat.pat_desc;
-                    if (typeof match === "number") {
-                      return ;
-                    }
-                    if (match.tag !== /* Tpat_variant */5) {
-                      return ;
-                    }
-                    var arg = match[1];
-                    var s = match[0];
-                    var row = row_repr_aux(/* [] */0, match[2].contents);
-                    if (List.exists((function (param) {
-                              if (s === param[0]) {
-                                return row_field_repr_aux(/* [] */0, param[1]) !== /* Rabsent */0;
-                              } else {
-                                return false;
-                              }
-                            }), row.row_fields) || !row.row_fixed && !static_row(row)) {
-                      return ;
-                    }
-                    var ty_arg = arg !== undefined ? /* :: */[
-                        type_expr(identity, arg.pat_type),
-                        /* [] */0
-                      ] : /* [] */0;
-                    var row$prime_row_fields = /* :: */[
-                      /* tuple */[
-                        s,
-                        /* Reither */Block.__(1, [
-                            arg === undefined,
-                            ty_arg,
-                            true,
-                            {
-                              contents: undefined
+  return function (param) {
+    return iter_pattern((function (pat) {
+                  var match = pat.pat_desc;
+                  if (typeof match === "number") {
+                    return ;
+                  }
+                  if (match.tag !== /* Tpat_variant */5) {
+                    return ;
+                  }
+                  var arg = match[1];
+                  var s = match[0];
+                  var row = row_repr_aux(/* [] */0, match[2].contents);
+                  if (List.exists((function (param) {
+                            if (s === param[0]) {
+                              return row_field_repr_aux(/* [] */0, param[1]) !== /* Rabsent */0;
+                            } else {
+                              return false;
                             }
-                          ])
-                      ],
+                          }), row.row_fields) || !row.row_fixed && !static_row(row)) {
+                    return ;
+                  }
+                  var ty_arg = arg !== undefined ? /* :: */[
+                      type_expr(identity, arg.pat_type),
                       /* [] */0
-                    ];
-                    var row$prime_row_more = newvar(undefined, undefined);
-                    var row$prime = {
-                      row_fields: row$prime_row_fields,
-                      row_more: row$prime_row_more,
-                      row_bound: undefined,
-                      row_closed: false,
-                      row_fixed: false,
-                      row_name: undefined
-                    };
-                    return unify_pat(env, {
-                                pat_desc: pat.pat_desc,
-                                pat_loc: pat.pat_loc,
-                                pat_extra: pat.pat_extra,
-                                pat_type: newty2(current_level.contents, /* Tvariant */Block.__(8, [row$prime])),
-                                pat_env: pat.pat_env,
-                                pat_attributes: pat.pat_attributes
-                              }, type_expr(identity, pat.pat_type));
-                  }), param);
-    });
+                    ] : /* [] */0;
+                  var row$prime_row_fields = /* :: */[
+                    /* tuple */[
+                      s,
+                      /* Reither */Block.__(1, [
+                          arg === undefined,
+                          ty_arg,
+                          true,
+                          {
+                            contents: undefined
+                          }
+                        ])
+                    ],
+                    /* [] */0
+                  ];
+                  var row$prime_row_more = newvar(undefined, undefined);
+                  var row$prime = {
+                    row_fields: row$prime_row_fields,
+                    row_more: row$prime_row_more,
+                    row_bound: undefined,
+                    row_closed: false,
+                    row_fixed: false,
+                    row_name: undefined
+                  };
+                  return unify_pat(env, {
+                              pat_desc: pat.pat_desc,
+                              pat_loc: pat.pat_loc,
+                              pat_extra: pat.pat_extra,
+                              pat_type: newty2(current_level.contents, /* Tvariant */Block.__(8, [row$prime])),
+                              pat_env: pat.pat_env,
+                              pat_attributes: pat.pat_attributes
+                            }, type_expr(identity, pat.pat_type));
+                }), param);
+  };
 }
 
 function duplicate_ident_types(loc, caselist, env) {
@@ -64117,24 +64117,24 @@ register_error_of_exn(function (err) {
                                                         ]), param$1[0]);
                                       case /* Label_missing */11 :
                                           var print_labels = function (ppf) {
-                                            return (function (param) {
-                                                return List.iter((function (lbl) {
-                                                              return Curry._1(Format.fprintf(ppf, /* Format */[
-                                                                              /* Formatting_lit */Block.__(17, [
-                                                                                  /* Break */Block.__(0, [
-                                                                                      "@ ",
-                                                                                      1,
-                                                                                      0
-                                                                                    ]),
-                                                                                  /* String */Block.__(2, [
-                                                                                      /* No_padding */0,
-                                                                                      /* End_of_format */0
-                                                                                    ])
-                                                                                ]),
-                                                                              "@ %s"
-                                                                            ]), lbl.name);
-                                                            }), param);
-                                              });
+                                            return function (param) {
+                                              return List.iter((function (lbl) {
+                                                            return Curry._1(Format.fprintf(ppf, /* Format */[
+                                                                            /* Formatting_lit */Block.__(17, [
+                                                                                /* Break */Block.__(0, [
+                                                                                    "@ ",
+                                                                                    1,
+                                                                                    0
+                                                                                  ]),
+                                                                                /* String */Block.__(2, [
+                                                                                    /* No_padding */0,
+                                                                                    /* End_of_format */0
+                                                                                  ])
+                                                                              ]),
+                                                                            "@ %s"
+                                                                          ]), lbl.name);
+                                                          }), param);
+                                            };
                                           };
                                           return Curry._2(Format.fprintf(param, /* Format */[
                                                           /* Formatting_gen */Block.__(18, [
@@ -65815,9 +65815,9 @@ function check_well_founded(env, loc, path, to_check, ty) {
 
 function check_well_founded_decl(env, loc, path, decl, to_check) {
   var it_it_type_expr = function (param) {
-    return (function (param) {
-        return check_well_founded(env, loc, path, to_check, param);
-      });
+    return function (param) {
+      return check_well_founded(env, loc, path, to_check, param);
+    };
   };
   var it = {
     it_signature: it_signature,
@@ -66496,9 +66496,9 @@ function compute_variance_fixpoint(env, decls, required, _variances) {
     var new_variances = List.map2((function(new_env){
         return function (param) {
           var decl = param[1];
-          return (function (param) {
-              return compute_variance_decl(new_env, false, decl, param);
-            });
+          return function (param) {
+            return compute_variance_decl(new_env, false, decl, param);
+          };
         }
         }(new_env)), new_decls, required);
     var new_variances$1 = List.map2((function (param, param$1) {
@@ -76405,32 +76405,32 @@ function type_structure$1(param, param$1, param$2) {
 }
 
 function normalize_signature(env) {
-  return (function (param) {
-      return List.iter((function (param) {
-                    switch (param.tag | 0) {
-                      case /* Sig_value */0 :
-                          return normalize_type(env, param[1].val_type);
-                      case /* Sig_module */3 :
-                          var _p = param[1].md_type;
-                          while(true) {
-                            var p = _p;
-                            switch (p.tag | 0) {
-                              case /* Mty_signature */1 :
-                                  return normalize_signature(env)(p[0]);
-                              case /* Mty_functor */2 :
-                                  _p = p[2];
-                                  continue ;
-                              case /* Mty_ident */0 :
-                              case /* Mty_alias */3 :
-                                  return ;
-                              
-                            }
-                          };
-                      default:
-                        return ;
-                    }
-                  }), param);
-    });
+  return function (param) {
+    return List.iter((function (param) {
+                  switch (param.tag | 0) {
+                    case /* Sig_value */0 :
+                        return normalize_type(env, param[1].val_type);
+                    case /* Sig_module */3 :
+                        var _p = param[1].md_type;
+                        while(true) {
+                          var p = _p;
+                          switch (p.tag | 0) {
+                            case /* Mty_signature */1 :
+                                return normalize_signature(env)(p[0]);
+                            case /* Mty_functor */2 :
+                                _p = p[2];
+                                continue ;
+                            case /* Mty_ident */0 :
+                            case /* Mty_alias */3 :
+                                return ;
+                            
+                          }
+                        };
+                    default:
+                      return ;
+                  }
+                }), param);
+  };
 }
 
 function type_module_type_of(env, smod) {

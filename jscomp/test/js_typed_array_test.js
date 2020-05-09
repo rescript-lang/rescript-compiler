@@ -14,9 +14,9 @@ function via(make, f, arr) {
 }
 
 function viaInt8(f, arr) {
-  return (function (param, param$1) {
-      return Array.from(Curry._1(param, new Int8Array(param$1)));
-    });
+  return function (param, param$1) {
+    return Array.from(Curry._1(param, new Int8Array(param$1)));
+  };
 }
 
 var x = new Int8Array([

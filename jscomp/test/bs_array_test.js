@@ -1265,17 +1265,17 @@ id$1("File \"bs_array_test.ml\", line 294, characters 5-12", [
 function every2(xs, ys) {
   var partial_arg = Belt_List.toArray(ys);
   var partial_arg$1 = Belt_List.toArray(xs);
-  return (function (param) {
-      return Belt_Array.every2(partial_arg$1, partial_arg, param);
-    });
+  return function (param) {
+    return Belt_Array.every2(partial_arg$1, partial_arg, param);
+  };
 }
 
 function some2(xs, ys) {
   var partial_arg = Belt_List.toArray(ys);
   var partial_arg$1 = Belt_List.toArray(xs);
-  return (function (param) {
-      return Belt_Array.some2(partial_arg$1, partial_arg, param);
-    });
+  return function (param) {
+    return Belt_Array.some2(partial_arg$1, partial_arg, param);
+  };
 }
 
 eq("File \"bs_array_test.ml\", line 304, characters 5-12", every2(/* [] */0, /* :: */[

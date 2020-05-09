@@ -3924,20 +3924,20 @@ function raise_errorf(locOpt, subOpt, if_highlightOpt) {
   var sub = subOpt !== undefined ? subOpt : /* [] */0;
   var if_highlight = if_highlightOpt !== undefined ? if_highlightOpt : "";
   var partial_arg = print_phanton_error_prefix;
-  return (function (param) {
-      return pp_ksprintf(partial_arg, (function (msg) {
-                    throw {
-                          RE_EXN_ID: $$Error,
-                          _1: {
-                            loc: loc,
-                            msg: msg,
-                            sub: sub,
-                            if_highlight: if_highlight
-                          },
-                          Error: new Error()
-                        };
-                  }), param);
-    });
+  return function (param) {
+    return pp_ksprintf(partial_arg, (function (msg) {
+                  throw {
+                        RE_EXN_ID: $$Error,
+                        _1: {
+                          loc: loc,
+                          msg: msg,
+                          sub: sub,
+                          if_highlight: if_highlight
+                        },
+                        Error: new Error()
+                      };
+                }), param);
+  };
 }
 
 var $$Location = {

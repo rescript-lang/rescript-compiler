@@ -16,19 +16,19 @@ function eq(loc, x, y) {
 }
 
 function make(s, b, i) {
-  return (function (param) {
-      var tmp = { };
-      if (s !== undefined) {
-        tmp.s = Caml_option.valFromOption(s);
-      }
-      if (b !== undefined) {
-        tmp.b = Caml_option.valFromOption(b);
-      }
-      if (i !== undefined) {
-        tmp.i = Caml_option.valFromOption(i);
-      }
-      return tmp;
-    });
+  return function (param) {
+    var tmp = { };
+    if (s !== undefined) {
+      tmp.s = Caml_option.valFromOption(s);
+    }
+    if (b !== undefined) {
+      tmp.b = Caml_option.valFromOption(b);
+    }
+    if (i !== undefined) {
+      tmp.i = Caml_option.valFromOption(i);
+    }
+    return tmp;
+  };
 }
 
 var hh = {

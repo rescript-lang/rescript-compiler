@@ -20,9 +20,9 @@ function h10(x) {
 }
 
 function h30(x) {
-  return (function (a) {
-      return x(3, 3, a);
-    });
+  return function (a) {
+    return x(3, 3, a);
+  };
 }
 
 function h33(x) {
@@ -44,9 +44,9 @@ function a0() {
 }
 
 function a1(param) {
-  return (function (x) {
-      return x;
-    });
+  return function (x) {
+    return x;
+  };
 }
 
 function a2(x, y) {
@@ -58,10 +58,10 @@ function a3(x, y, z) {
 }
 
 function xx(param) {
-  return (function (param) {
-      console.log(3);
-      
-    });
+  return function (param) {
+    console.log(3);
+    
+  };
 }
 
 var test_as = List.map;

@@ -25,12 +25,12 @@ function point_init($$class) {
             
           })
       ]);
-  return (function (env, self, x_init$1) {
-      var self$1 = CamlinternalOO.create_object_opt(self, $$class);
-      self$1[x_init] = x_init$1;
-      self$1[x] = x_init$1;
-      return self$1;
-    });
+  return function (env, self, x_init$1) {
+    var self$1 = CamlinternalOO.create_object_opt(self, $$class);
+    self$1[x_init] = x_init$1;
+    self$1[x] = x_init$1;
+    return self$1;
+  };
 }
 
 var point = CamlinternalOO.make_class(shared, point_init);

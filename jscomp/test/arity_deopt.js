@@ -34,21 +34,21 @@ function f0(x, y, z) {
 }
 
 function f1(x) {
-  return (function (y, z) {
-      return (x + y | 0) + z | 0;
-    });
+  return function (y, z) {
+    return (x + y | 0) + z | 0;
+  };
 }
 
 function f2(x, y) {
-  return (function (z) {
-      return (x + y | 0) + z | 0;
-    });
+  return function (z) {
+    return (x + y | 0) + z | 0;
+  };
 }
 
 function f3(x) {
-  return (function (y, z) {
-      return (x + y | 0) + z | 0;
-    });
+  return function (y, z) {
+    return (x + y | 0) + z | 0;
+  };
 }
 
 eq("File \"arity_deopt.ml\", line 45, characters 7-14", 6, f0(1, 2, 3));

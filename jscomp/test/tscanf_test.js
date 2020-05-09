@@ -2957,11 +2957,11 @@ function make_read_elem(fmt, f, ib) {
 }
 
 function scan_List(fmt) {
-  return (function (param) {
-      return read_list((function (param, param$1) {
-                    return Curry._1(Scanf.bscanf(param$1, fmt), param);
-                  }), param);
-    });
+  return function (param) {
+    return read_list((function (param, param$1) {
+                  return Curry._1(Scanf.bscanf(param$1, fmt), param);
+                }), param);
+  };
 }
 
 function test36(param) {

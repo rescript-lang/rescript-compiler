@@ -107,9 +107,9 @@ var f005 = CamlinternalLazy.from_fun(function () {
     });
 
 var f006 = CamlinternalLazy.from_fun(function () {
-      return (function (param) {
-          return 3;
-        });
+      return function (param) {
+        return 3;
+      };
     });
 
 var f007 = CamlinternalLazy.from_fun(function () {

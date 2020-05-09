@@ -103,12 +103,12 @@ function point_init($$class) {
             
           })
       ]);
-  return (function (env, self, x_init$1) {
-      var self$1 = CamlinternalOO.create_object_opt(self, $$class);
-      self$1[x_init] = x_init$1;
-      self$1[x] = x_init$1;
-      return self$1;
-    });
+  return function (env, self, x_init$1) {
+    var self$1 = CamlinternalOO.create_object_opt(self, $$class);
+    self$1[x_init] = x_init$1;
+    self$1[x] = x_init$1;
+    return self$1;
+  };
 }
 
 var point = CamlinternalOO.make_class(shared$5, point_init);
@@ -140,14 +140,14 @@ function adjusted_point_init($$class) {
             
           })
       ]);
-  return (function (env, self, x_init$1) {
-      var origin$1 = Caml_int32.imul(x_init$1 / 10 | 0, 10);
-      var self$1 = CamlinternalOO.create_object_opt(self, $$class);
-      self$1[origin] = origin$1;
-      self$1[x_init] = x_init$1;
-      self$1[x] = origin$1;
-      return self$1;
-    });
+  return function (env, self, x_init$1) {
+    var origin$1 = Caml_int32.imul(x_init$1 / 10 | 0, 10);
+    var self$1 = CamlinternalOO.create_object_opt(self, $$class);
+    self$1[origin] = origin$1;
+    self$1[x_init] = x_init$1;
+    self$1[x] = origin$1;
+    return self$1;
+  };
 }
 
 var adjusted_point = CamlinternalOO.make_class(shared$1, adjusted_point_init);
@@ -168,12 +168,12 @@ function adjusted_point2_000(param, param$1) {
 
 function adjusted_point2_001(table) {
   var env_init = Curry._1(point[1], table);
-  return (function (envs) {
-      var partial_arg = Curry._1(env_init, envs);
-      return (function (param, param$1) {
-          return new_init(partial_arg, param, param$1);
-        });
-    });
+  return function (envs) {
+    var partial_arg = Curry._1(env_init, envs);
+    return function (param, param$1) {
+      return new_init(partial_arg, param, param$1);
+    };
+  };
 }
 
 var adjusted_point2_002 = point[2];
@@ -213,12 +213,12 @@ function printable_point_init($$class) {
             return Curry._1(self$4[0][get_x], self$4);
           })
       ]);
-  return (function (env, self, x_init$1) {
-      var self$1 = CamlinternalOO.create_object_opt(self, $$class);
-      self$1[x_init] = x_init$1;
-      self$1[x] = x_init$1;
-      return self$1;
-    });
+  return function (env, self, x_init$1) {
+    var self$1 = CamlinternalOO.create_object_opt(self, $$class);
+    self$1[x_init] = x_init$1;
+    self$1[x] = x_init$1;
+    return self$1;
+  };
 }
 
 var printable_point = CamlinternalOO.make_class(shared$2, printable_point_init);
@@ -302,14 +302,14 @@ function printable_point2_init($$class) {
           console.log("initializingFile \"class3_test.ml\", line 76, characters 50-57");
           return Caml_array.caml_array_set(v, 0, self$6[x]);
         }));
-  return (function (env, self, x_init$1) {
-      var origin$1 = Caml_int32.imul(x_init$1 / 10 | 0, 10);
-      var self$1 = CamlinternalOO.create_object_opt(self, $$class);
-      self$1[origin] = origin$1;
-      self$1[x_init] = x_init$1;
-      self$1[x] = origin$1;
-      return CamlinternalOO.run_initializers_opt(self, self$1, $$class);
-    });
+  return function (env, self, x_init$1) {
+    var origin$1 = Caml_int32.imul(x_init$1 / 10 | 0, 10);
+    var self$1 = CamlinternalOO.create_object_opt(self, $$class);
+    self$1[origin] = origin$1;
+    self$1[x_init] = x_init$1;
+    self$1[x] = origin$1;
+    return CamlinternalOO.run_initializers_opt(self, self$1, $$class);
+  };
 }
 
 var printable_point2 = CamlinternalOO.make_class(shared$2, printable_point2_init);
@@ -329,11 +329,11 @@ function abstract_point_001($$class) {
   CamlinternalOO.set_method($$class, get_offset, (function (self$7) {
           return Curry._1(self$7[0][get_x], self$7) - self$7[x_init] | 0;
         }));
-  return (function (env, self, x_init$1) {
-      var self$1 = CamlinternalOO.create_object_opt(self, $$class);
-      self$1[x_init] = x_init$1;
-      return self$1;
-    });
+  return function (env, self, x_init$1) {
+    var self$1 = CamlinternalOO.create_object_opt(self, $$class);
+    self$1[x_init] = x_init$1;
+    return self$1;
+  };
 }
 
 var abstract_point = /* class */[
@@ -362,13 +362,13 @@ function vpoint_init($$class) {
             
           })
       ]);
-  return (function (env, self, x_init$1) {
-      var self$1 = CamlinternalOO.create_object_opt(self, $$class);
-      self$1[x_init] = x_init$1;
-      Curry._2(obj_init, self$1, x_init$1);
-      self$1[x] = x_init$1;
-      return CamlinternalOO.run_initializers_opt(self, self$1, $$class);
-    });
+  return function (env, self, x_init$1) {
+    var self$1 = CamlinternalOO.create_object_opt(self, $$class);
+    self$1[x_init] = x_init$1;
+    Curry._2(obj_init, self$1, x_init$1);
+    self$1[x] = x_init$1;
+    return CamlinternalOO.run_initializers_opt(self, self$1, $$class);
+  };
 }
 
 var vpoint = CamlinternalOO.make_class(shared$1, vpoint_init);
@@ -389,9 +389,9 @@ function abstract_point2_001($$class) {
           self$9[x] = self$9[x] + d | 0;
           
         }));
-  return (function (env, self) {
-      return CamlinternalOO.create_object_opt(self, $$class);
-    });
+  return function (env, self) {
+    return CamlinternalOO.create_object_opt(self, $$class);
+  };
 }
 
 var abstract_point2 = /* class */[
@@ -410,13 +410,13 @@ function point2_init($$class) {
   CamlinternalOO.set_method($$class, get_offset, (function (self$10) {
           return self$10[x] - self$10[x_init] | 0;
         }));
-  return (function (env, self, x_init$1) {
-      var self$1 = CamlinternalOO.create_object_opt(self, $$class);
-      self$1[x_init] = x_init$1;
-      Curry._1(obj_init, self$1);
-      self$1[x] = x_init$1;
-      return CamlinternalOO.run_initializers_opt(self, self$1, $$class);
-    });
+  return function (env, self, x_init$1) {
+    var self$1 = CamlinternalOO.create_object_opt(self, $$class);
+    self$1[x_init] = x_init$1;
+    Curry._1(obj_init, self$1);
+    self$1[x] = x_init$1;
+    return CamlinternalOO.run_initializers_opt(self, self$1, $$class);
+  };
 }
 
 var point2 = CamlinternalOO.make_class([
@@ -458,12 +458,12 @@ function restricted_point_init($$class) {
             return Curry._2(self$11[0][move], self$11, 1);
           })
       ]);
-  return (function (env, self, x_init$1) {
-      var self$1 = CamlinternalOO.create_object_opt(self, $$class);
-      self$1[x_init] = x_init$1;
-      self$1[x] = x_init$1;
-      return self$1;
-    });
+  return function (env, self, x_init$1) {
+    var self$1 = CamlinternalOO.create_object_opt(self, $$class);
+    self$1[x_init] = x_init$1;
+    self$1[x] = x_init$1;
+    return self$1;
+  };
 }
 
 var restricted_point = CamlinternalOO.make_class([
@@ -484,12 +484,12 @@ function point_again_init($$class) {
   CamlinternalOO.get_method_label($$class, "move");
   var inh = CamlinternalOO.inherits($$class, shared$3, 0, shared$7, restricted_point, true);
   var obj_init = inh[0];
-  return (function (env, self, x$1) {
-      var self$1 = CamlinternalOO.create_object_opt(self, $$class);
-      self$1[x] = x$1;
-      Curry._2(obj_init, self$1, x$1);
-      return CamlinternalOO.run_initializers_opt(self, self$1, $$class);
-    });
+  return function (env, self, x$1) {
+    var self$1 = CamlinternalOO.create_object_opt(self, $$class);
+    self$1[x] = x$1;
+    Curry._2(obj_init, self$1, x$1);
+    return CamlinternalOO.run_initializers_opt(self, self$1, $$class);
+  };
 }
 
 var point_again = CamlinternalOO.make_class(shared$4, point_again_init);
@@ -510,12 +510,12 @@ function point_again2_init($$class) {
   var x = CamlinternalOO.new_variable($$class, "");
   var inh = CamlinternalOO.inherits($$class, shared$3, 0, shared$7, restricted_point, true);
   var obj_init = inh[0];
-  return (function (env, self, x$1) {
-      var self$1 = CamlinternalOO.create_object_opt(self, $$class);
-      self$1[x] = x$1;
-      Curry._2(obj_init, self$1, x$1);
-      return CamlinternalOO.run_initializers_opt(self, self$1, $$class);
-    });
+  return function (env, self, x$1) {
+    var self$1 = CamlinternalOO.create_object_opt(self, $$class);
+    self$1[x] = x$1;
+    Curry._2(obj_init, self$1, x$1);
+    return CamlinternalOO.run_initializers_opt(self, self$1, $$class);
+  };
 }
 
 var point_again2 = CamlinternalOO.make_class(shared$4, point_again2_init);
@@ -539,12 +539,12 @@ function point_again3_init($$class) {
   var obj_init = inh[0];
   var move$1 = inh[4];
   CamlinternalOO.set_method($$class, move, Curry.__1(move$1));
-  return (function (env, self, x$1) {
-      var self$1 = CamlinternalOO.create_object_opt(self, $$class);
-      self$1[x] = x$1;
-      Curry._2(obj_init, self$1, x$1);
-      return CamlinternalOO.run_initializers_opt(self, self$1, $$class);
-    });
+  return function (env, self, x$1) {
+    var self$1 = CamlinternalOO.create_object_opt(self, $$class);
+    self$1[x] = x$1;
+    Curry._2(obj_init, self$1, x$1);
+    return CamlinternalOO.run_initializers_opt(self, self$1, $$class);
+  };
 }
 
 var point_again3 = CamlinternalOO.make_class(shared$4, point_again3_init);

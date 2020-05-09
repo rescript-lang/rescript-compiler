@@ -49,13 +49,13 @@ function make(foo) {
   var partial_arg = map((function (prim) {
           return String(prim);
         }), foo);
-  return (function (param) {
-      var tmp = { };
-      if (partial_arg !== undefined) {
-        tmp.foo = Caml_option.valFromOption(partial_arg);
-      }
-      return tmp;
-    });
+  return function (param) {
+    var tmp = { };
+    if (partial_arg !== undefined) {
+      tmp.foo = Caml_option.valFromOption(partial_arg);
+    }
+    return tmp;
+  };
 }
 
 var a_ = make(undefined)(undefined);
