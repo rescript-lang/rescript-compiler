@@ -136,26 +136,29 @@ type cxt = Ext_pp_scope.t
 let semi f = P.string f L.semi
 let comma f = P.string f L.comma
 
-let exn_block_as_obj ~stack (el : J.expression list) (ext : J.tag_info) : J.expression_desc =
+let exn_block_as_obj 
+    ~(stack : bool) 
+    (el : J.expression list) 
+    (ext : J.tag_info) : J.expression_desc =
   let field_name  = 
     match ext with 
     | Blk_extension -> (fun i -> 
-      match i with 
-      | 0 ->  Literals.exception_id
-      | i ->  
-         "_" ^ string_of_int i
-        )
+        match i with 
+        | 0 ->  Literals.exception_id
+        | i ->  
+          "_" ^ string_of_int i
+      )
     | Blk_record_ext ss ->   
       (fun i ->  
-      match i with 
-      | 0 -> Literals.exception_id
-      | i ->   ss.(i-1))
+         match i with 
+         | 0 -> Literals.exception_id
+         | i ->   ss.(i-1))
     | _ -> assert false in   
   Object (
     if stack then   
       Ext_list.mapi_append el (fun i e -> field_name i, e)
         ["Error", 
-          E.new_ (E.js_global "Error") []
+         E.new_ (E.js_global "Error") []
         ]
     else Ext_list.mapi  el (fun i e -> field_name i, e)
   )
@@ -1083,8 +1086,8 @@ and statement_desc top cxt f (s : J.statement_desc) : cxt =
   | Exp e ->
     (
       match e.expression_desc with 
-      | Raw_js_code {code = s; code_info =  Stmt (Js_stmt_comment)} -> 
-        P.string f s;
+      | Raw_js_code {code ; code_info =  Stmt (Js_stmt_comment)} -> 
+        P.string f code;
         cxt
       | Raw_js_code {code_info =  Exp (Js_literal {comment})} -> 
         (match comment with (* The %raw is just a comment *)
