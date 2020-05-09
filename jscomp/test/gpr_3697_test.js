@@ -3,12 +3,9 @@
 var CamlinternalLazy = require("../../lib/js/camlinternalLazy.js");
 
 function fix(param) {
-  return /* Fix */[{
-            tag: 246,
-            value: (function () {
-                return fix(undefined);
-              })
-          }];
+  return /* Fix */[CamlinternalLazy.from_fun((function () {
+                  return fix(undefined);
+                }))];
 }
 
 function unfixLeak(_f) {

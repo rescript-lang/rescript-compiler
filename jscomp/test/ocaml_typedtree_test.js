@@ -6661,15 +6661,12 @@ function symbol_docs(param) {
 function symbol_docs_lazy(param) {
   var p1 = Parsing.symbol_start_pos(undefined);
   var p2 = Parsing.symbol_end_pos(undefined);
-  return {
-          tag: 246,
-          value: (function () {
-              return {
-                      docs_pre: get_pre_docs(p1),
-                      docs_post: get_post_docs(p2)
-                    };
-            })
-        };
+  return CamlinternalLazy.from_fun((function () {
+                return {
+                        docs_pre: get_pre_docs(p1),
+                        docs_post: get_post_docs(p2)
+                      };
+              }));
 }
 
 function mark_symbol_docs(param) {
@@ -6684,12 +6681,9 @@ function mark_rhs_docs(pos1, pos2) {
 
 function symbol_text_lazy(param) {
   var pos = Parsing.symbol_start_pos(undefined);
-  return {
-          tag: 246,
-          value: (function () {
-              return get_text(pos);
-            })
-        };
+  return CamlinternalLazy.from_fun((function () {
+                return get_text(pos);
+              }));
 }
 
 function init(param) {
@@ -11991,56 +11985,53 @@ function prefix_idents_and_subst(root, sub, sg) {
   return /* tuple */[
           match[0],
           sub$1,
-          {
-            tag: 246,
-            value: (function () {
-                return List.map((function (item) {
-                              switch (item.tag | 0) {
-                                case /* Sig_value */0 :
-                                    return /* Sig_value */Block.__(0, [
-                                              item[0],
-                                              value_description(sub$1, item[1])
-                                            ]);
-                                case /* Sig_type */1 :
-                                    return /* Sig_type */Block.__(1, [
-                                              item[0],
-                                              type_declaration(sub$1, item[1]),
-                                              item[2]
-                                            ]);
-                                case /* Sig_typext */2 :
-                                    return /* Sig_typext */Block.__(2, [
-                                              item[0],
-                                              extension_constructor(sub$1, item[1]),
-                                              item[2]
-                                            ]);
-                                case /* Sig_module */3 :
-                                    return /* Sig_module */Block.__(3, [
-                                              item[0],
-                                              module_declaration(sub$1, item[1]),
-                                              item[2]
-                                            ]);
-                                case /* Sig_modtype */4 :
-                                    return /* Sig_modtype */Block.__(4, [
-                                              item[0],
-                                              modtype_declaration(sub$1, item[1])
-                                            ]);
-                                case /* Sig_class */5 :
-                                    return /* Sig_class */Block.__(5, [
-                                              item[0],
-                                              class_declaration(sub$1, item[1]),
-                                              item[2]
-                                            ]);
-                                case /* Sig_class_type */6 :
-                                    return /* Sig_class_type */Block.__(6, [
-                                              item[0],
-                                              cltype_declaration(sub$1, item[1]),
-                                              item[2]
-                                            ]);
-                                
-                              }
-                            }), sg);
-              })
-          }
+          CamlinternalLazy.from_fun((function () {
+                  return List.map((function (item) {
+                                switch (item.tag | 0) {
+                                  case /* Sig_value */0 :
+                                      return /* Sig_value */Block.__(0, [
+                                                item[0],
+                                                value_description(sub$1, item[1])
+                                              ]);
+                                  case /* Sig_type */1 :
+                                      return /* Sig_type */Block.__(1, [
+                                                item[0],
+                                                type_declaration(sub$1, item[1]),
+                                                item[2]
+                                              ]);
+                                  case /* Sig_typext */2 :
+                                      return /* Sig_typext */Block.__(2, [
+                                                item[0],
+                                                extension_constructor(sub$1, item[1]),
+                                                item[2]
+                                              ]);
+                                  case /* Sig_module */3 :
+                                      return /* Sig_module */Block.__(3, [
+                                                item[0],
+                                                module_declaration(sub$1, item[1]),
+                                                item[2]
+                                              ]);
+                                  case /* Sig_modtype */4 :
+                                      return /* Sig_modtype */Block.__(4, [
+                                                item[0],
+                                                modtype_declaration(sub$1, item[1])
+                                              ]);
+                                  case /* Sig_class */5 :
+                                      return /* Sig_class */Block.__(5, [
+                                                item[0],
+                                                class_declaration(sub$1, item[1]),
+                                                item[2]
+                                              ]);
+                                  case /* Sig_class_type */6 :
+                                      return /* Sig_class_type */Block.__(6, [
+                                                item[0],
+                                                cltype_declaration(sub$1, item[1]),
+                                                item[2]
+                                              ]);
+                                  
+                                }
+                              }), sg);
+                }))
         ];
 }
 
@@ -26867,13 +26858,10 @@ function copy_sep(fixed, free, bound, visited, ty) {
     }
     var t = newvar(undefined, undefined);
     delayed_copy.contents = /* :: */[
-      {
-        tag: 246,
-        value: (function () {
-            t.desc = /* Tlink */Block.__(6, [copy(undefined, undefined, undefined, ty$1)]);
-            
-          })
-      },
+      CamlinternalLazy.from_fun((function () {
+              t.desc = /* Tlink */Block.__(6, [copy(undefined, undefined, undefined, ty$1)]);
+              
+            })),
       delayed_copy.contents
     ];
     return t;
@@ -69650,20 +69638,17 @@ function declare_method(val_env, meths, self_type, lab, priv, sty, loc) {
     var sty$prime = match$1[1];
     var returned_cty = ctyp(/* Ttyp_any */0, newty2(current_level.contents, /* Tnil */0), val_env, loc);
     delayed_meth_specs.contents = /* :: */[
-      {
-        tag: 246,
-        value: (function () {
-            var cty = transl_simple_type_univars(val_env, sty$prime);
-            var ty = cty.ctyp_type;
-            unif(ty);
-            returned_cty.ctyp_desc = /* Ttyp_poly */Block.__(8, [
-                /* [] */0,
-                cty
-              ]);
-            returned_cty.ctyp_type = ty;
-            
-          })
-      },
+      CamlinternalLazy.from_fun((function () {
+              var cty = transl_simple_type_univars(val_env, sty$prime);
+              var ty = cty.ctyp_type;
+              unif(ty);
+              returned_cty.ctyp_desc = /* Ttyp_poly */Block.__(8, [
+                  /* [] */0,
+                  cty
+                ]);
+              returned_cty.ctyp_type = ty;
+              
+            })),
       delayed_meth_specs.contents
     ];
     return returned_cty;
@@ -70211,18 +70196,15 @@ function class_structure(cl_num, $$final, val_env, met_env, loc, param) {
                         match$3[1],
                         match$3[2],
                         /* :: */[
-                          {
-                            tag: 246,
-                            value: (function () {
-                                return mkcf(/* Tcf_inherit */Block.__(0, [
-                                              ovf,
-                                              parent,
-                                              $$super,
-                                              inh_vars,
-                                              inh_meths
-                                            ]));
-                              })
-                          },
+                          CamlinternalLazy.from_fun((function () {
+                                  return mkcf(/* Tcf_inherit */Block.__(0, [
+                                                ovf,
+                                                parent,
+                                                $$super,
+                                                inh_vars,
+                                                inh_meths
+                                              ]));
+                                })),
                           fields
                         ],
                         match$1[1],
@@ -70309,21 +70291,18 @@ function class_structure(cl_num, $$final, val_env, met_env, loc, param) {
                           met_env$prime,
                           match$7[3],
                           /* :: */[
-                            {
-                              tag: 246,
-                              value: (function () {
-                                  return mkcf(/* Tcf_val */Block.__(1, [
-                                                lab,
-                                                mut,
-                                                id,
-                                                /* Tcfk_concrete */Block.__(1, [
-                                                    ovf$1,
-                                                    exp
-                                                  ]),
-                                                met_env === met_env$prime
-                                              ]));
-                                })
-                            },
+                            CamlinternalLazy.from_fun((function () {
+                                    return mkcf(/* Tcf_val */Block.__(1, [
+                                                  lab,
+                                                  mut,
+                                                  id,
+                                                  /* Tcfk_concrete */Block.__(1, [
+                                                      ovf$1,
+                                                      exp
+                                                    ]),
+                                                  met_env === met_env$prime
+                                                ]));
+                                  })),
                             fields
                           ],
                           concr_meths,
@@ -70350,18 +70329,15 @@ function class_structure(cl_num, $$final, val_env, met_env, loc, param) {
                         met_env$prime$1,
                         match$8[3],
                         /* :: */[
-                          {
-                            tag: 246,
-                            value: (function () {
-                                return mkcf(/* Tcf_val */Block.__(1, [
-                                              lab,
-                                              mut,
-                                              id$1,
-                                              /* Tcfk_virtual */Block.__(0, [cty]),
-                                              met_env === met_env$prime$1
-                                            ]));
-                              })
-                          },
+                          CamlinternalLazy.from_fun((function () {
+                                  return mkcf(/* Tcf_val */Block.__(1, [
+                                                lab,
+                                                mut,
+                                                id$1,
+                                                /* Tcfk_virtual */Block.__(0, [cty]),
+                                                met_env === met_env$prime$1
+                                              ]));
+                                })),
                           fields
                         ],
                         concr_meths,
@@ -70494,29 +70470,26 @@ function class_structure(cl_num, $$final, val_env, met_env, loc, param) {
                   }
                   var meth_expr = make_method(self_loc, cl_num, expr$2);
                   var vars_local = vars.contents;
-                  var field = {
-                    tag: 246,
-                    value: (function () {
-                        var meth_type = newty2(100000000, /* Tarrow */Block.__(1, [
-                                "",
-                                self_type,
-                                ty$1,
-                                /* Cok */0
-                              ]));
-                        raise_nongen_level(undefined);
-                        vars.contents = vars_local;
-                        var texp = type_expect(undefined, met_env, meth_expr, meth_type);
-                        end_def(undefined);
-                        return mkcf(/* Tcf_method */Block.__(2, [
-                                      lab$1,
-                                      priv,
-                                      /* Tcfk_concrete */Block.__(1, [
-                                          ovf$2,
-                                          texp
-                                        ])
-                                    ]));
-                      })
-                  };
+                  var field = CamlinternalLazy.from_fun((function () {
+                          var meth_type = newty2(100000000, /* Tarrow */Block.__(1, [
+                                  "",
+                                  self_type,
+                                  ty$1,
+                                  /* Cok */0
+                                ]));
+                          raise_nongen_level(undefined);
+                          vars.contents = vars_local;
+                          var texp = type_expect(undefined, met_env, meth_expr, meth_type);
+                          end_def(undefined);
+                          return mkcf(/* Tcf_method */Block.__(2, [
+                                        lab$1,
+                                        priv,
+                                        /* Tcfk_concrete */Block.__(1, [
+                                            ovf$2,
+                                            texp
+                                          ])
+                                      ]));
+                        }));
                   return /* tuple */[
                           val_env,
                           met_env,
@@ -70538,16 +70511,13 @@ function class_structure(cl_num, $$final, val_env, met_env, loc, param) {
                         met_env,
                         par_env,
                         /* :: */[
-                          {
-                            tag: 246,
-                            value: (function () {
-                                return mkcf(/* Tcf_method */Block.__(2, [
-                                              lab$1,
-                                              priv,
-                                              /* Tcfk_virtual */Block.__(0, [cty$1])
-                                            ]));
-                              })
-                          },
+                          CamlinternalLazy.from_fun((function () {
+                                  return mkcf(/* Tcf_method */Block.__(2, [
+                                                lab$1,
+                                                priv,
+                                                /* Tcfk_virtual */Block.__(0, [cty$1])
+                                              ]));
+                                })),
                           fields
                         ],
                         concr_meths,
@@ -70566,15 +70536,12 @@ function class_structure(cl_num, $$final, val_env, met_env, loc, param) {
                         met_env,
                         par_env,
                         /* :: */[
-                          {
-                            tag: 246,
-                            value: (function () {
-                                return mkcf(/* Tcf_constraint */Block.__(3, [
-                                              cty$2,
-                                              cty$prime$1
-                                            ]));
-                              })
-                          },
+                          CamlinternalLazy.from_fun((function () {
+                                  return mkcf(/* Tcf_constraint */Block.__(3, [
+                                                cty$2,
+                                                cty$prime$1
+                                              ]));
+                                })),
                           fields
                         ],
                         concr_meths,
@@ -70586,24 +70553,21 @@ function class_structure(cl_num, $$final, val_env, met_env, loc, param) {
             case /* Pcf_initializer */4 :
                 var expr$3 = make_method(self_loc, cl_num, expr[0]);
                 var vars_local$1 = vars.contents;
-                var field$1 = {
-                  tag: 246,
-                  value: (function () {
-                      raise_nongen_level(undefined);
-                      var desc_002 = instance_def(type_unit);
-                      var desc = /* Tarrow */Block.__(1, [
-                          "",
-                          self_type,
-                          desc_002,
-                          /* Cok */0
-                        ]);
-                      var meth_type = newty2(current_level.contents, desc);
-                      vars.contents = vars_local$1;
-                      var texp = type_expect(undefined, met_env, expr$3, meth_type);
-                      end_def(undefined);
-                      return mkcf(/* Tcf_initializer */Block.__(4, [texp]));
-                    })
-                };
+                var field$1 = CamlinternalLazy.from_fun((function () {
+                        raise_nongen_level(undefined);
+                        var desc_002 = instance_def(type_unit);
+                        var desc = /* Tarrow */Block.__(1, [
+                            "",
+                            self_type,
+                            desc_002,
+                            /* Cok */0
+                          ]);
+                        var meth_type = newty2(current_level.contents, desc);
+                        vars.contents = vars_local$1;
+                        var texp = type_expect(undefined, met_env, expr$3, meth_type);
+                        end_def(undefined);
+                        return mkcf(/* Tcf_initializer */Block.__(4, [texp]));
+                      }));
                 return /* tuple */[
                         val_env,
                         met_env,
@@ -70629,12 +70593,9 @@ function class_structure(cl_num, $$final, val_env, met_env, loc, param) {
                         met_env,
                         par_env,
                         /* :: */[
-                          {
-                            tag: 246,
-                            value: (function () {
-                                return mkcf(/* Tcf_attribute */Block.__(5, [x]));
-                              })
-                          },
+                          CamlinternalLazy.from_fun((function () {
+                                  return mkcf(/* Tcf_attribute */Block.__(5, [x]));
+                                })),
                           fields
                         ],
                         concr_meths,
