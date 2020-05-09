@@ -3820,9 +3820,9 @@ function reader(ib, ob) {
 
 function go(param) {
   var ob = $$Buffer.create(17);
-  var ib = Scanf.Scanning.from_function((function (param) {
-          return next_char(ob, param);
-        }));
+  var ib = Scanf.Scanning.from_function(function (param) {
+        return next_char(ob, param);
+      });
   return reader(ib, ob);
 }
 

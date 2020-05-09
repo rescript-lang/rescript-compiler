@@ -53,11 +53,11 @@ console.log([
             2,
             3,
             4
-          ].filter((function (x) {
-                return x > 2;
-              })).map((function (x, i) {
-              return x + i | 0;
-            })).reduce((function (x, y) {
+          ].filter(function (x) {
+              return x > 2;
+            }).map(function (x, i) {
+            return x + i | 0;
+          }).reduce((function (x, y) {
             return x + y | 0;
           }), 0));
 
@@ -1281,9 +1281,9 @@ function some2(xs, ys) {
 eq("File \"bs_array_test.ml\", line 304, characters 5-12", every2(/* [] */0, /* :: */[
             1,
             /* [] */0
-          ])((function (x, y) {
-            return x > y;
-          })), true);
+          ])(function (x, y) {
+          return x > y;
+        }), true);
 
 eq("File \"bs_array_test.ml\", line 305, characters 5-12", every2(/* :: */[
             2,
@@ -1294,9 +1294,9 @@ eq("File \"bs_array_test.ml\", line 305, characters 5-12", every2(/* :: */[
           ], /* :: */[
             1,
             /* [] */0
-          ])((function (x, y) {
-            return x > y;
-          })), true);
+          ])(function (x, y) {
+          return x > y;
+        }), true);
 
 eq("File \"bs_array_test.ml\", line 306, characters 5-12", every2(/* :: */[
             2,
@@ -1304,9 +1304,9 @@ eq("File \"bs_array_test.ml\", line 306, characters 5-12", every2(/* :: */[
           ], /* :: */[
             1,
             /* [] */0
-          ])((function (x, y) {
-            return x > y;
-          })), true);
+          ])(function (x, y) {
+          return x > y;
+        }), true);
 
 eq("File \"bs_array_test.ml\", line 307, characters 5-12", every2(/* :: */[
             2,
@@ -1320,9 +1320,9 @@ eq("File \"bs_array_test.ml\", line 307, characters 5-12", every2(/* :: */[
               4,
               /* [] */0
             ]
-          ])((function (x, y) {
-            return x > y;
-          })), false);
+          ])(function (x, y) {
+          return x > y;
+        }), false);
 
 eq("File \"bs_array_test.ml\", line 308, characters 5-12", every2(/* :: */[
             2,
@@ -1336,16 +1336,16 @@ eq("File \"bs_array_test.ml\", line 308, characters 5-12", every2(/* :: */[
               0,
               /* [] */0
             ]
-          ])((function (x, y) {
-            return x > y;
-          })), true);
+          ])(function (x, y) {
+          return x > y;
+        }), true);
 
 eq("File \"bs_array_test.ml\", line 309, characters 5-12", some2(/* [] */0, /* :: */[
             1,
             /* [] */0
-          ])((function (x, y) {
-            return x > y;
-          })), false);
+          ])(function (x, y) {
+          return x > y;
+        }), false);
 
 eq("File \"bs_array_test.ml\", line 310, characters 5-12", some2(/* :: */[
             2,
@@ -1356,9 +1356,9 @@ eq("File \"bs_array_test.ml\", line 310, characters 5-12", some2(/* :: */[
           ], /* :: */[
             1,
             /* [] */0
-          ])((function (x, y) {
-            return x > y;
-          })), true);
+          ])(function (x, y) {
+          return x > y;
+        }), true);
 
 eq("File \"bs_array_test.ml\", line 311, characters 5-12", some2(/* :: */[
             2,
@@ -1372,9 +1372,9 @@ eq("File \"bs_array_test.ml\", line 311, characters 5-12", some2(/* :: */[
               4,
               /* [] */0
             ]
-          ])((function (x, y) {
-            return x > y;
-          })), true);
+          ])(function (x, y) {
+          return x > y;
+        }), true);
 
 eq("File \"bs_array_test.ml\", line 312, characters 5-12", some2(/* :: */[
             0,
@@ -1388,9 +1388,9 @@ eq("File \"bs_array_test.ml\", line 312, characters 5-12", some2(/* :: */[
               4,
               /* [] */0
             ]
-          ])((function (x, y) {
-            return x > y;
-          })), false);
+          ])(function (x, y) {
+          return x > y;
+        }), false);
 
 eq("File \"bs_array_test.ml\", line 313, characters 5-12", some2(/* :: */[
             0,
@@ -1404,9 +1404,9 @@ eq("File \"bs_array_test.ml\", line 313, characters 5-12", some2(/* :: */[
               2,
               /* [] */0
             ]
-          ])((function (x, y) {
-            return x > y;
-          })), true);
+          ])(function (x, y) {
+          return x > y;
+        }), true);
 
 eq("File \"bs_array_test.ml\", line 318, characters 5-12", Belt_Array.concat([], [
           1,

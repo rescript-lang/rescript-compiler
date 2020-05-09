@@ -677,12 +677,12 @@ function add_loc(loc, exn) {
         };
 }
 
-Printexc.register_printer((function (exn) {
-        if (exn.RE_EXN_ID === Compilation_error) {
-          return prepare_error(exn._1);
-        }
-        
-      }));
+Printexc.register_printer(function (exn) {
+      if (exn.RE_EXN_ID === Compilation_error) {
+        return prepare_error(exn._1);
+      }
+      
+    });
 
 function invalid_default_value(field_name, info, param) {
   throw {
@@ -4335,13 +4335,13 @@ function compile_message_p1(file_name, file_options, message_scope, param) {
   var validate_duplicate = function (number_index, field) {
     var number = field_number(field);
     var name = field_name(field);
-    if (not_found((function (param) {
-              List.assoc(number, number_index);
-              
-            })) && not_found((function (param) {
-              list_assoc2(name, number_index);
-              
-            }))) {
+    if (not_found(function (param) {
+            List.assoc(number, number_index);
+            
+          }) && not_found(function (param) {
+            list_assoc2(name, number_index);
+            
+          })) {
       return /* :: */[
               /* tuple */[
                 number,
@@ -4420,11 +4420,11 @@ function type_name_of_type(param) {
 }
 
 function find_all_types_in_field_scope(all_types, scope) {
-  return List.filter((function (t) {
-                  var match = type_scope_of_type(t);
-                  var dec_scope = Pervasives.$at(match.packages, match.message_names);
-                  return Caml_obj.caml_equal(dec_scope, scope);
-                }))(all_types);
+  return List.filter(function (t) {
+                var match = type_scope_of_type(t);
+                var dec_scope = Pervasives.$at(match.packages, match.message_names);
+                return Caml_obj.caml_equal(dec_scope, scope);
+              })(all_types);
 }
 
 function compile_message_p2(types, param, message) {

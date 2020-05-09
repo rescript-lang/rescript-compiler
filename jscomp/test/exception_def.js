@@ -74,12 +74,12 @@ var h5 = {
   _1: "xx"
 };
 
-Printexc.register_printer((function (s) {
-        if (s.RE_EXN_ID === A) {
-          return "A";
-        }
-        
-      }));
+Printexc.register_printer(function (s) {
+      if (s.RE_EXN_ID === A) {
+        return "A";
+      }
+      
+    });
 
 function p(e) {
   if (e.RE_EXN_ID === H4) {

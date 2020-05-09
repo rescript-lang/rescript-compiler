@@ -74,9 +74,9 @@ var suites_001 = /* :: */[
           "split_by",
           (function (param) {
               return /* Eq */Block.__(0, [
-                        List.filter((function (s) {
-                                  return s !== "";
-                                }))(Ext_string_test.split_by(undefined, (function (x) {
+                        List.filter(function (s) {
+                                return s !== "";
+                              })(Ext_string_test.split_by(undefined, (function (x) {
                                     if (x === /* " " */32) {
                                       return true;
                                     } else {

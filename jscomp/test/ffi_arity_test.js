@@ -21,25 +21,25 @@ var v = [
     1,
     2,
     3
-  ].map((function (a, b) {
-        return f(a)(b);
-      }));
+  ].map(function (a, b) {
+      return f(a)(b);
+    });
 
 var vv = [
     1,
     2,
     3
-  ].map((function (a, b) {
-        return a + b | 0;
-      }));
+  ].map(function (a, b) {
+      return a + b | 0;
+    });
 
 var hh = [
     "1",
     "2",
     "3"
-  ].map((function (x) {
-        return parseInt(x);
-      }));
+  ].map(function (x) {
+      return parseInt(x);
+    });
 
 function u() {
   return 3;

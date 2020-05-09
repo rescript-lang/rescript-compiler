@@ -205,10 +205,10 @@ function from_promise_suites(name, suites) {
               return List.iter((function (param) {
                             var code = param[1];
                             it(param[0], (function () {
-                                    return code.then((function (x) {
-                                                  handleCode(x);
-                                                  return val_unit;
-                                                }));
+                                    return code.then(function (x) {
+                                                handleCode(x);
+                                                return val_unit;
+                                              });
                                   }));
                             
                           }), suites);

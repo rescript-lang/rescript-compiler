@@ -106,9 +106,9 @@ var suites_001 = /* :: */[
                 "string_on_number3",
                 (function (param) {
                     return /* Eq */Block.__(0, [
-                              string_or_number((function (x) {
-                                      return x;
-                                    })),
+                              string_or_number(function (x) {
+                                    return x;
+                                  }),
                               false
                             ]);
                   })

@@ -39,29 +39,29 @@ var Hello = Caml_exceptions.create("Exception_repr_test.Hello");
 
 var A = Caml_exceptions.create("Exception_repr_test.A");
 
-Printexc.register_printer((function (s) {
-        if (s.RE_EXN_ID === Hi) {
-          return "hey";
-        } else if (s.RE_EXN_ID === A) {
-          return Curry._1(Format.asprintf(/* Format */[
-                          /* String_literal */Block.__(11, [
-                              "A(",
-                              /* Int */Block.__(4, [
-                                  /* Int_d */0,
-                                  /* No_padding */0,
-                                  /* No_precision */0,
-                                  /* Char_literal */Block.__(12, [
-                                      /* ")" */41,
-                                      /* End_of_format */0
-                                    ])
-                                ])
-                            ]),
-                          "A(%d)"
-                        ]), s._1);
-        } else {
-          return ;
-        }
-      }));
+Printexc.register_printer(function (s) {
+      if (s.RE_EXN_ID === Hi) {
+        return "hey";
+      } else if (s.RE_EXN_ID === A) {
+        return Curry._1(Format.asprintf(/* Format */[
+                        /* String_literal */Block.__(11, [
+                            "A(",
+                            /* Int */Block.__(4, [
+                                /* Int_d */0,
+                                /* No_padding */0,
+                                /* No_precision */0,
+                                /* Char_literal */Block.__(12, [
+                                    /* ")" */41,
+                                    /* End_of_format */0
+                                  ])
+                              ])
+                          ]),
+                        "A(%d)"
+                      ]), s._1);
+      } else {
+        return ;
+      }
+    });
 
 eq("File \"exception_repr_test.ml\", line 24, characters 7-14", "hey", Printexc.to_string({
           RE_EXN_ID: Hi

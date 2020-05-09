@@ -46,9 +46,9 @@ var m00 = {
   data: undefined
 };
 
-var I2 = Belt_Id.comparable((function (x, y) {
-        return Caml_primitive.caml_int_compare(y, x);
-      }));
+var I2 = Belt_Id.comparable(function (x, y) {
+      return Caml_primitive.caml_int_compare(y, x);
+    });
 
 var m_cmp = Icmp2.cmp;
 

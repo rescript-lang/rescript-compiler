@@ -16,13 +16,13 @@ function f(h) {
     });
 }
 
-f((function (prim, prim$1) {
-        return prim + prim$1 | 0;
-      }));
+f(function (prim, prim$1) {
+      return prim + prim$1 | 0;
+    });
 
-f((function (prim, prim$1) {
-        return prim + prim$1 | 0;
-      }));
+f(function (prim, prim$1) {
+      return prim + prim$1 | 0;
+    });
 
 var a = v.contents;
 
@@ -38,13 +38,13 @@ function f$1(h) {
     });
 }
 
-f$1((function (prim, prim$1) {
-        return prim + prim$1 | 0;
-      }));
+f$1(function (prim, prim$1) {
+      return prim + prim$1 | 0;
+    });
 
-f$1((function (prim, prim$1) {
-        return prim + prim$1 | 0;
-      }));
+f$1(function (prim, prim$1) {
+      return prim + prim$1 | 0;
+    });
 
 var b = v$1.contents;
 
@@ -56,13 +56,13 @@ function f$2(h) {
   return Curry._2(h, 2, (v$2.contents = v$2.contents + 1 | 0, 3));
 }
 
-f$2((function (prim, prim$1) {
-        return prim + prim$1 | 0;
-      }));
+f$2(function (prim, prim$1) {
+      return prim + prim$1 | 0;
+    });
 
-f$2((function (prim, prim$1) {
-        return prim + prim$1 | 0;
-      }));
+f$2(function (prim, prim$1) {
+      return prim + prim$1 | 0;
+    });
 
 var c = v$2.contents;
 

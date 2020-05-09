@@ -57,18 +57,18 @@ function fail(param) {
 
 function thenTest(param) {
   var p = Promise.resolve(4);
-  return p.then((function (x) {
-                return Promise.resolve(assert_bool(x === 4));
-              }));
+  return p.then(function (x) {
+              return Promise.resolve(assert_bool(x === 4));
+            });
 }
 
 function andThenTest(param) {
   var p = Promise.resolve(6);
-  return p.then((function (param) {
-                  return Promise.resolve(12);
-                })).then((function (y) {
-                return Promise.resolve(assert_bool(y === 12));
-              }));
+  return p.then(function (param) {
+                return Promise.resolve(12);
+              }).then(function (y) {
+              return Promise.resolve(assert_bool(y === 12));
+            });
 }
 
 var h = Promise.resolve(undefined);
@@ -98,74 +98,74 @@ function catchTest(param) {
 
 function orResolvedTest(param) {
   var p = Promise.resolve(42);
-  return p.catch((function (param) {
-                    return Promise.resolve(22);
-                  })).then((function (value) {
-                  return Promise.resolve(assert_bool(value === 42));
-                })).catch(fail);
+  return p.catch(function (param) {
+                  return Promise.resolve(22);
+                }).then(function (value) {
+                return Promise.resolve(assert_bool(value === 42));
+              }).catch(fail);
 }
 
 function orRejectedTest(param) {
   var p = Promise.reject({
         RE_EXN_ID: "Not_found"
       });
-  return p.catch((function (param) {
-                    return Promise.resolve(22);
-                  })).then((function (value) {
-                  return Promise.resolve(assert_bool(value === 22));
-                })).catch(fail);
+  return p.catch(function (param) {
+                  return Promise.resolve(22);
+                }).then(function (value) {
+                return Promise.resolve(assert_bool(value === 22));
+              }).catch(fail);
 }
 
 function orElseResolvedTest(param) {
   var p = Promise.resolve(42);
-  return p.catch((function (param) {
-                    return Promise.resolve(22);
-                  })).then((function (value) {
-                  return Promise.resolve(assert_bool(value === 42));
-                })).catch(fail);
+  return p.catch(function (param) {
+                  return Promise.resolve(22);
+                }).then(function (value) {
+                return Promise.resolve(assert_bool(value === 42));
+              }).catch(fail);
 }
 
 function orElseRejectedResolveTest(param) {
   var p = Promise.reject({
         RE_EXN_ID: "Not_found"
       });
-  return p.catch((function (param) {
-                    return Promise.resolve(22);
-                  })).then((function (value) {
-                  return Promise.resolve(assert_bool(value === 22));
-                })).catch(fail);
+  return p.catch(function (param) {
+                  return Promise.resolve(22);
+                }).then(function (value) {
+                return Promise.resolve(assert_bool(value === 22));
+              }).catch(fail);
 }
 
 function orElseRejectedRejectTest(param) {
   var p = Promise.reject({
         RE_EXN_ID: "Not_found"
       });
-  return p.catch((function (param) {
-                    return Promise.reject({
-                                RE_EXN_ID: "Stack_overflow"
-                              });
-                  })).then(fail).catch((function (error) {
-                var match = Caml_exceptions.caml_is_extension(error) && error.RE_EXN_ID === "Stack_overflow" ? 0 : undefined;
-                if (match !== undefined) {
-                  return h;
-                }
-                throw {
-                      RE_EXN_ID: "Assert_failure",
-                      _1: /* tuple */[
-                        "js_promise_basic_test.ml",
-                        77,
-                        18
-                      ],
-                      Error: new Error()
-                    };
-              }));
+  return p.catch(function (param) {
+                  return Promise.reject({
+                              RE_EXN_ID: "Stack_overflow"
+                            });
+                }).then(fail).catch(function (error) {
+              var match = Caml_exceptions.caml_is_extension(error) && error.RE_EXN_ID === "Stack_overflow" ? 0 : undefined;
+              if (match !== undefined) {
+                return h;
+              }
+              throw {
+                    RE_EXN_ID: "Assert_failure",
+                    _1: /* tuple */[
+                      "js_promise_basic_test.ml",
+                      77,
+                      18
+                    ],
+                    Error: new Error()
+                  };
+            });
 }
 
 function resolveTest(param) {
   var p1 = Promise.resolve(10);
-  return p1.then((function (x) {
-                return Promise.resolve(assert_bool(x === 10));
-              }));
+  return p1.then(function (x) {
+              return Promise.resolve(assert_bool(x === 10));
+            });
 }
 
 function rejectTest(param) {
@@ -177,9 +177,9 @@ function rejectTest(param) {
 
 function thenCatchChainResolvedTest(param) {
   var p = Promise.resolve(20);
-  return p.then((function (value) {
-                  return Promise.resolve(assert_bool(value === 20));
-                })).catch(fail);
+  return p.then(function (value) {
+                return Promise.resolve(assert_bool(value === 20));
+              }).catch(fail);
 }
 
 function thenCatchChainRejectedTest(param) {
@@ -198,12 +198,12 @@ function allResolvedTest(param) {
     p2,
     p3
   ];
-  return Promise.all(promises).then((function (resolved) {
-                assert_bool(Caml_array.caml_array_get(resolved, 0) === 1);
-                assert_bool(Caml_array.caml_array_get(resolved, 1) === 2);
-                assert_bool(Caml_array.caml_array_get(resolved, 2) === 3);
-                return h;
-              }));
+  return Promise.all(promises).then(function (resolved) {
+              assert_bool(Caml_array.caml_array_get(resolved, 0) === 1);
+              assert_bool(Caml_array.caml_array_get(resolved, 1) === 2);
+              assert_bool(Caml_array.caml_array_get(resolved, 2) === 3);
+              return h;
+            });
 }
 
 function allRejectTest(param) {
@@ -217,12 +217,12 @@ function allRejectTest(param) {
     p2,
     p3
   ];
-  return Promise.all(promises).then(fail).catch((function (error) {
-                assert_bool(error === ({
-                        RE_EXN_ID: "Not_found"
-                      }));
-                return h;
-              }));
+  return Promise.all(promises).then(fail).catch(function (error) {
+              assert_bool(error === ({
+                      RE_EXN_ID: "Not_found"
+                    }));
+              return h;
+            });
 }
 
 function raceTest(param) {
@@ -234,9 +234,9 @@ function raceTest(param) {
     p2,
     p3
   ];
-  return Promise.race(promises).then((function (resolved) {
-                  return h;
-                })).catch(fail);
+  return Promise.race(promises).then(function (resolved) {
+                return h;
+              }).catch(fail);
 }
 
 function createPromiseRejectTest(param) {
@@ -244,21 +244,21 @@ function createPromiseRejectTest(param) {
                   return reject({
                               RE_EXN_ID: "Not_found"
                             });
-                })).catch((function (error) {
-                assert_bool(error === ({
-                        RE_EXN_ID: "Not_found"
-                      }));
-                return h;
-              }));
+                })).catch(function (error) {
+              assert_bool(error === ({
+                      RE_EXN_ID: "Not_found"
+                    }));
+              return h;
+            });
 }
 
 function createPromiseFulfillTest(param) {
   return new Promise((function (resolve, param) {
                     return resolve("success");
-                  })).then((function (resolved) {
-                  assert_bool(resolved === "success");
-                  return h;
-                })).catch(fail);
+                  })).then(function (resolved) {
+                assert_bool(resolved === "success");
+                return h;
+              }).catch(fail);
 }
 
 thenTest(undefined);
@@ -294,16 +294,16 @@ createPromiseFulfillTest(undefined);
 Promise.all(/* tuple */[
         Promise.resolve(2),
         Promise.resolve(3)
-      ]).then((function (param) {
-        eq("File \"js_promise_basic_test.ml\", line 169, characters 7-14", /* tuple */[
-              param[0],
-              param[1]
-            ], /* tuple */[
-              2,
-              3
-            ]);
-        return Promise.resolve(undefined);
-      }));
+      ]).then(function (param) {
+      eq("File \"js_promise_basic_test.ml\", line 169, characters 7-14", /* tuple */[
+            param[0],
+            param[1]
+          ], /* tuple */[
+            2,
+            3
+          ]);
+      return Promise.resolve(undefined);
+    });
 
 console.log(List.length(suites.contents));
 
@@ -324,22 +324,22 @@ function re(prim) {
 Mt.from_promise_suites("Js_promise_basic_test", /* :: */[
       /* tuple */[
         "File \"js_promise_basic_test.ml\", line 187, characters 4-11",
-        twop.then((function (x) {
-                return Promise.resolve(/* Eq */Block.__(0, [
-                              x,
-                              2
-                            ]));
-              }))
+        twop.then(function (x) {
+              return Promise.resolve(/* Eq */Block.__(0, [
+                            x,
+                            2
+                          ]));
+            })
       ],
       /* :: */[
         /* tuple */[
           "File \"js_promise_basic_test.ml\", line 190, characters 4-11",
-          twop.then((function (x) {
-                  return Promise.resolve(/* Neq */Block.__(1, [
-                                x,
-                                3
-                              ]));
-                }))
+          twop.then(function (x) {
+                return Promise.resolve(/* Neq */Block.__(1, [
+                              x,
+                              3
+                            ]));
+              })
         ],
         /* [] */0
       ]
