@@ -376,10 +376,10 @@ let rec
   P.paren_group f 1 (fun _ -> expression ~level:1 cxt f function_id  )
 
 
-and  pp_function is_method
-    cxt (f : P.t) ?(name=No_name)  (return : bool)
+and  pp_function ~is_method
+    cxt (f : P.t) ?(name=No_name)  ~is_return
     (l : Ident.t list) (b : J.block) (env : Js_fun_env.t ) : cxt =
-  match b, (name,  return)  with
+  match b, (name,  is_return)  with
   | [ {statement_desc =
          Return {return_value =
                    {expression_desc =
@@ -409,7 +409,7 @@ and  pp_function is_method
        semi f ;
        cxt
      | No_name ->
-       if return then 
+       if is_return then 
          return_sp f ;
        optimize len ~p:(arity = NA && len <=8) cxt f v)
 
@@ -512,7 +512,7 @@ and  pp_function is_method
            (*TODO: when calculating lexical we should not include itself *)
            Set_ident.remove lexical name
          | _ -> lexical) in
-    enclose lexical return;
+    enclose lexical is_return;
     outer_cxt
 
 
@@ -590,8 +590,8 @@ and expression_desc cxt ~(level:int) f x : cxt  =
       let cxt = expression ~level:0 cxt f e1 in
       comma_sp f;
       expression ~level:0 cxt f e2 )
-  | Fun (method_, l, b, env) ->  (* TODO: dump for comments *)
-    pp_function method_ cxt f false  l b env
+  | Fun (is_method, l, b, env) ->  (* TODO: dump for comments *)
+    pp_function ~is_method cxt f ~is_return:false  l b env
   (* TODO:
      when [e] is [Js_raw_code] with arity
      print it in a more precise way
@@ -1027,10 +1027,10 @@ and variable_declaration top cxt f
       statement_desc top cxt f (J.Exp e)
     | _ ->
       match e.expression_desc, top  with
-      | Fun (method_, params, b, env ), _ ->
-        pp_function method_ cxt f
+      | Fun (is_method, params, b, env ), _ ->
+        pp_function ~is_method cxt f
           ~name:(if top then Name_top name else Name_non_top name)
-          false params b env      
+          ~is_return:false params b env      
       | Raw_js_function(s,params), true ->     
         P.string f L.function_;             
         P.space f ; 
@@ -1249,9 +1249,9 @@ and statement_desc top cxt f (s : J.statement_desc) : cxt =
 
   | Return {return_value = e} ->
     begin match e.expression_desc with
-      | Fun (method_,  l, b, env) ->
+      | Fun (is_method,  l, b, env) ->
         let cxt =
-          pp_function method_ cxt f true l b env in
+          pp_function ~is_method cxt f ~is_return:true l b env in
         semi f ; cxt
       | Undefined ->  
         return_sp f;
