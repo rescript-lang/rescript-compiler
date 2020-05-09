@@ -16,15 +16,14 @@
 
 (* Internals of forcing lazy values. *)
 type 'a t = {
-  mutable tag : int [@bs.as "tag"] ; 
+  mutable tag : string [@bs.as "RE_LAZY"] ; 
   (* Invariant: name  *)
-  mutable value : 'a (* [@bs.as "val"] *)
-  (* its type is ['a] or [unit -> 'a ] *)
+  mutable value : 'a (* its type is ['a] or [unit -> 'a ] *)
 }
 
 
-let%private lazy_tag = 246
-let%private forward_tag = 250
+let%private status_todo = "todo" (* used to be lazy tag in native *)
+let%private status_done = "done" (* used to be forward_tag in native *)
 external%private magic : 'a -> 'b = "%identity"
 external%private fnToVal : (unit -> 'a [@bs]) -> 'a = "%identity"
 external%private valToFn :  'a -> (unit -> 'a [@bs])  = "%identity"
@@ -37,18 +36,18 @@ let%private lazy_boxed (type a) (l : a ) : bool  =
   if Js.testAny l then false 
   else   
     let t = (magic l : _ t  ).tag in 
-    t = forward_tag || t = lazy_tag  
+    t = status_done || t = status_todo  
 
 let is_val (type a ) (l : a lazy_t) : bool = 
-  Js.testAny l || ((castToConcrete l ).tag  <> lazy_tag)
+  Js.testAny l || ((castToConcrete l ).tag  <> status_todo)
 
 let from_fun (type arg ) f : arg lazy_t = 
-  castToLazy {tag = lazy_tag; value = fnToVal f}
+  castToLazy {tag = status_todo; value = fnToVal f}
 
 
 let from_val (type arg ) (v : arg) : arg lazy_t=
   if lazy_boxed v  then begin
-    castToLazy {tag = forward_tag ; value = v} 
+    castToLazy {tag = status_done ; value = v} 
   end else begin
     lazyBox v 
   end    
@@ -59,7 +58,7 @@ let%private forward_with_closure (type a ) (blk : a t) (closure : unit -> a [@bs
   let result = closure () [@bs] in
   (* do set_field BEFORE set_tag *)
   blk.value <- result;
-  blk.tag<- forward_tag;
+  blk.tag<- status_done;
   result
 
 
