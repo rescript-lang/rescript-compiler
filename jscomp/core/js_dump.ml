@@ -465,11 +465,9 @@ and  pp_function ~is_method
            match fn_state with
            | Is_return -> 
              return_sp f ;
-             (* see # 1692, add a paren for annoymous function for safety  *)
-             P.paren_group f 1  (fun _ ->
-                 P.string f L.function_;
-                 P.space f ;
-                 param_body ())                
+             P.string f L.function_;
+             P.space f ;
+             param_body ()                
            | No_name {single_arg } ->
              (* see # 1692, add a paren for annoymous function for safety  *)
              P.cond_paren_group f (not single_arg) 1  (fun _ ->
