@@ -19,12 +19,12 @@ var shared$2 = [
 function x0_init($$class) {
   var v = CamlinternalOO.new_variable($$class, "");
   var x = CamlinternalOO.new_variable($$class, "x");
-  return (function (env, self, v$1) {
-      var self$1 = CamlinternalOO.create_object_opt(self, $$class);
-      self$1[v] = v$1;
-      self$1[x] = v$1 + 2 | 0;
-      return self$1;
-    });
+  return function (env, self, v$1) {
+    var self$1 = CamlinternalOO.create_object_opt(self, $$class);
+    self$1[v] = v$1;
+    self$1[x] = v$1 + 2 | 0;
+    return self$1;
+  };
 }
 
 var x0 = CamlinternalOO.make_class(0, x0_init);
@@ -37,12 +37,12 @@ function x_init($$class) {
   CamlinternalOO.set_method($$class, get_x, (function (self$2) {
           return self$2[x];
         }));
-  return (function (env, self, v$1) {
-      var self$1 = CamlinternalOO.create_object_opt(self, $$class);
-      self$1[v] = v$1;
-      self$1[x] = v$1;
-      return self$1;
-    });
+  return function (env, self, v$1) {
+    var self$1 = CamlinternalOO.create_object_opt(self, $$class);
+    self$1[v] = v$1;
+    self$1[x] = v$1;
+    return self$1;
+  };
 }
 
 var x = CamlinternalOO.make_class(shared$1, x_init);
@@ -93,12 +93,12 @@ function xx_init($$class) {
             return copy;
           })
       ]);
-  return (function (env, self, x$1) {
-      var self$1 = CamlinternalOO.create_object_opt(self, $$class);
-      self$1[x] = x$1;
-      self$1[money] = x$1;
-      return self$1;
-    });
+  return function (env, self, x$1) {
+    var self$1 = CamlinternalOO.create_object_opt(self, $$class);
+    self$1[x] = x$1;
+    self$1[money] = x$1;
+    return self$1;
+  };
 }
 
 var xx = CamlinternalOO.make_class(shared$2, xx_init);
@@ -154,11 +154,11 @@ function point_init($$class) {
             return Curry._1(self$4[0][get_x], self$4) + 5 | 0;
           })
       ]);
-  return (function (env, self) {
-      var self$1 = CamlinternalOO.create_object_opt(self, $$class);
-      self$1[x] = 0;
-      return self$1;
-    });
+  return function (env, self) {
+    var self$1 = CamlinternalOO.create_object_opt(self, $$class);
+    self$1[x] = 0;
+    return self$1;
+  };
 }
 
 var point = CamlinternalOO.make_class([
@@ -207,15 +207,15 @@ function xx0_init($$class) {
             return copy;
           })
       ]);
-  return (function (env, self, x$1) {
-      var self$1 = CamlinternalOO.create_object_opt(self, $$class);
-      self$1[x] = x$1;
-      self$1[money] = x$1;
-      self$1[a0] = 0;
-      self$1[a1] = 1;
-      self$1[a2] = 2;
-      return self$1;
-    });
+  return function (env, self, x$1) {
+    var self$1 = CamlinternalOO.create_object_opt(self, $$class);
+    self$1[x] = x$1;
+    self$1[money] = x$1;
+    self$1[a0] = 0;
+    self$1[a1] = 1;
+    self$1[a2] = 2;
+    return self$1;
+  };
 }
 
 var xx0 = CamlinternalOO.make_class(shared$2, xx0_init);

@@ -965,25 +965,25 @@ function reset_table(a) {
 }
 
 function mark_used_indices(tbl) {
-  return (function (param) {
-      return List.iter((function (param) {
-                    switch (param.tag | 0) {
-                      case /* TSeq */0 :
-                          return mark_used_indices(tbl)(param[0]);
-                      case /* TExp */1 :
-                      case /* TMatch */2 :
-                          break;
-                      
-                    }
-                    return List.iter((function (param) {
-                                  var i = param[1];
-                                  if (i >= 0) {
-                                    return Caml_array.caml_array_set(tbl, i, true);
-                                  }
-                                  
-                                }), param[0].marks);
-                  }), param);
-    });
+  return function (param) {
+    return List.iter((function (param) {
+                  switch (param.tag | 0) {
+                    case /* TSeq */0 :
+                        return mark_used_indices(tbl)(param[0]);
+                    case /* TExp */1 :
+                    case /* TMatch */2 :
+                        break;
+                    
+                  }
+                  return List.iter((function (param) {
+                                var i = param[1];
+                                if (i >= 0) {
+                                  return Caml_array.caml_array_set(tbl, i, true);
+                                }
+                                
+                              }), param[0].marks);
+                }), param);
+  };
 }
 
 function find_free(tbl, _idx, len) {
@@ -1009,16 +1009,16 @@ function free_index(tbl_ref, l) {
   return idx;
 }
 
-var remove_matches = List.filter((function (param) {
-        switch (param.tag | 0) {
-          case /* TSeq */0 :
-          case /* TExp */1 :
-              return true;
-          case /* TMatch */2 :
-              return false;
-          
-        }
-      }));
+var remove_matches = List.filter(function (param) {
+      switch (param.tag | 0) {
+        case /* TSeq */0 :
+        case /* TExp */1 :
+            return true;
+        case /* TMatch */2 :
+            return false;
+        
+      }
+    });
 
 function split_at_match_rec(_l$prime, _param) {
   while(true) {
@@ -1158,14 +1158,14 @@ function set_idx(idx, param) {
 
 function filter_marks(b, e, marks) {
   return {
-          marks: List.filter((function (param) {
-                    var i = param[0];
-                    if (i < b) {
-                      return true;
-                    } else {
-                      return i > e;
-                    }
-                  }))(marks.marks),
+          marks: List.filter(function (param) {
+                  var i = param[0];
+                  if (i < b) {
+                    return true;
+                  } else {
+                    return i > e;
+                  }
+                })(marks.marks),
           pmarks: marks.pmarks
         };
 }

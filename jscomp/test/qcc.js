@@ -59,9 +59,9 @@ function bufferize(f) {
         ];
 }
 
-var match = bufferize((function (param) {
-        return Caml_external_polyfill.resolve("caml_ml_input_char")(inch.contents);
-      }));
+var match = bufferize(function (param) {
+      return Caml_external_polyfill.resolve("caml_ml_input_char")(inch.contents);
+    });
 
 var ungetch = match[1];
 
@@ -1580,13 +1580,13 @@ function elfgen(outf) {
   out(3845);
   var off = 232 + gpos.contents | 0;
   var itr = function (f) {
-    return symitr((function (i, s) {
-                  var g = Caml_array.caml_array_get(globs, i);
-                  if (g.va < 0 && g.loc !== 0) {
-                    return Curry._3(f, s, s.length, g.loc);
-                  }
-                  
-                }));
+    return symitr(function (i, s) {
+                var g = Caml_array.caml_array_get(globs, i);
+                if (g.va < 0 && g.loc !== 0) {
+                  return Curry._3(f, s, s.length, g.loc);
+                }
+                
+              });
   };
   var va = function (x) {
     return (x + off | 0) + 4194304 | 0;
@@ -1606,47 +1606,47 @@ function elfgen(outf) {
   opos.contents = opos.contents + 1 | 0;
   $$String.blit("/lib64/ld-linux-x86-64.so.2\0libc.so.6", 0, obuf, opos.contents, 37);
   opos.contents = (opos.contents + 37 | 0) + 1 | 0;
-  itr((function (s, sl, param) {
-          $$String.blit(s, 0, obuf, opos.contents, sl);
-          opos.contents = (opos.contents + sl | 0) + 1 | 0;
-          
-        }));
+  itr(function (s, sl, param) {
+        $$String.blit(s, 0, obuf, opos.contents, sl);
+        opos.contents = (opos.contents + sl | 0) + 1 | 0;
+        
+      });
   opos.contents = opos.contents + 7 & -8;
   var symtab = opos.contents;
   var n = {
     contents: 39
   };
   opos.contents = opos.contents + 24 | 0;
-  itr((function (param, sl, param$1) {
-          le(32, n.contents);
-          le(32, 16);
-          le(64, 0);
-          le(64, 0);
-          n.contents = (n.contents + sl | 0) + 1 | 0;
-          
-        }));
+  itr(function (param, sl, param$1) {
+        le(32, n.contents);
+        le(32, 16);
+        le(64, 0);
+        le(64, 0);
+        n.contents = (n.contents + sl | 0) + 1 | 0;
+        
+      });
   var rel = opos.contents;
   var n$1 = {
     contents: 1
   };
-  itr((function (param, param$1, l) {
-          var genrel = function (_l) {
-            while(true) {
-              var l = _l;
-              if (l === 0) {
-                return ;
-              }
-              le(64, va(l));
-              le(64, 1 + (n$1.contents << 32) | 0);
-              le(64, 0);
-              _l = get32(l);
-              continue ;
-            };
+  itr(function (param, param$1, l) {
+        var genrel = function (_l) {
+          while(true) {
+            var l = _l;
+            if (l === 0) {
+              return ;
+            }
+            le(64, va(l));
+            le(64, 1 + (n$1.contents << 32) | 0);
+            le(64, 0);
+            _l = get32(l);
+            continue ;
           };
-          genrel(l);
-          n$1.contents = n$1.contents + 1 | 0;
-          
-        }));
+        };
+        genrel(l);
+        n$1.contents = n$1.contents + 1 | 0;
+        
+      });
   var hash = opos.contents;
   var n$2 = ((rel - symtab | 0) / 24 | 0) - 1 | 0;
   le(32, 1);

@@ -30,36 +30,36 @@ var xs = Array.prototype.map.call([
       1,
       2
     ], (function (x) {
-        return (function (y) {
-            return (y + x | 0) + 1 | 0;
-          });
+        return function (y) {
+          return (y + x | 0) + 1 | 0;
+        };
       }));
 
 function f_0(param) {
-  return hi((function () {
-                
-              }));
+  return hi(function () {
+              
+            });
 }
 
 function f_01(param) {
-  return hi((function () {
-                console.log("x");
-                
-              }));
+  return hi(function () {
+              console.log("x");
+              
+            });
 }
 
 function f_02(xs) {
-  return hi((function () {
-                xs.contents = undefined;
-                console.log("x");
-                
-              }));
+  return hi(function () {
+              xs.contents = undefined;
+              console.log("x");
+              
+            });
 }
 
 function f_03(xs, u) {
-  return hi((function () {
-                return Curry._1(u, undefined);
-              }));
+  return hi(function () {
+              return Curry._1(u, undefined);
+            });
 }
 
 function fishy(x, y, z) {
@@ -124,13 +124,13 @@ function unit_magic(param) {
 var f_unit_magic = unit_magic(undefined);
 
 function hh(xs) {
-  return (function (param) {
-      Caml_splice_call.spliceApply(f_0002, [
-            xs,
-            param
-          ]);
-      
-    });
+  return function (param) {
+    Caml_splice_call.spliceApply(f_0002, [
+          xs,
+          param
+        ]);
+    
+  };
 }
 
 exports.Curry = Curry$1;

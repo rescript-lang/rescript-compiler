@@ -1992,13 +1992,13 @@ function process_collision(dir, c1, c2, state) {
 
 function broad_phase(collid, all_collids, state) {
   var obj = collid[2];
-  return List.filter((function (c) {
-                  if (in_viewport(state.vpt, obj.pos) || is_player(collid)) {
-                    return true;
-                  } else {
-                    return out_of_viewport_below(state.vpt, obj.pos.y);
-                  }
-                }))(all_collids);
+  return List.filter(function (c) {
+                if (in_viewport(state.vpt, obj.pos) || is_player(collid)) {
+                  return true;
+                } else {
+                  return out_of_viewport_below(state.vpt, obj.pos.y);
+                }
+              })(all_collids);
 }
 
 function check_collisions(collid, all_collids, state) {
@@ -2228,9 +2228,9 @@ function update_loop(canvas, param, map_dim) {
           }), parts);
     fps(canvas, fps$1);
     hud(canvas, state$1.score, state$1.coins);
-    requestAnimationFrame((function (t) {
-            return update_helper(t, state$1, player$1, collid_objs.contents, particles.contents);
-          }));
+    requestAnimationFrame(function (t) {
+          return update_helper(t, state$1, player$1, collid_objs.contents, particles.contents);
+        });
     
   };
   return update_helper(0, state, player, param[1], /* [] */0);

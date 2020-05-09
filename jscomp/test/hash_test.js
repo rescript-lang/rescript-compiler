@@ -17,9 +17,9 @@ var test_id = {
 };
 
 function eq(f) {
-  return (function (param, param$1) {
-      return Mt_global.collect_eq(test_id, suites, f, param, param$1);
-    });
+  return function (param, param$1) {
+    return Mt_global.collect_eq(test_id, suites, f, param, param$1);
+  };
 }
 
 var test_strings = $$Array.init(32, (function (i) {

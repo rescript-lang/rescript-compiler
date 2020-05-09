@@ -29,11 +29,11 @@ function point_init($$class) {
             
           })
       ]);
-  return (function (env, self) {
-      var self$1 = CamlinternalOO.create_object_opt(self, $$class);
-      self$1[x] = 0;
-      return self$1;
-    });
+  return function (env, self) {
+    var self$1 = CamlinternalOO.create_object_opt(self, $$class);
+    self$1[x] = 0;
+    return self$1;
+  };
 }
 
 var point = CamlinternalOO.make_class(shared$1, point_init);
@@ -66,12 +66,12 @@ function point2_init($$class) {
             
           })
       ]);
-  return (function (env, self) {
-      var self$1 = CamlinternalOO.create_object_opt(self, $$class);
-      x0.contents = x0.contents + 1 | 0;
-      self$1[x] = x0.contents;
-      return self$1;
-    });
+  return function (env, self) {
+    var self$1 = CamlinternalOO.create_object_opt(self, $$class);
+    x0.contents = x0.contents + 1 | 0;
+    self$1[x] = x0.contents;
+    return self$1;
+  };
 }
 
 var point2 = CamlinternalOO.make_class(shared$1, point2_init);

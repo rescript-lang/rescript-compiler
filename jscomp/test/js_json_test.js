@@ -71,22 +71,9 @@ add_test("File \"js_json_test.ml\", line 23, characters 11-18", (function (param
         if (ty2.tag !== /* JSONArray */3) {
           return /* Ok */Block.__(4, [false]);
         }
-        ty2[0].forEach((function (x) {
-                var ty3 = Js_json.classify(x);
-                if (typeof ty3 === "number") {
-                  throw {
-                        RE_EXN_ID: "Assert_failure",
-                        _1: /* tuple */[
-                          "js_json_test.ml",
-                          37,
-                          21
-                        ],
-                        Error: new Error()
-                      };
-                }
-                if (ty3.tag === /* JSONNumber */1) {
-                  return ;
-                }
+        ty2[0].forEach(function (x) {
+              var ty3 = Js_json.classify(x);
+              if (typeof ty3 === "number") {
                 throw {
                       RE_EXN_ID: "Assert_failure",
                       _1: /* tuple */[
@@ -96,7 +83,20 @@ add_test("File \"js_json_test.ml\", line 23, characters 11-18", (function (param
                       ],
                       Error: new Error()
                     };
-              }));
+              }
+              if (ty3.tag === /* JSONNumber */1) {
+                return ;
+              }
+              throw {
+                    RE_EXN_ID: "Assert_failure",
+                    _1: /* tuple */[
+                      "js_json_test.ml",
+                      37,
+                      21
+                    ],
+                    Error: new Error()
+                  };
+            });
         return /* Ok */Block.__(4, [true]);
       }));
 

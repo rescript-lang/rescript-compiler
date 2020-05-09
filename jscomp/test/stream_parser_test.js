@@ -134,9 +134,9 @@ var lexer = Genlex.make_lexer(/* :: */[
 
 function token(chars) {
   var strm = lexer(chars);
-  return (function (param) {
-      return Stream.next(strm);
-    });
+  return function (param) {
+    return Stream.next(strm);
+  };
 }
 
 function l_parse(token) {

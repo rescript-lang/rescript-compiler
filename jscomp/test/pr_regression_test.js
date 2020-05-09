@@ -11,18 +11,18 @@ var v = {
 function f(h) {
   v.contents = v.contents + 1 | 0;
   var partial_arg = 3;
-  return (function (param) {
-      return Curry._2(h, partial_arg, param);
-    });
+  return function (param) {
+    return Curry._2(h, partial_arg, param);
+  };
 }
 
-f((function (prim, prim$1) {
-        return prim + prim$1 | 0;
-      }));
+f(function (prim, prim$1) {
+      return prim + prim$1 | 0;
+    });
 
-f((function (prim, prim$1) {
-        return prim + prim$1 | 0;
-      }));
+f(function (prim, prim$1) {
+      return prim + prim$1 | 0;
+    });
 
 var a = v.contents;
 
@@ -33,18 +33,18 @@ var v$1 = {
 function f$1(h) {
   v$1.contents = v$1.contents + 1 | 0;
   var partial_arg = 3;
-  return (function (param) {
-      return Curry._2(h, partial_arg, param);
-    });
+  return function (param) {
+    return Curry._2(h, partial_arg, param);
+  };
 }
 
-f$1((function (prim, prim$1) {
-        return prim + prim$1 | 0;
-      }));
+f$1(function (prim, prim$1) {
+      return prim + prim$1 | 0;
+    });
 
-f$1((function (prim, prim$1) {
-        return prim + prim$1 | 0;
-      }));
+f$1(function (prim, prim$1) {
+      return prim + prim$1 | 0;
+    });
 
 var b = v$1.contents;
 
@@ -56,13 +56,13 @@ function f$2(h) {
   return Curry._2(h, 2, (v$2.contents = v$2.contents + 1 | 0, 3));
 }
 
-f$2((function (prim, prim$1) {
-        return prim + prim$1 | 0;
-      }));
+f$2(function (prim, prim$1) {
+      return prim + prim$1 | 0;
+    });
 
-f$2((function (prim, prim$1) {
-        return prim + prim$1 | 0;
-      }));
+f$2(function (prim, prim$1) {
+      return prim + prim$1 | 0;
+    });
 
 var c = v$2.contents;
 
@@ -73,9 +73,9 @@ var v$3 = {
 function f$3(h, g) {
   v$3.contents = v$3.contents + 1 | 0;
   var partial_arg = 9;
-  return (function (param) {
-      return Curry._2(h, partial_arg, param);
-    });
+  return function (param) {
+    return Curry._2(h, partial_arg, param);
+  };
 }
 
 f$3((function (prim, prim$1) {

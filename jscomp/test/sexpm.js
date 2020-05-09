@@ -895,14 +895,14 @@ function parse_chan_gen(bufsize, ic) {
   var d = make(bufsize, (function (param, param$1, param$2) {
           return Pervasives.input(ic, param, param$1, param$2);
         }));
-  return (function (param) {
-      var e = next(d);
-      if (typeof e === "number") {
-        return ;
-      } else {
-        return e;
-      }
-    });
+  return function (param) {
+    var e = next(d);
+    if (typeof e === "number") {
+      return ;
+    } else {
+      return e;
+    }
+  };
 }
 
 function parse_chan_list(bufsize, ic) {

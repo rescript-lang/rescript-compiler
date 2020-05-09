@@ -46,9 +46,9 @@ var m00 = {
   data: undefined
 };
 
-var I2 = Belt_Id.comparable((function (x, y) {
-        return Caml_primitive.caml_int_compare(y, x);
-      }));
+var I2 = Belt_Id.comparable(function (x, y) {
+      return Caml_primitive.caml_int_compare(y, x);
+    });
 
 var m_cmp = Icmp2.cmp;
 
@@ -106,9 +106,9 @@ function f(param) {
 }
 
 function $eq$tilde(a, b) {
-  return (function (param) {
-      return Belt_Map.eq(a, b, param);
-    });
+  return function (param) {
+    return Belt_Map.eq(a, b, param);
+  };
 }
 
 var u0 = f(Belt_Array.map(Array_data_util.randomRange(0, 39), (function (x) {

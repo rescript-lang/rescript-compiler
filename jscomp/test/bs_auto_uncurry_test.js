@@ -38,21 +38,21 @@ var xs = {
   contents: /* [] */0
 };
 
-hi((function () {
-        xs.contents = /* :: */[
-          undefined,
-          xs.contents
-        ];
-        
-      }));
+hi(function () {
+      xs.contents = /* :: */[
+        undefined,
+        xs.contents
+      ];
+      
+    });
 
-hi((function () {
-        xs.contents = /* :: */[
-          undefined,
-          xs.contents
-        ];
-        
-      }));
+hi(function () {
+      xs.contents = /* :: */[
+        undefined,
+        xs.contents
+      ];
+      
+    });
 
 eq("File \"bs_auto_uncurry_test.ml\", line 27, characters 7-14", xs.contents, /* :: */[
       undefined,
@@ -66,9 +66,9 @@ eq("File \"bs_auto_uncurry_test.ml\", line 33, characters 7-14", [
         1,
         2,
         3
-      ].map((function (x) {
-            return x + 1 | 0;
-          })), [
+      ].map(function (x) {
+          return x + 1 | 0;
+        }), [
       2,
       3,
       4
@@ -78,9 +78,9 @@ eq("File \"bs_auto_uncurry_test.ml\", line 36, characters 7-14", [
         1,
         2,
         3
-      ].map((function (x) {
-            return x + 1 | 0;
-          })), [
+      ].map(function (x) {
+          return x + 1 | 0;
+        }), [
       2,
       3,
       4
@@ -106,17 +106,17 @@ eq("File \"bs_auto_uncurry_test.ml\", line 48, characters 7-14", [
         1,
         2,
         3
-      ].some((function (x) {
-            return x < 1;
-          })), false);
+      ].some(function (x) {
+          return x < 1;
+        }), false);
 
 eq("File \"bs_auto_uncurry_test.ml\", line 52, characters 7-14", [
         1,
         2,
         3
-      ].every((function (x) {
-            return x > 0;
-          })), true);
+      ].every(function (x) {
+          return x > 0;
+        }), true);
 
 Mt.from_pair_suites("Bs_auto_uncurry_test", suites.contents);
 

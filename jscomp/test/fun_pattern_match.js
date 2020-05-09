@@ -13,62 +13,62 @@ function f2(param, param$1) {
 
 function f3(param) {
   var lhs = param.rank;
-  return (function (param) {
-      var rhs = param.rank;
-      if (typeof lhs === "number") {
-        throw {
-              RE_EXN_ID: "Assert_failure",
-              _1: /* tuple */[
-                "fun_pattern_match.ml",
-                44,
-                9
-              ],
-              Error: new Error()
-            };
-      }
-      if (typeof rhs === "number") {
-        throw {
-              RE_EXN_ID: "Assert_failure",
-              _1: /* tuple */[
-                "fun_pattern_match.ml",
-                44,
-                9
-              ],
-              Error: new Error()
-            };
-      }
-      return Caml_primitive.caml_int_compare(lhs[0], rhs[0]);
-    });
+  return function (param) {
+    var rhs = param.rank;
+    if (typeof lhs === "number") {
+      throw {
+            RE_EXN_ID: "Assert_failure",
+            _1: /* tuple */[
+              "fun_pattern_match.ml",
+              44,
+              9
+            ],
+            Error: new Error()
+          };
+    }
+    if (typeof rhs === "number") {
+      throw {
+            RE_EXN_ID: "Assert_failure",
+            _1: /* tuple */[
+              "fun_pattern_match.ml",
+              44,
+              9
+            ],
+            Error: new Error()
+          };
+    }
+    return Caml_primitive.caml_int_compare(lhs[0], rhs[0]);
+  };
 }
 
 function f4(param) {
   var lhs = param.rank;
-  return (function (param) {
-      var rhs = param.rank;
-      if (typeof lhs === "number") {
-        throw {
-              RE_EXN_ID: "Assert_failure",
-              _1: /* tuple */[
-                "fun_pattern_match.ml",
-                52,
-                9
-              ],
-              Error: new Error()
-            };
-      }
-      if (typeof rhs === "number") {
-        throw {
-              RE_EXN_ID: "Assert_failure",
-              _1: /* tuple */[
-                "fun_pattern_match.ml",
-                52,
-                9
-              ],
-              Error: new Error()
-            };
-      }
-      return Caml_primitive.caml_int_compare(lhs[0], rhs[0]);
-    });
+  return function (param) {
+    var rhs = param.rank;
+    if (typeof lhs === "number") {
+      throw {
+            RE_EXN_ID: "Assert_failure",
+            _1: /* tuple */[
+              "fun_pattern_match.ml",
+              52,
+              9
+            ],
+            Error: new Error()
+          };
+    }
+    if (typeof rhs === "number") {
+      throw {
+            RE_EXN_ID: "Assert_failure",
+            _1: /* tuple */[
+              "fun_pattern_match.ml",
+              52,
+              9
+            ],
+            Error: new Error()
+          };
+    }
+    return Caml_primitive.caml_int_compare(lhs[0], rhs[0]);
+  };
 }
 
 var x = /* `A */[

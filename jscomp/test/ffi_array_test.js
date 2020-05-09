@@ -33,9 +33,9 @@ eq("File \"ffi_array_test.ml\", line 12, characters 5-12", [
         2,
         3,
         4
-      ].map((function (x) {
-            return x + 1 | 0;
-          })), [
+      ].map(function (x) {
+          return x + 1 | 0;
+        }), [
       2,
       3,
       4,

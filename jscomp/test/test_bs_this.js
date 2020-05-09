@@ -12,17 +12,17 @@ function even(x) {
 }
 
 function bark(param) {
-  return (function (x, y) {
-      var o = this ;
-      console.log(/* tuple */[
-            o.length,
-            o.x,
-            o.y,
-            x,
-            y
-          ]);
-      return x + y | 0;
-    });
+  return function (x, y) {
+    var o = this ;
+    console.log(/* tuple */[
+          o.length,
+          o.x,
+          o.y,
+          x,
+          y
+        ]);
+    return x + y | 0;
+  };
 }
 
 var js_obj = {

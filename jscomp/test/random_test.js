@@ -19,21 +19,21 @@ var suites = {
 };
 
 function eq(f) {
-  return (function (param, param$1) {
-      return Mt_global.collect_eq(id, suites, f, param, param$1);
-    });
+  return function (param, param$1) {
+    return Mt_global.collect_eq(id, suites, f, param, param$1);
+  };
 }
 
 function neq(f) {
-  return (function (param, param$1) {
-      return Mt_global.collect_neq(id, suites, f, param, param$1);
-    });
+  return function (param, param$1) {
+    return Mt_global.collect_neq(id, suites, f, param, param$1);
+  };
 }
 
 function approx(f) {
-  return (function (param, param$1) {
-      return Mt_global.collect_approx(id, suites, f, param, param$1);
-    });
+  return function (param, param$1) {
+    return Mt_global.collect_approx(id, suites, f, param, param$1);
+  };
 }
 
 Mt_global.collect_neq(id, suites, "File \"random_test.ml\", line 12, characters 6-13", (Random.self_init(undefined), Random.$$int(10000)), (Random.self_init(undefined), Random.$$int(1000)));

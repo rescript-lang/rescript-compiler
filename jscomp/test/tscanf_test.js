@@ -2957,11 +2957,11 @@ function make_read_elem(fmt, f, ib) {
 }
 
 function scan_List(fmt) {
-  return (function (param) {
-      return read_list((function (param, param$1) {
-                    return Curry._1(Scanf.bscanf(param$1, fmt), param);
-                  }), param);
-    });
+  return function (param) {
+    return read_list((function (param, param$1) {
+                  return Curry._1(Scanf.bscanf(param$1, fmt), param);
+                }), param);
+  };
 }
 
 function test36(param) {
@@ -3820,9 +3820,9 @@ function reader(ib, ob) {
 
 function go(param) {
   var ob = $$Buffer.create(17);
-  var ib = Scanf.Scanning.from_function((function (param) {
-          return next_char(ob, param);
-        }));
+  var ib = Scanf.Scanning.from_function(function (param) {
+        return next_char(ob, param);
+      });
   return reader(ib, ob);
 }
 

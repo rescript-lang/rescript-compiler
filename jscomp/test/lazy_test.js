@@ -10,10 +10,10 @@ var u = {
   contents: 3
 };
 
-var v = CamlinternalLazy.from_fun((function () {
-        u.contents = 32;
-        
-      }));
+var v = CamlinternalLazy.from_fun(function () {
+      u.contents = 32;
+      
+    });
 
 function lazy_test(param) {
   var h = u.contents;
@@ -51,15 +51,15 @@ var s = {
   contents: undefined
 };
 
-var set_true = CamlinternalLazy.from_fun((function () {
-        s.contents = 1;
-        
-      }));
+var set_true = CamlinternalLazy.from_fun(function () {
+      s.contents = 1;
+      
+    });
 
-var set_false = CamlinternalLazy.from_fun((function () {
-        s.contents = undefined;
-        
-      }));
+var set_false = CamlinternalLazy.from_fun(function () {
+      s.contents = undefined;
+      
+    });
 
 var h;
 
@@ -83,49 +83,49 @@ var u_v = {
   contents: 0
 };
 
-var u$1 = CamlinternalLazy.from_fun((function () {
-        u_v.contents = 2;
-        
-      }));
+var u$1 = CamlinternalLazy.from_fun(function () {
+      u_v.contents = 2;
+      
+    });
 
 CamlinternalLazy.force(u$1);
 
 var exotic = CamlinternalLazy.force;
 
-var l_from_fun = CamlinternalLazy.from_fun((function () {
+var l_from_fun = CamlinternalLazy.from_fun(function () {
+      return 3;
+    });
+
+var forward_test = CamlinternalLazy.from_fun(function () {
+      var u = 3;
+      u = u + 1 | 0;
+      return u;
+    });
+
+var f005 = CamlinternalLazy.from_fun(function () {
+      return 6;
+    });
+
+var f006 = CamlinternalLazy.from_fun(function () {
+      return function (param) {
         return 3;
-      }));
+      };
+    });
 
-var forward_test = CamlinternalLazy.from_fun((function () {
-        var u = 3;
-        u = u + 1 | 0;
-        return u;
-      }));
+var f007 = CamlinternalLazy.from_fun(function () {
+      throw {
+            RE_EXN_ID: "Not_found",
+            Error: new Error()
+          };
+    });
 
-var f005 = CamlinternalLazy.from_fun((function () {
-        return 6;
-      }));
-
-var f006 = CamlinternalLazy.from_fun((function () {
-        return (function (param) {
-            return 3;
-          });
-      }));
-
-var f007 = CamlinternalLazy.from_fun((function () {
-        throw {
-              RE_EXN_ID: "Not_found",
-              Error: new Error()
-            };
-      }));
-
-var f008 = CamlinternalLazy.from_fun((function () {
-        console.log("hi");
-        throw {
-              RE_EXN_ID: "Not_found",
-              Error: new Error()
-            };
-      }));
+var f008 = CamlinternalLazy.from_fun(function () {
+      console.log("hi");
+      throw {
+            RE_EXN_ID: "Not_found",
+            Error: new Error()
+          };
+    });
 
 var a2 = CamlinternalLazy.from_val;
 

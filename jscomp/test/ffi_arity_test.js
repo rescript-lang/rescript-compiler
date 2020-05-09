@@ -7,13 +7,13 @@ var Caml_int32 = require("../../lib/js/caml_int32.js");
 
 function f(v) {
   if (v % 2 === 0) {
-    return (function (v) {
-        return Caml_int32.imul(v, v);
-      });
+    return function (v) {
+      return Caml_int32.imul(v, v);
+    };
   } else {
-    return (function (v) {
-        return v + v | 0;
-      });
+    return function (v) {
+      return v + v | 0;
+    };
   }
 }
 
@@ -21,25 +21,25 @@ var v = [
     1,
     2,
     3
-  ].map((function (a, b) {
-        return f(a)(b);
-      }));
+  ].map(function (a, b) {
+      return f(a)(b);
+    });
 
 var vv = [
     1,
     2,
     3
-  ].map((function (a, b) {
-        return a + b | 0;
-      }));
+  ].map(function (a, b) {
+      return a + b | 0;
+    });
 
 var hh = [
     "1",
     "2",
     "3"
-  ].map((function (x) {
-        return parseInt(x);
-      }));
+  ].map(function (x) {
+      return parseInt(x);
+    });
 
 function u() {
   return 3;

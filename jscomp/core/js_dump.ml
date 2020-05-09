@@ -367,7 +367,9 @@ type fn_exp_state =
   | Is_return (* for sure no name *)
   | Name_top of Ident.t
   | Name_non_top of Ident.t
-  | No_name
+  | No_name of {single_arg : bool} (* true means for sure, false -- not sure *)
+
+let default_fn_exp_state = No_name {single_arg = false}  
 
 (* TODO: refactoring
    Note that {!pp_function} could print both statement and expression when [No_name] is given
@@ -410,7 +412,7 @@ and  pp_function ~is_method
        semi f ;
        cxt
      | Is_return  
-     | No_name ->
+     | No_name _ ->
        if fn_state = Is_return then 
          return_sp f ;
        optimize len ~p:(arity = NA && len <=8) cxt f v)
@@ -419,7 +421,7 @@ and  pp_function ~is_method
     let set_env : Set_ident.t = (** identifiers will be printed following*)
       match fn_state with
       | Is_return
-      | No_name ->
+      | No_name _ ->
         Js_fun_env.get_unbounded env
       | Name_top id | Name_non_top id -> 
         Set_ident.add (Js_fun_env.get_unbounded env ) id in
@@ -461,12 +463,14 @@ and  pp_function ~is_method
         then
           (
            match fn_state with
-           | Is_return
-           | No_name ->
-             if fn_state = Is_return then
-               return_sp f ;
+           | Is_return -> 
+             return_sp f ;
+             P.string f L.function_;
+             P.space f ;
+             param_body ()                
+           | No_name {single_arg } ->
              (* see # 1692, add a paren for annoymous function for safety  *)
-             P.paren_group f 1  (fun _ ->
+             P.cond_paren_group f (not single_arg) 1  (fun _ ->
                  P.string f L.function_;
                  P.space f ;
                  param_body ())                
@@ -490,7 +494,7 @@ and  pp_function ~is_method
           (
              match fn_state with
              | Is_return -> return_sp f 
-             | No_name -> ()
+             | No_name _ -> ()
              | Name_non_top name | Name_top name->
                ignore (pp_var_assign inner_cxt f name : cxt)
           )
@@ -504,14 +508,14 @@ and  pp_function ~is_method
               P.space f ;
               (match fn_state with
                | Is_return
-               | No_name  -> ()
+               | No_name _ -> ()
                | Name_non_top x | Name_top x -> ignore (Ext_pp_scope.ident inner_cxt f x));
               param_body ());
           pp_paren_params inner_cxt f lexical;     
           P.string f L.rparen;
           match fn_state with
           | Is_return
-          | No_name -> () (* expression *)
+          | No_name _ -> () (* expression *)
           | _ -> semi f (* has binding, a statement *)  in
       handle 
         (match fn_state with
@@ -598,7 +602,7 @@ and expression_desc cxt ~(level:int) f x : cxt  =
       comma_sp f;
       expression ~level:0 cxt f e2 )
   | Fun (is_method, l, b, env) ->  (* TODO: dump for comments *)
-    pp_function ~is_method cxt f ~fn_state:No_name  l b env
+    pp_function ~is_method cxt f ~fn_state:default_fn_exp_state  l b env
   (* TODO:
      when [e] is [Js_raw_code] with arity
      print it in a more precise way
@@ -616,7 +620,15 @@ and expression_desc cxt ~(level:int) f x : cxt  =
           | {arity  = Full }, _
           | _, [] ->
             let cxt = expression ~level:15 cxt f e in
-            P.paren_group f 1 (fun _ -> arguments cxt  f el )
+            P.paren_group f 1 (fun _ -> 
+                match el with 
+                | [{expression_desc = Fun (is_method, l,b,env)}]
+                  -> 
+                  pp_function ~is_method cxt f ~fn_state:(No_name {single_arg = true})
+                    l b env 
+                | _ ->       
+                  arguments cxt  f el
+              )
 
           | _ , _ ->
             let len = List.length el in

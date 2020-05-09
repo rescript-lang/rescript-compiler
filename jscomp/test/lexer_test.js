@@ -35,17 +35,17 @@ function from_tokens(lst) {
   var l = {
     contents: lst
   };
-  return (function (param) {
-      var match = l.contents;
-      if (match) {
-        l.contents = match[1];
-        return match[0];
-      }
-      throw {
-            RE_EXN_ID: "End_of_file",
-            Error: new Error()
-          };
-    });
+  return function (param) {
+    var match = l.contents;
+    if (match) {
+      l.contents = match[1];
+      return match[0];
+    }
+    throw {
+          RE_EXN_ID: "End_of_file",
+          Error: new Error()
+        };
+  };
 }
 
 var lexer_suites_000 = /* tuple */[

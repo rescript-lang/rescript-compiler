@@ -43,61 +43,61 @@ function classify(chr) {
 }
 
 function utf8_decode(strm) {
-  return Stream.slazy((function (param) {
-                var chr = Stream.peek(strm);
-                if (chr === undefined) {
-                  return ;
-                }
-                Stream.junk(strm);
-                var c = classify(chr);
-                if (typeof c === "number") {
-                  throw {
-                        RE_EXN_ID: Stream.$$Error,
-                        _1: "Invalid byte",
-                        Error: new Error()
-                      };
-                }
-                switch (c.tag | 0) {
-                  case /* Single */0 :
-                      return Stream.icons(c[0], utf8_decode(strm));
-                  case /* Cont */1 :
-                      throw {
-                            RE_EXN_ID: Stream.$$Error,
-                            _1: "Unexpected continuation byte",
-                            Error: new Error()
-                          };
-                  case /* Leading */2 :
-                      var follow = function (strm, _n, _c) {
-                        while(true) {
-                          var c = _c;
-                          var n = _n;
-                          if (n === 0) {
-                            return c;
-                          }
-                          var cc = classify(Stream.next(strm));
-                          if (typeof cc === "number") {
-                            throw {
-                                  RE_EXN_ID: Stream.$$Error,
-                                  _1: "Continuation byte expected",
-                                  Error: new Error()
-                                };
-                          }
-                          if (cc.tag === /* Cont */1) {
-                            _c = (c << 6) | cc[0] & 63;
-                            _n = n - 1 | 0;
-                            continue ;
-                          }
+  return Stream.slazy(function (param) {
+              var chr = Stream.peek(strm);
+              if (chr === undefined) {
+                return ;
+              }
+              Stream.junk(strm);
+              var c = classify(chr);
+              if (typeof c === "number") {
+                throw {
+                      RE_EXN_ID: Stream.$$Error,
+                      _1: "Invalid byte",
+                      Error: new Error()
+                    };
+              }
+              switch (c.tag | 0) {
+                case /* Single */0 :
+                    return Stream.icons(c[0], utf8_decode(strm));
+                case /* Cont */1 :
+                    throw {
+                          RE_EXN_ID: Stream.$$Error,
+                          _1: "Unexpected continuation byte",
+                          Error: new Error()
+                        };
+                case /* Leading */2 :
+                    var follow = function (strm, _n, _c) {
+                      while(true) {
+                        var c = _c;
+                        var n = _n;
+                        if (n === 0) {
+                          return c;
+                        }
+                        var cc = classify(Stream.next(strm));
+                        if (typeof cc === "number") {
                           throw {
                                 RE_EXN_ID: Stream.$$Error,
                                 _1: "Continuation byte expected",
                                 Error: new Error()
                               };
-                        };
+                        }
+                        if (cc.tag === /* Cont */1) {
+                          _c = (c << 6) | cc[0] & 63;
+                          _n = n - 1 | 0;
+                          continue ;
+                        }
+                        throw {
+                              RE_EXN_ID: Stream.$$Error,
+                              _1: "Continuation byte expected",
+                              Error: new Error()
+                            };
                       };
-                      return Stream.icons(follow(strm, c[0], c[1]), utf8_decode(strm));
-                  
-                }
-              }));
+                    };
+                    return Stream.icons(follow(strm, c[0], c[1]), utf8_decode(strm));
+                
+              }
+            });
 }
 
 function to_list(xs) {

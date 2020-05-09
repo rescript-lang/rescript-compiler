@@ -1832,47 +1832,47 @@ function error_of_printer(loc, print, x) {
                 ]), print, x);
 }
 
-register_error_of_exn((function (msg) {
-        if (msg.RE_EXN_ID === "Sys_error") {
-          return Curry._1(errorf(in_file(input_name.contents), undefined, undefined, /* Format */[
-                          /* String_literal */Block.__(11, [
-                              "I/O error: ",
-                              /* String */Block.__(2, [
-                                  /* No_padding */0,
-                                  /* End_of_format */0
-                                ])
-                            ]),
-                          "I/O error: %s"
-                        ]), msg._1);
-        } else if (msg.RE_EXN_ID === Errors) {
-          return Curry._1(errorf(in_file(input_name.contents), undefined, undefined, /* Format */[
-                          /* String_literal */Block.__(11, [
-                              "Some fatal warnings were triggered (",
-                              /* Int */Block.__(4, [
-                                  /* Int_d */0,
-                                  /* No_padding */0,
-                                  /* No_precision */0,
-                                  /* String_literal */Block.__(11, [
-                                      " occurrences)",
-                                      /* End_of_format */0
-                                    ])
-                                ])
-                            ]),
-                          "Some fatal warnings were triggered (%d occurrences)"
-                        ]), msg._1);
-        } else {
-          return ;
-        }
-      }));
+register_error_of_exn(function (msg) {
+      if (msg.RE_EXN_ID === "Sys_error") {
+        return Curry._1(errorf(in_file(input_name.contents), undefined, undefined, /* Format */[
+                        /* String_literal */Block.__(11, [
+                            "I/O error: ",
+                            /* String */Block.__(2, [
+                                /* No_padding */0,
+                                /* End_of_format */0
+                              ])
+                          ]),
+                        "I/O error: %s"
+                      ]), msg._1);
+      } else if (msg.RE_EXN_ID === Errors) {
+        return Curry._1(errorf(in_file(input_name.contents), undefined, undefined, /* Format */[
+                        /* String_literal */Block.__(11, [
+                            "Some fatal warnings were triggered (",
+                            /* Int */Block.__(4, [
+                                /* Int_d */0,
+                                /* No_padding */0,
+                                /* No_precision */0,
+                                /* String_literal */Block.__(11, [
+                                    " occurrences)",
+                                    /* End_of_format */0
+                                  ])
+                              ])
+                          ]),
+                        "Some fatal warnings were triggered (%d occurrences)"
+                      ]), msg._1);
+      } else {
+        return ;
+      }
+    });
 
 var $$Error = Caml_exceptions.create("Ocaml_parsetree_test.Location.Error");
 
-register_error_of_exn((function (e) {
-        if (e.RE_EXN_ID === $$Error) {
-          return e._1;
-        }
-        
-      }));
+register_error_of_exn(function (e) {
+      if (e.RE_EXN_ID === $$Error) {
+        return e._1;
+      }
+      
+    });
 
 function last(s) {
   switch (s.tag | 0) {
@@ -2421,12 +2421,12 @@ function symbol_docs(param) {
 function symbol_docs_lazy(param) {
   var p1 = Parsing.symbol_start_pos(undefined);
   var p2 = Parsing.symbol_end_pos(undefined);
-  return CamlinternalLazy.from_fun((function () {
-                return {
-                        docs_pre: get_pre_docs(p1),
-                        docs_post: get_post_docs(p2)
-                      };
-              }));
+  return CamlinternalLazy.from_fun(function () {
+              return {
+                      docs_pre: get_pre_docs(p1),
+                      docs_post: get_post_docs(p2)
+                    };
+            });
 }
 
 function mark_symbol_docs(param) {
@@ -2441,9 +2441,9 @@ function mark_rhs_docs(pos1, pos2) {
 
 function symbol_text_lazy(param) {
   var pos = Parsing.symbol_start_pos(undefined);
-  return CamlinternalLazy.from_fun((function () {
-                return get_text(pos);
-              }));
+  return CamlinternalLazy.from_fun(function () {
+              return get_text(pos);
+            });
 }
 
 function init(param) {
@@ -3412,12 +3412,12 @@ function prepare_error(loc) {
   }
 }
 
-register_error_of_exn((function (err) {
-        if (err.RE_EXN_ID === $$Error$1) {
-          return prepare_error(err._1);
-        }
-        
-      }));
+register_error_of_exn(function (err) {
+      if (err.RE_EXN_ID === $$Error$1) {
+        return prepare_error(err._1);
+      }
+      
+    });
 
 function mktyp(d) {
   return mk(symbol_rloc(undefined), undefined, d);
@@ -11051,12 +11051,12 @@ function report_error(ppf, c) {
   }
 }
 
-register_error_of_exn((function (param) {
-        if (param.RE_EXN_ID === $$Error$2) {
-          return error_of_printer(param._2, report_error, param._1);
-        }
-        
-      }));
+register_error_of_exn(function (param) {
+      if (param.RE_EXN_ID === $$Error$2) {
+        return error_of_printer(param._2, report_error, param._1);
+      }
+      
+    });
 
 var __ocaml_lex_tables = {
   lex_base: "\0\0\xa4\xff\xa5\xff\xe0\0\x03\x01&\x01I\x01l\x01\x8f\x01\xbc\xff\xb2\x01\xd7\x01\xc4\xff[\0\xfc\x01\x1f\x02D\0G\0T\0B\x02\xd5\xff\xd7\xff\xda\xffe\x02\xc4\x02\xe7\x02Y\0\xff\0\x05\x03\xec\xffR\x03s\x03\xbc\x03\x8c\x04\\\x05,\x06\x0b\x07g\x077\b}\0\xfe\xff\x01\0\x05\0\xff\xff\x06\0\x07\0\x16\t4\t\x04\n\xfa\xff\xf9\xff\xd4\n\xa4\x0b\xf7\xff\xf6\xff\xed\xff\xee\xff\xef\xff]\0v\x02[\0n\0\xe7\x02\x07\x04\xd7\x04e\x02\xfe\x02v\0\xc2\xff\xeb\xffx\x05\x84\f`\0q\0\x0b\0\xea\xff\xe9\xff\xe5\xff\xe5\x04\x80\0s\0\xe8\xff\xe0\0u\0\xe7\xffw\x06\x93\0\xe6\xff\x92\0\xe1\xff\x94\0\xe0\xff\xd9\0\x84\f\xdf\xff\xab\f\xaf\b\xae\x06\xde\xff\f\0\x18\x01,\x01P\x01-\x01\xde\xff\r\0\xd9\f\0\r#\rI\r\xd2\xff\xce\xff\xcf\xff\xd0\xff\xcc\xffl\r\x9a\0\xb7\0\xc5\xff\xc6\xff\xc7\xff\xc7\0\xb6\xff\xb8\xff\xbf\xff\x8f\r\xbb\xff\xbd\xff\xb2\r\xd5\r\xf8\r\x1b\x0e\xeb\x05\xf3\xff\xf4\xff\x11\0\xf5\xff>\x02\xac\x07\xfd\xff\xdf\0\xf1\0\xff\xff\xfe\xff\xfc\xff\xc8\x07-\x0e\xfa\0\xfc\0\x12\0\xfb\xff\xfa\xff\xf9\xff\x80\t\x1e\x03\x03\x01\xf8\xff\\\x03\x04\x01\xf7\xffO\n\x05\x01\xf6\xff+\x01\xc7\x01\xf7\xff\xf8\xff\xf9\xff;\x01v\x0e\xff\xff\xfa\xff\x1f\x0b$\x04\xfd\xff&\x01E\x01^\x01\xfc\x04\xfc\xff\xef\x0b\xfb\xff_\x01\xb5\x01\xfc\xff\xee\x06\xfe\xff\xff\xffo\x01p\x01\xfd\xffJ\x07\x10\x01\x13\x012\x01?\x01\x1a\x01k\x01!\x01\x13\0\xff\xff",
