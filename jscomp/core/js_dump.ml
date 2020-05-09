@@ -350,10 +350,6 @@ f/122 -->
              if in  use it
              else check last bumped id, increase it and register
 *)
-type name =
-  | No_name
-  | Name_top  of Ident.t
-  | Name_non_top of Ident.t
 
 
 (**
@@ -367,6 +363,12 @@ let is_var (b : J.expression)  a =
   | Var (Id i) -> Ident.same i a 
   | _ -> false
 
+type fn_exp_state = 
+  | Is_return (* for sure no name *)
+  | Name_top of Ident.t
+  | Name_non_top of Ident.t
+  | No_name
+
 (* TODO: refactoring
    Note that {!pp_function} could print both statement and expression when [No_name] is given
 *)
@@ -377,9 +379,9 @@ let rec
 
 
 and  pp_function ~is_method
-    cxt (f : P.t) ?(name=No_name)  ~is_return
+    cxt (f : P.t) ~fn_state
     (l : Ident.t list) (b : J.block) (env : Js_fun_env.t ) : cxt =
-  match b, (name,  is_return)  with
+  match b  with
   | [ {statement_desc =
          Return {return_value =
                    {expression_desc =
@@ -388,8 +390,7 @@ and  pp_function ~is_method
                            {arity = ( Full | NA as arity(* see #234*));
                             (* TODO: need a case to justify it*)
                             call_info =
-                              (Call_builtin_runtime | Call_ml )})}}}],
-    ((_, false) | (No_name, true))
+                              (Call_builtin_runtime | Call_ml )})}}}]
     when
       (* match such case:
          {[ function(x,y){ return u(x,y) } ]}
@@ -402,20 +403,22 @@ and  pp_function ~is_method
       else
         vident cxt f v in
     let len = List.length l in (* length *)
-    (match name with
+    (match fn_state with
      | Name_top i | Name_non_top i  ->       
        let cxt = pp_var_assign cxt f i in 
        let cxt = optimize len ~p:(arity = NA && len <= 8) cxt f v in
        semi f ;
        cxt
+     | Is_return  
      | No_name ->
-       if is_return then 
+       if fn_state = Is_return then 
          return_sp f ;
        optimize len ~p:(arity = NA && len <=8) cxt f v)
 
-  | _, _  ->
+  | _  ->
     let set_env : Set_ident.t = (** identifiers will be printed following*)
-      match name with
+      match fn_state with
+      | Is_return
       | No_name ->
         Js_fun_env.get_unbounded env
       | Name_top id | Name_non_top id -> 
@@ -452,14 +455,16 @@ and  pp_function ~is_method
         P.brace_vgroup f 1 (fun _ -> function_body cxt f b ) 
     in
     let lexical : Set_ident.t = Js_fun_env.get_lexical_scope env in
-    let enclose  lexical  return =
+    let enclose  lexical  =
       let handle lexical =
         if  Set_ident.is_empty lexical
         then
-          (if return then
-             return_sp f ;
-           match name with
+          (
+           match fn_state with
+           | Is_return
            | No_name ->
+             if fn_state = Is_return then
+               return_sp f ;
              (* see # 1692, add a paren for annoymous function for safety  *)
              P.paren_group f 1  (fun _ ->
                  P.string f L.function_;
@@ -477,14 +482,14 @@ and  pp_function ~is_method
              ignore (Ext_pp_scope.ident inner_cxt f x : cxt);
              param_body ())
         else
-          (* print as
-             {[(function(x,y){...} (x,y))]}
+          (* print our closure as
+             {[(function(x,y){ return function(..){...}} (x,y))]}
+             Maybe changed to `let` in the future
           *)
           let lexical = Set_ident.elements lexical in
-          (if return then 
-             return_sp f             
-           else
-             match name with
+          (
+             match fn_state with
+             | Is_return -> return_sp f 
              | No_name -> ()
              | Name_non_top name | Name_top name->
                ignore (pp_var_assign inner_cxt f name : cxt)
@@ -497,22 +502,24 @@ and  pp_function ~is_method
               return_sp f;
               P.string f L.function_;
               P.space f ;
-              (match name with
+              (match fn_state with
+               | Is_return
                | No_name  -> ()
                | Name_non_top x | Name_top x -> ignore (Ext_pp_scope.ident inner_cxt f x));
               param_body ());
           pp_paren_params inner_cxt f lexical;     
           P.string f L.rparen;
-          match name with
+          match fn_state with
+          | Is_return
           | No_name -> () (* expression *)
           | _ -> semi f (* has binding, a statement *)  in
       handle 
-        (match name with
+        (match fn_state with
          | Name_top name | Name_non_top name  when Set_ident.mem lexical name ->
            (*TODO: when calculating lexical we should not include itself *)
            Set_ident.remove lexical name
          | _ -> lexical) in
-    enclose lexical is_return;
+    enclose lexical;
     outer_cxt
 
 
@@ -591,7 +598,7 @@ and expression_desc cxt ~(level:int) f x : cxt  =
       comma_sp f;
       expression ~level:0 cxt f e2 )
   | Fun (is_method, l, b, env) ->  (* TODO: dump for comments *)
-    pp_function ~is_method cxt f ~is_return:false  l b env
+    pp_function ~is_method cxt f ~fn_state:No_name  l b env
   (* TODO:
      when [e] is [Js_raw_code] with arity
      print it in a more precise way
@@ -1029,8 +1036,8 @@ and variable_declaration top cxt f
       match e.expression_desc, top  with
       | Fun (is_method, params, b, env ), _ ->
         pp_function ~is_method cxt f
-          ~name:(if top then Name_top name else Name_non_top name)
-          ~is_return:false params b env      
+          ~fn_state:(if top then Name_top name else Name_non_top name)
+          params b env      
       | Raw_js_function(s,params), true ->     
         P.string f L.function_;             
         P.space f ; 
@@ -1251,7 +1258,7 @@ and statement_desc top cxt f (s : J.statement_desc) : cxt =
     begin match e.expression_desc with
       | Fun (is_method,  l, b, env) ->
         let cxt =
-          pp_function ~is_method cxt f ~is_return:true l b env in
+          pp_function ~is_method cxt f ~fn_state:Is_return l b env in
         semi f ; cxt
       | Undefined ->  
         return_sp f;
