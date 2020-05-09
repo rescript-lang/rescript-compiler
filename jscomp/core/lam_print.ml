@@ -69,29 +69,6 @@ let boxed_integer_mark name (i : Lam_compat.boxed_integer) =
 let print_boxed_integer name ppf bi =
   fprintf ppf "%s" (boxed_integer_mark name bi);;
 
-let print_bigarray name unsafe (kind : Lam_compat.bigarray_kind) ppf 
-    (layout : Lam_compat.bigarray_layout) =
-  fprintf ppf "Bigarray.%s[%s,%s]"
-    (if unsafe then "unsafe_"^ name else name)
-    (match kind with
-     | Lam_compat.Pbigarray_unknown -> "generic"
-     | Pbigarray_float32 -> "float32"
-     | Pbigarray_float64 -> "float64"
-     | Pbigarray_sint8 -> "sint8"
-     | Pbigarray_uint8 -> "uint8"
-     | Pbigarray_sint16 -> "sint16"
-     | Pbigarray_uint16 -> "uint16"
-     | Pbigarray_int32 -> "int32"
-     | Pbigarray_int64 -> "int64"
-     | Pbigarray_caml_int -> "camlint"
-     | Pbigarray_native_int -> "nativeint"
-     | Pbigarray_complex32 -> "complex32"
-     | Pbigarray_complex64 -> "complex64")
-    (match layout with
-     | Lam_compat.Pbigarray_unknown_layout -> "unknown"
-     | Pbigarray_c_layout -> "C"
-     | Pbigarray_fortran_layout -> "Fortran")
-
 let record_rep ppf (r : Lam_primitive.record_representation) =
   match r with
   | Record_regular -> fprintf ppf "regular"
@@ -264,29 +241,6 @@ let primitive ppf (prim : Lam_primitive.t) = match prim with
   | Pbintcomp(bi, Cgt) -> print_boxed_integer ">" ppf bi
   | Pbintcomp(bi, Cle) -> print_boxed_integer "<=" ppf bi
   | Pbintcomp(bi, Cge) -> print_boxed_integer ">=" ppf bi
-  | Pbigarrayref(unsafe, _, kind, layout) ->
-    print_bigarray "get" unsafe kind ppf layout
-  | Pbigarrayset(unsafe, _, kind, layout) ->
-    print_bigarray "set" unsafe kind ppf layout
-  | Pbigarraydim(n) -> fprintf ppf "Bigarray.dim_%i" n
-  | Pbigstring_load_16(unsafe) ->
-    if unsafe then fprintf ppf "bigarray.array1.unsafe_get16"
-    else fprintf ppf "bigarray.array1.get16"
-  | Pbigstring_load_32(unsafe) ->
-    if unsafe then fprintf ppf "bigarray.array1.unsafe_get32"
-    else fprintf ppf "bigarray.array1.get32"
-  | Pbigstring_load_64(unsafe) ->
-    if unsafe then fprintf ppf "bigarray.array1.unsafe_get64"
-    else fprintf ppf "bigarray.array1.get64"
-  | Pbigstring_set_16(unsafe) ->
-    if unsafe then fprintf ppf "bigarray.array1.unsafe_set16"
-    else fprintf ppf "bigarray.array1.set16"
-  | Pbigstring_set_32(unsafe) ->
-    if unsafe then fprintf ppf "bigarray.array1.unsafe_set32"
-    else fprintf ppf "bigarray.array1.set32"
-  | Pbigstring_set_64(unsafe) ->
-    if unsafe then fprintf ppf "bigarray.array1.unsafe_set64"
-    else fprintf ppf "bigarray.array1.set64"
   | Pbswap16 -> fprintf ppf "bswap16"
   | Pbbswap(bi) -> print_boxed_integer "bswap" ppf bi
 
