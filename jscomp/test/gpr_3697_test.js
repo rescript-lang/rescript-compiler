@@ -3,9 +3,12 @@
 var CamlinternalLazy = require("../../lib/js/camlinternalLazy.js");
 
 function fix(param) {
-  return /* Fix */[CamlinternalLazy.from_fun(function () {
+  return /* Fix */[{
+            RE_LAZY: "todo",
+            value: (function () {
                 return fix(undefined);
-              })];
+              })
+          }];
 }
 
 function unfixLeak(_f) {

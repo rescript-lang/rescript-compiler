@@ -275,17 +275,24 @@ let lam_prim ~primitive:( p : Lambda.primitive) ~args loc : Lam.t =
       prim ~primitive:(Pmakeblock (tag,info,mutable_flag)) ~args loc  
     | Blk_lazy_general  
       ->
-      let args = [ prim ~primitive:(Pjs_fn_make 0) ~args loc ] in 
-      Lam.apply 
-        (prim ~primitive:(Pfield (2,Fld_module {name = "from_fun"})) loc (*Invariant: hard code {from_fun} position*)
-         ~args: [Lam.global_module (Ident.create_persistent "CamlinternalLazy")] )
-        args loc App_infer_full
-    | Blk_lazy_forward
-      -> 
-      Lam.apply 
-        (prim ~primitive:(Pfield (1,Fld_module {name = "from_val"})) loc (*Invariant: hard code {from_fun} position*)
-         ~args: [Lam.global_module (Ident.create_persistent "CamlinternalLazy")] )
-        args loc App_infer_full
+      begin match args with 
+      | [Lvar _ | Lconst _ | Lfunction _ as result ] -> 
+        let args = 
+          [ Lam.const (Const_string "done") ; 
+           result
+          ] in 
+        prim ~primitive:(Pmakeblock (tag,Blk_record [|"RE_LAZY";"value"|],Mutable)) ~args loc  
+      | [computation] -> 
+        let args = 
+          [ Lam.const (Const_string "todo") ; 
+            (* FIXME: arity 0 does not get proper supported*)
+            prim ~primitive:(Pjs_fn_make 0) ~args:[Lam.function_ ~arity:1 ~params:[Ident.create "param"] ~body:computation] 
+            loc             
+          ] in 
+        prim ~primitive:(Pmakeblock (tag,Blk_record [|"RE_LAZY";"value"|],Mutable)) ~args loc  
+
+      | _ -> assert false
+      end
     | Blk_na s -> 
       let info : Lam_tag_info.t = Blk_na s in
       prim ~primitive:(Pmakeblock (tag,info,mutable_flag)) ~args loc

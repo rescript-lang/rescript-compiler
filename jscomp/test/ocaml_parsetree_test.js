@@ -2421,12 +2421,15 @@ function symbol_docs(param) {
 function symbol_docs_lazy(param) {
   var p1 = Parsing.symbol_start_pos(undefined);
   var p2 = Parsing.symbol_end_pos(undefined);
-  return CamlinternalLazy.from_fun(function () {
+  return {
+          RE_LAZY: "todo",
+          value: (function () {
               return {
                       docs_pre: get_pre_docs(p1),
                       docs_post: get_post_docs(p2)
                     };
-            });
+            })
+        };
 }
 
 function mark_symbol_docs(param) {
@@ -2441,9 +2444,12 @@ function mark_rhs_docs(pos1, pos2) {
 
 function symbol_text_lazy(param) {
   var pos = Parsing.symbol_start_pos(undefined);
-  return CamlinternalLazy.from_fun(function () {
+  return {
+          RE_LAZY: "todo",
+          value: (function () {
               return get_text(pos);
-            });
+            })
+        };
 }
 
 function init(param) {

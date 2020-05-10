@@ -1,17 +1,26 @@
-(**************************************************************************)
-(*                                                                        *)
-(*                                 OCaml                                  *)
-(*                                                                        *)
-(*             Damien Doligez, projet Para, INRIA Rocquencourt            *)
-(*                                                                        *)
-(*   Copyright 1997 Institut National de Recherche en Informatique et     *)
-(*     en Automatique.                                                    *)
-(*                                                                        *)
-(*   All rights reserved.  This file is distributed under the terms of    *)
-(*   the GNU Lesser General Public License version 2.1, with the          *)
-(*   special exception on linking described in the file LICENSE.          *)
-(*                                                                        *)
-(**************************************************************************)
+(* Copyright (C) 2017 Authors of BuckleScript
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * In addition to the permissions granted to you by the LGPL, you may combine
+ * or link a "work that uses the Library" with a publicly distributed version
+ * of this file to produce a combined library or application, then distribute
+ * that combined work under the terms of your choosing, with no requirement
+ * to comply with the obligations normally placed on you by section 4 of the
+ * LGPL version 3 (or the corresponding section of a later version of the LGPL
+ * should you choose to use a later version).
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
 
 (* Internals of forcing lazy values. *)
@@ -21,36 +30,15 @@ type 'a t = {
   mutable value : 'a (* its type is ['a] or [unit -> 'a ] *)
 }
 
-
-let%private status_todo = "todo" (* used to be lazy tag in native *)
 let%private status_done = "done" (* used to be forward_tag in native *)
-external%private magic : 'a -> 'b = "%identity"
 external%private fnToVal : (unit -> 'a [@bs]) -> 'a = "%identity"
 external%private valToFn :  'a -> (unit -> 'a [@bs])  = "%identity"
-external%private castToLazy : 'a t ->  'a lazy_t  = "%identity"
 external%private castToConcrete : 'a lazy_t -> 'a t   = "%identity"
-external%private lazyBox : 'a -> 'a lazy_t = "%identity"
-external%private lazyUnBox : 'a lazy_t  -> 'a  = "%identity"
-
-let%private lazy_boxed (type a) (l : a ) : bool  = 
-  if Js.testAny l then false 
-  else   
-    let t = (magic l : _ t  ).tag in 
-    t = status_done || t = status_todo  
 
 let is_val (type a ) (l : a lazy_t) : bool = 
-  Js.testAny l || ((castToConcrete l ).tag  <> status_todo)
-
-let from_fun (type arg ) f : arg lazy_t = 
-  castToLazy {tag = status_todo; value = fnToVal f}
+  ((castToConcrete l ).tag  = status_done)
 
 
-let from_val (type arg ) (v : arg) : arg lazy_t=
-  if lazy_boxed v  then begin
-    castToLazy {tag = status_done ; value = v} 
-  end else begin
-    lazyBox v 
-  end    
 
 exception Undefined
 
@@ -84,16 +72,16 @@ let%private force_val_lazy_block (type a ) (blk : a t) : a  =
 
 
 let force (type a ) (lzv : a lazy_t) : a =
-  if lazy_boxed  lzv then 
-    if is_val lzv then (castToConcrete lzv : _ t).value else
-      force_lazy_block (castToConcrete lzv : _ t)
-  else  lazyUnBox lzv
+    let lzv = (castToConcrete lzv : _ t) in 
+    if lzv.tag = status_done then lzv.value else
+      force_lazy_block lzv
 
 
 
-let force_val (lzv : 'arg lazy_t) : 'arg =
-  if lazy_boxed  lzv then 
-    if is_val lzv then (castToConcrete lzv : _ t).value  else
-      force_val_lazy_block (castToConcrete lzv : _ t)
-  else  lazyUnBox lzv
+
+let force_val (type a) (lzv : a lazy_t) : a =
+  let lzv : _ t = castToConcrete lzv in 
+  if lzv.tag = status_done then lzv.value  else
+    force_val_lazy_block lzv
+
 

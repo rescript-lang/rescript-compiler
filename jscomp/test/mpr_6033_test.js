@@ -34,7 +34,10 @@ function f(x) {
   return y + "abc";
 }
 
-var x = "def";
+var x = {
+  RE_LAZY: "done",
+  value: "def"
+};
 
 CamlinternalLazy.force(x);
 

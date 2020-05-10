@@ -56,6 +56,11 @@ var three = {
   contents: 3
 };
 
+var h = {
+  RE_LAZY: "done",
+  value: fib
+};
+
 var v = {
   contents: (function (param) {
       throw {
@@ -79,7 +84,7 @@ function fib(n) {
     case 2 :
         return three.contents;
     case 3 :
-        v.contents = CamlinternalLazy.force(fib);
+        v.contents = CamlinternalLazy.force(h);
         return 1;
     default:
       return fib(n - 1 | 0) + fib(n - 2 | 0) | 0;
@@ -142,10 +147,13 @@ function even2(_n) {
   };
 }
 
-function lazy_v(param) {
-  CamlinternalLazy.force(lazy_v);
-  
-}
+var lazy_v = {
+  RE_LAZY: "done",
+  value: (function (param) {
+      CamlinternalLazy.force(lazy_v);
+      
+    })
+};
 
 function sum(_acc, _n) {
   while(true) {
@@ -199,23 +207,23 @@ var fake_z2 = /* :: */[
   fake_z2_001
 ];
 
-var rec_variant_b = [];
+function rec_variant_b_001(param) {
+  return rec_variant_a;
+}
 
-var rec_variant_a = [];
+var rec_variant_b = /* B */Block.__(0, [
+    "gho",
+    rec_variant_b_001
+  ]);
 
-Caml_obj.caml_update_dummy(rec_variant_b, /* B */Block.__(0, [
-        "gho",
-        (function (param) {
-            return rec_variant_a;
-          })
-      ]));
+function rec_variant_a_001(param) {
+  return rec_variant_b;
+}
 
-Caml_obj.caml_update_dummy(rec_variant_a, /* A */Block.__(1, [
-        3,
-        (function (param) {
-            return rec_variant_b;
-          })
-      ]));
+var rec_variant_a = /* A */Block.__(1, [
+    3,
+    rec_variant_a_001
+  ]);
 
 var suites_000 = /* tuple */[
   "hd",
@@ -379,7 +387,7 @@ var suites_001 = /* :: */[
                     (function (param) {
                         if (!rec_variant_b.tag) {
                           return /* Eq */Block.__(0, [
-                                    Curry._1(rec_variant_b[1], undefined),
+                                    Curry._1(rec_variant_b_001, undefined),
                                     rec_variant_a
                                   ]);
                         }
@@ -400,7 +408,7 @@ var suites_001 = /* :: */[
                       (function (param) {
                           if (rec_variant_a.tag) {
                             return /* Eq */Block.__(0, [
-                                      Curry._1(rec_variant_a[1], undefined),
+                                      Curry._1(rec_variant_a_001, undefined),
                                       rec_variant_b
                                     ]);
                           }
