@@ -1,9 +1,7 @@
 'use strict';
 
 
-function sum (a,b){ 
-  return a + b
-};
+var sum = ((a,b) => a + b);
 
 var v = sum(1, 2);
 
@@ -15,11 +13,11 @@ var b = f(1);
 
 var c = f(2);
 
-function forIn (o,foo){
+var forIn = ((o,foo)=> {
   for (var i in o){
     foo(o)
   }
-  };
+  });
 
 function log(x) {
   console.log(x);
@@ -45,9 +43,21 @@ forIn({
         
       }));
 
-function f3 (){return true};
+var f3 = (()=>true);
 
 var bbbb = f3();
+
+if (!bbbb) {
+  throw {
+        RE_EXN_ID: "Assert_failure",
+        _1: /* tuple */[
+          "gpr_2682_test.ml",
+          59,
+          2
+        ],
+        Error: new Error()
+      };
+}
 
 exports.sum = sum;
 exports.v = v;

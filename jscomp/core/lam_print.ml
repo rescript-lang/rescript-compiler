@@ -106,7 +106,6 @@ let primitive ppf (prim : Lam_primitive.t) = match prim with
   | Pjs_fn_make i -> fprintf ppf "js_fn_make_%i" i
   | Pjs_fn_method  -> fprintf ppf "js_fn_method"
   | Pdebugger -> fprintf ppf "debugger"
-  | Praw_js_function _ -> fprintf ppf "[raw.fun]"
   | Praw_js_code _ -> fprintf ppf "[raw]"
   | Pjs_typeof -> fprintf ppf "[typeof]"
   | Pnull_to_opt -> fprintf ppf "[null->opt]"              

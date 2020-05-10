@@ -194,11 +194,10 @@ let raw_snippet_exp_simple_enough (s : string) =
 let exp_need_paren  (e : J.expression) =
   match e.expression_desc with
   (* | Caml_uninitialized_obj _  *)
-  | Call ({expression_desc = Fun _ | Raw_js_function _ | Raw_js_code _ },_,_) -> true
+  | Call ({expression_desc = Fun _  | Raw_js_code _ },_,_) -> true
 
   | Raw_js_code {code_info = Exp _}
   | Fun _ 
-  | Raw_js_function _ 
   | Caml_block (_,_,_, (Blk_record _ | Blk_module _))
   | Object _ -> true
   | Raw_js_code {code_info = Stmt _ }
@@ -231,12 +230,6 @@ let exp_need_paren  (e : J.expression) =
   | New _
     -> false
 
-let comma_strings f ls =     
-  iter_lst 
-  () f 
-  ls 
-  (fun _ f  a  -> P.string f a )
-  comma
 
 
 let comma_idents (cxt: cxt) f ls =     
@@ -269,11 +262,6 @@ let pp_var_assign cxt f id  =
   P.space f ;
   acxt 
 
-let pp_js_function_params_body f s params =   
-  P.paren_group f 1 (fun _ ->
-      comma_strings f params
-    );
-  P.brace f (fun _ -> P.string f s)
 
 let pp_var_assign_this cxt f id =   
   let cxt = pp_var_assign cxt f id in 
@@ -688,11 +676,6 @@ and expression_desc cxt ~(level:int) f x : cxt  =
     *)
     Js_dump_string.pp_string f  s;
     cxt
-  | Raw_js_function (s,params) ->   
-    P.string f L.function_; 
-    P.space f ; 
-    pp_js_function_params_body f s params;
-    cxt 
   | Raw_js_code {code = s; code_info = info} ->
     (match info with
      | Exp exp_info ->
@@ -1045,20 +1028,12 @@ and variable_declaration top cxt f
       (* Make sure parens are added correctly *)
       statement_desc top cxt f (J.Exp e)
     | _ ->
-      match e.expression_desc, top  with
-      | Fun (is_method, params, b, env ), _ ->
+      match e.expression_desc  with
+      | Fun (is_method, params, b, env ) ->
         pp_function ~is_method cxt f
           ~fn_state:(if top then Name_top name else Name_non_top name)
           params b env      
-      | Raw_js_function(s,params), true ->     
-        P.string f L.function_;             
-        P.space f ; 
-        let acxt = Ext_pp_scope.ident cxt f name in 
-        P.space f ; 
-        pp_js_function_params_body f s params;
-        semi f;
-        acxt 
-      | _, _ ->
+      | _ ->
         let cxt = pp_var_assign cxt f name in 
         let cxt = expression ~level:1 cxt f e in
         semi f;

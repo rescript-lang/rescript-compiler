@@ -9,9 +9,8 @@
 
 
 
-let sum : int -> int -> int  = fun%raw a b -> {| 
-  return a + b
-|}
+let sum : int -> int -> int  =  [%raw{|(a,b) => a + b
+|}]
 
 let v = sum 1 2 
 
@@ -22,11 +21,11 @@ let b = f 1
 let c = f 2 
 
 let forIn = 
-   (fun%raw  o foo -> {|
+   [%raw{|(o,foo)=> {
   for (var i in o){
     foo(o)
   }
-  |})
+  }|}]
 
 
 let forIn : 'a -> (string -> unit [@bs]) -> unit = forIn  
@@ -53,7 +52,9 @@ end
 ;;   forIn   [%obj{x = 3 ; y = 3}]  (fun[@bs] x -> Js.log x)
 
 
-let f3  : unit -> bool [@bs] = fun%raw () -> "return true"
+let f3  : unit -> bool [@bs] = [%raw"()=>true"]
 
 let bbbb  = f3 () [@bs]
+
+;;assert (bbbb)
 

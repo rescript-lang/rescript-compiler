@@ -15,16 +15,14 @@ function hash_string(s) {
   return Caml_hash_primitive.caml_hash_final_mix(Caml_hash_primitive.caml_hash_mix_string(0, s));
 }
 
-function hashString (str){ 
+var hashString = (function(str){ 
                                               var hash = 5381,
                                               i    = str.length | 0;
 
                                               while(i !== 0) {
                                               hash = (hash * 33) ^ str.charCodeAt(--i);
                                               }
-                                              return hash
-                                              
-                                            };
+                                              return hash});
 
 var $$String = Belt_Id.hashable(Hashtbl.hash, (function (x, y) {
         return x === y;

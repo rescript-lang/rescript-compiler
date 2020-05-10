@@ -498,17 +498,7 @@ let convert (exports : Set_ident.t) (lam : Lambda.lambda) : Lam.t * Lam_module_i
          prim ~primitive:(Praw_js_code {code; code_info = Exp kind})
            ~args:[] loc
        | _ -> assert false)
-      
-    | _ when s = "#raw_function" ->   
-      (match args with
-       | [Lconst( Const_base (Const_string(s,_)))] ->
-         let v = Ast_exp_extension.fromString s in 
-         prim ~primitive:(Praw_js_function {
-           block = v.block; args = v.args;
-           arity = List.length v.args})
-           ~args:[] loc
-       | _ -> assert false)
-      
+            
     | _ when s = "#raw_stmt" ->
       begin match args with
         | [Lconst( Const_base (Const_string(code,_)))] ->

@@ -361,9 +361,6 @@ class virtual fold =
       | Str (_x, _x_i1) -> let o = o#bool _x in let o = o#string _x_i1 in o
       | Unicode _x -> let o = o#string _x in o
       | Raw_js_code _x -> let o = o#unknown _x in o
-      | Raw_js_function (_x, _x_i1) ->
-          let o = o#string _x in
-          let o = o#list (fun o -> o#string) _x_i1 in o
       | Array (_x, _x_i1) ->
           let o = o#list (fun o -> o#expression) _x in
           let o = o#mutable_flag _x_i1 in o

@@ -164,7 +164,6 @@ let rec no_side_effects (lam : Lam.t) : bool =
       | Pcaml_obj_length
       (* | Pjs_is_instance_array *)
       | Pwrap_exn
-      | Praw_js_function _
       | Praw_js_code {code_info = Exp (Js_function _ | Js_literal _) | Stmt Js_stmt_comment}
         -> true
       | Pjs_apply
@@ -251,7 +250,6 @@ let rec size (lam : Lam.t) =
     | Lglobal_module _ -> 1       
     | Lprim {primitive = 
         Praw_js_code _ 
-      | Praw_js_function _ 
       } -> really_big ()
     | Lprim {args = ll; _} -> size_lams 1 ll
 
