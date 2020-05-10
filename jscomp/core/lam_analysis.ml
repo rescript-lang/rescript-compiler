@@ -130,7 +130,7 @@ let rec no_side_effects (lam : Lam.t) : bool =
       | Pbyteslength
       | Pbytesrefu
       | Pbytesrefs
-      | Pmakearray _ 
+      | Pmakearray 
       | Parraylength  
       | Parrayrefu 
       | Parrayrefs  
@@ -153,7 +153,7 @@ let rec no_side_effects (lam : Lam.t) : bool =
       | Pasrbint _
       | Pbintcomp _
       (* Operations on big arrays: (unsafe, #dimensions, kind, layout) *)
-      | Pbigarrayref _ (* TODO it may raise an exception....*)
+
       (* Compile time constants *)
       | Pctconst _
       (* Integer to external pointer *)
@@ -185,24 +185,6 @@ let rec no_side_effects (lam : Lam.t) : bool =
       | Pbittest
       (* Operations on boxed integers (Nativeint.t, Int32.t, Int64.t) *)
       | Parraysets 
-      | Pbigarrayset _
-      (* size of the nth dimension of a big array *)
-      | Pbigarraydim _
-      (* load/set 16,32,64 bits from a string: (unsafe)*)
-      (* | Pstring_load_16 _
-      | Pstring_load_32 _
-      | Pstring_load_64 _ *)
-      (* | Pstring_set_16 _
-      | Pstring_set_32 _
-      | Pstring_set_64 _ *)
-      (* load/set 16,32,64 bits from a
-         (char, int8_unsigned_elt, c_layout) Bigarray.Array1.t : (unsafe) *)
-      | Pbigstring_load_16 _
-      | Pbigstring_load_32 _
-      | Pbigstring_load_64 _
-      | Pbigstring_set_16 _
-      | Pbigstring_set_32 _
-      | Pbigstring_set_64 _
       (* byte swap *)
       | Pbswap16
       | Pbbswap _
@@ -212,7 +194,6 @@ let rec no_side_effects (lam : Lam.t) : bool =
       | Plazyforce 
       | Psetfield _ 
       | Psetfield_computed
-      (* | Psetglobal _  *)
         -> false 
     )
   | Llet (_,_, arg,body) -> no_side_effects arg && no_side_effects body 

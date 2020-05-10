@@ -353,8 +353,8 @@ let lam_prim ~primitive:( p : Lambda.primitive) ~args loc : Lam.t =
   | Poffsetref x -> prim ~primitive:(Poffsetref x) ~args  loc
   | Pfloatcomp x -> prim ~primitive:(Pfloatcomp x) ~args loc
   | Pmakearray 
-    (x, _mutable_flag) (*FIXME*)
-    -> prim ~primitive:(Pmakearray x) ~args  loc
+    (_, _mutable_flag) (*FIXME*)
+    -> prim ~primitive:Pmakearray ~args  loc
   | Parraylength _ -> prim ~primitive:Parraylength ~args loc
   | Parrayrefu _ -> prim ~primitive:(Parrayrefu ) ~args loc
   | Parraysetu _ -> prim ~primitive:(Parraysetu ) ~args loc
@@ -379,20 +379,22 @@ let lam_prim ~primitive:( p : Lambda.primitive) ~args loc : Lam.t =
   | Plslbint x -> prim ~primitive:(Plslbint x) ~args loc
   | Plsrbint x -> prim ~primitive:(Plsrbint x) ~args loc
   | Pasrbint x -> prim ~primitive:(Pasrbint x) ~args loc
-  | Pbigarraydim x -> prim ~primitive:(Pbigarraydim x) ~args loc
+  | Pbigarraydim _ 
+  | Pbigstring_load_16 _
+  | Pbigstring_load_32 _
+  | Pbigstring_load_64 _
+  | Pbigstring_set_16 _
+  | Pbigstring_set_32 _
+  | Pbigstring_set_64 _
   | Pstring_load_16 _
   | Pstring_load_32 _
   | Pstring_load_64 _
   | Pstring_set_16 _ 
   | Pstring_set_32 _ 
+  | Pbigarrayref _
+  | Pbigarrayset _
   | Pstring_set_64 _ -> 
     Location.raise_errorf ~loc "unsupported primitive"
-  | Pbigstring_load_16 x -> prim ~primitive:(Pbigstring_load_16 x) ~args loc
-  | Pbigstring_load_32 x -> prim ~primitive:(Pbigstring_load_32 x) ~args loc
-  | Pbigstring_load_64 x -> prim ~primitive:(Pbigstring_load_64 x) ~args loc
-  | Pbigstring_set_16 x -> prim ~primitive:(Pbigstring_set_16 x) ~args loc
-  | Pbigstring_set_32 x -> prim ~primitive:(Pbigstring_set_32 x) ~args loc
-  | Pbigstring_set_64 x -> prim ~primitive:(Pbigstring_set_64 x) ~args loc
   | Pctconst x ->
     begin match x with
       | Word_size 
@@ -413,8 +415,6 @@ let lam_prim ~primitive:( p : Lambda.primitive) ~args loc : Lam.t =
   | Pbbswap x -> prim ~primitive:(Pbbswap x) ~args loc
   | Pcvtbint (a,b) -> prim ~primitive:(Pcvtbint (a,b)) ~args loc
   | Pbintcomp (a,b) -> prim ~primitive:(Pbintcomp (a,b)) ~args loc
-  | Pbigarrayref (a,b,c,d) -> prim ~primitive:(Pbigarrayref (a,b,c,d)) ~args loc
-  | Pbigarrayset (a,b,c,d) -> prim ~primitive:(Pbigarrayset (a,b,c,d)) ~args loc
   | Pfield_computed -> 
     prim ~primitive:Pfield_computed ~args loc 
   | Popaque -> Ext_list.singleton_exn args      

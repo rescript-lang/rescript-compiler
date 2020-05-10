@@ -80,7 +80,7 @@ type t =
   | Pbytesrefs
   | Pbytessets
   (* Array operations *)
-  | Pmakearray of Lam_compat.array_kind
+  | Pmakearray
   | Parraylength 
   | Parrayrefu
   | Parraysetu
@@ -109,17 +109,6 @@ type t =
   | Plsrbint of Lam_compat.boxed_integer
   | Pasrbint of Lam_compat.boxed_integer
   | Pbintcomp of Lam_compat.boxed_integer * Lam_compat.comparison
-  (* Operations on big arrays: (unsafe, #dimensions, kind, layout) *)
-  | Pbigarrayref of bool * int * Lam_compat.bigarray_kind * Lam_compat.bigarray_layout
-  | Pbigarrayset of bool * int * Lam_compat.bigarray_kind * Lam_compat.bigarray_layout
-  (* size of the nth dimension of a big array *)
-  | Pbigarraydim of int
-  | Pbigstring_load_16 of bool
-  | Pbigstring_load_32 of bool
-  | Pbigstring_load_64 of bool
-  | Pbigstring_set_16 of bool
-  | Pbigstring_set_32 of bool
-  | Pbigstring_set_64 of bool
   (* Compile time constants *)
   | Pctconst of Lam_compat.compile_time_constant
   (* byte swap *)
@@ -158,8 +147,6 @@ type t =
   | Pjs_function_length
   | Pcaml_obj_length
   | Pwrap_exn (* convert either JS exception or OCaml exception into OCaml format *)
-
-  (* | Pcreate_exception of string  *)
   | Pcreate_extension of string
   | Pis_not_none (* no info about its type *)
   | Pval_from_option
@@ -278,7 +265,7 @@ let eq_primitive_approx ( lhs : t) (rhs : t) =
   | Pjscomp comparison ->  (match rhs with  Pjscomp comparison1 -> Lam_compat.eq_comparison comparison  comparison1  | _ -> false )    
   | Poffsetint i0 ->   (match rhs with  Poffsetint i1 -> i0 = i1 | _ -> false )   
   | Poffsetref i0 ->  (match rhs with Poffsetref i1 -> i0 = i1   | _ -> false)
-  | Pmakearray array_kind -> (match rhs with Pmakearray array_kind1 -> Lam_compat.eq_array_kind array_kind array_kind1 | _ -> false  )
+  | Pmakearray  -> rhs = Pmakearray
   | Parraylength  -> rhs = Parraylength
   | Parrayrefu  -> rhs = Parrayrefu
   | Parraysetu  -> rhs = Parraysetu
@@ -301,27 +288,12 @@ let eq_primitive_approx ( lhs : t) (rhs : t) =
   | Pbbswap boxed_integer ->   (match rhs with Pbbswap boxed_integer1  -> Lam_compat.eq_boxed_integer boxed_integer boxed_integer1 | _ -> false )
   | Pcvtbint  (boxed_integer, boxed_integer1) -> (match rhs with Pcvtbint (boxed_integer10, boxed_integer11) -> Lam_compat.eq_boxed_integer boxed_integer boxed_integer10 && Lam_compat.eq_boxed_integer boxed_integer1 boxed_integer11 | _ -> false )
   | Pbintcomp  (boxed_integer , comparison) -> (match rhs with Pbintcomp(boxed_integer1, comparison1) -> Lam_compat.eq_boxed_integer boxed_integer boxed_integer1 && Lam_compat.eq_comparison comparison comparison1 | _ -> false)  
-  | Pbigarraydim dim -> (match rhs with Pbigarraydim dim1 -> dim = dim1 | _ -> false )
-  (* | Pstring_load_16 str ->  (match  rhs with Pstring_load_16 str1 -> str = str1  | _ -> false )
-  | Pstring_load_32 b -> (match rhs with Pstring_load_32 b1 -> b = b1 | _ -> false )    
-  | Pstring_load_64 b -> (match rhs with Pstring_load_64 b1 -> b = b1 | _ -> false )     *)
-  (* | Pstring_set_16 b -> (match rhs with Pstring_set_16 b1 -> b = b1 | _ -> false )    
-  | Pstring_set_32 b -> (match rhs with Pstring_set_32 b1 -> b = b1 | _ -> false )    
-  | Pstring_set_64 b -> (match rhs with Pstring_set_64 b1 -> b = b1 | _ -> false )       *)
-  | Pbigstring_load_16 b -> (match rhs with Pbigstring_load_16 b1 -> b = b1 | _ -> false )      
-  | Pbigstring_load_32 b -> (match rhs with Pbigstring_load_32 b1 -> b = b1 | _ -> false )      
-  | Pbigstring_load_64 b -> (match rhs with Pbigstring_load_64 b1 -> b = b1 | _ -> false )      
-  | Pbigstring_set_16 b -> (match rhs with Pbigstring_set_16 b1 -> b = b1 | _ -> false )      
-  | Pbigstring_set_32 b -> (match rhs with Pbigstring_set_32 b1 -> b = b1 | _ -> false )      
-  | Pbigstring_set_64 b -> (match rhs with Pbigstring_set_64 b1 -> b = b1 | _ -> false )      
   | Pctconst compile_time_constant -> (match rhs with Pctconst compile_time_constant1 -> Lam_compat.eq_compile_time_constant compile_time_constant compile_time_constant1 | _ -> false)
   | Pjs_unsafe_downgrade {name; loc=_; setter } -> (match rhs with Pjs_unsafe_downgrade rhs -> name = rhs.name && setter = rhs.setter | _ -> false)  
   | Pjs_fn_make i -> (match rhs with Pjs_fn_make i1 -> i = i1 | _ -> false)
   | Pvoid_run  -> rhs = Pvoid_run
   | Pfull_apply -> rhs = Pfull_apply 
   | Pjs_fn_method  -> rhs = Pjs_fn_method 
-  | Pbigarrayref  _ 
-  | Pbigarrayset _ 
   | Praw_js_function _
   | Praw_js_code _ 
    -> false (* TOO lazy, here comparison is only approximation*)

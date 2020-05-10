@@ -68,7 +68,6 @@ build test/belt_result_alias_test.cmi test/belt_result_alias_test.cmj : cc test/
 build test/bench.cmi test/bench.cmj : cc test/bench.ml | $stdlib
 build test/big_enum.cmi test/big_enum.cmj : cc test/big_enum.ml | $stdlib
 build test/big_polyvar_test.cmi test/big_polyvar_test.cmj : cc test/big_polyvar_test.ml | $stdlib
-build test/bigarray_test.cmi test/bigarray_test.cmj : cc test/bigarray_test.ml | $stdlib
 build test/block_alias_test.cmi test/block_alias_test.cmj : cc test/block_alias_test.ml | test/mt.cmj $stdlib
 build test/boolean_test.cmi test/boolean_test.cmj : cc test/boolean_test.ml | test/mt.cmj test/test_bool_equal.cmj $stdlib
 build test/bs_MapInt_test.cmi test/bs_MapInt_test.cmj : cc test/bs_MapInt_test.ml | $stdlib
