@@ -77,6 +77,9 @@ __FILE__,
 __FILE__, 
 (fun _ -> Eq(a7,None));
 __FILE__, 
-(fun _ -> Eq (a8,()))
+(fun _ -> Eq (a8,()));
+
+__LOC__, (fun _ -> Ok (Lazy.is_val (lazy 3)));
+__LOC__, (fun _ -> Ok (not @@ Lazy.is_val (lazy (raise Not_found))));
 ]
 

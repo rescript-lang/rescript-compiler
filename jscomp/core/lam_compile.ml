@@ -26,6 +26,13 @@ module E = Js_exp_make
 
 module S = Js_stmt_make
 
+let args_either_function_or_const (args : Lam.t list) = 
+    Ext_list.for_all args (fun x -> 
+      match x with 
+      | Lfunction _
+      | Lconst _ -> true 
+      | _ -> false
+    )
 let call_info_of_ap_status (ap_status : Lam.apply_status) : Js_call_info.t =  
   match  ap_status with
   | App_infer_full ->
@@ -370,13 +377,13 @@ and compile_recursive_let ~all_bindings
          ))
     ), []
 
-  | Lprim{primitive = Pmakeblock (_, tag_info, _) ; _}   ->
-    (* FIXME: also should fill tag *)
+  | Lprim{primitive = Pmakeblock (_, tag_info, _) ; args } 
+    when  not (args_either_function_or_const args) ->
+
     (* Lconst should not appear here if we do [scc]
        optimization, since it's faked recursive value,
        however it would affect scope issues, we have to declare it first
     *)
-    (* Ext_log.err "@[recursive value %s/%d@]@." id.name id.stamp; *)
     begin
       match compile_lambda {cxt with continuation = NeedValue Not_tail } arg with
       | { block = b; value = Some v} ->
@@ -392,9 +399,6 @@ and compile_recursive_let ~all_bindings
         [S.define_variable ~kind:Variable id (E.dummy_obj tag_info)]
       | _ -> assert false
     end
-  | Lvar _   ->
-    compile_lambda
-      {cxt with continuation = Declare (Alias ,id) } arg, []
   | _ ->
     (* pathological case:
         fail to capture taill call?

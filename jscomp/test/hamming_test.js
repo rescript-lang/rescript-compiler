@@ -118,17 +118,22 @@ function pr(param) {
 }
 
 function map(f, l) {
-  return CamlinternalLazy.from_fun(function () {
+  return {
+          RE_LAZY: "todo",
+          value: (function () {
               var match = CamlinternalLazy.force(l);
               return /* Cons */[
                       Curry._1(f, match[0]),
                       map(f, match[1])
                     ];
-            });
+            })
+        };
 }
 
 function merge(cmp, l1, l2) {
-  return CamlinternalLazy.from_fun(function () {
+  return {
+          RE_LAZY: "todo",
+          value: (function () {
               var match = CamlinternalLazy.force(l1);
               var match$1 = CamlinternalLazy.force(l2);
               var ll2 = match$1[1];
@@ -152,7 +157,8 @@ function merge(cmp, l1, l2) {
                         merge(cmp, l1, ll2)
                       ];
               }
-            });
+            })
+        };
 }
 
 function iter_interval(f, _l, _param) {
@@ -177,24 +183,36 @@ function iter_interval(f, _l, _param) {
   };
 }
 
-var hamming = CamlinternalLazy.from_fun(function () {
+var hamming = {
+  RE_LAZY: "todo",
+  value: (function () {
       return /* Cons */[
               nn1,
               merge(cmp, ham2, merge(cmp, ham3, ham5))
             ];
-    });
+    })
+};
 
-var ham2 = CamlinternalLazy.from_fun(function () {
+var ham2 = {
+  RE_LAZY: "todo",
+  value: (function () {
       return CamlinternalLazy.force(map(x2, hamming));
-    });
+    })
+};
 
-var ham3 = CamlinternalLazy.from_fun(function () {
+var ham3 = {
+  RE_LAZY: "todo",
+  value: (function () {
       return CamlinternalLazy.force(map(x3, hamming));
-    });
+    })
+};
 
-var ham5 = CamlinternalLazy.from_fun(function () {
+var ham5 = {
+  RE_LAZY: "todo",
+  value: (function () {
       return CamlinternalLazy.force(map(x5, hamming));
-    });
+    })
+};
 
 iter_interval(pr, hamming, /* tuple */[
       88000,

@@ -10,10 +10,13 @@ var u = {
   contents: 3
 };
 
-var v = CamlinternalLazy.from_fun(function () {
+var v = {
+  RE_LAZY: "todo",
+  value: (function () {
       u.contents = 32;
       
-    });
+    })
+};
 
 function lazy_test(param) {
   var h = u.contents;
@@ -51,15 +54,21 @@ var s = {
   contents: undefined
 };
 
-var set_true = CamlinternalLazy.from_fun(function () {
+var set_true = {
+  RE_LAZY: "todo",
+  value: (function () {
       s.contents = 1;
       
-    });
+    })
+};
 
-var set_false = CamlinternalLazy.from_fun(function () {
+var set_false = {
+  RE_LAZY: "todo",
+  value: (function () {
       s.contents = undefined;
       
-    });
+    })
+};
 
 var h;
 
@@ -83,57 +92,99 @@ var u_v = {
   contents: 0
 };
 
-var u$1 = CamlinternalLazy.from_fun(function () {
+var u$1 = {
+  RE_LAZY: "todo",
+  value: (function () {
       u_v.contents = 2;
       
-    });
+    })
+};
 
 CamlinternalLazy.force(u$1);
 
 var exotic = CamlinternalLazy.force;
 
-var l_from_fun = CamlinternalLazy.from_fun(function () {
+var l_from_fun = {
+  RE_LAZY: "todo",
+  value: (function () {
       return 3;
-    });
+    })
+};
 
-var forward_test = CamlinternalLazy.from_fun(function () {
+var forward_test = {
+  RE_LAZY: "todo",
+  value: (function () {
       var u = 3;
       u = u + 1 | 0;
       return u;
-    });
+    })
+};
 
-var f005 = CamlinternalLazy.from_fun(function () {
-      return 6;
-    });
+var f005 = {
+  RE_LAZY: "done",
+  value: 6
+};
 
-var f006 = CamlinternalLazy.from_fun(function () {
+var f006 = {
+  RE_LAZY: "todo",
+  value: (function () {
       return function (param) {
         return 3;
       };
-    });
+    })
+};
 
-var f007 = CamlinternalLazy.from_fun(function () {
+var f007 = {
+  RE_LAZY: "todo",
+  value: (function () {
       throw {
             RE_EXN_ID: "Not_found",
             Error: new Error()
           };
-    });
+    })
+};
 
-var f008 = CamlinternalLazy.from_fun(function () {
+var f008 = {
+  RE_LAZY: "todo",
+  value: (function () {
       console.log("hi");
       throw {
             RE_EXN_ID: "Not_found",
             Error: new Error()
           };
-    });
+    })
+};
 
-var a2 = CamlinternalLazy.from_val;
+function a2(x) {
+  return {
+          RE_LAZY: "done",
+          value: x
+        };
+}
 
-var a4 = CamlinternalLazy.from_val(3);
+var a3 = {
+  RE_LAZY: "done",
+  value: 3
+};
 
-var a7 = CamlinternalLazy.force(undefined);
+var a4 = {
+  RE_LAZY: "done",
+  value: 3
+};
 
-var a8 = CamlinternalLazy.force(undefined);
+var a5 = {
+  RE_LAZY: "done",
+  value: undefined
+};
+
+var a6 = {
+  RE_LAZY: "done",
+  value: undefined
+};
+
+var a7 = CamlinternalLazy.force(a5);
+
+var a8 = CamlinternalLazy.force(a6);
 
 Mt.from_pair_suites("Lazy_test", /* :: */[
       /* tuple */[
@@ -183,7 +234,10 @@ Mt.from_pair_suites("Lazy_test", /* :: */[
                 "lazy_from_val",
                 (function (param) {
                     return /* Eq */Block.__(0, [
-                              CamlinternalLazy.force(Lazy.from_val(3)),
+                              CamlinternalLazy.force({
+                                    RE_LAZY: "done",
+                                    value: 3
+                                  }),
                               3
                             ]);
                   })
@@ -193,7 +247,13 @@ Mt.from_pair_suites("Lazy_test", /* :: */[
                   "lazy_from_val2",
                   (function (param) {
                       return /* Eq */Block.__(0, [
-                                CamlinternalLazy.force(CamlinternalLazy.force(Lazy.from_val(3))),
+                                CamlinternalLazy.force(CamlinternalLazy.force({
+                                          RE_LAZY: "done",
+                                          value: {
+                                            RE_LAZY: "done",
+                                            value: 3
+                                          }
+                                        })),
                                 3
                               ]);
                     })
@@ -204,7 +264,10 @@ Mt.from_pair_suites("Lazy_test", /* :: */[
                     (function (param) {
                         debugger;
                         return /* Eq */Block.__(0, [
-                                  CamlinternalLazy.force(CamlinternalLazy.force(Lazy.from_val(forward_test))),
+                                  CamlinternalLazy.force(CamlinternalLazy.force({
+                                            RE_LAZY: "done",
+                                            value: forward_test
+                                          })),
                                   4
                                 ]);
                       })
@@ -214,7 +277,7 @@ Mt.from_pair_suites("Lazy_test", /* :: */[
                       "lazy_test.ml",
                       (function (param) {
                           return /* Eq */Block.__(0, [
-                                    3,
+                                    a3,
                                     a4
                                   ]);
                         })
@@ -239,7 +302,34 @@ Mt.from_pair_suites("Lazy_test", /* :: */[
                                       ]);
                             })
                         ],
-                        /* [] */0
+                        /* :: */[
+                          /* tuple */[
+                            "File \"lazy_test.ml\", line 82, characters 0-7",
+                            (function (param) {
+                                return /* Ok */Block.__(4, [Lazy.is_val({
+                                                RE_LAZY: "done",
+                                                value: 3
+                                              })]);
+                              })
+                          ],
+                          /* :: */[
+                            /* tuple */[
+                              "File \"lazy_test.ml\", line 83, characters 0-7",
+                              (function (param) {
+                                  return /* Ok */Block.__(4, [!Lazy.is_val({
+                                                  RE_LAZY: "todo",
+                                                  value: (function () {
+                                                      throw {
+                                                            RE_EXN_ID: "Not_found",
+                                                            Error: new Error()
+                                                          };
+                                                    })
+                                                })]);
+                                })
+                            ],
+                            /* [] */0
+                          ]
+                        ]
                       ]
                     ]
                   ]
@@ -250,12 +340,6 @@ Mt.from_pair_suites("Lazy_test", /* :: */[
         ]
       ]
     ]);
-
-var a3 = 3;
-
-var a5;
-
-var a6;
 
 exports.v = v;
 exports.lazy_test = lazy_test;
