@@ -53,8 +53,6 @@ let translate  loc
     Js_of_lam_exception.make (E.str s)
   | Pwrap_exn -> 
     E.runtime_call Js_runtime_modules.caml_js_exceptions "internalToOCamlException" args 
-  | Praw_js_function {args ; block} -> 
-    E.raw_js_function block args
   | Praw_js_code {code; code_info} -> 
     E.raw_js_code code_info code
     (* FIXME: save one allocation 

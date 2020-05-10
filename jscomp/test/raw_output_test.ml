@@ -11,6 +11,6 @@ let mk fn = fn ()
   it will do a wrong job. So we disabled such application 
   when arity is zero
 *)
-;; mk (fun%raw () -> {|console.log('should works')|})
+;; mk [%raw  {|(_)=> console.log('should works')|}]
 
 ;; Js.log ((fun [@bs] () -> 1 ) () [@bs])

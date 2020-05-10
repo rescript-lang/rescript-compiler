@@ -120,11 +120,8 @@ type t =
     }
   | Pinit_mod
   | Pupdate_mod
-
   | Praw_js_code of 
     Js_raw_info.t
-  | Praw_js_function of 
-    { block : string ; args : string list; arity : int}
   | Pjs_fn_make of int 
   | Pvoid_run 
   | Pfull_apply 
@@ -141,8 +138,6 @@ type t =
   | Pjs_function_length 
   | Pcaml_obj_length
   | Pwrap_exn (* convert either JS exception or OCaml exception into OCaml format *)  
-
-  (* | Pcreate_exception of string  *)
   | Pcreate_extension of string 
   | Pis_not_none
   | Pval_from_option

@@ -125,7 +125,7 @@ let test_id = ref 0
 let eq loc x y = Mt.eq_suites ~test_id ~suites loc x y 
 
 let () = 
-  try (fun%raw _ -> {|throw 2|} : unit -> unit ) ()
+  try [%raw{|()=>{throw 2}|}]  () [@bs]
   with 
   e -> 
     eq __LOC__ (Js.Exn.asJsExn e <> None) true
@@ -147,5 +147,5 @@ let rec input_lines ic acc =
 
 
 let () = 
-  eq __LOC__ ((fun%raw  a b c _ -> {|return a + b + c |} : _ -> _ -> _ -> _ -> _ ) 1 2 3 4) 6
+  eq __LOC__ (([%raw{|(a,b,c,_) => a + b + c |}] : _ -> _ -> _ -> _ -> _ ) 1 2 3 4) 6
 ;; Mt.from_pair_suites __MODULE__ !suites

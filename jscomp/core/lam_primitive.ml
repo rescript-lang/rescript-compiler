@@ -126,7 +126,6 @@ type t =
   | Pinit_mod
   | Pupdate_mod
   | Praw_js_code of Js_raw_info.t  
-  | Praw_js_function of {block : string ; args : string list; arity : int}
   | Pjs_fn_make of int
   | Pvoid_run
   | Pfull_apply 
@@ -294,7 +293,6 @@ let eq_primitive_approx ( lhs : t) (rhs : t) =
   | Pvoid_run  -> rhs = Pvoid_run
   | Pfull_apply -> rhs = Pfull_apply 
   | Pjs_fn_method  -> rhs = Pjs_fn_method 
-  | Praw_js_function _
   | Praw_js_code _ 
    -> false (* TOO lazy, here comparison is only approximation*)
   
