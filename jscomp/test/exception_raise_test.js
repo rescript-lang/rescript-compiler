@@ -188,7 +188,7 @@ function eq(loc, x, y) {
 }
 
 try {
-  (function (_){throw 2}(undefined));
+  ((()=>{throw 2})());
 }
 catch (raw_e$2){
   var e = Caml_js_exceptions.internalToOCamlException(raw_e$2);
@@ -235,7 +235,7 @@ function input_lines(ic, _acc) {
   };
 }
 
-eq("File \"exception_raise_test.ml\", line 150, characters 5-12", function (a,b,c,_){return a + b + c }(1, 2, 3, 4), 6);
+eq("File \"exception_raise_test.ml\", line 150, characters 5-12", ((a,b,c,_) => a + b + c)(1, 2, 3, 4), 6);
 
 Mt.from_pair_suites("Exception_raise_test", suites.contents);
 
