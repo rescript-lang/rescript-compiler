@@ -33,10 +33,7 @@ let get_files ext dir =
   Ext_array.filter_map (Sys.readdir dir)
     (fun  x ->
        if Ext_string.ends_with x  ext 
-       then begin
-        print_endline ("getting file " ^ x ^ " from dir " ^ dir);
-        Some (Filename.concat dir x) end
-      else None )
+       then Some (Filename.concat dir x) else None )
   |> Array.to_list
 
 (** the cache should be readable and also update *)
