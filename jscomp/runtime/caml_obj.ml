@@ -219,14 +219,8 @@ let rec caml_compare (a : Caml_obj_extern.t) (b : Caml_obj_extern.t) : int =
         let tag_a = Caml_obj_extern.tag a in
         let tag_b = Caml_obj_extern.tag b in
         (* double_array_tag: 254
-           forward_tag:250
         *)
-        (* FIXME: The semantics of lazy (2 + 3) vs lazy 5 *)
-        if tag_a = 250 then
-          caml_compare (Caml_obj_extern.field a 0) b
-        else if tag_b = 250 then
-          caml_compare a (Caml_obj_extern.field b 0)
-        else if tag_a = 256 then   
+        if tag_a = 256 then   
           if tag_b = 256 then 
             Pervasives.compare (Obj.magic (Caml_obj_extern.field a 1) : int)
              (Obj.magic (Caml_obj_extern.field b 1) : int)
