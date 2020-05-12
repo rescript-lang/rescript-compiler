@@ -248,9 +248,6 @@ let rec mul this
 
 
 
-let swap (Int64 {lo ; hi }) =
-  mk ~lo:( Caml_int32.caml_int32_bswap hi)
-    ~hi:( Caml_int32.caml_int32_bswap lo)
 
 (* Dispatched by the compiler, idea: should we do maximum sharing
 *)

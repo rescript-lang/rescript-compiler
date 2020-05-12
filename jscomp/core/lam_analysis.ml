@@ -183,7 +183,6 @@ let rec no_side_effects (lam : Lam.t) : bool =
       (* Operations on boxed integers (Nativeint.t, Int32.t, Int64.t) *)
       | Parraysets 
       (* byte swap *)
-      | Pbbswap _
       | Parraysetu  
       | Poffsetref _ 
       | Praise

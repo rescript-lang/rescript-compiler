@@ -240,7 +240,7 @@ let primitive ppf (prim : Lam_primitive.t) = match prim with
   | Pbintcomp(bi, Cgt) -> print_boxed_integer ">" ppf bi
   | Pbintcomp(bi, Cle) -> print_boxed_integer "<=" ppf bi
   | Pbintcomp(bi, Cge) -> print_boxed_integer ">=" ppf bi
-  | Pbbswap(bi) -> print_boxed_integer "bswap" ppf bi
+
 
 
 type print_kind = 

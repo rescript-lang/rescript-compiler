@@ -108,9 +108,7 @@ type t =
 
   (* Compile time constants *)
   | Pctconst of Lam_compat.compile_time_constant
-  | Pbbswap of Lam_compat.boxed_integer
   (* Integer to external pointer *)
-
   | Pdebugger
   | Pjs_unsafe_downgrade of 
     { 

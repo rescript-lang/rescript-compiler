@@ -112,7 +112,6 @@ type t =
   
   (* Compile time constants *)
   | Pctconst of Lam_compat.compile_time_constant
-  | Pbbswap of Lam_compat.boxed_integer 
   (* Integer to external pointer *)
 
   | Pdebugger
@@ -282,7 +281,6 @@ let eq_primitive_approx ( lhs : t) (rhs : t) =
   | Plslbint  boxed_integer -> (match rhs with Plslbint boxed_integer1 -> Lam_compat.eq_boxed_integer boxed_integer boxed_integer1 | _ -> false )
   | Plsrbint  boxed_integer -> (match rhs with Plsrbint boxed_integer1 -> Lam_compat.eq_boxed_integer boxed_integer boxed_integer1 | _ -> false )
   | Pasrbint  boxed_integer -> (match rhs with Pasrbint boxed_integer1 -> Lam_compat.eq_boxed_integer boxed_integer boxed_integer1 | _ -> false )
-  | Pbbswap boxed_integer ->   (match rhs with Pbbswap boxed_integer1  -> Lam_compat.eq_boxed_integer boxed_integer boxed_integer1 | _ -> false )
   | Pcvtbint  (boxed_integer, boxed_integer1) -> (match rhs with Pcvtbint (boxed_integer10, boxed_integer11) -> Lam_compat.eq_boxed_integer boxed_integer boxed_integer10 && Lam_compat.eq_boxed_integer boxed_integer1 boxed_integer11 | _ -> false )
   | Pbintcomp  (boxed_integer , comparison) -> (match rhs with Pbintcomp(boxed_integer1, comparison1) -> Lam_compat.eq_boxed_integer boxed_integer boxed_integer1 && Lam_compat.eq_comparison comparison comparison1 | _ -> false)  
   | Pctconst compile_time_constant -> (match rhs with Pctconst compile_time_constant1 -> Lam_compat.eq_compile_time_constant compile_time_constant compile_time_constant1 | _ -> false)

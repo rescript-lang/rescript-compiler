@@ -39,16 +39,6 @@ let mod_ (x : nativeint) (y:nativeint) =
 
 
 
-let caml_int32_bswap (x : nativeint) = 
-  let open Caml_nativeint_extern in 
-  logor (shift_left (logand x  0x000000FFn) 24)
-     (logor (shift_left (logand x  0x0000FF00n)  8)
-        (logor (shift_right_logical (logand x  0x00FF0000n)  8) 
-      (shift_right_logical (logand x  0xFF000000n)  24)))
-
-
-
-let caml_nativeint_bswap = caml_int32_bswap
 
 (* -FIXME not polyfill any more in next release *)
 let imul : int32 -> int32 -> int32 = [%bs.raw{| Math.imul || function (x,y) {

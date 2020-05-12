@@ -52,7 +52,7 @@ val mul : t -> t -> t
 val xor : t -> t -> t 
 val or_ : t -> t -> t 
 val and_ : t -> t -> t 
-val swap : t -> t
+
 
 type comparison = t -> t -> bool 
 val ge : comparison
