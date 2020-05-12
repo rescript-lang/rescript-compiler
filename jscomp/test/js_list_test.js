@@ -4,7 +4,6 @@ var Mt = require("./mt.js");
 var Block = require("../../lib/js/block.js");
 var Js_list = require("../../lib/js/js_list.js");
 var Js_vector = require("../../lib/js/js_vector.js");
-var Caml_int32 = require("../../lib/js/caml_int32.js");
 
 var suites = {
   contents: /* [] */0
@@ -202,7 +201,7 @@ var vvv = Js_list.filter((function (x) {
 eq("File \"js_list_test.ml\", line 31, characters 7-14", Js_list.length(vvv), 10000);
 
 function f$1(x) {
-  return Caml_int32.imul(x, 10);
+  return Math.imul(x, 10);
 }
 
 eq("File \"js_list_test.ml\", line 32, characters 7-14", true, Js_list.equal((function (x, y) {

@@ -1,6 +1,5 @@
 'use strict';
 
-var Caml_int32 = require("../../lib/js/caml_int32.js");
 
 var r = 0;
 
@@ -11,9 +10,9 @@ for(var k = 1; k <= 10; ++k){
         (i << 1)
       ] : /* tuple */[
         2,
-        Caml_int32.imul(i, 3)
+        Math.imul(i, 3)
       ];
-    r = Caml_int32.imul(r, match[0]) + match[1] | 0;
+    r = Math.imul(r, match[0]) + match[1] | 0;
   }
 }
 

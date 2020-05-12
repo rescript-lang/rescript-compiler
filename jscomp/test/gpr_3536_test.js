@@ -2,7 +2,6 @@
 
 var Mt = require("./mt.js");
 var Curry = require("../../lib/js/curry.js");
-var Caml_int32 = require("../../lib/js/caml_int32.js");
 
 var suites = {
   contents: /* [] */0
@@ -28,7 +27,9 @@ eq("File \"gpr_3536_test.ml\", line 32, characters 6-13", xx(3, (function (prim,
             return prim - prim$1 | 0;
           }), 2, (function (prim, prim$1) {
             return prim + prim$1 | 0;
-          }), 4, Caml_int32.imul, 3), 11);
+          }), 4, (function (prim, prim$1) {
+            return Math.imul(prim, prim$1);
+          }), 3), 11);
 
 Mt.from_pair_suites("Gpr_3536_test", suites.contents);
 

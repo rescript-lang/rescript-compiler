@@ -24,7 +24,6 @@ var Caml_sys = require("../../lib/js/caml_sys.js");
 var Filename = require("../../lib/js/filename.js");
 var Caml_array = require("../../lib/js/caml_array.js");
 var Caml_bytes = require("../../lib/js/caml_bytes.js");
-var Caml_int32 = require("../../lib/js/caml_int32.js");
 var Caml_int64 = require("../../lib/js/caml_int64.js");
 var Pervasives = require("../../lib/js/pervasives.js");
 var Caml_format = require("../../lib/js/caml_format.js");
@@ -651,7 +650,7 @@ function parse_opt(error, active, flags, s) {
               ];
       }
       _i = i + 1 | 0;
-      _n = (Caml_int32.imul(10, n) + Caml_string.get(s, i) | 0) - /* "0" */48 | 0;
+      _n = (Math.imul(10, n) + Caml_string.get(s, i) | 0) - /* "0" */48 | 0;
       continue ;
     };
   };
@@ -9687,7 +9686,7 @@ function semantic_version_parse(str, start, last_index) {
                 start
               ];
       }
-      _acc = Caml_int32.imul(acc, 10) + v | 0;
+      _acc = Math.imul(acc, 10) + v | 0;
       _start = start + 1 | 0;
       continue ;
     };
@@ -10760,7 +10759,7 @@ function char_for_backslash(c) {
 }
 
 function char_for_decimal_code(lexbuf, i) {
-  var c = (Caml_int32.imul(100, Lexing.lexeme_char(lexbuf, i) - 48 | 0) + Caml_int32.imul(10, Lexing.lexeme_char(lexbuf, i + 1 | 0) - 48 | 0) | 0) + (Lexing.lexeme_char(lexbuf, i + 2 | 0) - 48 | 0) | 0;
+  var c = (Math.imul(100, Lexing.lexeme_char(lexbuf, i) - 48 | 0) + Math.imul(10, Lexing.lexeme_char(lexbuf, i + 1 | 0) - 48 | 0) | 0) + (Lexing.lexeme_char(lexbuf, i + 2 | 0) - 48 | 0) | 0;
   if (!(c < 0 || c > 255)) {
     return Char.chr(c);
   }

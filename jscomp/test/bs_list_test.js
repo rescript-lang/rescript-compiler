@@ -4,7 +4,6 @@ var Mt = require("./mt.js");
 var Caml_obj = require("../../lib/js/caml_obj.js");
 var Belt_List = require("../../lib/js/belt_List.js");
 var Belt_Array = require("../../lib/js/belt_Array.js");
-var Caml_int32 = require("../../lib/js/caml_int32.js");
 var Caml_primitive = require("../../lib/js/caml_primitive.js");
 
 var suites = {
@@ -50,11 +49,11 @@ function sum2(xs, ys) {
 }
 
 var u = Belt_List.makeBy(5, (function (i) {
-        return Caml_int32.imul(i, i);
+        return Math.imul(i, i);
       }));
 
 function f(i) {
-  return eq("File \"bs_list_test.ml\", line 26, characters 7-14", Belt_List.getExn(u, i), Caml_int32.imul(i, i));
+  return eq("File \"bs_list_test.ml\", line 26, characters 7-14", Belt_List.getExn(u, i), Math.imul(i, i));
 }
 
 for(var i = 0; i <= 4; ++i){

@@ -1,7 +1,6 @@
 'use strict';
 
 var Caml_array = require("../../lib/js/caml_array.js");
-var Caml_int32 = require("../../lib/js/caml_int32.js");
 
 function $$eval(_bdd, vars) {
   while(true) {
@@ -326,7 +325,7 @@ var seed = {
 };
 
 function random(param) {
-  seed.contents = Caml_int32.imul(seed.contents, 25173) + 17431 | 0;
+  seed.contents = Math.imul(seed.contents, 25173) + 17431 | 0;
   return (seed.contents & 1) > 0;
 }
 

@@ -12,7 +12,6 @@ var Caml_io = require("../../lib/js/caml_io.js");
 var Caml_obj = require("../../lib/js/caml_obj.js");
 var Caml_array = require("../../lib/js/caml_array.js");
 var Caml_bytes = require("../../lib/js/caml_bytes.js");
-var Caml_int32 = require("../../lib/js/caml_int32.js");
 var Pervasives = require("../../lib/js/pervasives.js");
 var Caml_option = require("../../lib/js/caml_option.js");
 var Caml_string = require("../../lib/js/caml_string.js");
@@ -234,7 +233,7 @@ function next(param) {
         if (match$1 > 57 || match$1 < 48) {
           return /* ILit */Block.__(1, [n]);
         }
-        _n = (Caml_int32.imul(10, n) + Curry._1(getch, undefined) | 0) - 48 | 0;
+        _n = (Math.imul(10, n) + Curry._1(getch, undefined) | 0) - 48 | 0;
         continue ;
       };
     }

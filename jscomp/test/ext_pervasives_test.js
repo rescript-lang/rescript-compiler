@@ -3,7 +3,6 @@
 var Arg = require("../../lib/js/arg.js");
 var Curry = require("../../lib/js/curry.js");
 var Format = require("../../lib/js/format.js");
-var Caml_int32 = require("../../lib/js/caml_int32.js");
 var Pervasives = require("../../lib/js/pervasives.js");
 var Caml_string = require("../../lib/js/caml_string.js");
 var Caml_exceptions = require("../../lib/js/caml_exceptions.js");
@@ -97,7 +96,7 @@ function bad_argf(fmt) {
 function hash_variant(s) {
   var accu = 0;
   for(var i = 0 ,i_finish = s.length; i < i_finish; ++i){
-    accu = Caml_int32.imul(223, accu) + Caml_string.get(s, i) | 0;
+    accu = Math.imul(223, accu) + Caml_string.get(s, i) | 0;
   }
   accu = accu & 2147483647;
   if (accu > 1073741823) {

@@ -3,7 +3,6 @@
 var Mt = require("./mt.js");
 var Block = require("../../lib/js/block.js");
 var Curry = require("../../lib/js/curry.js");
-var Caml_int32 = require("../../lib/js/caml_int32.js");
 var Caml_module = require("../../lib/js/caml_module.js");
 
 var suites = {
@@ -66,7 +65,7 @@ function fact(n) {
   if (n <= 1) {
     return 1;
   } else {
-    return Caml_int32.imul(n, Curry._1(M.fact, n - 1 | 0));
+    return Math.imul(n, Curry._1(M.fact, n - 1 | 0));
   }
 }
 

@@ -1,8 +1,9 @@
 'use strict';
 
-var Caml_int32 = require("../../lib/js/caml_int32.js");
 
-var f = Caml_int32.imul;
+function f(x, y) {
+  return Math.imul(x, y);
+}
 
 exports.f = f;
 /* No side effect */
