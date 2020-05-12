@@ -344,7 +344,6 @@ let lam_prim ~primitive:( p : Lambda.primitive) ~args loc : Lam.t =
   | Pbytessets -> prim ~primitive:Pbytessets ~args loc
   | Pisint -> prim ~primitive:Pisint ~args loc
   | Pisout -> prim ~primitive:Pisout ~args loc
-  | Pbittest -> prim ~primitive:Pbittest ~args loc
   | Pintoffloat -> prim ~primitive:Pintoffloat ~args loc
   | Pfloatofint -> prim ~primitive:Pfloatofint ~args loc
   | Pnegfloat -> prim ~primitive:Pnegfloat ~args loc
@@ -427,6 +426,7 @@ let lam_prim ~primitive:( p : Lambda.primitive) ~args loc : Lam.t =
     prim ~primitive:Psetfield_computed ~args loc 
   | Pbbswap _
   | Pbswap16 
+  | Pbittest
   | Pduparray _ ->  assert false 
     (* Does not exist since we compile array in js backend unlike native backend *)
 

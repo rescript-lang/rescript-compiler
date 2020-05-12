@@ -621,7 +621,7 @@ let translate  loc
        Lfunction(Curried, [parm], 
                  Matching.inline_lazy_force (Lvar parm) Location.none) 
    It is inlined, this should not appear here *)    
-  | Pbittest 
+
 
     -> 
     (*we dont use [throw] here, since [throw] is an statement  *)        

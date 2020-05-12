@@ -178,8 +178,6 @@ let rec no_side_effects (lam : Lam.t) : bool =
       | Praw_js_code _
       | Pbytessetu 
       | Pbytessets
-      (* Bitvect operations *)
-      | Pbittest
       (* Operations on boxed integers (Nativeint.t, Int32.t, Int64.t) *)
       | Parraysets 
       (* byte swap *)

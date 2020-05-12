@@ -87,8 +87,6 @@ type t =
   | Pisint
   (* Test if the (integer) argument is outside an interval *)
   | Pisout
-  (* Bitvect operations *)
-  | Pbittest
   (* Operations on boxed integers (Nativeint.t, Int32.t, Int64.t) *)
   | Pbintofint of Lam_compat.boxed_integer
   | Pintofbint of Lam_compat.boxed_integer
