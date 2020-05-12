@@ -3,7 +3,6 @@
 var Mt = require("./mt.js");
 var Int64 = require("../../lib/js/int64.js");
 var Belt_List = require("../../lib/js/belt_List.js");
-var Caml_int32 = require("../../lib/js/caml_int32.js");
 var Caml_int64 = require("../../lib/js/caml_int64.js");
 
 var suites = {
@@ -55,13 +54,13 @@ for(var i$2 = 0; i$2 <= 8; ++i$2){
 var u = Caml_int64.mk(-10001, 2097151);
 
 for(var i$3 = 0; i$3 <= 6; ++i$3){
-  eq("File \"int64_string_test.ml\", line 42, characters 5-12", Caml_int64.to_string(Caml_int64.add(u, Caml_int64.of_int32(Caml_int32.imul(i$3, 10000)))), "90071992547" + (String(3 + i$3 | 0) + "0991"));
+  eq("File \"int64_string_test.ml\", line 42, characters 5-12", Caml_int64.to_string(Caml_int64.add(u, Caml_int64.of_int32(Math.imul(i$3, 10000)))), "90071992547" + (String(3 + i$3 | 0) + "0991"));
 }
 
 var v$1 = Caml_int64.mk(-49999, -2097153);
 
 for(var i$4 = 0; i$4 <= 9; ++i$4){
-  eq("File \"int64_string_test.ml\", line 49, characters 5-12", Caml_int64.to_string(Caml_int64.add(v$1, Caml_int64.of_int32(Caml_int32.imul(i$4, 10000)))), "-90071992547" + (String(9 - i$4 | 0) + "0991"));
+  eq("File \"int64_string_test.ml\", line 49, characters 5-12", Caml_int64.to_string(Caml_int64.add(v$1, Caml_int64.of_int32(Math.imul(i$4, 10000)))), "-90071992547" + (String(9 - i$4 | 0) + "0991"));
 }
 
 eq("File \"int64_string_test.ml\", line 52, characters 6-13", Caml_int64.to_string(Caml_int64.mk(-1, 2097151)), "9007199254740991");

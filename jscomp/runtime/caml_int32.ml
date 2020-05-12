@@ -37,11 +37,3 @@ let mod_ (x : nativeint) (y:nativeint) =
     raise Division_by_zero
   else Caml_nativeint_extern.rem x  y
 
-
-
-
-(* -FIXME not polyfill any more in next release *)
-let imul : int32 -> int32 -> int32 = [%bs.raw{| Math.imul || function (x,y) {
-  y |= 0; return ((((x >> 16) * y) << 16) + (x & 0xffff) * y)|0; 
-}
-|}]

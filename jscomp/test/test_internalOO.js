@@ -31,7 +31,7 @@ var step = Sys.word_size / 16 | 0;
 function public_method_label(s) {
   var accu = 0;
   for(var i = 0 ,i_finish = s.length; i < i_finish; ++i){
-    accu = Caml_int32.imul(223, accu) + Caml_string.get(s, i) | 0;
+    accu = Math.imul(223, accu) + Caml_string.get(s, i) | 0;
   }
   accu = accu & 2147483647;
   if (accu > 1073741823) {
@@ -2973,7 +2973,7 @@ function new_table(pub_labels) {
   var len = pub_labels.length;
   var methods = Caml_array.caml_make_vect((len << 1) + 2 | 0, /* DummyA */0);
   Caml_array.caml_array_set(methods, 0, len);
-  Caml_array.caml_array_set(methods, 1, (Caml_int32.imul(fit_size(len), Sys.word_size) / 8 | 0) - 1 | 0);
+  Caml_array.caml_array_set(methods, 1, (Math.imul(fit_size(len), Sys.word_size) / 8 | 0) - 1 | 0);
   for(var i = 0; i < len; ++i){
     Caml_array.caml_array_set(methods, (i << 1) + 3 | 0, Caml_array.caml_array_get(pub_labels, i));
   }

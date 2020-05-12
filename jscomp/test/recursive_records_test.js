@@ -3,7 +3,6 @@
 var Mt = require("./mt.js");
 var List = require("../../lib/js/list.js");
 var Caml_obj = require("../../lib/js/caml_obj.js");
-var Caml_int32 = require("../../lib/js/caml_int32.js");
 
 var suites = {
   contents: /* [] */0
@@ -26,7 +25,7 @@ rec_cell.next = rec_cell;
 function f0(x) {
   var rec_cell = { };
   Caml_obj.update_dummy(rec_cell, {
-        content: Caml_int32.imul(x, x) - 6 | 0,
+        content: Math.imul(x, x) - 6 | 0,
         next: rec_cell
       });
   return rec_cell;
@@ -49,7 +48,7 @@ rec_cell2[1] = rec_cell2;
 function f2(x) {
   var rec_cell2 = [];
   Caml_obj.update_dummy(rec_cell2, /* Cons */[
-        /* content */Caml_int32.imul(x, x) - 6 | 0,
+        /* content */Math.imul(x, x) - 6 | 0,
         /* next */rec_cell2
       ]);
   return rec_cell2;
@@ -93,7 +92,7 @@ rec_cell3[1] = rec_cell3;
 function f3(x) {
   var rec_cell3 = [];
   Caml_obj.update_dummy(rec_cell3, /* :: */[
-        Caml_int32.imul(x, x) - 6 | 0,
+        Math.imul(x, x) - 6 | 0,
         rec_cell3
       ]);
   return rec_cell3;

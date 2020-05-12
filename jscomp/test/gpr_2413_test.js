@@ -1,6 +1,5 @@
 'use strict';
 
-var Caml_int32 = require("../../lib/js/caml_int32.js");
 
 function f(param) {
   switch (param.tag | 0) {
@@ -18,7 +17,7 @@ function f(param) {
     
   }
   var a$3 = param[0][0];
-  return Caml_int32.imul(a$3, a$3);
+  return Math.imul(a$3, a$3);
 }
 
 function ff(c) {

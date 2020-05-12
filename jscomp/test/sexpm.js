@@ -13,7 +13,6 @@ var $$String = require("../../lib/js/string.js");
 var Caml_io = require("../../lib/js/caml_io.js");
 var Printexc = require("../../lib/js/printexc.js");
 var Caml_bytes = require("../../lib/js/caml_bytes.js");
-var Caml_int32 = require("../../lib/js/caml_int32.js");
 var Pervasives = require("../../lib/js/pervasives.js");
 var Caml_primitive = require("../../lib/js/caml_primitive.js");
 var Caml_js_exceptions = require("../../lib/js/caml_js_exceptions.js");
@@ -765,7 +764,7 @@ function read2int(i, k, t) {
   }
   var c = _get(t);
   if (_is_digit(c)) {
-    return read1int(Caml_int32.imul(10, i) + (c - /* "0" */48 | 0) | 0, k, t);
+    return read1int(Math.imul(10, i) + (c - /* "0" */48 | 0) | 0, k, t);
   } else {
     return Curry._1(_error(t, /* Format */[
                     /* String_literal */Block.__(11, [
@@ -788,7 +787,7 @@ function read1int(i, k, t) {
   }
   var c = _get(t);
   if (_is_digit(c)) {
-    return Curry._1(k, Caml_int32.imul(10, i) + (c - /* "0" */48 | 0) | 0);
+    return Curry._1(k, Math.imul(10, i) + (c - /* "0" */48 | 0) | 0);
   } else {
     return Curry._1(_error(t, /* Format */[
                     /* String_literal */Block.__(11, [
@@ -1343,7 +1342,7 @@ function MakeDecode(funarg) {
     }
     var c = _get(t);
     if (_is_digit(c)) {
-      return read1int(Caml_int32.imul(10, i) + (c - /* "0" */48 | 0) | 0, k, t);
+      return read1int(Math.imul(10, i) + (c - /* "0" */48 | 0) | 0, k, t);
     } else {
       return Curry._1(_error(t, /* Format */[
                       /* String_literal */Block.__(11, [
@@ -1365,7 +1364,7 @@ function MakeDecode(funarg) {
     }
     var c = _get(t);
     if (_is_digit(c)) {
-      return Curry._1(k, Caml_int32.imul(10, i) + (c - /* "0" */48 | 0) | 0);
+      return Curry._1(k, Math.imul(10, i) + (c - /* "0" */48 | 0) | 0);
     } else {
       return Curry._1(_error(t, /* Format */[
                       /* String_literal */Block.__(11, [

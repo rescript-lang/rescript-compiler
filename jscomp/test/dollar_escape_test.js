@@ -2,7 +2,6 @@
 
 var Mt = require("./mt.js");
 var Block = require("../../lib/js/block.js");
-var Caml_int32 = require("../../lib/js/caml_int32.js");
 
 var suites = {
   contents: /* [] */0
@@ -33,7 +32,9 @@ function $$(x, y) {
   return x + y | 0;
 }
 
-var $$$plus = Caml_int32.imul;
+function $$$plus(x, y) {
+  return Math.imul(x, y);
+}
 
 eq("File \"dollar_escape_test.ml\", line 20, characters 6-13", 3, 3);
 

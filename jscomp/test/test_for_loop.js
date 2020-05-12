@@ -3,7 +3,6 @@
 var $$Array = require("../../lib/js/array.js");
 var Curry = require("../../lib/js/curry.js");
 var Caml_array = require("../../lib/js/caml_array.js");
-var Caml_int32 = require("../../lib/js/caml_int32.js");
 
 function for_(x) {
   for(var i = 0 ,i_finish = (console.log("hi"), x.length); i <= i_finish; ++i){
@@ -72,7 +71,7 @@ function for_5(x, u) {
           
         }), x);
   for(var i = 0 ,i_finish = x.length; i <= i_finish; ++i){
-    var k = Caml_int32.imul((u << 1), u);
+    var k = Math.imul((u << 1), u);
     Caml_array.caml_array_set(arr, i, (function(k){
         return function (param) {
           v.contents = v.contents + k | 0;
@@ -107,7 +106,7 @@ function for_6(x, u) {
     };
     (function(v2){
     for(var i = 0 ,i_finish = x.length; i <= i_finish; ++i){
-      var k = Caml_int32.imul((u << 1), u);
+      var k = Math.imul((u << 1), u);
       var h = (v5.contents << 1);
       v2.contents = v2.contents + 1 | 0;
       Caml_array.caml_array_set(arr, i, (function(k,h){

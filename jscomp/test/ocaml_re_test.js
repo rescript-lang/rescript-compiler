@@ -13,7 +13,6 @@ var Hashtbl = require("../../lib/js/hashtbl.js");
 var Caml_obj = require("../../lib/js/caml_obj.js");
 var Caml_array = require("../../lib/js/caml_array.js");
 var Caml_bytes = require("../../lib/js/caml_bytes.js");
-var Caml_int32 = require("../../lib/js/caml_int32.js");
 var Pervasives = require("../../lib/js/pervasives.js");
 var Caml_option = require("../../lib/js/caml_option.js");
 var Caml_string = require("../../lib/js/caml_string.js");
@@ -268,7 +267,7 @@ function hash_rec(param) {
     return 0;
   }
   var match = param[0];
-  return (match[0] + Caml_int32.imul(13, match[1]) | 0) + Caml_int32.imul(257, hash_rec(param[1])) | 0;
+  return (match[0] + Math.imul(13, match[1]) | 0) + Math.imul(257, hash_rec(param[1])) | 0;
 }
 
 function one_char(param) {
@@ -594,7 +593,7 @@ function add$1(x, t) {
 }
 
 function hash_combine(h, accu) {
-  return Caml_int32.imul(accu, 65599) + h | 0;
+  return Math.imul(accu, 65599) + h | 0;
 }
 
 var empty = {
@@ -3448,7 +3447,7 @@ function parse(multiline, dollar_endonly, dotall, ungreedy, s) {
           i.contents = i.contents - 1 | 0;
           return i$1;
         }
-        var i$prime = Caml_int32.imul(10, i$1) + (d$1 - /* "0" */48 | 0) | 0;
+        var i$prime = Math.imul(10, i$1) + (d$1 - /* "0" */48 | 0) | 0;
         if (i$prime < i$1) {
           throw {
                 RE_EXN_ID: Parse_error,

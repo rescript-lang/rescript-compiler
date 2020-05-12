@@ -7,7 +7,6 @@ var Curry = require("../../lib/js/curry.js");
 var Int32 = require("../../lib/js/int32.js");
 var Format = require("../../lib/js/format.js");
 var Caml_float = require("../../lib/js/caml_float.js");
-var Caml_int32 = require("../../lib/js/caml_int32.js");
 var Pervasives = require("../../lib/js/pervasives.js");
 var Ext_array_test = require("./ext_array_test.js");
 
@@ -151,7 +150,9 @@ var shift_left_tests = /* tuple */[
   shift_left_tests_001
 ];
 
-var $star$tilde = Caml_int32.imul;
+function $star$tilde(prim, prim$1) {
+  return Math.imul(prim, prim$1);
+}
 
 var suites = {
   contents: Pervasives.$at(/* :: */[

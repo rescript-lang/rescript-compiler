@@ -1,7 +1,6 @@
 'use strict';
 
 var Block = require("../../lib/js/block.js");
-var Caml_int32 = require("../../lib/js/caml_int32.js");
 
 function $plus$colon(_f, _g) {
   while(true) {
@@ -53,7 +52,7 @@ function $star$colon(_f, _g) {
     } else {
       var n = f[0];
       if (!g.tag) {
-        return /* Int */Block.__(0, [Caml_int32.imul(n, g[0])]);
+        return /* Int */Block.__(0, [Math.imul(n, g[0])]);
       }
       if (n === 0) {
         return /* Int */Block.__(0, [0]);

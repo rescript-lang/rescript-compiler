@@ -5,7 +5,6 @@ var List = require("../../lib/js/list.js");
 var Block = require("../../lib/js/block.js");
 var Curry = require("../../lib/js/curry.js");
 var Caml_array = require("../../lib/js/caml_array.js");
-var Caml_int32 = require("../../lib/js/caml_int32.js");
 var Pervasives = require("../../lib/js/pervasives.js");
 var Caml_oo_curry = require("../../lib/js/caml_oo_curry.js");
 var CamlinternalOO = require("../../lib/js/camlinternalOO.js");
@@ -141,7 +140,7 @@ function adjusted_point_init($$class) {
           })
       ]);
   return function (env, self, x_init$1) {
-    var origin$1 = Caml_int32.imul(x_init$1 / 10 | 0, 10);
+    var origin$1 = Math.imul(x_init$1 / 10 | 0, 10);
     var self$1 = CamlinternalOO.create_object_opt(self, $$class);
     self$1[origin] = origin$1;
     self$1[x_init] = x_init$1;
@@ -157,7 +156,7 @@ var tmp = Curry._2(adjusted_point[0], undefined, 31);
 eq("File \"class3_test.ml\", line 28, characters 13-20", Caml_oo_curry.js1(291546447, 2, tmp), 30);
 
 function new_init(obj_init, self, x_init) {
-  return Curry._2(obj_init, self, Caml_int32.imul(x_init / 10 | 0, 10));
+  return Curry._2(obj_init, self, Math.imul(x_init / 10 | 0, 10));
 }
 
 var partial_arg = point[0];
@@ -303,7 +302,7 @@ function printable_point2_init($$class) {
           return Caml_array.caml_array_set(v, 0, self$6[x]);
         }));
   return function (env, self, x_init$1) {
-    var origin$1 = Caml_int32.imul(x_init$1 / 10 | 0, 10);
+    var origin$1 = Math.imul(x_init$1 / 10 | 0, 10);
     var self$1 = CamlinternalOO.create_object_opt(self, $$class);
     self$1[origin] = origin$1;
     self$1[x_init] = x_init$1;

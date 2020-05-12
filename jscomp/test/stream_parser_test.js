@@ -76,7 +76,7 @@ function parse(token) {
     }
     switch (e[0]) {
       case "*" :
-          return Caml_int32.imul(e1, parse_term_aux(parse_atom(undefined)));
+          return Math.imul(e1, parse_term_aux(parse_atom(undefined)));
       case "/" :
           return Caml_int32.div(e1, parse_term_aux(parse_atom(undefined)));
       default:
@@ -166,7 +166,7 @@ function l_parse(token) {
       }
       switch (t[0]) {
         case "*" :
-            _a = Caml_int32.imul(a, parse_f(undefined));
+            _a = Math.imul(a, parse_f(undefined));
             continue ;
         case "/" :
             _a = Caml_int32.div(a, parse_f(undefined));

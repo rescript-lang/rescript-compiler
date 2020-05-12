@@ -5,7 +5,6 @@ var Bytes = require("../../lib/js/bytes.js");
 var Curry = require("../../lib/js/curry.js");
 var $$String = require("../../lib/js/string.js");
 var Caml_bytes = require("../../lib/js/caml_bytes.js");
-var Caml_int32 = require("../../lib/js/caml_int32.js");
 var Caml_string = require("../../lib/js/caml_string.js");
 var Ext_bytes_test = require("./ext_bytes_test.js");
 var Caml_exceptions = require("../../lib/js/caml_exceptions.js");
@@ -238,9 +237,9 @@ function is_empty(s) {
 
 function repeat(n, s) {
   var len = s.length;
-  var res = Caml_bytes.caml_create_bytes(Caml_int32.imul(n, len));
+  var res = Caml_bytes.caml_create_bytes(Math.imul(n, len));
   for(var i = 0; i < n; ++i){
-    $$String.blit(s, 0, res, Caml_int32.imul(i, len), len);
+    $$String.blit(s, 0, res, Math.imul(i, len), len);
   }
   return Bytes.to_string(res);
 }
@@ -366,7 +365,7 @@ function digits_of_str(s, offset, x) {
     if (i >= x) {
       return acc;
     }
-    _acc = (Caml_int32.imul(10, acc) + Caml_string.get(s, offset + i | 0) | 0) - 48 | 0;
+    _acc = (Math.imul(10, acc) + Caml_string.get(s, offset + i | 0) | 0) - 48 | 0;
     _i = i + 1 | 0;
     continue ;
   };
@@ -636,7 +635,7 @@ function concat_array(sep, s) {
   for(var i = 0; i < s_len; ++i){
     len = len + s[i].length | 0;
   }
-  var target = Caml_bytes.caml_create_bytes(len + Caml_int32.imul(s_len - 1 | 0, sep_len) | 0);
+  var target = Caml_bytes.caml_create_bytes(len + Math.imul(s_len - 1 | 0, sep_len) | 0);
   var hd = s[0];
   var hd_len = hd.length;
   Caml_bytes.caml_blit_string(hd, 0, target, 0, hd_len);

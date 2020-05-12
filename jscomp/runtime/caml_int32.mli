@@ -29,6 +29,3 @@ val div : nativeint -> nativeint -> nativeint
 val mod_ : nativeint -> nativeint -> nativeint
 
 
-
-val imul :int32 -> int32 -> int32
-
