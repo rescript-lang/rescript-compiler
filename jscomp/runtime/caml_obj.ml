@@ -134,7 +134,7 @@ let caml_obj_truncate (x : Caml_obj_extern.t) (new_size : int) =
    In most cases, rec value comes from record/modules, 
    whose tag is 0, we optimize that case
 *)
-let caml_update_dummy : _ -> _ -> unit= [%raw{|function(x,y){
+let update_dummy : _ -> _ -> unit= [%raw{|function(x,y){
   var k  
   if(Array.isArray(y)){
     for(k = 0; k < y.length ; ++k){
@@ -155,7 +155,7 @@ let caml_update_dummy : _ -> _ -> unit= [%raw{|function(x,y){
 (* [set_length] seems redundant here given that it is initialized as an array 
 *)
 
-type 'a selector = 'a -> 'a -> 'a 
+
 
 
 (** TODO: investigate total

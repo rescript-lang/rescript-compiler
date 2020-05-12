@@ -77,7 +77,7 @@ function copy(q) {
   }
   var tail = q.tail;
   var tail$prime = { };
-  Caml_obj.caml_update_dummy(tail$prime, {
+  Caml_obj.update_dummy(tail$prime, {
         content: tail.content,
         next: tail$prime
       });

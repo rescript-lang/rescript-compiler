@@ -90,7 +90,7 @@ let update_mod (shape : shape)  (o : Caml_obj_extern.t)  (n : Caml_obj_extern.t)
 
     | Lazy 
     | Class -> 
-      Caml_obj.caml_update_dummy o n 
+      Caml_obj.update_dummy o n 
     | Module comps 
       -> 
       for i = 0 to Array.length comps - 1 do 
