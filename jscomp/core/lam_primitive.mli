@@ -108,8 +108,6 @@ type t =
 
   (* Compile time constants *)
   | Pctconst of Lam_compat.compile_time_constant
-  (* byte swap *)
-  | Pbswap16
   | Pbbswap of Lam_compat.boxed_integer
   (* Integer to external pointer *)
 

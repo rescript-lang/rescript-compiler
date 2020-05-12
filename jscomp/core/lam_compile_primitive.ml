@@ -616,9 +616,6 @@ let translate  loc
     -> 
     Lam_dispatch_primitive.translate loc "caml_obj_dup" args
     (* check dubug mode *)  
-  | Pbswap16 
-    -> 
-    E.runtime_call Js_runtime_modules.int32 "caml_bswap16" args
   | Pbbswap Lambda.Pnativeint
   | Pbbswap Lambda.Pint32
     -> 

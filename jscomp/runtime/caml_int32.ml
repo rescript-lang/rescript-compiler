@@ -38,10 +38,6 @@ let mod_ (x : nativeint) (y:nativeint) =
   else Caml_nativeint_extern.rem x  y
 
 
-let caml_bswap16 (x : nativeint) = 
- let open Caml_nativeint_extern in 
- logor (shift_left (logand x 0x00ffn) 8)
-    (shift_right_logical (logand x 0xff00n) 8)
 
 let caml_int32_bswap (x : nativeint) = 
   let open Caml_nativeint_extern in 

@@ -28,7 +28,6 @@ val div : nativeint -> nativeint -> nativeint
 
 val mod_ : nativeint -> nativeint -> nativeint
 
-val caml_bswap16 : nativeint -> nativeint
 
 val caml_int32_bswap : nativeint -> nativeint
 

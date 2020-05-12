@@ -112,9 +112,7 @@ type t =
   
   (* Compile time constants *)
   | Pctconst of Lam_compat.compile_time_constant
-  (* byte swap *)
-  | Pbswap16
-  | Pbbswap of Lam_compat.boxed_integer
+  | Pbbswap of Lam_compat.boxed_integer 
   (* Integer to external pointer *)
 
   | Pdebugger
@@ -239,7 +237,6 @@ let eq_primitive_approx ( lhs : t) (rhs : t) =
   | Pdebugger -> rhs = Pdebugger    
   | Pinit_mod -> rhs = Pinit_mod
   | Pupdate_mod -> rhs = Pupdate_mod
-  | Pbswap16 -> rhs = Pbswap16
   | Pjs_function_length -> rhs = Pjs_function_length
   (* | Pjs_string_of_small_array -> rhs = Pjs_string_of_small_array *)
   (* | Pjs_is_instance_array -> rhs = Pjs_is_instance_array *)

@@ -353,8 +353,6 @@ let lam_prim ~primitive:( p : Lambda.primitive) ~args loc : Lam.t =
   | Psubfloat -> prim ~primitive:Psubfloat ~args loc
   | Pmulfloat -> prim ~primitive:Pmulfloat ~args loc
   | Pdivfloat -> prim ~primitive:Pdivfloat ~args loc
-
-  | Pbswap16 -> prim ~primitive:Pbswap16 ~args loc
   | Pintcomp x -> prim ~primitive:(Pintcomp x)  ~args loc
   | Poffsetint x -> prim ~primitive:(Poffsetint x) ~args loc
   | Poffsetref x -> prim ~primitive:(Poffsetref x) ~args  loc
@@ -427,6 +425,8 @@ let lam_prim ~primitive:( p : Lambda.primitive) ~args loc : Lam.t =
   | Popaque -> Ext_list.singleton_exn args      
   | Psetfield_computed _ ->  
     prim ~primitive:Psetfield_computed ~args loc 
+
+  | Pbswap16 
   | Pduparray _ ->  assert false 
     (* Does not exist since we compile array in js backend unlike native backend *)
 
