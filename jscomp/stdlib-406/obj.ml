@@ -37,7 +37,9 @@ external truncate : t -> int -> unit = "caml_obj_truncate"
 
 
 
-
+let lazy_tag = 246
+let object_tag = 248
+let forward_tag = 250
 
 
 module Ephemeron = struct

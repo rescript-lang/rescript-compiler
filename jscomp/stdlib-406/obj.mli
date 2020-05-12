@@ -57,6 +57,9 @@ external set_field : t -> int -> t -> unit = "%obj_set_field"
 external dup : t -> t = "caml_obj_dup"
 external truncate : t -> int -> unit = "caml_obj_truncate"
 
+val lazy_tag : int
+val object_tag : int
+val forward_tag : int
 
 module Ephemeron: sig
   (** Ephemeron with arbitrary arity and untyped *)
