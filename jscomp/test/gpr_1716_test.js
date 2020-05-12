@@ -33,11 +33,11 @@ var a = { };
 
 var b = { };
 
-Caml_obj.caml_update_dummy(a, {
+Caml_obj.update_dummy(a, {
       b: b
     });
 
-Caml_obj.caml_update_dummy(b, {
+Caml_obj.update_dummy(b, {
       a: a
     });
 

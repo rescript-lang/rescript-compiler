@@ -1,3 +1,4 @@
+#if false then
 external bswap16: int -> int = "%bswap16"
 external bswap32: int32 -> int32 = "%bswap_int32"
 external bswap64: int64 -> int64 = "%bswap_int64"
@@ -117,3 +118,4 @@ let f  s (* : 'a . ('a -> 'b, Format.formatter, unit, string) format4 * ('a * 'b
    @ f "d32" d32 
    (* @ f (d64 ()) *)
   )
+#end

@@ -46,7 +46,7 @@ let rec no_side_effects (lam : Lam.t) : bool =
     Ext_list.for_all args  no_side_effects && 
     (
       match primitive with 
-      | Pccall {prim_name ; _} ->
+      | Pccall {prim_name } ->
         begin 
           match prim_name,args with 
           | ("caml_register_named_value"
@@ -84,7 +84,6 @@ let rec no_side_effects (lam : Lam.t) : bool =
         end
       
       | Pcreate_extension _
-      (* | Pcreate_exception _ *)
       | Pjs_typeof
       | Pis_null
       | Pis_not_none
@@ -162,7 +161,6 @@ let rec no_side_effects (lam : Lam.t) : bool =
       | Pstringadd 
       | Pjs_function_length
       | Pcaml_obj_length
-      (* | Pjs_is_instance_array *)
       | Pwrap_exn
       | Praw_js_code {code_info = Exp (Js_function _ | Js_literal _) | Stmt Js_stmt_comment}
         -> true
@@ -180,13 +178,9 @@ let rec no_side_effects (lam : Lam.t) : bool =
       | Praw_js_code _
       | Pbytessetu 
       | Pbytessets
-      (* Bitvect operations *)
-      | Pbittest
       (* Operations on boxed integers (Nativeint.t, Int32.t, Int64.t) *)
       | Parraysets 
       (* byte swap *)
-      | Pbswap16
-      | Pbbswap _
       | Parraysetu  
       | Poffsetref _ 
       | Praise

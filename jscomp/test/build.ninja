@@ -562,7 +562,7 @@ build test/string_unicode_test.cmi test/string_unicode_test.cmj : cc test/string
 build test/stringmatch_test.cmi test/stringmatch_test.cmj : cc test/stringmatch_test.ml | $stdlib
 build test/submodule.cmi test/submodule.cmj : cc test/submodule.ml | $stdlib
 build test/submodule_call.cmi test/submodule_call.cmj : cc test/submodule_call.ml | test/submodule.cmj $stdlib
-build test/swap_test.cmi test/swap_test.cmj : cc test/swap_test.ml | test/mt.cmj $stdlib
+build test/swap_test.cmi test/swap_test.cmj : cc test/swap_test.ml | $stdlib
 build test/switch_case_test.cmi test/switch_case_test.cmj : cc test/switch_case_test.ml | test/mt.cmj $stdlib
 build test/tailcall_inline_test.cmi test/tailcall_inline_test.cmj : cc test/tailcall_inline_test.ml | test/mt.cmj $stdlib
 build test/test.cmi test/test.cmj : cc test/test.ml | $stdlib

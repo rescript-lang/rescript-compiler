@@ -344,7 +344,6 @@ let lam_prim ~primitive:( p : Lambda.primitive) ~args loc : Lam.t =
   | Pbytessets -> prim ~primitive:Pbytessets ~args loc
   | Pisint -> prim ~primitive:Pisint ~args loc
   | Pisout -> prim ~primitive:Pisout ~args loc
-  | Pbittest -> prim ~primitive:Pbittest ~args loc
   | Pintoffloat -> prim ~primitive:Pintoffloat ~args loc
   | Pfloatofint -> prim ~primitive:Pfloatofint ~args loc
   | Pnegfloat -> prim ~primitive:Pnegfloat ~args loc
@@ -353,8 +352,6 @@ let lam_prim ~primitive:( p : Lambda.primitive) ~args loc : Lam.t =
   | Psubfloat -> prim ~primitive:Psubfloat ~args loc
   | Pmulfloat -> prim ~primitive:Pmulfloat ~args loc
   | Pdivfloat -> prim ~primitive:Pdivfloat ~args loc
-
-  | Pbswap16 -> prim ~primitive:Pbswap16 ~args loc
   | Pintcomp x -> prim ~primitive:(Pintcomp x)  ~args loc
   | Poffsetint x -> prim ~primitive:(Poffsetint x) ~args loc
   | Poffsetref x -> prim ~primitive:(Poffsetref x) ~args  loc
@@ -419,7 +416,7 @@ let lam_prim ~primitive:( p : Lambda.primitive) ~args loc : Lam.t =
         -> prim ~primitive:(Pctconst Backend_type) ~args loc
     end
 
-  | Pbbswap x -> prim ~primitive:(Pbbswap x) ~args loc
+  
   | Pcvtbint (a,b) -> prim ~primitive:(Pcvtbint (a,b)) ~args loc
   | Pbintcomp (a,b) -> prim ~primitive:(Pbintcomp (a,b)) ~args loc
   | Pfield_computed -> 
@@ -427,6 +424,9 @@ let lam_prim ~primitive:( p : Lambda.primitive) ~args loc : Lam.t =
   | Popaque -> Ext_list.singleton_exn args      
   | Psetfield_computed _ ->  
     prim ~primitive:Psetfield_computed ~args loc 
+  | Pbbswap _
+  | Pbswap16 
+  | Pbittest
   | Pduparray _ ->  assert false 
     (* Does not exist since we compile array in js backend unlike native backend *)
 

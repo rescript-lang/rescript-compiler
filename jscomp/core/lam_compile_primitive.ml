@@ -615,29 +615,16 @@ let translate  loc
   | Pduprecord (Record_inlined _)
     -> 
     Lam_dispatch_primitive.translate loc "caml_obj_dup" args
-    (* check dubug mode *)  
-  | Pbswap16 
-    -> 
-    E.runtime_call Js_runtime_modules.int32 "caml_bswap16" args
-  | Pbbswap Lambda.Pnativeint
-  | Pbbswap Lambda.Pint32
-    -> 
-    E.runtime_call Js_runtime_modules.int32 "caml_int32_bswap" args
-  | Pbbswap Lambda.Pint64
-    -> Js_long.swap args 
-  (* | Pstring_load_16 unsafe
-    -> E.runtime_call Js_runtime_modules.string "caml_string_get16" args
-  | Pstring_load_32 unsafe
-    -> E.runtime_call Js_runtime_modules.string "caml_string_get32" args
-  | Pstring_load_64 unsafe
-    -> Js_long.get64 args *)
 
   | Plazyforce  
+    (* FIXME: we don't inline lazy force or at least 
+      let buckle handle it
+    *)
   (*   let parm = Ident.create "prim" in 
        Lfunction(Curried, [parm], 
                  Matching.inline_lazy_force (Lvar parm) Location.none) 
    It is inlined, this should not appear here *)    
-  | Pbittest 
+
 
     -> 
     (*we dont use [throw] here, since [throw] is an statement  *)        

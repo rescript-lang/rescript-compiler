@@ -282,7 +282,7 @@ and compile_external_field_apply
 
 (**
     The second return values are values which need to be wrapped using
-   [caml_update_dummy]
+   [update_dummy]
 
    Invariant:  jmp_table can not across function boundary,
        here we share env
@@ -394,7 +394,7 @@ and compile_recursive_let ~all_bindings
           (Ext_list.append
              b
              [S.exp
-                (E.runtime_call Js_runtime_modules.obj_runtime "caml_update_dummy"
+                (E.runtime_call Js_runtime_modules.obj_runtime "update_dummy"
                    [ E.var id;  v])]),
         [S.define_variable ~kind:Variable id (E.dummy_obj tag_info)]
       | _ -> assert false

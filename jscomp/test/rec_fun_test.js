@@ -43,7 +43,7 @@ function g(param) {
     }
     return i + 1 | 0;
   };
-  Caml_obj.caml_update_dummy(v, {
+  Caml_obj.update_dummy(v, {
         contents: next
       });
   console.log(String(next(0, true)));
@@ -56,12 +56,12 @@ var x = [];
 
 var y = [];
 
-Caml_obj.caml_update_dummy(x, /* :: */[
+Caml_obj.update_dummy(x, /* :: */[
       1,
       y
     ]);
 
-Caml_obj.caml_update_dummy(y, /* :: */[
+Caml_obj.update_dummy(y, /* :: */[
       2,
       x
     ]);

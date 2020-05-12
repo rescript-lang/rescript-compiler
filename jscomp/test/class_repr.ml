@@ -43,11 +43,18 @@ let v2 = v1#incr
 
 let () = assert (v1#get_money = 3.)
 
-    (* if Sys.backend_type = Other "BS" then *)
-#if BS then    
+    
+
 let () = 
+  match Sys.backend_type with 
+  | Other "BS" -> 
     Js.log (v1#get_money, v2#get_money)
-#end    
+  | _ -> () 
+  (* another code path
+    {[
+      if Sys.backend_type = Other "BS" then ...
+  *)
+
 
 let () = assert (v2#get_money = 9.)
 (*

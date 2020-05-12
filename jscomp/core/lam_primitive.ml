@@ -57,16 +57,17 @@ type t =
   | Pnegint | Paddint | Psubint | Pmulint | Pdivint | Pmodint
   | Pandint | Porint | Pxorint
   | Plslint | Plsrint | Pasrint
-  | Pintcomp of Lam_compat.comparison
+  
   | Poffsetint of int
   | Poffsetref of int
   (* Float operations *)
   | Pintoffloat | Pfloatofint
   | Pnegfloat 
-  (* | Pabsfloat *) (* is {!Pervasives.abs_float} %abs_float*)
   | Paddfloat | Psubfloat | Pmulfloat | Pdivfloat
+  | Pintcomp of Lam_compat.comparison
   | Pfloatcomp of Lam_compat.comparison
   | Pjscomp of Lam_compat.comparison
+  | Pbintcomp of Lam_compat.boxed_integer * Lam_compat.comparison
   | Pjs_apply (*[f;arg0;arg1; arg2; ... argN]*)
   | Pjs_runtime_apply (* [f; [...]] *)
   (* String operations *)
@@ -89,9 +90,7 @@ type t =
   (* Test if the argument is a block or an immediate integer *)
   | Pisint
   (* Test if the (integer) argument is outside an interval *)
-  | Pisout
-  (* Bitvect operations *)
-  | Pbittest
+  | Pisout  
   (* Operations on boxed integers (Nativeint.t, Int32.t, Int64.t) *)
   | Pbintofint of Lam_compat.boxed_integer
   | Pintofbint of Lam_compat.boxed_integer
@@ -108,12 +107,9 @@ type t =
   | Plslbint of Lam_compat.boxed_integer
   | Plsrbint of Lam_compat.boxed_integer
   | Pasrbint of Lam_compat.boxed_integer
-  | Pbintcomp of Lam_compat.boxed_integer * Lam_compat.comparison
+  
   (* Compile time constants *)
   | Pctconst of Lam_compat.compile_time_constant
-  (* byte swap *)
-  | Pbswap16
-  | Pbbswap of Lam_compat.boxed_integer
   (* Integer to external pointer *)
 
   | Pdebugger
@@ -234,11 +230,9 @@ let eq_primitive_approx ( lhs : t) (rhs : t) =
   | Pjs_typeof -> rhs = Pjs_typeof
   | Pisint -> rhs = Pisint
   | Pisout -> rhs = Pisout
-  | Pbittest -> rhs = Pbittest
   | Pdebugger -> rhs = Pdebugger    
   | Pinit_mod -> rhs = Pinit_mod
   | Pupdate_mod -> rhs = Pupdate_mod
-  | Pbswap16 -> rhs = Pbswap16
   | Pjs_function_length -> rhs = Pjs_function_length
   (* | Pjs_string_of_small_array -> rhs = Pjs_string_of_small_array *)
   (* | Pjs_is_instance_array -> rhs = Pjs_is_instance_array *)
@@ -284,7 +278,6 @@ let eq_primitive_approx ( lhs : t) (rhs : t) =
   | Plslbint  boxed_integer -> (match rhs with Plslbint boxed_integer1 -> Lam_compat.eq_boxed_integer boxed_integer boxed_integer1 | _ -> false )
   | Plsrbint  boxed_integer -> (match rhs with Plsrbint boxed_integer1 -> Lam_compat.eq_boxed_integer boxed_integer boxed_integer1 | _ -> false )
   | Pasrbint  boxed_integer -> (match rhs with Pasrbint boxed_integer1 -> Lam_compat.eq_boxed_integer boxed_integer boxed_integer1 | _ -> false )
-  | Pbbswap boxed_integer ->   (match rhs with Pbbswap boxed_integer1  -> Lam_compat.eq_boxed_integer boxed_integer boxed_integer1 | _ -> false )
   | Pcvtbint  (boxed_integer, boxed_integer1) -> (match rhs with Pcvtbint (boxed_integer10, boxed_integer11) -> Lam_compat.eq_boxed_integer boxed_integer boxed_integer10 && Lam_compat.eq_boxed_integer boxed_integer1 boxed_integer11 | _ -> false )
   | Pbintcomp  (boxed_integer , comparison) -> (match rhs with Pbintcomp(boxed_integer1, comparison1) -> Lam_compat.eq_boxed_integer boxed_integer boxed_integer1 && Lam_compat.eq_comparison comparison comparison1 | _ -> false)  
   | Pctconst compile_time_constant -> (match rhs with Pctconst compile_time_constant1 -> Lam_compat.eq_compile_time_constant compile_time_constant compile_time_constant1 | _ -> false)

@@ -19,17 +19,17 @@ var b = [];
 
 var c = [];
 
-Caml_obj.caml_update_dummy(a, /* :: */[
+Caml_obj.update_dummy(a, /* :: */[
       2,
       b
     ]);
 
-Caml_obj.caml_update_dummy(b, /* :: */[
+Caml_obj.update_dummy(b, /* :: */[
       3,
       c
     ]);
 
-Caml_obj.caml_update_dummy(c, /* :: */[
+Caml_obj.update_dummy(c, /* :: */[
       3,
       a
     ]);

@@ -54,15 +54,17 @@ type t =
   | Pnegint | Paddint | Psubint | Pmulint | Pdivint | Pmodint
   | Pandint | Porint | Pxorint
   | Plslint | Plsrint | Pasrint
-  | Pintcomp of Lam_compat.comparison
+
   | Poffsetint of int
   | Poffsetref of int
   | Pintoffloat | Pfloatofint
   | Pnegfloat 
-  (* | Pabsfloat *)
+  
   | Paddfloat | Psubfloat | Pmulfloat | Pdivfloat
+  | Pintcomp of Lam_compat.comparison
   | Pfloatcomp of Lam_compat.comparison
   | Pjscomp of Lam_compat.comparison
+  | Pbintcomp of Lam_compat.boxed_integer * Lam_compat.comparison
   | Pjs_apply (*[f;arg0;arg1; arg2; ... argN]*)
   | Pjs_runtime_apply (* [f; [...]] *)
   | Pstringlength 
@@ -85,8 +87,6 @@ type t =
   | Pisint
   (* Test if the (integer) argument is outside an interval *)
   | Pisout
-  (* Bitvect operations *)
-  | Pbittest
   (* Operations on boxed integers (Nativeint.t, Int32.t, Int64.t) *)
   | Pbintofint of Lam_compat.boxed_integer
   | Pintofbint of Lam_compat.boxed_integer
@@ -103,14 +103,10 @@ type t =
   | Plslbint of Lam_compat.boxed_integer
   | Plsrbint of Lam_compat.boxed_integer
   | Pasrbint of Lam_compat.boxed_integer
-  | Pbintcomp of Lam_compat.boxed_integer * Lam_compat.comparison
+
   (* Compile time constants *)
   | Pctconst of Lam_compat.compile_time_constant
-  (* byte swap *)
-  | Pbswap16
-  | Pbbswap of Lam_compat.boxed_integer
   (* Integer to external pointer *)
-
   | Pdebugger
   | Pjs_unsafe_downgrade of 
     { 
