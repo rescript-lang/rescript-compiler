@@ -617,6 +617,9 @@ let translate  loc
     Lam_dispatch_primitive.translate loc "caml_obj_dup" args
 
   | Plazyforce  
+    (* FIXME: we don't inline lazy force or at least 
+      let buckle handle it
+    *)
   (*   let parm = Ident.create "prim" in 
        Lfunction(Curried, [parm], 
                  Matching.inline_lazy_force (Lvar parm) Location.none) 

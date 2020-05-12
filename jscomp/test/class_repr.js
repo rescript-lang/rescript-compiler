@@ -1,6 +1,7 @@
 'use strict';
 
 var Oo = require("../../lib/js/oo.js");
+var Sys = require("../../lib/js/sys.js");
 var Curry = require("../../lib/js/curry.js");
 var Caml_obj = require("../../lib/js/caml_obj.js");
 var Caml_oo_curry = require("../../lib/js/caml_oo_curry.js");
@@ -119,17 +120,19 @@ if (Caml_oo_curry.js1(-804710761, 4, v1) !== 3) {
       };
 }
 
-console.log(/* tuple */[
-      Caml_oo_curry.js1(-804710761, 5, v1),
-      Caml_oo_curry.js1(-804710761, 6, v2)
-    ]);
+if (typeof Sys.backend_type !== "number" && Sys.backend_type[0] === "BS") {
+  console.log(/* tuple */[
+        Caml_oo_curry.js1(-804710761, 7, v1),
+        Caml_oo_curry.js1(-804710761, 8, v2)
+      ]);
+}
 
-if (Caml_oo_curry.js1(-804710761, 7, v2) !== 9) {
+if (Caml_oo_curry.js1(-804710761, 9, v2) !== 9) {
   throw {
         RE_EXN_ID: "Assert_failure",
         _1: /* tuple */[
           "class_repr.ml",
-          52,
+          59,
           9
         ],
         Error: new Error()
@@ -168,12 +171,12 @@ var point = CamlinternalOO.make_class([
 
 var v$1 = Curry._1(point[0], undefined);
 
-if (Caml_oo_curry.js1(590348294, 8, v$1) !== 5) {
+if (Caml_oo_curry.js1(590348294, 10, v$1) !== 5) {
   throw {
         RE_EXN_ID: "Assert_failure",
         _1: /* tuple */[
           "class_repr.ml",
-          99,
+          106,
           2
         ],
         Error: new Error()
