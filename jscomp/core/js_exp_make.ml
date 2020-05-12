@@ -1256,11 +1256,11 @@ let int32_mul ?comment
     else 
       call ?comment 
         ~info:Js_call_info.builtin_runtime_call
-        (runtime_var_dot Js_runtime_modules.int32 Literals.imul) [e1;e2]
+        (dot (js_global "Math") Literals.imul) [e1;e2]
   | _ ->
     call ?comment 
       ~info:Js_call_info.builtin_runtime_call
-      (runtime_var_dot Js_runtime_modules.int32 Literals.imul) [e1;e2] 
+      (dot (js_global "Math") Literals.imul) [e1;e2] 
 
 
 let unchecked_int32_mul ?comment e1 e2 : J.expression = 
