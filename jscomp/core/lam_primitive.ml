@@ -57,16 +57,17 @@ type t =
   | Pnegint | Paddint | Psubint | Pmulint | Pdivint | Pmodint
   | Pandint | Porint | Pxorint
   | Plslint | Plsrint | Pasrint
-  | Pintcomp of Lam_compat.comparison
+  
   | Poffsetint of int
   | Poffsetref of int
   (* Float operations *)
   | Pintoffloat | Pfloatofint
   | Pnegfloat 
-  (* | Pabsfloat *) (* is {!Pervasives.abs_float} %abs_float*)
   | Paddfloat | Psubfloat | Pmulfloat | Pdivfloat
+  | Pintcomp of Lam_compat.comparison
   | Pfloatcomp of Lam_compat.comparison
   | Pjscomp of Lam_compat.comparison
+  | Pbintcomp of Lam_compat.boxed_integer * Lam_compat.comparison
   | Pjs_apply (*[f;arg0;arg1; arg2; ... argN]*)
   | Pjs_runtime_apply (* [f; [...]] *)
   (* String operations *)
@@ -108,7 +109,7 @@ type t =
   | Plslbint of Lam_compat.boxed_integer
   | Plsrbint of Lam_compat.boxed_integer
   | Pasrbint of Lam_compat.boxed_integer
-  | Pbintcomp of Lam_compat.boxed_integer * Lam_compat.comparison
+  
   (* Compile time constants *)
   | Pctconst of Lam_compat.compile_time_constant
   (* byte swap *)

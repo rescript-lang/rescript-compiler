@@ -46,7 +46,7 @@ let rec no_side_effects (lam : Lam.t) : bool =
     Ext_list.for_all args  no_side_effects && 
     (
       match primitive with 
-      | Pccall {prim_name ; _} ->
+      | Pccall {prim_name } ->
         begin 
           match prim_name,args with 
           | ("caml_register_named_value"
