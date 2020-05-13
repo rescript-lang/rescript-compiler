@@ -34,3 +34,10 @@ let a,b,c,d,e =
 let f5 = true [@@bs.inline]  
 
 let f6 = 1 [@@bs.inline]
+
+let f7 = 1L [@@bs.inline]
+
+let f9 = 100L [@@bs.inline] 
+
+let v = 100L [@@bs.inline]
+let u = 1L [@@bs.inline] 

@@ -309,6 +309,12 @@ let inline_int_primitive (i : int32) : string list =
       (Const_int32 i))
   ]
 
+let inline_int64_primitive (i : int64) : string list =   
+  [""; 
+   to_string 
+     (Ffi_inline_const 
+        (Const_int64 i))
+  ]
 
 let rec ffi_bs_aux acc (params : External_arg_spec.params) = 
   match params with 
