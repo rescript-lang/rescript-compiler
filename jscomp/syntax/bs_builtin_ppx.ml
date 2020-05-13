@@ -351,7 +351,7 @@ let structure_item_mapper (self : mapper) (str : Parsetree.structure_item) =
       end 
     else      
       { str with pstr_desc =  Pstr_value(Nonrecursive, [{pvb_pat ; pvb_expr; pvb_attributes; pvb_loc}])}
-
+  | Pstr_attribute({txt = "bs.config" },_)  -> str      
   | _ -> default_mapper.structure_item self str
 
 
@@ -418,7 +418,7 @@ let rec
     | _ ->    
       self.structure_item self item  :: structure_mapper self rest
   
-let  unsafe_mapper : mapper =
+let  mapper : mapper =
   { default_mapper with
     expr = expr_mapper;
     typ = typ_mapper ;
@@ -444,29 +444,12 @@ let  unsafe_mapper : mapper =
 
 
 
-let rewrite_signature (x : Parsetree.signature) =  
-  Bs_ast_invariant.iter_warnings_on_sigi x;  
-  Ast_config.iter_on_bs_config_sigi x; 
-  let result =  
-      unsafe_mapper.signature  unsafe_mapper x in
-  (* Keep this check, since the check is not inexpensive*)
-  Bs_ast_invariant.emit_external_warnings_on_signature result;
-  result
 
 
 
   
 
 
-(* Note we also drop attributes like [@@@bs.deriving ] for convenience*)    
-let rewrite_implementation (x : Parsetree.structure) = 
-  Bs_ast_invariant.iter_warnings_on_stru x ;   
-  Ast_config.iter_on_bs_config_stru x ; 
-  let result =
-      unsafe_mapper.structure  unsafe_mapper x  in
-  (* Keep this check since it is not inexpensive*)
-  Bs_ast_invariant.emit_external_warnings_on_structure result;
-  result
 
 
 

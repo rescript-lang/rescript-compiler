@@ -25,13 +25,7 @@
 
 
 
-val rewrite_signature :   
-  Parsetree.signature -> 
-  Parsetree.signature
-
-val rewrite_implementation : 
-  Parsetree.structure -> 
-  Parsetree.structure
+val mapper : Bs_ast_mapper.mapper  
 
 
 

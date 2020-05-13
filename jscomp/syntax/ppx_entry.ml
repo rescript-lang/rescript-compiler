@@ -22,8 +22,11 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
-
+let unsafe_mapper = Bs_builtin_ppx.mapper
+  
 let rewrite_signature (ast : Parsetree.signature) : Parsetree.signature =  
+  Bs_ast_invariant.iter_warnings_on_sigi ast;  
+  Ast_config.iter_on_bs_config_sigi ast; 
   let ast = 
     match !Js_config.jsx_version with
     | 2 -> Reactjs_jsx_ppx_v2.rewrite_signature ast 
@@ -31,11 +34,19 @@ let rewrite_signature (ast : Parsetree.signature) : Parsetree.signature =
     | _ -> ast 
     (* react-jsx ppx relies on built-in ones like `##` *)
   in 
-
   if !Js_config.no_builtin_ppx then ast else 
-    Bs_builtin_ppx.rewrite_signature ast 
+    let result =  
+      unsafe_mapper.signature  unsafe_mapper ast in
+    (* Keep this check, since the check is not inexpensive*)
+    Bs_ast_invariant.emit_external_warnings_on_signature result;
+    result
+
+
+  
 
 let rewrite_implementation (ast : Parsetree.structure) : Parsetree.structure =   
+  Bs_ast_invariant.iter_warnings_on_stru ast ;   
+  Ast_config.iter_on_bs_config_stru ast ;   
   let ast = 
     match !Js_config.jsx_version with 
     | 2 -> Reactjs_jsx_ppx_v2.rewrite_implementation ast 
@@ -43,7 +54,10 @@ let rewrite_implementation (ast : Parsetree.structure) : Parsetree.structure =
     | _ -> ast 
   in 
   if !Js_config.no_builtin_ppx then ast else
-  begin
-    Bs_builtin_ppx.rewrite_implementation ast 
-  end
-  
+    begin
+      let result =
+        unsafe_mapper.structure  unsafe_mapper ast  in
+      (* Keep this check since it is not inexpensive*)
+      Bs_ast_invariant.emit_external_warnings_on_structure result;
+      result
+    end
