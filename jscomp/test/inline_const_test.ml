@@ -32,5 +32,10 @@ let () =
   eq __LOC__ f5 true;
   eq __LOC__ f6 1 
 
+
+let h = 
+  let open Inline_const in
+  Int64.add (Int64.add v  Int64.one) u
+  
 let () =   
   Mt.from_pair_suites __LOC__ !suites

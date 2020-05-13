@@ -268,7 +268,7 @@ let () = Oprint.map_primitive_name :=
   if is_bs_primitive s then "BS:external"
   else s )
 #else  
-  (fun s -> String.escaped s)
+  (fun s -> String.escaped s) (* For debugging*)
 #end
 
 (* TODO:  better error message when version mismatch *)
@@ -302,13 +302,19 @@ let inline_bool_primitive b : string list =
   [""; to_string (Ffi_inline_const lam )]
 
 (* FIXME: check overflow ?*)
-let inline_int_primitive i : string list =   
+let inline_int_primitive (i : int32) : string list =   
   [""; 
     to_string 
     (Ffi_inline_const 
-      (Const_int32 (Int32.of_int i)))
+      (Const_int32 i))
   ]
 
+let inline_int64_primitive (i : int64) : string list =   
+  [""; 
+   to_string 
+     (Ffi_inline_const 
+        (Const_int64 i))
+  ]
 
 let rec ffi_bs_aux acc (params : External_arg_spec.params) = 
   match params with 

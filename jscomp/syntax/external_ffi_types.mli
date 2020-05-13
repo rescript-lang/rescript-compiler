@@ -134,8 +134,12 @@ val inline_bool_primitive :
   string list
 
 val inline_int_primitive :   
-  int -> 
+  int32 -> 
   string list
+
+val inline_int64_primitive : 
+  int64 -> 
+  string list   
 
 val ffi_bs:
   External_arg_spec.params ->
