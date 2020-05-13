@@ -687,11 +687,9 @@ let has_boolean_type (x : t) =
     | Pisout 
     | Pintcomp _ 
     | Pis_not_none
-    | Pfloatcomp _; loc}
-  | Lprim {primitive = 
-    Pccall {prim_name = "caml_string_equal" | "caml_string_notequal"};
-    loc
-    }
+    | Pfloatcomp _
+    | Pccall {prim_name = "caml_string_equal" | "caml_string_notequal"}; 
+    loc}
    -> Some loc
   | _ -> None
 
