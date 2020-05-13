@@ -64,6 +64,10 @@ let (+>) = Lam_module_ident.Hash.add cached_tbl
 (* For each compilation we need reset to make it re-entrant *)
 let reset () = 
   Translmod.reset ();
+  Js_config.no_export := false; 
+  (* This is needed in the playground since one no_export can make it true
+    In the payground, it seems we need reset more states
+  *)
   Lam_module_ident.Hash.clear cached_tbl 
 
 
