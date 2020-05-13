@@ -243,7 +243,7 @@ let signature_item_mapper (self : mapper) (sigi : Parsetree.signature_item) =
                Pconst_integer (s,None)
                ) ->         
                Bs_ast_invariant.warn_discarded_unused_attributes pval_attributes;
-               let s = int_of_string s in  
+               let s = Int32.of_string s in  
                { sigi with 
                  psig_desc = Psig_value
                      { 
@@ -307,11 +307,9 @@ let structure_item_mapper (self : mapper) (str : Parsetree.structure_item) =
                pval_attributes = [];
                pval_prim = External_ffi_types.inline_string_primitive s dec
              } } 
-        | Pexp_constant(
-            Pconst_integer (s,None)
-          )
+        | Pexp_constant(Pconst_integer (s,None))
           -> 
-          let s = int_of_string s in  
+          let s = Int32.of_string s in  
           Bs_ast_invariant.warn_discarded_unused_attributes pvb_attributes; 
           {str with pstr_desc = Pstr_primitive  {
                pval_name = pval_name ;

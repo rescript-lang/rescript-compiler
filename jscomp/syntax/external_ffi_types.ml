@@ -302,11 +302,11 @@ let inline_bool_primitive b : string list =
   [""; to_string (Ffi_inline_const lam )]
 
 (* FIXME: check overflow ?*)
-let inline_int_primitive i : string list =   
+let inline_int_primitive (i : int32) : string list =   
   [""; 
     to_string 
     (Ffi_inline_const 
-      (Const_int32 (Int32.of_int i)))
+      (Const_int32 i))
   ]
 
 

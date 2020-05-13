@@ -134,7 +134,7 @@ val inline_bool_primitive :
   string list
 
 val inline_int_primitive :   
-  int -> 
+  int32 -> 
   string list
 
 val ffi_bs:
