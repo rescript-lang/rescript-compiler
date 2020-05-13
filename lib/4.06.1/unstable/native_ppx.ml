@@ -11439,6 +11439,7 @@ val type_exn : core_type_lit
 val type_string : core_type_lit
 val type_bool : core_type_lit
 val type_int : core_type_lit 
+val type_int64 : Parsetree.core_type
 val type_any : core_type_lit
 
 val pat_unit : pattern_lit
@@ -11575,7 +11576,11 @@ let type_int ?loc () =
   match loc with
   | None -> No_loc.type_int
   | Some loc ->
-    Ast_helper.Typ.mk ~loc  (Ptyp_constr ({ txt = Lid.type_int; loc}, []))
+  Ast_helper.Typ.mk ~loc  (Ptyp_constr ({ txt = Lid.type_int; loc}, []))
+
+let type_int64 =     
+  Ast_helper.Typ.mk   
+    (Ptyp_constr ({ txt = Lident "int64"; loc = Location.none}, []))  
 
 let type_any ?loc () =
   match loc with
@@ -18342,8 +18347,12 @@ val inline_bool_primitive :
   string list
 
 val inline_int_primitive :   
-  int -> 
+  int32 -> 
   string list
+
+val inline_int64_primitive : 
+  int64 -> 
+  string list   
 
 val ffi_bs:
   External_arg_spec.params ->
@@ -18668,13 +18677,19 @@ let inline_bool_primitive b : string list =
   [""; to_string (Ffi_inline_const lam )]
 
 (* FIXME: check overflow ?*)
-let inline_int_primitive i : string list =   
+let inline_int_primitive (i : int32) : string list =   
   [""; 
     to_string 
     (Ffi_inline_const 
-      (Const_int32 (Int32.of_int i)))
+      (Const_int32 i))
   ]
 
+let inline_int64_primitive (i : int64) : string list =   
+  [""; 
+   to_string 
+     (Ffi_inline_const 
+        (Const_int64 i))
+  ]
 
 let rec ffi_bs_aux acc (params : External_arg_spec.params) = 
   match params with 
