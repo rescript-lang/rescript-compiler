@@ -128,7 +128,11 @@ let type_int ?loc () =
   match loc with
   | None -> No_loc.type_int
   | Some loc ->
-    Ast_helper.Typ.mk ~loc  (Ptyp_constr ({ txt = Lid.type_int; loc}, []))
+  Ast_helper.Typ.mk ~loc  (Ptyp_constr ({ txt = Lid.type_int; loc}, []))
+
+let type_int64 =     
+  Ast_helper.Typ.mk   
+    (Ptyp_constr ({ txt = Lident "int64"; loc = Location.none}, []))  
 
 let type_any ?loc () =
   match loc with
