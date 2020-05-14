@@ -976,63 +976,6 @@ let jsxMapper () =
 
   let structure =
     (fun mapper structure -> match structure with
-      (*
-        match against [@bs.config {foo, jsx: ...}] at the file-level. This
-        indicates which version of JSX we're using. This code stays here because
-        we used to have 2 versions of JSX PPX (and likely will again in the
-        future when JSX PPX changes). So the architecture for switching between
-        JSX behavior stayed here. To create a new JSX ppx, copy paste this
-        entire file and change the relevant parts.
-        Description of architecture: in bucklescript's bsconfig.json, you can
-        specify a project-wide JSX version. You can also specify a file-level
-        JSX version. This degree of freedom allows a person to convert a project
-        one file at time onto the new JSX, when it was released. It also enabled
-        a project to depend on a third-party which is still using an old version
-        of JSX
-      *)
-      | ({
-          pstr_desc = Pstr_attribute (
-            {txt = "ocaml.ppx.context"} ,
-            _
-          )
-        }::
-        {
-          pstr_loc;
-          pstr_desc = Pstr_attribute (
-            ({txt = "bs.config"} as bsConfigLabel),
-            PStr [{pstr_desc = Pstr_eval ({pexp_desc = Pexp_record (recordFields, b)} as innerConfigRecord, a)} as configRecord]
-          )
-        }
-        ::restOfStructure ) | ({
-          pstr_loc;
-          pstr_desc = Pstr_attribute (
-            ({txt = "bs.config"} as bsConfigLabel),
-            PStr [{pstr_desc = Pstr_eval ({pexp_desc = Pexp_record (recordFields, b)} as innerConfigRecord, a)} as configRecord]
-          )
-        }::restOfStructure) -> begin
-          let (jsxField, recordFieldsWithoutJsx) = recordFields |> List.partition (fun ({txt}, _) -> txt = Lident "jsx") in
-          match (jsxField, recordFieldsWithoutJsx) with
-          (* no file-level jsx config found *)
-          | ([], _) -> default_mapper.structure mapper structure
-          (* {jsx: 2} *)
-          | ((_, {pexp_desc = Pexp_constant (Pconst_integer (version, None))})::_rest, recordFieldsWithoutJsx) -> begin
-              (match version with
-              | "2" -> jsxVersion := Some 2
-              | "3" -> jsxVersion := Some 3
-              | _ -> raise (Invalid_argument "JSX: the file-level bs.config's jsx version must be 2 or 3"));
-              match recordFieldsWithoutJsx with
-              (* record empty now, remove the whole bs.config attribute *)
-              | [] -> default_mapper.structure mapper @@ reactComponentTransform mapper restOfStructure
-              | fields -> default_mapper.structure mapper ({
-                pstr_loc;
-                pstr_desc = Pstr_attribute (
-                  bsConfigLabel,
-                  PStr [{configRecord with pstr_desc = Pstr_eval ({innerConfigRecord with pexp_desc = Pexp_record (fields, b)}, a)}]
-                )
-              }::(reactComponentTransform mapper restOfStructure))
-            end
-        | _ -> raise (Invalid_argument "JSX: the file-level bs.config's {jsx: ...} config accepts only a version number")
-      end
       | structures -> begin
         default_mapper.structure mapper @@ reactComponentTransform mapper structures
       end
