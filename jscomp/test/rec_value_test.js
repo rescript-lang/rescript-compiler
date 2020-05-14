@@ -57,7 +57,7 @@ var three = {
 };
 
 var h = {
-  RE_LAZY: "done",
+  RE_LAZY_DONE: true,
   value: fib
 };
 
@@ -148,7 +148,7 @@ function even2(_n) {
 }
 
 var lazy_v = {
-  RE_LAZY: "done",
+  RE_LAZY_DONE: true,
   value: (function (param) {
       CamlinternalLazy.force(lazy_v);
       

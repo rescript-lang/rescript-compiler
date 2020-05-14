@@ -4,7 +4,7 @@ var CamlinternalLazy = require("../../lib/js/camlinternalLazy.js");
 
 function fix(param) {
   return /* Fix */[{
-            RE_LAZY: "todo",
+            RE_LAZY_DONE: false,
             value: (function () {
                 return fix(undefined);
               })

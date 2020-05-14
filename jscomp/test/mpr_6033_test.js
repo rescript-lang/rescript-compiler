@@ -35,7 +35,7 @@ function f(x) {
 }
 
 var x = {
-  RE_LAZY: "done",
+  RE_LAZY_DONE: true,
   value: "def"
 };
 

@@ -119,7 +119,7 @@ function pr(param) {
 
 function map(f, l) {
   return {
-          RE_LAZY: "todo",
+          RE_LAZY_DONE: false,
           value: (function () {
               var match = CamlinternalLazy.force(l);
               return /* Cons */[
@@ -132,7 +132,7 @@ function map(f, l) {
 
 function merge(cmp, l1, l2) {
   return {
-          RE_LAZY: "todo",
+          RE_LAZY_DONE: false,
           value: (function () {
               var match = CamlinternalLazy.force(l1);
               var match$1 = CamlinternalLazy.force(l2);
@@ -184,7 +184,7 @@ function iter_interval(f, _l, _param) {
 }
 
 var hamming = {
-  RE_LAZY: "todo",
+  RE_LAZY_DONE: false,
   value: (function () {
       return /* Cons */[
               nn1,
@@ -194,21 +194,21 @@ var hamming = {
 };
 
 var ham2 = {
-  RE_LAZY: "todo",
+  RE_LAZY_DONE: false,
   value: (function () {
       return CamlinternalLazy.force(map(x2, hamming));
     })
 };
 
 var ham3 = {
-  RE_LAZY: "todo",
+  RE_LAZY_DONE: false,
   value: (function () {
       return CamlinternalLazy.force(map(x3, hamming));
     })
 };
 
 var ham5 = {
-  RE_LAZY: "todo",
+  RE_LAZY_DONE: false,
   value: (function () {
       return CamlinternalLazy.force(map(x5, hamming));
     })

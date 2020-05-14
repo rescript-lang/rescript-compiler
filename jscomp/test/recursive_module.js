@@ -60,7 +60,7 @@ var Intb = Caml_module.init_mod(/* tuple */[
           ]]]));
 
 var a = {
-  RE_LAZY: "todo",
+  RE_LAZY_DONE: false,
   value: (function () {
       return CamlinternalLazy.force(Intb.a);
     })
@@ -74,7 +74,7 @@ Caml_module.update_mod(/* Module */Block.__(0, [[/* tuple */[
     });
 
 var a$1 = {
-  RE_LAZY: "todo",
+  RE_LAZY_DONE: false,
   value: (function () {
       return CamlinternalLazy.force(Inta.a) + 1 | 0;
     })
@@ -122,7 +122,7 @@ var Intb$1 = Caml_module.init_mod(/* tuple */[
           ]]]));
 
 var a$2 = {
-  RE_LAZY: "todo",
+  RE_LAZY_DONE: false,
   value: (function () {
       return CamlinternalLazy.force(Intb$1.a) + 1 | 0;
     })
@@ -136,7 +136,7 @@ Caml_module.update_mod(/* Module */Block.__(0, [[/* tuple */[
     });
 
 var a$3 = {
-  RE_LAZY: "done",
+  RE_LAZY_DONE: true,
   value: 2
 };
 
