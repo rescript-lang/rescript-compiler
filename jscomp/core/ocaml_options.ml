@@ -134,10 +134,6 @@ let mk_short_paths f =
   "-stdin", Arg.Unit f, " Read script from standard input"
 ;; *)
 
-let mk_strict_sequence f =
-  "-strict-sequence", Arg.Unit f,
-  " Left-hand part of a sequence must have type unit"
-;;
 
 let mk_unsafe f =
   "-unsafe", Arg.Unit f,
@@ -235,14 +231,6 @@ let mk_dlambda f =
   \     (reduces necessary recompilation on module change)"
 ;; *)
 
-let mk_strict_formats f =
-  "-strict-formats", Arg.Unit f,
-  " Reject invalid formats accepted by legacy implementations\n\
-  \     (Warning: Invalid formats may behave differently from\n\
-  \      previous OCaml versions, and will become always-rejected\n\
-  \      in future OCaml versions. You should use this flag\n\
-  \      to detect and fix invalid formats.)"
-;;
 
 (* let mk__ f =
   "-", Arg.String f,
@@ -309,8 +297,6 @@ let ocaml_options =
   let _rectypes = set Clflags.recursive_types in 
   (* let _safe_string = unset unsafe_string in  *)
   let _short_paths = unset Clflags.real_paths in 
-  let _strict_sequence = set Clflags.strict_sequence in 
-  let _strict_formats = set Clflags.strict_formats in 
   let _unsafe = set Clflags.fast in 
   (* let _unsafe_string = set unsafe_string in  *)
   (* let _v () = print_version_and_library "compiler" in  *)
@@ -359,8 +345,6 @@ let ocaml_options =
     mk_rectypes _rectypes;
     (* mk_safe_string _safe_string; *)
     mk_short_paths _short_paths;
-    mk_strict_sequence _strict_sequence;
-    mk_strict_formats _strict_formats;
     mk_unsafe _unsafe;
     mk_v _v;
     mk_verbose _verbose;

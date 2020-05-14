@@ -10,17 +10,19 @@ var pairs = [
   ["no_std_include", "true"],
   ["Clflags.use_threads", "false"],
   ["Clflags.use_vmthreads", "false"],
-  ["Clflags.no_implicit_current_dir","true"]
+  ["Clflags.no_implicit_current_dir", "true"],
+  ["Clflags.strict_sequence", "true"],
+  ["Clflags.strict_formats", "true"],
 ];
 
-var regexp = RegExp(`${pairs.map(x => "!" + x[0]).join("|")}`, "g");
+var regexp = RegExp(`${pairs.map((x) => "!" + x[0]).join("|")}`, "g");
 
 /**
  *
  * @param {string} s
  */
 function transform(s) {
-  return s.replace(regexp, s => {
+  return s.replace(regexp, (s) => {
     for (let [k, v] of pairs) {
       if (s.includes(k)) {
         return v;
