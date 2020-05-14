@@ -6661,7 +6661,7 @@ function symbol_docs_lazy(param) {
   var p1 = Parsing.symbol_start_pos(undefined);
   var p2 = Parsing.symbol_end_pos(undefined);
   return {
-          RE_LAZY: "todo",
+          RE_LAZY_DONE: false,
           value: (function () {
               return {
                       docs_pre: get_pre_docs(p1),
@@ -6684,7 +6684,7 @@ function mark_rhs_docs(pos1, pos2) {
 function symbol_text_lazy(param) {
   var pos = Parsing.symbol_start_pos(undefined);
   return {
-          RE_LAZY: "todo",
+          RE_LAZY_DONE: false,
           value: (function () {
               return get_text(pos);
             })
@@ -11991,7 +11991,7 @@ function prefix_idents_and_subst(root, sub, sg) {
           match[0],
           sub$1,
           {
-            RE_LAZY: "todo",
+            RE_LAZY_DONE: false,
             value: (function () {
                 return List.map((function (item) {
                               switch (item.tag | 0) {
@@ -26867,7 +26867,7 @@ function copy_sep(fixed, free, bound, visited, ty) {
     var t = newvar(undefined, undefined);
     delayed_copy.contents = /* :: */[
       {
-        RE_LAZY: "todo",
+        RE_LAZY_DONE: false,
         value: (function () {
             t.desc = /* Tlink */Block.__(6, [copy(undefined, undefined, undefined, ty$1)]);
             
@@ -69650,7 +69650,7 @@ function declare_method(val_env, meths, self_type, lab, priv, sty, loc) {
     var returned_cty = ctyp(/* Ttyp_any */0, newty2(current_level.contents, /* Tnil */0), val_env, loc);
     delayed_meth_specs.contents = /* :: */[
       {
-        RE_LAZY: "todo",
+        RE_LAZY_DONE: false,
         value: (function () {
             var cty = transl_simple_type_univars(val_env, sty$prime);
             var ty = cty.ctyp_type;
@@ -70211,7 +70211,7 @@ function class_structure(cl_num, $$final, val_env, met_env, loc, param) {
                         match$3[2],
                         /* :: */[
                           {
-                            RE_LAZY: "todo",
+                            RE_LAZY_DONE: false,
                             value: (function () {
                                 return mkcf(/* Tcf_inherit */Block.__(0, [
                                               ovf,
@@ -70309,7 +70309,7 @@ function class_structure(cl_num, $$final, val_env, met_env, loc, param) {
                           match$7[3],
                           /* :: */[
                             {
-                              RE_LAZY: "todo",
+                              RE_LAZY_DONE: false,
                               value: (function () {
                                   return mkcf(/* Tcf_val */Block.__(1, [
                                                 lab,
@@ -70350,7 +70350,7 @@ function class_structure(cl_num, $$final, val_env, met_env, loc, param) {
                         match$8[3],
                         /* :: */[
                           {
-                            RE_LAZY: "todo",
+                            RE_LAZY_DONE: false,
                             value: (function () {
                                 return mkcf(/* Tcf_val */Block.__(1, [
                                               lab,
@@ -70494,7 +70494,7 @@ function class_structure(cl_num, $$final, val_env, met_env, loc, param) {
                   var meth_expr = make_method(self_loc, cl_num, expr$2);
                   var vars_local = vars.contents;
                   var field = {
-                    RE_LAZY: "todo",
+                    RE_LAZY_DONE: false,
                     value: (function () {
                         var meth_type = newty2(100000000, /* Tarrow */Block.__(1, [
                                 "",
@@ -70538,7 +70538,7 @@ function class_structure(cl_num, $$final, val_env, met_env, loc, param) {
                         par_env,
                         /* :: */[
                           {
-                            RE_LAZY: "todo",
+                            RE_LAZY_DONE: false,
                             value: (function () {
                                 return mkcf(/* Tcf_method */Block.__(2, [
                                               lab$1,
@@ -70566,7 +70566,7 @@ function class_structure(cl_num, $$final, val_env, met_env, loc, param) {
                         par_env,
                         /* :: */[
                           {
-                            RE_LAZY: "todo",
+                            RE_LAZY_DONE: false,
                             value: (function () {
                                 return mkcf(/* Tcf_constraint */Block.__(3, [
                                               cty$2,
@@ -70586,7 +70586,7 @@ function class_structure(cl_num, $$final, val_env, met_env, loc, param) {
                 var expr$3 = make_method(self_loc, cl_num, expr[0]);
                 var vars_local$1 = vars.contents;
                 var field$1 = {
-                  RE_LAZY: "todo",
+                  RE_LAZY_DONE: false,
                   value: (function () {
                       raise_nongen_level(undefined);
                       var desc_002 = instance_def(type_unit);
@@ -70629,7 +70629,7 @@ function class_structure(cl_num, $$final, val_env, met_env, loc, param) {
                         par_env,
                         /* :: */[
                           {
-                            RE_LAZY: "todo",
+                            RE_LAZY_DONE: false,
                             value: (function () {
                                 return mkcf(/* Tcf_attribute */Block.__(5, [x]));
                               })

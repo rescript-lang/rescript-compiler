@@ -22,21 +22,22 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
-
+ [@@@bs.config { flags = [|"-bs-no-cross-module-opt" |]}]
+ 
 (* Internals of forcing lazy values. *)
 type 'a t = {
-  mutable tag : string [@bs.as "RE_LAZY"] ; 
+  mutable tag : bool [@bs.as "RE_LAZY_DONE"] ; 
   (* Invariant: name  *)
   mutable value : 'a (* its type is ['a] or [unit -> 'a ] *)
 }
 
-let%private status_done = "done" (* used to be forward_tag in native *)
+
 external%private fnToVal : (unit -> 'a [@bs]) -> 'a = "%identity"
 external%private valToFn :  'a -> (unit -> 'a [@bs])  = "%identity"
 external%private castToConcrete : 'a lazy_t -> 'a t   = "%identity"
 
 let is_val (type a ) (l : a lazy_t) : bool = 
-  ((castToConcrete l ).tag  = status_done)
+  (castToConcrete l ).tag  
 
 
 
@@ -46,7 +47,7 @@ let%private forward_with_closure (type a ) (blk : a t) (closure : unit -> a [@bs
   let result = closure () [@bs] in
   (* do set_field BEFORE set_tag *)
   blk.value <- result;
-  blk.tag<- status_done;
+  blk.tag<- true;
   result
 
 
@@ -73,7 +74,7 @@ let%private force_val_lazy_block (type a ) (blk : a t) : a  =
 
 let force (type a ) (lzv : a lazy_t) : a =
     let lzv = (castToConcrete lzv : _ t) in 
-    if lzv.tag = status_done then lzv.value else
+    if lzv.tag  then lzv.value else
       force_lazy_block lzv
 
 
@@ -81,7 +82,7 @@ let force (type a ) (lzv : a lazy_t) : a =
 
 let force_val (type a) (lzv : a lazy_t) : a =
   let lzv : _ t = castToConcrete lzv in 
-  if lzv.tag = status_done then lzv.value  else
+  if lzv.tag then lzv.value  else
     force_val_lazy_block lzv
 
 

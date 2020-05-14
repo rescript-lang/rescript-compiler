@@ -11,7 +11,7 @@ var u = {
 };
 
 var v = {
-  RE_LAZY: "todo",
+  RE_LAZY_DONE: false,
   value: (function () {
       u.contents = 32;
       
@@ -55,7 +55,7 @@ var s = {
 };
 
 var set_true = {
-  RE_LAZY: "todo",
+  RE_LAZY_DONE: false,
   value: (function () {
       s.contents = 1;
       
@@ -63,7 +63,7 @@ var set_true = {
 };
 
 var set_false = {
-  RE_LAZY: "todo",
+  RE_LAZY_DONE: false,
   value: (function () {
       s.contents = undefined;
       
@@ -93,7 +93,7 @@ var u_v = {
 };
 
 var u$1 = {
-  RE_LAZY: "todo",
+  RE_LAZY_DONE: false,
   value: (function () {
       u_v.contents = 2;
       
@@ -105,14 +105,14 @@ CamlinternalLazy.force(u$1);
 var exotic = CamlinternalLazy.force;
 
 var l_from_fun = {
-  RE_LAZY: "todo",
+  RE_LAZY_DONE: false,
   value: (function () {
       return 3;
     })
 };
 
 var forward_test = {
-  RE_LAZY: "todo",
+  RE_LAZY_DONE: false,
   value: (function () {
       var u = 3;
       u = u + 1 | 0;
@@ -121,12 +121,12 @@ var forward_test = {
 };
 
 var f005 = {
-  RE_LAZY: "done",
+  RE_LAZY_DONE: true,
   value: 6
 };
 
 var f006 = {
-  RE_LAZY: "todo",
+  RE_LAZY_DONE: false,
   value: (function () {
       return function (param) {
         return 3;
@@ -135,7 +135,7 @@ var f006 = {
 };
 
 var f007 = {
-  RE_LAZY: "todo",
+  RE_LAZY_DONE: false,
   value: (function () {
       throw {
             RE_EXN_ID: "Not_found",
@@ -145,7 +145,7 @@ var f007 = {
 };
 
 var f008 = {
-  RE_LAZY: "todo",
+  RE_LAZY_DONE: false,
   value: (function () {
       console.log("hi");
       throw {
@@ -157,28 +157,28 @@ var f008 = {
 
 function a2(x) {
   return {
-          RE_LAZY: "done",
+          RE_LAZY_DONE: true,
           value: x
         };
 }
 
 var a3 = {
-  RE_LAZY: "done",
+  RE_LAZY_DONE: true,
   value: 3
 };
 
 var a4 = {
-  RE_LAZY: "done",
+  RE_LAZY_DONE: true,
   value: 3
 };
 
 var a5 = {
-  RE_LAZY: "done",
+  RE_LAZY_DONE: true,
   value: undefined
 };
 
 var a6 = {
-  RE_LAZY: "done",
+  RE_LAZY_DONE: true,
   value: undefined
 };
 
@@ -235,7 +235,7 @@ Mt.from_pair_suites("Lazy_test", /* :: */[
                 (function (param) {
                     return /* Eq */Block.__(0, [
                               CamlinternalLazy.force({
-                                    RE_LAZY: "done",
+                                    RE_LAZY_DONE: true,
                                     value: 3
                                   }),
                               3
@@ -248,9 +248,9 @@ Mt.from_pair_suites("Lazy_test", /* :: */[
                   (function (param) {
                       return /* Eq */Block.__(0, [
                                 CamlinternalLazy.force(CamlinternalLazy.force({
-                                          RE_LAZY: "done",
+                                          RE_LAZY_DONE: true,
                                           value: {
-                                            RE_LAZY: "done",
+                                            RE_LAZY_DONE: true,
                                             value: 3
                                           }
                                         })),
@@ -265,7 +265,7 @@ Mt.from_pair_suites("Lazy_test", /* :: */[
                         debugger;
                         return /* Eq */Block.__(0, [
                                   CamlinternalLazy.force(CamlinternalLazy.force({
-                                            RE_LAZY: "done",
+                                            RE_LAZY_DONE: true,
                                             value: forward_test
                                           })),
                                   4
@@ -307,7 +307,7 @@ Mt.from_pair_suites("Lazy_test", /* :: */[
                             "File \"lazy_test.ml\", line 82, characters 0-7",
                             (function (param) {
                                 return /* Ok */Block.__(4, [Lazy.is_val({
-                                                RE_LAZY: "done",
+                                                RE_LAZY_DONE: true,
                                                 value: 3
                                               })]);
                               })
@@ -317,7 +317,7 @@ Mt.from_pair_suites("Lazy_test", /* :: */[
                               "File \"lazy_test.ml\", line 83, characters 0-7",
                               (function (param) {
                                   return /* Ok */Block.__(4, [!Lazy.is_val({
-                                                  RE_LAZY: "todo",
+                                                  RE_LAZY_DONE: false,
                                                   value: (function () {
                                                       throw {
                                                             RE_EXN_ID: "Not_found",

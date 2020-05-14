@@ -405,6 +405,7 @@ build test/label_uncurry.cmi test/label_uncurry.cmj : cc test/label_uncurry.ml |
 build test/large_obj_test.cmi test/large_obj_test.cmj : cc test/large_obj_test.ml | $stdlib
 build test/large_record_duplication_test.cmi test/large_record_duplication_test.cmj : cc test/large_record_duplication_test.ml | test/mt.cmj $stdlib
 build test/largest_int_flow.cmi test/largest_int_flow.cmj : cc test/largest_int_flow.ml | $stdlib
+build test/lazy_demo.cmi test/lazy_demo.cmj : cc test/lazy_demo.re | $stdlib
 build test/lazy_test.cmi test/lazy_test.cmj : cc test/lazy_test.ml | test/mt.cmj $stdlib
 build test/lexer_test.cmi test/lexer_test.cmj : cc test/lexer_test.ml | test/arith_lexer.cmj test/arith_parser.cmj test/arith_syntax.cmj test/mt.cmj test/number_lexer.cmj $stdlib
 build test/lib_js_test.cmi test/lib_js_test.cmj : cc test/lib_js_test.ml | test/mt.cmj $stdlib

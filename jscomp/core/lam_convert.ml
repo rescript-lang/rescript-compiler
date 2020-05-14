@@ -278,18 +278,18 @@ let lam_prim ~primitive:( p : Lambda.primitive) ~args loc : Lam.t =
       begin match args with 
       | [Lvar _ | Lconst _ | Lfunction _ as result ] -> 
         let args = 
-          [ Lam.const (Const_string "done") ; 
+          [ Lam.const Const_js_true ; 
            result
           ] in 
-        prim ~primitive:(Pmakeblock (tag,Blk_record [|"RE_LAZY";"value"|],Mutable)) ~args loc  
+        prim ~primitive:(Pmakeblock (tag,Blk_record [|"RE_LAZY_DONE";"value"|],Mutable)) ~args loc  
       | [computation] -> 
         let args = 
-          [ Lam.const (Const_string "todo") ; 
+          [ Lam.const Const_js_false ; 
             (* FIXME: arity 0 does not get proper supported*)
             prim ~primitive:(Pjs_fn_make 0) ~args:[Lam.function_ ~arity:1 ~params:[Ident.create "param"] ~body:computation] 
             loc             
           ] in 
-        prim ~primitive:(Pmakeblock (tag,Blk_record [|"RE_LAZY";"value"|],Mutable)) ~args loc  
+        prim ~primitive:(Pmakeblock (tag,Blk_record [|"RE_LAZY_DONE";"value"|],Mutable)) ~args loc  
 
       | _ -> assert false
       end
