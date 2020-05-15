@@ -515,11 +515,11 @@ build test/reactEvent.cmi : cc test/reactEvent.rei | $stdlib
 build test/reactEventRe.cmj : cc_cmi test/reactEventRe.re | test/reactEvent.cmj test/reactEventRe.cmi $stdlib
 build test/reactEventRe.cmi : cc test/reactEventRe.rei | test/reactEvent.cmi $stdlib
 build test/reactTestUtils.cmj : cc_cmi test/reactTestUtils.re | test/react.cmj test/reactTestUtils.cmi $stdlib
-build test/reactTestUtils.cmi : cc test/reactTestUtils.rei | $stdlib
+build test/reactTestUtils.cmi : cc test/reactTestUtils.rei | test/react.cmi $stdlib
 build test/reasonReact.cmj : cc_cmi test/reasonReact.re | test/react.cmj test/reasonReact.cmi test/reasonReactOptimizedCreateClass.cmj test/reasonReactRouter.cmj $stdlib
-build test/reasonReact.cmi : cc test/reasonReact.rei | test/reasonReactRouter.cmi $stdlib
+build test/reasonReact.cmi : cc test/reasonReact.rei | test/react.cmi test/reasonReactRouter.cmi $stdlib
 build test/reasonReactCompat.cmj : cc_cmi test/reasonReactCompat.re | test/react.cmj test/reasonReact.cmj test/reasonReactCompat.cmi $stdlib
-build test/reasonReactCompat.cmi : cc test/reasonReactCompat.rei | test/reasonReact.cmi $stdlib
+build test/reasonReactCompat.cmi : cc test/reasonReactCompat.rei | test/react.cmi test/reasonReact.cmi $stdlib
 build test/reasonReactOptimizedCreateClass.cmi test/reasonReactOptimizedCreateClass.cmj : cc test/reasonReactOptimizedCreateClass.re | $stdlib
 build test/reasonReactRouter.cmj : cc_cmi test/reasonReactRouter.re | test/react.cmj test/reasonReactRouter.cmi $stdlib
 build test/reasonReactRouter.cmi : cc test/reasonReactRouter.rei | $stdlib

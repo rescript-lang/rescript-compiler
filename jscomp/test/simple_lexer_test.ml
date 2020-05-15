@@ -4,19 +4,19 @@
 
 # 6 "test/simple_lexer_test.ml"
 let __ocaml_lex_tables = {
-  Lexing.lex_base = 
+  Lexing.lex_base =
    "\000\000\253\255\254\255\000\000\000\000\001\000\000\000\000\000\
     \000\000\000\000\000\000\000\000\004\000\001\000\004\000\003\000\
     \000\000\006\000\000\000\255\255";
-  Lexing.lex_backtrk = 
+  Lexing.lex_backtrk =
    "\255\255\255\255\255\255\001\000\255\255\255\255\255\255\255\255\
     \255\255\255\255\255\255\255\255\255\255\255\255\255\255\255\255\
     \255\255\255\255\255\255\255\255";
-  Lexing.lex_default = 
+  Lexing.lex_default =
    "\002\000\000\000\000\000\255\255\255\255\255\255\255\255\255\255\
     \255\255\255\255\255\255\255\255\255\255\255\255\255\255\255\255\
     \255\255\255\255\255\255\000\000";
-  Lexing.lex_trans = 
+  Lexing.lex_trans =
    "\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\
     \000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\
     \000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\
@@ -50,7 +50,7 @@ let __ocaml_lex_tables = {
     \000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\
     \000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\
     \001\000\000\000\000\000\000\000\000\000\000\000\000\000";
-  Lexing.lex_check = 
+  Lexing.lex_check =
    "\255\255\255\255\255\255\255\255\255\255\255\255\255\255\255\255\
     \255\255\255\255\255\255\255\255\255\255\255\255\255\255\255\255\
     \255\255\255\255\255\255\255\255\255\255\255\255\255\255\255\255\
@@ -84,22 +84,22 @@ let __ocaml_lex_tables = {
     \255\255\255\255\255\255\255\255\255\255\255\255\255\255\255\255\
     \255\255\255\255\255\255\255\255\255\255\255\255\255\255\255\255\
     \000\000\255\255\255\255\255\255\255\255\255\255\255\255";
-  Lexing.lex_base_code = 
+  Lexing.lex_base_code =
    "";
-  Lexing.lex_backtrk_code = 
+  Lexing.lex_backtrk_code =
    "";
-  Lexing.lex_default_code = 
+  Lexing.lex_default_code =
    "";
-  Lexing.lex_trans_code = 
+  Lexing.lex_trans_code =
    "";
-  Lexing.lex_check_code = 
+  Lexing.lex_check_code =
    "";
-  Lexing.lex_code = 
+  Lexing.lex_code =
    "";
 }
 
 let rec translate lexbuf =
-    __ocaml_lex_translate_rec lexbuf 0
+   __ocaml_lex_translate_rec lexbuf 0
 and __ocaml_lex_translate_rec lexbuf __ocaml_lex_state =
   match Lexing.engine __ocaml_lex_tables __ocaml_lex_state lexbuf with
       | 0 ->
@@ -122,7 +122,7 @@ let
      ( "" )
 # 124 "test/simple_lexer_test.ml"
 
-  | __ocaml_lex_state -> lexbuf.Lexing.refill_buff lexbuf; 
+  | __ocaml_lex_state -> lexbuf.Lexing.refill_buff lexbuf;
       __ocaml_lex_translate_rec lexbuf __ocaml_lex_state
 
 ;;
