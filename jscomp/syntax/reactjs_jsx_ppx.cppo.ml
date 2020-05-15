@@ -534,8 +534,8 @@ let jsxMapper () =
              | Ptyp_constr({txt}, _innerTypeArgs) -> String.concat "." (Longident.flatten txt) ^ "(...)"
              | _ -> "...")
              in
-             Location.prerr_warning pattern.ppat_loc 
-               (Preprocessor 
+             Location.prerr_warning pattern.ppat_loc
+               (Preprocessor
                   (Printf.sprintf "ReasonReact: optional argument annotations must have explicit `option`. Did you mean `option(%s)=?`?" currentType)))
       | _ -> ()) in
       let alias = (match pattern with
@@ -716,7 +716,7 @@ let jsxMapper () =
           } -> ((fun a -> a), false, unerasableIgnoreExp  expression)
           (* let make = (prop) => ... *)
           | {
-            pexp_desc = Pexp_fun (nolabel, default, pattern, internalExpression)
+            pexp_desc = Pexp_fun (_nolabel, _default, _pattern, _internalExpression)
           } -> raise (Invalid_argument "if your component doesn't take any props use () or _ instead of a name as your argument")
           (* let make = {let foo = bar in (~prop) => ...} *)
           | {
