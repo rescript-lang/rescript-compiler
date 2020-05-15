@@ -716,8 +716,11 @@ let jsxMapper () =
           } -> ((fun a -> a), false, unerasableIgnoreExp  expression)
           (* let make = (prop) => ... *)
           | {
-            pexp_desc = Pexp_fun (_nolabel, _default, _pattern, _internalExpression)
-          } -> raise (Invalid_argument "if your component doesn't take any props use () or _ instead of a name as your argument")
+            pexp_desc = Pexp_fun (_nolabel, _default, _pattern, _internalExpression);
+            pexp_loc
+          } -> 
+            Location.raise_errorf ~loc:pexp_loc 
+               "Make sure to use labeled arguments for props, if your component doesn't take any props use () or _ instead of a name as your argument"
           (* let make = {let foo = bar in (~prop) => ...} *)
           | {
               pexp_desc = Pexp_let (recursive, vbs, internalExpression)
