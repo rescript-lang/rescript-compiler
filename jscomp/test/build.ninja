@@ -507,6 +507,22 @@ build test/raw_output_test.cmi test/raw_output_test.cmj : cc test/raw_output_tes
 build test/raw_pure_test.cmi test/raw_pure_test.cmj : cc test/raw_pure_test.ml | $stdlib
 build test/rbset.cmi test/rbset.cmj : cc test/rbset.ml | $stdlib
 build test/re_first_test.cmi test/re_first_test.cmj : cc test/re_first_test.re | test/mt.cmj $stdlib
+build test/react.cmi test/react.cmj : cc test/react.re | $stdlib
+build test/reactDOMRe.cmi test/reactDOMRe.cmj : cc test/reactDOMRe.re | test/react.cmj test/reactEvent.cmj test/reasonReact.cmj $stdlib
+build test/reactDOMServerRe.cmi test/reactDOMServerRe.cmj : cc test/reactDOMServerRe.re | test/react.cmj $stdlib
+build test/reactEvent.cmj : cc_cmi test/reactEvent.re | test/reactEvent.cmi $stdlib
+build test/reactEvent.cmi : cc test/reactEvent.rei | $stdlib
+build test/reactEventRe.cmj : cc_cmi test/reactEventRe.re | test/reactEvent.cmj test/reactEventRe.cmi $stdlib
+build test/reactEventRe.cmi : cc test/reactEventRe.rei | test/reactEvent.cmi $stdlib
+build test/reactTestUtils.cmj : cc_cmi test/reactTestUtils.re | test/react.cmj test/reactTestUtils.cmi $stdlib
+build test/reactTestUtils.cmi : cc test/reactTestUtils.rei | test/react.cmi $stdlib
+build test/reasonReact.cmj : cc_cmi test/reasonReact.re | test/react.cmj test/reasonReact.cmi test/reasonReactOptimizedCreateClass.cmj test/reasonReactRouter.cmj $stdlib
+build test/reasonReact.cmi : cc test/reasonReact.rei | test/react.cmi test/reasonReactRouter.cmi $stdlib
+build test/reasonReactCompat.cmj : cc_cmi test/reasonReactCompat.re | test/react.cmj test/reasonReact.cmj test/reasonReactCompat.cmi $stdlib
+build test/reasonReactCompat.cmi : cc test/reasonReactCompat.rei | test/react.cmi test/reasonReact.cmi $stdlib
+build test/reasonReactOptimizedCreateClass.cmi test/reasonReactOptimizedCreateClass.cmj : cc test/reasonReactOptimizedCreateClass.re | $stdlib
+build test/reasonReactRouter.cmj : cc_cmi test/reasonReactRouter.re | test/react.cmj test/reasonReactRouter.cmi $stdlib
+build test/reasonReactRouter.cmi : cc test/reasonReactRouter.rei | $stdlib
 build test/rebind_module.cmi test/rebind_module.cmj : cc test/rebind_module.ml | $stdlib
 build test/rebind_module_test.cmi test/rebind_module_test.cmj : cc test/rebind_module_test.ml | test/rebind_module.cmj $stdlib
 build test/rec_fun_test.cmi test/rec_fun_test.cmj : cc test/rec_fun_test.ml | test/mt.cmj $stdlib

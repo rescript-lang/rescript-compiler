@@ -329,7 +329,7 @@ function updateDepsKVsByModule(target, modules, depsMap) {
       let filenameAsCmi = filename + ".cmi";
       let filenameAsCmj = filename + ".cmj";
       if (target.endsWith(".cmi")) {
-        if (depsMap.has(filenameAsCmi)) {
+        if (depsMap.has(filenameAsCmi) || depsMap.has(filenameAsCmj)) {
           s.add(fileTarget(filenameAsCmi));
         }
       } else if (target.endsWith(".cmj")) {
