@@ -25,30 +25,27 @@ function compilerBug(a, b, c, f) {
     if (b === undefined) {
       if (c) {
         result.contents = "No x, c is true";
-        return ;
       } else {
         result.contents = "No x, c is false";
-        return ;
       }
+      return ;
     }
     if (b !== "x") {
       if (c) {
         result.contents = "No x, c is true";
-        return ;
       } else {
         result.contents = "No x, c is false";
-        return ;
       }
+      return ;
     }
     
   }
   if (Curry._1(f, undefined)) {
     result.contents = "Some x, f returns true";
-    return ;
   } else {
     result.contents = "Some x, f returns false";
-    return ;
   }
+  
 }
 
 var suites = {

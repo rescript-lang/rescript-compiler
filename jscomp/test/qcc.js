@@ -462,11 +462,10 @@ function patchlval(param) {
   var n = lval.contents[0];
   if (n.tag) {
     opos.contents = opos.contents - n[0] | 0;
-    return ;
   } else {
     obuf[opos.contents - n[0] | 0] = /* "\141" */141;
-    return ;
   }
+  
 }
 
 function read(param) {
@@ -477,7 +476,6 @@ function read(param) {
       /* Del */Block.__(1, [4]),
       /* Chr */1
     ];
-    return ;
   } else {
     out(18571);
     le(8, 0);
@@ -485,8 +483,8 @@ function read(param) {
       /* Del */Block.__(1, [3]),
       /* Int */0
     ];
-    return ;
   }
+  
 }
 
 var globs = Caml_array.caml_make_vect(100, {

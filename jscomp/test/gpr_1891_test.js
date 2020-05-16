@@ -5,11 +5,10 @@ var Curry = require("../../lib/js/curry.js");
 function foo(x) {
   if (typeof x === "number" || x[0] !== 3505894 || x[1] !== 3) {
     console.log("2");
-    return ;
   } else {
     console.log("1");
-    return ;
   }
+  
 }
 
 function foo2(x) {
@@ -39,11 +38,10 @@ function foo4(x, h) {
 function foo5(x) {
   if (typeof x === "number" || x[0] !== 3505894 || x[1] !== 3) {
     console.log("x");
-    return ;
   } else {
     console.log("hi");
-    return ;
   }
+  
 }
 
 exports.foo = foo;

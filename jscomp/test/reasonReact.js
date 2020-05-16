@@ -223,11 +223,10 @@ function createClass(debugName) {
                   var subs = $$this.subscriptions;
                   if (subs !== null) {
                     subs.push(subscription);
-                    return ;
                   } else {
                     $$this.subscriptions = [subscription];
-                    return ;
                   }
+                  
                 }),
               handleMethod: (function (callback) {
                   var $$this = this ;

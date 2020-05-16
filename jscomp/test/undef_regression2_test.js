@@ -51,22 +51,20 @@ function test(param) {
   var match = typeof __DEV__ === "undefined" ? undefined : __DEV__;
   if (match !== undefined) {
     console.log("dev mode");
-    return ;
   } else {
     console.log("producton mode");
-    return ;
   }
+  
 }
 
 function test2(param) {
   var f = typeof __filename === "undefined" ? undefined : __filename;
   if (f !== undefined) {
     console.log(f);
-    return ;
   } else {
     console.log("non node environment");
-    return ;
   }
+  
 }
 
 function test3(param) {

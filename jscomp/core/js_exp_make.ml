@@ -775,6 +775,8 @@ let rec econd ?comment (pred : t) (ifso : t) (ifnot : t) : t =
   | Js_not e, _, _  when not_empty_branch ifnot
     ->
     econd ?comment e ifnot ifso  
+  | _, Seq (a,{expression_desc = Undefined}), Seq(b,{expression_desc = Undefined})
+    -> seq (econd ?comment pred a b ) undefined
   | _ -> 
     if Js_analyzer.eq_expression ifso ifnot then
       if no_side_effect pred then ifso else seq  ?comment pred ifso

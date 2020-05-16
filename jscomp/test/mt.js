@@ -213,11 +213,10 @@ function from_promise_suites(name, suites) {
                             
                           }), suites);
             }));
-      return ;
     } else {
       console.log("promise suites");
-      return ;
     }
+    return ;
   }
   
 }

@@ -2248,11 +2248,10 @@ function associate_docstrings(dsl) {
                 var match = ds.ds_associated;
                 if (match !== 0) {
                   ds.ds_associated = /* Many */2;
-                  return ;
                 } else {
                   ds.ds_associated = /* One */1;
-                  return ;
                 }
+                
               }), dsl);
 }
 
