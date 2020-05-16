@@ -182,7 +182,7 @@ function useUrl(serverUrl, param) {
           return (function (param) {
                     return unwatchUrl(watcherId);
                   });
-        }), ([]));
+        }), []);
   return url$1;
 }
 

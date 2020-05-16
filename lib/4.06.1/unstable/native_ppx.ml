@@ -9188,6 +9188,7 @@ type exp =
     | RegExp of RegExp.t
   ]}
   *)
+  | Js_raw_json
   | Js_exp_unknown
 
 

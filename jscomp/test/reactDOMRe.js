@@ -86,7 +86,7 @@ function createElementVariadic(domClassName, props, children) {
 function unsafeAddProp(style, key, value) {
   var dict = { };
   dict[key] = value;
-  return Object.assign(({}), style, dict);
+  return Object.assign({}, style, dict);
 }
 
 var Style = {
