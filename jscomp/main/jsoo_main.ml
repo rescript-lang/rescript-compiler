@@ -107,6 +107,13 @@ let export (field : string) v =
   Js.Unsafe.set (Js.Unsafe.global) field v
 ;;
 
+(* To add a directory to the load path *)
+
+let dir_directory d =
+  Config.load_path := d :: !Config.load_path
+let () =
+  dir_directory "/static"
+
 let make_compiler name impl =
   export name
     (Js.Unsafe.(obj
