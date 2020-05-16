@@ -30,7 +30,7 @@
 let find_in_path_uncap path name =
   let uname = Ext_string.uncapitalize_ascii name in
   let rec try_dir = function
-    | [] -> None
+    | [] -> if Sys.file_exists name then Some name else None
     | dir::rem ->      
       let ufullname = Filename.concat dir uname in
       if Sys.file_exists ufullname then Some ufullname
