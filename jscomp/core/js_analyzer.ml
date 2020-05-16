@@ -296,9 +296,9 @@ and eq_statement
       | Exp b -> eq_expression a b 
       | _ -> false
     end
-  | Return { return_value = a ; _} -> 
+  | Return a  -> 
     begin match y0 with 
-      | Return { return_value = b; _} ->
+      | Return b ->
         eq_expression a b
       | _ -> false 
     end

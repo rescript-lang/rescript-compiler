@@ -64,12 +64,12 @@ let flatten_map =
           | _ ->
               assert false
           end
-      | Return ( {return_value = {expression_desc = Cond (a,b,c);  comment}}) 
+      | Return {expression_desc = Cond (a,b,c);  comment}
         -> 
           { statement_desc = If (a, [self#statement (S.return_stmt b)],  
                                   [ self#statement (S.return_stmt c)]); comment}
 
-      | Return ({return_value = {expression_desc = Seq _; _} as v}) ->
+      | Return ({expression_desc = Seq _; _} as v) ->
           let block = Js_analyzer.rev_flatten_seq v  in
           begin match block with
           | {statement_desc = Exp last_one ; _} :: rest_rev

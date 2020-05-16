@@ -1318,7 +1318,7 @@ let of_block ?comment ?e block : t =
                | None -> block 
                | Some e -> 
                  Ext_list.append block  
-                   [{J.statement_desc = Return {return_value = e } ;
+                   [{J.statement_desc = Return e  ;
                      comment}]
              end
             , Js_fun_env.make 0)

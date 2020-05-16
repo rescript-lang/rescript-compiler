@@ -81,7 +81,7 @@ class virtual map =
           in ForRange (_x, _x_i1, _x_i2, _x_i3, _x_i4, _x_i5)
       | Continue _x -> let _x = o#label _x in Continue _x
       | Break -> Break
-      | Return _x -> let _x = o#return_expression _x in Return _x
+      | Return _x -> let _x = o#expression _x in Return _x
       | Int_switch (_x, _x_i1, _x_i2) ->
           let _x = o#expression _x in
           let _x_i1 =
@@ -278,6 +278,16 @@ class virtual map =
                  (* only used when inline a fucntion *)
                  (* Here we need track back a bit ?, move Return to Function ...
                               Then we can only have one Return, which is not good *)
+                 (* since in ocaml, it's expression oriented langauge, [return] in
+    general has no jumps, it only happens when we do 
+    tailcall conversion, in that case there is a jump.
+    However, currently  a single [break] is good to cover
+    our compilation strategy 
+    Attention: we should not insert [break] arbitrarily, otherwise 
+    it would break the semantics
+    A more robust signature would be 
+    {[ goto : label option ; ]}
+  *)
                  o#case_clause (fun o -> o#int))
               _x_i1 in
           let _x_i2 = o#option (fun o -> o#block) _x_i2
@@ -305,9 +315,6 @@ class virtual map =
         let _x = o#statement_desc _x in
         let _x_i1 = o#option (fun o -> o#string) _x_i1
         in { statement_desc = _x; comment = _x_i1; }
-    method return_expression : return_expression -> return_expression =
-      fun { return_value = _x } ->
-        let _x = o#expression _x in { return_value = _x; }
     method required_modules : required_modules -> required_modules =
       o#unknown
     method property_name : property_name -> property_name = o#unknown
@@ -428,18 +435,7 @@ class virtual map =
         let _x_i2 = o#option (fun o -> o#string) _x_i2
         in { program = _x; modules = _x_i1; side_effect = _x_i2; }
     method case_clause :
-      (* since in ocaml, it's expression oriented langauge, [return] in
-    general has no jumps, it only happens when we do 
-    tailcall conversion, in that case there is a jump.
-    However, currently  a single [break] is good to cover
-    our compilation strategy 
-
-    Attention: we should not insert [break] arbitrarily, otherwise 
-    it would break the semantics
-    A more robust signature would be 
-    {[ goto : label option ; ]}
-  *)
-        'a 'a_out.
+      'a 'a_out.
         ('self_type -> 'a -> 'a_out) -> 'a case_clause -> 'a_out case_clause =
       fun _f_a
         {

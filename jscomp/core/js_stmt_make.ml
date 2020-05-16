@@ -32,7 +32,7 @@ module E = Js_exp_make
 type t = J.statement 
 
 let return_stmt ?comment e : t = 
-  {statement_desc = Return {return_value = e; } ; comment}
+  {statement_desc = Return  e; comment}
 
   
 let empty_stmt  : t = 
@@ -231,8 +231,8 @@ let if_ ?comment  ?declaration ?else_ (e : J.expression) (then_ : J.block)   : t
       |  [], [] -> exp e 
       |  [], _ ->
          aux ?comment (E.not e) ifnot [] (*Make sure no infinite loop*)        
-      | [ {statement_desc = Return {return_value = ret_ifso; _}; _}], 
-        [ {statement_desc = Return {return_value = ret_ifnot; _}; _}]
+      | [ {statement_desc = Return ret_ifso; _}], 
+        [ {statement_desc = Return ret_ifnot; _}]
         ->      
         return_stmt (E.econd e ret_ifso ret_ifnot ) 
       | _, [{statement_desc = Return _ }]

@@ -373,14 +373,14 @@ and  pp_function ~is_method
     (l : Ident.t list) (b : J.block) (env : Js_fun_env.t ) : cxt =
   match b  with
   | [ {statement_desc =
-         Return {return_value =
+         Return 
                    {expression_desc =
                       Call(({expression_desc = Var v ; _} as function_id),
                            ls ,
                            {arity = ( Full | NA as arity(* see #234*));
                             (* TODO: need a case to justify it*)
                             call_info =
-                              (Call_builtin_runtime | Call_ml )})}}}]
+                              (Call_builtin_runtime | Call_ml )})}}]
     when
       (* match such case:
          {[ function(x,y){ return u(x,y) } ]}
@@ -1243,7 +1243,7 @@ and statement_desc top cxt f (s : J.statement_desc) : cxt =
   | Debugger ->  debugger_nl f ; cxt
   | Break -> break_nl f; cxt
 
-  | Return {return_value = e} ->
+  | Return e ->
     begin match e.expression_desc with
       | Fun (is_method,  l, b, env) ->
         let cxt =
@@ -1340,10 +1340,10 @@ and function_body (cxt : cxt) f (b : J.block) : unit =
           then_,
            [{
               statement_desc =
-                Return {return_value = {expression_desc = Undefined}} }])
+                Return {expression_desc = Undefined}} ])
         ->
         ignore (statement false cxt f {s with statement_desc = If(bool,then_, [])} : cxt)
-    | Return {return_value = {expression_desc = Undefined }} -> ()    
+    | Return {expression_desc = Undefined } -> ()    
     | _ ->        
       ignore (statement false  cxt f  s : cxt)
     end
