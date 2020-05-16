@@ -163,9 +163,9 @@ let subst (export_set : Set_ident.t) stats  =
           end
 
       | [{statement_desc = 
-           Return {return_value = 
+           Return 
                      {expression_desc = 
-                        Call({expression_desc = Var (Id id)},args,_info)}} } as st ]
+                        Call({expression_desc = Var (Id id)},args,_info)} } as st ]
         -> 
         begin match Hash_ident.find_opt stats id with 
 
@@ -197,9 +197,8 @@ let subst (export_set : Set_ident.t) stats  =
         end
 
       | [{statement_desc = 
-            Return {return_value = 
-                      {expression_desc = 
-                         Call({expression_desc = Fun (false, params, block, env)},args,_info)}} } ]
+            Return {expression_desc = 
+                         Call({expression_desc = Fun (false, params, block, env)},args,_info)}}  ]
 
             when Ext_list.same_length params args 
             -> 

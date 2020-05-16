@@ -290,27 +290,26 @@ and statement_desc =
         * Js_closure.t  
   | Continue of label 
   | Break (* only used when inline a fucntion *)
-  | Return of return_expression   (* Here we need track back a bit ?, move Return to Function ...
+  | Return of expression   (* Here we need track back a bit ?, move Return to Function ...
                               Then we can only have one Return, which is not good *)
-  | Int_switch of expression * int case_clause list * block option 
-  | String_switch of expression * string case_clause list * block option 
-  | Throw of expression
-  | Try of block * (exception_ident * block) option * block option
-  | Debugger
-and return_expression = {
- (* since in ocaml, it's expression oriented langauge, [return] in
+    (* since in ocaml, it's expression oriented langauge, [return] in
     general has no jumps, it only happens when we do 
     tailcall conversion, in that case there is a jump.
     However, currently  a single [break] is good to cover
     our compilation strategy 
-
     Attention: we should not insert [break] arbitrarily, otherwise 
     it would break the semantics
     A more robust signature would be 
     {[ goto : label option ; ]}
   *)
-  return_value : expression
-}   
+
+  | Int_switch of expression * int case_clause list * block option 
+  | String_switch of expression * string case_clause list * block option 
+  | Throw of expression
+  | Try of block * (exception_ident * block) option * block option
+  | Debugger
+
+
 
 and expression = {
   expression_desc : expression_desc; 

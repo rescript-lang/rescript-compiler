@@ -68,7 +68,7 @@ class virtual fold =
           let o = o#block _x_i4 in let o = o#unknown _x_i5 in o
       | Continue _x -> let o = o#label _x in o
       | Break -> o
-      | Return _x -> let o = o#return_expression _x in o
+      | Return _x -> let o = o#expression _x in o
       | Int_switch (_x, _x_i1, _x_i2) ->
           let o = o#expression _x in
           let o =
@@ -265,6 +265,16 @@ class virtual fold =
                  (* only used when inline a fucntion *)
                  (* Here we need track back a bit ?, move Return to Function ...
                               Then we can only have one Return, which is not good *)
+                 (* since in ocaml, it's expression oriented langauge, [return] in
+    general has no jumps, it only happens when we do 
+    tailcall conversion, in that case there is a jump.
+    However, currently  a single [break] is good to cover
+    our compilation strategy 
+    Attention: we should not insert [break] arbitrarily, otherwise 
+    it would break the semantics
+    A more robust signature would be 
+    {[ goto : label option ; ]}
+  *)
                  o#case_clause (fun o -> o#int))
               _x_i1 in
           let o = o#option (fun o -> o#block) _x_i2 in o
@@ -287,8 +297,6 @@ class virtual fold =
       fun { statement_desc = _x; comment = _x_i1 } ->
         let o = o#statement_desc _x in
         let o = o#option (fun o -> o#string) _x_i1 in o
-    method return_expression : return_expression -> 'self_type =
-      fun { return_value = _x } -> let o = o#expression _x in o
     method required_modules : required_modules -> 'self_type = o#unknown
     method property_name : property_name -> 'self_type = o#unknown
     method property_map : property_map -> 'self_type =
@@ -387,18 +395,7 @@ class virtual fold =
         let o = o#required_modules _x_i1 in
         let o = o#option (fun o -> o#string) _x_i2 in o
     method case_clause :
-      (* since in ocaml, it's expression oriented langauge, [return] in
-    general has no jumps, it only happens when we do 
-    tailcall conversion, in that case there is a jump.
-    However, currently  a single [break] is good to cover
-    our compilation strategy 
-
-    Attention: we should not insert [break] arbitrarily, otherwise 
-    it would break the semantics
-    A more robust signature would be 
-    {[ goto : label option ; ]}
-  *)
-        'a. ('self_type -> 'a -> 'self_type) -> 'a case_clause -> 'self_type =
+      'a. ('self_type -> 'a -> 'self_type) -> 'a case_clause -> 'self_type =
       fun _f_a
         {
           switch_case = _x;
