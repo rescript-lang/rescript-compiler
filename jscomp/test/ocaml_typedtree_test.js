@@ -6488,11 +6488,10 @@ function associate_docstrings(dsl) {
                 var match = ds.ds_associated;
                 if (match !== 0) {
                   ds.ds_associated = /* Many */2;
-                  return ;
                 } else {
                   ds.ds_associated = /* One */1;
-                  return ;
                 }
+                
               }), dsl);
 }
 
@@ -40595,14 +40594,13 @@ function set_printing_env(env) {
                     /* [] */0
                   ]
                 ]]);
-            return ;
           } else {
             r.contents = /* Paths */Block.__(0, [/* :: */[
                   p,
                   l[0]
                 ]]);
-            return ;
           }
+          return ;
         }
         catch (raw_exn){
           var exn = Caml_js_exceptions.internalToOCamlException(raw_exn);
@@ -63405,15 +63403,14 @@ function type_let(checkOpt, check_strictOpt, env, rec_flag, spat_sexp_list, scop
                         slot$1.contents
                       ];
                       rec_needed.contents = true;
-                      return ;
                     } else {
                       List.iter((function (param) {
                               return mark_value_used(env, param[0], param[1]);
                             }), get_ref(slot));
                       used.contents = true;
                       some_used.contents = true;
-                      return ;
                     }
+                    
                   };
                   var key_001 = vd.val_loc;
                   var key = /* tuple */[

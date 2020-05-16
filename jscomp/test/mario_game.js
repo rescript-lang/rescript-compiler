@@ -808,11 +808,10 @@ function set_vel_to_speed(obj) {
   var match = obj.dir;
   if (match) {
     obj.vel.x = speed;
-    return ;
   } else {
     obj.vel.x = -speed;
-    return ;
   }
+  
 }
 
 function make_type$2(t) {

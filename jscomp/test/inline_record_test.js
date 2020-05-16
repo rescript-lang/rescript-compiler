@@ -79,11 +79,10 @@ eq("File \"inline_record_test.ml\", line 51, characters 6-13", tmp, 3);
 function ff(x) {
   if (x.tag) {
     x[/* z */0] = x[/* z */0] + 2 | 0;
-    return ;
   } else {
     x[/* x */0] = x[/* x */0] + 1 | 0;
-    return ;
   }
+  
 }
 
 var v4 = /* A0 */Block.__(0, [

@@ -17,11 +17,10 @@ function finish(param) {
   var match = all_tests_ok.contents;
   if (match) {
     console.log("\nAll tests succeeded.");
-    return ;
   } else {
     console.log("\n\n********* Test suite failed. ***********\n");
-    return ;
   }
+  
 }
 
 Pervasives.at_exit(finish);

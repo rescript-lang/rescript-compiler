@@ -8,22 +8,20 @@ function renderToElementWithClassName(reactElement, className) {
   var elements = document.getElementsByClassName(className);
   if (elements.length !== 0) {
     ReactDom.render(reactElement, elements[0]);
-    return ;
   } else {
     console.error("ReactDOMRe.renderToElementWithClassName: no element of class " + (className + " found in the HTML."));
-    return ;
   }
+  
 }
 
 function renderToElementWithId(reactElement, id) {
   var element = document.getElementById(id);
   if (element == null) {
     console.error("ReactDOMRe.renderToElementWithId : no element of id " + (id + " found in the HTML."));
-    return ;
   } else {
     ReactDom.render(reactElement, element);
-    return ;
   }
+  
 }
 
 function createRootWithClassName(className) {
@@ -53,11 +51,10 @@ function hydrateToElementWithClassName(reactElement, className) {
   var elements = document.getElementsByClassName(className);
   if (elements.length !== 0) {
     ReactDom.hydrate(reactElement, elements[0]);
-    return ;
   } else {
     console.error("ReactDOMRe.hydrateToElementWithClassName: no element of class " + (className + " found in the HTML."));
-    return ;
   }
+  
 }
 
 function hydrateToElementWithId(reactElement, id) {
