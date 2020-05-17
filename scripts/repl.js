@@ -44,14 +44,16 @@ var nativePath = path.join(__dirname, "..", "native", "4.06.1", "bin");
 var OCAMLC = path.join(nativePath, "ocamlc.opt");
 var OCAMLRUN = path.join(nativePath, "ocamlrun");
 var JSOO = path.join(__dirname, "..", "vendor", "js_of_ocaml.bc");
-function prepare() {
-  console.log("building byte code version of the compiler");
+function prepare(isDev) {
+  var [env, ocamlFlag, jsooFlag] = isDev
+    ? ["development", "-g ", "--pretty "]
+    : ["production", "", ""];
+  console.log(`building byte code version of the compiler [${env}]`);
   e(
-    `${OCAMLC} -w -30-40 -no-check-prims -I ${jsRefmtCompDir} ${jsRefmtCompDir}/js_refmt_compiler.mli ${jsRefmtCompDir}/js_refmt_compiler.ml -o jsc.byte `
+    `${OCAMLC} ${ocamlFlag}-w -30-40 -no-check-prims -I ${jsRefmtCompDir} ${jsRefmtCompDir}/js_refmt_compiler.mli ${jsRefmtCompDir}/js_refmt_compiler.ml -o jsc.byte `
   );
   console.log("building js version");
-  e(`${OCAMLRUN} ${JSOO} compile jsc.byte -o exports.js`);
-  // e() js_of_ocaml jsc.byte -o exports.js
+  e(`${OCAMLRUN} ${JSOO} compile jsc.byte ${jsooFlag}-o exports.js`);
   console.log("copy js artifacts");
   e(`cp ../lib/js/*.js ${playground}/stdlib`);
   e(`mv ./exports.js ${playground}`);
@@ -83,7 +85,7 @@ function prepublish() {
   });
 }
 
-prepare();
+prepare(process.argv.includes("-development"));
 if (process.argv.includes("-prepublish")) {
   prepublish();
 }
