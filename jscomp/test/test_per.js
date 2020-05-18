@@ -501,8 +501,8 @@ var exit_function = {
 };
 
 function at_exit(f) {
-  var g = exit_function[0];
-  exit_function[0] = (function (param) {
+  var g = exit_function.contents;
+  exit_function.contents = (function (param) {
       Curry._1(f, undefined);
       return Curry._1(g, undefined);
     });
@@ -510,11 +510,11 @@ function at_exit(f) {
 }
 
 function do_at_exit(param) {
-  return Curry._1(exit_function[0], undefined);
+  return Curry._1(exit_function.contents, undefined);
 }
 
 function exit(retcode) {
-  Curry._1(exit_function[0], undefined);
+  Curry._1(exit_function.contents, undefined);
   return Caml_sys.caml_sys_exit(retcode);
 }
 

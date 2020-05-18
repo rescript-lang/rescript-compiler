@@ -25,7 +25,7 @@ let v = new x 3 (*Texp_new
              ap_specialised=Default_specialise}
 ]}
 *)
-let u = Oo.copy v 
+let u = CamlinternalOO.copy v 
 
 let () = assert (v#get_x = 3) (* Texp_send*)
 
