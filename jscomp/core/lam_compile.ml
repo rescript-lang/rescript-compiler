@@ -147,6 +147,13 @@ type default_case =
   | Complete
   | NonComplete
 
+let default_action ~saturated failaction =
+    match failaction with
+    | None -> Complete 
+    | Some x -> 
+      if saturated then Complete
+      else Default x 
+
 let no_effects_const  = lazy true
 (* let has_effects_const = lazy false *)
 
@@ -558,7 +565,9 @@ and compile_general_cases
           [switch ?default ?declaration switch_exp body]
         )
 
-and compile_cases cxt switch_exp table default get_name =
+and compile_cases cxt 
+  (switch_exp : E.t) 
+  table default get_name =
   compile_general_cases
     get_name
     (fun i -> {(E.small_int i) with comment = get_name i})
@@ -569,7 +578,10 @@ and compile_cases cxt switch_exp table default get_name =
     switch_exp
     table
     default
-and compile_switch switch_arg sw (lambda_cxt : Lam_compile_context.t) = 
+and compile_switch 
+  (switch_arg : Lam.t) 
+  (sw : Lam.lambda_switch) 
+  (lambda_cxt : Lam_compile_context.t) = 
   (* TODO: if default is None, we can do some optimizations
       Use switch vs if/then/else
 
@@ -583,20 +595,11 @@ and compile_switch switch_arg sw (lambda_cxt : Lam_compile_context.t) =
         sw_blocks;
         sw_failaction;
         sw_names } : Lam.lambda_switch) = sw in 
-  let  sw_num_default  =
-    match sw_failaction with
-    | None -> Complete
-    | Some x ->
-      if sw_numconsts
-      then Complete
-      else Default x in
-  let sw_blocks_default =
-    match sw_failaction  with
-    | None -> Complete
-    | Some x ->
-      if sw_numblocks
-      then Complete
-      else Default x in
+  let  sw_num_default  = 
+    default_action ~saturated:sw_numconsts sw_failaction in     
+  let sw_blocks_default = 
+    default_action ~saturated:sw_numblocks sw_failaction in 
+
   let get_name is_const i =
     match sw_names with
     | None -> None
