@@ -102,8 +102,8 @@ let free_variables
               ({sw_consts; 
                 sw_blocks; 
                 sw_failaction;
-                sw_numconsts;
-                sw_numblocks
+                sw_consts_full;
+                sw_blocks_full
                })) ->
       iter top arg; 
       let top = Lam_var_stats.new_position_after_lam arg top  in       
@@ -112,7 +112,7 @@ let free_variables
       (match sw_failaction with 
        | None -> ()
        | Some x ->
-         if  sw_numconsts || sw_numblocks
+         if  sw_consts_full || sw_blocks_full
          then iter top x 
          else iter sink_pos x)      
     | Lstringswitch (arg,cases,default) ->

@@ -72,10 +72,10 @@ let rec eliminate_ref id (lam : Lam.t) =
     Lam.prim  ~primitive ~args:(Ext_list.map args (eliminate_ref id)) loc
   | Lswitch(e, sw) ->
     Lam.switch(eliminate_ref id e)
-      {sw_numconsts = sw.sw_numconsts;
+      {sw_consts_full = sw.sw_consts_full;
        sw_consts =
          Ext_list.map sw.sw_consts (fun (n, e) -> (n, eliminate_ref id e)) ;
-       sw_numblocks = sw.sw_numblocks;
+       sw_blocks_full = sw.sw_blocks_full;
        sw_blocks =
          Ext_list.map sw.sw_blocks (fun (n, e) -> (n, eliminate_ref id e)) ;
        sw_failaction =

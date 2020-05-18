@@ -589,16 +589,16 @@ and compile_switch
             also if last statement is throw -- should we drop remaining
             statement?
   *)
-  let ({sw_numconsts;
+  let ({sw_consts_full;
         sw_consts;
-        sw_numblocks;
+        sw_blocks_full;
         sw_blocks;
         sw_failaction;
         sw_names } : Lam.lambda_switch) = sw in 
   let  sw_num_default  = 
-    default_action ~saturated:sw_numconsts sw_failaction in     
+    default_action ~saturated:sw_consts_full sw_failaction in     
   let sw_blocks_default = 
-    default_action ~saturated:sw_numblocks sw_failaction in 
+    default_action ~saturated:sw_blocks_full sw_failaction in 
 
   let get_name is_const i =
     match sw_names with
@@ -613,9 +613,9 @@ and compile_switch
     | {value =  None; _}  -> assert false
     | { block; value = Some e } ->
       block @
-      (if sw_numconsts && sw_consts = [] then
+      (if sw_consts_full && sw_consts = [] then
          compile_cases cxt (E.tag e)  sw_blocks sw_blocks_default (get_name false)
-       else if sw_numblocks && sw_blocks = [] then
+       else if sw_blocks_full && sw_blocks = [] then
          compile_cases cxt e  sw_consts sw_num_default (get_name true)
        else
          (* [e] will be used twice  *)

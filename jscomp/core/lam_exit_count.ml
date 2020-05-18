@@ -50,7 +50,7 @@ let incr_exit (exits : collection) i =
   For Lstringswitch ^
   
   For Lswitch, if it is not exhuastive pattern match, default will be counted twice.
-  Since for pattern match,  we will  test whether it is  an integer or block, both have default cases predicate: [sw_numconsts] vs nconsts
+  Since for pattern match,  we will  test whether it is  an integer or block, both have default cases predicate: [sw_consts_full] vs nconsts
 *)
 let count_helper  (lam : Lam.t) : collection = 
   let exits : collection = Hash_int.create 17 in
@@ -90,7 +90,7 @@ let count_helper  (lam : Lam.t) : collection =
     match sw.sw_failaction with
     | None -> ()
     | Some al ->
-      if not sw.sw_numconsts && not sw.sw_numblocks
+      if not sw.sw_consts_full && not sw.sw_blocks_full
       then 
           (count al ; count al)    
       else 

@@ -111,8 +111,8 @@ let rec get_arity (meta : Lam_stats.t) (lam : Lam.t) :  Lam_arity.t =
   | Lswitch(_, {sw_failaction; 
                 sw_consts; 
                 sw_blocks;
-                sw_numblocks = _;
-                sw_numconsts = _;
+                sw_blocks_full = _;
+                sw_consts_full = _;
                }) -> 
     all_lambdas meta (
       let rest = 
