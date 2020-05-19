@@ -12,7 +12,7 @@
 (***********************************************************************)
 (** Almost rewritten  by authors of BuckleScript                       *)
 
-
+[@@@bs.config {flags = [|"-bs-noassertfalse" |] }]
 type ('k, 'v) node  = {
   mutable key : 'k;
   mutable value : 'v;
@@ -27,10 +27,6 @@ type ('k, 'id) cmp = ('k, 'id) Belt_Id.cmp
 
 module A = Belt_Array
 module S = Belt_SortArray
-
-
-external unsafeCoerce : 'a option -> 'a = "%identity"
-
 
 
 let treeHeight (n : _ t) =
@@ -70,20 +66,23 @@ let bal l x d r =
   let hl = match  l with None -> 0 | Some n -> n.height in
   let hr = match  r with None -> 0 | Some n -> n.height in
   if hl > hr + 2 then begin
-    let {left = ll; key = lv; value = ld; right = lr} = l |. unsafeCoerce 
-    in
+    match l with None -> assert false 
+    | Some {left = ll; key = lv; value = ld; right = lr} ->
     if treeHeight ll >= treeHeight lr then
       create ll lv ld (create lr x d r)
     else begin
-      let lr = lr |. unsafeCoerce in
+      match lr with None -> assert false 
+      | Some lr -> 
       create (create ll lv ld lr.left) lr.key lr.value (create lr.right x d r)
     end
   end else if hr > hl + 2 then begin
-    let {left = rl; key = rv; value = rd; right = rr} = r |. unsafeCoerce in
+    match r with None -> assert false
+    | Some {left = rl; key = rv; value = rd; right = rr} -> 
     if treeHeight rr >= treeHeight rl then
       create (create l x d rl) rv rd rr
     else begin
-      let  rl = rl |. unsafeCoerce  in
+      match rl with None -> assert false 
+      | Some rl ->
       create (create l x d rl.left) rl.key rl.value (create rl.right rv rd rr)
     end
   end else
@@ -645,7 +644,8 @@ let rec has  n x ~cmp =
   L rotation, Some root node
 *)
 let rotateWithLeftChild k2 =
-  let k1 = unsafeCoerce k2.left in
+  match k2.left with None -> assert false
+  | Some k1 ->
   (k2.left <- k1.right);
   (k1.right <- (Some k2 ));
   let hlk2, hrk2 = (treeHeight k2.left, (treeHeight k2.right)) in
@@ -656,7 +656,8 @@ let rotateWithLeftChild k2 =
   k1
 (* right rotation *)
 let rotateWithRightChild k1 =
-  let k2 = unsafeCoerce k1.right in
+  match k1.right with None -> assert false
+  | Some k2 ->
   (k1.right <- k2.left);
   (k2.left <- (Some k1));
   let hlk1, hrk1 = ((treeHeight k1.left), (treeHeight k1.right)) in
@@ -669,12 +670,14 @@ let rotateWithRightChild k1 =
   double l rotation
 *)
 let doubleWithLeftChild k3 =
-  let v = rotateWithRightChild (unsafeCoerce k3.left) in
+  let k3l = match k3.left with None -> assert false | Some x -> x in 
+  let v = rotateWithRightChild k3l in
   (k3.left <- (Some v ));
   rotateWithLeftChild k3
 
 let doubleWithRightChild k2 =
-  let v = rotateWithLeftChild (unsafeCoerce k2.right) in
+  let k2r = match k2.right with None -> assert false | Some x -> x in   
+  let v = rotateWithLeftChild k2r in
   (k2.right <- (Some v));
   rotateWithRightChild k2
 
@@ -687,8 +690,8 @@ let balMutate nt  =
   let l, r = (nt.left, nt.right) in
   let hl, hr =  (treeHeight l, treeHeight r) in
   if hl > 2 +  hr then
-    let l = unsafeCoerce l in
-    let {left = ll;  right = lr} = l in
+    match l with None -> assert false 
+    | Some {left = ll;  right = lr} ->
     (if heightGe ll lr then
        heightUpdateMutate (rotateWithLeftChild nt)
      else
@@ -696,8 +699,8 @@ let balMutate nt  =
     )
   else
   if hr > 2 + hl  then
-    let r = unsafeCoerce r in
-    let {left = rl; right = rr} = r in
+    match r with None -> assert false 
+    | Some {left = rl; right = rr} ->
     (if heightGe rr rl then
        heightUpdateMutate (rotateWithRightChild nt)
      else
