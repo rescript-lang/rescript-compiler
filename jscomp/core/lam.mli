@@ -29,9 +29,9 @@
 type ident = Ident.t
 
 type lambda_switch  =
-  { sw_numconsts: bool;
+  { sw_consts_full: bool;
     sw_consts: (int * t) list;
-    sw_numblocks: bool;
+    sw_blocks_full: bool;
     sw_blocks: (int * t) list;
     sw_failaction: t option;
     sw_names: Lambda.switch_names option }

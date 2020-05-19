@@ -221,9 +221,6 @@ let mk_dsource f =
   "-dsource", Arg.Unit f, " (undocumented)"
 ;;
 
-let mk_dlambda f =
-  "-dlambda", Arg.Unit f, " (undocumented)"
-;;
 
 (* let mk_opaque f =
   "-opaque", Arg.Unit f,
@@ -313,7 +310,7 @@ let ocaml_options =
   let _dparsetree = set Clflags.dump_parsetree in 
   let _dtypedtree = set Clflags.dump_typedtree in
   let _drawlambda = set Clflags.dump_rawlambda in
-  let _dlambda = set Clflags.dump_lambda in
+  
   (* let anonymous = anonymous in *)
 
   [ mk_absname _absname;
@@ -361,5 +358,5 @@ let ocaml_options =
     mk_dparsetree _dparsetree;
     mk_dtypedtree _dtypedtree;
     mk_drawlambda _drawlambda;
-    mk_dlambda _dlambda ]
+     ]
 

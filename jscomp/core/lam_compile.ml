@@ -147,6 +147,23 @@ type default_case =
   | Complete
   | NonComplete
 
+let default_action ~saturated failaction =
+    match failaction with
+    | None -> Complete 
+    | Some x -> 
+      if saturated then Complete
+      else Default x 
+
+let get_const_name i (sw_names : Lambda.switch_names option) =
+  match sw_names with 
+  | None -> None 
+  | Some {consts} -> Some consts.(i) 
+
+let get_block_name i (sw_names : Lambda.switch_names option) =   
+  match sw_names with 
+  | None -> None 
+  | Some {blocks} -> Some blocks.(i) 
+
 let no_effects_const  = lazy true
 (* let has_effects_const = lazy false *)
 
@@ -558,7 +575,9 @@ and compile_general_cases
           [switch ?default ?declaration switch_exp body]
         )
 
-and compile_cases cxt switch_exp table default get_name =
+and compile_cases cxt 
+  (switch_exp : E.t) 
+  table default get_name =
   compile_general_cases
     get_name
     (fun i -> {(E.small_int i) with comment = get_name i})
@@ -569,7 +588,10 @@ and compile_cases cxt switch_exp table default get_name =
     switch_exp
     table
     default
-and compile_switch switch_arg sw (lambda_cxt : Lam_compile_context.t) = 
+and compile_switch 
+  (switch_arg : Lam.t) 
+  (sw : Lam.lambda_switch) 
+  (lambda_cxt : Lam_compile_context.t) = 
   (* TODO: if default is None, we can do some optimizations
       Use switch vs if/then/else
 
@@ -577,31 +599,18 @@ and compile_switch switch_arg sw (lambda_cxt : Lam_compile_context.t) =
             also if last statement is throw -- should we drop remaining
             statement?
   *)
-  let ({sw_numconsts;
+  let ({sw_consts_full;
         sw_consts;
-        sw_numblocks;
+        sw_blocks_full;
         sw_blocks;
         sw_failaction;
         sw_names } : Lam.lambda_switch) = sw in 
-  let  sw_num_default  =
-    match sw_failaction with
-    | None -> Complete
-    | Some x ->
-      if sw_numconsts
-      then Complete
-      else Default x in
-  let sw_blocks_default =
-    match sw_failaction  with
-    | None -> Complete
-    | Some x ->
-      if sw_numblocks
-      then Complete
-      else Default x in
-  let get_name is_const i =
-    match sw_names with
-    | None -> None
-    | Some {blocks; consts} ->
-      Some (if is_const then consts.(i) else blocks.(i)) in
+  let  sw_num_default  = 
+    default_action ~saturated:sw_consts_full sw_failaction in     
+  let sw_blocks_default = 
+    default_action ~saturated:sw_blocks_full sw_failaction in 
+  let get_const_name i = get_const_name i sw_names in 
+  let get_block_name i = get_block_name i sw_names in   
   let compile_whole  (cxt  : Lam_compile_context.t ) =
     match compile_lambda 
             {cxt with  continuation = NeedValue Not_tail}
@@ -610,21 +619,21 @@ and compile_switch switch_arg sw (lambda_cxt : Lam_compile_context.t) =
     | {value =  None; _}  -> assert false
     | { block; value = Some e } ->
       block @
-      (if sw_numconsts && sw_consts = [] then
-         compile_cases cxt (E.tag e)  sw_blocks sw_blocks_default (get_name false)
-       else if sw_numblocks && sw_blocks = [] then
-         compile_cases cxt e  sw_consts sw_num_default (get_name true)
+      (if sw_consts_full && sw_consts = [] then
+         compile_cases cxt (E.tag e)  sw_blocks sw_blocks_default get_block_name
+       else if sw_blocks_full && sw_blocks = [] then
+         compile_cases cxt e  sw_consts sw_num_default get_const_name
        else
          (* [e] will be used twice  *)
          let dispatch e =
            S.if_
              (E.is_type_number e )
-             (compile_cases cxt e sw_consts sw_num_default (get_name true)
+             (compile_cases cxt e sw_consts sw_num_default get_const_name
              )
              (* default still needed, could simplified*)
              ~else_:
                (compile_cases cxt (E.tag e ) sw_blocks
-                  sw_blocks_default (get_name false)) in
+                  sw_blocks_default get_block_name) in
            match e.expression_desc with
            | J.Var _  -> [ dispatch e]
            | _ ->

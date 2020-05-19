@@ -178,14 +178,14 @@ let collect_occurs  lam : occ_tbl =
     match sw.sw_failaction with
     | None -> ()
     | Some al ->
-      if not sw.sw_numconsts && not sw.sw_numblocks
+      if not sw.sw_consts_full && not sw.sw_blocks_full
       then 
         begin (* default action will occur twice in native code *)
           count bv al ; count bv al
         end 
       else 
         begin (* default action will occur once *)
-          assert (not sw.sw_numconsts || not sw.sw_numblocks) ;
+          assert (not sw.sw_consts_full || not sw.sw_blocks_full) ;
           count bv al
         end
   in

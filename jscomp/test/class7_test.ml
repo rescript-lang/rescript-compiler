@@ -17,7 +17,7 @@ let () =
   (* TODO: see why [field 1] is missing 
   *)
   (* let () = [%bs.debugger] in  *)
-  let q = Oo.copy p in 
+  let q = CamlinternalOO.copy p in 
   q # move 7;
   eq __LOC__ (55, 62) (p#get_x, q # get_x )
 

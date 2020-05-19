@@ -17980,11 +17980,14 @@ module Lam_pointer_info : sig
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
 
-type t = 
-  | Pt_constructor of {name : string ; cstrs : int * int}
-  | Pt_variant of { name : string}
-  (* | Pt_module_alias *)
-  | Pt_na 
+type t = Lambda.pointer_info = 
+  | Pt_constructor of {name : string; const : int ; non_const :  int} 
+  | Pt_variant of {name : string}
+  | Pt_module_alias (* IMPOSSIBLE *)
+  | Pt_builtin_boolean (* IMPOSSIBLE *)
+  | Pt_shape_none (* IMPOSSIBLE *)  
+  | Pt_assertfalse
+  | Pt_na  
 
 end = struct
 #1 "lam_pointer_info.ml"
@@ -18013,11 +18016,15 @@ end = struct
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
 
-type t = 
-  | Pt_constructor of {name : string ; cstrs : int * int}
-  | Pt_variant of {name : string }
-  (* | Pt_module_alias *)
-  | Pt_na 
+type t = Lambda.pointer_info = 
+  | Pt_constructor of {name : string; const : int ; non_const :  int} 
+  | Pt_variant of {name : string}
+  | Pt_module_alias (* IMPOSSIBLE *)
+  | Pt_builtin_boolean (* IMPOSSIBLE *)
+  | Pt_shape_none (* IMPOSSIBLE *)  
+  | Pt_assertfalse
+  | Pt_na  
+
 
 end
 module Lam_tag_info

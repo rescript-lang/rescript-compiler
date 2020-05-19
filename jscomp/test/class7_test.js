@@ -1,7 +1,6 @@
 'use strict';
 
 var Mt = require("./mt.js");
-var Oo = require("../../lib/js/oo.js");
 var Block = require("../../lib/js/block.js");
 var Curry = require("../../lib/js/curry.js");
 var Caml_obj = require("../../lib/js/caml_obj.js");
@@ -87,7 +86,7 @@ var point = CamlinternalOO.make_class(shared$4, point_init);
 
 var p = Curry._2(point[0], undefined, 55);
 
-var q = Oo.copy(p);
+var q = Caml_exceptions.caml_set_oo_id(Caml_obj.caml_obj_dup(p));
 
 Caml_oo_curry.js2(-933174511, 1, q, 7);
 

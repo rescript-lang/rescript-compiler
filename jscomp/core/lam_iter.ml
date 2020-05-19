@@ -41,7 +41,7 @@ let inner_iter (l : t) (f : t -> unit ) : unit =
   | Lletrec(decl, body) ->
     f body;
     Ext_list.iter_snd  decl f 
-  | Lswitch(arg, {sw_consts; sw_numconsts = _ ; sw_blocks; sw_numblocks = _; sw_failaction}) ->
+  | Lswitch(arg, {sw_consts; sw_consts_full = _ ; sw_blocks; sw_blocks_full = _; sw_failaction}) ->
     f arg;
     Ext_list.iter_snd sw_consts f;
     Ext_list.iter_snd sw_blocks f;
@@ -93,7 +93,7 @@ let inner_exists (l : t) (f : t -> bool) : bool =
   | Lletrec(decl, body) ->
     f body ||
     Ext_list.exists_snd  decl f 
-  | Lswitch(arg, {sw_consts; sw_numconsts = _; sw_blocks; sw_numblocks = _; sw_failaction}) ->
+  | Lswitch(arg, {sw_consts; sw_consts_full = _; sw_blocks; sw_blocks_full = _; sw_failaction}) ->
     f arg ||
     Ext_list.exists_snd sw_consts f ||
     Ext_list.exists_snd sw_blocks f ||

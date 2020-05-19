@@ -118,8 +118,8 @@ let rewrite (map :   _ Hash_ident.t)
     | Lswitch(l, {sw_failaction; 
                   sw_consts; 
                   sw_blocks;
-                  sw_numblocks;
-                  sw_numconsts;
+                  sw_blocks_full;
+                  sw_consts_full;
                   sw_names;
                  }) ->
       let l = aux l in
@@ -127,8 +127,8 @@ let rewrite (map :   _ Hash_ident.t)
               {sw_consts = 
                  Ext_list.map_snd  sw_consts aux;
                sw_blocks = Ext_list.map_snd  sw_blocks aux;
-               sw_numconsts = sw_numconsts;
-               sw_numblocks = sw_numblocks;
+               sw_consts_full = sw_consts_full;
+               sw_blocks_full = sw_blocks_full;
                sw_failaction = option_map sw_failaction;
                sw_names;
               }

@@ -33,16 +33,16 @@ type apply_status =
 module Types = struct
 
   type lambda_switch =
-    { sw_numconsts: bool; (* TODO: refine its representation *)
+    { sw_consts_full : bool; (* TODO: refine its representation *)
       sw_consts: (int * t) list;
-      sw_numblocks: bool;
+      sw_blocks_full : bool;
       sw_blocks: (int * t) list;
       sw_failaction : t option;
       sw_names : Lambda.switch_names option }
   (* 
     Invariant: 
-    length (sw_consts) <= sw_numconsts 
-    when length (sw_consts) >= sw_numconsts -> true 
+    length (sw_consts) <= sw_consts_full 
+    when length (sw_consts) >= sw_consts_full -> true 
     Note that failaction would appear in both
      {[
        match x with
@@ -55,16 +55,16 @@ module Types = struct
 
      In most cases: {[
        let sw =
-         {sw_numconsts = cstr.cstr_consts; sw_consts = consts;
-          sw_numblocks = cstr.cstr_nonconsts; sw_blocks = nonconsts;
+         {sw_consts_full = cstr.cstr_consts; sw_consts = consts;
+          sw_blocks_full = cstr.cstr_nonconsts; sw_blocks = nonconsts;
           sw_failaction = None} in
      ]}
 
      but there are some edge cases (see https://caml.inria.fr/mantis/view.php?id=6033)
      one predicate used is
      {[
-       (sw.sw_numconsts - List.length sw.sw_consts) +
-       (sw.sw_numblocks - List.length sw.sw_blocks) > 1
+       (sw.sw_consts_full - List.length sw.sw_consts) +
+       (sw.sw_blocks_full - List.length sw.sw_blocks) > 1
      ]}
      if [= 1] with [some fail] -- called once
      if [= 0] could not have [some fail]
@@ -111,9 +111,9 @@ module X = struct
   type lambda_switch
     = Types.lambda_switch
     =
-      { sw_numconsts: bool;
+      { sw_consts_full: bool;
         sw_consts: (int * t) list;
-        sw_numblocks: bool;
+        sw_blocks_full: bool;
         sw_blocks: (int * t) list;
         sw_failaction: t option;
         sw_names: Lambda.switch_names option }
@@ -190,12 +190,12 @@ let inner_map
     let args = Ext_list.map args f in
     Lprim { args; primitive; loc}
 
-  | Lswitch(arg, {sw_consts; sw_numconsts; sw_blocks; sw_numblocks; sw_failaction; sw_names}) ->
+  | Lswitch(arg, {sw_consts; sw_consts_full; sw_blocks; sw_blocks_full; sw_failaction; sw_names}) ->
     let arg = f arg in
     let sw_consts = Ext_list.map_snd  sw_consts f in
     let sw_blocks = Ext_list.map_snd  sw_blocks f in
     let sw_failaction = Ext_option.map sw_failaction f in
-    Lswitch(arg, { sw_consts; sw_blocks; sw_failaction; sw_numblocks; sw_numconsts; sw_names})
+    Lswitch(arg, { sw_consts; sw_blocks; sw_failaction; sw_blocks_full; sw_consts_full; sw_names})
   | Lstringswitch (arg,cases,default) ->
     let arg = f arg  in
     let cases = Ext_list.map_snd  cases f in
@@ -737,6 +737,10 @@ let if_ (a : t) (b : t) (c : t) : t =
   
   | _ -> 
     match  b, c with 
+    | _, Lconst (Const_pointer (_, Pt_assertfalse))
+      -> seq a b (* TODO: we could customize more cases *)
+    | Lconst (Const_pointer (_, Pt_assertfalse)), _ 
+      -> seq a c
     | Lconst(Const_js_true), Lconst(Const_js_false)
       -> 
       if has_boolean_type a != None then a 
@@ -757,14 +761,14 @@ let if_ (a : t) (b : t) (c : t) : t =
          -> 
          begin match c with 
            | Lswitch ( Lvar yy as switch_arg, 
-                       ({sw_blocks = []; sw_numblocks = true; sw_consts ;
-                         sw_numconsts = _; sw_failaction = None} as body)
+                       ({sw_blocks = []; sw_blocks_full = true; sw_consts ;
+                         sw_consts_full = _; sw_failaction = None} as body)
                      )
              when Ident.same xx yy 
                && complete_range sw_consts ~start:0 ~finish:range
              ->  
              Lswitch(switch_arg, 
-                     { body with sw_failaction = Some b; sw_numconsts = false; })
+                     { body with sw_failaction = Some b; sw_consts_full = false; })
            |  _ -> Lifthenelse(a,b,c)      
          end
        | _ ->  Lifthenelse (a,b,c))

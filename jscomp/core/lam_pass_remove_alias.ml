@@ -228,16 +228,16 @@ let simplify_alias
     | Lswitch (l, {sw_failaction; 
                    sw_consts; 
                    sw_blocks;
-                   sw_numblocks;
-                   sw_numconsts;
+                   sw_blocks_full;
+                   sw_consts_full;
                    sw_names;
                   }) ->
       Lam.switch (simpl  l)
         {sw_consts = 
            Ext_list.map_snd  sw_consts simpl;
          sw_blocks = Ext_list.map_snd sw_blocks simpl;
-         sw_numconsts;
-         sw_numblocks;
+         sw_consts_full;
+         sw_blocks_full;
          sw_failaction = Ext_option.map sw_failaction simpl;
          sw_names;
         }

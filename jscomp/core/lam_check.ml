@@ -132,7 +132,7 @@ let check file lam =
         iter_list_snd sw.sw_consts;
         iter_list_snd sw.sw_blocks;
         Ext_option.iter sw.sw_failaction iter;         
-        assert (not (sw.sw_failaction <> None && sw.sw_numconsts && sw.sw_numblocks))
+        assert (not (sw.sw_failaction <> None && sw.sw_consts_full && sw.sw_blocks_full))
       | Lstringswitch (arg,cases,default) ->
         iter arg ;
         iter_list_snd cases ;

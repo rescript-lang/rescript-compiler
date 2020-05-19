@@ -1,6 +1,5 @@
 'use strict';
 
-var Oo = require("../../lib/js/oo.js");
 var Sys = require("../../lib/js/sys.js");
 var Curry = require("../../lib/js/curry.js");
 var Caml_obj = require("../../lib/js/caml_obj.js");
@@ -50,7 +49,7 @@ var x = CamlinternalOO.make_class(shared$1, x_init);
 
 var v = Curry._2(x[0], undefined, 3);
 
-var u = Oo.copy(v);
+var u = Caml_exceptions.caml_set_oo_id(Caml_obj.caml_obj_dup(v));
 
 if (Caml_oo_curry.js1(291546447, 1, v) !== 3) {
   throw {

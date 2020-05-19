@@ -38,17 +38,18 @@ let rec convert_constant ( const : Lambda.structured_constant) : Lam_constant.t 
   | Const_base (Const_int32 i) -> (Const_int32 i)
   | Const_base (Const_int64 i) -> (Const_int64 i)
   | Const_base (Const_nativeint i) -> (Const_nativeint i)
-  | Const_pointer(0, Pt_constructor{name = "()"; cstrs = 1,0})
+  | Const_pointer(0, Pt_constructor{name = "()"; const = 1; non_const = 0})
     -> Const_js_undefined
   | Const_pointer(i,p) ->
     begin match p with 
-    | Pt_constructor {name;cstrs} -> Const_pointer(i, Pt_constructor {name; cstrs})
-    | Pt_variant {name} -> Const_pointer(i,Pt_variant {name})
-    | Pt_module_alias -> Const_module_alias
-    | Pt_builtin_boolean -> if i = 0 then Const_js_false else Const_js_true
-    | Pt_shape_none ->
-       Lam_constant.lam_none
-    | Pt_na ->  Const_pointer(i, Pt_na)      
+      | Pt_module_alias -> Const_module_alias
+      | Pt_builtin_boolean -> if i = 0 then Const_js_false else Const_js_true
+      | Pt_shape_none ->
+        Lam_constant.lam_none
+    | Pt_assertfalse    
+    | Pt_constructor _
+    | Pt_variant _    
+    | Pt_na ->  Const_pointer(i, p)      
      end 
   | Const_float_array (s) -> Const_float_array(s)
   | Const_immstring s -> Const_immstring s
