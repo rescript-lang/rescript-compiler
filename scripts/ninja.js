@@ -973,7 +973,7 @@ async function othersNinja(devmode = true) {
   var ninjaCwd = "others";
 
   var templateOthersRules = `
-bsc_flags = ${commonBsFlags} -bs-cross-module-opt -bs-package-name bs-platform -bs-package-output commonjs:lib/js  -bs-package-output es6:lib/es6   -nopervasives  -unsafe  -w +50 -warn-error A  -bs-noassertfalse -open Bs_stdlib_mini -I ./runtime
+bsc_flags = ${commonBsFlags} -bs-cross-module-opt -bs-package-name bs-platform -bs-package-output commonjs:lib/js  -bs-package-output es6:lib/es6   -nopervasives  -unsafe  -w +50 -warn-error A  -open Bs_stdlib_mini -I ./runtime
 ${ruleCC(ninjaCwd)}
 ${
   devmode

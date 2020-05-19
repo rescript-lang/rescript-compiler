@@ -67,5 +67,8 @@ let comment_of_pointer_info (x :  Lam_pointer_info.t)=
   match x with 
   | Pt_constructor {name;_}
   | Pt_variant {name} -> Some name
-  (* | Pt_module_alias -> module_alias *)
+  | Pt_assertfalse -> Some "assert_false"
   | Pt_na -> None
+  | Pt_module_alias 
+  | Pt_builtin_boolean
+  | Pt_shape_none -> assert false

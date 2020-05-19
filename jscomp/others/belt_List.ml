@@ -59,6 +59,8 @@
    ]}
 *)
 
+[@@@bs.config {flags = [| "-bs-noassertfalse" |]}]
+
 type 'a t = 'a list
 
 module A = Belt_Array
@@ -73,12 +75,7 @@ external mutableCell :
 *)
 external unsafeMutateTail :
   'a t -> 'a t -> unit = "#setfield1"
-(*
-   - the cell is not empty
-   - it is mutated
-*)
-external unsafeTail :
-  'a t -> 'a t = "%field1"
+
 (*
    - the cell is not empty
 *)
@@ -789,9 +786,9 @@ let partitionU l p  =
     let b = p h [@bs]  in
     partitionAux p t nextX nextY;
     if b then
-      nextX, unsafeTail nextY
+      nextX, (match nextY with _ :: tail -> tail | [] -> assert false)
     else
-      unsafeTail nextX, nextY
+      (match nextX with _ :: tail -> tail | [] -> assert false) , nextY
 
 let partition l p = partitionU l (fun [@bs] x -> p x)
 

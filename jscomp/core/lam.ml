@@ -737,6 +737,10 @@ let if_ (a : t) (b : t) (c : t) : t =
   
   | _ -> 
     match  b, c with 
+    | _, Lconst (Const_pointer (_, Pt_assertfalse))
+      -> seq a b (* TODO: we could customize more cases *)
+    | Lconst (Const_pointer (_, Pt_assertfalse)), _ 
+      -> seq a c
     | Lconst(Const_js_true), Lconst(Const_js_false)
       -> 
       if has_boolean_type a != None then a 

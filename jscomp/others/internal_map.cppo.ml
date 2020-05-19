@@ -1,3 +1,4 @@
+[@@@bs.config {flags = [| "-bs-noassertfalse" |]}]
 #ifdef TYPE_STRING
 type key = string
 #elif defined TYPE_INT
