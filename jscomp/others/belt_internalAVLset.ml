@@ -22,8 +22,7 @@
  * You should have received a copy of the GNU Lesser General Public License
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
-
-
+[@@@bs.config {flags = [|"-bs-noassertfalse" |] }]
 type 'value node  = {
   mutable value : 'value;
   mutable height : int;
@@ -35,9 +34,6 @@ and 'value t =  'value node option
 
 module A = Belt_Array
 module S = Belt_SortArray
-
-
-external unsafeCoerce : 'a option -> 'a = "%identity"
 
 type ('a, 'b) cmp = ('a, 'b) Belt_Id.cmp
 
@@ -85,22 +81,26 @@ let bal l v r =
   let hr = match r with None -> 0 | Some n -> n.height in
   if hl > hr + 2 then begin
     (* [l] could not be None *)
-    let {left = ll; value = lv; right = lr} = l |. unsafeCoerce  in
+    match l with None -> assert false
+    | Some {left = ll; value = lv; right = lr} ->
     if heightGe ll  lr then
       create ll lv (create lr v r)
     else begin
       (* [lr] could not be None*)
-      let lr = lr |. unsafeCoerce in
+      match lr with None -> assert false 
+      | Some lr -> 
       create (create ll lv lr.left) lr.value (create lr.right v r)
     end
   end else if hr > hl + 2 then begin
     (* [r] could not be None *)
-    let {left = rl; value = rv; right = rr} = r |. unsafeCoerce  in
+    match r with None -> assert false
+    | Some {left = rl; value = rv; right = rr} ->
     if heightGe rr  rl then
       create (create l v rl) rv rr
     else begin
       (* [rl] could not be None *)
-      let rl = rl |. unsafeCoerce  in
+      match rl with None -> assert false 
+      | Some rl -> 
       create (create l v rl.left) rl.value (create rl.right rv rr)
     end
   end else
@@ -553,20 +553,23 @@ let rec getExn  (n : _ t) x ~cmp =
   L rotation, Some root node
 *)
 let rotateWithLeftChild k2 =
-  let k1 = k2 .left|. unsafeCoerce  in
-  k2 .left <- (k1 .right);
-  k1 .right <-  Some k2 ;
-  let hlk2, hrk2 = k2 .left|. treeHeight , k2 .right |. treeHeight in
-  k2 .height <-  (Pervasives.max hlk2 hrk2 + 1);
-  let hlk1, hk2 = k1 .left|. treeHeight , k2 .height  in
-  k1 .height <-  (Pervasives.max hlk1 hk2 + 1);
-  k1
+  match k2 .left with 
+  | None -> assert false 
+  | Some k1 -> 
+    k2 .left <- k1 .right;
+    k1 .right <-  Some k2 ;
+    let hlk2, hrk2 = k2 .left|. treeHeight , k2 .right |. treeHeight in
+    k2 .height <-  (Pervasives.max hlk2 hrk2 + 1);
+    let hlk1, hk2 = k1 .left|. treeHeight , k2 .height  in
+    k1 .height <-  (Pervasives.max hlk1 hk2 + 1);
+    k1
 (* right rotation *)
 let rotateWithRightChild k1 =
-  let k2 = k1 .right |. unsafeCoerce  in
-  k1 .right <-   (k2 .left);
+  match k1 .right with None -> assert false 
+  | Some k2 -> 
+  k1 .right <- k2 .left;
   k2 .left <-  Some k1;
-  let hlk1, hrk1 = k1 .left|. treeHeight, k1 .right |. treeHeight in
+  let hlk1, hrk1 = k1.left |. treeHeight, k1 .right |. treeHeight in
   k1 .height <-   (Pervasives.max  hlk1 hrk1 + 1);
   let hrk2, hk1 = k2 .right |. treeHeight, k1 .height in
   k2 .height <-  (Pervasives.max  hrk2 hk1 + 1);
@@ -576,15 +579,21 @@ let rotateWithRightChild k1 =
   double l rotation
 *)
 let doubleWithLeftChild k3 =
-  let v = k3 .left|. unsafeCoerce |. rotateWithRightChild |. Some in
-  k3 .left <-  v;
-  k3 |. rotateWithLeftChild
-  (** *)
+  match k3.left with 
+  | None -> assert false 
+  | Some k3l ->   
+    let v = k3l  |. rotateWithRightChild |. Some in
+    k3 .left <-  v;
+    k3 |. rotateWithLeftChild
+(** *)
 
 let doubleWithRightChild k2 =
-  let v = k2 .right |. unsafeCoerce |. rotateWithLeftChild |. Some in
-  k2 .right <-  v;
-  rotateWithRightChild k2
+  match k2.right with 
+  | None -> assert false 
+  | Some k2r ->   
+    let v = k2r |. rotateWithLeftChild |. Some in
+    k2 .right <-  v;
+    rotateWithRightChild k2
 
 let heightUpdateMutate t =
   let hlt, hrt = t .left|. treeHeight, t .right |. treeHeight  in
@@ -595,7 +604,8 @@ let balMutate nt  =
   let {left = l; right = r} = nt  in
   let hl, hr =  (treeHeight l, treeHeight r) in
   if hl > 2 +  hr then
-    let {left = ll; right = lr} = l |. unsafeCoerce in
+    match l with None -> assert false 
+    | Some {left = ll; right = lr} -> 
     (if heightGe ll lr then
        heightUpdateMutate (rotateWithLeftChild nt)
      else
@@ -603,7 +613,8 @@ let balMutate nt  =
     )
   else
   if hr > 2 + hl  then
-    let {left = rl; right = rr} = r |. unsafeCoerce  in
+    match r with None -> assert false 
+    | Some {left = rl; right = rr} -> 
     (if heightGe rr rl then
        heightUpdateMutate (rotateWithRightChild nt)
      else
