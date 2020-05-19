@@ -67,14 +67,23 @@ module A = Belt_Array
 
 external mutableCell :
   'a -> 'a t ->  'a t = "#makemutablelist"
+
+
+type poly = { unsafeMutateTail : 'a . 'a t  -> 'a t  -> unit } [@@unboxed]
+
+
 (*
     [mutableCell x []] == [x]
     but tell the compiler that is a mutable cell, so it wont
     be mis-inlined in the future
      dont inline a binding to mutable cell, it is mutable
 *)
-external unsafeMutateTail :
-  'a t -> 'a t -> unit = "#setfield1"
+(* relies on list internal representation *)
+let m : poly = {unsafeMutateTail = [%raw{|function(xs,ys){
+      xs[1] = ys 
+}|}]}
+
+
 
 (*
    - the cell is not empty
@@ -128,12 +137,12 @@ let rec partitionAux p cell precX precY =
     let next = mutableCell h [] in
     if p h [@bs] then
       begin
-        unsafeMutateTail precX next ;
+        m.unsafeMutateTail precX next ;
         partitionAux p t next precY
       end
     else
       begin
-        unsafeMutateTail precY next ;
+        m.unsafeMutateTail precY next ;
         partitionAux p t precX next
       end
 
@@ -143,8 +152,8 @@ let rec splitAux cell precX precY =
   | (a,b)::t ->
     let nextA = mutableCell a [] in
     let nextB = mutableCell b [] in
-    unsafeMutateTail precX nextA;
-    unsafeMutateTail precY nextB;
+    m.unsafeMutateTail precX nextA;
+    m.unsafeMutateTail precY nextB;
     splitAux t nextA nextB
 
 (* return the tail pointer so it can continue copy other
@@ -155,7 +164,7 @@ let rec copyAuxCont cellX prec =
   | [] -> prec
   | h::t ->
     let next = mutableCell h [] in
-    unsafeMutateTail prec next ;
+    m.unsafeMutateTail prec next ;
     copyAuxCont t next
 
 let rec copyAuxWitFilter f cellX prec =
@@ -166,7 +175,7 @@ let rec copyAuxWitFilter f cellX prec =
     if f h [@bs] then
       begin
         let next = mutableCell h [] in
-        unsafeMutateTail prec next ;
+        m.unsafeMutateTail prec next ;
         copyAuxWitFilter f t next
       end
     else copyAuxWitFilter f t prec
@@ -179,7 +188,7 @@ let rec copyAuxWithFilterIndex f cellX prec i =
     if f h i [@bs] then
       begin
         let next = mutableCell h [] in
-        unsafeMutateTail prec next ;
+        m.unsafeMutateTail prec next ;
         copyAuxWithFilterIndex f t next (i + 1)
       end
     else copyAuxWithFilterIndex f t prec (i + 1)
@@ -193,7 +202,7 @@ let rec copyAuxWitFilterMap f cellX prec =
     | Some h ->
       begin
         let next = mutableCell h [] in
-        unsafeMutateTail prec next ;
+        m.unsafeMutateTail prec next ;
         copyAuxWitFilterMap f t next
       end
     | None ->  copyAuxWitFilterMap f t prec
@@ -203,10 +212,10 @@ let rec removeAssocAuxWithMap  cellX x  prec f =
   | [] -> false
   | ((a,_) as h):: t ->
     if f a x [@bs] then
-      (unsafeMutateTail prec t ; true)
+      (m.unsafeMutateTail prec t ; true)
     else
       let next = mutableCell h [] in
-      unsafeMutateTail prec next ;
+      m.unsafeMutateTail prec next ;
       removeAssocAuxWithMap t x next f
 
 let rec setAssocAuxWithMap cellX x k prec eq =
@@ -214,10 +223,10 @@ let rec setAssocAuxWithMap cellX x k prec eq =
   | [] -> false
   | ((a,_) as h) :: t ->
     if eq a x [@bs] then
-      (unsafeMutateTail prec ( (x,k)::t); true)
+      (m.unsafeMutateTail prec ( (x,k)::t); true)
     else
       let next = mutableCell h [] in
-      unsafeMutateTail prec next ;
+      m.unsafeMutateTail prec next ;
       setAssocAuxWithMap t x k next eq
 
 
@@ -227,7 +236,7 @@ let rec copyAuxWithMap cellX prec f =
     ()
   | h::t ->
     let next = mutableCell (f h [@bs]) [] in
-    unsafeMutateTail prec next ;
+    m.unsafeMutateTail prec next ;
     copyAuxWithMap t next f
 
 
@@ -235,7 +244,7 @@ let rec zipAux  cellX cellY prec =
   match cellX, cellY with
   | h1::t1, h2::t2 ->
     let next = mutableCell ( h1, h2) [] in
-    unsafeMutateTail prec next ;
+    m.unsafeMutateTail prec next ;
     zipAux  t1 t2 next
   | [],_ | _,[] ->
     ()
@@ -244,7 +253,7 @@ let rec copyAuxWithMap2 f cellX cellY prec =
   match cellX, cellY with
   | h1::t1, h2::t2 ->
     let next = mutableCell (f h1 h2 [@bs]) [] in
-    unsafeMutateTail prec next ;
+    m.unsafeMutateTail prec next ;
     copyAuxWithMap2 f t1 t2 next
   | [],_ | _,[] ->
     ()
@@ -253,7 +262,7 @@ let rec copyAuxWithMapI f i cellX prec =
   match cellX with
   | h::t ->
     let next = mutableCell (f i h [@bs]) [] in
-    unsafeMutateTail prec next ;
+    m.unsafeMutateTail prec next ;
     copyAuxWithMapI f (i + 1) t next
   | [] ->
     ()
@@ -265,7 +274,7 @@ let rec takeAux n cell prec =
     | [] -> false
     | x::xs ->
       let cell = mutableCell x [] in
-      unsafeMutateTail prec cell;
+      m.unsafeMutateTail prec cell;
       takeAux (n - 1) xs cell
 
 let rec splitAtAux n cell prec =
@@ -275,7 +284,7 @@ let rec splitAtAux n cell prec =
     | [] -> None
     | x::xs ->
       let cell = mutableCell x [] in
-      unsafeMutateTail prec cell;
+      m.unsafeMutateTail prec cell;
       splitAtAux (n - 1) xs cell
 
 (* invarint [n >= 0] *)
@@ -323,7 +332,7 @@ let concat xs ys =
   | [] -> ys
   | h::t ->
     let cell = mutableCell h [] in
-    unsafeMutateTail (copyAuxCont t cell) ys;
+    m.unsafeMutateTail (copyAuxCont t cell) ys;
     cell
 
 let mapU xs f =
@@ -365,7 +374,7 @@ let makeByU n f =
     let i = ref 1 in
     while i.contents < n do
       let v = mutableCell (f i.contents [@bs]) [] in
-      unsafeMutateTail cur.contents v ;
+      m.unsafeMutateTail cur.contents v ;
       cur.contents<- v ;
       i.contents <- i.contents + 1 ;
     done
@@ -374,7 +383,7 @@ let makeByU n f =
 
 let makeBy n f = makeByU n (fun[@bs] x -> f x)
 
-let make n v =
+let make (type a) n (v : a) : a list =
   if n <= 0 then []
   else
     let headX = mutableCell v [] in
@@ -382,7 +391,7 @@ let make n v =
     let i = ref 1 in
     while i.contents < n do
       let v = mutableCell v [] in
-      unsafeMutateTail cur.contents v ;
+      m.unsafeMutateTail cur.contents v ;
       cur.contents<- v ;
       i.contents <- i.contents + 1 ;
     done
@@ -452,7 +461,7 @@ let shuffle xs =
 (*       let cell = ref head in    *)
 (*       for i = 1 to len - 1 do    *)
 (*         let next = mutableCell (f (A.getUnsafe arr i) [@bs]) [] in  *)
-(*         unsafeMutateTail !cell next ; *)
+(*         unsafeMutateTail.unsafeMutateTail !cell next ; *)
 (*         cell .contents<- next  *)
 (*       done ; *)
 (*       head *)
@@ -468,7 +477,7 @@ let reverse l = reverseConcat l []
 
 let rec flattenAux prec xs =
   match xs with
-  | [] -> unsafeMutateTail prec []
+  | [] -> m.unsafeMutateTail prec []
   | h::r -> flattenAux (copyAuxCont h prec) r
 
 
