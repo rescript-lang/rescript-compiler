@@ -154,6 +154,16 @@ let default_action ~saturated failaction =
       if saturated then Complete
       else Default x 
 
+let get_const_name i (sw_names : Lambda.switch_names option) =
+  match sw_names with 
+  | None -> None 
+  | Some {consts} -> Some consts.(i) 
+
+let get_block_name i (sw_names : Lambda.switch_names option) =   
+  match sw_names with 
+  | None -> None 
+  | Some {blocks} -> Some blocks.(i) 
+
 let no_effects_const  = lazy true
 (* let has_effects_const = lazy false *)
 
@@ -599,12 +609,8 @@ and compile_switch
     default_action ~saturated:sw_consts_full sw_failaction in     
   let sw_blocks_default = 
     default_action ~saturated:sw_blocks_full sw_failaction in 
-
-  let get_name is_const i =
-    match sw_names with
-    | None -> None
-    | Some {blocks; consts} ->
-      Some (if is_const then consts.(i) else blocks.(i)) in
+  let get_const_name i = get_const_name i sw_names in 
+  let get_block_name i = get_block_name i sw_names in   
   let compile_whole  (cxt  : Lam_compile_context.t ) =
     match compile_lambda 
             {cxt with  continuation = NeedValue Not_tail}
@@ -614,20 +620,20 @@ and compile_switch
     | { block; value = Some e } ->
       block @
       (if sw_consts_full && sw_consts = [] then
-         compile_cases cxt (E.tag e)  sw_blocks sw_blocks_default (get_name false)
+         compile_cases cxt (E.tag e)  sw_blocks sw_blocks_default get_block_name
        else if sw_blocks_full && sw_blocks = [] then
-         compile_cases cxt e  sw_consts sw_num_default (get_name true)
+         compile_cases cxt e  sw_consts sw_num_default get_const_name
        else
          (* [e] will be used twice  *)
          let dispatch e =
            S.if_
              (E.is_type_number e )
-             (compile_cases cxt e sw_consts sw_num_default (get_name true)
+             (compile_cases cxt e sw_consts sw_num_default get_const_name
              )
              (* default still needed, could simplified*)
              ~else_:
                (compile_cases cxt (E.tag e ) sw_blocks
-                  sw_blocks_default (get_name false)) in
+                  sw_blocks_default get_block_name) in
            match e.expression_desc with
            | J.Var _  -> [ dispatch e]
            | _ ->
