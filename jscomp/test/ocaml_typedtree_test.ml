@@ -5404,8 +5404,8 @@ type changes =
   | Invalid
 
 type snapshot = changes ref * int
-
-let trail = Weak.create 1
+module Weak = Array
+let trail = Weak.create 1 None
 let last_snapshot = ref 0
 
 let log_change ch =

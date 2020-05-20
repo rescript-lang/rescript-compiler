@@ -766,14 +766,6 @@ let translate loc (prim_name : string)
       -> call Js_runtime_modules.hash_primitive
     | "caml_hash"
       -> call Js_runtime_modules.hash 
-    | "caml_weak_set"
-    | "caml_weak_create"
-    | "caml_weak_get"
-    | "caml_weak_check"
-    | "caml_weak_blit"
-    | "caml_weak_get_copy"
-      -> call Js_runtime_modules.weak
-
     | "caml_ml_open_descriptor_in" when   
       args_const_unbox_approx_int_zero args -> 
       E.runtime_ref Js_runtime_modules.io "stdin"

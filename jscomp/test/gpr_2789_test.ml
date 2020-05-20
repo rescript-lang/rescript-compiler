@@ -4,8 +4,8 @@ let eq loc x y = Mt.eq_suites ~test_id ~suites loc x y
 
 
 
-let () = 
+(* let () = 
   eq __LOC__ 0 (Weak.length (Weak.create 0));
-  eq __LOC__ 1 (Weak.length (Weak.create 1))
+  eq __LOC__ 1 (Weak.length (Weak.create 1)) *)
 
 ;; Mt.from_pair_suites __MODULE__ !suites
