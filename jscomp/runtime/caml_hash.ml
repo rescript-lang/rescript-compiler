@@ -79,8 +79,6 @@ let unsafe_pop (q : 'a t) =
 external ( +~ ) : nativeint -> nativeint -> nativeint =
    "caml_int32_add"
 
-(*ATTENTION: refer {!Oo.id} *)
-external oo_id : Obj.t -> int  = "%field1"
 
 open Caml_hash_primitive
 
@@ -134,7 +132,8 @@ let caml_hash (count : int) _limit (seed : nativeint)
           let obj_tag = Obj.tag obj in
           let tag = (size lsl 10) lor obj_tag in 
           if tag = 248 (* Obj.object_tag*) then 
-            hash.contents <- caml_hash_mix_int hash.contents (Caml_nativeint_extern.of_int (oo_id  obj))
+            hash.contents <- caml_hash_mix_int hash.contents 
+              (Caml_nativeint_extern.of_int (Obj.obj (Obj.field obj 1) : int))
           else 
             begin 
               hash.contents <- caml_hash_mix_int hash.contents (Caml_nativeint_extern.of_int tag) ;

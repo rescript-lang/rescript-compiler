@@ -46,8 +46,8 @@ let caml_methods_cache =
     Caml_array_extern.make 1000 0 
 
 (* refer to {!CamlinternalOO.create_obj_opt}*)
-external get_methods : obj -> closure array =
-  "%field0"
+
+
 
 (* see  #251
    {[
@@ -71,7 +71,7 @@ let caml_get_public_method
     (obj : obj) 
     (tag : int) (cacheid  : int) : closure =
   let module Array = Caml_array_extern in 
-  let meths = get_methods obj in (* the first field of object is mehods *)
+  let meths : closure array = Obj.obj (Obj.field (Obj.repr obj) 0) in (* the first field of object is mehods *)
   let offs =  caml_methods_cache.(cacheid) in
   if (Obj.magic meths.(offs) : int) = tag then meths.(offs - 1)
   else

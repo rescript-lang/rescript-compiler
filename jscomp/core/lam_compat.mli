@@ -80,6 +80,7 @@ type field_dbg_info = Lambda.field_dbg_info =
   | Fld_poly_var_content
   | Fld_extension 
   | Fld_variant
+  | Fld_array
   
 val str_of_field_info : 
   field_dbg_info -> 

@@ -41,8 +41,6 @@ external not : bool -> bool = "%boolnot"
 
 external raise : exn -> 'a = "%raise"
 external ignore : 'a -> unit = "%ignore"
-external fst : 'a * 'b -> 'a = "%field0"
-external snd : 'a * 'b -> 'b = "%field1"
 external ( |> ) : 'a -> ('a -> 'b) -> 'b = "%revapply"
 external ( @@ ) : ('a -> 'b) -> 'a -> 'b = "%apply"
 
@@ -61,6 +59,7 @@ module Obj : sig
   (* The compiler ensures (|0) operation *)
   external set_tag : t -> int -> unit = "tag" [@@bs.set]  
   external repr : 'a -> t = "%identity"
+  external obj : t -> 'a = "%identity"
   external magic : 'a -> 'b = "%identity"  
   external size : t -> int = "#obj_length"
 end 
