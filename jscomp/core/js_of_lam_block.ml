@@ -56,6 +56,7 @@ let field (field_info : Lam_compat.field_dbg_info) e i =
   | Fld_poly_var_content 
   | Fld_record_inline _
   | Fld_variant
+  | Fld_array
     -> 
     E.array_index_by_int  
       ?comment:(Lam_compat.str_of_field_info field_info) e i 

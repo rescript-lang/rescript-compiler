@@ -171,10 +171,11 @@ type field_dbg_info = Lambda.field_dbg_info =
   | Fld_poly_var_content
   | Fld_extension
   | Fld_variant
-
+  | Fld_array 
 let str_of_field_info (x : field_dbg_info) : string option =  
   match x with 
-  | Fld_na  s -> Some s
+  | Fld_na  s -> if s = "" then None else Some s
+  | Fld_array
   | Fld_extension
   | Fld_variant
   | Fld_poly_var_tag 
