@@ -108,23 +108,6 @@ let caml_obj_dup : Caml_obj_extern.t -> Caml_obj_extern.t = [%raw{|function(x){
 
 
 
-let caml_obj_truncate (x : Caml_obj_extern.t) (new_size : int) =
-  let len = Caml_obj_extern.length x in
-  if new_size <= 0 || new_size > len then
-    raise (Invalid_argument "Obj.truncate")
-  else
-  if len <> new_size  then
-    begin
-      for i = new_size  to len - 1  do
-        Obj.set_field x  i (Obj.magic 0)
-      done;
-      Caml_obj_extern.set_length x new_size
-    end
-
-
-
-
-
 
 (** 
    For the empty dummy object, whether it's 
@@ -151,9 +134,6 @@ let update_dummy : _ -> _ -> unit= [%raw{|function(x,y){
 }
 |}]
   
-(* Caml_obj_extern.set_length x   (Caml_obj_extern.length y) *)
-(* [set_length] seems redundant here given that it is initialized as an array 
-*)
 
 
 

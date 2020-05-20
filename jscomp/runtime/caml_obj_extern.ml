@@ -29,7 +29,7 @@ type t = Bs_stdlib_mini.Obj.t
 
 
 
-external set_length : t -> int -> unit = "length" [@@bs.set]
+
 external length : t -> int = "#obj_length"
 
 

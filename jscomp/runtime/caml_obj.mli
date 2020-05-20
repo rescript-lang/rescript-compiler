@@ -32,8 +32,6 @@ type t = Caml_obj_extern.t
 val caml_obj_block : int -> int -> Caml_obj_extern.t
 val caml_obj_dup : Caml_obj_extern.t -> Caml_obj_extern.t
 
-val caml_obj_truncate : Caml_obj_extern.t -> int -> unit
-
 
 val update_dummy : Caml_obj_extern.t -> Caml_obj_extern.t -> unit
 

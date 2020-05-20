@@ -684,7 +684,6 @@ let translate loc (prim_name : string)
     (*   "caml_alloc_dummy"; *)
     (* TODO:   "caml_alloc_dummy_float"; *)
     | "caml_obj_dup" 
-    | "caml_obj_truncate"
       -> 
       call Js_runtime_modules.obj_runtime
 
@@ -774,60 +773,7 @@ let translate loc (prim_name : string)
       E.runtime_ref Js_runtime_modules.io "stdout"
     | "caml_ml_open_descriptor_out" when 
       args_const_unbox_approx_int_two args -> 
-      E.runtime_ref Js_runtime_modules.io "stderr"
-
-    | "caml_ba_create"
-    | "caml_ba_get_generic"
-    | "caml_ba_set_generic"
-    | "caml_ba_num_dims"
-    | "caml_ba_dim"
-    | "caml_ba_kind"
-    | "caml_ba_layout"
-    | "caml_ba_sub"
-    | "caml_ba_slice"
-    | "caml_ba_blit"
-    | "caml_ba_fill"
-    | "caml_ba_reshape"
-    | "caml_ba_map_file_bytecode"
-
-    (* caml_ba_get_1,  (\* %caml_ba_ref_1 *\) *)
-    (* caml_ba_get_2, *)
-    (* caml_ba_get_3, *)
-
-    (* caml_ba_set_1,  // %caml_ba_set_1 *)
-    (* caml_ba_set_2, *)
-    (* caml_ba_set_3, *)
-
-    (* caml_ba_dim_1, // %caml_ba_dim_1 *)
-    (* caml_ba_dim_2,  *)
-    (* caml_ba_dim_3,  *)
-    | "caml_output_value_to_buffer"
-    | "caml_marshal_data_size"
-    | "caml_input_value_from_string"
-    | "caml_output_value"
-    | "caml_input_value"
-    | "caml_output_value_to_string"
-    | "caml_md5_chan"
-    | "caml_hash_univ_param"
-    | "caml_sys_close"
-    | "caml_sys_open"
-    | "caml_ml_input"
-    | "caml_ml_input_scan_line"
-    | "caml_ml_input_int"
-    | "caml_ml_close_channel"
-    | "caml_ml_output_int"
-
-    | "caml_ml_channel_size_64"
-    | "caml_ml_channel_size"
-    | "caml_ml_pos_in_64"
-    | "caml_ml_pos_in"
-    | "caml_ml_seek_in"
-    | "caml_ml_seek_in_64"
-    | "caml_ml_pos_out"
-    | "caml_ml_pos_out_64"
-    | "caml_ml_seek_out"
-    | "caml_ml_seek_out_64"
-    | "caml_ml_set_binary_mode"    
+      E.runtime_ref Js_runtime_modules.io "stderr"       
     | _ -> 
       Bs_warnings.warn_missing_primitive loc prim_name  ;
       E.resolve_and_apply prim_name args

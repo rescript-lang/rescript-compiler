@@ -30,7 +30,7 @@ external field : t -> int -> t = "%obj_field"
 external set_field : t -> int -> t -> unit = "%obj_set_field"
  
 external dup : t -> t = "caml_obj_dup"
-external truncate : t -> int -> unit = "caml_obj_truncate"
+
 
 
 
