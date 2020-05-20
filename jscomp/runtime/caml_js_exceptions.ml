@@ -10,7 +10,7 @@ exception Error of  t
    {[
      exception A of int;;
      let v = A  3 ;;
-     Caml_obj_extern.tag (Caml_obj_extern.field (Caml_obj_extern.repr v) 0);;
+     Obj.tag (Obj.field (Obj.repr v) 0);;
      - : int = 248
    ]}
    This function has to be in this module Since 

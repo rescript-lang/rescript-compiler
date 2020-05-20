@@ -45,7 +45,7 @@ build runtime/caml_module.cmj : cc_cmi runtime/caml_module.ml | runtime/caml_arr
 build runtime/caml_module.cmi : cc runtime/caml_module.mli | runtime/bs_stdlib_mini.cmi runtime/caml_obj_extern.cmj runtime/js.cmi runtime/js.cmj
 build runtime/caml_obj.cmj : cc_cmi runtime/caml_obj.ml | runtime/caml_array_extern.cmj runtime/caml_obj.cmi runtime/caml_obj_extern.cmj runtime/caml_primitive.cmj runtime/js.cmj
 build runtime/caml_obj.cmi : cc runtime/caml_obj.mli | runtime/bs_stdlib_mini.cmi runtime/caml_obj_extern.cmj runtime/js.cmi runtime/js.cmj
-build runtime/caml_oo.cmj : cc_cmi runtime/caml_oo.ml | runtime/caml_array.cmj runtime/caml_array_extern.cmj runtime/caml_obj_extern.cmj runtime/caml_oo.cmi
+build runtime/caml_oo.cmj : cc_cmi runtime/caml_oo.ml | runtime/caml_array.cmj runtime/caml_array_extern.cmj runtime/caml_exceptions.cmj runtime/caml_oo.cmi
 build runtime/caml_oo.cmi : cc runtime/caml_oo.mli | runtime/bs_stdlib_mini.cmi runtime/js.cmi runtime/js.cmj
 build runtime/caml_option.cmj : cc_cmi runtime/caml_option.ml | runtime/caml_obj_extern.cmj runtime/caml_option.cmi runtime/caml_undefined_extern.cmj runtime/js.cmj
 build runtime/caml_option.cmi : cc runtime/caml_option.mli | runtime/bs_stdlib_mini.cmi runtime/caml_obj_extern.cmj runtime/caml_undefined_extern.cmj runtime/js.cmi runtime/js.cmj
@@ -59,12 +59,12 @@ build runtime/caml_string.cmj : cc_cmi runtime/caml_string.ml | runtime/caml_str
 build runtime/caml_string.cmi : cc runtime/caml_string.mli | runtime/bs_stdlib_mini.cmi runtime/js.cmi runtime/js.cmj
 build runtime/caml_sys.cmj : cc_cmi runtime/caml_sys.ml | runtime/caml_array_extern.cmj runtime/caml_nativeint_extern.cmj runtime/caml_sys.cmi runtime/caml_undefined_extern.cmj runtime/js.cmj
 build runtime/caml_sys.cmi : cc runtime/caml_sys.mli | runtime/bs_stdlib_mini.cmi runtime/js.cmi runtime/js.cmj
-build runtime/caml_weak.cmj : cc_cmi runtime/caml_weak.ml | runtime/caml_array.cmj runtime/caml_array_extern.cmj runtime/caml_obj.cmj runtime/caml_obj_extern.cmj runtime/caml_option.cmj runtime/caml_undefined_extern.cmj runtime/caml_weak.cmi
+build runtime/caml_weak.cmj : cc_cmi runtime/caml_weak.ml | runtime/caml_array.cmj runtime/caml_array_extern.cmj runtime/caml_obj.cmj runtime/caml_option.cmj runtime/caml_undefined_extern.cmj runtime/caml_weak.cmi
 build runtime/caml_weak.cmi : cc runtime/caml_weak.mli | runtime/bs_stdlib_mini.cmi runtime/js.cmi runtime/js.cmj
 build runtime/caml_array_extern.cmi runtime/caml_array_extern.cmj : cc runtime/caml_array_extern.ml | runtime/bs_stdlib_mini.cmi runtime/js.cmi runtime/js.cmj
 build runtime/caml_bytes_extern.cmi runtime/caml_bytes_extern.cmj : cc runtime/caml_bytes_extern.ml | runtime/bs_stdlib_mini.cmi runtime/js.cmi runtime/js.cmj
 build runtime/caml_char.cmi runtime/caml_char.cmj : cc runtime/caml_char.ml | runtime/bs_stdlib_mini.cmi runtime/js.cmi runtime/js.cmj
-build runtime/caml_exceptions.cmi runtime/caml_exceptions.cmj : cc runtime/caml_exceptions.ml | runtime/bs_stdlib_mini.cmi runtime/caml_obj_extern.cmj runtime/js.cmi runtime/js.cmj
+build runtime/caml_exceptions.cmi runtime/caml_exceptions.cmj : cc runtime/caml_exceptions.ml | runtime/bs_stdlib_mini.cmi runtime/js.cmi runtime/js.cmj
 build runtime/caml_external_polyfill.cmi runtime/caml_external_polyfill.cmj : cc runtime/caml_external_polyfill.ml | runtime/bs_stdlib_mini.cmi runtime/js.cmi runtime/js.cmj
 build runtime/caml_float_extern.cmi runtime/caml_float_extern.cmj : cc runtime/caml_float_extern.ml | runtime/bs_stdlib_mini.cmi runtime/js.cmi runtime/js.cmj
 build runtime/caml_int32_extern.cmi runtime/caml_int32_extern.cmj : cc runtime/caml_int32_extern.ml | runtime/bs_stdlib_mini.cmi runtime/js.cmi runtime/js.cmj

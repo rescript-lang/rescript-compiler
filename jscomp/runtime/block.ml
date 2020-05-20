@@ -32,7 +32,7 @@ type obj = Caml_obj_extern.t
 (* Note that when we introduce it in {!Js_dump} 
    we need introduce dependency properly *)
 let __ tag block = 
-  Caml_obj_extern.set_tag block tag; block
+  Obj.set_tag block tag; block
 
 
 

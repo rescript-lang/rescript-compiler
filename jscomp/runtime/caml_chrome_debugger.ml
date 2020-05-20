@@ -154,7 +154,7 @@ let __ = Block.__
 
 let variant meta tag xs =
   setupOnce () [@bs];
-  xs |. Caml_obj_extern.set_tag tag;
+  xs |. Obj.set_tag tag;
   xs |. addProp (cacheSymbol "BsVariant") {value = meta }
 
 let simpleVariant meta xs =
