@@ -1479,24 +1479,31 @@ var __ocaml_lex_tables = {
   lex_code: ""
 };
 
-function __ocaml_lex_comment_rec(_l, lexbuf, ___ocaml_lex_state) {
+function __ocaml_lex_string_rec(_l, lexbuf, ___ocaml_lex_state) {
   while(true) {
     var __ocaml_lex_state = ___ocaml_lex_state;
     var l = _l;
     var __ocaml_lex_state$1 = Lexing.engine(__ocaml_lex_tables, __ocaml_lex_state, lexbuf);
     switch (__ocaml_lex_state$1) {
       case 0 :
-          update_loc(lexbuf);
-          return /* Comment_value */[$$String.concat("", List.rev(l))];
+          var c = Lexing.lexeme_char(lexbuf, 1);
+          ___ocaml_lex_state = 55;
+          _l = /* :: */[
+            Char.escaped(c),
+            l
+          ];
+          continue ;
       case 1 :
-          ___ocaml_lex_state = 41;
+          return /* String_value */[$$String.concat("", List.rev(l))];
+      case 2 :
+          ___ocaml_lex_state = 55;
           _l = /* :: */[
             Lexing.lexeme(lexbuf),
             l
           ];
           continue ;
-      case 2 :
-          return /* Comment_eof */0;
+      case 3 :
+          return /* String_eof */0;
       default:
         Curry._1(lexbuf.refill_buff, lexbuf);
         ___ocaml_lex_state = __ocaml_lex_state$1;
@@ -1535,31 +1542,24 @@ function __ocaml_lex_multi_line_comment_rec(_l, lexbuf, ___ocaml_lex_state) {
   };
 }
 
-function __ocaml_lex_string_rec(_l, lexbuf, ___ocaml_lex_state) {
+function __ocaml_lex_comment_rec(_l, lexbuf, ___ocaml_lex_state) {
   while(true) {
     var __ocaml_lex_state = ___ocaml_lex_state;
     var l = _l;
     var __ocaml_lex_state$1 = Lexing.engine(__ocaml_lex_tables, __ocaml_lex_state, lexbuf);
     switch (__ocaml_lex_state$1) {
       case 0 :
-          var c = Lexing.lexeme_char(lexbuf, 1);
-          ___ocaml_lex_state = 55;
-          _l = /* :: */[
-            Char.escaped(c),
-            l
-          ];
-          continue ;
+          update_loc(lexbuf);
+          return /* Comment_value */[$$String.concat("", List.rev(l))];
       case 1 :
-          return /* String_value */[$$String.concat("", List.rev(l))];
-      case 2 :
-          ___ocaml_lex_state = 55;
+          ___ocaml_lex_state = 41;
           _l = /* :: */[
             Lexing.lexeme(lexbuf),
             l
           ];
           continue ;
-      case 3 :
-          return /* String_eof */0;
+      case 2 :
+          return /* Comment_eof */0;
       default:
         Curry._1(lexbuf.refill_buff, lexbuf);
         ___ocaml_lex_state = __ocaml_lex_state$1;
