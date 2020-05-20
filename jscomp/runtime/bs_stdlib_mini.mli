@@ -61,6 +61,7 @@ module Obj : sig
   (* The compiler ensures (|0) operation *)
   external set_tag : t -> int -> unit = "tag" [@@bs.set]  
   external repr : 'a -> t = "%identity"
+  external obj : t -> 'a = "%identity"
   external magic : 'a -> 'b = "%identity"  
   external size : t -> int = "#obj_length"
 end 
