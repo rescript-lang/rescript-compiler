@@ -41,8 +41,6 @@ external not : bool -> bool = "%boolnot"
 
 external raise : exn -> 'a = "%raise"
 external ignore : 'a -> unit = "%ignore"
-external fst : 'a * 'b -> 'a = "%field0"
-external snd : 'a * 'b -> 'b = "%field1"
 external ( |> ) : 'a -> ('a -> 'b) -> 'b = "%revapply"
 external ( @@ ) : ('a -> 'b) -> 'a -> 'b = "%apply"
 

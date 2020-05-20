@@ -22,7 +22,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
- let undefinedHeader = [| |]
+let undefinedHeader = [| |]
 
 let some ( x : Obj.t) : Obj.t = 
   if Obj.magic x =  None then 
@@ -30,9 +30,9 @@ let some ( x : Obj.t) : Obj.t =
     Obj.set_tag block 256;
     block)
   else 
-    if x != Obj.repr Js.null && fst (Obj.magic x ) == Obj.repr undefinedHeader then   
+    if x != Obj.repr Js.null && match (Obj.magic x ) with (x,_) -> x == Obj.repr undefinedHeader then   
       (
-      let nid =   snd (Obj.magic x) + 1 in 
+      let nid =   match (Obj.magic x) with (_,x) -> x + 1 in 
       let block = Obj.repr (undefinedHeader, nid) in 
        Obj.set_tag block 256;        
        block
@@ -60,11 +60,11 @@ let null_to_opt (type t ) ( x : t Js.null) : t option =
 (** The input is already of [Some] form, [x] is not None, 
     make sure [x[0]] will not throw *)
 let valFromOption (x : Obj.t) : Obj.t =   
-  if  x != Obj.repr Js.null && fst (Obj.magic x)  == Obj.repr undefinedHeader 
+  if  x != Obj.repr Js.null && match (Obj.magic x) with (x,_) -> x == Obj.repr undefinedHeader 
   then 
-    let depth : int = snd  (Obj.magic x)  in 
+    (match (Obj.magic x) with (_, (depth : int)) ->  
     if depth = 0 then Obj.magic None
-    else Obj.magic (undefinedHeader, depth - 1)
+    else Obj.magic (undefinedHeader, depth - 1))
   else Obj.magic x   
 
 
