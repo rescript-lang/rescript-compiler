@@ -80,12 +80,12 @@ external ( +~ ) : nativeint -> nativeint -> nativeint =
    "caml_int32_add"
 
 (*ATTENTION: refer {!Oo.id} *)
-external oo_id : Caml_obj_extern.t -> int  = "%field1"
+external oo_id : Obj.t -> int  = "%field1"
 
 open Caml_hash_primitive
 
 let caml_hash (count : int) _limit (seed : nativeint) 
-  (obj : Caml_obj_extern.t) : nativeint = 
+  (obj : Obj.t) : nativeint = 
   let hash = ref seed in 
   if Js.typeof obj = "number" then
     begin 

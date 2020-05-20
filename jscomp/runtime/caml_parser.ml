@@ -93,11 +93,11 @@ var PARSER_TRACE = false;
 |}]
 
 (**
- * external parse_engine : parse_tables -> parser_env -> parser_input -> Caml_obj_extern.t -> parser_output
+ * external parse_engine : parse_tables -> parser_env -> parser_input -> Obj.t -> parser_output
  * parsing.ml
  *
  * type parse_tables = {
- *   actions : (parser_env -> Caml_obj_extern.t) array
+ *   actions : (parser_env -> Obj.t) array
  *   transl_const : int array;
  *   transl_block : int array;
  *   lhs : string;
@@ -117,13 +117,13 @@ var PARSER_TRACE = false;
  *
  * type parser_env =
  * { mutable s_stack : int array;        (* States *)
- *  mutable v_stack : Caml_obj_extern.t array;      (* Semantic attributes *)
+ *  mutable v_stack : Obj.t array;      (* Semantic attributes *)
  *  mutable symb_start_stack : position array; (* Start positions *)
  *  mutable symb_end_stack : position array;   (* End positions *)
  *  mutable stacksize : int;            (* Size of the stacks *)
  *  mutable stackbase : int;            (* Base sp for current parse *)
  *  mutable curr_char : int;            (* Last token read *)
- *  mutable lval : Caml_obj_extern.t;               (* Its semantic attribute *)
+ *  mutable lval : Obj.t;               (* Its semantic attribute *)
  *  mutable symb_start : position;      (* Start pos. of the current symbol*)
  *  mutable symb_end : position;        (* End pos. of the current symbol *)
  *  mutable asp : int;                  (* The stack pointer for attributes *)
@@ -152,8 +152,8 @@ type parse_tables
 type parser_env 
 
 
-let caml_parse_engine : parse_tables -> parser_env -> (*Parsing.parser_input *)Caml_obj_extern.t -> Caml_obj_extern.t -> Caml_obj_extern.t = 
-    [%raw{|function (tables /* parser_table */, env /* parser_env */, cmd /* parser_input*/, arg /* Caml_obj_extern.t*/) {
+let caml_parse_engine : parse_tables -> parser_env -> (*Parsing.parser_input *)Obj.t -> Obj.t -> Obj.t = 
+    [%raw{|function (tables /* parser_table */, env /* parser_env */, cmd /* parser_input*/, arg /* Obj.t*/) {
     var ERRCODE = 256;
     //var START = 0;
     //var TOKEN_READ = 1;
@@ -174,7 +174,7 @@ let caml_parse_engine : parse_tables -> parser_env -> (*Parsing.parser_input *)C
     var env_stacksize = 'stacksize';
     var env_stackbase = 'stackbase';
     var env_curr_char = 'curr_char';
-    var env_lval = 'lval'; // Caml_obj_extern.t
+    var env_lval = 'lval'; // Obj.t
     var env_symb_start = 'symb_start'; // position
     var env_symb_end = 'symb_end'; // position
     var env_asp = 'asp';
