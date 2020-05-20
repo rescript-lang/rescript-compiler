@@ -471,6 +471,8 @@ build test/ocaml_typedtree_test.cmi : cc test/ocaml_typedtree_test.mli | $stdlib
 build test/of_string_test.cmi test/of_string_test.cmj : cc test/of_string_test.ml | test/mt.cmj $stdlib
 build test/offset.cmi test/offset.cmj : cc test/offset.ml | $stdlib
 build test/oo_js_test_date.cmi test/oo_js_test_date.cmj : cc test/oo_js_test_date.ml | test/mt.cmj $stdlib
+build test/opr_3576_test.cmi test/opr_3576_test.cmj : cc test/opr_3576_test.ml | test/mt.cmj $stdlib
+build test/opr_4560_test.cmi test/opr_4560_test.cmj : cc test/opr_4560_test.ml | test/mt.cmj $stdlib
 build test/option_repr_test.cmi test/option_repr_test.cmj : cc test/option_repr_test.ml | test/mt.cmj $stdlib
 build test/optional_ffi_test.cmi test/optional_ffi_test.cmj : cc test/optional_ffi_test.ml | test/mt.cmj $stdlib
 build test/optional_regression_test.cmi test/optional_regression_test.cmj : cc test/optional_regression_test.ml | test/mt.cmj $stdlib
