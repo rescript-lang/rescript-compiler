@@ -522,8 +522,8 @@ let float_of_bits (Int64 x : t) : float =
    Float64_array.unsafe_get (Float64_array.fromBuffer (Int32_array.buffer int32)) 0 *)
 
 let  bits_of_float : float -> t  = fun x -> 
-    let buf = ([%raw{|function(x){return new Int32Array(new Float64Array([x]).buffer)}|}] : _ -> _) x in 
-    mk ~lo:(fst buf) ~hi:(snd buf)
+    let lo,hi = ([%raw{|function(x){return new Int32Array(new Float64Array([x]).buffer)}|}] : _ -> _) x in 
+    mk ~lo ~hi
   (* let to_nat (x : int32) = x |> Caml_int32_extern.to_int |>  Caml_nativeint_extern.of_int in
 
   let u = Float64_array.make [| x |] in
