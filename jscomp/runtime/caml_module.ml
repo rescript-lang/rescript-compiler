@@ -33,14 +33,14 @@ type shape =
    | Lazy
    | Class
    | Module of (shape * string) array
-   | Value of Caml_obj_extern.t
+   | Value of Obj.t
 (* ATTENTION: check across versions *)
 module Array = Caml_array_extern 
 
-external set_field : Caml_obj_extern.t -> string -> Caml_obj_extern.t -> unit   = ""
+external set_field : Obj.t -> string -> Obj.t -> unit   = ""
   [@@bs.set_index]
 
-external get_field : Caml_obj_extern.t -> string -> Caml_obj_extern.t = ""
+external get_field : Obj.t -> string -> Obj.t = ""
   [@@bs.get_index]
 
 module type Empty = sig end
@@ -51,7 +51,7 @@ module type Empty = sig end
  *)
 let init_mod (loc : string * int * int) (shape : shape) =    
   let undef_module _ = raise (Undefined_recursive_module loc) in
-  let rec loop (shape : shape) (struct_ : Caml_obj_extern.t) idx = 
+  let rec loop (shape : shape) (struct_ : Obj.t) idx = 
     match shape with 
     | Function ->
       set_field struct_ idx (Obj.magic undef_module) 
@@ -82,7 +82,7 @@ let init_mod (loc : string * int * int) (shape : shape) =
 (* Note the [shape] passed between [init_mod] and [update_mod] is always the same 
    and we assume [module] is encoded as an array
  *)
-let update_mod (shape : shape)  (o : Caml_obj_extern.t)  (n : Caml_obj_extern.t) :  unit = 
+let update_mod (shape : shape)  (o : Obj.t)  (n : Obj.t) :  unit = 
   let rec aux (shape : shape) o n parent i  =
     match shape with
     | Function 

@@ -16,7 +16,7 @@ exception Error of  t
    This function has to be in this module Since 
    [Error] is defined here 
 *)
-let internalToOCamlException (e : Caml_obj_extern.t) =
+let internalToOCamlException (e : Obj.t) =
   if Caml_exceptions.caml_is_extension e  then
     (Obj.magic e  : exn)
   else Error (Any e)

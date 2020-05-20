@@ -24,7 +24,7 @@
 
  let undefinedHeader = [| |]
 
-let some ( x : Caml_obj_extern.t) : Caml_obj_extern.t = 
+let some ( x : Obj.t) : Obj.t = 
   if Obj.magic x =  None then 
     (let block = Obj.repr (undefinedHeader, 0) in
     Obj.set_tag block 256;
@@ -59,7 +59,7 @@ let null_to_opt (type t ) ( x : t Js.null) : t option =
 
 (** The input is already of [Some] form, [x] is not None, 
     make sure [x[0]] will not throw *)
-let valFromOption (x : Caml_obj_extern.t) : Caml_obj_extern.t =   
+let valFromOption (x : Obj.t) : Obj.t =   
   if  x != Obj.repr Js.null && fst (Obj.magic x)  == Obj.repr undefinedHeader 
   then 
     let depth : int = snd  (Obj.magic x)  in 

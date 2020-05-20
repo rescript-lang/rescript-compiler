@@ -27,7 +27,7 @@
 
 
 (** *)
-type obj = Caml_obj_extern.t
+type obj = Obj.t
 
 val __ : int -> obj -> obj
 
