@@ -45,10 +45,28 @@ type closure
 let caml_methods_cache = 
     Caml_array_extern.make 1000 0 
 
+(* refer to {!CamlinternalOO.create_obj_opt}*)
 external get_methods : obj -> closure array =
   "%field0"
 
+(* see  #251
+   {[
+     CAMLprim value caml_set_oo_id (value obj) {
+       Field(obj, 1) = oo_last_id;
+       oo_last_id += 2;
+       return obj;
+     }
 
+   ]}*)
+let caml_set_oo_id (b : obj)  : obj = 
+  Caml_obj_extern.set_field 
+    (Caml_obj_extern.repr b) 1 
+    (Caml_obj_extern.repr Caml_exceptions.id.contents);
+  Caml_exceptions.id.contents <- Caml_exceptions.id.contents  + 1; 
+  b
+
+
+  
 let caml_get_public_method 
     (obj : obj) 
     (tag : int) (cacheid  : int) : closure =

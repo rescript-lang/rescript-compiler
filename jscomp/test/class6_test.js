@@ -3,10 +3,10 @@
 var Mt = require("./mt.js");
 var Block = require("../../lib/js/block.js");
 var Curry = require("../../lib/js/curry.js");
+var Caml_oo = require("../../lib/js/caml_oo.js");
 var Caml_obj = require("../../lib/js/caml_obj.js");
 var Caml_oo_curry = require("../../lib/js/caml_oo_curry.js");
 var CamlinternalOO = require("../../lib/js/camlinternalOO.js");
-var Caml_exceptions = require("../../lib/js/caml_exceptions.js");
 
 var shared = ["x"];
 
@@ -209,7 +209,7 @@ function functional_point_init($$class) {
           }),
         move,
         (function (self$6, d) {
-            var copy = Caml_exceptions.caml_set_oo_id(Caml_obj.caml_obj_dup(self$6));
+            var copy = Caml_oo.caml_set_oo_id(Caml_obj.caml_obj_dup(self$6));
             copy[x] = self$6[x] + d | 0;
             return copy;
           })

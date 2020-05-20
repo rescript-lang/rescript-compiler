@@ -584,7 +584,7 @@ let translate loc (prim_name : string)
       call Js_runtime_modules.caml_js_exceptions  
     | "caml_set_oo_id" (* needed in {!camlinternalOO.set_id} *)
       ->
-      Js_of_lam_exception.caml_set_oo_id args 
+      call Js_runtime_modules.oo
 
     | "caml_sys_get_argv" 
     (** TODO: refine

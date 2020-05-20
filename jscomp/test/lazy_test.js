@@ -304,7 +304,7 @@ Mt.from_pair_suites("Lazy_test", /* :: */[
                         ],
                         /* :: */[
                           /* tuple */[
-                            "File \"lazy_test.ml\", line 82, characters 0-7",
+                            "File \"lazy_test.ml\", line 78, characters 0-7",
                             (function (param) {
                                 return /* Ok */Block.__(4, [Lazy.is_val({
                                                 RE_LAZY_DONE: true,
@@ -314,7 +314,7 @@ Mt.from_pair_suites("Lazy_test", /* :: */[
                           ],
                           /* :: */[
                             /* tuple */[
-                              "File \"lazy_test.ml\", line 83, characters 0-7",
+                              "File \"lazy_test.ml\", line 79, characters 0-7",
                               (function (param) {
                                   return /* Ok */Block.__(4, [!Lazy.is_val({
                                                   RE_LAZY_DONE: false,

@@ -45,7 +45,3 @@ let make exception_str  : J.expression =
 
 
 
-(* TODO: only used in camlinternalOO, split it off as a separate module? *)
-let caml_set_oo_id args = 
-   E.runtime_call Js_runtime_modules.exceptions "caml_set_oo_id" args 
-    

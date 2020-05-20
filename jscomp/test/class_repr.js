@@ -2,10 +2,10 @@
 
 var Sys = require("../../lib/js/sys.js");
 var Curry = require("../../lib/js/curry.js");
+var Caml_oo = require("../../lib/js/caml_oo.js");
 var Caml_obj = require("../../lib/js/caml_obj.js");
 var Caml_oo_curry = require("../../lib/js/caml_oo_curry.js");
 var CamlinternalOO = require("../../lib/js/camlinternalOO.js");
-var Caml_exceptions = require("../../lib/js/caml_exceptions.js");
 
 var shared = ["x"];
 
@@ -49,7 +49,7 @@ var x = CamlinternalOO.make_class(shared$1, x_init);
 
 var v = Curry._2(x[0], undefined, 3);
 
-var u = Caml_exceptions.caml_set_oo_id(Caml_obj.caml_obj_dup(v));
+var u = Caml_oo.caml_set_oo_id(Caml_obj.caml_obj_dup(v));
 
 if (Caml_oo_curry.js1(291546447, 1, v) !== 3) {
   throw {
@@ -88,7 +88,7 @@ function xx_init($$class) {
           }),
         incr,
         (function (self$3) {
-            var copy = Caml_exceptions.caml_set_oo_id(Caml_obj.caml_obj_dup(self$3));
+            var copy = Caml_oo.caml_set_oo_id(Caml_obj.caml_obj_dup(self$3));
             copy[money] = 2 * self$3[x] + Curry._1(self$3[0][get_money], self$3);
             return copy;
           })
@@ -203,7 +203,7 @@ function xx0_init($$class) {
           }),
         incr,
         (function (self$5) {
-            var copy = Caml_exceptions.caml_set_oo_id(Caml_obj.caml_obj_dup(self$5));
+            var copy = Caml_oo.caml_set_oo_id(Caml_obj.caml_obj_dup(self$5));
             copy[money] = 2 * self$5[x] + Curry._1(self$5[0][get_money], self$5);
             copy[a0] = 2;
             return copy;

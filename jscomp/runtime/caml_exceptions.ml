@@ -36,23 +36,7 @@ type t = {
    {[ a = caml_set_oo_id([248,"tag", caml_oo_last_id++]) ]}
 *)
 
-let%private id = ref 0
-
-
-(* see  #251
-   {[
-     CAMLprim value caml_set_oo_id (value obj) {
-       Field(obj, 1) = oo_last_id;
-       oo_last_id += 2;
-       return obj;
-     }
-
-   ]}*)
-let caml_set_oo_id (b : Caml_obj_extern.t)  : Caml_obj_extern.t = 
-  Caml_obj_extern.set_field (Caml_obj_extern.repr b) 1 (Caml_obj_extern.repr id.contents);
-  id .contents <-  id.contents  + 1; 
-  b
-(* FXIME: this is only relevant to OO module now *)
+let id = ref 0
 
 
 let create (str : string) : string = 

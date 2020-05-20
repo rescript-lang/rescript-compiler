@@ -33,3 +33,5 @@ type obj
 type closure 
 
 val caml_get_public_method : obj -> int -> int -> closure
+
+val caml_set_oo_id : obj -> obj

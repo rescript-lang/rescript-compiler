@@ -125,7 +125,7 @@ let caml_hash (count : int) _limit (seed : nativeint)
       else if Js.typeof obj = "undefined" then 
         ()
       else if Js.typeof obj = "symbol" then 
-        assert false (* TODO *)
+        ()
       else if Js.typeof obj = "function" then
         () 
       else 
