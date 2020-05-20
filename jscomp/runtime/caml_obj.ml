@@ -59,8 +59,8 @@ end
   block creation
 *)
 let caml_obj_block tag size = 
-  let v = Caml_obj_extern.repr (Caml_array_extern.new_uninitialized size) in 
-  Caml_obj_extern.set_tag  v tag ; 
+  let v = Obj.repr (Caml_array_extern.new_uninitialized size) in 
+  Obj.set_tag  v tag ; 
   v
 
 (**
@@ -116,7 +116,7 @@ let caml_obj_truncate (x : Caml_obj_extern.t) (new_size : int) =
   if len <> new_size  then
     begin
       for i = new_size  to len - 1  do
-        Caml_obj_extern.set_field x  i (Obj.magic 0)
+        Obj.set_field x  i (Obj.magic 0)
       done;
       Caml_obj_extern.set_length x new_size
     end
@@ -203,33 +203,33 @@ let rec caml_compare (a : Caml_obj_extern.t) (b : Caml_obj_extern.t) : int =
   | "number", "number" -> 
       Pervasives.compare (Obj.magic a : int) (Obj.magic b : int)
   | "number", _ ->        
-      if b == Caml_obj_extern.repr Js.null || Caml_obj_extern.tag b = 256 then 1 (* Some (Some ..) < x *)
+      if b == Obj.repr Js.null || Obj.tag b = 256 then 1 (* Some (Some ..) < x *)
       else 
         -1 (* Integer < Block in OCaml runtime GPR #1195, except Some.. *)
   | _, "number" -> 
-      if a == Caml_obj_extern.repr Js.null || Caml_obj_extern.tag a = 256 then -1
+      if a == Obj.repr Js.null || Obj.tag a = 256 then -1
       else 1
   | _ ->        
-      if a == Caml_obj_extern.repr Js.null then 
+      if a == Obj.repr Js.null then 
         (* [b] could not be null otherwise would equal *)
-        if Caml_obj_extern.tag b = 256 then 1 else -1
-     else if b == Caml_obj_extern.repr Js.null then 
-        if Caml_obj_extern.tag a = 256 then -1 else 1    
+        if Obj.tag b = 256 then 1 else -1
+     else if b == Obj.repr Js.null then 
+        if Obj.tag a = 256 then -1 else 1    
      else    
-        let tag_a = Caml_obj_extern.tag a in
-        let tag_b = Caml_obj_extern.tag b in
+        let tag_a = Obj.tag a in
+        let tag_b = Obj.tag b in
         (* double_array_tag: 254
         *)
         if tag_a = 256 then   
           if tag_b = 256 then 
-            Pervasives.compare (Obj.magic (Caml_obj_extern.field a 1) : int)
-             (Obj.magic (Caml_obj_extern.field b 1) : int)
+            Pervasives.compare (Obj.magic (Obj.field a 1) : int)
+             (Obj.magic (Obj.field b 1) : int)
             (* Some None < Some (Some None)) *)
           else  (* b could not be undefined/None *)
              (* Some None < Some ..*) 
              -1 
         else if tag_a = 248 (* object/exception *)  then
-          Pervasives.compare (Obj.magic (Caml_obj_extern.field a 1) : int) (Obj.magic (Caml_obj_extern.field b 1 ))
+          Pervasives.compare (Obj.magic (Obj.field a 1) : int) (Obj.magic (Obj.field b 1 ))
         else if tag_a = 251 (* abstract_tag *) then
           raise (Invalid_argument "equal: abstract value")
         else if tag_a <> tag_b then
@@ -251,19 +251,19 @@ and aux_same_length  (a : Caml_obj_extern.t) (b : Caml_obj_extern.t) i same_leng
   if i = same_length then
     0
   else
-    let res = caml_compare (Caml_obj_extern.field a i) (Caml_obj_extern.field b i) in
+    let res = caml_compare (Obj.field a i) (Obj.field b i) in
     if res <> 0 then res
     else aux_same_length  a b (i + 1) same_length
 and aux_length_a_short (a : Caml_obj_extern.t)  (b : Caml_obj_extern.t)  i short_length    =
   if i = short_length then -1
   else
-    let res = caml_compare (Caml_obj_extern.field a i) (Caml_obj_extern.field b i) in
+    let res = caml_compare (Obj.field a i) (Obj.field b i) in
     if res <> 0 then res
     else aux_length_a_short a b (i+1) short_length
 and aux_length_b_short (a : Caml_obj_extern.t) (b : Caml_obj_extern.t) i short_length =
   if i = short_length then 1
   else
-    let res = caml_compare (Caml_obj_extern.field a i) (Caml_obj_extern.field b i) in
+    let res = caml_compare (Obj.field a i) (Obj.field b i) in
     if res <> 0 then res
     else aux_length_b_short a b (i+1) short_length
 and aux_obj_compare (a: Caml_obj_extern.t) (b: Caml_obj_extern.t) =
@@ -314,23 +314,23 @@ let rec caml_equal (a : Caml_obj_extern.t) (b : Caml_obj_extern.t) : bool =
       if b_type = "number" || b_type = "undefined" || b == [%raw{|null|}] then false 
       else 
         (* [a] [b] could not be null, so it can not raise *)
-        let tag_a = Caml_obj_extern.tag a in
-        let tag_b = Caml_obj_extern.tag b in
+        let tag_a = Obj.tag a in
+        let tag_b = Obj.tag b in
         (* double_array_tag: 254
            forward_tag:250
         *)
         if tag_a = 250 then
-          caml_equal (Caml_obj_extern.field a 0) b
+          caml_equal (Obj.field a 0) b
         else if tag_b = 250 then
-          caml_equal a (Caml_obj_extern.field b 0)
+          caml_equal a (Obj.field b 0)
         else if tag_a = 248 (* object/exception *)  then
-          (Obj.magic  (Caml_obj_extern.field a 1)) ==  (Obj.magic (Caml_obj_extern.field b 1 ))
+          (Obj.magic  (Obj.field a 1)) ==  (Obj.magic (Obj.field b 1 ))
         else if tag_a = 251 (* abstract_tag *) then
           raise (Invalid_argument "equal: abstract value")
         else if tag_a <> tag_b then
           false
         else if tag_a = 256 then 
-          (Obj.magic (Caml_obj_extern.field a 1) : int) = Obj.magic (Caml_obj_extern.field b 1)
+          (Obj.magic (Obj.field a 1) : int) = Obj.magic (Obj.field b 1)
         else 
           let len_a = Caml_obj_extern.length a in
           let len_b = Caml_obj_extern.length b in
@@ -345,7 +345,7 @@ and aux_equal_length  (a : Caml_obj_extern.t) (b : Caml_obj_extern.t) i same_len
   if i = same_length then
     true
   else
-    caml_equal (Caml_obj_extern.field a i) (Caml_obj_extern.field b i)
+    caml_equal (Obj.field a i) (Obj.field b i)
     && aux_equal_length  a b (i + 1) same_length
 and aux_obj_equal (a: Caml_obj_extern.t) (b: Caml_obj_extern.t) =
   let result = ref true in
@@ -391,5 +391,5 @@ let caml_min (x : Caml_obj_extern.t) y =
 let caml_max (x : Caml_obj_extern.t) y =    
   if caml_compare x y >= 0 then x else y 
 
-let caml_obj_set_tag = Caml_obj_extern.set_tag  
+let caml_obj_set_tag = Obj.set_tag  
 

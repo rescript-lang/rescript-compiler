@@ -45,22 +45,40 @@ type closure
 let caml_methods_cache = 
     Caml_array_extern.make 1000 0 
 
+(* refer to {!CamlinternalOO.create_obj_opt}*)
 external get_methods : obj -> closure array =
   "%field0"
 
+(* see  #251
+   {[
+     CAMLprim value caml_set_oo_id (value obj) {
+       Field(obj, 1) = oo_last_id;
+       oo_last_id += 2;
+       return obj;
+     }
 
+   ]}*)
+let caml_set_oo_id (b : obj)  : obj = 
+  Obj.set_field 
+    (Obj.repr b) 1 
+    (Obj.repr Caml_exceptions.id.contents);
+  Caml_exceptions.id.contents <- Caml_exceptions.id.contents  + 1; 
+  b
+
+
+  
 let caml_get_public_method 
     (obj : obj) 
     (tag : int) (cacheid  : int) : closure =
   let module Array = Caml_array_extern in 
   let meths = get_methods obj in (* the first field of object is mehods *)
   let offs =  caml_methods_cache.(cacheid) in
-  if (Caml_obj_extern.magic meths.(offs) : int) = tag then meths.(offs - 1)
+  if (Obj.magic meths.(offs) : int) = tag then meths.(offs - 1)
   else
     (* TODO: binary search *)    
     let rec aux (i : int) : int =     
       if i < 3 then assert false       
-      else if (Caml_obj_extern.magic meths.(i) : int) = tag then
+      else if (Obj.magic meths.(i) : int) = tag then
         begin        
           caml_methods_cache.(cacheid) <- i;         
           i
@@ -68,5 +86,5 @@ let caml_get_public_method
       else         
         aux (i - 2)
     in
-    meths.(aux (Caml_obj_extern.magic ((Caml_obj_extern.magic meths.(0) : int) * 2 + 1) : int) - 1)     
+    meths.(aux (Obj.magic ((Obj.magic meths.(0) : int) * 2 + 1) : int) - 1)     
 

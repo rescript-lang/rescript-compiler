@@ -65,7 +65,7 @@ let init_mod (loc : string * int * int) (shape : shape) =
         ) 
     | Module comps 
       -> 
-      let v = Caml_obj_extern.repr (module struct end :  Empty) in
+      let v = Obj.repr (module struct end :  Empty) in
       set_field struct_ idx v ;
       let len = Array.length comps in
       for i = 0 to len - 1 do
@@ -74,7 +74,7 @@ let init_mod (loc : string * int * int) (shape : shape) =
       done
     | Value v ->
       set_field struct_ idx v in
-  let res = Caml_obj_extern.repr (module struct end :  Empty) in
+  let res = Obj.repr (module struct end :  Empty) in
   let dummy_name = "dummy" in
   loop shape res dummy_name;
   get_field res dummy_name 

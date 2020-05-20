@@ -11,11 +11,10 @@ var Caml_int32 = require("../../lib/js/caml_int32.js");
 var Caml_option = require("../../lib/js/caml_option.js");
 var Caml_string = require("../../lib/js/caml_string.js");
 var Caml_primitive = require("../../lib/js/caml_primitive.js");
-var Caml_exceptions = require("../../lib/js/caml_exceptions.js");
 var Caml_js_exceptions = require("../../lib/js/caml_js_exceptions.js");
 
 function copy(o) {
-  return Caml_exceptions.caml_set_oo_id(Caml_obj.caml_obj_dup(o));
+  return Caml_oo.caml_set_oo_id(Caml_obj.caml_obj_dup(o));
 }
 
 var params = {

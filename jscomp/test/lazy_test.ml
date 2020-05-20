@@ -26,11 +26,7 @@ let u = lazy (u_v := 2)
 let () = Lazy.force u 
 
   
-(** this is broken due to 
-    [%obj_field] and [%obj_set_field] is translated into 
-    [%array_unsafe_get] which does not fit our purpose
-    http://caml.inria.fr/mantis/view.php?id=7020
-*)
+
 (* module Mt = Mock_mt *)
 
 let exotic = (* Lazy in a pattern. (used in advi) *)

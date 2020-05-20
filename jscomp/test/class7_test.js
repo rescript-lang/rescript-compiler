@@ -3,11 +3,11 @@
 var Mt = require("./mt.js");
 var Block = require("../../lib/js/block.js");
 var Curry = require("../../lib/js/curry.js");
+var Caml_oo = require("../../lib/js/caml_oo.js");
 var Caml_obj = require("../../lib/js/caml_obj.js");
 var Caml_option = require("../../lib/js/caml_option.js");
 var Caml_oo_curry = require("../../lib/js/caml_oo_curry.js");
 var CamlinternalOO = require("../../lib/js/camlinternalOO.js");
-var Caml_exceptions = require("../../lib/js/caml_exceptions.js");
 
 var shared = ["window"];
 
@@ -86,7 +86,7 @@ var point = CamlinternalOO.make_class(shared$4, point_init);
 
 var p = Curry._2(point[0], undefined, 55);
 
-var q = Caml_exceptions.caml_set_oo_id(Caml_obj.caml_obj_dup(p));
+var q = Caml_oo.caml_set_oo_id(Caml_obj.caml_obj_dup(p));
 
 Caml_oo_curry.js2(-933174511, 1, q, 7);
 
@@ -136,7 +136,7 @@ function backup_init($$class) {
   CamlinternalOO.set_methods($$class, [
         save,
         (function (self$3) {
-            var copy$1 = Caml_exceptions.caml_set_oo_id(Caml_obj.caml_obj_dup(self$3));
+            var copy$1 = Caml_oo.caml_set_oo_id(Caml_obj.caml_obj_dup(self$3));
             self$3[copy] = Caml_option.some((copy$1[copy] = undefined, copy$1));
             
           }),
@@ -234,7 +234,7 @@ function backup2_init($$class) {
   CamlinternalOO.set_methods($$class, [
         save,
         (function (self$5) {
-            self$5[copy] = Caml_option.some(Caml_exceptions.caml_set_oo_id(Caml_obj.caml_obj_dup(self$5)));
+            self$5[copy] = Caml_option.some(Caml_oo.caml_set_oo_id(Caml_obj.caml_obj_dup(self$5)));
             
           }),
         restore,

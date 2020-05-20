@@ -53,7 +53,14 @@ external ( -. ) : float -> float -> float = "%subfloat"
 external ( *. ) : float -> float -> float = "%mulfloat"
 external ( /. ) : float -> float -> float = "%divfloat"
 
-module Obj : sig   
+module Obj : sig
+  type t 
+  external field : t -> int -> t = "%obj_field" 
+  external set_field : t -> int -> t -> unit = "%obj_set_field"
+  external tag : t -> int = "caml_obj_tag" 
+  (* The compiler ensures (|0) operation *)
+  external set_tag : t -> int -> unit = "tag" [@@bs.set]  
+  external repr : 'a -> t = "%identity"
   external magic : 'a -> 'b = "%identity"  
 end 
 

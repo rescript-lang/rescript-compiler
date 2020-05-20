@@ -2,10 +2,10 @@
 
 var Mt = require("./mt.js");
 var Curry = require("../../lib/js/curry.js");
+var Caml_oo = require("../../lib/js/caml_oo.js");
 var Caml_obj = require("../../lib/js/caml_obj.js");
 var Caml_oo_curry = require("../../lib/js/caml_oo_curry.js");
 var CamlinternalOO = require("../../lib/js/camlinternalOO.js");
-var Caml_exceptions = require("../../lib/js/caml_exceptions.js");
 
 var shared = [
   "leq",
@@ -79,7 +79,7 @@ function money2_init($$class) {
   var obj_init = inh[0];
   var repr = inh[1];
   CamlinternalOO.set_method($$class, times, (function (self$3, k) {
-          var copy = Caml_exceptions.caml_set_oo_id(Caml_obj.caml_obj_dup(self$3));
+          var copy = Caml_oo.caml_set_oo_id(Caml_obj.caml_obj_dup(self$3));
           copy[repr] = k * self$3[repr];
           return copy;
         }));

@@ -39,7 +39,7 @@ build stdlib-406/camlinternalFormat.cmj : cc_cmi stdlib-406/camlinternalFormat.m
 build stdlib-406/camlinternalFormat.cmi : cc stdlib-406/camlinternalFormat.mli | stdlib-406/buffer.cmi stdlib-406/camlinternalFormatBasics.cmi stdlib-406/pervasives.cmj others
 build stdlib-406/camlinternalLazy.cmj : cc_cmi stdlib-406/camlinternalLazy.ml | stdlib-406/camlinternalLazy.cmi others
 build stdlib-406/camlinternalLazy.cmi : cc stdlib-406/camlinternalLazy.mli | stdlib-406/pervasives.cmj others
-build stdlib-406/camlinternalMod.cmj : cc_cmi stdlib-406/camlinternalMod.ml | stdlib-406/array.cmj stdlib-406/camlinternalMod.cmi stdlib-406/camlinternalOO.cmj stdlib-406/obj.cmj others
+build stdlib-406/camlinternalMod.cmj : cc_cmi stdlib-406/camlinternalMod.ml | stdlib-406/camlinternalMod.cmi stdlib-406/obj.cmj others
 build stdlib-406/camlinternalMod.cmi : cc stdlib-406/camlinternalMod.mli | stdlib-406/obj.cmi stdlib-406/pervasives.cmj others
 build stdlib-406/camlinternalOO.cmj : cc_cmi stdlib-406/camlinternalOO.ml | stdlib-406/array.cmj stdlib-406/camlinternalOO.cmi stdlib-406/char.cmj stdlib-406/list.cmj stdlib-406/map.cmj stdlib-406/obj.cmj stdlib-406/string.cmj stdlib-406/sys.cmj others
 build stdlib-406/camlinternalOO.cmi : cc stdlib-406/camlinternalOO.mli | stdlib-406/obj.cmi stdlib-406/pervasives.cmj others

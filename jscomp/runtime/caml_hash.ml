@@ -125,7 +125,7 @@ let caml_hash (count : int) _limit (seed : nativeint)
       else if Js.typeof obj = "undefined" then 
         ()
       else if Js.typeof obj = "symbol" then 
-        assert false (* TODO *)
+        ()
       else if Js.typeof obj = "function" then
         () 
       else 
@@ -133,7 +133,7 @@ let caml_hash (count : int) _limit (seed : nativeint)
         match Js.undefinedToOption size with
         | None -> ()
         | Some size -> 
-          let obj_tag = Caml_obj_extern.tag obj in
+          let obj_tag = Obj.tag obj in
           let tag = (size lsl 10) lor obj_tag in 
           if tag = 248 (* Obj.object_tag*) then 
             hash.contents <- caml_hash_mix_int hash.contents (Caml_nativeint_extern.of_int (oo_id  obj))
@@ -143,7 +143,7 @@ let caml_hash (count : int) _limit (seed : nativeint)
               let block = 
                 let v = size - 1 in if v <  num.contents then v else num.contents in 
               for i = 0 to block do
-                 push_back queue (Caml_obj_extern.field obj i ) 
+                 push_back queue (Obj.field obj i ) 
               done 
             end
     done;
