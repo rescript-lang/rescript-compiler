@@ -129,10 +129,8 @@ let caml_hash (count : int) _limit (seed : nativeint)
       else if Js.typeof obj = "function" then
         () 
       else 
-        let size = Caml_obj_extern.size_of_t obj in 
-        match Js.undefinedToOption size with
-        | None -> ()
-        | Some size -> 
+        let size = Obj.size obj in 
+        if size <> 0 then         
           let obj_tag = Obj.tag obj in
           let tag = (size lsl 10) lor obj_tag in 
           if tag = 248 (* Obj.object_tag*) then 
@@ -143,7 +141,7 @@ let caml_hash (count : int) _limit (seed : nativeint)
               let block = 
                 let v = size - 1 in if v <  num.contents then v else num.contents in 
               for i = 0 to block do
-                 push_back queue (Obj.field obj i ) 
+                push_back queue (Obj.field obj i ) 
               done 
             end
     done;

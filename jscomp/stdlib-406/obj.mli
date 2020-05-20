@@ -26,7 +26,7 @@ external magic : 'a -> 'b = "%identity"
 val [@inline always] is_block : t -> bool
 
 external tag : t -> int = "caml_obj_tag"
-external size : t -> int = "%obj_size"
+external size : t -> int = "#obj_length"
 
   (**
      Computes the total size (in words, including the headers) of all

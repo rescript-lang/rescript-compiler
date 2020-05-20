@@ -23,9 +23,7 @@ external magic : 'a -> 'b = "%identity"
 external is_int : t -> bool = "%obj_is_int"
 let [@inline always] is_block a = not (is_int a)
 external tag : t -> int = "caml_obj_tag"
-(* external set_tag : t -> int -> unit = "caml_obj_set_tag" *)
-external size : t -> int = "%obj_size"
-
+external size : t -> int = "#obj_length"
 external field : t -> int -> t = "%obj_field"
 external set_field : t -> int -> t -> unit = "%obj_set_field"
  

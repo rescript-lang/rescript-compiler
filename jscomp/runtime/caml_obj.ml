@@ -215,8 +215,8 @@ let rec caml_compare (a : Caml_obj_extern.t) (b : Caml_obj_extern.t) : int =
         else if tag_a <> tag_b then
           if tag_a < tag_b then (-1) else  1
         else
-          let len_a = Caml_obj_extern.length a in
-          let len_b = Caml_obj_extern.length b in
+          let len_a = Obj.size a in
+          let len_b = Obj.size b in
           if len_a = len_b then
             if O.isArray(a)
             then aux_same_length a b 0 len_a
@@ -312,8 +312,8 @@ let rec caml_equal (a : Caml_obj_extern.t) (b : Caml_obj_extern.t) : bool =
         else if tag_a = 256 then 
           (Obj.magic (Obj.field a 1) : int) = Obj.magic (Obj.field b 1)
         else 
-          let len_a = Caml_obj_extern.length a in
-          let len_b = Caml_obj_extern.length b in
+          let len_a = Obj.size a in
+          let len_b = Obj.size b in
           if len_a = len_b then
             if O.isArray(a)
             then aux_equal_length a b 0 len_a
