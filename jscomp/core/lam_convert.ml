@@ -561,8 +561,6 @@ let convert (exports : Set_ident.t) (lam : Lambda.lambda) : Lam.t * Lam_module_i
         | "#apply8" -> Pjs_apply
         | "#makemutablelist" ->
           Pmakeblock(0, Blk_constructor{name = "::"; num_nonconst = 1},Mutable)
-        | "#setfield1" ->
-          Psetfield(1,  Fld_set_na)
         | "#undefined_to_opt" -> Pundefined_to_opt
         | "#nullable_to_opt" -> Pnull_undefined_to_opt
         | "#null_to_opt" -> Pnull_to_opt
