@@ -297,14 +297,7 @@ let rec caml_equal (a : Obj.t) (b : Obj.t) : bool =
         (* [a] [b] could not be null, so it can not raise *)
         let tag_a = Obj.tag a in
         let tag_b = Obj.tag b in
-        (* double_array_tag: 254
-           forward_tag:250
-        *)
-        if tag_a = 250 then
-          caml_equal (Obj.field a 0) b
-        else if tag_b = 250 then
-          caml_equal a (Obj.field b 0)
-        else if tag_a = 248 (* object/exception *)  then
+        if tag_a = 248 (* object/exception *)  then
           (Obj.magic  (Obj.field a 1)) ==  (Obj.magic (Obj.field b 1 ))
         else if tag_a = 251 (* abstract_tag *) then
           raise (Invalid_argument "equal: abstract value")
