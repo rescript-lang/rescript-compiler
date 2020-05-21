@@ -309,17 +309,17 @@ let rec caml_equal (a : Obj.t) (b : Obj.t) : bool =
           let len_a = Obj.size a in
           let len_b = Obj.size b in
           if len_a = len_b then
-            if O.isArray(a)
-            then aux_equal_length a b 0 len_a
+            if O.isArray a
+            then aux_equal_length (Obj.magic a : Obj.t array) (Obj.magic b : Obj.t array) 0 len_a
             else if [%raw{|a instanceof Date && b instanceof Date|}] then
             not (Js.unsafe_gt a  b || Js.unsafe_lt a  b)
             else aux_obj_equal a b
           else false
-and aux_equal_length  (a : Obj.t) (b : Obj.t) i same_length =
+and aux_equal_length  (a : Obj.t array) (b : Obj.t array) i same_length =
   if i = same_length then
     true
   else
-    caml_equal (Obj.field a i) (Obj.field b i)
+    caml_equal (Caml_array_extern.unsafe_get a i) (Caml_array_extern.unsafe_get b i)
     && aux_equal_length  a b (i + 1) same_length
 and aux_obj_equal (a: Obj.t) (b: Obj.t) =
   let result = ref true in
