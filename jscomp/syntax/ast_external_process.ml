@@ -67,7 +67,8 @@ let spec_of_ptyp
     begin match ptyp_desc with
       | Ptyp_variant (row_fields, Closed, _)
         when variant_unwrap row_fields ->
-        Unwrap
+        Unwrap 
+        (* Unwrap attribute can only be attached to things like `[a of a0 | b of b0]` *)
       | _ ->
         Bs_syntaxerr.err ptyp.ptyp_loc Invalid_bs_unwrap_type
     end

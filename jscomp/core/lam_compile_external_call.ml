@@ -139,8 +139,10 @@ let ocaml_to_js_eff
            - if ocaml arg is `None`, let js arg be `undefined` (no unwrapping)
            - if ocaml arg is `Some x`, unwrap the arg to get the `x`, then
              unwrap the `x` itself
+           - Here `Some x` is `x` due to the current encoding
+           Lets inline here since it depends on the runtime encoding
         *)
-        Js_of_lam_option.get_default_undefined raw_arg
+        Js_of_lam_option.option_unwrap raw_arg
       | _ ->
         Js_of_lam_variant.eval_as_unwrap raw_arg
     in

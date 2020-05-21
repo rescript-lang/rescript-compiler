@@ -35,4 +35,7 @@ val some : Obj.t -> Obj.t
 
 val option_get : Obj.t option -> Obj.t Caml_undefined_extern.t 
 
-val option_get_unwrap : 'a option -> Obj.t Caml_undefined_extern.t
+(** When it is None, return none
+    When it is (Some (`a 3)) return 3
+*)
+val option_unwrap : 'a option -> Obj.t Caml_undefined_extern.t

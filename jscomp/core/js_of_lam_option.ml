@@ -93,7 +93,7 @@ let get_default_undefined_from_optional
     else
       (E.runtime_call Js_runtime_modules.option "option_get" [arg])
 
-let get_default_undefined (arg : J.expression) : J.expression =
+let option_unwrap (arg : J.expression) : J.expression =
   let desc = arg.expression_desc in
   if is_none_static desc then E.undefined else
   match desc with
@@ -102,12 +102,7 @@ let get_default_undefined (arg : J.expression) : J.expression =
     Js_of_lam_polyvar.get_field x 
     (* invariant: option encoding *)
   | _ ->
-    (* FIXME: no need do such inlining*)
-    if Js_analyzer.is_okay_to_duplicate arg then
-      E.econd (is_not_none arg) 
-        (Js_of_lam_polyvar.get_field (val_from_option arg)) E.undefined
-    else
-      E.runtime_call Js_runtime_modules.option "option_get_unwrap" [arg]
+    E.runtime_call Js_runtime_modules.option "option_unwrap" [arg]
 
 let destruct_optional
   ~for_sure_none

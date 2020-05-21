@@ -74,7 +74,7 @@ let option_get (x : 'a option) =
 
 
 (** [input] is optional polymorphic variant *)  
-let option_get_unwrap (x : 'a option)  =
+let option_unwrap (x : 'a option)  =
   if x = None then Caml_undefined_extern.empty
-  else Obj.magic (Obj.field (Obj.repr (valFromOption (Obj.repr x))) 1 )
-
+  else Obj.magic (Obj.field (Obj.repr ((Obj.repr x))) 1 )
+(* INVARIANT: polyvar encoding*)
