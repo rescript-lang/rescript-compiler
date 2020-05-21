@@ -218,32 +218,33 @@ let rec caml_compare (a : Obj.t) (b : Obj.t) : int =
           let len_a = Obj.size a in
           let len_b = Obj.size b in
           if len_a = len_b then
-            if O.isArray(a)
-            then aux_same_length a b 0 len_a
+            if O.isArray a
+            then aux_same_length (Obj.magic a  : Obj.t array ) (Obj.magic b : Obj.t array) 0 len_a
             else if [%raw{|a instanceof Date && b instanceof Date|}] then 
             [%raw{|a - b|}]
             else aux_obj_compare a b
           else if len_a < len_b then
-            aux_length_a_short a b 0 len_a
+            (* at least one is not zero, so it is an array block*)
+            aux_length_a_short (Obj.magic a : Obj.t array) (Obj.magic b : Obj.t array) 0 len_a
           else
-            aux_length_b_short a b 0 len_b
-and aux_same_length  (a : Obj.t) (b : Obj.t) i same_length =
+            aux_length_b_short (Obj.magic a : Obj.t array) (Obj.magic b : Obj.t array) 0 len_b
+and aux_same_length  (a : Obj.t array) (b : Obj.t array) i same_length =
   if i = same_length then
     0
   else
-    let res = caml_compare (Obj.field a i) (Obj.field b i) in
+    let res = caml_compare (Caml_array_extern.unsafe_get  a i) (Caml_array_extern.unsafe_get b i) in
     if res <> 0 then res
     else aux_same_length  a b (i + 1) same_length
-and aux_length_a_short (a : Obj.t)  (b : Obj.t)  i short_length    =
+and aux_length_a_short (a : Obj.t array)  (b : Obj.t array)  i short_length    =
   if i = short_length then -1
   else
-    let res = caml_compare (Obj.field a i) (Obj.field b i) in
+    let res = caml_compare (Caml_array_extern.unsafe_get a i) (Caml_array_extern.unsafe_get b i) in
     if res <> 0 then res
     else aux_length_a_short a b (i+1) short_length
-and aux_length_b_short (a : Obj.t) (b : Obj.t) i short_length =
+and aux_length_b_short (a : Obj.t array) (b : Obj.t array) i short_length =
   if i = short_length then 1
   else
-    let res = caml_compare (Obj.field a i) (Obj.field b i) in
+    let res = caml_compare (Caml_array_extern.unsafe_get a i) (Caml_array_extern.unsafe_get b i) in
     if res <> 0 then res
     else aux_length_b_short a b (i+1) short_length
 and aux_obj_compare (a: Obj.t) (b: Obj.t) =
