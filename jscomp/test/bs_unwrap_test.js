@@ -12,22 +12,22 @@ console.log(1337);
 
 console.log("hello world");
 
-var arg_string = /* `String */[
-  -976970511,
-  "hi runtime"
-];
+var arg_string = {
+  HASH: /* String */-976970511,
+  value: "hi runtime"
+};
 
-console.log(arg_string[1]);
+console.log(arg_string.value);
 
-var arg_pair = /* `Pair */[
-  892012602,
-  /* tuple */[
+var arg_pair = {
+  HASH: /* Pair */892012602,
+  value: /* tuple */[
     "hi",
     1
   ]
-];
+};
 
-console.log(arg_pair[1]);
+console.log(arg_pair.value);
 
 console.log(undefined);
 
@@ -39,10 +39,10 @@ console.log(3, "hi");
 
 console.log(4, undefined);
 
-var some_arg = /* `Bool */[
-  737456202,
-  true
-];
+var some_arg = {
+  HASH: /* Bool */737456202,
+  value: true
+};
 
 console.log(5, Caml_option.option_unwrap(some_arg));
 
@@ -51,17 +51,17 @@ console.log(6, undefined);
 console.log(7, Caml_option.option_unwrap((console.log("trace"), undefined)));
 
 function dyn_log3(prim, prim$1, prim$2) {
-  console.log(prim[1], Caml_option.option_unwrap(prim$1));
+  console.log(prim.value, Caml_option.option_unwrap(prim$1));
   
 }
 
-dyn_log3(/* `Int */[
-      3654863,
-      8
-    ], /* `Bool */[
-      737456202,
-      true
-    ], undefined);
+dyn_log3({
+      HASH: /* Int */3654863,
+      value: 8
+    }, {
+      HASH: /* Bool */737456202,
+      value: true
+    }, undefined);
 
 console.log("foo");
 
@@ -70,7 +70,7 @@ console.log({
     });
 
 function dyn_log4(prim) {
-  console.log(prim[1]);
+  console.log(prim.value);
   
 }
 
@@ -79,7 +79,7 @@ console.log({
     });
 
 function f(x) {
-  console.log(x[1]);
+  console.log(x.value);
   
 }
 

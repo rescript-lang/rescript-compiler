@@ -51,10 +51,10 @@ function fn(authState, route) {
       } else {
         exit = 2;
       }
-    } else if (route[0] !== 378129979) {
+    } else if (route.HASH !== 378129979) {
       exit$1 = 3;
     } else {
-      onboardingRoute = route[1];
+      onboardingRoute = route.value;
       exit = 1;
     }
     if (exit$1 === 3) {
@@ -67,14 +67,14 @@ function fn(authState, route) {
     
   } else {
     var exit$2 = 0;
-    if (typeof route === "number" || route[0] !== 378129979) {
+    if (typeof route === "number" || route.HASH !== 378129979) {
       exit$2 = 3;
     } else {
-      onboardingRoute = route[1];
+      onboardingRoute = route.value;
       exit = 1;
     }
     if (exit$2 === 3) {
-      console.log(authState[1]);
+      console.log(authState.value);
       div(/* :: */[
             string("VerifyEmail"),
             /* [] */0
@@ -103,15 +103,15 @@ function fn(authState, route) {
 
 eq("File \"gpr_4280_test.ml\", line 46, characters 6-13", fn(/* Unauthenticated */-54822762, /* Invite */-730831383), 1);
 
-eq("File \"gpr_4280_test.ml\", line 47, characters 6-13", fn(/* Unauthenticated */-54822762, /* `Onboarding */[
-          378129979,
-          0
-        ]), 0);
+eq("File \"gpr_4280_test.ml\", line 47, characters 6-13", fn(/* Unauthenticated */-54822762, {
+          HASH: /* Onboarding */378129979,
+          value: 0
+        }), 0);
 
-eq("File \"gpr_4280_test.ml\", line 48, characters 6-13", fn(/* `Unverified */[
-          254489473,
-          0
-        ], /* Invite */-730831383), 2);
+eq("File \"gpr_4280_test.ml\", line 48, characters 6-13", fn({
+          HASH: /* Unverified */254489473,
+          value: 0
+        }, /* Invite */-730831383), 2);
 
 eq("File \"gpr_4280_test.ml\", line 49, characters 6-13", fn(/* Unauthenticated */-54822762, /* xx */26880), 3);
 
