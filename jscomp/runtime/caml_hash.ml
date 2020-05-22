@@ -129,12 +129,12 @@ let caml_hash (count : int) _limit (seed : nativeint)
         () 
       else 
         let size = Obj.size obj in 
-        if size <> 0 then         
+        if size <> 0 then begin        
           let obj_tag = Obj.tag obj in
           let tag = (size lsl 10) lor obj_tag in 
-          if tag = 248 (* Obj.object_tag*) then 
+          if obj_tag = 248 (* Obj.object_tag*) then 
             hash.contents <- caml_hash_mix_int hash.contents 
-              (Caml_nativeint_extern.of_int (Obj.obj (Obj.field obj 1) : int))
+                (Caml_nativeint_extern.of_int (Obj.obj (Obj.field obj 1) : int))
           else 
             begin 
               hash.contents <- caml_hash_mix_int hash.contents (Caml_nativeint_extern.of_int tag) ;
@@ -144,6 +144,18 @@ let caml_hash (count : int) _limit (seed : nativeint)
                 push_back queue (Obj.field obj i ) 
               done 
             end
+        end else
+          begin             
+            let size : int = ([%raw {|function(obj,cb){
+            var size = 0  
+            for(var k in obj){
+              cb(obj[k])
+              ++ size
+            }
+            return size
+          }|}] obj (fun [@bs] v -> push_back queue v ) [@bs]) in    
+            hash.contents <- caml_hash_mix_int hash.contents (Caml_nativeint_extern.of_int ((size lsl 10) lor 0)) (*tag*) ;
+          end
     done;
     caml_hash_final_mix hash.contents
     

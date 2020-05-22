@@ -400,7 +400,32 @@ let record_access (e : t) (name : string) (pos : int32) =
       { expression_desc = Static_index (e, name, Some pos); comment = None}     
     )
   | _ -> { expression_desc = Static_index (e, name, Some pos); comment = None} 
-    
+
+let poly_var_tag_access (e : t)  = 
+  match e.expression_desc with
+  | Array (l,_) (* Float i -- should not appear here *)
+  | Caml_block (l,_, _, _) when no_side_effect e
+    -> 
+    (match l  with
+     | x ::_ -> x 
+     | [] -> 
+       assert false
+    )
+  | _ -> { expression_desc = Static_index (e, "HASH", Some 0l); comment = None} 
+
+
+let poly_var_value_access (e : t) =   
+  match e.expression_desc with
+  | Array (l,_) 
+  | Caml_block (l,_, _, _) when no_side_effect e
+    -> 
+    (match l  with
+     | _ :: v :: _ ->  v
+     | _  -> 
+       assert false
+    )
+  | _ -> { expression_desc = Static_index (e, "value", Some 1l); comment = None} 
+  
 let extension_access (e : t) name (pos : int32)  : t  = 
   match e.expression_desc with
   | Array (l,_) (* Float i -- should not appear here *)

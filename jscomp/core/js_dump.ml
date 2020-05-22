@@ -849,6 +849,26 @@ and expression_desc cxt ~(level:int) f x : cxt  =
         (List.combine (Array.to_list fields) el )))      
         (* name convention of Record is slight different from modules 
         *)
+  | Caml_block(el,_,_, Blk_poly_var name) ->
+    begin match el with 
+      | [hash;value] -> 
+        expression_desc 
+          cxt 
+          ~level 
+          f 
+          (Object 
+             (("HASH", 
+               if !Js_config.debug then hash
+               else {hash with comment = Some name}
+              ) ::
+              ("value", value) ::
+              if !Js_config.debug then 
+                ["name", E.str name]
+              else []
+             )          
+          )
+      | _ -> assert false
+    end       
   | Caml_block(el,_, _, (Blk_extension | Blk_record_ext _ as ext )) ->             
     expression_desc cxt ~level f (exn_block_as_obj ~stack:false el ext)      
   | Caml_block( el, mutable_flag, tag, tag_info)

@@ -75,8 +75,10 @@ let option_get (x : 'a option) =
   else Obj.magic (valFromOption (Obj.repr x))
 
 
+type poly = {hash : int [@bs.as "HASH"]; value : Obj.t }  
+
 (** [input] is optional polymorphic variant *)  
-let option_unwrap (x : 'a option)  =
-  if x = None then Caml_undefined_extern.empty
-  else Obj.magic (Obj.field (Obj.repr ((Obj.repr x))) 1 )
-(* INVARIANT: polyvar encoding*)
+let option_unwrap (x : poly option) = 
+  match x with   
+  | None -> Obj.repr x
+  | Some x -> x.value

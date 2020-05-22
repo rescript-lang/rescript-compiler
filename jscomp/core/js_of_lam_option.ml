@@ -99,7 +99,7 @@ let option_unwrap (arg : J.expression) : J.expression =
   match desc with
   | Optional_block (x,_) 
     -> 
-    Js_of_lam_polyvar.get_field x 
+    E.poly_var_value_access x 
     (* invariant: option encoding *)
   | _ ->
     E.runtime_call Js_runtime_modules.option "option_unwrap" [arg]
