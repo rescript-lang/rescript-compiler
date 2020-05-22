@@ -15244,6 +15244,8 @@ val ns_sep : string
 
 val exception_id : string
 
+val polyvar_hash : string
+val polyvar_value : string
 end = struct
 #1 "literals.ml"
 (* Copyright (C) 2015-2016 Bloomberg Finance L.P.
@@ -15389,6 +15391,8 @@ let ns_sep_char = '-'
 let ns_sep = "-"
 let exception_id = "RE_EXN_ID"
 
+let polyvar_hash = "HASH"
+let polyvar_value = "value"
 end
 module Ast_attributes : sig 
 #1 "ast_attributes.mli"
@@ -19196,7 +19200,8 @@ let spec_of_ptyp
     begin match ptyp_desc with
       | Ptyp_variant (row_fields, Closed, _)
         when variant_unwrap row_fields ->
-        Unwrap
+        Unwrap 
+        (* Unwrap attribute can only be attached to things like `[a of a0 | b of b0]` *)
       | _ ->
         Bs_syntaxerr.err ptyp.ptyp_loc Invalid_bs_unwrap_type
     end

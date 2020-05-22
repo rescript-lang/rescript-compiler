@@ -44,7 +44,7 @@ val get_default_undefined_from_optional:
 
 (** Given [Some (`a x)] or [None], 
     return [x] *)  
-val get_default_undefined : 
+val option_unwrap : 
   J.expression ->
   J.expression
 

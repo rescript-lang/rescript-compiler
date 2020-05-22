@@ -44,61 +44,61 @@ eq("File \"a_filename_test.ml\", line 10, characters 5-12", /* tuple */[
       "/a/tmp.txt/subdir/file.txt"
     ]);
 
-eq("File \"a_filename_test.ml\", line 22, characters 5-12", Ext_filename_test.node_relative_path(true, /* `File */[
-          781515420,
-          "./a/b.c"
-        ], /* `File */[
-          781515420,
-          "./a/u/g.c"
-        ]), "./u/g.c");
+eq("File \"a_filename_test.ml\", line 22, characters 5-12", Ext_filename_test.node_relative_path(true, {
+          HASH: /* File */781515420,
+          value: "./a/b.c"
+        }, {
+          HASH: /* File */781515420,
+          value: "./a/u/g.c"
+        }), "./u/g.c");
 
-eq("File \"a_filename_test.ml\", line 27, characters 5-12", Ext_filename_test.node_relative_path(true, /* `File */[
-          781515420,
-          "./a/b.c"
-        ], /* `File */[
-          781515420,
-          "xxxghsoghos/ghsoghso/node_modules/buckle-stdlib/list.js"
-        ]), "buckle-stdlib/list.js");
+eq("File \"a_filename_test.ml\", line 27, characters 5-12", Ext_filename_test.node_relative_path(true, {
+          HASH: /* File */781515420,
+          value: "./a/b.c"
+        }, {
+          HASH: /* File */781515420,
+          value: "xxxghsoghos/ghsoghso/node_modules/buckle-stdlib/list.js"
+        }), "buckle-stdlib/list.js");
 
-eq("File \"a_filename_test.ml\", line 33, characters 5-12", Ext_filename_test.node_relative_path(true, /* `File */[
-          781515420,
-          "./a/b.c"
-        ], /* `File */[
-          781515420,
-          "xxxghsoghos/ghsoghso/node_modules//buckle-stdlib/list.js"
-        ]), "buckle-stdlib/list.js");
+eq("File \"a_filename_test.ml\", line 33, characters 5-12", Ext_filename_test.node_relative_path(true, {
+          HASH: /* File */781515420,
+          value: "./a/b.c"
+        }, {
+          HASH: /* File */781515420,
+          value: "xxxghsoghos/ghsoghso/node_modules//buckle-stdlib/list.js"
+        }), "buckle-stdlib/list.js");
 
-eq("File \"a_filename_test.ml\", line 39, characters 5-12", Ext_filename_test.node_relative_path(true, /* `File */[
-          781515420,
-          "./a/b.c"
-        ], /* `File */[
-          781515420,
-          "xxxghsoghos/ghsoghso/node_modules/./buckle-stdlib/list.js"
-        ]), "buckle-stdlib/list.js");
+eq("File \"a_filename_test.ml\", line 39, characters 5-12", Ext_filename_test.node_relative_path(true, {
+          HASH: /* File */781515420,
+          value: "./a/b.c"
+        }, {
+          HASH: /* File */781515420,
+          value: "xxxghsoghos/ghsoghso/node_modules/./buckle-stdlib/list.js"
+        }), "buckle-stdlib/list.js");
 
-eq("File \"a_filename_test.ml\", line 45, characters 5-12", Ext_filename_test.node_relative_path(true, /* `File */[
-          781515420,
-          "./a/c.js"
-        ], /* `File */[
-          781515420,
-          "./a/b"
-        ]), "./b");
+eq("File \"a_filename_test.ml\", line 45, characters 5-12", Ext_filename_test.node_relative_path(true, {
+          HASH: /* File */781515420,
+          value: "./a/c.js"
+        }, {
+          HASH: /* File */781515420,
+          value: "./a/b"
+        }), "./b");
 
-eq("File \"a_filename_test.ml\", line 50, characters 5-12", Ext_filename_test.node_relative_path(true, /* `File */[
-          781515420,
-          "./a/c"
-        ], /* `File */[
-          781515420,
-          "./a/b.js"
-        ]), "./b.js");
+eq("File \"a_filename_test.ml\", line 50, characters 5-12", Ext_filename_test.node_relative_path(true, {
+          HASH: /* File */781515420,
+          value: "./a/c"
+        }, {
+          HASH: /* File */781515420,
+          value: "./a/b.js"
+        }), "./b.js");
 
-eq("File \"a_filename_test.ml\", line 55, characters 5-12", Ext_filename_test.node_relative_path(true, /* `Dir */[
-          3405101,
-          "./a/"
-        ], /* `File */[
-          781515420,
-          "./a/b.js"
-        ]), "./b.js");
+eq("File \"a_filename_test.ml\", line 55, characters 5-12", Ext_filename_test.node_relative_path(true, {
+          HASH: /* Dir */3405101,
+          value: "./a/"
+        }, {
+          HASH: /* File */781515420,
+          value: "./a/b.js"
+        }), "./b.js");
 
 eq("File \"a_filename_test.ml\", line 60, characters 5-12", Ext_filename_test.get_extension("a.txt"), ".txt");
 

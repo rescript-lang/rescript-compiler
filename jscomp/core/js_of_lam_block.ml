@@ -52,14 +52,18 @@ let field (field_info : Lam_compat.field_dbg_info) e i =
   match field_info with 
   | Fld_na _
   | Fld_tuple  
-  | Fld_poly_var_tag 
-  | Fld_poly_var_content 
+  
+
   | Fld_record_inline _
   | Fld_variant
   | Fld_array
     -> 
     E.array_index_by_int  
       ?comment:(Lam_compat.str_of_field_info field_info) e i 
+  | Fld_poly_var_content
+    -> E.poly_var_value_access e     
+  | Fld_poly_var_tag    
+    -> E.poly_var_tag_access e 
   | Fld_record_extension {name} -> 
     E.extension_access e (Some name) i
   | Fld_extension -> 

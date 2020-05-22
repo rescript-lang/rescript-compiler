@@ -80,74 +80,79 @@ Mt_global.collect_eq(test_id, suites, "File \"hash_test.ml\", line 30, character
 
 Mt_global.collect_eq(test_id, suites, "File \"hash_test.ml\", line 33, characters 5-12", Hashtbl.hash(/* A */65) & 1073741823, 381663642);
 
-Mt_global.collect_eq(test_id, suites, "File \"hash_test.ml\", line 34, characters 5-12", Hashtbl.hash(/* `A */[
-          65,
+Mt_global.collect_eq(test_id, suites, "File \"hash_test.ml\", line 34, characters 5-12", Hashtbl.hash(/* tuple */[
+          /* A */65,
           3
         ]) & 1073741823, 294279345);
 
-Mt_global.collect_eq(test_id, suites, "File \"hash_test.ml\", line 35, characters 5-12", Hashtbl.hash(/* :: */[
-          /* `A */[
-            65,
-            3
-          ],
+Mt_global.collect_eq(test_id, suites, "File \"hash_test.ml\", line 35, characters 5-12", Hashtbl.hash({
+          HASH: /* A */65,
+          value: 3
+        }) & 1073741823, 294279345);
+
+Mt_global.collect_eq(test_id, suites, "File \"hash_test.ml\", line 36, characters 5-12", Hashtbl.hash(/* :: */[
+          {
+            HASH: /* A */65,
+            value: 3
+          },
           /* :: */[
-            /* `B */[
-              66,
-              2
-            ],
+            {
+              HASH: /* B */66,
+              value: 2
+            },
             /* :: */[
-              /* `C */[
-                67,
-                3
-              ],
+              {
+                HASH: /* C */67,
+                value: 3
+              },
               /* [] */0
             ]
           ]
         ]) & 1073741823, 1017654909);
 
-Mt_global.collect_eq(test_id, suites, "File \"hash_test.ml\", line 36, characters 5-12", Hashtbl.hash(/* :: */[
+Mt_global.collect_eq(test_id, suites, "File \"hash_test.ml\", line 37, characters 5-12", Hashtbl.hash(/* :: */[
           /* tuple */[
-            /* `A */[
-              65,
-              "3"
-            ],
-            /* `B */[
-              66,
-              "2"
-            ]
+            {
+              HASH: /* A */65,
+              value: "3"
+            },
+            {
+              HASH: /* B */66,
+              value: "2"
+            }
           ],
           /* :: */[
             /* tuple */[
-              /* `C */[
-                67,
-                "3"
-              ],
-              /* `D */[
-                68,
-                "4"
-              ]
+              {
+                HASH: /* C */67,
+                value: "3"
+              },
+              {
+                HASH: /* D */68,
+                value: "4"
+              }
             ],
             /* [] */0
           ]
         ]) & 1073741823, 81986873);
 
-Mt_global.collect_eq(test_id, suites, "File \"hash_test.ml\", line 39, characters 5-12", Hashtbl.hash(/* :: */[
+Mt_global.collect_eq(test_id, suites, "File \"hash_test.ml\", line 40, characters 5-12", Hashtbl.hash(/* :: */[
           /* tuple */[
-            /* `A */[
-              65,
-              /* tuple */[
+            {
+              HASH: /* A */65,
+              value: /* tuple */[
                 0,
                 2,
                 1
               ]
-            ],
-            /* `B */[
-              66,
-              [/* tuple */[
+            },
+            {
+              HASH: /* B */66,
+              value: [/* tuple */[
                   "x",
                   "y"
                 ]]
-            ]
+            }
           ],
           /* [] */0
         ]) & 1073741823, 100650590);

@@ -34,7 +34,7 @@ function eq(loc, param) {
 }
 
 function print_or_error(fmt, x) {
-  if (x[0] >= 106380200) {
+  if (x.HASH >= 106380200) {
     return Curry._1(Format.fprintf(fmt, /* Format */[
                     /* Formatting_gen */Block.__(18, [
                         /* Open_box */Block.__(1, [/* Format */[
@@ -56,7 +56,7 @@ function print_or_error(fmt, x) {
                           ])
                       ]),
                     "@[Error:%s@]@."
-                  ]), x[1]);
+                  ]), x.value);
   } else {
     return Curry._2(Format.fprintf(fmt, /* Format */[
                     /* Formatting_gen */Block.__(18, [
@@ -76,50 +76,50 @@ function print_or_error(fmt, x) {
                           ])
                       ]),
                     "@[Ok:%a@]@."
-                  ]), Sexpm.print, x[1]);
+                  ]), Sexpm.print, x.value);
   }
 }
 
 var a = Sexpm.parse_string("(x x gh 3 3)");
 
 eq("File \"sexpm_test.ml\", line 17, characters 7-14", /* tuple */[
-      /* `Ok */[
-        17724,
-        /* `List */[
-          848054398,
-          /* :: */[
-            /* `Atom */[
-              726615281,
-              "x"
-            ],
+      {
+        HASH: /* Ok */17724,
+        value: {
+          HASH: /* List */848054398,
+          value: /* :: */[
+            {
+              HASH: /* Atom */726615281,
+              value: "x"
+            },
             /* :: */[
-              /* `Atom */[
-                726615281,
-                "x"
-              ],
+              {
+                HASH: /* Atom */726615281,
+                value: "x"
+              },
               /* :: */[
-                /* `Atom */[
-                  726615281,
-                  "gh"
-                ],
+                {
+                  HASH: /* Atom */726615281,
+                  value: "gh"
+                },
                 /* :: */[
-                  /* `Atom */[
-                    726615281,
-                    "3"
-                  ],
+                  {
+                    HASH: /* Atom */726615281,
+                    value: "3"
+                  },
                   /* :: */[
-                    /* `Atom */[
-                      726615281,
-                      "3"
-                    ],
+                    {
+                      HASH: /* Atom */726615281,
+                      value: "3"
+                    },
                     /* [] */0
                   ]
                 ]
               ]
             ]
           ]
-        ]
-      ],
+        }
+      },
       a
     ]);
 

@@ -610,56 +610,56 @@ function is_ordered(cmp, tree) {
       var match$1 = is_ordered_min_max(r);
       if (typeof match$1 === "number") {
         if (match$1 >= 50834029) {
-          return /* `V */[
-                  86,
-                  /* tuple */[
+          return {
+                  HASH: /* V */86,
+                  value: /* tuple */[
                     v,
                     v
                   ]
-                ];
+                };
         } else {
           return /* No */17505;
         }
       }
-      var match$2 = match$1[1];
+      var match$2 = match$1.value;
       if (Curry._2(cmp, v, match$2[0]) < 0) {
-        return /* `V */[
-                86,
-                /* tuple */[
+        return {
+                HASH: /* V */86,
+                value: /* tuple */[
                   v,
                   match$2[1]
                 ]
-              ];
+              };
       } else {
         return /* No */17505;
       }
     }
-    var match$3 = match[1];
+    var match$3 = match.value;
     var max_v = match$3[1];
     var min_v = match$3[0];
     var match$4 = is_ordered_min_max(r);
     if (typeof match$4 === "number") {
       if (match$4 >= 50834029 && Curry._2(cmp, max_v, v) < 0) {
-        return /* `V */[
-                86,
-                /* tuple */[
+        return {
+                HASH: /* V */86,
+                value: /* tuple */[
                   min_v,
                   v
                 ]
-              ];
+              };
       } else {
         return /* No */17505;
       }
     }
-    var match$5 = match$4[1];
+    var match$5 = match$4.value;
     if (Curry._2(cmp, max_v, match$5[0]) < 0) {
-      return /* `V */[
-              86,
-              /* tuple */[
+      return {
+              HASH: /* V */86,
+              value: /* tuple */[
                 min_v,
                 match$5[1]
               ]
-            ];
+            };
     } else {
       return /* No */17505;
     }

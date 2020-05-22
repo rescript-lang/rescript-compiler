@@ -71,10 +71,10 @@ function f4(param) {
   };
 }
 
-var x = /* `A */[
-  65,
-  r
-];
+var x = {
+  HASH: /* A */65,
+  value: r
+};
 
 function r(param) {
   return x;
@@ -82,7 +82,7 @@ function r(param) {
 
 var match = r(undefined);
 
-var v = Curry._1(match[1], undefined);
+var v = Curry._1(match.value, undefined);
 
 console.log(v);
 

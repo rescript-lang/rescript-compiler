@@ -34,10 +34,10 @@ v0[0] = 65;
 
 v0[1] = v0;
 
-var v1 = /* `A */[
-  65,
-  /* B */66
-];
+var v1 = {
+  HASH: /* A */65,
+  value: /* B */66
+};
 
 exports.hi = hi;
 exports.v0 = v0;

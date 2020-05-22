@@ -22,7 +22,9 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
-let undefinedHeader = [| |]
+let%private undefinedHeader = [| |]
+type nest = (int array * int)
+
 
 let some ( x : Obj.t) : Obj.t = 
   if Obj.magic x =  None then 
@@ -30,9 +32,9 @@ let some ( x : Obj.t) : Obj.t =
     Obj.set_tag block 256;
     block)
   else 
-    if x != Obj.repr Js.null && match (Obj.magic x ) with (x,_) -> x == Obj.repr undefinedHeader then   
+    if x != Obj.repr Js.null && match (Obj.magic x :nest ) with (x,_) -> x ==  undefinedHeader then   
       (
-      let nid =   match (Obj.magic x) with (_,x) -> x + 1 in 
+      let nid =   match (Obj.magic x : nest) with (_,x) -> x + 1 in 
       let block = Obj.repr (undefinedHeader, nid) in 
        Obj.set_tag block 256;        
        block
@@ -60,9 +62,9 @@ let null_to_opt (type t ) ( x : t Js.null) : t option =
 (** The input is already of [Some] form, [x] is not None, 
     make sure [x[0]] will not throw *)
 let valFromOption (x : Obj.t) : Obj.t =   
-  if  x != Obj.repr Js.null && match (Obj.magic x) with (x,_) -> x == Obj.repr undefinedHeader 
+  if  x != Obj.repr Js.null && match (Obj.magic x : nest) with (x,_) -> x ==  undefinedHeader 
   then 
-    (match (Obj.magic x) with (_, (depth : int)) ->  
+    (match (Obj.magic x : nest) with _, depth ->  
     if depth = 0 then Obj.magic None
     else Obj.magic (undefinedHeader, depth - 1))
   else Obj.magic x   
@@ -73,8 +75,10 @@ let option_get (x : 'a option) =
   else Obj.magic (valFromOption (Obj.repr x))
 
 
-(** [input] is optional polymorphic variant *)  
-let option_get_unwrap (x : 'a option)  =
-  if x = None then Caml_undefined_extern.empty
-  else Obj.magic (Obj.field (Obj.repr (valFromOption (Obj.repr x))) 1 )
+type poly = {hash : int [@bs.as "HASH" (* Literals.polyvar_hash*)]; value : Obj.t }  
 
+(** [input] is optional polymorphic variant *)  
+let option_unwrap (x : poly option) = 
+  match x with   
+  | None -> Obj.repr x
+  | Some x -> x.value

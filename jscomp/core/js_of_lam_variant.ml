@@ -58,7 +58,7 @@ let eval_as_event (arg : J.expression) (dispatches : (int * string) list ) =
   | _ ->
     Splice2
       (E.of_block
-      [(S.int_switch (Js_of_lam_polyvar.get_tag arg)
+      [(S.int_switch (E.poly_var_tag_access arg)
       (Ext_list.map dispatches (fun (i,r) ->
               {J.switch_case = i ;
                switch_body = [S.return_stmt (E.str r)];
@@ -69,7 +69,7 @@ let eval_as_event (arg : J.expression) (dispatches : (int * string) list ) =
            the problem is that we can not create bindings
            due to the
         *)
-     (Js_of_lam_polyvar.get_field  arg)
+     (E.poly_var_value_access  arg)
       )
       (** FIXME:
         1. duplicated evaluation of expressions arg
@@ -100,7 +100,7 @@ let eval_as_unwrap (arg : J.expression) : E.t =
   | Caml_block ([{expression_desc = Number _}; cb], _, _, _) ->
     cb
   | _ ->
-    Js_of_lam_polyvar.get_field arg 
+    E.poly_var_value_access arg 
 
 
 

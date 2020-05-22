@@ -201,6 +201,13 @@ val record_assign :
   t -> 
   t 
 
+val poly_var_tag_access : 
+  t -> t 
+
+val poly_var_value_access : 
+  t -> t  
+
+  
 val extension_assign : 
   t -> 
   int32 -> 

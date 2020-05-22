@@ -218,32 +218,33 @@ let rec caml_compare (a : Obj.t) (b : Obj.t) : int =
           let len_a = Obj.size a in
           let len_b = Obj.size b in
           if len_a = len_b then
-            if O.isArray(a)
-            then aux_same_length a b 0 len_a
+            if O.isArray a
+            then aux_same_length (Obj.magic a  : Obj.t array ) (Obj.magic b : Obj.t array) 0 len_a
             else if [%raw{|a instanceof Date && b instanceof Date|}] then 
             [%raw{|a - b|}]
             else aux_obj_compare a b
           else if len_a < len_b then
-            aux_length_a_short a b 0 len_a
+            (* at least one is not zero, so it is an array block*)
+            aux_length_a_short (Obj.magic a : Obj.t array) (Obj.magic b : Obj.t array) 0 len_a
           else
-            aux_length_b_short a b 0 len_b
-and aux_same_length  (a : Obj.t) (b : Obj.t) i same_length =
+            aux_length_b_short (Obj.magic a : Obj.t array) (Obj.magic b : Obj.t array) 0 len_b
+and aux_same_length  (a : Obj.t array) (b : Obj.t array) i same_length =
   if i = same_length then
     0
   else
-    let res = caml_compare (Obj.field a i) (Obj.field b i) in
+    let res = caml_compare (Caml_array_extern.unsafe_get  a i) (Caml_array_extern.unsafe_get b i) in
     if res <> 0 then res
     else aux_same_length  a b (i + 1) same_length
-and aux_length_a_short (a : Obj.t)  (b : Obj.t)  i short_length    =
+and aux_length_a_short (a : Obj.t array)  (b : Obj.t array)  i short_length    =
   if i = short_length then -1
   else
-    let res = caml_compare (Obj.field a i) (Obj.field b i) in
+    let res = caml_compare (Caml_array_extern.unsafe_get a i) (Caml_array_extern.unsafe_get b i) in
     if res <> 0 then res
     else aux_length_a_short a b (i+1) short_length
-and aux_length_b_short (a : Obj.t) (b : Obj.t) i short_length =
+and aux_length_b_short (a : Obj.t array) (b : Obj.t array) i short_length =
   if i = short_length then 1
   else
-    let res = caml_compare (Obj.field a i) (Obj.field b i) in
+    let res = caml_compare (Caml_array_extern.unsafe_get a i) (Caml_array_extern.unsafe_get b i) in
     if res <> 0 then res
     else aux_length_b_short a b (i+1) short_length
 and aux_obj_compare (a: Obj.t) (b: Obj.t) =
@@ -296,14 +297,7 @@ let rec caml_equal (a : Obj.t) (b : Obj.t) : bool =
         (* [a] [b] could not be null, so it can not raise *)
         let tag_a = Obj.tag a in
         let tag_b = Obj.tag b in
-        (* double_array_tag: 254
-           forward_tag:250
-        *)
-        if tag_a = 250 then
-          caml_equal (Obj.field a 0) b
-        else if tag_b = 250 then
-          caml_equal a (Obj.field b 0)
-        else if tag_a = 248 (* object/exception *)  then
+        if tag_a = 248 (* object/exception *)  then
           (Obj.magic  (Obj.field a 1)) ==  (Obj.magic (Obj.field b 1 ))
         else if tag_a = 251 (* abstract_tag *) then
           raise (Invalid_argument "equal: abstract value")
@@ -315,17 +309,17 @@ let rec caml_equal (a : Obj.t) (b : Obj.t) : bool =
           let len_a = Obj.size a in
           let len_b = Obj.size b in
           if len_a = len_b then
-            if O.isArray(a)
-            then aux_equal_length a b 0 len_a
+            if O.isArray a
+            then aux_equal_length (Obj.magic a : Obj.t array) (Obj.magic b : Obj.t array) 0 len_a
             else if [%raw{|a instanceof Date && b instanceof Date|}] then
             not (Js.unsafe_gt a  b || Js.unsafe_lt a  b)
             else aux_obj_equal a b
           else false
-and aux_equal_length  (a : Obj.t) (b : Obj.t) i same_length =
+and aux_equal_length  (a : Obj.t array) (b : Obj.t array) i same_length =
   if i = same_length then
     true
   else
-    caml_equal (Obj.field a i) (Obj.field b i)
+    caml_equal (Caml_array_extern.unsafe_get a i) (Caml_array_extern.unsafe_get b i)
     && aux_equal_length  a b (i + 1) same_length
 and aux_obj_equal (a: Obj.t) (b: Obj.t) =
   let result = ref true in

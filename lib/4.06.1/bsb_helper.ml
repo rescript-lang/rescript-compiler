@@ -3183,6 +3183,8 @@ val ns_sep : string
 
 val exception_id : string
 
+val polyvar_hash : string
+val polyvar_value : string
 end = struct
 #1 "literals.ml"
 (* Copyright (C) 2015-2016 Bloomberg Finance L.P.
@@ -3328,6 +3330,8 @@ let ns_sep_char = '-'
 let ns_sep = "-"
 let exception_id = "RE_EXN_ID"
 
+let polyvar_hash = "HASH"
+let polyvar_value = "value"
 end
 module Bsb_db_decode : sig 
 #1 "bsb_db_decode.mli"

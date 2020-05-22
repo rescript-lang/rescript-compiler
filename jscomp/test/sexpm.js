@@ -28,10 +28,10 @@ function _with_in(filename, f) {
   catch (raw_e){
     var e = Caml_js_exceptions.internalToOCamlException(raw_e);
     Caml_external_polyfill.resolve("caml_ml_close_channel")(ic);
-    return /* `Error */[
-            106380200,
-            Printexc.to_string(e)
-          ];
+    return {
+            HASH: /* Error */106380200,
+            value: Printexc.to_string(e)
+          };
   }
 }
 
@@ -109,8 +109,8 @@ function _must_escape(s) {
 }
 
 function to_buf(b, t) {
-  if (t[0] >= 848054398) {
-    var l = t[1];
+  if (t.HASH >= 848054398) {
+    var l = t.value;
     if (l) {
       if (l[1]) {
         $$Buffer.add_char(b, /* "(" */40);
@@ -137,7 +137,7 @@ function to_buf(b, t) {
       return $$Buffer.add_string(b, "()");
     }
   }
-  var s = t[1];
+  var s = t.value;
   if (_must_escape(s)) {
     return Curry._1(Printf.bprintf(b, /* Format */[
                     /* Char_literal */Block.__(12, [
@@ -164,8 +164,8 @@ function to_string(t) {
 }
 
 function print(fmt, t) {
-  if (t[0] >= 848054398) {
-    var l = t[1];
+  if (t.HASH >= 848054398) {
+    var l = t.value;
     if (l) {
       if (l[1]) {
         Format.fprintf(fmt, /* Format */[
@@ -238,7 +238,7 @@ function print(fmt, t) {
       return Format.pp_print_string(fmt, "()");
     }
   }
-  var s = t[1];
+  var s = t.value;
   if (_must_escape(s)) {
     return Curry._1(Format.fprintf(fmt, /* Format */[
                     /* Char_literal */Block.__(12, [
@@ -259,8 +259,8 @@ function print(fmt, t) {
 }
 
 function print_noindent(fmt, t) {
-  if (t[0] >= 848054398) {
-    var l = t[1];
+  if (t.HASH >= 848054398) {
+    var l = t.value;
     if (l) {
       if (l[1]) {
         Format.pp_print_char(fmt, /* "(" */40);
@@ -287,7 +287,7 @@ function print_noindent(fmt, t) {
       return Format.pp_print_string(fmt, "()");
     }
   }
-  var s = t[1];
+  var s = t.value;
   if (_must_escape(s)) {
     return Curry._1(Format.fprintf(fmt, /* Format */[
                     /* Char_literal */Block.__(12, [
@@ -436,10 +436,10 @@ function _error(t, msg) {
           ]), t.line, t.col);
   return Printf.kbprintf((function (b) {
                 var msg$prime = $$Buffer.contents(b);
-                return /* `Error */[
-                        106380200,
-                        msg$prime
-                      ];
+                return {
+                        HASH: /* Error */106380200,
+                        value: msg$prime
+                      };
               }), b, msg);
 }
 
@@ -553,10 +553,10 @@ function expr_list(acc, k, t) {
     var switcher = c - 9 | 0;
     if (switcher > 23 || switcher < 0) {
       if (switcher === 32) {
-        return Curry._2(k, undefined, /* `List */[
-                    848054398,
-                    List.rev(acc)
-                  ]);
+        return Curry._2(k, undefined, {
+                    HASH: /* List */848054398,
+                    value: List.rev(acc)
+                  });
       }
       
     } else if (switcher > 22 || switcher < 2) {
@@ -571,13 +571,13 @@ function expr_list(acc, k, t) {
                                     acc
                                   ], k, t);
                       } else {
-                        return Curry._2(k, undefined, /* `List */[
-                                    848054398,
-                                    List.rev(/* :: */[
+                        return Curry._2(k, undefined, {
+                                    HASH: /* List */848054398,
+                                    value: List.rev(/* :: */[
                                           e,
                                           acc
                                         ])
-                                  ]);
+                                  });
                       }
                     } else {
                       return expr_list(/* [] */0, (function (param, l) {
@@ -600,10 +600,10 @@ function expr_list(acc, k, t) {
 function _return_atom(last, k, t) {
   var s = $$Buffer.contents(t.atom);
   t.atom.position = 0;
-  return Curry._2(k, last, /* `Atom */[
-              726615281,
-              s
-            ]);
+  return Curry._2(k, last, {
+              HASH: /* Atom */726615281,
+              value: s
+            });
 }
 
 function atom(k, t) {
@@ -842,10 +842,10 @@ function expr_or_end(k, t) {
 
 function next(t) {
   return expr_or_end((function (param, x) {
-                return /* `Ok */[
-                        17724,
-                        x
-                      ];
+                return {
+                        HASH: /* Ok */17724,
+                        value: x
+                      };
               }), t);
 }
 
@@ -866,10 +866,10 @@ function parse_string(s) {
   var d = make(n, refill);
   var res = next(d);
   if (typeof res === "number") {
-    return /* `Error */[
-            106380200,
-            "unexpected end of file"
-          ];
+    return {
+            HASH: /* Error */106380200,
+            value: "unexpected end of file"
+          };
   } else {
     return res;
   }
@@ -881,10 +881,10 @@ function parse_chan(bufsize, ic) {
         }));
   var res = next(d);
   if (typeof res === "number") {
-    return /* `Error */[
-            106380200,
-            "unexpected end of file"
-          ];
+    return {
+            HASH: /* Error */106380200,
+            value: "unexpected end of file"
+          };
   } else {
     return res;
   }
@@ -913,16 +913,16 @@ function parse_chan_list(bufsize, ic) {
     var acc = _acc;
     var e = next(d);
     if (typeof e === "number") {
-      return /* `Ok */[
-              17724,
-              List.rev(acc)
-            ];
+      return {
+              HASH: /* Ok */17724,
+              value: List.rev(acc)
+            };
     }
-    if (e[0] >= 106380200) {
+    if (e.HASH >= 106380200) {
       return e;
     }
     _acc = /* :: */[
-      e[1],
+      e.value,
       acc
     ];
     continue ;
@@ -1023,10 +1023,10 @@ function MakeDecode(funarg) {
             ]), t.line, t.col);
     return Printf.kbprintf((function (b) {
                   var msg$prime = $$Buffer.contents(b);
-                  return Curry._1(funarg.$$return, /* `Error */[
-                              106380200,
-                              msg$prime
-                            ]);
+                  return Curry._1(funarg.$$return, {
+                              HASH: /* Error */106380200,
+                              value: msg$prime
+                            });
                 }), b, msg);
   };
   var _error_eof = function (t) {
@@ -1136,10 +1136,10 @@ function MakeDecode(funarg) {
       var switcher = c - 9 | 0;
       if (switcher > 23 || switcher < 0) {
         if (switcher === 32) {
-          return Curry._2(k, undefined, /* `List */[
-                      848054398,
-                      List.rev(acc)
-                    ]);
+          return Curry._2(k, undefined, {
+                      HASH: /* List */848054398,
+                      value: List.rev(acc)
+                    });
         }
         
       } else if (switcher > 22 || switcher < 2) {
@@ -1154,13 +1154,13 @@ function MakeDecode(funarg) {
                                       acc
                                     ], k, t);
                         } else {
-                          return Curry._2(k, undefined, /* `List */[
-                                      848054398,
-                                      List.rev(/* :: */[
+                          return Curry._2(k, undefined, {
+                                      HASH: /* List */848054398,
+                                      value: List.rev(/* :: */[
                                             e,
                                             acc
                                           ])
-                                    ]);
+                                    });
                         }
                       } else {
                         return expr_list(/* [] */0, (function (param, l) {
@@ -1182,10 +1182,10 @@ function MakeDecode(funarg) {
   var _return_atom = function (last, k, t) {
     var s = $$Buffer.contents(t.atom);
     t.atom.position = 0;
-    return Curry._2(k, last, /* `Atom */[
-                726615281,
-                s
-              ]);
+    return Curry._2(k, last, {
+                HASH: /* Atom */726615281,
+                value: s
+              });
   };
   var atom = function (k, t) {
     while(true) {
@@ -1416,10 +1416,10 @@ function MakeDecode(funarg) {
   };
   var next = function (t) {
     return expr_or_end((function (param, x) {
-                  return Curry._1(funarg.$$return, /* `Ok */[
-                              17724,
-                              x
-                            ]);
+                  return Curry._1(funarg.$$return, {
+                              HASH: /* Ok */17724,
+                              value: x
+                            });
                 }), t);
   };
   return {

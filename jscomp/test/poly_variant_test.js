@@ -107,14 +107,14 @@ function read$1(name) {
 
 function test(readline, x) {
   readline.on((function () {
-            switch (x[0]) {
+            switch (x.HASH) {
               case -944564236 :
                   return "line";
               case -933029960 :
                   return "close";
               
             }
-          })(), x[1]);
+          })(), x.value);
   
 }
 
@@ -128,23 +128,23 @@ function p_is_int_test(x) {
 
 eq("File \"poly_variant_test.ml\", line 142, characters 5-12", 2, 2);
 
-eq("File \"poly_variant_test.ml\", line 143, characters 5-12", 3, p_is_int_test(/* `b */[
-          98,
-          2
-        ]));
+eq("File \"poly_variant_test.ml\", line 143, characters 5-12", 3, p_is_int_test({
+          HASH: /* b */98,
+          value: 2
+        }));
 
 Mt.from_pair_suites("Poly_variant_test", suites.contents);
 
 function on2(prim, prim$1) {
   prim.on2((function () {
-            switch (prim$1[0]) {
+            switch (prim$1.HASH) {
               case -944564236 :
                   return "line";
               case -933029960 :
                   return "close";
               
             }
-          })(), prim$1[1]);
+          })(), prim$1.value);
   
 }
 

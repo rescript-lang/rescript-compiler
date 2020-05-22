@@ -132,18 +132,18 @@ var h = /* :: */[
   ]
 ];
 
-var v2 = /* `C */[
-  67,
-  2
-];
+var v2 = {
+  HASH: /* C */67,
+  value: 2
+};
 
-var v3 = /* `C */[
-  67,
-  /* tuple */[
+var v3 = {
+  HASH: /* C */67,
+  value: /* tuple */[
     2,
     3
   ]
-];
+};
 
 var fmt = Format.std_formatter;
 

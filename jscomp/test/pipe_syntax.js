@@ -86,10 +86,10 @@ function hi(x) {
               }));
 }
 
-var with_poly = /* `Foo */[
-  3505894,
-  1
-];
+var with_poly = {
+  HASH: /* Foo */3505894,
+  value: 1
+};
 
 exports.t0 = t0;
 exports.t1 = t1;

@@ -59,7 +59,7 @@ var message_counter = {
 };
 
 function extension_range_range(from, to_) {
-  var to_$1 = typeof to_ === "number" ? /* To_max */0 : /* To_number */[to_[1]];
+  var to_$1 = typeof to_ === "number" ? /* To_max */0 : /* To_number */[to_.value];
   return /* Extension_range */Block.__(1, [
             from,
             to_$1
@@ -1000,10 +1000,10 @@ var yyact = [
   (function (__caml_parser_env) {
       var _1 = Parsing.peek_val(__caml_parser_env, 2);
       var _3 = Parsing.peek_val(__caml_parser_env, 0);
-      return extension_range_range(_1, /* `Number */[
-                  -703661335,
-                  _3
-                ]);
+      return extension_range_range(_1, {
+                  HASH: /* Number */-703661335,
+                  value: _3
+                });
     }),
   (function (__caml_parser_env) {
       var _1 = Parsing.peek_val(__caml_parser_env, 2);

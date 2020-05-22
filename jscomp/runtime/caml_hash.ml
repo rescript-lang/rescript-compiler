@@ -21,16 +21,15 @@
  * You should have received a copy of the GNU Lesser General Public License
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
-
+[@@@bs.config {flags = [|"-bs-noassertfalse"|]}]
 type 'a cell = {
   content : 'a ; 
-  mutable next : 'a cell_opt
+  mutable next : 'a cell option 
 }  
-and 'a cell_opt = 'a cell option
 and 'a t = {
   mutable length : int ;
-  mutable first : 'a cell_opt;
-  mutable last : 'a cell_opt
+  mutable first : 'a cell option;
+  mutable last : 'a cell option
 }
 
 
@@ -56,23 +55,25 @@ let push_back (q :'a t) (v : 'a) =
     last . next <- cell;
      q . last <- cell
 
-let is_empty_queue q = q . length  = 0     
+let is_empty_queue q = q.length  = 0     
 
 (* pop from front *)
 
 
 let unsafe_pop (q : 'a t) =        
-  let cell = (Obj.magic (q . first) : 'a cell) in 
-  let next =cell.next in 
-  if next = None then (
-    q . length <- 0 ; 
-    q . first <- None;
-    q . last<- None;
-  ) else (
-    q . length <- q . length - 1;
-    q . first <- next;
-  );
-  cell.content
+  match q.first with 
+  | None -> assert false 
+  | Some cell -> 
+    let next =cell.next in 
+    if next = None then (
+      q . length <- 0 ; 
+      q . first <- None;
+      q . last<- None;
+    ) else (
+      q . length <- q . length - 1;
+      q . first <- next;
+    );
+    cell.content
 
 
 
@@ -128,12 +129,12 @@ let caml_hash (count : int) _limit (seed : nativeint)
         () 
       else 
         let size = Obj.size obj in 
-        if size <> 0 then         
+        if size <> 0 then begin        
           let obj_tag = Obj.tag obj in
           let tag = (size lsl 10) lor obj_tag in 
-          if tag = 248 (* Obj.object_tag*) then 
+          if obj_tag = 248 (* Obj.object_tag*) then 
             hash.contents <- caml_hash_mix_int hash.contents 
-              (Caml_nativeint_extern.of_int (Obj.obj (Obj.field obj 1) : int))
+                (Caml_nativeint_extern.of_int (Obj.obj (Obj.field obj 1) : int))
           else 
             begin 
               hash.contents <- caml_hash_mix_int hash.contents (Caml_nativeint_extern.of_int tag) ;
@@ -143,6 +144,18 @@ let caml_hash (count : int) _limit (seed : nativeint)
                 push_back queue (Obj.field obj i ) 
               done 
             end
+        end else
+          begin             
+            let size : int = ([%raw {|function(obj,cb){
+            var size = 0  
+            for(var k in obj){
+              cb(obj[k])
+              ++ size
+            }
+            return size
+          }|}] obj (fun [@bs] v -> push_back queue v ) [@bs]) in    
+            hash.contents <- caml_hash_mix_int hash.contents (Caml_nativeint_extern.of_int ((size lsl 10) lor 0)) (*tag*) ;
+          end
     done;
     caml_hash_final_mix hash.contents
     
