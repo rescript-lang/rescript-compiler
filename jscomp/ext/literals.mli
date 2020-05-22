@@ -138,3 +138,6 @@ val ns_sep_char : char
 val ns_sep : string
 
 val exception_id : string
+
+val polyvar_hash : string
+val polyvar_value : string

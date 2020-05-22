@@ -75,7 +75,7 @@ let option_get (x : 'a option) =
   else Obj.magic (valFromOption (Obj.repr x))
 
 
-type poly = {hash : int [@bs.as "HASH"]; value : Obj.t }  
+type poly = {hash : int [@bs.as "HASH" (* Literals.polyvar_hash*)]; value : Obj.t }  
 
 (** [input] is optional polymorphic variant *)  
 let option_unwrap (x : poly option) = 

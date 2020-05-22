@@ -857,11 +857,11 @@ and expression_desc cxt ~(level:int) f x : cxt  =
           ~level 
           f 
           (Object 
-             (("HASH", 
+             ((Literals.polyvar_hash, 
                if !Js_config.debug then hash
                else {hash with comment = Some name}
               ) ::
-              ("value", value) ::
+              (Literals.polyvar_value, value) ::
               if !Js_config.debug then 
                 ["name", E.str name]
               else []
