@@ -128,12 +128,6 @@ let make_compiler name impl =
                       (fun _ code ->
                          (compile impl ~use_super_errors:true (Js.to_string code)));                    
                     "version", Js.Unsafe.inject (Js.string (Bs_version.version));
-                    "load_module",
-                    inject @@
-                    Js.wrap_meth_callback
-                      (fun _ cmi_path cmi_content cmj_path cmj_content ->
-                        Js.create_file cmi_path cmi_content;
-                        Js.create_file cmj_path cmj_content);
                   |]))
 let () = make_compiler "ocaml" Parse.implementation
 
