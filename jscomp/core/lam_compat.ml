@@ -95,48 +95,6 @@ let cmp_int (cmp : comparison) (a : int) b : bool =
   | Cge -> a >= b
 
 
-
-type bigarray_kind = Lambda.bigarray_kind = 
-    Pbigarray_unknown
-  | Pbigarray_float32 | Pbigarray_float64
-  | Pbigarray_sint8 | Pbigarray_uint8
-  | Pbigarray_sint16 | Pbigarray_uint16
-  | Pbigarray_int32 | Pbigarray_int64
-  | Pbigarray_caml_int | Pbigarray_native_int
-  | Pbigarray_complex32 | Pbigarray_complex64
-
-
-(* let eq_bigarray_kind (p : bigarray_kind) (p1 : bigarray_kind) = 
-  match p with   
-  | Pbigarray_unknown -> p1 = Pbigarray_unknown
-  | Pbigarray_float32 -> p1 = Pbigarray_float32
-  | Pbigarray_float64 -> p1 =  Pbigarray_float64
-  | Pbigarray_sint8 -> p1 = Pbigarray_sint8
-  | Pbigarray_uint8 -> p1 = Pbigarray_uint8
-  | Pbigarray_sint16 -> p1 = Pbigarray_sint16 
-  | Pbigarray_uint16 -> p1 = Pbigarray_uint16
-  | Pbigarray_int32  -> p1 = Pbigarray_int32
-  | Pbigarray_int64 -> p1 = Pbigarray_int64
-  | Pbigarray_caml_int -> p1 = Pbigarray_caml_int
-  | Pbigarray_native_int -> p1 = Pbigarray_native_int
-  | Pbigarray_complex32  -> p1 = Pbigarray_complex32
-  | Pbigarray_complex64 -> p1 = Pbigarray_complex64 *)
-  
-  
-type bigarray_layout = Lambda.bigarray_layout = 
-    Pbigarray_unknown_layout
-  | Pbigarray_c_layout
-  | Pbigarray_fortran_layout
-
-
-
-
-(* let eq_bigarray_layout (p : bigarray_layout) (p1 : bigarray_layout) = 
-  match p with 
-  | Pbigarray_unknown_layout -> p1 = Pbigarray_unknown_layout
-  | Pbigarray_c_layout -> p1 = Pbigarray_c_layout
-  | Pbigarray_fortran_layout -> p1 = Pbigarray_fortran_layout   *)
-
 type compile_time_constant =
     | Big_endian  
     | Ostype_unix
@@ -172,6 +130,7 @@ type field_dbg_info = Lambda.field_dbg_info =
   | Fld_extension
   | Fld_variant
   | Fld_array 
+  
 let str_of_field_info (x : field_dbg_info) : string option =  
   match x with 
   | Fld_na  s -> if s = "" then None else Some s
