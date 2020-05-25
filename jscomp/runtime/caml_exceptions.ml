@@ -33,7 +33,7 @@ type t = {
    It's common that we have 
    {[ a = caml_set_oo_id([248,"string",0]) ]}
    This can be inlined as 
-   {[ a = caml_set_oo_id([248,"tag", caml_oo_last_id++]) ]}
+   {[ a = caml_set_oo_id([248,"string", caml_oo_last_id++]) ]}
 *)
 
 let id = ref 0

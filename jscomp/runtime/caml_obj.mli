@@ -29,7 +29,7 @@
 type t = Obj.t 
 
 
-val caml_obj_block : int -> int -> Obj.t
+
 val caml_obj_dup : Obj.t -> Obj.t
 
 

@@ -847,7 +847,7 @@ and expression_desc cxt ~(level:int) f x : cxt  =
            else []
           ) in 
       if p.num_nonconst = 1 then tails
-      else ("tag",
+      else (L.tag,
         if !Js_config.debug then tag else {tag with comment = Some p.name}) :: tails in 
     if p.num_nonconst = 1 && not !Js_config.debug then 
       pp_comment_option f (Some p.name);
@@ -862,7 +862,7 @@ and expression_desc cxt ~(level:int) f x : cxt  =
       if p.num_nonconst = 1 then       
         tails
       else         
-        ("tag",
+        (L.tag,
           if !Js_config.debug then tag else {tag with comment = Some p.name}) :: tails
     in 
     if p.num_nonconst = 1 && not !Js_config.debug then 
