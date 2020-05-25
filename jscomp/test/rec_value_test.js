@@ -7,13 +7,13 @@ var Curry = require("../../lib/js/curry.js");
 var Caml_obj = require("../../lib/js/caml_obj.js");
 var CamlinternalLazy = require("../../lib/js/camlinternalLazy.js");
 
-var x = { };
+var x = {};
 
 x._0 = 1;
 
 x._1 = x;
 
-var x0 = { };
+var x0 = {};
 
 Caml_obj.update_dummy(x0, {
       HASH: /* Cons */748545553,
@@ -23,18 +23,18 @@ Caml_obj.update_dummy(x0, {
       ]
     });
 
-var y0 = { };
+var y0 = {};
 
 Caml_obj.update_dummy(y0, {
       HASH: /* Cons */748545553,
       value: y0
     });
 
-var a = { };
+var a = {};
 
-var b = { };
+var b = {};
 
-var c = { };
+var c = {};
 
 Caml_obj.update_dummy(a, /* :: */{
       _0: 2,
@@ -51,7 +51,7 @@ Caml_obj.update_dummy(c, /* :: */{
       _1: a
     });
 
-var xx = { };
+var xx = {};
 
 xx._0 = 1;
 
@@ -296,7 +296,7 @@ function ptl(l) {
   return l.value[1];
 }
 
-var y00 = { };
+var y00 = {};
 
 Caml_obj.update_dummy(y00, {
       tag: /* C1 */1,

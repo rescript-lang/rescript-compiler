@@ -3,7 +3,7 @@
 var Belt_List = require("../../lib/js/belt_List.js");
 var Belt_Array = require("../../lib/js/belt_Array.js");
 
-var N = { };
+var N = {};
 
 function f(X, xs) {
   return X.forEach(xs, {
@@ -24,7 +24,7 @@ Belt_List.forEachU(/* :: */{
         
       }));
 
-var Foo = { };
+var Foo = {};
 
 var bar = [{
     foo: "bar"

@@ -33,7 +33,7 @@ function eq(loc, x, y) {
   
 }
 
-var a = { };
+var a = {};
 
 var b = {
   foo: "42"
@@ -51,7 +51,7 @@ function make(foo) {
           return String(prim);
         }), foo);
   return function (param) {
-    var tmp = { };
+    var tmp = {};
     if (partial_arg !== undefined) {
       tmp.foo = Caml_option.valFromOption(partial_arg);
     }

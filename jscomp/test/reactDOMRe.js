@@ -82,7 +82,7 @@ function hydrateToElementWithId(reactElement, id) {
   
 }
 
-var Ref = { };
+var Ref = {};
 
 function createElementVariadic(domClassName, props, children) {
   var variadicArguments = [
@@ -93,7 +93,7 @@ function createElementVariadic(domClassName, props, children) {
 }
 
 function unsafeAddProp(style, key, value) {
-  var dict = { };
+  var dict = {};
   dict[key] = value;
   return Object.assign({}, style, dict);
 }

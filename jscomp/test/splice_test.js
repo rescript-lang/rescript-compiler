@@ -16,7 +16,7 @@ function eq(loc, x, y) {
   return Mt.eq_suites(test_id, suites, loc, x, y);
 }
 
-var Caml_splice_call$1 = { };
+var Caml_splice_call$1 = {};
 
 Math.max(1);
 

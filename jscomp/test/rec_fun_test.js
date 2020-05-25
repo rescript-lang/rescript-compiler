@@ -36,7 +36,7 @@ var called = {
 };
 
 function g(param) {
-  var v = { };
+  var v = {};
   var next = function (i, b) {
     called.contents = called.contents + 1 | 0;
     if (b) {
@@ -53,9 +53,9 @@ function g(param) {
 
 g(undefined);
 
-var x = { };
+var x = {};
 
-var y = { };
+var y = {};
 
 Caml_obj.update_dummy(x, /* :: */{
       _0: 1,

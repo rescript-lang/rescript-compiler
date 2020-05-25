@@ -21,7 +21,7 @@ function b(loc, x) {
   return Mt.bool_suites(test_id, suites, loc, x);
 }
 
-var Block$1 = { };
+var Block$1 = {};
 
 var v0 = {
   tag: /* A */1,
@@ -29,7 +29,7 @@ var v0 = {
   _1: 1
 };
 
-var Block$2 = { };
+var Block$2 = {};
 
 var v1 = {
   tag: /* A */1,
@@ -42,9 +42,9 @@ var N = {
   v1: v1
 };
 
-var Caml_obj$1 = { };
+var Caml_obj$1 = {};
 
-var List$1 = { };
+var List$1 = {};
 
 var V = {
   List: List$1

@@ -30,9 +30,9 @@ function eq(loc, x, y) {
   
 }
 
-var a = { };
+var a = {};
 
-var b = { };
+var b = {};
 
 Caml_obj.update_dummy(a, {
       b: b

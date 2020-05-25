@@ -17,7 +17,7 @@ function eq(loc, x, y) {
 
 function make(s, b, i) {
   return function (param) {
-    var tmp = { };
+    var tmp = {};
     if (s !== undefined) {
       tmp.s = Caml_option.valFromOption(s);
     }

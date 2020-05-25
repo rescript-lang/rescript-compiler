@@ -29,7 +29,7 @@ console.log(3);
 
 console.log("x");
 
-var v0 = { };
+var v0 = {};
 
 Caml_obj.update_dummy(v0, {
       HASH: /* A */65,

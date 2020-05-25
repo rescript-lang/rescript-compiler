@@ -64,7 +64,7 @@ function u(param) {
             });
 }
 
-var M = { };
+var M = {};
 
 eq("File \"format_test.ml\", line 26, characters 5-12", Curry._1(Format.asprintf(u(undefined)), "x"), "xx xyy");
 

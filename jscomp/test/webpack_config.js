@@ -32,9 +32,9 @@ var U = {
   configX: configX$1
 };
 
-var A = { };
+var A = {};
 
-var B = { };
+var B = {};
 
 function f(param) {
   return /* tuple */[

@@ -59,7 +59,7 @@ var int_expect2 = {
   x: 0
 };
 
-var int_expects_0 = { };
+var int_expects_0 = {};
 
 var int_expects_1 = /* :: */{
   _0: {

@@ -11,9 +11,9 @@ var Pervasives = require("../../lib/js/pervasives.js");
 var Caml_option = require("../../lib/js/caml_option.js");
 var Caml_primitive = require("../../lib/js/caml_primitive.js");
 
-var Actors = { };
+var Actors = {};
 
-var Dom_html = { };
+var Dom_html = {};
 
 function setup_sprite(loopOpt, bbox_offsetOpt, bbox_sizeOpt, img_src, max_frames, max_ticks, frame_size, src_offset) {
   var loop = loopOpt !== undefined ? loopOpt : true;

@@ -1745,7 +1745,7 @@ var Misc = {
   Color: Misc_Color
 };
 
-var Terminfo = { };
+var Terminfo = {};
 
 function number(param) {
   if (typeof param === "number") {
@@ -4162,7 +4162,7 @@ var $$Location = {
   report_exception: report_exception
 };
 
-var Asttypes = { };
+var Asttypes = {};
 
 function flatten(lid) {
   var _accu = /* [] */0;
@@ -4249,7 +4249,7 @@ var Longident = {
   parse: parse
 };
 
-var Parsetree = { };
+var Parsetree = {};
 
 var docstrings = {
   contents: /* [] */0

@@ -83,7 +83,7 @@ var suites_1 = /* :: */{
             return {
                     tag: /* Eq */0,
                     _0: 0,
-                    _1: Object.keys({ }).length
+                    _1: Object.keys({}).length
                   };
           })
       ],
@@ -96,7 +96,7 @@ var suites_1 = /* :: */{
                       _0: {
                         a: 1
                       },
-                      _1: Object.assign({ }, {
+                      _1: Object.assign({}, {
                             a: 1
                           })
                     };

@@ -21,7 +21,7 @@ function clear(q) {
 
 function add(x, q) {
   if (q.length === 0) {
-    var cell = { };
+    var cell = {};
     cell.content = x;
     cell.next = cell;
     q.length = 1;
@@ -76,7 +76,7 @@ function copy(q) {
           };
   }
   var tail = q.tail;
-  var tail$prime = { };
+  var tail$prime = {};
   Caml_obj.update_dummy(tail$prime, {
         content: tail.content,
         next: tail$prime

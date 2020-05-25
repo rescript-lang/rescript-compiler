@@ -1,19 +1,19 @@
 'use strict';
 
 
-var Ref = { };
+var Ref = {};
 
-var Children = { };
+var Children = {};
 
-var Context = { };
+var Context = {};
 
-var Fragment = { };
+var Fragment = {};
 
-var StrictMode = { };
+var StrictMode = {};
 
-var Suspense = { };
+var Suspense = {};
 
-var SuspenseList = { };
+var SuspenseList = {};
 
 exports.Ref = Ref;
 exports.Children = Children;

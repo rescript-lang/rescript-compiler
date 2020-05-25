@@ -6,7 +6,7 @@ function _assign(prim, prim$1) {
   return Object.assign(prim, prim$1);
 }
 
-var emptyObject = { };
+var emptyObject = {};
 
 /**
  * Copyright 2013-present, Facebook, Inc.

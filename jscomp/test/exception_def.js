@@ -24,7 +24,7 @@ var U = {
   A: A$1
 };
 
-var H = { };
+var H = {};
 
 var Bx = Caml_exceptions.create("Exception_def.Bx");
 

@@ -361,7 +361,7 @@ var dummyInteropComponent = basicComponent("interop");
 
 function wrapJsForReason(reactClass, props, children) {
   var jsElementWrapped = (function (param, param$1) {
-      var props$1 = Object.assign(Object.assign({ }, props), {
+      var props$1 = Object.assign(Object.assign({}, props), {
             ref: param$1,
             key: param
           });

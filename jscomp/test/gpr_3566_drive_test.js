@@ -16,11 +16,11 @@ function eq(loc, x, y) {
   return Mt.eq_suites(test_id, suites, loc, x, y);
 }
 
-var H = Gpr_3566_test.Test({ });
+var H = Gpr_3566_test.Test({});
 
 eq("File \"gpr_3566_drive_test.ml\", line 8, characters 5-12", H.b, true);
 
-var Caml_option$1 = { };
+var Caml_option$1 = {};
 
 function f(x) {
   return Caml_option.some(x);

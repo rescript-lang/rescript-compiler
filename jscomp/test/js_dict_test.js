@@ -17,7 +17,7 @@ var suites_0 = /* tuple */[
       return {
               tag: /* Eq */0,
               _0: [],
-              _1: Object.keys({ })
+              _1: Object.keys({})
             };
     })
 ];
@@ -143,7 +143,7 @@ var suites_1 = /* :: */{
                   (function (param) {
                       return {
                               tag: /* Eq */0,
-                              _0: { },
+                              _0: {},
                               _1: Js_dict.fromList(/* [] */0)
                             };
                     })
@@ -186,7 +186,7 @@ var suites_1 = /* :: */{
                       (function (param) {
                           return {
                                   tag: /* Eq */0,
-                                  _0: { },
+                                  _0: {},
                                   _1: Js_dict.fromArray([])
                                 };
                         })

@@ -34,7 +34,7 @@ var x$2 = "foo";
 
 eq("File \"unboxed_attribute_test.ml\", line 33, characters 3-10", x$2, x$2);
 
-var y = { };
+var y = {};
 
 y._0 = y;
 
