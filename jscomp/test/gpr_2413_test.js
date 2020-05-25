@@ -2,10 +2,10 @@
 
 
 function f(param) {
-  switch (param.tag | 0) {
+  switch (param.TAG | 0) {
     case /* A */0 :
         var a = param._0;
-        if (a.tag) {
+        if (a.TAG) {
           var a$1 = a._0;
           return a$1 - a$1 | 0;
         }

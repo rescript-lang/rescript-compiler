@@ -11,7 +11,7 @@ var suites_0 = [
   "valueOf",
   (function (param) {
       return {
-              tag: /* Eq */0,
+              TAG: /* Eq */0,
               _0: 195131516789,
               _1: new Date("1976-03-08T12:34:56.789+01:23").valueOf()
             };
@@ -23,7 +23,7 @@ var suites_1 = /* :: */{
     "make",
     (function (param) {
         return {
-                tag: /* Ok */4,
+                TAG: /* Ok */4,
                 _0: new Date().getTime() > 1487223505382
               };
       })
@@ -33,7 +33,7 @@ var suites_1 = /* :: */{
       "parseAsFloat",
       (function (param) {
           return {
-                  tag: /* Eq */0,
+                  TAG: /* Eq */0,
                   _0: Date.parse("1976-03-08T12:34:56.789+01:23"),
                   _1: 195131516789
                 };
@@ -44,7 +44,7 @@ var suites_1 = /* :: */{
         "parseAsFloat_invalid",
         (function (param) {
             return {
-                    tag: /* Ok */4,
+                    TAG: /* Ok */4,
                     _0: isNaN(Date.parse("gibberish"))
                   };
           })
@@ -54,7 +54,7 @@ var suites_1 = /* :: */{
           "fromFloat",
           (function (param) {
               return {
-                      tag: /* Eq */0,
+                      TAG: /* Eq */0,
                       _0: "1976-03-08T11:11:56.789Z",
                       _1: new Date(195131516789).toISOString()
                     };
@@ -65,7 +65,7 @@ var suites_1 = /* :: */{
             "fromString_valid",
             (function (param) {
                 return {
-                        tag: /* Eq */0,
+                        TAG: /* Eq */0,
                         _0: 195131516789,
                         _1: new Date("1976-03-08T12:34:56.789+01:23").getTime()
                       };
@@ -76,7 +76,7 @@ var suites_1 = /* :: */{
               "fromString_invalid",
               (function (param) {
                   return {
-                          tag: /* Ok */4,
+                          TAG: /* Ok */4,
                           _0: isNaN(new Date("gibberish").getTime())
                         };
                 })
@@ -87,7 +87,7 @@ var suites_1 = /* :: */{
                 (function (param) {
                     var d = new Date(1984, 4);
                     return {
-                            tag: /* Eq */0,
+                            TAG: /* Eq */0,
                             _0: [
                               1984,
                               4
@@ -105,7 +105,7 @@ var suites_1 = /* :: */{
                   (function (param) {
                       var d = new Date(1984, 4, 6);
                       return {
-                              tag: /* Eq */0,
+                              TAG: /* Eq */0,
                               _0: [
                                 1984,
                                 4,
@@ -125,7 +125,7 @@ var suites_1 = /* :: */{
                     (function (param) {
                         var d = new Date(1984, 4, 6, 3);
                         return {
-                                tag: /* Eq */0,
+                                TAG: /* Eq */0,
                                 _0: [
                                   1984,
                                   4,
@@ -147,7 +147,7 @@ var suites_1 = /* :: */{
                       (function (param) {
                           var d = new Date(1984, 4, 6, 3, 59);
                           return {
-                                  tag: /* Eq */0,
+                                  TAG: /* Eq */0,
                                   _0: [
                                     1984,
                                     4,
@@ -171,7 +171,7 @@ var suites_1 = /* :: */{
                         (function (param) {
                             var d = new Date(1984, 4, 6, 3, 59, 27);
                             return {
-                                    tag: /* Eq */0,
+                                    TAG: /* Eq */0,
                                     _0: [
                                       1984,
                                       4,
@@ -198,7 +198,7 @@ var suites_1 = /* :: */{
                               var d = Date.UTC(1984, 4);
                               var d$1 = new Date(d);
                               return {
-                                      tag: /* Eq */0,
+                                      TAG: /* Eq */0,
                                       _0: [
                                         1984,
                                         4
@@ -217,7 +217,7 @@ var suites_1 = /* :: */{
                                 var d = Date.UTC(1984, 4, 6);
                                 var d$1 = new Date(d);
                                 return {
-                                        tag: /* Eq */0,
+                                        TAG: /* Eq */0,
                                         _0: [
                                           1984,
                                           4,
@@ -238,7 +238,7 @@ var suites_1 = /* :: */{
                                   var d = Date.UTC(1984, 4, 6, 3);
                                   var d$1 = new Date(d);
                                   return {
-                                          tag: /* Eq */0,
+                                          TAG: /* Eq */0,
                                           _0: [
                                             1984,
                                             4,
@@ -261,7 +261,7 @@ var suites_1 = /* :: */{
                                     var d = Date.UTC(1984, 4, 6, 3, 59);
                                     var d$1 = new Date(d);
                                     return {
-                                            tag: /* Eq */0,
+                                            TAG: /* Eq */0,
                                             _0: [
                                               1984,
                                               4,
@@ -286,7 +286,7 @@ var suites_1 = /* :: */{
                                       var d = Date.UTC(1984, 4, 6, 3, 59, 27);
                                       var d$1 = new Date(d);
                                       return {
-                                              tag: /* Eq */0,
+                                              TAG: /* Eq */0,
                                               _0: [
                                                 1984,
                                                 4,
@@ -311,7 +311,7 @@ var suites_1 = /* :: */{
                                     "getFullYear",
                                     (function (param) {
                                         return {
-                                                tag: /* Eq */0,
+                                                TAG: /* Eq */0,
                                                 _0: 1976,
                                                 _1: new Date("1976-03-08T12:34:56.789+01:23").getFullYear()
                                               };
@@ -322,7 +322,7 @@ var suites_1 = /* :: */{
                                       "getMilliseconds",
                                       (function (param) {
                                           return {
-                                                  tag: /* Eq */0,
+                                                  TAG: /* Eq */0,
                                                   _0: 789,
                                                   _1: new Date("1976-03-08T12:34:56.789+01:23").getMilliseconds()
                                                 };
@@ -333,7 +333,7 @@ var suites_1 = /* :: */{
                                         "getSeconds",
                                         (function (param) {
                                             return {
-                                                    tag: /* Eq */0,
+                                                    TAG: /* Eq */0,
                                                     _0: 56,
                                                     _1: new Date("1976-03-08T12:34:56.789+01:23").getSeconds()
                                                   };
@@ -344,7 +344,7 @@ var suites_1 = /* :: */{
                                           "getTime",
                                           (function (param) {
                                               return {
-                                                      tag: /* Eq */0,
+                                                      TAG: /* Eq */0,
                                                       _0: 195131516789,
                                                       _1: new Date("1976-03-08T12:34:56.789+01:23").getTime()
                                                     };
@@ -355,7 +355,7 @@ var suites_1 = /* :: */{
                                             "getUTCDate",
                                             (function (param) {
                                                 return {
-                                                        tag: /* Eq */0,
+                                                        TAG: /* Eq */0,
                                                         _0: 8,
                                                         _1: new Date("1976-03-08T12:34:56.789+01:23").getUTCDate()
                                                       };
@@ -366,7 +366,7 @@ var suites_1 = /* :: */{
                                               "getUTCDay",
                                               (function (param) {
                                                   return {
-                                                          tag: /* Eq */0,
+                                                          TAG: /* Eq */0,
                                                           _0: 1,
                                                           _1: new Date("1976-03-08T12:34:56.789+01:23").getUTCDay()
                                                         };
@@ -377,7 +377,7 @@ var suites_1 = /* :: */{
                                                 "getUTCFUllYear",
                                                 (function (param) {
                                                     return {
-                                                            tag: /* Eq */0,
+                                                            TAG: /* Eq */0,
                                                             _0: 1976,
                                                             _1: new Date("1976-03-08T12:34:56.789+01:23").getUTCFullYear()
                                                           };
@@ -388,7 +388,7 @@ var suites_1 = /* :: */{
                                                   "getUTCHours",
                                                   (function (param) {
                                                       return {
-                                                              tag: /* Eq */0,
+                                                              TAG: /* Eq */0,
                                                               _0: 11,
                                                               _1: new Date("1976-03-08T12:34:56.789+01:23").getUTCHours()
                                                             };
@@ -399,7 +399,7 @@ var suites_1 = /* :: */{
                                                     "getUTCMilliseconds",
                                                     (function (param) {
                                                         return {
-                                                                tag: /* Eq */0,
+                                                                TAG: /* Eq */0,
                                                                 _0: 789,
                                                                 _1: new Date("1976-03-08T12:34:56.789+01:23").getUTCMilliseconds()
                                                               };
@@ -410,7 +410,7 @@ var suites_1 = /* :: */{
                                                       "getUTCMinutes",
                                                       (function (param) {
                                                           return {
-                                                                  tag: /* Eq */0,
+                                                                  TAG: /* Eq */0,
                                                                   _0: 11,
                                                                   _1: new Date("1976-03-08T12:34:56.789+01:23").getUTCMinutes()
                                                                 };
@@ -421,7 +421,7 @@ var suites_1 = /* :: */{
                                                         "getUTCMonth",
                                                         (function (param) {
                                                             return {
-                                                                    tag: /* Eq */0,
+                                                                    TAG: /* Eq */0,
                                                                     _0: 2,
                                                                     _1: new Date("1976-03-08T12:34:56.789+01:23").getUTCMonth()
                                                                   };
@@ -432,7 +432,7 @@ var suites_1 = /* :: */{
                                                           "getUTCSeconds",
                                                           (function (param) {
                                                               return {
-                                                                      tag: /* Eq */0,
+                                                                      TAG: /* Eq */0,
                                                                       _0: 56,
                                                                       _1: new Date("1976-03-08T12:34:56.789+01:23").getUTCSeconds()
                                                                     };
@@ -443,7 +443,7 @@ var suites_1 = /* :: */{
                                                             "getYear",
                                                             (function (param) {
                                                                 return {
-                                                                        tag: /* Eq */0,
+                                                                        TAG: /* Eq */0,
                                                                         _0: 1976,
                                                                         _1: new Date("1976-03-08T12:34:56.789+01:23").getFullYear()
                                                                       };
@@ -456,7 +456,7 @@ var suites_1 = /* :: */{
                                                                   var d = new Date("1976-03-08T12:34:56.789+01:23");
                                                                   d.setDate(12);
                                                                   return {
-                                                                          tag: /* Eq */0,
+                                                                          TAG: /* Eq */0,
                                                                           _0: 12,
                                                                           _1: d.getDate()
                                                                         };
@@ -469,7 +469,7 @@ var suites_1 = /* :: */{
                                                                     var d = new Date("1976-03-08T12:34:56.789+01:23");
                                                                     d.setFullYear(1986);
                                                                     return {
-                                                                            tag: /* Eq */0,
+                                                                            TAG: /* Eq */0,
                                                                             _0: 1986,
                                                                             _1: d.getFullYear()
                                                                           };
@@ -482,7 +482,7 @@ var suites_1 = /* :: */{
                                                                       var d = new Date("1976-03-08T12:34:56.789+01:23");
                                                                       d.setFullYear(1986, 7);
                                                                       return {
-                                                                              tag: /* Eq */0,
+                                                                              TAG: /* Eq */0,
                                                                               _0: [
                                                                                 1986,
                                                                                 7
@@ -501,7 +501,7 @@ var suites_1 = /* :: */{
                                                                         var d = new Date("1976-03-08T12:34:56.789+01:23");
                                                                         d.setFullYear(1986, 7, 23);
                                                                         return {
-                                                                                tag: /* Eq */0,
+                                                                                TAG: /* Eq */0,
                                                                                 _0: [
                                                                                   1986,
                                                                                   7,
@@ -522,7 +522,7 @@ var suites_1 = /* :: */{
                                                                           var d = new Date("1976-03-08T12:34:56.789+01:23");
                                                                           d.setHours(22);
                                                                           return {
-                                                                                  tag: /* Eq */0,
+                                                                                  TAG: /* Eq */0,
                                                                                   _0: 22,
                                                                                   _1: d.getHours()
                                                                                 };
@@ -535,7 +535,7 @@ var suites_1 = /* :: */{
                                                                             var d = new Date("1976-03-08T12:34:56.789+01:23");
                                                                             d.setHours(22, 48);
                                                                             return {
-                                                                                    tag: /* Eq */0,
+                                                                                    TAG: /* Eq */0,
                                                                                     _0: [
                                                                                       22,
                                                                                       48
@@ -554,7 +554,7 @@ var suites_1 = /* :: */{
                                                                               var d = new Date("1976-03-08T12:34:56.789+01:23");
                                                                               d.setHours(22, 48, 54);
                                                                               return {
-                                                                                      tag: /* Eq */0,
+                                                                                      TAG: /* Eq */0,
                                                                                       _0: [
                                                                                         22,
                                                                                         48,
@@ -575,7 +575,7 @@ var suites_1 = /* :: */{
                                                                                 var d = new Date("1976-03-08T12:34:56.789+01:23");
                                                                                 d.setMilliseconds(543);
                                                                                 return {
-                                                                                        tag: /* Eq */0,
+                                                                                        TAG: /* Eq */0,
                                                                                         _0: 543,
                                                                                         _1: d.getMilliseconds()
                                                                                       };
@@ -588,7 +588,7 @@ var suites_1 = /* :: */{
                                                                                   var d = new Date("1976-03-08T12:34:56.789+01:23");
                                                                                   d.setMinutes(18);
                                                                                   return {
-                                                                                          tag: /* Eq */0,
+                                                                                          TAG: /* Eq */0,
                                                                                           _0: 18,
                                                                                           _1: d.getMinutes()
                                                                                         };
@@ -601,7 +601,7 @@ var suites_1 = /* :: */{
                                                                                     var d = new Date("1976-03-08T12:34:56.789+01:23");
                                                                                     d.setMinutes(18, 42);
                                                                                     return {
-                                                                                            tag: /* Eq */0,
+                                                                                            TAG: /* Eq */0,
                                                                                             _0: [
                                                                                               18,
                                                                                               42
@@ -620,7 +620,7 @@ var suites_1 = /* :: */{
                                                                                       var d = new Date("1976-03-08T12:34:56.789+01:23");
                                                                                       d.setMinutes(18, 42, 311);
                                                                                       return {
-                                                                                              tag: /* Eq */0,
+                                                                                              TAG: /* Eq */0,
                                                                                               _0: [
                                                                                                 18,
                                                                                                 42,
@@ -641,7 +641,7 @@ var suites_1 = /* :: */{
                                                                                         var d = new Date("1976-03-08T12:34:56.789+01:23");
                                                                                         d.setMonth(10);
                                                                                         return {
-                                                                                                tag: /* Eq */0,
+                                                                                                TAG: /* Eq */0,
                                                                                                 _0: 10,
                                                                                                 _1: d.getMonth()
                                                                                               };
@@ -654,7 +654,7 @@ var suites_1 = /* :: */{
                                                                                           var d = new Date("1976-03-08T12:34:56.789+01:23");
                                                                                           d.setMonth(10, 14);
                                                                                           return {
-                                                                                                  tag: /* Eq */0,
+                                                                                                  TAG: /* Eq */0,
                                                                                                   _0: [
                                                                                                     10,
                                                                                                     14
@@ -673,7 +673,7 @@ var suites_1 = /* :: */{
                                                                                             var d = new Date("1976-03-08T12:34:56.789+01:23");
                                                                                             d.setSeconds(36);
                                                                                             return {
-                                                                                                    tag: /* Eq */0,
+                                                                                                    TAG: /* Eq */0,
                                                                                                     _0: 36,
                                                                                                     _1: d.getSeconds()
                                                                                                   };
@@ -686,7 +686,7 @@ var suites_1 = /* :: */{
                                                                                               var d = new Date("1976-03-08T12:34:56.789+01:23");
                                                                                               d.setSeconds(36, 420);
                                                                                               return {
-                                                                                                      tag: /* Eq */0,
+                                                                                                      TAG: /* Eq */0,
                                                                                                       _0: [
                                                                                                         36,
                                                                                                         420
@@ -705,7 +705,7 @@ var suites_1 = /* :: */{
                                                                                                 var d = new Date("1976-03-08T12:34:56.789+01:23");
                                                                                                 d.setUTCDate(12);
                                                                                                 return {
-                                                                                                        tag: /* Eq */0,
+                                                                                                        TAG: /* Eq */0,
                                                                                                         _0: 12,
                                                                                                         _1: d.getUTCDate()
                                                                                                       };
@@ -718,7 +718,7 @@ var suites_1 = /* :: */{
                                                                                                   var d = new Date("1976-03-08T12:34:56.789+01:23");
                                                                                                   d.setUTCFullYear(1986);
                                                                                                   return {
-                                                                                                          tag: /* Eq */0,
+                                                                                                          TAG: /* Eq */0,
                                                                                                           _0: 1986,
                                                                                                           _1: d.getUTCFullYear()
                                                                                                         };
@@ -731,7 +731,7 @@ var suites_1 = /* :: */{
                                                                                                     var d = new Date("1976-03-08T12:34:56.789+01:23");
                                                                                                     d.setUTCFullYear(1986, 7);
                                                                                                     return {
-                                                                                                            tag: /* Eq */0,
+                                                                                                            TAG: /* Eq */0,
                                                                                                             _0: [
                                                                                                               1986,
                                                                                                               7
@@ -750,7 +750,7 @@ var suites_1 = /* :: */{
                                                                                                       var d = new Date("1976-03-08T12:34:56.789+01:23");
                                                                                                       d.setUTCFullYear(1986, 7, 23);
                                                                                                       return {
-                                                                                                              tag: /* Eq */0,
+                                                                                                              TAG: /* Eq */0,
                                                                                                               _0: [
                                                                                                                 1986,
                                                                                                                 7,
@@ -771,7 +771,7 @@ var suites_1 = /* :: */{
                                                                                                         var d = new Date("1976-03-08T12:34:56.789+01:23");
                                                                                                         d.setUTCHours(22);
                                                                                                         return {
-                                                                                                                tag: /* Eq */0,
+                                                                                                                TAG: /* Eq */0,
                                                                                                                 _0: 22,
                                                                                                                 _1: d.getUTCHours()
                                                                                                               };
@@ -784,7 +784,7 @@ var suites_1 = /* :: */{
                                                                                                           var d = new Date("1976-03-08T12:34:56.789+01:23");
                                                                                                           d.setUTCHours(22, 48);
                                                                                                           return {
-                                                                                                                  tag: /* Eq */0,
+                                                                                                                  TAG: /* Eq */0,
                                                                                                                   _0: [
                                                                                                                     22,
                                                                                                                     48
@@ -803,7 +803,7 @@ var suites_1 = /* :: */{
                                                                                                             var d = new Date("1976-03-08T12:34:56.789+01:23");
                                                                                                             d.setUTCHours(22, 48, 54);
                                                                                                             return {
-                                                                                                                    tag: /* Eq */0,
+                                                                                                                    TAG: /* Eq */0,
                                                                                                                     _0: [
                                                                                                                       22,
                                                                                                                       48,
@@ -824,7 +824,7 @@ var suites_1 = /* :: */{
                                                                                                               var d = new Date("1976-03-08T12:34:56.789+01:23");
                                                                                                               d.setUTCMilliseconds(543);
                                                                                                               return {
-                                                                                                                      tag: /* Eq */0,
+                                                                                                                      TAG: /* Eq */0,
                                                                                                                       _0: 543,
                                                                                                                       _1: d.getUTCMilliseconds()
                                                                                                                     };
@@ -837,7 +837,7 @@ var suites_1 = /* :: */{
                                                                                                                 var d = new Date("1976-03-08T12:34:56.789+01:23");
                                                                                                                 d.setUTCMinutes(18);
                                                                                                                 return {
-                                                                                                                        tag: /* Eq */0,
+                                                                                                                        TAG: /* Eq */0,
                                                                                                                         _0: 18,
                                                                                                                         _1: d.getUTCMinutes()
                                                                                                                       };
@@ -850,7 +850,7 @@ var suites_1 = /* :: */{
                                                                                                                   var d = new Date("1976-03-08T12:34:56.789+01:23");
                                                                                                                   d.setUTCMinutes(18, 42);
                                                                                                                   return {
-                                                                                                                          tag: /* Eq */0,
+                                                                                                                          TAG: /* Eq */0,
                                                                                                                           _0: [
                                                                                                                             18,
                                                                                                                             42
@@ -869,7 +869,7 @@ var suites_1 = /* :: */{
                                                                                                                     var d = new Date("1976-03-08T12:34:56.789+01:23");
                                                                                                                     d.setUTCMinutes(18, 42, 311);
                                                                                                                     return {
-                                                                                                                            tag: /* Eq */0,
+                                                                                                                            TAG: /* Eq */0,
                                                                                                                             _0: [
                                                                                                                               18,
                                                                                                                               42,
@@ -890,7 +890,7 @@ var suites_1 = /* :: */{
                                                                                                                       var d = new Date("1976-03-08T12:34:56.789+01:23");
                                                                                                                       d.setUTCMonth(10);
                                                                                                                       return {
-                                                                                                                              tag: /* Eq */0,
+                                                                                                                              TAG: /* Eq */0,
                                                                                                                               _0: 10,
                                                                                                                               _1: d.getUTCMonth()
                                                                                                                             };
@@ -903,7 +903,7 @@ var suites_1 = /* :: */{
                                                                                                                         var d = new Date("1976-03-08T12:34:56.789+01:23");
                                                                                                                         d.setUTCMonth(10, 14);
                                                                                                                         return {
-                                                                                                                                tag: /* Eq */0,
+                                                                                                                                TAG: /* Eq */0,
                                                                                                                                 _0: [
                                                                                                                                   10,
                                                                                                                                   14
@@ -922,7 +922,7 @@ var suites_1 = /* :: */{
                                                                                                                           var d = new Date("1976-03-08T12:34:56.789+01:23");
                                                                                                                           d.setUTCSeconds(36);
                                                                                                                           return {
-                                                                                                                                  tag: /* Eq */0,
+                                                                                                                                  TAG: /* Eq */0,
                                                                                                                                   _0: 36,
                                                                                                                                   _1: d.getUTCSeconds()
                                                                                                                                 };
@@ -935,7 +935,7 @@ var suites_1 = /* :: */{
                                                                                                                             var d = new Date("1976-03-08T12:34:56.789+01:23");
                                                                                                                             d.setUTCSeconds(36, 420);
                                                                                                                             return {
-                                                                                                                                    tag: /* Eq */0,
+                                                                                                                                    TAG: /* Eq */0,
                                                                                                                                     _0: [
                                                                                                                                       36,
                                                                                                                                       420
@@ -952,7 +952,7 @@ var suites_1 = /* :: */{
                                                                                                                           "toDateString",
                                                                                                                           (function (param) {
                                                                                                                               return {
-                                                                                                                                      tag: /* Eq */0,
+                                                                                                                                      TAG: /* Eq */0,
                                                                                                                                       _0: "Mon Mar 08 1976",
                                                                                                                                       _1: new Date("1976-03-08T12:34:56.789+01:23").toDateString()
                                                                                                                                     };
@@ -963,7 +963,7 @@ var suites_1 = /* :: */{
                                                                                                                             "toGMTString",
                                                                                                                             (function (param) {
                                                                                                                                 return {
-                                                                                                                                        tag: /* Eq */0,
+                                                                                                                                        TAG: /* Eq */0,
                                                                                                                                         _0: "Mon, 08 Mar 1976 11:11:56 GMT",
                                                                                                                                         _1: new Date("1976-03-08T12:34:56.789+01:23").toUTCString()
                                                                                                                                       };
@@ -974,7 +974,7 @@ var suites_1 = /* :: */{
                                                                                                                               "toISOString",
                                                                                                                               (function (param) {
                                                                                                                                   return {
-                                                                                                                                          tag: /* Eq */0,
+                                                                                                                                          TAG: /* Eq */0,
                                                                                                                                           _0: "1976-03-08T11:11:56.789Z",
                                                                                                                                           _1: new Date("1976-03-08T12:34:56.789+01:23").toISOString()
                                                                                                                                         };
@@ -985,7 +985,7 @@ var suites_1 = /* :: */{
                                                                                                                                 "toJSON",
                                                                                                                                 (function (param) {
                                                                                                                                     return {
-                                                                                                                                            tag: /* Eq */0,
+                                                                                                                                            TAG: /* Eq */0,
                                                                                                                                             _0: "1976-03-08T11:11:56.789Z",
                                                                                                                                             _1: new Date("1976-03-08T12:34:56.789+01:23").toJSON()
                                                                                                                                           };
@@ -996,7 +996,7 @@ var suites_1 = /* :: */{
                                                                                                                                   "toJSONUnsafe",
                                                                                                                                   (function (param) {
                                                                                                                                       return {
-                                                                                                                                              tag: /* Eq */0,
+                                                                                                                                              TAG: /* Eq */0,
                                                                                                                                               _0: "1976-03-08T11:11:56.789Z",
                                                                                                                                               _1: new Date("1976-03-08T12:34:56.789+01:23").toJSON()
                                                                                                                                             };
@@ -1007,7 +1007,7 @@ var suites_1 = /* :: */{
                                                                                                                                     "toUTCString",
                                                                                                                                     (function (param) {
                                                                                                                                         return {
-                                                                                                                                                tag: /* Eq */0,
+                                                                                                                                                TAG: /* Eq */0,
                                                                                                                                                 _0: "Mon, 08 Mar 1976 11:11:56 GMT",
                                                                                                                                                 _1: new Date("1976-03-08T12:34:56.789+01:23").toUTCString()
                                                                                                                                               };
@@ -1021,7 +1021,7 @@ var suites_1 = /* :: */{
                                                                                                                                           var b = new Date("2013-03-01T01:10:00");
                                                                                                                                           var c = new Date("2013-03-01T01:10:01");
                                                                                                                                           return {
-                                                                                                                                                  tag: /* Ok */4,
+                                                                                                                                                  TAG: /* Ok */4,
                                                                                                                                                   _0: Caml_obj.caml_equal(a, b) && Caml_obj.caml_notequal(b, c) && Caml_obj.caml_greaterthan(c, b)
                                                                                                                                                 };
                                                                                                                                         })

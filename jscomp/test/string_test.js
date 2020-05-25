@@ -137,7 +137,7 @@ Mt.from_pair_suites("String_test", /* :: */{
         "mutliple switch",
         (function (param) {
             return {
-                    tag: /* Eq */0,
+                    TAG: /* Eq */0,
                     _0: 9,
                     _1: ff("4")
                   };
@@ -148,7 +148,7 @@ Mt.from_pair_suites("String_test", /* :: */{
           "int switch",
           (function (param) {
               return {
-                      tag: /* Eq */0,
+                      TAG: /* Eq */0,
                       _0: 9,
                       _1: gg(4)
                     };
@@ -159,7 +159,7 @@ Mt.from_pair_suites("String_test", /* :: */{
             "escape_normal",
             (function (param) {
                 return {
-                        tag: /* Eq */0,
+                        TAG: /* Eq */0,
                         _0: "haha",
                         _1: $$String.escaped("haha")
                       };
@@ -170,7 +170,7 @@ Mt.from_pair_suites("String_test", /* :: */{
               "escape_bytes",
               (function (param) {
                   return {
-                          tag: /* Eq */0,
+                          TAG: /* Eq */0,
                           _0: Bytes.of_string("haha"),
                           _1: Bytes.escaped(Bytes.of_string("haha"))
                         };
@@ -181,7 +181,7 @@ Mt.from_pair_suites("String_test", /* :: */{
                 "escape_quote",
                 (function (param) {
                     return {
-                            tag: /* Eq */0,
+                            TAG: /* Eq */0,
                             _0: "\\\"\\\"",
                             _1: $$String.escaped("\"\"")
                           };
@@ -192,7 +192,7 @@ Mt.from_pair_suites("String_test", /* :: */{
                   "rev_split_by_char",
                   (function (param) {
                       return {
-                              tag: /* Eq */0,
+                              TAG: /* Eq */0,
                               _0: /* :: */{
                                 _0: "",
                                 _1: /* :: */{
@@ -212,7 +212,7 @@ Mt.from_pair_suites("String_test", /* :: */{
                     "File \"string_test.ml\", line 74, characters 2-9",
                     (function (param) {
                         return {
-                                tag: /* Eq */0,
+                                TAG: /* Eq */0,
                                 _0: /* :: */{
                                   _0: "aaaa",
                                   _1: /* [] */0
@@ -226,7 +226,7 @@ Mt.from_pair_suites("String_test", /* :: */{
                       "xsplit",
                       (function (param) {
                           return {
-                                  tag: /* Eq */0,
+                                  TAG: /* Eq */0,
                                   _0: /* :: */{
                                     _0: "a",
                                     _1: /* :: */{
@@ -246,7 +246,7 @@ Mt.from_pair_suites("String_test", /* :: */{
                         "split_empty",
                         (function (param) {
                             return {
-                                    tag: /* Eq */0,
+                                    TAG: /* Eq */0,
                                     _0: /* [] */0,
                                     _1: Ext_string_test.split(undefined, "", /* "_" */95)
                                   };
@@ -257,7 +257,7 @@ Mt.from_pair_suites("String_test", /* :: */{
                           "split_empty2",
                           (function (param) {
                               return {
-                                      tag: /* Eq */0,
+                                      TAG: /* Eq */0,
                                       _0: /* :: */{
                                         _0: "test_unsafe_obj_ffi_ppx.cmi",
                                         _1: /* [] */0
@@ -271,7 +271,7 @@ Mt.from_pair_suites("String_test", /* :: */{
                             "rfind",
                             (function (param) {
                                 return {
-                                        tag: /* Eq */0,
+                                        TAG: /* Eq */0,
                                         _0: 7,
                                         _1: Ext_string_test.rfind("__", "__index__js")
                                       };
@@ -282,7 +282,7 @@ Mt.from_pair_suites("String_test", /* :: */{
                               "rfind_2",
                               (function (param) {
                                   return {
-                                          tag: /* Eq */0,
+                                          TAG: /* Eq */0,
                                           _0: 0,
                                           _1: Ext_string_test.rfind("__", "__index_js")
                                         };
@@ -293,7 +293,7 @@ Mt.from_pair_suites("String_test", /* :: */{
                                 "rfind_3",
                                 (function (param) {
                                     return {
-                                            tag: /* Eq */0,
+                                            TAG: /* Eq */0,
                                             _0: -1,
                                             _1: Ext_string_test.rfind("__", "_index_js")
                                           };
@@ -304,7 +304,7 @@ Mt.from_pair_suites("String_test", /* :: */{
                                   "find",
                                   (function (param) {
                                       return {
-                                              tag: /* Eq */0,
+                                              TAG: /* Eq */0,
                                               _0: 0,
                                               _1: Ext_string_test.find(undefined, "__", "__index__js")
                                             };
@@ -315,7 +315,7 @@ Mt.from_pair_suites("String_test", /* :: */{
                                     "find_2",
                                     (function (param) {
                                         return {
-                                                tag: /* Eq */0,
+                                                TAG: /* Eq */0,
                                                 _0: 6,
                                                 _1: Ext_string_test.find(undefined, "__", "_index__js")
                                               };
@@ -326,7 +326,7 @@ Mt.from_pair_suites("String_test", /* :: */{
                                       "find_3",
                                       (function (param) {
                                           return {
-                                                  tag: /* Eq */0,
+                                                  TAG: /* Eq */0,
                                                   _0: -1,
                                                   _1: Ext_string_test.find(undefined, "__", "_index_js")
                                                 };
@@ -337,7 +337,7 @@ Mt.from_pair_suites("String_test", /* :: */{
                                         "of_char",
                                         (function (param) {
                                             return {
-                                                    tag: /* Eq */0,
+                                                    TAG: /* Eq */0,
                                                     _0: String.fromCharCode(/* "0" */48),
                                                     _1: Caml_bytes.bytes_to_string(Bytes.make(1, /* "0" */48))
                                                   };
@@ -348,7 +348,7 @@ Mt.from_pair_suites("String_test", /* :: */{
                                           "of_chars",
                                           (function (param) {
                                               return {
-                                                      tag: /* Eq */0,
+                                                      TAG: /* Eq */0,
                                                       _0: string_of_chars(/* :: */{
                                                             _0: /* "0" */48,
                                                             _1: /* :: */{

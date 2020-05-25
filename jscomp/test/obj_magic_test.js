@@ -10,7 +10,7 @@ var suites_0 = [
   "is_block_test1",
   (function (param) {
       return {
-              tag: /* Eq */0,
+              TAG: /* Eq */0,
               _0: false,
               _1: false
             };
@@ -22,7 +22,7 @@ var suites_1 = /* :: */{
     "is_block_test2",
     (function (param) {
         return {
-                tag: /* Eq */0,
+                TAG: /* Eq */0,
                 _0: true,
                 _1: typeof /* :: */({
                     _0: 3,
@@ -36,7 +36,7 @@ var suites_1 = /* :: */{
       "is_block_test3",
       (function (param) {
           return {
-                  tag: /* Eq */0,
+                  TAG: /* Eq */0,
                   _0: true,
                   _1: true
                 };
@@ -47,7 +47,7 @@ var suites_1 = /* :: */{
         "is_block_test4",
         (function (param) {
             return {
-                    tag: /* Eq */0,
+                    TAG: /* Eq */0,
                     _0: false,
                     _1: false
                   };

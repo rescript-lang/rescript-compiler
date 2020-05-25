@@ -349,7 +349,7 @@ Mt.from_pair_suites("Map_find_test", /* :: */{
         "int",
         (function (param) {
             return {
-                    tag: /* Eq */0,
+                    TAG: /* Eq */0,
                     _0: find(10, m),
                     _1: /* "a" */97
                   };
@@ -360,7 +360,7 @@ Mt.from_pair_suites("Map_find_test", /* :: */{
           "string",
           (function (param) {
               return {
-                      tag: /* Eq */0,
+                      TAG: /* Eq */0,
                       _0: find$1("10", s),
                       _1: /* "a" */97
                     };

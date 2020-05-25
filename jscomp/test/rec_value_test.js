@@ -228,7 +228,7 @@ function rec_variant_b_1(param) {
 }
 
 var rec_variant_b = {
-  tag: /* B */0,
+  TAG: /* B */0,
   _0: "gho",
   _1: rec_variant_b_1
 };
@@ -238,7 +238,7 @@ function rec_variant_a_1(param) {
 }
 
 var rec_variant_a = {
-  tag: /* A */1,
+  TAG: /* A */1,
   _0: 3,
   _1: rec_variant_a_1
 };
@@ -298,7 +298,7 @@ function ptl(l) {
 var y00 = {};
 
 Caml_obj.update_dummy(y00, {
-      tag: /* C1 */1,
+      TAG: /* C1 */1,
       hd: 1,
       tail: y00
     });
@@ -315,7 +315,7 @@ var suites_0 = [
   "File \"rec_value_test.ml\", line 126, characters 2-9",
   (function (param) {
       return {
-              tag: /* Eq */0,
+              TAG: /* Eq */0,
               _0: 1,
               _1: phd(ptl(ptl(x0)))
             };
@@ -327,7 +327,7 @@ var suites_1 = /* :: */{
     "File \"rec_value_test.ml\", line 128, characters 2-9",
     (function (param) {
         return {
-                tag: /* Eq */0,
+                TAG: /* Eq */0,
                 _0: 1,
                 _1: 1
               };
@@ -338,7 +338,7 @@ var suites_1 = /* :: */{
       "hd",
       (function (param) {
           return {
-                  tag: /* Eq */0,
+                  TAG: /* Eq */0,
                   _0: 1,
                   _1: List.hd(List.tl(x))
                 };
@@ -376,7 +376,7 @@ var suites_1 = /* :: */{
                   };
             }
             return {
-                    tag: /* Eq */0,
+                    TAG: /* Eq */0,
                     _0: 3,
                     _1: tmp
                   };
@@ -387,7 +387,7 @@ var suites_1 = /* :: */{
           "rec_sum",
           (function (param) {
               return {
-                      tag: /* Eq */0,
+                      TAG: /* Eq */0,
                       _0: 55,
                       _1: sum(0, 10)
                     };
@@ -398,7 +398,7 @@ var suites_1 = /* :: */{
             "File \"rec_value_test.ml\", line 143, characters 2-9",
             (function (param) {
                 return {
-                        tag: /* Eq */0,
+                        TAG: /* Eq */0,
                         _0: /* :: */{
                           _0: 1,
                           _1: /* :: */{
@@ -415,7 +415,7 @@ var suites_1 = /* :: */{
               "File \"rec_value_test.ml\", line 146, characters 2-9",
               (function (param) {
                   return {
-                          tag: /* Eq */0,
+                          TAG: /* Eq */0,
                           _0: /* :: */{
                             _0: 2,
                             _1: /* :: */{
@@ -432,7 +432,7 @@ var suites_1 = /* :: */{
                 "File \"rec_value_test.ml\", line 149, characters 2-9",
                 (function (param) {
                     return {
-                            tag: /* Eq */0,
+                            TAG: /* Eq */0,
                             _0: /* :: */{
                               _0: 1,
                               _1: /* :: */{
@@ -452,7 +452,7 @@ var suites_1 = /* :: */{
                   "File \"rec_value_test.ml\", line 152, characters 2-9",
                   (function (param) {
                       return {
-                              tag: /* Eq */0,
+                              TAG: /* Eq */0,
                               _0: /* :: */{
                                 _0: 1,
                                 _1: /* :: */{
@@ -475,7 +475,7 @@ var suites_1 = /* :: */{
                     "File \"rec_value_test.ml\", line 155, characters 2-9",
                     (function (param) {
                         return {
-                                tag: /* Eq */0,
+                                TAG: /* Eq */0,
                                 _0: /* :: */{
                                   _0: 2,
                                   _1: /* :: */{
@@ -492,7 +492,7 @@ var suites_1 = /* :: */{
                       "File \"rec_value_test.ml\", line 158, characters 2-9",
                       (function (param) {
                           return {
-                                  tag: /* Eq */0,
+                                  TAG: /* Eq */0,
                                   _0: 3,
                                   _1: 3
                                 };
@@ -502,9 +502,9 @@ var suites_1 = /* :: */{
                       _0: [
                         "File \"rec_value_test.ml\", line 161, characters 2-9",
                         (function (param) {
-                            if (!rec_variant_b.tag) {
+                            if (!rec_variant_b.TAG) {
                               return {
-                                      tag: /* Eq */0,
+                                      TAG: /* Eq */0,
                                       _0: Curry._1(rec_variant_b_1, undefined),
                                       _1: rec_variant_a
                                     };
@@ -524,9 +524,9 @@ var suites_1 = /* :: */{
                         _0: [
                           "File \"rec_value_test.ml\", line 166, characters 2-9",
                           (function (param) {
-                              if (rec_variant_a.tag) {
+                              if (rec_variant_a.TAG) {
                                 return {
-                                        tag: /* Eq */0,
+                                        TAG: /* Eq */0,
                                         _0: Curry._1(rec_variant_a_1, undefined),
                                         _1: rec_variant_b
                                       };

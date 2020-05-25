@@ -15,7 +15,7 @@ var suites_0 = [
         5
       ];
       return {
-              tag: /* Eq */0,
+              TAG: /* Eq */0,
               _0: [
                 2,
                 4
@@ -39,7 +39,7 @@ var suites_1 = /* :: */{
           5
         ];
         return {
-                tag: /* Eq */0,
+                TAG: /* Eq */0,
                 _0: true,
                 _1: (Js_vector.filterInPlace((function (x) {
                           return x > 10;
@@ -52,7 +52,7 @@ var suites_1 = /* :: */{
       "isArray_array",
       (function (param) {
           return {
-                  tag: /* Eq */0,
+                  TAG: /* Eq */0,
                   _0: true,
                   _1: Array.isArray([])
                 };
@@ -63,7 +63,7 @@ var suites_1 = /* :: */{
         "isArray_int",
         (function (param) {
             return {
-                    tag: /* Eq */0,
+                    TAG: /* Eq */0,
                     _0: false,
                     _1: Array.isArray(34)
                   };
@@ -74,7 +74,7 @@ var suites_1 = /* :: */{
           "length",
           (function (param) {
               return {
-                      tag: /* Eq */0,
+                      TAG: /* Eq */0,
                       _0: 3,
                       _1: [
                         1,
@@ -89,7 +89,7 @@ var suites_1 = /* :: */{
             "copyWithin",
             (function (param) {
                 return {
-                        tag: /* Eq */0,
+                        TAG: /* Eq */0,
                         _0: [
                           1,
                           2,
@@ -112,7 +112,7 @@ var suites_1 = /* :: */{
               "copyWithinFrom",
               (function (param) {
                   return {
-                          tag: /* Eq */0,
+                          TAG: /* Eq */0,
                           _0: [
                             4,
                             5,
@@ -135,7 +135,7 @@ var suites_1 = /* :: */{
                 "copyWithinFromRange",
                 (function (param) {
                     return {
-                            tag: /* Eq */0,
+                            TAG: /* Eq */0,
                             _0: [
                               4,
                               2,
@@ -158,7 +158,7 @@ var suites_1 = /* :: */{
                   "fillInPlace",
                   (function (param) {
                       return {
-                              tag: /* Eq */0,
+                              TAG: /* Eq */0,
                               _0: [
                                 4,
                                 4,
@@ -177,7 +177,7 @@ var suites_1 = /* :: */{
                     "fillFromInPlace",
                     (function (param) {
                         return {
-                                tag: /* Eq */0,
+                                TAG: /* Eq */0,
                                 _0: [
                                   1,
                                   4,
@@ -196,7 +196,7 @@ var suites_1 = /* :: */{
                       "fillRangeInPlace",
                       (function (param) {
                           return {
-                                  tag: /* Eq */0,
+                                  TAG: /* Eq */0,
                                   _0: [
                                     1,
                                     4,
@@ -215,7 +215,7 @@ var suites_1 = /* :: */{
                         "pop",
                         (function (param) {
                             return {
-                                    tag: /* Eq */0,
+                                    TAG: /* Eq */0,
                                     _0: 3,
                                     _1: Caml_option.undefined_to_opt([
                                             1,
@@ -230,7 +230,7 @@ var suites_1 = /* :: */{
                           "pop - empty array",
                           (function (param) {
                               return {
-                                      tag: /* Eq */0,
+                                      TAG: /* Eq */0,
                                       _0: undefined,
                                       _1: Caml_option.undefined_to_opt([].pop())
                                     };
@@ -241,7 +241,7 @@ var suites_1 = /* :: */{
                             "push",
                             (function (param) {
                                 return {
-                                        tag: /* Eq */0,
+                                        TAG: /* Eq */0,
                                         _0: 4,
                                         _1: [
                                             1,
@@ -256,7 +256,7 @@ var suites_1 = /* :: */{
                               "pushMany",
                               (function (param) {
                                   return {
-                                          tag: /* Eq */0,
+                                          TAG: /* Eq */0,
                                           _0: 5,
                                           _1: [
                                               1,
@@ -271,7 +271,7 @@ var suites_1 = /* :: */{
                                 "reverseInPlace",
                                 (function (param) {
                                     return {
-                                            tag: /* Eq */0,
+                                            TAG: /* Eq */0,
                                             _0: [
                                               3,
                                               2,
@@ -290,7 +290,7 @@ var suites_1 = /* :: */{
                                   "shift",
                                   (function (param) {
                                       return {
-                                              tag: /* Eq */0,
+                                              TAG: /* Eq */0,
                                               _0: 1,
                                               _1: Caml_option.undefined_to_opt([
                                                       1,
@@ -305,7 +305,7 @@ var suites_1 = /* :: */{
                                     "shift - empty array",
                                     (function (param) {
                                         return {
-                                                tag: /* Eq */0,
+                                                TAG: /* Eq */0,
                                                 _0: undefined,
                                                 _1: Caml_option.undefined_to_opt([].shift())
                                               };
@@ -316,7 +316,7 @@ var suites_1 = /* :: */{
                                       "sortInPlace",
                                       (function (param) {
                                           return {
-                                                  tag: /* Eq */0,
+                                                  TAG: /* Eq */0,
                                                   _0: [
                                                     1,
                                                     2,
@@ -335,7 +335,7 @@ var suites_1 = /* :: */{
                                         "sortInPlaceWith",
                                         (function (param) {
                                             return {
-                                                    tag: /* Eq */0,
+                                                    TAG: /* Eq */0,
                                                     _0: [
                                                       3,
                                                       2,
@@ -363,7 +363,7 @@ var suites_1 = /* :: */{
                                               ];
                                               var removed = arr.splice(2, 0, 5);
                                               return {
-                                                      tag: /* Eq */0,
+                                                      TAG: /* Eq */0,
                                                       _0: [
                                                         [
                                                           1,
@@ -393,7 +393,7 @@ var suites_1 = /* :: */{
                                                 ];
                                                 var removed = arr.splice(2);
                                                 return {
-                                                        tag: /* Eq */0,
+                                                        TAG: /* Eq */0,
                                                         _0: [
                                                           [
                                                             1,
@@ -423,7 +423,7 @@ var suites_1 = /* :: */{
                                                   ];
                                                   var removed = arr.splice(2, 1);
                                                   return {
-                                                          tag: /* Eq */0,
+                                                          TAG: /* Eq */0,
                                                           _0: [
                                                             [
                                                               1,
@@ -444,7 +444,7 @@ var suites_1 = /* :: */{
                                                 "unshift",
                                                 (function (param) {
                                                     return {
-                                                            tag: /* Eq */0,
+                                                            TAG: /* Eq */0,
                                                             _0: 4,
                                                             _1: [
                                                                 1,
@@ -459,7 +459,7 @@ var suites_1 = /* :: */{
                                                   "unshiftMany",
                                                   (function (param) {
                                                       return {
-                                                              tag: /* Eq */0,
+                                                              TAG: /* Eq */0,
                                                               _0: 5,
                                                               _1: [
                                                                   1,
@@ -474,7 +474,7 @@ var suites_1 = /* :: */{
                                                     "append",
                                                     (function (param) {
                                                         return {
-                                                                tag: /* Eq */0,
+                                                                TAG: /* Eq */0,
                                                                 _0: [
                                                                   1,
                                                                   2,
@@ -494,7 +494,7 @@ var suites_1 = /* :: */{
                                                       "concat",
                                                       (function (param) {
                                                           return {
-                                                                  tag: /* Eq */0,
+                                                                  TAG: /* Eq */0,
                                                                   _0: [
                                                                     1,
                                                                     2,
@@ -518,7 +518,7 @@ var suites_1 = /* :: */{
                                                         "concatMany",
                                                         (function (param) {
                                                             return {
-                                                                    tag: /* Eq */0,
+                                                                    TAG: /* Eq */0,
                                                                     _0: [
                                                                       1,
                                                                       2,
@@ -547,7 +547,7 @@ var suites_1 = /* :: */{
                                                           "includes",
                                                           (function (param) {
                                                               return {
-                                                                      tag: /* Eq */0,
+                                                                      TAG: /* Eq */0,
                                                                       _0: true,
                                                                       _1: [
                                                                           1,
@@ -562,7 +562,7 @@ var suites_1 = /* :: */{
                                                             "indexOf",
                                                             (function (param) {
                                                                 return {
-                                                                        tag: /* Eq */0,
+                                                                        TAG: /* Eq */0,
                                                                         _0: 1,
                                                                         _1: [
                                                                             1,
@@ -577,7 +577,7 @@ var suites_1 = /* :: */{
                                                               "indexOfFrom",
                                                               (function (param) {
                                                                   return {
-                                                                          tag: /* Eq */0,
+                                                                          TAG: /* Eq */0,
                                                                           _0: 3,
                                                                           _1: [
                                                                               1,
@@ -593,7 +593,7 @@ var suites_1 = /* :: */{
                                                                 "join",
                                                                 (function (param) {
                                                                     return {
-                                                                            tag: /* Eq */0,
+                                                                            TAG: /* Eq */0,
                                                                             _0: "1,2,3",
                                                                             _1: [
                                                                                 1,
@@ -608,7 +608,7 @@ var suites_1 = /* :: */{
                                                                   "joinWith",
                                                                   (function (param) {
                                                                       return {
-                                                                              tag: /* Eq */0,
+                                                                              TAG: /* Eq */0,
                                                                               _0: "1;2;3",
                                                                               _1: [
                                                                                   1,
@@ -623,7 +623,7 @@ var suites_1 = /* :: */{
                                                                     "lastIndexOf",
                                                                     (function (param) {
                                                                         return {
-                                                                                tag: /* Eq */0,
+                                                                                TAG: /* Eq */0,
                                                                                 _0: 1,
                                                                                 _1: [
                                                                                     1,
@@ -638,7 +638,7 @@ var suites_1 = /* :: */{
                                                                       "lastIndexOfFrom",
                                                                       (function (param) {
                                                                           return {
-                                                                                  tag: /* Eq */0,
+                                                                                  TAG: /* Eq */0,
                                                                                   _0: 1,
                                                                                   _1: [
                                                                                       1,
@@ -654,7 +654,7 @@ var suites_1 = /* :: */{
                                                                         "slice",
                                                                         (function (param) {
                                                                             return {
-                                                                                    tag: /* Eq */0,
+                                                                                    TAG: /* Eq */0,
                                                                                     _0: [
                                                                                       2,
                                                                                       3
@@ -674,7 +674,7 @@ var suites_1 = /* :: */{
                                                                           "copy",
                                                                           (function (param) {
                                                                               return {
-                                                                                      tag: /* Eq */0,
+                                                                                      TAG: /* Eq */0,
                                                                                       _0: [
                                                                                         1,
                                                                                         2,
@@ -697,7 +697,7 @@ var suites_1 = /* :: */{
                                                                             "sliceFrom",
                                                                             (function (param) {
                                                                                 return {
-                                                                                        tag: /* Eq */0,
+                                                                                        TAG: /* Eq */0,
                                                                                         _0: [
                                                                                           3,
                                                                                           4,
@@ -718,7 +718,7 @@ var suites_1 = /* :: */{
                                                                               "toString",
                                                                               (function (param) {
                                                                                   return {
-                                                                                          tag: /* Eq */0,
+                                                                                          TAG: /* Eq */0,
                                                                                           _0: "1,2,3",
                                                                                           _1: [
                                                                                               1,
@@ -733,7 +733,7 @@ var suites_1 = /* :: */{
                                                                                 "toLocaleString",
                                                                                 (function (param) {
                                                                                     return {
-                                                                                            tag: /* Eq */0,
+                                                                                            TAG: /* Eq */0,
                                                                                             _0: "1,2,3",
                                                                                             _1: [
                                                                                                 1,
@@ -748,7 +748,7 @@ var suites_1 = /* :: */{
                                                                                   "every",
                                                                                   (function (param) {
                                                                                       return {
-                                                                                              tag: /* Eq */0,
+                                                                                              TAG: /* Eq */0,
                                                                                               _0: true,
                                                                                               _1: [
                                                                                                   1,
@@ -765,7 +765,7 @@ var suites_1 = /* :: */{
                                                                                     "everyi",
                                                                                     (function (param) {
                                                                                         return {
-                                                                                                tag: /* Eq */0,
+                                                                                                TAG: /* Eq */0,
                                                                                                 _0: false,
                                                                                                 _1: [
                                                                                                     1,
@@ -782,7 +782,7 @@ var suites_1 = /* :: */{
                                                                                       "filter",
                                                                                       (function (param) {
                                                                                           return {
-                                                                                                  tag: /* Eq */0,
+                                                                                                  TAG: /* Eq */0,
                                                                                                   _0: [
                                                                                                     2,
                                                                                                     4
@@ -803,7 +803,7 @@ var suites_1 = /* :: */{
                                                                                         "filteri",
                                                                                         (function (param) {
                                                                                             return {
-                                                                                                    tag: /* Eq */0,
+                                                                                                    TAG: /* Eq */0,
                                                                                                     _0: [
                                                                                                       1,
                                                                                                       3
@@ -824,7 +824,7 @@ var suites_1 = /* :: */{
                                                                                           "find",
                                                                                           (function (param) {
                                                                                               return {
-                                                                                                      tag: /* Eq */0,
+                                                                                                      TAG: /* Eq */0,
                                                                                                       _0: 2,
                                                                                                       _1: Caml_option.undefined_to_opt([
                                                                                                               1,
@@ -842,7 +842,7 @@ var suites_1 = /* :: */{
                                                                                             "find - no match",
                                                                                             (function (param) {
                                                                                                 return {
-                                                                                                        tag: /* Eq */0,
+                                                                                                        TAG: /* Eq */0,
                                                                                                         _0: undefined,
                                                                                                         _1: Caml_option.undefined_to_opt([
                                                                                                                 1,
@@ -860,7 +860,7 @@ var suites_1 = /* :: */{
                                                                                               "findi",
                                                                                               (function (param) {
                                                                                                   return {
-                                                                                                          tag: /* Eq */0,
+                                                                                                          TAG: /* Eq */0,
                                                                                                           _0: 1,
                                                                                                           _1: Caml_option.undefined_to_opt([
                                                                                                                   1,
@@ -878,7 +878,7 @@ var suites_1 = /* :: */{
                                                                                                 "findi - no match",
                                                                                                 (function (param) {
                                                                                                     return {
-                                                                                                            tag: /* Eq */0,
+                                                                                                            TAG: /* Eq */0,
                                                                                                             _0: undefined,
                                                                                                             _1: Caml_option.undefined_to_opt([
                                                                                                                     1,
@@ -896,7 +896,7 @@ var suites_1 = /* :: */{
                                                                                                   "findIndex",
                                                                                                   (function (param) {
                                                                                                       return {
-                                                                                                              tag: /* Eq */0,
+                                                                                                              TAG: /* Eq */0,
                                                                                                               _0: 1,
                                                                                                               _1: [
                                                                                                                   1,
@@ -914,7 +914,7 @@ var suites_1 = /* :: */{
                                                                                                     "findIndexi",
                                                                                                     (function (param) {
                                                                                                         return {
-                                                                                                                tag: /* Eq */0,
+                                                                                                                TAG: /* Eq */0,
                                                                                                                 _0: 0,
                                                                                                                 _1: [
                                                                                                                     1,
@@ -943,7 +943,7 @@ var suites_1 = /* :: */{
                                                                                                                 
                                                                                                               });
                                                                                                           return {
-                                                                                                                  tag: /* Eq */0,
+                                                                                                                  TAG: /* Eq */0,
                                                                                                                   _0: 6,
                                                                                                                   _1: sum.contents
                                                                                                                 };
@@ -965,7 +965,7 @@ var suites_1 = /* :: */{
                                                                                                                   
                                                                                                                 });
                                                                                                             return {
-                                                                                                                    tag: /* Eq */0,
+                                                                                                                    TAG: /* Eq */0,
                                                                                                                     _0: 3,
                                                                                                                     _1: sum.contents
                                                                                                                   };
@@ -976,7 +976,7 @@ var suites_1 = /* :: */{
                                                                                                           "map",
                                                                                                           (function (param) {
                                                                                                               return {
-                                                                                                                      tag: /* Eq */0,
+                                                                                                                      TAG: /* Eq */0,
                                                                                                                       _0: [
                                                                                                                         2,
                                                                                                                         4,
@@ -999,7 +999,7 @@ var suites_1 = /* :: */{
                                                                                                             "map",
                                                                                                             (function (param) {
                                                                                                                 return {
-                                                                                                                        tag: /* Eq */0,
+                                                                                                                        TAG: /* Eq */0,
                                                                                                                         _0: [
                                                                                                                           0,
                                                                                                                           2,
@@ -1022,7 +1022,7 @@ var suites_1 = /* :: */{
                                                                                                               "reduce",
                                                                                                               (function (param) {
                                                                                                                   return {
-                                                                                                                          tag: /* Eq */0,
+                                                                                                                          TAG: /* Eq */0,
                                                                                                                           _0: -10,
                                                                                                                           _1: [
                                                                                                                               1,
@@ -1040,7 +1040,7 @@ var suites_1 = /* :: */{
                                                                                                                 "reducei",
                                                                                                                 (function (param) {
                                                                                                                     return {
-                                                                                                                            tag: /* Eq */0,
+                                                                                                                            TAG: /* Eq */0,
                                                                                                                             _0: -6,
                                                                                                                             _1: [
                                                                                                                                 1,
@@ -1058,7 +1058,7 @@ var suites_1 = /* :: */{
                                                                                                                   "reduceRight",
                                                                                                                   (function (param) {
                                                                                                                       return {
-                                                                                                                              tag: /* Eq */0,
+                                                                                                                              TAG: /* Eq */0,
                                                                                                                               _0: -10,
                                                                                                                               _1: [
                                                                                                                                   1,
@@ -1076,7 +1076,7 @@ var suites_1 = /* :: */{
                                                                                                                     "reduceRighti",
                                                                                                                     (function (param) {
                                                                                                                         return {
-                                                                                                                                tag: /* Eq */0,
+                                                                                                                                TAG: /* Eq */0,
                                                                                                                                 _0: -6,
                                                                                                                                 _1: [
                                                                                                                                     1,
@@ -1094,7 +1094,7 @@ var suites_1 = /* :: */{
                                                                                                                       "some",
                                                                                                                       (function (param) {
                                                                                                                           return {
-                                                                                                                                  tag: /* Eq */0,
+                                                                                                                                  TAG: /* Eq */0,
                                                                                                                                   _0: false,
                                                                                                                                   _1: [
                                                                                                                                       1,
@@ -1112,7 +1112,7 @@ var suites_1 = /* :: */{
                                                                                                                         "somei",
                                                                                                                         (function (param) {
                                                                                                                             return {
-                                                                                                                                    tag: /* Eq */0,
+                                                                                                                                    TAG: /* Eq */0,
                                                                                                                                     _0: true,
                                                                                                                                     _1: [
                                                                                                                                         1,

@@ -13,7 +13,7 @@ Mt.from_pair_suites("Print_alpha_test", /* :: */{
         "File \"print_alpha_test.ml\", line 15, characters 4-11",
         (function (param) {
             return {
-                    tag: /* Eq */0,
+                    TAG: /* Eq */0,
                     _0: f((function (prim, prim$1) {
                               return prim + prim$1 | 0;
                             }), undefined)(1, 2),

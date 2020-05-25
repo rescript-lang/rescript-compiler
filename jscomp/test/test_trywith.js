@@ -117,7 +117,7 @@ function f(x) {
   if (typeof x === "number") {
     return 2;
   }
-  if (!x.tag) {
+  if (!x.TAG) {
     return 1;
   }
   throw {

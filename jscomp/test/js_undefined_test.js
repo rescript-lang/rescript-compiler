@@ -8,7 +8,7 @@ var suites_0 = [
   "toOption - empty",
   (function (param) {
       return {
-              tag: /* Eq */0,
+              TAG: /* Eq */0,
               _0: undefined,
               _1: undefined
             };
@@ -20,7 +20,7 @@ var suites_1 = /* :: */{
     "File \"js_undefined_test.ml\", line 5, characters 2-9",
     (function (param) {
         return {
-                tag: /* Eq */0,
+                TAG: /* Eq */0,
                 _0: undefined,
                 _1: undefined
               };
@@ -31,7 +31,7 @@ var suites_1 = /* :: */{
       "return",
       (function (param) {
           return {
-                  tag: /* Eq */0,
+                  TAG: /* Eq */0,
                   _0: "something",
                   _1: Caml_option.undefined_to_opt("something")
                 };
@@ -42,7 +42,7 @@ var suites_1 = /* :: */{
         "test - empty",
         (function (param) {
             return {
-                    tag: /* Eq */0,
+                    TAG: /* Eq */0,
                     _0: true,
                     _1: true
                   };
@@ -53,7 +53,7 @@ var suites_1 = /* :: */{
           "File \"js_undefined_test.ml\", line 8, characters 2-9",
           (function (param) {
               return {
-                      tag: /* Eq */0,
+                      TAG: /* Eq */0,
                       _0: true,
                       _1: true
                     };
@@ -64,7 +64,7 @@ var suites_1 = /* :: */{
             "bind - empty",
             (function (param) {
                 return {
-                        tag: /* Eq */0,
+                        TAG: /* Eq */0,
                         _0: undefined,
                         _1: Js_undefined.bind(undefined, (function (v) {
                                 return v;
@@ -77,7 +77,7 @@ var suites_1 = /* :: */{
               "bind - 'a",
               (function (param) {
                   return {
-                          tag: /* Eq */0,
+                          TAG: /* Eq */0,
                           _0: 4,
                           _1: Js_undefined.bind(2, (function (n) {
                                   return (n << 1);
@@ -97,7 +97,7 @@ var suites_1 = /* :: */{
                             
                           }));
                     return {
-                            tag: /* Eq */0,
+                            TAG: /* Eq */0,
                             _0: false,
                             _1: hit.contents
                           };
@@ -115,7 +115,7 @@ var suites_1 = /* :: */{
                               
                             }));
                       return {
-                              tag: /* Eq */0,
+                              TAG: /* Eq */0,
                               _0: 2,
                               _1: hit.contents
                             };
@@ -126,7 +126,7 @@ var suites_1 = /* :: */{
                     "fromOption - None",
                     (function (param) {
                         return {
-                                tag: /* Eq */0,
+                                TAG: /* Eq */0,
                                 _0: undefined,
                                 _1: Js_undefined.fromOption(undefined)
                               };
@@ -137,7 +137,7 @@ var suites_1 = /* :: */{
                       "fromOption - Some",
                       (function (param) {
                           return {
-                                  tag: /* Eq */0,
+                                  TAG: /* Eq */0,
                                   _0: 2,
                                   _1: Js_undefined.fromOption(2)
                                 };

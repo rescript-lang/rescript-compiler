@@ -101,7 +101,7 @@ function f1(x) {
 eq("File \"large_record_duplication_test.ml\", line 140, characters 6-13", get_x0(f1(v1)), 1);
 
 var v2 = {
-  tag: /* A0 */0,
+  TAG: /* A0 */0,
   x0: 9,
   x1: 9,
   x2: 9,
@@ -128,7 +128,7 @@ var v2 = {
 };
 
 function get_x0$1(x) {
-  if (x.tag) {
+  if (x.TAG) {
     return ;
   } else {
     return x.x0;
@@ -136,7 +136,7 @@ function get_x0$1(x) {
 }
 
 function f2(x) {
-  if (x.tag) {
+  if (x.TAG) {
     return x;
   }
   var newrecord = Caml_obj.caml_obj_dup(x);

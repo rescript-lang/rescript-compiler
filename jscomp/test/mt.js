@@ -52,7 +52,7 @@ function close_enough(thresholdOpt, a, b) {
 }
 
 function handleCode(spec) {
-  switch (spec.tag | 0) {
+  switch (spec.TAG | 0) {
     case /* Eq */0 :
         Assert.deepEqual(spec._0, spec._1);
         return ;
@@ -119,7 +119,7 @@ function from_pair_suites(name, suites) {
       return List.iter((function (param) {
                     var name = param[0];
                     var fn = Curry._1(param[1], undefined);
-                    switch (fn.tag | 0) {
+                    switch (fn.TAG | 0) {
                       case /* Eq */0 :
                           console.log([
                                 name,
@@ -227,7 +227,7 @@ function eq_suites(test_id, suites, loc, x, y) {
       loc + (" id " + String(test_id.contents)),
       (function (param) {
           return {
-                  tag: /* Eq */0,
+                  TAG: /* Eq */0,
                   _0: x,
                   _1: y
                 };
@@ -245,7 +245,7 @@ function bool_suites(test_id, suites, loc, x) {
       loc + (" id " + String(test_id.contents)),
       (function (param) {
           return {
-                  tag: /* Ok */4,
+                  TAG: /* Ok */4,
                   _0: x
                 };
         })
@@ -262,7 +262,7 @@ function throw_suites(test_id, suites, loc, x) {
       loc + (" id " + String(test_id.contents)),
       (function (param) {
           return {
-                  tag: /* ThrowAny */7,
+                  TAG: /* ThrowAny */7,
                   _0: x
                 };
         })

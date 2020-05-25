@@ -21,15 +21,15 @@ function eq(f, param) {
 eq("File \"scanf_test.ml\", line 6, characters 5-12", [
       Curry._1(Scanf.sscanf("32 31", /* Format */{
                 _0: {
-                  tag: /* Int */4,
+                  TAG: /* Int */4,
                   _0: /* Int_d */0,
                   _1: /* No_padding */0,
                   _2: /* No_precision */0,
                   _3: {
-                    tag: /* Char_literal */12,
+                    TAG: /* Char_literal */12,
                     _0: /* " " */32,
                     _1: {
-                      tag: /* Int */4,
+                      TAG: /* Int */4,
                       _0: /* Int_d */0,
                       _1: /* No_padding */0,
                       _2: /* No_precision */0,
@@ -47,7 +47,7 @@ eq("File \"scanf_test.ml\", line 6, characters 5-12", [
 eq("File \"scanf_test.ml\", line 7, characters 5-12", [
       Curry._1(Scanf.sscanf("12306459064359371967", /* Format */{
                 _0: {
-                  tag: /* Int64 */7,
+                  TAG: /* Int64 */7,
                   _0: /* Int_u */12,
                   _1: /* No_padding */0,
                   _2: /* No_precision */0,

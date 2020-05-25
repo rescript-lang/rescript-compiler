@@ -47,7 +47,7 @@ var suites_0 = [
   "simple",
   (function (param) {
       return {
-              tag: /* Eq */0,
+              TAG: /* Eq */0,
               _0: /* :: */{
                 _0: [
                   1,
@@ -71,7 +71,7 @@ var suites_1 = /* :: */{
     "more_iterations",
     (function (param) {
         return {
-                tag: /* Eq */0,
+                TAG: /* Eq */0,
                 _0: $$Array.init(1001, (function (i) {
                         return [
                                 (i << 1),
@@ -89,7 +89,7 @@ var suites_1 = /* :: */{
           var tbl = Curry._2(MoreLabels.Hashtbl.create, undefined, 30);
           Hashtbl.add(tbl, 3, 3);
           return {
-                  tag: /* Eq */0,
+                  TAG: /* Eq */0,
                   _0: tbl.size,
                   _1: 1
                 };

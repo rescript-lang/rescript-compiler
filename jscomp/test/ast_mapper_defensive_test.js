@@ -18,7 +18,7 @@ function $$throw(loc, x) {
       loc + (" id " + String(test_id.contents)),
       (function (param) {
           return {
-                  tag: /* ThrowAny */7,
+                  TAG: /* ThrowAny */7,
                   _0: x
                 };
         })

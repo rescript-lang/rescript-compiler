@@ -34,7 +34,7 @@ var suites_0 = [
   "and_tail",
   (function (param) {
       return {
-              tag: /* Eq */0,
+              TAG: /* Eq */0,
               _0: false,
               _1: f(true, 1, 0)
             };
@@ -46,7 +46,7 @@ var suites_1 = /* :: */{
     "or_tail",
     (function (param) {
         return {
-                tag: /* Eq */0,
+                TAG: /* Eq */0,
                 _0: false,
                 _1: or_f(false, 1, 0)
               };

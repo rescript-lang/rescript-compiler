@@ -7,10 +7,10 @@ var Pervasives = require("../../lib/js/pervasives.js");
 function err(str, f) {
   return Curry._1(Format.fprintf(Format.err_formatter, Pervasives.$caret$caret(/* Format */{
                       _0: {
-                        tag: /* String */2,
+                        TAG: /* String */2,
                         _0: /* No_padding */0,
                         _1: {
-                          tag: /* Char_literal */12,
+                          TAG: /* Char_literal */12,
                           _0: /* " " */32,
                           _1: /* End_of_format */0
                         }
@@ -18,7 +18,7 @@ function err(str, f) {
                       _1: "%s "
                     }, Pervasives.$caret$caret(f, /* Format */{
                           _0: {
-                            tag: /* Formatting_lit */17,
+                            TAG: /* Formatting_lit */17,
                             _0: /* Flush_newline */4,
                             _1: /* End_of_format */0
                           },
@@ -30,10 +30,10 @@ function ierr(b, str, f) {
   if (b) {
     return Curry._1(Format.fprintf(Format.err_formatter, Pervasives.$caret$caret(/* Format */{
                         _0: {
-                          tag: /* String */2,
+                          TAG: /* String */2,
                           _0: /* No_padding */0,
                           _1: {
-                            tag: /* Char_literal */12,
+                            TAG: /* Char_literal */12,
                             _0: /* " " */32,
                             _1: /* End_of_format */0
                           }
@@ -43,10 +43,10 @@ function ierr(b, str, f) {
   } else {
     return Format.ifprintf(Format.err_formatter, Pervasives.$caret$caret(/* Format */{
                       _0: {
-                        tag: /* String */2,
+                        TAG: /* String */2,
                         _0: /* No_padding */0,
                         _1: {
-                          tag: /* Char_literal */12,
+                          TAG: /* Char_literal */12,
                           _0: /* " " */32,
                           _1: /* End_of_format */0
                         }
@@ -59,13 +59,13 @@ function ierr(b, str, f) {
 function warn(str, f) {
   return Curry._1(Format.fprintf(Format.err_formatter, Pervasives.$caret$caret(/* Format */{
                       _0: {
-                        tag: /* String_literal */11,
+                        TAG: /* String_literal */11,
                         _0: "WARN: ",
                         _1: {
-                          tag: /* String */2,
+                          TAG: /* String */2,
                           _0: /* No_padding */0,
                           _1: {
-                            tag: /* Char_literal */12,
+                            TAG: /* Char_literal */12,
                             _0: /* " " */32,
                             _1: /* End_of_format */0
                           }
@@ -74,7 +74,7 @@ function warn(str, f) {
                       _1: "WARN: %s "
                     }, Pervasives.$caret$caret(f, /* Format */{
                           _0: {
-                            tag: /* Formatting_lit */17,
+                            TAG: /* Formatting_lit */17,
                             _0: /* Flush_newline */4,
                             _1: /* End_of_format */0
                           },
@@ -86,13 +86,13 @@ function iwarn(b, str, f) {
   if (b) {
     return Curry._1(Format.fprintf(Format.err_formatter, Pervasives.$caret$caret(/* Format */{
                         _0: {
-                          tag: /* String_literal */11,
+                          TAG: /* String_literal */11,
                           _0: "WARN: ",
                           _1: {
-                            tag: /* String */2,
+                            TAG: /* String */2,
                             _0: /* No_padding */0,
                             _1: {
-                              tag: /* Char_literal */12,
+                              TAG: /* Char_literal */12,
                               _0: /* " " */32,
                               _1: /* End_of_format */0
                             }
@@ -103,13 +103,13 @@ function iwarn(b, str, f) {
   } else {
     return Format.ifprintf(Format.err_formatter, Pervasives.$caret$caret(/* Format */{
                       _0: {
-                        tag: /* String_literal */11,
+                        TAG: /* String_literal */11,
                         _0: "WARN: ",
                         _1: {
-                          tag: /* String */2,
+                          TAG: /* String */2,
                           _0: /* No_padding */0,
                           _1: {
-                            tag: /* Char_literal */12,
+                            TAG: /* Char_literal */12,
                             _0: /* " " */32,
                             _1: /* End_of_format */0
                           }
@@ -123,13 +123,13 @@ function iwarn(b, str, f) {
 function info(str, f) {
   return Curry._1(Format.fprintf(Format.err_formatter, Pervasives.$caret$caret(/* Format */{
                       _0: {
-                        tag: /* String_literal */11,
+                        TAG: /* String_literal */11,
                         _0: "INFO: ",
                         _1: {
-                          tag: /* String */2,
+                          TAG: /* String */2,
                           _0: /* No_padding */0,
                           _1: {
-                            tag: /* Char_literal */12,
+                            TAG: /* Char_literal */12,
                             _0: /* " " */32,
                             _1: /* End_of_format */0
                           }
@@ -142,13 +142,13 @@ function info(str, f) {
 function iinfo(b, str, f) {
   return Curry._1(Format.fprintf(Format.err_formatter, Pervasives.$caret$caret(/* Format */{
                       _0: {
-                        tag: /* String_literal */11,
+                        TAG: /* String_literal */11,
                         _0: "INFO: ",
                         _1: {
-                          tag: /* String */2,
+                          TAG: /* String */2,
                           _0: /* No_padding */0,
                           _1: {
-                            tag: /* Char_literal */12,
+                            TAG: /* Char_literal */12,
                             _0: /* " " */32,
                             _1: /* End_of_format */0
                           }

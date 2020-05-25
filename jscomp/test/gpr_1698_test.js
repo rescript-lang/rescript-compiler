@@ -4,9 +4,9 @@
 function is_number(_expr) {
   while(true) {
     var expr = _expr;
-    switch (expr.tag | 0) {
+    switch (expr.TAG | 0) {
       case /* Val */0 :
-          if (expr._0.tag) {
+          if (expr._0.TAG) {
             return false;
           } else {
             return true;
@@ -36,9 +36,9 @@ function compare(context, state, _a, _b) {
     var exit$1 = 0;
     var exit$2 = 0;
     var exit$3 = 0;
-    switch (a.tag | 0) {
+    switch (a.TAG | 0) {
       case /* Val */0 :
-          switch (b.tag | 0) {
+          switch (b.TAG | 0) {
             case /* Val */0 :
                 return 111;
             case /* Neg */1 :
@@ -72,7 +72,7 @@ function compare(context, state, _a, _b) {
           exit$3 = 5;
           break;
       case /* Frac */4 :
-          switch (b.tag | 0) {
+          switch (b.TAG | 0) {
             case /* Val */0 :
                 throw {
                       RE_EXN_ID: "Assert_failure",
@@ -104,7 +104,7 @@ function compare(context, state, _a, _b) {
           }
           break;
       case /* Gcd */5 :
-          switch (b.tag | 0) {
+          switch (b.TAG | 0) {
             case /* Neg */1 :
                 exit$3 = 5;
                 break;
@@ -125,11 +125,11 @@ function compare(context, state, _a, _b) {
       
     }
     if (exit$3 === 5) {
-      if (b.tag === /* Neg */1) {
+      if (b.TAG === /* Neg */1) {
         _b = b._0;
         continue ;
       }
-      if (a.tag === /* Sum */2) {
+      if (a.TAG === /* Sum */2) {
         if (is_number(b)) {
           return 1;
         }
@@ -139,7 +139,7 @@ function compare(context, state, _a, _b) {
       }
     }
     if (exit$2 === 4) {
-      if (b.tag === /* Sum */2) {
+      if (b.TAG === /* Sum */2) {
         if (is_number(a)) {
           return -1;
         }
@@ -149,7 +149,7 @@ function compare(context, state, _a, _b) {
       }
     }
     if (exit$1 === 3) {
-      switch (a.tag | 0) {
+      switch (a.TAG | 0) {
         case /* Sum */2 :
             exit = 1;
             break;
@@ -164,7 +164,7 @@ function compare(context, state, _a, _b) {
     }
     switch (exit) {
       case 1 :
-          switch (b.tag | 0) {
+          switch (b.TAG | 0) {
             case /* Pow */3 :
                 return 1;
             case /* Gcd */5 :
@@ -186,20 +186,20 @@ function compare(context, state, _a, _b) {
 }
 
 var a = {
-  tag: /* Sum */2,
+  TAG: /* Sum */2,
   _0: /* :: */{
     _0: {
-      tag: /* Val */0,
+      TAG: /* Val */0,
       _0: {
-        tag: /* Symbol */1,
+        TAG: /* Symbol */1,
         _0: "a"
       }
     },
     _1: /* :: */{
       _0: {
-        tag: /* Val */0,
+        TAG: /* Val */0,
         _0: {
-          tag: /* Natural */0,
+          TAG: /* Natural */0,
           _0: 2
         }
       },
@@ -209,9 +209,9 @@ var a = {
 };
 
 var b = {
-  tag: /* Val */0,
+  TAG: /* Val */0,
   _0: {
-    tag: /* Symbol */1,
+    TAG: /* Symbol */1,
     _0: "x"
   }
 };

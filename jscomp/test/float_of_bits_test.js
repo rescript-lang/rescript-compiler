@@ -30,10 +30,10 @@ function from_pairs(pair) {
                                 _0: [
                                   Curry._1(Printf.sprintf(/* Format */{
                                             _0: {
-                                              tag: /* String_literal */11,
+                                              TAG: /* String_literal */11,
                                               _0: "int32_float_of_bits ",
                                               _1: {
-                                                tag: /* Int */4,
+                                                TAG: /* Int */4,
                                                 _0: /* Int_d */0,
                                                 _1: /* No_padding */0,
                                                 _2: /* No_precision */0,
@@ -44,7 +44,7 @@ function from_pairs(pair) {
                                           }), i),
                                   (function (param) {
                                       return {
-                                              tag: /* Eq */0,
+                                              TAG: /* Eq */0,
                                               _0: Caml_float.caml_int32_float_of_bits(i32),
                                               _1: f
                                             };
@@ -54,10 +54,10 @@ function from_pairs(pair) {
                                   _0: [
                                     Curry._1(Printf.sprintf(/* Format */{
                                               _0: {
-                                                tag: /* String_literal */11,
+                                                TAG: /* String_literal */11,
                                                 _0: "int32_bits_of_float ",
                                                 _1: {
-                                                  tag: /* Int */4,
+                                                  TAG: /* Int */4,
                                                   _0: /* Int_d */0,
                                                   _1: /* No_padding */0,
                                                   _2: /* No_precision */0,
@@ -68,7 +68,7 @@ function from_pairs(pair) {
                                             }), i),
                                     (function (param) {
                                         return {
-                                                tag: /* Eq */0,
+                                                TAG: /* Eq */0,
                                                 _0: Caml_float.caml_int32_bits_of_float(f),
                                                 _1: i32
                                               };
@@ -85,7 +85,7 @@ var suites = Pervasives.$at(/* :: */{
         "one",
         (function (param) {
             return {
-                    tag: /* Eq */0,
+                    TAG: /* Eq */0,
                     _0: Caml_int64.bits_of_float(1.0),
                     _1: one_float
                   };
@@ -96,7 +96,7 @@ var suites = Pervasives.$at(/* :: */{
           "two",
           (function (param) {
               return {
-                      tag: /* Eq */0,
+                      TAG: /* Eq */0,
                       _0: Caml_int64.float_of_bits(one_float),
                       _1: 1.0
                     };

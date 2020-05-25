@@ -190,7 +190,7 @@ Mt.from_pair_suites("Lazy_test", /* :: */{
         "simple",
         (function (param) {
             return {
-                    tag: /* Eq */0,
+                    TAG: /* Eq */0,
                     _0: lazy_test(undefined),
                     _1: [
                       3,
@@ -204,7 +204,7 @@ Mt.from_pair_suites("Lazy_test", /* :: */{
           "lazy_match",
           (function (param) {
               return {
-                      tag: /* Eq */0,
+                      TAG: /* Eq */0,
                       _0: h,
                       _1: 2
                     };
@@ -215,7 +215,7 @@ Mt.from_pair_suites("Lazy_test", /* :: */{
             "lazy_force",
             (function (param) {
                 return {
-                        tag: /* Eq */0,
+                        TAG: /* Eq */0,
                         _0: u_v.contents,
                         _1: 2
                       };
@@ -226,7 +226,7 @@ Mt.from_pair_suites("Lazy_test", /* :: */{
               "lazy_from_fun",
               (function (param) {
                   return {
-                          tag: /* Eq */0,
+                          TAG: /* Eq */0,
                           _0: CamlinternalLazy.force(l_from_fun),
                           _1: 3
                         };
@@ -237,7 +237,7 @@ Mt.from_pair_suites("Lazy_test", /* :: */{
                 "lazy_from_val",
                 (function (param) {
                     return {
-                            tag: /* Eq */0,
+                            TAG: /* Eq */0,
                             _0: CamlinternalLazy.force({
                                   RE_LAZY_DONE: true,
                                   value: 3
@@ -251,7 +251,7 @@ Mt.from_pair_suites("Lazy_test", /* :: */{
                   "lazy_from_val2",
                   (function (param) {
                       return {
-                              tag: /* Eq */0,
+                              TAG: /* Eq */0,
                               _0: CamlinternalLazy.force(CamlinternalLazy.force({
                                         RE_LAZY_DONE: true,
                                         value: {
@@ -269,7 +269,7 @@ Mt.from_pair_suites("Lazy_test", /* :: */{
                     (function (param) {
                         debugger;
                         return {
-                                tag: /* Eq */0,
+                                TAG: /* Eq */0,
                                 _0: CamlinternalLazy.force(CamlinternalLazy.force({
                                           RE_LAZY_DONE: true,
                                           value: forward_test
@@ -283,7 +283,7 @@ Mt.from_pair_suites("Lazy_test", /* :: */{
                       "lazy_test.ml",
                       (function (param) {
                           return {
-                                  tag: /* Eq */0,
+                                  TAG: /* Eq */0,
                                   _0: a3,
                                   _1: a4
                                 };
@@ -294,7 +294,7 @@ Mt.from_pair_suites("Lazy_test", /* :: */{
                         "lazy_test.ml",
                         (function (param) {
                             return {
-                                    tag: /* Eq */0,
+                                    TAG: /* Eq */0,
                                     _0: a7,
                                     _1: undefined
                                   };
@@ -305,7 +305,7 @@ Mt.from_pair_suites("Lazy_test", /* :: */{
                           "lazy_test.ml",
                           (function (param) {
                               return {
-                                      tag: /* Eq */0,
+                                      TAG: /* Eq */0,
                                       _0: a8,
                                       _1: undefined
                                     };
@@ -316,7 +316,7 @@ Mt.from_pair_suites("Lazy_test", /* :: */{
                             "File \"lazy_test.ml\", line 78, characters 0-7",
                             (function (param) {
                                 return {
-                                        tag: /* Ok */4,
+                                        TAG: /* Ok */4,
                                         _0: Lazy.is_val({
                                               RE_LAZY_DONE: true,
                                               value: 3
@@ -329,7 +329,7 @@ Mt.from_pair_suites("Lazy_test", /* :: */{
                               "File \"lazy_test.ml\", line 79, characters 0-7",
                               (function (param) {
                                   return {
-                                          tag: /* Ok */4,
+                                          TAG: /* Ok */4,
                                           _0: !Lazy.is_val({
                                                 RE_LAZY_DONE: false,
                                                 value: (function () {

@@ -48,7 +48,7 @@ var suites_0 = [
   "translate",
   (function (param) {
       return {
-              tag: /* Eq */0,
+              TAG: /* Eq */0,
               _0: __ocaml_lex_translate_rec(Lexing.from_string("-- current_directory --"), 0),
               _1: "-- . --"
             };

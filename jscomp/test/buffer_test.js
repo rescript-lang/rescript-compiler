@@ -11,7 +11,7 @@ var suites_0 = [
   "equal",
   (function (param) {
       return {
-              tag: /* Eq */0,
+              TAG: /* Eq */0,
               _0: [
                 Caml_bytes.get(Bytes.make(3, /* "a" */97), 0),
                 Bytes.make(3, /* "a" */97)[0]
@@ -31,7 +31,7 @@ var suites_1 = /* :: */{
         var u = Bytes.make(3, /* "a" */97);
         u[0] = /* "b" */98;
         return {
-                tag: /* Eq */0,
+                TAG: /* Eq */0,
                 _0: [
                   u[0],
                   /* "g" */103
@@ -52,7 +52,7 @@ var suites_1 = /* :: */{
             $$Buffer.add_string(v, String(i));
           }
           return {
-                  tag: /* Eq */0,
+                  TAG: /* Eq */0,
                   _0: $$Buffer.contents(v),
                   _1: "012345678910"
                 };

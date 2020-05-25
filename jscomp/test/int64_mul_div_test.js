@@ -11,7 +11,7 @@ var Pervasives = require("../../lib/js/pervasives.js");
 
 function commutative_mul(result, a, b) {
   return {
-          tag: /* Eq */0,
+          TAG: /* Eq */0,
           _0: [
             result,
             result
@@ -134,13 +134,13 @@ function from_pairs(prefix, pairs) {
                     return [
                             Curry._2(Printf.sprintf(/* Format */{
                                       _0: {
-                                        tag: /* String */2,
+                                        TAG: /* String */2,
                                         _0: /* No_padding */0,
                                         _1: {
-                                          tag: /* Char_literal */12,
+                                          TAG: /* Char_literal */12,
                                           _0: /* "_" */95,
                                           _1: {
-                                            tag: /* Int */4,
+                                            TAG: /* Int */4,
                                             _0: /* Int_d */0,
                                             _1: /* No_padding */0,
                                             _2: /* No_precision */0,
@@ -773,10 +773,10 @@ function from(xs) {
                 return [
                         Curry._1(Printf.sprintf(/* Format */{
                                   _0: {
-                                    tag: /* String_literal */11,
+                                    TAG: /* String_literal */11,
                                     _0: "small_divs ",
                                     _1: {
-                                      tag: /* Scan_get_counter */21,
+                                      TAG: /* Scan_get_counter */21,
                                       _0: /* Token_counter */2,
                                       _1: /* End_of_format */0
                                     }
@@ -785,7 +785,7 @@ function from(xs) {
                                 }), i),
                         (function (param) {
                             return {
-                                    tag: /* Eq */0,
+                                    TAG: /* Eq */0,
                                     _0: [
                                       c,
                                       d
@@ -831,10 +831,10 @@ function from_compare(xs) {
                 return [
                         Curry._1(Printf.sprintf(/* Format */{
                                   _0: {
-                                    tag: /* String_literal */11,
+                                    TAG: /* String_literal */11,
                                     _0: "int64_compare ",
                                     _1: {
-                                      tag: /* Scan_get_counter */21,
+                                      TAG: /* Scan_get_counter */21,
                                       _0: /* Token_counter */2,
                                       _1: /* End_of_format */0
                                     }
@@ -843,7 +843,7 @@ function from_compare(xs) {
                                 }), i),
                         (function (param) {
                             return {
-                                    tag: /* Eq */0,
+                                    TAG: /* Eq */0,
                                     _0: c,
                                     _1: Caml_int64.compare(a, b)
                                   };
@@ -859,10 +859,10 @@ function from_to_string(xs) {
                 return [
                         Curry._1(Printf.sprintf(/* Format */{
                                   _0: {
-                                    tag: /* String_literal */11,
+                                    TAG: /* String_literal */11,
                                     _0: "to_string ",
                                     _1: {
-                                      tag: /* Scan_get_counter */21,
+                                      TAG: /* Scan_get_counter */21,
                                       _0: /* Token_counter */2,
                                       _1: /* End_of_format */0
                                     }
@@ -871,7 +871,7 @@ function from_to_string(xs) {
                                 }), i),
                         (function (param) {
                             return {
-                                    tag: /* Eq */0,
+                                    TAG: /* Eq */0,
                                     _0: str_a,
                                     _1: Caml_int64.to_string(a)
                                   };
@@ -886,10 +886,10 @@ Mt.from_pair_suites("Int64_mul_div_test", Pervasives.$at(from_pairs("random", pa
                         return [
                                 Curry._1(Printf.sprintf(/* Format */{
                                           _0: {
-                                            tag: /* String_literal */11,
+                                            TAG: /* String_literal */11,
                                             _0: "to_float_",
                                             _1: {
-                                              tag: /* Int */4,
+                                              TAG: /* Int */4,
                                               _0: /* Int_d */0,
                                               _1: /* No_padding */0,
                                               _2: /* No_precision */0,
@@ -900,7 +900,7 @@ Mt.from_pair_suites("Int64_mul_div_test", Pervasives.$at(from_pairs("random", pa
                                         }), i),
                                 (function (param) {
                                     return {
-                                            tag: /* Eq */0,
+                                            TAG: /* Eq */0,
                                             _0: Caml_int64.to_float(i64),
                                             _1: f
                                           };
@@ -912,10 +912,10 @@ Mt.from_pair_suites("Int64_mul_div_test", Pervasives.$at(from_pairs("random", pa
                             return [
                                     Curry._1(Printf.sprintf(/* Format */{
                                               _0: {
-                                                tag: /* String_literal */11,
+                                                TAG: /* String_literal */11,
                                                 _0: "of_float_",
                                                 _1: {
-                                                  tag: /* Int */4,
+                                                  TAG: /* Int */4,
                                                   _0: /* Int_d */0,
                                                   _1: /* No_padding */0,
                                                   _2: /* No_precision */0,
@@ -926,7 +926,7 @@ Mt.from_pair_suites("Int64_mul_div_test", Pervasives.$at(from_pairs("random", pa
                                             }), i),
                                     (function (param) {
                                         return {
-                                                tag: /* Eq */0,
+                                                TAG: /* Eq */0,
                                                 _0: Caml_int64.of_float(f),
                                                 _1: i64
                                               };
@@ -937,7 +937,7 @@ Mt.from_pair_suites("Int64_mul_div_test", Pervasives.$at(from_pairs("random", pa
                             "compare_check_complete",
                             (function (param) {
                                 return {
-                                        tag: /* Eq */0,
+                                        TAG: /* Eq */0,
                                         _0: $$Array.map((function (param) {
                                                 return true;
                                               }), check_complete_compare),
@@ -951,7 +951,7 @@ Mt.from_pair_suites("Int64_mul_div_test", Pervasives.$at(from_pairs("random", pa
                                     "div_rem_0",
                                     (function (param) {
                                         return {
-                                                tag: /* Eq */0,
+                                                TAG: /* Eq */0,
                                                 _0: Caml_int64.zero,
                                                 _1: Caml_int64.zero
                                               };
@@ -962,7 +962,7 @@ Mt.from_pair_suites("Int64_mul_div_test", Pervasives.$at(from_pairs("random", pa
                                       "div_rem_1",
                                       (function (param) {
                                           return {
-                                                  tag: /* Eq */0,
+                                                  TAG: /* Eq */0,
                                                   _0: Caml_int64.neg_one,
                                                   _1: Caml_int64.neg_one
                                                 };
@@ -973,7 +973,7 @@ Mt.from_pair_suites("Int64_mul_div_test", Pervasives.$at(from_pairs("random", pa
                                         "File \"int64_mul_div_test.ml\", line 214, characters 5-12",
                                         (function (param) {
                                             return {
-                                                    tag: /* Eq */0,
+                                                    TAG: /* Eq */0,
                                                     _0: Caml_int64.to_float(Int64.max_int),
                                                     _1: 9.22337203685477581e+18
                                                   };

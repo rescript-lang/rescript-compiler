@@ -9,7 +9,7 @@ var PA = Caml_module.init_mod([
       3,
       6
     ], {
-      tag: /* Module */0,
+      TAG: /* Module */0,
       _0: [[
           /* Function */0,
           "print"
@@ -21,7 +21,7 @@ var P = Caml_module.init_mod([
       11,
       6
     ], {
-      tag: /* Module */0,
+      TAG: /* Module */0,
       _0: [[
           /* Function */0,
           "print"
@@ -33,7 +33,7 @@ function print(a) {
 }
 
 Caml_module.update_mod({
-      tag: /* Module */0,
+      TAG: /* Module */0,
       _0: [[
           /* Function */0,
           "print"
@@ -48,7 +48,7 @@ function print$1(i) {
 }
 
 Caml_module.update_mod({
-      tag: /* Module */0,
+      TAG: /* Module */0,
       _0: [[
           /* Function */0,
           "print"

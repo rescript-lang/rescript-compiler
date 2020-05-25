@@ -16,7 +16,7 @@ var fmt = Format.formatter_of_buffer(buf);
 function print_float(f) {
   return Curry._1(Format.fprintf(fmt, /* Format */{
                   _0: {
-                    tag: /* String */2,
+                    TAG: /* String */2,
                     _0: /* No_padding */0,
                     _1: /* End_of_format */0
                   },
@@ -27,7 +27,7 @@ function print_float(f) {
 function print_newline(param) {
   return Format.fprintf(fmt, /* Format */{
               _0: {
-                tag: /* Char_literal */12,
+                TAG: /* Char_literal */12,
                 _0: /* "\n" */10,
                 _1: /* End_of_format */0
               },

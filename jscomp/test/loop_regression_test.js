@@ -24,7 +24,7 @@ var suites_0 = [
   "sum",
   (function (param) {
       return {
-              tag: /* Eq */0,
+              TAG: /* Eq */0,
               _0: 55,
               _1: f(undefined)
             };

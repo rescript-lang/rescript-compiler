@@ -9,7 +9,7 @@ var suites_0 = [
   "epsilon",
   (function (param) {
       return {
-              tag: /* Eq */0,
+              TAG: /* Eq */0,
               _0: Pervasives.epsilon_float,
               _1: v
             };
@@ -21,7 +21,7 @@ var suites_1 = /* :: */{
     "raw_epsilon",
     (function (param) {
         return {
-                tag: /* Eq */0,
+                TAG: /* Eq */0,
                 _0: 2.220446049250313e-16,
                 _1: v
               };

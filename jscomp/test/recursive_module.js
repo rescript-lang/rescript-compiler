@@ -31,7 +31,7 @@ var Int3 = Caml_module.init_mod([
       27,
       6
     ], {
-      tag: /* Module */0,
+      TAG: /* Module */0,
       _0: [[
           /* Function */0,
           "u"
@@ -39,7 +39,7 @@ var Int3 = Caml_module.init_mod([
     });
 
 Caml_module.update_mod({
-      tag: /* Module */0,
+      TAG: /* Module */0,
       _0: [[
           /* Function */0,
           "u"
@@ -51,7 +51,7 @@ var Inta = Caml_module.init_mod([
       31,
       6
     ], {
-      tag: /* Module */0,
+      TAG: /* Module */0,
       _0: [[
           /* Lazy */1,
           "a"
@@ -63,7 +63,7 @@ var Intb = Caml_module.init_mod([
       36,
       6
     ], {
-      tag: /* Module */0,
+      TAG: /* Module */0,
       _0: [[
           /* Lazy */1,
           "a"
@@ -78,7 +78,7 @@ var a = {
 };
 
 Caml_module.update_mod({
-      tag: /* Module */0,
+      TAG: /* Module */0,
       _0: [[
           /* Lazy */1,
           "a"
@@ -95,7 +95,7 @@ var a$1 = {
 };
 
 Caml_module.update_mod({
-      tag: /* Module */0,
+      TAG: /* Module */0,
       _0: [[
           /* Lazy */1,
           "a"
@@ -125,7 +125,7 @@ var Inta$1 = Caml_module.init_mod([
       48,
       8
     ], {
-      tag: /* Module */0,
+      TAG: /* Module */0,
       _0: [[
           /* Lazy */1,
           "a"
@@ -137,7 +137,7 @@ var Intb$1 = Caml_module.init_mod([
       53,
       8
     ], {
-      tag: /* Module */0,
+      TAG: /* Module */0,
       _0: [[
           /* Lazy */1,
           "a"
@@ -152,7 +152,7 @@ var a$2 = {
 };
 
 Caml_module.update_mod({
-      tag: /* Module */0,
+      TAG: /* Module */0,
       _0: [[
           /* Lazy */1,
           "a"
@@ -167,7 +167,7 @@ var a$3 = {
 };
 
 Caml_module.update_mod({
-      tag: /* Module */0,
+      TAG: /* Module */0,
       _0: [[
           /* Lazy */1,
           "a"

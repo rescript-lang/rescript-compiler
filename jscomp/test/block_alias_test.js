@@ -23,7 +23,7 @@ function b(loc, x) {
 var Block = {};
 
 var v0 = {
-  tag: /* A */1,
+  TAG: /* A */1,
   _0: 0,
   _1: 1
 };
@@ -31,7 +31,7 @@ var v0 = {
 var Block$1 = {};
 
 var v1 = {
-  tag: /* A */1,
+  TAG: /* A */1,
   _0: 0,
   _1: 1
 };
@@ -60,7 +60,7 @@ eq("File \"block_alias_test.ml\", line 32, characters 6-13", List.length(/* :: *
         }), 2);
 
 b("File \"block_alias_test.ml\", line 33, characters 5-12", Caml_obj.caml_equal(v0, {
-          tag: /* A */1,
+          TAG: /* A */1,
           _0: 0,
           _1: 1
         }));

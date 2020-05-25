@@ -245,7 +245,7 @@ function make_particle(param) {
 }
 
 function make_type(typ, dir) {
-  switch (typ.tag | 0) {
+  switch (typ.TAG | 0) {
     case /* SPlayer */0 :
         var pt = typ._0;
         var spr_type = [
@@ -814,7 +814,7 @@ function set_vel_to_speed(obj) {
 }
 
 function make_type$2(t) {
-  switch (t.tag | 0) {
+  switch (t.TAG | 0) {
     case /* SPlayer */0 :
         return setup_obj(undefined, 2.8, undefined);
     case /* SEnemy */1 :
@@ -882,10 +882,10 @@ function spawn(spawnable, context, param) {
       ]);
   var obj = match[1];
   var spr = match[0];
-  switch (spawnable.tag | 0) {
+  switch (spawnable.TAG | 0) {
     case /* SPlayer */0 :
         return {
-                tag: /* Player */0,
+                TAG: /* Player */0,
                 _0: spawnable._0,
                 _1: spr,
                 _2: obj
@@ -893,21 +893,21 @@ function spawn(spawnable, context, param) {
     case /* SEnemy */1 :
         set_vel_to_speed(obj);
         return {
-                tag: /* Enemy */1,
+                TAG: /* Enemy */1,
                 _0: spawnable._0,
                 _1: spr,
                 _2: obj
               };
     case /* SItem */2 :
         return {
-                tag: /* Item */2,
+                TAG: /* Item */2,
                 _0: spawnable._0,
                 _1: spr,
                 _2: obj
               };
     case /* SBlock */3 :
         return {
-                tag: /* Block */3,
+                TAG: /* Block */3,
                 _0: spawnable._0,
                 _1: spr,
                 _2: obj
@@ -925,7 +925,7 @@ function get_obj(param) {
 }
 
 function is_player(param) {
-  if (param.tag) {
+  if (param.TAG) {
     return false;
   } else {
     return true;
@@ -933,7 +933,7 @@ function is_player(param) {
 }
 
 function is_enemy(param) {
-  if (param.tag === /* Enemy */1) {
+  if (param.TAG === /* Enemy */1) {
     return true;
   } else {
     return false;
@@ -1008,7 +1008,7 @@ function update_player(player, keys, context) {
     return [
             pl_typ,
             make({
-                  tag: /* SPlayer */0,
+                  TAG: /* SPlayer */0,
                   _0: pl_typ,
                   _1: /* Jumping */1
                 }, player.dir, context)
@@ -1017,7 +1017,7 @@ function update_player(player, keys, context) {
     return [
             pl_typ,
             make({
-                  tag: /* SPlayer */0,
+                  TAG: /* SPlayer */0,
                   _0: pl_typ,
                   _1: /* Running */2
                 }, player.dir, context)
@@ -1026,7 +1026,7 @@ function update_player(player, keys, context) {
     return [
             pl_typ,
             make({
-                  tag: /* SPlayer */0,
+                  TAG: /* SPlayer */0,
                   _0: pl_typ,
                   _1: /* Jumping */1
                 }, player.dir, context)
@@ -1035,7 +1035,7 @@ function update_player(player, keys, context) {
     return [
             pl_typ,
             make({
-                  tag: /* SPlayer */0,
+                  TAG: /* SPlayer */0,
                   _0: pl_typ,
                   _1: /* Crouching */3
                 }, player.dir, context)
@@ -1044,7 +1044,7 @@ function update_player(player, keys, context) {
     return [
             pl_typ,
             make({
-                  tag: /* SPlayer */0,
+                  TAG: /* SPlayer */0,
                   _0: pl_typ,
                   _1: /* Standing */0
                 }, player.dir, context)
@@ -1129,7 +1129,7 @@ function evolve_enemy(player_dir, typ, spr, obj, context) {
         return ;
     case /* GKoopa */1 :
         var match = make$2(undefined, obj.dir, {
-              tag: /* SEnemy */1,
+              TAG: /* SEnemy */1,
               _0: /* GKoopaShell */3
             }, context, [
               obj.pos.x,
@@ -1139,14 +1139,14 @@ function evolve_enemy(player_dir, typ, spr, obj, context) {
         var new_spr = match[0];
         normalize_pos(new_obj.pos, spr.params, new_spr.params);
         return {
-                tag: /* Enemy */1,
+                TAG: /* Enemy */1,
                 _0: /* GKoopaShell */3,
                 _1: new_spr,
                 _2: new_obj
               };
     case /* RKoopa */2 :
         var match$1 = make$2(undefined, obj.dir, {
-              tag: /* SEnemy */1,
+              TAG: /* SEnemy */1,
               _0: /* RKoopaShell */4
             }, context, [
               obj.pos.x,
@@ -1156,7 +1156,7 @@ function evolve_enemy(player_dir, typ, spr, obj, context) {
         var new_spr$1 = match$1[0];
         normalize_pos(new_obj$1.pos, spr.params, new_spr$1.params);
         return {
-                tag: /* Enemy */1,
+                TAG: /* Enemy */1,
                 _0: /* RKoopaShell */4,
                 _1: new_spr$1,
                 _2: new_obj$1
@@ -1198,14 +1198,14 @@ function dec_health(obj) {
 function evolve_block(obj, context) {
   dec_health(obj);
   var match = make$2(undefined, undefined, {
-        tag: /* SBlock */3,
+        TAG: /* SBlock */3,
         _0: /* QBlockUsed */0
       }, context, [
         obj.pos.x,
         obj.pos.y
       ]);
   return {
-          tag: /* Block */3,
+          TAG: /* Block */3,
           _0: /* QBlockUsed */0,
           _1: match[0],
           _2: match[1]
@@ -1214,7 +1214,7 @@ function evolve_block(obj, context) {
 
 function spawn_above(player_dir, obj, typ, context) {
   var item = spawn({
-        tag: /* SItem */2,
+        TAG: /* SItem */2,
         _0: typ
       }, context, [
         obj.pos.x,
@@ -1252,15 +1252,15 @@ function col_bypass(c1, c2) {
   var o1 = c1._2;
   var o2 = c2._2;
   var ctypes;
-  switch (c1.tag | 0) {
+  switch (c1.TAG | 0) {
     case /* Player */0 :
-        ctypes = c2.tag === /* Enemy */1 ? c1._2.invuln > 0 : false;
+        ctypes = c2.TAG === /* Enemy */1 ? c1._2.invuln > 0 : false;
         break;
     case /* Enemy */1 :
-        ctypes = c2.tag === /* Item */2 ? true : false;
+        ctypes = c2.TAG === /* Item */2 ? true : false;
         break;
     case /* Item */2 :
-        switch (c2.tag | 0) {
+        switch (c2.TAG | 0) {
           case /* Enemy */1 :
           case /* Item */2 :
               ctypes = true;
@@ -1318,7 +1318,7 @@ function check_collision(c1, c2) {
 }
 
 function kill(collid, ctx) {
-  switch (collid.tag | 0) {
+  switch (collid.TAG | 0) {
     case /* Player */0 :
         return /* [] */0;
     case /* Enemy */1 :
@@ -1645,11 +1645,11 @@ function process_collision(dir, c1, c2, state) {
   var o1$2;
   var t2$1;
   var o2$2;
-  switch (c1.tag | 0) {
+  switch (c1.TAG | 0) {
     case /* Player */0 :
         var o1$3 = c1._2;
         var s1$2 = c1._1;
-        switch (c2.tag | 0) {
+        switch (c2.TAG | 0) {
           case /* Player */0 :
               return [
                       undefined,
@@ -1758,7 +1758,7 @@ function process_collision(dir, c1, c2, state) {
         var o1$4 = c1._2;
         var s1$3 = c1._1;
         var t1 = c1._0;
-        switch (c2.tag | 0) {
+        switch (c2.TAG | 0) {
           case /* Player */0 :
               var o1$5 = c2._2;
               var s1$4 = c2._1;
@@ -1892,7 +1892,7 @@ function process_collision(dir, c1, c2, state) {
         break;
     case /* Item */2 :
         var o2$7 = c1._2;
-        switch (c2.tag | 0) {
+        switch (c2.TAG | 0) {
           case /* Player */0 :
               o1$2 = c2._2;
               t2$1 = c1._0;
@@ -2025,7 +2025,7 @@ function broad_phase(collid, all_collids, state) {
 }
 
 function check_collisions(collid, all_collids, state) {
-  if (collid.tag === /* Block */3) {
+  if (collid.TAG === /* Block */3) {
     return /* [] */0;
   }
   var broad = broad_phase(collid, all_collids, state);
@@ -2148,7 +2148,7 @@ function translate_keys(param) {
 }
 
 function run_update_collid(state, collid, all_collids) {
-  if (collid.tag) {
+  if (collid.TAG) {
     var obj = collid._2;
     var evolved = update_collidable(state, collid, all_collids);
     if (!obj.kill) {
@@ -2170,7 +2170,7 @@ function run_update_collid(state, collid, all_collids) {
     var new_spr = match[1];
     normalize_pos(o.pos, collid._1.params, new_spr.params);
     player = {
-      tag: /* Player */0,
+      TAG: /* Player */0,
       _0: match[0],
       _1: new_spr,
       _2: o
@@ -3071,7 +3071,7 @@ function generate_block_locs(blockw, blockh, _cbx, _cby, _acc) {
 
 function generate_panel(context, blockw, blockh) {
   return spawn({
-              tag: /* SBlock */3,
+              TAG: /* SBlock */3,
               _0: /* Panel */4
             }, context, [
               blockw * 16 - 256,
@@ -3129,7 +3129,7 @@ function convert_to_block_obj(lst, context) {
   var h = lst._0;
   var sblock_typ = choose_sblock_typ(h[0]);
   var ob = spawn({
-        tag: /* SBlock */3,
+        TAG: /* SBlock */3,
         _0: sblock_typ
       }, context, h[1]);
   return Pervasives.$at(/* :: */{
@@ -3145,7 +3145,7 @@ function convert_to_enemy_obj(lst, context) {
   var h = lst._0;
   var senemy_typ = choose_enemy_typ(h[0]);
   var ob = spawn({
-        tag: /* SEnemy */1,
+        TAG: /* SEnemy */1,
         _0: senemy_typ
       }, context, h[1]);
   return Pervasives.$at(/* :: */{
@@ -3159,7 +3159,7 @@ function convert_to_coin_obj(lst, context) {
     return /* [] */0;
   }
   var ob = spawn({
-        tag: /* SItem */2,
+        TAG: /* SItem */2,
         _0: /* Coin */3
       }, context, lst._0[1]);
   return Pervasives.$at(/* :: */{
@@ -3197,7 +3197,7 @@ function generate(w, h, context) {
   var blockh = h / 16 - 1;
   var collide_list = generate_helper(blockw, blockh, 0, 0, context);
   var player = spawn({
-        tag: /* SPlayer */0,
+        TAG: /* SPlayer */0,
         _0: /* SmallM */1,
         _1: /* Standing */0
       }, context, [
@@ -3233,13 +3233,13 @@ function load(param) {
   } else {
     Curry._1(Printf.printf(/* Format */{
               _0: {
-                tag: /* String_literal */11,
+                TAG: /* String_literal */11,
                 _0: "cant find canvas ",
                 _1: {
-                  tag: /* String */2,
+                  TAG: /* String */2,
                   _0: /* No_padding */0,
                   _1: {
-                    tag: /* String_literal */11,
+                    TAG: /* String_literal */11,
                     _0: " \n",
                     _1: /* End_of_format */0
                   }

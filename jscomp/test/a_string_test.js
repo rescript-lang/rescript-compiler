@@ -8,7 +8,7 @@ var suites_0 = [
   "split",
   (function (param) {
       return {
-              tag: /* Eq */0,
+              TAG: /* Eq */0,
               _0: Ext_string_test.split(true, "hihi", /* "i" */105),
               _1: /* :: */{
                 _0: "h",
@@ -29,7 +29,7 @@ var suites_1 = /* :: */{
     "split_non_empty",
     (function (param) {
         return {
-                tag: /* Eq */0,
+                TAG: /* Eq */0,
                 _0: Ext_string_test.split(undefined, "hihi", /* "i" */105),
                 _1: /* :: */{
                   _0: "h",
@@ -46,7 +46,7 @@ var suites_1 = /* :: */{
       "split_empty",
       (function (param) {
           return {
-                  tag: /* Eq */0,
+                  TAG: /* Eq */0,
                   _0: Ext_string_test.split(true, "", /* "i" */105),
                   _1: /* [] */0
                 };
@@ -57,7 +57,7 @@ var suites_1 = /* :: */{
         "split_normal",
         (function (param) {
             return {
-                    tag: /* Eq */0,
+                    TAG: /* Eq */0,
                     _0: Ext_string_test.split(true, "h i i", /* " " */32),
                     _1: /* :: */{
                       _0: "h",
@@ -77,7 +77,7 @@ var suites_1 = /* :: */{
           "split_by",
           (function (param) {
               return {
-                      tag: /* Eq */0,
+                      TAG: /* Eq */0,
                       _0: List.filter(function (s) {
                               return s !== "";
                             })(Ext_string_test.split_by(undefined, (function (x) {

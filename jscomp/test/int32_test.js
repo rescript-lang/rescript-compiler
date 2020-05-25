@@ -159,7 +159,7 @@ var suites = {
           "File \"int32_test.ml\", line 31, characters 2-9",
           (function (param) {
               return {
-                      tag: /* Eq */0,
+                      TAG: /* Eq */0,
                       _0: 1,
                       _1: 1
                     };
@@ -170,7 +170,7 @@ var suites = {
             "File \"int32_test.ml\", line 32, characters 2-9",
             (function (param) {
                 return {
-                        tag: /* Eq */0,
+                        TAG: /* Eq */0,
                         _0: -2147483647,
                         _1: -2147483647
                       };
@@ -182,10 +182,10 @@ var suites = {
                       return [
                               Curry._1(Format.asprintf(/* Format */{
                                         _0: {
-                                          tag: /* String_literal */11,
+                                          TAG: /* String_literal */11,
                                           _0: "shift_right_logical_cases ",
                                           _1: {
-                                            tag: /* Int */4,
+                                            TAG: /* Int */4,
                                             _0: /* Int_d */0,
                                             _1: /* No_padding */0,
                                             _2: /* No_precision */0,
@@ -196,7 +196,7 @@ var suites = {
                                       }), i),
                               (function (param) {
                                   return {
-                                          tag: /* Eq */0,
+                                          TAG: /* Eq */0,
                                           _0: a,
                                           _1: b
                                         };
@@ -206,10 +206,10 @@ var suites = {
                           return [
                                   Curry._1(Format.asprintf(/* Format */{
                                             _0: {
-                                              tag: /* String_literal */11,
+                                              TAG: /* String_literal */11,
                                               _0: "shift_right_cases ",
                                               _1: {
-                                                tag: /* Int */4,
+                                                TAG: /* Int */4,
                                                 _0: /* Int_d */0,
                                                 _1: /* No_padding */0,
                                                 _2: /* No_precision */0,
@@ -220,7 +220,7 @@ var suites = {
                                           }), i),
                                   (function (param) {
                                       return {
-                                              tag: /* Eq */0,
+                                              TAG: /* Eq */0,
                                               _0: a,
                                               _1: b
                                             };
@@ -230,10 +230,10 @@ var suites = {
                           return [
                                   Curry._1(Format.asprintf(/* Format */{
                                             _0: {
-                                              tag: /* String_literal */11,
+                                              TAG: /* String_literal */11,
                                               _0: "shift_left_cases ",
                                               _1: {
-                                                tag: /* Int */4,
+                                                TAG: /* Int */4,
                                                 _0: /* Int_d */0,
                                                 _1: /* No_padding */0,
                                                 _2: /* No_precision */0,
@@ -244,7 +244,7 @@ var suites = {
                                           }), i),
                                   (function (param) {
                                       return {
-                                              tag: /* Eq */0,
+                                              TAG: /* Eq */0,
                                               _0: a,
                                               _1: b
                                             };

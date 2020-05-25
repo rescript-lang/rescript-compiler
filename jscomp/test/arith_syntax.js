@@ -3,7 +3,7 @@
 var Pervasives = require("../../lib/js/pervasives.js");
 
 function str(e) {
-  switch (e.tag | 0) {
+  switch (e.TAG | 0) {
     case /* Numeral */0 :
         return Pervasives.string_of_float(e._0);
     case /* Plus */1 :

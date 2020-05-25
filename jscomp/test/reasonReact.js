@@ -264,7 +264,7 @@ function createClass(debugName) {
                                 if (typeof reasonStateUpdate === "number") {
                                   nextTotalState = curTotalState;
                                 } else {
-                                  switch (reasonStateUpdate.tag | 0) {
+                                  switch (reasonStateUpdate.TAG | 0) {
                                     case /* Update */0 :
                                         nextTotalState = {
                                           reasonState: reasonStateUpdate._0

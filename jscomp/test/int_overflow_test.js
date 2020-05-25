@@ -42,7 +42,7 @@ Mt.from_pair_suites("Int_overflow_test", /* :: */{
         "plus_overflow",
         (function (param) {
             return {
-                    tag: /* Eq */0,
+                    TAG: /* Eq */0,
                     _0: true,
                     _1: (Int32.max_int + 1 | 0) === Int32.min_int
                   };
@@ -53,7 +53,7 @@ Mt.from_pair_suites("Int_overflow_test", /* :: */{
           "minus_overflow",
           (function (param) {
               return {
-                      tag: /* Eq */0,
+                      TAG: /* Eq */0,
                       _0: true,
                       _1: (Int32.min_int - Int32.one | 0) === Int32.max_int
                     };
@@ -64,7 +64,7 @@ Mt.from_pair_suites("Int_overflow_test", /* :: */{
             "flow_again",
             (function (param) {
                 return {
-                        tag: /* Eq */0,
+                        TAG: /* Eq */0,
                         _0: 2147483646,
                         _1: (Int32.max_int + Int32.max_int | 0) + Int32.min_int | 0
                       };
@@ -75,7 +75,7 @@ Mt.from_pair_suites("Int_overflow_test", /* :: */{
               "flow_again",
               (function (param) {
                   return {
-                          tag: /* Eq */0,
+                          TAG: /* Eq */0,
                           _0: -2,
                           _1: Int32.max_int + Int32.max_int | 0
                         };
@@ -86,7 +86,7 @@ Mt.from_pair_suites("Int_overflow_test", /* :: */{
                 "hash_test",
                 (function (param) {
                     return {
-                            tag: /* Eq */0,
+                            TAG: /* Eq */0,
                             _0: hash_variant("xxyyzzuuxxzzyy00112233"),
                             _1: 544087776
                           };
@@ -97,7 +97,7 @@ Mt.from_pair_suites("Int_overflow_test", /* :: */{
                   "hash_test2",
                   (function (param) {
                       return {
-                              tag: /* Eq */0,
+                              TAG: /* Eq */0,
                               _0: hash_variant("xxyyzxzzyy"),
                               _1: -449896130
                             };
@@ -108,7 +108,7 @@ Mt.from_pair_suites("Int_overflow_test", /* :: */{
                     "File \"int_overflow_test.ml\", line 37, characters 2-9",
                     (function (param) {
                         return {
-                                tag: /* Eq */0,
+                                TAG: /* Eq */0,
                                 _0: hash_variant2("xxyyzzuuxxzzyy00112233"),
                                 _1: 544087776
                               };
@@ -119,7 +119,7 @@ Mt.from_pair_suites("Int_overflow_test", /* :: */{
                       "File \"int_overflow_test.ml\", line 38, characters 2-9",
                       (function (param) {
                           return {
-                                  tag: /* Eq */0,
+                                  TAG: /* Eq */0,
                                   _0: hash_variant2("xxyyzxzzyy"),
                                   _1: -449896130
                                 };
@@ -130,7 +130,7 @@ Mt.from_pair_suites("Int_overflow_test", /* :: */{
                         "int_literal_flow",
                         (function (param) {
                             return {
-                                    tag: /* Eq */0,
+                                    TAG: /* Eq */0,
                                     _0: -1,
                                     _1: -1
                                   };
@@ -141,7 +141,7 @@ Mt.from_pair_suites("Int_overflow_test", /* :: */{
                           "int_literal_flow2",
                           (function (param) {
                               return {
-                                      tag: /* Eq */0,
+                                      TAG: /* Eq */0,
                                       _0: -1,
                                       _1: -1
                                     };
@@ -152,7 +152,7 @@ Mt.from_pair_suites("Int_overflow_test", /* :: */{
                             "int_literal_flow3",
                             (function (param) {
                                 return {
-                                        tag: /* Eq */0,
+                                        TAG: /* Eq */0,
                                         _0: -1,
                                         _1: -1
                                       };
@@ -163,7 +163,7 @@ Mt.from_pair_suites("Int_overflow_test", /* :: */{
                               "int32_mul",
                               (function (param) {
                                   return {
-                                          tag: /* Eq */0,
+                                          TAG: /* Eq */0,
                                           _0: -33554431,
                                           _1: -33554431
                                         };
@@ -174,7 +174,7 @@ Mt.from_pair_suites("Int_overflow_test", /* :: */{
                                 "File \"int_overflow_test.ml\", line 44, characters 3-10",
                                 (function (param) {
                                     return {
-                                            tag: /* Eq */0,
+                                            TAG: /* Eq */0,
                                             _0: Number("3") | 0,
                                             _1: 3
                                           };
@@ -185,7 +185,7 @@ Mt.from_pair_suites("Int_overflow_test", /* :: */{
                                   "File \"int_overflow_test.ml\", line 46, characters 3-10",
                                   (function (param) {
                                       return {
-                                              tag: /* Eq */0,
+                                              TAG: /* Eq */0,
                                               _0: Number("3.2") | 0,
                                               _1: 3
                                             };

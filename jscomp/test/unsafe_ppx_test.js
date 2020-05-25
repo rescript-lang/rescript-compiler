@@ -57,7 +57,7 @@ Mt.from_pair_suites("Unsafe_ppx_test", /* :: */{
         "unsafe_max",
         (function (param) {
             return {
-                    tag: /* Eq */0,
+                    TAG: /* Eq */0,
                     _0: 2,
                     _1: max(1, 2)
                   };
@@ -68,7 +68,7 @@ Mt.from_pair_suites("Unsafe_ppx_test", /* :: */{
           "unsafe_test",
           (function (param) {
               return {
-                      tag: /* Eq */0,
+                      TAG: /* Eq */0,
                       _0: 3,
                       _1: v
                     };
@@ -79,7 +79,7 @@ Mt.from_pair_suites("Unsafe_ppx_test", /* :: */{
             "unsafe_max2",
             (function (param) {
                 return {
-                        tag: /* Eq */0,
+                        TAG: /* Eq */0,
                         _0: 2,
                         _1: Math.max(1, 2)
                       };
@@ -90,7 +90,7 @@ Mt.from_pair_suites("Unsafe_ppx_test", /* :: */{
               "ffi_keys",
               (function (param) {
                   return {
-                          tag: /* Eq */0,
+                          TAG: /* Eq */0,
                           _0: ["a"],
                           _1: Ffi_js_test.keys(({a : 3}))
                         };

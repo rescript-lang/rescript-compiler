@@ -25,19 +25,19 @@ function parse(token) {
     }
     catch (exn){
       return {
-              tag: /* Kwd */0,
+              TAG: /* Kwd */0,
               _0: "=="
             };
     }
   };
   var parse_atom = function (param) {
     var n = token$1(undefined);
-    switch (n.tag | 0) {
+    switch (n.TAG | 0) {
       case /* Kwd */0 :
           if (n._0 === "(") {
             var v = parse_expr_aux(parse_term_aux(parse_atom(undefined)));
             var match = token$1(undefined);
-            if (match.tag) {
+            if (match.TAG) {
               throw {
                     RE_EXN_ID: Parse_error,
                     _1: "Unbalanced parens",
@@ -72,7 +72,7 @@ function parse(token) {
   };
   var parse_term_aux = function (e1) {
     var e = token$1(undefined);
-    if (e.tag) {
+    if (e.TAG) {
       Queue.push(e, look_ahead);
       return e1;
     }
@@ -88,7 +88,7 @@ function parse(token) {
   };
   var parse_expr_aux = function (e1) {
     var e = token$1(undefined);
-    if (e.tag) {
+    if (e.TAG) {
       Queue.push(e, look_ahead);
       return e1;
     }
@@ -156,7 +156,7 @@ function l_parse(token) {
     }
     catch (exn){
       return {
-              tag: /* Kwd */0,
+              TAG: /* Kwd */0,
               _0: "=="
             };
     }
@@ -165,7 +165,7 @@ function l_parse(token) {
     while(true) {
       var a = _a;
       var t = token$1(undefined);
-      if (t.tag) {
+      if (t.TAG) {
         Queue.push(t, look_ahead);
         return a;
       }
@@ -184,12 +184,12 @@ function l_parse(token) {
   };
   var parse_f = function (param) {
     var i = token$1(undefined);
-    switch (i.tag | 0) {
+    switch (i.TAG | 0) {
       case /* Kwd */0 :
           if (i._0 === "(") {
             var v = parse_t_aux(parse_f_aux(parse_f(undefined)));
             var t = token$1(undefined);
-            if (t.tag) {
+            if (t.TAG) {
               throw {
                     RE_EXN_ID: Parse_error,
                     _1: "Unbalanced )",
@@ -224,7 +224,7 @@ function l_parse(token) {
     while(true) {
       var a = _a;
       var t = token$1(undefined);
-      if (t.tag) {
+      if (t.TAG) {
         Queue.push(t, look_ahead);
         return a;
       }
@@ -268,7 +268,7 @@ function eq(loc, x, y) {
       loc + (" id " + String(test_id.contents)),
       (function (param) {
           return {
-                  tag: /* Eq */0,
+                  TAG: /* Eq */0,
                   _0: x,
                   _1: y
                 };
@@ -288,7 +288,7 @@ eq("File \"stream_parser_test.ml\", line 132, characters 5-12", [
       10,
       /* :: */{
         _0: {
-          tag: /* Ident */1,
+          TAG: /* Ident */1,
           _0: "a"
         },
         _1: /* [] */0
@@ -299,7 +299,7 @@ eq("File \"stream_parser_test.ml\", line 133, characters 5-12", [
       2,
       /* :: */{
         _0: {
-          tag: /* Kwd */0,
+          TAG: /* Kwd */0,
           _0: "=="
         },
         _1: /* [] */0
@@ -310,7 +310,7 @@ eq("File \"stream_parser_test.ml\", line 134, characters 5-12", [
       0,
       /* :: */{
         _0: {
-          tag: /* Kwd */0,
+          TAG: /* Kwd */0,
           _0: "=="
         },
         _1: /* [] */0

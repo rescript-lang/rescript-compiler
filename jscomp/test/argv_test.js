@@ -19,7 +19,7 @@ var test = {
 var arg_spec_0 = [
   "-c",
   {
-    tag: /* Set */2,
+    TAG: /* Set */2,
     _0: compile
   },
   " Compile"
@@ -29,7 +29,7 @@ var arg_spec_1 = /* :: */{
   _0: [
     "-d",
     {
-      tag: /* Clear */3,
+      TAG: /* Clear */3,
       _0: test
     },
     " Test"

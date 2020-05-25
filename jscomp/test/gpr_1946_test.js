@@ -21,7 +21,7 @@ var zz = ({
 
 console.log(({
           "5": 3
-        }).tag | 0);
+        }).TAG | 0);
 
 exports.x = x;
 exports.zz = zz;

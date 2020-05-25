@@ -28,7 +28,7 @@ function create_tscanf_data(ob, lines) {
   var add_line = function (param) {
     $$Buffer.add_string(ob, Curry._1(Printf.sprintf(/* Format */{
                   _0: {
-                    tag: /* Caml_string */3,
+                    TAG: /* Caml_string */3,
                     _0: /* No_padding */0,
                     _1: /* End_of_format */0
                   },
@@ -37,7 +37,7 @@ function create_tscanf_data(ob, lines) {
     $$Buffer.add_string(ob, " -> ");
     $$Buffer.add_string(ob, Curry._1(Printf.sprintf(/* Format */{
                   _0: {
-                    tag: /* Caml_string */3,
+                    TAG: /* Caml_string */3,
                     _0: /* No_padding */0,
                     _1: /* End_of_format */0
                   },
@@ -66,19 +66,19 @@ function get_lines(fname) {
     while(!Scanf.Scanning.end_of_input(ib)) {
       Curry._1(Scanf.bscanf(ib, /* Format */{
                 _0: {
-                  tag: /* Char_literal */12,
+                  TAG: /* Char_literal */12,
                   _0: /* " " */32,
                   _1: {
-                    tag: /* Caml_string */3,
+                    TAG: /* Caml_string */3,
                     _0: /* No_padding */0,
                     _1: {
-                      tag: /* String_literal */11,
+                      TAG: /* String_literal */11,
                       _0: " -> ",
                       _1: {
-                        tag: /* Caml_string */3,
+                        TAG: /* Caml_string */3,
                         _0: /* No_padding */0,
                         _1: {
-                          tag: /* String_literal */11,
+                          TAG: /* String_literal */11,
                           _0: "; ",
                           _1: /* End_of_format */0
                         }
@@ -105,16 +105,16 @@ function get_lines(fname) {
     if (s.RE_EXN_ID === Scanf.Scan_failure) {
       var s$1 = Curry._2(Printf.sprintf(/* Format */{
                 _0: {
-                  tag: /* String_literal */11,
+                  TAG: /* String_literal */11,
                   _0: "in file ",
                   _1: {
-                    tag: /* String */2,
+                    TAG: /* String */2,
                     _0: /* No_padding */0,
                     _1: {
-                      tag: /* String_literal */11,
+                      TAG: /* String_literal */11,
                       _0: ", ",
                       _1: {
-                        tag: /* String */2,
+                        TAG: /* String */2,
                         _0: /* No_padding */0,
                         _1: /* End_of_format */0
                       }
@@ -132,13 +132,13 @@ function get_lines(fname) {
     if (s.RE_EXN_ID === "End_of_file") {
       var s$2 = Curry._1(Printf.sprintf(/* Format */{
                 _0: {
-                  tag: /* String_literal */11,
+                  TAG: /* String_literal */11,
                   _0: "in file ",
                   _1: {
-                    tag: /* String */2,
+                    TAG: /* String */2,
                     _0: /* No_padding */0,
                     _1: {
-                      tag: /* String_literal */11,
+                      TAG: /* String_literal */11,
                       _0: ", unexpected end of file",
                       _1: /* End_of_format */0
                     }
@@ -160,11 +160,11 @@ function add_digest_ib(ob, ib) {
   var scan_line = function (ib, f) {
     return Curry._1(Scanf.bscanf(ib, /* Format */{
                     _0: {
-                      tag: /* Scan_char_set */20,
+                      TAG: /* Scan_char_set */20,
                       _0: undefined,
                       _1: "\xff\xdb\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff",
                       _2: {
-                        tag: /* Char_literal */12,
+                        TAG: /* Char_literal */12,
                         _0: /* "\n" */10,
                         _1: /* End_of_format */0
                       }

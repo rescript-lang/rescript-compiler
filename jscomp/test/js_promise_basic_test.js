@@ -21,7 +21,7 @@ function eq(loc, x, y) {
       loc + (" id " + String(test_id.contents)),
       (function (param) {
           return {
-                  tag: /* Eq */0,
+                  TAG: /* Eq */0,
                   _0: x,
                   _1: y
                 };
@@ -326,7 +326,7 @@ Mt.from_promise_suites("Js_promise_basic_test", /* :: */{
         "File \"js_promise_basic_test.ml\", line 187, characters 4-11",
         twop.then(function (x) {
               return Promise.resolve({
-                          tag: /* Eq */0,
+                          TAG: /* Eq */0,
                           _0: x,
                           _1: 2
                         });
@@ -337,7 +337,7 @@ Mt.from_promise_suites("Js_promise_basic_test", /* :: */{
           "File \"js_promise_basic_test.ml\", line 190, characters 4-11",
           twop.then(function (x) {
                 return Promise.resolve({
-                            tag: /* Neq */1,
+                            TAG: /* Neq */1,
                             _0: x,
                             _1: 3
                           });

@@ -51,32 +51,32 @@ var lexer_suites_0 = [
   "arith_token",
   (function (param) {
       return {
-              tag: /* Eq */0,
+              TAG: /* Eq */0,
               _0: get_tokens(Arith_lexer.lexeme, "x + 3 + 4 + y"),
               _1: /* :: */{
                 _0: {
-                  tag: /* IDENT */1,
+                  TAG: /* IDENT */1,
                   _0: "x"
                 },
                 _1: /* :: */{
                   _0: /* PLUS */0,
                   _1: /* :: */{
                     _0: {
-                      tag: /* NUMERAL */0,
+                      TAG: /* NUMERAL */0,
                       _0: 3
                     },
                     _1: /* :: */{
                       _0: /* PLUS */0,
                       _1: /* :: */{
                         _0: {
-                          tag: /* NUMERAL */0,
+                          TAG: /* NUMERAL */0,
                           _0: 4
                         },
                         _1: /* :: */{
                           _0: /* PLUS */0,
                           _1: /* :: */{
                             _0: {
-                              tag: /* IDENT */1,
+                              TAG: /* IDENT */1,
                               _0: "y"
                             },
                             _1: /* [] */0
@@ -96,10 +96,10 @@ var lexer_suites_1 = /* :: */{
     "simple token",
     (function (param) {
         return {
-                tag: /* Eq */0,
+                TAG: /* Eq */0,
                 _0: Arith_lexer.lexeme(Lexing.from_string("10")),
                 _1: {
-                  tag: /* NUMERAL */0,
+                  TAG: /* NUMERAL */0,
                   _0: 10
                 }
               };
@@ -121,7 +121,7 @@ var lexer_suites_1 = /* :: */{
           };
           Number_lexer.token(add, Lexing.from_string("32 + 32 ( ) * / "));
           return {
-                  tag: /* Eq */0,
+                  TAG: /* Eq */0,
                   _0: List.rev(v.contents),
                   _1: /* :: */{
                     _0: "number",
@@ -183,7 +183,7 @@ var lexer_suites_1 = /* :: */{
         "simple number",
         (function (param) {
             return {
-                    tag: /* Eq */0,
+                    TAG: /* Eq */0,
                     _0: Arith_syntax.str(Arith_parser.toplevel(Arith_lexer.lexeme, Lexing.from_string("10"))),
                     _1: "10."
                   };
@@ -194,7 +194,7 @@ var lexer_suites_1 = /* :: */{
           "arith",
           (function (param) {
               return {
-                      tag: /* Eq */0,
+                      TAG: /* Eq */0,
                       _0: Arith_syntax.str(Arith_parser.toplevel(Arith_lexer.lexeme, Lexing.from_string("x + 3 + 4 + y"))),
                       _1: "x+3.+4.+y"
                     };

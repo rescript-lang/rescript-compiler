@@ -58,7 +58,7 @@ var array_suites_0 = [
   "init",
   (function (param) {
       return {
-              tag: /* Eq */0,
+              TAG: /* Eq */0,
               _0: $$Array.init(5, (function (x) {
                       return x;
                     })),
@@ -96,7 +96,7 @@ var array_suites_1 = /* :: */{
                   _1: /* [] */0
                 }));
         return {
-                tag: /* Eq */0,
+                TAG: /* Eq */0,
                 _0: match[0],
                 _1: match[1]
               };
@@ -107,7 +107,7 @@ var array_suites_1 = /* :: */{
       "concat",
       (function (param) {
           return {
-                  tag: /* Eq */0,
+                  TAG: /* Eq */0,
                   _0: [
                     0,
                     1,
@@ -144,7 +144,7 @@ var array_suites_1 = /* :: */{
         "make",
         (function (param) {
             return {
-                    tag: /* Eq */0,
+                    TAG: /* Eq */0,
                     _0: [
                       Caml_array.caml_make_vect(100, /* "a" */97),
                       Caml_array.caml_make_float_vect(100)
@@ -165,7 +165,7 @@ var array_suites_1 = /* :: */{
           "sub",
           (function (param) {
               return {
-                      tag: /* Eq */0,
+                      TAG: /* Eq */0,
                       _0: $$Array.sub([
                             0,
                             1,
@@ -194,7 +194,7 @@ var array_suites_1 = /* :: */{
                       }));
                 $$Array.blit(v, 1, u, 1, 2);
                 return {
-                        tag: /* Eq */0,
+                        TAG: /* Eq */0,
                         _0: [
                           [
                             0,
@@ -223,7 +223,7 @@ var array_suites_1 = /* :: */{
                         }));
                   $$Array.blit(a0, 10, a0, 5, 20);
                   return {
-                          tag: /* Eq */0,
+                          TAG: /* Eq */0,
                           _0: true,
                           _1: starts_with(a0, [
                                 0,
@@ -265,7 +265,7 @@ var array_suites_1 = /* :: */{
                           }));
                     $$Array.blit(a0, 5, a0, 10, 20);
                     return {
-                            tag: /* Eq */0,
+                            TAG: /* Eq */0,
                             _0: true,
                             _1: starts_with(a0, [
                                   0,
@@ -305,7 +305,7 @@ var array_suites_1 = /* :: */{
                   "make",
                   (function (param) {
                       return {
-                              tag: /* Eq */0,
+                              TAG: /* Eq */0,
                               _0: Caml_array.caml_make_vect(2, 1),
                               _1: [
                                 1,
@@ -325,7 +325,7 @@ var array_suites_1 = /* :: */{
                         ];
                         $$Array.sort(Caml_primitive.caml_int_compare, u);
                         return {
-                                tag: /* Eq */0,
+                                TAG: /* Eq */0,
                                 _0: Caml_obj.caml_equal([
                                       0,
                                       1,
@@ -344,7 +344,7 @@ var array_suites_1 = /* :: */{
                                 }));
                           $$Array.sort(Caml_primitive.caml_int_compare, v);
                           return {
-                                  tag: /* Eq */0,
+                                  TAG: /* Eq */0,
                                   _0: true,
                                   _1: is_sorted(v)
                                 };

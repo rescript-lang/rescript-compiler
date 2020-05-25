@@ -5,7 +5,7 @@ var Caml_obj = require("../../lib/js/caml_obj.js");
 var Caml_option = require("../../lib/js/caml_option.js");
 
 function eq_A(x, y) {
-  if (x.tag || y.tag) {
+  if (x.TAG || y.TAG) {
     return false;
   } else {
     return x._0 === y._0;
@@ -15,12 +15,12 @@ function eq_A(x, y) {
 function Test($star) {
   console.log("no inline");
   var u = {
-    tag: /* A */0,
+    TAG: /* A */0,
     _0: 3
   };
   var Block = {};
   var b = eq_A({
-        tag: /* A */0,
+        TAG: /* A */0,
         _0: 3
       }, u);
   return {
@@ -35,10 +35,10 @@ function Test2($star) {
   console.log("no inline");
   var Block = {};
   var b = eq_A({
-        tag: /* A */0,
+        TAG: /* A */0,
         _0: 3
       }, {
-        tag: /* A */0,
+        TAG: /* A */0,
         _0: 3
       });
   return {
@@ -50,7 +50,7 @@ function Test2($star) {
 
 function f(i, y) {
   var x = {
-    tag: /* A */0,
+    TAG: /* A */0,
     _0: i
   };
   return eq_A(x, y);

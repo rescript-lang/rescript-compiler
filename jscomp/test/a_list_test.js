@@ -7,7 +7,7 @@ var suites_0 = [
   "drop",
   (function (param) {
       return {
-              tag: /* Eq */0,
+              TAG: /* Eq */0,
               _0: Ext_list_test.drop(3, /* :: */{
                     _0: 0,
                     _1: /* :: */{
@@ -28,7 +28,7 @@ var suites_1 = /* :: */{
     "drop1",
     (function (param) {
         return {
-                tag: /* Eq */0,
+                TAG: /* Eq */0,
                 _0: Ext_list_test.drop(2, /* :: */{
                       _0: 0,
                       _1: /* :: */{
@@ -51,7 +51,7 @@ var suites_1 = /* :: */{
       "flat_map",
       (function (param) {
           return {
-                  tag: /* Eq */0,
+                  TAG: /* Eq */0,
                   _0: /* :: */{
                     _0: 0,
                     _1: /* :: */{

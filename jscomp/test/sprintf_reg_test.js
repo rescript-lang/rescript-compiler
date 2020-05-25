@@ -19,14 +19,14 @@ function eq(f, param) {
 
 var s = Curry._1(Printf.sprintf(/* Format */{
           _0: {
-            tag: /* Format_arg */13,
+            TAG: /* Format_arg */13,
             _0: undefined,
             _1: {
-              tag: /* String_ty */1,
+              TAG: /* String_ty */1,
               _0: /* End_of_fmtty */0
             },
             _2: {
-              tag: /* Char_literal */12,
+              TAG: /* Char_literal */12,
               _0: /* "." */46,
               _1: /* End_of_format */0
             }
@@ -34,10 +34,10 @@ var s = Curry._1(Printf.sprintf(/* Format */{
           _1: "%{%s%}."
         }), /* Format */{
       _0: {
-        tag: /* String_literal */11,
+        TAG: /* String_literal */11,
         _0: "32",
         _1: {
-          tag: /* String */2,
+          TAG: /* String */2,
           _0: /* No_padding */0,
           _1: /* End_of_format */0
         }
@@ -52,18 +52,18 @@ eq("File \"sprintf_reg_test.ml\", line 8, characters 5-12", [
 
 var s$1 = Curry._2(Printf.sprintf(/* Format */{
           _0: {
-            tag: /* Int */4,
+            TAG: /* Int */4,
             _0: /* Int_i */3,
             _1: /* No_padding */0,
             _2: /* No_precision */0,
             _3: {
-              tag: /* Char_literal */12,
+              TAG: /* Char_literal */12,
               _0: /* " " */32,
               _1: {
-                tag: /* Format_arg */13,
+                TAG: /* Format_arg */13,
                 _0: undefined,
                 _1: {
-                  tag: /* String_ty */1,
+                  TAG: /* String_ty */1,
                   _0: /* End_of_fmtty */0
                 },
                 _2: /* End_of_format */0
@@ -73,10 +73,10 @@ var s$1 = Curry._2(Printf.sprintf(/* Format */{
           _1: "%i %{%s%}"
         }), 1, /* Format */{
       _0: {
-        tag: /* String_literal */11,
+        TAG: /* String_literal */11,
         _0: "spells one ",
         _1: {
-          tag: /* String */2,
+          TAG: /* String */2,
           _0: /* No_padding */0,
           _1: /* End_of_format */0
         }

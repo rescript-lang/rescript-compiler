@@ -9,41 +9,41 @@ var Caml_bytes = require("../../lib/js/caml_bytes.js");
 function classify(chr) {
   if ((chr & 128) === 0) {
     return {
-            tag: /* Single */0,
+            TAG: /* Single */0,
             _0: chr
           };
   } else if ((chr & 64) === 0) {
     return {
-            tag: /* Cont */1,
+            TAG: /* Cont */1,
             _0: chr & 63
           };
   } else if ((chr & 32) === 0) {
     return {
-            tag: /* Leading */2,
+            TAG: /* Leading */2,
             _0: 1,
             _1: chr & 31
           };
   } else if ((chr & 16) === 0) {
     return {
-            tag: /* Leading */2,
+            TAG: /* Leading */2,
             _0: 2,
             _1: chr & 15
           };
   } else if ((chr & 8) === 0) {
     return {
-            tag: /* Leading */2,
+            TAG: /* Leading */2,
             _0: 3,
             _1: chr & 7
           };
   } else if ((chr & 4) === 0) {
     return {
-            tag: /* Leading */2,
+            TAG: /* Leading */2,
             _0: 4,
             _1: chr & 3
           };
   } else if ((chr & 2) === 0) {
     return {
-            tag: /* Leading */2,
+            TAG: /* Leading */2,
             _0: 5,
             _1: chr & 1
           };
@@ -67,7 +67,7 @@ function utf8_decode(strm) {
                       Error: new Error()
                     };
               }
-              switch (c.tag | 0) {
+              switch (c.TAG | 0) {
                 case /* Single */0 :
                     return Stream.icons(c._0, utf8_decode(strm));
                 case /* Cont */1 :
@@ -92,7 +92,7 @@ function utf8_decode(strm) {
                                 Error: new Error()
                               };
                         }
-                        if (cc.tag === /* Cont */1) {
+                        if (cc.TAG === /* Cont */1) {
                           _c = (c << 6) | cc._0 & 63;
                           _n = n - 1 | 0;
                           continue ;
@@ -137,7 +137,7 @@ function decode(bytes, offset) {
           Error: new Error()
         };
   }
-  switch (c.tag | 0) {
+  switch (c.TAG | 0) {
     case /* Single */0 :
         return [
                 c._0,
@@ -171,7 +171,7 @@ function decode(bytes, offset) {
                   Error: new Error()
                 };
           }
-          if (cc.tag === /* Cont */1) {
+          if (cc.TAG === /* Cont */1) {
             _offset = offset$1 + 1 | 0;
             _c = (c$1 << 6) | cc._0 & 63;
             _n = n - 1 | 0;
@@ -231,7 +231,7 @@ function eq(loc, param) {
       loc + (" id " + String(test_id.contents)),
       (function (param) {
           return {
-                  tag: /* Eq */0,
+                  TAG: /* Eq */0,
                   _0: x,
                   _1: y
                 };

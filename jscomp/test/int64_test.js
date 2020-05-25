@@ -23,7 +23,7 @@ var a = Caml_int64.mk(2147483647, 0);
 
 function commutative_add(result, a, b) {
   return {
-          tag: /* Eq */0,
+          TAG: /* Eq */0,
           _0: [
             result,
             result
@@ -298,7 +298,7 @@ var suites = Pervasives.$at(/* :: */{
         "add_one",
         (function (param) {
             return {
-                    tag: /* Eq */0,
+                    TAG: /* Eq */0,
                     _0: v,
                     _1: Caml_int64.mk(-2147483648, 0)
                   };
@@ -309,7 +309,7 @@ var suites = Pervasives.$at(/* :: */{
           "add_2",
           (function (param) {
               return {
-                      tag: /* Eq */0,
+                      TAG: /* Eq */0,
                       _0: Caml_int64.mk(-2, 0),
                       _1: Caml_int64.add(a, a)
                     };
@@ -320,7 +320,7 @@ var suites = Pervasives.$at(/* :: */{
             "add_3",
             (function (param) {
                 return {
-                        tag: /* Eq */0,
+                        TAG: /* Eq */0,
                         _0: Caml_int64.zero,
                         _1: Caml_int64.zero
                       };
@@ -387,7 +387,7 @@ var suites = Pervasives.$at(/* :: */{
                               "to_int32",
                               (function (param) {
                                   return {
-                                          tag: /* Eq */0,
+                                          TAG: /* Eq */0,
                                           _0: 3,
                                           _1: Caml_int64.to_int32(Caml_int64.mk(3, 0))
                                         };
@@ -398,7 +398,7 @@ var suites = Pervasives.$at(/* :: */{
                                 "to_int",
                                 (function (param) {
                                     return {
-                                            tag: /* Eq */0,
+                                            TAG: /* Eq */0,
                                             _0: 3,
                                             _1: Caml_int64.to_int32(Caml_int64.mk(3, 0))
                                           };
@@ -409,7 +409,7 @@ var suites = Pervasives.$at(/* :: */{
                                   "of_int",
                                   (function (param) {
                                       return {
-                                              tag: /* Eq */0,
+                                              TAG: /* Eq */0,
                                               _0: Caml_int64.mk(3, 0),
                                               _1: Caml_int64.mk(3, 0)
                                             };
@@ -420,7 +420,7 @@ var suites = Pervasives.$at(/* :: */{
                                     "lognot",
                                     (function (param) {
                                         return {
-                                                tag: /* Eq */0,
+                                                TAG: /* Eq */0,
                                                 _0: Caml_int64.mk(-3, -1),
                                                 _1: Caml_int64.mk(-3, -1)
                                               };
@@ -431,7 +431,7 @@ var suites = Pervasives.$at(/* :: */{
                                       "neg",
                                       (function (param) {
                                           return {
-                                                  tag: /* Eq */0,
+                                                  TAG: /* Eq */0,
                                                   _0: Caml_int64.mk(-2, -1),
                                                   _1: Caml_int64.mk(-2, -1)
                                                 };
@@ -442,7 +442,7 @@ var suites = Pervasives.$at(/* :: */{
                                         "File \"int64_test.ml\", line 80, characters 4-11",
                                         (function (param) {
                                             return {
-                                                    tag: /* Eq */0,
+                                                    TAG: /* Eq */0,
                                                     _0: Int64.min_int,
                                                     _1: Caml_int64.neg(Int64.min_int)
                                                   };
@@ -453,7 +453,7 @@ var suites = Pervasives.$at(/* :: */{
                                           "File \"int64_test.ml\", line 81, characters 4-11",
                                           (function (param) {
                                               return {
-                                                      tag: /* Eq */0,
+                                                      TAG: /* Eq */0,
                                                       _0: Int64.max_int,
                                                       _1: Caml_int64.neg(Caml_int64.add(Int64.min_int, Caml_int64.one))
                                                     };
@@ -464,7 +464,7 @@ var suites = Pervasives.$at(/* :: */{
                                             "sub1",
                                             (function (param) {
                                                 return {
-                                                        tag: /* Eq */0,
+                                                        TAG: /* Eq */0,
                                                         _0: Caml_int64.mk(2, 0),
                                                         _1: Caml_int64.mk(2, 0)
                                                       };
@@ -475,7 +475,7 @@ var suites = Pervasives.$at(/* :: */{
                                               "xor1",
                                               (function (param) {
                                                   return {
-                                                          tag: /* Eq */0,
+                                                          TAG: /* Eq */0,
                                                           _0: [
                                                             Caml_int64.mk(286331153, 0),
                                                             Caml_int64.xor(a, Caml_int64.mk(-285217025, 0))
@@ -492,7 +492,7 @@ var suites = Pervasives.$at(/* :: */{
                                                 "or",
                                                 (function (param) {
                                                     return {
-                                                            tag: /* Eq */0,
+                                                            TAG: /* Eq */0,
                                                             _0: Caml_int64.mk(-1, 0),
                                                             _1: Caml_int64.mk(-1, 0)
                                                           };
@@ -503,7 +503,7 @@ var suites = Pervasives.$at(/* :: */{
                                                   "and",
                                                   (function (param) {
                                                       return {
-                                                              tag: /* Eq */0,
+                                                              TAG: /* Eq */0,
                                                               _0: Caml_int64.mk(-286331154, 0),
                                                               _1: Caml_int64.mk(-286331154, 0)
                                                             };
@@ -514,7 +514,7 @@ var suites = Pervasives.$at(/* :: */{
                                                     "lsl",
                                                     (function (param) {
                                                         return {
-                                                                tag: /* Eq */0,
+                                                                TAG: /* Eq */0,
                                                                 _0: $$Array.map((function (x) {
                                                                         return Caml_int64.lsl_(Caml_int64.one, x);
                                                                       }), $$Array.init(64, (function (i) {
@@ -594,7 +594,7 @@ var suites = Pervasives.$at(/* :: */{
                                                       "lsr",
                                                       (function (param) {
                                                           return {
-                                                                  tag: /* Eq */0,
+                                                                  TAG: /* Eq */0,
                                                                   _0: $$Array.map((function (x) {
                                                                           return Caml_int64.lsr_(Caml_int64.neg_one, x);
                                                                         }), $$Array.init(64, (function (i) {
@@ -674,7 +674,7 @@ var suites = Pervasives.$at(/* :: */{
                                                         "asr",
                                                         (function (param) {
                                                             return {
-                                                                    tag: /* Eq */0,
+                                                                    TAG: /* Eq */0,
                                                                     _0: $$Array.map((function (x) {
                                                                             return Caml_int64.asr_(Caml_int64.neg_one, x);
                                                                           }), $$Array.init(64, (function (i) {
@@ -754,7 +754,7 @@ var suites = Pervasives.$at(/* :: */{
                                                           "mul simple",
                                                           (function (param) {
                                                               return {
-                                                                      tag: /* Eq */0,
+                                                                      TAG: /* Eq */0,
                                                                       _0: Caml_int64.mk(6, 0),
                                                                       _1: Caml_int64.mk(6, 0)
                                                                     };
@@ -765,7 +765,7 @@ var suites = Pervasives.$at(/* :: */{
                                                             "of_int32",
                                                             (function (param) {
                                                                 return {
-                                                                        tag: /* Eq */0,
+                                                                        TAG: /* Eq */0,
                                                                         _0: $$Array.map(Caml_int64.of_int32, [
                                                                               0,
                                                                               -2147483648
@@ -782,7 +782,7 @@ var suites = Pervasives.$at(/* :: */{
                                                               "of_int32_singleton",
                                                               (function (param) {
                                                                   return {
-                                                                          tag: /* Eq */0,
+                                                                          TAG: /* Eq */0,
                                                                           _0: Caml_int64.mk(-3, -1),
                                                                           _1: Caml_int64.mk(-3, -1)
                                                                         };
@@ -793,7 +793,7 @@ var suites = Pervasives.$at(/* :: */{
                                                                 "File \"int64_test.ml\", line 134, characters 4-11",
                                                                 (function (param) {
                                                                     return {
-                                                                            tag: /* Eq */0,
+                                                                            TAG: /* Eq */0,
                                                                             _0: Caml_int64.mk(3, 0),
                                                                             _1: Caml_int64.mk(3, 0)
                                                                           };
@@ -804,7 +804,7 @@ var suites = Pervasives.$at(/* :: */{
                                                                   "to_int32",
                                                                   (function (param) {
                                                                       return {
-                                                                              tag: /* Eq */0,
+                                                                              TAG: /* Eq */0,
                                                                               _0: $$Array.map(Caml_int64.to_int32, [
                                                                                     Caml_int64.zero,
                                                                                     Caml_int64.mk(-2147483648, 0)
@@ -821,7 +821,7 @@ var suites = Pervasives.$at(/* :: */{
                                                                     "discard_sign",
                                                                     (function (param) {
                                                                         return {
-                                                                                tag: /* Eq */0,
+                                                                                TAG: /* Eq */0,
                                                                                 _0: Caml_int64.discard_sign(Caml_int64.neg_one),
                                                                                 _1: Caml_int64.max_int
                                                                               };
@@ -832,7 +832,7 @@ var suites = Pervasives.$at(/* :: */{
                                                                       "div_mod",
                                                                       (function (param) {
                                                                           return {
-                                                                                  tag: /* Eq */0,
+                                                                                  TAG: /* Eq */0,
                                                                                   _0: Caml_int64.div_mod(Caml_int64.mk(7, 0), Caml_int64.mk(3, 0)),
                                                                                   _1: [
                                                                                     Caml_int64.mk(2, 0),
@@ -846,7 +846,7 @@ var suites = Pervasives.$at(/* :: */{
                                                                         "to_hex",
                                                                         (function (param) {
                                                                             return {
-                                                                                    tag: /* Eq */0,
+                                                                                    TAG: /* Eq */0,
                                                                                     _0: Caml_int64.to_hex(Caml_int64.neg_one),
                                                                                     _1: "ffffffffffffffff"
                                                                                   };
@@ -857,7 +857,7 @@ var suites = Pervasives.$at(/* :: */{
                                                                           "generic_compare",
                                                                           (function (param) {
                                                                               return {
-                                                                                      tag: /* Eq */0,
+                                                                                      TAG: /* Eq */0,
                                                                                       _0: Caml_obj.caml_compare(Caml_int64.mk(0, 1), Caml_int64.one) > 0,
                                                                                       _1: true
                                                                                     };
@@ -868,7 +868,7 @@ var suites = Pervasives.$at(/* :: */{
                                                                             "test_compier_literal",
                                                                             (function (param) {
                                                                                 return {
-                                                                                        tag: /* Eq */0,
+                                                                                        TAG: /* Eq */0,
                                                                                         _0: Caml_int64.mk(-1, 0),
                                                                                         _1: Caml_int64.mk(-1, 0)
                                                                                       };
@@ -879,7 +879,7 @@ var suites = Pervasives.$at(/* :: */{
                                                                               "generic_compare2",
                                                                               (function (param) {
                                                                                   return {
-                                                                                          tag: /* Eq */0,
+                                                                                          TAG: /* Eq */0,
                                                                                           _0: Caml_obj.caml_compare(Caml_int64.mk(-2147483648, 0), Caml_int64.one) > 0,
                                                                                           _1: true
                                                                                         };
@@ -890,7 +890,7 @@ var suites = Pervasives.$at(/* :: */{
                                                                                 "shift_left",
                                                                                 (function (param) {
                                                                                     return {
-                                                                                            tag: /* Eq */0,
+                                                                                            TAG: /* Eq */0,
                                                                                             _0: Caml_int64.mk(-256, 0),
                                                                                             _1: Caml_int64.mk(-256, 0)
                                                                                           };
@@ -901,7 +901,7 @@ var suites = Pervasives.$at(/* :: */{
                                                                                   "shift_right",
                                                                                   (function (param) {
                                                                                       return {
-                                                                                              tag: /* Eq */0,
+                                                                                              TAG: /* Eq */0,
                                                                                               _0: 4294967295,
                                                                                               _1: 4294967295
                                                                                             };
@@ -912,7 +912,7 @@ var suites = Pervasives.$at(/* :: */{
                                                                                     "fib_int64",
                                                                                     (function (param) {
                                                                                         return {
-                                                                                                tag: /* Eq */0,
+                                                                                                TAG: /* Eq */0,
                                                                                                 _0: fib(1000, Caml_int64.one, Caml_int64.mk(2, 0)),
                                                                                                 _1: Caml_int64.mk(-1420443336, -1990564327)
                                                                                               };
@@ -923,7 +923,7 @@ var suites = Pervasives.$at(/* :: */{
                                                                                       "fac_int64",
                                                                                       (function (param) {
                                                                                           return {
-                                                                                                  tag: /* Eq */0,
+                                                                                                  TAG: /* Eq */0,
                                                                                                   _0: fac(30, Caml_int64.one),
                                                                                                   _1: Caml_int64.mk(1409286144, -2040662563)
                                                                                                 };
@@ -934,7 +934,7 @@ var suites = Pervasives.$at(/* :: */{
                                                                                         "File \"int64_test.ml\", line 163, characters 6-13",
                                                                                         (function (param) {
                                                                                             return {
-                                                                                                    tag: /* Eq */0,
+                                                                                                    TAG: /* Eq */0,
                                                                                                     _0: Caml_int64.add(Int64.max_int, Int64.max_int),
                                                                                                     _1: Caml_int64.mk(-2, -1)
                                                                                                   };
@@ -945,7 +945,7 @@ var suites = Pervasives.$at(/* :: */{
                                                                                           "File \"int64_test.ml\", line 166, characters 6-13",
                                                                                           (function (param) {
                                                                                               return {
-                                                                                                      tag: /* Eq */0,
+                                                                                                      TAG: /* Eq */0,
                                                                                                       _0: Caml_int64.add(Int64.min_int, Int64.min_int),
                                                                                                       _1: Caml_int64.zero
                                                                                                     };
@@ -956,7 +956,7 @@ var suites = Pervasives.$at(/* :: */{
                                                                                             "File \"int64_test.ml\", line 170, characters 6-13",
                                                                                             (function (param) {
                                                                                                 return {
-                                                                                                        tag: /* Eq */0,
+                                                                                                        TAG: /* Eq */0,
                                                                                                         _0: Caml_int64.neg_one,
                                                                                                         _1: Caml_int64.neg_one
                                                                                                       };
@@ -1009,10 +1009,10 @@ var suites = Pervasives.$at(/* :: */{
                     return [
                             Curry._1(Format.asprintf(/* Format */{
                                       _0: {
-                                        tag: /* String_literal */11,
+                                        TAG: /* String_literal */11,
                                         _0: "shift_left_cases ",
                                         _1: {
-                                          tag: /* Int */4,
+                                          TAG: /* Int */4,
                                           _0: /* Int_d */0,
                                           _1: /* No_padding */0,
                                           _2: /* No_precision */0,
@@ -1023,7 +1023,7 @@ var suites = Pervasives.$at(/* :: */{
                                     }), i),
                             (function (param) {
                                 return {
-                                        tag: /* Eq */0,
+                                        TAG: /* Eq */0,
                                         _0: a,
                                         _1: b
                                       };
@@ -1033,10 +1033,10 @@ var suites = Pervasives.$at(/* :: */{
                         return [
                                 Curry._1(Format.asprintf(/* Format */{
                                           _0: {
-                                            tag: /* String_literal */11,
+                                            TAG: /* String_literal */11,
                                             _0: "shift_right_cases ",
                                             _1: {
-                                              tag: /* Int */4,
+                                              TAG: /* Int */4,
                                               _0: /* Int_d */0,
                                               _1: /* No_padding */0,
                                               _2: /* No_precision */0,
@@ -1047,7 +1047,7 @@ var suites = Pervasives.$at(/* :: */{
                                         }), i),
                                 (function (param) {
                                     return {
-                                            tag: /* Eq */0,
+                                            TAG: /* Eq */0,
                                             _0: a,
                                             _1: b
                                           };
@@ -1057,10 +1057,10 @@ var suites = Pervasives.$at(/* :: */{
                         return [
                                 Curry._1(Format.asprintf(/* Format */{
                                           _0: {
-                                            tag: /* String_literal */11,
+                                            TAG: /* String_literal */11,
                                             _0: "shift_right_logical_cases ",
                                             _1: {
-                                              tag: /* Int */4,
+                                              TAG: /* Int */4,
                                               _0: /* Int_d */0,
                                               _1: /* No_padding */0,
                                               _2: /* No_precision */0,
@@ -1071,7 +1071,7 @@ var suites = Pervasives.$at(/* :: */{
                                         }), i),
                                 (function (param) {
                                     return {
-                                            tag: /* Eq */0,
+                                            TAG: /* Eq */0,
                                             _0: a,
                                             _1: b
                                           };

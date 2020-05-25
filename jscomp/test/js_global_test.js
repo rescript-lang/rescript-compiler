@@ -10,7 +10,7 @@ var suites_0 = [
             }), 0);
       clearTimeout(handle);
       return {
-              tag: /* Ok */4,
+              TAG: /* Ok */4,
               _0: true
             };
     })
@@ -25,7 +25,7 @@ var suites_1 = /* :: */{
               }), 0);
         clearInterval(handle);
         return {
-                tag: /* Ok */4,
+                TAG: /* Ok */4,
                 _0: true
               };
       })
@@ -35,7 +35,7 @@ var suites_1 = /* :: */{
       "encodeURI",
       (function (param) {
           return {
-                  tag: /* Eq */0,
+                  TAG: /* Eq */0,
                   _0: encodeURI("[-=-]"),
                   _1: "%5B-=-%5D"
                 };
@@ -46,7 +46,7 @@ var suites_1 = /* :: */{
         "decodeURI",
         (function (param) {
             return {
-                    tag: /* Eq */0,
+                    TAG: /* Eq */0,
                     _0: decodeURI("%5B-=-%5D"),
                     _1: "[-=-]"
                   };
@@ -57,7 +57,7 @@ var suites_1 = /* :: */{
           "encodeURIComponent",
           (function (param) {
               return {
-                      tag: /* Eq */0,
+                      TAG: /* Eq */0,
                       _0: encodeURIComponent("[-=-]"),
                       _1: "%5B-%3D-%5D"
                     };
@@ -68,7 +68,7 @@ var suites_1 = /* :: */{
             "decodeURIComponent",
             (function (param) {
                 return {
-                        tag: /* Eq */0,
+                        TAG: /* Eq */0,
                         _0: decodeURIComponent("%5B-%3D-%5D"),
                         _1: "[-=-]"
                       };

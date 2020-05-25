@@ -34,7 +34,7 @@ function help_action(param) {
   throw {
         RE_EXN_ID: Stop,
         _1: {
-          tag: /* Unknown */0,
+          TAG: /* Unknown */0,
           _0: "-help"
         },
         Error: new Error()
@@ -63,7 +63,7 @@ function add_help(speclist) {
         _0: [
           "-help",
           {
-            tag: /* Unit */0,
+            TAG: /* Unit */0,
             _0: help_action
           },
           " Display this list of options"
@@ -86,7 +86,7 @@ function add_help(speclist) {
         _0: [
           "--help",
           {
-            tag: /* Unit */0,
+            TAG: /* Unit */0,
             _0: help_action
           },
           " Display this list of options"

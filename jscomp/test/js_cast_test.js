@@ -26,7 +26,7 @@ function add_test(loc, test) {
 function eq(loc, x, y) {
   return add_test(loc, (function (param) {
                 return {
-                        tag: /* Eq */0,
+                        TAG: /* Eq */0,
                         _0: x,
                         _1: y
                       };

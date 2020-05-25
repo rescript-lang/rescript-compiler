@@ -38,7 +38,7 @@ var suites_0 = [
         class_tables.key = env_init;
       }
       return {
-              tag: /* Eq */0,
+              TAG: /* Eq */0,
               _0: 33,
               _1: f(Curry._1(class_tables.key, undefined))
             };
@@ -50,7 +50,7 @@ var suites_1 = /* :: */{
     "js_obj",
     (function (param) {
         return {
-                tag: /* Eq */0,
+                TAG: /* Eq */0,
                 _0: 34,
                 _1: ({
                       say: (function (x) {
@@ -65,7 +65,7 @@ var suites_1 = /* :: */{
       "js_obj2",
       (function (param) {
           return {
-                  tag: /* Eq */0,
+                  TAG: /* Eq */0,
                   _0: 34,
                   _1: ({
                         say: (function (x) {
@@ -80,7 +80,7 @@ var suites_1 = /* :: */{
         "empty",
         (function (param) {
             return {
-                    tag: /* Eq */0,
+                    TAG: /* Eq */0,
                     _0: 0,
                     _1: Object.keys({}).length
                   };
@@ -91,7 +91,7 @@ var suites_1 = /* :: */{
           "assign",
           (function (param) {
               return {
-                      tag: /* Eq */0,
+                      TAG: /* Eq */0,
                       _0: {
                         a: 1
                       },

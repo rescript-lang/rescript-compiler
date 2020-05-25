@@ -22,7 +22,7 @@ function eq(loc, param) {
       loc + (" id " + String(test_id.contents)),
       (function (param) {
           return {
-                  tag: /* Eq */0,
+                  TAG: /* Eq */0,
                   _0: x,
                   _1: y
                 };
@@ -37,25 +37,25 @@ function print_or_error(fmt, x) {
   if (x.HASH >= 106380200) {
     return Curry._1(Format.fprintf(fmt, /* Format */{
                     _0: {
-                      tag: /* Formatting_gen */18,
+                      TAG: /* Formatting_gen */18,
                       _0: {
-                        tag: /* Open_box */1,
+                        TAG: /* Open_box */1,
                         _0: /* Format */{
                           _0: /* End_of_format */0,
                           _1: ""
                         }
                       },
                       _1: {
-                        tag: /* String_literal */11,
+                        TAG: /* String_literal */11,
                         _0: "Error:",
                         _1: {
-                          tag: /* String */2,
+                          TAG: /* String */2,
                           _0: /* No_padding */0,
                           _1: {
-                            tag: /* Formatting_lit */17,
+                            TAG: /* Formatting_lit */17,
                             _0: /* Close_box */0,
                             _1: {
-                              tag: /* Formatting_lit */17,
+                              TAG: /* Formatting_lit */17,
                               _0: /* Flush_newline */4,
                               _1: /* End_of_format */0
                             }
@@ -68,24 +68,24 @@ function print_or_error(fmt, x) {
   } else {
     return Curry._2(Format.fprintf(fmt, /* Format */{
                     _0: {
-                      tag: /* Formatting_gen */18,
+                      TAG: /* Formatting_gen */18,
                       _0: {
-                        tag: /* Open_box */1,
+                        TAG: /* Open_box */1,
                         _0: /* Format */{
                           _0: /* End_of_format */0,
                           _1: ""
                         }
                       },
                       _1: {
-                        tag: /* String_literal */11,
+                        TAG: /* String_literal */11,
                         _0: "Ok:",
                         _1: {
-                          tag: /* Alpha */15,
+                          TAG: /* Alpha */15,
                           _0: {
-                            tag: /* Formatting_lit */17,
+                            TAG: /* Formatting_lit */17,
                             _0: /* Close_box */0,
                             _1: {
-                              tag: /* Formatting_lit */17,
+                              TAG: /* Formatting_lit */17,
                               _0: /* Flush_newline */4,
                               _1: /* End_of_format */0
                             }
@@ -144,7 +144,7 @@ eq("File \"sexpm_test.ml\", line 17, characters 7-14", [
 eq("File \"sexpm_test.ml\", line 21, characters 7-14", [
       Curry._2(Format.asprintf(/* Format */{
                   _0: {
-                    tag: /* Alpha */15,
+                    TAG: /* Alpha */15,
                     _0: /* End_of_format */0
                   },
                   _1: "%a"

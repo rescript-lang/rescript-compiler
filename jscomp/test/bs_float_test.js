@@ -30,7 +30,7 @@ function neq(loc, x, y) {
       loc + (" id " + String(test_id.contents)),
       (function (param) {
           return {
-                  tag: /* Neq */1,
+                  TAG: /* Neq */1,
                   _0: x,
                   _1: y
                 };

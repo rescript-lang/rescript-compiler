@@ -7,7 +7,7 @@ var Point = Caml_module.init_mod([
       10,
       6
     ], {
-      tag: /* Module */0,
+      TAG: /* Module */0,
       _0: [[
           /* Function */0,
           "add"
@@ -15,7 +15,7 @@ var Point = Caml_module.init_mod([
     });
 
 Caml_module.update_mod({
-      tag: /* Module */0,
+      TAG: /* Module */0,
       _0: [[
           /* Function */0,
           "add"

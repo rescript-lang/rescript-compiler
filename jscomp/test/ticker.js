@@ -77,15 +77,15 @@ function string_of_rank(i) {
   } else {
     return Curry._1(Printf.sprintf(/* Format */{
                     _0: {
-                      tag: /* String_literal */11,
+                      TAG: /* String_literal */11,
                       _0: "Ranked(",
                       _1: {
-                        tag: /* Int */4,
+                        TAG: /* Int */4,
                         _0: /* Int_i */3,
                         _1: /* No_padding */0,
                         _2: /* No_precision */0,
                         _3: {
-                          tag: /* Char_literal */12,
+                          TAG: /* Char_literal */12,
                           _0: /* ")" */41,
                           _1: /* End_of_format */0
                         }

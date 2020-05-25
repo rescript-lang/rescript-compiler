@@ -24,7 +24,7 @@ function eq(loc, x, y) {
       loc + (" id " + String(test_id.contents)),
       (function (param) {
           return {
-                  tag: /* Eq */0,
+                  TAG: /* Eq */0,
                   _0: x,
                   _1: y
                 };
@@ -44,10 +44,10 @@ function eq3(loc, a, b, c) {
 function u(param) {
   return Pervasives.$caret$caret(/* Format */{
               _0: {
-                tag: /* String_literal */11,
+                TAG: /* String_literal */11,
                 _0: "xx ",
                 _1: {
-                  tag: /* String */2,
+                  TAG: /* String */2,
                   _0: /* No_padding */0,
                   _1: /* End_of_format */0
                 }
@@ -55,7 +55,7 @@ function u(param) {
               _1: "xx %s"
             }, /* Format */{
               _0: {
-                tag: /* String_literal */11,
+                TAG: /* String_literal */11,
                 _0: "yy",
                 _1: /* End_of_format */0
               },
@@ -132,7 +132,7 @@ f("File \"format_test.ml\", line 78, characters 6-13", /* :: */{
 function sl(f) {
   return Curry._1(Printf.sprintf(/* Format */{
                   _0: {
-                    tag: /* Float */8,
+                    TAG: /* Float */8,
                     _0: /* Float_h */16,
                     _1: /* No_padding */0,
                     _2: /* No_precision */0,
@@ -212,7 +212,7 @@ aux_list("File \"format_test.ml\", line 110, characters 11-18", literals);
 
 eq("File \"format_test.ml\", line 113, characters 5-12", Curry._1(Printf.sprintf(/* Format */{
               _0: {
-                tag: /* Float */8,
+                TAG: /* Float */8,
                 _0: /* Float_H */19,
                 _1: /* No_padding */0,
                 _2: /* No_precision */0,
@@ -224,7 +224,7 @@ eq("File \"format_test.ml\", line 113, characters 5-12", Curry._1(Printf.sprintf
 function scan_float(loc, s, expect) {
   return Curry._1(Scanf.sscanf(s, /* Format */{
                   _0: {
-                    tag: /* Float */8,
+                    TAG: /* Float */8,
                     _0: /* Float_h */16,
                     _1: /* No_padding */0,
                     _2: /* No_precision */0,

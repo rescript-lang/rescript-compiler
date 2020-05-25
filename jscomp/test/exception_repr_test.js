@@ -22,7 +22,7 @@ function eq(loc, x, y) {
       loc + (" id " + String(test_id.contents)),
       (function (param) {
           return {
-                  tag: /* Eq */0,
+                  TAG: /* Eq */0,
                   _0: x,
                   _1: y
                 };
@@ -45,15 +45,15 @@ Printexc.register_printer(function (s) {
       } else if (s.RE_EXN_ID === A) {
         return Curry._1(Format.asprintf(/* Format */{
                         _0: {
-                          tag: /* String_literal */11,
+                          TAG: /* String_literal */11,
                           _0: "A(",
                           _1: {
-                            tag: /* Int */4,
+                            TAG: /* Int */4,
                             _0: /* Int_d */0,
                             _1: /* No_padding */0,
                             _2: /* No_precision */0,
                             _3: {
-                              tag: /* Char_literal */12,
+                              TAG: /* Char_literal */12,
                               _0: /* ")" */41,
                               _1: /* End_of_format */0
                             }

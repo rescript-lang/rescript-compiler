@@ -73,7 +73,7 @@ Mt.from_pair_suites("Ffi_arity_test", /* :: */{
         "File \"ffi_arity_test.ml\", line 45, characters 4-11",
         (function (param) {
             return {
-                    tag: /* Eq */0,
+                    TAG: /* Eq */0,
                     _0: v,
                     _1: [
                       0,
@@ -88,7 +88,7 @@ Mt.from_pair_suites("Ffi_arity_test", /* :: */{
           "File \"ffi_arity_test.ml\", line 46, characters 4-11",
           (function (param) {
               return {
-                      tag: /* Eq */0,
+                      TAG: /* Eq */0,
                       _0: vv,
                       _1: [
                         1,
@@ -103,7 +103,7 @@ Mt.from_pair_suites("Ffi_arity_test", /* :: */{
             "File \"ffi_arity_test.ml\", line 47, characters 4-11",
             (function (param) {
                 return {
-                        tag: /* Eq */0,
+                        TAG: /* Eq */0,
                         _0: hh,
                         _1: [
                           1,

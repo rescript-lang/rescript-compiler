@@ -12,7 +12,7 @@ var A = Caml_module.init_mod([
       3,
       6
     ], {
-      tag: /* Module */0,
+      TAG: /* Module */0,
       _0: [[
           /* Function */0,
           "even"
@@ -24,7 +24,7 @@ var B = Caml_module.init_mod([
       11,
       6
     ], {
-      tag: /* Module */0,
+      TAG: /* Module */0,
       _0: [[
           /* Function */0,
           "odd"
@@ -42,7 +42,7 @@ function even(n) {
 }
 
 Caml_module.update_mod({
-      tag: /* Module */0,
+      TAG: /* Module */0,
       _0: [[
           /* Function */0,
           "even"
@@ -62,7 +62,7 @@ function odd(n) {
 }
 
 Caml_module.update_mod({
-      tag: /* Module */0,
+      TAG: /* Module */0,
       _0: [[
           /* Function */0,
           "odd"
@@ -76,7 +76,7 @@ var AA = Caml_module.init_mod([
       21,
       6
     ], {
-      tag: /* Module */0,
+      TAG: /* Module */0,
       _0: [
         [
           /* Function */0,
@@ -94,7 +94,7 @@ var BB = Caml_module.init_mod([
       31,
       6
     ], {
-      tag: /* Module */0,
+      TAG: /* Module */0,
       _0: [
         [
           /* Function */0,
@@ -122,7 +122,7 @@ function x(param) {
 }
 
 Caml_module.update_mod({
-      tag: /* Module */0,
+      TAG: /* Module */0,
       _0: [
         [
           /* Function */0,
@@ -153,7 +153,7 @@ function y(param) {
 }
 
 Caml_module.update_mod({
-      tag: /* Module */0,
+      TAG: /* Module */0,
       _0: [
         [
           /* Function */0,
@@ -174,7 +174,7 @@ var AAA = Caml_module.init_mod([
       55,
       2
     ], {
-      tag: /* Module */0,
+      TAG: /* Module */0,
       _0: [[
           /* Function */0,
           "compare"
@@ -1167,13 +1167,13 @@ var ASet = {
 };
 
 function compare$1(t1, t2) {
-  if (t1.tag) {
-    if (t2.tag) {
+  if (t1.TAG) {
+    if (t2.TAG) {
       return compare(t1._0, t2._0);
     } else {
       return -1;
     }
-  } else if (t2.tag) {
+  } else if (t2.TAG) {
     return 1;
   } else {
     return Caml_primitive.caml_string_compare(t1._0, t2._0);
@@ -1181,7 +1181,7 @@ function compare$1(t1, t2) {
 }
 
 Caml_module.update_mod({
-      tag: /* Module */0,
+      TAG: /* Module */0,
       _0: [[
           /* Function */0,
           "compare"
@@ -1194,7 +1194,7 @@ var suites_0 = [
   "test1",
   (function (param) {
       return {
-              tag: /* Eq */0,
+              TAG: /* Eq */0,
               _0: [
                 true,
                 true,
@@ -1216,7 +1216,7 @@ var suites_1 = /* :: */{
     "test2",
     (function (param) {
         return {
-                tag: /* Eq */0,
+                TAG: /* Eq */0,
                 _0: Curry._1(BB.y, undefined),
                 _1: 32
               };
@@ -1227,7 +1227,7 @@ var suites_1 = /* :: */{
       "test3",
       (function (param) {
           return {
-                  tag: /* Eq */0,
+                  TAG: /* Eq */0,
                   _0: Curry._1(AA.x, undefined),
                   _1: 35
                 };
@@ -1238,7 +1238,7 @@ var suites_1 = /* :: */{
         "test4",
         (function (param) {
             return {
-                    tag: /* Eq */0,
+                    TAG: /* Eq */0,
                     _0: true,
                     _1: Curry._1(A.even, 2)
                   };
@@ -1249,7 +1249,7 @@ var suites_1 = /* :: */{
           "test4",
           (function (param) {
               return {
-                      tag: /* Eq */0,
+                      TAG: /* Eq */0,
                       _0: true,
                       _1: Curry._1(AA.even, 4)
                     };
@@ -1260,7 +1260,7 @@ var suites_1 = /* :: */{
             "test5",
             (function (param) {
                 return {
-                        tag: /* Eq */0,
+                        TAG: /* Eq */0,
                         _0: false,
                         _1: Curry._1(B.odd, 2)
                       };
@@ -1271,21 +1271,21 @@ var suites_1 = /* :: */{
               "test6",
               (function (param) {
                   return {
-                          tag: /* Eq */0,
+                          TAG: /* Eq */0,
                           _0: 2,
                           _1: cardinal(of_list(/* :: */{
                                     _0: {
-                                      tag: /* Leaf */0,
+                                      TAG: /* Leaf */0,
                                       _0: "a"
                                     },
                                     _1: /* :: */{
                                       _0: {
-                                        tag: /* Leaf */0,
+                                        TAG: /* Leaf */0,
                                         _0: "b"
                                       },
                                       _1: /* :: */{
                                         _0: {
-                                          tag: /* Leaf */0,
+                                          TAG: /* Leaf */0,
                                           _0: "a"
                                         },
                                         _1: /* [] */0

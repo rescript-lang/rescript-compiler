@@ -25,7 +25,7 @@ function f2(x) {
 }
 
 function f3(x) {
-  switch (x.tag | 0) {
+  switch (x.TAG | 0) {
     case /* A */0 :
     case /* C */2 :
         return x._0 + 1 | 0;

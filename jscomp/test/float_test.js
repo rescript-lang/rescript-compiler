@@ -125,10 +125,10 @@ function from_pairs(ps) {
                     return [
                             Curry._1(Printf.sprintf(/* Format */{
                                       _0: {
-                                        tag: /* String_literal */11,
+                                        TAG: /* String_literal */11,
                                         _0: "pair ",
                                         _1: {
-                                          tag: /* Int */4,
+                                          TAG: /* Int */4,
                                           _0: /* Int_d */0,
                                           _1: /* No_padding */0,
                                           _2: /* No_precision */0,
@@ -139,7 +139,7 @@ function from_pairs(ps) {
                                     }), i),
                             (function (param) {
                                 return {
-                                        tag: /* Approx */5,
+                                        TAG: /* Approx */5,
                                         _0: a,
                                         _1: b
                                       };
@@ -219,7 +219,7 @@ Mt.from_pair_suites("Float_test", Pervasives.$at(/* :: */{
             "mod_float",
             (function (param) {
                 return {
-                        tag: /* Approx */5,
+                        TAG: /* Approx */5,
                         _0: 3.2 % 0.5,
                         _1: 0.200000000000000178
                       };
@@ -230,7 +230,7 @@ Mt.from_pair_suites("Float_test", Pervasives.$at(/* :: */{
               "modf_float1",
               (function (param) {
                   return {
-                          tag: /* Approx */5,
+                          TAG: /* Approx */5,
                           _0: a,
                           _1: 0.299999999999997158
                         };
@@ -241,7 +241,7 @@ Mt.from_pair_suites("Float_test", Pervasives.$at(/* :: */{
                 "modf_float2",
                 (function (param) {
                     return {
-                            tag: /* Approx */5,
+                            TAG: /* Approx */5,
                             _0: b,
                             _1: 32
                           };
@@ -252,7 +252,7 @@ Mt.from_pair_suites("Float_test", Pervasives.$at(/* :: */{
                   "int_of_float",
                   (function (param) {
                       return {
-                              tag: /* Eq */0,
+                              TAG: /* Eq */0,
                               _0: 3,
                               _1: 3
                             };

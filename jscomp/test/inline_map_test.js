@@ -165,7 +165,7 @@ Mt.from_pair_suites("Inline_map_test", /* :: */{
         "find",
         (function (param) {
             return {
-                    tag: /* Eq */0,
+                    TAG: /* Eq */0,
                     _0: find(10, m),
                     _1: /* "a" */97
                   };

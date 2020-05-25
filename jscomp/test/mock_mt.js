@@ -11,7 +11,7 @@ function from_pair_suites(name, suites) {
   return List.iter((function (param) {
                 var name = param[0];
                 var fn = Curry._1(param[1], undefined);
-                switch (fn.tag | 0) {
+                switch (fn.TAG | 0) {
                   case /* Eq */0 :
                       console.log([
                             name,

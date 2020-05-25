@@ -9,7 +9,7 @@ var list_suites_0 = [
   "length",
   (function (param) {
       return {
-              tag: /* Eq */0,
+              TAG: /* Eq */0,
               _0: 1,
               _1: List.length(/* :: */{
                     _0: [
@@ -30,7 +30,7 @@ var list_suites_1 = /* :: */{
     "length2",
     (function (param) {
         return {
-                tag: /* Eq */0,
+                TAG: /* Eq */0,
                 _0: 5,
                 _1: List.length(/* :: */{
                       _0: 0,
@@ -56,7 +56,7 @@ var list_suites_1 = /* :: */{
       "long_length",
       (function (param) {
           return {
-                  tag: /* Eq */0,
+                  TAG: /* Eq */0,
                   _0: 30000,
                   _1: List.length($$Array.to_list($$Array.init(30000, (function (param) {
                                   return 0;
@@ -69,7 +69,7 @@ var list_suites_1 = /* :: */{
         "sort",
         (function (param) {
             return {
-                    tag: /* Eq */0,
+                    TAG: /* Eq */0,
                     _0: List.sort(Caml_primitive.caml_int_compare, /* :: */{
                           _0: 4,
                           _1: /* :: */{

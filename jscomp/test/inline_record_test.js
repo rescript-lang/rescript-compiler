@@ -17,13 +17,13 @@ function eq(loc, x, y) {
 }
 
 var v = {
-  tag: /* A0 */0,
+  TAG: /* A0 */0,
   lbl: 3,
   more: /* [] */0
 };
 
 var v1 = {
-  tag: /* A1 */1,
+  TAG: /* A1 */1,
   more: /* :: */{
     _0: 1,
     _1: /* :: */{
@@ -34,7 +34,7 @@ var v1 = {
 };
 
 function f(x) {
-  if (x.tag) {
+  if (x.TAG) {
     return List.fold_left((function (prim, prim$1) {
                   return prim + prim$1 | 0;
                 }), 0, x.more);
@@ -80,7 +80,7 @@ if (A0 === A0) {
 eq("File \"inline_record_test.ml\", line 51, characters 6-13", tmp, 3);
 
 function ff(x) {
-  if (x.tag) {
+  if (x.TAG) {
     x.z = x.z + 2 | 0;
   } else {
     x.x = x.x + 1 | 0;
@@ -89,14 +89,14 @@ function ff(x) {
 }
 
 var v4 = {
-  tag: /* A0 */0,
+  TAG: /* A0 */0,
   x: 0,
   y: 0,
   z: 0
 };
 
 var v5 = {
-  tag: /* A1 */1,
+  TAG: /* A1 */1,
   z: 0
 };
 
@@ -107,7 +107,7 @@ for(var i = 0; i <= 10; ++i){
 
 var tmp$1;
 
-if (v4.tag) {
+if (v4.TAG) {
   throw {
         RE_EXN_ID: "Assert_failure",
         _1: [
@@ -125,7 +125,7 @@ eq("File \"inline_record_test.ml\", line 69, characters 6-13", tmp$1, 11);
 
 var tmp$2;
 
-if (v5.tag) {
+if (v5.TAG) {
   tmp$2 = v5.z;
 } else {
   throw {

@@ -203,7 +203,7 @@ function next(param) {
   }
   if (c === undefined) {
     return {
-            tag: /* Op */0,
+            TAG: /* Op */0,
             _0: "EOF!"
           };
   }
@@ -221,7 +221,7 @@ function next(param) {
       Curry._1(getch, undefined);
       gpos.contents = e + 8 & -8;
       return {
-              tag: /* SLit */2,
+              TAG: /* SLit */2,
               _0: (b + 232 | 0) + 4194304 | 0,
               _1: Bytes.to_string(Bytes.sub(glo, b, e - b | 0))
             };
@@ -235,7 +235,7 @@ function next(param) {
         var match$1 = peekch(undefined);
         if (match$1 > 57 || match$1 < 48) {
           return {
-                  tag: /* ILit */1,
+                  TAG: /* ILit */1,
                   _0: n
                 };
         }
@@ -255,7 +255,7 @@ function next(param) {
           };
     }
     return {
-            tag: /* ILit */1,
+            TAG: /* ILit */1,
             _0: ch
           };
   }
@@ -268,7 +268,7 @@ function next(param) {
       s[n$1] = ch$1;
       if (!isid(peekch(undefined))) {
         return {
-                tag: /* Sym */3,
+                TAG: /* Sym */3,
                 _0: addsym(Bytes.to_string(Bytes.sub(s, 0, n$1 + 1 | 0)))
               };
       }
@@ -312,7 +312,7 @@ function next(param) {
       var param$1 = _param;
       if (!param$1) {
         return {
-                tag: /* Op */0,
+                TAG: /* Op */0,
                 _0: Caml_bytes.bytes_to_string(Bytes.make(1, c))
               };
       }
@@ -320,7 +320,7 @@ function next(param) {
       if (Caml_string.get(lop, 0) === c && Caml_string.get(lop, 1) === peekch(undefined)) {
         Curry._1(getch, undefined);
         return {
-                tag: /* Op */0,
+                TAG: /* Op */0,
                 _0: lop
               };
       }
@@ -392,31 +392,31 @@ function patch(rel, loc, n) {
   if (dbg.contents) {
     Curry._3(Printf.eprintf(/* Format */{
               _0: {
-                tag: /* String_literal */11,
+                TAG: /* String_literal */11,
                 _0: "patching at ",
                 _1: {
-                  tag: /* Int */4,
+                  TAG: /* Int */4,
                   _0: /* Int_d */0,
                   _1: /* No_padding */0,
                   _2: /* No_precision */0,
                   _3: {
-                    tag: /* String_literal */11,
+                    TAG: /* String_literal */11,
                     _0: " to ",
                     _1: {
-                      tag: /* Int */4,
+                      TAG: /* Int */4,
                       _0: /* Int_d */0,
                       _1: /* No_padding */0,
                       _2: /* No_precision */0,
                       _3: {
-                        tag: /* String_literal */11,
+                        TAG: /* String_literal */11,
                         _0: " (n=",
                         _1: {
-                          tag: /* Int */4,
+                          TAG: /* Int */4,
                           _0: /* Int_d */0,
                           _1: /* No_padding */0,
                           _2: /* No_precision */0,
                           _3: {
-                            tag: /* String_literal */11,
+                            TAG: /* String_literal */11,
                             _0: ")\n",
                             _1: /* End_of_format */0
                           }
@@ -479,7 +479,7 @@ function pop(r) {
 var lval = {
   contents: [
     {
-      tag: /* Mov */0,
+      TAG: /* Mov */0,
       _0: 0
     },
     /* Int */0
@@ -488,7 +488,7 @@ var lval = {
 
 function patchlval(param) {
   var n = lval.contents[0];
-  if (n.tag) {
+  if (n.TAG) {
     opos.contents = opos.contents - n._0 | 0;
   } else {
     obuf[opos.contents - n._0 | 0] = /* "\141" */141;
@@ -502,7 +502,7 @@ function read(param) {
     le(8, 0);
     lval.contents = [
       {
-        tag: /* Del */1,
+        TAG: /* Del */1,
         _0: 4
       },
       /* Chr */1
@@ -512,7 +512,7 @@ function read(param) {
     le(8, 0);
     lval.contents = [
       {
-        tag: /* Del */1,
+        TAG: /* Del */1,
         _0: 3
       },
       /* Int */0
@@ -640,7 +640,7 @@ var inss = /* :: */{
   _0: [
     "*",
     {
-      tag: /* Bin */0,
+      TAG: /* Bin */0,
       _0: /* :: */{
         _0: 1208987585,
         _1: /* [] */0
@@ -651,7 +651,7 @@ var inss = /* :: */{
     _0: [
       "/",
       {
-        tag: /* Bin */0,
+        TAG: /* Bin */0,
         _0: /* :: */{
           _0: 18577,
           _1: /* :: */{
@@ -668,7 +668,7 @@ var inss = /* :: */{
       _0: [
         "%",
         {
-          tag: /* Bin */0,
+          TAG: /* Bin */0,
           _0: /* :: */{
             _0: 18577,
             _1: /* :: */{
@@ -688,7 +688,7 @@ var inss = /* :: */{
         _0: [
           "+",
           {
-            tag: /* Bin */0,
+            TAG: /* Bin */0,
             _0: /* :: */{
               _0: 4719048,
               _1: /* [] */0
@@ -699,7 +699,7 @@ var inss = /* :: */{
           _0: [
             "-",
             {
-              tag: /* Bin */0,
+              TAG: /* Bin */0,
               _0: /* :: */{
                 _0: 18577,
                 _1: /* :: */{
@@ -713,7 +713,7 @@ var inss = /* :: */{
             _0: [
               "<<",
               {
-                tag: /* Bin */0,
+                TAG: /* Bin */0,
                 _0: /* :: */{
                   _0: 18577,
                   _1: /* :: */{
@@ -727,7 +727,7 @@ var inss = /* :: */{
               _0: [
                 ">>",
                 {
-                  tag: /* Bin */0,
+                  TAG: /* Bin */0,
                   _0: /* :: */{
                     _0: 18577,
                     _1: /* :: */{
@@ -741,7 +741,7 @@ var inss = /* :: */{
                 _0: [
                   "<",
                   {
-                    tag: /* Cmp */1,
+                    TAG: /* Cmp */1,
                     _0: 10
                   }
                 ],
@@ -749,7 +749,7 @@ var inss = /* :: */{
                   _0: [
                     "<=",
                     {
-                      tag: /* Cmp */1,
+                      TAG: /* Cmp */1,
                       _0: 12
                     }
                   ],
@@ -757,7 +757,7 @@ var inss = /* :: */{
                     _0: [
                       ">",
                       {
-                        tag: /* Cmp */1,
+                        TAG: /* Cmp */1,
                         _0: 13
                       }
                     ],
@@ -765,7 +765,7 @@ var inss = /* :: */{
                       _0: [
                         ">=",
                         {
-                          tag: /* Cmp */1,
+                          TAG: /* Cmp */1,
                           _0: 11
                         }
                       ],
@@ -773,7 +773,7 @@ var inss = /* :: */{
                         _0: [
                           "==",
                           {
-                            tag: /* Cmp */1,
+                            TAG: /* Cmp */1,
                             _0: 2
                           }
                         ],
@@ -781,7 +781,7 @@ var inss = /* :: */{
                           _0: [
                             "!=",
                             {
-                              tag: /* Cmp */1,
+                              TAG: /* Cmp */1,
                               _0: 3
                             }
                           ],
@@ -789,7 +789,7 @@ var inss = /* :: */{
                             _0: [
                               "&",
                               {
-                                tag: /* Bin */0,
+                                TAG: /* Bin */0,
                                 _0: /* :: */{
                                   _0: 4727240,
                                   _1: /* [] */0
@@ -800,7 +800,7 @@ var inss = /* :: */{
                               _0: [
                                 "^",
                                 {
-                                  tag: /* Bin */0,
+                                  TAG: /* Bin */0,
                                   _0: /* :: */{
                                     _0: 4731336,
                                     _1: /* [] */0
@@ -811,7 +811,7 @@ var inss = /* :: */{
                                 _0: [
                                   "|",
                                   {
-                                    tag: /* Bin */0,
+                                    TAG: /* Bin */0,
                                     _0: /* :: */{
                                       _0: 4721096,
                                       _1: /* [] */0
@@ -837,42 +837,42 @@ var inss = /* :: */{
 };
 
 var tokint = {
-  tag: /* Sym */3,
+  TAG: /* Sym */3,
   _0: addsym("int")
 };
 
 var tokchar = {
-  tag: /* Sym */3,
+  TAG: /* Sym */3,
   _0: addsym("char")
 };
 
 var tokret = {
-  tag: /* Sym */3,
+  TAG: /* Sym */3,
   _0: addsym("return")
 };
 
 var tokif = {
-  tag: /* Sym */3,
+  TAG: /* Sym */3,
   _0: addsym("if")
 };
 
 var tokelse = {
-  tag: /* Sym */3,
+  TAG: /* Sym */3,
   _0: addsym("else")
 };
 
 var tokwhile = {
-  tag: /* Sym */3,
+  TAG: /* Sym */3,
   _0: addsym("while")
 };
 
 var tokfor = {
-  tag: /* Sym */3,
+  TAG: /* Sym */3,
   _0: addsym("for")
 };
 
 var tokbreak = {
-  tag: /* Sym */3,
+  TAG: /* Sym */3,
   _0: addsym("break")
 };
 
@@ -891,7 +891,7 @@ function binary(stk, lvl) {
     while(true) {
       var loc = _loc;
       var o = Curry._1(next$1, undefined);
-      if (o.tag) {
+      if (o.TAG) {
         Curry._1(unnext, o);
         return loc;
       }
@@ -910,7 +910,7 @@ function binary(stk, lvl) {
     var _param;
     while(true) {
       var o = Curry._1(next$1, undefined);
-      if (o.tag) {
+      if (o.TAG) {
         return Curry._1(unnext, o);
       }
       var o$1 = o._0;
@@ -921,7 +921,7 @@ function binary(stk, lvl) {
       binary(stk, lvl - 1 | 0);
       pop(1);
       var ops = List.assoc(o$1, inss);
-      if (ops.tag) {
+      if (ops.TAG) {
         out(4733377);
         cmp(ops._0);
       } else {
@@ -937,7 +937,7 @@ function binary(stk, lvl) {
 
 function unary(stk) {
   var i = Curry._1(next$1, undefined);
-  switch (i.tag | 0) {
+  switch (i.TAG | 0) {
     case /* Op */0 :
         var o = i._0;
         switch (o) {
@@ -954,7 +954,7 @@ function unary(stk) {
               var match;
               if (Caml_obj.caml_equal(t, tokint)) {
                 match = Caml_obj.caml_equal(Curry._1(next$1, undefined), {
-                      tag: /* Op */0,
+                      TAG: /* Op */0,
                       _0: "*"
                     }) ? [
                     /* Int */0,
@@ -1010,10 +1010,10 @@ function unary(stk) {
             if (!List.mem_assoc(o, unops)) {
               var s = Curry._1(Printf.sprintf(/* Format */{
                         _0: {
-                          tag: /* String_literal */11,
+                          TAG: /* String_literal */11,
                           _0: "unknown operator ",
                           _1: {
-                            tag: /* String */2,
+                            TAG: /* String */2,
                             _0: /* No_padding */0,
                             _1: /* End_of_format */0
                           }
@@ -1057,7 +1057,7 @@ function unary(stk) {
           out(l & 255);
           lval.contents = [
             {
-              tag: /* Mov */0,
+              TAG: /* Mov */0,
               _0: 3
             },
             /* Int */0
@@ -1080,7 +1080,7 @@ function unary(stk) {
 
 function postfix(stk) {
   var op = Curry._1(next$1, undefined);
-  if (op.tag) {
+  if (op.TAG) {
     return Curry._1(unnext, op);
   }
   var op$1 = op._0;
@@ -1091,7 +1091,7 @@ function postfix(stk) {
             var rl = _rl;
             var l = _l;
             if (nextis({
-                    tag: /* Op */0,
+                    TAG: /* Op */0,
                     _0: ")"
                   })) {
               Curry._1(next$1, undefined);
@@ -1100,7 +1100,7 @@ function postfix(stk) {
             expr(stk);
             push(0);
             if (nextis({
-                    tag: /* Op */0,
+                    TAG: /* Op */0,
                     _0: ","
                   })) {
               Curry._1(next$1, undefined);
@@ -1200,7 +1200,7 @@ function expr(stk) {
   var _param;
   while(true) {
     var t = Curry._1(next$1, undefined);
-    if (t.tag) {
+    if (t.TAG) {
       return Curry._1(unnext, t);
     }
     if (t._0 !== "=") {
@@ -1234,13 +1234,13 @@ function decl(g, _n, _stk) {
           var stk = _stk;
           var n = _n;
           while(nextis({
-                  tag: /* Op */0,
+                  TAG: /* Op */0,
                   _0: "*"
                 })) {
             Curry._1(next$1, undefined);
           };
           if (nextis({
-                  tag: /* Op */0,
+                  TAG: /* Op */0,
                   _0: ";"
                 })) {
             return [
@@ -1249,7 +1249,7 @@ function decl(g, _n, _stk) {
                   ];
           }
           var s = Curry._1(next$1, undefined);
-          if (s.tag === /* Sym */3) {
+          if (s.TAG === /* Sym */3) {
             var s$1 = s._0;
             var n$prime = n + 1 | 0;
             var stk$prime;
@@ -1279,7 +1279,7 @@ function decl(g, _n, _stk) {
               };
             }
             if (!nextis({
-                    tag: /* Op */0,
+                    TAG: /* Op */0,
                     _0: ","
                   })) {
               return [
@@ -1305,15 +1305,15 @@ function decl(g, _n, _stk) {
       if (dbg.contents) {
         Curry._1(Printf.eprintf(/* Format */{
                   _0: {
-                    tag: /* String_literal */11,
+                    TAG: /* String_literal */11,
                     _0: "end of decl (",
                     _1: {
-                      tag: /* Int */4,
+                      TAG: /* Int */4,
                       _0: /* Int_d */0,
                       _1: /* No_padding */0,
                       _2: /* No_precision */0,
                       _3: {
-                        tag: /* String_literal */11,
+                        TAG: /* String_literal */11,
                         _0: " vars)\n",
                         _1: /* End_of_format */0
                       }
@@ -1400,7 +1400,7 @@ function stmt(brk, stk) {
     } else {
       Curry._1(next$1, undefined);
       if (!nextis({
-              tag: /* Op */0,
+              TAG: /* Op */0,
               _0: ";"
             })) {
         expr(stk);
@@ -1408,7 +1408,7 @@ function stmt(brk, stk) {
       Curry._1(next$1, undefined);
       var top = opos.contents;
       if (nextis({
-              tag: /* Op */0,
+              TAG: /* Op */0,
               _0: ";"
             })) {
         bl.contents = 0;
@@ -1441,7 +1441,7 @@ function stmt(brk, stk) {
   }
   if (Caml_obj.caml_equal(t, tokret)) {
     if (!nextis({
-            tag: /* Op */0,
+            TAG: /* Op */0,
             _0: ";"
           })) {
       expr(stk);
@@ -1478,7 +1478,7 @@ function stmt(brk, stk) {
     brkl.contents = loc$4;
     return ;
   }
-  if (!t.tag) {
+  if (!t.TAG) {
     switch (t._0) {
       case ";" :
           return ;
@@ -1499,7 +1499,7 @@ function block(brk, stk) {
   var stk$prime = match[1];
   var n = match[0];
   while(!nextis({
-          tag: /* Op */0,
+          TAG: /* Op */0,
           _0: "}"
         })) {
     stmt(brk, stk$prime);
@@ -1517,7 +1517,7 @@ function block(brk, stk) {
 function top(_param) {
   while(true) {
     if (nextis({
-            tag: /* Op */0,
+            TAG: /* Op */0,
             _0: "EOF!"
           })) {
       return ;
@@ -1528,7 +1528,7 @@ function top(_param) {
       continue ;
     }
     var f = Curry._1(next$1, undefined);
-    if (f.tag === /* Sym */3) {
+    if (f.TAG === /* Sym */3) {
       var f$1 = f._0;
       var g = Caml_array.caml_array_get(globs, f$1);
       if (g.va >= 0) {
@@ -1548,7 +1548,7 @@ function top(_param) {
           var n = _n;
           var regs = _regs;
           var i = Curry._1(next$1, undefined);
-          switch (i.tag | 0) {
+          switch (i.TAG | 0) {
             case /* Op */0 :
                 if (i._0 === ")") {
                   return stk;
@@ -1569,7 +1569,7 @@ function top(_param) {
                 var r = List.hd(regs);
                 push(r);
                 if (nextis({
-                        tag: /* Op */0,
+                        TAG: /* Op */0,
                         _0: ","
                       })) {
                   Curry._1(next$1, undefined);
@@ -1614,7 +1614,7 @@ function top(_param) {
             }
           }, 1, /* [] */0);
       while(Caml_obj.caml_notequal(Curry._1(next$1, undefined), {
-              tag: /* Op */0,
+              TAG: /* Op */0,
               _0: "{"
             })) {
         
@@ -1631,13 +1631,13 @@ function top(_param) {
       if (dbg.contents) {
         Curry._1(Printf.eprintf(/* Format */{
                   _0: {
-                    tag: /* String_literal */11,
+                    TAG: /* String_literal */11,
                     _0: "done with function ",
                     _1: {
-                      tag: /* String */2,
+                      TAG: /* String */2,
                       _0: /* No_padding */0,
                       _1: {
-                        tag: /* Char_literal */12,
+                        TAG: /* Char_literal */12,
                         _0: /* "\n" */10,
                         _1: /* End_of_format */0
                       }
@@ -1895,17 +1895,17 @@ function elfgen(outf) {
 
 function main(param) {
   var ppsym = function (s) {
-    switch (s.tag | 0) {
+    switch (s.TAG | 0) {
       case /* Op */0 :
           return Curry._1(Printf.printf(/* Format */{
                           _0: {
-                            tag: /* String_literal */11,
+                            TAG: /* String_literal */11,
                             _0: "Operator '",
                             _1: {
-                              tag: /* String */2,
+                              TAG: /* String */2,
                               _0: /* No_padding */0,
                               _1: {
-                                tag: /* String_literal */11,
+                                TAG: /* String_literal */11,
                                 _0: "'\n",
                                 _1: /* End_of_format */0
                               }
@@ -1916,15 +1916,15 @@ function main(param) {
       case /* ILit */1 :
           return Curry._1(Printf.printf(/* Format */{
                           _0: {
-                            tag: /* String_literal */11,
+                            TAG: /* String_literal */11,
                             _0: "Int literal ",
                             _1: {
-                              tag: /* Int */4,
+                              TAG: /* Int */4,
                               _0: /* Int_d */0,
                               _1: /* No_padding */0,
                               _2: /* No_precision */0,
                               _3: {
-                                tag: /* Char_literal */12,
+                                TAG: /* Char_literal */12,
                                 _0: /* "\n" */10,
                                 _1: /* End_of_format */0
                               }
@@ -1935,13 +1935,13 @@ function main(param) {
       case /* SLit */2 :
           return Curry._1(Printf.printf(/* Format */{
                           _0: {
-                            tag: /* String_literal */11,
+                            TAG: /* String_literal */11,
                             _0: "Str literal ",
                             _1: {
-                              tag: /* Caml_string */3,
+                              TAG: /* Caml_string */3,
                               _0: /* No_padding */0,
                               _1: {
-                                tag: /* Char_literal */12,
+                                TAG: /* Char_literal */12,
                                 _0: /* "\n" */10,
                                 _1: /* End_of_format */0
                               }
@@ -1953,21 +1953,21 @@ function main(param) {
           var i = s._0;
           return Curry._2(Printf.printf(/* Format */{
                           _0: {
-                            tag: /* String_literal */11,
+                            TAG: /* String_literal */11,
                             _0: "Symbol '",
                             _1: {
-                              tag: /* String */2,
+                              TAG: /* String */2,
                               _0: /* No_padding */0,
                               _1: {
-                                tag: /* String_literal */11,
+                                TAG: /* String_literal */11,
                                 _0: "' (",
                                 _1: {
-                                  tag: /* Int */4,
+                                  TAG: /* Int */4,
                                   _0: /* Int_d */0,
                                   _1: /* No_padding */0,
                                   _2: /* No_precision */0,
                                   _3: {
-                                    tag: /* String_literal */11,
+                                    TAG: /* String_literal */11,
                                     _0: ")\n",
                                     _1: /* End_of_format */0
                                   }
@@ -2001,7 +2001,7 @@ function main(param) {
         var _param;
         while(true) {
           var tok = Curry._1(next$1, undefined);
-          if (tok.tag) {
+          if (tok.TAG) {
             ppsym(tok);
             _param = undefined;
             continue ;
@@ -2009,7 +2009,7 @@ function main(param) {
           if (tok._0 === "EOF!") {
             return Printf.printf(/* Format */{
                         _0: {
-                          tag: /* String_literal */11,
+                          TAG: /* String_literal */11,
                           _0: "End of input stream\n",
                           _1: /* End_of_format */0
                         },

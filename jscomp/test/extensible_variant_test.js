@@ -38,7 +38,7 @@ var suites_0 = [
   "test_int",
   (function (param) {
       return {
-              tag: /* Eq */0,
+              TAG: /* Eq */0,
               _0: 3,
               _1: to_int({
                     RE_EXN_ID: Int,
@@ -54,7 +54,7 @@ var suites_1 = /* :: */{
     "test_int2",
     (function (param) {
         return {
-                tag: /* Eq */0,
+                TAG: /* Eq */0,
                 _0: 0,
                 _1: to_int({
                       RE_EXN_ID: Int$1,
@@ -69,7 +69,7 @@ var suites_1 = /* :: */{
       "test_string",
       (function (param) {
           return {
-                  tag: /* Eq */0,
+                  TAG: /* Eq */0,
                   _0: -1,
                   _1: to_int({
                         RE_EXN_ID: Str,

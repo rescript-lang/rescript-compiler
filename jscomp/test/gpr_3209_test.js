@@ -12,7 +12,7 @@ function f9(param) {
         return 3;
     }
   } else {
-    switch (param.tag | 0) {
+    switch (param.TAG | 0) {
       case /* T64 */0 :
       case /* T65 */1 :
           return 2;

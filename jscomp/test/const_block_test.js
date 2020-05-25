@@ -36,7 +36,7 @@ function h(param) {
 function g(param) {
   f(undefined);
   return {
-          tag: /* Eq */0,
+          TAG: /* Eq */0,
           _0: [
             Caml_array.caml_array_get(a, 0),
             Caml_array.caml_array_get(b, 0)
@@ -60,7 +60,7 @@ var suites_1 = /* :: */{
         Caml_array.caml_array_set(c, 0, 3);
         Caml_array.caml_array_set(c, 1, 4);
         return {
-                tag: /* Eq */0,
+                TAG: /* Eq */0,
                 _0: [
                   3,
                   4,

@@ -17,7 +17,7 @@ var suites_0 = [
   "getMonth",
   (function (param) {
       return {
-              tag: /* Eq */0,
+              TAG: /* Eq */0,
               _0: 2,
               _1: d.getMonth()
             };
@@ -29,7 +29,7 @@ var suites_1 = /* :: */{
     "getYear",
     (function (param) {
         return {
-                tag: /* Eq */0,
+                TAG: /* Eq */0,
                 _0: [
                   2016,
                   2,

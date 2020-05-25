@@ -72,19 +72,19 @@ function chop_extension(locOpt, name) {
     if (exn.RE_EXN_ID === "Invalid_argument") {
       return Curry._2(Format.ksprintf(Pervasives.invalid_arg, /* Format */{
                       _0: {
-                        tag: /* String_literal */11,
+                        TAG: /* String_literal */11,
                         _0: "Filename.chop_extension ( ",
                         _1: {
-                          tag: /* String */2,
+                          TAG: /* String */2,
                           _0: /* No_padding */0,
                           _1: {
-                            tag: /* String_literal */11,
+                            TAG: /* String_literal */11,
                             _0: " : ",
                             _1: {
-                              tag: /* String */2,
+                              TAG: /* String */2,
                               _0: /* No_padding */0,
                               _1: {
-                                tag: /* String_literal */11,
+                                TAG: /* String_literal */11,
                                 _0: " )",
                                 _1: /* End_of_format */0
                               }
@@ -169,10 +169,10 @@ function node_relative_path(node_modules_shorten, file1, dep_file) {
       if (i >= len) {
         return Curry._1(Ext_pervasives_test.failwithf("File \"ext_filename_test.ml\", line 162, characters 43-50", /* Format */{
                         _0: {
-                          tag: /* String_literal */11,
+                          TAG: /* String_literal */11,
                           _0: "invalid path: ",
                           _1: {
-                            tag: /* String */2,
+                            TAG: /* String */2,
                             _0: /* No_padding */0,
                             _1: /* End_of_format */0
                           }
@@ -201,13 +201,13 @@ function find_root_filename(_cwd, filename) {
     if (cwd$prime.length >= cwd.length) {
       return Curry._2(Ext_pervasives_test.failwithf("File \"ext_filename_test.ml\", line 205, characters 13-20", /* Format */{
                       _0: {
-                        tag: /* String */2,
+                        TAG: /* String */2,
                         _0: /* No_padding */0,
                         _1: {
-                          tag: /* String_literal */11,
+                          TAG: /* String_literal */11,
                           _0: " not found from ",
                           _1: {
-                            tag: /* String */2,
+                            TAG: /* String */2,
                             _0: /* No_padding */0,
                             _1: /* End_of_format */0
                           }

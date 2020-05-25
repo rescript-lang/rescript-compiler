@@ -11,10 +11,10 @@ function ff(x) {
 
 function fff(x) {
   var x$1 = {
-    tag: /* A */0,
+    TAG: /* A */0,
     _0: x
   };
-  switch (x$1.tag | 0) {
+  switch (x$1.TAG | 0) {
     case /* A */0 :
         return x;
     case /* B */1 :

@@ -59,40 +59,40 @@ var suites_0 = [
   "lexer_stream_genlex",
   (function (param) {
       return {
-              tag: /* Eq */0,
+              TAG: /* Eq */0,
               _0: /* :: */{
                 _0: {
-                  tag: /* Int */2,
+                  TAG: /* Int */2,
                   _0: 3
                 },
                 _1: /* :: */{
                   _0: {
-                    tag: /* Kwd */0,
+                    TAG: /* Kwd */0,
                     _0: "("
                   },
                   _1: /* :: */{
                     _0: {
-                      tag: /* Int */2,
+                      TAG: /* Int */2,
                       _0: 3
                     },
                     _1: /* :: */{
                       _0: {
-                        tag: /* Kwd */0,
+                        TAG: /* Kwd */0,
                         _0: "+"
                       },
                       _1: /* :: */{
                         _0: {
-                          tag: /* Int */2,
+                          TAG: /* Int */2,
                           _0: 2
                         },
                         _1: /* :: */{
                           _0: {
-                            tag: /* Int */2,
+                            TAG: /* Int */2,
                             _0: -1
                           },
                           _1: /* :: */{
                             _0: {
-                              tag: /* Kwd */0,
+                              TAG: /* Kwd */0,
                               _0: ")"
                             },
                             _1: /* [] */0

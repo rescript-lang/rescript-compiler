@@ -70,44 +70,44 @@ var xxx = Random.int32(103);
 
 Curry._5(Printf.printf(/* Format */{
           _0: {
-            tag: /* Int64 */7,
+            TAG: /* Int64 */7,
             _0: /* Int_d */0,
             _1: /* No_padding */0,
             _2: /* No_precision */0,
             _3: {
-              tag: /* Char_literal */12,
+              TAG: /* Char_literal */12,
               _0: /* " " */32,
               _1: {
-                tag: /* Int64 */7,
+                TAG: /* Int64 */7,
                 _0: /* Int_d */0,
                 _1: /* No_padding */0,
                 _2: /* No_precision */0,
                 _3: {
-                  tag: /* Char_literal */12,
+                  TAG: /* Char_literal */12,
                   _0: /* " " */32,
                   _1: {
-                    tag: /* Int */4,
+                    TAG: /* Int */4,
                     _0: /* Int_d */0,
                     _1: /* No_padding */0,
                     _2: /* No_precision */0,
                     _3: {
-                      tag: /* Char_literal */12,
+                      TAG: /* Char_literal */12,
                       _0: /* " " */32,
                       _1: {
-                        tag: /* Float */8,
+                        TAG: /* Float */8,
                         _0: /* Float_f */0,
                         _1: /* No_padding */0,
                         _2: /* No_precision */0,
                         _3: {
-                          tag: /* Char_literal */12,
+                          TAG: /* Char_literal */12,
                           _0: /* " " */32,
                           _1: {
-                            tag: /* Int32 */5,
+                            TAG: /* Int32 */5,
                             _0: /* Int_d */0,
                             _1: /* No_padding */0,
                             _2: /* No_precision */0,
                             _3: {
-                              tag: /* String_literal */11,
+                              TAG: /* String_literal */11,
                               _0: " \n",
                               _1: /* End_of_format */0
                             }

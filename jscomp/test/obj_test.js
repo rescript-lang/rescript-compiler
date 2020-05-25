@@ -163,7 +163,7 @@ var suites_0 = [
   "single_obj",
   (function (param) {
       return {
-              tag: /* Eq */0,
+              TAG: /* Eq */0,
               _0: [
                 3,
                 32
@@ -181,7 +181,7 @@ var suites_1 = /* :: */{
     "single_obj_cache",
     (function (param) {
         return {
-                tag: /* Eq */0,
+                TAG: /* Eq */0,
                 _0: [
                   3,
                   32
@@ -198,7 +198,7 @@ var suites_1 = /* :: */{
       "self_obj",
       (function (param) {
           return {
-                  tag: /* Eq */0,
+                  TAG: /* Eq */0,
                   _0: 13,
                   _1: Caml_oo_curry.js2(616641298, 5, vv, 3)
                 };
@@ -209,7 +209,7 @@ var suites_1 = /* :: */{
         "uu_id",
         (function (param) {
             return {
-                    tag: /* Eq */0,
+                    TAG: /* Eq */0,
                     _0: "uu",
                     _1: Caml_oo_curry.js1(23515, 6, uu)
                   };
@@ -220,7 +220,7 @@ var suites_1 = /* :: */{
           "uu_add",
           (function (param) {
               return {
-                      tag: /* Eq */0,
+                      TAG: /* Eq */0,
                       _0: Caml_oo_curry.js3(4846113, 7, uuu, 1, 20),
                       _1: 21
                     };
@@ -231,7 +231,7 @@ var suites_1 = /* :: */{
             "v_add",
             (function (param) {
                 return {
-                        tag: /* Eq */0,
+                        TAG: /* Eq */0,
                         _0: Caml_oo_curry.js3(4846113, 8, vvvv, 3, 7),
                         _1: 10
                       };
@@ -242,7 +242,7 @@ var suites_1 = /* :: */{
               "u_id1",
               (function (param) {
                   return {
-                          tag: /* Eq */0,
+                          TAG: /* Eq */0,
                           _0: Caml_oo_curry.js1(5243894, 9, u),
                           _1: 3
                         };
@@ -253,7 +253,7 @@ var suites_1 = /* :: */{
                 "u_id2",
                 (function (param) {
                     return {
-                            tag: /* Eq */0,
+                            TAG: /* Eq */0,
                             _0: Caml_oo_curry.js1(5243895, 10, u),
                             _1: 4
                           };
@@ -264,7 +264,7 @@ var suites_1 = /* :: */{
                   "u hi",
                   (function (param) {
                       return {
-                              tag: /* Eq */0,
+                              TAG: /* Eq */0,
                               _0: Caml_oo_curry.js3(23297, 11, u, 1, 2),
                               _1: 3
                             };
@@ -275,7 +275,7 @@ var suites_1 = /* :: */{
                     "u hello",
                     (function (param) {
                         return {
-                                tag: /* Eq */0,
+                                TAG: /* Eq */0,
                                 _0: Caml_oo_curry.js2(616641298, 12, u, 32),
                                 _1: 32
                               };
@@ -286,7 +286,7 @@ var suites_1 = /* :: */{
                       "v hi",
                       (function (param) {
                           return {
-                                  tag: /* Eq */0,
+                                  TAG: /* Eq */0,
                                   _0: Caml_oo_curry.js2(23297, 13, vvvv, 31),
                                   _1: 63
                                 };
@@ -297,7 +297,7 @@ var suites_1 = /* :: */{
                         "uuu add",
                         (function (param) {
                             return {
-                                    tag: /* Eq */0,
+                                    TAG: /* Eq */0,
                                     _0: Caml_oo_curry.js3(4846113, 14, uuu, 3, 4),
                                     _1: 7
                                   };
@@ -308,7 +308,7 @@ var suites_1 = /* :: */{
                           "v x",
                           (function (param) {
                               return {
-                                      tag: /* Eq */0,
+                                      TAG: /* Eq */0,
                                       _0: Caml_oo_curry.js1(120, 15, v),
                                       _1: 3
                                     };

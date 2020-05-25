@@ -4,7 +4,7 @@
 function isfree(id, _id$prime) {
   while(true) {
     var id$prime = _id$prime;
-    switch (id$prime.tag | 0) {
+    switch (id$prime.TAG | 0) {
       case /* Pident */0 :
           return id === id$prime._0;
       case /* Pdot */1 :

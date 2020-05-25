@@ -384,7 +384,7 @@ var int_map_suites_0 = [
             }
           });
       return {
-              tag: /* Eq */0,
+              TAG: /* Eq */0,
               _0: cardinal(v),
               _1: 3
             };
@@ -434,7 +434,7 @@ var int_map_suites_1 = /* :: */{
               }
             });
         return {
-                tag: /* Eq */0,
+                TAG: /* Eq */0,
                 _0: compare(Caml_primitive.caml_int_compare, u, v),
                 _1: 0
               };
@@ -483,7 +483,7 @@ var int_map_suites_1 = /* :: */{
                 }
               });
           return {
-                  tag: /* Eq */0,
+                  TAG: /* Eq */0,
                   _0: true,
                   _1: equal((function (x, y) {
                           return x === y;
@@ -507,7 +507,7 @@ var int_map_suites_1 = /* :: */{
               
             }
             return {
-                    tag: /* Eq */0,
+                    TAG: /* Eq */0,
                     _0: v,
                     _1: -1
                   };

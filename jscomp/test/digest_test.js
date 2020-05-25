@@ -153,7 +153,7 @@ Mt.from_pair_suites("Digest_test", Pervasives.$at(/* :: */{
             "File \"digest_test.ml\", line 6, characters 4-11",
             (function (param) {
                 return {
-                        tag: /* Eq */0,
+                        TAG: /* Eq */0,
                         _0: Digest.to_hex(Digest.string("value")),
                         _1: "2063c1608d6e0baf80249c42e2be5804"
                       };
@@ -164,7 +164,7 @@ Mt.from_pair_suites("Digest_test", Pervasives.$at(/* :: */{
               "File \"digest_test.ml\", line 7, characters 4-11",
               (function (param) {
                   return {
-                          tag: /* Eq */0,
+                          TAG: /* Eq */0,
                           _0: Digest.to_hex(Digest.string("The quick brown fox jumps over the lazy dog")),
                           _1: "9e107d9d372bb6826bd81d3542a419d6"
                         };
@@ -175,7 +175,7 @@ Mt.from_pair_suites("Digest_test", Pervasives.$at(/* :: */{
                 "File \"digest_test.ml\", line 9, characters 4-11",
                 (function (param) {
                     return {
-                            tag: /* Eq */0,
+                            TAG: /* Eq */0,
                             _0: Digest.to_hex(Digest.string("The quick brown fox jumps over the lazy dog.")),
                             _1: "e4d909c290d0fb1ca068ffaddf22cbd0"
                           };
@@ -186,7 +186,7 @@ Mt.from_pair_suites("Digest_test", Pervasives.$at(/* :: */{
                   "File \"digest_test.ml\", line 11, characters 4-11",
                   (function (param) {
                       return {
-                              tag: /* Eq */0,
+                              TAG: /* Eq */0,
                               _0: Digest.to_hex(Digest.string("")),
                               _1: "d41d8cd98f00b204e9800998ecf8427e"
                             };
@@ -197,7 +197,7 @@ Mt.from_pair_suites("Digest_test", Pervasives.$at(/* :: */{
                     "File \"digest_test.ml\", line 12, characters 4-11",
                     (function (param) {
                         return {
-                                tag: /* Eq */0,
+                                TAG: /* Eq */0,
                                 _0: Digest.to_hex(Digest.string("The quick brown fox jumps over the lazy dog.The quick brown fox jumps over the lazy dog.The quick brown fox jumps over the lazy dog.The quick brown fox jumps over the lazy dog.The quick brown fox jumps over the lazy dog.The quick brown fox jumps over the lazy dog.The quick brown fox jumps over the lazy dog.The quick brown fox jumps over the lazy dog.The quick brown fox jumps over the lazy dog.The quick brown fox jumps over the lazy dog.The quick brown fox jumps over the lazy dog.The quick brown fox jumps over the lazy dog.")),
                                 _1: "7065cc36bba1d155fb09f9d02f22e8bf"
                               };
@@ -208,7 +208,7 @@ Mt.from_pair_suites("Digest_test", Pervasives.$at(/* :: */{
                       "File \"digest_test.ml\", line 13, characters 4-11",
                       (function (param) {
                           return {
-                                  tag: /* Eq */0,
+                                  TAG: /* Eq */0,
                                   _0: Digest.to_hex(Digest.string("The quick brown fox jumps over the lazy dog.The quick brown fox jumps over the lazy dog.The quick brown fox jumps over the lazy dog.")),
                                   _1: "b9193d1df4b7a8f0a25ffdd1005c5b2b"
                                 };
@@ -224,7 +224,7 @@ Mt.from_pair_suites("Digest_test", Pervasives.$at(/* :: */{
                     return [
                             Curry._1(Printf.sprintf(/* Format */{
                                       _0: {
-                                        tag: /* Int */4,
+                                        TAG: /* Int */4,
                                         _0: /* Int_d */0,
                                         _1: /* No_padding */0,
                                         _2: /* No_precision */0,
@@ -234,7 +234,7 @@ Mt.from_pair_suites("Digest_test", Pervasives.$at(/* :: */{
                                     }), i),
                             (function (param) {
                                 return {
-                                        tag: /* Eq */0,
+                                        TAG: /* Eq */0,
                                         _0: Digest.to_hex(Digest.string(Caml_bytes.bytes_to_string(Bytes.make(i, /* "a" */97)))),
                                         _1: Caml_array.caml_array_get(ref, i)
                                       };
