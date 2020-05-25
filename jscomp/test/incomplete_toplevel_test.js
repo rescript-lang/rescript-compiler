@@ -3,7 +3,7 @@
 
 function f(param) {
   console.log("no inline");
-  return /* tuple */[
+  return [
           1,
           2,
           3

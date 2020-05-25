@@ -4,7 +4,7 @@ var Mt = require("./mt.js");
 var Caml_array = require("../../lib/js/caml_array.js");
 var Caml_option = require("../../lib/js/caml_option.js");
 
-var suites_0 = /* tuple */[
+var suites_0 = [
   "captures",
   (function (param) {
       var re = /(\d+)-(?:(\d+))?/g;
@@ -19,11 +19,11 @@ var suites_0 = /* tuple */[
       var $$undefined = Caml_array.caml_array_get(result, 2);
       return {
               tag: /* Eq */0,
-              _0: /* tuple */[
+              _0: [
                 "3",
                 null
               ],
-              _1: /* tuple */[
+              _1: [
                 defined,
                 $$undefined
               ]
@@ -32,7 +32,7 @@ var suites_0 = /* tuple */[
 ];
 
 var suites_1 = /* :: */{
-  _0: /* tuple */[
+  _0: [
     "fromString",
     (function (param) {
         var contentOf = function (tag, xmlString) {
@@ -50,7 +50,7 @@ var suites_1 = /* :: */{
       })
   ],
   _1: /* :: */{
-    _0: /* tuple */[
+    _0: [
       "exec_literal",
       (function (param) {
           var res = /[^.]+/.exec("http://xxx.domain.com");
@@ -69,7 +69,7 @@ var suites_1 = /* :: */{
         })
     ],
     _1: /* :: */{
-      _0: /* tuple */[
+      _0: [
         "exec_no_match",
         (function (param) {
             var match = /https:\/\/(.*)/.exec("http://xxx.domain.com");
@@ -87,7 +87,7 @@ var suites_1 = /* :: */{
           })
       ],
       _1: /* :: */{
-        _0: /* tuple */[
+        _0: [
           "test_str",
           (function (param) {
               var res = new RegExp("foo").test("#foo#");
@@ -99,7 +99,7 @@ var suites_1 = /* :: */{
             })
         ],
         _1: /* :: */{
-          _0: /* tuple */[
+          _0: [
             "fromStringWithFlags",
             (function (param) {
                 var res = new RegExp("foo", "g");
@@ -111,7 +111,7 @@ var suites_1 = /* :: */{
               })
           ],
           _1: /* :: */{
-            _0: /* tuple */[
+            _0: [
               "result_index",
               (function (param) {
                   var res = new RegExp("zbar").exec("foobarbazbar");
@@ -130,7 +130,7 @@ var suites_1 = /* :: */{
                 })
             ],
             _1: /* :: */{
-              _0: /* tuple */[
+              _0: [
                 "result_input",
                 (function (param) {
                     var input = "foobar";
@@ -150,7 +150,7 @@ var suites_1 = /* :: */{
                   })
               ],
               _1: /* :: */{
-                _0: /* tuple */[
+                _0: [
                   "t_flags",
                   (function (param) {
                       return {
@@ -161,7 +161,7 @@ var suites_1 = /* :: */{
                     })
                 ],
                 _1: /* :: */{
-                  _0: /* tuple */[
+                  _0: [
                     "t_global",
                     (function (param) {
                         return {
@@ -172,7 +172,7 @@ var suites_1 = /* :: */{
                       })
                   ],
                   _1: /* :: */{
-                    _0: /* tuple */[
+                    _0: [
                       "t_ignoreCase",
                       (function (param) {
                           return {
@@ -183,7 +183,7 @@ var suites_1 = /* :: */{
                         })
                     ],
                     _1: /* :: */{
-                      _0: /* tuple */[
+                      _0: [
                         "t_lastIndex",
                         (function (param) {
                             var re = /na/g;
@@ -196,7 +196,7 @@ var suites_1 = /* :: */{
                           })
                       ],
                       _1: /* :: */{
-                        _0: /* tuple */[
+                        _0: [
                           "t_setLastIndex",
                           (function (param) {
                               var re = /na/g;
@@ -205,11 +205,11 @@ var suites_1 = /* :: */{
                               var after = re.lastIndex;
                               return {
                                       tag: /* Eq */0,
-                                      _0: /* tuple */[
+                                      _0: [
                                         0,
                                         42
                                       ],
-                                      _1: /* tuple */[
+                                      _1: [
                                         before,
                                         after
                                       ]
@@ -217,7 +217,7 @@ var suites_1 = /* :: */{
                             })
                         ],
                         _1: /* :: */{
-                          _0: /* tuple */[
+                          _0: [
                             "t_multiline",
                             (function (param) {
                                 return {
@@ -228,7 +228,7 @@ var suites_1 = /* :: */{
                               })
                           ],
                           _1: /* :: */{
-                            _0: /* tuple */[
+                            _0: [
                               "t_source",
                               (function (param) {
                                   return {
@@ -239,7 +239,7 @@ var suites_1 = /* :: */{
                                 })
                             ],
                             _1: /* :: */{
-                              _0: /* tuple */[
+                              _0: [
                                 "t_sticky",
                                 (function (param) {
                                     return {
@@ -250,7 +250,7 @@ var suites_1 = /* :: */{
                                   })
                               ],
                               _1: /* :: */{
-                                _0: /* tuple */[
+                                _0: [
                                   "t_unicode",
                                   (function (param) {
                                       return {

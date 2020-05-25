@@ -17,7 +17,7 @@ function eq(loc, param) {
   var x = param[0];
   test_id.contents = test_id.contents + 1 | 0;
   suites.contents = /* :: */{
-    _0: /* tuple */[
+    _0: [
       loc + (" id " + String(test_id.contents)),
       (function (param) {
           return {
@@ -50,7 +50,7 @@ var res = Caml_bytes.bytes_to_string(b);
 
 console.log(res);
 
-eq("File \"bytes_split_gpr_743_test.ml\", line 17, characters 5-12", /* tuple */[
+eq("File \"bytes_split_gpr_743_test.ml\", line 17, characters 5-12", [
       "aab",
       res
     ]);
@@ -73,7 +73,7 @@ var res2 = Caml_bytes.bytes_to_string(b$1);
 
 console.log(res2);
 
-eq("File \"bytes_split_gpr_743_test.ml\", line 32, characters 5-12", /* tuple */[
+eq("File \"bytes_split_gpr_743_test.ml\", line 32, characters 5-12", [
       "bcc",
       res2
     ]);

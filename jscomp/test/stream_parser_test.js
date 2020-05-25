@@ -103,7 +103,7 @@ function parse(token) {
     }
   };
   var r = parse_expr_aux(parse_term_aux(parse_atom(undefined)));
-  return /* tuple */[
+  return [
           r,
           Queue.fold((function (acc, x) {
                   return /* :: */{
@@ -242,7 +242,7 @@ function l_parse(token) {
     };
   };
   var r = parse_t_aux(parse_f_aux(parse_f(undefined)));
-  return /* tuple */[
+  return [
           r,
           Queue.fold((function (acc, x) {
                   return /* :: */{
@@ -264,7 +264,7 @@ var test_id = {
 function eq(loc, x, y) {
   test_id.contents = test_id.contents + 1 | 0;
   suites.contents = /* :: */{
-    _0: /* tuple */[
+    _0: [
       loc + (" id " + String(test_id.contents)),
       (function (param) {
           return {
@@ -281,10 +281,10 @@ function eq(loc, x, y) {
 
 var match = parse(token(Stream.of_string("1 + 2 + (3  - 2) * 3 * 3  - 2 a")));
 
-eq("File \"stream_parser_test.ml\", line 132, characters 5-12", /* tuple */[
+eq("File \"stream_parser_test.ml\", line 132, characters 5-12", [
       match[0],
       match[1]
-    ], /* tuple */[
+    ], [
       10,
       /* :: */{
         _0: {
@@ -295,7 +295,7 @@ eq("File \"stream_parser_test.ml\", line 132, characters 5-12", /* tuple */[
       }
     ]);
 
-eq("File \"stream_parser_test.ml\", line 133, characters 5-12", /* tuple */[
+eq("File \"stream_parser_test.ml\", line 133, characters 5-12", [
       2,
       /* :: */{
         _0: {
@@ -306,7 +306,7 @@ eq("File \"stream_parser_test.ml\", line 133, characters 5-12", /* tuple */[
       }
     ], parse(token(Stream.of_string("3 - 2  - 1"))));
 
-eq("File \"stream_parser_test.ml\", line 134, characters 5-12", /* tuple */[
+eq("File \"stream_parser_test.ml\", line 134, characters 5-12", [
       0,
       /* :: */{
         _0: {

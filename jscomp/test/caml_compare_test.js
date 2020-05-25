@@ -20,7 +20,7 @@ catch (raw_exn){
 
 var suites = {
   contents: /* :: */{
-    _0: /* tuple */[
+    _0: [
       "File \"caml_compare_test.ml\", line 9, characters 4-11",
       (function (param) {
           return {
@@ -31,7 +31,7 @@ var suites = {
         })
     ],
     _1: /* :: */{
-      _0: /* tuple */[
+      _0: [
         "option2",
         (function (param) {
             return {
@@ -42,7 +42,7 @@ var suites = {
           })
       ],
       _1: /* :: */{
-        _0: /* tuple */[
+        _0: [
           "File \"caml_compare_test.ml\", line 11, characters 4-11",
           (function (param) {
               return {
@@ -56,7 +56,7 @@ var suites = {
             })
         ],
         _1: /* :: */{
-          _0: /* tuple */[
+          _0: [
             "listeq",
             (function (param) {
                 return {
@@ -85,7 +85,7 @@ var suites = {
               })
           ],
           _1: /* :: */{
-            _0: /* tuple */[
+            _0: [
               "listneq",
               (function (param) {
                   return {
@@ -114,13 +114,13 @@ var suites = {
                 })
             ],
             _1: /* :: */{
-              _0: /* tuple */[
+              _0: [
                 "custom_u",
                 (function (param) {
                     return {
                             tag: /* Eq */0,
                             _0: true,
-                            _1: Caml_obj.caml_greaterthan(/* tuple */[
+                            _1: Caml_obj.caml_greaterthan([
                                   {
                                     tag: /* A */0,
                                     _0: 3
@@ -134,7 +134,7 @@ var suites = {
                                     tag: /* C */2,
                                     _0: 1
                                   }
-                                ], /* tuple */[
+                                ], [
                                   {
                                     tag: /* A */0,
                                     _0: 3
@@ -153,13 +153,13 @@ var suites = {
                   })
               ],
               _1: /* :: */{
-                _0: /* tuple */[
+                _0: [
                   "custom_u2",
                   (function (param) {
                       return {
                               tag: /* Eq */0,
                               _0: true,
-                              _1: Caml_obj.caml_equal(/* tuple */[
+                              _1: Caml_obj.caml_equal([
                                     {
                                       tag: /* A */0,
                                       _0: 3
@@ -173,7 +173,7 @@ var suites = {
                                       tag: /* C */2,
                                       _0: 1
                                     }
-                                  ], /* tuple */[
+                                  ], [
                                     {
                                       tag: /* A */0,
                                       _0: 3
@@ -192,7 +192,7 @@ var suites = {
                     })
                 ],
                 _1: /* :: */{
-                  _0: /* tuple */[
+                  _0: [
                     "function",
                     (function (param) {
                         return {
@@ -203,7 +203,7 @@ var suites = {
                       })
                   ],
                   _1: /* :: */{
-                    _0: /* tuple */[
+                    _0: [
                       "File \"caml_compare_test.ml\", line 17, characters 4-11",
                       (function (param) {
                           return {
@@ -214,7 +214,7 @@ var suites = {
                         })
                     ],
                     _1: /* :: */{
-                      _0: /* tuple */[
+                      _0: [
                         "File \"caml_compare_test.ml\", line 28, characters 4-11",
                         (function (param) {
                             return {
@@ -228,7 +228,7 @@ var suites = {
                           })
                       ],
                       _1: /* :: */{
-                        _0: /* tuple */[
+                        _0: [
                           "File \"caml_compare_test.ml\", line 31, characters 4-11",
                           (function (param) {
                               return {
@@ -242,7 +242,7 @@ var suites = {
                             })
                         ],
                         _1: /* :: */{
-                          _0: /* tuple */[
+                          _0: [
                             "File \"caml_compare_test.ml\", line 34, characters 4-11",
                             (function (param) {
                                 return {
@@ -310,7 +310,7 @@ var suites = {
                               })
                           ],
                           _1: /* :: */{
-                            _0: /* tuple */[
+                            _0: [
                               "File \"caml_compare_test.ml\", line 37, characters 4-11",
                               (function (param) {
                                   return {
@@ -330,7 +330,7 @@ var suites = {
                                 })
                             ],
                             _1: /* :: */{
-                              _0: /* tuple */[
+                              _0: [
                                 "File \"caml_compare_test.ml\", line 40, characters 4-11",
                                 (function (param) {
                                     return {
@@ -344,7 +344,7 @@ var suites = {
                                   })
                               ],
                               _1: /* :: */{
-                                _0: /* tuple */[
+                                _0: [
                                   "File \"caml_compare_test.ml\", line 43, characters 4-11",
                                   (function (param) {
                                       return {
@@ -412,7 +412,7 @@ var suites = {
                                     })
                                 ],
                                 _1: /* :: */{
-                                  _0: /* tuple */[
+                                  _0: [
                                     "File \"caml_compare_test.ml\", line 47, characters 4-11",
                                     (function (param) {
                                         return {
@@ -423,7 +423,7 @@ var suites = {
                                       })
                                   ],
                                   _1: /* :: */{
-                                    _0: /* tuple */[
+                                    _0: [
                                       "File \"caml_compare_test.ml\", line 50, characters 4-11",
                                       (function (param) {
                                           return {
@@ -434,7 +434,7 @@ var suites = {
                                         })
                                     ],
                                     _1: /* :: */{
-                                      _0: /* tuple */[
+                                      _0: [
                                         "File \"caml_compare_test.ml\", line 53, characters 4-11",
                                         (function (param) {
                                             return {
@@ -502,7 +502,7 @@ var suites = {
                                           })
                                       ],
                                       _1: /* :: */{
-                                        _0: /* tuple */[
+                                        _0: [
                                           "File \"caml_compare_test.ml\", line 56, characters 4-11",
                                           (function (param) {
                                               return {
@@ -570,7 +570,7 @@ var suites = {
                                             })
                                         ],
                                         _1: /* :: */{
-                                          _0: /* tuple */[
+                                          _0: [
                                             "cmp_id",
                                             (function (param) {
                                                 return {
@@ -587,7 +587,7 @@ var suites = {
                                               })
                                           ],
                                           _1: /* :: */{
-                                            _0: /* tuple */[
+                                            _0: [
                                               "cmp_val",
                                               (function (param) {
                                                   return {
@@ -602,7 +602,7 @@ var suites = {
                                                 })
                                             ],
                                             _1: /* :: */{
-                                              _0: /* tuple */[
+                                              _0: [
                                                 "cmp_val2",
                                                 (function (param) {
                                                     return {
@@ -617,7 +617,7 @@ var suites = {
                                                   })
                                               ],
                                               _1: /* :: */{
-                                                _0: /* tuple */[
+                                                _0: [
                                                   "cmp_empty",
                                                   (function (param) {
                                                       return {
@@ -628,7 +628,7 @@ var suites = {
                                                     })
                                                 ],
                                                 _1: /* :: */{
-                                                  _0: /* tuple */[
+                                                  _0: [
                                                     "cmp_empty2",
                                                     (function (param) {
                                                         return {
@@ -639,7 +639,7 @@ var suites = {
                                                       })
                                                   ],
                                                   _1: /* :: */{
-                                                    _0: /* tuple */[
+                                                    _0: [
                                                       "cmp_swap",
                                                       (function (param) {
                                                           return {
@@ -656,7 +656,7 @@ var suites = {
                                                         })
                                                     ],
                                                     _1: /* :: */{
-                                                      _0: /* tuple */[
+                                                      _0: [
                                                         "cmp_size",
                                                         (function (param) {
                                                             return {
@@ -667,7 +667,7 @@ var suites = {
                                                           })
                                                       ],
                                                       _1: /* :: */{
-                                                        _0: /* tuple */[
+                                                        _0: [
                                                           "cmp_size2",
                                                           (function (param) {
                                                               return {
@@ -678,7 +678,7 @@ var suites = {
                                                             })
                                                         ],
                                                         _1: /* :: */{
-                                                          _0: /* tuple */[
+                                                          _0: [
                                                             "cmp_order",
                                                             (function (param) {
                                                                 return {
@@ -695,7 +695,7 @@ var suites = {
                                                               })
                                                           ],
                                                           _1: /* :: */{
-                                                            _0: /* tuple */[
+                                                            _0: [
                                                               "cmp_order2",
                                                               (function (param) {
                                                                   return {
@@ -712,7 +712,7 @@ var suites = {
                                                                 })
                                                             ],
                                                             _1: /* :: */{
-                                                              _0: /* tuple */[
+                                                              _0: [
                                                                 "cmp_in_list",
                                                                 (function (param) {
                                                                     return {
@@ -733,7 +733,7 @@ var suites = {
                                                                   })
                                                               ],
                                                               _1: /* :: */{
-                                                                _0: /* tuple */[
+                                                                _0: [
                                                                   "cmp_in_list2",
                                                                   (function (param) {
                                                                       return {
@@ -754,7 +754,7 @@ var suites = {
                                                                     })
                                                                 ],
                                                                 _1: /* :: */{
-                                                                  _0: /* tuple */[
+                                                                  _0: [
                                                                     "cmp_with_list",
                                                                     (function (param) {
                                                                         return {
@@ -775,7 +775,7 @@ var suites = {
                                                                       })
                                                                   ],
                                                                   _1: /* :: */{
-                                                                    _0: /* tuple */[
+                                                                    _0: [
                                                                       "cmp_with_list2",
                                                                       (function (param) {
                                                                           return {
@@ -796,7 +796,7 @@ var suites = {
                                                                         })
                                                                     ],
                                                                     _1: /* :: */{
-                                                                      _0: /* tuple */[
+                                                                      _0: [
                                                                         "eq_id",
                                                                         (function (param) {
                                                                             return {
@@ -812,7 +812,7 @@ var suites = {
                                                                           })
                                                                       ],
                                                                       _1: /* :: */{
-                                                                        _0: /* tuple */[
+                                                                        _0: [
                                                                           "eq_val",
                                                                           (function (param) {
                                                                               return {
@@ -827,7 +827,7 @@ var suites = {
                                                                             })
                                                                         ],
                                                                         _1: /* :: */{
-                                                                          _0: /* tuple */[
+                                                                          _0: [
                                                                             "eq_val2",
                                                                             (function (param) {
                                                                                 return {
@@ -842,7 +842,7 @@ var suites = {
                                                                               })
                                                                           ],
                                                                           _1: /* :: */{
-                                                                            _0: /* tuple */[
+                                                                            _0: [
                                                                               "eq_empty",
                                                                               (function (param) {
                                                                                   return {
@@ -853,7 +853,7 @@ var suites = {
                                                                                 })
                                                                             ],
                                                                             _1: /* :: */{
-                                                                              _0: /* tuple */[
+                                                                              _0: [
                                                                                 "eq_empty2",
                                                                                 (function (param) {
                                                                                     return {
@@ -864,7 +864,7 @@ var suites = {
                                                                                   })
                                                                               ],
                                                                               _1: /* :: */{
-                                                                                _0: /* tuple */[
+                                                                                _0: [
                                                                                   "eq_swap",
                                                                                   (function (param) {
                                                                                       return {
@@ -880,7 +880,7 @@ var suites = {
                                                                                     })
                                                                                 ],
                                                                                 _1: /* :: */{
-                                                                                  _0: /* tuple */[
+                                                                                  _0: [
                                                                                     "eq_size",
                                                                                     (function (param) {
                                                                                         return {
@@ -891,7 +891,7 @@ var suites = {
                                                                                       })
                                                                                   ],
                                                                                   _1: /* :: */{
-                                                                                    _0: /* tuple */[
+                                                                                    _0: [
                                                                                       "eq_size2",
                                                                                       (function (param) {
                                                                                           return {
@@ -902,7 +902,7 @@ var suites = {
                                                                                         })
                                                                                     ],
                                                                                     _1: /* :: */{
-                                                                                      _0: /* tuple */[
+                                                                                      _0: [
                                                                                         "eq_in_list",
                                                                                         (function (param) {
                                                                                             return {
@@ -923,7 +923,7 @@ var suites = {
                                                                                           })
                                                                                       ],
                                                                                       _1: /* :: */{
-                                                                                        _0: /* tuple */[
+                                                                                        _0: [
                                                                                           "eq_in_list2",
                                                                                           (function (param) {
                                                                                               return {
@@ -944,7 +944,7 @@ var suites = {
                                                                                             })
                                                                                         ],
                                                                                         _1: /* :: */{
-                                                                                          _0: /* tuple */[
+                                                                                          _0: [
                                                                                             "eq_with_list",
                                                                                             (function (param) {
                                                                                                 return {
@@ -965,7 +965,7 @@ var suites = {
                                                                                               })
                                                                                           ],
                                                                                           _1: /* :: */{
-                                                                                            _0: /* tuple */[
+                                                                                            _0: [
                                                                                               "eq_with_list2",
                                                                                               (function (param) {
                                                                                                   return {
@@ -986,7 +986,7 @@ var suites = {
                                                                                                 })
                                                                                             ],
                                                                                             _1: /* :: */{
-                                                                                              _0: /* tuple */[
+                                                                                              _0: [
                                                                                                 "File \"caml_compare_test.ml\", line 87, characters 4-11",
                                                                                                 (function (param) {
                                                                                                     return {
@@ -1000,7 +1000,7 @@ var suites = {
                                                                                                   })
                                                                                               ],
                                                                                               _1: /* :: */{
-                                                                                                _0: /* tuple */[
+                                                                                                _0: [
                                                                                                   "File \"caml_compare_test.ml\", line 90, characters 4-11",
                                                                                                   (function (param) {
                                                                                                       return {
@@ -1014,7 +1014,7 @@ var suites = {
                                                                                                     })
                                                                                                 ],
                                                                                                 _1: /* :: */{
-                                                                                                  _0: /* tuple */[
+                                                                                                  _0: [
                                                                                                     "File \"caml_compare_test.ml\", line 93, characters 4-11",
                                                                                                     (function (param) {
                                                                                                         return {
@@ -1025,7 +1025,7 @@ var suites = {
                                                                                                       })
                                                                                                   ],
                                                                                                   _1: /* :: */{
-                                                                                                    _0: /* tuple */[
+                                                                                                    _0: [
                                                                                                       "File \"caml_compare_test.ml\", line 96, characters 4-11",
                                                                                                       (function (param) {
                                                                                                           return {
@@ -1036,7 +1036,7 @@ var suites = {
                                                                                                         })
                                                                                                     ],
                                                                                                     _1: /* :: */{
-                                                                                                      _0: /* tuple */[
+                                                                                                      _0: [
                                                                                                         "File \"caml_compare_test.ml\", line 99, characters 4-11",
                                                                                                         (function (param) {
                                                                                                             return {
@@ -1047,7 +1047,7 @@ var suites = {
                                                                                                           })
                                                                                                       ],
                                                                                                       _1: /* :: */{
-                                                                                                        _0: /* tuple */[
+                                                                                                        _0: [
                                                                                                           "File \"caml_compare_test.ml\", line 102, characters 4-11",
                                                                                                           (function (param) {
                                                                                                               return {

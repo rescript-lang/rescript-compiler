@@ -60,7 +60,7 @@ function add_help(speclist) {
     var exn = Caml_js_exceptions.internalToOCamlException(raw_exn);
     if (exn.RE_EXN_ID === "Not_found") {
       add1 = /* :: */{
-        _0: /* tuple */[
+        _0: [
           "-help",
           {
             tag: /* Unit */0,
@@ -83,7 +83,7 @@ function add_help(speclist) {
     var exn$1 = Caml_js_exceptions.internalToOCamlException(raw_exn$1);
     if (exn$1.RE_EXN_ID === "Not_found") {
       add2 = /* :: */{
-        _0: /* tuple */[
+        _0: [
           "--help",
           {
             tag: /* Unit */0,

@@ -17,7 +17,7 @@ var Caml_external_polyfill = require("../../lib/js/caml_external_polyfill.js");
 var tscanf_data_file = "tscanf_data";
 
 var tscanf_data_file_lines = /* :: */{
-  _0: /* tuple */[
+  _0: [
     "Objective",
     "Caml"
   ],
@@ -89,7 +89,7 @@ function get_lines(fname) {
                 _1: " %S -> %S; "
               }), (function (x, y) {
               l.contents = /* :: */{
-                _0: /* tuple */[
+                _0: [
                   x,
                   y
                 ],

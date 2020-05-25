@@ -53,7 +53,7 @@ var empty = Object.keys(3);
 var v = $$test(1, 2);
 
 Mt.from_pair_suites("Unsafe_ppx_test", /* :: */{
-      _0: /* tuple */[
+      _0: [
         "unsafe_max",
         (function (param) {
             return {
@@ -64,7 +64,7 @@ Mt.from_pair_suites("Unsafe_ppx_test", /* :: */{
           })
       ],
       _1: /* :: */{
-        _0: /* tuple */[
+        _0: [
           "unsafe_test",
           (function (param) {
               return {
@@ -75,7 +75,7 @@ Mt.from_pair_suites("Unsafe_ppx_test", /* :: */{
             })
         ],
         _1: /* :: */{
-          _0: /* tuple */[
+          _0: [
             "unsafe_max2",
             (function (param) {
                 return {
@@ -86,7 +86,7 @@ Mt.from_pair_suites("Unsafe_ppx_test", /* :: */{
               })
           ],
           _1: /* :: */{
-            _0: /* tuple */[
+            _0: [
               "ffi_keys",
               (function (param) {
                   return {

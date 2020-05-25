@@ -133,7 +133,7 @@ function string_of_chars(x) {
 }
 
 Mt.from_pair_suites("String_test", /* :: */{
-      _0: /* tuple */[
+      _0: [
         "mutliple switch",
         (function (param) {
             return {
@@ -144,7 +144,7 @@ Mt.from_pair_suites("String_test", /* :: */{
           })
       ],
       _1: /* :: */{
-        _0: /* tuple */[
+        _0: [
           "int switch",
           (function (param) {
               return {
@@ -155,7 +155,7 @@ Mt.from_pair_suites("String_test", /* :: */{
             })
         ],
         _1: /* :: */{
-          _0: /* tuple */[
+          _0: [
             "escape_normal",
             (function (param) {
                 return {
@@ -166,7 +166,7 @@ Mt.from_pair_suites("String_test", /* :: */{
               })
           ],
           _1: /* :: */{
-            _0: /* tuple */[
+            _0: [
               "escape_bytes",
               (function (param) {
                   return {
@@ -177,7 +177,7 @@ Mt.from_pair_suites("String_test", /* :: */{
                 })
             ],
             _1: /* :: */{
-              _0: /* tuple */[
+              _0: [
                 "escape_quote",
                 (function (param) {
                     return {
@@ -188,7 +188,7 @@ Mt.from_pair_suites("String_test", /* :: */{
                   })
               ],
               _1: /* :: */{
-                _0: /* tuple */[
+                _0: [
                   "rev_split_by_char",
                   (function (param) {
                       return {
@@ -208,7 +208,7 @@ Mt.from_pair_suites("String_test", /* :: */{
                     })
                 ],
                 _1: /* :: */{
-                  _0: /* tuple */[
+                  _0: [
                     "File \"string_test.ml\", line 74, characters 2-9",
                     (function (param) {
                         return {
@@ -222,7 +222,7 @@ Mt.from_pair_suites("String_test", /* :: */{
                       })
                   ],
                   _1: /* :: */{
-                    _0: /* tuple */[
+                    _0: [
                       "xsplit",
                       (function (param) {
                           return {
@@ -242,7 +242,7 @@ Mt.from_pair_suites("String_test", /* :: */{
                         })
                     ],
                     _1: /* :: */{
-                      _0: /* tuple */[
+                      _0: [
                         "split_empty",
                         (function (param) {
                             return {
@@ -253,7 +253,7 @@ Mt.from_pair_suites("String_test", /* :: */{
                           })
                       ],
                       _1: /* :: */{
-                        _0: /* tuple */[
+                        _0: [
                           "split_empty2",
                           (function (param) {
                               return {
@@ -267,7 +267,7 @@ Mt.from_pair_suites("String_test", /* :: */{
                             })
                         ],
                         _1: /* :: */{
-                          _0: /* tuple */[
+                          _0: [
                             "rfind",
                             (function (param) {
                                 return {
@@ -278,7 +278,7 @@ Mt.from_pair_suites("String_test", /* :: */{
                               })
                           ],
                           _1: /* :: */{
-                            _0: /* tuple */[
+                            _0: [
                               "rfind_2",
                               (function (param) {
                                   return {
@@ -289,7 +289,7 @@ Mt.from_pair_suites("String_test", /* :: */{
                                 })
                             ],
                             _1: /* :: */{
-                              _0: /* tuple */[
+                              _0: [
                                 "rfind_3",
                                 (function (param) {
                                     return {
@@ -300,7 +300,7 @@ Mt.from_pair_suites("String_test", /* :: */{
                                   })
                               ],
                               _1: /* :: */{
-                                _0: /* tuple */[
+                                _0: [
                                   "find",
                                   (function (param) {
                                       return {
@@ -311,7 +311,7 @@ Mt.from_pair_suites("String_test", /* :: */{
                                     })
                                 ],
                                 _1: /* :: */{
-                                  _0: /* tuple */[
+                                  _0: [
                                     "find_2",
                                     (function (param) {
                                         return {
@@ -322,7 +322,7 @@ Mt.from_pair_suites("String_test", /* :: */{
                                       })
                                   ],
                                   _1: /* :: */{
-                                    _0: /* tuple */[
+                                    _0: [
                                       "find_3",
                                       (function (param) {
                                           return {
@@ -333,7 +333,7 @@ Mt.from_pair_suites("String_test", /* :: */{
                                         })
                                     ],
                                     _1: /* :: */{
-                                      _0: /* tuple */[
+                                      _0: [
                                         "of_char",
                                         (function (param) {
                                             return {
@@ -344,7 +344,7 @@ Mt.from_pair_suites("String_test", /* :: */{
                                           })
                                       ],
                                       _1: /* :: */{
-                                        _0: /* tuple */[
+                                        _0: [
                                           "of_chars",
                                           (function (param) {
                                               return {

@@ -38,7 +38,7 @@ console.log(String(v.contents));
 if (v.contents !== 45) {
   throw {
         RE_EXN_ID: "Assert_failure",
-        _1: /* tuple */[
+        _1: [
           "test_while_closure.ml",
           63,
           4

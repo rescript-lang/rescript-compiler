@@ -16,7 +16,7 @@ var test_id = {
 function eq(loc, x, y) {
   test_id.contents = test_id.contents + 1 | 0;
   suites.contents = /* :: */{
-    _0: /* tuple */[
+    _0: [
       loc + (" id " + String(test_id.contents)),
       (function (param) {
           return {
@@ -34,7 +34,7 @@ function eq(loc, x, y) {
 function b(loc, v) {
   test_id.contents = test_id.contents + 1 | 0;
   suites.contents = /* :: */{
-    _0: /* tuple */[
+    _0: [
       loc + (" id " + String(test_id.contents)),
       (function (param) {
           return {
@@ -57,7 +57,7 @@ function emptyMap(param) {
 }
 
 var v = Belt_Array.makeByAndShuffle(1000000, (function (i) {
-        return /* tuple */[
+        return [
                 i,
                 i
               ];

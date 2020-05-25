@@ -7,25 +7,25 @@ var Caml_module = require("../../lib/js/caml_module.js");
 var Caml_option = require("../../lib/js/caml_option.js");
 var Caml_primitive = require("../../lib/js/caml_primitive.js");
 
-var A = Caml_module.init_mod(/* tuple */[
+var A = Caml_module.init_mod([
       "rec_module_test.ml",
       3,
       6
     ], {
       tag: /* Module */0,
-      _0: [/* tuple */[
+      _0: [[
           /* Function */0,
           "even"
         ]]
     });
 
-var B = Caml_module.init_mod(/* tuple */[
+var B = Caml_module.init_mod([
       "rec_module_test.ml",
       11,
       6
     ], {
       tag: /* Module */0,
-      _0: [/* tuple */[
+      _0: [[
           /* Function */0,
           "odd"
         ]]
@@ -43,7 +43,7 @@ function even(n) {
 
 Caml_module.update_mod({
       tag: /* Module */0,
-      _0: [/* tuple */[
+      _0: [[
           /* Function */0,
           "even"
         ]]
@@ -63,7 +63,7 @@ function odd(n) {
 
 Caml_module.update_mod({
       tag: /* Module */0,
-      _0: [/* tuple */[
+      _0: [[
           /* Function */0,
           "odd"
         ]]
@@ -71,36 +71,36 @@ Caml_module.update_mod({
       odd: odd
     });
 
-var AA = Caml_module.init_mod(/* tuple */[
+var AA = Caml_module.init_mod([
       "rec_module_test.ml",
       21,
       6
     ], {
       tag: /* Module */0,
       _0: [
-        /* tuple */[
+        [
           /* Function */0,
           "even"
         ],
-        /* tuple */[
+        [
           /* Function */0,
           "x"
         ]
       ]
     });
 
-var BB = Caml_module.init_mod(/* tuple */[
+var BB = Caml_module.init_mod([
       "rec_module_test.ml",
       31,
       6
     ], {
       tag: /* Module */0,
       _0: [
-        /* tuple */[
+        [
           /* Function */0,
           "odd"
         ],
-        /* tuple */[
+        [
           /* Function */0,
           "y"
         ]
@@ -124,11 +124,11 @@ function x(param) {
 Caml_module.update_mod({
       tag: /* Module */0,
       _0: [
-        /* tuple */[
+        [
           /* Function */0,
           "even"
         ],
-        /* tuple */[
+        [
           /* Function */0,
           "x"
         ]
@@ -155,11 +155,11 @@ function y(param) {
 Caml_module.update_mod({
       tag: /* Module */0,
       _0: [
-        /* tuple */[
+        [
           /* Function */0,
           "odd"
         ],
-        /* tuple */[
+        [
           /* Function */0,
           "y"
         ]
@@ -169,13 +169,13 @@ Caml_module.update_mod({
       y: y
     });
 
-var AAA = Caml_module.init_mod(/* tuple */[
+var AAA = Caml_module.init_mod([
       "rec_module_test.ml",
       55,
       2
     ], {
       tag: /* Module */0,
-      _0: [/* tuple */[
+      _0: [[
           /* Function */0,
           "compare"
         ]]
@@ -428,7 +428,7 @@ function concat(t1, t2) {
 
 function split(x, param) {
   if (!param) {
-    return /* tuple */[
+    return [
             /* Empty */0,
             false,
             /* Empty */0
@@ -439,7 +439,7 @@ function split(x, param) {
   var l = param.l;
   var c = Curry._2(AAA.compare, x, v);
   if (c === 0) {
-    return /* tuple */[
+    return [
             l,
             true,
             r
@@ -447,14 +447,14 @@ function split(x, param) {
   }
   if (c < 0) {
     var match = split(x, l);
-    return /* tuple */[
+    return [
             match[0],
             match[1],
             join(match[2], v, r)
           ];
   }
   var match$1 = split(x, r);
-  return /* tuple */[
+  return [
           join(l, v, match$1[0]),
           match$1[1],
           match$1[2]
@@ -761,7 +761,7 @@ function filter(p, t) {
 
 function partition(p, param) {
   if (!param) {
-    return /* tuple */[
+    return [
             /* Empty */0,
             /* Empty */0
           ];
@@ -775,12 +775,12 @@ function partition(p, param) {
   var rf = match$1[1];
   var rt = match$1[0];
   if (pv) {
-    return /* tuple */[
+    return [
             join(lt, v, rt),
             concat(lf, rf)
           ];
   } else {
-    return /* tuple */[
+    return [
             concat(lt, rt),
             join(lf, v, rf)
           ];
@@ -1026,13 +1026,13 @@ function of_list(l) {
       var sub = function (n, l) {
         switch (n) {
           case 0 :
-              return /* tuple */[
+              return [
                       /* Empty */0,
                       l
                     ];
           case 1 :
               if (l) {
-                return /* tuple */[
+                return [
                         /* Node */{
                           l: /* Empty */0,
                           v: l._0,
@@ -1047,7 +1047,7 @@ function of_list(l) {
               if (l) {
                 var match = l._1;
                 if (match) {
-                  return /* tuple */[
+                  return [
                           /* Node */{
                             l: /* Node */{
                               l: /* Empty */0,
@@ -1071,7 +1071,7 @@ function of_list(l) {
                 if (match$1) {
                   var match$2 = match$1._1;
                   if (match$2) {
-                    return /* tuple */[
+                    return [
                             /* Node */{
                               l: /* Node */{
                                 l: /* Empty */0,
@@ -1104,14 +1104,14 @@ function of_list(l) {
         var l$1 = match$3[1];
         if (l$1) {
           var match$4 = sub((n - nl | 0) - 1 | 0, l$1._1);
-          return /* tuple */[
+          return [
                   create(match$3[0], l$1._0, match$4[0]),
                   match$4[1]
                 ];
         }
         throw {
               RE_EXN_ID: "Assert_failure",
-              _1: /* tuple */[
+              _1: [
                 "set.ml",
                 510,
                 18
@@ -1182,7 +1182,7 @@ function compare$1(t1, t2) {
 
 Caml_module.update_mod({
       tag: /* Module */0,
-      _0: [/* tuple */[
+      _0: [[
           /* Function */0,
           "compare"
         ]]
@@ -1190,18 +1190,18 @@ Caml_module.update_mod({
       compare: compare$1
     });
 
-var suites_0 = /* tuple */[
+var suites_0 = [
   "test1",
   (function (param) {
       return {
               tag: /* Eq */0,
-              _0: /* tuple */[
+              _0: [
                 true,
                 true,
                 false,
                 false
               ],
-              _1: /* tuple */[
+              _1: [
                 Curry._1(A.even, 2),
                 Curry._1(AA.even, 4),
                 Curry._1(B.odd, 2),
@@ -1212,7 +1212,7 @@ var suites_0 = /* tuple */[
 ];
 
 var suites_1 = /* :: */{
-  _0: /* tuple */[
+  _0: [
     "test2",
     (function (param) {
         return {
@@ -1223,7 +1223,7 @@ var suites_1 = /* :: */{
       })
   ],
   _1: /* :: */{
-    _0: /* tuple */[
+    _0: [
       "test3",
       (function (param) {
           return {
@@ -1234,7 +1234,7 @@ var suites_1 = /* :: */{
         })
     ],
     _1: /* :: */{
-      _0: /* tuple */[
+      _0: [
         "test4",
         (function (param) {
             return {
@@ -1245,7 +1245,7 @@ var suites_1 = /* :: */{
           })
       ],
       _1: /* :: */{
-        _0: /* tuple */[
+        _0: [
           "test4",
           (function (param) {
               return {
@@ -1256,7 +1256,7 @@ var suites_1 = /* :: */{
             })
         ],
         _1: /* :: */{
-          _0: /* tuple */[
+          _0: [
             "test5",
             (function (param) {
                 return {
@@ -1267,7 +1267,7 @@ var suites_1 = /* :: */{
               })
           ],
           _1: /* :: */{
-            _0: /* tuple */[
+            _0: [
               "test6",
               (function (param) {
                   return {

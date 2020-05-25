@@ -221,14 +221,14 @@ function for_9(param) {
   $$Array.iter((function (f) {
           return Curry._1(f, undefined);
         }), arr2);
-  return [/* tuple */[
+  return [[
             vv.contents,
             $$Array.of_list(List.rev(v.contents)),
             vv2.contents
           ]];
 }
 
-var suites_0 = /* tuple */[
+var suites_0 = [
   "for_loop_test_3",
   (function (param) {
       return {
@@ -240,7 +240,7 @@ var suites_0 = /* tuple */[
 ];
 
 var suites_1 = /* :: */{
-  _0: /* tuple */[
+  _0: [
     "for_loop_test_4",
     (function (param) {
         return {
@@ -251,7 +251,7 @@ var suites_1 = /* :: */{
       })
   ],
   _1: /* :: */{
-    _0: /* tuple */[
+    _0: [
       "for_loop_test_5",
       (function (param) {
           return {
@@ -262,7 +262,7 @@ var suites_1 = /* :: */{
         })
     ],
     _1: /* :: */{
-      _0: /* tuple */[
+      _0: [
         "for_loop_test_6",
         (function (param) {
             return {
@@ -278,7 +278,7 @@ var suites_1 = /* :: */{
           })
       ],
       _1: /* :: */{
-        _0: /* tuple */[
+        _0: [
           "for_loop_test_7",
           (function (param) {
               return {
@@ -289,7 +289,7 @@ var suites_1 = /* :: */{
             })
         ],
         _1: /* :: */{
-          _0: /* tuple */[
+          _0: [
             "for_loop_test_8",
             (function (param) {
                 return {
@@ -300,12 +300,12 @@ var suites_1 = /* :: */{
               })
           ],
           _1: /* :: */{
-            _0: /* tuple */[
+            _0: [
               "for_loop_test_9",
               (function (param) {
                   return {
                           tag: /* Eq */0,
-                          _0: [/* tuple */[
+                          _0: [[
                               10,
                               [
                                 1,

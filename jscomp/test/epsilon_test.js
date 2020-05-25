@@ -5,7 +5,7 @@ var Pervasives = require("../../lib/js/pervasives.js");
 
 var v = (Number.EPSILON?Number.EPSILON:2.220446049250313e-16);
 
-var suites_0 = /* tuple */[
+var suites_0 = [
   "epsilon",
   (function (param) {
       return {
@@ -17,7 +17,7 @@ var suites_0 = /* tuple */[
 ];
 
 var suites_1 = /* :: */{
-  _0: /* tuple */[
+  _0: [
     "raw_epsilon",
     (function (param) {
         return {

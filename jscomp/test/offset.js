@@ -253,7 +253,7 @@ function concat(t1, t2) {
 
 function split(x, param) {
   if (!param) {
-    return /* tuple */[
+    return [
             /* Empty */0,
             false,
             /* Empty */0
@@ -264,7 +264,7 @@ function split(x, param) {
   var l = param.l;
   var c = Caml_primitive.caml_string_compare(x, v);
   if (c === 0) {
-    return /* tuple */[
+    return [
             l,
             true,
             r
@@ -272,14 +272,14 @@ function split(x, param) {
   }
   if (c < 0) {
     var match = split(x, l);
-    return /* tuple */[
+    return [
             match[0],
             match[1],
             join(match[2], v, r)
           ];
   }
   var match$1 = split(x, r);
-  return /* tuple */[
+  return [
           join(l, v, match$1[0]),
           match$1[1],
           match$1[2]
@@ -586,7 +586,7 @@ function filter(p, t) {
 
 function partition(p, param) {
   if (!param) {
-    return /* tuple */[
+    return [
             /* Empty */0,
             /* Empty */0
           ];
@@ -600,12 +600,12 @@ function partition(p, param) {
   var rf = match$1[1];
   var rt = match$1[0];
   if (pv) {
-    return /* tuple */[
+    return [
             join(lt, v, rt),
             concat(lf, rf)
           ];
   } else {
-    return /* tuple */[
+    return [
             concat(lt, rt),
             join(lf, v, rf)
           ];
@@ -851,13 +851,13 @@ function of_list(l) {
       var sub = function (n, l) {
         switch (n) {
           case 0 :
-              return /* tuple */[
+              return [
                       /* Empty */0,
                       l
                     ];
           case 1 :
               if (l) {
-                return /* tuple */[
+                return [
                         /* Node */{
                           l: /* Empty */0,
                           v: l._0,
@@ -872,7 +872,7 @@ function of_list(l) {
               if (l) {
                 var match = l._1;
                 if (match) {
-                  return /* tuple */[
+                  return [
                           /* Node */{
                             l: /* Node */{
                               l: /* Empty */0,
@@ -896,7 +896,7 @@ function of_list(l) {
                 if (match$1) {
                   var match$2 = match$1._1;
                   if (match$2) {
-                    return /* tuple */[
+                    return [
                             /* Node */{
                               l: /* Node */{
                                 l: /* Empty */0,
@@ -929,14 +929,14 @@ function of_list(l) {
         var l$1 = match$3[1];
         if (l$1) {
           var match$4 = sub((n - nl | 0) - 1 | 0, l$1._1);
-          return /* tuple */[
+          return [
                   create(match$3[0], l$1._0, match$4[0]),
                   match$4[1]
                 ];
         }
         throw {
               RE_EXN_ID: "Assert_failure",
-              _1: /* tuple */[
+              _1: [
                 "set.ml",
                 510,
                 18

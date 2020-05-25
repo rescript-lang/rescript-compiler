@@ -12,13 +12,13 @@ var test_id = {
 };
 
 function eq(loc, x, y) {
-  console.log(/* tuple */[
+  console.log([
         x,
         y
       ]);
   test_id.contents = test_id.contents + 1 | 0;
   suites.contents = /* :: */{
-    _0: /* tuple */[
+    _0: [
       loc + (" id " + String(test_id.contents)),
       (function (param) {
           return {

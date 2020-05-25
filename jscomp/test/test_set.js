@@ -210,7 +210,7 @@ function Make(Ord) {
   };
   var split = function (x, param) {
     if (!param) {
-      return /* tuple */[
+      return [
               /* Empty */0,
               false,
               /* Empty */0
@@ -221,7 +221,7 @@ function Make(Ord) {
     var l = param._0;
     var c = Curry._2(Ord.compare, x, v);
     if (c === 0) {
-      return /* tuple */[
+      return [
               l,
               true,
               r
@@ -229,14 +229,14 @@ function Make(Ord) {
     }
     if (c < 0) {
       var match = split(x, l);
-      return /* tuple */[
+      return [
               match[0],
               match[1],
               join(match[2], v, r)
             ];
     }
     var match$1 = split(x, r);
-    return /* tuple */[
+    return [
             join(l, v, match$1[0]),
             match$1[1],
             match$1[2]
@@ -504,7 +504,7 @@ function Make(Ord) {
   };
   var partition = function (p, param) {
     if (!param) {
-      return /* tuple */[
+      return [
               /* Empty */0,
               /* Empty */0
             ];
@@ -518,12 +518,12 @@ function Make(Ord) {
     var rf = match$1[1];
     var rt = match$1[0];
     if (pv) {
-      return /* tuple */[
+      return [
               join(lt, v, rt),
               concat(lf, rf)
             ];
     } else {
-      return /* tuple */[
+      return [
               concat(lt, rt),
               join(lf, v, rf)
             ];
@@ -576,13 +576,13 @@ function Make(Ord) {
     var sub = function (n, l) {
       switch (n) {
         case 0 :
-            return /* tuple */[
+            return [
                     /* Empty */0,
                     l
                   ];
         case 1 :
             if (l) {
-              return /* tuple */[
+              return [
                       /* Node */{
                         _0: /* Empty */0,
                         _1: l._0,
@@ -597,7 +597,7 @@ function Make(Ord) {
             if (l) {
               var match = l._1;
               if (match) {
-                return /* tuple */[
+                return [
                         /* Node */{
                           _0: /* Node */{
                             _0: /* Empty */0,
@@ -621,7 +621,7 @@ function Make(Ord) {
               if (match$1) {
                 var match$2 = match$1._1;
                 if (match$2) {
-                  return /* tuple */[
+                  return [
                           /* Node */{
                             _0: /* Node */{
                               _0: /* Empty */0,
@@ -654,14 +654,14 @@ function Make(Ord) {
       var l$1 = match$3[1];
       if (l$1) {
         var match$4 = sub((n - nl | 0) - 1 | 0, l$1._1);
-        return /* tuple */[
+        return [
                 create(match$3[0], l$1._0, match$4[0]),
                 match$4[1]
               ];
       }
       throw {
             RE_EXN_ID: "Assert_failure",
-            _1: /* tuple */[
+            _1: [
               "test_set.ml",
               372,
               18

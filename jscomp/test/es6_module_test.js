@@ -8,7 +8,7 @@ function length(param) {
 }
 
 Mt.from_pair_suites("Es6_module_test", /* :: */{
-      _0: /* tuple */[
+      _0: [
         "list_length",
         (function (param) {
             return {
@@ -25,7 +25,7 @@ Mt.from_pair_suites("Es6_module_test", /* :: */{
           })
       ],
       _1: /* :: */{
-        _0: /* tuple */[
+        _0: [
           "length",
           (function (param) {
               return {

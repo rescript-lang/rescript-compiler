@@ -7,16 +7,16 @@ var Caml_bytes = require("../../lib/js/caml_bytes.js");
 
 var v = "gso";
 
-var suites_0 = /* tuple */[
+var suites_0 = [
   "equal",
   (function (param) {
       return {
               tag: /* Eq */0,
-              _0: /* tuple */[
+              _0: [
                 Caml_bytes.get(Bytes.make(3, /* "a" */97), 0),
                 Bytes.make(3, /* "a" */97)[0]
               ],
-              _1: /* tuple */[
+              _1: [
                 /* "a" */97,
                 /* "a" */97
               ]
@@ -25,18 +25,18 @@ var suites_0 = /* tuple */[
 ];
 
 var suites_1 = /* :: */{
-  _0: /* tuple */[
+  _0: [
     "equal2",
     (function (param) {
         var u = Bytes.make(3, /* "a" */97);
         u[0] = /* "b" */98;
         return {
                 tag: /* Eq */0,
-                _0: /* tuple */[
+                _0: [
                   u[0],
                   /* "g" */103
                 ],
-                _1: /* tuple */[
+                _1: [
                   /* "b" */98,
                   /* "g" */103
                 ]
@@ -44,7 +44,7 @@ var suites_1 = /* :: */{
       })
   ],
   _1: /* :: */{
-    _0: /* tuple */[
+    _0: [
       "buffer",
       (function (param) {
           var v = $$Buffer.create(30);

@@ -15,7 +15,7 @@ var test_id = {
 function eq(loc, x, y) {
   test_id.contents = test_id.contents + 1 | 0;
   suites.contents = /* :: */{
-    _0: /* tuple */[
+    _0: [
       loc + (" id " + String(test_id.contents)),
       (function (param) {
           return {
@@ -38,13 +38,13 @@ function add(suite) {
   
 }
 
-var Int3 = Caml_module.init_mod(/* tuple */[
+var Int3 = Caml_module.init_mod([
       "recursive_module_test.ml",
       13,
       6
     ], {
       tag: /* Module */0,
-      _0: [/* tuple */[
+      _0: [[
           /* Function */0,
           "u"
         ]]
@@ -52,19 +52,19 @@ var Int3 = Caml_module.init_mod(/* tuple */[
 
 Caml_module.update_mod({
       tag: /* Module */0,
-      _0: [/* tuple */[
+      _0: [[
           /* Function */0,
           "u"
         ]]
     }, Int3, Int3);
 
-var M = Caml_module.init_mod(/* tuple */[
+var M = Caml_module.init_mod([
       "recursive_module_test.ml",
       20,
       20
     ], {
       tag: /* Module */0,
-      _0: [/* tuple */[
+      _0: [[
           /* Function */0,
           "fact"
         ]]
@@ -80,7 +80,7 @@ function fact(n) {
 
 Caml_module.update_mod({
       tag: /* Module */0,
-      _0: [/* tuple */[
+      _0: [[
           /* Function */0,
           "fact"
         ]]
@@ -97,7 +97,7 @@ var Fact = {
 
 eq("File \"recursive_module_test.ml\", line 30, characters 5-12", 120, Curry._1(fact$1, 5));
 
-add(/* tuple */[
+add([
       "File \"recursive_module_test.ml\", line 34, characters 7-14",
       (function (param) {
           return {

@@ -21,7 +21,7 @@ function lazy_test(param) {
   var h = u.contents;
   CamlinternalLazy.force(v);
   var g = u.contents;
-  return /* tuple */[
+  return [
           h,
           g
         ];
@@ -40,7 +40,7 @@ function f(param) {
   }
   throw {
         RE_EXN_ID: "Match_failure",
-        _1: /* tuple */[
+        _1: [
           "lazy_test.ml",
           11,
           8
@@ -72,7 +72,7 @@ var set_false = {
 var h;
 
 try {
-  h = f(/* tuple */[
+  h = f([
         set_true,
         set_false,
         s
@@ -186,13 +186,13 @@ var a7 = CamlinternalLazy.force(a5);
 var a8 = CamlinternalLazy.force(a6);
 
 Mt.from_pair_suites("Lazy_test", /* :: */{
-      _0: /* tuple */[
+      _0: [
         "simple",
         (function (param) {
             return {
                     tag: /* Eq */0,
                     _0: lazy_test(undefined),
-                    _1: /* tuple */[
+                    _1: [
                       3,
                       32
                     ]
@@ -200,7 +200,7 @@ Mt.from_pair_suites("Lazy_test", /* :: */{
           })
       ],
       _1: /* :: */{
-        _0: /* tuple */[
+        _0: [
           "lazy_match",
           (function (param) {
               return {
@@ -211,7 +211,7 @@ Mt.from_pair_suites("Lazy_test", /* :: */{
             })
         ],
         _1: /* :: */{
-          _0: /* tuple */[
+          _0: [
             "lazy_force",
             (function (param) {
                 return {
@@ -222,7 +222,7 @@ Mt.from_pair_suites("Lazy_test", /* :: */{
               })
           ],
           _1: /* :: */{
-            _0: /* tuple */[
+            _0: [
               "lazy_from_fun",
               (function (param) {
                   return {
@@ -233,7 +233,7 @@ Mt.from_pair_suites("Lazy_test", /* :: */{
                 })
             ],
             _1: /* :: */{
-              _0: /* tuple */[
+              _0: [
                 "lazy_from_val",
                 (function (param) {
                     return {
@@ -247,7 +247,7 @@ Mt.from_pair_suites("Lazy_test", /* :: */{
                   })
               ],
               _1: /* :: */{
-                _0: /* tuple */[
+                _0: [
                   "lazy_from_val2",
                   (function (param) {
                       return {
@@ -264,7 +264,7 @@ Mt.from_pair_suites("Lazy_test", /* :: */{
                     })
                 ],
                 _1: /* :: */{
-                  _0: /* tuple */[
+                  _0: [
                     "lazy_from_val3",
                     (function (param) {
                         debugger;
@@ -279,7 +279,7 @@ Mt.from_pair_suites("Lazy_test", /* :: */{
                       })
                   ],
                   _1: /* :: */{
-                    _0: /* tuple */[
+                    _0: [
                       "lazy_test.ml",
                       (function (param) {
                           return {
@@ -290,7 +290,7 @@ Mt.from_pair_suites("Lazy_test", /* :: */{
                         })
                     ],
                     _1: /* :: */{
-                      _0: /* tuple */[
+                      _0: [
                         "lazy_test.ml",
                         (function (param) {
                             return {
@@ -301,7 +301,7 @@ Mt.from_pair_suites("Lazy_test", /* :: */{
                           })
                       ],
                       _1: /* :: */{
-                        _0: /* tuple */[
+                        _0: [
                           "lazy_test.ml",
                           (function (param) {
                               return {
@@ -312,7 +312,7 @@ Mt.from_pair_suites("Lazy_test", /* :: */{
                             })
                         ],
                         _1: /* :: */{
-                          _0: /* tuple */[
+                          _0: [
                             "File \"lazy_test.ml\", line 78, characters 0-7",
                             (function (param) {
                                 return {
@@ -325,7 +325,7 @@ Mt.from_pair_suites("Lazy_test", /* :: */{
                               })
                           ],
                           _1: /* :: */{
-                            _0: /* tuple */[
+                            _0: [
                               "File \"lazy_test.ml\", line 79, characters 0-7",
                               (function (param) {
                                   return {

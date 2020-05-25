@@ -38,7 +38,7 @@ var XXX = Caml_exceptions.create("Exception_def.XXX");
 
 var Aa = "Match_failure";
 
-var v_1 = /* tuple */[
+var v_1 = [
   "",
   0,
   0

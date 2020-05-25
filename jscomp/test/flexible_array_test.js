@@ -128,7 +128,7 @@ function lorem(tr) {
     }
     throw {
           RE_EXN_ID: "Assert_failure",
-          _1: /* tuple */[
+          _1: [
             "flexible_array_test.ml",
             66,
             9
@@ -142,7 +142,7 @@ function lorem(tr) {
       };
 }
 
-var empty = /* tuple */[
+var empty = [
   /* Lf */0,
   0
 ];
@@ -165,7 +165,7 @@ function get(param, i) {
 function set(param, i, v) {
   var k = param[1];
   if (i >= 0 && i < k) {
-    return /* tuple */[
+    return [
             update(param[0], i + 1 | 0, v),
             k
           ];
@@ -178,7 +178,7 @@ function set(param, i, v) {
 }
 
 function push_front(param, v) {
-  return /* tuple */[
+  return [
           loext(param[0], v),
           param[1] + 1 | 0
         ];
@@ -187,7 +187,7 @@ function push_front(param, v) {
 function pop_front(param) {
   var k = param[1];
   if (k > 0) {
-    return /* tuple */[
+    return [
             lorem(param[0]),
             k - 1 | 0
           ];
@@ -201,7 +201,7 @@ function pop_front(param) {
 
 function push_back(param, v) {
   var k = param[1];
-  return /* tuple */[
+  return [
           update(param[0], k + 1 | 0, v),
           k + 1 | 0
         ];
@@ -210,7 +210,7 @@ function push_back(param, v) {
 function pop_back(param) {
   var k = param[1];
   if (k > 0) {
-    return /* tuple */[
+    return [
             $$delete(param[0], k),
             k - 1 | 0
           ];
@@ -326,7 +326,7 @@ if (!Caml_obj.caml_equal(x, of_array([
           ]))) {
   throw {
         RE_EXN_ID: "Assert_failure",
-        _1: /* tuple */[
+        _1: [
           "flexible_array_test.ml",
           166,
           4

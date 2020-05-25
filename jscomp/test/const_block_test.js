@@ -37,24 +37,24 @@ function g(param) {
   f(undefined);
   return {
           tag: /* Eq */0,
-          _0: /* tuple */[
+          _0: [
             Caml_array.caml_array_get(a, 0),
             Caml_array.caml_array_get(b, 0)
           ],
-          _1: /* tuple */[
+          _1: [
             3.0,
             3
           ]
         };
 }
 
-var suites_0 = /* tuple */[
+var suites_0 = [
   "const_block_test",
   g
 ];
 
 var suites_1 = /* :: */{
-  _0: /* tuple */[
+  _0: [
     "avoid_mutable_inline_test",
     (function (param) {
         Caml_array.caml_array_set(c, 0, 3);
@@ -83,7 +83,7 @@ var suites = /* :: */{
 
 Mt.from_pair_suites("Const_block_test", suites);
 
-var v = /* tuple */[
+var v = [
   0,
   1,
   2,

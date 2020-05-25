@@ -26,7 +26,7 @@ function v(param) {
   return to_list(v$1);
 }
 
-var suites_0 = /* tuple */[
+var suites_0 = [
   "push_test",
   (function (param) {
       return {

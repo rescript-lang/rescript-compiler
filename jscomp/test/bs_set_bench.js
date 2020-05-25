@@ -14,7 +14,7 @@ function bench(param) {
     if (!Belt_SetInt.has(data, i$1)) {
       throw {
             RE_EXN_ID: "Assert_failure",
-            _1: /* tuple */[
+            _1: [
               "bs_set_bench.ml",
               12,
               4
@@ -35,7 +35,7 @@ function bench(param) {
   }
   throw {
         RE_EXN_ID: "Assert_failure",
-        _1: /* tuple */[
+        _1: [
           "bs_set_bench.ml",
           17,
           2

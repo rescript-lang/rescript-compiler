@@ -12,71 +12,71 @@ var Pervasives = require("../../lib/js/pervasives.js");
 var Caml_format = require("../../lib/js/caml_format.js");
 
 var of_string = [
-  /* tuple */[
+  [
     0,
     "0"
   ],
-  /* tuple */[
+  [
     3,
     "03"
   ],
-  /* tuple */[
+  [
     -3,
     "-03"
   ],
-  /* tuple */[
+  [
     -63,
     "-0x3f"
   ],
-  /* tuple */[
+  [
     -31,
     "-0x1f"
   ],
-  /* tuple */[
+  [
     47,
     "0X2f"
   ],
-  /* tuple */[
+  [
     11,
     "0O13"
   ],
-  /* tuple */[
+  [
     8,
     "0o10"
   ],
-  /* tuple */[
+  [
     3,
     "0b11"
   ],
-  /* tuple */[
+  [
     1,
     "0b01"
   ],
-  /* tuple */[
+  [
     0,
     "0b00"
   ],
-  /* tuple */[
+  [
     -3,
     "-0b11"
   ],
-  /* tuple */[
+  [
     -5,
     "-0B101"
   ],
-  /* tuple */[
+  [
     332,
     "0332"
   ],
-  /* tuple */[
+  [
     -32,
     "-32"
   ],
-  /* tuple */[
+  [
     1,
     "-0xffff_ffff"
   ],
-  /* tuple */[
+  [
     -1,
     "0xffff_ffff"
   ]
@@ -92,7 +92,7 @@ function from_of_string(xs) {
   return $$Array.to_list($$Array.mapi((function (i, param) {
                     var b = param[1];
                     var a = param[0];
-                    return /* tuple */[
+                    return [
                             Curry._1(Printf.sprintf(/* Format */{
                                       _0: {
                                         tag: /* String_literal */11,
@@ -151,45 +151,45 @@ var v = Curry._1(Printf.sprintf(/* Format */{
         }), 3333);
 
 var pairs = [
-  /* tuple */[
+  [
     /* FP_infinite */3,
     "infinity"
   ],
-  /* tuple */[
+  [
     /* FP_infinite */3,
     "+infinity"
   ],
-  /* tuple */[
+  [
     /* FP_infinite */3,
     "-infinity"
   ],
-  /* tuple */[
+  [
     /* FP_zero */2,
     "0"
   ],
-  /* tuple */[
+  [
     /* FP_zero */2,
     "0."
   ]
 ];
 
 var pairs$1 = [
-  /* tuple */[
+  [
     3232,
     "32_32.0"
   ],
-  /* tuple */[
+  [
     1.000,
     "1.000"
   ],
-  /* tuple */[
+  [
     12.000,
     "12.000"
   ]
 ];
 
 var suites = Pervasives.$at(from_of_string(of_string), Pervasives.$at(/* :: */{
-          _0: /* tuple */[
+          _0: [
             "isnan_of_string",
             (function (param) {
                 return {
@@ -203,7 +203,7 @@ var suites = Pervasives.$at(from_of_string(of_string), Pervasives.$at(/* :: */{
         }, Pervasives.$at($$Array.to_list($$Array.mapi((function (i, param) {
                         var b = param[1];
                         var a = param[0];
-                        return /* tuple */[
+                        return [
                                 Curry._1(Printf.sprintf(/* Format */{
                                           _0: {
                                             tag: /* String_literal */11,
@@ -227,7 +227,7 @@ var suites = Pervasives.$at(from_of_string(of_string), Pervasives.$at(/* :: */{
                                   })
                               ];
                       }), pairs)), Pervasives.$at(/* :: */{
-                  _0: /* tuple */[
+                  _0: [
                     "throw",
                     (function (param) {
                         return {
@@ -240,7 +240,7 @@ var suites = Pervasives.$at(from_of_string(of_string), Pervasives.$at(/* :: */{
                       })
                   ],
                   _1: /* :: */{
-                    _0: /* tuple */[
+                    _0: [
                       "format_int",
                       (function (param) {
                           return {
@@ -255,7 +255,7 @@ var suites = Pervasives.$at(from_of_string(of_string), Pervasives.$at(/* :: */{
                 }, $$Array.to_list($$Array.mapi((function (i, param) {
                             var b = param[1];
                             var a = param[0];
-                            return /* tuple */[
+                            return [
                                     Curry._1(Printf.sprintf(/* Format */{
                                               _0: {
                                                 tag: /* String_literal */11,
@@ -284,7 +284,7 @@ function ff(param) {
   return Caml_format.caml_format_int("%32d", param);
 }
 
-var formatter_suites_0 = /* tuple */[
+var formatter_suites_0 = [
   "fmt_concat",
   (function (param) {
       return {
@@ -354,7 +354,7 @@ var formatter_suites_0 = /* tuple */[
 ];
 
 var formatter_suites_1 = /* :: */{
-  _0: /* tuple */[
+  _0: [
     "fmt_gen",
     (function (param) {
         return {
@@ -441,7 +441,7 @@ var formatter_suites_1 = /* :: */{
       })
   ],
   _1: /* :: */{
-    _0: /* tuple */[
+    _0: [
       "long_fmt",
       (function (param) {
           return {
@@ -808,7 +808,7 @@ var formatter_suites_1 = /* :: */{
         })
     ],
     _1: /* :: */{
-      _0: /* tuple */[
+      _0: [
         "long_fmt_2",
         (function (param) {
             return {
@@ -1229,7 +1229,7 @@ var formatter_suites_1 = /* :: */{
           })
       ],
       _1: /* :: */{
-        _0: /* tuple */[
+        _0: [
           "width_1",
           (function (param) {
               return {
@@ -1253,7 +1253,7 @@ var formatter_suites_1 = /* :: */{
             })
         ],
         _1: /* :: */{
-          _0: /* tuple */[
+          _0: [
             "width_2",
             (function (param) {
                 return {
@@ -1279,7 +1279,7 @@ var formatter_suites_1 = /* :: */{
               })
           ],
           _1: /* :: */{
-            _0: /* tuple */[
+            _0: [
               "alternate_1",
               (function (param) {
                   return {
@@ -1303,7 +1303,7 @@ var formatter_suites_1 = /* :: */{
                 })
             ],
             _1: /* :: */{
-              _0: /* tuple */[
+              _0: [
                 "alternate_2",
                 (function (param) {
                     return {
@@ -1327,12 +1327,12 @@ var formatter_suites_1 = /* :: */{
                   })
               ],
               _1: /* :: */{
-                _0: /* tuple */[
+                _0: [
                   "alternate_3",
                   (function (param) {
                       return {
                               tag: /* Eq */0,
-                              _0: /* tuple */[
+                              _0: [
                                 Curry._1(Format.asprintf(/* Format */{
                                           _0: {
                                             tag: /* Int */4,
@@ -1354,7 +1354,7 @@ var formatter_suites_1 = /* :: */{
                                           _1: "%o"
                                         }), 32)
                               ],
-                              _1: /* tuple */[
+                              _1: [
                                 "040",
                                 "40"
                               ]
@@ -1362,7 +1362,7 @@ var formatter_suites_1 = /* :: */{
                     })
                 ],
                 _1: /* :: */{
-                  _0: /* tuple */[
+                  _0: [
                     "justify_0",
                     (function (param) {
                         return {
@@ -1373,7 +1373,7 @@ var formatter_suites_1 = /* :: */{
                       })
                   ],
                   _1: /* :: */{
-                    _0: /* tuple */[
+                    _0: [
                       "sign_p",
                       (function (param) {
                           return {
@@ -1397,7 +1397,7 @@ var formatter_suites_1 = /* :: */{
                         })
                     ],
                     _1: /* :: */{
-                      _0: /* tuple */[
+                      _0: [
                         "sign_2p",
                         (function (param) {
                             return {
@@ -1421,7 +1421,7 @@ var formatter_suites_1 = /* :: */{
                           })
                       ],
                       _1: /* :: */{
-                        _0: /* tuple */[
+                        _0: [
                           "sign_3p",
                           (function (param) {
                               return {
@@ -1441,7 +1441,7 @@ var formatter_suites_1 = /* :: */{
                             })
                         ],
                         _1: /* :: */{
-                          _0: /* tuple */[
+                          _0: [
                             "sign_4p",
                             (function (param) {
                                 return {
@@ -1461,7 +1461,7 @@ var formatter_suites_1 = /* :: */{
                               })
                           ],
                           _1: /* :: */{
-                            _0: /* tuple */[
+                            _0: [
                               "width_3",
                               (function (param) {
                                   return {
@@ -1472,7 +1472,7 @@ var formatter_suites_1 = /* :: */{
                                 })
                             ],
                             _1: /* :: */{
-                              _0: /* tuple */[
+                              _0: [
                                 "prec_1",
                                 (function (param) {
                                     return {
@@ -1494,7 +1494,7 @@ var formatter_suites_1 = /* :: */{
                                   })
                               ],
                               _1: /* :: */{
-                                _0: /* tuple */[
+                                _0: [
                                   "prec_2",
                                   (function (param) {
                                       return {
@@ -1505,7 +1505,7 @@ var formatter_suites_1 = /* :: */{
                                     })
                                 ],
                                 _1: /* :: */{
-                                  _0: /* tuple */[
+                                  _0: [
                                     "prec_3",
                                     (function (param) {
                                         return {
@@ -1516,7 +1516,7 @@ var formatter_suites_1 = /* :: */{
                                       })
                                   ],
                                   _1: /* :: */{
-                                    _0: /* tuple */[
+                                    _0: [
                                       "prec_4",
                                       (function (param) {
                                           return {
@@ -1552,107 +1552,107 @@ var formatter_suites = /* :: */{
 };
 
 var float_data = [
-  /* tuple */[
+  [
     "%f",
     32,
     "32.000000"
   ],
-  /* tuple */[
+  [
     "%f",
     Number.NaN,
     "nan"
   ],
-  /* tuple */[
+  [
     "%f",
     Pervasives.infinity,
     "inf"
   ],
-  /* tuple */[
+  [
     "%f",
     Pervasives.neg_infinity,
     "-inf"
   ],
-  /* tuple */[
+  [
     "%1.e",
     13000,
     "1e+04"
   ],
-  /* tuple */[
+  [
     "%1.3e",
     2.3e-05,
     "2.300e-05"
   ],
-  /* tuple */[
+  [
     "%3.10e",
     3e+56,
     "3.0000000000e+56"
   ],
-  /* tuple */[
+  [
     "%3.10f",
     20000000000,
     "20000000000.0000000000"
   ],
-  /* tuple */[
+  [
     "%3.3f",
     -3300,
     "-3300.000"
   ],
-  /* tuple */[
+  [
     "%1.g",
     13000,
     "1e+04"
   ],
-  /* tuple */[
+  [
     "%1.3g",
     2.3e-05,
     "2.3e-05"
   ],
-  /* tuple */[
+  [
     "%3.10g",
     3e+56,
     "3e+56"
   ],
-  /* tuple */[
+  [
     "%3.10g",
     20000000000,
     "2e+10"
   ],
-  /* tuple */[
+  [
     "%3.3g",
     -3300,
     "-3.3e+03"
   ],
-  /* tuple */[
+  [
     "%3.3g",
     -0.0033,
     "-0.0033"
   ],
-  /* tuple */[
+  [
     "%3.10g",
     30000000000,
     "3e+10"
   ],
-  /* tuple */[
+  [
     "%3.0g",
     30000000000,
     "3e+10"
   ],
-  /* tuple */[
+  [
     "%3.g",
     30000000000,
     "3e+10"
   ],
-  /* tuple */[
+  [
     "%3.g",
     3,
     "  3"
   ],
-  /* tuple */[
+  [
     "%1.1g",
     2.1,
     "2"
   ],
-  /* tuple */[
+  [
     "%1.2g",
     2.1,
     "2.1"
@@ -1860,14 +1860,14 @@ var Lambda_suites = {
 };
 
 var lambda_suites = [
-  /* tuple */[
+  [
     {
       tag: /* Var */1,
       _0: "x"
     },
     "x"
   ],
-  /* tuple */[
+  [
     {
       tag: /* Apply */2,
       _0: {
@@ -1881,7 +1881,7 @@ var lambda_suites = [
     },
     "x y"
   ],
-  /* tuple */[
+  [
     {
       tag: /* Lambda */0,
       _0: "z",
@@ -1899,7 +1899,7 @@ var lambda_suites = [
     },
     "\\z. x y"
   ],
-  /* tuple */[
+  [
     {
       tag: /* Lambda */0,
       _0: "z",
@@ -1927,7 +1927,7 @@ function from_lambda_pairs(p) {
   return $$Array.to_list($$Array.mapi((function (i, param) {
                     var b = param[1];
                     var a = param[0];
-                    return /* tuple */[
+                    return [
                             Curry._1(Printf.sprintf(/* Format */{
                                       _0: {
                                         tag: /* String_literal */11,
@@ -1953,7 +1953,7 @@ function from_lambda_pairs(p) {
                   }), lambda_suites));
 }
 
-var ksprintf_suites_0 = /* tuple */[
+var ksprintf_suites_0 = [
   "ksprintf",
   (function (param) {
       var f = function (fmt) {
@@ -1989,7 +1989,7 @@ var ksprintf_suites_0 = /* tuple */[
 ];
 
 var ksprintf_suites_1 = /* :: */{
-  _0: /* tuple */[
+  _0: [
     "sprintf",
     (function (param) {
         return {
@@ -2022,7 +2022,7 @@ var ksprintf_suites = /* :: */{
   _1: ksprintf_suites_1
 };
 
-var int64_suites_0 = /* tuple */[
+var int64_suites_0 = [
   "i32_simple",
   (function (param) {
       return {
@@ -2043,7 +2043,7 @@ var int64_suites_0 = /* tuple */[
 ];
 
 var int64_suites_1 = /* :: */{
-  _0: /* tuple */[
+  _0: [
     "i32_simple1",
     (function (param) {
         return {
@@ -2063,7 +2063,7 @@ var int64_suites_1 = /* :: */{
       })
   ],
   _1: /* :: */{
-    _0: /* tuple */[
+    _0: [
       "i64_simple",
       (function (param) {
           return {
@@ -2083,7 +2083,7 @@ var int64_suites_1 = /* :: */{
         })
     ],
     _1: /* :: */{
-      _0: /* tuple */[
+      _0: [
         "i64_simple2",
         (function (param) {
             return {
@@ -2103,7 +2103,7 @@ var int64_suites_1 = /* :: */{
           })
       ],
       _1: /* :: */{
-        _0: /* tuple */[
+        _0: [
           "i64_simple3",
           (function (param) {
               return {
@@ -2123,7 +2123,7 @@ var int64_suites_1 = /* :: */{
             })
         ],
         _1: /* :: */{
-          _0: /* tuple */[
+          _0: [
             "i64_simple4",
             (function (param) {
                 return {
@@ -2143,7 +2143,7 @@ var int64_suites_1 = /* :: */{
               })
           ],
           _1: /* :: */{
-            _0: /* tuple */[
+            _0: [
               "i64_simple5",
               (function (param) {
                   return {
@@ -2163,7 +2163,7 @@ var int64_suites_1 = /* :: */{
                 })
             ],
             _1: /* :: */{
-              _0: /* tuple */[
+              _0: [
                 "i64_simple6",
                 (function (param) {
                     return {
@@ -2186,7 +2186,7 @@ var int64_suites_1 = /* :: */{
                   })
               ],
               _1: /* :: */{
-                _0: /* tuple */[
+                _0: [
                   "i64_simple7",
                   (function (param) {
                       return {
@@ -2197,7 +2197,7 @@ var int64_suites_1 = /* :: */{
                     })
                 ],
                 _1: /* :: */{
-                  _0: /* tuple */[
+                  _0: [
                     "i64_simple8",
                     (function (param) {
                         return {
@@ -2227,7 +2227,7 @@ var int64_suites_1 = /* :: */{
                       })
                   ],
                   _1: /* :: */{
-                    _0: /* tuple */[
+                    _0: [
                       "i64_simple9",
                       (function (param) {
                           return {
@@ -2257,7 +2257,7 @@ var int64_suites_1 = /* :: */{
                         })
                     ],
                     _1: /* :: */{
-                      _0: /* tuple */[
+                      _0: [
                         "i64_simple10",
                         (function (param) {
                             return {
@@ -2277,7 +2277,7 @@ var int64_suites_1 = /* :: */{
                           })
                       ],
                       _1: /* :: */{
-                        _0: /* tuple */[
+                        _0: [
                           "i64_simple15",
                           (function (param) {
                               return {
@@ -2297,7 +2297,7 @@ var int64_suites_1 = /* :: */{
                             })
                         ],
                         _1: /* :: */{
-                          _0: /* tuple */[
+                          _0: [
                             "i64_simple16",
                             (function (param) {
                                 return {
@@ -2317,7 +2317,7 @@ var int64_suites_1 = /* :: */{
                               })
                           ],
                           _1: /* :: */{
-                            _0: /* tuple */[
+                            _0: [
                               "i64_simple14",
                               (function (param) {
                                   return {
@@ -2337,7 +2337,7 @@ var int64_suites_1 = /* :: */{
                                 })
                             ],
                             _1: /* :: */{
-                              _0: /* tuple */[
+                              _0: [
                                 "File \"caml_format_test.ml\", line 206, characters 4-11",
                                 (function (param) {
                                     return {
@@ -2357,7 +2357,7 @@ var int64_suites_1 = /* :: */{
                                   })
                               ],
                               _1: /* :: */{
-                                _0: /* tuple */[
+                                _0: [
                                   "i64_simple11",
                                   (function (param) {
                                       return {
@@ -2377,7 +2377,7 @@ var int64_suites_1 = /* :: */{
                                     })
                                 ],
                                 _1: /* :: */{
-                                  _0: /* tuple */[
+                                  _0: [
                                     "File \"caml_format_test.ml\", line 214, characters 4-11",
                                     (function (param) {
                                         return {
@@ -2397,7 +2397,7 @@ var int64_suites_1 = /* :: */{
                                       })
                                   ],
                                   _1: /* :: */{
-                                    _0: /* tuple */[
+                                    _0: [
                                       "File \"caml_format_test.ml\", line 215, characters 4-11",
                                       (function (param) {
                                           return {
@@ -2417,7 +2417,7 @@ var int64_suites_1 = /* :: */{
                                         })
                                     ],
                                     _1: /* :: */{
-                                      _0: /* tuple */[
+                                      _0: [
                                         "File \"caml_format_test.ml\", line 219, characters 4-11",
                                         (function (param) {
                                             return {
@@ -2437,7 +2437,7 @@ var int64_suites_1 = /* :: */{
                                           })
                                       ],
                                       _1: /* :: */{
-                                        _0: /* tuple */[
+                                        _0: [
                                           "File \"caml_format_test.ml\", line 222, characters 4-11",
                                           (function (param) {
                                               return {
@@ -2457,7 +2457,7 @@ var int64_suites_1 = /* :: */{
                                             })
                                         ],
                                         _1: /* :: */{
-                                          _0: /* tuple */[
+                                          _0: [
                                             "File \"caml_format_test.ml\", line 225, characters 4-11",
                                             (function (param) {
                                                 return {
@@ -2477,7 +2477,7 @@ var int64_suites_1 = /* :: */{
                                               })
                                           ],
                                           _1: /* :: */{
-                                            _0: /* tuple */[
+                                            _0: [
                                               "i64_simple19",
                                               (function (param) {
                                                   return {
@@ -2497,7 +2497,7 @@ var int64_suites_1 = /* :: */{
                                                 })
                                             ],
                                             _1: /* :: */{
-                                              _0: /* tuple */[
+                                              _0: [
                                                 "i64_simple13",
                                                 (function (param) {
                                                     return {
@@ -2517,7 +2517,7 @@ var int64_suites_1 = /* :: */{
                                                   })
                                               ],
                                               _1: /* :: */{
-                                                _0: /* tuple */[
+                                                _0: [
                                                   "i64_simple20",
                                                   (function (param) {
                                                       return {
@@ -2541,7 +2541,7 @@ var int64_suites_1 = /* :: */{
                                                     })
                                                 ],
                                                 _1: /* :: */{
-                                                  _0: /* tuple */[
+                                                  _0: [
                                                     "i64_simple21",
                                                     (function (param) {
                                                         return {
@@ -2561,7 +2561,7 @@ var int64_suites_1 = /* :: */{
                                                       })
                                                   ],
                                                   _1: /* :: */{
-                                                    _0: /* tuple */[
+                                                    _0: [
                                                       "missing_neline",
                                                       (function (param) {
                                                           return {
@@ -2585,7 +2585,7 @@ var int64_suites_1 = /* :: */{
                                                         })
                                                     ],
                                                     _1: /* :: */{
-                                                      _0: /* tuple */[
+                                                      _0: [
                                                         "missing_newline2",
                                                         (function (param) {
                                                             var buf = $$Buffer.create(30);
@@ -2644,39 +2644,39 @@ var int64_suites = /* :: */{
 };
 
 var of_string_data = [
-  /* tuple */[
+  [
     Caml_int64.zero,
     "0"
   ],
-  /* tuple */[
+  [
     Caml_int64.mk(3, 0),
     "3"
   ],
-  /* tuple */[
+  [
     Caml_int64.mk(33, 0),
     "33"
   ],
-  /* tuple */[
+  [
     Caml_int64.mk(333, 0),
     "33_3"
   ],
-  /* tuple */[
+  [
     Caml_int64.mk(33333, 0),
     "33_33_3"
   ],
-  /* tuple */[
+  [
     Caml_int64.mk(-1674115755, 77),
     "333333333333"
   ],
-  /* tuple */[
+  [
     Caml_int64.neg_one,
     "0xffff_ffff_ffff_ffff"
   ],
-  /* tuple */[
+  [
     Caml_int64.mk(113, 0),
     "0b01110001"
   ],
-  /* tuple */[
+  [
     Caml_int64.one,
     "-0xffff_ffff_ffff_ffff"
   ]
@@ -2686,7 +2686,7 @@ Mt.from_pair_suites("Caml_format_test", Pervasives.$at(suites, Pervasives.$at(fo
                                     var str_result = param[2];
                                     var f = param[1];
                                     var fmt = param[0];
-                                    return /* tuple */[
+                                    return [
                                             Curry._1(Printf.sprintf(/* Format */{
                                                       _0: {
                                                         tag: /* String_literal */11,
@@ -2712,7 +2712,7 @@ Mt.from_pair_suites("Caml_format_test", Pervasives.$at(suites, Pervasives.$at(fo
                                   }), float_data)), Pervasives.$at(int64_suites, $$Array.to_list($$Array.mapi((function (i, param) {
                                         var b = param[1];
                                         var a = param[0];
-                                        return /* tuple */[
+                                        return [
                                                 Curry._1(Printf.sprintf(/* Format */{
                                                           _0: {
                                                             tag: /* String_literal */11,

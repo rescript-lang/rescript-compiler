@@ -592,7 +592,7 @@ var raw_object = obj_init(undefined);
 if (Caml_oo_curry.js1(291536124, 1, raw_object) !== 34) {
   throw {
         RE_EXN_ID: "Assert_failure",
-        _1: /* tuple */[
+        _1: [
           "large_obj_test.ml",
           124,
           10
@@ -920,7 +920,7 @@ var v = Curry._2(raw_class[0], undefined, 3);
 if (Caml_oo_curry.js1(291536121, 2, v) !== 56) {
   throw {
         RE_EXN_ID: "Assert_failure",
-        _1: /* tuple */[
+        _1: [
           "large_obj_test.ml",
           251,
           2

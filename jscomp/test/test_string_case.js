@@ -10,7 +10,7 @@ function f(param) {
     default:
       throw {
             RE_EXN_ID: "Assert_failure",
-            _1: /* tuple */[
+            _1: [
               "test_string_case.ml",
               4,
               9

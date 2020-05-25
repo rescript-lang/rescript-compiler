@@ -10,7 +10,7 @@ function obj(param) {
         };
 }
 
-var suites_0 = /* tuple */[
+var suites_0 = [
   "empty",
   (function (param) {
       return {
@@ -22,7 +22,7 @@ var suites_0 = /* tuple */[
 ];
 
 var suites_1 = /* :: */{
-  _0: /* tuple */[
+  _0: [
     "get",
     (function (param) {
         return {
@@ -36,7 +36,7 @@ var suites_1 = /* :: */{
       })
   ],
   _1: /* :: */{
-    _0: /* tuple */[
+    _0: [
       "get - property not in object",
       (function (param) {
           return {
@@ -50,7 +50,7 @@ var suites_1 = /* :: */{
         })
     ],
     _1: /* :: */{
-      _0: /* tuple */[
+      _0: [
         "unsafe_get",
         (function (param) {
             return {
@@ -64,7 +64,7 @@ var suites_1 = /* :: */{
           })
       ],
       _1: /* :: */{
-        _0: /* tuple */[
+        _0: [
           "set",
           (function (param) {
               var o = {
@@ -80,7 +80,7 @@ var suites_1 = /* :: */{
             })
         ],
         _1: /* :: */{
-          _0: /* tuple */[
+          _0: [
             "keys",
             (function (param) {
                 return {
@@ -97,17 +97,17 @@ var suites_1 = /* :: */{
               })
           ],
           _1: /* :: */{
-            _0: /* tuple */[
+            _0: [
               "entries",
               (function (param) {
                   return {
                           tag: /* Eq */0,
                           _0: [
-                            /* tuple */[
+                            [
                               "foo",
                               43
                             ],
-                            /* tuple */[
+                            [
                               "bar",
                               86
                             ]
@@ -120,7 +120,7 @@ var suites_1 = /* :: */{
                 })
             ],
             _1: /* :: */{
-              _0: /* tuple */[
+              _0: [
                 "values",
                 (function (param) {
                     return {
@@ -137,7 +137,7 @@ var suites_1 = /* :: */{
                   })
               ],
               _1: /* :: */{
-                _0: /* tuple */[
+                _0: [
                   "fromList - []",
                   (function (param) {
                       return {
@@ -148,28 +148,28 @@ var suites_1 = /* :: */{
                     })
                 ],
                 _1: /* :: */{
-                  _0: /* tuple */[
+                  _0: [
                     "fromList",
                     (function (param) {
                         return {
                                 tag: /* Eq */0,
                                 _0: [
-                                  /* tuple */[
+                                  [
                                     "x",
                                     23
                                   ],
-                                  /* tuple */[
+                                  [
                                     "y",
                                     46
                                   ]
                                 ],
                                 _1: Js_dict.entries(Js_dict.fromList(/* :: */{
-                                          _0: /* tuple */[
+                                          _0: [
                                             "x",
                                             23
                                           ],
                                           _1: /* :: */{
-                                            _0: /* tuple */[
+                                            _0: [
                                               "y",
                                               46
                                             ],
@@ -180,7 +180,7 @@ var suites_1 = /* :: */{
                       })
                   ],
                   _1: /* :: */{
-                    _0: /* tuple */[
+                    _0: [
                       "fromArray - []",
                       (function (param) {
                           return {
@@ -191,27 +191,27 @@ var suites_1 = /* :: */{
                         })
                     ],
                     _1: /* :: */{
-                      _0: /* tuple */[
+                      _0: [
                         "fromArray",
                         (function (param) {
                             return {
                                     tag: /* Eq */0,
                                     _0: [
-                                      /* tuple */[
+                                      [
                                         "x",
                                         23
                                       ],
-                                      /* tuple */[
+                                      [
                                         "y",
                                         46
                                       ]
                                     ],
                                     _1: Js_dict.entries(Js_dict.fromArray([
-                                              /* tuple */[
+                                              [
                                                 "x",
                                                 23
                                               ],
-                                              /* tuple */[
+                                              [
                                                 "y",
                                                 46
                                               ]
@@ -220,7 +220,7 @@ var suites_1 = /* :: */{
                           })
                       ],
                       _1: /* :: */{
-                        _0: /* tuple */[
+                        _0: [
                           "map",
                           (function (param) {
                               return {

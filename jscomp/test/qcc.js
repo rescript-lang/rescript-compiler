@@ -29,7 +29,7 @@ function bufferize(f) {
   var buf = {
     contents: undefined
   };
-  return /* tuple */[
+  return [
           (function (param) {
               var x = buf.contents;
               if (x !== undefined) {
@@ -43,7 +43,7 @@ function bufferize(f) {
               if (buf.contents !== undefined) {
                 throw {
                       RE_EXN_ID: "Assert_failure",
-                      _1: /* tuple */[
+                      _1: [
                         "qcc.ml",
                         17,
                         4
@@ -102,7 +102,7 @@ function symstr(n) {
   if (n >= syms.contents) {
     throw {
           RE_EXN_ID: "Assert_failure",
-          _1: /* tuple */[
+          _1: [
             "qcc.ml",
             40,
             4
@@ -375,7 +375,7 @@ function patch(rel, loc, n) {
   if (n >= 0) {
     throw {
           RE_EXN_ID: "Assert_failure",
-          _1: /* tuple */[
+          _1: [
             "qcc.ml",
             157,
             2
@@ -477,7 +477,7 @@ function pop(r) {
 }
 
 var lval = {
-  contents: /* tuple */[
+  contents: [
     {
       tag: /* Mov */0,
       _0: 0
@@ -500,7 +500,7 @@ function read(param) {
   if (param) {
     out(4722614);
     le(8, 0);
-    lval.contents = /* tuple */[
+    lval.contents = [
       {
         tag: /* Del */1,
         _0: 4
@@ -510,7 +510,7 @@ function read(param) {
   } else {
     out(18571);
     le(8, 0);
-    lval.contents = /* tuple */[
+    lval.contents = [
       {
         tag: /* Del */1,
         _0: 3
@@ -527,92 +527,92 @@ var globs = Caml_array.caml_make_vect(100, {
     });
 
 var lvls = /* :: */{
-  _0: /* tuple */[
+  _0: [
     "*",
     0
   ],
   _1: /* :: */{
-    _0: /* tuple */[
+    _0: [
       "/",
       0
     ],
     _1: /* :: */{
-      _0: /* tuple */[
+      _0: [
         "%",
         0
       ],
       _1: /* :: */{
-        _0: /* tuple */[
+        _0: [
           "+",
           1
         ],
         _1: /* :: */{
-          _0: /* tuple */[
+          _0: [
             "-",
             1
           ],
           _1: /* :: */{
-            _0: /* tuple */[
+            _0: [
               "<<",
               2
             ],
             _1: /* :: */{
-              _0: /* tuple */[
+              _0: [
                 ">>",
                 2
               ],
               _1: /* :: */{
-                _0: /* tuple */[
+                _0: [
                   "<",
                   3
                 ],
                 _1: /* :: */{
-                  _0: /* tuple */[
+                  _0: [
                     "<=",
                     3
                   ],
                   _1: /* :: */{
-                    _0: /* tuple */[
+                    _0: [
                       ">",
                       3
                     ],
                     _1: /* :: */{
-                      _0: /* tuple */[
+                      _0: [
                         ">=",
                         3
                       ],
                       _1: /* :: */{
-                        _0: /* tuple */[
+                        _0: [
                           "==",
                           4
                         ],
                         _1: /* :: */{
-                          _0: /* tuple */[
+                          _0: [
                             "!=",
                             4
                           ],
                           _1: /* :: */{
-                            _0: /* tuple */[
+                            _0: [
                               "&",
                               5
                             ],
                             _1: /* :: */{
-                              _0: /* tuple */[
+                              _0: [
                                 "^",
                                 6
                               ],
                               _1: /* :: */{
-                                _0: /* tuple */[
+                                _0: [
                                   "|",
                                   7
                                 ],
                                 _1: /* :: */{
-                                  _0: /* tuple */[
+                                  _0: [
                                     "&&",
                                     8
                                   ],
                                   _1: /* :: */{
-                                    _0: /* tuple */[
+                                    _0: [
                                       "||",
                                       9
                                     ],
@@ -637,7 +637,7 @@ var lvls = /* :: */{
 };
 
 var inss = /* :: */{
-  _0: /* tuple */[
+  _0: [
     "*",
     {
       tag: /* Bin */0,
@@ -648,7 +648,7 @@ var inss = /* :: */{
     }
   ],
   _1: /* :: */{
-    _0: /* tuple */[
+    _0: [
       "/",
       {
         tag: /* Bin */0,
@@ -665,7 +665,7 @@ var inss = /* :: */{
       }
     ],
     _1: /* :: */{
-      _0: /* tuple */[
+      _0: [
         "%",
         {
           tag: /* Bin */0,
@@ -685,7 +685,7 @@ var inss = /* :: */{
         }
       ],
       _1: /* :: */{
-        _0: /* tuple */[
+        _0: [
           "+",
           {
             tag: /* Bin */0,
@@ -696,7 +696,7 @@ var inss = /* :: */{
           }
         ],
         _1: /* :: */{
-          _0: /* tuple */[
+          _0: [
             "-",
             {
               tag: /* Bin */0,
@@ -710,7 +710,7 @@ var inss = /* :: */{
             }
           ],
           _1: /* :: */{
-            _0: /* tuple */[
+            _0: [
               "<<",
               {
                 tag: /* Bin */0,
@@ -724,7 +724,7 @@ var inss = /* :: */{
               }
             ],
             _1: /* :: */{
-              _0: /* tuple */[
+              _0: [
                 ">>",
                 {
                   tag: /* Bin */0,
@@ -738,7 +738,7 @@ var inss = /* :: */{
                 }
               ],
               _1: /* :: */{
-                _0: /* tuple */[
+                _0: [
                   "<",
                   {
                     tag: /* Cmp */1,
@@ -746,7 +746,7 @@ var inss = /* :: */{
                   }
                 ],
                 _1: /* :: */{
-                  _0: /* tuple */[
+                  _0: [
                     "<=",
                     {
                       tag: /* Cmp */1,
@@ -754,7 +754,7 @@ var inss = /* :: */{
                     }
                   ],
                   _1: /* :: */{
-                    _0: /* tuple */[
+                    _0: [
                       ">",
                       {
                         tag: /* Cmp */1,
@@ -762,7 +762,7 @@ var inss = /* :: */{
                       }
                     ],
                     _1: /* :: */{
-                      _0: /* tuple */[
+                      _0: [
                         ">=",
                         {
                           tag: /* Cmp */1,
@@ -770,7 +770,7 @@ var inss = /* :: */{
                         }
                       ],
                       _1: /* :: */{
-                        _0: /* tuple */[
+                        _0: [
                           "==",
                           {
                             tag: /* Cmp */1,
@@ -778,7 +778,7 @@ var inss = /* :: */{
                           }
                         ],
                         _1: /* :: */{
-                          _0: /* tuple */[
+                          _0: [
                             "!=",
                             {
                               tag: /* Cmp */1,
@@ -786,7 +786,7 @@ var inss = /* :: */{
                             }
                           ],
                           _1: /* :: */{
-                            _0: /* tuple */[
+                            _0: [
                               "&",
                               {
                                 tag: /* Bin */0,
@@ -797,7 +797,7 @@ var inss = /* :: */{
                               }
                             ],
                             _1: /* :: */{
-                              _0: /* tuple */[
+                              _0: [
                                 "^",
                                 {
                                   tag: /* Bin */0,
@@ -808,7 +808,7 @@ var inss = /* :: */{
                                 }
                               ],
                               _1: /* :: */{
-                                _0: /* tuple */[
+                                _0: [
                                   "|",
                                   {
                                     tag: /* Bin */0,
@@ -956,15 +956,15 @@ function unary(stk) {
                 match = Caml_obj.caml_equal(Curry._1(next$1, undefined), {
                       tag: /* Op */0,
                       _0: "*"
-                    }) ? /* tuple */[
+                    }) ? [
                     /* Int */0,
                     1
-                  ] : /* tuple */[
+                  ] : [
                     /* Int */0,
                     5
                   ];
               } else if (Caml_obj.caml_equal(t, tokchar)) {
-                match = /* tuple */[
+                match = [
                   /* Chr */1,
                   2
                 ];
@@ -982,22 +982,22 @@ function unary(stk) {
               return read(match[0]);
           default:
             var unops = /* :: */{
-              _0: /* tuple */[
+              _0: [
                 "+",
                 0
               ],
               _1: /* :: */{
-                _0: /* tuple */[
+                _0: [
                   "-",
                   4782040
                 ],
                 _1: /* :: */{
-                  _0: /* tuple */[
+                  _0: [
                     "~",
                     4782032
                   ],
                   _1: /* :: */{
-                    _0: /* tuple */[
+                    _0: [
                       "!",
                       4752832
                     ],
@@ -1045,7 +1045,7 @@ function unary(stk) {
           if (l <= -256) {
             throw {
                   RE_EXN_ID: "Assert_failure",
-                  _1: /* tuple */[
+                  _1: [
                     "qcc.ml",
                     295,
                     6
@@ -1055,7 +1055,7 @@ function unary(stk) {
           }
           out(4754245);
           out(l & 255);
-          lval.contents = /* tuple */[
+          lval.contents = [
             {
               tag: /* Mov */0,
               _0: 3
@@ -1153,36 +1153,36 @@ function postfix(stk) {
   patchlval(undefined);
   out(4753857);
   read(lval.contents[1]);
-  return out(List.assoc(/* tuple */[
+  return out(List.assoc([
                   op$1,
                   lval.contents[1]
                 ], /* :: */{
-                  _0: /* tuple */[
-                    /* tuple */[
+                  _0: [
+                    [
                       "++",
                       /* Int */0
                     ],
                     4783873
                   ],
                   _1: /* :: */{
-                    _0: /* tuple */[
-                      /* tuple */[
+                    _0: [
+                      [
                         "--",
                         /* Int */0
                       ],
                       4783881
                     ],
                     _1: /* :: */{
-                      _0: /* tuple */[
-                        /* tuple */[
+                      _0: [
+                        [
                           "++",
                           /* Chr */1
                         ],
                         65025
                       ],
                       _1: /* :: */{
-                        _0: /* tuple */[
-                          /* tuple */[
+                        _0: [
+                          [
                             "--",
                             /* Chr */1
                           ],
@@ -1243,7 +1243,7 @@ function decl(g, _n, _stk) {
                   tag: /* Op */0,
                   _0: ";"
                 })) {
-            return /* tuple */[
+            return [
                     n,
                     stk
                   ];
@@ -1271,7 +1271,7 @@ function decl(g, _n, _stk) {
               stk$prime = stk;
             } else {
               stk$prime = /* :: */{
-                _0: /* tuple */[
+                _0: [
                   s$1,
                   top - (n$prime << 3) | 0
                 ],
@@ -1282,7 +1282,7 @@ function decl(g, _n, _stk) {
                     tag: /* Op */0,
                     _0: ","
                   })) {
-              return /* tuple */[
+              return [
                       n$prime,
                       stk$prime
                     ];
@@ -1331,7 +1331,7 @@ function decl(g, _n, _stk) {
       if ((n << 3) >= 256) {
         throw {
               RE_EXN_ID: "Assert_failure",
-              _1: /* tuple */[
+              _1: [
                 "qcc.ml",
                 436,
                 6
@@ -1346,7 +1346,7 @@ function decl(g, _n, _stk) {
     if (dbg.contents && !g) {
       console.error("end of blk decls");
     }
-    return /* tuple */[
+    return [
             n,
             stk
           ];
@@ -1393,7 +1393,7 @@ function stmt(brk, stk) {
       var loc$2 = opos.contents;
       pexpr(stk);
       bl.contents = test(0, 0);
-      match = /* tuple */[
+      match = [
         0,
         loc$2
       ];
@@ -1425,13 +1425,13 @@ function stmt(brk, stk) {
       Curry._1(next$1, undefined);
       out(233);
       le(32, (top - opos.contents | 0) - 4 | 0);
-      match = /* tuple */[
+      match = [
         bdy,
         itr
       ];
     }
     patch(true, match[0], opos.contents);
-    stmt(/* tuple */[
+    stmt([
           bl,
           ba
         ], stk);
@@ -1460,7 +1460,7 @@ function stmt(brk, stk) {
     if (n < 0) {
       throw {
             RE_EXN_ID: "Assert_failure",
-            _1: /* tuple */[
+            _1: [
               "qcc.ml",
               515,
               4
@@ -1574,7 +1574,7 @@ function top(_param) {
                       })) {
                   Curry._1(next$1, undefined);
                 }
-                var stk$prime_0 = /* tuple */[
+                var stk$prime_0 = [
                   i._0,
                   ((-n | 0) << 3)
                 ];
@@ -1620,7 +1620,7 @@ function top(_param) {
         
       };
       retl.contents = 0;
-      block(/* tuple */[
+      block([
             {
               contents: 0
             },
@@ -1881,7 +1881,7 @@ function elfgen(outf) {
   if (opos.contents !== 232) {
     throw {
           RE_EXN_ID: "Assert_failure",
-          _1: /* tuple */[
+          _1: [
             "qcc.ml",
             698,
             2
@@ -1986,7 +1986,7 @@ function main(param) {
         var partial_arg_0 = {
           contents: 0
         };
-        var partial_arg = /* tuple */[
+        var partial_arg = [
           partial_arg_0,
           0
         ];

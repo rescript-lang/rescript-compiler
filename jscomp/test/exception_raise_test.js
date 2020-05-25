@@ -103,7 +103,7 @@ catch (raw_x$3){
   } else {
     throw {
           RE_EXN_ID: "Assert_failure",
-          _1: /* tuple */[
+          _1: [
             "exception_raise_test.ml",
             102,
             9
@@ -133,18 +133,18 @@ catch (raw_e$1){
 
 var suites = {
   contents: /* :: */{
-    _0: /* tuple */[
+    _0: [
       "File \"exception_raise_test.ml\", line 114, characters 4-11",
       (function (param) {
           return {
                   tag: /* Eq */0,
-                  _0: /* tuple */[
+                  _0: [
                     f,
                     ff,
                     fff,
                     a0
                   ],
-                  _1: /* tuple */[
+                  _1: [
                     2,
                     2,
                     2,
@@ -154,7 +154,7 @@ var suites = {
         })
     ],
     _1: /* :: */{
-      _0: /* tuple */[
+      _0: [
         "File \"exception_raise_test.ml\", line 116, characters 4-11",
         (function (param) {
             if (a1.RE_EXN_ID === Js_exn.$$Error) {
@@ -166,7 +166,7 @@ var suites = {
             }
             throw {
                   RE_EXN_ID: "Assert_failure",
-                  _1: /* tuple */[
+                  _1: [
                     "exception_raise_test.ml",
                     119,
                     15

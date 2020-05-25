@@ -24,7 +24,7 @@ function ff(x) {
     default:
       throw {
             RE_EXN_ID: "Assert_failure",
-            _1: /* tuple */[
+            _1: [
               "bb.ml",
               17,
               9
@@ -49,7 +49,7 @@ function test(x) {
     default:
       throw {
             RE_EXN_ID: "Assert_failure",
-            _1: /* tuple */[
+            _1: [
               "bb.ml",
               26,
               13

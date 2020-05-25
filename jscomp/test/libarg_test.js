@@ -193,7 +193,7 @@ function f_anon(s) {
                 }), s);
 }
 
-var spec_0 = /* tuple */[
+var spec_0 = [
   "-u",
   {
     tag: /* Unit */0,
@@ -203,7 +203,7 @@ var spec_0 = /* tuple */[
 ];
 
 var spec_1 = /* :: */{
-  _0: /* tuple */[
+  _0: [
     "-b",
     {
       tag: /* Bool */1,
@@ -212,7 +212,7 @@ var spec_1 = /* :: */{
     "Bool (1)"
   ],
   _1: /* :: */{
-    _0: /* tuple */[
+    _0: [
       "-s",
       {
         tag: /* Set */2,
@@ -221,7 +221,7 @@ var spec_1 = /* :: */{
       "Set (0)"
     ],
     _1: /* :: */{
-      _0: /* tuple */[
+      _0: [
         "-c",
         {
           tag: /* Clear */3,
@@ -230,7 +230,7 @@ var spec_1 = /* :: */{
         "Clear (0)"
       ],
       _1: /* :: */{
-        _0: /* tuple */[
+        _0: [
           "-str",
           {
             tag: /* String */4,
@@ -239,7 +239,7 @@ var spec_1 = /* :: */{
           "String (1)"
         ],
         _1: /* :: */{
-          _0: /* tuple */[
+          _0: [
             "-sstr",
             {
               tag: /* Set_string */5,
@@ -248,7 +248,7 @@ var spec_1 = /* :: */{
             "Set_string (1)"
           ],
           _1: /* :: */{
-            _0: /* tuple */[
+            _0: [
               "-i",
               {
                 tag: /* Int */6,
@@ -257,7 +257,7 @@ var spec_1 = /* :: */{
               "Int (1)"
             ],
             _1: /* :: */{
-              _0: /* tuple */[
+              _0: [
                 "-si",
                 {
                   tag: /* Set_int */7,
@@ -266,7 +266,7 @@ var spec_1 = /* :: */{
                 "Set_int (1)"
               ],
               _1: /* :: */{
-                _0: /* tuple */[
+                _0: [
                   "-f",
                   {
                     tag: /* Float */8,
@@ -275,7 +275,7 @@ var spec_1 = /* :: */{
                   "Float (1)"
                 ],
                 _1: /* :: */{
-                  _0: /* tuple */[
+                  _0: [
                     "-sf",
                     {
                       tag: /* Set_float */9,
@@ -284,7 +284,7 @@ var spec_1 = /* :: */{
                     "Set_float (1)"
                   ],
                   _1: /* :: */{
-                    _0: /* tuple */[
+                    _0: [
                       "-t",
                       {
                         tag: /* Tuple */10,
@@ -311,7 +311,7 @@ var spec_1 = /* :: */{
                       "Tuple (3)"
                     ],
                     _1: /* :: */{
-                      _0: /* tuple */[
+                      _0: [
                         "-sym",
                         {
                           tag: /* Symbol */11,
@@ -330,7 +330,7 @@ var spec_1 = /* :: */{
                         "Symbol (1)"
                       ],
                       _1: /* :: */{
-                        _0: /* tuple */[
+                        _0: [
                           "-rest",
                           {
                             tag: /* Rest */12,

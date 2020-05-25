@@ -18,7 +18,7 @@ function eq(loc, param) {
   var x = param[0];
   test_id.contents = test_id.contents + 1 | 0;
   suites.contents = /* :: */{
-    _0: /* tuple */[
+    _0: [
       loc + (" id " + String(test_id.contents)),
       (function (param) {
           return {
@@ -100,7 +100,7 @@ function print_or_error(fmt, x) {
 
 var a = Sexpm.parse_string("(x x gh 3 3)");
 
-eq("File \"sexpm_test.ml\", line 17, characters 7-14", /* tuple */[
+eq("File \"sexpm_test.ml\", line 17, characters 7-14", [
       {
         HASH: /* Ok */17724,
         value: {
@@ -141,7 +141,7 @@ eq("File \"sexpm_test.ml\", line 17, characters 7-14", /* tuple */[
       a
     ]);
 
-eq("File \"sexpm_test.ml\", line 21, characters 7-14", /* tuple */[
+eq("File \"sexpm_test.ml\", line 21, characters 7-14", [
       Curry._2(Format.asprintf(/* Format */{
                   _0: {
                     tag: /* Alpha */15,

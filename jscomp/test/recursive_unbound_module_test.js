@@ -14,16 +14,16 @@ function Make(X) {
         };
 }
 
-var B = Caml_module.init_mod(/* tuple */[
+var B = Caml_module.init_mod([
       "recursive_unbound_module_test.ml",
       18,
       0
     ], {
       tag: /* Module */0,
-      _0: [/* tuple */[
+      _0: [[
           {
             tag: /* Module */0,
-            _0: [/* tuple */[
+            _0: [[
                 /* Function */0,
                 "f"
               ]]
@@ -42,10 +42,10 @@ var M = {
 
 Caml_module.update_mod({
       tag: /* Module */0,
-      _0: [/* tuple */[
+      _0: [[
           {
             tag: /* Module */0,
-            _0: [/* tuple */[
+            _0: [[
                 /* Function */0,
                 "f"
               ]]

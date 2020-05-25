@@ -10,7 +10,7 @@ function f(v) {
 }
 
 Mt.from_pair_suites("To_string_test", /* :: */{
-      _0: /* tuple */[
+      _0: [
         "File \"to_string_test.ml\", line 7, characters 2-9",
         (function (param) {
             return {
@@ -21,7 +21,7 @@ Mt.from_pair_suites("To_string_test", /* :: */{
           })
       ],
       _1: /* :: */{
-        _0: /* tuple */[
+        _0: [
           "File \"to_string_test.ml\", line 8, characters 1-8",
           (function (param) {
               return {

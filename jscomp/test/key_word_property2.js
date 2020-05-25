@@ -10,7 +10,7 @@ function test2(v) {
 }
 
 function test(p) {
-  return /* tuple */[
+  return [
           p.catch,
           p.then
         ];

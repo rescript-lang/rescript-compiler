@@ -16,19 +16,19 @@ function eq(loc, x, y) {
 }
 
 var jsMapperConstantArray = [
-  /* tuple */[
+  [
     97,
     "x"
   ],
-  /* tuple */[
+  [
     98,
     "你"
   ],
-  /* tuple */[
+  [
     99,
     "我"
   ],
-  /* tuple */[
+  [
     117,
     "hi"
   ]

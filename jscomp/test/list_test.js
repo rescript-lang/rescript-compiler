@@ -5,14 +5,14 @@ var List = require("../../lib/js/list.js");
 var $$Array = require("../../lib/js/array.js");
 var Caml_primitive = require("../../lib/js/caml_primitive.js");
 
-var list_suites_0 = /* tuple */[
+var list_suites_0 = [
   "length",
   (function (param) {
       return {
               tag: /* Eq */0,
               _0: 1,
               _1: List.length(/* :: */{
-                    _0: /* tuple */[
+                    _0: [
                       0,
                       1,
                       2,
@@ -26,7 +26,7 @@ var list_suites_0 = /* tuple */[
 ];
 
 var list_suites_1 = /* :: */{
-  _0: /* tuple */[
+  _0: [
     "length2",
     (function (param) {
         return {
@@ -52,7 +52,7 @@ var list_suites_1 = /* :: */{
       })
   ],
   _1: /* :: */{
-    _0: /* tuple */[
+    _0: [
       "long_length",
       (function (param) {
           return {
@@ -65,7 +65,7 @@ var list_suites_1 = /* :: */{
         })
     ],
     _1: /* :: */{
-      _0: /* tuple */[
+      _0: [
         "sort",
         (function (param) {
             return {

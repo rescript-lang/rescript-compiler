@@ -4,25 +4,25 @@ var $$Array = require("../../lib/js/array.js");
 var Curry = require("../../lib/js/curry.js");
 var Caml_module = require("../../lib/js/caml_module.js");
 
-var PA = Caml_module.init_mod(/* tuple */[
+var PA = Caml_module.init_mod([
       "gpr_3931_test.ml",
       3,
       6
     ], {
       tag: /* Module */0,
-      _0: [/* tuple */[
+      _0: [[
           /* Function */0,
           "print"
         ]]
     });
 
-var P = Caml_module.init_mod(/* tuple */[
+var P = Caml_module.init_mod([
       "gpr_3931_test.ml",
       11,
       6
     ], {
       tag: /* Module */0,
-      _0: [/* tuple */[
+      _0: [[
           /* Function */0,
           "print"
         ]]
@@ -34,7 +34,7 @@ function print(a) {
 
 Caml_module.update_mod({
       tag: /* Module */0,
-      _0: [/* tuple */[
+      _0: [[
           /* Function */0,
           "print"
         ]]
@@ -49,7 +49,7 @@ function print$1(i) {
 
 Caml_module.update_mod({
       tag: /* Module */0,
-      _0: [/* tuple */[
+      _0: [[
           /* Function */0,
           "print"
         ]]

@@ -19,7 +19,7 @@ function add_test(loc, test) {
   counter.contents = counter.contents + 1 | 0;
   var id = loc + (" id " + String(counter.contents));
   suites.contents = /* :: */{
-    _0: /* tuple */[
+    _0: [
       id,
       test
     ],
@@ -97,7 +97,7 @@ add_test("File \"js_json_test.ml\", line 23, characters 11-18", (function (param
               if (typeof ty3 === "number") {
                 throw {
                       RE_EXN_ID: "Assert_failure",
-                      _1: /* tuple */[
+                      _1: [
                         "js_json_test.ml",
                         37,
                         21
@@ -110,7 +110,7 @@ add_test("File \"js_json_test.ml\", line 23, characters 11-18", (function (param
               }
               throw {
                     RE_EXN_ID: "Assert_failure",
-                    _1: /* tuple */[
+                    _1: [
                       "js_json_test.ml",
                       37,
                       21
@@ -258,7 +258,7 @@ function option_get(x) {
   }
   throw {
         RE_EXN_ID: "Assert_failure",
-        _1: /* tuple */[
+        _1: [
           "js_json_test.ml",
           102,
           36

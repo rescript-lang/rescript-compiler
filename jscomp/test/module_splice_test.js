@@ -17,7 +17,7 @@ function eq(loc, param) {
   var x = param[0];
   test_id.contents = test_id.contents + 1 | 0;
   suites.contents = /* :: */{
-    _0: /* tuple */[
+    _0: [
       loc + (" id " + String(test_id.contents)),
       (function (param) {
           return {
@@ -38,7 +38,7 @@ function joinClasses(prim) {
 
 var a = JoinClasses(1, 2, 3);
 
-var pair = /* tuple */[
+var pair = [
   a,
   6
 ];

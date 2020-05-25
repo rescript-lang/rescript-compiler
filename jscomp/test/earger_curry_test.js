@@ -73,7 +73,7 @@ var test_id = {
 function eq(loc, x, y) {
   test_id.contents = test_id.contents + 1 | 0;
   suites.contents = /* :: */{
-    _0: /* tuple */[
+    _0: [
       loc + (" id " + String(test_id.contents)),
       (function (param) {
           return {
@@ -97,7 +97,7 @@ var all_v = {
 };
 
 function add5(a0, a1, a2, a3, a4) {
-  console.log(/* tuple */[
+  console.log([
         a0,
         a1,
         a2,

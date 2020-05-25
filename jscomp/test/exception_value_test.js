@@ -16,7 +16,7 @@ function assert_f(x) {
   if (x <= 3) {
     throw {
           RE_EXN_ID: "Assert_failure",
-          _1: /* tuple */[
+          _1: [
             "exception_value_test.ml",
             9,
             12

@@ -26,13 +26,13 @@ var Xx = {
     })
 };
 
-var Int3 = Caml_module.init_mod(/* tuple */[
+var Int3 = Caml_module.init_mod([
       "recursive_module.ml",
       27,
       6
     ], {
       tag: /* Module */0,
-      _0: [/* tuple */[
+      _0: [[
           /* Function */0,
           "u"
         ]]
@@ -40,31 +40,31 @@ var Int3 = Caml_module.init_mod(/* tuple */[
 
 Caml_module.update_mod({
       tag: /* Module */0,
-      _0: [/* tuple */[
+      _0: [[
           /* Function */0,
           "u"
         ]]
     }, Int3, Int3);
 
-var Inta = Caml_module.init_mod(/* tuple */[
+var Inta = Caml_module.init_mod([
       "recursive_module.ml",
       31,
       6
     ], {
       tag: /* Module */0,
-      _0: [/* tuple */[
+      _0: [[
           /* Lazy */1,
           "a"
         ]]
     });
 
-var Intb = Caml_module.init_mod(/* tuple */[
+var Intb = Caml_module.init_mod([
       "recursive_module.ml",
       36,
       6
     ], {
       tag: /* Module */0,
-      _0: [/* tuple */[
+      _0: [[
           /* Lazy */1,
           "a"
         ]]
@@ -79,7 +79,7 @@ var a = {
 
 Caml_module.update_mod({
       tag: /* Module */0,
-      _0: [/* tuple */[
+      _0: [[
           /* Lazy */1,
           "a"
         ]]
@@ -96,7 +96,7 @@ var a$1 = {
 
 Caml_module.update_mod({
       tag: /* Module */0,
-      _0: [/* tuple */[
+      _0: [[
           /* Lazy */1,
           "a"
         ]]
@@ -120,25 +120,25 @@ catch (raw_exn){
 
 eq("File \"recursive_module.ml\", line 41, characters 3-10", -1, tmp);
 
-var Inta$1 = Caml_module.init_mod(/* tuple */[
+var Inta$1 = Caml_module.init_mod([
       "recursive_module.ml",
       48,
       8
     ], {
       tag: /* Module */0,
-      _0: [/* tuple */[
+      _0: [[
           /* Lazy */1,
           "a"
         ]]
     });
 
-var Intb$1 = Caml_module.init_mod(/* tuple */[
+var Intb$1 = Caml_module.init_mod([
       "recursive_module.ml",
       53,
       8
     ], {
       tag: /* Module */0,
-      _0: [/* tuple */[
+      _0: [[
           /* Lazy */1,
           "a"
         ]]
@@ -153,7 +153,7 @@ var a$2 = {
 
 Caml_module.update_mod({
       tag: /* Module */0,
-      _0: [/* tuple */[
+      _0: [[
           /* Lazy */1,
           "a"
         ]]
@@ -168,7 +168,7 @@ var a$3 = {
 
 Caml_module.update_mod({
       tag: /* Module */0,
-      _0: [/* tuple */[
+      _0: [[
           /* Lazy */1,
           "a"
         ]]

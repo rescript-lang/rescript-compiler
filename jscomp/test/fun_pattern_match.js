@@ -18,7 +18,7 @@ function f3(param) {
     if (typeof lhs === "number") {
       throw {
             RE_EXN_ID: "Assert_failure",
-            _1: /* tuple */[
+            _1: [
               "fun_pattern_match.ml",
               44,
               9
@@ -29,7 +29,7 @@ function f3(param) {
     if (typeof rhs === "number") {
       throw {
             RE_EXN_ID: "Assert_failure",
-            _1: /* tuple */[
+            _1: [
               "fun_pattern_match.ml",
               44,
               9
@@ -48,7 +48,7 @@ function f4(param) {
     if (typeof lhs === "number") {
       throw {
             RE_EXN_ID: "Assert_failure",
-            _1: /* tuple */[
+            _1: [
               "fun_pattern_match.ml",
               52,
               9
@@ -59,7 +59,7 @@ function f4(param) {
     if (typeof rhs === "number") {
       throw {
             RE_EXN_ID: "Assert_failure",
-            _1: /* tuple */[
+            _1: [
               "fun_pattern_match.ml",
               52,
               9
@@ -95,7 +95,7 @@ function handle_tuple(x, y) {
   } else if (y === 1) {
     return 2;
   }
-  console.log(/* tuple */[
+  console.log([
         x,
         y
       ]);

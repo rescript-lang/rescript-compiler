@@ -30,7 +30,7 @@ var test_id = {
 function eq(loc, x, y) {
   test_id.contents = test_id.contents + 1 | 0;
   suites.contents = /* :: */{
-    _0: /* tuple */[
+    _0: [
       loc + (" id " + String(test_id.contents)),
       (function (param) {
           return {
@@ -244,10 +244,10 @@ var l$1 = Curry._2(intlist2[0], undefined, /* :: */{
       }
     });
 
-eq("File \"class5_test.ml\", line 67, characters 5-12", /* tuple */[
+eq("File \"class5_test.ml\", line 67, characters 5-12", [
       6,
       "1 2 3 "
-    ], /* tuple */[
+    ], [
       Caml_oo_curry.js3(-1010803711, 5, l$1, (function (x, y) {
               return x + y | 0;
             }), 0),
@@ -315,10 +315,10 @@ var a = Caml_oo_curry.js2(-335965387, 8, p$1, Curry._2(point[0], undefined, 8));
 
 var b = Caml_oo_curry.js2(-335965387, 9, p$1, Curry._3(printable_colored_point[0], undefined, 1, "blue"));
 
-eq("File \"class5_test.ml\", line 94, characters 5-12", /* tuple */[
+eq("File \"class5_test.ml\", line 94, characters 5-12", [
       5,
       2
-    ], /* tuple */[
+    ], [
       a,
       b
     ]);

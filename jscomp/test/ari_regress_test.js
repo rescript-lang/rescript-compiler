@@ -27,7 +27,7 @@ function v(param) {
   return partial_arg(6, param);
 }
 
-var suites_0 = /* tuple */[
+var suites_0 = [
   "curry",
   (function (param) {
       return {
@@ -39,7 +39,7 @@ var suites_0 = /* tuple */[
 ];
 
 var suites_1 = /* :: */{
-  _0: /* tuple */[
+  _0: [
     "curry2",
     (function (param) {
         return {
@@ -50,7 +50,7 @@ var suites_1 = /* :: */{
       })
   ],
   _1: /* :: */{
-    _0: /* tuple */[
+    _0: [
       "curry3",
       (function (param) {
           return {
@@ -61,7 +61,7 @@ var suites_1 = /* :: */{
         })
     ],
     _1: /* :: */{
-      _0: /* tuple */[
+      _0: [
         "File \"ari_regress_test.ml\", line 20, characters 4-11",
         (function (param) {
             return {

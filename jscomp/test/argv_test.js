@@ -16,7 +16,7 @@ var test = {
   contents: true
 };
 
-var arg_spec_0 = /* tuple */[
+var arg_spec_0 = [
   "-c",
   {
     tag: /* Set */2,
@@ -26,7 +26,7 @@ var arg_spec_0 = /* tuple */[
 ];
 
 var arg_spec_1 = /* :: */{
-  _0: /* tuple */[
+  _0: [
     "-d",
     {
       tag: /* Clear */3,

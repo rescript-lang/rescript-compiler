@@ -19,7 +19,7 @@ function test2(param) {
   return v;
 }
 
-var suites_0 = /* tuple */[
+var suites_0 = [
   "for_order",
   (function (param) {
       return {

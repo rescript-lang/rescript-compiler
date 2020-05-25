@@ -4,7 +4,7 @@ var Mt = require("./mt.js");
 var Js_vector = require("../../lib/js/js_vector.js");
 var Caml_option = require("../../lib/js/caml_option.js");
 
-var suites_0 = /* tuple */[
+var suites_0 = [
   "File \"js_array_test.ml\", line 3, characters 4-11",
   (function (param) {
       var x = [
@@ -28,7 +28,7 @@ var suites_0 = /* tuple */[
 ];
 
 var suites_1 = /* :: */{
-  _0: /* tuple */[
+  _0: [
     "File \"js_array_test.ml\", line 11, characters 4-11",
     (function (param) {
         var x = [
@@ -48,7 +48,7 @@ var suites_1 = /* :: */{
       })
   ],
   _1: /* :: */{
-    _0: /* tuple */[
+    _0: [
       "isArray_array",
       (function (param) {
           return {
@@ -59,7 +59,7 @@ var suites_1 = /* :: */{
         })
     ],
     _1: /* :: */{
-      _0: /* tuple */[
+      _0: [
         "isArray_int",
         (function (param) {
             return {
@@ -70,7 +70,7 @@ var suites_1 = /* :: */{
           })
       ],
       _1: /* :: */{
-        _0: /* tuple */[
+        _0: [
           "length",
           (function (param) {
               return {
@@ -85,7 +85,7 @@ var suites_1 = /* :: */{
             })
         ],
         _1: /* :: */{
-          _0: /* tuple */[
+          _0: [
             "copyWithin",
             (function (param) {
                 return {
@@ -108,7 +108,7 @@ var suites_1 = /* :: */{
               })
           ],
           _1: /* :: */{
-            _0: /* tuple */[
+            _0: [
               "copyWithinFrom",
               (function (param) {
                   return {
@@ -131,7 +131,7 @@ var suites_1 = /* :: */{
                 })
             ],
             _1: /* :: */{
-              _0: /* tuple */[
+              _0: [
                 "copyWithinFromRange",
                 (function (param) {
                     return {
@@ -154,7 +154,7 @@ var suites_1 = /* :: */{
                   })
               ],
               _1: /* :: */{
-                _0: /* tuple */[
+                _0: [
                   "fillInPlace",
                   (function (param) {
                       return {
@@ -173,7 +173,7 @@ var suites_1 = /* :: */{
                     })
                 ],
                 _1: /* :: */{
-                  _0: /* tuple */[
+                  _0: [
                     "fillFromInPlace",
                     (function (param) {
                         return {
@@ -192,7 +192,7 @@ var suites_1 = /* :: */{
                       })
                   ],
                   _1: /* :: */{
-                    _0: /* tuple */[
+                    _0: [
                       "fillRangeInPlace",
                       (function (param) {
                           return {
@@ -211,7 +211,7 @@ var suites_1 = /* :: */{
                         })
                     ],
                     _1: /* :: */{
-                      _0: /* tuple */[
+                      _0: [
                         "pop",
                         (function (param) {
                             return {
@@ -226,7 +226,7 @@ var suites_1 = /* :: */{
                           })
                       ],
                       _1: /* :: */{
-                        _0: /* tuple */[
+                        _0: [
                           "pop - empty array",
                           (function (param) {
                               return {
@@ -237,7 +237,7 @@ var suites_1 = /* :: */{
                             })
                         ],
                         _1: /* :: */{
-                          _0: /* tuple */[
+                          _0: [
                             "push",
                             (function (param) {
                                 return {
@@ -252,7 +252,7 @@ var suites_1 = /* :: */{
                               })
                           ],
                           _1: /* :: */{
-                            _0: /* tuple */[
+                            _0: [
                               "pushMany",
                               (function (param) {
                                   return {
@@ -267,7 +267,7 @@ var suites_1 = /* :: */{
                                 })
                             ],
                             _1: /* :: */{
-                              _0: /* tuple */[
+                              _0: [
                                 "reverseInPlace",
                                 (function (param) {
                                     return {
@@ -286,7 +286,7 @@ var suites_1 = /* :: */{
                                   })
                               ],
                               _1: /* :: */{
-                                _0: /* tuple */[
+                                _0: [
                                   "shift",
                                   (function (param) {
                                       return {
@@ -301,7 +301,7 @@ var suites_1 = /* :: */{
                                     })
                                 ],
                                 _1: /* :: */{
-                                  _0: /* tuple */[
+                                  _0: [
                                     "shift - empty array",
                                     (function (param) {
                                         return {
@@ -312,7 +312,7 @@ var suites_1 = /* :: */{
                                       })
                                   ],
                                   _1: /* :: */{
-                                    _0: /* tuple */[
+                                    _0: [
                                       "sortInPlace",
                                       (function (param) {
                                           return {
@@ -331,7 +331,7 @@ var suites_1 = /* :: */{
                                         })
                                     ],
                                     _1: /* :: */{
-                                      _0: /* tuple */[
+                                      _0: [
                                         "sortInPlaceWith",
                                         (function (param) {
                                             return {
@@ -352,7 +352,7 @@ var suites_1 = /* :: */{
                                           })
                                       ],
                                       _1: /* :: */{
-                                        _0: /* tuple */[
+                                        _0: [
                                           "spliceInPlace",
                                           (function (param) {
                                               var arr = [
@@ -364,7 +364,7 @@ var suites_1 = /* :: */{
                                               var removed = arr.splice(2, 0, 5);
                                               return {
                                                       tag: /* Eq */0,
-                                                      _0: /* tuple */[
+                                                      _0: [
                                                         [
                                                           1,
                                                           2,
@@ -374,7 +374,7 @@ var suites_1 = /* :: */{
                                                         ],
                                                         []
                                                       ],
-                                                      _1: /* tuple */[
+                                                      _1: [
                                                         arr,
                                                         removed
                                                       ]
@@ -382,7 +382,7 @@ var suites_1 = /* :: */{
                                             })
                                         ],
                                         _1: /* :: */{
-                                          _0: /* tuple */[
+                                          _0: [
                                             "removeFromInPlace",
                                             (function (param) {
                                                 var arr = [
@@ -394,7 +394,7 @@ var suites_1 = /* :: */{
                                                 var removed = arr.splice(2);
                                                 return {
                                                         tag: /* Eq */0,
-                                                        _0: /* tuple */[
+                                                        _0: [
                                                           [
                                                             1,
                                                             2
@@ -404,7 +404,7 @@ var suites_1 = /* :: */{
                                                             4
                                                           ]
                                                         ],
-                                                        _1: /* tuple */[
+                                                        _1: [
                                                           arr,
                                                           removed
                                                         ]
@@ -412,7 +412,7 @@ var suites_1 = /* :: */{
                                               })
                                           ],
                                           _1: /* :: */{
-                                            _0: /* tuple */[
+                                            _0: [
                                               "removeCountInPlace",
                                               (function (param) {
                                                   var arr = [
@@ -424,7 +424,7 @@ var suites_1 = /* :: */{
                                                   var removed = arr.splice(2, 1);
                                                   return {
                                                           tag: /* Eq */0,
-                                                          _0: /* tuple */[
+                                                          _0: [
                                                             [
                                                               1,
                                                               2,
@@ -432,7 +432,7 @@ var suites_1 = /* :: */{
                                                             ],
                                                             [3]
                                                           ],
-                                                          _1: /* tuple */[
+                                                          _1: [
                                                             arr,
                                                             removed
                                                           ]
@@ -440,7 +440,7 @@ var suites_1 = /* :: */{
                                                 })
                                             ],
                                             _1: /* :: */{
-                                              _0: /* tuple */[
+                                              _0: [
                                                 "unshift",
                                                 (function (param) {
                                                     return {
@@ -455,7 +455,7 @@ var suites_1 = /* :: */{
                                                   })
                                               ],
                                               _1: /* :: */{
-                                                _0: /* tuple */[
+                                                _0: [
                                                   "unshiftMany",
                                                   (function (param) {
                                                       return {
@@ -470,7 +470,7 @@ var suites_1 = /* :: */{
                                                     })
                                                 ],
                                                 _1: /* :: */{
-                                                  _0: /* tuple */[
+                                                  _0: [
                                                     "append",
                                                     (function (param) {
                                                         return {
@@ -490,7 +490,7 @@ var suites_1 = /* :: */{
                                                       })
                                                   ],
                                                   _1: /* :: */{
-                                                    _0: /* tuple */[
+                                                    _0: [
                                                       "concat",
                                                       (function (param) {
                                                           return {
@@ -514,7 +514,7 @@ var suites_1 = /* :: */{
                                                         })
                                                     ],
                                                     _1: /* :: */{
-                                                      _0: /* tuple */[
+                                                      _0: [
                                                         "concatMany",
                                                         (function (param) {
                                                             return {
@@ -543,7 +543,7 @@ var suites_1 = /* :: */{
                                                           })
                                                       ],
                                                       _1: /* :: */{
-                                                        _0: /* tuple */[
+                                                        _0: [
                                                           "includes",
                                                           (function (param) {
                                                               return {
@@ -558,7 +558,7 @@ var suites_1 = /* :: */{
                                                             })
                                                         ],
                                                         _1: /* :: */{
-                                                          _0: /* tuple */[
+                                                          _0: [
                                                             "indexOf",
                                                             (function (param) {
                                                                 return {
@@ -573,7 +573,7 @@ var suites_1 = /* :: */{
                                                               })
                                                           ],
                                                           _1: /* :: */{
-                                                            _0: /* tuple */[
+                                                            _0: [
                                                               "indexOfFrom",
                                                               (function (param) {
                                                                   return {
@@ -589,7 +589,7 @@ var suites_1 = /* :: */{
                                                                 })
                                                             ],
                                                             _1: /* :: */{
-                                                              _0: /* tuple */[
+                                                              _0: [
                                                                 "join",
                                                                 (function (param) {
                                                                     return {
@@ -604,7 +604,7 @@ var suites_1 = /* :: */{
                                                                   })
                                                               ],
                                                               _1: /* :: */{
-                                                                _0: /* tuple */[
+                                                                _0: [
                                                                   "joinWith",
                                                                   (function (param) {
                                                                       return {
@@ -619,7 +619,7 @@ var suites_1 = /* :: */{
                                                                     })
                                                                 ],
                                                                 _1: /* :: */{
-                                                                  _0: /* tuple */[
+                                                                  _0: [
                                                                     "lastIndexOf",
                                                                     (function (param) {
                                                                         return {
@@ -634,7 +634,7 @@ var suites_1 = /* :: */{
                                                                       })
                                                                   ],
                                                                   _1: /* :: */{
-                                                                    _0: /* tuple */[
+                                                                    _0: [
                                                                       "lastIndexOfFrom",
                                                                       (function (param) {
                                                                           return {
@@ -650,7 +650,7 @@ var suites_1 = /* :: */{
                                                                         })
                                                                     ],
                                                                     _1: /* :: */{
-                                                                      _0: /* tuple */[
+                                                                      _0: [
                                                                         "slice",
                                                                         (function (param) {
                                                                             return {
@@ -670,7 +670,7 @@ var suites_1 = /* :: */{
                                                                           })
                                                                       ],
                                                                       _1: /* :: */{
-                                                                        _0: /* tuple */[
+                                                                        _0: [
                                                                           "copy",
                                                                           (function (param) {
                                                                               return {
@@ -693,7 +693,7 @@ var suites_1 = /* :: */{
                                                                             })
                                                                         ],
                                                                         _1: /* :: */{
-                                                                          _0: /* tuple */[
+                                                                          _0: [
                                                                             "sliceFrom",
                                                                             (function (param) {
                                                                                 return {
@@ -714,7 +714,7 @@ var suites_1 = /* :: */{
                                                                               })
                                                                           ],
                                                                           _1: /* :: */{
-                                                                            _0: /* tuple */[
+                                                                            _0: [
                                                                               "toString",
                                                                               (function (param) {
                                                                                   return {
@@ -729,7 +729,7 @@ var suites_1 = /* :: */{
                                                                                 })
                                                                             ],
                                                                             _1: /* :: */{
-                                                                              _0: /* tuple */[
+                                                                              _0: [
                                                                                 "toLocaleString",
                                                                                 (function (param) {
                                                                                     return {
@@ -744,7 +744,7 @@ var suites_1 = /* :: */{
                                                                                   })
                                                                               ],
                                                                               _1: /* :: */{
-                                                                                _0: /* tuple */[
+                                                                                _0: [
                                                                                   "every",
                                                                                   (function (param) {
                                                                                       return {
@@ -761,7 +761,7 @@ var suites_1 = /* :: */{
                                                                                     })
                                                                                 ],
                                                                                 _1: /* :: */{
-                                                                                  _0: /* tuple */[
+                                                                                  _0: [
                                                                                     "everyi",
                                                                                     (function (param) {
                                                                                         return {
@@ -778,7 +778,7 @@ var suites_1 = /* :: */{
                                                                                       })
                                                                                   ],
                                                                                   _1: /* :: */{
-                                                                                    _0: /* tuple */[
+                                                                                    _0: [
                                                                                       "filter",
                                                                                       (function (param) {
                                                                                           return {
@@ -799,7 +799,7 @@ var suites_1 = /* :: */{
                                                                                         })
                                                                                     ],
                                                                                     _1: /* :: */{
-                                                                                      _0: /* tuple */[
+                                                                                      _0: [
                                                                                         "filteri",
                                                                                         (function (param) {
                                                                                             return {
@@ -820,7 +820,7 @@ var suites_1 = /* :: */{
                                                                                           })
                                                                                       ],
                                                                                       _1: /* :: */{
-                                                                                        _0: /* tuple */[
+                                                                                        _0: [
                                                                                           "find",
                                                                                           (function (param) {
                                                                                               return {
@@ -838,7 +838,7 @@ var suites_1 = /* :: */{
                                                                                             })
                                                                                         ],
                                                                                         _1: /* :: */{
-                                                                                          _0: /* tuple */[
+                                                                                          _0: [
                                                                                             "find - no match",
                                                                                             (function (param) {
                                                                                                 return {
@@ -856,7 +856,7 @@ var suites_1 = /* :: */{
                                                                                               })
                                                                                           ],
                                                                                           _1: /* :: */{
-                                                                                            _0: /* tuple */[
+                                                                                            _0: [
                                                                                               "findi",
                                                                                               (function (param) {
                                                                                                   return {
@@ -874,7 +874,7 @@ var suites_1 = /* :: */{
                                                                                                 })
                                                                                             ],
                                                                                             _1: /* :: */{
-                                                                                              _0: /* tuple */[
+                                                                                              _0: [
                                                                                                 "findi - no match",
                                                                                                 (function (param) {
                                                                                                     return {
@@ -892,7 +892,7 @@ var suites_1 = /* :: */{
                                                                                                   })
                                                                                               ],
                                                                                               _1: /* :: */{
-                                                                                                _0: /* tuple */[
+                                                                                                _0: [
                                                                                                   "findIndex",
                                                                                                   (function (param) {
                                                                                                       return {
@@ -910,7 +910,7 @@ var suites_1 = /* :: */{
                                                                                                     })
                                                                                                 ],
                                                                                                 _1: /* :: */{
-                                                                                                  _0: /* tuple */[
+                                                                                                  _0: [
                                                                                                     "findIndexi",
                                                                                                     (function (param) {
                                                                                                         return {
@@ -928,7 +928,7 @@ var suites_1 = /* :: */{
                                                                                                       })
                                                                                                   ],
                                                                                                   _1: /* :: */{
-                                                                                                    _0: /* tuple */[
+                                                                                                    _0: [
                                                                                                       "forEach",
                                                                                                       (function (param) {
                                                                                                           var sum = {
@@ -950,7 +950,7 @@ var suites_1 = /* :: */{
                                                                                                         })
                                                                                                     ],
                                                                                                     _1: /* :: */{
-                                                                                                      _0: /* tuple */[
+                                                                                                      _0: [
                                                                                                         "forEachi",
                                                                                                         (function (param) {
                                                                                                             var sum = {
@@ -972,7 +972,7 @@ var suites_1 = /* :: */{
                                                                                                           })
                                                                                                       ],
                                                                                                       _1: /* :: */{
-                                                                                                        _0: /* tuple */[
+                                                                                                        _0: [
                                                                                                           "map",
                                                                                                           (function (param) {
                                                                                                               return {
@@ -995,7 +995,7 @@ var suites_1 = /* :: */{
                                                                                                             })
                                                                                                         ],
                                                                                                         _1: /* :: */{
-                                                                                                          _0: /* tuple */[
+                                                                                                          _0: [
                                                                                                             "map",
                                                                                                             (function (param) {
                                                                                                                 return {
@@ -1018,7 +1018,7 @@ var suites_1 = /* :: */{
                                                                                                               })
                                                                                                           ],
                                                                                                           _1: /* :: */{
-                                                                                                            _0: /* tuple */[
+                                                                                                            _0: [
                                                                                                               "reduce",
                                                                                                               (function (param) {
                                                                                                                   return {
@@ -1036,7 +1036,7 @@ var suites_1 = /* :: */{
                                                                                                                 })
                                                                                                             ],
                                                                                                             _1: /* :: */{
-                                                                                                              _0: /* tuple */[
+                                                                                                              _0: [
                                                                                                                 "reducei",
                                                                                                                 (function (param) {
                                                                                                                     return {
@@ -1054,7 +1054,7 @@ var suites_1 = /* :: */{
                                                                                                                   })
                                                                                                               ],
                                                                                                               _1: /* :: */{
-                                                                                                                _0: /* tuple */[
+                                                                                                                _0: [
                                                                                                                   "reduceRight",
                                                                                                                   (function (param) {
                                                                                                                       return {
@@ -1072,7 +1072,7 @@ var suites_1 = /* :: */{
                                                                                                                     })
                                                                                                                 ],
                                                                                                                 _1: /* :: */{
-                                                                                                                  _0: /* tuple */[
+                                                                                                                  _0: [
                                                                                                                     "reduceRighti",
                                                                                                                     (function (param) {
                                                                                                                         return {
@@ -1090,7 +1090,7 @@ var suites_1 = /* :: */{
                                                                                                                       })
                                                                                                                   ],
                                                                                                                   _1: /* :: */{
-                                                                                                                    _0: /* tuple */[
+                                                                                                                    _0: [
                                                                                                                       "some",
                                                                                                                       (function (param) {
                                                                                                                           return {
@@ -1108,7 +1108,7 @@ var suites_1 = /* :: */{
                                                                                                                         })
                                                                                                                     ],
                                                                                                                     _1: /* :: */{
-                                                                                                                      _0: /* tuple */[
+                                                                                                                      _0: [
                                                                                                                         "somei",
                                                                                                                         (function (param) {
                                                                                                                             return {

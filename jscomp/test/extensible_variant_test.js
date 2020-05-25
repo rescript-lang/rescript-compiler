@@ -25,7 +25,7 @@ function to_int(x) {
   }
   throw {
         RE_EXN_ID: "Assert_failure",
-        _1: /* tuple */[
+        _1: [
           "extensible_variant_test.ml",
           16,
           9
@@ -34,7 +34,7 @@ function to_int(x) {
       };
 }
 
-var suites_0 = /* tuple */[
+var suites_0 = [
   "test_int",
   (function (param) {
       return {
@@ -50,7 +50,7 @@ var suites_0 = /* tuple */[
 ];
 
 var suites_1 = /* :: */{
-  _0: /* tuple */[
+  _0: [
     "test_int2",
     (function (param) {
         return {
@@ -65,7 +65,7 @@ var suites_1 = /* :: */{
       })
   ],
   _1: /* :: */{
-    _0: /* tuple */[
+    _0: [
       "test_string",
       (function (param) {
           return {

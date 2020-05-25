@@ -3,7 +3,7 @@
 var Mt = require("./mt.js");
 var Ext_list_test = require("./ext_list_test.js");
 
-var suites_0 = /* tuple */[
+var suites_0 = [
   "drop",
   (function (param) {
       return {
@@ -24,7 +24,7 @@ var suites_0 = /* tuple */[
 ];
 
 var suites_1 = /* :: */{
-  _0: /* tuple */[
+  _0: [
     "drop1",
     (function (param) {
         return {
@@ -47,7 +47,7 @@ var suites_1 = /* :: */{
       })
   ],
   _1: /* :: */{
-    _0: /* tuple */[
+    _0: [
       "flat_map",
       (function (param) {
           return {

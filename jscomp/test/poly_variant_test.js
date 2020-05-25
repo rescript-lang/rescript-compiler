@@ -14,7 +14,7 @@ var test_id = {
 function eq(loc, x, y) {
   test_id.contents = test_id.contents + 1 | 0;
   suites.contents = /* :: */{
-    _0: /* tuple */[
+    _0: [
       loc + (" id " + String(test_id.contents)),
       (function (param) {
           return {
@@ -67,10 +67,10 @@ eq("File \"poly_variant_test.ml\", line 58, characters 5-12", vv, [
       4
     ]);
 
-eq("File \"poly_variant_test.ml\", line 59, characters 5-12", /* tuple */[
+eq("File \"poly_variant_test.ml\", line 59, characters 5-12", [
       hey_int(5),
       hey_int(6)
-    ], /* tuple */[
+    ], [
       5,
       6
     ]);

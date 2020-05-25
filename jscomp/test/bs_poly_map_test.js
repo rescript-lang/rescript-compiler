@@ -75,7 +75,7 @@ function mergeDiff(s1, s2) {
 
 function randomRange(i, j) {
   return Belt_Array.map(Array_data_util.randomRange(i, j), (function (x) {
-                return /* tuple */[
+                return [
                         x,
                         x
                       ];
@@ -188,7 +188,7 @@ var m = {
 var m1 = acc(m, Belt_Array.concat(Array_data_util.randomRange(0, 20), Array_data_util.randomRange(10, 30)));
 
 b("File \"bs_poly_map_test.ml\", line 103, characters 4-11", Belt_Map.eq(m1, Belt_Map.fromArray(Belt_Array.makeBy(31, (function (i) {
-                    return /* tuple */[
+                    return [
                             i,
                             i >= 10 && i <= 20 ? 2 : 1
                           ];
@@ -204,14 +204,14 @@ var v0 = {
 };
 
 var v1 = Belt_Map.mergeMany(v0, Belt_Array.map(Array_data_util.randomRange(0, 10000), (function (x) {
-            return /* tuple */[
+            return [
                     x,
                     x
                   ];
           })));
 
 var v2 = Belt_Map.fromArray(Belt_Array.map(Array_data_util.randomRange(0, 10000), (function (x) {
-            return /* tuple */[
+            return [
                     x,
                     x
                   ];

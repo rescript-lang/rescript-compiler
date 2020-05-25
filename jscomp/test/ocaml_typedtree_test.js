@@ -232,13 +232,13 @@ function split_last(param) {
     var tl = param._1;
     var x = param._0;
     if (!tl) {
-      return /* tuple */[
+      return [
               /* [] */0,
               x
             ];
     }
     var match = split_last(tl);
-    return /* tuple */[
+    return [
             /* :: */{
               _0: x,
               _1: match[0]
@@ -248,7 +248,7 @@ function split_last(param) {
   }
   throw {
         RE_EXN_ID: "Assert_failure",
-        _1: /* tuple */[
+        _1: [
           "misc.ml",
           54,
           10
@@ -892,7 +892,7 @@ function letter(param) {
     default:
       throw {
             RE_EXN_ID: "Assert_failure",
-            _1: /* tuple */[
+            _1: [
               "warnings.ml",
               176,
               9
@@ -929,14 +929,14 @@ function parse_opt(error, active, flags, s) {
       var i = _i;
       var n = _n;
       if (i >= s.length) {
-        return /* tuple */[
+        return [
                 i,
                 n
               ];
       }
       var match = Caml_string.get(s, i);
       if (match > 57 || match < 48) {
-        return /* tuple */[
+        return [
                 i,
                 n
               ];
@@ -951,7 +951,7 @@ function parse_opt(error, active, flags, s) {
     var n1 = match[1];
     var i$1 = match[0];
     if (!((i$1 + 2 | 0) < s.length && Caml_string.get(s, i$1) === /* "." */46 && Caml_string.get(s, i$1 + 1 | 0) === /* "." */46)) {
-      return /* tuple */[
+      return [
               i$1,
               n1,
               n1
@@ -966,7 +966,7 @@ function parse_opt(error, active, flags, s) {
             Error: new Error()
           };
     }
-    return /* tuple */[
+    return [
             match$1[0],
             n1,
             n2
@@ -1170,7 +1170,7 @@ function message(s) {
           }
           throw {
                 RE_EXN_ID: "Assert_failure",
-                _1: /* tuple */[
+                _1: [
                   "warnings.ml",
                   283,
                   26
@@ -1208,7 +1208,7 @@ function message(s) {
           }
           throw {
                 RE_EXN_ID: "Assert_failure",
-                _1: /* tuple */[
+                _1: [
                   "warnings.ml",
                   303,
                   37
@@ -1339,7 +1339,7 @@ function message(s) {
           }
           throw {
                 RE_EXN_ID: "Assert_failure",
-                _1: /* tuple */[
+                _1: [
                   "warnings.ml",
                   365,
                   39
@@ -1357,7 +1357,7 @@ function message(s) {
           }
           throw {
                 RE_EXN_ID: "Assert_failure",
-                _1: /* tuple */[
+                _1: [
                   "warnings.ml",
                   374,
                   36
@@ -1883,7 +1883,7 @@ function print_filename(ppf, file) {
 }
 
 function get_pos_info(pos) {
-  return /* tuple */[
+  return [
           pos.pos_fname,
           pos.pos_lnum,
           pos.pos_cnum - pos.pos_bol | 0
@@ -2439,7 +2439,7 @@ function balance(l, d, r) {
       }
       throw {
             RE_EXN_ID: "Assert_failure",
-            _1: /* tuple */[
+            _1: [
               "ident.ml",
               120,
               11
@@ -2449,7 +2449,7 @@ function balance(l, d, r) {
     }
     throw {
           RE_EXN_ID: "Assert_failure",
-          _1: /* tuple */[
+          _1: [
             "ident.ml",
             120,
             11
@@ -2475,7 +2475,7 @@ function balance(l, d, r) {
     }
     throw {
           RE_EXN_ID: "Assert_failure",
-          _1: /* tuple */[
+          _1: [
             "ident.ml",
             129,
             11
@@ -2485,7 +2485,7 @@ function balance(l, d, r) {
   }
   throw {
         RE_EXN_ID: "Assert_failure",
-        _1: /* tuple */[
+        _1: [
           "ident.ml",
           129,
           11
@@ -2745,7 +2745,7 @@ function head(_id) {
       case /* Papply */2 :
           throw {
                 RE_EXN_ID: "Assert_failure",
-                _1: /* tuple */[
+                _1: [
                   "path.ml",
                   49,
                   22
@@ -3173,14 +3173,14 @@ function conjugate(v) {
 }
 
 function get_upper(v) {
-  return /* tuple */[
+  return [
           mem$1(/* May_pos */0)(v),
           mem$1(/* May_neg */1)(v)
         ];
 }
 
 function get_lower(v) {
-  return /* tuple */[
+  return [
           mem$1(/* Pos */4)(v),
           mem$1(/* Neg */5)(v),
           mem$1(/* Inv */6)(v),
@@ -3387,7 +3387,7 @@ function concat(t1, t2) {
 
 function split(x, param) {
   if (!param) {
-    return /* tuple */[
+    return [
             /* Empty */0,
             false,
             /* Empty */0
@@ -3398,7 +3398,7 @@ function split(x, param) {
   var l = param.l;
   var c = Caml_primitive.caml_string_compare(x, v);
   if (c === 0) {
-    return /* tuple */[
+    return [
             l,
             true,
             r
@@ -3406,14 +3406,14 @@ function split(x, param) {
   }
   if (c < 0) {
     var match = split(x, l);
-    return /* tuple */[
+    return [
             match[0],
             match[1],
             join(match[2], v, r)
           ];
   }
   var match$1 = split(x, r);
-  return /* tuple */[
+  return [
           join(l, v, match$1[0]),
           match$1[1],
           match$1[2]
@@ -3833,7 +3833,7 @@ function concat$1(t1, t2) {
 
 function split$1(x, param) {
   if (!param) {
-    return /* tuple */[
+    return [
             /* Empty */0,
             false,
             /* Empty */0
@@ -3844,7 +3844,7 @@ function split$1(x, param) {
   var l = param.l;
   var c = Curry._2(funarg.compare, x, v);
   if (c === 0) {
-    return /* tuple */[
+    return [
             l,
             true,
             r
@@ -3852,14 +3852,14 @@ function split$1(x, param) {
   }
   if (c < 0) {
     var match = split$1(x, l);
-    return /* tuple */[
+    return [
             match[0],
             match[1],
             join$1(match[2], v, r)
           ];
   }
   var match$1 = split$1(x, r);
-  return /* tuple */[
+  return [
           join$1(l, v, match$1[0]),
           match$1[1],
           match$1[2]
@@ -4206,7 +4206,7 @@ var TypeHash = Hashtbl.Make({
 function print_raw(param) {
   throw {
         RE_EXN_ID: "Assert_failure",
-        _1: /* tuple */[
+        _1: [
           "btype.ml",
           27,
           16
@@ -4436,7 +4436,7 @@ function row_fixed(row) {
     default:
       throw {
             RE_EXN_ID: "Assert_failure",
-            _1: /* tuple */[
+            _1: [
               "btype.ml",
               137,
               9
@@ -4504,7 +4504,7 @@ function proxy(ty) {
             default:
               throw {
                     RE_EXN_ID: "Assert_failure",
-                    _1: /* tuple */[
+                    _1: [
                       "btype.ml",
                       167,
                       15
@@ -4622,7 +4622,7 @@ function iter_row(f, _row) {
         default:
           throw {
                 RE_EXN_ID: "Assert_failure",
-                _1: /* tuple */[
+                _1: [
                   "btype.ml",
                   214,
                   9
@@ -4870,13 +4870,13 @@ function copy_row(f, fixed, row, keep, more) {
                   _0: Curry._1(f, ty)
                 }) : fi;
           }
-          return /* tuple */[
+          return [
                   param[0],
                   tmp
                 ];
         }), row.row_fields);
   var match = row.row_name;
-  var name = match !== undefined ? /* tuple */[
+  var name = match !== undefined ? [
       match[0],
       List.map(f, match[1])
     ] : undefined;
@@ -4899,7 +4899,7 @@ function copy_kind(_param) {
       }
       throw {
             RE_EXN_ID: "Assert_failure",
-            _1: /* tuple */[
+            _1: [
               "btype.ml",
               363,
               16
@@ -4980,7 +4980,7 @@ function copy_type_desc(_keep_namesOpt, f, _ty) {
                     tag: /* Tobject */4,
                     _0: Curry._1(f, ty$1),
                     _1: {
-                      contents: /* tuple */[
+                      contents: [
                         match[0],
                         List.map(f, match[1])
                       ]
@@ -5010,7 +5010,7 @@ function copy_type_desc(_keep_namesOpt, f, _ty) {
       case /* Tsubst */7 :
           throw {
                 RE_EXN_ID: "Assert_failure",
-                _1: /* tuple */[
+                _1: [
                   "btype.ml",
                   390,
                   27
@@ -5020,7 +5020,7 @@ function copy_type_desc(_keep_namesOpt, f, _ty) {
       case /* Tvariant */8 :
           throw {
                 RE_EXN_ID: "Assert_failure",
-                _1: /* tuple */[
+                _1: [
                   "btype.ml",
                   385,
                   27
@@ -5056,7 +5056,7 @@ function copy_type_desc(_keep_namesOpt, f, _ty) {
                     }
                     throw {
                           RE_EXN_ID: "Assert_failure",
-                          _1: /* tuple */[
+                          _1: [
                             "btype.ml",
                             375,
                             26
@@ -5088,7 +5088,7 @@ var saved_desc = {
 
 function save_desc(ty, desc) {
   saved_desc.contents = /* :: */{
-    _0: /* tuple */[
+    _0: [
       ty,
       desc
     ],
@@ -5110,7 +5110,7 @@ function dup_kind(r) {
   if (match !== undefined) {
     throw {
           RE_EXN_ID: "Assert_failure",
-          _1: /* tuple */[
+          _1: [
             "btype.ml",
             408,
             40
@@ -5276,7 +5276,7 @@ function forget_abbrev_rec(mem, path) {
   if (typeof mem === "number") {
     throw {
           RE_EXN_ID: "Assert_failure",
-          _1: /* tuple */[
+          _1: [
             "btype.ml",
             520,
             6
@@ -5355,7 +5355,7 @@ function extract_label_aux(_hd, l, _param) {
       var p = param._0;
       var l$prime = p[0];
       if (label_name(l$prime) === l) {
-        return /* tuple */[
+        return [
                 l$prime,
                 p[1],
                 List.rev(hd),
@@ -5531,7 +5531,7 @@ function snapshot(param) {
   last_snapshot.contents = new_id.contents;
   var r = Caml_array.caml_array_get(trail, 0);
   if (r !== undefined) {
-    return /* tuple */[
+    return [
             r,
             old
           ];
@@ -5540,7 +5540,7 @@ function snapshot(param) {
     contents: /* Unchanged */0
   };
   Caml_array.caml_array_set(trail, 0, r$1);
-  return /* tuple */[
+  return [
           r$1,
           old
         ];
@@ -5554,7 +5554,7 @@ function rev_log(_accu, _param) {
       if (param !== 0) {
         throw {
               RE_EXN_ID: "Assert_failure",
-              _1: /* tuple */[
+              _1: [
                 "btype.ml",
                 656,
                 15
@@ -5683,13 +5683,13 @@ function read_cmi(filename) {
 
 function output_cmi(filename, oc, cmi) {
   Pervasives.output_string(oc, cmi_magic_number);
-  Caml_external_polyfill.resolve("caml_output_value")(oc, /* tuple */[
+  Caml_external_polyfill.resolve("caml_output_value")(oc, [
         cmi.cmi_name,
         cmi.cmi_sign
       ], /* [] */0);
   Caml_io.caml_ml_flush(oc);
   var crc = Digest.file(filename);
-  var crcs_0 = /* tuple */[
+  var crcs_0 = [
     cmi.cmi_name,
     crc
   ];
@@ -5798,7 +5798,7 @@ register_error_of_exn(function (err) {
 var Inconsistency = Caml_exceptions.create("Ocaml_typedtree_test.Consistbl.Inconsistency");
 
 function set$1(tbl, name, crc, source) {
-  return Hashtbl.add(tbl, name, /* tuple */[
+  return Hashtbl.add(tbl, name, [
               crc,
               source
             ]);
@@ -5810,7 +5810,7 @@ function extract(l, tbl) {
                 try {
                   var match = Hashtbl.find(tbl, name);
                   return /* :: */{
-                          _0: /* tuple */[
+                          _0: [
                             name,
                             Caml_option.some(match[0])
                           ],
@@ -5821,7 +5821,7 @@ function extract(l, tbl) {
                   var exn = Caml_js_exceptions.internalToOCamlException(raw_exn);
                   if (exn.RE_EXN_ID === "Not_found") {
                     return /* :: */{
-                            _0: /* tuple */[
+                            _0: [
                               name,
                               undefined
                             ],
@@ -5881,7 +5881,7 @@ var optional_shape_1 = {
   _0: /* [] */0
 };
 
-var optional_shape = /* tuple */[
+var optional_shape = [
   optional_shape_0,
   optional_shape_1
 ];
@@ -5962,7 +5962,7 @@ var builtin_idents = {
 function wrap(create, s) {
   var id = Curry._1(create, s);
   builtin_idents.contents = /* :: */{
-    _0: /* tuple */[
+    _0: [
       s,
       id
     ],
@@ -6547,7 +6547,7 @@ function build_initial_env(add_type, add_exception, empty_env) {
     type_attributes: /* [] */0
   };
   var unsafe_string = Curry._3(add_type, ident_bytes, decl_bytes_unsafe, common);
-  return /* tuple */[
+  return [
           safe_string,
           unsafe_string
         ];
@@ -6555,7 +6555,7 @@ function build_initial_env(add_type, add_exception, empty_env) {
 
 List.map((function (id) {
         make_global(id);
-        return /* tuple */[
+        return [
                 id.name,
                 id
               ];
@@ -6686,7 +6686,7 @@ function docs_attr(ds) {
     pstr_desc: item_pstr_desc,
     pstr_loc: item_pstr_loc
   };
-  return /* tuple */[
+  return [
           doc_loc,
           {
             tag: /* PStr */0,
@@ -6756,7 +6756,7 @@ function text_attr(ds) {
     pstr_desc: item_pstr_desc,
     pstr_loc: item_pstr_loc
   };
-  return /* tuple */[
+  return [
           text_loc,
           {
             tag: /* PStr */0,
@@ -7131,7 +7131,7 @@ function poly(loc, attrs, a, b) {
 function $$package(loc, attrs, a, b) {
   return mk(loc, attrs, {
               tag: /* Ptyp_package */9,
-              _0: /* tuple */[
+              _0: [
                 a,
                 b
               ]
@@ -7964,7 +7964,7 @@ function inherit_(loc, attrs, a) {
 function val_(loc, attrs, a, b, c, d) {
   return mk$9(loc, attrs, undefined, {
               tag: /* Pctf_val */1,
-              _0: /* tuple */[
+              _0: [
                 a,
                 b,
                 c,
@@ -7976,7 +7976,7 @@ function val_(loc, attrs, a, b, c, d) {
 function method_(loc, attrs, a, b, c, d) {
   return mk$9(loc, attrs, undefined, {
               tag: /* Pctf_method */2,
-              _0: /* tuple */[
+              _0: [
                 a,
                 b,
                 c,
@@ -7988,7 +7988,7 @@ function method_(loc, attrs, a, b, c, d) {
 function constraint_$4(loc, attrs, a, b) {
   return mk$9(loc, attrs, undefined, {
               tag: /* Pctf_constraint */3,
-              _0: /* tuple */[
+              _0: [
                 a,
                 b
               ]
@@ -8049,7 +8049,7 @@ function inherit_$1(loc, attrs, a, b, c) {
 function val_$1(loc, attrs, a, b, c) {
   return mk$10(loc, attrs, undefined, {
               tag: /* Pcf_val */1,
-              _0: /* tuple */[
+              _0: [
                 a,
                 b,
                 c
@@ -8060,7 +8060,7 @@ function val_$1(loc, attrs, a, b, c) {
 function method_$1(loc, attrs, a, b, c) {
   return mk$10(loc, attrs, undefined, {
               tag: /* Pcf_method */2,
-              _0: /* tuple */[
+              _0: [
                 a,
                 b,
                 c
@@ -8071,7 +8071,7 @@ function method_$1(loc, attrs, a, b, c) {
 function constraint_$5(loc, attrs, a, b) {
   return mk$10(loc, attrs, undefined, {
               tag: /* Pcf_constraint */3,
-              _0: /* tuple */[
+              _0: [
                 a,
                 b
               ]
@@ -8416,21 +8416,21 @@ var Ast_helper_Cf = {
 };
 
 function map_fst(f, param) {
-  return /* tuple */[
+  return [
           Curry._1(f, param[0]),
           param[1]
         ];
 }
 
 function map_snd(f, param) {
-  return /* tuple */[
+  return [
           param[0],
           Curry._1(f, param[1])
         ];
 }
 
 function map_tuple(f1, f2, param) {
-  return /* tuple */[
+  return [
           Curry._1(f1, param[0]),
           Curry._1(f2, param[1])
         ];
@@ -8468,7 +8468,7 @@ function map$1(sub, param) {
         return constr(loc, attrs, map_loc(sub, desc._0), List.map(Curry._1(sub.typ, sub), desc._1));
     case /* Ptyp_object */4 :
         var f = function (param) {
-          return /* tuple */[
+          return [
                   param[0],
                   Curry._2(sub.attributes, sub, param[1]),
                   Curry._2(sub.typ, sub, param[2])
@@ -8520,7 +8520,7 @@ function map_type_declaration(sub, param) {
   return mk$19(Curry._2(sub.location, sub, param.ptype_loc), Curry._2(sub.attributes, sub, param.ptype_attributes), undefined, undefined, List.map((function (param) {
                     return map_fst(partial_arg, param);
                   }), param.ptype_params), List.map((function (param) {
-                    return /* tuple */[
+                    return [
                             Curry._1(partial_arg$3, param[0]),
                             Curry._1(partial_arg$2, param[1]),
                             Curry._1(partial_arg$1, param[2])
@@ -9086,7 +9086,7 @@ function class_infos(sub, f, param) {
 }
 
 function default_mapper_attribute($$this, param) {
-  return /* tuple */[
+  return [
           map_loc($$this, param[0]),
           Curry._2($$this.payload, $$this, param[1])
         ];
@@ -9134,7 +9134,7 @@ function default_mapper_constructor_declaration($$this, param) {
 }
 
 function default_mapper_extension($$this, param) {
-  return /* tuple */[
+  return [
           map_loc($$this, param[0]),
           Curry._2($$this.payload, $$this, param[1])
         ];
@@ -9290,7 +9290,7 @@ function bal$4(l, x, d, r) {
       }
       throw {
             RE_EXN_ID: "Assert_failure",
-            _1: /* tuple */[
+            _1: [
               "tbl.ml",
               35,
               11
@@ -9300,7 +9300,7 @@ function bal$4(l, x, d, r) {
     }
     throw {
           RE_EXN_ID: "Assert_failure",
-          _1: /* tuple */[
+          _1: [
             "tbl.ml",
             35,
             11
@@ -9322,7 +9322,7 @@ function bal$4(l, x, d, r) {
     }
     throw {
           RE_EXN_ID: "Assert_failure",
-          _1: /* tuple */[
+          _1: [
             "tbl.ml",
             42,
             11
@@ -9332,7 +9332,7 @@ function bal$4(l, x, d, r) {
   }
   throw {
         RE_EXN_ID: "Assert_failure",
-        _1: /* tuple */[
+        _1: [
           "tbl.ml",
           42,
           11
@@ -9693,7 +9693,7 @@ function typexp(s, ty) {
                   tag: /* Tobject */4,
                   _0: typexp(s, desc$1._0),
                   _1: {
-                    contents: match !== undefined ? /* tuple */[
+                    contents: match !== undefined ? [
                         type_path(s, match[0]),
                         List.map((function (param) {
                                 return typexp(s, param);
@@ -9792,7 +9792,7 @@ function typexp(s, ty) {
                       default:
                         throw {
                               RE_EXN_ID: "Assert_failure",
-                              _1: /* tuple */[
+                              _1: [
                                 "subst.ml",
                                 170,
                                 23
@@ -9832,7 +9832,7 @@ function typexp(s, ty) {
                           row_bound: row$1.row_bound,
                           row_closed: row$1.row_closed,
                           row_fixed: row$1.row_fixed,
-                          row_name: /* tuple */[
+                          row_name: [
                             type_path(s, match$6[0]),
                             match$6[1]
                           ]
@@ -9949,7 +9949,7 @@ function class_signature(s, sign) {
   return {
           csig_self: typexp(s, sign.csig_self),
           csig_vars: map((function (param) {
-                  return /* tuple */[
+                  return [
                           param[0],
                           param[1],
                           typexp(s, param[2])
@@ -9957,7 +9957,7 @@ function class_signature(s, sign) {
                 }), sign.csig_vars),
           csig_concr: sign.csig_concr,
           csig_inher: List.map((function (param) {
-                  return /* tuple */[
+                  return [
                           type_path(s, param[0]),
                           List.map((function (param) {
                                   return typexp(s, param);
@@ -10082,7 +10082,7 @@ function rename_bound_idents(_s, _idents, _param) {
     var idents = _idents;
     var s = _s;
     if (!param) {
-      return /* tuple */[
+      return [
               List.rev(idents),
               s
             ];
@@ -10280,7 +10280,7 @@ var add_delayed_check_forward = {
   contents: (function (param) {
       throw {
             RE_EXN_ID: "Assert_failure",
-            _1: /* tuple */[
+            _1: [
               "env.ml",
               24,
               46
@@ -10378,7 +10378,7 @@ function add$6(kind, slot, id, x, tbl, ref_tbl) {
         var s = id.name;
         return Curry._3(slot, kind, s, already_defined(s, ref_tbl));
       }) : nothing;
-  return add(id, /* tuple */[
+  return add(id, [
               x,
               slot$1
             ], tbl);
@@ -10501,7 +10501,7 @@ var components_of_module$prime = {
   contents: (function (env, sub, path, mty) {
       throw {
             RE_EXN_ID: "Assert_failure",
-            _1: /* tuple */[
+            _1: [
               "env.ml",
               272,
               32
@@ -10515,7 +10515,7 @@ var components_of_module_maker$prime = {
   contents: (function (param) {
       throw {
             RE_EXN_ID: "Assert_failure",
-            _1: /* tuple */[
+            _1: [
               "env.ml",
               275,
               37
@@ -10529,7 +10529,7 @@ var components_of_functor_appl$prime = {
   contents: (function (f, p1, p2) {
       throw {
             RE_EXN_ID: "Assert_failure",
-            _1: /* tuple */[
+            _1: [
               "env.ml",
               278,
               23
@@ -10543,7 +10543,7 @@ var check_modtype_inclusion = {
   contents: (function (env, mty1, path1, mty2) {
       throw {
             RE_EXN_ID: "Assert_failure",
-            _1: /* tuple */[
+            _1: [
               "env.ml",
               282,
               35
@@ -10557,7 +10557,7 @@ var strengthen = {
   contents: (function (env, mty, path) {
       throw {
             RE_EXN_ID: "Assert_failure",
-            _1: /* tuple */[
+            _1: [
               "env.ml",
               286,
               28
@@ -10750,7 +10750,7 @@ function check_consistency(ps) {
             catch (raw_exn){
               var exn = Caml_js_exceptions.internalToOCamlException(raw_exn);
               if (exn.RE_EXN_ID === "Not_found") {
-                return Hashtbl.add(crc_units, name, /* tuple */[
+                return Hashtbl.add(crc_units, name, [
                             crco,
                             source
                           ]);
@@ -11188,7 +11188,7 @@ function normalize_path$1(oloc, env, path) {
       }
       throw {
             RE_EXN_ID: "Assert_failure",
-            _1: /* tuple */[
+            _1: [
               "env.ml",
               579,
               28
@@ -11204,7 +11204,7 @@ function find_type_expansion(path, env) {
   var decl = find_type_full(path, env)[0];
   var body = decl.type_manifest;
   if (body !== undefined && (decl.type_private === /* Public */1 || decl.type_kind !== /* Type_abstract */0 || has_constr_row(body))) {
-    return /* tuple */[
+    return [
             decl.type_params,
             body,
             may_map((function (prim) {
@@ -11219,7 +11219,7 @@ function find_type_expansion(path, env) {
           Error: new Error()
         };
   }
-  return /* tuple */[
+  return [
           decl.type_params,
           newty2(100000000, {
                 tag: /* Tconstr */3,
@@ -11239,7 +11239,7 @@ function find_type_expansion_opt(path, env) {
   var decl = find_type_full(path, env)[0];
   var body = decl.type_manifest;
   if (body !== undefined) {
-    return /* tuple */[
+    return [
             decl.type_params,
             body,
             may_map((function (prim) {
@@ -11254,7 +11254,7 @@ function find_type_expansion_opt(path, env) {
           Error: new Error()
         };
   }
-  return /* tuple */[
+  return [
           decl.type_params,
           newty2(100000000, {
                 tag: /* Tconstr */3,
@@ -11326,7 +11326,7 @@ function lookup_module_descr(lid, env) {
                   };
             }
             var ps = find_pers_struct(undefined, s);
-            return /* tuple */[
+            return [
                     {
                       tag: /* Pident */0,
                       _0: {
@@ -11351,7 +11351,7 @@ function lookup_module_descr(lid, env) {
               };
         }
         var match$1 = find$2(s$1, c._0.comp_components);
-        return /* tuple */[
+        return [
                 {
                   tag: /* Pdot */1,
                   _0: match[0],
@@ -11369,7 +11369,7 @@ function lookup_module_descr(lid, env) {
         if (f.tag) {
           var f$1 = f._0;
           may(Curry._3(check_modtype_inclusion.contents, env, match$3.md_type, p2), f$1.fcomp_arg);
-          return /* tuple */[
+          return [
                   {
                     tag: /* Papply */2,
                     _0: p1,
@@ -11505,7 +11505,7 @@ function lookup(proj1, proj2, lid, env) {
               };
         }
         var match$1 = find$2(s, Curry._1(proj2, c._0));
-        return /* tuple */[
+        return [
                 {
                   tag: /* Pdot */1,
                   _0: match[0],
@@ -11534,7 +11534,7 @@ function lookup_all_simple(proj1, proj2, shadow, lid, env) {
           var match = param._0;
           var x = match[0];
           return /* :: */{
-                  _0: /* tuple */[
+                  _0: [
                     x,
                     match[1]
                   ],
@@ -11566,7 +11566,7 @@ function lookup_all_simple(proj1, proj2, shadow, lid, env) {
           }
         }
         return List.map((function (param) {
-                      return /* tuple */[
+                      return [
                               param[0],
                               (function (param) {
                                   
@@ -11667,7 +11667,7 @@ function mark_value_used(env, name, vd) {
     return ;
   }
   try {
-    return Curry._1(Hashtbl.find(value_declarations, /* tuple */[
+    return Curry._1(Hashtbl.find(value_declarations, [
                     name,
                     vd.val_loc
                   ]), undefined);
@@ -11686,7 +11686,7 @@ function mark_type_used(env, name, vd) {
     return ;
   }
   try {
-    return Curry._1(Hashtbl.find(type_declarations, /* tuple */[
+    return Curry._1(Hashtbl.find(type_declarations, [
                     name,
                     vd.type_loc
                   ]), undefined);
@@ -11705,7 +11705,7 @@ function mark_constructor_used(usage, env, name, vd, constr) {
     return ;
   }
   try {
-    return Curry._1(Hashtbl.find(used_constructors, /* tuple */[
+    return Curry._1(Hashtbl.find(used_constructors, [
                     name,
                     vd.type_loc,
                     constr
@@ -11726,7 +11726,7 @@ function mark_extension_used(usage, env, ext, name) {
   }
   var ty_name = last(ext.ext_type_path);
   try {
-    return Curry._1(Hashtbl.find(used_constructors, /* tuple */[
+    return Curry._1(Hashtbl.find(used_constructors, [
                     ty_name,
                     ext.ext_loc,
                     name
@@ -11746,7 +11746,7 @@ function set_type_used_callback(name, td, callback) {
   if (loc.loc_ghost) {
     return ;
   }
-  var key = /* tuple */[
+  var key = [
     name,
     loc
   ];
@@ -11759,7 +11759,7 @@ function set_type_used_callback(name, td, callback) {
     if (exn.RE_EXN_ID === "Not_found") {
       throw {
             RE_EXN_ID: "Assert_failure",
-            _1: /* tuple */[
+            _1: [
               "env.ml",
               841,
               22
@@ -11784,7 +11784,7 @@ function lookup_type$1(lid, env) {
   var match = lookup_type(lid, env);
   var decl = match[1][0];
   mark_type_used(env, last$1(lid), decl);
-  return /* tuple */[
+  return [
           match[0],
           decl
         ];
@@ -11810,7 +11810,7 @@ function ty_path(t) {
   if (typeof match$1 === "number") {
     throw {
           RE_EXN_ID: "Assert_failure",
-          _1: /* tuple */[
+          _1: [
             "env.ml",
             871,
             9
@@ -11823,7 +11823,7 @@ function ty_path(t) {
   }
   throw {
         RE_EXN_ID: "Assert_failure",
-        _1: /* tuple */[
+        _1: [
           "env.ml",
           871,
           9
@@ -11864,7 +11864,7 @@ function lookup_all_constructors$1(lid, env) {
     return List.map((function (param) {
                   var use = param[1];
                   var cstr = param[0];
-                  return /* tuple */[
+                  return [
                           cstr,
                           (function (param) {
                               mark_type_path(env, ty_path(cstr.cstr_res));
@@ -11898,7 +11898,7 @@ function mark_constructor(usage, env, name, desc) {
         var ty_path$1 = ty_path(desc.cstr_res);
         var ty_name = last(ty_path$1);
         try {
-          return Curry._1(Hashtbl.find(used_constructors, /* tuple */[
+          return Curry._1(Hashtbl.find(used_constructors, [
                           ty_name,
                           desc.cstr_loc,
                           name
@@ -11923,7 +11923,7 @@ function mark_constructor(usage, env, name, desc) {
     if (exn$1.RE_EXN_ID === "Not_found") {
       throw {
             RE_EXN_ID: "Assert_failure",
-            _1: /* tuple */[
+            _1: [
               "env.ml",
               908,
               64
@@ -11943,7 +11943,7 @@ function lookup_all_labels$1(lid, env) {
     return List.map((function (param) {
                   var use = param[1];
                   var lbl = param[0];
-                  return /* tuple */[
+                  return [
                           lbl,
                           (function (param) {
                               mark_type_path(env, ty_path(lbl.lbl_res));
@@ -12072,7 +12072,7 @@ function iter_types(f) {
                             _0: path,
                             _1: s,
                             _2: n
-                          }, /* tuple */[
+                          }, [
                             {
                               tag: /* Pdot */1,
                               _0: path$prime,
@@ -12098,7 +12098,7 @@ function iter_types(f) {
                     }), comps$1.comp_components);
       };
       iter_env_cont.contents = /* :: */{
-        _0: /* tuple */[
+        _0: [
           path,
           cont
         ],
@@ -12160,7 +12160,7 @@ function find_all_comps(proj, s, param) {
   try {
     var match = find$2(s, Curry._1(proj, comps._0));
     return /* :: */{
-            _0: /* tuple */[
+            _0: [
               {
                 tag: /* Pdot */1,
                 _0: param[0],
@@ -12245,7 +12245,7 @@ function add_gadt_instance_level(lv, env) {
           summary: env.summary,
           local_constraints: env.local_constraints,
           gadt_instances: /* :: */{
-            _0: /* tuple */[
+            _0: [
               lv,
               {
                 contents: /* Empty */0
@@ -12301,7 +12301,7 @@ function add_gadt_instances(env, lv, tl) {
     if (exn.RE_EXN_ID === "Not_found") {
       throw {
             RE_EXN_ID: "Assert_failure",
-            _1: /* tuple */[
+            _1: [
               "env.ml",
               1066,
               59
@@ -12324,7 +12324,7 @@ function add_gadt_instance_chain(env, lv, t) {
     if (exn.RE_EXN_ID === "Not_found") {
       throw {
             RE_EXN_ID: "Assert_failure",
-            _1: /* tuple */[
+            _1: [
               "env.ml",
               1075,
               59
@@ -12433,13 +12433,13 @@ function constructors_of_type(ty_path, decl) {
       var cd_args = match.cd_args;
       var cd_id = match.cd_id;
       var ty_res$1 = cd_res !== undefined ? cd_res : ty_res;
-      var match$1 = cd_args ? /* tuple */[
+      var match$1 = cd_args ? [
           {
             tag: /* Cstr_block */1,
             _0: idx_nonconst
           },
           describe_constructors(idx_const, idx_nonconst + 1 | 0, rem)
-        ] : /* tuple */[
+        ] : [
           {
             tag: /* Cstr_constant */0,
             _0: idx_const
@@ -12482,7 +12482,7 @@ function constructors_of_type(ty_path, decl) {
         cstr_attributes: cstr_cstr_attributes
       };
       return /* :: */{
-              _0: /* tuple */[
+              _0: [
                 cd_id,
                 cstr
               ],
@@ -12564,7 +12564,7 @@ function constructors_of_type(ty_path, decl) {
         return result;
     }
     return /* :: */{
-            _0: /* tuple */[
+            _0: [
               a_id,
               {
                 cstr_name: a_descr.cstr_name,
@@ -12586,7 +12586,7 @@ function constructors_of_type(ty_path, decl) {
               }
             ],
             _1: /* :: */{
-              _0: /* tuple */[
+              _0: [
                 b_id,
                 {
                   cstr_name: b_descr.cstr_name,
@@ -12654,7 +12654,7 @@ function labels_of_type(ty_path, decl) {
       };
       Caml_array.caml_array_set(all_labels, num, lbl);
       return /* :: */{
-              _0: /* tuple */[
+              _0: [
                 l.ld_id,
                 lbl
               ],
@@ -12667,7 +12667,7 @@ function labels_of_type(ty_path, decl) {
 
 function prefix_idents(root, pos, sub, param) {
   if (!param) {
-    return /* tuple */[
+    return [
             /* [] */0,
             sub
           ];
@@ -12686,7 +12686,7 @@ function prefix_idents(root, pos, sub, param) {
         var nextpos;
         nextpos = typeof match$1 === "number" || match$1.tag ? pos + 1 | 0 : pos;
         var match$2 = prefix_idents(root, nextpos, sub, param._1);
-        return /* tuple */[
+        return [
                 /* :: */{
                   _0: p,
                   _1: match$2[0]
@@ -12703,7 +12703,7 @@ function prefix_idents(root, pos, sub, param) {
           _2: -1
         };
         var match$3 = prefix_idents(root, pos, add_type(id, p$1, sub), param._1);
-        return /* tuple */[
+        return [
                 /* :: */{
                   _0: p$1,
                   _1: match$3[0]
@@ -12719,7 +12719,7 @@ function prefix_idents(root, pos, sub, param) {
           _2: pos
         };
         var match$4 = prefix_idents(root, pos + 1 | 0, sub, param._1);
-        return /* tuple */[
+        return [
                 /* :: */{
                   _0: p$2,
                   _1: match$4[0]
@@ -12736,7 +12736,7 @@ function prefix_idents(root, pos, sub, param) {
           _2: pos
         };
         var match$5 = prefix_idents(root, pos + 1 | 0, add_module(id$1, p$3, sub), param._1);
-        return /* tuple */[
+        return [
                 /* :: */{
                   _0: p$3,
                   _1: match$5[0]
@@ -12756,7 +12756,7 @@ function prefix_idents(root, pos, sub, param) {
                   tag: /* Mty_ident */0,
                   _0: p$4
                 }, sub), param._1);
-        return /* tuple */[
+        return [
                 /* :: */{
                   _0: p$4,
                   _1: match$6[0]
@@ -12772,7 +12772,7 @@ function prefix_idents(root, pos, sub, param) {
           _2: pos
         };
         var match$7 = prefix_idents(root, pos + 1 | 0, sub, param._1);
-        return /* tuple */[
+        return [
                 /* :: */{
                   _0: p$5,
                   _1: match$7[0]
@@ -12788,7 +12788,7 @@ function prefix_idents(root, pos, sub, param) {
           _2: -1
         };
         var match$8 = prefix_idents(root, pos, sub, param._1);
-        return /* tuple */[
+        return [
                 /* :: */{
                   _0: p$6,
                   _1: match$8[0]
@@ -12802,7 +12802,7 @@ function prefix_idents(root, pos, sub, param) {
 function prefix_idents_and_subst(root, sub, sg) {
   var match = prefix_idents(root, 0, sub, sg);
   var sub$1 = match[1];
-  return /* tuple */[
+  return [
           match[0],
           sub$1,
           {
@@ -12893,7 +12893,7 @@ function prefix_idents_and_subst$1(root, sub, sg) {
     if (exn$1.RE_EXN_ID === "Not_found") {
       var r = prefix_idents_and_subst(root, sub, sg);
       sgs.contents = /* :: */{
-        _0: /* tuple */[
+        _0: [
           sg,
           r
         ],
@@ -12928,7 +12928,7 @@ function components_of_module(env, sub, path, mty) {
   return {
           contents: {
             tag: /* Thunk */2,
-            _0: /* tuple */[
+            _0: [
               env,
               sub,
               path,
@@ -12945,7 +12945,7 @@ function store_modtype(slot, id, path, info, env, renv) {
           labels: env.labels,
           types: env.types,
           modules: env.modules,
-          modtypes: add$6("module type", slot, id, /* tuple */[
+          modtypes: add$6("module type", slot, id, [
                 path,
                 info
               ], env.modtypes, renv.modtypes),
@@ -12970,11 +12970,11 @@ function store_type_infos(slot, id, path, info, env, renv) {
           values: env.values,
           constrs: env.constrs,
           labels: env.labels,
-          types: add$6("type", slot, id, /* tuple */[
+          types: add$6("type", slot, id, [
                 path,
-                /* tuple */[
+                [
                   info,
-                  /* tuple */[
+                  [
                     /* [] */0,
                     /* [] */0
                   ]
@@ -13004,12 +13004,12 @@ function store_module(slot, id, path, md, env, renv) {
           constrs: env.constrs,
           labels: env.labels,
           types: env.types,
-          modules: add$6("module", slot, id, /* tuple */[
+          modules: add$6("module", slot, id, [
                 path,
                 md
               ], env.modules, renv.modules),
           modtypes: env.modtypes,
-          components: add$6("module", slot, id, /* tuple */[
+          components: add$6("module", slot, id, [
                 path,
                 components_of_module(env, identity, path, md.md_type)
               ], env.components, renv.components),
@@ -13033,7 +13033,7 @@ function check_usage(loc, id, warn, tbl) {
     return ;
   }
   var name = id.name;
-  var key = /* tuple */[
+  var key = [
     name,
     loc
   ];
@@ -13121,7 +13121,7 @@ function components_of_module_maker(param) {
                   case /* Sig_value */0 :
                       var decl = item._1;
                       var decl$prime = value_description(sub$1, decl);
-                      c.comp_values = add$5(item._0.name, /* tuple */[
+                      c.comp_values = add$5(item._0.name, [
                             decl$prime,
                             pos.contents
                           ], c.comp_values);
@@ -13142,10 +13142,10 @@ function components_of_module_maker(param) {
                       var labels = List.map((function (prim) {
                               return prim[1];
                             }), labels_of_type(path, decl$prime$1));
-                      c.comp_types = add$5(id.name, /* tuple */[
-                            /* tuple */[
+                      c.comp_types = add$5(id.name, [
+                            [
                               decl$prime$1,
-                              /* tuple */[
+                              [
                                 constructors,
                                 labels
                               ]
@@ -13153,14 +13153,14 @@ function components_of_module_maker(param) {
                             -1
                           ], c.comp_types);
                       List.iter((function (descr) {
-                              c.comp_constrs = add_to_tbl(descr.cstr_name, /* tuple */[
+                              c.comp_constrs = add_to_tbl(descr.cstr_name, [
                                     descr,
                                     -1
                                   ], c.comp_constrs);
                               
                             }), constructors);
                       List.iter((function (descr) {
-                              c.comp_labels = add_to_tbl(descr.lbl_name, /* tuple */[
+                              c.comp_labels = add_to_tbl(descr.lbl_name, [
                                     descr,
                                     -1
                                   ], c.comp_labels);
@@ -13174,7 +13174,7 @@ function components_of_module_maker(param) {
                   case /* Sig_typext */2 :
                       var ext$prime = extension_constructor(sub$1, item._1);
                       var descr = extension_descr(path, ext$prime);
-                      c.comp_constrs = add_to_tbl(item._0.name, /* tuple */[
+                      c.comp_constrs = add_to_tbl(item._0.name, [
                             descr,
                             pos.contents
                           ], c.comp_constrs);
@@ -13187,18 +13187,18 @@ function components_of_module_maker(param) {
                       var mty$prime = {
                         contents: {
                           tag: /* Thunk */2,
-                          _0: /* tuple */[
+                          _0: [
                             sub$1,
                             mty
                           ]
                         }
                       };
-                      c.comp_modules = add$5(id$1.name, /* tuple */[
+                      c.comp_modules = add$5(id$1.name, [
                             mty$prime,
                             pos.contents
                           ], c.comp_modules);
                       var comps = components_of_module(env$1.contents, sub$1, path, mty);
-                      c.comp_components = add$5(id$1.name, /* tuple */[
+                      c.comp_components = add$5(id$1.name, [
                             comps,
                             pos.contents
                           ], c.comp_components);
@@ -13212,7 +13212,7 @@ function components_of_module_maker(param) {
                       var decl$2 = item._1;
                       var id$2 = item._0;
                       var decl$prime$2 = modtype_declaration(sub$1, decl$2);
-                      c.comp_modtypes = add$5(id$2.name, /* tuple */[
+                      c.comp_modtypes = add$5(id$2.name, [
                             decl$prime$2,
                             -1
                           ], c.comp_modtypes);
@@ -13223,7 +13223,7 @@ function components_of_module_maker(param) {
                       return ;
                   case /* Sig_class */5 :
                       var decl$prime$3 = class_declaration(sub$1, item._1);
-                      c.comp_classes = add$5(item._0.name, /* tuple */[
+                      c.comp_classes = add$5(item._0.name, [
                             decl$prime$3,
                             pos.contents
                           ], c.comp_classes);
@@ -13231,7 +13231,7 @@ function components_of_module_maker(param) {
                       return ;
                   case /* Sig_class_type */6 :
                       var decl$prime$4 = cltype_declaration(sub$1, item._1);
-                      c.comp_cltypes = add$5(item._0.name, /* tuple */[
+                      c.comp_cltypes = add$5(item._0.name, [
                             decl$prime$4,
                             pos.contents
                           ], c.comp_cltypes);
@@ -13285,7 +13285,7 @@ function store_value(check, slot, id, path, decl, env, renv) {
           return check_usage(decl.val_loc, id, f, value_declarations);
         }), check);
   return {
-          values: add$6("value", slot, id, /* tuple */[
+          values: add$6("value", slot, id, [
                 path,
                 decl
               ], env.values, renv.values),
@@ -13328,7 +13328,7 @@ function store_type(check, slot, id, path, info, env, renv) {
   var descrs_1 = List.map((function (prim) {
           return prim[1];
         }), labels);
-  var descrs = /* tuple */[
+  var descrs = [
     descrs_0,
     descrs_1
   ];
@@ -13341,7 +13341,7 @@ function store_type(check, slot, id, path, info, env, renv) {
     var ty = id.name;
     List.iter((function (param) {
             var c = param[1].cstr_name;
-            var k = /* tuple */[
+            var k = [
               ty,
               loc,
               c
@@ -13381,9 +13381,9 @@ function store_type(check, slot, id, path, info, env, renv) {
           labels: List.fold_right((function (param, labels) {
                   return add$6("label", slot, param[0], param[1], labels, renv.labels);
                 }), labels, env.labels),
-          types: add$6("type", slot, id, /* tuple */[
+          types: add$6("type", slot, id, [
                 path,
-                /* tuple */[
+                [
                   info,
                   descrs
                 ]
@@ -13416,7 +13416,7 @@ function store_extension(check, slot, id, path, ext, env, renv) {
         })) {
     var ty = last(ext.ext_type_path);
     var n = id.name;
-    var k = /* tuple */[
+    var k = [
       ty,
       loc,
       n
@@ -13476,7 +13476,7 @@ function store_class(slot, id, path, desc, env, renv) {
           modules: env.modules,
           modtypes: env.modtypes,
           components: env.components,
-          classes: add$6("class", slot, id, /* tuple */[
+          classes: add$6("class", slot, id, [
                 path,
                 desc
               ], env.classes, renv.classes),
@@ -13504,7 +13504,7 @@ function store_cltype(slot, id, path, desc, env, renv) {
           modtypes: env.modtypes,
           components: env.components,
           classes: env.classes,
-          cltypes: add$6("class type", slot, id, /* tuple */[
+          cltypes: add$6("class type", slot, id, [
                 path,
                 desc
               ], env.cltypes, renv.cltypes),
@@ -13642,7 +13642,7 @@ function add_local_constraint(id, info, elv, env) {
             type_private: info.type_private,
             type_manifest: info.type_manifest,
             type_variance: info.type_variance,
-            type_newtype_level: /* tuple */[
+            type_newtype_level: [
               match[0],
               elv
             ],
@@ -13668,7 +13668,7 @@ function add_local_constraint(id, info, elv, env) {
     }
     throw {
           RE_EXN_ID: "Assert_failure",
-          _1: /* tuple */[
+          _1: [
             "env.ml",
             1538,
             9
@@ -13678,7 +13678,7 @@ function add_local_constraint(id, info, elv, env) {
   }
   throw {
         RE_EXN_ID: "Assert_failure",
-        _1: /* tuple */[
+        _1: [
           "env.ml",
           1538,
           9
@@ -13689,7 +13689,7 @@ function add_local_constraint(id, info, elv, env) {
 
 function enter(store_fun, name, data, env) {
   var id = create(name);
-  return /* tuple */[
+  return [
           id,
           Curry._6(store_fun, undefined, id, {
                 tag: /* Pident */0,
@@ -13714,7 +13714,7 @@ function enter_type(param, param$1, param$2) {
 
 function enter_module_declaration(arg, name, md, env) {
   var id = create(name);
-  return /* tuple */[
+  return [
           id,
           add_module_declaration(arg, id, md, env)
         ];
@@ -13842,12 +13842,12 @@ function open_signature$1(locOpt, toplevelOpt, ovf, root, sg, env) {
     contents: /* [] */0
   };
   var slot = function (kind, s, b) {
-    if (b && !List.mem(/* tuple */[
+    if (b && !List.mem([
             kind,
             s
           ], shadowed.contents)) {
       shadowed.contents = /* :: */{
-        _0: /* tuple */[
+        _0: [
           kind,
           s
         ],
@@ -13938,7 +13938,7 @@ function save_signature(sg, modname, filename) {
       ps_sig: sg$1,
       ps_comps: comps,
       ps_crcs: /* :: */{
-        _0: /* tuple */[
+        _0: [
           modname,
           crc
         ],
@@ -14673,7 +14673,7 @@ function from_pair_suites(name, suites) {
             }));
       return ;
     } else {
-      console.log(/* tuple */[
+      console.log([
             name,
             "testing"
           ]);
@@ -14682,7 +14682,7 @@ function from_pair_suites(name, suites) {
                     var fn = Curry._1(param[1], undefined);
                     switch (fn.tag | 0) {
                       case /* Eq */0 :
-                          console.log(/* tuple */[
+                          console.log([
                                 name,
                                 fn._0,
                                 "eq?",
@@ -14690,7 +14690,7 @@ function from_pair_suites(name, suites) {
                               ]);
                           return ;
                       case /* Neq */1 :
-                          console.log(/* tuple */[
+                          console.log([
                                 name,
                                 fn._0,
                                 "neq?",
@@ -14698,7 +14698,7 @@ function from_pair_suites(name, suites) {
                               ]);
                           return ;
                       case /* StrictEq */2 :
-                          console.log(/* tuple */[
+                          console.log([
                                 name,
                                 fn._0,
                                 "strict_eq?",
@@ -14706,7 +14706,7 @@ function from_pair_suites(name, suites) {
                               ]);
                           return ;
                       case /* StrictNeq */3 :
-                          console.log(/* tuple */[
+                          console.log([
                                 name,
                                 fn._0,
                                 "strict_neq?",
@@ -14714,14 +14714,14 @@ function from_pair_suites(name, suites) {
                               ]);
                           return ;
                       case /* Ok */4 :
-                          console.log(/* tuple */[
+                          console.log([
                                 name,
                                 fn._0,
                                 "ok?"
                               ]);
                           return ;
                       case /* Approx */5 :
-                          console.log(/* tuple */[
+                          console.log([
                                 name,
                                 fn._0,
                                 "~",
@@ -14729,7 +14729,7 @@ function from_pair_suites(name, suites) {
                               ]);
                           return ;
                       case /* ApproxThreshold */6 :
-                          console.log(/* tuple */[
+                          console.log([
                                 name,
                                 fn._1,
                                 "~",
@@ -15067,12 +15067,12 @@ function mkinfix(arg1, name, arg2) {
               tag: /* Pexp_apply */5,
               _0: mkoperator(name, 2),
               _1: /* :: */{
-                _0: /* tuple */[
+                _0: [
                   "",
                   arg1
                 ],
                 _1: /* :: */{
-                  _0: /* tuple */[
+                  _0: [
                     "",
                     arg2
                   ],
@@ -15256,7 +15256,7 @@ function mkexp_constraint(e, param) {
   }
   throw {
         RE_EXN_ID: "Assert_failure",
-        _1: /* tuple */[
+        _1: [
           "parser.mly",
           153,
           18
@@ -15455,7 +15455,7 @@ function varify_constructors(var_names, t) {
             desc = {
               tag: /* Ptyp_object */4,
               _0: List.map((function (param) {
-                      return /* tuple */[
+                      return [
                               param[0],
                               param[1],
                               loop(param[2])
@@ -15504,10 +15504,10 @@ function varify_constructors(var_names, t) {
             var match = x._0;
             desc = {
               tag: /* Ptyp_package */9,
-              _0: /* tuple */[
+              _0: [
                 match[0],
                 List.map((function (param) {
-                        return /* tuple */[
+                        return [
                                 param[0],
                                 loop(param[1])
                               ];
@@ -15519,7 +15519,7 @@ function varify_constructors(var_names, t) {
             var match$1 = x._0;
             desc = {
               tag: /* Ptyp_extension */10,
-              _0: /* tuple */[
+              _0: [
                 match$1[0],
                 match$1[1]
               ]
@@ -15566,7 +15566,7 @@ function wrap_type_annotation(newtypes, core_type, body) {
                       _1: exp
                     });
         }), newtypes, exp);
-  return /* tuple */[
+  return [
           exp$1,
           ghtyp({
                 tag: /* Ptyp_poly */8,
@@ -15589,7 +15589,7 @@ function wrap_exp_attrs(body, param) {
   if (ext !== undefined) {
     return ghexp({
                 tag: /* Pexp_extension */33,
-                _0: /* tuple */[
+                _0: [
                   ext,
                   {
                     tag: /* PStr */0,
@@ -15639,7 +15639,7 @@ function add_nonrec(rf, attrs, pos) {
     loc: name_loc
   };
   return /* :: */{
-          _0: /* tuple */[
+          _0: [
             name,
             {
               tag: /* PStr */0,
@@ -15953,7 +15953,7 @@ var yyact = [
       return Parsing.peek_val(__caml_parser_env, 1);
     }),
   (function (__caml_parser_env) {
-      return /* tuple */[
+      return [
               {
                 txt: "*",
                 loc: rhs_loc(2)
@@ -15964,7 +15964,7 @@ var yyact = [
   (function (__caml_parser_env) {
       var _2 = Parsing.peek_val(__caml_parser_env, 3);
       var _4 = Parsing.peek_val(__caml_parser_env, 1);
-      return /* tuple */[
+      return [
               {
                 txt: _2,
                 loc: rhs_loc(2)
@@ -16190,7 +16190,7 @@ var yyact = [
       if (bindings) {
         var lb = bindings._0;
         if (typeof lb.lb_pattern.ppat_desc === "number" && !bindings._1) {
-          var exp = wrap_exp_attrs(lb.lb_expression, /* tuple */[
+          var exp = wrap_exp_attrs(lb.lb_expression, [
                 undefined,
                 lbs.lbs_attributes
               ]);
@@ -16230,7 +16230,7 @@ var yyact = [
       if (id !== undefined) {
         var d = {
           tag: /* Pstr_extension */14,
-          _0: /* tuple */[
+          _0: [
             id,
             {
               tag: /* PStr */0,
@@ -17039,7 +17039,7 @@ var yyact = [
               Error: new Error()
             };
       }
-      return /* tuple */[
+      return [
               {
                 txt: _4,
                 loc: rhs_loc(4)
@@ -17055,7 +17055,7 @@ var yyact = [
       var _2 = Parsing.peek_val(__caml_parser_env, 3);
       var _3 = Parsing.peek_val(__caml_parser_env, 2);
       var _5 = Parsing.peek_val(__caml_parser_env, 0);
-      return /* tuple */[
+      return [
               {
                 txt: _3,
                 loc: rhs_loc(3)
@@ -17072,7 +17072,7 @@ var yyact = [
       var _2 = Parsing.peek_val(__caml_parser_env, 3);
       var _3 = Parsing.peek_val(__caml_parser_env, 2);
       var _5 = Parsing.peek_val(__caml_parser_env, 0);
-      return /* tuple */[
+      return [
               {
                 txt: _3,
                 loc: rhs_loc(3)
@@ -17092,7 +17092,7 @@ var yyact = [
       var _4 = Parsing.peek_val(__caml_parser_env, 2);
       var _6 = Parsing.peek_val(__caml_parser_env, 0);
       var e = mkexp_constraint(_6, _4);
-      return /* tuple */[
+      return [
               {
                 txt: _3,
                 loc: rhs_loc(3)
@@ -17115,7 +17115,7 @@ var yyact = [
               Error: new Error()
             };
       }
-      return /* tuple */[
+      return [
               {
                 txt: _4,
                 loc: rhs_loc(4)
@@ -17138,7 +17138,7 @@ var yyact = [
               Error: new Error()
             };
       }
-      return /* tuple */[
+      return [
               {
                 txt: _4,
                 loc: rhs_loc(4)
@@ -17155,7 +17155,7 @@ var yyact = [
       var _2 = Parsing.peek_val(__caml_parser_env, 2);
       var _3 = Parsing.peek_val(__caml_parser_env, 1);
       var _4 = Parsing.peek_val(__caml_parser_env, 0);
-      return /* tuple */[
+      return [
               {
                 txt: _3,
                 loc: rhs_loc(3)
@@ -17178,7 +17178,7 @@ var yyact = [
       var _3 = Parsing.peek_val(__caml_parser_env, 4);
       var _5 = Parsing.peek_val(__caml_parser_env, 2);
       var _7 = Parsing.peek_val(__caml_parser_env, 0);
-      return /* tuple */[
+      return [
               {
                 txt: _3,
                 loc: rhs_loc(3)
@@ -17203,7 +17203,7 @@ var yyact = [
       var _8 = Parsing.peek_val(__caml_parser_env, 2);
       var _10 = Parsing.peek_val(__caml_parser_env, 0);
       var match = wrap_type_annotation(_6, _8, _10);
-      return /* tuple */[
+      return [
               {
                 txt: _3,
                 loc: rhs_loc(3)
@@ -17360,7 +17360,7 @@ var yyact = [
       var _6 = Parsing.peek_val(__caml_parser_env, 0);
       return mkctf(_6, symbol_docs(undefined), {
                   tag: /* Pctf_method */2,
-                  _0: /* tuple */[
+                  _0: [
                     _3,
                     _2[0],
                     _2[1],
@@ -17396,7 +17396,7 @@ var yyact = [
       var _2 = Parsing.peek_val(__caml_parser_env, 3);
       var _3 = Parsing.peek_val(__caml_parser_env, 2);
       var _5 = Parsing.peek_val(__caml_parser_env, 0);
-      return /* tuple */[
+      return [
               _3,
               _2,
               /* Virtual */0,
@@ -17407,7 +17407,7 @@ var yyact = [
       var _2 = Parsing.peek_val(__caml_parser_env, 3);
       var _3 = Parsing.peek_val(__caml_parser_env, 2);
       var _5 = Parsing.peek_val(__caml_parser_env, 0);
-      return /* tuple */[
+      return [
               _3,
               /* Mutable */1,
               _2,
@@ -17417,7 +17417,7 @@ var yyact = [
   (function (__caml_parser_env) {
       var _1 = Parsing.peek_val(__caml_parser_env, 2);
       var _3 = Parsing.peek_val(__caml_parser_env, 0);
-      return /* tuple */[
+      return [
               _1,
               /* Immutable */0,
               /* Concrete */1,
@@ -17427,7 +17427,7 @@ var yyact = [
   (function (__caml_parser_env) {
       var _1 = Parsing.peek_val(__caml_parser_env, 2);
       var _3 = Parsing.peek_val(__caml_parser_env, 0);
-      return /* tuple */[
+      return [
               _1,
               _3,
               symbol_rloc(undefined)
@@ -17436,7 +17436,7 @@ var yyact = [
   (function (__caml_parser_env) {
       var _1 = Parsing.peek_val(__caml_parser_env, 2);
       var _3 = Parsing.peek_val(__caml_parser_env, 0);
-      return /* tuple */[
+      return [
               _1,
               _3
             ];
@@ -17533,7 +17533,7 @@ var yyact = [
   (function (__caml_parser_env) {
       var _3 = Parsing.peek_val(__caml_parser_env, 2);
       var _4 = Parsing.peek_val(__caml_parser_env, 1);
-      return /* tuple */[
+      return [
               "?" + _3[0],
               _4,
               _3[1]
@@ -17541,7 +17541,7 @@ var yyact = [
     }),
   (function (__caml_parser_env) {
       var _2 = Parsing.peek_val(__caml_parser_env, 0);
-      return /* tuple */[
+      return [
               "?" + _2[0],
               undefined,
               _2[1]
@@ -17551,7 +17551,7 @@ var yyact = [
       var _1 = Parsing.peek_val(__caml_parser_env, 4);
       var _3 = Parsing.peek_val(__caml_parser_env, 2);
       var _4 = Parsing.peek_val(__caml_parser_env, 1);
-      return /* tuple */[
+      return [
               "?" + _1,
               _4,
               _3
@@ -17560,7 +17560,7 @@ var yyact = [
   (function (__caml_parser_env) {
       var _1 = Parsing.peek_val(__caml_parser_env, 1);
       var _2 = Parsing.peek_val(__caml_parser_env, 0);
-      return /* tuple */[
+      return [
               "?" + _1,
               undefined,
               _2
@@ -17568,7 +17568,7 @@ var yyact = [
     }),
   (function (__caml_parser_env) {
       var _3 = Parsing.peek_val(__caml_parser_env, 1);
-      return /* tuple */[
+      return [
               _3[0],
               undefined,
               _3[1]
@@ -17576,7 +17576,7 @@ var yyact = [
     }),
   (function (__caml_parser_env) {
       var _2 = Parsing.peek_val(__caml_parser_env, 0);
-      return /* tuple */[
+      return [
               _2[0],
               undefined,
               _2[1]
@@ -17585,7 +17585,7 @@ var yyact = [
   (function (__caml_parser_env) {
       var _1 = Parsing.peek_val(__caml_parser_env, 1);
       var _2 = Parsing.peek_val(__caml_parser_env, 0);
-      return /* tuple */[
+      return [
               _1,
               undefined,
               _2
@@ -17593,7 +17593,7 @@ var yyact = [
     }),
   (function (__caml_parser_env) {
       var _1 = Parsing.peek_val(__caml_parser_env, 0);
-      return /* tuple */[
+      return [
               "",
               undefined,
               _1
@@ -17624,7 +17624,7 @@ var yyact = [
   (function (__caml_parser_env) {
       var _1 = Parsing.peek_val(__caml_parser_env, 2);
       var _3 = Parsing.peek_val(__caml_parser_env, 0);
-      return /* tuple */[
+      return [
               _1[0],
               mkpat({
                     tag: /* Ppat_constraint */10,
@@ -17635,7 +17635,7 @@ var yyact = [
     }),
   (function (__caml_parser_env) {
       var _1 = Parsing.peek_val(__caml_parser_env, 0);
-      return /* tuple */[
+      return [
               _1,
               mkpat({
                     tag: /* Ppat_var */0,
@@ -17695,7 +17695,7 @@ var yyact = [
         _1: d_1,
         _2: _3
       };
-      return wrap_exp_attrs(mkexp(d), /* tuple */[
+      return wrap_exp_attrs(mkexp(d), [
                   _1.lbs_extension,
                   _1.lbs_attributes
                 ]);
@@ -18082,7 +18082,7 @@ var yyact = [
                   tag: /* Pexp_apply */5,
                   _0: mkoperator("~" + _1, 1),
                   _1: /* :: */{
-                    _0: /* tuple */[
+                    _0: [
                       "",
                       _2
                     ],
@@ -18124,7 +18124,7 @@ var yyact = [
                   tag: /* Pexp_apply */5,
                   _0: mkoperator("~" + _1, 1),
                   _1: /* :: */{
-                    _0: /* tuple */[
+                    _0: [
                       "",
                       _2
                     ],
@@ -18157,17 +18157,17 @@ var yyact = [
                         _0: array_function("Array", "set")
                       }),
                   _1: /* :: */{
-                    _0: /* tuple */[
+                    _0: [
                       "",
                       _1
                     ],
                     _1: /* :: */{
-                      _0: /* tuple */[
+                      _0: [
                         "",
                         _4
                       ],
                       _1: /* :: */{
-                        _0: /* tuple */[
+                        _0: [
                           "",
                           _7
                         ],
@@ -18188,17 +18188,17 @@ var yyact = [
                         _0: array_function("String", "set")
                       }),
                   _1: /* :: */{
-                    _0: /* tuple */[
+                    _0: [
                       "",
                       _1
                     ],
                     _1: /* :: */{
-                      _0: /* tuple */[
+                      _0: [
                         "",
                         _4
                       ],
                       _1: /* :: */{
-                        _0: /* tuple */[
+                        _0: [
                           "",
                           _7
                         ],
@@ -18225,17 +18225,17 @@ var yyact = [
                             _0: bigarray_function("Array1", set)
                           }),
                       _1: /* :: */{
-                        _0: /* tuple */[
+                        _0: [
                           "",
                           _1
                         ],
                         _1: /* :: */{
-                          _0: /* tuple */[
+                          _0: [
                             "",
                             c1
                           ],
                           _1: /* :: */{
-                            _0: /* tuple */[
+                            _0: [
                               "",
                               _7
                             ],
@@ -18255,22 +18255,22 @@ var yyact = [
                             _0: bigarray_function("Array2", set)
                           }),
                       _1: /* :: */{
-                        _0: /* tuple */[
+                        _0: [
                           "",
                           _1
                         ],
                         _1: /* :: */{
-                          _0: /* tuple */[
+                          _0: [
                             "",
                             c1
                           ],
                           _1: /* :: */{
-                            _0: /* tuple */[
+                            _0: [
                               "",
                               c2
                             ],
                             _1: /* :: */{
-                              _0: /* tuple */[
+                              _0: [
                                 "",
                                 _7
                               ],
@@ -18289,27 +18289,27 @@ var yyact = [
                             _0: bigarray_function("Array3", set)
                           }),
                       _1: /* :: */{
-                        _0: /* tuple */[
+                        _0: [
                           "",
                           _1
                         ],
                         _1: /* :: */{
-                          _0: /* tuple */[
+                          _0: [
                             "",
                             c1
                           ],
                           _1: /* :: */{
-                            _0: /* tuple */[
+                            _0: [
                               "",
                               c2
                             ],
                             _1: /* :: */{
-                              _0: /* tuple */[
+                              _0: [
                                 "",
                                 match$1._0
                               ],
                               _1: /* :: */{
-                                _0: /* tuple */[
+                                _0: [
                                   "",
                                   _7
                                 ],
@@ -18330,12 +18330,12 @@ var yyact = [
                         _0: bigarray_function("Genarray", "set")
                       }),
                   _1: /* :: */{
-                    _0: /* tuple */[
+                    _0: [
                       "",
                       _1
                     ],
                     _1: /* :: */{
-                      _0: /* tuple */[
+                      _0: [
                         "",
                         ghexp({
                               tag: /* Pexp_array */14,
@@ -18343,7 +18343,7 @@ var yyact = [
                             })
                       ],
                       _1: /* :: */{
-                        _0: /* tuple */[
+                        _0: [
                           "",
                           _7
                         ],
@@ -18513,12 +18513,12 @@ var yyact = [
                         _0: array_function("Array", "get")
                       }),
                   _1: /* :: */{
-                    _0: /* tuple */[
+                    _0: [
                       "",
                       _1
                     ],
                     _1: /* :: */{
-                      _0: /* tuple */[
+                      _0: [
                         "",
                         _4
                       ],
@@ -18542,12 +18542,12 @@ var yyact = [
                         _0: array_function("String", "get")
                       }),
                   _1: /* :: */{
-                    _0: /* tuple */[
+                    _0: [
                       "",
                       _1
                     ],
                     _1: /* :: */{
-                      _0: /* tuple */[
+                      _0: [
                         "",
                         _4
                       ],
@@ -18577,12 +18577,12 @@ var yyact = [
                             _0: bigarray_function("Array1", get)
                           }),
                       _1: /* :: */{
-                        _0: /* tuple */[
+                        _0: [
                           "",
                           _1
                         ],
                         _1: /* :: */{
-                          _0: /* tuple */[
+                          _0: [
                             "",
                             c1
                           ],
@@ -18601,17 +18601,17 @@ var yyact = [
                             _0: bigarray_function("Array2", get)
                           }),
                       _1: /* :: */{
-                        _0: /* tuple */[
+                        _0: [
                           "",
                           _1
                         ],
                         _1: /* :: */{
-                          _0: /* tuple */[
+                          _0: [
                             "",
                             c1
                           ],
                           _1: /* :: */{
-                            _0: /* tuple */[
+                            _0: [
                               "",
                               c2
                             ],
@@ -18629,22 +18629,22 @@ var yyact = [
                             _0: bigarray_function("Array3", get)
                           }),
                       _1: /* :: */{
-                        _0: /* tuple */[
+                        _0: [
                           "",
                           _1
                         ],
                         _1: /* :: */{
-                          _0: /* tuple */[
+                          _0: [
                             "",
                             c1
                           ],
                           _1: /* :: */{
-                            _0: /* tuple */[
+                            _0: [
                               "",
                               c2
                             ],
                             _1: /* :: */{
-                              _0: /* tuple */[
+                              _0: [
                                 "",
                                 match$1._0
                               ],
@@ -18664,12 +18664,12 @@ var yyact = [
                         _0: bigarray_function("Genarray", "get")
                       }),
                   _1: /* :: */{
-                    _0: /* tuple */[
+                    _0: [
                       "",
                       _1
                     ],
                     _1: /* :: */{
-                      _0: /* tuple */[
+                      _0: [
                         "",
                         ghexp({
                               tag: /* Pexp_array */14,
@@ -18801,7 +18801,7 @@ var yyact = [
                   tag: /* Pexp_apply */5,
                   _0: mkoperator(_1, 1),
                   _1: /* :: */{
-                    _0: /* tuple */[
+                    _0: [
                       "",
                       _2
                     ],
@@ -18815,7 +18815,7 @@ var yyact = [
                   tag: /* Pexp_apply */5,
                   _0: mkoperator("!", 1),
                   _1: /* :: */{
-                    _0: /* tuple */[
+                    _0: [
                       "",
                       _2
                     ],
@@ -18971,7 +18971,7 @@ var yyact = [
     }),
   (function (__caml_parser_env) {
       var _1 = Parsing.peek_val(__caml_parser_env, 0);
-      return /* tuple */[
+      return [
               "",
               _1
             ];
@@ -18982,7 +18982,7 @@ var yyact = [
   (function (__caml_parser_env) {
       var _1 = Parsing.peek_val(__caml_parser_env, 1);
       var _2 = Parsing.peek_val(__caml_parser_env, 0);
-      return /* tuple */[
+      return [
               _1,
               _2
             ];
@@ -18992,7 +18992,7 @@ var yyact = [
     }),
   (function (__caml_parser_env) {
       var _2 = Parsing.peek_val(__caml_parser_env, 0);
-      return /* tuple */[
+      return [
               "?" + _2[0],
               _2[1]
             ];
@@ -19000,14 +19000,14 @@ var yyact = [
   (function (__caml_parser_env) {
       var _1 = Parsing.peek_val(__caml_parser_env, 1);
       var _2 = Parsing.peek_val(__caml_parser_env, 0);
-      return /* tuple */[
+      return [
               "?" + _1,
               _2
             ];
     }),
   (function (__caml_parser_env) {
       var _1 = Parsing.peek_val(__caml_parser_env, 0);
-      return /* tuple */[
+      return [
               _1,
               mkexp({
                     tag: /* Pexp_ident */0,
@@ -19039,7 +19039,7 @@ var yyact = [
   (function (__caml_parser_env) {
       var _1 = Parsing.peek_val(__caml_parser_env, 1);
       var _2 = Parsing.peek_val(__caml_parser_env, 0);
-      return /* tuple */[
+      return [
               mkpatvar(_1, 1),
               _2
             ];
@@ -19049,7 +19049,7 @@ var yyact = [
       var _3 = Parsing.peek_val(__caml_parser_env, 4);
       var _5 = Parsing.peek_val(__caml_parser_env, 2);
       var _7 = Parsing.peek_val(__caml_parser_env, 0);
-      return /* tuple */[
+      return [
               ghpat({
                     tag: /* Ppat_constraint */10,
                     _0: mkpatvar(_1, 1),
@@ -19068,7 +19068,7 @@ var yyact = [
       var _6 = Parsing.peek_val(__caml_parser_env, 2);
       var _8 = Parsing.peek_val(__caml_parser_env, 0);
       var match = wrap_type_annotation(_4, _6, _8);
-      return /* tuple */[
+      return [
               ghpat({
                     tag: /* Ppat_constraint */10,
                     _0: mkpatvar(_1, 1),
@@ -19080,7 +19080,7 @@ var yyact = [
   (function (__caml_parser_env) {
       var _1 = Parsing.peek_val(__caml_parser_env, 2);
       var _3 = Parsing.peek_val(__caml_parser_env, 0);
-      return /* tuple */[
+      return [
               _1,
               _3
             ];
@@ -19089,7 +19089,7 @@ var yyact = [
       var _1 = Parsing.peek_val(__caml_parser_env, 4);
       var _3 = Parsing.peek_val(__caml_parser_env, 2);
       var _5 = Parsing.peek_val(__caml_parser_env, 0);
-      return /* tuple */[
+      return [
               ghpat({
                     tag: /* Ppat_constraint */10,
                     _0: _1,
@@ -19239,14 +19239,14 @@ var yyact = [
   (function (__caml_parser_env) {
       var _1 = Parsing.peek_val(__caml_parser_env, 2);
       var _3 = Parsing.peek_val(__caml_parser_env, 0);
-      return /* tuple */[
+      return [
               _1,
               _3
             ];
     }),
   (function (__caml_parser_env) {
       var _1 = Parsing.peek_val(__caml_parser_env, 0);
-      return /* tuple */[
+      return [
               undefined,
               _1
             ];
@@ -19276,7 +19276,7 @@ var yyact = [
   (function (__caml_parser_env) {
       var _1 = Parsing.peek_val(__caml_parser_env, 2);
       var _3 = Parsing.peek_val(__caml_parser_env, 0);
-      return /* tuple */[
+      return [
               {
                 txt: _1,
                 loc: rhs_loc(1)
@@ -19286,7 +19286,7 @@ var yyact = [
     }),
   (function (__caml_parser_env) {
       var _1 = Parsing.peek_val(__caml_parser_env, 0);
-      return /* tuple */[
+      return [
               {
                 txt: _1,
                 loc: rhs_loc(1)
@@ -19298,7 +19298,7 @@ var yyact = [
       var _1 = Parsing.peek_val(__caml_parser_env, 2);
       var _3 = Parsing.peek_val(__caml_parser_env, 0);
       return /* :: */{
-              _0: /* tuple */[
+              _0: [
                 {
                   txt: _1,
                   loc: rhs_loc(1)
@@ -19313,7 +19313,7 @@ var yyact = [
       var _3 = Parsing.peek_val(__caml_parser_env, 2);
       var _5 = Parsing.peek_val(__caml_parser_env, 0);
       return /* :: */{
-              _0: /* tuple */[
+              _0: [
                 {
                   txt: _3,
                   loc: rhs_loc(3)
@@ -19340,7 +19340,7 @@ var yyact = [
     }),
   (function (__caml_parser_env) {
       var _2 = Parsing.peek_val(__caml_parser_env, 0);
-      return /* tuple */[
+      return [
               _2,
               undefined
             ];
@@ -19348,14 +19348,14 @@ var yyact = [
   (function (__caml_parser_env) {
       var _2 = Parsing.peek_val(__caml_parser_env, 2);
       var _4 = Parsing.peek_val(__caml_parser_env, 0);
-      return /* tuple */[
+      return [
               _2,
               _4
             ];
     }),
   (function (__caml_parser_env) {
       var _2 = Parsing.peek_val(__caml_parser_env, 0);
-      return /* tuple */[
+      return [
               undefined,
               _2
             ];
@@ -19695,7 +19695,7 @@ var yyact = [
     }),
   (function (__caml_parser_env) {
       var _1 = Parsing.peek_val(__caml_parser_env, 0);
-      return /* tuple */[
+      return [
               /* :: */{
                 _0: _1,
                 _1: /* [] */0
@@ -19705,7 +19705,7 @@ var yyact = [
     }),
   (function (__caml_parser_env) {
       var _1 = Parsing.peek_val(__caml_parser_env, 1);
-      return /* tuple */[
+      return [
               /* :: */{
                 _0: _1,
                 _1: /* [] */0
@@ -19716,7 +19716,7 @@ var yyact = [
   (function (__caml_parser_env) {
       var _1 = Parsing.peek_val(__caml_parser_env, 3);
       Parsing.peek_val(__caml_parser_env, 0);
-      return /* tuple */[
+      return [
               /* :: */{
                 _0: _1,
                 _1: /* [] */0
@@ -19727,7 +19727,7 @@ var yyact = [
   (function (__caml_parser_env) {
       var _1 = Parsing.peek_val(__caml_parser_env, 2);
       var _3 = Parsing.peek_val(__caml_parser_env, 0);
-      return /* tuple */[
+      return [
               /* :: */{
                 _0: _1,
                 _1: _3[0]
@@ -19738,7 +19738,7 @@ var yyact = [
   (function (__caml_parser_env) {
       var _1 = Parsing.peek_val(__caml_parser_env, 2);
       var _3 = Parsing.peek_val(__caml_parser_env, 0);
-      return /* tuple */[
+      return [
               {
                 txt: _1,
                 loc: rhs_loc(1)
@@ -19748,7 +19748,7 @@ var yyact = [
     }),
   (function (__caml_parser_env) {
       var _1 = Parsing.peek_val(__caml_parser_env, 0);
-      return /* tuple */[
+      return [
               {
                 txt: _1,
                 loc: rhs_loc(1)
@@ -19840,7 +19840,7 @@ var yyact = [
       return /* [] */0;
     }),
   (function (__caml_parser_env) {
-      return /* tuple */[
+      return [
               /* Ptype_abstract */0,
               /* Public */1,
               undefined
@@ -19848,7 +19848,7 @@ var yyact = [
     }),
   (function (__caml_parser_env) {
       var _2 = Parsing.peek_val(__caml_parser_env, 0);
-      return /* tuple */[
+      return [
               /* Ptype_abstract */0,
               /* Public */1,
               _2
@@ -19856,7 +19856,7 @@ var yyact = [
     }),
   (function (__caml_parser_env) {
       var _3 = Parsing.peek_val(__caml_parser_env, 0);
-      return /* tuple */[
+      return [
               /* Ptype_abstract */0,
               /* Private */0,
               _3
@@ -19864,7 +19864,7 @@ var yyact = [
     }),
   (function (__caml_parser_env) {
       var _2 = Parsing.peek_val(__caml_parser_env, 0);
-      return /* tuple */[
+      return [
               {
                 tag: /* Ptype_variant */0,
                 _0: List.rev(_2)
@@ -19875,7 +19875,7 @@ var yyact = [
     }),
   (function (__caml_parser_env) {
       var _3 = Parsing.peek_val(__caml_parser_env, 0);
-      return /* tuple */[
+      return [
               {
                 tag: /* Ptype_variant */0,
                 _0: List.rev(_3)
@@ -19885,7 +19885,7 @@ var yyact = [
             ];
     }),
   (function (__caml_parser_env) {
-      return /* tuple */[
+      return [
               /* Ptype_open */1,
               /* Public */1,
               undefined
@@ -19894,7 +19894,7 @@ var yyact = [
   (function (__caml_parser_env) {
       var _2 = Parsing.peek_val(__caml_parser_env, 3);
       var _4 = Parsing.peek_val(__caml_parser_env, 1);
-      return /* tuple */[
+      return [
               {
                 tag: /* Ptype_record */1,
                 _0: _4
@@ -19907,7 +19907,7 @@ var yyact = [
       var _2 = Parsing.peek_val(__caml_parser_env, 3);
       var _4 = Parsing.peek_val(__caml_parser_env, 1);
       var _5 = Parsing.peek_val(__caml_parser_env, 0);
-      return /* tuple */[
+      return [
               {
                 tag: /* Ptype_variant */0,
                 _0: List.rev(_5)
@@ -19918,7 +19918,7 @@ var yyact = [
     }),
   (function (__caml_parser_env) {
       var _2 = Parsing.peek_val(__caml_parser_env, 2);
-      return /* tuple */[
+      return [
               /* Ptype_open */1,
               /* Public */1,
               _2
@@ -19928,7 +19928,7 @@ var yyact = [
       var _2 = Parsing.peek_val(__caml_parser_env, 5);
       var _4 = Parsing.peek_val(__caml_parser_env, 3);
       var _6 = Parsing.peek_val(__caml_parser_env, 1);
-      return /* tuple */[
+      return [
               {
                 tag: /* Ptype_record */1,
                 _0: _6
@@ -19953,7 +19953,7 @@ var yyact = [
   (function (__caml_parser_env) {
       var _1 = Parsing.peek_val(__caml_parser_env, 1);
       var _2 = Parsing.peek_val(__caml_parser_env, 0);
-      return /* tuple */[
+      return [
               _2,
               _1
             ];
@@ -19999,7 +19999,7 @@ var yyact = [
   (function (__caml_parser_env) {
       var _1 = Parsing.peek_val(__caml_parser_env, 1);
       var _2 = Parsing.peek_val(__caml_parser_env, 0);
-      return /* tuple */[
+      return [
               _2,
               _1
             ];
@@ -20102,14 +20102,14 @@ var yyact = [
                 });
     }),
   (function (__caml_parser_env) {
-      return /* tuple */[
+      return [
               /* [] */0,
               undefined
             ];
     }),
   (function (__caml_parser_env) {
       var _2 = Parsing.peek_val(__caml_parser_env, 0);
-      return /* tuple */[
+      return [
               List.rev(_2),
               undefined
             ];
@@ -20117,14 +20117,14 @@ var yyact = [
   (function (__caml_parser_env) {
       var _2 = Parsing.peek_val(__caml_parser_env, 2);
       var _4 = Parsing.peek_val(__caml_parser_env, 0);
-      return /* tuple */[
+      return [
               List.rev(_2),
               _4
             ];
     }),
   (function (__caml_parser_env) {
       var _2 = Parsing.peek_val(__caml_parser_env, 0);
-      return /* tuple */[
+      return [
               /* [] */0,
               _2
             ];
@@ -20727,7 +20727,7 @@ var yyact = [
     }),
   (function (__caml_parser_env) {
       var _1 = Parsing.peek_val(__caml_parser_env, 0);
-      return /* tuple */[
+      return [
               {
                 txt: _1,
                 loc: rhs_loc(1)
@@ -20738,7 +20738,7 @@ var yyact = [
   (function (__caml_parser_env) {
       var _1 = Parsing.peek_val(__caml_parser_env, 2);
       var _3 = Parsing.peek_val(__caml_parser_env, 0);
-      return /* tuple */[
+      return [
               {
                 txt: _1,
                 loc: rhs_loc(1)
@@ -20749,7 +20749,7 @@ var yyact = [
   (function (__caml_parser_env) {
       var _2 = Parsing.peek_val(__caml_parser_env, 2);
       var _4 = Parsing.peek_val(__caml_parser_env, 0);
-      return /* tuple */[
+      return [
               {
                 txt: _2,
                 loc: rhs_loc(2)
@@ -20933,7 +20933,7 @@ var yyact = [
   (function (__caml_parser_env) {
       var _1 = Parsing.peek_val(__caml_parser_env, 2);
       var _3 = Parsing.peek_val(__caml_parser_env, 0);
-      return /* tuple */[
+      return [
               /* :: */{
                 _0: _1,
                 _1: _3[0]
@@ -20944,7 +20944,7 @@ var yyact = [
   (function (__caml_parser_env) {
       var _1 = Parsing.peek_val(__caml_parser_env, 1);
       Parsing.peek_val(__caml_parser_env, 0);
-      return /* tuple */[
+      return [
               /* :: */{
                 _0: _1,
                 _1: /* [] */0
@@ -20953,7 +20953,7 @@ var yyact = [
             ];
     }),
   (function (__caml_parser_env) {
-      return /* tuple */[
+      return [
               /* [] */0,
               /* Open */1
             ];
@@ -20962,7 +20962,7 @@ var yyact = [
       var _1 = Parsing.peek_val(__caml_parser_env, 3);
       var _3 = Parsing.peek_val(__caml_parser_env, 1);
       var _4 = Parsing.peek_val(__caml_parser_env, 0);
-      return /* tuple */[
+      return [
               _1,
               _4,
               _3
@@ -21492,31 +21492,31 @@ var yyact = [
       return /* Virtual */0;
     }),
   (function (__caml_parser_env) {
-      return /* tuple */[
+      return [
               /* Public */1,
               /* Concrete */1
             ];
     }),
   (function (__caml_parser_env) {
-      return /* tuple */[
+      return [
               /* Private */0,
               /* Concrete */1
             ];
     }),
   (function (__caml_parser_env) {
-      return /* tuple */[
+      return [
               /* Public */1,
               /* Virtual */0
             ];
     }),
   (function (__caml_parser_env) {
-      return /* tuple */[
+      return [
               /* Private */0,
               /* Virtual */0
             ];
     }),
   (function (__caml_parser_env) {
-      return /* tuple */[
+      return [
               /* Private */0,
               /* Virtual */0
             ];
@@ -21719,7 +21719,7 @@ var yyact = [
   (function (__caml_parser_env) {
       var _2 = Parsing.peek_val(__caml_parser_env, 2);
       var _3 = Parsing.peek_val(__caml_parser_env, 1);
-      return /* tuple */[
+      return [
               _2,
               _3
             ];
@@ -21727,7 +21727,7 @@ var yyact = [
   (function (__caml_parser_env) {
       var _2 = Parsing.peek_val(__caml_parser_env, 2);
       var _3 = Parsing.peek_val(__caml_parser_env, 1);
-      return /* tuple */[
+      return [
               _2,
               _3
             ];
@@ -21735,7 +21735,7 @@ var yyact = [
   (function (__caml_parser_env) {
       var _2 = Parsing.peek_val(__caml_parser_env, 2);
       var _3 = Parsing.peek_val(__caml_parser_env, 1);
-      return /* tuple */[
+      return [
               _2,
               _3
             ];
@@ -21763,7 +21763,7 @@ var yyact = [
             };
     }),
   (function (__caml_parser_env) {
-      return /* tuple */[
+      return [
               undefined,
               /* [] */0
             ];
@@ -21771,7 +21771,7 @@ var yyact = [
   (function (__caml_parser_env) {
       var _1 = Parsing.peek_val(__caml_parser_env, 1);
       var _2 = Parsing.peek_val(__caml_parser_env, 0);
-      return /* tuple */[
+      return [
               undefined,
               /* :: */{
                 _0: _1,
@@ -21782,7 +21782,7 @@ var yyact = [
   (function (__caml_parser_env) {
       var _2 = Parsing.peek_val(__caml_parser_env, 1);
       var _3 = Parsing.peek_val(__caml_parser_env, 0);
-      return /* tuple */[
+      return [
               _2,
               _3
             ];
@@ -21790,7 +21790,7 @@ var yyact = [
   (function (__caml_parser_env) {
       var _2 = Parsing.peek_val(__caml_parser_env, 2);
       var _3 = Parsing.peek_val(__caml_parser_env, 1);
-      return /* tuple */[
+      return [
               _2,
               _3
             ];
@@ -21798,7 +21798,7 @@ var yyact = [
   (function (__caml_parser_env) {
       var _2 = Parsing.peek_val(__caml_parser_env, 2);
       var _3 = Parsing.peek_val(__caml_parser_env, 1);
-      return /* tuple */[
+      return [
               _2,
               _3
             ];
@@ -22017,21 +22017,21 @@ function semantic_version_parse(str, start, last_index) {
       var acc = _acc;
       var start = _start;
       if (start > last_index) {
-        return /* tuple */[
+        return [
                 acc,
                 start
               ];
       }
       var c = str.charCodeAt(start);
       if (c === /* "." */46) {
-        return /* tuple */[
+        return [
                 acc,
                 start + 1 | 0
               ];
       }
       var v = c - /* "0" */48 | 0;
       if (!(v >= 0 && v <= 9)) {
-        return /* tuple */[
+        return [
                 acc,
                 start
               ];
@@ -22046,8 +22046,8 @@ function semantic_version_parse(str, start, last_index) {
   var match$2 = aux(match$1[1], 0, last_index);
   var patch_end = match$2[1];
   var additional = $$String.sub(str, patch_end, (last_index - patch_end | 0) + 1 | 0);
-  return /* tuple */[
-          /* tuple */[
+  return [
+          [
             match[0],
             match$1[0],
             match$2[0]
@@ -22241,7 +22241,7 @@ function directive_parse(token_with_comments, lexbuf) {
     if (look_ahead.contents !== undefined) {
       throw {
             RE_EXN_ID: "Assert_failure",
-            _1: /* tuple */[
+            _1: [
               "lexer.mll",
               312,
               4
@@ -22307,7 +22307,7 @@ function directive_parse(token_with_comments, lexbuf) {
                       if (v !== 126) {
                         exit$3 = 1;
                       } else {
-                        match = /* tuple */[
+                        match = [
                           /* Approximate */-617782220,
                           semantic_version_parse(str, 1, last_index)
                         ];
@@ -22326,10 +22326,10 @@ function directive_parse(token_with_comments, lexbuf) {
                                     Error: new Error()
                                   };
                             }
-                            match = str[1] === "=" ? /* tuple */[
+                            match = str[1] === "=" ? [
                                 /* Le */17049,
                                 semantic_version_parse(str, 2, last_index)
-                              ] : /* tuple */[
+                              ] : [
                                 /* Lt */17064,
                                 semantic_version_parse(str, 1, last_index)
                               ];
@@ -22349,10 +22349,10 @@ function directive_parse(token_with_comments, lexbuf) {
                                     Error: new Error()
                                   };
                             }
-                            match = str[1] === "=" ? /* tuple */[
+                            match = str[1] === "=" ? [
                                 /* Ge */15934,
                                 semantic_version_parse(str, 2, last_index)
-                              ] : /* tuple */[
+                              ] : [
                                 /* Gt */15949,
                                 semantic_version_parse(str, 1, last_index)
                               ];
@@ -22363,13 +22363,13 @@ function directive_parse(token_with_comments, lexbuf) {
                       exit$3 = 1;
                     }
                   } else {
-                    match = /* tuple */[
+                    match = [
                       /* Compatible */785637236,
                       semantic_version_parse(str, 1, last_index)
                     ];
                   }
                   if (exit$3 === 1) {
-                    match = /* tuple */[
+                    match = [
                       /* Exact */172069535,
                       semantic_version_parse(str, 0, last_index)
                     ];
@@ -22476,7 +22476,7 @@ function directive_parse(token_with_comments, lexbuf) {
       if (exit$4 === 2) {
         throw {
               RE_EXN_ID: "Assert_failure",
-              _1: /* tuple */[
+              _1: [
                 "lexer.mll",
                 331,
                 17
@@ -22719,252 +22719,252 @@ function is_elif(i) {
 }
 
 var keyword_table = create_hashtable(149, /* :: */{
-      _0: /* tuple */[
+      _0: [
         "and",
         /* AND */2
       ],
       _1: /* :: */{
-        _0: /* tuple */[
+        _0: [
           "as",
           /* AS */3
         ],
         _1: /* :: */{
-          _0: /* tuple */[
+          _0: [
             "assert",
             /* ASSERT */4
           ],
           _1: /* :: */{
-            _0: /* tuple */[
+            _0: [
               "begin",
               /* BEGIN */10
             ],
             _1: /* :: */{
-              _0: /* tuple */[
+              _0: [
                 "class",
                 /* CLASS */11
               ],
               _1: /* :: */{
-                _0: /* tuple */[
+                _0: [
                   "constraint",
                   /* CONSTRAINT */17
                 ],
                 _1: /* :: */{
-                  _0: /* tuple */[
+                  _0: [
                     "do",
                     /* DO */18
                   ],
                   _1: /* :: */{
-                    _0: /* tuple */[
+                    _0: [
                       "done",
                       /* DONE */19
                     ],
                     _1: /* :: */{
-                      _0: /* tuple */[
+                      _0: [
                         "downto",
                         /* DOWNTO */22
                       ],
                       _1: /* :: */{
-                        _0: /* tuple */[
+                        _0: [
                           "else",
                           /* ELSE */23
                         ],
                         _1: /* :: */{
-                          _0: /* tuple */[
+                          _0: [
                             "end",
                             /* END */24
                           ],
                           _1: /* :: */{
-                            _0: /* tuple */[
+                            _0: [
                               "exception",
                               /* EXCEPTION */27
                             ],
                             _1: /* :: */{
-                              _0: /* tuple */[
+                              _0: [
                                 "external",
                                 /* EXTERNAL */28
                               ],
                               _1: /* :: */{
-                                _0: /* tuple */[
+                                _0: [
                                   "false",
                                   /* FALSE */29
                                 ],
                                 _1: /* :: */{
-                                  _0: /* tuple */[
+                                  _0: [
                                     "for",
                                     /* FOR */30
                                   ],
                                   _1: /* :: */{
-                                    _0: /* tuple */[
+                                    _0: [
                                       "fun",
                                       /* FUN */31
                                     ],
                                     _1: /* :: */{
-                                      _0: /* tuple */[
+                                      _0: [
                                         "function",
                                         /* FUNCTION */32
                                       ],
                                       _1: /* :: */{
-                                        _0: /* tuple */[
+                                        _0: [
                                           "functor",
                                           /* FUNCTOR */33
                                         ],
                                         _1: /* :: */{
-                                          _0: /* tuple */[
+                                          _0: [
                                             "if",
                                             /* IF */37
                                           ],
                                           _1: /* :: */{
-                                            _0: /* tuple */[
+                                            _0: [
                                               "in",
                                               /* IN */38
                                             ],
                                             _1: /* :: */{
-                                              _0: /* tuple */[
+                                              _0: [
                                                 "include",
                                                 /* INCLUDE */39
                                               ],
                                               _1: /* :: */{
-                                                _0: /* tuple */[
+                                                _0: [
                                                   "inherit",
                                                   /* INHERIT */40
                                                 ],
                                                 _1: /* :: */{
-                                                  _0: /* tuple */[
+                                                  _0: [
                                                     "initializer",
                                                     /* INITIALIZER */41
                                                   ],
                                                   _1: /* :: */{
-                                                    _0: /* tuple */[
+                                                    _0: [
                                                       "lazy",
                                                       /* LAZY */42
                                                     ],
                                                     _1: /* :: */{
-                                                      _0: /* tuple */[
+                                                      _0: [
                                                         "let",
                                                         /* LET */53
                                                       ],
                                                       _1: /* :: */{
-                                                        _0: /* tuple */[
+                                                        _0: [
                                                           "match",
                                                           /* MATCH */58
                                                         ],
                                                         _1: /* :: */{
-                                                          _0: /* tuple */[
+                                                          _0: [
                                                             "method",
                                                             /* METHOD */59
                                                           ],
                                                           _1: /* :: */{
-                                                            _0: /* tuple */[
+                                                            _0: [
                                                               "module",
                                                               /* MODULE */63
                                                             ],
                                                             _1: /* :: */{
-                                                              _0: /* tuple */[
+                                                              _0: [
                                                                 "mutable",
                                                                 /* MUTABLE */64
                                                               ],
                                                               _1: /* :: */{
-                                                                _0: /* tuple */[
+                                                                _0: [
                                                                   "new",
                                                                   /* NEW */65
                                                                 ],
                                                                 _1: /* :: */{
-                                                                  _0: /* tuple */[
+                                                                  _0: [
                                                                     "nonrec",
                                                                     /* NONREC */66
                                                                   ],
                                                                   _1: /* :: */{
-                                                                    _0: /* tuple */[
+                                                                    _0: [
                                                                       "object",
                                                                       /* OBJECT */67
                                                                     ],
                                                                     _1: /* :: */{
-                                                                      _0: /* tuple */[
+                                                                      _0: [
                                                                         "of",
                                                                         /* OF */68
                                                                       ],
                                                                       _1: /* :: */{
-                                                                        _0: /* tuple */[
+                                                                        _0: [
                                                                           "open",
                                                                           /* OPEN */69
                                                                         ],
                                                                         _1: /* :: */{
-                                                                          _0: /* tuple */[
+                                                                          _0: [
                                                                             "or",
                                                                             /* OR */70
                                                                           ],
                                                                           _1: /* :: */{
-                                                                            _0: /* tuple */[
+                                                                            _0: [
                                                                               "private",
                                                                               /* PRIVATE */75
                                                                             ],
                                                                             _1: /* :: */{
-                                                                              _0: /* tuple */[
+                                                                              _0: [
                                                                                 "rec",
                                                                                 /* REC */80
                                                                               ],
                                                                               _1: /* :: */{
-                                                                                _0: /* tuple */[
+                                                                                _0: [
                                                                                   "sig",
                                                                                   /* SIG */85
                                                                                 ],
                                                                                 _1: /* :: */{
-                                                                                  _0: /* tuple */[
+                                                                                  _0: [
                                                                                     "struct",
                                                                                     /* STRUCT */87
                                                                                   ],
                                                                                   _1: /* :: */{
-                                                                                    _0: /* tuple */[
+                                                                                    _0: [
                                                                                       "then",
                                                                                       /* THEN */88
                                                                                     ],
                                                                                     _1: /* :: */{
-                                                                                      _0: /* tuple */[
+                                                                                      _0: [
                                                                                         "to",
                                                                                         /* TO */90
                                                                                       ],
                                                                                       _1: /* :: */{
-                                                                                        _0: /* tuple */[
+                                                                                        _0: [
                                                                                           "true",
                                                                                           /* TRUE */91
                                                                                         ],
                                                                                         _1: /* :: */{
-                                                                                          _0: /* tuple */[
+                                                                                          _0: [
                                                                                             "try",
                                                                                             /* TRY */92
                                                                                           ],
                                                                                           _1: /* :: */{
-                                                                                            _0: /* tuple */[
+                                                                                            _0: [
                                                                                               "type",
                                                                                               /* TYPE */93
                                                                                             ],
                                                                                             _1: /* :: */{
-                                                                                              _0: /* tuple */[
+                                                                                              _0: [
                                                                                                 "val",
                                                                                                 /* VAL */95
                                                                                               ],
                                                                                               _1: /* :: */{
-                                                                                                _0: /* tuple */[
+                                                                                                _0: [
                                                                                                   "virtual",
                                                                                                   /* VIRTUAL */96
                                                                                                 ],
                                                                                                 _1: /* :: */{
-                                                                                                  _0: /* tuple */[
+                                                                                                  _0: [
                                                                                                     "when",
                                                                                                     /* WHEN */97
                                                                                                   ],
                                                                                                   _1: /* :: */{
-                                                                                                    _0: /* tuple */[
+                                                                                                    _0: [
                                                                                                       "while",
                                                                                                       /* WHILE */98
                                                                                                     ],
                                                                                                     _1: /* :: */{
-                                                                                                      _0: /* tuple */[
+                                                                                                      _0: [
                                                                                                         "with",
                                                                                                         /* WITH */99
                                                                                                       ],
                                                                                                       _1: /* :: */{
-                                                                                                        _0: /* tuple */[
+                                                                                                        _0: [
                                                                                                           "mod",
                                                                                                           {
                                                                                                             tag: /* INFIXOP3 */5,
@@ -22972,7 +22972,7 @@ var keyword_table = create_hashtable(149, /* :: */{
                                                                                                           }
                                                                                                         ],
                                                                                                         _1: /* :: */{
-                                                                                                          _0: /* tuple */[
+                                                                                                          _0: [
                                                                                                             "land",
                                                                                                             {
                                                                                                               tag: /* INFIXOP3 */5,
@@ -22980,7 +22980,7 @@ var keyword_table = create_hashtable(149, /* :: */{
                                                                                                             }
                                                                                                           ],
                                                                                                           _1: /* :: */{
-                                                                                                            _0: /* tuple */[
+                                                                                                            _0: [
                                                                                                               "lor",
                                                                                                               {
                                                                                                                 tag: /* INFIXOP3 */5,
@@ -22988,7 +22988,7 @@ var keyword_table = create_hashtable(149, /* :: */{
                                                                                                               }
                                                                                                             ],
                                                                                                             _1: /* :: */{
-                                                                                                              _0: /* tuple */[
+                                                                                                              _0: [
                                                                                                                 "lxor",
                                                                                                                 {
                                                                                                                   tag: /* INFIXOP3 */5,
@@ -22996,7 +22996,7 @@ var keyword_table = create_hashtable(149, /* :: */{
                                                                                                                 }
                                                                                                               ],
                                                                                                               _1: /* :: */{
-                                                                                                                _0: /* tuple */[
+                                                                                                                _0: [
                                                                                                                   "lsl",
                                                                                                                   {
                                                                                                                     tag: /* INFIXOP4 */6,
@@ -23004,7 +23004,7 @@ var keyword_table = create_hashtable(149, /* :: */{
                                                                                                                   }
                                                                                                                 ],
                                                                                                                 _1: /* :: */{
-                                                                                                                  _0: /* tuple */[
+                                                                                                                  _0: [
                                                                                                                     "lsr",
                                                                                                                     {
                                                                                                                       tag: /* INFIXOP4 */6,
@@ -23012,7 +23012,7 @@ var keyword_table = create_hashtable(149, /* :: */{
                                                                                                                     }
                                                                                                                   ],
                                                                                                                   _1: /* :: */{
-                                                                                                                    _0: /* tuple */[
+                                                                                                                    _0: [
                                                                                                                       "asr",
                                                                                                                       {
                                                                                                                         tag: /* INFIXOP4 */6,
@@ -23159,7 +23159,7 @@ function with_comment_buffer(comment, lexbuf) {
     loc_end: loc_loc_end,
     loc_ghost: loc_loc_ghost
   };
-  return /* tuple */[
+  return [
           s,
           loc
         ];
@@ -23316,7 +23316,7 @@ function add_comment(com) {
 }
 
 function add_docstring_comment(ds) {
-  return add_comment(/* tuple */[
+  return add_comment([
               ds.ds_body,
               ds.ds_loc
             ]);
@@ -23750,7 +23750,7 @@ function token(lexbuf) {
           lexbuf.lex_start_p = string_start;
           return {
                   tag: /* STRING */16,
-                  _0: /* tuple */[
+                  _0: [
                     get_stored_string(undefined),
                     undefined
                   ]
@@ -23767,7 +23767,7 @@ function token(lexbuf) {
           lexbuf.lex_start_p = string_start$1;
           return {
                   tag: /* STRING */16,
-                  _0: /* tuple */[
+                  _0: [
                     get_stored_string(undefined),
                     delim$1
                   ]
@@ -23814,7 +23814,7 @@ function token(lexbuf) {
           var match = with_comment_buffer(comment, lexbuf);
           return {
                   tag: /* COMMENT */18,
-                  _0: /* tuple */[
+                  _0: [
                     match[0],
                     match[1]
                   ]
@@ -23835,7 +23835,7 @@ function token(lexbuf) {
               }(stars)), lexbuf);
           return {
                   tag: /* COMMENT */18,
-                  _0: /* tuple */[
+                  _0: [
                     match$2[0],
                     match$2[1]
                   ]
@@ -23847,7 +23847,7 @@ function token(lexbuf) {
           var match$3 = with_comment_buffer(comment, lexbuf);
           return {
                   tag: /* COMMENT */18,
-                  _0: /* tuple */[
+                  _0: [
                     match$3[0],
                     match$3[1]
                   ]
@@ -23856,7 +23856,7 @@ function token(lexbuf) {
           var stars$1 = Lexing.sub_lexeme(lexbuf, lexbuf.lex_start_pos, lexbuf.lex_curr_pos - 2 | 0);
           return {
                   tag: /* COMMENT */18,
-                  _0: /* tuple */[
+                  _0: [
                     stars$1,
                     curr(lexbuf)
                   ]
@@ -24177,7 +24177,7 @@ function __ocaml_lex_comment_rec(lexbuf, ___ocaml_lex_state) {
           }
           throw {
                 RE_EXN_ID: "Assert_failure",
-                _1: /* tuple */[
+                _1: [
                   "lexer.mll",
                   989,
                   16
@@ -24216,7 +24216,7 @@ function __ocaml_lex_comment_rec(lexbuf, ___ocaml_lex_state) {
                 }
                 throw {
                       RE_EXN_ID: "Assert_failure",
-                      _1: /* tuple */[
+                      _1: [
                         "lexer.mll",
                         1003,
                         18
@@ -24266,7 +24266,7 @@ function __ocaml_lex_comment_rec(lexbuf, ___ocaml_lex_state) {
                 }
                 throw {
                       RE_EXN_ID: "Assert_failure",
-                      _1: /* tuple */[
+                      _1: [
                         "lexer.mll",
                         1023,
                         18
@@ -24306,7 +24306,7 @@ function __ocaml_lex_comment_rec(lexbuf, ___ocaml_lex_state) {
           }
           throw {
                 RE_EXN_ID: "Assert_failure",
-                _1: /* tuple */[
+                _1: [
                   "lexer.mll",
                   1053,
                   16
@@ -24572,7 +24572,7 @@ function token$1(lexbuf) {
         switch (doc.tag | 0) {
           case /* COMMENT */18 :
               var match$1 = doc._0;
-              add_comment(/* tuple */[
+              add_comment([
                     match$1[0],
                     match$1[1]
                   ]);
@@ -24834,7 +24834,7 @@ function map_pattern_desc(f, d) {
         return {
                 tag: /* Tpat_record */6,
                 _0: List.map((function (param) {
-                        return /* tuple */[
+                        return [
                                 param[0],
                                 param[1],
                                 Curry._1(f, param[2])
@@ -24878,7 +24878,7 @@ function bound_idents(_pat) {
     switch (d.tag | 0) {
       case /* Tpat_var */0 :
           idents.contents = /* :: */{
-            _0: /* tuple */[
+            _0: [
               d._0,
               d._1
             ],
@@ -24888,7 +24888,7 @@ function bound_idents(_pat) {
       case /* Tpat_alias */1 :
           bound_idents(d._0);
           idents.contents = /* :: */{
-            _0: /* tuple */[
+            _0: [
               d._1,
               d._2
             ],
@@ -25200,7 +25200,7 @@ function TypedtreeMap_MakeMap(funarg) {
             ctyp_desc = {
               tag: /* Ttyp_object */4,
               _0: List.map((function (param) {
-                      return /* tuple */[
+                      return [
                               param[0],
                               param[1],
                               map_core_type(param[2])
@@ -25319,7 +25319,7 @@ function TypedtreeMap_MakeMap(funarg) {
   var map_package_type = function (pack) {
     var pack$1 = Curry._1(funarg.enter_package_type, pack);
     var pack_fields = List.map((function (param) {
-            return /* tuple */[
+            return [
                     param[0],
                     map_core_type(param[1])
                   ];
@@ -25386,7 +25386,7 @@ function TypedtreeMap_MakeMap(funarg) {
     var decl$1 = Curry._1(funarg.enter_type_declaration, decl);
     var typ_params = List.map(map_type_parameter, decl$1.typ_params);
     var typ_cstrs = List.map((function (param) {
-            return /* tuple */[
+            return [
                     map_core_type(param[0]),
                     map_core_type(param[1]),
                     param[2]
@@ -25495,7 +25495,7 @@ function TypedtreeMap_MakeMap(funarg) {
             tag: /* Tmty_with */3,
             _0: map_module_type(sg._0),
             _1: List.map((function (param) {
-                    return /* tuple */[
+                    return [
                             param[0],
                             param[1],
                             map_with_constraint(param[2])
@@ -25581,7 +25581,7 @@ function TypedtreeMap_MakeMap(funarg) {
             pat_desc = {
               tag: /* Tpat_record */6,
               _0: List.map((function (param) {
-                      return /* tuple */[
+                      return [
                               param[0],
                               param[1],
                               map_pattern(param[2])
@@ -25629,7 +25629,7 @@ function TypedtreeMap_MakeMap(funarg) {
     if (typeof ct === "number" || ct.tag) {
       return pat_extra;
     } else {
-      return /* tuple */[
+      return [
               {
                 tag: /* Tpat_constraint */0,
                 _0: map_core_type(ct._0)
@@ -25901,7 +25901,7 @@ function TypedtreeMap_MakeMap(funarg) {
           break;
       case /* Tstr_class */10 :
           var list$1 = List.map((function (param) {
-                  return /* tuple */[
+                  return [
                           map_class_declaration(param[0]),
                           param[1],
                           param[2]
@@ -25914,7 +25914,7 @@ function TypedtreeMap_MakeMap(funarg) {
           break;
       case /* Tstr_class_type */11 :
           var list$2 = List.map((function (param) {
-                  return /* tuple */[
+                  return [
                           param[0],
                           param[1],
                           map_class_type_declaration(param[2])
@@ -25962,7 +25962,7 @@ function TypedtreeMap_MakeMap(funarg) {
           };
   };
   var map_type_parameter = function (param) {
-    return /* tuple */[
+    return [
             map_core_type(param[0]),
             param[1]
           ];
@@ -25996,7 +25996,7 @@ function TypedtreeMap_MakeMap(funarg) {
             _1: List.map((function (param) {
                     var expo = param[1];
                     var expo$1 = expo !== undefined ? map_expression(expo) : expo;
-                    return /* tuple */[
+                    return [
                             param[0],
                             expo$1,
                             param[2]
@@ -26046,7 +26046,7 @@ function TypedtreeMap_MakeMap(funarg) {
       case /* Texp_record */10 :
           var expo$2 = list._1;
           var list$1 = List.map((function (param) {
-                  return /* tuple */[
+                  return [
                           param[0],
                           param[1],
                           map_expression(param[2])
@@ -26144,7 +26144,7 @@ function TypedtreeMap_MakeMap(funarg) {
             tag: /* Texp_override */22,
             _0: list._0,
             _1: List.map((function (param) {
-                    return /* tuple */[
+                    return [
                             param[0],
                             param[1],
                             map_expression(param[2])
@@ -26223,7 +26223,7 @@ function TypedtreeMap_MakeMap(funarg) {
             _0: clstr._0,
             _1: map_pattern(clstr._1),
             _2: List.map((function (param) {
-                    return /* tuple */[
+                    return [
                             param[0],
                             param[1],
                             map_expression(param[2])
@@ -26238,7 +26238,7 @@ function TypedtreeMap_MakeMap(funarg) {
             tag: /* Tcl_apply */3,
             _0: map_class_expr(clstr._0),
             _1: List.map((function (param) {
-                    return /* tuple */[
+                    return [
                             param[0],
                             may_map(map_expression, param[1]),
                             param[2]
@@ -26253,7 +26253,7 @@ function TypedtreeMap_MakeMap(funarg) {
             _0: rec_flat,
             _1: List.map(map_binding, clstr._1),
             _2: List.map((function (param) {
-                    return /* tuple */[
+                    return [
                             param[0],
                             param[1],
                             map_expression(param[2])
@@ -26306,7 +26306,7 @@ function TypedtreeMap_MakeMap(funarg) {
           var match = ct._0;
           ctf_desc = {
             tag: /* Tctf_val */1,
-            _0: /* tuple */[
+            _0: [
               match[0],
               match[1],
               match[2],
@@ -26318,7 +26318,7 @@ function TypedtreeMap_MakeMap(funarg) {
           var match$1 = ct._0;
           ctf_desc = {
             tag: /* Tctf_method */2,
-            _0: /* tuple */[
+            _0: [
               match$1[0],
               match$1[1],
               match$1[2],
@@ -26330,7 +26330,7 @@ function TypedtreeMap_MakeMap(funarg) {
           var match$2 = ct._0;
           ctf_desc = {
             tag: /* Tctf_constraint */3,
-            _0: /* tuple */[
+            _0: [
               map_core_type(match$2[0]),
               map_core_type(match$2[1])
             ]
@@ -26482,7 +26482,7 @@ function TypedtreeMap_MakeMap(funarg) {
     var desc = exp_extra[0];
     switch (desc.tag | 0) {
       case /* Texp_constraint */0 :
-          return /* tuple */[
+          return [
                   {
                     tag: /* Texp_constraint */0,
                     _0: map_core_type(desc._0)
@@ -26493,7 +26493,7 @@ function TypedtreeMap_MakeMap(funarg) {
       case /* Texp_coerce */1 :
           var ct1 = desc._0;
           if (ct1 !== undefined) {
-            return /* tuple */[
+            return [
                     {
                       tag: /* Texp_coerce */1,
                       _0: map_core_type(ct1),
@@ -26503,7 +26503,7 @@ function TypedtreeMap_MakeMap(funarg) {
                     attrs
                   ];
           } else {
-            return /* tuple */[
+            return [
                     {
                       tag: /* Texp_coerce */1,
                       _0: undefined,
@@ -26516,7 +26516,7 @@ function TypedtreeMap_MakeMap(funarg) {
       case /* Texp_poly */3 :
           var ct = desc._0;
           if (ct !== undefined) {
-            return /* tuple */[
+            return [
                     {
                       tag: /* Texp_poly */3,
                       _0: map_core_type(ct)
@@ -26603,7 +26603,7 @@ function leave_expression(e) {
   var exp_extra = List.map((function (exp_extra) {
           var match = exp_extra[0];
           if (match.tag === /* Texp_open */2) {
-            return /* tuple */[
+            return [
                     {
                       tag: /* Texp_open */2,
                       _0: match._0,
@@ -26870,7 +26870,7 @@ function add_saved_type(b) {
 function record_value_dependency(vd1, vd2) {
   if (Caml_obj.caml_notequal(vd1.val_loc, vd2.val_loc)) {
     value_deps.contents = /* :: */{
-      _0: /* tuple */[
+      _0: [
         vd1,
         vd2
       ],
@@ -27060,7 +27060,7 @@ function init_def(level) {
 
 function begin_def(param) {
   saved_level.contents = /* :: */{
-    _0: /* tuple */[
+    _0: [
       current_level.contents,
       nongen_level.contents
     ],
@@ -27073,7 +27073,7 @@ function begin_def(param) {
 
 function begin_class_def(param) {
   saved_level.contents = /* :: */{
-    _0: /* tuple */[
+    _0: [
       current_level.contents,
       nongen_level.contents
     ],
@@ -27085,7 +27085,7 @@ function begin_class_def(param) {
 
 function raise_nongen_level(param) {
   saved_level.contents = /* :: */{
-    _0: /* tuple */[
+    _0: [
       current_level.contents,
       nongen_level.contents
     ],
@@ -27126,7 +27126,7 @@ function is_object_type(path) {
     case /* Papply */2 :
         throw {
               RE_EXN_ID: "Assert_failure",
-              _1: /* tuple */[
+              _1: [
                 "ctype.ml",
                 149,
                 23
@@ -27312,7 +27312,7 @@ function object_fields(ty) {
   if (typeof match === "number") {
     throw {
           RE_EXN_ID: "Assert_failure",
-          _1: /* tuple */[
+          _1: [
             "ctype.ml",
             284,
             27
@@ -27325,7 +27325,7 @@ function object_fields(ty) {
   }
   throw {
         RE_EXN_ID: "Assert_failure",
-        _1: /* tuple */[
+        _1: [
           "ctype.ml",
           284,
           27
@@ -27342,20 +27342,20 @@ function flatten_fields(ty) {
       var ty$1 = repr(ty);
       var match = ty$1.desc;
       if (typeof match === "number") {
-        return /* tuple */[
+        return [
                 l,
                 ty$1
               ];
       }
       if (match.tag !== /* Tfield */5) {
-        return /* tuple */[
+        return [
                 l,
                 ty$1
               ];
       }
       _ty = match._3;
       _l = /* :: */{
-        _0: /* tuple */[
+        _0: [
           match._0,
           match._1,
           match._2
@@ -27366,7 +27366,7 @@ function flatten_fields(ty) {
     };
   };
   var match = flatten(/* [] */0, ty);
-  return /* tuple */[
+  return [
           List.sort((function (param, param$1) {
                   return Caml_primitive.caml_string_compare(param[0], param$1[0]);
                 }), match[0]),
@@ -27392,7 +27392,7 @@ function associate_fields(fields1, fields2) {
   var _p = /* [] */0;
   var _s = /* [] */0;
   var _s$prime = /* [] */0;
-  var _param = /* tuple */[
+  var _param = [
     fields1,
     fields2
   ];
@@ -27403,14 +27403,14 @@ function associate_fields(fields1, fields2) {
     var p = _p;
     var l = param[0];
     if (!param[1]) {
-      return /* tuple */[
+      return [
               List.rev(p),
               Pervasives.$at(List.rev(s), l),
               List.rev(s$prime)
             ];
     }
     if (!l) {
-      return /* tuple */[
+      return [
               List.rev(p),
               List.rev(s),
               Pervasives.$at(List.rev(s$prime), param[1])
@@ -27428,12 +27428,12 @@ function associate_fields(fields1, fields2) {
     var k = match$1[1];
     var n = match$1[0];
     if (Caml_obj.caml_equal(n, n$prime)) {
-      _param = /* tuple */[
+      _param = [
         r,
         r$prime
       ];
       _p = /* :: */{
-        _0: /* tuple */[
+        _0: [
           n,
           k,
           t,
@@ -27445,12 +27445,12 @@ function associate_fields(fields1, fields2) {
       continue ;
     }
     if (Caml_obj.caml_lessthan(n, n$prime)) {
-      _param = /* tuple */[
+      _param = [
         r,
         l$prime
       ];
       _s = /* :: */{
-        _0: /* tuple */[
+        _0: [
           n,
           k,
           t
@@ -27459,12 +27459,12 @@ function associate_fields(fields1, fields2) {
       };
       continue ;
     }
-    _param = /* tuple */[
+    _param = [
       l,
       r$prime
     ];
     _s$prime = /* :: */{
-      _0: /* tuple */[
+      _0: [
         n$prime,
         k$prime,
         t$prime
@@ -27525,7 +27525,7 @@ function close_object(ty) {
   if (typeof match === "number") {
     throw {
           RE_EXN_ID: "Assert_failure",
-          _1: /* tuple */[
+          _1: [
             "ctype.ml",
             351,
             25
@@ -27542,7 +27542,7 @@ function close_object(ty) {
       if (typeof match$1 === "number") {
         throw {
               RE_EXN_ID: "Assert_failure",
-              _1: /* tuple */[
+              _1: [
                 "ctype.ml",
                 347,
                 30
@@ -27559,7 +27559,7 @@ function close_object(ty) {
         default:
           throw {
                 RE_EXN_ID: "Assert_failure",
-                _1: /* tuple */[
+                _1: [
                   "ctype.ml",
                   347,
                   30
@@ -27571,7 +27571,7 @@ function close_object(ty) {
   }
   throw {
         RE_EXN_ID: "Assert_failure",
-        _1: /* tuple */[
+        _1: [
           "ctype.ml",
           351,
           25
@@ -27585,7 +27585,7 @@ function row_variable(ty) {
   if (typeof match === "number") {
     throw {
           RE_EXN_ID: "Assert_failure",
-          _1: /* tuple */[
+          _1: [
             "ctype.ml",
             365,
             23
@@ -27602,7 +27602,7 @@ function row_variable(ty) {
       if (typeof match$1 === "number") {
         throw {
               RE_EXN_ID: "Assert_failure",
-              _1: /* tuple */[
+              _1: [
                 "ctype.ml",
                 361,
                 30
@@ -27619,7 +27619,7 @@ function row_variable(ty) {
         default:
           throw {
                 RE_EXN_ID: "Assert_failure",
-                _1: /* tuple */[
+                _1: [
                   "ctype.ml",
                   361,
                   30
@@ -27631,7 +27631,7 @@ function row_variable(ty) {
   }
   throw {
         RE_EXN_ID: "Assert_failure",
-        _1: /* tuple */[
+        _1: [
           "ctype.ml",
           365,
           23
@@ -27645,7 +27645,7 @@ function set_object_name(id, rv, params, ty) {
   if (typeof match === "number") {
     throw {
           RE_EXN_ID: "Assert_failure",
-          _1: /* tuple */[
+          _1: [
             "ctype.ml",
             375,
             6
@@ -27654,7 +27654,7 @@ function set_object_name(id, rv, params, ty) {
         };
   }
   if (match.tag === /* Tobject */4) {
-    return set_name(match._1, /* tuple */[
+    return set_name(match._1, [
                 {
                   tag: /* Pident */0,
                   _0: id
@@ -27667,7 +27667,7 @@ function set_object_name(id, rv, params, ty) {
   }
   throw {
         RE_EXN_ID: "Assert_failure",
-        _1: /* tuple */[
+        _1: [
           "ctype.ml",
           375,
           6
@@ -27681,7 +27681,7 @@ function hide_private_methods(ty) {
   if (typeof match === "number") {
     throw {
           RE_EXN_ID: "Assert_failure",
-          _1: /* tuple */[
+          _1: [
             "ctype.ml",
             397,
             6
@@ -27703,7 +27703,7 @@ function hide_private_methods(ty) {
   }
   throw {
         RE_EXN_ID: "Assert_failure",
-        _1: /* tuple */[
+        _1: [
           "ctype.ml",
           397,
           6
@@ -27752,14 +27752,14 @@ function sort_row_fields(param) {
 function merge_row_fields(fi1, fi2) {
   var exit = 0;
   if (!fi1) {
-    return /* tuple */[
+    return [
             fi1,
             fi2,
             /* [] */0
           ];
   }
   if (!fi2) {
-    return /* tuple */[
+    return [
             fi1,
             fi2,
             /* [] */0
@@ -27769,7 +27769,7 @@ function merge_row_fields(fi1, fi2) {
     exit = 2;
   } else {
     if (!List.mem_assoc(fi1._0[0], fi2)) {
-      return /* tuple */[
+      return [
               fi1,
               fi2,
               /* [] */0
@@ -27778,7 +27778,7 @@ function merge_row_fields(fi1, fi2) {
     exit = 2;
   }
   if (exit === 2 && !fi2._1 && !List.mem_assoc(fi2._0[0], fi1)) {
-    return /* tuple */[
+    return [
             fi1,
             fi2,
             /* [] */0
@@ -27796,14 +27796,14 @@ function merge_row_fields(fi1, fi2) {
     var r2 = _r2;
     var r1 = _r1;
     if (!fi1$1) {
-      return /* tuple */[
+      return [
               List.rev(r1),
               List.rev_append(r2, fi2$1),
               pairs
             ];
     }
     if (!fi2$1) {
-      return /* tuple */[
+      return [
               List.rev_append(r1, fi1$1),
               List.rev(r2),
               pairs
@@ -27819,7 +27819,7 @@ function merge_row_fields(fi1, fi2) {
       _fi2 = fi2$prime;
       _fi1 = fi1$prime;
       _pairs = /* :: */{
-        _0: /* tuple */[
+        _0: [
           l1,
           p1[1],
           p2[1]
@@ -27954,7 +27954,7 @@ function free_vars_rec(_real, _ty) {
     switch (match.tag | 0) {
       case /* Tvar */0 :
           free_variables.contents = /* :: */{
-            _0: /* tuple */[
+            _0: [
               ty$1,
               real
             ],
@@ -27971,7 +27971,7 @@ function free_vars_rec(_real, _ty) {
             var match$2 = find_type_expansion(match._0, Caml_option.valFromOption(match$1));
             if (repr(match$2[1]).level !== 100000000) {
               free_variables.contents = /* :: */{
-                _0: /* tuple */[
+                _0: [
                   ty$1,
                   real
                 ],
@@ -28354,7 +28354,7 @@ function update_level(env, level, _ty) {
       throw {
             RE_EXN_ID: Unify,
             _1: /* :: */{
-              _0: /* tuple */[
+              _0: [
                 ty$1,
                 newty2(level, {
                       tag: /* Tvar */0,
@@ -28383,7 +28383,7 @@ function update_level(env, level, _ty) {
                     throw {
                           RE_EXN_ID: Unify,
                           _1: /* :: */{
-                            _0: /* tuple */[
+                            _0: [
                               ty$1,
                               newty2(level, {
                                     tag: /* Tvar */0,
@@ -28418,7 +28418,7 @@ function update_level(env, level, _ty) {
               throw {
                     RE_EXN_ID: Unify,
                     _1: /* :: */{
-                      _0: /* tuple */[
+                      _0: [
                         ty1,
                         newty2(level, {
                               tag: /* Tvar */0,
@@ -28460,7 +28460,7 @@ function update_level(env, level, _ty) {
                 throw {
                       RE_EXN_ID: Unify,
                       _1: /* :: */{
-                        _0: /* tuple */[
+                        _0: [
                           ty$1,
                           newty2(level, {
                                 tag: /* Tvar */0,
@@ -28581,7 +28581,7 @@ function generalize_expansive$1(env, ty) {
         throw {
               RE_EXN_ID: Unify,
               _1: /* :: */{
-                _0: /* tuple */[
+                _0: [
                   ty,
                   tr$1._0[1]
                 ],
@@ -28613,7 +28613,7 @@ function limited_generalize(ty0, ty) {
     var ty$1 = repr(ty);
     if (ty$1.level > current_level.contents || ty$1.level === 100000000) {
       idx.contents = idx.contents - 1 | 0;
-      Hashtbl.add(graph, idx.contents, /* tuple */[
+      Hashtbl.add(graph, idx.contents, [
             ty$1,
             {
               contents: pty
@@ -28820,7 +28820,7 @@ function copy(env, partial, keep_names, ty) {
     } else {
       throw {
             RE_EXN_ID: "Assert_failure",
-            _1: /* tuple */[
+            _1: [
               "ctype.ml",
               984,
               16
@@ -28967,7 +28967,7 @@ function copy(env, partial, keep_names, ty) {
                   default:
                     throw {
                           RE_EXN_ID: "Assert_failure",
-                          _1: /* tuple */[
+                          _1: [
                             "ctype.ml",
                             1047,
                             24
@@ -29031,7 +29031,7 @@ function copy(env, partial, keep_names, ty) {
                   }
                   tmp$2 = tmp$3;
                 }
-                match$6 = tmp$2 ? /* tuple */[
+                match$6 = tmp$2 ? [
                     more$prime$1,
                     {
                       row_fields: List.filter(not_reither)(row$1.row_fields),
@@ -29041,12 +29041,12 @@ function copy(env, partial, keep_names, ty) {
                       row_fixed: false,
                       row_name: undefined
                     }
-                  ] : /* tuple */[
+                  ] : [
                     more$prime$1,
                     row$1
                   ];
               } else {
-                match$6 = /* tuple */[
+                match$6 = [
                   more$prime,
                   row$1
                 ];
@@ -29094,7 +29094,7 @@ function gadt_env(env) {
 
 function instance(partial, env, sch) {
   var env$1 = gadt_env(env);
-  var partial$1 = partial !== undefined ? /* tuple */[
+  var partial$1 = partial !== undefined ? [
       compute_univars(sch),
       partial
     ] : undefined;
@@ -29175,7 +29175,7 @@ function instance_constructor(in_pattern, cstr) {
     var newtype_lev = in_pattern[1];
     var env = in_pattern[0];
     var $$process = function (existential) {
-      var decl = new_declaration(/* tuple */[
+      var decl = new_declaration([
             newtype_lev,
             newtype_lev
           ], undefined);
@@ -29205,7 +29205,7 @@ function instance_constructor(in_pattern, cstr) {
       if (!is_Tvar(tv)) {
         throw {
               RE_EXN_ID: "Assert_failure",
-              _1: /* tuple */[
+              _1: [
                 "ctype.ml",
                 1170,
                 8
@@ -29220,7 +29220,7 @@ function instance_constructor(in_pattern, cstr) {
   var ty_res = copy(undefined, undefined, undefined, cstr.cstr_res);
   var ty_args = List.map(simple_copy, cstr.cstr_args);
   cleanup_types(undefined);
-  return /* tuple */[
+  return [
           ty_args,
           ty_res
         ];
@@ -29232,7 +29232,7 @@ function instance_parameterized_type(keep_names, sch_args, sch) {
         }), sch_args);
   var ty = copy(undefined, undefined, undefined, sch);
   cleanup_types(undefined);
-  return /* tuple */[
+  return [
           ty_args,
           ty
         ];
@@ -29309,7 +29309,7 @@ function instance_class(params, cty) {
                   _0: {
                     csig_self: copy(undefined, undefined, undefined, sign$1.csig_self),
                     csig_vars: map((function (param) {
-                            return /* tuple */[
+                            return [
                                     param[0],
                                     param[1],
                                     copy(undefined, undefined, undefined, param[2])
@@ -29317,7 +29317,7 @@ function instance_class(params, cty) {
                           }), sign$1.csig_vars),
                     csig_concr: sign$1.csig_concr,
                     csig_inher: List.map((function (param) {
-                            return /* tuple */[
+                            return [
                                     param[0],
                                     List.map(simple_copy, param[1])
                                   ];
@@ -29337,7 +29337,7 @@ function instance_class(params, cty) {
   var params$prime = List.map(simple_copy, params);
   var cty$prime = copy_class_type(cty);
   cleanup_types(undefined);
-  return /* tuple */[
+  return [
           params$prime,
           cty$prime
         ];
@@ -29430,9 +29430,9 @@ function copy_sep(fixed, free, bound, visited, ty) {
       }
       if (exit === 1) {
         visited$1 = /* :: */{
-          _0: /* tuple */[
+          _0: [
             ty$1,
-            /* tuple */[
+            [
               t$1,
               bound
             ]
@@ -29468,9 +29468,9 @@ function copy_sep(fixed, free, bound, visited, ty) {
                     }), tl);
               var bound$1 = Pervasives.$at(tl, bound);
               var visited$2 = Pervasives.$at(List.map2((function (ty, t) {
-                          return /* tuple */[
+                          return [
                                   ty,
-                                  /* tuple */[
+                                  [
                                     t,
                                     bound$1
                                   ]
@@ -29501,7 +29501,7 @@ function instance_poly(keep_namesOpt, fixed, univars, sch) {
     if (typeof name === "number") {
       throw {
             RE_EXN_ID: "Assert_failure",
-            _1: /* tuple */[
+            _1: [
               "ctype.ml",
               1307,
               11
@@ -29521,7 +29521,7 @@ function instance_poly(keep_namesOpt, fixed, univars, sch) {
     }
     throw {
           RE_EXN_ID: "Assert_failure",
-          _1: /* tuple */[
+          _1: [
             "ctype.ml",
             1307,
             11
@@ -29531,9 +29531,9 @@ function instance_poly(keep_namesOpt, fixed, univars, sch) {
   };
   var vars = List.map(copy_var, univars$1);
   var pairs = List.map2((function (u, v) {
-          return /* tuple */[
+          return [
                   u,
-                  /* tuple */[
+                  [
                     v,
                     /* [] */0
                   ]
@@ -29544,7 +29544,7 @@ function instance_poly(keep_namesOpt, fixed, univars, sch) {
   List.iter(CamlinternalLazy.force, delayed_copy.contents);
   delayed_copy.contents = /* [] */0;
   cleanup_types(undefined);
-  return /* tuple */[
+  return [
           vars,
           ty
         ];
@@ -29562,13 +29562,13 @@ function instance_label(fixed, lbl) {
     match$1 = instance_poly(undefined, fixed, match._1, match._0);
   }
   if (exit === 1) {
-    match$1 = /* tuple */[
+    match$1 = [
       /* [] */0,
       copy(undefined, undefined, undefined, lbl.lbl_arg)
     ];
   }
   cleanup_types(undefined);
-  return /* tuple */[
+  return [
           match$1[0],
           match$1[1],
           ty_res
@@ -29602,7 +29602,7 @@ function subst(env, level, priv, abbrev, ty, params, args, body) {
       if (typeof match === "number") {
         throw {
               RE_EXN_ID: "Assert_failure",
-              _1: /* tuple */[
+              _1: [
                 "ctype.ml",
                 1347,
                 8
@@ -29617,7 +29617,7 @@ function subst(env, level, priv, abbrev, ty, params, args, body) {
       } else {
         throw {
               RE_EXN_ID: "Assert_failure",
-              _1: /* tuple */[
+              _1: [
                 "ctype.ml",
                 1347,
                 8
@@ -29666,7 +29666,7 @@ function expand_abbrev_gen(kind, find_type_expansion, env, ty) {
   if (typeof match === "number") {
     throw {
           RE_EXN_ID: "Assert_failure",
-          _1: /* tuple */[
+          _1: [
             "ctype.ml",
             1456,
             6
@@ -29724,7 +29724,7 @@ function expand_abbrev_gen(kind, find_type_expansion, env, ty) {
             row_bound: row$1.row_bound,
             row_closed: row$1.row_closed,
             row_fixed: row$1.row_fixed,
-            row_name: /* tuple */[
+            row_name: [
               path,
               args
             ]
@@ -29740,7 +29740,7 @@ function expand_abbrev_gen(kind, find_type_expansion, env, ty) {
           throw {
                 RE_EXN_ID: Unify,
                 _1: /* :: */{
-                  _0: /* tuple */[
+                  _0: [
                     ty,
                     newty2(level, {
                           tag: /* Tvar */0,
@@ -29766,7 +29766,7 @@ function expand_abbrev_gen(kind, find_type_expansion, env, ty) {
   }
   throw {
         RE_EXN_ID: "Assert_failure",
-        _1: /* tuple */[
+        _1: [
           "ctype.ml",
           1456,
           6
@@ -29790,7 +29790,7 @@ function expand_head_once(env, ty) {
     if (exn.RE_EXN_ID === Cannot_expand) {
       throw {
             RE_EXN_ID: "Assert_failure",
-            _1: /* tuple */[
+            _1: [
               "ctype.ml",
               1464,
               56
@@ -29922,7 +29922,7 @@ function extract_concrete_typedecl(env, ty) {
     var p = match._0;
     var decl = find_type_full(p, env)[0];
     if (decl.type_kind !== /* Type_abstract */0) {
-      return /* tuple */[
+      return [
               p,
               p,
               decl
@@ -29943,7 +29943,7 @@ function extract_concrete_typedecl(env, ty) {
       throw exn;
     }
     var match$1 = extract_concrete_typedecl(env, ty$2);
-    return /* tuple */[
+    return [
             p,
             match$1[1],
             match$1[2]
@@ -30015,7 +30015,7 @@ function enforce_constraints(env, ty) {
   if (typeof match === "number") {
     throw {
           RE_EXN_ID: "Assert_failure",
-          _1: /* tuple */[
+          _1: [
             "ctype.ml",
             1574,
             6
@@ -30045,7 +30045,7 @@ function enforce_constraints(env, ty) {
   } else {
     throw {
           RE_EXN_ID: "Assert_failure",
-          _1: /* tuple */[
+          _1: [
             "ctype.ml",
             1574,
             6
@@ -30457,7 +30457,7 @@ function occur_univar(env, ty) {
             throw {
                   RE_EXN_ID: Unify,
                   _1: /* :: */{
-                    _0: /* tuple */[
+                    _0: [
                       ty$1,
                       newty2(100000000, {
                             tag: /* Tvar */0,
@@ -30616,7 +30616,7 @@ function enter_poly(env, univar_pairs, t1, tl1, t2, tl2, f) {
         };
   }
   var cl1 = List.map((function (t) {
-          return /* tuple */[
+          return [
                   t,
                   {
                     contents: undefined
@@ -30624,7 +30624,7 @@ function enter_poly(env, univar_pairs, t1, tl1, t2, tl2, f) {
                 ];
         }), tl1$1);
   var cl2 = List.map((function (t) {
-          return /* tuple */[
+          return [
                   t,
                   {
                     contents: undefined
@@ -30632,12 +30632,12 @@ function enter_poly(env, univar_pairs, t1, tl1, t2, tl2, f) {
                 ];
         }), tl2$1);
   univar_pairs.contents = /* :: */{
-    _0: /* tuple */[
+    _0: [
       cl1,
       cl2
     ],
     _1: /* :: */{
-      _0: /* tuple */[
+      _0: [
         cl2,
         cl1
       ],
@@ -30682,12 +30682,12 @@ function expand_trace(env, trace) {
                 var t2 = param[1];
                 var t1 = param[0];
                 return /* :: */{
-                        _0: /* tuple */[
+                        _0: [
                           repr(t1),
                           full_expand(env, t1)
                         ],
                         _1: /* :: */{
-                          _0: /* tuple */[
+                          _0: [
                             repr(t2),
                             full_expand(env, t2)
                           ],
@@ -30756,7 +30756,7 @@ function get_newtype_level(param) {
   }
   throw {
         RE_EXN_ID: "Assert_failure",
-        _1: /* tuple */[
+        _1: [
           "ctype.ml",
           1949,
           12
@@ -30768,7 +30768,7 @@ function get_newtype_level(param) {
 function reify(env, t) {
   var newtype_level = get_newtype_level(undefined);
   var create_fresh_constr = function (lev, name) {
-    var decl = new_declaration(/* tuple */[
+    var decl = new_declaration([
           newtype_level,
           newtype_level
         ], undefined);
@@ -30824,7 +30824,7 @@ function reify(env, t) {
               if (typeof o$2 === "number") {
                 throw {
                       RE_EXN_ID: "Assert_failure",
-                      _1: /* tuple */[
+                      _1: [
                         "ctype.ml",
                         1987,
                         19
@@ -30835,7 +30835,7 @@ function reify(env, t) {
               if (o$2.tag) {
                 throw {
                       RE_EXN_ID: "Assert_failure",
-                      _1: /* tuple */[
+                      _1: [
                         "ctype.ml",
                         1987,
                         19
@@ -30995,7 +30995,7 @@ function mcomp(type_pairs, env, _t1, _t2) {
         return ;
       }
       try {
-        return Curry._2(TypePairs.find, type_pairs, /* tuple */[
+        return Curry._2(TypePairs.find, type_pairs, [
                     t1$prime$1,
                     t2$prime$1
                   ]);
@@ -31003,7 +31003,7 @@ function mcomp(type_pairs, env, _t1, _t2) {
       catch (raw_exn){
         var exn = Caml_js_exceptions.internalToOCamlException(raw_exn);
         if (exn.RE_EXN_ID === "Not_found") {
-          Curry._3(TypePairs.add, type_pairs, /* tuple */[
+          Curry._3(TypePairs.add, type_pairs, [
                 t1$prime$1,
                 t2$prime$1
               ], undefined);
@@ -31039,7 +31039,7 @@ function mcomp(type_pairs, env, _t1, _t2) {
                     case /* Tvar */0 :
                         throw {
                               RE_EXN_ID: "Assert_failure",
-                              _1: /* tuple */[
+                              _1: [
                                 "ctype.ml",
                                 2051,
                                 30
@@ -31710,7 +31710,7 @@ function mcomp_fields(type_pairs, env, ty1, ty2) {
   if (!(concrete_object(ty1) && concrete_object(ty2))) {
     throw {
           RE_EXN_ID: "Assert_failure",
-          _1: /* tuple */[
+          _1: [
             "ctype.ml",
             2096,
             59
@@ -31865,7 +31865,7 @@ function find_newtype_level(env, path) {
     }
     throw {
           RE_EXN_ID: "Assert_failure",
-          _1: /* tuple */[
+          _1: [
             "ctype.ml",
             2227,
             12
@@ -31878,7 +31878,7 @@ function find_newtype_level(env, path) {
     if (exn.RE_EXN_ID === "Not_found") {
       throw {
             RE_EXN_ID: "Assert_failure",
-            _1: /* tuple */[
+            _1: [
               "ctype.ml",
               2228,
               20
@@ -31906,12 +31906,12 @@ var unify_eq_set = Curry._1(TypePairs.create, 11);
 
 function order_type_pair(t1, t2) {
   if (t1.id <= t2.id) {
-    return /* tuple */[
+    return [
             t1,
             t2
           ];
   } else {
-    return /* tuple */[
+    return [
             t2,
             t1
           ];
@@ -31934,7 +31934,7 @@ var nondep_type$prime = {
   contents: (function (param, param$1, param$2) {
       throw {
             RE_EXN_ID: "Assert_failure",
-            _1: /* tuple */[
+            _1: [
               "ctype.ml",
               2250,
               37
@@ -31948,7 +31948,7 @@ var package_subtype = {
   contents: (function (param, param$1, param$2, param$3, param$4, param$5, param$6) {
       throw {
             RE_EXN_ID: "Assert_failure",
-            _1: /* tuple */[
+            _1: [
               "ctype.ml",
               2251,
               48
@@ -32045,7 +32045,7 @@ function complete_type_list(allow_absentOpt, env, nl1, lv2, mty2, nl2, tl2) {
               var t2 = decl.type_manifest;
               if (t2 !== undefined) {
                 return /* :: */{
-                        _0: /* tuple */[
+                        _0: [
                           n,
                           nondep_instance(env$prime, lv2, id2, t2)
                         ],
@@ -32265,7 +32265,7 @@ function unify(env, t1, t2) {
       throw {
             RE_EXN_ID: Unify,
             _1: /* :: */{
-              _0: /* tuple */[
+              _0: [
                 t1$1,
                 t2$1
               ],
@@ -32342,7 +32342,7 @@ function unify_fields(env, ty1, ty2) {
                       throw {
                             RE_EXN_ID: Unify,
                             _1: /* :: */{
-                              _0: /* tuple */[
+                              _0: [
                                 newty2(current_level.contents, desc),
                                 newty2(current_level.contents, desc$1)
                               ],
@@ -32436,7 +32436,7 @@ function unify_row(env, row1, row2) {
     throw {
           RE_EXN_ID: Unify,
           _1: /* :: */{
-            _0: /* tuple */[
+            _0: [
               mkvariant(/* [] */0, true),
               mkvariant(/* [] */0, true)
             ],
@@ -32446,13 +32446,13 @@ function unify_row(env, row1, row2) {
         };
   }
   var name = row1$1.row_name !== undefined && (row1$1.row_closed || empty(r2)) && (!row2$1.row_closed || keep(function (f1, f2) {
-          return /* tuple */[
+          return [
                   f1,
                   f2
                 ];
         }) && empty(r1)) ? row1$1.row_name : (
       row2$1.row_name !== undefined && (row2$1.row_closed || empty(r1)) && (!row1$1.row_closed || keep(function (f1, f2) {
-              return /* tuple */[
+              return [
                       f2,
                       f1
                     ];
@@ -32466,10 +32466,10 @@ function unify_row(env, row1, row2) {
       throw {
             RE_EXN_ID: Unify,
             _1: /* :: */{
-              _0: row === row1$1 ? /* tuple */[
+              _0: row === row1$1 ? [
                   t1,
                   t2
-                ] : /* tuple */[
+                ] : [
                   t2,
                   t1
                 ],
@@ -32822,16 +32822,16 @@ function unify_row(env, row1, row2) {
                       throw {
                             RE_EXN_ID: Unify,
                             _1: /* :: */{
-                              _0: /* tuple */[
+                              _0: [
                                 mkvariant(/* :: */{
-                                      _0: /* tuple */[
+                                      _0: [
                                         l,
                                         f1
                                       ],
                                       _1: /* [] */0
                                     }, true),
                                 mkvariant(/* :: */{
-                                      _0: /* tuple */[
+                                      _0: [
                                         l,
                                         f2
                                       ],
@@ -32864,7 +32864,7 @@ function unify2(env, t1, t2) {
       var t1$prime = expand_head_unif(env.contents, t1);
       var t2$prime = expand_head_unif(env.contents, t2);
       if (unify_eq(env.contents, t1$prime, t1$prime$prime) && unify_eq(env.contents, t2$prime, t2$prime$prime)) {
-        return /* tuple */[
+        return [
                 t1$prime,
                 t2$prime
               ];
@@ -32911,12 +32911,12 @@ function unify2(env, t1, t2) {
     var match$3 = t2$1.desc;
     var tmp$1;
     tmp$1 = typeof match$3 === "number" || !(match$3.tag === /* Tconstr */3 && !match$3._1) ? t2$1 : t2$prime;
-    match$1 = /* tuple */[
+    match$1 = [
       tmp,
       tmp$1
     ];
   } else {
-    match$1 = /* tuple */[
+    match$1 = [
       t1$1,
       t2$1
     ];
@@ -32935,7 +32935,7 @@ function unify2(env, t1, t2) {
       throw {
             RE_EXN_ID: Unify,
             _1: List.map((function (param) {
-                    return /* tuple */[
+                    return [
                             param[1],
                             param[0]
                           ];
@@ -33048,7 +33048,7 @@ function unify_kind(k1, k2) {
   }
   throw {
         RE_EXN_ID: "Assert_failure",
-        _1: /* tuple */[
+        _1: [
           "ctype.ml",
           2624,
           37
@@ -33316,10 +33316,10 @@ function unify3(env, t1, t1$prime, t2, t2$prime) {
                                 if (d2._1 || !(is_newtype(env.contents, p1) && is_newtype(env.contents, path$prime) && generate_equations.contents)) {
                                   exit$6 = 7;
                                 } else {
-                                  var match$3 = Caml_obj.caml_greaterthan(find_newtype_level(env.contents, p1), find_newtype_level(env.contents, path$prime)) ? /* tuple */[
+                                  var match$3 = Caml_obj.caml_greaterthan(find_newtype_level(env.contents, p1), find_newtype_level(env.contents, path$prime)) ? [
                                       p,
                                       t2$prime
-                                    ] : /* tuple */[
+                                    ] : [
                                       path$prime._0,
                                       t1$prime
                                     ];
@@ -33714,7 +33714,7 @@ function unify$1(env, ty1, ty2) {
       throw {
             RE_EXN_ID: Unification_recursive_abbrev,
             _1: expand_trace(env.contents, /* :: */{
-                  _0: /* tuple */[
+                  _0: [
                     ty1,
                     ty2
                   ],
@@ -33756,7 +33756,7 @@ function unify_var(env, t1, t2) {
     if (trace.RE_EXN_ID === Unify) {
       reset_trace_gadt_instances(reset_tracing);
       var expanded_trace = expand_trace(env, /* :: */{
-            _0: /* tuple */[
+            _0: [
               t1$1,
               t2$1
             ],
@@ -33821,14 +33821,14 @@ function filter_arrow(env, t, l) {
               _3: /* Cok */0
             });
         link_type(t$1, t$prime);
-        return /* tuple */[
+        return [
                 t1,
                 t2
               ];
     case /* Tarrow */1 :
         var l$prime = match._0;
         if (l === l$prime || classic.contents && l === "" && !is_optional(l$prime)) {
-          return /* tuple */[
+          return [
                   match._1,
                   match._2
                 ];
@@ -33940,7 +33940,7 @@ function filter_self_method(env, lab, priv, meths, ty) {
     var exn = Caml_js_exceptions.internalToOCamlException(raw_exn);
     if (exn.RE_EXN_ID === "Not_found") {
       var pair_0 = create(lab);
-      var pair = /* tuple */[
+      var pair = [
         pair_0,
         ty$prime
       ];
@@ -34054,7 +34054,7 @@ function moregen(inst_nongen, type_pairs, env, t1, t2) {
         return ;
       }
       try {
-        return Curry._2(TypePairs.find, type_pairs, /* tuple */[
+        return Curry._2(TypePairs.find, type_pairs, [
                     t1$prime$1,
                     t2$prime$1
                   ]);
@@ -34062,7 +34062,7 @@ function moregen(inst_nongen, type_pairs, env, t1, t2) {
       catch (raw_exn){
         var exn = Caml_js_exceptions.internalToOCamlException(raw_exn);
         if (exn.RE_EXN_ID === "Not_found") {
-          Curry._3(TypePairs.add, type_pairs, /* tuple */[
+          Curry._3(TypePairs.add, type_pairs, [
                 t1$prime$1,
                 t2$prime$1
               ], undefined);
@@ -34215,10 +34215,10 @@ function moregen(inst_nongen, type_pairs, env, t1, t2) {
                   var match$4 = merge_row_fields(row1$1.row_fields, row2$1.row_fields);
                   var r2 = match$4[1];
                   var r1 = match$4[0];
-                  var match$5 = row2$1.row_closed ? /* tuple */[
+                  var match$5 = row2$1.row_closed ? [
                       filter_row_fields(may_inst, r1),
                       filter_row_fields(false, r2)
-                    ] : /* tuple */[
+                    ] : [
                       r1,
                       r2
                     ];
@@ -34601,7 +34601,7 @@ function moregen(inst_nongen, type_pairs, env, t1, t2) {
       throw {
             RE_EXN_ID: Unify,
             _1: /* :: */{
-              _0: /* tuple */[
+              _0: [
                 t1$1,
                 t2$1
               ],
@@ -34656,7 +34656,7 @@ function moregen_fields(inst_nongen, type_pairs, env, ty1, ty2) {
                     throw {
                           RE_EXN_ID: Unify,
                           _1: /* :: */{
-                            _0: /* tuple */[
+                            _0: [
                               newty2(current_level.contents, {
                                     tag: /* Tfield */5,
                                     _0: n,
@@ -34883,7 +34883,7 @@ function normalize_subst(subst) {
             return typeof match$1 === "number" || match$1.tag !== /* Tlink */6 ? false : true;
           }), subst.contents)) {
     subst.contents = List.map((function (param) {
-            return /* tuple */[
+            return [
                     repr(param[0]),
                     repr(param[1])
                   ];
@@ -34938,7 +34938,7 @@ function eqtype(rename, type_pairs, subst, env, t1, t2) {
                         };
                   }
                   subst.contents = /* :: */{
-                    _0: /* tuple */[
+                    _0: [
                       t1$1,
                       t2$1
                     ],
@@ -34973,7 +34973,7 @@ function eqtype(rename, type_pairs, subst, env, t1, t2) {
         return ;
       }
       try {
-        return Curry._2(TypePairs.find, type_pairs, /* tuple */[
+        return Curry._2(TypePairs.find, type_pairs, [
                     t1$prime$1,
                     t2$prime$1
                   ]);
@@ -34981,7 +34981,7 @@ function eqtype(rename, type_pairs, subst, env, t1, t2) {
       catch (raw_exn$1){
         var exn$1 = Caml_js_exceptions.internalToOCamlException(raw_exn$1);
         if (exn$1.RE_EXN_ID === "Not_found") {
-          Curry._3(TypePairs.add, type_pairs, /* tuple */[
+          Curry._3(TypePairs.add, type_pairs, [
                 t1$prime$1,
                 t2$prime$1
               ], undefined);
@@ -35038,7 +35038,7 @@ function eqtype(rename, type_pairs, subst, env, t1, t2) {
                             };
                       }
                       subst.contents = /* :: */{
-                        _0: /* tuple */[
+                        _0: [
                           t1$prime$1,
                           t2$prime$1
                         ],
@@ -35470,7 +35470,7 @@ function eqtype(rename, type_pairs, subst, env, t1, t2) {
       throw {
             RE_EXN_ID: Unify,
             _1: /* :: */{
-              _0: /* tuple */[
+              _0: [
                 t1$1,
                 t2$1
               ],
@@ -35503,10 +35503,10 @@ function eqtype_fields(rename, type_pairs, subst, env, ty1, _ty2) {
     var rest1 = match[1];
     var match$1 = flatten_fields(ty2);
     var rest2 = match$1[1];
-    var same_row = rest1 === rest2 || Curry._2(TypePairs.mem, type_pairs, /* tuple */[
+    var same_row = rest1 === rest2 || Curry._2(TypePairs.mem, type_pairs, [
           rest1,
           rest2
-        ]) || rename && List.mem(/* tuple */[
+        ]) || rename && List.mem([
           rest1,
           rest2
         ], subst.contents);
@@ -35545,7 +35545,7 @@ function eqtype_fields(rename, type_pairs, subst, env, ty1, _ty2) {
                     throw {
                           RE_EXN_ID: Unify,
                           _1: /* :: */{
-                            _0: /* tuple */[
+                            _0: [
                               newty2(current_level.contents, {
                                     tag: /* Tfield */5,
                                     _0: n,
@@ -35801,7 +35801,7 @@ function match_class_types(traceOpt, env, pat_sch, subj_sch) {
   var sign2 = signature_of_class_type(subj);
   var t1 = repr(sign1.csig_self);
   var t2 = repr(sign2.csig_self);
-  Curry._3(TypePairs.add, type_pairs, /* tuple */[
+  Curry._3(TypePairs.add, type_pairs, [
         t1,
         t2
       ], undefined);
@@ -36134,7 +36134,7 @@ function match_class_declarations(env, patt_params, patt_type, subj_params, subj
   var sign2 = signature_of_class_type(subj_type);
   var t1 = repr(sign1.csig_self);
   var t2 = repr(sign2.csig_self);
-  Curry._3(TypePairs.add, type_pairs, /* tuple */[
+  Curry._3(TypePairs.add, type_pairs, [
         t1,
         t2
       ], undefined);
@@ -36212,7 +36212,7 @@ function match_class_declarations(env, patt_params, patt_type, subj_params, subj
           }
           throw {
                 RE_EXN_ID: "Assert_failure",
-                _1: /* tuple */[
+                _1: [
                   "ctype.ml",
                   3600,
                   34
@@ -36452,7 +36452,7 @@ function find_cltype_for_path(env, p) {
       var match$2 = match$1._1.contents;
       if (match$2 !== undefined) {
         if (same(p, match$2[0])) {
-          return /* tuple */[
+          return [
                   cl_abbr,
                   ty
                 ];
@@ -36474,7 +36474,7 @@ function find_cltype_for_path(env, p) {
   } else {
     throw {
           RE_EXN_ID: "Assert_failure",
-          _1: /* tuple */[
+          _1: [
             "ctype.ml",
             3707,
             12
@@ -36490,13 +36490,13 @@ function build_subtype(env, visited, loops, posi, level, t) {
   if (typeof tlist === "number") {
     if (posi) {
       var v = newvar(undefined, undefined);
-      return /* tuple */[
+      return [
               v,
               /* Changed */2
             ];
     }
     warn.contents = true;
-    return /* tuple */[
+    return [
             t$1,
             /* Unchanged */0
           ];
@@ -36504,7 +36504,7 @@ function build_subtype(env, visited, loops, posi, level, t) {
   switch (tlist.tag | 0) {
     case /* Tvar */0 :
         if (!posi) {
-          return /* tuple */[
+          return [
                   t$1,
                   /* Unchanged */0
                 ];
@@ -36512,7 +36512,7 @@ function build_subtype(env, visited, loops, posi, level, t) {
         try {
           var t$prime = List.assq(t$1, loops);
           warn.contents = true;
-          return /* tuple */[
+          return [
                   t$prime,
                   /* Equiv */1
                 ];
@@ -36520,7 +36520,7 @@ function build_subtype(env, visited, loops, posi, level, t) {
         catch (raw_exn){
           var exn = Caml_js_exceptions.internalToOCamlException(raw_exn);
           if (exn.RE_EXN_ID === "Not_found") {
-            return /* tuple */[
+            return [
                     t$1,
                     /* Unchanged */0
                   ];
@@ -36529,7 +36529,7 @@ function build_subtype(env, visited, loops, posi, level, t) {
         }
     case /* Tarrow */1 :
         if (memq_warn(t$1, visited)) {
-          return /* tuple */[
+          return [
                   t$1,
                   /* Unchanged */0
                 ];
@@ -36542,7 +36542,7 @@ function build_subtype(env, visited, loops, posi, level, t) {
         var match$1 = build_subtype(env, visited$1, loops, posi, level, tlist._2);
         var c = Caml_primitive.caml_int_max(match[1], match$1[1]);
         if (c > /* Unchanged */0) {
-          return /* tuple */[
+          return [
                   newty2(current_level.contents, {
                         tag: /* Tarrow */1,
                         _0: tlist._0,
@@ -36553,14 +36553,14 @@ function build_subtype(env, visited, loops, posi, level, t) {
                   c
                 ];
         } else {
-          return /* tuple */[
+          return [
                   t$1,
                   /* Unchanged */0
                 ];
         }
     case /* Ttuple */2 :
         if (memq_warn(t$1, visited)) {
-          return /* tuple */[
+          return [
                   t$1,
                   /* Unchanged */0
                 ];
@@ -36574,7 +36574,7 @@ function build_subtype(env, visited, loops, posi, level, t) {
               }), tlist._0);
         var c$1 = collect(tlist$prime);
         if (c$1 <= /* Unchanged */0) {
-          return /* tuple */[
+          return [
                   t$1,
                   /* Unchanged */0
                 ];
@@ -36585,7 +36585,7 @@ function build_subtype(env, visited, loops, posi, level, t) {
                   return prim[0];
                 }), tlist$prime)
         };
-        return /* tuple */[
+        return [
                 newty2(current_level.contents, desc),
                 c$1
               ];
@@ -36620,7 +36620,7 @@ function build_subtype(env, visited, loops, posi, level, t) {
                   var match$6 = match$4._1.contents;
                   if (match$6 !== undefined) {
                     if (same(p, match$6[0])) {
-                      match$5 = /* tuple */[
+                      match$5 = [
                         match$4._0,
                         match$6[1]
                       ];
@@ -36656,7 +36656,7 @@ function build_subtype(env, visited, loops, posi, level, t) {
                   _0: undefined
                 };
                 var t$prime$prime = newvar(undefined, undefined);
-                var loops_0 = /* tuple */[
+                var loops_0 = [
                   ty$1,
                   t$prime$prime
                 ];
@@ -36672,7 +36672,7 @@ function build_subtype(env, visited, loops, posi, level, t) {
                 if (!is_Tvar(t$prime$prime)) {
                   throw {
                         RE_EXN_ID: "Assert_failure",
-                        _1: /* tuple */[
+                        _1: [
                           "ctype.ml",
                           3770,
                           10
@@ -36680,7 +36680,7 @@ function build_subtype(env, visited, loops, posi, level, t) {
                         Error: new Error()
                       };
                 }
-                var nm = match$7[1] > /* Equiv */1 || deep_occur(ty$1, ty1$prime) ? undefined : /* tuple */[
+                var nm = match$7[1] > /* Equiv */1 || deep_occur(ty$1, ty1$prime) ? undefined : [
                     p,
                     tl1
                   ];
@@ -36699,7 +36699,7 @@ function build_subtype(env, visited, loops, posi, level, t) {
                   if (exn$1.RE_EXN_ID === Unify) {
                     throw {
                           RE_EXN_ID: "Assert_failure",
-                          _1: /* tuple */[
+                          _1: [
                             "ctype.ml",
                             3774,
                             50
@@ -36709,7 +36709,7 @@ function build_subtype(env, visited, loops, posi, level, t) {
                   }
                   throw exn$1;
                 }
-                return /* tuple */[
+                return [
                         t$prime$prime,
                         /* Changed */2
                       ];
@@ -36730,12 +36730,12 @@ function build_subtype(env, visited, loops, posi, level, t) {
               var match$8 = build_subtype(env, visited, loops, posi, level$prime, t$prime$1);
               var c$2 = match$8[1];
               if (c$2 > /* Unchanged */0) {
-                return /* tuple */[
+                return [
                         match$8[0],
                         c$2
                       ];
               } else {
-                return /* tuple */[
+                return [
                         t$1,
                         /* Unchanged */0
                       ];
@@ -36745,7 +36745,7 @@ function build_subtype(env, visited, loops, posi, level, t) {
           }
         } else {
           if (memq_warn(t$1, visited)) {
-            return /* tuple */[
+            return [
                     t$1,
                     /* Unchanged */0
                   ];
@@ -36764,7 +36764,7 @@ function build_subtype(env, visited, loops, posi, level, t) {
                     var co = match[0];
                     if (match[1]) {
                       if (co) {
-                        return /* tuple */[
+                        return [
                                 t,
                                 /* Unchanged */0
                               ];
@@ -36774,7 +36774,7 @@ function build_subtype(env, visited, loops, posi, level, t) {
                     } else if (co) {
                       return build_subtype(env, visited$3, loops, posi, level, t);
                     } else {
-                      return /* tuple */[
+                      return [
                               newvar(undefined, undefined),
                               /* Changed */2
                             ];
@@ -36782,14 +36782,14 @@ function build_subtype(env, visited, loops, posi, level, t) {
                   }), decl.type_variance, tl);
             var c$3 = collect(tl$prime);
             if (c$3 > /* Unchanged */0) {
-              return /* tuple */[
+              return [
                       newconstr(p, List.map((function (prim) {
                                   return prim[0];
                                 }), tl$prime)),
                       c$3
                     ];
             } else {
-              return /* tuple */[
+              return [
                       t$1,
                       /* Unchanged */0
                     ];
@@ -36798,7 +36798,7 @@ function build_subtype(env, visited, loops, posi, level, t) {
           catch (raw_exn$3){
             var exn$3 = Caml_js_exceptions.internalToOCamlException(raw_exn$3);
             if (exn$3.RE_EXN_ID === "Not_found") {
-              return /* tuple */[
+              return [
                       t$1,
                       /* Unchanged */0
                     ];
@@ -36809,7 +36809,7 @@ function build_subtype(env, visited, loops, posi, level, t) {
     case /* Tobject */4 :
         var t1 = tlist._0;
         if (memq_warn(t$1, visited) || opened_object(t1)) {
-          return /* tuple */[
+          return [
                   t$1,
                   /* Unchanged */0
                 ];
@@ -36823,7 +36823,7 @@ function build_subtype(env, visited, loops, posi, level, t) {
         var match$9 = build_subtype(env, visited$4, loops, posi, level$prime$1, t1);
         var c$4 = match$9[1];
         if (c$4 > /* Unchanged */0) {
-          return /* tuple */[
+          return [
                   newty2(current_level.contents, {
                         tag: /* Tobject */4,
                         _0: match$9[0],
@@ -36834,7 +36834,7 @@ function build_subtype(env, visited, loops, posi, level, t) {
                   c$4
                 ];
         } else {
-          return /* tuple */[
+          return [
                   t$1,
                   /* Unchanged */0
                 ];
@@ -36844,7 +36844,7 @@ function build_subtype(env, visited, loops, posi, level, t) {
         var match$11 = build_subtype(env, visited, loops, posi, level, tlist._3);
         var c$5 = Caml_primitive.caml_int_max(match$10[1], match$11[1]);
         if (c$5 > /* Unchanged */0) {
-          return /* tuple */[
+          return [
                   newty2(current_level.contents, {
                         tag: /* Tfield */5,
                         _0: tlist._0,
@@ -36855,7 +36855,7 @@ function build_subtype(env, visited, loops, posi, level, t) {
                   c$5
                 ];
         } else {
-          return /* tuple */[
+          return [
                   t$1,
                   /* Unchanged */0
                 ];
@@ -36864,7 +36864,7 @@ function build_subtype(env, visited, loops, posi, level, t) {
     case /* Tsubst */7 :
         throw {
               RE_EXN_ID: "Assert_failure",
-              _1: /* tuple */[
+              _1: [
                 "ctype.ml",
                 3865,
                 6
@@ -36874,7 +36874,7 @@ function build_subtype(env, visited, loops, posi, level, t) {
     case /* Tvariant */8 :
         var row = row_repr_aux(/* [] */0, tlist._0);
         if (memq_warn(t$1, visited) || !static_row(row)) {
-          return /* tuple */[
+          return [
                   t$1,
                   /* Unchanged */0
                 ];
@@ -36892,7 +36892,7 @@ function build_subtype(env, visited, loops, posi, level, t) {
                 if (typeof match === "number") {
                   throw {
                         RE_EXN_ID: "Assert_failure",
-                        _1: /* tuple */[
+                        _1: [
                           "ctype.ml",
                           3832,
                           17
@@ -36903,7 +36903,7 @@ function build_subtype(env, visited, loops, posi, level, t) {
                 if (match.tag) {
                   throw {
                         RE_EXN_ID: "Assert_failure",
-                        _1: /* tuple */[
+                        _1: [
                           "ctype.ml",
                           3832,
                           17
@@ -36914,8 +36914,8 @@ function build_subtype(env, visited, loops, posi, level, t) {
                 var t = match._0;
                 if (t === undefined) {
                   if (posi) {
-                    return /* tuple */[
-                            /* tuple */[
+                    return [
+                            [
                               l,
                               {
                                 tag: /* Reither */1,
@@ -36930,7 +36930,7 @@ function build_subtype(env, visited, loops, posi, level, t) {
                             /* Unchanged */0
                           ];
                   } else {
-                    return /* tuple */[
+                    return [
                             orig,
                             /* Unchanged */0
                           ];
@@ -36953,8 +36953,8 @@ function build_subtype(env, visited, loops, posi, level, t) {
                       tag: /* Rpresent */0,
                       _0: t$prime
                     });
-                return /* tuple */[
-                        /* tuple */[
+                return [
+                        [
                           l,
                           f
                         ],
@@ -36975,7 +36975,7 @@ function build_subtype(env, visited, loops, posi, level, t) {
           row_fixed: false,
           row_name: row_row_name
         };
-        return /* tuple */[
+        return [
                 newty2(current_level.contents, {
                       tag: /* Tvariant */8,
                       _0: row$1
@@ -36986,7 +36986,7 @@ function build_subtype(env, visited, loops, posi, level, t) {
         var match$12 = build_subtype(env, visited, loops, posi, level, tlist._0);
         var c$7 = match$12[1];
         if (c$7 > /* Unchanged */0) {
-          return /* tuple */[
+          return [
                   newty2(current_level.contents, {
                         tag: /* Tpoly */10,
                         _0: match$12[0],
@@ -36995,14 +36995,14 @@ function build_subtype(env, visited, loops, posi, level, t) {
                   c$7
                 ];
         } else {
-          return /* tuple */[
+          return [
                   t$1,
                   /* Unchanged */0
                 ];
         }
     case /* Tunivar */9 :
     case /* Tpackage */11 :
-        return /* tuple */[
+        return [
                 t$1,
                 /* Unchanged */0
               ];
@@ -37013,7 +37013,7 @@ function build_subtype(env, visited, loops, posi, level, t) {
 function enlarge_type(env, ty) {
   warn.contents = false;
   var match = build_subtype(env, /* [] */0, /* [] */0, true, 4, ty);
-  return /* tuple */[
+  return [
           match[0],
           warn.contents
         ];
@@ -37042,7 +37042,7 @@ function subtype_rec(env, _trace, _t1, _t2, _cstrs) {
       return cstrs;
     }
     try {
-      Curry._2(TypePairs.find, subtypes, /* tuple */[
+      Curry._2(TypePairs.find, subtypes, [
             t1$1,
             t2$1
           ]);
@@ -37051,7 +37051,7 @@ function subtype_rec(env, _trace, _t1, _t2, _cstrs) {
     catch (raw_exn){
       var exn = Caml_js_exceptions.internalToOCamlException(raw_exn);
       if (exn.RE_EXN_ID === "Not_found") {
-        Curry._3(TypePairs.add, subtypes, /* tuple */[
+        Curry._3(TypePairs.add, subtypes, [
               t1$1,
               t2$1
             ], undefined);
@@ -37086,7 +37086,7 @@ function subtype_rec(env, _trace, _t1, _t2, _cstrs) {
                         var l2 = match$1._0;
                         if (l1 === l2 || classic.contents && !(is_optional(l1) || is_optional(l2))) {
                           var cstrs$1 = subtype_rec(env, /* :: */{
-                                _0: /* tuple */[
+                                _0: [
                                   t2$2,
                                   t1$2
                                 ],
@@ -37096,7 +37096,7 @@ function subtype_rec(env, _trace, _t1, _t2, _cstrs) {
                           _t2 = u2;
                           _t1 = u1;
                           _trace = /* :: */{
-                            _0: /* tuple */[
+                            _0: [
                               u1,
                               u2
                             ],
@@ -37131,7 +37131,7 @@ function subtype_rec(env, _trace, _t1, _t2, _cstrs) {
                         return List.fold_left2((function(trace){
                                   return function (cstrs, t1, t2) {
                                     return subtype_rec(env, /* :: */{
-                                                _0: /* tuple */[
+                                                _0: [
                                                   t1,
                                                   t2
                                                 ],
@@ -37188,7 +37188,7 @@ function subtype_rec(env, _trace, _t1, _t2, _cstrs) {
                         var f2 = match$1._0;
                         if (is_Tvar(object_row(f1)) && is_Tvar(object_row(f2))) {
                           return /* :: */{
-                                  _0: /* tuple */[
+                                  _0: [
                                     trace,
                                     t1$1,
                                     t2$1,
@@ -37206,13 +37206,13 @@ function subtype_rec(env, _trace, _t1, _t2, _cstrs) {
                           var miss1 = match$4[1];
                           var cstrs$2 = rest2.desc === /* Tnil */0 ? cstrs : (
                               miss1 === /* [] */0 ? subtype_rec(env, /* :: */{
-                                      _0: /* tuple */[
+                                      _0: [
                                         rest1,
                                         rest2
                                       ],
                                       _1: trace
                                     }, rest1, rest2, cstrs) : /* :: */({
-                                    _0: /* tuple */[
+                                    _0: [
                                       trace,
                                       build_fields(repr(f1).level)(miss1, rest1),
                                       rest2,
@@ -37222,7 +37222,7 @@ function subtype_rec(env, _trace, _t1, _t2, _cstrs) {
                                   })
                             );
                           var cstrs$3 = miss2 === /* [] */0 ? cstrs$2 : /* :: */({
-                                _0: /* tuple */[
+                                _0: [
                                   trace,
                                   rest1,
                                   build_fields(repr(f2).level)(miss2, newvar(undefined, undefined)),
@@ -37235,7 +37235,7 @@ function subtype_rec(env, _trace, _t1, _t2, _cstrs) {
                                       var t2 = param[4];
                                       var t1 = param[2];
                                       return subtype_rec(env, /* :: */{
-                                                  _0: /* tuple */[
+                                                  _0: [
                                                     t1,
                                                     t2
                                                   ],
@@ -37287,7 +37287,7 @@ function subtype_rec(env, _trace, _t1, _t2, _cstrs) {
                                   } else {
                                     if (same(match$6._0, match$7._0)) {
                                       return subtype_rec(env, /* :: */{
-                                                  _0: /* tuple */[
+                                                  _0: [
                                                     more1,
                                                     more2
                                                   ],
@@ -37307,7 +37307,7 @@ function subtype_rec(env, _trace, _t1, _t2, _cstrs) {
                                   if (match$7.tag === /* Tunivar */9) {
                                     if (row1$1.row_closed === row2$1.row_closed && r1 === /* [] */0 && match$5[1] === /* [] */0) {
                                       var cstrs$4 = subtype_rec(env, /* :: */{
-                                            _0: /* tuple */[
+                                            _0: [
                                               more1,
                                               more2
                                             ],
@@ -37460,7 +37460,7 @@ function subtype_rec(env, _trace, _t1, _t2, _cstrs) {
                                                     }
                                                   }
                                                   return subtype_rec(env, /* :: */{
-                                                              _0: /* tuple */[
+                                                              _0: [
                                                                 t1,
                                                                 t2
                                                               ],
@@ -37531,7 +37531,7 @@ function subtype_rec(env, _trace, _t1, _t2, _cstrs) {
                                                   var t2 = match$1._0;
                                                   if (t2 !== undefined) {
                                                     return subtype_rec(env, /* :: */{
-                                                                _0: /* tuple */[
+                                                                _0: [
                                                                   t1,
                                                                   t2
                                                                 ],
@@ -37568,7 +37568,7 @@ function subtype_rec(env, _trace, _t1, _t2, _cstrs) {
                                                 var t2$1 = match$1._0;
                                                 if (t2$1 !== undefined) {
                                                   return subtype_rec(env, /* :: */{
-                                                              _0: /* tuple */[
+                                                              _0: [
                                                                 t1$1,
                                                                 t2$1
                                                               ],
@@ -37617,7 +37617,7 @@ function subtype_rec(env, _trace, _t1, _t2, _cstrs) {
                           var exn$1 = Caml_js_exceptions.internalToOCamlException(raw_exn$1);
                           if (exn$1.RE_EXN_ID === Pervasives.Exit) {
                             return /* :: */{
-                                    _0: /* tuple */[
+                                    _0: [
                                       trace,
                                       t1$1,
                                       t2$1,
@@ -37688,7 +37688,7 @@ function subtype_rec(env, _trace, _t1, _t2, _cstrs) {
                               var exn$2 = Caml_js_exceptions.internalToOCamlException(raw_exn$2);
                               if (exn$2.RE_EXN_ID === Unify) {
                                 return /* :: */{
-                                        _0: /* tuple */[
+                                        _0: [
                                           trace,
                                           t1$1,
                                           t2$1,
@@ -37740,7 +37740,7 @@ function subtype_rec(env, _trace, _t1, _t2, _cstrs) {
                               }, nl2, tl2$2);
                           var cstrs$prime = List.map((function(trace,ntl1){
                               return function (param) {
-                                return /* tuple */[
+                                return [
                                         trace,
                                         List.assoc(param[0], ntl1),
                                         param[1],
@@ -37782,7 +37782,7 @@ function subtype_rec(env, _trace, _t1, _t2, _cstrs) {
                           var exn$4 = Caml_js_exceptions.internalToOCamlException(raw_exn$4);
                           if (exn$4.RE_EXN_ID === "Not_found") {
                             return /* :: */{
-                                    _0: /* tuple */[
+                                    _0: [
                                       trace,
                                       t1$1,
                                       t2$1,
@@ -37853,7 +37853,7 @@ function subtype_rec(env, _trace, _t1, _t2, _cstrs) {
                             if (match[0]) {
                               if (cn) {
                                 return /* :: */{
-                                        _0: /* tuple */[
+                                        _0: [
                                           trace,
                                           newty2(t1.level, {
                                                 tag: /* Ttuple */2,
@@ -37875,7 +37875,7 @@ function subtype_rec(env, _trace, _t1, _t2, _cstrs) {
                                       };
                               } else {
                                 return subtype_rec(env, /* :: */{
-                                            _0: /* tuple */[
+                                            _0: [
                                               t1,
                                               t2
                                             ],
@@ -37884,7 +37884,7 @@ function subtype_rec(env, _trace, _t1, _t2, _cstrs) {
                               }
                             } else if (cn) {
                               return subtype_rec(env, /* :: */{
-                                          _0: /* tuple */[
+                                          _0: [
                                             t2,
                                             t1
                                           ],
@@ -37900,7 +37900,7 @@ function subtype_rec(env, _trace, _t1, _t2, _cstrs) {
                 var exn$5 = Caml_js_exceptions.internalToOCamlException(raw_exn$5);
                 if (exn$5.RE_EXN_ID === "Not_found") {
                   return /* :: */{
-                          _0: /* tuple */[
+                          _0: [
                             trace,
                             t1$1,
                             t2$1,
@@ -37927,7 +37927,7 @@ function subtype_rec(env, _trace, _t1, _t2, _cstrs) {
           case 1 :
           case 2 :
               return /* :: */{
-                      _0: /* tuple */[
+                      _0: [
                         trace,
                         t1$1,
                         t2$1,
@@ -37948,7 +37948,7 @@ function subtype(env, ty1, ty2) {
   Curry._1(TypePairs.clear, subtypes);
   univar_pairs.contents = /* [] */0;
   var cstrs = subtype_rec(env, /* :: */{
-        _0: /* tuple */[
+        _0: [
           ty1,
           ty2
         ],
@@ -38005,7 +38005,7 @@ function unalias_object(ty) {
     default:
       throw {
             RE_EXN_ID: "Assert_failure",
-            _1: /* tuple */[
+            _1: [
               "ctype.ml",
               4129,
               6
@@ -38148,7 +38148,7 @@ function normalize_type_rec(env, visited, ty) {
                 }
                 if (exit === 1) {
                   if (v$prime !== v) {
-                    set_name(nm, /* tuple */[
+                    set_name(nm, [
                           n,
                           /* :: */{
                             _0: v$prime,
@@ -38220,7 +38220,7 @@ function normalize_type_rec(env, visited, ty) {
                       tmp = f;
                     }
                   }
-                  return /* tuple */[
+                  return [
                           param[0],
                           tmp
                         ];
@@ -38343,7 +38343,7 @@ function nondep_type_rec(env, id, _ty) {
                   var tmp$1;
                   if (match !== undefined) {
                     var p$1 = match[0];
-                    tmp$1 = isfree(id, p$1) ? undefined : /* tuple */[
+                    tmp$1 = isfree(id, p$1) ? undefined : [
                         p$1,
                         List.map((function (param) {
                                 return nondep_type_rec(env, id, param);
@@ -38607,7 +38607,7 @@ function nondep_extension_constructor(env, mid, ext) {
             };
       }
       if (match$1.tag === /* Tconstr */3) {
-        match = /* tuple */[
+        match = [
           match$1._0,
           match$1._1
         ];
@@ -38621,7 +38621,7 @@ function nondep_extension_constructor(env, mid, ext) {
       var type_params = List.map((function (param) {
               return nondep_type_rec(env, mid, param);
             }), ext.ext_type_params);
-      match = /* tuple */[
+      match = [
         ext.ext_type_path,
         type_params
       ];
@@ -38662,7 +38662,7 @@ function nondep_class_signature(env, id, sign) {
   return {
           csig_self: nondep_type_rec(env, id, sign.csig_self),
           csig_vars: map((function (param) {
-                  return /* tuple */[
+                  return [
                           param[0],
                           param[1],
                           nondep_type_rec(env, id, param[2])
@@ -38670,7 +38670,7 @@ function nondep_class_signature(env, id, sign) {
                 }), sign.csig_vars),
           csig_concr: sign.csig_concr,
           csig_inher: List.map((function (param) {
-                  return /* tuple */[
+                  return [
                           param[0],
                           List.map((function (param) {
                                   return nondep_type_rec(env, id, param);
@@ -38720,7 +38720,7 @@ function nondep_class_declaration(env, id, decl) {
   if (isfree(id, decl.cty_path)) {
     throw {
           RE_EXN_ID: "Assert_failure",
-          _1: /* tuple */[
+          _1: [
             "ctype.ml",
             4449,
             2
@@ -38749,7 +38749,7 @@ function nondep_cltype_declaration(env, id, decl) {
   if (isfree(id, decl.clty_path)) {
     throw {
           RE_EXN_ID: "Assert_failure",
-          _1: /* tuple */[
+          _1: [
             "ctype.ml",
             4468,
             2
@@ -39600,7 +39600,7 @@ function print_simple_out_type(ppf, s) {
                                 default:
                                   throw {
                                         RE_EXN_ID: "Assert_failure",
-                                        _1: /* tuple */[
+                                        _1: [
                                           "oprint.ml",
                                           229,
                                           17
@@ -41004,20 +41004,20 @@ function print_out_signature(ppf, param) {
         var items = _items;
         var acc = _acc;
         if (!items) {
-          return /* tuple */[
+          return [
                   List.rev(acc),
                   items
                 ];
         }
         var match = items._0;
         if (match.tag !== /* Osig_typext */2) {
-          return /* tuple */[
+          return [
                   List.rev(acc),
                   items
                 ];
         }
         if (match._1 !== 1) {
-          return /* tuple */[
+          return [
                   List.rev(acc),
                   items
                 ];
@@ -41025,7 +41025,7 @@ function print_out_signature(ppf, param) {
         var ext = match._0;
         _items = items._1;
         _acc = /* :: */{
-          _0: /* tuple */[
+          _0: [
             ext.oext_name,
             ext.oext_args,
             ext.oext_ret_type
@@ -41036,7 +41036,7 @@ function print_out_signature(ppf, param) {
       };
     };
     var match = gather_extensions(/* :: */{
-          _0: /* tuple */[
+          _0: [
             ext.oext_name,
             ext.oext_args,
             ext.oext_ret_type
@@ -41395,7 +41395,7 @@ function print_out_sig_item(ppf, param) {
                             }
                           },
                           _1: "@[<2>exception %a@]"
-                        }), print_out_constr, /* tuple */[
+                        }), print_out_constr, [
                       ext.oext_name,
                       ext.oext_args,
                       ext.oext_ret_type
@@ -41586,7 +41586,7 @@ function print_out_sig_item(ppf, param) {
                             }
                           },
                           _1: "@[<hv 2>type %t +=%s@;<1 2>%a@]"
-                        }), print_extended_type, ext.oext_private === /* Private */0 ? " private" : "", print_out_constr, /* tuple */[
+                        }), print_extended_type, ext.oext_private === /* Private */0 ? " private" : "", print_out_constr, [
                       ext.oext_name,
                       ext.oext_args,
                       ext.oext_ret_type
@@ -44571,7 +44571,7 @@ function normalize_type_path(cacheOpt, env, p) {
     var ty = repr(match[1]);
     var match$1 = ty.desc;
     if (typeof match$1 === "number") {
-      return /* tuple */[
+      return [
               p,
               {
                 tag: /* Nth */0,
@@ -44580,7 +44580,7 @@ function normalize_type_path(cacheOpt, env, p) {
             ];
     }
     if (match$1.tag !== /* Tconstr */3) {
-      return /* tuple */[
+      return [
               p,
               {
                 tag: /* Nth */0,
@@ -44596,7 +44596,7 @@ function normalize_type_path(cacheOpt, env, p) {
       return normalize_type_path(cache, env, p1);
     }
     if (cache || List.length(params) <= List.length(tyl) || !uniq(tyl)) {
-      return /* tuple */[
+      return [
               p,
               /* Id */0
             ];
@@ -44605,7 +44605,7 @@ function normalize_type_path(cacheOpt, env, p) {
             return index(params, param);
           }), tyl);
     var match$2 = normalize_type_path(cache, env, p1);
-    return /* tuple */[
+    return [
             match$2[0],
             compose(l1, match$2[1])
           ];
@@ -44613,7 +44613,7 @@ function normalize_type_path(cacheOpt, env, p) {
   catch (raw_exn){
     var exn = Caml_js_exceptions.internalToOCamlException(raw_exn);
     if (exn.RE_EXN_ID === "Not_found") {
-      return /* tuple */[
+      return [
               p,
               /* Id */0
             ];
@@ -44627,19 +44627,19 @@ function path_size(id) {
     case /* Pident */0 :
         var id$1 = id._0;
         var s = id$1.name;
-        return /* tuple */[
+        return [
                 s !== "" && Caml_string.get(s, 0) === /* "_" */95 ? 10 : 1,
                 -id$1.stamp | 0
               ];
     case /* Pdot */1 :
         var match = path_size(id._0);
-        return /* tuple */[
+        return [
                 1 + match[0] | 0,
                 match[1]
               ];
     case /* Papply */2 :
         var match$1 = path_size(id._0);
-        return /* tuple */[
+        return [
                 match$1[0] + path_size(id._1)[0] | 0,
                 match$1[1]
               ];
@@ -44763,7 +44763,7 @@ function is_unambiguous(path, env) {
 
 function best_type_path(p) {
   if (real_paths.contents || printing_env.contents === empty) {
-    return /* tuple */[
+    return [
             p,
             /* Id */0
           ];
@@ -44842,7 +44842,7 @@ function best_type_path(p) {
       throw exn;
     }
   }
-  return /* tuple */[
+  return [
           p$prime$prime,
           match[1]
         ];
@@ -44955,7 +44955,7 @@ function name_of_type(t) {
       }
       if (name !== "_") {
         names.contents = /* :: */{
-          _0: /* tuple */[
+          _0: [
             t,
             name
           ],
@@ -45381,7 +45381,7 @@ function tree_of_typexp(sch, ty) {
                   var l = param[0];
                   var match = row_field_repr_aux(/* [] */0, param[1]);
                   if (typeof match === "number") {
-                    return /* tuple */[
+                    return [
                             l,
                             false,
                             /* [] */0
@@ -45390,7 +45390,7 @@ function tree_of_typexp(sch, ty) {
                   if (match.tag) {
                     var c = match._0;
                     if (c && !match._1) {
-                      return /* tuple */[
+                      return [
                               l,
                               false,
                               /* [] */0
@@ -45398,7 +45398,7 @@ function tree_of_typexp(sch, ty) {
                     }
                     var tyl = match._1;
                     if (c) {
-                      return /* tuple */[
+                      return [
                               l,
                               true,
                               List.map((function (param) {
@@ -45406,7 +45406,7 @@ function tree_of_typexp(sch, ty) {
                                     }), tyl)
                             ];
                     } else {
-                      return /* tuple */[
+                      return [
                               l,
                               false,
                               List.map((function (param) {
@@ -45417,7 +45417,7 @@ function tree_of_typexp(sch, ty) {
                   }
                   var ty = match._0;
                   if (ty !== undefined) {
-                    return /* tuple */[
+                    return [
                             l,
                             false,
                             /* :: */{
@@ -45426,7 +45426,7 @@ function tree_of_typexp(sch, ty) {
                             }
                           ];
                   } else {
-                    return /* tuple */[
+                    return [
                             l,
                             false,
                             /* [] */0
@@ -45520,7 +45520,7 @@ function tree_of_typobject(sch, fi, nm) {
     if (match$1[1] !== /* Id */0) {
       throw {
             RE_EXN_ID: "Assert_failure",
-            _1: /* tuple */[
+            _1: [
               "printtyp.ml",
               688,
               6
@@ -45541,7 +45541,7 @@ function tree_of_typobject(sch, fi, nm) {
             var match = field_kind_repr(param[1]);
             if (typeof match === "number" && match === 0) {
               return /* :: */{
-                      _0: /* tuple */[
+                      _0: [
                         param[0],
                         param[2]
                       ],
@@ -45577,12 +45577,12 @@ function tree_of_typfields(sch, rest, param) {
     var match = param._0;
     var field_0 = match[0];
     var field_1 = tree_of_typexp(sch, match[1]);
-    var field = /* tuple */[
+    var field = [
       field_0,
       field_1
     ];
     var match$1 = tree_of_typfields(sch, rest, param._1);
-    return /* tuple */[
+    return [
             /* :: */{
               _0: field,
               _1: match$1[0]
@@ -45607,7 +45607,7 @@ function tree_of_typfields(sch, rest, param) {
         rest$1 = fatal_error("typfields (1)");
     }
   }
-  return /* tuple */[
+  return [
           /* [] */0,
           rest$1
         ];
@@ -45641,7 +45641,7 @@ function tree_of_constraints(params) {
                 }
                 var tr = tree_of_typexp(true, ty);
                 return /* :: */{
-                        _0: /* tuple */[
+                        _0: [
                           tr,
                           tree_of_typexp(true, ty$prime)
                         ],
@@ -45671,7 +45671,7 @@ function filter_params(tyl) {
 }
 
 function tree_of_label(l) {
-  return /* tuple */[
+  return [
           l.ld_id.name,
           l.ld_mutable === /* Mutable */1,
           tree_of_typexp(false, l.ld_type)
@@ -45682,7 +45682,7 @@ function tree_of_constructor(cd) {
   var name = cd.cd_id.name;
   var res = cd.cd_res;
   if (res === undefined) {
-    return /* tuple */[
+    return [
             name,
             List.map((function (param) {
                     return tree_of_typexp(false, param);
@@ -45697,7 +45697,7 @@ function tree_of_constructor(cd) {
           return tree_of_typexp(false, param);
         }), cd.cd_args);
   names.contents = nm;
-  return /* tuple */[
+  return [
           name,
           args,
           ret
@@ -45808,16 +45808,16 @@ function tree_of_type_decl(id, decl) {
             if (abstr || !is_Tvar(repr(ty))) {
               return Curry._1(Types_Variance.get_upper, v);
             } else {
-              return /* tuple */[
+              return [
                       true,
                       true
                     ];
             }
           }), decl.type_params, decl.type_variance);
-    return /* tuple */[
+    return [
             id.name,
             List.map2((function (ty, cocn) {
-                    return /* tuple */[
+                    return [
                             type_param(tree_of_typexp(false, ty)),
                             cocn
                           ];
@@ -45841,25 +45841,25 @@ function tree_of_type_decl(id, decl) {
   var match$3;
   match$3 = typeof cstrs$1 === "number" ? (
       cstrs$1 === /* Type_abstract */0 ? (
-          ty_manifest !== undefined ? /* tuple */[
+          ty_manifest !== undefined ? [
               tree_of_typexp(false, ty_manifest),
               decl.type_private
-            ] : /* tuple */[
+            ] : [
               /* Otyp_abstract */0,
               /* Public */1
             ]
-        ) : /* tuple */[
+        ) : [
           tree_of_manifest(/* Otyp_open */1),
           /* Public */1
         ]
     ) : (
-      cstrs$1.tag ? /* tuple */[
+      cstrs$1.tag ? [
           tree_of_manifest({
                 tag: /* Otyp_sum */8,
                 _0: List.map(tree_of_constructor, cstrs$1._0)
               }),
           decl.type_private
-        ] : /* tuple */[
+        ] : [
           tree_of_manifest({
                 tag: /* Otyp_record */6,
                 _0: List.map(tree_of_label, cstrs$1._0)
@@ -45916,12 +45916,12 @@ function tree_of_extension_constructor(id, ext, es) {
             return tree_of_typexp(false, param);
           }), ext.ext_args);
     names.contents = nm;
-    match = /* tuple */[
+    match = [
       args,
       ret
     ];
   } else {
-    match = /* tuple */[
+    match = [
       List.map((function (param) {
               return tree_of_typexp(false, param);
             }), ext.ext_args),
@@ -45972,25 +45972,25 @@ function method_type(param) {
   var match = field_kind_repr(param[1]);
   var match$1 = repr(param[2]);
   if (typeof match !== "number") {
-    return /* tuple */[
+    return [
             match$1,
             /* [] */0
           ];
   }
   if (match !== 0) {
-    return /* tuple */[
+    return [
             match$1,
             /* [] */0
           ];
   }
   var match$2 = match$1.desc;
   if (typeof match$2 === "number" || match$2.tag !== /* Tpoly */10) {
-    return /* tuple */[
+    return [
             match$1,
             /* [] */0
           ];
   } else {
-    return /* tuple */[
+    return [
             match$2._0,
             match$2._1
           ];
@@ -46081,7 +46081,7 @@ function tree_of_class_type(sch, params, _sign) {
                 }), /* [] */0, tree_of_constraints(params));
           var all_vars = fold((function (l, param, all) {
                   return /* :: */{
-                          _0: /* tuple */[
+                          _0: [
                             l,
                             param[0],
                             param[1],
@@ -46113,7 +46113,7 @@ function tree_of_class_type(sch, params, _sign) {
                 var kind = field_kind_repr(param$1[1]);
                 var priv = kind !== /* Fpresent */0;
                 var virt = !mem$2(lab, partial_arg);
-                var match = method_type(/* tuple */[
+                var match = method_type([
                       lab,
                       kind,
                       param$1[2]
@@ -46187,9 +46187,9 @@ function tree_of_class_param(param, variance) {
   var match = tree_of_typexp(true, param);
   var tmp;
   tmp = typeof match === "number" || match.tag !== /* Otyp_var */10 ? "?" : match._1;
-  return /* tuple */[
+  return [
           tmp,
-          is_Tvar(repr(param)) ? /* tuple */[
+          is_Tvar(repr(param)) ? [
               true,
               true
             ] : variance
@@ -46198,7 +46198,7 @@ function tree_of_class_param(param, variance) {
 
 function class_variance(param) {
   return List.map((function (v) {
-                return /* tuple */[
+                return [
                         Curry._2(Types_Variance.mem, /* May_pos */0, v),
                         Curry._2(Types_Variance.mem, /* May_neg */1, v)
                       ];
@@ -46282,21 +46282,21 @@ function filter_rem_sig(item, rem) {
   switch (item.tag | 0) {
     case /* Sig_class */5 :
         if (!rem) {
-          return /* tuple */[
+          return [
                   /* [] */0,
                   rem
                 ];
         }
         var match = rem._1;
         if (!match) {
-          return /* tuple */[
+          return [
                   /* [] */0,
                   rem
                 ];
         }
         var match$1 = match._1;
         if (match$1) {
-          return /* tuple */[
+          return [
                   /* :: */{
                     _0: rem._0,
                     _1: /* :: */{
@@ -46310,21 +46310,21 @@ function filter_rem_sig(item, rem) {
                   match$1._1
                 ];
         } else {
-          return /* tuple */[
+          return [
                   /* [] */0,
                   rem
                 ];
         }
     case /* Sig_class_type */6 :
         if (!rem) {
-          return /* tuple */[
+          return [
                   /* [] */0,
                   rem
                 ];
         }
         var match$2 = rem._1;
         if (match$2) {
-          return /* tuple */[
+          return [
                   /* :: */{
                     _0: rem._0,
                     _1: /* :: */{
@@ -46335,13 +46335,13 @@ function filter_rem_sig(item, rem) {
                   match$2._1
                 ];
         } else {
-          return /* tuple */[
+          return [
                   /* [] */0,
                   rem
                 ];
         }
     default:
-      return /* tuple */[
+      return [
               /* [] */0,
               rem
             ];
@@ -46909,12 +46909,12 @@ function filter_trace(keep_last, param) {
     return rem$prime;
   } else {
     return /* :: */{
-            _0: /* tuple */[
+            _0: [
               t1,
               t1$prime
             ],
             _1: /* :: */{
-              _0: /* tuple */[
+              _0: [
                 t2,
                 t2$prime
               ],
@@ -46997,7 +46997,7 @@ function prepare_expansion(param) {
   if (!same_path(t, t$prime)) {
     mark_loops(t$prime);
   }
-  return /* tuple */[
+  return [
           t,
           t$prime
         ];
@@ -47008,7 +47008,7 @@ function may_prepare_expansion(compact, param) {
   var t = param[0];
   var match = repr(t$prime).desc;
   if (typeof match === "number") {
-    return prepare_expansion(/* tuple */[
+    return prepare_expansion([
                 t,
                 t$prime
               ]);
@@ -47018,19 +47018,19 @@ function may_prepare_expansion(compact, param) {
     case /* Tvariant */8 :
         break;
     default:
-      return prepare_expansion(/* tuple */[
+      return prepare_expansion([
                   t,
                   t$prime
                 ]);
   }
   if (compact) {
     mark_loops(t);
-    return /* tuple */[
+    return [
             t,
             t
           ];
   } else {
-    return prepare_expansion(/* tuple */[
+    return prepare_expansion([
                 t,
                 t$prime
               ]);
@@ -47204,7 +47204,7 @@ function mismatch(unif, param) {
     if (m !== undefined) {
       return m;
     } else if (has_explanation(unif, t, t$prime)) {
-      return /* tuple */[
+      return [
               t,
               t$prime
             ];
@@ -47214,7 +47214,7 @@ function mismatch(unif, param) {
   }
   throw {
         RE_EXN_ID: "Assert_failure",
-        _1: /* tuple */[
+        _1: [
           "printtyp.ml",
           1339,
           9
@@ -47743,10 +47743,10 @@ function explanation(unif, mis, ppf) {
                           _1: "@,The universal variable %a would escape its scope"
                         }), type_expr$1, is_Tunivar(t3) ? t3 : t4);
       case 5 :
-          var match$6 = is_Tvar(t3) ? /* tuple */[
+          var match$6 = is_Tvar(t3) ? [
               t3,
               t4
-            ] : /* tuple */[
+            ] : [
               t4,
               t3
             ];
@@ -48173,7 +48173,7 @@ function report_unification_error(ppf, env, unifOpt, tr, txt1, txt2) {
                 reset(undefined);
                 trace_same_names(tr);
                 var tr$1 = List.map((function (param) {
-                        return /* tuple */[
+                        return [
                                 param[0],
                                 hide_variant_name(param[1])
                               ];
@@ -48299,7 +48299,7 @@ function report_unification_error(ppf, env, unifOpt, tr, txt1, txt2) {
                   } else {
                     throw {
                           RE_EXN_ID: "Assert_failure",
-                          _1: /* tuple */[
+                          _1: [
                             "printtyp.ml",
                             1438,
                             20
@@ -48310,7 +48310,7 @@ function report_unification_error(ppf, env, unifOpt, tr, txt1, txt2) {
                 } else {
                   throw {
                         RE_EXN_ID: "Assert_failure",
-                        _1: /* tuple */[
+                        _1: [
                           "printtyp.ml",
                           1438,
                           20
@@ -48980,7 +48980,7 @@ function type_manifest(env, ty1, params1, ty2, params2, priv2) {
                 return false;
               }
               var match$6 = List.split(List.map((function (param) {
-                          return /* tuple */[
+                          return [
                                   param[2],
                                   param[4]
                                 ];
@@ -49104,7 +49104,7 @@ function type_manifest(env, ty1, params1, ty2, params2, priv2) {
                             t2 = t2$1;
                           }
                           to_equal.contents = /* :: */{
-                            _0: /* tuple */[
+                            _0: [
                               t1,
                               t2
                             ],
@@ -50565,7 +50565,7 @@ function join$2(l, v, r) {
 
 function split$2(x, param) {
   if (!param) {
-    return /* tuple */[
+    return [
             /* Empty */0,
             false,
             /* Empty */0
@@ -50576,7 +50576,7 @@ function split$2(x, param) {
   var l = param.l;
   var c = compare$3(x, v);
   if (c === 0) {
-    return /* tuple */[
+    return [
             l,
             true,
             r
@@ -50584,14 +50584,14 @@ function split$2(x, param) {
   }
   if (c < 0) {
     var match = split$2(x, l);
-    return /* tuple */[
+    return [
             match[0],
             match[1],
             join$2(match[2], v, r)
           ];
   }
   var match$1 = split$2(x, r);
-  return /* tuple */[
+  return [
           join$2(l, v, match$1[0]),
           match$1[1],
           match$1[2]
@@ -50931,7 +50931,7 @@ function join$3(l, v, r) {
 
 function split$3(x, param) {
   if (!param) {
-    return /* tuple */[
+    return [
             /* Empty */0,
             false,
             /* Empty */0
@@ -50942,7 +50942,7 @@ function split$3(x, param) {
   var l = param.l;
   var c = Caml_obj.caml_compare(x, v);
   if (c === 0) {
-    return /* tuple */[
+    return [
             l,
             true,
             r
@@ -50950,14 +50950,14 @@ function split$3(x, param) {
   }
   if (c < 0) {
     var match = split$3(x, l);
-    return /* tuple */[
+    return [
             match[0],
             match[1],
             join$3(match[2], v, r)
           ];
   }
   var match$1 = split$3(x, r);
-  return /* tuple */[
+  return [
           join$3(l, v, match$1[0]),
           match$1[1],
           match$1[2]
@@ -51302,7 +51302,7 @@ function value_descriptions(env, cxt, subst, id, vd1, vd2) {
       throw {
             RE_EXN_ID: $$Error$5,
             _1: /* :: */{
-              _0: /* tuple */[
+              _0: [
                 cxt,
                 env,
                 {
@@ -51332,7 +51332,7 @@ function type_declarations$2(env, old_envOpt, cxt, subst, id, decl1, decl2) {
   throw {
         RE_EXN_ID: $$Error$5,
         _1: /* :: */{
-          _0: /* tuple */[
+          _0: [
             cxt,
             old_env,
             {
@@ -51357,7 +51357,7 @@ function extension_constructors$1(env, cxt, subst, id, ext1, ext2) {
   throw {
         RE_EXN_ID: $$Error$5,
         _1: /* :: */{
-          _0: /* tuple */[
+          _0: [
             cxt,
             env,
             {
@@ -51382,7 +51382,7 @@ function class_type_declarations$1(old_env, env, cxt, subst, id, decl1, decl2) {
   throw {
         RE_EXN_ID: $$Error$5,
         _1: /* :: */{
-          _0: /* tuple */[
+          _0: [
             cxt,
             old_env,
             {
@@ -51408,7 +51408,7 @@ function class_declarations$1(old_env, env, cxt, subst, id, decl1, decl2) {
   throw {
         RE_EXN_ID: $$Error$5,
         _1: /* :: */{
-          _0: /* tuple */[
+          _0: [
             cxt,
             old_env,
             {
@@ -51451,7 +51451,7 @@ function expand_module_path(env, cxt, path) {
       throw {
             RE_EXN_ID: $$Error$5,
             _1: /* :: */{
-              _0: /* tuple */[
+              _0: [
                 cxt,
                 env,
                 {
@@ -51478,7 +51478,7 @@ function expand_module_alias(env, cxt, path) {
       throw {
             RE_EXN_ID: $$Error$5,
             _1: /* :: */{
-              _0: /* tuple */[
+              _0: [
                 cxt,
                 env,
                 {
@@ -51519,7 +51519,7 @@ function item_ident_name(param) {
   switch (param.tag | 0) {
     case /* Sig_value */0 :
         var id = param._0;
-        return /* tuple */[
+        return [
                 id,
                 param._1.val_loc,
                 {
@@ -51529,7 +51529,7 @@ function item_ident_name(param) {
               ];
     case /* Sig_type */1 :
         var id$1 = param._0;
-        return /* tuple */[
+        return [
                 id$1,
                 param._1.type_loc,
                 {
@@ -51539,7 +51539,7 @@ function item_ident_name(param) {
               ];
     case /* Sig_typext */2 :
         var id$2 = param._0;
-        return /* tuple */[
+        return [
                 id$2,
                 param._1.ext_loc,
                 {
@@ -51549,7 +51549,7 @@ function item_ident_name(param) {
               ];
     case /* Sig_module */3 :
         var id$3 = param._0;
-        return /* tuple */[
+        return [
                 id$3,
                 param._1.md_loc,
                 {
@@ -51559,7 +51559,7 @@ function item_ident_name(param) {
               ];
     case /* Sig_modtype */4 :
         var id$4 = param._0;
-        return /* tuple */[
+        return [
                 id$4,
                 param._1.mtd_loc,
                 {
@@ -51569,7 +51569,7 @@ function item_ident_name(param) {
               ];
     case /* Sig_class */5 :
         var id$5 = param._0;
-        return /* tuple */[
+        return [
                 id$5,
                 param._1.cty_loc,
                 {
@@ -51579,7 +51579,7 @@ function item_ident_name(param) {
               ];
     case /* Sig_class_type */6 :
         var id$6 = param._0;
-        return /* tuple */[
+        return [
                 id$6,
                 param._1.clty_loc,
                 {
@@ -51619,7 +51619,7 @@ function modtypes(env, cxt, subst, mty1, mty2) {
       throw {
             RE_EXN_ID: $$Error$5,
             _1: /* :: */{
-              _0: /* tuple */[
+              _0: [
                 cxt,
                 env,
                 {
@@ -51643,7 +51643,7 @@ function modtypes(env, cxt, subst, mty1, mty2) {
       throw {
             RE_EXN_ID: $$Error$5,
             _1: /* :: */{
-              _0: /* tuple */[
+              _0: [
                 cxt,
                 env,
                 {
@@ -51782,7 +51782,7 @@ function try_modtypes(env, cxt, subst, _mty1, mty2) {
               throw {
                     RE_EXN_ID: $$Error$5,
                     _1: /* :: */{
-                      _0: /* tuple */[
+                      _0: [
                         cxt,
                         env,
                         {
@@ -51820,7 +51820,7 @@ function try_modtypes(env, cxt, subst, _mty1, mty2) {
                 throw {
                       RE_EXN_ID: $$Error$5,
                       _1: /* :: */{
-                        _0: /* tuple */[
+                        _0: [
                           cxt,
                           env,
                           {
@@ -51851,7 +51851,7 @@ function try_modtypes(env, cxt, subst, _mty1, mty2) {
         if (mty2$1.tag) {
           throw {
                 RE_EXN_ID: "Assert_failure",
-                _1: /* tuple */[
+                _1: [
                   "includemod.ml",
                   275,
                   6
@@ -51869,7 +51869,7 @@ function try_modtypes(env, cxt, subst, _mty1, mty2) {
       }
       throw {
             RE_EXN_ID: "Assert_failure",
-            _1: /* tuple */[
+            _1: [
               "includemod.ml",
               275,
               6
@@ -51890,9 +51890,9 @@ function signatures(env, cxt, subst, sig1, sig2) {
           var pos = param[1];
           var l = param[0];
           if (item.tag === /* Sig_module */3) {
-            return /* tuple */[
+            return [
                     /* :: */{
-                      _0: /* tuple */[
+                      _0: [
                         item._0,
                         pos,
                         /* Tcoerce_none */0
@@ -51902,12 +51902,12 @@ function signatures(env, cxt, subst, sig1, sig2) {
                     pos + 1 | 0
                   ];
           } else {
-            return /* tuple */[
+            return [
                     l,
                     is_runtime_component(item) ? pos + 1 | 0 : pos
                   ];
           }
-        }), /* tuple */[
+        }), [
         /* [] */0,
         0
       ], sig1);
@@ -51918,7 +51918,7 @@ function signatures(env, cxt, subst, sig1, sig2) {
       var tbl = _tbl;
       var pos = _pos;
       if (!param) {
-        return /* tuple */[
+        return [
                 pos,
                 tbl
               ];
@@ -51927,7 +51927,7 @@ function signatures(env, cxt, subst, sig1, sig2) {
       var match = item_ident_name(item);
       var nextpos = is_runtime_component(item) ? pos + 1 | 0 : pos;
       _param = param._1;
-      _tbl = add$5(match[2], /* tuple */[
+      _tbl = add$5(match[2], [
             match[0],
             item,
             pos
@@ -51960,18 +51960,18 @@ function signatures(env, cxt, subst, sig1, sig2) {
         if (item2.tag === /* Sig_type */1 && !(item2._1.type_manifest !== undefined || name2.tag !== /* Field_type */1)) {
           var s = name2._0;
           var l = s.length;
-          match$1 = l >= 4 && $$String.sub(s, l - 4 | 0, 4) === "#row" ? /* tuple */[
+          match$1 = l >= 4 && $$String.sub(s, l - 4 | 0, 4) === "#row" ? [
               {
                 tag: /* Field_type */1,
                 _0: $$String.sub(s, 0, s.length - 4 | 0)
               },
               false
-            ] : /* tuple */[
+            ] : [
               name2,
               true
             ];
         } else {
-          match$1 = /* tuple */[
+          match$1 = [
             name2,
             true
           ];
@@ -52007,7 +52007,7 @@ function signatures(env, cxt, subst, sig1, sig2) {
               new_subst = subst;
           }
           return pair_components(new_subst, /* :: */{
-                      _0: /* tuple */[
+                      _0: [
                         match$2[1],
                         item2,
                         match$2[2]
@@ -52019,7 +52019,7 @@ function signatures(env, cxt, subst, sig1, sig2) {
           var exn = Caml_js_exceptions.internalToOCamlException(raw_exn);
           if (exn.RE_EXN_ID === "Not_found") {
             var unpaired$1 = match$1[1] ? /* :: */({
-                  _0: /* tuple */[
+                  _0: [
                     cxt,
                     env,
                     {
@@ -52108,7 +52108,7 @@ function signature_components(old_env, env, cxt, subst, paired) {
           var p = valdecl2.val_kind;
           if (typeof p === "number" || p.tag) {
             return /* :: */{
-                    _0: /* tuple */[
+                    _0: [
                       pos,
                       cc
                     ],
@@ -52131,7 +52131,7 @@ function signature_components(old_env, env, cxt, subst, paired) {
         if (match$4.tag === /* Sig_typext */2) {
           extension_constructors$1(env, cxt, subst, match$1._0, match$1._1, match$4._1);
           return /* :: */{
-                  _0: /* tuple */[
+                  _0: [
                     match[2],
                     /* Tcoerce_none */0
                   ],
@@ -52154,7 +52154,7 @@ function signature_components(old_env, env, cxt, subst, paired) {
                     _0: id1
                   }), match$5._1.md_type);
           return /* :: */{
-                  _0: /* tuple */[
+                  _0: [
                     match[2],
                     cc$1
                   ],
@@ -52174,7 +52174,7 @@ function signature_components(old_env, env, cxt, subst, paired) {
         if (match$7.tag === /* Sig_class */5) {
           class_declarations$1(old_env, env, cxt, subst, match$1._0, match$1._1, match$7._1);
           return /* :: */{
-                  _0: /* tuple */[
+                  _0: [
                     match[2],
                     /* Tcoerce_none */0
                   ],
@@ -52193,7 +52193,7 @@ function signature_components(old_env, env, cxt, subst, paired) {
   }
   throw {
         RE_EXN_ID: "Assert_failure",
-        _1: /* tuple */[
+        _1: [
           "includemod.ml",
           400,
           6
@@ -52239,7 +52239,7 @@ function modtype_infos(env, cxt, subst, id, info1, info2) {
       throw {
             RE_EXN_ID: $$Error$5,
             _1: /* :: */{
-              _0: /* tuple */[
+              _0: [
                 cxt,
                 env,
                 {
@@ -52267,7 +52267,7 @@ function check_modtype_equiv(env, cxt, mty1, mty2) {
   throw {
         RE_EXN_ID: $$Error$5,
         _1: /* :: */{
-          _0: /* tuple */[
+          _0: [
             cxt,
             env,
             /* Modtype_permutation */0
@@ -52307,7 +52307,7 @@ function compunit(env, impl_name, impl_sig, intf_name, intf_sig) {
       throw {
             RE_EXN_ID: $$Error$5,
             _1: /* :: */{
-              _0: /* tuple */[
+              _0: [
                 /* [] */0,
                 empty,
                 {
@@ -52509,7 +52509,7 @@ function include_err$1(ppf, path$1) {
               }), d1, (function (param, param$1) {
                 return value_description$1(id, param, param$1);
               }), d2);
-        return show_locs(ppf, /* tuple */[
+        return show_locs(ppf, [
                     d1.val_loc,
                     d2.val_loc
                   ]);
@@ -52619,7 +52619,7 @@ function include_err$1(ppf, path$1) {
                       }),
                     d2$1,
                     show_locs,
-                    /* tuple */[
+                    [
                       d1$1.type_loc,
                       d2$1.type_loc
                     ],
@@ -52699,7 +52699,7 @@ function include_err$1(ppf, path$1) {
               }), x1, (function (param, param$1) {
                 return extension_constructor$1(id$2, param, param$1);
               }), x2);
-        return show_locs(ppf, /* tuple */[
+        return show_locs(ppf, [
                     x1.ext_loc,
                     x2.ext_loc
                   ]);
@@ -53399,7 +53399,7 @@ function path_of_context(param) {
     if (id.tag) {
       throw {
             RE_EXN_ID: "Assert_failure",
-            _1: /* tuple */[
+            _1: [
               "includemod.ml",
               573,
               9
@@ -53422,7 +53422,7 @@ function path_of_context(param) {
       if (id$1.tag) {
         throw {
               RE_EXN_ID: "Assert_failure",
-              _1: /* tuple */[
+              _1: [
                 "includemod.ml",
                 571,
                 15
@@ -53442,7 +53442,7 @@ function path_of_context(param) {
   }
   throw {
         RE_EXN_ID: "Assert_failure",
-        _1: /* tuple */[
+        _1: [
           "includemod.ml",
           573,
           9
@@ -53859,7 +53859,7 @@ function records_args(l1, l2) {
       continue ;
     }
     if (!l2$1) {
-      return /* tuple */[
+      return [
               List.rev(r1),
               List.rev(r2)
             ];
@@ -54108,7 +54108,7 @@ function compat(_p, _q) {
       case 3 :
           throw {
                 RE_EXN_ID: "Assert_failure",
-                _1: /* tuple */[
+                _1: [
                   "parmatch.ml",
                   106,
                   6
@@ -54135,7 +54135,7 @@ function compats(_ps, _qs) {
       }
       throw {
             RE_EXN_ID: "Assert_failure",
-            _1: /* tuple */[
+            _1: [
               "parmatch.ml",
               111,
               12
@@ -54148,7 +54148,7 @@ function compats(_ps, _qs) {
     }
     throw {
           RE_EXN_ID: "Assert_failure",
-          _1: /* tuple */[
+          _1: [
             "parmatch.ml",
             111,
             12
@@ -55393,7 +55393,7 @@ function normalize_pat(_q) {
           return make_pat({
                       tag: /* Tpat_record */6,
                       _0: List.map((function (param) {
-                              return /* tuple */[
+                              return [
                                       param[0],
                                       param[1],
                                       omega
@@ -55466,7 +55466,7 @@ function discr_pat(q, pss) {
                       var exn = Caml_js_exceptions.internalToOCamlException(raw_exn);
                       if (exn.RE_EXN_ID === "Not_found") {
                         return /* :: */{
-                                _0: /* tuple */[
+                                _0: [
                                   param[0],
                                   lbl,
                                   omega
@@ -55514,7 +55514,7 @@ function discr_pat(q, pss) {
 
 function read_args(xs, r) {
   if (!xs) {
-    return /* tuple */[
+    return [
             /* [] */0,
             r
           ];
@@ -55523,7 +55523,7 @@ function read_args(xs, r) {
     return fatal_error("Parmatch.read_args");
   }
   var match = read_args(xs._1, r._1);
-  return /* tuple */[
+  return [
           /* :: */{
             _0: r._0,
             _1: match[0]
@@ -55570,14 +55570,14 @@ function do_set_args(erase_mutable, q, r) {
         var match$2;
         if (omegas._1 !== undefined) {
           if (r) {
-            match$2 = /* tuple */[
+            match$2 = [
               r._0,
               r._1
             ];
           } else {
             throw {
                   RE_EXN_ID: "Assert_failure",
-                  _1: /* tuple */[
+                  _1: [
                     "parmatch.ml",
                     450,
                     13
@@ -55586,7 +55586,7 @@ function do_set_args(erase_mutable, q, r) {
                 };
           }
         } else {
-          match$2 = /* tuple */[
+          match$2 = [
             undefined,
             r
           ];
@@ -55615,13 +55615,13 @@ function do_set_args(erase_mutable, q, r) {
                                 tmp = match ? true : false;
                               }
                               if (tmp) {
-                                return /* tuple */[
+                                return [
                                         lid,
                                         lbl,
                                         omega
                                       ];
                               } else {
-                                return /* tuple */[
+                                return [
                                         lid,
                                         lbl,
                                         arg
@@ -55784,7 +55784,7 @@ function filter_all(pat0, pss) {
       var q0 = c[0];
       if (simple_match(q0, q)) {
         return /* :: */{
-                _0: /* tuple */[
+                _0: [
                   q0,
                   /* :: */{
                     _0: Pervasives.$at(simple_match_args(q0, q), qs),
@@ -55802,7 +55802,7 @@ function filter_all(pat0, pss) {
     }
     var q0$1 = normalize_pat(q);
     return /* :: */{
-            _0: /* tuple */[
+            _0: [
               q0$1,
               /* :: */{
                 _0: Pervasives.$at(simple_match_args(q0$1, q), qs),
@@ -55883,7 +55883,7 @@ function filter_all(pat0, pss) {
   }
   if (exit === 1) {
     tmp = /* :: */{
-      _0: /* tuple */[
+      _0: [
         pat0,
         /* [] */0
       ],
@@ -55940,7 +55940,7 @@ function filter_all(pat0, pss) {
       _env = List.map((function(ps$1){
           return function (param) {
             var q = param[0];
-            return /* tuple */[
+            return [
                     q,
                     /* :: */{
                       _0: Pervasives.$at(simple_match_args(q, omega), ps$1),
@@ -56067,7 +56067,7 @@ function row_of_pat(pat) {
   if (typeof row === "number") {
     throw {
           RE_EXN_ID: "Assert_failure",
-          _1: /* tuple */[
+          _1: [
             "parmatch.ml",
             602,
             9
@@ -56080,7 +56080,7 @@ function row_of_pat(pat) {
   }
   throw {
         RE_EXN_ID: "Assert_failure",
-        _1: /* tuple */[
+        _1: [
           "parmatch.ml",
           602,
           9
@@ -56094,7 +56094,7 @@ function generalized_constructor(x) {
   if (typeof match === "number") {
     throw {
           RE_EXN_ID: "Assert_failure",
-          _1: /* tuple */[
+          _1: [
             "parmatch.ml",
             613,
             9
@@ -56107,7 +56107,7 @@ function generalized_constructor(x) {
   }
   throw {
         RE_EXN_ID: "Assert_failure",
-        _1: /* tuple */[
+        _1: [
           "parmatch.ml",
           613,
           9
@@ -56170,7 +56170,7 @@ function full_match(ignore_generalized, closing, env) {
                 if (typeof match === "number") {
                   throw {
                         RE_EXN_ID: "Assert_failure",
-                        _1: /* tuple */[
+                        _1: [
                           "parmatch.ml",
                           640,
                           17
@@ -56183,7 +56183,7 @@ function full_match(ignore_generalized, closing, env) {
                 }
                 throw {
                       RE_EXN_ID: "Assert_failure",
-                      _1: /* tuple */[
+                      _1: [
                         "parmatch.ml",
                         640,
                         17
@@ -56278,7 +56278,7 @@ function complete_tags(nconsts, nconstrs, tags) {
             case /* Cstr_extension */2 :
                 throw {
                       RE_EXN_ID: "Assert_failure",
-                      _1: /* tuple */[
+                      _1: [
                         "parmatch.ml",
                         703,
                         14
@@ -56468,7 +56468,7 @@ function build_other(ext, env) {
                             }
                             throw {
                                   RE_EXN_ID: "Assert_failure",
-                                  _1: /* tuple */[
+                                  _1: [
                                     "parmatch.ml",
                                     857,
                                     55
@@ -56498,7 +56498,7 @@ function build_other(ext, env) {
                       }
                       throw {
                             RE_EXN_ID: "Assert_failure",
-                            _1: /* tuple */[
+                            _1: [
                               "parmatch.ml",
                               832,
                               15
@@ -56507,27 +56507,27 @@ function build_other(ext, env) {
                           };
                     }), env);
               var _param = /* :: */{
-                _0: /* tuple */[
+                _0: [
                   /* "a" */97,
                   /* "z" */122
                 ],
                 _1: /* :: */{
-                  _0: /* tuple */[
+                  _0: [
                     /* "A" */65,
                     /* "Z" */90
                   ],
                   _1: /* :: */{
-                    _0: /* tuple */[
+                    _0: [
                       /* "0" */48,
                       /* "9" */57
                     ],
                     _1: /* :: */{
-                      _0: /* tuple */[
+                      _0: [
                         /* " " */32,
                         /* "~" */126
                       ],
                       _1: /* :: */{
-                        _0: /* tuple */[
+                        _0: [
                           Char.chr(0),
                           Char.chr(255)
                         ],
@@ -56588,7 +56588,7 @@ function build_other(ext, env) {
                             }
                             throw {
                                   RE_EXN_ID: "Assert_failure",
-                                  _1: /* tuple */[
+                                  _1: [
                                     "parmatch.ml",
                                     878,
                                     21
@@ -56618,7 +56618,7 @@ function build_other(ext, env) {
                             }
                             throw {
                                   RE_EXN_ID: "Assert_failure",
-                                  _1: /* tuple */[
+                                  _1: [
                                     "parmatch.ml",
                                     884,
                                     21
@@ -56647,7 +56647,7 @@ function build_other(ext, env) {
                             }
                             throw {
                                   RE_EXN_ID: "Assert_failure",
-                                  _1: /* tuple */[
+                                  _1: [
                                     "parmatch.ml",
                                     862,
                                     57
@@ -56674,7 +56674,7 @@ function build_other(ext, env) {
                             }
                             throw {
                                   RE_EXN_ID: "Assert_failure",
-                                  _1: /* tuple */[
+                                  _1: [
                                     "parmatch.ml",
                                     867,
                                     57
@@ -56701,7 +56701,7 @@ function build_other(ext, env) {
                             }
                             throw {
                                   RE_EXN_ID: "Assert_failure",
-                                  _1: /* tuple */[
+                                  _1: [
                                     "parmatch.ml",
                                     872,
                                     61
@@ -56795,7 +56795,7 @@ function build_other(ext, env) {
                 if (typeof match === "number") {
                   throw {
                         RE_EXN_ID: "Assert_failure",
-                        _1: /* tuple */[
+                        _1: [
                           "parmatch.ml",
                           801,
                           23
@@ -56808,7 +56808,7 @@ function build_other(ext, env) {
                 }
                 throw {
                       RE_EXN_ID: "Assert_failure",
-                      _1: /* tuple */[
+                      _1: [
                         "parmatch.ml",
                         801,
                         23
@@ -56864,7 +56864,7 @@ function build_other(ext, env) {
                 if (typeof args === "number") {
                   throw {
                         RE_EXN_ID: "Assert_failure",
-                        _1: /* tuple */[
+                        _1: [
                           "parmatch.ml",
                           893,
                           15
@@ -56877,7 +56877,7 @@ function build_other(ext, env) {
                 }
                 throw {
                       RE_EXN_ID: "Assert_failure",
-                      _1: /* tuple */[
+                      _1: [
                         "parmatch.ml",
                         893,
                         15
@@ -56925,7 +56925,7 @@ function build_other_gadt(ext, env) {
   }
   throw {
         RE_EXN_ID: "Assert_failure",
-        _1: /* tuple */[
+        _1: [
           "parmatch.ml",
           917,
           11
@@ -57093,7 +57093,7 @@ function orify_many(param) {
   }
   throw {
         RE_EXN_ID: "Assert_failure",
-        _1: /* tuple */[
+        _1: [
           "parmatch.ml",
           989,
           12
@@ -57107,7 +57107,7 @@ function try_many_gadt(f, param) {
     return /* Rnone */0;
   }
   var match = param._0;
-  var r1 = Curry._1(f, /* tuple */[
+  var r1 = Curry._1(f, [
         match[0],
         match[1]
       ]);
@@ -57159,7 +57159,7 @@ function exhaust(ext, pss, n) {
           return /* Rnone */0;
         }
         var match = param._0;
-        var r = Curry._1(try_non_omega, /* tuple */[
+        var r = Curry._1(try_non_omega, [
               match[0],
               match[1]
             ]);
@@ -57322,7 +57322,7 @@ function exhaust_gadt$1(ext, pss, n) {
             if (param._1) {
               throw {
                     RE_EXN_ID: "Assert_failure",
-                    _1: /* tuple */[
+                    _1: [
                       "parmatch.ml",
                       1165,
                       19
@@ -57334,7 +57334,7 @@ function exhaust_gadt$1(ext, pss, n) {
           }
           throw {
                 RE_EXN_ID: "Assert_failure",
-                _1: /* tuple */[
+                _1: [
                   "parmatch.ml",
                   1165,
                   19
@@ -57443,7 +57443,7 @@ function is_var_column(rs) {
                 }
                 throw {
                       RE_EXN_ID: "Assert_failure",
-                      _1: /* tuple */[
+                      _1: [
                         "parmatch.ml",
                         1274,
                         14
@@ -57460,7 +57460,7 @@ function or_args(_p) {
     if (typeof match === "number") {
       throw {
             RE_EXN_ID: "Assert_failure",
-            _1: /* tuple */[
+            _1: [
               "parmatch.ml",
               1281,
               23
@@ -57473,14 +57473,14 @@ function or_args(_p) {
           _p = match._0;
           continue ;
       case /* Tpat_or */8 :
-          return /* tuple */[
+          return [
                   match._0,
                   match._1
                 ];
       default:
         throw {
               RE_EXN_ID: "Assert_failure",
-              _1: /* tuple */[
+              _1: [
                 "parmatch.ml",
                 1281,
                 23
@@ -57502,7 +57502,7 @@ function remove(r) {
   }
   throw {
         RE_EXN_ID: "Assert_failure",
-        _1: /* tuple */[
+        _1: [
           "parmatch.ml",
           1286,
           12
@@ -57525,7 +57525,7 @@ function push_no_or(r) {
   }
   throw {
         RE_EXN_ID: "Assert_failure",
-        _1: /* tuple */[
+        _1: [
           "parmatch.ml",
           1293,
           8
@@ -57548,7 +57548,7 @@ function push_or(r) {
   }
   throw {
         RE_EXN_ID: "Assert_failure",
-        _1: /* tuple */[
+        _1: [
           "parmatch.ml",
           1297,
           8
@@ -57634,7 +57634,7 @@ function filter_one$1(q, rs) {
       }
       throw {
             RE_EXN_ID: "Assert_failure",
-            _1: /* tuple */[
+            _1: [
               "parmatch.ml",
               1314,
               14
@@ -57696,7 +57696,7 @@ function extract_columns(pss, qs) {
     }
     throw {
           RE_EXN_ID: "Assert_failure",
-          _1: /* tuple */[
+          _1: [
             "parmatch.ml",
             1357,
             8
@@ -57779,7 +57779,7 @@ function every_satisfiables(_pss, _qs) {
                         if (match._1) {
                           throw {
                                 RE_EXN_ID: "Assert_failure",
-                                _1: /* tuple */[
+                                _1: [
                                   "parmatch.ml",
                                   1394,
                                   23
@@ -57813,7 +57813,7 @@ function every_satisfiables(_pss, _qs) {
                       }
                       throw {
                             RE_EXN_ID: "Assert_failure",
-                            _1: /* tuple */[
+                            _1: [
                               "parmatch.ml",
                               1394,
                               23
@@ -58169,7 +58169,7 @@ function initial_all(no_guard, param) {
     var match = param._0;
     var pat = match.c_lhs;
     return /* :: */{
-            _0: /* tuple */[
+            _0: [
               /* :: */{
                 _0: pat,
                 _1: /* [] */0
@@ -58196,7 +58196,7 @@ function do_filter_var(param) {
   var match$1 = match[0];
   if (match$1) {
     return /* :: */{
-            _0: /* tuple */[
+            _0: [
               match$1._1,
               match[1]
             ],
@@ -58225,7 +58225,7 @@ function do_filter_one(q, pss) {
         switch (match$2.tag | 0) {
           case /* Tpat_alias */1 :
               _param = /* :: */{
-                _0: /* tuple */[
+                _0: [
                   /* :: */{
                     _0: match$2._0,
                     _1: match$1._1
@@ -58239,7 +58239,7 @@ function do_filter_one(q, pss) {
               var loc = match[1];
               var ps = match$1._1;
               _param = /* :: */{
-                _0: /* tuple */[
+                _0: [
                   /* :: */{
                     _0: match$2._0,
                     _1: ps
@@ -58247,7 +58247,7 @@ function do_filter_one(q, pss) {
                   loc
                 ],
                 _1: /* :: */{
-                  _0: /* tuple */[
+                  _0: [
                     /* :: */{
                       _0: match$2._1,
                       _1: ps
@@ -58265,7 +58265,7 @@ function do_filter_one(q, pss) {
       var pss = param._1;
       if (simple_match(q, p)) {
         return /* :: */{
-                _0: /* tuple */[
+                _0: [
                   Pervasives.$at(simple_match_args(q, p), match$1._1),
                   match[1]
                 ],
@@ -58447,7 +58447,7 @@ function conv(typed) {
                           } else {
                             throw {
                                   RE_EXN_ID: "Assert_failure",
-                                  _1: /* tuple */[
+                                  _1: [
                                     "parmatch.ml",
                                     1729,
                                     28
@@ -58512,7 +58512,7 @@ function conv(typed) {
             return List.map((function(label_idents){
                       return function (lst) {
                         var lst$1 = List.map2((function (lid, pat) {
-                                return /* tuple */[
+                                return [
                                         {
                                           txt: lid,
                                           loc: none
@@ -58554,7 +58554,7 @@ function conv(typed) {
     };
   };
   var ps = loop(typed);
-  return /* tuple */[
+  return [
           ps,
           constrs,
           labels
@@ -59027,7 +59027,7 @@ function warning_leave_scope(param) {
   }
   throw {
         RE_EXN_ID: "Assert_failure",
-        _1: /* tuple */[
+        _1: [
           "typetexp.ml",
           146,
           10
@@ -59268,7 +59268,7 @@ function find_value$1(env, loc, lid) {
 function lookup_module$1(loadOpt, env, loc, lid) {
   var load = loadOpt !== undefined ? loadOpt : false;
   return find_component((function (lid, env) {
-                  return /* tuple */[
+                  return [
                           lookup_module(load, lid, env),
                           undefined
                         ];
@@ -59284,7 +59284,7 @@ function find_module$1(env, loc, lid) {
   var path = lookup_module$1(true, env, loc, lid);
   var decl = find_module(false, path, env);
   check_deprecated(loc, decl.md_attributes, name(undefined, path));
-  return /* tuple */[
+  return [
           path,
           decl
         ];
@@ -59334,7 +59334,7 @@ var transl_modtype_longident = {
   contents: (function (param) {
       throw {
             RE_EXN_ID: "Assert_failure",
-            _1: /* tuple */[
+            _1: [
               "typetexp.ml",
               293,
               45
@@ -59348,7 +59348,7 @@ var transl_modtype = {
   contents: (function (param) {
       throw {
             RE_EXN_ID: "Assert_failure",
-            _1: /* tuple */[
+            _1: [
               "typetexp.ml",
               294,
               35
@@ -59376,7 +59376,7 @@ function create_package_mty(fake, loc, env, param) {
           }
           return Caml_obj.caml_compare(s1.txt, s2.txt);
         }), param[1]);
-  return /* tuple */[
+  return [
           l,
           List.fold_left((function (mty, param) {
                   var s = param[0];
@@ -59440,7 +59440,7 @@ function reset_type_variables(param) {
 }
 
 function narrow(param) {
-  return /* tuple */[
+  return [
           increase_global_level(undefined),
           type_variables.contents
         ];
@@ -59485,7 +59485,7 @@ function transl_type_param(env, styp) {
   if (name.tag) {
     throw {
           RE_EXN_ID: "Assert_failure",
-          _1: /* tuple */[
+          _1: [
             "typetexp.ml",
             379,
             9
@@ -59625,7 +59625,7 @@ function transl_type(env, policy, styp) {
               var exn$1 = Caml_js_exceptions.internalToOCamlException(raw_exn$1);
               if (exn$1.RE_EXN_ID === "Not_found") {
                 var v = policy === /* Univars */2 ? new_pre_univar(name$1, undefined) : newvar(validate_name(name$1), undefined);
-                used_variables.contents = add$5(name$1, /* tuple */[
+                used_variables.contents = add$5(name$1, [
                       v,
                       styp.ptyp_loc
                     ], used_variables.contents);
@@ -59765,7 +59765,7 @@ function transl_type(env, policy, styp) {
     case /* Ptyp_object */4 :
         var o = name._1;
         var fields = List.map((function (param) {
-                return /* tuple */[
+                return [
                         param[0],
                         param[1],
                         transl_poly_type(env, policy, param[2])
@@ -59827,7 +59827,7 @@ function transl_type(env, policy, styp) {
                 tag: /* Deprecated */0,
                 _0: "old syntax for polymorphic variant type"
               });
-          match$1 = /* tuple */[
+          match$1 = [
             match$2[0],
             decl$1,
             true
@@ -59859,7 +59859,7 @@ function transl_type(env, policy, styp) {
                 
               }
               var match$3 = lookup_type$1(lid2, env);
-              match$1 = /* tuple */[
+              match$1 = [
                 match$3[0],
                 match$3[1],
                 false
@@ -59871,7 +59871,7 @@ function transl_type(env, policy, styp) {
                 find_class$1(env, styp.ptyp_loc, lid$1.txt);
                 throw {
                       RE_EXN_ID: "Assert_failure",
-                      _1: /* tuple */[
+                      _1: [
                         "typetexp.ml",
                         505,
                         57
@@ -59954,7 +59954,7 @@ function transl_type(env, policy, styp) {
         if (typeof row === "number") {
           throw {
                 RE_EXN_ID: "Assert_failure",
-                _1: /* tuple */[
+                _1: [
                   "typetexp.ml",
                   553,
                   10
@@ -60004,13 +60004,13 @@ function transl_type(env, policy, styp) {
                               }
                             });
                       }
-                      return /* tuple */[
+                      return [
                               param[0],
                               tmp
                             ];
                     }), row$1.row_fields);
               var row_row_more = newvar(validate_name(undefined), undefined);
-              var row_row_name = /* tuple */[
+              var row_row_name = [
                 path$1,
                 ty_args
               ];
@@ -60048,7 +60048,7 @@ function transl_type(env, policy, styp) {
           default:
             throw {
                   RE_EXN_ID: "Assert_failure",
-                  _1: /* tuple */[
+                  _1: [
                     "typetexp.ml",
                     553,
                     10
@@ -60109,7 +60109,7 @@ function transl_type(env, policy, styp) {
               begin_def(undefined);
             }
             var t$2 = newvar(validate_name(undefined), undefined);
-            used_variables.contents = add$5(alias, /* tuple */[
+            used_variables.contents = add$5(alias, [
                   t$2,
                   styp.ptyp_loc
                 ], used_variables.contents);
@@ -60196,7 +60196,7 @@ function transl_type(env, policy, styp) {
             tag: /* Tvariant */8,
             _0: {
               row_fields: /* :: */{
-                _0: /* tuple */[
+                _0: [
                   l,
                   f
                 ],
@@ -60265,7 +60265,7 @@ function transl_type(env, policy, styp) {
           catch (raw_exn){
             var exn = Caml_js_exceptions.internalToOCamlException(raw_exn);
             if (exn.RE_EXN_ID === "Not_found") {
-              return Hashtbl.add(hfields, h, /* tuple */[
+              return Hashtbl.add(hfields, h, [
                           l,
                           f
                         ]);
@@ -60281,7 +60281,7 @@ function transl_type(env, policy, styp) {
             var match = repr(cty.ctyp_type);
             var match$1 = match.desc;
             var nm;
-            nm = typeof match$1 === "number" || match$1.tag !== /* Tconstr */3 ? undefined : /* tuple */[
+            nm = typeof match$1 === "number" || match$1.tag !== /* Tconstr */3 ? undefined : [
                 match$1._0,
                 match$1._1
               ];
@@ -60357,7 +60357,7 @@ function transl_type(env, policy, styp) {
                       if (typeof f === "number") {
                         throw {
                               RE_EXN_ID: "Assert_failure",
-                              _1: /* tuple */[
+                              _1: [
                                 "typetexp.ml",
                                 666,
                                 24
@@ -60368,7 +60368,7 @@ function transl_type(env, policy, styp) {
                       if (f.tag) {
                         throw {
                               RE_EXN_ID: "Assert_failure",
-                              _1: /* tuple */[
+                              _1: [
                                 "typetexp.ml",
                                 666,
                                 24
@@ -60530,7 +60530,7 @@ function transl_type(env, policy, styp) {
         var vars = name._0;
         begin_def(undefined);
         var new_univars = List.map((function (name) {
-                return /* tuple */[
+                return [
                         name,
                         newvar(validate_name(name), undefined)
                       ];
@@ -60586,7 +60586,7 @@ function transl_type(env, policy, styp) {
     case /* Ptyp_package */9 :
         var match$6 = name._0;
         var p = match$6[0];
-        var match$7 = create_package_mty(true, styp.ptyp_loc, env, /* tuple */[
+        var match$7 = create_package_mty(true, styp.ptyp_loc, env, [
               p,
               match$6[1]
             ]);
@@ -60595,7 +60595,7 @@ function transl_type(env, policy, styp) {
         var mty = Curry._2(transl_modtype.contents, env, match$7[1]);
         widen(z);
         var ptys = List.map((function (param) {
-                return /* tuple */[
+                return [
                         param[0],
                         transl_type(env, policy, param[1])
                       ];
@@ -60699,7 +60699,7 @@ function make_fixed_univars(ty) {
                 if (typeof match === "number" || !match.tag) {
                   return p;
                 } else {
-                  return /* tuple */[
+                  return [
                           p[0],
                           {
                             tag: /* Reither */1,
@@ -60745,7 +60745,7 @@ function globalize_used_variables(env, fixed) {
           }
           try {
             r.contents = /* :: */{
-              _0: /* tuple */[
+              _0: [
                 loc,
                 v,
                 find$2(name, type_variables.contents)
@@ -60771,7 +60771,7 @@ function globalize_used_variables(env, fixed) {
               }
               var v2 = new_global_var(validate_name(undefined), undefined);
               r.contents = /* :: */{
-                _0: /* tuple */[
+                _0: [
                   loc,
                   v,
                   v2
@@ -60880,7 +60880,7 @@ function transl_simple_type_delayed(env, styp) {
   var ty = typ.ctyp_type;
   make_fixed_univars(ty);
   unmark_type(ty);
-  return /* tuple */[
+  return [
           typ,
           globalize_used_variables(env, false)
         ];
@@ -60910,7 +60910,7 @@ function spellcheck(ppf, fold, env, lid) {
     var best_choice = acc[0];
     var dist = edit_distance(target, head, cutoff);
     if (dist === undefined) {
-      return /* tuple */[
+      return [
               best_choice,
               best_dist
             ];
@@ -60924,12 +60924,12 @@ function spellcheck(ppf, fold, env, lid) {
               _1: best_choice
             }) : best_choice
       );
-    return /* tuple */[
+    return [
             choice,
             dist < best_dist ? dist : best_dist
           ];
   };
-  var init = /* tuple */[
+  var init = [
     /* [] */0,
     Pervasives.max_int
   ];
@@ -61725,7 +61725,7 @@ var type_module = {
   contents: (function (env, md) {
       throw {
             RE_EXN_ID: "Assert_failure",
-            _1: /* tuple */[
+            _1: [
               "typecore.ml",
               77,
               22
@@ -61739,7 +61739,7 @@ var type_open = {
   contents: (function (param) {
       throw {
             RE_EXN_ID: "Assert_failure",
-            _1: /* tuple */[
+            _1: [
               "typecore.ml",
               83,
               16
@@ -61753,7 +61753,7 @@ var type_package = {
   contents: (function (param) {
       throw {
             RE_EXN_ID: "Assert_failure",
-            _1: /* tuple */[
+            _1: [
               "typecore.ml",
               88,
               16
@@ -61767,7 +61767,7 @@ var type_object = {
   contents: (function (env, s) {
       throw {
             RE_EXN_ID: "Assert_failure",
-            _1: /* tuple */[
+            _1: [
               "typecore.ml",
               92,
               20
@@ -62131,7 +62131,7 @@ function extract_option_type(env, ty) {
   }
   throw {
         RE_EXN_ID: "Assert_failure",
-        _1: /* tuple */[
+        _1: [
           "typecore.ml",
           275,
           9
@@ -62150,7 +62150,7 @@ function extract_concrete_record(env, ty) {
         };
   }
   if (!match$1.tag) {
-    return /* tuple */[
+    return [
             match[0],
             match[1],
             match$1._0
@@ -62169,7 +62169,7 @@ function extract_concrete_variant(env, ty) {
   var p0 = match[0];
   if (typeof cstrs === "number") {
     if (cstrs !== /* Type_abstract */0) {
-      return /* tuple */[
+      return [
               p0,
               p,
               /* [] */0
@@ -62181,7 +62181,7 @@ function extract_concrete_variant(env, ty) {
         };
   } else {
     if (cstrs.tag) {
-      return /* tuple */[
+      return [
               p0,
               p,
               cstrs._0
@@ -62206,7 +62206,7 @@ function extract_label_names(sexp, env, ty) {
     if (exn.RE_EXN_ID === "Not_found") {
       throw {
             RE_EXN_ID: "Assert_failure",
-            _1: /* tuple */[
+            _1: [
               "typecore.ml",
               293,
               4
@@ -62311,7 +62311,7 @@ function get_newtype_level$1(param) {
   }
   throw {
         RE_EXN_ID: "Assert_failure",
-        _1: /* tuple */[
+        _1: [
           "typecore.ml",
           331,
           12
@@ -62328,7 +62328,7 @@ function unify_pat_types_gadt(loc, env, ty, ty$prime) {
   } else {
     throw {
           RE_EXN_ID: "Assert_failure",
-          _1: /* tuple */[
+          _1: [
             "typecore.ml",
             336,
             14
@@ -62422,7 +62422,7 @@ function finalize_variant(pat) {
   if (typeof row === "number") {
     throw {
           RE_EXN_ID: "Assert_failure",
-          _1: /* tuple */[
+          _1: [
             "typecore.ml",
             362,
             15
@@ -62437,7 +62437,7 @@ function finalize_variant(pat) {
   } else {
     throw {
           RE_EXN_ID: "Assert_failure",
-          _1: /* tuple */[
+          _1: [
             "typecore.ml",
             362,
             15
@@ -62480,7 +62480,7 @@ function finalize_variant(pat) {
       }
       throw {
             RE_EXN_ID: "Assert_failure",
-            _1: /* tuple */[
+            _1: [
               "typecore.ml",
               370,
               40
@@ -62585,7 +62585,7 @@ function enter_variable(is_moduleOpt, is_as_variableOpt, loc, name, ty) {
   }
   var id = create(name.txt);
   pattern_variables.contents = /* :: */{
-    _0: /* tuple */[
+    _0: [
       id,
       ty,
       name,
@@ -62605,7 +62605,7 @@ function enter_variable(is_moduleOpt, is_as_variableOpt, loc, name, ty) {
           };
     }
     module_variables.contents = /* :: */{
-      _0: /* tuple */[
+      _0: [
         name,
         loc
       ],
@@ -62672,7 +62672,7 @@ function enter_orpat_variables(loc, env, p1_vs, p2_vs) {
               throw trace;
             }
             return /* :: */{
-                    _0: /* tuple */[
+                    _0: [
                       x2,
                       x1
                     ],
@@ -62773,7 +62773,7 @@ function build_as_type(env, _p) {
             tag: /* Tvariant */8,
             _0: {
               row_fields: /* :: */{
-                _0: /* tuple */[
+                _0: [
                   pl._0,
                   {
                     tag: /* Rpresent */0,
@@ -62798,7 +62798,7 @@ function build_as_type(env, _p) {
           }
           var ty$1 = newvar(undefined, undefined);
           var ppl = List.map((function (param) {
-                  return /* tuple */[
+                  return [
                           param[1].lbl_pos,
                           param[2]
                         ];
@@ -62924,22 +62924,22 @@ function build_or_pat(env, loc, lid) {
           var pats = param[0];
           var match = row_field_repr_aux(/* [] */0, param$1[1]);
           if (typeof match === "number") {
-            return /* tuple */[
+            return [
                     pats,
                     fields
                   ];
           }
           if (match.tag) {
-            return /* tuple */[
+            return [
                     pats,
                     fields
                   ];
           }
           var ty = match._0;
           if (ty !== undefined) {
-            return /* tuple */[
+            return [
                     /* :: */{
-                      _0: /* tuple */[
+                      _0: [
                         l,
                         {
                           pat_desc: /* Tpat_any */0,
@@ -62953,7 +62953,7 @@ function build_or_pat(env, loc, lid) {
                       _1: pats
                     },
                     /* :: */{
-                      _0: /* tuple */[
+                      _0: [
                         l,
                         {
                           tag: /* Reither */1,
@@ -62972,16 +62972,16 @@ function build_or_pat(env, loc, lid) {
                     }
                   ];
           } else {
-            return /* tuple */[
+            return [
                     /* :: */{
-                      _0: /* tuple */[
+                      _0: [
                         l,
                         undefined
                       ],
                       _1: pats
                     },
                     /* :: */{
-                      _0: /* tuple */[
+                      _0: [
                         l,
                         {
                           tag: /* Reither */1,
@@ -62997,13 +62997,13 @@ function build_or_pat(env, loc, lid) {
                     }
                   ];
           }
-        }), /* tuple */[
+        }), [
         /* [] */0,
         /* [] */0
       ], row_repr_aux(/* [] */0, row0).row_fields);
   var row_row_fields = List.rev(match$1[1]);
   var row_row_more = newvar(undefined, undefined);
-  var row_row_name = /* tuple */[
+  var row_row_name = [
     path,
     tyl
   ];
@@ -63067,7 +63067,7 @@ function build_or_pat(env, loc, lid) {
                     pat_attributes: /* [] */0
                   };
           }), pats._0, pats._1);
-    return /* tuple */[
+    return [
             path,
             rp({
                   pat_desc: r.pat_desc,
@@ -63177,7 +63177,7 @@ function get_type_path$1(env, d) {
   if (typeof match === "number") {
     throw {
           RE_EXN_ID: "Assert_failure",
-          _1: /* tuple */[
+          _1: [
             "typecore.ml",
             602,
             11
@@ -63190,7 +63190,7 @@ function get_type_path$1(env, d) {
   }
   throw {
         RE_EXN_ID: "Assert_failure",
-        _1: /* tuple */[
+        _1: [
           "typecore.ml",
           602,
           11
@@ -63365,14 +63365,14 @@ function disambiguate(warnOpt, check_lkOpt, scope, lid, env, opath, lbls) {
             } else {
               var tp_0 = opath[0];
               var tp_1 = expand_path(env, tpath);
-              var tp = /* tuple */[
+              var tp = [
                 tp_0,
                 tp_1
               ];
               var tpl = List.map((function (param) {
                       var tp0 = get_type_path$1(env, param[0]);
                       var tp = expand_path(env, tp0);
-                      return /* tuple */[
+                      return [
                               tp0,
                               tp
                             ];
@@ -63449,19 +63449,19 @@ function disambiguate_label_by_ids(keep, env, closed, ids, labels) {
   };
   var labels$prime = List.filter(check_ids)(labels);
   if (keep && labels$prime === /* [] */0) {
-    return /* tuple */[
+    return [
             false,
             labels
           ];
   }
   var labels$prime$prime = List.filter(check_closed)(labels$prime);
   if (keep && labels$prime$prime === /* [] */0) {
-    return /* tuple */[
+    return [
             false,
             labels$prime
           ];
   } else {
-    return /* tuple */[
+    return [
             true,
             labels$prime$prime
           ];
@@ -63508,7 +63508,7 @@ function disambiguate_lid_a_list(loc, closed, env, opath, lid_a_list) {
           var match$1 = msg._0;
           if (match$1 && !match$1._1) {
             w_amb.contents = /* :: */{
-              _0: /* tuple */[
+              _0: [
                 match$1._0,
                 msg._1
               ],
@@ -63530,7 +63530,7 @@ function disambiguate_lid_a_list(loc, closed, env, opath, lid_a_list) {
     var match;
     var exit = 0;
     if (opath !== undefined && opath[2]) {
-      match = /* tuple */[
+      match = [
         true,
         scope
       ];
@@ -63549,7 +63549,7 @@ function disambiguate_lid_a_list(loc, closed, env, opath, lid_a_list) {
   };
   var lbl_a_list = List.map((function (param) {
           var lid = param[0];
-          return /* tuple */[
+          return [
                   lid,
                   process_label(lid),
                   param[1]
@@ -63639,7 +63639,7 @@ function type_label_a_list(labels, loc, closed, env, type_lbl_a, opath, lid_a_li
                       var s = lid.txt;
                       switch (s.tag | 0) {
                         case /* Lident */0 :
-                            return /* tuple */[
+                            return [
                                     lid,
                                     Hashtbl.find(labels$1, s._0),
                                     param[1]
@@ -63648,7 +63648,7 @@ function type_label_a_list(labels, loc, closed, env, type_lbl_a, opath, lid_a_li
                         case /* Lapply */2 :
                             throw {
                                   RE_EXN_ID: "Assert_failure",
-                                  _1: /* tuple */[
+                                  _1: [
                                     "typecore.ml",
                                     819,
                                     17
@@ -63681,7 +63681,7 @@ function type_label_a_list(labels, loc, closed, env, type_lbl_a, opath, lid_a_li
               var s = lid.txt;
               switch (s.tag | 0) {
                 case /* Lident */0 :
-                    return /* tuple */[
+                    return [
                             {
                               txt: {
                                 tag: /* Ldot */1,
@@ -63762,7 +63762,7 @@ function get_type_path$2(env, d) {
   if (typeof match === "number") {
     throw {
           RE_EXN_ID: "Assert_failure",
-          _1: /* tuple */[
+          _1: [
             "typecore.ml",
             602,
             11
@@ -63775,7 +63775,7 @@ function get_type_path$2(env, d) {
   }
   throw {
         RE_EXN_ID: "Assert_failure",
-        _1: /* tuple */[
+        _1: [
           "typecore.ml",
           602,
           11
@@ -63950,14 +63950,14 @@ function disambiguate$1(warnOpt, check_lkOpt, scope, lid, env, opath, lbls) {
             } else {
               var tp_0 = opath[0];
               var tp_1 = expand_path(env, tpath);
-              var tp = /* tuple */[
+              var tp = [
                 tp_0,
                 tp_1
               ];
               var tpl = List.map((function (param) {
                       var tp0 = get_type_path$2(env, param[0]);
                       var tp = expand_path(env, tp0);
-                      return /* tuple */[
+                      return [
                               tp0,
                               tp
                             ];
@@ -64022,7 +64022,7 @@ function unify_head_only(loc, env, ty, constr) {
   if (typeof match$1 === "number") {
     throw {
           RE_EXN_ID: "Assert_failure",
-          _1: /* tuple */[
+          _1: [
             "typecore.ml",
             892,
             9
@@ -64044,7 +64044,7 @@ function unify_head_only(loc, env, ty, constr) {
   }
   throw {
         RE_EXN_ID: "Assert_failure",
-        _1: /* tuple */[
+        _1: [
           "typecore.ml",
           892,
           9
@@ -64184,7 +64184,7 @@ function type_pat(constrs, labels, no_existentials, mode, env, sp, expected_ty) 
           ill_formed_ast(loc, "Tuples must have at least 2 components.");
         }
         var spl_ann = List.map((function (p) {
-                return /* tuple */[
+                return [
                         p,
                         newvar(undefined, undefined)
                       ];
@@ -64217,7 +64217,7 @@ function type_pat(constrs, labels, no_existentials, mode, env, sp, expected_ty) 
         var opath;
         try {
           var match = extract_concrete_variant(env.contents, expected_ty);
-          opath = /* tuple */[
+          opath = [
             match[0],
             match[1],
             true
@@ -64241,7 +64241,7 @@ function type_pat(constrs, labels, no_existentials, mode, env, sp, expected_ty) 
                 var s = match$1._0;
                 if (Hashtbl.mem(constrs$2, s)) {
                   constrs$1 = /* :: */{
-                    _0: /* tuple */[
+                    _0: [
                       Hashtbl.find(constrs$2, s),
                       (function (param) {
                           
@@ -64338,7 +64338,7 @@ function type_pat(constrs, labels, no_existentials, mode, env, sp, expected_ty) 
                 Error: new Error()
               };
         }
-        var match$2 = instance_constructor(/* tuple */[
+        var match$2 = instance_constructor([
               env,
               get_newtype_level$1(undefined)
             ], constr);
@@ -64372,7 +64372,7 @@ function type_pat(constrs, labels, no_existentials, mode, env, sp, expected_ty) 
               _1: /* [] */0
             }) : /* [] */0;
         var row_row_fields = /* :: */{
-          _0: /* tuple */[
+          _0: [
             l,
             {
               tag: /* Reither */1,
@@ -64431,8 +64431,8 @@ function type_pat(constrs, labels, no_existentials, mode, env, sp, expected_ty) 
         var match$3;
         try {
           var match$4 = extract_concrete_record(env.contents, expected_ty);
-          match$3 = /* tuple */[
-            /* tuple */[
+          match$3 = [
+            [
               match$4[0],
               match$4[1],
               true
@@ -64443,7 +64443,7 @@ function type_pat(constrs, labels, no_existentials, mode, env, sp, expected_ty) 
         catch (raw_exn$1){
           var exn$1 = Caml_js_exceptions.internalToOCamlException(raw_exn$1);
           if (exn$1.RE_EXN_ID === "Not_found") {
-            match$3 = /* tuple */[
+            match$3 = [
               undefined,
               newvar(undefined, undefined)
             ];
@@ -64512,7 +64512,7 @@ function type_pat(constrs, labels, no_existentials, mode, env, sp, expected_ty) 
             }
             
           }
-          return /* tuple */[
+          return [
                   label_lid,
                   label,
                   arg
@@ -64540,7 +64540,7 @@ function type_pat(constrs, labels, no_existentials, mode, env, sp, expected_ty) 
         var ty_elt = newvar(undefined, undefined);
         unify_pat_types(loc, env.contents, instance_def(type_array(ty_elt)), expected_ty);
         var spl_ann$1 = List.map((function (p) {
-                return /* tuple */[
+                return [
                         p,
                         newvar(undefined, undefined)
                       ];
@@ -64607,7 +64607,7 @@ function type_pat(constrs, labels, no_existentials, mode, env, sp, expected_ty) 
             if (typeof match$6 === "number") {
               throw {
                     RE_EXN_ID: "Assert_failure",
-                    _1: /* tuple */[
+                    _1: [
                       "typecore.ml",
                       955,
                       13
@@ -64632,7 +64632,7 @@ function type_pat(constrs, labels, no_existentials, mode, env, sp, expected_ty) 
                           },
                           pat_loc: lloc,
                           pat_extra: /* :: */{
-                            _0: /* tuple */[
+                            _0: [
                               {
                                 tag: /* Tpat_constraint */0,
                                 _0: cty
@@ -64649,7 +64649,7 @@ function type_pat(constrs, labels, no_existentials, mode, env, sp, expected_ty) 
             }
             throw {
                   RE_EXN_ID: "Assert_failure",
-                  _1: /* tuple */[
+                  _1: [
                     "typecore.ml",
                     955,
                     13
@@ -64679,7 +64679,7 @@ function type_pat(constrs, labels, no_existentials, mode, env, sp, expected_ty) 
             _0: cty$1
           };
           var extra_2 = sp$1.ppat_attributes;
-          var extra = /* tuple */[
+          var extra = [
             extra_0,
             loc,
             extra_2
@@ -64741,7 +64741,7 @@ function type_pat(constrs, labels, no_existentials, mode, env, sp, expected_ty) 
                 pat_desc: p$3.pat_desc,
                 pat_loc: p$3.pat_loc,
                 pat_extra: /* :: */{
-                  _0: /* tuple */[
+                  _0: [
                     {
                       tag: /* Tpat_type */1,
                       _0: match$10[0],
@@ -64782,7 +64782,7 @@ function type_pat(constrs, labels, no_existentials, mode, env, sp, expected_ty) 
                     },
                     pat_loc: sp.ppat_loc,
                     pat_extra: /* :: */{
-                      _0: /* tuple */[
+                      _0: [
                         /* Tpat_unpack */0,
                         loc,
                         sp.ppat_attributes
@@ -64865,7 +64865,7 @@ function check_partial$1(levOpt, env, expected_ty) {
 
 function add_pattern_variables(check, check_as, env) {
   var pv = get_ref(pattern_variables);
-  return /* tuple */[
+  return [
           List.fold_right((function (param, env) {
                   var check$1 = param[4] ? check_as : check;
                   return add_value(check$1, param[0], {
@@ -64896,7 +64896,7 @@ function type_pattern(lev, env, spat, scope, expected_ty) {
                   _0: s
                 };
         }), new_env.contents);
-  return /* tuple */[
+  return [
           pat,
           match[0],
           get_ref(pattern_force),
@@ -64913,7 +64913,7 @@ function type_pattern_list(env, spatl, scope, expected_tys, allow) {
           return type_pat$1(undefined, undefined, undefined, undefined, new_env, param, param$1);
         }), spatl, expected_tys);
   var match = add_pattern_variables(undefined, undefined, new_env.contents);
-  return /* tuple */[
+  return [
           patl,
           match[0],
           get_ref(pattern_force),
@@ -64958,9 +64958,9 @@ function type_class_arg_pattern(cl_num, val_env, met_env, l, spat) {
             }
           };
           var id$prime = create(id.name);
-          return /* tuple */[
+          return [
                   /* :: */{
-                    _0: /* tuple */[
+                    _0: [
                       id$prime,
                       param[2],
                       id,
@@ -64979,12 +64979,12 @@ function type_class_arg_pattern(cl_num, val_env, met_env, l, spat) {
                         val_attributes: /* [] */0
                       }, param$1[1])
                 ];
-        }), pattern_variables.contents, /* tuple */[
+        }), pattern_variables.contents, [
         /* [] */0,
         met_env
       ]);
   var match$1 = add_pattern_variables(undefined, undefined, val_env);
-  return /* tuple */[
+  return [
           pat,
           match[0],
           match$1[0],
@@ -65029,7 +65029,7 @@ function type_self_pattern(cl_num, privty, val_env, met_env, par_env, spat) {
           var loc = param[3];
           var ty = param[1];
           var id = param[0];
-          return /* tuple */[
+          return [
                   add_value(undefined, id, {
                         val_type: ty,
                         val_kind: /* Val_unbound */1,
@@ -65067,12 +65067,12 @@ function type_self_pattern(cl_num, privty, val_env, met_env, par_env, spat) {
                         val_attributes: /* [] */0
                       }, param$1[2])
                 ];
-        }), pv, /* tuple */[
+        }), pv, [
         val_env,
         met_env,
         par_env
       ]);
-  return /* tuple */[
+  return [
           pat,
           meths,
           vars,
@@ -65088,7 +65088,7 @@ var delayed_checks = {
 
 function add_delayed_check(f) {
   delayed_checks.contents = /* :: */{
-    _0: /* tuple */[
+    _0: [
       f,
       current.contents
     ],
@@ -65523,20 +65523,20 @@ function list_labels(env, ty) {
                   var visited = _visited;
                   var ty = expand_head(env, ty_fun);
                   if (List.memq(ty, visited)) {
-                    return /* tuple */[
+                    return [
                             List.rev(ls),
                             false
                           ];
                   }
                   var match = ty.desc;
                   if (typeof match === "number") {
-                    return /* tuple */[
+                    return [
                             List.rev(ls),
                             is_Tvar(ty)
                           ];
                   }
                   if (match.tag !== /* Tarrow */1) {
-                    return /* tuple */[
+                    return [
                             List.rev(ls),
                             is_Tvar(ty)
                           ];
@@ -65599,12 +65599,12 @@ function check_univars(env, expans, kind, exp, ty_expected, vars) {
           tag: /* Less_general */31,
           _0: kind,
           _1: /* :: */{
-            _0: /* tuple */[
+            _0: [
               ty,
               ty
             ],
             _1: /* :: */{
-              _0: /* tuple */[
+              _0: [
                 ty_expected$1,
                 ty_expected$1
               ],
@@ -65863,7 +65863,7 @@ function check_absent_variant(env) {
                         _1: /* [] */0
                       }) : /* [] */0;
                   var row$prime_row_fields = /* :: */{
-                    _0: /* tuple */[
+                    _0: [
                       s,
                       {
                         tag: /* Reither */1,
@@ -66035,7 +66035,7 @@ function type_expect_(in_function, env, sexp, ty_expected) {
                   case /* Lapply */2 :
                       throw {
                             RE_EXN_ID: "Assert_failure",
-                            _1: /* tuple */[
+                            _1: [
                               "typecore.ml",
                               1773,
                               38
@@ -66224,7 +66224,7 @@ function type_expect_(in_function, env, sexp, ty_expected) {
           if (!is_optional(l)) {
             throw {
                   RE_EXN_ID: "Assert_failure",
-                  _1: /* tuple */[
+                  _1: [
                     "typecore.ml",
                     1852,
                     6
@@ -66282,7 +66282,7 @@ function type_expect_(in_function, env, sexp, ty_expected) {
                     txt: "*opt*",
                     loc: none
                   }), Curry._5(Ast_helper_Exp.let_, loc, /* :: */{
-                    _0: /* tuple */[
+                    _0: [
                       {
                         txt: "#default",
                         loc: none
@@ -66349,7 +66349,7 @@ function type_expect_(in_function, env, sexp, ty_expected) {
                     if (exn.RE_EXN_ID === Unify) {
                       throw {
                             RE_EXN_ID: "Assert_failure",
-                            _1: /* tuple */[
+                            _1: [
                               "typecore.ml",
                               1903,
                               65
@@ -66400,7 +66400,7 @@ function type_expect_(in_function, env, sexp, ty_expected) {
             var ec = _ec;
             var vc = _vc;
             if (!param) {
-              return /* tuple */[
+              return [
                       List.rev(vc),
                       List.rev(ec)
                     ];
@@ -66513,7 +66513,7 @@ function type_expect_(in_function, env, sexp, ty_expected) {
         var opath;
         try {
           var match$14 = extract_concrete_variant(env, ty_expected);
-          opath = /* tuple */[
+          opath = [
             match$14[0],
             match$14[1],
             ty_expected.level === 100000000 || !principal.contents
@@ -66599,14 +66599,14 @@ function type_expect_(in_function, env, sexp, ty_expected) {
             });
         var match$17;
         if (match$16) {
-          match$17 = /* tuple */[
+          match$17 = [
             match$16._1,
             match$16._0
           ];
         } else {
           throw {
                 RE_EXN_ID: "Assert_failure",
-                _1: /* tuple */[
+                _1: [
                   "typecore.ml",
                   3375,
                   11
@@ -66770,7 +66770,7 @@ function type_expect_(in_function, env, sexp, ty_expected) {
               tag: /* Tvariant */8,
               _0: {
                 row_fields: /* :: */{
-                  _0: /* tuple */[
+                  _0: [
                     l$1,
                     {
                       tag: /* Rpresent */0,
@@ -66824,7 +66824,7 @@ function type_expect_(in_function, env, sexp, ty_expected) {
         var get_path = function (ty) {
           try {
             var match = extract_concrete_record(env, ty);
-            return /* tuple */[
+            return [
                     match[0],
                     match[1],
                     ty.level === 100000000 || !principal.contents
@@ -66841,7 +66841,7 @@ function type_expect_(in_function, env, sexp, ty_expected) {
         var op = get_path(ty_expected);
         var match$22;
         if (op !== undefined) {
-          match$22 = /* tuple */[
+          match$22 = [
             ty_expected,
             op
           ];
@@ -66854,18 +66854,18 @@ function type_expect_(in_function, env, sexp, ty_expected) {
             var ty$2 = newconstr(p$prime, instance_list(env, decl.type_params));
             end_def(undefined);
             generalize_structure$1(current_level.contents, ty$2);
-            match$22 = /* tuple */[
+            match$22 = [
               ty$2,
               op$1
             ];
           } else {
-            match$22 = /* tuple */[
+            match$22 = [
               newvar(undefined, undefined),
               undefined
             ];
           }
         } else {
-          match$22 = /* tuple */[
+          match$22 = [
             newvar(undefined, undefined),
             undefined
           ];
@@ -66936,7 +66936,7 @@ function type_expect_(in_function, env, sexp, ty_expected) {
           } else {
             throw {
                   RE_EXN_ID: "Assert_failure",
-                  _1: /* tuple */[
+                  _1: [
                     "typecore.ml",
                     2092,
                     15
@@ -66953,7 +66953,7 @@ function type_expect_(in_function, env, sexp, ty_expected) {
         } else {
           throw {
                 RE_EXN_ID: "Assert_failure",
-                _1: /* tuple */[
+                _1: [
                   "typecore.ml",
                   2095,
                   38
@@ -67037,7 +67037,7 @@ function type_expect_(in_function, env, sexp, ty_expected) {
         var match$25 = type_label_access(env, loc, lid._0, lid$4);
         var record$4 = match$25[0];
         var ty_record$1 = match$25[2] === undefined ? newvar(undefined, undefined) : record$4.exp_type;
-        var match$26 = type_label_exp(false, env, loc, ty_record$1, /* tuple */[
+        var match$26 = type_label_exp(false, env, loc, ty_record$1, [
               lid$4,
               match$25[1],
               lid._2
@@ -67164,7 +67164,7 @@ function type_expect_(in_function, env, sexp, ty_expected) {
         var match$27 = param.ppat_desc;
         var match$28;
         if (typeof match$27 === "number") {
-          match$28 = /* tuple */[
+          match$28 = [
             create("_for"),
             env
           ];
@@ -67221,7 +67221,7 @@ function type_expect_(in_function, env, sexp, ty_expected) {
                     exp_desc: arg$3.exp_desc,
                     exp_loc: arg$3.exp_loc,
                     exp_extra: /* :: */{
-                      _0: /* tuple */[
+                      _0: [
                         {
                           tag: /* Texp_constraint */0,
                           _0: cty
@@ -67274,7 +67274,7 @@ function type_expect_(in_function, env, sexp, ty_expected) {
           end_def(undefined);
           generalize_structure$1(current_level.contents, ty$5);
           generalize_structure$1(current_level.contents, ty$prime);
-          match$29 = /* tuple */[
+          match$29 = [
             type_argument(env, sarg$3, ty$5, instance(undefined, env, ty$5)),
             instance(undefined, env, ty$prime),
             cty$1,
@@ -67398,7 +67398,7 @@ function type_expect_(in_function, env, sexp, ty_expected) {
               }
             }
           }
-          match$29 = /* tuple */[
+          match$29 = [
             arg$4,
             ty$prime$1,
             undefined,
@@ -67410,7 +67410,7 @@ function type_expect_(in_function, env, sexp, ty_expected) {
                     exp_desc: arg$5.exp_desc,
                     exp_loc: arg$5.exp_loc,
                     exp_extra: /* :: */{
-                      _0: /* tuple */[
+                      _0: [
                         {
                           tag: /* Texp_coerce */1,
                           _0: match$29[2],
@@ -67454,7 +67454,7 @@ function type_expect_(in_function, env, sexp, ty_expected) {
                             _0: met
                           });
                     }
-                    match$40 = /* tuple */[
+                    match$40 = [
                       {
                         tag: /* Tmeth_val */1,
                         _0: match$42[0]
@@ -67498,7 +67498,7 @@ function type_expect_(in_function, env, sexp, ty_expected) {
                     if (typeof match$45 === "number") {
                       throw {
                             RE_EXN_ID: "Assert_failure",
-                            _1: /* tuple */[
+                            _1: [
                               "typecore.ml",
                               2384,
                               18
@@ -67535,7 +67535,7 @@ function type_expect_(in_function, env, sexp, ty_expected) {
                         exp_attributes: /* [] */0
                       };
                       var exp_1 = /* :: */{
-                        _0: /* tuple */[
+                        _0: [
                           "",
                           {
                             exp_desc: {
@@ -67559,7 +67559,7 @@ function type_expect_(in_function, env, sexp, ty_expected) {
                         _0: exp_0,
                         _1: exp_1
                       };
-                      match$40 = /* tuple */[
+                      match$40 = [
                         {
                           tag: /* Tmeth_name */0,
                           _0: met
@@ -67577,7 +67577,7 @@ function type_expect_(in_function, env, sexp, ty_expected) {
                     } else {
                       throw {
                             RE_EXN_ID: "Assert_failure",
-                            _1: /* tuple */[
+                            _1: [
                               "typecore.ml",
                               2384,
                               18
@@ -67592,7 +67592,7 @@ function type_expect_(in_function, env, sexp, ty_expected) {
             }
           }
           if (exit$3 === 1) {
-            match$40 = /* tuple */[
+            match$40 = [
               {
                 tag: /* Tmeth_name */0,
                 _0: met
@@ -67612,7 +67612,7 @@ function type_expect_(in_function, env, sexp, ty_expected) {
           if (typeof match$48 === "number") {
             throw {
                   RE_EXN_ID: "Assert_failure",
-                  _1: /* tuple */[
+                  _1: [
                     "typecore.ml",
                     2410,
                     14
@@ -67649,7 +67649,7 @@ function type_expect_(in_function, env, sexp, ty_expected) {
             default:
               throw {
                     RE_EXN_ID: "Assert_failure",
-                    _1: /* tuple */[
+                    _1: [
                       "typecore.ml",
                       2410,
                       14
@@ -67825,7 +67825,7 @@ function type_expect_(in_function, env, sexp, ty_expected) {
               }), lst, /* [] */0);
         var match$53;
         try {
-          match$53 = /* tuple */[
+          match$53 = [
             lookup_value$1({
                   tag: /* Lident */0,
                   _0: "selfpat-*"
@@ -67854,7 +67854,7 @@ function type_expect_(in_function, env, sexp, ty_expected) {
         if (typeof match$55 === "number") {
           throw {
                 RE_EXN_ID: "Assert_failure",
-                _1: /* tuple */[
+                _1: [
                   "typecore.ml",
                   2494,
                   10
@@ -67868,7 +67868,7 @@ function type_expect_(in_function, env, sexp, ty_expected) {
             var lab = param[0];
             try {
               var match = find(lab.txt, vars.contents);
-              return /* tuple */[
+              return [
                       {
                         tag: /* Pident */0,
                         _0: match[0]
@@ -67910,7 +67910,7 @@ function type_expect_(in_function, env, sexp, ty_expected) {
         }
         throw {
               RE_EXN_ID: "Assert_failure",
-              _1: /* tuple */[
+              _1: [
                 "typecore.ml",
                 2494,
                 10
@@ -68009,12 +68009,12 @@ function type_expect_(in_function, env, sexp, ty_expected) {
         if (sty$1 !== undefined) {
           var sty$2 = force_poly(sty$1);
           var cty$2 = transl_simple_type(env, false, sty$2);
-          match$58 = /* tuple */[
+          match$58 = [
             repr(cty$2.ctyp_type),
             cty$2
           ];
         } else {
-          match$58 = /* tuple */[
+          match$58 = [
             repr(ty_expected),
             undefined
           ];
@@ -68032,7 +68032,7 @@ function type_expect_(in_function, env, sexp, ty_expected) {
         if (typeof match$59 === "number") {
           throw {
                 RE_EXN_ID: "Assert_failure",
-                _1: /* tuple */[
+                _1: [
                   "typecore.ml",
                   2600,
                   15
@@ -68104,7 +68104,7 @@ function type_expect_(in_function, env, sexp, ty_expected) {
           default:
             throw {
                   RE_EXN_ID: "Assert_failure",
-                  _1: /* tuple */[
+                  _1: [
                     "typecore.ml",
                     2600,
                     15
@@ -68116,7 +68116,7 @@ function type_expect_(in_function, env, sexp, ty_expected) {
                     exp_desc: exp$2.exp_desc,
                     exp_loc: exp$2.exp_loc,
                     exp_extra: /* :: */{
-                      _0: /* tuple */[
+                      _0: [
                         {
                           tag: /* Texp_poly */3,
                           _0: match$58[1]
@@ -68149,7 +68149,7 @@ function type_expect_(in_function, env, sexp, ty_expected) {
         var ty$12 = newvar(undefined, undefined);
         begin_def(undefined);
         var level = current_level.contents;
-        var decl_type_newtype_level = /* tuple */[
+        var decl_type_newtype_level = [
           level,
           level
         ];
@@ -68203,7 +68203,7 @@ function type_expect_(in_function, env, sexp, ty_expected) {
                     exp_desc: body$5.exp_desc,
                     exp_loc: loc,
                     exp_extra: /* :: */{
-                      _0: /* tuple */[
+                      _0: [
                         {
                           tag: /* Texp_newtype */4,
                           _0: name$3
@@ -68249,7 +68249,7 @@ function type_expect_(in_function, env, sexp, ty_expected) {
                       _0: "this module packing"
                     });
               }
-              match$65 = /* tuple */[
+              match$65 = [
                 match$64._0,
                 match$64._1,
                 match$64._2
@@ -68296,7 +68296,7 @@ function type_expect_(in_function, env, sexp, ty_expected) {
                 exp_desc: exp$7.exp_desc,
                 exp_loc: exp$7.exp_loc,
                 exp_extra: /* :: */{
-                  _0: /* tuple */[
+                  _0: [
                     {
                       tag: /* Texp_open */2,
                       _0: ovf,
@@ -68324,7 +68324,7 @@ function type_expect_(in_function, env, sexp, ty_expected) {
 }
 
 function type_function(in_function, loc, attrs, env, ty_expected, l, caselist) {
-  var match = in_function !== undefined ? in_function : /* tuple */[
+  var match = in_function !== undefined ? in_function : [
       loc,
       instance(undefined, env, ty_expected)
     ];
@@ -68393,7 +68393,7 @@ function type_function(in_function, loc, attrs, env, ty_expected, l, caselist) {
       if (exn$1.RE_EXN_ID === Unify) {
         throw {
               RE_EXN_ID: "Assert_failure",
-              _1: /* tuple */[
+              _1: [
                 "typecore.ml",
                 2706,
                 24
@@ -68412,7 +68412,7 @@ function type_function(in_function, loc, attrs, env, ty_expected, l, caselist) {
     generalize_structure$1(current_level.contents, ty_arg$1);
     generalize_structure$1(current_level.contents, ty_res);
   }
-  var match$3 = type_cases(/* tuple */[
+  var match$3 = type_cases([
         loc_fun,
         ty_fun
       ], env, ty_arg$1, ty_res, true, loc, caselist);
@@ -68462,7 +68462,7 @@ function type_label_access(env, loc, srecord, lid) {
   var opath;
   try {
     var match = extract_concrete_record(env, ty_exp);
-    opath = /* tuple */[
+    opath = [
       match[0],
       match[1],
       ty_exp.level === 100000000 || !principal.contents
@@ -68480,7 +68480,7 @@ function type_label_access(env, loc, srecord, lid) {
   var label = wrap_disambiguate("This expression has", ty_exp, (function (param) {
           return disambiguate(undefined, undefined, undefined, lid, env, opath, param);
         }), labels);
-  return /* tuple */[
+  return [
           record,
           label,
           opath
@@ -68490,7 +68490,7 @@ function type_label_access(env, loc, srecord, lid) {
 function type_format(loc, str, env) {
   throw {
         RE_EXN_ID: "Assert_failure",
-        _1: /* tuple */[
+        _1: [
           "typecore.ml",
           2759,
           11
@@ -68606,7 +68606,7 @@ function type_label_exp(create, env, loc, ty_expected, param) {
       }
     }
   }
-  return /* tuple */[
+  return [
           lid,
           label,
           {
@@ -68687,7 +68687,7 @@ function type_argument(env, sarg, ty_expected$prime, ty_expected) {
           if (typeof match !== "number") {
             switch (match.tag | 0) {
               case /* Tvar */0 :
-                  return /* tuple */[
+                  return [
                           List.rev(args),
                           ty_fun,
                           false
@@ -68699,7 +68699,7 @@ function type_argument(env, sarg, ty_expected$prime, ty_expected) {
                     var ty = option_none(instance(undefined, env, match._1), sarg.pexp_loc);
                     _ty_fun = ty_fun$1;
                     _args = /* :: */{
-                      _0: /* tuple */[
+                      _0: [
                         l,
                         ty,
                         /* Optional */1
@@ -68709,7 +68709,7 @@ function type_argument(env, sarg, ty_expected$prime, ty_expected) {
                     continue ;
                   }
                   if (l === "" || classic.contents) {
-                    return /* tuple */[
+                    return [
                             List.rev(args),
                             ty_fun,
                             no_labels(ty_fun$1)
@@ -68720,7 +68720,7 @@ function type_argument(env, sarg, ty_expected$prime, ty_expected) {
                 
             }
           }
-          return /* tuple */[
+          return [
                   /* [] */0,
                   texp.exp_type,
                   false
@@ -68760,7 +68760,7 @@ function type_argument(env, sarg, ty_expected$prime, ty_expected) {
         }
         var var_pair = function (name, ty) {
           var id = create(name);
-          return /* tuple */[
+          return [
                   {
                     pat_desc: {
                       tag: /* Tpat_var */0,
@@ -68813,7 +68813,7 @@ function type_argument(env, sarg, ty_expected$prime, ty_expected) {
             tag: /* Texp_apply */4,
             _0: texp,
             _1: Pervasives.$at(args, /* :: */{
-                  _0: /* tuple */[
+                  _0: [
                     "",
                     eta_var,
                     /* Required */0
@@ -69014,7 +69014,7 @@ function type_application(env, funct, sargs) {
                         Error: new Error()
                       };
                 }
-                match$4 = /* tuple */[
+                match$4 = [
                   /* [] */0,
                   more_sargs._1,
                   (function(ty,ty0,sarg0){
@@ -69026,7 +69026,7 @@ function type_application(env, funct, sargs) {
               } else {
                 throw {
                       RE_EXN_ID: "Assert_failure",
-                      _1: /* tuple */[
+                      _1: [
                         "typecore.ml",
                         3250,
                         16
@@ -69047,7 +69047,7 @@ function type_application(env, funct, sargs) {
                           _0: "commuting this argument"
                         });
                   }
-                  match$7 = /* tuple */[
+                  match$7 = [
                     match$8[0],
                     sarg0$1,
                     Pervasives.$at(sargs1, match$8[3]),
@@ -69066,7 +69066,7 @@ function type_application(env, funct, sargs) {
                             _0: "commuting this argument"
                           });
                     }
-                    match$7 = /* tuple */[
+                    match$7 = [
                       match$9[0],
                       sarg0$2,
                       Pervasives.$at(sargs, sargs1$1),
@@ -69084,7 +69084,7 @@ function type_application(env, funct, sargs) {
                         _0: l
                       });
                 }
-                match$4 = /* tuple */[
+                match$4 = [
                   match$7[2],
                   match$7[3],
                   optional === /* Required */0 || is_optional(l$prime$1) ? (function(ty,ty0,sarg0$3){
@@ -69104,14 +69104,14 @@ function type_application(env, funct, sargs) {
               catch (raw_exn$1){
                 var exn$1 = Caml_js_exceptions.internalToOCamlException(raw_exn$1);
                 if (exn$1.RE_EXN_ID === "Not_found") {
-                  match$4 = /* tuple */[
+                  match$4 = [
                     sargs,
                     more_sargs,
                     optional === /* Optional */1 && (List.mem_assoc("", sargs) || List.mem_assoc("", more_sargs)) ? (may_warn(funct.exp_loc, {
                               tag: /* Without_principality */9,
                               _0: "eliminated optional argument"
                             }), ignored.contents = /* :: */{
-                          _0: /* tuple */[
+                          _0: [
                             l,
                             ty,
                             lv
@@ -69134,7 +69134,7 @@ function type_application(env, funct, sargs) {
             var arg = match$4[2];
             var sargs$1 = match$4[0];
             var omitted$1 = arg === undefined ? /* :: */({
-                  _0: /* tuple */[
+                  _0: [
                     l,
                     ty,
                     lv
@@ -69149,7 +69149,7 @@ function type_application(env, funct, sargs) {
             _ty_fun = ty_fun$1;
             _omitted = omitted$1;
             _args = /* :: */{
-              _0: /* tuple */[
+              _0: [
                 l,
                 arg,
                 optional
@@ -69191,18 +69191,18 @@ function type_application(env, funct, sargs) {
             var ty_fun$2 = _ty_fun$1;
             var args$1 = _args$1;
             if (!param) {
-              return /* tuple */[
+              return [
                       List.map((function (param) {
                               var f = param[1];
                               var l = param[0];
                               if (f !== undefined) {
-                                return /* tuple */[
+                                return [
                                         l,
                                         Curry._1(f, undefined),
                                         param[2]
                                       ];
                               } else {
-                                return /* tuple */[
+                                return [
                                         l,
                                         undefined,
                                         param[2]
@@ -69251,7 +69251,7 @@ function type_application(env, funct, sargs) {
                                 }
                               }
                             }));
-                    match$12 = /* tuple */[
+                    match$12 = [
                       t1,
                       t2
                     ];
@@ -69259,7 +69259,7 @@ function type_application(env, funct, sargs) {
                 case /* Tarrow */1 :
                     var l$1 = td._0;
                     if (l$1 === l1 || classic.contents && l1 === "" && !is_optional(l$1)) {
-                      match$12 = /* tuple */[
+                      match$12 = [
                         td._1,
                         td._2
                       ];
@@ -69332,7 +69332,7 @@ function type_application(env, funct, sargs) {
             _param = param._1;
             _ty_fun$1 = match$12[1];
             _args$1 = /* :: */{
-              _0: /* tuple */[
+              _0: [
                 l1,
                 arg1,
                 optional$1
@@ -69370,9 +69370,9 @@ function type_application(env, funct, sargs) {
               
           }
         }
-        return /* tuple */[
+        return [
                 /* :: */{
-                  _0: /* tuple */[
+                  _0: [
                     "",
                     exp,
                     /* Required */0
@@ -69447,10 +69447,10 @@ function type_cases(in_function, env, ty_arg, ty_res, partial_flag, loc, caselis
           return contains_gadt(env, param);
         }), patterns);
   var ty_arg$1 = (has_gadts || erase_either) && !principal.contents ? type_expr(identity, ty_arg) : ty_arg;
-  var match = has_gadts && !principal.contents ? /* tuple */[
+  var match = has_gadts && !principal.contents ? [
       type_expr(identity, ty_res),
       duplicate_ident_types(loc, caselist, env)
-    ] : /* tuple */[
+    ] : [
       ty_res,
       env
     ];
@@ -69462,12 +69462,12 @@ function type_cases(in_function, env, ty_arg, ty_res, partial_flag, loc, caselis
     set_current_time(current_level.contents);
     var lev = currentstamp.contents;
     init_def(lev + 1000 | 0);
-    match$1 = /* tuple */[
+    match$1 = [
       lev,
       add_gadt_instance_level(lev, env$1)
     ];
   } else {
-    match$1 = /* tuple */[
+    match$1 = [
       current_level.contents,
       env$1
     ];
@@ -69515,9 +69515,9 @@ function type_cases(in_function, env, ty_arg, ty_res, partial_flag, loc, caselis
                 pat_env: pat.pat_env,
                 pat_attributes: pat.pat_attributes
               }) : pat;
-          return /* tuple */[
+          return [
                   pat$1,
-                  /* tuple */[
+                  [
                     match[1],
                     match[3]
                   ]
@@ -69648,7 +69648,7 @@ function type_cases(in_function, env, ty_arg, ty_res, partial_flag, loc, caselis
             if (exit === 1) {
               throw {
                     RE_EXN_ID: "Assert_failure",
-                    _1: /* tuple */[
+                    _1: [
                       "parmatch.ml",
                       1947,
                       48
@@ -69677,7 +69677,7 @@ function type_cases(in_function, env, ty_arg, ty_res, partial_flag, loc, caselis
     end_def(undefined);
     unify_exp_types(loc, env$2, instance(undefined, env$2, ty_res$1), newvar(undefined, undefined));
   }
-  return /* tuple */[
+  return [
           cases,
           partial
         ];
@@ -69817,7 +69817,7 @@ function type_let(checkOpt, check_strictOpt, env, rec_flag, spat_sexp_list, scop
   var warn_unused = is_active(Curry._1(check$1, "")) || is_active(Curry._1(check_strict, "")) || is_recursive && is_active(/* Unused_rec_flag */15);
   var pat_slot_list = List.map((function (pat) {
           if (!warn_unused) {
-            return /* tuple */[
+            return [
                     pat,
                     undefined
                   ];
@@ -69850,7 +69850,7 @@ function type_let(checkOpt, check_strictOpt, env, rec_flag, spat_sexp_list, scop
                     var slot$1 = current_slot.contents;
                     if (slot$1 !== undefined) {
                       slot$1.contents = /* :: */{
-                        _0: /* tuple */[
+                        _0: [
                           name,
                           vd
                         ],
@@ -69867,7 +69867,7 @@ function type_let(checkOpt, check_strictOpt, env, rec_flag, spat_sexp_list, scop
                     
                   };
                   var key_1 = vd.val_loc;
-                  var key = /* tuple */[
+                  var key = [
                     name,
                     key_1
                   ];
@@ -69886,7 +69886,7 @@ function type_let(checkOpt, check_strictOpt, env, rec_flag, spat_sexp_list, scop
                     throw exn;
                   }
                 }), pat_bound_idents(pat));
-          return /* tuple */[
+          return [
                   pat,
                   slot
                 ];
@@ -69967,7 +69967,7 @@ function type_let(checkOpt, check_strictOpt, env, rec_flag, spat_sexp_list, scop
                   vb_loc: pvb.pvb_loc
                 };
         }), l, spat_sexp_list);
-  return /* tuple */[
+  return [
           l$1,
           new_env,
           unpacks
@@ -69987,7 +69987,7 @@ function type_binding(env, rec_flag, spat_sexp_list, scope) {
                   _0: s
                 };
         }), env, rec_flag, spat_sexp_list, scope, false);
-  return /* tuple */[
+  return [
           match[0],
           match[1]
         ];
@@ -69995,7 +69995,7 @@ function type_binding(env, rec_flag, spat_sexp_list, scope) {
 
 function type_let$1(env, rec_flag, spat_sexp_list, scope) {
   var match = type_let(undefined, undefined, env, rec_flag, spat_sexp_list, scope, false);
-  return /* tuple */[
+  return [
           match[0],
           match[1]
         ];
@@ -71200,7 +71200,7 @@ register_error_of_exn(function (err) {
                                                         }
                                                         throw {
                                                               RE_EXN_ID: "Assert_failure",
-                                                              _1: /* tuple */[
+                                                              _1: [
                                                                 "printtyp.ml",
                                                                 1585,
                                                                 12
@@ -71480,7 +71480,7 @@ register_error_of_exn(function (err) {
                                           var ty$prime = param$1._1;
                                           var ty$3 = param$1._0;
                                           report_unification_error(param, env, undefined, param$1._2, (function (ppf) {
-                                                  var match = prepare_expansion(/* tuple */[
+                                                  var match = prepare_expansion([
                                                         ty$3,
                                                         ty$prime
                                                       ]);
@@ -72063,7 +72063,7 @@ function set_fixed_row(env, loc, p, decl) {
   } else {
     throw {
           RE_EXN_ID: "Assert_failure",
-          _1: /* tuple */[
+          _1: [
             "typedecl.ml",
             113,
             14
@@ -72263,7 +72263,7 @@ function make_params(env, params) {
   var make_param = function (param) {
     var sty = param[0];
     try {
-      return /* tuple */[
+      return [
               transl_type_param(env, sty),
               param[1]
             ];
@@ -72314,7 +72314,7 @@ function make_constructor(env, type_path, type_params, sargs, sret_type) {
           };
     }
     widen(z);
-    return /* tuple */[
+    return [
             targs,
             tret_type,
             args,
@@ -72327,7 +72327,7 @@ function make_constructor(env, type_path, type_params, sargs, sret_type) {
   var args$1 = List.map((function (cty) {
           return cty.ctyp_type;
         }), targs$1);
-  return /* tuple */[
+  return [
           targs$1,
           undefined,
           args$1,
@@ -72391,7 +72391,7 @@ function check_constraints_rec(env, loc, visited, _ty) {
             if (exn.RE_EXN_ID === Unify) {
               throw {
                     RE_EXN_ID: "Assert_failure",
-                    _1: /* tuple */[
+                    _1: [
                       "typedecl.ml",
                       360,
                       28
@@ -72695,10 +72695,10 @@ function check_well_founded(env, loc, path, to_check, ty) {
     var match$1;
     try {
       var prev = find$1(ty$1, visited.contents);
-      match$1 = subset$1(exp_nodes, prev) ? /* tuple */[
+      match$1 = subset$1(exp_nodes, prev) ? [
           true,
           exp_nodes
-        ] : /* tuple */[
+        ] : [
           false,
           union$2(exp_nodes, prev)
         ];
@@ -72706,7 +72706,7 @@ function check_well_founded(env, loc, path, to_check, ty) {
     catch (raw_exn){
       var exn = Caml_js_exceptions.internalToOCamlException(raw_exn);
       if (exn.RE_EXN_ID === "Not_found") {
-        match$1 = /* tuple */[
+        match$1 = [
           false,
           exp_nodes
         ];
@@ -73061,13 +73061,13 @@ function compute_variance_type(env, check, param, decl, tyl) {
           var n = param[1];
           var c = param[0];
           if (c || n) {
-            return /* tuple */[
+            return [
                     c,
                     n,
                     i
                   ];
           } else {
-            return /* tuple */[
+            return [
                     true,
                     true,
                     i
@@ -73104,12 +73104,12 @@ function compute_variance_type(env, check, param, decl, tyl) {
                   _2: {
                     tag: /* Bad_variance */16,
                     _0: pos.contents,
-                    _1: /* tuple */[
+                    _1: [
                       co,
                       cn,
                       ij
                     ],
-                    _2: /* tuple */[
+                    _2: [
                       c,
                       n,
                       i
@@ -73186,12 +73186,12 @@ function compute_variance_type(env, check, param, decl, tyl) {
               _2: {
                 tag: /* Bad_variance */16,
                 _0: code,
-                _1: /* tuple */[
+                _1: [
                   c1,
                   n1,
                   false
                 ],
-                _2: /* tuple */[
+                _2: [
                   c2,
                   n2,
                   false
@@ -73210,10 +73210,10 @@ function compute_variance_type(env, check, param, decl, tyl) {
                 var v = get_variance(ty, tvl);
                 var tr = decl.type_private;
                 var concr = decl.type_kind !== /* Type_abstract */0;
-                var match = tr === /* Private */0 || !is_Tvar(ty) ? /* tuple */[
+                var match = tr === /* Private */0 || !is_Tvar(ty) ? [
                     param[0],
                     param[1]
-                  ] : /* tuple */[
+                  ] : [
                     false,
                     false
                   ];
@@ -73238,7 +73238,7 @@ function compute_variance_type(env, check, param, decl, tyl) {
 
 function add_false(param) {
   return List.map((function (ty) {
-                return /* tuple */[
+                return [
                         false,
                         ty
                       ];
@@ -73278,7 +73278,7 @@ function compute_variance_gadt(env, check, rloc, decl, param) {
   if (typeof match$1 === "number") {
     throw {
           RE_EXN_ID: "Assert_failure",
-          _1: /* tuple */[
+          _1: [
             "typedecl.ml",
             809,
             13
@@ -73304,7 +73304,7 @@ function compute_variance_gadt(env, check, rloc, decl, param) {
                       Error: new Error()
                     };
               }
-              return /* tuple */[
+              return [
                       /* :: */{
                         _0: fv2._0,
                         _1: fv1
@@ -73314,14 +73314,14 @@ function compute_variance_gadt(env, check, rloc, decl, param) {
             }
             throw {
                   RE_EXN_ID: "Assert_failure",
-                  _1: /* tuple */[
+                  _1: [
                     "typedecl.ml",
                     798,
                     37
                   ],
                   Error: new Error()
                 };
-          }), /* tuple */[
+          }), [
           /* [] */0,
           fvl
         ], tyl, rloc[0]);
@@ -73339,7 +73339,7 @@ function compute_variance_gadt(env, check, rloc, decl, param) {
   }
   throw {
         RE_EXN_ID: "Assert_failure",
-        _1: /* tuple */[
+        _1: [
           "typedecl.ml",
           809,
           13
@@ -73359,7 +73359,7 @@ function compute_variance_extension(env, check, decl, ext, rloc) {
               type_newtype_level: decl.type_newtype_level,
               type_loc: decl.type_loc,
               type_attributes: decl.type_attributes
-            }, /* tuple */[
+            }, [
               ext.ext_args,
               ext.ext_ret_type
             ]);
@@ -73373,7 +73373,7 @@ function compute_variance_decl(env, check, decl, rloc) {
   }
   var ty = decl.type_manifest;
   var mn = ty !== undefined ? /* :: */({
-        _0: /* tuple */[
+        _0: [
           false,
           ty
         ],
@@ -73385,7 +73385,7 @@ function compute_variance_decl(env, check, decl, rloc) {
   }
   if (!tll.tag) {
     return compute_variance_type(env, check, rloc, decl, Pervasives.$at(mn, List.map((function (param) {
-                          return /* tuple */[
+                          return [
                                   param.ld_mutable === /* Mutable */1,
                                   param.ld_type
                                 ];
@@ -73400,7 +73400,7 @@ function compute_variance_decl(env, check, decl, rloc) {
                                 }), tll$1)))));
   }
   var mn$1 = List.map((function (param) {
-          return /* tuple */[
+          return [
                   /* :: */{
                     _0: param[1],
                     _1: /* [] */0
@@ -73409,7 +73409,7 @@ function compute_variance_decl(env, check, decl, rloc) {
                 ];
         }), mn);
   var tll$2 = Pervasives.$at(mn$1, List.map((function (c) {
-              return /* tuple */[
+              return [
                       c.cd_args,
                       c.cd_res
                     ];
@@ -73431,7 +73431,7 @@ function compute_variance_decl(env, check, decl, rloc) {
   }
   throw {
         RE_EXN_ID: "Assert_failure",
-        _1: /* tuple */[
+        _1: [
           "typedecl.ml",
           848,
           15
@@ -73454,7 +73454,7 @@ function compute_variance_fixpoint(env, decls, required, _variances) {
     var variances = _variances;
     var new_decls = List.map2((function (param, variance) {
             var decl = param[1];
-            return /* tuple */[
+            return [
                     param[0],
                     {
                       type_params: decl.type_params,
@@ -73496,7 +73496,7 @@ function compute_variance_fixpoint(env, decls, required, _variances) {
           
         }
         }(new_env)), new_decls, required);
-    return /* tuple */[
+    return [
             new_decls,
             new_env
           ];
@@ -73513,19 +73513,19 @@ function add_injectivity(param) {
   return List.map((function (param) {
                 switch (param) {
                   case /* Covariant */0 :
-                      return /* tuple */[
+                      return [
                               true,
                               false,
                               false
                             ];
                   case /* Contravariant */1 :
-                      return /* tuple */[
+                      return [
                               false,
                               true,
                               false
                             ];
                   case /* Invariant */2 :
-                      return /* tuple */[
+                      return [
                               false,
                               false,
                               false
@@ -73541,23 +73541,23 @@ function compute_variance_decls(env, cldecls) {
           var variance = List.map((function (prim) {
                   return prim[1];
                 }), ci.ci_params);
-          return /* tuple */[
+          return [
                   /* :: */{
-                    _0: /* tuple */[
+                    _0: [
                       param[0],
                       param[1]
                     ],
                     _1: param$1[0]
                   },
                   /* :: */{
-                    _0: /* tuple */[
+                    _0: [
                       add_injectivity(variance),
                       ci.ci_loc
                     ],
                     _1: param$1[1]
                   }
                 ];
-        }), cldecls, /* tuple */[
+        }), cldecls, [
         /* [] */0,
         /* [] */0
       ]);
@@ -73570,7 +73570,7 @@ function compute_variance_decls(env, cldecls) {
                 var cl_abbr = param$1[2];
                 var decl = param[1];
                 var variance = decl.type_variance;
-                return /* tuple */[
+                return [
                         decl,
                         {
                           type_params: cl_abbr.type_params,
@@ -73742,13 +73742,13 @@ function transl_type_decl(env, rec_flag, sdecl_list) {
       });
   var id_slots = function (id) {
     if (!rec_flag) {
-      return /* tuple */[
+      return [
               id,
               undefined
             ];
     }
     if (!warn_unused) {
-      return /* tuple */[
+      return [
               id,
               undefined
             ];
@@ -73765,7 +73765,7 @@ function transl_type_decl(env, rec_flag, sdecl_list) {
             var slot$1 = current_slot.contents;
             if (slot$1 !== undefined) {
               slot$1.contents = /* :: */{
-                _0: /* tuple */[
+                _0: [
                   name,
                   td
                 ],
@@ -73779,7 +73779,7 @@ function transl_type_decl(env, rec_flag, sdecl_list) {
               return Curry._1(old_callback, undefined);
             }
           }));
-    return /* tuple */[
+    return [
             id,
             slot
           ];
@@ -73794,7 +73794,7 @@ function transl_type_decl(env, rec_flag, sdecl_list) {
             return param[0].ctyp_type;
           }), tparams);
     var cstrs = List.map((function (param) {
-            return /* tuple */[
+            return [
                     transl_simple_type(temp_env, false, param[0]),
                     transl_simple_type(temp_env, false, param[1]),
                     param[2]
@@ -73803,10 +73803,10 @@ function transl_type_decl(env, rec_flag, sdecl_list) {
     var scstrs = name_sdecl.ptype_kind;
     var match;
     if (typeof scstrs === "number") {
-      match = scstrs === /* Ptype_abstract */0 ? /* tuple */[
+      match = scstrs === /* Ptype_abstract */0 ? [
           /* Ttype_abstract */0,
           /* Type_abstract */0
-        ] : /* tuple */[
+        ] : [
           /* Ttype_open */1,
           /* Type_open */1
         ];
@@ -73870,7 +73870,7 @@ function transl_type_decl(env, rec_flag, sdecl_list) {
                 return same(match$1._0, path_float);
               }
             }), lbls$prime) ? /* Record_float */1 : /* Record_regular */0;
-      match = /* tuple */[
+      match = [
         {
           tag: /* Ttype_record */1,
           _0: lbls$1
@@ -73945,13 +73945,13 @@ function transl_type_decl(env, rec_flag, sdecl_list) {
           cd_loc: cstr_cd_loc,
           cd_attributes: cstr_cd_attributes
         };
-        return /* tuple */[
+        return [
                 tcstr,
                 cstr
               ];
       };
       var match$1 = List.split(List.map(make_cstr, scstrs$1));
-      match = /* tuple */[
+      match = [
         {
           tag: /* Ttype_variant */0,
           _0: match$1[0]
@@ -73967,12 +73967,12 @@ function transl_type_decl(env, rec_flag, sdecl_list) {
     if (sty !== undefined) {
       var no_row = !is_fixed_type(name_sdecl);
       var cty = transl_simple_type(temp_env, no_row, sty);
-      match$2 = /* tuple */[
+      match$2 = [
         cty,
         cty.ctyp_type
       ];
     } else {
-      match$2 = /* tuple */[
+      match$2 = [
         undefined,
         undefined
       ];
@@ -74034,7 +74034,7 @@ function transl_type_decl(env, rec_flag, sdecl_list) {
         if (exn.RE_EXN_ID === "Not_found") {
           throw {
                 RE_EXN_ID: "Assert_failure",
-                _1: /* tuple */[
+                _1: [
                   "typedecl.ml",
                   301,
                   26
@@ -74072,7 +74072,7 @@ function transl_type_decl(env, rec_flag, sdecl_list) {
   };
   var tdecls = List.map2(transl_declaration, sdecl_list$1, List.map(id_slots, id_list));
   var decls = List.map((function (tdecl) {
-          return /* tuple */[
+          return [
                   tdecl.typ_id,
                   tdecl.typ_type
                 ];
@@ -74123,7 +74123,7 @@ function transl_type_decl(env, rec_flag, sdecl_list) {
           return generalize_decl(param[1]);
         }), decls);
   var id_loc_list = List.map2((function (id, sdecl) {
-          return /* tuple */[
+          return [
                   id,
                   sdecl.ptype_loc
                 ];
@@ -74201,7 +74201,7 @@ function transl_type_decl(env, rec_flag, sdecl_list) {
               if (typeof pl === "number") {
                 throw {
                       RE_EXN_ID: "Assert_failure",
-                      _1: /* tuple */[
+                      _1: [
                         "typedecl.ml",
                         382,
                         58
@@ -74214,7 +74214,7 @@ function transl_type_decl(env, rec_flag, sdecl_list) {
               }
               throw {
                     RE_EXN_ID: "Assert_failure",
-                    _1: /* tuple */[
+                    _1: [
                       "typedecl.ml",
                       382,
                       58
@@ -74238,7 +74238,7 @@ function transl_type_decl(env, rec_flag, sdecl_list) {
                       if (exn.RE_EXN_ID === "Not_found") {
                         throw {
                               RE_EXN_ID: "Assert_failure",
-                              _1: /* tuple */[
+                              _1: [
                                 "typedecl.ml",
                                 395,
                                 30
@@ -74262,7 +74262,7 @@ function transl_type_decl(env, rec_flag, sdecl_list) {
               if (typeof pl === "number") {
                 throw {
                       RE_EXN_ID: "Assert_failure",
-                      _1: /* tuple */[
+                      _1: [
                         "typedecl.ml",
                         409,
                         59
@@ -74275,7 +74275,7 @@ function transl_type_decl(env, rec_flag, sdecl_list) {
               }
               throw {
                     RE_EXN_ID: "Assert_failure",
-                    _1: /* tuple */[
+                    _1: [
                       "typedecl.ml",
                       409,
                       59
@@ -74297,7 +74297,7 @@ function transl_type_decl(env, rec_flag, sdecl_list) {
                 }
                 throw {
                       RE_EXN_ID: "Assert_failure",
-                      _1: /* tuple */[
+                      _1: [
                         "typedecl.ml",
                         413,
                         16
@@ -74321,7 +74321,7 @@ function transl_type_decl(env, rec_flag, sdecl_list) {
           } else {
             throw {
                   RE_EXN_ID: "Assert_failure",
-                  _1: /* tuple */[
+                  _1: [
                     "typedecl.ml",
                     428,
                     63
@@ -74333,13 +74333,13 @@ function transl_type_decl(env, rec_flag, sdecl_list) {
         }), sdecl_list$1, decls);
   var decls$1 = List.map2((function (sdecl, param) {
           var id = param[0];
-          return /* tuple */[
+          return [
                   id,
                   name_recursion(sdecl, id, param[1])
                 ];
         }), sdecl_list$1, decls);
   var required = List.map((function (sdecl) {
-          return /* tuple */[
+          return [
                   add_injectivity(List.map((function (prim) {
                               return prim[1];
                             }), sdecl.ptype_params)),
@@ -74366,7 +74366,7 @@ function transl_type_decl(env, rec_flag, sdecl_list) {
                   typ_attributes: tdecl.typ_attributes
                 };
         }), tdecls, final_decls);
-  return /* tuple */[
+  return [
           final_decls$1,
           final_env
         ];
@@ -74388,12 +74388,12 @@ function transl_extension_constructor(env, check_open, type_path, type_params, t
       var params = instance_list(env, type_params);
       var res = newconstr(type_path, params);
       var ret_type = newconstr(type_path, params);
-      match$2 = /* tuple */[
+      match$2 = [
         res,
         ret_type
       ];
     } else {
-      match$2 = /* tuple */[
+      match$2 = [
         newconstr(type_path, typext_params),
         undefined
       ];
@@ -74447,7 +74447,7 @@ function transl_extension_constructor(env, check_open, type_path, type_params, t
     if (typeof match$3 === "number") {
       throw {
             RE_EXN_ID: "Assert_failure",
-            _1: /* tuple */[
+            _1: [
               "typedecl.ml",
               1162,
               17
@@ -74458,14 +74458,14 @@ function transl_extension_constructor(env, check_open, type_path, type_params, t
     if (match$3.tag === /* Tconstr */3) {
       var p = match$3._0;
       var decl = find_type_full(p, env)[0];
-      match$4 = /* tuple */[
+      match$4 = [
         p,
         decl.type_params
       ];
     } else {
       throw {
             RE_EXN_ID: "Assert_failure",
-            _1: /* tuple */[
+            _1: [
               "typedecl.ml",
               1162,
               17
@@ -74531,7 +74531,7 @@ function transl_extension_constructor(env, check_open, type_path, type_params, t
       case /* Cstr_block */1 :
           throw {
                 RE_EXN_ID: "Assert_failure",
-                _1: /* tuple */[
+                _1: [
                   "typedecl.ml",
                   1187,
                   17
@@ -74543,7 +74543,7 @@ function transl_extension_constructor(env, check_open, type_path, type_params, t
           break;
       
     }
-    match = /* tuple */[
+    match = [
       args,
       match$2[1],
       {
@@ -74554,7 +74554,7 @@ function transl_extension_constructor(env, check_open, type_path, type_params, t
     ];
   } else {
     var match$7 = make_constructor(env, type_path, typext_params, lid._0, lid._1);
-    match = /* tuple */[
+    match = [
       match$7[2],
       match$7[3],
       {
@@ -74636,7 +74636,7 @@ function transl_type_extension(check_open, env, loc, styext) {
   }
   var type_variance = List.map((function (v) {
           var match = Curry._1(Types_Variance.get_upper, v);
-          return /* tuple */[
+          return [
                   !match[1],
                   !match[0],
                   false
@@ -74710,7 +74710,7 @@ function transl_type_extension(check_open, env, loc, styext) {
               };
         }), constructors);
   List.iter((function (ext) {
-          compute_variance_extension(env, true, type_decl, ext.ext_type, /* tuple */[
+          compute_variance_extension(env, true, type_decl, ext.ext_type, [
                 type_variance,
                 loc
               ]);
@@ -74730,7 +74730,7 @@ function transl_type_extension(check_open, env, loc, styext) {
     tyext_private: tyext_tyext_private,
     tyext_attributes: tyext_tyext_attributes
   };
-  return /* tuple */[
+  return [
           tyext,
           newenv
         ];
@@ -74757,7 +74757,7 @@ function transl_exception(env, sext) {
         };
   }
   var newenv = add_extension(true, ext.ext_id, ext.ext_type, env);
-  return /* tuple */[
+  return [
           ext,
           newenv
         ];
@@ -74871,7 +74871,7 @@ function transl_value_decl(env, loc, valdecl) {
     val_loc: desc_val_loc,
     val_attributes: desc_val_attributes
   };
-  return /* tuple */[
+  return [
           desc,
           match[1]
         ];
@@ -74900,7 +74900,7 @@ function transl_with_constraint(env, id, row_path, orig_decl, sdecl) {
             var ty = cty.ctyp_type;
             var ty$prime = cty$prime.ctyp_type;
             unify$2(env, ty, ty$prime);
-            return /* tuple */[
+            return [
                     cty,
                     cty$prime,
                     loc
@@ -74928,12 +74928,12 @@ function transl_with_constraint(env, id, row_path, orig_decl, sdecl) {
   var match;
   if (sty !== undefined) {
     var cty = transl_simple_type(env, no_row, sty);
-    match = /* tuple */[
+    match = [
       cty,
       cty.ctyp_type
     ];
   } else {
-    match = /* tuple */[
+    match = [
       undefined,
       undefined
     ];
@@ -74985,7 +74985,7 @@ function transl_with_constraint(env, id, row_path, orig_decl, sdecl) {
   var decl_type_kind$1 = decl$1.type_kind;
   var decl_type_private = decl$1.type_private;
   var decl_type_manifest = decl$1.type_manifest;
-  var decl_type_variance = compute_variance_decl(env, false, decl$1, /* tuple */[
+  var decl_type_variance = compute_variance_decl(env, false, decl$1, [
         add_injectivity(List.map((function (prim) {
                     return prim[1];
                   }), sdecl.ptype_params)),
@@ -75053,7 +75053,7 @@ function abstract_type_decl(arity) {
 
 function approx_type_decl(env, sdecl_list) {
   return List.map((function (sdecl) {
-                return /* tuple */[
+                return [
                         create(sdecl.ptype_name.txt),
                         abstract_type_decl(List.length(sdecl.ptype_params))
                       ];
@@ -76626,7 +76626,7 @@ function class_body(_cty) {
 function extract_constraints(cty) {
   var sign = signature_of_class_type(cty);
   var match = flatten_fields(object_fields(sign.csig_self));
-  return /* tuple */[
+  return [
           fold((function (lab, param, vars) {
                   return /* :: */{
                           _0: lab,
@@ -76754,7 +76754,7 @@ function enter_met_env(check, loc, lab, kind, ty, val_env, met_env, par_env) {
         val_attributes: /* [] */0
       }, val_env);
   var id = match[0];
-  return /* tuple */[
+  return [
           id,
           match[1],
           add_value(check, id, {
@@ -76791,7 +76791,7 @@ function enter_val(cl_num, vars, inh, lab, mut, virt, ty, val_env, met_env, par_
           };
     }
     unify$2(val_env, instance(undefined, val_env, ty), instance(undefined, val_env, match$1[3]));
-    match = /* tuple */[
+    match = [
       !inh ? match$1[0] : undefined,
       virt$prime === /* Concrete */1 ? virt$prime : virt
     ];
@@ -76813,7 +76813,7 @@ function enter_val(cl_num, vars, inh, lab, mut, virt, ty, val_env, met_env, par_
           };
     }
     if (tr.RE_EXN_ID === "Not_found") {
-      match = /* tuple */[
+      match = [
         undefined,
         virt
       ];
@@ -76822,7 +76822,7 @@ function enter_val(cl_num, vars, inh, lab, mut, virt, ty, val_env, met_env, par_
     }
   }
   var id = match[0];
-  var result = id !== undefined ? /* tuple */[
+  var result = id !== undefined ? [
       id,
       val_env,
       met_env,
@@ -76832,7 +76832,7 @@ function enter_val(cl_num, vars, inh, lab, mut, virt, ty, val_env, met_env, par_
           _0: mut,
           _1: cl_num
         }, ty, val_env, met_env, par_env);
-  vars.contents = add$1(lab, /* tuple */[
+  vars.contents = add$1(lab, [
         result[0],
         mut,
         match[1],
@@ -76906,7 +76906,7 @@ function inheritance(self_type, env, ovf, concr_meths, warn_vals, loc, parent) {
             if (exit === 1) {
               throw {
                     RE_EXN_ID: "Assert_failure",
-                    _1: /* tuple */[
+                    _1: [
                       "typeclass.ml",
                       261,
                       12
@@ -76979,7 +76979,7 @@ function inheritance(self_type, env, ovf, concr_meths, warn_vals, loc, parent) {
         }
         var concr_meths$1 = union$1(cl_sig$1.csig_concr, concr_meths);
         var warn_vals$1 = union$1(concr_vals$1, warn_vals);
-        return /* tuple */[
+        return [
                 cl_sig$1,
                 concr_meths$1,
                 warn_vals$1
@@ -77114,7 +77114,7 @@ function type_constraint(val_env, sty, sty$prime, loc) {
     }
     throw trace;
   }
-  return /* tuple */[
+  return [
           cty,
           cty$prime
         ];
@@ -77146,7 +77146,7 @@ function add_val(env, loc, lab, param, val_sig) {
       throw exn;
     }
   }
-  return add$1(lab, /* tuple */[
+  return add$1(lab, [
               param[0],
               virt$1,
               param[2]
@@ -77215,7 +77215,7 @@ function class_signature$1(env, param) {
                 switch (match.tag | 0) {
                   case /* Cty_constr */0 :
                       inher$1 = /* :: */{
-                        _0: /* tuple */[
+                        _0: [
                           match._0,
                           match._1
                         ],
@@ -77233,7 +77233,7 @@ function class_signature$1(env, param) {
                 var val_sig$1 = fold((function (param, param$1, param$2) {
                         return add_val(env, partial_arg, param, param$1, param$2);
                       }), match$1[0].csig_vars, val_sig);
-                return /* tuple */[
+                return [
                         /* :: */{
                           _0: mkctf({
                                 tag: /* Tctf_inherit */0,
@@ -77252,11 +77252,11 @@ function class_signature$1(env, param) {
                 var lab = match$2[0];
                 var cty = transl_simple_type(env, false, match$2[3]);
                 var ty = cty.ctyp_type;
-                return /* tuple */[
+                return [
                         /* :: */{
                           _0: mkctf({
                                 tag: /* Tctf_val */1,
-                                _0: /* tuple */[
+                                _0: [
                                   lab,
                                   mut,
                                   virt,
@@ -77265,7 +77265,7 @@ function class_signature$1(env, param) {
                               }),
                           _1: fields
                         },
-                        add_val(env, param$1.pctf_loc, lab, /* tuple */[
+                        add_val(env, param$1.pctf_loc, lab, [
                               mut,
                               virt,
                               ty
@@ -77280,11 +77280,11 @@ function class_signature$1(env, param) {
                 var lab$1 = match$3[0];
                 var cty$1 = declare_method(env, meths, self_type, lab$1, priv, match$3[3], param$1.pctf_loc);
                 var concr_meths$1 = virt$1 ? add$2(lab$1, concr_meths) : concr_meths;
-                return /* tuple */[
+                return [
                         /* :: */{
                           _0: mkctf({
                                 tag: /* Tctf_method */2,
-                                _0: /* tuple */[
+                                _0: [
                                   lab$1,
                                   priv,
                                   virt$1,
@@ -77300,11 +77300,11 @@ function class_signature$1(env, param) {
             case /* Pctf_constraint */3 :
                 var match$4 = sparent._0;
                 var match$5 = type_constraint(env, match$4[0], match$4[1], param$1.pctf_loc);
-                return /* tuple */[
+                return [
                         /* :: */{
                           _0: mkctf({
                                 tag: /* Tctf_constraint */3,
-                                _0: /* tuple */[
+                                _0: [
                                   match$5[0],
                                   match$5[1]
                                 ]
@@ -77321,7 +77321,7 @@ function class_signature$1(env, param) {
                       _0: x,
                       _1: /* [] */0
                     });
-                return /* tuple */[
+                return [
                         /* :: */{
                           _0: mkctf({
                                 tag: /* Tctf_attribute */4,
@@ -77341,7 +77341,7 @@ function class_signature$1(env, param) {
                     };
             
           }
-        }), /* tuple */[
+        }), [
         /* [] */0,
         /* Empty */0,
         /* Empty */0,
@@ -77561,7 +77561,7 @@ function class_structure(cl_num, $$final, val_env, met_env, loc, param) {
             catch (exn){
               throw {
                     RE_EXN_ID: "Assert_failure",
-                    _1: /* tuple */[
+                    _1: [
                       "typeclass.ml",
                       760,
                       18
@@ -77602,7 +77602,7 @@ function class_structure(cl_num, $$final, val_env, met_env, loc, param) {
                 switch (match.tag | 0) {
                   case /* Cty_constr */0 :
                       inher$1 = /* :: */{
-                        _0: /* tuple */[
+                        _0: [
                           match._0,
                           match._1
                         ],
@@ -77619,19 +77619,19 @@ function class_structure(cl_num, $$final, val_env, met_env, loc, param) {
                 var cl_sig = match$1[0];
                 var match$2 = fold((function (lab, info, param) {
                         var match = enter_val(cl_num, vars, true, lab, info[0], info[1], info[2], param[0], param[1], param[2], sparent.pcl_loc);
-                        return /* tuple */[
+                        return [
                                 match[1],
                                 match[2],
                                 match[3],
                                 /* :: */{
-                                  _0: /* tuple */[
+                                  _0: [
                                     lab,
                                     match[0]
                                   ],
                                   _1: param[3]
                                 }
                               ];
-                      }), cl_sig.csig_vars, /* tuple */[
+                      }), cl_sig.csig_vars, [
                       val_env,
                       met_env,
                       par_env,
@@ -77643,7 +77643,7 @@ function class_structure(cl_num, $$final, val_env, met_env, loc, param) {
                 var val_env$1 = match$2[0];
                 var inh_meths = fold$1((function (lab, rem) {
                         return /* :: */{
-                                _0: /* tuple */[
+                                _0: [
                                   lab,
                                   create(lab)
                                 ],
@@ -77662,19 +77662,19 @@ function class_structure(cl_num, $$final, val_env, met_env, loc, param) {
                         _0: inh_meths,
                         _1: cl_num
                       }, self_type, val_env$1, met_env$1, par_env$1);
-                  match$3 = /* tuple */[
+                  match$3 = [
                     match$4[1],
                     match$4[2],
                     match$4[3]
                   ];
                 } else {
-                  match$3 = /* tuple */[
+                  match$3 = [
                     val_env$1,
                     met_env$1,
                     par_env$1
                   ];
                 }
-                return /* tuple */[
+                return [
                         match$3[0],
                         match$3[1],
                         match$3[2],
@@ -77781,7 +77781,7 @@ function class_structure(cl_num, $$final, val_env, met_env, loc, param) {
                   var match$7 = enter_val(cl_num, vars, false, lab.txt, mut, /* Concrete */1, exp.exp_type, val_env, met_env, par_env, loc);
                   var met_env$prime = match$7[2];
                   var id = match$7[0];
-                  return /* tuple */[
+                  return [
                           match$7[1],
                           met_env$prime,
                           match$7[3],
@@ -77824,7 +77824,7 @@ function class_structure(cl_num, $$final, val_env, met_env, loc, param) {
                 var match$8 = enter_val(cl_num, vars, false, lab.txt, mut, /* Virtual */0, ty, val_env, met_env, par_env, loc);
                 var met_env$prime$1 = match$8[2];
                 var id$1 = match$8[0];
-                return /* tuple */[
+                return [
                         match$8[1],
                         met_env$prime$1,
                         match$8[3],
@@ -77918,7 +77918,7 @@ function class_structure(cl_num, $$final, val_env, met_env, loc, param) {
                       if (typeof match$13 === "number") {
                         throw {
                               RE_EXN_ID: "Assert_failure",
-                              _1: /* tuple */[
+                              _1: [
                                 "typeclass.ml",
                                 662,
                                 17
@@ -77944,7 +77944,7 @@ function class_structure(cl_num, $$final, val_env, met_env, loc, param) {
                         default:
                           throw {
                                 RE_EXN_ID: "Assert_failure",
-                                _1: /* tuple */[
+                                _1: [
                                   "typeclass.ml",
                                   662,
                                   17
@@ -77955,7 +77955,7 @@ function class_structure(cl_num, $$final, val_env, met_env, loc, param) {
                     } else {
                       throw {
                             RE_EXN_ID: "Assert_failure",
-                            _1: /* tuple */[
+                            _1: [
                               "typeclass.ml",
                               664,
                               13
@@ -78010,7 +78010,7 @@ function class_structure(cl_num, $$final, val_env, met_env, loc, param) {
                                   });
                       })
                   };
-                  return /* tuple */[
+                  return [
                           val_env,
                           met_env,
                           par_env,
@@ -78026,7 +78026,7 @@ function class_structure(cl_num, $$final, val_env, met_env, loc, param) {
                         ];
                 }
                 var cty$1 = virtual_method(val_env, meths, self_type, lab$1.txt, priv, sty._0, loc);
-                return /* tuple */[
+                return [
                         val_env,
                         met_env,
                         par_env,
@@ -78058,7 +78058,7 @@ function class_structure(cl_num, $$final, val_env, met_env, loc, param) {
                 var match$16 = type_constraint(val_env, match$15[0], match$15[1], loc);
                 var cty$prime$1 = match$16[1];
                 var cty$2 = match$16[0];
-                return /* tuple */[
+                return [
                         val_env,
                         met_env,
                         par_env,
@@ -78106,7 +78106,7 @@ function class_structure(cl_num, $$final, val_env, met_env, loc, param) {
                                 });
                     })
                 };
-                return /* tuple */[
+                return [
                         val_env,
                         met_env,
                         par_env,
@@ -78126,7 +78126,7 @@ function class_structure(cl_num, $$final, val_env, met_env, loc, param) {
                       _0: x,
                       _1: /* [] */0
                     });
-                return /* tuple */[
+                return [
                         val_env,
                         met_env,
                         par_env,
@@ -78156,7 +78156,7 @@ function class_structure(cl_num, $$final, val_env, met_env, loc, param) {
                     };
             
           }
-        }), /* tuple */[
+        }), [
         val_env$1,
         match[4],
         match[5],
@@ -78172,7 +78172,7 @@ function class_structure(cl_num, $$final, val_env, met_env, loc, param) {
   warning_leave_scope(undefined);
   unify$2(val_env$1, self_type, newvar(undefined, undefined));
   var sign_csig_vars = map((function (param) {
-          return /* tuple */[
+          return [
                   param[1],
                   param[2],
                   param[3]
@@ -78310,7 +78310,7 @@ function class_structure(cl_num, $$final, val_env, met_env, loc, param) {
         csig_concr: concr_meths,
         csig_inher: inher
       });
-  return /* tuple */[
+  return [
           {
             cstr_self: pat,
             cstr_fields: fields,
@@ -78508,7 +78508,7 @@ function class_expr(cl_num, val_env, met_env, _scl) {
                   _0: param[2]
                 };
                 var vd = find_value(path, val_env$prime);
-                return /* tuple */[
+                return [
                         id,
                         param[1],
                         {
@@ -78692,7 +78692,7 @@ function class_expr(cl_num, val_env, met_env, _scl) {
                                         Error: new Error()
                                       };
                                 }
-                                match = /* tuple */[
+                                match = [
                                   /* [] */0,
                                   more_sargs._1,
                                   type_argument(val_env, sarg0, ty, ty0)
@@ -78700,7 +78700,7 @@ function class_expr(cl_num, val_env, met_env, _scl) {
                               } else {
                                 throw {
                                       RE_EXN_ID: "Assert_failure",
-                                      _1: /* tuple */[
+                                      _1: [
                                         "typeclass.ml",
                                         1017,
                                         20
@@ -78713,7 +78713,7 @@ function class_expr(cl_num, val_env, met_env, _scl) {
                                 var match$3;
                                 try {
                                   var match$4 = extract_label_aux(/* [] */0, name, sargs);
-                                  match$3 = /* tuple */[
+                                  match$3 = [
                                     match$4[0],
                                     match$4[1],
                                     Pervasives.$at(match$4[2], match$4[3]),
@@ -78724,7 +78724,7 @@ function class_expr(cl_num, val_env, met_env, _scl) {
                                   var exn = Caml_js_exceptions.internalToOCamlException(raw_exn);
                                   if (exn.RE_EXN_ID === "Not_found") {
                                     var match$5 = extract_label_aux(/* [] */0, name, more_sargs);
-                                    match$3 = /* tuple */[
+                                    match$3 = [
                                       match$5[0],
                                       match$5[1],
                                       Pervasives.$at(sargs, match$5[2]),
@@ -78751,7 +78751,7 @@ function class_expr(cl_num, val_env, met_env, _scl) {
                                   var arg = type_argument(val_env, sarg0$1, ty$prime, ty0$prime);
                                   tmp = option_some(arg);
                                 }
-                                match = /* tuple */[
+                                match = [
                                   match$3[2],
                                   match$3[3],
                                   tmp
@@ -78760,7 +78760,7 @@ function class_expr(cl_num, val_env, met_env, _scl) {
                               catch (raw_exn$1){
                                 var exn$1 = Caml_js_exceptions.internalToOCamlException(raw_exn$1);
                                 if (exn$1.RE_EXN_ID === "Not_found") {
-                                  match = /* tuple */[
+                                  match = [
                                     sargs,
                                     more_sargs,
                                     is_optional(l) && (List.mem_assoc("", sargs) || List.mem_assoc("", more_sargs)) ? option_none(ty0, none) : undefined
@@ -78772,7 +78772,7 @@ function class_expr(cl_num, val_env, met_env, _scl) {
                             }
                             var arg$1 = match[2];
                             var omitted$1 = arg$1 === undefined ? /* :: */({
-                                  _0: /* tuple */[
+                                  _0: [
                                     l,
                                     ty0
                                   ],
@@ -78784,7 +78784,7 @@ function class_expr(cl_num, val_env, met_env, _scl) {
                             _ty_fun = ty_fun._2;
                             _omitted = omitted$1;
                             _args = /* :: */{
-                              _0: /* tuple */[
+                              _0: [
                                 l,
                                 arg$1,
                                 optional
@@ -78801,7 +78801,7 @@ function class_expr(cl_num, val_env, met_env, _scl) {
               }
               var match$6 = Pervasives.$at(sargs, more_sargs);
               if (!match$6) {
-                return /* tuple */[
+                return [
                         List.rev(args),
                         List.fold_left((function (ty_fun, param) {
                                 return {
@@ -78932,9 +78932,9 @@ function class_expr(cl_num, val_env, met_env, _scl) {
                   val_attributes: /* [] */0
                 };
                 var id$prime = create(id.name);
-                return /* tuple */[
+                return [
                         /* :: */{
-                          _0: /* tuple */[
+                          _0: [
                             id$prime,
                             param[1],
                             expr
@@ -78944,7 +78944,7 @@ function class_expr(cl_num, val_env, met_env, _scl) {
                         add_value(undefined, id$prime, desc, param$1[1])
                       ];
               }
-              }(val_env$1)), List.rev(rev_let_bound_idents_with_loc(defs)), /* tuple */[
+              }(val_env$1)), List.rev(rev_let_bound_idents_with_loc(defs)), [
                 /* [] */0,
                 met_env
               ]);
@@ -79084,7 +79084,7 @@ function temp_abbrev(loc, env, id, arity) {
         type_loc: loc,
         type_attributes: /* [] */0
       }, env);
-  return /* tuple */[
+  return [
           params,
           ty,
           env$1
@@ -79093,7 +79093,7 @@ function temp_abbrev(loc, env, id, arity) {
 
 function extract_type_decls(param, decls) {
   return /* :: */{
-          _0: /* tuple */[
+          _0: [
             param[5],
             param[6],
             param[8],
@@ -79106,7 +79106,7 @@ function extract_type_decls(param, decls) {
 }
 
 function merge_type_decls(param, param$1) {
-  return /* tuple */[
+  return [
           param[0],
           param[1],
           param$1[2],
@@ -79126,7 +79126,7 @@ function merge_type_decls(param, param$1) {
 
 function type_classes(define_class, approx, kind, env, cls) {
   var cls$1 = List.map((function (cl) {
-          return /* tuple */[
+          return [
                   cl,
                   create(cl.pci_name.txt),
                   create(cl.pci_name.txt),
@@ -79177,9 +79177,9 @@ function type_classes(define_class, approx, kind, env, cls) {
                 clty_loc: none,
                 clty_attributes: /* [] */0
               }, define_class ? add_class(id, dummy_class, env) : env);
-          return /* tuple */[
+          return [
                   /* :: */{
-                    _0: /* tuple */[
+                    _0: [
                       cl,
                       id,
                       ty_id,
@@ -79196,7 +79196,7 @@ function type_classes(define_class, approx, kind, env, cls) {
                   },
                   env$1
                 ];
-        }), /* tuple */[
+        }), [
         /* [] */0,
         env
       ], cls$1);
@@ -79217,7 +79217,7 @@ function type_classes(define_class, approx, kind, env, cls) {
           var make_param = function (param) {
             var sty = param[0];
             try {
-              return /* tuple */[
+              return [
                       transl_type_param(env, sty),
                       param[1]
                     ];
@@ -79246,7 +79246,7 @@ function type_classes(define_class, approx, kind, env, cls) {
           var match;
           try {
             self_coercion.contents = /* :: */{
-              _0: /* tuple */[
+              _0: [
                 {
                   tag: /* Pident */0,
                   _0: obj_id
@@ -79554,9 +79554,9 @@ function type_classes(define_class, approx, kind, env, cls) {
             type_loc: cl_abbr_type_loc,
             type_attributes: /* [] */0
           };
-          return /* tuple */[
+          return [
                   /* :: */{
-                    _0: /* tuple */[
+                    _0: [
                       cl,
                       id,
                       clty$1,
@@ -79576,7 +79576,7 @@ function type_classes(define_class, approx, kind, env, cls) {
                   },
                   env$1
                 ];
-        }), match[0], /* tuple */[
+        }), match[0], [
         /* [] */0,
         match[1]
       ]);
@@ -79653,7 +79653,7 @@ function type_classes(define_class, approx, kind, env, cls) {
                   Error: new Error()
                 };
           }
-          return /* tuple */[
+          return [
                   id,
                   cl.pci_name,
                   clty,
@@ -79705,14 +79705,14 @@ function type_classes(define_class, approx, kind, env, cls) {
                 List.iter2((function (param, param$1) {
                         return unify$2(env$2, param, param$1);
                       }), match$3[0], match$4[0]);
-                match$2 = /* tuple */[
+                match$2 = [
                   match$3[1],
                   match$4[1]
                 ];
               } else {
                 throw {
                       RE_EXN_ID: "Assert_failure",
-                      _1: /* tuple */[
+                      _1: [
                         "typeclass.ml",
                         1562,
                         15
@@ -79723,7 +79723,7 @@ function type_classes(define_class, approx, kind, env, cls) {
             } else {
               throw {
                     RE_EXN_ID: "Assert_failure",
-                    _1: /* tuple */[
+                    _1: [
                       "typeclass.ml",
                       1562,
                       15
@@ -79767,7 +79767,7 @@ function type_classes(define_class, approx, kind, env, cls) {
             }
             
           }
-          return /* tuple */[
+          return [
                   param[0],
                   param[1],
                   param[2],
@@ -79782,7 +79782,7 @@ function type_classes(define_class, approx, kind, env, cls) {
                   param[13]
                 ];
         }), res$1);
-  return /* tuple */[
+  return [
           res$2,
           env$2
         ];
@@ -79795,7 +79795,7 @@ var class_num = {
 function class_declaration$2(env, sexpr) {
   class_num.contents = class_num.contents + 1 | 0;
   var expr = class_expr(String(class_num.contents), env, env, sexpr);
-  return /* tuple */[
+  return [
           expr,
           expr.cl_type
         ];
@@ -79803,7 +79803,7 @@ function class_declaration$2(env, sexpr) {
 
 function class_description(env, sexpr) {
   var expr = class_type$4(env, sexpr);
-  return /* tuple */[
+  return [
           expr,
           expr.cltyp_type
         ];
@@ -79819,9 +79819,9 @@ function class_descriptions(env, cls) {
 
 function class_type_declarations$2(env, cls) {
   var match = type_classes(false, approx_description, class_description, env, cls);
-  return /* tuple */[
+  return [
           List.map((function (param) {
-                  return /* tuple */[
+                  return [
                           param[3],
                           param[1],
                           param[4],
@@ -79860,7 +79860,7 @@ function unify_parents_struct(env, ty, st) {
                             }
                             throw {
                                   RE_EXN_ID: "Assert_failure",
-                                  _1: /* tuple */[
+                                  _1: [
                                     "typeclass.ml",
                                     1639,
                                     15
@@ -79897,7 +79897,7 @@ function type_object$1(env, loc, s) {
           return param[0];
         }), match$1[0]);
   unify_parents_struct(env, sign.csig_self, desc);
-  return /* tuple */[
+  return [
           desc,
           sign,
           meths
@@ -81141,10 +81141,10 @@ register_error_of_exn(function (err) {
                                                                 });
                                                     }));
                                     case /* Mutability_mismatch */22 :
-                                        var match = param$1._1 === /* Immutable */0 ? /* tuple */[
+                                        var match = param$1._1 === /* Immutable */0 ? [
                                             "mutable",
                                             "immutable"
-                                          ] : /* tuple */[
+                                          ] : [
                                             "immutable",
                                             "mutable"
                                           ];
@@ -81374,7 +81374,7 @@ function path_concat(head, p) {
     case /* Papply */2 :
         throw {
               RE_EXN_ID: "Assert_failure",
-              _1: /* tuple */[
+              _1: [
                 "typemod.ml",
                 54,
                 16
@@ -81420,7 +81420,7 @@ function type_open_(toplevel, ovf, env, loc, lid) {
   var match = find_module$1(env, lid.loc, lid.txt);
   var path = match[0];
   var sg = extract_sig_open(env, lid.loc, match[1].md_type);
-  return /* tuple */[
+  return [
           path,
           open_signature$1(loc, toplevel, ovf, path, sg, env)
         ];
@@ -81440,7 +81440,7 @@ function type_open$1(toplevel, env, sod) {
     open_loc: od_open_loc,
     open_attributes: od_open_attributes
   };
-  return /* tuple */[
+  return [
           path,
           match[1],
           od
@@ -81451,7 +81451,7 @@ var type_module_type_of_fwd = {
   contents: (function (env, m) {
       throw {
             RE_EXN_ID: "Assert_failure",
-            _1: /* tuple */[
+            _1: [
               "typemod.ml",
               99,
               22
@@ -81596,19 +81596,19 @@ function merge_constraint(initial_env, loc, sg, constr) {
                                   var match;
                                   switch (param[1]) {
                                     case /* Covariant */0 :
-                                        match = /* tuple */[
+                                        match = [
                                           true,
                                           false
                                         ];
                                         break;
                                     case /* Contravariant */1 :
-                                        match = /* tuple */[
+                                        match = [
                                           false,
                                           true
                                         ];
                                         break;
                                     case /* Invariant */2 :
-                                        match = /* tuple */[
+                                        match = [
                                           false,
                                           false
                                         ];
@@ -81656,8 +81656,8 @@ function merge_constraint(initial_env, loc, sg, constr) {
                             type_attributes: /* [] */0
                           };
                           var rs$prime = rs === /* Trec_first */1 ? /* Trec_not */0 : rs;
-                          return /* tuple */[
-                                  /* tuple */[
+                          return [
+                                  [
                                     {
                                       tag: /* Pident */0,
                                       _0: id
@@ -81696,8 +81696,8 @@ function merge_constraint(initial_env, loc, sg, constr) {
                           var tdecl$1 = transl_with_constraint(initial_env, id, undefined, decl, sdecl);
                           var newdecl$1 = tdecl$1.typ_type;
                           check_type_decl(env, sdecl.ptype_loc, id, row_id, newdecl$1, decl, rs, rem);
-                          return /* tuple */[
-                                  /* tuple */[
+                          return [
+                                  [
                                     {
                                       tag: /* Pident */0,
                                       _0: id
@@ -81743,8 +81743,8 @@ function merge_constraint(initial_env, loc, sg, constr) {
                       var newdecl$2 = tdecl$2.typ_type;
                       check_type_decl(env, sdecl$1.ptype_loc, id, row_id, newdecl$2, decl, rs, rem);
                       real_id.contents = id;
-                      return /* tuple */[
-                              /* tuple */[
+                      return [
+                              [
                                 {
                                   tag: /* Pident */0,
                                   _0: id
@@ -81794,8 +81794,8 @@ function merge_constraint(initial_env, loc, sg, constr) {
                           };
                           var newmd = strengthen_decl(env, md$prime$prime, path);
                           modtypes$1(env, newmd.md_type, md.md_type);
-                          return /* tuple */[
-                                  /* tuple */[
+                          return [
+                                  [
                                     {
                                       tag: /* Pident */0,
                                       _0: id$1
@@ -81832,8 +81832,8 @@ function merge_constraint(initial_env, loc, sg, constr) {
                           var newmd$1 = strengthen_decl(env, match$2[1], path$1);
                           modtypes$1(env, newmd$1.md_type, md.md_type);
                           real_id.contents = id$1;
-                          return /* tuple */[
-                                  /* tuple */[
+                          return [
+                                  [
                                     {
                                       tag: /* Pident */0,
                                       _0: id$1
@@ -81856,8 +81856,8 @@ function merge_constraint(initial_env, loc, sg, constr) {
                 if (exit$2 === 2 && id$1.name === s$1) {
                   var match$3 = merge(env, extract_sig(env, loc, md.md_type), namelist$1, undefined);
                   var match$4 = match$3[0];
-                  return /* tuple */[
-                          /* tuple */[
+                  return [
+                          [
                             path_concat(id$1, match$4[0]),
                             lid,
                             match$4[2]
@@ -81887,7 +81887,7 @@ function merge_constraint(initial_env, loc, sg, constr) {
             
         }
         var match$5 = merge(add_item(item, env), sg._1, namelist, row_id);
-        return /* tuple */[
+        return [
                 match$5[0],
                 /* :: */{
                   _0: item,
@@ -81927,7 +81927,7 @@ function merge_constraint(initial_env, loc, sg, constr) {
             } else {
               throw {
                     RE_EXN_ID: "Assert_failure",
-                    _1: /* tuple */[
+                    _1: [
                       "typemod.ml",
                       246,
                       38
@@ -82026,7 +82026,7 @@ function merge_constraint(initial_env, loc, sg, constr) {
               if (exn$1.RE_EXN_ID === "Not_found") {
                 throw {
                       RE_EXN_ID: "Assert_failure",
-                      _1: /* tuple */[
+                      _1: [
                         "typemod.ml",
                         263,
                         68
@@ -82047,7 +82047,7 @@ function merge_constraint(initial_env, loc, sg, constr) {
             } else {
               throw {
                     RE_EXN_ID: "Assert_failure",
-                    _1: /* tuple */[
+                    _1: [
                       "typemod.ml",
                       269,
                       38
@@ -82064,7 +82064,7 @@ function merge_constraint(initial_env, loc, sg, constr) {
     } else {
       sg$2 = sg$1;
     }
-    return /* tuple */[
+    return [
             match[0],
             sg$2
           ];
@@ -82249,7 +82249,7 @@ function approx_sig(_env, _ssg) {
       case /* Psig_recmodule */5 :
           var decls$1 = List.map((function(env){
               return function (pmd) {
-                return /* tuple */[
+                return [
                         create(pmd.pmd_name.txt),
                         approx_module_declaration(env, pmd)
                       ];
@@ -82721,14 +82721,14 @@ function transl_modtype$1(env, smty) {
         var init_sg = extract_sig(env, sbody.pmty_loc, body.mty_type);
         var match$1 = List.fold_left((function (param, sdecl) {
                 var match = merge_constraint(env, smty.pmty_loc, param[1], sdecl);
-                return /* tuple */[
+                return [
                         /* :: */{
                           _0: match[0],
                           _1: param[0]
                         },
                         match[1]
                       ];
-              }), /* tuple */[
+              }), [
               /* [] */0,
               init_sg
             ], lid._1);
@@ -82780,7 +82780,7 @@ function transl_signature(env, sg) {
   var transl_sig = function (env, sg) {
     init_def(currentstamp.contents);
     if (!sg) {
-      return /* tuple */[
+      return [
               /* [] */0,
               /* [] */0,
               env
@@ -82797,7 +82797,7 @@ function transl_signature(env, sg) {
           var match$1 = transl_sig(match[1], srem);
           var rem = match$1[1];
           var partial_arg = tdesc.val_id;
-          return /* tuple */[
+          return [
                   /* :: */{
                     _0: mksig$1({
                           tag: /* Tsig_value */0,
@@ -82826,7 +82826,7 @@ function transl_signature(env, sg) {
           var match$2 = transl_type_decl(env, rec_flag, sdecls);
           var decls = match$2[0];
           var match$3 = transl_sig(match$2[1], srem);
-          return /* tuple */[
+          return [
                   /* :: */{
                     _0: mksig$1({
                           tag: /* Tsig_type */1,
@@ -82855,7 +82855,7 @@ function transl_signature(env, sg) {
                                 return equal(partial_arg, param);
                               }), get_extension_constructors(rem$1));
                 })(tyext.tyext_constructors);
-          return /* tuple */[
+          return [
                   /* :: */{
                     _0: mksig$1({
                           tag: /* Tsig_typext */2,
@@ -82882,7 +82882,7 @@ function transl_signature(env, sg) {
           var shadowed = List.exists((function (param) {
                   return equal(partial_arg$1, param);
                 }), get_extension_constructors(rem$2));
-          return /* tuple */[
+          return [
                   /* :: */{
                     _0: mksig$1({
                           tag: /* Tsig_exception */3,
@@ -82916,7 +82916,7 @@ function transl_signature(env, sg) {
           var match$8 = enter_module_declaration(undefined, pmd.pmd_name.txt, md, env);
           var id = match$8[0];
           var match$9 = transl_sig(match$8[1], srem);
-          return /* tuple */[
+          return [
                   /* :: */{
                     _0: mksig$1({
                           tag: /* Tsig_module */4,
@@ -82949,7 +82949,7 @@ function transl_signature(env, sg) {
           var match$10 = transl_recmodule_modtypes(item.psig_loc, env, sdecls$1);
           var decls$1 = match$10[0];
           var match$11 = transl_sig(match$10[1], srem);
-          return /* tuple */[
+          return [
                   /* :: */{
                     _0: mksig$1({
                           tag: /* Tsig_recmodule */5,
@@ -82978,7 +82978,7 @@ function transl_signature(env, sg) {
       case /* Psig_modtype */6 :
           var match$12 = transl_modtype_decl(modtype_names, env, item.psig_loc, sdesc._0);
           var match$13 = transl_sig(match$12[0], srem);
-          return /* tuple */[
+          return [
                   /* :: */{
                     _0: mksig$1({
                           tag: /* Tsig_modtype */6,
@@ -82995,7 +82995,7 @@ function transl_signature(env, sg) {
       case /* Psig_open */7 :
           var match$14 = type_open$1(undefined, env, sdesc._0);
           var match$15 = transl_sig(match$14[1], srem);
-          return /* tuple */[
+          return [
                   /* :: */{
                     _0: mksig$1({
                           tag: /* Tsig_open */7,
@@ -83027,7 +83027,7 @@ function transl_signature(env, sg) {
           };
           var match$16 = transl_sig(newenv, srem);
           var rem$3 = match$16[1];
-          return /* tuple */[
+          return [
                   /* :: */{
                     _0: mksig$1({
                           tag: /* Tsig_include */8,
@@ -83046,7 +83046,7 @@ function transl_signature(env, sg) {
           var match$17 = class_descriptions(env, cl);
           var classes = match$17[0];
           var match$18 = transl_sig(match$17[1], srem);
-          return /* tuple */[
+          return [
                   /* :: */{
                     _0: mksig$1({
                           tag: /* Tsig_class */9,
@@ -83104,7 +83104,7 @@ function transl_signature(env, sg) {
           var match$19 = class_type_declarations$2(env, cl$1);
           var classes$1 = match$19[0];
           var match$20 = transl_sig(match$19[1], srem);
-          return /* tuple */[
+          return [
                   /* :: */{
                     _0: mksig$1({
                           tag: /* Tsig_class_type */10,
@@ -83153,7 +83153,7 @@ function transl_signature(env, sg) {
                 _1: /* [] */0
               });
           var match$21 = transl_sig(env, srem);
-          return /* tuple */[
+          return [
                   /* :: */{
                     _0: mksig$1({
                           tag: /* Tsig_attribute */11,
@@ -83220,7 +83220,7 @@ function transl_modtype_decl(modtype_names, env, loc, param) {
     mtd_attributes: pmtd_attributes,
     mtd_loc: pmtd_loc
   };
-  return /* tuple */[
+  return [
           match[1],
           mtd,
           {
@@ -83244,7 +83244,7 @@ function transl_recmodule_modtypes(loc, env, sdecls) {
   };
   var transition = function (env_c, curr) {
     return List.map2((function (pmd, param) {
-                  return /* tuple */[
+                  return [
                           param[0],
                           param[1],
                           transl_modtype$1(env_c, pmd.pmd_type)
@@ -83265,7 +83265,7 @@ function transl_recmodule_modtypes(loc, env, sdecls) {
           return add_module$1(true, id, dummy, env);
         }), env, ids);
   var init = List.map2((function (id, pmd) {
-          return /* tuple */[
+          return [
                   id,
                   pmd.pmd_name,
                   approx_modtype(approx_env, pmd.pmd_type)
@@ -83287,7 +83287,7 @@ function transl_recmodule_modtypes(loc, env, sdecls) {
                   md_loc: pmd.pmd_loc
                 };
         }), sdecls, dcl2);
-  return /* tuple */[
+  return [
           dcl2$1,
           env2
         ];
@@ -83296,7 +83296,7 @@ function transl_recmodule_modtypes(loc, env, sdecls) {
 function simplify_signature(sg) {
   var aux = function (param) {
     if (!param) {
-      return /* tuple */[
+      return [
               /* [] */0,
               /* Empty */0,
               /* Empty */0
@@ -83311,7 +83311,7 @@ function simplify_signature(sg) {
           if (mem$7(name, val_names)) {
             return k;
           } else {
-            return /* tuple */[
+            return [
                     /* :: */{
                       _0: component,
                       _1: k[0]
@@ -83327,7 +83327,7 @@ function simplify_signature(sg) {
           var sg = k$1[0];
           var name$1 = component._0.name;
           if (!mem$7(name$1, ext_names)) {
-            return /* tuple */[
+            return [
                     /* :: */{
                       _0: component,
                       _1: sg
@@ -83344,7 +83344,7 @@ function simplify_signature(sg) {
           }
           var match = sg._0;
           if (match.tag === /* Sig_typext */2 && match._2 === 1) {
-            return /* tuple */[
+            return [
                     /* :: */{
                       _0: {
                         tag: /* Sig_typext */2,
@@ -83362,7 +83362,7 @@ function simplify_signature(sg) {
           }
       default:
         var match$1 = aux(param._1);
-        return /* tuple */[
+        return [
                 /* :: */{
                   _0: component,
                   _1: match$1[0]
@@ -83510,7 +83510,7 @@ function check_recmodule_inclusion(env, bindings) {
     if (n > 0) {
       var bindings1 = List.map((function (param) {
               var id = param[0];
-              return /* tuple */[
+              return [
                       id,
                       rename(id),
                       param[4]
@@ -83648,7 +83648,7 @@ function package_constraints(env, loc, mty, constrs) {
                       if (l) {
                         if (match$1._0 === id$1.name) {
                           return /* :: */{
-                                  _0: /* tuple */[
+                                  _0: [
                                     l,
                                     match[1]
                                   ],
@@ -83910,11 +83910,11 @@ function type_module$1(aliasOpt, sttn, funct_body, anchor, env, smod) {
         var ty_arg = may_map((function (m) {
                 return m.mty_type;
               }), mty$2);
-        var match$1 = ty_arg !== undefined ? /* tuple */[
+        var match$1 = ty_arg !== undefined ? [
             enter_module(true, name.txt, ty_arg, env),
             true
-          ] : /* tuple */[
-            /* tuple */[
+          ] : [
+            [
               create("*"),
               env
             ],
@@ -84210,7 +84210,7 @@ function type_structure(toplevelOpt, funct_body, anchor, env, sstr, scope) {
     switch (desc.tag | 0) {
       case /* Pstr_eval */0 :
           var expr = type_expression(env, desc._0);
-          return /* tuple */[
+          return [
                   {
                     tag: /* Tstr_eval */0,
                     _0: expr,
@@ -84245,7 +84245,7 @@ function type_structure(toplevelOpt, funct_body, anchor, env, sstr, scope) {
           var match = type_binding(env, rec_flag, desc._1, scope$1);
           var newenv = match[1];
           var defs = match[0];
-          return /* tuple */[
+          return [
                   {
                     tag: /* Tstr_value */1,
                     _0: rec_flag,
@@ -84266,7 +84266,7 @@ function type_structure(toplevelOpt, funct_body, anchor, env, sstr, scope) {
       case /* Pstr_primitive */2 :
           var match$1 = transl_value_decl(env, loc, desc._0);
           var desc$1 = match$1[0];
-          return /* tuple */[
+          return [
                   {
                     tag: /* Tstr_primitive */2,
                     _0: desc$1
@@ -84289,7 +84289,7 @@ function type_structure(toplevelOpt, funct_body, anchor, env, sstr, scope) {
                 }), sdecls);
           var match$2 = transl_type_decl(env, rec_flag$1, sdecls);
           var decls = match$2[0];
-          return /* tuple */[
+          return [
                   {
                     tag: /* Tstr_type */3,
                     _0: decls
@@ -84307,7 +84307,7 @@ function type_structure(toplevelOpt, funct_body, anchor, env, sstr, scope) {
       case /* Pstr_typext */4 :
           var match$3 = transl_type_extension(true, env, loc, desc._0);
           var tyext = match$3[0];
-          return /* tuple */[
+          return [
                   {
                     tag: /* Tstr_typext */4,
                     _0: tyext
@@ -84325,7 +84325,7 @@ function type_structure(toplevelOpt, funct_body, anchor, env, sstr, scope) {
       case /* Pstr_exception */5 :
           var match$4 = transl_exception(env, desc._0);
           var ext = match$4[0];
-          return /* tuple */[
+          return [
                   {
                     tag: /* Tstr_exception */5,
                     _0: ext
@@ -84356,7 +84356,7 @@ function type_structure(toplevelOpt, funct_body, anchor, env, sstr, scope) {
           };
           var match$6 = enter_module_declaration(undefined, name.txt, md, env);
           var id = match$6[0];
-          return /* tuple */[
+          return [
                   {
                     tag: /* Tstr_module */6,
                     _0: {
@@ -84386,7 +84386,7 @@ function type_structure(toplevelOpt, funct_body, anchor, env, sstr, scope) {
           var sbind = List.map((function (mb) {
                   var match = mb.pmb_expr.pmod_desc;
                   if (match.tag === /* Pmod_constraint */4) {
-                    return /* tuple */[
+                    return [
                             mb.pmb_name,
                             match._1,
                             match._0,
@@ -84422,7 +84422,7 @@ function type_structure(toplevelOpt, funct_body, anchor, env, sstr, scope) {
                         _0: id
                       }, newenv$1, param$1[2]);
                   var mty$prime = enrich_module_type(anchor, id.name, modl.mod_type, newenv$1);
-                  return /* tuple */[
+                  return [
                           id,
                           param$1[0],
                           param.md_type,
@@ -84444,7 +84444,7 @@ function type_structure(toplevelOpt, funct_body, anchor, env, sstr, scope) {
                   return add_module_declaration(undefined, md.md_id, mdecl, env);
                 }), env, decls$1);
           var bindings2 = check_recmodule_inclusion(newenv$2, bindings1);
-          return /* tuple */[
+          return [
                   {
                     tag: /* Tstr_recmodule */7,
                     _0: bindings2
@@ -84465,7 +84465,7 @@ function type_structure(toplevelOpt, funct_body, anchor, env, sstr, scope) {
                 ];
       case /* Pstr_modtype */8 :
           var match$8 = transl_modtype_decl(modtype_names, env, loc, desc._0);
-          return /* tuple */[
+          return [
                   {
                     tag: /* Tstr_modtype */8,
                     _0: match$8[1]
@@ -84478,7 +84478,7 @@ function type_structure(toplevelOpt, funct_body, anchor, env, sstr, scope) {
                 ];
       case /* Pstr_open */9 :
           var match$9 = type_open$1(toplevel, env, desc._0);
-          return /* tuple */[
+          return [
                   {
                     tag: /* Tstr_open */9,
                     _0: match$9[2]
@@ -84493,12 +84493,12 @@ function type_structure(toplevelOpt, funct_body, anchor, env, sstr, scope) {
                 }), cl);
           var match$10 = class_declarations$2(env, cl);
           var classes = match$10[0];
-          return /* tuple */[
+          return [
                   {
                     tag: /* Tstr_class */10,
                     _0: List.map((function (param) {
                             var vf = param[2].cty_new === undefined ? /* Virtual */0 : /* Concrete */1;
-                            return /* tuple */[
+                            return [
                                     param[11],
                                     param[10],
                                     vf
@@ -84549,11 +84549,11 @@ function type_structure(toplevelOpt, funct_body, anchor, env, sstr, scope) {
                 }), cl$1);
           var match$11 = class_type_declarations$2(env, cl$1);
           var classes$1 = match$11[0];
-          return /* tuple */[
+          return [
                   {
                     tag: /* Tstr_class_type */11,
                     _0: List.map((function (param) {
-                            return /* tuple */[
+                            return [
                                     param[0],
                                     param[1],
                                     param[7]
@@ -84662,7 +84662,7 @@ function type_structure(toplevelOpt, funct_body, anchor, env, sstr, scope) {
             incl_loc: incl_incl_loc,
             incl_attributes: incl_incl_attributes
           };
-          return /* tuple */[
+          return [
                   {
                     tag: /* Tstr_include */12,
                     _0: incl
@@ -84676,7 +84676,7 @@ function type_structure(toplevelOpt, funct_body, anchor, env, sstr, scope) {
                 _0: x,
                 _1: /* [] */0
               });
-          return /* tuple */[
+          return [
                   {
                     tag: /* Tstr_attribute */13,
                     _0: x
@@ -84696,7 +84696,7 @@ function type_structure(toplevelOpt, funct_body, anchor, env, sstr, scope) {
   var type_struct = function (env, sstr) {
     init_def(currentstamp.contents);
     if (!sstr) {
-      return /* tuple */[
+      return [
               /* [] */0,
               /* [] */0,
               env
@@ -84721,7 +84721,7 @@ function type_structure(toplevelOpt, funct_body, anchor, env, sstr, scope) {
       _1: previous_saved_types
     };
     var match$1 = type_struct(match[2], srem);
-    return /* tuple */[
+    return [
             /* :: */{
               _0: str,
               _1: match$1[0]
@@ -84762,7 +84762,7 @@ function type_structure(toplevelOpt, funct_body, anchor, env, sstr, scope) {
     },
     _1: previous_saved_types
   };
-  return /* tuple */[
+  return [
           str,
           sg,
           final_env
@@ -84849,7 +84849,7 @@ function type_module_type_of(env, smod) {
           Error: new Error()
         };
   }
-  return /* tuple */[
+  return [
           tmty,
           mty$1
         ];
@@ -84867,7 +84867,7 @@ function type_package$1(env, m, p, nl, tl) {
   var match$1;
   if (match.tag) {
     var match$2 = enter_module(true, "%M", modl.mod_type, env);
-    match$1 = /* tuple */[
+    match$1 = [
       {
         tag: /* Pident */0,
         _0: match$2[0]
@@ -84875,7 +84875,7 @@ function type_package$1(env, m, p, nl, tl) {
       match$2[1]
     ];
   } else {
-    match$1 = /* tuple */[
+    match$1 = [
       match._0,
       env
     ];
@@ -84901,7 +84901,7 @@ function type_package$1(env, m, p, nl, tl) {
       case /* Lapply */2 :
           throw {
                 RE_EXN_ID: "Assert_failure",
-                _1: /* tuple */[
+                _1: [
                   "typemod.ml",
                   1565,
                   11
@@ -84923,7 +84923,7 @@ function type_package$1(env, m, p, nl, tl) {
         }), nl);
   end_def(undefined);
   if (nl === /* [] */0) {
-    return /* tuple */[
+    return [
             wrap_constraint(env$1, modl, {
                   tag: /* Mty_ident */0,
                   _0: p
@@ -84954,7 +84954,7 @@ function type_package$1(env, m, p, nl, tl) {
             throw exn;
           }
         }), nl, tl$prime);
-  return /* tuple */[
+  return [
           wrap_constraint(env$1, modl, mty, /* Tmodtype_implicit */0),
           tl$prime
         ];
@@ -84999,7 +84999,7 @@ function type_implementation_more(sourcefile, outputprefix, modulename, initial_
                               _1: "%a@."
                             }), signature$3, simple_sg);
             }));
-      return /* tuple */[
+      return [
               str,
               /* Tcoerce_none */0,
               finalenv,
@@ -85036,7 +85036,7 @@ function type_implementation_more(sourcefile, outputprefix, modulename, initial_
             tag: /* Implementation */1,
             _0: str
           }, sourcefile, initial_env, undefined);
-      return /* tuple */[
+      return [
               str,
               coercion,
               finalenv,
@@ -85092,7 +85092,7 @@ function type_implementation_more(sourcefile, outputprefix, modulename, initial_
             _0: str
           }, sourcefile, initial_env, sg$1);
     }
-    return /* tuple */[
+    return [
             str,
             coercion$1,
             finalenv,
@@ -85110,7 +85110,7 @@ function type_implementation_more(sourcefile, outputprefix, modulename, initial_
 
 function type_implementation(sourcefile, outputprefix, modulename, initial_env, ast) {
   var match = type_implementation_more(sourcefile, outputprefix, modulename, initial_env, ast);
-  return /* tuple */[
+  return [
           match[0],
           match[1]
         ];
@@ -85886,7 +85886,7 @@ var test_id = {
 function eq(loc, x, y) {
   test_id.contents = test_id.contents + 1 | 0;
   suites.contents = /* :: */{
-    _0: /* tuple */[
+    _0: [
       loc + (" id " + String(test_id.contents)),
       (function (param) {
           return {

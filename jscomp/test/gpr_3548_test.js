@@ -3,11 +3,11 @@
 var Js_mapperRt = require("../../lib/js/js_mapperRt.js");
 
 var jsMapperConstantArray = [
-  /* tuple */[
+  [
     -1010337642,
     "vertical"
   ],
-  /* tuple */[
+  [
     208994564,
     "horizontal"
   ]

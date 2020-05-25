@@ -148,15 +148,15 @@ console.timeEnd("test/bs_sort_test.ml 84");
 b("File \"bs_sort_test.ml\", line 85, characters 4-11", Belt_SortArray.isSorted(u1, cmp));
 
 var u$1 = [
-  /* tuple */[
+  [
     1,
     "a"
   ],
-  /* tuple */[
+  [
     1,
     "b"
   ],
-  /* tuple */[
+  [
     2,
     "a"
   ]
@@ -165,34 +165,34 @@ var u$1 = [
 eq("File \"bs_sort_test.ml\", line 90, characters 5-12", Belt_SortArray.stableSortBy(u$1, (function (param, param$1) {
             return param[0] - param$1[0] | 0;
           })), [
-      /* tuple */[
+      [
         1,
         "a"
       ],
-      /* tuple */[
+      [
         1,
         "b"
       ],
-      /* tuple */[
+      [
         2,
         "a"
       ]
     ]);
 
 var u$2 = [
-  /* tuple */[
+  [
     1,
     "b"
   ],
-  /* tuple */[
+  [
     1,
     "a"
   ],
-  /* tuple */[
+  [
     1,
     "b"
   ],
-  /* tuple */[
+  [
     2,
     "a"
   ]
@@ -201,46 +201,46 @@ var u$2 = [
 eq("File \"bs_sort_test.ml\", line 96, characters 5-12", Belt_SortArray.stableSortBy(u$2, (function (param, param$1) {
             return param[0] - param$1[0] | 0;
           })), [
-      /* tuple */[
+      [
         1,
         "b"
       ],
-      /* tuple */[
+      [
         1,
         "a"
       ],
-      /* tuple */[
+      [
         1,
         "b"
       ],
-      /* tuple */[
+      [
         2,
         "a"
       ]
     ]);
 
 var u$3 = [
-  /* tuple */[
+  [
     1,
     "c"
   ],
-  /* tuple */[
+  [
     1,
     "b"
   ],
-  /* tuple */[
+  [
     1,
     "a"
   ],
-  /* tuple */[
+  [
     1,
     "b"
   ],
-  /* tuple */[
+  [
     1,
     "c"
   ],
-  /* tuple */[
+  [
     2,
     "a"
   ]
@@ -249,27 +249,27 @@ var u$3 = [
 eq("File \"bs_sort_test.ml\", line 102, characters 5-12", Belt_SortArray.stableSortBy(u$3, (function (param, param$1) {
             return param[0] - param$1[0] | 0;
           })), [
-      /* tuple */[
+      [
         1,
         "c"
       ],
-      /* tuple */[
+      [
         1,
         "b"
       ],
-      /* tuple */[
+      [
         1,
         "a"
       ],
-      /* tuple */[
+      [
         1,
         "b"
       ],
-      /* tuple */[
+      [
         1,
         "c"
       ],
-      /* tuple */[
+      [
         2,
         "a"
       ]

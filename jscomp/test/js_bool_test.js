@@ -30,7 +30,7 @@ var u = 1;
 
 var v = true;
 
-var suites_0 = /* tuple */[
+var suites_0 = [
   "caml_bool_eq_caml_bool",
   (function (param) {
       return {
@@ -42,7 +42,7 @@ var suites_0 = /* tuple */[
 ];
 
 var suites_1 = /* :: */{
-  _0: /* tuple */[
+  _0: [
     "js_bool_eq_js_bool",
     (function (param) {
         return {
@@ -53,7 +53,7 @@ var suites_1 = /* :: */{
       })
   ],
   _1: /* :: */{
-    _0: /* tuple */[
+    _0: [
       "js_bool_neq_acml_bool",
       (function (param) {
           return {
@@ -101,7 +101,7 @@ function ss(x) {
 }
 
 function bb(x) {
-  return /* tuple */[
+  return [
           true > x,
           false,
           true,
@@ -113,7 +113,7 @@ function bb(x) {
         ];
 }
 
-var consts = /* tuple */[
+var consts = [
   false,
   false,
   true,

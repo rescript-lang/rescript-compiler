@@ -263,7 +263,7 @@ function split_aux(p) {
     var p$1 = _p;
     var dir = Curry._1(Filename.dirname, p$1);
     if (dir === p$1) {
-      return /* tuple */[
+      return [
               dir,
               acc
             ];

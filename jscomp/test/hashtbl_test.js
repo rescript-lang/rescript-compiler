@@ -11,7 +11,7 @@ var Caml_primitive = require("../../lib/js/caml_primitive.js");
 function to_list(tbl) {
   return Hashtbl.fold((function (k, v, acc) {
                 return /* :: */{
-                        _0: /* tuple */[
+                        _0: [
                           k,
                           v
                         ],
@@ -43,18 +43,18 @@ function g(count) {
                   }), v));
 }
 
-var suites_0 = /* tuple */[
+var suites_0 = [
   "simple",
   (function (param) {
       return {
               tag: /* Eq */0,
               _0: /* :: */{
-                _0: /* tuple */[
+                _0: [
                   1,
                   /* "1" */49
                 ],
                 _1: /* :: */{
-                  _0: /* tuple */[
+                  _0: [
                     2,
                     /* "2" */50
                   ],
@@ -67,13 +67,13 @@ var suites_0 = /* tuple */[
 ];
 
 var suites_1 = /* :: */{
-  _0: /* tuple */[
+  _0: [
     "more_iterations",
     (function (param) {
         return {
                 tag: /* Eq */0,
                 _0: $$Array.init(1001, (function (i) {
-                        return /* tuple */[
+                        return [
                                 (i << 1),
                                 String(i)
                               ];
@@ -83,7 +83,7 @@ var suites_1 = /* :: */{
       })
   ],
   _1: /* :: */{
-    _0: /* tuple */[
+    _0: [
       "More_labels_regressionfix_374",
       (function (param) {
           var tbl = Curry._2(MoreLabels.Hashtbl.create, undefined, 30);

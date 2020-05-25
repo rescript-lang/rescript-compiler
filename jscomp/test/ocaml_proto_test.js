@@ -1320,7 +1320,7 @@ var yyact = [
   (function (__caml_parser_env) {
       var _1 = Parsing.peek_val(__caml_parser_env, 2);
       var _3 = Parsing.peek_val(__caml_parser_env, 0);
-      return /* tuple */[
+      return [
               _1[1],
               _3
             ];
@@ -1328,7 +1328,7 @@ var yyact = [
   (function (__caml_parser_env) {
       var _2 = Parsing.peek_val(__caml_parser_env, 3);
       var _5 = Parsing.peek_val(__caml_parser_env, 0);
-      return /* tuple */[
+      return [
               _2[1],
               _5
             ];
@@ -1351,7 +1351,7 @@ var yyact = [
       var _2 = Parsing.peek_val(__caml_parser_env, 3);
       var _4 = Parsing.peek_val(__caml_parser_env, 1);
       Parsing.peek_val(__caml_parser_env, 0);
-      return /* tuple */[
+      return [
               _2,
               _4
             ];
@@ -1826,7 +1826,7 @@ function lexer(lexbuf) {
             default:
               return {
                       tag: /* IDENT */5,
-                      _0: /* tuple */[
+                      _0: [
                         loc,
                         ident
                       ]
@@ -2339,7 +2339,7 @@ function runtime_function(param) {
 }
 
 function decode_basic_type(bt, pk) {
-  return runtime_function(/* tuple */[
+  return runtime_function([
               /* Decode */427938126,
               pk,
               bt
@@ -3160,19 +3160,19 @@ function gen_struct(and_, t, sc) {
   var tmp;
   switch (r.tag | 0) {
     case /* Record */0 :
-        tmp = /* tuple */[
+        tmp = [
           gen_decode_record(and_, r._0, sc),
           true
         ];
         break;
     case /* Variant */1 :
-        tmp = /* tuple */[
+        tmp = [
           gen_decode_variant(and_, r._0, sc),
           true
         ];
         break;
     case /* Const_variant */2 :
-        tmp = /* tuple */[
+        tmp = [
           gen_decode_const_variant(and_, r._0, sc),
           true
         ];
@@ -3233,19 +3233,19 @@ function gen_sig(and_, t, sc) {
   var tmp;
   switch (match.tag | 0) {
     case /* Record */0 :
-        tmp = /* tuple */[
+        tmp = [
           f(match._0.r_name),
           true
         ];
         break;
     case /* Variant */1 :
-        tmp = /* tuple */[
+        tmp = [
           f(match._0.v_name),
           true
         ];
         break;
     case /* Const_variant */2 :
-        tmp = /* tuple */[
+        tmp = [
           f(match._0.cv_name),
           true
         ];
@@ -4198,28 +4198,28 @@ function strong_connect(g, sccs, stack, index, v) {
           var match = w.index;
           if (match !== undefined) {
             if (w.on_stack) {
-              v.lowlink = min_value(/* tuple */[
+              v.lowlink = min_value([
                     v.lowlink,
                     w.index
                   ]);
             }
-            return /* tuple */[
+            return [
                     sccs,
                     stack,
                     index
                   ];
           }
           var match$1 = strong_connect(g, sccs, stack, index + 1 | 0, w);
-          v.lowlink = min_value(/* tuple */[
+          v.lowlink = min_value([
                 v.lowlink,
                 w.lowlink
               ]);
-          return /* tuple */[
+          return [
                   match$1[0],
                   match$1[1],
                   match$1[2]
                 ];
-        }), /* tuple */[
+        }), [
         sccs,
         stack$1,
         index
@@ -4283,11 +4283,11 @@ function strong_connect(g, sccs, stack, index, v) {
           }), "[" + ($$String.concat(";", List.map((function (param) {
                     return String(param.core.id);
                   }), stack$2)) + "]"));
-  if (!eq_value(/* tuple */[
+  if (!eq_value([
           v.lowlink,
           v.index
         ])) {
-    return /* tuple */[
+    return [
             sccs$1,
             stack$2,
             index$1
@@ -4298,7 +4298,7 @@ function strong_connect(g, sccs, stack, index, v) {
           var stack = param[1];
           var scc = param[0];
           if (splitted) {
-            return /* tuple */[
+            return [
                     scc,
                     /* :: */{
                       _0: n,
@@ -4309,7 +4309,7 @@ function strong_connect(g, sccs, stack, index, v) {
           } else {
             n.on_stack = false;
             if (n.core.id === v.core.id) {
-              return /* tuple */[
+              return [
                       /* :: */{
                         _0: n.core.id,
                         _1: scc
@@ -4318,7 +4318,7 @@ function strong_connect(g, sccs, stack, index, v) {
                       true
                     ];
             } else {
-              return /* tuple */[
+              return [
                       /* :: */{
                         _0: n.core.id,
                         _1: scc
@@ -4328,12 +4328,12 @@ function strong_connect(g, sccs, stack, index, v) {
                     ];
             }
           }
-        }), /* tuple */[
+        }), [
         /* [] */0,
         /* [] */0,
         false
       ], stack$2);
-  return /* tuple */[
+  return [
           /* :: */{
             _0: match$1[0],
             _1: sccs$1
@@ -4351,7 +4351,7 @@ function tarjan(g) {
                   var sccs = param$1[0];
                   var match = n.index;
                   if (match !== undefined) {
-                    return /* tuple */[
+                    return [
                             sccs,
                             stack,
                             index
@@ -4359,7 +4359,7 @@ function tarjan(g) {
                   } else {
                     return strong_connect(g$1, sccs, stack, index, n);
                   }
-                }), g$1, /* tuple */[
+                }), g$1, [
                 /* [] */0,
                 /* [] */0,
                 0
@@ -4749,7 +4749,7 @@ function compile_message_p1(file_name, file_options, message_scope, param) {
                   tag: /* Message_field */0,
                   _0: compile_field_p1(f._0)
                 };
-                return /* tuple */[
+                return [
                         /* :: */{
                           _0: field,
                           _1: message_body
@@ -4762,7 +4762,7 @@ function compile_message_p1(file_name, file_options, message_scope, param) {
                   tag: /* Message_map_field */2,
                   _0: compile_map_p1(f._0)
                 };
-                return /* tuple */[
+                return [
                         /* :: */{
                           _0: field$1,
                           _1: message_body
@@ -4775,7 +4775,7 @@ function compile_message_p1(file_name, file_options, message_scope, param) {
                   tag: /* Message_oneof_field */1,
                   _0: compile_oneof_p1(f._0)
                 };
-                return /* tuple */[
+                return [
                         /* :: */{
                           _0: field$2,
                           _1: message_body
@@ -4785,13 +4785,13 @@ function compile_message_p1(file_name, file_options, message_scope, param) {
                       ];
             case /* Message_sub */3 :
                 var all_sub_types = compile_message_p1(file_name, file_options, sub_scope, f._0);
-                return /* tuple */[
+                return [
                         message_body,
                         extensions,
                         Pervasives.$at(all_types, all_sub_types)
                       ];
             case /* Message_enum */4 :
-                return /* tuple */[
+                return [
                         message_body,
                         extensions,
                         Pervasives.$at(all_types, /* :: */{
@@ -4800,14 +4800,14 @@ function compile_message_p1(file_name, file_options, message_scope, param) {
                             })
                       ];
             case /* Message_extension */5 :
-                return /* tuple */[
+                return [
                         message_body,
                         Pervasives.$at(extensions, f._0),
                         all_types
                       ];
             
           }
-        }), /* tuple */[
+        }), [
         /* [] */0,
         /* [] */0,
         /* [] */0
@@ -4824,7 +4824,7 @@ function compile_message_p1(file_name, file_options, message_scope, param) {
             
           })) {
       return /* :: */{
-              _0: /* tuple */[
+              _0: [
                 number,
                 name
               ],
@@ -5492,7 +5492,7 @@ function gen_encode_field_key(sc, number, pk, is_packed) {
 }
 
 function encode_basic_type(bt, pk) {
-  return runtime_function(/* tuple */[
+  return runtime_function([
               /* Encode */779642422,
               pk,
               bt
@@ -6133,19 +6133,19 @@ function gen_struct$3(and_, t, sc) {
   var tmp;
   switch (r.tag | 0) {
     case /* Record */0 :
-        tmp = /* tuple */[
+        tmp = [
           gen_encode_record(and_, r._0, sc),
           true
         ];
         break;
     case /* Variant */1 :
-        tmp = /* tuple */[
+        tmp = [
           gen_encode_variant(and_, r._0, sc),
           true
         ];
         break;
     case /* Const_variant */2 :
-        tmp = /* tuple */[
+        tmp = [
           gen_encode_const_variant(and_, r._0, sc),
           true
         ];
@@ -6202,19 +6202,19 @@ function gen_sig$3(and_, t, sc) {
   var tmp;
   switch (v.tag | 0) {
     case /* Record */0 :
-        tmp = /* tuple */[
+        tmp = [
           f(v._0.r_name),
           true
         ];
         break;
     case /* Variant */1 :
-        tmp = /* tuple */[
+        tmp = [
           f(v._0.v_name),
           true
         ];
         break;
     case /* Const_variant */2 :
-        tmp = /* tuple */[
+        tmp = [
           f(v._0.cv_name),
           true
         ];
@@ -6456,7 +6456,7 @@ function record_field_default_info(record_field) {
         } else {
           throw {
                 RE_EXN_ID: "Assert_failure",
-                _1: /* tuple */[
+                _1: [
                   "codegen_default.ml",
                   74,
                   15
@@ -6467,7 +6467,7 @@ function record_field_default_info(record_field) {
         break;
     
   }
-  return /* tuple */[
+  return [
           rf_label,
           default_value,
           type_string
@@ -6785,19 +6785,19 @@ function gen_struct$4(and_, t, sc) {
   switch (r.tag | 0) {
     case /* Record */0 :
         var r$1 = r._0;
-        tmp = /* tuple */[
+        tmp = [
           (gen_default_record(undefined, and_, r$1, sc), line$1(sc, ""), gen_default_record(Caml_option.some(undefined), Caml_option.some(undefined), r$1, sc)),
           true
         ];
         break;
     case /* Variant */1 :
-        tmp = /* tuple */[
+        tmp = [
           gen_default_variant(and_, r._0, sc),
           true
         ];
         break;
     case /* Const_variant */2 :
-        tmp = /* tuple */[
+        tmp = [
           gen_default_const_variant(undefined, r._0, sc),
           true
         ];
@@ -6934,19 +6934,19 @@ function gen_sig$4(and_, t, sc) {
   var tmp;
   switch (r.tag | 0) {
     case /* Record */0 :
-        tmp = /* tuple */[
+        tmp = [
           gen_sig_record(sc, r._0),
           true
         ];
         break;
     case /* Variant */1 :
-        tmp = /* tuple */[
+        tmp = [
           f(r._0.v_name),
           true
         ];
         break;
     case /* Const_variant */2 :
-        tmp = /* tuple */[
+        tmp = [
           f(r._0.cv_name),
           true
         ];
@@ -6985,26 +6985,26 @@ function rev_split_by_naming_convention(s) {
           var l = param[0];
           if (c !== 95) {
             if (param[2] || !is_uppercase(c)) {
-              return /* tuple */[
+              return [
                       l,
                       start_i,
                       is_uppercase(c)
                     ];
             } else {
-              return /* tuple */[
+              return [
                       add_sub_string(start_i, i, l),
                       i,
                       true
                     ];
             }
           } else {
-            return /* tuple */[
+            return [
                     add_sub_string(start_i, i, l),
                     i + 1 | 0,
                     false
                   ];
           }
-        }), /* tuple */[
+        }), [
         /* [] */0,
         0,
         false
@@ -7196,7 +7196,7 @@ function encoding_of_field(all_types, field) {
     packed = false;
   }
   var pk = encoding_info_of_field_type(all_types, field_type(field));
-  return /* tuple */[
+  return [
           pk,
           field_number(field),
           packed,
@@ -7377,7 +7377,7 @@ function variant_of_oneof(include_oneof_name, outer_message_names, all_types, fi
 function compile_enum(file_name, scope, param) {
   var module_ = module_of_file_name(file_name);
   var cv_constructors = List.map((function (param) {
-          return /* tuple */[
+          return [
                   constructor_name(param.enum_value_name),
                   param.enum_value_int
                 ];
@@ -7513,7 +7513,7 @@ function compile(proto_definition) {
                                           if (match$1 >= 202657151) {
                                             record_field_type = {
                                               tag: /* Rft_required */0,
-                                              _0: /* tuple */[
+                                              _0: [
                                                 field_type$1,
                                                 encoding_number,
                                                 pk,
@@ -7538,7 +7538,7 @@ function compile(proto_definition) {
                                             }
                                             record_field_type = {
                                               tag: /* Rft_repeated_field */2,
-                                              _0: /* tuple */[
+                                              _0: [
                                                 repeated_type,
                                                 field_type$1,
                                                 encoding_number,
@@ -7550,7 +7550,7 @@ function compile(proto_definition) {
                                         } else {
                                           record_field_type = {
                                             tag: /* Rft_optional */1,
-                                            _0: /* tuple */[
+                                            _0: [
                                               field_type$1,
                                               encoding_number,
                                               pk,
@@ -7564,7 +7564,7 @@ function compile(proto_definition) {
                                           rf_field_type: record_field_type,
                                           rf_mutable: mutable_
                                         };
-                                        return /* tuple */[
+                                        return [
                                                 variants,
                                                 /* :: */{
                                                   _0: record_field,
@@ -7603,7 +7603,7 @@ function compile(proto_definition) {
                                           _0: record_field$1,
                                           _1: fields
                                         };
-                                        return /* tuple */[
+                                        return [
                                                 variants$1,
                                                 fields$1
                                               ];
@@ -7672,14 +7672,14 @@ function compile(proto_definition) {
                                         }
                                         var record_field_type$1 = {
                                           tag: /* Rft_associative_field */3,
-                                          _0: /* tuple */[
+                                          _0: [
                                             associative_type,
                                             mf.map_number,
-                                            /* tuple */[
+                                            [
                                               key_type$1,
                                               key_pk
                                             ],
-                                            /* tuple */[
+                                            [
                                               value_type,
                                               value_pk
                                             ]
@@ -7692,7 +7692,7 @@ function compile(proto_definition) {
                                           rf_field_type: record_field_type$1,
                                           rf_mutable: record_field_rf_mutable
                                         };
-                                        return /* tuple */[
+                                        return [
                                                 variants,
                                                 /* :: */{
                                                   _0: record_field$2,
@@ -7701,7 +7701,7 @@ function compile(proto_definition) {
                                               ];
                                     
                                   }
-                                }), /* tuple */[
+                                }), [
                                 /* [] */0,
                                 /* [] */0
                               ], message_body);
@@ -7777,7 +7777,7 @@ function compile(proto_definition) {
   line$1(sc, "[@@@ocaml.warning \"-30\"]");
   line$1(sc, "");
   gen(all_ocaml_types, sc, List.map((function (m) {
-              return /* tuple */[
+              return [
                       m.gen_struct,
                       undefined
                     ];
@@ -7803,13 +7803,13 @@ function compile(proto_definition) {
                 _1: "(** %s Generated Types and Encoding *)"
               }), Curry._1(Filename.basename, proto_file_name)));
   gen(all_ocaml_types, sc$1, List.map((function (m) {
-              return /* tuple */[
+              return [
                       m.gen_sig,
                       m.ocamldoc_title
                     ];
             }), all_code_gen));
   var sig_string = print(sc$1);
-  return /* tuple */[
+  return [
           sig_string,
           struct_string
         ];
@@ -7828,7 +7828,7 @@ var test_id = {
 function eq(loc, x, y) {
   test_id.contents = test_id.contents + 1 | 0;
   suites.contents = /* :: */{
-    _0: /* tuple */[
+    _0: [
       loc + (" id " + String(test_id.contents)),
       (function (param) {
           return {

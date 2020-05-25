@@ -47,7 +47,7 @@ function from_tokens(lst) {
   };
 }
 
-var lexer_suites_0 = /* tuple */[
+var lexer_suites_0 = [
   "arith_token",
   (function (param) {
       return {
@@ -92,7 +92,7 @@ var lexer_suites_0 = /* tuple */[
 ];
 
 var lexer_suites_1 = /* :: */{
-  _0: /* tuple */[
+  _0: [
     "simple token",
     (function (param) {
         return {
@@ -106,7 +106,7 @@ var lexer_suites_1 = /* :: */{
       })
   ],
   _1: /* :: */{
-    _0: /* tuple */[
+    _0: [
       "number_lexer",
       (function (param) {
           var v = {
@@ -179,7 +179,7 @@ var lexer_suites_1 = /* :: */{
         })
     ],
     _1: /* :: */{
-      _0: /* tuple */[
+      _0: [
         "simple number",
         (function (param) {
             return {
@@ -190,7 +190,7 @@ var lexer_suites_1 = /* :: */{
           })
       ],
       _1: /* :: */{
-        _0: /* tuple */[
+        _0: [
           "arith",
           (function (param) {
               return {

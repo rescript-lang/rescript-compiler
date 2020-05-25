@@ -10,7 +10,7 @@ var Pervasives = require("../../lib/js/pervasives.js");
 var Ext_array_test = require("./ext_array_test.js");
 
 function f(x) {
-  return /* tuple */[
+  return [
           x,
           (x >>> 1),
           (x >>> 2)
@@ -56,7 +56,7 @@ var shift_right_logical_tests_1 = [
   1
 ];
 
-var shift_right_logical_tests = /* tuple */[
+var shift_right_logical_tests = [
   shift_right_logical_tests_0,
   shift_right_logical_tests_1
 ];
@@ -100,7 +100,7 @@ var shift_right_tests_1 = [
   -1
 ];
 
-var shift_right_tests = /* tuple */[
+var shift_right_tests = [
   shift_right_tests_0,
   shift_right_tests_1
 ];
@@ -144,7 +144,7 @@ var shift_left_tests_1 = [
   -2147483648
 ];
 
-var shift_left_tests = /* tuple */[
+var shift_left_tests = [
   shift_left_tests_0,
   shift_left_tests_1
 ];
@@ -155,7 +155,7 @@ function $star$tilde(prim, prim$1) {
 
 var suites = {
   contents: Pervasives.$at(/* :: */{
-        _0: /* tuple */[
+        _0: [
           "File \"int32_test.ml\", line 31, characters 2-9",
           (function (param) {
               return {
@@ -166,7 +166,7 @@ var suites = {
             })
         ],
         _1: /* :: */{
-          _0: /* tuple */[
+          _0: [
             "File \"int32_test.ml\", line 32, characters 2-9",
             (function (param) {
                 return {
@@ -179,7 +179,7 @@ var suites = {
           _1: /* [] */0
         }
       }, Pervasives.$at($$Array.to_list(Ext_array_test.map2i((function (i, a, b) {
-                      return /* tuple */[
+                      return [
                               Curry._1(Format.asprintf(/* Format */{
                                         _0: {
                                           tag: /* String_literal */11,
@@ -203,7 +203,7 @@ var suites = {
                                 })
                             ];
                     }), shift_right_logical_tests_0, shift_right_logical_tests_1)), Pervasives.$at($$Array.to_list(Ext_array_test.map2i((function (i, a, b) {
-                          return /* tuple */[
+                          return [
                                   Curry._1(Format.asprintf(/* Format */{
                                             _0: {
                                               tag: /* String_literal */11,
@@ -227,7 +227,7 @@ var suites = {
                                     })
                                 ];
                         }), shift_right_tests_0, shift_right_tests_1)), $$Array.to_list(Ext_array_test.map2i((function (i, a, b) {
-                          return /* tuple */[
+                          return [
                                   Curry._1(Format.asprintf(/* Format */{
                                             _0: {
                                               tag: /* String_literal */11,

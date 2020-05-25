@@ -55,7 +55,7 @@ function to_list(s) {
   };
 }
 
-var suites_0 = /* tuple */[
+var suites_0 = [
   "lexer_stream_genlex",
   (function (param) {
       return {

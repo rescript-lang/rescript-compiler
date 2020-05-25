@@ -43,19 +43,19 @@ function add(prim, prim$1) {
 }
 
 Belt_HashMap.mergeMany(empty, [
-      /* tuple */[
+      [
         1,
         1
       ],
-      /* tuple */[
+      [
         2,
         3
       ],
-      /* tuple */[
+      [
         3,
         3
       ],
-      /* tuple */[
+      [
         2,
         2
       ]

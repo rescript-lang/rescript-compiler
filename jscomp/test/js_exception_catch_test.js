@@ -18,7 +18,7 @@ function add_test(loc, test) {
   counter.contents = counter.contents + 1 | 0;
   var id = loc + (" id " + String(counter.contents));
   suites.contents = /* :: */{
-    _0: /* tuple */[
+    _0: [
       id,
       test
     ],

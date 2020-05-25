@@ -31,7 +31,7 @@ var digit = Caml_format.caml_int64_of_string("1000000000000000000");
 
 function mul(n, param) {
   var pl = param[0];
-  return /* tuple */[
+  return [
           Caml_int64.mod_(Caml_int64.mul(n, pl), digit),
           Caml_int64.add(Caml_int64.mul(n, param[1]), Caml_int64.div(Caml_int64.mul(n, pl), digit))
         ];
@@ -69,7 +69,7 @@ function x5(p) {
   return mul(n5, p);
 }
 
-var nn1 = /* tuple */[
+var nn1 = [
   n1,
   n0
 ];
@@ -179,7 +179,7 @@ function iter_interval(f, _l, _param) {
     if (start <= 0) {
       Curry._1(f, match._0);
     }
-    _param = /* tuple */[
+    _param = [
       start - 1 | 0,
       stop - 1 | 0
     ];
@@ -219,13 +219,13 @@ var ham5 = {
     })
 };
 
-iter_interval(pr, hamming, /* tuple */[
+iter_interval(pr, hamming, [
       88000,
       88100
     ]);
 
 Mt.from_pair_suites("Hamming_test", /* :: */{
-      _0: /* tuple */[
+      _0: [
         "output",
         (function (param) {
             return {

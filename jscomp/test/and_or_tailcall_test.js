@@ -30,7 +30,7 @@ function or_f(b, x, _n) {
   };
 }
 
-var suites_0 = /* tuple */[
+var suites_0 = [
   "and_tail",
   (function (param) {
       return {
@@ -42,7 +42,7 @@ var suites_0 = /* tuple */[
 ];
 
 var suites_1 = /* :: */{
-  _0: /* tuple */[
+  _0: [
     "or_tail",
     (function (param) {
         return {

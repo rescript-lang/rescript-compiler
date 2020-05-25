@@ -17,7 +17,7 @@ var test_id = {
 function eq(loc, x, y) {
   test_id.contents = test_id.contents + 1 | 0;
   suites.contents = /* :: */{
-    _0: /* tuple */[
+    _0: [
       loc + (" id " + String(test_id.contents)),
       (function (param) {
           return {
@@ -62,7 +62,7 @@ catch (raw_exn){
 
 eq("File \"caml_sys_poly_fill_test.ml\", line 23, characters 5-12", "Z", tmp);
 
-console.log(/* tuple */[
+console.log([
       Caml_sys.caml_sys_getcwd(undefined),
       Caml_sys.caml_sys_time(undefined),
       Sys.argv,

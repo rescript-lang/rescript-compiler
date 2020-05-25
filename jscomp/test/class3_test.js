@@ -70,7 +70,7 @@ var test_id = {
 function eq(loc, x, y) {
   test_id.contents = test_id.contents + 1 | 0;
   suites.contents = /* :: */{
-    _0: /* tuple */[
+    _0: [
       loc + (" id " + String(test_id.contents)),
       (function (param) {
           return {
@@ -179,7 +179,7 @@ var adjusted_point2_2 = point[2];
 
 var adjusted_point2_3 = point[3];
 
-var adjusted_point2 = /* class */[
+var adjusted_point2 = [
   adjusted_point2_0,
   adjusted_point2_1,
   adjusted_point2_2,
@@ -335,7 +335,7 @@ function abstract_point_1($$class) {
   };
 }
 
-var abstract_point = /* class */[
+var abstract_point = [
   undefined,
   abstract_point_1,
   undefined,
@@ -393,7 +393,7 @@ function abstract_point2_1($$class) {
   };
 }
 
-var abstract_point2 = /* class */[
+var abstract_point2 = [
   undefined,
   abstract_point2_1,
   undefined,

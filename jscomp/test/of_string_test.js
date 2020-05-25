@@ -3,7 +3,7 @@
 var Mt = require("./mt.js");
 var Pervasives = require("../../lib/js/pervasives.js");
 
-var suites_0 = /* tuple */[
+var suites_0 = [
   "string_of_float_1",
   (function (param) {
       return {
@@ -15,7 +15,7 @@ var suites_0 = /* tuple */[
 ];
 
 var suites_1 = /* :: */{
-  _0: /* tuple */[
+  _0: [
     "string_of_int",
     (function (param) {
         return {
@@ -26,7 +26,7 @@ var suites_1 = /* :: */{
       })
   ],
   _1: /* :: */{
-    _0: /* tuple */[
+    _0: [
       "valid_float_lexem",
       (function (param) {
           return {

@@ -9,7 +9,7 @@ function f(h, param) {
 }
 
 Mt.from_pair_suites("Print_alpha_test", /* :: */{
-      _0: /* tuple */[
+      _0: [
         "File \"print_alpha_test.ml\", line 15, characters 4-11",
         (function (param) {
             return {

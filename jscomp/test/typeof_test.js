@@ -30,7 +30,7 @@ function string_or_number(x) {
   }
 }
 
-var suites_0 = /* tuple */[
+var suites_0 = [
   "int_type",
   (function (param) {
       return {
@@ -42,7 +42,7 @@ var suites_0 = /* tuple */[
 ];
 
 var suites_1 = /* :: */{
-  _0: /* tuple */[
+  _0: [
     "string_type",
     (function (param) {
         return {
@@ -53,7 +53,7 @@ var suites_1 = /* :: */{
       })
   ],
   _1: /* :: */{
-    _0: /* tuple */[
+    _0: [
       "number_gadt_test",
       (function (param) {
           return {
@@ -64,7 +64,7 @@ var suites_1 = /* :: */{
         })
     ],
     _1: /* :: */{
-      _0: /* tuple */[
+      _0: [
         "boolean_gadt_test",
         (function (param) {
             return {
@@ -75,7 +75,7 @@ var suites_1 = /* :: */{
           })
       ],
       _1: /* :: */{
-        _0: /* tuple */[
+        _0: [
           "undefined_gadt_test",
           (function (param) {
               return {
@@ -86,7 +86,7 @@ var suites_1 = /* :: */{
             })
         ],
         _1: /* :: */{
-          _0: /* tuple */[
+          _0: [
             "string_on_number1",
             (function (param) {
                 return {
@@ -97,7 +97,7 @@ var suites_1 = /* :: */{
               })
           ],
           _1: /* :: */{
-            _0: /* tuple */[
+            _0: [
               "string_on_number2",
               (function (param) {
                   return {
@@ -108,7 +108,7 @@ var suites_1 = /* :: */{
                 })
             ],
             _1: /* :: */{
-              _0: /* tuple */[
+              _0: [
                 "string_on_number3",
                 (function (param) {
                     return {
@@ -121,7 +121,7 @@ var suites_1 = /* :: */{
                   })
               ],
               _1: /* :: */{
-                _0: /* tuple */[
+                _0: [
                   "string_gadt_test",
                   (function (param) {
                       return {
@@ -132,7 +132,7 @@ var suites_1 = /* :: */{
                     })
                 ],
                 _1: /* :: */{
-                  _0: /* tuple */[
+                  _0: [
                     "string_gadt_test_neg",
                     (function (param) {
                         return {
@@ -143,7 +143,7 @@ var suites_1 = /* :: */{
                       })
                   ],
                   _1: /* :: */{
-                    _0: /* tuple */[
+                    _0: [
                       "function_gadt_test",
                       (function (param) {
                           return {
@@ -156,7 +156,7 @@ var suites_1 = /* :: */{
                         })
                     ],
                     _1: /* :: */{
-                      _0: /* tuple */[
+                      _0: [
                         "object_gadt_test",
                         (function (param) {
                             return {

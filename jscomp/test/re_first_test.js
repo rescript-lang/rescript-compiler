@@ -28,15 +28,15 @@ var x = List.length(/* :: */{
     });
 
 var jsMapperConstantArray = [
-  /* tuple */[
+  [
     -988374136,
     "http"
   ],
-  /* tuple */[
+  [
     5243943,
     "idb"
   ],
-  /* tuple */[
+  [
     561436162,
     "leveldb"
   ]

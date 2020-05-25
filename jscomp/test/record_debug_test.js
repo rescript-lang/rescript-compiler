@@ -68,7 +68,7 @@ var N0 = {
 
 console.log(" hei " + v + " ");
 
-var a = /* tuple */[
+var a = [
   1,
   2,
   2,
@@ -98,7 +98,7 @@ var a_4 = "" + 3 + 3 + 3;
 
 var a_5 = " " + 3;
 
-var a$1 = /* tuple */[
+var a$1 = [
   a_0,
   a_1,
   a_2,
@@ -107,7 +107,7 @@ var a$1 = /* tuple */[
   a_5
 ];
 
-eq("File \"record_debug_test.ml\", line 64, characters 3-10", a$1, /* tuple */[
+eq("File \"record_debug_test.ml\", line 64, characters 3-10", a$1, [
       "",
       "a",
       "3",
@@ -139,7 +139,7 @@ var v2 = {
 
 var v3 = {
   HASH: /* C */67,
-  value: /* tuple */[
+  value: [
     2,
     3
   ]

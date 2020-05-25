@@ -159,7 +159,7 @@ CamlinternalOO.init_class($$class$5);
 
 var vvvv = CamlinternalOO.create_object_opt(undefined, $$class$5);
 
-var suites_0 = /* tuple */[
+var suites_0 = [
   "single_obj",
   (function (param) {
       return {
@@ -177,7 +177,7 @@ var suites_0 = /* tuple */[
 ];
 
 var suites_1 = /* :: */{
-  _0: /* tuple */[
+  _0: [
     "single_obj_cache",
     (function (param) {
         return {
@@ -194,7 +194,7 @@ var suites_1 = /* :: */{
       })
   ],
   _1: /* :: */{
-    _0: /* tuple */[
+    _0: [
       "self_obj",
       (function (param) {
           return {
@@ -205,7 +205,7 @@ var suites_1 = /* :: */{
         })
     ],
     _1: /* :: */{
-      _0: /* tuple */[
+      _0: [
         "uu_id",
         (function (param) {
             return {
@@ -216,7 +216,7 @@ var suites_1 = /* :: */{
           })
       ],
       _1: /* :: */{
-        _0: /* tuple */[
+        _0: [
           "uu_add",
           (function (param) {
               return {
@@ -227,7 +227,7 @@ var suites_1 = /* :: */{
             })
         ],
         _1: /* :: */{
-          _0: /* tuple */[
+          _0: [
             "v_add",
             (function (param) {
                 return {
@@ -238,7 +238,7 @@ var suites_1 = /* :: */{
               })
           ],
           _1: /* :: */{
-            _0: /* tuple */[
+            _0: [
               "u_id1",
               (function (param) {
                   return {
@@ -249,7 +249,7 @@ var suites_1 = /* :: */{
                 })
             ],
             _1: /* :: */{
-              _0: /* tuple */[
+              _0: [
                 "u_id2",
                 (function (param) {
                     return {
@@ -260,7 +260,7 @@ var suites_1 = /* :: */{
                   })
               ],
               _1: /* :: */{
-                _0: /* tuple */[
+                _0: [
                   "u hi",
                   (function (param) {
                       return {
@@ -271,7 +271,7 @@ var suites_1 = /* :: */{
                     })
                 ],
                 _1: /* :: */{
-                  _0: /* tuple */[
+                  _0: [
                     "u hello",
                     (function (param) {
                         return {
@@ -282,7 +282,7 @@ var suites_1 = /* :: */{
                       })
                   ],
                   _1: /* :: */{
-                    _0: /* tuple */[
+                    _0: [
                       "v hi",
                       (function (param) {
                           return {
@@ -293,7 +293,7 @@ var suites_1 = /* :: */{
                         })
                     ],
                     _1: /* :: */{
-                      _0: /* tuple */[
+                      _0: [
                         "uuu add",
                         (function (param) {
                             return {
@@ -304,7 +304,7 @@ var suites_1 = /* :: */{
                           })
                       ],
                       _1: /* :: */{
-                        _0: /* tuple */[
+                        _0: [
                           "v x",
                           (function (param) {
                               return {

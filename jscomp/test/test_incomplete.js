@@ -7,7 +7,7 @@ function f(x) {
   }
   throw {
         RE_EXN_ID: "Match_failure",
-        _1: /* tuple */[
+        _1: [
           "test_incomplete.ml",
           3,
           2

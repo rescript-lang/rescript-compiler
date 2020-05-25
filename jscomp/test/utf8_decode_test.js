@@ -139,7 +139,7 @@ function decode(bytes, offset) {
   }
   switch (c.tag | 0) {
     case /* Single */0 :
-        return /* tuple */[
+        return [
                 c._0,
                 offset + 1 | 0
               ];
@@ -158,7 +158,7 @@ function decode(bytes, offset) {
           var c$1 = _c;
           var n = _n;
           if (n === 0) {
-            return /* tuple */[
+            return [
                     c$1,
                     offset$1
                   ];
@@ -222,12 +222,12 @@ function eq(loc, param) {
   var y = param[1];
   var x = param[0];
   test_id.contents = test_id.contents + 1 | 0;
-  console.log(/* tuple */[
+  console.log([
         x,
         y
       ]);
   suites.contents = /* :: */{
-    _0: /* tuple */[
+    _0: [
       loc + (" id " + String(test_id.contents)),
       (function (param) {
           return {
@@ -243,14 +243,14 @@ function eq(loc, param) {
 }
 
 List.iter((function (param) {
-        return eq("File \"utf8_decode_test.ml\", line 107, characters 7-14", /* tuple */[
+        return eq("File \"utf8_decode_test.ml\", line 107, characters 7-14", [
                     true,
                     eq_list((function (prim, prim$1) {
                             return prim === prim$1;
                           }), to_list(utf8_decode(Stream.of_string(param[0]))), param[1])
                   ]);
       }), /* :: */{
-      _0: /* tuple */[
+      _0: [
         "\xe4\xbd\xa0\xe5\xa5\xbdBuckleScript,\xe6\x9c\x80\xe5\xa5\xbd\xe7\x9a\x84JS\xe8\xaf\xad\xe8\xa8\x80",
         /* :: */{
           _0: 20320,
@@ -321,7 +321,7 @@ List.iter((function (param) {
         }
       ],
       _1: /* :: */{
-        _0: /* tuple */[
+        _0: [
           "hello \xe4\xbd\xa0\xe5\xa5\xbd\xef\xbc\x8c\xe4\xb8\xad\xe5\x8d\x8e\xe6\xb0\x91\xe6\x97\x8f hei",
           /* :: */{
             _0: 104,

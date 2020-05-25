@@ -3,7 +3,7 @@
 var Mt = require("./mt.js");
 
 Mt.from_pair_suites("string_get_set_test.ml", /* :: */{
-      _0: /* tuple */[
+      _0: [
         "File \"string_get_set_test.ml\", line 6, characters 4-11",
         (function (param) {
             return {

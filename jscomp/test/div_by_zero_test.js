@@ -15,7 +15,7 @@ var test_id = {
 function eq(loc, x, y) {
   test_id.contents = test_id.contents + 1 | 0;
   suites.contents = /* :: */{
-    _0: /* tuple */[
+    _0: [
       loc + (" id " + String(test_id.contents)),
       (function (param) {
           return {
@@ -38,7 +38,7 @@ function add(suite) {
   
 }
 
-add(/* tuple */[
+add([
       "File \"div_by_zero_test.ml\", line 14, characters 7-14",
       (function (param) {
           return {
@@ -51,7 +51,7 @@ add(/* tuple */[
         })
     ]);
 
-add(/* tuple */[
+add([
       "File \"div_by_zero_test.ml\", line 15, characters 7-14",
       (function (param) {
           return {
@@ -64,7 +64,7 @@ add(/* tuple */[
         })
     ]);
 
-add(/* tuple */[
+add([
       "File \"div_by_zero_test.ml\", line 16, characters 7-14",
       (function (param) {
           return {
@@ -77,7 +77,7 @@ add(/* tuple */[
         })
     ]);
 
-add(/* tuple */[
+add([
       "File \"div_by_zero_test.ml\", line 17, characters 7-14",
       (function (param) {
           return {
@@ -90,7 +90,7 @@ add(/* tuple */[
         })
     ]);
 
-add(/* tuple */[
+add([
       "File \"div_by_zero_test.ml\", line 18, characters 7-14",
       (function (param) {
           return {
@@ -103,7 +103,7 @@ add(/* tuple */[
         })
     ]);
 
-add(/* tuple */[
+add([
       "File \"div_by_zero_test.ml\", line 19, characters 7-14",
       (function (param) {
           return {

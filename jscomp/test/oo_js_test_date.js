@@ -13,7 +13,7 @@ function d2(param) {
 
 var d3 = d2(2016)(1, undefined);
 
-var suites_0 = /* tuple */[
+var suites_0 = [
   "getMonth",
   (function (param) {
       return {
@@ -25,17 +25,17 @@ var suites_0 = /* tuple */[
 ];
 
 var suites_1 = /* :: */{
-  _0: /* tuple */[
+  _0: [
     "getYear",
     (function (param) {
         return {
                 tag: /* Eq */0,
-                _0: /* tuple */[
+                _0: [
                   2016,
                   2,
                   1
                 ],
-                _1: /* tuple */[
+                _1: [
                   d3.getFullYear(),
                   d3.getMonth(),
                   d3.getDate()

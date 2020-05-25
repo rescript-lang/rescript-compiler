@@ -17,7 +17,7 @@ var test_id = {
 function eq(loc, x, y) {
   test_id.contents = test_id.contents + 1 | 0;
   suites.contents = /* :: */{
-    _0: /* tuple */[
+    _0: [
       loc + (" id " + String(test_id.contents)),
       (function (param) {
           return {
@@ -46,7 +46,7 @@ function assert_bool(b) {
 function fail(param) {
   throw {
         RE_EXN_ID: "Assert_failure",
-        _1: /* tuple */[
+        _1: [
           "js_promise_basic_test.ml",
           19,
           2
@@ -80,7 +80,7 @@ function assertIsNotFound(x) {
   }
   throw {
         RE_EXN_ID: "Assert_failure",
-        _1: /* tuple */[
+        _1: [
           "js_promise_basic_test.ml",
           36,
           9
@@ -151,7 +151,7 @@ function orElseRejectedRejectTest(param) {
               }
               throw {
                     RE_EXN_ID: "Assert_failure",
-                    _1: /* tuple */[
+                    _1: [
                       "js_promise_basic_test.ml",
                       77,
                       18
@@ -291,14 +291,14 @@ createPromiseRejectTest(undefined);
 
 createPromiseFulfillTest(undefined);
 
-Promise.all(/* tuple */[
+Promise.all([
         Promise.resolve(2),
         Promise.resolve(3)
       ]).then(function (param) {
-      eq("File \"js_promise_basic_test.ml\", line 169, characters 7-14", /* tuple */[
+      eq("File \"js_promise_basic_test.ml\", line 169, characters 7-14", [
             param[0],
             param[1]
-          ], /* tuple */[
+          ], [
             2,
             3
           ]);
@@ -322,7 +322,7 @@ function re(prim) {
 }
 
 Mt.from_promise_suites("Js_promise_basic_test", /* :: */{
-      _0: /* tuple */[
+      _0: [
         "File \"js_promise_basic_test.ml\", line 187, characters 4-11",
         twop.then(function (x) {
               return Promise.resolve({
@@ -333,7 +333,7 @@ Mt.from_promise_suites("Js_promise_basic_test", /* :: */{
             })
       ],
       _1: /* :: */{
-        _0: /* tuple */[
+        _0: [
           "File \"js_promise_basic_test.ml\", line 190, characters 4-11",
           twop.then(function (x) {
                 return Promise.resolve({

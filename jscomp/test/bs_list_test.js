@@ -364,12 +364,12 @@ eq("ZIP", Belt_List.zip(/* :: */{
             _1: /* [] */0
           }
         }), /* :: */{
-      _0: /* tuple */[
+      _0: [
         1,
         3
       ],
       _1: /* :: */{
-        _0: /* tuple */[
+        _0: [
           2,
           4
         ],
@@ -414,17 +414,17 @@ eq("ZIP", Belt_List.zip(/* :: */{
             }
           }
         }), /* :: */{
-      _0: /* tuple */[
+      _0: [
         1,
         2
       ],
       _1: /* :: */{
-        _0: /* tuple */[
+        _0: [
           2,
           3
         ],
         _1: /* :: */{
-          _0: /* tuple */[
+          _0: [
             3,
             4
           ],
@@ -459,7 +459,7 @@ eq("PARTITION", Belt_List.partition(/* :: */{
               }
             }
           }
-        }, mod2), /* tuple */[
+        }, mod2), [
       /* :: */{
         _0: 2,
         _1: /* :: */{
@@ -494,7 +494,7 @@ eq("PARTITION", Belt_List.partition(/* :: */{
               }
             }
           }
-        }, mod2), /* tuple */[
+        }, mod2), [
       /* :: */{
         _0: 2,
         _1: /* :: */{
@@ -525,7 +525,7 @@ eq("PARTITION", Belt_List.partition(/* :: */{
           }
         }, (function (x) {
             return !mod2(x);
-          })), /* tuple */[
+          })), [
       /* [] */0,
       /* :: */{
         _0: 2,
@@ -542,23 +542,23 @@ eq("PARTITION", Belt_List.partition(/* :: */{
       }
     ]);
 
-eq("PARTITION", Belt_List.partition(/* [] */0, mod2), /* tuple */[
+eq("PARTITION", Belt_List.partition(/* [] */0, mod2), [
       /* [] */0,
       /* [] */0
     ]);
 
-eq("UNZIP", Belt_List.unzip(/* [] */0), /* tuple */[
+eq("UNZIP", Belt_List.unzip(/* [] */0), [
       /* [] */0,
       /* [] */0
     ]);
 
 eq("UNZIP", Belt_List.unzip(/* :: */{
-          _0: /* tuple */[
+          _0: [
             1,
             2
           ],
           _1: /* [] */0
-        }), /* tuple */[
+        }), [
       /* :: */{
         _0: 1,
         _1: /* [] */0
@@ -570,18 +570,18 @@ eq("UNZIP", Belt_List.unzip(/* :: */{
     ]);
 
 eq("UNZIP", Belt_List.unzip(/* :: */{
-          _0: /* tuple */[
+          _0: [
             1,
             2
           ],
           _1: /* :: */{
-            _0: /* tuple */[
+            _0: [
               3,
               4
             ],
             _1: /* [] */0
           }
-        }), /* tuple */[
+        }), [
       /* :: */{
         _0: 1,
         _1: /* :: */{
@@ -900,12 +900,12 @@ eq("SPLIT", Belt_List.splitAt(/* [] */0, 1), undefined);
 
 eq("SPLIT", Belt_List.splitAt(a, 6), undefined);
 
-eq("SPLIT", Belt_List.splitAt(a, 5), /* tuple */[
+eq("SPLIT", Belt_List.splitAt(a, 5), [
       a,
       /* [] */0
     ]);
 
-eq("SPLIT", Belt_List.splitAt(a, 4), /* tuple */[
+eq("SPLIT", Belt_List.splitAt(a, 4), [
       /* :: */{
         _0: 0,
         _1: /* :: */{
@@ -925,7 +925,7 @@ eq("SPLIT", Belt_List.splitAt(a, 4), /* tuple */[
       }
     ]);
 
-eq("SPLIT", Belt_List.splitAt(a, 3), /* tuple */[
+eq("SPLIT", Belt_List.splitAt(a, 3), [
       /* :: */{
         _0: 0,
         _1: /* :: */{
@@ -945,7 +945,7 @@ eq("SPLIT", Belt_List.splitAt(a, 3), /* tuple */[
       }
     ]);
 
-eq("SPLIT", Belt_List.splitAt(a, 2), /* tuple */[
+eq("SPLIT", Belt_List.splitAt(a, 2), [
       /* :: */{
         _0: 0,
         _1: /* :: */{
@@ -965,7 +965,7 @@ eq("SPLIT", Belt_List.splitAt(a, 2), /* tuple */[
       }
     ]);
 
-eq("SPLIT", Belt_List.splitAt(a, 1), /* tuple */[
+eq("SPLIT", Belt_List.splitAt(a, 1), [
       /* :: */{
         _0: 0,
         _1: /* [] */0
@@ -985,7 +985,7 @@ eq("SPLIT", Belt_List.splitAt(a, 1), /* tuple */[
       }
     ]);
 
-eq("SPLIT", Belt_List.splitAt(a, 0), /* tuple */[
+eq("SPLIT", Belt_List.splitAt(a, 0), [
       /* [] */0,
       a
     ]);
@@ -1001,17 +1001,17 @@ function eqx(x, y) {
 }
 
 b("File \"bs_list_test.ml\", line 182, characters 4-11", Belt_List.hasAssoc(/* :: */{
-          _0: /* tuple */[
+          _0: [
             1,
             "1"
           ],
           _1: /* :: */{
-            _0: /* tuple */[
+            _0: [
               2,
               "2"
             ],
             _1: /* :: */{
-              _0: /* tuple */[
+              _0: [
                 3,
                 "3"
               ],
@@ -1023,17 +1023,17 @@ b("File \"bs_list_test.ml\", line 182, characters 4-11", Belt_List.hasAssoc(/* :
           })));
 
 b("File \"bs_list_test.ml\", line 183, characters 4-11", !Belt_List.hasAssoc(/* :: */{
-          _0: /* tuple */[
+          _0: [
             1,
             "1"
           ],
           _1: /* :: */{
-            _0: /* tuple */[
+            _0: [
               2,
               "2"
             ],
             _1: /* :: */{
-              _0: /* tuple */[
+              _0: [
                 3,
                 "3"
               ],
@@ -1045,17 +1045,17 @@ b("File \"bs_list_test.ml\", line 183, characters 4-11", !Belt_List.hasAssoc(/* 
           })));
 
 b("File \"bs_list_test.ml\", line 184, characters 4-11", Belt_List.hasAssoc(/* :: */{
-          _0: /* tuple */[
+          _0: [
             1,
             "1"
           ],
           _1: /* :: */{
-            _0: /* tuple */[
+            _0: [
               2,
               "2"
             ],
             _1: /* :: */{
-              _0: /* tuple */[
+              _0: [
                 3,
                 "3"
               ],
@@ -1067,17 +1067,17 @@ b("File \"bs_list_test.ml\", line 184, characters 4-11", Belt_List.hasAssoc(/* :
           })));
 
 eq("REMOVEASSOQ", Belt_List.removeAssoc(/* :: */{
-          _0: /* tuple */[
+          _0: [
             1,
             "1"
           ],
           _1: /* :: */{
-            _0: /* tuple */[
+            _0: [
               2,
               "2"
             ],
             _1: /* :: */{
-              _0: /* tuple */[
+              _0: [
                 3,
                 "3"
               ],
@@ -1087,12 +1087,12 @@ eq("REMOVEASSOQ", Belt_List.removeAssoc(/* :: */{
         }, 3, (function (prim, prim$1) {
             return prim === prim$1;
           })), /* :: */{
-      _0: /* tuple */[
+      _0: [
         1,
         "1"
       ],
       _1: /* :: */{
-        _0: /* tuple */[
+        _0: [
           2,
           "2"
         ],
@@ -1101,17 +1101,17 @@ eq("REMOVEASSOQ", Belt_List.removeAssoc(/* :: */{
     });
 
 eq("REMOVEASSOQ", Belt_List.removeAssoc(/* :: */{
-          _0: /* tuple */[
+          _0: [
             1,
             "1"
           ],
           _1: /* :: */{
-            _0: /* tuple */[
+            _0: [
               2,
               "2"
             ],
             _1: /* :: */{
-              _0: /* tuple */[
+              _0: [
                 3,
                 "3"
               ],
@@ -1121,12 +1121,12 @@ eq("REMOVEASSOQ", Belt_List.removeAssoc(/* :: */{
         }, 1, (function (prim, prim$1) {
             return prim === prim$1;
           })), /* :: */{
-      _0: /* tuple */[
+      _0: [
         2,
         "2"
       ],
       _1: /* :: */{
-        _0: /* tuple */[
+        _0: [
           3,
           "3"
         ],
@@ -1135,17 +1135,17 @@ eq("REMOVEASSOQ", Belt_List.removeAssoc(/* :: */{
     });
 
 eq("REMOVEASSOQ", Belt_List.removeAssoc(/* :: */{
-          _0: /* tuple */[
+          _0: [
             1,
             "1"
           ],
           _1: /* :: */{
-            _0: /* tuple */[
+            _0: [
               2,
               "2"
             ],
             _1: /* :: */{
-              _0: /* tuple */[
+              _0: [
                 3,
                 "3"
               ],
@@ -1155,12 +1155,12 @@ eq("REMOVEASSOQ", Belt_List.removeAssoc(/* :: */{
         }, 2, (function (prim, prim$1) {
             return prim === prim$1;
           })), /* :: */{
-      _0: /* tuple */[
+      _0: [
         1,
         "1"
       ],
       _1: /* :: */{
-        _0: /* tuple */[
+        _0: [
           3,
           "3"
         ],
@@ -1169,17 +1169,17 @@ eq("REMOVEASSOQ", Belt_List.removeAssoc(/* :: */{
     });
 
 eq("REMOVEASSOQ", Belt_List.removeAssoc(/* :: */{
-          _0: /* tuple */[
+          _0: [
             1,
             "1"
           ],
           _1: /* :: */{
-            _0: /* tuple */[
+            _0: [
               2,
               "2"
             ],
             _1: /* :: */{
-              _0: /* tuple */[
+              _0: [
                 3,
                 "3"
               ],
@@ -1189,17 +1189,17 @@ eq("REMOVEASSOQ", Belt_List.removeAssoc(/* :: */{
         }, 0, (function (prim, prim$1) {
             return prim === prim$1;
           })), /* :: */{
-      _0: /* tuple */[
+      _0: [
         1,
         "1"
       ],
       _1: /* :: */{
-        _0: /* tuple */[
+        _0: [
           2,
           "2"
         ],
         _1: /* :: */{
-          _0: /* tuple */[
+          _0: [
             3,
             "3"
           ],
@@ -1209,17 +1209,17 @@ eq("REMOVEASSOQ", Belt_List.removeAssoc(/* :: */{
     });
 
 eq("REMOVEASSOQ", Belt_List.removeAssoc(/* :: */{
-          _0: /* tuple */[
+          _0: [
             1,
             "1"
           ],
           _1: /* :: */{
-            _0: /* tuple */[
+            _0: [
               2,
               "2"
             ],
             _1: /* :: */{
-              _0: /* tuple */[
+              _0: [
                 3,
                 "3"
               ],
@@ -1227,12 +1227,12 @@ eq("REMOVEASSOQ", Belt_List.removeAssoc(/* :: */{
             }
           }
         }, 3, eqx), /* :: */{
-      _0: /* tuple */[
+      _0: [
         1,
         "1"
       ],
       _1: /* :: */{
-        _0: /* tuple */[
+        _0: [
           2,
           "2"
         ],
@@ -1241,17 +1241,17 @@ eq("REMOVEASSOQ", Belt_List.removeAssoc(/* :: */{
     });
 
 eq("REMOVEASSOQ", Belt_List.removeAssoc(/* :: */{
-          _0: /* tuple */[
+          _0: [
             1,
             "1"
           ],
           _1: /* :: */{
-            _0: /* tuple */[
+            _0: [
               2,
               "2"
             ],
             _1: /* :: */{
-              _0: /* tuple */[
+              _0: [
                 3,
                 "3"
               ],
@@ -1259,12 +1259,12 @@ eq("REMOVEASSOQ", Belt_List.removeAssoc(/* :: */{
             }
           }
         }, 1, eqx), /* :: */{
-      _0: /* tuple */[
+      _0: [
         2,
         "2"
       ],
       _1: /* :: */{
-        _0: /* tuple */[
+        _0: [
           3,
           "3"
         ],
@@ -1273,17 +1273,17 @@ eq("REMOVEASSOQ", Belt_List.removeAssoc(/* :: */{
     });
 
 eq("REMOVEASSOQ", Belt_List.removeAssoc(/* :: */{
-          _0: /* tuple */[
+          _0: [
             1,
             "1"
           ],
           _1: /* :: */{
-            _0: /* tuple */[
+            _0: [
               2,
               "2"
             ],
             _1: /* :: */{
-              _0: /* tuple */[
+              _0: [
                 3,
                 "3"
               ],
@@ -1291,12 +1291,12 @@ eq("REMOVEASSOQ", Belt_List.removeAssoc(/* :: */{
             }
           }
         }, 2, eqx), /* :: */{
-      _0: /* tuple */[
+      _0: [
         1,
         "1"
       ],
       _1: /* :: */{
-        _0: /* tuple */[
+        _0: [
           3,
           "3"
         ],
@@ -1307,17 +1307,17 @@ eq("REMOVEASSOQ", Belt_List.removeAssoc(/* :: */{
 eq("REMOVEASSOQ", Belt_List.removeAssoc(/* [] */0, 2, eqx), /* [] */0);
 
 var ll = /* :: */{
-  _0: /* tuple */[
+  _0: [
     1,
     "1"
   ],
   _1: /* :: */{
-    _0: /* tuple */[
+    _0: [
       2,
       "2"
     ],
     _1: /* :: */{
-      _0: /* tuple */[
+      _0: [
         3,
         "3"
       ],
@@ -1335,17 +1335,17 @@ var ll1 = Belt_List.setAssoc(ll, 2, "22", (function (prim, prim$1) {
       }));
 
 eq("File \"bs_list_test.ml\", line 198, characters 5-12", ll1, /* :: */{
-      _0: /* tuple */[
+      _0: [
         1,
         "1"
       ],
       _1: /* :: */{
-        _0: /* tuple */[
+        _0: [
           2,
           "22"
         ],
         _1: /* :: */{
-          _0: /* tuple */[
+          _0: [
             3,
             "3"
           ],
@@ -1359,7 +1359,7 @@ var ll2 = Belt_List.setAssoc(ll1, 22, "2", (function (prim, prim$1) {
       }));
 
 b("File \"bs_list_test.ml\", line 200, characters 4-11", Caml_obj.caml_equal(ll2, /* :: */{
-          _0: /* tuple */[
+          _0: [
             22,
             "2"
           ],
@@ -1369,17 +1369,17 @@ b("File \"bs_list_test.ml\", line 200, characters 4-11", Caml_obj.caml_equal(ll2
 b("File \"bs_list_test.ml\", line 201, characters 4-11", Belt_List.tailExn(ll2) === ll1);
 
 b("File \"bs_list_test.ml\", line 202, characters 4-11", Caml_obj.caml_equal(Belt_List.setAssoc(/* :: */{
-              _0: /* tuple */[
+              _0: [
                 1,
                 "a"
               ],
               _1: /* :: */{
-                _0: /* tuple */[
+                _0: [
                   2,
                   "b"
                 ],
                 _1: /* :: */{
-                  _0: /* tuple */[
+                  _0: [
                     3,
                     "c"
                   ],
@@ -1389,17 +1389,17 @@ b("File \"bs_list_test.ml\", line 202, characters 4-11", Caml_obj.caml_equal(Bel
             }, 2, "x", (function (prim, prim$1) {
                 return prim === prim$1;
               })), /* :: */{
-          _0: /* tuple */[
+          _0: [
             1,
             "a"
           ],
           _1: /* :: */{
-            _0: /* tuple */[
+            _0: [
               2,
               "x"
             ],
             _1: /* :: */{
-              _0: /* tuple */[
+              _0: [
                 3,
                 "c"
               ],
@@ -1409,12 +1409,12 @@ b("File \"bs_list_test.ml\", line 202, characters 4-11", Caml_obj.caml_equal(Bel
         }));
 
 b("File \"bs_list_test.ml\", line 204, characters 4-11", Caml_obj.caml_equal(Belt_List.setAssoc(/* :: */{
-              _0: /* tuple */[
+              _0: [
                 1,
                 "a"
               ],
               _1: /* :: */{
-                _0: /* tuple */[
+                _0: [
                   3,
                   "c"
                 ],
@@ -1423,17 +1423,17 @@ b("File \"bs_list_test.ml\", line 204, characters 4-11", Caml_obj.caml_equal(Bel
             }, 2, "2", (function (prim, prim$1) {
                 return prim === prim$1;
               })), /* :: */{
-          _0: /* tuple */[
+          _0: [
             2,
             "2"
           ],
           _1: /* :: */{
-            _0: /* tuple */[
+            _0: [
               1,
               "a"
             ],
             _1: /* :: */{
-              _0: /* tuple */[
+              _0: [
                 3,
                 "c"
               ],
@@ -1445,7 +1445,7 @@ b("File \"bs_list_test.ml\", line 204, characters 4-11", Caml_obj.caml_equal(Bel
 eq("File \"bs_list_test.ml\", line 206, characters 5-12", Belt_List.setAssoc(/* [] */0, 1, "1", (function (prim, prim$1) {
             return prim === prim$1;
           })), /* :: */{
-      _0: /* tuple */[
+      _0: [
         1,
         "1"
       ],
@@ -1455,7 +1455,7 @@ eq("File \"bs_list_test.ml\", line 206, characters 5-12", Belt_List.setAssoc(/* 
 debugger;
 
 eq("File \"bs_list_test.ml\", line 208, characters 5-12", Belt_List.setAssoc(/* :: */{
-          _0: /* tuple */[
+          _0: [
             1,
             "2"
           ],
@@ -1463,7 +1463,7 @@ eq("File \"bs_list_test.ml\", line 208, characters 5-12", Belt_List.setAssoc(/* 
         }, 1, "1", (function (prim, prim$1) {
             return prim === prim$1;
           })), /* :: */{
-      _0: /* tuple */[
+      _0: [
         1,
         "1"
       ],
@@ -1471,12 +1471,12 @@ eq("File \"bs_list_test.ml\", line 208, characters 5-12", Belt_List.setAssoc(/* 
     });
 
 eq("File \"bs_list_test.ml\", line 210, characters 5-12", Belt_List.setAssoc(/* :: */{
-          _0: /* tuple */[
+          _0: [
             0,
             "0"
           ],
           _1: /* :: */{
-            _0: /* tuple */[
+            _0: [
               1,
               "2"
             ],
@@ -1485,12 +1485,12 @@ eq("File \"bs_list_test.ml\", line 210, characters 5-12", Belt_List.setAssoc(/* 
         }, 1, "1", (function (prim, prim$1) {
             return prim === prim$1;
           })), /* :: */{
-      _0: /* tuple */[
+      _0: [
         0,
         "0"
       ],
       _1: /* :: */{
-        _0: /* tuple */[
+        _0: [
           1,
           "1"
         ],
@@ -1499,17 +1499,17 @@ eq("File \"bs_list_test.ml\", line 210, characters 5-12", Belt_List.setAssoc(/* 
     });
 
 b("File \"bs_list_test.ml\", line 211, characters 4-11", Caml_obj.caml_equal(Belt_List.getAssoc(/* :: */{
-              _0: /* tuple */[
+              _0: [
                 1,
                 "a"
               ],
               _1: /* :: */{
-                _0: /* tuple */[
+                _0: [
                   2,
                   "b"
                 ],
                 _1: /* :: */{
-                  _0: /* tuple */[
+                  _0: [
                     3,
                     "c"
                   ],
@@ -1521,17 +1521,17 @@ b("File \"bs_list_test.ml\", line 211, characters 4-11", Caml_obj.caml_equal(Bel
               })), "b"));
 
 b("File \"bs_list_test.ml\", line 212, characters 4-11", Belt_List.getAssoc(/* :: */{
-          _0: /* tuple */[
+          _0: [
             1,
             "a"
           ],
           _1: /* :: */{
-            _0: /* tuple */[
+            _0: [
               2,
               "b"
             ],
             _1: /* :: */{
-              _0: /* tuple */[
+              _0: [
                 3,
                 "c"
               ],
@@ -1542,10 +1542,10 @@ b("File \"bs_list_test.ml\", line 212, characters 4-11", Belt_List.getAssoc(/* :
             return prim === prim$1;
           })) === undefined);
 
-eq("File \"bs_list_test.ml\", line 216, characters 5-12", /* tuple */[
+eq("File \"bs_list_test.ml\", line 216, characters 5-12", [
       Belt_List.head(length_10_id),
       Belt_List.tail(length_10_id)
-    ], /* tuple */[
+    ], [
       0,
       Belt_List.drop(length_10_id, 1)
     ]);

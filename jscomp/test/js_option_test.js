@@ -7,7 +7,7 @@ function simpleEq(a, b) {
   return a === b;
 }
 
-var option_suites_0 = /* tuple */[
+var option_suites_0 = [
   "option_isSome_Some",
   (function (param) {
       return {
@@ -19,7 +19,7 @@ var option_suites_0 = /* tuple */[
 ];
 
 var option_suites_1 = /* :: */{
-  _0: /* tuple */[
+  _0: [
     "option_isSome_None",
     (function (param) {
         return {
@@ -30,7 +30,7 @@ var option_suites_1 = /* :: */{
       })
   ],
   _1: /* :: */{
-    _0: /* tuple */[
+    _0: [
       "option_isNone_Some",
       (function (param) {
           return {
@@ -41,7 +41,7 @@ var option_suites_1 = /* :: */{
         })
     ],
     _1: /* :: */{
-      _0: /* tuple */[
+      _0: [
         "option_isNone_None",
         (function (param) {
             return {
@@ -52,7 +52,7 @@ var option_suites_1 = /* :: */{
           })
       ],
       _1: /* :: */{
-        _0: /* tuple */[
+        _0: [
           "option_isSomeValue_Eq",
           (function (param) {
               return {
@@ -63,7 +63,7 @@ var option_suites_1 = /* :: */{
             })
         ],
         _1: /* :: */{
-          _0: /* tuple */[
+          _0: [
             "option_isSomeValue_Diff",
             (function (param) {
                 return {
@@ -74,7 +74,7 @@ var option_suites_1 = /* :: */{
               })
           ],
           _1: /* :: */{
-            _0: /* tuple */[
+            _0: [
               "option_isSomeValue_DiffNone",
               (function (param) {
                   return {
@@ -85,7 +85,7 @@ var option_suites_1 = /* :: */{
                 })
             ],
             _1: /* :: */{
-              _0: /* tuple */[
+              _0: [
                 "option_getExn_Some",
                 (function (param) {
                     return {
@@ -96,7 +96,7 @@ var option_suites_1 = /* :: */{
                   })
               ],
               _1: /* :: */{
-                _0: /* tuple */[
+                _0: [
                   "option_equal_Eq",
                   (function (param) {
                       return {
@@ -107,7 +107,7 @@ var option_suites_1 = /* :: */{
                     })
                 ],
                 _1: /* :: */{
-                  _0: /* tuple */[
+                  _0: [
                     "option_equal_Diff",
                     (function (param) {
                         return {
@@ -118,7 +118,7 @@ var option_suites_1 = /* :: */{
                       })
                   ],
                   _1: /* :: */{
-                    _0: /* tuple */[
+                    _0: [
                       "option_equal_DiffNone",
                       (function (param) {
                           return {
@@ -129,7 +129,7 @@ var option_suites_1 = /* :: */{
                         })
                     ],
                     _1: /* :: */{
-                      _0: /* tuple */[
+                      _0: [
                         "option_andThen_SomeSome",
                         (function (param) {
                             return {
@@ -142,7 +142,7 @@ var option_suites_1 = /* :: */{
                           })
                       ],
                       _1: /* :: */{
-                        _0: /* tuple */[
+                        _0: [
                           "option_andThen_SomeNone",
                           (function (param) {
                               return {
@@ -155,7 +155,7 @@ var option_suites_1 = /* :: */{
                             })
                         ],
                         _1: /* :: */{
-                          _0: /* tuple */[
+                          _0: [
                             "option_map_Some",
                             (function (param) {
                                 return {
@@ -168,7 +168,7 @@ var option_suites_1 = /* :: */{
                               })
                           ],
                           _1: /* :: */{
-                            _0: /* tuple */[
+                            _0: [
                               "option_map_None",
                               (function (param) {
                                   return {
@@ -181,7 +181,7 @@ var option_suites_1 = /* :: */{
                                 })
                             ],
                             _1: /* :: */{
-                              _0: /* tuple */[
+                              _0: [
                                 "option_default_Some",
                                 (function (param) {
                                     return {
@@ -192,7 +192,7 @@ var option_suites_1 = /* :: */{
                                   })
                               ],
                               _1: /* :: */{
-                                _0: /* tuple */[
+                                _0: [
                                   "option_default_None",
                                   (function (param) {
                                       return {
@@ -203,7 +203,7 @@ var option_suites_1 = /* :: */{
                                     })
                                 ],
                                 _1: /* :: */{
-                                  _0: /* tuple */[
+                                  _0: [
                                     "option_filter_Pass",
                                     (function (param) {
                                         return {
@@ -216,7 +216,7 @@ var option_suites_1 = /* :: */{
                                       })
                                   ],
                                   _1: /* :: */{
-                                    _0: /* tuple */[
+                                    _0: [
                                       "option_filter_Reject",
                                       (function (param) {
                                           return {
@@ -229,7 +229,7 @@ var option_suites_1 = /* :: */{
                                         })
                                     ],
                                     _1: /* :: */{
-                                      _0: /* tuple */[
+                                      _0: [
                                         "option_filter_None",
                                         (function (param) {
                                             return {
@@ -242,7 +242,7 @@ var option_suites_1 = /* :: */{
                                           })
                                       ],
                                       _1: /* :: */{
-                                        _0: /* tuple */[
+                                        _0: [
                                           "option_firstSome_First",
                                           (function (param) {
                                               return {
@@ -253,7 +253,7 @@ var option_suites_1 = /* :: */{
                                             })
                                         ],
                                         _1: /* :: */{
-                                          _0: /* tuple */[
+                                          _0: [
                                             "option_firstSome_First",
                                             (function (param) {
                                                 return {
@@ -264,7 +264,7 @@ var option_suites_1 = /* :: */{
                                               })
                                           ],
                                           _1: /* :: */{
-                                            _0: /* tuple */[
+                                            _0: [
                                               "option_firstSome_None",
                                               (function (param) {
                                                   return {

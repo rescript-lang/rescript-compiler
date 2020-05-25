@@ -76,7 +76,7 @@ function test_closure2(param) {
 }
 
 Mt.from_pair_suites("Cps_test", /* :: */{
-      _0: /* tuple */[
+      _0: [
         "cps_test_sum",
         (function (param) {
             return {
@@ -87,7 +87,7 @@ Mt.from_pair_suites("Cps_test", /* :: */{
           })
       ],
       _1: /* :: */{
-        _0: /* tuple */[
+        _0: [
           "cps_test_closure",
           (function (param) {
               return {
@@ -98,7 +98,7 @@ Mt.from_pair_suites("Cps_test", /* :: */{
             })
         ],
         _1: /* :: */{
-          _0: /* tuple */[
+          _0: [
             "cps_test_closure2",
             (function (param) {
                 return {

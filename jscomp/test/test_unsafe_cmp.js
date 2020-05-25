@@ -2,7 +2,7 @@
 
 
 function f(x, y) {
-  return /* tuple */[
+  return [
           x < y,
           x <= y,
           x > y,

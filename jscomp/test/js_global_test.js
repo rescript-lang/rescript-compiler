@@ -2,7 +2,7 @@
 
 var Mt = require("./mt.js");
 
-var suites_0 = /* tuple */[
+var suites_0 = [
   "setTimeout/clearTimeout sanity check",
   (function (param) {
       var handle = setTimeout((function (param) {
@@ -17,7 +17,7 @@ var suites_0 = /* tuple */[
 ];
 
 var suites_1 = /* :: */{
-  _0: /* tuple */[
+  _0: [
     "setInerval/clearInterval sanity check",
     (function (param) {
         var handle = setInterval((function (param) {
@@ -31,7 +31,7 @@ var suites_1 = /* :: */{
       })
   ],
   _1: /* :: */{
-    _0: /* tuple */[
+    _0: [
       "encodeURI",
       (function (param) {
           return {
@@ -42,7 +42,7 @@ var suites_1 = /* :: */{
         })
     ],
     _1: /* :: */{
-      _0: /* tuple */[
+      _0: [
         "decodeURI",
         (function (param) {
             return {
@@ -53,7 +53,7 @@ var suites_1 = /* :: */{
           })
       ],
       _1: /* :: */{
-        _0: /* tuple */[
+        _0: [
           "encodeURIComponent",
           (function (param) {
               return {
@@ -64,7 +64,7 @@ var suites_1 = /* :: */{
             })
         ],
         _1: /* :: */{
-          _0: /* tuple */[
+          _0: [
             "decodeURIComponent",
             (function (param) {
                 return {

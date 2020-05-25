@@ -15,7 +15,7 @@ function u(param) {
 }
 
 Mt.from_pair_suites("Jsoo_400_test", /* :: */{
-      _0: /* tuple */[
+      _0: [
         "File \"jsoo_400_test.ml\", line 8, characters 3-10",
         (function (param) {
             return {

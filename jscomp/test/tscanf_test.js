@@ -31,7 +31,7 @@ function eq(f, param) {
 }
 
 function test(loc, b) {
-  return eq(loc, /* tuple */[
+  return eq(loc, [
               b,
               true
             ]);
@@ -635,10 +635,10 @@ function test6(param) {
               },
               _1: "%B%B"
             }), (function (b1, b2) {
-            return Caml_obj.caml_equal(/* tuple */[
+            return Caml_obj.caml_equal([
                         b1,
                         b2
-                      ], /* tuple */[
+                      ], [
                         true,
                         true
                       ]);
@@ -654,10 +654,10 @@ function test6(param) {
               },
               _1: "%B%B"
             }), (function (b1, b2) {
-            return Caml_obj.caml_equal(/* tuple */[
+            return Caml_obj.caml_equal([
                         b1,
                         b2
-                      ], /* tuple */[
+                      ], [
                         true,
                         false
                       ]);
@@ -673,10 +673,10 @@ function test6(param) {
               },
               _1: "%B%B"
             }), (function (b1, b2) {
-            return Caml_obj.caml_equal(/* tuple */[
+            return Caml_obj.caml_equal([
                         b1,
                         b2
-                      ], /* tuple */[
+                      ], [
                         false,
                         true
                       ]);
@@ -692,10 +692,10 @@ function test6(param) {
               },
               _1: "%B%B"
             }), (function (b1, b2) {
-            return Caml_obj.caml_equal(/* tuple */[
+            return Caml_obj.caml_equal([
                         b1,
                         b2
-                      ], /* tuple */[
+                      ], [
                         false,
                         false
                       ]);
@@ -716,10 +716,10 @@ function test6(param) {
                     },
                     _1: "%B %B"
                   }), (function (b1, b2) {
-                  return Caml_obj.caml_equal(/* tuple */[
+                  return Caml_obj.caml_equal([
                               b1,
                               b2
-                            ], /* tuple */[
+                            ], [
                               true,
                               false
                             ]);
@@ -827,7 +827,7 @@ function verify_read(c) {
   }
   throw {
         RE_EXN_ID: "Assert_failure",
-        _1: /* tuple */[
+        _1: [
           "tscanf_test.ml",
           174,
           2
@@ -3198,11 +3198,11 @@ function test35(param) {
                   },
                   _1: "%d%N"
                 }), (function (x, y) {
-                return /* tuple */[
+                return [
                         x,
                         y
                       ];
-              })), /* tuple */[
+              })), [
           456,
           1
         ])) {
@@ -3222,12 +3222,12 @@ function test35(param) {
                         },
                         _1: "%N%s%N"
                       }), (function (x, s, y) {
-                      return /* tuple */[
+                      return [
                               x,
                               s,
                               y
                             ];
-                    })), /* tuple */[
+                    })), [
                 0,
                 "",
                 1
@@ -3340,11 +3340,11 @@ function test36(param) {
                   },
                   _1: "%d%n"
                 }), (function (x, y) {
-                return /* tuple */[
+                return [
                         x,
                         y
                       ];
-              })), /* tuple */[
+              })), [
           456,
           3
         ])) {
@@ -3364,12 +3364,12 @@ function test36(param) {
                         },
                         _1: "%n%s%n"
                       }), (function (x, s, y) {
-                      return /* tuple */[
+                      return [
                               x,
                               s,
                               y
                             ];
-                    })), /* tuple */[
+                    })), [
                 0,
                 "",
                 0
@@ -3966,31 +3966,31 @@ function test48(param) {
                     },
                     _1: "with %(%i %s%)"
                   }), (function (_fmt, amount, currency) {
-                  return /* tuple */[
+                  return [
                           amount,
                           currency
                         ];
                 }));
   };
-  if (!Caml_obj.caml_equal(i("with \" : %d %s\" :        21 euros"), /* tuple */[
+  if (!Caml_obj.caml_equal(i("with \" : %d %s\" :        21 euros"), [
           21,
           "euros"
         ])) {
     return false;
   }
-  if (!Caml_obj.caml_equal(i("with \" : %d %s\" : 987654321 dollars"), /* tuple */[
+  if (!Caml_obj.caml_equal(i("with \" : %d %s\" : 987654321 dollars"), [
           987654321,
           "dollars"
         ])) {
     return false;
   }
-  if (!Caml_obj.caml_equal(i("with \" : %u %s\" :     54321 pounds"), /* tuple */[
+  if (!Caml_obj.caml_equal(i("with \" : %u %s\" :     54321 pounds"), [
           54321,
           "pounds"
         ])) {
     return false;
   }
-  if (!Caml_obj.caml_equal(i("with \" : %x %s\" :       321 yens"), /* tuple */[
+  if (!Caml_obj.caml_equal(i("with \" : %x %s\" :       321 yens"), [
           801,
           "yens"
         ])) {
@@ -4016,23 +4016,23 @@ function test48(param) {
                     },
                     _1: "with %(%i %_s %s%)"
                   }), (function (_fmt, amount, currency) {
-                  return /* tuple */[
+                  return [
                           amount,
                           currency
                         ];
                 }));
   };
-  if (Caml_obj.caml_equal(j("with \" : %1d %_s %s\" : 987654321 euros"), /* tuple */[
+  if (Caml_obj.caml_equal(j("with \" : %1d %_s %s\" : 987654321 euros"), [
           9,
           "euros"
-        ]) && Caml_obj.caml_equal(j("with \" : %2d %_s %s\" : 987654321 dollars"), /* tuple */[
+        ]) && Caml_obj.caml_equal(j("with \" : %2d %_s %s\" : 987654321 dollars"), [
           98,
           "dollars"
-        ]) && Caml_obj.caml_equal(j("with \" : %3u %_s %s\" : 987654321 pounds"), /* tuple */[
+        ]) && Caml_obj.caml_equal(j("with \" : %3u %_s %s\" : 987654321 pounds"), [
           987,
           "pounds"
         ])) {
-    return Caml_obj.caml_equal(j("with \" : %4x %_s %s\" : 987654321 yens"), /* tuple */[
+    return Caml_obj.caml_equal(j("with \" : %4x %_s %s\" : 987654321 yens"), [
                 39030,
                 "yens"
               ]);
@@ -4860,20 +4860,20 @@ function test56(param) {
                     },
                     _1: "%d%n"
                   }), (function (i, n) {
-                  return /* tuple */[
+                  return [
                           i,
                           n
                         ];
                 }));
   };
-  if (Caml_obj.caml_equal(g("99"), /* tuple */[
+  if (Caml_obj.caml_equal(g("99"), [
           99,
           2
-        ]) && Caml_obj.caml_equal(g("99 syntaxes all in a row"), /* tuple */[
+        ]) && Caml_obj.caml_equal(g("99 syntaxes all in a row"), [
           99,
           2
         ])) {
-    return Caml_obj.caml_equal(g("-20 degrees Celsius"), /* tuple */[
+    return Caml_obj.caml_equal(g("-20 degrees Celsius"), [
                 -20,
                 3
               ]);
@@ -5291,7 +5291,7 @@ test("File \"tscanf_test.ml\", line 1414, characters 5-12", test60(undefined));
 Mt.from_pair_suites("Tscanf_test", suites.contents);
 
 var tscanf_data_file_lines = /* :: */{
-  _0: /* tuple */[
+  _0: [
     "Objective",
     "Caml"
   ],

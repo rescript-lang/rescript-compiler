@@ -10,14 +10,14 @@ function f1(a0) {
 }
 
 function f2(a0, a1) {
-  return /* tuple */[
+  return [
           a0,
           a1
         ];
 }
 
 function f3(a0, a1, a2) {
-  return /* tuple */[
+  return [
           a0,
           a1,
           a2
@@ -25,7 +25,7 @@ function f3(a0, a1, a2) {
 }
 
 function f4(a0, a1, a2, a3) {
-  return /* tuple */[
+  return [
           a0,
           a1,
           a2,
@@ -34,7 +34,7 @@ function f4(a0, a1, a2, a3) {
 }
 
 function f5(a0, a1, a2, a3, a4) {
-  return /* tuple */[
+  return [
           a0,
           a1,
           a2,
@@ -44,7 +44,7 @@ function f5(a0, a1, a2, a3, a4) {
 }
 
 function f6(a0, a1, a2, a3, a4, a5) {
-  return /* tuple */[
+  return [
           a0,
           a1,
           a2,
@@ -55,7 +55,7 @@ function f6(a0, a1, a2, a3, a4, a5) {
 }
 
 function f7(a0, a1, a2, a3, a4, a5, a6) {
-  return /* tuple */[
+  return [
           a0,
           a1,
           a2,
@@ -67,7 +67,7 @@ function f7(a0, a1, a2, a3, a4, a5, a6) {
 }
 
 function f8(a0, a1, a2, a3, a4, a5, a6, a7) {
-  return /* tuple */[
+  return [
           a0,
           a1,
           a2,
@@ -80,7 +80,7 @@ function f8(a0, a1, a2, a3, a4, a5, a6, a7) {
 }
 
 function f9(a0, a1, a2, a3, a4, a5, a6, a7, a8) {
-  return /* tuple */[
+  return [
           a0,
           a1,
           a2,
@@ -94,7 +94,7 @@ function f9(a0, a1, a2, a3, a4, a5, a6, a7, a8) {
 }
 
 function f10(a0, a1, a2, a3, a4, a5, a6, a7, a8, a9) {
-  return /* tuple */[
+  return [
           a0,
           a1,
           a2,
@@ -109,7 +109,7 @@ function f10(a0, a1, a2, a3, a4, a5, a6, a7, a8, a9) {
 }
 
 function f11(a0, a1, a2, a3, a4, a5, a6, a7, a8, a9, a10) {
-  return /* tuple */[
+  return [
           a0,
           a1,
           a2,
@@ -125,7 +125,7 @@ function f11(a0, a1, a2, a3, a4, a5, a6, a7, a8, a9, a10) {
 }
 
 function f12(a0, a1, a2, a3, a4, a5, a6, a7, a8, a9, a10, a11) {
-  return /* tuple */[
+  return [
           a0,
           a1,
           a2,
@@ -142,7 +142,7 @@ function f12(a0, a1, a2, a3, a4, a5, a6, a7, a8, a9, a10, a11) {
 }
 
 function f13(a0, a1, a2, a3, a4, a5, a6, a7, a8, a9, a10, a11, a12) {
-  return /* tuple */[
+  return [
           a0,
           a1,
           a2,
@@ -160,7 +160,7 @@ function f13(a0, a1, a2, a3, a4, a5, a6, a7, a8, a9, a10, a11, a12) {
 }
 
 function f14(a0, a1, a2, a3, a4, a5, a6, a7, a8, a9, a10, a11, a12, a13) {
-  return /* tuple */[
+  return [
           a0,
           a1,
           a2,
@@ -179,7 +179,7 @@ function f14(a0, a1, a2, a3, a4, a5, a6, a7, a8, a9, a10, a11, a12, a13) {
 }
 
 function f15(a0, a1, a2, a3, a4, a5, a6, a7, a8, a9, a10, a11, a12, a13, a14) {
-  return /* tuple */[
+  return [
           a0,
           a1,
           a2,
@@ -199,7 +199,7 @@ function f15(a0, a1, a2, a3, a4, a5, a6, a7, a8, a9, a10, a11, a12, a13, a14) {
 }
 
 function f16(a0, a1, a2, a3, a4, a5, a6, a7, a8, a9, a10, a11, a12, a13, a14, a15) {
-  return /* tuple */[
+  return [
           a0,
           a1,
           a2,
@@ -220,7 +220,7 @@ function f16(a0, a1, a2, a3, a4, a5, a6, a7, a8, a9, a10, a11, a12, a13, a14, a1
 }
 
 function f17(a0, a1, a2, a3, a4, a5, a6, a7, a8, a9, a10, a11, a12, a13, a14, a15, a16) {
-  return /* tuple */[
+  return [
           a0,
           a1,
           a2,
@@ -242,7 +242,7 @@ function f17(a0, a1, a2, a3, a4, a5, a6, a7, a8, a9, a10, a11, a12, a13, a14, a1
 }
 
 function f18(a0, a1, a2, a3, a4, a5, a6, a7, a8, a9, a10, a11, a12, a13, a14, a15, a16, a17) {
-  return /* tuple */[
+  return [
           a0,
           a1,
           a2,
@@ -265,7 +265,7 @@ function f18(a0, a1, a2, a3, a4, a5, a6, a7, a8, a9, a10, a11, a12, a13, a14, a1
 }
 
 function f19(a0, a1, a2, a3, a4, a5, a6, a7, a8, a9, a10, a11, a12, a13, a14, a15, a16, a17, a18) {
-  return /* tuple */[
+  return [
           a0,
           a1,
           a2,
@@ -289,7 +289,7 @@ function f19(a0, a1, a2, a3, a4, a5, a6, a7, a8, a9, a10, a11, a12, a13, a14, a1
 }
 
 function f20(a0, a1, a2, a3, a4, a5, a6, a7, a8, a9, a10, a11, a12, a13, a14, a15, a16, a17, a18, a19) {
-  return /* tuple */[
+  return [
           a0,
           a1,
           a2,
@@ -314,7 +314,7 @@ function f20(a0, a1, a2, a3, a4, a5, a6, a7, a8, a9, a10, a11, a12, a13, a14, a1
 }
 
 function f21(a0, a1, a2, a3, a4, a5, a6, a7, a8, a9, a10, a11, a12, a13, a14, a15, a16, a17, a18, a19, a20) {
-  return /* tuple */[
+  return [
           a0,
           a1,
           a2,
@@ -340,7 +340,7 @@ function f21(a0, a1, a2, a3, a4, a5, a6, a7, a8, a9, a10, a11, a12, a13, a14, a1
 }
 
 function f22(a0, a1, a2, a3, a4, a5, a6, a7, a8, a9, a10, a11, a12, a13, a14, a15, a16, a17, a18, a19, a20, a21) {
-  return /* tuple */[
+  return [
           a0,
           a1,
           a2,

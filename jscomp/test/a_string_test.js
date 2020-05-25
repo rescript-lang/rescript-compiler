@@ -4,7 +4,7 @@ var Mt = require("./mt.js");
 var List = require("../../lib/js/list.js");
 var Ext_string_test = require("./ext_string_test.js");
 
-var suites_0 = /* tuple */[
+var suites_0 = [
   "split",
   (function (param) {
       return {
@@ -25,7 +25,7 @@ var suites_0 = /* tuple */[
 ];
 
 var suites_1 = /* :: */{
-  _0: /* tuple */[
+  _0: [
     "split_non_empty",
     (function (param) {
         return {
@@ -42,7 +42,7 @@ var suites_1 = /* :: */{
       })
   ],
   _1: /* :: */{
-    _0: /* tuple */[
+    _0: [
       "split_empty",
       (function (param) {
           return {
@@ -53,7 +53,7 @@ var suites_1 = /* :: */{
         })
     ],
     _1: /* :: */{
-      _0: /* tuple */[
+      _0: [
         "split_normal",
         (function (param) {
             return {
@@ -73,7 +73,7 @@ var suites_1 = /* :: */{
           })
       ],
       _1: /* :: */{
-        _0: /* tuple */[
+        _0: [
           "split_by",
           (function (param) {
               return {

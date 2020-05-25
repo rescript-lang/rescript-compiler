@@ -149,7 +149,7 @@ var ref = [
 ];
 
 Mt.from_pair_suites("Digest_test", Pervasives.$at(/* :: */{
-          _0: /* tuple */[
+          _0: [
             "File \"digest_test.ml\", line 6, characters 4-11",
             (function (param) {
                 return {
@@ -160,7 +160,7 @@ Mt.from_pair_suites("Digest_test", Pervasives.$at(/* :: */{
               })
           ],
           _1: /* :: */{
-            _0: /* tuple */[
+            _0: [
               "File \"digest_test.ml\", line 7, characters 4-11",
               (function (param) {
                   return {
@@ -171,7 +171,7 @@ Mt.from_pair_suites("Digest_test", Pervasives.$at(/* :: */{
                 })
             ],
             _1: /* :: */{
-              _0: /* tuple */[
+              _0: [
                 "File \"digest_test.ml\", line 9, characters 4-11",
                 (function (param) {
                     return {
@@ -182,7 +182,7 @@ Mt.from_pair_suites("Digest_test", Pervasives.$at(/* :: */{
                   })
               ],
               _1: /* :: */{
-                _0: /* tuple */[
+                _0: [
                   "File \"digest_test.ml\", line 11, characters 4-11",
                   (function (param) {
                       return {
@@ -193,7 +193,7 @@ Mt.from_pair_suites("Digest_test", Pervasives.$at(/* :: */{
                     })
                 ],
                 _1: /* :: */{
-                  _0: /* tuple */[
+                  _0: [
                     "File \"digest_test.ml\", line 12, characters 4-11",
                     (function (param) {
                         return {
@@ -204,7 +204,7 @@ Mt.from_pair_suites("Digest_test", Pervasives.$at(/* :: */{
                       })
                   ],
                   _1: /* :: */{
-                    _0: /* tuple */[
+                    _0: [
                       "File \"digest_test.ml\", line 13, characters 4-11",
                       (function (param) {
                           return {
@@ -221,7 +221,7 @@ Mt.from_pair_suites("Digest_test", Pervasives.$at(/* :: */{
             }
           }
         }, $$Array.to_list($$Array.map((function (i) {
-                    return /* tuple */[
+                    return [
                             Curry._1(Printf.sprintf(/* Format */{
                                       _0: {
                                         tag: /* Int */4,

@@ -4,7 +4,7 @@ var Curry = require("../../lib/js/curry.js");
 var Caml_obj = require("../../lib/js/caml_obj.js");
 
 function map_pair(r, param) {
-  return /* tuple */[
+  return [
           Curry._1(r, param[0]),
           Curry._1(r, param[1])
         ];
@@ -14,7 +14,7 @@ function u(x) {
   return x;
 }
 
-map_pair(u, /* tuple */[
+map_pair(u, [
       3,
       true
     ]);

@@ -15,7 +15,7 @@ console.log(JSON.stringify(/* :: */{
 
 console.log("hey");
 
-var suites_0 = /* tuple */[
+var suites_0 = [
   "anything_to_string",
   (function (param) {
       return {

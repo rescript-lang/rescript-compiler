@@ -6,7 +6,7 @@ var Bytes = require("../../lib/js/bytes.js");
 var Caml_char = require("../../lib/js/caml_char.js");
 var Caml_bytes = require("../../lib/js/caml_bytes.js");
 
-var suites_0 = /* tuple */[
+var suites_0 = [
   "caml_is_printable",
   (function (param) {
       return {
@@ -18,13 +18,13 @@ var suites_0 = /* tuple */[
 ];
 
 var suites_1 = /* :: */{
-  _0: /* tuple */[
+  _0: [
     "caml_string_of_bytes",
     (function (param) {
         var match = List.split(List.map((function (x) {
                     var b = Caml_bytes.caml_create_bytes(1000);
                     Caml_bytes.caml_fill_bytes(b, 0, x, /* "c" */99);
-                    return /* tuple */[
+                    return [
                             Caml_bytes.bytes_to_string(b),
                             Caml_bytes.bytes_to_string(Bytes.init(x, (function (param) {
                                         return /* "c" */99;

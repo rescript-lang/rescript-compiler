@@ -429,7 +429,7 @@ function _get(t) {
   if (t.i >= t.len) {
     throw {
           RE_EXN_ID: "Assert_failure",
-          _1: /* tuple */[
+          _1: [
             "sexpm.ml",
             152,
             4
@@ -543,7 +543,7 @@ function expr_starting_with(c, k, t) {
         case 0 :
             throw {
                   RE_EXN_ID: "Assert_failure",
-                  _1: /* tuple */[
+                  _1: [
                     "sexpm.ml",
                     183,
                     27
@@ -577,7 +577,7 @@ function expr_starting_with(c, k, t) {
   } else if (c >= 9) {
     throw {
           RE_EXN_ID: "Assert_failure",
-          _1: /* tuple */[
+          _1: [
             "sexpm.ml",
             183,
             27
@@ -1042,7 +1042,7 @@ function MakeDecode(funarg) {
     if (t.i >= t.len) {
       throw {
             RE_EXN_ID: "Assert_failure",
-            _1: /* tuple */[
+            _1: [
               "sexpm.ml",
               152,
               4
@@ -1152,7 +1152,7 @@ function MakeDecode(funarg) {
           case 0 :
               throw {
                     RE_EXN_ID: "Assert_failure",
-                    _1: /* tuple */[
+                    _1: [
                       "sexpm.ml",
                       183,
                       27
@@ -1186,7 +1186,7 @@ function MakeDecode(funarg) {
     } else if (c >= 9) {
       throw {
             RE_EXN_ID: "Assert_failure",
-            _1: /* tuple */[
+            _1: [
               "sexpm.ml",
               183,
               27

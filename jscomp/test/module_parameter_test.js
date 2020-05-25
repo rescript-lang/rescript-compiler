@@ -17,7 +17,7 @@ function v(x) {
   return x.length;
 }
 
-var suites_0 = /* tuple */[
+var suites_0 = [
   "const",
   (function (param) {
       return {
@@ -29,7 +29,7 @@ var suites_0 = /* tuple */[
 ];
 
 var suites_1 = /* :: */{
-  _0: /* tuple */[
+  _0: [
     "other",
     (function (param) {
         return {

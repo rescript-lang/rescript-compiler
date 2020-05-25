@@ -30,7 +30,7 @@ var test_id = {
 function eq(loc, x, y) {
   test_id.contents = test_id.contents + 1 | 0;
   suites.contents = /* :: */{
-    _0: /* tuple */[
+    _0: [
       loc + (" id " + String(test_id.contents)),
       (function (param) {
           return {
@@ -65,7 +65,7 @@ function union(_l, _l$prime) {
     var c1 = match$1[0];
     if ((c2 + 1 | 0) < c1$prime) {
       return /* :: */{
-              _0: /* tuple */[
+              _0: [
                 c1,
                 c2
               ],
@@ -74,7 +74,7 @@ function union(_l, _l$prime) {
     }
     if ((c2$prime + 1 | 0) < c1) {
       return /* :: */{
-              _0: /* tuple */[
+              _0: [
                 c1$prime,
                 c2$prime
               ],
@@ -83,7 +83,7 @@ function union(_l, _l$prime) {
     }
     if (c2 < c2$prime) {
       _l$prime = /* :: */{
-        _0: /* tuple */[
+        _0: [
           c1 < c1$prime ? c1 : c1$prime,
           c2$prime
         ],
@@ -94,7 +94,7 @@ function union(_l, _l$prime) {
     }
     _l$prime = r$prime;
     _l = /* :: */{
-      _0: /* tuple */[
+      _0: [
         c1 < c1$prime ? c1 : c1$prime,
         c2
       ],
@@ -129,7 +129,7 @@ function inter(_l, _l$prime) {
     if (!Caml_obj.caml_lessthan(c2$prime, c1)) {
       if (Caml_obj.caml_lessthan(c2, c2$prime)) {
         return /* :: */{
-                _0: /* tuple */[
+                _0: [
                   Caml_obj.caml_max(c1, c1$prime),
                   c2
                 ],
@@ -137,7 +137,7 @@ function inter(_l, _l$prime) {
               };
       } else {
         return /* :: */{
-                _0: /* tuple */[
+                _0: [
                   Caml_obj.caml_max(c1, c1$prime),
                   c2$prime
                 ],
@@ -170,7 +170,7 @@ function diff(_l, _l$prime) {
     var c1 = match$1[0];
     if (c2 < c1$prime) {
       return /* :: */{
-              _0: /* tuple */[
+              _0: [
                 c1,
                 c2
               ],
@@ -182,7 +182,7 @@ function diff(_l, _l$prime) {
       continue ;
     }
     var r$prime$prime = c2$prime < c2 ? /* :: */({
-          _0: /* tuple */[
+          _0: [
             c2$prime + 1 | 0,
             c2
           ],
@@ -190,7 +190,7 @@ function diff(_l, _l$prime) {
         }) : r;
     if (c1 < c1$prime) {
       return /* :: */{
-              _0: /* tuple */[
+              _0: [
                 c1,
                 c1$prime - 1 | 0
               ],
@@ -205,7 +205,7 @@ function diff(_l, _l$prime) {
 
 function single(c) {
   return /* :: */{
-          _0: /* tuple */[
+          _0: [
             c,
             c
           ],
@@ -216,7 +216,7 @@ function single(c) {
 function seq(c, c$prime) {
   if (Caml_obj.caml_lessequal(c, c$prime)) {
     return /* :: */{
-            _0: /* tuple */[
+            _0: [
               c,
               c$prime
             ],
@@ -224,7 +224,7 @@ function seq(c, c$prime) {
           };
   } else {
     return /* :: */{
-            _0: /* tuple */[
+            _0: [
               c$prime,
               c
             ],
@@ -239,7 +239,7 @@ function offset(o, l) {
   }
   var match = l._0;
   return /* :: */{
-          _0: /* tuple */[
+          _0: [
             match[0] + o | 0,
             match[1] + o | 0
           ],
@@ -419,7 +419,7 @@ function add(x, data, m) {
 }
 
 var cany = /* :: */{
-  _0: /* tuple */[
+  _0: [
     0,
     255
   ],
@@ -626,7 +626,7 @@ function marks_set_idx(idx, marks) {
     return marks;
   } else {
     return /* :: */{
-            _0: /* tuple */[
+            _0: [
               match[0],
               idx
             ],
@@ -1058,7 +1058,7 @@ function split_at_match_rec(_l$prime, _param) {
             };
             continue ;
         case /* TMatch */2 :
-            return /* tuple */[
+            return [
                     List.rev(l$prime),
                     Curry._1(remove_matches, param._1)
                   ];
@@ -1067,7 +1067,7 @@ function split_at_match_rec(_l$prime, _param) {
     } else {
       throw {
             RE_EXN_ID: "Assert_failure",
-            _1: /* tuple */[
+            _1: [
               "re_automata.ml",
               429,
               21
@@ -1082,7 +1082,7 @@ function remove_duplicates(prev, _l, y) {
   while(true) {
     var l = _l;
     if (!l) {
-      return /* tuple */[
+      return [
               /* [] */0,
               prev
             ];
@@ -1093,7 +1093,7 @@ function remove_duplicates(prev, _l, y) {
           var x$1 = x._1;
           var match = remove_duplicates(prev, x._0, x$1);
           var match$1 = remove_duplicates(match[1], l._1, y);
-          return /* tuple */[
+          return [
                   tseq(x._2, match[0], x$1, match$1[0]),
                   match$1[1]
                 ];
@@ -1109,7 +1109,7 @@ function remove_duplicates(prev, _l, y) {
                   _0: y.id,
                   _1: prev
                 }, r, y);
-            return /* tuple */[
+            return [
                     /* :: */{
                       _0: x,
                       _1: match$2[0]
@@ -1126,7 +1126,7 @@ function remove_duplicates(prev, _l, y) {
                 _0: x$2.id,
                 _1: prev
               }, r$1, y);
-          return /* tuple */[
+          return [
                   /* :: */{
                     _0: x,
                     _1: match$3[0]
@@ -1134,7 +1134,7 @@ function remove_duplicates(prev, _l, y) {
                   match$3[1]
                 ];
       case /* TMatch */2 :
-          return /* tuple */[
+          return [
                   /* :: */{
                     _0: x,
                     _1: /* [] */0
@@ -1240,10 +1240,10 @@ function delta_1(marks, c, next_cat, prev_cat, x, rem) {
                   
                 }
               }), y$prime$1);
-        var match = marks$prime !== undefined ? /* tuple */[
+        var match = marks$prime !== undefined ? [
             Curry._1(remove_matches, y$prime$1),
             marks$prime
-          ] : /* tuple */[
+          ] : [
             y$prime$1,
             marks
           ];
@@ -1268,7 +1268,7 @@ function delta_1(marks, c, next_cat, prev_cat, x, rem) {
     case /* Mark */4 :
         var i = s._0;
         var marks_marks = /* :: */{
-          _0: /* tuple */[
+          _0: [
             i,
             -1
           ],
@@ -1581,12 +1581,12 @@ function $$final(info, st, cat) {
       var st$prime = delta$1(info, cat, -1, st);
       var res_0 = st$prime.idx;
       var res_1 = status(st$prime);
-      var res = /* tuple */[
+      var res = [
         res_0,
         res_1
       ];
       st.final = /* :: */{
-        _0: /* tuple */[
+        _0: [
           cat,
           res
         ],
@@ -1607,7 +1607,7 @@ function find_initial_state(re, cat) {
     if (exn.RE_EXN_ID === "Not_found") {
       var st = find_state(re, Curry._2(Re_automata_State.create, cat, re.initial));
       re.initial_states = /* :: */{
-        _0: /* tuple */[
+        _0: [
           cat,
           st
         ],
@@ -1709,7 +1709,7 @@ function trans_set(cache, cm, s) {
     return single(Caml_bytes.get(cm, i));
   }
   var v_0 = hash_rec(s);
-  var v = /* tuple */[
+  var v = [
     v_0,
     s
   ];
@@ -1823,7 +1823,7 @@ var cdigit = seq(/* "0" */48, /* "9" */57);
 var calnum = union(calpha, cdigit);
 
 var cword = union(/* :: */{
-      _0: /* tuple */[
+      _0: [
         /* "_" */95,
         /* "_" */95
       ],
@@ -1842,7 +1842,7 @@ function colorize(c, regexp) {
           case /* Beg_of_line */0 :
           case /* End_of_line */1 :
               return split(/* :: */{
-                          _0: /* tuple */[
+                          _0: [
                             /* "\n" */10,
                             /* "\n" */10
                           ],
@@ -1883,7 +1883,7 @@ function colorize(c, regexp) {
           default:
             throw {
                   RE_EXN_ID: "Assert_failure",
-                  _1: /* tuple */[
+                  _1: [
                     "re.ml",
                     502,
                     35
@@ -1911,7 +1911,7 @@ function flatten_cmap(cm) {
     c[i] = Char.chr(v);
     col_repr[v] = Char.chr(i);
   }
-  return /* tuple */[
+  return [
           c,
           Bytes.sub(col_repr, 0, v + 1 | 0),
           v + 1 | 0
@@ -2269,7 +2269,7 @@ function translate(ids, kind, _ign_group, ign_case, _greedy, pos, cache, c, _s) 
       switch (s) {
         case /* Beg_of_line */0 :
             var c$1 = Curry._2(Re_automata_Category.$plus$plus, Re_automata_Category.inexistant, Re_automata_Category.newline);
-            return /* tuple */[
+            return [
                     mk_expr(ids, {
                           tag: /* After */7,
                           _0: c$1
@@ -2278,7 +2278,7 @@ function translate(ids, kind, _ign_group, ign_case, _greedy, pos, cache, c, _s) 
                   ];
         case /* End_of_line */1 :
             var c$2 = Curry._2(Re_automata_Category.$plus$plus, Re_automata_Category.inexistant, Re_automata_Category.newline);
-            return /* tuple */[
+            return [
                     mk_expr(ids, {
                           tag: /* Before */6,
                           _0: c$2
@@ -2288,7 +2288,7 @@ function translate(ids, kind, _ign_group, ign_case, _greedy, pos, cache, c, _s) 
         case /* Beg_of_word */2 :
             var c$3 = Curry._2(Re_automata_Category.$plus$plus, Re_automata_Category.inexistant, Re_automata_Category.not_letter);
             var c$4 = Curry._2(Re_automata_Category.$plus$plus, Re_automata_Category.inexistant, Re_automata_Category.letter);
-            return /* tuple */[
+            return [
                     seq$1(ids, /* First */332064784, mk_expr(ids, {
                               tag: /* After */7,
                               _0: c$3
@@ -2301,7 +2301,7 @@ function translate(ids, kind, _ign_group, ign_case, _greedy, pos, cache, c, _s) 
         case /* End_of_word */3 :
             var c$5 = Curry._2(Re_automata_Category.$plus$plus, Re_automata_Category.inexistant, Re_automata_Category.letter);
             var c$6 = Curry._2(Re_automata_Category.$plus$plus, Re_automata_Category.inexistant, Re_automata_Category.not_letter);
-            return /* tuple */[
+            return [
                     seq$1(ids, /* First */332064784, mk_expr(ids, {
                               tag: /* After */7,
                               _0: c$5
@@ -2312,7 +2312,7 @@ function translate(ids, kind, _ign_group, ign_case, _greedy, pos, cache, c, _s) 
                     kind
                   ];
         case /* Not_bound */4 :
-            return /* tuple */[
+            return [
                     alt(ids, /* :: */{
                           _0: seq$1(ids, /* First */332064784, mk_expr(ids, {
                                     tag: /* After */7,
@@ -2335,7 +2335,7 @@ function translate(ids, kind, _ign_group, ign_case, _greedy, pos, cache, c, _s) 
                     kind
                   ];
         case /* Beg_of_str */5 :
-            return /* tuple */[
+            return [
                     mk_expr(ids, {
                           tag: /* After */7,
                           _0: Re_automata_Category.inexistant
@@ -2343,7 +2343,7 @@ function translate(ids, kind, _ign_group, ign_case, _greedy, pos, cache, c, _s) 
                     kind
                   ];
         case /* End_of_str */6 :
-            return /* tuple */[
+            return [
                     mk_expr(ids, {
                           tag: /* Before */6,
                           _0: Re_automata_Category.inexistant
@@ -2352,7 +2352,7 @@ function translate(ids, kind, _ign_group, ign_case, _greedy, pos, cache, c, _s) 
                   ];
         case /* Last_end_of_line */7 :
             var c$7 = Curry._2(Re_automata_Category.$plus$plus, Re_automata_Category.inexistant, Re_automata_Category.lastnewline);
-            return /* tuple */[
+            return [
                     mk_expr(ids, {
                           tag: /* Before */6,
                           _0: c$7
@@ -2360,7 +2360,7 @@ function translate(ids, kind, _ign_group, ign_case, _greedy, pos, cache, c, _s) 
                     kind
                   ];
         case /* Start */8 :
-            return /* tuple */[
+            return [
                     mk_expr(ids, {
                           tag: /* After */7,
                           _0: Re_automata_Category.search_boundary
@@ -2368,7 +2368,7 @@ function translate(ids, kind, _ign_group, ign_case, _greedy, pos, cache, c, _s) 
                     kind
                   ];
         case /* Stop */9 :
-            return /* tuple */[
+            return [
                     mk_expr(ids, {
                           tag: /* Before */6,
                           _0: Re_automata_Category.search_boundary
@@ -2380,12 +2380,12 @@ function translate(ids, kind, _ign_group, ign_case, _greedy, pos, cache, c, _s) 
     } else {
       switch (s.tag | 0) {
         case /* Set */0 :
-            return /* tuple */[
+            return [
                     cst(ids, trans_set(cache, c, s._0)),
                     kind
                   ];
         case /* Sequence */1 :
-            return /* tuple */[
+            return [
                     trans_seq(ids, kind, ign_group, ign_case, greedy, pos, cache, c, s._0),
                     kind
                   ];
@@ -2393,12 +2393,12 @@ function translate(ids, kind, _ign_group, ign_case, _greedy, pos, cache, c, _s) 
             var merged_sequences = merge_sequences(s._0);
             if (merged_sequences && !merged_sequences._1) {
               var match = translate(ids, kind, ign_group, ign_case, greedy, pos, cache, c, merged_sequences._0);
-              return /* tuple */[
+              return [
                       enforce_kind(ids, kind, match[1], match[0]),
                       kind
                     ];
             }
-            return /* tuple */[
+            return [
                     alt(ids, List.map((function(ign_group,greedy){
                             return function (r$prime) {
                               var match = translate(ids, kind, ign_group, ign_case, greedy, pos, cache, c, r$prime);
@@ -2440,7 +2440,7 @@ function translate(ids, kind, _ign_group, ign_case, _greedy, pos, cache, c, _s) 
             } else {
               rem = rep(ids, greedy, kind$prime, cr);
             }
-            return /* tuple */[
+            return [
                     iter(i, (function(cr,kind$prime){
                         return function (rem) {
                           return seq$1(ids, kind$prime, rename(ids, cr), rem);
@@ -2451,7 +2451,7 @@ function translate(ids, kind, _ign_group, ign_case, _greedy, pos, cache, c, _s) 
         case /* Sem */4 :
             var kind$prime$1 = s._0;
             var match$2 = translate(ids, kind$prime$1, ign_group, ign_case, greedy, pos, cache, c, s._1);
-            return /* tuple */[
+            return [
                     enforce_kind(ids, kind$prime$1, match$2[1], match$2[0]),
                     kind$prime$1
                   ];
@@ -2468,7 +2468,7 @@ function translate(ids, kind, _ign_group, ign_case, _greedy, pos, cache, c, _s) 
             var p = pos.contents;
             pos.contents = pos.contents + 2 | 0;
             var match$3 = translate(ids, kind, ign_group, ign_case, greedy, pos, cache, c, r$prime);
-            return /* tuple */[
+            return [
                     seq$1(ids, /* First */332064784, mk_expr(ids, {
                               tag: /* Mark */4,
                               _0: p
@@ -2489,19 +2489,19 @@ function translate(ids, kind, _ign_group, ign_case, _greedy, pos, cache, c, _s) 
             var cr$1 = match$4[0];
             var e = pos.contents - 1 | 0;
             if (e < b) {
-              return /* tuple */[
+              return [
                       cr$1,
                       kind$prime$2
                     ];
             } else {
-              return /* tuple */[
+              return [
                       seq$1(ids, /* First */332064784, erase(ids, b, e), cr$1),
                       kind$prime$2
                     ];
             }
         case /* Pmark */14 :
             var match$5 = translate(ids, kind, ign_group, ign_case, greedy, pos, cache, c, s._1);
-            return /* tuple */[
+            return [
                     seq$1(ids, /* First */332064784, mk_expr(ids, {
                               tag: /* Pmark */8,
                               _0: s._0
@@ -2511,7 +2511,7 @@ function translate(ids, kind, _ign_group, ign_case, _greedy, pos, cache, c, _s) 
         default:
           throw {
                 RE_EXN_ID: "Assert_failure",
-                _1: /* tuple */[
+                _1: [
                   "re.ml",
                   714,
                   4
@@ -2553,7 +2553,7 @@ function as_set(s) {
   if (typeof s === "number") {
     throw {
           RE_EXN_ID: "Assert_failure",
-          _1: /* tuple */[
+          _1: [
             "re.ml",
             747,
             13
@@ -2566,7 +2566,7 @@ function as_set(s) {
   }
   throw {
         RE_EXN_ID: "Assert_failure",
-        _1: /* tuple */[
+        _1: [
           "re.ml",
           747,
           13
@@ -2848,7 +2848,7 @@ var any = {
 var notnl = {
   tag: /* Set */0,
   _0: diff(cany, /* :: */{
-        _0: /* tuple */[
+        _0: [
           /* "\n" */10,
           /* "\n" */10
         ],
@@ -2865,7 +2865,7 @@ var lower = alt$1(/* :: */{
         _0: {
           tag: /* Set */0,
           _0: /* :: */{
-            _0: /* tuple */[
+            _0: [
               /* "\181" */181,
               /* "\181" */181
             ],
@@ -2916,7 +2916,7 @@ var alpha = alt$1(/* :: */{
           _0: {
             tag: /* Set */0,
             _0: /* :: */{
-              _0: /* tuple */[
+              _0: [
                 /* "\170" */170,
                 /* "\170" */170
               ],
@@ -2927,7 +2927,7 @@ var alpha = alt$1(/* :: */{
             _0: {
               tag: /* Set */0,
               _0: /* :: */{
-                _0: /* tuple */[
+                _0: [
                   /* "\186" */186,
                   /* "\186" */186
                 ],
@@ -2959,7 +2959,7 @@ var wordc = alt$1(/* :: */{
         _0: {
           tag: /* Set */0,
           _0: /* :: */{
-            _0: /* tuple */[
+            _0: [
               /* "_" */95,
               /* "_" */95
             ],
@@ -3063,7 +3063,7 @@ var punct = alt$1(/* :: */{
                       _0: {
                         tag: /* Set */0,
                         _0: /* :: */{
-                          _0: /* tuple */[
+                          _0: [
                             /* "\215" */215,
                             /* "\215" */215
                           ],
@@ -3074,7 +3074,7 @@ var punct = alt$1(/* :: */{
                         _0: {
                           tag: /* Set */0,
                           _0: /* :: */{
-                            _0: /* tuple */[
+                            _0: [
                               /* "\247" */247,
                               /* "\247" */247
                             ],
@@ -3097,7 +3097,7 @@ var space = alt$1(/* :: */{
       _0: {
         tag: /* Set */0,
         _0: /* :: */{
-          _0: /* tuple */[
+          _0: [
             /* " " */32,
             /* " " */32
           ],
@@ -3270,7 +3270,7 @@ function offset$1(t, i) {
   }
   var p1 = Caml_array.caml_array_get(t.gpos, m1) - 1 | 0;
   var p2 = Caml_array.caml_array_get(t.gpos, Caml_array.caml_array_get(t.marks, (i << 1) + 1 | 0)) - 1 | 0;
-  return /* tuple */[
+  return [
           p1,
           p2
         ];
@@ -3576,7 +3576,7 @@ function parse(multiline, dollar_endonly, dotall, ungreedy, s) {
                           _0: {
                             tag: /* Set */0,
                             _0: /* :: */{
-                              _0: /* tuple */[
+                              _0: [
                                 /* "_" */95,
                                 /* "_" */95
                               ],
@@ -3624,7 +3624,7 @@ function parse(multiline, dollar_endonly, dotall, ungreedy, s) {
                           _0: {
                             tag: /* Set */0,
                             _0: /* :: */{
-                              _0: /* tuple */[
+                              _0: [
                                 /* "_" */95,
                                 /* "_" */95
                               ],
@@ -3924,7 +3924,7 @@ function parse(multiline, dollar_endonly, dotall, ungreedy, s) {
                             _0: {
                               tag: /* Set */0,
                               _0: /* :: */{
-                                _0: /* tuple */[
+                                _0: [
                                   /* "_" */95,
                                   /* "_" */95
                                 ],
@@ -3991,7 +3991,7 @@ function parse(multiline, dollar_endonly, dotall, ungreedy, s) {
                             _0: {
                               tag: /* Set */0,
                               _0: /* :: */{
-                                _0: /* tuple */[
+                                _0: [
                                   /* "_" */95,
                                   /* "_" */95
                                 ],
@@ -4083,7 +4083,7 @@ function parse(multiline, dollar_endonly, dotall, ungreedy, s) {
                       _0: {
                         tag: /* Set */0,
                         _0: /* :: */{
-                          _0: /* tuple */[
+                          _0: [
                             /* "-" */45,
                             /* "-" */45
                           ],
@@ -4105,7 +4105,7 @@ function parse(multiline, dollar_endonly, dotall, ungreedy, s) {
                       _0: {
                         tag: /* Set */0,
                         _0: /* :: */{
-                          _0: /* tuple */[
+                          _0: [
                             /* "-" */45,
                             /* "-" */45
                           ],

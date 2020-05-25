@@ -43,7 +43,7 @@ function basename(param) {
               }), Filename.current_dir_name, param);
 }
 
-var suites_0 = /* tuple */[
+var suites_0 = [
   "basename",
   (function (param) {
       return {

@@ -4,7 +4,7 @@ var Mt = require("./mt.js");
 var Caml_option = require("../../lib/js/caml_option.js");
 var Js_null_undefined = require("../../lib/js/js_null_undefined.js");
 
-var suites_0 = /* tuple */[
+var suites_0 = [
   "toOption - null",
   (function (param) {
       return {
@@ -16,7 +16,7 @@ var suites_0 = /* tuple */[
 ];
 
 var suites_1 = /* :: */{
-  _0: /* tuple */[
+  _0: [
     "toOption - undefined",
     (function (param) {
         return {
@@ -27,7 +27,7 @@ var suites_1 = /* :: */{
       })
   ],
   _1: /* :: */{
-    _0: /* tuple */[
+    _0: [
       "toOption - empty",
       (function (param) {
           return {
@@ -38,7 +38,7 @@ var suites_1 = /* :: */{
         })
     ],
     _1: /* :: */{
-      _0: /* tuple */[
+      _0: [
         "File \"js_null_undefined_test.ml\", line 7, characters 2-9",
         (function (param) {
             return {
@@ -49,7 +49,7 @@ var suites_1 = /* :: */{
           })
       ],
       _1: /* :: */{
-        _0: /* tuple */[
+        _0: [
           "return",
           (function (param) {
               return {
@@ -60,7 +60,7 @@ var suites_1 = /* :: */{
             })
         ],
         _1: /* :: */{
-          _0: /* tuple */[
+          _0: [
             "test - null",
             (function (param) {
                 return {
@@ -71,7 +71,7 @@ var suites_1 = /* :: */{
               })
           ],
           _1: /* :: */{
-            _0: /* tuple */[
+            _0: [
               "test - undefined",
               (function (param) {
                   return {
@@ -82,7 +82,7 @@ var suites_1 = /* :: */{
                 })
             ],
             _1: /* :: */{
-              _0: /* tuple */[
+              _0: [
                 "test - empty",
                 (function (param) {
                     return {
@@ -93,7 +93,7 @@ var suites_1 = /* :: */{
                   })
               ],
               _1: /* :: */{
-                _0: /* tuple */[
+                _0: [
                   "File \"js_null_undefined_test.ml\", line 12, characters 2-9",
                   (function (param) {
                       return {
@@ -104,7 +104,7 @@ var suites_1 = /* :: */{
                     })
                 ],
                 _1: /* :: */{
-                  _0: /* tuple */[
+                  _0: [
                     "bind - null",
                     (function (param) {
                         return {
@@ -117,7 +117,7 @@ var suites_1 = /* :: */{
                       })
                   ],
                   _1: /* :: */{
-                    _0: /* tuple */[
+                    _0: [
                       "bind - undefined",
                       (function (param) {
                           return {
@@ -130,7 +130,7 @@ var suites_1 = /* :: */{
                         })
                     ],
                     _1: /* :: */{
-                      _0: /* tuple */[
+                      _0: [
                         "bind - empty",
                         (function (param) {
                             return {
@@ -143,7 +143,7 @@ var suites_1 = /* :: */{
                           })
                       ],
                       _1: /* :: */{
-                        _0: /* tuple */[
+                        _0: [
                           "bind - 'a",
                           (function (param) {
                               return {
@@ -156,7 +156,7 @@ var suites_1 = /* :: */{
                             })
                         ],
                         _1: /* :: */{
-                          _0: /* tuple */[
+                          _0: [
                             "iter - null",
                             (function (param) {
                                 var hit = {
@@ -174,7 +174,7 @@ var suites_1 = /* :: */{
                               })
                           ],
                           _1: /* :: */{
-                            _0: /* tuple */[
+                            _0: [
                               "iter - undefined",
                               (function (param) {
                                   var hit = {
@@ -192,7 +192,7 @@ var suites_1 = /* :: */{
                                 })
                             ],
                             _1: /* :: */{
-                              _0: /* tuple */[
+                              _0: [
                                 "iter - empty",
                                 (function (param) {
                                     var hit = {
@@ -210,7 +210,7 @@ var suites_1 = /* :: */{
                                   })
                               ],
                               _1: /* :: */{
-                                _0: /* tuple */[
+                                _0: [
                                   "iter - 'a",
                                   (function (param) {
                                       var hit = {
@@ -228,7 +228,7 @@ var suites_1 = /* :: */{
                                     })
                                 ],
                                 _1: /* :: */{
-                                  _0: /* tuple */[
+                                  _0: [
                                     "fromOption - None",
                                     (function (param) {
                                         return {
@@ -239,7 +239,7 @@ var suites_1 = /* :: */{
                                       })
                                   ],
                                   _1: /* :: */{
-                                    _0: /* tuple */[
+                                    _0: [
                                       "fromOption - Some",
                                       (function (param) {
                                           return {
@@ -250,7 +250,7 @@ var suites_1 = /* :: */{
                                         })
                                     ],
                                     _1: /* :: */{
-                                      _0: /* tuple */[
+                                      _0: [
                                         "null <> undefined",
                                         (function (param) {
                                             return {
@@ -260,7 +260,7 @@ var suites_1 = /* :: */{
                                           })
                                       ],
                                       _1: /* :: */{
-                                        _0: /* tuple */[
+                                        _0: [
                                           "null <> empty",
                                           (function (param) {
                                               return {
@@ -270,7 +270,7 @@ var suites_1 = /* :: */{
                                             })
                                         ],
                                         _1: /* :: */{
-                                          _0: /* tuple */[
+                                          _0: [
                                             "undefined = empty",
                                             (function (param) {
                                                 return {
@@ -280,7 +280,7 @@ var suites_1 = /* :: */{
                                               })
                                           ],
                                           _1: /* :: */{
-                                            _0: /* tuple */[
+                                            _0: [
                                               "File \"js_null_undefined_test.ml\", line 42, characters 2-9",
                                               (function (param) {
                                                   return {

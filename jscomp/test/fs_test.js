@@ -17,7 +17,7 @@ function eq(loc, param) {
   var x = param[0];
   test_id.contents = test_id.contents + 1 | 0;
   suites.contents = /* :: */{
-    _0: /* tuple */[
+    _0: [
       loc + (" id " + String(test_id.contents)),
       (function (param) {
           return {
@@ -49,11 +49,11 @@ var pathobj = Path.parse(current_dir_name);
 var module_ = typeof module === "undefined" ? undefined : module;
 
 if (module_ !== undefined) {
-  console.log(/* tuple */[
+  console.log([
         module_.id,
         module_.paths
       ]);
-  eq("File \"fs_test.ml\", line 45, characters 7-14", /* tuple */[
+  eq("File \"fs_test.ml\", line 45, characters 7-14", [
         pathobj.name,
         "test"
       ]);

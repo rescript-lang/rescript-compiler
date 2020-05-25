@@ -16,7 +16,7 @@ var x0 = {};
 
 Caml_obj.update_dummy(x0, {
       HASH: /* Cons */748545553,
-      value: /* tuple */[
+      value: [
         1,
         x0
       ]
@@ -81,7 +81,7 @@ var v = {
   contents: (function (param) {
       throw {
             RE_EXN_ID: "Assert_failure",
-            _1: /* tuple */[
+            _1: [
               "rec_value_test.ml",
               28,
               24
@@ -116,7 +116,7 @@ var xs_0 = /* :: */{
   _1: /* [] */0
 };
 
-var xs = /* tuple */[
+var xs = [
   xs_0,
   zs
 ];
@@ -247,7 +247,7 @@ function phd(l) {
   if (typeof l === "number") {
     throw {
           RE_EXN_ID: "Assert_failure",
-          _1: /* tuple */[
+          _1: [
             "rec_value_test.ml",
             105,
             9
@@ -258,7 +258,7 @@ function phd(l) {
   if (l.HASH !== 748545553) {
     throw {
           RE_EXN_ID: "Assert_failure",
-          _1: /* tuple */[
+          _1: [
             "rec_value_test.ml",
             105,
             9
@@ -273,7 +273,7 @@ function ptl(l) {
   if (typeof l === "number") {
     throw {
           RE_EXN_ID: "Assert_failure",
-          _1: /* tuple */[
+          _1: [
             "rec_value_test.ml",
             110,
             9
@@ -284,7 +284,7 @@ function ptl(l) {
   if (l.HASH !== 748545553) {
     throw {
           RE_EXN_ID: "Assert_failure",
-          _1: /* tuple */[
+          _1: [
             "rec_value_test.ml",
             110,
             9
@@ -311,7 +311,7 @@ function xtl(h) {
   return h.tail;
 }
 
-var suites_0 = /* tuple */[
+var suites_0 = [
   "File \"rec_value_test.ml\", line 126, characters 2-9",
   (function (param) {
       return {
@@ -323,7 +323,7 @@ var suites_0 = /* tuple */[
 ];
 
 var suites_1 = /* :: */{
-  _0: /* tuple */[
+  _0: [
     "File \"rec_value_test.ml\", line 128, characters 2-9",
     (function (param) {
         return {
@@ -334,7 +334,7 @@ var suites_1 = /* :: */{
       })
   ],
   _1: /* :: */{
-    _0: /* tuple */[
+    _0: [
       "hd",
       (function (param) {
           return {
@@ -345,7 +345,7 @@ var suites_1 = /* :: */{
         })
     ],
     _1: /* :: */{
-      _0: /* tuple */[
+      _0: [
         "mutual",
         (function (param) {
             var tmp;
@@ -356,7 +356,7 @@ var suites_1 = /* :: */{
               } else {
                 throw {
                       RE_EXN_ID: "Assert_failure",
-                      _1: /* tuple */[
+                      _1: [
                         "rec_value_test.ml",
                         140,
                         2
@@ -367,7 +367,7 @@ var suites_1 = /* :: */{
             } else {
               throw {
                     RE_EXN_ID: "Assert_failure",
-                    _1: /* tuple */[
+                    _1: [
                       "rec_value_test.ml",
                       140,
                       2
@@ -383,7 +383,7 @@ var suites_1 = /* :: */{
           })
       ],
       _1: /* :: */{
-        _0: /* tuple */[
+        _0: [
           "rec_sum",
           (function (param) {
               return {
@@ -394,7 +394,7 @@ var suites_1 = /* :: */{
             })
         ],
         _1: /* :: */{
-          _0: /* tuple */[
+          _0: [
             "File \"rec_value_test.ml\", line 143, characters 2-9",
             (function (param) {
                 return {
@@ -411,7 +411,7 @@ var suites_1 = /* :: */{
               })
           ],
           _1: /* :: */{
-            _0: /* tuple */[
+            _0: [
               "File \"rec_value_test.ml\", line 146, characters 2-9",
               (function (param) {
                   return {
@@ -428,7 +428,7 @@ var suites_1 = /* :: */{
                 })
             ],
             _1: /* :: */{
-              _0: /* tuple */[
+              _0: [
                 "File \"rec_value_test.ml\", line 149, characters 2-9",
                 (function (param) {
                     return {
@@ -448,7 +448,7 @@ var suites_1 = /* :: */{
                   })
               ],
               _1: /* :: */{
-                _0: /* tuple */[
+                _0: [
                   "File \"rec_value_test.ml\", line 152, characters 2-9",
                   (function (param) {
                       return {
@@ -471,7 +471,7 @@ var suites_1 = /* :: */{
                     })
                 ],
                 _1: /* :: */{
-                  _0: /* tuple */[
+                  _0: [
                     "File \"rec_value_test.ml\", line 155, characters 2-9",
                     (function (param) {
                         return {
@@ -488,7 +488,7 @@ var suites_1 = /* :: */{
                       })
                   ],
                   _1: /* :: */{
-                    _0: /* tuple */[
+                    _0: [
                       "File \"rec_value_test.ml\", line 158, characters 2-9",
                       (function (param) {
                           return {
@@ -499,7 +499,7 @@ var suites_1 = /* :: */{
                         })
                     ],
                     _1: /* :: */{
-                      _0: /* tuple */[
+                      _0: [
                         "File \"rec_value_test.ml\", line 161, characters 2-9",
                         (function (param) {
                             if (!rec_variant_b.tag) {
@@ -511,7 +511,7 @@ var suites_1 = /* :: */{
                             }
                             throw {
                                   RE_EXN_ID: "Assert_failure",
-                                  _1: /* tuple */[
+                                  _1: [
                                     "rec_value_test.ml",
                                     164,
                                     11
@@ -521,7 +521,7 @@ var suites_1 = /* :: */{
                           })
                       ],
                       _1: /* :: */{
-                        _0: /* tuple */[
+                        _0: [
                           "File \"rec_value_test.ml\", line 166, characters 2-9",
                           (function (param) {
                               if (rec_variant_a.tag) {
@@ -533,7 +533,7 @@ var suites_1 = /* :: */{
                               }
                               throw {
                                     RE_EXN_ID: "Assert_failure",
-                                    _1: /* tuple */[
+                                    _1: [
                                       "rec_value_test.ml",
                                       169,
                                       11

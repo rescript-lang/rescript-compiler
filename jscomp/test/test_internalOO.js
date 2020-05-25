@@ -214,7 +214,7 @@ function find_first(f, _param) {
           var d0 = _d0;
           var v0 = _v0;
           if (!param$1) {
-            return /* tuple */[
+            return [
                     v0,
                     d0
                   ];
@@ -256,7 +256,7 @@ function find_first_opt(f, _param) {
         var d0 = _d0;
         var v0 = _v0;
         if (!param$1) {
-          return /* tuple */[
+          return [
                   v0,
                   d0
                 ];
@@ -291,7 +291,7 @@ function find_last(f, _param) {
           var d0 = _d0;
           var v0 = _v0;
           if (!param$1) {
-            return /* tuple */[
+            return [
                     v0,
                     d0
                   ];
@@ -333,7 +333,7 @@ function find_last_opt(f, _param) {
         var d0 = _d0;
         var v0 = _v0;
         if (!param$1) {
-          return /* tuple */[
+          return [
                   v0,
                   d0
                 ];
@@ -390,7 +390,7 @@ function min_binding(_param) {
     if (param) {
       var l = param.l;
       if (!l) {
-        return /* tuple */[
+        return [
                 param.v,
                 param.d
               ];
@@ -413,7 +413,7 @@ function min_binding_opt(_param) {
     }
     var l = param.l;
     if (!l) {
-      return /* tuple */[
+      return [
               param.v,
               param.d
             ];
@@ -429,7 +429,7 @@ function max_binding(_param) {
     if (param) {
       var r = param.r;
       if (!r) {
-        return /* tuple */[
+        return [
                 param.v,
                 param.d
               ];
@@ -452,7 +452,7 @@ function max_binding_opt(_param) {
     }
     var r = param.r;
     if (!r) {
-      return /* tuple */[
+      return [
               param.v,
               param.d
             ];
@@ -719,7 +719,7 @@ function concat_or_join(t1, v, d, t2) {
 
 function split(x, param) {
   if (!param) {
-    return /* tuple */[
+    return [
             /* Empty */0,
             undefined,
             /* Empty */0
@@ -731,7 +731,7 @@ function split(x, param) {
   var l = param.l;
   var c = Caml_primitive.caml_string_compare(x, v);
   if (c === 0) {
-    return /* tuple */[
+    return [
             l,
             Caml_option.some(d),
             r
@@ -739,14 +739,14 @@ function split(x, param) {
   }
   if (c < 0) {
     var match = split(x, l);
-    return /* tuple */[
+    return [
             match[0],
             match[1],
             join(match[2], v, d, r)
           ];
   }
   var match$1 = split(x, r);
-  return /* tuple */[
+  return [
           join(l, v, d, match$1[0]),
           match$1[1],
           match$1[2]
@@ -771,7 +771,7 @@ function merge$1(f, s1, s2) {
   }
   throw {
         RE_EXN_ID: "Assert_failure",
-        _1: /* tuple */[
+        _1: [
           "map.ml",
           393,
           10
@@ -837,7 +837,7 @@ function filter(p, m) {
 
 function partition(p, param) {
   if (!param) {
-    return /* tuple */[
+    return [
             /* Empty */0,
             /* Empty */0
           ];
@@ -852,12 +852,12 @@ function partition(p, param) {
   var rf = match$1[1];
   var rt = match$1[0];
   if (pvd) {
-    return /* tuple */[
+    return [
             join(lt, v, d, rt),
             concat(lf, rf)
           ];
   } else {
-    return /* tuple */[
+    return [
             concat(lt, rt),
             join(lf, v, d, rf)
           ];
@@ -957,7 +957,7 @@ function bindings_aux(_accu, _param) {
     }
     _param = param.l;
     _accu = /* :: */{
-      _0: /* tuple */[
+      _0: [
         param.v,
         param.d
       ],
@@ -1182,7 +1182,7 @@ function find_first$1(f, _param) {
           var d0 = _d0;
           var v0 = _v0;
           if (!param$1) {
-            return /* tuple */[
+            return [
                     v0,
                     d0
                   ];
@@ -1224,7 +1224,7 @@ function find_first_opt$1(f, _param) {
         var d0 = _d0;
         var v0 = _v0;
         if (!param$1) {
-          return /* tuple */[
+          return [
                   v0,
                   d0
                 ];
@@ -1259,7 +1259,7 @@ function find_last$1(f, _param) {
           var d0 = _d0;
           var v0 = _v0;
           if (!param$1) {
-            return /* tuple */[
+            return [
                     v0,
                     d0
                   ];
@@ -1301,7 +1301,7 @@ function find_last_opt$1(f, _param) {
         var d0 = _d0;
         var v0 = _v0;
         if (!param$1) {
-          return /* tuple */[
+          return [
                   v0,
                   d0
                 ];
@@ -1358,7 +1358,7 @@ function min_binding$1(_param) {
     if (param) {
       var l = param.l;
       if (!l) {
-        return /* tuple */[
+        return [
                 param.v,
                 param.d
               ];
@@ -1381,7 +1381,7 @@ function min_binding_opt$1(_param) {
     }
     var l = param.l;
     if (!l) {
-      return /* tuple */[
+      return [
               param.v,
               param.d
             ];
@@ -1397,7 +1397,7 @@ function max_binding$1(_param) {
     if (param) {
       var r = param.r;
       if (!r) {
-        return /* tuple */[
+        return [
                 param.v,
                 param.d
               ];
@@ -1420,7 +1420,7 @@ function max_binding_opt$1(_param) {
     }
     var r = param.r;
     if (!r) {
-      return /* tuple */[
+      return [
               param.v,
               param.d
             ];
@@ -1687,7 +1687,7 @@ function concat_or_join$1(t1, v, d, t2) {
 
 function split$1(x, param) {
   if (!param) {
-    return /* tuple */[
+    return [
             /* Empty */0,
             undefined,
             /* Empty */0
@@ -1699,7 +1699,7 @@ function split$1(x, param) {
   var l = param.l;
   var c = Caml_primitive.caml_string_compare(x, v);
   if (c === 0) {
-    return /* tuple */[
+    return [
             l,
             Caml_option.some(d),
             r
@@ -1707,14 +1707,14 @@ function split$1(x, param) {
   }
   if (c < 0) {
     var match = split$1(x, l);
-    return /* tuple */[
+    return [
             match[0],
             match[1],
             join$1(match[2], v, d, r)
           ];
   }
   var match$1 = split$1(x, r);
-  return /* tuple */[
+  return [
           join$1(l, v, d, match$1[0]),
           match$1[1],
           match$1[2]
@@ -1739,7 +1739,7 @@ function merge$3(f, s1, s2) {
   }
   throw {
         RE_EXN_ID: "Assert_failure",
-        _1: /* tuple */[
+        _1: [
           "map.ml",
           393,
           10
@@ -1805,7 +1805,7 @@ function filter$1(p, m) {
 
 function partition$1(p, param) {
   if (!param) {
-    return /* tuple */[
+    return [
             /* Empty */0,
             /* Empty */0
           ];
@@ -1820,12 +1820,12 @@ function partition$1(p, param) {
   var rf = match$1[1];
   var rt = match$1[0];
   if (pvd) {
-    return /* tuple */[
+    return [
             join$1(lt, v, d, rt),
             concat$1(lf, rf)
           ];
   } else {
-    return /* tuple */[
+    return [
             concat$1(lt, rt),
             join$1(lf, v, d, rf)
           ];
@@ -1925,7 +1925,7 @@ function bindings_aux$1(_accu, _param) {
     }
     _param = param.l;
     _accu = /* :: */{
-      _0: /* tuple */[
+      _0: [
         param.v,
         param.d
       ],
@@ -2150,7 +2150,7 @@ function find_first$2(f, _param) {
           var d0 = _d0;
           var v0 = _v0;
           if (!param$1) {
-            return /* tuple */[
+            return [
                     v0,
                     d0
                   ];
@@ -2192,7 +2192,7 @@ function find_first_opt$2(f, _param) {
         var d0 = _d0;
         var v0 = _v0;
         if (!param$1) {
-          return /* tuple */[
+          return [
                   v0,
                   d0
                 ];
@@ -2227,7 +2227,7 @@ function find_last$2(f, _param) {
           var d0 = _d0;
           var v0 = _v0;
           if (!param$1) {
-            return /* tuple */[
+            return [
                     v0,
                     d0
                   ];
@@ -2269,7 +2269,7 @@ function find_last_opt$2(f, _param) {
         var d0 = _d0;
         var v0 = _v0;
         if (!param$1) {
-          return /* tuple */[
+          return [
                   v0,
                   d0
                 ];
@@ -2326,7 +2326,7 @@ function min_binding$2(_param) {
     if (param) {
       var l = param.l;
       if (!l) {
-        return /* tuple */[
+        return [
                 param.v,
                 param.d
               ];
@@ -2349,7 +2349,7 @@ function min_binding_opt$2(_param) {
     }
     var l = param.l;
     if (!l) {
-      return /* tuple */[
+      return [
               param.v,
               param.d
             ];
@@ -2365,7 +2365,7 @@ function max_binding$2(_param) {
     if (param) {
       var r = param.r;
       if (!r) {
-        return /* tuple */[
+        return [
                 param.v,
                 param.d
               ];
@@ -2388,7 +2388,7 @@ function max_binding_opt$2(_param) {
     }
     var r = param.r;
     if (!r) {
-      return /* tuple */[
+      return [
               param.v,
               param.d
             ];
@@ -2655,7 +2655,7 @@ function concat_or_join$2(t1, v, d, t2) {
 
 function split$2(x, param) {
   if (!param) {
-    return /* tuple */[
+    return [
             /* Empty */0,
             undefined,
             /* Empty */0
@@ -2667,7 +2667,7 @@ function split$2(x, param) {
   var l = param.l;
   var c = Caml_primitive.caml_int_compare(x, v);
   if (c === 0) {
-    return /* tuple */[
+    return [
             l,
             Caml_option.some(d),
             r
@@ -2675,14 +2675,14 @@ function split$2(x, param) {
   }
   if (c < 0) {
     var match = split$2(x, l);
-    return /* tuple */[
+    return [
             match[0],
             match[1],
             join$2(match[2], v, d, r)
           ];
   }
   var match$1 = split$2(x, r);
-  return /* tuple */[
+  return [
           join$2(l, v, d, match$1[0]),
           match$1[1],
           match$1[2]
@@ -2707,7 +2707,7 @@ function merge$5(f, s1, s2) {
   }
   throw {
         RE_EXN_ID: "Assert_failure",
-        _1: /* tuple */[
+        _1: [
           "map.ml",
           393,
           10
@@ -2773,7 +2773,7 @@ function filter$2(p, m) {
 
 function partition$2(p, param) {
   if (!param) {
-    return /* tuple */[
+    return [
             /* Empty */0,
             /* Empty */0
           ];
@@ -2788,12 +2788,12 @@ function partition$2(p, param) {
   var rf = match$1[1];
   var rt = match$1[0];
   if (pvd) {
-    return /* tuple */[
+    return [
             join$2(lt, v, d, rt),
             concat$2(lf, rf)
           ];
   } else {
-    return /* tuple */[
+    return [
             concat$2(lt, rt),
             join$2(lf, v, d, rf)
           ];
@@ -2893,7 +2893,7 @@ function bindings_aux$2(_accu, _param) {
     }
     _param = param.l;
     _accu = /* :: */{
-      _0: /* tuple */[
+      _0: [
         param.v,
         param.d
       ],
@@ -3046,7 +3046,7 @@ function set_method(table, label, element) {
     return put(table, label, element);
   } else {
     table.hidden_meths = /* :: */{
-      _0: /* tuple */[
+      _0: [
         label,
         element
       ],
@@ -3088,7 +3088,7 @@ function narrow(table, vars, virt_meths, concr_meths) {
           return get_method_label(table, param);
         }), concr_meths$1);
   table.previous_states = /* :: */{
-    _0: /* tuple */[
+    _0: [
       table.methods_by_name,
       table.methods_by_label,
       table.hidden_meths,
@@ -3224,7 +3224,7 @@ function get_variable(table, name) {
     if (exn.RE_EXN_ID === "Not_found") {
       throw {
             RE_EXN_ID: "Assert_failure",
-            _1: /* tuple */[
+            _1: [
               "test_internalOO.ml",
               280,
               50
@@ -3296,7 +3296,7 @@ function make_class(pub_meths, class_init) {
   var table = create_table(pub_meths);
   var env_init = Curry._1(class_init, table);
   init_class(table);
-  return /* tuple */[
+  return [
           Curry._1(env_init, 0),
           class_init,
           env_init,
@@ -3321,7 +3321,7 @@ function dummy_class(loc) {
           Error: new Error()
         };
   };
-  return /* tuple */[
+  return [
           undef,
           undef,
           undef,

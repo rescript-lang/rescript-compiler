@@ -59,7 +59,7 @@ function ut3(param, param$1, param$2) {
   var x0 = param.contents;
   var x1 = param$1.contents;
   var x2 = param$2.contents;
-  return /* tuple */[
+  return [
           x0,
           x1,
           x2
@@ -72,7 +72,7 @@ function t3(param) {
     var x1 = param.contents;
     return function (param) {
       var x2 = param.contents;
-      return /* tuple */[
+      return [
               x0,
               x1,
               x2
@@ -88,7 +88,7 @@ function ut4(param, param$1, param$2, param$3) {
                 var x2 = param.contents;
                 return function (param) {
                   var x3 = param.contents;
-                  return /* tuple */[
+                  return [
                           x0,
                           x1,
                           x2,
@@ -107,7 +107,7 @@ function ut5(param, param$1, param$2, param$3, param$4) {
                   var x3 = param.contents;
                   return function (param) {
                     var x4 = param.contents;
-                    return /* tuple */[
+                    return [
                             x0,
                             x1,
                             x2,
@@ -125,7 +125,7 @@ eqs("File \"mutable_uncurry_test.ml\", line 38, characters 9-16", ut3({
           contents: 2
         }, {
           contents: 3
-        }), /* tuple */[
+        }), [
       1,
       2,
       3
@@ -137,7 +137,7 @@ eqs("File \"mutable_uncurry_test.ml\", line 39, characters 7-14", Curry._1(t3({
               contents: 2
             }), {
           contents: 3
-        }), /* tuple */[
+        }), [
       1,
       2,
       3
@@ -153,7 +153,7 @@ eqs("File \"mutable_uncurry_test.ml\", line 41, characters 7-14", ut5({
           contents: 1
         }, {
           contents: 1
-        }), /* tuple */[
+        }), [
       1,
       2,
       3,

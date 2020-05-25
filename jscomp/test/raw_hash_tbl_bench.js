@@ -11,7 +11,7 @@ function bench(param) {
     if (!Hashtbl.mem(table, i$1)) {
       throw {
             RE_EXN_ID: "Assert_failure",
-            _1: /* tuple */[
+            _1: [
               "raw_hash_tbl_bench.ml",
               9,
               4

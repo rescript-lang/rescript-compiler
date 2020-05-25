@@ -45,7 +45,7 @@ var s = Curry._1(Printf.sprintf(/* Format */{
       _1: "32%s"
     });
 
-eq("File \"sprintf_reg_test.ml\", line 8, characters 5-12", /* tuple */[
+eq("File \"sprintf_reg_test.ml\", line 8, characters 5-12", [
       s,
       "%s."
     ]);
@@ -84,7 +84,7 @@ var s$1 = Curry._2(Printf.sprintf(/* Format */{
       _1: "spells one %s"
     });
 
-eq("File \"sprintf_reg_test.ml\", line 14, characters 5-12", /* tuple */[
+eq("File \"sprintf_reg_test.ml\", line 14, characters 5-12", [
       s$1,
       "1 %s"
     ]);

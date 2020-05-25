@@ -611,7 +611,7 @@ function letter(param) {
     default:
       throw {
             RE_EXN_ID: "Assert_failure",
-            _1: /* tuple */[
+            _1: [
               "warnings.ml",
               176,
               9
@@ -648,14 +648,14 @@ function parse_opt(error, active, flags, s) {
       var i = _i;
       var n = _n;
       if (i >= s.length) {
-        return /* tuple */[
+        return [
                 i,
                 n
               ];
       }
       var match = Caml_string.get(s, i);
       if (match > 57 || match < 48) {
-        return /* tuple */[
+        return [
                 i,
                 n
               ];
@@ -670,7 +670,7 @@ function parse_opt(error, active, flags, s) {
     var n1 = match[1];
     var i$1 = match[0];
     if (!((i$1 + 2 | 0) < s.length && Caml_string.get(s, i$1) === /* "." */46 && Caml_string.get(s, i$1 + 1 | 0) === /* "." */46)) {
-      return /* tuple */[
+      return [
               i$1,
               n1,
               n1
@@ -685,7 +685,7 @@ function parse_opt(error, active, flags, s) {
             Error: new Error()
           };
     }
-    return /* tuple */[
+    return [
             match$1[0],
             n1,
             n2
@@ -889,7 +889,7 @@ function message(s) {
           }
           throw {
                 RE_EXN_ID: "Assert_failure",
-                _1: /* tuple */[
+                _1: [
                   "warnings.ml",
                   283,
                   26
@@ -927,7 +927,7 @@ function message(s) {
           }
           throw {
                 RE_EXN_ID: "Assert_failure",
-                _1: /* tuple */[
+                _1: [
                   "warnings.ml",
                   303,
                   37
@@ -1058,7 +1058,7 @@ function message(s) {
           }
           throw {
                 RE_EXN_ID: "Assert_failure",
-                _1: /* tuple */[
+                _1: [
                   "warnings.ml",
                   365,
                   39
@@ -1076,7 +1076,7 @@ function message(s) {
           }
           throw {
                 RE_EXN_ID: "Assert_failure",
-                _1: /* tuple */[
+                _1: [
                   "warnings.ml",
                   374,
                   36
@@ -1602,7 +1602,7 @@ function print_filename(ppf, file) {
 }
 
 function get_pos_info(pos) {
-  return /* tuple */[
+  return [
           pos.pos_fname,
           pos.pos_lnum,
           pos.pos_cnum - pos.pos_bol | 0
@@ -2091,7 +2091,7 @@ function from_pair_suites(name, suites) {
             }));
       return ;
     } else {
-      console.log(/* tuple */[
+      console.log([
             name,
             "testing"
           ]);
@@ -2100,7 +2100,7 @@ function from_pair_suites(name, suites) {
                     var fn = Curry._1(param[1], undefined);
                     switch (fn.tag | 0) {
                       case /* Eq */0 :
-                          console.log(/* tuple */[
+                          console.log([
                                 name,
                                 fn._0,
                                 "eq?",
@@ -2108,7 +2108,7 @@ function from_pair_suites(name, suites) {
                               ]);
                           return ;
                       case /* Neq */1 :
-                          console.log(/* tuple */[
+                          console.log([
                                 name,
                                 fn._0,
                                 "neq?",
@@ -2116,7 +2116,7 @@ function from_pair_suites(name, suites) {
                               ]);
                           return ;
                       case /* StrictEq */2 :
-                          console.log(/* tuple */[
+                          console.log([
                                 name,
                                 fn._0,
                                 "strict_eq?",
@@ -2124,7 +2124,7 @@ function from_pair_suites(name, suites) {
                               ]);
                           return ;
                       case /* StrictNeq */3 :
-                          console.log(/* tuple */[
+                          console.log([
                                 name,
                                 fn._0,
                                 "strict_neq?",
@@ -2132,14 +2132,14 @@ function from_pair_suites(name, suites) {
                               ]);
                           return ;
                       case /* Ok */4 :
-                          console.log(/* tuple */[
+                          console.log([
                                 name,
                                 fn._0,
                                 "ok?"
                               ]);
                           return ;
                       case /* Approx */5 :
-                          console.log(/* tuple */[
+                          console.log([
                                 name,
                                 fn._0,
                                 "~",
@@ -2147,7 +2147,7 @@ function from_pair_suites(name, suites) {
                               ]);
                           return ;
                       case /* ApproxThreshold */6 :
-                          console.log(/* tuple */[
+                          console.log([
                                 name,
                                 fn._1,
                                 "~",
@@ -2260,7 +2260,7 @@ function docs_attr(ds) {
     pstr_desc: item_pstr_desc,
     pstr_loc: item_pstr_loc
   };
-  return /* tuple */[
+  return [
           doc_loc,
           {
             tag: /* PStr */0,
@@ -2330,7 +2330,7 @@ function text_attr(ds) {
     pstr_desc: item_pstr_desc,
     pstr_loc: item_pstr_loc
   };
-  return /* tuple */[
+  return [
           text_loc,
           {
             tag: /* PStr */0,
@@ -3101,7 +3101,7 @@ function inherit_(loc, attrs, a) {
 function val_(loc, attrs, a, b, c, d) {
   return mk$9(loc, attrs, undefined, {
               tag: /* Pctf_val */1,
-              _0: /* tuple */[
+              _0: [
                 a,
                 b,
                 c,
@@ -3113,7 +3113,7 @@ function val_(loc, attrs, a, b, c, d) {
 function method_(loc, attrs, a, b, c, d) {
   return mk$9(loc, attrs, undefined, {
               tag: /* Pctf_method */2,
-              _0: /* tuple */[
+              _0: [
                 a,
                 b,
                 c,
@@ -3125,7 +3125,7 @@ function method_(loc, attrs, a, b, c, d) {
 function constraint_$1(loc, attrs, a, b) {
   return mk$9(loc, attrs, undefined, {
               tag: /* Pctf_constraint */3,
-              _0: /* tuple */[
+              _0: [
                 a,
                 b
               ]
@@ -3186,7 +3186,7 @@ function inherit_$1(loc, attrs, a, b, c) {
 function val_$1(loc, attrs, a, b, c) {
   return mk$10(loc, attrs, undefined, {
               tag: /* Pcf_val */1,
-              _0: /* tuple */[
+              _0: [
                 a,
                 b,
                 c
@@ -3197,7 +3197,7 @@ function val_$1(loc, attrs, a, b, c) {
 function method_$1(loc, attrs, a, b, c) {
   return mk$10(loc, attrs, undefined, {
               tag: /* Pcf_method */2,
-              _0: /* tuple */[
+              _0: [
                 a,
                 b,
                 c
@@ -3208,7 +3208,7 @@ function method_$1(loc, attrs, a, b, c) {
 function constraint_$2(loc, attrs, a, b) {
   return mk$10(loc, attrs, undefined, {
               tag: /* Pcf_constraint */3,
-              _0: /* tuple */[
+              _0: [
                 a,
                 b
               ]
@@ -3837,12 +3837,12 @@ function mkinfix(arg1, name, arg2) {
               tag: /* Pexp_apply */5,
               _0: mkoperator(name, 2),
               _1: /* :: */{
-                _0: /* tuple */[
+                _0: [
                   "",
                   arg1
                 ],
                 _1: /* :: */{
-                  _0: /* tuple */[
+                  _0: [
                     "",
                     arg2
                   ],
@@ -4026,7 +4026,7 @@ function mkexp_constraint(e, param) {
   }
   throw {
         RE_EXN_ID: "Assert_failure",
-        _1: /* tuple */[
+        _1: [
           "parser.mly",
           153,
           18
@@ -4225,7 +4225,7 @@ function varify_constructors(var_names, t) {
             desc = {
               tag: /* Ptyp_object */4,
               _0: List.map((function (param) {
-                      return /* tuple */[
+                      return [
                               param[0],
                               param[1],
                               loop(param[2])
@@ -4274,10 +4274,10 @@ function varify_constructors(var_names, t) {
             var match = x._0;
             desc = {
               tag: /* Ptyp_package */9,
-              _0: /* tuple */[
+              _0: [
                 match[0],
                 List.map((function (param) {
-                        return /* tuple */[
+                        return [
                                 param[0],
                                 loop(param[1])
                               ];
@@ -4289,7 +4289,7 @@ function varify_constructors(var_names, t) {
             var match$1 = x._0;
             desc = {
               tag: /* Ptyp_extension */10,
-              _0: /* tuple */[
+              _0: [
                 match$1[0],
                 match$1[1]
               ]
@@ -4336,7 +4336,7 @@ function wrap_type_annotation(newtypes, core_type, body) {
                       _1: exp
                     });
         }), newtypes, exp);
-  return /* tuple */[
+  return [
           exp$1,
           ghtyp({
                 tag: /* Ptyp_poly */8,
@@ -4359,7 +4359,7 @@ function wrap_exp_attrs(body, param) {
   if (ext !== undefined) {
     return ghexp({
                 tag: /* Pexp_extension */33,
-                _0: /* tuple */[
+                _0: [
                   ext,
                   {
                     tag: /* PStr */0,
@@ -4409,7 +4409,7 @@ function add_nonrec(rf, attrs, pos) {
     loc: name_loc
   };
   return /* :: */{
-          _0: /* tuple */[
+          _0: [
             name,
             {
               tag: /* PStr */0,
@@ -4723,7 +4723,7 @@ var yyact = [
       return Parsing.peek_val(__caml_parser_env, 1);
     }),
   (function (__caml_parser_env) {
-      return /* tuple */[
+      return [
               {
                 txt: "*",
                 loc: rhs_loc(2)
@@ -4734,7 +4734,7 @@ var yyact = [
   (function (__caml_parser_env) {
       var _2 = Parsing.peek_val(__caml_parser_env, 3);
       var _4 = Parsing.peek_val(__caml_parser_env, 1);
-      return /* tuple */[
+      return [
               {
                 txt: _2,
                 loc: rhs_loc(2)
@@ -4960,7 +4960,7 @@ var yyact = [
       if (bindings) {
         var lb = bindings._0;
         if (typeof lb.lb_pattern.ppat_desc === "number" && !bindings._1) {
-          var exp = wrap_exp_attrs(lb.lb_expression, /* tuple */[
+          var exp = wrap_exp_attrs(lb.lb_expression, [
                 undefined,
                 lbs.lbs_attributes
               ]);
@@ -5000,7 +5000,7 @@ var yyact = [
       if (id !== undefined) {
         var d = {
           tag: /* Pstr_extension */14,
-          _0: /* tuple */[
+          _0: [
             id,
             {
               tag: /* PStr */0,
@@ -5809,7 +5809,7 @@ var yyact = [
               Error: new Error()
             };
       }
-      return /* tuple */[
+      return [
               {
                 txt: _4,
                 loc: rhs_loc(4)
@@ -5825,7 +5825,7 @@ var yyact = [
       var _2 = Parsing.peek_val(__caml_parser_env, 3);
       var _3 = Parsing.peek_val(__caml_parser_env, 2);
       var _5 = Parsing.peek_val(__caml_parser_env, 0);
-      return /* tuple */[
+      return [
               {
                 txt: _3,
                 loc: rhs_loc(3)
@@ -5842,7 +5842,7 @@ var yyact = [
       var _2 = Parsing.peek_val(__caml_parser_env, 3);
       var _3 = Parsing.peek_val(__caml_parser_env, 2);
       var _5 = Parsing.peek_val(__caml_parser_env, 0);
-      return /* tuple */[
+      return [
               {
                 txt: _3,
                 loc: rhs_loc(3)
@@ -5862,7 +5862,7 @@ var yyact = [
       var _4 = Parsing.peek_val(__caml_parser_env, 2);
       var _6 = Parsing.peek_val(__caml_parser_env, 0);
       var e = mkexp_constraint(_6, _4);
-      return /* tuple */[
+      return [
               {
                 txt: _3,
                 loc: rhs_loc(3)
@@ -5885,7 +5885,7 @@ var yyact = [
               Error: new Error()
             };
       }
-      return /* tuple */[
+      return [
               {
                 txt: _4,
                 loc: rhs_loc(4)
@@ -5908,7 +5908,7 @@ var yyact = [
               Error: new Error()
             };
       }
-      return /* tuple */[
+      return [
               {
                 txt: _4,
                 loc: rhs_loc(4)
@@ -5925,7 +5925,7 @@ var yyact = [
       var _2 = Parsing.peek_val(__caml_parser_env, 2);
       var _3 = Parsing.peek_val(__caml_parser_env, 1);
       var _4 = Parsing.peek_val(__caml_parser_env, 0);
-      return /* tuple */[
+      return [
               {
                 txt: _3,
                 loc: rhs_loc(3)
@@ -5948,7 +5948,7 @@ var yyact = [
       var _3 = Parsing.peek_val(__caml_parser_env, 4);
       var _5 = Parsing.peek_val(__caml_parser_env, 2);
       var _7 = Parsing.peek_val(__caml_parser_env, 0);
-      return /* tuple */[
+      return [
               {
                 txt: _3,
                 loc: rhs_loc(3)
@@ -5973,7 +5973,7 @@ var yyact = [
       var _8 = Parsing.peek_val(__caml_parser_env, 2);
       var _10 = Parsing.peek_val(__caml_parser_env, 0);
       var match = wrap_type_annotation(_6, _8, _10);
-      return /* tuple */[
+      return [
               {
                 txt: _3,
                 loc: rhs_loc(3)
@@ -6130,7 +6130,7 @@ var yyact = [
       var _6 = Parsing.peek_val(__caml_parser_env, 0);
       return mkctf(_6, symbol_docs(undefined), {
                   tag: /* Pctf_method */2,
-                  _0: /* tuple */[
+                  _0: [
                     _3,
                     _2[0],
                     _2[1],
@@ -6166,7 +6166,7 @@ var yyact = [
       var _2 = Parsing.peek_val(__caml_parser_env, 3);
       var _3 = Parsing.peek_val(__caml_parser_env, 2);
       var _5 = Parsing.peek_val(__caml_parser_env, 0);
-      return /* tuple */[
+      return [
               _3,
               _2,
               /* Virtual */0,
@@ -6177,7 +6177,7 @@ var yyact = [
       var _2 = Parsing.peek_val(__caml_parser_env, 3);
       var _3 = Parsing.peek_val(__caml_parser_env, 2);
       var _5 = Parsing.peek_val(__caml_parser_env, 0);
-      return /* tuple */[
+      return [
               _3,
               /* Mutable */1,
               _2,
@@ -6187,7 +6187,7 @@ var yyact = [
   (function (__caml_parser_env) {
       var _1 = Parsing.peek_val(__caml_parser_env, 2);
       var _3 = Parsing.peek_val(__caml_parser_env, 0);
-      return /* tuple */[
+      return [
               _1,
               /* Immutable */0,
               /* Concrete */1,
@@ -6197,7 +6197,7 @@ var yyact = [
   (function (__caml_parser_env) {
       var _1 = Parsing.peek_val(__caml_parser_env, 2);
       var _3 = Parsing.peek_val(__caml_parser_env, 0);
-      return /* tuple */[
+      return [
               _1,
               _3,
               symbol_rloc(undefined)
@@ -6206,7 +6206,7 @@ var yyact = [
   (function (__caml_parser_env) {
       var _1 = Parsing.peek_val(__caml_parser_env, 2);
       var _3 = Parsing.peek_val(__caml_parser_env, 0);
-      return /* tuple */[
+      return [
               _1,
               _3
             ];
@@ -6303,7 +6303,7 @@ var yyact = [
   (function (__caml_parser_env) {
       var _3 = Parsing.peek_val(__caml_parser_env, 2);
       var _4 = Parsing.peek_val(__caml_parser_env, 1);
-      return /* tuple */[
+      return [
               "?" + _3[0],
               _4,
               _3[1]
@@ -6311,7 +6311,7 @@ var yyact = [
     }),
   (function (__caml_parser_env) {
       var _2 = Parsing.peek_val(__caml_parser_env, 0);
-      return /* tuple */[
+      return [
               "?" + _2[0],
               undefined,
               _2[1]
@@ -6321,7 +6321,7 @@ var yyact = [
       var _1 = Parsing.peek_val(__caml_parser_env, 4);
       var _3 = Parsing.peek_val(__caml_parser_env, 2);
       var _4 = Parsing.peek_val(__caml_parser_env, 1);
-      return /* tuple */[
+      return [
               "?" + _1,
               _4,
               _3
@@ -6330,7 +6330,7 @@ var yyact = [
   (function (__caml_parser_env) {
       var _1 = Parsing.peek_val(__caml_parser_env, 1);
       var _2 = Parsing.peek_val(__caml_parser_env, 0);
-      return /* tuple */[
+      return [
               "?" + _1,
               undefined,
               _2
@@ -6338,7 +6338,7 @@ var yyact = [
     }),
   (function (__caml_parser_env) {
       var _3 = Parsing.peek_val(__caml_parser_env, 1);
-      return /* tuple */[
+      return [
               _3[0],
               undefined,
               _3[1]
@@ -6346,7 +6346,7 @@ var yyact = [
     }),
   (function (__caml_parser_env) {
       var _2 = Parsing.peek_val(__caml_parser_env, 0);
-      return /* tuple */[
+      return [
               _2[0],
               undefined,
               _2[1]
@@ -6355,7 +6355,7 @@ var yyact = [
   (function (__caml_parser_env) {
       var _1 = Parsing.peek_val(__caml_parser_env, 1);
       var _2 = Parsing.peek_val(__caml_parser_env, 0);
-      return /* tuple */[
+      return [
               _1,
               undefined,
               _2
@@ -6363,7 +6363,7 @@ var yyact = [
     }),
   (function (__caml_parser_env) {
       var _1 = Parsing.peek_val(__caml_parser_env, 0);
-      return /* tuple */[
+      return [
               "",
               undefined,
               _1
@@ -6394,7 +6394,7 @@ var yyact = [
   (function (__caml_parser_env) {
       var _1 = Parsing.peek_val(__caml_parser_env, 2);
       var _3 = Parsing.peek_val(__caml_parser_env, 0);
-      return /* tuple */[
+      return [
               _1[0],
               mkpat({
                     tag: /* Ppat_constraint */10,
@@ -6405,7 +6405,7 @@ var yyact = [
     }),
   (function (__caml_parser_env) {
       var _1 = Parsing.peek_val(__caml_parser_env, 0);
-      return /* tuple */[
+      return [
               _1,
               mkpat({
                     tag: /* Ppat_var */0,
@@ -6465,7 +6465,7 @@ var yyact = [
         _1: d_1,
         _2: _3
       };
-      return wrap_exp_attrs(mkexp(d), /* tuple */[
+      return wrap_exp_attrs(mkexp(d), [
                   _1.lbs_extension,
                   _1.lbs_attributes
                 ]);
@@ -6852,7 +6852,7 @@ var yyact = [
                   tag: /* Pexp_apply */5,
                   _0: mkoperator("~" + _1, 1),
                   _1: /* :: */{
-                    _0: /* tuple */[
+                    _0: [
                       "",
                       _2
                     ],
@@ -6894,7 +6894,7 @@ var yyact = [
                   tag: /* Pexp_apply */5,
                   _0: mkoperator("~" + _1, 1),
                   _1: /* :: */{
-                    _0: /* tuple */[
+                    _0: [
                       "",
                       _2
                     ],
@@ -6927,17 +6927,17 @@ var yyact = [
                         _0: array_function("Array", "set")
                       }),
                   _1: /* :: */{
-                    _0: /* tuple */[
+                    _0: [
                       "",
                       _1
                     ],
                     _1: /* :: */{
-                      _0: /* tuple */[
+                      _0: [
                         "",
                         _4
                       ],
                       _1: /* :: */{
-                        _0: /* tuple */[
+                        _0: [
                           "",
                           _7
                         ],
@@ -6958,17 +6958,17 @@ var yyact = [
                         _0: array_function("String", "set")
                       }),
                   _1: /* :: */{
-                    _0: /* tuple */[
+                    _0: [
                       "",
                       _1
                     ],
                     _1: /* :: */{
-                      _0: /* tuple */[
+                      _0: [
                         "",
                         _4
                       ],
                       _1: /* :: */{
-                        _0: /* tuple */[
+                        _0: [
                           "",
                           _7
                         ],
@@ -6995,17 +6995,17 @@ var yyact = [
                             _0: bigarray_function("Array1", set)
                           }),
                       _1: /* :: */{
-                        _0: /* tuple */[
+                        _0: [
                           "",
                           _1
                         ],
                         _1: /* :: */{
-                          _0: /* tuple */[
+                          _0: [
                             "",
                             c1
                           ],
                           _1: /* :: */{
-                            _0: /* tuple */[
+                            _0: [
                               "",
                               _7
                             ],
@@ -7025,22 +7025,22 @@ var yyact = [
                             _0: bigarray_function("Array2", set)
                           }),
                       _1: /* :: */{
-                        _0: /* tuple */[
+                        _0: [
                           "",
                           _1
                         ],
                         _1: /* :: */{
-                          _0: /* tuple */[
+                          _0: [
                             "",
                             c1
                           ],
                           _1: /* :: */{
-                            _0: /* tuple */[
+                            _0: [
                               "",
                               c2
                             ],
                             _1: /* :: */{
-                              _0: /* tuple */[
+                              _0: [
                                 "",
                                 _7
                               ],
@@ -7059,27 +7059,27 @@ var yyact = [
                             _0: bigarray_function("Array3", set)
                           }),
                       _1: /* :: */{
-                        _0: /* tuple */[
+                        _0: [
                           "",
                           _1
                         ],
                         _1: /* :: */{
-                          _0: /* tuple */[
+                          _0: [
                             "",
                             c1
                           ],
                           _1: /* :: */{
-                            _0: /* tuple */[
+                            _0: [
                               "",
                               c2
                             ],
                             _1: /* :: */{
-                              _0: /* tuple */[
+                              _0: [
                                 "",
                                 match$1._0
                               ],
                               _1: /* :: */{
-                                _0: /* tuple */[
+                                _0: [
                                   "",
                                   _7
                                 ],
@@ -7100,12 +7100,12 @@ var yyact = [
                         _0: bigarray_function("Genarray", "set")
                       }),
                   _1: /* :: */{
-                    _0: /* tuple */[
+                    _0: [
                       "",
                       _1
                     ],
                     _1: /* :: */{
-                      _0: /* tuple */[
+                      _0: [
                         "",
                         ghexp({
                               tag: /* Pexp_array */14,
@@ -7113,7 +7113,7 @@ var yyact = [
                             })
                       ],
                       _1: /* :: */{
-                        _0: /* tuple */[
+                        _0: [
                           "",
                           _7
                         ],
@@ -7283,12 +7283,12 @@ var yyact = [
                         _0: array_function("Array", "get")
                       }),
                   _1: /* :: */{
-                    _0: /* tuple */[
+                    _0: [
                       "",
                       _1
                     ],
                     _1: /* :: */{
-                      _0: /* tuple */[
+                      _0: [
                         "",
                         _4
                       ],
@@ -7312,12 +7312,12 @@ var yyact = [
                         _0: array_function("String", "get")
                       }),
                   _1: /* :: */{
-                    _0: /* tuple */[
+                    _0: [
                       "",
                       _1
                     ],
                     _1: /* :: */{
-                      _0: /* tuple */[
+                      _0: [
                         "",
                         _4
                       ],
@@ -7347,12 +7347,12 @@ var yyact = [
                             _0: bigarray_function("Array1", get)
                           }),
                       _1: /* :: */{
-                        _0: /* tuple */[
+                        _0: [
                           "",
                           _1
                         ],
                         _1: /* :: */{
-                          _0: /* tuple */[
+                          _0: [
                             "",
                             c1
                           ],
@@ -7371,17 +7371,17 @@ var yyact = [
                             _0: bigarray_function("Array2", get)
                           }),
                       _1: /* :: */{
-                        _0: /* tuple */[
+                        _0: [
                           "",
                           _1
                         ],
                         _1: /* :: */{
-                          _0: /* tuple */[
+                          _0: [
                             "",
                             c1
                           ],
                           _1: /* :: */{
-                            _0: /* tuple */[
+                            _0: [
                               "",
                               c2
                             ],
@@ -7399,22 +7399,22 @@ var yyact = [
                             _0: bigarray_function("Array3", get)
                           }),
                       _1: /* :: */{
-                        _0: /* tuple */[
+                        _0: [
                           "",
                           _1
                         ],
                         _1: /* :: */{
-                          _0: /* tuple */[
+                          _0: [
                             "",
                             c1
                           ],
                           _1: /* :: */{
-                            _0: /* tuple */[
+                            _0: [
                               "",
                               c2
                             ],
                             _1: /* :: */{
-                              _0: /* tuple */[
+                              _0: [
                                 "",
                                 match$1._0
                               ],
@@ -7434,12 +7434,12 @@ var yyact = [
                         _0: bigarray_function("Genarray", "get")
                       }),
                   _1: /* :: */{
-                    _0: /* tuple */[
+                    _0: [
                       "",
                       _1
                     ],
                     _1: /* :: */{
-                      _0: /* tuple */[
+                      _0: [
                         "",
                         ghexp({
                               tag: /* Pexp_array */14,
@@ -7571,7 +7571,7 @@ var yyact = [
                   tag: /* Pexp_apply */5,
                   _0: mkoperator(_1, 1),
                   _1: /* :: */{
-                    _0: /* tuple */[
+                    _0: [
                       "",
                       _2
                     ],
@@ -7585,7 +7585,7 @@ var yyact = [
                   tag: /* Pexp_apply */5,
                   _0: mkoperator("!", 1),
                   _1: /* :: */{
-                    _0: /* tuple */[
+                    _0: [
                       "",
                       _2
                     ],
@@ -7741,7 +7741,7 @@ var yyact = [
     }),
   (function (__caml_parser_env) {
       var _1 = Parsing.peek_val(__caml_parser_env, 0);
-      return /* tuple */[
+      return [
               "",
               _1
             ];
@@ -7752,7 +7752,7 @@ var yyact = [
   (function (__caml_parser_env) {
       var _1 = Parsing.peek_val(__caml_parser_env, 1);
       var _2 = Parsing.peek_val(__caml_parser_env, 0);
-      return /* tuple */[
+      return [
               _1,
               _2
             ];
@@ -7762,7 +7762,7 @@ var yyact = [
     }),
   (function (__caml_parser_env) {
       var _2 = Parsing.peek_val(__caml_parser_env, 0);
-      return /* tuple */[
+      return [
               "?" + _2[0],
               _2[1]
             ];
@@ -7770,14 +7770,14 @@ var yyact = [
   (function (__caml_parser_env) {
       var _1 = Parsing.peek_val(__caml_parser_env, 1);
       var _2 = Parsing.peek_val(__caml_parser_env, 0);
-      return /* tuple */[
+      return [
               "?" + _1,
               _2
             ];
     }),
   (function (__caml_parser_env) {
       var _1 = Parsing.peek_val(__caml_parser_env, 0);
-      return /* tuple */[
+      return [
               _1,
               mkexp({
                     tag: /* Pexp_ident */0,
@@ -7809,7 +7809,7 @@ var yyact = [
   (function (__caml_parser_env) {
       var _1 = Parsing.peek_val(__caml_parser_env, 1);
       var _2 = Parsing.peek_val(__caml_parser_env, 0);
-      return /* tuple */[
+      return [
               mkpatvar(_1, 1),
               _2
             ];
@@ -7819,7 +7819,7 @@ var yyact = [
       var _3 = Parsing.peek_val(__caml_parser_env, 4);
       var _5 = Parsing.peek_val(__caml_parser_env, 2);
       var _7 = Parsing.peek_val(__caml_parser_env, 0);
-      return /* tuple */[
+      return [
               ghpat({
                     tag: /* Ppat_constraint */10,
                     _0: mkpatvar(_1, 1),
@@ -7838,7 +7838,7 @@ var yyact = [
       var _6 = Parsing.peek_val(__caml_parser_env, 2);
       var _8 = Parsing.peek_val(__caml_parser_env, 0);
       var match = wrap_type_annotation(_4, _6, _8);
-      return /* tuple */[
+      return [
               ghpat({
                     tag: /* Ppat_constraint */10,
                     _0: mkpatvar(_1, 1),
@@ -7850,7 +7850,7 @@ var yyact = [
   (function (__caml_parser_env) {
       var _1 = Parsing.peek_val(__caml_parser_env, 2);
       var _3 = Parsing.peek_val(__caml_parser_env, 0);
-      return /* tuple */[
+      return [
               _1,
               _3
             ];
@@ -7859,7 +7859,7 @@ var yyact = [
       var _1 = Parsing.peek_val(__caml_parser_env, 4);
       var _3 = Parsing.peek_val(__caml_parser_env, 2);
       var _5 = Parsing.peek_val(__caml_parser_env, 0);
-      return /* tuple */[
+      return [
               ghpat({
                     tag: /* Ppat_constraint */10,
                     _0: _1,
@@ -8009,14 +8009,14 @@ var yyact = [
   (function (__caml_parser_env) {
       var _1 = Parsing.peek_val(__caml_parser_env, 2);
       var _3 = Parsing.peek_val(__caml_parser_env, 0);
-      return /* tuple */[
+      return [
               _1,
               _3
             ];
     }),
   (function (__caml_parser_env) {
       var _1 = Parsing.peek_val(__caml_parser_env, 0);
-      return /* tuple */[
+      return [
               undefined,
               _1
             ];
@@ -8046,7 +8046,7 @@ var yyact = [
   (function (__caml_parser_env) {
       var _1 = Parsing.peek_val(__caml_parser_env, 2);
       var _3 = Parsing.peek_val(__caml_parser_env, 0);
-      return /* tuple */[
+      return [
               {
                 txt: _1,
                 loc: rhs_loc(1)
@@ -8056,7 +8056,7 @@ var yyact = [
     }),
   (function (__caml_parser_env) {
       var _1 = Parsing.peek_val(__caml_parser_env, 0);
-      return /* tuple */[
+      return [
               {
                 txt: _1,
                 loc: rhs_loc(1)
@@ -8068,7 +8068,7 @@ var yyact = [
       var _1 = Parsing.peek_val(__caml_parser_env, 2);
       var _3 = Parsing.peek_val(__caml_parser_env, 0);
       return /* :: */{
-              _0: /* tuple */[
+              _0: [
                 {
                   txt: _1,
                   loc: rhs_loc(1)
@@ -8083,7 +8083,7 @@ var yyact = [
       var _3 = Parsing.peek_val(__caml_parser_env, 2);
       var _5 = Parsing.peek_val(__caml_parser_env, 0);
       return /* :: */{
-              _0: /* tuple */[
+              _0: [
                 {
                   txt: _3,
                   loc: rhs_loc(3)
@@ -8110,7 +8110,7 @@ var yyact = [
     }),
   (function (__caml_parser_env) {
       var _2 = Parsing.peek_val(__caml_parser_env, 0);
-      return /* tuple */[
+      return [
               _2,
               undefined
             ];
@@ -8118,14 +8118,14 @@ var yyact = [
   (function (__caml_parser_env) {
       var _2 = Parsing.peek_val(__caml_parser_env, 2);
       var _4 = Parsing.peek_val(__caml_parser_env, 0);
-      return /* tuple */[
+      return [
               _2,
               _4
             ];
     }),
   (function (__caml_parser_env) {
       var _2 = Parsing.peek_val(__caml_parser_env, 0);
-      return /* tuple */[
+      return [
               undefined,
               _2
             ];
@@ -8465,7 +8465,7 @@ var yyact = [
     }),
   (function (__caml_parser_env) {
       var _1 = Parsing.peek_val(__caml_parser_env, 0);
-      return /* tuple */[
+      return [
               /* :: */{
                 _0: _1,
                 _1: /* [] */0
@@ -8475,7 +8475,7 @@ var yyact = [
     }),
   (function (__caml_parser_env) {
       var _1 = Parsing.peek_val(__caml_parser_env, 1);
-      return /* tuple */[
+      return [
               /* :: */{
                 _0: _1,
                 _1: /* [] */0
@@ -8486,7 +8486,7 @@ var yyact = [
   (function (__caml_parser_env) {
       var _1 = Parsing.peek_val(__caml_parser_env, 3);
       Parsing.peek_val(__caml_parser_env, 0);
-      return /* tuple */[
+      return [
               /* :: */{
                 _0: _1,
                 _1: /* [] */0
@@ -8497,7 +8497,7 @@ var yyact = [
   (function (__caml_parser_env) {
       var _1 = Parsing.peek_val(__caml_parser_env, 2);
       var _3 = Parsing.peek_val(__caml_parser_env, 0);
-      return /* tuple */[
+      return [
               /* :: */{
                 _0: _1,
                 _1: _3[0]
@@ -8508,7 +8508,7 @@ var yyact = [
   (function (__caml_parser_env) {
       var _1 = Parsing.peek_val(__caml_parser_env, 2);
       var _3 = Parsing.peek_val(__caml_parser_env, 0);
-      return /* tuple */[
+      return [
               {
                 txt: _1,
                 loc: rhs_loc(1)
@@ -8518,7 +8518,7 @@ var yyact = [
     }),
   (function (__caml_parser_env) {
       var _1 = Parsing.peek_val(__caml_parser_env, 0);
-      return /* tuple */[
+      return [
               {
                 txt: _1,
                 loc: rhs_loc(1)
@@ -8610,7 +8610,7 @@ var yyact = [
       return /* [] */0;
     }),
   (function (__caml_parser_env) {
-      return /* tuple */[
+      return [
               /* Ptype_abstract */0,
               /* Public */1,
               undefined
@@ -8618,7 +8618,7 @@ var yyact = [
     }),
   (function (__caml_parser_env) {
       var _2 = Parsing.peek_val(__caml_parser_env, 0);
-      return /* tuple */[
+      return [
               /* Ptype_abstract */0,
               /* Public */1,
               _2
@@ -8626,7 +8626,7 @@ var yyact = [
     }),
   (function (__caml_parser_env) {
       var _3 = Parsing.peek_val(__caml_parser_env, 0);
-      return /* tuple */[
+      return [
               /* Ptype_abstract */0,
               /* Private */0,
               _3
@@ -8634,7 +8634,7 @@ var yyact = [
     }),
   (function (__caml_parser_env) {
       var _2 = Parsing.peek_val(__caml_parser_env, 0);
-      return /* tuple */[
+      return [
               {
                 tag: /* Ptype_variant */0,
                 _0: List.rev(_2)
@@ -8645,7 +8645,7 @@ var yyact = [
     }),
   (function (__caml_parser_env) {
       var _3 = Parsing.peek_val(__caml_parser_env, 0);
-      return /* tuple */[
+      return [
               {
                 tag: /* Ptype_variant */0,
                 _0: List.rev(_3)
@@ -8655,7 +8655,7 @@ var yyact = [
             ];
     }),
   (function (__caml_parser_env) {
-      return /* tuple */[
+      return [
               /* Ptype_open */1,
               /* Public */1,
               undefined
@@ -8664,7 +8664,7 @@ var yyact = [
   (function (__caml_parser_env) {
       var _2 = Parsing.peek_val(__caml_parser_env, 3);
       var _4 = Parsing.peek_val(__caml_parser_env, 1);
-      return /* tuple */[
+      return [
               {
                 tag: /* Ptype_record */1,
                 _0: _4
@@ -8677,7 +8677,7 @@ var yyact = [
       var _2 = Parsing.peek_val(__caml_parser_env, 3);
       var _4 = Parsing.peek_val(__caml_parser_env, 1);
       var _5 = Parsing.peek_val(__caml_parser_env, 0);
-      return /* tuple */[
+      return [
               {
                 tag: /* Ptype_variant */0,
                 _0: List.rev(_5)
@@ -8688,7 +8688,7 @@ var yyact = [
     }),
   (function (__caml_parser_env) {
       var _2 = Parsing.peek_val(__caml_parser_env, 2);
-      return /* tuple */[
+      return [
               /* Ptype_open */1,
               /* Public */1,
               _2
@@ -8698,7 +8698,7 @@ var yyact = [
       var _2 = Parsing.peek_val(__caml_parser_env, 5);
       var _4 = Parsing.peek_val(__caml_parser_env, 3);
       var _6 = Parsing.peek_val(__caml_parser_env, 1);
-      return /* tuple */[
+      return [
               {
                 tag: /* Ptype_record */1,
                 _0: _6
@@ -8723,7 +8723,7 @@ var yyact = [
   (function (__caml_parser_env) {
       var _1 = Parsing.peek_val(__caml_parser_env, 1);
       var _2 = Parsing.peek_val(__caml_parser_env, 0);
-      return /* tuple */[
+      return [
               _2,
               _1
             ];
@@ -8769,7 +8769,7 @@ var yyact = [
   (function (__caml_parser_env) {
       var _1 = Parsing.peek_val(__caml_parser_env, 1);
       var _2 = Parsing.peek_val(__caml_parser_env, 0);
-      return /* tuple */[
+      return [
               _2,
               _1
             ];
@@ -8872,14 +8872,14 @@ var yyact = [
                 });
     }),
   (function (__caml_parser_env) {
-      return /* tuple */[
+      return [
               /* [] */0,
               undefined
             ];
     }),
   (function (__caml_parser_env) {
       var _2 = Parsing.peek_val(__caml_parser_env, 0);
-      return /* tuple */[
+      return [
               List.rev(_2),
               undefined
             ];
@@ -8887,14 +8887,14 @@ var yyact = [
   (function (__caml_parser_env) {
       var _2 = Parsing.peek_val(__caml_parser_env, 2);
       var _4 = Parsing.peek_val(__caml_parser_env, 0);
-      return /* tuple */[
+      return [
               List.rev(_2),
               _4
             ];
     }),
   (function (__caml_parser_env) {
       var _2 = Parsing.peek_val(__caml_parser_env, 0);
-      return /* tuple */[
+      return [
               /* [] */0,
               _2
             ];
@@ -9497,7 +9497,7 @@ var yyact = [
     }),
   (function (__caml_parser_env) {
       var _1 = Parsing.peek_val(__caml_parser_env, 0);
-      return /* tuple */[
+      return [
               {
                 txt: _1,
                 loc: rhs_loc(1)
@@ -9508,7 +9508,7 @@ var yyact = [
   (function (__caml_parser_env) {
       var _1 = Parsing.peek_val(__caml_parser_env, 2);
       var _3 = Parsing.peek_val(__caml_parser_env, 0);
-      return /* tuple */[
+      return [
               {
                 txt: _1,
                 loc: rhs_loc(1)
@@ -9519,7 +9519,7 @@ var yyact = [
   (function (__caml_parser_env) {
       var _2 = Parsing.peek_val(__caml_parser_env, 2);
       var _4 = Parsing.peek_val(__caml_parser_env, 0);
-      return /* tuple */[
+      return [
               {
                 txt: _2,
                 loc: rhs_loc(2)
@@ -9703,7 +9703,7 @@ var yyact = [
   (function (__caml_parser_env) {
       var _1 = Parsing.peek_val(__caml_parser_env, 2);
       var _3 = Parsing.peek_val(__caml_parser_env, 0);
-      return /* tuple */[
+      return [
               /* :: */{
                 _0: _1,
                 _1: _3[0]
@@ -9714,7 +9714,7 @@ var yyact = [
   (function (__caml_parser_env) {
       var _1 = Parsing.peek_val(__caml_parser_env, 1);
       Parsing.peek_val(__caml_parser_env, 0);
-      return /* tuple */[
+      return [
               /* :: */{
                 _0: _1,
                 _1: /* [] */0
@@ -9723,7 +9723,7 @@ var yyact = [
             ];
     }),
   (function (__caml_parser_env) {
-      return /* tuple */[
+      return [
               /* [] */0,
               /* Open */1
             ];
@@ -9732,7 +9732,7 @@ var yyact = [
       var _1 = Parsing.peek_val(__caml_parser_env, 3);
       var _3 = Parsing.peek_val(__caml_parser_env, 1);
       var _4 = Parsing.peek_val(__caml_parser_env, 0);
-      return /* tuple */[
+      return [
               _1,
               _4,
               _3
@@ -10262,31 +10262,31 @@ var yyact = [
       return /* Virtual */0;
     }),
   (function (__caml_parser_env) {
-      return /* tuple */[
+      return [
               /* Public */1,
               /* Concrete */1
             ];
     }),
   (function (__caml_parser_env) {
-      return /* tuple */[
+      return [
               /* Private */0,
               /* Concrete */1
             ];
     }),
   (function (__caml_parser_env) {
-      return /* tuple */[
+      return [
               /* Public */1,
               /* Virtual */0
             ];
     }),
   (function (__caml_parser_env) {
-      return /* tuple */[
+      return [
               /* Private */0,
               /* Virtual */0
             ];
     }),
   (function (__caml_parser_env) {
-      return /* tuple */[
+      return [
               /* Private */0,
               /* Virtual */0
             ];
@@ -10489,7 +10489,7 @@ var yyact = [
   (function (__caml_parser_env) {
       var _2 = Parsing.peek_val(__caml_parser_env, 2);
       var _3 = Parsing.peek_val(__caml_parser_env, 1);
-      return /* tuple */[
+      return [
               _2,
               _3
             ];
@@ -10497,7 +10497,7 @@ var yyact = [
   (function (__caml_parser_env) {
       var _2 = Parsing.peek_val(__caml_parser_env, 2);
       var _3 = Parsing.peek_val(__caml_parser_env, 1);
-      return /* tuple */[
+      return [
               _2,
               _3
             ];
@@ -10505,7 +10505,7 @@ var yyact = [
   (function (__caml_parser_env) {
       var _2 = Parsing.peek_val(__caml_parser_env, 2);
       var _3 = Parsing.peek_val(__caml_parser_env, 1);
-      return /* tuple */[
+      return [
               _2,
               _3
             ];
@@ -10533,7 +10533,7 @@ var yyact = [
             };
     }),
   (function (__caml_parser_env) {
-      return /* tuple */[
+      return [
               undefined,
               /* [] */0
             ];
@@ -10541,7 +10541,7 @@ var yyact = [
   (function (__caml_parser_env) {
       var _1 = Parsing.peek_val(__caml_parser_env, 1);
       var _2 = Parsing.peek_val(__caml_parser_env, 0);
-      return /* tuple */[
+      return [
               undefined,
               /* :: */{
                 _0: _1,
@@ -10552,7 +10552,7 @@ var yyact = [
   (function (__caml_parser_env) {
       var _2 = Parsing.peek_val(__caml_parser_env, 1);
       var _3 = Parsing.peek_val(__caml_parser_env, 0);
-      return /* tuple */[
+      return [
               _2,
               _3
             ];
@@ -10560,7 +10560,7 @@ var yyact = [
   (function (__caml_parser_env) {
       var _2 = Parsing.peek_val(__caml_parser_env, 2);
       var _3 = Parsing.peek_val(__caml_parser_env, 1);
-      return /* tuple */[
+      return [
               _2,
               _3
             ];
@@ -10568,7 +10568,7 @@ var yyact = [
   (function (__caml_parser_env) {
       var _2 = Parsing.peek_val(__caml_parser_env, 2);
       var _3 = Parsing.peek_val(__caml_parser_env, 1);
-      return /* tuple */[
+      return [
               _2,
               _3
             ];
@@ -10787,21 +10787,21 @@ function semantic_version_parse(str, start, last_index) {
       var acc = _acc;
       var start = _start;
       if (start > last_index) {
-        return /* tuple */[
+        return [
                 acc,
                 start
               ];
       }
       var c = str.charCodeAt(start);
       if (c === /* "." */46) {
-        return /* tuple */[
+        return [
                 acc,
                 start + 1 | 0
               ];
       }
       var v = c - /* "0" */48 | 0;
       if (!(v >= 0 && v <= 9)) {
-        return /* tuple */[
+        return [
                 acc,
                 start
               ];
@@ -10816,8 +10816,8 @@ function semantic_version_parse(str, start, last_index) {
   var match$2 = aux(match$1[1], 0, last_index);
   var patch_end = match$2[1];
   var additional = $$String.sub(str, patch_end, (last_index - patch_end | 0) + 1 | 0);
-  return /* tuple */[
-          /* tuple */[
+  return [
+          [
             match[0],
             match$1[0],
             match$2[0]
@@ -11011,7 +11011,7 @@ function directive_parse(token_with_comments, lexbuf) {
     if (look_ahead.contents !== undefined) {
       throw {
             RE_EXN_ID: "Assert_failure",
-            _1: /* tuple */[
+            _1: [
               "lexer.mll",
               312,
               4
@@ -11077,7 +11077,7 @@ function directive_parse(token_with_comments, lexbuf) {
                       if (v !== 126) {
                         exit$3 = 1;
                       } else {
-                        match = /* tuple */[
+                        match = [
                           /* Approximate */-617782220,
                           semantic_version_parse(str, 1, last_index)
                         ];
@@ -11096,10 +11096,10 @@ function directive_parse(token_with_comments, lexbuf) {
                                     Error: new Error()
                                   };
                             }
-                            match = str[1] === "=" ? /* tuple */[
+                            match = str[1] === "=" ? [
                                 /* Le */17049,
                                 semantic_version_parse(str, 2, last_index)
-                              ] : /* tuple */[
+                              ] : [
                                 /* Lt */17064,
                                 semantic_version_parse(str, 1, last_index)
                               ];
@@ -11119,10 +11119,10 @@ function directive_parse(token_with_comments, lexbuf) {
                                     Error: new Error()
                                   };
                             }
-                            match = str[1] === "=" ? /* tuple */[
+                            match = str[1] === "=" ? [
                                 /* Ge */15934,
                                 semantic_version_parse(str, 2, last_index)
-                              ] : /* tuple */[
+                              ] : [
                                 /* Gt */15949,
                                 semantic_version_parse(str, 1, last_index)
                               ];
@@ -11133,13 +11133,13 @@ function directive_parse(token_with_comments, lexbuf) {
                       exit$3 = 1;
                     }
                   } else {
-                    match = /* tuple */[
+                    match = [
                       /* Compatible */785637236,
                       semantic_version_parse(str, 1, last_index)
                     ];
                   }
                   if (exit$3 === 1) {
-                    match = /* tuple */[
+                    match = [
                       /* Exact */172069535,
                       semantic_version_parse(str, 0, last_index)
                     ];
@@ -11246,7 +11246,7 @@ function directive_parse(token_with_comments, lexbuf) {
       if (exit$4 === 2) {
         throw {
               RE_EXN_ID: "Assert_failure",
-              _1: /* tuple */[
+              _1: [
                 "lexer.mll",
                 331,
                 17
@@ -11482,252 +11482,252 @@ function is_elif(i) {
 }
 
 var keyword_table = create_hashtable(149, /* :: */{
-      _0: /* tuple */[
+      _0: [
         "and",
         /* AND */2
       ],
       _1: /* :: */{
-        _0: /* tuple */[
+        _0: [
           "as",
           /* AS */3
         ],
         _1: /* :: */{
-          _0: /* tuple */[
+          _0: [
             "assert",
             /* ASSERT */4
           ],
           _1: /* :: */{
-            _0: /* tuple */[
+            _0: [
               "begin",
               /* BEGIN */10
             ],
             _1: /* :: */{
-              _0: /* tuple */[
+              _0: [
                 "class",
                 /* CLASS */11
               ],
               _1: /* :: */{
-                _0: /* tuple */[
+                _0: [
                   "constraint",
                   /* CONSTRAINT */17
                 ],
                 _1: /* :: */{
-                  _0: /* tuple */[
+                  _0: [
                     "do",
                     /* DO */18
                   ],
                   _1: /* :: */{
-                    _0: /* tuple */[
+                    _0: [
                       "done",
                       /* DONE */19
                     ],
                     _1: /* :: */{
-                      _0: /* tuple */[
+                      _0: [
                         "downto",
                         /* DOWNTO */22
                       ],
                       _1: /* :: */{
-                        _0: /* tuple */[
+                        _0: [
                           "else",
                           /* ELSE */23
                         ],
                         _1: /* :: */{
-                          _0: /* tuple */[
+                          _0: [
                             "end",
                             /* END */24
                           ],
                           _1: /* :: */{
-                            _0: /* tuple */[
+                            _0: [
                               "exception",
                               /* EXCEPTION */27
                             ],
                             _1: /* :: */{
-                              _0: /* tuple */[
+                              _0: [
                                 "external",
                                 /* EXTERNAL */28
                               ],
                               _1: /* :: */{
-                                _0: /* tuple */[
+                                _0: [
                                   "false",
                                   /* FALSE */29
                                 ],
                                 _1: /* :: */{
-                                  _0: /* tuple */[
+                                  _0: [
                                     "for",
                                     /* FOR */30
                                   ],
                                   _1: /* :: */{
-                                    _0: /* tuple */[
+                                    _0: [
                                       "fun",
                                       /* FUN */31
                                     ],
                                     _1: /* :: */{
-                                      _0: /* tuple */[
+                                      _0: [
                                         "function",
                                         /* FUNCTION */32
                                       ],
                                       _1: /* :: */{
-                                        _0: /* tuple */[
+                                        _0: [
                                           "functor",
                                           /* FUNCTOR */33
                                         ],
                                         _1: /* :: */{
-                                          _0: /* tuple */[
+                                          _0: [
                                             "if",
                                             /* IF */37
                                           ],
                                           _1: /* :: */{
-                                            _0: /* tuple */[
+                                            _0: [
                                               "in",
                                               /* IN */38
                                             ],
                                             _1: /* :: */{
-                                              _0: /* tuple */[
+                                              _0: [
                                                 "include",
                                                 /* INCLUDE */39
                                               ],
                                               _1: /* :: */{
-                                                _0: /* tuple */[
+                                                _0: [
                                                   "inherit",
                                                   /* INHERIT */40
                                                 ],
                                                 _1: /* :: */{
-                                                  _0: /* tuple */[
+                                                  _0: [
                                                     "initializer",
                                                     /* INITIALIZER */41
                                                   ],
                                                   _1: /* :: */{
-                                                    _0: /* tuple */[
+                                                    _0: [
                                                       "lazy",
                                                       /* LAZY */42
                                                     ],
                                                     _1: /* :: */{
-                                                      _0: /* tuple */[
+                                                      _0: [
                                                         "let",
                                                         /* LET */53
                                                       ],
                                                       _1: /* :: */{
-                                                        _0: /* tuple */[
+                                                        _0: [
                                                           "match",
                                                           /* MATCH */58
                                                         ],
                                                         _1: /* :: */{
-                                                          _0: /* tuple */[
+                                                          _0: [
                                                             "method",
                                                             /* METHOD */59
                                                           ],
                                                           _1: /* :: */{
-                                                            _0: /* tuple */[
+                                                            _0: [
                                                               "module",
                                                               /* MODULE */63
                                                             ],
                                                             _1: /* :: */{
-                                                              _0: /* tuple */[
+                                                              _0: [
                                                                 "mutable",
                                                                 /* MUTABLE */64
                                                               ],
                                                               _1: /* :: */{
-                                                                _0: /* tuple */[
+                                                                _0: [
                                                                   "new",
                                                                   /* NEW */65
                                                                 ],
                                                                 _1: /* :: */{
-                                                                  _0: /* tuple */[
+                                                                  _0: [
                                                                     "nonrec",
                                                                     /* NONREC */66
                                                                   ],
                                                                   _1: /* :: */{
-                                                                    _0: /* tuple */[
+                                                                    _0: [
                                                                       "object",
                                                                       /* OBJECT */67
                                                                     ],
                                                                     _1: /* :: */{
-                                                                      _0: /* tuple */[
+                                                                      _0: [
                                                                         "of",
                                                                         /* OF */68
                                                                       ],
                                                                       _1: /* :: */{
-                                                                        _0: /* tuple */[
+                                                                        _0: [
                                                                           "open",
                                                                           /* OPEN */69
                                                                         ],
                                                                         _1: /* :: */{
-                                                                          _0: /* tuple */[
+                                                                          _0: [
                                                                             "or",
                                                                             /* OR */70
                                                                           ],
                                                                           _1: /* :: */{
-                                                                            _0: /* tuple */[
+                                                                            _0: [
                                                                               "private",
                                                                               /* PRIVATE */75
                                                                             ],
                                                                             _1: /* :: */{
-                                                                              _0: /* tuple */[
+                                                                              _0: [
                                                                                 "rec",
                                                                                 /* REC */80
                                                                               ],
                                                                               _1: /* :: */{
-                                                                                _0: /* tuple */[
+                                                                                _0: [
                                                                                   "sig",
                                                                                   /* SIG */85
                                                                                 ],
                                                                                 _1: /* :: */{
-                                                                                  _0: /* tuple */[
+                                                                                  _0: [
                                                                                     "struct",
                                                                                     /* STRUCT */87
                                                                                   ],
                                                                                   _1: /* :: */{
-                                                                                    _0: /* tuple */[
+                                                                                    _0: [
                                                                                       "then",
                                                                                       /* THEN */88
                                                                                     ],
                                                                                     _1: /* :: */{
-                                                                                      _0: /* tuple */[
+                                                                                      _0: [
                                                                                         "to",
                                                                                         /* TO */90
                                                                                       ],
                                                                                       _1: /* :: */{
-                                                                                        _0: /* tuple */[
+                                                                                        _0: [
                                                                                           "true",
                                                                                           /* TRUE */91
                                                                                         ],
                                                                                         _1: /* :: */{
-                                                                                          _0: /* tuple */[
+                                                                                          _0: [
                                                                                             "try",
                                                                                             /* TRY */92
                                                                                           ],
                                                                                           _1: /* :: */{
-                                                                                            _0: /* tuple */[
+                                                                                            _0: [
                                                                                               "type",
                                                                                               /* TYPE */93
                                                                                             ],
                                                                                             _1: /* :: */{
-                                                                                              _0: /* tuple */[
+                                                                                              _0: [
                                                                                                 "val",
                                                                                                 /* VAL */95
                                                                                               ],
                                                                                               _1: /* :: */{
-                                                                                                _0: /* tuple */[
+                                                                                                _0: [
                                                                                                   "virtual",
                                                                                                   /* VIRTUAL */96
                                                                                                 ],
                                                                                                 _1: /* :: */{
-                                                                                                  _0: /* tuple */[
+                                                                                                  _0: [
                                                                                                     "when",
                                                                                                     /* WHEN */97
                                                                                                   ],
                                                                                                   _1: /* :: */{
-                                                                                                    _0: /* tuple */[
+                                                                                                    _0: [
                                                                                                       "while",
                                                                                                       /* WHILE */98
                                                                                                     ],
                                                                                                     _1: /* :: */{
-                                                                                                      _0: /* tuple */[
+                                                                                                      _0: [
                                                                                                         "with",
                                                                                                         /* WITH */99
                                                                                                       ],
                                                                                                       _1: /* :: */{
-                                                                                                        _0: /* tuple */[
+                                                                                                        _0: [
                                                                                                           "mod",
                                                                                                           {
                                                                                                             tag: /* INFIXOP3 */5,
@@ -11735,7 +11735,7 @@ var keyword_table = create_hashtable(149, /* :: */{
                                                                                                           }
                                                                                                         ],
                                                                                                         _1: /* :: */{
-                                                                                                          _0: /* tuple */[
+                                                                                                          _0: [
                                                                                                             "land",
                                                                                                             {
                                                                                                               tag: /* INFIXOP3 */5,
@@ -11743,7 +11743,7 @@ var keyword_table = create_hashtable(149, /* :: */{
                                                                                                             }
                                                                                                           ],
                                                                                                           _1: /* :: */{
-                                                                                                            _0: /* tuple */[
+                                                                                                            _0: [
                                                                                                               "lor",
                                                                                                               {
                                                                                                                 tag: /* INFIXOP3 */5,
@@ -11751,7 +11751,7 @@ var keyword_table = create_hashtable(149, /* :: */{
                                                                                                               }
                                                                                                             ],
                                                                                                             _1: /* :: */{
-                                                                                                              _0: /* tuple */[
+                                                                                                              _0: [
                                                                                                                 "lxor",
                                                                                                                 {
                                                                                                                   tag: /* INFIXOP3 */5,
@@ -11759,7 +11759,7 @@ var keyword_table = create_hashtable(149, /* :: */{
                                                                                                                 }
                                                                                                               ],
                                                                                                               _1: /* :: */{
-                                                                                                                _0: /* tuple */[
+                                                                                                                _0: [
                                                                                                                   "lsl",
                                                                                                                   {
                                                                                                                     tag: /* INFIXOP4 */6,
@@ -11767,7 +11767,7 @@ var keyword_table = create_hashtable(149, /* :: */{
                                                                                                                   }
                                                                                                                 ],
                                                                                                                 _1: /* :: */{
-                                                                                                                  _0: /* tuple */[
+                                                                                                                  _0: [
                                                                                                                     "lsr",
                                                                                                                     {
                                                                                                                       tag: /* INFIXOP4 */6,
@@ -11775,7 +11775,7 @@ var keyword_table = create_hashtable(149, /* :: */{
                                                                                                                     }
                                                                                                                   ],
                                                                                                                   _1: /* :: */{
-                                                                                                                    _0: /* tuple */[
+                                                                                                                    _0: [
                                                                                                                       "asr",
                                                                                                                       {
                                                                                                                         tag: /* INFIXOP4 */6,
@@ -11922,7 +11922,7 @@ function with_comment_buffer(comment, lexbuf) {
     loc_end: loc_loc_end,
     loc_ghost: loc_loc_ghost
   };
-  return /* tuple */[
+  return [
           s,
           loc
         ];
@@ -12079,7 +12079,7 @@ function add_comment(com) {
 }
 
 function add_docstring_comment(ds) {
-  return add_comment(/* tuple */[
+  return add_comment([
               ds.ds_body,
               ds.ds_loc
             ]);
@@ -12513,7 +12513,7 @@ function token(lexbuf) {
           lexbuf.lex_start_p = string_start;
           return {
                   tag: /* STRING */16,
-                  _0: /* tuple */[
+                  _0: [
                     get_stored_string(undefined),
                     undefined
                   ]
@@ -12530,7 +12530,7 @@ function token(lexbuf) {
           lexbuf.lex_start_p = string_start$1;
           return {
                   tag: /* STRING */16,
-                  _0: /* tuple */[
+                  _0: [
                     get_stored_string(undefined),
                     delim$1
                   ]
@@ -12577,7 +12577,7 @@ function token(lexbuf) {
           var match = with_comment_buffer(comment, lexbuf);
           return {
                   tag: /* COMMENT */18,
-                  _0: /* tuple */[
+                  _0: [
                     match[0],
                     match[1]
                   ]
@@ -12598,7 +12598,7 @@ function token(lexbuf) {
               }(stars)), lexbuf);
           return {
                   tag: /* COMMENT */18,
-                  _0: /* tuple */[
+                  _0: [
                     match$2[0],
                     match$2[1]
                   ]
@@ -12610,7 +12610,7 @@ function token(lexbuf) {
           var match$3 = with_comment_buffer(comment, lexbuf);
           return {
                   tag: /* COMMENT */18,
-                  _0: /* tuple */[
+                  _0: [
                     match$3[0],
                     match$3[1]
                   ]
@@ -12619,7 +12619,7 @@ function token(lexbuf) {
           var stars$1 = Lexing.sub_lexeme(lexbuf, lexbuf.lex_start_pos, lexbuf.lex_curr_pos - 2 | 0);
           return {
                   tag: /* COMMENT */18,
-                  _0: /* tuple */[
+                  _0: [
                     stars$1,
                     curr(lexbuf)
                   ]
@@ -12897,7 +12897,7 @@ function __ocaml_lex_comment_rec(lexbuf, ___ocaml_lex_state) {
           }
           throw {
                 RE_EXN_ID: "Assert_failure",
-                _1: /* tuple */[
+                _1: [
                   "lexer.mll",
                   992,
                   16
@@ -12936,7 +12936,7 @@ function __ocaml_lex_comment_rec(lexbuf, ___ocaml_lex_state) {
                 }
                 throw {
                       RE_EXN_ID: "Assert_failure",
-                      _1: /* tuple */[
+                      _1: [
                         "lexer.mll",
                         1006,
                         18
@@ -12986,7 +12986,7 @@ function __ocaml_lex_comment_rec(lexbuf, ___ocaml_lex_state) {
                 }
                 throw {
                       RE_EXN_ID: "Assert_failure",
-                      _1: /* tuple */[
+                      _1: [
                         "lexer.mll",
                         1026,
                         18
@@ -13026,7 +13026,7 @@ function __ocaml_lex_comment_rec(lexbuf, ___ocaml_lex_state) {
           }
           throw {
                 RE_EXN_ID: "Assert_failure",
-                _1: /* tuple */[
+                _1: [
                   "lexer.mll",
                   1056,
                   16
@@ -13335,7 +13335,7 @@ function token$1(lexbuf) {
         switch (doc.tag | 0) {
           case /* COMMENT */18 :
               var match$1 = doc._0;
-              add_comment(/* tuple */[
+              add_comment([
                     match$1[0],
                     match$1[1]
                   ]);
@@ -13541,7 +13541,7 @@ var test_id = {
 function eq(loc, x, y) {
   test_id.contents = test_id.contents + 1 | 0;
   suites.contents = /* :: */{
-    _0: /* tuple */[
+    _0: [
       loc + (" id " + String(test_id.contents)),
       (function (param) {
           return {

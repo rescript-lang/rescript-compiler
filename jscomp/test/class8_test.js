@@ -33,7 +33,7 @@ function comparable_1($$class) {
   };
 }
 
-var comparable = /* class */[
+var comparable = [
   undefined,
   comparable_1,
   undefined,

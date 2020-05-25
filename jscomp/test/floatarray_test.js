@@ -23,11 +23,11 @@ for(var i = 0; i <= 4; ++i){
 
 Caml_array.caml_array_set(v, 2, 15.5);
 
-eq("File \"floatarray_test.ml\", line 17, characters 5-12", /* tuple */[
+eq("File \"floatarray_test.ml\", line 17, characters 5-12", [
       v.length,
       v[2],
       Caml_array.caml_array_get(v, 1)
-    ], /* tuple */[
+    ], [
       5,
       15.5,
       0

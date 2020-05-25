@@ -14,7 +14,7 @@ var test_id = {
 function eq(loc, x, y) {
   test_id.contents = test_id.contents + 1 | 0;
   suites.contents = /* :: */{
-    _0: /* tuple */[
+    _0: [
       loc + (" id " + String(test_id.contents)),
       (function (param) {
           return {
@@ -32,7 +32,7 @@ function eq(loc, x, y) {
 function f(param) {
   var x = new Date();
   var y = new Date();
-  return /* tuple */[
+  return [
           Caml_obj.caml_greaterthan(y, x),
           Caml_obj.caml_lessthan(y, x),
           true

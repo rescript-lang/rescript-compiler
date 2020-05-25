@@ -17,7 +17,7 @@ var test_id = {
 function eq(loc, x, y) {
   test_id.contents = test_id.contents + 1 | 0;
   suites.contents = /* :: */{
-    _0: /* tuple */[
+    _0: [
       loc + (" id " + String(test_id.contents)),
       (function (param) {
           return {
@@ -43,7 +43,7 @@ function handler(e) {
   }
   throw {
         RE_EXN_ID: "Assert_failure",
-        _1: /* tuple */[
+        _1: [
           "promise_catch_test.ml",
           22,
           9
@@ -87,7 +87,7 @@ catch (raw_e){
 if (exit === 1) {
   throw {
         RE_EXN_ID: "Assert_failure",
-        _1: /* tuple */[
+        _1: [
           "promise_catch_test.ml",
           39,
           9

@@ -2,13 +2,13 @@
 
 var Caml_module = require("../../lib/js/caml_module.js");
 
-var Point = Caml_module.init_mod(/* tuple */[
+var Point = Caml_module.init_mod([
       "gpr_1539_test.ml",
       10,
       6
     ], {
       tag: /* Module */0,
-      _0: [/* tuple */[
+      _0: [[
           /* Function */0,
           "add"
         ]]
@@ -16,7 +16,7 @@ var Point = Caml_module.init_mod(/* tuple */[
 
 Caml_module.update_mod({
       tag: /* Module */0,
-      _0: [/* tuple */[
+      _0: [[
           /* Function */0,
           "add"
         ]]

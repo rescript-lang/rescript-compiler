@@ -2,7 +2,7 @@
 
 var Mt = require("./mt.js");
 
-var suites_0 = /* tuple */[
+var suites_0 = [
   "toExponential",
   (function (param) {
       return {
@@ -14,7 +14,7 @@ var suites_0 = /* tuple */[
 ];
 
 var suites_1 = /* :: */{
-  _0: /* tuple */[
+  _0: [
     "toExponentialWithPrecision - digits:2",
     (function (param) {
         return {
@@ -25,7 +25,7 @@ var suites_1 = /* :: */{
       })
   ],
   _1: /* :: */{
-    _0: /* tuple */[
+    _0: [
       "toExponentialWithPrecision - digits:4",
       (function (param) {
           return {
@@ -36,7 +36,7 @@ var suites_1 = /* :: */{
         })
     ],
     _1: /* :: */{
-      _0: /* tuple */[
+      _0: [
         "toExponentialWithPrecision - digits:20",
         (function (param) {
             return {
@@ -47,7 +47,7 @@ var suites_1 = /* :: */{
           })
       ],
       _1: /* :: */{
-        _0: /* tuple */[
+        _0: [
           "File \"js_int_test.ml\", line 12, characters 3-10",
           (function (param) {
               return {
@@ -60,7 +60,7 @@ var suites_1 = /* :: */{
             })
         ],
         _1: /* :: */{
-          _0: /* tuple */[
+          _0: [
             "toExponentialWithPrecision - digits:-1",
             (function (param) {
                 return {
@@ -73,7 +73,7 @@ var suites_1 = /* :: */{
               })
           ],
           _1: /* :: */{
-            _0: /* tuple */[
+            _0: [
               "toPrecision",
               (function (param) {
                   return {
@@ -84,7 +84,7 @@ var suites_1 = /* :: */{
                 })
             ],
             _1: /* :: */{
-              _0: /* tuple */[
+              _0: [
                 "toPrecisionWithPrecision - digits:2",
                 (function (param) {
                     return {
@@ -95,7 +95,7 @@ var suites_1 = /* :: */{
                   })
               ],
               _1: /* :: */{
-                _0: /* tuple */[
+                _0: [
                   "toPrecisionWithPrecision - digits:4",
                   (function (param) {
                       return {
@@ -106,7 +106,7 @@ var suites_1 = /* :: */{
                     })
                 ],
                 _1: /* :: */{
-                  _0: /* tuple */[
+                  _0: [
                     "toPrecisionWithPrecision - digits:20",
                     (function (param) {
                         return {
@@ -117,7 +117,7 @@ var suites_1 = /* :: */{
                       })
                   ],
                   _1: /* :: */{
-                    _0: /* tuple */[
+                    _0: [
                       "File \"js_int_test.ml\", line 25, characters 3-10",
                       (function (param) {
                           return {
@@ -130,7 +130,7 @@ var suites_1 = /* :: */{
                         })
                     ],
                     _1: /* :: */{
-                      _0: /* tuple */[
+                      _0: [
                         "toPrecisionWithPrecision - digits:-1",
                         (function (param) {
                             return {
@@ -143,7 +143,7 @@ var suites_1 = /* :: */{
                           })
                       ],
                       _1: /* :: */{
-                        _0: /* tuple */[
+                        _0: [
                           "toString",
                           (function (param) {
                               return {
@@ -154,7 +154,7 @@ var suites_1 = /* :: */{
                             })
                         ],
                         _1: /* :: */{
-                          _0: /* tuple */[
+                          _0: [
                             "toStringWithRadix - radix:2",
                             (function (param) {
                                 return {
@@ -165,7 +165,7 @@ var suites_1 = /* :: */{
                               })
                           ],
                           _1: /* :: */{
-                            _0: /* tuple */[
+                            _0: [
                               "toStringWithRadix - radix:16",
                               (function (param) {
                                   return {
@@ -176,7 +176,7 @@ var suites_1 = /* :: */{
                                 })
                             ],
                             _1: /* :: */{
-                              _0: /* tuple */[
+                              _0: [
                                 "toStringWithRadix - radix:36",
                                 (function (param) {
                                     return {
@@ -187,7 +187,7 @@ var suites_1 = /* :: */{
                                   })
                               ],
                               _1: /* :: */{
-                                _0: /* tuple */[
+                                _0: [
                                   "toStringWithRadix - radix:37",
                                   (function (param) {
                                       return {
@@ -200,7 +200,7 @@ var suites_1 = /* :: */{
                                     })
                                 ],
                                 _1: /* :: */{
-                                  _0: /* tuple */[
+                                  _0: [
                                     "toStringWithRadix - radix:1",
                                     (function (param) {
                                         return {
@@ -213,7 +213,7 @@ var suites_1 = /* :: */{
                                       })
                                   ],
                                   _1: /* :: */{
-                                    _0: /* tuple */[
+                                    _0: [
                                       "toStringWithRadix - radix:-1",
                                       (function (param) {
                                           return {

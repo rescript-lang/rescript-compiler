@@ -24,7 +24,7 @@ function f(param) {
   return v;
 }
 
-var suites_0 = /* tuple */[
+var suites_0 = [
   "acc",
   (function (param) {
       return {
@@ -47,7 +47,7 @@ var suites_0 = /* tuple */[
 ];
 
 var suites_1 = /* :: */{
-  _0: /* tuple */[
+  _0: [
     "array_to_list",
     (function (param) {
         return {

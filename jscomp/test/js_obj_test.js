@@ -19,7 +19,7 @@ var class_tables = /* Cons */{
   next: undefined
 };
 
-var suites_0 = /* tuple */[
+var suites_0 = [
   "caml_obj",
   (function (param) {
       if (!class_tables.key) {
@@ -46,7 +46,7 @@ var suites_0 = /* tuple */[
 ];
 
 var suites_1 = /* :: */{
-  _0: /* tuple */[
+  _0: [
     "js_obj",
     (function (param) {
         return {
@@ -61,7 +61,7 @@ var suites_1 = /* :: */{
       })
   ],
   _1: /* :: */{
-    _0: /* tuple */[
+    _0: [
       "js_obj2",
       (function (param) {
           return {
@@ -76,7 +76,7 @@ var suites_1 = /* :: */{
         })
     ],
     _1: /* :: */{
-      _0: /* tuple */[
+      _0: [
         "empty",
         (function (param) {
             return {
@@ -87,7 +87,7 @@ var suites_1 = /* :: */{
           })
       ],
       _1: /* :: */{
-        _0: /* tuple */[
+        _0: [
           "assign",
           (function (param) {
               return {

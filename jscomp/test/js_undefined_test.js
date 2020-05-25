@@ -4,7 +4,7 @@ var Mt = require("./mt.js");
 var Caml_option = require("../../lib/js/caml_option.js");
 var Js_undefined = require("../../lib/js/js_undefined.js");
 
-var suites_0 = /* tuple */[
+var suites_0 = [
   "toOption - empty",
   (function (param) {
       return {
@@ -16,7 +16,7 @@ var suites_0 = /* tuple */[
 ];
 
 var suites_1 = /* :: */{
-  _0: /* tuple */[
+  _0: [
     "File \"js_undefined_test.ml\", line 5, characters 2-9",
     (function (param) {
         return {
@@ -27,7 +27,7 @@ var suites_1 = /* :: */{
       })
   ],
   _1: /* :: */{
-    _0: /* tuple */[
+    _0: [
       "return",
       (function (param) {
           return {
@@ -38,7 +38,7 @@ var suites_1 = /* :: */{
         })
     ],
     _1: /* :: */{
-      _0: /* tuple */[
+      _0: [
         "test - empty",
         (function (param) {
             return {
@@ -49,7 +49,7 @@ var suites_1 = /* :: */{
           })
       ],
       _1: /* :: */{
-        _0: /* tuple */[
+        _0: [
           "File \"js_undefined_test.ml\", line 8, characters 2-9",
           (function (param) {
               return {
@@ -60,7 +60,7 @@ var suites_1 = /* :: */{
             })
         ],
         _1: /* :: */{
-          _0: /* tuple */[
+          _0: [
             "bind - empty",
             (function (param) {
                 return {
@@ -73,7 +73,7 @@ var suites_1 = /* :: */{
               })
           ],
           _1: /* :: */{
-            _0: /* tuple */[
+            _0: [
               "bind - 'a",
               (function (param) {
                   return {
@@ -86,7 +86,7 @@ var suites_1 = /* :: */{
                 })
             ],
             _1: /* :: */{
-              _0: /* tuple */[
+              _0: [
                 "iter - empty",
                 (function (param) {
                     var hit = {
@@ -104,7 +104,7 @@ var suites_1 = /* :: */{
                   })
               ],
               _1: /* :: */{
-                _0: /* tuple */[
+                _0: [
                   "iter - 'a",
                   (function (param) {
                       var hit = {
@@ -122,7 +122,7 @@ var suites_1 = /* :: */{
                     })
                 ],
                 _1: /* :: */{
-                  _0: /* tuple */[
+                  _0: [
                     "fromOption - None",
                     (function (param) {
                         return {
@@ -133,7 +133,7 @@ var suites_1 = /* :: */{
                       })
                   ],
                   _1: /* :: */{
-                    _0: /* tuple */[
+                    _0: [
                       "fromOption - Some",
                       (function (param) {
                           return {

@@ -5,10 +5,10 @@ var r = 0;
 
 for(var k = 1; k <= 10; ++k){
   for(var i = 1; i <= 10; ++i){
-    var match = i % 2 === 0 ? /* tuple */[
+    var match = i % 2 === 0 ? [
         1,
         (i << 1)
-      ] : /* tuple */[
+      ] : [
         2,
         Math.imul(i, 3)
       ];

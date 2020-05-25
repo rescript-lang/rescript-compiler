@@ -68,7 +68,7 @@ if (A0 === A0) {
 } else {
   throw {
         RE_EXN_ID: "Assert_failure",
-        _1: /* tuple */[
+        _1: [
           "inline_record_test.ml",
           51,
           52
@@ -110,7 +110,7 @@ var tmp$1;
 if (v4.tag) {
   throw {
         RE_EXN_ID: "Assert_failure",
-        _1: /* tuple */[
+        _1: [
           "inline_record_test.ml",
           69,
           48
@@ -130,7 +130,7 @@ if (v5.tag) {
 } else {
   throw {
         RE_EXN_ID: "Assert_failure",
-        _1: /* tuple */[
+        _1: [
           "inline_record_test.ml",
           71,
           48
@@ -170,7 +170,7 @@ if (v6.RE_EXN_ID === A4) {
 } else {
   throw {
         RE_EXN_ID: "Assert_failure",
-        _1: /* tuple */[
+        _1: [
           "inline_record_test.ml",
           87,
           49

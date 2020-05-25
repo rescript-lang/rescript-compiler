@@ -24,11 +24,11 @@ var a = Caml_int64.mk(2147483647, 0);
 function commutative_add(result, a, b) {
   return {
           tag: /* Eq */0,
-          _0: /* tuple */[
+          _0: [
             result,
             result
           ],
-          _1: /* tuple */[
+          _1: [
             Caml_int64.add(a, b),
             Caml_int64.add(b, a)
           ]
@@ -108,7 +108,7 @@ var shift_left_tests_1 = [
   Caml_int64.min_int
 ];
 
-var shift_left_tests = /* tuple */[
+var shift_left_tests = [
   shift_left_tests_0,
   shift_left_tests_1
 ];
@@ -184,7 +184,7 @@ var shift_right_tests_1 = [
   Caml_int64.neg_one
 ];
 
-var shift_right_tests = /* tuple */[
+var shift_right_tests = [
   shift_right_tests_0,
   shift_right_tests_1
 ];
@@ -260,7 +260,7 @@ var shift_right_logical_suites_1 = [
   Caml_int64.one
 ];
 
-var shift_right_logical_suites = /* tuple */[
+var shift_right_logical_suites = [
   shift_right_logical_suites_0,
   shift_right_logical_suites_1
 ];
@@ -294,7 +294,7 @@ function fac(_n, _acc) {
 }
 
 var suites = Pervasives.$at(/* :: */{
-      _0: /* tuple */[
+      _0: [
         "add_one",
         (function (param) {
             return {
@@ -305,7 +305,7 @@ var suites = Pervasives.$at(/* :: */{
           })
       ],
       _1: /* :: */{
-        _0: /* tuple */[
+        _0: [
           "add_2",
           (function (param) {
               return {
@@ -316,7 +316,7 @@ var suites = Pervasives.$at(/* :: */{
             })
         ],
         _1: /* :: */{
-          _0: /* tuple */[
+          _0: [
             "add_3",
             (function (param) {
                 return {
@@ -327,63 +327,63 @@ var suites = Pervasives.$at(/* :: */{
               })
           ],
           _1: /* :: */{
-            _0: /* tuple */[
+            _0: [
               "add_4",
               (function (param) {
                   return commutative_add(Caml_int64.mk(-2, -1), Caml_int64.mk(-3, -1), Caml_int64.one);
                 })
             ],
             _1: /* :: */{
-              _0: /* tuple */[
+              _0: [
                 "add_5",
                 (function (param) {
                     return commutative_add(Caml_int64.mk(-3, -1), Caml_int64.mk(-3, -1), Caml_int64.zero);
                   })
               ],
               _1: /* :: */{
-                _0: /* tuple */[
+                _0: [
                   "add_6",
                   (function (param) {
                       return commutative_add(Caml_int64.mk(4, 0), Caml_int64.mk(-3, -1), Caml_int64.mk(7, 0));
                     })
                 ],
                 _1: /* :: */{
-                  _0: /* tuple */[
+                  _0: [
                     "add_7",
                     (function (param) {
                         return commutative_add(Caml_int64.mk(0, 1), Caml_int64.mk(-2147483648, 0), Caml_int64.mk(-2147483648, 0));
                       })
                   ],
                   _1: /* :: */{
-                    _0: /* tuple */[
+                    _0: [
                       "add_8",
                       (function (param) {
                           return commutative_add(Caml_int64.mk(0, 1), Caml_int64.mk(-1, 0), Caml_int64.one);
                         })
                     ],
                     _1: /* :: */{
-                      _0: /* tuple */[
+                      _0: [
                         "add_9",
                         (function (param) {
                             return commutative_add(Caml_int64.mk(-1, 0), Caml_int64.mk(-2147483648, 0), Caml_int64.mk(2147483647, 0));
                           })
                       ],
                       _1: /* :: */{
-                        _0: /* tuple */[
+                        _0: [
                           "add_10",
                           (function (param) {
                               return commutative_add(Caml_int64.mk(-2147483648, 0), Caml_int64.mk(-2147483648, 0), Caml_int64.zero);
                             })
                         ],
                         _1: /* :: */{
-                          _0: /* tuple */[
+                          _0: [
                             "add_11",
                             (function (param) {
                                 return commutative_add(Caml_int64.mk(-1, 0), Caml_int64.mk(-1, 0), Caml_int64.zero);
                               })
                           ],
                           _1: /* :: */{
-                            _0: /* tuple */[
+                            _0: [
                               "to_int32",
                               (function (param) {
                                   return {
@@ -394,7 +394,7 @@ var suites = Pervasives.$at(/* :: */{
                                 })
                             ],
                             _1: /* :: */{
-                              _0: /* tuple */[
+                              _0: [
                                 "to_int",
                                 (function (param) {
                                     return {
@@ -405,7 +405,7 @@ var suites = Pervasives.$at(/* :: */{
                                   })
                               ],
                               _1: /* :: */{
-                                _0: /* tuple */[
+                                _0: [
                                   "of_int",
                                   (function (param) {
                                       return {
@@ -416,7 +416,7 @@ var suites = Pervasives.$at(/* :: */{
                                     })
                                 ],
                                 _1: /* :: */{
-                                  _0: /* tuple */[
+                                  _0: [
                                     "lognot",
                                     (function (param) {
                                         return {
@@ -427,7 +427,7 @@ var suites = Pervasives.$at(/* :: */{
                                       })
                                   ],
                                   _1: /* :: */{
-                                    _0: /* tuple */[
+                                    _0: [
                                       "neg",
                                       (function (param) {
                                           return {
@@ -438,7 +438,7 @@ var suites = Pervasives.$at(/* :: */{
                                         })
                                     ],
                                     _1: /* :: */{
-                                      _0: /* tuple */[
+                                      _0: [
                                         "File \"int64_test.ml\", line 80, characters 4-11",
                                         (function (param) {
                                             return {
@@ -449,7 +449,7 @@ var suites = Pervasives.$at(/* :: */{
                                           })
                                       ],
                                       _1: /* :: */{
-                                        _0: /* tuple */[
+                                        _0: [
                                           "File \"int64_test.ml\", line 81, characters 4-11",
                                           (function (param) {
                                               return {
@@ -460,7 +460,7 @@ var suites = Pervasives.$at(/* :: */{
                                             })
                                         ],
                                         _1: /* :: */{
-                                          _0: /* tuple */[
+                                          _0: [
                                             "sub1",
                                             (function (param) {
                                                 return {
@@ -471,16 +471,16 @@ var suites = Pervasives.$at(/* :: */{
                                               })
                                           ],
                                           _1: /* :: */{
-                                            _0: /* tuple */[
+                                            _0: [
                                               "xor1",
                                               (function (param) {
                                                   return {
                                                           tag: /* Eq */0,
-                                                          _0: /* tuple */[
+                                                          _0: [
                                                             Caml_int64.mk(286331153, 0),
                                                             Caml_int64.xor(a, Caml_int64.mk(-285217025, 0))
                                                           ],
-                                                          _1: /* tuple */[
+                                                          _1: [
                                                             Caml_int64.mk(286331153, 0),
                                                             Caml_int64.mk(-1862266624, 0)
                                                           ]
@@ -488,7 +488,7 @@ var suites = Pervasives.$at(/* :: */{
                                                 })
                                             ],
                                             _1: /* :: */{
-                                              _0: /* tuple */[
+                                              _0: [
                                                 "or",
                                                 (function (param) {
                                                     return {
@@ -499,7 +499,7 @@ var suites = Pervasives.$at(/* :: */{
                                                   })
                                               ],
                                               _1: /* :: */{
-                                                _0: /* tuple */[
+                                                _0: [
                                                   "and",
                                                   (function (param) {
                                                       return {
@@ -510,7 +510,7 @@ var suites = Pervasives.$at(/* :: */{
                                                     })
                                                 ],
                                                 _1: /* :: */{
-                                                  _0: /* tuple */[
+                                                  _0: [
                                                     "lsl",
                                                     (function (param) {
                                                         return {
@@ -590,7 +590,7 @@ var suites = Pervasives.$at(/* :: */{
                                                       })
                                                   ],
                                                   _1: /* :: */{
-                                                    _0: /* tuple */[
+                                                    _0: [
                                                       "lsr",
                                                       (function (param) {
                                                           return {
@@ -670,7 +670,7 @@ var suites = Pervasives.$at(/* :: */{
                                                         })
                                                     ],
                                                     _1: /* :: */{
-                                                      _0: /* tuple */[
+                                                      _0: [
                                                         "asr",
                                                         (function (param) {
                                                             return {
@@ -750,7 +750,7 @@ var suites = Pervasives.$at(/* :: */{
                                                           })
                                                       ],
                                                       _1: /* :: */{
-                                                        _0: /* tuple */[
+                                                        _0: [
                                                           "mul simple",
                                                           (function (param) {
                                                               return {
@@ -761,7 +761,7 @@ var suites = Pervasives.$at(/* :: */{
                                                             })
                                                         ],
                                                         _1: /* :: */{
-                                                          _0: /* tuple */[
+                                                          _0: [
                                                             "of_int32",
                                                             (function (param) {
                                                                 return {
@@ -778,7 +778,7 @@ var suites = Pervasives.$at(/* :: */{
                                                               })
                                                           ],
                                                           _1: /* :: */{
-                                                            _0: /* tuple */[
+                                                            _0: [
                                                               "of_int32_singleton",
                                                               (function (param) {
                                                                   return {
@@ -789,7 +789,7 @@ var suites = Pervasives.$at(/* :: */{
                                                                 })
                                                             ],
                                                             _1: /* :: */{
-                                                              _0: /* tuple */[
+                                                              _0: [
                                                                 "File \"int64_test.ml\", line 134, characters 4-11",
                                                                 (function (param) {
                                                                     return {
@@ -800,7 +800,7 @@ var suites = Pervasives.$at(/* :: */{
                                                                   })
                                                               ],
                                                               _1: /* :: */{
-                                                                _0: /* tuple */[
+                                                                _0: [
                                                                   "to_int32",
                                                                   (function (param) {
                                                                       return {
@@ -817,7 +817,7 @@ var suites = Pervasives.$at(/* :: */{
                                                                     })
                                                                 ],
                                                                 _1: /* :: */{
-                                                                  _0: /* tuple */[
+                                                                  _0: [
                                                                     "discard_sign",
                                                                     (function (param) {
                                                                         return {
@@ -828,13 +828,13 @@ var suites = Pervasives.$at(/* :: */{
                                                                       })
                                                                   ],
                                                                   _1: /* :: */{
-                                                                    _0: /* tuple */[
+                                                                    _0: [
                                                                       "div_mod",
                                                                       (function (param) {
                                                                           return {
                                                                                   tag: /* Eq */0,
                                                                                   _0: Caml_int64.div_mod(Caml_int64.mk(7, 0), Caml_int64.mk(3, 0)),
-                                                                                  _1: /* tuple */[
+                                                                                  _1: [
                                                                                     Caml_int64.mk(2, 0),
                                                                                     Caml_int64.one
                                                                                   ]
@@ -842,7 +842,7 @@ var suites = Pervasives.$at(/* :: */{
                                                                         })
                                                                     ],
                                                                     _1: /* :: */{
-                                                                      _0: /* tuple */[
+                                                                      _0: [
                                                                         "to_hex",
                                                                         (function (param) {
                                                                             return {
@@ -853,7 +853,7 @@ var suites = Pervasives.$at(/* :: */{
                                                                           })
                                                                       ],
                                                                       _1: /* :: */{
-                                                                        _0: /* tuple */[
+                                                                        _0: [
                                                                           "generic_compare",
                                                                           (function (param) {
                                                                               return {
@@ -864,7 +864,7 @@ var suites = Pervasives.$at(/* :: */{
                                                                             })
                                                                         ],
                                                                         _1: /* :: */{
-                                                                          _0: /* tuple */[
+                                                                          _0: [
                                                                             "test_compier_literal",
                                                                             (function (param) {
                                                                                 return {
@@ -875,7 +875,7 @@ var suites = Pervasives.$at(/* :: */{
                                                                               })
                                                                           ],
                                                                           _1: /* :: */{
-                                                                            _0: /* tuple */[
+                                                                            _0: [
                                                                               "generic_compare2",
                                                                               (function (param) {
                                                                                   return {
@@ -886,7 +886,7 @@ var suites = Pervasives.$at(/* :: */{
                                                                                 })
                                                                             ],
                                                                             _1: /* :: */{
-                                                                              _0: /* tuple */[
+                                                                              _0: [
                                                                                 "shift_left",
                                                                                 (function (param) {
                                                                                     return {
@@ -897,7 +897,7 @@ var suites = Pervasives.$at(/* :: */{
                                                                                   })
                                                                               ],
                                                                               _1: /* :: */{
-                                                                                _0: /* tuple */[
+                                                                                _0: [
                                                                                   "shift_right",
                                                                                   (function (param) {
                                                                                       return {
@@ -908,7 +908,7 @@ var suites = Pervasives.$at(/* :: */{
                                                                                     })
                                                                                 ],
                                                                                 _1: /* :: */{
-                                                                                  _0: /* tuple */[
+                                                                                  _0: [
                                                                                     "fib_int64",
                                                                                     (function (param) {
                                                                                         return {
@@ -919,7 +919,7 @@ var suites = Pervasives.$at(/* :: */{
                                                                                       })
                                                                                   ],
                                                                                   _1: /* :: */{
-                                                                                    _0: /* tuple */[
+                                                                                    _0: [
                                                                                       "fac_int64",
                                                                                       (function (param) {
                                                                                           return {
@@ -930,7 +930,7 @@ var suites = Pervasives.$at(/* :: */{
                                                                                         })
                                                                                     ],
                                                                                     _1: /* :: */{
-                                                                                      _0: /* tuple */[
+                                                                                      _0: [
                                                                                         "File \"int64_test.ml\", line 163, characters 6-13",
                                                                                         (function (param) {
                                                                                             return {
@@ -941,7 +941,7 @@ var suites = Pervasives.$at(/* :: */{
                                                                                           })
                                                                                       ],
                                                                                       _1: /* :: */{
-                                                                                        _0: /* tuple */[
+                                                                                        _0: [
                                                                                           "File \"int64_test.ml\", line 166, characters 6-13",
                                                                                           (function (param) {
                                                                                               return {
@@ -952,7 +952,7 @@ var suites = Pervasives.$at(/* :: */{
                                                                                             })
                                                                                         ],
                                                                                         _1: /* :: */{
-                                                                                          _0: /* tuple */[
+                                                                                          _0: [
                                                                                             "File \"int64_test.ml\", line 170, characters 6-13",
                                                                                             (function (param) {
                                                                                                 return {
@@ -1006,7 +1006,7 @@ var suites = Pervasives.$at(/* :: */{
         }
       }
     }, Pervasives.$at($$Array.to_list(Ext_array_test.map2i((function (i, a, b) {
-                    return /* tuple */[
+                    return [
                             Curry._1(Format.asprintf(/* Format */{
                                       _0: {
                                         tag: /* String_literal */11,
@@ -1030,7 +1030,7 @@ var suites = Pervasives.$at(/* :: */{
                               })
                           ];
                   }), shift_left_tests_0, shift_left_tests_1)), Pervasives.$at($$Array.to_list(Ext_array_test.map2i((function (i, a, b) {
-                        return /* tuple */[
+                        return [
                                 Curry._1(Format.asprintf(/* Format */{
                                           _0: {
                                             tag: /* String_literal */11,
@@ -1054,7 +1054,7 @@ var suites = Pervasives.$at(/* :: */{
                                   })
                               ];
                       }), shift_right_tests_0, shift_right_tests_1)), $$Array.to_list(Ext_array_test.map2i((function (i, a, b) {
-                        return /* tuple */[
+                        return [
                                 Curry._1(Format.asprintf(/* Format */{
                                           _0: {
                                             tag: /* String_literal */11,

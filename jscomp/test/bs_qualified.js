@@ -11,7 +11,7 @@ function f(a, b, c) {
 }
 
 function f2(param) {
-  return /* tuple */[
+  return [
           Z.a0.a1.a2.hi,
           a0.a1.a2.ho,
           Math.imul(1, 2)

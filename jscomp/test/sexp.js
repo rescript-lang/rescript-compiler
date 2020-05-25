@@ -272,7 +272,7 @@ function to_pair(e) {
   }
   var match$1 = match._1;
   if (match$1 && !match$1._1) {
-    return /* tuple */[
+    return [
             match._0,
             match$1._0
           ];
@@ -285,7 +285,7 @@ function to_pair_with(f1, f2, e) {
                 var y = param[1];
                 return $great$great$eq(Curry._1(f1, param[0]), (function (x) {
                               return $great$great$eq(Curry._1(f2, y), (function (y) {
-                                            return /* tuple */[
+                                            return [
                                                     x,
                                                     y
                                                   ];
@@ -311,7 +311,7 @@ function to_triple(e) {
   }
   var match$2 = match$1._1;
   if (match$2 && !match$2._1) {
-    return /* tuple */[
+    return [
             match._0,
             match$1._0,
             match$2._0
@@ -327,7 +327,7 @@ function to_triple_with(f1, f2, f3, e) {
                 return $great$great$eq(Curry._1(f1, param[0]), (function (x) {
                               return $great$great$eq(Curry._1(f2, y), (function (y) {
                                             return $great$great$eq(Curry._1(f3, z), (function (z) {
-                                                          return /* tuple */[
+                                                          return [
                                                                   x,
                                                                   y,
                                                                   z

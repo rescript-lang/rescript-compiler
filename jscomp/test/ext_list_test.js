@@ -53,12 +53,12 @@ function excludes(p, l) {
   };
   var v = aux(/* [] */0, l);
   if (excluded.contents) {
-    return /* tuple */[
+    return [
             true,
             v
           ];
   } else {
-    return /* tuple */[
+    return [
             false,
             l
           ];
@@ -92,7 +92,7 @@ function exclude_with_fact(p, l) {
     };
   };
   var v = aux(/* [] */0, l);
-  return /* tuple */[
+  return [
           excluded.contents,
           excluded.contents !== undefined ? v : l
         ];
@@ -133,7 +133,7 @@ function exclude_with_fact2(p1, p2, l) {
     };
   };
   var v = aux(/* [] */0, l);
-  return /* tuple */[
+  return [
           excluded1.contents,
           excluded2.contents,
           excluded1.contents !== undefined && excluded2.contents !== undefined ? v : l
@@ -444,7 +444,7 @@ function take(n, l) {
           Error: new Error()
         };
   }
-  return /* tuple */[
+  return [
           $$Array.to_list($$Array.sub(arr, 0, n)),
           $$Array.to_list($$Array.sub(arr, n, arr_length - n | 0))
         ];
@@ -454,13 +454,13 @@ function try_take(n, l) {
   var arr = $$Array.of_list(l);
   var arr_length = arr.length;
   if (arr_length <= n) {
-    return /* tuple */[
+    return [
             l,
             arr_length,
             /* [] */0
           ];
   } else {
-    return /* tuple */[
+    return [
             $$Array.to_list($$Array.sub(arr, 0, n)),
             n,
             $$Array.to_list($$Array.sub(arr, n, arr_length - n | 0))
@@ -514,7 +514,7 @@ function exclude_tail(x) {
       var ys = x$1._1;
       var x$2 = x$1._0;
       if (!ys) {
-        return /* tuple */[
+        return [
                 x$2,
                 List.rev(acc)
               ];
@@ -736,7 +736,7 @@ function split_map(f, xs) {
     var cs = _cs;
     var bs = _bs;
     if (!xs$1) {
-      return /* tuple */[
+      return [
               List.rev(bs),
               List.rev(cs)
             ];
@@ -838,7 +838,7 @@ function rev_except_last(xs) {
       var xs$2 = xs$1._1;
       var x = xs$1._0;
       if (!xs$2) {
-        return /* tuple */[
+        return [
                 acc,
                 x
               ];
@@ -899,7 +899,7 @@ function assoc_by_string(def, k, _lst) {
     }
     throw {
           RE_EXN_ID: "Assert_failure",
-          _1: /* tuple */[
+          _1: [
             "ext_list_test.ml",
             399,
             14
@@ -925,7 +925,7 @@ function assoc_by_int(def, k, _lst) {
     }
     throw {
           RE_EXN_ID: "Assert_failure",
-          _1: /* tuple */[
+          _1: [
             "ext_list_test.ml",
             409,
             14

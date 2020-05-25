@@ -20,7 +20,7 @@ var test_id = {
 function eq(loc, x, y) {
   test_id.contents = test_id.contents + 1 | 0;
   suites.contents = /* :: */{
-    _0: /* tuple */[
+    _0: [
       loc + (" id " + String(test_id.contents)),
       (function (param) {
           return {
@@ -110,17 +110,17 @@ function f(loc, ls) {
 }
 
 f("File \"format_test.ml\", line 78, characters 6-13", /* :: */{
-      _0: /* tuple */[
+      _0: [
         "0x3.fp+1",
         7.875
       ],
       _1: /* :: */{
-        _0: /* tuple */[
+        _0: [
           " 0x3.fp2",
           15.75
         ],
         _1: /* :: */{
-          _0: /* tuple */[
+          _0: [
             " 0x4.fp2",
             19.75
           ],
@@ -148,48 +148,48 @@ function aux_list(loc, ls) {
               }), ls);
 }
 
-var literals_0 = /* tuple */[
+var literals_0 = [
   7.875,
   "0x1.f8p+2"
 ];
 
 var literals_1 = /* :: */{
-  _0: /* tuple */[
+  _0: [
     0.3,
     "0x1.3333333333333p-2"
   ],
   _1: /* :: */{
-    _0: /* tuple */[
+    _0: [
       Pervasives.infinity,
       "infinity"
     ],
     _1: /* :: */{
-      _0: /* tuple */[
+      _0: [
         0.4,
         "0x1.999999999999ap-2"
       ],
       _1: /* :: */{
-        _0: /* tuple */[
+        _0: [
           0.5,
           "0x1p-1"
         ],
         _1: /* :: */{
-          _0: /* tuple */[
+          _0: [
             0.6,
             "0x1.3333333333333p-1"
           ],
           _1: /* :: */{
-            _0: /* tuple */[
+            _0: [
               0.7,
               "0x1.6666666666666p-1"
             ],
             _1: /* :: */{
-              _0: /* tuple */[
+              _0: [
                 0.8,
                 "0x1.999999999999ap-1"
               ],
               _1: /* :: */{
-                _0: /* tuple */[
+                _0: [
                   0.9,
                   "0x1.ccccccccccccdp-1"
                 ],

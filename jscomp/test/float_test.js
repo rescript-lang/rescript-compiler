@@ -39,80 +39,80 @@ var match$1 = Caml_float.caml_frexp_float(0);
 var match$2 = Caml_float.caml_frexp_float(-12.0);
 
 var results = $$Array.append([
-      /* tuple */[
+      [
         Math.log10(2),
         0.301029995663981198
       ],
-      /* tuple */[
+      [
         Caml_float.caml_ldexp_float(1, 6),
         64
       ],
-      /* tuple */[
+      [
         Caml_float.caml_ldexp_float(1, 5),
         32
       ],
-      /* tuple */[
+      [
         Caml_float.caml_ldexp_float(1.e-5, 1024),
         1.79769313486231605e+303
       ],
-      /* tuple */[
+      [
         Caml_float.caml_ldexp_float(1, -1024),
         5.56268464626800346e-309
       ],
-      /* tuple */[
+      [
         Caml_float.caml_hypot_float(3, 4),
         5
       ],
-      /* tuple */[
+      [
         Caml_float.caml_hypot_float(4, 3),
         5
       ],
-      /* tuple */[
+      [
         Caml_float.caml_hypot_float(5, 12),
         13
       ],
-      /* tuple */[
+      [
         Caml_float.caml_hypot_float(12, 5),
         13
       ],
-      /* tuple */[
+      [
         Caml_float.caml_copysign_float(22.3, -1),
         -22.3
       ],
-      /* tuple */[
+      [
         Caml_float.caml_copysign_float(22.3, 1),
         22.3
       ],
-      /* tuple */[
+      [
         Caml_float.caml_expm1_float(1e-15),
         1.00000000000000067e-15
       ],
-      /* tuple */[
+      [
         Math.log1p(1e-10),
         9.9999999995000007e-11
       ]
     ], [
-      /* tuple */[
+      [
         match$1[0],
         0
       ],
-      /* tuple */[
+      [
         match$1[1],
         0
       ],
-      /* tuple */[
+      [
         match[0],
         0.75
       ],
-      /* tuple */[
+      [
         match[1],
         4
       ],
-      /* tuple */[
+      [
         match$2[0],
         -0.75
       ],
-      /* tuple */[
+      [
         match$2[1],
         4
       ]
@@ -122,7 +122,7 @@ function from_pairs(ps) {
   return $$Array.to_list($$Array.mapi((function (i, param) {
                     var b = param[1];
                     var a = param[0];
-                    return /* tuple */[
+                    return [
                             Curry._1(Printf.sprintf(/* Format */{
                                       _0: {
                                         tag: /* String_literal */11,
@@ -152,17 +152,17 @@ var float_compare = Caml_primitive.caml_float_compare;
 
 Mt_global.collect_eq(test_id, suites, "File \"float_test.ml\", line 47, characters 5-12", Pervasives.classify_float(3), /* FP_normal */0);
 
-Mt_global.collect_eq(test_id, suites, "File \"float_test.ml\", line 48, characters 5-12", Caml_float.caml_modf_float(-3.125), /* tuple */[
+Mt_global.collect_eq(test_id, suites, "File \"float_test.ml\", line 48, characters 5-12", Caml_float.caml_modf_float(-3.125), [
       -0.125,
       -3
     ]);
 
 var match$3 = Caml_float.caml_modf_float(Number.NaN);
 
-Mt_global.collect_eq(test_id, suites, "File \"float_test.ml\", line 49, characters 5-12", /* tuple */[
+Mt_global.collect_eq(test_id, suites, "File \"float_test.ml\", line 49, characters 5-12", [
       isNaN(match$3[0]),
       isNaN(match$3[1])
-    ], /* tuple */[
+    ], [
       true,
       true
     ]);
@@ -178,15 +178,15 @@ Mt_global.collect_eq(test_id, suites, "File \"float_test.ml\", line 52, characte
           }), $$Array.map((function (param) {
                 return Caml_primitive.caml_float_compare(param[0], param[1]);
               }), [
-              /* tuple */[
+              [
                 1,
                 3
               ],
-              /* tuple */[
+              [
                 2,
                 1
               ],
-              /* tuple */[
+              [
                 3,
                 2
               ]
@@ -215,7 +215,7 @@ var b = match$4[1];
 var a = match$4[0];
 
 Mt.from_pair_suites("Float_test", Pervasives.$at(/* :: */{
-          _0: /* tuple */[
+          _0: [
             "mod_float",
             (function (param) {
                 return {
@@ -226,7 +226,7 @@ Mt.from_pair_suites("Float_test", Pervasives.$at(/* :: */{
               })
           ],
           _1: /* :: */{
-            _0: /* tuple */[
+            _0: [
               "modf_float1",
               (function (param) {
                   return {
@@ -237,7 +237,7 @@ Mt.from_pair_suites("Float_test", Pervasives.$at(/* :: */{
                 })
             ],
             _1: /* :: */{
-              _0: /* tuple */[
+              _0: [
                 "modf_float2",
                 (function (param) {
                     return {
@@ -248,7 +248,7 @@ Mt.from_pair_suites("Float_test", Pervasives.$at(/* :: */{
                   })
               ],
               _1: /* :: */{
-                _0: /* tuple */[
+                _0: [
                   "int_of_float",
                   (function (param) {
                       return {

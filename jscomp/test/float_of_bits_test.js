@@ -12,11 +12,11 @@ var Pervasives = require("../../lib/js/pervasives.js");
 var one_float = Caml_int64.mk(0, 1072693248);
 
 var int32_pairs = [
-  /* tuple */[
+  [
     32,
     4.48415508583941463e-44
   ],
-  /* tuple */[
+  [
     3,
     4.20389539297445121e-45
   ]
@@ -27,7 +27,7 @@ function from_pairs(pair) {
                         var f = param[1];
                         var i32 = param[0];
                         return /* :: */{
-                                _0: /* tuple */[
+                                _0: [
                                   Curry._1(Printf.sprintf(/* Format */{
                                             _0: {
                                               tag: /* String_literal */11,
@@ -51,7 +51,7 @@ function from_pairs(pair) {
                                     })
                                 ],
                                 _1: /* :: */{
-                                  _0: /* tuple */[
+                                  _0: [
                                     Curry._1(Printf.sprintf(/* Format */{
                                               _0: {
                                                 tag: /* String_literal */11,
@@ -81,7 +81,7 @@ function from_pairs(pair) {
 }
 
 var suites = Pervasives.$at(/* :: */{
-      _0: /* tuple */[
+      _0: [
         "one",
         (function (param) {
             return {
@@ -92,7 +92,7 @@ var suites = Pervasives.$at(/* :: */{
           })
       ],
       _1: /* :: */{
-        _0: /* tuple */[
+        _0: [
           "two",
           (function (param) {
               return {

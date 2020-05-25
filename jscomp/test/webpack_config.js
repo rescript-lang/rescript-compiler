@@ -37,7 +37,7 @@ var A = {};
 var B = {};
 
 function f(param) {
-  return /* tuple */[
+  return [
           (function (prim) {
               List$3.ff();
               

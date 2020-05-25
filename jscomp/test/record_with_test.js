@@ -36,7 +36,7 @@ function f(g, h) {
         };
 }
 
-var suites_0 = /* tuple */[
+var suites_0 = [
   "eq_with",
   (function (param) {
       return {

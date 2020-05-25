@@ -15,7 +15,7 @@ function eq(loc, param) {
   var x = param[0];
   test_id.contents = test_id.contents + 1 | 0;
   suites.contents = /* :: */{
-    _0: /* tuple */[
+    _0: [
       loc + (" id " + String(test_id.contents)),
       (function (param) {
           return {
@@ -55,14 +55,14 @@ var v = {
 
 var p_1 = u.say(1, 2);
 
-var p = /* tuple */[
+var p = [
   3,
   p_1
 ];
 
 eq("File \"gpr_627_test.ml\", line 26, characters 5-12", p);
 
-eq("File \"gpr_627_test.ml\", line 27, characters 5-12", /* tuple */[
+eq("File \"gpr_627_test.ml\", line 27, characters 5-12", [
       v.hi(1, 2),
       6
     ]);

@@ -20,7 +20,7 @@ function f(param) {
   };
 }
 
-var suites_0 = /* tuple */[
+var suites_0 = [
   "sum",
   (function (param) {
       return {
