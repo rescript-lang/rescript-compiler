@@ -252,7 +252,7 @@ function internal_bal(l, v, r) {
       }
       throw {
             RE_EXN_ID: "Assert_failure",
-            _1: /* tuple */[
+            _1: [
               "set_gen.ml",
               235,
               19
@@ -262,7 +262,7 @@ function internal_bal(l, v, r) {
     }
     throw {
           RE_EXN_ID: "Assert_failure",
-          _1: /* tuple */[
+          _1: [
             "set_gen.ml",
             225,
             15
@@ -290,7 +290,7 @@ function internal_bal(l, v, r) {
     }
     throw {
           RE_EXN_ID: "Assert_failure",
-          _1: /* tuple */[
+          _1: [
             "set_gen.ml",
             251,
             19
@@ -300,7 +300,7 @@ function internal_bal(l, v, r) {
   }
   throw {
         RE_EXN_ID: "Assert_failure",
-        _1: /* tuple */[
+        _1: [
           "set_gen.ml",
           245,
           15
@@ -409,7 +409,7 @@ function filter(p, param) {
 
 function partition(p, param) {
   if (!param) {
-    return /* tuple */[
+    return [
             /* Empty */0,
             /* Empty */0
           ];
@@ -423,12 +423,12 @@ function partition(p, param) {
   var rf = match$1[1];
   var rt = match$1[0];
   if (pv) {
-    return /* tuple */[
+    return [
             internal_join(lt, v, rt),
             internal_concat(lf, rf)
           ];
   } else {
-    return /* tuple */[
+    return [
             internal_concat(lt, rt),
             internal_join(lf, v, rf)
           ];
@@ -439,13 +439,13 @@ function of_sorted_list(l) {
   var sub = function (n, l) {
     switch (n) {
       case 0 :
-          return /* tuple */[
+          return [
                   /* Empty */0,
                   l
                 ];
       case 1 :
           if (l) {
-            return /* tuple */[
+            return [
                     /* Node */{
                       _0: /* Empty */0,
                       _1: l._0,
@@ -460,7 +460,7 @@ function of_sorted_list(l) {
           if (l) {
             var match = l._1;
             if (match) {
-              return /* tuple */[
+              return [
                       /* Node */{
                         _0: /* Node */{
                           _0: /* Empty */0,
@@ -484,7 +484,7 @@ function of_sorted_list(l) {
             if (match$1) {
               var match$2 = match$1._1;
               if (match$2) {
-                return /* tuple */[
+                return [
                         /* Node */{
                           _0: /* Node */{
                             _0: /* Empty */0,
@@ -517,14 +517,14 @@ function of_sorted_list(l) {
     var l$1 = match$3[1];
     if (l$1) {
       var match$4 = sub((n - nl | 0) - 1 | 0, l$1._1);
-      return /* tuple */[
+      return [
               create(match$3[0], l$1._0, match$4[0]),
               match$4[1]
             ];
     }
     throw {
           RE_EXN_ID: "Assert_failure",
-          _1: /* tuple */[
+          _1: [
             "set_gen.ml",
             361,
             14
@@ -612,7 +612,7 @@ function is_ordered(cmp, tree) {
         if (match$1 >= 50834029) {
           return {
                   HASH: /* V */86,
-                  value: /* tuple */[
+                  value: [
                     v,
                     v
                   ]
@@ -625,7 +625,7 @@ function is_ordered(cmp, tree) {
       if (Curry._2(cmp, v, match$2[0]) < 0) {
         return {
                 HASH: /* V */86,
-                value: /* tuple */[
+                value: [
                   v,
                   match$2[1]
                 ]
@@ -642,7 +642,7 @@ function is_ordered(cmp, tree) {
       if (match$4 >= 50834029 && Curry._2(cmp, max_v, v) < 0) {
         return {
                 HASH: /* V */86,
-                value: /* tuple */[
+                value: [
                   min_v,
                   v
                 ]
@@ -655,7 +655,7 @@ function is_ordered(cmp, tree) {
     if (Curry._2(cmp, max_v, match$5[0]) < 0) {
       return {
               HASH: /* V */86,
-              value: /* tuple */[
+              value: [
                 min_v,
                 match$5[1]
               ]

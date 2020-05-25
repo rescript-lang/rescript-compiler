@@ -1,6 +1,5 @@
 'use strict';
 
-var Block = require("../../lib/js/block.js");
 var React = require("react");
 var ReactDom = require("react-dom");
 
@@ -28,12 +27,12 @@ function createRootWithClassName(className) {
   var elements = document.getElementsByClassName(className);
   if (elements.length !== 0) {
     return {
-            tag: /* Ok */0,
+            TAG: /* Ok */0,
             _0: ReactDom.createRoot(elements[0])
           };
   } else {
     return {
-            tag: /* Error */1,
+            TAG: /* Error */1,
             _0: "ReactDOMRe.Unstable.createRootWithClassName: no element of class " + (className + " found in the HTML.")
           };
   }
@@ -43,12 +42,12 @@ function createRootWithId(id) {
   var element = document.getElementById(id);
   if (element == null) {
     return {
-            tag: /* Error */1,
+            TAG: /* Error */1,
             _0: "ReactDOMRe.Unstable.createRootWithId: no element of id " + (id + " found in the HTML.")
           };
   } else {
     return {
-            tag: /* Ok */0,
+            TAG: /* Ok */0,
             _0: ReactDom.createRoot(element)
           };
   }

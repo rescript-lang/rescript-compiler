@@ -1,7 +1,6 @@
 'use strict';
 
 var Mt = require("./mt.js");
-var Block = require("../../lib/js/block.js");
 var Js_mapperRt = require("../../lib/js/js_mapperRt.js");
 
 var suites = {
@@ -15,11 +14,11 @@ var test_id = {
 function $$throw(loc, x) {
   test_id.contents = test_id.contents + 1 | 0;
   suites.contents = /* :: */{
-    _0: /* tuple */[
+    _0: [
       loc + (" id " + String(test_id.contents)),
       (function (param) {
           return {
-                  tag: /* ThrowAny */7,
+                  TAG: /* ThrowAny */7,
                   _0: x
                 };
         })
@@ -55,15 +54,15 @@ function bFromJs(param) {
 }
 
 var jsMapperConstantArray$1 = [
-  /* tuple */[
+  [
     22125,
     "c0"
   ],
-  /* tuple */[
+  [
     22126,
     "c1"
   ],
-  /* tuple */[
+  [
     22127,
     "c2"
   ]

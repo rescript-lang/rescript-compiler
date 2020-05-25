@@ -70,7 +70,7 @@ function remove_top(param) {
 
 function extract(queue) {
   if (queue) {
-    return /* tuple */[
+    return [
             queue._0,
             queue._1,
             remove_top(queue)

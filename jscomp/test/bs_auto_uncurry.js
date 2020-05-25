@@ -104,7 +104,7 @@ function h5(x) {
 }
 
 function add(x, y) {
-  console.log(/* tuple */[
+  console.log([
         x,
         y
       ]);

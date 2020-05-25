@@ -1,7 +1,6 @@
 'use strict';
 
 var Mt = require("./mt.js");
-var Block = require("../../lib/js/block.js");
 var Curry = require("../../lib/js/curry.js");
 var Caml_array = require("../../lib/js/caml_array.js");
 var Pervasives = require("../../lib/js/pervasives.js");
@@ -74,11 +73,11 @@ var test_id = {
 function eq(loc, x, y) {
   test_id.contents = test_id.contents + 1 | 0;
   suites.contents = /* :: */{
-    _0: /* tuple */[
+    _0: [
       loc + (" id " + String(test_id.contents)),
       (function (param) {
           return {
-                  tag: /* Eq */0,
+                  TAG: /* Eq */0,
                   _0: x,
                   _1: y
                 };
@@ -98,7 +97,7 @@ var all_v = {
 };
 
 function add5(a0, a1, a2, a3, a4) {
-  console.log(/* tuple */[
+  console.log([
         a0,
         a1,
         a2,

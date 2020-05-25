@@ -4,7 +4,7 @@ var Mt = require("./mt.js");
 var Test_bool_equal = require("./test_bool_equal.js");
 
 Mt.from_suites("boolean", /* :: */{
-      _0: /* tuple */[
+      _0: [
         "bool_equal",
         Test_bool_equal.assertions
       ],

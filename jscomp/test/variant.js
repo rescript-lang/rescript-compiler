@@ -1,6 +1,5 @@
 'use strict';
 
-var Block = require("../../lib/js/block.js");
 var Curry = require("../../lib/js/curry.js");
 var Caml_obj = require("../../lib/js/caml_obj.js");
 var Caml_exceptions = require("../../lib/js/caml_exceptions.js");
@@ -14,7 +13,7 @@ function foo(n) {
       return 2;
     }
   }
-  switch (n.tag | 0) {
+  switch (n.TAG | 0) {
     case /* B */0 :
         return n._0;
     case /* C */1 :
@@ -35,7 +34,7 @@ function fooA1(param) {
 }
 
 function fooC(param) {
-  if (typeof param === "number" || param.tag !== /* C */1) {
+  if (typeof param === "number" || param.TAG !== /* C */1) {
     return 42;
   } else {
     return param._0 + param._1 | 0;
@@ -88,7 +87,7 @@ function rollback_path(subst, p) {
   catch (raw_exn){
     var exn = Caml_js_exceptions.internalToOCamlException(raw_exn);
     if (exn.RE_EXN_ID === "Not_found") {
-      switch (p.tag | 0) {
+      switch (p.TAG | 0) {
         case /* Pdot */1 :
             return "Pdot";
         case /* Pident */0 :
@@ -143,19 +142,19 @@ var a1 = /* A1 */0;
 var a2 = /* A2 */1;
 
 var b = {
-  tag: /* B */0,
+  TAG: /* B */0,
   _0: 34
 };
 
 var c = {
-  tag: /* C */1,
+  TAG: /* C */1,
   _0: 4,
   _1: 2
 };
 
 var d = {
-  tag: /* D */2,
-  _0: /* tuple */[
+  TAG: /* D */2,
+  _0: [
     4,
     2
   ]

@@ -1,7 +1,6 @@
 'use strict';
 
 var Mt = require("./mt.js");
-var Block = require("../../lib/js/block.js");
 var Curry = require("../../lib/js/curry.js");
 var Caml_oo_curry = require("../../lib/js/caml_oo_curry.js");
 var CamlinternalOO = require("../../lib/js/camlinternalOO.js");
@@ -20,7 +19,7 @@ var class_tables = /* Cons */{
   next: undefined
 };
 
-var suites_0 = /* tuple */[
+var suites_0 = [
   "caml_obj",
   (function (param) {
       if (!class_tables.key) {
@@ -39,7 +38,7 @@ var suites_0 = /* tuple */[
         class_tables.key = env_init;
       }
       return {
-              tag: /* Eq */0,
+              TAG: /* Eq */0,
               _0: 33,
               _1: f(Curry._1(class_tables.key, undefined))
             };
@@ -47,11 +46,11 @@ var suites_0 = /* tuple */[
 ];
 
 var suites_1 = /* :: */{
-  _0: /* tuple */[
+  _0: [
     "js_obj",
     (function (param) {
         return {
-                tag: /* Eq */0,
+                TAG: /* Eq */0,
                 _0: 34,
                 _1: ({
                       say: (function (x) {
@@ -62,11 +61,11 @@ var suites_1 = /* :: */{
       })
   ],
   _1: /* :: */{
-    _0: /* tuple */[
+    _0: [
       "js_obj2",
       (function (param) {
           return {
-                  tag: /* Eq */0,
+                  TAG: /* Eq */0,
                   _0: 34,
                   _1: ({
                         say: (function (x) {
@@ -77,22 +76,22 @@ var suites_1 = /* :: */{
         })
     ],
     _1: /* :: */{
-      _0: /* tuple */[
+      _0: [
         "empty",
         (function (param) {
             return {
-                    tag: /* Eq */0,
+                    TAG: /* Eq */0,
                     _0: 0,
                     _1: Object.keys({}).length
                   };
           })
       ],
       _1: /* :: */{
-        _0: /* tuple */[
+        _0: [
           "assign",
           (function (param) {
               return {
-                      tag: /* Eq */0,
+                      TAG: /* Eq */0,
                       _0: {
                         a: 1
                       },

@@ -37,7 +37,7 @@ function f5(param) {
       
     }
   } else {
-    switch (param.tag | 0) {
+    switch (param.TAG | 0) {
       case /* C */0 :
       case /* D */1 :
           return 1;
@@ -72,7 +72,7 @@ function f7(param) {
       
     }
   } else {
-    switch (param.tag | 0) {
+    switch (param.TAG | 0) {
       case /* C */0 :
           return 3;
       case /* D */1 :
@@ -94,7 +94,7 @@ function f8(param) {
         return 3;
     }
   } else {
-    switch (param.tag | 0) {
+    switch (param.TAG | 0) {
       case /* T64 */0 :
       case /* T65 */1 :
           return 2;
@@ -112,7 +112,7 @@ function f9(param) {
       return 1;
     }
   }
-  switch (param.tag | 0) {
+  switch (param.TAG | 0) {
     case /* T64 */0 :
     case /* T65 */1 :
         return 2;
@@ -137,7 +137,7 @@ function f10(param) {
       
     }
   } else {
-    switch (param.tag | 0) {
+    switch (param.TAG | 0) {
       case /* T64 */0 :
       case /* T65 */1 :
           return 2;
@@ -153,12 +153,12 @@ function f11(x) {
   if (typeof x === "number") {
     return 2;
   }
-  if (!x.tag) {
+  if (!x.TAG) {
     return 1;
   }
   throw {
         RE_EXN_ID: "Assert_failure",
-        _1: /* tuple */[
+        _1: [
           "adt_optimize_test.ml",
           191,
           9

@@ -1,14 +1,13 @@
 'use strict';
 
 var Mt = require("./mt.js");
-var Block = require("../../lib/js/block.js");
 var Complex = require("../../lib/js/complex.js");
 
-var suites_0 = /* tuple */[
+var suites_0 = [
   "basic_add",
   (function (param) {
       return {
-              tag: /* Eq */0,
+              TAG: /* Eq */0,
               _0: {
                 re: 2,
                 im: 2

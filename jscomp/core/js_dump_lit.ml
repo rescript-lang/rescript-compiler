@@ -71,7 +71,7 @@ let true_ = "true"
 let false_ = "false"
 
 let debugger = "debugger"
-let tag = "tag"
+let tag = "TAG"
 let bind = "bind"
 let math = "Math"
 let apply = "apply"

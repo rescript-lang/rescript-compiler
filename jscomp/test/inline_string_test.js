@@ -13,13 +13,13 @@ function f(param) {
   }
 }
 
-console.log(/* tuple */[
+console.log([
       f(3),
       "None",
       "Some"
     ]);
 
-console.log(/* tuple */[
+console.log([
       "A",
       "A"
     ]);

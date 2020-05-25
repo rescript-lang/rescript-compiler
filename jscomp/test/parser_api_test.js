@@ -19,13 +19,13 @@ var match = Parser_api.implementation(Parser_api.from_string("let v str = \n  st
 
 if (match) {
   var match$1 = match._0.pstr_desc;
-  if (match$1.tag === /* Pstr_value */1 && !match$1._0) {
+  if (match$1.TAG === /* Pstr_value */1 && !match$1._0) {
     var match$2 = match$1._1;
     if (match$2) {
       var match$3 = match$2._0;
       var match$4 = match$3.pvb_pat;
       var match$5 = match$4.ppat_desc;
-      if (typeof match$5 === "number" || match$5.tag) {
+      if (typeof match$5 === "number" || match$5.TAG) {
         eq("File \"parser_api_test.ml\", line 211, characters 12-19", true, false);
       } else {
         var match$6 = match$5._0;
@@ -42,10 +42,10 @@ if (match) {
                 if (match$12.pos_fname === "" && !(match$12.pos_lnum !== 1 || match$12.pos_bol !== 0 || match$12.pos_cnum !== 5 || match$10.loc_ghost || match$4.ppat_attributes)) {
                   var match$13 = match$3.pvb_expr;
                   var match$14 = match$13.pexp_desc;
-                  if (match$14.tag === /* Pexp_fun */4 && match$14._0 === "" && match$14._1 === undefined) {
+                  if (match$14.TAG === /* Pexp_fun */4 && match$14._0 === "" && match$14._1 === undefined) {
                     var match$15 = match$14._2;
                     var match$16 = match$15.ppat_desc;
-                    if (typeof match$16 === "number" || match$16.tag) {
+                    if (typeof match$16 === "number" || match$16.TAG) {
                       eq("File \"parser_api_test.ml\", line 211, characters 12-19", true, false);
                     } else {
                       var match$17 = match$16._0;
@@ -62,15 +62,15 @@ if (match) {
                               if (match$23.pos_fname === "" && !(match$23.pos_lnum !== 1 || match$23.pos_bol !== 0 || match$23.pos_cnum !== 9 || match$21.loc_ghost || match$15.ppat_attributes)) {
                                 var match$24 = match$14._3;
                                 var match$25 = match$24.pexp_desc;
-                                if (match$25.tag === /* Pexp_apply */5) {
+                                if (match$25.TAG === /* Pexp_apply */5) {
                                   var match$26 = match$25._0;
                                   var match$27 = match$26.pexp_desc;
-                                  if (match$27.tag) {
+                                  if (match$27.TAG) {
                                     eq("File \"parser_api_test.ml\", line 211, characters 12-19", true, false);
                                   } else {
                                     var match$28 = match$27._0;
                                     var match$29 = match$28.txt;
-                                    switch (match$29.tag | 0) {
+                                    switch (match$29.TAG | 0) {
                                       case /* Lident */0 :
                                           if (match$29._0 === "|>") {
                                             var match$30 = match$28.loc;
@@ -89,15 +89,15 @@ if (match) {
                                                       if (match$37[0] === "") {
                                                         var match$38 = match$37[1];
                                                         var match$39 = match$38.pexp_desc;
-                                                        if (match$39.tag === /* Pexp_apply */5) {
+                                                        if (match$39.TAG === /* Pexp_apply */5) {
                                                           var match$40 = match$39._0;
                                                           var match$41 = match$40.pexp_desc;
-                                                          if (match$41.tag) {
+                                                          if (match$41.TAG) {
                                                             eq("File \"parser_api_test.ml\", line 211, characters 12-19", true, false);
                                                           } else {
                                                             var match$42 = match$41._0;
                                                             var match$43 = match$42.txt;
-                                                            switch (match$43.tag | 0) {
+                                                            switch (match$43.TAG | 0) {
                                                               case /* Lident */0 :
                                                                   if (match$43._0 === "|>") {
                                                                     var match$44 = match$42.loc;
@@ -116,12 +116,12 @@ if (match) {
                                                                               if (match$51[0] === "") {
                                                                                 var match$52 = match$51[1];
                                                                                 var match$53 = match$52.pexp_desc;
-                                                                                if (match$53.tag) {
+                                                                                if (match$53.TAG) {
                                                                                   eq("File \"parser_api_test.ml\", line 211, characters 12-19", true, false);
                                                                                 } else {
                                                                                   var match$54 = match$53._0;
                                                                                   var match$55 = match$54.txt;
-                                                                                  switch (match$55.tag | 0) {
+                                                                                  switch (match$55.TAG | 0) {
                                                                                     case /* Lident */0 :
                                                                                         if (match$55._0 === "str") {
                                                                                           var match$56 = match$54.loc;
@@ -140,15 +140,15 @@ if (match) {
                                                                                                     if (match$63[0] === "") {
                                                                                                       var match$64 = match$63[1];
                                                                                                       var match$65 = match$64.pexp_desc;
-                                                                                                      if (match$65.tag) {
+                                                                                                      if (match$65.TAG) {
                                                                                                         eq("File \"parser_api_test.ml\", line 211, characters 12-19", true, false);
                                                                                                       } else {
                                                                                                         var match$66 = match$65._0;
                                                                                                         var match$67 = match$66.txt;
-                                                                                                        switch (match$67.tag | 0) {
+                                                                                                        switch (match$67.TAG | 0) {
                                                                                                           case /* Ldot */1 :
                                                                                                               var match$68 = match$67._0;
-                                                                                                              switch (match$68.tag | 0) {
+                                                                                                              switch (match$68.TAG | 0) {
                                                                                                                 case /* Lident */0 :
                                                                                                                     if (match$68._0 === "Lexing" && match$67._1 === "from_string") {
                                                                                                                       var match$69 = match$66.loc;
@@ -172,15 +172,15 @@ if (match) {
                                                                                                                                     if (match$79[0] === "") {
                                                                                                                                       var match$80 = match$79[1];
                                                                                                                                       var match$81 = match$80.pexp_desc;
-                                                                                                                                      if (match$81.tag) {
+                                                                                                                                      if (match$81.TAG) {
                                                                                                                                         eq("File \"parser_api_test.ml\", line 211, characters 12-19", true, false);
                                                                                                                                       } else {
                                                                                                                                         var match$82 = match$81._0;
                                                                                                                                         var match$83 = match$82.txt;
-                                                                                                                                        switch (match$83.tag | 0) {
+                                                                                                                                        switch (match$83.TAG | 0) {
                                                                                                                                           case /* Ldot */1 :
                                                                                                                                               var match$84 = match$83._0;
-                                                                                                                                              switch (match$84.tag | 0) {
+                                                                                                                                              switch (match$84.TAG | 0) {
                                                                                                                                                 case /* Lident */0 :
                                                                                                                                                     if (match$84._0 === "Parse" && match$83._1 === "implementation") {
                                                                                                                                                       var match$85 = match$82.loc;

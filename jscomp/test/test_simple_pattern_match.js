@@ -7,13 +7,13 @@ var match;
 switch (Sys.os_type) {
   case "Cygwin" :
   case "Unix" :
-      match = /* tuple */[
+      match = [
         1,
         2
       ];
       break;
   default:
-    match = /* tuple */[
+    match = [
       3,
       4
     ];

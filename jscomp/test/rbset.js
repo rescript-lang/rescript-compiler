@@ -3,7 +3,7 @@
 
 function blackify(s) {
   if (s && s._0) {
-    return /* tuple */[
+    return [
             /* Node */{
               _0: /* Black */0,
               _1: s._1,
@@ -13,7 +13,7 @@ function blackify(s) {
             false
           ];
   } else {
-    return /* tuple */[
+    return [
             s,
             true
           ];
@@ -205,7 +205,7 @@ function unbalanced_left(param) {
     if (param._0) {
       var match = param._1;
       if (match && !match._0) {
-        return /* tuple */[
+        return [
                 balance_left(/* Node */{
                       _0: /* Red */1,
                       _1: match._1,
@@ -220,7 +220,7 @@ function unbalanced_left(param) {
       var match$1 = param._1;
       if (match$1) {
         if (!match$1._0) {
-          return /* tuple */[
+          return [
                   balance_left(/* Node */{
                         _0: /* Red */1,
                         _1: match$1._1,
@@ -232,7 +232,7 @@ function unbalanced_left(param) {
         }
         var match$2 = match$1._3;
         if (match$2 && !match$2._0) {
-          return /* tuple */[
+          return [
                   /* Node */{
                     _0: /* Black */0,
                     _1: match$1._1,
@@ -254,7 +254,7 @@ function unbalanced_left(param) {
   }
   throw {
         RE_EXN_ID: "Assert_failure",
-        _1: /* tuple */[
+        _1: [
           "rbset.ml",
           57,
           9
@@ -268,7 +268,7 @@ function unbalanced_right(param) {
     if (param._0) {
       var match = param._3;
       if (match && !match._0) {
-        return /* tuple */[
+        return [
                 balance_right(param._1, param._2, /* Node */{
                       _0: /* Red */1,
                       _1: match._1,
@@ -285,7 +285,7 @@ function unbalanced_right(param) {
         var x = param._2;
         var a = param._1;
         if (!match$1._0) {
-          return /* tuple */[
+          return [
                   balance_right(a, x, /* Node */{
                         _0: /* Red */1,
                         _1: match$1._1,
@@ -297,7 +297,7 @@ function unbalanced_right(param) {
         }
         var match$2 = match$1._1;
         if (match$2 && !match$2._0) {
-          return /* tuple */[
+          return [
                   /* Node */{
                     _0: /* Black */0,
                     _1: balance_right(a, x, /* Node */{
@@ -319,7 +319,7 @@ function unbalanced_right(param) {
   }
   throw {
         RE_EXN_ID: "Assert_failure",
-        _1: /* tuple */[
+        _1: [
           "rbset.ml",
           63,
           9
@@ -523,7 +523,7 @@ function remove_min(param) {
     var c = param._0;
     if (c) {
       if (!param._1) {
-        return /* tuple */[
+        return [
                 param._3,
                 param._2,
                 false
@@ -534,14 +534,14 @@ function remove_min(param) {
       var match = param._3;
       var x = param._2;
       if (!match) {
-        return /* tuple */[
+        return [
                 /* Empty */0,
                 x,
                 true
               ];
       }
       if (match._0) {
-        return /* tuple */[
+        return [
                 /* Node */{
                   _0: /* Black */0,
                   _1: match._1,
@@ -554,7 +554,7 @@ function remove_min(param) {
       }
       throw {
             RE_EXN_ID: "Assert_failure",
-            _1: /* tuple */[
+            _1: [
               "rbset.ml",
               115,
               4
@@ -574,14 +574,14 @@ function remove_min(param) {
       _3: s_3
     };
     if (!match$1[2]) {
-      return /* tuple */[
+      return [
               s,
               y,
               false
             ];
     }
     var match$2 = unbalanced_right(s);
-    return /* tuple */[
+    return [
             match$2[0],
             y,
             match$2[1]
@@ -589,7 +589,7 @@ function remove_min(param) {
   }
   throw {
         RE_EXN_ID: "Assert_failure",
-        _1: /* tuple */[
+        _1: [
           "rbset.ml",
           115,
           4
@@ -600,7 +600,7 @@ function remove_min(param) {
 
 function remove_aux(x, n) {
   if (!n) {
-    return /* tuple */[
+    return [
             /* Empty */0,
             false
           ];
@@ -612,7 +612,7 @@ function remove_aux(x, n) {
   if (x === y) {
     if (!r) {
       if (c === /* Red */1) {
-        return /* tuple */[
+        return [
                 l,
                 false
               ];
@@ -632,7 +632,7 @@ function remove_aux(x, n) {
     if (match[2]) {
       return unbalanced_left(n$1);
     } else {
-      return /* tuple */[
+      return [
               n$1,
               false
             ];
@@ -650,7 +650,7 @@ function remove_aux(x, n) {
     if (match$1[1]) {
       return unbalanced_right(n$2);
     } else {
-      return /* tuple */[
+      return [
               n$2,
               false
             ];
@@ -667,7 +667,7 @@ function remove_aux(x, n) {
   if (match$2[1]) {
     return unbalanced_left(n$3);
   } else {
-    return /* tuple */[
+    return [
             n$3,
             false
           ];

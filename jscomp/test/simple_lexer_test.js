@@ -1,7 +1,6 @@
 'use strict';
 
 var Mt = require("./mt.js");
-var Block = require("../../lib/js/block.js");
 var Bytes = require("../../lib/js/bytes.js");
 var Curry = require("../../lib/js/curry.js");
 var Lexing = require("../../lib/js/lexing.js");
@@ -45,11 +44,11 @@ function translate(lexbuf) {
   return __ocaml_lex_translate_rec(lexbuf, 0);
 }
 
-var suites_0 = /* tuple */[
+var suites_0 = [
   "translate",
   (function (param) {
       return {
-              tag: /* Eq */0,
+              TAG: /* Eq */0,
               _0: __ocaml_lex_translate_rec(Lexing.from_string("-- current_directory --"), 0),
               _1: "-- . --"
             };

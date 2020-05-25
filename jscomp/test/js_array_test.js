@@ -1,11 +1,10 @@
 'use strict';
 
 var Mt = require("./mt.js");
-var Block = require("../../lib/js/block.js");
 var Js_vector = require("../../lib/js/js_vector.js");
 var Caml_option = require("../../lib/js/caml_option.js");
 
-var suites_0 = /* tuple */[
+var suites_0 = [
   "File \"js_array_test.ml\", line 3, characters 4-11",
   (function (param) {
       var x = [
@@ -16,7 +15,7 @@ var suites_0 = /* tuple */[
         5
       ];
       return {
-              tag: /* Eq */0,
+              TAG: /* Eq */0,
               _0: [
                 2,
                 4
@@ -29,7 +28,7 @@ var suites_0 = /* tuple */[
 ];
 
 var suites_1 = /* :: */{
-  _0: /* tuple */[
+  _0: [
     "File \"js_array_test.ml\", line 11, characters 4-11",
     (function (param) {
         var x = [
@@ -40,7 +39,7 @@ var suites_1 = /* :: */{
           5
         ];
         return {
-                tag: /* Eq */0,
+                TAG: /* Eq */0,
                 _0: true,
                 _1: (Js_vector.filterInPlace((function (x) {
                           return x > 10;
@@ -49,33 +48,33 @@ var suites_1 = /* :: */{
       })
   ],
   _1: /* :: */{
-    _0: /* tuple */[
+    _0: [
       "isArray_array",
       (function (param) {
           return {
-                  tag: /* Eq */0,
+                  TAG: /* Eq */0,
                   _0: true,
                   _1: Array.isArray([])
                 };
         })
     ],
     _1: /* :: */{
-      _0: /* tuple */[
+      _0: [
         "isArray_int",
         (function (param) {
             return {
-                    tag: /* Eq */0,
+                    TAG: /* Eq */0,
                     _0: false,
                     _1: Array.isArray(34)
                   };
           })
       ],
       _1: /* :: */{
-        _0: /* tuple */[
+        _0: [
           "length",
           (function (param) {
               return {
-                      tag: /* Eq */0,
+                      TAG: /* Eq */0,
                       _0: 3,
                       _1: [
                         1,
@@ -86,11 +85,11 @@ var suites_1 = /* :: */{
             })
         ],
         _1: /* :: */{
-          _0: /* tuple */[
+          _0: [
             "copyWithin",
             (function (param) {
                 return {
-                        tag: /* Eq */0,
+                        TAG: /* Eq */0,
                         _0: [
                           1,
                           2,
@@ -109,11 +108,11 @@ var suites_1 = /* :: */{
               })
           ],
           _1: /* :: */{
-            _0: /* tuple */[
+            _0: [
               "copyWithinFrom",
               (function (param) {
                   return {
-                          tag: /* Eq */0,
+                          TAG: /* Eq */0,
                           _0: [
                             4,
                             5,
@@ -132,11 +131,11 @@ var suites_1 = /* :: */{
                 })
             ],
             _1: /* :: */{
-              _0: /* tuple */[
+              _0: [
                 "copyWithinFromRange",
                 (function (param) {
                     return {
-                            tag: /* Eq */0,
+                            TAG: /* Eq */0,
                             _0: [
                               4,
                               2,
@@ -155,11 +154,11 @@ var suites_1 = /* :: */{
                   })
               ],
               _1: /* :: */{
-                _0: /* tuple */[
+                _0: [
                   "fillInPlace",
                   (function (param) {
                       return {
-                              tag: /* Eq */0,
+                              TAG: /* Eq */0,
                               _0: [
                                 4,
                                 4,
@@ -174,11 +173,11 @@ var suites_1 = /* :: */{
                     })
                 ],
                 _1: /* :: */{
-                  _0: /* tuple */[
+                  _0: [
                     "fillFromInPlace",
                     (function (param) {
                         return {
-                                tag: /* Eq */0,
+                                TAG: /* Eq */0,
                                 _0: [
                                   1,
                                   4,
@@ -193,11 +192,11 @@ var suites_1 = /* :: */{
                       })
                   ],
                   _1: /* :: */{
-                    _0: /* tuple */[
+                    _0: [
                       "fillRangeInPlace",
                       (function (param) {
                           return {
-                                  tag: /* Eq */0,
+                                  TAG: /* Eq */0,
                                   _0: [
                                     1,
                                     4,
@@ -212,11 +211,11 @@ var suites_1 = /* :: */{
                         })
                     ],
                     _1: /* :: */{
-                      _0: /* tuple */[
+                      _0: [
                         "pop",
                         (function (param) {
                             return {
-                                    tag: /* Eq */0,
+                                    TAG: /* Eq */0,
                                     _0: 3,
                                     _1: Caml_option.undefined_to_opt([
                                             1,
@@ -227,22 +226,22 @@ var suites_1 = /* :: */{
                           })
                       ],
                       _1: /* :: */{
-                        _0: /* tuple */[
+                        _0: [
                           "pop - empty array",
                           (function (param) {
                               return {
-                                      tag: /* Eq */0,
+                                      TAG: /* Eq */0,
                                       _0: undefined,
                                       _1: Caml_option.undefined_to_opt([].pop())
                                     };
                             })
                         ],
                         _1: /* :: */{
-                          _0: /* tuple */[
+                          _0: [
                             "push",
                             (function (param) {
                                 return {
-                                        tag: /* Eq */0,
+                                        TAG: /* Eq */0,
                                         _0: 4,
                                         _1: [
                                             1,
@@ -253,11 +252,11 @@ var suites_1 = /* :: */{
                               })
                           ],
                           _1: /* :: */{
-                            _0: /* tuple */[
+                            _0: [
                               "pushMany",
                               (function (param) {
                                   return {
-                                          tag: /* Eq */0,
+                                          TAG: /* Eq */0,
                                           _0: 5,
                                           _1: [
                                               1,
@@ -268,11 +267,11 @@ var suites_1 = /* :: */{
                                 })
                             ],
                             _1: /* :: */{
-                              _0: /* tuple */[
+                              _0: [
                                 "reverseInPlace",
                                 (function (param) {
                                     return {
-                                            tag: /* Eq */0,
+                                            TAG: /* Eq */0,
                                             _0: [
                                               3,
                                               2,
@@ -287,11 +286,11 @@ var suites_1 = /* :: */{
                                   })
                               ],
                               _1: /* :: */{
-                                _0: /* tuple */[
+                                _0: [
                                   "shift",
                                   (function (param) {
                                       return {
-                                              tag: /* Eq */0,
+                                              TAG: /* Eq */0,
                                               _0: 1,
                                               _1: Caml_option.undefined_to_opt([
                                                       1,
@@ -302,22 +301,22 @@ var suites_1 = /* :: */{
                                     })
                                 ],
                                 _1: /* :: */{
-                                  _0: /* tuple */[
+                                  _0: [
                                     "shift - empty array",
                                     (function (param) {
                                         return {
-                                                tag: /* Eq */0,
+                                                TAG: /* Eq */0,
                                                 _0: undefined,
                                                 _1: Caml_option.undefined_to_opt([].shift())
                                               };
                                       })
                                   ],
                                   _1: /* :: */{
-                                    _0: /* tuple */[
+                                    _0: [
                                       "sortInPlace",
                                       (function (param) {
                                           return {
-                                                  tag: /* Eq */0,
+                                                  TAG: /* Eq */0,
                                                   _0: [
                                                     1,
                                                     2,
@@ -332,11 +331,11 @@ var suites_1 = /* :: */{
                                         })
                                     ],
                                     _1: /* :: */{
-                                      _0: /* tuple */[
+                                      _0: [
                                         "sortInPlaceWith",
                                         (function (param) {
                                             return {
-                                                    tag: /* Eq */0,
+                                                    TAG: /* Eq */0,
                                                     _0: [
                                                       3,
                                                       2,
@@ -353,7 +352,7 @@ var suites_1 = /* :: */{
                                           })
                                       ],
                                       _1: /* :: */{
-                                        _0: /* tuple */[
+                                        _0: [
                                           "spliceInPlace",
                                           (function (param) {
                                               var arr = [
@@ -364,8 +363,8 @@ var suites_1 = /* :: */{
                                               ];
                                               var removed = arr.splice(2, 0, 5);
                                               return {
-                                                      tag: /* Eq */0,
-                                                      _0: /* tuple */[
+                                                      TAG: /* Eq */0,
+                                                      _0: [
                                                         [
                                                           1,
                                                           2,
@@ -375,7 +374,7 @@ var suites_1 = /* :: */{
                                                         ],
                                                         []
                                                       ],
-                                                      _1: /* tuple */[
+                                                      _1: [
                                                         arr,
                                                         removed
                                                       ]
@@ -383,7 +382,7 @@ var suites_1 = /* :: */{
                                             })
                                         ],
                                         _1: /* :: */{
-                                          _0: /* tuple */[
+                                          _0: [
                                             "removeFromInPlace",
                                             (function (param) {
                                                 var arr = [
@@ -394,8 +393,8 @@ var suites_1 = /* :: */{
                                                 ];
                                                 var removed = arr.splice(2);
                                                 return {
-                                                        tag: /* Eq */0,
-                                                        _0: /* tuple */[
+                                                        TAG: /* Eq */0,
+                                                        _0: [
                                                           [
                                                             1,
                                                             2
@@ -405,7 +404,7 @@ var suites_1 = /* :: */{
                                                             4
                                                           ]
                                                         ],
-                                                        _1: /* tuple */[
+                                                        _1: [
                                                           arr,
                                                           removed
                                                         ]
@@ -413,7 +412,7 @@ var suites_1 = /* :: */{
                                               })
                                           ],
                                           _1: /* :: */{
-                                            _0: /* tuple */[
+                                            _0: [
                                               "removeCountInPlace",
                                               (function (param) {
                                                   var arr = [
@@ -424,8 +423,8 @@ var suites_1 = /* :: */{
                                                   ];
                                                   var removed = arr.splice(2, 1);
                                                   return {
-                                                          tag: /* Eq */0,
-                                                          _0: /* tuple */[
+                                                          TAG: /* Eq */0,
+                                                          _0: [
                                                             [
                                                               1,
                                                               2,
@@ -433,7 +432,7 @@ var suites_1 = /* :: */{
                                                             ],
                                                             [3]
                                                           ],
-                                                          _1: /* tuple */[
+                                                          _1: [
                                                             arr,
                                                             removed
                                                           ]
@@ -441,11 +440,11 @@ var suites_1 = /* :: */{
                                                 })
                                             ],
                                             _1: /* :: */{
-                                              _0: /* tuple */[
+                                              _0: [
                                                 "unshift",
                                                 (function (param) {
                                                     return {
-                                                            tag: /* Eq */0,
+                                                            TAG: /* Eq */0,
                                                             _0: 4,
                                                             _1: [
                                                                 1,
@@ -456,11 +455,11 @@ var suites_1 = /* :: */{
                                                   })
                                               ],
                                               _1: /* :: */{
-                                                _0: /* tuple */[
+                                                _0: [
                                                   "unshiftMany",
                                                   (function (param) {
                                                       return {
-                                                              tag: /* Eq */0,
+                                                              TAG: /* Eq */0,
                                                               _0: 5,
                                                               _1: [
                                                                   1,
@@ -471,11 +470,11 @@ var suites_1 = /* :: */{
                                                     })
                                                 ],
                                                 _1: /* :: */{
-                                                  _0: /* tuple */[
+                                                  _0: [
                                                     "append",
                                                     (function (param) {
                                                         return {
-                                                                tag: /* Eq */0,
+                                                                TAG: /* Eq */0,
                                                                 _0: [
                                                                   1,
                                                                   2,
@@ -491,11 +490,11 @@ var suites_1 = /* :: */{
                                                       })
                                                   ],
                                                   _1: /* :: */{
-                                                    _0: /* tuple */[
+                                                    _0: [
                                                       "concat",
                                                       (function (param) {
                                                           return {
-                                                                  tag: /* Eq */0,
+                                                                  TAG: /* Eq */0,
                                                                   _0: [
                                                                     1,
                                                                     2,
@@ -515,11 +514,11 @@ var suites_1 = /* :: */{
                                                         })
                                                     ],
                                                     _1: /* :: */{
-                                                      _0: /* tuple */[
+                                                      _0: [
                                                         "concatMany",
                                                         (function (param) {
                                                             return {
-                                                                    tag: /* Eq */0,
+                                                                    TAG: /* Eq */0,
                                                                     _0: [
                                                                       1,
                                                                       2,
@@ -544,11 +543,11 @@ var suites_1 = /* :: */{
                                                           })
                                                       ],
                                                       _1: /* :: */{
-                                                        _0: /* tuple */[
+                                                        _0: [
                                                           "includes",
                                                           (function (param) {
                                                               return {
-                                                                      tag: /* Eq */0,
+                                                                      TAG: /* Eq */0,
                                                                       _0: true,
                                                                       _1: [
                                                                           1,
@@ -559,11 +558,11 @@ var suites_1 = /* :: */{
                                                             })
                                                         ],
                                                         _1: /* :: */{
-                                                          _0: /* tuple */[
+                                                          _0: [
                                                             "indexOf",
                                                             (function (param) {
                                                                 return {
-                                                                        tag: /* Eq */0,
+                                                                        TAG: /* Eq */0,
                                                                         _0: 1,
                                                                         _1: [
                                                                             1,
@@ -574,11 +573,11 @@ var suites_1 = /* :: */{
                                                               })
                                                           ],
                                                           _1: /* :: */{
-                                                            _0: /* tuple */[
+                                                            _0: [
                                                               "indexOfFrom",
                                                               (function (param) {
                                                                   return {
-                                                                          tag: /* Eq */0,
+                                                                          TAG: /* Eq */0,
                                                                           _0: 3,
                                                                           _1: [
                                                                               1,
@@ -590,11 +589,11 @@ var suites_1 = /* :: */{
                                                                 })
                                                             ],
                                                             _1: /* :: */{
-                                                              _0: /* tuple */[
+                                                              _0: [
                                                                 "join",
                                                                 (function (param) {
                                                                     return {
-                                                                            tag: /* Eq */0,
+                                                                            TAG: /* Eq */0,
                                                                             _0: "1,2,3",
                                                                             _1: [
                                                                                 1,
@@ -605,11 +604,11 @@ var suites_1 = /* :: */{
                                                                   })
                                                               ],
                                                               _1: /* :: */{
-                                                                _0: /* tuple */[
+                                                                _0: [
                                                                   "joinWith",
                                                                   (function (param) {
                                                                       return {
-                                                                              tag: /* Eq */0,
+                                                                              TAG: /* Eq */0,
                                                                               _0: "1;2;3",
                                                                               _1: [
                                                                                   1,
@@ -620,11 +619,11 @@ var suites_1 = /* :: */{
                                                                     })
                                                                 ],
                                                                 _1: /* :: */{
-                                                                  _0: /* tuple */[
+                                                                  _0: [
                                                                     "lastIndexOf",
                                                                     (function (param) {
                                                                         return {
-                                                                                tag: /* Eq */0,
+                                                                                TAG: /* Eq */0,
                                                                                 _0: 1,
                                                                                 _1: [
                                                                                     1,
@@ -635,11 +634,11 @@ var suites_1 = /* :: */{
                                                                       })
                                                                   ],
                                                                   _1: /* :: */{
-                                                                    _0: /* tuple */[
+                                                                    _0: [
                                                                       "lastIndexOfFrom",
                                                                       (function (param) {
                                                                           return {
-                                                                                  tag: /* Eq */0,
+                                                                                  TAG: /* Eq */0,
                                                                                   _0: 1,
                                                                                   _1: [
                                                                                       1,
@@ -651,11 +650,11 @@ var suites_1 = /* :: */{
                                                                         })
                                                                     ],
                                                                     _1: /* :: */{
-                                                                      _0: /* tuple */[
+                                                                      _0: [
                                                                         "slice",
                                                                         (function (param) {
                                                                             return {
-                                                                                    tag: /* Eq */0,
+                                                                                    TAG: /* Eq */0,
                                                                                     _0: [
                                                                                       2,
                                                                                       3
@@ -671,11 +670,11 @@ var suites_1 = /* :: */{
                                                                           })
                                                                       ],
                                                                       _1: /* :: */{
-                                                                        _0: /* tuple */[
+                                                                        _0: [
                                                                           "copy",
                                                                           (function (param) {
                                                                               return {
-                                                                                      tag: /* Eq */0,
+                                                                                      TAG: /* Eq */0,
                                                                                       _0: [
                                                                                         1,
                                                                                         2,
@@ -694,11 +693,11 @@ var suites_1 = /* :: */{
                                                                             })
                                                                         ],
                                                                         _1: /* :: */{
-                                                                          _0: /* tuple */[
+                                                                          _0: [
                                                                             "sliceFrom",
                                                                             (function (param) {
                                                                                 return {
-                                                                                        tag: /* Eq */0,
+                                                                                        TAG: /* Eq */0,
                                                                                         _0: [
                                                                                           3,
                                                                                           4,
@@ -715,11 +714,11 @@ var suites_1 = /* :: */{
                                                                               })
                                                                           ],
                                                                           _1: /* :: */{
-                                                                            _0: /* tuple */[
+                                                                            _0: [
                                                                               "toString",
                                                                               (function (param) {
                                                                                   return {
-                                                                                          tag: /* Eq */0,
+                                                                                          TAG: /* Eq */0,
                                                                                           _0: "1,2,3",
                                                                                           _1: [
                                                                                               1,
@@ -730,11 +729,11 @@ var suites_1 = /* :: */{
                                                                                 })
                                                                             ],
                                                                             _1: /* :: */{
-                                                                              _0: /* tuple */[
+                                                                              _0: [
                                                                                 "toLocaleString",
                                                                                 (function (param) {
                                                                                     return {
-                                                                                            tag: /* Eq */0,
+                                                                                            TAG: /* Eq */0,
                                                                                             _0: "1,2,3",
                                                                                             _1: [
                                                                                                 1,
@@ -745,11 +744,11 @@ var suites_1 = /* :: */{
                                                                                   })
                                                                               ],
                                                                               _1: /* :: */{
-                                                                                _0: /* tuple */[
+                                                                                _0: [
                                                                                   "every",
                                                                                   (function (param) {
                                                                                       return {
-                                                                                              tag: /* Eq */0,
+                                                                                              TAG: /* Eq */0,
                                                                                               _0: true,
                                                                                               _1: [
                                                                                                   1,
@@ -762,11 +761,11 @@ var suites_1 = /* :: */{
                                                                                     })
                                                                                 ],
                                                                                 _1: /* :: */{
-                                                                                  _0: /* tuple */[
+                                                                                  _0: [
                                                                                     "everyi",
                                                                                     (function (param) {
                                                                                         return {
-                                                                                                tag: /* Eq */0,
+                                                                                                TAG: /* Eq */0,
                                                                                                 _0: false,
                                                                                                 _1: [
                                                                                                     1,
@@ -779,11 +778,11 @@ var suites_1 = /* :: */{
                                                                                       })
                                                                                   ],
                                                                                   _1: /* :: */{
-                                                                                    _0: /* tuple */[
+                                                                                    _0: [
                                                                                       "filter",
                                                                                       (function (param) {
                                                                                           return {
-                                                                                                  tag: /* Eq */0,
+                                                                                                  TAG: /* Eq */0,
                                                                                                   _0: [
                                                                                                     2,
                                                                                                     4
@@ -800,11 +799,11 @@ var suites_1 = /* :: */{
                                                                                         })
                                                                                     ],
                                                                                     _1: /* :: */{
-                                                                                      _0: /* tuple */[
+                                                                                      _0: [
                                                                                         "filteri",
                                                                                         (function (param) {
                                                                                             return {
-                                                                                                    tag: /* Eq */0,
+                                                                                                    TAG: /* Eq */0,
                                                                                                     _0: [
                                                                                                       1,
                                                                                                       3
@@ -821,11 +820,11 @@ var suites_1 = /* :: */{
                                                                                           })
                                                                                       ],
                                                                                       _1: /* :: */{
-                                                                                        _0: /* tuple */[
+                                                                                        _0: [
                                                                                           "find",
                                                                                           (function (param) {
                                                                                               return {
-                                                                                                      tag: /* Eq */0,
+                                                                                                      TAG: /* Eq */0,
                                                                                                       _0: 2,
                                                                                                       _1: Caml_option.undefined_to_opt([
                                                                                                               1,
@@ -839,11 +838,11 @@ var suites_1 = /* :: */{
                                                                                             })
                                                                                         ],
                                                                                         _1: /* :: */{
-                                                                                          _0: /* tuple */[
+                                                                                          _0: [
                                                                                             "find - no match",
                                                                                             (function (param) {
                                                                                                 return {
-                                                                                                        tag: /* Eq */0,
+                                                                                                        TAG: /* Eq */0,
                                                                                                         _0: undefined,
                                                                                                         _1: Caml_option.undefined_to_opt([
                                                                                                                 1,
@@ -857,11 +856,11 @@ var suites_1 = /* :: */{
                                                                                               })
                                                                                           ],
                                                                                           _1: /* :: */{
-                                                                                            _0: /* tuple */[
+                                                                                            _0: [
                                                                                               "findi",
                                                                                               (function (param) {
                                                                                                   return {
-                                                                                                          tag: /* Eq */0,
+                                                                                                          TAG: /* Eq */0,
                                                                                                           _0: 1,
                                                                                                           _1: Caml_option.undefined_to_opt([
                                                                                                                   1,
@@ -875,11 +874,11 @@ var suites_1 = /* :: */{
                                                                                                 })
                                                                                             ],
                                                                                             _1: /* :: */{
-                                                                                              _0: /* tuple */[
+                                                                                              _0: [
                                                                                                 "findi - no match",
                                                                                                 (function (param) {
                                                                                                     return {
-                                                                                                            tag: /* Eq */0,
+                                                                                                            TAG: /* Eq */0,
                                                                                                             _0: undefined,
                                                                                                             _1: Caml_option.undefined_to_opt([
                                                                                                                     1,
@@ -893,11 +892,11 @@ var suites_1 = /* :: */{
                                                                                                   })
                                                                                               ],
                                                                                               _1: /* :: */{
-                                                                                                _0: /* tuple */[
+                                                                                                _0: [
                                                                                                   "findIndex",
                                                                                                   (function (param) {
                                                                                                       return {
-                                                                                                              tag: /* Eq */0,
+                                                                                                              TAG: /* Eq */0,
                                                                                                               _0: 1,
                                                                                                               _1: [
                                                                                                                   1,
@@ -911,11 +910,11 @@ var suites_1 = /* :: */{
                                                                                                     })
                                                                                                 ],
                                                                                                 _1: /* :: */{
-                                                                                                  _0: /* tuple */[
+                                                                                                  _0: [
                                                                                                     "findIndexi",
                                                                                                     (function (param) {
                                                                                                         return {
-                                                                                                                tag: /* Eq */0,
+                                                                                                                TAG: /* Eq */0,
                                                                                                                 _0: 0,
                                                                                                                 _1: [
                                                                                                                     1,
@@ -929,7 +928,7 @@ var suites_1 = /* :: */{
                                                                                                       })
                                                                                                   ],
                                                                                                   _1: /* :: */{
-                                                                                                    _0: /* tuple */[
+                                                                                                    _0: [
                                                                                                       "forEach",
                                                                                                       (function (param) {
                                                                                                           var sum = {
@@ -944,14 +943,14 @@ var suites_1 = /* :: */{
                                                                                                                 
                                                                                                               });
                                                                                                           return {
-                                                                                                                  tag: /* Eq */0,
+                                                                                                                  TAG: /* Eq */0,
                                                                                                                   _0: 6,
                                                                                                                   _1: sum.contents
                                                                                                                 };
                                                                                                         })
                                                                                                     ],
                                                                                                     _1: /* :: */{
-                                                                                                      _0: /* tuple */[
+                                                                                                      _0: [
                                                                                                         "forEachi",
                                                                                                         (function (param) {
                                                                                                             var sum = {
@@ -966,18 +965,18 @@ var suites_1 = /* :: */{
                                                                                                                   
                                                                                                                 });
                                                                                                             return {
-                                                                                                                    tag: /* Eq */0,
+                                                                                                                    TAG: /* Eq */0,
                                                                                                                     _0: 3,
                                                                                                                     _1: sum.contents
                                                                                                                   };
                                                                                                           })
                                                                                                       ],
                                                                                                       _1: /* :: */{
-                                                                                                        _0: /* tuple */[
+                                                                                                        _0: [
                                                                                                           "map",
                                                                                                           (function (param) {
                                                                                                               return {
-                                                                                                                      tag: /* Eq */0,
+                                                                                                                      TAG: /* Eq */0,
                                                                                                                       _0: [
                                                                                                                         2,
                                                                                                                         4,
@@ -996,11 +995,11 @@ var suites_1 = /* :: */{
                                                                                                             })
                                                                                                         ],
                                                                                                         _1: /* :: */{
-                                                                                                          _0: /* tuple */[
+                                                                                                          _0: [
                                                                                                             "map",
                                                                                                             (function (param) {
                                                                                                                 return {
-                                                                                                                        tag: /* Eq */0,
+                                                                                                                        TAG: /* Eq */0,
                                                                                                                         _0: [
                                                                                                                           0,
                                                                                                                           2,
@@ -1019,11 +1018,11 @@ var suites_1 = /* :: */{
                                                                                                               })
                                                                                                           ],
                                                                                                           _1: /* :: */{
-                                                                                                            _0: /* tuple */[
+                                                                                                            _0: [
                                                                                                               "reduce",
                                                                                                               (function (param) {
                                                                                                                   return {
-                                                                                                                          tag: /* Eq */0,
+                                                                                                                          TAG: /* Eq */0,
                                                                                                                           _0: -10,
                                                                                                                           _1: [
                                                                                                                               1,
@@ -1037,11 +1036,11 @@ var suites_1 = /* :: */{
                                                                                                                 })
                                                                                                             ],
                                                                                                             _1: /* :: */{
-                                                                                                              _0: /* tuple */[
+                                                                                                              _0: [
                                                                                                                 "reducei",
                                                                                                                 (function (param) {
                                                                                                                     return {
-                                                                                                                            tag: /* Eq */0,
+                                                                                                                            TAG: /* Eq */0,
                                                                                                                             _0: -6,
                                                                                                                             _1: [
                                                                                                                                 1,
@@ -1055,11 +1054,11 @@ var suites_1 = /* :: */{
                                                                                                                   })
                                                                                                               ],
                                                                                                               _1: /* :: */{
-                                                                                                                _0: /* tuple */[
+                                                                                                                _0: [
                                                                                                                   "reduceRight",
                                                                                                                   (function (param) {
                                                                                                                       return {
-                                                                                                                              tag: /* Eq */0,
+                                                                                                                              TAG: /* Eq */0,
                                                                                                                               _0: -10,
                                                                                                                               _1: [
                                                                                                                                   1,
@@ -1073,11 +1072,11 @@ var suites_1 = /* :: */{
                                                                                                                     })
                                                                                                                 ],
                                                                                                                 _1: /* :: */{
-                                                                                                                  _0: /* tuple */[
+                                                                                                                  _0: [
                                                                                                                     "reduceRighti",
                                                                                                                     (function (param) {
                                                                                                                         return {
-                                                                                                                                tag: /* Eq */0,
+                                                                                                                                TAG: /* Eq */0,
                                                                                                                                 _0: -6,
                                                                                                                                 _1: [
                                                                                                                                     1,
@@ -1091,11 +1090,11 @@ var suites_1 = /* :: */{
                                                                                                                       })
                                                                                                                   ],
                                                                                                                   _1: /* :: */{
-                                                                                                                    _0: /* tuple */[
+                                                                                                                    _0: [
                                                                                                                       "some",
                                                                                                                       (function (param) {
                                                                                                                           return {
-                                                                                                                                  tag: /* Eq */0,
+                                                                                                                                  TAG: /* Eq */0,
                                                                                                                                   _0: false,
                                                                                                                                   _1: [
                                                                                                                                       1,
@@ -1109,11 +1108,11 @@ var suites_1 = /* :: */{
                                                                                                                         })
                                                                                                                     ],
                                                                                                                     _1: /* :: */{
-                                                                                                                      _0: /* tuple */[
+                                                                                                                      _0: [
                                                                                                                         "somei",
                                                                                                                         (function (param) {
                                                                                                                             return {
-                                                                                                                                    tag: /* Eq */0,
+                                                                                                                                    TAG: /* Eq */0,
                                                                                                                                     _0: true,
                                                                                                                                     _1: [
                                                                                                                                         1,

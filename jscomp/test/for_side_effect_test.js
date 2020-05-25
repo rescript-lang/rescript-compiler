@@ -1,7 +1,6 @@
 'use strict';
 
 var Mt = require("./mt.js");
-var Block = require("../../lib/js/block.js");
 
 function tst(param) {
   for(var i = (console.log("hi"), 0) ,i_finish = (console.log("hello"), 3); i <= i_finish; ++i){
@@ -20,11 +19,11 @@ function test2(param) {
   return v;
 }
 
-var suites_0 = /* tuple */[
+var suites_0 = [
   "for_order",
   (function (param) {
       return {
-              tag: /* Eq */0,
+              TAG: /* Eq */0,
               _0: 10,
               _1: test2(undefined)
             };

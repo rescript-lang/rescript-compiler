@@ -1,7 +1,6 @@
 'use strict';
 
 var Mt = require("./mt.js");
-var Block = require("../../lib/js/block.js");
 var Js_types = require("../../lib/js/js_types.js");
 
 function string_or_number(x) {
@@ -15,7 +14,7 @@ function string_or_number(x) {
         return false;
     }
   } else {
-    switch (ty.tag | 0) {
+    switch (ty.TAG | 0) {
       case /* JSNumber */0 :
           console.log(ty._0 + 3);
           return true;
@@ -31,11 +30,11 @@ function string_or_number(x) {
   }
 }
 
-var suites_0 = /* tuple */[
+var suites_0 = [
   "int_type",
   (function (param) {
       return {
-              tag: /* Eq */0,
+              TAG: /* Eq */0,
               _0: "number",
               _1: "number"
             };
@@ -43,77 +42,77 @@ var suites_0 = /* tuple */[
 ];
 
 var suites_1 = /* :: */{
-  _0: /* tuple */[
+  _0: [
     "string_type",
     (function (param) {
         return {
-                tag: /* Eq */0,
+                TAG: /* Eq */0,
                 _0: "string",
                 _1: "string"
               };
       })
   ],
   _1: /* :: */{
-    _0: /* tuple */[
+    _0: [
       "number_gadt_test",
       (function (param) {
           return {
-                  tag: /* Eq */0,
+                  TAG: /* Eq */0,
                   _0: Js_types.test(3, /* Number */3),
                   _1: true
                 };
         })
     ],
     _1: /* :: */{
-      _0: /* tuple */[
+      _0: [
         "boolean_gadt_test",
         (function (param) {
             return {
-                    tag: /* Eq */0,
+                    TAG: /* Eq */0,
                     _0: Js_types.test(true, /* Boolean */2),
                     _1: true
                   };
           })
       ],
       _1: /* :: */{
-        _0: /* tuple */[
+        _0: [
           "undefined_gadt_test",
           (function (param) {
               return {
-                      tag: /* Eq */0,
+                      TAG: /* Eq */0,
                       _0: Js_types.test(undefined, /* Undefined */0),
                       _1: true
                     };
             })
         ],
         _1: /* :: */{
-          _0: /* tuple */[
+          _0: [
             "string_on_number1",
             (function (param) {
                 return {
-                        tag: /* Eq */0,
+                        TAG: /* Eq */0,
                         _0: string_or_number("xx"),
                         _1: true
                       };
               })
           ],
           _1: /* :: */{
-            _0: /* tuple */[
+            _0: [
               "string_on_number2",
               (function (param) {
                   return {
-                          tag: /* Eq */0,
+                          TAG: /* Eq */0,
                           _0: string_or_number(3.02),
                           _1: true
                         };
                 })
             ],
             _1: /* :: */{
-              _0: /* tuple */[
+              _0: [
                 "string_on_number3",
                 (function (param) {
                     return {
-                            tag: /* Eq */0,
+                            TAG: /* Eq */0,
                             _0: string_or_number(function (x) {
                                   return x;
                                 }),
@@ -122,33 +121,33 @@ var suites_1 = /* :: */{
                   })
               ],
               _1: /* :: */{
-                _0: /* tuple */[
+                _0: [
                   "string_gadt_test",
                   (function (param) {
                       return {
-                              tag: /* Eq */0,
+                              TAG: /* Eq */0,
                               _0: Js_types.test("3", /* String */4),
                               _1: true
                             };
                     })
                 ],
                 _1: /* :: */{
-                  _0: /* tuple */[
+                  _0: [
                     "string_gadt_test_neg",
                     (function (param) {
                         return {
-                                tag: /* Eq */0,
+                                TAG: /* Eq */0,
                                 _0: Js_types.test(3, /* String */4),
                                 _1: false
                               };
                       })
                   ],
                   _1: /* :: */{
-                    _0: /* tuple */[
+                    _0: [
                       "function_gadt_test",
                       (function (param) {
                           return {
-                                  tag: /* Eq */0,
+                                  TAG: /* Eq */0,
                                   _0: Js_types.test((function (x) {
                                           return x;
                                         }), /* Function */5),
@@ -157,11 +156,11 @@ var suites_1 = /* :: */{
                         })
                     ],
                     _1: /* :: */{
-                      _0: /* tuple */[
+                      _0: [
                         "object_gadt_test",
                         (function (param) {
                             return {
-                                    tag: /* Eq */0,
+                                    TAG: /* Eq */0,
                                     _0: Js_types.test({
                                           x: 3
                                         }, /* Object */6),

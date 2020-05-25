@@ -21,7 +21,7 @@ function eq(f, param) {
 }
 
 function assert_(loc, v) {
-  return eq(loc, /* tuple */[
+  return eq(loc, [
               v,
               true
             ]);

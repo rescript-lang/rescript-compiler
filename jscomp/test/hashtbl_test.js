@@ -3,7 +3,6 @@
 var Mt = require("./mt.js");
 var List = require("../../lib/js/list.js");
 var $$Array = require("../../lib/js/array.js");
-var Block = require("../../lib/js/block.js");
 var Curry = require("../../lib/js/curry.js");
 var Hashtbl = require("../../lib/js/hashtbl.js");
 var MoreLabels = require("../../lib/js/moreLabels.js");
@@ -12,7 +11,7 @@ var Caml_primitive = require("../../lib/js/caml_primitive.js");
 function to_list(tbl) {
   return Hashtbl.fold((function (k, v, acc) {
                 return /* :: */{
-                        _0: /* tuple */[
+                        _0: [
                           k,
                           v
                         ],
@@ -44,18 +43,18 @@ function g(count) {
                   }), v));
 }
 
-var suites_0 = /* tuple */[
+var suites_0 = [
   "simple",
   (function (param) {
       return {
-              tag: /* Eq */0,
+              TAG: /* Eq */0,
               _0: /* :: */{
-                _0: /* tuple */[
+                _0: [
                   1,
                   /* "1" */49
                 ],
                 _1: /* :: */{
-                  _0: /* tuple */[
+                  _0: [
                     2,
                     /* "2" */50
                   ],
@@ -68,13 +67,13 @@ var suites_0 = /* tuple */[
 ];
 
 var suites_1 = /* :: */{
-  _0: /* tuple */[
+  _0: [
     "more_iterations",
     (function (param) {
         return {
-                tag: /* Eq */0,
+                TAG: /* Eq */0,
                 _0: $$Array.init(1001, (function (i) {
-                        return /* tuple */[
+                        return [
                                 (i << 1),
                                 String(i)
                               ];
@@ -84,13 +83,13 @@ var suites_1 = /* :: */{
       })
   ],
   _1: /* :: */{
-    _0: /* tuple */[
+    _0: [
       "More_labels_regressionfix_374",
       (function (param) {
           var tbl = Curry._2(MoreLabels.Hashtbl.create, undefined, 30);
           Hashtbl.add(tbl, 3, 3);
           return {
-                  tag: /* Eq */0,
+                  TAG: /* Eq */0,
                   _0: tbl.size,
                   _1: 1
                 };

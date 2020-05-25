@@ -44,24 +44,7 @@ module O = struct
 end
 
 
-(** Mainly used in camlinternalOO
-    {[
-      let dummy_met : item = obj (Obj.new_block 0 0)
-      let obj = Obj.new_block Obj.object_tag table.size
-    ]}
 
-    Here we only need generate expression like this
-    {[
-      { tag : tag ; length : size }
-    ]}
-    we don't need fill fields, since it is not required by GC
-  This function should never be used in variant 
-  block creation
-*)
-let caml_obj_block tag size = 
-  let v = Obj.repr (Caml_array_extern.new_uninitialized size) in 
-  Obj.set_tag  v tag ; 
-  v
 
 (**
    Since now we change it back to use
@@ -97,8 +80,8 @@ let caml_obj_dup : Obj.t -> Obj.t = [%raw{|function(x){
     for(var i = 0 ; i < len ; ++i){
       v[i] = x[i]
     }
-    if(x.tag !== undefined){
-      v.tag = x.tag 
+    if(x.TAG !== undefined){
+      v.TAG = x.TAG // TODO this can be removed eventually
     }  
     return v 
   } 
@@ -123,8 +106,8 @@ let update_dummy : _ -> _ -> unit= [%raw{|function(x,y){
     for(k = 0; k < y.length ; ++k){
       x[k] = y[k]
     }
-    if(y.tag !== undefined){
-      x.tag = y.tag
+    if(y.TAG !== undefined){
+      x.TAG = y.TAG
     }
   } else {
     for (var k in y){

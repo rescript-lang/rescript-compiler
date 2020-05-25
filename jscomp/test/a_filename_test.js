@@ -2,7 +2,6 @@
 
 var Mt = require("./mt.js");
 var $$Array = require("../../lib/js/array.js");
-var Block = require("../../lib/js/block.js");
 var Ext_filename_test = require("./ext_filename_test.js");
 
 var suites = {
@@ -16,11 +15,11 @@ var test_id = {
 function eq(loc, x, y) {
   test_id.contents = test_id.contents + 1 | 0;
   suites.contents = /* :: */{
-    _0: /* tuple */[
+    _0: [
       loc + (" id " + String(test_id.contents)),
       (function (param) {
           return {
-                  tag: /* Eq */0,
+                  TAG: /* Eq */0,
                   _0: x,
                   _1: y
                 };
@@ -35,11 +34,11 @@ function test(param, param$1) {
   return Ext_filename_test.node_relative_path(true, param, param$1);
 }
 
-eq("File \"a_filename_test.ml\", line 10, characters 5-12", /* tuple */[
+eq("File \"a_filename_test.ml\", line 10, characters 5-12", [
       Ext_filename_test.combine("/tmp", "subdir/file.txt"),
       Ext_filename_test.combine("/tmp", "/a/tmp.txt"),
       Ext_filename_test.combine("/a/tmp.txt", "subdir/file.txt")
-    ], /* tuple */[
+    ], [
       "/tmp/subdir/file.txt",
       "/a/tmp.txt",
       "/a/tmp.txt/subdir/file.txt"

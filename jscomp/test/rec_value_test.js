@@ -2,7 +2,6 @@
 
 var Mt = require("./mt.js");
 var List = require("../../lib/js/list.js");
-var Block = require("../../lib/js/block.js");
 var Curry = require("../../lib/js/curry.js");
 var Caml_obj = require("../../lib/js/caml_obj.js");
 var CamlinternalLazy = require("../../lib/js/camlinternalLazy.js");
@@ -17,7 +16,7 @@ var x0 = {};
 
 Caml_obj.update_dummy(x0, {
       HASH: /* Cons */748545553,
-      value: /* tuple */[
+      value: [
         1,
         x0
       ]
@@ -82,7 +81,7 @@ var v = {
   contents: (function (param) {
       throw {
             RE_EXN_ID: "Assert_failure",
-            _1: /* tuple */[
+            _1: [
               "rec_value_test.ml",
               28,
               24
@@ -117,7 +116,7 @@ var xs_0 = /* :: */{
   _1: /* [] */0
 };
 
-var xs = /* tuple */[
+var xs = [
   xs_0,
   zs
 ];
@@ -229,7 +228,7 @@ function rec_variant_b_1(param) {
 }
 
 var rec_variant_b = {
-  tag: /* B */0,
+  TAG: /* B */0,
   _0: "gho",
   _1: rec_variant_b_1
 };
@@ -239,7 +238,7 @@ function rec_variant_a_1(param) {
 }
 
 var rec_variant_a = {
-  tag: /* A */1,
+  TAG: /* A */1,
   _0: 3,
   _1: rec_variant_a_1
 };
@@ -248,7 +247,7 @@ function phd(l) {
   if (typeof l === "number") {
     throw {
           RE_EXN_ID: "Assert_failure",
-          _1: /* tuple */[
+          _1: [
             "rec_value_test.ml",
             105,
             9
@@ -259,7 +258,7 @@ function phd(l) {
   if (l.HASH !== 748545553) {
     throw {
           RE_EXN_ID: "Assert_failure",
-          _1: /* tuple */[
+          _1: [
             "rec_value_test.ml",
             105,
             9
@@ -274,7 +273,7 @@ function ptl(l) {
   if (typeof l === "number") {
     throw {
           RE_EXN_ID: "Assert_failure",
-          _1: /* tuple */[
+          _1: [
             "rec_value_test.ml",
             110,
             9
@@ -285,7 +284,7 @@ function ptl(l) {
   if (l.HASH !== 748545553) {
     throw {
           RE_EXN_ID: "Assert_failure",
-          _1: /* tuple */[
+          _1: [
             "rec_value_test.ml",
             110,
             9
@@ -299,7 +298,7 @@ function ptl(l) {
 var y00 = {};
 
 Caml_obj.update_dummy(y00, {
-      tag: /* C1 */1,
+      TAG: /* C1 */1,
       hd: 1,
       tail: y00
     });
@@ -312,11 +311,11 @@ function xtl(h) {
   return h.tail;
 }
 
-var suites_0 = /* tuple */[
+var suites_0 = [
   "File \"rec_value_test.ml\", line 126, characters 2-9",
   (function (param) {
       return {
-              tag: /* Eq */0,
+              TAG: /* Eq */0,
               _0: 1,
               _1: phd(ptl(ptl(x0)))
             };
@@ -324,29 +323,29 @@ var suites_0 = /* tuple */[
 ];
 
 var suites_1 = /* :: */{
-  _0: /* tuple */[
+  _0: [
     "File \"rec_value_test.ml\", line 128, characters 2-9",
     (function (param) {
         return {
-                tag: /* Eq */0,
+                TAG: /* Eq */0,
                 _0: 1,
                 _1: 1
               };
       })
   ],
   _1: /* :: */{
-    _0: /* tuple */[
+    _0: [
       "hd",
       (function (param) {
           return {
-                  tag: /* Eq */0,
+                  TAG: /* Eq */0,
                   _0: 1,
                   _1: List.hd(List.tl(x))
                 };
         })
     ],
     _1: /* :: */{
-      _0: /* tuple */[
+      _0: [
         "mutual",
         (function (param) {
             var tmp;
@@ -357,7 +356,7 @@ var suites_1 = /* :: */{
               } else {
                 throw {
                       RE_EXN_ID: "Assert_failure",
-                      _1: /* tuple */[
+                      _1: [
                         "rec_value_test.ml",
                         140,
                         2
@@ -368,7 +367,7 @@ var suites_1 = /* :: */{
             } else {
               throw {
                     RE_EXN_ID: "Assert_failure",
-                    _1: /* tuple */[
+                    _1: [
                       "rec_value_test.ml",
                       140,
                       2
@@ -377,29 +376,29 @@ var suites_1 = /* :: */{
                   };
             }
             return {
-                    tag: /* Eq */0,
+                    TAG: /* Eq */0,
                     _0: 3,
                     _1: tmp
                   };
           })
       ],
       _1: /* :: */{
-        _0: /* tuple */[
+        _0: [
           "rec_sum",
           (function (param) {
               return {
-                      tag: /* Eq */0,
+                      TAG: /* Eq */0,
                       _0: 55,
                       _1: sum(0, 10)
                     };
             })
         ],
         _1: /* :: */{
-          _0: /* tuple */[
+          _0: [
             "File \"rec_value_test.ml\", line 143, characters 2-9",
             (function (param) {
                 return {
-                        tag: /* Eq */0,
+                        TAG: /* Eq */0,
                         _0: /* :: */{
                           _0: 1,
                           _1: /* :: */{
@@ -412,11 +411,11 @@ var suites_1 = /* :: */{
               })
           ],
           _1: /* :: */{
-            _0: /* tuple */[
+            _0: [
               "File \"rec_value_test.ml\", line 146, characters 2-9",
               (function (param) {
                   return {
-                          tag: /* Eq */0,
+                          TAG: /* Eq */0,
                           _0: /* :: */{
                             _0: 2,
                             _1: /* :: */{
@@ -429,11 +428,11 @@ var suites_1 = /* :: */{
                 })
             ],
             _1: /* :: */{
-              _0: /* tuple */[
+              _0: [
                 "File \"rec_value_test.ml\", line 149, characters 2-9",
                 (function (param) {
                     return {
-                            tag: /* Eq */0,
+                            TAG: /* Eq */0,
                             _0: /* :: */{
                               _0: 1,
                               _1: /* :: */{
@@ -449,11 +448,11 @@ var suites_1 = /* :: */{
                   })
               ],
               _1: /* :: */{
-                _0: /* tuple */[
+                _0: [
                   "File \"rec_value_test.ml\", line 152, characters 2-9",
                   (function (param) {
                       return {
-                              tag: /* Eq */0,
+                              TAG: /* Eq */0,
                               _0: /* :: */{
                                 _0: 1,
                                 _1: /* :: */{
@@ -472,11 +471,11 @@ var suites_1 = /* :: */{
                     })
                 ],
                 _1: /* :: */{
-                  _0: /* tuple */[
+                  _0: [
                     "File \"rec_value_test.ml\", line 155, characters 2-9",
                     (function (param) {
                         return {
-                                tag: /* Eq */0,
+                                TAG: /* Eq */0,
                                 _0: /* :: */{
                                   _0: 2,
                                   _1: /* :: */{
@@ -489,30 +488,30 @@ var suites_1 = /* :: */{
                       })
                   ],
                   _1: /* :: */{
-                    _0: /* tuple */[
+                    _0: [
                       "File \"rec_value_test.ml\", line 158, characters 2-9",
                       (function (param) {
                           return {
-                                  tag: /* Eq */0,
+                                  TAG: /* Eq */0,
                                   _0: 3,
                                   _1: 3
                                 };
                         })
                     ],
                     _1: /* :: */{
-                      _0: /* tuple */[
+                      _0: [
                         "File \"rec_value_test.ml\", line 161, characters 2-9",
                         (function (param) {
-                            if (!rec_variant_b.tag) {
+                            if (!rec_variant_b.TAG) {
                               return {
-                                      tag: /* Eq */0,
+                                      TAG: /* Eq */0,
                                       _0: Curry._1(rec_variant_b_1, undefined),
                                       _1: rec_variant_a
                                     };
                             }
                             throw {
                                   RE_EXN_ID: "Assert_failure",
-                                  _1: /* tuple */[
+                                  _1: [
                                     "rec_value_test.ml",
                                     164,
                                     11
@@ -522,19 +521,19 @@ var suites_1 = /* :: */{
                           })
                       ],
                       _1: /* :: */{
-                        _0: /* tuple */[
+                        _0: [
                           "File \"rec_value_test.ml\", line 166, characters 2-9",
                           (function (param) {
-                              if (rec_variant_a.tag) {
+                              if (rec_variant_a.TAG) {
                                 return {
-                                        tag: /* Eq */0,
+                                        TAG: /* Eq */0,
                                         _0: Curry._1(rec_variant_a_1, undefined),
                                         _1: rec_variant_b
                                       };
                               }
                               throw {
                                     RE_EXN_ID: "Assert_failure",
-                                    _1: /* tuple */[
+                                    _1: [
                                       "rec_value_test.ml",
                                       169,
                                       11

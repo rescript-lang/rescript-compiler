@@ -59,7 +59,6 @@ module L = Js_dump_lit
 
 (* There modules are dynamically inserted in the last stage
   {Caml_curry}
-  {Caml_block}
   {Caml_option}
 
   They can appear anywhere so even if you have a module 
@@ -94,36 +93,6 @@ module Curry_gen = struct
     P.string f "_"; 
     P.string f (Printf.sprintf "%d" len)
 end 
-
-let block_dot f = 
-  P.string f Js_runtime_modules.block;
-  P.string f L.dot 
-
-let pp_block_create f =   
-  block_dot f ;
-  P.string f L.caml_block_create
-
-let dbg_block_dot f =   
-  P.string f Js_runtime_modules.caml_chrome_block;
-  P.string f L.dot 
-
-let dbg_block_create f =   
-  dbg_block_dot f ;
-  P.string f L.caml_block_create
-
-
-
-let dbg_poly_var f =   
-  dbg_block_dot f;
-  P.string f L.block_poly_var
-
-let dbg_simple_variant f =   
-  dbg_block_dot f ;
-  P.string f L.block_simple_variant
-
-let dbg_variant f =   
-  dbg_block_dot f ; 
-  P.string f L.block_variant
 
 
 
@@ -878,7 +847,7 @@ and expression_desc cxt ~(level:int) f x : cxt  =
            else []
           ) in 
       if p.num_nonconst = 1 then tails
-      else ("tag",
+      else (L.tag,
         if !Js_config.debug then tag else {tag with comment = Some p.name}) :: tails in 
     if p.num_nonconst = 1 && not !Js_config.debug then 
       pp_comment_option f (Some p.name);
@@ -893,85 +862,17 @@ and expression_desc cxt ~(level:int) f x : cxt  =
       if p.num_nonconst = 1 then       
         tails
       else         
-        ("tag",
+        (L.tag,
           if !Js_config.debug then tag else {tag with comment = Some p.name}) :: tails
     in 
     if p.num_nonconst = 1 && not !Js_config.debug then 
       pp_comment_option f (Some p.name);
     expression_desc cxt ~level f (Object objs)
-  | Caml_block( el, mutable_flag, tag, tag_info)
+  | Caml_block ( _, _, _, (Blk_module_export | Blk_na _ )) -> assert false
+  | Caml_block( el, mutable_flag, _tag, (Blk_tuple  | Blk_class | Blk_array  ))
     ->
-    pp_comment_option f (Lam_compile_util.comment_of_tag_info tag_info);
-    (* Note that, if we ignore more than tag [0] we loose some information
-       with regard tag  
-
-       TODO: for numbers like 248, 255 we can reverse engineer to make it
-         [Obj.xx_flag], but we can not do this in runtime libraries
-
-       When it does not need block runtime, it means it will be compiled 
-       as an array, note exception or open variant it is outer-most is 
-       simply an array
-    *)
-    if not !Js_config.debug then begin 
-      if not (Js_block_runtime.needBlockRuntime tag tag_info) then 
-        expression_desc cxt ~level f  (Array (el, mutable_flag))
-      else  
-        begin
-          pp_block_create f;
-          P.paren_group f 1 (fun _ -> arguments cxt f [tag; E.array mutable_flag el])
-        end  
-    end 
-      else
-        if not (Js_block_runtime.needChromeRuntime tag tag_info) then 
-          expression_desc cxt ~level f  (Array (el, mutable_flag))
-        else 
-      (  
-        match tag_info with 
-        | Blk_record _ 
-        | Blk_module _ 
-        | Blk_module_export -> 
-          assert false 
-            (* 
-              This can not happen, see the pattern match on previous branch 
-              TODO: we still need clean up local module compilation 
-              to make it more obvious
-            *)
-        | Blk_poly_var name ->  
-          dbg_poly_var f;
-          P.paren_group f 1 (fun _ -> arguments cxt f [ 
-              E.str name;
-              E.array mutable_flag el])        
-        | Blk_constructor{name; num_nonconst = number}
-
-          -> (* has to be debug mode *)          
-          if number = 1 && Js_block_runtime.tag_is_zero tag then 
-            begin
-              dbg_simple_variant f; 
-              P.paren_group f 1 (fun _ ->
-                  arguments cxt f 
-                    [E.str name; E.array mutable_flag el])             
-            end
-          else begin 
-            dbg_variant f;
-            P.paren_group f 1 (fun _ ->
-                arguments cxt f 
-                  [E.str name; tag; E.array mutable_flag el])
-          end
-
-          
-
-        | Blk_record_inlined _ (* TODO: No support for debug mode yet *)
-        | Blk_tuple
-        | Blk_extension
-        | Blk_class
-        | Blk_array
-        | Blk_record_ext _
-        | Blk_na _
-           ->           
-          dbg_block_create f;
-          P.paren_group f 1 (fun _ -> arguments cxt f [tag; E.array mutable_flag el])
-    )
-
+    expression_desc cxt ~level f  (Array (el, mutable_flag))
+ 
   | Caml_block_tag e ->
     P.group f 1 (fun _ ->
         let cxt = expression ~level:15 cxt f  e in

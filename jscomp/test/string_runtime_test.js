@@ -2,16 +2,15 @@
 
 var Mt = require("./mt.js");
 var List = require("../../lib/js/list.js");
-var Block = require("../../lib/js/block.js");
 var Bytes = require("../../lib/js/bytes.js");
 var Caml_char = require("../../lib/js/caml_char.js");
 var Caml_bytes = require("../../lib/js/caml_bytes.js");
 
-var suites_0 = /* tuple */[
+var suites_0 = [
   "caml_is_printable",
   (function (param) {
       return {
-              tag: /* Eq */0,
+              TAG: /* Eq */0,
               _0: Caml_char.caml_is_printable(/* "a" */97),
               _1: true
             };
@@ -19,13 +18,13 @@ var suites_0 = /* tuple */[
 ];
 
 var suites_1 = /* :: */{
-  _0: /* tuple */[
+  _0: [
     "caml_string_of_bytes",
     (function (param) {
         var match = List.split(List.map((function (x) {
                     var b = Caml_bytes.caml_create_bytes(1000);
                     Caml_bytes.caml_fill_bytes(b, 0, x, /* "c" */99);
-                    return /* tuple */[
+                    return [
                             Caml_bytes.bytes_to_string(b),
                             Caml_bytes.bytes_to_string(Bytes.init(x, (function (param) {
                                         return /* "c" */99;
@@ -54,7 +53,7 @@ var suites_1 = /* :: */{
                   }
                 }));
         return {
-                tag: /* Eq */0,
+                TAG: /* Eq */0,
                 _0: match[0],
                 _1: match[1]
               };

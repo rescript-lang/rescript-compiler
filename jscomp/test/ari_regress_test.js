@@ -1,7 +1,6 @@
 'use strict';
 
 var Mt = require("./mt.js");
-var Block = require("../../lib/js/block.js");
 var Curry = require("../../lib/js/curry.js");
 
 var g = 7;
@@ -28,11 +27,11 @@ function v(param) {
   return partial_arg(6, param);
 }
 
-var suites_0 = /* tuple */[
+var suites_0 = [
   "curry",
   (function (param) {
       return {
-              tag: /* Eq */0,
+              TAG: /* Eq */0,
               _0: g,
               _1: 7
             };
@@ -40,33 +39,33 @@ var suites_0 = /* tuple */[
 ];
 
 var suites_1 = /* :: */{
-  _0: /* tuple */[
+  _0: [
     "curry2",
     (function (param) {
         return {
-                tag: /* Eq */0,
+                TAG: /* Eq */0,
                 _0: 14,
                 _1: (Curry._1(v, 1), Curry._1(v, 1))
               };
       })
   ],
   _1: /* :: */{
-    _0: /* tuple */[
+    _0: [
       "curry3",
       (function (param) {
           return {
-                  tag: /* Eq */0,
+                  TAG: /* Eq */0,
                   _0: x,
                   _1: 14
                 };
         })
     ],
     _1: /* :: */{
-      _0: /* tuple */[
+      _0: [
         "File \"ari_regress_test.ml\", line 20, characters 4-11",
         (function (param) {
             return {
-                    tag: /* Eq */0,
+                    TAG: /* Eq */0,
                     _0: h.contents,
                     _1: 1
                   };

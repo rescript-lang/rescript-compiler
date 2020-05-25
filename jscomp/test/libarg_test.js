@@ -3,7 +3,6 @@
 var Mt = require("./mt.js");
 var Arg = require("../../lib/js/arg.js");
 var List = require("../../lib/js/list.js");
-var Block = require("../../lib/js/block.js");
 var Curry = require("../../lib/js/curry.js");
 var Printf = require("../../lib/js/printf.js");
 var Caml_obj = require("../../lib/js/caml_obj.js");
@@ -29,7 +28,7 @@ function record(fmt) {
 function f_unit(param) {
   return record(/* Format */{
               _0: {
-                tag: /* String_literal */11,
+                TAG: /* String_literal */11,
                 _0: "unit()",
                 _1: /* End_of_format */0
               },
@@ -40,13 +39,13 @@ function f_unit(param) {
 function f_bool(b) {
   return Curry._1(record(/* Format */{
                   _0: {
-                    tag: /* String_literal */11,
+                    TAG: /* String_literal */11,
                     _0: "bool(",
                     _1: {
-                      tag: /* Bool */9,
+                      TAG: /* Bool */9,
                       _0: /* No_padding */0,
                       _1: {
-                        tag: /* Char_literal */12,
+                        TAG: /* Char_literal */12,
                         _0: /* ")" */41,
                         _1: /* End_of_format */0
                       }
@@ -67,13 +66,13 @@ var r_clear = {
 function f_string(s) {
   return Curry._1(record(/* Format */{
                   _0: {
-                    tag: /* String_literal */11,
+                    TAG: /* String_literal */11,
                     _0: "string(",
                     _1: {
-                      tag: /* String */2,
+                      TAG: /* String */2,
                       _0: /* No_padding */0,
                       _1: {
-                        tag: /* Char_literal */12,
+                        TAG: /* Char_literal */12,
                         _0: /* ")" */41,
                         _1: /* End_of_format */0
                       }
@@ -90,15 +89,15 @@ var r_string = {
 function f_int(i) {
   return Curry._1(record(/* Format */{
                   _0: {
-                    tag: /* String_literal */11,
+                    TAG: /* String_literal */11,
                     _0: "int(",
                     _1: {
-                      tag: /* Int */4,
+                      TAG: /* Int */4,
                       _0: /* Int_d */0,
                       _1: /* No_padding */0,
                       _2: /* No_precision */0,
                       _3: {
-                        tag: /* Char_literal */12,
+                        TAG: /* Char_literal */12,
                         _0: /* ")" */41,
                         _1: /* End_of_format */0
                       }
@@ -115,15 +114,15 @@ var r_int = {
 function f_float(f) {
   return Curry._1(record(/* Format */{
                   _0: {
-                    tag: /* String_literal */11,
+                    TAG: /* String_literal */11,
                     _0: "float(",
                     _1: {
-                      tag: /* Float */8,
+                      TAG: /* Float */8,
                       _0: /* Float_g */9,
                       _1: /* No_padding */0,
                       _2: /* No_precision */0,
                       _3: {
-                        tag: /* Char_literal */12,
+                        TAG: /* Char_literal */12,
                         _0: /* ")" */41,
                         _1: /* End_of_format */0
                       }
@@ -140,13 +139,13 @@ var r_float = {
 function f_symbol(s) {
   return Curry._1(record(/* Format */{
                   _0: {
-                    tag: /* String_literal */11,
+                    TAG: /* String_literal */11,
                     _0: "symbol(",
                     _1: {
-                      tag: /* String */2,
+                      TAG: /* String */2,
                       _0: /* No_padding */0,
                       _1: {
-                        tag: /* Char_literal */12,
+                        TAG: /* Char_literal */12,
                         _0: /* ")" */41,
                         _1: /* End_of_format */0
                       }
@@ -159,13 +158,13 @@ function f_symbol(s) {
 function f_rest(s) {
   return Curry._1(record(/* Format */{
                   _0: {
-                    tag: /* String_literal */11,
+                    TAG: /* String_literal */11,
                     _0: "rest(",
                     _1: {
-                      tag: /* String */2,
+                      TAG: /* String */2,
                       _0: /* No_padding */0,
                       _1: {
-                        tag: /* Char_literal */12,
+                        TAG: /* Char_literal */12,
                         _0: /* ")" */41,
                         _1: /* End_of_format */0
                       }
@@ -178,13 +177,13 @@ function f_rest(s) {
 function f_anon(s) {
   return Curry._1(record(/* Format */{
                   _0: {
-                    tag: /* String_literal */11,
+                    TAG: /* String_literal */11,
                     _0: "anon(",
                     _1: {
-                      tag: /* String */2,
+                      TAG: /* String */2,
                       _0: /* No_padding */0,
                       _1: {
-                        tag: /* Char_literal */12,
+                        TAG: /* Char_literal */12,
                         _0: /* ")" */41,
                         _1: /* End_of_format */0
                       }
@@ -194,114 +193,114 @@ function f_anon(s) {
                 }), s);
 }
 
-var spec_0 = /* tuple */[
+var spec_0 = [
   "-u",
   {
-    tag: /* Unit */0,
+    TAG: /* Unit */0,
     _0: f_unit
   },
   "Unit (0)"
 ];
 
 var spec_1 = /* :: */{
-  _0: /* tuple */[
+  _0: [
     "-b",
     {
-      tag: /* Bool */1,
+      TAG: /* Bool */1,
       _0: f_bool
     },
     "Bool (1)"
   ],
   _1: /* :: */{
-    _0: /* tuple */[
+    _0: [
       "-s",
       {
-        tag: /* Set */2,
+        TAG: /* Set */2,
         _0: r_set
       },
       "Set (0)"
     ],
     _1: /* :: */{
-      _0: /* tuple */[
+      _0: [
         "-c",
         {
-          tag: /* Clear */3,
+          TAG: /* Clear */3,
           _0: r_clear
         },
         "Clear (0)"
       ],
       _1: /* :: */{
-        _0: /* tuple */[
+        _0: [
           "-str",
           {
-            tag: /* String */4,
+            TAG: /* String */4,
             _0: f_string
           },
           "String (1)"
         ],
         _1: /* :: */{
-          _0: /* tuple */[
+          _0: [
             "-sstr",
             {
-              tag: /* Set_string */5,
+              TAG: /* Set_string */5,
               _0: r_string
             },
             "Set_string (1)"
           ],
           _1: /* :: */{
-            _0: /* tuple */[
+            _0: [
               "-i",
               {
-                tag: /* Int */6,
+                TAG: /* Int */6,
                 _0: f_int
               },
               "Int (1)"
             ],
             _1: /* :: */{
-              _0: /* tuple */[
+              _0: [
                 "-si",
                 {
-                  tag: /* Set_int */7,
+                  TAG: /* Set_int */7,
                   _0: r_int
                 },
                 "Set_int (1)"
               ],
               _1: /* :: */{
-                _0: /* tuple */[
+                _0: [
                   "-f",
                   {
-                    tag: /* Float */8,
+                    TAG: /* Float */8,
                     _0: f_float
                   },
                   "Float (1)"
                 ],
                 _1: /* :: */{
-                  _0: /* tuple */[
+                  _0: [
                     "-sf",
                     {
-                      tag: /* Set_float */9,
+                      TAG: /* Set_float */9,
                       _0: r_float
                     },
                     "Set_float (1)"
                   ],
                   _1: /* :: */{
-                    _0: /* tuple */[
+                    _0: [
                       "-t",
                       {
-                        tag: /* Tuple */10,
+                        TAG: /* Tuple */10,
                         _0: /* :: */{
                           _0: {
-                            tag: /* Bool */1,
+                            TAG: /* Bool */1,
                             _0: f_bool
                           },
                           _1: /* :: */{
                             _0: {
-                              tag: /* String */4,
+                              TAG: /* String */4,
                               _0: f_string
                             },
                             _1: /* :: */{
                               _0: {
-                                tag: /* Int */6,
+                                TAG: /* Int */6,
                                 _0: f_int
                               },
                               _1: /* [] */0
@@ -312,10 +311,10 @@ var spec_1 = /* :: */{
                       "Tuple (3)"
                     ],
                     _1: /* :: */{
-                      _0: /* tuple */[
+                      _0: [
                         "-sym",
                         {
-                          tag: /* Symbol */11,
+                          TAG: /* Symbol */11,
                           _0: /* :: */{
                             _0: "a",
                             _1: /* :: */{
@@ -331,10 +330,10 @@ var spec_1 = /* :: */{
                         "Symbol (1)"
                       ],
                       _1: /* :: */{
-                        _0: /* tuple */[
+                        _0: [
                           "-rest",
                           {
-                            tag: /* Rest */12,
+                            TAG: /* Rest */12,
                             _0: f_rest
                           },
                           "Rest (*)"
@@ -421,13 +420,13 @@ var args2 = [
 function error(s) {
   return Curry._1(Printf.printf(/* Format */{
                   _0: {
-                    tag: /* String_literal */11,
+                    TAG: /* String_literal */11,
                     _0: "error (",
                     _1: {
-                      tag: /* String */2,
+                      TAG: /* String */2,
                       _0: /* No_padding */0,
                       _1: {
-                        tag: /* String_literal */11,
+                        TAG: /* String_literal */11,
                         _0: ")\n",
                         _1: /* End_of_format */0
                       }
@@ -504,32 +503,32 @@ function test(argv) {
     var f = function (x, y) {
       return Curry._3(Printf.printf(/* Format */{
                       _0: {
-                        tag: /* String */2,
+                        TAG: /* String */2,
                         _0: {
-                          tag: /* Lit_padding */0,
+                          TAG: /* Lit_padding */0,
                           _0: /* Right */1,
                           _1: 20
                         },
                         _1: {
-                          tag: /* Char_literal */12,
+                          TAG: /* Char_literal */12,
                           _0: /* " " */32,
                           _1: {
-                            tag: /* Char */0,
+                            TAG: /* Char */0,
                             _0: {
-                              tag: /* Char_literal */12,
+                              TAG: /* Char_literal */12,
                               _0: /* " " */32,
                               _1: {
-                                tag: /* String */2,
+                                TAG: /* String */2,
                                 _0: {
-                                  tag: /* Lit_padding */0,
+                                  TAG: /* Lit_padding */0,
                                   _0: /* Left */0,
                                   _1: 20
                                 },
                                 _1: {
-                                  tag: /* Char_literal */12,
+                                  TAG: /* Char_literal */12,
                                   _0: /* "\n" */10,
                                   _1: {
-                                    tag: /* Flush */10,
+                                    TAG: /* Flush */10,
                                     _0: /* End_of_format */0
                                   }
                                 }

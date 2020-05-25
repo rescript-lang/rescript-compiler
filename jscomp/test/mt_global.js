@@ -1,15 +1,14 @@
 'use strict';
 
-var Block = require("../../lib/js/block.js");
 
 function collect_eq(test_id, suites, loc, x, y) {
   test_id.contents = test_id.contents + 1 | 0;
   suites.contents = /* :: */{
-    _0: /* tuple */[
+    _0: [
       loc + (" id " + String(test_id.contents)),
       (function (param) {
           return {
-                  tag: /* Eq */0,
+                  TAG: /* Eq */0,
                   _0: x,
                   _1: y
                 };
@@ -23,11 +22,11 @@ function collect_eq(test_id, suites, loc, x, y) {
 function collect_neq(test_id, suites, loc, x, y) {
   test_id.contents = test_id.contents + 1 | 0;
   suites.contents = /* :: */{
-    _0: /* tuple */[
+    _0: [
       loc + (" id " + String(test_id.contents)),
       (function (param) {
           return {
-                  tag: /* Neq */1,
+                  TAG: /* Neq */1,
                   _0: x,
                   _1: y
                 };
@@ -41,11 +40,11 @@ function collect_neq(test_id, suites, loc, x, y) {
 function collect_approx(test_id, suites, loc, x, y) {
   test_id.contents = test_id.contents + 1 | 0;
   suites.contents = /* :: */{
-    _0: /* tuple */[
+    _0: [
       loc + (" id " + String(test_id.contents)),
       (function (param) {
           return {
-                  tag: /* Approx */5,
+                  TAG: /* Approx */5,
                   _0: x,
                   _1: y
                 };

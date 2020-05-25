@@ -1,7 +1,6 @@
 'use strict';
 
 var Mt = require("./mt.js");
-var Block = require("../../lib/js/block.js");
 var Curry = require("../../lib/js/curry.js");
 var Pervasives = require("../../lib/js/pervasives.js");
 var Ffi_js_test = require("./ffi_js_test.js");
@@ -54,44 +53,44 @@ var empty = Object.keys(3);
 var v = $$test(1, 2);
 
 Mt.from_pair_suites("Unsafe_ppx_test", /* :: */{
-      _0: /* tuple */[
+      _0: [
         "unsafe_max",
         (function (param) {
             return {
-                    tag: /* Eq */0,
+                    TAG: /* Eq */0,
                     _0: 2,
                     _1: max(1, 2)
                   };
           })
       ],
       _1: /* :: */{
-        _0: /* tuple */[
+        _0: [
           "unsafe_test",
           (function (param) {
               return {
-                      tag: /* Eq */0,
+                      TAG: /* Eq */0,
                       _0: 3,
                       _1: v
                     };
             })
         ],
         _1: /* :: */{
-          _0: /* tuple */[
+          _0: [
             "unsafe_max2",
             (function (param) {
                 return {
-                        tag: /* Eq */0,
+                        TAG: /* Eq */0,
                         _0: 2,
                         _1: Math.max(1, 2)
                       };
               })
           ],
           _1: /* :: */{
-            _0: /* tuple */[
+            _0: [
               "ffi_keys",
               (function (param) {
                   return {
-                          tag: /* Eq */0,
+                          TAG: /* Eq */0,
                           _0: ["a"],
                           _1: Ffi_js_test.keys(({a : 3}))
                         };

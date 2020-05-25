@@ -1,7 +1,6 @@
 'use strict';
 
 var Mt = require("./mt.js");
-var Block = require("../../lib/js/block.js");
 var Curry = require("../../lib/js/curry.js");
 var Caml_oo_curry = require("../../lib/js/caml_oo_curry.js");
 var CamlinternalOO = require("../../lib/js/camlinternalOO.js");
@@ -160,11 +159,11 @@ CamlinternalOO.init_class($$class$5);
 
 var vvvv = CamlinternalOO.create_object_opt(undefined, $$class$5);
 
-var suites_0 = /* tuple */[
+var suites_0 = [
   "single_obj",
   (function (param) {
       return {
-              tag: /* Eq */0,
+              TAG: /* Eq */0,
               _0: [
                 3,
                 32
@@ -178,11 +177,11 @@ var suites_0 = /* tuple */[
 ];
 
 var suites_1 = /* :: */{
-  _0: /* tuple */[
+  _0: [
     "single_obj_cache",
     (function (param) {
         return {
-                tag: /* Eq */0,
+                TAG: /* Eq */0,
                 _0: [
                   3,
                   32
@@ -195,121 +194,121 @@ var suites_1 = /* :: */{
       })
   ],
   _1: /* :: */{
-    _0: /* tuple */[
+    _0: [
       "self_obj",
       (function (param) {
           return {
-                  tag: /* Eq */0,
+                  TAG: /* Eq */0,
                   _0: 13,
                   _1: Caml_oo_curry.js2(616641298, 5, vv, 3)
                 };
         })
     ],
     _1: /* :: */{
-      _0: /* tuple */[
+      _0: [
         "uu_id",
         (function (param) {
             return {
-                    tag: /* Eq */0,
+                    TAG: /* Eq */0,
                     _0: "uu",
                     _1: Caml_oo_curry.js1(23515, 6, uu)
                   };
           })
       ],
       _1: /* :: */{
-        _0: /* tuple */[
+        _0: [
           "uu_add",
           (function (param) {
               return {
-                      tag: /* Eq */0,
+                      TAG: /* Eq */0,
                       _0: Caml_oo_curry.js3(4846113, 7, uuu, 1, 20),
                       _1: 21
                     };
             })
         ],
         _1: /* :: */{
-          _0: /* tuple */[
+          _0: [
             "v_add",
             (function (param) {
                 return {
-                        tag: /* Eq */0,
+                        TAG: /* Eq */0,
                         _0: Caml_oo_curry.js3(4846113, 8, vvvv, 3, 7),
                         _1: 10
                       };
               })
           ],
           _1: /* :: */{
-            _0: /* tuple */[
+            _0: [
               "u_id1",
               (function (param) {
                   return {
-                          tag: /* Eq */0,
+                          TAG: /* Eq */0,
                           _0: Caml_oo_curry.js1(5243894, 9, u),
                           _1: 3
                         };
                 })
             ],
             _1: /* :: */{
-              _0: /* tuple */[
+              _0: [
                 "u_id2",
                 (function (param) {
                     return {
-                            tag: /* Eq */0,
+                            TAG: /* Eq */0,
                             _0: Caml_oo_curry.js1(5243895, 10, u),
                             _1: 4
                           };
                   })
               ],
               _1: /* :: */{
-                _0: /* tuple */[
+                _0: [
                   "u hi",
                   (function (param) {
                       return {
-                              tag: /* Eq */0,
+                              TAG: /* Eq */0,
                               _0: Caml_oo_curry.js3(23297, 11, u, 1, 2),
                               _1: 3
                             };
                     })
                 ],
                 _1: /* :: */{
-                  _0: /* tuple */[
+                  _0: [
                     "u hello",
                     (function (param) {
                         return {
-                                tag: /* Eq */0,
+                                TAG: /* Eq */0,
                                 _0: Caml_oo_curry.js2(616641298, 12, u, 32),
                                 _1: 32
                               };
                       })
                   ],
                   _1: /* :: */{
-                    _0: /* tuple */[
+                    _0: [
                       "v hi",
                       (function (param) {
                           return {
-                                  tag: /* Eq */0,
+                                  TAG: /* Eq */0,
                                   _0: Caml_oo_curry.js2(23297, 13, vvvv, 31),
                                   _1: 63
                                 };
                         })
                     ],
                     _1: /* :: */{
-                      _0: /* tuple */[
+                      _0: [
                         "uuu add",
                         (function (param) {
                             return {
-                                    tag: /* Eq */0,
+                                    TAG: /* Eq */0,
                                     _0: Caml_oo_curry.js3(4846113, 14, uuu, 3, 4),
                                     _1: 7
                                   };
                           })
                       ],
                       _1: /* :: */{
-                        _0: /* tuple */[
+                        _0: [
                           "v x",
                           (function (param) {
                               return {
-                                      tag: /* Eq */0,
+                                      TAG: /* Eq */0,
                                       _0: Caml_oo_curry.js1(120, 15, v),
                                       _1: 3
                                     };

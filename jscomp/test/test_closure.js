@@ -32,7 +32,7 @@ $$Array.iter((function (x) {
 if (v.contents !== 45) {
   throw {
         RE_EXN_ID: "Assert_failure",
-        _1: /* tuple */[
+        _1: [
           "test_closure.ml",
           53,
           2

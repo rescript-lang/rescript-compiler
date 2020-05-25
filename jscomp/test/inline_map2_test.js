@@ -2,7 +2,6 @@
 
 var Mt = require("./mt.js");
 var List = require("../../lib/js/list.js");
-var Block = require("../../lib/js/block.js");
 var Curry = require("../../lib/js/curry.js");
 var Caml_option = require("../../lib/js/caml_option.js");
 var Caml_primitive = require("../../lib/js/caml_primitive.js");
@@ -167,7 +166,7 @@ function Make(Ord) {
       if (param) {
         var l = param._0;
         if (!l) {
-          return /* tuple */[
+          return [
                   param._1,
                   param._2
                 ];
@@ -187,7 +186,7 @@ function Make(Ord) {
       if (param) {
         var r = param._3;
         if (!r) {
-          return /* tuple */[
+          return [
                   param._1,
                   param._2
                 ];
@@ -377,7 +376,7 @@ function Make(Ord) {
   };
   var split = function (x, param) {
     if (!param) {
-      return /* tuple */[
+      return [
               /* Empty */0,
               undefined,
               /* Empty */0
@@ -389,7 +388,7 @@ function Make(Ord) {
     var l = param._0;
     var c = Curry._2(Ord.compare, x, v);
     if (c === 0) {
-      return /* tuple */[
+      return [
               l,
               Caml_option.some(d),
               r
@@ -397,14 +396,14 @@ function Make(Ord) {
     }
     if (c < 0) {
       var match = split(x, l);
-      return /* tuple */[
+      return [
               match[0],
               match[1],
               join(match[2], v, d, r)
             ];
     }
     var match$1 = split(x, r);
-    return /* tuple */[
+    return [
             join(l, v, d, match$1[0]),
             match$1[1],
             match$1[2]
@@ -428,7 +427,7 @@ function Make(Ord) {
     }
     throw {
           RE_EXN_ID: "Assert_failure",
-          _1: /* tuple */[
+          _1: [
             "inline_map2_test.ml",
             270,
             10
@@ -453,7 +452,7 @@ function Make(Ord) {
   };
   var partition = function (p, param) {
     if (!param) {
-      return /* tuple */[
+      return [
               /* Empty */0,
               /* Empty */0
             ];
@@ -468,12 +467,12 @@ function Make(Ord) {
     var rf = match$1[1];
     var rt = match$1[0];
     if (pvd) {
-      return /* tuple */[
+      return [
               join(lt, v, d, rt),
               concat(lf, rf)
             ];
     } else {
-      return /* tuple */[
+      return [
               concat(lt, rt),
               join(lf, v, d, rf)
             ];
@@ -568,7 +567,7 @@ function Make(Ord) {
       }
       _param = param._0;
       _accu = /* :: */{
-        _0: /* tuple */[
+        _0: [
           param._1,
           param._2
         ],
@@ -786,7 +785,7 @@ function min_binding(_param) {
     if (param) {
       var l = param._0;
       if (!l) {
-        return /* tuple */[
+        return [
                 param._1,
                 param._2
               ];
@@ -807,7 +806,7 @@ function max_binding(_param) {
     if (param) {
       var r = param._3;
       if (!r) {
-        return /* tuple */[
+        return [
                 param._1,
                 param._2
               ];
@@ -1011,7 +1010,7 @@ function concat_or_join(t1, v, d, t2) {
 
 function split(x, param) {
   if (!param) {
-    return /* tuple */[
+    return [
             /* Empty */0,
             undefined,
             /* Empty */0
@@ -1023,7 +1022,7 @@ function split(x, param) {
   var l = param._0;
   var c = Caml_primitive.caml_int_compare(x, v);
   if (c === 0) {
-    return /* tuple */[
+    return [
             l,
             Caml_option.some(d),
             r
@@ -1031,14 +1030,14 @@ function split(x, param) {
   }
   if (c < 0) {
     var match = split(x, l);
-    return /* tuple */[
+    return [
             match[0],
             match[1],
             join(match[2], v, d, r)
           ];
   }
   var match$1 = split(x, r);
-  return /* tuple */[
+  return [
           join(l, v, d, match$1[0]),
           match$1[1],
           match$1[2]
@@ -1063,7 +1062,7 @@ function merge(f, s1, s2) {
   }
   throw {
         RE_EXN_ID: "Assert_failure",
-        _1: /* tuple */[
+        _1: [
           "inline_map2_test.ml",
           270,
           10
@@ -1090,7 +1089,7 @@ function filter(p, param) {
 
 function partition(p, param) {
   if (!param) {
-    return /* tuple */[
+    return [
             /* Empty */0,
             /* Empty */0
           ];
@@ -1105,12 +1104,12 @@ function partition(p, param) {
   var rf = match$1[1];
   var rt = match$1[0];
   if (pvd) {
-    return /* tuple */[
+    return [
             join(lt, v, d, rt),
             concat(lf, rf)
           ];
   } else {
-    return /* tuple */[
+    return [
             concat(lt, rt),
             join(lf, v, d, rf)
           ];
@@ -1210,7 +1209,7 @@ function bindings_aux(_accu, _param) {
     }
     _param = param._0;
     _accu = /* :: */{
-      _0: /* tuple */[
+      _0: [
         param._1,
         param._2
       ],
@@ -1265,22 +1264,22 @@ var IntMap = {
 var m = List.fold_left((function (acc, param) {
         return add(param[0], param[1], acc);
       }), /* Empty */0, /* :: */{
-      _0: /* tuple */[
+      _0: [
         10,
         /* "a" */97
       ],
       _1: /* :: */{
-        _0: /* tuple */[
+        _0: [
           3,
           /* "b" */98
         ],
         _1: /* :: */{
-          _0: /* tuple */[
+          _0: [
             7,
             /* "c" */99
           ],
           _1: /* :: */{
-            _0: /* tuple */[
+            _0: [
               20,
               /* "d" */100
             ],
@@ -1457,7 +1456,7 @@ function min_binding$1(_param) {
     if (param) {
       var l = param._0;
       if (!l) {
-        return /* tuple */[
+        return [
                 param._1,
                 param._2
               ];
@@ -1478,7 +1477,7 @@ function max_binding$1(_param) {
     if (param) {
       var r = param._3;
       if (!r) {
-        return /* tuple */[
+        return [
                 param._1,
                 param._2
               ];
@@ -1682,7 +1681,7 @@ function concat_or_join$1(t1, v, d, t2) {
 
 function split$1(x, param) {
   if (!param) {
-    return /* tuple */[
+    return [
             /* Empty */0,
             undefined,
             /* Empty */0
@@ -1694,7 +1693,7 @@ function split$1(x, param) {
   var l = param._0;
   var c = Caml_primitive.caml_string_compare(x, v);
   if (c === 0) {
-    return /* tuple */[
+    return [
             l,
             Caml_option.some(d),
             r
@@ -1702,14 +1701,14 @@ function split$1(x, param) {
   }
   if (c < 0) {
     var match = split$1(x, l);
-    return /* tuple */[
+    return [
             match[0],
             match[1],
             join$1(match[2], v, d, r)
           ];
   }
   var match$1 = split$1(x, r);
-  return /* tuple */[
+  return [
           join$1(l, v, d, match$1[0]),
           match$1[1],
           match$1[2]
@@ -1734,7 +1733,7 @@ function merge$1(f, s1, s2) {
   }
   throw {
         RE_EXN_ID: "Assert_failure",
-        _1: /* tuple */[
+        _1: [
           "inline_map2_test.ml",
           270,
           10
@@ -1761,7 +1760,7 @@ function filter$1(p, param) {
 
 function partition$1(p, param) {
   if (!param) {
-    return /* tuple */[
+    return [
             /* Empty */0,
             /* Empty */0
           ];
@@ -1776,12 +1775,12 @@ function partition$1(p, param) {
   var rf = match$1[1];
   var rt = match$1[0];
   if (pvd) {
-    return /* tuple */[
+    return [
             join$1(lt, v, d, rt),
             concat$1(lf, rf)
           ];
   } else {
-    return /* tuple */[
+    return [
             concat$1(lt, rt),
             join$1(lf, v, d, rf)
           ];
@@ -1881,7 +1880,7 @@ function bindings_aux$1(_accu, _param) {
     }
     _param = param._0;
     _accu = /* :: */{
-      _0: /* tuple */[
+      _0: [
         param._1,
         param._2
       ],
@@ -1936,22 +1935,22 @@ var SMap = {
 var s = List.fold_left((function (acc, param) {
         return add$1(param[0], param[1], acc);
       }), /* Empty */0, /* :: */{
-      _0: /* tuple */[
+      _0: [
         "10",
         /* "a" */97
       ],
       _1: /* :: */{
-        _0: /* tuple */[
+        _0: [
           "3",
           /* "b" */98
         ],
         _1: /* :: */{
-          _0: /* tuple */[
+          _0: [
             "7",
             /* "c" */99
           ],
           _1: /* :: */{
-            _0: /* tuple */[
+            _0: [
               "20",
               /* "d" */100
             ],
@@ -1962,22 +1961,22 @@ var s = List.fold_left((function (acc, param) {
     });
 
 Mt.from_pair_suites("Inline_map2_test", /* :: */{
-      _0: /* tuple */[
+      _0: [
         "assertion1",
         (function (param) {
             return {
-                    tag: /* Eq */0,
+                    TAG: /* Eq */0,
                     _0: find(10, m),
                     _1: /* "a" */97
                   };
           })
       ],
       _1: /* :: */{
-        _0: /* tuple */[
+        _0: [
           "assertion2",
           (function (param) {
               return {
-                      tag: /* Eq */0,
+                      TAG: /* Eq */0,
                       _0: find$1("10", s),
                       _1: /* "a" */97
                     };

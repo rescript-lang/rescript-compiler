@@ -1,7 +1,6 @@
 'use strict';
 
 var Mt = require("./mt.js");
-var Block = require("../../lib/js/block.js");
 var Curry = require("../../lib/js/curry.js");
 var Js_list = require("../../lib/js/js_list.js");
 var Caml_obj = require("../../lib/js/caml_obj.js");
@@ -34,11 +33,11 @@ function $$throw(loc, x) {
 function neq(loc, x, y) {
   test_id.contents = test_id.contents + 1 | 0;
   suites.contents = /* :: */{
-    _0: /* tuple */[
+    _0: [
       loc + (" id " + String(test_id.contents)),
       (function (param) {
           return {
-                  tag: /* Neq */1,
+                  TAG: /* Neq */1,
                   _0: x,
                   _1: y
                 };
@@ -67,13 +66,13 @@ var v = [
   2
 ];
 
-eq("File \"bs_array_test.ml\", line 25, characters 5-12", /* tuple */[
+eq("File \"bs_array_test.ml\", line 25, characters 5-12", [
       Belt_Array.get(v, 0),
       Belt_Array.get(v, 1),
       Belt_Array.get(v, 2),
       Belt_Array.get(v, 3),
       Belt_Array.get(v, -1)
-    ], /* tuple */[
+    ], [
       1,
       2,
       undefined,
@@ -106,10 +105,10 @@ function f(param) {
   return Belt_Array.getExn(partial_arg, param);
 }
 
-b("File \"bs_array_test.ml\", line 30, characters 4-11", Caml_obj.caml_equal(/* tuple */[
+b("File \"bs_array_test.ml\", line 30, characters 4-11", Caml_obj.caml_equal([
           Curry._1(f, 0),
           Curry._1(f, 1)
-        ], /* tuple */[
+        ], [
           0,
           1
         ]));
@@ -141,7 +140,7 @@ var v$1 = [
 if (!Belt_Array.set(v$1, 0, 0)) {
   throw {
         RE_EXN_ID: "Assert_failure",
-        _1: /* tuple */[
+        _1: [
           "bs_array_test.ml",
           34,
           33
@@ -160,7 +159,7 @@ var v$2 = [
 if (!Belt_Array.set(v$2, 1, 0)) {
   throw {
         RE_EXN_ID: "Assert_failure",
-        _1: /* tuple */[
+        _1: [
           "bs_array_test.ml",
           35,
           32
@@ -1070,15 +1069,15 @@ eq("File \"bs_array_test.ml\", line 256, characters 5-12", Belt_Array.zip([
           4,
           1
         ]), [
-      /* tuple */[
+      [
         1,
         2
       ],
-      /* tuple */[
+      [
         2,
         3
       ],
-      /* tuple */[
+      [
         3,
         4
       ]
@@ -1094,15 +1093,15 @@ eq("File \"bs_array_test.ml\", line 257, characters 5-12", Belt_Array.zip([
           2,
           3
         ]), [
-      /* tuple */[
+      [
         2,
         1
       ],
-      /* tuple */[
+      [
         3,
         2
       ],
-      /* tuple */[
+      [
         4,
         3
       ]
@@ -1145,19 +1144,19 @@ eq("File \"bs_array_test.ml\", line 259, characters 5-12", Belt_Array.zipBy([
           })));
 
 eq("File \"bs_array_test.ml\", line 260, characters 5-12", Belt_Array.unzip([
-          /* tuple */[
+          [
             1,
             2
           ],
-          /* tuple */[
+          [
             2,
             3
           ],
-          /* tuple */[
+          [
             3,
             4
           ]
-        ]), /* tuple */[
+        ]), [
       [
         1,
         2,

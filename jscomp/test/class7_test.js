@@ -1,7 +1,6 @@
 'use strict';
 
 var Mt = require("./mt.js");
-var Block = require("../../lib/js/block.js");
 var Curry = require("../../lib/js/curry.js");
 var Caml_oo = require("../../lib/js/caml_oo.js");
 var Caml_obj = require("../../lib/js/caml_obj.js");
@@ -43,11 +42,11 @@ var test_id = {
 function eq(loc, x, y) {
   test_id.contents = test_id.contents + 1 | 0;
   suites.contents = /* :: */{
-    _0: /* tuple */[
+    _0: [
       loc + (" id " + String(test_id.contents)),
       (function (param) {
           return {
-                  tag: /* Eq */0,
+                  TAG: /* Eq */0,
                   _0: x,
                   _1: y
                 };
@@ -91,10 +90,10 @@ var q = Caml_oo.caml_set_oo_id(Caml_obj.caml_obj_dup(p));
 
 Caml_oo_curry.js2(-933174511, 1, q, 7);
 
-eq("File \"class7_test.ml\", line 22, characters 5-12", /* tuple */[
+eq("File \"class7_test.ml\", line 22, characters 5-12", [
       55,
       62
-    ], /* tuple */[
+    ], [
       Caml_oo_curry.js1(291546447, 2, p),
       Caml_oo_curry.js1(291546447, 3, q)
     ]);

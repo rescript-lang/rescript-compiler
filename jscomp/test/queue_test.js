@@ -2,7 +2,6 @@
 
 var Mt = require("./mt.js");
 var $$Array = require("../../lib/js/array.js");
-var Block = require("../../lib/js/block.js");
 var Curry = require("../../lib/js/curry.js");
 var Queue = require("../../lib/js/queue.js");
 var Queue_402 = require("./queue_402.js");
@@ -81,7 +80,7 @@ var T2 = {
   queue_1: queue_1$1
 };
 
-var suites_0 = /* tuple */[
+var suites_0 = [
   "File \"queue_test.ml\", line 26, characters 2-9",
   (function (param) {
       var x = [
@@ -91,7 +90,7 @@ var suites_0 = /* tuple */[
         2
       ];
       return {
-              tag: /* Eq */0,
+              TAG: /* Eq */0,
               _0: x,
               _1: queue_1(x)
             };
@@ -99,7 +98,7 @@ var suites_0 = /* tuple */[
 ];
 
 var suites_1 = /* :: */{
-  _0: /* tuple */[
+  _0: [
     "File \"queue_test.ml\", line 29, characters 2-9",
     (function (param) {
         var x = [
@@ -109,7 +108,7 @@ var suites_1 = /* :: */{
           2
         ];
         return {
-                tag: /* Eq */0,
+                TAG: /* Eq */0,
                 _0: x,
                 _1: queue_1$1(x)
               };

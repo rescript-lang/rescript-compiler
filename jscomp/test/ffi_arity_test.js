@@ -1,7 +1,6 @@
 'use strict';
 
 var Mt = require("./mt.js");
-var Block = require("../../lib/js/block.js");
 var Curry = require("../../lib/js/curry.js");
 
 function f(v) {
@@ -70,11 +69,11 @@ var abc_u = abc;
 g();
 
 Mt.from_pair_suites("Ffi_arity_test", /* :: */{
-      _0: /* tuple */[
+      _0: [
         "File \"ffi_arity_test.ml\", line 45, characters 4-11",
         (function (param) {
             return {
-                    tag: /* Eq */0,
+                    TAG: /* Eq */0,
                     _0: v,
                     _1: [
                       0,
@@ -85,11 +84,11 @@ Mt.from_pair_suites("Ffi_arity_test", /* :: */{
           })
       ],
       _1: /* :: */{
-        _0: /* tuple */[
+        _0: [
           "File \"ffi_arity_test.ml\", line 46, characters 4-11",
           (function (param) {
               return {
-                      tag: /* Eq */0,
+                      TAG: /* Eq */0,
                       _0: vv,
                       _1: [
                         1,
@@ -100,11 +99,11 @@ Mt.from_pair_suites("Ffi_arity_test", /* :: */{
             })
         ],
         _1: /* :: */{
-          _0: /* tuple */[
+          _0: [
             "File \"ffi_arity_test.ml\", line 47, characters 4-11",
             (function (param) {
                 return {
-                        tag: /* Eq */0,
+                        TAG: /* Eq */0,
                         _0: hh,
                         _1: [
                           1,

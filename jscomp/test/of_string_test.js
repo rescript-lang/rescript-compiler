@@ -1,14 +1,13 @@
 'use strict';
 
 var Mt = require("./mt.js");
-var Block = require("../../lib/js/block.js");
 var Pervasives = require("../../lib/js/pervasives.js");
 
-var suites_0 = /* tuple */[
+var suites_0 = [
   "string_of_float_1",
   (function (param) {
       return {
-              tag: /* Eq */0,
+              TAG: /* Eq */0,
               _0: "10.",
               _1: Pervasives.string_of_float(10)
             };
@@ -16,22 +15,22 @@ var suites_0 = /* tuple */[
 ];
 
 var suites_1 = /* :: */{
-  _0: /* tuple */[
+  _0: [
     "string_of_int",
     (function (param) {
         return {
-                tag: /* Eq */0,
+                TAG: /* Eq */0,
                 _0: "10",
                 _1: String(10)
               };
       })
   ],
   _1: /* :: */{
-    _0: /* tuple */[
+    _0: [
       "valid_float_lexem",
       (function (param) {
           return {
-                  tag: /* Eq */0,
+                  TAG: /* Eq */0,
                   _0: "10.",
                   _1: Pervasives.valid_float_lexem("10")
                 };

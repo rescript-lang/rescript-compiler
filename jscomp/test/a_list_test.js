@@ -1,14 +1,13 @@
 'use strict';
 
 var Mt = require("./mt.js");
-var Block = require("../../lib/js/block.js");
 var Ext_list_test = require("./ext_list_test.js");
 
-var suites_0 = /* tuple */[
+var suites_0 = [
   "drop",
   (function (param) {
       return {
-              tag: /* Eq */0,
+              TAG: /* Eq */0,
               _0: Ext_list_test.drop(3, /* :: */{
                     _0: 0,
                     _1: /* :: */{
@@ -25,11 +24,11 @@ var suites_0 = /* tuple */[
 ];
 
 var suites_1 = /* :: */{
-  _0: /* tuple */[
+  _0: [
     "drop1",
     (function (param) {
         return {
-                tag: /* Eq */0,
+                TAG: /* Eq */0,
                 _0: Ext_list_test.drop(2, /* :: */{
                       _0: 0,
                       _1: /* :: */{
@@ -48,11 +47,11 @@ var suites_1 = /* :: */{
       })
   ],
   _1: /* :: */{
-    _0: /* tuple */[
+    _0: [
       "flat_map",
       (function (param) {
           return {
-                  tag: /* Eq */0,
+                  TAG: /* Eq */0,
                   _0: /* :: */{
                     _0: 0,
                     _1: /* :: */{

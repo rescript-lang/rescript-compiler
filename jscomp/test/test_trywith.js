@@ -117,12 +117,12 @@ function f(x) {
   if (typeof x === "number") {
     return 2;
   }
-  if (!x.tag) {
+  if (!x.TAG) {
     return 1;
   }
   throw {
         RE_EXN_ID: "Assert_failure",
-        _1: /* tuple */[
+        _1: [
           "test_trywith.ml",
           51,
           9

@@ -21,7 +21,7 @@ function t3(x, f) {
 }
 
 function f(a, b, c) {
-  return /* tuple */[
+  return [
           Curry._1(b, a),
           Curry._1(c, a)
         ];
@@ -29,7 +29,7 @@ function f(a, b, c) {
 
 function f1(a, b, c, d) {
   var __ocaml_internal_obj = Curry._1(a, b);
-  return /* tuple */[
+  return [
           Curry._1(c, __ocaml_internal_obj),
           Curry._1(d, __ocaml_internal_obj)
         ];
@@ -51,7 +51,7 @@ function f3(a, b, c, d, e) {
 }
 
 function f4(a, b, c) {
-  return /* tuple */[
+  return [
           Curry._2(b, a, c),
           Curry._2(b, a, c)
         ];
@@ -69,7 +69,7 @@ function f6(a) {
 }
 
 function f7(a) {
-  return /* tuple */[
+  return [
           Caml_option.some(a),
           Caml_option.some(a),
           Caml_option.some(a)

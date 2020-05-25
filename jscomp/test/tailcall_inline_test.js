@@ -2,7 +2,6 @@
 
 var Mt = require("./mt.js");
 var $$Array = require("../../lib/js/array.js");
-var Block = require("../../lib/js/block.js");
 var Caml_array = require("../../lib/js/caml_array.js");
 
 function f(param) {
@@ -25,11 +24,11 @@ function f(param) {
   return v;
 }
 
-var suites_0 = /* tuple */[
+var suites_0 = [
   "acc",
   (function (param) {
       return {
-              tag: /* Eq */0,
+              TAG: /* Eq */0,
               _0: f(undefined),
               _1: [
                 0,
@@ -48,11 +47,11 @@ var suites_0 = /* tuple */[
 ];
 
 var suites_1 = /* :: */{
-  _0: /* tuple */[
+  _0: [
     "array_to_list",
     (function (param) {
         return {
-                tag: /* Eq */0,
+                TAG: /* Eq */0,
                 _0: /* :: */{
                   _0: 1,
                   _1: /* :: */{

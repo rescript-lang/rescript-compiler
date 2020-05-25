@@ -2,7 +2,7 @@
 
 
 function f(x, y) {
-  console.log(/* tuple */[
+  console.log([
         x,
         y
       ]);

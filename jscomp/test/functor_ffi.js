@@ -20,7 +20,7 @@ var Int_arr = {
 };
 
 function f(v) {
-  return /* tuple */[
+  return [
           v[0],
           Caml_option.undefined_to_opt(v[1])
         ];

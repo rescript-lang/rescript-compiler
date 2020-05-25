@@ -46,7 +46,7 @@ var f2_1 = [
   }
 ];
 
-var f2 = /* tuple */[
+var f2 = [
   f2_0,
   f2_1
 ];

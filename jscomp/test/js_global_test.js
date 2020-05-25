@@ -1,9 +1,8 @@
 'use strict';
 
 var Mt = require("./mt.js");
-var Block = require("../../lib/js/block.js");
 
-var suites_0 = /* tuple */[
+var suites_0 = [
   "setTimeout/clearTimeout sanity check",
   (function (param) {
       var handle = setTimeout((function (param) {
@@ -11,14 +10,14 @@ var suites_0 = /* tuple */[
             }), 0);
       clearTimeout(handle);
       return {
-              tag: /* Ok */4,
+              TAG: /* Ok */4,
               _0: true
             };
     })
 ];
 
 var suites_1 = /* :: */{
-  _0: /* tuple */[
+  _0: [
     "setInerval/clearInterval sanity check",
     (function (param) {
         var handle = setInterval((function (param) {
@@ -26,50 +25,50 @@ var suites_1 = /* :: */{
               }), 0);
         clearInterval(handle);
         return {
-                tag: /* Ok */4,
+                TAG: /* Ok */4,
                 _0: true
               };
       })
   ],
   _1: /* :: */{
-    _0: /* tuple */[
+    _0: [
       "encodeURI",
       (function (param) {
           return {
-                  tag: /* Eq */0,
+                  TAG: /* Eq */0,
                   _0: encodeURI("[-=-]"),
                   _1: "%5B-=-%5D"
                 };
         })
     ],
     _1: /* :: */{
-      _0: /* tuple */[
+      _0: [
         "decodeURI",
         (function (param) {
             return {
-                    tag: /* Eq */0,
+                    TAG: /* Eq */0,
                     _0: decodeURI("%5B-=-%5D"),
                     _1: "[-=-]"
                   };
           })
       ],
       _1: /* :: */{
-        _0: /* tuple */[
+        _0: [
           "encodeURIComponent",
           (function (param) {
               return {
-                      tag: /* Eq */0,
+                      TAG: /* Eq */0,
                       _0: encodeURIComponent("[-=-]"),
                       _1: "%5B-%3D-%5D"
                     };
             })
         ],
         _1: /* :: */{
-          _0: /* tuple */[
+          _0: [
             "decodeURIComponent",
             (function (param) {
                 return {
-                        tag: /* Eq */0,
+                        TAG: /* Eq */0,
                         _0: decodeURIComponent("%5B-%3D-%5D"),
                         _1: "[-=-]"
                       };

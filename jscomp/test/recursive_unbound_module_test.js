@@ -1,6 +1,5 @@
 'use strict';
 
-var Block = require("../../lib/js/block.js");
 var Caml_module = require("../../lib/js/caml_module.js");
 
 function Make(X) {
@@ -15,16 +14,16 @@ function Make(X) {
         };
 }
 
-var B = Caml_module.init_mod(/* tuple */[
+var B = Caml_module.init_mod([
       "recursive_unbound_module_test.ml",
       18,
       0
     ], {
-      tag: /* Module */0,
-      _0: [/* tuple */[
+      TAG: /* Module */0,
+      _0: [[
           {
-            tag: /* Module */0,
-            _0: [/* tuple */[
+            TAG: /* Module */0,
+            _0: [[
                 /* Function */0,
                 "f"
               ]]
@@ -42,11 +41,11 @@ var M = {
 };
 
 Caml_module.update_mod({
-      tag: /* Module */0,
-      _0: [/* tuple */[
+      TAG: /* Module */0,
+      _0: [[
           {
-            tag: /* Module */0,
-            _0: [/* tuple */[
+            TAG: /* Module */0,
+            _0: [[
                 /* Function */0,
                 "f"
               ]]

@@ -7,7 +7,7 @@ function f(x) {
   }
   throw {
         RE_EXN_ID: "Match_failure",
-        _1: /* tuple */[
+        _1: [
           "test_incomplete.ml",
           3,
           2
@@ -25,7 +25,7 @@ function f2(x) {
 }
 
 function f3(x) {
-  switch (x.tag | 0) {
+  switch (x.TAG | 0) {
     case /* A */0 :
     case /* C */2 :
         return x._0 + 1 | 0;

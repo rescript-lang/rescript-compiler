@@ -1,7 +1,6 @@
 'use strict';
 
 var Arg = require("../../lib/js/arg.js");
-var Block = require("../../lib/js/block.js");
 
 function anno_fun(arg) {
   
@@ -17,20 +16,20 @@ var test = {
   contents: true
 };
 
-var arg_spec_0 = /* tuple */[
+var arg_spec_0 = [
   "-c",
   {
-    tag: /* Set */2,
+    TAG: /* Set */2,
     _0: compile
   },
   " Compile"
 ];
 
 var arg_spec_1 = /* :: */{
-  _0: /* tuple */[
+  _0: [
     "-d",
     {
-      tag: /* Clear */3,
+      TAG: /* Clear */3,
       _0: test
     },
     " Test"

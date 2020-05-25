@@ -2,7 +2,6 @@
 
 var List = require("../../lib/js/list.js");
 var $$Array = require("../../lib/js/array.js");
-var Block = require("../../lib/js/block.js");
 var Curry = require("../../lib/js/curry.js");
 var Caml_array = require("../../lib/js/caml_array.js");
 
@@ -222,18 +221,18 @@ function for_9(param) {
   $$Array.iter((function (f) {
           return Curry._1(f, undefined);
         }), arr2);
-  return [/* tuple */[
+  return [[
             vv.contents,
             $$Array.of_list(List.rev(v.contents)),
             vv2.contents
           ]];
 }
 
-var suites_0 = /* tuple */[
+var suites_0 = [
   "for_loop_test_3",
   (function (param) {
       return {
-              tag: /* Eq */0,
+              TAG: /* Eq */0,
               _0: 90,
               _1: for_3(Caml_array.caml_make_vect(10, 2))
             };
@@ -241,33 +240,33 @@ var suites_0 = /* tuple */[
 ];
 
 var suites_1 = /* :: */{
-  _0: /* tuple */[
+  _0: [
     "for_loop_test_4",
     (function (param) {
         return {
-                tag: /* Eq */0,
+                TAG: /* Eq */0,
                 _0: 180,
                 _1: for_4(Caml_array.caml_make_vect(10, 2))
               };
       })
   ],
   _1: /* :: */{
-    _0: /* tuple */[
+    _0: [
       "for_loop_test_5",
       (function (param) {
           return {
-                  tag: /* Eq */0,
+                  TAG: /* Eq */0,
                   _0: 2420,
                   _1: for_5(Caml_array.caml_make_vect(10, 2), 11)
                 };
         })
     ],
     _1: /* :: */{
-      _0: /* tuple */[
+      _0: [
         "for_loop_test_6",
         (function (param) {
             return {
-                    tag: /* Eq */0,
+                    TAG: /* Eq */0,
                     _0: [
                       30,
                       1,
@@ -279,34 +278,34 @@ var suites_1 = /* :: */{
           })
       ],
       _1: /* :: */{
-        _0: /* tuple */[
+        _0: [
           "for_loop_test_7",
           (function (param) {
               return {
-                      tag: /* Eq */0,
+                      TAG: /* Eq */0,
                       _0: 84,
                       _1: for_7(undefined)
                     };
             })
         ],
         _1: /* :: */{
-          _0: /* tuple */[
+          _0: [
             "for_loop_test_8",
             (function (param) {
                 return {
-                        tag: /* Eq */0,
+                        TAG: /* Eq */0,
                         _0: 294,
                         _1: for_8(undefined)
                       };
               })
           ],
           _1: /* :: */{
-            _0: /* tuple */[
+            _0: [
               "for_loop_test_9",
               (function (param) {
                   return {
-                          tag: /* Eq */0,
-                          _0: [/* tuple */[
+                          TAG: /* Eq */0,
+                          _0: [[
                               10,
                               [
                                 1,

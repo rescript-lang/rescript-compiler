@@ -45,8 +45,8 @@ let int64 = "Caml_int64"
 let md5 = "Caml_md5"
 let gc = "Caml_gc"
 let int32 = "Caml_int32"
-let block = "Block"
-let caml_chrome_block = "Caml_chrome_debugger"
+
+
 let option = "Caml_option"
 let module_ = "Caml_module"
 let external_polyfill = "Caml_external_polyfill"

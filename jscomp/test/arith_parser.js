@@ -1,6 +1,5 @@
 'use strict';
 
-var Block = require("../../lib/js/block.js");
 var Parsing = require("../../lib/js/parsing.js");
 
 var yytransl_const = [
@@ -57,14 +56,14 @@ var yyact = [
   (function (__caml_parser_env) {
       var _1 = Parsing.peek_val(__caml_parser_env, 0);
       return {
-              tag: /* Numeral */0,
+              TAG: /* Numeral */0,
               _0: _1
             };
     }),
   (function (__caml_parser_env) {
       var _1 = Parsing.peek_val(__caml_parser_env, 0);
       return {
-              tag: /* Variable */6,
+              TAG: /* Variable */6,
               _0: _1
             };
     }),
@@ -72,7 +71,7 @@ var yyact = [
       var _1 = Parsing.peek_val(__caml_parser_env, 2);
       var _3 = Parsing.peek_val(__caml_parser_env, 0);
       return {
-              tag: /* Plus */1,
+              TAG: /* Plus */1,
               _0: _1,
               _1: _3
             };
@@ -81,7 +80,7 @@ var yyact = [
       var _1 = Parsing.peek_val(__caml_parser_env, 2);
       var _3 = Parsing.peek_val(__caml_parser_env, 0);
       return {
-              tag: /* Minus */2,
+              TAG: /* Minus */2,
               _0: _1,
               _1: _3
             };
@@ -90,7 +89,7 @@ var yyact = [
       var _1 = Parsing.peek_val(__caml_parser_env, 2);
       var _3 = Parsing.peek_val(__caml_parser_env, 0);
       return {
-              tag: /* Times */3,
+              TAG: /* Times */3,
               _0: _1,
               _1: _3
             };
@@ -99,7 +98,7 @@ var yyact = [
       var _1 = Parsing.peek_val(__caml_parser_env, 2);
       var _3 = Parsing.peek_val(__caml_parser_env, 0);
       return {
-              tag: /* Divide */4,
+              TAG: /* Divide */4,
               _0: _1,
               _1: _3
             };
@@ -107,7 +106,7 @@ var yyact = [
   (function (__caml_parser_env) {
       var _2 = Parsing.peek_val(__caml_parser_env, 0);
       return {
-              tag: /* Negate */5,
+              TAG: /* Negate */5,
               _0: _2
             };
     }),

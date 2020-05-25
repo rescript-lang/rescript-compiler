@@ -1,7 +1,6 @@
 'use strict';
 
 var Mt = require("./mt.js");
-var Block = require("../../lib/js/block.js");
 var Curry = require("../../lib/js/curry.js");
 
 var v = {
@@ -37,11 +36,11 @@ function f(g, h) {
         };
 }
 
-var suites_0 = /* tuple */[
+var suites_0 = [
   "eq_with",
   (function (param) {
       return {
-              tag: /* Eq */0,
+              TAG: /* Eq */0,
               _0: v,
               _1: u_v
             };

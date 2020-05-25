@@ -1,6 +1,5 @@
 'use strict';
 
-var Block = require("../../lib/js/block.js");
 var Curry = require("../../lib/js/curry.js");
 var Scanf = require("../../lib/js/scanf.js");
 var Printf = require("../../lib/js/printf.js");
@@ -39,15 +38,15 @@ function print_failure_test_fail(param) {
   all_tests_ok.contents = false;
   return Pervasives.print_string(Curry._1(Printf.sprintf(/* Format */{
                       _0: {
-                        tag: /* String_literal */11,
+                        TAG: /* String_literal */11,
                         _0: "\n********* Failure Test number ",
                         _1: {
-                          tag: /* Int */4,
+                          TAG: /* Int */4,
                           _0: /* Int_i */3,
                           _1: /* No_padding */0,
                           _2: /* No_precision */0,
                           _3: {
-                            tag: /* String_literal */11,
+                            TAG: /* String_literal */11,
                             _0: " incorrectly failed ***********\n",
                             _1: /* End_of_format */0
                           }
@@ -61,15 +60,15 @@ function print_failure_test_succeed(param) {
   all_tests_ok.contents = false;
   return Pervasives.print_string(Curry._1(Printf.sprintf(/* Format */{
                       _0: {
-                        tag: /* String_literal */11,
+                        TAG: /* String_literal */11,
                         _0: "\n********* Failure Test number ",
                         _1: {
-                          tag: /* Int */4,
+                          TAG: /* Int */4,
                           _0: /* Int_i */3,
                           _1: /* No_padding */0,
                           _2: /* No_precision */0,
                           _3: {
-                            tag: /* String_literal */11,
+                            TAG: /* String_literal */11,
                             _0: " failed to fail ***********\n",
                             _1: /* End_of_format */0
                           }
@@ -86,15 +85,15 @@ function test(b) {
     all_tests_ok.contents = false;
     return Pervasives.print_string(Curry._1(Printf.sprintf(/* Format */{
                         _0: {
-                          tag: /* String_literal */11,
+                          TAG: /* String_literal */11,
                           _0: "\n********* Test number ",
                           _1: {
-                            tag: /* Int */4,
+                            TAG: /* Int */4,
                             _0: /* Int_i */3,
                             _1: /* No_padding */0,
                             _2: /* No_precision */0,
                             _3: {
-                              tag: /* String_literal */11,
+                              TAG: /* String_literal */11,
                               _0: " failed ***********\n",
                               _1: /* End_of_format */0
                             }

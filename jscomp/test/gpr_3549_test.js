@@ -14,7 +14,7 @@ function eq(loc, x, y) {
   return Mt.eq_suites(test_id, suites, loc, x, y);
 }
 
-var others = /* tuple */[
+var others = [
   0,
   0,
   1,
@@ -30,7 +30,7 @@ eq("File \"gpr_3549_test.ml\", line 20, characters 5-12", 0.2, 0.2);
 
 eq("File \"gpr_3549_test.ml\", line 21, characters 5-12", 32, 32);
 
-eq("File \"gpr_3549_test.ml\", line 22, characters 5-12", others, /* tuple */[
+eq("File \"gpr_3549_test.ml\", line 22, characters 5-12", others, [
       0.0,
       0.0,
       1.0,

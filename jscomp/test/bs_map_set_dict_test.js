@@ -112,7 +112,7 @@ function $eq$tilde(a, b) {
 }
 
 var u0 = f(Belt_Array.map(Array_data_util.randomRange(0, 39), (function (x) {
-            return /* tuple */[
+            return [
                     x,
                     x
                   ];
@@ -121,7 +121,7 @@ var u0 = f(Belt_Array.map(Array_data_util.randomRange(0, 39), (function (x) {
 var u1 = Belt_Map.set(u0, 39, 120);
 
 b("File \"bs_map_set_dict_test.ml\", line 80, characters 4-11", Belt_Array.every2(Belt_MapDict.toArray(u0.data), Belt_Array.map(Array_data_util.range(0, 39), (function (x) {
-                return /* tuple */[
+                return [
                         x,
                         x
                       ];
@@ -134,7 +134,7 @@ b("File \"bs_map_set_dict_test.ml\", line 80, characters 4-11", Belt_Array.every
           })));
 
 b("File \"bs_map_set_dict_test.ml\", line 85, characters 4-11", Belt_List.every2(Belt_MapDict.toList(u0.data), Belt_List.fromArray(Belt_Array.map(Array_data_util.range(0, 39), (function (x) {
-                    return /* tuple */[
+                    return [
                             x,
                             x
                           ];
@@ -151,14 +151,14 @@ eq("File \"bs_map_set_dict_test.ml\", line 90, characters 5-12", Belt_Map.get(u0
 eq("File \"bs_map_set_dict_test.ml\", line 91, characters 5-12", Belt_Map.get(u1, 39), 120);
 
 var u = f(Belt_Array.makeByAndShuffle(10000, (function (x) {
-            return /* tuple */[
+            return [
                     x,
                     x
                   ];
           })));
 
 eq("File \"bs_map_set_dict_test.ml\", line 97, characters 4-11", Belt_Array.makeBy(10000, (function (x) {
-            return /* tuple */[
+            return [
                     x,
                     x
                   ];

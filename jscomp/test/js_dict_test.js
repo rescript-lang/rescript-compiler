@@ -1,7 +1,6 @@
 'use strict';
 
 var Mt = require("./mt.js");
-var Block = require("../../lib/js/block.js");
 var Js_dict = require("../../lib/js/js_dict.js");
 
 function obj(param) {
@@ -11,11 +10,11 @@ function obj(param) {
         };
 }
 
-var suites_0 = /* tuple */[
+var suites_0 = [
   "empty",
   (function (param) {
       return {
-              tag: /* Eq */0,
+              TAG: /* Eq */0,
               _0: [],
               _1: Object.keys({})
             };
@@ -23,11 +22,11 @@ var suites_0 = /* tuple */[
 ];
 
 var suites_1 = /* :: */{
-  _0: /* tuple */[
+  _0: [
     "get",
     (function (param) {
         return {
-                tag: /* Eq */0,
+                TAG: /* Eq */0,
                 _0: 43,
                 _1: Js_dict.get({
                       foo: 43,
@@ -37,11 +36,11 @@ var suites_1 = /* :: */{
       })
   ],
   _1: /* :: */{
-    _0: /* tuple */[
+    _0: [
       "get - property not in object",
       (function (param) {
           return {
-                  tag: /* Eq */0,
+                  TAG: /* Eq */0,
                   _0: undefined,
                   _1: Js_dict.get({
                         foo: 43,
@@ -51,11 +50,11 @@ var suites_1 = /* :: */{
         })
     ],
     _1: /* :: */{
-      _0: /* tuple */[
+      _0: [
         "unsafe_get",
         (function (param) {
             return {
-                    tag: /* Eq */0,
+                    TAG: /* Eq */0,
                     _0: 43,
                     _1: ({
                           foo: 43,
@@ -65,7 +64,7 @@ var suites_1 = /* :: */{
           })
       ],
       _1: /* :: */{
-        _0: /* tuple */[
+        _0: [
           "set",
           (function (param) {
               var o = {
@@ -74,18 +73,18 @@ var suites_1 = /* :: */{
               };
               o["foo"] = 36;
               return {
-                      tag: /* Eq */0,
+                      TAG: /* Eq */0,
                       _0: 36,
                       _1: Js_dict.get(o, "foo")
                     };
             })
         ],
         _1: /* :: */{
-          _0: /* tuple */[
+          _0: [
             "keys",
             (function (param) {
                 return {
-                        tag: /* Eq */0,
+                        TAG: /* Eq */0,
                         _0: [
                           "foo",
                           "bar"
@@ -98,17 +97,17 @@ var suites_1 = /* :: */{
               })
           ],
           _1: /* :: */{
-            _0: /* tuple */[
+            _0: [
               "entries",
               (function (param) {
                   return {
-                          tag: /* Eq */0,
+                          TAG: /* Eq */0,
                           _0: [
-                            /* tuple */[
+                            [
                               "foo",
                               43
                             ],
-                            /* tuple */[
+                            [
                               "bar",
                               86
                             ]
@@ -121,11 +120,11 @@ var suites_1 = /* :: */{
                 })
             ],
             _1: /* :: */{
-              _0: /* tuple */[
+              _0: [
                 "values",
                 (function (param) {
                     return {
-                            tag: /* Eq */0,
+                            TAG: /* Eq */0,
                             _0: [
                               43,
                               86
@@ -138,39 +137,39 @@ var suites_1 = /* :: */{
                   })
               ],
               _1: /* :: */{
-                _0: /* tuple */[
+                _0: [
                   "fromList - []",
                   (function (param) {
                       return {
-                              tag: /* Eq */0,
+                              TAG: /* Eq */0,
                               _0: {},
                               _1: Js_dict.fromList(/* [] */0)
                             };
                     })
                 ],
                 _1: /* :: */{
-                  _0: /* tuple */[
+                  _0: [
                     "fromList",
                     (function (param) {
                         return {
-                                tag: /* Eq */0,
+                                TAG: /* Eq */0,
                                 _0: [
-                                  /* tuple */[
+                                  [
                                     "x",
                                     23
                                   ],
-                                  /* tuple */[
+                                  [
                                     "y",
                                     46
                                   ]
                                 ],
                                 _1: Js_dict.entries(Js_dict.fromList(/* :: */{
-                                          _0: /* tuple */[
+                                          _0: [
                                             "x",
                                             23
                                           ],
                                           _1: /* :: */{
-                                            _0: /* tuple */[
+                                            _0: [
                                               "y",
                                               46
                                             ],
@@ -181,38 +180,38 @@ var suites_1 = /* :: */{
                       })
                   ],
                   _1: /* :: */{
-                    _0: /* tuple */[
+                    _0: [
                       "fromArray - []",
                       (function (param) {
                           return {
-                                  tag: /* Eq */0,
+                                  TAG: /* Eq */0,
                                   _0: {},
                                   _1: Js_dict.fromArray([])
                                 };
                         })
                     ],
                     _1: /* :: */{
-                      _0: /* tuple */[
+                      _0: [
                         "fromArray",
                         (function (param) {
                             return {
-                                    tag: /* Eq */0,
+                                    TAG: /* Eq */0,
                                     _0: [
-                                      /* tuple */[
+                                      [
                                         "x",
                                         23
                                       ],
-                                      /* tuple */[
+                                      [
                                         "y",
                                         46
                                       ]
                                     ],
                                     _1: Js_dict.entries(Js_dict.fromArray([
-                                              /* tuple */[
+                                              [
                                                 "x",
                                                 23
                                               ],
-                                              /* tuple */[
+                                              [
                                                 "y",
                                                 46
                                               ]
@@ -221,11 +220,11 @@ var suites_1 = /* :: */{
                           })
                       ],
                       _1: /* :: */{
-                        _0: /* tuple */[
+                        _0: [
                           "map",
                           (function (param) {
                               return {
-                                      tag: /* Eq */0,
+                                      TAG: /* Eq */0,
                                       _0: {
                                         foo: "43",
                                         bar: "86"

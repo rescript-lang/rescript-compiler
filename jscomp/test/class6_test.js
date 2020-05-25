@@ -1,7 +1,6 @@
 'use strict';
 
 var Mt = require("./mt.js");
-var Block = require("../../lib/js/block.js");
 var Curry = require("../../lib/js/curry.js");
 var Caml_oo = require("../../lib/js/caml_oo.js");
 var Caml_obj = require("../../lib/js/caml_obj.js");
@@ -28,11 +27,11 @@ var test_id = {
 function eq(loc, x, y) {
   test_id.contents = test_id.contents + 1 | 0;
   suites.contents = /* :: */{
-    _0: /* tuple */[
+    _0: [
       loc + (" id " + String(test_id.contents)),
       (function (param) {
           return {
-                  tag: /* Eq */0,
+                  TAG: /* Eq */0,
                   _0: x,
                   _1: y
                 };
@@ -176,7 +175,7 @@ CamlinternalOO.init_class(table);
 
 var d_0 = Curry._1(env_init, undefined);
 
-var d = /* class */[
+var d = [
   d_0,
   d_init,
   env_init,
@@ -190,7 +189,7 @@ function c2$prime_1($$class) {
   };
 }
 
-var c2$prime = /* class */[
+var c2$prime = [
   undefined,
   c2$prime_1,
   undefined,
@@ -229,11 +228,11 @@ var p$1 = Curry._2(functional_point[0], undefined, 7);
 
 var tmp = Caml_oo_curry.js2(-933174511, 2, p$1, 3);
 
-eq("File \"class6_test.ml\", line 60, characters 5-12", /* tuple */[
+eq("File \"class6_test.ml\", line 60, characters 5-12", [
       7,
       10,
       7
-    ], /* tuple */[
+    ], [
       Caml_oo_curry.js1(291546447, 1, p$1),
       Caml_oo_curry.js1(291546447, 3, tmp),
       Caml_oo_curry.js1(291546447, 4, p$1)
@@ -271,7 +270,7 @@ CamlinternalOO.init_class(table$1);
 
 var bad_functional_point_0 = Curry._1(env_init$1, undefined);
 
-var bad_functional_point = /* class */[
+var bad_functional_point = [
   bad_functional_point_0,
   bad_functional_point_init,
   env_init$1,
@@ -282,11 +281,11 @@ var p$2 = Curry._2(bad_functional_point_0, undefined, 7);
 
 var tmp$1 = Caml_oo_curry.js2(-933174511, 6, p$2, 3);
 
-eq("File \"class6_test.ml\", line 74, characters 5-12", /* tuple */[
+eq("File \"class6_test.ml\", line 74, characters 5-12", [
       7,
       10,
       7
-    ], /* tuple */[
+    ], [
       Caml_oo_curry.js1(291546447, 5, p$2),
       Caml_oo_curry.js1(291546447, 7, tmp$1),
       Caml_oo_curry.js1(291546447, 8, p$2)

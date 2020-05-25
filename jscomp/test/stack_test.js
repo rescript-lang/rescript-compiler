@@ -2,7 +2,6 @@
 
 var Mt = require("./mt.js");
 var List = require("../../lib/js/list.js");
-var Block = require("../../lib/js/block.js");
 var Stack = require("../../lib/js/stack.js");
 
 function to_list(v) {
@@ -27,11 +26,11 @@ function v(param) {
   return to_list(v$1);
 }
 
-var suites_0 = /* tuple */[
+var suites_0 = [
   "push_test",
   (function (param) {
       return {
-              tag: /* Eq */0,
+              TAG: /* Eq */0,
               _0: /* :: */{
                 _0: 1,
                 _1: /* :: */{

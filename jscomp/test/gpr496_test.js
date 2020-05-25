@@ -1,7 +1,6 @@
 'use strict';
 
 var Mt = require("./mt.js");
-var Block = require("../../lib/js/block.js");
 var Curry = require("../../lib/js/curry.js");
 var Caml_primitive = require("../../lib/js/caml_primitive.js");
 
@@ -16,11 +15,11 @@ var test_id = {
 function eq(loc, x, y) {
   test_id.contents = test_id.contents + 1 | 0;
   suites.contents = /* :: */{
-    _0: /* tuple */[
+    _0: [
       loc + (" id " + String(test_id.contents)),
       (function (param) {
           return {
-                  tag: /* Eq */0,
+                  TAG: /* Eq */0,
                   _0: x,
                   _1: y
                 };
@@ -31,7 +30,7 @@ function eq(loc, x, y) {
   
 }
 
-var expected = /* tuple */[
+var expected = [
   false,
   false,
   true,
@@ -42,7 +41,7 @@ var expected = /* tuple */[
   0
 ];
 
-var expected2 = /* tuple */[
+var expected2 = [
   false,
   false,
   true,
@@ -53,7 +52,7 @@ var expected2 = /* tuple */[
   0
 ];
 
-var u = /* tuple */[
+var u = [
   false,
   false,
   true,

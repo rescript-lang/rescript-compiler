@@ -1,7 +1,6 @@
 'use strict';
 
 var Mt = require("./mt.js");
-var Block = require("../../lib/js/block.js");
 
 console.log(JSON.stringify(/* :: */{
           _0: 1,
@@ -16,11 +15,11 @@ console.log(JSON.stringify(/* :: */{
 
 console.log("hey");
 
-var suites_0 = /* tuple */[
+var suites_0 = [
   "anything_to_string",
   (function (param) {
       return {
-              tag: /* Eq */0,
+              TAG: /* Eq */0,
               _0: "3",
               _1: String(3)
             };

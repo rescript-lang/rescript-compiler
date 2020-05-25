@@ -3,7 +3,6 @@
 var Mt = require("./mt.js");
 var List = require("../../lib/js/list.js");
 var $$Array = require("../../lib/js/array.js");
-var Block = require("../../lib/js/block.js");
 var Curry = require("../../lib/js/curry.js");
 var Caml_obj = require("../../lib/js/caml_obj.js");
 var Caml_array = require("../../lib/js/caml_array.js");
@@ -55,11 +54,11 @@ function is_sorted(x) {
   };
 }
 
-var array_suites_0 = /* tuple */[
+var array_suites_0 = [
   "init",
   (function (param) {
       return {
-              tag: /* Eq */0,
+              TAG: /* Eq */0,
               _0: $$Array.init(5, (function (x) {
                       return x;
                     })),
@@ -75,13 +74,13 @@ var array_suites_0 = /* tuple */[
 ];
 
 var array_suites_1 = /* :: */{
-  _0: /* tuple */[
+  _0: [
     "toList",
     (function (param) {
         var aux = function (xs) {
           return List.fold_left((function (acc, param) {
                         return /* :: */{
-                                _0: /* tuple */[
+                                _0: [
                                   $$Array.to_list(param[0]),
                                   param[1]
                                 ],
@@ -90,25 +89,25 @@ var array_suites_1 = /* :: */{
                       }), /* [] */0, xs);
         };
         var match = List.split(aux(/* :: */{
-                  _0: /* tuple */[
+                  _0: [
                     [],
                     /* [] */0
                   ],
                   _1: /* [] */0
                 }));
         return {
-                tag: /* Eq */0,
+                TAG: /* Eq */0,
                 _0: match[0],
                 _1: match[1]
               };
       })
   ],
   _1: /* :: */{
-    _0: /* tuple */[
+    _0: [
       "concat",
       (function (param) {
           return {
-                  tag: /* Eq */0,
+                  TAG: /* Eq */0,
                   _0: [
                     0,
                     1,
@@ -141,16 +140,16 @@ var array_suites_1 = /* :: */{
         })
     ],
     _1: /* :: */{
-      _0: /* tuple */[
+      _0: [
         "make",
         (function (param) {
             return {
-                    tag: /* Eq */0,
-                    _0: /* tuple */[
+                    TAG: /* Eq */0,
+                    _0: [
                       Caml_array.caml_make_vect(100, /* "a" */97),
                       Caml_array.caml_make_float_vect(100)
                     ],
-                    _1: /* tuple */[
+                    _1: [
                       $$Array.init(100, (function (param) {
                               return /* "a" */97;
                             })),
@@ -162,11 +161,11 @@ var array_suites_1 = /* :: */{
           })
       ],
       _1: /* :: */{
-        _0: /* tuple */[
+        _0: [
           "sub",
           (function (param) {
               return {
-                      tag: /* Eq */0,
+                      TAG: /* Eq */0,
                       _0: $$Array.sub([
                             0,
                             1,
@@ -182,7 +181,7 @@ var array_suites_1 = /* :: */{
             })
         ],
         _1: /* :: */{
-          _0: /* tuple */[
+          _0: [
             "blit",
             (function (param) {
                 var u = [
@@ -195,8 +194,8 @@ var array_suites_1 = /* :: */{
                       }));
                 $$Array.blit(v, 1, u, 1, 2);
                 return {
-                        tag: /* Eq */0,
-                        _0: /* tuple */[
+                        TAG: /* Eq */0,
+                        _0: [
                           [
                             0,
                             2,
@@ -208,7 +207,7 @@ var array_suites_1 = /* :: */{
                             4
                           ]
                         ],
-                        _1: /* tuple */[
+                        _1: [
                           v,
                           u
                         ]
@@ -216,7 +215,7 @@ var array_suites_1 = /* :: */{
               })
           ],
           _1: /* :: */{
-            _0: /* tuple */[
+            _0: [
               "File \"array_test.ml\", line 63, characters 2-9",
               (function (param) {
                   var a0 = $$Array.init(100, (function (i) {
@@ -224,7 +223,7 @@ var array_suites_1 = /* :: */{
                         }));
                   $$Array.blit(a0, 10, a0, 5, 20);
                   return {
-                          tag: /* Eq */0,
+                          TAG: /* Eq */0,
                           _0: true,
                           _1: starts_with(a0, [
                                 0,
@@ -258,7 +257,7 @@ var array_suites_1 = /* :: */{
                 })
             ],
             _1: /* :: */{
-              _0: /* tuple */[
+              _0: [
                 "File \"array_test.ml\", line 72, characters 2-9",
                 (function (param) {
                     var a0 = $$Array.init(100, (function (i) {
@@ -266,7 +265,7 @@ var array_suites_1 = /* :: */{
                           }));
                     $$Array.blit(a0, 5, a0, 10, 20);
                     return {
-                            tag: /* Eq */0,
+                            TAG: /* Eq */0,
                             _0: true,
                             _1: starts_with(a0, [
                                   0,
@@ -302,11 +301,11 @@ var array_suites_1 = /* :: */{
                   })
               ],
               _1: /* :: */{
-                _0: /* tuple */[
+                _0: [
                   "make",
                   (function (param) {
                       return {
-                              tag: /* Eq */0,
+                              TAG: /* Eq */0,
                               _0: Caml_array.caml_make_vect(2, 1),
                               _1: [
                                 1,
@@ -316,7 +315,7 @@ var array_suites_1 = /* :: */{
                     })
                 ],
                 _1: /* :: */{
-                  _0: /* tuple */[
+                  _0: [
                     "sort",
                     (function (param) {
                         var u = [
@@ -326,7 +325,7 @@ var array_suites_1 = /* :: */{
                         ];
                         $$Array.sort(Caml_primitive.caml_int_compare, u);
                         return {
-                                tag: /* Eq */0,
+                                TAG: /* Eq */0,
                                 _0: Caml_obj.caml_equal([
                                       0,
                                       1,
@@ -337,7 +336,7 @@ var array_suites_1 = /* :: */{
                       })
                   ],
                   _1: /* :: */{
-                    _0: /* tuple */[
+                    _0: [
                       "sort_large",
                       (function (param) {
                           var v = $$Array.init(4, (function (i) {
@@ -345,7 +344,7 @@ var array_suites_1 = /* :: */{
                                 }));
                           $$Array.sort(Caml_primitive.caml_int_compare, v);
                           return {
-                                  tag: /* Eq */0,
+                                  TAG: /* Eq */0,
                                   _0: true,
                                   _1: is_sorted(v)
                                 };

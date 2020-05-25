@@ -2,7 +2,6 @@
 
 var Mt = require("./mt.js");
 var List = require("../../lib/js/list.js");
-var Block = require("../../lib/js/block.js");
 var Curry = require("../../lib/js/curry.js");
 var Caml_primitive = require("../../lib/js/caml_primitive.js");
 
@@ -362,21 +361,21 @@ function of_list(kvs) {
               }), /* Empty */0, kvs);
 }
 
-var int_map_suites_0 = /* tuple */[
+var int_map_suites_0 = [
   "add",
   (function (param) {
       var v = of_list(/* :: */{
-            _0: /* tuple */[
+            _0: [
               1,
               /* "1" */49
             ],
             _1: /* :: */{
-              _0: /* tuple */[
+              _0: [
                 2,
                 /* "3" */51
               ],
               _1: /* :: */{
-                _0: /* tuple */[
+                _0: [
                   3,
                   /* "4" */52
                 ],
@@ -385,7 +384,7 @@ var int_map_suites_0 = /* tuple */[
             }
           });
       return {
-              tag: /* Eq */0,
+              TAG: /* Eq */0,
               _0: cardinal(v),
               _1: 3
             };
@@ -393,21 +392,21 @@ var int_map_suites_0 = /* tuple */[
 ];
 
 var int_map_suites_1 = /* :: */{
-  _0: /* tuple */[
+  _0: [
     "equal",
     (function (param) {
         var v = of_list(/* :: */{
-              _0: /* tuple */[
+              _0: [
                 1,
                 /* "1" */49
               ],
               _1: /* :: */{
-                _0: /* tuple */[
+                _0: [
                   2,
                   /* "3" */51
                 ],
                 _1: /* :: */{
-                  _0: /* tuple */[
+                  _0: [
                     3,
                     /* "4" */52
                   ],
@@ -416,17 +415,17 @@ var int_map_suites_1 = /* :: */{
               }
             });
         var u = of_list(/* :: */{
-              _0: /* tuple */[
+              _0: [
                 2,
                 /* "3" */51
               ],
               _1: /* :: */{
-                _0: /* tuple */[
+                _0: [
                   3,
                   /* "4" */52
                 ],
                 _1: /* :: */{
-                  _0: /* tuple */[
+                  _0: [
                     1,
                     /* "1" */49
                   ],
@@ -435,28 +434,28 @@ var int_map_suites_1 = /* :: */{
               }
             });
         return {
-                tag: /* Eq */0,
+                TAG: /* Eq */0,
                 _0: compare(Caml_primitive.caml_int_compare, u, v),
                 _1: 0
               };
       })
   ],
   _1: /* :: */{
-    _0: /* tuple */[
+    _0: [
       "equal2",
       (function (param) {
           var v = of_list(/* :: */{
-                _0: /* tuple */[
+                _0: [
                   1,
                   /* "1" */49
                 ],
                 _1: /* :: */{
-                  _0: /* tuple */[
+                  _0: [
                     2,
                     /* "3" */51
                   ],
                   _1: /* :: */{
-                    _0: /* tuple */[
+                    _0: [
                       3,
                       /* "4" */52
                     ],
@@ -465,17 +464,17 @@ var int_map_suites_1 = /* :: */{
                 }
               });
           var u = of_list(/* :: */{
-                _0: /* tuple */[
+                _0: [
                   2,
                   /* "3" */51
                 ],
                 _1: /* :: */{
-                  _0: /* tuple */[
+                  _0: [
                     3,
                     /* "4" */52
                   ],
                   _1: /* :: */{
-                    _0: /* tuple */[
+                    _0: [
                       1,
                       /* "1" */49
                     ],
@@ -484,7 +483,7 @@ var int_map_suites_1 = /* :: */{
                 }
               });
           return {
-                  tag: /* Eq */0,
+                  TAG: /* Eq */0,
                   _0: true,
                   _1: equal((function (x, y) {
                           return x === y;
@@ -493,7 +492,7 @@ var int_map_suites_1 = /* :: */{
         })
     ],
     _1: /* :: */{
-      _0: /* tuple */[
+      _0: [
         "iteration",
         (function (param) {
             var m = /* Empty */0;
@@ -508,7 +507,7 @@ var int_map_suites_1 = /* :: */{
               
             }
             return {
-                    tag: /* Eq */0,
+                    TAG: /* Eq */0,
                     _0: v,
                     _1: -1
                   };

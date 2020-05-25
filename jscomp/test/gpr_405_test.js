@@ -38,7 +38,7 @@ function Make(funarg) {
       if (find_default(already_processed, top)) {
         throw {
               RE_EXN_ID: "Assert_failure",
-              _1: /* tuple */[
+              _1: [
                 "gpr_405_test.ml",
                 43,
                 6
@@ -49,7 +49,7 @@ function Make(funarg) {
       if (find_default(on_the_stack, top)) {
         throw {
               RE_EXN_ID: "Assert_failure",
-              _1: /* tuple */[
+              _1: [
                 "gpr_405_test.ml",
                 44,
                 6
@@ -73,7 +73,7 @@ function Make(funarg) {
           var successor = successors._0;
           if (!find_default(already_processed, successor)) {
             return step2(successor, /* :: */{
-                        _0: /* tuple */[
+                        _0: [
                           top$1,
                           successors
                         ],

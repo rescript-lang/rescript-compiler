@@ -2,7 +2,6 @@
 
 var Mt = require("./mt.js");
 var $$Array = require("../../lib/js/array.js");
-var Block = require("../../lib/js/block.js");
 var Curry = require("../../lib/js/curry.js");
 var Int32 = require("../../lib/js/int32.js");
 var Format = require("../../lib/js/format.js");
@@ -11,7 +10,7 @@ var Pervasives = require("../../lib/js/pervasives.js");
 var Ext_array_test = require("./ext_array_test.js");
 
 function f(x) {
-  return /* tuple */[
+  return [
           x,
           (x >>> 1),
           (x >>> 2)
@@ -57,7 +56,7 @@ var shift_right_logical_tests_1 = [
   1
 ];
 
-var shift_right_logical_tests = /* tuple */[
+var shift_right_logical_tests = [
   shift_right_logical_tests_0,
   shift_right_logical_tests_1
 ];
@@ -101,7 +100,7 @@ var shift_right_tests_1 = [
   -1
 ];
 
-var shift_right_tests = /* tuple */[
+var shift_right_tests = [
   shift_right_tests_0,
   shift_right_tests_1
 ];
@@ -145,7 +144,7 @@ var shift_left_tests_1 = [
   -2147483648
 ];
 
-var shift_left_tests = /* tuple */[
+var shift_left_tests = [
   shift_left_tests_0,
   shift_left_tests_1
 ];
@@ -156,22 +155,22 @@ function $star$tilde(prim, prim$1) {
 
 var suites = {
   contents: Pervasives.$at(/* :: */{
-        _0: /* tuple */[
+        _0: [
           "File \"int32_test.ml\", line 31, characters 2-9",
           (function (param) {
               return {
-                      tag: /* Eq */0,
+                      TAG: /* Eq */0,
                       _0: 1,
                       _1: 1
                     };
             })
         ],
         _1: /* :: */{
-          _0: /* tuple */[
+          _0: [
             "File \"int32_test.ml\", line 32, characters 2-9",
             (function (param) {
                 return {
-                        tag: /* Eq */0,
+                        TAG: /* Eq */0,
                         _0: -2147483647,
                         _1: -2147483647
                       };
@@ -180,13 +179,13 @@ var suites = {
           _1: /* [] */0
         }
       }, Pervasives.$at($$Array.to_list(Ext_array_test.map2i((function (i, a, b) {
-                      return /* tuple */[
+                      return [
                               Curry._1(Format.asprintf(/* Format */{
                                         _0: {
-                                          tag: /* String_literal */11,
+                                          TAG: /* String_literal */11,
                                           _0: "shift_right_logical_cases ",
                                           _1: {
-                                            tag: /* Int */4,
+                                            TAG: /* Int */4,
                                             _0: /* Int_d */0,
                                             _1: /* No_padding */0,
                                             _2: /* No_precision */0,
@@ -197,20 +196,20 @@ var suites = {
                                       }), i),
                               (function (param) {
                                   return {
-                                          tag: /* Eq */0,
+                                          TAG: /* Eq */0,
                                           _0: a,
                                           _1: b
                                         };
                                 })
                             ];
                     }), shift_right_logical_tests_0, shift_right_logical_tests_1)), Pervasives.$at($$Array.to_list(Ext_array_test.map2i((function (i, a, b) {
-                          return /* tuple */[
+                          return [
                                   Curry._1(Format.asprintf(/* Format */{
                                             _0: {
-                                              tag: /* String_literal */11,
+                                              TAG: /* String_literal */11,
                                               _0: "shift_right_cases ",
                                               _1: {
-                                                tag: /* Int */4,
+                                                TAG: /* Int */4,
                                                 _0: /* Int_d */0,
                                                 _1: /* No_padding */0,
                                                 _2: /* No_precision */0,
@@ -221,20 +220,20 @@ var suites = {
                                           }), i),
                                   (function (param) {
                                       return {
-                                              tag: /* Eq */0,
+                                              TAG: /* Eq */0,
                                               _0: a,
                                               _1: b
                                             };
                                     })
                                 ];
                         }), shift_right_tests_0, shift_right_tests_1)), $$Array.to_list(Ext_array_test.map2i((function (i, a, b) {
-                          return /* tuple */[
+                          return [
                                   Curry._1(Format.asprintf(/* Format */{
                                             _0: {
-                                              tag: /* String_literal */11,
+                                              TAG: /* String_literal */11,
                                               _0: "shift_left_cases ",
                                               _1: {
-                                                tag: /* Int */4,
+                                                TAG: /* Int */4,
                                                 _0: /* Int_d */0,
                                                 _1: /* No_padding */0,
                                                 _2: /* No_precision */0,
@@ -245,7 +244,7 @@ var suites = {
                                           }), i),
                                   (function (param) {
                                       return {
-                                              tag: /* Eq */0,
+                                              TAG: /* Eq */0,
                                               _0: a,
                                               _1: b
                                             };

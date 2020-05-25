@@ -1,6 +1,5 @@
 'use strict';
 
-var Block = require("../../lib/js/block.js");
 var Curry = require("../../lib/js/curry.js");
 
 function f(param) {
@@ -11,7 +10,7 @@ function f(param) {
       return 5;
     }
   }
-  switch (param.tag | 0) {
+  switch (param.TAG | 0) {
     case /* A */0 :
         return 0;
     case /* B */1 :
@@ -25,11 +24,11 @@ function f(param) {
 }
 
 function bind(x, f) {
-  if (x.tag) {
+  if (x.TAG) {
     return x;
   } else {
     return {
-            tag: /* Left */0,
+            TAG: /* Left */0,
             _0: Curry._1(f, x._0)
           };
   }

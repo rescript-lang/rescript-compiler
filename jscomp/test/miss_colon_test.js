@@ -1,16 +1,15 @@
 'use strict';
 
-var Block = require("../../lib/js/block.js");
 
 function $plus$colon(_f, _g) {
   while(true) {
     var g = _g;
     var f = _f;
-    if (!f.tag) {
+    if (!f.TAG) {
       var n = f._0;
-      if (!g.tag) {
+      if (!g.TAG) {
         return {
-                tag: /* Int */0,
+                TAG: /* Int */0,
                 _0: n + g._0 | 0
               };
       }
@@ -19,11 +18,11 @@ function $plus$colon(_f, _g) {
       }
       
     }
-    switch (g.tag | 0) {
+    switch (g.TAG | 0) {
       case /* Int */0 :
           if (g._0 !== 0) {
             return {
-                    tag: /* Add */2,
+                    TAG: /* Add */2,
                     _0: f,
                     _1: g
                   };
@@ -37,7 +36,7 @@ function $plus$colon(_f, _g) {
       case /* Var */1 :
       case /* Mul */3 :
           return {
-                  tag: /* Add */2,
+                  TAG: /* Add */2,
                   _0: f,
                   _1: g
                 };
@@ -52,45 +51,45 @@ function $star$colon(_f, _g) {
     var f = _f;
     var exit = 0;
     var exit$1 = 0;
-    if (f.tag) {
+    if (f.TAG) {
       exit$1 = 3;
     } else {
       var n = f._0;
-      if (!g.tag) {
+      if (!g.TAG) {
         return {
-                tag: /* Int */0,
+                TAG: /* Int */0,
                 _0: Math.imul(n, g._0)
               };
       }
       if (n === 0) {
         return {
-                tag: /* Int */0,
+                TAG: /* Int */0,
                 _0: 0
               };
       }
       exit$1 = 3;
     }
     if (exit$1 === 3) {
-      if (g.tag) {
+      if (g.TAG) {
         exit = 2;
       } else {
         if (g._0 === 0) {
           return {
-                  tag: /* Int */0,
+                  TAG: /* Int */0,
                   _0: 0
                 };
         }
         exit = 2;
       }
     }
-    if (exit === 2 && !f.tag && f._0 === 1) {
+    if (exit === 2 && !f.TAG && f._0 === 1) {
       return g;
     }
-    switch (g.tag | 0) {
+    switch (g.TAG | 0) {
       case /* Int */0 :
           if (g._0 !== 1) {
             return {
-                    tag: /* Mul */3,
+                    TAG: /* Mul */3,
                     _0: f,
                     _1: g
                   };
@@ -100,7 +99,7 @@ function $star$colon(_f, _g) {
       case /* Var */1 :
       case /* Add */2 :
           return {
-                  tag: /* Mul */3,
+                  TAG: /* Mul */3,
                   _0: f,
                   _1: g
                 };
@@ -114,7 +113,7 @@ function $star$colon(_f, _g) {
 }
 
 function simplify(f) {
-  switch (f.tag | 0) {
+  switch (f.TAG | 0) {
     case /* Int */0 :
     case /* Var */1 :
         return f;

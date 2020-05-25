@@ -1,7 +1,6 @@
 'use strict';
 
 var Mt = require("./mt.js");
-var Block = require("../../lib/js/block.js");
 var Curry = require("../../lib/js/curry.js");
 var Caml_oo_curry = require("../../lib/js/caml_oo_curry.js");
 var CamlinternalOO = require("../../lib/js/camlinternalOO.js");
@@ -29,11 +28,11 @@ var test_id = {
 function eq(loc, x, y) {
   test_id.contents = test_id.contents + 1 | 0;
   suites.contents = /* :: */{
-    _0: /* tuple */[
+    _0: [
       loc + (" id " + String(test_id.contents)),
       (function (param) {
           return {
-                  tag: /* Eq */0,
+                  TAG: /* Eq */0,
                   _0: x,
                   _1: y
                 };
@@ -123,7 +122,7 @@ function abstract_point_1($$class) {
   };
 }
 
-var abstract_point = /* class */[
+var abstract_point = [
   undefined,
   abstract_point_1,
   undefined,
@@ -198,10 +197,10 @@ var colored_point = CamlinternalOO.make_class([
 
 var p$prime = Curry._3(colored_point[0], undefined, 5, "red");
 
-eq("File \"class4_test.ml\", line 67, characters 5-12", /* tuple */[
+eq("File \"class4_test.ml\", line 67, characters 5-12", [
       5,
       "red"
-    ], /* tuple */[
+    ], [
       Caml_oo_curry.js1(291546447, 1, p$prime),
       Caml_oo_curry.js1(-899911325, 2, p$prime)
     ]);

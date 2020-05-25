@@ -8,7 +8,7 @@ var Caml_primitive = require("../../lib/js/caml_primitive.js");
 
 function split(x, tree) {
   if (!tree) {
-    return /* tuple */[
+    return [
             /* Empty */0,
             false,
             /* Empty */0
@@ -19,7 +19,7 @@ function split(x, tree) {
   var l = tree._0;
   var c = Caml_primitive.caml_string_compare(x, v);
   if (c === 0) {
-    return /* tuple */[
+    return [
             l,
             true,
             r
@@ -27,14 +27,14 @@ function split(x, tree) {
   }
   if (c < 0) {
     var match = split(x, l);
-    return /* tuple */[
+    return [
             match[0],
             match[1],
             Set_gen.internal_join(match[2], v, r)
           ];
   }
   var match$1 = split(x, r);
-  return /* tuple */[
+  return [
           Set_gen.internal_join(l, v, match$1[0]),
           match$1[1],
           match$1[2]

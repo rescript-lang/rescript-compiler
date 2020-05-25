@@ -2,7 +2,6 @@
 
 var Mt = require("./mt.js");
 var List = require("../../lib/js/list.js");
-var Block = require("../../lib/js/block.js");
 var Curry = require("../../lib/js/curry.js");
 var Scanf = require("../../lib/js/scanf.js");
 var Format = require("../../lib/js/format.js");
@@ -21,11 +20,11 @@ var test_id = {
 function eq(loc, x, y) {
   test_id.contents = test_id.contents + 1 | 0;
   suites.contents = /* :: */{
-    _0: /* tuple */[
+    _0: [
       loc + (" id " + String(test_id.contents)),
       (function (param) {
           return {
-                  tag: /* Eq */0,
+                  TAG: /* Eq */0,
                   _0: x,
                   _1: y
                 };
@@ -45,10 +44,10 @@ function eq3(loc, a, b, c) {
 function u(param) {
   return Pervasives.$caret$caret(/* Format */{
               _0: {
-                tag: /* String_literal */11,
+                TAG: /* String_literal */11,
                 _0: "xx ",
                 _1: {
-                  tag: /* String */2,
+                  TAG: /* String */2,
                   _0: /* No_padding */0,
                   _1: /* End_of_format */0
                 }
@@ -56,7 +55,7 @@ function u(param) {
               _1: "xx %s"
             }, /* Format */{
               _0: {
-                tag: /* String_literal */11,
+                TAG: /* String_literal */11,
                 _0: "yy",
                 _1: /* End_of_format */0
               },
@@ -111,17 +110,17 @@ function f(loc, ls) {
 }
 
 f("File \"format_test.ml\", line 78, characters 6-13", /* :: */{
-      _0: /* tuple */[
+      _0: [
         "0x3.fp+1",
         7.875
       ],
       _1: /* :: */{
-        _0: /* tuple */[
+        _0: [
           " 0x3.fp2",
           15.75
         ],
         _1: /* :: */{
-          _0: /* tuple */[
+          _0: [
             " 0x4.fp2",
             19.75
           ],
@@ -133,7 +132,7 @@ f("File \"format_test.ml\", line 78, characters 6-13", /* :: */{
 function sl(f) {
   return Curry._1(Printf.sprintf(/* Format */{
                   _0: {
-                    tag: /* Float */8,
+                    TAG: /* Float */8,
                     _0: /* Float_h */16,
                     _1: /* No_padding */0,
                     _2: /* No_precision */0,
@@ -149,48 +148,48 @@ function aux_list(loc, ls) {
               }), ls);
 }
 
-var literals_0 = /* tuple */[
+var literals_0 = [
   7.875,
   "0x1.f8p+2"
 ];
 
 var literals_1 = /* :: */{
-  _0: /* tuple */[
+  _0: [
     0.3,
     "0x1.3333333333333p-2"
   ],
   _1: /* :: */{
-    _0: /* tuple */[
+    _0: [
       Pervasives.infinity,
       "infinity"
     ],
     _1: /* :: */{
-      _0: /* tuple */[
+      _0: [
         0.4,
         "0x1.999999999999ap-2"
       ],
       _1: /* :: */{
-        _0: /* tuple */[
+        _0: [
           0.5,
           "0x1p-1"
         ],
         _1: /* :: */{
-          _0: /* tuple */[
+          _0: [
             0.6,
             "0x1.3333333333333p-1"
           ],
           _1: /* :: */{
-            _0: /* tuple */[
+            _0: [
               0.7,
               "0x1.6666666666666p-1"
             ],
             _1: /* :: */{
-              _0: /* tuple */[
+              _0: [
                 0.8,
                 "0x1.999999999999ap-1"
               ],
               _1: /* :: */{
-                _0: /* tuple */[
+                _0: [
                   0.9,
                   "0x1.ccccccccccccdp-1"
                 ],
@@ -213,7 +212,7 @@ aux_list("File \"format_test.ml\", line 110, characters 11-18", literals);
 
 eq("File \"format_test.ml\", line 113, characters 5-12", Curry._1(Printf.sprintf(/* Format */{
               _0: {
-                tag: /* Float */8,
+                TAG: /* Float */8,
                 _0: /* Float_H */19,
                 _1: /* No_padding */0,
                 _2: /* No_precision */0,
@@ -225,7 +224,7 @@ eq("File \"format_test.ml\", line 113, characters 5-12", Curry._1(Printf.sprintf
 function scan_float(loc, s, expect) {
   return Curry._1(Scanf.sscanf(s, /* Format */{
                   _0: {
-                    tag: /* Float */8,
+                    TAG: /* Float */8,
                     _0: /* Float_h */16,
                     _1: /* No_padding */0,
                     _2: /* No_precision */0,

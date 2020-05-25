@@ -2,7 +2,6 @@
 
 var Mt = require("./mt.js");
 var List = require("../../lib/js/list.js");
-var Block = require("../../lib/js/block.js");
 var Genlex = require("../../lib/js/genlex.js");
 var Stream = require("../../lib/js/stream.js");
 var Caml_js_exceptions = require("../../lib/js/caml_js_exceptions.js");
@@ -56,44 +55,44 @@ function to_list(s) {
   };
 }
 
-var suites_0 = /* tuple */[
+var suites_0 = [
   "lexer_stream_genlex",
   (function (param) {
       return {
-              tag: /* Eq */0,
+              TAG: /* Eq */0,
               _0: /* :: */{
                 _0: {
-                  tag: /* Int */2,
+                  TAG: /* Int */2,
                   _0: 3
                 },
                 _1: /* :: */{
                   _0: {
-                    tag: /* Kwd */0,
+                    TAG: /* Kwd */0,
                     _0: "("
                   },
                   _1: /* :: */{
                     _0: {
-                      tag: /* Int */2,
+                      TAG: /* Int */2,
                       _0: 3
                     },
                     _1: /* :: */{
                       _0: {
-                        tag: /* Kwd */0,
+                        TAG: /* Kwd */0,
                         _0: "+"
                       },
                       _1: /* :: */{
                         _0: {
-                          tag: /* Int */2,
+                          TAG: /* Int */2,
                           _0: 2
                         },
                         _1: /* :: */{
                           _0: {
-                            tag: /* Int */2,
+                            TAG: /* Int */2,
                             _0: -1
                           },
                           _1: /* :: */{
                             _0: {
-                              tag: /* Kwd */0,
+                              TAG: /* Kwd */0,
                               _0: ")"
                             },
                             _1: /* [] */0

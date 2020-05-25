@@ -1,7 +1,6 @@
 'use strict';
 
 var Mt = require("./mt.js");
-var Block = require("../../lib/js/block.js");
 
 var suites = {
   contents: /* [] */0
@@ -16,11 +15,11 @@ function eq(loc, param) {
   var x = param[0];
   test_id.contents = test_id.contents + 1 | 0;
   suites.contents = /* :: */{
-    _0: /* tuple */[
+    _0: [
       loc + (" id " + String(test_id.contents)),
       (function (param) {
           return {
-                  tag: /* Eq */0,
+                  TAG: /* Eq */0,
                   _0: x,
                   _1: y
                 };
@@ -37,7 +36,7 @@ var v5 = {
   setY: (function (v) {
       var self = this ;
       self.y = 2;
-      return /* tuple */[
+      return [
               self.y,
               v
             ];
@@ -167,7 +166,7 @@ var test_type2 = /* :: */{
   _1: test_type2_1
 };
 
-eq("File \"ppx_this_obj_field.ml\", line 92, characters 5-12", /* tuple */[
+eq("File \"ppx_this_obj_field.ml\", line 92, characters 5-12", [
       6,
       v5.say()
     ]);
@@ -184,13 +183,13 @@ var c = v.say();
 
 v.incr();
 
-eq("File \"ppx_this_obj_field.ml\", line 99, characters 5-12", /* tuple */[
-      /* tuple */[
+eq("File \"ppx_this_obj_field.ml\", line 99, characters 5-12", [
+      [
         3,
         4,
         5
       ],
-      /* tuple */[
+      [
         a,
         b,
         c
@@ -203,12 +202,12 @@ z.setX(32);
 
 var bb = z.getX();
 
-eq("File \"ppx_this_obj_field.ml\", line 103, characters 5-12", /* tuple */[
-      /* tuple */[
+eq("File \"ppx_this_obj_field.ml\", line 103, characters 5-12", [
+      [
         3,
         32
       ],
-      /* tuple */[
+      [
         aa,
         bb
       ]

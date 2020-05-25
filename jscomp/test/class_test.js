@@ -1,7 +1,6 @@
 'use strict';
 
 var Mt = require("./mt.js");
-var Block = require("../../lib/js/block.js");
 var Curry = require("../../lib/js/curry.js");
 var Caml_oo_curry = require("../../lib/js/caml_oo_curry.js");
 var CamlinternalOO = require("../../lib/js/camlinternalOO.js");
@@ -93,44 +92,44 @@ var u = {
 };
 
 Mt.from_pair_suites("Class_test", /* :: */{
-      _0: /* tuple */[
+      _0: [
         "File \"class_test.ml\", line 38, characters 4-11",
         (function (param) {
             return {
-                    tag: /* Eq */0,
+                    TAG: /* Eq */0,
                     _0: zero,
                     _1: 0
                   };
           })
       ],
       _1: /* :: */{
-        _0: /* tuple */[
+        _0: [
           "File \"class_test.ml\", line 39, characters 4-11",
           (function (param) {
               return {
-                      tag: /* Eq */0,
+                      TAG: /* Eq */0,
                       _0: three,
                       _1: 3
                     };
             })
         ],
         _1: /* :: */{
-          _0: /* tuple */[
+          _0: [
             "File \"class_test.ml\", line 40, characters 4-11",
             (function (param) {
                 return {
-                        tag: /* Eq */0,
+                        TAG: /* Eq */0,
                         _0: one,
                         _1: 1
                       };
               })
           ],
           _1: /* :: */{
-            _0: /* tuple */[
+            _0: [
               "File \"class_test.ml\", line 41, characters 4-11",
               (function (param) {
                   return {
-                          tag: /* Eq */0,
+                          TAG: /* Eq */0,
                           _0: two,
                           _1: 2
                         };

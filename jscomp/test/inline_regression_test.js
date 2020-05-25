@@ -1,7 +1,6 @@
 'use strict';
 
 var Mt = require("./mt.js");
-var Block = require("../../lib/js/block.js");
 var Curry = require("../../lib/js/curry.js");
 var $$String = require("../../lib/js/string.js");
 var Filename = require("../../lib/js/filename.js");
@@ -44,11 +43,11 @@ function basename(param) {
               }), Filename.current_dir_name, param);
 }
 
-var suites_0 = /* tuple */[
+var suites_0 = [
   "basename",
   (function (param) {
       return {
-              tag: /* Eq */0,
+              TAG: /* Eq */0,
               _0: basename("b/c/a.b"),
               _1: "a.b"
             };

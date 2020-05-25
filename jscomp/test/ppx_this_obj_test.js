@@ -1,7 +1,6 @@
 'use strict';
 
 var Mt = require("./mt.js");
-var Block = require("../../lib/js/block.js");
 
 var suites = {
   contents: /* [] */0
@@ -16,11 +15,11 @@ function eq(loc, param) {
   var x = param[0];
   test_id.contents = test_id.contents + 1 | 0;
   suites.contents = /* :: */{
-    _0: /* tuple */[
+    _0: [
       loc + (" id " + String(test_id.contents)),
       (function (param) {
           return {
-                  tag: /* Eq */0,
+                  TAG: /* Eq */0,
                   _0: x,
                   _1: y
                 };
@@ -95,12 +94,12 @@ var collection = [
   v4
 ];
 
-eq("File \"ppx_this_obj_test.ml\", line 59, characters 5-12", /* tuple */[
+eq("File \"ppx_this_obj_test.ml\", line 59, characters 5-12", [
       11,
       v.hi(3, 2)
     ]);
 
-eq("File \"ppx_this_obj_test.ml\", line 60, characters 5-12", /* tuple */[
+eq("File \"ppx_this_obj_test.ml\", line 60, characters 5-12", [
       11,
       v2.hi(3, 2)
     ]);

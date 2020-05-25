@@ -13,7 +13,7 @@ function is_equal(param) {
   if (Caml_bytes.get(Bytes.make(3, /* "a" */97), 0) !== /* "a" */97) {
     throw {
           RE_EXN_ID: "Assert_failure",
-          _1: /* tuple */[
+          _1: [
             "equal_exception_test.ml",
             9,
             4
@@ -24,7 +24,7 @@ function is_equal(param) {
   if (Bytes.make(3, /* "a" */97)[0] !== /* "a" */97) {
     throw {
           RE_EXN_ID: "Assert_failure",
-          _1: /* tuple */[
+          _1: [
             "equal_exception_test.ml",
             10,
             4
@@ -37,7 +37,7 @@ function is_equal(param) {
   if (u[0] !== /* "b" */98) {
     throw {
           RE_EXN_ID: "Assert_failure",
-          _1: /* tuple */[
+          _1: [
             "equal_exception_test.ml",
             13,
             4
@@ -98,23 +98,23 @@ function is_arbitrary_exception(param) {
   }
 }
 
-var suites_0 = /* tuple */[
+var suites_0 = [
   "is_equal",
   is_equal
 ];
 
 var suites_1 = /* :: */{
-  _0: /* tuple */[
+  _0: [
     "is_exception",
     is_exception
   ],
   _1: /* :: */{
-    _0: /* tuple */[
+    _0: [
       "is_normal_exception",
       is_normal_exception
     ],
     _1: /* :: */{
-      _0: /* tuple */[
+      _0: [
         "is_arbitrary_exception",
         is_arbitrary_exception
       ],
@@ -143,7 +143,7 @@ if (Caml_obj.caml_equal(e, {
       }) !== false) {
   throw {
         RE_EXN_ID: "Assert_failure",
-        _1: /* tuple */[
+        _1: [
           "equal_exception_test.ml",
           50,
           3
@@ -155,7 +155,7 @@ if (Caml_obj.caml_equal(e, {
 if (Not_found === "Not_found" !== false) {
   throw {
         RE_EXN_ID: "Assert_failure",
-        _1: /* tuple */[
+        _1: [
           "equal_exception_test.ml",
           51,
           3

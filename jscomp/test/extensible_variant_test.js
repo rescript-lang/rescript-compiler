@@ -1,7 +1,6 @@
 'use strict';
 
 var Mt = require("./mt.js");
-var Block = require("../../lib/js/block.js");
 var Caml_exceptions = require("../../lib/js/caml_exceptions.js");
 
 var Str = Caml_exceptions.create("Extensible_variant_test.Str");
@@ -26,7 +25,7 @@ function to_int(x) {
   }
   throw {
         RE_EXN_ID: "Assert_failure",
-        _1: /* tuple */[
+        _1: [
           "extensible_variant_test.ml",
           16,
           9
@@ -35,11 +34,11 @@ function to_int(x) {
       };
 }
 
-var suites_0 = /* tuple */[
+var suites_0 = [
   "test_int",
   (function (param) {
       return {
-              tag: /* Eq */0,
+              TAG: /* Eq */0,
               _0: 3,
               _1: to_int({
                     RE_EXN_ID: Int,
@@ -51,11 +50,11 @@ var suites_0 = /* tuple */[
 ];
 
 var suites_1 = /* :: */{
-  _0: /* tuple */[
+  _0: [
     "test_int2",
     (function (param) {
         return {
-                tag: /* Eq */0,
+                TAG: /* Eq */0,
                 _0: 0,
                 _1: to_int({
                       RE_EXN_ID: Int$1,
@@ -66,11 +65,11 @@ var suites_1 = /* :: */{
       })
   ],
   _1: /* :: */{
-    _0: /* tuple */[
+    _0: [
       "test_string",
       (function (param) {
           return {
-                  tag: /* Eq */0,
+                  TAG: /* Eq */0,
                   _0: -1,
                   _1: to_int({
                         RE_EXN_ID: Str,

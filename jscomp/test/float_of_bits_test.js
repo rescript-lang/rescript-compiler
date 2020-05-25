@@ -3,7 +3,6 @@
 var Mt = require("./mt.js");
 var List = require("../../lib/js/list.js");
 var $$Array = require("../../lib/js/array.js");
-var Block = require("../../lib/js/block.js");
 var Curry = require("../../lib/js/curry.js");
 var Printf = require("../../lib/js/printf.js");
 var Caml_float = require("../../lib/js/caml_float.js");
@@ -13,11 +12,11 @@ var Pervasives = require("../../lib/js/pervasives.js");
 var one_float = Caml_int64.mk(0, 1072693248);
 
 var int32_pairs = [
-  /* tuple */[
+  [
     32,
     4.48415508583941463e-44
   ],
-  /* tuple */[
+  [
     3,
     4.20389539297445121e-45
   ]
@@ -28,13 +27,13 @@ function from_pairs(pair) {
                         var f = param[1];
                         var i32 = param[0];
                         return /* :: */{
-                                _0: /* tuple */[
+                                _0: [
                                   Curry._1(Printf.sprintf(/* Format */{
                                             _0: {
-                                              tag: /* String_literal */11,
+                                              TAG: /* String_literal */11,
                                               _0: "int32_float_of_bits ",
                                               _1: {
-                                                tag: /* Int */4,
+                                                TAG: /* Int */4,
                                                 _0: /* Int_d */0,
                                                 _1: /* No_padding */0,
                                                 _2: /* No_precision */0,
@@ -45,20 +44,20 @@ function from_pairs(pair) {
                                           }), i),
                                   (function (param) {
                                       return {
-                                              tag: /* Eq */0,
+                                              TAG: /* Eq */0,
                                               _0: Caml_float.caml_int32_float_of_bits(i32),
                                               _1: f
                                             };
                                     })
                                 ],
                                 _1: /* :: */{
-                                  _0: /* tuple */[
+                                  _0: [
                                     Curry._1(Printf.sprintf(/* Format */{
                                               _0: {
-                                                tag: /* String_literal */11,
+                                                TAG: /* String_literal */11,
                                                 _0: "int32_bits_of_float ",
                                                 _1: {
-                                                  tag: /* Int */4,
+                                                  TAG: /* Int */4,
                                                   _0: /* Int_d */0,
                                                   _1: /* No_padding */0,
                                                   _2: /* No_precision */0,
@@ -69,7 +68,7 @@ function from_pairs(pair) {
                                             }), i),
                                     (function (param) {
                                         return {
-                                                tag: /* Eq */0,
+                                                TAG: /* Eq */0,
                                                 _0: Caml_float.caml_int32_bits_of_float(f),
                                                 _1: i32
                                               };
@@ -82,22 +81,22 @@ function from_pairs(pair) {
 }
 
 var suites = Pervasives.$at(/* :: */{
-      _0: /* tuple */[
+      _0: [
         "one",
         (function (param) {
             return {
-                    tag: /* Eq */0,
+                    TAG: /* Eq */0,
                     _0: Caml_int64.bits_of_float(1.0),
                     _1: one_float
                   };
           })
       ],
       _1: /* :: */{
-        _0: /* tuple */[
+        _0: [
           "two",
           (function (param) {
               return {
-                      tag: /* Eq */0,
+                      TAG: /* Eq */0,
                       _0: Caml_int64.float_of_bits(one_float),
                       _1: 1.0
                     };

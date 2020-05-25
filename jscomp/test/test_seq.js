@@ -1,6 +1,5 @@
 'use strict';
 
-var Block = require("../../lib/js/block.js");
 var Curry = require("../../lib/js/curry.js");
 var Caml_obj = require("../../lib/js/caml_obj.js");
 var Pervasives = require("../../lib/js/pervasives.js");
@@ -35,7 +34,7 @@ function help_action(param) {
   throw {
         RE_EXN_ID: Stop,
         _1: {
-          tag: /* Unknown */0,
+          TAG: /* Unknown */0,
           _0: "-help"
         },
         Error: new Error()
@@ -61,10 +60,10 @@ function add_help(speclist) {
     var exn = Caml_js_exceptions.internalToOCamlException(raw_exn);
     if (exn.RE_EXN_ID === "Not_found") {
       add1 = /* :: */{
-        _0: /* tuple */[
+        _0: [
           "-help",
           {
-            tag: /* Unit */0,
+            TAG: /* Unit */0,
             _0: help_action
           },
           " Display this list of options"
@@ -84,10 +83,10 @@ function add_help(speclist) {
     var exn$1 = Caml_js_exceptions.internalToOCamlException(raw_exn$1);
     if (exn$1.RE_EXN_ID === "Not_found") {
       add2 = /* :: */{
-        _0: /* tuple */[
+        _0: [
           "--help",
           {
-            tag: /* Unit */0,
+            TAG: /* Unit */0,
             _0: help_action
           },
           " Display this list of options"

@@ -37,7 +37,7 @@ function ff(x) {
 
 function randomRange(i, j) {
   return Belt_Array.map(Array_data_util.randomRange(i, j), (function (x) {
-                return /* tuple */[
+                return [
                         x,
                         x
                       ];
@@ -86,15 +86,15 @@ Belt_MutableMap.removeMany(a0$1, Belt_Array.map(randomRange(2002, 11000), (funct
           })));
 
 eq("File \"bs_poly_mutable_map_test.ml\", line 41, characters 6-13", Belt_internalAVLtree.toArray(a0$1.data), [
-      /* tuple */[
+      [
         1999,
         1999
       ],
-      /* tuple */[
+      [
         2000,
         33
       ],
-      /* tuple */[
+      [
         2001,
         2001
       ]

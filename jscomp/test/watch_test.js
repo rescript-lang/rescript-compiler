@@ -6,7 +6,7 @@ function test(path) {
   Fs.watch(path, {
             recursive: true
           }).on("change", (function ($$event, string_buffer) {
-            console.log(/* tuple */[
+            console.log([
                   $$event,
                   string_buffer
                 ]);

@@ -63,7 +63,7 @@ function resize(newSize) {
       if (typeof n === "number") {
         throw {
               RE_EXN_ID: "Assert_failure",
-              _1: /* tuple */[
+              _1: [
                 "bdd.ml",
                 54,
                 27
@@ -129,7 +129,7 @@ function mkNode(low, v, high) {
       if (typeof n === "number") {
         throw {
               RE_EXN_ID: "Assert_failure",
-              _1: /* tuple */[
+              _1: [
                 "bdd.ml",
                 99,
                 31
@@ -373,7 +373,7 @@ function main(param) {
   }
   throw {
         RE_EXN_ID: "Assert_failure",
-        _1: /* tuple */[
+        _1: [
           "bdd.ml",
           233,
           2

@@ -1,7 +1,6 @@
 'use strict';
 
 var Mt = require("./mt.js");
-var Block = require("../../lib/js/block.js");
 
 function f(param) {
   var v = {
@@ -21,11 +20,11 @@ function f(param) {
   };
 }
 
-var suites_0 = /* tuple */[
+var suites_0 = [
   "sum",
   (function (param) {
       return {
-              tag: /* Eq */0,
+              TAG: /* Eq */0,
               _0: 55,
               _1: f(undefined)
             };

@@ -14,7 +14,7 @@ function even(x) {
 function bark(param) {
   return function (x, y) {
     var o = this ;
-    console.log(/* tuple */[
+    console.log([
           o.length,
           o.x,
           o.y,

@@ -1,7 +1,6 @@
 'use strict';
 
 var Mt = require("./mt.js");
-var Block = require("../../lib/js/block.js");
 
 var suites = {
   contents: /* [] */0
@@ -15,7 +14,7 @@ function add_test(loc, test) {
   counter.contents = counter.contents + 1 | 0;
   var id = loc + (" id " + String(counter.contents));
   suites.contents = /* :: */{
-    _0: /* tuple */[
+    _0: [
       id,
       test
     ],
@@ -27,7 +26,7 @@ function add_test(loc, test) {
 function eq(loc, x, y) {
   return add_test(loc, (function (param) {
                 return {
-                        tag: /* Eq */0,
+                        TAG: /* Eq */0,
                         _0: x,
                         _1: y
                       };

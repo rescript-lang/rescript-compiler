@@ -2,7 +2,6 @@
 
 var Mt = require("./mt.js");
 var Fs = require("fs");
-var Block = require("../../lib/js/block.js");
 
 var suites = {
   contents: /* [] */0
@@ -15,11 +14,11 @@ var test_id = {
 function eq(loc, x, y) {
   test_id.contents = test_id.contents + 1 | 0;
   suites.contents = /* :: */{
-    _0: /* tuple */[
+    _0: [
       loc + (" id " + String(test_id.contents)),
       (function (param) {
           return {
-                  tag: /* Eq */0,
+                  TAG: /* Eq */0,
                   _0: x,
                   _1: y
                 };
@@ -68,10 +67,10 @@ eq("File \"poly_variant_test.ml\", line 58, characters 5-12", vv, [
       4
     ]);
 
-eq("File \"poly_variant_test.ml\", line 59, characters 5-12", /* tuple */[
+eq("File \"poly_variant_test.ml\", line 59, characters 5-12", [
       hey_int(5),
       hey_int(6)
-    ], /* tuple */[
+    ], [
       5,
       6
     ]);

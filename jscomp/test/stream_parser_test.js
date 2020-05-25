@@ -1,7 +1,6 @@
 'use strict';
 
 var Mt = require("./mt.js");
-var Block = require("../../lib/js/block.js");
 var Curry = require("../../lib/js/curry.js");
 var Queue = require("../../lib/js/queue.js");
 var Genlex = require("../../lib/js/genlex.js");
@@ -26,19 +25,19 @@ function parse(token) {
     }
     catch (exn){
       return {
-              tag: /* Kwd */0,
+              TAG: /* Kwd */0,
               _0: "=="
             };
     }
   };
   var parse_atom = function (param) {
     var n = token$1(undefined);
-    switch (n.tag | 0) {
+    switch (n.TAG | 0) {
       case /* Kwd */0 :
           if (n._0 === "(") {
             var v = parse_expr_aux(parse_term_aux(parse_atom(undefined)));
             var match = token$1(undefined);
-            if (match.tag) {
+            if (match.TAG) {
               throw {
                     RE_EXN_ID: Parse_error,
                     _1: "Unbalanced parens",
@@ -73,7 +72,7 @@ function parse(token) {
   };
   var parse_term_aux = function (e1) {
     var e = token$1(undefined);
-    if (e.tag) {
+    if (e.TAG) {
       Queue.push(e, look_ahead);
       return e1;
     }
@@ -89,7 +88,7 @@ function parse(token) {
   };
   var parse_expr_aux = function (e1) {
     var e = token$1(undefined);
-    if (e.tag) {
+    if (e.TAG) {
       Queue.push(e, look_ahead);
       return e1;
     }
@@ -104,7 +103,7 @@ function parse(token) {
     }
   };
   var r = parse_expr_aux(parse_term_aux(parse_atom(undefined)));
-  return /* tuple */[
+  return [
           r,
           Queue.fold((function (acc, x) {
                   return /* :: */{
@@ -157,7 +156,7 @@ function l_parse(token) {
     }
     catch (exn){
       return {
-              tag: /* Kwd */0,
+              TAG: /* Kwd */0,
               _0: "=="
             };
     }
@@ -166,7 +165,7 @@ function l_parse(token) {
     while(true) {
       var a = _a;
       var t = token$1(undefined);
-      if (t.tag) {
+      if (t.TAG) {
         Queue.push(t, look_ahead);
         return a;
       }
@@ -185,12 +184,12 @@ function l_parse(token) {
   };
   var parse_f = function (param) {
     var i = token$1(undefined);
-    switch (i.tag | 0) {
+    switch (i.TAG | 0) {
       case /* Kwd */0 :
           if (i._0 === "(") {
             var v = parse_t_aux(parse_f_aux(parse_f(undefined)));
             var t = token$1(undefined);
-            if (t.tag) {
+            if (t.TAG) {
               throw {
                     RE_EXN_ID: Parse_error,
                     _1: "Unbalanced )",
@@ -225,7 +224,7 @@ function l_parse(token) {
     while(true) {
       var a = _a;
       var t = token$1(undefined);
-      if (t.tag) {
+      if (t.TAG) {
         Queue.push(t, look_ahead);
         return a;
       }
@@ -243,7 +242,7 @@ function l_parse(token) {
     };
   };
   var r = parse_t_aux(parse_f_aux(parse_f(undefined)));
-  return /* tuple */[
+  return [
           r,
           Queue.fold((function (acc, x) {
                   return /* :: */{
@@ -265,11 +264,11 @@ var test_id = {
 function eq(loc, x, y) {
   test_id.contents = test_id.contents + 1 | 0;
   suites.contents = /* :: */{
-    _0: /* tuple */[
+    _0: [
       loc + (" id " + String(test_id.contents)),
       (function (param) {
           return {
-                  tag: /* Eq */0,
+                  TAG: /* Eq */0,
                   _0: x,
                   _1: y
                 };
@@ -282,36 +281,36 @@ function eq(loc, x, y) {
 
 var match = parse(token(Stream.of_string("1 + 2 + (3  - 2) * 3 * 3  - 2 a")));
 
-eq("File \"stream_parser_test.ml\", line 132, characters 5-12", /* tuple */[
+eq("File \"stream_parser_test.ml\", line 132, characters 5-12", [
       match[0],
       match[1]
-    ], /* tuple */[
+    ], [
       10,
       /* :: */{
         _0: {
-          tag: /* Ident */1,
+          TAG: /* Ident */1,
           _0: "a"
         },
         _1: /* [] */0
       }
     ]);
 
-eq("File \"stream_parser_test.ml\", line 133, characters 5-12", /* tuple */[
+eq("File \"stream_parser_test.ml\", line 133, characters 5-12", [
       2,
       /* :: */{
         _0: {
-          tag: /* Kwd */0,
+          TAG: /* Kwd */0,
           _0: "=="
         },
         _1: /* [] */0
       }
     ], parse(token(Stream.of_string("3 - 2  - 1"))));
 
-eq("File \"stream_parser_test.ml\", line 134, characters 5-12", /* tuple */[
+eq("File \"stream_parser_test.ml\", line 134, characters 5-12", [
       0,
       /* :: */{
         _0: {
-          tag: /* Kwd */0,
+          TAG: /* Kwd */0,
           _0: "=="
         },
         _1: /* [] */0

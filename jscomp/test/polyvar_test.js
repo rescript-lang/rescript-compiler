@@ -3,7 +3,7 @@
 
 var ff = "B";
 
-console.log(/* tuple */[
+console.log([
       "A",
       ff,
       "A"

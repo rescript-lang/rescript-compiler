@@ -3,7 +3,7 @@
 var Curry = require("../../lib/js/curry.js");
 var Caml_option = require("../../lib/js/caml_option.js");
 
-console.log(/* tuple */[
+console.log([
       "hello world",
       1
     ]);
@@ -21,7 +21,7 @@ console.log(arg_string.value);
 
 var arg_pair = {
   HASH: /* Pair */892012602,
-  value: /* tuple */[
+  value: [
     "hi",
     1
   ]

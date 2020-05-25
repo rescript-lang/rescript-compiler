@@ -1,7 +1,6 @@
 'use strict';
 
 var Mt = require("./mt.js");
-var Block = require("../../lib/js/block.js");
 var Caml_option = require("../../lib/js/caml_option.js");
 
 var suites = {
@@ -17,11 +16,11 @@ function eq(loc, param) {
   var x = param[0];
   test_id.contents = test_id.contents + 1 | 0;
   suites.contents = /* :: */{
-    _0: /* tuple */[
+    _0: [
       loc + (" id " + String(test_id.contents)),
       (function (param) {
           return {
-                  tag: /* Eq */0,
+                  TAG: /* Eq */0,
                   _0: x,
                   _1: y
                 };
@@ -42,12 +41,12 @@ var u = hey(undefined, 3);
 
 var z = hey(5, 3);
 
-eq("File \"optional_ffi_test.ml\", line 23, characters 5-12", /* tuple */[
-      /* tuple */[
+eq("File \"optional_ffi_test.ml\", line 23, characters 5-12", [
+      [
         u,
         z
       ],
-      /* tuple */[
+      [
         6,
         8
       ]
@@ -81,34 +80,34 @@ function side_effect2(x) {
 
 var v = bug_to_fix(side_effect, counter);
 
-var pair_0 = /* tuple */[
+var pair_0 = [
   v,
   counter.contents
 ];
 
-var pair_1 = /* tuple */[
+var pair_1 = [
   4,
   1
 ];
 
-var pair = /* tuple */[
+var pair = [
   pair_0,
   pair_1
 ];
 
 var v2 = bug_to_fix2(side_effect2, counter2);
 
-var pair2_0 = /* tuple */[
+var pair2_0 = [
   v2,
   counter.contents
 ];
 
-var pair2_1 = /* tuple */[
+var pair2_1 = [
   4,
   1
 ];
 
-var pair2 = /* tuple */[
+var pair2 = [
   pair2_0,
   pair2_1
 ];
@@ -125,7 +124,7 @@ function heystr(x, y) {
 
 var pair_1$1 = heystr("name", "4");
 
-var pair$1 = /* tuple */[
+var pair$1 = [
   "name4",
   pair_1$1
 ];

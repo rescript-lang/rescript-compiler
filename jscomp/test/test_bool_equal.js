@@ -19,7 +19,7 @@ function assertions(param) {
   if (!bool_equal(true, true)) {
     throw {
           RE_EXN_ID: "Assert_failure",
-          _1: /* tuple */[
+          _1: [
             "test_bool_equal.ml",
             21,
             2
@@ -30,7 +30,7 @@ function assertions(param) {
   if (!bool_equal(false, false)) {
     throw {
           RE_EXN_ID: "Assert_failure",
-          _1: /* tuple */[
+          _1: [
             "test_bool_equal.ml",
             22,
             2
@@ -41,7 +41,7 @@ function assertions(param) {
   if (bool_equal(true, false)) {
     throw {
           RE_EXN_ID: "Assert_failure",
-          _1: /* tuple */[
+          _1: [
             "test_bool_equal.ml",
             23,
             2
@@ -52,7 +52,7 @@ function assertions(param) {
   if (bool_equal(false, true)) {
     throw {
           RE_EXN_ID: "Assert_failure",
-          _1: /* tuple */[
+          _1: [
             "test_bool_equal.ml",
             24,
             2

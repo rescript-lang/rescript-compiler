@@ -1,18 +1,17 @@
 'use strict';
 
-var Block = require("../../lib/js/block.js");
 var Curry = require("../../lib/js/curry.js");
 var Printf = require("../../lib/js/printf.js");
 var Caml_int64 = require("../../lib/js/caml_int64.js");
 
 Curry._1(Printf.printf(/* Format */{
           _0: {
-            tag: /* Int64 */7,
+            TAG: /* Int64 */7,
             _0: /* Int_d */0,
             _1: /* No_padding */0,
             _2: /* No_precision */0,
             _3: {
-              tag: /* Char_literal */12,
+              TAG: /* Char_literal */12,
               _0: /* "\n" */10,
               _1: /* End_of_format */0
             }
@@ -22,7 +21,7 @@ Curry._1(Printf.printf(/* Format */{
 
 Printf.printf(/* Format */{
       _0: {
-        tag: /* String_literal */11,
+        TAG: /* String_literal */11,
         _0: "heloo!\nhelloxx\n",
         _1: /* End_of_format */0
       },
@@ -31,7 +30,7 @@ Printf.printf(/* Format */{
 
 Printf.printf(/* Format */{
       _0: {
-        tag: /* String_literal */11,
+        TAG: /* String_literal */11,
         _0: "hello\nhi\n",
         _1: /* End_of_format */0
       },
@@ -40,15 +39,15 @@ Printf.printf(/* Format */{
 
 Curry._2(Printf.printf(/* Format */{
           _0: {
-            tag: /* Int */4,
+            TAG: /* Int */4,
             _0: /* Int_d */0,
             _1: {
-              tag: /* Arg_padding */1,
+              TAG: /* Arg_padding */1,
               _0: /* Right */1
             },
             _2: /* No_precision */0,
             _3: {
-              tag: /* String_literal */11,
+              TAG: /* String_literal */11,
               _0: "\n\n",
               _1: /* End_of_format */0
             }
@@ -58,22 +57,22 @@ Curry._2(Printf.printf(/* Format */{
 
 Curry._1(Printf.printf(/* Format */{
           _0: {
-            tag: /* String */2,
+            TAG: /* String */2,
             _0: /* No_padding */0,
             _1: /* End_of_format */0
           },
           _1: "%s"
         }), Curry._2(Printf.sprintf(/* Format */{
               _0: {
-                tag: /* Int */4,
+                TAG: /* Int */4,
                 _0: /* Int_d */0,
                 _1: {
-                  tag: /* Arg_padding */1,
+                  TAG: /* Arg_padding */1,
                   _0: /* Right */1
                 },
                 _2: /* No_precision */0,
                 _3: {
-                  tag: /* Char_literal */12,
+                  TAG: /* Char_literal */12,
                   _0: /* "\n" */10,
                   _1: /* End_of_format */0
                 }

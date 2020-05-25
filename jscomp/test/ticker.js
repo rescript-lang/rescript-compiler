@@ -1,7 +1,6 @@
 'use strict';
 
 var List = require("../../lib/js/list.js");
-var Block = require("../../lib/js/block.js");
 var Curry = require("../../lib/js/curry.js");
 var Printf = require("../../lib/js/printf.js");
 var $$String = require("../../lib/js/string.js");
@@ -78,15 +77,15 @@ function string_of_rank(i) {
   } else {
     return Curry._1(Printf.sprintf(/* Format */{
                     _0: {
-                      tag: /* String_literal */11,
+                      TAG: /* String_literal */11,
                       _0: "Ranked(",
                       _1: {
-                        tag: /* Int */4,
+                        TAG: /* Int */4,
                         _0: /* Int_i */3,
                         _1: /* No_padding */0,
                         _2: /* No_precision */0,
                         _3: {
-                          tag: /* Char_literal */12,
+                          TAG: /* Char_literal */12,
                           _0: /* ")" */41,
                           _1: /* End_of_format */0
                         }
@@ -287,7 +286,7 @@ function find_first(f, _param) {
           var d0 = _d0;
           var v0 = _v0;
           if (!param$1) {
-            return /* tuple */[
+            return [
                     v0,
                     d0
                   ];
@@ -329,7 +328,7 @@ function find_first_opt(f, _param) {
         var d0 = _d0;
         var v0 = _v0;
         if (!param$1) {
-          return /* tuple */[
+          return [
                   v0,
                   d0
                 ];
@@ -364,7 +363,7 @@ function find_last(f, _param) {
           var d0 = _d0;
           var v0 = _v0;
           if (!param$1) {
-            return /* tuple */[
+            return [
                     v0,
                     d0
                   ];
@@ -406,7 +405,7 @@ function find_last_opt(f, _param) {
         var d0 = _d0;
         var v0 = _v0;
         if (!param$1) {
-          return /* tuple */[
+          return [
                   v0,
                   d0
                 ];
@@ -463,7 +462,7 @@ function min_binding(_param) {
     if (param) {
       var l = param.l;
       if (!l) {
-        return /* tuple */[
+        return [
                 param.v,
                 param.d
               ];
@@ -486,7 +485,7 @@ function min_binding_opt(_param) {
     }
     var l = param.l;
     if (!l) {
-      return /* tuple */[
+      return [
               param.v,
               param.d
             ];
@@ -502,7 +501,7 @@ function max_binding(_param) {
     if (param) {
       var r = param.r;
       if (!r) {
-        return /* tuple */[
+        return [
                 param.v,
                 param.d
               ];
@@ -525,7 +524,7 @@ function max_binding_opt(_param) {
     }
     var r = param.r;
     if (!r) {
-      return /* tuple */[
+      return [
               param.v,
               param.d
             ];
@@ -792,7 +791,7 @@ function concat_or_join(t1, v, d, t2) {
 
 function split$1(x, param) {
   if (!param) {
-    return /* tuple */[
+    return [
             /* Empty */0,
             undefined,
             /* Empty */0
@@ -804,7 +803,7 @@ function split$1(x, param) {
   var l = param.l;
   var c = Caml_obj.caml_compare(x, v);
   if (c === 0) {
-    return /* tuple */[
+    return [
             l,
             Caml_option.some(d),
             r
@@ -812,14 +811,14 @@ function split$1(x, param) {
   }
   if (c < 0) {
     var match = split$1(x, l);
-    return /* tuple */[
+    return [
             match[0],
             match[1],
             join(match[2], v, d, r)
           ];
   }
   var match$1 = split$1(x, r);
-  return /* tuple */[
+  return [
           join(l, v, d, match$1[0]),
           match$1[1],
           match$1[2]
@@ -844,7 +843,7 @@ function merge$1(f, s1, s2) {
   }
   throw {
         RE_EXN_ID: "Assert_failure",
-        _1: /* tuple */[
+        _1: [
           "map.ml",
           393,
           10
@@ -910,7 +909,7 @@ function filter(p, m) {
 
 function partition(p, param) {
   if (!param) {
-    return /* tuple */[
+    return [
             /* Empty */0,
             /* Empty */0
           ];
@@ -925,12 +924,12 @@ function partition(p, param) {
   var rf = match$1[1];
   var rt = match$1[0];
   if (pvd) {
-    return /* tuple */[
+    return [
             join(lt, v, d, rt),
             concat(lf, rf)
           ];
   } else {
-    return /* tuple */[
+    return [
             concat(lt, rt),
             join(lf, v, d, rf)
           ];
@@ -1030,7 +1029,7 @@ function bindings_aux(_accu, _param) {
     }
     _param = param.l;
     _accu = /* :: */{
-      _0: /* tuple */[
+      _0: [
         param.v,
         param.d
       ],
@@ -1230,7 +1229,7 @@ function process_input_line(ticker_map, all_tickers, line) {
               var ticker_map$1 = ticker_map !== undefined ? Caml_option.valFromOption(ticker_map) : compute_update_sequences(all_tickers);
               var value = Caml_format.caml_float_of_string(match$1._0);
               process_quote(ticker_map$1, match._0, value);
-              return /* tuple */[
+              return [
                       all_tickers,
                       Caml_option.some(ticker_map$1)
                     ];
@@ -1265,7 +1264,7 @@ function process_input_line(ticker_map, all_tickers, line) {
                                 Error: new Error()
                               };
                         }
-                        return /* tuple */[
+                        return [
                                 /* :: */{
                                   _0: make_binary_op(ticker_name, match$4._0, match$5._0, /* PLUS */0),
                                   _1: all_tickers
@@ -1296,7 +1295,7 @@ function process_input_line(ticker_map, all_tickers, line) {
                                 Error: new Error()
                               };
                         }
-                        return /* tuple */[
+                        return [
                                 /* :: */{
                                   _0: make_binary_op(ticker_name, match$6._0, match$7._0, /* MINUS */1),
                                   _1: all_tickers
@@ -1323,7 +1322,7 @@ function process_input_line(ticker_map, all_tickers, line) {
                             Error: new Error()
                           };
                     }
-                    return /* tuple */[
+                    return [
                             /* :: */{
                               _0: {
                                 value: undefined,

@@ -21,7 +21,7 @@ function tFromJs(param) {
 var u = tToJs({
       xx: 3,
       yy: "x",
-      zz: /* tuple */[
+      zz: [
         1,
         2
       ]
@@ -32,7 +32,7 @@ tFromJs(u);
 tFromJs({
       xx: 3,
       yy: "2",
-      zz: /* tuple */[
+      zz: [
         1,
         2
       ],
@@ -68,19 +68,19 @@ function aFromJs(param) {
 }
 
 var jsMapperConstantArray$1 = [
-  /* tuple */[
+  [
     21902,
     "b0"
   ],
-  /* tuple */[
+  [
     21903,
     "b1"
   ],
-  /* tuple */[
+  [
     21904,
     "b2"
   ],
-  /* tuple */[
+  [
     21905,
     "b3"
   ]

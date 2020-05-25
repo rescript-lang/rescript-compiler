@@ -1,7 +1,6 @@
 'use strict';
 
 var Mt = require("./mt.js");
-var Block = require("../../lib/js/block.js");
 var $$String = require("../../lib/js/string.js");
 
 function u(v) {
@@ -18,11 +17,11 @@ function v(x) {
   return x.length;
 }
 
-var suites_0 = /* tuple */[
+var suites_0 = [
   "const",
   (function (param) {
       return {
-              tag: /* Eq */0,
+              TAG: /* Eq */0,
               _0: 1,
               _1: 1
             };
@@ -30,11 +29,11 @@ var suites_0 = /* tuple */[
 ];
 
 var suites_1 = /* :: */{
-  _0: /* tuple */[
+  _0: [
     "other",
     (function (param) {
         return {
-                tag: /* Eq */0,
+                TAG: /* Eq */0,
                 _0: 3,
                 _1: 3
               };

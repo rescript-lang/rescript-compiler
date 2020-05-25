@@ -3,7 +3,6 @@
 var List = require("../../lib/js/list.js");
 var Path = require("path");
 var $$Array = require("../../lib/js/array.js");
-var Block = require("../../lib/js/block.js");
 var Curry = require("../../lib/js/curry.js");
 var Assert = require("assert");
 var Process = require("process");
@@ -53,7 +52,7 @@ function close_enough(thresholdOpt, a, b) {
 }
 
 function handleCode(spec) {
-  switch (spec.tag | 0) {
+  switch (spec.TAG | 0) {
     case /* Eq */0 :
         Assert.deepEqual(spec._0, spec._1);
         return ;
@@ -113,16 +112,16 @@ function from_pair_suites(name, suites) {
             }));
       return ;
     } else {
-      console.log(/* tuple */[
+      console.log([
             name,
             "testing"
           ]);
       return List.iter((function (param) {
                     var name = param[0];
                     var fn = Curry._1(param[1], undefined);
-                    switch (fn.tag | 0) {
+                    switch (fn.TAG | 0) {
                       case /* Eq */0 :
-                          console.log(/* tuple */[
+                          console.log([
                                 name,
                                 fn._0,
                                 "eq?",
@@ -130,7 +129,7 @@ function from_pair_suites(name, suites) {
                               ]);
                           return ;
                       case /* Neq */1 :
-                          console.log(/* tuple */[
+                          console.log([
                                 name,
                                 fn._0,
                                 "neq?",
@@ -138,7 +137,7 @@ function from_pair_suites(name, suites) {
                               ]);
                           return ;
                       case /* StrictEq */2 :
-                          console.log(/* tuple */[
+                          console.log([
                                 name,
                                 fn._0,
                                 "strict_eq?",
@@ -146,7 +145,7 @@ function from_pair_suites(name, suites) {
                               ]);
                           return ;
                       case /* StrictNeq */3 :
-                          console.log(/* tuple */[
+                          console.log([
                                 name,
                                 fn._0,
                                 "strict_neq?",
@@ -154,14 +153,14 @@ function from_pair_suites(name, suites) {
                               ]);
                           return ;
                       case /* Ok */4 :
-                          console.log(/* tuple */[
+                          console.log([
                                 name,
                                 fn._0,
                                 "ok?"
                               ]);
                           return ;
                       case /* Approx */5 :
-                          console.log(/* tuple */[
+                          console.log([
                                 name,
                                 fn._0,
                                 "~",
@@ -169,7 +168,7 @@ function from_pair_suites(name, suites) {
                               ]);
                           return ;
                       case /* ApproxThreshold */6 :
-                          console.log(/* tuple */[
+                          console.log([
                                 name,
                                 fn._1,
                                 "~",
@@ -224,11 +223,11 @@ function from_promise_suites(name, suites) {
 function eq_suites(test_id, suites, loc, x, y) {
   test_id.contents = test_id.contents + 1 | 0;
   suites.contents = /* :: */{
-    _0: /* tuple */[
+    _0: [
       loc + (" id " + String(test_id.contents)),
       (function (param) {
           return {
-                  tag: /* Eq */0,
+                  TAG: /* Eq */0,
                   _0: x,
                   _1: y
                 };
@@ -242,11 +241,11 @@ function eq_suites(test_id, suites, loc, x, y) {
 function bool_suites(test_id, suites, loc, x) {
   test_id.contents = test_id.contents + 1 | 0;
   suites.contents = /* :: */{
-    _0: /* tuple */[
+    _0: [
       loc + (" id " + String(test_id.contents)),
       (function (param) {
           return {
-                  tag: /* Ok */4,
+                  TAG: /* Ok */4,
                   _0: x
                 };
         })
@@ -259,11 +258,11 @@ function bool_suites(test_id, suites, loc, x) {
 function throw_suites(test_id, suites, loc, x) {
   test_id.contents = test_id.contents + 1 | 0;
   suites.contents = /* :: */{
-    _0: /* tuple */[
+    _0: [
       loc + (" id " + String(test_id.contents)),
       (function (param) {
           return {
-                  tag: /* ThrowAny */7,
+                  TAG: /* ThrowAny */7,
                   _0: x
                 };
         })

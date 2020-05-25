@@ -1,7 +1,6 @@
 'use strict';
 
 var Mt = require("./mt.js");
-var Block = require("../../lib/js/block.js");
 var Caml_obj = require("../../lib/js/caml_obj.js");
 
 var suites = {
@@ -15,11 +14,11 @@ var test_id = {
 function eq(loc, x, y) {
   test_id.contents = test_id.contents + 1 | 0;
   suites.contents = /* :: */{
-    _0: /* tuple */[
+    _0: [
       loc + (" id " + String(test_id.contents)),
       (function (param) {
           return {
-                  tag: /* Eq */0,
+                  TAG: /* Eq */0,
                   _0: x,
                   _1: y
                 };
@@ -33,7 +32,7 @@ function eq(loc, x, y) {
 function f(param) {
   var x = new Date();
   var y = new Date();
-  return /* tuple */[
+  return [
           Caml_obj.caml_greaterthan(y, x),
           Caml_obj.caml_lessthan(y, x),
           true

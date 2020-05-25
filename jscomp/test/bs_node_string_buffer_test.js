@@ -5,12 +5,12 @@ var $$Node = require("../../lib/js/node.js");
 function f(str) {
   var match = $$Node.test(str);
   if (match[0]) {
-    console.log(/* tuple */[
+    console.log([
           "buffer",
           Buffer.isBuffer(match[1])
         ]);
   } else {
-    console.log(/* tuple */[
+    console.log([
           "string",
           match[1]
         ]);

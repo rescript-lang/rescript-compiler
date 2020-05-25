@@ -2,7 +2,6 @@
 
 var Mt = require("./mt.js");
 var List = require("../../lib/js/list.js");
-var Block = require("../../lib/js/block.js");
 var Bytes = require("../../lib/js/bytes.js");
 var $$String = require("../../lib/js/string.js");
 var Caml_bytes = require("../../lib/js/caml_bytes.js");
@@ -134,66 +133,66 @@ function string_of_chars(x) {
 }
 
 Mt.from_pair_suites("String_test", /* :: */{
-      _0: /* tuple */[
+      _0: [
         "mutliple switch",
         (function (param) {
             return {
-                    tag: /* Eq */0,
+                    TAG: /* Eq */0,
                     _0: 9,
                     _1: ff("4")
                   };
           })
       ],
       _1: /* :: */{
-        _0: /* tuple */[
+        _0: [
           "int switch",
           (function (param) {
               return {
-                      tag: /* Eq */0,
+                      TAG: /* Eq */0,
                       _0: 9,
                       _1: gg(4)
                     };
             })
         ],
         _1: /* :: */{
-          _0: /* tuple */[
+          _0: [
             "escape_normal",
             (function (param) {
                 return {
-                        tag: /* Eq */0,
+                        TAG: /* Eq */0,
                         _0: "haha",
                         _1: $$String.escaped("haha")
                       };
               })
           ],
           _1: /* :: */{
-            _0: /* tuple */[
+            _0: [
               "escape_bytes",
               (function (param) {
                   return {
-                          tag: /* Eq */0,
+                          TAG: /* Eq */0,
                           _0: Bytes.of_string("haha"),
                           _1: Bytes.escaped(Bytes.of_string("haha"))
                         };
                 })
             ],
             _1: /* :: */{
-              _0: /* tuple */[
+              _0: [
                 "escape_quote",
                 (function (param) {
                     return {
-                            tag: /* Eq */0,
+                            TAG: /* Eq */0,
                             _0: "\\\"\\\"",
                             _1: $$String.escaped("\"\"")
                           };
                   })
               ],
               _1: /* :: */{
-                _0: /* tuple */[
+                _0: [
                   "rev_split_by_char",
                   (function (param) {
                       return {
-                              tag: /* Eq */0,
+                              TAG: /* Eq */0,
                               _0: /* :: */{
                                 _0: "",
                                 _1: /* :: */{
@@ -209,11 +208,11 @@ Mt.from_pair_suites("String_test", /* :: */{
                     })
                 ],
                 _1: /* :: */{
-                  _0: /* tuple */[
+                  _0: [
                     "File \"string_test.ml\", line 74, characters 2-9",
                     (function (param) {
                         return {
-                                tag: /* Eq */0,
+                                TAG: /* Eq */0,
                                 _0: /* :: */{
                                   _0: "aaaa",
                                   _1: /* [] */0
@@ -223,11 +222,11 @@ Mt.from_pair_suites("String_test", /* :: */{
                       })
                   ],
                   _1: /* :: */{
-                    _0: /* tuple */[
+                    _0: [
                       "xsplit",
                       (function (param) {
                           return {
-                                  tag: /* Eq */0,
+                                  TAG: /* Eq */0,
                                   _0: /* :: */{
                                     _0: "a",
                                     _1: /* :: */{
@@ -243,22 +242,22 @@ Mt.from_pair_suites("String_test", /* :: */{
                         })
                     ],
                     _1: /* :: */{
-                      _0: /* tuple */[
+                      _0: [
                         "split_empty",
                         (function (param) {
                             return {
-                                    tag: /* Eq */0,
+                                    TAG: /* Eq */0,
                                     _0: /* [] */0,
                                     _1: Ext_string_test.split(undefined, "", /* "_" */95)
                                   };
                           })
                       ],
                       _1: /* :: */{
-                        _0: /* tuple */[
+                        _0: [
                           "split_empty2",
                           (function (param) {
                               return {
-                                      tag: /* Eq */0,
+                                      TAG: /* Eq */0,
                                       _0: /* :: */{
                                         _0: "test_unsafe_obj_ffi_ppx.cmi",
                                         _1: /* [] */0
@@ -268,88 +267,88 @@ Mt.from_pair_suites("String_test", /* :: */{
                             })
                         ],
                         _1: /* :: */{
-                          _0: /* tuple */[
+                          _0: [
                             "rfind",
                             (function (param) {
                                 return {
-                                        tag: /* Eq */0,
+                                        TAG: /* Eq */0,
                                         _0: 7,
                                         _1: Ext_string_test.rfind("__", "__index__js")
                                       };
                               })
                           ],
                           _1: /* :: */{
-                            _0: /* tuple */[
+                            _0: [
                               "rfind_2",
                               (function (param) {
                                   return {
-                                          tag: /* Eq */0,
+                                          TAG: /* Eq */0,
                                           _0: 0,
                                           _1: Ext_string_test.rfind("__", "__index_js")
                                         };
                                 })
                             ],
                             _1: /* :: */{
-                              _0: /* tuple */[
+                              _0: [
                                 "rfind_3",
                                 (function (param) {
                                     return {
-                                            tag: /* Eq */0,
+                                            TAG: /* Eq */0,
                                             _0: -1,
                                             _1: Ext_string_test.rfind("__", "_index_js")
                                           };
                                   })
                               ],
                               _1: /* :: */{
-                                _0: /* tuple */[
+                                _0: [
                                   "find",
                                   (function (param) {
                                       return {
-                                              tag: /* Eq */0,
+                                              TAG: /* Eq */0,
                                               _0: 0,
                                               _1: Ext_string_test.find(undefined, "__", "__index__js")
                                             };
                                     })
                                 ],
                                 _1: /* :: */{
-                                  _0: /* tuple */[
+                                  _0: [
                                     "find_2",
                                     (function (param) {
                                         return {
-                                                tag: /* Eq */0,
+                                                TAG: /* Eq */0,
                                                 _0: 6,
                                                 _1: Ext_string_test.find(undefined, "__", "_index__js")
                                               };
                                       })
                                   ],
                                   _1: /* :: */{
-                                    _0: /* tuple */[
+                                    _0: [
                                       "find_3",
                                       (function (param) {
                                           return {
-                                                  tag: /* Eq */0,
+                                                  TAG: /* Eq */0,
                                                   _0: -1,
                                                   _1: Ext_string_test.find(undefined, "__", "_index_js")
                                                 };
                                         })
                                     ],
                                     _1: /* :: */{
-                                      _0: /* tuple */[
+                                      _0: [
                                         "of_char",
                                         (function (param) {
                                             return {
-                                                    tag: /* Eq */0,
+                                                    TAG: /* Eq */0,
                                                     _0: String.fromCharCode(/* "0" */48),
                                                     _1: Caml_bytes.bytes_to_string(Bytes.make(1, /* "0" */48))
                                                   };
                                           })
                                       ],
                                       _1: /* :: */{
-                                        _0: /* tuple */[
+                                        _0: [
                                           "of_chars",
                                           (function (param) {
                                               return {
-                                                      tag: /* Eq */0,
+                                                      TAG: /* Eq */0,
                                                       _0: string_of_chars(/* :: */{
                                                             _0: /* "0" */48,
                                                             _1: /* :: */{

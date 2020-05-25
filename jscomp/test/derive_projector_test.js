@@ -1,6 +1,5 @@
 'use strict';
 
-var Block = require("../../lib/js/block.js");
 
 function u_x(param) {
   return param.u_x;
@@ -16,14 +15,14 @@ function c_x(param) {
 
 function d_int(param_0) {
   return {
-          tag: /* D_int */0,
+          TAG: /* D_int */0,
           _0: param_0
         };
 }
 
 function d_tuple(param_0, param_1) {
   return {
-          tag: /* D_tuple */1,
+          TAG: /* D_tuple */1,
           _0: param_0,
           _1: param_1
         };
@@ -31,14 +30,14 @@ function d_tuple(param_0, param_1) {
 
 function newContent(param_0) {
   return {
-          tag: /* NewContent */2,
+          TAG: /* NewContent */2,
           _0: param_0
         };
 }
 
 function d_tweak(param_0) {
   return {
-          tag: /* D_tweak */3,
+          TAG: /* D_tweak */3,
           _0: param_0
         };
 }
@@ -52,32 +51,32 @@ function d(param) {
 }
 
 var v = {
-  tag: /* D_int */0,
+  TAG: /* D_int */0,
   _0: 3
 };
 
 var h_1 = /* :: */{
   _0: {
-    tag: /* D_int */0,
+    TAG: /* D_int */0,
     _0: 3
   },
   _1: /* :: */{
     _0: {
-      tag: /* D_tuple */1,
+      TAG: /* D_tuple */1,
       _0: 3,
       _1: "hgo"
     },
     _1: /* :: */{
       _0: {
-        tag: /* D_tweak */3,
-        _0: /* tuple */[
+        TAG: /* D_tweak */3,
+        _0: [
           3,
           "hgo"
         ]
       },
       _1: /* :: */{
         _0: {
-          tag: /* NewContent */2,
+          TAG: /* NewContent */2,
           _0: "3"
         },
         _1: /* [] */0

@@ -68,7 +68,7 @@ function tl_exn(x) {
   }
   throw {
         RE_EXN_ID: "Assert_failure",
-        _1: /* tuple */[
+        _1: [
           "recursive_records_test.ml",
           52,
           11
