@@ -7,31 +7,31 @@ var Genlex = require("../../lib/js/genlex.js");
 var Stream = require("../../lib/js/stream.js");
 var Caml_js_exceptions = require("../../lib/js/caml_js_exceptions.js");
 
-var lexer = Genlex.make_lexer(/* :: */[
-      "+",
-      /* :: */[
-        "-",
-        /* :: */[
-          "*",
-          /* :: */[
-            "/",
-            /* :: */[
-              "let",
-              /* :: */[
-                "=",
-                /* :: */[
-                  "(",
-                  /* :: */[
-                    ")",
-                    /* [] */0
-                  ]
-                ]
-              ]
-            ]
-          ]
-        ]
-      ]
-    ]);
+var lexer = Genlex.make_lexer(/* :: */{
+      _0: "+",
+      _1: /* :: */{
+        _0: "-",
+        _1: /* :: */{
+          _0: "*",
+          _1: /* :: */{
+            _0: "/",
+            _1: /* :: */{
+              _0: "let",
+              _1: /* :: */{
+                _0: "=",
+                _1: /* :: */{
+                  _0: "(",
+                  _1: /* :: */{
+                    _0: ")",
+                    _1: /* [] */0
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    });
 
 function to_list(s) {
   var _acc = /* [] */0;
@@ -48,10 +48,10 @@ function to_list(s) {
       }
       throw exn;
     }
-    _acc = /* :: */[
-      v,
-      acc
-    ];
+    _acc = /* :: */{
+      _0: v,
+      _1: acc
+    };
     continue ;
   };
 }
@@ -59,38 +59,60 @@ function to_list(s) {
 var suites_000 = /* tuple */[
   "lexer_stream_genlex",
   (function (param) {
-      return /* Eq */Block.__(0, [
-                /* :: */[
-                  /* Int */Block.__(2, [3]),
-                  /* :: */[
-                    /* Kwd */Block.__(0, ["("]),
-                    /* :: */[
-                      /* Int */Block.__(2, [3]),
-                      /* :: */[
-                        /* Kwd */Block.__(0, ["+"]),
-                        /* :: */[
-                          /* Int */Block.__(2, [2]),
-                          /* :: */[
-                            /* Int */Block.__(2, [-1]),
-                            /* :: */[
-                              /* Kwd */Block.__(0, [")"]),
-                              /* [] */0
-                            ]
-                          ]
-                        ]
-                      ]
-                    ]
-                  ]
-                ],
-                to_list(lexer(Stream.of_string("3(3 + 2 -1)")))
-              ]);
+      return {
+              tag: /* Eq */0,
+              _0: /* :: */{
+                _0: {
+                  tag: /* Int */2,
+                  _0: 3
+                },
+                _1: /* :: */{
+                  _0: {
+                    tag: /* Kwd */0,
+                    _0: "("
+                  },
+                  _1: /* :: */{
+                    _0: {
+                      tag: /* Int */2,
+                      _0: 3
+                    },
+                    _1: /* :: */{
+                      _0: {
+                        tag: /* Kwd */0,
+                        _0: "+"
+                      },
+                      _1: /* :: */{
+                        _0: {
+                          tag: /* Int */2,
+                          _0: 2
+                        },
+                        _1: /* :: */{
+                          _0: {
+                            tag: /* Int */2,
+                            _0: -1
+                          },
+                          _1: /* :: */{
+                            _0: {
+                              tag: /* Kwd */0,
+                              _0: ")"
+                            },
+                            _1: /* [] */0
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              },
+              _1: to_list(lexer(Stream.of_string("3(3 + 2 -1)")))
+            };
     })
 ];
 
-var suites = /* :: */[
-  suites_000,
-  /* [] */0
-];
+var suites = /* :: */{
+  _0: suites_000,
+  _1: /* [] */0
+};
 
 Mt.from_pair_suites("Genlex_test", suites);
 

@@ -24,18 +24,19 @@ function eq(loc, param) {
   var y = param[1];
   var x = param[0];
   test_id.contents = test_id.contents + 1 | 0;
-  suites.contents = /* :: */[
-    /* tuple */[
+  suites.contents = /* :: */{
+    _0: /* tuple */[
       loc + (" id " + String(test_id.contents)),
       (function (param) {
-          return /* Eq */Block.__(0, [
-                    x,
-                    y
-                  ]);
+          return {
+                  tag: /* Eq */0,
+                  _0: x,
+                  _1: y
+                };
         })
     ],
-    suites.contents
-  ];
+    _1: suites.contents
+  };
   
 }
 
@@ -54,27 +55,27 @@ eq("File \"ffi_js_test.ml\", line 32, characters 5-12", /* tuple */[
       $$higher_order(1)(2, 3)
     ]);
 
-var same_type_000 = /* :: */[
-  int_config,
-  /* :: */[
-    {
+var same_type_000 = /* :: */{
+  _0: int_config,
+  _1: /* :: */{
+    _0: {
       hi: 3,
       low: 32
     },
-    /* [] */0
-  ]
-];
+    _1: /* [] */0
+  }
+};
 
-var same_type_001 = /* :: */[
-  string_config,
-  /* :: */[
-    {
+var same_type_001 = /* :: */{
+  _0: string_config,
+  _1: /* :: */{
+    _0: {
       hi: 3,
       low: "32"
     },
-    /* [] */0
-  ]
-];
+    _1: /* [] */0
+  }
+};
 
 var same_type = /* tuple */[
   same_type_000,

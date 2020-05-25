@@ -17,31 +17,33 @@ var Caml_external_polyfill = require("../../lib/js/caml_external_polyfill.js");
 
 var tscanf_data_file = "tscanf_data";
 
-var tscanf_data_file_lines = /* :: */[
-  /* tuple */[
+var tscanf_data_file_lines = /* :: */{
+  _0: /* tuple */[
     "Objective",
     "Caml"
   ],
-  /* [] */0
-];
+  _1: /* [] */0
+};
 
 function create_tscanf_data(ob, lines) {
   var add_line = function (param) {
-    $$Buffer.add_string(ob, Curry._1(Printf.sprintf(/* Format */[
-                  /* Caml_string */Block.__(3, [
-                      /* No_padding */0,
-                      /* End_of_format */0
-                    ]),
-                  "%S"
-                ]), param[0]));
+    $$Buffer.add_string(ob, Curry._1(Printf.sprintf(/* Format */{
+                  _0: {
+                    tag: /* Caml_string */3,
+                    _0: /* No_padding */0,
+                    _1: /* End_of_format */0
+                  },
+                  _1: "%S"
+                }), param[0]));
     $$Buffer.add_string(ob, " -> ");
-    $$Buffer.add_string(ob, Curry._1(Printf.sprintf(/* Format */[
-                  /* Caml_string */Block.__(3, [
-                      /* No_padding */0,
-                      /* End_of_format */0
-                    ]),
-                  "%S"
-                ]), param[1]));
+    $$Buffer.add_string(ob, Curry._1(Printf.sprintf(/* Format */{
+                  _0: {
+                    tag: /* Caml_string */3,
+                    _0: /* No_padding */0,
+                    _1: /* End_of_format */0
+                  },
+                  _1: "%S"
+                }), param[1]));
     return $$Buffer.add_string(ob, ";\n");
   };
   return List.iter(add_line, lines);
@@ -63,32 +65,37 @@ function get_lines(fname) {
   };
   try {
     while(!Scanf.Scanning.end_of_input(ib)) {
-      Curry._1(Scanf.bscanf(ib, /* Format */[
-                /* Char_literal */Block.__(12, [
-                    /* " " */32,
-                    /* Caml_string */Block.__(3, [
-                        /* No_padding */0,
-                        /* String_literal */Block.__(11, [
-                            " -> ",
-                            /* Caml_string */Block.__(3, [
-                                /* No_padding */0,
-                                /* String_literal */Block.__(11, [
-                                    "; ",
-                                    /* End_of_format */0
-                                  ])
-                              ])
-                          ])
-                      ])
-                  ]),
-                " %S -> %S; "
-              ]), (function (x, y) {
-              l.contents = /* :: */[
-                /* tuple */[
+      Curry._1(Scanf.bscanf(ib, /* Format */{
+                _0: {
+                  tag: /* Char_literal */12,
+                  _0: /* " " */32,
+                  _1: {
+                    tag: /* Caml_string */3,
+                    _0: /* No_padding */0,
+                    _1: {
+                      tag: /* String_literal */11,
+                      _0: " -> ",
+                      _1: {
+                        tag: /* Caml_string */3,
+                        _0: /* No_padding */0,
+                        _1: {
+                          tag: /* String_literal */11,
+                          _0: "; ",
+                          _1: /* End_of_format */0
+                        }
+                      }
+                    }
+                  }
+                },
+                _1: " %S -> %S; "
+              }), (function (x, y) {
+              l.contents = /* :: */{
+                _0: /* tuple */[
                   x,
                   y
                 ],
-                l.contents
-              ];
+                _1: l.contents
+              };
               
             }));
     };
@@ -97,22 +104,26 @@ function get_lines(fname) {
   catch (raw_s){
     var s = Caml_js_exceptions.internalToOCamlException(raw_s);
     if (s.RE_EXN_ID === Scanf.Scan_failure) {
-      var s$1 = Curry._2(Printf.sprintf(/* Format */[
-                /* String_literal */Block.__(11, [
-                    "in file ",
-                    /* String */Block.__(2, [
-                        /* No_padding */0,
-                        /* String_literal */Block.__(11, [
-                            ", ",
-                            /* String */Block.__(2, [
-                                /* No_padding */0,
-                                /* End_of_format */0
-                              ])
-                          ])
-                      ])
-                  ]),
-                "in file %s, %s"
-              ]), fname, s._1);
+      var s$1 = Curry._2(Printf.sprintf(/* Format */{
+                _0: {
+                  tag: /* String_literal */11,
+                  _0: "in file ",
+                  _1: {
+                    tag: /* String */2,
+                    _0: /* No_padding */0,
+                    _1: {
+                      tag: /* String_literal */11,
+                      _0: ", ",
+                      _1: {
+                        tag: /* String */2,
+                        _0: /* No_padding */0,
+                        _1: /* End_of_format */0
+                      }
+                    }
+                  }
+                },
+                _1: "in file %s, %s"
+              }), fname, s._1);
       throw {
             RE_EXN_ID: "Failure",
             _1: s$1,
@@ -120,19 +131,22 @@ function get_lines(fname) {
           };
     }
     if (s.RE_EXN_ID === "End_of_file") {
-      var s$2 = Curry._1(Printf.sprintf(/* Format */[
-                /* String_literal */Block.__(11, [
-                    "in file ",
-                    /* String */Block.__(2, [
-                        /* No_padding */0,
-                        /* String_literal */Block.__(11, [
-                            ", unexpected end of file",
-                            /* End_of_format */0
-                          ])
-                      ])
-                  ]),
-                "in file %s, unexpected end of file"
-              ]), fname);
+      var s$2 = Curry._1(Printf.sprintf(/* Format */{
+                _0: {
+                  tag: /* String_literal */11,
+                  _0: "in file ",
+                  _1: {
+                    tag: /* String */2,
+                    _0: /* No_padding */0,
+                    _1: {
+                      tag: /* String_literal */11,
+                      _0: ", unexpected end of file",
+                      _1: /* End_of_format */0
+                    }
+                  }
+                },
+                _1: "in file %s, unexpected end of file"
+              }), fname);
       throw {
             RE_EXN_ID: "Failure",
             _1: s$2,
@@ -145,17 +159,19 @@ function get_lines(fname) {
 
 function add_digest_ib(ob, ib) {
   var scan_line = function (ib, f) {
-    return Curry._1(Scanf.bscanf(ib, /* Format */[
-                    /* Scan_char_set */Block.__(20, [
-                        undefined,
-                        "\xff\xdb\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff",
-                        /* Char_literal */Block.__(12, [
-                            /* "\n" */10,
-                            /* End_of_format */0
-                          ])
-                      ]),
-                    "%[^\n\r]\n"
-                  ]), f);
+    return Curry._1(Scanf.bscanf(ib, /* Format */{
+                    _0: {
+                      tag: /* Scan_char_set */20,
+                      _0: undefined,
+                      _1: "\xff\xdb\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff",
+                      _2: {
+                        tag: /* Char_literal */12,
+                        _0: /* "\n" */10,
+                        _1: /* End_of_format */0
+                      }
+                    },
+                    _1: "%[^\n\r]\n"
+                  }), f);
   };
   var output_line_digest = function (s) {
     $$Buffer.add_string(ob, s);

@@ -5,11 +5,11 @@ function map(f, param) {
   if (!param) {
     return /* [] */0;
   }
-  var r = f(param[0]);
-  return /* :: */[
-          r,
-          map(f, param[1])
-        ];
+  var r = f(param._0);
+  return /* :: */{
+          _0: r,
+          _1: map(f, param._1)
+        };
 }
 
 exports.map = map;

@@ -47,10 +47,10 @@ function read_lines(inc) {
     if (l === undefined) {
       return List.rev(acc);
     }
-    _acc = /* :: */[
-      l,
-      acc
-    ];
+    _acc = /* :: */{
+      _0: l,
+      _1: acc
+    };
     continue ;
   };
 }
@@ -70,10 +70,10 @@ function read_lines2(inc) {
       }
       throw exn;
     }
-    _acc = /* :: */[
-      l,
-      acc
-    ];
+    _acc = /* :: */{
+      _0: l,
+      _1: acc
+    };
     continue ;
   };
 }
@@ -82,10 +82,10 @@ function read_lines3(inc) {
   var loop = function (acc) {
     try {
       var l = Pervasives.input_line(inc);
-      return loop(/* :: */[
-                  l,
-                  acc
-                ]);
+      return loop(/* :: */{
+                  _0: l,
+                  _1: acc
+                });
     }
     catch (raw_exn){
       var exn = Caml_js_exceptions.internalToOCamlException(raw_exn);

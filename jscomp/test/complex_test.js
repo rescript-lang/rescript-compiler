@@ -7,20 +7,21 @@ var Complex = require("../../lib/js/complex.js");
 var suites_000 = /* tuple */[
   "basic_add",
   (function (param) {
-      return /* Eq */Block.__(0, [
-                {
-                  re: 2,
-                  im: 2
-                },
-                Complex.add(Complex.add(Complex.add(Complex.one, Complex.one), Complex.i), Complex.i)
-              ]);
+      return {
+              tag: /* Eq */0,
+              _0: {
+                re: 2,
+                im: 2
+              },
+              _1: Complex.add(Complex.add(Complex.add(Complex.one, Complex.one), Complex.i), Complex.i)
+            };
     })
 ];
 
-var suites = /* :: */[
-  suites_000,
-  /* [] */0
-];
+var suites = /* :: */{
+  _0: suites_000,
+  _1: /* [] */0
+};
 
 Mt.from_pair_suites("Complex_test", suites);
 

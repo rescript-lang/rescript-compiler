@@ -30,18 +30,19 @@ var test_id = {
 
 function eq(loc, x, y) {
   test_id.contents = test_id.contents + 1 | 0;
-  suites.contents = /* :: */[
-    /* tuple */[
+  suites.contents = /* :: */{
+    _0: /* tuple */[
       loc + (" id " + String(test_id.contents)),
       (function (param) {
-          return /* Eq */Block.__(0, [
-                    x,
-                    y
-                  ]);
+          return {
+                  tag: /* Eq */0,
+                  _0: x,
+                  _1: y
+                };
         })
     ],
-    suites.contents
-  ];
+    _1: suites.contents
+  };
   
 }
 
@@ -194,16 +195,16 @@ function intlist_init($$class) {
 
 var intlist = CamlinternalOO.make_class(shared, intlist_init);
 
-var l = Curry._2(intlist[0], undefined, /* :: */[
-      1,
-      /* :: */[
-        2,
-        /* :: */[
-          3,
-          /* [] */0
-        ]
-      ]
-    ]);
+var l = Curry._2(intlist[0], undefined, /* :: */{
+      _0: 1,
+      _1: /* :: */{
+        _0: 2,
+        _1: /* :: */{
+          _0: 3,
+          _1: /* [] */0
+        }
+      }
+    });
 
 eq("File \"class5_test.ml\", line 54, characters 5-12", 6, Caml_oo_curry.js3(-1010803711, 4, l, (function (x, y) {
             return x + y | 0;
@@ -233,16 +234,16 @@ function intlist2_init($$class) {
 
 var intlist2 = CamlinternalOO.make_class(shared, intlist2_init);
 
-var l$1 = Curry._2(intlist2[0], undefined, /* :: */[
-      1,
-      /* :: */[
-        2,
-        /* :: */[
-          3,
-          /* [] */0
-        ]
-      ]
-    ]);
+var l$1 = Curry._2(intlist2[0], undefined, /* :: */{
+      _0: 1,
+      _1: /* :: */{
+        _0: 2,
+        _1: /* :: */{
+          _0: 3,
+          _1: /* [] */0
+        }
+      }
+    });
 
 eq("File \"class5_test.ml\", line 67, characters 5-12", /* tuple */[
       6,

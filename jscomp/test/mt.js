@@ -18,11 +18,11 @@ function is_mocha(param) {
   if (!match) {
     return false;
   }
-  var match$1 = match[1];
+  var match$1 = match._1;
   if (!match$1) {
     return false;
   }
-  var exec = Path.basename(match$1[0]);
+  var exec = Path.basename(match$1._0);
   if (exec === "mocha") {
     return true;
   } else {
@@ -55,23 +55,23 @@ function close_enough(thresholdOpt, a, b) {
 function handleCode(spec) {
   switch (spec.tag | 0) {
     case /* Eq */0 :
-        Assert.deepEqual(spec[0], spec[1]);
+        Assert.deepEqual(spec._0, spec._1);
         return ;
     case /* Neq */1 :
-        Assert.notDeepEqual(spec[0], spec[1]);
+        Assert.notDeepEqual(spec._0, spec._1);
         return ;
     case /* StrictEq */2 :
-        Assert.strictEqual(spec[0], spec[1]);
+        Assert.strictEqual(spec._0, spec._1);
         return ;
     case /* StrictNeq */3 :
-        Assert.notStrictEqual(spec[0], spec[1]);
+        Assert.notStrictEqual(spec._0, spec._1);
         return ;
     case /* Ok */4 :
-        Assert.ok(spec[0]);
+        Assert.ok(spec._0);
         return ;
     case /* Approx */5 :
-        var b = spec[1];
-        var a = spec[0];
+        var b = spec._1;
+        var a = spec._0;
         if (!close_enough(undefined, a, b)) {
           Assert.deepEqual(a, b);
           return ;
@@ -79,21 +79,21 @@ function handleCode(spec) {
           return ;
         }
     case /* ApproxThreshold */6 :
-        var b$1 = spec[2];
-        var a$1 = spec[1];
-        if (!close_enough(spec[0], a$1, b$1)) {
+        var b$1 = spec._2;
+        var a$1 = spec._1;
+        if (!close_enough(spec._0, a$1, b$1)) {
           Assert.deepEqual(a$1, b$1);
           return ;
         } else {
           return ;
         }
     case /* ThrowAny */7 :
-        Assert.throws(spec[0]);
+        Assert.throws(spec._0);
         return ;
     case /* Fail */8 :
         return assert_fail("failed");
     case /* FailWith */9 :
-        return assert_fail(spec[0]);
+        return assert_fail(spec._0);
     
   }
 }
@@ -124,58 +124,58 @@ function from_pair_suites(name, suites) {
                       case /* Eq */0 :
                           console.log(/* tuple */[
                                 name,
-                                fn[0],
+                                fn._0,
                                 "eq?",
-                                fn[1]
+                                fn._1
                               ]);
                           return ;
                       case /* Neq */1 :
                           console.log(/* tuple */[
                                 name,
-                                fn[0],
+                                fn._0,
                                 "neq?",
-                                fn[1]
+                                fn._1
                               ]);
                           return ;
                       case /* StrictEq */2 :
                           console.log(/* tuple */[
                                 name,
-                                fn[0],
+                                fn._0,
                                 "strict_eq?",
-                                fn[1]
+                                fn._1
                               ]);
                           return ;
                       case /* StrictNeq */3 :
                           console.log(/* tuple */[
                                 name,
-                                fn[0],
+                                fn._0,
                                 "strict_neq?",
-                                fn[1]
+                                fn._1
                               ]);
                           return ;
                       case /* Ok */4 :
                           console.log(/* tuple */[
                                 name,
-                                fn[0],
+                                fn._0,
                                 "ok?"
                               ]);
                           return ;
                       case /* Approx */5 :
                           console.log(/* tuple */[
                                 name,
-                                fn[0],
+                                fn._0,
                                 "~",
-                                fn[1]
+                                fn._1
                               ]);
                           return ;
                       case /* ApproxThreshold */6 :
                           console.log(/* tuple */[
                                 name,
-                                fn[1],
+                                fn._1,
                                 "~",
-                                fn[2],
+                                fn._2,
                                 " (",
-                                fn[0],
+                                fn._0,
                                 ")"
                               ]);
                           return ;
@@ -185,7 +185,7 @@ function from_pair_suites(name, suites) {
                           console.log("failed");
                           return ;
                       case /* FailWith */9 :
-                          console.log("failed: " + fn[0]);
+                          console.log("failed: " + fn._0);
                           return ;
                       
                     }
@@ -223,46 +223,53 @@ function from_promise_suites(name, suites) {
 
 function eq_suites(test_id, suites, loc, x, y) {
   test_id.contents = test_id.contents + 1 | 0;
-  suites.contents = /* :: */[
-    /* tuple */[
+  suites.contents = /* :: */{
+    _0: /* tuple */[
       loc + (" id " + String(test_id.contents)),
       (function (param) {
-          return /* Eq */Block.__(0, [
-                    x,
-                    y
-                  ]);
+          return {
+                  tag: /* Eq */0,
+                  _0: x,
+                  _1: y
+                };
         })
     ],
-    suites.contents
-  ];
+    _1: suites.contents
+  };
   
 }
 
 function bool_suites(test_id, suites, loc, x) {
   test_id.contents = test_id.contents + 1 | 0;
-  suites.contents = /* :: */[
-    /* tuple */[
+  suites.contents = /* :: */{
+    _0: /* tuple */[
       loc + (" id " + String(test_id.contents)),
       (function (param) {
-          return /* Ok */Block.__(4, [x]);
+          return {
+                  tag: /* Ok */4,
+                  _0: x
+                };
         })
     ],
-    suites.contents
-  ];
+    _1: suites.contents
+  };
   
 }
 
 function throw_suites(test_id, suites, loc, x) {
   test_id.contents = test_id.contents + 1 | 0;
-  suites.contents = /* :: */[
-    /* tuple */[
+  suites.contents = /* :: */{
+    _0: /* tuple */[
       loc + (" id " + String(test_id.contents)),
       (function (param) {
-          return /* ThrowAny */Block.__(7, [x]);
+          return {
+                  tag: /* ThrowAny */7,
+                  _0: x
+                };
         })
     ],
-    suites.contents
-  ];
+    _1: suites.contents
+  };
   
 }
 

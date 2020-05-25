@@ -7,13 +7,13 @@ function is_number(_expr) {
     var expr = _expr;
     switch (expr.tag | 0) {
       case /* Val */0 :
-          if (expr[0].tag) {
+          if (expr._0.tag) {
             return false;
           } else {
             return true;
           }
       case /* Neg */1 :
-          _expr = expr[0];
+          _expr = expr._0;
           continue ;
       case /* Sum */2 :
       case /* Pow */3 :
@@ -66,7 +66,7 @@ function compare(context, state, _a, _b) {
           }
           break;
       case /* Neg */1 :
-          _a = a[0];
+          _a = a._0;
           continue ;
       case /* Sum */2 :
       case /* Pow */3 :
@@ -91,10 +91,10 @@ function compare(context, state, _a, _b) {
                 exit$2 = 4;
                 break;
             case /* Frac */4 :
-                na = a[0];
-                da = a[1];
-                nb = b[0];
-                db = b[1];
+                na = a._0;
+                da = a._1;
+                nb = b._0;
+                db = b._1;
                 exit = 2;
                 break;
             case /* Pow */3 :
@@ -113,10 +113,10 @@ function compare(context, state, _a, _b) {
                 exit$2 = 4;
                 break;
             case /* Gcd */5 :
-                na = a[0];
-                da = a[1];
-                nb = b[0];
-                db = b[1];
+                na = a._0;
+                da = a._1;
+                nb = b._0;
+                db = b._1;
                 exit = 2;
                 break;
             default:
@@ -127,7 +127,7 @@ function compare(context, state, _a, _b) {
     }
     if (exit$3 === 5) {
       if (b.tag === /* Neg */1) {
-        _b = b[0];
+        _b = b._0;
         continue ;
       }
       if (a.tag === /* Sum */2) {
@@ -186,15 +186,36 @@ function compare(context, state, _a, _b) {
   };
 }
 
-var a = /* Sum */Block.__(2, [/* :: */[
-      /* Val */Block.__(0, [/* Symbol */Block.__(1, ["a"])]),
-      /* :: */[
-        /* Val */Block.__(0, [/* Natural */Block.__(0, [2])]),
-        /* [] */0
-      ]
-    ]]);
+var a = {
+  tag: /* Sum */2,
+  _0: /* :: */{
+    _0: {
+      tag: /* Val */0,
+      _0: {
+        tag: /* Symbol */1,
+        _0: "a"
+      }
+    },
+    _1: /* :: */{
+      _0: {
+        tag: /* Val */0,
+        _0: {
+          tag: /* Natural */0,
+          _0: 2
+        }
+      },
+      _1: /* [] */0
+    }
+  }
+};
 
-var b = /* Val */Block.__(0, [/* Symbol */Block.__(1, ["x"])]);
+var b = {
+  tag: /* Val */0,
+  _0: {
+    tag: /* Symbol */1,
+    _0: "x"
+  }
+};
 
 console.log(compare(/* InSum */0, {
           complex: true

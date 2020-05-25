@@ -40,17 +40,18 @@ function f(g, h) {
 var suites_000 = /* tuple */[
   "eq_with",
   (function (param) {
-      return /* Eq */Block.__(0, [
-                v,
-                u_v
-              ]);
+      return {
+              tag: /* Eq */0,
+              _0: v,
+              _1: u_v
+            };
     })
 ];
 
-var suites = /* :: */[
-  suites_000,
-  /* [] */0
-];
+var suites = /* :: */{
+  _0: suites_000,
+  _1: /* [] */0
+};
 
 Mt.from_pair_suites("Record_with_test", suites);
 

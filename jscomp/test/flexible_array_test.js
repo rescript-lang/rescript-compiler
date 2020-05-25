@@ -13,15 +13,15 @@ function sub(_tr, _k) {
     var tr = _tr;
     if (tr) {
       if (k === 1) {
-        return tr[0];
+        return tr._0;
       }
       if (k % 2 === 0) {
         _k = k / 2 | 0;
-        _tr = tr[1];
+        _tr = tr._1;
         continue ;
       }
       _k = k / 2 | 0;
-      _tr = tr[2];
+      _tr = tr._2;
       continue ;
     }
     throw {
@@ -33,36 +33,36 @@ function sub(_tr, _k) {
 
 function update(tr, k, w) {
   if (tr) {
-    var r = tr[2];
-    var l = tr[1];
+    var r = tr._2;
+    var l = tr._1;
     if (k === 1) {
-      return /* Br */[
-              w,
-              l,
-              r
-            ];
+      return /* Br */{
+              _0: w,
+              _1: l,
+              _2: r
+            };
     }
-    var v = tr[0];
+    var v = tr._0;
     if (k % 2 === 0) {
-      return /* Br */[
-              v,
-              update(l, k / 2 | 0, w),
-              r
-            ];
+      return /* Br */{
+              _0: v,
+              _1: update(l, k / 2 | 0, w),
+              _2: r
+            };
     } else {
-      return /* Br */[
-              v,
-              l,
-              update(r, k / 2 | 0, w)
-            ];
+      return /* Br */{
+              _0: v,
+              _1: l,
+              _2: update(r, k / 2 | 0, w)
+            };
     }
   }
   if (k === 1) {
-    return /* Br */[
-            w,
-            /* Lf */0,
-            /* Lf */0
-          ];
+    return /* Br */{
+            _0: w,
+            _1: /* Lf */0,
+            _2: /* Lf */0
+          };
   }
   throw {
         RE_EXN_ID: "Not_found",
@@ -75,21 +75,21 @@ function $$delete(tr, n) {
     if (n === 1) {
       return /* Lf */0;
     }
-    var r = tr[2];
-    var l = tr[1];
-    var v = tr[0];
+    var r = tr._2;
+    var l = tr._1;
+    var v = tr._0;
     if (n % 2 === 0) {
-      return /* Br */[
-              v,
-              $$delete(l, n / 2 | 0),
-              r
-            ];
+      return /* Br */{
+              _0: v,
+              _1: $$delete(l, n / 2 | 0),
+              _2: r
+            };
     } else {
-      return /* Br */[
-              v,
-              l,
-              $$delete(r, n / 2 | 0)
-            ];
+      return /* Br */{
+              _0: v,
+              _1: l,
+              _2: $$delete(r, n / 2 | 0)
+            };
     }
   }
   throw {
@@ -100,31 +100,31 @@ function $$delete(tr, n) {
 
 function loext(tr, w) {
   if (tr) {
-    return /* Br */[
-            w,
-            loext(tr[2], tr[0]),
-            tr[1]
-          ];
+    return /* Br */{
+            _0: w,
+            _1: loext(tr._2, tr._0),
+            _2: tr._1
+          };
   } else {
-    return /* Br */[
-            w,
-            /* Lf */0,
-            /* Lf */0
-          ];
+    return /* Br */{
+            _0: w,
+            _1: /* Lf */0,
+            _2: /* Lf */0
+          };
   }
 }
 
 function lorem(tr) {
   if (tr) {
-    var l = tr[1];
+    var l = tr._1;
     if (l) {
-      return /* Br */[
-              l[0],
-              tr[2],
-              lorem(l)
-            ];
+      return /* Br */{
+              _0: l._0,
+              _1: tr._2,
+              _2: lorem(l)
+            };
     }
-    if (!tr[2]) {
+    if (!tr._2) {
       return /* Lf */0;
     }
     throw {
@@ -229,13 +229,14 @@ function pp(fmt, s) {
     v = v + (", " + String(get(s, i)));
   }
   v = v + "]";
-  return Curry._1(Format.fprintf(fmt, /* Format */[
-                  /* String */Block.__(2, [
-                      /* No_padding */0,
-                      /* End_of_format */0
-                    ]),
-                  "%s"
-                ]), v);
+  return Curry._1(Format.fprintf(fmt, /* Format */{
+                  _0: {
+                    tag: /* String */2,
+                    _0: /* No_padding */0,
+                    _1: /* End_of_format */0
+                  },
+                  _1: "%s"
+                }), v);
 }
 
 function filter_from(i, p, s) {

@@ -71,25 +71,30 @@ function chop_extension(locOpt, name) {
   catch (raw_exn){
     var exn = Caml_js_exceptions.internalToOCamlException(raw_exn);
     if (exn.RE_EXN_ID === "Invalid_argument") {
-      return Curry._2(Format.ksprintf(Pervasives.invalid_arg, /* Format */[
-                      /* String_literal */Block.__(11, [
-                          "Filename.chop_extension ( ",
-                          /* String */Block.__(2, [
-                              /* No_padding */0,
-                              /* String_literal */Block.__(11, [
-                                  " : ",
-                                  /* String */Block.__(2, [
-                                      /* No_padding */0,
-                                      /* String_literal */Block.__(11, [
-                                          " )",
-                                          /* End_of_format */0
-                                        ])
-                                    ])
-                                ])
-                            ])
-                        ]),
-                      "Filename.chop_extension ( %s : %s )"
-                    ]), loc, name);
+      return Curry._2(Format.ksprintf(Pervasives.invalid_arg, /* Format */{
+                      _0: {
+                        tag: /* String_literal */11,
+                        _0: "Filename.chop_extension ( ",
+                        _1: {
+                          tag: /* String */2,
+                          _0: /* No_padding */0,
+                          _1: {
+                            tag: /* String_literal */11,
+                            _0: " : ",
+                            _1: {
+                              tag: /* String */2,
+                              _0: /* No_padding */0,
+                              _1: {
+                                tag: /* String_literal */11,
+                                _0: " )",
+                                _1: /* End_of_format */0
+                              }
+                            }
+                          }
+                        }
+                      },
+                      _1: "Filename.chop_extension ( %s : %s )"
+                    }), loc, name);
     }
     throw exn;
   }
@@ -119,9 +124,9 @@ function relative_path(file_or_dir_1, file_or_dir_2) {
     while(true) {
       var dir2 = _dir2;
       var dir1 = _dir1;
-      if (dir1 && dir2 && dir1[0] === dir2[0]) {
-        _dir2 = dir2[1];
-        _dir1 = dir1[1];
+      if (dir1 && dir2 && dir1._0 === dir2._0) {
+        _dir2 = dir2._1;
+        _dir1 = dir1._1;
         continue ;
       }
       return Pervasives.$at(List.map((function (param) {
@@ -130,13 +135,13 @@ function relative_path(file_or_dir_1, file_or_dir_2) {
     };
   };
   var ys = go(dir1, dir2);
-  if (ys && ys[0] === node_parent) {
+  if (ys && ys._0 === node_parent) {
     return $$String.concat(node_sep, ys);
   } else {
-    return $$String.concat(node_sep, /* :: */[
-                node_current,
-                ys
-              ]);
+    return $$String.concat(node_sep, /* :: */{
+                _0: node_current,
+                _1: ys
+              });
   }
 }
 
@@ -163,16 +168,18 @@ function node_relative_path(node_modules_shorten, file1, dep_file) {
     while(true) {
       var i = _i;
       if (i >= len) {
-        return Curry._1(Ext_pervasives_test.failwithf("File \"ext_filename_test.ml\", line 162, characters 43-50", /* Format */[
-                        /* String_literal */Block.__(11, [
-                            "invalid path: ",
-                            /* String */Block.__(2, [
-                                /* No_padding */0,
-                                /* End_of_format */0
-                              ])
-                          ]),
-                        "invalid path: %s"
-                      ]), file2);
+        return Curry._1(Ext_pervasives_test.failwithf("File \"ext_filename_test.ml\", line 162, characters 43-50", /* Format */{
+                        _0: {
+                          tag: /* String_literal */11,
+                          _0: "invalid path: ",
+                          _1: {
+                            tag: /* String */2,
+                            _0: /* No_padding */0,
+                            _1: /* End_of_format */0
+                          }
+                        },
+                        _1: "invalid path: %s"
+                      }), file2);
       }
       var curr_char = file2.charCodeAt(i);
       if (!(curr_char === os_path_separator_char || curr_char === /* "." */46)) {
@@ -193,19 +200,22 @@ function find_root_filename(_cwd, filename) {
     }
     var cwd$prime = Curry._1(Filename.dirname, cwd);
     if (cwd$prime.length >= cwd.length) {
-      return Curry._2(Ext_pervasives_test.failwithf("File \"ext_filename_test.ml\", line 205, characters 13-20", /* Format */[
-                      /* String */Block.__(2, [
-                          /* No_padding */0,
-                          /* String_literal */Block.__(11, [
-                              " not found from ",
-                              /* String */Block.__(2, [
-                                  /* No_padding */0,
-                                  /* End_of_format */0
-                                ])
-                            ])
-                        ]),
-                      "%s not found from %s"
-                    ]), filename, cwd);
+      return Curry._2(Ext_pervasives_test.failwithf("File \"ext_filename_test.ml\", line 205, characters 13-20", /* Format */{
+                      _0: {
+                        tag: /* String */2,
+                        _0: /* No_padding */0,
+                        _1: {
+                          tag: /* String_literal */11,
+                          _0: " not found from ",
+                          _1: {
+                            tag: /* String */2,
+                            _0: /* No_padding */0,
+                            _1: /* End_of_format */0
+                          }
+                        }
+                      },
+                      _1: "%s not found from %s"
+                    }), filename, cwd);
     }
     _cwd = cwd$prime;
     continue ;
@@ -264,10 +274,10 @@ function split_aux(p) {
       _p = dir;
       continue ;
     }
-    _acc = /* :: */[
-      new_path,
-      acc
-    ];
+    _acc = /* :: */{
+      _0: new_path,
+      _1: acc
+    };
     _p = dir;
     continue ;
   };
@@ -287,19 +297,19 @@ function rel_normalized_absolute_path(from, to_) {
     var xss = _xss;
     if (!xss) {
       if (yss) {
-        return List.fold_left(Filename.concat, yss[0], yss[1]);
+        return List.fold_left(Filename.concat, yss._0, yss._1);
       } else {
         return Ext_string_test.empty;
       }
     }
-    var xs = xss[1];
+    var xs = xss._1;
     if (!yss) {
       return List.fold_left((function (acc, param) {
                     return Filename.concat(acc, Ext_string_test.parent_dir_lit);
                   }), Ext_string_test.parent_dir_lit, xs);
     }
-    if (xss[0] === yss[0]) {
-      _yss = yss[1];
+    if (xss._0 === yss._0) {
+      _yss = yss._1;
       _xss = xs;
       continue ;
     }
@@ -313,7 +323,7 @@ function rel_normalized_absolute_path(from, to_) {
 function normalize_absolute_path(x) {
   var drop_if_exist = function (xs) {
     if (xs) {
-      return xs[1];
+      return xs._1;
     } else {
       return /* [] */0;
     }
@@ -325,8 +335,8 @@ function normalize_absolute_path(x) {
       if (!paths) {
         return acc;
       }
-      var xs = paths[1];
-      var x = paths[0];
+      var xs = paths._1;
+      var x = paths._0;
       if (x === Ext_string_test.current_dir_lit) {
         _paths = xs;
         continue ;
@@ -337,10 +347,10 @@ function normalize_absolute_path(x) {
         continue ;
       }
       _paths = xs;
-      _acc = /* :: */[
-        x,
-        acc
-      ];
+      _acc = /* :: */{
+        _0: x,
+        _1: acc
+      };
       continue ;
     };
   };
@@ -348,16 +358,16 @@ function normalize_absolute_path(x) {
   var root = match[0];
   var rev_paths = normalize_list(/* [] */0, match[1]);
   if (rev_paths) {
-    var _acc = rev_paths[0];
-    var _rev_paths = rev_paths[1];
+    var _acc = rev_paths._0;
+    var _rev_paths = rev_paths._1;
     while(true) {
       var rev_paths$1 = _rev_paths;
       var acc = _acc;
       if (!rev_paths$1) {
         return Filename.concat(root, acc);
       }
-      _rev_paths = rev_paths$1[1];
-      _acc = Filename.concat(rev_paths$1[0], acc);
+      _rev_paths = rev_paths$1._1;
+      _acc = Filename.concat(rev_paths$1._0, acc);
       continue ;
     };
   } else {

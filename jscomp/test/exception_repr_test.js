@@ -18,18 +18,19 @@ var test_id = {
 
 function eq(loc, x, y) {
   test_id.contents = test_id.contents + 1 | 0;
-  suites.contents = /* :: */[
-    /* tuple */[
+  suites.contents = /* :: */{
+    _0: /* tuple */[
       loc + (" id " + String(test_id.contents)),
       (function (param) {
-          return /* Eq */Block.__(0, [
-                    x,
-                    y
-                  ]);
+          return {
+                  tag: /* Eq */0,
+                  _0: x,
+                  _1: y
+                };
         })
     ],
-    suites.contents
-  ];
+    _1: suites.contents
+  };
   
 }
 
@@ -43,21 +44,24 @@ Printexc.register_printer(function (s) {
       if (s.RE_EXN_ID === Hi) {
         return "hey";
       } else if (s.RE_EXN_ID === A) {
-        return Curry._1(Format.asprintf(/* Format */[
-                        /* String_literal */Block.__(11, [
-                            "A(",
-                            /* Int */Block.__(4, [
-                                /* Int_d */0,
-                                /* No_padding */0,
-                                /* No_precision */0,
-                                /* Char_literal */Block.__(12, [
-                                    /* ")" */41,
-                                    /* End_of_format */0
-                                  ])
-                              ])
-                          ]),
-                        "A(%d)"
-                      ]), s._1);
+        return Curry._1(Format.asprintf(/* Format */{
+                        _0: {
+                          tag: /* String_literal */11,
+                          _0: "A(",
+                          _1: {
+                            tag: /* Int */4,
+                            _0: /* Int_d */0,
+                            _1: /* No_padding */0,
+                            _2: /* No_precision */0,
+                            _3: {
+                              tag: /* Char_literal */12,
+                              _0: /* ")" */41,
+                              _1: /* End_of_format */0
+                            }
+                          }
+                        },
+                        _1: "A(%d)"
+                      }), s._1);
       } else {
         return ;
       }

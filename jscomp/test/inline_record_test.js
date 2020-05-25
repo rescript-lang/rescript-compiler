@@ -17,28 +17,32 @@ function eq(loc, x, y) {
   return Mt.eq_suites(test_id, suites, loc, x, y);
 }
 
-var v = /* A0 */Block.__(0, [
-    /* lbl */3,
-    /* more : [] */0
-  ]);
+var v = {
+  tag: /* A0 */0,
+  lbl: 3,
+  more: /* [] */0
+};
 
-var v1 = /* A1 */Block.__(1, [/* more : :: */[
-      1,
-      /* :: */[
-        2,
-        /* [] */0
-      ]
-    ]]);
+var v1 = {
+  tag: /* A1 */1,
+  more: /* :: */{
+    _0: 1,
+    _1: /* :: */{
+      _0: 2,
+      _1: /* [] */0
+    }
+  }
+};
 
 function f(x) {
   if (x.tag) {
     return List.fold_left((function (prim, prim$1) {
                   return prim + prim$1 | 0;
-                }), 0, x[/* more */0]);
+                }), 0, x.more);
   } else {
     return List.fold_left((function (prim, prim$1) {
                   return prim + prim$1 | 0;
-                }), x[/* lbl */0], x[/* more */1]);
+                }), x.lbl, x.more);
   }
 }
 
@@ -78,20 +82,24 @@ eq("File \"inline_record_test.ml\", line 51, characters 6-13", tmp, 3);
 
 function ff(x) {
   if (x.tag) {
-    x[/* z */0] = x[/* z */0] + 2 | 0;
+    x.z = x.z + 2 | 0;
   } else {
-    x[/* x */0] = x[/* x */0] + 1 | 0;
+    x.x = x.x + 1 | 0;
   }
   
 }
 
-var v4 = /* A0 */Block.__(0, [
-    /* x */0,
-    /* y */0,
-    /* z */0
-  ]);
+var v4 = {
+  tag: /* A0 */0,
+  x: 0,
+  y: 0,
+  z: 0
+};
 
-var v5 = /* A1 */Block.__(1, [/* z */0]);
+var v5 = {
+  tag: /* A1 */1,
+  z: 0
+};
 
 for(var i = 0; i <= 10; ++i){
   ff(v4);
@@ -112,14 +120,14 @@ if (v4.tag) {
       };
 }
 
-tmp$1 = v4[/* x */0];
+tmp$1 = v4.x;
 
 eq("File \"inline_record_test.ml\", line 69, characters 6-13", tmp$1, 11);
 
 var tmp$2;
 
 if (v5.tag) {
-  tmp$2 = v5[/* z */0];
+  tmp$2 = v5.z;
 } else {
   throw {
         RE_EXN_ID: "Assert_failure",
@@ -176,10 +184,10 @@ eq("File \"inline_record_test.ml\", line 87, characters 6-13", tmp$3, 11);
 
 function ff1(x) {
   if (x) {
-    return /* A0 */[
-            /* lbl */x[/* lbl */0] + 1 | 0,
-            /* more */x[/* more */1]
-          ];
+    return /* A0 */{
+            lbl: x.lbl + 1 | 0,
+            more: x.more
+          };
   } else {
     return /* A1 */0;
   }
@@ -187,15 +195,15 @@ function ff1(x) {
 
 Mt.from_pair_suites("Inline_record_test", suites.contents);
 
-var v2 = /* A0 */[
-  /* lbl */3,
-  /* more : [] */0
-];
+var v2 = /* A0 */{
+  lbl: 3,
+  more: /* [] */0
+};
 
-var vvv = /* A0 */[
-  /* lbl */3,
-  /* more : [] */0
-];
+var vvv = /* A0 */{
+  lbl: 3,
+  more: /* [] */0
+};
 
 exports.suites = suites;
 exports.test_id = test_id;

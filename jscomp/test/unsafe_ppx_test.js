@@ -53,51 +53,55 @@ var empty = Object.keys(3);
 
 var v = $$test(1, 2);
 
-Mt.from_pair_suites("Unsafe_ppx_test", /* :: */[
-      /* tuple */[
+Mt.from_pair_suites("Unsafe_ppx_test", /* :: */{
+      _0: /* tuple */[
         "unsafe_max",
         (function (param) {
-            return /* Eq */Block.__(0, [
-                      2,
-                      max(1, 2)
-                    ]);
+            return {
+                    tag: /* Eq */0,
+                    _0: 2,
+                    _1: max(1, 2)
+                  };
           })
       ],
-      /* :: */[
-        /* tuple */[
+      _1: /* :: */{
+        _0: /* tuple */[
           "unsafe_test",
           (function (param) {
-              return /* Eq */Block.__(0, [
-                        3,
-                        v
-                      ]);
+              return {
+                      tag: /* Eq */0,
+                      _0: 3,
+                      _1: v
+                    };
             })
         ],
-        /* :: */[
-          /* tuple */[
+        _1: /* :: */{
+          _0: /* tuple */[
             "unsafe_max2",
             (function (param) {
-                return /* Eq */Block.__(0, [
-                          2,
-                          Math.max(1, 2)
-                        ]);
+                return {
+                        tag: /* Eq */0,
+                        _0: 2,
+                        _1: Math.max(1, 2)
+                      };
               })
           ],
-          /* :: */[
-            /* tuple */[
+          _1: /* :: */{
+            _0: /* tuple */[
               "ffi_keys",
               (function (param) {
-                  return /* Eq */Block.__(0, [
-                            ["a"],
-                            Ffi_js_test.keys(({a : 3}))
-                          ]);
+                  return {
+                          tag: /* Eq */0,
+                          _0: ["a"],
+                          _1: Ffi_js_test.keys(({a : 3}))
+                        };
                 })
             ],
-            /* [] */0
-          ]
-        ]
-      ]
-    ]);
+            _1: /* [] */0
+          }
+        }
+      }
+    });
 
 exports.x = x;
 exports.max = max;

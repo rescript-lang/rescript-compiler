@@ -15,22 +15,32 @@ function c_x(param) {
 }
 
 function d_int(param_0) {
-  return /* D_int */Block.__(0, [param_0]);
+  return {
+          tag: /* D_int */0,
+          _0: param_0
+        };
 }
 
 function d_tuple(param_0, param_1) {
-  return /* D_tuple */Block.__(1, [
-            param_0,
-            param_1
-          ]);
+  return {
+          tag: /* D_tuple */1,
+          _0: param_0,
+          _1: param_1
+        };
 }
 
 function newContent(param_0) {
-  return /* NewContent */Block.__(2, [param_0]);
+  return {
+          tag: /* NewContent */2,
+          _0: param_0
+        };
 }
 
 function d_tweak(param_0) {
-  return /* D_tweak */Block.__(3, [param_0]);
+  return {
+          tag: /* D_tweak */3,
+          _0: param_0
+        };
 }
 
 function u_X(param) {
@@ -41,39 +51,56 @@ function d(param) {
   return param.d;
 }
 
-var v = /* D_int */Block.__(0, [3]);
+var v = {
+  tag: /* D_int */0,
+  _0: 3
+};
 
-var h_001 = /* :: */[
-  /* D_int */Block.__(0, [3]),
-  /* :: */[
-    /* D_tuple */Block.__(1, [
-        3,
-        "hgo"
-      ]),
-    /* :: */[
-      /* D_tweak */Block.__(3, [/* tuple */[
-            3,
-            "hgo"
-          ]]),
-      /* :: */[
-        /* NewContent */Block.__(2, ["3"]),
-        /* [] */0
-      ]
-    ]
-  ]
-];
+var h_001 = /* :: */{
+  _0: {
+    tag: /* D_int */0,
+    _0: 3
+  },
+  _1: /* :: */{
+    _0: {
+      tag: /* D_tuple */1,
+      _0: 3,
+      _1: "hgo"
+    },
+    _1: /* :: */{
+      _0: {
+        tag: /* D_tweak */3,
+        _0: /* tuple */[
+          3,
+          "hgo"
+        ]
+      },
+      _1: /* :: */{
+        _0: {
+          tag: /* NewContent */2,
+          _0: "3"
+        },
+        _1: /* [] */0
+      }
+    }
+  }
+};
 
-var h = /* :: */[
-  /* D_empty */0,
-  h_001
-];
+var h = /* :: */{
+  _0: /* D_empty */0,
+  _1: h_001
+};
 
 function xx(param_0) {
-  return /* Xx */[param_0];
+  return /* Xx */{
+          _0: param_0
+        };
 }
 
 function a(param_0) {
-  return /* A */[param_0];
+  return /* A */{
+          _0: param_0
+        };
 }
 
 var d_empty = /* D_empty */0;

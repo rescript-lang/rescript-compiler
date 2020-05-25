@@ -7,41 +7,44 @@ var Pervasives = require("../../lib/js/pervasives.js");
 var suites_000 = /* tuple */[
   "string_of_float_1",
   (function (param) {
-      return /* Eq */Block.__(0, [
-                "10.",
-                Pervasives.string_of_float(10)
-              ]);
+      return {
+              tag: /* Eq */0,
+              _0: "10.",
+              _1: Pervasives.string_of_float(10)
+            };
     })
 ];
 
-var suites_001 = /* :: */[
-  /* tuple */[
+var suites_001 = /* :: */{
+  _0: /* tuple */[
     "string_of_int",
     (function (param) {
-        return /* Eq */Block.__(0, [
-                  "10",
-                  String(10)
-                ]);
+        return {
+                tag: /* Eq */0,
+                _0: "10",
+                _1: String(10)
+              };
       })
   ],
-  /* :: */[
-    /* tuple */[
+  _1: /* :: */{
+    _0: /* tuple */[
       "valid_float_lexem",
       (function (param) {
-          return /* Eq */Block.__(0, [
-                    "10.",
-                    Pervasives.valid_float_lexem("10")
-                  ]);
+          return {
+                  tag: /* Eq */0,
+                  _0: "10.",
+                  _1: Pervasives.valid_float_lexem("10")
+                };
         })
     ],
-    /* [] */0
-  ]
-];
+    _1: /* [] */0
+  }
+};
 
-var suites = /* :: */[
-  suites_000,
-  suites_001
-];
+var suites = /* :: */{
+  _0: suites_000,
+  _1: suites_001
+};
 
 Mt.from_pair_suites("Of_string_test", suites);
 

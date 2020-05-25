@@ -14,22 +14,23 @@ var counter = {
 function add_test(loc, test) {
   counter.contents = counter.contents + 1 | 0;
   var id = loc + (" id " + String(counter.contents));
-  suites.contents = /* :: */[
-    /* tuple */[
+  suites.contents = /* :: */{
+    _0: /* tuple */[
       id,
       test
     ],
-    suites.contents
-  ];
+    _1: suites.contents
+  };
   
 }
 
 function eq(loc, x, y) {
   return add_test(loc, (function (param) {
-                return /* Eq */Block.__(0, [
-                          x,
-                          y
-                        ]);
+                return {
+                        tag: /* Eq */0,
+                        _0: x,
+                        _1: y
+                      };
               }));
 }
 

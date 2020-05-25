@@ -10,42 +10,42 @@ var v_ice_cream3_000 = {
   num: 3
 };
 
-var v_ice_cream3_001 = /* :: */[
-  {
+var v_ice_cream3_001 = /* :: */{
+  _0: {
     flavor: "x",
     num: 3
   },
-  /* :: */[
-    {
+  _1: /* :: */{
+    _0: {
       flavor: "vanilla",
       num: 3
     },
-    /* [] */0
-  ]
-];
+    _1: /* [] */0
+  }
+};
 
-var v_ice_cream3 = /* :: */[
-  v_ice_cream3_000,
-  v_ice_cream3_001
-];
+var v_ice_cream3 = /* :: */{
+  _0: v_ice_cream3_000,
+  _1: v_ice_cream3_001
+};
 
 var v_ice_cream4_000 = {
   flavor: "vanilla",
   num: 3
 };
 
-var v_ice_cream4_001 = /* :: */[
-  {
+var v_ice_cream4_001 = /* :: */{
+  _0: {
     flavor: "x",
     num: 3
   },
-  /* [] */0
-];
+  _1: /* [] */0
+};
 
-var v_ice_cream4 = /* :: */[
-  v_ice_cream4_000,
-  v_ice_cream4_001
-];
+var v_ice_cream4 = /* :: */{
+  _0: v_ice_cream4_000,
+  _1: v_ice_cream4_001
+};
 
 var vv = {
   x: 3
@@ -61,22 +61,22 @@ var int_expect2 = {
 
 var int_expects_000 = { };
 
-var int_expects_001 = /* :: */[
-  {
+var int_expects_001 = /* :: */{
+  _0: {
     x: 2
   },
-  /* :: */[
-    {
+  _1: /* :: */{
+    _0: {
       x: 3
     },
-    /* [] */0
-  ]
-];
+    _1: /* [] */0
+  }
+};
 
-var int_expects = /* :: */[
-  int_expects_000,
-  int_expects_001
-];
+var int_expects = /* :: */{
+  _0: int_expects_000,
+  _1: int_expects_001
+};
 
 var mk_ice = {
   flavour: "vanilla",
@@ -118,22 +118,22 @@ var v_mk7_000 = {
   y: 3
 };
 
-var v_mk7_001 = /* :: */[
-  {
+var v_mk7_001 = /* :: */{
+  _0: {
     y: 2
   },
-  /* :: */[
-    {
+  _1: /* :: */{
+    _0: {
       y: 2
     },
-    /* [] */0
-  ]
-];
+    _1: /* [] */0
+  }
+};
 
-var v_mk7 = /* :: */[
-  v_mk7_000,
-  v_mk7_001
-];
+var v_mk7 = /* :: */{
+  _0: v_mk7_000,
+  _1: v_mk7_001
+};
 
 again("a", 3);
 

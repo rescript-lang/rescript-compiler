@@ -14,12 +14,12 @@ function f(X, xs) {
             });
 }
 
-Belt_List.forEachU(/* :: */[
-      {
+Belt_List.forEachU(/* :: */{
+      _0: {
         x: 3
       },
-      /* [] */0
-    ], (function (x) {
+      _1: /* [] */0
+    }, (function (x) {
         console.log(x.x);
         
       }));

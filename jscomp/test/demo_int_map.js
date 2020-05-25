@@ -3,7 +3,7 @@
 
 function height(param) {
   if (param) {
-    return param[/* h */4];
+    return param.h;
   } else {
     return 0;
   }
@@ -12,29 +12,29 @@ function height(param) {
 function create(l, x, d, r) {
   var hl = height(l);
   var hr = height(r);
-  return /* Node */[
-          /* l */l,
-          /* v */x,
-          /* d */d,
-          /* r */r,
-          /* h */hl >= hr ? hl + 1 | 0 : hr + 1 | 0
-        ];
+  return /* Node */{
+          l: l,
+          v: x,
+          d: d,
+          r: r,
+          h: hl >= hr ? hl + 1 | 0 : hr + 1 | 0
+        };
 }
 
 function bal(l, x, d, r) {
-  var hl = l ? l[/* h */4] : 0;
-  var hr = r ? r[/* h */4] : 0;
+  var hl = l ? l.h : 0;
+  var hr = r ? r.h : 0;
   if (hl > (hr + 2 | 0)) {
     if (l) {
-      var lr = l[/* r */3];
-      var ld = l[/* d */2];
-      var lv = l[/* v */1];
-      var ll = l[/* l */0];
+      var lr = l.r;
+      var ld = l.d;
+      var lv = l.v;
+      var ll = l.l;
       if (height(ll) >= height(lr)) {
         return create(ll, lv, ld, create(lr, x, d, r));
       }
       if (lr) {
-        return create(create(ll, lv, ld, lr[/* l */0]), lr[/* v */1], lr[/* d */2], create(lr[/* r */3], x, d, r));
+        return create(create(ll, lv, ld, lr.l), lr.v, lr.d, create(lr.r, x, d, r));
       }
       throw {
             RE_EXN_ID: "Invalid_argument",
@@ -49,24 +49,24 @@ function bal(l, x, d, r) {
         };
   }
   if (hr <= (hl + 2 | 0)) {
-    return /* Node */[
-            /* l */l,
-            /* v */x,
-            /* d */d,
-            /* r */r,
-            /* h */hl >= hr ? hl + 1 | 0 : hr + 1 | 0
-          ];
+    return /* Node */{
+            l: l,
+            v: x,
+            d: d,
+            r: r,
+            h: hl >= hr ? hl + 1 | 0 : hr + 1 | 0
+          };
   }
   if (r) {
-    var rr = r[/* r */3];
-    var rd = r[/* d */2];
-    var rv = r[/* v */1];
-    var rl = r[/* l */0];
+    var rr = r.r;
+    var rd = r.d;
+    var rv = r.v;
+    var rl = r.l;
     if (height(rr) >= height(rl)) {
       return create(create(l, x, d, rl), rv, rd, rr);
     }
     if (rl) {
-      return create(create(l, x, d, rl[/* l */0]), rl[/* v */1], rl[/* d */2], create(rl[/* r */3], rv, rd, rr));
+      return create(create(l, x, d, rl.l), rl.v, rl.d, create(rl.r, rv, rd, rr));
     }
     throw {
           RE_EXN_ID: "Invalid_argument",
@@ -83,30 +83,30 @@ function bal(l, x, d, r) {
 
 function add(x, data, m) {
   if (!m) {
-    return /* Node */[
-            /* l : Empty */0,
-            /* v */x,
-            /* d */data,
-            /* r : Empty */0,
-            /* h */1
-          ];
+    return /* Node */{
+            l: /* Empty */0,
+            v: x,
+            d: data,
+            r: /* Empty */0,
+            h: 1
+          };
   }
-  var r = m[/* r */3];
-  var d = m[/* d */2];
-  var v = m[/* v */1];
-  var l = m[/* l */0];
+  var r = m.r;
+  var d = m.d;
+  var v = m.v;
+  var l = m.l;
   var c = x - v | 0;
   if (c === 0) {
     if (d === data) {
       return m;
     } else {
-      return /* Node */[
-              /* l */l,
-              /* v */x,
-              /* d */data,
-              /* r */r,
-              /* h */m[/* h */4]
-            ];
+      return /* Node */{
+              l: l,
+              v: x,
+              d: data,
+              r: r,
+              h: m.h
+            };
     }
   }
   if (c < 0) {
@@ -129,11 +129,11 @@ function find(x, _param) {
   while(true) {
     var param = _param;
     if (param) {
-      var c = x - param[/* v */1] | 0;
+      var c = x - param.v | 0;
       if (c === 0) {
-        return param[/* d */2];
+        return param.d;
       }
-      _param = c < 0 ? param[/* l */0] : param[/* r */3];
+      _param = c < 0 ? param.l : param.r;
       continue ;
     }
     throw {

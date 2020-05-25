@@ -92,51 +92,55 @@ var u = {
     })
 };
 
-Mt.from_pair_suites("Class_test", /* :: */[
-      /* tuple */[
+Mt.from_pair_suites("Class_test", /* :: */{
+      _0: /* tuple */[
         "File \"class_test.ml\", line 38, characters 4-11",
         (function (param) {
-            return /* Eq */Block.__(0, [
-                      zero,
-                      0
-                    ]);
+            return {
+                    tag: /* Eq */0,
+                    _0: zero,
+                    _1: 0
+                  };
           })
       ],
-      /* :: */[
-        /* tuple */[
+      _1: /* :: */{
+        _0: /* tuple */[
           "File \"class_test.ml\", line 39, characters 4-11",
           (function (param) {
-              return /* Eq */Block.__(0, [
-                        three,
-                        3
-                      ]);
+              return {
+                      tag: /* Eq */0,
+                      _0: three,
+                      _1: 3
+                    };
             })
         ],
-        /* :: */[
-          /* tuple */[
+        _1: /* :: */{
+          _0: /* tuple */[
             "File \"class_test.ml\", line 40, characters 4-11",
             (function (param) {
-                return /* Eq */Block.__(0, [
-                          one,
-                          1
-                        ]);
+                return {
+                        tag: /* Eq */0,
+                        _0: one,
+                        _1: 1
+                      };
               })
           ],
-          /* :: */[
-            /* tuple */[
+          _1: /* :: */{
+            _0: /* tuple */[
               "File \"class_test.ml\", line 41, characters 4-11",
               (function (param) {
-                  return /* Eq */Block.__(0, [
-                            two,
-                            2
-                          ]);
+                  return {
+                          tag: /* Eq */0,
+                          _0: two,
+                          _1: 2
+                        };
                 })
             ],
-            /* [] */0
-          ]
-        ]
-      ]
-    ]);
+            _1: /* [] */0
+          }
+        }
+      }
+    });
 
 exports.point = point;
 exports.p = p;

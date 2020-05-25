@@ -9,7 +9,9 @@ var U = {
   f: f
 };
 
-var v = /* H */[/* OT */0];
+var v = /* H */{
+  _0: /* OT */0
+};
 
 exports.U = U;
 exports.v = v;

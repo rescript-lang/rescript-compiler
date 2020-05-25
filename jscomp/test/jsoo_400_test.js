@@ -15,18 +15,21 @@ function u(param) {
   return Caml_int32.div(3, 0);
 }
 
-Mt.from_pair_suites("Jsoo_400_test", /* :: */[
-      /* tuple */[
+Mt.from_pair_suites("Jsoo_400_test", /* :: */{
+      _0: /* tuple */[
         "File \"jsoo_400_test.ml\", line 8, characters 3-10",
         (function (param) {
-            return /* ThrowAny */Block.__(7, [(function (param) {
-                          u(undefined);
-                          
-                        })]);
+            return {
+                    tag: /* ThrowAny */7,
+                    _0: (function (param) {
+                        u(undefined);
+                        
+                      })
+                  };
           })
       ],
-      /* [] */0
-    ]);
+      _1: /* [] */0
+    });
 
 exports.u = u;
 /*  Not a pure module */

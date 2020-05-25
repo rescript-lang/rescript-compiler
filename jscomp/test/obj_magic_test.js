@@ -10,55 +10,59 @@ function is_block(x) {
 var suites_000 = /* tuple */[
   "is_block_test1",
   (function (param) {
-      return /* Eq */Block.__(0, [
-                false,
-                false
-              ]);
+      return {
+              tag: /* Eq */0,
+              _0: false,
+              _1: false
+            };
     })
 ];
 
-var suites_001 = /* :: */[
-  /* tuple */[
+var suites_001 = /* :: */{
+  _0: /* tuple */[
     "is_block_test2",
     (function (param) {
-        return /* Eq */Block.__(0, [
-                  true,
-                  typeof /* :: */[
-                    3,
-                    /* [] */0
-                  ] !== "number"
-                ]);
+        return {
+                tag: /* Eq */0,
+                _0: true,
+                _1: typeof /* :: */({
+                    _0: 3,
+                    _1: /* [] */0
+                  }) !== "number"
+              };
       })
   ],
-  /* :: */[
-    /* tuple */[
+  _1: /* :: */{
+    _0: /* tuple */[
       "is_block_test3",
       (function (param) {
-          return /* Eq */Block.__(0, [
-                    true,
-                    true
-                  ]);
+          return {
+                  tag: /* Eq */0,
+                  _0: true,
+                  _1: true
+                };
         })
     ],
-    /* :: */[
-      /* tuple */[
+    _1: /* :: */{
+      _0: /* tuple */[
         "is_block_test4",
         (function (param) {
-            return /* Eq */Block.__(0, [
-                      false,
-                      false
-                    ]);
+            return {
+                    tag: /* Eq */0,
+                    _0: false,
+                    _1: false
+                  };
           })
       ],
-      /* [] */0
-    ]
-  ]
-];
+      _1: /* [] */0
+    }
+  }
+};
 
-var suites = /* :: */[
-  suites_000,
-  suites_001
-];
+var suites = /* :: */{
+  _0: suites_000,
+  _1: suites_001
+};
 
 Mt.from_pair_suites("Obj_magic_test", suites);
 

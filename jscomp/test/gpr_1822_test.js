@@ -13,26 +13,30 @@ var test_id = {
 
 function eq(loc, x, y) {
   test_id.contents = test_id.contents + 1 | 0;
-  suites.contents = /* :: */[
-    /* tuple */[
+  suites.contents = /* :: */{
+    _0: /* tuple */[
       loc + (" id " + String(test_id.contents)),
       (function (param) {
-          return /* Eq */Block.__(0, [
-                    x,
-                    y
-                  ]);
+          return {
+                  tag: /* Eq */0,
+                  _0: x,
+                  _1: y
+                };
         })
     ],
-    suites.contents
-  ];
+    _1: suites.contents
+  };
   
 }
 
-var myShape = /* Circle */Block.__(0, [10]);
+var myShape = {
+  tag: /* Circle */0,
+  _0: 10
+};
 
 var area;
 
-area = myShape.tag ? Math.imul(10, myShape[1]) : 100 * 3.14;
+area = myShape.tag ? Math.imul(10, myShape._1) : 100 * 3.14;
 
 eq("File \"gpr_1822_test.ml\", line 21, characters 6-13", area, 314);
 

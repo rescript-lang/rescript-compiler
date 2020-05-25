@@ -7,13 +7,13 @@ function fff(x) {
 }
 
 function ff(x, z) {
-  return /* :: */[
-          x.height,
-          /* :: */[
-            z.height,
-            /* [] */0
-          ]
-        ];
+  return /* :: */{
+          _0: x.height,
+          _1: /* :: */{
+            _0: z.height,
+            _1: /* [] */0
+          }
+        };
 }
 
 exports.fff = fff;

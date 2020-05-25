@@ -12,19 +12,19 @@ function cons_enum(_s, _e) {
     if (!s) {
       return e;
     }
-    _e = /* More */[
-      s[1],
-      s[2],
-      e
-    ];
-    _s = s[0];
+    _e = /* More */{
+      _0: s._1,
+      _1: s._2,
+      _2: e
+    };
+    _s = s._0;
     continue ;
   };
 }
 
 function height(param) {
   if (param) {
-    return param[3];
+    return param._3;
   } else {
     return 0;
   }
@@ -34,9 +34,9 @@ function min_elt(_param) {
   while(true) {
     var param = _param;
     if (param) {
-      var l = param[0];
+      var l = param._0;
       if (!l) {
-        return param[1];
+        return param._1;
       }
       _param = l;
       continue ;
@@ -52,9 +52,9 @@ function max_elt(_param) {
   while(true) {
     var param = _param;
     if (param) {
-      var r = param[2];
+      var r = param._2;
       if (!r) {
-        return param[1];
+        return param._1;
       }
       _param = r;
       continue ;
@@ -81,8 +81,8 @@ function cardinal_aux(_acc, _param) {
     if (!param) {
       return acc;
     }
-    _param = param[0];
-    _acc = cardinal_aux(acc + 1 | 0, param[2]);
+    _param = param._0;
+    _acc = cardinal_aux(acc + 1 | 0, param._2);
     continue ;
   };
 }
@@ -98,11 +98,11 @@ function elements_aux(_accu, _param) {
     if (!param) {
       return accu;
     }
-    _param = param[0];
-    _accu = /* :: */[
-      param[1],
-      elements_aux(accu, param[2])
-    ];
+    _param = param._0;
+    _accu = /* :: */{
+      _0: param._1,
+      _1: elements_aux(accu, param._2)
+    };
     continue ;
   };
 }
@@ -117,9 +117,9 @@ function iter(f, _param) {
     if (!param) {
       return ;
     }
-    iter(f, param[0]);
-    Curry._1(f, param[1]);
-    _param = param[2];
+    iter(f, param._0);
+    Curry._1(f, param._1);
+    _param = param._2;
     continue ;
   };
 }
@@ -131,8 +131,8 @@ function fold(f, _s, _accu) {
     if (!s) {
       return accu;
     }
-    _accu = Curry._2(f, s[1], fold(f, s[0], accu));
-    _s = s[2];
+    _accu = Curry._2(f, s._1, fold(f, s._0, accu));
+    _s = s._2;
     continue ;
   };
 }
@@ -143,13 +143,13 @@ function for_all(p, _param) {
     if (!param) {
       return true;
     }
-    if (!Curry._1(p, param[1])) {
+    if (!Curry._1(p, param._1)) {
       return false;
     }
-    if (!for_all(p, param[0])) {
+    if (!for_all(p, param._0)) {
       return false;
     }
-    _param = param[2];
+    _param = param._2;
     continue ;
   };
 }
@@ -160,13 +160,13 @@ function exists(p, _param) {
     if (!param) {
       return false;
     }
-    if (Curry._1(p, param[1])) {
+    if (Curry._1(p, param._1)) {
       return true;
     }
-    if (exists(p, param[0])) {
+    if (exists(p, param._0)) {
       return true;
     }
-    _param = param[2];
+    _param = param._2;
     continue ;
   };
 }
@@ -201,9 +201,9 @@ function check_height_and_diff(param) {
   if (!param) {
     return 0;
   }
-  var h = param[3];
-  var hl = check_height_and_diff(param[0]);
-  var hr = check_height_and_diff(param[2]);
+  var h = param._3;
+  var hl = check_height_and_diff(param._0);
+  var hr = check_height_and_diff(param._2);
   if (h !== (max_int_2(hl, hr) + 1 | 0)) {
     throw {
           RE_EXN_ID: Height_invariant_broken,
@@ -226,29 +226,29 @@ function check(tree) {
 }
 
 function create(l, v, r) {
-  var hl = l ? l[3] : 0;
-  var hr = r ? r[3] : 0;
-  return /* Node */[
-          l,
-          v,
-          r,
-          hl >= hr ? hl + 1 | 0 : hr + 1 | 0
-        ];
+  var hl = l ? l._3 : 0;
+  var hr = r ? r._3 : 0;
+  return /* Node */{
+          _0: l,
+          _1: v,
+          _2: r,
+          _3: hl >= hr ? hl + 1 | 0 : hr + 1 | 0
+        };
 }
 
 function internal_bal(l, v, r) {
-  var hl = l ? l[3] : 0;
-  var hr = r ? r[3] : 0;
+  var hl = l ? l._3 : 0;
+  var hr = r ? r._3 : 0;
   if (hl > (hr + 2 | 0)) {
     if (l) {
-      var lr = l[2];
-      var lv = l[1];
-      var ll = l[0];
+      var lr = l._2;
+      var lv = l._1;
+      var ll = l._0;
       if (height(ll) >= height(lr)) {
         return create(ll, lv, create(lr, v, r));
       }
       if (lr) {
-        return create(create(ll, lv, lr[0]), lr[1], create(lr[2], v, r));
+        return create(create(ll, lv, lr._0), lr._1, create(lr._2, v, r));
       }
       throw {
             RE_EXN_ID: "Assert_failure",
@@ -271,22 +271,22 @@ function internal_bal(l, v, r) {
         };
   }
   if (hr <= (hl + 2 | 0)) {
-    return /* Node */[
-            l,
-            v,
-            r,
-            hl >= hr ? hl + 1 | 0 : hr + 1 | 0
-          ];
+    return /* Node */{
+            _0: l,
+            _1: v,
+            _2: r,
+            _3: hl >= hr ? hl + 1 | 0 : hr + 1 | 0
+          };
   }
   if (r) {
-    var rr = r[2];
-    var rv = r[1];
-    var rl = r[0];
+    var rr = r._2;
+    var rv = r._1;
+    var rl = r._0;
     if (height(rr) >= height(rl)) {
       return create(create(l, v, rl), rv, rr);
     }
     if (rl) {
-      return create(create(l, v, rl[0]), rl[1], create(rl[2], rv, rr));
+      return create(create(l, v, rl._0), rl._1, create(rl._2, rv, rr));
     }
     throw {
           RE_EXN_ID: "Assert_failure",
@@ -311,11 +311,11 @@ function internal_bal(l, v, r) {
 
 function remove_min_elt(param) {
   if (param) {
-    var l = param[0];
+    var l = param._0;
     if (l) {
-      return internal_bal(remove_min_elt(l), param[1], param[2]);
+      return internal_bal(remove_min_elt(l), param._1, param._2);
     } else {
-      return param[2];
+      return param._2;
     }
   }
   throw {
@@ -326,12 +326,12 @@ function remove_min_elt(param) {
 }
 
 function singleton(x) {
-  return /* Node */[
-          /* Empty */0,
-          x,
-          /* Empty */0,
-          1
-        ];
+  return /* Node */{
+          _0: /* Empty */0,
+          _1: x,
+          _2: /* Empty */0,
+          _3: 1
+        };
 }
 
 function internal_merge(l, r) {
@@ -348,7 +348,7 @@ function internal_merge(l, r) {
 
 function add_min_element(v, param) {
   if (param) {
-    return internal_bal(add_min_element(v, param[0]), param[1], param[2]);
+    return internal_bal(add_min_element(v, param._0), param._1, param._2);
   } else {
     return singleton(v);
   }
@@ -356,7 +356,7 @@ function add_min_element(v, param) {
 
 function add_max_element(v, param) {
   if (param) {
-    return internal_bal(param[0], param[1], add_max_element(v, param[2]));
+    return internal_bal(param._0, param._1, add_max_element(v, param._2));
   } else {
     return singleton(v);
   }
@@ -369,12 +369,12 @@ function internal_join(l, v, r) {
   if (!r) {
     return add_max_element(v, l);
   }
-  var rh = r[3];
-  var lh = l[3];
+  var rh = r._3;
+  var lh = l._3;
   if (lh > (rh + 2 | 0)) {
-    return internal_bal(l[0], l[1], internal_join(l[2], v, r));
+    return internal_bal(l._0, l._1, internal_join(l._2, v, r));
   } else if (rh > (lh + 2 | 0)) {
-    return internal_bal(internal_join(l, v, r[0]), r[1], r[2]);
+    return internal_bal(internal_join(l, v, r._0), r._1, r._2);
   } else {
     return create(l, v, r);
   }
@@ -396,10 +396,10 @@ function filter(p, param) {
   if (!param) {
     return /* Empty */0;
   }
-  var v = param[1];
-  var l$prime = filter(p, param[0]);
+  var v = param._1;
+  var l$prime = filter(p, param._0);
   var pv = Curry._1(p, v);
-  var r$prime = filter(p, param[2]);
+  var r$prime = filter(p, param._2);
   if (pv) {
     return internal_join(l$prime, v, r$prime);
   } else {
@@ -414,12 +414,12 @@ function partition(p, param) {
             /* Empty */0
           ];
   }
-  var v = param[1];
-  var match = partition(p, param[0]);
+  var v = param._1;
+  var match = partition(p, param._0);
   var lf = match[1];
   var lt = match[0];
   var pv = Curry._1(p, v);
-  var match$1 = partition(p, param[2]);
+  var match$1 = partition(p, param._2);
   var rf = match$1[1];
   var rt = match$1[0];
   if (pv) {
@@ -446,33 +446,33 @@ function of_sorted_list(l) {
       case 1 :
           if (l) {
             return /* tuple */[
-                    /* Node */[
-                      /* Empty */0,
-                      l[0],
-                      /* Empty */0,
-                      1
-                    ],
-                    l[1]
+                    /* Node */{
+                      _0: /* Empty */0,
+                      _1: l._0,
+                      _2: /* Empty */0,
+                      _3: 1
+                    },
+                    l._1
                   ];
           }
           break;
       case 2 :
           if (l) {
-            var match = l[1];
+            var match = l._1;
             if (match) {
               return /* tuple */[
-                      /* Node */[
-                        /* Node */[
-                          /* Empty */0,
-                          l[0],
-                          /* Empty */0,
-                          1
-                        ],
-                        match[0],
-                        /* Empty */0,
-                        2
-                      ],
-                      match[1]
+                      /* Node */{
+                        _0: /* Node */{
+                          _0: /* Empty */0,
+                          _1: l._0,
+                          _2: /* Empty */0,
+                          _3: 1
+                        },
+                        _1: match._0,
+                        _2: /* Empty */0,
+                        _3: 2
+                      },
+                      match._1
                     ];
             }
             
@@ -480,28 +480,28 @@ function of_sorted_list(l) {
           break;
       case 3 :
           if (l) {
-            var match$1 = l[1];
+            var match$1 = l._1;
             if (match$1) {
-              var match$2 = match$1[1];
+              var match$2 = match$1._1;
               if (match$2) {
                 return /* tuple */[
-                        /* Node */[
-                          /* Node */[
-                            /* Empty */0,
-                            l[0],
-                            /* Empty */0,
-                            1
-                          ],
-                          match$1[0],
-                          /* Node */[
-                            /* Empty */0,
-                            match$2[0],
-                            /* Empty */0,
-                            1
-                          ],
-                          2
-                        ],
-                        match$2[1]
+                        /* Node */{
+                          _0: /* Node */{
+                            _0: /* Empty */0,
+                            _1: l._0,
+                            _2: /* Empty */0,
+                            _3: 1
+                          },
+                          _1: match$1._0,
+                          _2: /* Node */{
+                            _0: /* Empty */0,
+                            _1: match$2._0,
+                            _2: /* Empty */0,
+                            _3: 1
+                          },
+                          _3: 2
+                        },
+                        match$2._1
                       ];
               }
               
@@ -516,9 +516,9 @@ function of_sorted_list(l) {
     var match$3 = sub(nl, l);
     var l$1 = match$3[1];
     if (l$1) {
-      var match$4 = sub((n - nl | 0) - 1 | 0, l$1[1]);
+      var match$4 = sub((n - nl | 0) - 1 | 0, l$1._1);
       return /* tuple */[
-              create(match$3[0], l$1[0], match$4[0]),
+              create(match$3[0], l$1._0, match$4[0]),
               match$4[1]
             ];
     }
@@ -542,48 +542,48 @@ function of_sorted_array(l) {
     }
     if (n === 1) {
       var x0 = l[start];
-      return /* Node */[
-              /* Empty */0,
-              x0,
-              /* Empty */0,
-              1
-            ];
+      return /* Node */{
+              _0: /* Empty */0,
+              _1: x0,
+              _2: /* Empty */0,
+              _3: 1
+            };
     }
     if (n === 2) {
       var x0$1 = l[start];
       var x1 = l[start + 1 | 0];
-      return /* Node */[
-              /* Node */[
-                /* Empty */0,
-                x0$1,
-                /* Empty */0,
-                1
-              ],
-              x1,
-              /* Empty */0,
-              2
-            ];
+      return /* Node */{
+              _0: /* Node */{
+                _0: /* Empty */0,
+                _1: x0$1,
+                _2: /* Empty */0,
+                _3: 1
+              },
+              _1: x1,
+              _2: /* Empty */0,
+              _3: 2
+            };
     }
     if (n === 3) {
       var x0$2 = l[start];
       var x1$1 = l[start + 1 | 0];
       var x2 = l[start + 2 | 0];
-      return /* Node */[
-              /* Node */[
-                /* Empty */0,
-                x0$2,
-                /* Empty */0,
-                1
-              ],
-              x1$1,
-              /* Node */[
-                /* Empty */0,
-                x2,
-                /* Empty */0,
-                1
-              ],
-              2
-            ];
+      return /* Node */{
+              _0: /* Node */{
+                _0: /* Empty */0,
+                _1: x0$2,
+                _2: /* Empty */0,
+                _3: 1
+              },
+              _1: x1$1,
+              _2: /* Node */{
+                _0: /* Empty */0,
+                _1: x2,
+                _2: /* Empty */0,
+                _3: 1
+              },
+              _3: 2
+            };
     }
     var nl = n / 2 | 0;
     var left = sub(start, nl, l);
@@ -600,9 +600,9 @@ function is_ordered(cmp, tree) {
     if (!tree) {
       return /* Empty */50834029;
     }
-    var r = tree[2];
-    var v = tree[1];
-    var match = is_ordered_min_max(tree[0]);
+    var r = tree._2;
+    var v = tree._1;
+    var match = is_ordered_min_max(tree._0);
     if (typeof match === "number") {
       if (match < 50834029) {
         return /* No */17505;
@@ -686,12 +686,12 @@ function compare_aux(cmp, _e1, _e2) {
     if (!e2) {
       return 1;
     }
-    var c = Curry._2(cmp, e1[0], e2[0]);
+    var c = Curry._2(cmp, e1._0, e2._0);
     if (c !== 0) {
       return c;
     }
-    _e2 = cons_enum(e2[1], e2[2]);
-    _e1 = cons_enum(e1[1], e1[2]);
+    _e2 = cons_enum(e2._1, e2._2);
+    _e1 = cons_enum(e1._1, e1._2);
     continue ;
   };
 }

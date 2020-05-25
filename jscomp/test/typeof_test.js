@@ -17,10 +17,10 @@ function string_or_number(x) {
   } else {
     switch (ty.tag | 0) {
       case /* JSNumber */0 :
-          console.log(ty[0] + 3);
+          console.log(ty._0 + 3);
           return true;
       case /* JSString */1 :
-          console.log(ty[0] + "hei");
+          console.log(ty._0 + "hei");
           return true;
       case /* JSFunction */2 :
           console.log("Function");
@@ -34,146 +34,158 @@ function string_or_number(x) {
 var suites_000 = /* tuple */[
   "int_type",
   (function (param) {
-      return /* Eq */Block.__(0, [
-                "number",
-                "number"
-              ]);
+      return {
+              tag: /* Eq */0,
+              _0: "number",
+              _1: "number"
+            };
     })
 ];
 
-var suites_001 = /* :: */[
-  /* tuple */[
+var suites_001 = /* :: */{
+  _0: /* tuple */[
     "string_type",
     (function (param) {
-        return /* Eq */Block.__(0, [
-                  "string",
-                  "string"
-                ]);
+        return {
+                tag: /* Eq */0,
+                _0: "string",
+                _1: "string"
+              };
       })
   ],
-  /* :: */[
-    /* tuple */[
+  _1: /* :: */{
+    _0: /* tuple */[
       "number_gadt_test",
       (function (param) {
-          return /* Eq */Block.__(0, [
-                    Js_types.test(3, /* Number */3),
-                    true
-                  ]);
+          return {
+                  tag: /* Eq */0,
+                  _0: Js_types.test(3, /* Number */3),
+                  _1: true
+                };
         })
     ],
-    /* :: */[
-      /* tuple */[
+    _1: /* :: */{
+      _0: /* tuple */[
         "boolean_gadt_test",
         (function (param) {
-            return /* Eq */Block.__(0, [
-                      Js_types.test(true, /* Boolean */2),
-                      true
-                    ]);
+            return {
+                    tag: /* Eq */0,
+                    _0: Js_types.test(true, /* Boolean */2),
+                    _1: true
+                  };
           })
       ],
-      /* :: */[
-        /* tuple */[
+      _1: /* :: */{
+        _0: /* tuple */[
           "undefined_gadt_test",
           (function (param) {
-              return /* Eq */Block.__(0, [
-                        Js_types.test(undefined, /* Undefined */0),
-                        true
-                      ]);
+              return {
+                      tag: /* Eq */0,
+                      _0: Js_types.test(undefined, /* Undefined */0),
+                      _1: true
+                    };
             })
         ],
-        /* :: */[
-          /* tuple */[
+        _1: /* :: */{
+          _0: /* tuple */[
             "string_on_number1",
             (function (param) {
-                return /* Eq */Block.__(0, [
-                          string_or_number("xx"),
-                          true
-                        ]);
+                return {
+                        tag: /* Eq */0,
+                        _0: string_or_number("xx"),
+                        _1: true
+                      };
               })
           ],
-          /* :: */[
-            /* tuple */[
+          _1: /* :: */{
+            _0: /* tuple */[
               "string_on_number2",
               (function (param) {
-                  return /* Eq */Block.__(0, [
-                            string_or_number(3.02),
-                            true
-                          ]);
+                  return {
+                          tag: /* Eq */0,
+                          _0: string_or_number(3.02),
+                          _1: true
+                        };
                 })
             ],
-            /* :: */[
-              /* tuple */[
+            _1: /* :: */{
+              _0: /* tuple */[
                 "string_on_number3",
                 (function (param) {
-                    return /* Eq */Block.__(0, [
-                              string_or_number(function (x) {
-                                    return x;
-                                  }),
-                              false
-                            ]);
+                    return {
+                            tag: /* Eq */0,
+                            _0: string_or_number(function (x) {
+                                  return x;
+                                }),
+                            _1: false
+                          };
                   })
               ],
-              /* :: */[
-                /* tuple */[
+              _1: /* :: */{
+                _0: /* tuple */[
                   "string_gadt_test",
                   (function (param) {
-                      return /* Eq */Block.__(0, [
-                                Js_types.test("3", /* String */4),
-                                true
-                              ]);
+                      return {
+                              tag: /* Eq */0,
+                              _0: Js_types.test("3", /* String */4),
+                              _1: true
+                            };
                     })
                 ],
-                /* :: */[
-                  /* tuple */[
+                _1: /* :: */{
+                  _0: /* tuple */[
                     "string_gadt_test_neg",
                     (function (param) {
-                        return /* Eq */Block.__(0, [
-                                  Js_types.test(3, /* String */4),
-                                  false
-                                ]);
+                        return {
+                                tag: /* Eq */0,
+                                _0: Js_types.test(3, /* String */4),
+                                _1: false
+                              };
                       })
                   ],
-                  /* :: */[
-                    /* tuple */[
+                  _1: /* :: */{
+                    _0: /* tuple */[
                       "function_gadt_test",
                       (function (param) {
-                          return /* Eq */Block.__(0, [
-                                    Js_types.test((function (x) {
-                                            return x;
-                                          }), /* Function */5),
-                                    true
-                                  ]);
+                          return {
+                                  tag: /* Eq */0,
+                                  _0: Js_types.test((function (x) {
+                                          return x;
+                                        }), /* Function */5),
+                                  _1: true
+                                };
                         })
                     ],
-                    /* :: */[
-                      /* tuple */[
+                    _1: /* :: */{
+                      _0: /* tuple */[
                         "object_gadt_test",
                         (function (param) {
-                            return /* Eq */Block.__(0, [
-                                      Js_types.test({
-                                            x: 3
-                                          }, /* Object */6),
-                                      true
-                                    ]);
+                            return {
+                                    tag: /* Eq */0,
+                                    _0: Js_types.test({
+                                          x: 3
+                                        }, /* Object */6),
+                                    _1: true
+                                  };
                           })
                       ],
-                      /* [] */0
-                    ]
-                  ]
-                ]
-              ]
-            ]
-          ]
-        ]
-      ]
-    ]
-  ]
-];
+                      _1: /* [] */0
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+};
 
-var suites = /* :: */[
-  suites_000,
-  suites_001
-];
+var suites = /* :: */{
+  _0: suites_000,
+  _1: suites_001
+};
 
 Mt.from_pair_suites("Typeof_test", suites);
 

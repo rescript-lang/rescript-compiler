@@ -15,18 +15,19 @@ var test_id = {
 
 function eq(loc, x, y) {
   test_id.contents = test_id.contents + 1 | 0;
-  suites.contents = /* :: */[
-    /* tuple */[
+  suites.contents = /* :: */{
+    _0: /* tuple */[
       loc + (" id " + String(test_id.contents)),
       (function (param) {
-          return /* Eq */Block.__(0, [
-                    x,
-                    y
-                  ]);
+          return {
+                  tag: /* Eq */0,
+                  _0: x,
+                  _1: y
+                };
         })
     ],
-    suites.contents
-  ];
+    _1: suites.contents
+  };
   
 }
 
@@ -51,13 +52,13 @@ function f(param) {
   return List;
 }
 
-eq("File \"global_module_alias_test.ml\", line 51, characters 5-12", List.length(/* :: */[
-          1,
-          /* :: */[
-            2,
-            /* [] */0
-          ]
-        ]), 2);
+eq("File \"global_module_alias_test.ml\", line 51, characters 5-12", List.length(/* :: */{
+          _0: 1,
+          _1: /* :: */{
+            _0: 2,
+            _1: /* [] */0
+          }
+        }), 2);
 
 v.contents = v.contents + 1 | 0;
 
@@ -88,19 +89,19 @@ var H = List;
 eq("File \"global_module_alias_test.ml\", line 57, characters 5-12", v.contents, 12);
 
 function g(param) {
-  return List.length(/* :: */[
-              1,
-              /* :: */[
-                2,
-                /* :: */[
-                  3,
-                  /* :: */[
-                    4,
-                    /* [] */0
-                  ]
-                ]
-              ]
-            ]);
+  return List.length(/* :: */{
+              _0: 1,
+              _1: /* :: */{
+                _0: 2,
+                _1: /* :: */{
+                  _0: 3,
+                  _1: /* :: */{
+                    _0: 4,
+                    _1: /* [] */0
+                  }
+                }
+              }
+            });
 }
 
 function xx(param) {
@@ -114,28 +115,28 @@ eq("File \"global_module_alias_test.ml\", line 86, characters 5-12", g(undefined
 
 var V = xx(undefined);
 
-eq("File \"global_module_alias_test.ml\", line 92, characters 5-12", Curry._1(V.length, /* :: */[
-          1,
-          /* :: */[
-            2,
-            /* :: */[
-              3,
-              /* [] */0
-            ]
-          ]
-        ]), 3);
+eq("File \"global_module_alias_test.ml\", line 92, characters 5-12", Curry._1(V.length, /* :: */{
+          _0: 1,
+          _1: /* :: */{
+            _0: 2,
+            _1: /* :: */{
+              _0: 3,
+              _1: /* [] */0
+            }
+          }
+        }), 3);
 
 eq("File \"global_module_alias_test.ml\", line 93, characters 5-12", v.contents, 15);
 
 var H$1 = f(undefined);
 
-eq("File \"global_module_alias_test.ml\", line 95, characters 5-12", Curry._1(H$1.length, /* :: */[
-          1,
-          /* :: */[
-            2,
-            /* [] */0
-          ]
-        ]), 2);
+eq("File \"global_module_alias_test.ml\", line 95, characters 5-12", Curry._1(H$1.length, /* :: */{
+          _0: 1,
+          _1: /* :: */{
+            _0: 2,
+            _1: /* [] */0
+          }
+        }), 2);
 
 eq("File \"global_module_alias_test.ml\", line 96, characters 5-12", v.contents, 21);
 

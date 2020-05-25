@@ -23,17 +23,18 @@ function test2(param) {
 var suites_000 = /* tuple */[
   "for_order",
   (function (param) {
-      return /* Eq */Block.__(0, [
-                10,
-                test2(undefined)
-              ]);
+      return {
+              tag: /* Eq */0,
+              _0: 10,
+              _1: test2(undefined)
+            };
     })
 ];
 
-var suites = /* :: */[
-  suites_000,
-  /* [] */0
-];
+var suites = /* :: */{
+  _0: suites_000,
+  _1: /* [] */0
+};
 
 Mt.from_pair_suites("For_side_effect_test", suites);
 

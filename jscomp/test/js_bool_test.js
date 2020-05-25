@@ -34,41 +34,44 @@ var v = true;
 var suites_000 = /* tuple */[
   "caml_bool_eq_caml_bool",
   (function (param) {
-      return /* Eq */Block.__(0, [
-                u,
-                true
-              ]);
+      return {
+              tag: /* Eq */0,
+              _0: u,
+              _1: true
+            };
     })
 ];
 
-var suites_001 = /* :: */[
-  /* tuple */[
+var suites_001 = /* :: */{
+  _0: /* tuple */[
     "js_bool_eq_js_bool",
     (function (param) {
-        return /* Eq */Block.__(0, [
-                  v,
-                  true
-                ]);
+        return {
+                tag: /* Eq */0,
+                _0: v,
+                _1: true
+              };
       })
   ],
-  /* :: */[
-    /* tuple */[
+  _1: /* :: */{
+    _0: /* tuple */[
       "js_bool_neq_acml_bool",
       (function (param) {
-          return /* Eq */Block.__(0, [
-                    true,
-                    true === true
-                  ]);
+          return {
+                  tag: /* Eq */0,
+                  _0: true,
+                  _1: true === true
+                };
         })
     ],
-    /* [] */0
-  ]
-];
+    _1: /* [] */0
+  }
+};
 
-var suites = /* :: */[
-  suites_000,
-  suites_001
-];
+var suites = /* :: */{
+  _0: suites_000,
+  _1: suites_001
+};
 
 function ff(u) {
   if (u === true) {

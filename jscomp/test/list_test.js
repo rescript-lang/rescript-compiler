@@ -9,102 +9,106 @@ var Caml_primitive = require("../../lib/js/caml_primitive.js");
 var list_suites_000 = /* tuple */[
   "length",
   (function (param) {
-      return /* Eq */Block.__(0, [
-                1,
-                List.length(/* :: */[
-                      /* tuple */[
-                        0,
-                        1,
-                        2,
-                        3,
-                        4
-                      ],
-                      /* [] */0
-                    ])
-              ]);
+      return {
+              tag: /* Eq */0,
+              _0: 1,
+              _1: List.length(/* :: */{
+                    _0: /* tuple */[
+                      0,
+                      1,
+                      2,
+                      3,
+                      4
+                    ],
+                    _1: /* [] */0
+                  })
+            };
     })
 ];
 
-var list_suites_001 = /* :: */[
-  /* tuple */[
+var list_suites_001 = /* :: */{
+  _0: /* tuple */[
     "length2",
     (function (param) {
-        return /* Eq */Block.__(0, [
-                  5,
-                  List.length(/* :: */[
-                        0,
-                        /* :: */[
-                          1,
-                          /* :: */[
-                            2,
-                            /* :: */[
-                              3,
-                              /* :: */[
-                                4,
-                                /* [] */0
-                              ]
-                            ]
-                          ]
-                        ]
-                      ])
-                ]);
+        return {
+                tag: /* Eq */0,
+                _0: 5,
+                _1: List.length(/* :: */{
+                      _0: 0,
+                      _1: /* :: */{
+                        _0: 1,
+                        _1: /* :: */{
+                          _0: 2,
+                          _1: /* :: */{
+                            _0: 3,
+                            _1: /* :: */{
+                              _0: 4,
+                              _1: /* [] */0
+                            }
+                          }
+                        }
+                      }
+                    })
+              };
       })
   ],
-  /* :: */[
-    /* tuple */[
+  _1: /* :: */{
+    _0: /* tuple */[
       "long_length",
       (function (param) {
-          return /* Eq */Block.__(0, [
-                    30000,
-                    List.length($$Array.to_list($$Array.init(30000, (function (param) {
-                                    return 0;
-                                  }))))
-                  ]);
+          return {
+                  tag: /* Eq */0,
+                  _0: 30000,
+                  _1: List.length($$Array.to_list($$Array.init(30000, (function (param) {
+                                  return 0;
+                                }))))
+                };
         })
     ],
-    /* :: */[
-      /* tuple */[
+    _1: /* :: */{
+      _0: /* tuple */[
         "sort",
         (function (param) {
-            return /* Eq */Block.__(0, [
-                      List.sort(Caml_primitive.caml_int_compare, /* :: */[
-                            4,
-                            /* :: */[
-                              1,
-                              /* :: */[
-                                2,
-                                /* :: */[
-                                  3,
-                                  /* [] */0
-                                ]
-                              ]
-                            ]
-                          ]),
-                      /* :: */[
-                        1,
-                        /* :: */[
-                          2,
-                          /* :: */[
-                            3,
-                            /* :: */[
-                              4,
-                              /* [] */0
-                            ]
-                          ]
-                        ]
-                      ]
-                    ]);
+            return {
+                    tag: /* Eq */0,
+                    _0: List.sort(Caml_primitive.caml_int_compare, /* :: */{
+                          _0: 4,
+                          _1: /* :: */{
+                            _0: 1,
+                            _1: /* :: */{
+                              _0: 2,
+                              _1: /* :: */{
+                                _0: 3,
+                                _1: /* [] */0
+                              }
+                            }
+                          }
+                        }),
+                    _1: /* :: */{
+                      _0: 1,
+                      _1: /* :: */{
+                        _0: 2,
+                        _1: /* :: */{
+                          _0: 3,
+                          _1: /* :: */{
+                            _0: 4,
+                            _1: /* [] */0
+                          }
+                        }
+                      }
+                    }
+                  };
           })
       ],
-      /* [] */0
-    ]
-  ]
-];
+      _1: /* [] */0
+    }
+  }
+};
 
-var list_suites = /* :: */[
-  list_suites_000,
-  list_suites_001
-];
+var list_suites = /* :: */{
+  _0: list_suites_000,
+  _1: list_suites_001
+};
 
 Mt.from_pair_suites("List_test", list_suites);
 

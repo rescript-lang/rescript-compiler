@@ -28,10 +28,10 @@ function f3(x) {
   switch (x.tag | 0) {
     case /* A */0 :
     case /* C */2 :
-        return x[0] + 1 | 0;
+        return x._0 + 1 | 0;
     case /* B */1 :
     case /* D */3 :
-        return x[0] + 2 | 0;
+        return x._0 + 2 | 0;
     
   }
 }

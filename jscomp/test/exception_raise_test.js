@@ -47,13 +47,13 @@ function appf(g, x) {
     if (!match) {
       return 4;
     }
-    var match$1 = match[1];
+    var match$1 = match._1;
     if (!match$1) {
       return 4;
     }
-    var match$2 = match$1[1];
+    var match$2 = match$1._1;
     if (match$2) {
-      return match$2[0];
+      return match$2._0;
     } else {
       return 4;
     }
@@ -133,35 +133,37 @@ catch (raw_e$1){
 }
 
 var suites = {
-  contents: /* :: */[
-    /* tuple */[
+  contents: /* :: */{
+    _0: /* tuple */[
       "File \"exception_raise_test.ml\", line 114, characters 4-11",
       (function (param) {
-          return /* Eq */Block.__(0, [
-                    /* tuple */[
-                      f,
-                      ff,
-                      fff,
-                      a0
-                    ],
-                    /* tuple */[
-                      2,
-                      2,
-                      2,
-                      2
-                    ]
-                  ]);
+          return {
+                  tag: /* Eq */0,
+                  _0: /* tuple */[
+                    f,
+                    ff,
+                    fff,
+                    a0
+                  ],
+                  _1: /* tuple */[
+                    2,
+                    2,
+                    2,
+                    2
+                  ]
+                };
         })
     ],
-    /* :: */[
-      /* tuple */[
+    _1: /* :: */{
+      _0: /* tuple */[
         "File \"exception_raise_test.ml\", line 116, characters 4-11",
         (function (param) {
             if (a1.RE_EXN_ID === Js_exn.$$Error) {
-              return /* Eq */Block.__(0, [
-                        a1._1,
-                        2
-                      ]);
+              return {
+                      tag: /* Eq */0,
+                      _0: a1._1,
+                      _1: 2
+                    };
             }
             throw {
                   RE_EXN_ID: "Assert_failure",
@@ -174,9 +176,9 @@ var suites = {
                 };
           })
       ],
-      /* [] */0
-    ]
-  ]
+      _1: /* [] */0
+    }
+  }
 };
 
 var test_id = {
@@ -227,10 +229,10 @@ function input_lines(ic, _acc) {
     catch (exn){
       return List.rev(acc);
     }
-    _acc = /* :: */[
-      line,
-      acc
-    ];
+    _acc = /* :: */{
+      _0: line,
+      _1: acc
+    };
     continue ;
   };
 }

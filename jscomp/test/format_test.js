@@ -20,18 +20,19 @@ var test_id = {
 
 function eq(loc, x, y) {
   test_id.contents = test_id.contents + 1 | 0;
-  suites.contents = /* :: */[
-    /* tuple */[
+  suites.contents = /* :: */{
+    _0: /* tuple */[
       loc + (" id " + String(test_id.contents)),
       (function (param) {
-          return /* Eq */Block.__(0, [
-                    x,
-                    y
-                  ]);
+          return {
+                  tag: /* Eq */0,
+                  _0: x,
+                  _1: y
+                };
         })
     ],
-    suites.contents
-  ];
+    _1: suites.contents
+  };
   
 }
 
@@ -42,22 +43,25 @@ function eq3(loc, a, b, c) {
 }
 
 function u(param) {
-  return Pervasives.$caret$caret(/* Format */[
-              /* String_literal */Block.__(11, [
-                  "xx ",
-                  /* String */Block.__(2, [
-                      /* No_padding */0,
-                      /* End_of_format */0
-                    ])
-                ]),
-              "xx %s"
-            ], /* Format */[
-              /* String_literal */Block.__(11, [
-                  "yy",
-                  /* End_of_format */0
-                ]),
-              "yy"
-            ]);
+  return Pervasives.$caret$caret(/* Format */{
+              _0: {
+                tag: /* String_literal */11,
+                _0: "xx ",
+                _1: {
+                  tag: /* String */2,
+                  _0: /* No_padding */0,
+                  _1: /* End_of_format */0
+                }
+              },
+              _1: "xx %s"
+            }, /* Format */{
+              _0: {
+                tag: /* String_literal */11,
+                _0: "yy",
+                _1: /* End_of_format */0
+              },
+              _1: "yy"
+            });
 }
 
 var M = { };
@@ -106,36 +110,37 @@ function f(loc, ls) {
               }), ls);
 }
 
-f("File \"format_test.ml\", line 78, characters 6-13", /* :: */[
-      /* tuple */[
+f("File \"format_test.ml\", line 78, characters 6-13", /* :: */{
+      _0: /* tuple */[
         "0x3.fp+1",
         7.875
       ],
-      /* :: */[
-        /* tuple */[
+      _1: /* :: */{
+        _0: /* tuple */[
           " 0x3.fp2",
           15.75
         ],
-        /* :: */[
-          /* tuple */[
+        _1: /* :: */{
+          _0: /* tuple */[
             " 0x4.fp2",
             19.75
           ],
-          /* [] */0
-        ]
-      ]
-    ]);
+          _1: /* [] */0
+        }
+      }
+    });
 
 function sl(f) {
-  return Curry._1(Printf.sprintf(/* Format */[
-                  /* Float */Block.__(8, [
-                      /* Float_h */16,
-                      /* No_padding */0,
-                      /* No_precision */0,
-                      /* End_of_format */0
-                    ]),
-                  "%h"
-                ]), f);
+  return Curry._1(Printf.sprintf(/* Format */{
+                  _0: {
+                    tag: /* Float */8,
+                    _0: /* Float_h */16,
+                    _1: /* No_padding */0,
+                    _2: /* No_precision */0,
+                    _3: /* End_of_format */0
+                  },
+                  _1: "%h"
+                }), f);
 }
 
 function aux_list(loc, ls) {
@@ -149,83 +154,85 @@ var literals_000 = /* tuple */[
   "0x1.f8p+2"
 ];
 
-var literals_001 = /* :: */[
-  /* tuple */[
+var literals_001 = /* :: */{
+  _0: /* tuple */[
     0.3,
     "0x1.3333333333333p-2"
   ],
-  /* :: */[
-    /* tuple */[
+  _1: /* :: */{
+    _0: /* tuple */[
       Pervasives.infinity,
       "infinity"
     ],
-    /* :: */[
-      /* tuple */[
+    _1: /* :: */{
+      _0: /* tuple */[
         0.4,
         "0x1.999999999999ap-2"
       ],
-      /* :: */[
-        /* tuple */[
+      _1: /* :: */{
+        _0: /* tuple */[
           0.5,
           "0x1p-1"
         ],
-        /* :: */[
-          /* tuple */[
+        _1: /* :: */{
+          _0: /* tuple */[
             0.6,
             "0x1.3333333333333p-1"
           ],
-          /* :: */[
-            /* tuple */[
+          _1: /* :: */{
+            _0: /* tuple */[
               0.7,
               "0x1.6666666666666p-1"
             ],
-            /* :: */[
-              /* tuple */[
+            _1: /* :: */{
+              _0: /* tuple */[
                 0.8,
                 "0x1.999999999999ap-1"
               ],
-              /* :: */[
-                /* tuple */[
+              _1: /* :: */{
+                _0: /* tuple */[
                   0.9,
                   "0x1.ccccccccccccdp-1"
                 ],
-                /* [] */0
-              ]
-            ]
-          ]
-        ]
-      ]
-    ]
-  ]
-];
+                _1: /* [] */0
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+};
 
-var literals = /* :: */[
-  literals_000,
-  literals_001
-];
+var literals = /* :: */{
+  _0: literals_000,
+  _1: literals_001
+};
 
 aux_list("File \"format_test.ml\", line 110, characters 11-18", literals);
 
-eq("File \"format_test.ml\", line 113, characters 5-12", Curry._1(Printf.sprintf(/* Format */[
-              /* Float */Block.__(8, [
-                  /* Float_H */19,
-                  /* No_padding */0,
-                  /* No_precision */0,
-                  /* End_of_format */0
-                ]),
-              "%H"
-            ]), 7.875), "0X1.F8P+2");
+eq("File \"format_test.ml\", line 113, characters 5-12", Curry._1(Printf.sprintf(/* Format */{
+              _0: {
+                tag: /* Float */8,
+                _0: /* Float_H */19,
+                _1: /* No_padding */0,
+                _2: /* No_precision */0,
+                _3: /* End_of_format */0
+              },
+              _1: "%H"
+            }), 7.875), "0X1.F8P+2");
 
 function scan_float(loc, s, expect) {
-  return Curry._1(Scanf.sscanf(s, /* Format */[
-                  /* Float */Block.__(8, [
-                      /* Float_h */16,
-                      /* No_padding */0,
-                      /* No_precision */0,
-                      /* End_of_format */0
-                    ]),
-                  "%h"
-                ]), (function (result) {
+  return Curry._1(Scanf.sscanf(s, /* Format */{
+                  _0: {
+                    tag: /* Float */8,
+                    _0: /* Float_h */16,
+                    _1: /* No_padding */0,
+                    _2: /* No_precision */0,
+                    _3: /* End_of_format */0
+                  },
+                  _1: "%h"
+                }), (function (result) {
                 return eq(loc, result, expect);
               }));
 }

@@ -103,30 +103,30 @@ var suites_000 = /* tuple */[
   is_equal
 ];
 
-var suites_001 = /* :: */[
-  /* tuple */[
+var suites_001 = /* :: */{
+  _0: /* tuple */[
     "is_exception",
     is_exception
   ],
-  /* :: */[
-    /* tuple */[
+  _1: /* :: */{
+    _0: /* tuple */[
       "is_normal_exception",
       is_normal_exception
     ],
-    /* :: */[
-      /* tuple */[
+    _1: /* :: */{
+      _0: /* tuple */[
         "is_arbitrary_exception",
         is_arbitrary_exception
       ],
-      /* [] */0
-    ]
-  ]
-];
+      _1: /* [] */0
+    }
+  }
+};
 
-var suites = /* :: */[
-  suites_000,
-  suites_001
-];
+var suites = /* :: */{
+  _0: suites_000,
+  _1: suites_001
+};
 
 var e = {
   RE_EXN_ID: "Not_found"

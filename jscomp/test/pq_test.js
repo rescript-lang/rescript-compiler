@@ -4,31 +4,31 @@ var Caml_exceptions = require("../../lib/js/caml_exceptions.js");
 
 function insert(queue, prio, elt) {
   if (!queue) {
-    return /* Node */[
-            prio,
-            elt,
-            /* Empty */0,
-            /* Empty */0
-          ];
+    return /* Node */{
+            _0: prio,
+            _1: elt,
+            _2: /* Empty */0,
+            _3: /* Empty */0
+          };
   }
-  var right = queue[3];
-  var left = queue[2];
-  var e = queue[1];
-  var p = queue[0];
+  var right = queue._3;
+  var left = queue._2;
+  var e = queue._1;
+  var p = queue._0;
   if (prio <= p) {
-    return /* Node */[
-            prio,
-            elt,
-            insert(right, p, e),
-            left
-          ];
+    return /* Node */{
+            _0: prio,
+            _1: elt,
+            _2: insert(right, p, e),
+            _3: left
+          };
   } else {
-    return /* Node */[
-            p,
-            e,
-            insert(right, prio, elt),
-            left
-          ];
+    return /* Node */{
+            _0: p,
+            _1: e,
+            _2: insert(right, prio, elt),
+            _3: left
+          };
   }
 }
 
@@ -36,30 +36,30 @@ var Queue_is_empty = Caml_exceptions.create("Pq_test.PrioQueue.Queue_is_empty");
 
 function remove_top(param) {
   if (param) {
-    var left = param[2];
-    if (!param[3]) {
+    var left = param._2;
+    if (!param._3) {
       return left;
     }
     if (!left) {
-      return param[3];
+      return param._3;
     }
-    var right = param[3];
-    var rprio = right[0];
-    var lprio = left[0];
+    var right = param._3;
+    var rprio = right._0;
+    var lprio = left._0;
     if (lprio <= rprio) {
-      return /* Node */[
-              lprio,
-              left[1],
-              remove_top(left),
-              right
-            ];
+      return /* Node */{
+              _0: lprio,
+              _1: left._1,
+              _2: remove_top(left),
+              _3: right
+            };
     } else {
-      return /* Node */[
-              rprio,
-              right[1],
-              left,
-              remove_top(right)
-            ];
+      return /* Node */{
+              _0: rprio,
+              _1: right._1,
+              _2: left,
+              _3: remove_top(right)
+            };
     }
   }
   throw {
@@ -71,8 +71,8 @@ function remove_top(param) {
 function extract(queue) {
   if (queue) {
     return /* tuple */[
-            queue[0],
-            queue[1],
+            queue._0,
+            queue._1,
             remove_top(queue)
           ];
   }

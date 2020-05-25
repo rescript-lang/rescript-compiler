@@ -31,33 +31,45 @@ var Int3 = Caml_module.init_mod(/* tuple */[
       "recursive_module.ml",
       27,
       6
-    ], /* Module */Block.__(0, [[/* tuple */[
-            /* Function */0,
-            "u"
-          ]]]));
+    ], {
+      tag: /* Module */0,
+      _0: [/* tuple */[
+          /* Function */0,
+          "u"
+        ]]
+    });
 
-Caml_module.update_mod(/* Module */Block.__(0, [[/* tuple */[
-            /* Function */0,
-            "u"
-          ]]]), Int3, Int3);
+Caml_module.update_mod({
+      tag: /* Module */0,
+      _0: [/* tuple */[
+          /* Function */0,
+          "u"
+        ]]
+    }, Int3, Int3);
 
 var Inta = Caml_module.init_mod(/* tuple */[
       "recursive_module.ml",
       31,
       6
-    ], /* Module */Block.__(0, [[/* tuple */[
-            /* Lazy */1,
-            "a"
-          ]]]));
+    ], {
+      tag: /* Module */0,
+      _0: [/* tuple */[
+          /* Lazy */1,
+          "a"
+        ]]
+    });
 
 var Intb = Caml_module.init_mod(/* tuple */[
       "recursive_module.ml",
       36,
       6
-    ], /* Module */Block.__(0, [[/* tuple */[
-            /* Lazy */1,
-            "a"
-          ]]]));
+    ], {
+      tag: /* Module */0,
+      _0: [/* tuple */[
+          /* Lazy */1,
+          "a"
+        ]]
+    });
 
 var a = {
   RE_LAZY_DONE: false,
@@ -66,10 +78,13 @@ var a = {
     })
 };
 
-Caml_module.update_mod(/* Module */Block.__(0, [[/* tuple */[
-            /* Lazy */1,
-            "a"
-          ]]]), Inta, {
+Caml_module.update_mod({
+      tag: /* Module */0,
+      _0: [/* tuple */[
+          /* Lazy */1,
+          "a"
+        ]]
+    }, Inta, {
       a: a
     });
 
@@ -80,10 +95,13 @@ var a$1 = {
     })
 };
 
-Caml_module.update_mod(/* Module */Block.__(0, [[/* tuple */[
-            /* Lazy */1,
-            "a"
-          ]]]), Intb, {
+Caml_module.update_mod({
+      tag: /* Module */0,
+      _0: [/* tuple */[
+          /* Lazy */1,
+          "a"
+        ]]
+    }, Intb, {
       a: a$1
     });
 
@@ -107,19 +125,25 @@ var Inta$1 = Caml_module.init_mod(/* tuple */[
       "recursive_module.ml",
       48,
       8
-    ], /* Module */Block.__(0, [[/* tuple */[
-            /* Lazy */1,
-            "a"
-          ]]]));
+    ], {
+      tag: /* Module */0,
+      _0: [/* tuple */[
+          /* Lazy */1,
+          "a"
+        ]]
+    });
 
 var Intb$1 = Caml_module.init_mod(/* tuple */[
       "recursive_module.ml",
       53,
       8
-    ], /* Module */Block.__(0, [[/* tuple */[
-            /* Lazy */1,
-            "a"
-          ]]]));
+    ], {
+      tag: /* Module */0,
+      _0: [/* tuple */[
+          /* Lazy */1,
+          "a"
+        ]]
+    });
 
 var a$2 = {
   RE_LAZY_DONE: false,
@@ -128,10 +152,13 @@ var a$2 = {
     })
 };
 
-Caml_module.update_mod(/* Module */Block.__(0, [[/* tuple */[
-            /* Lazy */1,
-            "a"
-          ]]]), Inta$1, {
+Caml_module.update_mod({
+      tag: /* Module */0,
+      _0: [/* tuple */[
+          /* Lazy */1,
+          "a"
+        ]]
+    }, Inta$1, {
       a: a$2
     });
 
@@ -140,10 +167,13 @@ var a$3 = {
   value: 2
 };
 
-Caml_module.update_mod(/* Module */Block.__(0, [[/* tuple */[
-            /* Lazy */1,
-            "a"
-          ]]]), Intb$1, {
+Caml_module.update_mod({
+      tag: /* Module */0,
+      _0: [/* tuple */[
+          /* Lazy */1,
+          "a"
+        ]]
+    }, Intb$1, {
       a: a$3
     });
 

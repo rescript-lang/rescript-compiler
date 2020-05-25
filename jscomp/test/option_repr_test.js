@@ -112,16 +112,16 @@ var length_10_id = Belt_List.makeBy(10, (function (x) {
       }));
 
 function f13$1(param) {
-  return Caml_obj.caml_equal(Belt_List.take(length_10_id, 8), /* :: */[
-              1,
-              /* :: */[
-                2,
-                /* :: */[
-                  3,
-                  /* [] */0
-                ]
-              ]
-            ]);
+  return Caml_obj.caml_equal(Belt_List.take(length_10_id, 8), /* :: */{
+              _0: 1,
+              _1: /* :: */{
+                _0: 2,
+                _1: /* :: */{
+                  _0: 3,
+                  _1: /* [] */0
+                }
+              }
+            });
 }
 
 b("File \"option_repr_test.ml\", line 94, characters 4-11", Caml_obj.caml_lessthan(undefined, null));
@@ -176,10 +176,10 @@ function all_true(xs) {
 
 var xs_000 = gtx(Caml_option.some(null), Caml_option.some(undefined));
 
-var xs = /* :: */[
-  xs_000,
-  /* [] */0
-];
+var xs = /* :: */{
+  _0: xs_000,
+  _1: /* [] */0
+};
 
 b("File \"option_repr_test.ml\", line 121, characters 5-12", Belt_List.every(xs, (function (x) {
             return x;
@@ -187,44 +187,44 @@ b("File \"option_repr_test.ml\", line 121, characters 5-12", Belt_List.every(xs,
 
 var xs_000$1 = ltx(Caml_option.some(undefined), 3);
 
-var xs_001 = /* :: */[
-  ltx(Caml_option.some(undefined), Caml_option.some(Caml_option.some(undefined))),
-  /* :: */[
-    ltx(Caml_option.some(undefined), "3"),
-    /* :: */[
-      ltx(Caml_option.some(undefined), true),
-      /* :: */[
-        ltx(Caml_option.some(undefined), false),
-        /* :: */[
-          ltx(false, true),
-          /* :: */[
-            ltx(false, true),
-            /* :: */[
-              ltx(undefined, Caml_option.some(undefined)),
-              /* :: */[
-                ltx(undefined, null),
-                /* :: */[
-                  ltx(undefined, (function (x) {
+var xs_001 = /* :: */{
+  _0: ltx(Caml_option.some(undefined), Caml_option.some(Caml_option.some(undefined))),
+  _1: /* :: */{
+    _0: ltx(Caml_option.some(undefined), "3"),
+    _1: /* :: */{
+      _0: ltx(Caml_option.some(undefined), true),
+      _1: /* :: */{
+        _0: ltx(Caml_option.some(undefined), false),
+        _1: /* :: */{
+          _0: ltx(false, true),
+          _1: /* :: */{
+            _0: ltx(false, true),
+            _1: /* :: */{
+              _0: ltx(undefined, Caml_option.some(undefined)),
+              _1: /* :: */{
+                _0: ltx(undefined, null),
+                _1: /* :: */{
+                  _0: ltx(undefined, (function (x) {
                           return x;
                         })),
-                  /* :: */[
-                    ltx(null, 3),
-                    /* [] */0
-                  ]
-                ]
-              ]
-            ]
-          ]
-        ]
-      ]
-    ]
-  ]
-];
+                  _1: /* :: */{
+                    _0: ltx(null, 3),
+                    _1: /* [] */0
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+};
 
-var xs$1 = /* :: */[
-  xs_000$1,
-  xs_001
-];
+var xs$1 = /* :: */{
+  _0: xs_000$1,
+  _1: xs_001
+};
 
 b("File \"option_repr_test.ml\", line 127, characters 5-12", Belt_List.every(xs$1, (function (x) {
             return x;
@@ -232,24 +232,24 @@ b("File \"option_repr_test.ml\", line 127, characters 5-12", Belt_List.every(xs$
 
 var xs_000$2 = eqx(undefined, undefined);
 
-var xs_001$1 = /* :: */[
-  neqx(undefined, null),
-  /* :: */[
-    eqx(Caml_option.some(undefined), Caml_option.some(undefined)),
-    /* :: */[
-      eqx(Caml_option.some(Caml_option.some(undefined)), Caml_option.some(Caml_option.some(undefined))),
-      /* :: */[
-        neqx(Caml_option.some(Caml_option.some(Caml_option.some(undefined))), Caml_option.some(Caml_option.some(undefined))),
-        /* [] */0
-      ]
-    ]
-  ]
-];
+var xs_001$1 = /* :: */{
+  _0: neqx(undefined, null),
+  _1: /* :: */{
+    _0: eqx(Caml_option.some(undefined), Caml_option.some(undefined)),
+    _1: /* :: */{
+      _0: eqx(Caml_option.some(Caml_option.some(undefined)), Caml_option.some(Caml_option.some(undefined))),
+      _1: /* :: */{
+        _0: neqx(Caml_option.some(Caml_option.some(Caml_option.some(undefined))), Caml_option.some(Caml_option.some(undefined))),
+        _1: /* [] */0
+      }
+    }
+  }
+};
 
-var xs$2 = /* :: */[
-  xs_000$2,
-  xs_001$1
-];
+var xs$2 = /* :: */{
+  _0: xs_000$2,
+  _1: xs_001$1
+};
 
 b("File \"option_repr_test.ml\", line 143, characters 5-12", Belt_List.every(xs$2, (function (x) {
             return x;

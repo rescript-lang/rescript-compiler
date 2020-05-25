@@ -35,10 +35,10 @@ function path(param) {
         if (i < 0) {
           return res;
         }
-        _res = /* :: */[
-          a[i],
-          res
-        ];
+        _res = /* :: */{
+          _0: a[i],
+          _1: res
+        };
         _i = i - 1 | 0;
         continue ;
       };
@@ -116,11 +116,11 @@ function urlNotEqual(a, b) {
       if (!bList) {
         return true;
       }
-      if (aList[0] !== bList[0]) {
+      if (aList._0 !== bList._0) {
         return true;
       }
-      _bList = bList[1];
-      _aList = aList[1];
+      _bList = bList._1;
+      _aList = aList._1;
       continue ;
     };
   }

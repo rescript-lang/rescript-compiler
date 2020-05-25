@@ -38,7 +38,7 @@ function length_aux(_len, _param) {
     if (!param) {
       return len;
     }
-    _param = param[1];
+    _param = param._1;
     _len = len + 1 | 0;
     continue ;
   };

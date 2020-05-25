@@ -18,9 +18,13 @@ function eq(loc, x, y) {
 
 eq("File \"406_primitive_test.ml\", line 18, characters 6-13", 32, 32);
 
-var backend_type = /* Other */["BS"];
+var backend_type = /* Other */{
+  _0: "BS"
+};
 
-eq("File \"406_primitive_test.ml\", line 29, characters 6-13", backend_type, /* Other */["BS"]);
+eq("File \"406_primitive_test.ml\", line 29, characters 6-13", backend_type, /* Other */{
+      _0: "BS"
+    });
 
 function f(param) {
   var A = Caml_exceptions.create("A");

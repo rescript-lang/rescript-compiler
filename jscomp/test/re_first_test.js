@@ -16,16 +16,16 @@ function eq(loc, x, y) {
   return Mt.eq_suites(test_id, suites, loc, x, y);
 }
 
-var x = List.length(/* :: */[
-      1,
-      /* :: */[
-        2,
-        /* :: */[
-          3,
-          /* [] */0
-        ]
-      ]
-    ]);
+var x = List.length(/* :: */{
+      _0: 1,
+      _1: /* :: */{
+        _0: 2,
+        _1: /* :: */{
+          _0: 3,
+          _1: /* [] */0
+        }
+      }
+    });
 
 var jsMapperConstantArray = [
   /* tuple */[

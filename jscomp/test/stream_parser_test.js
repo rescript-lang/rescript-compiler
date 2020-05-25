@@ -25,14 +25,17 @@ function parse(token) {
       return Curry._1(token, undefined);
     }
     catch (exn){
-      return /* Kwd */Block.__(0, ["=="]);
+      return {
+              tag: /* Kwd */0,
+              _0: "=="
+            };
     }
   };
   var parse_atom = function (param) {
     var n = token$1(undefined);
     switch (n.tag | 0) {
       case /* Kwd */0 :
-          if (n[0] === "(") {
+          if (n._0 === "(") {
             var v = parse_expr_aux(parse_term_aux(parse_atom(undefined)));
             var match = token$1(undefined);
             if (match.tag) {
@@ -42,7 +45,7 @@ function parse(token) {
                     Error: new Error()
                   };
             }
-            if (match[0] === ")") {
+            if (match._0 === ")") {
               return v;
             }
             throw {
@@ -58,7 +61,7 @@ function parse(token) {
                 Error: new Error()
               };
       case /* Int */2 :
-          return n[0];
+          return n._0;
       default:
         Queue.push(n, look_ahead);
         throw {
@@ -74,7 +77,7 @@ function parse(token) {
       Queue.push(e, look_ahead);
       return e1;
     }
-    switch (e[0]) {
+    switch (e._0) {
       case "*" :
           return Math.imul(e1, parse_term_aux(parse_atom(undefined)));
       case "/" :
@@ -90,7 +93,7 @@ function parse(token) {
       Queue.push(e, look_ahead);
       return e1;
     }
-    switch (e[0]) {
+    switch (e._0) {
       case "+" :
           return e1 + parse_expr_aux(parse_term_aux(parse_atom(undefined))) | 0;
       case "-" :
@@ -104,33 +107,33 @@ function parse(token) {
   return /* tuple */[
           r,
           Queue.fold((function (acc, x) {
-                  return /* :: */[
-                          x,
-                          acc
-                        ];
+                  return /* :: */{
+                          _0: x,
+                          _1: acc
+                        };
                 }), /* [] */0, look_ahead)
         ];
 }
 
-var lexer = Genlex.make_lexer(/* :: */[
-      "(",
-      /* :: */[
-        "*",
-        /* :: */[
-          "/",
-          /* :: */[
-            "+",
-            /* :: */[
-              "-",
-              /* :: */[
-                ")",
-                /* [] */0
-              ]
-            ]
-          ]
-        ]
-      ]
-    ]);
+var lexer = Genlex.make_lexer(/* :: */{
+      _0: "(",
+      _1: /* :: */{
+        _0: "*",
+        _1: /* :: */{
+          _0: "/",
+          _1: /* :: */{
+            _0: "+",
+            _1: /* :: */{
+              _0: "-",
+              _1: /* :: */{
+                _0: ")",
+                _1: /* [] */0
+              }
+            }
+          }
+        }
+      }
+    });
 
 function token(chars) {
   var strm = lexer(chars);
@@ -153,7 +156,10 @@ function l_parse(token) {
       return Curry._1(token, undefined);
     }
     catch (exn){
-      return /* Kwd */Block.__(0, ["=="]);
+      return {
+              tag: /* Kwd */0,
+              _0: "=="
+            };
     }
   };
   var parse_f_aux = function (_a) {
@@ -164,7 +170,7 @@ function l_parse(token) {
         Queue.push(t, look_ahead);
         return a;
       }
-      switch (t[0]) {
+      switch (t._0) {
         case "*" :
             _a = Math.imul(a, parse_f(undefined));
             continue ;
@@ -181,7 +187,7 @@ function l_parse(token) {
     var i = token$1(undefined);
     switch (i.tag | 0) {
       case /* Kwd */0 :
-          if (i[0] === "(") {
+          if (i._0 === "(") {
             var v = parse_t_aux(parse_f_aux(parse_f(undefined)));
             var t = token$1(undefined);
             if (t.tag) {
@@ -191,7 +197,7 @@ function l_parse(token) {
                     Error: new Error()
                   };
             }
-            if (t[0] === ")") {
+            if (t._0 === ")") {
               return v;
             }
             throw {
@@ -206,7 +212,7 @@ function l_parse(token) {
                 Error: new Error()
               };
       case /* Int */2 :
-          return i[0];
+          return i._0;
       default:
         throw {
               RE_EXN_ID: Parse_error,
@@ -223,7 +229,7 @@ function l_parse(token) {
         Queue.push(t, look_ahead);
         return a;
       }
-      switch (t[0]) {
+      switch (t._0) {
         case "+" :
             _a = a + parse_f_aux(parse_f(undefined)) | 0;
             continue ;
@@ -240,10 +246,10 @@ function l_parse(token) {
   return /* tuple */[
           r,
           Queue.fold((function (acc, x) {
-                  return /* :: */[
-                          x,
-                          acc
-                        ];
+                  return /* :: */{
+                          _0: x,
+                          _1: acc
+                        };
                 }), /* [] */0, look_ahead)
         ];
 }
@@ -258,18 +264,19 @@ var test_id = {
 
 function eq(loc, x, y) {
   test_id.contents = test_id.contents + 1 | 0;
-  suites.contents = /* :: */[
-    /* tuple */[
+  suites.contents = /* :: */{
+    _0: /* tuple */[
       loc + (" id " + String(test_id.contents)),
       (function (param) {
-          return /* Eq */Block.__(0, [
-                    x,
-                    y
-                  ]);
+          return {
+                  tag: /* Eq */0,
+                  _0: x,
+                  _1: y
+                };
         })
     ],
-    suites.contents
-  ];
+    _1: suites.contents
+  };
   
 }
 
@@ -280,26 +287,35 @@ eq("File \"stream_parser_test.ml\", line 132, characters 5-12", /* tuple */[
       match[1]
     ], /* tuple */[
       10,
-      /* :: */[
-        /* Ident */Block.__(1, ["a"]),
-        /* [] */0
-      ]
+      /* :: */{
+        _0: {
+          tag: /* Ident */1,
+          _0: "a"
+        },
+        _1: /* [] */0
+      }
     ]);
 
 eq("File \"stream_parser_test.ml\", line 133, characters 5-12", /* tuple */[
       2,
-      /* :: */[
-        /* Kwd */Block.__(0, ["=="]),
-        /* [] */0
-      ]
+      /* :: */{
+        _0: {
+          tag: /* Kwd */0,
+          _0: "=="
+        },
+        _1: /* [] */0
+      }
     ], parse(token(Stream.of_string("3 - 2  - 1"))));
 
 eq("File \"stream_parser_test.ml\", line 134, characters 5-12", /* tuple */[
       0,
-      /* :: */[
-        /* Kwd */Block.__(0, ["=="]),
-        /* [] */0
-      ]
+      /* :: */{
+        _0: {
+          tag: /* Kwd */0,
+          _0: "=="
+        },
+        _1: /* [] */0
+      }
     ], l_parse(token(Stream.of_string("3 - 2  - 1"))));
 
 Mt.from_pair_suites("Stream_parser_test", suites.contents);

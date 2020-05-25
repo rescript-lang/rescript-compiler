@@ -248,9 +248,9 @@ function make_particle(param) {
 function make_type(typ, dir) {
   switch (typ.tag | 0) {
     case /* SPlayer */0 :
-        var pt = typ[0];
+        var pt = typ._0;
         var spr_type = /* tuple */[
-          typ[1],
+          typ._1,
           dir
         ];
         if (pt) {
@@ -502,11 +502,11 @@ function make_type(typ, dir) {
         }
     case /* SEnemy */1 :
         return make_enemy(/* tuple */[
-                    typ[0],
+                    typ._0,
                     dir
                   ]);
     case /* SItem */2 :
-        var param = typ[0];
+        var param = typ._0;
         switch (param) {
           case /* Mushroom */0 :
               return setup_sprite(undefined, /* tuple */[
@@ -555,7 +555,7 @@ function make_type(typ, dir) {
           
         }
     case /* SBlock */3 :
-        var param$1 = typ[0];
+        var param$1 = typ._0;
         if (typeof param$1 !== "number") {
           return setup_sprite(undefined, undefined, undefined, "blocks.png", 4, 15, /* tuple */[
                       16,
@@ -819,20 +819,21 @@ function make_type$2(t) {
     case /* SPlayer */0 :
         return setup_obj(undefined, 2.8, undefined);
     case /* SEnemy */1 :
-        var param = t[0];
+        var param = t._0;
         if (param >= 3) {
           return setup_obj(undefined, 3, undefined);
         } else {
           return setup_obj(undefined, undefined, undefined);
         }
     case /* SItem */2 :
-        var param$1 = t[0];
+        var param$1 = t._0;
         if (param$1 >= 3) {
           return setup_obj(false, undefined, undefined);
         } else {
           return setup_obj(undefined, undefined, undefined);
         }
     case /* SBlock */3 :
+        t._0;
         return setup_obj(false, undefined, undefined);
     
   }
@@ -884,40 +885,44 @@ function spawn(spawnable, context, param) {
   var spr = match[0];
   switch (spawnable.tag | 0) {
     case /* SPlayer */0 :
-        return /* Player */Block.__(0, [
-                  spawnable[0],
-                  spr,
-                  obj
-                ]);
+        return {
+                tag: /* Player */0,
+                _0: spawnable._0,
+                _1: spr,
+                _2: obj
+              };
     case /* SEnemy */1 :
         set_vel_to_speed(obj);
-        return /* Enemy */Block.__(1, [
-                  spawnable[0],
-                  spr,
-                  obj
-                ]);
+        return {
+                tag: /* Enemy */1,
+                _0: spawnable._0,
+                _1: spr,
+                _2: obj
+              };
     case /* SItem */2 :
-        return /* Item */Block.__(2, [
-                  spawnable[0],
-                  spr,
-                  obj
-                ]);
+        return {
+                tag: /* Item */2,
+                _0: spawnable._0,
+                _1: spr,
+                _2: obj
+              };
     case /* SBlock */3 :
-        return /* Block */Block.__(3, [
-                  spawnable[0],
-                  spr,
-                  obj
-                ]);
+        return {
+                tag: /* Block */3,
+                _0: spawnable._0,
+                _1: spr,
+                _2: obj
+              };
     
   }
 }
 
 function get_sprite(param) {
-  return param[1];
+  return param._1;
 }
 
 function get_obj(param) {
-  return param[2];
+  return param._2;
 }
 
 function is_player(param) {
@@ -937,7 +942,7 @@ function is_enemy(param) {
 }
 
 function equals(col1, col2) {
-  return col1[2].id === col2[2].id;
+  return col1._2.id === col2._2.id;
 }
 
 function normalize_pos(pos, p1, p2) {
@@ -1003,42 +1008,47 @@ function update_player(player, keys, context) {
   if (!prev_jumping && player.jumping) {
     return /* tuple */[
             pl_typ,
-            make(/* SPlayer */Block.__(0, [
-                    pl_typ,
-                    /* Jumping */1
-                  ]), player.dir, context)
+            make({
+                  tag: /* SPlayer */0,
+                  _0: pl_typ,
+                  _1: /* Jumping */1
+                }, player.dir, context)
           ];
   } else if (prev_dir !== player.dir || prev_vx === 0 && Math.abs(player.vel.x) > 0 && !player.jumping) {
     return /* tuple */[
             pl_typ,
-            make(/* SPlayer */Block.__(0, [
-                    pl_typ,
-                    /* Running */2
-                  ]), player.dir, context)
+            make({
+                  tag: /* SPlayer */0,
+                  _0: pl_typ,
+                  _1: /* Running */2
+                }, player.dir, context)
           ];
   } else if (prev_dir !== player.dir && player.jumping && prev_jumping) {
     return /* tuple */[
             pl_typ,
-            make(/* SPlayer */Block.__(0, [
-                    pl_typ,
-                    /* Jumping */1
-                  ]), player.dir, context)
+            make({
+                  tag: /* SPlayer */0,
+                  _0: pl_typ,
+                  _1: /* Jumping */1
+                }, player.dir, context)
           ];
   } else if (player.vel.y === 0 && player.crouch) {
     return /* tuple */[
             pl_typ,
-            make(/* SPlayer */Block.__(0, [
-                    pl_typ,
-                    /* Crouching */3
-                  ]), player.dir, context)
+            make({
+                  tag: /* SPlayer */0,
+                  _0: pl_typ,
+                  _1: /* Crouching */3
+                }, player.dir, context)
           ];
   } else if (player.vel.y === 0 && player.vel.x === 0) {
     return /* tuple */[
             pl_typ,
-            make(/* SPlayer */Block.__(0, [
-                    pl_typ,
-                    /* Standing */0
-                  ]), player.dir, context)
+            make({
+                  tag: /* SPlayer */0,
+                  _0: pl_typ,
+                  _1: /* Standing */0
+                }, player.dir, context)
           ];
   } else {
     return ;
@@ -1119,31 +1129,39 @@ function evolve_enemy(player_dir, typ, spr, obj, context) {
         obj.kill = true;
         return ;
     case /* GKoopa */1 :
-        var match = make$2(undefined, obj.dir, /* SEnemy */Block.__(1, [/* GKoopaShell */3]), context, /* tuple */[
+        var match = make$2(undefined, obj.dir, {
+              tag: /* SEnemy */1,
+              _0: /* GKoopaShell */3
+            }, context, /* tuple */[
               obj.pos.x,
               obj.pos.y
             ]);
         var new_obj = match[1];
         var new_spr = match[0];
         normalize_pos(new_obj.pos, spr.params, new_spr.params);
-        return /* Enemy */Block.__(1, [
-                  /* GKoopaShell */3,
-                  new_spr,
-                  new_obj
-                ]);
+        return {
+                tag: /* Enemy */1,
+                _0: /* GKoopaShell */3,
+                _1: new_spr,
+                _2: new_obj
+              };
     case /* RKoopa */2 :
-        var match$1 = make$2(undefined, obj.dir, /* SEnemy */Block.__(1, [/* RKoopaShell */4]), context, /* tuple */[
+        var match$1 = make$2(undefined, obj.dir, {
+              tag: /* SEnemy */1,
+              _0: /* RKoopaShell */4
+            }, context, /* tuple */[
               obj.pos.x,
               obj.pos.y
             ]);
         var new_obj$1 = match$1[1];
         var new_spr$1 = match$1[0];
         normalize_pos(new_obj$1.pos, spr.params, new_spr$1.params);
-        return /* Enemy */Block.__(1, [
-                  /* RKoopaShell */4,
-                  new_spr$1,
-                  new_obj$1
-                ]);
+        return {
+                tag: /* Enemy */1,
+                _0: /* RKoopaShell */4,
+                _1: new_spr$1,
+                _2: new_obj$1
+              };
     case /* GKoopaShell */3 :
     case /* RKoopaShell */4 :
         break;
@@ -1180,32 +1198,39 @@ function dec_health(obj) {
 
 function evolve_block(obj, context) {
   dec_health(obj);
-  var match = make$2(undefined, undefined, /* SBlock */Block.__(3, [/* QBlockUsed */0]), context, /* tuple */[
+  var match = make$2(undefined, undefined, {
+        tag: /* SBlock */3,
+        _0: /* QBlockUsed */0
+      }, context, /* tuple */[
         obj.pos.x,
         obj.pos.y
       ]);
-  return /* Block */Block.__(3, [
-            /* QBlockUsed */0,
-            match[0],
-            match[1]
-          ]);
+  return {
+          tag: /* Block */3,
+          _0: /* QBlockUsed */0,
+          _1: match[0],
+          _2: match[1]
+        };
 }
 
 function spawn_above(player_dir, obj, typ, context) {
-  var item = spawn(/* SItem */Block.__(2, [typ]), context, /* tuple */[
+  var item = spawn({
+        tag: /* SItem */2,
+        _0: typ
+      }, context, /* tuple */[
         obj.pos.x,
         obj.pos.y
       ]);
-  var item_obj = item[2];
-  item_obj.pos.y = item_obj.pos.y - item[1].params.frame_size[1];
+  var item_obj = item._2;
+  item_obj.pos.y = item_obj.pos.y - item._1.params.frame_size[1];
   item_obj.dir = player_dir ? /* Left */0 : /* Right */1;
   set_vel_to_speed(item_obj);
   return item;
 }
 
 function get_aabb(obj) {
-  var spr = obj[1].params;
-  var obj$1 = obj[2];
+  var spr = obj._1.params;
+  var obj$1 = obj._2;
   var match = spr.bbox_offset;
   var box = obj$1.pos.x + match[0];
   var boy = obj$1.pos.y + match[1];
@@ -1225,12 +1250,12 @@ function get_aabb(obj) {
 }
 
 function col_bypass(c1, c2) {
-  var o1 = c1[2];
-  var o2 = c2[2];
+  var o1 = c1._2;
+  var o2 = c2._2;
   var ctypes;
   switch (c1.tag | 0) {
     case /* Player */0 :
-        ctypes = c2.tag === /* Enemy */1 ? c1[2].invuln > 0 : false;
+        ctypes = c2.tag === /* Enemy */1 ? c1._2.invuln > 0 : false;
         break;
     case /* Enemy */1 :
         ctypes = c2.tag === /* Item */2 ? true : false;
@@ -1263,7 +1288,7 @@ function col_bypass(c1, c2) {
 function check_collision(c1, c2) {
   var b1 = get_aabb(c1);
   var b2 = get_aabb(c2);
-  var o1 = c1[2];
+  var o1 = c1._2;
   if (col_bypass(c1, c2)) {
     return ;
   }
@@ -1298,38 +1323,38 @@ function kill(collid, ctx) {
     case /* Player */0 :
         return /* [] */0;
     case /* Enemy */1 :
-        var o = collid[2];
+        var o = collid._2;
         var pos_000 = o.pos.x;
         var pos_001 = o.pos.y;
         var pos = /* tuple */[
           pos_000,
           pos_001
         ];
-        var score = o.score > 0 ? /* :: */[
-            make_score(o.score, pos, ctx),
-            /* [] */0
-          ] : /* [] */0;
-        var remains = collid[0] !== 0 ? /* [] */0 : /* :: */[
-            make$1(undefined, undefined, /* GoombaSquish */0, pos, ctx),
-            /* [] */0
-          ];
+        var score = o.score > 0 ? /* :: */({
+              _0: make_score(o.score, pos, ctx),
+              _1: /* [] */0
+            }) : /* [] */0;
+        var remains = collid._0 !== 0 ? /* [] */0 : /* :: */({
+              _0: make$1(undefined, undefined, /* GoombaSquish */0, pos, ctx),
+              _1: /* [] */0
+            });
         return Pervasives.$at(score, remains);
     case /* Item */2 :
-        var o$1 = collid[2];
-        if (collid[0] !== 0) {
+        var o$1 = collid._2;
+        if (collid._0 !== 0) {
           return /* [] */0;
         } else {
-          return /* :: */[
-                  make_score(o$1.score, /* tuple */[
+          return /* :: */{
+                  _0: make_score(o$1.score, /* tuple */[
                         o$1.pos.x,
                         o$1.pos.y
                       ], ctx),
-                  /* [] */0
-                ];
+                  _1: /* [] */0
+                };
         }
     case /* Block */3 :
-        var o$2 = collid[2];
-        var t = collid[0];
+        var o$2 = collid._2;
+        var t = collid._0;
         if (typeof t !== "number") {
           return /* [] */0;
         }
@@ -1370,19 +1395,19 @@ function kill(collid, ctx) {
               0,
               0.2
             ], /* BrickChunkR */2, pos$1, ctx);
-        return /* :: */[
-                p1,
-                /* :: */[
-                  p2,
-                  /* :: */[
-                    p3,
-                    /* :: */[
-                      p4,
-                      /* [] */0
-                    ]
-                  ]
-                ]
-              ];
+        return /* :: */{
+                _0: p1,
+                _1: /* :: */{
+                  _0: p2,
+                  _1: /* :: */{
+                    _0: p3,
+                    _1: /* :: */{
+                      _0: p4,
+                      _1: /* [] */0
+                    }
+                  }
+                }
+              };
     
   }
 }
@@ -1623,8 +1648,8 @@ function process_collision(dir, c1, c2, state) {
   var o2$2;
   switch (c1.tag | 0) {
     case /* Player */0 :
-        var o1$3 = c1[2];
-        var s1$2 = c1[1];
+        var o1$3 = c1._2;
+        var s1$2 = c1._1;
         switch (c2.tag | 0) {
           case /* Player */0 :
               return /* tuple */[
@@ -1632,9 +1657,9 @@ function process_collision(dir, c1, c2, state) {
                       undefined
                     ];
           case /* Enemy */1 :
-              var o2$3 = c2[2];
-              var s2$2 = c2[1];
-              var typ$1 = c2[0];
+              var o2$3 = c2._2;
+              var s2$2 = c2._1;
+              var typ$1 = c2._0;
               if (dir !== 1) {
                 s1$1 = s1$2;
                 o1$1 = o1$3;
@@ -1653,13 +1678,13 @@ function process_collision(dir, c1, c2, state) {
               break;
           case /* Item */2 :
               o1$2 = o1$3;
-              t2$1 = c2[0];
-              o2$2 = c2[2];
+              t2$1 = c2._0;
+              o2$2 = c2._2;
               exit = 3;
               break;
           case /* Block */3 :
-              var o2$4 = c2[2];
-              var t = c2[0];
+              var o2$4 = c2._2;
+              var t = c2._0;
               if (dir !== 0) {
                 var exit$1 = 0;
                 if (typeof t === "number" && t === 4) {
@@ -1703,7 +1728,7 @@ function process_collision(dir, c1, c2, state) {
                               undefined
                             ];
                     }
-                  } else if (c1[0] === /* BigM */0) {
+                  } else if (c1._0 === /* BigM */0) {
                     collide_block(undefined, dir, o1$3);
                     dec_health(o2$4);
                     return /* tuple */[
@@ -1719,7 +1744,7 @@ function process_collision(dir, c1, c2, state) {
                   }
                 }
                 var updated_block = evolve_block(o2$4, context);
-                var spawned_item = spawn_above(o1$3.dir, o2$4, t[0], context);
+                var spawned_item = spawn_above(o1$3.dir, o2$4, t._0, context);
                 collide_block(undefined, dir, o1$3);
                 return /* tuple */[
                         spawned_item,
@@ -1731,13 +1756,13 @@ function process_collision(dir, c1, c2, state) {
         }
         break;
     case /* Enemy */1 :
-        var o1$4 = c1[2];
-        var s1$3 = c1[1];
-        var t1 = c1[0];
+        var o1$4 = c1._2;
+        var s1$3 = c1._1;
+        var t1 = c1._0;
         switch (c2.tag | 0) {
           case /* Player */0 :
-              var o1$5 = c2[2];
-              var s1$4 = c2[1];
+              var o1$5 = c2._2;
+              var s1$4 = c2._1;
               if (dir !== 0) {
                 s1$1 = s1$4;
                 o1$1 = o1$5;
@@ -1755,9 +1780,9 @@ function process_collision(dir, c1, c2, state) {
               }
               break;
           case /* Enemy */1 :
-              var t2$2 = c2[0];
-              var s2$3 = c2[1];
-              var o2$5 = c2[2];
+              var t2$2 = c2._0;
+              var s2$3 = c2._1;
+              var o2$5 = c2._2;
               if (t1 !== 3) {
                 if (t1 < 4) {
                   if (t2$2 >= 3) {
@@ -1824,8 +1849,8 @@ function process_collision(dir, c1, c2, state) {
                       undefined
                     ];
           case /* Block */3 :
-              var o2$6 = c2[2];
-              var t2$3 = c2[0];
+              var o2$6 = c2._2;
+              var t2$3 = c2._0;
               if (dir >= 2) {
                 if (t1 >= 3) {
                   if (typeof t2$3 === "number") {
@@ -1845,7 +1870,7 @@ function process_collision(dir, c1, c2, state) {
                     }
                   }
                   var updated_block$1 = evolve_block(o2$6, context);
-                  var spawned_item$1 = spawn_above(o1$4.dir, o2$6, t2$3[0], context);
+                  var spawned_item$1 = spawn_above(o1$4.dir, o2$6, t2$3._0, context);
                   rev_dir(o1$4, t1, s1$3);
                   return /* tuple */[
                           updated_block$1,
@@ -1867,11 +1892,11 @@ function process_collision(dir, c1, c2, state) {
         }
         break;
     case /* Item */2 :
-        var o2$7 = c1[2];
+        var o2$7 = c1._2;
         switch (c2.tag | 0) {
           case /* Player */0 :
-              o1$2 = c2[2];
-              t2$1 = c1[0];
+              o1$2 = c2._2;
+              t2$1 = c1._0;
               o2$2 = o2$7;
               exit = 3;
               break;
@@ -1990,7 +2015,7 @@ function process_collision(dir, c1, c2, state) {
 }
 
 function broad_phase(collid, all_collids, state) {
-  var obj = collid[2];
+  var obj = collid._2;
   return List.filter(function (c) {
                 if (in_viewport(state.vpt, obj.pos) || is_player(collid)) {
                   return true;
@@ -2013,8 +2038,8 @@ function check_collisions(collid, all_collids, state) {
     if (!cs) {
       return acc;
     }
-    var h = cs[0];
-    var c_obj = collid[2];
+    var h = cs._0;
+    var c_obj = collid._2;
     var new_objs;
     if (equals(collid, h)) {
       new_objs = /* tuple */[
@@ -2023,7 +2048,7 @@ function check_collisions(collid, all_collids, state) {
       ];
     } else {
       var dir = check_collision(collid, h);
-      new_objs = dir !== undefined && h[2].id !== c_obj.id ? process_collision(dir, collid, h, state) : /* tuple */[
+      new_objs = dir !== undefined && h._2.id !== c_obj.id ? process_collision(dir, collid, h, state) : /* tuple */[
           undefined,
           undefined
         ];
@@ -2032,32 +2057,32 @@ function check_collisions(collid, all_collids, state) {
     var acc$1;
     if (o !== undefined) {
       var o2 = new_objs[1];
-      acc$1 = o2 !== undefined ? /* :: */[
-          o,
-          /* :: */[
-            o2,
-            acc
-          ]
-        ] : /* :: */[
-          o,
-          acc
-        ];
+      acc$1 = o2 !== undefined ? /* :: */({
+            _0: o,
+            _1: /* :: */{
+              _0: o2,
+              _1: acc
+            }
+          }) : /* :: */({
+            _0: o,
+            _1: acc
+          });
     } else {
       var o$1 = new_objs[1];
-      acc$1 = o$1 !== undefined ? /* :: */[
-          o$1,
-          acc
-        ] : acc;
+      acc$1 = o$1 !== undefined ? /* :: */({
+            _0: o$1,
+            _1: acc
+          }) : acc;
     }
     _acc = acc$1;
-    _cs = cs[1];
+    _cs = cs._1;
     continue ;
   };
 }
 
 function update_collidable(state, collid, all_collids) {
-  var obj = collid[2];
-  var spr = collid[1];
+  var obj = collid._2;
+  var spr = collid._1;
   obj.invuln = obj.invuln > 0 ? obj.invuln - 1 | 0 : 0;
   var viewport_filter = in_viewport(state.vpt, obj.pos) || is_player(collid) || out_of_viewport_below(state.vpt, obj.pos.y);
   if (!(!obj.kill && viewport_filter)) {
@@ -2088,35 +2113,35 @@ function translate_keys(param) {
     pressed_keys.left,
     /* CLeft */0
   ];
-  var ctrls_001 = /* :: */[
-    /* tuple */[
+  var ctrls_001 = /* :: */{
+    _0: /* tuple */[
       pressed_keys.right,
       /* CRight */1
     ],
-    /* :: */[
-      /* tuple */[
+    _1: /* :: */{
+      _0: /* tuple */[
         pressed_keys.up,
         /* CUp */2
       ],
-      /* :: */[
-        /* tuple */[
+      _1: /* :: */{
+        _0: /* tuple */[
           pressed_keys.down,
           /* CDown */3
         ],
-        /* [] */0
-      ]
-    ]
-  ];
-  var ctrls = /* :: */[
-    ctrls_000,
-    ctrls_001
-  ];
+        _1: /* [] */0
+      }
+    }
+  };
+  var ctrls = /* :: */{
+    _0: ctrls_000,
+    _1: ctrls_001
+  };
   return List.fold_left((function (a, x) {
                 if (x[0]) {
-                  return /* :: */[
-                          x[1],
-                          a
-                        ];
+                  return /* :: */{
+                          _0: x[1],
+                          _1: a
+                        };
                 } else {
                   return a;
                 }
@@ -2125,31 +2150,32 @@ function translate_keys(param) {
 
 function run_update_collid(state, collid, all_collids) {
   if (collid.tag) {
-    var obj = collid[2];
+    var obj = collid._2;
     var evolved = update_collidable(state, collid, all_collids);
     if (!obj.kill) {
-      collid_objs.contents = /* :: */[
-        collid,
-        Pervasives.$at(collid_objs.contents, evolved)
-      ];
+      collid_objs.contents = /* :: */{
+        _0: collid,
+        _1: Pervasives.$at(collid_objs.contents, evolved)
+      };
     }
     var new_parts = obj.kill ? kill(collid, state.ctx) : /* [] */0;
     particles.contents = Pervasives.$at(particles.contents, new_parts);
     return collid;
   }
-  var o = collid[2];
+  var o = collid._2;
   var keys = translate_keys(undefined);
   o.crouch = false;
   var match = update_player(o, keys, state.ctx);
   var player;
   if (match !== undefined) {
     var new_spr = match[1];
-    normalize_pos(o.pos, collid[1].params, new_spr.params);
-    player = /* Player */Block.__(0, [
-        match[0],
-        new_spr,
-        o
-      ]);
+    normalize_pos(o.pos, collid._1.params, new_spr.params);
+    player = {
+      tag: /* Player */0,
+      _0: match[0],
+      _1: new_spr,
+      _2: o
+    };
   } else {
     player = collid;
   }
@@ -2170,7 +2196,7 @@ function update_loop(canvas, param, map_dim) {
   var state = {
     bgd: make_bgd(ctx),
     ctx: ctx,
-    vpt: update(viewport, player[2].pos),
+    vpt: update(viewport, player._2.pos),
     map: map_dim[1],
     score: 0,
     coins: 0,
@@ -2191,13 +2217,13 @@ function update_loop(canvas, param, map_dim) {
     var bgd_width = state.bgd.params.frame_size[0] | 0;
     draw_bgd(state.bgd, Caml_int32.mod_(vpos_x_int, bgd_width));
     var player$1 = run_update_collid(state, player, objs);
-    if (player$1[2].kill === true) {
+    if (player$1._2.kill === true) {
       return game_loss(state.ctx);
     }
     var state$1 = {
       bgd: state.bgd,
       ctx: state.ctx,
-      vpt: update(state.vpt, player$1[2].pos),
+      vpt: update(state.vpt, player$1._2.pos),
       map: state.map,
       score: state.score,
       coins: state.coins,
@@ -2217,10 +2243,10 @@ function update_loop(canvas, param, map_dim) {
                   y
                 ]);
             if (!part.kill) {
-              particles.contents = /* :: */[
-                part,
-                particles.contents
-              ];
+              particles.contents = /* :: */{
+                _0: part,
+                _1: particles.contents
+              };
               return ;
             }
             
@@ -2362,10 +2388,10 @@ function mem_loc(checkloc, _loclist) {
     if (!loclist) {
       return false;
     }
-    if (Caml_obj.caml_equal(checkloc, loclist[0][1])) {
+    if (Caml_obj.caml_equal(checkloc, loclist._0[1])) {
       return true;
     }
-    _loclist = loclist[1];
+    _loclist = loclist._1;
     continue ;
   };
 }
@@ -2374,17 +2400,17 @@ function convert_list(lst) {
   if (!lst) {
     return /* [] */0;
   }
-  var h = lst[0];
-  return Pervasives.$at(/* :: */[
-              /* tuple */[
+  var h = lst._0;
+  return Pervasives.$at(/* :: */{
+              _0: /* tuple */[
                 h[0],
                 /* tuple */[
                   h[1][0] * 16,
                   h[1][1] * 16
                 ]
               ],
-              /* [] */0
-            ], convert_list(lst[1]));
+              _1: /* [] */0
+            }, convert_list(lst._1));
 }
 
 function choose_enemy_typ(typ) {
@@ -2413,7 +2439,9 @@ function choose_sblock_typ(typ) {
     case 2 :
         return /* Cloud */3;
     case 3 :
-        return /* QBlock */[/* Mushroom */0];
+        return /* QBlock */{
+                _0: /* Mushroom */0
+              };
     case 4 :
         return /* Ground */5;
     default:
@@ -2431,13 +2459,13 @@ function avoid_overlap(_lst, currentLst) {
     if (!lst) {
       return /* [] */0;
     }
-    var t = lst[1];
-    var h = lst[0];
+    var t = lst._1;
+    var h = lst._0;
     if (!mem_loc(h[1], currentLst)) {
-      return Pervasives.$at(/* :: */[
-                  h,
-                  /* [] */0
-                ], avoid_overlap(t, currentLst));
+      return Pervasives.$at(/* :: */{
+                  _0: h,
+                  _1: /* [] */0
+                }, avoid_overlap(t, currentLst));
     }
     _lst = t;
     continue ;
@@ -2450,17 +2478,17 @@ function trim_edges(_lst, blockw, blockh) {
     if (!lst) {
       return /* [] */0;
     }
-    var t = lst[1];
-    var h = lst[0];
+    var t = lst._1;
+    var h = lst._0;
     var cx = h[1][0];
     var cy = h[1][1];
     var pixx = blockw * 16;
     var pixy = blockh * 16;
     if (!(cx < 128 || pixx - cx < 528 || cy === 0 || pixy - cy < 48)) {
-      return Pervasives.$at(/* :: */[
-                  h,
-                  /* [] */0
-                ], trim_edges(t, blockw, blockh));
+      return Pervasives.$at(/* :: */{
+                  _0: h,
+                  _1: /* [] */0
+                }, trim_edges(t, blockw, blockh));
     }
     _lst = t;
     continue ;
@@ -2471,16 +2499,16 @@ function generate_clouds(cbx, cby, typ, num) {
   if (num === 0) {
     return /* [] */0;
   } else {
-    return Pervasives.$at(/* :: */[
-                /* tuple */[
+    return Pervasives.$at(/* :: */{
+                _0: /* tuple */[
                   typ,
                   /* tuple */[
                     cbx,
                     cby
                   ]
                 ],
-                /* [] */0
-              ], generate_clouds(cbx + 1, cby, typ, num - 1 | 0));
+                _1: /* [] */0
+              }, generate_clouds(cbx + 1, cby, typ, num - 1 | 0));
   }
 }
 
@@ -2491,21 +2519,21 @@ function generate_coins(_block_coord) {
     if (!block_coord) {
       return /* [] */0;
     }
-    var t = block_coord[1];
-    var h = block_coord[0];
+    var t = block_coord._1;
+    var h = block_coord._0;
     if (place_coin === 0) {
       var xc = h[1][0];
       var yc = h[1][1];
-      return Pervasives.$at(/* :: */[
-                  /* tuple */[
+      return Pervasives.$at(/* :: */{
+                  _0: /* tuple */[
                     0,
                     /* tuple */[
                       xc,
                       yc - 16
                     ]
                   ],
-                  /* [] */0
-                ], generate_coins(t));
+                  _1: /* [] */0
+                }, generate_coins(t));
     }
     _block_coord = t;
     continue ;
@@ -2523,65 +2551,65 @@ function choose_block_pattern(blockw, blockh, cbx, cby, prob) {
   switch (prob) {
     case 0 :
         if (blockw - cbx > 2) {
-          return /* :: */[
-                  /* tuple */[
+          return /* :: */{
+                  _0: /* tuple */[
                     stair_typ,
                     /* tuple */[
                       cbx,
                       cby
                     ]
                   ],
-                  /* :: */[
-                    /* tuple */[
+                  _1: /* :: */{
+                    _0: /* tuple */[
                       middle_block,
                       /* tuple */[
                         cbx + 1,
                         cby
                       ]
                     ],
-                    /* :: */[
-                      /* tuple */[
+                    _1: /* :: */{
+                      _0: /* tuple */[
                         stair_typ,
                         /* tuple */[
                           cbx + 2,
                           cby
                         ]
                       ],
-                      /* [] */0
-                    ]
-                  ]
-                ];
+                      _1: /* [] */0
+                    }
+                  }
+                };
         } else if (blockw - cbx > 1) {
-          return /* :: */[
-                  /* tuple */[
+          return /* :: */{
+                  _0: /* tuple */[
                     block_typ,
                     /* tuple */[
                       cbx,
                       cby
                     ]
                   ],
-                  /* :: */[
-                    /* tuple */[
+                  _1: /* :: */{
+                    _0: /* tuple */[
                       block_typ,
                       /* tuple */[
                         cbx + 1,
                         cby
                       ]
                     ],
-                    /* [] */0
-                  ]
-                ];
+                    _1: /* [] */0
+                  }
+                };
         } else {
-          return /* :: */[
-                  /* tuple */[
+          return /* :: */{
+                  _0: /* tuple */[
                     block_typ,
                     /* tuple */[
                       cbx,
                       cby
                     ]
                   ],
-                  /* [] */0
-                ];
+                  _1: /* [] */0
+                };
         }
     case 1 :
         var num_clouds = Random.$$int(5) + 5 | 0;
@@ -2599,38 +2627,38 @@ function choose_block_pattern(blockw, blockh, cbx, cby, prob) {
               cby
             ]
           ];
-          var four_001 = /* :: */[
-            /* tuple */[
+          var four_001 = /* :: */{
+            _0: /* tuple */[
               stair_typ,
               /* tuple */[
                 cbx + 1,
                 cby
               ]
             ],
-            /* :: */[
-              /* tuple */[
+            _1: /* :: */{
+              _0: /* tuple */[
                 stair_typ,
                 /* tuple */[
                   cbx + 2,
                   cby
                 ]
               ],
-              /* :: */[
-                /* tuple */[
+              _1: /* :: */{
+                _0: /* tuple */[
                   stair_typ,
                   /* tuple */[
                     cbx + 3,
                     cby
                   ]
                 ],
-                /* [] */0
-              ]
-            ]
-          ];
-          var four = /* :: */[
-            four_000,
-            four_001
-          ];
+                _1: /* [] */0
+              }
+            }
+          };
+          var four = /* :: */{
+            _0: four_000,
+            _1: four_001
+          };
           var three_000 = /* tuple */[
             stair_typ,
             /* tuple */[
@@ -2638,29 +2666,29 @@ function choose_block_pattern(blockw, blockh, cbx, cby, prob) {
               cby - 1
             ]
           ];
-          var three_001 = /* :: */[
-            /* tuple */[
+          var three_001 = /* :: */{
+            _0: /* tuple */[
               stair_typ,
               /* tuple */[
                 cbx + 2,
                 cby - 1
               ]
             ],
-            /* :: */[
-              /* tuple */[
+            _1: /* :: */{
+              _0: /* tuple */[
                 stair_typ,
                 /* tuple */[
                   cbx + 3,
                   cby - 1
                 ]
               ],
-              /* [] */0
-            ]
-          ];
-          var three = /* :: */[
-            three_000,
-            three_001
-          ];
+              _1: /* [] */0
+            }
+          };
+          var three = /* :: */{
+            _0: three_000,
+            _1: three_001
+          };
           var two_000 = /* tuple */[
             stair_typ,
             /* tuple */[
@@ -2668,20 +2696,20 @@ function choose_block_pattern(blockw, blockh, cbx, cby, prob) {
               cby - 2
             ]
           ];
-          var two_001 = /* :: */[
-            /* tuple */[
+          var two_001 = /* :: */{
+            _0: /* tuple */[
               stair_typ,
               /* tuple */[
                 cbx + 3,
                 cby - 2
               ]
             ],
-            /* [] */0
-          ];
-          var two = /* :: */[
-            two_000,
-            two_001
-          ];
+            _1: /* [] */0
+          };
+          var two = /* :: */{
+            _0: two_000,
+            _1: two_001
+          };
           var one_000 = /* tuple */[
             stair_typ,
             /* tuple */[
@@ -2689,10 +2717,10 @@ function choose_block_pattern(blockw, blockh, cbx, cby, prob) {
               cby - 3
             ]
           ];
-          var one = /* :: */[
-            one_000,
-            /* [] */0
-          ];
+          var one = /* :: */{
+            _0: one_000,
+            _1: /* [] */0
+          };
           return Pervasives.$at(four, Pervasives.$at(three, Pervasives.$at(two, one)));
         } else {
           return /* [] */0;
@@ -2706,29 +2734,29 @@ function choose_block_pattern(blockw, blockh, cbx, cby, prob) {
               cby
             ]
           ];
-          var three_001$1 = /* :: */[
-            /* tuple */[
+          var three_001$1 = /* :: */{
+            _0: /* tuple */[
               stair_typ,
               /* tuple */[
                 cbx + 1,
                 cby
               ]
             ],
-            /* :: */[
-              /* tuple */[
+            _1: /* :: */{
+              _0: /* tuple */[
                 stair_typ,
                 /* tuple */[
                   cbx + 2,
                   cby
                 ]
               ],
-              /* [] */0
-            ]
-          ];
-          var three$1 = /* :: */[
-            three_000$1,
-            three_001$1
-          ];
+              _1: /* [] */0
+            }
+          };
+          var three$1 = /* :: */{
+            _0: three_000$1,
+            _1: three_001$1
+          };
           var two_000$1 = /* tuple */[
             stair_typ,
             /* tuple */[
@@ -2736,20 +2764,20 @@ function choose_block_pattern(blockw, blockh, cbx, cby, prob) {
               cby + 1
             ]
           ];
-          var two_001$1 = /* :: */[
-            /* tuple */[
+          var two_001$1 = /* :: */{
+            _0: /* tuple */[
               stair_typ,
               /* tuple */[
                 cbx + 3,
                 cby + 1
               ]
             ],
-            /* [] */0
-          ];
-          var two$1 = /* :: */[
-            two_000$1,
-            two_001$1
-          ];
+            _1: /* [] */0
+          };
+          var two$1 = /* :: */{
+            _0: two_000$1,
+            _1: two_001$1
+          };
           var one_000$1 = /* tuple */[
             stair_typ,
             /* tuple */[
@@ -2757,20 +2785,20 @@ function choose_block_pattern(blockw, blockh, cbx, cby, prob) {
               cby + 2
             ]
           ];
-          var one_001 = /* :: */[
-            /* tuple */[
+          var one_001 = /* :: */{
+            _0: /* tuple */[
               stair_typ,
               /* tuple */[
                 cbx + 6,
                 cby + 2
               ]
             ],
-            /* [] */0
-          ];
-          var one$1 = /* :: */[
-            one_000$1,
-            one_001
-          ];
+            _1: /* [] */0
+          };
+          var one$1 = /* :: */{
+            _0: one_000$1,
+            _1: one_001
+          };
           return Pervasives.$at(three$1, Pervasives.$at(two$1, one$1));
         } else if (blockh - cby > 2) {
           var one_000$2 = /* tuple */[
@@ -2780,20 +2808,20 @@ function choose_block_pattern(blockw, blockh, cbx, cby, prob) {
               cby
             ]
           ];
-          var one_001$1 = /* :: */[
-            /* tuple */[
+          var one_001$1 = /* :: */{
+            _0: /* tuple */[
               stair_typ,
               /* tuple */[
                 cbx + 1,
                 cby
               ]
             ],
-            /* [] */0
-          ];
-          var one$2 = /* :: */[
-            one_000$2,
-            one_001$1
-          ];
+            _1: /* [] */0
+          };
+          var one$2 = /* :: */{
+            _0: one_000$2,
+            _1: one_001$1
+          };
           var two_000$2 = /* tuple */[
             stair_typ,
             /* tuple */[
@@ -2801,20 +2829,20 @@ function choose_block_pattern(blockw, blockh, cbx, cby, prob) {
               cby - 1
             ]
           ];
-          var two_001$2 = /* :: */[
-            /* tuple */[
+          var two_001$2 = /* :: */{
+            _0: /* tuple */[
               stair_typ,
               /* tuple */[
                 cbx + 4,
                 cby - 1
               ]
             ],
-            /* [] */0
-          ];
-          var two$2 = /* :: */[
-            two_000$2,
-            two_001$2
-          ];
+            _1: /* [] */0
+          };
+          var two$2 = /* :: */{
+            _0: two_000$2,
+            _1: two_001$2
+          };
           var three_000$2 = /* tuple */[
             stair_typ,
             /* tuple */[
@@ -2822,115 +2850,115 @@ function choose_block_pattern(blockw, blockh, cbx, cby, prob) {
               cby - 2
             ]
           ];
-          var three_001$2 = /* :: */[
-            /* tuple */[
+          var three_001$2 = /* :: */{
+            _0: /* tuple */[
               stair_typ,
               /* tuple */[
                 cbx + 5,
                 cby - 2
               ]
             ],
-            /* :: */[
-              /* tuple */[
+            _1: /* :: */{
+              _0: /* tuple */[
                 stair_typ,
                 /* tuple */[
                   cbx + 6,
                   cby - 2
                 ]
               ],
-              /* [] */0
-            ]
-          ];
-          var three$2 = /* :: */[
-            three_000$2,
-            three_001$2
-          ];
+              _1: /* [] */0
+            }
+          };
+          var three$2 = /* :: */{
+            _0: three_000$2,
+            _1: three_001$2
+          };
           return Pervasives.$at(one$2, Pervasives.$at(two$2, three$2));
         } else {
-          return /* :: */[
-                  /* tuple */[
+          return /* :: */{
+                  _0: /* tuple */[
                     stair_typ,
                     /* tuple */[
                       cbx,
                       cby
                     ]
                   ],
-                  /* [] */0
-                ];
+                  _1: /* [] */0
+                };
         }
     case 4 :
         if (cby + 3 - blockh === 2) {
-          return /* :: */[
-                  /* tuple */[
+          return /* :: */{
+                  _0: /* tuple */[
                     stair_typ,
                     /* tuple */[
                       cbx,
                       cby
                     ]
                   ],
-                  /* [] */0
-                ];
+                  _1: /* [] */0
+                };
         } else if (cby + 3 - blockh === 1) {
-          return /* :: */[
-                  /* tuple */[
+          return /* :: */{
+                  _0: /* tuple */[
                     stair_typ,
                     /* tuple */[
                       cbx,
                       cby
                     ]
                   ],
-                  /* :: */[
-                    /* tuple */[
+                  _1: /* :: */{
+                    _0: /* tuple */[
                       stair_typ,
                       /* tuple */[
                         cbx,
                         cby + 1
                       ]
                     ],
-                    /* [] */0
-                  ]
-                ];
+                    _1: /* [] */0
+                  }
+                };
         } else {
-          return /* :: */[
-                  /* tuple */[
+          return /* :: */{
+                  _0: /* tuple */[
                     stair_typ,
                     /* tuple */[
                       cbx,
                       cby
                     ]
                   ],
-                  /* :: */[
-                    /* tuple */[
+                  _1: /* :: */{
+                    _0: /* tuple */[
                       stair_typ,
                       /* tuple */[
                         cbx,
                         cby + 1
                       ]
                     ],
-                    /* :: */[
-                      /* tuple */[
+                    _1: /* :: */{
+                      _0: /* tuple */[
                         stair_typ,
                         /* tuple */[
                           cbx,
                           cby + 2
                         ]
                       ],
-                      /* [] */0
-                    ]
-                  ]
-                ];
+                      _1: /* [] */0
+                    }
+                  }
+                };
         }
     case 5 :
-        return /* :: */[
-                /* tuple */[
+        return /* :: */{
+                _0: /* tuple */[
                   3,
                   /* tuple */[
                     cbx,
                     cby
                   ]
                 ],
-                /* [] */0
-              ];
+                _1: /* [] */0
+              };
     default:
       throw {
             RE_EXN_ID: "Failure",
@@ -2968,10 +2996,10 @@ function generate_enemies(blockw, blockh, _cbx, _cby, acc) {
           cby * 16
         ]
       ];
-      var enemy = /* :: */[
-        enemy_000,
-        /* [] */0
-      ];
+      var enemy = /* :: */{
+        _0: enemy_000,
+        _1: /* [] */0
+      };
       return Pervasives.$at(enemy, generate_enemies(blockw, blockh, cbx, cby + 1, acc));
     }
     _cby = cby + 1;
@@ -2987,21 +3015,21 @@ function generate_block_enemies(_block_coord) {
     if (!block_coord) {
       return /* [] */0;
     }
-    var t = block_coord[1];
-    var h = block_coord[0];
+    var t = block_coord._1;
+    var h = block_coord._0;
     if (place_enemy === 0) {
       var xc = h[1][0];
       var yc = h[1][1];
-      return Pervasives.$at(/* :: */[
-                  /* tuple */[
+      return Pervasives.$at(/* :: */{
+                  _0: /* tuple */[
                     enemy_typ,
                     /* tuple */[
                       xc,
                       yc - 16
                     ]
                   ],
-                  /* [] */0
-                ], generate_block_enemies(t));
+                  _1: /* [] */0
+                }, generate_block_enemies(t));
     }
     _block_coord = t;
     continue ;
@@ -3043,7 +3071,10 @@ function generate_block_locs(blockw, blockh, _cbx, _cby, _acc) {
 }
 
 function generate_panel(context, blockw, blockh) {
-  return spawn(/* SBlock */Block.__(3, [/* Panel */4]), context, /* tuple */[
+  return spawn({
+              tag: /* SBlock */3,
+              _0: /* Panel */4
+            }, context, /* tuple */[
               blockw * 16 - 256,
               blockh * 16 * 2 / 3
             ]);
@@ -3058,16 +3089,16 @@ function generate_ground(blockw, blockh, _inc, _acc) {
     }
     if (inc > 10) {
       var skip = Random.$$int(10);
-      var newacc = Pervasives.$at(acc, /* :: */[
-            /* tuple */[
+      var newacc = Pervasives.$at(acc, /* :: */{
+            _0: /* tuple */[
               4,
               /* tuple */[
                 inc * 16,
                 blockh * 16
               ]
             ],
-            /* [] */0
-          ]);
+            _1: /* [] */0
+          });
       if (skip === 7 && blockw - inc > 32) {
         _inc = inc + 1;
         continue ;
@@ -3076,16 +3107,16 @@ function generate_ground(blockw, blockh, _inc, _acc) {
       _inc = inc + 1;
       continue ;
     }
-    var newacc$1 = Pervasives.$at(acc, /* :: */[
-          /* tuple */[
+    var newacc$1 = Pervasives.$at(acc, /* :: */{
+          _0: /* tuple */[
             4,
             /* tuple */[
               inc * 16,
               blockh * 16
             ]
           ],
-          /* [] */0
-        ]);
+          _1: /* [] */0
+        });
     _acc = newacc$1;
     _inc = inc + 1;
     continue ;
@@ -3096,37 +3127,46 @@ function convert_to_block_obj(lst, context) {
   if (!lst) {
     return /* [] */0;
   }
-  var h = lst[0];
+  var h = lst._0;
   var sblock_typ = choose_sblock_typ(h[0]);
-  var ob = spawn(/* SBlock */Block.__(3, [sblock_typ]), context, h[1]);
-  return Pervasives.$at(/* :: */[
-              ob,
-              /* [] */0
-            ], convert_to_block_obj(lst[1], context));
+  var ob = spawn({
+        tag: /* SBlock */3,
+        _0: sblock_typ
+      }, context, h[1]);
+  return Pervasives.$at(/* :: */{
+              _0: ob,
+              _1: /* [] */0
+            }, convert_to_block_obj(lst._1, context));
 }
 
 function convert_to_enemy_obj(lst, context) {
   if (!lst) {
     return /* [] */0;
   }
-  var h = lst[0];
+  var h = lst._0;
   var senemy_typ = choose_enemy_typ(h[0]);
-  var ob = spawn(/* SEnemy */Block.__(1, [senemy_typ]), context, h[1]);
-  return Pervasives.$at(/* :: */[
-              ob,
-              /* [] */0
-            ], convert_to_enemy_obj(lst[1], context));
+  var ob = spawn({
+        tag: /* SEnemy */1,
+        _0: senemy_typ
+      }, context, h[1]);
+  return Pervasives.$at(/* :: */{
+              _0: ob,
+              _1: /* [] */0
+            }, convert_to_enemy_obj(lst._1, context));
 }
 
 function convert_to_coin_obj(lst, context) {
   if (!lst) {
     return /* [] */0;
   }
-  var ob = spawn(/* SItem */Block.__(2, [/* Coin */3]), context, lst[0][1]);
-  return Pervasives.$at(/* :: */[
-              ob,
-              /* [] */0
-            ], convert_to_coin_obj(lst[1], context));
+  var ob = spawn({
+        tag: /* SItem */2,
+        _0: /* Coin */3
+      }, context, lst._0[1]);
+  return Pervasives.$at(/* :: */{
+              _0: ob,
+              _1: /* [] */0
+            }, convert_to_coin_obj(lst._1, context));
 }
 
 function generate_helper(blockw, blockh, cx, cy, context) {
@@ -3147,20 +3187,21 @@ function generate_helper(blockw, blockh, cx, cy, context) {
   var obj_enemy_blocks = convert_to_enemy_obj(undup_enemy_block_locs, context);
   var coin_objects = convert_to_coin_obj(undup_coin_locs, context);
   var obj_panel = generate_panel(context, blockw, blockh);
-  return Pervasives.$at(all_blocks, Pervasives.$at(obj_converted_enemies, Pervasives.$at(coin_objects, Pervasives.$at(obj_enemy_blocks, /* :: */[
-                          obj_panel,
-                          /* [] */0
-                        ]))));
+  return Pervasives.$at(all_blocks, Pervasives.$at(obj_converted_enemies, Pervasives.$at(coin_objects, Pervasives.$at(obj_enemy_blocks, /* :: */{
+                          _0: obj_panel,
+                          _1: /* [] */0
+                        }))));
 }
 
 function generate(w, h, context) {
   var blockw = w / 16;
   var blockh = h / 16 - 1;
   var collide_list = generate_helper(blockw, blockh, 0, 0, context);
-  var player = spawn(/* SPlayer */Block.__(0, [
-          /* SmallM */1,
-          /* Standing */0
-        ]), context, /* tuple */[
+  var player = spawn({
+        tag: /* SPlayer */0,
+        _0: /* SmallM */1,
+        _1: /* Standing */0
+      }, context, /* tuple */[
         100,
         224
       ]);
@@ -3191,19 +3232,22 @@ function load(param) {
   if (el !== null) {
     canvas = el;
   } else {
-    Curry._1(Printf.printf(/* Format */[
-              /* String_literal */Block.__(11, [
-                  "cant find canvas ",
-                  /* String */Block.__(2, [
-                      /* No_padding */0,
-                      /* String_literal */Block.__(11, [
-                          " \n",
-                          /* End_of_format */0
-                        ])
-                    ])
-                ]),
-              "cant find canvas %s \n"
-            ]), canvas_id);
+    Curry._1(Printf.printf(/* Format */{
+              _0: {
+                tag: /* String_literal */11,
+                _0: "cant find canvas ",
+                _1: {
+                  tag: /* String */2,
+                  _0: /* No_padding */0,
+                  _1: {
+                    tag: /* String_literal */11,
+                    _0: " \n",
+                    _1: /* End_of_format */0
+                  }
+                }
+              },
+              _1: "cant find canvas %s \n"
+            }), canvas_id);
     throw {
           RE_EXN_ID: "Failure",
           _1: "fail",
@@ -3240,19 +3284,19 @@ function preload(param) {
                         return true;
                       }), true);
                 
-              }), /* :: */[
-              "blocks.png",
-              /* :: */[
-                "items.png",
-                /* :: */[
-                  "enemies.png",
-                  /* :: */[
-                    "mario-small.png",
-                    /* [] */0
-                  ]
-                ]
-              ]
-            ]);
+              }), /* :: */{
+              _0: "blocks.png",
+              _1: /* :: */{
+                _0: "items.png",
+                _1: /* :: */{
+                  _0: "enemies.png",
+                  _1: /* :: */{
+                    _0: "mario-small.png",
+                    _1: /* [] */0
+                  }
+                }
+              }
+            });
 }
 
 window.onload = (function (param) {

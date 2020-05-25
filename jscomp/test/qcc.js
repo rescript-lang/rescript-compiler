@@ -203,7 +203,10 @@ function next(param) {
     }
   }
   if (c === undefined) {
-    return /* Op */Block.__(0, ["EOF!"]);
+    return {
+            tag: /* Op */0,
+            _0: "EOF!"
+          };
   }
   if (c === 34) {
     var b = gpos.contents;
@@ -218,10 +221,11 @@ function next(param) {
       }
       Curry._1(getch, undefined);
       gpos.contents = e + 8 & -8;
-      return /* SLit */Block.__(2, [
-                (b + 232 | 0) + 4194304 | 0,
-                Bytes.to_string(Bytes.sub(glo, b, e - b | 0))
-              ]);
+      return {
+              tag: /* SLit */2,
+              _0: (b + 232 | 0) + 4194304 | 0,
+              _1: Bytes.to_string(Bytes.sub(glo, b, e - b | 0))
+            };
     };
   }
   if (c >= 48) {
@@ -231,7 +235,10 @@ function next(param) {
         var n = _n;
         var match$1 = peekch(undefined);
         if (match$1 > 57 || match$1 < 48) {
-          return /* ILit */Block.__(1, [n]);
+          return {
+                  tag: /* ILit */1,
+                  _0: n
+                };
         }
         _n = (Math.imul(10, n) + Curry._1(getch, undefined) | 0) - 48 | 0;
         continue ;
@@ -248,7 +255,10 @@ function next(param) {
             Error: new Error()
           };
     }
-    return /* ILit */Block.__(1, [ch]);
+    return {
+            tag: /* ILit */1,
+            _0: ch
+          };
   }
   if (isid(c)) {
     var _n$1 = 0;
@@ -258,55 +268,64 @@ function next(param) {
       var n$1 = _n$1;
       s[n$1] = ch$1;
       if (!isid(peekch(undefined))) {
-        return /* Sym */Block.__(3, [addsym(Bytes.to_string(Bytes.sub(s, 0, n$1 + 1 | 0)))]);
+        return {
+                tag: /* Sym */3,
+                _0: addsym(Bytes.to_string(Bytes.sub(s, 0, n$1 + 1 | 0)))
+              };
       }
       _ch = Curry._1(getch, undefined);
       _n$1 = n$1 + 1 | 0;
       continue ;
     };
   } else {
-    var _param = /* :: */[
-      "++",
-      /* :: */[
-        "--",
-        /* :: */[
-          "&&",
-          /* :: */[
-            "||",
-            /* :: */[
-              "==",
-              /* :: */[
-                "<=",
-                /* :: */[
-                  ">=",
-                  /* :: */[
-                    "!=",
-                    /* :: */[
-                      ">>",
-                      /* :: */[
-                        "<<",
-                        /* [] */0
-                      ]
-                    ]
-                  ]
-                ]
-              ]
-            ]
-          ]
-        ]
-      ]
-    ];
+    var _param = /* :: */{
+      _0: "++",
+      _1: /* :: */{
+        _0: "--",
+        _1: /* :: */{
+          _0: "&&",
+          _1: /* :: */{
+            _0: "||",
+            _1: /* :: */{
+              _0: "==",
+              _1: /* :: */{
+                _0: "<=",
+                _1: /* :: */{
+                  _0: ">=",
+                  _1: /* :: */{
+                    _0: "!=",
+                    _1: /* :: */{
+                      _0: ">>",
+                      _1: /* :: */{
+                        _0: "<<",
+                        _1: /* [] */0
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    };
     while(true) {
       var param$1 = _param;
       if (!param$1) {
-        return /* Op */Block.__(0, [Caml_bytes.bytes_to_string(Bytes.make(1, c))]);
+        return {
+                tag: /* Op */0,
+                _0: Caml_bytes.bytes_to_string(Bytes.make(1, c))
+              };
       }
-      var lop = param$1[0];
+      var lop = param$1._0;
       if (Caml_string.get(lop, 0) === c && Caml_string.get(lop, 1) === peekch(undefined)) {
         Curry._1(getch, undefined);
-        return /* Op */Block.__(0, [lop]);
+        return {
+                tag: /* Op */0,
+                _0: lop
+              };
       }
-      _param = param$1[1];
+      _param = param$1._1;
       continue ;
     };
   }
@@ -372,37 +391,44 @@ function patch(rel, loc, n) {
   var loc$prime = get32(loc);
   var x = rel ? n - (loc + 4 | 0) | 0 : n;
   if (dbg.contents) {
-    Curry._3(Printf.eprintf(/* Format */[
-              /* String_literal */Block.__(11, [
-                  "patching at ",
-                  /* Int */Block.__(4, [
-                      /* Int_d */0,
-                      /* No_padding */0,
-                      /* No_precision */0,
-                      /* String_literal */Block.__(11, [
-                          " to ",
-                          /* Int */Block.__(4, [
-                              /* Int_d */0,
-                              /* No_padding */0,
-                              /* No_precision */0,
-                              /* String_literal */Block.__(11, [
-                                  " (n=",
-                                  /* Int */Block.__(4, [
-                                      /* Int_d */0,
-                                      /* No_padding */0,
-                                      /* No_precision */0,
-                                      /* String_literal */Block.__(11, [
-                                          ")\n",
-                                          /* End_of_format */0
-                                        ])
-                                    ])
-                                ])
-                            ])
-                        ])
-                    ])
-                ]),
-              "patching at %d to %d (n=%d)\n"
-            ]), loc, x, n);
+    Curry._3(Printf.eprintf(/* Format */{
+              _0: {
+                tag: /* String_literal */11,
+                _0: "patching at ",
+                _1: {
+                  tag: /* Int */4,
+                  _0: /* Int_d */0,
+                  _1: /* No_padding */0,
+                  _2: /* No_precision */0,
+                  _3: {
+                    tag: /* String_literal */11,
+                    _0: " to ",
+                    _1: {
+                      tag: /* Int */4,
+                      _0: /* Int_d */0,
+                      _1: /* No_padding */0,
+                      _2: /* No_precision */0,
+                      _3: {
+                        tag: /* String_literal */11,
+                        _0: " (n=",
+                        _1: {
+                          tag: /* Int */4,
+                          _0: /* Int_d */0,
+                          _1: /* No_padding */0,
+                          _2: /* No_precision */0,
+                          _3: {
+                            tag: /* String_literal */11,
+                            _0: ")\n",
+                            _1: /* End_of_format */0
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              },
+              _1: "patching at %d to %d (n=%d)\n"
+            }), loc, x, n);
   }
   opos.contents = loc;
   le(32, x);
@@ -453,7 +479,10 @@ function pop(r) {
 
 var lval = {
   contents: /* tuple */[
-    /* Mov */Block.__(0, [0]),
+    {
+      tag: /* Mov */0,
+      _0: 0
+    },
     /* Int */0
   ]
 };
@@ -461,9 +490,9 @@ var lval = {
 function patchlval(param) {
   var n = lval.contents[0];
   if (n.tag) {
-    opos.contents = opos.contents - n[0] | 0;
+    opos.contents = opos.contents - n._0 | 0;
   } else {
-    obuf[opos.contents - n[0] | 0] = /* "\141" */141;
+    obuf[opos.contents - n._0 | 0] = /* "\141" */141;
   }
   
 }
@@ -473,14 +502,20 @@ function read(param) {
     out(4722614);
     le(8, 0);
     lval.contents = /* tuple */[
-      /* Del */Block.__(1, [4]),
+      {
+        tag: /* Del */1,
+        _0: 4
+      },
       /* Chr */1
     ];
   } else {
     out(18571);
     le(8, 0);
     lval.contents = /* tuple */[
-      /* Del */Block.__(1, [3]),
+      {
+        tag: /* Del */1,
+        _0: 3
+      },
       /* Int */0
     ];
   }
@@ -492,283 +527,355 @@ var globs = Caml_array.caml_make_vect(100, {
       va: -1
     });
 
-var lvls = /* :: */[
-  /* tuple */[
+var lvls = /* :: */{
+  _0: /* tuple */[
     "*",
     0
   ],
-  /* :: */[
-    /* tuple */[
+  _1: /* :: */{
+    _0: /* tuple */[
       "/",
       0
     ],
-    /* :: */[
-      /* tuple */[
+    _1: /* :: */{
+      _0: /* tuple */[
         "%",
         0
       ],
-      /* :: */[
-        /* tuple */[
+      _1: /* :: */{
+        _0: /* tuple */[
           "+",
           1
         ],
-        /* :: */[
-          /* tuple */[
+        _1: /* :: */{
+          _0: /* tuple */[
             "-",
             1
           ],
-          /* :: */[
-            /* tuple */[
+          _1: /* :: */{
+            _0: /* tuple */[
               "<<",
               2
             ],
-            /* :: */[
-              /* tuple */[
+            _1: /* :: */{
+              _0: /* tuple */[
                 ">>",
                 2
               ],
-              /* :: */[
-                /* tuple */[
+              _1: /* :: */{
+                _0: /* tuple */[
                   "<",
                   3
                 ],
-                /* :: */[
-                  /* tuple */[
+                _1: /* :: */{
+                  _0: /* tuple */[
                     "<=",
                     3
                   ],
-                  /* :: */[
-                    /* tuple */[
+                  _1: /* :: */{
+                    _0: /* tuple */[
                       ">",
                       3
                     ],
-                    /* :: */[
-                      /* tuple */[
+                    _1: /* :: */{
+                      _0: /* tuple */[
                         ">=",
                         3
                       ],
-                      /* :: */[
-                        /* tuple */[
+                      _1: /* :: */{
+                        _0: /* tuple */[
                           "==",
                           4
                         ],
-                        /* :: */[
-                          /* tuple */[
+                        _1: /* :: */{
+                          _0: /* tuple */[
                             "!=",
                             4
                           ],
-                          /* :: */[
-                            /* tuple */[
+                          _1: /* :: */{
+                            _0: /* tuple */[
                               "&",
                               5
                             ],
-                            /* :: */[
-                              /* tuple */[
+                            _1: /* :: */{
+                              _0: /* tuple */[
                                 "^",
                                 6
                               ],
-                              /* :: */[
-                                /* tuple */[
+                              _1: /* :: */{
+                                _0: /* tuple */[
                                   "|",
                                   7
                                 ],
-                                /* :: */[
-                                  /* tuple */[
+                                _1: /* :: */{
+                                  _0: /* tuple */[
                                     "&&",
                                     8
                                   ],
-                                  /* :: */[
-                                    /* tuple */[
+                                  _1: /* :: */{
+                                    _0: /* tuple */[
                                       "||",
                                       9
                                     ],
-                                    /* [] */0
-                                  ]
-                                ]
-                              ]
-                            ]
-                          ]
-                        ]
-                      ]
-                    ]
-                  ]
-                ]
-              ]
-            ]
-          ]
-        ]
-      ]
-    ]
-  ]
-];
+                                    _1: /* [] */0
+                                  }
+                                }
+                              }
+                            }
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+};
 
-var inss = /* :: */[
-  /* tuple */[
+var inss = /* :: */{
+  _0: /* tuple */[
     "*",
-    /* Bin */Block.__(0, [/* :: */[
-          1208987585,
-          /* [] */0
-        ]])
+    {
+      tag: /* Bin */0,
+      _0: /* :: */{
+        _0: 1208987585,
+        _1: /* [] */0
+      }
+    }
   ],
-  /* :: */[
-    /* tuple */[
+  _1: /* :: */{
+    _0: /* tuple */[
       "/",
-      /* Bin */Block.__(0, [/* :: */[
-            18577,
-            /* :: */[
-              18585,
-              /* :: */[
-                4782073,
-                /* [] */0
-              ]
-            ]
-          ]])
+      {
+        tag: /* Bin */0,
+        _0: /* :: */{
+          _0: 18577,
+          _1: /* :: */{
+            _0: 18585,
+            _1: /* :: */{
+              _0: 4782073,
+              _1: /* [] */0
+            }
+          }
+        }
+      }
     ],
-    /* :: */[
-      /* tuple */[
+    _1: /* :: */{
+      _0: /* tuple */[
         "%",
-        /* Bin */Block.__(0, [/* :: */[
-              18577,
-              /* :: */[
-                18585,
-                /* :: */[
-                  4782073,
-                  /* :: */[
-                    18578,
-                    /* [] */0
-                  ]
-                ]
-              ]
-            ]])
+        {
+          tag: /* Bin */0,
+          _0: /* :: */{
+            _0: 18577,
+            _1: /* :: */{
+              _0: 18585,
+              _1: /* :: */{
+                _0: 4782073,
+                _1: /* :: */{
+                  _0: 18578,
+                  _1: /* [] */0
+                }
+              }
+            }
+          }
+        }
       ],
-      /* :: */[
-        /* tuple */[
+      _1: /* :: */{
+        _0: /* tuple */[
           "+",
-          /* Bin */Block.__(0, [/* :: */[
-                4719048,
-                /* [] */0
-              ]])
+          {
+            tag: /* Bin */0,
+            _0: /* :: */{
+              _0: 4719048,
+              _1: /* [] */0
+            }
+          }
         ],
-        /* :: */[
-          /* tuple */[
+        _1: /* :: */{
+          _0: /* tuple */[
             "-",
-            /* Bin */Block.__(0, [/* :: */[
-                  18577,
-                  /* :: */[
-                    4729288,
-                    /* [] */0
-                  ]
-                ]])
+            {
+              tag: /* Bin */0,
+              _0: /* :: */{
+                _0: 18577,
+                _1: /* :: */{
+                  _0: 4729288,
+                  _1: /* [] */0
+                }
+              }
+            }
           ],
-          /* :: */[
-            /* tuple */[
+          _1: /* :: */{
+            _0: /* tuple */[
               "<<",
-              /* Bin */Block.__(0, [/* :: */[
-                    18577,
-                    /* :: */[
-                      4772832,
-                      /* [] */0
-                    ]
-                  ]])
+              {
+                tag: /* Bin */0,
+                _0: /* :: */{
+                  _0: 18577,
+                  _1: /* :: */{
+                    _0: 4772832,
+                    _1: /* [] */0
+                  }
+                }
+              }
             ],
-            /* :: */[
-              /* tuple */[
+            _1: /* :: */{
+              _0: /* tuple */[
                 ">>",
-                /* Bin */Block.__(0, [/* :: */[
-                      18577,
-                      /* :: */[
-                        4772856,
-                        /* [] */0
-                      ]
-                    ]])
+                {
+                  tag: /* Bin */0,
+                  _0: /* :: */{
+                    _0: 18577,
+                    _1: /* :: */{
+                      _0: 4772856,
+                      _1: /* [] */0
+                    }
+                  }
+                }
               ],
-              /* :: */[
-                /* tuple */[
+              _1: /* :: */{
+                _0: /* tuple */[
                   "<",
-                  /* Cmp */Block.__(1, [10])
+                  {
+                    tag: /* Cmp */1,
+                    _0: 10
+                  }
                 ],
-                /* :: */[
-                  /* tuple */[
+                _1: /* :: */{
+                  _0: /* tuple */[
                     "<=",
-                    /* Cmp */Block.__(1, [12])
+                    {
+                      tag: /* Cmp */1,
+                      _0: 12
+                    }
                   ],
-                  /* :: */[
-                    /* tuple */[
+                  _1: /* :: */{
+                    _0: /* tuple */[
                       ">",
-                      /* Cmp */Block.__(1, [13])
+                      {
+                        tag: /* Cmp */1,
+                        _0: 13
+                      }
                     ],
-                    /* :: */[
-                      /* tuple */[
+                    _1: /* :: */{
+                      _0: /* tuple */[
                         ">=",
-                        /* Cmp */Block.__(1, [11])
+                        {
+                          tag: /* Cmp */1,
+                          _0: 11
+                        }
                       ],
-                      /* :: */[
-                        /* tuple */[
+                      _1: /* :: */{
+                        _0: /* tuple */[
                           "==",
-                          /* Cmp */Block.__(1, [2])
+                          {
+                            tag: /* Cmp */1,
+                            _0: 2
+                          }
                         ],
-                        /* :: */[
-                          /* tuple */[
+                        _1: /* :: */{
+                          _0: /* tuple */[
                             "!=",
-                            /* Cmp */Block.__(1, [3])
+                            {
+                              tag: /* Cmp */1,
+                              _0: 3
+                            }
                           ],
-                          /* :: */[
-                            /* tuple */[
+                          _1: /* :: */{
+                            _0: /* tuple */[
                               "&",
-                              /* Bin */Block.__(0, [/* :: */[
-                                    4727240,
-                                    /* [] */0
-                                  ]])
+                              {
+                                tag: /* Bin */0,
+                                _0: /* :: */{
+                                  _0: 4727240,
+                                  _1: /* [] */0
+                                }
+                              }
                             ],
-                            /* :: */[
-                              /* tuple */[
+                            _1: /* :: */{
+                              _0: /* tuple */[
                                 "^",
-                                /* Bin */Block.__(0, [/* :: */[
-                                      4731336,
-                                      /* [] */0
-                                    ]])
+                                {
+                                  tag: /* Bin */0,
+                                  _0: /* :: */{
+                                    _0: 4731336,
+                                    _1: /* [] */0
+                                  }
+                                }
                               ],
-                              /* :: */[
-                                /* tuple */[
+                              _1: /* :: */{
+                                _0: /* tuple */[
                                   "|",
-                                  /* Bin */Block.__(0, [/* :: */[
-                                        4721096,
-                                        /* [] */0
-                                      ]])
+                                  {
+                                    tag: /* Bin */0,
+                                    _0: /* :: */{
+                                      _0: 4721096,
+                                      _1: /* [] */0
+                                    }
+                                  }
                                 ],
-                                /* [] */0
-                              ]
-                            ]
-                          ]
-                        ]
-                      ]
-                    ]
-                  ]
-                ]
-              ]
-            ]
-          ]
-        ]
-      ]
-    ]
-  ]
-];
+                                _1: /* [] */0
+                              }
+                            }
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+};
 
-var tokint = /* Sym */Block.__(3, [addsym("int")]);
+var tokint = {
+  tag: /* Sym */3,
+  _0: addsym("int")
+};
 
-var tokchar = /* Sym */Block.__(3, [addsym("char")]);
+var tokchar = {
+  tag: /* Sym */3,
+  _0: addsym("char")
+};
 
-var tokret = /* Sym */Block.__(3, [addsym("return")]);
+var tokret = {
+  tag: /* Sym */3,
+  _0: addsym("return")
+};
 
-var tokif = /* Sym */Block.__(3, [addsym("if")]);
+var tokif = {
+  tag: /* Sym */3,
+  _0: addsym("if")
+};
 
-var tokelse = /* Sym */Block.__(3, [addsym("else")]);
+var tokelse = {
+  tag: /* Sym */3,
+  _0: addsym("else")
+};
 
-var tokwhile = /* Sym */Block.__(3, [addsym("while")]);
+var tokwhile = {
+  tag: /* Sym */3,
+  _0: addsym("while")
+};
 
-var tokfor = /* Sym */Block.__(3, [addsym("for")]);
+var tokfor = {
+  tag: /* Sym */3,
+  _0: addsym("for")
+};
 
-var tokbreak = /* Sym */Block.__(3, [addsym("break")]);
+var tokbreak = {
+  tag: /* Sym */3,
+  _0: addsym("break")
+};
 
 function binary(stk, lvl) {
   if (lvl === -1) {
@@ -789,7 +896,7 @@ function binary(stk, lvl) {
         Curry._1(unnext, o);
         return loc;
       }
-      if (lvlof(o[0]) === lvl) {
+      if (lvlof(o._0) === lvl) {
         var loc$prime = test(lvl - 8 | 0, loc);
         binary(stk, lvl - 1 | 0);
         _loc = loc$prime;
@@ -807,7 +914,7 @@ function binary(stk, lvl) {
       if (o.tag) {
         return Curry._1(unnext, o);
       }
-      var o$1 = o[0];
+      var o$1 = o._0;
       if (lvlof(o$1) !== lvl) {
         return Curry._1(unnext, o);
       }
@@ -817,9 +924,9 @@ function binary(stk, lvl) {
       var ops = List.assoc(o$1, inss);
       if (ops.tag) {
         out(4733377);
-        cmp(ops[0]);
+        cmp(ops._0);
       } else {
-        List.iter(out, ops[0]);
+        List.iter(out, ops._0);
       }
       _param = undefined;
       continue ;
@@ -833,7 +940,7 @@ function unary(stk) {
   var i = Curry._1(next$1, undefined);
   switch (i.tag | 0) {
     case /* Op */0 :
-        var o = i[0];
+        var o = i._0;
         switch (o) {
           case "&" :
               unary(stk);
@@ -847,7 +954,10 @@ function unary(stk) {
               var t = Curry._1(next$1, undefined);
               var match;
               if (Caml_obj.caml_equal(t, tokint)) {
-                match = Caml_obj.caml_equal(Curry._1(next$1, undefined), /* Op */Block.__(0, ["*"])) ? /* tuple */[
+                match = Caml_obj.caml_equal(Curry._1(next$1, undefined), {
+                      tag: /* Op */0,
+                      _0: "*"
+                    }) ? /* tuple */[
                     /* Int */0,
                     1
                   ] : /* tuple */[
@@ -872,43 +982,45 @@ function unary(stk) {
               unary(stk);
               return read(match[0]);
           default:
-            var unops = /* :: */[
-              /* tuple */[
+            var unops = /* :: */{
+              _0: /* tuple */[
                 "+",
                 0
               ],
-              /* :: */[
-                /* tuple */[
+              _1: /* :: */{
+                _0: /* tuple */[
                   "-",
                   4782040
                 ],
-                /* :: */[
-                  /* tuple */[
+                _1: /* :: */{
+                  _0: /* tuple */[
                     "~",
                     4782032
                   ],
-                  /* :: */[
-                    /* tuple */[
+                  _1: /* :: */{
+                    _0: /* tuple */[
                       "!",
                       4752832
                     ],
-                    /* [] */0
-                  ]
-                ]
-              ]
-            ];
+                    _1: /* [] */0
+                  }
+                }
+              }
+            };
             unary(stk);
             if (!List.mem_assoc(o, unops)) {
-              var s = Curry._1(Printf.sprintf(/* Format */[
-                        /* String_literal */Block.__(11, [
-                            "unknown operator ",
-                            /* String */Block.__(2, [
-                                /* No_padding */0,
-                                /* End_of_format */0
-                              ])
-                          ]),
-                        "unknown operator %s"
-                      ]), o);
+              var s = Curry._1(Printf.sprintf(/* Format */{
+                        _0: {
+                          tag: /* String_literal */11,
+                          _0: "unknown operator ",
+                          _1: {
+                            tag: /* String */2,
+                            _0: /* No_padding */0,
+                            _1: /* End_of_format */0
+                          }
+                        },
+                        _1: "unknown operator %s"
+                      }), o);
               throw {
                     RE_EXN_ID: "Failure",
                     _1: s,
@@ -923,12 +1035,12 @@ function unary(stk) {
             }
         }
     case /* ILit */1 :
-        return load(0, i[0]);
+        return load(0, i._0);
     case /* SLit */2 :
         out(18616);
-        return le(64, i[0]);
+        return le(64, i._0);
     case /* Sym */3 :
-        var i$1 = i[0];
+        var i$1 = i._0;
         if (List.mem_assoc(i$1, stk)) {
           var l = List.assoc(i$1, stk);
           if (l <= -256) {
@@ -945,7 +1057,10 @@ function unary(stk) {
           out(4754245);
           out(l & 255);
           lval.contents = /* tuple */[
-            /* Mov */Block.__(0, [3]),
+            {
+              tag: /* Mov */0,
+              _0: 3
+            },
             /* Int */0
           ];
         } else {
@@ -969,51 +1084,57 @@ function postfix(stk) {
   if (op.tag) {
     return Curry._1(unnext, op);
   }
-  var op$1 = op[0];
+  var op$1 = op._0;
   switch (op$1) {
     case "(" :
         var emitargs = function (_l, _rl) {
           while(true) {
             var rl = _rl;
             var l = _l;
-            if (nextis(/* Op */Block.__(0, [")"]))) {
+            if (nextis({
+                    tag: /* Op */0,
+                    _0: ")"
+                  })) {
               Curry._1(next$1, undefined);
               return List.iter(pop, l);
             }
             expr(stk);
             push(0);
-            if (nextis(/* Op */Block.__(0, [","]))) {
+            if (nextis({
+                    tag: /* Op */0,
+                    _0: ","
+                  })) {
               Curry._1(next$1, undefined);
             }
             _rl = List.tl(rl);
-            _l = /* :: */[
-              List.hd(rl),
-              l
-            ];
+            _l = /* :: */{
+              _0: List.hd(rl),
+              _1: l
+            };
             continue ;
           };
         };
         patchlval(undefined);
         push(0);
-        emitargs(/* [] */0, /* :: */[
-              7,
-              /* :: */[
-                6,
-                /* :: */[
-                  2,
-                  /* :: */[
-                    1,
-                    /* :: */[
-                      8,
-                      /* :: */[
-                        9,
-                        /* [] */0
-                      ]
-                    ]
-                  ]
-                ]
-              ]
-            ]);
+        emitargs(/* [] */0, /* :: */{
+              _0: 7,
+              _1: /* :: */{
+                _0: 6,
+                _1: /* :: */{
+                  _0: 2,
+                  _1: /* :: */{
+                    _0: 1,
+                    _1: /* :: */{
+                      _0: 8,
+                      _1: /* :: */{
+                        _0: 9,
+                        _1: /* [] */0
+                      }
+                    }
+                  }
+                }
+              }
+            });
         pop(0);
         if (align.contents % 2 !== 0) {
           out(1216605192);
@@ -1036,43 +1157,43 @@ function postfix(stk) {
   return out(List.assoc(/* tuple */[
                   op$1,
                   lval.contents[1]
-                ], /* :: */[
-                  /* tuple */[
+                ], /* :: */{
+                  _0: /* tuple */[
                     /* tuple */[
                       "++",
                       /* Int */0
                     ],
                     4783873
                   ],
-                  /* :: */[
-                    /* tuple */[
+                  _1: /* :: */{
+                    _0: /* tuple */[
                       /* tuple */[
                         "--",
                         /* Int */0
                       ],
                       4783881
                     ],
-                    /* :: */[
-                      /* tuple */[
+                    _1: /* :: */{
+                      _0: /* tuple */[
                         /* tuple */[
                           "++",
                           /* Chr */1
                         ],
                         65025
                       ],
-                      /* :: */[
-                        /* tuple */[
+                      _1: /* :: */{
+                        _0: /* tuple */[
                           /* tuple */[
                             "--",
                             /* Chr */1
                           ],
                           65033
                         ],
-                        /* [] */0
-                      ]
-                    ]
-                  ]
-                ]));
+                        _1: /* [] */0
+                      }
+                    }
+                  }
+                }));
 }
 
 function expr(stk) {
@@ -1083,7 +1204,7 @@ function expr(stk) {
     if (t.tag) {
       return Curry._1(unnext, t);
     }
-    if (t[0] !== "=") {
+    if (t._0 !== "=") {
       return Curry._1(unnext, t);
     }
     patchlval(undefined);
@@ -1107,16 +1228,22 @@ function decl(g, _n, _stk) {
     var n = _n;
     var t = Curry._1(next$1, undefined);
     if (Caml_obj.caml_equal(t, tokint)) {
-      var top = stk ? stk[0][1] : 0;
+      var top = stk ? stk._0[1] : 0;
       var vars = (function(top){
       return function vars(_n, _stk) {
         while(true) {
           var stk = _stk;
           var n = _n;
-          while(nextis(/* Op */Block.__(0, ["*"]))) {
+          while(nextis({
+                  tag: /* Op */0,
+                  _0: "*"
+                })) {
             Curry._1(next$1, undefined);
           };
-          if (nextis(/* Op */Block.__(0, [";"]))) {
+          if (nextis({
+                  tag: /* Op */0,
+                  _0: ";"
+                })) {
             return /* tuple */[
                     n,
                     stk
@@ -1124,7 +1251,7 @@ function decl(g, _n, _stk) {
           }
           var s = Curry._1(next$1, undefined);
           if (s.tag === /* Sym */3) {
-            var s$1 = s[0];
+            var s$1 = s._0;
             var n$prime = n + 1 | 0;
             var stk$prime;
             if (g) {
@@ -1144,15 +1271,18 @@ function decl(g, _n, _stk) {
               gpos.contents = gpos.contents + 8 | 0;
               stk$prime = stk;
             } else {
-              stk$prime = /* :: */[
-                /* tuple */[
+              stk$prime = /* :: */{
+                _0: /* tuple */[
                   s$1,
                   top - (n$prime << 3) | 0
                 ],
-                stk
-              ];
+                _1: stk
+              };
             }
-            if (!nextis(/* Op */Block.__(0, [","]))) {
+            if (!nextis({
+                    tag: /* Op */0,
+                    _0: ","
+                  })) {
               return /* tuple */[
                       n$prime,
                       stk$prime
@@ -1174,21 +1304,24 @@ function decl(g, _n, _stk) {
       var match = vars(0, stk);
       Curry._1(next$1, undefined);
       if (dbg.contents) {
-        Curry._1(Printf.eprintf(/* Format */[
-                  /* String_literal */Block.__(11, [
-                      "end of decl (",
-                      /* Int */Block.__(4, [
-                          /* Int_d */0,
-                          /* No_padding */0,
-                          /* No_precision */0,
-                          /* String_literal */Block.__(11, [
-                              " vars)\n",
-                              /* End_of_format */0
-                            ])
-                        ])
-                    ]),
-                  "end of decl (%d vars)\n"
-                ]), n);
+        Curry._1(Printf.eprintf(/* Format */{
+                  _0: {
+                    tag: /* String_literal */11,
+                    _0: "end of decl (",
+                    _1: {
+                      tag: /* Int */4,
+                      _0: /* Int_d */0,
+                      _1: /* No_padding */0,
+                      _2: /* No_precision */0,
+                      _3: {
+                        tag: /* String_literal */11,
+                        _0: " vars)\n",
+                        _1: /* End_of_format */0
+                      }
+                    }
+                  },
+                  _1: "end of decl (%d vars)\n"
+                }), n);
       }
       _stk = match[1];
       _n = n + match[0] | 0;
@@ -1267,12 +1400,18 @@ function stmt(brk, stk) {
       ];
     } else {
       Curry._1(next$1, undefined);
-      if (!nextis(/* Op */Block.__(0, [";"]))) {
+      if (!nextis({
+              tag: /* Op */0,
+              _0: ";"
+            })) {
         expr(stk);
       }
       Curry._1(next$1, undefined);
       var top = opos.contents;
-      if (nextis(/* Op */Block.__(0, [";"]))) {
+      if (nextis({
+              tag: /* Op */0,
+              _0: ";"
+            })) {
         bl.contents = 0;
       } else {
         expr(stk);
@@ -1302,7 +1441,10 @@ function stmt(brk, stk) {
     return patch(true, bl.contents, opos.contents);
   }
   if (Caml_obj.caml_equal(t, tokret)) {
-    if (!nextis(/* Op */Block.__(0, [";"]))) {
+    if (!nextis({
+            tag: /* Op */0,
+            _0: ";"
+          })) {
       expr(stk);
     }
     Curry._1(next$1, undefined);
@@ -1338,7 +1480,7 @@ function stmt(brk, stk) {
     return ;
   }
   if (!t.tag) {
-    switch (t[0]) {
+    switch (t._0) {
       case ";" :
           return ;
       case "{" :
@@ -1357,7 +1499,10 @@ function block(brk, stk) {
   var match = decl(false, 0, stk);
   var stk$prime = match[1];
   var n = match[0];
-  while(!nextis(/* Op */Block.__(0, ["}"]))) {
+  while(!nextis({
+          tag: /* Op */0,
+          _0: "}"
+        })) {
     stmt(brk, stk$prime);
   };
   Curry._1(next$1, undefined);
@@ -1372,7 +1517,10 @@ function block(brk, stk) {
 
 function top(_param) {
   while(true) {
-    if (nextis(/* Op */Block.__(0, ["EOF!"]))) {
+    if (nextis({
+            tag: /* Op */0,
+            _0: "EOF!"
+          })) {
       return ;
     }
     if (nextis(tokint)) {
@@ -1382,7 +1530,7 @@ function top(_param) {
     }
     var f = Curry._1(next$1, undefined);
     if (f.tag === /* Sym */3) {
-      var f$1 = f[0];
+      var f$1 = f._0;
       var g = Caml_array.caml_array_get(globs, f$1);
       if (g.va >= 0) {
         throw {
@@ -1403,7 +1551,7 @@ function top(_param) {
           var i = Curry._1(next$1, undefined);
           switch (i.tag | 0) {
             case /* Op */0 :
-                if (i[0] === ")") {
+                if (i._0 === ")") {
                   return stk;
                 }
                 throw {
@@ -1421,17 +1569,20 @@ function top(_param) {
             case /* Sym */3 :
                 var r = List.hd(regs);
                 push(r);
-                if (nextis(/* Op */Block.__(0, [","]))) {
+                if (nextis({
+                        tag: /* Op */0,
+                        _0: ","
+                      })) {
                   Curry._1(next$1, undefined);
                 }
                 var stk$prime_000 = /* tuple */[
-                  i[0],
+                  i._0,
                   ((-n | 0) << 3)
                 ];
-                var stk$prime = /* :: */[
-                  stk$prime_000,
-                  stk
-                ];
+                var stk$prime = /* :: */{
+                  _0: stk$prime_000,
+                  _1: stk
+                };
                 _stk = stk$prime;
                 _n = n + 1 | 0;
                 _regs = List.tl(regs);
@@ -1444,26 +1595,29 @@ function top(_param) {
       align.contents = 0;
       out(85);
       out(4753893);
-      var stk = emitargs(/* :: */[
-            7,
-            /* :: */[
-              6,
-              /* :: */[
-                2,
-                /* :: */[
-                  1,
-                  /* :: */[
-                    8,
-                    /* :: */[
-                      9,
-                      /* [] */0
-                    ]
-                  ]
-                ]
-              ]
-            ]
-          ], 1, /* [] */0);
-      while(Caml_obj.caml_notequal(Curry._1(next$1, undefined), /* Op */Block.__(0, ["{"]))) {
+      var stk = emitargs(/* :: */{
+            _0: 7,
+            _1: /* :: */{
+              _0: 6,
+              _1: /* :: */{
+                _0: 2,
+                _1: /* :: */{
+                  _0: 1,
+                  _1: /* :: */{
+                    _0: 8,
+                    _1: /* :: */{
+                      _0: 9,
+                      _1: /* [] */0
+                    }
+                  }
+                }
+              }
+            }
+          }, 1, /* [] */0);
+      while(Caml_obj.caml_notequal(Curry._1(next$1, undefined), {
+              tag: /* Op */0,
+              _0: "{"
+            })) {
         
       };
       retl.contents = 0;
@@ -1476,19 +1630,22 @@ function top(_param) {
       patch(true, retl.contents, opos.contents);
       out(51651);
       if (dbg.contents) {
-        Curry._1(Printf.eprintf(/* Format */[
-                  /* String_literal */Block.__(11, [
-                      "done with function ",
-                      /* String */Block.__(2, [
-                          /* No_padding */0,
-                          /* Char_literal */Block.__(12, [
-                              /* "\n" */10,
-                              /* End_of_format */0
-                            ])
-                        ])
-                    ]),
-                  "done with function %s\n"
-                ]), symstr(f$1));
+        Curry._1(Printf.eprintf(/* Format */{
+                  _0: {
+                    tag: /* String_literal */11,
+                    _0: "done with function ",
+                    _1: {
+                      tag: /* String */2,
+                      _0: /* No_padding */0,
+                      _1: {
+                        tag: /* Char_literal */12,
+                        _0: /* "\n" */10,
+                        _1: /* End_of_format */0
+                      }
+                    }
+                  },
+                  _1: "done with function %s\n"
+                }), symstr(f$1));
       }
       _param = undefined;
       continue ;
@@ -1501,52 +1658,52 @@ function top(_param) {
   };
 }
 
-var elfhdr = Bytes.of_string($$String.concat("", /* :: */[
-          "\x7fELF\x02\x01\x01\0",
-          /* :: */[
-            "\0\0\0\0\0\0\0\0",
-            /* :: */[
-              "\x02\0",
-              /* :: */[
-                ">\0",
-                /* :: */[
-                  "\x01\0\0\0",
-                  /* :: */[
-                    "\0\0\0\0\0\0\0\0",
-                    /* :: */[
-                      "@\0\0\0\0\0\0\0",
-                      /* :: */[
-                        "\0\0\0\0\0\0\0\0",
-                        /* :: */[
-                          "\0\0\0\0",
-                          /* :: */[
-                            "@\0",
-                            /* :: */[
-                              "8\0",
-                              /* :: */[
-                                "\x03\0",
-                                /* :: */[
-                                  "@\0",
-                                  /* :: */[
-                                    "\0\0",
-                                    /* :: */[
-                                      "\0\0",
-                                      /* [] */0
-                                    ]
-                                  ]
-                                ]
-                              ]
-                            ]
-                          ]
-                        ]
-                      ]
-                    ]
-                  ]
-                ]
-              ]
-            ]
-          ]
-        ]));
+var elfhdr = Bytes.of_string($$String.concat("", /* :: */{
+          _0: "\x7fELF\x02\x01\x01\0",
+          _1: /* :: */{
+            _0: "\0\0\0\0\0\0\0\0",
+            _1: /* :: */{
+              _0: "\x02\0",
+              _1: /* :: */{
+                _0: ">\0",
+                _1: /* :: */{
+                  _0: "\x01\0\0\0",
+                  _1: /* :: */{
+                    _0: "\0\0\0\0\0\0\0\0",
+                    _1: /* :: */{
+                      _0: "@\0\0\0\0\0\0\0",
+                      _1: /* :: */{
+                        _0: "\0\0\0\0\0\0\0\0",
+                        _1: /* :: */{
+                          _0: "\0\0\0\0",
+                          _1: /* :: */{
+                            _0: "@\0",
+                            _1: /* :: */{
+                              _0: "8\0",
+                              _1: /* :: */{
+                                _0: "\x03\0",
+                                _1: /* :: */{
+                                  _0: "@\0",
+                                  _1: /* :: */{
+                                    _0: "\0\0",
+                                    _1: /* :: */{
+                                      _0: "\0\0",
+                                      _1: /* [] */0
+                                    }
+                                  }
+                                }
+                              }
+                            }
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }));
 
 function elfphdr(ty, off, sz, align) {
   le(32, ty);
@@ -1656,64 +1813,64 @@ function elfgen(outf) {
   var dyn = opos.contents;
   List.iter((function (param) {
           return le(64, param);
-        }), /* :: */[
-        1,
-        /* :: */[
-          29,
-          /* :: */[
-            4,
-            /* :: */[
-              va(hash),
-              /* :: */[
-                5,
-                /* :: */[
-                  va(strtab),
-                  /* :: */[
-                    6,
-                    /* :: */[
-                      va(symtab),
-                      /* :: */[
-                        7,
-                        /* :: */[
-                          va(rel),
-                          /* :: */[
-                            8,
-                            /* :: */[
-                              hash - rel | 0,
-                              /* :: */[
-                                9,
-                                /* :: */[
-                                  24,
-                                  /* :: */[
-                                    10,
-                                    /* :: */[
-                                      symtab - strtab | 0,
-                                      /* :: */[
-                                        11,
-                                        /* :: */[
-                                          24,
-                                          /* :: */[
-                                            0,
-                                            /* [] */0
-                                          ]
-                                        ]
-                                      ]
-                                    ]
-                                  ]
-                                ]
-                              ]
-                            ]
-                          ]
-                        ]
-                      ]
-                    ]
-                  ]
-                ]
-              ]
-            ]
-          ]
-        ]
-      ]);
+        }), /* :: */{
+        _0: 1,
+        _1: /* :: */{
+          _0: 29,
+          _1: /* :: */{
+            _0: 4,
+            _1: /* :: */{
+              _0: va(hash),
+              _1: /* :: */{
+                _0: 5,
+                _1: /* :: */{
+                  _0: va(strtab),
+                  _1: /* :: */{
+                    _0: 6,
+                    _1: /* :: */{
+                      _0: va(symtab),
+                      _1: /* :: */{
+                        _0: 7,
+                        _1: /* :: */{
+                          _0: va(rel),
+                          _1: /* :: */{
+                            _0: 8,
+                            _1: /* :: */{
+                              _0: hash - rel | 0,
+                              _1: /* :: */{
+                                _0: 9,
+                                _1: /* :: */{
+                                  _0: 24,
+                                  _1: /* :: */{
+                                    _0: 10,
+                                    _1: /* :: */{
+                                      _0: symtab - strtab | 0,
+                                      _1: /* :: */{
+                                        _0: 11,
+                                        _1: /* :: */{
+                                          _0: 24,
+                                          _1: /* :: */{
+                                            _0: 0,
+                                            _1: /* [] */0
+                                          }
+                                        }
+                                      }
+                                    }
+                                  }
+                                }
+                              }
+                            }
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      });
   var tend = opos.contents;
   Bytes.blit(obuf, 0, obuf, off, tend);
   Bytes.blit(glo, 0, obuf, 232, gpos.contents);
@@ -1741,72 +1898,86 @@ function main(param) {
   var ppsym = function (s) {
     switch (s.tag | 0) {
       case /* Op */0 :
-          return Curry._1(Printf.printf(/* Format */[
-                          /* String_literal */Block.__(11, [
-                              "Operator '",
-                              /* String */Block.__(2, [
-                                  /* No_padding */0,
-                                  /* String_literal */Block.__(11, [
-                                      "'\n",
-                                      /* End_of_format */0
-                                    ])
-                                ])
-                            ]),
-                          "Operator '%s'\n"
-                        ]), s[0]);
+          return Curry._1(Printf.printf(/* Format */{
+                          _0: {
+                            tag: /* String_literal */11,
+                            _0: "Operator '",
+                            _1: {
+                              tag: /* String */2,
+                              _0: /* No_padding */0,
+                              _1: {
+                                tag: /* String_literal */11,
+                                _0: "'\n",
+                                _1: /* End_of_format */0
+                              }
+                            }
+                          },
+                          _1: "Operator '%s'\n"
+                        }), s._0);
       case /* ILit */1 :
-          return Curry._1(Printf.printf(/* Format */[
-                          /* String_literal */Block.__(11, [
-                              "Int literal ",
-                              /* Int */Block.__(4, [
-                                  /* Int_d */0,
-                                  /* No_padding */0,
-                                  /* No_precision */0,
-                                  /* Char_literal */Block.__(12, [
-                                      /* "\n" */10,
-                                      /* End_of_format */0
-                                    ])
-                                ])
-                            ]),
-                          "Int literal %d\n"
-                        ]), s[0]);
+          return Curry._1(Printf.printf(/* Format */{
+                          _0: {
+                            tag: /* String_literal */11,
+                            _0: "Int literal ",
+                            _1: {
+                              tag: /* Int */4,
+                              _0: /* Int_d */0,
+                              _1: /* No_padding */0,
+                              _2: /* No_precision */0,
+                              _3: {
+                                tag: /* Char_literal */12,
+                                _0: /* "\n" */10,
+                                _1: /* End_of_format */0
+                              }
+                            }
+                          },
+                          _1: "Int literal %d\n"
+                        }), s._0);
       case /* SLit */2 :
-          return Curry._1(Printf.printf(/* Format */[
-                          /* String_literal */Block.__(11, [
-                              "Str literal ",
-                              /* Caml_string */Block.__(3, [
-                                  /* No_padding */0,
-                                  /* Char_literal */Block.__(12, [
-                                      /* "\n" */10,
-                                      /* End_of_format */0
-                                    ])
-                                ])
-                            ]),
-                          "Str literal %S\n"
-                        ]), s[1]);
+          return Curry._1(Printf.printf(/* Format */{
+                          _0: {
+                            tag: /* String_literal */11,
+                            _0: "Str literal ",
+                            _1: {
+                              tag: /* Caml_string */3,
+                              _0: /* No_padding */0,
+                              _1: {
+                                tag: /* Char_literal */12,
+                                _0: /* "\n" */10,
+                                _1: /* End_of_format */0
+                              }
+                            }
+                          },
+                          _1: "Str literal %S\n"
+                        }), s._1);
       case /* Sym */3 :
-          var i = s[0];
-          return Curry._2(Printf.printf(/* Format */[
-                          /* String_literal */Block.__(11, [
-                              "Symbol '",
-                              /* String */Block.__(2, [
-                                  /* No_padding */0,
-                                  /* String_literal */Block.__(11, [
-                                      "' (",
-                                      /* Int */Block.__(4, [
-                                          /* Int_d */0,
-                                          /* No_padding */0,
-                                          /* No_precision */0,
-                                          /* String_literal */Block.__(11, [
-                                              ")\n",
-                                              /* End_of_format */0
-                                            ])
-                                        ])
-                                    ])
-                                ])
-                            ]),
-                          "Symbol '%s' (%d)\n"
-                        ]), symstr(i), i);
+          var i = s._0;
+          return Curry._2(Printf.printf(/* Format */{
+                          _0: {
+                            tag: /* String_literal */11,
+                            _0: "Symbol '",
+                            _1: {
+                              tag: /* String */2,
+                              _0: /* No_padding */0,
+                              _1: {
+                                tag: /* String_literal */11,
+                                _0: "' (",
+                                _1: {
+                                  tag: /* Int */4,
+                                  _0: /* Int_d */0,
+                                  _1: /* No_padding */0,
+                                  _2: /* No_precision */0,
+                                  _3: {
+                                    tag: /* String_literal */11,
+                                    _0: ")\n",
+                                    _1: /* End_of_format */0
+                                  }
+                                }
+                              }
+                            }
+                          },
+                          _1: "Symbol '%s' (%d)\n"
+                        }), symstr(i), i);
       
     }
   };
@@ -1836,14 +2007,15 @@ function main(param) {
             _param = undefined;
             continue ;
           }
-          if (tok[0] === "EOF!") {
-            return Printf.printf(/* Format */[
-                        /* String_literal */Block.__(11, [
-                            "End of input stream\n",
-                            /* End_of_format */0
-                          ]),
-                        "End of input stream\n"
-                      ]);
+          if (tok._0 === "EOF!") {
+            return Printf.printf(/* Format */{
+                        _0: {
+                          tag: /* String_literal */11,
+                          _0: "End of input stream\n",
+                          _1: /* End_of_format */0
+                        },
+                        _1: "End of input stream\n"
+                      });
           }
           ppsym(tok);
           _param = undefined;

@@ -14,15 +14,18 @@ var test_id = {
 
 function $$throw(loc, x) {
   test_id.contents = test_id.contents + 1 | 0;
-  suites.contents = /* :: */[
-    /* tuple */[
+  suites.contents = /* :: */{
+    _0: /* tuple */[
       loc + (" id " + String(test_id.contents)),
       (function (param) {
-          return /* ThrowAny */Block.__(7, [x]);
+          return {
+                  tag: /* ThrowAny */7,
+                  _0: x
+                };
         })
     ],
-    suites.contents
-  ];
+    _1: suites.contents
+  };
   
 }
 

@@ -18,34 +18,41 @@ var counter = {
 function add_test(loc, test) {
   counter.contents = counter.contents + 1 | 0;
   var id = loc + (" id " + String(counter.contents));
-  suites.contents = /* :: */[
-    /* tuple */[
+  suites.contents = /* :: */{
+    _0: /* tuple */[
       id,
       test
     ],
-    suites.contents
-  ];
+    _1: suites.contents
+  };
   
 }
 
 function eq(loc, x, y) {
   return add_test(loc, (function (param) {
-                return /* Eq */Block.__(0, [
-                          x,
-                          y
-                        ]);
+                return {
+                        tag: /* Eq */0,
+                        _0: x,
+                        _1: y
+                      };
               }));
 }
 
 function false_(loc) {
   return add_test(loc, (function (param) {
-                return /* Ok */Block.__(4, [false]);
+                return {
+                        tag: /* Ok */4,
+                        _0: false
+                      };
               }));
 }
 
 function true_(loc) {
   return add_test(loc, (function (param) {
-                return /* Ok */Block.__(4, [true]);
+                return {
+                        tag: /* Ok */4,
+                        _0: true
+                      };
               }));
 }
 
@@ -61,7 +68,10 @@ catch (raw_x){
   var x = Caml_js_exceptions.internalToOCamlException(raw_x);
   if (x.RE_EXN_ID === Js_exn.$$Error) {
     add_test("File \"js_exception_catch_test.ml\", line 21, characters 10-17", (function (param) {
-            return /* Ok */Block.__(4, [true]);
+            return {
+                    tag: /* Ok */4,
+                    _0: true
+                  };
           }));
   } else {
     throw x;
@@ -70,7 +80,10 @@ catch (raw_x){
 
 if (exit === 1) {
   add_test("File \"js_exception_catch_test.ml\", line 22, characters 16-23", (function (param) {
-          return /* Ok */Block.__(4, [false]);
+          return {
+                  tag: /* Ok */4,
+                  _0: false
+                };
         }));
 }
 

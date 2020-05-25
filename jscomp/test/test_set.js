@@ -6,34 +6,34 @@ var Curry = require("../../lib/js/curry.js");
 function Make(Ord) {
   var height = function (param) {
     if (param) {
-      return param[3];
+      return param._3;
     } else {
       return 0;
     }
   };
   var create = function (l, v, r) {
-    var hl = l ? l[3] : 0;
-    var hr = r ? r[3] : 0;
-    return /* Node */[
-            l,
-            v,
-            r,
-            hl >= hr ? hl + 1 | 0 : hr + 1 | 0
-          ];
+    var hl = l ? l._3 : 0;
+    var hr = r ? r._3 : 0;
+    return /* Node */{
+            _0: l,
+            _1: v,
+            _2: r,
+            _3: hl >= hr ? hl + 1 | 0 : hr + 1 | 0
+          };
   };
   var bal = function (l, v, r) {
-    var hl = l ? l[3] : 0;
-    var hr = r ? r[3] : 0;
+    var hl = l ? l._3 : 0;
+    var hr = r ? r._3 : 0;
     if (hl > (hr + 2 | 0)) {
       if (l) {
-        var lr = l[2];
-        var lv = l[1];
-        var ll = l[0];
+        var lr = l._2;
+        var lv = l._1;
+        var ll = l._0;
         if (height(ll) >= height(lr)) {
           return create(ll, lv, create(lr, v, r));
         }
         if (lr) {
-          return create(create(ll, lv, lr[0]), lr[1], create(lr[2], v, r));
+          return create(create(ll, lv, lr._0), lr._1, create(lr._2, v, r));
         }
         throw {
               RE_EXN_ID: "Invalid_argument",
@@ -48,22 +48,22 @@ function Make(Ord) {
           };
     }
     if (hr <= (hl + 2 | 0)) {
-      return /* Node */[
-              l,
-              v,
-              r,
-              hl >= hr ? hl + 1 | 0 : hr + 1 | 0
-            ];
+      return /* Node */{
+              _0: l,
+              _1: v,
+              _2: r,
+              _3: hl >= hr ? hl + 1 | 0 : hr + 1 | 0
+            };
     }
     if (r) {
-      var rr = r[2];
-      var rv = r[1];
-      var rl = r[0];
+      var rr = r._2;
+      var rv = r._1;
+      var rl = r._0;
       if (height(rr) >= height(rl)) {
         return create(create(l, v, rl), rv, rr);
       }
       if (rl) {
-        return create(create(l, v, rl[0]), rl[1], create(rl[2], rv, rr));
+        return create(create(l, v, rl._0), rl._1, create(rl._2, rv, rr));
       }
       throw {
             RE_EXN_ID: "Invalid_argument",
@@ -79,16 +79,16 @@ function Make(Ord) {
   };
   var add = function (x, t) {
     if (!t) {
-      return /* Node */[
-              /* Empty */0,
-              x,
-              /* Empty */0,
-              1
-            ];
+      return /* Node */{
+              _0: /* Empty */0,
+              _1: x,
+              _2: /* Empty */0,
+              _3: 1
+            };
     }
-    var r = t[2];
-    var v = t[1];
-    var l = t[0];
+    var r = t._2;
+    var v = t._1;
+    var l = t._0;
     var c = Curry._2(Ord.compare, x, v);
     if (c === 0) {
       return t;
@@ -99,23 +99,23 @@ function Make(Ord) {
     }
   };
   var singleton = function (x) {
-    return /* Node */[
-            /* Empty */0,
-            x,
-            /* Empty */0,
-            1
-          ];
+    return /* Node */{
+            _0: /* Empty */0,
+            _1: x,
+            _2: /* Empty */0,
+            _3: 1
+          };
   };
   var add_min_element = function (v, param) {
     if (param) {
-      return bal(add_min_element(v, param[0]), param[1], param[2]);
+      return bal(add_min_element(v, param._0), param._1, param._2);
     } else {
       return singleton(v);
     }
   };
   var add_max_element = function (v, param) {
     if (param) {
-      return bal(param[0], param[1], add_max_element(v, param[2]));
+      return bal(param._0, param._1, add_max_element(v, param._2));
     } else {
       return singleton(v);
     }
@@ -127,12 +127,12 @@ function Make(Ord) {
     if (!r) {
       return add_max_element(v, l);
     }
-    var rh = r[3];
-    var lh = l[3];
+    var rh = r._3;
+    var lh = l._3;
     if (lh > (rh + 2 | 0)) {
-      return bal(l[0], l[1], join(l[2], v, r));
+      return bal(l._0, l._1, join(l._2, v, r));
     } else if (rh > (lh + 2 | 0)) {
-      return bal(join(l, v, r[0]), r[1], r[2]);
+      return bal(join(l, v, r._0), r._1, r._2);
     } else {
       return create(l, v, r);
     }
@@ -141,9 +141,9 @@ function Make(Ord) {
     while(true) {
       var param = _param;
       if (param) {
-        var l = param[0];
+        var l = param._0;
         if (!l) {
-          return param[1];
+          return param._1;
         }
         _param = l;
         continue ;
@@ -158,9 +158,9 @@ function Make(Ord) {
     while(true) {
       var param = _param;
       if (param) {
-        var r = param[2];
+        var r = param._2;
         if (!r) {
-          return param[1];
+          return param._1;
         }
         _param = r;
         continue ;
@@ -173,11 +173,11 @@ function Make(Ord) {
   };
   var remove_min_elt = function (param) {
     if (param) {
-      var l = param[0];
+      var l = param._0;
       if (l) {
-        return bal(remove_min_elt(l), param[1], param[2]);
+        return bal(remove_min_elt(l), param._1, param._2);
       } else {
-        return param[2];
+        return param._2;
       }
     }
     throw {
@@ -216,9 +216,9 @@ function Make(Ord) {
               /* Empty */0
             ];
     }
-    var r = param[2];
-    var v = param[1];
-    var l = param[0];
+    var r = param._2;
+    var v = param._1;
+    var l = param._0;
     var c = Curry._2(Ord.compare, x, v);
     if (c === 0) {
       return /* tuple */[
@@ -255,11 +255,11 @@ function Make(Ord) {
       if (!param) {
         return false;
       }
-      var c = Curry._2(Ord.compare, x, param[1]);
+      var c = Curry._2(Ord.compare, x, param._1);
       if (c === 0) {
         return true;
       }
-      _param = c < 0 ? param[0] : param[2];
+      _param = c < 0 ? param._0 : param._2;
       continue ;
     };
   };
@@ -267,9 +267,9 @@ function Make(Ord) {
     if (!param) {
       return /* Empty */0;
     }
-    var r = param[2];
-    var v = param[1];
-    var l = param[0];
+    var r = param._2;
+    var v = param._1;
+    var l = param._0;
     var c = Curry._2(Ord.compare, x, v);
     if (c === 0) {
       return merge(l, r);
@@ -286,22 +286,22 @@ function Make(Ord) {
     if (!s2) {
       return s1;
     }
-    var h2 = s2[3];
-    var v2 = s2[1];
-    var h1 = s1[3];
-    var v1 = s1[1];
+    var h2 = s2._3;
+    var v2 = s2._1;
+    var h1 = s1._3;
+    var v1 = s1._1;
     if (h1 >= h2) {
       if (h2 === 1) {
         return add(v2, s1);
       }
       var match = split(v1, s2);
-      return join(union(s1[0], match[0]), v1, union(s1[2], match[2]));
+      return join(union(s1._0, match[0]), v1, union(s1._2, match[2]));
     }
     if (h1 === 1) {
       return add(v1, s2);
     }
     var match$1 = split(v2, s1);
-    return join(union(match$1[0], s2[0]), v2, union(match$1[2], s2[2]));
+    return join(union(match$1[0], s2._0), v2, union(match$1[2], s2._2));
   };
   var inter = function (s1, s2) {
     if (!s1) {
@@ -310,9 +310,9 @@ function Make(Ord) {
     if (!s2) {
       return /* Empty */0;
     }
-    var r1 = s1[2];
-    var v1 = s1[1];
-    var l1 = s1[0];
+    var r1 = s1._2;
+    var v1 = s1._1;
+    var l1 = s1._0;
     var match = split(v1, s2);
     var l2 = match[0];
     if (match[1]) {
@@ -328,9 +328,9 @@ function Make(Ord) {
     if (!s2) {
       return s1;
     }
-    var r1 = s1[2];
-    var v1 = s1[1];
-    var l1 = s1[0];
+    var r1 = s1._2;
+    var v1 = s1._1;
+    var l1 = s1._0;
     var match = split(v1, s2);
     var l2 = match[0];
     if (match[1]) {
@@ -346,12 +346,12 @@ function Make(Ord) {
       if (!s) {
         return e;
       }
-      _e = /* More */[
-        s[1],
-        s[2],
-        e
-      ];
-      _s = s[0];
+      _e = /* More */{
+        _0: s._1,
+        _1: s._2,
+        _2: e
+      };
+      _s = s._0;
       continue ;
     };
   };
@@ -369,12 +369,12 @@ function Make(Ord) {
       if (!e2) {
         return 1;
       }
-      var c = Curry._2(Ord.compare, e1[0], e2[0]);
+      var c = Curry._2(Ord.compare, e1._0, e2._0);
       if (c !== 0) {
         return c;
       }
-      _e2 = cons_enum(e2[1], e2[2]);
-      _e1 = cons_enum(e1[1], e1[2]);
+      _e2 = cons_enum(e2._1, e2._2);
+      _e1 = cons_enum(e1._1, e1._2);
       continue ;
     };
   };
@@ -394,12 +394,12 @@ function Make(Ord) {
       if (!s2) {
         return false;
       }
-      var r2 = s2[2];
-      var l2 = s2[0];
-      var r1 = s1[2];
-      var v1 = s1[1];
-      var l1 = s1[0];
-      var c = Curry._2(Ord.compare, v1, s2[1]);
+      var r2 = s2._2;
+      var l2 = s2._0;
+      var r1 = s1._2;
+      var v1 = s1._1;
+      var l1 = s1._0;
+      var c = Curry._2(Ord.compare, v1, s2._1);
       if (c === 0) {
         if (!subset(l1, l2)) {
           return false;
@@ -409,23 +409,23 @@ function Make(Ord) {
         continue ;
       }
       if (c < 0) {
-        if (!subset(/* Node */[
-                l1,
-                v1,
-                /* Empty */0,
-                0
-              ], l2)) {
+        if (!subset(/* Node */{
+                _0: l1,
+                _1: v1,
+                _2: /* Empty */0,
+                _3: 0
+              }, l2)) {
           return false;
         }
         _s1 = r1;
         continue ;
       }
-      if (!subset(/* Node */[
-              /* Empty */0,
-              v1,
-              r1,
-              0
-            ], r2)) {
+      if (!subset(/* Node */{
+              _0: /* Empty */0,
+              _1: v1,
+              _2: r1,
+              _3: 0
+            }, r2)) {
         return false;
       }
       _s1 = l1;
@@ -438,9 +438,9 @@ function Make(Ord) {
       if (!param) {
         return ;
       }
-      iter(f, param[0]);
-      Curry._1(f, param[1]);
-      _param = param[2];
+      iter(f, param._0);
+      Curry._1(f, param._1);
+      _param = param._2;
       continue ;
     };
   };
@@ -451,8 +451,8 @@ function Make(Ord) {
       if (!s) {
         return accu;
       }
-      _accu = Curry._2(f, s[1], fold(f, s[0], accu));
-      _s = s[2];
+      _accu = Curry._2(f, s._1, fold(f, s._0, accu));
+      _s = s._2;
       continue ;
     };
   };
@@ -462,13 +462,13 @@ function Make(Ord) {
       if (!param) {
         return true;
       }
-      if (!Curry._1(p, param[1])) {
+      if (!Curry._1(p, param._1)) {
         return false;
       }
-      if (!for_all(p, param[0])) {
+      if (!for_all(p, param._0)) {
         return false;
       }
-      _param = param[2];
+      _param = param._2;
       continue ;
     };
   };
@@ -478,13 +478,13 @@ function Make(Ord) {
       if (!param) {
         return false;
       }
-      if (Curry._1(p, param[1])) {
+      if (Curry._1(p, param._1)) {
         return true;
       }
-      if (exists(p, param[0])) {
+      if (exists(p, param._0)) {
         return true;
       }
-      _param = param[2];
+      _param = param._2;
       continue ;
     };
   };
@@ -492,10 +492,10 @@ function Make(Ord) {
     if (!param) {
       return /* Empty */0;
     }
-    var v = param[1];
-    var l$prime = filter(p, param[0]);
+    var v = param._1;
+    var l$prime = filter(p, param._0);
     var pv = Curry._1(p, v);
-    var r$prime = filter(p, param[2]);
+    var r$prime = filter(p, param._2);
     if (pv) {
       return join(l$prime, v, r$prime);
     } else {
@@ -509,12 +509,12 @@ function Make(Ord) {
               /* Empty */0
             ];
     }
-    var v = param[1];
-    var match = partition(p, param[0]);
+    var v = param._1;
+    var match = partition(p, param._0);
     var lf = match[1];
     var lt = match[0];
     var pv = Curry._1(p, v);
-    var match$1 = partition(p, param[2]);
+    var match$1 = partition(p, param._2);
     var rf = match$1[1];
     var rt = match$1[0];
     if (pv) {
@@ -531,7 +531,7 @@ function Make(Ord) {
   };
   var cardinal = function (param) {
     if (param) {
-      return (cardinal(param[0]) + 1 | 0) + cardinal(param[2]) | 0;
+      return (cardinal(param._0) + 1 | 0) + cardinal(param._2) | 0;
     } else {
       return 0;
     }
@@ -543,11 +543,11 @@ function Make(Ord) {
       if (!param) {
         return accu;
       }
-      _param = param[0];
-      _accu = /* :: */[
-        param[1],
-        elements_aux(accu, param[2])
-      ];
+      _param = param._0;
+      _accu = /* :: */{
+        _0: param._1,
+        _1: elements_aux(accu, param._2)
+      };
       continue ;
     };
   };
@@ -558,12 +558,12 @@ function Make(Ord) {
     while(true) {
       var param = _param;
       if (param) {
-        var v = param[1];
+        var v = param._1;
         var c = Curry._2(Ord.compare, x, v);
         if (c === 0) {
           return v;
         }
-        _param = c < 0 ? param[0] : param[2];
+        _param = c < 0 ? param._0 : param._2;
         continue ;
       }
       throw {
@@ -583,33 +583,33 @@ function Make(Ord) {
         case 1 :
             if (l) {
               return /* tuple */[
-                      /* Node */[
-                        /* Empty */0,
-                        l[0],
-                        /* Empty */0,
-                        1
-                      ],
-                      l[1]
+                      /* Node */{
+                        _0: /* Empty */0,
+                        _1: l._0,
+                        _2: /* Empty */0,
+                        _3: 1
+                      },
+                      l._1
                     ];
             }
             break;
         case 2 :
             if (l) {
-              var match = l[1];
+              var match = l._1;
               if (match) {
                 return /* tuple */[
-                        /* Node */[
-                          /* Node */[
-                            /* Empty */0,
-                            l[0],
-                            /* Empty */0,
-                            1
-                          ],
-                          match[0],
-                          /* Empty */0,
-                          2
-                        ],
-                        match[1]
+                        /* Node */{
+                          _0: /* Node */{
+                            _0: /* Empty */0,
+                            _1: l._0,
+                            _2: /* Empty */0,
+                            _3: 1
+                          },
+                          _1: match._0,
+                          _2: /* Empty */0,
+                          _3: 2
+                        },
+                        match._1
                       ];
               }
               
@@ -617,28 +617,28 @@ function Make(Ord) {
             break;
         case 3 :
             if (l) {
-              var match$1 = l[1];
+              var match$1 = l._1;
               if (match$1) {
-                var match$2 = match$1[1];
+                var match$2 = match$1._1;
                 if (match$2) {
                   return /* tuple */[
-                          /* Node */[
-                            /* Node */[
-                              /* Empty */0,
-                              l[0],
-                              /* Empty */0,
-                              1
-                            ],
-                            match$1[0],
-                            /* Node */[
-                              /* Empty */0,
-                              match$2[0],
-                              /* Empty */0,
-                              1
-                            ],
-                            2
-                          ],
-                          match$2[1]
+                          /* Node */{
+                            _0: /* Node */{
+                              _0: /* Empty */0,
+                              _1: l._0,
+                              _2: /* Empty */0,
+                              _3: 1
+                            },
+                            _1: match$1._0,
+                            _2: /* Node */{
+                              _0: /* Empty */0,
+                              _1: match$2._0,
+                              _2: /* Empty */0,
+                              _3: 1
+                            },
+                            _3: 2
+                          },
+                          match$2._1
                         ];
                 }
                 
@@ -653,9 +653,9 @@ function Make(Ord) {
       var match$3 = sub(nl, l);
       var l$1 = match$3[1];
       if (l$1) {
-        var match$4 = sub((n - nl | 0) - 1 | 0, l$1[1]);
+        var match$4 = sub((n - nl | 0) - 1 | 0, l$1._1);
         return /* tuple */[
-                create(match$3[0], l$1[0], match$4[0]),
+                create(match$3[0], l$1._0, match$4[0]),
                 match$4[1]
               ];
       }
@@ -675,28 +675,28 @@ function Make(Ord) {
     if (!l) {
       return /* Empty */0;
     }
-    var match = l[1];
-    var x0 = l[0];
+    var match = l._1;
+    var x0 = l._0;
     if (!match) {
       return singleton(x0);
     }
-    var match$1 = match[1];
-    var x1 = match[0];
+    var match$1 = match._1;
+    var x1 = match._0;
     if (!match$1) {
       return add(x1, singleton(x0));
     }
-    var match$2 = match$1[1];
-    var x2 = match$1[0];
+    var match$2 = match$1._1;
+    var x2 = match$1._0;
     if (!match$2) {
       return add(x2, add(x1, singleton(x0)));
     }
-    var match$3 = match$2[1];
-    var x3 = match$2[0];
+    var match$3 = match$2._1;
+    var x3 = match$2._0;
     if (match$3) {
-      if (match$3[1]) {
+      if (match$3._1) {
         return of_sorted_list(List.sort_uniq(Ord.compare, l));
       } else {
-        return add(match$3[0], add(x3, add(x2, add(x1, singleton(x0)))));
+        return add(match$3._0, add(x3, add(x2, add(x1, singleton(x0)))));
       }
     } else {
       return add(x3, add(x2, add(x1, singleton(x0))));

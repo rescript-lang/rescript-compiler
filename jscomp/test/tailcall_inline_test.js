@@ -28,54 +28,56 @@ function f(param) {
 var suites_000 = /* tuple */[
   "acc",
   (function (param) {
-      return /* Eq */Block.__(0, [
-                f(undefined),
-                [
-                  0,
-                  1,
-                  3,
-                  6,
-                  10,
-                  15,
-                  21,
-                  28,
-                  36,
-                  45
-                ]
-              ]);
+      return {
+              tag: /* Eq */0,
+              _0: f(undefined),
+              _1: [
+                0,
+                1,
+                3,
+                6,
+                10,
+                15,
+                21,
+                28,
+                36,
+                45
+              ]
+            };
     })
 ];
 
-var suites_001 = /* :: */[
-  /* tuple */[
+var suites_001 = /* :: */{
+  _0: /* tuple */[
     "array_to_list",
     (function (param) {
-        return /* Eq */Block.__(0, [
-                  /* :: */[
-                    1,
-                    /* :: */[
+        return {
+                tag: /* Eq */0,
+                _0: /* :: */{
+                  _0: 1,
+                  _1: /* :: */{
+                    _0: 2,
+                    _1: /* :: */{
+                      _0: 3,
+                      _1: /* [] */0
+                    }
+                  }
+                },
+                _1: $$Array.to_list([
+                      1,
                       2,
-                      /* :: */[
-                        3,
-                        /* [] */0
-                      ]
-                    ]
-                  ],
-                  $$Array.to_list([
-                        1,
-                        2,
-                        3
-                      ])
-                ]);
+                      3
+                    ])
+              };
       })
   ],
-  /* [] */0
-];
+  _1: /* [] */0
+};
 
-var suites = /* :: */[
-  suites_000,
-  suites_001
-];
+var suites = /* :: */{
+  _0: suites_000,
+  _1: suites_001
+};
 
 Mt.from_pair_suites("Tailcall_inline_test", suites);
 

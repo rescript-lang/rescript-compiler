@@ -34,30 +34,32 @@ function or_f(b, x, _n) {
 var suites_000 = /* tuple */[
   "and_tail",
   (function (param) {
-      return /* Eq */Block.__(0, [
-                false,
-                f(true, 1, 0)
-              ]);
+      return {
+              tag: /* Eq */0,
+              _0: false,
+              _1: f(true, 1, 0)
+            };
     })
 ];
 
-var suites_001 = /* :: */[
-  /* tuple */[
+var suites_001 = /* :: */{
+  _0: /* tuple */[
     "or_tail",
     (function (param) {
-        return /* Eq */Block.__(0, [
-                  false,
-                  or_f(false, 1, 0)
-                ]);
+        return {
+                tag: /* Eq */0,
+                _0: false,
+                _1: or_f(false, 1, 0)
+              };
       })
   ],
-  /* [] */0
-];
+  _1: /* [] */0
+};
 
-var suites = /* :: */[
-  suites_000,
-  suites_001
-];
+var suites = /* :: */{
+  _0: suites_000,
+  _1: suites_001
+};
 
 Mt.from_pair_suites("And_or_tailcall_test", suites);
 

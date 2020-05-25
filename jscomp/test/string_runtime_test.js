@@ -10,15 +10,16 @@ var Caml_bytes = require("../../lib/js/caml_bytes.js");
 var suites_000 = /* tuple */[
   "caml_is_printable",
   (function (param) {
-      return /* Eq */Block.__(0, [
-                Caml_char.caml_is_printable(/* "a" */97),
-                true
-              ]);
+      return {
+              tag: /* Eq */0,
+              _0: Caml_char.caml_is_printable(/* "a" */97),
+              _1: true
+            };
     })
 ];
 
-var suites_001 = /* :: */[
-  /* tuple */[
+var suites_001 = /* :: */{
+  _0: /* tuple */[
     "caml_string_of_bytes",
     (function (param) {
         var match = List.split(List.map((function (x) {
@@ -30,41 +31,42 @@ var suites_001 = /* :: */[
                                         return /* "c" */99;
                                       })))
                           ];
-                  }), /* :: */[
-                  1000,
-                  /* :: */[
-                    1024,
-                    /* :: */[
-                      1025,
-                      /* :: */[
-                        4095,
-                        /* :: */[
-                          4096,
-                          /* :: */[
-                            5000,
-                            /* :: */[
-                              10000,
-                              /* [] */0
-                            ]
-                          ]
-                        ]
-                      ]
-                    ]
-                  ]
-                ]));
-        return /* Eq */Block.__(0, [
-                  match[0],
-                  match[1]
-                ]);
+                  }), /* :: */{
+                  _0: 1000,
+                  _1: /* :: */{
+                    _0: 1024,
+                    _1: /* :: */{
+                      _0: 1025,
+                      _1: /* :: */{
+                        _0: 4095,
+                        _1: /* :: */{
+                          _0: 4096,
+                          _1: /* :: */{
+                            _0: 5000,
+                            _1: /* :: */{
+                              _0: 10000,
+                              _1: /* [] */0
+                            }
+                          }
+                        }
+                      }
+                    }
+                  }
+                }));
+        return {
+                tag: /* Eq */0,
+                _0: match[0],
+                _1: match[1]
+              };
       })
   ],
-  /* [] */0
-];
+  _1: /* [] */0
+};
 
-var suites = /* :: */[
-  suites_000,
-  suites_001
-];
+var suites = /* :: */{
+  _0: suites_000,
+  _1: suites_001
+};
 
 Mt.from_pair_suites("String_runtime_test", suites);
 

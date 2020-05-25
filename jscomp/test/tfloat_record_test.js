@@ -15,23 +15,25 @@ var buf = $$Buffer.create(50);
 var fmt = Format.formatter_of_buffer(buf);
 
 function print_float(f) {
-  return Curry._1(Format.fprintf(fmt, /* Format */[
-                  /* String */Block.__(2, [
-                      /* No_padding */0,
-                      /* End_of_format */0
-                    ]),
-                  "%s"
-                ]), Pervasives.string_of_float(f));
+  return Curry._1(Format.fprintf(fmt, /* Format */{
+                  _0: {
+                    tag: /* String */2,
+                    _0: /* No_padding */0,
+                    _1: /* End_of_format */0
+                  },
+                  _1: "%s"
+                }), Pervasives.string_of_float(f));
 }
 
 function print_newline(param) {
-  return Format.fprintf(fmt, /* Format */[
-              /* Char_literal */Block.__(12, [
-                  /* "\n" */10,
-                  /* End_of_format */0
-                ]),
-              "\n"
-            ]);
+  return Format.fprintf(fmt, /* Format */{
+              _0: {
+                tag: /* Char_literal */12,
+                _0: /* "\n" */10,
+                _1: /* End_of_format */0
+              },
+              _1: "\n"
+            });
 }
 
 var s = {

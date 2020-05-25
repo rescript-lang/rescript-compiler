@@ -27,77 +27,85 @@ function from_pairs(pair) {
   return List.concat($$Array.to_list($$Array.mapi((function (i, param) {
                         var f = param[1];
                         var i32 = param[0];
-                        return /* :: */[
-                                /* tuple */[
-                                  Curry._1(Printf.sprintf(/* Format */[
-                                            /* String_literal */Block.__(11, [
-                                                "int32_float_of_bits ",
-                                                /* Int */Block.__(4, [
-                                                    /* Int_d */0,
-                                                    /* No_padding */0,
-                                                    /* No_precision */0,
-                                                    /* End_of_format */0
-                                                  ])
-                                              ]),
-                                            "int32_float_of_bits %d"
-                                          ]), i),
+                        return /* :: */{
+                                _0: /* tuple */[
+                                  Curry._1(Printf.sprintf(/* Format */{
+                                            _0: {
+                                              tag: /* String_literal */11,
+                                              _0: "int32_float_of_bits ",
+                                              _1: {
+                                                tag: /* Int */4,
+                                                _0: /* Int_d */0,
+                                                _1: /* No_padding */0,
+                                                _2: /* No_precision */0,
+                                                _3: /* End_of_format */0
+                                              }
+                                            },
+                                            _1: "int32_float_of_bits %d"
+                                          }), i),
                                   (function (param) {
-                                      return /* Eq */Block.__(0, [
-                                                Caml_float.caml_int32_float_of_bits(i32),
-                                                f
-                                              ]);
+                                      return {
+                                              tag: /* Eq */0,
+                                              _0: Caml_float.caml_int32_float_of_bits(i32),
+                                              _1: f
+                                            };
                                     })
                                 ],
-                                /* :: */[
-                                  /* tuple */[
-                                    Curry._1(Printf.sprintf(/* Format */[
-                                              /* String_literal */Block.__(11, [
-                                                  "int32_bits_of_float ",
-                                                  /* Int */Block.__(4, [
-                                                      /* Int_d */0,
-                                                      /* No_padding */0,
-                                                      /* No_precision */0,
-                                                      /* End_of_format */0
-                                                    ])
-                                                ]),
-                                              "int32_bits_of_float %d"
-                                            ]), i),
+                                _1: /* :: */{
+                                  _0: /* tuple */[
+                                    Curry._1(Printf.sprintf(/* Format */{
+                                              _0: {
+                                                tag: /* String_literal */11,
+                                                _0: "int32_bits_of_float ",
+                                                _1: {
+                                                  tag: /* Int */4,
+                                                  _0: /* Int_d */0,
+                                                  _1: /* No_padding */0,
+                                                  _2: /* No_precision */0,
+                                                  _3: /* End_of_format */0
+                                                }
+                                              },
+                                              _1: "int32_bits_of_float %d"
+                                            }), i),
                                     (function (param) {
-                                        return /* Eq */Block.__(0, [
-                                                  Caml_float.caml_int32_bits_of_float(f),
-                                                  i32
-                                                ]);
+                                        return {
+                                                tag: /* Eq */0,
+                                                _0: Caml_float.caml_int32_bits_of_float(f),
+                                                _1: i32
+                                              };
                                       })
                                   ],
-                                  /* [] */0
-                                ]
-                              ];
+                                  _1: /* [] */0
+                                }
+                              };
                       }), int32_pairs)));
 }
 
-var suites = Pervasives.$at(/* :: */[
-      /* tuple */[
+var suites = Pervasives.$at(/* :: */{
+      _0: /* tuple */[
         "one",
         (function (param) {
-            return /* Eq */Block.__(0, [
-                      Caml_int64.bits_of_float(1.0),
-                      one_float
-                    ]);
+            return {
+                    tag: /* Eq */0,
+                    _0: Caml_int64.bits_of_float(1.0),
+                    _1: one_float
+                  };
           })
       ],
-      /* :: */[
-        /* tuple */[
+      _1: /* :: */{
+        _0: /* tuple */[
           "two",
           (function (param) {
-              return /* Eq */Block.__(0, [
-                        Caml_int64.float_of_bits(one_float),
-                        1.0
-                      ]);
+              return {
+                      tag: /* Eq */0,
+                      _0: Caml_int64.float_of_bits(one_float),
+                      _1: 1.0
+                    };
             })
         ],
-        /* [] */0
-      ]
-    ], from_pairs(int32_pairs));
+        _1: /* [] */0
+      }
+    }, from_pairs(int32_pairs));
 
 Mt.from_pair_suites("Float_of_bits_test", suites);
 
