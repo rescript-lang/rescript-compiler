@@ -5,7 +5,7 @@ var Block = require("../../lib/js/block.js");
 var Js_vector = require("../../lib/js/js_vector.js");
 var Caml_option = require("../../lib/js/caml_option.js");
 
-var suites_000 = /* tuple */[
+var suites_0 = /* tuple */[
   "File \"js_array_test.ml\", line 3, characters 4-11",
   (function (param) {
       var x = [
@@ -28,7 +28,7 @@ var suites_000 = /* tuple */[
     })
 ];
 
-var suites_001 = /* :: */{
+var suites_1 = /* :: */{
   _0: /* tuple */[
     "File \"js_array_test.ml\", line 11, characters 4-11",
     (function (param) {
@@ -1188,8 +1188,8 @@ var suites_001 = /* :: */{
 };
 
 var suites = /* :: */{
-  _0: suites_000,
-  _1: suites_001
+  _0: suites_0,
+  _1: suites_1
 };
 
 Mt.from_pair_suites("Js_array_test", suites);

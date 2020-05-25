@@ -362,7 +362,7 @@ function of_list(kvs) {
               }), /* Empty */0, kvs);
 }
 
-var int_map_suites_000 = /* tuple */[
+var int_map_suites_0 = /* tuple */[
   "add",
   (function (param) {
       var v = of_list(/* :: */{
@@ -392,7 +392,7 @@ var int_map_suites_000 = /* tuple */[
     })
 ];
 
-var int_map_suites_001 = /* :: */{
+var int_map_suites_1 = /* :: */{
   _0: /* tuple */[
     "equal",
     (function (param) {
@@ -520,8 +520,8 @@ var int_map_suites_001 = /* :: */{
 };
 
 var int_map_suites = /* :: */{
-  _0: int_map_suites_000,
-  _1: int_map_suites_001
+  _0: int_map_suites_0,
+  _1: int_map_suites_1
 };
 
 Mt.from_pair_suites("Map_test", int_map_suites);

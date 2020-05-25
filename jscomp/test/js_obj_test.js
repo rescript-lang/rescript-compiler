@@ -20,7 +20,7 @@ var class_tables = /* Cons */{
   next: undefined
 };
 
-var suites_000 = /* tuple */[
+var suites_0 = /* tuple */[
   "caml_obj",
   (function (param) {
       if (!class_tables.key) {
@@ -46,7 +46,7 @@ var suites_000 = /* tuple */[
     })
 ];
 
-var suites_001 = /* :: */{
+var suites_1 = /* :: */{
   _0: /* tuple */[
     "js_obj",
     (function (param) {
@@ -109,8 +109,8 @@ var suites_001 = /* :: */{
 };
 
 var suites = /* :: */{
-  _0: suites_000,
-  _1: suites_001
+  _0: suites_0,
+  _1: suites_1
 };
 
 Mt.from_pair_suites("Js_obj_test", suites);

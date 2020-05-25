@@ -37,9 +37,9 @@ function split(delim, s) {
         }
         throw exn;
       }
-      var l_000 = $$String.sub(s, i$prime + 1 | 0, (i - i$prime | 0) - 1 | 0);
+      var l_0 = $$String.sub(s, i$prime + 1 | 0, (i - i$prime | 0) - 1 | 0);
       var l$1 = /* :: */{
-        _0: l_000,
+        _0: l_0,
         _1: l
       };
       var l$2 = i$prime === 0 ? /* :: */({

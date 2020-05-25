@@ -20,7 +20,7 @@ function test2(param) {
   return v;
 }
 
-var suites_000 = /* tuple */[
+var suites_0 = /* tuple */[
   "for_order",
   (function (param) {
       return {
@@ -32,7 +32,7 @@ var suites_000 = /* tuple */[
 ];
 
 var suites = /* :: */{
-  _0: suites_000,
+  _0: suites_0,
   _1: /* [] */0
 };
 

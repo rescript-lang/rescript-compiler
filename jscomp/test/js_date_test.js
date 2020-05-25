@@ -8,7 +8,7 @@ function date(param) {
   return new Date("1976-03-08T12:34:56.789+01:23");
 }
 
-var suites_000 = /* tuple */[
+var suites_0 = /* tuple */[
   "valueOf",
   (function (param) {
       return {
@@ -19,7 +19,7 @@ var suites_000 = /* tuple */[
     })
 ];
 
-var suites_001 = /* :: */{
+var suites_1 = /* :: */{
   _0: /* tuple */[
     "make",
     (function (param) {
@@ -1096,8 +1096,8 @@ var suites_001 = /* :: */{
 };
 
 var suites = /* :: */{
-  _0: suites_000,
-  _1: suites_001
+  _0: suites_0,
+  _1: suites_1
 };
 
 Mt.from_pair_suites("Js_date_test", suites);

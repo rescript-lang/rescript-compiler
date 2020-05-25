@@ -5,7 +5,7 @@ var Block = require("../../lib/js/block.js");
 var Caml_option = require("../../lib/js/caml_option.js");
 var Js_null_undefined = require("../../lib/js/js_null_undefined.js");
 
-var suites_000 = /* tuple */[
+var suites_0 = /* tuple */[
   "toOption - null",
   (function (param) {
       return {
@@ -16,7 +16,7 @@ var suites_000 = /* tuple */[
     })
 ];
 
-var suites_001 = /* :: */{
+var suites_1 = /* :: */{
   _0: /* tuple */[
     "toOption - undefined",
     (function (param) {
@@ -315,8 +315,8 @@ var suites_001 = /* :: */{
 };
 
 var suites = /* :: */{
-  _0: suites_000,
-  _1: suites_001
+  _0: suites_0,
+  _1: suites_1
 };
 
 Mt.from_pair_suites("Js_null_undefined_test", suites);

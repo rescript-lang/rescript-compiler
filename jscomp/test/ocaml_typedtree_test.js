@@ -557,7 +557,7 @@ var first = {
   contents: true
 };
 
-var formatter_l_001 = /* :: */{
+var formatter_l_1 = /* :: */{
   _0: Format.err_formatter,
   _1: /* :: */{
     _0: Format.str_formatter,
@@ -567,7 +567,7 @@ var formatter_l_001 = /* :: */{
 
 var formatter_l = /* :: */{
   _0: Format.std_formatter,
-  _1: formatter_l_001
+  _1: formatter_l_1
 };
 
 function setup(o) {
@@ -2887,9 +2887,9 @@ function parse_declaration(arity, decl) {
 }
 
 function description_list(p) {
-  var list_000 = p.prim_name;
+  var list_0 = p.prim_name;
   var list = /* :: */{
-    _0: list_000,
+    _0: list_0,
     _1: /* [] */0
   };
   var list$1 = p.prim_alloc ? list : /* :: */({
@@ -5690,14 +5690,14 @@ function output_cmi(filename, oc, cmi) {
       ], /* [] */0);
   Caml_io.caml_ml_flush(oc);
   var crc = Digest.file(filename);
-  var crcs_000 = /* tuple */[
+  var crcs_0 = /* tuple */[
     cmi.cmi_name,
     crc
   ];
-  var crcs_001 = cmi.cmi_crcs;
+  var crcs_1 = cmi.cmi_crcs;
   var crcs = /* :: */{
-    _0: crcs_000,
-    _1: crcs_001
+    _0: crcs_0,
+    _1: crcs_1
   };
   Caml_external_polyfill.resolve("caml_output_value")(oc, crcs, /* [] */0);
   Caml_external_polyfill.resolve("caml_output_value")(oc, cmi.cmi_flags, /* [] */0);
@@ -5872,19 +5872,19 @@ function free_vars(ty) {
   return ret.contents;
 }
 
-var optional_shape_000 = {
+var optional_shape_0 = {
   txt: "internal.optional",
   loc: none
 };
 
-var optional_shape_001 = {
+var optional_shape_1 = {
   tag: /* PStr */0,
   _0: /* [] */0
 };
 
 var optional_shape = /* tuple */[
-  optional_shape_000,
-  optional_shape_001
+  optional_shape_0,
+  optional_shape_1
 ];
 
 function extension_descr(path_ext, ext) {
@@ -5897,11 +5897,11 @@ function extension_descr(path_ext, ext) {
             contents: /* Mnil */0
           }
         });
-  var tag_001 = ext.ext_args === /* [] */0;
+  var tag_1 = ext.ext_args === /* [] */0;
   var tag = {
     tag: /* Cstr_extension */2,
     _0: path_ext,
-    _1: tag_001
+    _1: tag_1
   };
   var type_ret$1 = ext.ext_ret_type;
   var existentials;
@@ -11472,10 +11472,10 @@ function lookup_module(load, lid, env) {
         var match$2 = lookup_module_descr(lid._0, env);
         var p2 = lookup_module(true, lid._1, env);
         var match$3 = find_module(false, p2, env);
-        var p_000 = match$2[0];
+        var p_0 = match$2[0];
         var p = {
           tag: /* Papply */2,
-          _0: p_000,
+          _0: p_0,
           _1: p2
         };
         var f = force(components_of_module_maker$prime.contents, match$2[1]);
@@ -12676,11 +12676,11 @@ function prefix_idents(root, pos, sub, param) {
   var match = param._0;
   switch (match.tag | 0) {
     case /* Sig_value */0 :
-        var p_001 = match._0.name;
+        var p_1 = match._0.name;
         var p = {
           tag: /* Pdot */1,
           _0: root,
-          _1: p_001,
+          _1: p_1,
           _2: pos
         };
         var match$1 = match._1.val_kind;
@@ -12696,11 +12696,11 @@ function prefix_idents(root, pos, sub, param) {
               ];
     case /* Sig_type */1 :
         var id = match._0;
-        var p_001$1 = id.name;
+        var p_1$1 = id.name;
         var p$1 = {
           tag: /* Pdot */1,
           _0: root,
-          _1: p_001$1,
+          _1: p_1$1,
           _2: -1
         };
         var match$3 = prefix_idents(root, pos, add_type(id, p$1, sub), param._1);
@@ -12712,11 +12712,11 @@ function prefix_idents(root, pos, sub, param) {
                 match$3[1]
               ];
     case /* Sig_typext */2 :
-        var p_001$2 = match._0.name;
+        var p_1$2 = match._0.name;
         var p$2 = {
           tag: /* Pdot */1,
           _0: root,
-          _1: p_001$2,
+          _1: p_1$2,
           _2: pos
         };
         var match$4 = prefix_idents(root, pos + 1 | 0, sub, param._1);
@@ -12729,11 +12729,11 @@ function prefix_idents(root, pos, sub, param) {
               ];
     case /* Sig_module */3 :
         var id$1 = match._0;
-        var p_001$3 = id$1.name;
+        var p_1$3 = id$1.name;
         var p$3 = {
           tag: /* Pdot */1,
           _0: root,
-          _1: p_001$3,
+          _1: p_1$3,
           _2: pos
         };
         var match$5 = prefix_idents(root, pos + 1 | 0, add_module(id$1, p$3, sub), param._1);
@@ -12746,11 +12746,11 @@ function prefix_idents(root, pos, sub, param) {
               ];
     case /* Sig_modtype */4 :
         var id$2 = match._0;
-        var p_001$4 = id$2.name;
+        var p_1$4 = id$2.name;
         var p$4 = {
           tag: /* Pdot */1,
           _0: root,
-          _1: p_001$4,
+          _1: p_1$4,
           _2: -1
         };
         var match$6 = prefix_idents(root, pos, add_modtype(id$2, {
@@ -12765,11 +12765,11 @@ function prefix_idents(root, pos, sub, param) {
                 match$6[1]
               ];
     case /* Sig_class */5 :
-        var p_001$5 = match._0.name;
+        var p_1$5 = match._0.name;
         var p$5 = {
           tag: /* Pdot */1,
           _0: root,
-          _1: p_001$5,
+          _1: p_1$5,
           _2: pos
         };
         var match$7 = prefix_idents(root, pos + 1 | 0, sub, param._1);
@@ -12781,11 +12781,11 @@ function prefix_idents(root, pos, sub, param) {
                 match$7[1]
               ];
     case /* Sig_class_type */6 :
-        var p_001$6 = match._0.name;
+        var p_1$6 = match._0.name;
         var p$6 = {
           tag: /* Pdot */1,
           _0: root,
-          _1: p_001$6,
+          _1: p_1$6,
           _2: -1
         };
         var match$8 = prefix_idents(root, pos, sub, param._1);
@@ -13323,15 +13323,15 @@ function store_type(check, slot, id, path, info, env, renv) {
   }
   var constructors = constructors_of_type(path, info);
   var labels = labels_of_type(path, info);
-  var descrs_000 = List.map((function (prim) {
+  var descrs_0 = List.map((function (prim) {
           return prim[1];
         }), constructors);
-  var descrs_001 = List.map((function (prim) {
+  var descrs_1 = List.map((function (prim) {
           return prim[1];
         }), labels);
   var descrs = /* tuple */[
-    descrs_000,
-    descrs_001
+    descrs_0,
+    descrs_1
   ];
   if (check && !loc.loc_ghost && is_active({
           tag: /* Unused_constructor */21,
@@ -17688,12 +17688,12 @@ var yyact = [
               }
               return mk$17(lb.lb_loc, undefined, undefined, undefined, lb.lb_pattern, lb.lb_expression);
             }), _1.lbs_bindings);
-      var d_000 = _1.lbs_rec;
-      var d_001 = List.rev(bindings);
+      var d_0 = _1.lbs_rec;
+      var d_1 = List.rev(bindings);
       var d = {
         tag: /* Pexp_let */2,
-        _0: d_000,
-        _1: d_001,
+        _0: d_0,
+        _1: d_1,
         _2: _3
       };
       return wrap_exp_attrs(mkexp(d), /* tuple */[
@@ -17706,13 +17706,13 @@ var yyact = [
       var _4 = Parsing.peek_val(__caml_parser_env, 3);
       var _5 = Parsing.peek_val(__caml_parser_env, 2);
       var _7 = Parsing.peek_val(__caml_parser_env, 0);
-      var d_000 = {
+      var d_0 = {
         txt: _4,
         loc: rhs_loc(4)
       };
       var d = {
         tag: /* Pexp_letmodule */25,
-        _0: d_000,
+        _0: d_0,
         _1: _5,
         _2: _7
       };
@@ -17723,14 +17723,14 @@ var yyact = [
       var _4 = Parsing.peek_val(__caml_parser_env, 3);
       var _5 = Parsing.peek_val(__caml_parser_env, 2);
       var _7 = Parsing.peek_val(__caml_parser_env, 0);
-      var d_001 = {
+      var d_1 = {
         txt: _5,
         loc: rhs_loc(5)
       };
       var d = {
         tag: /* Pexp_open */32,
         _0: _3,
-        _1: d_001,
+        _1: d_1,
         _2: _7
       };
       return wrap_exp_attrs(mkexp(d), _4);
@@ -17772,11 +17772,11 @@ var yyact = [
       var _3 = Parsing.peek_val(__caml_parser_env, 3);
       Parsing.peek_val(__caml_parser_env, 1);
       var _6 = Parsing.peek_val(__caml_parser_env, 0);
-      var d_001 = List.rev(_6);
+      var d_1 = List.rev(_6);
       var d = {
         tag: /* Pexp_match */6,
         _0: _3,
-        _1: d_001
+        _1: d_1
       };
       return wrap_exp_attrs(mkexp(d), _2);
     }),
@@ -17785,11 +17785,11 @@ var yyact = [
       var _3 = Parsing.peek_val(__caml_parser_env, 3);
       Parsing.peek_val(__caml_parser_env, 1);
       var _6 = Parsing.peek_val(__caml_parser_env, 0);
-      var d_001 = List.rev(_6);
+      var d_1 = List.rev(_6);
       var d = {
         tag: /* Pexp_try */7,
         _0: _3,
-        _1: d_001
+        _1: d_1
       };
       return wrap_exp_attrs(mkexp(d), _2);
     }),
@@ -18450,7 +18450,7 @@ var yyact = [
     }),
   (function (__caml_parser_env) {
       var _2 = Parsing.peek_val(__caml_parser_env, 1);
-      var d_000 = {
+      var d_0 = {
         txt: {
           tag: /* Lident */0,
           _0: "()"
@@ -18459,7 +18459,7 @@ var yyact = [
       };
       var d = {
         tag: /* Pexp_construct */9,
-        _0: d_000,
+        _0: d_0,
         _1: undefined
       };
       return wrap_exp_attrs(mkexp(d), _2);
@@ -32324,21 +32324,21 @@ function unify_fields(env, ty1, ty2) {
                   catch (raw_trace){
                     var trace = Caml_js_exceptions.internalToOCamlException(raw_trace);
                     if (trace.RE_EXN_ID === Unify) {
-                      var desc_003 = newty2(current_level.contents, /* Tnil */0);
+                      var desc_3 = newty2(current_level.contents, /* Tnil */0);
                       var desc = {
                         tag: /* Tfield */5,
                         _0: n,
                         _1: k1,
                         _2: t1,
-                        _3: desc_003
+                        _3: desc_3
                       };
-                      var desc_003$1 = newty2(current_level.contents, /* Tnil */0);
+                      var desc_3$1 = newty2(current_level.contents, /* Tnil */0);
                       var desc$1 = {
                         tag: /* Tfield */5,
                         _0: n,
                         _1: k2,
                         _2: t2,
-                        _3: desc_003$1
+                        _3: desc_3$1
                       };
                       throw {
                             RE_EXN_ID: Unify,
@@ -32648,22 +32648,22 @@ function unify_row(env, row1, row2) {
                           var e = {
                             contents: undefined
                           };
-                          var f1$prime_000 = c1 || c2;
-                          var f1$prime_002 = m1 || m2;
+                          var f1$prime_0 = c1 || c2;
+                          var f1$prime_2 = m1 || m2;
                           var f1$prime = {
                             tag: /* Reither */1,
-                            _0: f1$prime_000,
+                            _0: f1$prime_0,
                             _1: tl1$prime,
-                            _2: f1$prime_002,
+                            _2: f1$prime_2,
                             _3: e
                           };
-                          var f2$prime_000 = c1 || c2;
-                          var f2$prime_002 = m1 || m2;
+                          var f2$prime_0 = c1 || c2;
+                          var f2$prime_2 = m1 || m2;
                           var f2$prime = {
                             tag: /* Reither */1,
-                            _0: f2$prime_000,
+                            _0: f2$prime_0,
                             _1: tl2$prime,
-                            _2: f2$prime_002,
+                            _2: f2$prime_2,
                             _3: e
                           };
                           set_row_field(e1, f1$prime);
@@ -33940,9 +33940,9 @@ function filter_self_method(env, lab, priv, meths, ty) {
   catch (raw_exn){
     var exn = Caml_js_exceptions.internalToOCamlException(raw_exn);
     if (exn.RE_EXN_ID === "Not_found") {
-      var pair_000 = create(lab);
+      var pair_0 = create(lab);
       var pair = /* tuple */[
-        pair_000,
+        pair_0,
         ty$prime
       ];
       meths.contents = add$1(lab, pair, meths.contents);
@@ -36657,12 +36657,12 @@ function build_subtype(env, visited, loops, posi, level, t) {
                   _0: undefined
                 };
                 var t$prime$prime = newvar(undefined, undefined);
-                var loops_000 = /* tuple */[
+                var loops_0 = /* tuple */[
                   ty$1,
                   t$prime$prime
                 ];
                 var loops$1 = /* :: */{
-                  _0: loops_000,
+                  _0: loops_0,
                   _1: loops
                 };
                 var match$7 = build_subtype(env, /* :: */{
@@ -36816,10 +36816,10 @@ function build_subtype(env, visited, loops, posi, level, t) {
                 ];
         }
         var level$prime$1 = pred_enlarge(level);
-        var visited_001 = level$prime$1 < level ? /* [] */0 : filter_visited(visited);
+        var visited_1 = level$prime$1 < level ? /* [] */0 : filter_visited(visited);
         var visited$4 = /* :: */{
           _0: t$1,
-          _1: visited_001
+          _1: visited_1
         };
         var match$9 = build_subtype(env, visited$4, loops, posi, level$prime$1, t1);
         var c$4 = match$9[1];
@@ -36881,10 +36881,10 @@ function build_subtype(env, visited, loops, posi, level, t) {
                 ];
         }
         var level$prime$2 = pred_enlarge(level);
-        var visited_001$1 = level$prime$2 < level ? /* [] */0 : filter_visited(visited);
+        var visited_1$1 = level$prime$2 < level ? /* [] */0 : filter_visited(visited);
         var visited$5 = /* :: */{
           _0: t$1,
-          _1: visited_001$1
+          _1: visited_1$1
         };
         var fields = filter_row_fields(false, row.row_fields);
         var fields$1 = List.map((function (orig) {
@@ -45466,11 +45466,11 @@ function tree_of_typexp(sch, ty) {
           var old_delayed = delayed.contents;
           List.iter(add_delayed, tyl$4);
           var tl = List.map(name_of_type, tyl$4);
-          var tr_001 = tree_of_typexp(sch, ty$2);
+          var tr_1 = tree_of_typexp(sch, ty$2);
           var tr = {
             tag: /* Otyp_poly */12,
             _0: tl,
-            _1: tr_001
+            _1: tr_1
           };
           remove_names(tyl$4);
           delayed.contents = old_delayed;
@@ -45576,11 +45576,11 @@ function is_non_gen(sch, ty) {
 function tree_of_typfields(sch, rest, param) {
   if (param) {
     var match = param._0;
-    var field_000 = match[0];
-    var field_001 = tree_of_typexp(sch, match[1]);
+    var field_0 = match[0];
+    var field_1 = tree_of_typexp(sch, match[1]);
     var field = /* tuple */[
-      field_000,
-      field_001
+      field_0,
+      field_1
     ];
     var match$1 = tree_of_typfields(sch, rest, param._1);
     return /* tuple */[
@@ -46386,11 +46386,11 @@ function hide_rec_items(param) {
       return /* [] */0;
     }
   };
-  var ids_000 = match._0;
-  var ids_001 = get_ids(param._1);
+  var ids_0 = match._0;
+  var ids_1 = get_ids(param._1);
   var ids = /* :: */{
-    _0: ids_000,
-    _1: ids_001
+    _0: ids_0,
+    _1: ids_1
   };
   return set_printing_env(List.fold_right((function (id) {
                     var partial_arg = rename(id);
@@ -52205,12 +52205,12 @@ function signature_components(old_env, env, cxt, subst, paired) {
 
 function modtype_infos(env, cxt, subst, id, info1, info2) {
   var info2$1 = modtype_declaration(subst, info2);
-  var cxt$prime_000 = {
+  var cxt$prime_0 = {
     tag: /* Modtype */1,
     _0: id
   };
   var cxt$prime = /* :: */{
-    _0: cxt$prime_000,
+    _0: cxt$prime_0,
     _1: cxt
   };
   try {
@@ -60602,17 +60602,17 @@ function transl_type(env, policy, styp) {
                       ];
               }), l$1);
         var path$2 = Curry._3(transl_modtype_longident.contents, styp.ptyp_loc, env, p.txt);
-        var desc_001 = List.map((function (param) {
+        var desc_1 = List.map((function (param) {
                 return param[0].txt;
               }), l$1);
-        var desc_002 = List.map((function (param) {
+        var desc_2 = List.map((function (param) {
                 return param[1].ctyp_type;
               }), ptys);
         var desc$1 = {
           tag: /* Tpackage */11,
           _0: path$2,
-          _1: desc_001,
-          _2: desc_002
+          _1: desc_1,
+          _2: desc_2
         };
         var ty$12 = newty2(current_level.contents, desc$1);
         return ctyp({
@@ -63364,11 +63364,11 @@ function disambiguate(warnOpt, check_lkOpt, scope, lid, env, opath, lbls) {
             if (lbls === /* [] */0) {
               lbl = unbound_label_error(env, lid);
             } else {
-              var tp_000 = opath[0];
-              var tp_001 = expand_path(env, tpath);
+              var tp_0 = opath[0];
+              var tp_1 = expand_path(env, tpath);
               var tp = /* tuple */[
-                tp_000,
-                tp_001
+                tp_0,
+                tp_1
               ];
               var tpl = List.map((function (param) {
                       var tp0 = get_type_path$1(env, param[0]);
@@ -63949,11 +63949,11 @@ function disambiguate$1(warnOpt, check_lkOpt, scope, lid, env, opath, lbls) {
             if (lbls === /* [] */0) {
               lbl = unbound_constructor_error(env, lid);
             } else {
-              var tp_000 = opath[0];
-              var tp_001 = expand_path(env, tpath);
+              var tp_0 = opath[0];
+              var tp_1 = expand_path(env, tpath);
               var tp = /* tuple */[
-                tp_000,
-                tp_001
+                tp_0,
+                tp_1
               ];
               var tpl = List.map((function (param) {
                       var tp0 = get_type_path$2(env, param[0]);
@@ -64666,24 +64666,24 @@ function type_pat(constrs, labels, no_existentials, mode, env, sp, expected_ty) 
           var ty$2 = cty$1.ctyp_type;
           end_def(undefined);
           generalize_structure$1(current_level.contents, ty$2);
-          var match_000 = instance(undefined, env.contents, ty$2);
-          var match_001 = instance(undefined, env.contents, ty$2);
-          var ty$3 = match_000;
+          var match_0 = instance(undefined, env.contents, ty$2);
+          var match_1 = instance(undefined, env.contents, ty$2);
+          var ty$3 = match_0;
           unify_pat_types(loc, env.contents, ty$3, expected_ty);
-          var p$2 = type_pat$1(undefined, undefined)(sp$1, match_001);
+          var p$2 = type_pat$1(undefined, undefined)(sp$1, match_1);
           pattern_force.contents = /* :: */{
             _0: match$8[1],
             _1: pattern_force.contents
           };
-          var extra_000 = {
+          var extra_0 = {
             tag: /* Tpat_constraint */0,
             _0: cty$1
           };
-          var extra_002 = sp$1.ppat_attributes;
+          var extra_2 = sp$1.ppat_attributes;
           var extra = /* tuple */[
-            extra_000,
+            extra_0,
             loc,
-            extra_002
+            extra_2
           ];
           var match$9 = p$2.pat_desc;
           var exit$2 = 0;
@@ -65335,12 +65335,12 @@ function approx_type(env, _sty) {
       case /* Ptyp_arrow */1 :
           var p = args._0;
           var ty1 = is_optional(p) ? type_option$1(newvar(undefined, undefined)) : newvar(undefined, undefined);
-          var desc_002 = approx_type(env, args._2);
+          var desc_2 = approx_type(env, args._2);
           var desc = {
             tag: /* Tarrow */1,
             _0: p,
             _1: ty1,
-            _2: desc_002,
+            _2: desc_2,
             _3: /* Cok */0
           };
           return newty2(current_level.contents, desc);
@@ -65396,13 +65396,13 @@ function type_approx(env, _sexp) {
           if (!match) {
             return newvar(undefined, undefined);
           }
-          var desc_001 = newvar(undefined, undefined);
-          var desc_002 = type_approx(env, match._0.pc_rhs);
+          var desc_1 = newvar(undefined, undefined);
+          var desc_2 = type_approx(env, match._0.pc_rhs);
           var desc = {
             tag: /* Tarrow */1,
             _0: "",
-            _1: desc_001,
-            _2: desc_002,
+            _1: desc_1,
+            _2: desc_2,
             _3: /* Cok */0
           };
           return newty2(current_level.contents, desc);
@@ -65410,24 +65410,24 @@ function type_approx(env, _sexp) {
           var e = l._3;
           var p = l._0;
           if (is_optional(p)) {
-            var desc_001$1 = type_option$1(newvar(undefined, undefined));
-            var desc_002$1 = type_approx(env, e);
+            var desc_1$1 = type_option$1(newvar(undefined, undefined));
+            var desc_2$1 = type_approx(env, e);
             var desc$1 = {
               tag: /* Tarrow */1,
               _0: p,
-              _1: desc_001$1,
-              _2: desc_002$1,
+              _1: desc_1$1,
+              _2: desc_2$1,
               _3: /* Cok */0
             };
             return newty2(current_level.contents, desc$1);
           }
-          var desc_001$2 = newvar(undefined, undefined);
-          var desc_002$2 = type_approx(env, e);
+          var desc_1$2 = newvar(undefined, undefined);
+          var desc_2$2 = type_approx(env, e);
           var desc$2 = {
             tag: /* Tarrow */1,
             _0: p,
-            _1: desc_001$2,
-            _2: desc_002$2,
+            _1: desc_1$2,
+            _2: desc_2$2,
             _3: /* Cok */0
           };
           return newty2(current_level.contents, desc$2);
@@ -66097,7 +66097,7 @@ function type_expect_(in_function, env, sexp, ty_expected) {
                     });
         }
         var ty_exp = expand_head(env, ty_expected);
-        var fmt6_path_000 = {
+        var fmt6_path_0 = {
           tag: /* Pident */0,
           _0: {
             stamp: 0,
@@ -66107,7 +66107,7 @@ function type_expect_(in_function, env, sexp, ty_expected) {
         };
         var fmt6_path = {
           tag: /* Pdot */1,
-          _0: fmt6_path_000,
+          _0: fmt6_path_0,
           _1: "format6",
           _2: 0
         };
@@ -66234,7 +66234,7 @@ function type_expect_(in_function, env, sexp, ty_expected) {
                 };
           }
           var default_loc = $$default.pexp_loc;
-          var scases_000 = Curry._3(Ast_helper_Exp.$$case, construct(default_loc, undefined, {
+          var scases_0 = Curry._3(Ast_helper_Exp.$$case, construct(default_loc, undefined, {
                     txt: {
                       tag: /* Ldot */1,
                       _0: {
@@ -66254,7 +66254,7 @@ function type_expect_(in_function, env, sexp, ty_expected) {
                     },
                     loc: none
                   }));
-          var scases_001 = /* :: */{
+          var scases_1 = /* :: */{
             _0: Curry._3(Ast_helper_Exp.$$case, construct(default_loc, undefined, {
                       txt: {
                         tag: /* Ldot */1,
@@ -66269,8 +66269,8 @@ function type_expect_(in_function, env, sexp, ty_expected) {
             _1: /* [] */0
           };
           var scases = /* :: */{
-            _0: scases_000,
-            _1: scases_001
+            _0: scases_0,
+            _1: scases_1
           };
           var smatch = Curry._4(Ast_helper_Exp.match_, loc, undefined, Curry._3(Ast_helper_Exp.ident, loc, undefined, {
                     txt: {
@@ -67215,9 +67215,9 @@ function type_expect_(in_function, env, sexp, ty_expected) {
         var ty$4 = cty.ctyp_type;
         end_def(undefined);
         generalize_structure$1(current_level.contents, ty$4);
-        var match_000 = type_argument(env, sarg$2, ty$4, instance(undefined, env, ty$4));
-        var match_001 = instance(undefined, env, ty$4);
-        var arg$3 = match_000;
+        var match_0 = type_argument(env, sarg$2, ty$4, instance(undefined, env, ty$4));
+        var match_1 = instance(undefined, env, ty$4);
+        var arg$3 = match_0;
         return rue({
                     exp_desc: arg$3.exp_desc,
                     exp_loc: arg$3.exp_loc,
@@ -67232,7 +67232,7 @@ function type_expect_(in_function, env, sexp, ty_expected) {
                       ],
                       _1: arg$3.exp_extra
                     },
-                    exp_type: match_001,
+                    exp_type: match_1,
                     exp_env: env,
                     exp_attributes: arg$3.exp_attributes
                   });
@@ -67514,7 +67514,7 @@ function type_expect_(in_function, env, sexp, ty_expected) {
                       var match$47 = filter_arrow(env, method_type, "");
                       unify$2(env, match$47[0], desc$3.val_type);
                       unify$2(env, match$47[1], instance(undefined, env, typ$1));
-                      var exp_000 = {
+                      var exp_0 = {
                         exp_desc: {
                           tag: /* Texp_ident */0,
                           _0: {
@@ -67535,7 +67535,7 @@ function type_expect_(in_function, env, sexp, ty_expected) {
                         exp_env: env,
                         exp_attributes: /* [] */0
                       };
-                      var exp_001 = /* :: */{
+                      var exp_1 = /* :: */{
                         _0: /* tuple */[
                           "",
                           {
@@ -67557,8 +67557,8 @@ function type_expect_(in_function, env, sexp, ty_expected) {
                       };
                       var exp$1 = {
                         tag: /* Texp_apply */4,
-                        _0: exp_000,
-                        _1: exp_001
+                        _0: exp_0,
+                        _1: exp_1
                       };
                       match$40 = /* tuple */[
                         {
@@ -69867,10 +69867,10 @@ function type_let(checkOpt, check_strictOpt, env, rec_flag, spat_sexp_list, scop
                     }
                     
                   };
-                  var key_001 = vd.val_loc;
+                  var key_1 = vd.val_loc;
                   var key = /* tuple */[
                     name,
-                    key_001
+                    key_1
                   ];
                   try {
                     var old = Hashtbl.find(value_declarations, key);
@@ -73680,19 +73680,19 @@ function name_recursion(sdecl, id, decl) {
   if (!deep_occur(ty$1, ty$prime)) {
     return decl;
   }
-  var td_000 = {
+  var td_0 = {
     tag: /* Pident */0,
     _0: id
   };
-  var td_001 = decl.type_params;
-  var td_002 = {
+  var td_1 = decl.type_params;
+  var td_2 = {
     contents: /* Mnil */0
   };
   var td = {
     tag: /* Tconstr */3,
-    _0: td_000,
-    _1: td_001,
-    _2: td_002
+    _0: td_0,
+    _1: td_1,
+    _2: td_2
   };
   link_type(ty$1, newty2(ty$1.level, td));
   return {
@@ -74476,7 +74476,7 @@ function transl_extension_constructor(env, check_open, type_path, type_params, t
     }
     var cstr_type_params = match$4[1];
     var cstr_type_path = match$4[0];
-    var cstr_types_000 = newty2(100000000, {
+    var cstr_types_0 = newty2(100000000, {
           tag: /* Tconstr */3,
           _0: cstr_type_path,
           _1: cstr_type_params,
@@ -74485,10 +74485,10 @@ function transl_extension_constructor(env, check_open, type_path, type_params, t
           }
         });
     var cstr_types = /* :: */{
-      _0: cstr_types_000,
+      _0: cstr_types_0,
       _1: cstr_type_params
     };
-    var ext_types_000 = newty2(100000000, {
+    var ext_types_0 = newty2(100000000, {
           tag: /* Tconstr */3,
           _0: type_path,
           _1: type_params,
@@ -74497,7 +74497,7 @@ function transl_extension_constructor(env, check_open, type_path, type_params, t
           }
         });
     var ext_types = /* :: */{
-      _0: ext_types_000,
+      _0: ext_types_0,
       _1: type_params
     };
     if (!equal$4(env, true, cstr_types, ext_types)) {
@@ -76593,14 +76593,14 @@ function constructor_type(constr, _cty) {
       case /* Cty_signature */1 :
           return constr;
       case /* Cty_arrow */2 :
-          var desc_000 = cty._0;
-          var desc_001 = cty._1;
-          var desc_002 = constructor_type(constr, cty._2);
+          var desc_0 = cty._0;
+          var desc_1 = cty._1;
+          var desc_2 = constructor_type(constr, cty._2);
           var desc = {
             tag: /* Tarrow */1,
-            _0: desc_000,
-            _1: desc_001,
-            _2: desc_002,
+            _0: desc_0,
+            _1: desc_1,
+            _2: desc_2,
             _3: /* Cok */0
           };
           return newty2(current_level.contents, desc);
@@ -77435,12 +77435,12 @@ function class_type$3(env, scty) {
                 }
                 return cty$prime;
               }), styl, params);
-        var typ_002 = match$1[1];
+        var typ_2 = match$1[1];
         var typ = {
           tag: /* Cty_constr */0,
           _0: path,
           _1: params,
-          _2: typ_002
+          _2: typ_2
         };
         return cltyp({
                     tag: /* Tcty_constr */0,
@@ -77463,12 +77463,12 @@ function class_type$3(env, scty) {
         var cty = transl_simple_type(env, false, pcsig._1);
         var ty = cty.ctyp_type;
         var clty = class_type$3(env, pcsig._2);
-        var typ_002$1 = clty.cltyp_type;
+        var typ_2$1 = clty.cltyp_type;
         var typ$2 = {
           tag: /* Cty_arrow */2,
           _0: l,
           _1: ty,
-          _2: typ_002$1
+          _2: typ_2$1
         };
         return cltyp({
                     tag: /* Tcty_arrow */2,
@@ -77518,14 +77518,14 @@ function class_structure(cl_num, $$final, val_env, met_env, loc, param) {
   var public_self = pat.pat_type;
   var ty;
   if ($$final) {
-    var desc_000 = newvar(undefined, undefined);
-    var desc_001 = {
+    var desc_0 = newvar(undefined, undefined);
+    var desc_1 = {
       contents: undefined
     };
     var desc = {
       tag: /* Tobject */4,
-      _0: desc_000,
-      _1: desc_001
+      _0: desc_0,
+      _1: desc_1
     };
     ty = newty2(current_level.contents, desc);
   } else {
@@ -78089,12 +78089,12 @@ function class_structure(cl_num, $$final, val_env, met_env, loc, param) {
                   RE_LAZY_DONE: false,
                   value: (function () {
                       raise_nongen_level(undefined);
-                      var desc_002 = instance_def(type_unit);
+                      var desc_2 = instance_def(type_unit);
                       var desc = {
                         tag: /* Tarrow */1,
                         _0: "",
                         _1: self_type,
-                        _2: desc_002,
+                        _2: desc_2,
                         _3: /* Cok */0
                       };
                       var meth_type = newty2(current_level.contents, desc);
@@ -78234,13 +78234,13 @@ function class_structure(cl_num, $$final, val_env, met_env, loc, param) {
                 return rem;
               }
             }
-            var desc_001 = copy_kind(kind);
-            var desc_002 = param[2];
+            var desc_1 = copy_kind(kind);
+            var desc_2 = param[2];
             var desc = {
               tag: /* Tfield */5,
               _0: lab,
-              _1: desc_001,
-              _2: desc_002,
+              _1: desc_1,
+              _2: desc_2,
               _3: rem
             };
             return newty2(current_level.contents, desc);
@@ -78434,7 +78434,7 @@ function class_expr(cl_num, val_env, met_env, _scl) {
           var l = cl_str._0;
           if ($$default !== undefined) {
             var loc = $$default.pexp_loc;
-            var scases_000 = Curry._3(Ast_helper_Exp.$$case, construct(loc, undefined, {
+            var scases_0 = Curry._3(Ast_helper_Exp.$$case, construct(loc, undefined, {
                       txt: {
                         tag: /* Ldot */1,
                         _0: {
@@ -78454,7 +78454,7 @@ function class_expr(cl_num, val_env, met_env, _scl) {
                       },
                       loc: none
                     }));
-            var scases_001 = /* :: */{
+            var scases_1 = /* :: */{
               _0: Curry._3(Ast_helper_Exp.$$case, construct(loc, undefined, {
                         txt: {
                           tag: /* Ldot */1,
@@ -78469,8 +78469,8 @@ function class_expr(cl_num, val_env, met_env, _scl) {
               _1: /* [] */0
             };
             var scases = /* :: */{
-              _0: scases_000,
-              _1: scases_001
+              _0: scases_0,
+              _1: scases_1
             };
             var smatch = Curry._4(Ast_helper_Exp.match_, loc, undefined, Curry._3(Ast_helper_Exp.ident, loc, undefined, {
                       txt: {
@@ -79026,12 +79026,12 @@ function approx_declaration(_cl) {
       case /* Pcl_fun */2 :
           var l = match._0;
           var arg = is_optional(l) ? instance_def(var_option) : newvar(undefined, undefined);
-          var desc_002 = approx_declaration(match._3);
+          var desc_2 = approx_declaration(match._3);
           var desc = {
             tag: /* Tarrow */1,
             _0: l,
             _1: arg,
-            _2: desc_002,
+            _2: desc_2,
             _3: /* Cok */0
           };
           return newty2(current_level.contents, desc);
@@ -79054,12 +79054,12 @@ function approx_description(ct) {
   }
   var l = match._0;
   var arg = is_optional(l) ? instance_def(var_option) : newvar(undefined, undefined);
-  var desc_002 = approx_description(match._2);
+  var desc_2 = approx_description(match._2);
   var desc = {
     tag: /* Tarrow */1,
     _0: l,
     _1: arg,
-    _2: desc_002,
+    _2: desc_2,
     _3: /* Cok */0
   };
   return newty2(current_level.contents, desc);

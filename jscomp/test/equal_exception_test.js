@@ -98,12 +98,12 @@ function is_arbitrary_exception(param) {
   }
 }
 
-var suites_000 = /* tuple */[
+var suites_0 = /* tuple */[
   "is_equal",
   is_equal
 ];
 
-var suites_001 = /* :: */{
+var suites_1 = /* :: */{
   _0: /* tuple */[
     "is_exception",
     is_exception
@@ -124,8 +124,8 @@ var suites_001 = /* :: */{
 };
 
 var suites = /* :: */{
-  _0: suites_000,
-  _1: suites_001
+  _0: suites_0,
+  _1: suites_1
 };
 
 var e = {

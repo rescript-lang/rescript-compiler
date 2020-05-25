@@ -55,7 +55,7 @@ eq("File \"ffi_js_test.ml\", line 32, characters 5-12", /* tuple */[
       $$higher_order(1)(2, 3)
     ]);
 
-var same_type_000 = /* :: */{
+var same_type_0 = /* :: */{
   _0: int_config,
   _1: /* :: */{
     _0: {
@@ -66,7 +66,7 @@ var same_type_000 = /* :: */{
   }
 };
 
-var same_type_001 = /* :: */{
+var same_type_1 = /* :: */{
   _0: string_config,
   _1: /* :: */{
     _0: {
@@ -78,8 +78,8 @@ var same_type_001 = /* :: */{
 };
 
 var same_type = /* tuple */[
-  same_type_000,
-  same_type_001
+  same_type_0,
+  same_type_1
 ];
 
 var v_obj = {

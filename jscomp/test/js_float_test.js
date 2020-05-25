@@ -4,7 +4,7 @@ var Mt = require("./mt.js");
 var Block = require("../../lib/js/block.js");
 var Pervasives = require("../../lib/js/pervasives.js");
 
-var suites_000 = /* tuple */[
+var suites_0 = /* tuple */[
   "_NaN <> _NaN",
   (function (param) {
       return {
@@ -15,7 +15,7 @@ var suites_000 = /* tuple */[
     })
 ];
 
-var suites_001 = /* :: */{
+var suites_1 = /* :: */{
   _0: /* tuple */[
     "isNaN - _NaN",
     (function (param) {
@@ -540,8 +540,8 @@ var suites_001 = /* :: */{
 };
 
 var suites = /* :: */{
-  _0: suites_000,
-  _1: suites_001
+  _0: suites_0,
+  _1: suites_1
 };
 
 Mt.from_pair_suites("Js_float_test", suites);

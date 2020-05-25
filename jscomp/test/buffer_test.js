@@ -8,7 +8,7 @@ var Caml_bytes = require("../../lib/js/caml_bytes.js");
 
 var v = "gso";
 
-var suites_000 = /* tuple */[
+var suites_0 = /* tuple */[
   "equal",
   (function (param) {
       return {
@@ -25,7 +25,7 @@ var suites_000 = /* tuple */[
     })
 ];
 
-var suites_001 = /* :: */{
+var suites_1 = /* :: */{
   _0: /* tuple */[
     "equal2",
     (function (param) {
@@ -64,8 +64,8 @@ var suites_001 = /* :: */{
 };
 
 var suites = /* :: */{
-  _0: suites_000,
-  _1: suites_001
+  _0: suites_0,
+  _1: suites_1
 };
 
 Mt.from_pair_suites("Buffer_test", suites);

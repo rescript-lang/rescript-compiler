@@ -4,7 +4,7 @@ var Mt = require("./mt.js");
 var Block = require("../../lib/js/block.js");
 var Ext_list_test = require("./ext_list_test.js");
 
-var suites_000 = /* tuple */[
+var suites_0 = /* tuple */[
   "drop",
   (function (param) {
       return {
@@ -24,7 +24,7 @@ var suites_000 = /* tuple */[
     })
 ];
 
-var suites_001 = /* :: */{
+var suites_1 = /* :: */{
   _0: /* tuple */[
     "drop1",
     (function (param) {
@@ -105,8 +105,8 @@ var suites_001 = /* :: */{
 };
 
 var suites = /* :: */{
-  _0: suites_000,
-  _1: suites_001
+  _0: suites_0,
+  _1: suites_1
 };
 
 Mt.from_pair_suites("A_list_test", suites);

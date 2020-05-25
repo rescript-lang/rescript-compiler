@@ -95,14 +95,14 @@ var u = {
     })
 };
 
-var test_type_001 = /* :: */{
+var test_type_1 = /* :: */{
   _0: v,
   _1: /* [] */0
 };
 
 var test_type = /* :: */{
   _0: u,
-  _1: test_type_001
+  _1: test_type_1
 };
 
 var z = {
@@ -157,14 +157,14 @@ var zz = {
     })
 };
 
-var test_type2_001 = /* :: */{
+var test_type2_1 = /* :: */{
   _0: zz,
   _1: /* [] */0
 };
 
 var test_type2 = /* :: */{
   _0: z,
-  _1: test_type2_001
+  _1: test_type2_1
 };
 
 eq("File \"ppx_this_obj_field.ml\", line 92, characters 5-12", /* tuple */[

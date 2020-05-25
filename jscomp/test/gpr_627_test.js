@@ -54,11 +54,11 @@ var v = {
     })
 };
 
-var p_001 = u.say(1, 2);
+var p_1 = u.say(1, 2);
 
 var p = /* tuple */[
   3,
-  p_001
+  p_1
 ];
 
 eq("File \"gpr_627_test.ml\", line 26, characters 5-12", p);

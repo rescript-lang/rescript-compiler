@@ -5,7 +5,7 @@ var List = require("../../lib/js/list.js");
 var Block = require("../../lib/js/block.js");
 var Ext_string_test = require("./ext_string_test.js");
 
-var suites_000 = /* tuple */[
+var suites_0 = /* tuple */[
   "split",
   (function (param) {
       return {
@@ -25,7 +25,7 @@ var suites_000 = /* tuple */[
     })
 ];
 
-var suites_001 = /* :: */{
+var suites_1 = /* :: */{
   _0: /* tuple */[
     "split_non_empty",
     (function (param) {
@@ -111,8 +111,8 @@ var suites_001 = /* :: */{
 };
 
 var suites = /* :: */{
-  _0: suites_000,
-  _1: suites_001
+  _0: suites_0,
+  _1: suites_1
 };
 
 Mt.from_pair_suites("A_string_test", suites);

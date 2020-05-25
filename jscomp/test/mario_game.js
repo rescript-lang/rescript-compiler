@@ -1324,11 +1324,11 @@ function kill(collid, ctx) {
         return /* [] */0;
     case /* Enemy */1 :
         var o = collid._2;
-        var pos_000 = o.pos.x;
-        var pos_001 = o.pos.y;
+        var pos_0 = o.pos.x;
+        var pos_1 = o.pos.y;
         var pos = /* tuple */[
-          pos_000,
-          pos_001
+          pos_0,
+          pos_1
         ];
         var score = o.score > 0 ? /* :: */({
               _0: make_score(o.score, pos, ctx),
@@ -1361,11 +1361,11 @@ function kill(collid, ctx) {
         if (t !== 1) {
           return /* [] */0;
         }
-        var pos_000$1 = o$2.pos.x;
-        var pos_001$1 = o$2.pos.y;
+        var pos_0$1 = o$2.pos.x;
+        var pos_1$1 = o$2.pos.y;
         var pos$1 = /* tuple */[
-          pos_000$1,
-          pos_001$1
+          pos_0$1,
+          pos_1$1
         ];
         var p1 = make$1(/* tuple */[
               -5,
@@ -2109,11 +2109,11 @@ function update_collidable(state, collid, all_collids) {
 }
 
 function translate_keys(param) {
-  var ctrls_000 = /* tuple */[
+  var ctrls_0 = /* tuple */[
     pressed_keys.left,
     /* CLeft */0
   ];
-  var ctrls_001 = /* :: */{
+  var ctrls_1 = /* :: */{
     _0: /* tuple */[
       pressed_keys.right,
       /* CRight */1
@@ -2133,8 +2133,8 @@ function translate_keys(param) {
     }
   };
   var ctrls = /* :: */{
-    _0: ctrls_000,
-    _1: ctrls_001
+    _0: ctrls_0,
+    _1: ctrls_1
   };
   return List.fold_left((function (a, x) {
                 if (x[0]) {
@@ -2620,14 +2620,14 @@ function choose_block_pattern(blockw, blockh, cbx, cby, prob) {
         }
     case 2 :
         if (blockh - cby === 1) {
-          var four_000 = /* tuple */[
+          var four_0 = /* tuple */[
             stair_typ,
             /* tuple */[
               cbx,
               cby
             ]
           ];
-          var four_001 = /* :: */{
+          var four_1 = /* :: */{
             _0: /* tuple */[
               stair_typ,
               /* tuple */[
@@ -2656,17 +2656,17 @@ function choose_block_pattern(blockw, blockh, cbx, cby, prob) {
             }
           };
           var four = /* :: */{
-            _0: four_000,
-            _1: four_001
+            _0: four_0,
+            _1: four_1
           };
-          var three_000 = /* tuple */[
+          var three_0 = /* tuple */[
             stair_typ,
             /* tuple */[
               cbx + 1,
               cby - 1
             ]
           ];
-          var three_001 = /* :: */{
+          var three_1 = /* :: */{
             _0: /* tuple */[
               stair_typ,
               /* tuple */[
@@ -2686,17 +2686,17 @@ function choose_block_pattern(blockw, blockh, cbx, cby, prob) {
             }
           };
           var three = /* :: */{
-            _0: three_000,
-            _1: three_001
+            _0: three_0,
+            _1: three_1
           };
-          var two_000 = /* tuple */[
+          var two_0 = /* tuple */[
             stair_typ,
             /* tuple */[
               cbx + 2,
               cby - 2
             ]
           ];
-          var two_001 = /* :: */{
+          var two_1 = /* :: */{
             _0: /* tuple */[
               stair_typ,
               /* tuple */[
@@ -2707,10 +2707,10 @@ function choose_block_pattern(blockw, blockh, cbx, cby, prob) {
             _1: /* [] */0
           };
           var two = /* :: */{
-            _0: two_000,
-            _1: two_001
+            _0: two_0,
+            _1: two_1
           };
-          var one_000 = /* tuple */[
+          var one_0 = /* tuple */[
             stair_typ,
             /* tuple */[
               cbx + 3,
@@ -2718,7 +2718,7 @@ function choose_block_pattern(blockw, blockh, cbx, cby, prob) {
             ]
           ];
           var one = /* :: */{
-            _0: one_000,
+            _0: one_0,
             _1: /* [] */0
           };
           return Pervasives.$at(four, Pervasives.$at(three, Pervasives.$at(two, one)));
@@ -2727,14 +2727,14 @@ function choose_block_pattern(blockw, blockh, cbx, cby, prob) {
         }
     case 3 :
         if (stair_typ === 0 && blockh - cby > 3) {
-          var three_000$1 = /* tuple */[
+          var three_0$1 = /* tuple */[
             stair_typ,
             /* tuple */[
               cbx,
               cby
             ]
           ];
-          var three_001$1 = /* :: */{
+          var three_1$1 = /* :: */{
             _0: /* tuple */[
               stair_typ,
               /* tuple */[
@@ -2754,17 +2754,17 @@ function choose_block_pattern(blockw, blockh, cbx, cby, prob) {
             }
           };
           var three$1 = /* :: */{
-            _0: three_000$1,
-            _1: three_001$1
+            _0: three_0$1,
+            _1: three_1$1
           };
-          var two_000$1 = /* tuple */[
+          var two_0$1 = /* tuple */[
             stair_typ,
             /* tuple */[
               cbx + 2,
               cby + 1
             ]
           ];
-          var two_001$1 = /* :: */{
+          var two_1$1 = /* :: */{
             _0: /* tuple */[
               stair_typ,
               /* tuple */[
@@ -2775,17 +2775,17 @@ function choose_block_pattern(blockw, blockh, cbx, cby, prob) {
             _1: /* [] */0
           };
           var two$1 = /* :: */{
-            _0: two_000$1,
-            _1: two_001$1
+            _0: two_0$1,
+            _1: two_1$1
           };
-          var one_000$1 = /* tuple */[
+          var one_0$1 = /* tuple */[
             stair_typ,
             /* tuple */[
               cbx + 5,
               cby + 2
             ]
           ];
-          var one_001 = /* :: */{
+          var one_1 = /* :: */{
             _0: /* tuple */[
               stair_typ,
               /* tuple */[
@@ -2796,19 +2796,19 @@ function choose_block_pattern(blockw, blockh, cbx, cby, prob) {
             _1: /* [] */0
           };
           var one$1 = /* :: */{
-            _0: one_000$1,
-            _1: one_001
+            _0: one_0$1,
+            _1: one_1
           };
           return Pervasives.$at(three$1, Pervasives.$at(two$1, one$1));
         } else if (blockh - cby > 2) {
-          var one_000$2 = /* tuple */[
+          var one_0$2 = /* tuple */[
             stair_typ,
             /* tuple */[
               cbx,
               cby
             ]
           ];
-          var one_001$1 = /* :: */{
+          var one_1$1 = /* :: */{
             _0: /* tuple */[
               stair_typ,
               /* tuple */[
@@ -2819,17 +2819,17 @@ function choose_block_pattern(blockw, blockh, cbx, cby, prob) {
             _1: /* [] */0
           };
           var one$2 = /* :: */{
-            _0: one_000$2,
-            _1: one_001$1
+            _0: one_0$2,
+            _1: one_1$1
           };
-          var two_000$2 = /* tuple */[
+          var two_0$2 = /* tuple */[
             stair_typ,
             /* tuple */[
               cbx + 3,
               cby - 1
             ]
           ];
-          var two_001$2 = /* :: */{
+          var two_1$2 = /* :: */{
             _0: /* tuple */[
               stair_typ,
               /* tuple */[
@@ -2840,17 +2840,17 @@ function choose_block_pattern(blockw, blockh, cbx, cby, prob) {
             _1: /* [] */0
           };
           var two$2 = /* :: */{
-            _0: two_000$2,
-            _1: two_001$2
+            _0: two_0$2,
+            _1: two_1$2
           };
-          var three_000$2 = /* tuple */[
+          var three_0$2 = /* tuple */[
             stair_typ,
             /* tuple */[
               cbx + 4,
               cby - 2
             ]
           ];
-          var three_001$2 = /* :: */{
+          var three_1$2 = /* :: */{
             _0: /* tuple */[
               stair_typ,
               /* tuple */[
@@ -2870,8 +2870,8 @@ function choose_block_pattern(blockw, blockh, cbx, cby, prob) {
             }
           };
           var three$2 = /* :: */{
-            _0: three_000$2,
-            _1: three_001$2
+            _0: three_0$2,
+            _1: three_1$2
           };
           return Pervasives.$at(one$2, Pervasives.$at(two$2, three$2));
         } else {
@@ -2989,7 +2989,7 @@ function generate_enemies(blockw, blockh, _cbx, _cby, acc) {
     }
     var prob = Random.$$int(30);
     if (prob < 3 && blockh - 1 === cby) {
-      var enemy_000 = /* tuple */[
+      var enemy_0 = /* tuple */[
         prob,
         /* tuple */[
           cbx * 16,
@@ -2997,7 +2997,7 @@ function generate_enemies(blockw, blockh, _cbx, _cby, acc) {
         ]
       ];
       var enemy = /* :: */{
-        _0: enemy_000,
+        _0: enemy_0,
         _1: /* [] */0
       };
       return Pervasives.$at(enemy, generate_enemies(blockw, blockh, cbx, cby + 1, acc));

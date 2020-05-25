@@ -15,7 +15,7 @@ var s = {
   RE_EXN_ID: "End_of_file"
 };
 
-var suites_000 = /* tuple */[
+var suites_0 = /* tuple */[
   "not_found_equal",
   (function (param) {
       return {
@@ -26,7 +26,7 @@ var suites_000 = /* tuple */[
     })
 ];
 
-var suites_001 = /* :: */{
+var suites_1 = /* :: */{
   _0: /* tuple */[
     "not_found_not_equal_end_of_file",
     (function (param) {
@@ -41,8 +41,8 @@ var suites_001 = /* :: */{
 };
 
 var suites = /* :: */{
-  _0: suites_000,
-  _1: suites_001
+  _0: suites_0,
+  _1: suites_1
 };
 
 Mt.from_pair_suites("Global_exception_regression_test", suites);

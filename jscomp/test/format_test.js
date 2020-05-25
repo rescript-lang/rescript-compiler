@@ -149,12 +149,12 @@ function aux_list(loc, ls) {
               }), ls);
 }
 
-var literals_000 = /* tuple */[
+var literals_0 = /* tuple */[
   7.875,
   "0x1.f8p+2"
 ];
 
-var literals_001 = /* :: */{
+var literals_1 = /* :: */{
   _0: /* tuple */[
     0.3,
     "0x1.3333333333333p-2"
@@ -205,8 +205,8 @@ var literals_001 = /* :: */{
 };
 
 var literals = /* :: */{
-  _0: literals_000,
-  _1: literals_001
+  _0: literals_0,
+  _1: literals_1
 };
 
 aux_list("File \"format_test.ml\", line 110, characters 11-18", literals);

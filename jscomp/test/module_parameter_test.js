@@ -18,7 +18,7 @@ function v(x) {
   return x.length;
 }
 
-var suites_000 = /* tuple */[
+var suites_0 = /* tuple */[
   "const",
   (function (param) {
       return {
@@ -29,7 +29,7 @@ var suites_000 = /* tuple */[
     })
 ];
 
-var suites_001 = /* :: */{
+var suites_1 = /* :: */{
   _0: /* tuple */[
     "other",
     (function (param) {
@@ -44,8 +44,8 @@ var suites_001 = /* :: */{
 };
 
 var suites = /* :: */{
-  _0: suites_000,
-  _1: suites_001
+  _0: suites_0,
+  _1: suites_1
 };
 
 Mt.from_pair_suites("Module_parameter_test", suites);

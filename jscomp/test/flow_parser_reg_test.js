@@ -2071,14 +2071,14 @@ function get_result_and_clear_state(param) {
 }
 
 function lex_error(env, loc, err) {
-  var lex_errors_acc_000 = /* tuple */[
+  var lex_errors_acc_0 = /* tuple */[
     loc,
     err
   ];
-  var lex_errors_acc_001 = env.lex_state.lex_errors_acc;
+  var lex_errors_acc_1 = env.lex_state.lex_errors_acc;
   var lex_errors_acc = /* :: */{
-    _0: lex_errors_acc_000,
-    _1: lex_errors_acc_001
+    _0: lex_errors_acc_0,
+    _1: lex_errors_acc_1
   };
   var init = env.lex_state;
   return {
@@ -2364,14 +2364,14 @@ function save_comment(env, start, _end, buf, multiline) {
         tag: /* Line */1,
         _0: s
       });
-  var lex_comments_acc_000 = /* tuple */[
+  var lex_comments_acc_0 = /* tuple */[
     loc,
     c
   ];
-  var lex_comments_acc_001 = env.lex_state.lex_comments_acc;
+  var lex_comments_acc_1 = env.lex_state.lex_comments_acc;
   var lex_comments_acc = /* :: */{
-    _0: lex_comments_acc_000,
-    _1: lex_comments_acc_001
+    _0: lex_comments_acc_0,
+    _1: lex_comments_acc_1
   };
   var init = env.lex_state;
   return {
@@ -7195,13 +7195,13 @@ function postfix_with(env, _t) {
     var end_loc = Curry._2(Parser_env_Peek.loc, undefined, env);
     token$4(env, /* T_RBRACKET */6);
     var loc = btwn(t[0], end_loc);
-    var t_001 = {
+    var t_1 = {
       tag: /* Array */3,
       _0: t
     };
     var t$1 = /* tuple */[
       loc,
-      t_001
+      t_1
     ];
     _t = t$1;
     continue ;
@@ -7339,15 +7339,15 @@ function param_list_or_type(env) {
         if (Curry._2(Parser_env_Peek.token, undefined, env) !== /* T_RPAREN */4) {
           token$4(env, /* T_COMMA */8);
         }
-        var param_000 = btwn(name[0], typeAnnotation[0]);
-        var param_001 = {
+        var param_0 = btwn(name[0], typeAnnotation[0]);
+        var param_1 = {
           name: name,
           typeAnnotation: typeAnnotation,
           optional: optional
         };
         var param = /* tuple */[
-          param_000,
-          param_001
+          param_0,
+          param_1
         ];
         ret = {
           tag: /* ParamList */0,
@@ -7428,17 +7428,17 @@ function methodish(env, start_loc) {
 
 function method_property(env, start_loc, $$static, key) {
   var value = methodish(env, start_loc);
-  var value_000 = value[0];
-  var value_001 = {
+  var value_0 = value[0];
+  var value_1 = {
     tag: /* Function */1,
     _0: value[1]
   };
   var value$1 = /* tuple */[
-    value_000,
-    value_001
+    value_0,
+    value_1
   ];
   return /* tuple */[
-          value_000,
+          value_0,
           {
             key: key,
             value: value$1,
@@ -7579,7 +7579,7 @@ function properties(allow_static, env, _param) {
                   start_loc,
                   /* StrictReservedWord */39
                 ]);
-            var static_key_001 = {
+            var static_key_1 = {
               tag: /* Identifier */1,
               _0: /* tuple */[
                 start_loc,
@@ -7592,7 +7592,7 @@ function properties(allow_static, env, _param) {
             };
             var static_key = /* tuple */[
               start_loc,
-              static_key_001
+              static_key_1
             ];
             match$2 = /* tuple */[
               false,
@@ -7681,9 +7681,9 @@ function types(env, _acc) {
       }
       
     }
-    var acc_000 = union(env);
+    var acc_0 = union(env);
     var acc$1 = /* :: */{
-      _0: acc_000,
+      _0: acc_0,
       _1: acc
     };
     if (Curry._2(Parser_env_Peek.token, undefined, env) !== /* T_RBRACKET */6) {
@@ -7718,9 +7718,9 @@ function function_param_list_without_parens(env) {
       }
       switch (exit) {
         case 1 :
-            var acc_000 = param(env);
+            var acc_0 = param(env);
             var acc$1 = /* :: */{
-              _0: acc_000,
+              _0: acc_0,
               _1: acc
             };
             if (Curry._2(Parser_env_Peek.token, undefined, env) !== /* T_RPAREN */4) {
@@ -7753,9 +7753,9 @@ function params(env, _acc) {
       }
       
     }
-    var acc_000 = union(env);
+    var acc_0 = union(env);
     var acc$1 = /* :: */{
-      _0: acc_000,
+      _0: acc_0,
       _1: acc
     };
     if (Curry._2(Parser_env_Peek.token, undefined, env) !== /* T_GREATER_THAN */90) {
@@ -7859,7 +7859,7 @@ function params$1(env, allow_default, _require_default, _acc) {
         false
       ];
     }
-    var param_001 = {
+    var param_1 = {
       name: id.name,
       bound: id.typeAnnotation,
       variance: variance,
@@ -7867,7 +7867,7 @@ function params$1(env, allow_default, _require_default, _acc) {
     };
     var param = /* tuple */[
       loc,
-      param_001
+      param_1
     ];
     var acc$1 = /* :: */{
       _0: param,
@@ -7946,14 +7946,14 @@ function identifier(env, _param) {
 }
 
 function raw_generic_with_identifier(env, id) {
-  var id_000 = id[0];
-  var id_001 = {
+  var id_0 = id[0];
+  var id_1 = {
     tag: /* Unqualified */0,
     _0: id
   };
   var id$1 = /* tuple */[
-    id_000,
-    id_001
+    id_0,
+    id_1
   ];
   var match = identifier(env, id$1);
   var id_loc = match[0];
@@ -8905,8 +8905,8 @@ function _new(env, _finish_fn) {
             callee[0],
             /* [] */0
           ];
-        var callee$prime_000 = btwn(start_loc, match[0]);
-        var callee$prime_001 = {
+        var callee$prime_0 = btwn(start_loc, match[0]);
+        var callee$prime_1 = {
           tag: /* New */11,
           _0: {
             callee: callee,
@@ -8914,8 +8914,8 @@ function _new(env, _finish_fn) {
           }
         };
         var callee$prime = /* tuple */[
-          callee$prime_000,
-          callee$prime_001
+          callee$prime_0,
+          callee$prime_1
         ];
         return Curry._2(finish_fn, callee$prime, undefined);
       }
@@ -9157,14 +9157,14 @@ function primary$1(env) {
       case /* T_SUPER */49 :
           var loc$1 = Curry._2(Parser_env_Peek.loc, undefined, env);
           token$4(env, /* T_SUPER */49);
-          var id_001 = {
+          var id_1 = {
             name: "super",
             typeAnnotation: undefined,
             optional: false
           };
           var id = /* tuple */[
             loc$1,
-            id_001
+            id_1
           ];
           return /* tuple */[
                   loc$1,
@@ -10105,9 +10105,9 @@ function arguments$prime(env, _acc) {
       }
       
     }
-    var acc_000 = argument(env);
+    var acc_0 = argument(env);
     var acc$1 = /* :: */{
-      _0: acc_000,
+      _0: acc_0,
       _1: acc
     };
     if (Curry._2(Parser_env_Peek.token, undefined, env) !== /* T_RPAREN */4) {
@@ -10184,12 +10184,12 @@ function template_parts(env, _quasis, _expressions) {
       }
       var loc = match$2[0];
       pop_lex_mode(env);
-      var quasis_000 = /* tuple */[
+      var quasis_0 = /* tuple */[
         loc,
         match$2[1]
       ];
       var quasis$1 = /* :: */{
-        _0: quasis_000,
+        _0: quasis_0,
         _1: quasis
       };
       if (match$2[2]) {
@@ -10204,8 +10204,8 @@ function template_parts(env, _quasis, _expressions) {
       continue ;
     }
     error_unexpected(env);
-    var imaginary_quasi_000 = expr[0];
-    var imaginary_quasi_001 = {
+    var imaginary_quasi_0 = expr[0];
+    var imaginary_quasi_1 = {
       value: {
         raw: "",
         cooked: ""
@@ -10213,8 +10213,8 @@ function template_parts(env, _quasis, _expressions) {
       tail: true
     };
     var imaginary_quasi = /* tuple */[
-      imaginary_quasi_000,
-      imaginary_quasi_001
+      imaginary_quasi_0,
+      imaginary_quasi_1
     ];
     return /* tuple */[
             expr[0],
@@ -10235,7 +10235,7 @@ function template_literal(env, part) {
         tag: /* T_TEMPLATE_PART */2,
         _0: part
       });
-  var head_001 = {
+  var head_1 = {
     value: {
       raw: match.raw,
       cooked: match.cooked
@@ -10244,7 +10244,7 @@ function template_literal(env, part) {
   };
   var head = /* tuple */[
     start_loc,
-    head_001
+    head_1
   ];
   var match$1 = is_tail ? /* tuple */[
       start_loc,
@@ -10383,14 +10383,14 @@ function try_arrow_function(env) {
   var match;
   if (Curry._2(Parser_env_Peek.is_identifier, undefined, env$1) && typeParameters === undefined) {
     var id = Curry._2(Parse.identifier, /* StrictParamName */28, env$1);
-    var param_000 = id[0];
-    var param_001 = {
+    var param_0 = id[0];
+    var param_1 = {
       tag: /* Identifier */3,
       _0: id
     };
     var param = /* tuple */[
-      param_000,
-      param_001
+      param_0,
+      param_1
     ];
     match = /* tuple */[
       /* :: */{
@@ -10636,8 +10636,8 @@ function _method(env, kind) {
       body._0[0],
       false
     ];
-  var value_000 = match$2[0];
-  var value_001 = {
+  var value_0 = match$2[0];
+  var value_1 = {
     id: undefined,
     params: params,
     defaults: /* [] */0,
@@ -10651,8 +10651,8 @@ function _method(env, kind) {
     typeParameters: typeParameters
   };
   var value = /* tuple */[
-    value_000,
-    value_001
+    value_0,
+    value_1
   ];
   return /* tuple */[
           match[1],
@@ -10737,13 +10737,13 @@ function get(env, start_loc) {
   var match = _method(env, /* Get */1);
   var match$1 = match[1];
   var end_loc = match$1[0];
-  var value_001 = {
+  var value_1 = {
     tag: /* Function */2,
     _0: match$1[1]
   };
   var value = /* tuple */[
     end_loc,
-    value_001
+    value_1
   ];
   return /* tuple */[
           btwn(start_loc, end_loc),
@@ -10761,13 +10761,13 @@ function set(env, start_loc) {
   var match = _method(env, /* Set */2);
   var match$1 = match[1];
   var end_loc = match$1[0];
-  var value_001 = {
+  var value_1 = {
     tag: /* Function */2,
     _0: match$1[1]
   };
   var value = /* tuple */[
     end_loc,
-    value_001
+    value_1
   ];
   return /* tuple */[
           btwn(start_loc, end_loc),
@@ -10877,8 +10877,8 @@ function init(env, start_loc, key, async, generator) {
             body._0[0],
             false
           ];
-        var value_000 = match$4[0];
-        var value_001 = {
+        var value_0 = match$4[0];
+        var value_1 = {
           tag: /* Function */2,
           _0: {
             id: undefined,
@@ -10895,8 +10895,8 @@ function init(env, start_loc, key, async, generator) {
           }
         };
         var value = /* tuple */[
-          value_000,
-          value_001
+          value_0,
+          value_1
         ];
         match$1 = /* tuple */[
           value,
@@ -11102,13 +11102,13 @@ function class_implements(env, _acc) {
     var id = Curry._2(Parse.identifier, undefined, env);
     var typeParameters = wrap(type_parameter_instantiation, env);
     var loc = typeParameters !== undefined ? btwn(id[0], typeParameters[0]) : id[0];
-    var implement_001 = {
+    var implement_1 = {
       id: id,
       typeParameters: typeParameters
     };
     var implement = /* tuple */[
       loc,
-      implement_001
+      implement_1
     ];
     var acc$1 = /* :: */{
       _0: implement,
@@ -11185,7 +11185,7 @@ function init$1(env, start_loc, decorators, key, async, generator, $$static) {
       false
     ];
   var end_loc$1 = match$3[0];
-  var value_001 = {
+  var value_1 = {
     id: undefined,
     params: params,
     defaults: defaults,
@@ -11200,7 +11200,7 @@ function init$1(env, start_loc, decorators, key, async, generator, $$static) {
   };
   var value$1 = /* tuple */[
     end_loc$1,
-    value_001
+    value_1
   ];
   var kind;
   switch (key.tag | 0) {
@@ -11518,14 +11518,14 @@ function export_source(env) {
     tag: /* String */0,
     _0: raw$1
   };
-  var ret_000 = Curry._2(Parser_env_Peek.loc, undefined, env);
-  var ret_001 = {
+  var ret_0 = Curry._2(Parser_env_Peek.loc, undefined, env);
+  var ret_1 = {
     value: value$2,
     raw: raw$1
   };
   var ret = /* tuple */[
-    ret_000,
-    ret_001
+    ret_0,
+    ret_1
   ];
   error_unexpected(env);
   return ret;
@@ -11557,7 +11557,7 @@ function declare_function(env, start_loc) {
   var returnType = wrap(_type, env);
   var end_loc = returnType[0];
   var loc = btwn(start_sig_loc, end_loc);
-  var value_001 = {
+  var value_1 = {
     tag: /* Function */1,
     _0: {
       params: match[1],
@@ -11568,22 +11568,22 @@ function declare_function(env, start_loc) {
   };
   var value = /* tuple */[
     loc,
-    value_001
+    value_1
   ];
   var typeAnnotation = /* tuple */[
     loc,
     value
   ];
   var init = id[1];
-  var id_000 = btwn(id[0], end_loc);
-  var id_001 = {
+  var id_0 = btwn(id[0], end_loc);
+  var id_1 = {
     name: init.name,
     typeAnnotation: typeAnnotation,
     optional: init.optional
   };
   var id$1 = /* tuple */[
-    id_000,
-    id_001
+    id_0,
+    id_1
   ];
   var end_loc$1 = Curry._2(Parser_env_Peek.semicolon_loc, undefined, env);
   var end_loc$2 = end_loc$1 !== undefined ? end_loc$1 : end_loc;
@@ -11649,13 +11649,13 @@ function export_specifiers_and_errs(env, _specifiers, _errs) {
     }
     var err = match$2[1];
     var loc$1 = btwn(id[0], match$2[2]);
-    var specifier_001 = {
+    var specifier_1 = {
       id: id,
       name: match$2[0]
     };
     var specifier = /* tuple */[
       loc$1,
-      specifier_001
+      specifier_1
     ];
     if (Curry._2(Parser_env_Peek.token, undefined, env) === /* T_COMMA */8) {
       token$4(env, /* T_COMMA */8);
@@ -12221,12 +12221,12 @@ function declare(in_moduleOpt, env) {
           token$4(env, /* T_RCURLY */2);
           var body_end_loc = Curry._2(Parser_env_Peek.loc, undefined, env);
           var body_loc = btwn(body_start_loc, body_end_loc);
-          var body_001 = {
+          var body_1 = {
             body: match$4[1]
           };
           var body = /* tuple */[
             body_loc,
-            body_001
+            body_1
           ];
           var loc$3 = btwn(start_loc, body_loc);
           var kind = module_kind !== undefined ? module_kind : ({
@@ -12589,7 +12589,7 @@ function case_list(env, _param) {
     var consequent = Curry._2(Parse.statement_list, term_fn, with_in_switch(true, env));
     var match$2 = List.rev(consequent);
     var end_loc$1 = match$2 ? match$2._0[0] : end_loc;
-    var acc_000 = /* tuple */[
+    var acc_0 = /* tuple */[
       btwn(start_loc, end_loc$1),
       {
         test: test,
@@ -12597,7 +12597,7 @@ function case_list(env, _param) {
       }
     ];
     var acc$1 = /* :: */{
-      _0: acc_000,
+      _0: acc_0,
       _1: acc
     };
     _param = /* tuple */[
@@ -12662,14 +12662,14 @@ function source(env) {
     tag: /* String */0,
     _0: raw$1
   };
-  var ret_000 = Curry._2(Parser_env_Peek.loc, undefined, env);
-  var ret_001 = {
+  var ret_0 = Curry._2(Parser_env_Peek.loc, undefined, env);
+  var ret_1 = {
     value: value$2,
     raw: raw$1
   };
   var ret = /* tuple */[
-    ret_000,
-    ret_001
+    ret_0,
+    ret_1
   ];
   error_unexpected(env);
   return ret;
@@ -12957,14 +12957,14 @@ function _object$2(restricted_error) {
       switch (key.tag | 0) {
         case /* Identifier */1 :
             var id = key._0;
-            var pattern_000 = id[0];
-            var pattern_001 = {
+            var pattern_0 = id[0];
+            var pattern_1 = {
               tag: /* Identifier */3,
               _0: id
             };
             var pattern$2 = /* tuple */[
-              pattern_000,
-              pattern_001
+              pattern_0,
+              pattern_1
             ];
             prop = /* tuple */[
               pattern$2,
@@ -13289,13 +13289,13 @@ function member_expression(env, _member) {
     token$4(env, /* T_PERIOD */9);
     var property = identifier$1(env);
     var loc = btwn(member[0], property[0]);
-    var member_001 = {
+    var member_1 = {
       _object: _object,
       property: property
     };
     var member$1 = /* tuple */[
       loc,
-      member_001
+      member_1
     ];
     _member = member$1;
     continue ;
@@ -13339,13 +13339,13 @@ function name(env) {
   token$4(env, /* T_PERIOD */9);
   var property = identifier$1(env);
   var loc$1 = btwn(name$1[0], property[0]);
-  var member_001 = {
+  var member_1 = {
     _object: _object,
     property: property
   };
   var member = /* tuple */[
     loc$1,
-    member_001
+    member_1
   ];
   return {
           tag: /* MemberExpression */2,
@@ -13630,14 +13630,14 @@ function children_and_closing(env, _acc) {
               ];
       }
       var element = closingElement._0;
-      var element_000 = element[0];
-      var element_001 = {
+      var element_0 = element[0];
+      var element_1 = {
         tag: /* Element */0,
         _0: element[1]
       };
       var element$1 = /* tuple */[
-        element_000,
-        element_001
+        element_0,
+        element_1
       ];
       _acc = /* :: */{
         _0: element$1,
@@ -14223,13 +14223,13 @@ function module_item(env) {
               tag: /* String */0,
               _0: value
             };
-            var source_001 = {
+            var source_1 = {
               value: value$1,
               raw: raw
             };
             var source$4 = /* tuple */[
               str_loc,
-              source_001
+              source_1
             ];
             var loc$5 = Curry._2(Parser_env_Peek.semicolon_loc, undefined, env$2);
             var end_loc$6 = loc$5 !== undefined ? loc$5 : str_loc;
@@ -14446,14 +14446,14 @@ function statement(env) {
                   token$4(env, /* T_CATCH */32);
                   token$4(env, /* T_LPAREN */3);
                   var id = Curry._2(Parse.identifier, /* StrictCatchVariable */26, env);
-                  var param_000 = id[0];
-                  var param_001 = {
+                  var param_0 = id[0];
+                  var param_1 = {
                     tag: /* Identifier */3,
                     _0: id
                   };
                   var param = /* tuple */[
-                    param_000,
-                    param_001
+                    param_0,
+                    param_1
                   ];
                   token$4(env, /* T_RPAREN */4);
                   var body = Curry._1(Parse.block_body, env);
@@ -15033,11 +15033,11 @@ function statement_list(_env, term_fn, item_fn, _param) {
               stmts
             ];
     }
-    var string_token_000 = Curry._2(Parser_env_Peek.loc, undefined, env);
-    var string_token_001 = Curry._2(Parser_env_Peek.token, undefined, env);
+    var string_token_0 = Curry._2(Parser_env_Peek.loc, undefined, env);
+    var string_token_1 = Curry._2(Parser_env_Peek.token, undefined, env);
     var string_token = /* tuple */[
-      string_token_000,
-      string_token_001
+      string_token_0,
+      string_token_1
     ];
     var possible_directive = Curry._1(item_fn, env);
     var stmts$1 = /* :: */{

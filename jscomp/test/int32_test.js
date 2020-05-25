@@ -18,11 +18,11 @@ function f(x) {
         ];
 }
 
-var shift_right_logical_tests_000 = $$Array.map((function (x) {
+var shift_right_logical_tests_0 = $$Array.map((function (x) {
         return (-1 >>> x) | 0;
       }), Ext_array_test.range(0, 31));
 
-var shift_right_logical_tests_001 = [
+var shift_right_logical_tests_1 = [
   -1,
   2147483647,
   1073741823,
@@ -58,15 +58,15 @@ var shift_right_logical_tests_001 = [
 ];
 
 var shift_right_logical_tests = /* tuple */[
-  shift_right_logical_tests_000,
-  shift_right_logical_tests_001
+  shift_right_logical_tests_0,
+  shift_right_logical_tests_1
 ];
 
-var shift_right_tests_000 = $$Array.map((function (x) {
+var shift_right_tests_0 = $$Array.map((function (x) {
         return (Int32.min_int >> x);
       }), Ext_array_test.range(0, 31));
 
-var shift_right_tests_001 = [
+var shift_right_tests_1 = [
   -2147483648,
   -1073741824,
   -536870912,
@@ -102,15 +102,15 @@ var shift_right_tests_001 = [
 ];
 
 var shift_right_tests = /* tuple */[
-  shift_right_tests_000,
-  shift_right_tests_001
+  shift_right_tests_0,
+  shift_right_tests_1
 ];
 
-var shift_left_tests_000 = $$Array.map((function (x) {
+var shift_left_tests_0 = $$Array.map((function (x) {
         return (1 << x);
       }), Ext_array_test.range(0, 31));
 
-var shift_left_tests_001 = [
+var shift_left_tests_1 = [
   1,
   2,
   4,
@@ -146,8 +146,8 @@ var shift_left_tests_001 = [
 ];
 
 var shift_left_tests = /* tuple */[
-  shift_left_tests_000,
-  shift_left_tests_001
+  shift_left_tests_0,
+  shift_left_tests_1
 ];
 
 function $star$tilde(prim, prim$1) {
@@ -203,7 +203,7 @@ var suites = {
                                         };
                                 })
                             ];
-                    }), shift_right_logical_tests_000, shift_right_logical_tests_001)), Pervasives.$at($$Array.to_list(Ext_array_test.map2i((function (i, a, b) {
+                    }), shift_right_logical_tests_0, shift_right_logical_tests_1)), Pervasives.$at($$Array.to_list(Ext_array_test.map2i((function (i, a, b) {
                           return /* tuple */[
                                   Curry._1(Format.asprintf(/* Format */{
                                             _0: {
@@ -227,7 +227,7 @@ var suites = {
                                             };
                                     })
                                 ];
-                        }), shift_right_tests_000, shift_right_tests_001)), $$Array.to_list(Ext_array_test.map2i((function (i, a, b) {
+                        }), shift_right_tests_0, shift_right_tests_1)), $$Array.to_list(Ext_array_test.map2i((function (i, a, b) {
                           return /* tuple */[
                                   Curry._1(Format.asprintf(/* Format */{
                                             _0: {
@@ -251,7 +251,7 @@ var suites = {
                                             };
                                     })
                                 ];
-                        }), shift_left_tests_000, shift_left_tests_001)))))
+                        }), shift_left_tests_0, shift_left_tests_1)))))
 };
 
 var test_id = {

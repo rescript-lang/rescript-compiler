@@ -1580,11 +1580,11 @@ function $$final(info, st, cat) {
     var exn = Caml_js_exceptions.internalToOCamlException(raw_exn);
     if (exn.RE_EXN_ID === "Not_found") {
       var st$prime = delta$1(info, cat, -1, st);
-      var res_000 = st$prime.idx;
-      var res_001 = status(st$prime);
+      var res_0 = st$prime.idx;
+      var res_1 = status(st$prime);
       var res = /* tuple */[
-        res_000,
-        res_001
+        res_0,
+        res_1
       ];
       st.final = /* :: */{
         _0: /* tuple */[
@@ -1709,9 +1709,9 @@ function trans_set(cache, cm, s) {
   if (i !== undefined) {
     return single(Caml_bytes.get(cm, i));
   }
-  var v_000 = hash_rec(s);
+  var v_0 = hash_rec(s);
   var v = /* tuple */[
-    v_000,
+    v_0,
     s
   ];
   try {

@@ -55,7 +55,7 @@ function is_sorted(x) {
   };
 }
 
-var array_suites_000 = /* tuple */[
+var array_suites_0 = /* tuple */[
   "init",
   (function (param) {
       return {
@@ -74,7 +74,7 @@ var array_suites_000 = /* tuple */[
     })
 ];
 
-var array_suites_001 = /* :: */{
+var array_suites_1 = /* :: */{
   _0: /* tuple */[
     "toList",
     (function (param) {
@@ -364,8 +364,8 @@ var array_suites_001 = /* :: */{
 };
 
 var array_suites = /* :: */{
-  _0: array_suites_000,
-  _1: array_suites_001
+  _0: array_suites_0,
+  _1: array_suites_1
 };
 
 Mt.from_pair_suites("Array_test", array_suites);

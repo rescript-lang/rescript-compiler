@@ -31,7 +31,7 @@ function or_f(b, x, _n) {
   };
 }
 
-var suites_000 = /* tuple */[
+var suites_0 = /* tuple */[
   "and_tail",
   (function (param) {
       return {
@@ -42,7 +42,7 @@ var suites_000 = /* tuple */[
     })
 ];
 
-var suites_001 = /* :: */{
+var suites_1 = /* :: */{
   _0: /* tuple */[
     "or_tail",
     (function (param) {
@@ -57,8 +57,8 @@ var suites_001 = /* :: */{
 };
 
 var suites = /* :: */{
-  _0: suites_000,
-  _1: suites_001
+  _0: suites_0,
+  _1: suites_1
 };
 
 Mt.from_pair_suites("And_or_tailcall_test", suites);

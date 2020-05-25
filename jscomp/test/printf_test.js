@@ -37,7 +37,7 @@ function print_pair(fmt, param) {
                 }), param[0], param[1]);
 }
 
-var suites_000 = /* tuple */[
+var suites_0 = /* tuple */[
   "sprintf_simple",
   (function (param) {
       return {
@@ -61,7 +61,7 @@ var suites_000 = /* tuple */[
     })
 ];
 
-var suites_001 = /* :: */{
+var suites_1 = /* :: */{
   _0: /* tuple */[
     "print_asprintf",
     (function (param) {
@@ -104,8 +104,8 @@ var suites_001 = /* :: */{
 };
 
 var suites = /* :: */{
-  _0: suites_000,
-  _1: suites_001
+  _0: suites_0,
+  _1: suites_1
 };
 
 var v = Format.asprintf(/* Format */{

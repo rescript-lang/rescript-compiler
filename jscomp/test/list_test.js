@@ -6,7 +6,7 @@ var $$Array = require("../../lib/js/array.js");
 var Block = require("../../lib/js/block.js");
 var Caml_primitive = require("../../lib/js/caml_primitive.js");
 
-var list_suites_000 = /* tuple */[
+var list_suites_0 = /* tuple */[
   "length",
   (function (param) {
       return {
@@ -26,7 +26,7 @@ var list_suites_000 = /* tuple */[
     })
 ];
 
-var list_suites_001 = /* :: */{
+var list_suites_1 = /* :: */{
   _0: /* tuple */[
     "length2",
     (function (param) {
@@ -106,8 +106,8 @@ var list_suites_001 = /* :: */{
 };
 
 var list_suites = /* :: */{
-  _0: list_suites_000,
-  _1: list_suites_001
+  _0: list_suites_0,
+  _1: list_suites_1
 };
 
 Mt.from_pair_suites("List_test", list_suites);

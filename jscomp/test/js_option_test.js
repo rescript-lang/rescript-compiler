@@ -8,7 +8,7 @@ function simpleEq(a, b) {
   return a === b;
 }
 
-var option_suites_000 = /* tuple */[
+var option_suites_0 = /* tuple */[
   "option_isSome_Some",
   (function (param) {
       return {
@@ -19,7 +19,7 @@ var option_suites_000 = /* tuple */[
     })
 ];
 
-var option_suites_001 = /* :: */{
+var option_suites_1 = /* :: */{
   _0: /* tuple */[
     "option_isSome_None",
     (function (param) {
@@ -300,8 +300,8 @@ var option_suites_001 = /* :: */{
 };
 
 var option_suites = /* :: */{
-  _0: option_suites_000,
-  _1: option_suites_001
+  _0: option_suites_0,
+  _1: option_suites_1
 };
 
 Mt.from_pair_suites("Js_option_test", option_suites);

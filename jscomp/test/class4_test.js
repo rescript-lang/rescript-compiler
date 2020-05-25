@@ -104,7 +104,7 @@ var Point = {
   restricted_point$prime: restricted_point
 };
 
-function abstract_point_001($$class) {
+function abstract_point_1($$class) {
   var x_init = CamlinternalOO.new_variable($$class, "");
   var ids = CamlinternalOO.get_method_labels($$class, [
         "move",
@@ -125,7 +125,7 @@ function abstract_point_001($$class) {
 
 var abstract_point = /* class */[
   undefined,
-  abstract_point_001,
+  abstract_point_1,
   undefined,
   undefined
 ];

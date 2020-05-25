@@ -174,16 +174,16 @@ var env_init = d_init(table);
 
 CamlinternalOO.init_class(table);
 
-var d_000 = Curry._1(env_init, undefined);
+var d_0 = Curry._1(env_init, undefined);
 
 var d = /* class */[
-  d_000,
+  d_0,
   d_init,
   env_init,
   undefined
 ];
 
-function c2$prime_001($$class) {
+function c2$prime_1($$class) {
   CamlinternalOO.get_method_label($$class, "m");
   return function (env, self) {
     return CamlinternalOO.create_object_opt(self, $$class);
@@ -192,7 +192,7 @@ function c2$prime_001($$class) {
 
 var c2$prime = /* class */[
   undefined,
-  c2$prime_001,
+  c2$prime_1,
   undefined,
   undefined
 ];
@@ -269,16 +269,16 @@ var env_init$1 = bad_functional_point_init(table$1);
 
 CamlinternalOO.init_class(table$1);
 
-var bad_functional_point_000 = Curry._1(env_init$1, undefined);
+var bad_functional_point_0 = Curry._1(env_init$1, undefined);
 
 var bad_functional_point = /* class */[
-  bad_functional_point_000,
+  bad_functional_point_0,
   bad_functional_point_init,
   env_init$1,
   undefined
 ];
 
-var p$2 = Curry._2(bad_functional_point_000, undefined, 7);
+var p$2 = Curry._2(bad_functional_point_0, undefined, 7);
 
 var tmp$1 = Caml_oo_curry.js2(-933174511, 6, p$2, 3);
 

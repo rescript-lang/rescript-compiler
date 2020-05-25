@@ -86,25 +86,25 @@ var c = [
 
 console.log(" " + Format.std_formatter + " " + a + " " + c + " ");
 
-var a_000 = "";
+var a_0 = "";
 
-var a_001 = "a";
+var a_1 = "a";
 
-var a_002 = "" + 3;
+var a_2 = "" + 3;
 
-var a_003 = "" + 3 + 3;
+var a_3 = "" + 3 + 3;
 
-var a_004 = "" + 3 + 3 + 3;
+var a_4 = "" + 3 + 3 + 3;
 
-var a_005 = " " + 3;
+var a_5 = " " + 3;
 
 var a$1 = /* tuple */[
-  a_000,
-  a_001,
-  a_002,
-  a_003,
-  a_004,
-  a_005
+  a_0,
+  a_1,
+  a_2,
+  a_3,
+  a_4,
+  a_5
 ];
 
 eq("File \"record_debug_test.ml\", line 64, characters 3-10", a$1, /* tuple */[

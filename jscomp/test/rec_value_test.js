@@ -112,13 +112,13 @@ function zs(param) {
   return List.hd(xs[0]);
 }
 
-var xs_000 = /* :: */{
+var xs_0 = /* :: */{
   _0: 2,
   _1: /* [] */0
 };
 
 var xs = /* tuple */[
-  xs_000,
+  xs_0,
   zs
 ];
 
@@ -214,34 +214,34 @@ var fake_y2 = /* :: */{
   }
 };
 
-var fake_z2_001 = /* :: */{
+var fake_z2_1 = /* :: */{
   _0: sum(0, 10),
   _1: fake_y2
 };
 
 var fake_z2 = /* :: */{
   _0: 1,
-  _1: fake_z2_001
+  _1: fake_z2_1
 };
 
-function rec_variant_b_001(param) {
+function rec_variant_b_1(param) {
   return rec_variant_a;
 }
 
 var rec_variant_b = {
   tag: /* B */0,
   _0: "gho",
-  _1: rec_variant_b_001
+  _1: rec_variant_b_1
 };
 
-function rec_variant_a_001(param) {
+function rec_variant_a_1(param) {
   return rec_variant_b;
 }
 
 var rec_variant_a = {
   tag: /* A */1,
   _0: 3,
-  _1: rec_variant_a_001
+  _1: rec_variant_a_1
 };
 
 function phd(l) {
@@ -312,7 +312,7 @@ function xtl(h) {
   return h.tail;
 }
 
-var suites_000 = /* tuple */[
+var suites_0 = /* tuple */[
   "File \"rec_value_test.ml\", line 126, characters 2-9",
   (function (param) {
       return {
@@ -323,7 +323,7 @@ var suites_000 = /* tuple */[
     })
 ];
 
-var suites_001 = /* :: */{
+var suites_1 = /* :: */{
   _0: /* tuple */[
     "File \"rec_value_test.ml\", line 128, characters 2-9",
     (function (param) {
@@ -506,7 +506,7 @@ var suites_001 = /* :: */{
                             if (!rec_variant_b.tag) {
                               return {
                                       tag: /* Eq */0,
-                                      _0: Curry._1(rec_variant_b_001, undefined),
+                                      _0: Curry._1(rec_variant_b_1, undefined),
                                       _1: rec_variant_a
                                     };
                             }
@@ -528,7 +528,7 @@ var suites_001 = /* :: */{
                               if (rec_variant_a.tag) {
                                 return {
                                         tag: /* Eq */0,
-                                        _0: Curry._1(rec_variant_a_001, undefined),
+                                        _0: Curry._1(rec_variant_a_1, undefined),
                                         _1: rec_variant_b
                                       };
                               }
@@ -558,8 +558,8 @@ var suites_001 = /* :: */{
 };
 
 var suites = /* :: */{
-  _0: suites_000,
-  _1: suites_001
+  _0: suites_0,
+  _1: suites_1
 };
 
 function fake_minus(n) {

@@ -56,7 +56,7 @@ function to_list(s) {
   };
 }
 
-var suites_000 = /* tuple */[
+var suites_0 = /* tuple */[
   "lexer_stream_genlex",
   (function (param) {
       return {
@@ -110,7 +110,7 @@ var suites_000 = /* tuple */[
 ];
 
 var suites = /* :: */{
-  _0: suites_000,
+  _0: suites_0,
   _1: /* [] */0
 };
 

@@ -28,7 +28,7 @@ function v(param) {
   return partial_arg(6, param);
 }
 
-var suites_000 = /* tuple */[
+var suites_0 = /* tuple */[
   "curry",
   (function (param) {
       return {
@@ -39,7 +39,7 @@ var suites_000 = /* tuple */[
     })
 ];
 
-var suites_001 = /* :: */{
+var suites_1 = /* :: */{
   _0: /* tuple */[
     "curry2",
     (function (param) {
@@ -78,8 +78,8 @@ var suites_001 = /* :: */{
 };
 
 var suites = /* :: */{
-  _0: suites_000,
-  _1: suites_001
+  _0: suites_0,
+  _1: suites_1
 };
 
 Mt.from_pair_suites("Ari_regress_test", suites);

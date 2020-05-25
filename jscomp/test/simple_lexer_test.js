@@ -45,7 +45,7 @@ function translate(lexbuf) {
   return __ocaml_lex_translate_rec(lexbuf, 0);
 }
 
-var suites_000 = /* tuple */[
+var suites_0 = /* tuple */[
   "translate",
   (function (param) {
       return {
@@ -57,7 +57,7 @@ var suites_000 = /* tuple */[
 ];
 
 var suites = /* :: */{
-  _0: suites_000,
+  _0: suites_0,
   _1: /* [] */0
 };
 

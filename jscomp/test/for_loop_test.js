@@ -229,7 +229,7 @@ function for_9(param) {
           ]];
 }
 
-var suites_000 = /* tuple */[
+var suites_0 = /* tuple */[
   "for_loop_test_3",
   (function (param) {
       return {
@@ -240,7 +240,7 @@ var suites_000 = /* tuple */[
     })
 ];
 
-var suites_001 = /* :: */{
+var suites_1 = /* :: */{
   _0: /* tuple */[
     "for_loop_test_4",
     (function (param) {
@@ -329,8 +329,8 @@ var suites_001 = /* :: */{
 };
 
 var suites = /* :: */{
-  _0: suites_000,
-  _1: suites_001
+  _0: suites_0,
+  _1: suites_1
 };
 
 exports.for_3 = for_3;

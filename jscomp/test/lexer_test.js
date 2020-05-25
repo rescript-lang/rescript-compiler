@@ -48,7 +48,7 @@ function from_tokens(lst) {
   };
 }
 
-var lexer_suites_000 = /* tuple */[
+var lexer_suites_0 = /* tuple */[
   "arith_token",
   (function (param) {
       return {
@@ -92,7 +92,7 @@ var lexer_suites_000 = /* tuple */[
     })
 ];
 
-var lexer_suites_001 = /* :: */{
+var lexer_suites_1 = /* :: */{
   _0: /* tuple */[
     "simple token",
     (function (param) {
@@ -208,8 +208,8 @@ var lexer_suites_001 = /* :: */{
 };
 
 var lexer_suites = /* :: */{
-  _0: lexer_suites_000,
-  _1: lexer_suites_001
+  _0: lexer_suites_0,
+  _1: lexer_suites_1
 };
 
 Mt.from_pair_suites("Lexer_test", lexer_suites);

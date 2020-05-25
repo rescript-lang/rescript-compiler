@@ -564,14 +564,14 @@ function remove_min(param) {
     }
     var match$1 = remove_min(param._1);
     var y = match$1[1];
-    var s_001 = match$1[0];
-    var s_002 = param._2;
-    var s_003 = param._3;
+    var s_1 = match$1[0];
+    var s_2 = param._2;
+    var s_3 = param._3;
     var s = /* Node */{
       _0: c,
-      _1: s_001,
-      _2: s_002,
-      _3: s_003
+      _1: s_1,
+      _2: s_2,
+      _3: s_3
     };
     if (!match$1[2]) {
       return /* tuple */[
@@ -621,13 +621,13 @@ function remove_aux(x, n) {
       }
     }
     var match = remove_min(r);
-    var n_002 = match[1];
-    var n_003 = match[0];
+    var n_2 = match[1];
+    var n_3 = match[0];
     var n$1 = /* Node */{
       _0: c,
       _1: l,
-      _2: n_002,
-      _3: n_003
+      _2: n_2,
+      _3: n_3
     };
     if (match[2]) {
       return unbalanced_left(n$1);
@@ -640,10 +640,10 @@ function remove_aux(x, n) {
   }
   if (x < y) {
     var match$1 = remove_aux(x, l);
-    var n_001 = match$1[0];
+    var n_1 = match$1[0];
     var n$2 = /* Node */{
       _0: c,
-      _1: n_001,
+      _1: n_1,
       _2: y,
       _3: r
     };
@@ -657,12 +657,12 @@ function remove_aux(x, n) {
     }
   }
   var match$2 = remove_aux(x, r);
-  var n_003$1 = match$2[0];
+  var n_3$1 = match$2[0];
   var n$3 = /* Node */{
     _0: c,
     _1: l,
     _2: y,
-    _3: n_003$1
+    _3: n_3$1
   };
   if (match$2[1]) {
     return unbalanced_left(n$3);

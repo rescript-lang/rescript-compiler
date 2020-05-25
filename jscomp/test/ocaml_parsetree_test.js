@@ -276,7 +276,7 @@ var first = {
   contents: true
 };
 
-var formatter_l_001 = /* :: */{
+var formatter_l_1 = /* :: */{
   _0: Format.err_formatter,
   _1: /* :: */{
     _0: Format.str_formatter,
@@ -286,7 +286,7 @@ var formatter_l_001 = /* :: */{
 
 var formatter_l = /* :: */{
   _0: Format.std_formatter,
-  _1: formatter_l_001
+  _1: formatter_l_1
 };
 
 function setup(o) {
@@ -6458,12 +6458,12 @@ var yyact = [
               }
               return mk$17(lb.lb_loc, undefined, undefined, undefined, lb.lb_pattern, lb.lb_expression);
             }), _1.lbs_bindings);
-      var d_000 = _1.lbs_rec;
-      var d_001 = List.rev(bindings);
+      var d_0 = _1.lbs_rec;
+      var d_1 = List.rev(bindings);
       var d = {
         tag: /* Pexp_let */2,
-        _0: d_000,
-        _1: d_001,
+        _0: d_0,
+        _1: d_1,
         _2: _3
       };
       return wrap_exp_attrs(mkexp(d), /* tuple */[
@@ -6476,13 +6476,13 @@ var yyact = [
       var _4 = Parsing.peek_val(__caml_parser_env, 3);
       var _5 = Parsing.peek_val(__caml_parser_env, 2);
       var _7 = Parsing.peek_val(__caml_parser_env, 0);
-      var d_000 = {
+      var d_0 = {
         txt: _4,
         loc: rhs_loc(4)
       };
       var d = {
         tag: /* Pexp_letmodule */25,
-        _0: d_000,
+        _0: d_0,
         _1: _5,
         _2: _7
       };
@@ -6493,14 +6493,14 @@ var yyact = [
       var _4 = Parsing.peek_val(__caml_parser_env, 3);
       var _5 = Parsing.peek_val(__caml_parser_env, 2);
       var _7 = Parsing.peek_val(__caml_parser_env, 0);
-      var d_001 = {
+      var d_1 = {
         txt: _5,
         loc: rhs_loc(5)
       };
       var d = {
         tag: /* Pexp_open */32,
         _0: _3,
-        _1: d_001,
+        _1: d_1,
         _2: _7
       };
       return wrap_exp_attrs(mkexp(d), _4);
@@ -6542,11 +6542,11 @@ var yyact = [
       var _3 = Parsing.peek_val(__caml_parser_env, 3);
       Parsing.peek_val(__caml_parser_env, 1);
       var _6 = Parsing.peek_val(__caml_parser_env, 0);
-      var d_001 = List.rev(_6);
+      var d_1 = List.rev(_6);
       var d = {
         tag: /* Pexp_match */6,
         _0: _3,
-        _1: d_001
+        _1: d_1
       };
       return wrap_exp_attrs(mkexp(d), _2);
     }),
@@ -6555,11 +6555,11 @@ var yyact = [
       var _3 = Parsing.peek_val(__caml_parser_env, 3);
       Parsing.peek_val(__caml_parser_env, 1);
       var _6 = Parsing.peek_val(__caml_parser_env, 0);
-      var d_001 = List.rev(_6);
+      var d_1 = List.rev(_6);
       var d = {
         tag: /* Pexp_try */7,
         _0: _3,
-        _1: d_001
+        _1: d_1
       };
       return wrap_exp_attrs(mkexp(d), _2);
     }),
@@ -7220,7 +7220,7 @@ var yyact = [
     }),
   (function (__caml_parser_env) {
       var _2 = Parsing.peek_val(__caml_parser_env, 1);
-      var d_000 = {
+      var d_0 = {
         txt: {
           tag: /* Lident */0,
           _0: "()"
@@ -7229,7 +7229,7 @@ var yyact = [
       };
       var d = {
         tag: /* Pexp_construct */9,
-        _0: d_000,
+        _0: d_0,
         _1: undefined
       };
       return wrap_exp_attrs(mkexp(d), _2);

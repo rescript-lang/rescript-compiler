@@ -4,7 +4,7 @@ var Mt = require("./mt.js");
 var Block = require("../../lib/js/block.js");
 var Complex = require("../../lib/js/complex.js");
 
-var suites_000 = /* tuple */[
+var suites_0 = /* tuple */[
   "basic_add",
   (function (param) {
       return {
@@ -19,7 +19,7 @@ var suites_000 = /* tuple */[
 ];
 
 var suites = /* :: */{
-  _0: suites_000,
+  _0: suites_0,
   _1: /* [] */0
 };
 

@@ -31,7 +31,7 @@ function string_or_number(x) {
   }
 }
 
-var suites_000 = /* tuple */[
+var suites_0 = /* tuple */[
   "int_type",
   (function (param) {
       return {
@@ -42,7 +42,7 @@ var suites_000 = /* tuple */[
     })
 ];
 
-var suites_001 = /* :: */{
+var suites_1 = /* :: */{
   _0: /* tuple */[
     "string_type",
     (function (param) {
@@ -183,8 +183,8 @@ var suites_001 = /* :: */{
 };
 
 var suites = /* :: */{
-  _0: suites_000,
-  _1: suites_001
+  _0: suites_0,
+  _1: suites_1
 };
 
 Mt.from_pair_suites("Typeof_test", suites);

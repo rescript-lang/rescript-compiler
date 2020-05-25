@@ -1575,12 +1575,12 @@ function top(_param) {
                       })) {
                   Curry._1(next$1, undefined);
                 }
-                var stk$prime_000 = /* tuple */[
+                var stk$prime_0 = /* tuple */[
                   i._0,
                   ((-n | 0) << 3)
                 ];
                 var stk$prime = /* :: */{
-                  _0: stk$prime_000,
+                  _0: stk$prime_0,
                   _1: stk
                 };
                 _stk = stk$prime;
@@ -1984,11 +1984,11 @@ function main(param) {
   var f = Sys.argv.length < 2 ? "-blk" : Caml_array.caml_array_get(Sys.argv, 1);
   switch (f) {
     case "-blk" :
-        var partial_arg_000 = {
+        var partial_arg_0 = {
           contents: 0
         };
         var partial_arg = /* tuple */[
-          partial_arg_000,
+          partial_arg_0,
           0
         ];
         var c = function (param) {

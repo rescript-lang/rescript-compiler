@@ -7395,7 +7395,7 @@ function compile_enum(file_name, scope, param) {
         };
 }
 
-var all_code_gen_001 = /* :: */{
+var all_code_gen_1 = /* :: */{
   _0: Codegen_default,
   _1: /* :: */{
     _0: Codegen_decode,
@@ -7411,7 +7411,7 @@ var all_code_gen_001 = /* :: */{
 
 var all_code_gen = /* :: */{
   _0: Codegen_type,
-  _1: all_code_gen_001
+  _1: all_code_gen_1
 };
 
 function compile(proto_definition) {
@@ -7589,7 +7589,7 @@ function compile(proto_definition) {
                                           rf_field_type: record_field_rf_field_type,
                                           rf_mutable: false
                                         };
-                                        var variants_000 = {
+                                        var variants_0 = {
                                           module_: module_,
                                           spec: {
                                             tag: /* Variant */1,
@@ -7597,7 +7597,7 @@ function compile(proto_definition) {
                                           }
                                         };
                                         var variants$1 = /* :: */{
-                                          _0: variants_000,
+                                          _0: variants_0,
                                           _1: variants
                                         };
                                         var fields$1 = /* :: */{

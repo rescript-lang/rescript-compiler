@@ -123,7 +123,7 @@ function string_escaped(s) {
   return Bytes.to_string(escaped(Bytes.of_string(s)));
 }
 
-var suites_000 = /* tuple */[
+var suites_0 = /* tuple */[
   "complete_escape",
   (function (param) {
       return {
@@ -135,7 +135,7 @@ var suites_000 = /* tuple */[
 ];
 
 var suites = /* :: */{
-  _0: suites_000,
+  _0: suites_0,
   _1: /* [] */0
 };
 

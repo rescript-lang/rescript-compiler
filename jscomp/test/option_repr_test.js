@@ -174,10 +174,10 @@ function all_true(xs) {
               }));
 }
 
-var xs_000 = gtx(Caml_option.some(null), Caml_option.some(undefined));
+var xs_0 = gtx(Caml_option.some(null), Caml_option.some(undefined));
 
 var xs = /* :: */{
-  _0: xs_000,
+  _0: xs_0,
   _1: /* [] */0
 };
 
@@ -185,9 +185,9 @@ b("File \"option_repr_test.ml\", line 121, characters 5-12", Belt_List.every(xs,
             return x;
           })));
 
-var xs_000$1 = ltx(Caml_option.some(undefined), 3);
+var xs_0$1 = ltx(Caml_option.some(undefined), 3);
 
-var xs_001 = /* :: */{
+var xs_1 = /* :: */{
   _0: ltx(Caml_option.some(undefined), Caml_option.some(Caml_option.some(undefined))),
   _1: /* :: */{
     _0: ltx(Caml_option.some(undefined), "3"),
@@ -222,17 +222,17 @@ var xs_001 = /* :: */{
 };
 
 var xs$1 = /* :: */{
-  _0: xs_000$1,
-  _1: xs_001
+  _0: xs_0$1,
+  _1: xs_1
 };
 
 b("File \"option_repr_test.ml\", line 127, characters 5-12", Belt_List.every(xs$1, (function (x) {
             return x;
           })));
 
-var xs_000$2 = eqx(undefined, undefined);
+var xs_0$2 = eqx(undefined, undefined);
 
-var xs_001$1 = /* :: */{
+var xs_1$1 = /* :: */{
   _0: neqx(undefined, null),
   _1: /* :: */{
     _0: eqx(Caml_option.some(undefined), Caml_option.some(undefined)),
@@ -247,8 +247,8 @@ var xs_001$1 = /* :: */{
 };
 
 var xs$2 = /* :: */{
-  _0: xs_000$2,
-  _1: xs_001$1
+  _0: xs_0$2,
+  _1: xs_1$1
 };
 
 b("File \"option_repr_test.ml\", line 143, characters 5-12", Belt_List.every(xs$2, (function (x) {

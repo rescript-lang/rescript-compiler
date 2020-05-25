@@ -25,7 +25,7 @@ var x = new Int8Array([
       3
     ]);
 
-var suites_000 = /* tuple */[
+var suites_0 = /* tuple */[
   "array_buffer - make",
   (function (param) {
       return {
@@ -36,7 +36,7 @@ var suites_000 = /* tuple */[
     })
 ];
 
-var suites_001 = /* :: */{
+var suites_1 = /* :: */{
   _0: /* tuple */[
     "array_buffer - byteLength",
     (function (param) {
@@ -2329,8 +2329,8 @@ var suites_001 = /* :: */{
 };
 
 var suites = /* :: */{
-  _0: suites_000,
-  _1: suites_001
+  _0: suites_0,
+  _1: suites_1
 };
 
 Mt.from_pair_suites("Js_typed_array_test", suites);

@@ -31,7 +31,7 @@ var u = 1;
 
 var v = true;
 
-var suites_000 = /* tuple */[
+var suites_0 = /* tuple */[
   "caml_bool_eq_caml_bool",
   (function (param) {
       return {
@@ -42,7 +42,7 @@ var suites_000 = /* tuple */[
     })
 ];
 
-var suites_001 = /* :: */{
+var suites_1 = /* :: */{
   _0: /* tuple */[
     "js_bool_eq_js_bool",
     (function (param) {
@@ -69,8 +69,8 @@ var suites_001 = /* :: */{
 };
 
 var suites = /* :: */{
-  _0: suites_000,
-  _1: suites_001
+  _0: suites_0,
+  _1: suites_1
 };
 
 function ff(u) {

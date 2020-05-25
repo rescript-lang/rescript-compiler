@@ -5,7 +5,7 @@ var Block = require("../../lib/js/block.js");
 var Caml_array = require("../../lib/js/caml_array.js");
 var Caml_option = require("../../lib/js/caml_option.js");
 
-var suites_000 = /* tuple */[
+var suites_0 = /* tuple */[
   "captures",
   (function (param) {
       var re = /(\d+)-(?:(\d+))?/g;
@@ -32,7 +32,7 @@ var suites_000 = /* tuple */[
     })
 ];
 
-var suites_001 = /* :: */{
+var suites_1 = /* :: */{
   _0: /* tuple */[
     "fromString",
     (function (param) {
@@ -280,8 +280,8 @@ var suites_001 = /* :: */{
 };
 
 var suites = /* :: */{
-  _0: suites_000,
-  _1: suites_001
+  _0: suites_0,
+  _1: suites_1
 };
 
 Mt.from_pair_suites("Js_re_test", suites);

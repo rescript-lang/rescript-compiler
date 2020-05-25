@@ -285,7 +285,7 @@ function ff(param) {
   return Caml_format.caml_format_int("%32d", param);
 }
 
-var formatter_suites_000 = /* tuple */[
+var formatter_suites_0 = /* tuple */[
   "fmt_concat",
   (function (param) {
       return {
@@ -354,7 +354,7 @@ var formatter_suites_000 = /* tuple */[
     })
 ];
 
-var formatter_suites_001 = /* :: */{
+var formatter_suites_1 = /* :: */{
   _0: /* tuple */[
     "fmt_gen",
     (function (param) {
@@ -1548,8 +1548,8 @@ var formatter_suites_001 = /* :: */{
 };
 
 var formatter_suites = /* :: */{
-  _0: formatter_suites_000,
-  _1: formatter_suites_001
+  _0: formatter_suites_0,
+  _1: formatter_suites_1
 };
 
 var float_data = [
@@ -1954,7 +1954,7 @@ function from_lambda_pairs(p) {
                   }), lambda_suites));
 }
 
-var ksprintf_suites_000 = /* tuple */[
+var ksprintf_suites_0 = /* tuple */[
   "ksprintf",
   (function (param) {
       var f = function (fmt) {
@@ -1989,7 +1989,7 @@ var ksprintf_suites_000 = /* tuple */[
     })
 ];
 
-var ksprintf_suites_001 = /* :: */{
+var ksprintf_suites_1 = /* :: */{
   _0: /* tuple */[
     "sprintf",
     (function (param) {
@@ -2019,11 +2019,11 @@ var ksprintf_suites_001 = /* :: */{
 };
 
 var ksprintf_suites = /* :: */{
-  _0: ksprintf_suites_000,
-  _1: ksprintf_suites_001
+  _0: ksprintf_suites_0,
+  _1: ksprintf_suites_1
 };
 
-var int64_suites_000 = /* tuple */[
+var int64_suites_0 = /* tuple */[
   "i32_simple",
   (function (param) {
       return {
@@ -2043,7 +2043,7 @@ var int64_suites_000 = /* tuple */[
     })
 ];
 
-var int64_suites_001 = /* :: */{
+var int64_suites_1 = /* :: */{
   _0: /* tuple */[
     "i32_simple1",
     (function (param) {
@@ -2640,8 +2640,8 @@ var int64_suites_001 = /* :: */{
 };
 
 var int64_suites = /* :: */{
-  _0: int64_suites_000,
-  _1: int64_suites_001
+  _0: int64_suites_0,
+  _1: int64_suites_1
 };
 
 var of_string_data = [

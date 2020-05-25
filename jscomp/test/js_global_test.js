@@ -3,7 +3,7 @@
 var Mt = require("./mt.js");
 var Block = require("../../lib/js/block.js");
 
-var suites_000 = /* tuple */[
+var suites_0 = /* tuple */[
   "setTimeout/clearTimeout sanity check",
   (function (param) {
       var handle = setTimeout((function (param) {
@@ -17,7 +17,7 @@ var suites_000 = /* tuple */[
     })
 ];
 
-var suites_001 = /* :: */{
+var suites_1 = /* :: */{
   _0: /* tuple */[
     "setInerval/clearInterval sanity check",
     (function (param) {
@@ -83,8 +83,8 @@ var suites_001 = /* :: */{
 };
 
 var suites = /* :: */{
-  _0: suites_000,
-  _1: suites_001
+  _0: suites_0,
+  _1: suites_1
 };
 
 Mt.from_pair_suites("Js_global_test", suites);

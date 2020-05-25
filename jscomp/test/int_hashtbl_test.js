@@ -58,7 +58,7 @@ var Int_hash = Hashtbl.Make({
       hash: hash
     });
 
-var suites_000 = /* tuple */[
+var suites_0 = /* tuple */[
   "simple",
   (function (param) {
       return {
@@ -81,7 +81,7 @@ var suites_000 = /* tuple */[
     })
 ];
 
-var suites_001 = /* :: */{
+var suites_1 = /* :: */{
   _0: /* tuple */[
     "more_iterations",
     (function (param) {
@@ -101,8 +101,8 @@ var suites_001 = /* :: */{
 };
 
 var suites = /* :: */{
-  _0: suites_000,
-  _1: suites_001
+  _0: suites_0,
+  _1: suites_1
 };
 
 Mt.from_pair_suites("Int_hashtbl_test", suites);

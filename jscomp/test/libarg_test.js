@@ -194,7 +194,7 @@ function f_anon(s) {
                 }), s);
 }
 
-var spec_000 = /* tuple */[
+var spec_0 = /* tuple */[
   "-u",
   {
     tag: /* Unit */0,
@@ -203,7 +203,7 @@ var spec_000 = /* tuple */[
   "Unit (0)"
 ];
 
-var spec_001 = /* :: */{
+var spec_1 = /* :: */{
   _0: /* tuple */[
     "-b",
     {
@@ -354,8 +354,8 @@ var spec_001 = /* :: */{
 };
 
 var spec = /* :: */{
-  _0: spec_000,
-  _1: spec_001
+  _0: spec_0,
+  _1: spec_1
 };
 
 var args1 = [

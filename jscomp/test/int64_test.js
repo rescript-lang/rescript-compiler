@@ -38,11 +38,11 @@ function commutative_add(result, a, b) {
 
 var generic_compare = Caml_obj.caml_compare;
 
-var shift_left_tests_000 = $$Array.map((function (i) {
+var shift_left_tests_0 = $$Array.map((function (i) {
         return Caml_int64.lsl_(Caml_int64.one, i);
       }), Ext_array_test.range(0, 63));
 
-var shift_left_tests_001 = [
+var shift_left_tests_1 = [
   Caml_int64.one,
   Caml_int64.mk(2, 0),
   Caml_int64.mk(4, 0),
@@ -110,15 +110,15 @@ var shift_left_tests_001 = [
 ];
 
 var shift_left_tests = /* tuple */[
-  shift_left_tests_000,
-  shift_left_tests_001
+  shift_left_tests_0,
+  shift_left_tests_1
 ];
 
-var shift_right_tests_000 = $$Array.map((function (i) {
+var shift_right_tests_0 = $$Array.map((function (i) {
         return Caml_int64.asr_(Caml_int64.min_int, i);
       }), Ext_array_test.range(0, 63));
 
-var shift_right_tests_001 = [
+var shift_right_tests_1 = [
   Caml_int64.min_int,
   Caml_int64.mk(0, -1073741824),
   Caml_int64.mk(0, -536870912),
@@ -186,15 +186,15 @@ var shift_right_tests_001 = [
 ];
 
 var shift_right_tests = /* tuple */[
-  shift_right_tests_000,
-  shift_right_tests_001
+  shift_right_tests_0,
+  shift_right_tests_1
 ];
 
-var shift_right_logical_suites_000 = $$Array.map((function (i) {
+var shift_right_logical_suites_0 = $$Array.map((function (i) {
         return Caml_int64.lsr_(Caml_int64.min_int, i);
       }), Ext_array_test.range(0, 63));
 
-var shift_right_logical_suites_001 = [
+var shift_right_logical_suites_1 = [
   Caml_int64.min_int,
   Caml_int64.mk(0, 1073741824),
   Caml_int64.mk(0, 536870912),
@@ -262,8 +262,8 @@ var shift_right_logical_suites_001 = [
 ];
 
 var shift_right_logical_suites = /* tuple */[
-  shift_right_logical_suites_000,
-  shift_right_logical_suites_001
+  shift_right_logical_suites_0,
+  shift_right_logical_suites_1
 ];
 
 function fib(_n, _a, _b) {
@@ -1030,7 +1030,7 @@ var suites = Pervasives.$at(/* :: */{
                                       };
                               })
                           ];
-                  }), shift_left_tests_000, shift_left_tests_001)), Pervasives.$at($$Array.to_list(Ext_array_test.map2i((function (i, a, b) {
+                  }), shift_left_tests_0, shift_left_tests_1)), Pervasives.$at($$Array.to_list(Ext_array_test.map2i((function (i, a, b) {
                         return /* tuple */[
                                 Curry._1(Format.asprintf(/* Format */{
                                           _0: {
@@ -1054,7 +1054,7 @@ var suites = Pervasives.$at(/* :: */{
                                           };
                                   })
                               ];
-                      }), shift_right_tests_000, shift_right_tests_001)), $$Array.to_list(Ext_array_test.map2i((function (i, a, b) {
+                      }), shift_right_tests_0, shift_right_tests_1)), $$Array.to_list(Ext_array_test.map2i((function (i, a, b) {
                         return /* tuple */[
                                 Curry._1(Format.asprintf(/* Format */{
                                           _0: {
@@ -1078,7 +1078,7 @@ var suites = Pervasives.$at(/* :: */{
                                           };
                                   })
                               ];
-                      }), shift_right_logical_suites_000, shift_right_logical_suites_001)))));
+                      }), shift_right_logical_suites_0, shift_right_logical_suites_1)))));
 
 var suites$1 = {
   contents: suites
