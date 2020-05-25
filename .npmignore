@@ -37,3 +37,4 @@ package/
 *.tgz
 .nyc_output/
 themes
+vendor/js_of_ocaml.bc
