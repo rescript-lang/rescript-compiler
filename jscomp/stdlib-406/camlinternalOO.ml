@@ -16,7 +16,7 @@
 
 let new_object_tag_block  : int -> Obj.t = [%raw{|function(size){
   var v = new Array(size)
-  v.tag = 248 // tag
+  v.TAG = 248 // tag
   return v
 }|}]
 

@@ -80,8 +80,8 @@ let caml_obj_dup : Obj.t -> Obj.t = [%raw{|function(x){
     for(var i = 0 ; i < len ; ++i){
       v[i] = x[i]
     }
-    if(x.tag !== undefined){
-      v.tag = x.tag 
+    if(x.TAG !== undefined){
+      v.TAG = x.TAG // TODO this can be removed eventually
     }  
     return v 
   } 
@@ -106,8 +106,8 @@ let update_dummy : _ -> _ -> unit= [%raw{|function(x,y){
     for(k = 0; k < y.length ; ++k){
       x[k] = y[k]
     }
-    if(y.tag !== undefined){
-      x.tag = y.tag
+    if(y.TAG !== undefined){
+      x.TAG = y.TAG
     }
   } else {
     for (var k in y){
