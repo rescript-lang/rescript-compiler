@@ -23,74 +23,16 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
 
-let tag_is_zero (tag : J.expression) = 
-  match tag.expression_desc with 
-  | Number (Int {i = 0l; _}) -> true 
-  | _ -> false;;
-
- let needChromeRuntime 
-  (tag : J.expression)
-  (tag_info : J.tag_info) = 
-  match tag_info with 
-  | Blk_poly_var _     
-  | Blk_constructor _   -> true
-  | Blk_record_inlined _ -> true  
-  | Blk_record _   
-  | Blk_module_export
-  | Blk_module _ -> false
-  | Blk_tuple 
-  | Blk_extension
-  | Blk_class
-  | Blk_array   
-  | Blk_record_ext _ -> false
-  | Blk_na _ ->  not (tag_is_zero tag )
-
-let needBlockRuntime (tag : J.expression) (tag_info : J.tag_info) = 
-  match  tag_info with 
-  | Blk_poly_var _ 
-  | Blk_module _
-  | Blk_module_export
-  | Blk_record _  
-  | Blk_tuple 
-  | Blk_extension
-  | Blk_class
-  | Blk_array -> false   
-  | Blk_record_inlined {num_nonconst = 1}  
-  | Blk_constructor {num_nonconst = 1}        
-  | Blk_na _ -> not (tag_is_zero tag)
-  | Blk_record_inlined _ 
-  | Blk_constructor _   -> true  
-  | Blk_record_ext _ 
-   -> false 
-    (* converted to [Pcreate_extension] in the beginning*)
-
 let option_id =   
   Ident.create_persistent Js_runtime_modules.option
 let curry_id =   
   Ident.create_persistent Js_runtime_modules.curry
-let block_id = 
-  Ident.create_persistent Js_runtime_modules.block
-let caml_chrome_id = 
-  Ident.create_persistent Js_runtime_modules.caml_chrome_block
 
-let check_additional_id (x : J.expression) =
+let check_additional_id (x : J.expression) : Ident.t option =
   match x.expression_desc with
   | Optional_block(_,false) -> 
     Some option_id  
   | Call(_, _, {arity = NA}) ->  
     Some curry_id
-  | Caml_block(_,_,tag,tag_info) 
-    -> 
-    if not !Js_config.debug then
-      if needBlockRuntime tag tag_info then 
-        Some block_id
-      else None   
-    else
-    if needChromeRuntime tag tag_info then 
-      (* This may depends on two modules, so in the runtime
-        we let chrome depends on block
-      *)
-      Some caml_chrome_id
-    else None
   | _ -> 
     None
