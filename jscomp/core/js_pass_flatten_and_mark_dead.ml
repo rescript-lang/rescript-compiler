@@ -228,11 +228,11 @@ let subst_map () = object (self)
                     (match tag_info with 
                      | Blk_module fields -> 
                        (match Ext_list.nth_opt fields i with 
-                        | None -> Printf.sprintf "%03d" i                      
+                        | None -> Printf.sprintf "%d" i                      
                         | Some x -> x )
                      | Blk_record fields ->    
-                      Ext_array.get_or fields i (fun _ -> Printf.sprintf "%03d" i)                     
-                     | _ -> Printf.sprintf "%03d" i    
+                      Ext_array.get_or fields i (fun _ -> Printf.sprintf "%d" i)                     
+                     | _ -> Printf.sprintf "%d" i    
                     )) in
                (i + 1, E.var match_id :: e, (match_id, v') :: acc))  in
       let e = 

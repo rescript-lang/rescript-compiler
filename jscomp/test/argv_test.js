@@ -17,7 +17,7 @@ var test = {
   contents: true
 };
 
-var arg_spec_000 = /* tuple */[
+var arg_spec_0 = /* tuple */[
   "-c",
   {
     tag: /* Set */2,
@@ -26,7 +26,7 @@ var arg_spec_000 = /* tuple */[
   " Compile"
 ];
 
-var arg_spec_001 = /* :: */{
+var arg_spec_1 = /* :: */{
   _0: /* tuple */[
     "-d",
     {
@@ -39,8 +39,8 @@ var arg_spec_001 = /* :: */{
 };
 
 var arg_spec = /* :: */{
-  _0: arg_spec_000,
-  _1: arg_spec_001
+  _0: arg_spec_0,
+  _1: arg_spec_1
 };
 
 Arg.parse(arg_spec, anno_fun, usage_msg);
