@@ -3,7 +3,6 @@
 var Mt = require("./mt.js");
 var Block = require("../../lib/js/block.js");
 var Caml_obj = require("../../lib/js/caml_obj.js");
-var Caml_array = require("../../lib/js/caml_array.js");
 var Caml_exceptions = require("../../lib/js/caml_exceptions.js");
 
 var suites = {
@@ -95,7 +94,7 @@ function f1(x) {
   if (!x) {
     return /* A1 */0;
   }
-  var newrecord = Caml_array.caml_array_dup(x);
+  var newrecord = Caml_obj.caml_obj_dup(x);
   newrecord[/* x0 */0] = 1;
   return newrecord;
 }
