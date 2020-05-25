@@ -647,27 +647,7 @@ let translate loc (prim_name : string)
           end
         | _ -> assert false 
       end
-    | "caml_obj_block" -> 
-      (** TODO: Optimize  for [CamlinternalOO] input 
-          external new_block : tag:int -> size:int  -> t = "caml_obj_block"
-          Note that we don't need initialize its content anyway
-          TODO: more optimizations later
-          ATTENTION: This optmization is coupled with memory layout
-      *)
-      begin match args with 
-        | [ tag; 
-            {expression_desc = Number (Int { i ;_}); _} ] ->
-          E.make_block tag (Blk_na "obj_block")
-            (Ext_list.init (Int32.to_int i) 
-               (fun _ -> E.zero_int_literal)) NA
 
-        | [ _; _] -> 
-          call Js_runtime_modules.obj_runtime
-          (* E.uninitialized_object tag size *)
-        | _ -> assert false
-
-
-      end
     | "caml_format_float"
     | "caml_hexstring_of_float"  
     | "caml_nativeint_format"
@@ -735,17 +715,7 @@ let translate loc (prim_name : string)
       *)      
       begin match args with 
         | [e] -> E.tag e 
-        | _ -> assert false end
-
-    (* End of Unix support *)
-    (* bigarrary support *)
-
-    (* call  Js_config.bigarray *)
-    (* End of bigarray support *)
-    | "caml_bswap16"
-    | "caml_int32_bswap"
-    | "caml_nativeint_bswap" 
-      -> call Js_runtime_modules.int32
+        | _ -> assert false end    
     | "caml_get_public_method"
       ->
       call Js_runtime_modules.oo

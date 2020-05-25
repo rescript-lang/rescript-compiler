@@ -13,10 +13,12 @@
 (*                                                                        *)
 (**************************************************************************)
 
-let object_tag = 248
-external new_block : int -> int -> Obj.t = "caml_obj_block"
-let new_object_tag_block size = 
-  new_block object_tag size  
+
+let new_object_tag_block  : int -> Obj.t = [%raw{|function(size){
+  var v = new Array(size)
+  v.tag = 248 // tag
+  return v
+}|}]
 
 open Obj
 
