@@ -131,14 +131,6 @@ let raw_js_code ?comment info s : t =
 let array ?comment mt es : t  = 
   {expression_desc = Array (es,mt) ; comment}
 
-let sep = " : "
-let merge_outer_comment comment (e : t )  = 
-  match e.comment with
-  | None -> {e with comment = Some comment}
-  | Some s -> { e with 
-                comment 
-                = Some (comment ^ sep ^ s)} 
-
 let some_comment = None
 
 let optional_block e  : J.expression =                 
@@ -178,29 +170,6 @@ let make_block ?comment
   (tag_info : J.tag_info) 
   (es : t list) 
   (mutable_flag : J.mutable_flag) : t = 
-  let comment = 
-    match comment with 
-    | None -> Lam_compile_util.comment_of_tag_info tag_info 
-    | _ -> comment in
-  let es = 
-    match tag_info with       
-    | Blk_record_inlined {fields = des}
-      -> 
-      Ext_list.mapi es (fun i e  -> merge_outer_comment des.(i) e) 
-    | Blk_record_ext _
-    | Blk_record _ 
-    | Blk_module _
-    | Blk_module_export
-    | Blk_tuple 
-    | Blk_array
-    | Blk_extension_slot 
-    | Blk_extension 
-    | Blk_class 
-    | Blk_constructor _ 
-    | Blk_poly_var _ 
-    | Blk_na _
-      ->  es
-  in
   {
     expression_desc = Caml_block( es, mutable_flag, tag,tag_info) ;
     comment 
@@ -284,14 +253,15 @@ let dummy_obj ?comment (info : Lam_tag_info.t)  : t =
   match info with
   | Blk_record _ 
   | Blk_module _ 
-    -> 
-    {comment ; expression_desc = Object ([])}
   | Blk_constructor _ 
-  | Blk_tuple | Blk_array
-  | Blk_poly_var _ | Blk_extension_slot 
-  | Blk_extension | Blk_na _ 
   | Blk_record_inlined _ 
+  | Blk_poly_var _ 
+  | Blk_extension 
   | Blk_record_ext _ 
+    -> 
+    {comment ; expression_desc = Object []}
+  | Blk_tuple | Blk_array  
+  | Blk_na _   
   | Blk_class | Blk_module_export 
     ->
     {comment  ; expression_desc = Array ([],Mutable)}
@@ -400,6 +370,9 @@ let record_access (e : t) (name : string) (pos : int32) =
       { expression_desc = Static_index (e, name, Some pos); comment = None}     
     )
   | _ -> { expression_desc = Static_index (e, name, Some pos); comment = None} 
+
+(* The same as {!record_access} except tag*)
+let inline_record_access = record_access
 
 let poly_var_tag_access (e : t)  = 
   match e.expression_desc with

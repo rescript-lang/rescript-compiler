@@ -362,7 +362,12 @@ and compile_recursive_let ~all_bindings
     Js_output.output_of_expression 
       (Declare (Alias, id))
        result ~no_effects:(lazy (Lam_analysis.no_side_effects arg)), []
-  | Lprim {primitive = Pmakeblock (0, tag_info, _) ; args =  ls}
+  | Lprim{primitive = Pmakeblock (_, _, _) ; args } 
+    when  args_either_function_or_const args -> 
+    compile_lambda
+    {cxt with continuation = Declare (Alias ,id)} arg, [] 
+    (* case of lazy blocks, treat it as usual *)
+  | Lprim {primitive = Pmakeblock (_, (Blk_record _ | Blk_constructor {num_nonconst = 1} | Blk_record_inlined {num_nonconst = 1} as tag_info) , _) ; args =  ls}
     when Ext_list.for_all ls (fun x ->
         match x with
         | Lvar pid ->
@@ -385,7 +390,9 @@ and compile_recursive_let ~all_bindings
              (Js_of_lam_block.set_field 
               (match tag_info with 
               | Blk_record xs -> Fld_record_set xs.(i)
-              | _ -> Fld_set_na) (E.var id)  (Int32.of_int i)                    
+              | Blk_record_inlined xs -> Fld_record_inline_set xs.fields.(i)
+              | Blk_constructor _ -> Fld_record_inline_set ("_" ^ string_of_int i)
+              | _ -> assert false) (E.var id)  (Int32.of_int i)                    
                 (match x with 
                  | Lvar lid  -> E.var lid
                  | Lconst x -> Lam_compile_const.translate x
@@ -394,8 +401,7 @@ and compile_recursive_let ~all_bindings
          ))
     ), []
 
-  | Lprim{primitive = Pmakeblock (_, tag_info, _) ; args } 
-    when  not (args_either_function_or_const args) ->
+  | Lprim{primitive = Pmakeblock (_, tag_info, _) ;  }  ->
 
     (* Lconst should not appear here if we do [scc]
        optimization, since it's faked recursive value,

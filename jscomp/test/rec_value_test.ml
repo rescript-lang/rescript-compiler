@@ -2,6 +2,11 @@
 
 let rec x = 1::x
 
+let rec x0 = `Cons(1,x0)
+
+let rec y0 = `Cons (y0)
+
+
 let rec a = 2::b 
 and b = 3 :: c 
 and c = 3 :: a 
@@ -94,8 +99,35 @@ let rec rec_variant_b =
 and rec_variant_a = 
     A (3, fun _ -> rec_variant_b)    
 
+let phd l=     
+  match l with 
+  | `Cons(x,_) -> x 
+  | _ -> assert false  
+
+let ptl l = 
+  match l with 
+  | `Cons(_,x) -> x
+  | _ -> assert false
+type h = 
+  | C0 of { hd : int ; tail:h}  
+  | C1 of { hd : int ; tail : h}
+
+let rec y00 = C1 { hd = 1 ; tail = y00 }  
+
+let xhd (h : h)=
+  match h with 
+  | C0 {hd} | C1 {hd} -> hd
+  
+let xtl (h : h)= 
+  match h with   
+  | C0 {tail} | C1 {tail} -> tail      
 
 let suites = Mt.[
+  __LOC__, (fun _ -> 
+    Eq(1, x0 |. ptl |. ptl |. phd));
+  __LOC__, (fun _ -> 
+    Eq (1, y00 |. xtl |. xtl |. xhd)
+  );
   "hd", (fun _ -> 
     Eq(1, List.hd (List.tl x)));
   "mutual", (fun _ -> 

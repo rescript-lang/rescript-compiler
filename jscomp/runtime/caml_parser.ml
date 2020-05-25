@@ -242,11 +242,11 @@ let caml_parse_engine : parse_tables -> parser_env -> (*Parsing.parser_input *)O
             case Automata.TOKEN_READ:
                 if (typeof arg !== 'number') {
                     env[env_curr_char] = tables[tbl_transl_block][arg.tag | 0 /* + 1 */];
-                    env[env_lval] = arg[0];
+                    env[env_lval] = arg._0; // token carries payload
                 }
                 else {
                     env[env_curr_char] = tables[tbl_transl_const][arg /* + 1 */];
-                    env[env_lval] = 0;
+                    env[env_lval] = 0; // const token
                 }
                 if (PARSER_TRACE) {
                     console.error("State %d, read token", state, arg);

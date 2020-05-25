@@ -43,7 +43,6 @@ let tag_is_zero (tag : J.expression) =
   | Blk_class
   | Blk_array   
   | Blk_record_ext _ -> false
-  | Blk_extension_slot -> false 
   | Blk_na _ ->  not (tag_is_zero tag )
 
 let needBlockRuntime (tag : J.expression) (tag_info : J.tag_info) = 
@@ -62,7 +61,7 @@ let needBlockRuntime (tag : J.expression) (tag_info : J.tag_info) =
   | Blk_record_inlined _ 
   | Blk_constructor _   -> true  
   | Blk_record_ext _ 
-  | Blk_extension_slot -> false 
+   -> false 
     (* converted to [Pcreate_extension] in the beginning*)
 
 let option_id =   

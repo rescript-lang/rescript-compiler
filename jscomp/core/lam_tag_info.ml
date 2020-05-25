@@ -33,7 +33,6 @@ type t =
   | Blk_poly_var of string 
   | Blk_record of string array 
   | Blk_module of string list
-  | Blk_extension_slot
   | Blk_extension
   | Blk_na of string (* for debugging *)
   | Blk_record_ext of string array
