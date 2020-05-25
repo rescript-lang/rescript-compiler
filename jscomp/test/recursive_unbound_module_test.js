@@ -19,13 +19,19 @@ var B = Caml_module.init_mod(/* tuple */[
       "recursive_unbound_module_test.ml",
       18,
       0
-    ], /* Module */Block.__(0, [[/* tuple */[
-            /* Module */Block.__(0, [[/* tuple */[
-                    /* Function */0,
-                    "f"
-                  ]]]),
-            "M"
-          ]]]));
+    ], {
+      tag: /* Module */0,
+      _0: [/* tuple */[
+          {
+            tag: /* Module */0,
+            _0: [/* tuple */[
+                /* Function */0,
+                "f"
+              ]]
+          },
+          "M"
+        ]]
+    });
 
 function f(param) {
   
@@ -35,13 +41,19 @@ var M = {
   f: f
 };
 
-Caml_module.update_mod(/* Module */Block.__(0, [[/* tuple */[
-            /* Module */Block.__(0, [[/* tuple */[
-                    /* Function */0,
-                    "f"
-                  ]]]),
-            "M"
-          ]]]), B, {
+Caml_module.update_mod({
+      tag: /* Module */0,
+      _0: [/* tuple */[
+          {
+            tag: /* Module */0,
+            _0: [/* tuple */[
+                /* Function */0,
+                "f"
+              ]]
+          },
+          "M"
+        ]]
+    }, B, {
       M: M
     });
 

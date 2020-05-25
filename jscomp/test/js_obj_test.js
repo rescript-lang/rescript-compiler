@@ -14,16 +14,16 @@ function f_js(u) {
   return u.say(32);
 }
 
-var class_tables = /* Cons */[
-  /* key */undefined,
-  /* data */undefined,
-  /* next */undefined
-];
+var class_tables = /* Cons */{
+  key: undefined,
+  data: undefined,
+  next: undefined
+};
 
-var suites_000 = /* tuple */[
+var suites_0 = /* tuple */[
   "caml_obj",
   (function (param) {
-      if (!class_tables[/* key */0]) {
+      if (!class_tables.key) {
         var $$class = CamlinternalOO.create_table(["say"]);
         var env = CamlinternalOO.new_variable($$class, "");
         var say = CamlinternalOO.get_method_label($$class, "say");
@@ -36,77 +36,82 @@ var suites_000 = /* tuple */[
           return self;
         };
         CamlinternalOO.init_class($$class);
-        class_tables[/* key */0] = env_init;
+        class_tables.key = env_init;
       }
-      return /* Eq */Block.__(0, [
-                33,
-                f(Curry._1(class_tables[/* key */0], undefined))
-              ]);
+      return {
+              tag: /* Eq */0,
+              _0: 33,
+              _1: f(Curry._1(class_tables.key, undefined))
+            };
     })
 ];
 
-var suites_001 = /* :: */[
-  /* tuple */[
+var suites_1 = /* :: */{
+  _0: /* tuple */[
     "js_obj",
     (function (param) {
-        return /* Eq */Block.__(0, [
-                  34,
-                  ({
+        return {
+                tag: /* Eq */0,
+                _0: 34,
+                _1: ({
+                      say: (function (x) {
+                          return x + 2 | 0;
+                        })
+                    }).say(32)
+              };
+      })
+  ],
+  _1: /* :: */{
+    _0: /* tuple */[
+      "js_obj2",
+      (function (param) {
+          return {
+                  tag: /* Eq */0,
+                  _0: 34,
+                  _1: ({
                         say: (function (x) {
                             return x + 2 | 0;
                           })
                       }).say(32)
-                ]);
-      })
-  ],
-  /* :: */[
-    /* tuple */[
-      "js_obj2",
-      (function (param) {
-          return /* Eq */Block.__(0, [
-                    34,
-                    ({
-                          say: (function (x) {
-                              return x + 2 | 0;
-                            })
-                        }).say(32)
-                  ]);
+                };
         })
     ],
-    /* :: */[
-      /* tuple */[
+    _1: /* :: */{
+      _0: /* tuple */[
         "empty",
         (function (param) {
-            return /* Eq */Block.__(0, [
-                      0,
-                      Object.keys({ }).length
-                    ]);
+            return {
+                    tag: /* Eq */0,
+                    _0: 0,
+                    _1: Object.keys({}).length
+                  };
           })
       ],
-      /* :: */[
-        /* tuple */[
+      _1: /* :: */{
+        _0: /* tuple */[
           "assign",
           (function (param) {
-              return /* Eq */Block.__(0, [
-                        {
-                          a: 1
-                        },
-                        Object.assign({ }, {
-                              a: 1
-                            })
-                      ]);
+              return {
+                      tag: /* Eq */0,
+                      _0: {
+                        a: 1
+                      },
+                      _1: Object.assign({}, {
+                            a: 1
+                          })
+                    };
             })
         ],
-        /* [] */0
-      ]
-    ]
-  ]
-];
+        _1: /* [] */0
+      }
+    }
+  }
+};
 
-var suites = /* :: */[
-  suites_000,
-  suites_001
-];
+var suites = /* :: */{
+  _0: suites_0,
+  _1: suites_1
+};
 
 Mt.from_pair_suites("Js_obj_test", suites);
 

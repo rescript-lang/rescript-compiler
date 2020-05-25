@@ -26,18 +26,19 @@ function $$throw(loc, x) {
 
 function neq(loc, x, y) {
   test_id.contents = test_id.contents + 1 | 0;
-  suites.contents = /* :: */[
-    /* tuple */[
+  suites.contents = /* :: */{
+    _0: /* tuple */[
       loc + (" id " + String(test_id.contents)),
       (function (param) {
-          return /* Neq */Block.__(1, [
-                    x,
-                    y
-                  ]);
+          return {
+                  tag: /* Neq */1,
+                  _0: x,
+                  _1: y
+                };
         })
     ],
-    suites.contents
-  ];
+    _1: suites.contents
+  };
   
 }
 

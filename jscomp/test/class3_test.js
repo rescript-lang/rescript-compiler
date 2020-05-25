@@ -70,18 +70,19 @@ var test_id = {
 
 function eq(loc, x, y) {
   test_id.contents = test_id.contents + 1 | 0;
-  suites.contents = /* :: */[
-    /* tuple */[
+  suites.contents = /* :: */{
+    _0: /* tuple */[
       loc + (" id " + String(test_id.contents)),
       (function (param) {
-          return /* Eq */Block.__(0, [
-                    x,
-                    y
-                  ]);
+          return {
+                  tag: /* Eq */0,
+                  _0: x,
+                  _1: y
+                };
         })
     ],
-    suites.contents
-  ];
+    _1: suites.contents
+  };
   
 }
 
@@ -161,11 +162,11 @@ function new_init(obj_init, self, x_init) {
 
 var partial_arg = point[0];
 
-function adjusted_point2_000(param, param$1) {
+function adjusted_point2_0(param, param$1) {
   return new_init(partial_arg, param, param$1);
 }
 
-function adjusted_point2_001(table) {
+function adjusted_point2_1(table) {
   var env_init = Curry._1(point[1], table);
   return function (envs) {
     var partial_arg = Curry._1(env_init, envs);
@@ -175,18 +176,18 @@ function adjusted_point2_001(table) {
   };
 }
 
-var adjusted_point2_002 = point[2];
+var adjusted_point2_2 = point[2];
 
-var adjusted_point2_003 = point[3];
+var adjusted_point2_3 = point[3];
 
 var adjusted_point2 = /* class */[
-  adjusted_point2_000,
-  adjusted_point2_001,
-  adjusted_point2_002,
-  adjusted_point2_003
+  adjusted_point2_0,
+  adjusted_point2_1,
+  adjusted_point2_2,
+  adjusted_point2_3
 ];
 
-var tmp$1 = Curry._2(adjusted_point2_000, undefined, 31);
+var tmp$1 = Curry._2(adjusted_point2_0, undefined, 31);
 
 eq("File \"class3_test.ml\", line 33, characters 12-19", Caml_oo_curry.js1(291546447, 3, tmp$1), 30);
 
@@ -247,10 +248,10 @@ CamlinternalOO.set_methods($$class, [
         }),
       register,
       (function (self$5) {
-          ints.contents = /* :: */[
-            self$5,
-            ints.contents
-          ];
+          ints.contents = /* :: */{
+            _0: self$5,
+            _1: ints.contents
+          };
           
         }),
       len,
@@ -320,7 +321,7 @@ eq("File \"class3_test.ml\", line 81, characters 12-19", v, [
       3
     ]);
 
-function abstract_point_001($$class) {
+function abstract_point_1($$class) {
   var x_init = CamlinternalOO.new_variable($$class, "");
   var ids = CamlinternalOO.get_method_labels($$class, shared);
   var get_x = ids[1];
@@ -337,7 +338,7 @@ function abstract_point_001($$class) {
 
 var abstract_point = /* class */[
   undefined,
-  abstract_point_001,
+  abstract_point_1,
   undefined,
   undefined
 ];
@@ -380,7 +381,7 @@ var v$1 = Caml_oo_curry.js1(-792262820, 9, h);
 
 eq("File \"class3_test.ml\", line 107, characters 12-19", v$1, 32);
 
-function abstract_point2_001($$class) {
+function abstract_point2_1($$class) {
   var ids = CamlinternalOO.new_methods_variables($$class, shared$8, shared$3);
   var move = ids[0];
   var x = ids[1];
@@ -395,7 +396,7 @@ function abstract_point2_001($$class) {
 
 var abstract_point2 = /* class */[
   undefined,
-  abstract_point2_001,
+  abstract_point2_1,
   undefined,
   undefined
 ];

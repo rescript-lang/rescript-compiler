@@ -16,11 +16,11 @@ function foo(n) {
   }
   switch (n.tag | 0) {
     case /* B */0 :
-        return n[0];
+        return n._0;
     case /* C */1 :
-        return n[0] + n[1] | 0;
+        return n._0 + n._1 | 0;
     case /* D */2 :
-        var match = n[0];
+        var match = n._0;
         return match[0] + match[1] | 0;
     
   }
@@ -38,7 +38,7 @@ function fooC(param) {
   if (typeof param === "number" || param.tag !== /* C */1) {
     return 42;
   } else {
-    return param[0] + param[1] | 0;
+    return param._0 + param._1 | 0;
   }
 }
 
@@ -142,17 +142,24 @@ var a1 = /* A1 */0;
 
 var a2 = /* A2 */1;
 
-var b = /* B */Block.__(0, [34]);
+var b = {
+  tag: /* B */0,
+  _0: 34
+};
 
-var c = /* C */Block.__(1, [
+var c = {
+  tag: /* C */1,
+  _0: 4,
+  _1: 2
+};
+
+var d = {
+  tag: /* D */2,
+  _0: /* tuple */[
     4,
     2
-  ]);
-
-var d = /* D */Block.__(2, [/* tuple */[
-      4,
-      2
-    ]]);
+  ]
+};
 
 exports.a1 = a1;
 exports.a2 = a2;

@@ -119,7 +119,7 @@ if (Caml_oo_curry.js1(-804710761, 4, v1) !== 3) {
       };
 }
 
-if (typeof Sys.backend_type !== "number" && Sys.backend_type[0] === "BS") {
+if (typeof Sys.backend_type !== "number" && Sys.backend_type._0 === "BS") {
   console.log(/* tuple */[
         Caml_oo_curry.js1(-804710761, 7, v1),
         Caml_oo_curry.js1(-804710761, 8, v2)

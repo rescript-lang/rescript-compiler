@@ -10,7 +10,7 @@ function f1(g, x) {
   return Curry._1(g, x);
 }
 
-var X = { };
+var X = {};
 
 function f2(g, x) {
   return Curry._1(g, x);
@@ -37,7 +37,7 @@ function f7(g, x) {
   return Curry._1(g, x);
 }
 
-var X0 = { };
+var X0 = {};
 
 function f8(g, x) {
   return Curry._1(g, x);

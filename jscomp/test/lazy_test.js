@@ -186,160 +186,176 @@ var a7 = CamlinternalLazy.force(a5);
 
 var a8 = CamlinternalLazy.force(a6);
 
-Mt.from_pair_suites("Lazy_test", /* :: */[
-      /* tuple */[
+Mt.from_pair_suites("Lazy_test", /* :: */{
+      _0: /* tuple */[
         "simple",
         (function (param) {
-            return /* Eq */Block.__(0, [
-                      lazy_test(undefined),
-                      /* tuple */[
-                        3,
-                        32
-                      ]
-                    ]);
+            return {
+                    tag: /* Eq */0,
+                    _0: lazy_test(undefined),
+                    _1: /* tuple */[
+                      3,
+                      32
+                    ]
+                  };
           })
       ],
-      /* :: */[
-        /* tuple */[
+      _1: /* :: */{
+        _0: /* tuple */[
           "lazy_match",
           (function (param) {
-              return /* Eq */Block.__(0, [
-                        h,
-                        2
-                      ]);
+              return {
+                      tag: /* Eq */0,
+                      _0: h,
+                      _1: 2
+                    };
             })
         ],
-        /* :: */[
-          /* tuple */[
+        _1: /* :: */{
+          _0: /* tuple */[
             "lazy_force",
             (function (param) {
-                return /* Eq */Block.__(0, [
-                          u_v.contents,
-                          2
-                        ]);
+                return {
+                        tag: /* Eq */0,
+                        _0: u_v.contents,
+                        _1: 2
+                      };
               })
           ],
-          /* :: */[
-            /* tuple */[
+          _1: /* :: */{
+            _0: /* tuple */[
               "lazy_from_fun",
               (function (param) {
-                  return /* Eq */Block.__(0, [
-                            CamlinternalLazy.force(l_from_fun),
-                            3
-                          ]);
+                  return {
+                          tag: /* Eq */0,
+                          _0: CamlinternalLazy.force(l_from_fun),
+                          _1: 3
+                        };
                 })
             ],
-            /* :: */[
-              /* tuple */[
+            _1: /* :: */{
+              _0: /* tuple */[
                 "lazy_from_val",
                 (function (param) {
-                    return /* Eq */Block.__(0, [
-                              CamlinternalLazy.force({
-                                    RE_LAZY_DONE: true,
-                                    value: 3
-                                  }),
-                              3
-                            ]);
+                    return {
+                            tag: /* Eq */0,
+                            _0: CamlinternalLazy.force({
+                                  RE_LAZY_DONE: true,
+                                  value: 3
+                                }),
+                            _1: 3
+                          };
                   })
               ],
-              /* :: */[
-                /* tuple */[
+              _1: /* :: */{
+                _0: /* tuple */[
                   "lazy_from_val2",
                   (function (param) {
-                      return /* Eq */Block.__(0, [
-                                CamlinternalLazy.force(CamlinternalLazy.force({
+                      return {
+                              tag: /* Eq */0,
+                              _0: CamlinternalLazy.force(CamlinternalLazy.force({
+                                        RE_LAZY_DONE: true,
+                                        value: {
                                           RE_LAZY_DONE: true,
-                                          value: {
-                                            RE_LAZY_DONE: true,
-                                            value: 3
-                                          }
-                                        })),
-                                3
-                              ]);
+                                          value: 3
+                                        }
+                                      })),
+                              _1: 3
+                            };
                     })
                 ],
-                /* :: */[
-                  /* tuple */[
+                _1: /* :: */{
+                  _0: /* tuple */[
                     "lazy_from_val3",
                     (function (param) {
                         debugger;
-                        return /* Eq */Block.__(0, [
-                                  CamlinternalLazy.force(CamlinternalLazy.force({
-                                            RE_LAZY_DONE: true,
-                                            value: forward_test
-                                          })),
-                                  4
-                                ]);
+                        return {
+                                tag: /* Eq */0,
+                                _0: CamlinternalLazy.force(CamlinternalLazy.force({
+                                          RE_LAZY_DONE: true,
+                                          value: forward_test
+                                        })),
+                                _1: 4
+                              };
                       })
                   ],
-                  /* :: */[
-                    /* tuple */[
+                  _1: /* :: */{
+                    _0: /* tuple */[
                       "lazy_test.ml",
                       (function (param) {
-                          return /* Eq */Block.__(0, [
-                                    a3,
-                                    a4
-                                  ]);
+                          return {
+                                  tag: /* Eq */0,
+                                  _0: a3,
+                                  _1: a4
+                                };
                         })
                     ],
-                    /* :: */[
-                      /* tuple */[
+                    _1: /* :: */{
+                      _0: /* tuple */[
                         "lazy_test.ml",
                         (function (param) {
-                            return /* Eq */Block.__(0, [
-                                      a7,
-                                      undefined
-                                    ]);
+                            return {
+                                    tag: /* Eq */0,
+                                    _0: a7,
+                                    _1: undefined
+                                  };
                           })
                       ],
-                      /* :: */[
-                        /* tuple */[
+                      _1: /* :: */{
+                        _0: /* tuple */[
                           "lazy_test.ml",
                           (function (param) {
-                              return /* Eq */Block.__(0, [
-                                        a8,
-                                        undefined
-                                      ]);
+                              return {
+                                      tag: /* Eq */0,
+                                      _0: a8,
+                                      _1: undefined
+                                    };
                             })
                         ],
-                        /* :: */[
-                          /* tuple */[
+                        _1: /* :: */{
+                          _0: /* tuple */[
                             "File \"lazy_test.ml\", line 78, characters 0-7",
                             (function (param) {
-                                return /* Ok */Block.__(4, [Lazy.is_val({
-                                                RE_LAZY_DONE: true,
-                                                value: 3
-                                              })]);
+                                return {
+                                        tag: /* Ok */4,
+                                        _0: Lazy.is_val({
+                                              RE_LAZY_DONE: true,
+                                              value: 3
+                                            })
+                                      };
                               })
                           ],
-                          /* :: */[
-                            /* tuple */[
+                          _1: /* :: */{
+                            _0: /* tuple */[
                               "File \"lazy_test.ml\", line 79, characters 0-7",
                               (function (param) {
-                                  return /* Ok */Block.__(4, [!Lazy.is_val({
-                                                  RE_LAZY_DONE: false,
-                                                  value: (function () {
-                                                      throw {
-                                                            RE_EXN_ID: "Not_found",
-                                                            Error: new Error()
-                                                          };
-                                                    })
-                                                })]);
+                                  return {
+                                          tag: /* Ok */4,
+                                          _0: !Lazy.is_val({
+                                                RE_LAZY_DONE: false,
+                                                value: (function () {
+                                                    throw {
+                                                          RE_EXN_ID: "Not_found",
+                                                          Error: new Error()
+                                                        };
+                                                  })
+                                              })
+                                        };
                                 })
                             ],
-                            /* [] */0
-                          ]
-                        ]
-                      ]
-                    ]
-                  ]
-                ]
-              ]
-            ]
-          ]
-        ]
-      ]
-    ]);
+                            _1: /* [] */0
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    });
 
 exports.v = v;
 exports.lazy_test = lazy_test;

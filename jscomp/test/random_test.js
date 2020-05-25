@@ -69,50 +69,60 @@ var xx = Random.$$float(3.0);
 
 var xxx = Random.int32(103);
 
-Curry._5(Printf.printf(/* Format */[
-          /* Int64 */Block.__(7, [
-              /* Int_d */0,
-              /* No_padding */0,
-              /* No_precision */0,
-              /* Char_literal */Block.__(12, [
-                  /* " " */32,
-                  /* Int64 */Block.__(7, [
-                      /* Int_d */0,
-                      /* No_padding */0,
-                      /* No_precision */0,
-                      /* Char_literal */Block.__(12, [
-                          /* " " */32,
-                          /* Int */Block.__(4, [
-                              /* Int_d */0,
-                              /* No_padding */0,
-                              /* No_precision */0,
-                              /* Char_literal */Block.__(12, [
-                                  /* " " */32,
-                                  /* Float */Block.__(8, [
-                                      /* Float_f */0,
-                                      /* No_padding */0,
-                                      /* No_precision */0,
-                                      /* Char_literal */Block.__(12, [
-                                          /* " " */32,
-                                          /* Int32 */Block.__(5, [
-                                              /* Int_d */0,
-                                              /* No_padding */0,
-                                              /* No_precision */0,
-                                              /* String_literal */Block.__(11, [
-                                                  " \n",
-                                                  /* End_of_format */0
-                                                ])
-                                            ])
-                                        ])
-                                    ])
-                                ])
-                            ])
-                        ])
-                    ])
-                ])
-            ]),
-          "%Ld %Ld %d %f %ld \n"
-        ]), f, h, vv, xx, xxx);
+Curry._5(Printf.printf(/* Format */{
+          _0: {
+            tag: /* Int64 */7,
+            _0: /* Int_d */0,
+            _1: /* No_padding */0,
+            _2: /* No_precision */0,
+            _3: {
+              tag: /* Char_literal */12,
+              _0: /* " " */32,
+              _1: {
+                tag: /* Int64 */7,
+                _0: /* Int_d */0,
+                _1: /* No_padding */0,
+                _2: /* No_precision */0,
+                _3: {
+                  tag: /* Char_literal */12,
+                  _0: /* " " */32,
+                  _1: {
+                    tag: /* Int */4,
+                    _0: /* Int_d */0,
+                    _1: /* No_padding */0,
+                    _2: /* No_precision */0,
+                    _3: {
+                      tag: /* Char_literal */12,
+                      _0: /* " " */32,
+                      _1: {
+                        tag: /* Float */8,
+                        _0: /* Float_f */0,
+                        _1: /* No_padding */0,
+                        _2: /* No_precision */0,
+                        _3: {
+                          tag: /* Char_literal */12,
+                          _0: /* " " */32,
+                          _1: {
+                            tag: /* Int32 */5,
+                            _0: /* Int_d */0,
+                            _1: /* No_padding */0,
+                            _2: /* No_precision */0,
+                            _3: {
+                              tag: /* String_literal */11,
+                              _0: " \n",
+                              _1: /* End_of_format */0
+                            }
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          _1: "%Ld %Ld %d %f %ld \n"
+        }), f, h, vv, xx, xxx);
 
 Mt.from_pair_suites("Random_test", suites.contents);
 

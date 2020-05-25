@@ -88,28 +88,29 @@ f$3((function (prim, prim$1) {
 
 var d = v$3.contents;
 
-Mt.from_pair_suites("Pr_regression_test", /* :: */[
-      /* tuple */[
+Mt.from_pair_suites("Pr_regression_test", /* :: */{
+      _0: /* tuple */[
         "partial",
         (function (param) {
-            return /* Eq */Block.__(0, [
-                      /* tuple */[
-                        5,
-                        5,
-                        5,
-                        5
-                      ],
-                      /* tuple */[
-                        a,
-                        b,
-                        c,
-                        d
-                      ]
-                    ]);
+            return {
+                    tag: /* Eq */0,
+                    _0: /* tuple */[
+                      5,
+                      5,
+                      5,
+                      5
+                    ],
+                    _1: /* tuple */[
+                      a,
+                      b,
+                      c,
+                      d
+                    ]
+                  };
           })
       ],
-      /* [] */0
-    ]);
+      _1: /* [] */0
+    });
 
 exports.a = a;
 exports.b = b;

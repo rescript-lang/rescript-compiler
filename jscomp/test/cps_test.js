@@ -76,40 +76,43 @@ function test_closure2(param) {
   return v.contents;
 }
 
-Mt.from_pair_suites("Cps_test", /* :: */[
-      /* tuple */[
+Mt.from_pair_suites("Cps_test", /* :: */{
+      _0: /* tuple */[
         "cps_test_sum",
         (function (param) {
-            return /* Eq */Block.__(0, [
-                      55,
-                      test(undefined)
-                    ]);
+            return {
+                    tag: /* Eq */0,
+                    _0: 55,
+                    _1: test(undefined)
+                  };
           })
       ],
-      /* :: */[
-        /* tuple */[
+      _1: /* :: */{
+        _0: /* tuple */[
           "cps_test_closure",
           (function (param) {
-              return /* Eq */Block.__(0, [
-                        15,
-                        test_closure(undefined)
-                      ]);
+              return {
+                      tag: /* Eq */0,
+                      _0: 15,
+                      _1: test_closure(undefined)
+                    };
             })
         ],
-        /* :: */[
-          /* tuple */[
+        _1: /* :: */{
+          _0: /* tuple */[
             "cps_test_closure2",
             (function (param) {
-                return /* Eq */Block.__(0, [
-                          30,
-                          test_closure2(undefined)
-                        ]);
+                return {
+                        tag: /* Eq */0,
+                        _0: 30,
+                        _1: test_closure2(undefined)
+                      };
               })
           ],
-          /* [] */0
-        ]
-      ]
-    ]);
+          _1: /* [] */0
+        }
+      }
+    });
 
 exports.test = test;
 exports.test_closure = test_closure;

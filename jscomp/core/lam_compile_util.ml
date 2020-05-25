@@ -59,7 +59,7 @@ let comment_of_tag_info  (x : Lam_tag_info.t) =
      (* Turn it on next time to save some noise diff*)
     None
   | Blk_extension (* TODO: enhance it later *)
-  | Blk_extension_slot -> None
+    -> None
   | Blk_na s -> if s = "" then None else Some s
 
 (* let module_alias = Some "alias"   *)

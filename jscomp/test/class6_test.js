@@ -27,18 +27,19 @@ var test_id = {
 
 function eq(loc, x, y) {
   test_id.contents = test_id.contents + 1 | 0;
-  suites.contents = /* :: */[
-    /* tuple */[
+  suites.contents = /* :: */{
+    _0: /* tuple */[
       loc + (" id " + String(test_id.contents)),
       (function (param) {
-          return /* Eq */Block.__(0, [
-                    x,
-                    y
-                  ]);
+          return {
+                  tag: /* Eq */0,
+                  _0: x,
+                  _1: y
+                };
         })
     ],
-    suites.contents
-  ];
+    _1: suites.contents
+  };
   
 }
 
@@ -111,11 +112,11 @@ function lookup_obj(obj, _param) {
   while(true) {
     var param = _param;
     if (param) {
-      var obj$prime = param[0];
+      var obj$prime = param._0;
       if (Caml_obj.caml_equal(obj, obj$prime)) {
         return obj$prime;
       }
-      _param = param[1];
+      _param = param._1;
       continue ;
     }
     throw {
@@ -173,16 +174,16 @@ var env_init = d_init(table);
 
 CamlinternalOO.init_class(table);
 
-var d_000 = Curry._1(env_init, undefined);
+var d_0 = Curry._1(env_init, undefined);
 
 var d = /* class */[
-  d_000,
+  d_0,
   d_init,
   env_init,
   undefined
 ];
 
-function c2$prime_001($$class) {
+function c2$prime_1($$class) {
   CamlinternalOO.get_method_label($$class, "m");
   return function (env, self) {
     return CamlinternalOO.create_object_opt(self, $$class);
@@ -191,7 +192,7 @@ function c2$prime_001($$class) {
 
 var c2$prime = /* class */[
   undefined,
-  c2$prime_001,
+  c2$prime_1,
   undefined,
   undefined
 ];
@@ -268,16 +269,16 @@ var env_init$1 = bad_functional_point_init(table$1);
 
 CamlinternalOO.init_class(table$1);
 
-var bad_functional_point_000 = Curry._1(env_init$1, undefined);
+var bad_functional_point_0 = Curry._1(env_init$1, undefined);
 
 var bad_functional_point = /* class */[
-  bad_functional_point_000,
+  bad_functional_point_0,
   bad_functional_point_init,
   env_init$1,
   undefined
 ];
 
-var p$2 = Curry._2(bad_functional_point_000, undefined, 7);
+var p$2 = Curry._2(bad_functional_point_0, undefined, 7);
 
 var tmp$1 = Caml_oo_curry.js2(-933174511, 6, p$2, 3);
 

@@ -8,35 +8,37 @@ function length(param) {
   return 3;
 }
 
-Mt.from_pair_suites("Es6_module_test", /* :: */[
-      /* tuple */[
+Mt.from_pair_suites("Es6_module_test", /* :: */{
+      _0: /* tuple */[
         "list_length",
         (function (param) {
-            return /* Eq */Block.__(0, [
-                      List.length(/* :: */[
-                            1,
-                            /* :: */[
-                              2,
-                              /* [] */0
-                            ]
-                          ]),
-                      2
-                    ]);
+            return {
+                    tag: /* Eq */0,
+                    _0: List.length(/* :: */{
+                          _0: 1,
+                          _1: /* :: */{
+                            _0: 2,
+                            _1: /* [] */0
+                          }
+                        }),
+                    _1: 2
+                  };
           })
       ],
-      /* :: */[
-        /* tuple */[
+      _1: /* :: */{
+        _0: /* tuple */[
           "length",
           (function (param) {
-              return /* Eq */Block.__(0, [
-                        3,
-                        3
-                      ]);
+              return {
+                      tag: /* Eq */0,
+                      _0: 3,
+                      _1: 3
+                    };
             })
         ],
-        /* [] */0
-      ]
-    ]);
+        _1: /* [] */0
+      }
+    });
 
 exports.length = length;
 /*  Not a pure module */

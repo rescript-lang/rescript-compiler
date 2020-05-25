@@ -9,28 +9,37 @@ var PA = Caml_module.init_mod(/* tuple */[
       "gpr_3931_test.ml",
       3,
       6
-    ], /* Module */Block.__(0, [[/* tuple */[
-            /* Function */0,
-            "print"
-          ]]]));
+    ], {
+      tag: /* Module */0,
+      _0: [/* tuple */[
+          /* Function */0,
+          "print"
+        ]]
+    });
 
 var P = Caml_module.init_mod(/* tuple */[
       "gpr_3931_test.ml",
       11,
       6
-    ], /* Module */Block.__(0, [[/* tuple */[
-            /* Function */0,
-            "print"
-          ]]]));
+    ], {
+      tag: /* Module */0,
+      _0: [/* tuple */[
+          /* Function */0,
+          "print"
+        ]]
+    });
 
 function print(a) {
   return $$Array.iter(P.print, a);
 }
 
-Caml_module.update_mod(/* Module */Block.__(0, [[/* tuple */[
-            /* Function */0,
-            "print"
-          ]]]), PA, {
+Caml_module.update_mod({
+      tag: /* Module */0,
+      _0: [/* tuple */[
+          /* Function */0,
+          "print"
+        ]]
+    }, PA, {
       print: print
     });
 
@@ -39,10 +48,13 @@ function print$1(i) {
   
 }
 
-Caml_module.update_mod(/* Module */Block.__(0, [[/* tuple */[
-            /* Function */0,
-            "print"
-          ]]]), P, {
+Caml_module.update_mod({
+      tag: /* Module */0,
+      _0: [/* tuple */[
+          /* Function */0,
+          "print"
+        ]]
+    }, P, {
       print: print$1
     });
 

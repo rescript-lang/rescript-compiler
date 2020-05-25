@@ -31,44 +31,47 @@ var u = 1;
 
 var v = true;
 
-var suites_000 = /* tuple */[
+var suites_0 = /* tuple */[
   "caml_bool_eq_caml_bool",
   (function (param) {
-      return /* Eq */Block.__(0, [
-                u,
-                true
-              ]);
+      return {
+              tag: /* Eq */0,
+              _0: u,
+              _1: true
+            };
     })
 ];
 
-var suites_001 = /* :: */[
-  /* tuple */[
+var suites_1 = /* :: */{
+  _0: /* tuple */[
     "js_bool_eq_js_bool",
     (function (param) {
-        return /* Eq */Block.__(0, [
-                  v,
-                  true
-                ]);
+        return {
+                tag: /* Eq */0,
+                _0: v,
+                _1: true
+              };
       })
   ],
-  /* :: */[
-    /* tuple */[
+  _1: /* :: */{
+    _0: /* tuple */[
       "js_bool_neq_acml_bool",
       (function (param) {
-          return /* Eq */Block.__(0, [
-                    true,
-                    true === true
-                  ]);
+          return {
+                  tag: /* Eq */0,
+                  _0: true,
+                  _1: true === true
+                };
         })
     ],
-    /* [] */0
-  ]
-];
+    _1: /* [] */0
+  }
+};
 
-var suites = /* :: */[
-  suites_000,
-  suites_001
-];
+var suites = /* :: */{
+  _0: suites_0,
+  _1: suites_1
+};
 
 function ff(u) {
   if (u === true) {

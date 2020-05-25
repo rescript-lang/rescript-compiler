@@ -11,13 +11,13 @@ var Caml_primitive = require("../../lib/js/caml_primitive.js");
 
 function to_list(tbl) {
   return Hashtbl.fold((function (k, v, acc) {
-                return /* :: */[
-                        /* tuple */[
+                return /* :: */{
+                        _0: /* tuple */[
                           k,
                           v
                         ],
-                        acc
-                      ];
+                        _1: acc
+                      };
               }), tbl, /* [] */0);
 }
 
@@ -44,63 +44,66 @@ function g(count) {
                   }), v));
 }
 
-var suites_000 = /* tuple */[
+var suites_0 = /* tuple */[
   "simple",
   (function (param) {
-      return /* Eq */Block.__(0, [
-                /* :: */[
-                  /* tuple */[
-                    1,
-                    /* "1" */49
-                  ],
-                  /* :: */[
-                    /* tuple */[
-                      2,
-                      /* "2" */50
-                    ],
-                    /* [] */0
-                  ]
+      return {
+              tag: /* Eq */0,
+              _0: /* :: */{
+                _0: /* tuple */[
+                  1,
+                  /* "1" */49
                 ],
-                f(undefined)
-              ]);
+                _1: /* :: */{
+                  _0: /* tuple */[
+                    2,
+                    /* "2" */50
+                  ],
+                  _1: /* [] */0
+                }
+              },
+              _1: f(undefined)
+            };
     })
 ];
 
-var suites_001 = /* :: */[
-  /* tuple */[
+var suites_1 = /* :: */{
+  _0: /* tuple */[
     "more_iterations",
     (function (param) {
-        return /* Eq */Block.__(0, [
-                  $$Array.init(1001, (function (i) {
-                          return /* tuple */[
-                                  (i << 1),
-                                  String(i)
-                                ];
-                        })),
-                  g(1000)
-                ]);
+        return {
+                tag: /* Eq */0,
+                _0: $$Array.init(1001, (function (i) {
+                        return /* tuple */[
+                                (i << 1),
+                                String(i)
+                              ];
+                      })),
+                _1: g(1000)
+              };
       })
   ],
-  /* :: */[
-    /* tuple */[
+  _1: /* :: */{
+    _0: /* tuple */[
       "More_labels_regressionfix_374",
       (function (param) {
           var tbl = Curry._2(MoreLabels.Hashtbl.create, undefined, 30);
           Hashtbl.add(tbl, 3, 3);
-          return /* Eq */Block.__(0, [
-                    tbl.size,
-                    1
-                  ]);
+          return {
+                  tag: /* Eq */0,
+                  _0: tbl.size,
+                  _1: 1
+                };
         })
     ],
-    /* [] */0
-  ]
-];
+    _1: /* [] */0
+  }
+};
 
-var suites = /* :: */[
-  suites_000,
-  suites_001
-];
+var suites = /* :: */{
+  _0: suites_0,
+  _1: suites_1
+};
 
 Mt.from_pair_suites("Hashtbl_test", suites);
 

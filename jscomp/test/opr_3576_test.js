@@ -22,17 +22,17 @@ function eq(loc, x, y) {
   return Mt.eq_suites(test_id, suites, loc, x, y);
 }
 
-var class_tables = /* Cons */[
-  /* key */undefined,
-  /* data */undefined,
-  /* next */undefined
-];
+var class_tables = /* Cons */{
+  key: undefined,
+  data: undefined,
+  next: undefined
+};
 
-var class_tables$1 = /* Cons */[
-  /* key */undefined,
-  /* data */undefined,
-  /* next */undefined
-];
+var class_tables$1 = /* Cons */{
+  key: undefined,
+  data: undefined,
+  next: undefined
+};
 
 function a_init($$class) {
   var ids = CamlinternalOO.get_method_labels($$class, [
@@ -44,7 +44,7 @@ function a_init($$class) {
   CamlinternalOO.set_methods($$class, [
         m1,
         (function (self$1) {
-            if (!class_tables$1[/* key */0]) {
+            if (!class_tables$1.key) {
               var $$class = CamlinternalOO.create_table(["m3"]);
               var env = CamlinternalOO.new_variable($$class, "");
               var m3 = CamlinternalOO.get_method_label($$class, "m3");
@@ -57,13 +57,13 @@ function a_init($$class) {
                 return self;
               };
               CamlinternalOO.init_class($$class);
-              class_tables$1[/* key */0] = env_init;
+              class_tables$1.key = env_init;
             }
-            return Curry._1(class_tables$1[/* key */0], undefined);
+            return Curry._1(class_tables$1.key, undefined);
           }),
         m2,
         (function (self$1) {
-            if (!class_tables[/* key */0]) {
+            if (!class_tables.key) {
               var $$class = CamlinternalOO.create_table(["m4"]);
               var env = CamlinternalOO.new_variable($$class, "");
               var m4 = CamlinternalOO.get_method_label($$class, "m4");
@@ -78,9 +78,9 @@ function a_init($$class) {
                 return self;
               };
               CamlinternalOO.init_class($$class);
-              class_tables[/* key */0] = env_init;
+              class_tables.key = env_init;
             }
-            return Curry._1(class_tables[/* key */0], [
+            return Curry._1(class_tables.key, [
                         m1,
                         self$1
                       ]);

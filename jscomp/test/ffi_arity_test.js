@@ -69,52 +69,55 @@ var abc_u = abc;
 
 g();
 
-Mt.from_pair_suites("Ffi_arity_test", /* :: */[
-      /* tuple */[
+Mt.from_pair_suites("Ffi_arity_test", /* :: */{
+      _0: /* tuple */[
         "File \"ffi_arity_test.ml\", line 45, characters 4-11",
         (function (param) {
-            return /* Eq */Block.__(0, [
-                      v,
-                      [
-                        0,
-                        1,
-                        4
-                      ]
-                    ]);
+            return {
+                    tag: /* Eq */0,
+                    _0: v,
+                    _1: [
+                      0,
+                      1,
+                      4
+                    ]
+                  };
           })
       ],
-      /* :: */[
-        /* tuple */[
+      _1: /* :: */{
+        _0: /* tuple */[
           "File \"ffi_arity_test.ml\", line 46, characters 4-11",
           (function (param) {
-              return /* Eq */Block.__(0, [
-                        vv,
-                        [
-                          1,
-                          3,
-                          5
-                        ]
-                      ]);
+              return {
+                      tag: /* Eq */0,
+                      _0: vv,
+                      _1: [
+                        1,
+                        3,
+                        5
+                      ]
+                    };
             })
         ],
-        /* :: */[
-          /* tuple */[
+        _1: /* :: */{
+          _0: /* tuple */[
             "File \"ffi_arity_test.ml\", line 47, characters 4-11",
             (function (param) {
-                return /* Eq */Block.__(0, [
-                          hh,
-                          [
-                            1,
-                            2,
-                            3
-                          ]
-                        ]);
+                return {
+                        tag: /* Eq */0,
+                        _0: hh,
+                        _1: [
+                          1,
+                          2,
+                          3
+                        ]
+                      };
               })
           ],
-          /* [] */0
-        ]
-      ]
-    ]);
+          _1: /* [] */0
+        }
+      }
+    });
 
 function bar(fn) {
   return Curry._1(fn, undefined);

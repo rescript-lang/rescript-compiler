@@ -9,15 +9,21 @@ function eq_A(x, y) {
   if (x.tag || y.tag) {
     return false;
   } else {
-    return x[0] === y[0];
+    return x._0 === y._0;
   }
 }
 
 function Test($star) {
   console.log("no inline");
-  var u = /* A */Block.__(0, [3]);
-  var Block$1 = { };
-  var b = eq_A(/* A */Block.__(0, [3]), u);
+  var u = {
+    tag: /* A */0,
+    _0: 3
+  };
+  var Block$1 = {};
+  var b = eq_A({
+        tag: /* A */0,
+        _0: 3
+      }, u);
   return {
           u: u,
           Block: Block$1,
@@ -28,8 +34,14 @@ function Test($star) {
 
 function Test2($star) {
   console.log("no inline");
-  var Block$1 = { };
-  var b = eq_A(/* A */Block.__(0, [3]), /* A */Block.__(0, [3]));
+  var Block$1 = {};
+  var b = eq_A({
+        tag: /* A */0,
+        _0: 3
+      }, {
+        tag: /* A */0,
+        _0: 3
+      });
   return {
           Block: Block$1,
           y: 32,
@@ -38,13 +50,16 @@ function Test2($star) {
 }
 
 function f(i, y) {
-  var x = /* A */Block.__(0, [i]);
+  var x = {
+    tag: /* A */0,
+    _0: i
+  };
   return eq_A(x, y);
 }
 
 function Test3($star) {
   var f = Caml_obj.caml_equal;
-  var Caml_obj$1 = { };
+  var Caml_obj$1 = {};
   return {
           f: f,
           Caml_obj: Caml_obj$1
@@ -52,7 +67,7 @@ function Test3($star) {
 }
 
 function Test4($star) {
-  var Caml_obj$1 = { };
+  var Caml_obj$1 = {};
   var f = Caml_obj.caml_equal;
   return {
           Caml_obj: Caml_obj$1,
@@ -64,7 +79,7 @@ function Test5($star) {
   var f = function (x) {
     return Caml_option.some(x);
   };
-  var Caml_option$1 = { };
+  var Caml_option$1 = {};
   return {
           f: f,
           Caml_option: Caml_option$1
@@ -72,7 +87,7 @@ function Test5($star) {
 }
 
 function Test6($star) {
-  var Caml_option$1 = { };
+  var Caml_option$1 = {};
   var f = function (x) {
     return Caml_option.some(x);
   };
@@ -83,14 +98,14 @@ function Test6($star) {
 }
 
 function Test7($star) {
-  var Caml_option = { };
+  var Caml_option = {};
   return {
           Caml_option: Caml_option
         };
 }
 
 function Test8($star) {
-  var Curry$1 = { };
+  var Curry$1 = {};
   var f = function (x) {
     return Curry._1(x, 1);
   };
@@ -104,7 +119,7 @@ function Test9($star) {
   var f = function (x) {
     return Curry._1(x, 1);
   };
-  var Curry$1 = { };
+  var Curry$1 = {};
   return {
           f: f,
           Curry: Curry$1
@@ -112,7 +127,7 @@ function Test9($star) {
 }
 
 function Test10($star) {
-  var Curry = { };
+  var Curry = {};
   return {
           Curry: Curry
         };

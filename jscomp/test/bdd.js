@@ -8,11 +8,11 @@ function $$eval(_bdd, vars) {
     if (typeof bdd === "number") {
       return bdd === 0;
     }
-    if (Caml_array.caml_array_get(vars, bdd[1])) {
-      _bdd = bdd[3];
+    if (Caml_array.caml_array_get(vars, bdd._1)) {
+      _bdd = bdd._3;
       continue ;
     }
-    _bdd = bdd[0];
+    _bdd = bdd._0;
     continue ;
   };
 }
@@ -25,7 +25,7 @@ function getId(bdd) {
       return 1;
     }
   } else {
-    return bdd[2];
+    return bdd._2;
   }
 }
 
@@ -59,7 +59,7 @@ function resize(newSize) {
       if (!bucket) {
         return ;
       }
-      var n = bucket[0];
+      var n = bucket._0;
       if (typeof n === "number") {
         throw {
               RE_EXN_ID: "Assert_failure",
@@ -71,12 +71,12 @@ function resize(newSize) {
               Error: new Error()
             };
       }
-      var ind = hashVal(getId(n[0]), getId(n[3]), n[1]) & newSz_1;
-      Caml_array.caml_array_set(newArr, ind, /* :: */[
-            n,
-            Caml_array.caml_array_get(newArr, ind)
-          ]);
-      _bucket = bucket[1];
+      var ind = hashVal(getId(n._0), getId(n._3), n._1) & newSz_1;
+      Caml_array.caml_array_set(newArr, ind, /* :: */{
+            _0: n,
+            _1: Caml_array.caml_array_get(newArr, ind)
+          });
+      _bucket = bucket._1;
       continue ;
     };
   };
@@ -90,19 +90,19 @@ function resize(newSize) {
 
 function insert(idl, idh, v, ind, bucket, newNode) {
   if (n_items.contents <= sz_1.contents) {
-    Caml_array.caml_array_set(htab.contents, ind, /* :: */[
-          newNode,
-          bucket
-        ]);
+    Caml_array.caml_array_set(htab.contents, ind, /* :: */{
+          _0: newNode,
+          _1: bucket
+        });
     n_items.contents = n_items.contents + 1 | 0;
     return ;
   }
   resize((sz_1.contents + sz_1.contents | 0) + 2 | 0);
   var ind$1 = hashVal(idl, idh, v) & sz_1.contents;
-  return Caml_array.caml_array_set(htab.contents, ind$1, /* :: */[
-              newNode,
-              Caml_array.caml_array_get(htab.contents, ind$1)
-            ]);
+  return Caml_array.caml_array_set(htab.contents, ind$1, /* :: */{
+              _0: newNode,
+              _1: Caml_array.caml_array_get(htab.contents, ind$1)
+            });
 }
 
 function resetUnique(param) {
@@ -125,7 +125,7 @@ function mkNode(low, v, high) {
   while(true) {
     var b = _b;
     if (b) {
-      var n = b[0];
+      var n = b._0;
       if (typeof n === "number") {
         throw {
               RE_EXN_ID: "Assert_failure",
@@ -137,19 +137,19 @@ function mkNode(low, v, high) {
               Error: new Error()
             };
       }
-      if (v === n[1] && idl === getId(n[0]) && idh === getId(n[3])) {
+      if (v === n._1 && idl === getId(n._0) && idh === getId(n._3)) {
         return n;
       }
-      _b = b[1];
+      _b = b._1;
       continue ;
     }
-    var n_002 = (nodeC.contents = nodeC.contents + 1 | 0, nodeC.contents);
-    var n$1 = /* Node */[
-      low,
-      v,
-      n_002,
-      high
-    ];
+    var n_2 = (nodeC.contents = nodeC.contents + 1 | 0, nodeC.contents);
+    var n$1 = /* Node */{
+      _0: low,
+      _1: v,
+      _2: n_2,
+      _3: high
+    };
     insert(getId(low), getId(high), v, ind, bucket, n$1);
     return n$1;
   };
@@ -197,12 +197,12 @@ function not(n) {
       return /* Zero */1;
     }
   }
-  var id = n[2];
+  var id = n._2;
   var h = id % 1999;
   if (id === Caml_array.caml_array_get(notslot1, h)) {
     return Caml_array.caml_array_get(notslot2, h);
   }
-  var f = mkNode(not(n[0]), n[1], not(n[3]));
+  var f = mkNode(not(n._0), n._1, not(n._3));
   Caml_array.caml_array_set(notslot1, h, id);
   Caml_array.caml_array_set(notslot2, h, f);
   return f;
@@ -216,10 +216,10 @@ function and2(n1, n2) {
       return n2;
     }
   }
-  var r1 = n1[3];
-  var i1 = n1[2];
-  var v1 = n1[1];
-  var l1 = n1[0];
+  var r1 = n1._3;
+  var i1 = n1._2;
+  var v1 = n1._1;
+  var l1 = n1._0;
   if (typeof n2 === "number") {
     if (n2 !== 0) {
       return /* Zero */1;
@@ -227,10 +227,10 @@ function and2(n1, n2) {
       return n1;
     }
   }
-  var r2 = n2[3];
-  var i2 = n2[2];
-  var v2 = n2[1];
-  var l2 = n2[0];
+  var r2 = n2._3;
+  var i2 = n2._2;
+  var v2 = n2._1;
+  var l2 = n2._0;
   var h = hash(i1, i2);
   if (i1 === Caml_array.caml_array_get(andslot1, h) && i2 === Caml_array.caml_array_get(andslot2, h)) {
     return Caml_array.caml_array_get(andslot3, h);
@@ -263,10 +263,10 @@ function xor(n1, n2) {
       return not(n2);
     }
   }
-  var r1 = n1[3];
-  var i1 = n1[2];
-  var v1 = n1[1];
-  var l1 = n1[0];
+  var r1 = n1._3;
+  var i1 = n1._2;
+  var v1 = n1._1;
+  var l1 = n1._0;
   if (typeof n2 === "number") {
     if (n2 !== 0) {
       return n1;
@@ -274,10 +274,10 @@ function xor(n1, n2) {
       return not(n1);
     }
   }
-  var r2 = n2[3];
-  var i2 = n2[2];
-  var v2 = n2[1];
-  var l2 = n2[0];
+  var r2 = n2._3;
+  var i2 = n2._2;
+  var v2 = n2._1;
+  var l2 = n2._0;
   var h = hash(i1, i2);
   if (i1 === Caml_array.caml_array_get(andslot1, h) && i2 === Caml_array.caml_array_get(andslot2, h)) {
     return Caml_array.caml_array_get(andslot3, h);

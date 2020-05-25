@@ -15,10 +15,10 @@ function eq(loc, x, y) {
   return Mt.eq_suites(test_id, suites, loc, x, y);
 }
 
-var oppHeroes = /* :: */[
-  0,
-  /* [] */0
-];
+var oppHeroes = /* :: */{
+  _0: 0,
+  _1: /* [] */0
+};
 
 var huntGrootCondition = false;
 

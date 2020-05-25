@@ -32,9 +32,9 @@ var U = {
   configX: configX$1
 };
 
-var A = { };
+var A = {};
 
-var B = { };
+var B = {};
 
 function f(param) {
   return /* tuple */[
@@ -59,13 +59,13 @@ function f(param) {
 
 List$1.xx();
 
-List.length(/* :: */[
-      1,
-      /* :: */[
-        2,
-        /* [] */0
-      ]
-    ]);
+List.length(/* :: */{
+      _0: 1,
+      _1: /* :: */{
+        _0: 2,
+        _1: /* [] */0
+      }
+    });
 
 List.length(/* [] */0);
 

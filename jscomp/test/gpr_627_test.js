@@ -15,18 +15,19 @@ function eq(loc, param) {
   var y = param[1];
   var x = param[0];
   test_id.contents = test_id.contents + 1 | 0;
-  suites.contents = /* :: */[
-    /* tuple */[
+  suites.contents = /* :: */{
+    _0: /* tuple */[
       loc + (" id " + String(test_id.contents)),
       (function (param) {
-          return /* Eq */Block.__(0, [
-                    x,
-                    y
-                  ]);
+          return {
+                  tag: /* Eq */0,
+                  _0: x,
+                  _1: y
+                };
         })
     ],
-    suites.contents
-  ];
+    _1: suites.contents
+  };
   
 }
 
@@ -53,11 +54,11 @@ var v = {
     })
 };
 
-var p_001 = u.say(1, 2);
+var p_1 = u.say(1, 2);
 
 var p = /* tuple */[
   3,
-  p_001
+  p_1
 ];
 
 eq("File \"gpr_627_test.ml\", line 26, characters 5-12", p);

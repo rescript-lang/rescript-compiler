@@ -98,35 +98,35 @@ function is_arbitrary_exception(param) {
   }
 }
 
-var suites_000 = /* tuple */[
+var suites_0 = /* tuple */[
   "is_equal",
   is_equal
 ];
 
-var suites_001 = /* :: */[
-  /* tuple */[
+var suites_1 = /* :: */{
+  _0: /* tuple */[
     "is_exception",
     is_exception
   ],
-  /* :: */[
-    /* tuple */[
+  _1: /* :: */{
+    _0: /* tuple */[
       "is_normal_exception",
       is_normal_exception
     ],
-    /* :: */[
-      /* tuple */[
+    _1: /* :: */{
+      _0: /* tuple */[
         "is_arbitrary_exception",
         is_arbitrary_exception
       ],
-      /* [] */0
-    ]
-  ]
-];
+      _1: /* [] */0
+    }
+  }
+};
 
-var suites = /* :: */[
-  suites_000,
-  suites_001
-];
+var suites = /* :: */{
+  _0: suites_0,
+  _1: suites_1
+};
 
 var e = {
   RE_EXN_ID: "Not_found"

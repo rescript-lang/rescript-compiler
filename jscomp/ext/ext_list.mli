@@ -33,6 +33,17 @@ val map_combine :
   'b list -> 
   ('a -> 'c) -> 
   ('c * 'b) list 
+
+val combine_array:
+  'a array ->
+  'b list -> 
+  ('a * 'b) list   
+
+val combine_array_append:
+  'a array ->
+  'b list ->
+  ('a * 'b) list -> 
+  ('a * 'b) list   
   
 val has_string :   
   string list ->

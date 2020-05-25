@@ -3,79 +3,89 @@
 var Mt = require("./mt.js");
 var Block = require("../../lib/js/block.js");
 
-var suites_000 = /* tuple */[
+var suites_0 = /* tuple */[
   "setTimeout/clearTimeout sanity check",
   (function (param) {
       var handle = setTimeout((function (param) {
               
             }), 0);
       clearTimeout(handle);
-      return /* Ok */Block.__(4, [true]);
+      return {
+              tag: /* Ok */4,
+              _0: true
+            };
     })
 ];
 
-var suites_001 = /* :: */[
-  /* tuple */[
+var suites_1 = /* :: */{
+  _0: /* tuple */[
     "setInerval/clearInterval sanity check",
     (function (param) {
         var handle = setInterval((function (param) {
                 
               }), 0);
         clearInterval(handle);
-        return /* Ok */Block.__(4, [true]);
+        return {
+                tag: /* Ok */4,
+                _0: true
+              };
       })
   ],
-  /* :: */[
-    /* tuple */[
+  _1: /* :: */{
+    _0: /* tuple */[
       "encodeURI",
       (function (param) {
-          return /* Eq */Block.__(0, [
-                    encodeURI("[-=-]"),
-                    "%5B-=-%5D"
-                  ]);
+          return {
+                  tag: /* Eq */0,
+                  _0: encodeURI("[-=-]"),
+                  _1: "%5B-=-%5D"
+                };
         })
     ],
-    /* :: */[
-      /* tuple */[
+    _1: /* :: */{
+      _0: /* tuple */[
         "decodeURI",
         (function (param) {
-            return /* Eq */Block.__(0, [
-                      decodeURI("%5B-=-%5D"),
-                      "[-=-]"
-                    ]);
+            return {
+                    tag: /* Eq */0,
+                    _0: decodeURI("%5B-=-%5D"),
+                    _1: "[-=-]"
+                  };
           })
       ],
-      /* :: */[
-        /* tuple */[
+      _1: /* :: */{
+        _0: /* tuple */[
           "encodeURIComponent",
           (function (param) {
-              return /* Eq */Block.__(0, [
-                        encodeURIComponent("[-=-]"),
-                        "%5B-%3D-%5D"
-                      ]);
+              return {
+                      tag: /* Eq */0,
+                      _0: encodeURIComponent("[-=-]"),
+                      _1: "%5B-%3D-%5D"
+                    };
             })
         ],
-        /* :: */[
-          /* tuple */[
+        _1: /* :: */{
+          _0: /* tuple */[
             "decodeURIComponent",
             (function (param) {
-                return /* Eq */Block.__(0, [
-                          decodeURIComponent("%5B-%3D-%5D"),
-                          "[-=-]"
-                        ]);
+                return {
+                        tag: /* Eq */0,
+                        _0: decodeURIComponent("%5B-%3D-%5D"),
+                        _1: "[-=-]"
+                      };
               })
           ],
-          /* [] */0
-        ]
-      ]
-    ]
-  ]
-];
+          _1: /* [] */0
+        }
+      }
+    }
+  }
+};
 
-var suites = /* :: */[
-  suites_000,
-  suites_001
-];
+var suites = /* :: */{
+  _0: suites_0,
+  _1: suites_1
+};
 
 Mt.from_pair_suites("Js_global_test", suites);
 

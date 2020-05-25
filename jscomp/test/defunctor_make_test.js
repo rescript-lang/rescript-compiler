@@ -17,7 +17,7 @@ var Comparable = {
 
 function height(param) {
   if (param) {
-    return param[4];
+    return param._4;
   } else {
     return 0;
   }
@@ -26,29 +26,29 @@ function height(param) {
 function create(l, x, d, r) {
   var hl = height(l);
   var hr = height(r);
-  return /* Node */[
-          l,
-          x,
-          d,
-          r,
-          hl >= hr ? hl + 1 | 0 : hr + 1 | 0
-        ];
+  return /* Node */{
+          _0: l,
+          _1: x,
+          _2: d,
+          _3: r,
+          _4: hl >= hr ? hl + 1 | 0 : hr + 1 | 0
+        };
 }
 
 function bal(l, x, d, r) {
-  var hl = l ? l[4] : 0;
-  var hr = r ? r[4] : 0;
+  var hl = l ? l._4 : 0;
+  var hr = r ? r._4 : 0;
   if (hl > (hr + 2 | 0)) {
     if (l) {
-      var lr = l[3];
-      var ld = l[2];
-      var lv = l[1];
-      var ll = l[0];
+      var lr = l._3;
+      var ld = l._2;
+      var lv = l._1;
+      var ll = l._0;
       if (height(ll) >= height(lr)) {
         return create(ll, lv, ld, create(lr, x, d, r));
       }
       if (lr) {
-        return create(create(ll, lv, ld, lr[0]), lr[1], lr[2], create(lr[3], x, d, r));
+        return create(create(ll, lv, ld, lr._0), lr._1, lr._2, create(lr._3, x, d, r));
       }
       throw {
             RE_EXN_ID: "Invalid_argument",
@@ -63,24 +63,24 @@ function bal(l, x, d, r) {
         };
   }
   if (hr <= (hl + 2 | 0)) {
-    return /* Node */[
-            l,
-            x,
-            d,
-            r,
-            hl >= hr ? hl + 1 | 0 : hr + 1 | 0
-          ];
+    return /* Node */{
+            _0: l,
+            _1: x,
+            _2: d,
+            _3: r,
+            _4: hl >= hr ? hl + 1 | 0 : hr + 1 | 0
+          };
   }
   if (r) {
-    var rr = r[3];
-    var rd = r[2];
-    var rv = r[1];
-    var rl = r[0];
+    var rr = r._3;
+    var rd = r._2;
+    var rv = r._1;
+    var rl = r._0;
     if (height(rr) >= height(rl)) {
       return create(create(l, x, d, rl), rv, rd, rr);
     }
     if (rl) {
-      return create(create(l, x, d, rl[0]), rl[1], rl[2], create(rl[3], rv, rd, rr));
+      return create(create(l, x, d, rl._0), rl._1, rl._2, create(rl._3, rv, rd, rr));
     }
     throw {
           RE_EXN_ID: "Invalid_argument",
@@ -97,27 +97,27 @@ function bal(l, x, d, r) {
 
 function add(x, data, compare, param) {
   if (!param) {
-    return /* Node */[
-            /* Empty */0,
-            x,
-            data,
-            /* Empty */0,
-            1
-          ];
+    return /* Node */{
+            _0: /* Empty */0,
+            _1: x,
+            _2: data,
+            _3: /* Empty */0,
+            _4: 1
+          };
   }
-  var r = param[3];
-  var d = param[2];
-  var v = param[1];
-  var l = param[0];
+  var r = param._3;
+  var d = param._2;
+  var v = param._1;
+  var l = param._0;
   var c = compare(x, v);
   if (c === 0) {
-    return /* Node */[
-            l,
-            x,
-            data,
-            r,
-            param[4]
-          ];
+    return /* Node */{
+            _0: l,
+            _1: x,
+            _2: data,
+            _3: r,
+            _4: param._4
+          };
   } else if (c < 0) {
     return bal(add(x, data, compare, l), v, d, r);
   } else {

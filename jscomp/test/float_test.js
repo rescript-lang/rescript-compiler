@@ -124,23 +124,26 @@ function from_pairs(ps) {
                     var b = param[1];
                     var a = param[0];
                     return /* tuple */[
-                            Curry._1(Printf.sprintf(/* Format */[
-                                      /* String_literal */Block.__(11, [
-                                          "pair ",
-                                          /* Int */Block.__(4, [
-                                              /* Int_d */0,
-                                              /* No_padding */0,
-                                              /* No_precision */0,
-                                              /* End_of_format */0
-                                            ])
-                                        ]),
-                                      "pair %d"
-                                    ]), i),
+                            Curry._1(Printf.sprintf(/* Format */{
+                                      _0: {
+                                        tag: /* String_literal */11,
+                                        _0: "pair ",
+                                        _1: {
+                                          tag: /* Int */4,
+                                          _0: /* Int_d */0,
+                                          _1: /* No_padding */0,
+                                          _2: /* No_precision */0,
+                                          _3: /* End_of_format */0
+                                        }
+                                      },
+                                      _1: "pair %d"
+                                    }), i),
                             (function (param) {
-                                return /* Approx */Block.__(5, [
-                                          a,
-                                          b
-                                        ]);
+                                return {
+                                        tag: /* Approx */5,
+                                        _0: a,
+                                        _1: b
+                                      };
                               })
                           ];
                   }), ps));
@@ -212,51 +215,55 @@ var b = match$4[1];
 
 var a = match$4[0];
 
-Mt.from_pair_suites("Float_test", Pervasives.$at(/* :: */[
-          /* tuple */[
+Mt.from_pair_suites("Float_test", Pervasives.$at(/* :: */{
+          _0: /* tuple */[
             "mod_float",
             (function (param) {
-                return /* Approx */Block.__(5, [
-                          3.2 % 0.5,
-                          0.200000000000000178
-                        ]);
+                return {
+                        tag: /* Approx */5,
+                        _0: 3.2 % 0.5,
+                        _1: 0.200000000000000178
+                      };
               })
           ],
-          /* :: */[
-            /* tuple */[
+          _1: /* :: */{
+            _0: /* tuple */[
               "modf_float1",
               (function (param) {
-                  return /* Approx */Block.__(5, [
-                            a,
-                            0.299999999999997158
-                          ]);
+                  return {
+                          tag: /* Approx */5,
+                          _0: a,
+                          _1: 0.299999999999997158
+                        };
                 })
             ],
-            /* :: */[
-              /* tuple */[
+            _1: /* :: */{
+              _0: /* tuple */[
                 "modf_float2",
                 (function (param) {
-                    return /* Approx */Block.__(5, [
-                              b,
-                              32
-                            ]);
+                    return {
+                            tag: /* Approx */5,
+                            _0: b,
+                            _1: 32
+                          };
                   })
               ],
-              /* :: */[
-                /* tuple */[
+              _1: /* :: */{
+                _0: /* tuple */[
                   "int_of_float",
                   (function (param) {
-                      return /* Eq */Block.__(0, [
-                                3,
-                                3
-                              ]);
+                      return {
+                              tag: /* Eq */0,
+                              _0: 3,
+                              _1: 3
+                            };
                     })
                 ],
-                /* [] */0
-              ]
-            ]
-          ]
-        ], Pervasives.$at(from_pairs(results), suites.contents)));
+                _1: /* [] */0
+              }
+            }
+          }
+        }, Pervasives.$at(from_pairs(results), suites.contents)));
 
 exports.test_id = test_id;
 exports.suites = suites;

@@ -21,57 +21,63 @@ function eq(f, param) {
 }
 
 function scan_rest(ib, accu) {
-  return Curry._1(Scanf.bscanf(ib, /* Format */[
-                  /* Scan_char_set */Block.__(20, [
-                      undefined,
-                      "\0\0\0\0\0\0\0\0\0\0\0 \0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0",
-                      /* End_of_format */0
-                    ]),
-                  "%[]]"
-                ]), (function (param) {
+  return Curry._1(Scanf.bscanf(ib, /* Format */{
+                  _0: {
+                    tag: /* Scan_char_set */20,
+                    _0: undefined,
+                    _1: "\0\0\0\0\0\0\0\0\0\0\0 \0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0",
+                    _2: /* End_of_format */0
+                  },
+                  _1: "%[]]"
+                }), (function (param) {
                 if (param === "]") {
                   return accu;
                 } else {
-                  return Curry._1(Scanf.bscanf(ib, /* Format */[
-                                  /* Char_literal */Block.__(12, [
-                                      /* " " */32,
-                                      /* Int */Block.__(4, [
-                                          /* Int_i */3,
-                                          /* No_padding */0,
-                                          /* No_precision */0,
-                                          /* Char_literal */Block.__(12, [
-                                              /* " " */32,
-                                              /* End_of_format */0
-                                            ])
-                                        ])
-                                    ]),
-                                  " %i "
-                                ]), (function (i) {
-                                var accu$1 = /* :: */[
-                                  i,
-                                  accu
-                                ];
-                                return Curry._1(Scanf.bscanf(ib, /* Format */[
-                                                /* Scan_char_set */Block.__(20, [
-                                                    1,
-                                                    "\0\0\0\0\0\0\0\b\0\0\0 \0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0",
-                                                    /* End_of_format */0
-                                                  ]),
-                                                "%1[];]"
-                                              ]), (function (param) {
+                  return Curry._1(Scanf.bscanf(ib, /* Format */{
+                                  _0: {
+                                    tag: /* Char_literal */12,
+                                    _0: /* " " */32,
+                                    _1: {
+                                      tag: /* Int */4,
+                                      _0: /* Int_i */3,
+                                      _1: /* No_padding */0,
+                                      _2: /* No_precision */0,
+                                      _3: {
+                                        tag: /* Char_literal */12,
+                                        _0: /* " " */32,
+                                        _1: /* End_of_format */0
+                                      }
+                                    }
+                                  },
+                                  _1: " %i "
+                                }), (function (i) {
+                                var accu$1 = /* :: */{
+                                  _0: i,
+                                  _1: accu
+                                };
+                                return Curry._1(Scanf.bscanf(ib, /* Format */{
+                                                _0: {
+                                                  tag: /* Scan_char_set */20,
+                                                  _0: 1,
+                                                  _1: "\0\0\0\0\0\0\0\b\0\0\0 \0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0",
+                                                  _2: /* End_of_format */0
+                                                },
+                                                _1: "%1[];]"
+                                              }), (function (param) {
                                               switch (param) {
                                                 case ";" :
                                                     return scan_rest(ib, accu$1);
                                                 case "]" :
                                                     return accu$1;
                                                 default:
-                                                  var s = Printf.sprintf(/* Format */[
-                                                        /* String_literal */Block.__(11, [
-                                                            "scan_int_list",
-                                                            /* End_of_format */0
-                                                          ]),
-                                                        "scan_int_list"
-                                                      ]);
+                                                  var s = Printf.sprintf(/* Format */{
+                                                        _0: {
+                                                          tag: /* String_literal */11,
+                                                          _0: "scan_int_list",
+                                                          _1: /* End_of_format */0
+                                                        },
+                                                        _1: "scan_int_list"
+                                                      });
                                                   throw {
                                                         RE_EXN_ID: "Failure",
                                                         _1: s,
@@ -85,13 +91,14 @@ function scan_rest(ib, accu) {
 }
 
 function scan_int_list(ib) {
-  Curry._1(Scanf.bscanf(ib, /* Format */[
-            /* String_literal */Block.__(11, [
-                " [ ",
-                /* End_of_format */0
-              ]),
-            " [ "
-          ]), undefined);
+  Curry._1(Scanf.bscanf(ib, /* Format */{
+            _0: {
+              tag: /* String_literal */11,
+              _0: " [ ",
+              _1: /* End_of_format */0
+            },
+            _1: " [ "
+          }), undefined);
   return List.rev(scan_rest(ib, /* [] */0));
 }
 

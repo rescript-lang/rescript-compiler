@@ -17,25 +17,31 @@ var test = {
   contents: true
 };
 
-var arg_spec_000 = /* tuple */[
+var arg_spec_0 = /* tuple */[
   "-c",
-  /* Set */Block.__(2, [compile]),
+  {
+    tag: /* Set */2,
+    _0: compile
+  },
   " Compile"
 ];
 
-var arg_spec_001 = /* :: */[
-  /* tuple */[
+var arg_spec_1 = /* :: */{
+  _0: /* tuple */[
     "-d",
-    /* Clear */Block.__(3, [test]),
+    {
+      tag: /* Clear */3,
+      _0: test
+    },
     " Test"
   ],
-  /* [] */0
-];
+  _1: /* [] */0
+};
 
-var arg_spec = /* :: */[
-  arg_spec_000,
-  arg_spec_001
-];
+var arg_spec = /* :: */{
+  _0: arg_spec_0,
+  _1: arg_spec_1
+};
 
 Arg.parse(arg_spec, anno_fun, usage_msg);
 

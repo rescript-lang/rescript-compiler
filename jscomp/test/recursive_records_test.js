@@ -16,14 +16,14 @@ function eq(loc, x, y) {
   return Mt.eq_suites(test_id, suites, loc, x, y);
 }
 
-var rec_cell = { };
+var rec_cell = {};
 
 rec_cell.content = 3;
 
 rec_cell.next = rec_cell;
 
 function f0(x) {
-  var rec_cell = { };
+  var rec_cell = {};
   Caml_obj.update_dummy(rec_cell, {
         content: Math.imul(x, x) - 6 | 0,
         next: rec_cell
@@ -39,24 +39,24 @@ eq("File \"recursive_records_test.ml\", line 29, characters 5-12", a0(rec_cell),
 
 eq("File \"recursive_records_test.ml\", line 30, characters 5-12", a0(f0(3)), 9);
 
-var rec_cell2 = [];
+var rec_cell2 = {};
 
-rec_cell2[0] = 3;
+rec_cell2.content = 3;
 
-rec_cell2[1] = rec_cell2;
+rec_cell2.next = rec_cell2;
 
 function f2(x) {
-  var rec_cell2 = [];
-  Caml_obj.update_dummy(rec_cell2, /* Cons */[
-        /* content */Math.imul(x, x) - 6 | 0,
-        /* next */rec_cell2
-      ]);
+  var rec_cell2 = {};
+  Caml_obj.update_dummy(rec_cell2, /* Cons */{
+        content: Math.imul(x, x) - 6 | 0,
+        next: rec_cell2
+      });
   return rec_cell2;
 }
 
 function hd(x) {
   if (x) {
-    return x[/* content */0];
+    return x.content;
   } else {
     return 0;
   }
@@ -64,7 +64,7 @@ function hd(x) {
 
 function tl_exn(x) {
   if (x) {
-    return x[/* next */1];
+    return x.next;
   }
   throw {
         RE_EXN_ID: "Assert_failure",
@@ -83,18 +83,18 @@ var rec_cell2$1 = f2(3);
 
 eq("File \"recursive_records_test.ml\", line 60, characters 5-12", (hd(rec_cell2$1) + hd(tl_exn(rec_cell2$1)) | 0) + hd(tl_exn(tl_exn(rec_cell2$1))) | 0, 9);
 
-var rec_cell3 = [];
+var rec_cell3 = {};
 
-rec_cell3[0] = 3;
+rec_cell3._0 = 3;
 
-rec_cell3[1] = rec_cell3;
+rec_cell3._1 = rec_cell3;
 
 function f3(x) {
-  var rec_cell3 = [];
-  Caml_obj.update_dummy(rec_cell3, /* :: */[
-        Math.imul(x, x) - 6 | 0,
-        rec_cell3
-      ]);
+  var rec_cell3 = {};
+  Caml_obj.update_dummy(rec_cell3, /* :: */{
+        _0: Math.imul(x, x) - 6 | 0,
+        _1: rec_cell3
+      });
   return rec_cell3;
 }
 

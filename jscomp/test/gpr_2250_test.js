@@ -16,29 +16,30 @@ var test_id = {
 
 function eq(loc, x, y) {
   test_id.contents = test_id.contents + 1 | 0;
-  suites.contents = /* :: */[
-    /* tuple */[
+  suites.contents = /* :: */{
+    _0: /* tuple */[
       loc + (" id " + String(test_id.contents)),
       (function (param) {
-          return /* Eq */Block.__(0, [
-                    x,
-                    y
-                  ]);
+          return {
+                  tag: /* Eq */0,
+                  _0: x,
+                  _1: y
+                };
         })
     ],
-    suites.contents
-  ];
+    _1: suites.contents
+  };
   
 }
 
-var class_tables = /* Cons */[
-  /* key */undefined,
-  /* data */undefined,
-  /* next */undefined
-];
+var class_tables = /* Cons */{
+  key: undefined,
+  data: undefined,
+  next: undefined
+};
 
 function create(param) {
-  if (!class_tables[/* key */0]) {
+  if (!class_tables.key) {
     var $$class = CamlinternalOO.create_table([
           "add",
           "get"
@@ -69,9 +70,9 @@ function create(param) {
       return self;
     };
     CamlinternalOO.init_class($$class);
-    class_tables[/* key */0] = env_init;
+    class_tables.key = env_init;
   }
-  return Curry._1(class_tables[/* key */0], undefined);
+  return Curry._1(class_tables.key, undefined);
 }
 
 var cxt1 = create(undefined);

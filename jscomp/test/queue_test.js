@@ -81,7 +81,7 @@ var T2 = {
   queue_1: queue_1$1
 };
 
-var suites_000 = /* tuple */[
+var suites_0 = /* tuple */[
   "File \"queue_test.ml\", line 26, characters 2-9",
   (function (param) {
       var x = [
@@ -90,15 +90,16 @@ var suites_000 = /* tuple */[
         5,
         2
       ];
-      return /* Eq */Block.__(0, [
-                x,
-                queue_1(x)
-              ]);
+      return {
+              tag: /* Eq */0,
+              _0: x,
+              _1: queue_1(x)
+            };
     })
 ];
 
-var suites_001 = /* :: */[
-  /* tuple */[
+var suites_1 = /* :: */{
+  _0: /* tuple */[
     "File \"queue_test.ml\", line 29, characters 2-9",
     (function (param) {
         var x = [
@@ -107,19 +108,20 @@ var suites_001 = /* :: */[
           5,
           2
         ];
-        return /* Eq */Block.__(0, [
-                  x,
-                  queue_1$1(x)
-                ]);
+        return {
+                tag: /* Eq */0,
+                _0: x,
+                _1: queue_1$1(x)
+              };
       })
   ],
-  /* [] */0
-];
+  _1: /* [] */0
+};
 
-var suites = /* :: */[
-  suites_000,
-  suites_001
-];
+var suites = /* :: */{
+  _0: suites_0,
+  _1: suites_1
+};
 
 Mt.from_pair_suites("Queue_test", suites);
 

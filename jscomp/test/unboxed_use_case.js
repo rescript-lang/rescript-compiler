@@ -1,6 +1,7 @@
 'use strict';
 
 var Curry = require("../../lib/js/curry.js");
+var Caml_obj = require("../../lib/js/caml_obj.js");
 
 function map_pair(r, param) {
   return /* tuple */[
@@ -28,11 +29,12 @@ console.log(3);
 
 console.log("x");
 
-var v0 = [];
+var v0 = {};
 
-v0[0] = 65;
-
-v0[1] = v0;
+Caml_obj.update_dummy(v0, {
+      HASH: /* A */65,
+      value: v0
+    });
 
 var v1 = {
   HASH: /* A */65,

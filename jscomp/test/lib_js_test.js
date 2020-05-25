@@ -3,33 +3,34 @@
 var Mt = require("./mt.js");
 var Block = require("../../lib/js/block.js");
 
-console.log(JSON.stringify(/* :: */[
-          1,
-          /* :: */[
-            2,
-            /* :: */[
-              3,
-              /* [] */0
-            ]
-          ]
-        ]));
+console.log(JSON.stringify(/* :: */{
+          _0: 1,
+          _1: /* :: */{
+            _0: 2,
+            _1: /* :: */{
+              _0: 3,
+              _1: /* [] */0
+            }
+          }
+        }));
 
 console.log("hey");
 
-var suites_000 = /* tuple */[
+var suites_0 = /* tuple */[
   "anything_to_string",
   (function (param) {
-      return /* Eq */Block.__(0, [
-                "3",
-                String(3)
-              ]);
+      return {
+              tag: /* Eq */0,
+              _0: "3",
+              _1: String(3)
+            };
     })
 ];
 
-var suites = /* :: */[
-  suites_000,
-  /* [] */0
-];
+var suites = /* :: */{
+  _0: suites_0,
+  _1: /* [] */0
+};
 
 Mt.from_pair_suites("Lib_js_test", suites);
 

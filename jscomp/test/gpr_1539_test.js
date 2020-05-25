@@ -7,15 +7,21 @@ var Point = Caml_module.init_mod(/* tuple */[
       "gpr_1539_test.ml",
       10,
       6
-    ], /* Module */Block.__(0, [[/* tuple */[
-            /* Function */0,
-            "add"
-          ]]]));
+    ], {
+      tag: /* Module */0,
+      _0: [/* tuple */[
+          /* Function */0,
+          "add"
+        ]]
+    });
 
-Caml_module.update_mod(/* Module */Block.__(0, [[/* tuple */[
-            /* Function */0,
-            "add"
-          ]]]), Point, {
+Caml_module.update_mod({
+      tag: /* Module */0,
+      _0: [/* tuple */[
+          /* Function */0,
+          "add"
+        ]]
+    }, Point, {
       add: (function (prim, prim$1) {
           return prim.add(prim$1);
         })

@@ -56,47 +56,60 @@ var yyact = [
     }),
   (function (__caml_parser_env) {
       var _1 = Parsing.peek_val(__caml_parser_env, 0);
-      return /* Numeral */Block.__(0, [_1]);
+      return {
+              tag: /* Numeral */0,
+              _0: _1
+            };
     }),
   (function (__caml_parser_env) {
       var _1 = Parsing.peek_val(__caml_parser_env, 0);
-      return /* Variable */Block.__(6, [_1]);
+      return {
+              tag: /* Variable */6,
+              _0: _1
+            };
     }),
   (function (__caml_parser_env) {
       var _1 = Parsing.peek_val(__caml_parser_env, 2);
       var _3 = Parsing.peek_val(__caml_parser_env, 0);
-      return /* Plus */Block.__(1, [
-                _1,
-                _3
-              ]);
+      return {
+              tag: /* Plus */1,
+              _0: _1,
+              _1: _3
+            };
     }),
   (function (__caml_parser_env) {
       var _1 = Parsing.peek_val(__caml_parser_env, 2);
       var _3 = Parsing.peek_val(__caml_parser_env, 0);
-      return /* Minus */Block.__(2, [
-                _1,
-                _3
-              ]);
+      return {
+              tag: /* Minus */2,
+              _0: _1,
+              _1: _3
+            };
     }),
   (function (__caml_parser_env) {
       var _1 = Parsing.peek_val(__caml_parser_env, 2);
       var _3 = Parsing.peek_val(__caml_parser_env, 0);
-      return /* Times */Block.__(3, [
-                _1,
-                _3
-              ]);
+      return {
+              tag: /* Times */3,
+              _0: _1,
+              _1: _3
+            };
     }),
   (function (__caml_parser_env) {
       var _1 = Parsing.peek_val(__caml_parser_env, 2);
       var _3 = Parsing.peek_val(__caml_parser_env, 0);
-      return /* Divide */Block.__(4, [
-                _1,
-                _3
-              ]);
+      return {
+              tag: /* Divide */4,
+              _0: _1,
+              _1: _3
+            };
     }),
   (function (__caml_parser_env) {
       var _2 = Parsing.peek_val(__caml_parser_env, 0);
-      return /* Negate */Block.__(5, [_2]);
+      return {
+              tag: /* Negate */5,
+              _0: _2
+            };
     }),
   (function (__caml_parser_env) {
       return Parsing.peek_val(__caml_parser_env, 1);

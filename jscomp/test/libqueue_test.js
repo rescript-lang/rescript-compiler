@@ -8,10 +8,10 @@ var Caml_js_exceptions = require("../../lib/js/caml_js_exceptions.js");
 
 function to_list(q) {
   return List.rev(Queue.fold((function (l, x) {
-                    return /* :: */[
-                            x,
-                            l
-                          ];
+                    return /* :: */{
+                            _0: x,
+                            _1: l
+                          };
                   }), /* [] */0, q));
 }
 
@@ -68,10 +68,10 @@ if (!(to_list(q) === /* [] */0 && q.length === 0)) {
 
 Queue.add(1, q);
 
-if (!(Caml_obj.caml_equal(to_list(q), /* :: */[
-          1,
-          /* [] */0
-        ]) && q.length === 1)) {
+if (!(Caml_obj.caml_equal(to_list(q), /* :: */{
+          _0: 1,
+          _1: /* [] */0
+        }) && q.length === 1)) {
   throw {
         RE_EXN_ID: "Assert_failure",
         _1: /* tuple */[
@@ -85,13 +85,13 @@ if (!(Caml_obj.caml_equal(to_list(q), /* :: */[
 
 Queue.add(2, q);
 
-if (!(Caml_obj.caml_equal(to_list(q), /* :: */[
-          1,
-          /* :: */[
-            2,
-            /* [] */0
-          ]
-        ]) && q.length === 2)) {
+if (!(Caml_obj.caml_equal(to_list(q), /* :: */{
+          _0: 1,
+          _1: /* :: */{
+            _0: 2,
+            _1: /* [] */0
+          }
+        }) && q.length === 2)) {
   throw {
         RE_EXN_ID: "Assert_failure",
         _1: /* tuple */[
@@ -105,16 +105,16 @@ if (!(Caml_obj.caml_equal(to_list(q), /* :: */[
 
 Queue.add(3, q);
 
-if (!(Caml_obj.caml_equal(to_list(q), /* :: */[
-          1,
-          /* :: */[
-            2,
-            /* :: */[
-              3,
-              /* [] */0
-            ]
-          ]
-        ]) && q.length === 3)) {
+if (!(Caml_obj.caml_equal(to_list(q), /* :: */{
+          _0: 1,
+          _1: /* :: */{
+            _0: 2,
+            _1: /* :: */{
+              _0: 3,
+              _1: /* [] */0
+            }
+          }
+        }) && q.length === 3)) {
   throw {
         RE_EXN_ID: "Assert_failure",
         _1: /* tuple */[
@@ -128,19 +128,19 @@ if (!(Caml_obj.caml_equal(to_list(q), /* :: */[
 
 Queue.add(4, q);
 
-if (!(Caml_obj.caml_equal(to_list(q), /* :: */[
-          1,
-          /* :: */[
-            2,
-            /* :: */[
-              3,
-              /* :: */[
-                4,
-                /* [] */0
-              ]
-            ]
-          ]
-        ]) && q.length === 4)) {
+if (!(Caml_obj.caml_equal(to_list(q), /* :: */{
+          _0: 1,
+          _1: /* :: */{
+            _0: 2,
+            _1: /* :: */{
+              _0: 3,
+              _1: /* :: */{
+                _0: 4,
+                _1: /* [] */0
+              }
+            }
+          }
+        }) && q.length === 4)) {
   throw {
         RE_EXN_ID: "Assert_failure",
         _1: /* tuple */[
@@ -164,16 +164,16 @@ if (Queue.take(q) !== 1) {
       };
 }
 
-if (!(Caml_obj.caml_equal(to_list(q), /* :: */[
-          2,
-          /* :: */[
-            3,
-            /* :: */[
-              4,
-              /* [] */0
-            ]
-          ]
-        ]) && q.length === 3)) {
+if (!(Caml_obj.caml_equal(to_list(q), /* :: */{
+          _0: 2,
+          _1: /* :: */{
+            _0: 3,
+            _1: /* :: */{
+              _0: 4,
+              _1: /* [] */0
+            }
+          }
+        }) && q.length === 3)) {
   throw {
         RE_EXN_ID: "Assert_failure",
         _1: /* tuple */[
@@ -197,13 +197,13 @@ if (Queue.take(q) !== 2) {
       };
 }
 
-if (!(Caml_obj.caml_equal(to_list(q), /* :: */[
-          3,
-          /* :: */[
-            4,
-            /* [] */0
-          ]
-        ]) && q.length === 2)) {
+if (!(Caml_obj.caml_equal(to_list(q), /* :: */{
+          _0: 3,
+          _1: /* :: */{
+            _0: 4,
+            _1: /* [] */0
+          }
+        }) && q.length === 2)) {
   throw {
         RE_EXN_ID: "Assert_failure",
         _1: /* tuple */[
@@ -227,10 +227,10 @@ if (Queue.take(q) !== 3) {
       };
 }
 
-if (!(Caml_obj.caml_equal(to_list(q), /* :: */[
-          4,
-          /* [] */0
-        ]) && q.length === 1)) {
+if (!(Caml_obj.caml_equal(to_list(q), /* :: */{
+          _0: 4,
+          _1: /* [] */0
+        }) && q.length === 1)) {
   throw {
         RE_EXN_ID: "Assert_failure",
         _1: /* tuple */[
@@ -570,37 +570,37 @@ for(var i$1 = 1; i$1 <= 10; ++i$1){
 
 var q2 = Queue.copy(q1);
 
-if (!Caml_obj.caml_equal(to_list(q1), /* :: */[
-        1,
-        /* :: */[
-          2,
-          /* :: */[
-            3,
-            /* :: */[
-              4,
-              /* :: */[
-                5,
-                /* :: */[
-                  6,
-                  /* :: */[
-                    7,
-                    /* :: */[
-                      8,
-                      /* :: */[
-                        9,
-                        /* :: */[
-                          10,
-                          /* [] */0
-                        ]
-                      ]
-                    ]
-                  ]
-                ]
-              ]
-            ]
-          ]
-        ]
-      ])) {
+if (!Caml_obj.caml_equal(to_list(q1), /* :: */{
+        _0: 1,
+        _1: /* :: */{
+          _0: 2,
+          _1: /* :: */{
+            _0: 3,
+            _1: /* :: */{
+              _0: 4,
+              _1: /* :: */{
+                _0: 5,
+                _1: /* :: */{
+                  _0: 6,
+                  _1: /* :: */{
+                    _0: 7,
+                    _1: /* :: */{
+                      _0: 8,
+                      _1: /* :: */{
+                        _0: 9,
+                        _1: /* :: */{
+                          _0: 10,
+                          _1: /* [] */0
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      })) {
   throw {
         RE_EXN_ID: "Assert_failure",
         _1: /* tuple */[
@@ -612,37 +612,37 @@ if (!Caml_obj.caml_equal(to_list(q1), /* :: */[
       };
 }
 
-if (!Caml_obj.caml_equal(to_list(q2), /* :: */[
-        1,
-        /* :: */[
-          2,
-          /* :: */[
-            3,
-            /* :: */[
-              4,
-              /* :: */[
-                5,
-                /* :: */[
-                  6,
-                  /* :: */[
-                    7,
-                    /* :: */[
-                      8,
-                      /* :: */[
-                        9,
-                        /* :: */[
-                          10,
-                          /* [] */0
-                        ]
-                      ]
-                    ]
-                  ]
-                ]
-              ]
-            ]
-          ]
-        ]
-      ])) {
+if (!Caml_obj.caml_equal(to_list(q2), /* :: */{
+        _0: 1,
+        _1: /* :: */{
+          _0: 2,
+          _1: /* :: */{
+            _0: 3,
+            _1: /* :: */{
+              _0: 4,
+              _1: /* :: */{
+                _0: 5,
+                _1: /* :: */{
+                  _0: 6,
+                  _1: /* :: */{
+                    _0: 7,
+                    _1: /* :: */{
+                      _0: 8,
+                      _1: /* :: */{
+                        _0: 9,
+                        _1: /* :: */{
+                          _0: 10,
+                          _1: /* [] */0
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      })) {
   throw {
         RE_EXN_ID: "Assert_failure",
         _1: /* tuple */[
@@ -971,19 +971,19 @@ if (q1$2.length !== 4) {
       };
 }
 
-if (!Caml_obj.caml_equal(to_list(q1$2), /* :: */[
-        1,
-        /* :: */[
-          2,
-          /* :: */[
-            3,
-            /* :: */[
-              4,
-              /* [] */0
-            ]
-          ]
-        ]
-      ])) {
+if (!Caml_obj.caml_equal(to_list(q1$2), /* :: */{
+        _0: 1,
+        _1: /* :: */{
+          _0: 2,
+          _1: /* :: */{
+            _0: 3,
+            _1: /* :: */{
+              _0: 4,
+              _1: /* [] */0
+            }
+          }
+        }
+      })) {
   throw {
         RE_EXN_ID: "Assert_failure",
         _1: /* tuple */[
@@ -1057,19 +1057,19 @@ if (q2$2.length !== 4) {
       };
 }
 
-if (!Caml_obj.caml_equal(to_list(q2$2), /* :: */[
-        1,
-        /* :: */[
-          2,
-          /* :: */[
-            3,
-            /* :: */[
-              4,
-              /* [] */0
-            ]
-          ]
-        ]
-      ])) {
+if (!Caml_obj.caml_equal(to_list(q2$2), /* :: */{
+        _0: 1,
+        _1: /* :: */{
+          _0: 2,
+          _1: /* :: */{
+            _0: 3,
+            _1: /* :: */{
+              _0: 4,
+              _1: /* [] */0
+            }
+          }
+        }
+      })) {
   throw {
         RE_EXN_ID: "Assert_failure",
         _1: /* tuple */[
@@ -1133,19 +1133,19 @@ if (q2$3.length !== 4) {
       };
 }
 
-if (!Caml_obj.caml_equal(to_list(q2$3), /* :: */[
-        5,
-        /* :: */[
-          6,
-          /* :: */[
-            7,
-            /* :: */[
-              8,
-              /* [] */0
-            ]
-          ]
-        ]
-      ])) {
+if (!Caml_obj.caml_equal(to_list(q2$3), /* :: */{
+        _0: 5,
+        _1: /* :: */{
+          _0: 6,
+          _1: /* :: */{
+            _0: 7,
+            _1: /* :: */{
+              _0: 8,
+              _1: /* [] */0
+            }
+          }
+        }
+      })) {
   throw {
         RE_EXN_ID: "Assert_failure",
         _1: /* tuple */[
@@ -1195,19 +1195,19 @@ if (q2$3.length !== 4) {
       };
 }
 
-if (!Caml_obj.caml_equal(to_list(q2$3), /* :: */[
-        5,
-        /* :: */[
-          6,
-          /* :: */[
-            7,
-            /* :: */[
-              8,
-              /* [] */0
-            ]
-          ]
-        ]
-      ])) {
+if (!Caml_obj.caml_equal(to_list(q2$3), /* :: */{
+        _0: 5,
+        _1: /* :: */{
+          _0: 6,
+          _1: /* :: */{
+            _0: 7,
+            _1: /* :: */{
+              _0: 8,
+              _1: /* [] */0
+            }
+          }
+        }
+      })) {
   throw {
         RE_EXN_ID: "Assert_failure",
         _1: /* tuple */[
@@ -1251,19 +1251,19 @@ if (q1$4.length !== 4) {
       };
 }
 
-if (!Caml_obj.caml_equal(to_list(q1$4), /* :: */[
-        1,
-        /* :: */[
-          2,
-          /* :: */[
-            3,
-            /* :: */[
-              4,
-              /* [] */0
-            ]
-          ]
-        ]
-      ])) {
+if (!Caml_obj.caml_equal(to_list(q1$4), /* :: */{
+        _0: 1,
+        _1: /* :: */{
+          _0: 2,
+          _1: /* :: */{
+            _0: 3,
+            _1: /* :: */{
+              _0: 4,
+              _1: /* [] */0
+            }
+          }
+        }
+      })) {
   throw {
         RE_EXN_ID: "Assert_failure",
         _1: /* tuple */[
@@ -1287,19 +1287,19 @@ if (q2$4.length !== 4) {
       };
 }
 
-if (!Caml_obj.caml_equal(to_list(q2$4), /* :: */[
-        5,
-        /* :: */[
-          6,
-          /* :: */[
-            7,
-            /* :: */[
-              8,
-              /* [] */0
-            ]
-          ]
-        ]
-      ])) {
+if (!Caml_obj.caml_equal(to_list(q2$4), /* :: */{
+        _0: 5,
+        _1: /* :: */{
+          _0: 6,
+          _1: /* :: */{
+            _0: 7,
+            _1: /* :: */{
+              _0: 8,
+              _1: /* [] */0
+            }
+          }
+        }
+      })) {
   throw {
         RE_EXN_ID: "Assert_failure",
         _1: /* tuple */[
@@ -1349,31 +1349,31 @@ if (q2$4.length !== 8) {
       };
 }
 
-if (!Caml_obj.caml_equal(to_list(q2$4), /* :: */[
-        5,
-        /* :: */[
-          6,
-          /* :: */[
-            7,
-            /* :: */[
-              8,
-              /* :: */[
-                1,
-                /* :: */[
-                  2,
-                  /* :: */[
-                    3,
-                    /* :: */[
-                      4,
-                      /* [] */0
-                    ]
-                  ]
-                ]
-              ]
-            ]
-          ]
-        ]
-      ])) {
+if (!Caml_obj.caml_equal(to_list(q2$4), /* :: */{
+        _0: 5,
+        _1: /* :: */{
+          _0: 6,
+          _1: /* :: */{
+            _0: 7,
+            _1: /* :: */{
+              _0: 8,
+              _1: /* :: */{
+                _0: 1,
+                _1: /* :: */{
+                  _0: 2,
+                  _1: /* :: */{
+                    _0: 3,
+                    _1: /* :: */{
+                      _0: 4,
+                      _1: /* [] */0
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      })) {
   throw {
         RE_EXN_ID: "Assert_failure",
         _1: /* tuple */[

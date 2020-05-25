@@ -26,7 +26,7 @@ function eq(loc, x, y) {
   return Mt.eq_suites(test_id, suites, loc, x, y);
 }
 
-function comparable_001($$class) {
+function comparable_1($$class) {
   CamlinternalOO.get_method_label($$class, "leq");
   return function (env, self) {
     return CamlinternalOO.create_object_opt(self, $$class);
@@ -35,7 +35,7 @@ function comparable_001($$class) {
 
 var comparable = /* class */[
   undefined,
-  comparable_001,
+  comparable_1,
   undefined,
   undefined
 ];

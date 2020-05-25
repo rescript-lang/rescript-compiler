@@ -15,18 +15,19 @@ var test_id = {
 
 function eq(loc, x, y) {
   test_id.contents = test_id.contents + 1 | 0;
-  suites.contents = /* :: */[
-    /* tuple */[
+  suites.contents = /* :: */{
+    _0: /* tuple */[
       loc + (" id " + String(test_id.contents)),
       (function (param) {
-          return /* Eq */Block.__(0, [
-                    x,
-                    y
-                  ]);
+          return {
+                  tag: /* Eq */0,
+                  _0: x,
+                  _1: y
+                };
         })
     ],
-    suites.contents
-  ];
+    _1: suites.contents
+  };
   
 }
 
@@ -38,16 +39,16 @@ function f(x) {
 
 var h = f(/* [] */0);
 
-var a = Curry._1(h.length, /* :: */[
-      1,
-      /* :: */[
-        2,
-        /* :: */[
-          3,
-          /* [] */0
-        ]
-      ]
-    ]);
+var a = Curry._1(h.length, /* :: */{
+      _0: 1,
+      _1: /* :: */{
+        _0: 2,
+        _1: /* :: */{
+          _0: 3,
+          _1: /* [] */0
+        }
+      }
+    });
 
 eq("File \"module_alias_test.ml\", line 30, characters 6-13", a, 3);
 

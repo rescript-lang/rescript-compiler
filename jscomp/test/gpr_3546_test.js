@@ -2,7 +2,9 @@
 
 
 function t_error3(param_0) {
-  return /* T_error3 */[param_0];
+  return /* T_error3 */{
+          _0: param_0
+        };
 }
 
 var t_error = /* T_error */0;

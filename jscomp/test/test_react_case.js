@@ -2,7 +2,7 @@
 
 
 function v(prim) {
-  return { };
+  return {};
 }
 
 exports.v = v;

@@ -176,10 +176,10 @@ function for_9(param) {
     contents: /* [] */0
   };
   var collect = function (x) {
-    v.contents = /* :: */[
-      x,
-      v.contents
-    ];
+    v.contents = /* :: */{
+      _0: x,
+      _1: v.contents
+    };
     
   };
   var vv = {
@@ -229,102 +229,109 @@ function for_9(param) {
           ]];
 }
 
-var suites_000 = /* tuple */[
+var suites_0 = /* tuple */[
   "for_loop_test_3",
   (function (param) {
-      return /* Eq */Block.__(0, [
-                90,
-                for_3(Caml_array.caml_make_vect(10, 2))
-              ]);
+      return {
+              tag: /* Eq */0,
+              _0: 90,
+              _1: for_3(Caml_array.caml_make_vect(10, 2))
+            };
     })
 ];
 
-var suites_001 = /* :: */[
-  /* tuple */[
+var suites_1 = /* :: */{
+  _0: /* tuple */[
     "for_loop_test_4",
     (function (param) {
-        return /* Eq */Block.__(0, [
-                  180,
-                  for_4(Caml_array.caml_make_vect(10, 2))
-                ]);
+        return {
+                tag: /* Eq */0,
+                _0: 180,
+                _1: for_4(Caml_array.caml_make_vect(10, 2))
+              };
       })
   ],
-  /* :: */[
-    /* tuple */[
+  _1: /* :: */{
+    _0: /* tuple */[
       "for_loop_test_5",
       (function (param) {
-          return /* Eq */Block.__(0, [
-                    2420,
-                    for_5(Caml_array.caml_make_vect(10, 2), 11)
-                  ]);
+          return {
+                  tag: /* Eq */0,
+                  _0: 2420,
+                  _1: for_5(Caml_array.caml_make_vect(10, 2), 11)
+                };
         })
     ],
-    /* :: */[
-      /* tuple */[
+    _1: /* :: */{
+      _0: /* tuple */[
         "for_loop_test_6",
         (function (param) {
-            return /* Eq */Block.__(0, [
-                      [
-                        30,
-                        1,
-                        2,
-                        3
-                      ],
-                      for_6(Caml_array.caml_make_vect(3, 0), 0)
-                    ]);
+            return {
+                    tag: /* Eq */0,
+                    _0: [
+                      30,
+                      1,
+                      2,
+                      3
+                    ],
+                    _1: for_6(Caml_array.caml_make_vect(3, 0), 0)
+                  };
           })
       ],
-      /* :: */[
-        /* tuple */[
+      _1: /* :: */{
+        _0: /* tuple */[
           "for_loop_test_7",
           (function (param) {
-              return /* Eq */Block.__(0, [
-                        84,
-                        for_7(undefined)
-                      ]);
+              return {
+                      tag: /* Eq */0,
+                      _0: 84,
+                      _1: for_7(undefined)
+                    };
             })
         ],
-        /* :: */[
-          /* tuple */[
+        _1: /* :: */{
+          _0: /* tuple */[
             "for_loop_test_8",
             (function (param) {
-                return /* Eq */Block.__(0, [
-                          294,
-                          for_8(undefined)
-                        ]);
+                return {
+                        tag: /* Eq */0,
+                        _0: 294,
+                        _1: for_8(undefined)
+                      };
               })
           ],
-          /* :: */[
-            /* tuple */[
+          _1: /* :: */{
+            _0: /* tuple */[
               "for_loop_test_9",
               (function (param) {
-                  return /* Eq */Block.__(0, [
-                            [/* tuple */[
-                                10,
-                                [
-                                  1,
-                                  2,
-                                  2,
-                                  3
-                                ],
-                                5
-                              ]],
-                            for_9(undefined)
-                          ]);
+                  return {
+                          tag: /* Eq */0,
+                          _0: [/* tuple */[
+                              10,
+                              [
+                                1,
+                                2,
+                                2,
+                                3
+                              ],
+                              5
+                            ]],
+                          _1: for_9(undefined)
+                        };
                 })
             ],
-            /* [] */0
-          ]
-        ]
-      ]
-    ]
-  ]
-];
+            _1: /* [] */0
+          }
+        }
+      }
+    }
+  }
+};
 
-var suites = /* :: */[
-  suites_000,
-  suites_001
-];
+var suites = /* :: */{
+  _0: suites_0,
+  _1: suites_1
+};
 
 exports.for_3 = for_3;
 exports.for_4 = for_4;

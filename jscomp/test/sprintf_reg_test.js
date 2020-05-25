@@ -18,57 +18,72 @@ function eq(f, param) {
   return Mt_global.collect_eq(test_id, suites, f, param[0], param[1]);
 }
 
-var s = Curry._1(Printf.sprintf(/* Format */[
-          /* Format_arg */Block.__(13, [
-              undefined,
-              /* String_ty */Block.__(1, [/* End_of_fmtty */0]),
-              /* Char_literal */Block.__(12, [
-                  /* "." */46,
-                  /* End_of_format */0
-                ])
-            ]),
-          "%{%s%}."
-        ]), /* Format */[
-      /* String_literal */Block.__(11, [
-          "32",
-          /* String */Block.__(2, [
-              /* No_padding */0,
-              /* End_of_format */0
-            ])
-        ]),
-      "32%s"
-    ]);
+var s = Curry._1(Printf.sprintf(/* Format */{
+          _0: {
+            tag: /* Format_arg */13,
+            _0: undefined,
+            _1: {
+              tag: /* String_ty */1,
+              _0: /* End_of_fmtty */0
+            },
+            _2: {
+              tag: /* Char_literal */12,
+              _0: /* "." */46,
+              _1: /* End_of_format */0
+            }
+          },
+          _1: "%{%s%}."
+        }), /* Format */{
+      _0: {
+        tag: /* String_literal */11,
+        _0: "32",
+        _1: {
+          tag: /* String */2,
+          _0: /* No_padding */0,
+          _1: /* End_of_format */0
+        }
+      },
+      _1: "32%s"
+    });
 
 eq("File \"sprintf_reg_test.ml\", line 8, characters 5-12", /* tuple */[
       s,
       "%s."
     ]);
 
-var s$1 = Curry._2(Printf.sprintf(/* Format */[
-          /* Int */Block.__(4, [
-              /* Int_i */3,
-              /* No_padding */0,
-              /* No_precision */0,
-              /* Char_literal */Block.__(12, [
-                  /* " " */32,
-                  /* Format_arg */Block.__(13, [
-                      undefined,
-                      /* String_ty */Block.__(1, [/* End_of_fmtty */0]),
-                      /* End_of_format */0
-                    ])
-                ])
-            ]),
-          "%i %{%s%}"
-        ]), 1, /* Format */[
-      /* String_literal */Block.__(11, [
-          "spells one ",
-          /* String */Block.__(2, [
-              /* No_padding */0,
-              /* End_of_format */0
-            ])
-        ]),
-      "spells one %s"
-    ]);
+var s$1 = Curry._2(Printf.sprintf(/* Format */{
+          _0: {
+            tag: /* Int */4,
+            _0: /* Int_i */3,
+            _1: /* No_padding */0,
+            _2: /* No_precision */0,
+            _3: {
+              tag: /* Char_literal */12,
+              _0: /* " " */32,
+              _1: {
+                tag: /* Format_arg */13,
+                _0: undefined,
+                _1: {
+                  tag: /* String_ty */1,
+                  _0: /* End_of_fmtty */0
+                },
+                _2: /* End_of_format */0
+              }
+            }
+          },
+          _1: "%i %{%s%}"
+        }), 1, /* Format */{
+      _0: {
+        tag: /* String_literal */11,
+        _0: "spells one ",
+        _1: {
+          tag: /* String */2,
+          _0: /* No_padding */0,
+          _1: /* End_of_format */0
+        }
+      },
+      _1: "spells one %s"
+    });
 
 eq("File \"sprintf_reg_test.ml\", line 14, characters 5-12", /* tuple */[
       s$1,

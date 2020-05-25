@@ -21,28 +21,30 @@ function b(loc, x) {
   return Mt.bool_suites(test_id, suites, loc, x);
 }
 
-var Block$1 = { };
+var Block$1 = {};
 
-var v0 = /* A */Block.__(1, [
-    0,
-    1
-  ]);
+var v0 = {
+  tag: /* A */1,
+  _0: 0,
+  _1: 1
+};
 
-var Block$2 = { };
+var Block$2 = {};
 
-var v1 = /* A */Block.__(1, [
-    0,
-    1
-  ]);
+var v1 = {
+  tag: /* A */1,
+  _0: 0,
+  _1: 1
+};
 
 var N = {
   Block: Block$2,
   v1: v1
 };
 
-var Caml_obj$1 = { };
+var Caml_obj$1 = {};
 
-var List$1 = { };
+var List$1 = {};
 
 var V = {
   List: List$1
@@ -50,18 +52,19 @@ var V = {
 
 var f = Caml_obj.caml_equal;
 
-eq("File \"block_alias_test.ml\", line 32, characters 6-13", List.length(/* :: */[
-          1,
-          /* :: */[
-            2,
-            /* [] */0
-          ]
-        ]), 2);
+eq("File \"block_alias_test.ml\", line 32, characters 6-13", List.length(/* :: */{
+          _0: 1,
+          _1: /* :: */{
+            _0: 2,
+            _1: /* [] */0
+          }
+        }), 2);
 
-b("File \"block_alias_test.ml\", line 33, characters 5-12", Caml_obj.caml_equal(v0, /* A */Block.__(1, [
-            0,
-            1
-          ])));
+b("File \"block_alias_test.ml\", line 33, characters 5-12", Caml_obj.caml_equal(v0, {
+          tag: /* A */1,
+          _0: 0,
+          _1: 1
+        }));
 
 eq("File \"block_alias_test.ml\", line 34, characters 6-13", v0, v1);
 

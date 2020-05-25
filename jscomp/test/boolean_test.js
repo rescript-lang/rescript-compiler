@@ -3,12 +3,12 @@
 var Mt = require("./mt.js");
 var Test_bool_equal = require("./test_bool_equal.js");
 
-Mt.from_suites("boolean", /* :: */[
-      /* tuple */[
+Mt.from_suites("boolean", /* :: */{
+      _0: /* tuple */[
         "bool_equal",
         Test_bool_equal.assertions
       ],
-      /* [] */0
-    ]);
+      _1: /* [] */0
+    });
 
 /*  Not a pure module */

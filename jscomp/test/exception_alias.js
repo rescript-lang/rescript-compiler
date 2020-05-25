@@ -6,13 +6,13 @@ var a0 = {
   RE_EXN_ID: "Not_found"
 };
 
-var b = List.length(/* :: */[
-      1,
-      /* :: */[
-        2,
-        /* [] */0
-      ]
-    ]);
+var b = List.length(/* :: */{
+      _0: 1,
+      _1: /* :: */{
+        _0: 2,
+        _1: /* [] */0
+      }
+    });
 
 var List$1 = {
   compare_lengths: List.compare_lengths,

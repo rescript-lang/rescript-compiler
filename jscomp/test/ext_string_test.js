@@ -24,10 +24,10 @@ function split_by(keep_emptyOpt, is_delim, str) {
       if (last_pos === 0 && !keep_empty) {
         return acc;
       } else {
-        return /* :: */[
-                $$String.sub(str, 0, last_pos),
-                acc
-              ];
+        return /* :: */{
+                _0: $$String.sub(str, 0, last_pos),
+                _1: acc
+              };
       }
     }
     if (Curry._1(is_delim, Caml_string.get(str, pos))) {
@@ -36,10 +36,10 @@ function split_by(keep_emptyOpt, is_delim, str) {
         var v = $$String.sub(str, pos + 1 | 0, new_len);
         _pos = pos - 1 | 0;
         _last_pos = pos;
-        _acc = /* :: */[
-          v,
-          acc
-        ];
+        _acc = /* :: */{
+          _0: v,
+          _1: acc
+        };
         continue ;
       }
       _pos = pos - 1 | 0;
@@ -159,11 +159,11 @@ function check_any_suffix_case_then_chop(s, suffixes) {
     if (!suffixes$1) {
       return ;
     }
-    var id = ends_with_index(s, suffixes$1[0]);
+    var id = ends_with_index(s, suffixes$1._0);
     if (id >= 0) {
       return $$String.sub(s, 0, id);
     }
-    _suffixes = suffixes$1[1];
+    _suffixes = suffixes$1._1;
     continue ;
   };
 }
@@ -397,7 +397,7 @@ function unsafe_concat_with_length(len, sep, l) {
   if (!l) {
     return "";
   }
-  var hd = l[0];
+  var hd = l._0;
   var r = Caml_bytes.caml_create_bytes(len);
   var hd_len = hd.length;
   var sep_len = sep.length;
@@ -412,7 +412,7 @@ function unsafe_concat_with_length(len, sep, l) {
           Caml_bytes.caml_blit_string(s, 0, r, pos.contents, s_len);
           pos.contents = pos.contents + s_len | 0;
           
-        }), l[1]);
+        }), l._1);
   return Caml_bytes.bytes_to_string(r);
 }
 
@@ -516,19 +516,19 @@ function is_valid_npm_package_name(s) {
 }
 
 function is_valid_source_name(name) {
-  var x = check_any_suffix_case_then_chop(name, /* :: */[
-        ".ml",
-        /* :: */[
-          ".re",
-          /* :: */[
-            ".mli",
-            /* :: */[
-              ".rei",
-              /* [] */0
-            ]
-          ]
-        ]
-      ]);
+  var x = check_any_suffix_case_then_chop(name, /* :: */{
+        _0: ".ml",
+        _1: /* :: */{
+          _0: ".re",
+          _1: /* :: */{
+            _0: ".mli",
+            _1: /* :: */{
+              _0: ".rei",
+              _1: /* [] */0
+            }
+          }
+        }
+      });
   if (x !== undefined) {
     if (is_valid_module_file(x)) {
       return /* Good */0;

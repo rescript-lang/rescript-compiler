@@ -15,26 +15,27 @@ var test_id = {
 
 function eq(loc, x, y) {
   test_id.contents = test_id.contents + 1 | 0;
-  suites.contents = /* :: */[
-    /* tuple */[
+  suites.contents = /* :: */{
+    _0: /* tuple */[
       loc + (" id " + String(test_id.contents)),
       (function (param) {
-          return /* Eq */Block.__(0, [
-                    x,
-                    y
-                  ]);
+          return {
+                  tag: /* Eq */0,
+                  _0: x,
+                  _1: y
+                };
         })
     ],
-    suites.contents
-  ];
+    _1: suites.contents
+  };
   
 }
 
 function add(suite) {
-  suites.contents = /* :: */[
-    suite,
-    suites.contents
-  ];
+  suites.contents = /* :: */{
+    _0: suite,
+    _1: suites.contents
+  };
   
 }
 
@@ -42,24 +43,33 @@ var Int3 = Caml_module.init_mod(/* tuple */[
       "recursive_module_test.ml",
       13,
       6
-    ], /* Module */Block.__(0, [[/* tuple */[
-            /* Function */0,
-            "u"
-          ]]]));
+    ], {
+      tag: /* Module */0,
+      _0: [/* tuple */[
+          /* Function */0,
+          "u"
+        ]]
+    });
 
-Caml_module.update_mod(/* Module */Block.__(0, [[/* tuple */[
-            /* Function */0,
-            "u"
-          ]]]), Int3, Int3);
+Caml_module.update_mod({
+      tag: /* Module */0,
+      _0: [/* tuple */[
+          /* Function */0,
+          "u"
+        ]]
+    }, Int3, Int3);
 
 var M = Caml_module.init_mod(/* tuple */[
       "recursive_module_test.ml",
       20,
       20
-    ], /* Module */Block.__(0, [[/* tuple */[
-            /* Function */0,
-            "fact"
-          ]]]));
+    ], {
+      tag: /* Module */0,
+      _0: [/* tuple */[
+          /* Function */0,
+          "fact"
+        ]]
+    });
 
 function fact(n) {
   if (n <= 1) {
@@ -69,10 +79,13 @@ function fact(n) {
   }
 }
 
-Caml_module.update_mod(/* Module */Block.__(0, [[/* tuple */[
-            /* Function */0,
-            "fact"
-          ]]]), M, {
+Caml_module.update_mod({
+      tag: /* Module */0,
+      _0: [/* tuple */[
+          /* Function */0,
+          "fact"
+        ]]
+    }, M, {
       fact: fact
     });
 
@@ -88,10 +101,13 @@ eq("File \"recursive_module_test.ml\", line 30, characters 5-12", 120, Curry._1(
 add(/* tuple */[
       "File \"recursive_module_test.ml\", line 34, characters 7-14",
       (function (param) {
-          return /* ThrowAny */Block.__(7, [(function (param) {
-                        Curry._1(Int3.u, 3);
-                        
-                      })]);
+          return {
+                  tag: /* ThrowAny */7,
+                  _0: (function (param) {
+                      Curry._1(Int3.u, 3);
+                      
+                    })
+                };
         })
     ]);
 

@@ -1,10 +1,10 @@
 'use strict';
 
 
-var N = { };
+var N = {};
 
 function N1($star) {
-  return { };
+  return {};
 }
 
 var x = true;

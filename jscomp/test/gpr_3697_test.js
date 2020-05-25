@@ -3,18 +3,20 @@
 var CamlinternalLazy = require("../../lib/js/camlinternalLazy.js");
 
 function fix(param) {
-  return /* Fix */[{
+  return /* Fix */{
+          _0: {
             RE_LAZY_DONE: false,
             value: (function () {
                 return fix(undefined);
               })
-          }];
+          }
+        };
 }
 
 function unfixLeak(_f) {
   while(true) {
     var f = _f;
-    _f = CamlinternalLazy.force(f[0]);
+    _f = CamlinternalLazy.force(f._0);
     continue ;
   };
 }
@@ -22,7 +24,7 @@ function unfixLeak(_f) {
 function unfix(p) {
   while(true) {
     var match = p.contents;
-    p.contents = CamlinternalLazy.force(match[0]);
+    p.contents = CamlinternalLazy.force(match._0);
   };
   
 }

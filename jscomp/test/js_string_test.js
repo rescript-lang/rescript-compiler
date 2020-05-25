@@ -4,301 +4,330 @@ var Mt = require("./mt.js");
 var Block = require("../../lib/js/block.js");
 var Caml_option = require("../../lib/js/caml_option.js");
 
-var suites_000 = /* tuple */[
+var suites_0 = /* tuple */[
   "make",
   (function (param) {
-      return /* Eq */Block.__(0, [
-                "null",
-                String(null).concat("")
-              ]);
+      return {
+              tag: /* Eq */0,
+              _0: "null",
+              _1: String(null).concat("")
+            };
     })
 ];
 
-var suites_001 = /* :: */[
-  /* tuple */[
+var suites_1 = /* :: */{
+  _0: /* tuple */[
     "fromCharCode",
     (function (param) {
-        return /* Eq */Block.__(0, [
-                  "a",
-                  String.fromCharCode(97)
-                ]);
+        return {
+                tag: /* Eq */0,
+                _0: "a",
+                _1: String.fromCharCode(97)
+              };
       })
   ],
-  /* :: */[
-    /* tuple */[
+  _1: /* :: */{
+    _0: /* tuple */[
       "fromCharCodeMany",
       (function (param) {
-          return /* Eq */Block.__(0, [
-                    "az",
-                    String.fromCharCode(97, 122)
-                  ]);
+          return {
+                  tag: /* Eq */0,
+                  _0: "az",
+                  _1: String.fromCharCode(97, 122)
+                };
         })
     ],
-    /* :: */[
-      /* tuple */[
+    _1: /* :: */{
+      _0: /* tuple */[
         "fromCodePoint",
         (function (param) {
-            return /* Eq */Block.__(0, [
-                      "a",
-                      String.fromCodePoint(97)
-                    ]);
+            return {
+                    tag: /* Eq */0,
+                    _0: "a",
+                    _1: String.fromCodePoint(97)
+                  };
           })
       ],
-      /* :: */[
-        /* tuple */[
+      _1: /* :: */{
+        _0: /* tuple */[
           "fromCodePointMany",
           (function (param) {
-              return /* Eq */Block.__(0, [
-                        "az",
-                        String.fromCodePoint(97, 122)
-                      ]);
+              return {
+                      tag: /* Eq */0,
+                      _0: "az",
+                      _1: String.fromCodePoint(97, 122)
+                    };
             })
         ],
-        /* :: */[
-          /* tuple */[
+        _1: /* :: */{
+          _0: /* tuple */[
             "length",
             (function (param) {
-                return /* Eq */Block.__(0, [
-                          3,
-                          "foo".length
-                        ]);
+                return {
+                        tag: /* Eq */0,
+                        _0: 3,
+                        _1: "foo".length
+                      };
               })
           ],
-          /* :: */[
-            /* tuple */[
+          _1: /* :: */{
+            _0: /* tuple */[
               "get",
               (function (param) {
-                  return /* Eq */Block.__(0, [
-                            "a",
-                            "foobar"[4]
-                          ]);
+                  return {
+                          tag: /* Eq */0,
+                          _0: "a",
+                          _1: "foobar"[4]
+                        };
                 })
             ],
-            /* :: */[
-              /* tuple */[
+            _1: /* :: */{
+              _0: /* tuple */[
                 "charAt",
                 (function (param) {
-                    return /* Eq */Block.__(0, [
-                              "a",
-                              "foobar".charAt(4)
-                            ]);
+                    return {
+                            tag: /* Eq */0,
+                            _0: "a",
+                            _1: "foobar".charAt(4)
+                          };
                   })
               ],
-              /* :: */[
-                /* tuple */[
+              _1: /* :: */{
+                _0: /* tuple */[
                   "charCodeAt",
                   (function (param) {
-                      return /* Eq */Block.__(0, [
-                                97,
-                                "foobar".charCodeAt(4)
-                              ]);
+                      return {
+                              tag: /* Eq */0,
+                              _0: 97,
+                              _1: "foobar".charCodeAt(4)
+                            };
                     })
                 ],
-                /* :: */[
-                  /* tuple */[
+                _1: /* :: */{
+                  _0: /* tuple */[
                     "codePointAt",
                     (function (param) {
-                        return /* Eq */Block.__(0, [
-                                  97,
-                                  "foobar".codePointAt(4)
-                                ]);
+                        return {
+                                tag: /* Eq */0,
+                                _0: 97,
+                                _1: "foobar".codePointAt(4)
+                              };
                       })
                   ],
-                  /* :: */[
-                    /* tuple */[
+                  _1: /* :: */{
+                    _0: /* tuple */[
                       "codePointAt - out of bounds",
                       (function (param) {
-                          return /* Eq */Block.__(0, [
-                                    undefined,
-                                    "foobar".codePointAt(98)
-                                  ]);
+                          return {
+                                  tag: /* Eq */0,
+                                  _0: undefined,
+                                  _1: "foobar".codePointAt(98)
+                                };
                         })
                     ],
-                    /* :: */[
-                      /* tuple */[
+                    _1: /* :: */{
+                      _0: /* tuple */[
                         "concat",
                         (function (param) {
-                            return /* Eq */Block.__(0, [
-                                      "foobar",
-                                      "foo".concat("bar")
-                                    ]);
+                            return {
+                                    tag: /* Eq */0,
+                                    _0: "foobar",
+                                    _1: "foo".concat("bar")
+                                  };
                           })
                       ],
-                      /* :: */[
-                        /* tuple */[
+                      _1: /* :: */{
+                        _0: /* tuple */[
                           "concatMany",
                           (function (param) {
-                              return /* Eq */Block.__(0, [
-                                        "foobarbaz",
-                                        "foo".concat("bar", "baz")
-                                      ]);
+                              return {
+                                      tag: /* Eq */0,
+                                      _0: "foobarbaz",
+                                      _1: "foo".concat("bar", "baz")
+                                    };
                             })
                         ],
-                        /* :: */[
-                          /* tuple */[
+                        _1: /* :: */{
+                          _0: /* tuple */[
                             "endsWith",
                             (function (param) {
-                                return /* Eq */Block.__(0, [
-                                          true,
-                                          "foobar".endsWith("bar")
-                                        ]);
+                                return {
+                                        tag: /* Eq */0,
+                                        _0: true,
+                                        _1: "foobar".endsWith("bar")
+                                      };
                               })
                           ],
-                          /* :: */[
-                            /* tuple */[
+                          _1: /* :: */{
+                            _0: /* tuple */[
                               "endsWithFrom",
                               (function (param) {
-                                  return /* Eq */Block.__(0, [
-                                            false,
-                                            "foobar".endsWith("bar", 1)
-                                          ]);
+                                  return {
+                                          tag: /* Eq */0,
+                                          _0: false,
+                                          _1: "foobar".endsWith("bar", 1)
+                                        };
                                 })
                             ],
-                            /* :: */[
-                              /* tuple */[
+                            _1: /* :: */{
+                              _0: /* tuple */[
                                 "includes",
                                 (function (param) {
-                                    return /* Eq */Block.__(0, [
-                                              true,
-                                              "foobarbaz".includes("bar")
-                                            ]);
+                                    return {
+                                            tag: /* Eq */0,
+                                            _0: true,
+                                            _1: "foobarbaz".includes("bar")
+                                          };
                                   })
                               ],
-                              /* :: */[
-                                /* tuple */[
+                              _1: /* :: */{
+                                _0: /* tuple */[
                                   "includesFrom",
                                   (function (param) {
-                                      return /* Eq */Block.__(0, [
-                                                false,
-                                                "foobarbaz".includes("bar", 4)
-                                              ]);
+                                      return {
+                                              tag: /* Eq */0,
+                                              _0: false,
+                                              _1: "foobarbaz".includes("bar", 4)
+                                            };
                                     })
                                 ],
-                                /* :: */[
-                                  /* tuple */[
+                                _1: /* :: */{
+                                  _0: /* tuple */[
                                     "indexOf",
                                     (function (param) {
-                                        return /* Eq */Block.__(0, [
-                                                  3,
-                                                  "foobarbaz".indexOf("bar")
-                                                ]);
+                                        return {
+                                                tag: /* Eq */0,
+                                                _0: 3,
+                                                _1: "foobarbaz".indexOf("bar")
+                                              };
                                       })
                                   ],
-                                  /* :: */[
-                                    /* tuple */[
+                                  _1: /* :: */{
+                                    _0: /* tuple */[
                                       "indexOfFrom",
                                       (function (param) {
-                                          return /* Eq */Block.__(0, [
-                                                    -1,
-                                                    "foobarbaz".indexOf("bar", 4)
-                                                  ]);
+                                          return {
+                                                  tag: /* Eq */0,
+                                                  _0: -1,
+                                                  _1: "foobarbaz".indexOf("bar", 4)
+                                                };
                                         })
                                     ],
-                                    /* :: */[
-                                      /* tuple */[
+                                    _1: /* :: */{
+                                      _0: /* tuple */[
                                         "lastIndexOf",
                                         (function (param) {
-                                            return /* Eq */Block.__(0, [
-                                                      3,
-                                                      "foobarbaz".lastIndexOf("bar")
-                                                    ]);
+                                            return {
+                                                    tag: /* Eq */0,
+                                                    _0: 3,
+                                                    _1: "foobarbaz".lastIndexOf("bar")
+                                                  };
                                           })
                                       ],
-                                      /* :: */[
-                                        /* tuple */[
+                                      _1: /* :: */{
+                                        _0: /* tuple */[
                                           "lastIndexOfFrom",
                                           (function (param) {
-                                              return /* Eq */Block.__(0, [
-                                                        3,
-                                                        "foobarbaz".lastIndexOf("bar", 4)
-                                                      ]);
+                                              return {
+                                                      tag: /* Eq */0,
+                                                      _0: 3,
+                                                      _1: "foobarbaz".lastIndexOf("bar", 4)
+                                                    };
                                             })
                                         ],
-                                        /* :: */[
-                                          /* tuple */[
+                                        _1: /* :: */{
+                                          _0: /* tuple */[
                                             "localeCompare",
                                             (function (param) {
-                                                return /* Eq */Block.__(0, [
-                                                          0,
-                                                          "foo".localeCompare("foo")
-                                                        ]);
+                                                return {
+                                                        tag: /* Eq */0,
+                                                        _0: 0,
+                                                        _1: "foo".localeCompare("foo")
+                                                      };
                                               })
                                           ],
-                                          /* :: */[
-                                            /* tuple */[
+                                          _1: /* :: */{
+                                            _0: /* tuple */[
                                               "match",
                                               (function (param) {
-                                                  return /* Eq */Block.__(0, [
-                                                            [
-                                                              "na",
-                                                              "na"
-                                                            ],
-                                                            Caml_option.null_to_opt("banana".match(/na+/g))
-                                                          ]);
+                                                  return {
+                                                          tag: /* Eq */0,
+                                                          _0: [
+                                                            "na",
+                                                            "na"
+                                                          ],
+                                                          _1: Caml_option.null_to_opt("banana".match(/na+/g))
+                                                        };
                                                 })
                                             ],
-                                            /* :: */[
-                                              /* tuple */[
+                                            _1: /* :: */{
+                                              _0: /* tuple */[
                                                 "match - no match",
                                                 (function (param) {
-                                                    return /* Eq */Block.__(0, [
-                                                              undefined,
-                                                              Caml_option.null_to_opt("banana".match(/nanana+/g))
-                                                            ]);
+                                                    return {
+                                                            tag: /* Eq */0,
+                                                            _0: undefined,
+                                                            _1: Caml_option.null_to_opt("banana".match(/nanana+/g))
+                                                          };
                                                   })
                                               ],
-                                              /* :: */[
-                                                /* tuple */[
+                                              _1: /* :: */{
+                                                _0: /* tuple */[
                                                   "normalize",
                                                   (function (param) {
-                                                      return /* Eq */Block.__(0, [
-                                                                "foo",
-                                                                "foo".normalize()
-                                                              ]);
+                                                      return {
+                                                              tag: /* Eq */0,
+                                                              _0: "foo",
+                                                              _1: "foo".normalize()
+                                                            };
                                                     })
                                                 ],
-                                                /* :: */[
-                                                  /* tuple */[
+                                                _1: /* :: */{
+                                                  _0: /* tuple */[
                                                     "normalizeByForm",
                                                     (function (param) {
-                                                        return /* Eq */Block.__(0, [
-                                                                  "foo",
-                                                                  "foo".normalize("NFKD")
-                                                                ]);
+                                                        return {
+                                                                tag: /* Eq */0,
+                                                                _0: "foo",
+                                                                _1: "foo".normalize("NFKD")
+                                                              };
                                                       })
                                                   ],
-                                                  /* :: */[
-                                                    /* tuple */[
+                                                  _1: /* :: */{
+                                                    _0: /* tuple */[
                                                       "repeat",
                                                       (function (param) {
-                                                          return /* Eq */Block.__(0, [
-                                                                    "foofoofoo",
-                                                                    "foo".repeat(3)
-                                                                  ]);
+                                                          return {
+                                                                  tag: /* Eq */0,
+                                                                  _0: "foofoofoo",
+                                                                  _1: "foo".repeat(3)
+                                                                };
                                                         })
                                                     ],
-                                                    /* :: */[
-                                                      /* tuple */[
+                                                    _1: /* :: */{
+                                                      _0: /* tuple */[
                                                         "replace",
                                                         (function (param) {
-                                                            return /* Eq */Block.__(0, [
-                                                                      "fooBORKbaz",
-                                                                      "foobarbaz".replace("bar", "BORK")
-                                                                    ]);
+                                                            return {
+                                                                    tag: /* Eq */0,
+                                                                    _0: "fooBORKbaz",
+                                                                    _1: "foobarbaz".replace("bar", "BORK")
+                                                                  };
                                                           })
                                                       ],
-                                                      /* :: */[
-                                                        /* tuple */[
+                                                      _1: /* :: */{
+                                                        _0: /* tuple */[
                                                           "replaceByRe",
                                                           (function (param) {
-                                                              return /* Eq */Block.__(0, [
-                                                                        "fooBORKBORK",
-                                                                        "foobarbaz".replace(/ba./g, "BORK")
-                                                                      ]);
+                                                              return {
+                                                                      tag: /* Eq */0,
+                                                                      _0: "fooBORKBORK",
+                                                                      _1: "foobarbaz".replace(/ba./g, "BORK")
+                                                                    };
                                                             })
                                                         ],
-                                                        /* :: */[
-                                                          /* tuple */[
+                                                        _1: /* :: */{
+                                                          _0: /* tuple */[
                                                             "unsafeReplaceBy0",
                                                             (function (param) {
                                                                 var replace = function (whole, offset, s) {
@@ -308,14 +337,15 @@ var suites_001 = /* :: */[
                                                                     return "DORK";
                                                                   }
                                                                 };
-                                                                return /* Eq */Block.__(0, [
-                                                                          "fooBORKDORK",
-                                                                          "foobarbaz".replace(/ba./g, replace)
-                                                                        ]);
+                                                                return {
+                                                                        tag: /* Eq */0,
+                                                                        _0: "fooBORKDORK",
+                                                                        _1: "foobarbaz".replace(/ba./g, replace)
+                                                                      };
                                                               })
                                                           ],
-                                                          /* :: */[
-                                                            /* tuple */[
+                                                          _1: /* :: */{
+                                                            _0: /* tuple */[
                                                               "unsafeReplaceBy1",
                                                               (function (param) {
                                                                   var replace = function (whole, p1, offset, s) {
@@ -325,14 +355,15 @@ var suites_001 = /* :: */[
                                                                       return "DORK";
                                                                     }
                                                                   };
-                                                                  return /* Eq */Block.__(0, [
-                                                                            "fooBORKDORK",
-                                                                            "foobarbaz".replace(/ba./g, replace)
-                                                                          ]);
+                                                                  return {
+                                                                          tag: /* Eq */0,
+                                                                          _0: "fooBORKDORK",
+                                                                          _1: "foobarbaz".replace(/ba./g, replace)
+                                                                        };
                                                                 })
                                                             ],
-                                                            /* :: */[
-                                                              /* tuple */[
+                                                            _1: /* :: */{
+                                                              _0: /* tuple */[
                                                                 "unsafeReplaceBy2",
                                                                 (function (param) {
                                                                     var replace = function (whole, p1, p2, offset, s) {
@@ -342,14 +373,15 @@ var suites_001 = /* :: */[
                                                                         return "DORK";
                                                                       }
                                                                     };
-                                                                    return /* Eq */Block.__(0, [
-                                                                              "fooBORKDORK",
-                                                                              "foobarbaz".replace(/ba./g, replace)
-                                                                            ]);
+                                                                    return {
+                                                                            tag: /* Eq */0,
+                                                                            _0: "fooBORKDORK",
+                                                                            _1: "foobarbaz".replace(/ba./g, replace)
+                                                                          };
                                                                   })
                                                               ],
-                                                              /* :: */[
-                                                                /* tuple */[
+                                                              _1: /* :: */{
+                                                                _0: /* tuple */[
                                                                   "unsafeReplaceBy3",
                                                                   (function (param) {
                                                                       var replace = function (whole, p1, p2, p3, offset, s) {
@@ -359,297 +391,321 @@ var suites_001 = /* :: */[
                                                                           return "DORK";
                                                                         }
                                                                       };
-                                                                      return /* Eq */Block.__(0, [
-                                                                                "fooBORKDORK",
-                                                                                "foobarbaz".replace(/ba./g, replace)
-                                                                              ]);
+                                                                      return {
+                                                                              tag: /* Eq */0,
+                                                                              _0: "fooBORKDORK",
+                                                                              _1: "foobarbaz".replace(/ba./g, replace)
+                                                                            };
                                                                     })
                                                                 ],
-                                                                /* :: */[
-                                                                  /* tuple */[
+                                                                _1: /* :: */{
+                                                                  _0: /* tuple */[
                                                                     "search",
                                                                     (function (param) {
-                                                                        return /* Eq */Block.__(0, [
-                                                                                  3,
-                                                                                  "foobarbaz".search(/ba./g)
-                                                                                ]);
+                                                                        return {
+                                                                                tag: /* Eq */0,
+                                                                                _0: 3,
+                                                                                _1: "foobarbaz".search(/ba./g)
+                                                                              };
                                                                       })
                                                                   ],
-                                                                  /* :: */[
-                                                                    /* tuple */[
+                                                                  _1: /* :: */{
+                                                                    _0: /* tuple */[
                                                                       "slice",
                                                                       (function (param) {
-                                                                          return /* Eq */Block.__(0, [
-                                                                                    "bar",
-                                                                                    "foobarbaz".slice(3, 6)
-                                                                                  ]);
+                                                                          return {
+                                                                                  tag: /* Eq */0,
+                                                                                  _0: "bar",
+                                                                                  _1: "foobarbaz".slice(3, 6)
+                                                                                };
                                                                         })
                                                                     ],
-                                                                    /* :: */[
-                                                                      /* tuple */[
+                                                                    _1: /* :: */{
+                                                                      _0: /* tuple */[
                                                                         "sliceToEnd",
                                                                         (function (param) {
-                                                                            return /* Eq */Block.__(0, [
-                                                                                      "barbaz",
-                                                                                      "foobarbaz".slice(3)
-                                                                                    ]);
+                                                                            return {
+                                                                                    tag: /* Eq */0,
+                                                                                    _0: "barbaz",
+                                                                                    _1: "foobarbaz".slice(3)
+                                                                                  };
                                                                           })
                                                                       ],
-                                                                      /* :: */[
-                                                                        /* tuple */[
+                                                                      _1: /* :: */{
+                                                                        _0: /* tuple */[
                                                                           "split",
                                                                           (function (param) {
-                                                                              return /* Eq */Block.__(0, [
-                                                                                        [
-                                                                                          "foo",
-                                                                                          "bar",
-                                                                                          "baz"
-                                                                                        ],
-                                                                                        "foo bar baz".split(" ")
-                                                                                      ]);
+                                                                              return {
+                                                                                      tag: /* Eq */0,
+                                                                                      _0: [
+                                                                                        "foo",
+                                                                                        "bar",
+                                                                                        "baz"
+                                                                                      ],
+                                                                                      _1: "foo bar baz".split(" ")
+                                                                                    };
                                                                             })
                                                                         ],
-                                                                        /* :: */[
-                                                                          /* tuple */[
+                                                                        _1: /* :: */{
+                                                                          _0: /* tuple */[
                                                                             "splitAtMost",
                                                                             (function (param) {
-                                                                                return /* Eq */Block.__(0, [
-                                                                                          [
-                                                                                            "foo",
-                                                                                            "bar"
-                                                                                          ],
-                                                                                          "foo bar baz".split(" ", 2)
-                                                                                        ]);
+                                                                                return {
+                                                                                        tag: /* Eq */0,
+                                                                                        _0: [
+                                                                                          "foo",
+                                                                                          "bar"
+                                                                                        ],
+                                                                                        _1: "foo bar baz".split(" ", 2)
+                                                                                      };
                                                                               })
                                                                           ],
-                                                                          /* :: */[
-                                                                            /* tuple */[
+                                                                          _1: /* :: */{
+                                                                            _0: /* tuple */[
                                                                               "splitByRe",
                                                                               (function (param) {
-                                                                                  return /* Eq */Block.__(0, [
-                                                                                            [
-                                                                                              "a",
-                                                                                              "#",
-                                                                                              undefined,
-                                                                                              "b",
-                                                                                              "#",
-                                                                                              ":",
-                                                                                              "c"
-                                                                                            ],
-                                                                                            "a#b#:c".split(/(#)(:)?/)
-                                                                                          ]);
+                                                                                  return {
+                                                                                          tag: /* Eq */0,
+                                                                                          _0: [
+                                                                                            "a",
+                                                                                            "#",
+                                                                                            undefined,
+                                                                                            "b",
+                                                                                            "#",
+                                                                                            ":",
+                                                                                            "c"
+                                                                                          ],
+                                                                                          _1: "a#b#:c".split(/(#)(:)?/)
+                                                                                        };
                                                                                 })
                                                                             ],
-                                                                            /* :: */[
-                                                                              /* tuple */[
+                                                                            _1: /* :: */{
+                                                                              _0: /* tuple */[
                                                                                 "splitByReAtMost",
                                                                                 (function (param) {
-                                                                                    return /* Eq */Block.__(0, [
-                                                                                              [
-                                                                                                "a",
-                                                                                                "#",
-                                                                                                undefined
-                                                                                              ],
-                                                                                              "a#b#:c".split(/(#)(:)?/, 3)
-                                                                                            ]);
+                                                                                    return {
+                                                                                            tag: /* Eq */0,
+                                                                                            _0: [
+                                                                                              "a",
+                                                                                              "#",
+                                                                                              undefined
+                                                                                            ],
+                                                                                            _1: "a#b#:c".split(/(#)(:)?/, 3)
+                                                                                          };
                                                                                   })
                                                                               ],
-                                                                              /* :: */[
-                                                                                /* tuple */[
+                                                                              _1: /* :: */{
+                                                                                _0: /* tuple */[
                                                                                   "startsWith",
                                                                                   (function (param) {
-                                                                                      return /* Eq */Block.__(0, [
-                                                                                                true,
-                                                                                                "foobarbaz".startsWith("foo")
-                                                                                              ]);
+                                                                                      return {
+                                                                                              tag: /* Eq */0,
+                                                                                              _0: true,
+                                                                                              _1: "foobarbaz".startsWith("foo")
+                                                                                            };
                                                                                     })
                                                                                 ],
-                                                                                /* :: */[
-                                                                                  /* tuple */[
+                                                                                _1: /* :: */{
+                                                                                  _0: /* tuple */[
                                                                                     "startsWithFrom",
                                                                                     (function (param) {
-                                                                                        return /* Eq */Block.__(0, [
-                                                                                                  false,
-                                                                                                  "foobarbaz".startsWith("foo", 1)
-                                                                                                ]);
+                                                                                        return {
+                                                                                                tag: /* Eq */0,
+                                                                                                _0: false,
+                                                                                                _1: "foobarbaz".startsWith("foo", 1)
+                                                                                              };
                                                                                       })
                                                                                   ],
-                                                                                  /* :: */[
-                                                                                    /* tuple */[
+                                                                                  _1: /* :: */{
+                                                                                    _0: /* tuple */[
                                                                                       "substr",
                                                                                       (function (param) {
-                                                                                          return /* Eq */Block.__(0, [
-                                                                                                    "barbaz",
-                                                                                                    "foobarbaz".substr(3)
-                                                                                                  ]);
+                                                                                          return {
+                                                                                                  tag: /* Eq */0,
+                                                                                                  _0: "barbaz",
+                                                                                                  _1: "foobarbaz".substr(3)
+                                                                                                };
                                                                                         })
                                                                                     ],
-                                                                                    /* :: */[
-                                                                                      /* tuple */[
+                                                                                    _1: /* :: */{
+                                                                                      _0: /* tuple */[
                                                                                         "substrAtMost",
                                                                                         (function (param) {
-                                                                                            return /* Eq */Block.__(0, [
-                                                                                                      "bar",
-                                                                                                      "foobarbaz".substr(3, 3)
-                                                                                                    ]);
+                                                                                            return {
+                                                                                                    tag: /* Eq */0,
+                                                                                                    _0: "bar",
+                                                                                                    _1: "foobarbaz".substr(3, 3)
+                                                                                                  };
                                                                                           })
                                                                                       ],
-                                                                                      /* :: */[
-                                                                                        /* tuple */[
+                                                                                      _1: /* :: */{
+                                                                                        _0: /* tuple */[
                                                                                           "substring",
                                                                                           (function (param) {
-                                                                                              return /* Eq */Block.__(0, [
-                                                                                                        "bar",
-                                                                                                        "foobarbaz".substring(3, 6)
-                                                                                                      ]);
+                                                                                              return {
+                                                                                                      tag: /* Eq */0,
+                                                                                                      _0: "bar",
+                                                                                                      _1: "foobarbaz".substring(3, 6)
+                                                                                                    };
                                                                                             })
                                                                                         ],
-                                                                                        /* :: */[
-                                                                                          /* tuple */[
+                                                                                        _1: /* :: */{
+                                                                                          _0: /* tuple */[
                                                                                             "substringToEnd",
                                                                                             (function (param) {
-                                                                                                return /* Eq */Block.__(0, [
-                                                                                                          "barbaz",
-                                                                                                          "foobarbaz".substring(3)
-                                                                                                        ]);
+                                                                                                return {
+                                                                                                        tag: /* Eq */0,
+                                                                                                        _0: "barbaz",
+                                                                                                        _1: "foobarbaz".substring(3)
+                                                                                                      };
                                                                                               })
                                                                                           ],
-                                                                                          /* :: */[
-                                                                                            /* tuple */[
+                                                                                          _1: /* :: */{
+                                                                                            _0: /* tuple */[
                                                                                               "toLowerCase",
                                                                                               (function (param) {
-                                                                                                  return /* Eq */Block.__(0, [
-                                                                                                            "bork",
-                                                                                                            "BORK".toLowerCase()
-                                                                                                          ]);
+                                                                                                  return {
+                                                                                                          tag: /* Eq */0,
+                                                                                                          _0: "bork",
+                                                                                                          _1: "BORK".toLowerCase()
+                                                                                                        };
                                                                                                 })
                                                                                             ],
-                                                                                            /* :: */[
-                                                                                              /* tuple */[
+                                                                                            _1: /* :: */{
+                                                                                              _0: /* tuple */[
                                                                                                 "toLocaleLowerCase",
                                                                                                 (function (param) {
-                                                                                                    return /* Eq */Block.__(0, [
-                                                                                                              "bork",
-                                                                                                              "BORK".toLocaleLowerCase()
-                                                                                                            ]);
+                                                                                                    return {
+                                                                                                            tag: /* Eq */0,
+                                                                                                            _0: "bork",
+                                                                                                            _1: "BORK".toLocaleLowerCase()
+                                                                                                          };
                                                                                                   })
                                                                                               ],
-                                                                                              /* :: */[
-                                                                                                /* tuple */[
+                                                                                              _1: /* :: */{
+                                                                                                _0: /* tuple */[
                                                                                                   "toUpperCase",
                                                                                                   (function (param) {
-                                                                                                      return /* Eq */Block.__(0, [
-                                                                                                                "FUBAR",
-                                                                                                                "fubar".toUpperCase()
-                                                                                                              ]);
+                                                                                                      return {
+                                                                                                              tag: /* Eq */0,
+                                                                                                              _0: "FUBAR",
+                                                                                                              _1: "fubar".toUpperCase()
+                                                                                                            };
                                                                                                     })
                                                                                                 ],
-                                                                                                /* :: */[
-                                                                                                  /* tuple */[
+                                                                                                _1: /* :: */{
+                                                                                                  _0: /* tuple */[
                                                                                                     "toLocaleUpperCase",
                                                                                                     (function (param) {
-                                                                                                        return /* Eq */Block.__(0, [
-                                                                                                                  "FUBAR",
-                                                                                                                  "fubar".toLocaleUpperCase()
-                                                                                                                ]);
+                                                                                                        return {
+                                                                                                                tag: /* Eq */0,
+                                                                                                                _0: "FUBAR",
+                                                                                                                _1: "fubar".toLocaleUpperCase()
+                                                                                                              };
                                                                                                       })
                                                                                                   ],
-                                                                                                  /* :: */[
-                                                                                                    /* tuple */[
+                                                                                                  _1: /* :: */{
+                                                                                                    _0: /* tuple */[
                                                                                                       "trim",
                                                                                                       (function (param) {
-                                                                                                          return /* Eq */Block.__(0, [
-                                                                                                                    "foo",
-                                                                                                                    "  foo  ".trim()
-                                                                                                                  ]);
+                                                                                                          return {
+                                                                                                                  tag: /* Eq */0,
+                                                                                                                  _0: "foo",
+                                                                                                                  _1: "  foo  ".trim()
+                                                                                                                };
                                                                                                         })
                                                                                                     ],
-                                                                                                    /* :: */[
-                                                                                                      /* tuple */[
+                                                                                                    _1: /* :: */{
+                                                                                                      _0: /* tuple */[
                                                                                                         "anchor",
                                                                                                         (function (param) {
-                                                                                                            return /* Eq */Block.__(0, [
-                                                                                                                      "<a name=\"bar\">foo</a>",
-                                                                                                                      "foo".anchor("bar")
-                                                                                                                    ]);
+                                                                                                            return {
+                                                                                                                    tag: /* Eq */0,
+                                                                                                                    _0: "<a name=\"bar\">foo</a>",
+                                                                                                                    _1: "foo".anchor("bar")
+                                                                                                                  };
                                                                                                           })
                                                                                                       ],
-                                                                                                      /* :: */[
-                                                                                                        /* tuple */[
+                                                                                                      _1: /* :: */{
+                                                                                                        _0: /* tuple */[
                                                                                                           "link",
                                                                                                           (function (param) {
-                                                                                                              return /* Eq */Block.__(0, [
-                                                                                                                        "<a href=\"https://reason.ml\">foo</a>",
-                                                                                                                        "foo".link("https://reason.ml")
-                                                                                                                      ]);
+                                                                                                              return {
+                                                                                                                      tag: /* Eq */0,
+                                                                                                                      _0: "<a href=\"https://reason.ml\">foo</a>",
+                                                                                                                      _1: "foo".link("https://reason.ml")
+                                                                                                                    };
                                                                                                             })
                                                                                                         ],
-                                                                                                        /* :: */[
-                                                                                                          /* tuple */[
+                                                                                                        _1: /* :: */{
+                                                                                                          _0: /* tuple */[
                                                                                                             "File \"js_string_test.ml\", line 211, characters 4-11",
                                                                                                             (function (param) {
-                                                                                                                return /* Ok */Block.__(4, ["ab".includes("a")]);
+                                                                                                                return {
+                                                                                                                        tag: /* Ok */4,
+                                                                                                                        _0: "ab".includes("a")
+                                                                                                                      };
                                                                                                               })
                                                                                                           ],
-                                                                                                          /* [] */0
-                                                                                                        ]
-                                                                                                      ]
-                                                                                                    ]
-                                                                                                  ]
-                                                                                                ]
-                                                                                              ]
-                                                                                            ]
-                                                                                          ]
-                                                                                        ]
-                                                                                      ]
-                                                                                    ]
-                                                                                  ]
-                                                                                ]
-                                                                              ]
-                                                                            ]
-                                                                          ]
-                                                                        ]
-                                                                      ]
-                                                                    ]
-                                                                  ]
-                                                                ]
-                                                              ]
-                                                            ]
-                                                          ]
-                                                        ]
-                                                      ]
-                                                    ]
-                                                  ]
-                                                ]
-                                              ]
-                                            ]
-                                          ]
-                                        ]
-                                      ]
-                                    ]
-                                  ]
-                                ]
-                              ]
-                            ]
-                          ]
-                        ]
-                      ]
-                    ]
-                  ]
-                ]
-              ]
-            ]
-          ]
-        ]
-      ]
-    ]
-  ]
-];
+                                                                                                          _1: /* [] */0
+                                                                                                        }
+                                                                                                      }
+                                                                                                    }
+                                                                                                  }
+                                                                                                }
+                                                                                              }
+                                                                                            }
+                                                                                          }
+                                                                                        }
+                                                                                      }
+                                                                                    }
+                                                                                  }
+                                                                                }
+                                                                              }
+                                                                            }
+                                                                          }
+                                                                        }
+                                                                      }
+                                                                    }
+                                                                  }
+                                                                }
+                                                              }
+                                                            }
+                                                          }
+                                                        }
+                                                      }
+                                                    }
+                                                  }
+                                                }
+                                              }
+                                            }
+                                          }
+                                        }
+                                      }
+                                    }
+                                  }
+                                }
+                              }
+                            }
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+};
 
-var suites = /* :: */[
-  suites_000,
-  suites_001
-];
+var suites = /* :: */{
+  _0: suites_0,
+  _1: suites_1
+};
 
 Mt.from_pair_suites("Js_string_test", suites);
 

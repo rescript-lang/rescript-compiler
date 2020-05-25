@@ -15,13 +15,13 @@ function f(H) {
   return List.sort((function (param, param$1) {
                 return Caml_primitive.caml_int_compare(param[0], param$1[0]);
               }), Curry._3(H.fold, (function (k, v, acc) {
-                    return /* :: */[
-                            /* tuple */[
+                    return /* :: */{
+                            _0: /* tuple */[
                               k,
                               v
                             ],
-                            acc
-                          ];
+                            _1: acc
+                          };
                   }), tbl, /* [] */0));
 }
 
@@ -34,13 +34,13 @@ function g(H, count) {
     Curry._3(H.replace, tbl, (i$1 << 1), String(i$1));
   }
   var v = Curry._3(H.fold, (function (k, v, acc) {
-          return /* :: */[
-                  /* tuple */[
+          return /* :: */{
+                  _0: /* tuple */[
                     k,
                     v
                   ],
-                  acc
-                ];
+                  _1: acc
+                };
         }), tbl, /* [] */0);
   return $$Array.of_list(List.sort((function (param, param$1) {
                     return Caml_primitive.caml_int_compare(param[0], param$1[0]);
@@ -58,50 +58,52 @@ var Int_hash = Hashtbl.Make({
       hash: hash
     });
 
-var suites_000 = /* tuple */[
+var suites_0 = /* tuple */[
   "simple",
   (function (param) {
-      return /* Eq */Block.__(0, [
-                /* :: */[
-                  /* tuple */[
-                    1,
-                    /* "1" */49
-                  ],
-                  /* :: */[
-                    /* tuple */[
-                      2,
-                      /* "2" */50
-                    ],
-                    /* [] */0
-                  ]
+      return {
+              tag: /* Eq */0,
+              _0: /* :: */{
+                _0: /* tuple */[
+                  1,
+                  /* "1" */49
                 ],
-                f(Int_hash)
-              ]);
+                _1: /* :: */{
+                  _0: /* tuple */[
+                    2,
+                    /* "2" */50
+                  ],
+                  _1: /* [] */0
+                }
+              },
+              _1: f(Int_hash)
+            };
     })
 ];
 
-var suites_001 = /* :: */[
-  /* tuple */[
+var suites_1 = /* :: */{
+  _0: /* tuple */[
     "more_iterations",
     (function (param) {
-        return /* Eq */Block.__(0, [
-                  $$Array.init(1001, (function (i) {
-                          return /* tuple */[
-                                  (i << 1),
-                                  String(i)
-                                ];
-                        })),
-                  g(Int_hash, 1000)
-                ]);
+        return {
+                tag: /* Eq */0,
+                _0: $$Array.init(1001, (function (i) {
+                        return /* tuple */[
+                                (i << 1),
+                                String(i)
+                              ];
+                      })),
+                _1: g(Int_hash, 1000)
+              };
       })
   ],
-  /* [] */0
-];
+  _1: /* [] */0
+};
 
-var suites = /* :: */[
-  suites_000,
-  suites_001
-];
+var suites = /* :: */{
+  _0: suites_0,
+  _1: suites_1
+};
 
 Mt.from_pair_suites("Int_hashtbl_test", suites);
 

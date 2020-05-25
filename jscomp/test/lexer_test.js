@@ -19,10 +19,10 @@ function get_tokens(lex, str) {
     if (v === /* EOF */7) {
       return List.rev(acc);
     }
-    _acc = /* :: */[
-      v,
-      acc
-    ];
+    _acc = /* :: */{
+      _0: v,
+      _1: acc
+    };
     continue ;
   };
 }
@@ -38,8 +38,8 @@ function from_tokens(lst) {
   return function (param) {
     var match = l.contents;
     if (match) {
-      l.contents = match[1];
-      return match[0];
+      l.contents = match._1;
+      return match._0;
     }
     throw {
           RE_EXN_ID: "End_of_file",
@@ -48,149 +48,169 @@ function from_tokens(lst) {
   };
 }
 
-var lexer_suites_000 = /* tuple */[
+var lexer_suites_0 = /* tuple */[
   "arith_token",
   (function (param) {
-      return /* Eq */Block.__(0, [
-                get_tokens(Arith_lexer.lexeme, "x + 3 + 4 + y"),
-                /* :: */[
-                  /* IDENT */Block.__(1, ["x"]),
-                  /* :: */[
-                    /* PLUS */0,
-                    /* :: */[
-                      /* NUMERAL */Block.__(0, [3]),
-                      /* :: */[
-                        /* PLUS */0,
-                        /* :: */[
-                          /* NUMERAL */Block.__(0, [4]),
-                          /* :: */[
-                            /* PLUS */0,
-                            /* :: */[
-                              /* IDENT */Block.__(1, ["y"]),
-                              /* [] */0
-                            ]
-                          ]
-                        ]
-                      ]
-                    ]
-                  ]
-                ]
-              ]);
+      return {
+              tag: /* Eq */0,
+              _0: get_tokens(Arith_lexer.lexeme, "x + 3 + 4 + y"),
+              _1: /* :: */{
+                _0: {
+                  tag: /* IDENT */1,
+                  _0: "x"
+                },
+                _1: /* :: */{
+                  _0: /* PLUS */0,
+                  _1: /* :: */{
+                    _0: {
+                      tag: /* NUMERAL */0,
+                      _0: 3
+                    },
+                    _1: /* :: */{
+                      _0: /* PLUS */0,
+                      _1: /* :: */{
+                        _0: {
+                          tag: /* NUMERAL */0,
+                          _0: 4
+                        },
+                        _1: /* :: */{
+                          _0: /* PLUS */0,
+                          _1: /* :: */{
+                            _0: {
+                              tag: /* IDENT */1,
+                              _0: "y"
+                            },
+                            _1: /* [] */0
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            };
     })
 ];
 
-var lexer_suites_001 = /* :: */[
-  /* tuple */[
+var lexer_suites_1 = /* :: */{
+  _0: /* tuple */[
     "simple token",
     (function (param) {
-        return /* Eq */Block.__(0, [
-                  Arith_lexer.lexeme(Lexing.from_string("10")),
-                  /* NUMERAL */Block.__(0, [10])
-                ]);
+        return {
+                tag: /* Eq */0,
+                _0: Arith_lexer.lexeme(Lexing.from_string("10")),
+                _1: {
+                  tag: /* NUMERAL */0,
+                  _0: 10
+                }
+              };
       })
   ],
-  /* :: */[
-    /* tuple */[
+  _1: /* :: */{
+    _0: /* tuple */[
       "number_lexer",
       (function (param) {
           var v = {
             contents: /* [] */0
           };
           var add = function (t) {
-            v.contents = /* :: */[
-              t,
-              v.contents
-            ];
+            v.contents = /* :: */{
+              _0: t,
+              _1: v.contents
+            };
             
           };
           Number_lexer.token(add, Lexing.from_string("32 + 32 ( ) * / "));
-          return /* Eq */Block.__(0, [
-                    List.rev(v.contents),
-                    /* :: */[
-                      "number",
-                      /* :: */[
-                        "32",
-                        /* :: */[
-                          "new line",
-                          /* :: */[
-                            "+",
-                            /* :: */[
-                              "new line",
-                              /* :: */[
-                                "number",
-                                /* :: */[
-                                  "32",
-                                  /* :: */[
-                                    "new line",
-                                    /* :: */[
-                                      "(",
-                                      /* :: */[
-                                        "new line",
-                                        /* :: */[
-                                          ")",
-                                          /* :: */[
-                                            "new line",
-                                            /* :: */[
-                                              "*",
-                                              /* :: */[
-                                                "new line",
-                                                /* :: */[
-                                                  "/",
-                                                  /* :: */[
-                                                    "new line",
-                                                    /* :: */[
-                                                      "eof",
-                                                      /* [] */0
-                                                    ]
-                                                  ]
-                                                ]
-                                              ]
-                                            ]
-                                          ]
-                                        ]
-                                      ]
-                                    ]
-                                  ]
-                                ]
-                              ]
-                            ]
-                          ]
-                        ]
-                      ]
-                    ]
-                  ]);
+          return {
+                  tag: /* Eq */0,
+                  _0: List.rev(v.contents),
+                  _1: /* :: */{
+                    _0: "number",
+                    _1: /* :: */{
+                      _0: "32",
+                      _1: /* :: */{
+                        _0: "new line",
+                        _1: /* :: */{
+                          _0: "+",
+                          _1: /* :: */{
+                            _0: "new line",
+                            _1: /* :: */{
+                              _0: "number",
+                              _1: /* :: */{
+                                _0: "32",
+                                _1: /* :: */{
+                                  _0: "new line",
+                                  _1: /* :: */{
+                                    _0: "(",
+                                    _1: /* :: */{
+                                      _0: "new line",
+                                      _1: /* :: */{
+                                        _0: ")",
+                                        _1: /* :: */{
+                                          _0: "new line",
+                                          _1: /* :: */{
+                                            _0: "*",
+                                            _1: /* :: */{
+                                              _0: "new line",
+                                              _1: /* :: */{
+                                                _0: "/",
+                                                _1: /* :: */{
+                                                  _0: "new line",
+                                                  _1: /* :: */{
+                                                    _0: "eof",
+                                                    _1: /* [] */0
+                                                  }
+                                                }
+                                              }
+                                            }
+                                          }
+                                        }
+                                      }
+                                    }
+                                  }
+                                }
+                              }
+                            }
+                          }
+                        }
+                      }
+                    }
+                  }
+                };
         })
     ],
-    /* :: */[
-      /* tuple */[
+    _1: /* :: */{
+      _0: /* tuple */[
         "simple number",
         (function (param) {
-            return /* Eq */Block.__(0, [
-                      Arith_syntax.str(Arith_parser.toplevel(Arith_lexer.lexeme, Lexing.from_string("10"))),
-                      "10."
-                    ]);
+            return {
+                    tag: /* Eq */0,
+                    _0: Arith_syntax.str(Arith_parser.toplevel(Arith_lexer.lexeme, Lexing.from_string("10"))),
+                    _1: "10."
+                  };
           })
       ],
-      /* :: */[
-        /* tuple */[
+      _1: /* :: */{
+        _0: /* tuple */[
           "arith",
           (function (param) {
-              return /* Eq */Block.__(0, [
-                        Arith_syntax.str(Arith_parser.toplevel(Arith_lexer.lexeme, Lexing.from_string("x + 3 + 4 + y"))),
-                        "x+3.+4.+y"
-                      ]);
+              return {
+                      tag: /* Eq */0,
+                      _0: Arith_syntax.str(Arith_parser.toplevel(Arith_lexer.lexeme, Lexing.from_string("x + 3 + 4 + y"))),
+                      _1: "x+3.+4.+y"
+                    };
             })
         ],
-        /* [] */0
-      ]
-    ]
-  ]
-];
+        _1: /* [] */0
+      }
+    }
+  }
+};
 
-var lexer_suites = /* :: */[
-  lexer_suites_000,
-  lexer_suites_001
-];
+var lexer_suites = /* :: */{
+  _0: lexer_suites_0,
+  _1: lexer_suites_1
+};
 
 Mt.from_pair_suites("Lexer_test", lexer_suites);
 

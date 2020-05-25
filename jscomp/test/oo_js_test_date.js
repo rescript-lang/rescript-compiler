@@ -14,41 +14,43 @@ function d2(param) {
 
 var d3 = d2(2016)(1, undefined);
 
-var suites_000 = /* tuple */[
+var suites_0 = /* tuple */[
   "getMonth",
   (function (param) {
-      return /* Eq */Block.__(0, [
-                2,
-                d.getMonth()
-              ]);
+      return {
+              tag: /* Eq */0,
+              _0: 2,
+              _1: d.getMonth()
+            };
     })
 ];
 
-var suites_001 = /* :: */[
-  /* tuple */[
+var suites_1 = /* :: */{
+  _0: /* tuple */[
     "getYear",
     (function (param) {
-        return /* Eq */Block.__(0, [
-                  /* tuple */[
-                    2016,
-                    2,
-                    1
-                  ],
-                  /* tuple */[
-                    d3.getFullYear(),
-                    d3.getMonth(),
-                    d3.getDate()
-                  ]
-                ]);
+        return {
+                tag: /* Eq */0,
+                _0: /* tuple */[
+                  2016,
+                  2,
+                  1
+                ],
+                _1: /* tuple */[
+                  d3.getFullYear(),
+                  d3.getMonth(),
+                  d3.getDate()
+                ]
+              };
       })
   ],
-  /* [] */0
-];
+  _1: /* [] */0
+};
 
-var suites = /* :: */[
-  suites_000,
-  suites_001
-];
+var suites = /* :: */{
+  _0: suites_0,
+  _1: suites_1
+};
 
 Mt.from_pair_suites("Oo_js_test_date", suites);
 

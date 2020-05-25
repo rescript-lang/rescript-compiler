@@ -20,7 +20,7 @@ function b(loc, x) {
   return Mt.bool_suites(test_id, suites, loc, x);
 }
 
-var d = { };
+var d = {};
 
 d["foo"] = undefined;
 
@@ -32,7 +32,7 @@ if (match !== undefined && Caml_option.valFromOption(match) === undefined) {
   b("File \"gpr_3154_test.ml\", line 13, characters 11-18", false);
 }
 
-var d0 = { };
+var d0 = {};
 
 d0["foo"] = undefined;
 

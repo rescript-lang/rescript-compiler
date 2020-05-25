@@ -844,11 +844,10 @@ and expression_desc cxt ~(level:int) f x : cxt  =
   | Caml_block(el,_, _, Blk_module fields) ->        
       expression_desc cxt ~level f (Object (
         (Ext_list.map_combine fields el Ext_ident.convert)))
+  (*name convention of Record is slight different from modules*)        
   | Caml_block(el,_, _, Blk_record fields) ->        
-      expression_desc cxt ~level f (Object (
-        (List.combine (Array.to_list fields) el )))      
-        (* name convention of Record is slight different from modules 
-        *)
+      expression_desc cxt ~level f (Object ((Ext_list.combine_array fields el )))      
+        
   | Caml_block(el,_,_, Blk_poly_var name) ->
     begin match el with 
       | [hash;value] -> 
@@ -870,9 +869,39 @@ and expression_desc cxt ~(level:int) f x : cxt  =
       | _ -> assert false
     end       
   | Caml_block(el,_, _, (Blk_extension | Blk_record_ext _ as ext )) ->             
-    expression_desc cxt ~level f (exn_block_as_obj ~stack:false el ext)      
+    expression_desc cxt ~level f (exn_block_as_obj ~stack:false el ext)
+  | Caml_block(el,_,tag, (Blk_record_inlined p)) -> 
+    let objs = 
+      let tails =   
+        Ext_list.combine_array_append p.fields el      
+          (if !Js_config.debug then ["NAME",E.str p.name]
+           else []
+          ) in 
+      if p.num_nonconst = 1 then tails
+      else ("tag",
+        if !Js_config.debug then tag else {tag with comment = Some p.name}) :: tails in 
+    if p.num_nonconst = 1 && not !Js_config.debug then 
+      pp_comment_option f (Some p.name);
+    expression_desc cxt ~level f (Object objs)  
+  | Caml_block(el,_,tag, (Blk_constructor p)) -> 
+    let objs =     
+      let tails =   
+        Ext_list.mapi_append el (fun i e -> "_" ^ string_of_int i , e )
+          (if !Js_config.debug then 
+             ["NAME", E.str p.name]
+           else []) in         
+      if p.num_nonconst = 1 then       
+        tails
+      else         
+        ("tag",
+          if !Js_config.debug then tag else {tag with comment = Some p.name}) :: tails
+    in 
+    if p.num_nonconst = 1 && not !Js_config.debug then 
+      pp_comment_option f (Some p.name);
+    expression_desc cxt ~level f (Object objs)
   | Caml_block( el, mutable_flag, tag, tag_info)
     ->
+    pp_comment_option f (Lam_compile_util.comment_of_tag_info tag_info);
     (* Note that, if we ignore more than tag [0] we loose some information
        with regard tag  
 
@@ -937,7 +966,6 @@ and expression_desc cxt ~(level:int) f x : cxt  =
         | Blk_class
         | Blk_array
         | Blk_record_ext _
-        | Blk_extension_slot
         | Blk_na _
            ->           
           dbg_block_create f;
@@ -1007,7 +1035,7 @@ and expression_desc cxt ~(level:int) f x : cxt  =
 
   | Object lst ->    
     let action () =
-      if lst = [] then begin P.string f "{ }" ; cxt end else      
+      if lst = [] then begin P.string f "{}" ; cxt end else      
         P.brace_vgroup f 1 (fun _ ->
             property_name_and_value_list cxt f lst) in
     if level > 1 then

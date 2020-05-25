@@ -29,9 +29,15 @@ function __ocaml_lex_lexeme_rec(lexbuf, ___ocaml_lex_state) {
           ___ocaml_lex_state = 0;
           continue ;
       case 1 :
-          return /* NUMERAL */Block.__(0, [Caml_format.caml_int_of_string(Lexing.lexeme(lexbuf))]);
+          return {
+                  tag: /* NUMERAL */0,
+                  _0: Caml_format.caml_int_of_string(Lexing.lexeme(lexbuf))
+                };
       case 2 :
-          return /* IDENT */Block.__(1, [Lexing.lexeme(lexbuf)]);
+          return {
+                  tag: /* IDENT */1,
+                  _0: Lexing.lexeme(lexbuf)
+                };
       case 3 :
           return /* PLUS */0;
       case 4 :
@@ -61,19 +67,19 @@ function lexeme(lexbuf) {
 function str(e) {
   switch (e.tag | 0) {
     case /* Numeral */0 :
-        return Pervasives.string_of_float(e[0]);
+        return Pervasives.string_of_float(e._0);
     case /* Plus */1 :
-        return str(e[0]) + ("+" + str(e[1]));
+        return str(e._0) + ("+" + str(e._1));
     case /* Minus */2 :
-        return str(e[0]) + ("-" + str(e[1]));
+        return str(e._0) + ("-" + str(e._1));
     case /* Times */3 :
-        return str(e[0]) + ("*" + str(e[1]));
+        return str(e._0) + ("*" + str(e._1));
     case /* Divide */4 :
-        return str(e[0]) + ("/" + str(e[1]));
+        return str(e._0) + ("/" + str(e._1));
     case /* Negate */5 :
-        return "-" + str(e[0]);
+        return "-" + str(e._0);
     case /* Variable */6 :
-        return e[0];
+        return e._0;
     
   }
 }

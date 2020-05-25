@@ -17,18 +17,19 @@ var test_id = {
 
 function eq(loc, x, y) {
   test_id.contents = test_id.contents + 1 | 0;
-  suites.contents = /* :: */[
-    /* tuple */[
+  suites.contents = /* :: */{
+    _0: /* tuple */[
       loc + (" id " + String(test_id.contents)),
       (function (param) {
-          return /* Eq */Block.__(0, [
-                    x,
-                    y
-                  ]);
+          return {
+                  tag: /* Eq */0,
+                  _0: x,
+                  _1: y
+                };
         })
     ],
-    suites.contents
-  ];
+    _1: suites.contents
+  };
   
 }
 
@@ -321,29 +322,31 @@ function re(prim) {
   return Promise.resolve(prim);
 }
 
-Mt.from_promise_suites("Js_promise_basic_test", /* :: */[
-      /* tuple */[
+Mt.from_promise_suites("Js_promise_basic_test", /* :: */{
+      _0: /* tuple */[
         "File \"js_promise_basic_test.ml\", line 187, characters 4-11",
         twop.then(function (x) {
-              return Promise.resolve(/* Eq */Block.__(0, [
-                            x,
-                            2
-                          ]));
+              return Promise.resolve({
+                          tag: /* Eq */0,
+                          _0: x,
+                          _1: 2
+                        });
             })
       ],
-      /* :: */[
-        /* tuple */[
+      _1: /* :: */{
+        _0: /* tuple */[
           "File \"js_promise_basic_test.ml\", line 190, characters 4-11",
           twop.then(function (x) {
-                return Promise.resolve(/* Neq */Block.__(1, [
-                              x,
-                              3
-                            ]));
+                return Promise.resolve({
+                            tag: /* Neq */1,
+                            _0: x,
+                            _1: 3
+                          });
               })
         ],
-        /* [] */0
-      ]
-    ]);
+        _1: /* [] */0
+      }
+    });
 
 exports.suites = suites;
 exports.test_id = test_id;

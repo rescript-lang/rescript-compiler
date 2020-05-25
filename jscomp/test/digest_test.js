@@ -149,88 +149,96 @@ var ref = [
   "b325dc1c6f5e7a2b7cf465b9feab7948"
 ];
 
-Mt.from_pair_suites("Digest_test", Pervasives.$at(/* :: */[
-          /* tuple */[
+Mt.from_pair_suites("Digest_test", Pervasives.$at(/* :: */{
+          _0: /* tuple */[
             "File \"digest_test.ml\", line 6, characters 4-11",
             (function (param) {
-                return /* Eq */Block.__(0, [
-                          Digest.to_hex(Digest.string("value")),
-                          "2063c1608d6e0baf80249c42e2be5804"
-                        ]);
+                return {
+                        tag: /* Eq */0,
+                        _0: Digest.to_hex(Digest.string("value")),
+                        _1: "2063c1608d6e0baf80249c42e2be5804"
+                      };
               })
           ],
-          /* :: */[
-            /* tuple */[
+          _1: /* :: */{
+            _0: /* tuple */[
               "File \"digest_test.ml\", line 7, characters 4-11",
               (function (param) {
-                  return /* Eq */Block.__(0, [
-                            Digest.to_hex(Digest.string("The quick brown fox jumps over the lazy dog")),
-                            "9e107d9d372bb6826bd81d3542a419d6"
-                          ]);
+                  return {
+                          tag: /* Eq */0,
+                          _0: Digest.to_hex(Digest.string("The quick brown fox jumps over the lazy dog")),
+                          _1: "9e107d9d372bb6826bd81d3542a419d6"
+                        };
                 })
             ],
-            /* :: */[
-              /* tuple */[
+            _1: /* :: */{
+              _0: /* tuple */[
                 "File \"digest_test.ml\", line 9, characters 4-11",
                 (function (param) {
-                    return /* Eq */Block.__(0, [
-                              Digest.to_hex(Digest.string("The quick brown fox jumps over the lazy dog.")),
-                              "e4d909c290d0fb1ca068ffaddf22cbd0"
-                            ]);
+                    return {
+                            tag: /* Eq */0,
+                            _0: Digest.to_hex(Digest.string("The quick brown fox jumps over the lazy dog.")),
+                            _1: "e4d909c290d0fb1ca068ffaddf22cbd0"
+                          };
                   })
               ],
-              /* :: */[
-                /* tuple */[
+              _1: /* :: */{
+                _0: /* tuple */[
                   "File \"digest_test.ml\", line 11, characters 4-11",
                   (function (param) {
-                      return /* Eq */Block.__(0, [
-                                Digest.to_hex(Digest.string("")),
-                                "d41d8cd98f00b204e9800998ecf8427e"
-                              ]);
+                      return {
+                              tag: /* Eq */0,
+                              _0: Digest.to_hex(Digest.string("")),
+                              _1: "d41d8cd98f00b204e9800998ecf8427e"
+                            };
                     })
                 ],
-                /* :: */[
-                  /* tuple */[
+                _1: /* :: */{
+                  _0: /* tuple */[
                     "File \"digest_test.ml\", line 12, characters 4-11",
                     (function (param) {
-                        return /* Eq */Block.__(0, [
-                                  Digest.to_hex(Digest.string("The quick brown fox jumps over the lazy dog.The quick brown fox jumps over the lazy dog.The quick brown fox jumps over the lazy dog.The quick brown fox jumps over the lazy dog.The quick brown fox jumps over the lazy dog.The quick brown fox jumps over the lazy dog.The quick brown fox jumps over the lazy dog.The quick brown fox jumps over the lazy dog.The quick brown fox jumps over the lazy dog.The quick brown fox jumps over the lazy dog.The quick brown fox jumps over the lazy dog.The quick brown fox jumps over the lazy dog.")),
-                                  "7065cc36bba1d155fb09f9d02f22e8bf"
-                                ]);
+                        return {
+                                tag: /* Eq */0,
+                                _0: Digest.to_hex(Digest.string("The quick brown fox jumps over the lazy dog.The quick brown fox jumps over the lazy dog.The quick brown fox jumps over the lazy dog.The quick brown fox jumps over the lazy dog.The quick brown fox jumps over the lazy dog.The quick brown fox jumps over the lazy dog.The quick brown fox jumps over the lazy dog.The quick brown fox jumps over the lazy dog.The quick brown fox jumps over the lazy dog.The quick brown fox jumps over the lazy dog.The quick brown fox jumps over the lazy dog.The quick brown fox jumps over the lazy dog.")),
+                                _1: "7065cc36bba1d155fb09f9d02f22e8bf"
+                              };
                       })
                   ],
-                  /* :: */[
-                    /* tuple */[
+                  _1: /* :: */{
+                    _0: /* tuple */[
                       "File \"digest_test.ml\", line 13, characters 4-11",
                       (function (param) {
-                          return /* Eq */Block.__(0, [
-                                    Digest.to_hex(Digest.string("The quick brown fox jumps over the lazy dog.The quick brown fox jumps over the lazy dog.The quick brown fox jumps over the lazy dog.")),
-                                    "b9193d1df4b7a8f0a25ffdd1005c5b2b"
-                                  ]);
+                          return {
+                                  tag: /* Eq */0,
+                                  _0: Digest.to_hex(Digest.string("The quick brown fox jumps over the lazy dog.The quick brown fox jumps over the lazy dog.The quick brown fox jumps over the lazy dog.")),
+                                  _1: "b9193d1df4b7a8f0a25ffdd1005c5b2b"
+                                };
                         })
                     ],
-                    /* [] */0
-                  ]
-                ]
-              ]
-            ]
-          ]
-        ], $$Array.to_list($$Array.map((function (i) {
+                    _1: /* [] */0
+                  }
+                }
+              }
+            }
+          }
+        }, $$Array.to_list($$Array.map((function (i) {
                     return /* tuple */[
-                            Curry._1(Printf.sprintf(/* Format */[
-                                      /* Int */Block.__(4, [
-                                          /* Int_d */0,
-                                          /* No_padding */0,
-                                          /* No_precision */0,
-                                          /* End_of_format */0
-                                        ]),
-                                      "%d"
-                                    ]), i),
+                            Curry._1(Printf.sprintf(/* Format */{
+                                      _0: {
+                                        tag: /* Int */4,
+                                        _0: /* Int_d */0,
+                                        _1: /* No_padding */0,
+                                        _2: /* No_precision */0,
+                                        _3: /* End_of_format */0
+                                      },
+                                      _1: "%d"
+                                    }), i),
                             (function (param) {
-                                return /* Eq */Block.__(0, [
-                                          Digest.to_hex(Digest.string(Caml_bytes.bytes_to_string(Bytes.make(i, /* "a" */97)))),
-                                          Caml_array.caml_array_get(ref, i)
-                                        ]);
+                                return {
+                                        tag: /* Eq */0,
+                                        _0: Digest.to_hex(Digest.string(Caml_bytes.bytes_to_string(Bytes.make(i, /* "a" */97)))),
+                                        _1: Caml_array.caml_array_get(ref, i)
+                                      };
                               })
                           ];
                   }), Ext_array_test.range(0, 129)))));

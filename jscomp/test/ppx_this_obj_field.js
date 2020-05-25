@@ -15,18 +15,19 @@ function eq(loc, param) {
   var y = param[1];
   var x = param[0];
   test_id.contents = test_id.contents + 1 | 0;
-  suites.contents = /* :: */[
-    /* tuple */[
+  suites.contents = /* :: */{
+    _0: /* tuple */[
       loc + (" id " + String(test_id.contents)),
       (function (param) {
-          return /* Eq */Block.__(0, [
-                    x,
-                    y
-                  ]);
+          return {
+                  tag: /* Eq */0,
+                  _0: x,
+                  _1: y
+                };
         })
     ],
-    suites.contents
-  ];
+    _1: suites.contents
+  };
   
 }
 
@@ -94,15 +95,15 @@ var u = {
     })
 };
 
-var test_type_001 = /* :: */[
-  v,
-  /* [] */0
-];
+var test_type_1 = /* :: */{
+  _0: v,
+  _1: /* [] */0
+};
 
-var test_type = /* :: */[
-  u,
-  test_type_001
-];
+var test_type = /* :: */{
+  _0: u,
+  _1: test_type_1
+};
 
 var z = {
   x: {
@@ -156,15 +157,15 @@ var zz = {
     })
 };
 
-var test_type2_001 = /* :: */[
-  zz,
-  /* [] */0
-];
+var test_type2_1 = /* :: */{
+  _0: zz,
+  _1: /* [] */0
+};
 
-var test_type2 = /* :: */[
-  z,
-  test_type2_001
-];
+var test_type2 = /* :: */{
+  _0: z,
+  _1: test_type2_1
+};
 
 eq("File \"ppx_this_obj_field.ml\", line 92, characters 5-12", /* tuple */[
       6,

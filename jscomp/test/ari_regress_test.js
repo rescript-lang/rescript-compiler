@@ -28,55 +28,59 @@ function v(param) {
   return partial_arg(6, param);
 }
 
-var suites_000 = /* tuple */[
+var suites_0 = /* tuple */[
   "curry",
   (function (param) {
-      return /* Eq */Block.__(0, [
-                g,
-                7
-              ]);
+      return {
+              tag: /* Eq */0,
+              _0: g,
+              _1: 7
+            };
     })
 ];
 
-var suites_001 = /* :: */[
-  /* tuple */[
+var suites_1 = /* :: */{
+  _0: /* tuple */[
     "curry2",
     (function (param) {
-        return /* Eq */Block.__(0, [
-                  14,
-                  (Curry._1(v, 1), Curry._1(v, 1))
-                ]);
+        return {
+                tag: /* Eq */0,
+                _0: 14,
+                _1: (Curry._1(v, 1), Curry._1(v, 1))
+              };
       })
   ],
-  /* :: */[
-    /* tuple */[
+  _1: /* :: */{
+    _0: /* tuple */[
       "curry3",
       (function (param) {
-          return /* Eq */Block.__(0, [
-                    x,
-                    14
-                  ]);
+          return {
+                  tag: /* Eq */0,
+                  _0: x,
+                  _1: 14
+                };
         })
     ],
-    /* :: */[
-      /* tuple */[
+    _1: /* :: */{
+      _0: /* tuple */[
         "File \"ari_regress_test.ml\", line 20, characters 4-11",
         (function (param) {
-            return /* Eq */Block.__(0, [
-                      h.contents,
-                      1
-                    ]);
+            return {
+                    tag: /* Eq */0,
+                    _0: h.contents,
+                    _1: 1
+                  };
           })
       ],
-      /* [] */0
-    ]
-  ]
-];
+      _1: /* [] */0
+    }
+  }
+};
 
-var suites = /* :: */[
-  suites_000,
-  suites_001
-];
+var suites = /* :: */{
+  _0: suites_0,
+  _1: suites_1
+};
 
 Mt.from_pair_suites("Ari_regress_test", suites);
 

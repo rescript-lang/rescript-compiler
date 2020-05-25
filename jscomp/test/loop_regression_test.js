@@ -21,20 +21,21 @@ function f(param) {
   };
 }
 
-var suites_000 = /* tuple */[
+var suites_0 = /* tuple */[
   "sum",
   (function (param) {
-      return /* Eq */Block.__(0, [
-                55,
-                f(undefined)
-              ]);
+      return {
+              tag: /* Eq */0,
+              _0: 55,
+              _1: f(undefined)
+            };
     })
 ];
 
-var suites = /* :: */[
-  suites_000,
-  /* [] */0
-];
+var suites = /* :: */{
+  _0: suites_0,
+  _1: /* [] */0
+};
 
 Mt.from_pair_suites("Loop_regression_test", suites);
 

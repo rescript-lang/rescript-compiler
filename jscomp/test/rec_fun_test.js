@@ -15,18 +15,19 @@ var test_id = {
 
 function eq(loc, x, y) {
   test_id.contents = test_id.contents + 1 | 0;
-  suites.contents = /* :: */[
-    /* tuple */[
+  suites.contents = /* :: */{
+    _0: /* tuple */[
       loc + (" id " + String(test_id.contents)),
       (function (param) {
-          return /* Eq */Block.__(0, [
-                    x,
-                    y
-                  ]);
+          return {
+                  tag: /* Eq */0,
+                  _0: x,
+                  _1: y
+                };
         })
     ],
-    suites.contents
-  ];
+    _1: suites.contents
+  };
   
 }
 
@@ -35,7 +36,7 @@ var called = {
 };
 
 function g(param) {
-  var v = { };
+  var v = {};
   var next = function (i, b) {
     called.contents = called.contents + 1 | 0;
     if (b) {
@@ -52,19 +53,19 @@ function g(param) {
 
 g(undefined);
 
-var x = [];
+var x = {};
 
-var y = [];
+var y = {};
 
-Caml_obj.update_dummy(x, /* :: */[
-      1,
-      y
-    ]);
+Caml_obj.update_dummy(x, /* :: */{
+      _0: 1,
+      _1: y
+    });
 
-Caml_obj.update_dummy(y, /* :: */[
-      2,
-      x
-    ]);
+Caml_obj.update_dummy(y, /* :: */{
+      _0: 2,
+      _1: x
+    });
 
 eq("File \"rec_fun_test.ml\", line 27, characters 6-13", called.contents, 2);
 

@@ -37,7 +37,7 @@ function f3(param) {
             Error: new Error()
           };
     }
-    return Caml_primitive.caml_int_compare(lhs[0], rhs[0]);
+    return Caml_primitive.caml_int_compare(lhs._0, rhs._0);
   };
 }
 
@@ -67,7 +67,7 @@ function f4(param) {
             Error: new Error()
           };
     }
-    return Caml_primitive.caml_int_compare(lhs[0], rhs[0]);
+    return Caml_primitive.caml_int_compare(lhs._0, rhs._0);
   };
 }
 

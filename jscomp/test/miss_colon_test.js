@@ -7,9 +7,12 @@ function $plus$colon(_f, _g) {
     var g = _g;
     var f = _f;
     if (!f.tag) {
-      var n = f[0];
+      var n = f._0;
       if (!g.tag) {
-        return /* Int */Block.__(0, [n + g[0] | 0]);
+        return {
+                tag: /* Int */0,
+                _0: n + g._0 | 0
+              };
       }
       if (n === 0) {
         return g;
@@ -18,24 +21,26 @@ function $plus$colon(_f, _g) {
     }
     switch (g.tag | 0) {
       case /* Int */0 :
-          if (g[0] !== 0) {
-            return /* Add */Block.__(2, [
-                      f,
-                      g
-                    ]);
+          if (g._0 !== 0) {
+            return {
+                    tag: /* Add */2,
+                    _0: f,
+                    _1: g
+                  };
           } else {
             return f;
           }
       case /* Add */2 :
-          _g = g[1];
-          _f = $plus$colon(f, g[0]);
+          _g = g._1;
+          _f = $plus$colon(f, g._0);
           continue ;
       case /* Var */1 :
       case /* Mul */3 :
-          return /* Add */Block.__(2, [
-                    f,
-                    g
-                  ]);
+          return {
+                  tag: /* Add */2,
+                  _0: f,
+                  _1: g
+                };
       
     }
   };
@@ -50,12 +55,18 @@ function $star$colon(_f, _g) {
     if (f.tag) {
       exit$1 = 3;
     } else {
-      var n = f[0];
+      var n = f._0;
       if (!g.tag) {
-        return /* Int */Block.__(0, [Math.imul(n, g[0])]);
+        return {
+                tag: /* Int */0,
+                _0: Math.imul(n, g._0)
+              };
       }
       if (n === 0) {
-        return /* Int */Block.__(0, [0]);
+        return {
+                tag: /* Int */0,
+                _0: 0
+              };
       }
       exit$1 = 3;
     }
@@ -63,34 +74,39 @@ function $star$colon(_f, _g) {
       if (g.tag) {
         exit = 2;
       } else {
-        if (g[0] === 0) {
-          return /* Int */Block.__(0, [0]);
+        if (g._0 === 0) {
+          return {
+                  tag: /* Int */0,
+                  _0: 0
+                };
         }
         exit = 2;
       }
     }
-    if (exit === 2 && !f.tag && f[0] === 1) {
+    if (exit === 2 && !f.tag && f._0 === 1) {
       return g;
     }
     switch (g.tag | 0) {
       case /* Int */0 :
-          if (g[0] !== 1) {
-            return /* Mul */Block.__(3, [
-                      f,
-                      g
-                    ]);
+          if (g._0 !== 1) {
+            return {
+                    tag: /* Mul */3,
+                    _0: f,
+                    _1: g
+                  };
           } else {
             return f;
           }
       case /* Var */1 :
       case /* Add */2 :
-          return /* Mul */Block.__(3, [
-                    f,
-                    g
-                  ]);
+          return {
+                  tag: /* Mul */3,
+                  _0: f,
+                  _1: g
+                };
       case /* Mul */3 :
-          _g = g[1];
-          _f = $star$colon(f, g[0]);
+          _g = g._1;
+          _f = $star$colon(f, g._0);
           continue ;
       
     }
@@ -103,9 +119,9 @@ function simplify(f) {
     case /* Var */1 :
         return f;
     case /* Add */2 :
-        return $plus$colon(simplify(f[0]), simplify(f[1]));
+        return $plus$colon(simplify(f._0), simplify(f._1));
     case /* Mul */3 :
-        return $star$colon(simplify(f[0]), simplify(f[1]));
+        return $star$colon(simplify(f._0), simplify(f._1));
     
   }
 }

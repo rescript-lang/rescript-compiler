@@ -19,22 +19,22 @@ function eq(loc, x, y) {
   return Mt.eq_suites(test_id, suites, loc, x, y);
 }
 
-var class_tables = /* Cons */[
-  /* key */undefined,
-  /* data */undefined,
-  /* next */undefined
-];
+var class_tables = /* Cons */{
+  key: undefined,
+  data: undefined,
+  next: undefined
+};
 
-var class_tables$1 = /* Cons */[
-  /* key */undefined,
-  /* data */undefined,
-  /* next */undefined
-];
+var class_tables$1 = /* Cons */{
+  key: undefined,
+  data: undefined,
+  next: undefined
+};
 
 function c1_init($$class) {
   var b = CamlinternalOO.get_method_label($$class, "b");
   CamlinternalOO.set_method($$class, b, (function (self$1) {
-          if (!class_tables[/* key */0]) {
+          if (!class_tables.key) {
             var $$class = CamlinternalOO.create_table([
                   "c",
                   "h"
@@ -50,7 +50,7 @@ function c1_init($$class) {
                   c,
                   (function (self$2) {
                       var env$1 = self$2[env];
-                      if (!class_tables$1[/* key */0]) {
+                      if (!class_tables$1.key) {
                         var $$class = CamlinternalOO.create_table(["d"]);
                         var env$2 = CamlinternalOO.new_variable($$class, "");
                         var d = CamlinternalOO.get_method_label($$class, "d");
@@ -65,9 +65,9 @@ function c1_init($$class) {
                           return self;
                         };
                         CamlinternalOO.init_class($$class);
-                        class_tables$1[/* key */0] = env_init;
+                        class_tables$1.key = env_init;
                       }
-                      return Curry._1(class_tables$1[/* key */0], [
+                      return Curry._1(class_tables$1.key, [
                                   env$1[0],
                                   env$1[1]
                                 ]);
@@ -83,9 +83,9 @@ function c1_init($$class) {
               return self;
             };
             CamlinternalOO.init_class($$class);
-            class_tables[/* key */0] = env_init;
+            class_tables.key = env_init;
           }
-          return Curry._1(class_tables[/* key */0], [
+          return Curry._1(class_tables.key, [
                       b,
                       self$1
                     ]);

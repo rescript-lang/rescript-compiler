@@ -1,7 +1,7 @@
 'use strict';
 
 
-({ })["hi"] = "hello";
+({})["hi"] = "hello";
 
 console.log("hi");
 

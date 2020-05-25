@@ -6,33 +6,35 @@ var Pervasives = require("../../lib/js/pervasives.js");
 
 var v = (Number.EPSILON?Number.EPSILON:2.220446049250313e-16);
 
-var suites_000 = /* tuple */[
+var suites_0 = /* tuple */[
   "epsilon",
   (function (param) {
-      return /* Eq */Block.__(0, [
-                Pervasives.epsilon_float,
-                v
-              ]);
+      return {
+              tag: /* Eq */0,
+              _0: Pervasives.epsilon_float,
+              _1: v
+            };
     })
 ];
 
-var suites_001 = /* :: */[
-  /* tuple */[
+var suites_1 = /* :: */{
+  _0: /* tuple */[
     "raw_epsilon",
     (function (param) {
-        return /* Eq */Block.__(0, [
-                  2.220446049250313e-16,
-                  v
-                ]);
+        return {
+                tag: /* Eq */0,
+                _0: 2.220446049250313e-16,
+                _1: v
+              };
       })
   ],
-  /* [] */0
-];
+  _1: /* [] */0
+};
 
-var suites = /* :: */[
-  suites_000,
-  suites_001
-];
+var suites = /* :: */{
+  _0: suites_0,
+  _1: suites_1
+};
 
 Mt.from_pair_suites("Epsilon_test", suites);
 

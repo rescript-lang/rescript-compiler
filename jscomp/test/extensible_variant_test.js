@@ -35,55 +35,58 @@ function to_int(x) {
       };
 }
 
-var suites_000 = /* tuple */[
+var suites_0 = /* tuple */[
   "test_int",
   (function (param) {
-      return /* Eq */Block.__(0, [
-                3,
-                to_int({
-                      RE_EXN_ID: Int,
-                      _1: 3,
-                      _2: 0
-                    })
-              ]);
+      return {
+              tag: /* Eq */0,
+              _0: 3,
+              _1: to_int({
+                    RE_EXN_ID: Int,
+                    _1: 3,
+                    _2: 0
+                  })
+            };
     })
 ];
 
-var suites_001 = /* :: */[
-  /* tuple */[
+var suites_1 = /* :: */{
+  _0: /* tuple */[
     "test_int2",
     (function (param) {
-        return /* Eq */Block.__(0, [
-                  0,
-                  to_int({
-                        RE_EXN_ID: Int$1,
-                        _1: 3,
-                        _2: 0
-                      })
-                ]);
+        return {
+                tag: /* Eq */0,
+                _0: 0,
+                _1: to_int({
+                      RE_EXN_ID: Int$1,
+                      _1: 3,
+                      _2: 0
+                    })
+              };
       })
   ],
-  /* :: */[
-    /* tuple */[
+  _1: /* :: */{
+    _0: /* tuple */[
       "test_string",
       (function (param) {
-          return /* Eq */Block.__(0, [
-                    -1,
-                    to_int({
-                          RE_EXN_ID: Str,
-                          _1: "x"
-                        })
-                  ]);
+          return {
+                  tag: /* Eq */0,
+                  _0: -1,
+                  _1: to_int({
+                        RE_EXN_ID: Str,
+                        _1: "x"
+                      })
+                };
         })
     ],
-    /* [] */0
-  ]
-];
+    _1: /* [] */0
+  }
+};
 
-var suites = /* :: */[
-  suites_000,
-  suites_001
-];
+var suites = /* :: */{
+  _0: suites_0,
+  _1: suites_1
+};
 
 Mt.from_pair_suites("Extensible_variant_test", suites);
 

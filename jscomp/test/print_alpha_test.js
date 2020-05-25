@@ -9,20 +9,21 @@ function f(h, param) {
   return Curry.__2(h);
 }
 
-Mt.from_pair_suites("Print_alpha_test", /* :: */[
-      /* tuple */[
+Mt.from_pair_suites("Print_alpha_test", /* :: */{
+      _0: /* tuple */[
         "File \"print_alpha_test.ml\", line 15, characters 4-11",
         (function (param) {
-            return /* Eq */Block.__(0, [
-                      f((function (prim, prim$1) {
-                                return prim + prim$1 | 0;
-                              }), undefined)(1, 2),
-                      3
-                    ]);
+            return {
+                    tag: /* Eq */0,
+                    _0: f((function (prim, prim$1) {
+                              return prim + prim$1 | 0;
+                            }), undefined)(1, 2),
+                    _1: 3
+                  };
           })
       ],
-      /* [] */0
-    ]);
+      _1: /* [] */0
+    });
 
 exports.f = f;
 /*  Not a pure module */

@@ -44,20 +44,21 @@ function basename(param) {
               }), Filename.current_dir_name, param);
 }
 
-var suites_000 = /* tuple */[
+var suites_0 = /* tuple */[
   "basename",
   (function (param) {
-      return /* Eq */Block.__(0, [
-                basename("b/c/a.b"),
-                "a.b"
-              ]);
+      return {
+              tag: /* Eq */0,
+              _0: basename("b/c/a.b"),
+              _1: "a.b"
+            };
     })
 ];
 
-var suites = /* :: */[
-  suites_000,
-  /* [] */0
-];
+var suites = /* :: */{
+  _0: suites_0,
+  _1: /* [] */0
+};
 
 Mt.from_pair_suites("Inline_regression_test", suites);
 

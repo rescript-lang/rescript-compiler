@@ -19,34 +19,41 @@ var counter = {
 function add_test(loc, test) {
   counter.contents = counter.contents + 1 | 0;
   var id = loc + (" id " + String(counter.contents));
-  suites.contents = /* :: */[
-    /* tuple */[
+  suites.contents = /* :: */{
+    _0: /* tuple */[
       id,
       test
     ],
-    suites.contents
-  ];
+    _1: suites.contents
+  };
   
 }
 
 function eq(loc, x, y) {
   return add_test(loc, (function (param) {
-                return /* Eq */Block.__(0, [
-                          x,
-                          y
-                        ]);
+                return {
+                        tag: /* Eq */0,
+                        _0: x,
+                        _1: y
+                      };
               }));
 }
 
 function false_(loc) {
   return add_test(loc, (function (param) {
-                return /* Ok */Block.__(4, [false]);
+                return {
+                        tag: /* Ok */4,
+                        _0: false
+                      };
               }));
 }
 
 function true_(loc) {
   return add_test(loc, (function (param) {
-                return /* Ok */Block.__(4, [true]);
+                return {
+                        tag: /* Ok */4,
+                        _0: true
+                      };
               }));
 }
 
@@ -55,23 +62,38 @@ var v = JSON.parse(" { \"x\" : [1, 2, 3 ] } ");
 add_test("File \"js_json_test.ml\", line 23, characters 11-18", (function (param) {
         var ty = Js_json.classify(v);
         if (typeof ty === "number") {
-          return /* Ok */Block.__(4, [false]);
+          return {
+                  tag: /* Ok */4,
+                  _0: false
+                };
         }
         if (ty.tag !== /* JSONObject */2) {
-          return /* Ok */Block.__(4, [false]);
+          return {
+                  tag: /* Ok */4,
+                  _0: false
+                };
         }
-        var v$1 = Js_dict.get(ty[0], "x");
+        var v$1 = Js_dict.get(ty._0, "x");
         if (v$1 === undefined) {
-          return /* Ok */Block.__(4, [false]);
+          return {
+                  tag: /* Ok */4,
+                  _0: false
+                };
         }
         var ty2 = Js_json.classify(Caml_option.valFromOption(v$1));
         if (typeof ty2 === "number") {
-          return /* Ok */Block.__(4, [false]);
+          return {
+                  tag: /* Ok */4,
+                  _0: false
+                };
         }
         if (ty2.tag !== /* JSONArray */3) {
-          return /* Ok */Block.__(4, [false]);
+          return {
+                  tag: /* Ok */4,
+                  _0: false
+                };
         }
-        ty2[0].forEach(function (x) {
+        ty2._0.forEach(function (x) {
               var ty3 = Js_json.classify(x);
               if (typeof ty3 === "number") {
                 throw {
@@ -97,7 +119,10 @@ add_test("File \"js_json_test.ml\", line 23, characters 11-18", (function (param
                     Error: new Error()
                   };
             });
-        return /* Ok */Block.__(4, [true]);
+        return {
+                tag: /* Ok */4,
+                _0: true
+              };
       }));
 
 eq("File \"js_json_test.ml\", line 48, characters 5-12", Js_json.test(v, /* Object */2), true);
@@ -109,18 +134,27 @@ var ty = Js_json.classify(json);
 if (typeof ty === "number") {
   if (ty >= 2) {
     add_test("File \"js_json_test.ml\", line 54, characters 30-37", (function (param) {
-            return /* Ok */Block.__(4, [true]);
+            return {
+                    tag: /* Ok */4,
+                    _0: true
+                  };
           }));
   } else {
     console.log(ty);
     add_test("File \"js_json_test.ml\", line 55, characters 27-34", (function (param) {
-            return /* Ok */Block.__(4, [false]);
+            return {
+                    tag: /* Ok */4,
+                    _0: false
+                  };
           }));
   }
 } else {
   console.log(ty);
   add_test("File \"js_json_test.ml\", line 55, characters 27-34", (function (param) {
-          return /* Ok */Block.__(4, [false]);
+          return {
+                  tag: /* Ok */4,
+                  _0: false
+                };
         }));
 }
 
@@ -130,14 +164,20 @@ var ty$1 = Js_json.classify(json$1);
 
 if (typeof ty$1 === "number") {
   add_test("File \"js_json_test.ml\", line 65, characters 16-23", (function (param) {
-          return /* Ok */Block.__(4, [false]);
+          return {
+                  tag: /* Ok */4,
+                  _0: false
+                };
         }));
 } else if (ty$1.tag) {
   add_test("File \"js_json_test.ml\", line 65, characters 16-23", (function (param) {
-          return /* Ok */Block.__(4, [false]);
+          return {
+                  tag: /* Ok */4,
+                  _0: false
+                };
         }));
 } else {
-  eq("File \"js_json_test.ml\", line 64, characters 31-38", ty$1[0], "test string");
+  eq("File \"js_json_test.ml\", line 64, characters 31-38", ty$1._0, "test string");
 }
 
 var json$2 = JSON.parse(JSON.stringify(1.23456789));
@@ -149,12 +189,15 @@ var exit = 0;
 if (typeof ty$2 === "number" || ty$2.tag !== /* JSONNumber */1) {
   exit = 1;
 } else {
-  eq("File \"js_json_test.ml\", line 74, characters 31-38", ty$2[0], 1.23456789);
+  eq("File \"js_json_test.ml\", line 74, characters 31-38", ty$2._0, 1.23456789);
 }
 
 if (exit === 1) {
   add_test("File \"js_json_test.ml\", line 75, characters 18-25", (function (param) {
-          return /* Ok */Block.__(4, [false]);
+          return {
+                  tag: /* Ok */4,
+                  _0: false
+                };
         }));
 }
 
@@ -167,12 +210,15 @@ var exit$1 = 0;
 if (typeof ty$3 === "number" || ty$3.tag !== /* JSONNumber */1) {
   exit$1 = 1;
 } else {
-  eq("File \"js_json_test.ml\", line 84, characters 31-38", ty$3[0] | 0, -1347440721);
+  eq("File \"js_json_test.ml\", line 84, characters 31-38", ty$3._0 | 0, -1347440721);
 }
 
 if (exit$1 === 1) {
   add_test("File \"js_json_test.ml\", line 85, characters 18-25", (function (param) {
-          return /* Ok */Block.__(4, [false]);
+          return {
+                  tag: /* Ok */4,
+                  _0: false
+                };
         }));
 }
 
@@ -181,7 +227,10 @@ function test(v) {
   var ty = Js_json.classify(json);
   if (typeof ty !== "number") {
     return add_test("File \"js_json_test.ml\", line 96, characters 18-25", (function (param) {
-                  return /* Ok */Block.__(4, [false]);
+                  return {
+                          tag: /* Ok */4,
+                          _0: false
+                        };
                 }));
   }
   switch (ty) {
@@ -191,7 +240,10 @@ function test(v) {
         return eq("File \"js_json_test.ml\", line 94, characters 30-37", true, v);
     case /* JSONNull */2 :
         return add_test("File \"js_json_test.ml\", line 96, characters 18-25", (function (param) {
-                      return /* Ok */Block.__(4, [false]);
+                      return {
+                              tag: /* Ok */4,
+                              _0: false
+                            };
                     }));
     
   }
@@ -216,7 +268,7 @@ function option_get(x) {
       };
 }
 
-var dict = { };
+var dict = {};
 
 dict["a"] = "test string";
 
@@ -228,46 +280,68 @@ var ty$4 = Js_json.classify(json$4);
 
 if (typeof ty$4 === "number") {
   add_test("File \"js_json_test.ml\", line 134, characters 16-23", (function (param) {
-          return /* Ok */Block.__(4, [false]);
+          return {
+                  tag: /* Ok */4,
+                  _0: false
+                };
         }));
 } else if (ty$4.tag === /* JSONObject */2) {
-  var x = ty$4[0];
+  var x = ty$4._0;
   var ta = Js_json.classify(option_get(Js_dict.get(x, "a")));
   if (typeof ta === "number") {
     add_test("File \"js_json_test.ml\", line 132, characters 18-25", (function (param) {
-            return /* Ok */Block.__(4, [false]);
+            return {
+                    tag: /* Ok */4,
+                    _0: false
+                  };
           }));
   } else if (ta.tag) {
     add_test("File \"js_json_test.ml\", line 132, characters 18-25", (function (param) {
-            return /* Ok */Block.__(4, [false]);
+            return {
+                    tag: /* Ok */4,
+                    _0: false
+                  };
           }));
-  } else if (ta[0] !== "test string") {
+  } else if (ta._0 !== "test string") {
     add_test("File \"js_json_test.ml\", line 123, characters 18-25", (function (param) {
-            return /* Ok */Block.__(4, [false]);
+            return {
+                    tag: /* Ok */4,
+                    _0: false
+                  };
           }));
   } else {
     var ty$5 = Js_json.classify(option_get(Js_dict.get(x, "b")));
     if (typeof ty$5 === "number") {
       add_test("File \"js_json_test.ml\", line 130, characters 22-29", (function (param) {
-              return /* Ok */Block.__(4, [false]);
+              return {
+                      tag: /* Ok */4,
+                      _0: false
+                    };
             }));
     } else if (ty$5.tag === /* JSONNumber */1) {
-      var b = ty$5[0];
+      var b = ty$5._0;
       add_test("File \"js_json_test.ml\", line 129, characters 19-26", (function (param) {
-              return /* Approx */Block.__(5, [
-                        123.0,
-                        b
-                      ]);
+              return {
+                      tag: /* Approx */5,
+                      _0: 123.0,
+                      _1: b
+                    };
             }));
     } else {
       add_test("File \"js_json_test.ml\", line 130, characters 22-29", (function (param) {
-              return /* Ok */Block.__(4, [false]);
+              return {
+                      tag: /* Ok */4,
+                      _0: false
+                    };
             }));
     }
   }
 } else {
   add_test("File \"js_json_test.ml\", line 134, characters 16-23", (function (param) {
-          return /* Ok */Block.__(4, [false]);
+          return {
+                  tag: /* Ok */4,
+                  _0: false
+                };
         }));
 }
 
@@ -275,68 +349,101 @@ function eq_at_i(loc, json, i, kind, expected) {
   var ty = Js_json.classify(json);
   if (typeof ty === "number") {
     return add_test(loc, (function (param) {
-                  return /* Ok */Block.__(4, [false]);
+                  return {
+                          tag: /* Ok */4,
+                          _0: false
+                        };
                 }));
   }
   if (ty.tag !== /* JSONArray */3) {
     return add_test(loc, (function (param) {
-                  return /* Ok */Block.__(4, [false]);
+                  return {
+                          tag: /* Ok */4,
+                          _0: false
+                        };
                 }));
   }
-  var ty$1 = Js_json.classify(Caml_array.caml_array_get(ty[0], i));
+  var ty$1 = Js_json.classify(Caml_array.caml_array_get(ty._0, i));
   switch (kind) {
     case /* String */0 :
         if (typeof ty$1 === "number") {
           return add_test(loc, (function (param) {
-                        return /* Ok */Block.__(4, [false]);
+                        return {
+                                tag: /* Ok */4,
+                                _0: false
+                              };
                       }));
         } else if (ty$1.tag) {
           return add_test(loc, (function (param) {
-                        return /* Ok */Block.__(4, [false]);
+                        return {
+                                tag: /* Ok */4,
+                                _0: false
+                              };
                       }));
         } else {
-          return eq(loc, ty$1[0], expected);
+          return eq(loc, ty$1._0, expected);
         }
     case /* Number */1 :
         if (typeof ty$1 === "number") {
           return add_test(loc, (function (param) {
-                        return /* Ok */Block.__(4, [false]);
+                        return {
+                                tag: /* Ok */4,
+                                _0: false
+                              };
                       }));
         } else if (ty$1.tag === /* JSONNumber */1) {
-          return eq(loc, ty$1[0], expected);
+          return eq(loc, ty$1._0, expected);
         } else {
           return add_test(loc, (function (param) {
-                        return /* Ok */Block.__(4, [false]);
+                        return {
+                                tag: /* Ok */4,
+                                _0: false
+                              };
                       }));
         }
     case /* Object */2 :
         if (typeof ty$1 === "number") {
           return add_test(loc, (function (param) {
-                        return /* Ok */Block.__(4, [false]);
+                        return {
+                                tag: /* Ok */4,
+                                _0: false
+                              };
                       }));
         } else if (ty$1.tag === /* JSONObject */2) {
-          return eq(loc, ty$1[0], expected);
+          return eq(loc, ty$1._0, expected);
         } else {
           return add_test(loc, (function (param) {
-                        return /* Ok */Block.__(4, [false]);
+                        return {
+                                tag: /* Ok */4,
+                                _0: false
+                              };
                       }));
         }
     case /* Array */3 :
         if (typeof ty$1 === "number") {
           return add_test(loc, (function (param) {
-                        return /* Ok */Block.__(4, [false]);
+                        return {
+                                tag: /* Ok */4,
+                                _0: false
+                              };
                       }));
         } else if (ty$1.tag === /* JSONArray */3) {
-          return eq(loc, ty$1[0], expected);
+          return eq(loc, ty$1._0, expected);
         } else {
           return add_test(loc, (function (param) {
-                        return /* Ok */Block.__(4, [false]);
+                        return {
+                                tag: /* Ok */4,
+                                _0: false
+                              };
                       }));
         }
     case /* Boolean */4 :
         if (typeof ty$1 !== "number") {
           return add_test(loc, (function (param) {
-                        return /* Ok */Block.__(4, [false]);
+                        return {
+                                tag: /* Ok */4,
+                                _0: false
+                              };
                       }));
         }
         switch (ty$1) {
@@ -346,7 +453,10 @@ function eq_at_i(loc, json, i, kind, expected) {
               return eq(loc, true, expected);
           case /* JSONNull */2 :
               return add_test(loc, (function (param) {
-                            return /* Ok */Block.__(4, [false]);
+                            return {
+                                    tag: /* Ok */4,
+                                    _0: false
+                                  };
                           }));
           
         }
@@ -354,16 +464,25 @@ function eq_at_i(loc, json, i, kind, expected) {
         if (typeof ty$1 === "number") {
           if (ty$1 >= 2) {
             return add_test(loc, (function (param) {
-                          return /* Ok */Block.__(4, [true]);
+                          return {
+                                  tag: /* Ok */4,
+                                  _0: true
+                                };
                         }));
           } else {
             return add_test(loc, (function (param) {
-                          return /* Ok */Block.__(4, [false]);
+                          return {
+                                  tag: /* Ok */4,
+                                  _0: false
+                                };
                         }));
           }
         } else {
           return add_test(loc, (function (param) {
-                        return /* Ok */Block.__(4, [false]);
+                        return {
+                                tag: /* Ok */4,
+                                _0: false
+                              };
                       }));
         }
     
@@ -441,7 +560,7 @@ eq_at_i("File \"js_json_test.ml\", line 249, characters 10-17", json$9, 1, /* Bo
 eq_at_i("File \"js_json_test.ml\", line 250, characters 10-17", json$9, 2, /* Boolean */4, Caml_array.caml_array_get(a$2, 2));
 
 function make_d(s, i) {
-  var d = { };
+  var d = {};
   d["a"] = s;
   d["b"] = i;
   return d;
@@ -458,47 +577,71 @@ var ty$6 = Js_json.classify(json$10);
 
 if (typeof ty$6 === "number") {
   add_test("File \"js_json_test.ml\", line 282, characters 16-23", (function (param) {
-          return /* Ok */Block.__(4, [false]);
+          return {
+                  tag: /* Ok */4,
+                  _0: false
+                };
         }));
 } else if (ty$6.tag === /* JSONArray */3) {
-  var ty$7 = Js_json.classify(Caml_array.caml_array_get(ty$6[0], 1));
+  var ty$7 = Js_json.classify(Caml_array.caml_array_get(ty$6._0, 1));
   if (typeof ty$7 === "number") {
     add_test("File \"js_json_test.ml\", line 280, characters 18-25", (function (param) {
-            return /* Ok */Block.__(4, [false]);
+            return {
+                    tag: /* Ok */4,
+                    _0: false
+                  };
           }));
   } else if (ty$7.tag === /* JSONObject */2) {
-    var ty$8 = Js_json.classify(option_get(Js_dict.get(ty$7[0], "a")));
+    var ty$8 = Js_json.classify(option_get(Js_dict.get(ty$7._0, "a")));
     if (typeof ty$8 === "number") {
       add_test("File \"js_json_test.ml\", line 278, characters 20-27", (function (param) {
-              return /* Ok */Block.__(4, [false]);
+              return {
+                      tag: /* Ok */4,
+                      _0: false
+                    };
             }));
     } else if (ty$8.tag) {
       add_test("File \"js_json_test.ml\", line 278, characters 20-27", (function (param) {
-              return /* Ok */Block.__(4, [false]);
+              return {
+                      tag: /* Ok */4,
+                      _0: false
+                    };
             }));
     } else {
-      eq("File \"js_json_test.ml\", line 277, characters 40-47", ty$8[0], "bbb");
+      eq("File \"js_json_test.ml\", line 277, characters 40-47", ty$8._0, "bbb");
     }
   } else {
     add_test("File \"js_json_test.ml\", line 280, characters 18-25", (function (param) {
-            return /* Ok */Block.__(4, [false]);
+            return {
+                    tag: /* Ok */4,
+                    _0: false
+                  };
           }));
   }
 } else {
   add_test("File \"js_json_test.ml\", line 282, characters 16-23", (function (param) {
-          return /* Ok */Block.__(4, [false]);
+          return {
+                  tag: /* Ok */4,
+                  _0: false
+                };
         }));
 }
 
 try {
   JSON.parse("{{ A}");
   add_test("File \"js_json_test.ml\", line 288, characters 11-18", (function (param) {
-          return /* Ok */Block.__(4, [false]);
+          return {
+                  tag: /* Ok */4,
+                  _0: false
+                };
         }));
 }
 catch (exn){
   add_test("File \"js_json_test.ml\", line 291, characters 10-17", (function (param) {
-          return /* Ok */Block.__(4, [true]);
+          return {
+                  tag: /* Ok */4,
+                  _0: true
+                };
         }));
 }
 
@@ -528,7 +671,7 @@ eq("File \"js_json_test.ml\", line 312, characters 5-12", Js_json.decodeString([
 
 eq("File \"js_json_test.ml\", line 314, characters 5-12", Js_json.decodeString(null), undefined);
 
-eq("File \"js_json_test.ml\", line 316, characters 5-12", Js_json.decodeString({ }), undefined);
+eq("File \"js_json_test.ml\", line 316, characters 5-12", Js_json.decodeString({}), undefined);
 
 eq("File \"js_json_test.ml\", line 318, characters 5-12", Js_json.decodeString(1.23), undefined);
 
@@ -540,7 +683,7 @@ eq("File \"js_json_test.ml\", line 326, characters 5-12", Js_json.decodeNumber([
 
 eq("File \"js_json_test.ml\", line 328, characters 5-12", Js_json.decodeNumber(null), undefined);
 
-eq("File \"js_json_test.ml\", line 330, characters 5-12", Js_json.decodeNumber({ }), undefined);
+eq("File \"js_json_test.ml\", line 330, characters 5-12", Js_json.decodeNumber({}), undefined);
 
 eq("File \"js_json_test.ml\", line 332, characters 5-12", Js_json.decodeNumber(1.23), 1.23);
 
@@ -552,7 +695,7 @@ eq("File \"js_json_test.ml\", line 340, characters 5-12", Js_json.decodeObject([
 
 eq("File \"js_json_test.ml\", line 342, characters 5-12", Js_json.decodeObject(null), undefined);
 
-eq("File \"js_json_test.ml\", line 344, characters 5-12", Js_json.decodeObject({ }), { });
+eq("File \"js_json_test.ml\", line 344, characters 5-12", Js_json.decodeObject({}), {});
 
 eq("File \"js_json_test.ml\", line 347, characters 5-12", Js_json.decodeObject(1.23), undefined);
 
@@ -564,7 +707,7 @@ eq("File \"js_json_test.ml\", line 355, characters 5-12", Js_json.decodeArray([]
 
 eq("File \"js_json_test.ml\", line 357, characters 5-12", Js_json.decodeArray(null), undefined);
 
-eq("File \"js_json_test.ml\", line 359, characters 5-12", Js_json.decodeArray({ }), undefined);
+eq("File \"js_json_test.ml\", line 359, characters 5-12", Js_json.decodeArray({}), undefined);
 
 eq("File \"js_json_test.ml\", line 361, characters 5-12", Js_json.decodeArray(1.23), undefined);
 
@@ -576,7 +719,7 @@ eq("File \"js_json_test.ml\", line 369, characters 5-12", Js_json.decodeBoolean(
 
 eq("File \"js_json_test.ml\", line 371, characters 5-12", Js_json.decodeBoolean(null), undefined);
 
-eq("File \"js_json_test.ml\", line 373, characters 5-12", Js_json.decodeBoolean({ }), undefined);
+eq("File \"js_json_test.ml\", line 373, characters 5-12", Js_json.decodeBoolean({}), undefined);
 
 eq("File \"js_json_test.ml\", line 375, characters 5-12", Js_json.decodeBoolean(1.23), undefined);
 
@@ -588,7 +731,7 @@ eq("File \"js_json_test.ml\", line 383, characters 5-12", Js_json.decodeNull([])
 
 eq("File \"js_json_test.ml\", line 385, characters 5-12", Js_json.decodeNull(null), null);
 
-eq("File \"js_json_test.ml\", line 387, characters 5-12", Js_json.decodeNull({ }), undefined);
+eq("File \"js_json_test.ml\", line 387, characters 5-12", Js_json.decodeNull({}), undefined);
 
 eq("File \"js_json_test.ml\", line 389, characters 5-12", Js_json.decodeNull(1.23), undefined);
 

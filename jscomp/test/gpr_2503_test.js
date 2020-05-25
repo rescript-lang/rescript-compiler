@@ -20,7 +20,7 @@ function b(loc, b$1) {
 }
 
 function makeWrapper(foo, param) {
-  var tmp = { };
+  var tmp = {};
   if (foo !== undefined) {
     tmp.foo = (function () {
           switch (Caml_option.valFromOption(foo)) {
@@ -55,7 +55,7 @@ makeWrapper2(/* a */97, undefined);
 
 function makeWrapper3(foo, param) {
   console.log(2);
-  var tmp = { };
+  var tmp = {};
   if (foo !== undefined) {
     tmp.foo = (function () {
           switch (Caml_option.valFromOption(foo)) {
@@ -72,7 +72,7 @@ function makeWrapper3(foo, param) {
 
 function makeWrapper4(foo, param) {
   console.log(2);
-  var tmp = { };
+  var tmp = {};
   var tmp$1 = foo > 100 ? undefined : (
       foo > 10 ? /* b */98 : /* a */97
     );

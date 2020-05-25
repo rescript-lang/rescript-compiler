@@ -4,19 +4,19 @@
 function f(param) {
   switch (param.tag | 0) {
     case /* A */0 :
-        var a = param[0];
+        var a = param._0;
         if (a.tag) {
-          var a$1 = a[0];
+          var a$1 = a._0;
           return a$1 - a$1 | 0;
         }
-        var a$2 = a[0];
+        var a$2 = a._0;
         return a$2 + a$2 | 0;
     case /* B */1 :
     case /* C */2 :
         break;
     
   }
-  var a$3 = param[0][0];
+  var a$3 = param._0._0;
   return Math.imul(a$3, a$3);
 }
 

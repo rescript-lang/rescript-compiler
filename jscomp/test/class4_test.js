@@ -28,18 +28,19 @@ var test_id = {
 
 function eq(loc, x, y) {
   test_id.contents = test_id.contents + 1 | 0;
-  suites.contents = /* :: */[
-    /* tuple */[
+  suites.contents = /* :: */{
+    _0: /* tuple */[
       loc + (" id " + String(test_id.contents)),
       (function (param) {
-          return /* Eq */Block.__(0, [
-                    x,
-                    y
-                  ]);
+          return {
+                  tag: /* Eq */0,
+                  _0: x,
+                  _1: y
+                };
         })
     ],
-    suites.contents
-  ];
+    _1: suites.contents
+  };
   
 }
 
@@ -103,7 +104,7 @@ var Point = {
   restricted_point$prime: restricted_point
 };
 
-function abstract_point_001($$class) {
+function abstract_point_1($$class) {
   var x_init = CamlinternalOO.new_variable($$class, "");
   var ids = CamlinternalOO.get_method_labels($$class, [
         "move",
@@ -124,7 +125,7 @@ function abstract_point_001($$class) {
 
 var abstract_point = /* class */[
   undefined,
-  abstract_point_001,
+  abstract_point_1,
   undefined,
   undefined
 ];

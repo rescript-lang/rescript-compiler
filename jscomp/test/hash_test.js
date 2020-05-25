@@ -90,28 +90,28 @@ Mt_global.collect_eq(test_id, suites, "File \"hash_test.ml\", line 35, character
           value: 3
         }) & 1073741823, 294279345);
 
-Mt_global.collect_eq(test_id, suites, "File \"hash_test.ml\", line 36, characters 5-12", Hashtbl.hash(/* :: */[
-          {
+Mt_global.collect_eq(test_id, suites, "File \"hash_test.ml\", line 36, characters 5-12", Hashtbl.hash(/* :: */{
+          _0: {
             HASH: /* A */65,
             value: 3
           },
-          /* :: */[
-            {
+          _1: /* :: */{
+            _0: {
               HASH: /* B */66,
               value: 2
             },
-            /* :: */[
-              {
+            _1: /* :: */{
+              _0: {
                 HASH: /* C */67,
                 value: 3
               },
-              /* [] */0
-            ]
-          ]
-        ]) & 1073741823, 1017654909);
+              _1: /* [] */0
+            }
+          }
+        }) & 1073741823, 1017654909);
 
-Mt_global.collect_eq(test_id, suites, "File \"hash_test.ml\", line 37, characters 5-12", Hashtbl.hash(/* :: */[
-          /* tuple */[
+Mt_global.collect_eq(test_id, suites, "File \"hash_test.ml\", line 37, characters 5-12", Hashtbl.hash(/* :: */{
+          _0: /* tuple */[
             {
               HASH: /* A */65,
               value: "3"
@@ -121,8 +121,8 @@ Mt_global.collect_eq(test_id, suites, "File \"hash_test.ml\", line 37, character
               value: "2"
             }
           ],
-          /* :: */[
-            /* tuple */[
+          _1: /* :: */{
+            _0: /* tuple */[
               {
                 HASH: /* C */67,
                 value: "3"
@@ -132,12 +132,12 @@ Mt_global.collect_eq(test_id, suites, "File \"hash_test.ml\", line 37, character
                 value: "4"
               }
             ],
-            /* [] */0
-          ]
-        ]) & 1073741823, 81986873);
+            _1: /* [] */0
+          }
+        }) & 1073741823, 81986873);
 
-Mt_global.collect_eq(test_id, suites, "File \"hash_test.ml\", line 40, characters 5-12", Hashtbl.hash(/* :: */[
-          /* tuple */[
+Mt_global.collect_eq(test_id, suites, "File \"hash_test.ml\", line 40, characters 5-12", Hashtbl.hash(/* :: */{
+          _0: /* tuple */[
             {
               HASH: /* A */65,
               value: /* tuple */[
@@ -154,8 +154,8 @@ Mt_global.collect_eq(test_id, suites, "File \"hash_test.ml\", line 40, character
                 ]]
             }
           ],
-          /* [] */0
-        ]) & 1073741823, 100650590);
+          _1: /* [] */0
+        }) & 1073741823, 100650590);
 
 Mt.from_pair_suites("Hash_test", suites.contents);
 

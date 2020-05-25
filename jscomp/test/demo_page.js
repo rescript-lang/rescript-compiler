@@ -22,10 +22,10 @@ function sum(n) {
 
 function map(f, param) {
   if (param) {
-    return /* Cons */[
-            Curry._1(f, param[0]),
-            map(f, param[1])
-          ];
+    return /* Cons */{
+            _0: Curry._1(f, param._0),
+            _1: map(f, param._1)
+          };
   } else {
     return /* Nil */0;
   }

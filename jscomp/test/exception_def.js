@@ -24,7 +24,7 @@ var U = {
   A: A$1
 };
 
-var H = { };
+var H = {};
 
 var Bx = Caml_exceptions.create("Exception_def.Bx");
 
@@ -38,7 +38,7 @@ var XXX = Caml_exceptions.create("Exception_def.XXX");
 
 var Aa = "Match_failure";
 
-var v_001 = /* tuple */[
+var v_1 = /* tuple */[
   "",
   0,
   0
@@ -46,7 +46,7 @@ var v_001 = /* tuple */[
 
 var v = {
   RE_EXN_ID: Aa,
-  _1: v_001
+  _1: v_1
 };
 
 var H0 = "Not_found";

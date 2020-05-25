@@ -27,18 +27,30 @@ function renderToElementWithId(reactElement, id) {
 function createRootWithClassName(className) {
   var elements = document.getElementsByClassName(className);
   if (elements.length !== 0) {
-    return /* Ok */Block.__(0, [ReactDom.createRoot(elements[0])]);
+    return {
+            tag: /* Ok */0,
+            _0: ReactDom.createRoot(elements[0])
+          };
   } else {
-    return /* Error */Block.__(1, ["ReactDOMRe.Unstable.createRootWithClassName: no element of class " + (className + " found in the HTML.")]);
+    return {
+            tag: /* Error */1,
+            _0: "ReactDOMRe.Unstable.createRootWithClassName: no element of class " + (className + " found in the HTML.")
+          };
   }
 }
 
 function createRootWithId(id) {
   var element = document.getElementById(id);
   if (element == null) {
-    return /* Error */Block.__(1, ["ReactDOMRe.Unstable.createRootWithId: no element of id " + (id + " found in the HTML.")]);
+    return {
+            tag: /* Error */1,
+            _0: "ReactDOMRe.Unstable.createRootWithId: no element of id " + (id + " found in the HTML.")
+          };
   } else {
-    return /* Ok */Block.__(0, [ReactDom.createRoot(element)]);
+    return {
+            tag: /* Ok */0,
+            _0: ReactDom.createRoot(element)
+          };
   }
 }
 
@@ -70,7 +82,7 @@ function hydrateToElementWithId(reactElement, id) {
   
 }
 
-var Ref = { };
+var Ref = {};
 
 function createElementVariadic(domClassName, props, children) {
   var variadicArguments = [
@@ -81,7 +93,7 @@ function createElementVariadic(domClassName, props, children) {
 }
 
 function unsafeAddProp(style, key, value) {
-  var dict = { };
+  var dict = {};
   dict[key] = value;
   return Object.assign({}, style, dict);
 }

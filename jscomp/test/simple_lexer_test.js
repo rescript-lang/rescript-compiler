@@ -45,20 +45,21 @@ function translate(lexbuf) {
   return __ocaml_lex_translate_rec(lexbuf, 0);
 }
 
-var suites_000 = /* tuple */[
+var suites_0 = /* tuple */[
   "translate",
   (function (param) {
-      return /* Eq */Block.__(0, [
-                __ocaml_lex_translate_rec(Lexing.from_string("-- current_directory --"), 0),
-                "-- . --"
-              ]);
+      return {
+              tag: /* Eq */0,
+              _0: __ocaml_lex_translate_rec(Lexing.from_string("-- current_directory --"), 0),
+              _1: "-- . --"
+            };
     })
 ];
 
-var suites = /* :: */[
-  suites_000,
-  /* [] */0
-];
+var suites = /* :: */{
+  _0: suites_0,
+  _1: /* [] */0
+};
 
 Mt.from_pair_suites("Simple_lexer_test", suites);
 

@@ -8,10 +8,10 @@ var Stack = require("../../lib/js/stack.js");
 function to_list(v) {
   var acc = /* [] */0;
   while(v.c !== /* [] */0) {
-    acc = /* :: */[
-      Stack.pop(v),
-      acc
-    ];
+    acc = /* :: */{
+      _0: Stack.pop(v),
+      _1: acc
+    };
   };
   return List.rev(acc);
 }
@@ -27,29 +27,30 @@ function v(param) {
   return to_list(v$1);
 }
 
-var suites_000 = /* tuple */[
+var suites_0 = /* tuple */[
   "push_test",
   (function (param) {
-      return /* Eq */Block.__(0, [
-                /* :: */[
-                  1,
-                  /* :: */[
-                    4,
-                    /* :: */[
-                      3,
-                      /* [] */0
-                    ]
-                  ]
-                ],
-                v(undefined)
-              ]);
+      return {
+              tag: /* Eq */0,
+              _0: /* :: */{
+                _0: 1,
+                _1: /* :: */{
+                  _0: 4,
+                  _1: /* :: */{
+                    _0: 3,
+                    _1: /* [] */0
+                  }
+                }
+              },
+              _1: v(undefined)
+            };
     })
 ];
 
-var suites = /* :: */[
-  suites_000,
-  /* [] */0
-];
+var suites = /* :: */{
+  _0: suites_0,
+  _1: /* [] */0
+};
 
 Mt.from_pair_suites("Stack_test", suites);
 

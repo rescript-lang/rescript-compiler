@@ -5,65 +5,80 @@ var Curry = require("../../lib/js/curry.js");
 var Printf = require("../../lib/js/printf.js");
 var Caml_int64 = require("../../lib/js/caml_int64.js");
 
-Curry._1(Printf.printf(/* Format */[
-          /* Int64 */Block.__(7, [
-              /* Int_d */0,
-              /* No_padding */0,
-              /* No_precision */0,
-              /* Char_literal */Block.__(12, [
-                  /* "\n" */10,
-                  /* End_of_format */0
-                ])
-            ]),
-          "%Ld\n"
-        ]), Caml_int64.mk(32, 0));
+Curry._1(Printf.printf(/* Format */{
+          _0: {
+            tag: /* Int64 */7,
+            _0: /* Int_d */0,
+            _1: /* No_padding */0,
+            _2: /* No_precision */0,
+            _3: {
+              tag: /* Char_literal */12,
+              _0: /* "\n" */10,
+              _1: /* End_of_format */0
+            }
+          },
+          _1: "%Ld\n"
+        }), Caml_int64.mk(32, 0));
 
-Printf.printf(/* Format */[
-      /* String_literal */Block.__(11, [
-          "heloo!\nhelloxx\n",
-          /* End_of_format */0
-        ]),
-      "heloo!\nhelloxx\n"
-    ]);
+Printf.printf(/* Format */{
+      _0: {
+        tag: /* String_literal */11,
+        _0: "heloo!\nhelloxx\n",
+        _1: /* End_of_format */0
+      },
+      _1: "heloo!\nhelloxx\n"
+    });
 
-Printf.printf(/* Format */[
-      /* String_literal */Block.__(11, [
-          "hello\nhi\n",
-          /* End_of_format */0
-        ]),
-      "hello\nhi\n"
-    ]);
+Printf.printf(/* Format */{
+      _0: {
+        tag: /* String_literal */11,
+        _0: "hello\nhi\n",
+        _1: /* End_of_format */0
+      },
+      _1: "hello\nhi\n"
+    });
 
-Curry._2(Printf.printf(/* Format */[
-          /* Int */Block.__(4, [
-              /* Int_d */0,
-              /* Arg_padding */Block.__(1, [/* Right */1]),
-              /* No_precision */0,
-              /* String_literal */Block.__(11, [
-                  "\n\n",
-                  /* End_of_format */0
-                ])
-            ]),
-          "%*d\n\n"
-        ]), 32, 3);
+Curry._2(Printf.printf(/* Format */{
+          _0: {
+            tag: /* Int */4,
+            _0: /* Int_d */0,
+            _1: {
+              tag: /* Arg_padding */1,
+              _0: /* Right */1
+            },
+            _2: /* No_precision */0,
+            _3: {
+              tag: /* String_literal */11,
+              _0: "\n\n",
+              _1: /* End_of_format */0
+            }
+          },
+          _1: "%*d\n\n"
+        }), 32, 3);
 
-Curry._1(Printf.printf(/* Format */[
-          /* String */Block.__(2, [
-              /* No_padding */0,
-              /* End_of_format */0
-            ]),
-          "%s"
-        ]), Curry._2(Printf.sprintf(/* Format */[
-              /* Int */Block.__(4, [
-                  /* Int_d */0,
-                  /* Arg_padding */Block.__(1, [/* Right */1]),
-                  /* No_precision */0,
-                  /* Char_literal */Block.__(12, [
-                      /* "\n" */10,
-                      /* End_of_format */0
-                    ])
-                ]),
-              "%*d\n"
-            ]), 32, 3));
+Curry._1(Printf.printf(/* Format */{
+          _0: {
+            tag: /* String */2,
+            _0: /* No_padding */0,
+            _1: /* End_of_format */0
+          },
+          _1: "%s"
+        }), Curry._2(Printf.sprintf(/* Format */{
+              _0: {
+                tag: /* Int */4,
+                _0: /* Int_d */0,
+                _1: {
+                  tag: /* Arg_padding */1,
+                  _0: /* Right */1
+                },
+                _2: /* No_precision */0,
+                _3: {
+                  tag: /* Char_literal */12,
+                  _0: /* "\n" */10,
+                  _1: /* End_of_format */0
+                }
+              },
+              _1: "%*d\n"
+            }), 32, 3));
 
 /*  Not a pure module */

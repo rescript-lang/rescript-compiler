@@ -28,7 +28,10 @@ function bind(x, f) {
   if (x.tag) {
     return x;
   } else {
-    return /* Left */Block.__(0, [Curry._1(f, x[0])]);
+    return {
+            tag: /* Left */0,
+            _0: Curry._1(f, x._0)
+          };
   }
 }
 

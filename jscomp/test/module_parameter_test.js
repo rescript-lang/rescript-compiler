@@ -18,33 +18,35 @@ function v(x) {
   return x.length;
 }
 
-var suites_000 = /* tuple */[
+var suites_0 = /* tuple */[
   "const",
   (function (param) {
-      return /* Eq */Block.__(0, [
-                1,
-                1
-              ]);
+      return {
+              tag: /* Eq */0,
+              _0: 1,
+              _1: 1
+            };
     })
 ];
 
-var suites_001 = /* :: */[
-  /* tuple */[
+var suites_1 = /* :: */{
+  _0: /* tuple */[
     "other",
     (function (param) {
-        return /* Eq */Block.__(0, [
-                  3,
-                  3
-                ]);
+        return {
+                tag: /* Eq */0,
+                _0: 3,
+                _1: 3
+              };
       })
   ],
-  /* [] */0
-];
+  _1: /* [] */0
+};
 
-var suites = /* :: */[
-  suites_000,
-  suites_001
-];
+var suites = /* :: */{
+  _0: suites_0,
+  _1: suites_1
+};
 
 Mt.from_pair_suites("Module_parameter_test", suites);
 

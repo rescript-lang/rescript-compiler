@@ -4,28 +4,29 @@ var Mt = require("./mt.js");
 var Block = require("../../lib/js/block.js");
 var Test_google_closure = require("./test_google_closure.js");
 
-Mt.from_pair_suites("Closure", /* :: */[
-      /* tuple */[
+Mt.from_pair_suites("Closure", /* :: */{
+      _0: /* tuple */[
         "partial",
         (function (param) {
-            return /* Eq */Block.__(0, [
-                      /* tuple */[
-                        Test_google_closure.a,
-                        Test_google_closure.b,
-                        Test_google_closure.c
-                      ],
-                      /* tuple */[
-                        "3",
-                        101,
-                        [
-                          1,
-                          2
-                        ]
+            return {
+                    tag: /* Eq */0,
+                    _0: /* tuple */[
+                      Test_google_closure.a,
+                      Test_google_closure.b,
+                      Test_google_closure.c
+                    ],
+                    _1: /* tuple */[
+                      "3",
+                      101,
+                      [
+                        1,
+                        2
                       ]
-                    ]);
+                    ]
+                  };
           })
       ],
-      /* [] */0
-    ]);
+      _1: /* [] */0
+    });
 
 /*  Not a pure module */

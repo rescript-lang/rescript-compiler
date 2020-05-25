@@ -39,17 +39,17 @@ function reverse_of_list(l) {
     return [];
   }
   var len = List.length(l);
-  var a = Caml_array.caml_make_vect(len, l[0]);
+  var a = Caml_array.caml_make_vect(len, l._0);
   var _i = 0;
-  var _param = l[1];
+  var _param = l._1;
   while(true) {
     var param = _param;
     var i = _i;
     if (!param) {
       return a;
     }
-    a[(len - i | 0) - 2 | 0] = param[0];
-    _param = param[1];
+    a[(len - i | 0) - 2 | 0] = param._0;
+    _param = param._1;
     _i = i + 1 | 0;
     continue ;
   };
@@ -68,10 +68,10 @@ function filter(f, a) {
     var v = a[i];
     if (Curry._1(f, v)) {
       _i = i + 1 | 0;
-      _acc = /* :: */[
-        v,
-        acc
-      ];
+      _acc = /* :: */{
+        _0: v,
+        _1: acc
+      };
       continue ;
     }
     _i = i + 1 | 0;
@@ -93,10 +93,10 @@ function filter_map(f, a) {
     var v$1 = Curry._1(f, v);
     if (v$1 !== undefined) {
       _i = i + 1 | 0;
-      _acc = /* :: */[
-        Caml_option.valFromOption(v$1),
-        acc
-      ];
+      _acc = /* :: */{
+        _0: Caml_option.valFromOption(v$1),
+        _1: acc
+      };
       continue ;
     }
     _i = i + 1 | 0;
@@ -140,10 +140,10 @@ function tolist_aux(a, f, _i, _res) {
     }
     var v = a[i];
     var v$1 = Curry._1(f, v);
-    _res = v$1 !== undefined ? /* :: */[
-        Caml_option.valFromOption(v$1),
-        res
-      ] : res;
+    _res = v$1 !== undefined ? /* :: */({
+          _0: Caml_option.valFromOption(v$1),
+          _1: res
+        }) : res;
     _i = i - 1 | 0;
     continue ;
   };
@@ -161,8 +161,8 @@ function of_list_map(f, a) {
   if (!a) {
     return [];
   }
-  var tl = a[1];
-  var hd = Curry._1(f, a[0]);
+  var tl = a._1;
+  var hd = Curry._1(f, a._0);
   var len = List.length(tl) + 1 | 0;
   var arr = Caml_array.caml_make_vect(len, hd);
   var _i = 1;
@@ -173,8 +173,8 @@ function of_list_map(f, a) {
     if (!param) {
       return arr;
     }
-    arr[i] = Curry._1(f, param[0]);
-    _param = param[1];
+    arr[i] = Curry._1(f, param._0);
+    _param = param._1;
     _i = i + 1 | 0;
     continue ;
   };

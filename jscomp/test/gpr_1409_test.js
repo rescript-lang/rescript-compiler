@@ -17,22 +17,23 @@ var test_id = {
 
 function eq(loc, x, y) {
   test_id.contents = test_id.contents + 1 | 0;
-  suites.contents = /* :: */[
-    /* tuple */[
+  suites.contents = /* :: */{
+    _0: /* tuple */[
       loc + (" id " + String(test_id.contents)),
       (function (param) {
-          return /* Eq */Block.__(0, [
-                    x,
-                    y
-                  ]);
+          return {
+                  tag: /* Eq */0,
+                  _0: x,
+                  _1: y
+                };
         })
     ],
-    suites.contents
-  ];
+    _1: suites.contents
+  };
   
 }
 
-var a = { };
+var a = {};
 
 var b = {
   foo: "42"
@@ -50,7 +51,7 @@ function make(foo) {
           return String(prim);
         }), foo);
   return function (param) {
-    var tmp = { };
+    var tmp = {};
     if (partial_arg !== undefined) {
       tmp.foo = Caml_option.valFromOption(partial_arg);
     }
@@ -139,29 +140,29 @@ function keys(xs, ys) {
   return String_set.equal(String_set.of_list(xs), String_set.of_list($$Array.to_list(ys)));
 }
 
-eq("File \"gpr_1409_test.ml\", line 69, characters 6-13", keys(/* :: */[
-          "hi",
-          /* [] */0
-        ], Object.keys(test3(undefined, undefined))), true);
+eq("File \"gpr_1409_test.ml\", line 69, characters 6-13", keys(/* :: */{
+          _0: "hi",
+          _1: /* [] */0
+        }, Object.keys(test3(undefined, undefined))), true);
 
-eq("File \"gpr_1409_test.ml\", line 71, characters 6-13", keys(/* :: */[
-          "hi",
-          /* :: */[
-            "open",
-            /* [] */0
-          ]
-        ], Object.keys(test3(2, undefined))), true);
+eq("File \"gpr_1409_test.ml\", line 71, characters 6-13", keys(/* :: */{
+          _0: "hi",
+          _1: /* :: */{
+            _0: "open",
+            _1: /* [] */0
+          }
+        }, Object.keys(test3(2, undefined))), true);
 
-eq("File \"gpr_1409_test.ml\", line 73, characters 6-13", keys(/* :: */[
-          "hi",
-          /* :: */[
-            "open",
-            /* :: */[
-              "xx",
-              /* [] */0
-            ]
-          ]
-        ], Object.keys(test3(2, 2))), true);
+eq("File \"gpr_1409_test.ml\", line 73, characters 6-13", keys(/* :: */{
+          _0: "hi",
+          _1: /* :: */{
+            _0: "open",
+            _1: /* :: */{
+              _0: "xx",
+              _1: /* [] */0
+            }
+          }
+        }, Object.keys(test3(2, 2))), true);
 
 Mt.from_pair_suites("Gpr_1409_test", suites.contents);
 

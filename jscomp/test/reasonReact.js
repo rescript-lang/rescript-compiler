@@ -42,7 +42,9 @@ function convertPropsIfTheyreFromJs(props, jsPropsToReason, debugName) {
     return match;
   }
   if (jsPropsToReason !== undefined) {
-    return /* Element */[jsPropsToReason(props)];
+    return /* Element */{
+            _0: jsPropsToReason(props)
+          };
   }
   throw {
         RE_EXN_ID: "Invalid_argument",
@@ -69,14 +71,14 @@ function createClass(debugName) {
                   var thisJs = this;
                   var convertedReasonProps = convertPropsIfTheyreFromJs(thisJs.props, thisJs.jsPropsToReason, debugName);
                   return {
-                          reasonState: Curry._1(convertedReasonProps[0].initialState, undefined)
+                          reasonState: Curry._1(convertedReasonProps._0.initialState, undefined)
                         };
                 }),
               componentDidMount: (function () {
                   var $$this = this ;
                   var thisJs = this;
                   var convertedReasonProps = convertPropsIfTheyreFromJs(thisJs.props, thisJs.jsPropsToReason, debugName);
-                  var component = convertedReasonProps[0];
+                  var component = convertedReasonProps._0;
                   var curTotalState = thisJs.state;
                   var curReasonState = curTotalState.reasonState;
                   var self = $$this.self(curReasonState, component.retainedProps);
@@ -92,7 +94,7 @@ function createClass(debugName) {
                   var curReasonState = curState.reasonState;
                   var newJsProps = thisJs.props;
                   var newConvertedReasonProps = convertPropsIfTheyreFromJs(newJsProps, thisJs.jsPropsToReason, debugName);
-                  var newComponent = newConvertedReasonProps[0];
+                  var newComponent = newConvertedReasonProps._0;
                   if (newComponent.didUpdate === anyToUnit) {
                     return ;
                   }
@@ -100,7 +102,7 @@ function createClass(debugName) {
                   var prevReasonState = prevState.reasonState;
                   var newSelf = $$this.self(curReasonState, newComponent.retainedProps);
                   var oldSelf_handle = newSelf.handle;
-                  var oldSelf_retainedProps = oldConvertedReasonProps[0].retainedProps;
+                  var oldSelf_retainedProps = oldConvertedReasonProps._0.retainedProps;
                   var oldSelf_send = newSelf.send;
                   var oldSelf_onUnmount = newSelf.onUnmount;
                   var oldSelf = {
@@ -119,7 +121,7 @@ function createClass(debugName) {
                   var $$this = this ;
                   var thisJs = this;
                   var convertedReasonProps = convertPropsIfTheyreFromJs(thisJs.props, thisJs.jsPropsToReason, debugName);
-                  var component = convertedReasonProps[0];
+                  var component = convertedReasonProps._0;
                   var curState = thisJs.state;
                   var curReasonState = curState.reasonState;
                   if (component.willUnmount !== anyToUnit) {
@@ -138,7 +140,7 @@ function createClass(debugName) {
                   var $$this = this ;
                   var thisJs = this;
                   var newConvertedReasonProps = convertPropsIfTheyreFromJs(nextProps, thisJs.jsPropsToReason, debugName);
-                  var newComponent = newConvertedReasonProps[0];
+                  var newComponent = newConvertedReasonProps._0;
                   if (newComponent.willUpdate === anyToUnit) {
                     return ;
                   }
@@ -149,7 +151,7 @@ function createClass(debugName) {
                   var nextReasonState = nextState.reasonState;
                   var newSelf = $$this.self(nextReasonState, newComponent.retainedProps);
                   var oldSelf_handle = newSelf.handle;
-                  var oldSelf_retainedProps = oldConvertedReasonProps[0].retainedProps;
+                  var oldSelf_retainedProps = oldConvertedReasonProps._0.retainedProps;
                   var oldSelf_send = newSelf.send;
                   var oldSelf_onUnmount = newSelf.onUnmount;
                   var oldSelf = {
@@ -168,13 +170,13 @@ function createClass(debugName) {
                   var $$this = this ;
                   var thisJs = this;
                   var newConvertedReasonProps = convertPropsIfTheyreFromJs(nextProps, thisJs.jsPropsToReason, debugName);
-                  var newComponent = newConvertedReasonProps[0];
+                  var newComponent = newConvertedReasonProps._0;
                   if (newComponent.willReceiveProps === willReceivePropsDefault) {
                     return ;
                   }
                   var oldJsProps = thisJs.props;
                   var oldConvertedReasonProps = nextProps === oldJsProps ? newConvertedReasonProps : convertPropsIfTheyreFromJs(oldJsProps, thisJs.jsPropsToReason, debugName);
-                  var oldComponent = oldConvertedReasonProps[0];
+                  var oldComponent = oldConvertedReasonProps._0;
                   return thisJs.setState((function (curTotalState, param) {
                                 var curReasonState = curTotalState.reasonState;
                                 var oldSelf = $$this.self(curReasonState, oldComponent.retainedProps);
@@ -194,7 +196,7 @@ function createClass(debugName) {
                   var curJsProps = thisJs.props;
                   var oldConvertedReasonProps = convertPropsIfTheyreFromJs(thisJs.props, thisJs.jsPropsToReason, debugName);
                   var newConvertedReasonProps = nextJsProps === curJsProps ? oldConvertedReasonProps : convertPropsIfTheyreFromJs(nextJsProps, thisJs.jsPropsToReason, debugName);
-                  var newComponent = newConvertedReasonProps[0];
+                  var newComponent = newConvertedReasonProps._0;
                   var nextReasonState = nextState.reasonState;
                   var newSelf = $$this.self(nextReasonState, newComponent.retainedProps);
                   if (newComponent.shouldUpdate === anyToTrue) {
@@ -203,7 +205,7 @@ function createClass(debugName) {
                   var curState = thisJs.state;
                   var curReasonState = curState.reasonState;
                   var oldSelf_handle = newSelf.handle;
-                  var oldSelf_retainedProps = oldConvertedReasonProps[0].retainedProps;
+                  var oldSelf_retainedProps = oldConvertedReasonProps._0.retainedProps;
                   var oldSelf_send = newSelf.send;
                   var oldSelf_onUnmount = newSelf.onUnmount;
                   var oldSelf = {
@@ -235,14 +237,14 @@ function createClass(debugName) {
                     var curState = thisJs.state;
                     var curReasonState = curState.reasonState;
                     var convertedReasonProps = convertPropsIfTheyreFromJs(thisJs.props, thisJs.jsPropsToReason, debugName);
-                    return Curry._2(callback, callbackPayload, $$this.self(curReasonState, convertedReasonProps[0].retainedProps));
+                    return Curry._2(callback, callbackPayload, $$this.self(curReasonState, convertedReasonProps._0.retainedProps));
                   };
                 }),
               sendMethod: (function (action) {
                   var $$this = this ;
                   var thisJs = this;
                   var convertedReasonProps = convertPropsIfTheyreFromJs(thisJs.props, thisJs.jsPropsToReason, debugName);
-                  var component = convertedReasonProps[0];
+                  var component = convertedReasonProps._0;
                   if (component.reducer === reducerDefault) {
                     return ;
                   }
@@ -265,17 +267,17 @@ function createClass(debugName) {
                                   switch (reasonStateUpdate.tag | 0) {
                                     case /* Update */0 :
                                         nextTotalState = {
-                                          reasonState: reasonStateUpdate[0]
+                                          reasonState: reasonStateUpdate._0
                                         };
                                         break;
                                     case /* SideEffects */1 :
-                                        sideEffects.contents = reasonStateUpdate[0];
+                                        sideEffects.contents = reasonStateUpdate._0;
                                         nextTotalState = curTotalState;
                                         break;
                                     case /* UpdateWithSideEffects */2 :
-                                        sideEffects.contents = reasonStateUpdate[1];
+                                        sideEffects.contents = reasonStateUpdate._1;
                                         nextTotalState = {
-                                          reasonState: reasonStateUpdate[0]
+                                          reasonState: reasonStateUpdate._0
                                         };
                                         break;
                                     
@@ -294,7 +296,7 @@ function createClass(debugName) {
                   var $$this = this ;
                   var thisJs = this;
                   var convertedReasonProps = convertPropsIfTheyreFromJs(thisJs.props, thisJs.jsPropsToReason, debugName);
-                  var created = convertedReasonProps[0];
+                  var created = convertedReasonProps._0;
                   var curState = thisJs.state;
                   var curReasonState = curState.reasonState;
                   return Curry._1(created.render, $$this.self(curReasonState, created.retainedProps));
@@ -334,7 +336,9 @@ var reducerComponentWithRetainedProps = basicComponent;
 function element(keyOpt, refOpt, component) {
   var key = keyOpt !== undefined ? keyOpt : undefined;
   var ref = refOpt !== undefined ? refOpt : undefined;
-  var element$1 = /* Element */[component];
+  var element$1 = /* Element */{
+    _0: component
+  };
   var jsElementWrapped = component.jsElementWrapped;
   if (jsElementWrapped !== undefined) {
     return Curry._2(jsElementWrapped, key, ref);
@@ -357,7 +361,7 @@ var dummyInteropComponent = basicComponent("interop");
 
 function wrapJsForReason(reactClass, props, children) {
   var jsElementWrapped = (function (param, param$1) {
-      var props$1 = Object.assign(Object.assign({ }, props), {
+      var props$1 = Object.assign(Object.assign({}, props), {
             ref: param$1,
             key: param
           });
