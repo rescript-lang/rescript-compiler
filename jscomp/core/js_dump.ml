@@ -1035,7 +1035,7 @@ and expression_desc cxt ~(level:int) f x : cxt  =
 
   | Object lst ->    
     let action () =
-      if lst = [] then begin P.string f "{ }" ; cxt end else      
+      if lst = [] then begin P.string f "{}" ; cxt end else      
         P.brace_vgroup f 1 (fun _ ->
             property_name_and_value_list cxt f lst) in
     if level > 1 then
