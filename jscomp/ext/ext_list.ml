@@ -76,6 +76,23 @@ let rec map_combine l1 l2 f =
   | (_, _) -> 
     invalid_arg "Ext_list.map_combine"
 
+let rec combine_array_unsafe arr l i j acc =    
+  if i = j then acc
+  else 
+    match l with
+    | [] -> invalid_arg "Ext_list.combine"
+    | h :: tl ->
+      (Array.unsafe_get arr i , h) ::
+      combine_array_unsafe arr tl (i + 1) j acc
+
+let combine_array_append arr l acc = 
+  let len = Array.length arr in
+  combine_array_unsafe arr l 0 len acc
+
+let combine_array arr l = 
+  let len = Array.length arr in
+  combine_array_unsafe arr l 0 len []  
+
 let rec map_split_opt 
   (xs : 'a list)  (f : 'a -> 'b option * 'c option) 
   : 'b list * 'c list = 
