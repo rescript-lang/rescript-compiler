@@ -1,7 +1,6 @@
 'use strict';
 
 var Mt = require("./mt.js");
-var Block = require("../../lib/js/block.js");
 
 Mt.from_pair_suites("string_get_set_test.ml", /* :: */{
       _0: /* tuple */[

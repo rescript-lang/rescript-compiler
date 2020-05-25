@@ -2,7 +2,6 @@
 
 var Mt = require("./mt.js");
 var List = require("../../lib/js/list.js");
-var Block = require("../../lib/js/block.js");
 var Curry = require("../../lib/js/curry.js");
 var Stream = require("../../lib/js/stream.js");
 var Caml_bytes = require("../../lib/js/caml_bytes.js");

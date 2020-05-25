@@ -2,7 +2,6 @@
 
 var Mt = require("./mt.js");
 var Sys = require("../../lib/js/sys.js");
-var Block = require("../../lib/js/block.js");
 var Caml_sys = require("../../lib/js/caml_sys.js");
 var Node_process = require("../../lib/js/node_process.js");
 var Caml_js_exceptions = require("../../lib/js/caml_js_exceptions.js");

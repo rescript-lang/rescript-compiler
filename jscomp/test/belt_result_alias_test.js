@@ -1,6 +1,5 @@
 'use strict';
 
-var Block = require("../../lib/js/block.js");
 var Belt_Result = require("../../lib/js/belt_Result.js");
 
 Belt_Result.map({

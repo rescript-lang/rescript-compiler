@@ -2,7 +2,6 @@
 
 var Mt = require("./mt.js");
 var List = require("../../lib/js/list.js");
-var Block = require("../../lib/js/block.js");
 var Caml_obj = require("../../lib/js/caml_obj.js");
 
 var suites = {
@@ -21,7 +20,7 @@ function b(loc, x) {
   return Mt.bool_suites(test_id, suites, loc, x);
 }
 
-var Block$1 = {};
+var Block = {};
 
 var v0 = {
   tag: /* A */1,
@@ -29,7 +28,7 @@ var v0 = {
   _1: 1
 };
 
-var Block$2 = {};
+var Block$1 = {};
 
 var v1 = {
   tag: /* A */1,
@@ -38,7 +37,7 @@ var v1 = {
 };
 
 var N = {
-  Block: Block$2,
+  Block: Block$1,
   v1: v1
 };
 
@@ -76,7 +75,7 @@ exports.suites = suites;
 exports.test_id = test_id;
 exports.eq = eq;
 exports.b = b;
-exports.Block = Block$1;
+exports.Block = Block;
 exports.v0 = v0;
 exports.N = N;
 exports.Caml_obj = Caml_obj$1;

@@ -3,7 +3,6 @@
 var Mt = require("./mt.js");
 var List = require("../../lib/js/list.js");
 var $$Array = require("../../lib/js/array.js");
-var Block = require("../../lib/js/block.js");
 var Caml_primitive = require("../../lib/js/caml_primitive.js");
 
 var list_suites_0 = /* tuple */[

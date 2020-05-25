@@ -1,7 +1,6 @@
 'use strict';
 
 var Mt = require("./mt.js");
-var Block = require("../../lib/js/block.js");
 var Int32 = require("../../lib/js/int32.js");
 var Pervasives = require("../../lib/js/pervasives.js");
 

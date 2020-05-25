@@ -3,7 +3,6 @@
 var Mt = require("./mt.js");
 var Arg = require("../../lib/js/arg.js");
 var List = require("../../lib/js/list.js");
-var Block = require("../../lib/js/block.js");
 var Curry = require("../../lib/js/curry.js");
 var Printf = require("../../lib/js/printf.js");
 var Caml_obj = require("../../lib/js/caml_obj.js");

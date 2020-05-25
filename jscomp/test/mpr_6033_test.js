@@ -1,7 +1,6 @@
 'use strict';
 
 var Mt = require("./mt.js");
-var Block = require("../../lib/js/block.js");
 var CamlinternalLazy = require("../../lib/js/camlinternalLazy.js");
 
 var suites = {

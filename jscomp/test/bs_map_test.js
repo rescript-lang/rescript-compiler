@@ -1,7 +1,6 @@
 'use strict';
 
 var Mt = require("./mt.js");
-var Block = require("../../lib/js/block.js");
 var Belt_Array = require("../../lib/js/belt_Array.js");
 var Belt_MapInt = require("../../lib/js/belt_MapInt.js");
 var Belt_SetInt = require("../../lib/js/belt_SetInt.js");

@@ -1,7 +1,6 @@
 'use strict';
 
 var Mt = require("./mt.js");
-var Block = require("../../lib/js/block.js");
 var JoinClasses = require("./joinClasses");
 var Caml_splice_call = require("../../lib/js/caml_splice_call.js");
 

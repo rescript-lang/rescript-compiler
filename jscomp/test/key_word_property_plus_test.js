@@ -1,7 +1,6 @@
 'use strict';
 
 var Mt = require("./mt.js");
-var Block = require("../../lib/js/block.js");
 var Global_mangles = require("./global_mangles.js");
 
 var suites = {

@@ -2,7 +2,6 @@
 
 var Mt = require("./mt.js");
 var Fs = require("fs");
-var Block = require("../../lib/js/block.js");
 
 var suites = {
   contents: /* [] */0

@@ -2,7 +2,6 @@
 
 var Mt = require("./mt.js");
 var Lazy = require("../../lib/js/lazy.js");
-var Block = require("../../lib/js/block.js");
 var CamlinternalLazy = require("../../lib/js/camlinternalLazy.js");
 var Caml_js_exceptions = require("../../lib/js/caml_js_exceptions.js");
 

@@ -2,7 +2,6 @@
 
 var Mt = require("./mt.js");
 var List = require("../../lib/js/list.js");
-var Block = require("../../lib/js/block.js");
 var Caml_primitive = require("../../lib/js/caml_primitive.js");
 
 function height(param) {

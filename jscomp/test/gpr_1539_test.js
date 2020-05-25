@@ -1,6 +1,5 @@
 'use strict';
 
-var Block = require("../../lib/js/block.js");
 var Caml_module = require("../../lib/js/caml_module.js");
 
 var Point = Caml_module.init_mod(/* tuple */[

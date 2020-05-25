@@ -1,6 +1,5 @@
 'use strict';
 
-var Block = require("../../lib/js/block.js");
 var React = require("react");
 var ReactDom = require("react-dom");
 

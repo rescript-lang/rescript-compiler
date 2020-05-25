@@ -1,6 +1,5 @@
 'use strict';
 
-var Block = require("../../lib/js/block.js");
 
 function $plus$colon(_f, _g) {
   while(true) {

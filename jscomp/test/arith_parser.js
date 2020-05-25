@@ -1,6 +1,5 @@
 'use strict';
 
-var Block = require("../../lib/js/block.js");
 var Parsing = require("../../lib/js/parsing.js");
 
 var yytransl_const = [

@@ -2,7 +2,6 @@
 
 var Mt = require("./mt.js");
 var Lazy = require("../../lib/js/lazy.js");
-var Block = require("../../lib/js/block.js");
 var Curry = require("../../lib/js/curry.js");
 var Caml_module = require("../../lib/js/caml_module.js");
 var CamlinternalLazy = require("../../lib/js/camlinternalLazy.js");

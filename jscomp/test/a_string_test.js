@@ -2,7 +2,6 @@
 
 var Mt = require("./mt.js");
 var List = require("../../lib/js/list.js");
-var Block = require("../../lib/js/block.js");
 var Ext_string_test = require("./ext_string_test.js");
 
 var suites_0 = /* tuple */[

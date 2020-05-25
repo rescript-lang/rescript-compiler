@@ -1,7 +1,6 @@
 'use strict';
 
 var Mt = require("./mt.js");
-var Block = require("../../lib/js/block.js");
 var Belt_Int = require("../../lib/js/belt_Int.js");
 
 var suites = {

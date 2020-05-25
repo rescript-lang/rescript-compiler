@@ -1,6 +1,5 @@
 'use strict';
 
-var Block = require("../../lib/js/block.js");
 var Curry = require("../../lib/js/curry.js");
 var Caml_obj = require("../../lib/js/caml_obj.js");
 var Caml_option = require("../../lib/js/caml_option.js");
@@ -19,14 +18,14 @@ function Test($star) {
     tag: /* A */0,
     _0: 3
   };
-  var Block$1 = {};
+  var Block = {};
   var b = eq_A({
         tag: /* A */0,
         _0: 3
       }, u);
   return {
           u: u,
-          Block: Block$1,
+          Block: Block,
           y: 32,
           b: b
         };
@@ -34,7 +33,7 @@ function Test($star) {
 
 function Test2($star) {
   console.log("no inline");
-  var Block$1 = {};
+  var Block = {};
   var b = eq_A({
         tag: /* A */0,
         _0: 3
@@ -43,7 +42,7 @@ function Test2($star) {
         _0: 3
       });
   return {
-          Block: Block$1,
+          Block: Block,
           y: 32,
           b: b
         };

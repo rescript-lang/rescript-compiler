@@ -1,7 +1,6 @@
 'use strict';
 
 var Mt = require("./mt.js");
-var Block = require("../../lib/js/block.js");
 var Caml_js_exceptions = require("../../lib/js/caml_js_exceptions.js");
 
 var suites = {

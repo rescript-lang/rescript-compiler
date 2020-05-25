@@ -1,7 +1,6 @@
 'use strict';
 
 var Mt = require("./mt.js");
-var Block = require("../../lib/js/block.js");
 var Curry = require("../../lib/js/curry.js");
 var Js_list = require("../../lib/js/js_list.js");
 var Caml_obj = require("../../lib/js/caml_obj.js");
