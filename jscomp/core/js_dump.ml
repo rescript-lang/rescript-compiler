@@ -869,9 +869,8 @@ and expression_desc cxt ~(level:int) f x : cxt  =
       pp_comment_option f (Some p.name);
     expression_desc cxt ~level f (Object objs)
   | Caml_block ( _, _, _, (Blk_module_export | Blk_na _ )) -> assert false
-  | Caml_block( el, mutable_flag, _tag, (Blk_tuple  | Blk_class | Blk_array  as tag_info))
+  | Caml_block( el, mutable_flag, _tag, (Blk_tuple  | Blk_class | Blk_array  ))
     ->
-    pp_comment_option f (Lam_compile_util.comment_of_tag_info tag_info);   
     expression_desc cxt ~level f  (Array (el, mutable_flag))
  
   | Caml_block_tag e ->
