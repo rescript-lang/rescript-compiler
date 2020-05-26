@@ -586,7 +586,7 @@ let convert (exports : Set_ident.t) (lam : Lambda.lambda) : Lam.t * Lam_module_i
         | "#fn_method" -> Pjs_fn_method 
         | "#unsafe_downgrade" -> Pjs_unsafe_downgrade {name = Ext_string.empty; loc ; setter = false}
         | _ -> Location.raise_errorf ~loc
-                 "@{<error>Error:@} internal error, using unrecorgnized primitive %s" s
+                 "@{<error>Error:@} internal error, using unrecognized primitive %s" s
       in
       if primitive = Pfull_apply then
         match args with 
