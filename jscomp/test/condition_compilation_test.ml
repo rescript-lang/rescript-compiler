@@ -14,7 +14,7 @@ let buffer_size =
 
 
 
-type open_flag = Unix.open_flag =
+type open_flag = 
   | O_RDONLY
   | O_WRONLY
   | O_RDWR
