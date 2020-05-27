@@ -253,6 +253,10 @@ let report_error env ppf = function
         fprintf ppf "it should have type@ %a@]"
           type_expr ty
       end else begin
+        match ty with 
+        | {desc = Tconstr (Pdot (Pdot(Pident {name = "Js"},"Fn",_),_,_),_,_)} -> 
+          fprintf ppf "This expression is excpeted to have an uncurried function"
+        | _ ->     
         fprintf ppf "@[This expression should not be a function,@ ";
         fprintf ppf "the expected type is@ %a@]"
           type_expr ty
