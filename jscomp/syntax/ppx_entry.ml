@@ -29,7 +29,6 @@ let rewrite_signature (ast : Parsetree.signature) : Parsetree.signature =
   Ast_config.iter_on_bs_config_sigi ast; 
   let ast = 
     match !Js_config.jsx_version with
-    | 2 -> Reactjs_jsx_ppx_v2.rewrite_signature ast 
     | 3 -> Reactjs_jsx_ppx_v3.rewrite_signature ast 
     | _ -> ast 
     (* react-jsx ppx relies on built-in ones like `##` *)
@@ -48,8 +47,7 @@ let rewrite_implementation (ast : Parsetree.structure) : Parsetree.structure =
   Bs_ast_invariant.iter_warnings_on_stru ast ;   
   Ast_config.iter_on_bs_config_stru ast ;   
   let ast = 
-    match !Js_config.jsx_version with 
-    | 2 -> Reactjs_jsx_ppx_v2.rewrite_implementation ast 
+    match !Js_config.jsx_version with     
     | 3 -> Reactjs_jsx_ppx_v3.rewrite_implementation ast 
     | _ -> ast 
   in 
