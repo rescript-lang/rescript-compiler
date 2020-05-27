@@ -154,8 +154,8 @@ function $star$tilde(prim, prim$1) {
 }
 
 var suites = {
-  contents: Pervasives.$at(/* :: */{
-        _0: [
+  contents: Pervasives.$at({
+        hd: [
           "File \"int32_test.ml\", line 31, characters 2-9",
           (function (param) {
               return {
@@ -165,8 +165,8 @@ var suites = {
                     };
             })
         ],
-        _1: /* :: */{
-          _0: [
+        tl: {
+          hd: [
             "File \"int32_test.ml\", line 32, characters 2-9",
             (function (param) {
                 return {
@@ -176,7 +176,7 @@ var suites = {
                       };
               })
           ],
-          _1: /* [] */0
+          tl: /* [] */0
         }
       }, Pervasives.$at($$Array.to_list(Ext_array_test.map2i((function (i, a, b) {
                       return [

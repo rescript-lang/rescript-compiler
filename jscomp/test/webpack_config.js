@@ -59,11 +59,11 @@ function f(param) {
 
 List$1.xx();
 
-List.length(/* :: */{
-      _0: 1,
-      _1: /* :: */{
-        _0: 2,
-        _1: /* [] */0
+List.length({
+      hd: 1,
+      tl: {
+        hd: 2,
+        tl: /* [] */0
       }
     });
 

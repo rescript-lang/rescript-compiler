@@ -8,8 +8,8 @@ function f(h, param) {
   return Curry.__2(h);
 }
 
-Mt.from_pair_suites("Print_alpha_test", /* :: */{
-      _0: [
+Mt.from_pair_suites("Print_alpha_test", {
+      hd: [
         "File \"print_alpha_test.ml\", line 15, characters 4-11",
         (function (param) {
             return {
@@ -21,7 +21,7 @@ Mt.from_pair_suites("Print_alpha_test", /* :: */{
                   };
           })
       ],
-      _1: /* [] */0
+      tl: /* [] */0
     });
 
 exports.f = f;

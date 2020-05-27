@@ -21,8 +21,8 @@ var suites_0 = [
     })
 ];
 
-var suites_1 = /* :: */{
-  _0: [
+var suites_1 = {
+  hd: [
     "get",
     (function (param) {
         return {
@@ -35,8 +35,8 @@ var suites_1 = /* :: */{
               };
       })
   ],
-  _1: /* :: */{
-    _0: [
+  tl: {
+    hd: [
       "get - property not in object",
       (function (param) {
           return {
@@ -49,8 +49,8 @@ var suites_1 = /* :: */{
                 };
         })
     ],
-    _1: /* :: */{
-      _0: [
+    tl: {
+      hd: [
         "unsafe_get",
         (function (param) {
             return {
@@ -63,8 +63,8 @@ var suites_1 = /* :: */{
                   };
           })
       ],
-      _1: /* :: */{
-        _0: [
+      tl: {
+        hd: [
           "set",
           (function (param) {
               var o = {
@@ -79,8 +79,8 @@ var suites_1 = /* :: */{
                     };
             })
         ],
-        _1: /* :: */{
-          _0: [
+        tl: {
+          hd: [
             "keys",
             (function (param) {
                 return {
@@ -96,8 +96,8 @@ var suites_1 = /* :: */{
                       };
               })
           ],
-          _1: /* :: */{
-            _0: [
+          tl: {
+            hd: [
               "entries",
               (function (param) {
                   return {
@@ -119,8 +119,8 @@ var suites_1 = /* :: */{
                         };
                 })
             ],
-            _1: /* :: */{
-              _0: [
+            tl: {
+              hd: [
                 "values",
                 (function (param) {
                     return {
@@ -136,8 +136,8 @@ var suites_1 = /* :: */{
                           };
                   })
               ],
-              _1: /* :: */{
-                _0: [
+              tl: {
+                hd: [
                   "fromList - []",
                   (function (param) {
                       return {
@@ -147,8 +147,8 @@ var suites_1 = /* :: */{
                             };
                     })
                 ],
-                _1: /* :: */{
-                  _0: [
+                tl: {
+                  hd: [
                     "fromList",
                     (function (param) {
                         return {
@@ -163,24 +163,24 @@ var suites_1 = /* :: */{
                                     46
                                   ]
                                 ],
-                                _1: Js_dict.entries(Js_dict.fromList(/* :: */{
-                                          _0: [
+                                _1: Js_dict.entries(Js_dict.fromList({
+                                          hd: [
                                             "x",
                                             23
                                           ],
-                                          _1: /* :: */{
-                                            _0: [
+                                          tl: {
+                                            hd: [
                                               "y",
                                               46
                                             ],
-                                            _1: /* [] */0
+                                            tl: /* [] */0
                                           }
                                         }))
                               };
                       })
                   ],
-                  _1: /* :: */{
-                    _0: [
+                  tl: {
+                    hd: [
                       "fromArray - []",
                       (function (param) {
                           return {
@@ -190,8 +190,8 @@ var suites_1 = /* :: */{
                                 };
                         })
                     ],
-                    _1: /* :: */{
-                      _0: [
+                    tl: {
+                      hd: [
                         "fromArray",
                         (function (param) {
                             return {
@@ -219,8 +219,8 @@ var suites_1 = /* :: */{
                                   };
                           })
                       ],
-                      _1: /* :: */{
-                        _0: [
+                      tl: {
+                        hd: [
                           "map",
                           (function (param) {
                               return {
@@ -238,7 +238,7 @@ var suites_1 = /* :: */{
                                     };
                             })
                         ],
-                        _1: /* [] */0
+                        tl: /* [] */0
                       }
                     }
                   }
@@ -252,9 +252,9 @@ var suites_1 = /* :: */{
   }
 };
 
-var suites = /* :: */{
-  _0: suites_0,
-  _1: suites_1
+var suites = {
+  hd: suites_0,
+  tl: suites_1
 };
 
 Mt.from_pair_suites("Js_dict_test", suites);

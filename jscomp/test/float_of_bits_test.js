@@ -26,8 +26,8 @@ function from_pairs(pair) {
   return List.concat($$Array.to_list($$Array.mapi((function (i, param) {
                         var f = param[1];
                         var i32 = param[0];
-                        return /* :: */{
-                                _0: [
+                        return {
+                                hd: [
                                   Curry._1(Printf.sprintf(/* Format */{
                                             _0: {
                                               TAG: /* String_literal */11,
@@ -50,8 +50,8 @@ function from_pairs(pair) {
                                             };
                                     })
                                 ],
-                                _1: /* :: */{
-                                  _0: [
+                                tl: {
+                                  hd: [
                                     Curry._1(Printf.sprintf(/* Format */{
                                               _0: {
                                                 TAG: /* String_literal */11,
@@ -74,14 +74,14 @@ function from_pairs(pair) {
                                               };
                                       })
                                   ],
-                                  _1: /* [] */0
+                                  tl: /* [] */0
                                 }
                               };
                       }), int32_pairs)));
 }
 
-var suites = Pervasives.$at(/* :: */{
-      _0: [
+var suites = Pervasives.$at({
+      hd: [
         "one",
         (function (param) {
             return {
@@ -91,8 +91,8 @@ var suites = Pervasives.$at(/* :: */{
                   };
           })
       ],
-      _1: /* :: */{
-        _0: [
+      tl: {
+        hd: [
           "two",
           (function (param) {
               return {
@@ -102,7 +102,7 @@ var suites = Pervasives.$at(/* :: */{
                     };
             })
         ],
-        _1: /* [] */0
+        tl: /* [] */0
       }
     }, from_pairs(int32_pairs));
 

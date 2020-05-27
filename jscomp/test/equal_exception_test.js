@@ -103,29 +103,29 @@ var suites_0 = [
   is_equal
 ];
 
-var suites_1 = /* :: */{
-  _0: [
+var suites_1 = {
+  hd: [
     "is_exception",
     is_exception
   ],
-  _1: /* :: */{
-    _0: [
+  tl: {
+    hd: [
       "is_normal_exception",
       is_normal_exception
     ],
-    _1: /* :: */{
-      _0: [
+    tl: {
+      hd: [
         "is_arbitrary_exception",
         is_arbitrary_exception
       ],
-      _1: /* [] */0
+      tl: /* [] */0
     }
   }
 };
 
-var suites = /* :: */{
-  _0: suites_0,
-  _1: suites_1
+var suites = {
+  hd: suites_0,
+  tl: suites_1
 };
 
 var e = {

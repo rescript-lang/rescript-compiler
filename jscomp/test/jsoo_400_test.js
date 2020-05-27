@@ -14,8 +14,8 @@ function u(param) {
   return Caml_int32.div(3, 0);
 }
 
-Mt.from_pair_suites("Jsoo_400_test", /* :: */{
-      _0: [
+Mt.from_pair_suites("Jsoo_400_test", {
+      hd: [
         "File \"jsoo_400_test.ml\", line 8, characters 3-10",
         (function (param) {
             return {
@@ -27,7 +27,7 @@ Mt.from_pair_suites("Jsoo_400_test", /* :: */{
                   };
           })
       ],
-      _1: /* [] */0
+      tl: /* [] */0
     });
 
 exports.u = u;

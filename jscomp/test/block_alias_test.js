@@ -51,11 +51,11 @@ var V = {
 
 var f = Caml_obj.caml_equal;
 
-eq("File \"block_alias_test.ml\", line 32, characters 6-13", List.length(/* :: */{
-          _0: 1,
-          _1: /* :: */{
-            _0: 2,
-            _1: /* [] */0
+eq("File \"block_alias_test.ml\", line 32, characters 6-13", List.length({
+          hd: 1,
+          tl: {
+            hd: 2,
+            tl: /* [] */0
           }
         }), 2);
 

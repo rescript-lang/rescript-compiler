@@ -6,23 +6,23 @@ var Genlex = require("../../lib/js/genlex.js");
 var Stream = require("../../lib/js/stream.js");
 var Caml_js_exceptions = require("../../lib/js/caml_js_exceptions.js");
 
-var lexer = Genlex.make_lexer(/* :: */{
-      _0: "+",
-      _1: /* :: */{
-        _0: "-",
-        _1: /* :: */{
-          _0: "*",
-          _1: /* :: */{
-            _0: "/",
-            _1: /* :: */{
-              _0: "let",
-              _1: /* :: */{
-                _0: "=",
-                _1: /* :: */{
-                  _0: "(",
-                  _1: /* :: */{
-                    _0: ")",
-                    _1: /* [] */0
+var lexer = Genlex.make_lexer({
+      hd: "+",
+      tl: {
+        hd: "-",
+        tl: {
+          hd: "*",
+          tl: {
+            hd: "/",
+            tl: {
+              hd: "let",
+              tl: {
+                hd: "=",
+                tl: {
+                  hd: "(",
+                  tl: {
+                    hd: ")",
+                    tl: /* [] */0
                   }
                 }
               }
@@ -47,9 +47,9 @@ function to_list(s) {
       }
       throw exn;
     }
-    _acc = /* :: */{
-      _0: v,
-      _1: acc
+    _acc = {
+      hd: v,
+      tl: acc
     };
     continue ;
   };
@@ -60,42 +60,42 @@ var suites_0 = [
   (function (param) {
       return {
               TAG: /* Eq */0,
-              _0: /* :: */{
-                _0: {
+              _0: {
+                hd: {
                   TAG: /* Int */2,
                   _0: 3
                 },
-                _1: /* :: */{
-                  _0: {
+                tl: {
+                  hd: {
                     TAG: /* Kwd */0,
                     _0: "("
                   },
-                  _1: /* :: */{
-                    _0: {
+                  tl: {
+                    hd: {
                       TAG: /* Int */2,
                       _0: 3
                     },
-                    _1: /* :: */{
-                      _0: {
+                    tl: {
+                      hd: {
                         TAG: /* Kwd */0,
                         _0: "+"
                       },
-                      _1: /* :: */{
-                        _0: {
+                      tl: {
+                        hd: {
                           TAG: /* Int */2,
                           _0: 2
                         },
-                        _1: /* :: */{
-                          _0: {
+                        tl: {
+                          hd: {
                             TAG: /* Int */2,
                             _0: -1
                           },
-                          _1: /* :: */{
-                            _0: {
+                          tl: {
+                            hd: {
                               TAG: /* Kwd */0,
                               _0: ")"
                             },
-                            _1: /* [] */0
+                            tl: /* [] */0
                           }
                         }
                       }
@@ -108,9 +108,9 @@ var suites_0 = [
     })
 ];
 
-var suites = /* :: */{
-  _0: suites_0,
-  _1: /* [] */0
+var suites = {
+  hd: suites_0,
+  tl: /* [] */0
 };
 
 Mt.from_pair_suites("Genlex_test", suites);

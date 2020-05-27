@@ -91,8 +91,8 @@ var u = {
     })
 };
 
-Mt.from_pair_suites("Class_test", /* :: */{
-      _0: [
+Mt.from_pair_suites("Class_test", {
+      hd: [
         "File \"class_test.ml\", line 38, characters 4-11",
         (function (param) {
             return {
@@ -102,8 +102,8 @@ Mt.from_pair_suites("Class_test", /* :: */{
                   };
           })
       ],
-      _1: /* :: */{
-        _0: [
+      tl: {
+        hd: [
           "File \"class_test.ml\", line 39, characters 4-11",
           (function (param) {
               return {
@@ -113,8 +113,8 @@ Mt.from_pair_suites("Class_test", /* :: */{
                     };
             })
         ],
-        _1: /* :: */{
-          _0: [
+        tl: {
+          hd: [
             "File \"class_test.ml\", line 40, characters 4-11",
             (function (param) {
                 return {
@@ -124,8 +124,8 @@ Mt.from_pair_suites("Class_test", /* :: */{
                       };
               })
           ],
-          _1: /* :: */{
-            _0: [
+          tl: {
+            hd: [
               "File \"class_test.ml\", line 41, characters 4-11",
               (function (param) {
                   return {
@@ -135,7 +135,7 @@ Mt.from_pair_suites("Class_test", /* :: */{
                         };
                 })
             ],
-            _1: /* [] */0
+            tl: /* [] */0
           }
         }
       }

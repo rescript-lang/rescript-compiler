@@ -118,15 +118,15 @@ eq("File \"record_debug_test.ml\", line 64, characters 3-10", a$1, [
 
 Mt.from_pair_suites("record_debug_test.ml", suites.contents);
 
-var h = /* :: */{
-  _0: 1,
-  _1: /* :: */{
-    _0: 2,
-    _1: /* :: */{
-      _0: 3,
-      _1: /* :: */{
-        _0: 4,
-        _1: /* [] */0
+var h = {
+  hd: 1,
+  tl: {
+    hd: 2,
+    tl: {
+      hd: 3,
+      tl: {
+        hd: 4,
+        tl: /* [] */0
       }
     }
   }

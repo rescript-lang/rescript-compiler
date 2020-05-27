@@ -21,22 +21,22 @@ var hhh = $$Array.append([
       5
     ]);
 
-var u = Caml_array.caml_array_concat(/* :: */{
-      _0: [
+var u = Caml_array.caml_array_concat({
+      hd: [
         1,
         2
       ],
-      _1: /* :: */{
-        _0: [
+      tl: {
+        hd: [
           2,
           3
         ],
-        _1: /* :: */{
-          _0: [
+        tl: {
+          hd: [
             3,
             4
           ],
-          _1: /* [] */0
+          tl: /* [] */0
         }
       }
     });

@@ -397,17 +397,17 @@ b("File \"bs_mutable_set_test.ml\", line 164, characters 4-11", Belt_MutableSetI
 
 b("File \"bs_mutable_set_test.ml\", line 165, characters 4-11", Belt_MutableSetInt.eq(a2, a4));
 
-Belt_List.forEach(/* :: */{
-      _0: a0,
-      _1: /* :: */{
-        _0: a1,
-        _1: /* :: */{
-          _0: a2,
-          _1: /* :: */{
-            _0: a3,
-            _1: /* :: */{
-              _0: a4,
-              _1: /* [] */0
+Belt_List.forEach({
+      hd: a0,
+      tl: {
+        hd: a1,
+        tl: {
+          hd: a2,
+          tl: {
+            hd: a3,
+            tl: {
+              hd: a4,
+              tl: /* [] */0
             }
           }
         }

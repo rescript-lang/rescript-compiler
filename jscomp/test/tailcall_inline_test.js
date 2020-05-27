@@ -46,19 +46,19 @@ var suites_0 = [
     })
 ];
 
-var suites_1 = /* :: */{
-  _0: [
+var suites_1 = {
+  hd: [
     "array_to_list",
     (function (param) {
         return {
                 TAG: /* Eq */0,
-                _0: /* :: */{
-                  _0: 1,
-                  _1: /* :: */{
-                    _0: 2,
-                    _1: /* :: */{
-                      _0: 3,
-                      _1: /* [] */0
+                _0: {
+                  hd: 1,
+                  tl: {
+                    hd: 2,
+                    tl: {
+                      hd: 3,
+                      tl: /* [] */0
                     }
                   }
                 },
@@ -70,12 +70,12 @@ var suites_1 = /* :: */{
               };
       })
   ],
-  _1: /* [] */0
+  tl: /* [] */0
 };
 
-var suites = /* :: */{
-  _0: suites_0,
-  _1: suites_1
+var suites = {
+  hd: suites_0,
+  tl: suites_1
 };
 
 Mt.from_pair_suites("Tailcall_inline_test", suites);

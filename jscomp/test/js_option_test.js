@@ -18,8 +18,8 @@ var option_suites_0 = [
     })
 ];
 
-var option_suites_1 = /* :: */{
-  _0: [
+var option_suites_1 = {
+  hd: [
     "option_isSome_None",
     (function (param) {
         return {
@@ -29,8 +29,8 @@ var option_suites_1 = /* :: */{
               };
       })
   ],
-  _1: /* :: */{
-    _0: [
+  tl: {
+    hd: [
       "option_isNone_Some",
       (function (param) {
           return {
@@ -40,8 +40,8 @@ var option_suites_1 = /* :: */{
                 };
         })
     ],
-    _1: /* :: */{
-      _0: [
+    tl: {
+      hd: [
         "option_isNone_None",
         (function (param) {
             return {
@@ -51,8 +51,8 @@ var option_suites_1 = /* :: */{
                   };
           })
       ],
-      _1: /* :: */{
-        _0: [
+      tl: {
+        hd: [
           "option_isSomeValue_Eq",
           (function (param) {
               return {
@@ -62,8 +62,8 @@ var option_suites_1 = /* :: */{
                     };
             })
         ],
-        _1: /* :: */{
-          _0: [
+        tl: {
+          hd: [
             "option_isSomeValue_Diff",
             (function (param) {
                 return {
@@ -73,8 +73,8 @@ var option_suites_1 = /* :: */{
                       };
               })
           ],
-          _1: /* :: */{
-            _0: [
+          tl: {
+            hd: [
               "option_isSomeValue_DiffNone",
               (function (param) {
                   return {
@@ -84,8 +84,8 @@ var option_suites_1 = /* :: */{
                         };
                 })
             ],
-            _1: /* :: */{
-              _0: [
+            tl: {
+              hd: [
                 "option_getExn_Some",
                 (function (param) {
                     return {
@@ -95,8 +95,8 @@ var option_suites_1 = /* :: */{
                           };
                   })
               ],
-              _1: /* :: */{
-                _0: [
+              tl: {
+                hd: [
                   "option_equal_Eq",
                   (function (param) {
                       return {
@@ -106,8 +106,8 @@ var option_suites_1 = /* :: */{
                             };
                     })
                 ],
-                _1: /* :: */{
-                  _0: [
+                tl: {
+                  hd: [
                     "option_equal_Diff",
                     (function (param) {
                         return {
@@ -117,8 +117,8 @@ var option_suites_1 = /* :: */{
                               };
                       })
                   ],
-                  _1: /* :: */{
-                    _0: [
+                  tl: {
+                    hd: [
                       "option_equal_DiffNone",
                       (function (param) {
                           return {
@@ -128,8 +128,8 @@ var option_suites_1 = /* :: */{
                                 };
                         })
                     ],
-                    _1: /* :: */{
-                      _0: [
+                    tl: {
+                      hd: [
                         "option_andThen_SomeSome",
                         (function (param) {
                             return {
@@ -141,8 +141,8 @@ var option_suites_1 = /* :: */{
                                   };
                           })
                       ],
-                      _1: /* :: */{
-                        _0: [
+                      tl: {
+                        hd: [
                           "option_andThen_SomeNone",
                           (function (param) {
                               return {
@@ -154,8 +154,8 @@ var option_suites_1 = /* :: */{
                                     };
                             })
                         ],
-                        _1: /* :: */{
-                          _0: [
+                        tl: {
+                          hd: [
                             "option_map_Some",
                             (function (param) {
                                 return {
@@ -167,8 +167,8 @@ var option_suites_1 = /* :: */{
                                       };
                               })
                           ],
-                          _1: /* :: */{
-                            _0: [
+                          tl: {
+                            hd: [
                               "option_map_None",
                               (function (param) {
                                   return {
@@ -180,8 +180,8 @@ var option_suites_1 = /* :: */{
                                         };
                                 })
                             ],
-                            _1: /* :: */{
-                              _0: [
+                            tl: {
+                              hd: [
                                 "option_default_Some",
                                 (function (param) {
                                     return {
@@ -191,8 +191,8 @@ var option_suites_1 = /* :: */{
                                           };
                                   })
                               ],
-                              _1: /* :: */{
-                                _0: [
+                              tl: {
+                                hd: [
                                   "option_default_None",
                                   (function (param) {
                                       return {
@@ -202,8 +202,8 @@ var option_suites_1 = /* :: */{
                                             };
                                     })
                                 ],
-                                _1: /* :: */{
-                                  _0: [
+                                tl: {
+                                  hd: [
                                     "option_filter_Pass",
                                     (function (param) {
                                         return {
@@ -215,8 +215,8 @@ var option_suites_1 = /* :: */{
                                               };
                                       })
                                   ],
-                                  _1: /* :: */{
-                                    _0: [
+                                  tl: {
+                                    hd: [
                                       "option_filter_Reject",
                                       (function (param) {
                                           return {
@@ -228,8 +228,8 @@ var option_suites_1 = /* :: */{
                                                 };
                                         })
                                     ],
-                                    _1: /* :: */{
-                                      _0: [
+                                    tl: {
+                                      hd: [
                                         "option_filter_None",
                                         (function (param) {
                                             return {
@@ -241,8 +241,8 @@ var option_suites_1 = /* :: */{
                                                   };
                                           })
                                       ],
-                                      _1: /* :: */{
-                                        _0: [
+                                      tl: {
+                                        hd: [
                                           "option_firstSome_First",
                                           (function (param) {
                                               return {
@@ -252,8 +252,8 @@ var option_suites_1 = /* :: */{
                                                     };
                                             })
                                         ],
-                                        _1: /* :: */{
-                                          _0: [
+                                        tl: {
+                                          hd: [
                                             "option_firstSome_First",
                                             (function (param) {
                                                 return {
@@ -263,8 +263,8 @@ var option_suites_1 = /* :: */{
                                                       };
                                               })
                                           ],
-                                          _1: /* :: */{
-                                            _0: [
+                                          tl: {
+                                            hd: [
                                               "option_firstSome_None",
                                               (function (param) {
                                                   return {
@@ -274,7 +274,7 @@ var option_suites_1 = /* :: */{
                                                         };
                                                 })
                                             ],
-                                            _1: /* [] */0
+                                            tl: /* [] */0
                                           }
                                         }
                                       }
@@ -298,9 +298,9 @@ var option_suites_1 = /* :: */{
   }
 };
 
-var option_suites = /* :: */{
-  _0: option_suites_0,
-  _1: option_suites_1
+var option_suites = {
+  hd: option_suites_0,
+  tl: option_suites_1
 };
 
 Mt.from_pair_suites("Js_option_test", option_suites);

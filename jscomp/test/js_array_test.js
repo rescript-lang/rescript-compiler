@@ -27,8 +27,8 @@ var suites_0 = [
     })
 ];
 
-var suites_1 = /* :: */{
-  _0: [
+var suites_1 = {
+  hd: [
     "File \"js_array_test.ml\", line 11, characters 4-11",
     (function (param) {
         var x = [
@@ -47,8 +47,8 @@ var suites_1 = /* :: */{
               };
       })
   ],
-  _1: /* :: */{
-    _0: [
+  tl: {
+    hd: [
       "isArray_array",
       (function (param) {
           return {
@@ -58,8 +58,8 @@ var suites_1 = /* :: */{
                 };
         })
     ],
-    _1: /* :: */{
-      _0: [
+    tl: {
+      hd: [
         "isArray_int",
         (function (param) {
             return {
@@ -69,8 +69,8 @@ var suites_1 = /* :: */{
                   };
           })
       ],
-      _1: /* :: */{
-        _0: [
+      tl: {
+        hd: [
           "length",
           (function (param) {
               return {
@@ -84,8 +84,8 @@ var suites_1 = /* :: */{
                     };
             })
         ],
-        _1: /* :: */{
-          _0: [
+        tl: {
+          hd: [
             "copyWithin",
             (function (param) {
                 return {
@@ -107,8 +107,8 @@ var suites_1 = /* :: */{
                       };
               })
           ],
-          _1: /* :: */{
-            _0: [
+          tl: {
+            hd: [
               "copyWithinFrom",
               (function (param) {
                   return {
@@ -130,8 +130,8 @@ var suites_1 = /* :: */{
                         };
                 })
             ],
-            _1: /* :: */{
-              _0: [
+            tl: {
+              hd: [
                 "copyWithinFromRange",
                 (function (param) {
                     return {
@@ -153,8 +153,8 @@ var suites_1 = /* :: */{
                           };
                   })
               ],
-              _1: /* :: */{
-                _0: [
+              tl: {
+                hd: [
                   "fillInPlace",
                   (function (param) {
                       return {
@@ -172,8 +172,8 @@ var suites_1 = /* :: */{
                             };
                     })
                 ],
-                _1: /* :: */{
-                  _0: [
+                tl: {
+                  hd: [
                     "fillFromInPlace",
                     (function (param) {
                         return {
@@ -191,8 +191,8 @@ var suites_1 = /* :: */{
                               };
                       })
                   ],
-                  _1: /* :: */{
-                    _0: [
+                  tl: {
+                    hd: [
                       "fillRangeInPlace",
                       (function (param) {
                           return {
@@ -210,8 +210,8 @@ var suites_1 = /* :: */{
                                 };
                         })
                     ],
-                    _1: /* :: */{
-                      _0: [
+                    tl: {
+                      hd: [
                         "pop",
                         (function (param) {
                             return {
@@ -225,8 +225,8 @@ var suites_1 = /* :: */{
                                   };
                           })
                       ],
-                      _1: /* :: */{
-                        _0: [
+                      tl: {
+                        hd: [
                           "pop - empty array",
                           (function (param) {
                               return {
@@ -236,8 +236,8 @@ var suites_1 = /* :: */{
                                     };
                             })
                         ],
-                        _1: /* :: */{
-                          _0: [
+                        tl: {
+                          hd: [
                             "push",
                             (function (param) {
                                 return {
@@ -251,8 +251,8 @@ var suites_1 = /* :: */{
                                       };
                               })
                           ],
-                          _1: /* :: */{
-                            _0: [
+                          tl: {
+                            hd: [
                               "pushMany",
                               (function (param) {
                                   return {
@@ -266,8 +266,8 @@ var suites_1 = /* :: */{
                                         };
                                 })
                             ],
-                            _1: /* :: */{
-                              _0: [
+                            tl: {
+                              hd: [
                                 "reverseInPlace",
                                 (function (param) {
                                     return {
@@ -285,8 +285,8 @@ var suites_1 = /* :: */{
                                           };
                                   })
                               ],
-                              _1: /* :: */{
-                                _0: [
+                              tl: {
+                                hd: [
                                   "shift",
                                   (function (param) {
                                       return {
@@ -300,8 +300,8 @@ var suites_1 = /* :: */{
                                             };
                                     })
                                 ],
-                                _1: /* :: */{
-                                  _0: [
+                                tl: {
+                                  hd: [
                                     "shift - empty array",
                                     (function (param) {
                                         return {
@@ -311,8 +311,8 @@ var suites_1 = /* :: */{
                                               };
                                       })
                                   ],
-                                  _1: /* :: */{
-                                    _0: [
+                                  tl: {
+                                    hd: [
                                       "sortInPlace",
                                       (function (param) {
                                           return {
@@ -330,8 +330,8 @@ var suites_1 = /* :: */{
                                                 };
                                         })
                                     ],
-                                    _1: /* :: */{
-                                      _0: [
+                                    tl: {
+                                      hd: [
                                         "sortInPlaceWith",
                                         (function (param) {
                                             return {
@@ -351,8 +351,8 @@ var suites_1 = /* :: */{
                                                   };
                                           })
                                       ],
-                                      _1: /* :: */{
-                                        _0: [
+                                      tl: {
+                                        hd: [
                                           "spliceInPlace",
                                           (function (param) {
                                               var arr = [
@@ -381,8 +381,8 @@ var suites_1 = /* :: */{
                                                     };
                                             })
                                         ],
-                                        _1: /* :: */{
-                                          _0: [
+                                        tl: {
+                                          hd: [
                                             "removeFromInPlace",
                                             (function (param) {
                                                 var arr = [
@@ -411,8 +411,8 @@ var suites_1 = /* :: */{
                                                       };
                                               })
                                           ],
-                                          _1: /* :: */{
-                                            _0: [
+                                          tl: {
+                                            hd: [
                                               "removeCountInPlace",
                                               (function (param) {
                                                   var arr = [
@@ -439,8 +439,8 @@ var suites_1 = /* :: */{
                                                         };
                                                 })
                                             ],
-                                            _1: /* :: */{
-                                              _0: [
+                                            tl: {
+                                              hd: [
                                                 "unshift",
                                                 (function (param) {
                                                     return {
@@ -454,8 +454,8 @@ var suites_1 = /* :: */{
                                                           };
                                                   })
                                               ],
-                                              _1: /* :: */{
-                                                _0: [
+                                              tl: {
+                                                hd: [
                                                   "unshiftMany",
                                                   (function (param) {
                                                       return {
@@ -469,8 +469,8 @@ var suites_1 = /* :: */{
                                                             };
                                                     })
                                                 ],
-                                                _1: /* :: */{
-                                                  _0: [
+                                                tl: {
+                                                  hd: [
                                                     "append",
                                                     (function (param) {
                                                         return {
@@ -489,8 +489,8 @@ var suites_1 = /* :: */{
                                                               };
                                                       })
                                                   ],
-                                                  _1: /* :: */{
-                                                    _0: [
+                                                  tl: {
+                                                    hd: [
                                                       "concat",
                                                       (function (param) {
                                                           return {
@@ -513,8 +513,8 @@ var suites_1 = /* :: */{
                                                                 };
                                                         })
                                                     ],
-                                                    _1: /* :: */{
-                                                      _0: [
+                                                    tl: {
+                                                      hd: [
                                                         "concatMany",
                                                         (function (param) {
                                                             return {
@@ -542,8 +542,8 @@ var suites_1 = /* :: */{
                                                                   };
                                                           })
                                                       ],
-                                                      _1: /* :: */{
-                                                        _0: [
+                                                      tl: {
+                                                        hd: [
                                                           "includes",
                                                           (function (param) {
                                                               return {
@@ -557,8 +557,8 @@ var suites_1 = /* :: */{
                                                                     };
                                                             })
                                                         ],
-                                                        _1: /* :: */{
-                                                          _0: [
+                                                        tl: {
+                                                          hd: [
                                                             "indexOf",
                                                             (function (param) {
                                                                 return {
@@ -572,8 +572,8 @@ var suites_1 = /* :: */{
                                                                       };
                                                               })
                                                           ],
-                                                          _1: /* :: */{
-                                                            _0: [
+                                                          tl: {
+                                                            hd: [
                                                               "indexOfFrom",
                                                               (function (param) {
                                                                   return {
@@ -588,8 +588,8 @@ var suites_1 = /* :: */{
                                                                         };
                                                                 })
                                                             ],
-                                                            _1: /* :: */{
-                                                              _0: [
+                                                            tl: {
+                                                              hd: [
                                                                 "join",
                                                                 (function (param) {
                                                                     return {
@@ -603,8 +603,8 @@ var suites_1 = /* :: */{
                                                                           };
                                                                   })
                                                               ],
-                                                              _1: /* :: */{
-                                                                _0: [
+                                                              tl: {
+                                                                hd: [
                                                                   "joinWith",
                                                                   (function (param) {
                                                                       return {
@@ -618,8 +618,8 @@ var suites_1 = /* :: */{
                                                                             };
                                                                     })
                                                                 ],
-                                                                _1: /* :: */{
-                                                                  _0: [
+                                                                tl: {
+                                                                  hd: [
                                                                     "lastIndexOf",
                                                                     (function (param) {
                                                                         return {
@@ -633,8 +633,8 @@ var suites_1 = /* :: */{
                                                                               };
                                                                       })
                                                                   ],
-                                                                  _1: /* :: */{
-                                                                    _0: [
+                                                                  tl: {
+                                                                    hd: [
                                                                       "lastIndexOfFrom",
                                                                       (function (param) {
                                                                           return {
@@ -649,8 +649,8 @@ var suites_1 = /* :: */{
                                                                                 };
                                                                         })
                                                                     ],
-                                                                    _1: /* :: */{
-                                                                      _0: [
+                                                                    tl: {
+                                                                      hd: [
                                                                         "slice",
                                                                         (function (param) {
                                                                             return {
@@ -669,8 +669,8 @@ var suites_1 = /* :: */{
                                                                                   };
                                                                           })
                                                                       ],
-                                                                      _1: /* :: */{
-                                                                        _0: [
+                                                                      tl: {
+                                                                        hd: [
                                                                           "copy",
                                                                           (function (param) {
                                                                               return {
@@ -692,8 +692,8 @@ var suites_1 = /* :: */{
                                                                                     };
                                                                             })
                                                                         ],
-                                                                        _1: /* :: */{
-                                                                          _0: [
+                                                                        tl: {
+                                                                          hd: [
                                                                             "sliceFrom",
                                                                             (function (param) {
                                                                                 return {
@@ -713,8 +713,8 @@ var suites_1 = /* :: */{
                                                                                       };
                                                                               })
                                                                           ],
-                                                                          _1: /* :: */{
-                                                                            _0: [
+                                                                          tl: {
+                                                                            hd: [
                                                                               "toString",
                                                                               (function (param) {
                                                                                   return {
@@ -728,8 +728,8 @@ var suites_1 = /* :: */{
                                                                                         };
                                                                                 })
                                                                             ],
-                                                                            _1: /* :: */{
-                                                                              _0: [
+                                                                            tl: {
+                                                                              hd: [
                                                                                 "toLocaleString",
                                                                                 (function (param) {
                                                                                     return {
@@ -743,8 +743,8 @@ var suites_1 = /* :: */{
                                                                                           };
                                                                                   })
                                                                               ],
-                                                                              _1: /* :: */{
-                                                                                _0: [
+                                                                              tl: {
+                                                                                hd: [
                                                                                   "every",
                                                                                   (function (param) {
                                                                                       return {
@@ -760,8 +760,8 @@ var suites_1 = /* :: */{
                                                                                             };
                                                                                     })
                                                                                 ],
-                                                                                _1: /* :: */{
-                                                                                  _0: [
+                                                                                tl: {
+                                                                                  hd: [
                                                                                     "everyi",
                                                                                     (function (param) {
                                                                                         return {
@@ -777,8 +777,8 @@ var suites_1 = /* :: */{
                                                                                               };
                                                                                       })
                                                                                   ],
-                                                                                  _1: /* :: */{
-                                                                                    _0: [
+                                                                                  tl: {
+                                                                                    hd: [
                                                                                       "filter",
                                                                                       (function (param) {
                                                                                           return {
@@ -798,8 +798,8 @@ var suites_1 = /* :: */{
                                                                                                 };
                                                                                         })
                                                                                     ],
-                                                                                    _1: /* :: */{
-                                                                                      _0: [
+                                                                                    tl: {
+                                                                                      hd: [
                                                                                         "filteri",
                                                                                         (function (param) {
                                                                                             return {
@@ -819,8 +819,8 @@ var suites_1 = /* :: */{
                                                                                                   };
                                                                                           })
                                                                                       ],
-                                                                                      _1: /* :: */{
-                                                                                        _0: [
+                                                                                      tl: {
+                                                                                        hd: [
                                                                                           "find",
                                                                                           (function (param) {
                                                                                               return {
@@ -837,8 +837,8 @@ var suites_1 = /* :: */{
                                                                                                     };
                                                                                             })
                                                                                         ],
-                                                                                        _1: /* :: */{
-                                                                                          _0: [
+                                                                                        tl: {
+                                                                                          hd: [
                                                                                             "find - no match",
                                                                                             (function (param) {
                                                                                                 return {
@@ -855,8 +855,8 @@ var suites_1 = /* :: */{
                                                                                                       };
                                                                                               })
                                                                                           ],
-                                                                                          _1: /* :: */{
-                                                                                            _0: [
+                                                                                          tl: {
+                                                                                            hd: [
                                                                                               "findi",
                                                                                               (function (param) {
                                                                                                   return {
@@ -873,8 +873,8 @@ var suites_1 = /* :: */{
                                                                                                         };
                                                                                                 })
                                                                                             ],
-                                                                                            _1: /* :: */{
-                                                                                              _0: [
+                                                                                            tl: {
+                                                                                              hd: [
                                                                                                 "findi - no match",
                                                                                                 (function (param) {
                                                                                                     return {
@@ -891,8 +891,8 @@ var suites_1 = /* :: */{
                                                                                                           };
                                                                                                   })
                                                                                               ],
-                                                                                              _1: /* :: */{
-                                                                                                _0: [
+                                                                                              tl: {
+                                                                                                hd: [
                                                                                                   "findIndex",
                                                                                                   (function (param) {
                                                                                                       return {
@@ -909,8 +909,8 @@ var suites_1 = /* :: */{
                                                                                                             };
                                                                                                     })
                                                                                                 ],
-                                                                                                _1: /* :: */{
-                                                                                                  _0: [
+                                                                                                tl: {
+                                                                                                  hd: [
                                                                                                     "findIndexi",
                                                                                                     (function (param) {
                                                                                                         return {
@@ -927,8 +927,8 @@ var suites_1 = /* :: */{
                                                                                                               };
                                                                                                       })
                                                                                                   ],
-                                                                                                  _1: /* :: */{
-                                                                                                    _0: [
+                                                                                                  tl: {
+                                                                                                    hd: [
                                                                                                       "forEach",
                                                                                                       (function (param) {
                                                                                                           var sum = {
@@ -949,8 +949,8 @@ var suites_1 = /* :: */{
                                                                                                                 };
                                                                                                         })
                                                                                                     ],
-                                                                                                    _1: /* :: */{
-                                                                                                      _0: [
+                                                                                                    tl: {
+                                                                                                      hd: [
                                                                                                         "forEachi",
                                                                                                         (function (param) {
                                                                                                             var sum = {
@@ -971,8 +971,8 @@ var suites_1 = /* :: */{
                                                                                                                   };
                                                                                                           })
                                                                                                       ],
-                                                                                                      _1: /* :: */{
-                                                                                                        _0: [
+                                                                                                      tl: {
+                                                                                                        hd: [
                                                                                                           "map",
                                                                                                           (function (param) {
                                                                                                               return {
@@ -994,8 +994,8 @@ var suites_1 = /* :: */{
                                                                                                                     };
                                                                                                             })
                                                                                                         ],
-                                                                                                        _1: /* :: */{
-                                                                                                          _0: [
+                                                                                                        tl: {
+                                                                                                          hd: [
                                                                                                             "map",
                                                                                                             (function (param) {
                                                                                                                 return {
@@ -1017,8 +1017,8 @@ var suites_1 = /* :: */{
                                                                                                                       };
                                                                                                               })
                                                                                                           ],
-                                                                                                          _1: /* :: */{
-                                                                                                            _0: [
+                                                                                                          tl: {
+                                                                                                            hd: [
                                                                                                               "reduce",
                                                                                                               (function (param) {
                                                                                                                   return {
@@ -1035,8 +1035,8 @@ var suites_1 = /* :: */{
                                                                                                                         };
                                                                                                                 })
                                                                                                             ],
-                                                                                                            _1: /* :: */{
-                                                                                                              _0: [
+                                                                                                            tl: {
+                                                                                                              hd: [
                                                                                                                 "reducei",
                                                                                                                 (function (param) {
                                                                                                                     return {
@@ -1053,8 +1053,8 @@ var suites_1 = /* :: */{
                                                                                                                           };
                                                                                                                   })
                                                                                                               ],
-                                                                                                              _1: /* :: */{
-                                                                                                                _0: [
+                                                                                                              tl: {
+                                                                                                                hd: [
                                                                                                                   "reduceRight",
                                                                                                                   (function (param) {
                                                                                                                       return {
@@ -1071,8 +1071,8 @@ var suites_1 = /* :: */{
                                                                                                                             };
                                                                                                                     })
                                                                                                                 ],
-                                                                                                                _1: /* :: */{
-                                                                                                                  _0: [
+                                                                                                                tl: {
+                                                                                                                  hd: [
                                                                                                                     "reduceRighti",
                                                                                                                     (function (param) {
                                                                                                                         return {
@@ -1089,8 +1089,8 @@ var suites_1 = /* :: */{
                                                                                                                               };
                                                                                                                       })
                                                                                                                   ],
-                                                                                                                  _1: /* :: */{
-                                                                                                                    _0: [
+                                                                                                                  tl: {
+                                                                                                                    hd: [
                                                                                                                       "some",
                                                                                                                       (function (param) {
                                                                                                                           return {
@@ -1107,8 +1107,8 @@ var suites_1 = /* :: */{
                                                                                                                                 };
                                                                                                                         })
                                                                                                                     ],
-                                                                                                                    _1: /* :: */{
-                                                                                                                      _0: [
+                                                                                                                    tl: {
+                                                                                                                      hd: [
                                                                                                                         "somei",
                                                                                                                         (function (param) {
                                                                                                                             return {
@@ -1125,7 +1125,7 @@ var suites_1 = /* :: */{
                                                                                                                                   };
                                                                                                                           })
                                                                                                                       ],
-                                                                                                                      _1: /* [] */0
+                                                                                                                      tl: /* [] */0
                                                                                                                     }
                                                                                                                   }
                                                                                                                 }
@@ -1186,9 +1186,9 @@ var suites_1 = /* :: */{
   }
 };
 
-var suites = /* :: */{
-  _0: suites_0,
-  _1: suites_1
+var suites = {
+  hd: suites_0,
+  tl: suites_1
 };
 
 Mt.from_pair_suites("Js_array_test", suites);

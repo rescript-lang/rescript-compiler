@@ -14,8 +14,8 @@ var test_id = {
 
 function eq(loc, x, y) {
   test_id.contents = test_id.contents + 1 | 0;
-  suites.contents = /* :: */{
-    _0: [
+  suites.contents = {
+    hd: [
       loc + (" id " + String(test_id.contents)),
       (function (param) {
           return {
@@ -25,7 +25,7 @@ function eq(loc, x, y) {
                 };
         })
     ],
-    _1: suites.contents
+    tl: suites.contents
   };
   
 }
@@ -51,11 +51,11 @@ function f(param) {
   return List;
 }
 
-eq("File \"global_module_alias_test.ml\", line 51, characters 5-12", List.length(/* :: */{
-          _0: 1,
-          _1: /* :: */{
-            _0: 2,
-            _1: /* [] */0
+eq("File \"global_module_alias_test.ml\", line 51, characters 5-12", List.length({
+          hd: 1,
+          tl: {
+            hd: 2,
+            tl: /* [] */0
           }
         }), 2);
 
@@ -88,15 +88,15 @@ var H = List;
 eq("File \"global_module_alias_test.ml\", line 57, characters 5-12", v.contents, 12);
 
 function g(param) {
-  return List.length(/* :: */{
-              _0: 1,
-              _1: /* :: */{
-                _0: 2,
-                _1: /* :: */{
-                  _0: 3,
-                  _1: /* :: */{
-                    _0: 4,
-                    _1: /* [] */0
+  return List.length({
+              hd: 1,
+              tl: {
+                hd: 2,
+                tl: {
+                  hd: 3,
+                  tl: {
+                    hd: 4,
+                    tl: /* [] */0
                   }
                 }
               }
@@ -114,13 +114,13 @@ eq("File \"global_module_alias_test.ml\", line 86, characters 5-12", g(undefined
 
 var V = xx(undefined);
 
-eq("File \"global_module_alias_test.ml\", line 92, characters 5-12", Curry._1(V.length, /* :: */{
-          _0: 1,
-          _1: /* :: */{
-            _0: 2,
-            _1: /* :: */{
-              _0: 3,
-              _1: /* [] */0
+eq("File \"global_module_alias_test.ml\", line 92, characters 5-12", Curry._1(V.length, {
+          hd: 1,
+          tl: {
+            hd: 2,
+            tl: {
+              hd: 3,
+              tl: /* [] */0
             }
           }
         }), 3);
@@ -129,11 +129,11 @@ eq("File \"global_module_alias_test.ml\", line 93, characters 5-12", v.contents,
 
 var H$1 = f(undefined);
 
-eq("File \"global_module_alias_test.ml\", line 95, characters 5-12", Curry._1(H$1.length, /* :: */{
-          _0: 1,
-          _1: /* :: */{
-            _0: 2,
-            _1: /* [] */0
+eq("File \"global_module_alias_test.ml\", line 95, characters 5-12", Curry._1(H$1.length, {
+          hd: 1,
+          tl: {
+            hd: 2,
+            tl: /* [] */0
           }
         }), 2);
 

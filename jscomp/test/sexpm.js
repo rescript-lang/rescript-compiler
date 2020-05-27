@@ -111,7 +111,7 @@ function to_buf(b, t) {
   if (t.HASH >= 848054398) {
     var l = t.value;
     if (l) {
-      if (l._1) {
+      if (l.tl) {
         $$Buffer.add_char(b, /* "(" */40);
         List.iteri((function (i, t$prime) {
                 if (i > 0) {
@@ -135,7 +135,7 @@ function to_buf(b, t) {
                           }
                         },
                         _1: "(%a)"
-                      }), to_buf, l._0);
+                      }), to_buf, l.hd);
       }
     } else {
       return $$Buffer.add_string(b, "()");
@@ -174,7 +174,7 @@ function print(fmt, t) {
   if (t.HASH >= 848054398) {
     var l = t.value;
     if (l) {
-      if (l._1) {
+      if (l.tl) {
         Format.fprintf(fmt, /* Format */{
               _0: {
                 TAG: /* Formatting_gen */18,
@@ -260,7 +260,7 @@ function print(fmt, t) {
                           }
                         },
                         _1: "@[<hov2>(%a)@]"
-                      }), print, l._0);
+                      }), print, l.hd);
       }
     } else {
       return Format.pp_print_string(fmt, "()");
@@ -293,7 +293,7 @@ function print_noindent(fmt, t) {
   if (t.HASH >= 848054398) {
     var l = t.value;
     if (l) {
-      if (l._1) {
+      if (l.tl) {
         Format.pp_print_char(fmt, /* "(" */40);
         List.iteri((function (i, t$prime) {
                 if (i > 0) {
@@ -317,7 +317,7 @@ function print_noindent(fmt, t) {
                           }
                         },
                         _1: "(%a)"
-                      }), print_noindent, l._0);
+                      }), print_noindent, l.hd);
       }
     } else {
       return Format.pp_print_string(fmt, "()");
@@ -613,31 +613,31 @@ function expr_list(acc, k, t) {
                   if (last !== undefined) {
                     if (last !== 40) {
                       if (last !== 41) {
-                        return expr_list(/* :: */{
-                                    _0: e,
-                                    _1: acc
+                        return expr_list({
+                                    hd: e,
+                                    tl: acc
                                   }, k, t);
                       } else {
                         return Curry._2(k, undefined, {
                                     HASH: /* List */848054398,
-                                    value: List.rev(/* :: */{
-                                          _0: e,
-                                          _1: acc
+                                    value: List.rev({
+                                          hd: e,
+                                          tl: acc
                                         })
                                   });
                       }
                     } else {
                       return expr_list(/* [] */0, (function (param, l) {
-                                    return expr_list(/* :: */{
-                                                _0: l,
-                                                _1: acc
+                                    return expr_list({
+                                                hd: l,
+                                                tl: acc
                                               }, k, t);
                                   }), t);
                     }
                   } else {
-                    return expr_list(/* :: */{
-                                _0: e,
-                                _1: acc
+                    return expr_list({
+                                hd: e,
+                                tl: acc
                               }, k, t);
                   }
                 }), t);
@@ -985,9 +985,9 @@ function parse_chan_list(bufsize, ic) {
     if (e.HASH >= 106380200) {
       return e;
     }
-    _acc = /* :: */{
-      _0: e.value,
-      _1: acc
+    _acc = {
+      hd: e.value,
+      tl: acc
     };
     continue ;
   };
@@ -1221,31 +1221,31 @@ function MakeDecode(funarg) {
                     if (last !== undefined) {
                       if (last !== 40) {
                         if (last !== 41) {
-                          return expr_list(/* :: */{
-                                      _0: e,
-                                      _1: acc
+                          return expr_list({
+                                      hd: e,
+                                      tl: acc
                                     }, k, t);
                         } else {
                           return Curry._2(k, undefined, {
                                       HASH: /* List */848054398,
-                                      value: List.rev(/* :: */{
-                                            _0: e,
-                                            _1: acc
+                                      value: List.rev({
+                                            hd: e,
+                                            tl: acc
                                           })
                                     });
                         }
                       } else {
                         return expr_list(/* [] */0, (function (param, l) {
-                                      return expr_list(/* :: */{
-                                                  _0: l,
-                                                  _1: acc
+                                      return expr_list({
+                                                  hd: l,
+                                                  tl: acc
                                                 }, k, t);
                                     }), t);
                       }
                     } else {
-                      return expr_list(/* :: */{
-                                  _0: e,
-                                  _1: acc
+                      return expr_list({
+                                  hd: e,
+                                  tl: acc
                                 }, k, t);
                     }
                   }), t);

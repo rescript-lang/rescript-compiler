@@ -14,8 +14,8 @@ function eq(loc, param) {
   var y = param[1];
   var x = param[0];
   test_id.contents = test_id.contents + 1 | 0;
-  suites.contents = /* :: */{
-    _0: [
+  suites.contents = {
+    hd: [
       loc + (" id " + String(test_id.contents)),
       (function (param) {
           return {
@@ -25,7 +25,7 @@ function eq(loc, param) {
                 };
         })
     ],
-    _1: suites.contents
+    tl: suites.contents
   };
   
 }

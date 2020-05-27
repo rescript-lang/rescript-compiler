@@ -38,8 +38,8 @@ var suites_0 = [
     })
 ];
 
-var suites_1 = /* :: */{
-  _0: [
+var suites_1 = {
+  hd: [
     "curry2",
     (function (param) {
         return {
@@ -49,8 +49,8 @@ var suites_1 = /* :: */{
               };
       })
   ],
-  _1: /* :: */{
-    _0: [
+  tl: {
+    hd: [
       "curry3",
       (function (param) {
           return {
@@ -60,8 +60,8 @@ var suites_1 = /* :: */{
                 };
         })
     ],
-    _1: /* :: */{
-      _0: [
+    tl: {
+      hd: [
         "File \"ari_regress_test.ml\", line 20, characters 4-11",
         (function (param) {
             return {
@@ -71,14 +71,14 @@ var suites_1 = /* :: */{
                   };
           })
       ],
-      _1: /* [] */0
+      tl: /* [] */0
     }
   }
 };
 
-var suites = /* :: */{
-  _0: suites_0,
-  _1: suites_1
+var suites = {
+  hd: suites_0,
+  tl: suites_1
 };
 
 Mt.from_pair_suites("Ari_regress_test", suites);

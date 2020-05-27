@@ -58,9 +58,9 @@ function fn(authState, route) {
       exit = 1;
     }
     if (exit$1 === 3) {
-      div(/* :: */{
-            _0: string("Redirect"),
-            _1: /* [] */0
+      div({
+            hd: string("Redirect"),
+            tl: /* [] */0
           }, undefined);
       return 3;
     }
@@ -75,9 +75,9 @@ function fn(authState, route) {
     }
     if (exit$2 === 3) {
       console.log(authState.value);
-      div(/* :: */{
-            _0: string("VerifyEmail"),
-            _1: /* [] */0
+      div({
+            hd: string("VerifyEmail"),
+            tl: /* [] */0
           }, undefined);
       return 2;
     }
@@ -86,15 +86,15 @@ function fn(authState, route) {
   switch (exit) {
     case 1 :
         console.log(onboardingRoute);
-        div(/* :: */{
-              _0: string("Onboarding"),
-              _1: /* [] */0
+        div({
+              hd: string("Onboarding"),
+              tl: /* [] */0
             }, undefined);
         return 0;
     case 2 :
-        div(/* :: */{
-              _0: string("LoggedOut"),
-              _1: /* [] */0
+        div({
+              hd: string("LoggedOut"),
+              tl: /* [] */0
             }, undefined);
         return 1;
     

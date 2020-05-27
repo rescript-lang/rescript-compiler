@@ -16,8 +16,8 @@ var test_id = {
 
 function eq(loc, x, y) {
   test_id.contents = test_id.contents + 1 | 0;
-  suites.contents = /* :: */{
-    _0: [
+  suites.contents = {
+    hd: [
       loc + (" id " + String(test_id.contents)),
       (function (param) {
           return {
@@ -27,7 +27,7 @@ function eq(loc, x, y) {
                 };
         })
     ],
-    _1: suites.contents
+    tl: suites.contents
   };
   
 }
@@ -321,8 +321,8 @@ function re(prim) {
   return Promise.resolve(prim);
 }
 
-Mt.from_promise_suites("Js_promise_basic_test", /* :: */{
-      _0: [
+Mt.from_promise_suites("Js_promise_basic_test", {
+      hd: [
         "File \"js_promise_basic_test.ml\", line 187, characters 4-11",
         twop.then(function (x) {
               return Promise.resolve({
@@ -332,8 +332,8 @@ Mt.from_promise_suites("Js_promise_basic_test", /* :: */{
                         });
             })
       ],
-      _1: /* :: */{
-        _0: [
+      tl: {
+        hd: [
           "File \"js_promise_basic_test.ml\", line 190, characters 4-11",
           twop.then(function (x) {
                 return Promise.resolve({
@@ -343,7 +343,7 @@ Mt.from_promise_suites("Js_promise_basic_test", /* :: */{
                           });
               })
         ],
-        _1: /* [] */0
+        tl: /* [] */0
       }
     });
 

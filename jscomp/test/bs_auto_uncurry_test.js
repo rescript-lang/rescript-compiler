@@ -12,8 +12,8 @@ var test_id = {
 
 function eq(loc, x, y) {
   test_id.contents = test_id.contents + 1 | 0;
-  suites.contents = /* :: */{
-    _0: [
+  suites.contents = {
+    hd: [
       loc + (" id " + String(test_id.contents)),
       (function (param) {
           return {
@@ -23,7 +23,7 @@ function eq(loc, x, y) {
                 };
         })
     ],
-    _1: suites.contents
+    tl: suites.contents
   };
   
 }
@@ -39,26 +39,26 @@ var xs = {
 };
 
 hi(function () {
-      xs.contents = /* :: */{
-        _0: undefined,
-        _1: xs.contents
+      xs.contents = {
+        hd: undefined,
+        tl: xs.contents
       };
       
     });
 
 hi(function () {
-      xs.contents = /* :: */{
-        _0: undefined,
-        _1: xs.contents
+      xs.contents = {
+        hd: undefined,
+        tl: xs.contents
       };
       
     });
 
-eq("File \"bs_auto_uncurry_test.ml\", line 27, characters 7-14", xs.contents, /* :: */{
-      _0: undefined,
-      _1: /* :: */{
-        _0: undefined,
-        _1: /* [] */0
+eq("File \"bs_auto_uncurry_test.ml\", line 27, characters 7-14", xs.contents, {
+      hd: undefined,
+      tl: {
+        hd: undefined,
+        tl: /* [] */0
       }
     });
 

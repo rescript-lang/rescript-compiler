@@ -41,8 +41,8 @@ var suites_0 = [
     })
 ];
 
-var suites_1 = /* :: */{
-  _0: [
+var suites_1 = {
+  hd: [
     "string_type",
     (function (param) {
         return {
@@ -52,8 +52,8 @@ var suites_1 = /* :: */{
               };
       })
   ],
-  _1: /* :: */{
-    _0: [
+  tl: {
+    hd: [
       "number_gadt_test",
       (function (param) {
           return {
@@ -63,8 +63,8 @@ var suites_1 = /* :: */{
                 };
         })
     ],
-    _1: /* :: */{
-      _0: [
+    tl: {
+      hd: [
         "boolean_gadt_test",
         (function (param) {
             return {
@@ -74,8 +74,8 @@ var suites_1 = /* :: */{
                   };
           })
       ],
-      _1: /* :: */{
-        _0: [
+      tl: {
+        hd: [
           "undefined_gadt_test",
           (function (param) {
               return {
@@ -85,8 +85,8 @@ var suites_1 = /* :: */{
                     };
             })
         ],
-        _1: /* :: */{
-          _0: [
+        tl: {
+          hd: [
             "string_on_number1",
             (function (param) {
                 return {
@@ -96,8 +96,8 @@ var suites_1 = /* :: */{
                       };
               })
           ],
-          _1: /* :: */{
-            _0: [
+          tl: {
+            hd: [
               "string_on_number2",
               (function (param) {
                   return {
@@ -107,8 +107,8 @@ var suites_1 = /* :: */{
                         };
                 })
             ],
-            _1: /* :: */{
-              _0: [
+            tl: {
+              hd: [
                 "string_on_number3",
                 (function (param) {
                     return {
@@ -120,8 +120,8 @@ var suites_1 = /* :: */{
                           };
                   })
               ],
-              _1: /* :: */{
-                _0: [
+              tl: {
+                hd: [
                   "string_gadt_test",
                   (function (param) {
                       return {
@@ -131,8 +131,8 @@ var suites_1 = /* :: */{
                             };
                     })
                 ],
-                _1: /* :: */{
-                  _0: [
+                tl: {
+                  hd: [
                     "string_gadt_test_neg",
                     (function (param) {
                         return {
@@ -142,8 +142,8 @@ var suites_1 = /* :: */{
                               };
                       })
                   ],
-                  _1: /* :: */{
-                    _0: [
+                  tl: {
+                    hd: [
                       "function_gadt_test",
                       (function (param) {
                           return {
@@ -155,8 +155,8 @@ var suites_1 = /* :: */{
                                 };
                         })
                     ],
-                    _1: /* :: */{
-                      _0: [
+                    tl: {
+                      hd: [
                         "object_gadt_test",
                         (function (param) {
                             return {
@@ -168,7 +168,7 @@ var suites_1 = /* :: */{
                                   };
                           })
                       ],
-                      _1: /* [] */0
+                      tl: /* [] */0
                     }
                   }
                 }
@@ -181,9 +181,9 @@ var suites_1 = /* :: */{
   }
 };
 
-var suites = /* :: */{
-  _0: suites_0,
-  _1: suites_1
+var suites = {
+  hd: suites_0,
+  tl: suites_1
 };
 
 Mt.from_pair_suites("Typeof_test", suites);

@@ -59,11 +59,11 @@ function of_rev_list(l) {
 function of_pair(param) {
   return {
           HASH: /* List */848054398,
-          value: /* :: */{
-            _0: param[0],
-            _1: /* :: */{
-              _0: param[1],
-              _1: /* [] */0
+          value: {
+            hd: param[0],
+            tl: {
+              hd: param[1],
+              tl: /* [] */0
             }
           }
         };
@@ -72,13 +72,13 @@ function of_pair(param) {
 function of_triple(param) {
   return {
           HASH: /* List */848054398,
-          value: /* :: */{
-            _0: param[0],
-            _1: /* :: */{
-              _0: param[1],
-              _1: /* :: */{
-                _0: param[2],
-                _1: /* [] */0
+          value: {
+            hd: param[0],
+            tl: {
+              hd: param[1],
+              tl: {
+                hd: param[2],
+                tl: /* [] */0
               }
             }
           }
@@ -88,15 +88,15 @@ function of_triple(param) {
 function of_quad(param) {
   return {
           HASH: /* List */848054398,
-          value: /* :: */{
-            _0: param[0],
-            _1: /* :: */{
-              _0: param[1],
-              _1: /* :: */{
-                _0: param[2],
-                _1: /* :: */{
-                  _0: param[3],
-                  _1: /* [] */0
+          value: {
+            hd: param[0],
+            tl: {
+              hd: param[1],
+              tl: {
+                hd: param[2],
+                tl: {
+                  hd: param[3],
+                  tl: /* [] */0
                 }
               }
             }
@@ -107,12 +107,12 @@ function of_quad(param) {
 function of_variant(name, args) {
   return {
           HASH: /* List */848054398,
-          value: /* :: */{
-            _0: {
+          value: {
+            hd: {
               HASH: /* Atom */726615281,
               value: name
             },
-            _1: args
+            tl: args
           }
         };
 }
@@ -120,14 +120,14 @@ function of_variant(name, args) {
 function of_field(name, t) {
   return {
           HASH: /* List */848054398,
-          value: /* :: */{
-            _0: {
+          value: {
+            hd: {
               HASH: /* Atom */726615281,
               value: name
             },
-            _1: /* :: */{
-              _0: t,
-              _1: /* [] */0
+            tl: {
+              hd: t,
+              tl: /* [] */0
             }
           }
         };
@@ -169,14 +169,14 @@ function map_opt(f, l) {
     if (!l$1) {
       return List.rev(acc);
     }
-    var y = Curry._1(f, l$1._0);
+    var y = Curry._1(f, l$1.hd);
     if (y === undefined) {
       return ;
     }
-    _l = l$1._1;
-    _acc = /* :: */{
-      _0: Caml_option.valFromOption(y),
-      _1: acc
+    _l = l$1.tl;
+    _acc = {
+      hd: Caml_option.valFromOption(y),
+      tl: acc
     };
     continue ;
   };
@@ -190,11 +190,11 @@ function list_any(f, e) {
       if (!l) {
         return ;
       }
-      var res = Curry._1(f, l._0);
+      var res = Curry._1(f, l.hd);
       if (res !== undefined) {
         return res;
       }
-      _l = l._1;
+      _l = l.tl;
       continue ;
     };
   }
@@ -211,13 +211,13 @@ function list_all(f, e) {
       if (!l) {
         return List.rev(acc);
       }
-      var tl = l._1;
-      var y = Curry._1(f, l._0);
+      var tl = l.tl;
+      var y = Curry._1(f, l.hd);
       if (y !== undefined) {
         _l = tl;
-        _acc = /* :: */{
-          _0: Caml_option.valFromOption(y),
-          _1: acc
+        _acc = {
+          hd: Caml_option.valFromOption(y),
+          tl: acc
         };
         continue ;
       }
@@ -270,11 +270,11 @@ function to_pair(e) {
   if (!match) {
     return ;
   }
-  var match$1 = match._1;
-  if (match$1 && !match$1._1) {
+  var match$1 = match.tl;
+  if (match$1 && !match$1.tl) {
     return [
-            match._0,
-            match$1._0
+            match.hd,
+            match$1.hd
           ];
   }
   
@@ -305,16 +305,16 @@ function to_triple(e) {
   if (!match) {
     return ;
   }
-  var match$1 = match._1;
+  var match$1 = match.tl;
   if (!match$1) {
     return ;
   }
-  var match$2 = match$1._1;
-  if (match$2 && !match$2._1) {
+  var match$2 = match$1.tl;
+  if (match$2 && !match$2.tl) {
     return [
-            match._0,
-            match$1._0,
-            match$2._0
+            match.hd,
+            match$1.hd,
+            match$2.hd
           ];
   }
   
@@ -360,42 +360,42 @@ function get_field(name, e) {
       if (!l) {
         return ;
       }
-      var match = l._0;
+      var match = l.hd;
       if (typeof match === "number") {
-        _l = l._1;
+        _l = l.tl;
         continue ;
       }
       if (match.HASH !== 848054398) {
-        _l = l._1;
+        _l = l.tl;
         continue ;
       }
       var match$1 = match.value;
       if (match$1) {
-        var match$2 = match$1._0;
+        var match$2 = match$1.hd;
         if (typeof match$2 === "number") {
-          _l = l._1;
+          _l = l.tl;
           continue ;
         }
         if (match$2.HASH !== 726615281) {
-          _l = l._1;
+          _l = l.tl;
           continue ;
         }
-        var match$3 = match$1._1;
+        var match$3 = match$1.tl;
         if (match$3) {
-          if (match$3._1) {
-            _l = l._1;
+          if (match$3.tl) {
+            _l = l.tl;
             continue ;
           }
           if (Caml_obj.caml_equal(name, match$2.value)) {
-            return match$3._0;
+            return match$3.hd;
           }
-          _l = l._1;
+          _l = l.tl;
           continue ;
         }
-        _l = l._1;
+        _l = l.tl;
         continue ;
       }
-      _l = l._1;
+      _l = l.tl;
       continue ;
     };
   }
@@ -412,33 +412,33 @@ function _get_field_list(name, _l) {
     if (!l) {
       return ;
     }
-    var match = l._0;
+    var match = l.hd;
     if (typeof match === "number") {
-      _l = l._1;
+      _l = l.tl;
       continue ;
     }
     if (match.HASH !== 848054398) {
-      _l = l._1;
+      _l = l.tl;
       continue ;
     }
     var match$1 = match.value;
     if (match$1) {
-      var match$2 = match$1._0;
+      var match$2 = match$1.hd;
       if (typeof match$2 === "number") {
-        _l = l._1;
+        _l = l.tl;
         continue ;
       }
       if (match$2.HASH !== 726615281) {
-        _l = l._1;
+        _l = l.tl;
         continue ;
       }
       if (Caml_obj.caml_equal(name, match$2.value)) {
-        return match$1._1;
+        return match$1.tl;
       }
-      _l = l._1;
+      _l = l.tl;
       continue ;
     }
-    _l = l._1;
+    _l = l.tl;
     continue ;
   };
 }
@@ -456,11 +456,11 @@ function _get_variant(s, args, _l) {
     if (!l) {
       return ;
     }
-    var match = l._0;
+    var match = l.hd;
     if (Caml_obj.caml_equal(s, match[0])) {
       return Curry._1(match[1], args);
     }
-    _l = l._1;
+    _l = l.tl;
     continue ;
   };
 }
@@ -473,11 +473,11 @@ function get_variant(l, e) {
   if (!match) {
     return ;
   }
-  var match$1 = match._0;
+  var match$1 = match.hd;
   if (typeof match$1 === "number" || match$1.HASH !== 726615281) {
     return ;
   } else {
-    return _get_variant(match$1.value, match._1, l);
+    return _get_variant(match$1.value, match.tl, l);
   }
 }
 

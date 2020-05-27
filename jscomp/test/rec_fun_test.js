@@ -14,8 +14,8 @@ var test_id = {
 
 function eq(loc, x, y) {
   test_id.contents = test_id.contents + 1 | 0;
-  suites.contents = /* :: */{
-    _0: [
+  suites.contents = {
+    hd: [
       loc + (" id " + String(test_id.contents)),
       (function (param) {
           return {
@@ -25,7 +25,7 @@ function eq(loc, x, y) {
                 };
         })
     ],
-    _1: suites.contents
+    tl: suites.contents
   };
   
 }
@@ -56,14 +56,14 @@ var x = {};
 
 var y = {};
 
-Caml_obj.update_dummy(x, /* :: */{
-      _0: 1,
-      _1: y
+Caml_obj.update_dummy(x, {
+      hd: 1,
+      tl: y
     });
 
-Caml_obj.update_dummy(y, /* :: */{
-      _0: 2,
-      _1: x
+Caml_obj.update_dummy(y, {
+      hd: 2,
+      tl: x
     });
 
 eq("File \"rec_fun_test.ml\", line 27, characters 6-13", called.contents, 2);

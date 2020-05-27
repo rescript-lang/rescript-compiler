@@ -85,15 +85,15 @@ eq("File \"recursive_records_test.ml\", line 60, characters 5-12", (hd(rec_cell2
 
 var rec_cell3 = {};
 
-rec_cell3._0 = 3;
+rec_cell3.hd = 3;
 
-rec_cell3._1 = rec_cell3;
+rec_cell3.tl = rec_cell3;
 
 function f3(x) {
   var rec_cell3 = {};
-  Caml_obj.update_dummy(rec_cell3, /* :: */{
-        _0: Math.imul(x, x) - 6 | 0,
-        _1: rec_cell3
+  Caml_obj.update_dummy(rec_cell3, {
+        hd: Math.imul(x, x) - 6 | 0,
+        tl: rec_cell3
       });
   return rec_cell3;
 }

@@ -18,9 +18,9 @@ function get_tokens(lex, str) {
     if (v === /* EOF */7) {
       return List.rev(acc);
     }
-    _acc = /* :: */{
-      _0: v,
-      _1: acc
+    _acc = {
+      hd: v,
+      tl: acc
     };
     continue ;
   };
@@ -37,8 +37,8 @@ function from_tokens(lst) {
   return function (param) {
     var match = l.contents;
     if (match) {
-      l.contents = match._1;
-      return match._0;
+      l.contents = match.tl;
+      return match.hd;
     }
     throw {
           RE_EXN_ID: "End_of_file",
@@ -53,33 +53,33 @@ var lexer_suites_0 = [
       return {
               TAG: /* Eq */0,
               _0: get_tokens(Arith_lexer.lexeme, "x + 3 + 4 + y"),
-              _1: /* :: */{
-                _0: {
+              _1: {
+                hd: {
                   TAG: /* IDENT */1,
                   _0: "x"
                 },
-                _1: /* :: */{
-                  _0: /* PLUS */0,
-                  _1: /* :: */{
-                    _0: {
+                tl: {
+                  hd: /* PLUS */0,
+                  tl: {
+                    hd: {
                       TAG: /* NUMERAL */0,
                       _0: 3
                     },
-                    _1: /* :: */{
-                      _0: /* PLUS */0,
-                      _1: /* :: */{
-                        _0: {
+                    tl: {
+                      hd: /* PLUS */0,
+                      tl: {
+                        hd: {
                           TAG: /* NUMERAL */0,
                           _0: 4
                         },
-                        _1: /* :: */{
-                          _0: /* PLUS */0,
-                          _1: /* :: */{
-                            _0: {
+                        tl: {
+                          hd: /* PLUS */0,
+                          tl: {
+                            hd: {
                               TAG: /* IDENT */1,
                               _0: "y"
                             },
-                            _1: /* [] */0
+                            tl: /* [] */0
                           }
                         }
                       }
@@ -91,8 +91,8 @@ var lexer_suites_0 = [
     })
 ];
 
-var lexer_suites_1 = /* :: */{
-  _0: [
+var lexer_suites_1 = {
+  hd: [
     "simple token",
     (function (param) {
         return {
@@ -105,17 +105,17 @@ var lexer_suites_1 = /* :: */{
               };
       })
   ],
-  _1: /* :: */{
-    _0: [
+  tl: {
+    hd: [
       "number_lexer",
       (function (param) {
           var v = {
             contents: /* [] */0
           };
           var add = function (t) {
-            v.contents = /* :: */{
-              _0: t,
-              _1: v.contents
+            v.contents = {
+              hd: t,
+              tl: v.contents
             };
             
           };
@@ -123,41 +123,41 @@ var lexer_suites_1 = /* :: */{
           return {
                   TAG: /* Eq */0,
                   _0: List.rev(v.contents),
-                  _1: /* :: */{
-                    _0: "number",
-                    _1: /* :: */{
-                      _0: "32",
-                      _1: /* :: */{
-                        _0: "new line",
-                        _1: /* :: */{
-                          _0: "+",
-                          _1: /* :: */{
-                            _0: "new line",
-                            _1: /* :: */{
-                              _0: "number",
-                              _1: /* :: */{
-                                _0: "32",
-                                _1: /* :: */{
-                                  _0: "new line",
-                                  _1: /* :: */{
-                                    _0: "(",
-                                    _1: /* :: */{
-                                      _0: "new line",
-                                      _1: /* :: */{
-                                        _0: ")",
-                                        _1: /* :: */{
-                                          _0: "new line",
-                                          _1: /* :: */{
-                                            _0: "*",
-                                            _1: /* :: */{
-                                              _0: "new line",
-                                              _1: /* :: */{
-                                                _0: "/",
-                                                _1: /* :: */{
-                                                  _0: "new line",
-                                                  _1: /* :: */{
-                                                    _0: "eof",
-                                                    _1: /* [] */0
+                  _1: {
+                    hd: "number",
+                    tl: {
+                      hd: "32",
+                      tl: {
+                        hd: "new line",
+                        tl: {
+                          hd: "+",
+                          tl: {
+                            hd: "new line",
+                            tl: {
+                              hd: "number",
+                              tl: {
+                                hd: "32",
+                                tl: {
+                                  hd: "new line",
+                                  tl: {
+                                    hd: "(",
+                                    tl: {
+                                      hd: "new line",
+                                      tl: {
+                                        hd: ")",
+                                        tl: {
+                                          hd: "new line",
+                                          tl: {
+                                            hd: "*",
+                                            tl: {
+                                              hd: "new line",
+                                              tl: {
+                                                hd: "/",
+                                                tl: {
+                                                  hd: "new line",
+                                                  tl: {
+                                                    hd: "eof",
+                                                    tl: /* [] */0
                                                   }
                                                 }
                                               }
@@ -178,8 +178,8 @@ var lexer_suites_1 = /* :: */{
                 };
         })
     ],
-    _1: /* :: */{
-      _0: [
+    tl: {
+      hd: [
         "simple number",
         (function (param) {
             return {
@@ -189,8 +189,8 @@ var lexer_suites_1 = /* :: */{
                   };
           })
       ],
-      _1: /* :: */{
-        _0: [
+      tl: {
+        hd: [
           "arith",
           (function (param) {
               return {
@@ -200,15 +200,15 @@ var lexer_suites_1 = /* :: */{
                     };
             })
         ],
-        _1: /* [] */0
+        tl: /* [] */0
       }
     }
   }
 };
 
-var lexer_suites = /* :: */{
-  _0: lexer_suites_0,
-  _1: lexer_suites_1
+var lexer_suites = {
+  hd: lexer_suites_0,
+  tl: lexer_suites_1
 };
 
 Mt.from_pair_suites("Lexer_test", lexer_suites);

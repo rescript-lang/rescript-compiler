@@ -188,8 +188,8 @@ var pairs$1 = [
   ]
 ];
 
-var suites = Pervasives.$at(from_of_string(of_string), Pervasives.$at(/* :: */{
-          _0: [
+var suites = Pervasives.$at(from_of_string(of_string), Pervasives.$at({
+          hd: [
             "isnan_of_string",
             (function (param) {
                 return {
@@ -199,7 +199,7 @@ var suites = Pervasives.$at(from_of_string(of_string), Pervasives.$at(/* :: */{
                       };
               })
           ],
-          _1: /* [] */0
+          tl: /* [] */0
         }, Pervasives.$at($$Array.to_list($$Array.mapi((function (i, param) {
                         var b = param[1];
                         var a = param[0];
@@ -226,8 +226,8 @@ var suites = Pervasives.$at(from_of_string(of_string), Pervasives.$at(/* :: */{
                                           };
                                   })
                               ];
-                      }), pairs)), Pervasives.$at(/* :: */{
-                  _0: [
+                      }), pairs)), Pervasives.$at({
+                  hd: [
                     "throw",
                     (function (param) {
                         return {
@@ -239,8 +239,8 @@ var suites = Pervasives.$at(from_of_string(of_string), Pervasives.$at(/* :: */{
                               };
                       })
                   ],
-                  _1: /* :: */{
-                    _0: [
+                  tl: {
+                    hd: [
                       "format_int",
                       (function (param) {
                           return {
@@ -250,7 +250,7 @@ var suites = Pervasives.$at(from_of_string(of_string), Pervasives.$at(/* :: */{
                                 };
                         })
                     ],
-                    _1: /* [] */0
+                    tl: /* [] */0
                   }
                 }, $$Array.to_list($$Array.mapi((function (i, param) {
                             var b = param[1];
@@ -353,8 +353,8 @@ var formatter_suites_0 = [
     })
 ];
 
-var formatter_suites_1 = /* :: */{
-  _0: [
+var formatter_suites_1 = {
+  hd: [
     "fmt_gen",
     (function (param) {
         return {
@@ -426,13 +426,13 @@ var formatter_suites_1 = /* :: */{
                               _1: "%S %03d %L %a"
                             })), "32", 33, 33, "a", 33, 3, (function (param, param$1) {
                         return Format.pp_print_list(undefined, Format.pp_print_int, param, param$1);
-                      }), /* :: */{
-                      _0: 1,
-                      _1: /* :: */{
-                        _0: 2,
-                        _1: /* :: */{
-                          _0: 3,
-                          _1: /* [] */0
+                      }), {
+                      hd: 1,
+                      tl: {
+                        hd: 2,
+                        tl: {
+                          hd: 3,
+                          tl: /* [] */0
                         }
                       }
                     }),
@@ -440,8 +440,8 @@ var formatter_suites_1 = /* :: */{
               };
       })
   ],
-  _1: /* :: */{
-    _0: [
+  tl: {
+    hd: [
       "long_fmt",
       (function (param) {
           return {
@@ -807,8 +807,8 @@ var formatter_suites_1 = /* :: */{
                 };
         })
     ],
-    _1: /* :: */{
-      _0: [
+    tl: {
+      hd: [
         "long_fmt_2",
         (function (param) {
             return {
@@ -1228,8 +1228,8 @@ var formatter_suites_1 = /* :: */{
                   };
           })
       ],
-      _1: /* :: */{
-        _0: [
+      tl: {
+        hd: [
           "width_1",
           (function (param) {
               return {
@@ -1252,8 +1252,8 @@ var formatter_suites_1 = /* :: */{
                     };
             })
         ],
-        _1: /* :: */{
-          _0: [
+        tl: {
+          hd: [
             "width_2",
             (function (param) {
                 return {
@@ -1278,8 +1278,8 @@ var formatter_suites_1 = /* :: */{
                       };
               })
           ],
-          _1: /* :: */{
-            _0: [
+          tl: {
+            hd: [
               "alternate_1",
               (function (param) {
                   return {
@@ -1302,8 +1302,8 @@ var formatter_suites_1 = /* :: */{
                         };
                 })
             ],
-            _1: /* :: */{
-              _0: [
+            tl: {
+              hd: [
                 "alternate_2",
                 (function (param) {
                     return {
@@ -1326,8 +1326,8 @@ var formatter_suites_1 = /* :: */{
                           };
                   })
               ],
-              _1: /* :: */{
-                _0: [
+              tl: {
+                hd: [
                   "alternate_3",
                   (function (param) {
                       return {
@@ -1361,8 +1361,8 @@ var formatter_suites_1 = /* :: */{
                             };
                     })
                 ],
-                _1: /* :: */{
-                  _0: [
+                tl: {
+                  hd: [
                     "justify_0",
                     (function (param) {
                         return {
@@ -1372,8 +1372,8 @@ var formatter_suites_1 = /* :: */{
                               };
                       })
                   ],
-                  _1: /* :: */{
-                    _0: [
+                  tl: {
+                    hd: [
                       "sign_p",
                       (function (param) {
                           return {
@@ -1396,8 +1396,8 @@ var formatter_suites_1 = /* :: */{
                                 };
                         })
                     ],
-                    _1: /* :: */{
-                      _0: [
+                    tl: {
+                      hd: [
                         "sign_2p",
                         (function (param) {
                             return {
@@ -1420,8 +1420,8 @@ var formatter_suites_1 = /* :: */{
                                   };
                           })
                       ],
-                      _1: /* :: */{
-                        _0: [
+                      tl: {
+                        hd: [
                           "sign_3p",
                           (function (param) {
                               return {
@@ -1440,8 +1440,8 @@ var formatter_suites_1 = /* :: */{
                                     };
                             })
                         ],
-                        _1: /* :: */{
-                          _0: [
+                        tl: {
+                          hd: [
                             "sign_4p",
                             (function (param) {
                                 return {
@@ -1460,8 +1460,8 @@ var formatter_suites_1 = /* :: */{
                                       };
                               })
                           ],
-                          _1: /* :: */{
-                            _0: [
+                          tl: {
+                            hd: [
                               "width_3",
                               (function (param) {
                                   return {
@@ -1471,8 +1471,8 @@ var formatter_suites_1 = /* :: */{
                                         };
                                 })
                             ],
-                            _1: /* :: */{
-                              _0: [
+                            tl: {
+                              hd: [
                                 "prec_1",
                                 (function (param) {
                                     return {
@@ -1493,8 +1493,8 @@ var formatter_suites_1 = /* :: */{
                                           };
                                   })
                               ],
-                              _1: /* :: */{
-                                _0: [
+                              tl: {
+                                hd: [
                                   "prec_2",
                                   (function (param) {
                                       return {
@@ -1504,8 +1504,8 @@ var formatter_suites_1 = /* :: */{
                                             };
                                     })
                                 ],
-                                _1: /* :: */{
-                                  _0: [
+                                tl: {
+                                  hd: [
                                     "prec_3",
                                     (function (param) {
                                         return {
@@ -1515,8 +1515,8 @@ var formatter_suites_1 = /* :: */{
                                               };
                                       })
                                   ],
-                                  _1: /* :: */{
-                                    _0: [
+                                  tl: {
+                                    hd: [
                                       "prec_4",
                                       (function (param) {
                                           return {
@@ -1526,7 +1526,7 @@ var formatter_suites_1 = /* :: */{
                                                 };
                                         })
                                     ],
-                                    _1: /* [] */0
+                                    tl: /* [] */0
                                   }
                                 }
                               }
@@ -1546,9 +1546,9 @@ var formatter_suites_1 = /* :: */{
   }
 };
 
-var formatter_suites = /* :: */{
-  _0: formatter_suites_0,
-  _1: formatter_suites_1
+var formatter_suites = {
+  hd: formatter_suites_0,
+  tl: formatter_suites_1
 };
 
 var float_data = [
@@ -1988,8 +1988,8 @@ var ksprintf_suites_0 = [
     })
 ];
 
-var ksprintf_suites_1 = /* :: */{
-  _0: [
+var ksprintf_suites_1 = {
+  hd: [
     "sprintf",
     (function (param) {
         return {
@@ -2014,12 +2014,12 @@ var ksprintf_suites_1 = /* :: */{
               };
       })
   ],
-  _1: /* [] */0
+  tl: /* [] */0
 };
 
-var ksprintf_suites = /* :: */{
-  _0: ksprintf_suites_0,
-  _1: ksprintf_suites_1
+var ksprintf_suites = {
+  hd: ksprintf_suites_0,
+  tl: ksprintf_suites_1
 };
 
 var int64_suites_0 = [
@@ -2042,8 +2042,8 @@ var int64_suites_0 = [
     })
 ];
 
-var int64_suites_1 = /* :: */{
-  _0: [
+var int64_suites_1 = {
+  hd: [
     "i32_simple1",
     (function (param) {
         return {
@@ -2062,8 +2062,8 @@ var int64_suites_1 = /* :: */{
               };
       })
   ],
-  _1: /* :: */{
-    _0: [
+  tl: {
+    hd: [
       "i64_simple",
       (function (param) {
           return {
@@ -2082,8 +2082,8 @@ var int64_suites_1 = /* :: */{
                 };
         })
     ],
-    _1: /* :: */{
-      _0: [
+    tl: {
+      hd: [
         "i64_simple2",
         (function (param) {
             return {
@@ -2102,8 +2102,8 @@ var int64_suites_1 = /* :: */{
                   };
           })
       ],
-      _1: /* :: */{
-        _0: [
+      tl: {
+        hd: [
           "i64_simple3",
           (function (param) {
               return {
@@ -2122,8 +2122,8 @@ var int64_suites_1 = /* :: */{
                     };
             })
         ],
-        _1: /* :: */{
-          _0: [
+        tl: {
+          hd: [
             "i64_simple4",
             (function (param) {
                 return {
@@ -2142,8 +2142,8 @@ var int64_suites_1 = /* :: */{
                       };
               })
           ],
-          _1: /* :: */{
-            _0: [
+          tl: {
+            hd: [
               "i64_simple5",
               (function (param) {
                   return {
@@ -2162,8 +2162,8 @@ var int64_suites_1 = /* :: */{
                         };
                 })
             ],
-            _1: /* :: */{
-              _0: [
+            tl: {
+              hd: [
                 "i64_simple6",
                 (function (param) {
                     return {
@@ -2185,8 +2185,8 @@ var int64_suites_1 = /* :: */{
                           };
                   })
               ],
-              _1: /* :: */{
-                _0: [
+              tl: {
+                hd: [
                   "i64_simple7",
                   (function (param) {
                       return {
@@ -2196,8 +2196,8 @@ var int64_suites_1 = /* :: */{
                             };
                     })
                 ],
-                _1: /* :: */{
-                  _0: [
+                tl: {
+                  hd: [
                     "i64_simple8",
                     (function (param) {
                         return {
@@ -2226,8 +2226,8 @@ var int64_suites_1 = /* :: */{
                               };
                       })
                   ],
-                  _1: /* :: */{
-                    _0: [
+                  tl: {
+                    hd: [
                       "i64_simple9",
                       (function (param) {
                           return {
@@ -2256,8 +2256,8 @@ var int64_suites_1 = /* :: */{
                                 };
                         })
                     ],
-                    _1: /* :: */{
-                      _0: [
+                    tl: {
+                      hd: [
                         "i64_simple10",
                         (function (param) {
                             return {
@@ -2276,8 +2276,8 @@ var int64_suites_1 = /* :: */{
                                   };
                           })
                       ],
-                      _1: /* :: */{
-                        _0: [
+                      tl: {
+                        hd: [
                           "i64_simple15",
                           (function (param) {
                               return {
@@ -2296,8 +2296,8 @@ var int64_suites_1 = /* :: */{
                                     };
                             })
                         ],
-                        _1: /* :: */{
-                          _0: [
+                        tl: {
+                          hd: [
                             "i64_simple16",
                             (function (param) {
                                 return {
@@ -2316,8 +2316,8 @@ var int64_suites_1 = /* :: */{
                                       };
                               })
                           ],
-                          _1: /* :: */{
-                            _0: [
+                          tl: {
+                            hd: [
                               "i64_simple14",
                               (function (param) {
                                   return {
@@ -2336,8 +2336,8 @@ var int64_suites_1 = /* :: */{
                                         };
                                 })
                             ],
-                            _1: /* :: */{
-                              _0: [
+                            tl: {
+                              hd: [
                                 "File \"caml_format_test.ml\", line 206, characters 4-11",
                                 (function (param) {
                                     return {
@@ -2356,8 +2356,8 @@ var int64_suites_1 = /* :: */{
                                           };
                                   })
                               ],
-                              _1: /* :: */{
-                                _0: [
+                              tl: {
+                                hd: [
                                   "i64_simple11",
                                   (function (param) {
                                       return {
@@ -2376,8 +2376,8 @@ var int64_suites_1 = /* :: */{
                                             };
                                     })
                                 ],
-                                _1: /* :: */{
-                                  _0: [
+                                tl: {
+                                  hd: [
                                     "File \"caml_format_test.ml\", line 214, characters 4-11",
                                     (function (param) {
                                         return {
@@ -2396,8 +2396,8 @@ var int64_suites_1 = /* :: */{
                                               };
                                       })
                                   ],
-                                  _1: /* :: */{
-                                    _0: [
+                                  tl: {
+                                    hd: [
                                       "File \"caml_format_test.ml\", line 215, characters 4-11",
                                       (function (param) {
                                           return {
@@ -2416,8 +2416,8 @@ var int64_suites_1 = /* :: */{
                                                 };
                                         })
                                     ],
-                                    _1: /* :: */{
-                                      _0: [
+                                    tl: {
+                                      hd: [
                                         "File \"caml_format_test.ml\", line 219, characters 4-11",
                                         (function (param) {
                                             return {
@@ -2436,8 +2436,8 @@ var int64_suites_1 = /* :: */{
                                                   };
                                           })
                                       ],
-                                      _1: /* :: */{
-                                        _0: [
+                                      tl: {
+                                        hd: [
                                           "File \"caml_format_test.ml\", line 222, characters 4-11",
                                           (function (param) {
                                               return {
@@ -2456,8 +2456,8 @@ var int64_suites_1 = /* :: */{
                                                     };
                                             })
                                         ],
-                                        _1: /* :: */{
-                                          _0: [
+                                        tl: {
+                                          hd: [
                                             "File \"caml_format_test.ml\", line 225, characters 4-11",
                                             (function (param) {
                                                 return {
@@ -2476,8 +2476,8 @@ var int64_suites_1 = /* :: */{
                                                       };
                                               })
                                           ],
-                                          _1: /* :: */{
-                                            _0: [
+                                          tl: {
+                                            hd: [
                                               "i64_simple19",
                                               (function (param) {
                                                   return {
@@ -2496,8 +2496,8 @@ var int64_suites_1 = /* :: */{
                                                         };
                                                 })
                                             ],
-                                            _1: /* :: */{
-                                              _0: [
+                                            tl: {
+                                              hd: [
                                                 "i64_simple13",
                                                 (function (param) {
                                                     return {
@@ -2516,8 +2516,8 @@ var int64_suites_1 = /* :: */{
                                                           };
                                                   })
                                               ],
-                                              _1: /* :: */{
-                                                _0: [
+                                              tl: {
+                                                hd: [
                                                   "i64_simple20",
                                                   (function (param) {
                                                       return {
@@ -2540,8 +2540,8 @@ var int64_suites_1 = /* :: */{
                                                             };
                                                     })
                                                 ],
-                                                _1: /* :: */{
-                                                  _0: [
+                                                tl: {
+                                                  hd: [
                                                     "i64_simple21",
                                                     (function (param) {
                                                         return {
@@ -2560,8 +2560,8 @@ var int64_suites_1 = /* :: */{
                                                               };
                                                       })
                                                   ],
-                                                  _1: /* :: */{
-                                                    _0: [
+                                                  tl: {
+                                                    hd: [
                                                       "missing_neline",
                                                       (function (param) {
                                                           return {
@@ -2584,8 +2584,8 @@ var int64_suites_1 = /* :: */{
                                                                 };
                                                         })
                                                     ],
-                                                    _1: /* :: */{
-                                                      _0: [
+                                                    tl: {
+                                                      hd: [
                                                         "missing_newline2",
                                                         (function (param) {
                                                             var buf = $$Buffer.create(30);
@@ -2609,7 +2609,7 @@ var int64_suites_1 = /* :: */{
                                                                   };
                                                           })
                                                       ],
-                                                      _1: /* [] */0
+                                                      tl: /* [] */0
                                                     }
                                                   }
                                                 }
@@ -2638,9 +2638,9 @@ var int64_suites_1 = /* :: */{
   }
 };
 
-var int64_suites = /* :: */{
-  _0: int64_suites_0,
-  _1: int64_suites_1
+var int64_suites = {
+  hd: int64_suites_0,
+  tl: int64_suites_1
 };
 
 var of_string_data = [
@@ -2743,9 +2743,9 @@ Mt.from_pair_suites("Caml_format_test", Pervasives.$at(suites, Pervasives.$at(fo
 
 var a = Format.asprintf;
 
-var float_suites = /* :: */{
-  _0: "float_nan",
-  _1: /* [] */0
+var float_suites = {
+  hd: "float_nan",
+  tl: /* [] */0
 };
 
 var hh = Caml_int64.mk(-858993460, 214748364);

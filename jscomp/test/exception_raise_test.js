@@ -46,13 +46,13 @@ function appf(g, x) {
     if (!match) {
       return 4;
     }
-    var match$1 = match._1;
+    var match$1 = match.tl;
     if (!match$1) {
       return 4;
     }
-    var match$2 = match$1._1;
+    var match$2 = match$1.tl;
     if (match$2) {
-      return match$2._0;
+      return match$2.hd;
     } else {
       return 4;
     }
@@ -132,8 +132,8 @@ catch (raw_e$1){
 }
 
 var suites = {
-  contents: /* :: */{
-    _0: [
+  contents: {
+    hd: [
       "File \"exception_raise_test.ml\", line 114, characters 4-11",
       (function (param) {
           return {
@@ -153,8 +153,8 @@ var suites = {
                 };
         })
     ],
-    _1: /* :: */{
-      _0: [
+    tl: {
+      hd: [
         "File \"exception_raise_test.ml\", line 116, characters 4-11",
         (function (param) {
             if (a1.RE_EXN_ID === Js_exn.$$Error) {
@@ -175,7 +175,7 @@ var suites = {
                 };
           })
       ],
-      _1: /* [] */0
+      tl: /* [] */0
     }
   }
 };
@@ -228,9 +228,9 @@ function input_lines(ic, _acc) {
     catch (exn){
       return List.rev(acc);
     }
-    _acc = /* :: */{
-      _0: line,
-      _1: acc
+    _acc = {
+      hd: line,
+      tl: acc
     };
     continue ;
   };

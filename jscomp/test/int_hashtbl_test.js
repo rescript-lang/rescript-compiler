@@ -14,12 +14,12 @@ function f(H) {
   return List.sort((function (param, param$1) {
                 return Caml_primitive.caml_int_compare(param[0], param$1[0]);
               }), Curry._3(H.fold, (function (k, v, acc) {
-                    return /* :: */{
-                            _0: [
+                    return {
+                            hd: [
                               k,
                               v
                             ],
-                            _1: acc
+                            tl: acc
                           };
                   }), tbl, /* [] */0));
 }
@@ -33,12 +33,12 @@ function g(H, count) {
     Curry._3(H.replace, tbl, (i$1 << 1), String(i$1));
   }
   var v = Curry._3(H.fold, (function (k, v, acc) {
-          return /* :: */{
-                  _0: [
+          return {
+                  hd: [
                     k,
                     v
                   ],
-                  _1: acc
+                  tl: acc
                 };
         }), tbl, /* [] */0);
   return $$Array.of_list(List.sort((function (param, param$1) {
@@ -62,17 +62,17 @@ var suites_0 = [
   (function (param) {
       return {
               TAG: /* Eq */0,
-              _0: /* :: */{
-                _0: [
+              _0: {
+                hd: [
                   1,
                   /* "1" */49
                 ],
-                _1: /* :: */{
-                  _0: [
+                tl: {
+                  hd: [
                     2,
                     /* "2" */50
                   ],
-                  _1: /* [] */0
+                  tl: /* [] */0
                 }
               },
               _1: f(Int_hash)
@@ -80,8 +80,8 @@ var suites_0 = [
     })
 ];
 
-var suites_1 = /* :: */{
-  _0: [
+var suites_1 = {
+  hd: [
     "more_iterations",
     (function (param) {
         return {
@@ -96,12 +96,12 @@ var suites_1 = /* :: */{
               };
       })
   ],
-  _1: /* [] */0
+  tl: /* [] */0
 };
 
-var suites = /* :: */{
-  _0: suites_0,
-  _1: suites_1
+var suites = {
+  hd: suites_0,
+  tl: suites_1
 };
 
 Mt.from_pair_suites("Int_hashtbl_test", suites);

@@ -68,8 +68,8 @@ var abc_u = abc;
 
 g();
 
-Mt.from_pair_suites("Ffi_arity_test", /* :: */{
-      _0: [
+Mt.from_pair_suites("Ffi_arity_test", {
+      hd: [
         "File \"ffi_arity_test.ml\", line 45, characters 4-11",
         (function (param) {
             return {
@@ -83,8 +83,8 @@ Mt.from_pair_suites("Ffi_arity_test", /* :: */{
                   };
           })
       ],
-      _1: /* :: */{
-        _0: [
+      tl: {
+        hd: [
           "File \"ffi_arity_test.ml\", line 46, characters 4-11",
           (function (param) {
               return {
@@ -98,8 +98,8 @@ Mt.from_pair_suites("Ffi_arity_test", /* :: */{
                     };
             })
         ],
-        _1: /* :: */{
-          _0: [
+        tl: {
+          hd: [
             "File \"ffi_arity_test.ml\", line 47, characters 4-11",
             (function (param) {
                 return {
@@ -113,7 +113,7 @@ Mt.from_pair_suites("Ffi_arity_test", /* :: */{
                       };
               })
           ],
-          _1: /* [] */0
+          tl: /* [] */0
         }
       }
     });

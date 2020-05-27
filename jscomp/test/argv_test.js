@@ -25,8 +25,8 @@ var arg_spec_0 = [
   " Compile"
 ];
 
-var arg_spec_1 = /* :: */{
-  _0: [
+var arg_spec_1 = {
+  hd: [
     "-d",
     {
       TAG: /* Clear */3,
@@ -34,12 +34,12 @@ var arg_spec_1 = /* :: */{
     },
     " Test"
   ],
-  _1: /* [] */0
+  tl: /* [] */0
 };
 
-var arg_spec = /* :: */{
-  _0: arg_spec_0,
-  _1: arg_spec_1
+var arg_spec = {
+  hd: arg_spec_0,
+  tl: arg_spec_1
 };
 
 Arg.parse(arg_spec, anno_fun, usage_msg);

@@ -5,25 +5,25 @@ function f_list(x) {
   if (!x) {
     return 0;
   }
-  var match = x._1;
+  var match = x.tl;
   if (!match) {
     return 0;
   }
-  var match$1 = match._1;
+  var match$1 = match.tl;
   if (!match$1) {
     return 0;
   }
-  var match$2 = match$1._1;
+  var match$2 = match$1.tl;
   if (!match$2) {
     return 0;
   }
-  var match$3 = match$2._1;
+  var match$3 = match$2.tl;
   if (!match$3) {
     return 0;
   }
-  var match$4 = match$3._1;
+  var match$4 = match$3.tl;
   if (match$4) {
-    return ((((x._0 + match._0 | 0) + match$1._0 | 0) + match$2._0 | 0) + match$3._0 | 0) + match$4._0 | 0;
+    return ((((x.hd + match.hd | 0) + match$1.hd | 0) + match$2.hd | 0) + match$3.hd | 0) + match$4.hd | 0;
   } else {
     return 0;
   }
@@ -52,40 +52,40 @@ function f_opion(x) {
     if (!match$1) {
       return 0;
     }
-    if (match$1._0 !== undefined) {
+    if (match$1.hd !== undefined) {
       return 0;
     }
-    var match$2 = match$1._1;
+    var match$2 = match$1.tl;
     if (!match$2) {
       return 0;
     }
-    if (match$2._0 !== undefined) {
+    if (match$2.hd !== undefined) {
       return 0;
     }
-    var match$3 = match$2._1;
+    var match$3 = match$2.tl;
     if (!match$3) {
       return 0;
     }
-    var match$4 = match$3._0;
+    var match$4 = match$3.hd;
     if (match$4 === undefined) {
       return 0;
     }
     if (match$4 !== 2) {
       return 0;
     }
-    var match$5 = match$3._1;
+    var match$5 = match$3.tl;
     if (!match$5) {
       return 0;
     }
-    var match$6 = match$5._0;
+    var match$6 = match$5.hd;
     if (match$6 === undefined) {
       return 0;
     }
     if (match$6 !== 1) {
       return 0;
     }
-    var match$7 = match$5._1;
-    if (match$7 && match$7._0 !== undefined) {
+    var match$7 = match$5.tl;
+    if (match$7 && match$7.hd !== undefined) {
       return 2;
     } else {
       return 0;
@@ -95,40 +95,40 @@ function f_opion(x) {
   if (!match$8) {
     return 0;
   }
-  if (match$8._0 !== undefined) {
+  if (match$8.hd !== undefined) {
     return 0;
   }
-  var match$9 = match$8._1;
+  var match$9 = match$8.tl;
   if (!match$9) {
     return 0;
   }
-  if (match$9._0 !== undefined) {
+  if (match$9.hd !== undefined) {
     return 0;
   }
-  var match$10 = match$9._1;
+  var match$10 = match$9.tl;
   if (!match$10) {
     return 0;
   }
-  var match$11 = match$10._0;
+  var match$11 = match$10.hd;
   if (match$11 === undefined) {
     return 0;
   }
   if (match$11 !== 2) {
     return 0;
   }
-  var match$12 = match$10._1;
+  var match$12 = match$10.tl;
   if (!match$12) {
     return 0;
   }
-  var match$13 = match$12._0;
+  var match$13 = match$12.hd;
   if (match$13 === undefined) {
     return 0;
   }
   if (match$13 !== 1) {
     return 0;
   }
-  var match$14 = match$12._1;
-  if (match$14 && match$14._0 !== undefined) {
+  var match$14 = match$12.tl;
+  if (match$14 && match$14.hd !== undefined) {
     return 3;
   } else {
     return 0;

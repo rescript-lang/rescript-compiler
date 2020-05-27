@@ -87,8 +87,8 @@ f$3((function (prim, prim$1) {
 
 var d = v$3.contents;
 
-Mt.from_pair_suites("Pr_regression_test", /* :: */{
-      _0: [
+Mt.from_pair_suites("Pr_regression_test", {
+      hd: [
         "partial",
         (function (param) {
             return {
@@ -108,7 +108,7 @@ Mt.from_pair_suites("Pr_regression_test", /* :: */{
                   };
           })
       ],
-      _1: /* [] */0
+      tl: /* [] */0
     });
 
 exports.a = a;

@@ -13,8 +13,8 @@ var suites_0 = [
     })
 ];
 
-var suites_1 = /* :: */{
-  _0: [
+var suites_1 = {
+  hd: [
     "toExponentialWithPrecision - digits:2",
     (function (param) {
         return {
@@ -24,8 +24,8 @@ var suites_1 = /* :: */{
               };
       })
   ],
-  _1: /* :: */{
-    _0: [
+  tl: {
+    hd: [
       "toExponentialWithPrecision - digits:4",
       (function (param) {
           return {
@@ -35,8 +35,8 @@ var suites_1 = /* :: */{
                 };
         })
     ],
-    _1: /* :: */{
-      _0: [
+    tl: {
+      hd: [
         "toExponentialWithPrecision - digits:20",
         (function (param) {
             return {
@@ -46,8 +46,8 @@ var suites_1 = /* :: */{
                   };
           })
       ],
-      _1: /* :: */{
-        _0: [
+      tl: {
+        hd: [
           "File \"js_int_test.ml\", line 12, characters 3-10",
           (function (param) {
               return {
@@ -59,8 +59,8 @@ var suites_1 = /* :: */{
                     };
             })
         ],
-        _1: /* :: */{
-          _0: [
+        tl: {
+          hd: [
             "toExponentialWithPrecision - digits:-1",
             (function (param) {
                 return {
@@ -72,8 +72,8 @@ var suites_1 = /* :: */{
                       };
               })
           ],
-          _1: /* :: */{
-            _0: [
+          tl: {
+            hd: [
               "toPrecision",
               (function (param) {
                   return {
@@ -83,8 +83,8 @@ var suites_1 = /* :: */{
                         };
                 })
             ],
-            _1: /* :: */{
-              _0: [
+            tl: {
+              hd: [
                 "toPrecisionWithPrecision - digits:2",
                 (function (param) {
                     return {
@@ -94,8 +94,8 @@ var suites_1 = /* :: */{
                           };
                   })
               ],
-              _1: /* :: */{
-                _0: [
+              tl: {
+                hd: [
                   "toPrecisionWithPrecision - digits:4",
                   (function (param) {
                       return {
@@ -105,8 +105,8 @@ var suites_1 = /* :: */{
                             };
                     })
                 ],
-                _1: /* :: */{
-                  _0: [
+                tl: {
+                  hd: [
                     "toPrecisionWithPrecision - digits:20",
                     (function (param) {
                         return {
@@ -116,8 +116,8 @@ var suites_1 = /* :: */{
                               };
                       })
                   ],
-                  _1: /* :: */{
-                    _0: [
+                  tl: {
+                    hd: [
                       "File \"js_int_test.ml\", line 25, characters 3-10",
                       (function (param) {
                           return {
@@ -129,8 +129,8 @@ var suites_1 = /* :: */{
                                 };
                         })
                     ],
-                    _1: /* :: */{
-                      _0: [
+                    tl: {
+                      hd: [
                         "toPrecisionWithPrecision - digits:-1",
                         (function (param) {
                             return {
@@ -142,8 +142,8 @@ var suites_1 = /* :: */{
                                   };
                           })
                       ],
-                      _1: /* :: */{
-                        _0: [
+                      tl: {
+                        hd: [
                           "toString",
                           (function (param) {
                               return {
@@ -153,8 +153,8 @@ var suites_1 = /* :: */{
                                     };
                             })
                         ],
-                        _1: /* :: */{
-                          _0: [
+                        tl: {
+                          hd: [
                             "toStringWithRadix - radix:2",
                             (function (param) {
                                 return {
@@ -164,8 +164,8 @@ var suites_1 = /* :: */{
                                       };
                               })
                           ],
-                          _1: /* :: */{
-                            _0: [
+                          tl: {
+                            hd: [
                               "toStringWithRadix - radix:16",
                               (function (param) {
                                   return {
@@ -175,8 +175,8 @@ var suites_1 = /* :: */{
                                         };
                                 })
                             ],
-                            _1: /* :: */{
-                              _0: [
+                            tl: {
+                              hd: [
                                 "toStringWithRadix - radix:36",
                                 (function (param) {
                                     return {
@@ -186,8 +186,8 @@ var suites_1 = /* :: */{
                                           };
                                   })
                               ],
-                              _1: /* :: */{
-                                _0: [
+                              tl: {
+                                hd: [
                                   "toStringWithRadix - radix:37",
                                   (function (param) {
                                       return {
@@ -199,8 +199,8 @@ var suites_1 = /* :: */{
                                             };
                                     })
                                 ],
-                                _1: /* :: */{
-                                  _0: [
+                                tl: {
+                                  hd: [
                                     "toStringWithRadix - radix:1",
                                     (function (param) {
                                         return {
@@ -212,8 +212,8 @@ var suites_1 = /* :: */{
                                               };
                                       })
                                   ],
-                                  _1: /* :: */{
-                                    _0: [
+                                  tl: {
+                                    hd: [
                                       "toStringWithRadix - radix:-1",
                                       (function (param) {
                                           return {
@@ -225,7 +225,7 @@ var suites_1 = /* :: */{
                                                 };
                                         })
                                     ],
-                                    _1: /* [] */0
+                                    tl: /* [] */0
                                   }
                                 }
                               }
@@ -245,9 +245,9 @@ var suites_1 = /* :: */{
   }
 };
 
-var suites = /* :: */{
-  _0: suites_0,
-  _1: suites_1
+var suites = {
+  hd: suites_0,
+  tl: suites_1
 };
 
 Mt.from_pair_suites("Js_int_test", suites);

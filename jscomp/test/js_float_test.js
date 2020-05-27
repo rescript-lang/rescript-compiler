@@ -14,8 +14,8 @@ var suites_0 = [
     })
 ];
 
-var suites_1 = /* :: */{
-  _0: [
+var suites_1 = {
+  hd: [
     "isNaN - _NaN",
     (function (param) {
         return {
@@ -25,8 +25,8 @@ var suites_1 = /* :: */{
               };
       })
   ],
-  _1: /* :: */{
-    _0: [
+  tl: {
+    hd: [
       "isNaN - 0.",
       (function (param) {
           return {
@@ -36,8 +36,8 @@ var suites_1 = /* :: */{
                 };
         })
     ],
-    _1: /* :: */{
-      _0: [
+    tl: {
+      hd: [
         "isFinite - infinity",
         (function (param) {
             return {
@@ -47,8 +47,8 @@ var suites_1 = /* :: */{
                   };
           })
       ],
-      _1: /* :: */{
-        _0: [
+      tl: {
+        hd: [
           "isFinite - neg_infinity",
           (function (param) {
               return {
@@ -58,8 +58,8 @@ var suites_1 = /* :: */{
                     };
             })
         ],
-        _1: /* :: */{
-          _0: [
+        tl: {
+          hd: [
             "isFinite - _NaN",
             (function (param) {
                 return {
@@ -69,8 +69,8 @@ var suites_1 = /* :: */{
                       };
               })
           ],
-          _1: /* :: */{
-            _0: [
+          tl: {
+            hd: [
               "isFinite - 0.",
               (function (param) {
                   return {
@@ -80,8 +80,8 @@ var suites_1 = /* :: */{
                         };
                 })
             ],
-            _1: /* :: */{
-              _0: [
+            tl: {
+              hd: [
                 "toExponential",
                 (function (param) {
                     return {
@@ -91,8 +91,8 @@ var suites_1 = /* :: */{
                           };
                   })
               ],
-              _1: /* :: */{
-                _0: [
+              tl: {
+                hd: [
                   "toExponential - large number",
                   (function (param) {
                       return {
@@ -102,8 +102,8 @@ var suites_1 = /* :: */{
                             };
                     })
                 ],
-                _1: /* :: */{
-                  _0: [
+                tl: {
+                  hd: [
                     "toExponentialWithPrecision - digits:2",
                     (function (param) {
                         return {
@@ -113,8 +113,8 @@ var suites_1 = /* :: */{
                               };
                       })
                   ],
-                  _1: /* :: */{
-                    _0: [
+                  tl: {
+                    hd: [
                       "toExponentialWithPrecision - digits:4",
                       (function (param) {
                           return {
@@ -124,8 +124,8 @@ var suites_1 = /* :: */{
                                 };
                         })
                     ],
-                    _1: /* :: */{
-                      _0: [
+                    tl: {
+                      hd: [
                         "toExponentialWithPrecision - digits:20",
                         (function (param) {
                             return {
@@ -135,8 +135,8 @@ var suites_1 = /* :: */{
                                   };
                           })
                       ],
-                      _1: /* :: */{
-                        _0: [
+                      tl: {
+                        hd: [
                           "File \"js_float_test.ml\", line 31, characters 3-10",
                           (function (param) {
                               return {
@@ -148,8 +148,8 @@ var suites_1 = /* :: */{
                                     };
                             })
                         ],
-                        _1: /* :: */{
-                          _0: [
+                        tl: {
+                          hd: [
                             "toExponentialWithPrecision - digits:-1",
                             (function (param) {
                                 return {
@@ -161,8 +161,8 @@ var suites_1 = /* :: */{
                                       };
                               })
                           ],
-                          _1: /* :: */{
-                            _0: [
+                          tl: {
+                            hd: [
                               "toFixed",
                               (function (param) {
                                   return {
@@ -172,8 +172,8 @@ var suites_1 = /* :: */{
                                         };
                                 })
                             ],
-                            _1: /* :: */{
-                              _0: [
+                            tl: {
+                              hd: [
                                 "toFixed - large number",
                                 (function (param) {
                                     return {
@@ -183,8 +183,8 @@ var suites_1 = /* :: */{
                                           };
                                   })
                               ],
-                              _1: /* :: */{
-                                _0: [
+                              tl: {
+                                hd: [
                                   "toFixedWithPrecision - digits:2",
                                   (function (param) {
                                       return {
@@ -194,8 +194,8 @@ var suites_1 = /* :: */{
                                             };
                                     })
                                 ],
-                                _1: /* :: */{
-                                  _0: [
+                                tl: {
+                                  hd: [
                                     "toFixedWithPrecision - digits:4",
                                     (function (param) {
                                         return {
@@ -205,8 +205,8 @@ var suites_1 = /* :: */{
                                               };
                                       })
                                   ],
-                                  _1: /* :: */{
-                                    _0: [
+                                  tl: {
+                                    hd: [
                                       "toFixedWithPrecision - digits:20",
                                       (function (param) {
                                           return {
@@ -216,8 +216,8 @@ var suites_1 = /* :: */{
                                                 };
                                         })
                                     ],
-                                    _1: /* :: */{
-                                      _0: [
+                                    tl: {
+                                      hd: [
                                         "toFixedWithPrecision - digits:101",
                                         (function (param) {
                                             return {
@@ -229,8 +229,8 @@ var suites_1 = /* :: */{
                                                   };
                                           })
                                       ],
-                                      _1: /* :: */{
-                                        _0: [
+                                      tl: {
+                                        hd: [
                                           "toFixedWithPrecision - digits:-1",
                                           (function (param) {
                                               return {
@@ -242,8 +242,8 @@ var suites_1 = /* :: */{
                                                     };
                                             })
                                         ],
-                                        _1: /* :: */{
-                                          _0: [
+                                        tl: {
+                                          hd: [
                                             "toPrecision",
                                             (function (param) {
                                                 return {
@@ -253,8 +253,8 @@ var suites_1 = /* :: */{
                                                       };
                                               })
                                           ],
-                                          _1: /* :: */{
-                                            _0: [
+                                          tl: {
+                                            hd: [
                                               "toPrecision - large number",
                                               (function (param) {
                                                   return {
@@ -264,8 +264,8 @@ var suites_1 = /* :: */{
                                                         };
                                                 })
                                             ],
-                                            _1: /* :: */{
-                                              _0: [
+                                            tl: {
+                                              hd: [
                                                 "toPrecisionWithPrecision - digits:2",
                                                 (function (param) {
                                                     return {
@@ -275,8 +275,8 @@ var suites_1 = /* :: */{
                                                           };
                                                   })
                                               ],
-                                              _1: /* :: */{
-                                                _0: [
+                                              tl: {
+                                                hd: [
                                                   "toPrecisionWithPrecision - digits:4",
                                                   (function (param) {
                                                       return {
@@ -286,8 +286,8 @@ var suites_1 = /* :: */{
                                                             };
                                                     })
                                                 ],
-                                                _1: /* :: */{
-                                                  _0: [
+                                                tl: {
+                                                  hd: [
                                                     "toPrecisionWithPrecision - digits:20",
                                                     (function (param) {
                                                         return {
@@ -297,8 +297,8 @@ var suites_1 = /* :: */{
                                                               };
                                                       })
                                                   ],
-                                                  _1: /* :: */{
-                                                    _0: [
+                                                  tl: {
+                                                    hd: [
                                                       "File \"js_float_test.ml\", line 61, characters 3-10",
                                                       (function (param) {
                                                           return {
@@ -310,8 +310,8 @@ var suites_1 = /* :: */{
                                                                 };
                                                         })
                                                     ],
-                                                    _1: /* :: */{
-                                                      _0: [
+                                                    tl: {
+                                                      hd: [
                                                         "toPrecisionWithPrecision - digits:-1",
                                                         (function (param) {
                                                             return {
@@ -323,8 +323,8 @@ var suites_1 = /* :: */{
                                                                   };
                                                           })
                                                       ],
-                                                      _1: /* :: */{
-                                                        _0: [
+                                                      tl: {
+                                                        hd: [
                                                           "toString",
                                                           (function (param) {
                                                               return {
@@ -334,8 +334,8 @@ var suites_1 = /* :: */{
                                                                     };
                                                             })
                                                         ],
-                                                        _1: /* :: */{
-                                                          _0: [
+                                                        tl: {
+                                                          hd: [
                                                             "toString - large number",
                                                             (function (param) {
                                                                 return {
@@ -345,8 +345,8 @@ var suites_1 = /* :: */{
                                                                       };
                                                               })
                                                           ],
-                                                          _1: /* :: */{
-                                                            _0: [
+                                                          tl: {
+                                                            hd: [
                                                               "toStringWithRadix - radix:2",
                                                               (function (param) {
                                                                   return {
@@ -356,8 +356,8 @@ var suites_1 = /* :: */{
                                                                         };
                                                                 })
                                                             ],
-                                                            _1: /* :: */{
-                                                              _0: [
+                                                            tl: {
+                                                              hd: [
                                                                 "toStringWithRadix - radix:16",
                                                                 (function (param) {
                                                                     return {
@@ -367,8 +367,8 @@ var suites_1 = /* :: */{
                                                                           };
                                                                   })
                                                               ],
-                                                              _1: /* :: */{
-                                                                _0: [
+                                                              tl: {
+                                                                hd: [
                                                                   "toStringWithRadix - radix:36",
                                                                   (function (param) {
                                                                       return {
@@ -378,8 +378,8 @@ var suites_1 = /* :: */{
                                                                             };
                                                                     })
                                                                 ],
-                                                                _1: /* :: */{
-                                                                  _0: [
+                                                                tl: {
+                                                                  hd: [
                                                                     "toStringWithRadix - radix:37",
                                                                     (function (param) {
                                                                         return {
@@ -391,8 +391,8 @@ var suites_1 = /* :: */{
                                                                               };
                                                                       })
                                                                   ],
-                                                                  _1: /* :: */{
-                                                                    _0: [
+                                                                  tl: {
+                                                                    hd: [
                                                                       "toStringWithRadix - radix:1",
                                                                       (function (param) {
                                                                           return {
@@ -404,8 +404,8 @@ var suites_1 = /* :: */{
                                                                                 };
                                                                         })
                                                                     ],
-                                                                    _1: /* :: */{
-                                                                      _0: [
+                                                                    tl: {
+                                                                      hd: [
                                                                         "toStringWithRadix - radix:-1",
                                                                         (function (param) {
                                                                             return {
@@ -417,8 +417,8 @@ var suites_1 = /* :: */{
                                                                                   };
                                                                           })
                                                                       ],
-                                                                      _1: /* :: */{
-                                                                        _0: [
+                                                                      tl: {
+                                                                        hd: [
                                                                           "fromString - 123",
                                                                           (function (param) {
                                                                               return {
@@ -428,8 +428,8 @@ var suites_1 = /* :: */{
                                                                                     };
                                                                             })
                                                                         ],
-                                                                        _1: /* :: */{
-                                                                          _0: [
+                                                                        tl: {
+                                                                          hd: [
                                                                             "fromString - 12.3",
                                                                             (function (param) {
                                                                                 return {
@@ -439,8 +439,8 @@ var suites_1 = /* :: */{
                                                                                       };
                                                                               })
                                                                           ],
-                                                                          _1: /* :: */{
-                                                                            _0: [
+                                                                          tl: {
+                                                                            hd: [
                                                                               "fromString - empty string",
                                                                               (function (param) {
                                                                                   return {
@@ -450,8 +450,8 @@ var suites_1 = /* :: */{
                                                                                         };
                                                                                 })
                                                                             ],
-                                                                            _1: /* :: */{
-                                                                              _0: [
+                                                                            tl: {
+                                                                              hd: [
                                                                                 "fromString - 0x11",
                                                                                 (function (param) {
                                                                                     return {
@@ -461,8 +461,8 @@ var suites_1 = /* :: */{
                                                                                           };
                                                                                   })
                                                                               ],
-                                                                              _1: /* :: */{
-                                                                                _0: [
+                                                                              tl: {
+                                                                                hd: [
                                                                                   "fromString - 0b11",
                                                                                   (function (param) {
                                                                                       return {
@@ -472,8 +472,8 @@ var suites_1 = /* :: */{
                                                                                             };
                                                                                     })
                                                                                 ],
-                                                                                _1: /* :: */{
-                                                                                  _0: [
+                                                                                tl: {
+                                                                                  hd: [
                                                                                     "fromString - 0o11",
                                                                                     (function (param) {
                                                                                         return {
@@ -483,8 +483,8 @@ var suites_1 = /* :: */{
                                                                                               };
                                                                                       })
                                                                                   ],
-                                                                                  _1: /* :: */{
-                                                                                    _0: [
+                                                                                  tl: {
+                                                                                    hd: [
                                                                                       "fromString - invalid string",
                                                                                       (function (param) {
                                                                                           return {
@@ -494,7 +494,7 @@ var suites_1 = /* :: */{
                                                                                                 };
                                                                                         })
                                                                                     ],
-                                                                                    _1: /* [] */0
+                                                                                    tl: /* [] */0
                                                                                   }
                                                                                 }
                                                                               }
@@ -538,9 +538,9 @@ var suites_1 = /* :: */{
   }
 };
 
-var suites = /* :: */{
-  _0: suites_0,
-  _1: suites_1
+var suites = {
+  hd: suites_0,
+  tl: suites_1
 };
 
 Mt.from_pair_suites("Js_float_test", suites);

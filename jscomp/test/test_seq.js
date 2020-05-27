@@ -16,11 +16,11 @@ function assoc3(x, _l) {
   while(true) {
     var l = _l;
     if (l) {
-      var match = l._0;
+      var match = l.hd;
       if (Caml_obj.caml_equal(match[0], x)) {
         return match[1];
       }
-      _l = l._1;
+      _l = l.tl;
       continue ;
     }
     throw {
@@ -59,8 +59,8 @@ function add_help(speclist) {
   catch (raw_exn){
     var exn = Caml_js_exceptions.internalToOCamlException(raw_exn);
     if (exn.RE_EXN_ID === "Not_found") {
-      add1 = /* :: */{
-        _0: [
+      add1 = {
+        hd: [
           "-help",
           {
             TAG: /* Unit */0,
@@ -68,7 +68,7 @@ function add_help(speclist) {
           },
           " Display this list of options"
         ],
-        _1: /* [] */0
+        tl: /* [] */0
       };
     } else {
       throw exn;
@@ -82,8 +82,8 @@ function add_help(speclist) {
   catch (raw_exn$1){
     var exn$1 = Caml_js_exceptions.internalToOCamlException(raw_exn$1);
     if (exn$1.RE_EXN_ID === "Not_found") {
-      add2 = /* :: */{
-        _0: [
+      add2 = {
+        hd: [
           "--help",
           {
             TAG: /* Unit */0,
@@ -91,7 +91,7 @@ function add_help(speclist) {
           },
           " Display this list of options"
         ],
-        _1: /* [] */0
+        tl: /* [] */0
       };
     } else {
       throw exn$1;

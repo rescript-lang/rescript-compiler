@@ -50,9 +50,9 @@ function scan_rest(ib, accu) {
                                   },
                                   _1: " %i "
                                 }), (function (i) {
-                                var accu$1 = /* :: */{
-                                  _0: i,
-                                  _1: accu
+                                var accu$1 = {
+                                  hd: i,
+                                  tl: accu
                                 };
                                 return Curry._1(Scanf.bscanf(ib, /* Format */{
                                                 _0: {

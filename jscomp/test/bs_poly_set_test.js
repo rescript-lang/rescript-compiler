@@ -199,9 +199,9 @@ function testIterToList(xs) {
     contents: /* [] */0
   };
   Belt_Set.forEach(xs, (function (x) {
-          v.contents = /* :: */{
-            _0: x,
-            _1: v.contents
+          v.contents = {
+            hd: x,
+            tl: v.contents
           };
           
         }));
@@ -213,9 +213,9 @@ function testIterToList2(xs) {
     contents: /* [] */0
   };
   Belt_SetDict.forEach(xs.data, (function (x) {
-          v.contents = /* :: */{
-            _0: x,
-            _1: v.contents
+          v.contents = {
+            hd: x,
+            tl: v.contents
           };
           
         }));
@@ -354,17 +354,17 @@ eq("File \"bs_poly_set_test.ml\", line 146, characters 5-12", Belt_SetDict.minim
 
 eq("File \"bs_poly_set_test.ml\", line 147, characters 5-12", Belt_SetDict.minimum(a9.data), 201);
 
-Belt_List.forEach(/* :: */{
-      _0: a0,
-      _1: /* :: */{
-        _0: a1,
-        _1: /* :: */{
-          _0: a2,
-          _1: /* :: */{
-            _0: a3,
-            _1: /* :: */{
-              _0: a4,
-              _1: /* [] */0
+Belt_List.forEach({
+      hd: a0,
+      tl: {
+        hd: a1,
+        tl: {
+          hd: a2,
+          tl: {
+            hd: a3,
+            tl: {
+              hd: a4,
+              tl: /* [] */0
             }
           }
         }

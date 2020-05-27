@@ -187,23 +187,23 @@ function compare(context, state, _a, _b) {
 
 var a = {
   TAG: /* Sum */2,
-  _0: /* :: */{
-    _0: {
+  _0: {
+    hd: {
       TAG: /* Val */0,
       _0: {
         TAG: /* Symbol */1,
         _0: "a"
       }
     },
-    _1: /* :: */{
-      _0: {
+    tl: {
+      hd: {
         TAG: /* Val */0,
         _0: {
           TAG: /* Natural */0,
           _0: 2
         }
       },
-      _1: /* [] */0
+      tl: /* [] */0
     }
   }
 };

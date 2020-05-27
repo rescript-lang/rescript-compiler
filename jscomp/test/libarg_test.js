@@ -17,9 +17,9 @@ var accum = {
 
 function record(fmt) {
   return Printf.kprintf((function (s) {
-                accum.contents = /* :: */{
-                  _0: s,
-                  _1: accum.contents
+                accum.contents = {
+                  hd: s,
+                  tl: accum.contents
                 };
                 
               }), fmt);
@@ -202,8 +202,8 @@ var spec_0 = [
   "Unit (0)"
 ];
 
-var spec_1 = /* :: */{
-  _0: [
+var spec_1 = {
+  hd: [
     "-b",
     {
       TAG: /* Bool */1,
@@ -211,8 +211,8 @@ var spec_1 = /* :: */{
     },
     "Bool (1)"
   ],
-  _1: /* :: */{
-    _0: [
+  tl: {
+    hd: [
       "-s",
       {
         TAG: /* Set */2,
@@ -220,8 +220,8 @@ var spec_1 = /* :: */{
       },
       "Set (0)"
     ],
-    _1: /* :: */{
-      _0: [
+    tl: {
+      hd: [
         "-c",
         {
           TAG: /* Clear */3,
@@ -229,8 +229,8 @@ var spec_1 = /* :: */{
         },
         "Clear (0)"
       ],
-      _1: /* :: */{
-        _0: [
+      tl: {
+        hd: [
           "-str",
           {
             TAG: /* String */4,
@@ -238,8 +238,8 @@ var spec_1 = /* :: */{
           },
           "String (1)"
         ],
-        _1: /* :: */{
-          _0: [
+        tl: {
+          hd: [
             "-sstr",
             {
               TAG: /* Set_string */5,
@@ -247,8 +247,8 @@ var spec_1 = /* :: */{
             },
             "Set_string (1)"
           ],
-          _1: /* :: */{
-            _0: [
+          tl: {
+            hd: [
               "-i",
               {
                 TAG: /* Int */6,
@@ -256,8 +256,8 @@ var spec_1 = /* :: */{
               },
               "Int (1)"
             ],
-            _1: /* :: */{
-              _0: [
+            tl: {
+              hd: [
                 "-si",
                 {
                   TAG: /* Set_int */7,
@@ -265,8 +265,8 @@ var spec_1 = /* :: */{
                 },
                 "Set_int (1)"
               ],
-              _1: /* :: */{
-                _0: [
+              tl: {
+                hd: [
                   "-f",
                   {
                     TAG: /* Float */8,
@@ -274,8 +274,8 @@ var spec_1 = /* :: */{
                   },
                   "Float (1)"
                 ],
-                _1: /* :: */{
-                  _0: [
+                tl: {
+                  hd: [
                     "-sf",
                     {
                       TAG: /* Set_float */9,
@@ -283,45 +283,45 @@ var spec_1 = /* :: */{
                     },
                     "Set_float (1)"
                   ],
-                  _1: /* :: */{
-                    _0: [
+                  tl: {
+                    hd: [
                       "-t",
                       {
                         TAG: /* Tuple */10,
-                        _0: /* :: */{
-                          _0: {
+                        _0: {
+                          hd: {
                             TAG: /* Bool */1,
                             _0: f_bool
                           },
-                          _1: /* :: */{
-                            _0: {
+                          tl: {
+                            hd: {
                               TAG: /* String */4,
                               _0: f_string
                             },
-                            _1: /* :: */{
-                              _0: {
+                            tl: {
+                              hd: {
                                 TAG: /* Int */6,
                                 _0: f_int
                               },
-                              _1: /* [] */0
+                              tl: /* [] */0
                             }
                           }
                         }
                       },
                       "Tuple (3)"
                     ],
-                    _1: /* :: */{
-                      _0: [
+                    tl: {
+                      hd: [
                         "-sym",
                         {
                           TAG: /* Symbol */11,
-                          _0: /* :: */{
-                            _0: "a",
-                            _1: /* :: */{
-                              _0: "b",
-                              _1: /* :: */{
-                                _0: "c",
-                                _1: /* [] */0
+                          _0: {
+                            hd: "a",
+                            tl: {
+                              hd: "b",
+                              tl: {
+                                hd: "c",
+                                tl: /* [] */0
                               }
                             }
                           },
@@ -329,8 +329,8 @@ var spec_1 = /* :: */{
                         },
                         "Symbol (1)"
                       ],
-                      _1: /* :: */{
-                        _0: [
+                      tl: {
+                        hd: [
                           "-rest",
                           {
                             TAG: /* Rest */12,
@@ -338,7 +338,7 @@ var spec_1 = /* :: */{
                           },
                           "Rest (*)"
                         ],
-                        _1: /* [] */0
+                        tl: /* [] */0
                       }
                     }
                   }
@@ -352,9 +352,9 @@ var spec_1 = /* :: */{
   }
 };
 
-var spec = /* :: */{
-  _0: spec_0,
-  _1: spec_1
+var spec = {
+  hd: spec_0,
+  tl: spec_1
 };
 
 var args1 = [
@@ -453,37 +453,37 @@ function test(argv) {
   accum.contents = /* [] */0;
   Arg.parse_argv(current, argv, spec, f_anon, "usage");
   var result = List.rev(accum.contents);
-  var reference = /* :: */{
-    _0: "anon(anon1)",
-    _1: /* :: */{
-      _0: "unit()",
-      _1: /* :: */{
-        _0: "bool(true)",
-        _1: /* :: */{
-          _0: "anon(anon2)",
-          _1: /* :: */{
-            _0: "string(foo)",
-            _1: /* :: */{
-              _0: "int(19)",
-              _1: /* :: */{
-                _0: "float(3.14)",
-                _1: /* :: */{
-                  _0: "anon(anon3)",
-                  _1: /* :: */{
-                    _0: "bool(false)",
-                    _1: /* :: */{
-                      _0: "string(gee)",
-                      _1: /* :: */{
-                        _0: "int(1436)",
-                        _1: /* :: */{
-                          _0: "symbol(c)",
-                          _1: /* :: */{
-                            _0: "anon(anon4)",
-                            _1: /* :: */{
-                              _0: "rest(r1)",
-                              _1: /* :: */{
-                                _0: "rest(r2)",
-                                _1: /* [] */0
+  var reference = {
+    hd: "anon(anon1)",
+    tl: {
+      hd: "unit()",
+      tl: {
+        hd: "bool(true)",
+        tl: {
+          hd: "anon(anon2)",
+          tl: {
+            hd: "string(foo)",
+            tl: {
+              hd: "int(19)",
+              tl: {
+                hd: "float(3.14)",
+                tl: {
+                  hd: "anon(anon3)",
+                  tl: {
+                    hd: "bool(false)",
+                    tl: {
+                      hd: "string(gee)",
+                      tl: {
+                        hd: "int(1436)",
+                        tl: {
+                          hd: "symbol(c)",
+                          tl: {
+                            hd: "anon(anon4)",
+                            tl: {
+                              hd: "rest(r1)",
+                              tl: {
+                                hd: "rest(r2)",
+                                tl: /* [] */0
                               }
                             }
                           }

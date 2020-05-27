@@ -59,7 +59,7 @@ function resize(newSize) {
       if (!bucket) {
         return ;
       }
-      var n = bucket._0;
+      var n = bucket.hd;
       if (typeof n === "number") {
         throw {
               RE_EXN_ID: "Assert_failure",
@@ -72,11 +72,11 @@ function resize(newSize) {
             };
       }
       var ind = hashVal(getId(n._0), getId(n._3), n._1) & newSz_1;
-      Caml_array.caml_array_set(newArr, ind, /* :: */{
-            _0: n,
-            _1: Caml_array.caml_array_get(newArr, ind)
+      Caml_array.caml_array_set(newArr, ind, {
+            hd: n,
+            tl: Caml_array.caml_array_get(newArr, ind)
           });
-      _bucket = bucket._1;
+      _bucket = bucket.tl;
       continue ;
     };
   };
@@ -90,18 +90,18 @@ function resize(newSize) {
 
 function insert(idl, idh, v, ind, bucket, newNode) {
   if (n_items.contents <= sz_1.contents) {
-    Caml_array.caml_array_set(htab.contents, ind, /* :: */{
-          _0: newNode,
-          _1: bucket
+    Caml_array.caml_array_set(htab.contents, ind, {
+          hd: newNode,
+          tl: bucket
         });
     n_items.contents = n_items.contents + 1 | 0;
     return ;
   }
   resize((sz_1.contents + sz_1.contents | 0) + 2 | 0);
   var ind$1 = hashVal(idl, idh, v) & sz_1.contents;
-  return Caml_array.caml_array_set(htab.contents, ind$1, /* :: */{
-              _0: newNode,
-              _1: Caml_array.caml_array_get(htab.contents, ind$1)
+  return Caml_array.caml_array_set(htab.contents, ind$1, {
+              hd: newNode,
+              tl: Caml_array.caml_array_get(htab.contents, ind$1)
             });
 }
 
@@ -125,7 +125,7 @@ function mkNode(low, v, high) {
   while(true) {
     var b = _b;
     if (b) {
-      var n = b._0;
+      var n = b.hd;
       if (typeof n === "number") {
         throw {
               RE_EXN_ID: "Assert_failure",
@@ -140,7 +140,7 @@ function mkNode(low, v, high) {
       if (v === n._1 && idl === getId(n._0) && idh === getId(n._3)) {
         return n;
       }
-      _b = b._1;
+      _b = b.tl;
       continue ;
     }
     var n_2 = (nodeC.contents = nodeC.contents + 1 | 0, nodeC.contents);

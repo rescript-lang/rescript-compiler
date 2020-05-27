@@ -15,8 +15,8 @@ var suites_0 = [
     })
 ];
 
-var suites_1 = /* :: */{
-  _0: [
+var suites_1 = {
+  hd: [
     "File \"js_undefined_test.ml\", line 5, characters 2-9",
     (function (param) {
         return {
@@ -26,8 +26,8 @@ var suites_1 = /* :: */{
               };
       })
   ],
-  _1: /* :: */{
-    _0: [
+  tl: {
+    hd: [
       "return",
       (function (param) {
           return {
@@ -37,8 +37,8 @@ var suites_1 = /* :: */{
                 };
         })
     ],
-    _1: /* :: */{
-      _0: [
+    tl: {
+      hd: [
         "test - empty",
         (function (param) {
             return {
@@ -48,8 +48,8 @@ var suites_1 = /* :: */{
                   };
           })
       ],
-      _1: /* :: */{
-        _0: [
+      tl: {
+        hd: [
           "File \"js_undefined_test.ml\", line 8, characters 2-9",
           (function (param) {
               return {
@@ -59,8 +59,8 @@ var suites_1 = /* :: */{
                     };
             })
         ],
-        _1: /* :: */{
-          _0: [
+        tl: {
+          hd: [
             "bind - empty",
             (function (param) {
                 return {
@@ -72,8 +72,8 @@ var suites_1 = /* :: */{
                       };
               })
           ],
-          _1: /* :: */{
-            _0: [
+          tl: {
+            hd: [
               "bind - 'a",
               (function (param) {
                   return {
@@ -85,8 +85,8 @@ var suites_1 = /* :: */{
                         };
                 })
             ],
-            _1: /* :: */{
-              _0: [
+            tl: {
+              hd: [
                 "iter - empty",
                 (function (param) {
                     var hit = {
@@ -103,8 +103,8 @@ var suites_1 = /* :: */{
                           };
                   })
               ],
-              _1: /* :: */{
-                _0: [
+              tl: {
+                hd: [
                   "iter - 'a",
                   (function (param) {
                       var hit = {
@@ -121,8 +121,8 @@ var suites_1 = /* :: */{
                             };
                     })
                 ],
-                _1: /* :: */{
-                  _0: [
+                tl: {
+                  hd: [
                     "fromOption - None",
                     (function (param) {
                         return {
@@ -132,8 +132,8 @@ var suites_1 = /* :: */{
                               };
                       })
                   ],
-                  _1: /* :: */{
-                    _0: [
+                  tl: {
+                    hd: [
                       "fromOption - Some",
                       (function (param) {
                           return {
@@ -143,7 +143,7 @@ var suites_1 = /* :: */{
                                 };
                         })
                     ],
-                    _1: /* [] */0
+                    tl: /* [] */0
                   }
                 }
               }
@@ -155,9 +155,9 @@ var suites_1 = /* :: */{
   }
 };
 
-var suites = /* :: */{
-  _0: suites_0,
-  _1: suites_1
+var suites = {
+  hd: suites_0,
+  tl: suites_1
 };
 
 Mt.from_pair_suites("Js_undefined_test", suites);

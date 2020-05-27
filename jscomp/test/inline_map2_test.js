@@ -566,12 +566,12 @@ function Make(Ord) {
         return accu;
       }
       _param = param._0;
-      _accu = /* :: */{
-        _0: [
+      _accu = {
+        hd: [
           param._1,
           param._2
         ],
-        _1: bindings_aux(accu, param._3)
+        tl: bindings_aux(accu, param._3)
       };
       continue ;
     };
@@ -1208,12 +1208,12 @@ function bindings_aux(_accu, _param) {
       return accu;
     }
     _param = param._0;
-    _accu = /* :: */{
-      _0: [
+    _accu = {
+      hd: [
         param._1,
         param._2
       ],
-      _1: bindings_aux(accu, param._3)
+      tl: bindings_aux(accu, param._3)
     };
     continue ;
   };
@@ -1263,27 +1263,27 @@ var IntMap = {
 
 var m = List.fold_left((function (acc, param) {
         return add(param[0], param[1], acc);
-      }), /* Empty */0, /* :: */{
-      _0: [
+      }), /* Empty */0, {
+      hd: [
         10,
         /* "a" */97
       ],
-      _1: /* :: */{
-        _0: [
+      tl: {
+        hd: [
           3,
           /* "b" */98
         ],
-        _1: /* :: */{
-          _0: [
+        tl: {
+          hd: [
             7,
             /* "c" */99
           ],
-          _1: /* :: */{
-            _0: [
+          tl: {
+            hd: [
               20,
               /* "d" */100
             ],
-            _1: /* [] */0
+            tl: /* [] */0
           }
         }
       }
@@ -1879,12 +1879,12 @@ function bindings_aux$1(_accu, _param) {
       return accu;
     }
     _param = param._0;
-    _accu = /* :: */{
-      _0: [
+    _accu = {
+      hd: [
         param._1,
         param._2
       ],
-      _1: bindings_aux$1(accu, param._3)
+      tl: bindings_aux$1(accu, param._3)
     };
     continue ;
   };
@@ -1934,34 +1934,34 @@ var SMap = {
 
 var s = List.fold_left((function (acc, param) {
         return add$1(param[0], param[1], acc);
-      }), /* Empty */0, /* :: */{
-      _0: [
+      }), /* Empty */0, {
+      hd: [
         "10",
         /* "a" */97
       ],
-      _1: /* :: */{
-        _0: [
+      tl: {
+        hd: [
           "3",
           /* "b" */98
         ],
-        _1: /* :: */{
-          _0: [
+        tl: {
+          hd: [
             "7",
             /* "c" */99
           ],
-          _1: /* :: */{
-            _0: [
+          tl: {
+            hd: [
               "20",
               /* "d" */100
             ],
-            _1: /* [] */0
+            tl: /* [] */0
           }
         }
       }
     });
 
-Mt.from_pair_suites("Inline_map2_test", /* :: */{
-      _0: [
+Mt.from_pair_suites("Inline_map2_test", {
+      hd: [
         "assertion1",
         (function (param) {
             return {
@@ -1971,8 +1971,8 @@ Mt.from_pair_suites("Inline_map2_test", /* :: */{
                   };
           })
       ],
-      _1: /* :: */{
-        _0: [
+      tl: {
+        hd: [
           "assertion2",
           (function (param) {
               return {
@@ -1982,7 +1982,7 @@ Mt.from_pair_suites("Inline_map2_test", /* :: */{
                     };
             })
         ],
-        _1: /* [] */0
+        tl: /* [] */0
       }
     });
 

@@ -18,8 +18,8 @@ var suites_0 = [
     })
 ];
 
-var suites_1 = /* :: */{
-  _0: [
+var suites_1 = {
+  hd: [
     "make",
     (function (param) {
         return {
@@ -28,8 +28,8 @@ var suites_1 = /* :: */{
               };
       })
   ],
-  _1: /* :: */{
-    _0: [
+  tl: {
+    hd: [
       "parseAsFloat",
       (function (param) {
           return {
@@ -39,8 +39,8 @@ var suites_1 = /* :: */{
                 };
         })
     ],
-    _1: /* :: */{
-      _0: [
+    tl: {
+      hd: [
         "parseAsFloat_invalid",
         (function (param) {
             return {
@@ -49,8 +49,8 @@ var suites_1 = /* :: */{
                   };
           })
       ],
-      _1: /* :: */{
-        _0: [
+      tl: {
+        hd: [
           "fromFloat",
           (function (param) {
               return {
@@ -60,8 +60,8 @@ var suites_1 = /* :: */{
                     };
             })
         ],
-        _1: /* :: */{
-          _0: [
+        tl: {
+          hd: [
             "fromString_valid",
             (function (param) {
                 return {
@@ -71,8 +71,8 @@ var suites_1 = /* :: */{
                       };
               })
           ],
-          _1: /* :: */{
-            _0: [
+          tl: {
+            hd: [
               "fromString_invalid",
               (function (param) {
                   return {
@@ -81,8 +81,8 @@ var suites_1 = /* :: */{
                         };
                 })
             ],
-            _1: /* :: */{
-              _0: [
+            tl: {
+              hd: [
                 "makeWithYM",
                 (function (param) {
                     var d = new Date(1984, 4);
@@ -99,8 +99,8 @@ var suites_1 = /* :: */{
                           };
                   })
               ],
-              _1: /* :: */{
-                _0: [
+              tl: {
+                hd: [
                   "makeWithYMD",
                   (function (param) {
                       var d = new Date(1984, 4, 6);
@@ -119,8 +119,8 @@ var suites_1 = /* :: */{
                             };
                     })
                 ],
-                _1: /* :: */{
-                  _0: [
+                tl: {
+                  hd: [
                     "makeWithYMDH",
                     (function (param) {
                         var d = new Date(1984, 4, 6, 3);
@@ -141,8 +141,8 @@ var suites_1 = /* :: */{
                               };
                       })
                   ],
-                  _1: /* :: */{
-                    _0: [
+                  tl: {
+                    hd: [
                       "makeWithYMDHM",
                       (function (param) {
                           var d = new Date(1984, 4, 6, 3, 59);
@@ -165,8 +165,8 @@ var suites_1 = /* :: */{
                                 };
                         })
                     ],
-                    _1: /* :: */{
-                      _0: [
+                    tl: {
+                      hd: [
                         "makeWithYMDHMS",
                         (function (param) {
                             var d = new Date(1984, 4, 6, 3, 59, 27);
@@ -191,8 +191,8 @@ var suites_1 = /* :: */{
                                   };
                           })
                       ],
-                      _1: /* :: */{
-                        _0: [
+                      tl: {
+                        hd: [
                           "utcWithYM",
                           (function (param) {
                               var d = Date.UTC(1984, 4);
@@ -210,8 +210,8 @@ var suites_1 = /* :: */{
                                     };
                             })
                         ],
-                        _1: /* :: */{
-                          _0: [
+                        tl: {
+                          hd: [
                             "utcWithYMD",
                             (function (param) {
                                 var d = Date.UTC(1984, 4, 6);
@@ -231,8 +231,8 @@ var suites_1 = /* :: */{
                                       };
                               })
                           ],
-                          _1: /* :: */{
-                            _0: [
+                          tl: {
+                            hd: [
                               "utcWithYMDH",
                               (function (param) {
                                   var d = Date.UTC(1984, 4, 6, 3);
@@ -254,8 +254,8 @@ var suites_1 = /* :: */{
                                         };
                                 })
                             ],
-                            _1: /* :: */{
-                              _0: [
+                            tl: {
+                              hd: [
                                 "utcWithYMDHM",
                                 (function (param) {
                                     var d = Date.UTC(1984, 4, 6, 3, 59);
@@ -279,8 +279,8 @@ var suites_1 = /* :: */{
                                           };
                                   })
                               ],
-                              _1: /* :: */{
-                                _0: [
+                              tl: {
+                                hd: [
                                   "utcWithYMDHMS",
                                   (function (param) {
                                       var d = Date.UTC(1984, 4, 6, 3, 59, 27);
@@ -306,8 +306,8 @@ var suites_1 = /* :: */{
                                             };
                                     })
                                 ],
-                                _1: /* :: */{
-                                  _0: [
+                                tl: {
+                                  hd: [
                                     "getFullYear",
                                     (function (param) {
                                         return {
@@ -317,8 +317,8 @@ var suites_1 = /* :: */{
                                               };
                                       })
                                   ],
-                                  _1: /* :: */{
-                                    _0: [
+                                  tl: {
+                                    hd: [
                                       "getMilliseconds",
                                       (function (param) {
                                           return {
@@ -328,8 +328,8 @@ var suites_1 = /* :: */{
                                                 };
                                         })
                                     ],
-                                    _1: /* :: */{
-                                      _0: [
+                                    tl: {
+                                      hd: [
                                         "getSeconds",
                                         (function (param) {
                                             return {
@@ -339,8 +339,8 @@ var suites_1 = /* :: */{
                                                   };
                                           })
                                       ],
-                                      _1: /* :: */{
-                                        _0: [
+                                      tl: {
+                                        hd: [
                                           "getTime",
                                           (function (param) {
                                               return {
@@ -350,8 +350,8 @@ var suites_1 = /* :: */{
                                                     };
                                             })
                                         ],
-                                        _1: /* :: */{
-                                          _0: [
+                                        tl: {
+                                          hd: [
                                             "getUTCDate",
                                             (function (param) {
                                                 return {
@@ -361,8 +361,8 @@ var suites_1 = /* :: */{
                                                       };
                                               })
                                           ],
-                                          _1: /* :: */{
-                                            _0: [
+                                          tl: {
+                                            hd: [
                                               "getUTCDay",
                                               (function (param) {
                                                   return {
@@ -372,8 +372,8 @@ var suites_1 = /* :: */{
                                                         };
                                                 })
                                             ],
-                                            _1: /* :: */{
-                                              _0: [
+                                            tl: {
+                                              hd: [
                                                 "getUTCFUllYear",
                                                 (function (param) {
                                                     return {
@@ -383,8 +383,8 @@ var suites_1 = /* :: */{
                                                           };
                                                   })
                                               ],
-                                              _1: /* :: */{
-                                                _0: [
+                                              tl: {
+                                                hd: [
                                                   "getUTCHours",
                                                   (function (param) {
                                                       return {
@@ -394,8 +394,8 @@ var suites_1 = /* :: */{
                                                             };
                                                     })
                                                 ],
-                                                _1: /* :: */{
-                                                  _0: [
+                                                tl: {
+                                                  hd: [
                                                     "getUTCMilliseconds",
                                                     (function (param) {
                                                         return {
@@ -405,8 +405,8 @@ var suites_1 = /* :: */{
                                                               };
                                                       })
                                                   ],
-                                                  _1: /* :: */{
-                                                    _0: [
+                                                  tl: {
+                                                    hd: [
                                                       "getUTCMinutes",
                                                       (function (param) {
                                                           return {
@@ -416,8 +416,8 @@ var suites_1 = /* :: */{
                                                                 };
                                                         })
                                                     ],
-                                                    _1: /* :: */{
-                                                      _0: [
+                                                    tl: {
+                                                      hd: [
                                                         "getUTCMonth",
                                                         (function (param) {
                                                             return {
@@ -427,8 +427,8 @@ var suites_1 = /* :: */{
                                                                   };
                                                           })
                                                       ],
-                                                      _1: /* :: */{
-                                                        _0: [
+                                                      tl: {
+                                                        hd: [
                                                           "getUTCSeconds",
                                                           (function (param) {
                                                               return {
@@ -438,8 +438,8 @@ var suites_1 = /* :: */{
                                                                     };
                                                             })
                                                         ],
-                                                        _1: /* :: */{
-                                                          _0: [
+                                                        tl: {
+                                                          hd: [
                                                             "getYear",
                                                             (function (param) {
                                                                 return {
@@ -449,8 +449,8 @@ var suites_1 = /* :: */{
                                                                       };
                                                               })
                                                           ],
-                                                          _1: /* :: */{
-                                                            _0: [
+                                                          tl: {
+                                                            hd: [
                                                               "setDate",
                                                               (function (param) {
                                                                   var d = new Date("1976-03-08T12:34:56.789+01:23");
@@ -462,8 +462,8 @@ var suites_1 = /* :: */{
                                                                         };
                                                                 })
                                                             ],
-                                                            _1: /* :: */{
-                                                              _0: [
+                                                            tl: {
+                                                              hd: [
                                                                 "setFullYear",
                                                                 (function (param) {
                                                                     var d = new Date("1976-03-08T12:34:56.789+01:23");
@@ -475,8 +475,8 @@ var suites_1 = /* :: */{
                                                                           };
                                                                   })
                                                               ],
-                                                              _1: /* :: */{
-                                                                _0: [
+                                                              tl: {
+                                                                hd: [
                                                                   "setFullYearM",
                                                                   (function (param) {
                                                                       var d = new Date("1976-03-08T12:34:56.789+01:23");
@@ -494,8 +494,8 @@ var suites_1 = /* :: */{
                                                                             };
                                                                     })
                                                                 ],
-                                                                _1: /* :: */{
-                                                                  _0: [
+                                                                tl: {
+                                                                  hd: [
                                                                     "setFullYearMD",
                                                                     (function (param) {
                                                                         var d = new Date("1976-03-08T12:34:56.789+01:23");
@@ -515,8 +515,8 @@ var suites_1 = /* :: */{
                                                                               };
                                                                       })
                                                                   ],
-                                                                  _1: /* :: */{
-                                                                    _0: [
+                                                                  tl: {
+                                                                    hd: [
                                                                       "setHours",
                                                                       (function (param) {
                                                                           var d = new Date("1976-03-08T12:34:56.789+01:23");
@@ -528,8 +528,8 @@ var suites_1 = /* :: */{
                                                                                 };
                                                                         })
                                                                     ],
-                                                                    _1: /* :: */{
-                                                                      _0: [
+                                                                    tl: {
+                                                                      hd: [
                                                                         "setHoursM",
                                                                         (function (param) {
                                                                             var d = new Date("1976-03-08T12:34:56.789+01:23");
@@ -547,8 +547,8 @@ var suites_1 = /* :: */{
                                                                                   };
                                                                           })
                                                                       ],
-                                                                      _1: /* :: */{
-                                                                        _0: [
+                                                                      tl: {
+                                                                        hd: [
                                                                           "setHoursMS",
                                                                           (function (param) {
                                                                               var d = new Date("1976-03-08T12:34:56.789+01:23");
@@ -568,8 +568,8 @@ var suites_1 = /* :: */{
                                                                                     };
                                                                             })
                                                                         ],
-                                                                        _1: /* :: */{
-                                                                          _0: [
+                                                                        tl: {
+                                                                          hd: [
                                                                             "setMilliseconds",
                                                                             (function (param) {
                                                                                 var d = new Date("1976-03-08T12:34:56.789+01:23");
@@ -581,8 +581,8 @@ var suites_1 = /* :: */{
                                                                                       };
                                                                               })
                                                                           ],
-                                                                          _1: /* :: */{
-                                                                            _0: [
+                                                                          tl: {
+                                                                            hd: [
                                                                               "setMinutes",
                                                                               (function (param) {
                                                                                   var d = new Date("1976-03-08T12:34:56.789+01:23");
@@ -594,8 +594,8 @@ var suites_1 = /* :: */{
                                                                                         };
                                                                                 })
                                                                             ],
-                                                                            _1: /* :: */{
-                                                                              _0: [
+                                                                            tl: {
+                                                                              hd: [
                                                                                 "setMinutesS",
                                                                                 (function (param) {
                                                                                     var d = new Date("1976-03-08T12:34:56.789+01:23");
@@ -613,8 +613,8 @@ var suites_1 = /* :: */{
                                                                                           };
                                                                                   })
                                                                               ],
-                                                                              _1: /* :: */{
-                                                                                _0: [
+                                                                              tl: {
+                                                                                hd: [
                                                                                   "setMinutesSMs",
                                                                                   (function (param) {
                                                                                       var d = new Date("1976-03-08T12:34:56.789+01:23");
@@ -634,8 +634,8 @@ var suites_1 = /* :: */{
                                                                                             };
                                                                                     })
                                                                                 ],
-                                                                                _1: /* :: */{
-                                                                                  _0: [
+                                                                                tl: {
+                                                                                  hd: [
                                                                                     "setMonth",
                                                                                     (function (param) {
                                                                                         var d = new Date("1976-03-08T12:34:56.789+01:23");
@@ -647,8 +647,8 @@ var suites_1 = /* :: */{
                                                                                               };
                                                                                       })
                                                                                   ],
-                                                                                  _1: /* :: */{
-                                                                                    _0: [
+                                                                                  tl: {
+                                                                                    hd: [
                                                                                       "setMonthD",
                                                                                       (function (param) {
                                                                                           var d = new Date("1976-03-08T12:34:56.789+01:23");
@@ -666,8 +666,8 @@ var suites_1 = /* :: */{
                                                                                                 };
                                                                                         })
                                                                                     ],
-                                                                                    _1: /* :: */{
-                                                                                      _0: [
+                                                                                    tl: {
+                                                                                      hd: [
                                                                                         "setSeconds",
                                                                                         (function (param) {
                                                                                             var d = new Date("1976-03-08T12:34:56.789+01:23");
@@ -679,8 +679,8 @@ var suites_1 = /* :: */{
                                                                                                   };
                                                                                           })
                                                                                       ],
-                                                                                      _1: /* :: */{
-                                                                                        _0: [
+                                                                                      tl: {
+                                                                                        hd: [
                                                                                           "setSecondsMs",
                                                                                           (function (param) {
                                                                                               var d = new Date("1976-03-08T12:34:56.789+01:23");
@@ -698,8 +698,8 @@ var suites_1 = /* :: */{
                                                                                                     };
                                                                                             })
                                                                                         ],
-                                                                                        _1: /* :: */{
-                                                                                          _0: [
+                                                                                        tl: {
+                                                                                          hd: [
                                                                                             "setUTCDate",
                                                                                             (function (param) {
                                                                                                 var d = new Date("1976-03-08T12:34:56.789+01:23");
@@ -711,8 +711,8 @@ var suites_1 = /* :: */{
                                                                                                       };
                                                                                               })
                                                                                           ],
-                                                                                          _1: /* :: */{
-                                                                                            _0: [
+                                                                                          tl: {
+                                                                                            hd: [
                                                                                               "setUTCFullYear",
                                                                                               (function (param) {
                                                                                                   var d = new Date("1976-03-08T12:34:56.789+01:23");
@@ -724,8 +724,8 @@ var suites_1 = /* :: */{
                                                                                                         };
                                                                                                 })
                                                                                             ],
-                                                                                            _1: /* :: */{
-                                                                                              _0: [
+                                                                                            tl: {
+                                                                                              hd: [
                                                                                                 "setUTCFullYearM",
                                                                                                 (function (param) {
                                                                                                     var d = new Date("1976-03-08T12:34:56.789+01:23");
@@ -743,8 +743,8 @@ var suites_1 = /* :: */{
                                                                                                           };
                                                                                                   })
                                                                                               ],
-                                                                                              _1: /* :: */{
-                                                                                                _0: [
+                                                                                              tl: {
+                                                                                                hd: [
                                                                                                   "setUTCFullYearMD",
                                                                                                   (function (param) {
                                                                                                       var d = new Date("1976-03-08T12:34:56.789+01:23");
@@ -764,8 +764,8 @@ var suites_1 = /* :: */{
                                                                                                             };
                                                                                                     })
                                                                                                 ],
-                                                                                                _1: /* :: */{
-                                                                                                  _0: [
+                                                                                                tl: {
+                                                                                                  hd: [
                                                                                                     "setUTCHours",
                                                                                                     (function (param) {
                                                                                                         var d = new Date("1976-03-08T12:34:56.789+01:23");
@@ -777,8 +777,8 @@ var suites_1 = /* :: */{
                                                                                                               };
                                                                                                       })
                                                                                                   ],
-                                                                                                  _1: /* :: */{
-                                                                                                    _0: [
+                                                                                                  tl: {
+                                                                                                    hd: [
                                                                                                       "setUTCHoursM",
                                                                                                       (function (param) {
                                                                                                           var d = new Date("1976-03-08T12:34:56.789+01:23");
@@ -796,8 +796,8 @@ var suites_1 = /* :: */{
                                                                                                                 };
                                                                                                         })
                                                                                                     ],
-                                                                                                    _1: /* :: */{
-                                                                                                      _0: [
+                                                                                                    tl: {
+                                                                                                      hd: [
                                                                                                         "setUTCHoursMS",
                                                                                                         (function (param) {
                                                                                                             var d = new Date("1976-03-08T12:34:56.789+01:23");
@@ -817,8 +817,8 @@ var suites_1 = /* :: */{
                                                                                                                   };
                                                                                                           })
                                                                                                       ],
-                                                                                                      _1: /* :: */{
-                                                                                                        _0: [
+                                                                                                      tl: {
+                                                                                                        hd: [
                                                                                                           "setUTCMilliseconds",
                                                                                                           (function (param) {
                                                                                                               var d = new Date("1976-03-08T12:34:56.789+01:23");
@@ -830,8 +830,8 @@ var suites_1 = /* :: */{
                                                                                                                     };
                                                                                                             })
                                                                                                         ],
-                                                                                                        _1: /* :: */{
-                                                                                                          _0: [
+                                                                                                        tl: {
+                                                                                                          hd: [
                                                                                                             "setUTCMinutes",
                                                                                                             (function (param) {
                                                                                                                 var d = new Date("1976-03-08T12:34:56.789+01:23");
@@ -843,8 +843,8 @@ var suites_1 = /* :: */{
                                                                                                                       };
                                                                                                               })
                                                                                                           ],
-                                                                                                          _1: /* :: */{
-                                                                                                            _0: [
+                                                                                                          tl: {
+                                                                                                            hd: [
                                                                                                               "setUTCMinutesS",
                                                                                                               (function (param) {
                                                                                                                   var d = new Date("1976-03-08T12:34:56.789+01:23");
@@ -862,8 +862,8 @@ var suites_1 = /* :: */{
                                                                                                                         };
                                                                                                                 })
                                                                                                             ],
-                                                                                                            _1: /* :: */{
-                                                                                                              _0: [
+                                                                                                            tl: {
+                                                                                                              hd: [
                                                                                                                 "setUTCMinutesSMs",
                                                                                                                 (function (param) {
                                                                                                                     var d = new Date("1976-03-08T12:34:56.789+01:23");
@@ -883,8 +883,8 @@ var suites_1 = /* :: */{
                                                                                                                           };
                                                                                                                   })
                                                                                                               ],
-                                                                                                              _1: /* :: */{
-                                                                                                                _0: [
+                                                                                                              tl: {
+                                                                                                                hd: [
                                                                                                                   "setUTCMonth",
                                                                                                                   (function (param) {
                                                                                                                       var d = new Date("1976-03-08T12:34:56.789+01:23");
@@ -896,8 +896,8 @@ var suites_1 = /* :: */{
                                                                                                                             };
                                                                                                                     })
                                                                                                                 ],
-                                                                                                                _1: /* :: */{
-                                                                                                                  _0: [
+                                                                                                                tl: {
+                                                                                                                  hd: [
                                                                                                                     "setUTCMonthD",
                                                                                                                     (function (param) {
                                                                                                                         var d = new Date("1976-03-08T12:34:56.789+01:23");
@@ -915,8 +915,8 @@ var suites_1 = /* :: */{
                                                                                                                               };
                                                                                                                       })
                                                                                                                   ],
-                                                                                                                  _1: /* :: */{
-                                                                                                                    _0: [
+                                                                                                                  tl: {
+                                                                                                                    hd: [
                                                                                                                       "setUTCSeconds",
                                                                                                                       (function (param) {
                                                                                                                           var d = new Date("1976-03-08T12:34:56.789+01:23");
@@ -928,8 +928,8 @@ var suites_1 = /* :: */{
                                                                                                                                 };
                                                                                                                         })
                                                                                                                     ],
-                                                                                                                    _1: /* :: */{
-                                                                                                                      _0: [
+                                                                                                                    tl: {
+                                                                                                                      hd: [
                                                                                                                         "setUTCSecondsMs",
                                                                                                                         (function (param) {
                                                                                                                             var d = new Date("1976-03-08T12:34:56.789+01:23");
@@ -947,8 +947,8 @@ var suites_1 = /* :: */{
                                                                                                                                   };
                                                                                                                           })
                                                                                                                       ],
-                                                                                                                      _1: /* :: */{
-                                                                                                                        _0: [
+                                                                                                                      tl: {
+                                                                                                                        hd: [
                                                                                                                           "toDateString",
                                                                                                                           (function (param) {
                                                                                                                               return {
@@ -958,8 +958,8 @@ var suites_1 = /* :: */{
                                                                                                                                     };
                                                                                                                             })
                                                                                                                         ],
-                                                                                                                        _1: /* :: */{
-                                                                                                                          _0: [
+                                                                                                                        tl: {
+                                                                                                                          hd: [
                                                                                                                             "toGMTString",
                                                                                                                             (function (param) {
                                                                                                                                 return {
@@ -969,8 +969,8 @@ var suites_1 = /* :: */{
                                                                                                                                       };
                                                                                                                               })
                                                                                                                           ],
-                                                                                                                          _1: /* :: */{
-                                                                                                                            _0: [
+                                                                                                                          tl: {
+                                                                                                                            hd: [
                                                                                                                               "toISOString",
                                                                                                                               (function (param) {
                                                                                                                                   return {
@@ -980,8 +980,8 @@ var suites_1 = /* :: */{
                                                                                                                                         };
                                                                                                                                 })
                                                                                                                             ],
-                                                                                                                            _1: /* :: */{
-                                                                                                                              _0: [
+                                                                                                                            tl: {
+                                                                                                                              hd: [
                                                                                                                                 "toJSON",
                                                                                                                                 (function (param) {
                                                                                                                                     return {
@@ -991,8 +991,8 @@ var suites_1 = /* :: */{
                                                                                                                                           };
                                                                                                                                   })
                                                                                                                               ],
-                                                                                                                              _1: /* :: */{
-                                                                                                                                _0: [
+                                                                                                                              tl: {
+                                                                                                                                hd: [
                                                                                                                                   "toJSONUnsafe",
                                                                                                                                   (function (param) {
                                                                                                                                       return {
@@ -1002,8 +1002,8 @@ var suites_1 = /* :: */{
                                                                                                                                             };
                                                                                                                                     })
                                                                                                                                 ],
-                                                                                                                                _1: /* :: */{
-                                                                                                                                  _0: [
+                                                                                                                                tl: {
+                                                                                                                                  hd: [
                                                                                                                                     "toUTCString",
                                                                                                                                     (function (param) {
                                                                                                                                         return {
@@ -1013,8 +1013,8 @@ var suites_1 = /* :: */{
                                                                                                                                               };
                                                                                                                                       })
                                                                                                                                   ],
-                                                                                                                                  _1: /* :: */{
-                                                                                                                                    _0: [
+                                                                                                                                  tl: {
+                                                                                                                                    hd: [
                                                                                                                                       "eq",
                                                                                                                                       (function (param) {
                                                                                                                                           var a = new Date("2013-03-01T01:10:00");
@@ -1026,7 +1026,7 @@ var suites_1 = /* :: */{
                                                                                                                                                 };
                                                                                                                                         })
                                                                                                                                     ],
-                                                                                                                                    _1: /* [] */0
+                                                                                                                                    tl: /* [] */0
                                                                                                                                   }
                                                                                                                                 }
                                                                                                                               }
@@ -1094,9 +1094,9 @@ var suites_1 = /* :: */{
   }
 };
 
-var suites = /* :: */{
-  _0: suites_0,
-  _1: suites_1
+var suites = {
+  hd: suites_0,
+  tl: suites_1
 };
 
 Mt.from_pair_suites("Js_date_test", suites);

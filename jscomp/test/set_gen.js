@@ -99,9 +99,9 @@ function elements_aux(_accu, _param) {
       return accu;
     }
     _param = param._0;
-    _accu = /* :: */{
-      _0: param._1,
-      _1: elements_aux(accu, param._2)
+    _accu = {
+      hd: param._1,
+      tl: elements_aux(accu, param._2)
     };
     continue ;
   };
@@ -448,31 +448,31 @@ function of_sorted_list(l) {
             return [
                     /* Node */{
                       _0: /* Empty */0,
-                      _1: l._0,
+                      _1: l.hd,
                       _2: /* Empty */0,
                       _3: 1
                     },
-                    l._1
+                    l.tl
                   ];
           }
           break;
       case 2 :
           if (l) {
-            var match = l._1;
+            var match = l.tl;
             if (match) {
               return [
                       /* Node */{
                         _0: /* Node */{
                           _0: /* Empty */0,
-                          _1: l._0,
+                          _1: l.hd,
                           _2: /* Empty */0,
                           _3: 1
                         },
-                        _1: match._0,
+                        _1: match.hd,
                         _2: /* Empty */0,
                         _3: 2
                       },
-                      match._1
+                      match.tl
                     ];
             }
             
@@ -480,28 +480,28 @@ function of_sorted_list(l) {
           break;
       case 3 :
           if (l) {
-            var match$1 = l._1;
+            var match$1 = l.tl;
             if (match$1) {
-              var match$2 = match$1._1;
+              var match$2 = match$1.tl;
               if (match$2) {
                 return [
                         /* Node */{
                           _0: /* Node */{
                             _0: /* Empty */0,
-                            _1: l._0,
+                            _1: l.hd,
                             _2: /* Empty */0,
                             _3: 1
                           },
-                          _1: match$1._0,
+                          _1: match$1.hd,
                           _2: /* Node */{
                             _0: /* Empty */0,
-                            _1: match$2._0,
+                            _1: match$2.hd,
                             _2: /* Empty */0,
                             _3: 1
                           },
                           _3: 2
                         },
-                        match$2._1
+                        match$2.tl
                       ];
               }
               
@@ -516,9 +516,9 @@ function of_sorted_list(l) {
     var match$3 = sub(nl, l);
     var l$1 = match$3[1];
     if (l$1) {
-      var match$4 = sub((n - nl | 0) - 1 | 0, l$1._1);
+      var match$4 = sub((n - nl | 0) - 1 | 0, l$1.tl);
       return [
-              create(match$3[0], l$1._0, match$4[0]),
+              create(match$3[0], l$1.hd, match$4[0]),
               match$4[1]
             ];
     }

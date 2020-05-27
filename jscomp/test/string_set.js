@@ -238,28 +238,28 @@ function of_list(l) {
   if (!l) {
     return /* Empty */0;
   }
-  var match = l._1;
-  var x0 = l._0;
+  var match = l.tl;
+  var x0 = l.hd;
   if (!match) {
     return Set_gen.singleton(x0);
   }
-  var match$1 = match._1;
-  var x1 = match._0;
+  var match$1 = match.tl;
+  var x1 = match.hd;
   if (!match$1) {
     return add(x1, Set_gen.singleton(x0));
   }
-  var match$2 = match$1._1;
-  var x2 = match$1._0;
+  var match$2 = match$1.tl;
+  var x2 = match$1.hd;
   if (!match$2) {
     return add(x2, add(x1, Set_gen.singleton(x0)));
   }
-  var match$3 = match$2._1;
-  var x3 = match$2._0;
+  var match$3 = match$2.tl;
+  var x3 = match$2.hd;
   if (match$3) {
-    if (match$3._1) {
+    if (match$3.tl) {
       return Set_gen.of_sorted_list(List.sort_uniq($$String.compare, l));
     } else {
-      return add(match$3._0, add(x3, add(x2, add(x1, Set_gen.singleton(x0)))));
+      return add(match$3.hd, add(x3, add(x2, add(x1, Set_gen.singleton(x0)))));
     }
   } else {
     return add(x3, add(x2, add(x1, Set_gen.singleton(x0))));

@@ -39,17 +39,17 @@ function reverse_of_list(l) {
     return [];
   }
   var len = List.length(l);
-  var a = Caml_array.caml_make_vect(len, l._0);
+  var a = Caml_array.caml_make_vect(len, l.hd);
   var _i = 0;
-  var _param = l._1;
+  var _param = l.tl;
   while(true) {
     var param = _param;
     var i = _i;
     if (!param) {
       return a;
     }
-    a[(len - i | 0) - 2 | 0] = param._0;
-    _param = param._1;
+    a[(len - i | 0) - 2 | 0] = param.hd;
+    _param = param.tl;
     _i = i + 1 | 0;
     continue ;
   };
@@ -68,9 +68,9 @@ function filter(f, a) {
     var v = a[i];
     if (Curry._1(f, v)) {
       _i = i + 1 | 0;
-      _acc = /* :: */{
-        _0: v,
-        _1: acc
+      _acc = {
+        hd: v,
+        tl: acc
       };
       continue ;
     }
@@ -93,9 +93,9 @@ function filter_map(f, a) {
     var v$1 = Curry._1(f, v);
     if (v$1 !== undefined) {
       _i = i + 1 | 0;
-      _acc = /* :: */{
-        _0: Caml_option.valFromOption(v$1),
-        _1: acc
+      _acc = {
+        hd: Caml_option.valFromOption(v$1),
+        tl: acc
       };
       continue ;
     }
@@ -140,9 +140,9 @@ function tolist_aux(a, f, _i, _res) {
     }
     var v = a[i];
     var v$1 = Curry._1(f, v);
-    _res = v$1 !== undefined ? /* :: */({
-          _0: Caml_option.valFromOption(v$1),
-          _1: res
+    _res = v$1 !== undefined ? ({
+          hd: Caml_option.valFromOption(v$1),
+          tl: res
         }) : res;
     _i = i - 1 | 0;
     continue ;
@@ -161,8 +161,8 @@ function of_list_map(f, a) {
   if (!a) {
     return [];
   }
-  var tl = a._1;
-  var hd = Curry._1(f, a._0);
+  var tl = a.tl;
+  var hd = Curry._1(f, a.hd);
   var len = List.length(tl) + 1 | 0;
   var arr = Caml_array.caml_make_vect(len, hd);
   var _i = 1;
@@ -173,8 +173,8 @@ function of_list_map(f, a) {
     if (!param) {
       return arr;
     }
-    arr[i] = Curry._1(f, param._0);
-    _param = param._1;
+    arr[i] = Curry._1(f, param.hd);
+    _param = param.tl;
     _i = i + 1 | 0;
     continue ;
   };

@@ -47,9 +47,9 @@ function read_lines(inc) {
     if (l === undefined) {
       return List.rev(acc);
     }
-    _acc = /* :: */{
-      _0: l,
-      _1: acc
+    _acc = {
+      hd: l,
+      tl: acc
     };
     continue ;
   };
@@ -70,9 +70,9 @@ function read_lines2(inc) {
       }
       throw exn;
     }
-    _acc = /* :: */{
-      _0: l,
-      _1: acc
+    _acc = {
+      hd: l,
+      tl: acc
     };
     continue ;
   };
@@ -82,9 +82,9 @@ function read_lines3(inc) {
   var loop = function (acc) {
     try {
       var l = Pervasives.input_line(inc);
-      return loop(/* :: */{
-                  _0: l,
-                  _1: acc
+      return loop({
+                  hd: l,
+                  tl: acc
                 });
     }
     catch (raw_exn){

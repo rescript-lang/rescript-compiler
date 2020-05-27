@@ -16,8 +16,8 @@ var suites_0 = [
     })
 ];
 
-var suites_1 = /* :: */{
-  _0: [
+var suites_1 = {
+  hd: [
     "setInerval/clearInterval sanity check",
     (function (param) {
         var handle = setInterval((function (param) {
@@ -30,8 +30,8 @@ var suites_1 = /* :: */{
               };
       })
   ],
-  _1: /* :: */{
-    _0: [
+  tl: {
+    hd: [
       "encodeURI",
       (function (param) {
           return {
@@ -41,8 +41,8 @@ var suites_1 = /* :: */{
                 };
         })
     ],
-    _1: /* :: */{
-      _0: [
+    tl: {
+      hd: [
         "decodeURI",
         (function (param) {
             return {
@@ -52,8 +52,8 @@ var suites_1 = /* :: */{
                   };
           })
       ],
-      _1: /* :: */{
-        _0: [
+      tl: {
+        hd: [
           "encodeURIComponent",
           (function (param) {
               return {
@@ -63,8 +63,8 @@ var suites_1 = /* :: */{
                     };
             })
         ],
-        _1: /* :: */{
-          _0: [
+        tl: {
+          hd: [
             "decodeURIComponent",
             (function (param) {
                 return {
@@ -74,16 +74,16 @@ var suites_1 = /* :: */{
                       };
               })
           ],
-          _1: /* [] */0
+          tl: /* [] */0
         }
       }
     }
   }
 };
 
-var suites = /* :: */{
-  _0: suites_0,
-  _1: suites_1
+var suites = {
+  hd: suites_0,
+  tl: suites_1
 };
 
 Mt.from_pair_suites("Js_global_test", suites);

@@ -75,8 +75,8 @@ function test_closure2(param) {
   return v.contents;
 }
 
-Mt.from_pair_suites("Cps_test", /* :: */{
-      _0: [
+Mt.from_pair_suites("Cps_test", {
+      hd: [
         "cps_test_sum",
         (function (param) {
             return {
@@ -86,8 +86,8 @@ Mt.from_pair_suites("Cps_test", /* :: */{
                   };
           })
       ],
-      _1: /* :: */{
-        _0: [
+      tl: {
+        hd: [
           "cps_test_closure",
           (function (param) {
               return {
@@ -97,8 +97,8 @@ Mt.from_pair_suites("Cps_test", /* :: */{
                     };
             })
         ],
-        _1: /* :: */{
-          _0: [
+        tl: {
+          hd: [
             "cps_test_closure2",
             (function (param) {
                 return {
@@ -108,7 +108,7 @@ Mt.from_pair_suites("Cps_test", /* :: */{
                       };
               })
           ],
-          _1: /* [] */0
+          tl: /* [] */0
         }
       }
     });
