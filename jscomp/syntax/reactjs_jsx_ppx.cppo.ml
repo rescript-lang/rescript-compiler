@@ -439,80 +439,8 @@ let jsxMapper () =
         args
     in
 
-  let transformUppercaseCall modulePath mapper loc attrs _ callArguments =
-    let (children, argsWithLabels) = extractChildren ~loc ~removeLastPositionUnit:true callArguments in
-    let (argsKeyRef, argsForMake) = List.partition argIsKeyRef argsWithLabels in
-    let childrenExpr = transformChildrenIfList ~loc ~mapper children in
-    let recursivelyTransformedArgsForMake = argsForMake |> List.map (fun (label, expression) -> (label, mapper.expr mapper expression)) in
-    let args = recursivelyTransformedArgsForMake @ [ (nolabel, childrenExpr) ] in
-    let wrapWithReasonReactElement e = (* ReasonReact.element(~key, ~ref, ...) *)
-      Exp.apply
-        ~loc
-        (Exp.ident ~loc {loc; txt = Ldot (Lident "ReasonReact", "element")})
-        (argsKeyRef @ [(nolabel, e)]) in
-    Exp.apply
-      ~loc
-      ~attrs
-      (* Foo.make *)
-      (Exp.ident ~loc {loc; txt = Ldot (modulePath, "make")})
-      args
-    |> wrapWithReasonReactElement in
+ 
 
-  let transformLowercaseCall mapper loc attrs callArguments id =
-    let (children, nonChildrenProps) = extractChildren ~loc callArguments in
-    let componentNameExpr = constantString ~loc id in
-    let childrenExpr = transformChildrenIfList ~loc ~mapper children in
-    let createElementCall = match children with
-      (* [@JSX] div(~children=[a]), coming from <div> a </div> *)
-      | {
-          pexp_desc =
-           Pexp_construct ({txt = Lident "::"}, Some {pexp_desc = Pexp_tuple _ })
-           | Pexp_construct ({txt = Lident "[]"}, None)
-        } -> "createElement"
-      (* [@JSX] div(~children=[|a|]), coming from <div> ...[|a|] </div> *)
-      | { pexp_desc = (Pexp_array _) } ->
-        raise (Invalid_argument "A spread + an array literal as a DOM element's \
-          children would cancel each other out, and thus don't make sense written \
-          together. You can simply remove the spread and the array literal.")
-      (* [@JSX] div(~children= <div />), coming from <div> ...<div/> </div> *)
-      | {
-          pexp_attributes
-        } when pexp_attributes |> List.exists (fun (attribute, _) -> attribute.txt = "JSX") ->
-        raise (Invalid_argument "A spread + a JSX literal as a DOM element's \
-          children don't make sense written together. You can simply remove the spread.")
-      | _ -> "createElementVariadic"
-    in
-    let args = match nonChildrenProps with
-      | [_justTheUnitArgumentAtEnd] ->
-        [
-          (* "div" *)
-          (nolabel, componentNameExpr);
-          (* [|moreCreateElementCallsHere|] *)
-          (nolabel, childrenExpr)
-        ]
-      | nonEmptyProps ->
-        let propsCall =
-          Exp.apply
-            ~loc
-            (Exp.ident ~loc {loc; txt = Ldot (Lident "ReactDOMRe", "props")})
-            (nonEmptyProps |> List.map (fun (label, expression) -> (label, mapper.expr mapper expression)))
-        in
-        [
-          (* "div" *)
-          (nolabel, componentNameExpr);
-          (* ReactDOMRe.props(~className=blabla, ~foo=bar, ()) *)
-          (labelled "props", propsCall);
-          (* [|moreCreateElementCallsHere|] *)
-          (nolabel, childrenExpr)
-        ] in
-    Exp.apply
-      ~loc
-      (* throw away the [@JSX] attribute and keep the others, if any *)
-      ~attrs
-      (* ReactDOMRe.createElement *)
-      (Exp.ident ~loc {loc; txt = Ldot (Lident "ReactDOMRe", createElementCall)})
-      args
-  in
 
   let rec recursivelyTransformNamedArgsForMake mapper expr list =
     let expr = mapper.expr mapper expr in
@@ -932,20 +860,18 @@ let jsxMapper () =
         (* Foo.createElement(~prop1=foo, ~prop2=bar, ~children=[], ()) *)
         | {loc; txt = Ldot (modulePath, ("createElement" | "make"))} ->
           (match !jsxVersion with
-          | Some 2 -> transformUppercaseCall modulePath mapper loc attrs callExpression callArguments
           | None
           | Some 3 -> transformUppercaseCall3 modulePath mapper loc attrs callExpression callArguments
-          | Some _ -> raise (Invalid_argument "JSX: the JSX version must be 2 or 3"))
+          | Some _ -> raise (Invalid_argument "JSX: the JSX version must be  3"))
 
         (* div(~prop1=foo, ~prop2=bar, ~children=[bla], ()) *)
         (* turn that into
           ReactDOMRe.createElement(~props=ReactDOMRe.props(~props1=foo, ~props2=bar, ()), [|bla|]) *)
         | {loc; txt = Lident id} ->
           (match !jsxVersion with
-          | Some 2 -> transformLowercaseCall mapper loc attrs callArguments id
           | None
           | Some 3 -> transformLowercaseCall3 mapper loc attrs callArguments id
-          | Some _ -> raise (Invalid_argument "JSX: the JSX version must be 2 or 3"))
+          | Some _ -> raise (Invalid_argument "JSX: the JSX version must be 3"))
 
         | {txt = Ldot (_, anythingNotCreateElementOrMake)} ->
           raise (
