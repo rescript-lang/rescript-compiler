@@ -704,6 +704,7 @@ build test/tfloat_record_test.cmi test/tfloat_record_test.cmj : cc test/tfloat_r
 build test/ticker.cmi test/ticker.cmj : cc test/ticker.ml | $stdlib
 build test/to_string_test.cmi test/to_string_test.cmj : cc test/to_string_test.ml | test/mt.cmj $stdlib
 build test/topsort_test.cmi test/topsort_test.cmj : cc test/topsort_test.ml | $stdlib
+build test/tramp_fib.cmi test/tramp_fib.cmj : cc test/tramp_fib.ml | test/mt.cmj $stdlib
 build test/tscanf_test.cmi test/tscanf_test.cmj : cc test/tscanf_test.ml | test/mt.cmj test/mt_global.cmj test/testing.cmj $stdlib
 build test/tuple_alloc.cmi test/tuple_alloc.cmj : cc test/tuple_alloc.ml | $stdlib
 build test/typeof_test.cmi test/typeof_test.cmj : cc test/typeof_test.ml | test/mt.cmj $stdlib
