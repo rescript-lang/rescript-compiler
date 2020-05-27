@@ -956,12 +956,12 @@ function bindings_aux(_accu, _param) {
       return accu;
     }
     _param = param.l;
-    _accu = /* :: */{
-      _0: [
+    _accu = {
+      hd: [
         param.v,
         param.d
       ],
-      _1: bindings_aux(accu, param.r)
+      tl: bindings_aux(accu, param.r)
     };
     continue ;
   };
@@ -1924,12 +1924,12 @@ function bindings_aux$1(_accu, _param) {
       return accu;
     }
     _param = param.l;
-    _accu = /* :: */{
-      _0: [
+    _accu = {
+      hd: [
         param.v,
         param.d
       ],
-      _1: bindings_aux$1(accu, param.r)
+      tl: bindings_aux$1(accu, param.r)
     };
     continue ;
   };
@@ -2892,12 +2892,12 @@ function bindings_aux$2(_accu, _param) {
       return accu;
     }
     _param = param.l;
-    _accu = /* :: */{
-      _0: [
+    _accu = {
+      hd: [
         param.v,
         param.d
       ],
-      _1: bindings_aux$2(accu, param.r)
+      tl: bindings_aux$2(accu, param.r)
     };
     continue ;
   };
@@ -3045,12 +3045,12 @@ function set_method(table, label, element) {
   if (find$2(label, table.methods_by_label)) {
     return put(table, label, element);
   } else {
-    table.hidden_meths = /* :: */{
-      _0: [
+    table.hidden_meths = {
+      hd: [
         label,
         element
       ],
-      _1: table.hidden_meths
+      tl: table.hidden_meths
     };
     return ;
   }
@@ -3087,8 +3087,8 @@ function narrow(table, vars, virt_meths, concr_meths) {
   var concr_meth_labs = List.map((function (param) {
           return get_method_label(table, param);
         }), concr_meths$1);
-  table.previous_states = /* :: */{
-    _0: [
+  table.previous_states = {
+    hd: [
       table.methods_by_name,
       table.methods_by_label,
       table.hidden_meths,
@@ -3096,7 +3096,7 @@ function narrow(table, vars, virt_meths, concr_meths) {
       virt_meth_labs,
       vars$1
     ],
-    _1: table.previous_states
+    tl: table.previous_states
   };
   table.vars = fold((function (lab, info, tvars) {
           if (List.mem(lab, vars$1)) {
@@ -3139,9 +3139,9 @@ function narrow(table, vars, virt_meths, concr_meths) {
           if (List.mem(met[0], virt_meth_labs)) {
             return hm;
           } else {
-            return /* :: */{
-                    _0: met,
-                    _1: hm
+            return {
+                    hd: met,
+                    tl: hm
                   };
           }
         }), table.hidden_meths, /* [] */0);
@@ -3161,9 +3161,9 @@ function widen(table) {
           if (List.mem(met[0], virt_meths)) {
             return hm;
           } else {
-            return /* :: */{
-                    _0: met,
-                    _1: hm
+            return {
+                    hd: met,
+                    tl: hm
                   };
           }
         }), table.hidden_meths, match[2]);
@@ -3243,9 +3243,9 @@ function get_variables(table, names) {
 }
 
 function add_initializer(table, f) {
-  table.initializers = /* :: */{
-    _0: f,
-    _1: table.initializers
+  table.initializers = {
+    hd: f,
+    tl: table.initializers
   };
   
 }
@@ -3276,17 +3276,17 @@ function inherits(cla, vals, virt_meths, concr_meths, param, top) {
   narrow(cla, vals, virt_meths, concr_meths);
   var init = top ? Curry._2($$super, cla, param[3]) : Curry._1($$super, cla);
   widen(cla);
-  return Caml_array.caml_array_concat(/* :: */{
-              _0: [init],
-              _1: /* :: */{
-                _0: $$Array.map((function (param) {
+  return Caml_array.caml_array_concat({
+              hd: [init],
+              tl: {
+                hd: $$Array.map((function (param) {
                         return get_variable(cla, param);
                       }), to_array(vals)),
-                _1: /* :: */{
-                  _0: $$Array.map((function (nm) {
+                tl: {
+                  hd: $$Array.map((function (nm) {
                           return get_method(cla, get_method_label(cla, nm));
                         }), to_array(concr_meths)),
-                  _1: /* [] */0
+                  tl: /* [] */0
                 }
               }
             });
@@ -3335,8 +3335,8 @@ function iter_f(obj, _param) {
     if (!param) {
       return ;
     }
-    Curry._1(param._0, obj);
-    _param = param._1;
+    Curry._1(param.hd, obj);
+    _param = param.tl;
     continue ;
   };
 }

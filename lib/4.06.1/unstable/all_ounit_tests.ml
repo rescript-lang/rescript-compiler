@@ -4037,6 +4037,10 @@ val exception_id : string
 
 val polyvar_hash : string
 val polyvar_value : string
+
+val cons : string
+val hd : string
+val tl : string
 end = struct
 #1 "literals.ml"
 (* Copyright (C) 2015-2016 Bloomberg Finance L.P.
@@ -4184,6 +4188,10 @@ let exception_id = "RE_EXN_ID"
 
 let polyvar_hash = "HASH"
 let polyvar_value = "value"
+
+let cons = "::"
+let hd = "hd"
+let tl = "tl"
 end
 module Ounit_cmd_util : sig 
 #1 "ounit_cmd_util.mli"

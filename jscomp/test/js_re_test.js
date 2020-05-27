@@ -31,8 +31,8 @@ var suites_0 = [
     })
 ];
 
-var suites_1 = /* :: */{
-  _0: [
+var suites_1 = {
+  hd: [
     "fromString",
     (function (param) {
         var contentOf = function (tag, xmlString) {
@@ -49,8 +49,8 @@ var suites_1 = /* :: */{
               };
       })
   ],
-  _1: /* :: */{
-    _0: [
+  tl: {
+    hd: [
       "exec_literal",
       (function (param) {
           var res = /[^.]+/.exec("http://xxx.domain.com");
@@ -68,8 +68,8 @@ var suites_1 = /* :: */{
           }
         })
     ],
-    _1: /* :: */{
-      _0: [
+    tl: {
+      hd: [
         "exec_no_match",
         (function (param) {
             var match = /https:\/\/(.*)/.exec("http://xxx.domain.com");
@@ -86,8 +86,8 @@ var suites_1 = /* :: */{
             }
           })
       ],
-      _1: /* :: */{
-        _0: [
+      tl: {
+        hd: [
           "test_str",
           (function (param) {
               var res = new RegExp("foo").test("#foo#");
@@ -98,8 +98,8 @@ var suites_1 = /* :: */{
                     };
             })
         ],
-        _1: /* :: */{
-          _0: [
+        tl: {
+          hd: [
             "fromStringWithFlags",
             (function (param) {
                 var res = new RegExp("foo", "g");
@@ -110,8 +110,8 @@ var suites_1 = /* :: */{
                       };
               })
           ],
-          _1: /* :: */{
-            _0: [
+          tl: {
+            hd: [
               "result_index",
               (function (param) {
                   var res = new RegExp("zbar").exec("foobarbazbar");
@@ -129,8 +129,8 @@ var suites_1 = /* :: */{
                   }
                 })
             ],
-            _1: /* :: */{
-              _0: [
+            tl: {
+              hd: [
                 "result_input",
                 (function (param) {
                     var input = "foobar";
@@ -149,8 +149,8 @@ var suites_1 = /* :: */{
                     }
                   })
               ],
-              _1: /* :: */{
-                _0: [
+              tl: {
+                hd: [
                   "t_flags",
                   (function (param) {
                       return {
@@ -160,8 +160,8 @@ var suites_1 = /* :: */{
                             };
                     })
                 ],
-                _1: /* :: */{
-                  _0: [
+                tl: {
+                  hd: [
                     "t_global",
                     (function (param) {
                         return {
@@ -171,8 +171,8 @@ var suites_1 = /* :: */{
                               };
                       })
                   ],
-                  _1: /* :: */{
-                    _0: [
+                  tl: {
+                    hd: [
                       "t_ignoreCase",
                       (function (param) {
                           return {
@@ -182,8 +182,8 @@ var suites_1 = /* :: */{
                                 };
                         })
                     ],
-                    _1: /* :: */{
-                      _0: [
+                    tl: {
+                      hd: [
                         "t_lastIndex",
                         (function (param) {
                             var re = /na/g;
@@ -195,8 +195,8 @@ var suites_1 = /* :: */{
                                   };
                           })
                       ],
-                      _1: /* :: */{
-                        _0: [
+                      tl: {
+                        hd: [
                           "t_setLastIndex",
                           (function (param) {
                               var re = /na/g;
@@ -216,8 +216,8 @@ var suites_1 = /* :: */{
                                     };
                             })
                         ],
-                        _1: /* :: */{
-                          _0: [
+                        tl: {
+                          hd: [
                             "t_multiline",
                             (function (param) {
                                 return {
@@ -227,8 +227,8 @@ var suites_1 = /* :: */{
                                       };
                               })
                           ],
-                          _1: /* :: */{
-                            _0: [
+                          tl: {
+                            hd: [
                               "t_source",
                               (function (param) {
                                   return {
@@ -238,8 +238,8 @@ var suites_1 = /* :: */{
                                         };
                                 })
                             ],
-                            _1: /* :: */{
-                              _0: [
+                            tl: {
+                              hd: [
                                 "t_sticky",
                                 (function (param) {
                                     return {
@@ -249,8 +249,8 @@ var suites_1 = /* :: */{
                                           };
                                   })
                               ],
-                              _1: /* :: */{
-                                _0: [
+                              tl: {
+                                hd: [
                                   "t_unicode",
                                   (function (param) {
                                       return {
@@ -260,7 +260,7 @@ var suites_1 = /* :: */{
                                             };
                                     })
                                 ],
-                                _1: /* [] */0
+                                tl: /* [] */0
                               }
                             }
                           }
@@ -278,9 +278,9 @@ var suites_1 = /* :: */{
   }
 };
 
-var suites = /* :: */{
-  _0: suites_0,
-  _1: suites_1
+var suites = {
+  hd: suites_0,
+  tl: suites_1
 };
 
 Mt.from_pair_suites("Js_re_test", suites);

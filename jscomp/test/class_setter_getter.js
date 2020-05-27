@@ -7,11 +7,11 @@ function fff(x) {
 }
 
 function ff(x, z) {
-  return /* :: */{
-          _0: x.height,
-          _1: /* :: */{
-            _0: z.height,
-            _1: /* [] */0
+  return {
+          hd: x.height,
+          tl: {
+            hd: z.height,
+            tl: /* [] */0
           }
         };
 }

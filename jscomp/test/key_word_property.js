@@ -15,12 +15,12 @@ function mk($$window, $$default) {
 }
 
 function mk2($$window, $$default) {
-  return /* :: */{
-          _0: {
+  return {
+          hd: {
             window: $$window,
             default: $$default
           },
-          _1: /* [] */0
+          tl: /* [] */0
         };
 }
 

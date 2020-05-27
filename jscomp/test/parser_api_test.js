@@ -18,11 +18,11 @@ function eq(loc, x, y) {
 var match = Parser_api.implementation(Parser_api.from_string("let v str = \n  str  \n  |> Lexing.from_string \n  |> Parse.implementation\n"));
 
 if (match) {
-  var match$1 = match._0.pstr_desc;
+  var match$1 = match.hd.pstr_desc;
   if (match$1.TAG === /* Pstr_value */1 && !match$1._0) {
     var match$2 = match$1._1;
     if (match$2) {
-      var match$3 = match$2._0;
+      var match$3 = match$2.hd;
       var match$4 = match$3.pvb_pat;
       var match$5 = match$4.ppat_desc;
       if (typeof match$5 === "number" || match$5.TAG) {
@@ -85,7 +85,7 @@ if (match) {
                                                   if (match$35.pos_fname === "" && !(match$35.pos_lnum !== 4 || match$35.pos_bol !== 46 || match$35.pos_cnum !== 50 || match$33.loc_ghost || match$26.pexp_attributes)) {
                                                     var match$36 = match$25._1;
                                                     if (match$36) {
-                                                      var match$37 = match$36._0;
+                                                      var match$37 = match$36.hd;
                                                       if (match$37[0] === "") {
                                                         var match$38 = match$37[1];
                                                         var match$39 = match$38.pexp_desc;
@@ -112,7 +112,7 @@ if (match) {
                                                                           if (match$49.pos_fname === "" && !(match$49.pos_lnum !== 3 || match$49.pos_bol !== 21 || match$49.pos_cnum !== 25 || match$47.loc_ghost || match$40.pexp_attributes)) {
                                                                             var match$50 = match$39._1;
                                                                             if (match$50) {
-                                                                              var match$51 = match$50._0;
+                                                                              var match$51 = match$50.hd;
                                                                               if (match$51[0] === "") {
                                                                                 var match$52 = match$51[1];
                                                                                 var match$53 = match$52.pexp_desc;
@@ -134,9 +134,9 @@ if (match) {
                                                                                               if (match$60.pos_fname === "" && !(match$60.pos_lnum !== 2 || match$60.pos_bol !== 13 || match$60.pos_cnum !== 15)) {
                                                                                                 var match$61 = match$59.loc_end;
                                                                                                 if (match$61.pos_fname === "" && !(match$61.pos_lnum !== 2 || match$61.pos_bol !== 13 || match$61.pos_cnum !== 18 || match$59.loc_ghost || match$52.pexp_attributes)) {
-                                                                                                  var match$62 = match$50._1;
+                                                                                                  var match$62 = match$50.tl;
                                                                                                   if (match$62) {
-                                                                                                    var match$63 = match$62._0;
+                                                                                                    var match$63 = match$62.hd;
                                                                                                     if (match$63[0] === "") {
                                                                                                       var match$64 = match$63[1];
                                                                                                       var match$65 = match$64.pexp_desc;
@@ -160,15 +160,15 @@ if (match) {
                                                                                                                           var match$73 = match$72.loc_start;
                                                                                                                           if (match$73.pos_fname === "" && !(match$73.pos_lnum !== 3 || match$73.pos_bol !== 21 || match$73.pos_cnum !== 26)) {
                                                                                                                             var match$74 = match$72.loc_end;
-                                                                                                                            if (match$74.pos_fname === "" && !(match$74.pos_lnum !== 3 || match$74.pos_bol !== 21 || match$74.pos_cnum !== 44 || match$72.loc_ghost || match$64.pexp_attributes || match$62._1)) {
+                                                                                                                            if (match$74.pos_fname === "" && !(match$74.pos_lnum !== 3 || match$74.pos_bol !== 21 || match$74.pos_cnum !== 44 || match$72.loc_ghost || match$64.pexp_attributes || match$62.tl)) {
                                                                                                                               var match$75 = match$38.pexp_loc;
                                                                                                                               var match$76 = match$75.loc_start;
                                                                                                                               if (match$76.pos_fname === "" && !(match$76.pos_lnum !== 2 || match$76.pos_bol !== 13 || match$76.pos_cnum !== 15)) {
                                                                                                                                 var match$77 = match$75.loc_end;
                                                                                                                                 if (match$77.pos_fname === "" && !(match$77.pos_lnum !== 3 || match$77.pos_bol !== 21 || match$77.pos_cnum !== 44 || match$75.loc_ghost || match$38.pexp_attributes)) {
-                                                                                                                                  var match$78 = match$36._1;
+                                                                                                                                  var match$78 = match$36.tl;
                                                                                                                                   if (match$78) {
-                                                                                                                                    var match$79 = match$78._0;
+                                                                                                                                    var match$79 = match$78.hd;
                                                                                                                                     if (match$79[0] === "") {
                                                                                                                                       var match$80 = match$79[1];
                                                                                                                                       var match$81 = match$80.pexp_desc;
@@ -192,7 +192,7 @@ if (match) {
                                                                                                                                                           var match$89 = match$88.loc_start;
                                                                                                                                                           if (match$89.pos_fname === "" && !(match$89.pos_lnum !== 4 || match$89.pos_bol !== 46 || match$89.pos_cnum !== 51)) {
                                                                                                                                                             var match$90 = match$88.loc_end;
-                                                                                                                                                            if (match$90.pos_fname === "" && !(match$90.pos_lnum !== 4 || match$90.pos_bol !== 46 || match$90.pos_cnum !== 71 || match$88.loc_ghost || match$80.pexp_attributes || match$78._1)) {
+                                                                                                                                                            if (match$90.pos_fname === "" && !(match$90.pos_lnum !== 4 || match$90.pos_bol !== 46 || match$90.pos_cnum !== 71 || match$88.loc_ghost || match$80.pexp_attributes || match$78.tl)) {
                                                                                                                                                               var match$91 = match$24.pexp_loc;
                                                                                                                                                               var match$92 = match$91.loc_start;
                                                                                                                                                               if (match$92.pos_fname === "" && !(match$92.pos_lnum !== 2 || match$92.pos_bol !== 13 || match$92.pos_cnum !== 15)) {
@@ -207,7 +207,7 @@ if (match) {
                                                                                                                                                                       var match$98 = match$97.loc_start;
                                                                                                                                                                       if (match$98.pos_fname === "" && !(match$98.pos_lnum !== 1 || match$98.pos_bol !== 0 || match$98.pos_cnum !== 0)) {
                                                                                                                                                                         var match$99 = match$97.loc_end;
-                                                                                                                                                                        if (match$99.pos_fname === "" && !(match$99.pos_lnum !== 4 || match$99.pos_bol !== 46 || match$99.pos_cnum !== 71 || match$97.loc_ghost || match$2._1)) {
+                                                                                                                                                                        if (match$99.pos_fname === "" && !(match$99.pos_lnum !== 4 || match$99.pos_bol !== 46 || match$99.pos_cnum !== 71 || match$97.loc_ghost || match$2.tl)) {
                                                                                                                                                                           eq("File \"parser_api_test.ml\", line 210, characters 10-17", true, true);
                                                                                                                                                                         } else {
                                                                                                                                                                           eq("File \"parser_api_test.ml\", line 211, characters 12-19", true, false);

@@ -72,8 +72,8 @@ var test_id = {
 
 function eq(loc, x, y) {
   test_id.contents = test_id.contents + 1 | 0;
-  suites.contents = /* :: */{
-    _0: [
+  suites.contents = {
+    hd: [
       loc + (" id " + String(test_id.contents)),
       (function (param) {
           return {
@@ -83,7 +83,7 @@ function eq(loc, x, y) {
                 };
         })
     ],
-    _1: suites.contents
+    tl: suites.contents
   };
   
 }
@@ -104,9 +104,9 @@ function add5(a0, a1, a2, a3, a4) {
         a3,
         a4
       ]);
-  all_v.contents = /* :: */{
-    _0: v.contents,
-    _1: all_v.contents
+  all_v.contents = {
+    hd: v.contents,
+    tl: all_v.contents
   };
   return (((a0 + a1 | 0) + a2 | 0) + a3 | 0) + a4 | 0;
 }
@@ -129,9 +129,9 @@ function g(x) {
   var u = function (param, param$1) {
     return add5(x, partial_arg$1, partial_arg, param, param$1);
   };
-  all_v.contents = /* :: */{
-    _0: v.contents,
-    _1: all_v.contents
+  all_v.contents = {
+    hd: v.contents,
+    tl: all_v.contents
   };
   return u;
 }
@@ -152,19 +152,19 @@ eq("File \"earger_curry_test.ml\", line 120, characters 7-14", c, 10);
 
 eq("File \"earger_curry_test.ml\", line 121, characters 7-14", d, 11);
 
-eq("File \"earger_curry_test.ml\", line 122, characters 7-14", all_v.contents, /* :: */{
-      _0: 8,
-      _1: /* :: */{
-        _0: 8,
-        _1: /* :: */{
-          _0: 6,
-          _1: /* :: */{
-            _0: 6,
-            _1: /* :: */{
-              _0: 4,
-              _1: /* :: */{
-                _0: 2,
-                _1: /* [] */0
+eq("File \"earger_curry_test.ml\", line 122, characters 7-14", all_v.contents, {
+      hd: 8,
+      tl: {
+        hd: 8,
+        tl: {
+          hd: 6,
+          tl: {
+            hd: 6,
+            tl: {
+              hd: 4,
+              tl: {
+                hd: 2,
+                tl: /* [] */0
               }
             }
           }

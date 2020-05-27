@@ -65,10 +65,10 @@ let field (field_info : Lam_compat.field_dbg_info) e (i : int32) =
     E.extension_access e (Some name) i
   | Fld_extension -> 
     E.extension_access e  None i    
-  | Fld_variant  
-    -> 
-    E.inline_record_access e 
-      ("_" ^ Int32.to_string i) i 
+  | Fld_variant ->
+    E.variant_access e i  
+  | Fld_cons -> 
+    E.cons_access e i 
   | Fld_record_inline {name}
     -> E.inline_record_access e name i      
   | Fld_record {name}

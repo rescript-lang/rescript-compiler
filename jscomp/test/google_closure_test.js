@@ -3,8 +3,8 @@
 var Mt = require("./mt.js");
 var Test_google_closure = require("./test_google_closure.js");
 
-Mt.from_pair_suites("Closure", /* :: */{
-      _0: [
+Mt.from_pair_suites("Closure", {
+      hd: [
         "partial",
         (function (param) {
             return {
@@ -25,7 +25,7 @@ Mt.from_pair_suites("Closure", /* :: */{
                   };
           })
       ],
-      _1: /* [] */0
+      tl: /* [] */0
     });
 
 /*  Not a pure module */

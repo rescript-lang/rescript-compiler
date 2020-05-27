@@ -2,8 +2,8 @@
 
 var Mt = require("./mt.js");
 
-Mt.from_pair_suites("string_get_set_test.ml", /* :: */{
-      _0: [
+Mt.from_pair_suites("string_get_set_test.ml", {
+      hd: [
         "File \"string_get_set_test.ml\", line 6, characters 4-11",
         (function (param) {
             return {
@@ -13,7 +13,7 @@ Mt.from_pair_suites("string_get_set_test.ml", /* :: */{
                   };
           })
       ],
-      _1: /* [] */0
+      tl: /* [] */0
     });
 
 /*  Not a pure module */

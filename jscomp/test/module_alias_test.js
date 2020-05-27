@@ -14,8 +14,8 @@ var test_id = {
 
 function eq(loc, x, y) {
   test_id.contents = test_id.contents + 1 | 0;
-  suites.contents = /* :: */{
-    _0: [
+  suites.contents = {
+    hd: [
       loc + (" id " + String(test_id.contents)),
       (function (param) {
           return {
@@ -25,7 +25,7 @@ function eq(loc, x, y) {
                 };
         })
     ],
-    _1: suites.contents
+    tl: suites.contents
   };
   
 }
@@ -38,13 +38,13 @@ function f(x) {
 
 var h = f(/* [] */0);
 
-var a = Curry._1(h.length, /* :: */{
-      _0: 1,
-      _1: /* :: */{
-        _0: 2,
-        _1: /* :: */{
-          _0: 3,
-          _1: /* [] */0
+var a = Curry._1(h.length, {
+      hd: 1,
+      tl: {
+        hd: 2,
+        tl: {
+          hd: 3,
+          tl: /* [] */0
         }
       }
     });

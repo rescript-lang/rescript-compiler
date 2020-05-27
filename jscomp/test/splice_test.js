@@ -41,11 +41,11 @@ function dynamic(arr) {
         1,
         arr
       ]);
-  return eq("File \"splice_test.ml\", line 34, characters 5-12", a, Caml_array.caml_array_concat(/* :: */{
-                  _0: [1],
-                  _1: /* :: */{
-                    _0: arr,
-                    _1: /* [] */0
+  return eq("File \"splice_test.ml\", line 34, characters 5-12", a, Caml_array.caml_array_concat({
+                  hd: [1],
+                  tl: {
+                    hd: arr,
+                    tl: /* [] */0
                   }
                 }));
 }
@@ -81,11 +81,11 @@ function dynamic$1(arr) {
         1,
         arr
       ]);
-  return eq("File \"splice_test.ml\", line 56, characters 7-14", a, Caml_array.caml_array_concat(/* :: */{
-                  _0: [1],
-                  _1: /* :: */{
-                    _0: arr,
-                    _1: /* [] */0
+  return eq("File \"splice_test.ml\", line 56, characters 7-14", a, Caml_array.caml_array_concat({
+                  hd: [1],
+                  tl: {
+                    hd: arr,
+                    tl: /* [] */0
                   }
                 }));
 }

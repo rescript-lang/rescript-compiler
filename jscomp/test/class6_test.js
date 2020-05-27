@@ -26,8 +26,8 @@ var test_id = {
 
 function eq(loc, x, y) {
   test_id.contents = test_id.contents + 1 | 0;
-  suites.contents = /* :: */{
-    _0: [
+  suites.contents = {
+    hd: [
       loc + (" id " + String(test_id.contents)),
       (function (param) {
           return {
@@ -37,7 +37,7 @@ function eq(loc, x, y) {
                 };
         })
     ],
-    _1: suites.contents
+    tl: suites.contents
   };
   
 }
@@ -111,11 +111,11 @@ function lookup_obj(obj, _param) {
   while(true) {
     var param = _param;
     if (param) {
-      var obj$prime = param._0;
+      var obj$prime = param.hd;
       if (Caml_obj.caml_equal(obj, obj$prime)) {
         return obj$prime;
       }
-      _param = param._1;
+      _param = param.tl;
       continue ;
     }
     throw {

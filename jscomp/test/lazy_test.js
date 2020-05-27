@@ -185,8 +185,8 @@ var a7 = CamlinternalLazy.force(a5);
 
 var a8 = CamlinternalLazy.force(a6);
 
-Mt.from_pair_suites("Lazy_test", /* :: */{
-      _0: [
+Mt.from_pair_suites("Lazy_test", {
+      hd: [
         "simple",
         (function (param) {
             return {
@@ -199,8 +199,8 @@ Mt.from_pair_suites("Lazy_test", /* :: */{
                   };
           })
       ],
-      _1: /* :: */{
-        _0: [
+      tl: {
+        hd: [
           "lazy_match",
           (function (param) {
               return {
@@ -210,8 +210,8 @@ Mt.from_pair_suites("Lazy_test", /* :: */{
                     };
             })
         ],
-        _1: /* :: */{
-          _0: [
+        tl: {
+          hd: [
             "lazy_force",
             (function (param) {
                 return {
@@ -221,8 +221,8 @@ Mt.from_pair_suites("Lazy_test", /* :: */{
                       };
               })
           ],
-          _1: /* :: */{
-            _0: [
+          tl: {
+            hd: [
               "lazy_from_fun",
               (function (param) {
                   return {
@@ -232,8 +232,8 @@ Mt.from_pair_suites("Lazy_test", /* :: */{
                         };
                 })
             ],
-            _1: /* :: */{
-              _0: [
+            tl: {
+              hd: [
                 "lazy_from_val",
                 (function (param) {
                     return {
@@ -246,8 +246,8 @@ Mt.from_pair_suites("Lazy_test", /* :: */{
                           };
                   })
               ],
-              _1: /* :: */{
-                _0: [
+              tl: {
+                hd: [
                   "lazy_from_val2",
                   (function (param) {
                       return {
@@ -263,8 +263,8 @@ Mt.from_pair_suites("Lazy_test", /* :: */{
                             };
                     })
                 ],
-                _1: /* :: */{
-                  _0: [
+                tl: {
+                  hd: [
                     "lazy_from_val3",
                     (function (param) {
                         debugger;
@@ -278,8 +278,8 @@ Mt.from_pair_suites("Lazy_test", /* :: */{
                               };
                       })
                   ],
-                  _1: /* :: */{
-                    _0: [
+                  tl: {
+                    hd: [
                       "lazy_test.ml",
                       (function (param) {
                           return {
@@ -289,8 +289,8 @@ Mt.from_pair_suites("Lazy_test", /* :: */{
                                 };
                         })
                     ],
-                    _1: /* :: */{
-                      _0: [
+                    tl: {
+                      hd: [
                         "lazy_test.ml",
                         (function (param) {
                             return {
@@ -300,8 +300,8 @@ Mt.from_pair_suites("Lazy_test", /* :: */{
                                   };
                           })
                       ],
-                      _1: /* :: */{
-                        _0: [
+                      tl: {
+                        hd: [
                           "lazy_test.ml",
                           (function (param) {
                               return {
@@ -311,8 +311,8 @@ Mt.from_pair_suites("Lazy_test", /* :: */{
                                     };
                             })
                         ],
-                        _1: /* :: */{
-                          _0: [
+                        tl: {
+                          hd: [
                             "File \"lazy_test.ml\", line 78, characters 0-7",
                             (function (param) {
                                 return {
@@ -324,8 +324,8 @@ Mt.from_pair_suites("Lazy_test", /* :: */{
                                       };
                               })
                           ],
-                          _1: /* :: */{
-                            _0: [
+                          tl: {
+                            hd: [
                               "File \"lazy_test.ml\", line 79, characters 0-7",
                               (function (param) {
                                   return {
@@ -342,7 +342,7 @@ Mt.from_pair_suites("Lazy_test", /* :: */{
                                         };
                                 })
                             ],
-                            _1: /* [] */0
+                            tl: /* [] */0
                           }
                         }
                       }

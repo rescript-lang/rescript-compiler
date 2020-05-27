@@ -8,9 +8,9 @@ var Caml_js_exceptions = require("../../lib/js/caml_js_exceptions.js");
 
 function to_list(q) {
   return List.rev(Queue.fold((function (l, x) {
-                    return /* :: */{
-                            _0: x,
-                            _1: l
+                    return {
+                            hd: x,
+                            tl: l
                           };
                   }), /* [] */0, q));
 }
@@ -68,9 +68,9 @@ if (!(to_list(q) === /* [] */0 && q.length === 0)) {
 
 Queue.add(1, q);
 
-if (!(Caml_obj.caml_equal(to_list(q), /* :: */{
-          _0: 1,
-          _1: /* [] */0
+if (!(Caml_obj.caml_equal(to_list(q), {
+          hd: 1,
+          tl: /* [] */0
         }) && q.length === 1)) {
   throw {
         RE_EXN_ID: "Assert_failure",
@@ -85,11 +85,11 @@ if (!(Caml_obj.caml_equal(to_list(q), /* :: */{
 
 Queue.add(2, q);
 
-if (!(Caml_obj.caml_equal(to_list(q), /* :: */{
-          _0: 1,
-          _1: /* :: */{
-            _0: 2,
-            _1: /* [] */0
+if (!(Caml_obj.caml_equal(to_list(q), {
+          hd: 1,
+          tl: {
+            hd: 2,
+            tl: /* [] */0
           }
         }) && q.length === 2)) {
   throw {
@@ -105,13 +105,13 @@ if (!(Caml_obj.caml_equal(to_list(q), /* :: */{
 
 Queue.add(3, q);
 
-if (!(Caml_obj.caml_equal(to_list(q), /* :: */{
-          _0: 1,
-          _1: /* :: */{
-            _0: 2,
-            _1: /* :: */{
-              _0: 3,
-              _1: /* [] */0
+if (!(Caml_obj.caml_equal(to_list(q), {
+          hd: 1,
+          tl: {
+            hd: 2,
+            tl: {
+              hd: 3,
+              tl: /* [] */0
             }
           }
         }) && q.length === 3)) {
@@ -128,15 +128,15 @@ if (!(Caml_obj.caml_equal(to_list(q), /* :: */{
 
 Queue.add(4, q);
 
-if (!(Caml_obj.caml_equal(to_list(q), /* :: */{
-          _0: 1,
-          _1: /* :: */{
-            _0: 2,
-            _1: /* :: */{
-              _0: 3,
-              _1: /* :: */{
-                _0: 4,
-                _1: /* [] */0
+if (!(Caml_obj.caml_equal(to_list(q), {
+          hd: 1,
+          tl: {
+            hd: 2,
+            tl: {
+              hd: 3,
+              tl: {
+                hd: 4,
+                tl: /* [] */0
               }
             }
           }
@@ -164,13 +164,13 @@ if (Queue.take(q) !== 1) {
       };
 }
 
-if (!(Caml_obj.caml_equal(to_list(q), /* :: */{
-          _0: 2,
-          _1: /* :: */{
-            _0: 3,
-            _1: /* :: */{
-              _0: 4,
-              _1: /* [] */0
+if (!(Caml_obj.caml_equal(to_list(q), {
+          hd: 2,
+          tl: {
+            hd: 3,
+            tl: {
+              hd: 4,
+              tl: /* [] */0
             }
           }
         }) && q.length === 3)) {
@@ -197,11 +197,11 @@ if (Queue.take(q) !== 2) {
       };
 }
 
-if (!(Caml_obj.caml_equal(to_list(q), /* :: */{
-          _0: 3,
-          _1: /* :: */{
-            _0: 4,
-            _1: /* [] */0
+if (!(Caml_obj.caml_equal(to_list(q), {
+          hd: 3,
+          tl: {
+            hd: 4,
+            tl: /* [] */0
           }
         }) && q.length === 2)) {
   throw {
@@ -227,9 +227,9 @@ if (Queue.take(q) !== 3) {
       };
 }
 
-if (!(Caml_obj.caml_equal(to_list(q), /* :: */{
-          _0: 4,
-          _1: /* [] */0
+if (!(Caml_obj.caml_equal(to_list(q), {
+          hd: 4,
+          tl: /* [] */0
         }) && q.length === 1)) {
   throw {
         RE_EXN_ID: "Assert_failure",
@@ -570,27 +570,27 @@ for(var i$1 = 1; i$1 <= 10; ++i$1){
 
 var q2 = Queue.copy(q1);
 
-if (!Caml_obj.caml_equal(to_list(q1), /* :: */{
-        _0: 1,
-        _1: /* :: */{
-          _0: 2,
-          _1: /* :: */{
-            _0: 3,
-            _1: /* :: */{
-              _0: 4,
-              _1: /* :: */{
-                _0: 5,
-                _1: /* :: */{
-                  _0: 6,
-                  _1: /* :: */{
-                    _0: 7,
-                    _1: /* :: */{
-                      _0: 8,
-                      _1: /* :: */{
-                        _0: 9,
-                        _1: /* :: */{
-                          _0: 10,
-                          _1: /* [] */0
+if (!Caml_obj.caml_equal(to_list(q1), {
+        hd: 1,
+        tl: {
+          hd: 2,
+          tl: {
+            hd: 3,
+            tl: {
+              hd: 4,
+              tl: {
+                hd: 5,
+                tl: {
+                  hd: 6,
+                  tl: {
+                    hd: 7,
+                    tl: {
+                      hd: 8,
+                      tl: {
+                        hd: 9,
+                        tl: {
+                          hd: 10,
+                          tl: /* [] */0
                         }
                       }
                     }
@@ -612,27 +612,27 @@ if (!Caml_obj.caml_equal(to_list(q1), /* :: */{
       };
 }
 
-if (!Caml_obj.caml_equal(to_list(q2), /* :: */{
-        _0: 1,
-        _1: /* :: */{
-          _0: 2,
-          _1: /* :: */{
-            _0: 3,
-            _1: /* :: */{
-              _0: 4,
-              _1: /* :: */{
-                _0: 5,
-                _1: /* :: */{
-                  _0: 6,
-                  _1: /* :: */{
-                    _0: 7,
-                    _1: /* :: */{
-                      _0: 8,
-                      _1: /* :: */{
-                        _0: 9,
-                        _1: /* :: */{
-                          _0: 10,
-                          _1: /* [] */0
+if (!Caml_obj.caml_equal(to_list(q2), {
+        hd: 1,
+        tl: {
+          hd: 2,
+          tl: {
+            hd: 3,
+            tl: {
+              hd: 4,
+              tl: {
+                hd: 5,
+                tl: {
+                  hd: 6,
+                  tl: {
+                    hd: 7,
+                    tl: {
+                      hd: 8,
+                      tl: {
+                        hd: 9,
+                        tl: {
+                          hd: 10,
+                          tl: /* [] */0
                         }
                       }
                     }
@@ -971,15 +971,15 @@ if (q1$2.length !== 4) {
       };
 }
 
-if (!Caml_obj.caml_equal(to_list(q1$2), /* :: */{
-        _0: 1,
-        _1: /* :: */{
-          _0: 2,
-          _1: /* :: */{
-            _0: 3,
-            _1: /* :: */{
-              _0: 4,
-              _1: /* [] */0
+if (!Caml_obj.caml_equal(to_list(q1$2), {
+        hd: 1,
+        tl: {
+          hd: 2,
+          tl: {
+            hd: 3,
+            tl: {
+              hd: 4,
+              tl: /* [] */0
             }
           }
         }
@@ -1057,15 +1057,15 @@ if (q2$2.length !== 4) {
       };
 }
 
-if (!Caml_obj.caml_equal(to_list(q2$2), /* :: */{
-        _0: 1,
-        _1: /* :: */{
-          _0: 2,
-          _1: /* :: */{
-            _0: 3,
-            _1: /* :: */{
-              _0: 4,
-              _1: /* [] */0
+if (!Caml_obj.caml_equal(to_list(q2$2), {
+        hd: 1,
+        tl: {
+          hd: 2,
+          tl: {
+            hd: 3,
+            tl: {
+              hd: 4,
+              tl: /* [] */0
             }
           }
         }
@@ -1133,15 +1133,15 @@ if (q2$3.length !== 4) {
       };
 }
 
-if (!Caml_obj.caml_equal(to_list(q2$3), /* :: */{
-        _0: 5,
-        _1: /* :: */{
-          _0: 6,
-          _1: /* :: */{
-            _0: 7,
-            _1: /* :: */{
-              _0: 8,
-              _1: /* [] */0
+if (!Caml_obj.caml_equal(to_list(q2$3), {
+        hd: 5,
+        tl: {
+          hd: 6,
+          tl: {
+            hd: 7,
+            tl: {
+              hd: 8,
+              tl: /* [] */0
             }
           }
         }
@@ -1195,15 +1195,15 @@ if (q2$3.length !== 4) {
       };
 }
 
-if (!Caml_obj.caml_equal(to_list(q2$3), /* :: */{
-        _0: 5,
-        _1: /* :: */{
-          _0: 6,
-          _1: /* :: */{
-            _0: 7,
-            _1: /* :: */{
-              _0: 8,
-              _1: /* [] */0
+if (!Caml_obj.caml_equal(to_list(q2$3), {
+        hd: 5,
+        tl: {
+          hd: 6,
+          tl: {
+            hd: 7,
+            tl: {
+              hd: 8,
+              tl: /* [] */0
             }
           }
         }
@@ -1251,15 +1251,15 @@ if (q1$4.length !== 4) {
       };
 }
 
-if (!Caml_obj.caml_equal(to_list(q1$4), /* :: */{
-        _0: 1,
-        _1: /* :: */{
-          _0: 2,
-          _1: /* :: */{
-            _0: 3,
-            _1: /* :: */{
-              _0: 4,
-              _1: /* [] */0
+if (!Caml_obj.caml_equal(to_list(q1$4), {
+        hd: 1,
+        tl: {
+          hd: 2,
+          tl: {
+            hd: 3,
+            tl: {
+              hd: 4,
+              tl: /* [] */0
             }
           }
         }
@@ -1287,15 +1287,15 @@ if (q2$4.length !== 4) {
       };
 }
 
-if (!Caml_obj.caml_equal(to_list(q2$4), /* :: */{
-        _0: 5,
-        _1: /* :: */{
-          _0: 6,
-          _1: /* :: */{
-            _0: 7,
-            _1: /* :: */{
-              _0: 8,
-              _1: /* [] */0
+if (!Caml_obj.caml_equal(to_list(q2$4), {
+        hd: 5,
+        tl: {
+          hd: 6,
+          tl: {
+            hd: 7,
+            tl: {
+              hd: 8,
+              tl: /* [] */0
             }
           }
         }
@@ -1349,23 +1349,23 @@ if (q2$4.length !== 8) {
       };
 }
 
-if (!Caml_obj.caml_equal(to_list(q2$4), /* :: */{
-        _0: 5,
-        _1: /* :: */{
-          _0: 6,
-          _1: /* :: */{
-            _0: 7,
-            _1: /* :: */{
-              _0: 8,
-              _1: /* :: */{
-                _0: 1,
-                _1: /* :: */{
-                  _0: 2,
-                  _1: /* :: */{
-                    _0: 3,
-                    _1: /* :: */{
-                      _0: 4,
-                      _1: /* [] */0
+if (!Caml_obj.caml_equal(to_list(q2$4), {
+        hd: 5,
+        tl: {
+          hd: 6,
+          tl: {
+            hd: 7,
+            tl: {
+              hd: 8,
+              tl: {
+                hd: 1,
+                tl: {
+                  hd: 2,
+                  tl: {
+                    hd: 3,
+                    tl: {
+                      hd: 4,
+                      tl: /* [] */0
                     }
                   }
                 }

@@ -14,8 +14,8 @@ var test_id = {
 
 function eq(loc, x, y) {
   test_id.contents = test_id.contents + 1 | 0;
-  suites.contents = /* :: */{
-    _0: [
+  suites.contents = {
+    hd: [
       loc + (" id " + String(test_id.contents)),
       (function (param) {
           return {
@@ -25,7 +25,7 @@ function eq(loc, x, y) {
                 };
         })
     ],
-    _1: suites.contents
+    tl: suites.contents
   };
   
 }
@@ -54,45 +54,45 @@ function convert(s) {
 
 eq("File \"chn_test.ml\", line 25, characters 7-14", "你好，\n世界", "你好，\n世界");
 
-eq("File \"chn_test.ml\", line 27, characters 7-14", convert("汉字是世界上最美丽的character"), /* :: */{
-      _0: 27721,
-      _1: /* :: */{
-        _0: 23383,
-        _1: /* :: */{
-          _0: 26159,
-          _1: /* :: */{
-            _0: 19990,
-            _1: /* :: */{
-              _0: 30028,
-              _1: /* :: */{
-                _0: 19978,
-                _1: /* :: */{
-                  _0: 26368,
-                  _1: /* :: */{
-                    _0: 32654,
-                    _1: /* :: */{
-                      _0: 20029,
-                      _1: /* :: */{
-                        _0: 30340,
-                        _1: /* :: */{
-                          _0: 99,
-                          _1: /* :: */{
-                            _0: 104,
-                            _1: /* :: */{
-                              _0: 97,
-                              _1: /* :: */{
-                                _0: 114,
-                                _1: /* :: */{
-                                  _0: 97,
-                                  _1: /* :: */{
-                                    _0: 99,
-                                    _1: /* :: */{
-                                      _0: 116,
-                                      _1: /* :: */{
-                                        _0: 101,
-                                        _1: /* :: */{
-                                          _0: 114,
-                                          _1: /* [] */0
+eq("File \"chn_test.ml\", line 27, characters 7-14", convert("汉字是世界上最美丽的character"), {
+      hd: 27721,
+      tl: {
+        hd: 23383,
+        tl: {
+          hd: 26159,
+          tl: {
+            hd: 19990,
+            tl: {
+              hd: 30028,
+              tl: {
+                hd: 19978,
+                tl: {
+                  hd: 26368,
+                  tl: {
+                    hd: 32654,
+                    tl: {
+                      hd: 20029,
+                      tl: {
+                        hd: 30340,
+                        tl: {
+                          hd: 99,
+                          tl: {
+                            hd: 104,
+                            tl: {
+                              hd: 97,
+                              tl: {
+                                hd: 114,
+                                tl: {
+                                  hd: 97,
+                                  tl: {
+                                    hd: 99,
+                                    tl: {
+                                      hd: 116,
+                                      tl: {
+                                        hd: 101,
+                                        tl: {
+                                          hd: 114,
+                                          tl: /* [] */0
                                         }
                                       }
                                     }
@@ -113,73 +113,73 @@ eq("File \"chn_test.ml\", line 27, characters 7-14", convert("汉字是世界上
       }
     });
 
-eq("File \"chn_test.ml\", line 48, characters 5-12", convert("\x3f\x3fa"), /* :: */{
-      _0: 63,
-      _1: /* :: */{
-        _0: 63,
-        _1: /* :: */{
-          _0: 97,
-          _1: /* [] */0
+eq("File \"chn_test.ml\", line 48, characters 5-12", convert("\x3f\x3fa"), {
+      hd: 63,
+      tl: {
+        hd: 63,
+        tl: {
+          hd: 97,
+          tl: /* [] */0
         }
       }
     });
 
-eq("File \"chn_test.ml\", line 50, characters 5-12", convert("??a"), /* :: */{
-      _0: 63,
-      _1: /* :: */{
-        _0: 63,
-        _1: /* :: */{
-          _0: 97,
-          _1: /* [] */0
+eq("File \"chn_test.ml\", line 50, characters 5-12", convert("??a"), {
+      hd: 63,
+      tl: {
+        hd: 63,
+        tl: {
+          hd: 97,
+          tl: /* [] */0
         }
       }
     });
 
-eq("File \"chn_test.ml\", line 52, characters 5-12", convert("\u003f\x3fa"), /* :: */{
-      _0: 63,
-      _1: /* :: */{
-        _0: 63,
-        _1: /* :: */{
-          _0: 97,
-          _1: /* [] */0
+eq("File \"chn_test.ml\", line 52, characters 5-12", convert("\u003f\x3fa"), {
+      hd: 63,
+      tl: {
+        hd: 63,
+        tl: {
+          hd: 97,
+          tl: /* [] */0
         }
       }
     });
 
-eq("File \"chn_test.ml\", line 54, characters 5-12", convert("🚀🚀a"), /* :: */{
-      _0: 128640,
-      _1: /* :: */{
-        _0: 128640,
-        _1: /* :: */{
-          _0: 97,
-          _1: /* [] */0
+eq("File \"chn_test.ml\", line 54, characters 5-12", convert("🚀🚀a"), {
+      hd: 128640,
+      tl: {
+        hd: 128640,
+        tl: {
+          hd: 97,
+          tl: /* [] */0
         }
       }
     });
 
-eq("File \"chn_test.ml\", line 56, characters 5-12", convert("\uD83D\uDE80a"), /* :: */{
-      _0: 128640,
-      _1: /* :: */{
-        _0: 97,
-        _1: /* [] */0
+eq("File \"chn_test.ml\", line 56, characters 5-12", convert("\uD83D\uDE80a"), {
+      hd: 128640,
+      tl: {
+        hd: 97,
+        tl: /* [] */0
       }
     });
 
-eq("File \"chn_test.ml\", line 58, characters 5-12", convert("\uD83D\uDE80\x3f"), /* :: */{
-      _0: 128640,
-      _1: /* :: */{
-        _0: 63,
-        _1: /* [] */0
+eq("File \"chn_test.ml\", line 58, characters 5-12", convert("\uD83D\uDE80\x3f"), {
+      hd: 128640,
+      tl: {
+        hd: 63,
+        tl: /* [] */0
       }
     });
 
-eq("File \"chn_test.ml\", line 63, characters 5-12", convert("\uD83D\uDE80\uD83D\uDE80a"), /* :: */{
-      _0: 128640,
-      _1: /* :: */{
-        _0: 128640,
-        _1: /* :: */{
-          _0: 97,
-          _1: /* [] */0
+eq("File \"chn_test.ml\", line 63, characters 5-12", convert("\uD83D\uDE80\uD83D\uDE80a"), {
+      hd: 128640,
+      tl: {
+        hd: 128640,
+        tl: {
+          hd: 97,
+          tl: /* [] */0
         }
       }
     });
@@ -188,36 +188,36 @@ eq("No inline string length", "\uD83D\uDE80\0".length, 3);
 
 eq("No inline string access", Caml_string.get("\uD83D\uDE80\0", 0) & 255, 61);
 
-eq("File \"chn_test.ml\", line 79, characters 5-12", convert("\uD83D\uDE80"), /* :: */{
-      _0: 128640,
-      _1: /* [] */0
+eq("File \"chn_test.ml\", line 79, characters 5-12", convert("\uD83D\uDE80"), {
+      hd: 128640,
+      tl: /* [] */0
     });
 
-eq("File \"chn_test.ml\", line 81, characters 5-12", convert("\uD83D\uDE80\uD83D\uDE80"), /* :: */{
-      _0: 128640,
-      _1: /* :: */{
-        _0: 128640,
-        _1: /* [] */0
+eq("File \"chn_test.ml\", line 81, characters 5-12", convert("\uD83D\uDE80\uD83D\uDE80"), {
+      hd: 128640,
+      tl: {
+        hd: 128640,
+        tl: /* [] */0
       }
     });
 
-eq("File \"chn_test.ml\", line 82, characters 5-12", convert(" \b\t\n\v\f\ra"), /* :: */{
-      _0: 32,
-      _1: /* :: */{
-        _0: 8,
-        _1: /* :: */{
-          _0: 9,
-          _1: /* :: */{
-            _0: 10,
-            _1: /* :: */{
-              _0: 11,
-              _1: /* :: */{
-                _0: 12,
-                _1: /* :: */{
-                  _0: 13,
-                  _1: /* :: */{
-                    _0: 97,
-                    _1: /* [] */0
+eq("File \"chn_test.ml\", line 82, characters 5-12", convert(" \b\t\n\v\f\ra"), {
+      hd: 32,
+      tl: {
+        hd: 8,
+        tl: {
+          hd: 9,
+          tl: {
+            hd: 10,
+            tl: {
+              hd: 11,
+              tl: {
+                hd: 12,
+                tl: {
+                  hd: 13,
+                  tl: {
+                    hd: 97,
+                    tl: /* [] */0
                   }
                 }
               }
@@ -227,31 +227,31 @@ eq("File \"chn_test.ml\", line 82, characters 5-12", convert(" \b\t\n\v\f\ra"), 
       }
     });
 
-eq("File \"chn_test.ml\", line 89, characters 6-13", convert(" \b\t\n\v\f\r\"\'\\\0a"), /* :: */{
-      _0: 32,
-      _1: /* :: */{
-        _0: 8,
-        _1: /* :: */{
-          _0: 9,
-          _1: /* :: */{
-            _0: 10,
-            _1: /* :: */{
-              _0: 11,
-              _1: /* :: */{
-                _0: 12,
-                _1: /* :: */{
-                  _0: 13,
-                  _1: /* :: */{
-                    _0: 34,
-                    _1: /* :: */{
-                      _0: 39,
-                      _1: /* :: */{
-                        _0: 92,
-                        _1: /* :: */{
-                          _0: 0,
-                          _1: /* :: */{
-                            _0: 97,
-                            _1: /* [] */0
+eq("File \"chn_test.ml\", line 89, characters 6-13", convert(" \b\t\n\v\f\r\"\'\\\0a"), {
+      hd: 32,
+      tl: {
+        hd: 8,
+        tl: {
+          hd: 9,
+          tl: {
+            hd: 10,
+            tl: {
+              hd: 11,
+              tl: {
+                hd: 12,
+                tl: {
+                  hd: 13,
+                  tl: {
+                    hd: 34,
+                    tl: {
+                      hd: 39,
+                      tl: {
+                        hd: 92,
+                        tl: {
+                          hd: 0,
+                          tl: {
+                            hd: 97,
+                            tl: /* [] */0
                           }
                         }
                       }

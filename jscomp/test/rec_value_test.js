@@ -8,9 +8,9 @@ var CamlinternalLazy = require("../../lib/js/camlinternalLazy.js");
 
 var x = {};
 
-x._0 = 1;
+x.hd = 1;
 
-x._1 = x;
+x.tl = x;
 
 var x0 = {};
 
@@ -35,26 +35,26 @@ var b = {};
 
 var c = {};
 
-Caml_obj.update_dummy(a, /* :: */{
-      _0: 2,
-      _1: b
+Caml_obj.update_dummy(a, {
+      hd: 2,
+      tl: b
     });
 
-Caml_obj.update_dummy(b, /* :: */{
-      _0: 3,
-      _1: c
+Caml_obj.update_dummy(b, {
+      hd: 3,
+      tl: c
     });
 
-Caml_obj.update_dummy(c, /* :: */{
-      _0: 3,
-      _1: a
+Caml_obj.update_dummy(c, {
+      hd: 3,
+      tl: a
     });
 
 var xx = {};
 
-xx._0 = 1;
+xx.hd = 1;
 
-xx._1 = xx;
+xx.tl = xx;
 
 function naive(n) {
   if (n === 0 || n === 1) {
@@ -111,9 +111,9 @@ function zs(param) {
   return List.hd(xs[0]);
 }
 
-var xs_0 = /* :: */{
-  _0: 2,
-  _1: /* [] */0
+var xs_0 = {
+  hd: 2,
+  tl: /* [] */0
 };
 
 var xs = [
@@ -184,43 +184,43 @@ function sum(_acc, _n) {
   };
 }
 
-var fake_v = /* :: */{
-  _0: 1,
-  _1: /* :: */{
-    _0: 2,
-    _1: /* [] */0
+var fake_v = {
+  hd: 1,
+  tl: {
+    hd: 2,
+    tl: /* [] */0
   }
 };
 
-var fake_y = /* :: */{
-  _0: 2,
-  _1: /* :: */{
-    _0: 3,
-    _1: /* [] */0
+var fake_y = {
+  hd: 2,
+  tl: {
+    hd: 3,
+    tl: /* [] */0
   }
 };
 
-var fake_z = /* :: */{
-  _0: 1,
-  _1: fake_y
+var fake_z = {
+  hd: 1,
+  tl: fake_y
 };
 
-var fake_y2 = /* :: */{
-  _0: 2,
-  _1: /* :: */{
-    _0: 3,
-    _1: /* [] */0
+var fake_y2 = {
+  hd: 2,
+  tl: {
+    hd: 3,
+    tl: /* [] */0
   }
 };
 
-var fake_z2_1 = /* :: */{
-  _0: sum(0, 10),
-  _1: fake_y2
+var fake_z2_1 = {
+  hd: sum(0, 10),
+  tl: fake_y2
 };
 
-var fake_z2 = /* :: */{
-  _0: 1,
-  _1: fake_z2_1
+var fake_z2 = {
+  hd: 1,
+  tl: fake_z2_1
 };
 
 function rec_variant_b_1(param) {
@@ -322,8 +322,8 @@ var suites_0 = [
     })
 ];
 
-var suites_1 = /* :: */{
-  _0: [
+var suites_1 = {
+  hd: [
     "File \"rec_value_test.ml\", line 128, characters 2-9",
     (function (param) {
         return {
@@ -333,8 +333,8 @@ var suites_1 = /* :: */{
               };
       })
   ],
-  _1: /* :: */{
-    _0: [
+  tl: {
+    hd: [
       "hd",
       (function (param) {
           return {
@@ -344,15 +344,15 @@ var suites_1 = /* :: */{
                 };
         })
     ],
-    _1: /* :: */{
-      _0: [
+    tl: {
+      hd: [
         "mutual",
         (function (param) {
             var tmp;
             if (a) {
-              var match = a._1;
+              var match = a.tl;
               if (match) {
-                tmp = match._0;
+                tmp = match.hd;
               } else {
                 throw {
                       RE_EXN_ID: "Assert_failure",
@@ -382,8 +382,8 @@ var suites_1 = /* :: */{
                   };
           })
       ],
-      _1: /* :: */{
-        _0: [
+      tl: {
+        hd: [
           "rec_sum",
           (function (param) {
               return {
@@ -393,53 +393,53 @@ var suites_1 = /* :: */{
                     };
             })
         ],
-        _1: /* :: */{
-          _0: [
+        tl: {
+          hd: [
             "File \"rec_value_test.ml\", line 143, characters 2-9",
             (function (param) {
                 return {
                         TAG: /* Eq */0,
-                        _0: /* :: */{
-                          _0: 1,
-                          _1: /* :: */{
-                            _0: 2,
-                            _1: /* [] */0
+                        _0: {
+                          hd: 1,
+                          tl: {
+                            hd: 2,
+                            tl: /* [] */0
                           }
                         },
                         _1: fake_v
                       };
               })
           ],
-          _1: /* :: */{
-            _0: [
+          tl: {
+            hd: [
               "File \"rec_value_test.ml\", line 146, characters 2-9",
               (function (param) {
                   return {
                           TAG: /* Eq */0,
-                          _0: /* :: */{
-                            _0: 2,
-                            _1: /* :: */{
-                              _0: 3,
-                              _1: /* [] */0
+                          _0: {
+                            hd: 2,
+                            tl: {
+                              hd: 3,
+                              tl: /* [] */0
                             }
                           },
                           _1: fake_y
                         };
                 })
             ],
-            _1: /* :: */{
-              _0: [
+            tl: {
+              hd: [
                 "File \"rec_value_test.ml\", line 149, characters 2-9",
                 (function (param) {
                     return {
                             TAG: /* Eq */0,
-                            _0: /* :: */{
-                              _0: 1,
-                              _1: /* :: */{
-                                _0: 2,
-                                _1: /* :: */{
-                                  _0: 3,
-                                  _1: /* [] */0
+                            _0: {
+                              hd: 1,
+                              tl: {
+                                hd: 2,
+                                tl: {
+                                  hd: 3,
+                                  tl: /* [] */0
                                 }
                               }
                             },
@@ -447,21 +447,21 @@ var suites_1 = /* :: */{
                           };
                   })
               ],
-              _1: /* :: */{
-                _0: [
+              tl: {
+                hd: [
                   "File \"rec_value_test.ml\", line 152, characters 2-9",
                   (function (param) {
                       return {
                               TAG: /* Eq */0,
-                              _0: /* :: */{
-                                _0: 1,
-                                _1: /* :: */{
-                                  _0: 55,
-                                  _1: /* :: */{
-                                    _0: 2,
-                                    _1: /* :: */{
-                                      _0: 3,
-                                      _1: /* [] */0
+                              _0: {
+                                hd: 1,
+                                tl: {
+                                  hd: 55,
+                                  tl: {
+                                    hd: 2,
+                                    tl: {
+                                      hd: 3,
+                                      tl: /* [] */0
                                     }
                                   }
                                 }
@@ -470,25 +470,25 @@ var suites_1 = /* :: */{
                             };
                     })
                 ],
-                _1: /* :: */{
-                  _0: [
+                tl: {
+                  hd: [
                     "File \"rec_value_test.ml\", line 155, characters 2-9",
                     (function (param) {
                         return {
                                 TAG: /* Eq */0,
-                                _0: /* :: */{
-                                  _0: 2,
-                                  _1: /* :: */{
-                                    _0: 3,
-                                    _1: /* [] */0
+                                _0: {
+                                  hd: 2,
+                                  tl: {
+                                    hd: 3,
+                                    tl: /* [] */0
                                   }
                                 },
                                 _1: fake_y2
                               };
                       })
                   ],
-                  _1: /* :: */{
-                    _0: [
+                  tl: {
+                    hd: [
                       "File \"rec_value_test.ml\", line 158, characters 2-9",
                       (function (param) {
                           return {
@@ -498,8 +498,8 @@ var suites_1 = /* :: */{
                                 };
                         })
                     ],
-                    _1: /* :: */{
-                      _0: [
+                    tl: {
+                      hd: [
                         "File \"rec_value_test.ml\", line 161, characters 2-9",
                         (function (param) {
                             if (!rec_variant_b.TAG) {
@@ -520,8 +520,8 @@ var suites_1 = /* :: */{
                                 };
                           })
                       ],
-                      _1: /* :: */{
-                        _0: [
+                      tl: {
+                        hd: [
                           "File \"rec_value_test.ml\", line 166, characters 2-9",
                           (function (param) {
                               if (rec_variant_a.TAG) {
@@ -542,7 +542,7 @@ var suites_1 = /* :: */{
                                   };
                             })
                         ],
-                        _1: /* [] */0
+                        tl: /* [] */0
                       }
                     }
                   }
@@ -556,9 +556,9 @@ var suites_1 = /* :: */{
   }
 };
 
-var suites = /* :: */{
-  _0: suites_0,
-  _1: suites_1
+var suites = {
+  hd: suites_0,
+  tl: suites_1
 };
 
 function fake_minus(n) {

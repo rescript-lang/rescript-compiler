@@ -176,8 +176,8 @@ var suites_0 = [
     })
 ];
 
-var suites_1 = /* :: */{
-  _0: [
+var suites_1 = {
+  hd: [
     "single_obj_cache",
     (function (param) {
         return {
@@ -193,8 +193,8 @@ var suites_1 = /* :: */{
               };
       })
   ],
-  _1: /* :: */{
-    _0: [
+  tl: {
+    hd: [
       "self_obj",
       (function (param) {
           return {
@@ -204,8 +204,8 @@ var suites_1 = /* :: */{
                 };
         })
     ],
-    _1: /* :: */{
-      _0: [
+    tl: {
+      hd: [
         "uu_id",
         (function (param) {
             return {
@@ -215,8 +215,8 @@ var suites_1 = /* :: */{
                   };
           })
       ],
-      _1: /* :: */{
-        _0: [
+      tl: {
+        hd: [
           "uu_add",
           (function (param) {
               return {
@@ -226,8 +226,8 @@ var suites_1 = /* :: */{
                     };
             })
         ],
-        _1: /* :: */{
-          _0: [
+        tl: {
+          hd: [
             "v_add",
             (function (param) {
                 return {
@@ -237,8 +237,8 @@ var suites_1 = /* :: */{
                       };
               })
           ],
-          _1: /* :: */{
-            _0: [
+          tl: {
+            hd: [
               "u_id1",
               (function (param) {
                   return {
@@ -248,8 +248,8 @@ var suites_1 = /* :: */{
                         };
                 })
             ],
-            _1: /* :: */{
-              _0: [
+            tl: {
+              hd: [
                 "u_id2",
                 (function (param) {
                     return {
@@ -259,8 +259,8 @@ var suites_1 = /* :: */{
                           };
                   })
               ],
-              _1: /* :: */{
-                _0: [
+              tl: {
+                hd: [
                   "u hi",
                   (function (param) {
                       return {
@@ -270,8 +270,8 @@ var suites_1 = /* :: */{
                             };
                     })
                 ],
-                _1: /* :: */{
-                  _0: [
+                tl: {
+                  hd: [
                     "u hello",
                     (function (param) {
                         return {
@@ -281,8 +281,8 @@ var suites_1 = /* :: */{
                               };
                       })
                   ],
-                  _1: /* :: */{
-                    _0: [
+                  tl: {
+                    hd: [
                       "v hi",
                       (function (param) {
                           return {
@@ -292,8 +292,8 @@ var suites_1 = /* :: */{
                                 };
                         })
                     ],
-                    _1: /* :: */{
-                      _0: [
+                    tl: {
+                      hd: [
                         "uuu add",
                         (function (param) {
                             return {
@@ -303,8 +303,8 @@ var suites_1 = /* :: */{
                                   };
                           })
                       ],
-                      _1: /* :: */{
-                        _0: [
+                      tl: {
+                        hd: [
                           "v x",
                           (function (param) {
                               return {
@@ -314,7 +314,7 @@ var suites_1 = /* :: */{
                                     };
                             })
                         ],
-                        _1: /* [] */0
+                        tl: /* [] */0
                       }
                     }
                   }
@@ -328,9 +328,9 @@ var suites_1 = /* :: */{
   }
 };
 
-var suites = /* :: */{
-  _0: suites_0,
-  _1: suites_1
+var suites = {
+  hd: suites_0,
+  tl: suites_1
 };
 
 Mt.from_pair_suites("Obj_test", suites);

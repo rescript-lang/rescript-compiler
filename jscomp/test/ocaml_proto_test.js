@@ -126,9 +126,9 @@ function proto(syntax, file_option, $$package, $$import, message, $$enum, proto$
         imports: proto$4.imports,
         file_options: proto$4.file_options,
         package: proto$4.package,
-        messages: /* :: */{
-          _0: message,
-          _1: proto$2.messages
+        messages: {
+          hd: message,
+          tl: proto$2.messages
         },
         enums: proto$4.enums,
         extends: proto$4.extends
@@ -139,17 +139,17 @@ function proto(syntax, file_option, $$package, $$import, message, $$enum, proto$
         file_options: proto$5.file_options,
         package: proto$5.package,
         messages: proto$5.messages,
-        enums: /* :: */{
-          _0: $$enum,
-          _1: proto$2.enums
+        enums: {
+          hd: $$enum,
+          tl: proto$2.enums
         },
         extends: proto$5.extends
       }) : proto$5;
   var proto$7 = $$import !== undefined ? ({
         syntax: proto$6.syntax,
-        imports: /* :: */{
-          _0: $$import,
-          _1: proto$2.imports
+        imports: {
+          hd: $$import,
+          tl: proto$2.imports
         },
         file_options: proto$6.file_options,
         package: proto$6.package,
@@ -160,9 +160,9 @@ function proto(syntax, file_option, $$package, $$import, message, $$enum, proto$
   var proto$8 = file_option !== undefined ? ({
         syntax: proto$7.syntax,
         imports: proto$7.imports,
-        file_options: /* :: */{
-          _0: file_option,
-          _1: proto$2.file_options
+        file_options: {
+          hd: file_option,
+          tl: proto$2.file_options
         },
         package: proto$7.package,
         messages: proto$7.messages,
@@ -177,9 +177,9 @@ function proto(syntax, file_option, $$package, $$import, message, $$enum, proto$
             package: proto$8.package,
             messages: proto$8.messages,
             enums: proto$8.enums,
-            extends: /* :: */{
-              _0: extend,
-              _1: proto$2.extends
+            extends: {
+              hd: extend,
+              tl: proto$2.extends
             }
           };
   } else {
@@ -207,17 +207,17 @@ function rev_split_by_char(c, s) {
     try {
       var i$prime = $$String.index_from(s, i, c);
       var s$prime = $$String.sub(s, i, i$prime - i | 0);
-      return loop(i$prime + 1 | 0, s$prime === "" ? l : /* :: */({
-                      _0: s$prime,
-                      _1: l
+      return loop(i$prime + 1 | 0, s$prime === "" ? l : ({
+                      hd: s$prime,
+                      tl: l
                     }));
     }
     catch (raw_exn){
       var exn = Caml_js_exceptions.internalToOCamlException(raw_exn);
       if (exn.RE_EXN_ID === "Not_found") {
-        return /* :: */{
-                _0: $$String.sub(s, i, s.length - i | 0),
-                _1: l
+        return {
+                hd: $$String.sub(s, i, s.length - i | 0),
+                tl: l
               };
       }
       throw exn;
@@ -228,11 +228,11 @@ function rev_split_by_char(c, s) {
 
 function pop_last(param) {
   if (param) {
-    var tl = param._1;
+    var tl = param.tl;
     if (tl) {
-      return /* :: */{
-              _0: param._0,
-              _1: pop_last(tl)
+      return {
+              hd: param.hd,
+              tl: pop_last(tl)
             };
     } else {
       return /* [] */0;
@@ -251,11 +251,11 @@ function apply_until(f, _param) {
     if (!param) {
       return ;
     }
-    var x = Curry._1(f, param._0);
+    var x = Curry._1(f, param.hd);
     if (x !== undefined) {
       return x;
     }
-    _param = param._1;
+    _param = param.tl;
     continue ;
   };
 }
@@ -991,17 +991,17 @@ var yyact = [
     }),
   (function (__caml_parser_env) {
       var _1 = Parsing.peek_val(__caml_parser_env, 0);
-      return /* :: */{
-              _0: _1,
-              _1: /* [] */0
+      return {
+              hd: _1,
+              tl: /* [] */0
             };
     }),
   (function (__caml_parser_env) {
       var _1 = Parsing.peek_val(__caml_parser_env, 1);
       var _2 = Parsing.peek_val(__caml_parser_env, 0);
-      return /* :: */{
-              _0: _1,
-              _1: _2
+      return {
+              hd: _1,
+              tl: _2
             };
     }),
   (function (__caml_parser_env) {
@@ -1060,17 +1060,17 @@ var yyact = [
     }),
   (function (__caml_parser_env) {
       var _1 = Parsing.peek_val(__caml_parser_env, 0);
-      return /* :: */{
-              _0: _1,
-              _1: /* [] */0
+      return {
+              hd: _1,
+              tl: /* [] */0
             };
     }),
   (function (__caml_parser_env) {
       var _1 = Parsing.peek_val(__caml_parser_env, 1);
       var _2 = Parsing.peek_val(__caml_parser_env, 0);
-      return /* :: */{
-              _0: _1,
-              _1: _2
+      return {
+              hd: _1,
+              tl: _2
             };
     }),
   (function (__caml_parser_env) {
@@ -1080,17 +1080,17 @@ var yyact = [
     }),
   (function (__caml_parser_env) {
       var _1 = Parsing.peek_val(__caml_parser_env, 0);
-      return /* :: */{
-              _0: _1,
-              _1: /* [] */0
+      return {
+              hd: _1,
+              tl: /* [] */0
             };
     }),
   (function (__caml_parser_env) {
       var _1 = Parsing.peek_val(__caml_parser_env, 2);
       var _3 = Parsing.peek_val(__caml_parser_env, 0);
-      return /* :: */{
-              _0: _1,
-              _1: _3
+      return {
+              hd: _1,
+              tl: _3
             };
     }),
   (function (__caml_parser_env) {
@@ -1140,9 +1140,9 @@ var yyact = [
   (function (__caml_parser_env) {
       var _1 = Parsing.peek_val(__caml_parser_env, 1);
       var _2 = Parsing.peek_val(__caml_parser_env, 0);
-      return /* :: */{
-              _0: _1,
-              _1: _2
+      return {
+              hd: _1,
+              tl: _2
             };
     }),
   (function (__caml_parser_env) {
@@ -1304,17 +1304,17 @@ var yyact = [
     }),
   (function (__caml_parser_env) {
       var _1 = Parsing.peek_val(__caml_parser_env, 0);
-      return /* :: */{
-              _0: _1,
-              _1: /* [] */0
+      return {
+              hd: _1,
+              tl: /* [] */0
             };
     }),
   (function (__caml_parser_env) {
       var _1 = Parsing.peek_val(__caml_parser_env, 2);
       var _3 = Parsing.peek_val(__caml_parser_env, 0);
-      return /* :: */{
-              _0: _1,
-              _1: _3
+      return {
+              hd: _1,
+              tl: _3
             };
     }),
   (function (__caml_parser_env) {
@@ -1418,9 +1418,9 @@ var yyact = [
   (function (__caml_parser_env) {
       var _1 = Parsing.peek_val(__caml_parser_env, 1);
       var _2 = Parsing.peek_val(__caml_parser_env, 0);
-      return /* :: */{
-              _0: _1,
-              _1: _2
+      return {
+              hd: _1,
+              tl: _2
             };
     }),
   (function (__caml_parser_env) {
@@ -1621,9 +1621,9 @@ function __ocaml_lex_string_rec(_l, lexbuf, ___ocaml_lex_state) {
       case 0 :
           var c = Lexing.lexeme_char(lexbuf, 1);
           ___ocaml_lex_state = 55;
-          _l = /* :: */{
-            _0: Char.escaped(c),
-            _1: l
+          _l = {
+            hd: Char.escaped(c),
+            tl: l
           };
           continue ;
       case 1 :
@@ -1632,9 +1632,9 @@ function __ocaml_lex_string_rec(_l, lexbuf, ___ocaml_lex_state) {
                 };
       case 2 :
           ___ocaml_lex_state = 55;
-          _l = /* :: */{
-            _0: Lexing.lexeme(lexbuf),
-            _1: l
+          _l = {
+            hd: Lexing.lexeme(lexbuf),
+            tl: l
           };
           continue ;
       case 3 :
@@ -1664,9 +1664,9 @@ function __ocaml_lex_multi_line_comment_rec(_l, lexbuf, ___ocaml_lex_state) {
                 };
       case 2 :
           ___ocaml_lex_state = 47;
-          _l = /* :: */{
-            _0: Lexing.lexeme(lexbuf),
-            _1: l
+          _l = {
+            hd: Lexing.lexeme(lexbuf),
+            tl: l
           };
           continue ;
       case 3 :
@@ -1692,9 +1692,9 @@ function __ocaml_lex_comment_rec(_l, lexbuf, ___ocaml_lex_state) {
                 };
       case 1 :
           ___ocaml_lex_state = 41;
-          _l = /* :: */{
-            _0: Lexing.lexeme(lexbuf),
-            _1: l
+          _l = {
+            hd: Lexing.lexeme(lexbuf),
+            tl: l
           };
           continue ;
       case 2 :
@@ -2055,12 +2055,12 @@ function string_of_payload_kind(capitalize, payload_kind, packed) {
 }
 
 function line$1(scope, s) {
-  scope.items = /* :: */{
-    _0: {
+  scope.items = {
+    hd: {
       TAG: /* Line */0,
       _0: s
     },
-    _1: scope.items
+    tl: scope.items
   };
   
 }
@@ -2070,12 +2070,12 @@ function scope(scope$1, f) {
     items: /* [] */0
   };
   Curry._1(f, sub_scope);
-  scope$1.items = /* :: */{
-    _0: {
+  scope$1.items = {
+    hd: {
       TAG: /* Scope */1,
       _0: sub_scope
     },
-    _1: scope$1.items
+    tl: scope$1.items
   };
   
 }
@@ -2113,18 +2113,18 @@ function print(scope) {
       if (!param) {
         return acc;
       }
-      var s = param._0;
+      var s = param.hd;
       if (s.TAG) {
         var items = s._0.items;
         var sub = loop(/* [] */0, i + 1 | 0, items);
-        _param = param._1;
+        _param = param.tl;
         _acc = Pervasives.$at(sub, acc);
         continue ;
       }
-      _param = param._1;
-      _acc = /* :: */{
-        _0: indentation_prefix(i) + s._0,
-        _1: acc
+      _param = param.tl;
+      _acc = {
+        hd: indentation_prefix(i) + s._0,
+        tl: acc
       };
       continue ;
     };
@@ -2377,9 +2377,9 @@ function gen_decode_record(and_, param, sc) {
           if (rf_field_type._0[0]) {
             return acc;
           } else {
-            return /* :: */{
-                    _0: param.rf_label,
-                    _1: acc
+            return {
+                    hd: param.rf_label,
+                    tl: acc
                   };
           }
         }), /* [] */0, r_fields);
@@ -4157,9 +4157,9 @@ function strong_connect(g, sccs, stack, index, v) {
           }), v.core.id, index);
   v.index = index;
   v.lowlink = index;
-  var stack$1 = /* :: */{
-    _0: v,
-    _1: stack
+  var stack$1 = {
+    hd: v,
+    tl: stack
   };
   v.on_stack = true;
   var match = List.fold_left((function (param, id) {
@@ -4300,9 +4300,9 @@ function strong_connect(g, sccs, stack, index, v) {
           if (splitted) {
             return [
                     scc,
-                    /* :: */{
-                      _0: n,
-                      _1: stack
+                    {
+                      hd: n,
+                      tl: stack
                     },
                     splitted
                   ];
@@ -4310,18 +4310,18 @@ function strong_connect(g, sccs, stack, index, v) {
             n.on_stack = false;
             if (n.core.id === v.core.id) {
               return [
-                      /* :: */{
-                        _0: n.core.id,
-                        _1: scc
+                      {
+                        hd: n.core.id,
+                        tl: scc
                       },
                       stack,
                       true
                     ];
             } else {
               return [
-                      /* :: */{
-                        _0: n.core.id,
-                        _1: scc
+                      {
+                        hd: n.core.id,
+                        tl: scc
                       },
                       stack,
                       false
@@ -4334,9 +4334,9 @@ function strong_connect(g, sccs, stack, index, v) {
         false
       ], stack$2);
   return [
-          /* :: */{
-            _0: match$1[0],
-            _1: sccs$1
+          {
+            hd: match$1[0],
+            tl: sccs$1
           },
           List.rev(match$1[1]),
           index$1
@@ -4472,8 +4472,8 @@ function unresolved_of_string(s) {
   var match = rev_split_by_char(/* "." */46, s);
   if (match) {
     return {
-            scope: List.rev(match._1),
-            type_name: match._0,
+            scope: List.rev(match.tl),
+            type_name: match.hd,
             from_root: Caml_string.get(s, 0) === /* "." */46
           };
   }
@@ -4688,11 +4688,11 @@ function list_assoc2(x, _param) {
   while(true) {
     var param = _param;
     if (param) {
-      var match = param._0;
+      var match = param.hd;
       if (Caml_obj.caml_equal(match[1], x)) {
         return match[0];
       }
-      _param = param._1;
+      _param = param.tl;
       continue ;
     }
     throw {
@@ -4731,9 +4731,9 @@ function compile_enum_p1(file_name, file_options, scope, param) {
 function compile_message_p1(file_name, file_options, message_scope, param) {
   var message_name = param.message_name;
   var sub_scope_packages = message_scope.packages;
-  var sub_scope_message_names = Pervasives.$at(message_scope.message_names, /* :: */{
-        _0: message_name,
-        _1: /* [] */0
+  var sub_scope_message_names = Pervasives.$at(message_scope.message_names, {
+        hd: message_name,
+        tl: /* [] */0
       });
   var sub_scope = {
     packages: sub_scope_packages,
@@ -4750,9 +4750,9 @@ function compile_message_p1(file_name, file_options, message_scope, param) {
                   _0: compile_field_p1(f._0)
                 };
                 return [
-                        /* :: */{
-                          _0: field,
-                          _1: message_body
+                        {
+                          hd: field,
+                          tl: message_body
                         },
                         extensions,
                         all_types
@@ -4763,9 +4763,9 @@ function compile_message_p1(file_name, file_options, message_scope, param) {
                   _0: compile_map_p1(f._0)
                 };
                 return [
-                        /* :: */{
-                          _0: field$1,
-                          _1: message_body
+                        {
+                          hd: field$1,
+                          tl: message_body
                         },
                         extensions,
                         all_types
@@ -4776,9 +4776,9 @@ function compile_message_p1(file_name, file_options, message_scope, param) {
                   _0: compile_oneof_p1(f._0)
                 };
                 return [
-                        /* :: */{
-                          _0: field$2,
-                          _1: message_body
+                        {
+                          hd: field$2,
+                          tl: message_body
                         },
                         extensions,
                         all_types
@@ -4794,9 +4794,9 @@ function compile_message_p1(file_name, file_options, message_scope, param) {
                 return [
                         message_body,
                         extensions,
-                        Pervasives.$at(all_types, /* :: */{
-                              _0: compile_enum_p1(file_name, file_options, sub_scope, f._0),
-                              _1: /* [] */0
+                        Pervasives.$at(all_types, {
+                              hd: compile_enum_p1(file_name, file_options, sub_scope, f._0),
+                              tl: /* [] */0
                             })
                       ];
             case /* Message_extension */5 :
@@ -4823,12 +4823,12 @@ function compile_message_p1(file_name, file_options, message_scope, param) {
             list_assoc2(name, number_index);
             
           })) {
-      return /* :: */{
-              _0: [
+      return {
+              hd: [
                 number,
                 name
               ],
-              _1: number_index
+              tl: number_index
             };
     } else {
       var previous_field_name = "";
@@ -4857,8 +4857,8 @@ function compile_message_p1(file_name, file_options, message_scope, param) {
             
           }
         }), /* [] */0, message_body);
-  return Pervasives.$at(match[2], /* :: */{
-              _0: type_of_spec(file_name, file_options, param.id, message_scope, {
+  return Pervasives.$at(match[2], {
+              hd: type_of_spec(file_name, file_options, param.id, message_scope, {
                     TAG: /* Message */1,
                     _0: {
                       extensions: match[1],
@@ -4866,7 +4866,7 @@ function compile_message_p1(file_name, file_options, message_scope, param) {
                       message_body: message_body
                     }
                   }),
-              _1: /* [] */0
+              tl: /* [] */0
             });
 }
 
@@ -4874,9 +4874,9 @@ function compile_proto_p1(file_name, param) {
   var file_options = param.file_options;
   var scope = scope_of_package(param.package);
   var pbtt_msgs = List.fold_right((function (e, pbtt_msgs) {
-          return /* :: */{
-                  _0: compile_enum_p1(file_name, file_options, scope, e),
-                  _1: pbtt_msgs
+          return {
+                  hd: compile_enum_p1(file_name, file_options, scope, e),
+                  tl: pbtt_msgs
                 };
         }), param.enums, /* [] */0);
   return List.fold_left((function (pbtt_msgs, pbpt_msg) {
@@ -4916,15 +4916,15 @@ function find_all_types_in_field_scope(all_types, scope) {
 
 function compile_message_p2(types, param, message) {
   var message_name = message.message_name;
-  var message_scope = Pervasives.$at(param.packages, Pervasives.$at(param.message_names, /* :: */{
-            _0: message_name,
-            _1: /* [] */0
+  var message_scope = Pervasives.$at(param.packages, Pervasives.$at(param.message_names, {
+            hd: message_name,
+            tl: /* [] */0
           }));
   var search_scopes = function (field_scope, from_root) {
     if (from_root) {
-      return /* :: */{
-              _0: field_scope,
-              _1: /* [] */0
+      return {
+              hd: field_scope,
+              tl: /* [] */0
             };
     }
     var loop = function (_scopes, _l) {
@@ -4932,15 +4932,15 @@ function compile_message_p2(types, param, message) {
         var l = _l;
         var scopes = _scopes;
         if (!l) {
-          return /* :: */{
-                  _0: field_scope,
-                  _1: scopes
+          return {
+                  hd: field_scope,
+                  tl: scopes
                 };
         }
         _l = pop_last(l);
-        _scopes = /* :: */{
-          _0: Pervasives.$at(l, field_scope),
-          _1: scopes
+        _scopes = {
+          hd: Pervasives.$at(l, field_scope),
+          tl: scopes
         };
         continue ;
       };
@@ -5090,12 +5090,12 @@ function compile_message_p2(types, param, message) {
                   field_default: field_field_default$1,
                   field_options: field_field_options$1
                 };
-                return /* :: */{
-                        _0: {
+                return {
+                        hd: {
                           TAG: /* Message_field */0,
                           _0: field$3
                         },
-                        _1: message_body
+                        tl: message_body
                       };
             case /* Message_oneof_field */1 :
                 var oneof = field._0;
@@ -5103,26 +5103,26 @@ function compile_message_p2(types, param, message) {
                         var field_name$2 = field_name(field);
                         var field_type$2 = field_type(field);
                         var field_type$3 = compile_field_p2(field_name$2, field_type$2);
-                        return /* :: */{
-                                _0: {
+                        return {
+                                hd: {
                                   field_parsed: field.field_parsed,
                                   field_type: field_type$3,
                                   field_default: field.field_default,
                                   field_options: field.field_options
                                 },
-                                _1: oneof_fields
+                                tl: oneof_fields
                               };
                       }), /* [] */0, oneof.oneof_fields);
                 var oneof_fields$1 = List.rev(oneof_fields);
-                return /* :: */{
-                        _0: {
+                return {
+                        hd: {
                           TAG: /* Message_oneof_field */1,
                           _0: {
                             oneof_name: oneof.oneof_name,
                             oneof_fields: oneof_fields$1
                           }
                         },
-                        _1: message_body
+                        tl: message_body
                       };
             case /* Message_map_field */2 :
                 var map = field._0;
@@ -5139,9 +5139,9 @@ function compile_message_p2(types, param, message) {
                     map_options: map.map_options
                   }
                 };
-                return /* :: */{
-                        _0: resolved_map,
-                        _1: message_body
+                return {
+                        hd: resolved_map,
+                        tl: message_body
                       };
             
           }
@@ -5170,9 +5170,9 @@ function node_of_proto_type(param) {
                     if (typeof field_type === "number") {
                       return /* [] */0;
                     } else {
-                      return /* :: */{
-                              _0: field_type._0,
-                              _1: /* [] */0
+                      return {
+                              hd: field_type._0,
+                              tl: /* [] */0
                             };
                     }
                 case /* Message_oneof_field */1 :
@@ -5181,9 +5181,9 @@ function node_of_proto_type(param) {
                                       if (typeof field_type === "number") {
                                         return /* [] */0;
                                       } else {
-                                        return /* :: */{
-                                                _0: field_type._0,
-                                                _1: /* [] */0
+                                        return {
+                                                hd: field_type._0,
+                                                tl: /* [] */0
                                               };
                                       }
                                     }), param._0.oneof_fields));
@@ -5192,9 +5192,9 @@ function node_of_proto_type(param) {
                     if (typeof map_value_type === "number") {
                       return /* [] */0;
                     } else {
-                      return /* :: */{
-                              _0: map_value_type._0,
-                              _1: /* [] */0
+                      return {
+                              hd: map_value_type._0,
+                              tl: /* [] */0
                             };
                     }
                 
@@ -6430,7 +6430,7 @@ function record_field_default_info(record_field) {
     case /* Rft_variant_field */4 :
         var v_constructors = rf_field_type._0.v_constructors;
         if (v_constructors) {
-          var match$3 = v_constructors._0;
+          var match$3 = v_constructors.hd;
           var vc_field_type = match$3.vc_field_type;
           var vc_constructor = match$3.vc_constructor;
           default_value = vc_field_type ? Curry._2(Printf.sprintf(/* Format */{
@@ -6637,7 +6637,7 @@ function gen_default_variant(and_, param, sc) {
   var v_constructors = param.v_constructors;
   var v_name = param.v_name;
   if (v_constructors) {
-    var match = v_constructors._0;
+    var match = v_constructors.hd;
     var vc_field_type = match.vc_field_type;
     var vc_constructor = match.vc_constructor;
     var decl = let_decl_of_and(and_);
@@ -6733,7 +6733,7 @@ function gen_default_const_variant(and_, param, sc) {
   var cv_name = param.cv_name;
   var first_constructor_name;
   if (cv_constructors) {
-    first_constructor_name = cv_constructors._0[0];
+    first_constructor_name = cv_constructors.hd[0];
   } else {
     throw {
           RE_EXN_ID: "Failure",
@@ -6974,9 +6974,9 @@ function rev_split_by_naming_convention(s) {
     if (start_i === end_i) {
       return l;
     } else {
-      return /* :: */{
-              _0: $$String.sub(s, start_i, end_i - start_i | 0),
-              _1: l
+      return {
+              hd: $$String.sub(s, start_i, end_i - start_i | 0),
+              tl: l
             };
     }
   };
@@ -7112,19 +7112,19 @@ function module_of_file_name(file_name) {
 }
 
 function type_name(message_scope, name) {
-  var all_names = Pervasives.$at(message_scope, /* :: */{
-        _0: name,
-        _1: /* [] */0
+  var all_names = Pervasives.$at(message_scope, {
+        hd: name,
+        tl: /* [] */0
       });
   var all_names$1 = List.map((function (s) {
           return List.map($$String.lowercase, List.rev(rev_split_by_naming_convention(s)));
         }), all_names);
   var all_names$2 = List.flatten(all_names$1);
   if (all_names$2) {
-    if (all_names$2._1) {
+    if (all_names$2.tl) {
       return $$String.concat("_", all_names$2);
     } else {
-      return fix_ocaml_keyword_conflict(all_names$2._0);
+      return fix_ocaml_keyword_conflict(all_names$2.hd);
     }
   }
   throw {
@@ -7394,23 +7394,23 @@ function compile_enum(file_name, scope, param) {
         };
 }
 
-var all_code_gen_1 = /* :: */{
-  _0: Codegen_default,
-  _1: /* :: */{
-    _0: Codegen_decode,
-    _1: /* :: */{
-      _0: Codegen_encode,
-      _1: /* :: */{
-        _0: Codegen_pp,
-        _1: /* [] */0
+var all_code_gen_1 = {
+  hd: Codegen_default,
+  tl: {
+    hd: Codegen_decode,
+    tl: {
+      hd: Codegen_encode,
+      tl: {
+        hd: Codegen_pp,
+        tl: /* [] */0
       }
     }
   }
 };
 
-var all_code_gen = /* :: */{
-  _0: Codegen_type,
-  _1: all_code_gen_1
+var all_code_gen = {
+  hd: Codegen_type,
+  tl: all_code_gen_1
 };
 
 function compile(proto_definition) {
@@ -7467,24 +7467,24 @@ function compile(proto_definition) {
                           if (!message_body) {
                             return /* [] */0;
                           }
-                          var f = message_body._0;
+                          var f = message_body.hd;
                           switch (f.TAG | 0) {
                             case /* Message_oneof_field */1 :
-                                if (!message_body._1) {
-                                  var outer_message_names = Pervasives.$at(message_names, /* :: */{
-                                        _0: message_name,
-                                        _1: /* [] */0
+                                if (!message_body.tl) {
+                                  var outer_message_names = Pervasives.$at(message_names, {
+                                        hd: message_name,
+                                        tl: /* [] */0
                                       });
                                   var variant = variant_of_oneof(undefined, outer_message_names, all_pbtt_msgs$1, file_options, file_name, f._0);
-                                  return /* :: */{
-                                          _0: {
+                                  return {
+                                          hd: {
                                             module_: module_,
                                             spec: {
                                               TAG: /* Variant */1,
                                               _0: variant
                                             }
                                           },
-                                          _1: /* [] */0
+                                          tl: /* [] */0
                                         };
                                 }
                                 break;
@@ -7566,16 +7566,16 @@ function compile(proto_definition) {
                                         };
                                         return [
                                                 variants,
-                                                /* :: */{
-                                                  _0: record_field,
-                                                  _1: fields
+                                                {
+                                                  hd: record_field,
+                                                  tl: fields
                                                 }
                                               ];
                                     case /* Message_oneof_field */1 :
                                         var field$2 = field._0;
-                                        var outer_message_names = Pervasives.$at(message_names, /* :: */{
-                                              _0: message_name,
-                                              _1: /* [] */0
+                                        var outer_message_names = Pervasives.$at(message_names, {
+                                              hd: message_name,
+                                              tl: /* [] */0
                                             });
                                         var variant = variant_of_oneof(Caml_option.some(undefined), outer_message_names, all_pbtt_msgs$1, file_options, file_name, field$2);
                                         var record_field_rf_label$1 = label_name_of_field_name(field$2.oneof_name);
@@ -7595,13 +7595,13 @@ function compile(proto_definition) {
                                             _0: variant
                                           }
                                         };
-                                        var variants$1 = /* :: */{
-                                          _0: variants_0,
-                                          _1: variants
+                                        var variants$1 = {
+                                          hd: variants_0,
+                                          tl: variants
                                         };
-                                        var fields$1 = /* :: */{
-                                          _0: record_field$1,
-                                          _1: fields
+                                        var fields$1 = {
+                                          hd: record_field$1,
+                                          tl: fields
                                         };
                                         return [
                                                 variants$1,
@@ -7694,9 +7694,9 @@ function compile(proto_definition) {
                                         };
                                         return [
                                                 variants,
-                                                /* :: */{
-                                                  _0: record_field$2,
-                                                  _1: fields
+                                                {
+                                                  hd: record_field$2,
+                                                  tl: fields
                                                 }
                                               ];
                                     
@@ -7719,14 +7719,14 @@ function compile(proto_definition) {
                             module_: module_,
                             spec: type__spec
                           };
-                          return List.rev(/* :: */{
-                                      _0: type_,
-                                      _1: match[0]
+                          return List.rev({
+                                      hd: type_,
+                                      tl: match[0]
                                     });
                         } else {
-                          return /* :: */{
-                                  _0: compile_enum(file_name, scope, m._0),
-                                  _1: /* [] */0
+                          return {
+                                  hd: compile_enum(file_name, scope, m._0),
+                                  tl: /* [] */0
                                 };
                         }
                       }), pbtt_msgs);
@@ -7827,8 +7827,8 @@ var test_id = {
 
 function eq(loc, x, y) {
   test_id.contents = test_id.contents + 1 | 0;
-  suites.contents = /* :: */{
-    _0: [
+  suites.contents = {
+    hd: [
       loc + (" id " + String(test_id.contents)),
       (function (param) {
           return {
@@ -7838,7 +7838,7 @@ function eq(loc, x, y) {
                 };
         })
     ],
-    _1: suites.contents
+    tl: suites.contents
   };
   
 }

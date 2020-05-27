@@ -73,27 +73,27 @@ var array_suites_0 = [
     })
 ];
 
-var array_suites_1 = /* :: */{
-  _0: [
+var array_suites_1 = {
+  hd: [
     "toList",
     (function (param) {
         var aux = function (xs) {
           return List.fold_left((function (acc, param) {
-                        return /* :: */{
-                                _0: [
+                        return {
+                                hd: [
                                   $$Array.to_list(param[0]),
                                   param[1]
                                 ],
-                                _1: acc
+                                tl: acc
                               };
                       }), /* [] */0, xs);
         };
-        var match = List.split(aux(/* :: */{
-                  _0: [
+        var match = List.split(aux({
+                  hd: [
                     [],
                     /* [] */0
                   ],
-                  _1: /* [] */0
+                  tl: /* [] */0
                 }));
         return {
                 TAG: /* Eq */0,
@@ -102,8 +102,8 @@ var array_suites_1 = /* :: */{
               };
       })
   ],
-  _1: /* :: */{
-    _0: [
+  tl: {
+    hd: [
       "concat",
       (function (param) {
           return {
@@ -116,22 +116,22 @@ var array_suites_1 = /* :: */{
                     4,
                     5
                   ],
-                  _1: Caml_array.caml_array_concat(/* :: */{
-                        _0: [
+                  _1: Caml_array.caml_array_concat({
+                        hd: [
                           0,
                           1,
                           2
                         ],
-                        _1: /* :: */{
-                          _0: [
+                        tl: {
+                          hd: [
                             3,
                             4
                           ],
-                          _1: /* :: */{
-                            _0: [],
-                            _1: /* :: */{
-                              _0: [5],
-                              _1: /* [] */0
+                          tl: {
+                            hd: [],
+                            tl: {
+                              hd: [5],
+                              tl: /* [] */0
                             }
                           }
                         }
@@ -139,8 +139,8 @@ var array_suites_1 = /* :: */{
                 };
         })
     ],
-    _1: /* :: */{
-      _0: [
+    tl: {
+      hd: [
         "make",
         (function (param) {
             return {
@@ -160,8 +160,8 @@ var array_suites_1 = /* :: */{
                   };
           })
       ],
-      _1: /* :: */{
-        _0: [
+      tl: {
+        hd: [
           "sub",
           (function (param) {
               return {
@@ -180,8 +180,8 @@ var array_suites_1 = /* :: */{
                     };
             })
         ],
-        _1: /* :: */{
-          _0: [
+        tl: {
+          hd: [
             "blit",
             (function (param) {
                 var u = [
@@ -214,8 +214,8 @@ var array_suites_1 = /* :: */{
                       };
               })
           ],
-          _1: /* :: */{
-            _0: [
+          tl: {
+            hd: [
               "File \"array_test.ml\", line 63, characters 2-9",
               (function (param) {
                   var a0 = $$Array.init(100, (function (i) {
@@ -256,8 +256,8 @@ var array_suites_1 = /* :: */{
                         };
                 })
             ],
-            _1: /* :: */{
-              _0: [
+            tl: {
+              hd: [
                 "File \"array_test.ml\", line 72, characters 2-9",
                 (function (param) {
                     var a0 = $$Array.init(100, (function (i) {
@@ -300,8 +300,8 @@ var array_suites_1 = /* :: */{
                           };
                   })
               ],
-              _1: /* :: */{
-                _0: [
+              tl: {
+                hd: [
                   "make",
                   (function (param) {
                       return {
@@ -314,8 +314,8 @@ var array_suites_1 = /* :: */{
                             };
                     })
                 ],
-                _1: /* :: */{
-                  _0: [
+                tl: {
+                  hd: [
                     "sort",
                     (function (param) {
                         var u = [
@@ -335,8 +335,8 @@ var array_suites_1 = /* :: */{
                               };
                       })
                   ],
-                  _1: /* :: */{
-                    _0: [
+                  tl: {
+                    hd: [
                       "sort_large",
                       (function (param) {
                           var v = $$Array.init(4, (function (i) {
@@ -350,7 +350,7 @@ var array_suites_1 = /* :: */{
                                 };
                         })
                     ],
-                    _1: /* [] */0
+                    tl: /* [] */0
                   }
                 }
               }
@@ -362,9 +362,9 @@ var array_suites_1 = /* :: */{
   }
 };
 
-var array_suites = /* :: */{
-  _0: array_suites_0,
-  _1: array_suites_1
+var array_suites = {
+  hd: array_suites_0,
+  tl: array_suites_1
 };
 
 Mt.from_pair_suites("Array_test", array_suites);

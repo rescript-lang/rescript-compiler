@@ -29,21 +29,21 @@ function split(delim, s) {
       catch (raw_exn){
         var exn = Caml_js_exceptions.internalToOCamlException(raw_exn);
         if (exn.RE_EXN_ID === "Not_found") {
-          return /* :: */{
-                  _0: $$String.sub(s, 0, i),
-                  _1: l
+          return {
+                  hd: $$String.sub(s, 0, i),
+                  tl: l
                 };
         }
         throw exn;
       }
       var l_0 = $$String.sub(s, i$prime + 1 | 0, (i - i$prime | 0) - 1 | 0);
-      var l$1 = /* :: */{
-        _0: l_0,
-        _1: l
+      var l$1 = {
+        hd: l_0,
+        tl: l
       };
-      var l$2 = i$prime === 0 ? /* :: */({
-            _0: "",
-            _1: l$1
+      var l$2 = i$prime === 0 ? ({
+            hd: "",
+            tl: l$1
           }) : l$1;
       _i = i$prime;
       _l = l$2;
@@ -1028,12 +1028,12 @@ function bindings_aux(_accu, _param) {
       return accu;
     }
     _param = param.l;
-    _accu = /* :: */{
-      _0: [
+    _accu = {
+      hd: [
         param.v,
         param.d
       ],
-      _1: bindings_aux(accu, param.r)
+      tl: bindings_aux(accu, param.r)
     };
     continue ;
   };
@@ -1112,9 +1112,9 @@ function compute_update_sequences(all_tickers) {
         }), 0, all_tickers);
   var map = List.fold_left((function (map, ticker) {
           if (!ticker.type_) {
-            return add(ticker.ticker_name, /* :: */{
-                        _0: ticker,
-                        _1: /* [] */0
+            return add(ticker.ticker_name, {
+                        hd: ticker,
+                        tl: /* [] */0
                       }, map);
           }
           var loop = function (_up, _map, _ticker) {
@@ -1126,15 +1126,15 @@ function compute_update_sequences(all_tickers) {
               var ticker_name = ticker.ticker_name;
               if (type_) {
                 var match = type_._0;
-                var map$1 = loop(/* :: */{
-                      _0: ticker,
-                      _1: up
+                var map$1 = loop({
+                      hd: ticker,
+                      tl: up
                     }, map, match.lhs);
                 _ticker = match.rhs;
                 _map = map$1;
-                _up = /* :: */{
-                  _0: ticker,
-                  _1: up
+                _up = {
+                  hd: ticker,
+                  tl: up
                 };
                 continue ;
               }
@@ -1213,13 +1213,13 @@ function process_input_line(ticker_map, all_tickers, line) {
   };
   var tokens = split(/* "|" */124, line);
   if (tokens) {
-    switch (tokens._0) {
+    switch (tokens.hd) {
       case "Q" :
-          var match = tokens._1;
+          var match = tokens.tl;
           if (match) {
-            var match$1 = match._1;
+            var match$1 = match.tl;
             if (match$1) {
-              if (match$1._1) {
+              if (match$1.tl) {
                 throw {
                       RE_EXN_ID: "Failure",
                       _1: "Invalid input line",
@@ -1227,8 +1227,8 @@ function process_input_line(ticker_map, all_tickers, line) {
                     };
               }
               var ticker_map$1 = ticker_map !== undefined ? Caml_option.valFromOption(ticker_map) : compute_update_sequences(all_tickers);
-              var value = Caml_format.caml_float_of_string(match$1._0);
-              process_quote(ticker_map$1, match._0, value);
+              var value = Caml_format.caml_float_of_string(match$1.hd);
+              process_quote(ticker_map$1, match.hd, value);
               return [
                       all_tickers,
                       Caml_option.some(ticker_map$1)
@@ -1246,18 +1246,18 @@ function process_input_line(ticker_map, all_tickers, line) {
                 Error: new Error()
               };
       case "R" :
-          var match$2 = tokens._1;
+          var match$2 = tokens.tl;
           if (match$2) {
-            var match$3 = match$2._1;
+            var match$3 = match$2.tl;
             if (match$3) {
-              var ticker_name = match$2._0;
-              switch (match$3._0) {
+              var ticker_name = match$2.hd;
+              switch (match$3.hd) {
                 case "+" :
-                    var match$4 = match$3._1;
+                    var match$4 = match$3.tl;
                     if (match$4) {
-                      var match$5 = match$4._1;
+                      var match$5 = match$4.tl;
                       if (match$5) {
-                        if (match$5._1) {
+                        if (match$5.tl) {
                           throw {
                                 RE_EXN_ID: "Failure",
                                 _1: "Invalid input line",
@@ -1265,9 +1265,9 @@ function process_input_line(ticker_map, all_tickers, line) {
                               };
                         }
                         return [
-                                /* :: */{
-                                  _0: make_binary_op(ticker_name, match$4._0, match$5._0, /* PLUS */0),
-                                  _1: all_tickers
+                                {
+                                  hd: make_binary_op(ticker_name, match$4.hd, match$5.hd, /* PLUS */0),
+                                  tl: all_tickers
                                 },
                                 ticker_map
                               ];
@@ -1284,11 +1284,11 @@ function process_input_line(ticker_map, all_tickers, line) {
                           Error: new Error()
                         };
                 case "-" :
-                    var match$6 = match$3._1;
+                    var match$6 = match$3.tl;
                     if (match$6) {
-                      var match$7 = match$6._1;
+                      var match$7 = match$6.tl;
                       if (match$7) {
-                        if (match$7._1) {
+                        if (match$7.tl) {
                           throw {
                                 RE_EXN_ID: "Failure",
                                 _1: "Invalid input line",
@@ -1296,9 +1296,9 @@ function process_input_line(ticker_map, all_tickers, line) {
                               };
                         }
                         return [
-                                /* :: */{
-                                  _0: make_binary_op(ticker_name, match$6._0, match$7._0, /* MINUS */1),
-                                  _1: all_tickers
+                                {
+                                  hd: make_binary_op(ticker_name, match$6.hd, match$7.hd, /* MINUS */1),
+                                  tl: all_tickers
                                 },
                                 ticker_map
                               ];
@@ -1315,7 +1315,7 @@ function process_input_line(ticker_map, all_tickers, line) {
                           Error: new Error()
                         };
                 case "S" :
-                    if (match$3._1) {
+                    if (match$3.tl) {
                       throw {
                             RE_EXN_ID: "Failure",
                             _1: "Invalid input line",
@@ -1323,14 +1323,14 @@ function process_input_line(ticker_map, all_tickers, line) {
                           };
                     }
                     return [
-                            /* :: */{
-                              _0: {
+                            {
+                              hd: {
                                 value: undefined,
                                 rank: /* Uninitialized */0,
                                 ticker_name: ticker_name,
                                 type_: /* Market */0
                               },
-                              _1: all_tickers
+                              tl: all_tickers
                             },
                             ticker_map
                           ];
@@ -1379,31 +1379,31 @@ function loop(_lines, _param) {
     if (!lines) {
       return print_all_composite(all_tickers);
     }
-    _param = process_input_line(param[1], all_tickers, lines._0);
-    _lines = lines._1;
+    _param = process_input_line(param[1], all_tickers, lines.hd);
+    _lines = lines.tl;
     continue ;
   };
 }
 
-var lines = /* :: */{
-  _0: "R|MSFT|S",
-  _1: /* :: */{
-    _0: "R|IBM|S",
-    _1: /* :: */{
-      _0: "R|FB|S",
-      _1: /* :: */{
-        _0: "R|CP1|+|MSFT|IBM",
-        _1: /* :: */{
-          _0: "R|CP2|-|FB|IBM",
-          _1: /* :: */{
-            _0: "R|CP12|+|CP1|CP2",
-            _1: /* :: */{
-              _0: "Q|MSFT|120.",
-              _1: /* :: */{
-                _0: "Q|IBM|130.",
-                _1: /* :: */{
-                  _0: "Q|FB|80.",
-                  _1: /* [] */0
+var lines = {
+  hd: "R|MSFT|S",
+  tl: {
+    hd: "R|IBM|S",
+    tl: {
+      hd: "R|FB|S",
+      tl: {
+        hd: "R|CP1|+|MSFT|IBM",
+        tl: {
+          hd: "R|CP2|-|FB|IBM",
+          tl: {
+            hd: "R|CP12|+|CP1|CP2",
+            tl: {
+              hd: "Q|MSFT|120.",
+              tl: {
+                hd: "Q|IBM|130.",
+                tl: {
+                  hd: "Q|FB|80.",
+                  tl: /* [] */0
                 }
               }
             }

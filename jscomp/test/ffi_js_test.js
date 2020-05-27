@@ -23,8 +23,8 @@ function eq(loc, param) {
   var y = param[1];
   var x = param[0];
   test_id.contents = test_id.contents + 1 | 0;
-  suites.contents = /* :: */{
-    _0: [
+  suites.contents = {
+    hd: [
       loc + (" id " + String(test_id.contents)),
       (function (param) {
           return {
@@ -34,7 +34,7 @@ function eq(loc, param) {
                 };
         })
     ],
-    _1: suites.contents
+    tl: suites.contents
   };
   
 }
@@ -54,25 +54,25 @@ eq("File \"ffi_js_test.ml\", line 32, characters 5-12", [
       $$higher_order(1)(2, 3)
     ]);
 
-var same_type_0 = /* :: */{
-  _0: int_config,
-  _1: /* :: */{
-    _0: {
+var same_type_0 = {
+  hd: int_config,
+  tl: {
+    hd: {
       hi: 3,
       low: 32
     },
-    _1: /* [] */0
+    tl: /* [] */0
   }
 };
 
-var same_type_1 = /* :: */{
-  _0: string_config,
-  _1: /* :: */{
-    _0: {
+var same_type_1 = {
+  hd: string_config,
+  tl: {
+    hd: {
       hi: 3,
       low: "32"
     },
-    _1: /* [] */0
+    tl: /* [] */0
   }
 };
 

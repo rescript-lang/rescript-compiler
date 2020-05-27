@@ -9,7 +9,7 @@ function tailcall(x) {
 
 function non_length(x) {
   if (x) {
-    return 1 + non_length(x._1) | 0;
+    return 1 + non_length(x.tl) | 0;
   } else {
     return 0;
   }
@@ -22,9 +22,9 @@ function length(_acc, _x) {
     if (!x) {
       return acc;
     }
-    var tl = x._1;
+    var tl = x.tl;
     if (tl) {
-      return 1 + length(acc + 1 | 0, tl._1) | 0;
+      return 1 + length(acc + 1 | 0, tl.tl) | 0;
     }
     _x = tl;
     _acc = acc + 1 | 0;

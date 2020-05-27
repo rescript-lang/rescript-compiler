@@ -803,9 +803,9 @@ function elements_aux(_accu, _param) {
       return accu;
     }
     _param = param.l;
-    _accu = /* :: */{
-      _0: param.v,
-      _1: elements_aux(accu, param.r)
+    _accu = {
+      hd: param.v,
+      tl: elements_aux(accu, param.r)
     };
     continue ;
   };
@@ -1003,25 +1003,25 @@ function of_list(l) {
   if (!l) {
     return /* Empty */0;
   }
-  var match = l._1;
-  var x0 = l._0;
+  var match = l.tl;
+  var x0 = l.hd;
   if (!match) {
     return singleton(x0);
   }
-  var match$1 = match._1;
-  var x1 = match._0;
+  var match$1 = match.tl;
+  var x1 = match.hd;
   if (!match$1) {
     return add(x1, singleton(x0));
   }
-  var match$2 = match$1._1;
-  var x2 = match$1._0;
+  var match$2 = match$1.tl;
+  var x2 = match$1.hd;
   if (!match$2) {
     return add(x2, add(x1, singleton(x0)));
   }
-  var match$3 = match$2._1;
-  var x3 = match$2._0;
+  var match$3 = match$2.tl;
+  var x3 = match$2.hd;
   if (match$3) {
-    if (match$3._1) {
+    if (match$3.tl) {
       var l$1 = List.sort_uniq(AAA.compare, l);
       var sub = function (n, l) {
         switch (n) {
@@ -1035,31 +1035,31 @@ function of_list(l) {
                 return [
                         /* Node */{
                           l: /* Empty */0,
-                          v: l._0,
+                          v: l.hd,
                           r: /* Empty */0,
                           h: 1
                         },
-                        l._1
+                        l.tl
                       ];
               }
               break;
           case 2 :
               if (l) {
-                var match = l._1;
+                var match = l.tl;
                 if (match) {
                   return [
                           /* Node */{
                             l: /* Node */{
                               l: /* Empty */0,
-                              v: l._0,
+                              v: l.hd,
                               r: /* Empty */0,
                               h: 1
                             },
-                            v: match._0,
+                            v: match.hd,
                             r: /* Empty */0,
                             h: 2
                           },
-                          match._1
+                          match.tl
                         ];
                 }
                 
@@ -1067,28 +1067,28 @@ function of_list(l) {
               break;
           case 3 :
               if (l) {
-                var match$1 = l._1;
+                var match$1 = l.tl;
                 if (match$1) {
-                  var match$2 = match$1._1;
+                  var match$2 = match$1.tl;
                   if (match$2) {
                     return [
                             /* Node */{
                               l: /* Node */{
                                 l: /* Empty */0,
-                                v: l._0,
+                                v: l.hd,
                                 r: /* Empty */0,
                                 h: 1
                               },
-                              v: match$1._0,
+                              v: match$1.hd,
                               r: /* Node */{
                                 l: /* Empty */0,
-                                v: match$2._0,
+                                v: match$2.hd,
                                 r: /* Empty */0,
                                 h: 1
                               },
                               h: 2
                             },
-                            match$2._1
+                            match$2.tl
                           ];
                   }
                   
@@ -1103,9 +1103,9 @@ function of_list(l) {
         var match$3 = sub(nl, l);
         var l$1 = match$3[1];
         if (l$1) {
-          var match$4 = sub((n - nl | 0) - 1 | 0, l$1._1);
+          var match$4 = sub((n - nl | 0) - 1 | 0, l$1.tl);
           return [
-                  create(match$3[0], l$1._0, match$4[0]),
+                  create(match$3[0], l$1.hd, match$4[0]),
                   match$4[1]
                 ];
         }
@@ -1121,7 +1121,7 @@ function of_list(l) {
       };
       return sub(List.length(l$1), l$1)[0];
     } else {
-      return add(match$3._0, add(x3, add(x2, add(x1, singleton(x0)))));
+      return add(match$3.hd, add(x3, add(x2, add(x1, singleton(x0)))));
     }
   } else {
     return add(x3, add(x2, add(x1, singleton(x0))));
@@ -1211,8 +1211,8 @@ var suites_0 = [
     })
 ];
 
-var suites_1 = /* :: */{
-  _0: [
+var suites_1 = {
+  hd: [
     "test2",
     (function (param) {
         return {
@@ -1222,8 +1222,8 @@ var suites_1 = /* :: */{
               };
       })
   ],
-  _1: /* :: */{
-    _0: [
+  tl: {
+    hd: [
       "test3",
       (function (param) {
           return {
@@ -1233,8 +1233,8 @@ var suites_1 = /* :: */{
                 };
         })
     ],
-    _1: /* :: */{
-      _0: [
+    tl: {
+      hd: [
         "test4",
         (function (param) {
             return {
@@ -1244,8 +1244,8 @@ var suites_1 = /* :: */{
                   };
           })
       ],
-      _1: /* :: */{
-        _0: [
+      tl: {
+        hd: [
           "test4",
           (function (param) {
               return {
@@ -1255,8 +1255,8 @@ var suites_1 = /* :: */{
                     };
             })
         ],
-        _1: /* :: */{
-          _0: [
+        tl: {
+          hd: [
             "test5",
             (function (param) {
                 return {
@@ -1266,36 +1266,36 @@ var suites_1 = /* :: */{
                       };
               })
           ],
-          _1: /* :: */{
-            _0: [
+          tl: {
+            hd: [
               "test6",
               (function (param) {
                   return {
                           TAG: /* Eq */0,
                           _0: 2,
-                          _1: cardinal(of_list(/* :: */{
-                                    _0: {
+                          _1: cardinal(of_list({
+                                    hd: {
                                       TAG: /* Leaf */0,
                                       _0: "a"
                                     },
-                                    _1: /* :: */{
-                                      _0: {
+                                    tl: {
+                                      hd: {
                                         TAG: /* Leaf */0,
                                         _0: "b"
                                       },
-                                      _1: /* :: */{
-                                        _0: {
+                                      tl: {
+                                        hd: {
                                           TAG: /* Leaf */0,
                                           _0: "a"
                                         },
-                                        _1: /* [] */0
+                                        tl: /* [] */0
                                       }
                                     }
                                   }))
                         };
                 })
             ],
-            _1: /* [] */0
+            tl: /* [] */0
           }
         }
       }
@@ -1303,9 +1303,9 @@ var suites_1 = /* :: */{
   }
 };
 
-var suites = /* :: */{
-  _0: suites_0,
-  _1: suites_1
+var suites = {
+  hd: suites_0,
+  tl: suites_1
 };
 
 Mt.from_pair_suites("Rec_module_test", suites);

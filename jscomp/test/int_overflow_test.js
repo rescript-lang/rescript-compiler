@@ -37,8 +37,8 @@ function fib(n) {
   }
 }
 
-Mt.from_pair_suites("Int_overflow_test", /* :: */{
-      _0: [
+Mt.from_pair_suites("Int_overflow_test", {
+      hd: [
         "plus_overflow",
         (function (param) {
             return {
@@ -48,8 +48,8 @@ Mt.from_pair_suites("Int_overflow_test", /* :: */{
                   };
           })
       ],
-      _1: /* :: */{
-        _0: [
+      tl: {
+        hd: [
           "minus_overflow",
           (function (param) {
               return {
@@ -59,8 +59,8 @@ Mt.from_pair_suites("Int_overflow_test", /* :: */{
                     };
             })
         ],
-        _1: /* :: */{
-          _0: [
+        tl: {
+          hd: [
             "flow_again",
             (function (param) {
                 return {
@@ -70,8 +70,8 @@ Mt.from_pair_suites("Int_overflow_test", /* :: */{
                       };
               })
           ],
-          _1: /* :: */{
-            _0: [
+          tl: {
+            hd: [
               "flow_again",
               (function (param) {
                   return {
@@ -81,8 +81,8 @@ Mt.from_pair_suites("Int_overflow_test", /* :: */{
                         };
                 })
             ],
-            _1: /* :: */{
-              _0: [
+            tl: {
+              hd: [
                 "hash_test",
                 (function (param) {
                     return {
@@ -92,8 +92,8 @@ Mt.from_pair_suites("Int_overflow_test", /* :: */{
                           };
                   })
               ],
-              _1: /* :: */{
-                _0: [
+              tl: {
+                hd: [
                   "hash_test2",
                   (function (param) {
                       return {
@@ -103,8 +103,8 @@ Mt.from_pair_suites("Int_overflow_test", /* :: */{
                             };
                     })
                 ],
-                _1: /* :: */{
-                  _0: [
+                tl: {
+                  hd: [
                     "File \"int_overflow_test.ml\", line 37, characters 2-9",
                     (function (param) {
                         return {
@@ -114,8 +114,8 @@ Mt.from_pair_suites("Int_overflow_test", /* :: */{
                               };
                       })
                   ],
-                  _1: /* :: */{
-                    _0: [
+                  tl: {
+                    hd: [
                       "File \"int_overflow_test.ml\", line 38, characters 2-9",
                       (function (param) {
                           return {
@@ -125,8 +125,8 @@ Mt.from_pair_suites("Int_overflow_test", /* :: */{
                                 };
                         })
                     ],
-                    _1: /* :: */{
-                      _0: [
+                    tl: {
+                      hd: [
                         "int_literal_flow",
                         (function (param) {
                             return {
@@ -136,8 +136,8 @@ Mt.from_pair_suites("Int_overflow_test", /* :: */{
                                   };
                           })
                       ],
-                      _1: /* :: */{
-                        _0: [
+                      tl: {
+                        hd: [
                           "int_literal_flow2",
                           (function (param) {
                               return {
@@ -147,8 +147,8 @@ Mt.from_pair_suites("Int_overflow_test", /* :: */{
                                     };
                             })
                         ],
-                        _1: /* :: */{
-                          _0: [
+                        tl: {
+                          hd: [
                             "int_literal_flow3",
                             (function (param) {
                                 return {
@@ -158,8 +158,8 @@ Mt.from_pair_suites("Int_overflow_test", /* :: */{
                                       };
                               })
                           ],
-                          _1: /* :: */{
-                            _0: [
+                          tl: {
+                            hd: [
                               "int32_mul",
                               (function (param) {
                                   return {
@@ -169,8 +169,8 @@ Mt.from_pair_suites("Int_overflow_test", /* :: */{
                                         };
                                 })
                             ],
-                            _1: /* :: */{
-                              _0: [
+                            tl: {
+                              hd: [
                                 "File \"int_overflow_test.ml\", line 44, characters 3-10",
                                 (function (param) {
                                     return {
@@ -180,8 +180,8 @@ Mt.from_pair_suites("Int_overflow_test", /* :: */{
                                           };
                                   })
                               ],
-                              _1: /* :: */{
-                                _0: [
+                              tl: {
+                                hd: [
                                   "File \"int_overflow_test.ml\", line 46, characters 3-10",
                                   (function (param) {
                                       return {
@@ -191,7 +191,7 @@ Mt.from_pair_suites("Int_overflow_test", /* :: */{
                                             };
                                     })
                                 ],
-                                _1: /* [] */0
+                                tl: /* [] */0
                               }
                             }
                           }

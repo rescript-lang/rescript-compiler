@@ -214,8 +214,8 @@ var b = match$4[1];
 
 var a = match$4[0];
 
-Mt.from_pair_suites("Float_test", Pervasives.$at(/* :: */{
-          _0: [
+Mt.from_pair_suites("Float_test", Pervasives.$at({
+          hd: [
             "mod_float",
             (function (param) {
                 return {
@@ -225,8 +225,8 @@ Mt.from_pair_suites("Float_test", Pervasives.$at(/* :: */{
                       };
               })
           ],
-          _1: /* :: */{
-            _0: [
+          tl: {
+            hd: [
               "modf_float1",
               (function (param) {
                   return {
@@ -236,8 +236,8 @@ Mt.from_pair_suites("Float_test", Pervasives.$at(/* :: */{
                         };
                 })
             ],
-            _1: /* :: */{
-              _0: [
+            tl: {
+              hd: [
                 "modf_float2",
                 (function (param) {
                     return {
@@ -247,8 +247,8 @@ Mt.from_pair_suites("Float_test", Pervasives.$at(/* :: */{
                           };
                   })
               ],
-              _1: /* :: */{
-                _0: [
+              tl: {
+                hd: [
                   "int_of_float",
                   (function (param) {
                       return {
@@ -258,7 +258,7 @@ Mt.from_pair_suites("Float_test", Pervasives.$at(/* :: */{
                             };
                     })
                 ],
-                _1: /* [] */0
+                tl: /* [] */0
               }
             }
           }

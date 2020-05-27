@@ -97,8 +97,8 @@ var suites_0 = [
     })
 ];
 
-var suites_1 = /* :: */{
-  _0: [
+var suites_1 = {
+  hd: [
     "File \"queue_test.ml\", line 29, characters 2-9",
     (function (param) {
         var x = [
@@ -114,12 +114,12 @@ var suites_1 = /* :: */{
               };
       })
   ],
-  _1: /* [] */0
+  tl: /* [] */0
 };
 
-var suites = /* :: */{
-  _0: suites_0,
-  _1: suites_1
+var suites = {
+  hd: suites_0,
+  tl: suites_1
 };
 
 Mt.from_pair_suites("Queue_test", suites);

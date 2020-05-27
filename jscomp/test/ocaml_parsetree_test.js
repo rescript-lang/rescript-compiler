@@ -129,35 +129,35 @@ function code_of_style(c) {
 
 function ansi_of_style_l(l) {
   var s = l ? (
-      l._1 ? $$String.concat(";", List.map(code_of_style, l)) : code_of_style(l._0)
+      l.tl ? $$String.concat(";", List.map(code_of_style, l)) : code_of_style(l.hd)
     ) : "0";
   return "\x1b[" + (s + "m");
 }
 
 var default_styles = {
-  error: /* :: */{
-    _0: /* Bold */0,
-    _1: /* :: */{
-      _0: {
+  error: {
+    hd: /* Bold */0,
+    tl: {
+      hd: {
         TAG: /* FG */0,
         _0: /* Red */1
       },
-      _1: /* [] */0
+      tl: /* [] */0
     }
   },
-  warning: /* :: */{
-    _0: /* Bold */0,
-    _1: /* :: */{
-      _0: {
+  warning: {
+    hd: /* Bold */0,
+    tl: {
+      hd: {
         TAG: /* FG */0,
         _0: /* Magenta */5
       },
-      _1: /* [] */0
+      tl: /* [] */0
     }
   },
-  loc: /* :: */{
-    _0: /* Bold */0,
-    _1: /* [] */0
+  loc: {
+    hd: /* Bold */0,
+    tl: /* [] */0
   }
 };
 
@@ -177,29 +177,29 @@ function set_styles(s) {
 function style_of_tag(s) {
   switch (s) {
     case "dim" :
-        return /* :: */{
-                _0: /* Dim */2,
-                _1: /* [] */0
+        return {
+                hd: /* Dim */2,
+                tl: /* [] */0
               };
     case "error" :
         return cur_styles.contents.error;
     case "filename" :
-        return /* :: */{
-                _0: {
+        return {
+                hd: {
                   TAG: /* FG */0,
                   _0: /* Cyan */6
                 },
-                _1: /* [] */0
+                tl: /* [] */0
               };
     case "info" :
-        return /* :: */{
-                _0: /* Bold */0,
-                _1: /* :: */{
-                  _0: {
+        return {
+                hd: /* Bold */0,
+                tl: {
+                  hd: {
                     TAG: /* FG */0,
                     _0: /* Yellow */3
                   },
-                  _1: /* [] */0
+                  tl: /* [] */0
                 }
               };
     case "loc" :
@@ -243,9 +243,9 @@ function set_color_tag_handling(ppf) {
     try {
       style_of_tag(param);
       if (color_enabled.contents) {
-        return ansi_of_style_l(/* :: */{
-                    _0: /* Reset */1,
-                    _1: /* [] */0
+        return ansi_of_style_l({
+                    hd: /* Reset */1,
+                    tl: /* [] */0
                   });
       } else {
         return "";
@@ -275,17 +275,17 @@ var first = {
   contents: true
 };
 
-var formatter_l_1 = /* :: */{
-  _0: Format.err_formatter,
-  _1: /* :: */{
-    _0: Format.str_formatter,
-    _1: /* [] */0
+var formatter_l_1 = {
+  hd: Format.err_formatter,
+  tl: {
+    hd: Format.str_formatter,
+    tl: /* [] */0
   }
 };
 
-var formatter_l = /* :: */{
-  _0: Format.std_formatter,
-  _1: formatter_l_1
+var formatter_l = {
+  hd: Format.std_formatter,
+  tl: formatter_l_1
 };
 
 function setup(o) {
@@ -446,9 +446,9 @@ function loop(i) {
   if (i === 0) {
     return /* [] */0;
   } else {
-    return /* :: */{
-            _0: i,
-            _1: loop(i - 1 | 0)
+    return {
+            hd: i,
+            tl: loop(i - 1 | 0)
           };
   }
 }
@@ -460,46 +460,46 @@ function letter(param) {
     case 97 :
         return letter_all;
     case 99 :
-        return /* :: */{
-                _0: 1,
-                _1: /* :: */{
-                  _0: 2,
-                  _1: /* [] */0
+        return {
+                hd: 1,
+                tl: {
+                  hd: 2,
+                  tl: /* [] */0
                 }
               };
     case 100 :
-        return /* :: */{
-                _0: 3,
-                _1: /* [] */0
+        return {
+                hd: 3,
+                tl: /* [] */0
               };
     case 101 :
-        return /* :: */{
-                _0: 4,
-                _1: /* [] */0
+        return {
+                hd: 4,
+                tl: /* [] */0
               };
     case 102 :
-        return /* :: */{
-                _0: 5,
-                _1: /* [] */0
+        return {
+                hd: 5,
+                tl: /* [] */0
               };
     case 107 :
-        return /* :: */{
-                _0: 32,
-                _1: /* :: */{
-                  _0: 33,
-                  _1: /* :: */{
-                    _0: 34,
-                    _1: /* :: */{
-                      _0: 35,
-                      _1: /* :: */{
-                        _0: 36,
-                        _1: /* :: */{
-                          _0: 37,
-                          _1: /* :: */{
-                            _0: 38,
-                            _1: /* :: */{
-                              _0: 39,
-                              _1: /* [] */0
+        return {
+                hd: 32,
+                tl: {
+                  hd: 33,
+                  tl: {
+                    hd: 34,
+                    tl: {
+                      hd: 35,
+                      tl: {
+                        hd: 36,
+                        tl: {
+                          hd: 37,
+                          tl: {
+                            hd: 38,
+                            tl: {
+                              hd: 39,
+                              tl: /* [] */0
                             }
                           }
                         }
@@ -509,42 +509,42 @@ function letter(param) {
                 }
               };
     case 108 :
-        return /* :: */{
-                _0: 6,
-                _1: /* [] */0
+        return {
+                hd: 6,
+                tl: /* [] */0
               };
     case 109 :
-        return /* :: */{
-                _0: 7,
-                _1: /* [] */0
+        return {
+                hd: 7,
+                tl: /* [] */0
               };
     case 112 :
-        return /* :: */{
-                _0: 8,
-                _1: /* [] */0
+        return {
+                hd: 8,
+                tl: /* [] */0
               };
     case 114 :
-        return /* :: */{
-                _0: 9,
-                _1: /* [] */0
+        return {
+                hd: 9,
+                tl: /* [] */0
               };
     case 115 :
-        return /* :: */{
-                _0: 10,
-                _1: /* [] */0
+        return {
+                hd: 10,
+                tl: /* [] */0
               };
     case 117 :
-        return /* :: */{
-                _0: 11,
-                _1: /* :: */{
-                  _0: 12,
-                  _1: /* [] */0
+        return {
+                hd: 11,
+                tl: {
+                  hd: 12,
+                  tl: /* [] */0
                 }
               };
     case 118 :
-        return /* :: */{
-                _0: 13,
-                _1: /* [] */0
+        return {
+                hd: 13,
+                tl: /* [] */0
               };
     case 98 :
     case 103 :
@@ -558,33 +558,33 @@ function letter(param) {
     case 119 :
         return /* [] */0;
     case 120 :
-        return /* :: */{
-                _0: 14,
-                _1: /* :: */{
-                  _0: 15,
-                  _1: /* :: */{
-                    _0: 16,
-                    _1: /* :: */{
-                      _0: 17,
-                      _1: /* :: */{
-                        _0: 18,
-                        _1: /* :: */{
-                          _0: 19,
-                          _1: /* :: */{
-                            _0: 20,
-                            _1: /* :: */{
-                              _0: 21,
-                              _1: /* :: */{
-                                _0: 22,
-                                _1: /* :: */{
-                                  _0: 23,
-                                  _1: /* :: */{
-                                    _0: 24,
-                                    _1: /* :: */{
-                                      _0: 25,
-                                      _1: /* :: */{
-                                        _0: 30,
-                                        _1: /* [] */0
+        return {
+                hd: 14,
+                tl: {
+                  hd: 15,
+                  tl: {
+                    hd: 16,
+                    tl: {
+                      hd: 17,
+                      tl: {
+                        hd: 18,
+                        tl: {
+                          hd: 19,
+                          tl: {
+                            hd: 20,
+                            tl: {
+                              hd: 21,
+                              tl: {
+                                hd: 22,
+                                tl: {
+                                  hd: 23,
+                                  tl: {
+                                    hd: 24,
+                                    tl: {
+                                      hd: 25,
+                                      tl: {
+                                        hd: 30,
+                                        tl: /* [] */0
                                       }
                                     }
                                   }
@@ -599,14 +599,14 @@ function letter(param) {
                 }
               };
     case 121 :
-        return /* :: */{
-                _0: 26,
-                _1: /* [] */0
+        return {
+                hd: 26,
+                tl: /* [] */0
               };
     case 122 :
-        return /* :: */{
-                _0: 27,
-                _1: /* [] */0
+        return {
+                hd: 27,
+                tl: /* [] */0
               };
     default:
       throw {
@@ -870,16 +870,16 @@ function message(s) {
       case /* Method_override */2 :
           var match = s._0;
           if (match) {
-            var slist = match._1;
-            var lab = match._0;
+            var slist = match.tl;
+            var lab = match.hd;
             if (slist) {
-              return $$String.concat(" ", /* :: */{
-                          _0: "the following methods are overridden by the class",
-                          _1: /* :: */{
-                            _0: lab,
-                            _1: /* :: */{
-                              _0: ":\n ",
-                              _1: slist
+              return $$String.concat(" ", {
+                          hd: "the following methods are overridden by the class",
+                          tl: {
+                            hd: lab,
+                            tl: {
+                              hd: ":\n ",
+                              tl: slist
                             }
                           }
                         });
@@ -908,16 +908,16 @@ function message(s) {
       case /* Instance_variable_override */5 :
           var match$1 = s._0;
           if (match$1) {
-            var slist$1 = match$1._1;
-            var lab$1 = match$1._0;
+            var slist$1 = match$1.tl;
+            var lab$1 = match$1.hd;
             if (slist$1) {
-              return $$String.concat(" ", /* :: */{
-                          _0: "the following instance variables are overridden by the class",
-                          _1: /* :: */{
-                            _0: lab$1,
-                            _1: /* :: */{
-                              _0: ":\n ",
-                              _1: slist$1
+              return $$String.concat(" ", {
+                          hd: "the following instance variables are overridden by the class",
+                          tl: {
+                            hd: lab$1,
+                            tl: {
+                              hd: ":\n ",
+                              tl: slist$1
                             }
                           }
                         }) + "\nThe behaviour changed in ocaml 3.10 (previous behaviour was hiding.)";
@@ -1050,8 +1050,8 @@ function message(s) {
       case /* Name_out_of_scope */23 :
           var slist$2 = s._1;
           var ty = s._0;
-          if (slist$2 && !slist$2._1 && !s._2) {
-            return slist$2._0 + (" was selected from type " + (ty + ".\nIt is not visible in the current scope, and will not \nbe selected if the type becomes unknown."));
+          if (slist$2 && !slist$2.tl && !s._2) {
+            return slist$2.hd + (" was selected from type " + (ty + ".\nIt is not visible in the current scope, and will not \nbe selected if the type becomes unknown."));
           }
           if (s._2) {
             return "this record of type " + (ty + (" contains fields that are \nnot visible in the current scope: " + ($$String.concat(" ", slist$2) + ".\nThey will not be selected if the type becomes unknown.")));
@@ -1068,8 +1068,8 @@ function message(s) {
           break;
       case /* Ambiguous_name */24 :
           var slist$3 = s._0;
-          if (slist$3 && !slist$3._1 && !s._2) {
-            return slist$3._0 + (" belongs to several types: " + ($$String.concat(" ", s._1) + "\nThe first one was selected. Please disambiguate if this is wrong."));
+          if (slist$3 && !slist$3.tl && !s._2) {
+            return slist$3.hd + (" belongs to several types: " + ($$String.concat(" ", s._1) + "\nThe first one was selected. Please disambiguate if this is wrong."));
           }
           if (s._2) {
             return "these field labels belong to several types: " + ($$String.concat(" ", s._1) + "\nThe first one was selected. Please disambiguate if this is wrong.");
@@ -1617,9 +1617,9 @@ function print_loc(ppf, loc) {
   var startchar$1 = bs_vscode ? startchar + 1 | 0 : startchar;
   var endchar = (loc.loc_end.pos_cnum - loc.loc_start.pos_cnum | 0) + startchar$1 | 0;
   if (file === "//toplevel//") {
-    if (highlight_locations(ppf, /* :: */{
-            _0: loc,
-            _1: /* [] */0
+    if (highlight_locations(ppf, {
+            hd: loc,
+            tl: /* [] */0
           })) {
       return ;
     } else {
@@ -1723,9 +1723,9 @@ function print_loc(ppf, loc) {
 
 function print$1(ppf, loc) {
   Curry._1(Misc_Color.setup, color.contents);
-  if (loc.loc_start.pos_fname === "//toplevel//" && highlight_locations(ppf, /* :: */{
-          _0: loc,
-          _1: /* [] */0
+  if (loc.loc_start.pos_fname === "//toplevel//" && highlight_locations(ppf, {
+          hd: loc,
+          tl: /* [] */0
         })) {
     return ;
   } else {
@@ -1926,9 +1926,9 @@ var error_of_exn = {
 };
 
 function register_error_of_exn(f) {
-  error_of_exn.contents = /* :: */{
-    _0: f,
-    _1: error_of_exn.contents
+  error_of_exn.contents = {
+    hd: f,
+    tl: error_of_exn.contents
   };
   
 }
@@ -2016,11 +2016,11 @@ function is_mocha(param) {
   if (!match) {
     return false;
   }
-  var match$1 = match._1;
+  var match$1 = match.tl;
   if (!match$1) {
     return false;
   }
-  var exec = Path.basename(match$1._0);
+  var exec = Path.basename(match$1.hd);
   if (exec === "mocha") {
     return true;
   } else {
@@ -2218,9 +2218,9 @@ function docstring(body, loc) {
     ds_attached: /* Unattached */0,
     ds_associated: /* Zero */0
   };
-  docstrings.contents = /* :: */{
-    _0: ds,
-    _1: docstrings.contents
+  docstrings.contents = {
+    hd: ds,
+    tl: docstrings.contents
   };
   return ds;
 }
@@ -2264,9 +2264,9 @@ function docs_attr(ds) {
           doc_loc,
           {
             TAG: /* PStr */0,
-            _0: /* :: */{
-              _0: item,
-              _1: /* [] */0
+            _0: {
+              hd: item,
+              tl: /* [] */0
             }
           }
         ];
@@ -2274,15 +2274,15 @@ function docs_attr(ds) {
 
 function add_docs_attrs(docs, attrs) {
   var ds = docs.docs_pre;
-  var attrs$1 = ds !== undefined ? /* :: */({
-        _0: docs_attr(ds),
-        _1: attrs
+  var attrs$1 = ds !== undefined ? ({
+        hd: docs_attr(ds),
+        tl: attrs
       }) : attrs;
   var ds$1 = docs.docs_post;
   if (ds$1 !== undefined) {
-    return Pervasives.$at(attrs$1, /* :: */{
-                _0: docs_attr(ds$1),
-                _1: /* [] */0
+    return Pervasives.$at(attrs$1, {
+                hd: docs_attr(ds$1),
+                tl: /* [] */0
               });
   } else {
     return attrs$1;
@@ -2291,9 +2291,9 @@ function add_docs_attrs(docs, attrs) {
 
 function add_info_attrs(info, attrs) {
   if (info !== undefined) {
-    return Pervasives.$at(attrs, /* :: */{
-                _0: docs_attr(info),
-                _1: /* [] */0
+    return Pervasives.$at(attrs, {
+                hd: docs_attr(info),
+                tl: /* [] */0
               });
   } else {
     return attrs;
@@ -2334,9 +2334,9 @@ function text_attr(ds) {
           text_loc,
           {
             TAG: /* PStr */0,
-            _0: /* :: */{
-              _0: item,
-              _1: /* [] */0
+            _0: {
+              hd: item,
+              tl: /* [] */0
             }
           }
         ];
@@ -2353,13 +2353,13 @@ function get_docstring(info, dsl) {
     if (!param) {
       return ;
     }
-    var ds = param._0;
+    var ds = param.hd;
     var match = ds.ds_attached;
     if (match !== 1) {
       ds.ds_attached = info ? /* Info */1 : /* Docs */2;
       return ds;
     }
-    _param = param._1;
+    _param = param.tl;
     continue ;
   };
 }
@@ -2373,18 +2373,18 @@ function get_docstrings(dsl) {
     if (!param) {
       return List.rev(acc);
     }
-    var ds = param._0;
+    var ds = param.hd;
     var match = ds.ds_attached;
     if (match !== 1) {
       ds.ds_attached = /* Docs */2;
-      _param = param._1;
-      _acc = /* :: */{
-        _0: ds,
-        _1: acc
+      _param = param.tl;
+      _acc = {
+        hd: ds,
+        tl: acc
       };
       continue ;
     }
-    _param = param._1;
+    _param = param.tl;
     continue ;
   };
 }
@@ -2623,9 +2623,9 @@ function attr(d, a) {
   return {
           ptyp_desc: d.ptyp_desc,
           ptyp_loc: d.ptyp_loc,
-          ptyp_attributes: Pervasives.$at(d.ptyp_attributes, /* :: */{
-                _0: a,
-                _1: /* [] */0
+          ptyp_attributes: Pervasives.$at(d.ptyp_attributes, {
+                hd: a,
+                tl: /* [] */0
               })
         };
 }
@@ -2644,9 +2644,9 @@ function attr$1(d, a) {
   return {
           ppat_desc: d.ppat_desc,
           ppat_loc: d.ppat_loc,
-          ppat_attributes: Pervasives.$at(d.ppat_attributes, /* :: */{
-                _0: a,
-                _1: /* [] */0
+          ppat_attributes: Pervasives.$at(d.ppat_attributes, {
+                hd: a,
+                tl: /* [] */0
               })
         };
 }
@@ -2665,9 +2665,9 @@ function attr$2(d, a) {
   return {
           pexp_desc: d.pexp_desc,
           pexp_loc: d.pexp_loc,
-          pexp_attributes: Pervasives.$at(d.pexp_attributes, /* :: */{
-                _0: a,
-                _1: /* [] */0
+          pexp_attributes: Pervasives.$at(d.pexp_attributes, {
+                hd: a,
+                tl: /* [] */0
               })
         };
 }
@@ -2965,9 +2965,9 @@ function attr$3(d, a) {
   return {
           pmty_desc: d.pmty_desc,
           pmty_loc: d.pmty_loc,
-          pmty_attributes: Pervasives.$at(d.pmty_attributes, /* :: */{
-                _0: a,
-                _1: /* [] */0
+          pmty_attributes: Pervasives.$at(d.pmty_attributes, {
+                hd: a,
+                tl: /* [] */0
               })
         };
 }
@@ -2993,9 +2993,9 @@ function attr$4(d, a) {
   return {
           pmod_desc: d.pmod_desc,
           pmod_loc: d.pmod_loc,
-          pmod_attributes: Pervasives.$at(d.pmod_attributes, /* :: */{
-                _0: a,
-                _1: /* [] */0
+          pmod_attributes: Pervasives.$at(d.pmod_attributes, {
+                hd: a,
+                tl: /* [] */0
               })
         };
 }
@@ -3052,9 +3052,9 @@ function attr$5(d, a) {
   return {
           pcl_desc: d.pcl_desc,
           pcl_loc: d.pcl_loc,
-          pcl_attributes: Pervasives.$at(d.pcl_attributes, /* :: */{
-                _0: a,
-                _1: /* [] */0
+          pcl_attributes: Pervasives.$at(d.pcl_attributes, {
+                hd: a,
+                tl: /* [] */0
               })
         };
 }
@@ -3073,9 +3073,9 @@ function attr$6(d, a) {
   return {
           pcty_desc: d.pcty_desc,
           pcty_loc: d.pcty_loc,
-          pcty_attributes: Pervasives.$at(d.pcty_attributes, /* :: */{
-                _0: a,
-                _1: /* [] */0
+          pcty_attributes: Pervasives.$at(d.pcty_attributes, {
+                hd: a,
+                tl: /* [] */0
               })
         };
 }
@@ -3156,9 +3156,9 @@ function attr$7(d, a) {
   return {
           pctf_desc: d.pctf_desc,
           pctf_loc: d.pctf_loc,
-          pctf_attributes: Pervasives.$at(d.pctf_attributes, /* :: */{
-                _0: a,
-                _1: /* [] */0
+          pctf_attributes: Pervasives.$at(d.pctf_attributes, {
+                hd: a,
+                tl: /* [] */0
               })
         };
 }
@@ -3261,9 +3261,9 @@ function attr$8(d, a) {
   return {
           pcf_desc: d.pcf_desc,
           pcf_loc: d.pcf_loc,
-          pcf_attributes: Pervasives.$at(d.pcf_attributes, /* :: */{
-                _0: a,
-                _1: /* [] */0
+          pcf_attributes: Pervasives.$at(d.pcf_attributes, {
+                hd: a,
+                tl: /* [] */0
               })
         };
 }
@@ -3548,8 +3548,8 @@ function prepare_error(loc) {
     case /* Unclosed */0 :
         var closing = loc._3;
         var opening = loc._1;
-        return Curry._1(errorf(loc._2, /* :: */{
-                        _0: Curry._1(errorf(loc._0, undefined, undefined, /* Format */{
+        return Curry._1(errorf(loc._2, {
+                        hd: Curry._1(errorf(loc._0, undefined, undefined, /* Format */{
                                   _0: {
                                     TAG: /* String_literal */11,
                                     _0: "This '",
@@ -3565,7 +3565,7 @@ function prepare_error(loc) {
                                   },
                                   _1: "This '%s' might be unmatched"
                                 }), opening),
-                        _1: /* [] */0
+                        tl: /* [] */0
                       }, Curry._2(Printf.sprintf(/* Format */{
                                 _0: {
                                   TAG: /* String_literal */11,
@@ -3773,9 +3773,9 @@ function mkoption(d) {
                 },
                 loc: loc
               },
-              _1: /* :: */{
-                _0: d,
-                _1: /* [] */0
+              _1: {
+                hd: d,
+                tl: /* [] */0
               }
             });
 }
@@ -3836,17 +3836,17 @@ function mkinfix(arg1, name, arg2) {
   return mkexp({
               TAG: /* Pexp_apply */5,
               _0: mkoperator(name, 2),
-              _1: /* :: */{
-                _0: [
+              _1: {
+                hd: [
                   "",
                   arg1
                 ],
-                _1: /* :: */{
-                  _0: [
+                tl: {
+                  hd: [
                     "",
                     arg2
                   ],
-                  _1: /* [] */0
+                  tl: /* [] */0
                 }
               }
             });
@@ -3890,8 +3890,8 @@ function mkpat_cons(consloc, args, loc) {
 
 function mktailexp(nilloc, param) {
   if (param) {
-    var e1 = param._0;
-    var exp_el = mktailexp(nilloc, param._1);
+    var e1 = param.hd;
+    var exp_el = mktailexp(nilloc, param.tl);
     var loc_loc_start = e1.pexp_loc.loc_start;
     var loc_loc_end = exp_el.pexp_loc.loc_end;
     var loc = {
@@ -3901,11 +3901,11 @@ function mktailexp(nilloc, param) {
     };
     var arg = Curry._3(Ast_helper_Exp.mk, loc, undefined, {
           TAG: /* Pexp_tuple */8,
-          _0: /* :: */{
-            _0: e1,
-            _1: /* :: */{
-              _0: exp_el,
-              _1: /* [] */0
+          _0: {
+            hd: e1,
+            tl: {
+              hd: exp_el,
+              tl: /* [] */0
             }
           }
         });
@@ -3939,8 +3939,8 @@ function mktailexp(nilloc, param) {
 
 function mktailpat(nilloc, param) {
   if (param) {
-    var p1 = param._0;
-    var pat_pl = mktailpat(nilloc, param._1);
+    var p1 = param.hd;
+    var pat_pl = mktailpat(nilloc, param.tl);
     var loc_loc_start = p1.ppat_loc.loc_start;
     var loc_loc_end = pat_pl.ppat_loc.loc_end;
     var loc = {
@@ -3950,11 +3950,11 @@ function mktailpat(nilloc, param) {
     };
     var arg = mk$1(loc, undefined, {
           TAG: /* Ppat_tuple */4,
-          _0: /* :: */{
-            _0: p1,
-            _1: /* :: */{
-              _0: pat_pl,
-              _1: /* [] */0
+          _0: {
+            hd: p1,
+            tl: {
+              hd: pat_pl,
+              tl: /* [] */0
             }
           }
         });
@@ -4110,9 +4110,9 @@ function bigarray_untuplify(exp) {
   if (explist.TAG === /* Pexp_tuple */8) {
     return explist._0;
   } else {
-    return /* :: */{
-            _0: exp,
-            _1: /* [] */0
+    return {
+            hd: exp,
+            tl: /* [] */0
           };
   }
 }
@@ -4363,9 +4363,9 @@ function wrap_exp_attrs(body, param) {
                   ext,
                   {
                     TAG: /* PStr */0,
-                    _0: /* :: */{
-                      _0: mkstrexp(body$1, /* [] */0),
-                      _1: /* [] */0
+                    _0: {
+                      hd: mkstrexp(body$1, /* [] */0),
+                      tl: /* [] */0
                     }
                   }
                 ]
@@ -4376,12 +4376,12 @@ function wrap_exp_attrs(body, param) {
 }
 
 function text_def(pos) {
-  return /* :: */{
-          _0: {
+  return {
+          hd: {
             TAG: /* Ptop_def */0,
             _0: text$1(get_text(Parsing.rhs_start_pos(pos)))
           },
-          _1: /* [] */0
+          tl: /* [] */0
         };
 }
 
@@ -4408,15 +4408,15 @@ function add_nonrec(rf, attrs, pos) {
     txt: "nonrec",
     loc: name_loc
   };
-  return /* :: */{
-          _0: [
+  return {
+          hd: [
             name,
             {
               TAG: /* PStr */0,
               _0: /* [] */0
             }
           ],
-          _1: attrs
+          tl: attrs
         };
 }
 
@@ -4595,9 +4595,9 @@ var yyact = [
   (function (__caml_parser_env) {
       var _1 = Parsing.peek_val(__caml_parser_env, 1);
       var _2 = Parsing.peek_val(__caml_parser_env, 0);
-      return Pervasives.$at(text$1(get_text(Parsing.rhs_start_pos(1))), /* :: */{
-                  _0: mkstrexp(_1, _2),
-                  _1: /* [] */0
+      return Pervasives.$at(text$1(get_text(Parsing.rhs_start_pos(1))), {
+                  hd: mkstrexp(_1, _2),
+                  tl: /* [] */0
                 });
     }),
   (function (__caml_parser_env) {
@@ -4609,21 +4609,21 @@ var yyact = [
   (function (__caml_parser_env) {
       var _1 = Parsing.peek_val(__caml_parser_env, 1);
       var _2 = Parsing.peek_val(__caml_parser_env, 0);
-      return Pervasives.$at(text$1(get_text(Parsing.rhs_start_pos(1))), /* :: */{
-                  _0: _1,
-                  _1: _2
+      return Pervasives.$at(text$1(get_text(Parsing.rhs_start_pos(1))), {
+                  hd: _1,
+                  tl: _2
                 });
     }),
   (function (__caml_parser_env) {
       var _1 = Parsing.peek_val(__caml_parser_env, 0);
       var pos = 1;
       return extra_text((function (txt) {
-                    return /* :: */{
-                            _0: {
+                    return {
+                            hd: {
                               TAG: /* Ptop_def */0,
                               _0: text$1(txt)
                             },
-                            _1: /* [] */0
+                            tl: /* [] */0
                           };
                   }), pos, _1);
     }),
@@ -4634,15 +4634,15 @@ var yyact = [
       var _1 = Parsing.peek_val(__caml_parser_env, 2);
       var _2 = Parsing.peek_val(__caml_parser_env, 1);
       var _3 = Parsing.peek_val(__caml_parser_env, 0);
-      return Pervasives.$at(text_def(1), /* :: */{
-                  _0: {
+      return Pervasives.$at(text_def(1), {
+                  hd: {
                     TAG: /* Ptop_def */0,
-                    _0: /* :: */{
-                      _0: mkstrexp(_1, _2),
-                      _1: /* [] */0
+                    _0: {
+                      hd: mkstrexp(_1, _2),
+                      tl: /* [] */0
                     }
                   },
-                  _1: _3
+                  tl: _3
                 });
     }),
   (function (__caml_parser_env) {
@@ -4656,61 +4656,61 @@ var yyact = [
       var _3 = Parsing.peek_val(__caml_parser_env, 1);
       var _4 = Parsing.peek_val(__caml_parser_env, 0);
       mark_rhs_docs(2, 3);
-      return Pervasives.$at(text_def(1), Pervasives.$at(text_def(2), /* :: */{
-                      _0: {
+      return Pervasives.$at(text_def(1), Pervasives.$at(text_def(2), {
+                      hd: {
                         TAG: /* Ptop_def */0,
-                        _0: /* :: */{
-                          _0: mkstrexp(_2, _3),
-                          _1: /* [] */0
+                        _0: {
+                          hd: mkstrexp(_2, _3),
+                          tl: /* [] */0
                         }
                       },
-                      _1: _4
+                      tl: _4
                     }));
     }),
   (function (__caml_parser_env) {
       var _2 = Parsing.peek_val(__caml_parser_env, 1);
       var _3 = Parsing.peek_val(__caml_parser_env, 0);
-      return Pervasives.$at(text_def(1), Pervasives.$at(text_def(2), /* :: */{
-                      _0: {
+      return Pervasives.$at(text_def(1), Pervasives.$at(text_def(2), {
+                      hd: {
                         TAG: /* Ptop_def */0,
-                        _0: /* :: */{
-                          _0: _2,
-                          _1: /* [] */0
+                        _0: {
+                          hd: _2,
+                          tl: /* [] */0
                         }
                       },
-                      _1: _3
+                      tl: _3
                     }));
     }),
   (function (__caml_parser_env) {
       var _2 = Parsing.peek_val(__caml_parser_env, 1);
       var _3 = Parsing.peek_val(__caml_parser_env, 0);
       mark_rhs_docs(2, 3);
-      return Pervasives.$at(text_def(1), Pervasives.$at(text_def(2), /* :: */{
-                      _0: _2,
-                      _1: _3
+      return Pervasives.$at(text_def(1), Pervasives.$at(text_def(2), {
+                      hd: _2,
+                      tl: _3
                     }));
     }),
   (function (__caml_parser_env) {
       var _1 = Parsing.peek_val(__caml_parser_env, 1);
       var _2 = Parsing.peek_val(__caml_parser_env, 0);
-      return Pervasives.$at(text_def(1), /* :: */{
-                  _0: {
+      return Pervasives.$at(text_def(1), {
+                  hd: {
                     TAG: /* Ptop_def */0,
-                    _0: /* :: */{
-                      _0: _1,
-                      _1: /* [] */0
+                    _0: {
+                      hd: _1,
+                      tl: /* [] */0
                     }
                   },
-                  _1: _2
+                  tl: _2
                 });
     }),
   (function (__caml_parser_env) {
       var _1 = Parsing.peek_val(__caml_parser_env, 1);
       var _2 = Parsing.peek_val(__caml_parser_env, 0);
       mark_rhs_docs(1, 1);
-      return Pervasives.$at(text_def(1), /* :: */{
-                  _0: _1,
-                  _1: _2
+      return Pervasives.$at(text_def(1), {
+                  hd: _1,
+                  tl: _2
                 });
     }),
   (function (__caml_parser_env) {
@@ -4751,16 +4751,16 @@ var yyact = [
   (function (__caml_parser_env) {
       var _1 = Parsing.peek_val(__caml_parser_env, 1);
       var _2 = Parsing.peek_val(__caml_parser_env, 0);
-      return /* :: */{
-              _0: _2,
-              _1: _1
+      return {
+              hd: _2,
+              tl: _1
             };
     }),
   (function (__caml_parser_env) {
       var _1 = Parsing.peek_val(__caml_parser_env, 0);
-      return /* :: */{
-              _0: _1,
-              _1: /* [] */0
+      return {
+              hd: _1,
+              tl: /* [] */0
             };
     }),
   (function (__caml_parser_env) {
@@ -4929,9 +4929,9 @@ var yyact = [
       var _2 = Parsing.peek_val(__caml_parser_env, 1);
       var _3 = Parsing.peek_val(__caml_parser_env, 0);
       mark_rhs_docs(1, 2);
-      return Pervasives.$at(text$1(get_text(Parsing.rhs_start_pos(1))), /* :: */{
-                  _0: mkstrexp(_1, _2),
-                  _1: _3
+      return Pervasives.$at(text$1(get_text(Parsing.rhs_start_pos(1))), {
+                  hd: mkstrexp(_1, _2),
+                  tl: _3
                 });
     }),
   (function (__caml_parser_env) {
@@ -4947,9 +4947,9 @@ var yyact = [
   (function (__caml_parser_env) {
       var _1 = Parsing.peek_val(__caml_parser_env, 1);
       var _2 = Parsing.peek_val(__caml_parser_env, 0);
-      return Pervasives.$at(text$1(get_text(Parsing.rhs_start_pos(1))), /* :: */{
-                  _0: _1,
-                  _1: _2
+      return Pervasives.$at(text$1(get_text(Parsing.rhs_start_pos(1))), {
+                  hd: _1,
+                  tl: _2
                 });
     }),
   (function (__caml_parser_env) {
@@ -4958,8 +4958,8 @@ var yyact = [
       var str;
       var exit = 0;
       if (bindings) {
-        var lb = bindings._0;
-        if (typeof lb.lb_pattern.ppat_desc === "number" && !bindings._1) {
+        var lb = bindings.hd;
+        if (typeof lb.lb_pattern.ppat_desc === "number" && !bindings.tl) {
           var exp = wrap_exp_attrs(lb.lb_expression, [
                 undefined,
                 lbs.lbs_attributes
@@ -5004,9 +5004,9 @@ var yyact = [
             id,
             {
               TAG: /* PStr */0,
-              _0: /* :: */{
-                _0: str,
-                _1: /* [] */0
+              _0: {
+                hd: str,
+                tl: /* [] */0
               }
             }
           ],
@@ -5149,17 +5149,17 @@ var yyact = [
     }),
   (function (__caml_parser_env) {
       var _1 = Parsing.peek_val(__caml_parser_env, 0);
-      return /* :: */{
-              _0: _1,
-              _1: /* [] */0
+      return {
+              hd: _1,
+              tl: /* [] */0
             };
     }),
   (function (__caml_parser_env) {
       var _1 = Parsing.peek_val(__caml_parser_env, 1);
       var _2 = Parsing.peek_val(__caml_parser_env, 0);
-      return /* :: */{
-              _0: _2,
-              _1: _1
+      return {
+              hd: _2,
+              tl: _1
             };
     }),
   (function (__caml_parser_env) {
@@ -5258,9 +5258,9 @@ var yyact = [
   (function (__caml_parser_env) {
       var _1 = Parsing.peek_val(__caml_parser_env, 1);
       var _2 = Parsing.peek_val(__caml_parser_env, 0);
-      return Pervasives.$at(text(get_text(Parsing.rhs_start_pos(1))), /* :: */{
-                  _0: _1,
-                  _1: _2
+      return Pervasives.$at(text(get_text(Parsing.rhs_start_pos(1))), {
+                  hd: _1,
+                  tl: _2
                 });
     }),
   (function (__caml_parser_env) {
@@ -5437,17 +5437,17 @@ var yyact = [
     }),
   (function (__caml_parser_env) {
       var _1 = Parsing.peek_val(__caml_parser_env, 0);
-      return /* :: */{
-              _0: _1,
-              _1: /* [] */0
+      return {
+              hd: _1,
+              tl: /* [] */0
             };
     }),
   (function (__caml_parser_env) {
       var _1 = Parsing.peek_val(__caml_parser_env, 1);
       var _2 = Parsing.peek_val(__caml_parser_env, 0);
-      return /* :: */{
-              _0: _2,
-              _1: _1
+      return {
+              hd: _2,
+              tl: _1
             };
     }),
   (function (__caml_parser_env) {
@@ -5485,17 +5485,17 @@ var yyact = [
     }),
   (function (__caml_parser_env) {
       var _1 = Parsing.peek_val(__caml_parser_env, 0);
-      return /* :: */{
-              _0: _1,
-              _1: /* [] */0
+      return {
+              hd: _1,
+              tl: /* [] */0
             };
     }),
   (function (__caml_parser_env) {
       var _1 = Parsing.peek_val(__caml_parser_env, 1);
       var _2 = Parsing.peek_val(__caml_parser_env, 0);
-      return /* :: */{
-              _0: _2,
-              _1: _1
+      return {
+              hd: _2,
+              tl: _1
             };
     }),
   (function (__caml_parser_env) {
@@ -5728,9 +5728,9 @@ var yyact = [
   (function (__caml_parser_env) {
       var _1 = Parsing.peek_val(__caml_parser_env, 1);
       var _2 = Parsing.peek_val(__caml_parser_env, 0);
-      return Pervasives.$at(/* :: */{
-                  _0: _2,
-                  _1: Curry._1(Ast_helper_Cf.text, get_text(Parsing.rhs_start_pos(2)))
+      return Pervasives.$at({
+                  hd: _2,
+                  tl: Curry._1(Ast_helper_Cf.text, get_text(Parsing.rhs_start_pos(2)))
                 }, _1);
     }),
   (function (__caml_parser_env) {
@@ -6102,9 +6102,9 @@ var yyact = [
   (function (__caml_parser_env) {
       var _1 = Parsing.peek_val(__caml_parser_env, 1);
       var _2 = Parsing.peek_val(__caml_parser_env, 0);
-      return Pervasives.$at(/* :: */{
-                  _0: _2,
-                  _1: Curry._1(Ast_helper_Ctf.text, get_text(Parsing.rhs_start_pos(2)))
+      return Pervasives.$at({
+                  hd: _2,
+                  tl: Curry._1(Ast_helper_Ctf.text, get_text(Parsing.rhs_start_pos(2)))
                 }, _1);
     }),
   (function (__caml_parser_env) {
@@ -6213,17 +6213,17 @@ var yyact = [
     }),
   (function (__caml_parser_env) {
       var _1 = Parsing.peek_val(__caml_parser_env, 0);
-      return /* :: */{
-              _0: _1,
-              _1: /* [] */0
+      return {
+              hd: _1,
+              tl: /* [] */0
             };
     }),
   (function (__caml_parser_env) {
       var _1 = Parsing.peek_val(__caml_parser_env, 1);
       var _2 = Parsing.peek_val(__caml_parser_env, 0);
-      return /* :: */{
-              _0: _2,
-              _1: _1
+      return {
+              hd: _2,
+              tl: _1
             };
     }),
   (function (__caml_parser_env) {
@@ -6250,17 +6250,17 @@ var yyact = [
     }),
   (function (__caml_parser_env) {
       var _1 = Parsing.peek_val(__caml_parser_env, 0);
-      return /* :: */{
-              _0: _1,
-              _1: /* [] */0
+      return {
+              hd: _1,
+              tl: /* [] */0
             };
     }),
   (function (__caml_parser_env) {
       var _1 = Parsing.peek_val(__caml_parser_env, 1);
       var _2 = Parsing.peek_val(__caml_parser_env, 0);
-      return /* :: */{
-              _0: _2,
-              _1: _1
+      return {
+              hd: _2,
+              tl: _1
             };
     }),
   (function (__caml_parser_env) {
@@ -6652,11 +6652,11 @@ var yyact = [
       var _3 = Parsing.peek_val(__caml_parser_env, 0);
       return mkexp_cons(rhs_loc(2), ghexp({
                       TAG: /* Pexp_tuple */8,
-                      _0: /* :: */{
-                        _0: _1,
-                        _1: /* :: */{
-                          _0: _3,
-                          _1: /* [] */0
+                      _0: {
+                        hd: _1,
+                        tl: {
+                          hd: _3,
+                          tl: /* [] */0
                         }
                       }
                     }), symbol_rloc(undefined));
@@ -6666,11 +6666,11 @@ var yyact = [
       var _7 = Parsing.peek_val(__caml_parser_env, 1);
       return mkexp_cons(rhs_loc(2), ghexp({
                       TAG: /* Pexp_tuple */8,
-                      _0: /* :: */{
-                        _0: _5,
-                        _1: /* :: */{
-                          _0: _7,
-                          _1: /* [] */0
+                      _0: {
+                        hd: _5,
+                        tl: {
+                          hd: _7,
+                          tl: /* [] */0
                         }
                       }
                     }), symbol_rloc(undefined));
@@ -6851,12 +6851,12 @@ var yyact = [
       return mkexp({
                   TAG: /* Pexp_apply */5,
                   _0: mkoperator("~" + _1, 1),
-                  _1: /* :: */{
-                    _0: [
+                  _1: {
+                    hd: [
                       "",
                       _2
                     ],
-                    _1: /* [] */0
+                    tl: /* [] */0
                   }
                 });
     }),
@@ -6893,12 +6893,12 @@ var yyact = [
       return mkexp({
                   TAG: /* Pexp_apply */5,
                   _0: mkoperator("~" + _1, 1),
-                  _1: /* :: */{
-                    _0: [
+                  _1: {
+                    hd: [
                       "",
                       _2
                     ],
-                    _1: /* [] */0
+                    tl: /* [] */0
                   }
                 });
     }),
@@ -6926,22 +6926,22 @@ var yyact = [
                         TAG: /* Pexp_ident */0,
                         _0: array_function("Array", "set")
                       }),
-                  _1: /* :: */{
-                    _0: [
+                  _1: {
+                    hd: [
                       "",
                       _1
                     ],
-                    _1: /* :: */{
-                      _0: [
+                    tl: {
+                      hd: [
                         "",
                         _4
                       ],
-                      _1: /* :: */{
-                        _0: [
+                      tl: {
+                        hd: [
                           "",
                           _7
                         ],
-                        _1: /* [] */0
+                        tl: /* [] */0
                       }
                     }
                   }
@@ -6957,22 +6957,22 @@ var yyact = [
                         TAG: /* Pexp_ident */0,
                         _0: array_function("String", "set")
                       }),
-                  _1: /* :: */{
-                    _0: [
+                  _1: {
+                    hd: [
                       "",
                       _1
                     ],
-                    _1: /* :: */{
-                      _0: [
+                    tl: {
+                      hd: [
                         "",
                         _4
                       ],
-                      _1: /* :: */{
-                        _0: [
+                      tl: {
+                        hd: [
                           "",
                           _7
                         ],
-                        _1: /* [] */0
+                        tl: /* [] */0
                       }
                     }
                   }
@@ -6985,8 +6985,8 @@ var yyact = [
       var set = fast.contents ? "unsafe_set" : "set";
       var coords = bigarray_untuplify(_4);
       if (coords) {
-        var match = coords._1;
-        var c1 = coords._0;
+        var match = coords.tl;
+        var c1 = coords.hd;
         if (!match) {
           return mkexp({
                       TAG: /* Pexp_apply */5,
@@ -6994,29 +6994,29 @@ var yyact = [
                             TAG: /* Pexp_ident */0,
                             _0: bigarray_function("Array1", set)
                           }),
-                      _1: /* :: */{
-                        _0: [
+                      _1: {
+                        hd: [
                           "",
                           _1
                         ],
-                        _1: /* :: */{
-                          _0: [
+                        tl: {
+                          hd: [
                             "",
                             c1
                           ],
-                          _1: /* :: */{
-                            _0: [
+                          tl: {
+                            hd: [
                               "",
                               _7
                             ],
-                            _1: /* [] */0
+                            tl: /* [] */0
                           }
                         }
                       }
                     });
         }
-        var match$1 = match._1;
-        var c2 = match._0;
+        var match$1 = match.tl;
+        var c2 = match.hd;
         if (!match$1) {
           return mkexp({
                       TAG: /* Pexp_apply */5,
@@ -7024,66 +7024,66 @@ var yyact = [
                             TAG: /* Pexp_ident */0,
                             _0: bigarray_function("Array2", set)
                           }),
-                      _1: /* :: */{
-                        _0: [
+                      _1: {
+                        hd: [
                           "",
                           _1
                         ],
-                        _1: /* :: */{
-                          _0: [
+                        tl: {
+                          hd: [
                             "",
                             c1
                           ],
-                          _1: /* :: */{
-                            _0: [
+                          tl: {
+                            hd: [
                               "",
                               c2
                             ],
-                            _1: /* :: */{
-                              _0: [
+                            tl: {
+                              hd: [
                                 "",
                                 _7
                               ],
-                              _1: /* [] */0
+                              tl: /* [] */0
                             }
                           }
                         }
                       }
                     });
         }
-        if (!match$1._1) {
+        if (!match$1.tl) {
           return mkexp({
                       TAG: /* Pexp_apply */5,
                       _0: ghexp({
                             TAG: /* Pexp_ident */0,
                             _0: bigarray_function("Array3", set)
                           }),
-                      _1: /* :: */{
-                        _0: [
+                      _1: {
+                        hd: [
                           "",
                           _1
                         ],
-                        _1: /* :: */{
-                          _0: [
+                        tl: {
+                          hd: [
                             "",
                             c1
                           ],
-                          _1: /* :: */{
-                            _0: [
+                          tl: {
+                            hd: [
                               "",
                               c2
                             ],
-                            _1: /* :: */{
-                              _0: [
+                            tl: {
+                              hd: [
                                 "",
-                                match$1._0
+                                match$1.hd
                               ],
-                              _1: /* :: */{
-                                _0: [
+                              tl: {
+                                hd: [
                                   "",
                                   _7
                                 ],
-                                _1: /* [] */0
+                                tl: /* [] */0
                               }
                             }
                           }
@@ -7099,25 +7099,25 @@ var yyact = [
                         TAG: /* Pexp_ident */0,
                         _0: bigarray_function("Genarray", "set")
                       }),
-                  _1: /* :: */{
-                    _0: [
+                  _1: {
+                    hd: [
                       "",
                       _1
                     ],
-                    _1: /* :: */{
-                      _0: [
+                    tl: {
+                      hd: [
                         "",
                         ghexp({
                               TAG: /* Pexp_array */14,
                               _0: coords
                             })
                       ],
-                      _1: /* :: */{
-                        _0: [
+                      tl: {
+                        hd: [
                           "",
                           _7
                         ],
-                        _1: /* [] */0
+                        tl: /* [] */0
                       }
                     }
                   }
@@ -7282,17 +7282,17 @@ var yyact = [
                         TAG: /* Pexp_ident */0,
                         _0: array_function("Array", "get")
                       }),
-                  _1: /* :: */{
-                    _0: [
+                  _1: {
+                    hd: [
                       "",
                       _1
                     ],
-                    _1: /* :: */{
-                      _0: [
+                    tl: {
+                      hd: [
                         "",
                         _4
                       ],
-                      _1: /* [] */0
+                      tl: /* [] */0
                     }
                   }
                 });
@@ -7311,17 +7311,17 @@ var yyact = [
                         TAG: /* Pexp_ident */0,
                         _0: array_function("String", "get")
                       }),
-                  _1: /* :: */{
-                    _0: [
+                  _1: {
+                    hd: [
                       "",
                       _1
                     ],
-                    _1: /* :: */{
-                      _0: [
+                    tl: {
+                      hd: [
                         "",
                         _4
                       ],
-                      _1: /* [] */0
+                      tl: /* [] */0
                     }
                   }
                 });
@@ -7337,8 +7337,8 @@ var yyact = [
       var get = fast.contents ? "unsafe_get" : "get";
       var coords = bigarray_untuplify(_4);
       if (coords) {
-        var match = coords._1;
-        var c1 = coords._0;
+        var match = coords.tl;
+        var c1 = coords.hd;
         if (!match) {
           return mkexp({
                       TAG: /* Pexp_apply */5,
@@ -7346,23 +7346,23 @@ var yyact = [
                             TAG: /* Pexp_ident */0,
                             _0: bigarray_function("Array1", get)
                           }),
-                      _1: /* :: */{
-                        _0: [
+                      _1: {
+                        hd: [
                           "",
                           _1
                         ],
-                        _1: /* :: */{
-                          _0: [
+                        tl: {
+                          hd: [
                             "",
                             c1
                           ],
-                          _1: /* [] */0
+                          tl: /* [] */0
                         }
                       }
                     });
         }
-        var match$1 = match._1;
-        var c2 = match._0;
+        var match$1 = match.tl;
+        var c2 = match.hd;
         if (!match$1) {
           return mkexp({
                       TAG: /* Pexp_apply */5,
@@ -7370,55 +7370,55 @@ var yyact = [
                             TAG: /* Pexp_ident */0,
                             _0: bigarray_function("Array2", get)
                           }),
-                      _1: /* :: */{
-                        _0: [
+                      _1: {
+                        hd: [
                           "",
                           _1
                         ],
-                        _1: /* :: */{
-                          _0: [
+                        tl: {
+                          hd: [
                             "",
                             c1
                           ],
-                          _1: /* :: */{
-                            _0: [
+                          tl: {
+                            hd: [
                               "",
                               c2
                             ],
-                            _1: /* [] */0
+                            tl: /* [] */0
                           }
                         }
                       }
                     });
         }
-        if (!match$1._1) {
+        if (!match$1.tl) {
           return mkexp({
                       TAG: /* Pexp_apply */5,
                       _0: ghexp({
                             TAG: /* Pexp_ident */0,
                             _0: bigarray_function("Array3", get)
                           }),
-                      _1: /* :: */{
-                        _0: [
+                      _1: {
+                        hd: [
                           "",
                           _1
                         ],
-                        _1: /* :: */{
-                          _0: [
+                        tl: {
+                          hd: [
                             "",
                             c1
                           ],
-                          _1: /* :: */{
-                            _0: [
+                          tl: {
+                            hd: [
                               "",
                               c2
                             ],
-                            _1: /* :: */{
-                              _0: [
+                            tl: {
+                              hd: [
                                 "",
-                                match$1._0
+                                match$1.hd
                               ],
-                              _1: /* [] */0
+                              tl: /* [] */0
                             }
                           }
                         }
@@ -7433,20 +7433,20 @@ var yyact = [
                         TAG: /* Pexp_ident */0,
                         _0: bigarray_function("Genarray", "get")
                       }),
-                  _1: /* :: */{
-                    _0: [
+                  _1: {
+                    hd: [
                       "",
                       _1
                     ],
-                    _1: /* :: */{
-                      _0: [
+                    tl: {
+                      hd: [
                         "",
                         ghexp({
                               TAG: /* Pexp_array */14,
                               _0: coords
                             })
                       ],
-                      _1: /* [] */0
+                      tl: /* [] */0
                     }
                   }
                 });
@@ -7570,12 +7570,12 @@ var yyact = [
       return mkexp({
                   TAG: /* Pexp_apply */5,
                   _0: mkoperator(_1, 1),
-                  _1: /* :: */{
-                    _0: [
+                  _1: {
+                    hd: [
                       "",
                       _2
                     ],
-                    _1: /* [] */0
+                    tl: /* [] */0
                   }
                 });
     }),
@@ -7584,12 +7584,12 @@ var yyact = [
       return mkexp({
                   TAG: /* Pexp_apply */5,
                   _0: mkoperator("!", 1),
-                  _1: /* :: */{
-                    _0: [
+                  _1: {
+                    hd: [
                       "",
                       _2
                     ],
-                    _1: /* [] */0
+                    tl: /* [] */0
                   }
                 });
     }),
@@ -7726,17 +7726,17 @@ var yyact = [
     }),
   (function (__caml_parser_env) {
       var _1 = Parsing.peek_val(__caml_parser_env, 0);
-      return /* :: */{
-              _0: _1,
-              _1: /* [] */0
+      return {
+              hd: _1,
+              tl: /* [] */0
             };
     }),
   (function (__caml_parser_env) {
       var _1 = Parsing.peek_val(__caml_parser_env, 1);
       var _2 = Parsing.peek_val(__caml_parser_env, 0);
-      return /* :: */{
-              _0: _2,
-              _1: _1
+      return {
+              hd: _2,
+              tl: _1
             };
     }),
   (function (__caml_parser_env) {
@@ -7793,17 +7793,17 @@ var yyact = [
     }),
   (function (__caml_parser_env) {
       var _1 = Parsing.peek_val(__caml_parser_env, 0);
-      return /* :: */{
-              _0: _1,
-              _1: /* [] */0
+      return {
+              hd: _1,
+              tl: /* [] */0
             };
     }),
   (function (__caml_parser_env) {
       var _1 = Parsing.peek_val(__caml_parser_env, 1);
       var _2 = Parsing.peek_val(__caml_parser_env, 0);
-      return /* :: */{
-              _0: _1,
-              _1: _2
+      return {
+              hd: _1,
+              tl: _2
             };
     }),
   (function (__caml_parser_env) {
@@ -7875,9 +7875,9 @@ var yyact = [
       var _1 = Parsing.peek_val(__caml_parser_env, 1);
       var _2 = Parsing.peek_val(__caml_parser_env, 0);
       return {
-              lbs_bindings: /* :: */{
-                _0: _2,
-                _1: _1.lbs_bindings
+              lbs_bindings: {
+                hd: _2,
+                tl: _1.lbs_bindings
               },
               lbs_rec: _1.lbs_rec,
               lbs_extension: _1.lbs_extension,
@@ -7892,9 +7892,9 @@ var yyact = [
       var _5 = Parsing.peek_val(__caml_parser_env, 0);
       var lb = mklb(_4, _5);
       return {
-              lbs_bindings: /* :: */{
-                _0: lb,
-                _1: /* [] */0
+              lbs_bindings: {
+                hd: lb,
+                tl: /* [] */0
               },
               lbs_rec: _3,
               lbs_extension: _2[0],
@@ -7940,17 +7940,17 @@ var yyact = [
     }),
   (function (__caml_parser_env) {
       var _1 = Parsing.peek_val(__caml_parser_env, 0);
-      return /* :: */{
-              _0: _1,
-              _1: /* [] */0
+      return {
+              hd: _1,
+              tl: /* [] */0
             };
     }),
   (function (__caml_parser_env) {
       var _1 = Parsing.peek_val(__caml_parser_env, 2);
       var _3 = Parsing.peek_val(__caml_parser_env, 0);
-      return /* :: */{
-              _0: _3,
-              _1: _1
+      return {
+              hd: _3,
+              tl: _1
             };
     }),
   (function (__caml_parser_env) {
@@ -7990,19 +7990,19 @@ var yyact = [
   (function (__caml_parser_env) {
       var _1 = Parsing.peek_val(__caml_parser_env, 2);
       var _3 = Parsing.peek_val(__caml_parser_env, 0);
-      return /* :: */{
-              _0: _3,
-              _1: _1
+      return {
+              hd: _3,
+              tl: _1
             };
     }),
   (function (__caml_parser_env) {
       var _1 = Parsing.peek_val(__caml_parser_env, 2);
       var _3 = Parsing.peek_val(__caml_parser_env, 0);
-      return /* :: */{
-              _0: _3,
-              _1: /* :: */{
-                _0: _1,
-                _1: /* [] */0
+      return {
+              hd: _3,
+              tl: {
+                hd: _1,
+                tl: /* [] */0
               }
             };
     }),
@@ -8023,24 +8023,24 @@ var yyact = [
     }),
   (function (__caml_parser_env) {
       var _1 = Parsing.peek_val(__caml_parser_env, 0);
-      return /* :: */{
-              _0: _1,
-              _1: /* [] */0
+      return {
+              hd: _1,
+              tl: /* [] */0
             };
     }),
   (function (__caml_parser_env) {
       var _1 = Parsing.peek_val(__caml_parser_env, 2);
       var _3 = Parsing.peek_val(__caml_parser_env, 0);
-      return /* :: */{
-              _0: _1,
-              _1: _3
+      return {
+              hd: _1,
+              tl: _3
             };
     }),
   (function (__caml_parser_env) {
       var _1 = Parsing.peek_val(__caml_parser_env, 1);
-      return /* :: */{
-              _0: _1,
-              _1: /* [] */0
+      return {
+              hd: _1,
+              tl: /* [] */0
             };
     }),
   (function (__caml_parser_env) {
@@ -8067,45 +8067,45 @@ var yyact = [
   (function (__caml_parser_env) {
       var _1 = Parsing.peek_val(__caml_parser_env, 2);
       var _3 = Parsing.peek_val(__caml_parser_env, 0);
-      return /* :: */{
-              _0: [
+      return {
+              hd: [
                 {
                   txt: _1,
                   loc: rhs_loc(1)
                 },
                 _3
               ],
-              _1: /* [] */0
+              tl: /* [] */0
             };
     }),
   (function (__caml_parser_env) {
       var _1 = Parsing.peek_val(__caml_parser_env, 4);
       var _3 = Parsing.peek_val(__caml_parser_env, 2);
       var _5 = Parsing.peek_val(__caml_parser_env, 0);
-      return /* :: */{
-              _0: [
+      return {
+              hd: [
                 {
                   txt: _3,
                   loc: rhs_loc(3)
                 },
                 _5
               ],
-              _1: _1
+              tl: _1
             };
     }),
   (function (__caml_parser_env) {
       var _1 = Parsing.peek_val(__caml_parser_env, 0);
-      return /* :: */{
-              _0: _1,
-              _1: /* [] */0
+      return {
+              hd: _1,
+              tl: /* [] */0
             };
     }),
   (function (__caml_parser_env) {
       var _1 = Parsing.peek_val(__caml_parser_env, 2);
       var _3 = Parsing.peek_val(__caml_parser_env, 0);
-      return /* :: */{
-              _0: _3,
-              _1: _1
+      return {
+              hd: _3,
+              tl: _1
             };
     }),
   (function (__caml_parser_env) {
@@ -8194,11 +8194,11 @@ var yyact = [
       var _3 = Parsing.peek_val(__caml_parser_env, 0);
       return mkpat_cons(rhs_loc(2), ghpat({
                       TAG: /* Ppat_tuple */4,
-                      _0: /* :: */{
-                        _0: _1,
-                        _1: /* :: */{
-                          _0: _3,
-                          _1: /* [] */0
+                      _0: {
+                        hd: _1,
+                        tl: {
+                          hd: _3,
+                          tl: /* [] */0
                         }
                       }
                     }), symbol_rloc(undefined));
@@ -8212,11 +8212,11 @@ var yyact = [
       var _7 = Parsing.peek_val(__caml_parser_env, 1);
       return mkpat_cons(rhs_loc(2), ghpat({
                       TAG: /* Ppat_tuple */4,
-                      _0: /* :: */{
-                        _0: _5,
-                        _1: /* :: */{
-                          _0: _7,
-                          _1: /* [] */0
+                      _0: {
+                        hd: _5,
+                        tl: {
+                          hd: _7,
+                          tl: /* [] */0
                         }
                       }
                     }), symbol_rloc(undefined));
@@ -8428,19 +8428,19 @@ var yyact = [
   (function (__caml_parser_env) {
       var _1 = Parsing.peek_val(__caml_parser_env, 2);
       var _3 = Parsing.peek_val(__caml_parser_env, 0);
-      return /* :: */{
-              _0: _3,
-              _1: _1
+      return {
+              hd: _3,
+              tl: _1
             };
     }),
   (function (__caml_parser_env) {
       var _1 = Parsing.peek_val(__caml_parser_env, 2);
       var _3 = Parsing.peek_val(__caml_parser_env, 0);
-      return /* :: */{
-              _0: _3,
-              _1: /* :: */{
-                _0: _1,
-                _1: /* [] */0
+      return {
+              hd: _3,
+              tl: {
+                hd: _1,
+                tl: /* [] */0
               }
             };
     }),
@@ -8450,25 +8450,25 @@ var yyact = [
     }),
   (function (__caml_parser_env) {
       var _1 = Parsing.peek_val(__caml_parser_env, 0);
-      return /* :: */{
-              _0: _1,
-              _1: /* [] */0
+      return {
+              hd: _1,
+              tl: /* [] */0
             };
     }),
   (function (__caml_parser_env) {
       var _1 = Parsing.peek_val(__caml_parser_env, 2);
       var _3 = Parsing.peek_val(__caml_parser_env, 0);
-      return /* :: */{
-              _0: _3,
-              _1: _1
+      return {
+              hd: _3,
+              tl: _1
             };
     }),
   (function (__caml_parser_env) {
       var _1 = Parsing.peek_val(__caml_parser_env, 0);
       return [
-              /* :: */{
-                _0: _1,
-                _1: /* [] */0
+              {
+                hd: _1,
+                tl: /* [] */0
               },
               /* Closed */0
             ];
@@ -8476,9 +8476,9 @@ var yyact = [
   (function (__caml_parser_env) {
       var _1 = Parsing.peek_val(__caml_parser_env, 1);
       return [
-              /* :: */{
-                _0: _1,
-                _1: /* [] */0
+              {
+                hd: _1,
+                tl: /* [] */0
               },
               /* Closed */0
             ];
@@ -8487,9 +8487,9 @@ var yyact = [
       var _1 = Parsing.peek_val(__caml_parser_env, 3);
       Parsing.peek_val(__caml_parser_env, 0);
       return [
-              /* :: */{
-                _0: _1,
-                _1: /* [] */0
+              {
+                hd: _1,
+                tl: /* [] */0
               },
               /* Open */1
             ];
@@ -8498,9 +8498,9 @@ var yyact = [
       var _1 = Parsing.peek_val(__caml_parser_env, 2);
       var _3 = Parsing.peek_val(__caml_parser_env, 0);
       return [
-              /* :: */{
-                _0: _1,
-                _1: _3[0]
+              {
+                hd: _1,
+                tl: _3[0]
               },
               _3[1]
             ];
@@ -8537,17 +8537,17 @@ var yyact = [
     }),
   (function (__caml_parser_env) {
       var _1 = Parsing.peek_val(__caml_parser_env, 0);
-      return /* :: */{
-              _0: _1[0],
-              _1: /* [] */0
+      return {
+              hd: _1[0],
+              tl: /* [] */0
             };
     }),
   (function (__caml_parser_env) {
       var _1 = Parsing.peek_val(__caml_parser_env, 1);
       var _2 = Parsing.peek_val(__caml_parser_env, 0);
-      return /* :: */{
-              _0: _1[0],
-              _1: _2
+      return {
+              hd: _1[0],
+              tl: _2
             };
     }),
   (function (__caml_parser_env) {
@@ -8562,17 +8562,17 @@ var yyact = [
     }),
   (function (__caml_parser_env) {
       var _1 = Parsing.peek_val(__caml_parser_env, 0);
-      return /* :: */{
-              _0: _1,
-              _1: /* [] */0
+      return {
+              hd: _1,
+              tl: /* [] */0
             };
     }),
   (function (__caml_parser_env) {
       var _1 = Parsing.peek_val(__caml_parser_env, 1);
       var _2 = Parsing.peek_val(__caml_parser_env, 0);
-      return /* :: */{
-              _0: _2,
-              _1: _1
+      return {
+              hd: _2,
+              tl: _1
             };
     }),
   (function (__caml_parser_env) {
@@ -8601,9 +8601,9 @@ var yyact = [
   (function (__caml_parser_env) {
       var _1 = Parsing.peek_val(__caml_parser_env, 2);
       var _3 = Parsing.peek_val(__caml_parser_env, 0);
-      return /* :: */{
-              _0: _3,
-              _1: _1
+      return {
+              hd: _3,
+              tl: _1
             };
     }),
   (function (__caml_parser_env) {
@@ -8712,9 +8712,9 @@ var yyact = [
     }),
   (function (__caml_parser_env) {
       var _1 = Parsing.peek_val(__caml_parser_env, 0);
-      return /* :: */{
-              _0: _1,
-              _1: /* [] */0
+      return {
+              hd: _1,
+              tl: /* [] */0
             };
     }),
   (function (__caml_parser_env) {
@@ -8730,17 +8730,17 @@ var yyact = [
     }),
   (function (__caml_parser_env) {
       var _1 = Parsing.peek_val(__caml_parser_env, 0);
-      return /* :: */{
-              _0: _1,
-              _1: /* [] */0
+      return {
+              hd: _1,
+              tl: /* [] */0
             };
     }),
   (function (__caml_parser_env) {
       var _1 = Parsing.peek_val(__caml_parser_env, 2);
       var _3 = Parsing.peek_val(__caml_parser_env, 0);
-      return /* :: */{
-              _0: _3,
-              _1: _1
+      return {
+              hd: _3,
+              tl: _1
             };
     }),
   (function (__caml_parser_env) {
@@ -8758,9 +8758,9 @@ var yyact = [
     }),
   (function (__caml_parser_env) {
       var _1 = Parsing.peek_val(__caml_parser_env, 0);
-      return /* :: */{
-              _0: _1,
-              _1: /* [] */0
+      return {
+              hd: _1,
+              tl: /* [] */0
             };
     }),
   (function (__caml_parser_env) {
@@ -8792,39 +8792,39 @@ var yyact = [
     }),
   (function (__caml_parser_env) {
       var _1 = Parsing.peek_val(__caml_parser_env, 0);
-      return /* :: */{
-              _0: _1,
-              _1: /* [] */0
+      return {
+              hd: _1,
+              tl: /* [] */0
             };
     }),
   (function (__caml_parser_env) {
       var _1 = Parsing.peek_val(__caml_parser_env, 2);
       var _3 = Parsing.peek_val(__caml_parser_env, 0);
-      return /* :: */{
-              _0: _3,
-              _1: _1
+      return {
+              hd: _3,
+              tl: _1
             };
     }),
   (function (__caml_parser_env) {
       var _1 = Parsing.peek_val(__caml_parser_env, 0);
-      return /* :: */{
-              _0: _1,
-              _1: /* [] */0
+      return {
+              hd: _1,
+              tl: /* [] */0
             };
     }),
   (function (__caml_parser_env) {
       var _1 = Parsing.peek_val(__caml_parser_env, 0);
-      return /* :: */{
-              _0: _1,
-              _1: /* [] */0
+      return {
+              hd: _1,
+              tl: /* [] */0
             };
     }),
   (function (__caml_parser_env) {
       var _1 = Parsing.peek_val(__caml_parser_env, 1);
       var _2 = Parsing.peek_val(__caml_parser_env, 0);
-      return /* :: */{
-              _0: _2,
-              _1: _1
+      return {
+              hd: _2,
+              tl: _1
             };
     }),
   (function (__caml_parser_env) {
@@ -8901,24 +8901,24 @@ var yyact = [
     }),
   (function (__caml_parser_env) {
       var _1 = Parsing.peek_val(__caml_parser_env, 0);
-      return /* :: */{
-              _0: _1,
-              _1: /* [] */0
+      return {
+              hd: _1,
+              tl: /* [] */0
             };
     }),
   (function (__caml_parser_env) {
       var _1 = Parsing.peek_val(__caml_parser_env, 0);
-      return /* :: */{
-              _0: _1,
-              _1: /* [] */0
+      return {
+              hd: _1,
+              tl: /* [] */0
             };
     }),
   (function (__caml_parser_env) {
       var _1 = Parsing.peek_val(__caml_parser_env, 1);
       var _2 = Parsing.peek_val(__caml_parser_env, 0);
-      return /* :: */{
-              _0: _1,
-              _1: _2
+      return {
+              hd: _1,
+              tl: _2
             };
     }),
   (function (__caml_parser_env) {
@@ -8976,68 +8976,68 @@ var yyact = [
     }),
   (function (__caml_parser_env) {
       var _1 = Parsing.peek_val(__caml_parser_env, 0);
-      return /* :: */{
-              _0: _1,
-              _1: /* [] */0
+      return {
+              hd: _1,
+              tl: /* [] */0
             };
     }),
   (function (__caml_parser_env) {
       var _1 = Parsing.peek_val(__caml_parser_env, 0);
-      return /* :: */{
-              _0: _1,
-              _1: /* [] */0
+      return {
+              hd: _1,
+              tl: /* [] */0
             };
     }),
   (function (__caml_parser_env) {
       var _1 = Parsing.peek_val(__caml_parser_env, 0);
-      return /* :: */{
-              _0: _1,
-              _1: /* [] */0
+      return {
+              hd: _1,
+              tl: /* [] */0
             };
     }),
   (function (__caml_parser_env) {
       var _1 = Parsing.peek_val(__caml_parser_env, 0);
-      return /* :: */{
-              _0: _1,
-              _1: /* [] */0
+      return {
+              hd: _1,
+              tl: /* [] */0
             };
     }),
   (function (__caml_parser_env) {
       var _1 = Parsing.peek_val(__caml_parser_env, 1);
       var _2 = Parsing.peek_val(__caml_parser_env, 0);
-      return /* :: */{
-              _0: _2,
-              _1: _1
+      return {
+              hd: _2,
+              tl: _1
             };
     }),
   (function (__caml_parser_env) {
       var _1 = Parsing.peek_val(__caml_parser_env, 1);
       var _2 = Parsing.peek_val(__caml_parser_env, 0);
-      return /* :: */{
-              _0: _2,
-              _1: _1
+      return {
+              hd: _2,
+              tl: _1
             };
     }),
   (function (__caml_parser_env) {
       var _1 = Parsing.peek_val(__caml_parser_env, 0);
-      return /* :: */{
-              _0: _1,
-              _1: /* [] */0
+      return {
+              hd: _1,
+              tl: /* [] */0
             };
     }),
   (function (__caml_parser_env) {
       var _1 = Parsing.peek_val(__caml_parser_env, 0);
-      return /* :: */{
-              _0: _1,
-              _1: /* [] */0
+      return {
+              hd: _1,
+              tl: /* [] */0
             };
     }),
   (function (__caml_parser_env) {
       var _1 = Parsing.peek_val(__caml_parser_env, 1);
       var _2 = Parsing.peek_val(__caml_parser_env, 0);
-      return /* :: */{
-              _0: _2,
-              _1: _1
+      return {
+              hd: _2,
+              tl: _1
             };
     }),
   (function (__caml_parser_env) {
@@ -9084,17 +9084,17 @@ var yyact = [
     }),
   (function (__caml_parser_env) {
       var _1 = Parsing.peek_val(__caml_parser_env, 0);
-      return /* :: */{
-              _0: _1,
-              _1: /* [] */0
+      return {
+              hd: _1,
+              tl: /* [] */0
             };
     }),
   (function (__caml_parser_env) {
       var _1 = Parsing.peek_val(__caml_parser_env, 2);
       var _3 = Parsing.peek_val(__caml_parser_env, 0);
-      return /* :: */{
-              _0: _3,
-              _1: _1
+      return {
+              hd: _3,
+              tl: _1
             };
     }),
   (function (__caml_parser_env) {
@@ -9166,17 +9166,17 @@ var yyact = [
     }),
   (function (__caml_parser_env) {
       var _2 = Parsing.peek_val(__caml_parser_env, 0);
-      return /* :: */{
-              _0: _2,
-              _1: /* [] */0
+      return {
+              hd: _2,
+              tl: /* [] */0
             };
     }),
   (function (__caml_parser_env) {
       var _1 = Parsing.peek_val(__caml_parser_env, 2);
       var _3 = Parsing.peek_val(__caml_parser_env, 0);
-      return /* :: */{
-              _0: _3,
-              _1: _1
+      return {
+              hd: _3,
+              tl: _1
             };
     }),
   (function (__caml_parser_env) {
@@ -9275,13 +9275,13 @@ var yyact = [
   (function (__caml_parser_env) {
       var _2 = Parsing.peek_val(__caml_parser_env, 1);
       if (_2) {
-        if (_2._1) {
+        if (_2.tl) {
           throw {
                 RE_EXN_ID: Parsing.Parse_error,
                 Error: new Error()
               };
         }
-        return _2._0;
+        return _2.hd;
       }
       throw {
             RE_EXN_ID: Parsing.Parse_error,
@@ -9294,13 +9294,13 @@ var yyact = [
   (function (__caml_parser_env) {
       var _2 = Parsing.peek_val(__caml_parser_env, 1);
       if (_2) {
-        if (_2._1) {
+        if (_2.tl) {
           throw {
                 RE_EXN_ID: Parsing.Parse_error,
                 Error: new Error()
               };
         }
-        return _2._0;
+        return _2.hd;
       }
       throw {
             RE_EXN_ID: Parsing.Parse_error,
@@ -9337,9 +9337,9 @@ var yyact = [
                     txt: _2,
                     loc: rhs_loc(2)
                   },
-                  _1: /* :: */{
-                    _0: _1,
-                    _1: /* [] */0
+                  _1: {
+                    hd: _1,
+                    tl: /* [] */0
                   }
                 });
     }),
@@ -9390,9 +9390,9 @@ var yyact = [
                     txt: _3,
                     loc: rhs_loc(3)
                   },
-                  _1: /* :: */{
-                    _0: _1,
-                    _1: /* [] */0
+                  _1: {
+                    hd: _1,
+                    tl: /* [] */0
                   }
                 });
     }),
@@ -9412,9 +9412,9 @@ var yyact = [
       var _2 = Parsing.peek_val(__caml_parser_env, 1);
       return mktyp({
                   TAG: /* Ptyp_variant */7,
-                  _0: /* :: */{
-                    _0: _2,
-                    _1: /* [] */0
+                  _0: {
+                    hd: _2,
+                    tl: /* [] */0
                   },
                   _1: /* Closed */0,
                   _2: undefined
@@ -9434,9 +9434,9 @@ var yyact = [
       var _4 = Parsing.peek_val(__caml_parser_env, 1);
       return mktyp({
                   TAG: /* Ptyp_variant */7,
-                  _0: /* :: */{
-                    _0: _2,
-                    _1: List.rev(_4)
+                  _0: {
+                    hd: _2,
+                    tl: List.rev(_4)
                   },
                   _1: /* Closed */0,
                   _2: undefined
@@ -9529,32 +9529,32 @@ var yyact = [
     }),
   (function (__caml_parser_env) {
       var _1 = Parsing.peek_val(__caml_parser_env, 0);
-      return /* :: */{
-              _0: _1,
-              _1: /* [] */0
+      return {
+              hd: _1,
+              tl: /* [] */0
             };
     }),
   (function (__caml_parser_env) {
       var _1 = Parsing.peek_val(__caml_parser_env, 2);
       var _3 = Parsing.peek_val(__caml_parser_env, 0);
-      return /* :: */{
-              _0: _1,
-              _1: _3
+      return {
+              hd: _1,
+              tl: _3
             };
     }),
   (function (__caml_parser_env) {
       var _1 = Parsing.peek_val(__caml_parser_env, 0);
-      return /* :: */{
-              _0: _1,
-              _1: /* [] */0
+      return {
+              hd: _1,
+              tl: /* [] */0
             };
     }),
   (function (__caml_parser_env) {
       var _1 = Parsing.peek_val(__caml_parser_env, 2);
       var _3 = Parsing.peek_val(__caml_parser_env, 0);
-      return /* :: */{
-              _0: _3,
-              _1: _1
+      return {
+              hd: _3,
+              tl: _1
             };
     }),
   (function (__caml_parser_env) {
@@ -9599,32 +9599,32 @@ var yyact = [
     }),
   (function (__caml_parser_env) {
       var _1 = Parsing.peek_val(__caml_parser_env, 0);
-      return /* :: */{
-              _0: _1,
-              _1: /* [] */0
+      return {
+              hd: _1,
+              tl: /* [] */0
             };
     }),
   (function (__caml_parser_env) {
       var _1 = Parsing.peek_val(__caml_parser_env, 2);
       var _3 = Parsing.peek_val(__caml_parser_env, 0);
-      return /* :: */{
-              _0: _3,
-              _1: _1
+      return {
+              hd: _3,
+              tl: _1
             };
     }),
   (function (__caml_parser_env) {
       var _1 = Parsing.peek_val(__caml_parser_env, 0);
-      return /* :: */{
-              _0: _1,
-              _1: /* [] */0
+      return {
+              hd: _1,
+              tl: /* [] */0
             };
     }),
   (function (__caml_parser_env) {
       var _1 = Parsing.peek_val(__caml_parser_env, 1);
       var _2 = Parsing.peek_val(__caml_parser_env, 0);
-      return /* :: */{
-              _0: _2,
-              _1: _1
+      return {
+              hd: _2,
+              tl: _1
             };
     }),
   (function (__caml_parser_env) {
@@ -9635,9 +9635,9 @@ var yyact = [
       var _3 = Parsing.peek_val(__caml_parser_env, 0);
       return mktyp({
                   TAG: /* Ptyp_tuple */2,
-                  _0: /* :: */{
-                    _0: _1,
-                    _1: List.rev(_3)
+                  _0: {
+                    hd: _1,
+                    tl: List.rev(_3)
                   }
                 });
     }),
@@ -9649,64 +9649,64 @@ var yyact = [
       var _3 = Parsing.peek_val(__caml_parser_env, 0);
       return mktyp({
                   TAG: /* Ptyp_tuple */2,
-                  _0: /* :: */{
-                    _0: _1,
-                    _1: List.rev(_3)
+                  _0: {
+                    hd: _1,
+                    tl: List.rev(_3)
                   }
                 });
     }),
   (function (__caml_parser_env) {
       var _1 = Parsing.peek_val(__caml_parser_env, 0);
-      return /* :: */{
-              _0: _1,
-              _1: /* [] */0
+      return {
+              hd: _1,
+              tl: /* [] */0
             };
     }),
   (function (__caml_parser_env) {
       var _1 = Parsing.peek_val(__caml_parser_env, 2);
       var _3 = Parsing.peek_val(__caml_parser_env, 0);
-      return /* :: */{
-              _0: _3,
-              _1: _1
+      return {
+              hd: _3,
+              tl: _1
             };
     }),
   (function (__caml_parser_env) {
       var _1 = Parsing.peek_val(__caml_parser_env, 0);
-      return /* :: */{
-              _0: _1,
-              _1: /* [] */0
+      return {
+              hd: _1,
+              tl: /* [] */0
             };
     }),
   (function (__caml_parser_env) {
       var _1 = Parsing.peek_val(__caml_parser_env, 2);
       var _3 = Parsing.peek_val(__caml_parser_env, 0);
-      return /* :: */{
-              _0: _3,
-              _1: _1
+      return {
+              hd: _3,
+              tl: _1
             };
     }),
   (function (__caml_parser_env) {
       var _1 = Parsing.peek_val(__caml_parser_env, 0);
-      return /* :: */{
-              _0: _1,
-              _1: /* [] */0
+      return {
+              hd: _1,
+              tl: /* [] */0
             };
     }),
   (function (__caml_parser_env) {
       var _1 = Parsing.peek_val(__caml_parser_env, 2);
       var _3 = Parsing.peek_val(__caml_parser_env, 0);
-      return /* :: */{
-              _0: _3,
-              _1: _1
+      return {
+              hd: _3,
+              tl: _1
             };
     }),
   (function (__caml_parser_env) {
       var _1 = Parsing.peek_val(__caml_parser_env, 2);
       var _3 = Parsing.peek_val(__caml_parser_env, 0);
       return [
-              /* :: */{
-                _0: _1,
-                _1: _3[0]
+              {
+                hd: _1,
+                tl: _3[0]
               },
               _3[1]
             ];
@@ -9715,9 +9715,9 @@ var yyact = [
       var _1 = Parsing.peek_val(__caml_parser_env, 1);
       Parsing.peek_val(__caml_parser_env, 0);
       return [
-              /* :: */{
-                _0: _1,
-                _1: /* [] */0
+              {
+                hd: _1,
+                tl: /* [] */0
               },
               /* Closed */0
             ];
@@ -10516,9 +10516,9 @@ var yyact = [
   (function (__caml_parser_env) {
       var _1 = Parsing.peek_val(__caml_parser_env, 1);
       var _2 = Parsing.peek_val(__caml_parser_env, 0);
-      return /* :: */{
-              _0: _1,
-              _1: _2
+      return {
+              hd: _1,
+              tl: _2
             };
     }),
   (function (__caml_parser_env) {
@@ -10527,9 +10527,9 @@ var yyact = [
   (function (__caml_parser_env) {
       var _1 = Parsing.peek_val(__caml_parser_env, 1);
       var _2 = Parsing.peek_val(__caml_parser_env, 0);
-      return /* :: */{
-              _0: _1,
-              _1: _2
+      return {
+              hd: _1,
+              tl: _2
             };
     }),
   (function (__caml_parser_env) {
@@ -10543,9 +10543,9 @@ var yyact = [
       var _2 = Parsing.peek_val(__caml_parser_env, 0);
       return [
               undefined,
-              /* :: */{
-                _0: _1,
-                _1: _2
+              {
+                hd: _1,
+                tl: _2
               }
             ];
     }),
@@ -11481,308 +11481,308 @@ function is_elif(i) {
   }
 }
 
-var keyword_table = create_hashtable(149, /* :: */{
-      _0: [
+var keyword_table = create_hashtable(149, {
+      hd: [
         "and",
         /* AND */2
       ],
-      _1: /* :: */{
-        _0: [
+      tl: {
+        hd: [
           "as",
           /* AS */3
         ],
-        _1: /* :: */{
-          _0: [
+        tl: {
+          hd: [
             "assert",
             /* ASSERT */4
           ],
-          _1: /* :: */{
-            _0: [
+          tl: {
+            hd: [
               "begin",
               /* BEGIN */10
             ],
-            _1: /* :: */{
-              _0: [
+            tl: {
+              hd: [
                 "class",
                 /* CLASS */11
               ],
-              _1: /* :: */{
-                _0: [
+              tl: {
+                hd: [
                   "constraint",
                   /* CONSTRAINT */17
                 ],
-                _1: /* :: */{
-                  _0: [
+                tl: {
+                  hd: [
                     "do",
                     /* DO */18
                   ],
-                  _1: /* :: */{
-                    _0: [
+                  tl: {
+                    hd: [
                       "done",
                       /* DONE */19
                     ],
-                    _1: /* :: */{
-                      _0: [
+                    tl: {
+                      hd: [
                         "downto",
                         /* DOWNTO */22
                       ],
-                      _1: /* :: */{
-                        _0: [
+                      tl: {
+                        hd: [
                           "else",
                           /* ELSE */23
                         ],
-                        _1: /* :: */{
-                          _0: [
+                        tl: {
+                          hd: [
                             "end",
                             /* END */24
                           ],
-                          _1: /* :: */{
-                            _0: [
+                          tl: {
+                            hd: [
                               "exception",
                               /* EXCEPTION */27
                             ],
-                            _1: /* :: */{
-                              _0: [
+                            tl: {
+                              hd: [
                                 "external",
                                 /* EXTERNAL */28
                               ],
-                              _1: /* :: */{
-                                _0: [
+                              tl: {
+                                hd: [
                                   "false",
                                   /* FALSE */29
                                 ],
-                                _1: /* :: */{
-                                  _0: [
+                                tl: {
+                                  hd: [
                                     "for",
                                     /* FOR */30
                                   ],
-                                  _1: /* :: */{
-                                    _0: [
+                                  tl: {
+                                    hd: [
                                       "fun",
                                       /* FUN */31
                                     ],
-                                    _1: /* :: */{
-                                      _0: [
+                                    tl: {
+                                      hd: [
                                         "function",
                                         /* FUNCTION */32
                                       ],
-                                      _1: /* :: */{
-                                        _0: [
+                                      tl: {
+                                        hd: [
                                           "functor",
                                           /* FUNCTOR */33
                                         ],
-                                        _1: /* :: */{
-                                          _0: [
+                                        tl: {
+                                          hd: [
                                             "if",
                                             /* IF */37
                                           ],
-                                          _1: /* :: */{
-                                            _0: [
+                                          tl: {
+                                            hd: [
                                               "in",
                                               /* IN */38
                                             ],
-                                            _1: /* :: */{
-                                              _0: [
+                                            tl: {
+                                              hd: [
                                                 "include",
                                                 /* INCLUDE */39
                                               ],
-                                              _1: /* :: */{
-                                                _0: [
+                                              tl: {
+                                                hd: [
                                                   "inherit",
                                                   /* INHERIT */40
                                                 ],
-                                                _1: /* :: */{
-                                                  _0: [
+                                                tl: {
+                                                  hd: [
                                                     "initializer",
                                                     /* INITIALIZER */41
                                                   ],
-                                                  _1: /* :: */{
-                                                    _0: [
+                                                  tl: {
+                                                    hd: [
                                                       "lazy",
                                                       /* LAZY */42
                                                     ],
-                                                    _1: /* :: */{
-                                                      _0: [
+                                                    tl: {
+                                                      hd: [
                                                         "let",
                                                         /* LET */53
                                                       ],
-                                                      _1: /* :: */{
-                                                        _0: [
+                                                      tl: {
+                                                        hd: [
                                                           "match",
                                                           /* MATCH */58
                                                         ],
-                                                        _1: /* :: */{
-                                                          _0: [
+                                                        tl: {
+                                                          hd: [
                                                             "method",
                                                             /* METHOD */59
                                                           ],
-                                                          _1: /* :: */{
-                                                            _0: [
+                                                          tl: {
+                                                            hd: [
                                                               "module",
                                                               /* MODULE */63
                                                             ],
-                                                            _1: /* :: */{
-                                                              _0: [
+                                                            tl: {
+                                                              hd: [
                                                                 "mutable",
                                                                 /* MUTABLE */64
                                                               ],
-                                                              _1: /* :: */{
-                                                                _0: [
+                                                              tl: {
+                                                                hd: [
                                                                   "new",
                                                                   /* NEW */65
                                                                 ],
-                                                                _1: /* :: */{
-                                                                  _0: [
+                                                                tl: {
+                                                                  hd: [
                                                                     "nonrec",
                                                                     /* NONREC */66
                                                                   ],
-                                                                  _1: /* :: */{
-                                                                    _0: [
+                                                                  tl: {
+                                                                    hd: [
                                                                       "object",
                                                                       /* OBJECT */67
                                                                     ],
-                                                                    _1: /* :: */{
-                                                                      _0: [
+                                                                    tl: {
+                                                                      hd: [
                                                                         "of",
                                                                         /* OF */68
                                                                       ],
-                                                                      _1: /* :: */{
-                                                                        _0: [
+                                                                      tl: {
+                                                                        hd: [
                                                                           "open",
                                                                           /* OPEN */69
                                                                         ],
-                                                                        _1: /* :: */{
-                                                                          _0: [
+                                                                        tl: {
+                                                                          hd: [
                                                                             "or",
                                                                             /* OR */70
                                                                           ],
-                                                                          _1: /* :: */{
-                                                                            _0: [
+                                                                          tl: {
+                                                                            hd: [
                                                                               "private",
                                                                               /* PRIVATE */75
                                                                             ],
-                                                                            _1: /* :: */{
-                                                                              _0: [
+                                                                            tl: {
+                                                                              hd: [
                                                                                 "rec",
                                                                                 /* REC */80
                                                                               ],
-                                                                              _1: /* :: */{
-                                                                                _0: [
+                                                                              tl: {
+                                                                                hd: [
                                                                                   "sig",
                                                                                   /* SIG */85
                                                                                 ],
-                                                                                _1: /* :: */{
-                                                                                  _0: [
+                                                                                tl: {
+                                                                                  hd: [
                                                                                     "struct",
                                                                                     /* STRUCT */87
                                                                                   ],
-                                                                                  _1: /* :: */{
-                                                                                    _0: [
+                                                                                  tl: {
+                                                                                    hd: [
                                                                                       "then",
                                                                                       /* THEN */88
                                                                                     ],
-                                                                                    _1: /* :: */{
-                                                                                      _0: [
+                                                                                    tl: {
+                                                                                      hd: [
                                                                                         "to",
                                                                                         /* TO */90
                                                                                       ],
-                                                                                      _1: /* :: */{
-                                                                                        _0: [
+                                                                                      tl: {
+                                                                                        hd: [
                                                                                           "true",
                                                                                           /* TRUE */91
                                                                                         ],
-                                                                                        _1: /* :: */{
-                                                                                          _0: [
+                                                                                        tl: {
+                                                                                          hd: [
                                                                                             "try",
                                                                                             /* TRY */92
                                                                                           ],
-                                                                                          _1: /* :: */{
-                                                                                            _0: [
+                                                                                          tl: {
+                                                                                            hd: [
                                                                                               "type",
                                                                                               /* TYPE */93
                                                                                             ],
-                                                                                            _1: /* :: */{
-                                                                                              _0: [
+                                                                                            tl: {
+                                                                                              hd: [
                                                                                                 "val",
                                                                                                 /* VAL */95
                                                                                               ],
-                                                                                              _1: /* :: */{
-                                                                                                _0: [
+                                                                                              tl: {
+                                                                                                hd: [
                                                                                                   "virtual",
                                                                                                   /* VIRTUAL */96
                                                                                                 ],
-                                                                                                _1: /* :: */{
-                                                                                                  _0: [
+                                                                                                tl: {
+                                                                                                  hd: [
                                                                                                     "when",
                                                                                                     /* WHEN */97
                                                                                                   ],
-                                                                                                  _1: /* :: */{
-                                                                                                    _0: [
+                                                                                                  tl: {
+                                                                                                    hd: [
                                                                                                       "while",
                                                                                                       /* WHILE */98
                                                                                                     ],
-                                                                                                    _1: /* :: */{
-                                                                                                      _0: [
+                                                                                                    tl: {
+                                                                                                      hd: [
                                                                                                         "with",
                                                                                                         /* WITH */99
                                                                                                       ],
-                                                                                                      _1: /* :: */{
-                                                                                                        _0: [
+                                                                                                      tl: {
+                                                                                                        hd: [
                                                                                                           "mod",
                                                                                                           {
                                                                                                             TAG: /* INFIXOP3 */5,
                                                                                                             _0: "mod"
                                                                                                           }
                                                                                                         ],
-                                                                                                        _1: /* :: */{
-                                                                                                          _0: [
+                                                                                                        tl: {
+                                                                                                          hd: [
                                                                                                             "land",
                                                                                                             {
                                                                                                               TAG: /* INFIXOP3 */5,
                                                                                                               _0: "land"
                                                                                                             }
                                                                                                           ],
-                                                                                                          _1: /* :: */{
-                                                                                                            _0: [
+                                                                                                          tl: {
+                                                                                                            hd: [
                                                                                                               "lor",
                                                                                                               {
                                                                                                                 TAG: /* INFIXOP3 */5,
                                                                                                                 _0: "lor"
                                                                                                               }
                                                                                                             ],
-                                                                                                            _1: /* :: */{
-                                                                                                              _0: [
+                                                                                                            tl: {
+                                                                                                              hd: [
                                                                                                                 "lxor",
                                                                                                                 {
                                                                                                                   TAG: /* INFIXOP3 */5,
                                                                                                                   _0: "lxor"
                                                                                                                 }
                                                                                                               ],
-                                                                                                              _1: /* :: */{
-                                                                                                                _0: [
+                                                                                                              tl: {
+                                                                                                                hd: [
                                                                                                                   "lsl",
                                                                                                                   {
                                                                                                                     TAG: /* INFIXOP4 */6,
                                                                                                                     _0: "lsl"
                                                                                                                   }
                                                                                                                 ],
-                                                                                                                _1: /* :: */{
-                                                                                                                  _0: [
+                                                                                                                tl: {
+                                                                                                                  hd: [
                                                                                                                     "lsr",
                                                                                                                     {
                                                                                                                       TAG: /* INFIXOP4 */6,
                                                                                                                       _0: "lsr"
                                                                                                                     }
                                                                                                                   ],
-                                                                                                                  _1: /* :: */{
-                                                                                                                    _0: [
+                                                                                                                  tl: {
+                                                                                                                    hd: [
                                                                                                                       "asr",
                                                                                                                       {
                                                                                                                         TAG: /* INFIXOP4 */6,
                                                                                                                         _0: "asr"
                                                                                                                       }
                                                                                                                     ],
-                                                                                                                    _1: /* [] */0
+                                                                                                                    tl: /* [] */0
                                                                                                                   }
                                                                                                                 }
                                                                                                               }
@@ -11906,9 +11906,9 @@ var sharp_look_ahead = {
 
 function with_comment_buffer(comment, lexbuf) {
   var start_loc = curr(lexbuf);
-  comment_start_loc.contents = /* :: */{
-    _0: start_loc,
-    _1: /* [] */0
+  comment_start_loc.contents = {
+    hd: start_loc,
+    tl: /* [] */0
   };
   reset_string_buffer(undefined);
   var end_loc = Curry._1(comment, lexbuf);
@@ -12071,9 +12071,9 @@ var comment_list = {
 };
 
 function add_comment(com) {
-  comment_list.contents = /* :: */{
-    _0: com,
-    _1: comment_list.contents
+  comment_list.contents = {
+    hd: com,
+    tl: comment_list.contents
   };
   
 }
@@ -12875,9 +12875,9 @@ function __ocaml_lex_comment_rec(lexbuf, ___ocaml_lex_state) {
     var __ocaml_lex_state$1 = Lexing.engine(__ocaml_lex_tables, __ocaml_lex_state, lexbuf);
     switch (__ocaml_lex_state$1) {
       case 0 :
-          comment_start_loc.contents = /* :: */{
-            _0: curr(lexbuf),
-            _1: comment_start_loc.contents
+          comment_start_loc.contents = {
+            hd: curr(lexbuf),
+            tl: comment_start_loc.contents
           };
           store_string(Lexing.lexeme(lexbuf));
           ___ocaml_lex_state = 132;
@@ -12885,7 +12885,7 @@ function __ocaml_lex_comment_rec(lexbuf, ___ocaml_lex_state) {
       case 1 :
           var match = comment_start_loc.contents;
           if (match) {
-            var l = match._1;
+            var l = match.tl;
             if (l) {
               comment_start_loc.contents = l;
               store_string(Lexing.lexeme(lexbuf));
@@ -12930,7 +12930,7 @@ function __ocaml_lex_comment_rec(lexbuf, ___ocaml_lex_state) {
                           _0: start,
                           _1: exn._2
                         },
-                        _2: match$2._0,
+                        _2: match$2.hd,
                         Error: new Error()
                       };
                 }
@@ -12980,7 +12980,7 @@ function __ocaml_lex_comment_rec(lexbuf, ___ocaml_lex_state) {
                           _0: start$1,
                           _1: exn$1._2
                         },
-                        _2: match$4._0,
+                        _2: match$4.hd,
                         Error: new Error()
                       };
                 }
@@ -13020,7 +13020,7 @@ function __ocaml_lex_comment_rec(lexbuf, ___ocaml_lex_state) {
                     TAG: /* Unterminated_comment */2,
                     _0: start$2
                   },
-                  _2: match$5._0,
+                  _2: match$5.hd,
                   Error: new Error()
                 };
           }
@@ -13351,15 +13351,15 @@ function token$1(lexbuf) {
                       TAG: /* Before */1,
                       _0: /* [] */0,
                       _1: /* [] */0,
-                      _2: /* :: */{
-                        _0: doc$1,
-                        _1: /* [] */0
+                      _2: {
+                        hd: doc$1,
+                        tl: /* [] */0
                       }
                     }) : ({
                       TAG: /* After */0,
-                      _0: /* :: */{
-                        _0: doc$1,
-                        _1: /* [] */0
+                      _0: {
+                        hd: doc$1,
+                        tl: /* [] */0
                       }
                     });
               } else if (docs.TAG) {
@@ -13370,17 +13370,17 @@ function token$1(lexbuf) {
                       TAG: /* Before */1,
                       _0: a,
                       _1: Pervasives.$at(b, f),
-                      _2: /* :: */{
-                        _0: doc$1,
-                        _1: /* [] */0
+                      _2: {
+                        hd: doc$1,
+                        tl: /* [] */0
                       }
                     }) : ({
                       TAG: /* Before */1,
                       _0: a,
                       _1: f,
-                      _2: /* :: */{
-                        _0: doc$1,
-                        _1: b
+                      _2: {
+                        hd: doc$1,
+                        tl: b
                       }
                     });
               } else {
@@ -13389,15 +13389,15 @@ function token$1(lexbuf) {
                       TAG: /* Before */1,
                       _0: a$1,
                       _1: /* [] */0,
-                      _2: /* :: */{
-                        _0: doc$1,
-                        _1: /* [] */0
+                      _2: {
+                        hd: doc$1,
+                        tl: /* [] */0
                       }
                     }) : ({
                       TAG: /* After */0,
-                      _0: /* :: */{
-                        _0: doc$1,
-                        _1: a$1
+                      _0: {
+                        hd: doc$1,
+                        tl: a$1
                       }
                     });
               }
@@ -13540,8 +13540,8 @@ var test_id = {
 
 function eq(loc, x, y) {
   test_id.contents = test_id.contents + 1 | 0;
-  suites.contents = /* :: */{
-    _0: [
+  suites.contents = {
+    hd: [
       loc + (" id " + String(test_id.contents)),
       (function (param) {
           return {
@@ -13551,7 +13551,7 @@ function eq(loc, x, y) {
                 };
         })
     ],
-    _1: suites.contents
+    tl: suites.contents
   };
   
 }
@@ -13559,11 +13559,11 @@ function eq(loc, x, y) {
 var match = wrap(implementation, Lexing.from_string("let v str = \n  str  \n  |> Lexing.from_string \n  |> Parse.implementation\n"));
 
 if (match) {
-  var match$1 = match._0.pstr_desc;
+  var match$1 = match.hd.pstr_desc;
   if (match$1.TAG === /* Pstr_value */1 && !match$1._0) {
     var match$2 = match$1._1;
     if (match$2) {
-      var match$3 = match$2._0;
+      var match$3 = match$2.hd;
       var match$4 = match$3.pvb_pat;
       var match$5 = match$4.ppat_desc;
       if (typeof match$5 === "number" || match$5.TAG) {
@@ -13626,7 +13626,7 @@ if (match) {
                                                   if (match$35.pos_fname === "" && !(match$35.pos_lnum !== 4 || match$35.pos_bol !== 46 || match$35.pos_cnum !== 50 || match$33.loc_ghost || match$26.pexp_attributes)) {
                                                     var match$36 = match$25._1;
                                                     if (match$36) {
-                                                      var match$37 = match$36._0;
+                                                      var match$37 = match$36.hd;
                                                       if (match$37[0] === "") {
                                                         var match$38 = match$37[1];
                                                         var match$39 = match$38.pexp_desc;
@@ -13653,7 +13653,7 @@ if (match) {
                                                                           if (match$49.pos_fname === "" && !(match$49.pos_lnum !== 3 || match$49.pos_bol !== 21 || match$49.pos_cnum !== 25 || match$47.loc_ghost || match$40.pexp_attributes)) {
                                                                             var match$50 = match$39._1;
                                                                             if (match$50) {
-                                                                              var match$51 = match$50._0;
+                                                                              var match$51 = match$50.hd;
                                                                               if (match$51[0] === "") {
                                                                                 var match$52 = match$51[1];
                                                                                 var match$53 = match$52.pexp_desc;
@@ -13675,9 +13675,9 @@ if (match) {
                                                                                               if (match$60.pos_fname === "" && !(match$60.pos_lnum !== 2 || match$60.pos_bol !== 13 || match$60.pos_cnum !== 15)) {
                                                                                                 var match$61 = match$59.loc_end;
                                                                                                 if (match$61.pos_fname === "" && !(match$61.pos_lnum !== 2 || match$61.pos_bol !== 13 || match$61.pos_cnum !== 18 || match$59.loc_ghost || match$52.pexp_attributes)) {
-                                                                                                  var match$62 = match$50._1;
+                                                                                                  var match$62 = match$50.tl;
                                                                                                   if (match$62) {
-                                                                                                    var match$63 = match$62._0;
+                                                                                                    var match$63 = match$62.hd;
                                                                                                     if (match$63[0] === "") {
                                                                                                       var match$64 = match$63[1];
                                                                                                       var match$65 = match$64.pexp_desc;
@@ -13701,15 +13701,15 @@ if (match) {
                                                                                                                           var match$73 = match$72.loc_start;
                                                                                                                           if (match$73.pos_fname === "" && !(match$73.pos_lnum !== 3 || match$73.pos_bol !== 21 || match$73.pos_cnum !== 26)) {
                                                                                                                             var match$74 = match$72.loc_end;
-                                                                                                                            if (match$74.pos_fname === "" && !(match$74.pos_lnum !== 3 || match$74.pos_bol !== 21 || match$74.pos_cnum !== 44 || match$72.loc_ghost || match$64.pexp_attributes || match$62._1)) {
+                                                                                                                            if (match$74.pos_fname === "" && !(match$74.pos_lnum !== 3 || match$74.pos_bol !== 21 || match$74.pos_cnum !== 44 || match$72.loc_ghost || match$64.pexp_attributes || match$62.tl)) {
                                                                                                                               var match$75 = match$38.pexp_loc;
                                                                                                                               var match$76 = match$75.loc_start;
                                                                                                                               if (match$76.pos_fname === "" && !(match$76.pos_lnum !== 2 || match$76.pos_bol !== 13 || match$76.pos_cnum !== 15)) {
                                                                                                                                 var match$77 = match$75.loc_end;
                                                                                                                                 if (match$77.pos_fname === "" && !(match$77.pos_lnum !== 3 || match$77.pos_bol !== 21 || match$77.pos_cnum !== 44 || match$75.loc_ghost || match$38.pexp_attributes)) {
-                                                                                                                                  var match$78 = match$36._1;
+                                                                                                                                  var match$78 = match$36.tl;
                                                                                                                                   if (match$78) {
-                                                                                                                                    var match$79 = match$78._0;
+                                                                                                                                    var match$79 = match$78.hd;
                                                                                                                                     if (match$79[0] === "") {
                                                                                                                                       var match$80 = match$79[1];
                                                                                                                                       var match$81 = match$80.pexp_desc;
@@ -13733,7 +13733,7 @@ if (match) {
                                                                                                                                                           var match$89 = match$88.loc_start;
                                                                                                                                                           if (match$89.pos_fname === "" && !(match$89.pos_lnum !== 4 || match$89.pos_bol !== 46 || match$89.pos_cnum !== 51)) {
                                                                                                                                                             var match$90 = match$88.loc_end;
-                                                                                                                                                            if (match$90.pos_fname === "" && !(match$90.pos_lnum !== 4 || match$90.pos_bol !== 46 || match$90.pos_cnum !== 71 || match$88.loc_ghost || match$80.pexp_attributes || match$78._1)) {
+                                                                                                                                                            if (match$90.pos_fname === "" && !(match$90.pos_lnum !== 4 || match$90.pos_bol !== 46 || match$90.pos_cnum !== 71 || match$88.loc_ghost || match$80.pexp_attributes || match$78.tl)) {
                                                                                                                                                               var match$91 = match$24.pexp_loc;
                                                                                                                                                               var match$92 = match$91.loc_start;
                                                                                                                                                               if (match$92.pos_fname === "" && !(match$92.pos_lnum !== 2 || match$92.pos_bol !== 13 || match$92.pos_cnum !== 15)) {
@@ -13748,7 +13748,7 @@ if (match) {
                                                                                                                                                                       var match$98 = match$97.loc_start;
                                                                                                                                                                       if (match$98.pos_fname === "" && !(match$98.pos_lnum !== 1 || match$98.pos_bol !== 0 || match$98.pos_cnum !== 0)) {
                                                                                                                                                                         var match$99 = match$97.loc_end;
-                                                                                                                                                                        if (match$99.pos_fname === "" && !(match$99.pos_lnum !== 4 || match$99.pos_bol !== 46 || match$99.pos_cnum !== 71 || match$97.loc_ghost || match$2._1)) {
+                                                                                                                                                                        if (match$99.pos_fname === "" && !(match$99.pos_lnum !== 4 || match$99.pos_bol !== 46 || match$99.pos_cnum !== 71 || match$97.loc_ghost || match$2.tl)) {
                                                                                                                                                                           eq("File \"ocaml_parsetree_main_bspack.ml\", line 215, characters 10-17", true, true);
                                                                                                                                                                         } else {
                                                                                                                                                                           eq("File \"ocaml_parsetree_main_bspack.ml\", line 216, characters 12-19", true, false);

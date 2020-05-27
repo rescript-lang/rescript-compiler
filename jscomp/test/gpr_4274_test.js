@@ -14,11 +14,11 @@ function f(X, xs) {
             });
 }
 
-Belt_List.forEachU(/* :: */{
-      _0: {
+Belt_List.forEachU({
+      hd: {
         x: 3
       },
-      _1: /* [] */0
+      tl: /* [] */0
     }, (function (x) {
         console.log(x.x);
         

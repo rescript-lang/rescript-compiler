@@ -6,11 +6,11 @@ var a0 = {
   RE_EXN_ID: "Not_found"
 };
 
-var b = List.length(/* :: */{
-      _0: 1,
-      _1: /* :: */{
-        _0: 2,
-        _1: /* [] */0
+var b = List.length({
+      hd: 1,
+      tl: {
+        hd: 2,
+        tl: /* [] */0
       }
     });
 

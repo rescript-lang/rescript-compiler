@@ -16,8 +16,8 @@ var test_id = {
 
 function eq(loc, x, y) {
   test_id.contents = test_id.contents + 1 | 0;
-  suites.contents = /* :: */{
-    _0: [
+  suites.contents = {
+    hd: [
       loc + (" id " + String(test_id.contents)),
       (function (param) {
           return {
@@ -27,7 +27,7 @@ function eq(loc, x, y) {
                 };
         })
     ],
-    _1: suites.contents
+    tl: suites.contents
   };
   
 }
@@ -139,26 +139,26 @@ function keys(xs, ys) {
   return String_set.equal(String_set.of_list(xs), String_set.of_list($$Array.to_list(ys)));
 }
 
-eq("File \"gpr_1409_test.ml\", line 69, characters 6-13", keys(/* :: */{
-          _0: "hi",
-          _1: /* [] */0
+eq("File \"gpr_1409_test.ml\", line 69, characters 6-13", keys({
+          hd: "hi",
+          tl: /* [] */0
         }, Object.keys(test3(undefined, undefined))), true);
 
-eq("File \"gpr_1409_test.ml\", line 71, characters 6-13", keys(/* :: */{
-          _0: "hi",
-          _1: /* :: */{
-            _0: "open",
-            _1: /* [] */0
+eq("File \"gpr_1409_test.ml\", line 71, characters 6-13", keys({
+          hd: "hi",
+          tl: {
+            hd: "open",
+            tl: /* [] */0
           }
         }, Object.keys(test3(2, undefined))), true);
 
-eq("File \"gpr_1409_test.ml\", line 73, characters 6-13", keys(/* :: */{
-          _0: "hi",
-          _1: /* :: */{
-            _0: "open",
-            _1: /* :: */{
-              _0: "xx",
-              _1: /* [] */0
+eq("File \"gpr_1409_test.ml\", line 73, characters 6-13", keys({
+          hd: "hi",
+          tl: {
+            hd: "open",
+            tl: {
+              hd: "xx",
+              tl: /* [] */0
             }
           }
         }, Object.keys(test3(2, 2))), true);

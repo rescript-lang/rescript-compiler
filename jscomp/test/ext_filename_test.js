@@ -123,9 +123,9 @@ function relative_path(file_or_dir_1, file_or_dir_2) {
     while(true) {
       var dir2 = _dir2;
       var dir1 = _dir1;
-      if (dir1 && dir2 && dir1._0 === dir2._0) {
-        _dir2 = dir2._1;
-        _dir1 = dir1._1;
+      if (dir1 && dir2 && dir1.hd === dir2.hd) {
+        _dir2 = dir2.tl;
+        _dir1 = dir1.tl;
         continue ;
       }
       return Pervasives.$at(List.map((function (param) {
@@ -134,12 +134,12 @@ function relative_path(file_or_dir_1, file_or_dir_2) {
     };
   };
   var ys = go(dir1, dir2);
-  if (ys && ys._0 === node_parent) {
+  if (ys && ys.hd === node_parent) {
     return $$String.concat(node_sep, ys);
   } else {
-    return $$String.concat(node_sep, /* :: */{
-                _0: node_current,
-                _1: ys
+    return $$String.concat(node_sep, {
+                hd: node_current,
+                tl: ys
               });
   }
 }
@@ -273,9 +273,9 @@ function split_aux(p) {
       _p = dir;
       continue ;
     }
-    _acc = /* :: */{
-      _0: new_path,
-      _1: acc
+    _acc = {
+      hd: new_path,
+      tl: acc
     };
     _p = dir;
     continue ;
@@ -296,19 +296,19 @@ function rel_normalized_absolute_path(from, to_) {
     var xss = _xss;
     if (!xss) {
       if (yss) {
-        return List.fold_left(Filename.concat, yss._0, yss._1);
+        return List.fold_left(Filename.concat, yss.hd, yss.tl);
       } else {
         return Ext_string_test.empty;
       }
     }
-    var xs = xss._1;
+    var xs = xss.tl;
     if (!yss) {
       return List.fold_left((function (acc, param) {
                     return Filename.concat(acc, Ext_string_test.parent_dir_lit);
                   }), Ext_string_test.parent_dir_lit, xs);
     }
-    if (xss._0 === yss._0) {
-      _yss = yss._1;
+    if (xss.hd === yss.hd) {
+      _yss = yss.tl;
       _xss = xs;
       continue ;
     }
@@ -322,7 +322,7 @@ function rel_normalized_absolute_path(from, to_) {
 function normalize_absolute_path(x) {
   var drop_if_exist = function (xs) {
     if (xs) {
-      return xs._1;
+      return xs.tl;
     } else {
       return /* [] */0;
     }
@@ -334,8 +334,8 @@ function normalize_absolute_path(x) {
       if (!paths) {
         return acc;
       }
-      var xs = paths._1;
-      var x = paths._0;
+      var xs = paths.tl;
+      var x = paths.hd;
       if (x === Ext_string_test.current_dir_lit) {
         _paths = xs;
         continue ;
@@ -346,9 +346,9 @@ function normalize_absolute_path(x) {
         continue ;
       }
       _paths = xs;
-      _acc = /* :: */{
-        _0: x,
-        _1: acc
+      _acc = {
+        hd: x,
+        tl: acc
       };
       continue ;
     };
@@ -357,16 +357,16 @@ function normalize_absolute_path(x) {
   var root = match[0];
   var rev_paths = normalize_list(/* [] */0, match[1]);
   if (rev_paths) {
-    var _acc = rev_paths._0;
-    var _rev_paths = rev_paths._1;
+    var _acc = rev_paths.hd;
+    var _rev_paths = rev_paths.tl;
     while(true) {
       var rev_paths$1 = _rev_paths;
       var acc = _acc;
       if (!rev_paths$1) {
         return Filename.concat(root, acc);
       }
-      _rev_paths = rev_paths$1._1;
-      _acc = Filename.concat(rev_paths$1._0, acc);
+      _rev_paths = rev_paths$1.tl;
+      _acc = Filename.concat(rev_paths$1.hd, acc);
       continue ;
     };
   } else {

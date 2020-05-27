@@ -544,9 +544,9 @@ function Make(Ord) {
         return accu;
       }
       _param = param._0;
-      _accu = /* :: */{
-        _0: param._1,
-        _1: elements_aux(accu, param._2)
+      _accu = {
+        hd: param._1,
+        tl: elements_aux(accu, param._2)
       };
       continue ;
     };
@@ -585,31 +585,31 @@ function Make(Ord) {
               return [
                       /* Node */{
                         _0: /* Empty */0,
-                        _1: l._0,
+                        _1: l.hd,
                         _2: /* Empty */0,
                         _3: 1
                       },
-                      l._1
+                      l.tl
                     ];
             }
             break;
         case 2 :
             if (l) {
-              var match = l._1;
+              var match = l.tl;
               if (match) {
                 return [
                         /* Node */{
                           _0: /* Node */{
                             _0: /* Empty */0,
-                            _1: l._0,
+                            _1: l.hd,
                             _2: /* Empty */0,
                             _3: 1
                           },
-                          _1: match._0,
+                          _1: match.hd,
                           _2: /* Empty */0,
                           _3: 2
                         },
-                        match._1
+                        match.tl
                       ];
               }
               
@@ -617,28 +617,28 @@ function Make(Ord) {
             break;
         case 3 :
             if (l) {
-              var match$1 = l._1;
+              var match$1 = l.tl;
               if (match$1) {
-                var match$2 = match$1._1;
+                var match$2 = match$1.tl;
                 if (match$2) {
                   return [
                           /* Node */{
                             _0: /* Node */{
                               _0: /* Empty */0,
-                              _1: l._0,
+                              _1: l.hd,
                               _2: /* Empty */0,
                               _3: 1
                             },
-                            _1: match$1._0,
+                            _1: match$1.hd,
                             _2: /* Node */{
                               _0: /* Empty */0,
-                              _1: match$2._0,
+                              _1: match$2.hd,
                               _2: /* Empty */0,
                               _3: 1
                             },
                             _3: 2
                           },
-                          match$2._1
+                          match$2.tl
                         ];
                 }
                 
@@ -653,9 +653,9 @@ function Make(Ord) {
       var match$3 = sub(nl, l);
       var l$1 = match$3[1];
       if (l$1) {
-        var match$4 = sub((n - nl | 0) - 1 | 0, l$1._1);
+        var match$4 = sub((n - nl | 0) - 1 | 0, l$1.tl);
         return [
-                create(match$3[0], l$1._0, match$4[0]),
+                create(match$3[0], l$1.hd, match$4[0]),
                 match$4[1]
               ];
       }
@@ -675,28 +675,28 @@ function Make(Ord) {
     if (!l) {
       return /* Empty */0;
     }
-    var match = l._1;
-    var x0 = l._0;
+    var match = l.tl;
+    var x0 = l.hd;
     if (!match) {
       return singleton(x0);
     }
-    var match$1 = match._1;
-    var x1 = match._0;
+    var match$1 = match.tl;
+    var x1 = match.hd;
     if (!match$1) {
       return add(x1, singleton(x0));
     }
-    var match$2 = match$1._1;
-    var x2 = match$1._0;
+    var match$2 = match$1.tl;
+    var x2 = match$1.hd;
     if (!match$2) {
       return add(x2, add(x1, singleton(x0)));
     }
-    var match$3 = match$2._1;
-    var x3 = match$2._0;
+    var match$3 = match$2.tl;
+    var x3 = match$2.hd;
     if (match$3) {
-      if (match$3._1) {
+      if (match$3.tl) {
         return of_sorted_list(List.sort_uniq(Ord.compare, l));
       } else {
-        return add(match$3._0, add(x3, add(x2, add(x1, singleton(x0)))));
+        return add(match$3.hd, add(x3, add(x2, add(x1, singleton(x0)))));
       }
     } else {
       return add(x3, add(x2, add(x1, singleton(x0))));

@@ -175,9 +175,9 @@ function for_9(param) {
     contents: /* [] */0
   };
   var collect = function (x) {
-    v.contents = /* :: */{
-      _0: x,
-      _1: v.contents
+    v.contents = {
+      hd: x,
+      tl: v.contents
     };
     
   };
@@ -239,8 +239,8 @@ var suites_0 = [
     })
 ];
 
-var suites_1 = /* :: */{
-  _0: [
+var suites_1 = {
+  hd: [
     "for_loop_test_4",
     (function (param) {
         return {
@@ -250,8 +250,8 @@ var suites_1 = /* :: */{
               };
       })
   ],
-  _1: /* :: */{
-    _0: [
+  tl: {
+    hd: [
       "for_loop_test_5",
       (function (param) {
           return {
@@ -261,8 +261,8 @@ var suites_1 = /* :: */{
                 };
         })
     ],
-    _1: /* :: */{
-      _0: [
+    tl: {
+      hd: [
         "for_loop_test_6",
         (function (param) {
             return {
@@ -277,8 +277,8 @@ var suites_1 = /* :: */{
                   };
           })
       ],
-      _1: /* :: */{
-        _0: [
+      tl: {
+        hd: [
           "for_loop_test_7",
           (function (param) {
               return {
@@ -288,8 +288,8 @@ var suites_1 = /* :: */{
                     };
             })
         ],
-        _1: /* :: */{
-          _0: [
+        tl: {
+          hd: [
             "for_loop_test_8",
             (function (param) {
                 return {
@@ -299,8 +299,8 @@ var suites_1 = /* :: */{
                       };
               })
           ],
-          _1: /* :: */{
-            _0: [
+          tl: {
+            hd: [
               "for_loop_test_9",
               (function (param) {
                   return {
@@ -319,7 +319,7 @@ var suites_1 = /* :: */{
                         };
                 })
             ],
-            _1: /* [] */0
+            tl: /* [] */0
           }
         }
       }
@@ -327,9 +327,9 @@ var suites_1 = /* :: */{
   }
 };
 
-var suites = /* :: */{
-  _0: suites_0,
-  _1: suites_1
+var suites = {
+  hd: suites_0,
+  tl: suites_1
 };
 
 exports.for_3 = for_3;

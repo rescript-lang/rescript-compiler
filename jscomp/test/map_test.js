@@ -364,22 +364,22 @@ function of_list(kvs) {
 var int_map_suites_0 = [
   "add",
   (function (param) {
-      var v = of_list(/* :: */{
-            _0: [
+      var v = of_list({
+            hd: [
               1,
               /* "1" */49
             ],
-            _1: /* :: */{
-              _0: [
+            tl: {
+              hd: [
                 2,
                 /* "3" */51
               ],
-              _1: /* :: */{
-                _0: [
+              tl: {
+                hd: [
                   3,
                   /* "4" */52
                 ],
-                _1: /* [] */0
+                tl: /* [] */0
               }
             }
           });
@@ -391,45 +391,45 @@ var int_map_suites_0 = [
     })
 ];
 
-var int_map_suites_1 = /* :: */{
-  _0: [
+var int_map_suites_1 = {
+  hd: [
     "equal",
     (function (param) {
-        var v = of_list(/* :: */{
-              _0: [
+        var v = of_list({
+              hd: [
                 1,
                 /* "1" */49
               ],
-              _1: /* :: */{
-                _0: [
+              tl: {
+                hd: [
                   2,
                   /* "3" */51
                 ],
-                _1: /* :: */{
-                  _0: [
+                tl: {
+                  hd: [
                     3,
                     /* "4" */52
                   ],
-                  _1: /* [] */0
+                  tl: /* [] */0
                 }
               }
             });
-        var u = of_list(/* :: */{
-              _0: [
+        var u = of_list({
+              hd: [
                 2,
                 /* "3" */51
               ],
-              _1: /* :: */{
-                _0: [
+              tl: {
+                hd: [
                   3,
                   /* "4" */52
                 ],
-                _1: /* :: */{
-                  _0: [
+                tl: {
+                  hd: [
                     1,
                     /* "1" */49
                   ],
-                  _1: /* [] */0
+                  tl: /* [] */0
                 }
               }
             });
@@ -440,45 +440,45 @@ var int_map_suites_1 = /* :: */{
               };
       })
   ],
-  _1: /* :: */{
-    _0: [
+  tl: {
+    hd: [
       "equal2",
       (function (param) {
-          var v = of_list(/* :: */{
-                _0: [
+          var v = of_list({
+                hd: [
                   1,
                   /* "1" */49
                 ],
-                _1: /* :: */{
-                  _0: [
+                tl: {
+                  hd: [
                     2,
                     /* "3" */51
                   ],
-                  _1: /* :: */{
-                    _0: [
+                  tl: {
+                    hd: [
                       3,
                       /* "4" */52
                     ],
-                    _1: /* [] */0
+                    tl: /* [] */0
                   }
                 }
               });
-          var u = of_list(/* :: */{
-                _0: [
+          var u = of_list({
+                hd: [
                   2,
                   /* "3" */51
                 ],
-                _1: /* :: */{
-                  _0: [
+                tl: {
+                  hd: [
                     3,
                     /* "4" */52
                   ],
-                  _1: /* :: */{
-                    _0: [
+                  tl: {
+                    hd: [
                       1,
                       /* "1" */49
                     ],
-                    _1: /* [] */0
+                    tl: /* [] */0
                   }
                 }
               });
@@ -491,8 +491,8 @@ var int_map_suites_1 = /* :: */{
                 };
         })
     ],
-    _1: /* :: */{
-      _0: [
+    tl: {
+      hd: [
         "iteration",
         (function (param) {
             var m = /* Empty */0;
@@ -513,14 +513,14 @@ var int_map_suites_1 = /* :: */{
                   };
           })
       ],
-      _1: /* [] */0
+      tl: /* [] */0
     }
   }
 };
 
-var int_map_suites = /* :: */{
-  _0: int_map_suites_0,
-  _1: int_map_suites_1
+var int_map_suites = {
+  hd: int_map_suites_0,
+  tl: int_map_suites_1
 };
 
 Mt.from_pair_suites("Map_test", int_map_suites);

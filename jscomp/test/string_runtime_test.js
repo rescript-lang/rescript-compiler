@@ -17,8 +17,8 @@ var suites_0 = [
     })
 ];
 
-var suites_1 = /* :: */{
-  _0: [
+var suites_1 = {
+  hd: [
     "caml_string_of_bytes",
     (function (param) {
         var match = List.split(List.map((function (x) {
@@ -30,21 +30,21 @@ var suites_1 = /* :: */{
                                         return /* "c" */99;
                                       })))
                           ];
-                  }), /* :: */{
-                  _0: 1000,
-                  _1: /* :: */{
-                    _0: 1024,
-                    _1: /* :: */{
-                      _0: 1025,
-                      _1: /* :: */{
-                        _0: 4095,
-                        _1: /* :: */{
-                          _0: 4096,
-                          _1: /* :: */{
-                            _0: 5000,
-                            _1: /* :: */{
-                              _0: 10000,
-                              _1: /* [] */0
+                  }), {
+                  hd: 1000,
+                  tl: {
+                    hd: 1024,
+                    tl: {
+                      hd: 1025,
+                      tl: {
+                        hd: 4095,
+                        tl: {
+                          hd: 4096,
+                          tl: {
+                            hd: 5000,
+                            tl: {
+                              hd: 10000,
+                              tl: /* [] */0
                             }
                           }
                         }
@@ -59,12 +59,12 @@ var suites_1 = /* :: */{
               };
       })
   ],
-  _1: /* [] */0
+  tl: /* [] */0
 };
 
-var suites = /* :: */{
-  _0: suites_0,
-  _1: suites_1
+var suites = {
+  hd: suites_0,
+  tl: suites_1
 };
 
 Mt.from_pair_suites("String_runtime_test", suites);

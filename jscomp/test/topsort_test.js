@@ -10,47 +10,47 @@ var Caml_primitive = require("../../lib/js/caml_primitive.js");
 var Caml_exceptions = require("../../lib/js/caml_exceptions.js");
 var Caml_js_exceptions = require("../../lib/js/caml_js_exceptions.js");
 
-var graph = /* :: */{
-  _0: [
+var graph = {
+  hd: [
     "a",
     "b"
   ],
-  _1: /* :: */{
-    _0: [
+  tl: {
+    hd: [
       "a",
       "c"
     ],
-    _1: /* :: */{
-      _0: [
+    tl: {
+      hd: [
         "a",
         "d"
       ],
-      _1: /* :: */{
-        _0: [
+      tl: {
+        hd: [
           "b",
           "e"
         ],
-        _1: /* :: */{
-          _0: [
+        tl: {
+          hd: [
             "c",
             "f"
           ],
-          _1: /* :: */{
-            _0: [
+          tl: {
+            hd: [
               "d",
               "e"
             ],
-            _1: /* :: */{
-              _0: [
+            tl: {
+              hd: [
                 "e",
                 "f"
               ],
-              _1: /* :: */{
-                _0: [
+              tl: {
+                hd: [
                   "e",
                   "g"
                 ],
-                _1: /* [] */0
+                tl: /* [] */0
               }
             }
           }
@@ -63,9 +63,9 @@ var graph = /* :: */{
 function nexts(x, g) {
   return List.fold_left((function (acc, param) {
                 if (param[0] === x) {
-                  return /* :: */{
-                          _0: param[1],
-                          _1: acc
+                  return {
+                          hd: param[1],
+                          tl: acc
                         };
                 } else {
                   return acc;
@@ -80,40 +80,40 @@ function dfs1(_nodes, graph, _visited) {
     if (!nodes) {
       return List.rev(visited);
     }
-    var xs = nodes._1;
-    var x = nodes._0;
+    var xs = nodes.tl;
+    var x = nodes.hd;
     if (List.mem(x, visited)) {
       _nodes = xs;
       continue ;
     }
     console.log(x);
-    _visited = /* :: */{
-      _0: x,
-      _1: visited
+    _visited = {
+      hd: x,
+      tl: visited
     };
     _nodes = Pervasives.$at(nexts(x, graph), xs);
     continue ;
   };
 }
 
-if (!Caml_obj.caml_equal(dfs1(/* :: */{
-            _0: "a",
-            _1: /* [] */0
-          }, graph, /* [] */0), /* :: */{
-        _0: "a",
-        _1: /* :: */{
-          _0: "d",
-          _1: /* :: */{
-            _0: "e",
-            _1: /* :: */{
-              _0: "g",
-              _1: /* :: */{
-                _0: "f",
-                _1: /* :: */{
-                  _0: "c",
-                  _1: /* :: */{
-                    _0: "b",
-                    _1: /* [] */0
+if (!Caml_obj.caml_equal(dfs1({
+            hd: "a",
+            tl: /* [] */0
+          }, graph, /* [] */0), {
+        hd: "a",
+        tl: {
+          hd: "d",
+          tl: {
+            hd: "e",
+            tl: {
+              hd: "g",
+              tl: {
+                hd: "f",
+                tl: {
+                  hd: "c",
+                  tl: {
+                    hd: "b",
+                    tl: /* [] */0
                   }
                 }
               }
@@ -134,26 +134,26 @@ if (!Caml_obj.caml_equal(dfs1(/* :: */{
 
 Pervasives.print_newline(undefined);
 
-if (!Caml_obj.caml_equal(dfs1(/* :: */{
-            _0: "b",
-            _1: /* [] */0
-          }, /* :: */{
-            _0: [
+if (!Caml_obj.caml_equal(dfs1({
+            hd: "b",
+            tl: /* [] */0
+          }, {
+            hd: [
               "f",
               "d"
             ],
-            _1: graph
-          }, /* [] */0), /* :: */{
-        _0: "b",
-        _1: /* :: */{
-          _0: "e",
-          _1: /* :: */{
-            _0: "g",
-            _1: /* :: */{
-              _0: "f",
-              _1: /* :: */{
-                _0: "d",
-                _1: /* [] */0
+            tl: graph
+          }, /* [] */0), {
+        hd: "b",
+        tl: {
+          hd: "e",
+          tl: {
+            hd: "g",
+            tl: {
+              hd: "f",
+              tl: {
+                hd: "d",
+                tl: /* [] */0
               }
             }
           }
@@ -178,15 +178,15 @@ function dfs2(nodes, graph, visited) {
       if (!nodes) {
         return visited;
       }
-      var xs = nodes._1;
-      var x = nodes._0;
+      var xs = nodes.tl;
+      var x = nodes.hd;
       if (List.mem(x, visited)) {
         _nodes = xs;
         continue ;
       }
-      _visited = aux(nexts(x, graph), graph, /* :: */{
-            _0: x,
-            _1: visited
+      _visited = aux(nexts(x, graph), graph, {
+            hd: x,
+            tl: visited
           });
       _nodes = xs;
       continue ;
@@ -195,24 +195,24 @@ function dfs2(nodes, graph, visited) {
   return List.rev(aux(nodes, graph, visited));
 }
 
-if (!Caml_obj.caml_equal(dfs2(/* :: */{
-            _0: "a",
-            _1: /* [] */0
-          }, graph, /* [] */0), /* :: */{
-        _0: "a",
-        _1: /* :: */{
-          _0: "d",
-          _1: /* :: */{
-            _0: "e",
-            _1: /* :: */{
-              _0: "g",
-              _1: /* :: */{
-                _0: "f",
-                _1: /* :: */{
-                  _0: "c",
-                  _1: /* :: */{
-                    _0: "b",
-                    _1: /* [] */0
+if (!Caml_obj.caml_equal(dfs2({
+            hd: "a",
+            tl: /* [] */0
+          }, graph, /* [] */0), {
+        hd: "a",
+        tl: {
+          hd: "d",
+          tl: {
+            hd: "e",
+            tl: {
+              hd: "g",
+              tl: {
+                hd: "f",
+                tl: {
+                  hd: "c",
+                  tl: {
+                    hd: "b",
+                    tl: /* [] */0
                   }
                 }
               }
@@ -231,26 +231,26 @@ if (!Caml_obj.caml_equal(dfs2(/* :: */{
       };
 }
 
-if (!Caml_obj.caml_equal(dfs2(/* :: */{
-            _0: "b",
-            _1: /* [] */0
-          }, /* :: */{
-            _0: [
+if (!Caml_obj.caml_equal(dfs2({
+            hd: "b",
+            tl: /* [] */0
+          }, {
+            hd: [
               "f",
               "d"
             ],
-            _1: graph
-          }, /* [] */0), /* :: */{
-        _0: "b",
-        _1: /* :: */{
-          _0: "e",
-          _1: /* :: */{
-            _0: "g",
-            _1: /* :: */{
-              _0: "f",
-              _1: /* :: */{
-                _0: "d",
-                _1: /* [] */0
+            tl: graph
+          }, /* [] */0), {
+        hd: "b",
+        tl: {
+          hd: "e",
+          tl: {
+            hd: "g",
+            tl: {
+              hd: "f",
+              tl: {
+                hd: "d",
+                tl: /* [] */0
               }
             }
           }
@@ -273,9 +273,9 @@ function dfs3(nodes, graph) {
   };
   var aux = function (node, graph) {
     if (!List.mem(node, visited.contents)) {
-      visited.contents = /* :: */{
-        _0: node,
-        _1: visited.contents
+      visited.contents = {
+        hd: node,
+        tl: visited.contents
       };
       return List.iter((function (x) {
                     return aux(x, graph);
@@ -289,24 +289,24 @@ function dfs3(nodes, graph) {
   return List.rev(visited.contents);
 }
 
-if (!Caml_obj.caml_equal(dfs3(/* :: */{
-            _0: "a",
-            _1: /* [] */0
-          }, graph), /* :: */{
-        _0: "a",
-        _1: /* :: */{
-          _0: "d",
-          _1: /* :: */{
-            _0: "e",
-            _1: /* :: */{
-              _0: "g",
-              _1: /* :: */{
-                _0: "f",
-                _1: /* :: */{
-                  _0: "c",
-                  _1: /* :: */{
-                    _0: "b",
-                    _1: /* [] */0
+if (!Caml_obj.caml_equal(dfs3({
+            hd: "a",
+            tl: /* [] */0
+          }, graph), {
+        hd: "a",
+        tl: {
+          hd: "d",
+          tl: {
+            hd: "e",
+            tl: {
+              hd: "g",
+              tl: {
+                hd: "f",
+                tl: {
+                  hd: "c",
+                  tl: {
+                    hd: "b",
+                    tl: /* [] */0
                   }
                 }
               }
@@ -325,26 +325,26 @@ if (!Caml_obj.caml_equal(dfs3(/* :: */{
       };
 }
 
-if (!Caml_obj.caml_equal(dfs3(/* :: */{
-            _0: "b",
-            _1: /* [] */0
-          }, /* :: */{
-            _0: [
+if (!Caml_obj.caml_equal(dfs3({
+            hd: "b",
+            tl: /* [] */0
+          }, {
+            hd: [
               "f",
               "d"
             ],
-            _1: graph
-          }), /* :: */{
-        _0: "b",
-        _1: /* :: */{
-          _0: "e",
-          _1: /* :: */{
-            _0: "g",
-            _1: /* :: */{
-              _0: "f",
-              _1: /* :: */{
-                _0: "d",
-                _1: /* [] */0
+            tl: graph
+          }), {
+        hd: "b",
+        tl: {
+          hd: "e",
+          tl: {
+            hd: "g",
+            tl: {
+              hd: "f",
+              tl: {
+                hd: "d",
+                tl: /* [] */0
               }
             }
           }
@@ -361,37 +361,37 @@ if (!Caml_obj.caml_equal(dfs3(/* :: */{
       };
 }
 
-var grwork = /* :: */{
-  _0: [
+var grwork = {
+  hd: [
     "wake",
     "shower"
   ],
-  _1: /* :: */{
-    _0: [
+  tl: {
+    hd: [
       "shower",
       "dress"
     ],
-    _1: /* :: */{
-      _0: [
+    tl: {
+      hd: [
         "dress",
         "go"
       ],
-      _1: /* :: */{
-        _0: [
+      tl: {
+        hd: [
           "wake",
           "eat"
         ],
-        _1: /* :: */{
-          _0: [
+        tl: {
+          hd: [
             "eat",
             "washup"
           ],
-          _1: /* :: */{
-            _0: [
+          tl: {
+            hd: [
               "washup",
               "go"
             ],
-            _1: /* [] */0
+            tl: /* [] */0
           }
         }
       }
@@ -409,9 +409,9 @@ function unsafe_topsort(graph) {
     }
     var nodes = nexts(node, graph);
     List.iter(sort_node, nodes);
-    visited.contents = /* :: */{
-      _0: node,
-      _1: visited.contents
+    visited.contents = {
+      hd: node,
+      tl: visited.contents
     };
     
   };
@@ -421,19 +421,19 @@ function unsafe_topsort(graph) {
   return visited.contents;
 }
 
-if (!Caml_obj.caml_equal(unsafe_topsort(grwork), /* :: */{
-        _0: "wake",
-        _1: /* :: */{
-          _0: "shower",
-          _1: /* :: */{
-            _0: "dress",
-            _1: /* :: */{
-              _0: "eat",
-              _1: /* :: */{
-                _0: "washup",
-                _1: /* :: */{
-                  _0: "go",
-                  _1: /* [] */0
+if (!Caml_obj.caml_equal(unsafe_topsort(grwork), {
+        hd: "wake",
+        tl: {
+          hd: "shower",
+          tl: {
+            hd: "dress",
+            tl: {
+              hd: "eat",
+              tl: {
+                hd: "washup",
+                tl: {
+                  hd: "go",
+                  tl: /* [] */0
                 }
               }
             }
@@ -1073,9 +1073,9 @@ function elements_aux(_accu, _param) {
       return accu;
     }
     _param = param.l;
-    _accu = /* :: */{
-      _0: param.v,
-      _1: elements_aux(accu, param.r)
+    _accu = {
+      hd: param.v,
+      tl: elements_aux(accu, param.r)
     };
     continue ;
   };
@@ -1273,25 +1273,25 @@ function of_list(l) {
   if (!l) {
     return /* Empty */0;
   }
-  var match = l._1;
-  var x0 = l._0;
+  var match = l.tl;
+  var x0 = l.hd;
   if (!match) {
     return singleton(x0);
   }
-  var match$1 = match._1;
-  var x1 = match._0;
+  var match$1 = match.tl;
+  var x1 = match.hd;
   if (!match$1) {
     return add(x1, singleton(x0));
   }
-  var match$2 = match$1._1;
-  var x2 = match$1._0;
+  var match$2 = match$1.tl;
+  var x2 = match$1.hd;
   if (!match$2) {
     return add(x2, add(x1, singleton(x0)));
   }
-  var match$3 = match$2._1;
-  var x3 = match$2._0;
+  var match$3 = match$2.tl;
+  var x3 = match$2.hd;
   if (match$3) {
-    if (match$3._1) {
+    if (match$3.tl) {
       var l$1 = List.sort_uniq($$String.compare, l);
       var sub = function (n, l) {
         switch (n) {
@@ -1305,31 +1305,31 @@ function of_list(l) {
                 return [
                         /* Node */{
                           l: /* Empty */0,
-                          v: l._0,
+                          v: l.hd,
                           r: /* Empty */0,
                           h: 1
                         },
-                        l._1
+                        l.tl
                       ];
               }
               break;
           case 2 :
               if (l) {
-                var match = l._1;
+                var match = l.tl;
                 if (match) {
                   return [
                           /* Node */{
                             l: /* Node */{
                               l: /* Empty */0,
-                              v: l._0,
+                              v: l.hd,
                               r: /* Empty */0,
                               h: 1
                             },
-                            v: match._0,
+                            v: match.hd,
                             r: /* Empty */0,
                             h: 2
                           },
-                          match._1
+                          match.tl
                         ];
                 }
                 
@@ -1337,28 +1337,28 @@ function of_list(l) {
               break;
           case 3 :
               if (l) {
-                var match$1 = l._1;
+                var match$1 = l.tl;
                 if (match$1) {
-                  var match$2 = match$1._1;
+                  var match$2 = match$1.tl;
                   if (match$2) {
                     return [
                             /* Node */{
                               l: /* Node */{
                                 l: /* Empty */0,
-                                v: l._0,
+                                v: l.hd,
                                 r: /* Empty */0,
                                 h: 1
                               },
-                              v: match$1._0,
+                              v: match$1.hd,
                               r: /* Node */{
                                 l: /* Empty */0,
-                                v: match$2._0,
+                                v: match$2.hd,
                                 r: /* Empty */0,
                                 h: 1
                               },
                               h: 2
                             },
-                            match$2._1
+                            match$2.tl
                           ];
                   }
                   
@@ -1373,9 +1373,9 @@ function of_list(l) {
         var match$3 = sub(nl, l);
         var l$1 = match$3[1];
         if (l$1) {
-          var match$4 = sub((n - nl | 0) - 1 | 0, l$1._1);
+          var match$4 = sub((n - nl | 0) - 1 | 0, l$1.tl);
           return [
-                  create(match$3[0], l$1._0, match$4[0]),
+                  create(match$3[0], l$1.hd, match$4[0]),
                   match$4[1]
                 ];
         }
@@ -1391,7 +1391,7 @@ function of_list(l) {
       };
       return sub(List.length(l$1), l$1)[0];
     } else {
-      return add(match$3._0, add(x3, add(x2, add(x1, singleton(x0)))));
+      return add(match$3.hd, add(x3, add(x2, add(x1, singleton(x0)))));
     }
   } else {
     return add(x3, add(x2, add(x1, singleton(x0))));
@@ -1452,18 +1452,18 @@ function pathsort(graph) {
     if (mem(node, set)) {
       throw {
             RE_EXN_ID: Cycle,
-            _1: /* :: */{
-              _0: node,
-              _1: stack
+            _1: {
+              hd: node,
+              tl: stack
             },
             Error: new Error()
           };
     }
     return [
             add(node, set),
-            /* :: */{
-              _0: node,
-              _1: stack
+            {
+              hd: node,
+              tl: stack
             }
           ];
   };
@@ -1475,9 +1475,9 @@ function pathsort(graph) {
   var sort_node = function (path, node) {
     if (!List.mem(node, visited.contents)) {
       sort_nodes($plus$great(node, path), nexts(node, graph));
-      visited.contents = /* :: */{
-        _0: node,
-        _1: visited.contents
+      visited.contents = {
+        hd: node,
+        tl: visited.contents
       };
       return ;
     }
@@ -1489,19 +1489,19 @@ function pathsort(graph) {
   return visited.contents;
 }
 
-if (!Caml_obj.caml_equal(pathsort(grwork), /* :: */{
-        _0: "wake",
-        _1: /* :: */{
-          _0: "shower",
-          _1: /* :: */{
-            _0: "dress",
-            _1: /* :: */{
-              _0: "eat",
-              _1: /* :: */{
-                _0: "washup",
-                _1: /* :: */{
-                  _0: "go",
-                  _1: /* [] */0
+if (!Caml_obj.caml_equal(pathsort(grwork), {
+        hd: "wake",
+        tl: {
+          hd: "shower",
+          tl: {
+            hd: "dress",
+            tl: {
+              hd: "eat",
+              tl: {
+                hd: "washup",
+                tl: {
+                  hd: "go",
+                  tl: /* [] */0
                 }
               }
             }
@@ -1520,12 +1520,12 @@ if (!Caml_obj.caml_equal(pathsort(grwork), /* :: */{
 }
 
 try {
-  pathsort(/* :: */{
-        _0: [
+  pathsort({
+        hd: [
           "go",
           "eat"
         ],
-        _1: grwork
+        tl: grwork
       });
   throw {
         RE_EXN_ID: "Assert_failure",
@@ -1542,13 +1542,13 @@ catch (raw_exn){
   var exit = 0;
   if (exn.RE_EXN_ID === Cycle) {
     var match = exn._1;
-    if (match && match._0 === "go") {
-      var match$1 = match._1;
-      if (match$1 && match$1._0 === "washup") {
-        var match$2 = match$1._1;
-        if (match$2 && match$2._0 === "eat") {
-          var match$3 = match$2._1;
-          if (!(match$3 && match$3._0 === "go" && !match$3._1)) {
+    if (match && match.hd === "go") {
+      var match$1 = match.tl;
+      if (match$1 && match$1.hd === "washup") {
+        var match$2 = match$1.tl;
+        if (match$2 && match$2.hd === "eat") {
+          var match$3 = match$2.tl;
+          if (!(match$3 && match$3.hd === "go" && !match$3.tl)) {
             exit = 1;
           }
           

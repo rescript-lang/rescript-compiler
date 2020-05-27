@@ -11,38 +11,38 @@ var list_suites_0 = [
       return {
               TAG: /* Eq */0,
               _0: 1,
-              _1: List.length(/* :: */{
-                    _0: [
+              _1: List.length({
+                    hd: [
                       0,
                       1,
                       2,
                       3,
                       4
                     ],
-                    _1: /* [] */0
+                    tl: /* [] */0
                   })
             };
     })
 ];
 
-var list_suites_1 = /* :: */{
-  _0: [
+var list_suites_1 = {
+  hd: [
     "length2",
     (function (param) {
         return {
                 TAG: /* Eq */0,
                 _0: 5,
-                _1: List.length(/* :: */{
-                      _0: 0,
-                      _1: /* :: */{
-                        _0: 1,
-                        _1: /* :: */{
-                          _0: 2,
-                          _1: /* :: */{
-                            _0: 3,
-                            _1: /* :: */{
-                              _0: 4,
-                              _1: /* [] */0
+                _1: List.length({
+                      hd: 0,
+                      tl: {
+                        hd: 1,
+                        tl: {
+                          hd: 2,
+                          tl: {
+                            hd: 3,
+                            tl: {
+                              hd: 4,
+                              tl: /* [] */0
                             }
                           }
                         }
@@ -51,8 +51,8 @@ var list_suites_1 = /* :: */{
               };
       })
   ],
-  _1: /* :: */{
-    _0: [
+  tl: {
+    hd: [
       "long_length",
       (function (param) {
           return {
@@ -64,34 +64,34 @@ var list_suites_1 = /* :: */{
                 };
         })
     ],
-    _1: /* :: */{
-      _0: [
+    tl: {
+      hd: [
         "sort",
         (function (param) {
             return {
                     TAG: /* Eq */0,
-                    _0: List.sort(Caml_primitive.caml_int_compare, /* :: */{
-                          _0: 4,
-                          _1: /* :: */{
-                            _0: 1,
-                            _1: /* :: */{
-                              _0: 2,
-                              _1: /* :: */{
-                                _0: 3,
-                                _1: /* [] */0
+                    _0: List.sort(Caml_primitive.caml_int_compare, {
+                          hd: 4,
+                          tl: {
+                            hd: 1,
+                            tl: {
+                              hd: 2,
+                              tl: {
+                                hd: 3,
+                                tl: /* [] */0
                               }
                             }
                           }
                         }),
-                    _1: /* :: */{
-                      _0: 1,
-                      _1: /* :: */{
-                        _0: 2,
-                        _1: /* :: */{
-                          _0: 3,
-                          _1: /* :: */{
-                            _0: 4,
-                            _1: /* [] */0
+                    _1: {
+                      hd: 1,
+                      tl: {
+                        hd: 2,
+                        tl: {
+                          hd: 3,
+                          tl: {
+                            hd: 4,
+                            tl: /* [] */0
                           }
                         }
                       }
@@ -99,14 +99,14 @@ var list_suites_1 = /* :: */{
                   };
           })
       ],
-      _1: /* [] */0
+      tl: /* [] */0
     }
   }
 };
 
-var list_suites = /* :: */{
-  _0: list_suites_0,
-  _1: list_suites_1
+var list_suites = {
+  hd: list_suites_0,
+  tl: list_suites_1
 };
 
 Mt.from_pair_suites("List_test", list_suites);

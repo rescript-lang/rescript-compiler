@@ -19,8 +19,8 @@ catch (raw_exn){
 }
 
 var suites = {
-  contents: /* :: */{
-    _0: [
+  contents: {
+    hd: [
       "File \"caml_compare_test.ml\", line 9, characters 4-11",
       (function (param) {
           return {
@@ -30,8 +30,8 @@ var suites = {
                 };
         })
     ],
-    _1: /* :: */{
-      _0: [
+    tl: {
+      hd: [
         "option2",
         (function (param) {
             return {
@@ -41,80 +41,80 @@ var suites = {
                   };
           })
       ],
-      _1: /* :: */{
-        _0: [
+      tl: {
+        hd: [
           "File \"caml_compare_test.ml\", line 11, characters 4-11",
           (function (param) {
               return {
                       TAG: /* Eq */0,
                       _0: true,
-                      _1: Caml_obj.caml_greaterthan(/* :: */{
-                            _0: 1,
-                            _1: /* [] */0
+                      _1: Caml_obj.caml_greaterthan({
+                            hd: 1,
+                            tl: /* [] */0
                           }, /* [] */0)
                     };
             })
         ],
-        _1: /* :: */{
-          _0: [
+        tl: {
+          hd: [
             "listeq",
             (function (param) {
                 return {
                         TAG: /* Eq */0,
                         _0: true,
-                        _1: Caml_obj.caml_equal(/* :: */{
-                              _0: 1,
-                              _1: /* :: */{
-                                _0: 2,
-                                _1: /* :: */{
-                                  _0: 3,
-                                  _1: /* [] */0
+                        _1: Caml_obj.caml_equal({
+                              hd: 1,
+                              tl: {
+                                hd: 2,
+                                tl: {
+                                  hd: 3,
+                                  tl: /* [] */0
                                 }
                               }
-                            }, /* :: */{
-                              _0: 1,
-                              _1: /* :: */{
-                                _0: 2,
-                                _1: /* :: */{
-                                  _0: 3,
-                                  _1: /* [] */0
+                            }, {
+                              hd: 1,
+                              tl: {
+                                hd: 2,
+                                tl: {
+                                  hd: 3,
+                                  tl: /* [] */0
                                 }
                               }
                             })
                       };
               })
           ],
-          _1: /* :: */{
-            _0: [
+          tl: {
+            hd: [
               "listneq",
               (function (param) {
                   return {
                           TAG: /* Eq */0,
                           _0: true,
-                          _1: Caml_obj.caml_greaterthan(/* :: */{
-                                _0: 1,
-                                _1: /* :: */{
-                                  _0: 2,
-                                  _1: /* :: */{
-                                    _0: 3,
-                                    _1: /* [] */0
+                          _1: Caml_obj.caml_greaterthan({
+                                hd: 1,
+                                tl: {
+                                  hd: 2,
+                                  tl: {
+                                    hd: 3,
+                                    tl: /* [] */0
                                   }
                                 }
-                              }, /* :: */{
-                                _0: 1,
-                                _1: /* :: */{
-                                  _0: 2,
-                                  _1: /* :: */{
-                                    _0: 2,
-                                    _1: /* [] */0
+                              }, {
+                                hd: 1,
+                                tl: {
+                                  hd: 2,
+                                  tl: {
+                                    hd: 2,
+                                    tl: /* [] */0
                                   }
                                 }
                               })
                         };
                 })
             ],
-            _1: /* :: */{
-              _0: [
+            tl: {
+              hd: [
                 "custom_u",
                 (function (param) {
                     return {
@@ -152,8 +152,8 @@ var suites = {
                           };
                   })
               ],
-              _1: /* :: */{
-                _0: [
+              tl: {
+                hd: [
                   "custom_u2",
                   (function (param) {
                       return {
@@ -191,8 +191,8 @@ var suites = {
                             };
                     })
                 ],
-                _1: /* :: */{
-                  _0: [
+                tl: {
+                  hd: [
                     "function",
                     (function (param) {
                         return {
@@ -202,8 +202,8 @@ var suites = {
                               };
                       })
                   ],
-                  _1: /* :: */{
-                    _0: [
+                  tl: {
+                    hd: [
                       "File \"caml_compare_test.ml\", line 17, characters 4-11",
                       (function (param) {
                           return {
@@ -213,8 +213,8 @@ var suites = {
                                 };
                         })
                     ],
-                    _1: /* :: */{
-                      _0: [
+                    tl: {
+                      hd: [
                         "File \"caml_compare_test.ml\", line 28, characters 4-11",
                         (function (param) {
                             return {
@@ -227,8 +227,8 @@ var suites = {
                                   };
                           })
                       ],
-                      _1: /* :: */{
-                        _0: [
+                      tl: {
+                        hd: [
                           "File \"caml_compare_test.ml\", line 31, characters 4-11",
                           (function (param) {
                               return {
@@ -241,32 +241,32 @@ var suites = {
                                     };
                             })
                         ],
-                        _1: /* :: */{
-                          _0: [
+                        tl: {
+                          hd: [
                             "File \"caml_compare_test.ml\", line 34, characters 4-11",
                             (function (param) {
                                 return {
                                         TAG: /* Eq */0,
                                         _0: true,
-                                        _1: Caml_obj.caml_lessthan(/* :: */{
-                                              _0: 2,
-                                              _1: /* :: */{
-                                                _0: 6,
-                                                _1: /* :: */{
-                                                  _0: 1,
-                                                  _1: /* :: */{
-                                                    _0: 1,
-                                                    _1: /* :: */{
-                                                      _0: 2,
-                                                      _1: /* :: */{
-                                                        _0: 1,
-                                                        _1: /* :: */{
-                                                          _0: 4,
-                                                          _1: /* :: */{
-                                                            _0: 2,
-                                                            _1: /* :: */{
-                                                              _0: 1,
-                                                              _1: /* [] */0
+                                        _1: Caml_obj.caml_lessthan({
+                                              hd: 2,
+                                              tl: {
+                                                hd: 6,
+                                                tl: {
+                                                  hd: 1,
+                                                  tl: {
+                                                    hd: 1,
+                                                    tl: {
+                                                      hd: 2,
+                                                      tl: {
+                                                        hd: 1,
+                                                        tl: {
+                                                          hd: 4,
+                                                          tl: {
+                                                            hd: 2,
+                                                            tl: {
+                                                              hd: 1,
+                                                              tl: /* [] */0
                                                             }
                                                           }
                                                         }
@@ -275,27 +275,27 @@ var suites = {
                                                   }
                                                 }
                                               }
-                                            }, /* :: */{
-                                              _0: 2,
-                                              _1: /* :: */{
-                                                _0: 6,
-                                                _1: /* :: */{
-                                                  _0: 1,
-                                                  _1: /* :: */{
-                                                    _0: 1,
-                                                    _1: /* :: */{
-                                                      _0: 2,
-                                                      _1: /* :: */{
-                                                        _0: 1,
-                                                        _1: /* :: */{
-                                                          _0: 4,
-                                                          _1: /* :: */{
-                                                            _0: 2,
-                                                            _1: /* :: */{
-                                                              _0: 1,
-                                                              _1: /* :: */{
-                                                                _0: 409,
-                                                                _1: /* [] */0
+                                            }, {
+                                              hd: 2,
+                                              tl: {
+                                                hd: 6,
+                                                tl: {
+                                                  hd: 1,
+                                                  tl: {
+                                                    hd: 1,
+                                                    tl: {
+                                                      hd: 2,
+                                                      tl: {
+                                                        hd: 1,
+                                                        tl: {
+                                                          hd: 4,
+                                                          tl: {
+                                                            hd: 2,
+                                                            tl: {
+                                                              hd: 1,
+                                                              tl: {
+                                                                hd: 409,
+                                                                tl: /* [] */0
                                                               }
                                                             }
                                                           }
@@ -309,68 +309,68 @@ var suites = {
                                       };
                               })
                           ],
-                          _1: /* :: */{
-                            _0: [
+                          tl: {
+                            hd: [
                               "File \"caml_compare_test.ml\", line 37, characters 4-11",
                               (function (param) {
                                   return {
                                           TAG: /* Eq */0,
                                           _0: true,
-                                          _1: Caml_obj.caml_lessthan(/* :: */{
-                                                _0: 1,
-                                                _1: /* [] */0
-                                              }, /* :: */{
-                                                _0: 1,
-                                                _1: /* :: */{
-                                                  _0: 409,
-                                                  _1: /* [] */0
+                                          _1: Caml_obj.caml_lessthan({
+                                                hd: 1,
+                                                tl: /* [] */0
+                                              }, {
+                                                hd: 1,
+                                                tl: {
+                                                  hd: 409,
+                                                  tl: /* [] */0
                                                 }
                                               })
                                         };
                                 })
                             ],
-                            _1: /* :: */{
-                              _0: [
+                            tl: {
+                              hd: [
                                 "File \"caml_compare_test.ml\", line 40, characters 4-11",
                                 (function (param) {
                                     return {
                                             TAG: /* Eq */0,
                                             _0: true,
-                                            _1: Caml_obj.caml_lessthan(/* [] */0, /* :: */{
-                                                  _0: 409,
-                                                  _1: /* [] */0
+                                            _1: Caml_obj.caml_lessthan(/* [] */0, {
+                                                  hd: 409,
+                                                  tl: /* [] */0
                                                 })
                                           };
                                   })
                               ],
-                              _1: /* :: */{
-                                _0: [
+                              tl: {
+                                hd: [
                                   "File \"caml_compare_test.ml\", line 43, characters 4-11",
                                   (function (param) {
                                       return {
                                               TAG: /* Eq */0,
                                               _0: true,
-                                              _1: Caml_obj.caml_greaterthan(/* :: */{
-                                                    _0: 2,
-                                                    _1: /* :: */{
-                                                      _0: 6,
-                                                      _1: /* :: */{
-                                                        _0: 1,
-                                                        _1: /* :: */{
-                                                          _0: 1,
-                                                          _1: /* :: */{
-                                                            _0: 2,
-                                                            _1: /* :: */{
-                                                              _0: 1,
-                                                              _1: /* :: */{
-                                                                _0: 4,
-                                                                _1: /* :: */{
-                                                                  _0: 2,
-                                                                  _1: /* :: */{
-                                                                    _0: 1,
-                                                                    _1: /* :: */{
-                                                                      _0: 409,
-                                                                      _1: /* [] */0
+                                              _1: Caml_obj.caml_greaterthan({
+                                                    hd: 2,
+                                                    tl: {
+                                                      hd: 6,
+                                                      tl: {
+                                                        hd: 1,
+                                                        tl: {
+                                                          hd: 1,
+                                                          tl: {
+                                                            hd: 2,
+                                                            tl: {
+                                                              hd: 1,
+                                                              tl: {
+                                                                hd: 4,
+                                                                tl: {
+                                                                  hd: 2,
+                                                                  tl: {
+                                                                    hd: 1,
+                                                                    tl: {
+                                                                      hd: 409,
+                                                                      tl: /* [] */0
                                                                     }
                                                                   }
                                                                 }
@@ -380,25 +380,25 @@ var suites = {
                                                         }
                                                       }
                                                     }
-                                                  }, /* :: */{
-                                                    _0: 2,
-                                                    _1: /* :: */{
-                                                      _0: 6,
-                                                      _1: /* :: */{
-                                                        _0: 1,
-                                                        _1: /* :: */{
-                                                          _0: 1,
-                                                          _1: /* :: */{
-                                                            _0: 2,
-                                                            _1: /* :: */{
-                                                              _0: 1,
-                                                              _1: /* :: */{
-                                                                _0: 4,
-                                                                _1: /* :: */{
-                                                                  _0: 2,
-                                                                  _1: /* :: */{
-                                                                    _0: 1,
-                                                                    _1: /* [] */0
+                                                  }, {
+                                                    hd: 2,
+                                                    tl: {
+                                                      hd: 6,
+                                                      tl: {
+                                                        hd: 1,
+                                                        tl: {
+                                                          hd: 1,
+                                                          tl: {
+                                                            hd: 2,
+                                                            tl: {
+                                                              hd: 1,
+                                                              tl: {
+                                                                hd: 4,
+                                                                tl: {
+                                                                  hd: 2,
+                                                                  tl: {
+                                                                    hd: 1,
+                                                                    tl: /* [] */0
                                                                   }
                                                                 }
                                                               }
@@ -411,8 +411,8 @@ var suites = {
                                             };
                                     })
                                 ],
-                                _1: /* :: */{
-                                  _0: [
+                                tl: {
+                                  hd: [
                                     "File \"caml_compare_test.ml\", line 47, characters 4-11",
                                     (function (param) {
                                         return {
@@ -422,8 +422,8 @@ var suites = {
                                               };
                                       })
                                   ],
-                                  _1: /* :: */{
-                                    _0: [
+                                  tl: {
+                                    hd: [
                                       "File \"caml_compare_test.ml\", line 50, characters 4-11",
                                       (function (param) {
                                           return {
@@ -433,32 +433,32 @@ var suites = {
                                                 };
                                         })
                                     ],
-                                    _1: /* :: */{
-                                      _0: [
+                                    tl: {
+                                      hd: [
                                         "File \"caml_compare_test.ml\", line 53, characters 4-11",
                                         (function (param) {
                                             return {
                                                     TAG: /* Eq */0,
                                                     _0: false,
-                                                    _1: Caml_obj.caml_equal(/* :: */{
-                                                          _0: 2,
-                                                          _1: /* :: */{
-                                                            _0: 6,
-                                                            _1: /* :: */{
-                                                              _0: 1,
-                                                              _1: /* :: */{
-                                                                _0: 1,
-                                                                _1: /* :: */{
-                                                                  _0: 2,
-                                                                  _1: /* :: */{
-                                                                    _0: 1,
-                                                                    _1: /* :: */{
-                                                                      _0: 4,
-                                                                      _1: /* :: */{
-                                                                        _0: 2,
-                                                                        _1: /* :: */{
-                                                                          _0: 1,
-                                                                          _1: /* [] */0
+                                                    _1: Caml_obj.caml_equal({
+                                                          hd: 2,
+                                                          tl: {
+                                                            hd: 6,
+                                                            tl: {
+                                                              hd: 1,
+                                                              tl: {
+                                                                hd: 1,
+                                                                tl: {
+                                                                  hd: 2,
+                                                                  tl: {
+                                                                    hd: 1,
+                                                                    tl: {
+                                                                      hd: 4,
+                                                                      tl: {
+                                                                        hd: 2,
+                                                                        tl: {
+                                                                          hd: 1,
+                                                                          tl: /* [] */0
                                                                         }
                                                                       }
                                                                     }
@@ -467,27 +467,27 @@ var suites = {
                                                               }
                                                             }
                                                           }
-                                                        }, /* :: */{
-                                                          _0: 2,
-                                                          _1: /* :: */{
-                                                            _0: 6,
-                                                            _1: /* :: */{
-                                                              _0: 1,
-                                                              _1: /* :: */{
-                                                                _0: 1,
-                                                                _1: /* :: */{
-                                                                  _0: 2,
-                                                                  _1: /* :: */{
-                                                                    _0: 1,
-                                                                    _1: /* :: */{
-                                                                      _0: 4,
-                                                                      _1: /* :: */{
-                                                                        _0: 2,
-                                                                        _1: /* :: */{
-                                                                          _0: 1,
-                                                                          _1: /* :: */{
-                                                                            _0: 409,
-                                                                            _1: /* [] */0
+                                                        }, {
+                                                          hd: 2,
+                                                          tl: {
+                                                            hd: 6,
+                                                            tl: {
+                                                              hd: 1,
+                                                              tl: {
+                                                                hd: 1,
+                                                                tl: {
+                                                                  hd: 2,
+                                                                  tl: {
+                                                                    hd: 1,
+                                                                    tl: {
+                                                                      hd: 4,
+                                                                      tl: {
+                                                                        hd: 2,
+                                                                        tl: {
+                                                                          hd: 1,
+                                                                          tl: {
+                                                                            hd: 409,
+                                                                            tl: /* [] */0
                                                                           }
                                                                         }
                                                                       }
@@ -501,34 +501,34 @@ var suites = {
                                                   };
                                           })
                                       ],
-                                      _1: /* :: */{
-                                        _0: [
+                                      tl: {
+                                        hd: [
                                           "File \"caml_compare_test.ml\", line 56, characters 4-11",
                                           (function (param) {
                                               return {
                                                       TAG: /* Eq */0,
                                                       _0: false,
-                                                      _1: Caml_obj.caml_equal(/* :: */{
-                                                            _0: 2,
-                                                            _1: /* :: */{
-                                                              _0: 6,
-                                                              _1: /* :: */{
-                                                                _0: 1,
-                                                                _1: /* :: */{
-                                                                  _0: 1,
-                                                                  _1: /* :: */{
-                                                                    _0: 2,
-                                                                    _1: /* :: */{
-                                                                      _0: 1,
-                                                                      _1: /* :: */{
-                                                                        _0: 4,
-                                                                        _1: /* :: */{
-                                                                          _0: 2,
-                                                                          _1: /* :: */{
-                                                                            _0: 1,
-                                                                            _1: /* :: */{
-                                                                              _0: 409,
-                                                                              _1: /* [] */0
+                                                      _1: Caml_obj.caml_equal({
+                                                            hd: 2,
+                                                            tl: {
+                                                              hd: 6,
+                                                              tl: {
+                                                                hd: 1,
+                                                                tl: {
+                                                                  hd: 1,
+                                                                  tl: {
+                                                                    hd: 2,
+                                                                    tl: {
+                                                                      hd: 1,
+                                                                      tl: {
+                                                                        hd: 4,
+                                                                        tl: {
+                                                                          hd: 2,
+                                                                          tl: {
+                                                                            hd: 1,
+                                                                            tl: {
+                                                                              hd: 409,
+                                                                              tl: /* [] */0
                                                                             }
                                                                           }
                                                                         }
@@ -538,25 +538,25 @@ var suites = {
                                                                 }
                                                               }
                                                             }
-                                                          }, /* :: */{
-                                                            _0: 2,
-                                                            _1: /* :: */{
-                                                              _0: 6,
-                                                              _1: /* :: */{
-                                                                _0: 1,
-                                                                _1: /* :: */{
-                                                                  _0: 1,
-                                                                  _1: /* :: */{
-                                                                    _0: 2,
-                                                                    _1: /* :: */{
-                                                                      _0: 1,
-                                                                      _1: /* :: */{
-                                                                        _0: 4,
-                                                                        _1: /* :: */{
-                                                                          _0: 2,
-                                                                          _1: /* :: */{
-                                                                            _0: 1,
-                                                                            _1: /* [] */0
+                                                          }, {
+                                                            hd: 2,
+                                                            tl: {
+                                                              hd: 6,
+                                                              tl: {
+                                                                hd: 1,
+                                                                tl: {
+                                                                  hd: 1,
+                                                                  tl: {
+                                                                    hd: 2,
+                                                                    tl: {
+                                                                      hd: 1,
+                                                                      tl: {
+                                                                        hd: 4,
+                                                                        tl: {
+                                                                          hd: 2,
+                                                                          tl: {
+                                                                            hd: 1,
+                                                                            tl: /* [] */0
                                                                           }
                                                                         }
                                                                       }
@@ -569,8 +569,8 @@ var suites = {
                                                     };
                                             })
                                         ],
-                                        _1: /* :: */{
-                                          _0: [
+                                        tl: {
+                                          hd: [
                                             "cmp_id",
                                             (function (param) {
                                                 return {
@@ -586,8 +586,8 @@ var suites = {
                                                       };
                                               })
                                           ],
-                                          _1: /* :: */{
-                                            _0: [
+                                          tl: {
+                                            hd: [
                                               "cmp_val",
                                               (function (param) {
                                                   return {
@@ -601,8 +601,8 @@ var suites = {
                                                         };
                                                 })
                                             ],
-                                            _1: /* :: */{
-                                              _0: [
+                                            tl: {
+                                              hd: [
                                                 "cmp_val2",
                                                 (function (param) {
                                                     return {
@@ -616,8 +616,8 @@ var suites = {
                                                           };
                                                   })
                                               ],
-                                              _1: /* :: */{
-                                                _0: [
+                                              tl: {
+                                                hd: [
                                                   "cmp_empty",
                                                   (function (param) {
                                                       return {
@@ -627,8 +627,8 @@ var suites = {
                                                             };
                                                     })
                                                 ],
-                                                _1: /* :: */{
-                                                  _0: [
+                                                tl: {
+                                                  hd: [
                                                     "cmp_empty2",
                                                     (function (param) {
                                                         return {
@@ -638,8 +638,8 @@ var suites = {
                                                               };
                                                       })
                                                   ],
-                                                  _1: /* :: */{
-                                                    _0: [
+                                                  tl: {
+                                                    hd: [
                                                       "cmp_swap",
                                                       (function (param) {
                                                           return {
@@ -655,8 +655,8 @@ var suites = {
                                                                 };
                                                         })
                                                     ],
-                                                    _1: /* :: */{
-                                                      _0: [
+                                                    tl: {
+                                                      hd: [
                                                         "cmp_size",
                                                         (function (param) {
                                                             return {
@@ -666,8 +666,8 @@ var suites = {
                                                                   };
                                                           })
                                                       ],
-                                                      _1: /* :: */{
-                                                        _0: [
+                                                      tl: {
+                                                        hd: [
                                                           "cmp_size2",
                                                           (function (param) {
                                                               return {
@@ -677,8 +677,8 @@ var suites = {
                                                                     };
                                                             })
                                                         ],
-                                                        _1: /* :: */{
-                                                          _0: [
+                                                        tl: {
+                                                          hd: [
                                                             "cmp_order",
                                                             (function (param) {
                                                                 return {
@@ -694,8 +694,8 @@ var suites = {
                                                                       };
                                                               })
                                                           ],
-                                                          _1: /* :: */{
-                                                            _0: [
+                                                          tl: {
+                                                            hd: [
                                                               "cmp_order2",
                                                               (function (param) {
                                                                   return {
@@ -711,92 +711,92 @@ var suites = {
                                                                         };
                                                                 })
                                                             ],
-                                                            _1: /* :: */{
-                                                              _0: [
+                                                            tl: {
+                                                              hd: [
                                                                 "cmp_in_list",
                                                                 (function (param) {
                                                                     return {
                                                                             TAG: /* Eq */0,
-                                                                            _0: Caml_obj.caml_compare(/* :: */{
-                                                                                  _0: {
+                                                                            _0: Caml_obj.caml_compare({
+                                                                                  hd: {
                                                                                     x: 1
                                                                                   },
-                                                                                  _1: /* [] */0
-                                                                                }, /* :: */{
-                                                                                  _0: {
+                                                                                  tl: /* [] */0
+                                                                                }, {
+                                                                                  hd: {
                                                                                     x: 2
                                                                                   },
-                                                                                  _1: /* [] */0
+                                                                                  tl: /* [] */0
                                                                                 }),
                                                                             _1: -1
                                                                           };
                                                                   })
                                                               ],
-                                                              _1: /* :: */{
-                                                                _0: [
+                                                              tl: {
+                                                                hd: [
                                                                   "cmp_in_list2",
                                                                   (function (param) {
                                                                       return {
                                                                               TAG: /* Eq */0,
-                                                                              _0: Caml_obj.caml_compare(/* :: */{
-                                                                                    _0: {
+                                                                              _0: Caml_obj.caml_compare({
+                                                                                    hd: {
                                                                                       x: 2
                                                                                     },
-                                                                                    _1: /* [] */0
-                                                                                  }, /* :: */{
-                                                                                    _0: {
+                                                                                    tl: /* [] */0
+                                                                                  }, {
+                                                                                    hd: {
                                                                                       x: 1
                                                                                     },
-                                                                                    _1: /* [] */0
+                                                                                    tl: /* [] */0
                                                                                   }),
                                                                               _1: 1
                                                                             };
                                                                     })
                                                                 ],
-                                                                _1: /* :: */{
-                                                                  _0: [
+                                                                tl: {
+                                                                  hd: [
                                                                     "cmp_with_list",
                                                                     (function (param) {
                                                                         return {
                                                                                 TAG: /* Eq */0,
                                                                                 _0: Caml_obj.caml_compare({
-                                                                                      x: /* :: */{
-                                                                                        _0: 0,
-                                                                                        _1: /* [] */0
+                                                                                      x: {
+                                                                                        hd: 0,
+                                                                                        tl: /* [] */0
                                                                                       }
                                                                                     }, {
-                                                                                      x: /* :: */{
-                                                                                        _0: 1,
-                                                                                        _1: /* [] */0
+                                                                                      x: {
+                                                                                        hd: 1,
+                                                                                        tl: /* [] */0
                                                                                       }
                                                                                     }),
                                                                                 _1: -1
                                                                               };
                                                                       })
                                                                   ],
-                                                                  _1: /* :: */{
-                                                                    _0: [
+                                                                  tl: {
+                                                                    hd: [
                                                                       "cmp_with_list2",
                                                                       (function (param) {
                                                                           return {
                                                                                   TAG: /* Eq */0,
                                                                                   _0: Caml_obj.caml_compare({
-                                                                                        x: /* :: */{
-                                                                                          _0: 1,
-                                                                                          _1: /* [] */0
+                                                                                        x: {
+                                                                                          hd: 1,
+                                                                                          tl: /* [] */0
                                                                                         }
                                                                                       }, {
-                                                                                        x: /* :: */{
-                                                                                          _0: 0,
-                                                                                          _1: /* [] */0
+                                                                                        x: {
+                                                                                          hd: 0,
+                                                                                          tl: /* [] */0
                                                                                         }
                                                                                       }),
                                                                                   _1: 1
                                                                                 };
                                                                         })
                                                                     ],
-                                                                    _1: /* :: */{
-                                                                      _0: [
+                                                                    tl: {
+                                                                      hd: [
                                                                         "eq_id",
                                                                         (function (param) {
                                                                             return {
@@ -811,8 +811,8 @@ var suites = {
                                                                                   };
                                                                           })
                                                                       ],
-                                                                      _1: /* :: */{
-                                                                        _0: [
+                                                                      tl: {
+                                                                        hd: [
                                                                           "eq_val",
                                                                           (function (param) {
                                                                               return {
@@ -826,8 +826,8 @@ var suites = {
                                                                                     };
                                                                             })
                                                                         ],
-                                                                        _1: /* :: */{
-                                                                          _0: [
+                                                                        tl: {
+                                                                          hd: [
                                                                             "eq_val2",
                                                                             (function (param) {
                                                                                 return {
@@ -841,8 +841,8 @@ var suites = {
                                                                                       };
                                                                               })
                                                                           ],
-                                                                          _1: /* :: */{
-                                                                            _0: [
+                                                                          tl: {
+                                                                            hd: [
                                                                               "eq_empty",
                                                                               (function (param) {
                                                                                   return {
@@ -852,8 +852,8 @@ var suites = {
                                                                                         };
                                                                                 })
                                                                             ],
-                                                                            _1: /* :: */{
-                                                                              _0: [
+                                                                            tl: {
+                                                                              hd: [
                                                                                 "eq_empty2",
                                                                                 (function (param) {
                                                                                     return {
@@ -863,8 +863,8 @@ var suites = {
                                                                                           };
                                                                                   })
                                                                               ],
-                                                                              _1: /* :: */{
-                                                                                _0: [
+                                                                              tl: {
+                                                                                hd: [
                                                                                   "eq_swap",
                                                                                   (function (param) {
                                                                                       return {
@@ -879,8 +879,8 @@ var suites = {
                                                                                             };
                                                                                     })
                                                                                 ],
-                                                                                _1: /* :: */{
-                                                                                  _0: [
+                                                                                tl: {
+                                                                                  hd: [
                                                                                     "eq_size",
                                                                                     (function (param) {
                                                                                         return {
@@ -890,8 +890,8 @@ var suites = {
                                                                                               };
                                                                                       })
                                                                                   ],
-                                                                                  _1: /* :: */{
-                                                                                    _0: [
+                                                                                  tl: {
+                                                                                    hd: [
                                                                                       "eq_size2",
                                                                                       (function (param) {
                                                                                           return {
@@ -901,120 +901,120 @@ var suites = {
                                                                                                 };
                                                                                         })
                                                                                     ],
-                                                                                    _1: /* :: */{
-                                                                                      _0: [
+                                                                                    tl: {
+                                                                                      hd: [
                                                                                         "eq_in_list",
                                                                                         (function (param) {
                                                                                             return {
                                                                                                     TAG: /* Eq */0,
-                                                                                                    _0: Caml_obj.caml_equal(/* :: */{
-                                                                                                          _0: {
+                                                                                                    _0: Caml_obj.caml_equal({
+                                                                                                          hd: {
                                                                                                             x: 1
                                                                                                           },
-                                                                                                          _1: /* [] */0
-                                                                                                        }, /* :: */{
-                                                                                                          _0: {
+                                                                                                          tl: /* [] */0
+                                                                                                        }, {
+                                                                                                          hd: {
                                                                                                             x: 2
                                                                                                           },
-                                                                                                          _1: /* [] */0
+                                                                                                          tl: /* [] */0
                                                                                                         }),
                                                                                                     _1: false
                                                                                                   };
                                                                                           })
                                                                                       ],
-                                                                                      _1: /* :: */{
-                                                                                        _0: [
+                                                                                      tl: {
+                                                                                        hd: [
                                                                                           "eq_in_list2",
                                                                                           (function (param) {
                                                                                               return {
                                                                                                       TAG: /* Eq */0,
-                                                                                                      _0: Caml_obj.caml_equal(/* :: */{
-                                                                                                            _0: {
+                                                                                                      _0: Caml_obj.caml_equal({
+                                                                                                            hd: {
                                                                                                               x: 2
                                                                                                             },
-                                                                                                            _1: /* [] */0
-                                                                                                          }, /* :: */{
-                                                                                                            _0: {
+                                                                                                            tl: /* [] */0
+                                                                                                          }, {
+                                                                                                            hd: {
                                                                                                               x: 2
                                                                                                             },
-                                                                                                            _1: /* [] */0
+                                                                                                            tl: /* [] */0
                                                                                                           }),
                                                                                                       _1: true
                                                                                                     };
                                                                                             })
                                                                                         ],
-                                                                                        _1: /* :: */{
-                                                                                          _0: [
+                                                                                        tl: {
+                                                                                          hd: [
                                                                                             "eq_with_list",
                                                                                             (function (param) {
                                                                                                 return {
                                                                                                         TAG: /* Eq */0,
                                                                                                         _0: Caml_obj.caml_equal({
-                                                                                                              x: /* :: */{
-                                                                                                                _0: 0,
-                                                                                                                _1: /* [] */0
+                                                                                                              x: {
+                                                                                                                hd: 0,
+                                                                                                                tl: /* [] */0
                                                                                                               }
                                                                                                             }, {
-                                                                                                              x: /* :: */{
-                                                                                                                _0: 0,
-                                                                                                                _1: /* [] */0
+                                                                                                              x: {
+                                                                                                                hd: 0,
+                                                                                                                tl: /* [] */0
                                                                                                               }
                                                                                                             }),
                                                                                                         _1: true
                                                                                                       };
                                                                                               })
                                                                                           ],
-                                                                                          _1: /* :: */{
-                                                                                            _0: [
+                                                                                          tl: {
+                                                                                            hd: [
                                                                                               "eq_with_list2",
                                                                                               (function (param) {
                                                                                                   return {
                                                                                                           TAG: /* Eq */0,
                                                                                                           _0: Caml_obj.caml_equal({
-                                                                                                                x: /* :: */{
-                                                                                                                  _0: 0,
-                                                                                                                  _1: /* [] */0
+                                                                                                                x: {
+                                                                                                                  hd: 0,
+                                                                                                                  tl: /* [] */0
                                                                                                                 }
                                                                                                               }, {
-                                                                                                                x: /* :: */{
-                                                                                                                  _0: 1,
-                                                                                                                  _1: /* [] */0
+                                                                                                                x: {
+                                                                                                                  hd: 1,
+                                                                                                                  tl: /* [] */0
                                                                                                                 }
                                                                                                               }),
                                                                                                           _1: false
                                                                                                         };
                                                                                                 })
                                                                                             ],
-                                                                                            _1: /* :: */{
-                                                                                              _0: [
+                                                                                            tl: {
+                                                                                              hd: [
                                                                                                 "File \"caml_compare_test.ml\", line 87, characters 4-11",
                                                                                                 (function (param) {
                                                                                                     return {
                                                                                                             TAG: /* Eq */0,
-                                                                                                            _0: Caml_obj.caml_compare(null, /* :: */{
-                                                                                                                  _0: 3,
-                                                                                                                  _1: /* [] */0
+                                                                                                            _0: Caml_obj.caml_compare(null, {
+                                                                                                                  hd: 3,
+                                                                                                                  tl: /* [] */0
                                                                                                                 }),
                                                                                                             _1: -1
                                                                                                           };
                                                                                                   })
                                                                                               ],
-                                                                                              _1: /* :: */{
-                                                                                                _0: [
+                                                                                              tl: {
+                                                                                                hd: [
                                                                                                   "File \"caml_compare_test.ml\", line 90, characters 4-11",
                                                                                                   (function (param) {
                                                                                                       return {
                                                                                                               TAG: /* Eq */0,
-                                                                                                              _0: Caml_obj.caml_compare(/* :: */{
-                                                                                                                    _0: 3,
-                                                                                                                    _1: /* [] */0
+                                                                                                              _0: Caml_obj.caml_compare({
+                                                                                                                    hd: 3,
+                                                                                                                    tl: /* [] */0
                                                                                                                   }, null),
                                                                                                               _1: 1
                                                                                                             };
                                                                                                     })
                                                                                                 ],
-                                                                                                _1: /* :: */{
-                                                                                                  _0: [
+                                                                                                tl: {
+                                                                                                  hd: [
                                                                                                     "File \"caml_compare_test.ml\", line 93, characters 4-11",
                                                                                                     (function (param) {
                                                                                                         return {
@@ -1024,8 +1024,8 @@ var suites = {
                                                                                                               };
                                                                                                       })
                                                                                                   ],
-                                                                                                  _1: /* :: */{
-                                                                                                    _0: [
+                                                                                                  tl: {
+                                                                                                    hd: [
                                                                                                       "File \"caml_compare_test.ml\", line 96, characters 4-11",
                                                                                                       (function (param) {
                                                                                                           return {
@@ -1035,8 +1035,8 @@ var suites = {
                                                                                                                 };
                                                                                                         })
                                                                                                     ],
-                                                                                                    _1: /* :: */{
-                                                                                                      _0: [
+                                                                                                    tl: {
+                                                                                                      hd: [
                                                                                                         "File \"caml_compare_test.ml\", line 99, characters 4-11",
                                                                                                         (function (param) {
                                                                                                             return {
@@ -1046,8 +1046,8 @@ var suites = {
                                                                                                                   };
                                                                                                           })
                                                                                                       ],
-                                                                                                      _1: /* :: */{
-                                                                                                        _0: [
+                                                                                                      tl: {
+                                                                                                        hd: [
                                                                                                           "File \"caml_compare_test.ml\", line 102, characters 4-11",
                                                                                                           (function (param) {
                                                                                                               return {
@@ -1057,7 +1057,7 @@ var suites = {
                                                                                                                     };
                                                                                                             })
                                                                                                         ],
-                                                                                                        _1: /* [] */0
+                                                                                                        tl: /* [] */0
                                                                                                       }
                                                                                                     }
                                                                                                   }
@@ -1121,9 +1121,9 @@ function eq(loc, x, y) {
 
 eq("File \"caml_compare_test.ml\", line 112, characters 6-13", true, Caml_obj.caml_greaterthan(1, undefined));
 
-eq("File \"caml_compare_test.ml\", line 113, characters 6-13", true, Caml_obj.caml_lessthan(/* [] */0, /* :: */{
-          _0: 1,
-          _1: /* [] */0
+eq("File \"caml_compare_test.ml\", line 113, characters 6-13", true, Caml_obj.caml_lessthan(/* [] */0, {
+          hd: 1,
+          tl: /* [] */0
         }));
 
 eq("File \"caml_compare_test.ml\", line 114, characters 6-13", false, Caml_obj.caml_greaterthan(undefined, 1));

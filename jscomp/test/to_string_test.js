@@ -9,8 +9,8 @@ function f(v) {
   return String(v);
 }
 
-Mt.from_pair_suites("To_string_test", /* :: */{
-      _0: [
+Mt.from_pair_suites("To_string_test", {
+      hd: [
         "File \"to_string_test.ml\", line 7, characters 2-9",
         (function (param) {
             return {
@@ -20,8 +20,8 @@ Mt.from_pair_suites("To_string_test", /* :: */{
                   };
           })
       ],
-      _1: /* :: */{
-        _0: [
+      tl: {
+        hd: [
           "File \"to_string_test.ml\", line 8, characters 1-8",
           (function (param) {
               return {
@@ -31,7 +31,7 @@ Mt.from_pair_suites("To_string_test", /* :: */{
                     };
             })
         ],
-        _1: /* [] */0
+        tl: /* [] */0
       }
     });
 

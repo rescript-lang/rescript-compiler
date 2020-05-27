@@ -64,17 +64,17 @@ function rev_split_by_char(c, s) {
     try {
       var i$prime = $$String.index_from(s, i, c);
       var s$prime = $$String.sub(s, i, i$prime - i | 0);
-      return loop(i$prime + 1 | 0, s$prime === "" ? l : /* :: */({
-                      _0: s$prime,
-                      _1: l
+      return loop(i$prime + 1 | 0, s$prime === "" ? l : ({
+                      hd: s$prime,
+                      tl: l
                     }));
     }
     catch (raw_exn){
       var exn = Caml_js_exceptions.internalToOCamlException(raw_exn);
       if (exn.RE_EXN_ID === "Not_found") {
-        return /* :: */{
-                _0: $$String.sub(s, i, s.length - i | 0),
-                _1: l
+        return {
+                hd: $$String.sub(s, i, s.length - i | 0),
+                tl: l
               };
       }
       throw exn;
@@ -101,21 +101,21 @@ function xsplit(delim, s) {
       catch (raw_exn){
         var exn = Caml_js_exceptions.internalToOCamlException(raw_exn);
         if (exn.RE_EXN_ID === "Not_found") {
-          return /* :: */{
-                  _0: $$String.sub(s, 0, i),
-                  _1: l
+          return {
+                  hd: $$String.sub(s, 0, i),
+                  tl: l
                 };
         }
         throw exn;
       }
       var l_0 = $$String.sub(s, i$prime + 1 | 0, (i - i$prime | 0) - 1 | 0);
-      var l$1 = /* :: */{
-        _0: l_0,
-        _1: l
+      var l$1 = {
+        hd: l_0,
+        tl: l
       };
-      var l$2 = i$prime === 0 ? /* :: */({
-            _0: "",
-            _1: l$1
+      var l$2 = i$prime === 0 ? ({
+            hd: "",
+            tl: l$1
           }) : l$1;
       _i = i$prime;
       _l = l$2;
@@ -132,8 +132,8 @@ function string_of_chars(x) {
                   }), x));
 }
 
-Mt.from_pair_suites("String_test", /* :: */{
-      _0: [
+Mt.from_pair_suites("String_test", {
+      hd: [
         "mutliple switch",
         (function (param) {
             return {
@@ -143,8 +143,8 @@ Mt.from_pair_suites("String_test", /* :: */{
                   };
           })
       ],
-      _1: /* :: */{
-        _0: [
+      tl: {
+        hd: [
           "int switch",
           (function (param) {
               return {
@@ -154,8 +154,8 @@ Mt.from_pair_suites("String_test", /* :: */{
                     };
             })
         ],
-        _1: /* :: */{
-          _0: [
+        tl: {
+          hd: [
             "escape_normal",
             (function (param) {
                 return {
@@ -165,8 +165,8 @@ Mt.from_pair_suites("String_test", /* :: */{
                       };
               })
           ],
-          _1: /* :: */{
-            _0: [
+          tl: {
+            hd: [
               "escape_bytes",
               (function (param) {
                   return {
@@ -176,8 +176,8 @@ Mt.from_pair_suites("String_test", /* :: */{
                         };
                 })
             ],
-            _1: /* :: */{
-              _0: [
+            tl: {
+              hd: [
                 "escape_quote",
                 (function (param) {
                     return {
@@ -187,19 +187,19 @@ Mt.from_pair_suites("String_test", /* :: */{
                           };
                   })
               ],
-              _1: /* :: */{
-                _0: [
+              tl: {
+                hd: [
                   "rev_split_by_char",
                   (function (param) {
                       return {
                               TAG: /* Eq */0,
-                              _0: /* :: */{
-                                _0: "",
-                                _1: /* :: */{
-                                  _0: "bbbb",
-                                  _1: /* :: */{
-                                    _0: "bbbb",
-                                    _1: /* [] */0
+                              _0: {
+                                hd: "",
+                                tl: {
+                                  hd: "bbbb",
+                                  tl: {
+                                    hd: "bbbb",
+                                    tl: /* [] */0
                                   }
                                 }
                               },
@@ -207,33 +207,33 @@ Mt.from_pair_suites("String_test", /* :: */{
                             };
                     })
                 ],
-                _1: /* :: */{
-                  _0: [
+                tl: {
+                  hd: [
                     "File \"string_test.ml\", line 74, characters 2-9",
                     (function (param) {
                         return {
                                 TAG: /* Eq */0,
-                                _0: /* :: */{
-                                  _0: "aaaa",
-                                  _1: /* [] */0
+                                _0: {
+                                  hd: "aaaa",
+                                  tl: /* [] */0
                                 },
                                 _1: rev_split_by_char(/* "," */44, "aaaa")
                               };
                       })
                   ],
-                  _1: /* :: */{
-                    _0: [
+                  tl: {
+                    hd: [
                       "xsplit",
                       (function (param) {
                           return {
                                   TAG: /* Eq */0,
-                                  _0: /* :: */{
-                                    _0: "a",
-                                    _1: /* :: */{
-                                      _0: "b",
-                                      _1: /* :: */{
-                                        _0: "c",
-                                        _1: /* [] */0
+                                  _0: {
+                                    hd: "a",
+                                    tl: {
+                                      hd: "b",
+                                      tl: {
+                                        hd: "c",
+                                        tl: /* [] */0
                                       }
                                     }
                                   },
@@ -241,8 +241,8 @@ Mt.from_pair_suites("String_test", /* :: */{
                                 };
                         })
                     ],
-                    _1: /* :: */{
-                      _0: [
+                    tl: {
+                      hd: [
                         "split_empty",
                         (function (param) {
                             return {
@@ -252,22 +252,22 @@ Mt.from_pair_suites("String_test", /* :: */{
                                   };
                           })
                       ],
-                      _1: /* :: */{
-                        _0: [
+                      tl: {
+                        hd: [
                           "split_empty2",
                           (function (param) {
                               return {
                                       TAG: /* Eq */0,
-                                      _0: /* :: */{
-                                        _0: "test_unsafe_obj_ffi_ppx.cmi",
-                                        _1: /* [] */0
+                                      _0: {
+                                        hd: "test_unsafe_obj_ffi_ppx.cmi",
+                                        tl: /* [] */0
                                       },
                                       _1: Ext_string_test.split(false, " test_unsafe_obj_ffi_ppx.cmi", /* " " */32)
                                     };
                             })
                         ],
-                        _1: /* :: */{
-                          _0: [
+                        tl: {
+                          hd: [
                             "rfind",
                             (function (param) {
                                 return {
@@ -277,8 +277,8 @@ Mt.from_pair_suites("String_test", /* :: */{
                                       };
                               })
                           ],
-                          _1: /* :: */{
-                            _0: [
+                          tl: {
+                            hd: [
                               "rfind_2",
                               (function (param) {
                                   return {
@@ -288,8 +288,8 @@ Mt.from_pair_suites("String_test", /* :: */{
                                         };
                                 })
                             ],
-                            _1: /* :: */{
-                              _0: [
+                            tl: {
+                              hd: [
                                 "rfind_3",
                                 (function (param) {
                                     return {
@@ -299,8 +299,8 @@ Mt.from_pair_suites("String_test", /* :: */{
                                           };
                                   })
                               ],
-                              _1: /* :: */{
-                                _0: [
+                              tl: {
+                                hd: [
                                   "find",
                                   (function (param) {
                                       return {
@@ -310,8 +310,8 @@ Mt.from_pair_suites("String_test", /* :: */{
                                             };
                                     })
                                 ],
-                                _1: /* :: */{
-                                  _0: [
+                                tl: {
+                                  hd: [
                                     "find_2",
                                     (function (param) {
                                         return {
@@ -321,8 +321,8 @@ Mt.from_pair_suites("String_test", /* :: */{
                                               };
                                       })
                                   ],
-                                  _1: /* :: */{
-                                    _0: [
+                                  tl: {
+                                    hd: [
                                       "find_3",
                                       (function (param) {
                                           return {
@@ -332,8 +332,8 @@ Mt.from_pair_suites("String_test", /* :: */{
                                                 };
                                         })
                                     ],
-                                    _1: /* :: */{
-                                      _0: [
+                                    tl: {
+                                      hd: [
                                         "of_char",
                                         (function (param) {
                                             return {
@@ -343,19 +343,19 @@ Mt.from_pair_suites("String_test", /* :: */{
                                                   };
                                           })
                                       ],
-                                      _1: /* :: */{
-                                        _0: [
+                                      tl: {
+                                        hd: [
                                           "of_chars",
                                           (function (param) {
                                               return {
                                                       TAG: /* Eq */0,
-                                                      _0: string_of_chars(/* :: */{
-                                                            _0: /* "0" */48,
-                                                            _1: /* :: */{
-                                                              _0: /* "1" */49,
-                                                              _1: /* :: */{
-                                                                _0: /* "2" */50,
-                                                                _1: /* [] */0
+                                                      _0: string_of_chars({
+                                                            hd: /* "0" */48,
+                                                            tl: {
+                                                              hd: /* "1" */49,
+                                                              tl: {
+                                                                hd: /* "2" */50,
+                                                                tl: /* [] */0
                                                               }
                                                             }
                                                           }),
@@ -363,7 +363,7 @@ Mt.from_pair_suites("String_test", /* :: */{
                                                     };
                                             })
                                         ],
-                                        _1: /* [] */0
+                                        tl: /* [] */0
                                       }
                                     }
                                   }

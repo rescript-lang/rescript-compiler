@@ -2075,9 +2075,9 @@ function lex_error(env, loc, err) {
     err
   ];
   var lex_errors_acc_1 = env.lex_state.lex_errors_acc;
-  var lex_errors_acc = /* :: */{
-    _0: lex_errors_acc_0,
-    _1: lex_errors_acc_1
+  var lex_errors_acc = {
+    hd: lex_errors_acc_0,
+    tl: lex_errors_acc_1
   };
   var init = env.lex_state;
   return {
@@ -2130,7 +2130,7 @@ function eat(f) {
             mantissa: f.mantissa,
             exponent: f.exponent,
             decimal_exponent: f.decimal_exponent,
-            todo: match._1
+            todo: match.tl
           };
   }
   throw {
@@ -2144,9 +2144,9 @@ function start(str) {
     contents: /* [] */0
   };
   $$String.iter((function (c) {
-          todo.contents = /* :: */{
-            _0: c,
-            _1: todo.contents
+          todo.contents = {
+            hd: c,
+            tl: todo.contents
           };
           
         }), str);
@@ -2164,7 +2164,7 @@ function parse_sign(f) {
   if (!match) {
     return f;
   }
-  switch (match._0) {
+  switch (match.hd) {
     case 43 :
         return eat(f);
     case 44 :
@@ -2186,15 +2186,15 @@ function parse_sign(f) {
 function parse_hex_symbol(f) {
   var match = f.todo;
   if (match) {
-    if (match._0 !== 48) {
+    if (match.hd !== 48) {
       throw {
             RE_EXN_ID: No_good,
             Error: new Error()
           };
     }
-    var match$1 = match._1;
+    var match$1 = match.tl;
     if (match$1) {
-      var match$2 = match$1._0;
+      var match$2 = match$1.hd;
       if (match$2 === 88) {
         return eat(eat(f));
       }
@@ -2249,7 +2249,7 @@ function parse_body(_f) {
     if (!match) {
       return f;
     }
-    var c = match._0;
+    var c = match.hd;
     if (c >= 81) {
       if (c !== 95) {
         if (c === 112) {
@@ -2368,9 +2368,9 @@ function save_comment(env, start, _end, buf, multiline) {
     c
   ];
   var lex_comments_acc_1 = env.lex_state.lex_comments_acc;
-  var lex_comments_acc = /* :: */{
-    _0: lex_comments_acc_0,
-    _1: lex_comments_acc_1
+  var lex_comments_acc = {
+    hd: lex_comments_acc_0,
+    tl: lex_comments_acc_1
   };
   var init = env.lex_state;
   return {
@@ -2454,42 +2454,42 @@ function hexa_to_int(x) {
 
 function utf16to8(code) {
   if (code >= 65536) {
-    return /* :: */{
-            _0: Char.chr(240 | (code >>> 18)),
-            _1: /* :: */{
-              _0: Char.chr(128 | (code >>> 12) & 63),
-              _1: /* :: */{
-                _0: Char.chr(128 | (code >>> 6) & 63),
-                _1: /* :: */{
-                  _0: Char.chr(128 | code & 63),
-                  _1: /* [] */0
+    return {
+            hd: Char.chr(240 | (code >>> 18)),
+            tl: {
+              hd: Char.chr(128 | (code >>> 12) & 63),
+              tl: {
+                hd: Char.chr(128 | (code >>> 6) & 63),
+                tl: {
+                  hd: Char.chr(128 | code & 63),
+                  tl: /* [] */0
                 }
               }
             }
           };
   } else if (code >= 2048) {
-    return /* :: */{
-            _0: Char.chr(224 | (code >>> 12)),
-            _1: /* :: */{
-              _0: Char.chr(128 | (code >>> 6) & 63),
-              _1: /* :: */{
-                _0: Char.chr(128 | code & 63),
-                _1: /* [] */0
+    return {
+            hd: Char.chr(224 | (code >>> 12)),
+            tl: {
+              hd: Char.chr(128 | (code >>> 6) & 63),
+              tl: {
+                hd: Char.chr(128 | code & 63),
+                tl: /* [] */0
               }
             }
           };
   } else if (code >= 128) {
-    return /* :: */{
-            _0: Char.chr(192 | (code >>> 6)),
-            _1: /* :: */{
-              _0: Char.chr(128 | code & 63),
-              _1: /* [] */0
+    return {
+            hd: Char.chr(192 | (code >>> 6)),
+            tl: {
+              hd: Char.chr(128 | code & 63),
+              tl: /* [] */0
             }
           };
   } else {
-    return /* :: */{
-            _0: Char.chr(code),
-            _1: /* [] */0
+    return {
+            hd: Char.chr(code),
+            tl: /* [] */0
           };
   }
 }
@@ -2526,257 +2526,257 @@ var type_keywords = Hashtbl.create(undefined, 53);
 
 List.iter((function (param) {
         return Hashtbl.add(keywords, param[0], param[1]);
-      }), /* :: */{
-      _0: [
+      }), {
+      hd: [
         "function",
         /* T_FUNCTION */13
       ],
-      _1: /* :: */{
-        _0: [
+      tl: {
+        hd: [
           "if",
           /* T_IF */14
         ],
-        _1: /* :: */{
-          _0: [
+        tl: {
+          hd: [
             "in",
             /* T_IN */15
           ],
-          _1: /* :: */{
-            _0: [
+          tl: {
+            hd: [
               "instanceof",
               /* T_INSTANCEOF */16
             ],
-            _1: /* :: */{
-              _0: [
+            tl: {
+              hd: [
                 "return",
                 /* T_RETURN */17
               ],
-              _1: /* :: */{
-                _0: [
+              tl: {
+                hd: [
                   "switch",
                   /* T_SWITCH */18
                 ],
-                _1: /* :: */{
-                  _0: [
+                tl: {
+                  hd: [
                     "this",
                     /* T_THIS */19
                   ],
-                  _1: /* :: */{
-                    _0: [
+                  tl: {
+                    hd: [
                       "throw",
                       /* T_THROW */20
                     ],
-                    _1: /* :: */{
-                      _0: [
+                    tl: {
+                      hd: [
                         "try",
                         /* T_TRY */21
                       ],
-                      _1: /* :: */{
-                        _0: [
+                      tl: {
+                        hd: [
                           "var",
                           /* T_VAR */22
                         ],
-                        _1: /* :: */{
-                          _0: [
+                        tl: {
+                          hd: [
                             "while",
                             /* T_WHILE */23
                           ],
-                          _1: /* :: */{
-                            _0: [
+                          tl: {
+                            hd: [
                               "with",
                               /* T_WITH */24
                             ],
-                            _1: /* :: */{
-                              _0: [
+                            tl: {
+                              hd: [
                                 "const",
                                 /* T_CONST */25
                               ],
-                              _1: /* :: */{
-                                _0: [
+                              tl: {
+                                hd: [
                                   "let",
                                   /* T_LET */26
                                 ],
-                                _1: /* :: */{
-                                  _0: [
+                                tl: {
+                                  hd: [
                                     "null",
                                     /* T_NULL */27
                                   ],
-                                  _1: /* :: */{
-                                    _0: [
+                                  tl: {
+                                    hd: [
                                       "false",
                                       /* T_FALSE */28
                                     ],
-                                    _1: /* :: */{
-                                      _0: [
+                                    tl: {
+                                      hd: [
                                         "true",
                                         /* T_TRUE */29
                                       ],
-                                      _1: /* :: */{
-                                        _0: [
+                                      tl: {
+                                        hd: [
                                           "break",
                                           /* T_BREAK */30
                                         ],
-                                        _1: /* :: */{
-                                          _0: [
+                                        tl: {
+                                          hd: [
                                             "case",
                                             /* T_CASE */31
                                           ],
-                                          _1: /* :: */{
-                                            _0: [
+                                          tl: {
+                                            hd: [
                                               "catch",
                                               /* T_CATCH */32
                                             ],
-                                            _1: /* :: */{
-                                              _0: [
+                                            tl: {
+                                              hd: [
                                                 "continue",
                                                 /* T_CONTINUE */33
                                               ],
-                                              _1: /* :: */{
-                                                _0: [
+                                              tl: {
+                                                hd: [
                                                   "default",
                                                   /* T_DEFAULT */34
                                                 ],
-                                                _1: /* :: */{
-                                                  _0: [
+                                                tl: {
+                                                  hd: [
                                                     "do",
                                                     /* T_DO */35
                                                   ],
-                                                  _1: /* :: */{
-                                                    _0: [
+                                                  tl: {
+                                                    hd: [
                                                       "finally",
                                                       /* T_FINALLY */36
                                                     ],
-                                                    _1: /* :: */{
-                                                      _0: [
+                                                    tl: {
+                                                      hd: [
                                                         "for",
                                                         /* T_FOR */37
                                                       ],
-                                                      _1: /* :: */{
-                                                        _0: [
+                                                      tl: {
+                                                        hd: [
                                                           "class",
                                                           /* T_CLASS */38
                                                         ],
-                                                        _1: /* :: */{
-                                                          _0: [
+                                                        tl: {
+                                                          hd: [
                                                             "extends",
                                                             /* T_EXTENDS */39
                                                           ],
-                                                          _1: /* :: */{
-                                                            _0: [
+                                                          tl: {
+                                                            hd: [
                                                               "static",
                                                               /* T_STATIC */40
                                                             ],
-                                                            _1: /* :: */{
-                                                              _0: [
+                                                            tl: {
+                                                              hd: [
                                                                 "else",
                                                                 /* T_ELSE */41
                                                               ],
-                                                              _1: /* :: */{
-                                                                _0: [
+                                                              tl: {
+                                                                hd: [
                                                                   "new",
                                                                   /* T_NEW */42
                                                                 ],
-                                                                _1: /* :: */{
-                                                                  _0: [
+                                                                tl: {
+                                                                  hd: [
                                                                     "delete",
                                                                     /* T_DELETE */43
                                                                   ],
-                                                                  _1: /* :: */{
-                                                                    _0: [
+                                                                  tl: {
+                                                                    hd: [
                                                                       "typeof",
                                                                       /* T_TYPEOF */44
                                                                     ],
-                                                                    _1: /* :: */{
-                                                                      _0: [
+                                                                    tl: {
+                                                                      hd: [
                                                                         "void",
                                                                         /* T_VOID */45
                                                                       ],
-                                                                      _1: /* :: */{
-                                                                        _0: [
+                                                                      tl: {
+                                                                        hd: [
                                                                           "enum",
                                                                           /* T_ENUM */46
                                                                         ],
-                                                                        _1: /* :: */{
-                                                                          _0: [
+                                                                        tl: {
+                                                                          hd: [
                                                                             "export",
                                                                             /* T_EXPORT */47
                                                                           ],
-                                                                          _1: /* :: */{
-                                                                            _0: [
+                                                                          tl: {
+                                                                            hd: [
                                                                               "import",
                                                                               /* T_IMPORT */48
                                                                             ],
-                                                                            _1: /* :: */{
-                                                                              _0: [
+                                                                            tl: {
+                                                                              hd: [
                                                                                 "super",
                                                                                 /* T_SUPER */49
                                                                               ],
-                                                                              _1: /* :: */{
-                                                                                _0: [
+                                                                              tl: {
+                                                                                hd: [
                                                                                   "implements",
                                                                                   /* T_IMPLEMENTS */50
                                                                                 ],
-                                                                                _1: /* :: */{
-                                                                                  _0: [
+                                                                                tl: {
+                                                                                  hd: [
                                                                                     "interface",
                                                                                     /* T_INTERFACE */51
                                                                                   ],
-                                                                                  _1: /* :: */{
-                                                                                    _0: [
+                                                                                  tl: {
+                                                                                    hd: [
                                                                                       "package",
                                                                                       /* T_PACKAGE */52
                                                                                     ],
-                                                                                    _1: /* :: */{
-                                                                                      _0: [
+                                                                                    tl: {
+                                                                                      hd: [
                                                                                         "private",
                                                                                         /* T_PRIVATE */53
                                                                                       ],
-                                                                                      _1: /* :: */{
-                                                                                        _0: [
+                                                                                      tl: {
+                                                                                        hd: [
                                                                                           "protected",
                                                                                           /* T_PROTECTED */54
                                                                                         ],
-                                                                                        _1: /* :: */{
-                                                                                          _0: [
+                                                                                        tl: {
+                                                                                          hd: [
                                                                                             "public",
                                                                                             /* T_PUBLIC */55
                                                                                           ],
-                                                                                          _1: /* :: */{
-                                                                                            _0: [
+                                                                                          tl: {
+                                                                                            hd: [
                                                                                               "yield",
                                                                                               /* T_YIELD */56
                                                                                             ],
-                                                                                            _1: /* :: */{
-                                                                                              _0: [
+                                                                                            tl: {
+                                                                                              hd: [
                                                                                                 "debugger",
                                                                                                 /* T_DEBUGGER */57
                                                                                               ],
-                                                                                              _1: /* :: */{
-                                                                                                _0: [
+                                                                                              tl: {
+                                                                                                hd: [
                                                                                                   "declare",
                                                                                                   /* T_DECLARE */58
                                                                                                 ],
-                                                                                                _1: /* :: */{
-                                                                                                  _0: [
+                                                                                                tl: {
+                                                                                                  hd: [
                                                                                                     "type",
                                                                                                     /* T_TYPE */59
                                                                                                   ],
-                                                                                                  _1: /* :: */{
-                                                                                                    _0: [
+                                                                                                  tl: {
+                                                                                                    hd: [
                                                                                                       "of",
                                                                                                       /* T_OF */60
                                                                                                     ],
-                                                                                                    _1: /* :: */{
-                                                                                                      _0: [
+                                                                                                    tl: {
+                                                                                                      hd: [
                                                                                                         "async",
                                                                                                         /* T_ASYNC */61
                                                                                                       ],
-                                                                                                      _1: /* :: */{
-                                                                                                        _0: [
+                                                                                                      tl: {
+                                                                                                        hd: [
                                                                                                           "await",
                                                                                                           /* T_AWAIT */62
                                                                                                         ],
-                                                                                                        _1: /* [] */0
+                                                                                                        tl: /* [] */0
                                                                                                       }
                                                                                                     }
                                                                                                   }
@@ -2830,62 +2830,62 @@ List.iter((function (param) {
 
 List.iter((function (param) {
         return Hashtbl.add(type_keywords, param[0], param[1]);
-      }), /* :: */{
-      _0: [
+      }), {
+      hd: [
         "static",
         /* T_STATIC */40
       ],
-      _1: /* :: */{
-        _0: [
+      tl: {
+        hd: [
           "typeof",
           /* T_TYPEOF */44
         ],
-        _1: /* :: */{
-          _0: [
+        tl: {
+          hd: [
             "any",
             /* T_ANY_TYPE */107
           ],
-          _1: /* :: */{
-            _0: [
+          tl: {
+            hd: [
               "bool",
               /* T_BOOLEAN_TYPE */108
             ],
-            _1: /* :: */{
-              _0: [
+            tl: {
+              hd: [
                 "boolean",
                 /* T_BOOLEAN_TYPE */108
               ],
-              _1: /* :: */{
-                _0: [
+              tl: {
+                hd: [
                   "true",
                   /* T_TRUE */29
                 ],
-                _1: /* :: */{
-                  _0: [
+                tl: {
+                  hd: [
                     "false",
                     /* T_FALSE */28
                   ],
-                  _1: /* :: */{
-                    _0: [
+                  tl: {
+                    hd: [
                       "number",
                       /* T_NUMBER_TYPE */109
                     ],
-                    _1: /* :: */{
-                      _0: [
+                    tl: {
+                      hd: [
                         "string",
                         /* T_STRING_TYPE */110
                       ],
-                      _1: /* :: */{
-                        _0: [
+                      tl: {
+                        hd: [
                           "void",
                           /* T_VOID_TYPE */111
                         ],
-                        _1: /* :: */{
-                          _0: [
+                        tl: {
+                          hd: [
                             "null",
                             /* T_NULL */27
                           ],
-                          _1: /* [] */0
+                          tl: /* [] */0
                         }
                       }
                     }
@@ -5752,9 +5752,9 @@ function init_env(token_sinkOpt, parse_optionsOpt, source, content) {
           allow_await: false,
           error_callback: undefined,
           lex_mode_stack: {
-            contents: /* :: */{
-              _0: /* NORMAL */0,
-              _1: /* [] */0
+            contents: {
+              hd: /* NORMAL */0,
+              tl: /* [] */0
             }
           },
           lex_env: {
@@ -5773,12 +5773,12 @@ function init_env(token_sinkOpt, parse_optionsOpt, source, content) {
 
 function error_at(env, param) {
   var e = param[1];
-  env.errors.contents = /* :: */{
-    _0: [
+  env.errors.contents = {
+    hd: [
       param[0],
       e
     ],
-    _1: env.errors.contents
+    tl: env.errors.contents
   };
   var callback = env.error_callback;
   if (callback !== undefined) {
@@ -5790,9 +5790,9 @@ function error_at(env, param) {
 function comment_list(env) {
   return function (param) {
     return List.iter((function (c) {
-                  env.comments.contents = /* :: */{
-                    _0: c,
-                    _1: env.comments.contents
+                  env.comments.contents = {
+                    hd: c,
+                    tl: env.comments.contents
                   };
                   
                 }), param);
@@ -6193,9 +6193,9 @@ function token$3(env) {
 }
 
 function push_lex_mode(env, mode) {
-  env.lex_mode_stack.contents = /* :: */{
-    _0: mode,
-    _1: env.lex_mode_stack.contents
+  env.lex_mode_stack.contents = {
+    hd: mode,
+    tl: env.lex_mode_stack.contents
   };
   env.lookahead.contents = create$1(env.lex_env.contents, List.hd(env.lex_mode_stack.contents));
   
@@ -6205,7 +6205,7 @@ function pop_lex_mode(env) {
   var match = env.lex_mode_stack.contents;
   var new_stack;
   if (match) {
-    new_stack = match._1;
+    new_stack = match.tl;
   } else {
     throw {
           RE_EXN_ID: "Failure",
@@ -6222,9 +6222,9 @@ function double_pop_lex_mode(env) {
   var match = env.lex_mode_stack.contents;
   var new_stack;
   if (match) {
-    var match$1 = match._1;
+    var match$1 = match.tl;
     if (match$1) {
-      new_stack = match$1._1;
+      new_stack = match$1.tl;
     } else {
       throw {
             RE_EXN_ID: "Failure",
@@ -6775,9 +6775,9 @@ function filter_duplicate_errors(errs) {
           } else {
             return [
                     add$3(err, set),
-                    /* :: */{
-                      _0: err,
-                      _1: deduped
+                    {
+                      hd: err,
+                      tl: deduped
                     }
                   ];
           }
@@ -7139,9 +7139,9 @@ function function_param_or_generic_type(env) {
     maybe(env, /* T_COMMA */8);
     return {
             TAG: /* ParamList */0,
-            _0: Curry._2(function_param_list_without_parens, env, /* :: */{
-                  _0: param,
-                  _1: /* [] */0
+            _0: Curry._2(function_param_list_without_parens, env, {
+                  hd: param,
+                  tl: /* [] */0
                 })
           };
   }
@@ -7237,7 +7237,7 @@ function prefix(env) {
 function rev_nonempty_acc(acc) {
   var end_loc;
   if (acc) {
-    end_loc = acc._0[0];
+    end_loc = acc.hd[0];
   } else {
     throw {
           RE_EXN_ID: "Assert_failure",
@@ -7252,7 +7252,7 @@ function rev_nonempty_acc(acc) {
   var acc$1 = List.rev(acc);
   var start_loc;
   if (acc$1) {
-    start_loc = acc$1._0[0];
+    start_loc = acc$1.hd[0];
   } else {
     throw {
           RE_EXN_ID: "Assert_failure",
@@ -7350,9 +7350,9 @@ function param_list_or_type(env) {
         ];
         ret = {
           TAG: /* ParamList */0,
-          _0: Curry._2(function_param_list_without_parens, env, /* :: */{
-                _0: param,
-                _1: /* [] */0
+          _0: Curry._2(function_param_list_without_parens, env, {
+                hd: param,
+                tl: /* [] */0
               })
         };
       } else {
@@ -7379,18 +7379,18 @@ function postfix(env) {
 
 function union_with(env, left) {
   if (Curry._2(Parser_env_Peek.token, undefined, env) === /* T_BIT_OR */80) {
-    var _acc = /* :: */{
-      _0: left,
-      _1: /* [] */0
+    var _acc = {
+      hd: left,
+      tl: /* [] */0
     };
     while(true) {
       var acc = _acc;
       var match = Curry._2(Parser_env_Peek.token, undefined, env);
       if (typeof match === "number" && match === 80) {
         token$4(env, /* T_BIT_OR */80);
-        _acc = /* :: */{
-          _0: intersection(env),
-          _1: acc
+        _acc = {
+          hd: intersection(env),
+          tl: acc
         };
         continue ;
       }
@@ -7549,9 +7549,9 @@ function properties(allow_static, env, _param) {
                   semicolon$1(env);
                   _param = [
                     acc,
-                    /* :: */{
-                      _0: indexer,
-                      _1: indexers
+                    {
+                      hd: indexer,
+                      tl: indexers
                     },
                     callProperties
                   ];
@@ -7615,9 +7615,9 @@ function properties(allow_static, env, _param) {
           var property$1 = typeof match$3 === "number" && !(match$3 !== 3 && match$3 !== 89) ? method_property(env, start_loc, $$static$1, key$1) : property(env, start_loc, $$static$1, key$1);
           semicolon$1(env);
           _param = [
-            /* :: */{
-              _0: property$1,
-              _1: acc
+            {
+              hd: property$1,
+              tl: acc
             },
             indexers,
             callProperties
@@ -7635,9 +7635,9 @@ function properties(allow_static, env, _param) {
           _param = [
             acc,
             indexers,
-            /* :: */{
-              _0: call_prop,
-              _1: callProperties
+            {
+              hd: call_prop,
+              tl: callProperties
             }
           ];
           continue ;
@@ -7681,9 +7681,9 @@ function types(env, _acc) {
       
     }
     var acc_0 = union(env);
-    var acc$1 = /* :: */{
-      _0: acc_0,
-      _1: acc
+    var acc$1 = {
+      hd: acc_0,
+      tl: acc
     };
     if (Curry._2(Parser_env_Peek.token, undefined, env) !== /* T_RBRACKET */6) {
       token$4(env, /* T_COMMA */8);
@@ -7718,9 +7718,9 @@ function function_param_list_without_parens(env) {
       switch (exit) {
         case 1 :
             var acc_0 = param(env);
-            var acc$1 = /* :: */{
-              _0: acc_0,
-              _1: acc
+            var acc$1 = {
+              hd: acc_0,
+              tl: acc
             };
             if (Curry._2(Parser_env_Peek.token, undefined, env) !== /* T_RPAREN */4) {
               token$4(env, /* T_COMMA */8);
@@ -7753,9 +7753,9 @@ function params(env, _acc) {
       
     }
     var acc_0 = union(env);
-    var acc$1 = /* :: */{
-      _0: acc_0,
-      _1: acc
+    var acc$1 = {
+      hd: acc_0,
+      tl: acc
     };
     if (Curry._2(Parser_env_Peek.token, undefined, env) !== /* T_GREATER_THAN */90) {
       token$4(env, /* T_COMMA */8);
@@ -7784,18 +7784,18 @@ function type_parameter_instantiation(env) {
 
 function intersection_with(env, left) {
   if (Curry._2(Parser_env_Peek.token, undefined, env) === /* T_BIT_AND */82) {
-    var _acc = /* :: */{
-      _0: left,
-      _1: /* [] */0
+    var _acc = {
+      hd: left,
+      tl: /* [] */0
     };
     while(true) {
       var acc = _acc;
       var match = Curry._2(Parser_env_Peek.token, undefined, env);
       if (typeof match === "number" && match === 82) {
         token$4(env, /* T_BIT_AND */82);
-        _acc = /* :: */{
-          _0: prefix(env),
-          _1: acc
+        _acc = {
+          hd: prefix(env),
+          tl: acc
         };
         continue ;
       }
@@ -7868,9 +7868,9 @@ function params$1(env, allow_default, _require_default, _acc) {
       loc,
       param_1
     ];
-    var acc$1 = /* :: */{
-      _0: param,
-      _1: acc
+    var acc$1 = {
+      hd: param,
+      tl: acc
     };
     var match$4 = Curry._2(Parser_env_Peek.token, undefined, env);
     if (typeof match$4 === "number") {
@@ -8200,13 +8200,13 @@ function param_list(env, _param) {
             token$4(env, /* T_COMMA */8);
           }
           _param = [
-            /* :: */{
-              _0: match[0],
-              _1: params
+            {
+              hd: match[0],
+              tl: params
             },
-            /* :: */{
-              _0: $$default,
-              _1: defaults
+            {
+              hd: $$default,
+              tl: defaults
             },
             has_default$1
           ];
@@ -8376,12 +8376,12 @@ function variable_declaration(env) {
         /* [] */0
       ] : [
         undefined,
-        /* :: */{
-          _0: [
+        {
+          hd: [
             id[0],
             /* NoUninitializedDestructuring */43
           ],
-          _1: /* [] */0
+          tl: /* [] */0
         }
       ];
   }
@@ -8405,9 +8405,9 @@ function helper(env, _decls, _errs) {
     var decls = _decls;
     var match = variable_declaration(env);
     var decl = match[0];
-    var decls$1 = /* :: */{
-      _0: decl,
-      _1: decls
+    var decls$1 = {
+      hd: decl,
+      tl: decls
     };
     var errs$1 = Pervasives.$at(match[1], errs);
     if (Curry._2(Parser_env_Peek.token, undefined, env) === /* T_COMMA */8) {
@@ -8452,12 +8452,12 @@ function $$const(env) {
           if (decl[1].init !== undefined) {
             return errs;
           } else {
-            return /* :: */{
-                    _0: [
+            return {
+                    hd: [
                       decl[0],
                       /* NoUninitializedConst */42
                     ],
-                    _1: errs
+                    tl: errs
                   };
           }
         }), match[1], variable.declarations);
@@ -9109,9 +9109,9 @@ function primary$1(env) {
                 ];
               }
             } else {
-              ret = sequence(env, /* :: */{
-                    _0: expression,
-                    _1: /* [] */0
+              ret = sequence(env, {
+                    hd: expression,
+                    tl: /* [] */0
                   });
             }
           } else {
@@ -9403,15 +9403,15 @@ function sequence(env, _acc) {
     if (typeof match === "number" && match === 8) {
       token$4(env, /* T_COMMA */8);
       var expr = Curry._1(assignment, env);
-      _acc = /* :: */{
-        _0: expr,
-        _1: acc
+      _acc = {
+        hd: expr,
+        tl: acc
       };
       continue ;
     }
-    var last_loc = acc ? acc._0[0] : none;
+    var last_loc = acc ? acc.hd[0] : none;
     var expressions = List.rev(acc);
-    var first_loc = expressions ? expressions._0[0] : none;
+    var first_loc = expressions ? expressions.hd[0] : none;
     return [
             btwn(first_loc, last_loc),
             {
@@ -9980,12 +9980,12 @@ function add_to_stack(_right, _param, _rloc, _stack) {
     var rpri = param[1];
     var rop = param[0];
     if (stack) {
-      var match = stack._0;
+      var match = stack.hd;
       var match$1 = match[1];
       if (is_tighter(match$1[1], rpri)) {
         var loc = btwn(match[2], rloc);
         var right$1 = make_binary(match[0], right, match$1[0], loc);
-        _stack = stack._1;
+        _stack = stack.tl;
         _rloc = loc;
         _param = [
           rop,
@@ -9996,8 +9996,8 @@ function add_to_stack(_right, _param, _rloc, _stack) {
       }
       
     }
-    return /* :: */{
-            _0: [
+    return {
+            hd: [
               right,
               [
                 rop,
@@ -10005,7 +10005,7 @@ function add_to_stack(_right, _param, _rloc, _stack) {
               ],
               rloc
             ],
-            _1: stack
+            tl: stack
           };
   };
 }
@@ -10039,9 +10039,9 @@ function binary(env) {
         if (!param) {
           return right$1;
         }
-        var match$1 = param._0;
+        var match$1 = param.hd;
         var loc$1 = btwn(match$1[2], rloc);
-        _param = param._1;
+        _param = param.tl;
         _rloc = loc$1;
         _right = make_binary(match$1[0], right$1, match$1[1][0], loc$1);
         continue ;
@@ -10105,9 +10105,9 @@ function arguments$prime(env, _acc) {
       
     }
     var acc_0 = argument(env);
-    var acc$1 = /* :: */{
-      _0: acc_0,
-      _1: acc
+    var acc$1 = {
+      hd: acc_0,
+      tl: acc
     };
     if (Curry._2(Parser_env_Peek.token, undefined, env) !== /* T_RPAREN */4) {
       token$4(env, /* T_COMMA */8);
@@ -10134,9 +10134,9 @@ function template_parts(env, _quasis, _expressions) {
     var expressions = _expressions;
     var quasis = _quasis;
     var expr = Curry._1(Parse.expression, env);
-    var expressions$1 = /* :: */{
-      _0: expr,
-      _1: expressions
+    var expressions$1 = {
+      hd: expr,
+      tl: expressions
     };
     var match = Curry._2(Parser_env_Peek.token, undefined, env);
     if (typeof match === "number" && match === 2) {
@@ -10187,9 +10187,9 @@ function template_parts(env, _quasis, _expressions) {
         loc,
         match$2[1]
       ];
-      var quasis$1 = /* :: */{
-        _0: quasis_0,
-        _1: quasis
+      var quasis$1 = {
+        hd: quasis_0,
+        tl: quasis
       };
       if (match$2[2]) {
         return [
@@ -10217,9 +10217,9 @@ function template_parts(env, _quasis, _expressions) {
     ];
     return [
             expr[0],
-            List.rev(/* :: */{
-                  _0: imaginary_quasi,
-                  _1: quasis
+            List.rev({
+                  hd: imaginary_quasi,
+                  tl: quasis
                 }),
             List.rev(expressions$1)
           ];
@@ -10247,14 +10247,14 @@ function template_literal(env, part) {
   ];
   var match$1 = is_tail ? [
       start_loc,
-      /* :: */{
-        _0: head,
-        _1: /* [] */0
+      {
+        hd: head,
+        tl: /* [] */0
       },
       /* [] */0
-    ] : template_parts(env, /* :: */{
-          _0: head,
-          _1: /* [] */0
+    ] : template_parts(env, {
+          hd: head,
+          tl: /* [] */0
         }, /* [] */0);
   var loc = btwn(start_loc, match$1[0]);
   return [
@@ -10280,9 +10280,9 @@ function elements(env, _acc) {
               return List.rev(acc);
           case /* T_COMMA */8 :
               token$4(env, /* T_COMMA */8);
-              _acc = /* :: */{
-                _0: undefined,
-                _1: acc
+              _acc = {
+                hd: undefined,
+                tl: acc
               };
               continue ;
           case /* T_IDENTIFIER */0 :
@@ -10309,9 +10309,9 @@ function elements(env, _acc) {
                   }
                 ]
               };
-              _acc = /* :: */{
-                _0: elem,
-                _1: acc
+              _acc = {
+                hd: elem,
+                tl: acc
               };
               continue ;
           
@@ -10326,9 +10326,9 @@ function elements(env, _acc) {
     if (Curry._2(Parser_env_Peek.token, undefined, env) !== /* T_RBRACKET */6) {
       token$4(env, /* T_COMMA */8);
     }
-    _acc = /* :: */{
-      _0: elem$1,
-      _1: acc
+    _acc = {
+      hd: elem$1,
+      tl: acc
     };
     continue ;
   };
@@ -10392,9 +10392,9 @@ function try_arrow_function(env) {
       param_1
     ];
     match = [
-      /* :: */{
-        _0: param,
-        _1: /* [] */0
+      {
+        hd: param,
+        tl: /* [] */0
       },
       /* [] */0,
       undefined,
@@ -10479,9 +10479,9 @@ function decorator_list_helper(env, _decorators) {
       return decorators;
     }
     token$3(env);
-    _decorators = /* :: */{
-      _0: left_hand_side(env),
-      _1: decorators
+    _decorators = {
+      hd: left_hand_side(env),
+      tl: decorators
     };
     continue ;
   };
@@ -10608,15 +10608,15 @@ function _method(env, kind) {
         break;
     case /* Set */2 :
         var param = Curry._2(Parse.identifier_with_type, env, /* StrictParamName */28);
-        params = /* :: */{
-          _0: [
+        params = {
+          hd: [
             param[0],
             {
               TAG: /* Identifier */3,
               _0: param
             }
           ],
-          _1: /* [] */0
+          tl: /* [] */0
         };
         break;
     
@@ -11069,9 +11069,9 @@ function properties$1(env, _param) {
     }
     _param = [
       prop_map,
-      /* :: */{
-        _0: prop,
-        _1: acc
+      {
+        hd: prop,
+        tl: acc
       }
     ];
     continue ;
@@ -11109,9 +11109,9 @@ function class_implements(env, _acc) {
       loc,
       implement_1
     ];
-    var acc$1 = /* :: */{
-      _0: implement,
-      _1: acc
+    var acc$1 = {
+      hd: implement,
+      tl: acc
     };
     var match = Curry._2(Parser_env_Peek.token, undefined, env);
     if (typeof match !== "number") {
@@ -11344,9 +11344,9 @@ function elements$1(env, _acc) {
       }
       
     }
-    _acc = /* :: */{
-      _0: Curry._1(class_element, env),
-      _1: acc
+    _acc = {
+      hd: Curry._1(class_element, env),
+      tl: acc
     };
     continue ;
   };
@@ -11659,14 +11659,14 @@ function export_specifiers_and_errs(env, _specifiers, _errs) {
     if (Curry._2(Parser_env_Peek.token, undefined, env) === /* T_COMMA */8) {
       token$4(env, /* T_COMMA */8);
     }
-    var errs$1 = err !== undefined ? /* :: */({
-          _0: err,
-          _1: errs
+    var errs$1 = err !== undefined ? ({
+          hd: err,
+          tl: errs
         }) : errs;
     _errs = errs$1;
-    _specifiers = /* :: */{
-      _0: specifier,
-      _1: specifiers
+    _specifiers = {
+      hd: specifier,
+      tl: specifiers
     };
     continue ;
   };
@@ -12267,9 +12267,9 @@ function supers(env, _acc) {
   while(true) {
     var acc = _acc;
     var $$super = wrap(generic, env);
-    var acc$1 = /* :: */{
-      _0: $$super,
-      _1: acc
+    var acc$1 = {
+      hd: $$super,
+      tl: acc
     };
     var match = Curry._2(Parser_env_Peek.token, undefined, env);
     if (typeof match !== "number") {
@@ -12311,9 +12311,9 @@ function supers$1(env, _acc) {
   while(true) {
     var acc = _acc;
     var $$super = wrap(generic, env);
-    var acc$1 = /* :: */{
-      _0: $$super,
-      _1: acc
+    var acc$1 = {
+      hd: $$super,
+      tl: acc
     };
     var match = Curry._2(Parser_env_Peek.token, undefined, env);
     if (typeof match !== "number") {
@@ -12443,9 +12443,9 @@ function module_items(env, _module_kind, _acc) {
           module_kind$1 = module_kind;
       }
     }
-    _acc = /* :: */{
-      _0: stmt,
-      _1: acc
+    _acc = {
+      hd: stmt,
+      tl: acc
     };
     _module_kind = module_kind$1;
     continue ;
@@ -12482,12 +12482,12 @@ function fold(acc, _param) {
           continue ;
       case /* Identifier */3 :
           var match$1 = match._0;
-          return /* :: */{
-                  _0: [
+          return {
+                  hd: [
                     match$1[0],
                     match$1[1].name
                   ],
-                  _1: acc
+                  tl: acc
                 };
       case /* Expression */4 :
           throw {
@@ -12521,7 +12521,7 @@ function assert_can_be_forin_or_forof(env, err, param) {
   }
   var match$1 = param._0;
   var declarations = match$1[1].declarations;
-  if (declarations && declarations._0[1].init === undefined && !declarations._1) {
+  if (declarations && declarations.hd[1].init === undefined && !declarations.tl) {
     return ;
   }
   return error_at(env, [
@@ -12587,7 +12587,7 @@ function case_list(env, _param) {
     };
     var consequent = Curry._2(Parse.statement_list, term_fn, with_in_switch(true, env));
     var match$2 = List.rev(consequent);
-    var end_loc$1 = match$2 ? match$2._0[0] : end_loc;
+    var end_loc$1 = match$2 ? match$2.hd[0] : end_loc;
     var acc_0 = [
       btwn(start_loc, end_loc$1),
       {
@@ -12595,9 +12595,9 @@ function case_list(env, _param) {
         consequent: consequent
       }
     ];
-    var acc$1 = /* :: */{
-      _0: acc_0,
-      _1: acc
+    var acc$1 = {
+      hd: acc_0,
+      tl: acc
     };
     _param = [
       seen_default$1,
@@ -12716,9 +12716,9 @@ function specifier_list(env, _acc) {
     if (Curry._2(Parser_env_Peek.token, undefined, env) === /* T_COMMA */8) {
       token$4(env, /* T_COMMA */8);
     }
-    _acc = /* :: */{
-      _0: specifier,
-      _1: acc
+    _acc = {
+      hd: specifier,
+      tl: acc
     };
     continue ;
   };
@@ -12731,15 +12731,15 @@ function named_or_namespace_specifier(env) {
     token$4(env, /* T_MULT */97);
     contextual(env, "as");
     var id = Curry._2(Parse.identifier, undefined, env);
-    return /* :: */{
-            _0: {
+    return {
+            hd: {
               TAG: /* ImportNamespaceSpecifier */2,
               _0: [
                 btwn(start_loc, id[0]),
                 id
               ]
             },
-            _1: /* [] */0
+            tl: /* [] */0
           };
   }
   token$4(env, /* T_LCURLY */1);
@@ -13032,9 +13032,9 @@ function _object$2(restricted_error) {
         if (Curry._2(Parser_env_Peek.token, undefined, env) !== /* T_RCURLY */2) {
           token$4(env, /* T_COMMA */8);
         }
-        _acc = /* :: */{
-          _0: prop,
-          _1: acc
+        _acc = {
+          hd: prop,
+          tl: acc
         };
         continue ;
       }
@@ -13088,9 +13088,9 @@ function _array(restricted_error) {
                 return List.rev(acc);
             case /* T_COMMA */8 :
                 token$4(env, /* T_COMMA */8);
-                _acc = /* :: */{
-                  _0: undefined,
-                  _1: acc
+                _acc = {
+                  hd: undefined,
+                  tl: acc
                 };
                 continue ;
             case /* T_IDENTIFIER */0 :
@@ -13117,9 +13117,9 @@ function _array(restricted_error) {
                     }
                   ]
                 };
-                _acc = /* :: */{
-                  _0: element,
-                  _1: acc
+                _acc = {
+                  hd: element,
+                  tl: acc
                 };
                 continue ;
             
@@ -13154,9 +13154,9 @@ function _array(restricted_error) {
       if (Curry._2(Parser_env_Peek.token, undefined, env) !== /* T_RBRACKET */6) {
         token$4(env, /* T_COMMA */8);
       }
-      _acc = /* :: */{
-        _0: element$1,
-        _1: acc
+      _acc = {
+        hd: element$1,
+        tl: acc
       };
       continue ;
     };
@@ -13486,9 +13486,9 @@ function attributes(env, _acc) {
           TAG: /* SpreadAttribute */1,
           _0: spread_attribute(env)
         };
-        _acc = /* :: */{
-          _0: attribute$1,
-          _1: acc
+        _acc = {
+          hd: attribute$1,
+          tl: acc
         };
         continue ;
       }
@@ -13497,9 +13497,9 @@ function attributes(env, _acc) {
       TAG: /* Attribute */0,
       _0: attribute(env)
     };
-    _acc = /* :: */{
-      _0: attribute$2,
-      _1: acc
+    _acc = {
+      hd: attribute$2,
+      tl: acc
     };
     continue ;
   };
@@ -13609,9 +13609,9 @@ function children_and_closing(env, _acc) {
     if (typeof match === "number") {
       if (match !== 89) {
         if (match !== 105) {
-          _acc = /* :: */{
-            _0: child(env),
-            _1: acc
+          _acc = {
+            hd: child(env),
+            tl: acc
           };
           continue ;
         }
@@ -13638,15 +13638,15 @@ function children_and_closing(env, _acc) {
         element_0,
         element_1
       ];
-      _acc = /* :: */{
-        _0: element$1,
-        _1: acc
+      _acc = {
+        hd: element$1,
+        tl: acc
       };
       continue ;
     }
-    _acc = /* :: */{
-      _0: child(env),
-      _1: acc
+    _acc = {
+      hd: child(env),
+      tl: acc
     };
     continue ;
   };
@@ -14092,12 +14092,12 @@ function module_item(env) {
                 case /* FunctionDeclaration */18 :
                     var id = match$8._0.id;
                     if (id !== undefined) {
-                      names = /* :: */{
-                        _0: [
+                      names = {
+                        hd: [
                           loc$4,
                           extract_ident_name(id)
                         ],
-                        _1: /* [] */0
+                        tl: /* [] */0
                       };
                     } else {
                       error_at(env$1, [
@@ -14110,9 +14110,9 @@ function module_item(env) {
                 case /* VariableDeclaration */19 :
                     names = List.fold_left((function (names, param) {
                             var id = param[1].id;
-                            var param$1 = /* :: */{
-                              _0: id,
-                              _1: /* [] */0
+                            var param$1 = {
+                              hd: id,
+                              tl: /* [] */0
                             };
                             return List.fold_left(fold, names, param$1);
                           }), /* [] */0, match$8._0.declarations);
@@ -14120,12 +14120,12 @@ function module_item(env) {
                 case /* ClassDeclaration */20 :
                     var id$1 = match$8._0.id;
                     if (id$1 !== undefined) {
-                      names = /* :: */{
-                        _0: [
+                      names = {
+                        hd: [
                           loc$4,
                           extract_ident_name(id$1)
                         ],
-                        _1: /* [] */0
+                        tl: /* [] */0
                       };
                     } else {
                       error_at(env$1, [
@@ -14309,9 +14309,9 @@ function module_item(env) {
                     _0: {
                       importKind: match$16[0],
                       source: source$6,
-                      specifiers: /* :: */{
-                        _0: match$16[1],
-                        _1: additional_specifiers
+                      specifiers: {
+                        hd: match$16[1],
+                        tl: additional_specifiers
                       }
                     }
                   }
@@ -15003,9 +15003,9 @@ function module_body(term_fn, env) {
     if (Curry._1(term_fn, t)) {
       return List.rev(acc);
     }
-    _acc = /* :: */{
-      _0: module_item(env),
-      _1: acc
+    _acc = {
+      hd: module_item(env),
+      tl: acc
     };
     continue ;
   };
@@ -15039,9 +15039,9 @@ function statement_list(_env, term_fn, item_fn, _param) {
       string_token_1
     ];
     var possible_directive = Curry._1(item_fn, env);
-    var stmts$1 = /* :: */{
-      _0: possible_directive,
-      _1: stmts
+    var stmts$1 = {
+      hd: possible_directive,
+      tl: stmts
     };
     var match = possible_directive[1];
     if (typeof match === "number") {
@@ -15092,9 +15092,9 @@ function statement_list(_env, term_fn, item_fn, _param) {
     var loc = match$1[0];
     var len = loc._end.column - loc.start.column | 0;
     var strict = env.in_strict_mode || str._0 === "use strict" && len === 12;
-    var string_tokens$1 = /* :: */{
-      _0: string_token,
-      _1: string_tokens
+    var string_tokens$1 = {
+      hd: string_token,
+      tl: string_tokens
     };
     _param = [
       string_tokens$1,
@@ -15147,9 +15147,9 @@ function statement_list$1(term_fn, env) {
     if (Curry._1(term_fn, t)) {
       return List.rev(acc);
     }
-    _acc = /* :: */{
-      _0: statement_list_item(undefined, env),
-      _1: acc
+    _acc = {
+      hd: statement_list_item(undefined, env),
+      tl: acc
     };
     continue ;
   };
@@ -15164,9 +15164,9 @@ function statement_list_with_directives(term_fn, env) {
   var env$1 = match[0];
   var stmts = Curry._2(statement_list$1, term_fn, env$1);
   var stmts$1 = List.fold_left((function (acc, stmt) {
-          return /* :: */{
-                  _0: stmt,
-                  _1: acc
+          return {
+                  hd: stmt,
+                  tl: acc
                 };
         }), stmts, match[1]);
   return [
@@ -15223,9 +15223,9 @@ function module_body_with_directives(env, term_fn) {
   var match = Curry._3(directives, env, term_fn, module_item);
   var stmts = Curry._2(module_body, term_fn, match[0]);
   return List.fold_left((function (acc, stmt) {
-                return /* :: */{
-                        _0: stmt,
-                        _1: acc
+                return {
+                        hd: stmt,
+                        tl: acc
                       };
               }), stmts, match[1]);
 }
@@ -15249,9 +15249,9 @@ function expression$1(env) {
   var expr = Curry._1(assignment, env);
   var match = Curry._2(Parser_env_Peek.token, undefined, env);
   if (typeof match === "number" && match === 8) {
-    return sequence(env, /* :: */{
-                _0: expr,
-                _1: /* [] */0
+    return sequence(env, {
+                hd: expr,
+                tl: /* [] */0
               });
   } else {
     return expr;
@@ -15532,12 +15532,12 @@ function regexp$1(loc, pattern, flags) {
     return new RegExp(pattern, flags);
   }
   catch (exn){
-    translation_errors.contents = /* :: */{
-      _0: [
+    translation_errors.contents = {
+      hd: [
         loc,
         /* InvalidRegExp */12
       ],
-      _1: translation_errors.contents
+      tl: translation_errors.contents
     };
     return new RegExp("", flags);
   }
@@ -17940,8 +17940,8 @@ var test_id = {
 
 function eq(loc, x, y) {
   test_id.contents = test_id.contents + 1 | 0;
-  suites.contents = /* :: */{
-    _0: [
+  suites.contents = {
+    hd: [
       loc + (" id " + String(test_id.contents)),
       (function (param) {
           return {
@@ -17951,7 +17951,7 @@ function eq(loc, x, y) {
                 };
         })
     ],
-    _1: suites.contents
+    tl: suites.contents
   };
   
 }

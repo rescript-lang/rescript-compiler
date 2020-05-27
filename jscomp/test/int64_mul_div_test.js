@@ -932,8 +932,8 @@ Mt.from_pair_suites("Int64_mul_div_test", Pervasives.$at(from_pairs("random", pa
                                               };
                                       })
                                   ];
-                          }), $$Array.to_list(of_float_pairs)), Pervasives.$at(/* :: */{
-                          _0: [
+                          }), $$Array.to_list(of_float_pairs)), Pervasives.$at({
+                          hd: [
                             "compare_check_complete",
                             (function (param) {
                                 return {
@@ -945,9 +945,9 @@ Mt.from_pair_suites("Int64_mul_div_test", Pervasives.$at(from_pairs("random", pa
                                       };
                               })
                           ],
-                          _1: /* [] */0
-                        }, Pervasives.$at(from(simple_divs), Pervasives.$at(from_compare(int64_compare_tests), /* :: */{
-                                  _0: [
+                          tl: /* [] */0
+                        }, Pervasives.$at(from(simple_divs), Pervasives.$at(from_compare(int64_compare_tests), {
+                                  hd: [
                                     "div_rem_0",
                                     (function (param) {
                                         return {
@@ -957,8 +957,8 @@ Mt.from_pair_suites("Int64_mul_div_test", Pervasives.$at(from_pairs("random", pa
                                               };
                                       })
                                   ],
-                                  _1: /* :: */{
-                                    _0: [
+                                  tl: {
+                                    hd: [
                                       "div_rem_1",
                                       (function (param) {
                                           return {
@@ -968,8 +968,8 @@ Mt.from_pair_suites("Int64_mul_div_test", Pervasives.$at(from_pairs("random", pa
                                                 };
                                         })
                                     ],
-                                    _1: /* :: */{
-                                      _0: [
+                                    tl: {
+                                      hd: [
                                         "File \"int64_mul_div_test.ml\", line 214, characters 5-12",
                                         (function (param) {
                                             return {
@@ -979,7 +979,7 @@ Mt.from_pair_suites("Int64_mul_div_test", Pervasives.$at(from_pairs("random", pa
                                                   };
                                           })
                                       ],
-                                      _1: /* [] */0
+                                      tl: /* [] */0
                                     }
                                   }
                                 }))))))));

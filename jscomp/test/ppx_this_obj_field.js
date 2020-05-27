@@ -14,8 +14,8 @@ function eq(loc, param) {
   var y = param[1];
   var x = param[0];
   test_id.contents = test_id.contents + 1 | 0;
-  suites.contents = /* :: */{
-    _0: [
+  suites.contents = {
+    hd: [
       loc + (" id " + String(test_id.contents)),
       (function (param) {
           return {
@@ -25,7 +25,7 @@ function eq(loc, param) {
                 };
         })
     ],
-    _1: suites.contents
+    tl: suites.contents
   };
   
 }
@@ -94,14 +94,14 @@ var u = {
     })
 };
 
-var test_type_1 = /* :: */{
-  _0: v,
-  _1: /* [] */0
+var test_type_1 = {
+  hd: v,
+  tl: /* [] */0
 };
 
-var test_type = /* :: */{
-  _0: u,
-  _1: test_type_1
+var test_type = {
+  hd: u,
+  tl: test_type_1
 };
 
 var z = {
@@ -156,14 +156,14 @@ var zz = {
     })
 };
 
-var test_type2_1 = /* :: */{
-  _0: zz,
-  _1: /* [] */0
+var test_type2_1 = {
+  hd: zz,
+  tl: /* [] */0
 };
 
-var test_type2 = /* :: */{
-  _0: z,
-  _1: test_type2_1
+var test_type2 = {
+  hd: z,
+  tl: test_type2_1
 };
 
 eq("File \"ppx_this_obj_field.ml\", line 92, characters 5-12", [

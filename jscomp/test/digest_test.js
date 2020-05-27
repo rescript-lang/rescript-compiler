@@ -148,8 +148,8 @@ var ref = [
   "b325dc1c6f5e7a2b7cf465b9feab7948"
 ];
 
-Mt.from_pair_suites("Digest_test", Pervasives.$at(/* :: */{
-          _0: [
+Mt.from_pair_suites("Digest_test", Pervasives.$at({
+          hd: [
             "File \"digest_test.ml\", line 6, characters 4-11",
             (function (param) {
                 return {
@@ -159,8 +159,8 @@ Mt.from_pair_suites("Digest_test", Pervasives.$at(/* :: */{
                       };
               })
           ],
-          _1: /* :: */{
-            _0: [
+          tl: {
+            hd: [
               "File \"digest_test.ml\", line 7, characters 4-11",
               (function (param) {
                   return {
@@ -170,8 +170,8 @@ Mt.from_pair_suites("Digest_test", Pervasives.$at(/* :: */{
                         };
                 })
             ],
-            _1: /* :: */{
-              _0: [
+            tl: {
+              hd: [
                 "File \"digest_test.ml\", line 9, characters 4-11",
                 (function (param) {
                     return {
@@ -181,8 +181,8 @@ Mt.from_pair_suites("Digest_test", Pervasives.$at(/* :: */{
                           };
                   })
               ],
-              _1: /* :: */{
-                _0: [
+              tl: {
+                hd: [
                   "File \"digest_test.ml\", line 11, characters 4-11",
                   (function (param) {
                       return {
@@ -192,8 +192,8 @@ Mt.from_pair_suites("Digest_test", Pervasives.$at(/* :: */{
                             };
                     })
                 ],
-                _1: /* :: */{
-                  _0: [
+                tl: {
+                  hd: [
                     "File \"digest_test.ml\", line 12, characters 4-11",
                     (function (param) {
                         return {
@@ -203,8 +203,8 @@ Mt.from_pair_suites("Digest_test", Pervasives.$at(/* :: */{
                               };
                       })
                   ],
-                  _1: /* :: */{
-                    _0: [
+                  tl: {
+                    hd: [
                       "File \"digest_test.ml\", line 13, characters 4-11",
                       (function (param) {
                           return {
@@ -214,7 +214,7 @@ Mt.from_pair_suites("Digest_test", Pervasives.$at(/* :: */{
                                 };
                         })
                     ],
-                    _1: /* [] */0
+                    tl: /* [] */0
                   }
                 }
               }

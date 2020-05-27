@@ -10,13 +10,13 @@ var suites_0 = [
       return {
               TAG: /* Eq */0,
               _0: Ext_string_test.split(true, "hihi", /* "i" */105),
-              _1: /* :: */{
-                _0: "h",
-                _1: /* :: */{
-                  _0: "h",
-                  _1: /* :: */{
-                    _0: "",
-                    _1: /* [] */0
+              _1: {
+                hd: "h",
+                tl: {
+                  hd: "h",
+                  tl: {
+                    hd: "",
+                    tl: /* [] */0
                   }
                 }
               }
@@ -24,25 +24,25 @@ var suites_0 = [
     })
 ];
 
-var suites_1 = /* :: */{
-  _0: [
+var suites_1 = {
+  hd: [
     "split_non_empty",
     (function (param) {
         return {
                 TAG: /* Eq */0,
                 _0: Ext_string_test.split(undefined, "hihi", /* "i" */105),
-                _1: /* :: */{
-                  _0: "h",
-                  _1: /* :: */{
-                    _0: "h",
-                    _1: /* [] */0
+                _1: {
+                  hd: "h",
+                  tl: {
+                    hd: "h",
+                    tl: /* [] */0
                   }
                 }
               };
       })
   ],
-  _1: /* :: */{
-    _0: [
+  tl: {
+    hd: [
       "split_empty",
       (function (param) {
           return {
@@ -52,28 +52,28 @@ var suites_1 = /* :: */{
                 };
         })
     ],
-    _1: /* :: */{
-      _0: [
+    tl: {
+      hd: [
         "split_normal",
         (function (param) {
             return {
                     TAG: /* Eq */0,
                     _0: Ext_string_test.split(true, "h i i", /* " " */32),
-                    _1: /* :: */{
-                      _0: "h",
-                      _1: /* :: */{
-                        _0: "i",
-                        _1: /* :: */{
-                          _0: "i",
-                          _1: /* [] */0
+                    _1: {
+                      hd: "h",
+                      tl: {
+                        hd: "i",
+                        tl: {
+                          hd: "i",
+                          tl: /* [] */0
                         }
                       }
                     }
                   };
           })
       ],
-      _1: /* :: */{
-        _0: [
+      tl: {
+        hd: [
           "split_by",
           (function (param) {
               return {
@@ -87,15 +87,15 @@ var suites_1 = /* :: */{
                                     return x === /* "\t" */9;
                                   }
                                 }), "h hgso hgso \t hi")),
-                      _1: /* :: */{
-                        _0: "h",
-                        _1: /* :: */{
-                          _0: "hgso",
-                          _1: /* :: */{
-                            _0: "hgso",
-                            _1: /* :: */{
-                              _0: "hi",
-                              _1: /* [] */0
+                      _1: {
+                        hd: "h",
+                        tl: {
+                          hd: "hgso",
+                          tl: {
+                            hd: "hgso",
+                            tl: {
+                              hd: "hi",
+                              tl: /* [] */0
                             }
                           }
                         }
@@ -103,15 +103,15 @@ var suites_1 = /* :: */{
                     };
             })
         ],
-        _1: /* [] */0
+        tl: /* [] */0
       }
     }
   }
 };
 
-var suites = /* :: */{
-  _0: suites_0,
-  _1: suites_1
+var suites = {
+  hd: suites_0,
+  tl: suites_1
 };
 
 Mt.from_pair_suites("A_string_test", suites);

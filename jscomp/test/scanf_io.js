@@ -16,12 +16,12 @@ var Caml_external_polyfill = require("../../lib/js/caml_external_polyfill.js");
 
 var tscanf_data_file = "tscanf_data";
 
-var tscanf_data_file_lines = /* :: */{
-  _0: [
+var tscanf_data_file_lines = {
+  hd: [
     "Objective",
     "Caml"
   ],
-  _1: /* [] */0
+  tl: /* [] */0
 };
 
 function create_tscanf_data(ob, lines) {
@@ -88,12 +88,12 @@ function get_lines(fname) {
                 },
                 _1: " %S -> %S; "
               }), (function (x, y) {
-              l.contents = /* :: */{
-                _0: [
+              l.contents = {
+                hd: [
                   x,
                   y
                 ],
-                _1: l.contents
+                tl: l.contents
               };
               
             }));

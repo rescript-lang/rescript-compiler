@@ -54,9 +54,9 @@ var suites_0 = [
     })
 ];
 
-var suites = /* :: */{
-  _0: suites_0,
-  _1: /* [] */0
+var suites = {
+  hd: suites_0,
+  tl: /* [] */0
 };
 
 Mt.from_pair_suites("Inline_regression_test", suites);

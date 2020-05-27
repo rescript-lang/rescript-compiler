@@ -35,8 +35,8 @@ var suites_0 = [
     })
 ];
 
-var suites_1 = /* :: */{
-  _0: [
+var suites_1 = {
+  hd: [
     "array_buffer - byteLength",
     (function (param) {
         return {
@@ -46,8 +46,8 @@ var suites_1 = /* :: */{
               };
       })
   ],
-  _1: /* :: */{
-    _0: [
+  tl: {
+    hd: [
       "array_buffer - slice",
       (function (param) {
           return {
@@ -57,8 +57,8 @@ var suites_1 = /* :: */{
                 };
         })
     ],
-    _1: /* :: */{
-      _0: [
+    tl: {
+      hd: [
         "array_buffer - sliceFrom",
         (function (param) {
             return {
@@ -68,8 +68,8 @@ var suites_1 = /* :: */{
                   };
           })
       ],
-      _1: /* :: */{
-        _0: [
+      tl: {
+        hd: [
           "typed_array - unsafe_get",
           (function (param) {
               return {
@@ -85,8 +85,8 @@ var suites_1 = /* :: */{
                     };
             })
         ],
-        _1: /* :: */{
-          _0: [
+        tl: {
+          hd: [
             "typed_array - unsafe_set",
             (function (param) {
                 var a = new Int8Array([
@@ -104,8 +104,8 @@ var suites_1 = /* :: */{
                       };
               })
           ],
-          _1: /* :: */{
-            _0: [
+          tl: {
+            hd: [
               "typed_array - buffer",
               (function (param) {
                   return {
@@ -125,8 +125,8 @@ var suites_1 = /* :: */{
                         };
                 })
             ],
-            _1: /* :: */{
-              _0: [
+            tl: {
+              hd: [
                 "typed_array - byteLength",
                 (function (param) {
                     return {
@@ -142,8 +142,8 @@ var suites_1 = /* :: */{
                           };
                   })
               ],
-              _1: /* :: */{
-                _0: [
+              tl: {
+                hd: [
                   "typed_array - byteOffset",
                   (function (param) {
                       return {
@@ -159,8 +159,8 @@ var suites_1 = /* :: */{
                             };
                     })
                 ],
-                _1: /* :: */{
-                  _0: [
+                tl: {
+                  hd: [
                     "typed_array - setArray",
                     (function (param) {
                         var f = function (a) {
@@ -190,8 +190,8 @@ var suites_1 = /* :: */{
                               };
                       })
                   ],
-                  _1: /* :: */{
-                    _0: [
+                  tl: {
+                    hd: [
                       "typed_array - setArrayOffset",
                       (function (param) {
                           var f = function (a) {
@@ -221,8 +221,8 @@ var suites_1 = /* :: */{
                                 };
                         })
                     ],
-                    _1: /* :: */{
-                      _0: [
+                    tl: {
+                      hd: [
                         "typed_array - length",
                         (function (param) {
                             return {
@@ -238,8 +238,8 @@ var suites_1 = /* :: */{
                                   };
                           })
                       ],
-                      _1: /* :: */{
-                        _0: [
+                      tl: {
+                        hd: [
                           "typed_array - copyWithin",
                           (function (param) {
                               return {
@@ -261,8 +261,8 @@ var suites_1 = /* :: */{
                                     };
                             })
                         ],
-                        _1: /* :: */{
-                          _0: [
+                        tl: {
+                          hd: [
                             "typed_array - copyWithinFrom",
                             (function (param) {
                                 return {
@@ -284,8 +284,8 @@ var suites_1 = /* :: */{
                                       };
                               })
                           ],
-                          _1: /* :: */{
-                            _0: [
+                          tl: {
+                            hd: [
                               "typed_array - copyWithinFromRange",
                               (function (param) {
                                   return {
@@ -307,8 +307,8 @@ var suites_1 = /* :: */{
                                         };
                                 })
                             ],
-                            _1: /* :: */{
-                              _0: [
+                            tl: {
+                              hd: [
                                 "typed_array - fillInPlace",
                                 (function (param) {
                                     return {
@@ -326,8 +326,8 @@ var suites_1 = /* :: */{
                                           };
                                   })
                               ],
-                              _1: /* :: */{
-                                _0: [
+                              tl: {
+                                hd: [
                                   "typed_array - fillFromInPlace",
                                   (function (param) {
                                       return {
@@ -345,8 +345,8 @@ var suites_1 = /* :: */{
                                             };
                                     })
                                 ],
-                                _1: /* :: */{
-                                  _0: [
+                                tl: {
+                                  hd: [
                                     "typed_array - fillRangeInPlace",
                                     (function (param) {
                                         return {
@@ -364,8 +364,8 @@ var suites_1 = /* :: */{
                                               };
                                       })
                                   ],
-                                  _1: /* :: */{
-                                    _0: [
+                                  tl: {
+                                    hd: [
                                       "typed_array - reverseInPlace",
                                       (function (param) {
                                           return {
@@ -383,8 +383,8 @@ var suites_1 = /* :: */{
                                                 };
                                         })
                                     ],
-                                    _1: /* :: */{
-                                      _0: [
+                                    tl: {
+                                      hd: [
                                         "typed_array - sortInPlace",
                                         (function (param) {
                                             return {
@@ -402,8 +402,8 @@ var suites_1 = /* :: */{
                                                   };
                                           })
                                       ],
-                                      _1: /* :: */{
-                                        _0: [
+                                      tl: {
+                                        hd: [
                                           "typed_array - sortInPlaceWith",
                                           (function (param) {
                                               return {
@@ -423,8 +423,8 @@ var suites_1 = /* :: */{
                                                     };
                                             })
                                         ],
-                                        _1: /* :: */{
-                                          _0: [
+                                        tl: {
+                                          hd: [
                                             "typed_array - includes",
                                             (function (param) {
                                                 return {
@@ -438,8 +438,8 @@ var suites_1 = /* :: */{
                                                       };
                                               })
                                           ],
-                                          _1: /* :: */{
-                                            _0: [
+                                          tl: {
+                                            hd: [
                                               "typed_array - indexOf",
                                               (function (param) {
                                                   return {
@@ -453,8 +453,8 @@ var suites_1 = /* :: */{
                                                         };
                                                 })
                                             ],
-                                            _1: /* :: */{
-                                              _0: [
+                                            tl: {
+                                              hd: [
                                                 "typed_array - indexOfFrom",
                                                 (function (param) {
                                                     return {
@@ -469,8 +469,8 @@ var suites_1 = /* :: */{
                                                           };
                                                   })
                                               ],
-                                              _1: /* :: */{
-                                                _0: [
+                                              tl: {
+                                                hd: [
                                                   "typed_array - join",
                                                   (function (param) {
                                                       return {
@@ -484,8 +484,8 @@ var suites_1 = /* :: */{
                                                             };
                                                     })
                                                 ],
-                                                _1: /* :: */{
-                                                  _0: [
+                                                tl: {
+                                                  hd: [
                                                     "typed_array - joinWith",
                                                     (function (param) {
                                                         return {
@@ -499,8 +499,8 @@ var suites_1 = /* :: */{
                                                               };
                                                       })
                                                   ],
-                                                  _1: /* :: */{
-                                                    _0: [
+                                                  tl: {
+                                                    hd: [
                                                       "typed_array - lastIndexOf",
                                                       (function (param) {
                                                           return {
@@ -514,8 +514,8 @@ var suites_1 = /* :: */{
                                                                 };
                                                         })
                                                     ],
-                                                    _1: /* :: */{
-                                                      _0: [
+                                                    tl: {
+                                                      hd: [
                                                         "typed_array - lastIndexOfFrom",
                                                         (function (param) {
                                                             return {
@@ -530,8 +530,8 @@ var suites_1 = /* :: */{
                                                                   };
                                                           })
                                                       ],
-                                                      _1: /* :: */{
-                                                        _0: [
+                                                      tl: {
+                                                        hd: [
                                                           "typed_array - slice",
                                                           (function (param) {
                                                               return {
@@ -550,8 +550,8 @@ var suites_1 = /* :: */{
                                                                     };
                                                             })
                                                         ],
-                                                        _1: /* :: */{
-                                                          _0: [
+                                                        tl: {
+                                                          hd: [
                                                             "typed_array - copy",
                                                             (function (param) {
                                                                 return {
@@ -573,8 +573,8 @@ var suites_1 = /* :: */{
                                                                       };
                                                               })
                                                           ],
-                                                          _1: /* :: */{
-                                                            _0: [
+                                                          tl: {
+                                                            hd: [
                                                               "typed_array - sliceFrom",
                                                               (function (param) {
                                                                   return {
@@ -594,8 +594,8 @@ var suites_1 = /* :: */{
                                                                         };
                                                                 })
                                                             ],
-                                                            _1: /* :: */{
-                                                              _0: [
+                                                            tl: {
+                                                              hd: [
                                                                 "typed_array - subarray",
                                                                 (function (param) {
                                                                     return {
@@ -614,8 +614,8 @@ var suites_1 = /* :: */{
                                                                           };
                                                                   })
                                                               ],
-                                                              _1: /* :: */{
-                                                                _0: [
+                                                              tl: {
+                                                                hd: [
                                                                   "typed_array - subarrayFrom",
                                                                   (function (param) {
                                                                       return {
@@ -635,8 +635,8 @@ var suites_1 = /* :: */{
                                                                             };
                                                                     })
                                                                 ],
-                                                                _1: /* :: */{
-                                                                  _0: [
+                                                                tl: {
+                                                                  hd: [
                                                                     "typed_array - toString",
                                                                     (function (param) {
                                                                         return {
@@ -650,8 +650,8 @@ var suites_1 = /* :: */{
                                                                               };
                                                                       })
                                                                   ],
-                                                                  _1: /* :: */{
-                                                                    _0: [
+                                                                  tl: {
+                                                                    hd: [
                                                                       "typed_array - toLocaleString",
                                                                       (function (param) {
                                                                           return {
@@ -665,8 +665,8 @@ var suites_1 = /* :: */{
                                                                                 };
                                                                         })
                                                                     ],
-                                                                    _1: /* :: */{
-                                                                      _0: [
+                                                                    tl: {
+                                                                      hd: [
                                                                         "typed_array - every",
                                                                         (function (param) {
                                                                             return {
@@ -682,8 +682,8 @@ var suites_1 = /* :: */{
                                                                                   };
                                                                           })
                                                                       ],
-                                                                      _1: /* :: */{
-                                                                        _0: [
+                                                                      tl: {
+                                                                        hd: [
                                                                           "typed_array - everyi",
                                                                           (function (param) {
                                                                               return {
@@ -699,8 +699,8 @@ var suites_1 = /* :: */{
                                                                                     };
                                                                             })
                                                                         ],
-                                                                        _1: /* :: */{
-                                                                          _0: [
+                                                                        tl: {
+                                                                          hd: [
                                                                             "typed_array - filter",
                                                                             (function (param) {
                                                                                 return {
@@ -720,8 +720,8 @@ var suites_1 = /* :: */{
                                                                                       };
                                                                               })
                                                                           ],
-                                                                          _1: /* :: */{
-                                                                            _0: [
+                                                                          tl: {
+                                                                            hd: [
                                                                               "typed_array - filteri",
                                                                               (function (param) {
                                                                                   return {
@@ -741,8 +741,8 @@ var suites_1 = /* :: */{
                                                                                         };
                                                                                 })
                                                                             ],
-                                                                            _1: /* :: */{
-                                                                              _0: [
+                                                                            tl: {
+                                                                              hd: [
                                                                                 "typed_array - find",
                                                                                 (function (param) {
                                                                                     return {
@@ -759,8 +759,8 @@ var suites_1 = /* :: */{
                                                                                           };
                                                                                   })
                                                                               ],
-                                                                              _1: /* :: */{
-                                                                                _0: [
+                                                                              tl: {
+                                                                                hd: [
                                                                                   "typed_array - findi",
                                                                                   (function (param) {
                                                                                       return {
@@ -777,8 +777,8 @@ var suites_1 = /* :: */{
                                                                                             };
                                                                                     })
                                                                                 ],
-                                                                                _1: /* :: */{
-                                                                                  _0: [
+                                                                                tl: {
+                                                                                  hd: [
                                                                                     "typed_array - findIndex",
                                                                                     (function (param) {
                                                                                         return {
@@ -795,8 +795,8 @@ var suites_1 = /* :: */{
                                                                                               };
                                                                                       })
                                                                                   ],
-                                                                                  _1: /* :: */{
-                                                                                    _0: [
+                                                                                  tl: {
+                                                                                    hd: [
                                                                                       "typed_array - findIndexi",
                                                                                       (function (param) {
                                                                                           return {
@@ -813,8 +813,8 @@ var suites_1 = /* :: */{
                                                                                                 };
                                                                                         })
                                                                                     ],
-                                                                                    _1: /* :: */{
-                                                                                      _0: [
+                                                                                    tl: {
+                                                                                      hd: [
                                                                                         "typed_array - forEach",
                                                                                         (function (param) {
                                                                                             var sum = {
@@ -835,8 +835,8 @@ var suites_1 = /* :: */{
                                                                                                   };
                                                                                           })
                                                                                       ],
-                                                                                      _1: /* :: */{
-                                                                                        _0: [
+                                                                                      tl: {
+                                                                                        hd: [
                                                                                           "typed_array - forEachi",
                                                                                           (function (param) {
                                                                                               var sum = {
@@ -857,8 +857,8 @@ var suites_1 = /* :: */{
                                                                                                     };
                                                                                             })
                                                                                         ],
-                                                                                        _1: /* :: */{
-                                                                                          _0: [
+                                                                                        tl: {
+                                                                                          hd: [
                                                                                             "typed_array - map",
                                                                                             (function (param) {
                                                                                                 return {
@@ -880,8 +880,8 @@ var suites_1 = /* :: */{
                                                                                                       };
                                                                                               })
                                                                                           ],
-                                                                                          _1: /* :: */{
-                                                                                            _0: [
+                                                                                          tl: {
+                                                                                            hd: [
                                                                                               "typed_array - map",
                                                                                               (function (param) {
                                                                                                   return {
@@ -903,8 +903,8 @@ var suites_1 = /* :: */{
                                                                                                         };
                                                                                                 })
                                                                                             ],
-                                                                                            _1: /* :: */{
-                                                                                              _0: [
+                                                                                            tl: {
+                                                                                              hd: [
                                                                                                 "typed_array - reduce",
                                                                                                 (function (param) {
                                                                                                     return {
@@ -921,8 +921,8 @@ var suites_1 = /* :: */{
                                                                                                           };
                                                                                                   })
                                                                                               ],
-                                                                                              _1: /* :: */{
-                                                                                                _0: [
+                                                                                              tl: {
+                                                                                                hd: [
                                                                                                   "typed_array - reducei",
                                                                                                   (function (param) {
                                                                                                       return {
@@ -939,8 +939,8 @@ var suites_1 = /* :: */{
                                                                                                             };
                                                                                                     })
                                                                                                 ],
-                                                                                                _1: /* :: */{
-                                                                                                  _0: [
+                                                                                                tl: {
+                                                                                                  hd: [
                                                                                                     "typed_array - reduceRight",
                                                                                                     (function (param) {
                                                                                                         return {
@@ -957,8 +957,8 @@ var suites_1 = /* :: */{
                                                                                                               };
                                                                                                       })
                                                                                                   ],
-                                                                                                  _1: /* :: */{
-                                                                                                    _0: [
+                                                                                                  tl: {
+                                                                                                    hd: [
                                                                                                       "typed_array - reduceRighti",
                                                                                                       (function (param) {
                                                                                                           return {
@@ -975,8 +975,8 @@ var suites_1 = /* :: */{
                                                                                                                 };
                                                                                                         })
                                                                                                     ],
-                                                                                                    _1: /* :: */{
-                                                                                                      _0: [
+                                                                                                    tl: {
+                                                                                                      hd: [
                                                                                                         "typed_array - some",
                                                                                                         (function (param) {
                                                                                                             return {
@@ -993,8 +993,8 @@ var suites_1 = /* :: */{
                                                                                                                   };
                                                                                                           })
                                                                                                       ],
-                                                                                                      _1: /* :: */{
-                                                                                                        _0: [
+                                                                                                      tl: {
+                                                                                                        hd: [
                                                                                                           "typed_array - somei",
                                                                                                           (function (param) {
                                                                                                               return {
@@ -1011,8 +1011,8 @@ var suites_1 = /* :: */{
                                                                                                                     };
                                                                                                             })
                                                                                                         ],
-                                                                                                        _1: /* :: */{
-                                                                                                          _0: [
+                                                                                                        tl: {
+                                                                                                          hd: [
                                                                                                             "int8_array - _BYTES_PER_ELEMENT",
                                                                                                             (function (param) {
                                                                                                                 return {
@@ -1022,8 +1022,8 @@ var suites_1 = /* :: */{
                                                                                                                       };
                                                                                                               })
                                                                                                           ],
-                                                                                                          _1: /* :: */{
-                                                                                                            _0: [
+                                                                                                          tl: {
+                                                                                                            hd: [
                                                                                                               "int8_array - make",
                                                                                                               (function (param) {
                                                                                                                   return {
@@ -1037,8 +1037,8 @@ var suites_1 = /* :: */{
                                                                                                                         };
                                                                                                                 })
                                                                                                             ],
-                                                                                                            _1: /* :: */{
-                                                                                                              _0: [
+                                                                                                            tl: {
+                                                                                                              hd: [
                                                                                                                 "int8_array - fromBuffer",
                                                                                                                 (function (param) {
                                                                                                                     return {
@@ -1048,8 +1048,8 @@ var suites_1 = /* :: */{
                                                                                                                           };
                                                                                                                   })
                                                                                                               ],
-                                                                                                              _1: /* :: */{
-                                                                                                                _0: [
+                                                                                                              tl: {
+                                                                                                                hd: [
                                                                                                                   "int8_array - fromBufferOffset",
                                                                                                                   (function (param) {
                                                                                                                       var buffer = new ArrayBuffer(32);
@@ -1060,8 +1060,8 @@ var suites_1 = /* :: */{
                                                                                                                             };
                                                                                                                     })
                                                                                                                 ],
-                                                                                                                _1: /* :: */{
-                                                                                                                  _0: [
+                                                                                                                tl: {
+                                                                                                                  hd: [
                                                                                                                     "int8_array - fromBufferRange",
                                                                                                                     (function (param) {
                                                                                                                         var buffer = new ArrayBuffer(32);
@@ -1072,8 +1072,8 @@ var suites_1 = /* :: */{
                                                                                                                               };
                                                                                                                       })
                                                                                                                   ],
-                                                                                                                  _1: /* :: */{
-                                                                                                                    _0: [
+                                                                                                                  tl: {
+                                                                                                                    hd: [
                                                                                                                       "int8_array - fromLength",
                                                                                                                       (function (param) {
                                                                                                                           return {
@@ -1083,8 +1083,8 @@ var suites_1 = /* :: */{
                                                                                                                                 };
                                                                                                                         })
                                                                                                                     ],
-                                                                                                                    _1: /* :: */{
-                                                                                                                      _0: [
+                                                                                                                    tl: {
+                                                                                                                      hd: [
                                                                                                                         "int8_array - unsafe_set - typed_array sanity check",
                                                                                                                         (function (param) {
                                                                                                                             var a = new Int8Array([
@@ -1102,8 +1102,8 @@ var suites_1 = /* :: */{
                                                                                                                                   };
                                                                                                                           })
                                                                                                                       ],
-                                                                                                                      _1: /* :: */{
-                                                                                                                        _0: [
+                                                                                                                      tl: {
+                                                                                                                        hd: [
                                                                                                                           "uint8_array - _BYTES_PER_ELEMENT",
                                                                                                                           (function (param) {
                                                                                                                               return {
@@ -1113,8 +1113,8 @@ var suites_1 = /* :: */{
                                                                                                                                     };
                                                                                                                             })
                                                                                                                         ],
-                                                                                                                        _1: /* :: */{
-                                                                                                                          _0: [
+                                                                                                                        tl: {
+                                                                                                                          hd: [
                                                                                                                             "uint8_array - make",
                                                                                                                             (function (param) {
                                                                                                                                 return {
@@ -1128,8 +1128,8 @@ var suites_1 = /* :: */{
                                                                                                                                       };
                                                                                                                               })
                                                                                                                           ],
-                                                                                                                          _1: /* :: */{
-                                                                                                                            _0: [
+                                                                                                                          tl: {
+                                                                                                                            hd: [
                                                                                                                               "uint8_array - fromBuffer",
                                                                                                                               (function (param) {
                                                                                                                                   return {
@@ -1139,8 +1139,8 @@ var suites_1 = /* :: */{
                                                                                                                                         };
                                                                                                                                 })
                                                                                                                             ],
-                                                                                                                            _1: /* :: */{
-                                                                                                                              _0: [
+                                                                                                                            tl: {
+                                                                                                                              hd: [
                                                                                                                                 "uint8_array - fromBufferOffset",
                                                                                                                                 (function (param) {
                                                                                                                                     var buffer = new ArrayBuffer(32);
@@ -1151,8 +1151,8 @@ var suites_1 = /* :: */{
                                                                                                                                           };
                                                                                                                                   })
                                                                                                                               ],
-                                                                                                                              _1: /* :: */{
-                                                                                                                                _0: [
+                                                                                                                              tl: {
+                                                                                                                                hd: [
                                                                                                                                   "uint8_array - fromBufferRange",
                                                                                                                                   (function (param) {
                                                                                                                                       var buffer = new ArrayBuffer(32);
@@ -1163,8 +1163,8 @@ var suites_1 = /* :: */{
                                                                                                                                             };
                                                                                                                                     })
                                                                                                                                 ],
-                                                                                                                                _1: /* :: */{
-                                                                                                                                  _0: [
+                                                                                                                                tl: {
+                                                                                                                                  hd: [
                                                                                                                                     "uint8_array - fromLength",
                                                                                                                                     (function (param) {
                                                                                                                                         return {
@@ -1174,8 +1174,8 @@ var suites_1 = /* :: */{
                                                                                                                                               };
                                                                                                                                       })
                                                                                                                                   ],
-                                                                                                                                  _1: /* :: */{
-                                                                                                                                    _0: [
+                                                                                                                                  tl: {
+                                                                                                                                    hd: [
                                                                                                                                       "uint8_array - unsafe_set - typed_array sanity check",
                                                                                                                                       (function (param) {
                                                                                                                                           var a = new Uint8Array([
@@ -1193,8 +1193,8 @@ var suites_1 = /* :: */{
                                                                                                                                                 };
                                                                                                                                         })
                                                                                                                                     ],
-                                                                                                                                    _1: /* :: */{
-                                                                                                                                      _0: [
+                                                                                                                                    tl: {
+                                                                                                                                      hd: [
                                                                                                                                         "uint8clamped_array - _BYTES_PER_ELEMENT",
                                                                                                                                         (function (param) {
                                                                                                                                             return {
@@ -1204,8 +1204,8 @@ var suites_1 = /* :: */{
                                                                                                                                                   };
                                                                                                                                           })
                                                                                                                                       ],
-                                                                                                                                      _1: /* :: */{
-                                                                                                                                        _0: [
+                                                                                                                                      tl: {
+                                                                                                                                        hd: [
                                                                                                                                           "uint8clamped_array - make",
                                                                                                                                           (function (param) {
                                                                                                                                               return {
@@ -1219,8 +1219,8 @@ var suites_1 = /* :: */{
                                                                                                                                                     };
                                                                                                                                             })
                                                                                                                                         ],
-                                                                                                                                        _1: /* :: */{
-                                                                                                                                          _0: [
+                                                                                                                                        tl: {
+                                                                                                                                          hd: [
                                                                                                                                             "uint8clamped_array - fromBuffer",
                                                                                                                                             (function (param) {
                                                                                                                                                 return {
@@ -1230,8 +1230,8 @@ var suites_1 = /* :: */{
                                                                                                                                                       };
                                                                                                                                               })
                                                                                                                                           ],
-                                                                                                                                          _1: /* :: */{
-                                                                                                                                            _0: [
+                                                                                                                                          tl: {
+                                                                                                                                            hd: [
                                                                                                                                               "uint8clamped_array - fromBufferOffset",
                                                                                                                                               (function (param) {
                                                                                                                                                   var buffer = new ArrayBuffer(32);
@@ -1242,8 +1242,8 @@ var suites_1 = /* :: */{
                                                                                                                                                         };
                                                                                                                                                 })
                                                                                                                                             ],
-                                                                                                                                            _1: /* :: */{
-                                                                                                                                              _0: [
+                                                                                                                                            tl: {
+                                                                                                                                              hd: [
                                                                                                                                                 "uint8clamped_array - fromBufferRange",
                                                                                                                                                 (function (param) {
                                                                                                                                                     var buffer = new ArrayBuffer(32);
@@ -1254,8 +1254,8 @@ var suites_1 = /* :: */{
                                                                                                                                                           };
                                                                                                                                                   })
                                                                                                                                               ],
-                                                                                                                                              _1: /* :: */{
-                                                                                                                                                _0: [
+                                                                                                                                              tl: {
+                                                                                                                                                hd: [
                                                                                                                                                   "uint8clamped_array - fromLength",
                                                                                                                                                   (function (param) {
                                                                                                                                                       return {
@@ -1265,8 +1265,8 @@ var suites_1 = /* :: */{
                                                                                                                                                             };
                                                                                                                                                     })
                                                                                                                                                 ],
-                                                                                                                                                _1: /* :: */{
-                                                                                                                                                  _0: [
+                                                                                                                                                tl: {
+                                                                                                                                                  hd: [
                                                                                                                                                     "uint8clamped_array - unsafe_set - typed_array sanity check",
                                                                                                                                                     (function (param) {
                                                                                                                                                         var a = new Uint8ClampedArray([
@@ -1284,8 +1284,8 @@ var suites_1 = /* :: */{
                                                                                                                                                               };
                                                                                                                                                       })
                                                                                                                                                   ],
-                                                                                                                                                  _1: /* :: */{
-                                                                                                                                                    _0: [
+                                                                                                                                                  tl: {
+                                                                                                                                                    hd: [
                                                                                                                                                       "int16_array - _BYTES_PER_ELEMENT",
                                                                                                                                                       (function (param) {
                                                                                                                                                           return {
@@ -1295,8 +1295,8 @@ var suites_1 = /* :: */{
                                                                                                                                                                 };
                                                                                                                                                         })
                                                                                                                                                     ],
-                                                                                                                                                    _1: /* :: */{
-                                                                                                                                                      _0: [
+                                                                                                                                                    tl: {
+                                                                                                                                                      hd: [
                                                                                                                                                         "int16_array - make",
                                                                                                                                                         (function (param) {
                                                                                                                                                             return {
@@ -1310,8 +1310,8 @@ var suites_1 = /* :: */{
                                                                                                                                                                   };
                                                                                                                                                           })
                                                                                                                                                       ],
-                                                                                                                                                      _1: /* :: */{
-                                                                                                                                                        _0: [
+                                                                                                                                                      tl: {
+                                                                                                                                                        hd: [
                                                                                                                                                           "int16_array - fromBuffer",
                                                                                                                                                           (function (param) {
                                                                                                                                                               return {
@@ -1321,8 +1321,8 @@ var suites_1 = /* :: */{
                                                                                                                                                                     };
                                                                                                                                                             })
                                                                                                                                                         ],
-                                                                                                                                                        _1: /* :: */{
-                                                                                                                                                          _0: [
+                                                                                                                                                        tl: {
+                                                                                                                                                          hd: [
                                                                                                                                                             "int16_array - fromBufferOffset",
                                                                                                                                                             (function (param) {
                                                                                                                                                                 var buffer = new ArrayBuffer(32);
@@ -1333,8 +1333,8 @@ var suites_1 = /* :: */{
                                                                                                                                                                       };
                                                                                                                                                               })
                                                                                                                                                           ],
-                                                                                                                                                          _1: /* :: */{
-                                                                                                                                                            _0: [
+                                                                                                                                                          tl: {
+                                                                                                                                                            hd: [
                                                                                                                                                               "int16_array - fromBufferRange",
                                                                                                                                                               (function (param) {
                                                                                                                                                                   var buffer = new ArrayBuffer(32);
@@ -1345,8 +1345,8 @@ var suites_1 = /* :: */{
                                                                                                                                                                         };
                                                                                                                                                                 })
                                                                                                                                                             ],
-                                                                                                                                                            _1: /* :: */{
-                                                                                                                                                              _0: [
+                                                                                                                                                            tl: {
+                                                                                                                                                              hd: [
                                                                                                                                                                 "int16_array - fromLength",
                                                                                                                                                                 (function (param) {
                                                                                                                                                                     return {
@@ -1356,8 +1356,8 @@ var suites_1 = /* :: */{
                                                                                                                                                                           };
                                                                                                                                                                   })
                                                                                                                                                               ],
-                                                                                                                                                              _1: /* :: */{
-                                                                                                                                                                _0: [
+                                                                                                                                                              tl: {
+                                                                                                                                                                hd: [
                                                                                                                                                                   "int16_array - unsafe_set - typed_array sanity check",
                                                                                                                                                                   (function (param) {
                                                                                                                                                                       var a = new Int16Array([
@@ -1375,8 +1375,8 @@ var suites_1 = /* :: */{
                                                                                                                                                                             };
                                                                                                                                                                     })
                                                                                                                                                                 ],
-                                                                                                                                                                _1: /* :: */{
-                                                                                                                                                                  _0: [
+                                                                                                                                                                tl: {
+                                                                                                                                                                  hd: [
                                                                                                                                                                     "uint16_array - _BYTES_PER_ELEMENT",
                                                                                                                                                                     (function (param) {
                                                                                                                                                                         return {
@@ -1386,8 +1386,8 @@ var suites_1 = /* :: */{
                                                                                                                                                                               };
                                                                                                                                                                       })
                                                                                                                                                                   ],
-                                                                                                                                                                  _1: /* :: */{
-                                                                                                                                                                    _0: [
+                                                                                                                                                                  tl: {
+                                                                                                                                                                    hd: [
                                                                                                                                                                       "uint16_array - make",
                                                                                                                                                                       (function (param) {
                                                                                                                                                                           return {
@@ -1401,8 +1401,8 @@ var suites_1 = /* :: */{
                                                                                                                                                                                 };
                                                                                                                                                                         })
                                                                                                                                                                     ],
-                                                                                                                                                                    _1: /* :: */{
-                                                                                                                                                                      _0: [
+                                                                                                                                                                    tl: {
+                                                                                                                                                                      hd: [
                                                                                                                                                                         "uint16_array - fromBuffer",
                                                                                                                                                                         (function (param) {
                                                                                                                                                                             return {
@@ -1412,8 +1412,8 @@ var suites_1 = /* :: */{
                                                                                                                                                                                   };
                                                                                                                                                                           })
                                                                                                                                                                       ],
-                                                                                                                                                                      _1: /* :: */{
-                                                                                                                                                                        _0: [
+                                                                                                                                                                      tl: {
+                                                                                                                                                                        hd: [
                                                                                                                                                                           "uint16_array - fromBufferOffset",
                                                                                                                                                                           (function (param) {
                                                                                                                                                                               var buffer = new ArrayBuffer(32);
@@ -1424,8 +1424,8 @@ var suites_1 = /* :: */{
                                                                                                                                                                                     };
                                                                                                                                                                             })
                                                                                                                                                                         ],
-                                                                                                                                                                        _1: /* :: */{
-                                                                                                                                                                          _0: [
+                                                                                                                                                                        tl: {
+                                                                                                                                                                          hd: [
                                                                                                                                                                             "uint16_array - fromBufferRange",
                                                                                                                                                                             (function (param) {
                                                                                                                                                                                 var buffer = new ArrayBuffer(32);
@@ -1436,8 +1436,8 @@ var suites_1 = /* :: */{
                                                                                                                                                                                       };
                                                                                                                                                                               })
                                                                                                                                                                           ],
-                                                                                                                                                                          _1: /* :: */{
-                                                                                                                                                                            _0: [
+                                                                                                                                                                          tl: {
+                                                                                                                                                                            hd: [
                                                                                                                                                                               "uint16_array - fromLength",
                                                                                                                                                                               (function (param) {
                                                                                                                                                                                   return {
@@ -1447,8 +1447,8 @@ var suites_1 = /* :: */{
                                                                                                                                                                                         };
                                                                                                                                                                                 })
                                                                                                                                                                             ],
-                                                                                                                                                                            _1: /* :: */{
-                                                                                                                                                                              _0: [
+                                                                                                                                                                            tl: {
+                                                                                                                                                                              hd: [
                                                                                                                                                                                 "uint16_array - unsafe_set - typed_array sanity check",
                                                                                                                                                                                 (function (param) {
                                                                                                                                                                                     var a = new Uint16Array([
@@ -1466,8 +1466,8 @@ var suites_1 = /* :: */{
                                                                                                                                                                                           };
                                                                                                                                                                                   })
                                                                                                                                                                               ],
-                                                                                                                                                                              _1: /* :: */{
-                                                                                                                                                                                _0: [
+                                                                                                                                                                              tl: {
+                                                                                                                                                                                hd: [
                                                                                                                                                                                   "int32_array - _BYTES_PER_ELEMENT",
                                                                                                                                                                                   (function (param) {
                                                                                                                                                                                       return {
@@ -1477,8 +1477,8 @@ var suites_1 = /* :: */{
                                                                                                                                                                                             };
                                                                                                                                                                                     })
                                                                                                                                                                                 ],
-                                                                                                                                                                                _1: /* :: */{
-                                                                                                                                                                                  _0: [
+                                                                                                                                                                                tl: {
+                                                                                                                                                                                  hd: [
                                                                                                                                                                                     "int32_array - make",
                                                                                                                                                                                     (function (param) {
                                                                                                                                                                                         return {
@@ -1494,8 +1494,8 @@ var suites_1 = /* :: */{
                                                                                                                                                                                               };
                                                                                                                                                                                       })
                                                                                                                                                                                   ],
-                                                                                                                                                                                  _1: /* :: */{
-                                                                                                                                                                                    _0: [
+                                                                                                                                                                                  tl: {
+                                                                                                                                                                                    hd: [
                                                                                                                                                                                       "int32_array - fromBuffer",
                                                                                                                                                                                       (function (param) {
                                                                                                                                                                                           return {
@@ -1505,8 +1505,8 @@ var suites_1 = /* :: */{
                                                                                                                                                                                                 };
                                                                                                                                                                                         })
                                                                                                                                                                                     ],
-                                                                                                                                                                                    _1: /* :: */{
-                                                                                                                                                                                      _0: [
+                                                                                                                                                                                    tl: {
+                                                                                                                                                                                      hd: [
                                                                                                                                                                                         "int32_array - fromBufferOffset",
                                                                                                                                                                                         (function (param) {
                                                                                                                                                                                             var buffer = new ArrayBuffer(32);
@@ -1517,8 +1517,8 @@ var suites_1 = /* :: */{
                                                                                                                                                                                                   };
                                                                                                                                                                                           })
                                                                                                                                                                                       ],
-                                                                                                                                                                                      _1: /* :: */{
-                                                                                                                                                                                        _0: [
+                                                                                                                                                                                      tl: {
+                                                                                                                                                                                        hd: [
                                                                                                                                                                                           "int32_array - fromBufferRange",
                                                                                                                                                                                           (function (param) {
                                                                                                                                                                                               var buffer = new ArrayBuffer(32);
@@ -1529,8 +1529,8 @@ var suites_1 = /* :: */{
                                                                                                                                                                                                     };
                                                                                                                                                                                             })
                                                                                                                                                                                         ],
-                                                                                                                                                                                        _1: /* :: */{
-                                                                                                                                                                                          _0: [
+                                                                                                                                                                                        tl: {
+                                                                                                                                                                                          hd: [
                                                                                                                                                                                             "int32_array - fromLength",
                                                                                                                                                                                             (function (param) {
                                                                                                                                                                                                 return {
@@ -1540,8 +1540,8 @@ var suites_1 = /* :: */{
                                                                                                                                                                                                       };
                                                                                                                                                                                               })
                                                                                                                                                                                           ],
-                                                                                                                                                                                          _1: /* :: */{
-                                                                                                                                                                                            _0: [
+                                                                                                                                                                                          tl: {
+                                                                                                                                                                                            hd: [
                                                                                                                                                                                               "int32_array - unsafe_set - typed_array sanity check",
                                                                                                                                                                                               (function (param) {
                                                                                                                                                                                                   var a = new Int32Array($$Array.map((function (prim) {
@@ -1561,8 +1561,8 @@ var suites_1 = /* :: */{
                                                                                                                                                                                                         };
                                                                                                                                                                                                 })
                                                                                                                                                                                             ],
-                                                                                                                                                                                            _1: /* :: */{
-                                                                                                                                                                                              _0: [
+                                                                                                                                                                                            tl: {
+                                                                                                                                                                                              hd: [
                                                                                                                                                                                                 "uint32_array - _BYTES_PER_ELEMENT",
                                                                                                                                                                                                 (function (param) {
                                                                                                                                                                                                     return {
@@ -1572,8 +1572,8 @@ var suites_1 = /* :: */{
                                                                                                                                                                                                           };
                                                                                                                                                                                                   })
                                                                                                                                                                                               ],
-                                                                                                                                                                                              _1: /* :: */{
-                                                                                                                                                                                                _0: [
+                                                                                                                                                                                              tl: {
+                                                                                                                                                                                                hd: [
                                                                                                                                                                                                   "uint32_array - make",
                                                                                                                                                                                                   (function (param) {
                                                                                                                                                                                                       return {
@@ -1587,8 +1587,8 @@ var suites_1 = /* :: */{
                                                                                                                                                                                                             };
                                                                                                                                                                                                     })
                                                                                                                                                                                                 ],
-                                                                                                                                                                                                _1: /* :: */{
-                                                                                                                                                                                                  _0: [
+                                                                                                                                                                                                tl: {
+                                                                                                                                                                                                  hd: [
                                                                                                                                                                                                     "uint32_array - fromBuffer",
                                                                                                                                                                                                     (function (param) {
                                                                                                                                                                                                         return {
@@ -1598,8 +1598,8 @@ var suites_1 = /* :: */{
                                                                                                                                                                                                               };
                                                                                                                                                                                                       })
                                                                                                                                                                                                   ],
-                                                                                                                                                                                                  _1: /* :: */{
-                                                                                                                                                                                                    _0: [
+                                                                                                                                                                                                  tl: {
+                                                                                                                                                                                                    hd: [
                                                                                                                                                                                                       "uint32_array - fromBufferOffset",
                                                                                                                                                                                                       (function (param) {
                                                                                                                                                                                                           var buffer = new ArrayBuffer(32);
@@ -1610,8 +1610,8 @@ var suites_1 = /* :: */{
                                                                                                                                                                                                                 };
                                                                                                                                                                                                         })
                                                                                                                                                                                                     ],
-                                                                                                                                                                                                    _1: /* :: */{
-                                                                                                                                                                                                      _0: [
+                                                                                                                                                                                                    tl: {
+                                                                                                                                                                                                      hd: [
                                                                                                                                                                                                         "uint32_array - fromBufferRange",
                                                                                                                                                                                                         (function (param) {
                                                                                                                                                                                                             var buffer = new ArrayBuffer(32);
@@ -1622,8 +1622,8 @@ var suites_1 = /* :: */{
                                                                                                                                                                                                                   };
                                                                                                                                                                                                           })
                                                                                                                                                                                                       ],
-                                                                                                                                                                                                      _1: /* :: */{
-                                                                                                                                                                                                        _0: [
+                                                                                                                                                                                                      tl: {
+                                                                                                                                                                                                        hd: [
                                                                                                                                                                                                           "uint32_array - fromLength",
                                                                                                                                                                                                           (function (param) {
                                                                                                                                                                                                               return {
@@ -1633,8 +1633,8 @@ var suites_1 = /* :: */{
                                                                                                                                                                                                                     };
                                                                                                                                                                                                             })
                                                                                                                                                                                                         ],
-                                                                                                                                                                                                        _1: /* :: */{
-                                                                                                                                                                                                          _0: [
+                                                                                                                                                                                                        tl: {
+                                                                                                                                                                                                          hd: [
                                                                                                                                                                                                             "uint32_array - unsafe_set - typed_array sanity check",
                                                                                                                                                                                                             (function (param) {
                                                                                                                                                                                                                 var a = new Uint32Array([
@@ -1652,8 +1652,8 @@ var suites_1 = /* :: */{
                                                                                                                                                                                                                       };
                                                                                                                                                                                                               })
                                                                                                                                                                                                           ],
-                                                                                                                                                                                                          _1: /* :: */{
-                                                                                                                                                                                                            _0: [
+                                                                                                                                                                                                          tl: {
+                                                                                                                                                                                                            hd: [
                                                                                                                                                                                                               "float32_array - _BYTES_PER_ELEMENT",
                                                                                                                                                                                                               (function (param) {
                                                                                                                                                                                                                   return {
@@ -1663,8 +1663,8 @@ var suites_1 = /* :: */{
                                                                                                                                                                                                                         };
                                                                                                                                                                                                                 })
                                                                                                                                                                                                             ],
-                                                                                                                                                                                                            _1: /* :: */{
-                                                                                                                                                                                                              _0: [
+                                                                                                                                                                                                            tl: {
+                                                                                                                                                                                                              hd: [
                                                                                                                                                                                                                 "float32_array - make",
                                                                                                                                                                                                                 (function (param) {
                                                                                                                                                                                                                     return {
@@ -1678,8 +1678,8 @@ var suites_1 = /* :: */{
                                                                                                                                                                                                                           };
                                                                                                                                                                                                                   })
                                                                                                                                                                                                               ],
-                                                                                                                                                                                                              _1: /* :: */{
-                                                                                                                                                                                                                _0: [
+                                                                                                                                                                                                              tl: {
+                                                                                                                                                                                                                hd: [
                                                                                                                                                                                                                   "float32_array - fromBuffer",
                                                                                                                                                                                                                   (function (param) {
                                                                                                                                                                                                                       return {
@@ -1689,8 +1689,8 @@ var suites_1 = /* :: */{
                                                                                                                                                                                                                             };
                                                                                                                                                                                                                     })
                                                                                                                                                                                                                 ],
-                                                                                                                                                                                                                _1: /* :: */{
-                                                                                                                                                                                                                  _0: [
+                                                                                                                                                                                                                tl: {
+                                                                                                                                                                                                                  hd: [
                                                                                                                                                                                                                     "float32_array - fromBufferOffset",
                                                                                                                                                                                                                     (function (param) {
                                                                                                                                                                                                                         var buffer = new ArrayBuffer(32);
@@ -1701,8 +1701,8 @@ var suites_1 = /* :: */{
                                                                                                                                                                                                                               };
                                                                                                                                                                                                                       })
                                                                                                                                                                                                                   ],
-                                                                                                                                                                                                                  _1: /* :: */{
-                                                                                                                                                                                                                    _0: [
+                                                                                                                                                                                                                  tl: {
+                                                                                                                                                                                                                    hd: [
                                                                                                                                                                                                                       "float32_array - fromBufferRange",
                                                                                                                                                                                                                       (function (param) {
                                                                                                                                                                                                                           var buffer = new ArrayBuffer(32);
@@ -1713,8 +1713,8 @@ var suites_1 = /* :: */{
                                                                                                                                                                                                                                 };
                                                                                                                                                                                                                         })
                                                                                                                                                                                                                     ],
-                                                                                                                                                                                                                    _1: /* :: */{
-                                                                                                                                                                                                                      _0: [
+                                                                                                                                                                                                                    tl: {
+                                                                                                                                                                                                                      hd: [
                                                                                                                                                                                                                         "float32_array - fromLength",
                                                                                                                                                                                                                         (function (param) {
                                                                                                                                                                                                                             return {
@@ -1724,8 +1724,8 @@ var suites_1 = /* :: */{
                                                                                                                                                                                                                                   };
                                                                                                                                                                                                                           })
                                                                                                                                                                                                                       ],
-                                                                                                                                                                                                                      _1: /* :: */{
-                                                                                                                                                                                                                        _0: [
+                                                                                                                                                                                                                      tl: {
+                                                                                                                                                                                                                        hd: [
                                                                                                                                                                                                                           "float32_array - unsafe_set - typed_array sanity check",
                                                                                                                                                                                                                           (function (param) {
                                                                                                                                                                                                                               var a = new Float32Array([
@@ -1743,8 +1743,8 @@ var suites_1 = /* :: */{
                                                                                                                                                                                                                                     };
                                                                                                                                                                                                                             })
                                                                                                                                                                                                                         ],
-                                                                                                                                                                                                                        _1: /* :: */{
-                                                                                                                                                                                                                          _0: [
+                                                                                                                                                                                                                        tl: {
+                                                                                                                                                                                                                          hd: [
                                                                                                                                                                                                                             "float64_array - _BYTES_PER_ELEMENT",
                                                                                                                                                                                                                             (function (param) {
                                                                                                                                                                                                                                 return {
@@ -1754,8 +1754,8 @@ var suites_1 = /* :: */{
                                                                                                                                                                                                                                       };
                                                                                                                                                                                                                               })
                                                                                                                                                                                                                           ],
-                                                                                                                                                                                                                          _1: /* :: */{
-                                                                                                                                                                                                                            _0: [
+                                                                                                                                                                                                                          tl: {
+                                                                                                                                                                                                                            hd: [
                                                                                                                                                                                                                               "float64_array - make",
                                                                                                                                                                                                                               (function (param) {
                                                                                                                                                                                                                                   return {
@@ -1769,8 +1769,8 @@ var suites_1 = /* :: */{
                                                                                                                                                                                                                                         };
                                                                                                                                                                                                                                 })
                                                                                                                                                                                                                             ],
-                                                                                                                                                                                                                            _1: /* :: */{
-                                                                                                                                                                                                                              _0: [
+                                                                                                                                                                                                                            tl: {
+                                                                                                                                                                                                                              hd: [
                                                                                                                                                                                                                                 "float64_array - fromBuffer",
                                                                                                                                                                                                                                 (function (param) {
                                                                                                                                                                                                                                     return {
@@ -1780,8 +1780,8 @@ var suites_1 = /* :: */{
                                                                                                                                                                                                                                           };
                                                                                                                                                                                                                                   })
                                                                                                                                                                                                                               ],
-                                                                                                                                                                                                                              _1: /* :: */{
-                                                                                                                                                                                                                                _0: [
+                                                                                                                                                                                                                              tl: {
+                                                                                                                                                                                                                                hd: [
                                                                                                                                                                                                                                   "float64_array - fromBufferOffset",
                                                                                                                                                                                                                                   (function (param) {
                                                                                                                                                                                                                                       var buffer = new ArrayBuffer(32);
@@ -1792,8 +1792,8 @@ var suites_1 = /* :: */{
                                                                                                                                                                                                                                             };
                                                                                                                                                                                                                                     })
                                                                                                                                                                                                                                 ],
-                                                                                                                                                                                                                                _1: /* :: */{
-                                                                                                                                                                                                                                  _0: [
+                                                                                                                                                                                                                                tl: {
+                                                                                                                                                                                                                                  hd: [
                                                                                                                                                                                                                                     "float64_array - fromBufferRange",
                                                                                                                                                                                                                                     (function (param) {
                                                                                                                                                                                                                                         var buffer = new ArrayBuffer(32);
@@ -1804,8 +1804,8 @@ var suites_1 = /* :: */{
                                                                                                                                                                                                                                               };
                                                                                                                                                                                                                                       })
                                                                                                                                                                                                                                   ],
-                                                                                                                                                                                                                                  _1: /* :: */{
-                                                                                                                                                                                                                                    _0: [
+                                                                                                                                                                                                                                  tl: {
+                                                                                                                                                                                                                                    hd: [
                                                                                                                                                                                                                                       "float64_array - fromLength",
                                                                                                                                                                                                                                       (function (param) {
                                                                                                                                                                                                                                           return {
@@ -1815,8 +1815,8 @@ var suites_1 = /* :: */{
                                                                                                                                                                                                                                                 };
                                                                                                                                                                                                                                         })
                                                                                                                                                                                                                                     ],
-                                                                                                                                                                                                                                    _1: /* :: */{
-                                                                                                                                                                                                                                      _0: [
+                                                                                                                                                                                                                                    tl: {
+                                                                                                                                                                                                                                      hd: [
                                                                                                                                                                                                                                         "float64_array - unsafe_set - typed_array sanity check",
                                                                                                                                                                                                                                         (function (param) {
                                                                                                                                                                                                                                             var a = new Float64Array([
@@ -1834,8 +1834,8 @@ var suites_1 = /* :: */{
                                                                                                                                                                                                                                                   };
                                                                                                                                                                                                                                           })
                                                                                                                                                                                                                                       ],
-                                                                                                                                                                                                                                      _1: /* :: */{
-                                                                                                                                                                                                                                        _0: [
+                                                                                                                                                                                                                                      tl: {
+                                                                                                                                                                                                                                        hd: [
                                                                                                                                                                                                                                           "DataView - make, byteLength",
                                                                                                                                                                                                                                           (function (param) {
                                                                                                                                                                                                                                               return {
@@ -1845,8 +1845,8 @@ var suites_1 = /* :: */{
                                                                                                                                                                                                                                                     };
                                                                                                                                                                                                                                             })
                                                                                                                                                                                                                                         ],
-                                                                                                                                                                                                                                        _1: /* :: */{
-                                                                                                                                                                                                                                          _0: [
+                                                                                                                                                                                                                                        tl: {
+                                                                                                                                                                                                                                          hd: [
                                                                                                                                                                                                                                             "DataView - fromBuffer",
                                                                                                                                                                                                                                             (function (param) {
                                                                                                                                                                                                                                                 return {
@@ -1856,8 +1856,8 @@ var suites_1 = /* :: */{
                                                                                                                                                                                                                                                       };
                                                                                                                                                                                                                                               })
                                                                                                                                                                                                                                           ],
-                                                                                                                                                                                                                                          _1: /* :: */{
-                                                                                                                                                                                                                                            _0: [
+                                                                                                                                                                                                                                          tl: {
+                                                                                                                                                                                                                                            hd: [
                                                                                                                                                                                                                                               "DataView - fromBufferOffset",
                                                                                                                                                                                                                                               (function (param) {
                                                                                                                                                                                                                                                   var buffer = new ArrayBuffer(32);
@@ -1868,8 +1868,8 @@ var suites_1 = /* :: */{
                                                                                                                                                                                                                                                         };
                                                                                                                                                                                                                                                 })
                                                                                                                                                                                                                                             ],
-                                                                                                                                                                                                                                            _1: /* :: */{
-                                                                                                                                                                                                                                              _0: [
+                                                                                                                                                                                                                                            tl: {
+                                                                                                                                                                                                                                              hd: [
                                                                                                                                                                                                                                                 "DataView - fromBufferRange",
                                                                                                                                                                                                                                                 (function (param) {
                                                                                                                                                                                                                                                     var buffer = new ArrayBuffer(32);
@@ -1880,8 +1880,8 @@ var suites_1 = /* :: */{
                                                                                                                                                                                                                                                           };
                                                                                                                                                                                                                                                   })
                                                                                                                                                                                                                                               ],
-                                                                                                                                                                                                                                              _1: /* :: */{
-                                                                                                                                                                                                                                                _0: [
+                                                                                                                                                                                                                                              tl: {
+                                                                                                                                                                                                                                                hd: [
                                                                                                                                                                                                                                                   "DataView - buffer",
                                                                                                                                                                                                                                                   (function (param) {
                                                                                                                                                                                                                                                       var buffer = new ArrayBuffer(32);
@@ -1892,8 +1892,8 @@ var suites_1 = /* :: */{
                                                                                                                                                                                                                                                             };
                                                                                                                                                                                                                                                     })
                                                                                                                                                                                                                                                 ],
-                                                                                                                                                                                                                                                _1: /* :: */{
-                                                                                                                                                                                                                                                  _0: [
+                                                                                                                                                                                                                                                tl: {
+                                                                                                                                                                                                                                                  hd: [
                                                                                                                                                                                                                                                     "DataView - byteOffset",
                                                                                                                                                                                                                                                     (function (param) {
                                                                                                                                                                                                                                                         var buffer = new ArrayBuffer(32);
@@ -1904,8 +1904,8 @@ var suites_1 = /* :: */{
                                                                                                                                                                                                                                                               };
                                                                                                                                                                                                                                                       })
                                                                                                                                                                                                                                                   ],
-                                                                                                                                                                                                                                                  _1: /* :: */{
-                                                                                                                                                                                                                                                    _0: [
+                                                                                                                                                                                                                                                  tl: {
+                                                                                                                                                                                                                                                    hd: [
                                                                                                                                                                                                                                                       "DataView - setInt8, getInt8",
                                                                                                                                                                                                                                                       (function (param) {
                                                                                                                                                                                                                                                           var buffer = new ArrayBuffer(8);
@@ -1918,8 +1918,8 @@ var suites_1 = /* :: */{
                                                                                                                                                                                                                                                                 };
                                                                                                                                                                                                                                                         })
                                                                                                                                                                                                                                                     ],
-                                                                                                                                                                                                                                                    _1: /* :: */{
-                                                                                                                                                                                                                                                      _0: [
+                                                                                                                                                                                                                                                    tl: {
+                                                                                                                                                                                                                                                      hd: [
                                                                                                                                                                                                                                                         "DataView - setUint8, getUint8",
                                                                                                                                                                                                                                                         (function (param) {
                                                                                                                                                                                                                                                             var buffer = new ArrayBuffer(8);
@@ -1932,8 +1932,8 @@ var suites_1 = /* :: */{
                                                                                                                                                                                                                                                                   };
                                                                                                                                                                                                                                                           })
                                                                                                                                                                                                                                                       ],
-                                                                                                                                                                                                                                                      _1: /* :: */{
-                                                                                                                                                                                                                                                        _0: [
+                                                                                                                                                                                                                                                      tl: {
+                                                                                                                                                                                                                                                        hd: [
                                                                                                                                                                                                                                                           "DataView - setInt16, getInt16",
                                                                                                                                                                                                                                                           (function (param) {
                                                                                                                                                                                                                                                               var buffer = new ArrayBuffer(8);
@@ -1946,8 +1946,8 @@ var suites_1 = /* :: */{
                                                                                                                                                                                                                                                                     };
                                                                                                                                                                                                                                                             })
                                                                                                                                                                                                                                                         ],
-                                                                                                                                                                                                                                                        _1: /* :: */{
-                                                                                                                                                                                                                                                          _0: [
+                                                                                                                                                                                                                                                        tl: {
+                                                                                                                                                                                                                                                          hd: [
                                                                                                                                                                                                                                                             "DataView - getInt16LittleEndian",
                                                                                                                                                                                                                                                             (function (param) {
                                                                                                                                                                                                                                                                 var buffer = new ArrayBuffer(8);
@@ -1960,8 +1960,8 @@ var suites_1 = /* :: */{
                                                                                                                                                                                                                                                                       };
                                                                                                                                                                                                                                                               })
                                                                                                                                                                                                                                                           ],
-                                                                                                                                                                                                                                                          _1: /* :: */{
-                                                                                                                                                                                                                                                            _0: [
+                                                                                                                                                                                                                                                          tl: {
+                                                                                                                                                                                                                                                            hd: [
                                                                                                                                                                                                                                                               "DataView - setInt16LittleEndian",
                                                                                                                                                                                                                                                               (function (param) {
                                                                                                                                                                                                                                                                   var buffer = new ArrayBuffer(8);
@@ -1974,8 +1974,8 @@ var suites_1 = /* :: */{
                                                                                                                                                                                                                                                                         };
                                                                                                                                                                                                                                                                 })
                                                                                                                                                                                                                                                             ],
-                                                                                                                                                                                                                                                            _1: /* :: */{
-                                                                                                                                                                                                                                                              _0: [
+                                                                                                                                                                                                                                                            tl: {
+                                                                                                                                                                                                                                                              hd: [
                                                                                                                                                                                                                                                                 "DataView - setUint16, getUint16",
                                                                                                                                                                                                                                                                 (function (param) {
                                                                                                                                                                                                                                                                     var buffer = new ArrayBuffer(8);
@@ -1988,8 +1988,8 @@ var suites_1 = /* :: */{
                                                                                                                                                                                                                                                                           };
                                                                                                                                                                                                                                                                   })
                                                                                                                                                                                                                                                               ],
-                                                                                                                                                                                                                                                              _1: /* :: */{
-                                                                                                                                                                                                                                                                _0: [
+                                                                                                                                                                                                                                                              tl: {
+                                                                                                                                                                                                                                                                hd: [
                                                                                                                                                                                                                                                                   "DataView - getUint16LittleEndian",
                                                                                                                                                                                                                                                                   (function (param) {
                                                                                                                                                                                                                                                                       var buffer = new ArrayBuffer(8);
@@ -2002,8 +2002,8 @@ var suites_1 = /* :: */{
                                                                                                                                                                                                                                                                             };
                                                                                                                                                                                                                                                                     })
                                                                                                                                                                                                                                                                 ],
-                                                                                                                                                                                                                                                                _1: /* :: */{
-                                                                                                                                                                                                                                                                  _0: [
+                                                                                                                                                                                                                                                                tl: {
+                                                                                                                                                                                                                                                                  hd: [
                                                                                                                                                                                                                                                                     "DataView - setUint16LittleEndian",
                                                                                                                                                                                                                                                                     (function (param) {
                                                                                                                                                                                                                                                                         var buffer = new ArrayBuffer(8);
@@ -2016,8 +2016,8 @@ var suites_1 = /* :: */{
                                                                                                                                                                                                                                                                               };
                                                                                                                                                                                                                                                                       })
                                                                                                                                                                                                                                                                   ],
-                                                                                                                                                                                                                                                                  _1: /* :: */{
-                                                                                                                                                                                                                                                                    _0: [
+                                                                                                                                                                                                                                                                  tl: {
+                                                                                                                                                                                                                                                                    hd: [
                                                                                                                                                                                                                                                                       "DataView - setInt32, getInt32",
                                                                                                                                                                                                                                                                       (function (param) {
                                                                                                                                                                                                                                                                           var buffer = new ArrayBuffer(8);
@@ -2030,8 +2030,8 @@ var suites_1 = /* :: */{
                                                                                                                                                                                                                                                                                 };
                                                                                                                                                                                                                                                                         })
                                                                                                                                                                                                                                                                     ],
-                                                                                                                                                                                                                                                                    _1: /* :: */{
-                                                                                                                                                                                                                                                                      _0: [
+                                                                                                                                                                                                                                                                    tl: {
+                                                                                                                                                                                                                                                                      hd: [
                                                                                                                                                                                                                                                                         "DataView - getInt32LittleEndian",
                                                                                                                                                                                                                                                                         (function (param) {
                                                                                                                                                                                                                                                                             var buffer = new ArrayBuffer(8);
@@ -2044,8 +2044,8 @@ var suites_1 = /* :: */{
                                                                                                                                                                                                                                                                                   };
                                                                                                                                                                                                                                                                           })
                                                                                                                                                                                                                                                                       ],
-                                                                                                                                                                                                                                                                      _1: /* :: */{
-                                                                                                                                                                                                                                                                        _0: [
+                                                                                                                                                                                                                                                                      tl: {
+                                                                                                                                                                                                                                                                        hd: [
                                                                                                                                                                                                                                                                           "DataView - setInt32LittleEndian",
                                                                                                                                                                                                                                                                           (function (param) {
                                                                                                                                                                                                                                                                               var buffer = new ArrayBuffer(8);
@@ -2058,8 +2058,8 @@ var suites_1 = /* :: */{
                                                                                                                                                                                                                                                                                     };
                                                                                                                                                                                                                                                                             })
                                                                                                                                                                                                                                                                         ],
-                                                                                                                                                                                                                                                                        _1: /* :: */{
-                                                                                                                                                                                                                                                                          _0: [
+                                                                                                                                                                                                                                                                        tl: {
+                                                                                                                                                                                                                                                                          hd: [
                                                                                                                                                                                                                                                                             "DataView - setUint32, getUint32",
                                                                                                                                                                                                                                                                             (function (param) {
                                                                                                                                                                                                                                                                                 var buffer = new ArrayBuffer(8);
@@ -2072,8 +2072,8 @@ var suites_1 = /* :: */{
                                                                                                                                                                                                                                                                                       };
                                                                                                                                                                                                                                                                               })
                                                                                                                                                                                                                                                                           ],
-                                                                                                                                                                                                                                                                          _1: /* :: */{
-                                                                                                                                                                                                                                                                            _0: [
+                                                                                                                                                                                                                                                                          tl: {
+                                                                                                                                                                                                                                                                            hd: [
                                                                                                                                                                                                                                                                               "DataView - getUint32LittleEndian",
                                                                                                                                                                                                                                                                               (function (param) {
                                                                                                                                                                                                                                                                                   var buffer = new ArrayBuffer(8);
@@ -2086,8 +2086,8 @@ var suites_1 = /* :: */{
                                                                                                                                                                                                                                                                                         };
                                                                                                                                                                                                                                                                                 })
                                                                                                                                                                                                                                                                             ],
-                                                                                                                                                                                                                                                                            _1: /* :: */{
-                                                                                                                                                                                                                                                                              _0: [
+                                                                                                                                                                                                                                                                            tl: {
+                                                                                                                                                                                                                                                                              hd: [
                                                                                                                                                                                                                                                                                 "DataView - setUint32LittleEndian",
                                                                                                                                                                                                                                                                                 (function (param) {
                                                                                                                                                                                                                                                                                     var buffer = new ArrayBuffer(8);
@@ -2100,8 +2100,8 @@ var suites_1 = /* :: */{
                                                                                                                                                                                                                                                                                           };
                                                                                                                                                                                                                                                                                   })
                                                                                                                                                                                                                                                                               ],
-                                                                                                                                                                                                                                                                              _1: /* :: */{
-                                                                                                                                                                                                                                                                                _0: [
+                                                                                                                                                                                                                                                                              tl: {
+                                                                                                                                                                                                                                                                                hd: [
                                                                                                                                                                                                                                                                                   "DataView - setFloat32, getFloat32",
                                                                                                                                                                                                                                                                                   (function (param) {
                                                                                                                                                                                                                                                                                       var buffer = new ArrayBuffer(8);
@@ -2114,8 +2114,8 @@ var suites_1 = /* :: */{
                                                                                                                                                                                                                                                                                             };
                                                                                                                                                                                                                                                                                     })
                                                                                                                                                                                                                                                                                 ],
-                                                                                                                                                                                                                                                                                _1: /* :: */{
-                                                                                                                                                                                                                                                                                  _0: [
+                                                                                                                                                                                                                                                                                tl: {
+                                                                                                                                                                                                                                                                                  hd: [
                                                                                                                                                                                                                                                                                     "DataView - getFloat32LittleEndian",
                                                                                                                                                                                                                                                                                     (function (param) {
                                                                                                                                                                                                                                                                                         var buffer = new ArrayBuffer(8);
@@ -2128,8 +2128,8 @@ var suites_1 = /* :: */{
                                                                                                                                                                                                                                                                                               };
                                                                                                                                                                                                                                                                                       })
                                                                                                                                                                                                                                                                                   ],
-                                                                                                                                                                                                                                                                                  _1: /* :: */{
-                                                                                                                                                                                                                                                                                    _0: [
+                                                                                                                                                                                                                                                                                  tl: {
+                                                                                                                                                                                                                                                                                    hd: [
                                                                                                                                                                                                                                                                                       "DataView - setFloat32LittleEndian",
                                                                                                                                                                                                                                                                                       (function (param) {
                                                                                                                                                                                                                                                                                           var buffer = new ArrayBuffer(8);
@@ -2142,8 +2142,8 @@ var suites_1 = /* :: */{
                                                                                                                                                                                                                                                                                                 };
                                                                                                                                                                                                                                                                                         })
                                                                                                                                                                                                                                                                                     ],
-                                                                                                                                                                                                                                                                                    _1: /* :: */{
-                                                                                                                                                                                                                                                                                      _0: [
+                                                                                                                                                                                                                                                                                    tl: {
+                                                                                                                                                                                                                                                                                      hd: [
                                                                                                                                                                                                                                                                                         "DataView - setFloat64, getFloat64",
                                                                                                                                                                                                                                                                                         (function (param) {
                                                                                                                                                                                                                                                                                             var buffer = new ArrayBuffer(8);
@@ -2156,8 +2156,8 @@ var suites_1 = /* :: */{
                                                                                                                                                                                                                                                                                                   };
                                                                                                                                                                                                                                                                                           })
                                                                                                                                                                                                                                                                                       ],
-                                                                                                                                                                                                                                                                                      _1: /* :: */{
-                                                                                                                                                                                                                                                                                        _0: [
+                                                                                                                                                                                                                                                                                      tl: {
+                                                                                                                                                                                                                                                                                        hd: [
                                                                                                                                                                                                                                                                                           "DataView - getFloat64LittleEndian",
                                                                                                                                                                                                                                                                                           (function (param) {
                                                                                                                                                                                                                                                                                               var buffer = new ArrayBuffer(8);
@@ -2170,8 +2170,8 @@ var suites_1 = /* :: */{
                                                                                                                                                                                                                                                                                                     };
                                                                                                                                                                                                                                                                                             })
                                                                                                                                                                                                                                                                                         ],
-                                                                                                                                                                                                                                                                                        _1: /* :: */{
-                                                                                                                                                                                                                                                                                          _0: [
+                                                                                                                                                                                                                                                                                        tl: {
+                                                                                                                                                                                                                                                                                          hd: [
                                                                                                                                                                                                                                                                                             "DataView - setFloat64LittleEndian",
                                                                                                                                                                                                                                                                                             (function (param) {
                                                                                                                                                                                                                                                                                                 var buffer = new ArrayBuffer(8);
@@ -2184,7 +2184,7 @@ var suites_1 = /* :: */{
                                                                                                                                                                                                                                                                                                       };
                                                                                                                                                                                                                                                                                               })
                                                                                                                                                                                                                                                                                           ],
-                                                                                                                                                                                                                                                                                          _1: /* [] */0
+                                                                                                                                                                                                                                                                                          tl: /* [] */0
                                                                                                                                                                                                                                                                                         }
                                                                                                                                                                                                                                                                                       }
                                                                                                                                                                                                                                                                                     }
@@ -2327,9 +2327,9 @@ var suites_1 = /* :: */{
   }
 };
 
-var suites = /* :: */{
-  _0: suites_0,
-  _1: suites_1
+var suites = {
+  hd: suites_0,
+  tl: suites_1
 };
 
 Mt.from_pair_suites("Js_typed_array_test", suites);

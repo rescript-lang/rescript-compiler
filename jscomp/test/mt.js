@@ -17,11 +17,11 @@ function is_mocha(param) {
   if (!match) {
     return false;
   }
-  var match$1 = match._1;
+  var match$1 = match.tl;
   if (!match$1) {
     return false;
   }
-  var exec = Path.basename(match$1._0);
+  var exec = Path.basename(match$1.hd);
   if (exec === "mocha") {
     return true;
   } else {
@@ -222,8 +222,8 @@ function from_promise_suites(name, suites) {
 
 function eq_suites(test_id, suites, loc, x, y) {
   test_id.contents = test_id.contents + 1 | 0;
-  suites.contents = /* :: */{
-    _0: [
+  suites.contents = {
+    hd: [
       loc + (" id " + String(test_id.contents)),
       (function (param) {
           return {
@@ -233,15 +233,15 @@ function eq_suites(test_id, suites, loc, x, y) {
                 };
         })
     ],
-    _1: suites.contents
+    tl: suites.contents
   };
   
 }
 
 function bool_suites(test_id, suites, loc, x) {
   test_id.contents = test_id.contents + 1 | 0;
-  suites.contents = /* :: */{
-    _0: [
+  suites.contents = {
+    hd: [
       loc + (" id " + String(test_id.contents)),
       (function (param) {
           return {
@@ -250,15 +250,15 @@ function bool_suites(test_id, suites, loc, x) {
                 };
         })
     ],
-    _1: suites.contents
+    tl: suites.contents
   };
   
 }
 
 function throw_suites(test_id, suites, loc, x) {
   test_id.contents = test_id.contents + 1 | 0;
-  suites.contents = /* :: */{
-    _0: [
+  suites.contents = {
+    hd: [
       loc + (" id " + String(test_id.contents)),
       (function (param) {
           return {
@@ -267,7 +267,7 @@ function throw_suites(test_id, suites, loc, x) {
                 };
         })
     ],
-    _1: suites.contents
+    tl: suites.contents
   };
   
 }

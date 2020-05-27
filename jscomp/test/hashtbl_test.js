@@ -10,12 +10,12 @@ var Caml_primitive = require("../../lib/js/caml_primitive.js");
 
 function to_list(tbl) {
   return Hashtbl.fold((function (k, v, acc) {
-                return /* :: */{
-                        _0: [
+                return {
+                        hd: [
                           k,
                           v
                         ],
-                        _1: acc
+                        tl: acc
                       };
               }), tbl, /* [] */0);
 }
@@ -48,17 +48,17 @@ var suites_0 = [
   (function (param) {
       return {
               TAG: /* Eq */0,
-              _0: /* :: */{
-                _0: [
+              _0: {
+                hd: [
                   1,
                   /* "1" */49
                 ],
-                _1: /* :: */{
-                  _0: [
+                tl: {
+                  hd: [
                     2,
                     /* "2" */50
                   ],
-                  _1: /* [] */0
+                  tl: /* [] */0
                 }
               },
               _1: f(undefined)
@@ -66,8 +66,8 @@ var suites_0 = [
     })
 ];
 
-var suites_1 = /* :: */{
-  _0: [
+var suites_1 = {
+  hd: [
     "more_iterations",
     (function (param) {
         return {
@@ -82,8 +82,8 @@ var suites_1 = /* :: */{
               };
       })
   ],
-  _1: /* :: */{
-    _0: [
+  tl: {
+    hd: [
       "More_labels_regressionfix_374",
       (function (param) {
           var tbl = Curry._2(MoreLabels.Hashtbl.create, undefined, 30);
@@ -95,13 +95,13 @@ var suites_1 = /* :: */{
                 };
         })
     ],
-    _1: /* [] */0
+    tl: /* [] */0
   }
 };
 
-var suites = /* :: */{
-  _0: suites_0,
-  _1: suites_1
+var suites = {
+  hd: suites_0,
+  tl: suites_1
 };
 
 Mt.from_pair_suites("Hashtbl_test", suites);

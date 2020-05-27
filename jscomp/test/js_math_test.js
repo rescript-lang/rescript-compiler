@@ -15,8 +15,8 @@ var suites_0 = [
     })
 ];
 
-var suites_1 = /* :: */{
-  _0: [
+var suites_1 = {
+  hd: [
     "_LN2",
     (function (param) {
         return {
@@ -27,8 +27,8 @@ var suites_1 = /* :: */{
               };
       })
   ],
-  _1: /* :: */{
-    _0: [
+  tl: {
+    hd: [
       "_LN10",
       (function (param) {
           return {
@@ -39,8 +39,8 @@ var suites_1 = /* :: */{
                 };
         })
     ],
-    _1: /* :: */{
-      _0: [
+    tl: {
+      hd: [
         "_LOG2E",
         (function (param) {
             return {
@@ -51,8 +51,8 @@ var suites_1 = /* :: */{
                   };
           })
       ],
-      _1: /* :: */{
-        _0: [
+      tl: {
+        hd: [
           "_LOG10E",
           (function (param) {
               return {
@@ -63,8 +63,8 @@ var suites_1 = /* :: */{
                     };
             })
         ],
-        _1: /* :: */{
-          _0: [
+        tl: {
+          hd: [
             "_PI",
             (function (param) {
                 return {
@@ -75,8 +75,8 @@ var suites_1 = /* :: */{
                       };
               })
           ],
-          _1: /* :: */{
-            _0: [
+          tl: {
+            hd: [
               "_SQRT1_2",
               (function (param) {
                   return {
@@ -87,8 +87,8 @@ var suites_1 = /* :: */{
                         };
                 })
             ],
-            _1: /* :: */{
-              _0: [
+            tl: {
+              hd: [
                 "_SQRT2",
                 (function (param) {
                     return {
@@ -99,8 +99,8 @@ var suites_1 = /* :: */{
                           };
                   })
               ],
-              _1: /* :: */{
-                _0: [
+              tl: {
+                hd: [
                   "abs_int",
                   (function (param) {
                       return {
@@ -110,8 +110,8 @@ var suites_1 = /* :: */{
                             };
                     })
                 ],
-                _1: /* :: */{
-                  _0: [
+                tl: {
+                  hd: [
                     "abs_float",
                     (function (param) {
                         return {
@@ -121,8 +121,8 @@ var suites_1 = /* :: */{
                               };
                       })
                   ],
-                  _1: /* :: */{
-                    _0: [
+                  tl: {
+                    hd: [
                       "acos",
                       (function (param) {
                           return {
@@ -133,8 +133,8 @@ var suites_1 = /* :: */{
                                 };
                         })
                     ],
-                    _1: /* :: */{
-                      _0: [
+                    tl: {
+                      hd: [
                         "acosh",
                         (function (param) {
                             return {
@@ -145,8 +145,8 @@ var suites_1 = /* :: */{
                                   };
                           })
                       ],
-                      _1: /* :: */{
-                        _0: [
+                      tl: {
+                        hd: [
                           "asin",
                           (function (param) {
                               return {
@@ -157,8 +157,8 @@ var suites_1 = /* :: */{
                                     };
                             })
                         ],
-                        _1: /* :: */{
-                          _0: [
+                        tl: {
+                          hd: [
                             "asinh",
                             (function (param) {
                                 return {
@@ -169,8 +169,8 @@ var suites_1 = /* :: */{
                                       };
                               })
                           ],
-                          _1: /* :: */{
-                            _0: [
+                          tl: {
+                            hd: [
                               "atan",
                               (function (param) {
                                   return {
@@ -181,8 +181,8 @@ var suites_1 = /* :: */{
                                         };
                                 })
                             ],
-                            _1: /* :: */{
-                              _0: [
+                            tl: {
+                              hd: [
                                 "atanh",
                                 (function (param) {
                                     return {
@@ -193,8 +193,8 @@ var suites_1 = /* :: */{
                                           };
                                   })
                               ],
-                              _1: /* :: */{
-                                _0: [
+                              tl: {
+                                hd: [
                                   "atan2",
                                   (function (param) {
                                       return {
@@ -205,8 +205,8 @@ var suites_1 = /* :: */{
                                             };
                                     })
                                 ],
-                                _1: /* :: */{
-                                  _0: [
+                                tl: {
+                                  hd: [
                                     "cbrt",
                                     (function (param) {
                                         return {
@@ -216,8 +216,8 @@ var suites_1 = /* :: */{
                                               };
                                       })
                                   ],
-                                  _1: /* :: */{
-                                    _0: [
+                                  tl: {
+                                    hd: [
                                       "unsafe_ceil_int",
                                       (function (param) {
                                           return {
@@ -227,8 +227,8 @@ var suites_1 = /* :: */{
                                                 };
                                         })
                                     ],
-                                    _1: /* :: */{
-                                      _0: [
+                                    tl: {
+                                      hd: [
                                         "ceil_int",
                                         (function (param) {
                                             return {
@@ -238,8 +238,8 @@ var suites_1 = /* :: */{
                                                   };
                                           })
                                       ],
-                                      _1: /* :: */{
-                                        _0: [
+                                      tl: {
+                                        hd: [
                                           "ceil_float",
                                           (function (param) {
                                               return {
@@ -249,8 +249,8 @@ var suites_1 = /* :: */{
                                                     };
                                             })
                                         ],
-                                        _1: /* :: */{
-                                          _0: [
+                                        tl: {
+                                          hd: [
                                             "cos",
                                             (function (param) {
                                                 return {
@@ -261,8 +261,8 @@ var suites_1 = /* :: */{
                                                       };
                                               })
                                           ],
-                                          _1: /* :: */{
-                                            _0: [
+                                          tl: {
+                                            hd: [
                                               "cosh",
                                               (function (param) {
                                                   return {
@@ -273,8 +273,8 @@ var suites_1 = /* :: */{
                                                         };
                                                 })
                                             ],
-                                            _1: /* :: */{
-                                              _0: [
+                                            tl: {
+                                              hd: [
                                                 "exp",
                                                 (function (param) {
                                                     return {
@@ -285,8 +285,8 @@ var suites_1 = /* :: */{
                                                           };
                                                   })
                                               ],
-                                              _1: /* :: */{
-                                                _0: [
+                                              tl: {
+                                                hd: [
                                                   "expm1",
                                                   (function (param) {
                                                       return {
@@ -297,8 +297,8 @@ var suites_1 = /* :: */{
                                                             };
                                                     })
                                                 ],
-                                                _1: /* :: */{
-                                                  _0: [
+                                                tl: {
+                                                  hd: [
                                                     "unsafe_floor_int",
                                                     (function (param) {
                                                         return {
@@ -308,8 +308,8 @@ var suites_1 = /* :: */{
                                                               };
                                                       })
                                                   ],
-                                                  _1: /* :: */{
-                                                    _0: [
+                                                  tl: {
+                                                    hd: [
                                                       "floor_int",
                                                       (function (param) {
                                                           return {
@@ -319,8 +319,8 @@ var suites_1 = /* :: */{
                                                                 };
                                                         })
                                                     ],
-                                                    _1: /* :: */{
-                                                      _0: [
+                                                    tl: {
+                                                      hd: [
                                                         "floor_float",
                                                         (function (param) {
                                                             return {
@@ -330,8 +330,8 @@ var suites_1 = /* :: */{
                                                                   };
                                                           })
                                                       ],
-                                                      _1: /* :: */{
-                                                        _0: [
+                                                      tl: {
+                                                        hd: [
                                                           "fround",
                                                           (function (param) {
                                                               return {
@@ -341,8 +341,8 @@ var suites_1 = /* :: */{
                                                                     };
                                                             })
                                                         ],
-                                                        _1: /* :: */{
-                                                          _0: [
+                                                        tl: {
+                                                          hd: [
                                                             "hypot",
                                                             (function (param) {
                                                                 return {
@@ -353,8 +353,8 @@ var suites_1 = /* :: */{
                                                                       };
                                                               })
                                                           ],
-                                                          _1: /* :: */{
-                                                            _0: [
+                                                          tl: {
+                                                            hd: [
                                                               "hypotMany",
                                                               (function (param) {
                                                                   return {
@@ -365,8 +365,8 @@ var suites_1 = /* :: */{
                                                                         };
                                                                 })
                                                             ],
-                                                            _1: /* :: */{
-                                                              _0: [
+                                                            tl: {
+                                                              hd: [
                                                                 "imul",
                                                                 (function (param) {
                                                                     return {
@@ -376,8 +376,8 @@ var suites_1 = /* :: */{
                                                                           };
                                                                   })
                                                               ],
-                                                              _1: /* :: */{
-                                                                _0: [
+                                                              tl: {
+                                                                hd: [
                                                                   "log",
                                                                   (function (param) {
                                                                       return {
@@ -388,8 +388,8 @@ var suites_1 = /* :: */{
                                                                             };
                                                                     })
                                                                 ],
-                                                                _1: /* :: */{
-                                                                  _0: [
+                                                                tl: {
+                                                                  hd: [
                                                                     "log1p",
                                                                     (function (param) {
                                                                         return {
@@ -400,8 +400,8 @@ var suites_1 = /* :: */{
                                                                               };
                                                                       })
                                                                   ],
-                                                                  _1: /* :: */{
-                                                                    _0: [
+                                                                  tl: {
+                                                                    hd: [
                                                                       "log10",
                                                                       (function (param) {
                                                                           return {
@@ -412,8 +412,8 @@ var suites_1 = /* :: */{
                                                                                 };
                                                                         })
                                                                     ],
-                                                                    _1: /* :: */{
-                                                                      _0: [
+                                                                    tl: {
+                                                                      hd: [
                                                                         "log2",
                                                                         (function (param) {
                                                                             return {
@@ -424,8 +424,8 @@ var suites_1 = /* :: */{
                                                                                   };
                                                                           })
                                                                       ],
-                                                                      _1: /* :: */{
-                                                                        _0: [
+                                                                      tl: {
+                                                                        hd: [
                                                                           "max_int",
                                                                           (function (param) {
                                                                               return {
@@ -435,8 +435,8 @@ var suites_1 = /* :: */{
                                                                                     };
                                                                             })
                                                                         ],
-                                                                        _1: /* :: */{
-                                                                          _0: [
+                                                                        tl: {
+                                                                          hd: [
                                                                             "maxMany_int",
                                                                             (function (param) {
                                                                                 return {
@@ -446,8 +446,8 @@ var suites_1 = /* :: */{
                                                                                       };
                                                                               })
                                                                           ],
-                                                                          _1: /* :: */{
-                                                                            _0: [
+                                                                          tl: {
+                                                                            hd: [
                                                                               "max_float",
                                                                               (function (param) {
                                                                                   return {
@@ -457,8 +457,8 @@ var suites_1 = /* :: */{
                                                                                         };
                                                                                 })
                                                                             ],
-                                                                            _1: /* :: */{
-                                                                              _0: [
+                                                                            tl: {
+                                                                              hd: [
                                                                                 "maxMany_float",
                                                                                 (function (param) {
                                                                                     return {
@@ -468,8 +468,8 @@ var suites_1 = /* :: */{
                                                                                           };
                                                                                   })
                                                                               ],
-                                                                              _1: /* :: */{
-                                                                                _0: [
+                                                                              tl: {
+                                                                                hd: [
                                                                                   "min_int",
                                                                                   (function (param) {
                                                                                       return {
@@ -479,8 +479,8 @@ var suites_1 = /* :: */{
                                                                                             };
                                                                                     })
                                                                                 ],
-                                                                                _1: /* :: */{
-                                                                                  _0: [
+                                                                                tl: {
+                                                                                  hd: [
                                                                                     "minMany_int",
                                                                                     (function (param) {
                                                                                         return {
@@ -490,8 +490,8 @@ var suites_1 = /* :: */{
                                                                                               };
                                                                                       })
                                                                                   ],
-                                                                                  _1: /* :: */{
-                                                                                    _0: [
+                                                                                  tl: {
+                                                                                    hd: [
                                                                                       "min_float",
                                                                                       (function (param) {
                                                                                           return {
@@ -501,8 +501,8 @@ var suites_1 = /* :: */{
                                                                                                 };
                                                                                         })
                                                                                     ],
-                                                                                    _1: /* :: */{
-                                                                                      _0: [
+                                                                                    tl: {
+                                                                                      hd: [
                                                                                         "minMany_float",
                                                                                         (function (param) {
                                                                                             return {
@@ -512,8 +512,8 @@ var suites_1 = /* :: */{
                                                                                                   };
                                                                                           })
                                                                                       ],
-                                                                                      _1: /* :: */{
-                                                                                        _0: [
+                                                                                      tl: {
+                                                                                        hd: [
                                                                                           "random",
                                                                                           (function (param) {
                                                                                               var a = Math.random();
@@ -523,8 +523,8 @@ var suites_1 = /* :: */{
                                                                                                     };
                                                                                             })
                                                                                         ],
-                                                                                        _1: /* :: */{
-                                                                                          _0: [
+                                                                                        tl: {
+                                                                                          hd: [
                                                                                             "random_int",
                                                                                             (function (param) {
                                                                                                 var a = Js_math.random_int(1, 3);
@@ -534,8 +534,8 @@ var suites_1 = /* :: */{
                                                                                                       };
                                                                                               })
                                                                                           ],
-                                                                                          _1: /* :: */{
-                                                                                            _0: [
+                                                                                          tl: {
+                                                                                            hd: [
                                                                                               "unsafe_round",
                                                                                               (function (param) {
                                                                                                   return {
@@ -545,8 +545,8 @@ var suites_1 = /* :: */{
                                                                                                         };
                                                                                                 })
                                                                                             ],
-                                                                                            _1: /* :: */{
-                                                                                              _0: [
+                                                                                            tl: {
+                                                                                              hd: [
                                                                                                 "round",
                                                                                                 (function (param) {
                                                                                                     return {
@@ -556,8 +556,8 @@ var suites_1 = /* :: */{
                                                                                                           };
                                                                                                   })
                                                                                               ],
-                                                                                              _1: /* :: */{
-                                                                                                _0: [
+                                                                                              tl: {
+                                                                                                hd: [
                                                                                                   "sign_int",
                                                                                                   (function (param) {
                                                                                                       return {
@@ -567,8 +567,8 @@ var suites_1 = /* :: */{
                                                                                                             };
                                                                                                     })
                                                                                                 ],
-                                                                                                _1: /* :: */{
-                                                                                                  _0: [
+                                                                                                tl: {
+                                                                                                  hd: [
                                                                                                     "sign_float",
                                                                                                     (function (param) {
                                                                                                         return {
@@ -578,8 +578,8 @@ var suites_1 = /* :: */{
                                                                                                               };
                                                                                                       })
                                                                                                   ],
-                                                                                                  _1: /* :: */{
-                                                                                                    _0: [
+                                                                                                  tl: {
+                                                                                                    hd: [
                                                                                                       "sign_float -0",
                                                                                                       (function (param) {
                                                                                                           return {
@@ -589,8 +589,8 @@ var suites_1 = /* :: */{
                                                                                                                 };
                                                                                                         })
                                                                                                     ],
-                                                                                                    _1: /* :: */{
-                                                                                                      _0: [
+                                                                                                    tl: {
+                                                                                                      hd: [
                                                                                                         "sin",
                                                                                                         (function (param) {
                                                                                                             return {
@@ -601,8 +601,8 @@ var suites_1 = /* :: */{
                                                                                                                   };
                                                                                                           })
                                                                                                       ],
-                                                                                                      _1: /* :: */{
-                                                                                                        _0: [
+                                                                                                      tl: {
+                                                                                                        hd: [
                                                                                                           "sinh",
                                                                                                           (function (param) {
                                                                                                               return {
@@ -613,8 +613,8 @@ var suites_1 = /* :: */{
                                                                                                                     };
                                                                                                             })
                                                                                                         ],
-                                                                                                        _1: /* :: */{
-                                                                                                          _0: [
+                                                                                                        tl: {
+                                                                                                          hd: [
                                                                                                             "sqrt",
                                                                                                             (function (param) {
                                                                                                                 return {
@@ -625,8 +625,8 @@ var suites_1 = /* :: */{
                                                                                                                       };
                                                                                                               })
                                                                                                           ],
-                                                                                                          _1: /* :: */{
-                                                                                                            _0: [
+                                                                                                          tl: {
+                                                                                                            hd: [
                                                                                                               "tan",
                                                                                                               (function (param) {
                                                                                                                   return {
@@ -637,8 +637,8 @@ var suites_1 = /* :: */{
                                                                                                                         };
                                                                                                                 })
                                                                                                             ],
-                                                                                                            _1: /* :: */{
-                                                                                                              _0: [
+                                                                                                            tl: {
+                                                                                                              hd: [
                                                                                                                 "tanh",
                                                                                                                 (function (param) {
                                                                                                                     return {
@@ -649,8 +649,8 @@ var suites_1 = /* :: */{
                                                                                                                           };
                                                                                                                   })
                                                                                                               ],
-                                                                                                              _1: /* :: */{
-                                                                                                                _0: [
+                                                                                                              tl: {
+                                                                                                                hd: [
                                                                                                                   "unsafe_trunc",
                                                                                                                   (function (param) {
                                                                                                                       return {
@@ -660,8 +660,8 @@ var suites_1 = /* :: */{
                                                                                                                             };
                                                                                                                     })
                                                                                                                 ],
-                                                                                                                _1: /* :: */{
-                                                                                                                  _0: [
+                                                                                                                tl: {
+                                                                                                                  hd: [
                                                                                                                     "trunc",
                                                                                                                     (function (param) {
                                                                                                                         return {
@@ -671,7 +671,7 @@ var suites_1 = /* :: */{
                                                                                                                               };
                                                                                                                       })
                                                                                                                   ],
-                                                                                                                  _1: /* [] */0
+                                                                                                                  tl: /* [] */0
                                                                                                                 }
                                                                                                               }
                                                                                                             }
@@ -730,9 +730,9 @@ var suites_1 = /* :: */{
   }
 };
 
-var suites = /* :: */{
-  _0: suites_0,
-  _1: suites_1
+var suites = {
+  hd: suites_0,
+  tl: suites_1
 };
 
 Mt.from_pair_suites("Js_math_test", suites);

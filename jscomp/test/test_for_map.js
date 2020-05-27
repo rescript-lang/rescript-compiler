@@ -920,12 +920,12 @@ function bindings_aux(_accu, _param) {
       return accu;
     }
     _param = param.l;
-    _accu = /* :: */{
-      _0: [
+    _accu = {
+      hd: [
         param.v,
         param.d
       ],
-      _1: bindings_aux(accu, param.r)
+      tl: bindings_aux(accu, param.r)
     };
     continue ;
   };

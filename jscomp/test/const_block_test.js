@@ -53,8 +53,8 @@ var suites_0 = [
   g
 ];
 
-var suites_1 = /* :: */{
-  _0: [
+var suites_1 = {
+  hd: [
     "avoid_mutable_inline_test",
     (function (param) {
         Caml_array.caml_array_set(c, 0, 3);
@@ -73,12 +73,12 @@ var suites_1 = /* :: */{
               };
       })
   ],
-  _1: /* [] */0
+  tl: /* [] */0
 };
 
-var suites = /* :: */{
-  _0: suites_0,
-  _1: suites_1
+var suites = {
+  hd: suites_0,
+  tl: suites_1
 };
 
 Mt.from_pair_suites("Const_block_test", suites);

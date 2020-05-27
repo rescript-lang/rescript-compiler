@@ -55,39 +55,39 @@ var v = {
   _0: 3
 };
 
-var h_1 = /* :: */{
-  _0: {
+var h_1 = {
+  hd: {
     TAG: /* D_int */0,
     _0: 3
   },
-  _1: /* :: */{
-    _0: {
+  tl: {
+    hd: {
       TAG: /* D_tuple */1,
       _0: 3,
       _1: "hgo"
     },
-    _1: /* :: */{
-      _0: {
+    tl: {
+      hd: {
         TAG: /* D_tweak */3,
         _0: [
           3,
           "hgo"
         ]
       },
-      _1: /* :: */{
-        _0: {
+      tl: {
+        hd: {
           TAG: /* NewContent */2,
           _0: "3"
         },
-        _1: /* [] */0
+        tl: /* [] */0
       }
     }
   }
 };
 
-var h = /* :: */{
-  _0: /* D_empty */0,
-  _1: h_1
+var h = {
+  hd: /* D_empty */0,
+  tl: h_1
 };
 
 function xx(param_0) {

@@ -224,8 +224,8 @@ iter_interval(pr, hamming, [
       88100
     ]);
 
-Mt.from_pair_suites("Hamming_test", /* :: */{
-      _0: [
+Mt.from_pair_suites("Hamming_test", {
+      hd: [
         "output",
         (function (param) {
             return {
@@ -235,7 +235,7 @@ Mt.from_pair_suites("Hamming_test", /* :: */{
                   };
           })
       ],
-      _1: /* [] */0
+      tl: /* [] */0
     });
 
 exports.n0 = n0;

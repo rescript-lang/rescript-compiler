@@ -17,22 +17,22 @@ var suites_0 = [
     })
 ];
 
-var suites_1 = /* :: */{
-  _0: [
+var suites_1 = {
+  hd: [
     "is_block_test2",
     (function (param) {
         return {
                 TAG: /* Eq */0,
                 _0: true,
-                _1: typeof /* :: */({
-                    _0: 3,
-                    _1: /* [] */0
+                _1: typeof ({
+                    hd: 3,
+                    tl: /* [] */0
                   }) !== "number"
               };
       })
   ],
-  _1: /* :: */{
-    _0: [
+  tl: {
+    hd: [
       "is_block_test3",
       (function (param) {
           return {
@@ -42,8 +42,8 @@ var suites_1 = /* :: */{
                 };
         })
     ],
-    _1: /* :: */{
-      _0: [
+    tl: {
+      hd: [
         "is_block_test4",
         (function (param) {
             return {
@@ -53,14 +53,14 @@ var suites_1 = /* :: */{
                   };
           })
       ],
-      _1: /* [] */0
+      tl: /* [] */0
     }
   }
 };
 
-var suites = /* :: */{
-  _0: suites_0,
-  _1: suites_1
+var suites = {
+  hd: suites_0,
+  tl: suites_1
 };
 
 Mt.from_pair_suites("Obj_magic_test", suites);

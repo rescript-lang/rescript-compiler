@@ -129,27 +129,27 @@ function add(x, data, m) {
 
 List.fold_left((function (acc, param) {
         return add(param[0], param[1], acc);
-      }), /* Empty */0, /* :: */{
-      _0: [
+      }), /* Empty */0, {
+      hd: [
         10,
         /* "a" */97
       ],
-      _1: /* :: */{
-        _0: [
+      tl: {
+        hd: [
           3,
           /* "b" */98
         ],
-        _1: /* :: */{
-          _0: [
+        tl: {
+          hd: [
             7,
             /* "c" */99
           ],
-          _1: /* :: */{
-            _0: [
+          tl: {
+            hd: [
               20,
               /* "d" */100
             ],
-            _1: /* [] */0
+            tl: /* [] */0
           }
         }
       }

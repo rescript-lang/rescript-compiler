@@ -293,8 +293,8 @@ function fac(_n, _acc) {
   };
 }
 
-var suites = Pervasives.$at(/* :: */{
-      _0: [
+var suites = Pervasives.$at({
+      hd: [
         "add_one",
         (function (param) {
             return {
@@ -304,8 +304,8 @@ var suites = Pervasives.$at(/* :: */{
                   };
           })
       ],
-      _1: /* :: */{
-        _0: [
+      tl: {
+        hd: [
           "add_2",
           (function (param) {
               return {
@@ -315,8 +315,8 @@ var suites = Pervasives.$at(/* :: */{
                     };
             })
         ],
-        _1: /* :: */{
-          _0: [
+        tl: {
+          hd: [
             "add_3",
             (function (param) {
                 return {
@@ -326,64 +326,64 @@ var suites = Pervasives.$at(/* :: */{
                       };
               })
           ],
-          _1: /* :: */{
-            _0: [
+          tl: {
+            hd: [
               "add_4",
               (function (param) {
                   return commutative_add(Caml_int64.mk(-2, -1), Caml_int64.mk(-3, -1), Caml_int64.one);
                 })
             ],
-            _1: /* :: */{
-              _0: [
+            tl: {
+              hd: [
                 "add_5",
                 (function (param) {
                     return commutative_add(Caml_int64.mk(-3, -1), Caml_int64.mk(-3, -1), Caml_int64.zero);
                   })
               ],
-              _1: /* :: */{
-                _0: [
+              tl: {
+                hd: [
                   "add_6",
                   (function (param) {
                       return commutative_add(Caml_int64.mk(4, 0), Caml_int64.mk(-3, -1), Caml_int64.mk(7, 0));
                     })
                 ],
-                _1: /* :: */{
-                  _0: [
+                tl: {
+                  hd: [
                     "add_7",
                     (function (param) {
                         return commutative_add(Caml_int64.mk(0, 1), Caml_int64.mk(-2147483648, 0), Caml_int64.mk(-2147483648, 0));
                       })
                   ],
-                  _1: /* :: */{
-                    _0: [
+                  tl: {
+                    hd: [
                       "add_8",
                       (function (param) {
                           return commutative_add(Caml_int64.mk(0, 1), Caml_int64.mk(-1, 0), Caml_int64.one);
                         })
                     ],
-                    _1: /* :: */{
-                      _0: [
+                    tl: {
+                      hd: [
                         "add_9",
                         (function (param) {
                             return commutative_add(Caml_int64.mk(-1, 0), Caml_int64.mk(-2147483648, 0), Caml_int64.mk(2147483647, 0));
                           })
                       ],
-                      _1: /* :: */{
-                        _0: [
+                      tl: {
+                        hd: [
                           "add_10",
                           (function (param) {
                               return commutative_add(Caml_int64.mk(-2147483648, 0), Caml_int64.mk(-2147483648, 0), Caml_int64.zero);
                             })
                         ],
-                        _1: /* :: */{
-                          _0: [
+                        tl: {
+                          hd: [
                             "add_11",
                             (function (param) {
                                 return commutative_add(Caml_int64.mk(-1, 0), Caml_int64.mk(-1, 0), Caml_int64.zero);
                               })
                           ],
-                          _1: /* :: */{
-                            _0: [
+                          tl: {
+                            hd: [
                               "to_int32",
                               (function (param) {
                                   return {
@@ -393,8 +393,8 @@ var suites = Pervasives.$at(/* :: */{
                                         };
                                 })
                             ],
-                            _1: /* :: */{
-                              _0: [
+                            tl: {
+                              hd: [
                                 "to_int",
                                 (function (param) {
                                     return {
@@ -404,8 +404,8 @@ var suites = Pervasives.$at(/* :: */{
                                           };
                                   })
                               ],
-                              _1: /* :: */{
-                                _0: [
+                              tl: {
+                                hd: [
                                   "of_int",
                                   (function (param) {
                                       return {
@@ -415,8 +415,8 @@ var suites = Pervasives.$at(/* :: */{
                                             };
                                     })
                                 ],
-                                _1: /* :: */{
-                                  _0: [
+                                tl: {
+                                  hd: [
                                     "lognot",
                                     (function (param) {
                                         return {
@@ -426,8 +426,8 @@ var suites = Pervasives.$at(/* :: */{
                                               };
                                       })
                                   ],
-                                  _1: /* :: */{
-                                    _0: [
+                                  tl: {
+                                    hd: [
                                       "neg",
                                       (function (param) {
                                           return {
@@ -437,8 +437,8 @@ var suites = Pervasives.$at(/* :: */{
                                                 };
                                         })
                                     ],
-                                    _1: /* :: */{
-                                      _0: [
+                                    tl: {
+                                      hd: [
                                         "File \"int64_test.ml\", line 80, characters 4-11",
                                         (function (param) {
                                             return {
@@ -448,8 +448,8 @@ var suites = Pervasives.$at(/* :: */{
                                                   };
                                           })
                                       ],
-                                      _1: /* :: */{
-                                        _0: [
+                                      tl: {
+                                        hd: [
                                           "File \"int64_test.ml\", line 81, characters 4-11",
                                           (function (param) {
                                               return {
@@ -459,8 +459,8 @@ var suites = Pervasives.$at(/* :: */{
                                                     };
                                             })
                                         ],
-                                        _1: /* :: */{
-                                          _0: [
+                                        tl: {
+                                          hd: [
                                             "sub1",
                                             (function (param) {
                                                 return {
@@ -470,8 +470,8 @@ var suites = Pervasives.$at(/* :: */{
                                                       };
                                               })
                                           ],
-                                          _1: /* :: */{
-                                            _0: [
+                                          tl: {
+                                            hd: [
                                               "xor1",
                                               (function (param) {
                                                   return {
@@ -487,8 +487,8 @@ var suites = Pervasives.$at(/* :: */{
                                                         };
                                                 })
                                             ],
-                                            _1: /* :: */{
-                                              _0: [
+                                            tl: {
+                                              hd: [
                                                 "or",
                                                 (function (param) {
                                                     return {
@@ -498,8 +498,8 @@ var suites = Pervasives.$at(/* :: */{
                                                           };
                                                   })
                                               ],
-                                              _1: /* :: */{
-                                                _0: [
+                                              tl: {
+                                                hd: [
                                                   "and",
                                                   (function (param) {
                                                       return {
@@ -509,8 +509,8 @@ var suites = Pervasives.$at(/* :: */{
                                                             };
                                                     })
                                                 ],
-                                                _1: /* :: */{
-                                                  _0: [
+                                                tl: {
+                                                  hd: [
                                                     "lsl",
                                                     (function (param) {
                                                         return {
@@ -589,8 +589,8 @@ var suites = Pervasives.$at(/* :: */{
                                                               };
                                                       })
                                                   ],
-                                                  _1: /* :: */{
-                                                    _0: [
+                                                  tl: {
+                                                    hd: [
                                                       "lsr",
                                                       (function (param) {
                                                           return {
@@ -669,8 +669,8 @@ var suites = Pervasives.$at(/* :: */{
                                                                 };
                                                         })
                                                     ],
-                                                    _1: /* :: */{
-                                                      _0: [
+                                                    tl: {
+                                                      hd: [
                                                         "asr",
                                                         (function (param) {
                                                             return {
@@ -749,8 +749,8 @@ var suites = Pervasives.$at(/* :: */{
                                                                   };
                                                           })
                                                       ],
-                                                      _1: /* :: */{
-                                                        _0: [
+                                                      tl: {
+                                                        hd: [
                                                           "mul simple",
                                                           (function (param) {
                                                               return {
@@ -760,8 +760,8 @@ var suites = Pervasives.$at(/* :: */{
                                                                     };
                                                             })
                                                         ],
-                                                        _1: /* :: */{
-                                                          _0: [
+                                                        tl: {
+                                                          hd: [
                                                             "of_int32",
                                                             (function (param) {
                                                                 return {
@@ -777,8 +777,8 @@ var suites = Pervasives.$at(/* :: */{
                                                                       };
                                                               })
                                                           ],
-                                                          _1: /* :: */{
-                                                            _0: [
+                                                          tl: {
+                                                            hd: [
                                                               "of_int32_singleton",
                                                               (function (param) {
                                                                   return {
@@ -788,8 +788,8 @@ var suites = Pervasives.$at(/* :: */{
                                                                         };
                                                                 })
                                                             ],
-                                                            _1: /* :: */{
-                                                              _0: [
+                                                            tl: {
+                                                              hd: [
                                                                 "File \"int64_test.ml\", line 134, characters 4-11",
                                                                 (function (param) {
                                                                     return {
@@ -799,8 +799,8 @@ var suites = Pervasives.$at(/* :: */{
                                                                           };
                                                                   })
                                                               ],
-                                                              _1: /* :: */{
-                                                                _0: [
+                                                              tl: {
+                                                                hd: [
                                                                   "to_int32",
                                                                   (function (param) {
                                                                       return {
@@ -816,8 +816,8 @@ var suites = Pervasives.$at(/* :: */{
                                                                             };
                                                                     })
                                                                 ],
-                                                                _1: /* :: */{
-                                                                  _0: [
+                                                                tl: {
+                                                                  hd: [
                                                                     "discard_sign",
                                                                     (function (param) {
                                                                         return {
@@ -827,8 +827,8 @@ var suites = Pervasives.$at(/* :: */{
                                                                               };
                                                                       })
                                                                   ],
-                                                                  _1: /* :: */{
-                                                                    _0: [
+                                                                  tl: {
+                                                                    hd: [
                                                                       "div_mod",
                                                                       (function (param) {
                                                                           return {
@@ -841,8 +841,8 @@ var suites = Pervasives.$at(/* :: */{
                                                                                 };
                                                                         })
                                                                     ],
-                                                                    _1: /* :: */{
-                                                                      _0: [
+                                                                    tl: {
+                                                                      hd: [
                                                                         "to_hex",
                                                                         (function (param) {
                                                                             return {
@@ -852,8 +852,8 @@ var suites = Pervasives.$at(/* :: */{
                                                                                   };
                                                                           })
                                                                       ],
-                                                                      _1: /* :: */{
-                                                                        _0: [
+                                                                      tl: {
+                                                                        hd: [
                                                                           "generic_compare",
                                                                           (function (param) {
                                                                               return {
@@ -863,8 +863,8 @@ var suites = Pervasives.$at(/* :: */{
                                                                                     };
                                                                             })
                                                                         ],
-                                                                        _1: /* :: */{
-                                                                          _0: [
+                                                                        tl: {
+                                                                          hd: [
                                                                             "test_compier_literal",
                                                                             (function (param) {
                                                                                 return {
@@ -874,8 +874,8 @@ var suites = Pervasives.$at(/* :: */{
                                                                                       };
                                                                               })
                                                                           ],
-                                                                          _1: /* :: */{
-                                                                            _0: [
+                                                                          tl: {
+                                                                            hd: [
                                                                               "generic_compare2",
                                                                               (function (param) {
                                                                                   return {
@@ -885,8 +885,8 @@ var suites = Pervasives.$at(/* :: */{
                                                                                         };
                                                                                 })
                                                                             ],
-                                                                            _1: /* :: */{
-                                                                              _0: [
+                                                                            tl: {
+                                                                              hd: [
                                                                                 "shift_left",
                                                                                 (function (param) {
                                                                                     return {
@@ -896,8 +896,8 @@ var suites = Pervasives.$at(/* :: */{
                                                                                           };
                                                                                   })
                                                                               ],
-                                                                              _1: /* :: */{
-                                                                                _0: [
+                                                                              tl: {
+                                                                                hd: [
                                                                                   "shift_right",
                                                                                   (function (param) {
                                                                                       return {
@@ -907,8 +907,8 @@ var suites = Pervasives.$at(/* :: */{
                                                                                             };
                                                                                     })
                                                                                 ],
-                                                                                _1: /* :: */{
-                                                                                  _0: [
+                                                                                tl: {
+                                                                                  hd: [
                                                                                     "fib_int64",
                                                                                     (function (param) {
                                                                                         return {
@@ -918,8 +918,8 @@ var suites = Pervasives.$at(/* :: */{
                                                                                               };
                                                                                       })
                                                                                   ],
-                                                                                  _1: /* :: */{
-                                                                                    _0: [
+                                                                                  tl: {
+                                                                                    hd: [
                                                                                       "fac_int64",
                                                                                       (function (param) {
                                                                                           return {
@@ -929,8 +929,8 @@ var suites = Pervasives.$at(/* :: */{
                                                                                                 };
                                                                                         })
                                                                                     ],
-                                                                                    _1: /* :: */{
-                                                                                      _0: [
+                                                                                    tl: {
+                                                                                      hd: [
                                                                                         "File \"int64_test.ml\", line 163, characters 6-13",
                                                                                         (function (param) {
                                                                                             return {
@@ -940,8 +940,8 @@ var suites = Pervasives.$at(/* :: */{
                                                                                                   };
                                                                                           })
                                                                                       ],
-                                                                                      _1: /* :: */{
-                                                                                        _0: [
+                                                                                      tl: {
+                                                                                        hd: [
                                                                                           "File \"int64_test.ml\", line 166, characters 6-13",
                                                                                           (function (param) {
                                                                                               return {
@@ -951,8 +951,8 @@ var suites = Pervasives.$at(/* :: */{
                                                                                                     };
                                                                                             })
                                                                                         ],
-                                                                                        _1: /* :: */{
-                                                                                          _0: [
+                                                                                        tl: {
+                                                                                          hd: [
                                                                                             "File \"int64_test.ml\", line 170, characters 6-13",
                                                                                             (function (param) {
                                                                                                 return {
@@ -962,7 +962,7 @@ var suites = Pervasives.$at(/* :: */{
                                                                                                       };
                                                                                               })
                                                                                           ],
-                                                                                          _1: /* [] */0
+                                                                                          tl: /* [] */0
                                                                                         }
                                                                                       }
                                                                                     }
