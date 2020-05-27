@@ -180,7 +180,9 @@ let buckle_script_flags : (string * Arg.spec * string) list =
   )
   ::
   ("-bs-jsx",
-    Arg.Int (fun i -> Js_config.jsx_version := i),
+    Arg.Int (fun i -> 
+      (if i <> 3 then raise (Arg.Bad (" Not supported jsx version : " ^ string_of_int i)));
+      Js_config.jsx_version := i),
     " Set jsx version"
   )
   :: 

@@ -14,10 +14,10 @@ var jsDir = path.join(__dirname, "..", "lib", "js");
 
 var runtimeFiles = fs.readdirSync(runtimeDir, "ascii");
 var runtimeMlFiles = runtimeFiles.filter(
-  x => !x.startsWith("bs_stdlib_mini") && x.endsWith(".ml") && x !== "js.ml"
+  (x) => !x.startsWith("bs_stdlib_mini") && x.endsWith(".ml") && x !== "js.ml"
 );
 var runtimeMliFiles = runtimeFiles.filter(
-  x => !x.startsWith("bs_stdlib_mini") && x.endsWith(".mli") && x !== "js.mli"
+  (x) => !x.startsWith("bs_stdlib_mini") && x.endsWith(".mli") && x !== "js.mli"
 );
 var runtimeSourceFiles = runtimeMlFiles.concat(runtimeMliFiles);
 var runtimeJsFiles = [...new Set(runtimeSourceFiles.map(baseName))];
@@ -58,9 +58,7 @@ function generateVisitorPattern() {
   if (hasCamlp4()) {
     return visitorPattern;
   } else {
-    console.warn(
-      `camlp4of ignored`
-    );
+    console.warn(`camlp4of ignored`);
     return ``;
   }
 }
@@ -134,7 +132,7 @@ var getVersionString = () => {
     var searcher = "version";
     try {
       var output = cp.execSync(`${getOcamldepFile()} -version`, {
-        encoding: "ascii"
+        encoding: "ascii",
       });
       versionString = output
         .substring(output.indexOf(searcher) + searcher.length)
@@ -391,7 +389,7 @@ function targetToString(file, cwd) {
  * @returns {string} return a string separated with whitespace
  */
 function targetsToString(files, cwd) {
-  return files.map(x => targetToString(x, cwd)).join(" ");
+  return files.map((x) => targetToString(x, cwd)).join(" ");
 }
 /**
  *
@@ -416,7 +414,7 @@ function ninjaBuild(outputs, inputs, rule, deps, cwd, overrides) {
     stmt +=
       `\n` +
       overrides
-        .map(x => {
+        .map((x) => {
           return `    ${x.key} = ${x.value}`;
         })
         .join("\n");
@@ -468,7 +466,7 @@ function ninjaQuickBuild(
     rule,
     ds.concat(dds),
     cwd,
-    overrides.map(x => {
+    overrides.map((x) => {
       return { key: x[0], value: x[1] };
     })
   );
@@ -483,7 +481,7 @@ function ninjaQuickBuild(
  */
 function ninjaQuickBuidList(xs) {
   return xs
-    .map(x => ninjaQuickBuild(x[0], x[1], x[2], x[3], x[4], x[5], x[6]))
+    .map((x) => ninjaQuickBuild(x[0], x[1], x[2], x[3], x[4], x[5], x[6]))
     .join("\n");
 }
 
@@ -495,7 +493,7 @@ function ninjaQuickBuidList(xs) {
  */
 function cppoList(cwd, xs) {
   return xs
-    .map(x => {
+    .map((x) => {
       /**
        * @type {KV[]}
        */
@@ -526,7 +524,7 @@ function cppoList(cwd, xs) {
  */
 function mllList(cwd, xs) {
   return xs
-    .map(x => {
+    .map((x) => {
       var output = baseName(x) + ".ml";
       return ninjaQuickBuild(output, x, mllRuleName, cwd, [], [], []);
     })
@@ -556,7 +554,7 @@ function pseudoTarget(name) {
  * @returns {Targets}
  */
 function fileTargets(args) {
-  return args.map(name => fileTarget(name));
+  return args.map((name) => fileTarget(name));
 }
 
 /**
@@ -576,10 +574,10 @@ function buildStmt(outputs, inputs, rule, depsMap, cwd, overrides, extraDeps) {
   for (var i = 0; i < outputs.length; ++i) {
     var curDeps = depsMap.get(outputs[i]);
     if (curDeps !== undefined) {
-      curDeps.forEach(x => deps.add(x));
+      curDeps.forEach((x) => deps.add(x));
     }
   }
-  extraDeps.forEach(x => deps.add(x));
+  extraDeps.forEach((x) => deps.add(x));
   return ninjaBuild(os, is, rule, deps.toSortedArray(), cwd, overrides);
 }
 
@@ -618,21 +616,21 @@ function ocamlDepForBscAsync(files, dir, depsMap) {
       `${getOcamldepFile()} -allow-approx -one-line -native ${files.join(" ")}`,
       {
         cwd: dir,
-        encoding: "ascii"
+        encoding: "ascii",
       },
-      function(error, stdout, stderr) {
+      function (error, stdout, stderr) {
         if (error !== null) {
           return reject(error);
         } else {
-          var pairs = stdout.split("\n").map(x => x.split(":"));
-          pairs.forEach(x => {
+          var pairs = stdout.split("\n").map((x) => x.split(":"));
+          pairs.forEach((x) => {
             var deps;
             let source = replaceCmj(x[0]);
             if (x[1] !== undefined && (deps = x[1].trim())) {
               deps = deps.split(" ");
               updateDepsKVsByFile(
                 source,
-                deps.map(x => replaceCmj(x)),
+                deps.map((x) => replaceCmj(x)),
                 depsMap
               );
             }
@@ -654,8 +652,8 @@ function ocamlDepForBscAsync(files, dir, depsMap) {
  * By default `ocamldep.opt` only list dependencies in its args
  */
 function depModulesForBscAsync(files, dir, depsMap) {
-  let ocamlFiles = files.filter(x => x.endsWith(".ml") || x.endsWith(".mli"));
-  let reFiles = files.filter(x => x.endsWith(".re") || x.endsWith(".rei"));
+  let ocamlFiles = files.filter((x) => x.endsWith(".ml") || x.endsWith(".mli"));
+  let reFiles = files.filter((x) => x.endsWith(".re") || x.endsWith(".rei"));
   /**
    *
    * @param {(value:void) =>void} resolve
@@ -667,12 +665,12 @@ function depModulesForBscAsync(files, dir, depsMap) {
      * @param {string} stdout
      * @param {string} stderr
      */
-    let fn = function(error, stdout, stderr) {
+    let fn = function (error, stdout, stderr) {
       if (error !== null) {
         return reject(error);
       } else {
-        var pairs = stdout.split("\n").map(x => x.split(":"));
-        pairs.forEach(x => {
+        var pairs = stdout.split("\n").map((x) => x.split(":"));
+        pairs.forEach((x) => {
           var modules;
           let source = sourceToTarget(x[0].trim());
           if (x[1] !== undefined && (modules = x[1].trim())) {
@@ -687,7 +685,7 @@ function depModulesForBscAsync(files, dir, depsMap) {
   };
   let config = {
     cwd: dir,
-    encoding: "ascii"
+    encoding: "ascii",
   };
   return [
     new Promise((resolve, reject) => {
@@ -710,7 +708,7 @@ function depModulesForBscAsync(files, dir, depsMap) {
         config,
         cb(resolve, reject)
       );
-    })
+    }),
   ];
 }
 
@@ -725,7 +723,7 @@ function collectTarget(sourceFiles) {
    * @type {Map<string,FileInfo>}
    */
   var allTargets = new Map();
-  sourceFiles.forEach(x => {
+  sourceFiles.forEach((x) => {
     var { ext, name } = path.parse(x);
     var existExt = allTargets.get(name);
     if (existExt === undefined) {
@@ -885,7 +883,7 @@ ${ninjaQuickBuidList([
     ninjaCwd,
     [["bsc_flags", "-nostdlib -nopervasives"]],
     [],
-    externalDeps
+    externalDeps,
   ],
   [
     ["js.cmj", "js.cmi"],
@@ -894,8 +892,8 @@ ${ninjaQuickBuidList([
     ninjaCwd,
     [["bsc_flags", "$bsc_no_open_flags"]],
     [],
-    externalDeps
-  ]
+    externalDeps,
+  ],
 ])}
 `;
   /**
@@ -921,7 +919,7 @@ ${ninjaQuickBuidList([
   try {
     await Promise.all([
       runJSCheckAsync(depsMap),
-      ocamlDepForBscAsync(runtimeSourceFiles, runtimeDir, depsMap)
+      ocamlDepForBscAsync(runtimeSourceFiles, runtimeDir, depsMap),
     ]);
     var stmts = generateNinja(depsMap, allTargets, ninjaCwd, externalDeps);
     stmts.push(
@@ -1012,7 +1010,7 @@ ${cppoList(ninjaCwd, [
   ["belt_internalSetString.ml", "internal_set.cppo.ml", dTypeString],
   ["belt_internalSetInt.ml", "internal_set.cppo.ml", dTypeInt],
   ["js_typed_array.ml", "js_typed_array.cppo.ml", ""],
-  ["js_typed_array2.ml", "js_typed_array2.cppo.ml", ""]
+  ["js_typed_array2.ml", "js_typed_array2.cppo.ml", ""],
 ])}
 `
     : `
@@ -1020,18 +1018,18 @@ ${cppoList(ninjaCwd, [
 }
 ${ninjaQuickBuidList([
   [["belt.cmj", "belt.cmi"], "belt.ml", "cc", ninjaCwd, [], [], externalDeps],
-  [["node.cmj", "node.cmi"], "node.ml", "cc", ninjaCwd, [], [], externalDeps]
+  [["node.cmj", "node.cmi"], "node.ml", "cc", ninjaCwd, [], [], externalDeps],
 ])}
 `;
   var othersDirFiles = fs.readdirSync(othersDir, "ascii");
   var jsPrefixSourceFiles = othersDirFiles.filter(
-    x =>
+    (x) =>
       x.startsWith("js") &&
       (x.endsWith(".ml") || x.endsWith(".mli")) &&
       !x.includes(".cppo")
   );
   var othersFiles = othersDirFiles.filter(
-    x =>
+    (x) =>
       !x.startsWith("js") &&
       x !== "belt.ml" &&
       x !== "node.ml" &&
@@ -1044,7 +1042,7 @@ ${ninjaQuickBuidList([
   let depsMap = new Map();
   await Promise.all([
     ocamlDepForBscAsync(jsPrefixSourceFiles, othersDir, jsDepsMap),
-    ocamlDepForBscAsync(othersFiles, othersDir, depsMap)
+    ocamlDepForBscAsync(othersFiles, othersDir, depsMap),
   ]);
   var jsOutput = generateNinja(jsDepsMap, jsTargets, ninjaCwd, externalDeps);
   jsOutput.push(phony(js_package, fileTargets(allJsTargets), ninjaCwd));
@@ -1110,7 +1108,7 @@ ${ninjaQuickBuidList([
     ninjaCwd,
     bsc_builtin_overrides,
     [],
-    externalDeps
+    externalDeps,
   ],
   // we make it still depends on external
   // to enjoy free ride on dev config for compiler-deps
@@ -1122,7 +1120,7 @@ ${ninjaQuickBuidList([
     ninjaCwd,
     bsc_builtin_overrides,
     "camlinternalFormatBasics.cmi",
-    externalDeps
+    externalDeps,
   ],
   [
     "pervasives.cmj",
@@ -1131,7 +1129,7 @@ ${ninjaQuickBuidList([
     ninjaCwd,
     bsc_builtin_overrides,
     "pervasives.cmi",
-    externalDeps
+    externalDeps,
   ],
   [
     "pervasives.cmi",
@@ -1140,12 +1138,12 @@ ${ninjaQuickBuidList([
     ninjaCwd,
     bsc_builtin_overrides,
     "camlinternalFormatBasics.cmj",
-    externalDeps
-  ]
+    externalDeps,
+  ],
 ])}
 `;
   var stdlibDirFiles = fs.readdirSync(stdlibDir, "ascii");
-  var sources = stdlibDirFiles.filter(x => {
+  var sources = stdlibDirFiles.filter((x) => {
     return (
       !x.startsWith("camlinternalFormatBasics") &&
       !x.startsWith("pervasives") &&
@@ -1159,7 +1157,7 @@ ${ninjaQuickBuidList([
     "camlinternalFormatBasics.cmi",
     "camlinternalFormatBasics.cmj",
     "pervasives.cmi",
-    "pervasives.cmj"
+    "pervasives.cmj",
   ]);
   targets.forEach((ext, mod) => {
     switch (ext) {
@@ -1192,7 +1190,7 @@ function getDeps(text) {
   var deps = [];
   text.replace(
     /(\/\*[\w\W]*?\*\/|\/\/[^\n]*|[.$]r)|\brequire\s*\(\s*["']([^"']*)["']\s*\)/g,
-    function(_, ignore, id) {
+    function (_, ignore, id) {
       if (!ignore) deps.push(id);
       return ""; // TODO: examine the regex
     }
@@ -1242,11 +1240,11 @@ ${mllRule}
 ${mllList(ninjaCwd, [
   "arith_lexer.mll",
   "number_lexer.mll",
-  "simple_lexer_test.mll"
+  "simple_lexer_test.mll",
 ])}
 `;
   var testDirFiles = fs.readdirSync(testDir, "ascii");
-  var sources = testDirFiles.filter(x => {
+  var sources = testDirFiles.filter((x) => {
     return (
       x.endsWith(".re") ||
       x.endsWith(".rei") ||
@@ -1269,7 +1267,7 @@ ${mllList(ninjaCwd, [
  * @param {DepsMap} depsMap
  */
 function runJSCheckAsync(depsMap) {
-  return new Promise(resolve => {
+  return new Promise((resolve) => {
     var count = 0;
     var tasks = runtimeJsFiles.length;
     var updateTick = () => {
@@ -1278,12 +1276,14 @@ function runJSCheckAsync(depsMap) {
         resolve(count);
       }
     };
-    runtimeJsFiles.forEach(name => {
+    runtimeJsFiles.forEach((name) => {
       var jsFile = path.join(jsDir, name + ".js");
-      fs.readFile(jsFile, "utf8", function(err, fileContent) {
+      fs.readFile(jsFile, "utf8", function (err, fileContent) {
         if (err === null) {
-          var deps = getDeps(fileContent).map(x => path.parse(x).name + ".cmj");
-          fs.exists(path.join(runtimeDir, name + ".mli"), exist => {
+          var deps = getDeps(fileContent).map(
+            (x) => path.parse(x).name + ".cmj"
+          );
+          fs.exists(path.join(runtimeDir, name + ".mli"), (exist) => {
             if (exist) {
               deps.push(name + ".cmi");
             }
@@ -1300,29 +1300,29 @@ function runJSCheckAsync(depsMap) {
 }
 
 function checkEffect() {
-  var jsPaths = runtimeJsFiles.map(x => path.join(jsDir, x + ".js"));
+  var jsPaths = runtimeJsFiles.map((x) => path.join(jsDir, x + ".js"));
   var effect = jsPaths
-    .map(x => {
+    .map((x) => {
       return {
         file: x,
-        content: fs.readFileSync(x, "utf8")
+        content: fs.readFileSync(x, "utf8"),
       };
     })
     .map(({ file, content: x }) => {
       if (/No side effect|This output is empty/.test(x)) {
         return {
           file,
-          effect: "pure"
+          effect: "pure",
         };
       } else if (/Not a pure module/.test(x)) {
         return {
           file,
-          effect: "false"
+          effect: "false",
         };
       } else {
         return {
           file,
-          effect: "unknown"
+          effect: "unknown",
         };
       }
     })
@@ -1335,13 +1335,13 @@ function checkEffect() {
     "caml_int32.js",
     "caml_int64.js",
     "caml_lexer.js",
-    "caml_parser.js"
+    "caml_parser.js",
   ]);
 
   var assert = require("assert");
   assert(
     effect.length === black_list.size &&
-      effect.every(x => black_list.has(x.file))
+      effect.every((x) => black_list.has(x.file))
   );
 
   console.log(effect);
@@ -1365,7 +1365,7 @@ function sortFilesByDeps(domain, dependency_graph) {
    * @param {string[]} path
    * @param {string} current
    */
-  var visit = function(visiting, path, current) {
+  var visit = function (visiting, path, current) {
     if (visiting.has(current)) {
       throw new Error(`cycle: ${path.concat(current).join(" ")}`);
     }
@@ -1373,7 +1373,7 @@ function sortFilesByDeps(domain, dependency_graph) {
       visiting.add(current);
       var next = dependency_graph.get(current);
       if (next !== undefined && next.size > 0) {
-        next.forEach(x => {
+        next.forEach((x) => {
           visit(visiting, path.concat(current), x);
         });
       }
@@ -1460,13 +1460,13 @@ function readdirSync(dir) {
  */
 function test(dir) {
   return readdirSync(path.join(jscompDir, dir))
-    .filter(x => {
+    .filter((x) => {
       return (
         (x.endsWith(".ml") || x.endsWith(".mli")) &&
         !(x.endsWith(".cppo.ml") || x.endsWith(".cppo.mli"))
       );
     })
-    .map(x => path.join(dir, x));
+    .map((x) => path.join(dir, x));
 }
 
 /**
@@ -1538,21 +1538,20 @@ ${cppoList("ext", [
   [
     "ordered_hash_map_local_ident.ml",
     "ordered_hash_map.cppo.ml",
-    dTypeLocalIdent
+    dTypeLocalIdent,
   ],
   ["hash_string.ml", "hash.cppo.ml", dTypeString],
   ["hash_int.ml", "hash.cppo.ml", dTypeInt],
   ["hash_ident.ml", "hash.cppo.ml", dTypeIdent],
-  ["hash.ml", "hash.cppo.ml", dTypeFunctor]
+  ["hash.ml", "hash.cppo.ml", dTypeFunctor],
 ])}
 ${cppoList("outcome_printer", [
   ["tweaked_reason_oprint.ml", "tweaked_reason_oprint.cppo.ml", ""],
   ["reason_syntax_util.ml", "reason_syntax_util.cppo.ml", ""],
-  ["reason_syntax_util.mli", "reason_syntax_util.cppo.mli", ""]
+  ["reason_syntax_util.mli", "reason_syntax_util.cppo.mli", ""],
 ])}
 ${cppoList("syntax", [
   ["reactjs_jsx_ppx_v3.ml", "reactjs_jsx_ppx.cppo.ml", ""],
-  ["reactjs_jsx_ppx_v2.ml", "reactjs_jsx_ppx.cppo.ml", "REACT_JS_JSX_V2"]
 ])}
 build ../${
     process.platform
@@ -1566,7 +1565,7 @@ build ../${
   cp.execFileSync(vendorNinjaPath, ["-f", cppoNinjaFile, "--verbose"], {
     cwd: jscompDir,
     stdio: [0, 1, 2],
-    encoding: "utf8"
+    encoding: "utf8",
   });
 }
 /**
@@ -1590,14 +1589,15 @@ function nativeNinja() {
     "bsb_helper",
     "ounit",
     "ounit_tests",
-    "main"
+    "main",
   ];
-  var includes = sourceDirs.map(x => `-I ${x}`).join(" ");
+  var includes = sourceDirs.map((x) => `-I ${x}`).join(" ");
 
   var templateNative = `
 subninja ${getPreprocessorFileName()}
 rule optc
-    command = BS_NATIVE=${!!process.env.BS_NATIVE} $ocamlopt -safe-string -I +compiler-libs -opaque ${includes} -g -linscan -w A-4-9-40..42-30-48-50 -warn-error A -absname -c $in
+    command = BS_NATIVE=${!!process.env
+      .BS_NATIVE} $ocamlopt -safe-string -I +compiler-libs -opaque ${includes} -g -linscan -w A-4-9-40..42-30-48-50 -warn-error A -absname -c $in
     description = $out : $in
 rule archive
     command = $ocamlopt -a $in -o $out
@@ -1671,7 +1671,7 @@ build ../odoc_gen/generator.cmxs : mk_shared ../odoc_gen/generator.mli ../odoc_g
    * @type { {name : string, libs: string[]}[]}
    */
   var libs = [];
-  sourceDirs.forEach(name => {
+  sourceDirs.forEach((name) => {
     if (name !== "main" && name !== "stubs") {
       libs.push({ name, libs: [] });
     }
@@ -1690,7 +1690,7 @@ build ../odoc_gen/generator.cmxs : mk_shared ../odoc_gen/generator.mli ../odoc_g
       " "
     )}`,
     { cwd: jscompDir, encoding: "ascii" },
-    function(error, out) {
+    function (error, out) {
       if (error !== null) {
         throw error;
       }
@@ -1699,8 +1699,8 @@ build ../odoc_gen/generator.cmxs : mk_shared ../odoc_gen/generator.mli ../odoc_g
        */
       var map = new Map();
 
-      var pairs = out.split("\n").map(x => x.split(":").map(x => x.trim()));
-      pairs.forEach(pair => {
+      var pairs = out.split("\n").map((x) => x.split(":").map((x) => x.trim()));
+      pairs.forEach((pair) => {
         /**
          * @type {string[]|string}
          */
@@ -1713,7 +1713,7 @@ build ../odoc_gen/generator.cmxs : mk_shared ../odoc_gen/generator.mli ../odoc_g
           map.set(key, new Set(deps));
         }
         if (key.endsWith("cmx")) {
-          libs.forEach(x => {
+          libs.forEach((x) => {
             if (path.dirname(key) === x.name) {
               x.libs.push(key);
             }
@@ -1723,7 +1723,7 @@ build ../odoc_gen/generator.cmxs : mk_shared ../odoc_gen/generator.mli ../odoc_g
 
       // not ocamldep output
       // when no mli exists no deps for cmi otherwise add cmi
-      var stmts = pairs.map(pair => {
+      var stmts = pairs.map((pair) => {
         if (pair[0]) {
           var target = pair[0];
           var y = path.parse(target);
@@ -1746,7 +1746,7 @@ build ../odoc_gen/generator.cmxs : mk_shared ../odoc_gen/generator.mli ../odoc_g
           }
         }
       });
-      libs.forEach(x => {
+      libs.forEach((x) => {
         var output = sortFilesByDeps(x.libs, map);
         var name = x.name;
         stmts.push(`build ${name}/${name}.cmxa : archive ${output.join(" ")}`);
@@ -1772,7 +1772,7 @@ function main() {
       checkEffect();
     }
     if (process.argv.includes("-native")) {
-      process.env.BS_NATIVE = "true"
+      process.env.BS_NATIVE = "true";
       emptyCount++;
     }
     if (process.argv.includes("-playground")) {
@@ -1787,7 +1787,7 @@ function main() {
           cp.execFileSync(vendorNinjaPath, {
             encoding: "utf8",
             cwd: jscompDir,
-            stdio: [0, 1, 2]
+            stdio: [0, 1, 2],
           });
           if (!isPlayground) {
             cp.execFileSync(
@@ -1795,14 +1795,14 @@ function main() {
               {
                 encoding: "utf8",
                 cwd: jscompDir,
-                stdio: [0, 1, 2]
+                stdio: [0, 1, 2],
               }
             );
           }
           cp.execFileSync(vendorNinjaPath, ["-f", "snapshot.ninja"], {
             encoding: "utf8",
             cwd: jscompDir,
-            stdio: [0, 1, 2]
+            stdio: [0, 1, 2],
           });
         } catch (e) {
           console.log(e.message);
@@ -1815,14 +1815,17 @@ function main() {
           cp.execFileSync(vendorNinjaPath, ["-t", "clean"], {
             encoding: "utf8",
             cwd: jscompDir,
-            stdio: [0, 1]
+            stdio: [0, 1],
           });
         } catch (e) {}
-        cp.execSync(`git clean -dfx jscomp ${process.platform} lib && rm -rf lib/js/*.js && rm -rf lib/es6/*.js`, {
-          encoding: "utf8",
-          cwd: path.join(__dirname, ".."),
-          stdio: [0, 1, 2]
-        });
+        cp.execSync(
+          `git clean -dfx jscomp ${process.platform} lib && rm -rf lib/js/*.js && rm -rf lib/es6/*.js`,
+          {
+            encoding: "utf8",
+            cwd: path.join(__dirname, ".."),
+            stdio: [0, 1, 2],
+          }
+        );
         break;
       case "config":
         console.log(`config for the first time may take a while`);
@@ -1834,15 +1837,15 @@ function main() {
         console.log(`run cleaning first`);
         cp.execSync(`node ${__filename} clean`, {
           cwd: __dirname,
-          stdio: [0, 1, 2]
+          stdio: [0, 1, 2],
         });
         cp.execSync(`node ${__filename} config`, {
           cwd: __dirname,
-          stdio: [0, 1, 2]
+          stdio: [0, 1, 2],
         });
         cp.execSync(`node ${__filename} build`, {
           cwd: __dirname,
-          stdio: [0, 1, 2]
+          stdio: [0, 1, 2],
         });
         break;
       case "docs":
