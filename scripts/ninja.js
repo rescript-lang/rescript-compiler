@@ -1818,7 +1818,7 @@ function main() {
             stdio: [0, 1]
           });
         } catch (e) {}
-        cp.execSync(`git clean -dfx jscomp ${process.platform} lib`, {
+        cp.execSync(`git clean -dfx jscomp ${process.platform} lib && rm -rf lib/js/*.js && rm -rf lib/es6/*.js`, {
           encoding: "utf8",
           cwd: path.join(__dirname, ".."),
           stdio: [0, 1, 2]
