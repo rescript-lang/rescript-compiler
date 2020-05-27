@@ -194,6 +194,15 @@ val inline_record_access :
   Int32.t -> 
   t 
 
+val variant_access : 
+  t -> 
+  int32 -> 
+  t 
+
+val cons_access : 
+  t -> 
+  int32 -> 
+  t 
 
 val extension_access : 
   t ->

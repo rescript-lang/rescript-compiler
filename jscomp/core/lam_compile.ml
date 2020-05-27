@@ -391,7 +391,13 @@ and compile_recursive_let ~all_bindings
               (match tag_info with 
               | Blk_record xs -> Fld_record_set xs.(i)
               | Blk_record_inlined xs -> Fld_record_inline_set xs.fields.(i)
-              | Blk_constructor _ -> Fld_record_inline_set ("_" ^ string_of_int i)
+              | Blk_constructor p -> 
+                let is_cons = p.name = Literals.cons in 
+                begin match is_cons,i with
+                | true, 0 -> Fld_record_inline_set Literals.hd
+                | true, 1 -> Fld_record_inline_set Literals.tl
+                | _, _ ->  Fld_record_inline_set ("_" ^ string_of_int i)
+                end
               | _ -> assert false) (E.var id)  (Int32.of_int i)                    
                 (match x with 
                  | Lvar lid  -> E.var lid

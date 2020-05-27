@@ -374,6 +374,16 @@ let record_access (e : t) (name : string) (pos : int32) =
 (* The same as {!record_access} except tag*)
 let inline_record_access = record_access
 
+let variant_access (e : t)  (pos : int32) =  
+  inline_record_access e ("_" ^ Int32.to_string pos) pos
+  
+let cons_access (e : t) (pos : int32) = 
+  inline_record_access e  
+    (match pos with 
+     | 0l ->  Literals.hd 
+     | 1l ->  Literals.tl 
+     | _ ->  ("_" ^ Int32.to_string pos)) pos 
+
 let poly_var_tag_access (e : t)  = 
   match e.expression_desc with
   | Caml_block (l,_, _, _) when no_side_effect e

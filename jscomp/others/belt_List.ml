@@ -80,7 +80,7 @@ type poly = { unsafeMutateTail : 'a . 'a t  -> 'a t  -> unit } [@@unboxed]
 *)
 (* relies on list internal representation *)
 let m : poly = {unsafeMutateTail = [%raw{|function(xs,ys){
-      xs._1 = ys 
+      xs.tl = ys 
 }|}]}
 
 

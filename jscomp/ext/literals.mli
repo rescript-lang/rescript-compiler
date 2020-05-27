@@ -141,3 +141,7 @@ val exception_id : string
 
 val polyvar_hash : string
 val polyvar_value : string
+
+val cons : string
+val hd : string
+val tl : string

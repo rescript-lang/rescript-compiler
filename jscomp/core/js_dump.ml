@@ -853,9 +853,15 @@ and expression_desc cxt ~(level:int) f x : cxt  =
       pp_comment_option f (Some p.name);
     expression_desc cxt ~level f (Object objs)  
   | Caml_block(el,_,tag, (Blk_constructor p)) -> 
+    let is_cons = p.name = Literals.cons in   
     let objs =     
       let tails =   
-        Ext_list.mapi_append el (fun i e -> "_" ^ string_of_int i , e )
+        Ext_list.mapi_append el (fun i e -> 
+          (match is_cons, i with 
+          | true,  0 -> Literals.hd
+          | true,  1 -> Literals.tl 
+          | _ ->
+            "_" ^ string_of_int i) , e )
           (if !Js_config.debug then 
              ["NAME", E.str p.name]
            else []) in         
@@ -865,7 +871,8 @@ and expression_desc cxt ~(level:int) f x : cxt  =
         (L.tag,
           if !Js_config.debug then tag else {tag with comment = Some p.name}) :: tails
     in 
-    if p.num_nonconst = 1 && not !Js_config.debug then 
+    if p.num_nonconst = 1 && not !Js_config.debug 
+      && not is_cons then 
       pp_comment_option f (Some p.name);
     expression_desc cxt ~level f (Object objs)
   | Caml_block ( _, _, _, (Blk_module_export | Blk_na _ )) -> assert false
