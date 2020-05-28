@@ -145,3 +145,5 @@ val polyvar_value : string
 val cons : string
 val hd : string
 val tl : string
+val lazy_done : string
+val lazy_val : string

@@ -26,9 +26,10 @@
  
 (* Internals of forcing lazy values. *)
 type 'a t = {
-  mutable tag : bool [@bs.as "RE_LAZY_DONE"] ; 
+  mutable tag : bool [@bs.as "LAZY_DONE"] ; 
   (* Invariant: name  *)
-  mutable value : 'a (* its type is ['a] or [unit -> 'a ] *)
+  mutable value : 'a [@bs.as "VAL"]
+  (* its type is ['a] or [unit -> 'a ] *)
 }
 
 
