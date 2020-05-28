@@ -115,8 +115,8 @@ function chop_extension_if_any(fname) {
 var os_path_separator_char = Filename.dir_sep.charCodeAt(0);
 
 function relative_path(file_or_dir_1, file_or_dir_2) {
-  var relevant_dir1 = file_or_dir_1.HASH >= 781515420 ? Curry._1(Filename.dirname, file_or_dir_1.value) : file_or_dir_1.value;
-  var relevant_dir2 = file_or_dir_2.HASH >= 781515420 ? Curry._1(Filename.dirname, file_or_dir_2.value) : file_or_dir_2.value;
+  var relevant_dir1 = file_or_dir_1.HASH >= 781515420 ? Curry._1(Filename.dirname, file_or_dir_1.VAL) : file_or_dir_1.VAL;
+  var relevant_dir2 = file_or_dir_2.HASH >= 781515420 ? Curry._1(Filename.dirname, file_or_dir_2.VAL) : file_or_dir_2.VAL;
   var dir1 = Ext_string_test.split(undefined, relevant_dir1, os_path_separator_char);
   var dir2 = Ext_string_test.split(undefined, relevant_dir2, os_path_separator_char);
   var go = function (_dir1, _dir2) {
@@ -145,22 +145,22 @@ function relative_path(file_or_dir_1, file_or_dir_2) {
 }
 
 function node_relative_path(node_modules_shorten, file1, dep_file) {
-  var file2 = dep_file.value;
+  var file2 = dep_file.VAL;
   var v = Ext_string_test.find(undefined, Test_literals.node_modules, file2);
   var len = file2.length;
   if (!(node_modules_shorten && v >= 0)) {
     return relative_path(dep_file.HASH >= 781515420 ? ({
                     HASH: /* File */781515420,
-                    value: absolute_path(dep_file.value)
+                    VAL: absolute_path(dep_file.VAL)
                   }) : ({
                     HASH: /* Dir */3405101,
-                    value: absolute_path(dep_file.value)
+                    VAL: absolute_path(dep_file.VAL)
                   }), file1.HASH >= 781515420 ? ({
                     HASH: /* File */781515420,
-                    value: absolute_path(file1.value)
+                    VAL: absolute_path(file1.VAL)
                   }) : ({
                     HASH: /* Dir */3405101,
-                    value: absolute_path(file1.value)
+                    VAL: absolute_path(file1.VAL)
                   })) + (node_sep + Curry._1(Filename.basename, file2));
   }
   var skip = function (_i) {

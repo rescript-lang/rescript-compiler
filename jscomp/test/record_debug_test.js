@@ -134,12 +134,12 @@ var h = {
 
 var v2 = {
   HASH: /* C */67,
-  value: 2
+  VAL: 2
 };
 
 var v3 = {
   HASH: /* C */67,
-  value: [
+  VAL: [
     2,
     3
   ]

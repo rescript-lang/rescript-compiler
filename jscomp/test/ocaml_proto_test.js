@@ -59,7 +59,7 @@ var message_counter = {
 
 function extension_range_range(from, to_) {
   var to_$1 = typeof to_ === "number" ? /* To_max */0 : /* To_number */({
-        _0: to_.value
+        _0: to_.VAL
       });
   return {
           TAG: /* Extension_range */1,
@@ -1104,7 +1104,7 @@ var yyact = [
       var _3 = Parsing.peek_val(__caml_parser_env, 0);
       return extension_range_range(_1, {
                   HASH: /* Number */-703661335,
-                  value: _3
+                  VAL: _3
                 });
     }),
   (function (__caml_parser_env) {

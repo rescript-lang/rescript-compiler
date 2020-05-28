@@ -29,7 +29,7 @@ function _with_in(filename, f) {
     Caml_external_polyfill.resolve("caml_ml_close_channel")(ic);
     return {
             HASH: /* Error */106380200,
-            value: Printexc.to_string(e)
+            VAL: Printexc.to_string(e)
           };
   }
 }
@@ -109,7 +109,7 @@ function _must_escape(s) {
 
 function to_buf(b, t) {
   if (t.HASH >= 848054398) {
-    var l = t.value;
+    var l = t.VAL;
     if (l) {
       if (l.tl) {
         $$Buffer.add_char(b, /* "(" */40);
@@ -141,7 +141,7 @@ function to_buf(b, t) {
       return $$Buffer.add_string(b, "()");
     }
   }
-  var s = t.value;
+  var s = t.VAL;
   if (_must_escape(s)) {
     return Curry._1(Printf.bprintf(b, /* Format */{
                     _0: {
@@ -172,7 +172,7 @@ function to_string(t) {
 
 function print(fmt, t) {
   if (t.HASH >= 848054398) {
-    var l = t.value;
+    var l = t.VAL;
     if (l) {
       if (l.tl) {
         Format.fprintf(fmt, /* Format */{
@@ -266,7 +266,7 @@ function print(fmt, t) {
       return Format.pp_print_string(fmt, "()");
     }
   }
-  var s = t.value;
+  var s = t.VAL;
   if (_must_escape(s)) {
     return Curry._1(Format.fprintf(fmt, /* Format */{
                     _0: {
@@ -291,7 +291,7 @@ function print(fmt, t) {
 
 function print_noindent(fmt, t) {
   if (t.HASH >= 848054398) {
-    var l = t.value;
+    var l = t.VAL;
     if (l) {
       if (l.tl) {
         Format.pp_print_char(fmt, /* "(" */40);
@@ -323,7 +323,7 @@ function print_noindent(fmt, t) {
       return Format.pp_print_string(fmt, "()");
     }
   }
-  var s = t.value;
+  var s = t.VAL;
   if (_must_escape(s)) {
     return Curry._1(Format.fprintf(fmt, /* Format */{
                     _0: {
@@ -482,7 +482,7 @@ function _error(t, msg) {
                 var msg$prime = $$Buffer.contents(b);
                 return {
                         HASH: /* Error */106380200,
-                        value: msg$prime
+                        VAL: msg$prime
                       };
               }), b, msg);
 }
@@ -602,7 +602,7 @@ function expr_list(acc, k, t) {
       if (switcher === 32) {
         return Curry._2(k, undefined, {
                     HASH: /* List */848054398,
-                    value: List.rev(acc)
+                    VAL: List.rev(acc)
                   });
       }
       
@@ -620,7 +620,7 @@ function expr_list(acc, k, t) {
                       } else {
                         return Curry._2(k, undefined, {
                                     HASH: /* List */848054398,
-                                    value: List.rev({
+                                    VAL: List.rev({
                                           hd: e,
                                           tl: acc
                                         })
@@ -649,7 +649,7 @@ function _return_atom(last, k, t) {
   t.atom.position = 0;
   return Curry._2(k, last, {
               HASH: /* Atom */726615281,
-              value: s
+              VAL: s
             });
 }
 
@@ -908,7 +908,7 @@ function next(t) {
   return expr_or_end((function (param, x) {
                 return {
                         HASH: /* Ok */17724,
-                        value: x
+                        VAL: x
                       };
               }), t);
 }
@@ -932,7 +932,7 @@ function parse_string(s) {
   if (typeof res === "number") {
     return {
             HASH: /* Error */106380200,
-            value: "unexpected end of file"
+            VAL: "unexpected end of file"
           };
   } else {
     return res;
@@ -947,7 +947,7 @@ function parse_chan(bufsize, ic) {
   if (typeof res === "number") {
     return {
             HASH: /* Error */106380200,
-            value: "unexpected end of file"
+            VAL: "unexpected end of file"
           };
   } else {
     return res;
@@ -979,14 +979,14 @@ function parse_chan_list(bufsize, ic) {
     if (typeof e === "number") {
       return {
               HASH: /* Ok */17724,
-              value: List.rev(acc)
+              VAL: List.rev(acc)
             };
     }
     if (e.HASH >= 106380200) {
       return e;
     }
     _acc = {
-      hd: e.value,
+      hd: e.VAL,
       tl: acc
     };
     continue ;
@@ -1094,7 +1094,7 @@ function MakeDecode(funarg) {
                   var msg$prime = $$Buffer.contents(b);
                   return Curry._1(funarg.$$return, {
                               HASH: /* Error */106380200,
-                              value: msg$prime
+                              VAL: msg$prime
                             });
                 }), b, msg);
   };
@@ -1210,7 +1210,7 @@ function MakeDecode(funarg) {
         if (switcher === 32) {
           return Curry._2(k, undefined, {
                       HASH: /* List */848054398,
-                      value: List.rev(acc)
+                      VAL: List.rev(acc)
                     });
         }
         
@@ -1228,7 +1228,7 @@ function MakeDecode(funarg) {
                         } else {
                           return Curry._2(k, undefined, {
                                       HASH: /* List */848054398,
-                                      value: List.rev({
+                                      VAL: List.rev({
                                             hd: e,
                                             tl: acc
                                           })
@@ -1256,7 +1256,7 @@ function MakeDecode(funarg) {
     t.atom.position = 0;
     return Curry._2(k, last, {
                 HASH: /* Atom */726615281,
-                value: s
+                VAL: s
               });
   };
   var atom = function (k, t) {
@@ -1507,7 +1507,7 @@ function MakeDecode(funarg) {
     return expr_or_end((function (param, x) {
                   return Curry._1(funarg.$$return, {
                               HASH: /* Ok */17724,
-                              value: x
+                              VAL: x
                             });
                 }), t);
   };

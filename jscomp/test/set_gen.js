@@ -612,7 +612,7 @@ function is_ordered(cmp, tree) {
         if (match$1 >= 50834029) {
           return {
                   HASH: /* V */86,
-                  value: [
+                  VAL: [
                     v,
                     v
                   ]
@@ -621,11 +621,11 @@ function is_ordered(cmp, tree) {
           return /* No */17505;
         }
       }
-      var match$2 = match$1.value;
+      var match$2 = match$1.VAL;
       if (Curry._2(cmp, v, match$2[0]) < 0) {
         return {
                 HASH: /* V */86,
-                value: [
+                VAL: [
                   v,
                   match$2[1]
                 ]
@@ -634,7 +634,7 @@ function is_ordered(cmp, tree) {
         return /* No */17505;
       }
     }
-    var match$3 = match.value;
+    var match$3 = match.VAL;
     var max_v = match$3[1];
     var min_v = match$3[0];
     var match$4 = is_ordered_min_max(r);
@@ -642,7 +642,7 @@ function is_ordered(cmp, tree) {
       if (match$4 >= 50834029 && Curry._2(cmp, max_v, v) < 0) {
         return {
                 HASH: /* V */86,
-                value: [
+                VAL: [
                   min_v,
                   v
                 ]
@@ -651,11 +651,11 @@ function is_ordered(cmp, tree) {
         return /* No */17505;
       }
     }
-    var match$5 = match$4.value;
+    var match$5 = match$4.VAL;
     if (Curry._2(cmp, max_v, match$5[0]) < 0) {
       return {
               HASH: /* V */86,
-              value: [
+              VAL: [
                 min_v,
                 match$5[1]
               ]

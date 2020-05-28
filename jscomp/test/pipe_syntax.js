@@ -88,7 +88,7 @@ function hi(x) {
 
 var with_poly = {
   HASH: /* Foo */3505894,
-  value: 1
+  VAL: 1
 };
 
 exports.t0 = t0;

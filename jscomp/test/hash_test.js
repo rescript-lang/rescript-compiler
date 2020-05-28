@@ -87,23 +87,23 @@ Mt_global.collect_eq(test_id, suites, "File \"hash_test.ml\", line 34, character
 
 Mt_global.collect_eq(test_id, suites, "File \"hash_test.ml\", line 35, characters 5-12", Hashtbl.hash({
           HASH: /* A */65,
-          value: 3
+          VAL: 3
         }) & 1073741823, 294279345);
 
 Mt_global.collect_eq(test_id, suites, "File \"hash_test.ml\", line 36, characters 5-12", Hashtbl.hash({
           hd: {
             HASH: /* A */65,
-            value: 3
+            VAL: 3
           },
           tl: {
             hd: {
               HASH: /* B */66,
-              value: 2
+              VAL: 2
             },
             tl: {
               hd: {
                 HASH: /* C */67,
-                value: 3
+                VAL: 3
               },
               tl: /* [] */0
             }
@@ -114,22 +114,22 @@ Mt_global.collect_eq(test_id, suites, "File \"hash_test.ml\", line 37, character
           hd: [
             {
               HASH: /* A */65,
-              value: "3"
+              VAL: "3"
             },
             {
               HASH: /* B */66,
-              value: "2"
+              VAL: "2"
             }
           ],
           tl: {
             hd: [
               {
                 HASH: /* C */67,
-                value: "3"
+                VAL: "3"
               },
               {
                 HASH: /* D */68,
-                value: "4"
+                VAL: "4"
               }
             ],
             tl: /* [] */0
@@ -140,7 +140,7 @@ Mt_global.collect_eq(test_id, suites, "File \"hash_test.ml\", line 40, character
           hd: [
             {
               HASH: /* A */65,
-              value: [
+              VAL: [
                 0,
                 2,
                 1
@@ -148,7 +148,7 @@ Mt_global.collect_eq(test_id, suites, "File \"hash_test.ml\", line 40, character
             },
             {
               HASH: /* B */66,
-              value: [[
+              VAL: [[
                   "x",
                   "y"
                 ]]

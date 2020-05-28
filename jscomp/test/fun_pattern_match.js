@@ -73,7 +73,7 @@ function f4(param) {
 
 var x = {
   HASH: /* A */65,
-  value: r
+  VAL: r
 };
 
 function r(param) {
@@ -82,7 +82,7 @@ function r(param) {
 
 var match = r(undefined);
 
-var v = Curry._1(match.value, undefined);
+var v = Curry._1(match.VAL, undefined);
 
 console.log(v);
 

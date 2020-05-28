@@ -15424,7 +15424,7 @@ let ns_sep = "-"
 let exception_id = "RE_EXN_ID"
 
 let polyvar_hash = "HASH"
-let polyvar_value = "value"
+let polyvar_value = "VAL"
 
 let cons = "::"
 let hd = "hd"
