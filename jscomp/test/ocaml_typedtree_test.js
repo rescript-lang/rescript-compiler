@@ -6992,8 +6992,8 @@ function symbol_docs_lazy(param) {
   var p1 = Parsing.symbol_start_pos(undefined);
   var p2 = Parsing.symbol_end_pos(undefined);
   return {
-          RE_LAZY_DONE: false,
-          value: (function () {
+          LAZY_DONE: false,
+          VAL: (function () {
               return {
                       docs_pre: get_pre_docs(p1),
                       docs_post: get_post_docs(p2)
@@ -7015,8 +7015,8 @@ function mark_rhs_docs(pos1, pos2) {
 function symbol_text_lazy(param) {
   var pos = Parsing.symbol_start_pos(undefined);
   return {
-          RE_LAZY_DONE: false,
-          value: (function () {
+          LAZY_DONE: false,
+          VAL: (function () {
               return get_text(pos);
             })
         };
@@ -12806,8 +12806,8 @@ function prefix_idents_and_subst(root, sub, sg) {
           match[0],
           sub$1,
           {
-            RE_LAZY_DONE: false,
-            value: (function () {
+            LAZY_DONE: false,
+            VAL: (function () {
                 return List.map((function (item) {
                               switch (item.TAG | 0) {
                                 case /* Sig_value */0 :
@@ -29381,8 +29381,8 @@ function copy_sep(fixed, free, bound, visited, ty) {
     var t = newvar(undefined, undefined);
     delayed_copy.contents = {
       hd: {
-        RE_LAZY_DONE: false,
-        value: (function () {
+        LAZY_DONE: false,
+        VAL: (function () {
             t.desc = {
               TAG: /* Tlink */6,
               _0: copy(undefined, undefined, undefined, ty$1)
@@ -77066,8 +77066,8 @@ function declare_method(val_env, meths, self_type, lab, priv, sty, loc) {
     var returned_cty = ctyp(/* Ttyp_any */0, newty2(current_level.contents, /* Tnil */0), val_env, loc);
     delayed_meth_specs.contents = {
       hd: {
-        RE_LAZY_DONE: false,
-        value: (function () {
+        LAZY_DONE: false,
+        VAL: (function () {
             var cty = transl_simple_type_univars(val_env, sty$prime);
             var ty = cty.ctyp_type;
             unif(ty);
@@ -77680,8 +77680,8 @@ function class_structure(cl_num, $$final, val_env, met_env, loc, param) {
                         match$3[2],
                         {
                           hd: {
-                            RE_LAZY_DONE: false,
-                            value: (function () {
+                            LAZY_DONE: false,
+                            VAL: (function () {
                                 return mkcf({
                                             TAG: /* Tcf_inherit */0,
                                             _0: ovf,
@@ -77787,8 +77787,8 @@ function class_structure(cl_num, $$final, val_env, met_env, loc, param) {
                           match$7[3],
                           {
                             hd: {
-                              RE_LAZY_DONE: false,
-                              value: (function () {
+                              LAZY_DONE: false,
+                              VAL: (function () {
                                   return mkcf({
                                               TAG: /* Tcf_val */1,
                                               _0: lab,
@@ -77830,8 +77830,8 @@ function class_structure(cl_num, $$final, val_env, met_env, loc, param) {
                         match$8[3],
                         {
                           hd: {
-                            RE_LAZY_DONE: false,
-                            value: (function () {
+                            LAZY_DONE: false,
+                            VAL: (function () {
                                 return mkcf({
                                             TAG: /* Tcf_val */1,
                                             _0: lab,
@@ -77985,8 +77985,8 @@ function class_structure(cl_num, $$final, val_env, met_env, loc, param) {
                   var meth_expr = make_method(self_loc, cl_num, expr$2);
                   var vars_local = vars.contents;
                   var field = {
-                    RE_LAZY_DONE: false,
-                    value: (function () {
+                    LAZY_DONE: false,
+                    VAL: (function () {
                         var meth_type = newty2(100000000, {
                               TAG: /* Tarrow */1,
                               _0: "",
@@ -78032,8 +78032,8 @@ function class_structure(cl_num, $$final, val_env, met_env, loc, param) {
                         par_env,
                         {
                           hd: {
-                            RE_LAZY_DONE: false,
-                            value: (function () {
+                            LAZY_DONE: false,
+                            VAL: (function () {
                                 return mkcf({
                                             TAG: /* Tcf_method */2,
                                             _0: lab$1,
@@ -78064,8 +78064,8 @@ function class_structure(cl_num, $$final, val_env, met_env, loc, param) {
                         par_env,
                         {
                           hd: {
-                            RE_LAZY_DONE: false,
-                            value: (function () {
+                            LAZY_DONE: false,
+                            VAL: (function () {
                                 return mkcf({
                                             TAG: /* Tcf_constraint */3,
                                             _0: cty$2,
@@ -78085,8 +78085,8 @@ function class_structure(cl_num, $$final, val_env, met_env, loc, param) {
                 var expr$3 = make_method(self_loc, cl_num, expr._0);
                 var vars_local$1 = vars.contents;
                 var field$1 = {
-                  RE_LAZY_DONE: false,
-                  value: (function () {
+                  LAZY_DONE: false,
+                  VAL: (function () {
                       raise_nongen_level(undefined);
                       var desc_2 = instance_def(type_unit);
                       var desc = {
@@ -78132,8 +78132,8 @@ function class_structure(cl_num, $$final, val_env, met_env, loc, param) {
                         par_env,
                         {
                           hd: {
-                            RE_LAZY_DONE: false,
-                            value: (function () {
+                            LAZY_DONE: false,
+                            VAL: (function () {
                                 return mkcf({
                                             TAG: /* Tcf_attribute */5,
                                             _0: x

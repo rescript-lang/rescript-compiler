@@ -15278,6 +15278,8 @@ val polyvar_value : string
 val cons : string
 val hd : string
 val tl : string
+val lazy_done : string
+val lazy_val : string
 end = struct
 #1 "literals.ml"
 (* Copyright (C) 2015-2016 Bloomberg Finance L.P.
@@ -15429,6 +15431,9 @@ let polyvar_value = "VAL"
 let cons = "::"
 let hd = "hd"
 let tl = "tl"
+
+let lazy_done = "LAZY_DONE"
+let lazy_val = "VAL"
 end
 module Ast_attributes : sig 
 #1 "ast_attributes.mli"

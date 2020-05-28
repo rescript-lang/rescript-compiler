@@ -3,16 +3,16 @@
 var CamlinternalLazy = require("../../lib/js/camlinternalLazy.js");
 
 var lazy1 = {
-  RE_LAZY_DONE: false,
-  value: (function () {
+  LAZY_DONE: false,
+  VAL: (function () {
       console.log("Hello, lazy");
       return 1;
     })
 };
 
 var lazy2 = {
-  RE_LAZY_DONE: true,
-  value: 3
+  LAZY_DONE: true,
+  VAL: 3
 };
 
 console.log(lazy1, lazy2);

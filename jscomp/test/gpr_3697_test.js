@@ -5,8 +5,8 @@ var CamlinternalLazy = require("../../lib/js/camlinternalLazy.js");
 function fix(param) {
   return /* Fix */{
           _0: {
-            RE_LAZY_DONE: false,
-            value: (function () {
+            LAZY_DONE: false,
+            VAL: (function () {
                 return fix(undefined);
               })
           }
