@@ -87,6 +87,11 @@ val for_all2_no_exn :
   ('a -> 'b -> bool) -> 
   bool
 
+val for_alli : 
+  'a array -> 
+  (int -> 'a -> bool) -> 
+  bool 
+    
 val map :   
   'a array -> 
   ('a -> 'b) -> 

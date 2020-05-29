@@ -234,6 +234,14 @@ let rec unsafe_loop index len p xs ys  =
       (Array.unsafe_get ys index) &&
     unsafe_loop (succ index) len p xs ys 
 
+let for_alli a p =
+  let n = Array.length a in
+  let rec loop i =
+    if i = n then true
+    else if p i (Array.unsafe_get a i) then loop (succ i)
+    else false in
+  loop 0
+
 let for_all2_no_exn xs ys p = 
   let len_xs = Array.length xs in 
   let len_ys = Array.length ys in 
