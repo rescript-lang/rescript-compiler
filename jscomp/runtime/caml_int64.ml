@@ -43,13 +43,13 @@ let ( & ) = Caml_nativeint_extern.logand
 let ( << ) = Caml_nativeint_extern.shift_left
 let lognot x = Caml_nativeint_extern.logxor x (-1n)
 
-type t = Int64 of {  hi : nativeint; lo : nativeint ;  }
+type t =   {  hi : nativeint ; [@bs.as "0"] lo : nativeint ; [@bs.as "1" ]  }
 
 external unsafe_to_int64 : t -> int64 = "%identity"           
 external unsafe_of_int64 : int64 -> t = "%identity"
 
 
-let mk ~lo ~hi = Int64 {lo = lo >>> 0 ; hi}
+let mk ~lo ~hi =  {lo = lo >>> 0 ; hi}
 let min_int =  mk  ~lo: 0n ~hi:(-0x80000000n)
 (* The high bits are signed 0x80000000 |~ 0 *)
 
@@ -67,10 +67,10 @@ let non_neg_signed x = (x  & 0x8000_0000n) = 0n
 let succ_aux ~x_lo ~x_hi = 
   let lo =  ( x_lo +~ 1n) |~ 0n in  
   mk ~lo ~hi:(( x_hi +~ if lo = 0n then 1n else 0n) |~ 0n)
-let succ (Int64 {lo = x_lo; hi = x_hi} : t) =
+let succ ( {lo = x_lo; hi = x_hi} : t) =
   succ_aux ~x_lo ~x_hi
   
-let neg (Int64 {lo;hi} ) =
+let neg ( {lo;hi} ) =
   let other_lo = (lognot lo +~  1n) |~ 0n in   
   mk ~lo:other_lo 
     ~hi:((lognot hi +~ if other_lo = 0n then 1n else 0n)  |~ 0n)
@@ -81,7 +81,7 @@ let neg (Int64 {lo;hi} ) =
 
 
 let add_aux 
-    (Int64 {lo = x_lo; hi = x_hi} : t)
+    ( {lo = x_lo; hi = x_hi} : t)
     ~y_lo ~y_hi  =
   let lo =  ( x_lo +~ y_lo) |~ 0n in
   let overflow =
@@ -101,13 +101,13 @@ let add_aux
 
 let add
     (self : t)
-    (Int64 {lo = y_lo; hi = y_hi} : t) =
+    ( {lo = y_lo; hi = y_hi} : t) =
   add_aux self ~y_lo ~y_hi
 
 
-(* let not (Int64 {lo; hi })  = mk ~lo:(lognot lo) ~hi:(lognot hi) *)
+(* let not ( {lo; hi })  = mk ~lo:(lognot lo) ~hi:(lognot hi) *)
 
-let eq (Int64 x) (Int64 y) = x.hi = y.hi && x.lo = y.lo
+let eq ( x) ( y) = x.hi = y.hi && x.lo = y.lo
 
 let equal_null x y =    
   match Js.nullToOption y with 
@@ -130,10 +130,10 @@ let sub_aux x ~lo ~hi =
   let y_hi =  ((lognot hi +~ if y_lo = 0n then 1n else 0n)  |~  0n) in 
   add_aux x ~y_lo ~y_hi
 
-let sub self (Int64{lo;hi})= sub_aux self ~lo ~hi 
+let sub self ({lo;hi})= sub_aux self ~lo ~hi 
 
 
-let lsl_ (Int64 {lo; hi} as x) numBits =
+let lsl_ ( {lo; hi} as x) numBits =
   if numBits = 0 then
     x
   else if numBits >= 32 then
@@ -146,7 +146,7 @@ let lsl_ (Int64 {lo; hi} as x) numBits =
          ( hi << numBits))
 
 
-let lsr_ (Int64 {lo; hi} as x) numBits =
+let lsr_ ( {lo; hi} as x) numBits =
   if numBits = 0 then x
   else
     let offset = numBits - 32 in
@@ -163,7 +163,7 @@ let lsr_ (Int64 {lo; hi} as x) numBits =
             ( lo >>> numBits))
 
 
-let asr_ (Int64 {lo; hi } as x) numBits =
+let asr_ ( {lo; hi } as x) numBits =
   if numBits = 0  then
     x
   else
@@ -180,7 +180,7 @@ let asr_ (Int64 {lo; hi } as x) numBits =
 
 
 let is_zero = function
-  | Int64 {lo = 0n ; hi = 0n} -> true
+  |  {lo = 0n ; hi = 0n} -> true
   | _ -> false
 
 
@@ -188,17 +188,17 @@ let is_zero = function
 let rec mul this
     other =
   match this, other with
-  | Int64 {lo = 0n ; hi = 0n}, _
-  | _, Int64 {lo = 0n; hi = 0n}
+  |  {lo = 0n ; hi = 0n}, _
+  | _,  {lo = 0n; hi = 0n}
     -> zero
-  | Int64 {lo = 0n; hi = - 0x80000000n}, Int64 {lo;_ }
-  | Int64 {lo;_}, Int64 {lo = 0n; hi = - 0x80000000n}
+  |  {lo = 0n; hi = - 0x80000000n},  {lo;_ }
+  |  {lo;_},  {lo = 0n; hi = - 0x80000000n}
     ->
     if  (lo & 0x1n) = 0n then
       zero
     else min_int
-  | Int64 {lo = this_lo; hi = this_hi},
-    Int64 {lo = other_lo; hi = other_hi }
+  |  {lo = this_lo; hi = this_hi},
+     {lo = other_lo; hi = other_hi }
     ->
     if this_hi < 0n  then
       if other_hi < 0n then
@@ -251,18 +251,18 @@ let rec mul this
 
 (* Dispatched by the compiler, idea: should we do maximum sharing
 *)
- let xor (Int64 {lo = this_lo; hi= this_hi}) (Int64 {lo = other_lo; hi = other_hi}) =
+ let xor ( {lo = this_lo; hi= this_hi}) ( {lo = other_lo; hi = other_hi}) =
    mk
      ~lo:(Caml_nativeint_extern.logxor this_lo other_lo)
     ~hi:(Caml_nativeint_extern.logxor this_hi other_hi)
 
 
-let or_  (Int64 {lo = this_lo; hi= this_hi}) (Int64 {lo = other_lo; hi = other_hi}) =
+let or_  ( {lo = this_lo; hi= this_hi}) ( {lo = other_lo; hi = other_hi}) =
   mk
     ~lo:(Caml_nativeint_extern.logor this_lo other_lo)
     ~hi:(Caml_nativeint_extern.logor this_hi other_hi)
 
-let and_ (Int64 {lo = this_lo; hi= this_hi}) (Int64 {lo = other_lo; hi = other_hi}) =
+let and_ ( {lo = this_lo; hi= this_hi}) ( {lo = other_lo; hi = other_hi}) =
   mk
     ~lo:(Caml_nativeint_extern.logand this_lo other_lo)
     ~hi:(Caml_nativeint_extern.logand this_hi other_hi)
@@ -276,7 +276,7 @@ let and_ (Int64 {lo = this_lo; hi= this_hi}) (Int64 {lo = other_lo; hi = other_h
 
 type comparison = t -> t -> bool
 
-let  ge (Int64 {hi; lo } : t)  (Int64 {hi = other_hi; lo = other_lo}) : bool =
+let  ge ( {hi; lo } : t)  ( {hi = other_hi; lo = other_lo}) : bool =
   if hi > other_hi then true
   else if hi < other_hi then false
   else  lo  >=  other_lo
@@ -285,7 +285,7 @@ let  ge (Int64 {hi; lo } : t)  (Int64 {hi = other_hi; lo = other_lo}) : bool =
 
 let neq x y = Pervasives.not (eq x y)
 let lt x y  = Pervasives.not (ge x y)
-let gt (Int64 x) (Int64 y) =
+let gt ( x) ( y) =
   if x.hi > y.hi then
     true
   else if x.hi < y.hi  then
@@ -298,7 +298,7 @@ let le x y = Pervasives.not (gt x y)
 let min x y = if lt x  y then x else y 
 let max x y = if gt x y then x else y 
 
-let to_float (Int64 {hi; lo} : t) = 
+let to_float ( {hi; lo} : t) = 
   Caml_nativeint_extern.to_float ( hi *~ [%raw{|0x100000000|}] +~ lo)
 
 
@@ -341,7 +341,7 @@ external floor : float -> float =  "floor" [@@bs.val] [@@bs.scope "Math"]
 (* either top 11 bits are all 0 or all 1 
   when it is all 1, we need exclude -2^53
 *)
-let isSafeInteger (Int64{hi;lo}) = 
+let isSafeInteger ({hi;lo}) = 
   let top11Bits = hi >> 21 in   
   top11Bits = 0n || 
   (top11Bits = -1n && 
@@ -349,7 +349,7 @@ let isSafeInteger (Int64{hi;lo}) =
 
 external string_of_float : float -> string = "String" [@@bs.val] 
 let rec to_string ( self : int64) = 
-  let (Int64{hi=self_hi;_} as self) = unsafe_of_int64 self in
+  let ({hi=self_hi;_} as self) = unsafe_of_int64 self in
   if isSafeInteger self then 
      string_of_float (to_float self)
   else 
@@ -358,8 +358,8 @@ let rec to_string ( self : int64) =
     if eq self min_int then "-9223372036854775808"
     else "-" ^ to_string (unsafe_to_int64 (neg self))
   else (* large positive number *)    
-    let (Int64 {lo ; hi} as approx_div1) =  (of_float (floor (to_float self /. 10.) )) in
-    let (Int64 { lo = rem_lo ;hi = rem_hi} ) = (* rem should be a pretty small number *)
+    let ( {lo ; hi} as approx_div1) =  (of_float (floor (to_float self /. 10.) )) in
+    let ( { lo = rem_lo ;hi = rem_hi} ) = (* rem should be a pretty small number *)
         self 
         |. sub_aux  ~lo:(lo << 3) ~hi:((lo>>>29) |~ (hi << 3))
         |. sub_aux ~lo:(lo << 1) ~hi: ((lo >>> 31) |~ (hi << 1))
@@ -367,7 +367,7 @@ let rec to_string ( self : int64) =
     if rem_lo =0n && rem_hi = 0n then to_string (unsafe_to_int64 approx_div1) ^ "0"
     else 
     if rem_hi < 0n then 
-      (* let (Int64 {lo = rem_lo}) = neg rem in      *)
+      (* let ( {lo = rem_lo}) = neg rem in      *)
       let rem_lo = (lognot rem_lo +~ 1n ) >>> 0 |. Caml_nativeint_extern.to_float  in 
       let delta =  (ceil (rem_lo /. 10.)) in 
       let remainder = 10. *. delta -. rem_lo in
@@ -393,31 +393,31 @@ let rec to_string ( self : int64) =
 
 let rec div self other =
   match self, other with
-  | _, Int64 {lo = 0n ; hi = 0n} ->
+  | _,  {lo = 0n ; hi = 0n} ->
     raise Division_by_zero
-  | Int64 {lo = 0n; hi = 0n}, _
+  |  {lo = 0n; hi = 0n}, _
     -> zero
-  | Int64 {lo = 0n ; hi = -0x8000_0000n}, _
+  |  {lo = 0n ; hi = -0x8000_0000n}, _
     ->
     begin
       if eq other one || eq other neg_one then self
       else if eq other min_int then one
       else
-        let (Int64 {hi = other_hi;_}) = other in
+        let ( {hi = other_hi;_}) = other in
       (* now |other| >= 2, so |this/other| < |MIN_VALUE|*)
         let half_this = asr_ self 1  in
         let approx = lsl_ (div half_this other) 1 in
         match approx with
-        | Int64 {lo = 0n ; hi = 0n}
+        |  {lo = 0n ; hi = 0n}
           -> if other_hi < 0n then one else neg one
         | _
           ->
           let rem = sub self (mul other approx) in
           add approx (div rem other)
     end
-  | _, Int64 {lo = 0n; hi = - 0x8000_0000n}
+  | _,  {lo = 0n; hi = - 0x8000_0000n}
     -> zero
-  | Int64 {lo = _; hi = self_hi}, Int64 {lo = _; hi = other_hi}
+  |  {lo = _; hi = self_hi},  {lo = _; hi = other_hi}
     ->
     if self_hi < 0n then
       if other_hi <0n then
@@ -439,7 +439,7 @@ let rec div self other =
           else 2. ** (log2 -. 48.) in
         let approxRes = ref (of_float approx.contents) in
         let approxRem = ref (mul approxRes.contents other) in
-        while (match approxRem.contents with Int64 {hi;_}-> hi) < 0n || gt approxRem.contents rem.contents do
+        while (match approxRem.contents with  {hi;_}-> hi) < 0n || gt approxRem.contents rem.contents do
           approx.contents <- approx.contents -. delta;
           approxRes.contents <- of_float approx.contents;
           approxRem.contents <- mul approxRes.contents other
@@ -459,7 +459,7 @@ let div_mod (self : int64) (other : int64) : int64 * int64 =
   let quotient = div (unsafe_of_int64 self) (unsafe_of_int64 other) in
   unsafe_to_int64 quotient, unsafe_to_int64 (sub (unsafe_of_int64 self) (mul quotient (unsafe_of_int64 other)))
 
-let compare (Int64 self) (Int64 other) =
+let compare ( self) ( other) =
   let v = Pervasives.compare self.hi other.hi in
   if v = 0 then
     Pervasives.compare self.lo  other.lo
@@ -468,13 +468,13 @@ let compare (Int64 self) (Int64 other) =
 let of_int32 (lo : nativeint) =
   mk ~lo ~hi:(if lo < 0n then -1n else 0n)
 
-let to_int32 (Int64 x) = Caml_nativeint_extern.logor x.lo  0n (* signed integer *)
+let to_int32 ( x) = Caml_nativeint_extern.logor x.lo  0n (* signed integer *)
 
 
 (* width does matter, will it be relevant to endian order? *)
 
 let to_hex (x : int64) =
-  let Int64 {hi = x_hi; lo = x_lo} = unsafe_of_int64 x in 
+  let  {hi = x_hi; lo = x_lo} = unsafe_of_int64 x in 
   let aux v : string =
     Caml_string_extern.of_int (Caml_nativeint_extern.to_int (Caml_nativeint_extern.shift_right_logical v 0)) ~base:16
   in
@@ -494,7 +494,7 @@ let to_hex (x : int64) =
 let discard_sign (x : int64) : int64 = 
   let v = unsafe_of_int64 x in   
   unsafe_to_int64 
-  (match v with Int64 v -> Int64 {  v with hi = Caml_nativeint_extern.logand 0x7fff_ffffn v.hi })
+  (match v with  v ->  {  v with hi = Caml_nativeint_extern.logand 0x7fff_ffffn v.hi })
 
 (* >>> 0 does not change its bit representation
       it simply makes sure it is an unsigned integer
@@ -508,7 +508,7 @@ let discard_sign (x : int64) : int64 =
       ]}
 *)
 
-let float_of_bits (Int64 x : t) : float =  
+let float_of_bits ( x : t) : float =  
    ([%raw{|function(lo,hi){ return (new Float64Array(new Int32Array([lo,hi]).buffer))[0]}|}] : _ -> _ -> _ ) x.lo x.hi 
 
   (* let to_int32 (x : nativeint) = x |> Caml_nativeint_extern.to_int32

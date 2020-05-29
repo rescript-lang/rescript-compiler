@@ -31,7 +31,7 @@ function eq(loc, x, y) {
 function f(x) {
   return [
           x["003"],
-          x["50"],
+          x[50],
           x["50x"],
           x.__50,
           x.__50x,
