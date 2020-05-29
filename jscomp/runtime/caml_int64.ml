@@ -43,7 +43,7 @@ let ( & ) = Caml_nativeint_extern.logand
 let ( << ) = Caml_nativeint_extern.shift_left
 let lognot x = Caml_nativeint_extern.logxor x (-1n)
 
-type t =   {  hi : nativeint; lo : nativeint ;  }
+type t =   {  hi : nativeint ; [@bs.as "0"] lo : nativeint ; [@bs.as "1" ]  }
 
 external unsafe_to_int64 : t -> int64 = "%identity"           
 external unsafe_of_int64 : int64 -> t = "%identity"
