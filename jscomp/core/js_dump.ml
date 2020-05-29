@@ -50,7 +50,7 @@
 
 *)
 
-
+let name_symbol = Js_op.Symbol_name
 module P = Ext_pp
 module E = Js_exp_make
 (* module S = Js_stmt_make *)
@@ -125,11 +125,11 @@ let exn_block_as_obj
     | _ -> assert false in   
   Object (
     if stack then   
-      Ext_list.mapi_append el (fun i e -> field_name i, e)
-        ["Error", 
+      Ext_list.mapi_append el (fun i e -> Js_op.Lit (field_name i), e)
+        [ Js_op.Lit "Error", 
          E.new_ (E.js_global "Error") []
         ]
-    else Ext_list.mapi  el (fun i e -> field_name i, e)
+    else Ext_list.mapi  el (fun i e -> Js_op.Lit (field_name i), e)
   )
 
 let rec iter_lst cxt (f : P.t) ls element inter = 
@@ -812,10 +812,13 @@ and expression_desc cxt ~(level:int) f x : cxt  =
          E.runtime_call Js_runtime_modules.option "some" [e])
   | Caml_block(el,_, _, Blk_module fields) ->        
       expression_desc cxt ~level f (Object (
-        (Ext_list.map_combine fields el Ext_ident.convert)))
+        (Ext_list.map_combine 
+          fields el 
+          (fun  x -> Js_op.Lit (Ext_ident.convert x) ))))
   (*name convention of Record is slight different from modules*)        
   | Caml_block(el,_, _, Blk_record fields) ->        
-      expression_desc cxt ~level f (Object ((Ext_list.combine_array fields el )))      
+      expression_desc cxt ~level f (Object 
+        ((Ext_list.combine_array fields el  (fun i -> Js_op.Lit i))))      
         
   | Caml_block(el,_,_, Blk_poly_var name) ->
     begin match el with 
@@ -825,13 +828,13 @@ and expression_desc cxt ~(level:int) f x : cxt  =
           ~level 
           f 
           (Object 
-             ((Literals.polyvar_hash, 
+             ((Js_op.Lit Literals.polyvar_hash, 
                if !Js_config.debug then hash
                else {hash with comment = Some name}
               ) ::
-              (Literals.polyvar_value, value) ::
+              (Js_op.Lit Literals.polyvar_value, value) ::
               if !Js_config.debug then 
-                ["name", E.str name]
+                [name_symbol, E.str name]
               else []
              )          
           )
@@ -843,11 +846,11 @@ and expression_desc cxt ~(level:int) f x : cxt  =
     let objs = 
       let tails =   
         Ext_list.combine_array_append p.fields el      
-          (if !Js_config.debug then ["NAME",E.str p.name]
+          (if !Js_config.debug then [name_symbol,E.str p.name]
            else []
-          ) in 
+          ) (fun i -> Js_op.Lit i) in 
       if p.num_nonconst = 1 then tails
-      else (L.tag,
+      else (Js_op.Lit L.tag,
         if !Js_config.debug then tag else {tag with comment = Some p.name}) :: tails in 
     if p.num_nonconst = 1 && not !Js_config.debug then 
       pp_comment_option f (Some p.name);
@@ -858,17 +861,17 @@ and expression_desc cxt ~(level:int) f x : cxt  =
       let tails =   
         Ext_list.mapi_append el (fun i e -> 
           (match is_cons, i with 
-          | true,  0 -> Literals.hd
-          | true,  1 -> Literals.tl 
+          | true,  0 -> Js_op.Lit Literals.hd
+          | true,  1 -> Js_op.Lit Literals.tl 
           | _ ->
-            "_" ^ string_of_int i) , e )
+          Js_op.Lit ("_" ^ string_of_int i)) , e )
           (if !Js_config.debug then 
-             ["NAME", E.str p.name]
+             [name_symbol, E.str p.name]
            else []) in         
       if p.num_nonconst = 1 then       
         tails
       else         
-        (L.tag,
+        (Js_op.Lit L.tag,
           if !Js_config.debug then tag else {tag with comment = Some p.name}) :: tails
     in 
     if p.num_nonconst = 1 && not !Js_config.debug 

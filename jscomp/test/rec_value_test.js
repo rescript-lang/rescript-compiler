@@ -16,7 +16,7 @@ var x0 = {};
 
 Caml_obj.update_dummy(x0, {
       HASH: /* Cons */748545553,
-      value: [
+      VAL: [
         1,
         x0
       ]
@@ -26,7 +26,7 @@ var y0 = {};
 
 Caml_obj.update_dummy(y0, {
       HASH: /* Cons */748545553,
-      value: y0
+      VAL: y0
     });
 
 var a = {};
@@ -73,8 +73,8 @@ var three = {
 };
 
 var h = {
-  RE_LAZY_DONE: true,
-  value: fib
+  LAZY_DONE: true,
+  VAL: fib
 };
 
 var v = {
@@ -164,8 +164,8 @@ function even2(_n) {
 }
 
 var lazy_v = {
-  RE_LAZY_DONE: true,
-  value: (function (param) {
+  LAZY_DONE: true,
+  VAL: (function (param) {
       CamlinternalLazy.force(lazy_v);
       
     })
@@ -266,7 +266,7 @@ function phd(l) {
           Error: new Error()
         };
   }
-  return l.value[0];
+  return l.VAL[0];
 }
 
 function ptl(l) {
@@ -292,7 +292,7 @@ function ptl(l) {
           Error: new Error()
         };
   }
-  return l.value[1];
+  return l.VAL[1];
 }
 
 var y00 = {};

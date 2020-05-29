@@ -11,7 +11,7 @@ function on1(foo, $$event) {
                   return "foo";
               
             }
-          })(), $$event.value);
+          })(), $$event.VAL);
   
 }
 
@@ -24,7 +24,7 @@ function on2(foo, h, $$event) {
                   return "foo";
               
             }
-          })(), Curry._1(h, $$event).value);
+          })(), Curry._1(h, $$event).VAL);
   
 }
 

@@ -124,8 +124,8 @@ function pr(param) {
 
 function map(f, l) {
   return {
-          RE_LAZY_DONE: false,
-          value: (function () {
+          LAZY_DONE: false,
+          VAL: (function () {
               var match = CamlinternalLazy.force(l);
               return /* Cons */{
                       _0: Curry._1(f, match._0),
@@ -137,8 +137,8 @@ function map(f, l) {
 
 function merge(cmp, l1, l2) {
   return {
-          RE_LAZY_DONE: false,
-          value: (function () {
+          LAZY_DONE: false,
+          VAL: (function () {
               var match = CamlinternalLazy.force(l1);
               var match$1 = CamlinternalLazy.force(l2);
               var ll2 = match$1._1;
@@ -189,8 +189,8 @@ function iter_interval(f, _l, _param) {
 }
 
 var hamming = {
-  RE_LAZY_DONE: false,
-  value: (function () {
+  LAZY_DONE: false,
+  VAL: (function () {
       return /* Cons */{
               _0: nn1,
               _1: merge(cmp, ham2, merge(cmp, ham3, ham5))
@@ -199,22 +199,22 @@ var hamming = {
 };
 
 var ham2 = {
-  RE_LAZY_DONE: false,
-  value: (function () {
+  LAZY_DONE: false,
+  VAL: (function () {
       return CamlinternalLazy.force(map(x2, hamming));
     })
 };
 
 var ham3 = {
-  RE_LAZY_DONE: false,
-  value: (function () {
+  LAZY_DONE: false,
+  VAL: (function () {
       return CamlinternalLazy.force(map(x3, hamming));
     })
 };
 
 var ham5 = {
-  RE_LAZY_DONE: false,
-  value: (function () {
+  LAZY_DONE: false,
+  VAL: (function () {
       return CamlinternalLazy.force(map(x5, hamming));
     })
 };

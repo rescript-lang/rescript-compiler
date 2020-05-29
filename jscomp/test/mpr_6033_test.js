@@ -35,8 +35,8 @@ function f(x) {
 }
 
 var x = {
-  RE_LAZY_DONE: true,
-  value: "def"
+  LAZY_DONE: true,
+  VAL: "def"
 };
 
 CamlinternalLazy.force(x);

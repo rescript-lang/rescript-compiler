@@ -32,6 +32,10 @@ let prim = Lam.prim
 let lam_extension_id loc (head : Lam.t) =
   prim ~primitive:lam_caml_id ~args:[head] loc    
 
+let lazy_block_info : Lam_tag_info.t = 
+  Blk_record 
+    [|Literals.lazy_done; 
+      Literals.lazy_val|]  
 
 let unbox_extension info (args : Lam.t list) mutable_flag loc =
     prim ~primitive:(Pmakeblock (0,info,mutable_flag)) ~args loc 
@@ -281,7 +285,7 @@ let lam_prim ~primitive:( p : Lambda.primitive) ~args loc : Lam.t =
           [ Lam.const Const_js_true ; 
            result
           ] in 
-        prim ~primitive:(Pmakeblock (tag,Blk_record [|"RE_LAZY_DONE";"value"|],Mutable)) ~args loc  
+        prim ~primitive:(Pmakeblock (tag,lazy_block_info,Mutable)) ~args loc  
       | [computation] -> 
         let args = 
           [ Lam.const Const_js_false ; 
@@ -289,7 +293,7 @@ let lam_prim ~primitive:( p : Lambda.primitive) ~args loc : Lam.t =
             prim ~primitive:(Pjs_fn_make 0) ~args:[Lam.function_ ~arity:1 ~params:[Ident.create "param"] ~body:computation] 
             loc             
           ] in 
-        prim ~primitive:(Pmakeblock (tag,Blk_record [|"RE_LAZY_DONE";"value"|],Mutable)) ~args loc  
+        prim ~primitive:(Pmakeblock (tag,lazy_block_info,Mutable)) ~args loc  
 
       | _ -> assert false
       end

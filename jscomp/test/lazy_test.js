@@ -10,8 +10,8 @@ var u = {
 };
 
 var v = {
-  RE_LAZY_DONE: false,
-  value: (function () {
+  LAZY_DONE: false,
+  VAL: (function () {
       u.contents = 32;
       
     })
@@ -54,16 +54,16 @@ var s = {
 };
 
 var set_true = {
-  RE_LAZY_DONE: false,
-  value: (function () {
+  LAZY_DONE: false,
+  VAL: (function () {
       s.contents = 1;
       
     })
 };
 
 var set_false = {
-  RE_LAZY_DONE: false,
-  value: (function () {
+  LAZY_DONE: false,
+  VAL: (function () {
       s.contents = undefined;
       
     })
@@ -92,8 +92,8 @@ var u_v = {
 };
 
 var u$1 = {
-  RE_LAZY_DONE: false,
-  value: (function () {
+  LAZY_DONE: false,
+  VAL: (function () {
       u_v.contents = 2;
       
     })
@@ -104,15 +104,15 @@ CamlinternalLazy.force(u$1);
 var exotic = CamlinternalLazy.force;
 
 var l_from_fun = {
-  RE_LAZY_DONE: false,
-  value: (function () {
+  LAZY_DONE: false,
+  VAL: (function () {
       return 3;
     })
 };
 
 var forward_test = {
-  RE_LAZY_DONE: false,
-  value: (function () {
+  LAZY_DONE: false,
+  VAL: (function () {
       var u = 3;
       u = u + 1 | 0;
       return u;
@@ -120,13 +120,13 @@ var forward_test = {
 };
 
 var f005 = {
-  RE_LAZY_DONE: true,
-  value: 6
+  LAZY_DONE: true,
+  VAL: 6
 };
 
 var f006 = {
-  RE_LAZY_DONE: false,
-  value: (function () {
+  LAZY_DONE: false,
+  VAL: (function () {
       return function (param) {
         return 3;
       };
@@ -134,8 +134,8 @@ var f006 = {
 };
 
 var f007 = {
-  RE_LAZY_DONE: false,
-  value: (function () {
+  LAZY_DONE: false,
+  VAL: (function () {
       throw {
             RE_EXN_ID: "Not_found",
             Error: new Error()
@@ -144,8 +144,8 @@ var f007 = {
 };
 
 var f008 = {
-  RE_LAZY_DONE: false,
-  value: (function () {
+  LAZY_DONE: false,
+  VAL: (function () {
       console.log("hi");
       throw {
             RE_EXN_ID: "Not_found",
@@ -156,29 +156,29 @@ var f008 = {
 
 function a2(x) {
   return {
-          RE_LAZY_DONE: true,
-          value: x
+          LAZY_DONE: true,
+          VAL: x
         };
 }
 
 var a3 = {
-  RE_LAZY_DONE: true,
-  value: 3
+  LAZY_DONE: true,
+  VAL: 3
 };
 
 var a4 = {
-  RE_LAZY_DONE: true,
-  value: 3
+  LAZY_DONE: true,
+  VAL: 3
 };
 
 var a5 = {
-  RE_LAZY_DONE: true,
-  value: undefined
+  LAZY_DONE: true,
+  VAL: undefined
 };
 
 var a6 = {
-  RE_LAZY_DONE: true,
-  value: undefined
+  LAZY_DONE: true,
+  VAL: undefined
 };
 
 var a7 = CamlinternalLazy.force(a5);
@@ -239,8 +239,8 @@ Mt.from_pair_suites("Lazy_test", {
                     return {
                             TAG: /* Eq */0,
                             _0: CamlinternalLazy.force({
-                                  RE_LAZY_DONE: true,
-                                  value: 3
+                                  LAZY_DONE: true,
+                                  VAL: 3
                                 }),
                             _1: 3
                           };
@@ -253,10 +253,10 @@ Mt.from_pair_suites("Lazy_test", {
                       return {
                               TAG: /* Eq */0,
                               _0: CamlinternalLazy.force(CamlinternalLazy.force({
-                                        RE_LAZY_DONE: true,
-                                        value: {
-                                          RE_LAZY_DONE: true,
-                                          value: 3
+                                        LAZY_DONE: true,
+                                        VAL: {
+                                          LAZY_DONE: true,
+                                          VAL: 3
                                         }
                                       })),
                               _1: 3
@@ -271,8 +271,8 @@ Mt.from_pair_suites("Lazy_test", {
                         return {
                                 TAG: /* Eq */0,
                                 _0: CamlinternalLazy.force(CamlinternalLazy.force({
-                                          RE_LAZY_DONE: true,
-                                          value: forward_test
+                                          LAZY_DONE: true,
+                                          VAL: forward_test
                                         })),
                                 _1: 4
                               };
@@ -318,8 +318,8 @@ Mt.from_pair_suites("Lazy_test", {
                                 return {
                                         TAG: /* Ok */4,
                                         _0: Lazy.is_val({
-                                              RE_LAZY_DONE: true,
-                                              value: 3
+                                              LAZY_DONE: true,
+                                              VAL: 3
                                             })
                                       };
                               })
@@ -331,8 +331,8 @@ Mt.from_pair_suites("Lazy_test", {
                                   return {
                                           TAG: /* Ok */4,
                                           _0: !Lazy.is_val({
-                                                RE_LAZY_DONE: false,
-                                                value: (function () {
+                                                LAZY_DONE: false,
+                                                VAL: (function () {
                                                     throw {
                                                           RE_EXN_ID: "Not_found",
                                                           Error: new Error()

@@ -7560,13 +7560,15 @@ val map_combine :
 val combine_array:
   'a array ->
   'b list -> 
-  ('a * 'b) list   
+  ('a -> 'c) ->
+  ('c * 'b) list   
 
 val combine_array_append:
   'a array ->
   'b list ->
-  ('a * 'b) list -> 
-  ('a * 'b) list   
+  ('c * 'b) list -> 
+  ('a -> 'c) ->
+  ('c * 'b) list   
   
 val has_string :   
   string list ->
@@ -8007,22 +8009,22 @@ let rec map_combine l1 l2 f =
   | (_, _) -> 
     invalid_arg "Ext_list.map_combine"
 
-let rec combine_array_unsafe arr l i j acc =    
+let rec combine_array_unsafe arr l i j acc f =    
   if i = j then acc
   else 
     match l with
     | [] -> invalid_arg "Ext_list.combine"
     | h :: tl ->
-      (Array.unsafe_get arr i , h) ::
-      combine_array_unsafe arr tl (i + 1) j acc
+      (f (Array.unsafe_get arr i) , h) ::
+      combine_array_unsafe arr tl (i + 1) j acc f
 
-let combine_array_append arr l acc = 
+let combine_array_append arr l acc f = 
   let len = Array.length arr in
-  combine_array_unsafe arr l 0 len acc
+  combine_array_unsafe arr l 0 len acc f
 
-let combine_array arr l = 
+let combine_array arr l f = 
   let len = Array.length arr in
-  combine_array_unsafe arr l 0 len []  
+  combine_array_unsafe arr l 0 len [] f 
 
 let rec map_split_opt 
   (xs : 'a list)  (f : 'a -> 'b option * 'c option) 
@@ -15278,6 +15280,8 @@ val polyvar_value : string
 val cons : string
 val hd : string
 val tl : string
+val lazy_done : string
+val lazy_val : string
 end = struct
 #1 "literals.ml"
 (* Copyright (C) 2015-2016 Bloomberg Finance L.P.
@@ -15424,11 +15428,14 @@ let ns_sep = "-"
 let exception_id = "RE_EXN_ID"
 
 let polyvar_hash = "HASH"
-let polyvar_value = "value"
+let polyvar_value = "VAL"
 
 let cons = "::"
 let hd = "hd"
 let tl = "tl"
+
+let lazy_done = "LAZY_DONE"
+let lazy_val = "VAL"
 end
 module Ast_attributes : sig 
 #1 "ast_attributes.mli"

@@ -64,7 +64,7 @@ function print_or_error(fmt, x) {
                       }
                     },
                     _1: "@[Error:%s@]@."
-                  }), x.value);
+                  }), x.VAL);
   } else {
     return Curry._2(Format.fprintf(fmt, /* Format */{
                     _0: {
@@ -94,7 +94,7 @@ function print_or_error(fmt, x) {
                       }
                     },
                     _1: "@[Ok:%a@]@."
-                  }), Sexpm.print, x.value);
+                  }), Sexpm.print, x.VAL);
   }
 }
 
@@ -103,32 +103,32 @@ var a = Sexpm.parse_string("(x x gh 3 3)");
 eq("File \"sexpm_test.ml\", line 17, characters 7-14", [
       {
         HASH: /* Ok */17724,
-        value: {
+        VAL: {
           HASH: /* List */848054398,
-          value: {
+          VAL: {
             hd: {
               HASH: /* Atom */726615281,
-              value: "x"
+              VAL: "x"
             },
             tl: {
               hd: {
                 HASH: /* Atom */726615281,
-                value: "x"
+                VAL: "x"
               },
               tl: {
                 hd: {
                   HASH: /* Atom */726615281,
-                  value: "gh"
+                  VAL: "gh"
                 },
                 tl: {
                   hd: {
                     HASH: /* Atom */726615281,
-                    value: "3"
+                    VAL: "3"
                   },
                   tl: {
                     hd: {
                       HASH: /* Atom */726615281,
-                      value: "3"
+                      VAL: "3"
                     },
                     tl: /* [] */0
                   }

@@ -17,49 +17,49 @@ var hash = Hashtbl.hash;
 function of_int(x) {
   return {
           HASH: /* Atom */726615281,
-          value: String(x)
+          VAL: String(x)
         };
 }
 
 function of_float(x) {
   return {
           HASH: /* Atom */726615281,
-          value: Pervasives.string_of_float(x)
+          VAL: Pervasives.string_of_float(x)
         };
 }
 
 function of_bool(x) {
   return {
           HASH: /* Atom */726615281,
-          value: x ? "true" : "false"
+          VAL: x ? "true" : "false"
         };
 }
 
 function atom(x) {
   return {
           HASH: /* Atom */726615281,
-          value: x
+          VAL: x
         };
 }
 
 function of_list(l) {
   return {
           HASH: /* List */848054398,
-          value: l
+          VAL: l
         };
 }
 
 function of_rev_list(l) {
   return {
           HASH: /* List */848054398,
-          value: List.rev(l)
+          VAL: List.rev(l)
         };
 }
 
 function of_pair(param) {
   return {
           HASH: /* List */848054398,
-          value: {
+          VAL: {
             hd: param[0],
             tl: {
               hd: param[1],
@@ -72,7 +72,7 @@ function of_pair(param) {
 function of_triple(param) {
   return {
           HASH: /* List */848054398,
-          value: {
+          VAL: {
             hd: param[0],
             tl: {
               hd: param[1],
@@ -88,7 +88,7 @@ function of_triple(param) {
 function of_quad(param) {
   return {
           HASH: /* List */848054398,
-          value: {
+          VAL: {
             hd: param[0],
             tl: {
               hd: param[1],
@@ -107,10 +107,10 @@ function of_quad(param) {
 function of_variant(name, args) {
   return {
           HASH: /* List */848054398,
-          value: {
+          VAL: {
             hd: {
               HASH: /* Atom */726615281,
-              value: name
+              VAL: name
             },
             tl: args
           }
@@ -120,10 +120,10 @@ function of_variant(name, args) {
 function of_field(name, t) {
   return {
           HASH: /* List */848054398,
-          value: {
+          VAL: {
             hd: {
               HASH: /* Atom */726615281,
-              value: name
+              VAL: name
             },
             tl: {
               hd: t,
@@ -136,7 +136,7 @@ function of_field(name, t) {
 function of_record(l) {
   return {
           HASH: /* List */848054398,
-          value: List.map((function (param) {
+          VAL: List.map((function (param) {
                   return of_field(param[0], param[1]);
                 }), l)
         };
@@ -184,7 +184,7 @@ function map_opt(f, l) {
 
 function list_any(f, e) {
   if (e.HASH >= 848054398) {
-    var _l = e.value;
+    var _l = e.VAL;
     while(true) {
       var l = _l;
       if (!l) {
@@ -204,7 +204,7 @@ function list_any(f, e) {
 function list_all(f, e) {
   if (e.HASH >= 848054398) {
     var _acc = /* [] */0;
-    var _l = e.value;
+    var _l = e.VAL;
     while(true) {
       var l = _l;
       var acc = _acc;
@@ -234,7 +234,7 @@ function _try_atom(e, f) {
     return ;
   }
   try {
-    return Caml_option.some(Curry._1(f, e.value));
+    return Caml_option.some(Curry._1(f, e.VAL));
   }
   catch (exn){
     return ;
@@ -266,7 +266,7 @@ function to_pair(e) {
   if (e.HASH !== 848054398) {
     return ;
   }
-  var match = e.value;
+  var match = e.VAL;
   if (!match) {
     return ;
   }
@@ -301,7 +301,7 @@ function to_triple(e) {
   if (e.HASH !== 848054398) {
     return ;
   }
-  var match = e.value;
+  var match = e.VAL;
   if (!match) {
     return ;
   }
@@ -340,21 +340,21 @@ function to_triple_with(f1, f2, f3, e) {
 
 function to_list(e) {
   if (e.HASH >= 848054398) {
-    return Caml_option.some(e.value);
+    return Caml_option.some(e.VAL);
   }
   
 }
 
 function to_list_with(f, e) {
   if (e.HASH >= 848054398) {
-    return map_opt(f, e.value);
+    return map_opt(f, e.VAL);
   }
   
 }
 
 function get_field(name, e) {
   if (e.HASH >= 848054398) {
-    var _l = e.value;
+    var _l = e.VAL;
     while(true) {
       var l = _l;
       if (!l) {
@@ -369,7 +369,7 @@ function get_field(name, e) {
         _l = l.tl;
         continue ;
       }
-      var match$1 = match.value;
+      var match$1 = match.VAL;
       if (match$1) {
         var match$2 = match$1.hd;
         if (typeof match$2 === "number") {
@@ -386,7 +386,7 @@ function get_field(name, e) {
             _l = l.tl;
             continue ;
           }
-          if (Caml_obj.caml_equal(name, match$2.value)) {
+          if (Caml_obj.caml_equal(name, match$2.VAL)) {
             return match$3.hd;
           }
           _l = l.tl;
@@ -421,7 +421,7 @@ function _get_field_list(name, _l) {
       _l = l.tl;
       continue ;
     }
-    var match$1 = match.value;
+    var match$1 = match.VAL;
     if (match$1) {
       var match$2 = match$1.hd;
       if (typeof match$2 === "number") {
@@ -432,7 +432,7 @@ function _get_field_list(name, _l) {
         _l = l.tl;
         continue ;
       }
-      if (Caml_obj.caml_equal(name, match$2.value)) {
+      if (Caml_obj.caml_equal(name, match$2.VAL)) {
         return match$1.tl;
       }
       _l = l.tl;
@@ -445,7 +445,7 @@ function _get_field_list(name, _l) {
 
 function field_list(name, f, e) {
   if (e.HASH >= 848054398) {
-    return $great$great$eq(_get_field_list(name, e.value), f);
+    return $great$great$eq(_get_field_list(name, e.VAL), f);
   }
   
 }
@@ -467,9 +467,9 @@ function _get_variant(s, args, _l) {
 
 function get_variant(l, e) {
   if (e.HASH < 848054398) {
-    return _get_variant(e.value, /* [] */0, l);
+    return _get_variant(e.VAL, /* [] */0, l);
   }
-  var match = e.value;
+  var match = e.VAL;
   if (!match) {
     return ;
   }
@@ -477,7 +477,7 @@ function get_variant(l, e) {
   if (typeof match$1 === "number" || match$1.HASH !== 726615281) {
     return ;
   } else {
-    return _get_variant(match$1.value, match.tl, l);
+    return _get_variant(match$1.VAL, match.tl, l);
   }
 }
 
@@ -494,7 +494,7 @@ function get_exn(e) {
 
 var of_unit = {
   HASH: /* List */848054398,
-  value: /* [] */0
+  VAL: /* [] */0
 };
 
 var Traverse = {

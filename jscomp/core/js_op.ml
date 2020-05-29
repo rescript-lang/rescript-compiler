@@ -146,14 +146,10 @@ type property = Lam_compat.let_kind =
   | Variable
 
 
-type property_name = (* private *)
-  (* TODO: FIXME [caml_uninitialized_obj] seems to be a bug*)
-  (* | Key of *)
-   string
-  (* | Int_key of int  *)
-  (* | Tag  *)
-  (* | Length *)
-
+type property_name = 
+   | Lit of string
+   | Symbol_name
+  
 type 'a access = 
   | Getter
   | Setter
