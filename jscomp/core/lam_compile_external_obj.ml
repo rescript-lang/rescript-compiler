@@ -48,7 +48,7 @@ let assemble_obj_args (labels : External_arg_spec.obj_params)  (args : J.express
     | [] , []  ->  [], [], []
     | {obj_arg_label = Obj_label {name = label;  }; obj_arg_type = Arg_cst cst } :: labels  , args -> 
       let accs, eff, assign = aux labels args in 
-      (label, Lam_compile_const.translate_arg_cst cst )::accs, eff, assign 
+      (Js_op.Lit label, Lam_compile_const.translate_arg_cst cst )::accs, eff, assign 
     (* | {obj_arg_label = EmptyCst _ } :: rest  , args -> assert false  *)
     | {obj_arg_label = Obj_empty  }::labels, arg::args 
       ->  (* unit type*)
@@ -63,7 +63,7 @@ let assemble_obj_args (labels : External_arg_spec.obj_params)  (args : J.express
         | Splice2 _ 
         | Splice0 -> assert false
         | Splice1 x ->
-          (label, x) :: accs , Ext_list.append new_eff  eff , assign          
+          (Js_op.Lit label, x) :: accs , Ext_list.append new_eff  eff , assign          
       end (* evaluation order is undefined *)
 
     | ({obj_arg_label = Obj_optional {name = label}; obj_arg_type } as arg_kind)::labels, arg::args 
@@ -77,7 +77,7 @@ let assemble_obj_args (labels : External_arg_spec.obj_params)  (args : J.express
           | Splice2 _
           | Splice0 -> assert false 
           | Splice1 x ->
-            (label, x) :: accs , Ext_list.append new_eff  eff , assign
+            (Js_op.Lit label, x) :: accs , Ext_list.append new_eff  eff , assign
           end )
         ~not_sure:(fun _ -> accs, eff , (arg_kind,arg)::assign )
     | {obj_arg_label = Obj_empty  | Obj_label _ | Obj_optional _  } :: _ , [] -> assert false 

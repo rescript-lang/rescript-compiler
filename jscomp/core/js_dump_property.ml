@@ -87,7 +87,12 @@ let property_access f s =
       Js_dump_string.pp_string f s
     end
 
-let property_key f s =     
-  if obj_property_no_need_quot s then 
-    P.string f s 
-  else Js_dump_string.pp_string f s  
+let property_key f (s : J.property_name) =     
+  match s with 
+  | Lit s ->
+    if obj_property_no_need_quot s then 
+      P.string f s 
+    else Js_dump_string.pp_string f s  
+ | Symbol_name -> 
+    P.string f 
+       {|[Symbol.for("name")]|}
