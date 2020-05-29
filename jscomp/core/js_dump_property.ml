@@ -83,8 +83,18 @@ let property_access f s =
     end
   else
     begin 
-      P.bracket_group f 1 @@ fun _ ->
-      Js_dump_string.pp_string f s
+      P.bracket_group f 1 (fun _ ->
+      (* avoid cases like 
+        "0123", "123_456"
+      *)
+      match string_of_int (int_of_string s ) with 
+      | s0 when s0 = s -> 
+        P.string f s 
+      | _  ->
+        Js_dump_string.pp_string f s
+      | exception _ -> 
+        Js_dump_string.pp_string f s
+    )
     end
 
 let property_key f (s : J.property_name) =     
