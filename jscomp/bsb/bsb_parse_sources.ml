@@ -71,12 +71,12 @@ let collect_pub_modules
         set := Set_string.add !set str
       else 
         Bsb_log.warn
-          "@{<warning>IGNORED@} %S in public is ignored since it is not\
-           an existing module@." str
+          "@{<warning>IGNORED@}: %S in public is not an existing module \
+          and has been ignored@." str
     | _ -> 
       Bsb_exception.errorf 
         ~loc:(Ext_json.loc_of v)
-        "public excpect a list of strings"
+        "public expects a list of strings"
   done  ;
   !set
 
