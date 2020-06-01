@@ -3319,9 +3319,6 @@ val of_int : int -> t
 
 
 
-val bsc_dev_includes :  string 
-
-
 end = struct
 #1 "bsb_dir_index.ml"
 (* Copyright (C) 2017 Authors of BuckleScript
@@ -3366,16 +3363,7 @@ let get_dev_index ( ) =  1
 
 
 
-(** bsb generate pre-defined variables [bsc_group_i_includes]
-  for each rule, there is variable [bsc_extra_excludes]
-  [g_dev_incls] are for app test etc
-  it will be like
-  {[
-    g_dev_incls = ${bsc_group_1_includes}
-  ]}
-  where [bsc_group_1_includes] will be pre-calcuated
-*)
-let bsc_dev_includes = "bsc_group_1_includes"
+
 
 
 
@@ -13556,24 +13544,16 @@ let handle_generators oc
 let make_common_shadows     
     package_specs 
     dirname 
-    dir_index 
   : Bsb_ninja_targets.shadow list 
   =
   
-    { key = Bsb_ninja_global_vars.g_pkg_flg;
+   [{ key = Bsb_ninja_global_vars.g_pkg_flg;
       op = 
         Append
           (Bsb_package_specs.package_flag_of_package_specs
              package_specs dirname
           )
-    } ::
-    (if Bsb_dir_index.is_lib_dir dir_index  then [] else
-       [         
-        { key =  Bsb_ninja_global_vars.g_dev_incls;
-          op = OverwriteVar (Bsb_dir_index.bsc_dev_includes );          
-        }
-       ]
-    )   
+    }] 
   
 
 
@@ -13612,7 +13592,7 @@ let emit_module_build
   let common_shadows = 
     make_common_shadows package_specs
       (Filename.dirname output_cmi)
-      group_dir_index in  
+      in  
   let ast_rule =     
     if is_re then 
       rules.build_ast_from_re
@@ -13947,7 +13927,7 @@ let output_ninja_and_namespace_map
              Bsb_db_util.conflict_module_info k a (Map_string.find_exn lib k)            
         ) ;
       Bsb_ninja_targets.output_kv 
-        Bsb_dir_index.bsc_dev_includes
+        Bsb_ninja_global_vars.g_dev_incls
         (Bsb_build_util.include_dirs source_dirs.(1)) oc
       ;
       bs_groups,source_dirs.(0), static_resources
