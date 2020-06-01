@@ -3954,7 +3954,7 @@ type  file_group =
     sources : Bsb_db.t; 
     resources : string list ;
     public : public ;
-    dir_index : bool ; (* false means not in dev mode *)
+    dev_index : bool ; (* false means not in dev mode *)
     generators : build_generator list ; 
     (* output of [generators] should be added to [sources],
        if it is [.ml,.mli,.re,.rei]
@@ -4031,7 +4031,7 @@ type  file_group =
     sources : Bsb_db.t; 
     resources : string list ;
     public : public ;
-    dir_index : bool  ;
+    dev_index : bool  ;
     generators : build_generator list ; 
     (* output of [generators] should be added to [sources],
        if it is [.ml,.mli,.re,.rei]
@@ -10474,7 +10474,7 @@ let errorf x fmt =
 
 type cxt = {
   toplevel : bool ;
-  dir_index : bool; 
+  dev_index : bool; 
   cwd : string ;
   root : string;
   cut_generators : bool;
@@ -10768,18 +10768,18 @@ let rec
                     sources = sources; 
                     resources ;
                     public ;
-                    dir_index = cxt.dir_index ;
+                    dev_index = cxt.dev_index ;
                     generators = if has_generators then scanned_generators else []  } 
       ?globbed_dir:(
         if !cur_globbed_dirs then Some dir else None)
       children
 
 
-and parsing_single_source ({toplevel; dir_index ; cwd} as cxt ) (x : Ext_json_types.t )
+and parsing_single_source ({toplevel; dev_index ; cwd} as cxt ) (x : Ext_json_types.t )
   : t  =
   match x with 
   | Str  { str = dir }  -> 
-    if not toplevel &&  dir_index then 
+    if not toplevel &&  dev_index then 
       Bsb_file_groups.empty
     else 
       parsing_source_dir_map 
@@ -10792,7 +10792,7 @@ and parsing_single_source ({toplevel; dir_index ; cwd} as cxt ) (x : Ext_json_ty
       | Some (Str {str="dev"}) -> 
         true
       | Some _ -> Bsb_exception.config_error x {|type field expect "dev" literal |}
-      | None -> dir_index in 
+      | None -> dev_index in 
     if not toplevel && current_dir_index then 
       Bsb_file_groups.empty 
     else 
@@ -10808,7 +10808,7 @@ and parsing_single_source ({toplevel; dir_index ; cwd} as cxt ) (x : Ext_json_ty
 
       in
       parsing_source_dir_map 
-        {cxt with dir_index = current_dir_index; 
+        {cxt with dev_index = current_dir_index; 
                   cwd= Ext_path.concat cwd dir} map
   | _ -> Bsb_file_groups.empty
 and  parsing_arr_sources cxt (file_groups : Ext_json_types.t array)  = 
@@ -10834,7 +10834,7 @@ let scan
   parse_sources {
     ignored_dirs;
     toplevel;
-    dir_index = false;
+    dev_index = false;
     cwd = Filename.current_dir_name;
     root ;
     cut_generators;
@@ -13449,7 +13449,7 @@ let handle_files_per_dir
           module_info.name_sans_extension;
       emit_module_build  rules
         package_specs
-        group.dir_index
+        group.dev_index
         oc 
         ~bs_suffix
         js_post_build_cmd      
@@ -13668,9 +13668,9 @@ let output_ninja_and_namespace_map
       let bs_groups = Array.init  2 (fun _ -> Map_string.empty) in
       let source_dirs = Array.init 2 (fun _ -> []) in
       let static_resources =
-        Ext_list.fold_left bs_file_groups [] (fun (acc_resources : string list) {sources; dir; resources; dir_index} 
+        Ext_list.fold_left bs_file_groups [] (fun (acc_resources : string list) {sources; dir; resources; dev_index} 
            ->
-            let dir_index = if dir_index then 1 else 0 in 
+            let dir_index = if dev_index then 1 else 0 in 
             bs_groups.(dir_index) <- Bsb_db_util.merge bs_groups.(dir_index) sources ;
             source_dirs.(dir_index) <- dir :: source_dirs.(dir_index);
             Ext_list.map_append resources  acc_resources (fun x -> dir//x) 
