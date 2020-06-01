@@ -127,7 +127,7 @@ let dev = "dev"
 let export_all = "all"
 let export_none = "none"
 
-let bsb_dir_group = "bsb_dir_group"
+
 let g_lib_incls = "g_lib_incls"
 let use_stdlib = "use-stdlib"
 let reason = "reason"
@@ -12626,7 +12626,7 @@ type builtin = {
   copy_resources : t;
   (** Rules below all need restat *)
   build_bin_deps : t ;
-
+  build_bin_deps_dev : t ;
   ml_cmj_js : t;
   ml_cmj_js_dev : t;
   ml_cmj_cmi_js : t ;
@@ -12761,7 +12761,7 @@ type builtin = {
   copy_resources : t;
   (** Rules below all need restat *)
   build_bin_deps : t ;
-
+  build_bin_deps_dev : t;        
   ml_cmj_js : t;
   ml_cmj_js_dev : t;
   ml_cmj_cmi_js : t ;
@@ -12861,8 +12861,14 @@ let make_custom_rules
     define
       ~restat:()
       ~command:
-      ("$bsdep -hash " ^ digest ^" $g_ns $bsb_dir_group $in")
-      "build_deps" in 
+      ("$bsdep -hash " ^ digest ^" $g_ns $in")
+      "mk_deps" in 
+  let build_bin_deps_dev =
+    define
+      ~restat:()
+      ~command:
+      ("$bsdep -g -hash " ^ digest ^" $g_ns $in")
+      "mk_deps_dev" in     
   let aux ~name ~read_cmi  ~postbuild =
     let postbuild = has_postbuild && postbuild in 
     define
@@ -12906,7 +12912,7 @@ let make_custom_rules
     copy_resources;
     (** Rules below all need restat *)
     build_bin_deps ;
-
+    build_bin_deps_dev;
     ml_cmj_js ;
     ml_cmj_js_dev ;
     ml_cmj_cmi_js ;
@@ -13365,12 +13371,7 @@ let emit_module_build
     oc
     ~outputs:[output_d]
     ~inputs:(if has_intf_file then [output_mlast;output_mliast] else [output_mlast] )
-    ~rule:rules.build_bin_deps
-    ?shadows:(if is_dev then
-                Some [{Bsb_ninja_targets.key = Bsb_build_schemas.bsb_dir_group ; 
-                       op = 
-                         Overwrite "-g" }] 
-              else None)
+    ~rule:(if is_dev then rules.build_bin_deps_dev else rules.build_bin_deps)
   ;  
   if has_intf_file then begin           
     Bsb_ninja_targets.output_build oc
