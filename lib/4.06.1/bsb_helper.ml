@@ -40,7 +40,7 @@ val of_int : int -> t
 
 
 
-val string_of_bsb_dev_include : t -> string 
+val bsc_dev_includes :  string 
 
 
 end = struct
@@ -96,18 +96,7 @@ let get_dev_index ( ) =  1
   ]}
   where [bsc_group_1_includes] will be pre-calcuated
 *)
-let bsc_group_1_includes = "bsc_group_1_includes"
-let bsc_group_2_includes = "bsc_group_2_includes"
-let bsc_group_3_includes = "bsc_group_3_includes"
-let bsc_group_4_includes = "bsc_group_4_includes"
-let string_of_bsb_dev_include i = 
-  match i with 
-  | 1 -> bsc_group_1_includes 
-  | 2 -> bsc_group_2_includes
-  | 3 -> bsc_group_3_includes
-  | 4 -> bsc_group_4_includes
-  | _ -> 
-    "bsc_group_" ^ string_of_int i ^ "_includes"
+let bsc_dev_includes = "bsc_group_1_includes"
 
 
 
@@ -3535,7 +3524,8 @@ type module_info =  {
 
 
 let find_opt 
-  ((sorteds,whole) : t )  i (key : string) 
+  ((sorteds,whole) : t )  
+    (i : int) (key : string) 
     : module_info option = 
   let group = sorteds.(i) in 
   let i = Ext_string_array.find_sorted  group.modules key in 
@@ -4060,13 +4050,14 @@ let oc_cmi buf namespace source =
     When ns is turned on, `B` is interprted as `Ns-B` which is a cyclic dependency,
     it can be errored out earlier
 *)
-let find_module db dependent_module is_not_lib_dir (index : Bsb_dir_index.t) = 
+let find_module db dependent_module is_not_lib_dir 
+  : Bsb_db_decode.module_info option = 
   let opt = Bsb_db_decode.find_opt db 0 dependent_module in 
   match opt with 
   | Some _ -> opt
   | None -> 
     if is_not_lib_dir then 
-      Bsb_db_decode.find_opt db (index :> int) dependent_module 
+      Bsb_db_decode.find_opt db 1 dependent_module 
     else None 
 let oc_impl 
     (mlast : string)
@@ -4104,7 +4095,7 @@ let oc_impl
       end
     );
     (match  
-      find_module db dependent_module is_not_lib_dir index  
+      find_module db dependent_module is_not_lib_dir 
     with      
     | None -> ()
     | Some ({dir_name; case }) -> 
@@ -4166,7 +4157,7 @@ let oc_intf
          exit 2
        end
     );
-    (match  find_module db dependent_module is_not_lib_dir index 
+    (match  find_module db dependent_module is_not_lib_dir 
      with     
      | None -> ()
      | Some {dir_name; case} ->       

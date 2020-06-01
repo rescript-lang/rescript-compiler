@@ -3319,7 +3319,7 @@ val of_int : int -> t
 
 
 
-val string_of_bsb_dev_include : t -> string 
+val bsc_dev_includes :  string 
 
 
 end = struct
@@ -3375,18 +3375,7 @@ let get_dev_index ( ) =  1
   ]}
   where [bsc_group_1_includes] will be pre-calcuated
 *)
-let bsc_group_1_includes = "bsc_group_1_includes"
-let bsc_group_2_includes = "bsc_group_2_includes"
-let bsc_group_3_includes = "bsc_group_3_includes"
-let bsc_group_4_includes = "bsc_group_4_includes"
-let string_of_bsb_dev_include i = 
-  match i with 
-  | 1 -> bsc_group_1_includes 
-  | 2 -> bsc_group_2_includes
-  | 3 -> bsc_group_3_includes
-  | 4 -> bsc_group_4_includes
-  | _ -> 
-    "bsc_group_" ^ string_of_int i ^ "_includes"
+let bsc_dev_includes = "bsc_group_1_includes"
 
 
 
@@ -13581,7 +13570,7 @@ let make_common_shadows
     (if Bsb_dir_index.is_lib_dir dir_index  then [] else
        [         
         { key =  Bsb_ninja_global_vars.g_dev_incls;
-          op = OverwriteVar (Bsb_dir_index.string_of_bsb_dev_include dir_index);          
+          op = OverwriteVar (Bsb_dir_index.bsc_dev_includes );          
         }
        ]
     )   
@@ -13958,7 +13947,7 @@ let output_ninja_and_namespace_map
              Bsb_db_util.conflict_module_info k a (Map_string.find_exn lib k)            
         ) ;
       Bsb_ninja_targets.output_kv 
-        (Bsb_dir_index.(string_of_bsb_dev_include (of_int 1)))
+        Bsb_dir_index.bsc_dev_includes
         (Bsb_build_util.include_dirs source_dirs.(1)) oc
       ;
       bs_groups,source_dirs.(0), static_resources
