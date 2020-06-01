@@ -316,6 +316,11 @@ let inline_int64_primitive (i : int64) : string list =
         (Const_int64 i))
   ]
 
+let inline_float_primitive (i : string) : string list =
+  ["";
+    to_string 
+      (Ffi_inline_const (Const_float i))
+  ]    
 let rec ffi_bs_aux acc (params : External_arg_spec.params) = 
   match params with 
   | {arg_type = Nothing; arg_label = Arg_empty} 

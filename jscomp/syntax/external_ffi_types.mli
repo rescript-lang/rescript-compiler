@@ -141,6 +141,9 @@ val inline_int64_primitive :
   int64 -> 
   string list   
 
+val inline_float_primitive : 
+  string -> string list
+
 val ffi_bs:
   External_arg_spec.params ->
   return_wrapper -> 
