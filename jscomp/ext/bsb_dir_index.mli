@@ -38,5 +38,5 @@ val of_int : int -> t
 
 
 
-val string_of_bsb_dev_include : t -> string 
+val bsc_dev_includes :  string 
 
