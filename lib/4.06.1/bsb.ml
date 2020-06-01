@@ -7606,7 +7606,6 @@ type entries_t = JsTarget of string | NativeTarget of string | BytecodeTarget of
 type compilation_kind_t = Js | Bytecode | Native
 
 type reason_react_jsx = 
-  | Jsx_v2
   | Jsx_v3
   (* string option  *)
 
@@ -11440,8 +11439,6 @@ let extract_reason_react_jsx (map : json_map) =
       match Map_string.find_opt m Bsb_build_schemas.react_jsx with 
       | Some (Flo{loc; flo}) -> 
         begin match flo with 
-          | "2" -> 
-            default := Some Jsx_v2
           | "3" -> 
             default := Some Jsx_v3
           | _ -> Bsb_exception.errorf ~loc "Unsupported jsx version %s" flo
@@ -11957,7 +11954,7 @@ let merlin_file_gen ~per_proj_dir:(per_proj_dir:string)
             else  "'%s -as-ppx -bs-jsx %d'" 
           in 
           Printf.sprintf fmt  Bsb_global_paths.vendor_bsc
-            (match opt with Jsx_v2 -> 2 | Jsx_v3 -> 3)
+            (match opt with Jsx_v3 -> 3)
        )
       );    
     Ext_list.iter external_includes (fun path -> 
@@ -12830,8 +12827,6 @@ let make_custom_rules
     (match has_reason_react_jsx, reason_react_jsx with
      | false, _ 
      | _, None -> ()
-     | _, Some Jsx_v2
-       -> Ext_buffer.add_string buf " -bs-jsx 2"
      | _, Some Jsx_v3 
        -> Ext_buffer.add_string buf " -bs-jsx 3"
     );
