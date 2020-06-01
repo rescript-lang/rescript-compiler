@@ -163,8 +163,6 @@ let make_custom_rules
     (match has_reason_react_jsx, reason_react_jsx with
      | false, _ 
      | _, None -> ()
-     | _, Some Jsx_v2
-       -> Ext_buffer.add_string buf " -bs-jsx 2"
      | _, Some Jsx_v3 
        -> Ext_buffer.add_string buf " -bs-jsx 3"
     );
