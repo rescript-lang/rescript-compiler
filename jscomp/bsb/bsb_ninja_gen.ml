@@ -116,7 +116,7 @@ let output_ninja_and_namespace_map
       namespace ; 
       warning;
       gentype_config; 
-      number_of_dev_groups;
+
     } : Bsb_config_types.t) : unit 
   =
   let lib_artifacts_dir = !Bsb_global_backend.lib_artifacts_dir in
@@ -164,19 +164,6 @@ let output_ninja_and_namespace_map
       |] oc 
   in        
   let  bs_groups, bsc_lib_dirs, static_resources =    
-    if number_of_dev_groups = 0 then
-      let bs_group, source_dirs,static_resources  =
-        Ext_list.fold_left bs_file_groups (Map_string.empty,[],[]) 
-          (fun (acc, dirs,acc_resources) ({sources ; dir; resources } as x)   
-            ->
-            Bsb_db_util.merge  acc  sources ,  
-            (if Bsb_file_groups.is_empty x then dirs else  dir::dirs) , 
-            ( if resources = [] then acc_resources
-              else Ext_list.map_append resources acc_resources (fun x -> dir // x ) )
-          )  in
-      Bsb_db_util.sanity_check bs_group;
-      [|bs_group|], source_dirs, static_resources
-    else
       (* number_of_dev_groups = 1 -- all devs share the same group *)
       let bs_groups = Array.init  2 (fun _ -> Map_string.empty) in
       let source_dirs = Array.init 2 (fun _ -> []) in

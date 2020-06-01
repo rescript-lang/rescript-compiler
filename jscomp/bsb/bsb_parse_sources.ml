@@ -401,21 +401,18 @@ let scan
   ~namespace 
   ~bs_suffix 
   ~ignored_dirs
-  x : t * int = 
-  Bsb_dir_index.reset ();
-  let output = 
-    parse_sources {
-      ignored_dirs;
-      toplevel;
-      dir_index = Bsb_dir_index.lib_dir_index;
-      cwd = Filename.current_dir_name;
-      root ;
-      cut_generators;
-      namespace;
-      bs_suffix;
-      traverse = false
-    } x in 
-  output, Bsb_dir_index.get_current_number_of_dev_groups ()
+  x : t  = 
+  parse_sources {
+    ignored_dirs;
+    toplevel;
+    dir_index = Bsb_dir_index.lib_dir_index;
+    cwd = Filename.current_dir_name;
+    root ;
+    cut_generators;
+    namespace;
+    bs_suffix;
+    traverse = false
+  } x 
 
 
 

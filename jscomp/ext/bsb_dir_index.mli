@@ -35,14 +35,8 @@ val get_dev_index : unit -> t
 
 val of_int : int -> t 
 
-val get_current_number_of_dev_groups : unit -> int 
+
 
 
 val string_of_bsb_dev_include : t -> string 
 
-(** TODO: Need reset
-   when generating each ninja file to provide stronger guarantee. 
-   Here we get a weak guarantee because only dev group is 
-  inside the toplevel project
-   *)
-val reset : unit -> unit

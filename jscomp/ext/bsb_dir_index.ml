@@ -34,13 +34,10 @@ let lib_dir_index = 0
 
 let is_lib_dir x = x = lib_dir_index
 
-let dir_index = ref 0 
 
-let get_dev_index ( ) = 
-  incr dir_index ; !dir_index
 
-let get_current_number_of_dev_groups =
-   (fun () -> !dir_index )
+let get_dev_index ( ) =  1
+
 
 
 (** bsb generate pre-defined variables [bsc_group_i_includes]
@@ -66,4 +63,3 @@ let string_of_bsb_dev_include i =
     "bsc_group_" ^ string_of_int i ^ "_includes"
 
 
-let reset () = dir_index := 0
