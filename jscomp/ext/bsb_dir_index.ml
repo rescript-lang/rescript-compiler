@@ -40,15 +40,6 @@ let get_dev_index ( ) =  1
 
 
 
-(** bsb generate pre-defined variables [bsc_group_i_includes]
-  for each rule, there is variable [bsc_extra_excludes]
-  [g_dev_incls] are for app test etc
-  it will be like
-  {[
-    g_dev_incls = ${bsc_group_1_includes}
-  ]}
-  where [bsc_group_1_includes] will be pre-calcuated
-*)
-let bsc_dev_includes = "bsc_group_1_includes"
+
 
 

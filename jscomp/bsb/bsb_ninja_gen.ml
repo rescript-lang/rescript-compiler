@@ -185,7 +185,7 @@ let output_ninja_and_namespace_map
              Bsb_db_util.conflict_module_info k a (Map_string.find_exn lib k)            
         ) ;
       Bsb_ninja_targets.output_kv 
-        Bsb_dir_index.bsc_dev_includes
+        Bsb_ninja_global_vars.g_dev_incls
         (Bsb_build_util.include_dirs source_dirs.(1)) oc
       ;
       bs_groups,source_dirs.(0), static_resources

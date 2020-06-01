@@ -49,24 +49,16 @@ let handle_generators oc
 let make_common_shadows     
     package_specs 
     dirname 
-    dir_index 
   : Bsb_ninja_targets.shadow list 
   =
   
-    { key = Bsb_ninja_global_vars.g_pkg_flg;
+   [{ key = Bsb_ninja_global_vars.g_pkg_flg;
       op = 
         Append
           (Bsb_package_specs.package_flag_of_package_specs
              package_specs dirname
           )
-    } ::
-    (if Bsb_dir_index.is_lib_dir dir_index  then [] else
-       [         
-        { key =  Bsb_ninja_global_vars.g_dev_incls;
-          op = OverwriteVar (Bsb_dir_index.bsc_dev_includes );          
-        }
-       ]
-    )   
+    }] 
   
 
 
@@ -105,7 +97,7 @@ let emit_module_build
   let common_shadows = 
     make_common_shadows package_specs
       (Filename.dirname output_cmi)
-      group_dir_index in  
+      in  
   let ast_rule =     
     if is_re then 
       rules.build_ast_from_re
