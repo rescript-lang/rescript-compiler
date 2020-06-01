@@ -47,7 +47,7 @@ val length : t -> int
 
 val is_empty : t -> bool
 
-(* val clear : t -> unit *)
+val clear : t -> unit
 (** Empty the buffer. *)
 
 
