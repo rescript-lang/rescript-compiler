@@ -135,15 +135,15 @@ let make_custom_rules
     if read_cmi then 
       Ext_buffer.add_string buf " -bs-read-cmi";
     if is_dev then 
-      Ext_buffer.add_string buf " $g_dev_incls";      
-    Ext_buffer.add_string buf " $g_lib_incls" ;
+      Ext_buffer.add_ninja_prefix_var buf Bsb_ninja_global_vars.g_dev_incls;      
+    Ext_buffer.add_ninja_prefix_var buf Bsb_build_schemas.g_lib_incls;
     if is_dev then
-      Ext_buffer.add_string buf " $g_dpkg_incls";
+      Ext_buffer.add_ninja_prefix_var buf Bsb_ninja_global_vars.g_dpkg_incls;
     if not has_builtin then   
       Ext_buffer.add_string buf " -nostdlib";
     Ext_buffer.add_string buf " $warnings $bsc_flags";
     if has_gentype then
-      Ext_buffer.add_string buf " $gentypeconfig";
+      Ext_buffer.add_ninja_prefix_var buf Bsb_ninja_global_vars.gentypeconfig;
     Ext_buffer.add_string buf " -o $out $in";
     if postbuild then
       Ext_buffer.add_string buf " $postbuild";
@@ -159,7 +159,7 @@ let make_custom_rules
       Ext_buffer.add_string buf (Ext_filename.maybe_quote x);
     );
     if has_pp then
-      Ext_buffer.add_string buf " $pp_flags";
+      Ext_buffer.add_ninja_prefix_var buf Bsb_ninja_global_vars.pp_flags;
     (match has_reason_react_jsx, reason_react_jsx with
      | false, _ 
      | _, None -> ()
@@ -167,7 +167,7 @@ let make_custom_rules
        -> Ext_buffer.add_string buf " -bs-jsx 3"
     );
     if has_ppx then 
-      Ext_buffer.add_string buf " $ppx_flags"; 
+      Ext_buffer.add_ninja_prefix_var buf Bsb_ninja_global_vars.ppx_flags; 
     Ext_buffer.add_string buf " $bsc_flags -o $out -bs-syntax-only -bs-binary-ast $in";   
     Ext_buffer.contents buf
   in  
