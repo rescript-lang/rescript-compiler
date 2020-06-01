@@ -194,7 +194,7 @@ let handle_files_per_dir
           module_info.name_sans_extension;
       emit_module_build  rules
         package_specs
-        group.dir_index
+        group.dev_index
         oc 
         ~bs_suffix
         js_post_build_cmd      

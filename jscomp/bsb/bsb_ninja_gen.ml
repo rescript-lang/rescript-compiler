@@ -167,9 +167,9 @@ let output_ninja_and_namespace_map
       let bs_groups = Array.init  2 (fun _ -> Map_string.empty) in
       let source_dirs = Array.init 2 (fun _ -> []) in
       let static_resources =
-        Ext_list.fold_left bs_file_groups [] (fun (acc_resources : string list) {sources; dir; resources; dir_index} 
+        Ext_list.fold_left bs_file_groups [] (fun (acc_resources : string list) {sources; dir; resources; dev_index} 
            ->
-            let dir_index = if dir_index then 1 else 0 in 
+            let dir_index = if dev_index then 1 else 0 in 
             bs_groups.(dir_index) <- Bsb_db_util.merge bs_groups.(dir_index) sources ;
             source_dirs.(dir_index) <- dir :: source_dirs.(dir_index);
             Ext_list.map_append resources  acc_resources (fun x -> dir//x) 
