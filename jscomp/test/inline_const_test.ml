@@ -10,7 +10,8 @@ let f ,
     f3,
     f4,
     f5,
-    f6
+    f6,
+    f7
     = 
 
   Inline_const.(
@@ -20,7 +21,8 @@ let f ,
     N.f3,
     H.f4,
     f5,
-    f6
+    f6,
+    H.xx
   )
 
 let () =   
@@ -30,8 +32,8 @@ let () =
   eq __LOC__ f3 {j|中文|j};
   eq __LOC__ f4 {j|中文|j};
   eq __LOC__ f5 true;
-  eq __LOC__ f6 1 
-
+  eq __LOC__ f6 1 ;
+  eq __LOC__ f7 0.000003
 
 let h = 
   let open Inline_const in

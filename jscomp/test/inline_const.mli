@@ -18,6 +18,7 @@ end
 module N1 : functor () -> sig 
   val f4 : string 
   [@@bs.inline {j|中文|j}]
+  val xx : float [@@bs.inline 3e-6]
 end 
 
 val h : string

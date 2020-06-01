@@ -3,11 +3,16 @@
 
 var N = {};
 
-function N1($star) {
-  return {};
-}
+console.log([
+      3e-6,
+      3e-6
+    ]);
 
 var x = true;
+
+function N1(funarg) {
+  return {};
+}
 
 var h = "hello";
 
@@ -18,4 +23,4 @@ exports.N = N;
 exports.N1 = N1;
 exports.h = h;
 exports.hh = hh;
-/* No side effect */
+/*  Not a pure module */

@@ -134,6 +134,10 @@ let type_int64 =
   Ast_helper.Typ.mk   
     (Ptyp_constr ({ txt = Lident "int64"; loc = Location.none}, []))  
 
+let type_float =     
+  Ast_helper.Typ.mk   
+    (Ptyp_constr ({ txt = Lident "float"; loc = Location.none}, []))  
+
 let type_any ?loc () =
   match loc with
   | None -> No_loc.type_any
