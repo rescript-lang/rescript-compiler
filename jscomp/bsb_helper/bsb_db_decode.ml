@@ -102,7 +102,8 @@ type module_info =  {
 
 
 let find_opt 
-  ((sorteds,whole) : t )  i (key : string) 
+  ((sorteds,whole) : t )  
+    (i : int) (key : string) 
     : module_info option = 
   let group = sorteds.(i) in 
   let i = Ext_string_array.find_sorted  group.modules key in 
