@@ -11484,6 +11484,7 @@ val type_string : core_type_lit
 val type_bool : core_type_lit
 val type_int : core_type_lit 
 val type_int64 : Parsetree.core_type
+val type_float : Parsetree.core_type
 val type_any : core_type_lit
 
 val pat_unit : pattern_lit
@@ -11625,6 +11626,10 @@ let type_int ?loc () =
 let type_int64 =     
   Ast_helper.Typ.mk   
     (Ptyp_constr ({ txt = Lident "int64"; loc = Location.none}, []))  
+
+let type_float =     
+  Ast_helper.Typ.mk   
+    (Ptyp_constr ({ txt = Lident "float"; loc = Location.none}, []))  
 
 let type_any ?loc () =
   match loc with
@@ -18421,6 +18426,9 @@ val inline_int64_primitive :
   int64 -> 
   string list   
 
+val inline_float_primitive : 
+  string -> string list
+
 val ffi_bs:
   External_arg_spec.params ->
   return_wrapper -> 
@@ -18758,6 +18766,11 @@ let inline_int64_primitive (i : int64) : string list =
         (Const_int64 i))
   ]
 
+let inline_float_primitive (i : string) : string list =
+  ["";
+    to_string 
+      (Ffi_inline_const (Const_float i))
+  ]    
 let rec ffi_bs_aux acc (params : External_arg_spec.params) = 
   match params with 
   | {arg_type = Nothing; arg_label = Arg_empty} 

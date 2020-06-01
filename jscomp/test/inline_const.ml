@@ -19,6 +19,8 @@ end
 
 module N1 = functor () -> struct 
   let f4 = {j|中文|j} [@@bs.inline]
+  let xx = 3e-6 [@@bs.inline]
+  let xx0 = 3e-6
 end 
 let h = f 
 
@@ -41,3 +43,5 @@ let f9 = 100L [@@bs.inline]
 
 let v = 100L [@@bs.inline]
 let u = 1L [@@bs.inline] 
+
+let () = Js.log (xx,xx0)
