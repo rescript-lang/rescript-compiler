@@ -3277,128 +3277,6 @@ type ts = t array
 
 
 end
-module Bsb_dir_index : sig 
-#1 "bsb_dir_index.mli"
-(* Copyright (C) 2017 Authors of BuckleScript
- * 
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * In addition to the permissions granted to you by the LGPL, you may combine
- * or link a "work that uses the Library" with a publicly distributed version
- * of this file to produce a combined library or application, then distribute
- * that combined work under the terms of your choosing, with no requirement
- * to comply with the obligations normally placed on you by section 4 of the
- * LGPL version 3 (or the corresponding section of a later version of the LGPL
- * should you choose to use a later version).
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Lesser General Public License for more details.
- * 
- * You should have received a copy of the GNU Lesser General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
-
-(** Used to index [.bsbuildcache] may not be needed if we flatten dev 
-  into  a single group
-*)
-type t = private int
-
-val lib_dir_index : t 
-
-val is_lib_dir : t -> bool 
-
-val get_dev_index : unit -> t 
-
-val of_int : int -> t 
-
-val get_current_number_of_dev_groups : unit -> int 
-
-
-val string_of_bsb_dev_include : t -> string 
-
-(** TODO: Need reset
-   when generating each ninja file to provide stronger guarantee. 
-   Here we get a weak guarantee because only dev group is 
-  inside the toplevel project
-   *)
-val reset : unit -> unit
-end = struct
-#1 "bsb_dir_index.ml"
-(* Copyright (C) 2017 Authors of BuckleScript
- * 
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * In addition to the permissions granted to you by the LGPL, you may combine
- * or link a "work that uses the Library" with a publicly distributed version
- * of this file to produce a combined library or application, then distribute
- * that combined work under the terms of your choosing, with no requirement
- * to comply with the obligations normally placed on you by section 4 of the
- * LGPL version 3 (or the corresponding section of a later version of the LGPL
- * should you choose to use a later version).
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Lesser General Public License for more details.
- * 
- * You should have received a copy of the GNU Lesser General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
-
-type t = int 
-
-(** 
-   0 : lib 
-   1 : dev 1 
-   2 : dev 2 
-*)  
-external of_int : int -> t = "%identity"
-let lib_dir_index = 0
-
-let is_lib_dir x = x = lib_dir_index
-
-let dir_index = ref 0 
-
-let get_dev_index ( ) = 
-  incr dir_index ; !dir_index
-
-let get_current_number_of_dev_groups =
-   (fun () -> !dir_index )
-
-
-(** bsb generate pre-defined variables [bsc_group_i_includes]
-  for each rule, there is variable [bsc_extra_excludes]
-  [g_dev_incls] are for app test etc
-  it will be like
-  {[
-    g_dev_incls = ${bsc_group_1_includes}
-  ]}
-  where [bsc_group_1_includes] will be pre-calcuated
-*)
-let bsc_group_1_includes = "bsc_group_1_includes"
-let bsc_group_2_includes = "bsc_group_2_includes"
-let bsc_group_3_includes = "bsc_group_3_includes"
-let bsc_group_4_includes = "bsc_group_4_includes"
-let string_of_bsb_dev_include i = 
-  match i with 
-  | 1 -> bsc_group_1_includes 
-  | 2 -> bsc_group_2_includes
-  | 3 -> bsc_group_3_includes
-  | 4 -> bsc_group_4_includes
-  | _ -> 
-    "bsc_group_" ^ string_of_int i ^ "_includes"
-
-
-let reset () = dir_index := 0
-end
 module Set_gen
 = struct
 #1 "set_gen.ml"
@@ -4076,7 +3954,7 @@ type  file_group =
     sources : Bsb_db.t; 
     resources : string list ;
     public : public ;
-    dir_index : Bsb_dir_index.t  ;
+    dev_index : bool ; (* false means not in dev mode *)
     generators : build_generator list ; 
     (* output of [generators] should be added to [sources],
        if it is [.ml,.mli,.re,.rei]
@@ -4153,7 +4031,7 @@ type  file_group =
     sources : Bsb_db.t; 
     resources : string list ;
     public : public ;
-    dir_index : Bsb_dir_index.t  ;
+    dev_index : bool  ;
     generators : build_generator list ; 
     (* output of [generators] should be added to [sources],
        if it is [.ml,.mli,.re,.rei]
@@ -7779,7 +7657,6 @@ type t =
     cut_generators : bool; (* note when used as a dev mode, we will always ignore it *)
     bs_suffix : bool ; (* true means [.bs.js] we should pass [-bs-suffix] flag *)
     gentype_config : gentype_config option;
-    number_of_dev_groups : int
   }
 
 end
@@ -10571,7 +10448,7 @@ val scan :
   bs_suffix:bool -> 
   ignored_dirs:Set_string.t ->
   Ext_json_types.t ->   
-  Bsb_file_groups.t * int 
+  Bsb_file_groups.t 
 
 (** This function has some duplication 
   from [scan],
@@ -10629,7 +10506,7 @@ let errorf x fmt =
 
 type cxt = {
   toplevel : bool ;
-  dir_index : Bsb_dir_index.t ; 
+  dev_index : bool; 
   cwd : string ;
   root : string;
   cut_generators : bool;
@@ -10923,18 +10800,18 @@ let rec
                     sources = sources; 
                     resources ;
                     public ;
-                    dir_index = cxt.dir_index ;
+                    dev_index = cxt.dev_index ;
                     generators = if has_generators then scanned_generators else []  } 
       ?globbed_dir:(
         if !cur_globbed_dirs then Some dir else None)
       children
 
 
-and parsing_single_source ({toplevel; dir_index ; cwd} as cxt ) (x : Ext_json_types.t )
+and parsing_single_source ({toplevel; dev_index ; cwd} as cxt ) (x : Ext_json_types.t )
   : t  =
   match x with 
   | Str  { str = dir }  -> 
-    if not toplevel && not (Bsb_dir_index.is_lib_dir dir_index) then 
+    if not toplevel &&  dev_index then 
       Bsb_file_groups.empty
     else 
       parsing_source_dir_map 
@@ -10945,10 +10822,10 @@ and parsing_single_source ({toplevel; dir_index ; cwd} as cxt ) (x : Ext_json_ty
     let current_dir_index = 
       match Map_string.find_opt map Bsb_build_schemas.type_ with 
       | Some (Str {str="dev"}) -> 
-        Bsb_dir_index.get_dev_index ()
+        true
       | Some _ -> Bsb_exception.config_error x {|type field expect "dev" literal |}
-      | None -> dir_index in 
-    if not toplevel && not (Bsb_dir_index.is_lib_dir current_dir_index) then 
+      | None -> dev_index in 
+    if not toplevel && current_dir_index then 
       Bsb_file_groups.empty 
     else 
       let dir = 
@@ -10963,7 +10840,7 @@ and parsing_single_source ({toplevel; dir_index ; cwd} as cxt ) (x : Ext_json_ty
 
       in
       parsing_source_dir_map 
-        {cxt with dir_index = current_dir_index; 
+        {cxt with dev_index = current_dir_index; 
                   cwd= Ext_path.concat cwd dir} map
   | _ -> Bsb_file_groups.empty
 and  parsing_arr_sources cxt (file_groups : Ext_json_types.t array)  = 
@@ -10985,21 +10862,18 @@ let scan
   ~namespace 
   ~bs_suffix 
   ~ignored_dirs
-  x : t * int = 
-  Bsb_dir_index.reset ();
-  let output = 
-    parse_sources {
-      ignored_dirs;
-      toplevel;
-      dir_index = Bsb_dir_index.lib_dir_index;
-      cwd = Filename.current_dir_name;
-      root ;
-      cut_generators;
-      namespace;
-      bs_suffix;
-      traverse = false
-    } x in 
-  output, Bsb_dir_index.get_current_number_of_dev_groups ()
+  x : t  = 
+  parse_sources {
+    ignored_dirs;
+    toplevel;
+    dev_index = false;
+    cwd = Filename.current_dir_name;
+    root ;
+    cut_generators;
+    namespace;
+    bs_suffix;
+    traverse = false
+  } x 
 
 
 
@@ -11894,7 +11768,7 @@ let interpret_json
       | Some sources -> 
         let cut_generators = 
           extract_boolean map Bsb_build_schemas.cut_generators false in 
-        let groups, number_of_dev_groups = Bsb_parse_sources.scan
+        let groups = Bsb_parse_sources.scan
             ~ignored_dirs:(extract_ignored_dirs map)
             ~toplevel
             ~root: per_proj_dir
@@ -11938,7 +11812,6 @@ let interpret_json
           entries;
           generators = extract_generators map ; 
           cut_generators ;
-          number_of_dev_groups;   
         }
       | None -> 
           Bsb_exception.invalid_spec
@@ -13137,7 +13010,7 @@ let make_custom_rules
     define
       ~restat:()
       ~command:
-      ("$bsdep -hash " ^ digest ^" $g_ns -g $bsb_dir_group $in")
+      ("$bsdep -hash " ^ digest ^" $g_ns $bsb_dir_group $in")
       "build_deps" in 
   let aux ~name ~read_cmi  ~postbuild =
     let postbuild = has_postbuild && postbuild in 
@@ -13580,31 +13453,23 @@ let handle_generators oc
 let make_common_shadows     
     package_specs 
     dirname 
-    dir_index 
   : Bsb_ninja_targets.shadow list 
   =
   
-    { key = Bsb_ninja_global_vars.g_pkg_flg;
+   [{ key = Bsb_ninja_global_vars.g_pkg_flg;
       op = 
         Append
           (Bsb_package_specs.package_flag_of_package_specs
              package_specs dirname
           )
-    } ::
-    (if Bsb_dir_index.is_lib_dir dir_index  then [] else
-       [         
-        { key =  Bsb_ninja_global_vars.g_dev_incls;
-          op = OverwriteVar (Bsb_dir_index.string_of_bsb_dev_include dir_index);          
-        }
-       ]
-    )   
+    }] 
   
 
 
 let emit_module_build
     (rules : Bsb_ninja_rule.builtin)  
     (package_specs : Bsb_package_specs.t)
-    (group_dir_index : Bsb_dir_index.t) 
+    (is_dev : bool) 
     oc 
     ~bs_suffix
     js_post_build_cmd
@@ -13614,7 +13479,6 @@ let emit_module_build
   let has_intf_file = module_info.info = Ml_mli in 
   let is_re = module_info.is_re in 
   let filename_sans_extension = module_info.name_sans_extension in 
-  let is_dev = not (Bsb_dir_index.is_lib_dir group_dir_index) in
   let input_impl = 
     Bsb_config.proj_rel 
       (filename_sans_extension ^ if is_re then  Literals.suffix_re else  Literals.suffix_ml  ) in
@@ -13636,7 +13500,7 @@ let emit_module_build
   let common_shadows = 
     make_common_shadows package_specs
       (Filename.dirname output_cmi)
-      group_dir_index in  
+      in  
   let ast_rule =     
     if is_re then 
       rules.build_ast_from_re
@@ -13654,7 +13518,7 @@ let emit_module_build
     ?shadows:(if is_dev then
                 Some [{Bsb_ninja_targets.key = Bsb_build_schemas.bsb_dir_group ; 
                        op = 
-                         Overwrite (string_of_int (group_dir_index :> int)) }] 
+                         Overwrite "-g" }] 
               else None)
   ;  
   if has_intf_file then begin           
@@ -13734,7 +13598,7 @@ let handle_files_per_dir
           module_info.name_sans_extension;
       emit_module_build  rules
         package_specs
-        group.dir_index
+        group.dev_index
         oc 
         ~bs_suffix
         js_post_build_cmd      
@@ -13902,7 +13766,7 @@ let output_ninja_and_namespace_map
       namespace ; 
       warning;
       gentype_config; 
-      number_of_dev_groups;
+
     } : Bsb_config_types.t) : unit 
   =
   let lib_artifacts_dir = !Bsb_global_backend.lib_artifacts_dir in
@@ -13946,48 +13810,34 @@ let output_ninja_and_namespace_map
            bs_dev_dependencies
            (fun x -> x.package_install_path));  
         Bsb_ninja_global_vars.g_ns , g_ns_flg ; 
-        Bsb_build_schemas.bsb_dir_group, "0"  (*TODO: avoid name conflict in the future *)
       |] oc 
   in        
   let  bs_groups, bsc_lib_dirs, static_resources =    
-    if number_of_dev_groups = 0 then
-      let bs_group, source_dirs,static_resources  =
-        Ext_list.fold_left bs_file_groups (Map_string.empty,[],[]) 
-          (fun (acc, dirs,acc_resources) ({sources ; dir; resources } as x)   
-            ->
-            Bsb_db_util.merge  acc  sources ,  
-            (if Bsb_file_groups.is_empty x then dirs else  dir::dirs) , 
-            ( if resources = [] then acc_resources
-              else Ext_list.map_append resources acc_resources (fun x -> dir // x ) )
-          )  in
-      Bsb_db_util.sanity_check bs_group;
-      [|bs_group|], source_dirs, static_resources
-    else
-      let bs_groups = Array.init  (number_of_dev_groups + 1 ) (fun _ -> Map_string.empty) in
-      let source_dirs = Array.init (number_of_dev_groups + 1 ) (fun _ -> []) in
+      (* number_of_dev_groups = 1 -- all devs share the same group *)
+      let bs_groups = Array.init  2 (fun _ -> Map_string.empty) in
+      let source_dirs = Array.init 2 (fun _ -> []) in
       let static_resources =
-        Ext_list.fold_left bs_file_groups [] (fun (acc_resources : string list) {sources; dir; resources; dir_index} 
+        Ext_list.fold_left bs_file_groups [] (fun (acc_resources : string list) {sources; dir; resources; dev_index} 
            ->
-            let dir_index = (dir_index :> int) in 
+            let dir_index = if dev_index then 1 else 0 in 
             bs_groups.(dir_index) <- Bsb_db_util.merge bs_groups.(dir_index) sources ;
             source_dirs.(dir_index) <- dir :: source_dirs.(dir_index);
             Ext_list.map_append resources  acc_resources (fun x -> dir//x) 
           ) in
-      let lib = bs_groups.((Bsb_dir_index.lib_dir_index :> int)) in               
+      let lib = bs_groups.(0) in               
       Bsb_db_util.sanity_check lib;
-      for i = 1 to number_of_dev_groups  do
-        let c = bs_groups.(i) in
-        Bsb_db_util.sanity_check c;
-        Map_string.iter c 
-          (fun k a -> 
-            if Map_string.mem lib k  then 
-              Bsb_db_util.conflict_module_info k a (Map_string.find_exn lib k)            
-            ) ;
-        Bsb_ninja_targets.output_kv 
-          (Bsb_dir_index.(string_of_bsb_dev_include (of_int i)))
-          (Bsb_build_util.include_dirs source_dirs.(i)) oc
-      done  ;
-      bs_groups,source_dirs.((Bsb_dir_index.lib_dir_index:>int)), static_resources
+      let c = bs_groups.(1) in
+      Bsb_db_util.sanity_check c;
+      Map_string.iter c 
+        (fun k a -> 
+           if Map_string.mem lib k  then 
+             Bsb_db_util.conflict_module_info k a (Map_string.find_exn lib k)            
+        ) ;
+      Bsb_ninja_targets.output_kv 
+        Bsb_ninja_global_vars.g_dev_incls
+        (Bsb_build_util.include_dirs source_dirs.(1)) oc
+      ;
+      bs_groups,source_dirs.(0), static_resources
   in
 
   let digest = Bsb_db_encode.write_build_cache ~dir:cwd_lib_bs bs_groups in

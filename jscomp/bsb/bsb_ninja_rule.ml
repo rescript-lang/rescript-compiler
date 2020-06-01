@@ -194,7 +194,7 @@ let make_custom_rules
     define
       ~restat:()
       ~command:
-      ("$bsdep -hash " ^ digest ^" $g_ns -g $bsb_dir_group $in")
+      ("$bsdep -hash " ^ digest ^" $g_ns $bsb_dir_group $in")
       "build_deps" in 
   let aux ~name ~read_cmi  ~postbuild =
     let postbuild = has_postbuild && postbuild in 

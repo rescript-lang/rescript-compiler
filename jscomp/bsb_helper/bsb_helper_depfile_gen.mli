@@ -32,7 +32,7 @@ val deps_of_channel : in_channel -> string list
 
 val emit_d: 
   kind -> 
-  Bsb_dir_index.t ->  
+  bool ->  
   string  option ->
   string ->
   string -> (* empty string means no mliast *)

@@ -37,7 +37,7 @@ val scan :
   bs_suffix:bool -> 
   ignored_dirs:Set_string.t ->
   Ext_json_types.t ->   
-  Bsb_file_groups.t * int 
+  Bsb_file_groups.t 
 
 (** This function has some duplication 
   from [scan],

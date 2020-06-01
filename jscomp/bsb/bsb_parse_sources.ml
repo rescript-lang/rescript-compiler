@@ -45,7 +45,7 @@ let errorf x fmt =
 
 type cxt = {
   toplevel : bool ;
-  dir_index : Bsb_dir_index.t ; 
+  dev_index : bool; 
   cwd : string ;
   root : string;
   cut_generators : bool;
@@ -339,18 +339,18 @@ let rec
                     sources = sources; 
                     resources ;
                     public ;
-                    dir_index = cxt.dir_index ;
+                    dev_index = cxt.dev_index ;
                     generators = if has_generators then scanned_generators else []  } 
       ?globbed_dir:(
         if !cur_globbed_dirs then Some dir else None)
       children
 
 
-and parsing_single_source ({toplevel; dir_index ; cwd} as cxt ) (x : Ext_json_types.t )
+and parsing_single_source ({toplevel; dev_index ; cwd} as cxt ) (x : Ext_json_types.t )
   : t  =
   match x with 
   | Str  { str = dir }  -> 
-    if not toplevel && not (Bsb_dir_index.is_lib_dir dir_index) then 
+    if not toplevel &&  dev_index then 
       Bsb_file_groups.empty
     else 
       parsing_source_dir_map 
@@ -361,10 +361,10 @@ and parsing_single_source ({toplevel; dir_index ; cwd} as cxt ) (x : Ext_json_ty
     let current_dir_index = 
       match Map_string.find_opt map Bsb_build_schemas.type_ with 
       | Some (Str {str="dev"}) -> 
-        Bsb_dir_index.get_dev_index ()
+        true
       | Some _ -> Bsb_exception.config_error x {|type field expect "dev" literal |}
-      | None -> dir_index in 
-    if not toplevel && not (Bsb_dir_index.is_lib_dir current_dir_index) then 
+      | None -> dev_index in 
+    if not toplevel && current_dir_index then 
       Bsb_file_groups.empty 
     else 
       let dir = 
@@ -379,7 +379,7 @@ and parsing_single_source ({toplevel; dir_index ; cwd} as cxt ) (x : Ext_json_ty
 
       in
       parsing_source_dir_map 
-        {cxt with dir_index = current_dir_index; 
+        {cxt with dev_index = current_dir_index; 
                   cwd= Ext_path.concat cwd dir} map
   | _ -> Bsb_file_groups.empty
 and  parsing_arr_sources cxt (file_groups : Ext_json_types.t array)  = 
@@ -401,21 +401,18 @@ let scan
   ~namespace 
   ~bs_suffix 
   ~ignored_dirs
-  x : t * int = 
-  Bsb_dir_index.reset ();
-  let output = 
-    parse_sources {
-      ignored_dirs;
-      toplevel;
-      dir_index = Bsb_dir_index.lib_dir_index;
-      cwd = Filename.current_dir_name;
-      root ;
-      cut_generators;
-      namespace;
-      bs_suffix;
-      traverse = false
-    } x in 
-  output, Bsb_dir_index.get_current_number_of_dev_groups ()
+  x : t  = 
+  parse_sources {
+    ignored_dirs;
+    toplevel;
+    dev_index = false;
+    cwd = Filename.current_dir_name;
+    root ;
+    cut_generators;
+    namespace;
+    bs_suffix;
+    traverse = false
+  } x 
 
 
 

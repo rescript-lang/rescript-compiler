@@ -52,8 +52,8 @@ type module_info = {
   dir_name : string
 } 
 
-val find_opt :
+val find:
   t -> (* contains global info *)
-  int -> (* more likely to be zero *)
   string -> (* module name *)
+  bool -> (* more likely to be zero *)
   module_info option 

@@ -40,7 +40,7 @@ type  file_group =
     sources : Bsb_db.t; 
     resources : string list ;
     public : public ;
-    dir_index : Bsb_dir_index.t  ;
+    dev_index : bool  ;
     generators : build_generator list ; 
     (* output of [generators] should be added to [sources],
        if it is [.ml,.mli,.re,.rei]

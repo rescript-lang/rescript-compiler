@@ -49,31 +49,23 @@ let handle_generators oc
 let make_common_shadows     
     package_specs 
     dirname 
-    dir_index 
   : Bsb_ninja_targets.shadow list 
   =
   
-    { key = Bsb_ninja_global_vars.g_pkg_flg;
+   [{ key = Bsb_ninja_global_vars.g_pkg_flg;
       op = 
         Append
           (Bsb_package_specs.package_flag_of_package_specs
              package_specs dirname
           )
-    } ::
-    (if Bsb_dir_index.is_lib_dir dir_index  then [] else
-       [         
-        { key =  Bsb_ninja_global_vars.g_dev_incls;
-          op = OverwriteVar (Bsb_dir_index.string_of_bsb_dev_include dir_index);          
-        }
-       ]
-    )   
+    }] 
   
 
 
 let emit_module_build
     (rules : Bsb_ninja_rule.builtin)  
     (package_specs : Bsb_package_specs.t)
-    (group_dir_index : Bsb_dir_index.t) 
+    (is_dev : bool) 
     oc 
     ~bs_suffix
     js_post_build_cmd
@@ -83,7 +75,6 @@ let emit_module_build
   let has_intf_file = module_info.info = Ml_mli in 
   let is_re = module_info.is_re in 
   let filename_sans_extension = module_info.name_sans_extension in 
-  let is_dev = not (Bsb_dir_index.is_lib_dir group_dir_index) in
   let input_impl = 
     Bsb_config.proj_rel 
       (filename_sans_extension ^ if is_re then  Literals.suffix_re else  Literals.suffix_ml  ) in
@@ -105,7 +96,7 @@ let emit_module_build
   let common_shadows = 
     make_common_shadows package_specs
       (Filename.dirname output_cmi)
-      group_dir_index in  
+      in  
   let ast_rule =     
     if is_re then 
       rules.build_ast_from_re
@@ -123,7 +114,7 @@ let emit_module_build
     ?shadows:(if is_dev then
                 Some [{Bsb_ninja_targets.key = Bsb_build_schemas.bsb_dir_group ; 
                        op = 
-                         Overwrite (string_of_int (group_dir_index :> int)) }] 
+                         Overwrite "-g" }] 
               else None)
   ;  
   if has_intf_file then begin           
@@ -203,7 +194,7 @@ let handle_files_per_dir
           module_info.name_sans_extension;
       emit_module_build  rules
         package_specs
-        group.dir_index
+        group.dev_index
         oc 
         ~bs_suffix
         js_post_build_cmd      

@@ -102,7 +102,8 @@ type module_info =  {
 
 
 let find_opt 
-  ((sorteds,whole) : t )  i (key : string) 
+  ((sorteds,whole) : t )  
+    (i : int) (key : string) 
     : module_info option = 
   let group = sorteds.(i) in 
   let i = Ext_string_array.find_sorted  group.modules key in 
@@ -130,5 +131,11 @@ let find_opt
     in    
     Some {case ; dir_name = String.sub whole dir_name_start (dir_name_finish - dir_name_start)}
   
-        
-      
+let find db dependent_module is_not_lib_dir =         
+  let opt = find_opt db 0 dependent_module in 
+  match opt with 
+  | Some _ -> opt
+  | None -> 
+    if is_not_lib_dir then 
+      find_opt db 1 dependent_module 
+    else None       
