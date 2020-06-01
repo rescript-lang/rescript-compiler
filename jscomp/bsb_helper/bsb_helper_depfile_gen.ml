@@ -119,15 +119,6 @@ let oc_cmi buf namespace source =
     When ns is turned on, `B` is interprted as `Ns-B` which is a cyclic dependency,
     it can be errored out earlier
 *)
-let find_module db dependent_module is_not_lib_dir 
-  : Bsb_db_decode.module_info option = 
-  let opt = Bsb_db_decode.find_opt db 0 dependent_module in 
-  match opt with 
-  | Some _ -> opt
-  | None -> 
-    if is_not_lib_dir then 
-      Bsb_db_decode.find_opt db 1 dependent_module 
-    else None 
 let oc_impl 
     (mlast : string)
     (index : Bsb_dir_index.t)
@@ -164,7 +155,7 @@ let oc_impl
       end
     );
     (match  
-      find_module db dependent_module is_not_lib_dir 
+      Bsb_db_decode.find db dependent_module is_not_lib_dir 
     with      
     | None -> ()
     | Some ({dir_name; case }) -> 
@@ -226,7 +217,7 @@ let oc_intf
          exit 2
        end
     );
-    (match  find_module db dependent_module is_not_lib_dir 
+    (match  Bsb_db_decode.find db dependent_module is_not_lib_dir 
      with     
      | None -> ()
      | Some {dir_name; case} ->       
