@@ -94,7 +94,7 @@ type builtin = {
   copy_resources : t;
   (** Rules below all need restat *)
   build_bin_deps : t ;
-
+  build_bin_deps_dev : t;        
   ml_cmj_js : t;
   ml_cmj_js_dev : t;
   ml_cmj_cmi_js : t ;
@@ -194,8 +194,14 @@ let make_custom_rules
     define
       ~restat:()
       ~command:
-      ("$bsdep -hash " ^ digest ^" $g_ns $bsb_dir_group $in")
-      "build_deps" in 
+      ("$bsdep -hash " ^ digest ^" $g_ns $in")
+      "mk_deps" in 
+  let build_bin_deps_dev =
+    define
+      ~restat:()
+      ~command:
+      ("$bsdep -g -hash " ^ digest ^" $g_ns $in")
+      "mk_deps_dev" in     
   let aux ~name ~read_cmi  ~postbuild =
     let postbuild = has_postbuild && postbuild in 
     define
@@ -239,7 +245,7 @@ let make_custom_rules
     copy_resources;
     (** Rules below all need restat *)
     build_bin_deps ;
-
+    build_bin_deps_dev;
     ml_cmj_js ;
     ml_cmj_js_dev ;
     ml_cmj_cmi_js ;
