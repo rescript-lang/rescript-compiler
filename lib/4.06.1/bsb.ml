@@ -7114,11 +7114,17 @@ let prepare_warning_concat ~(beg : bool) s =
 let to_merlin_string x =
   "-w " ^ Bsc_warnings.defaults_w
   ^
-  (match x with
-   | Some {number =None}
-   | None ->  Ext_string.empty
-   | Some {number = Some x} -> 
-    prepare_warning_concat ~beg:false x )
+  (let customize = (match x with
+       | Some {number =None}
+       | None ->  Ext_string.empty
+       | Some {number = Some x} -> 
+         prepare_warning_concat ~beg:false x 
+     ) in 
+   if customize = "" then customize
+   else customize ^ "-40-42-61") 
+(* see #4406 to avoid user pass A
+   Sync up with {!Warnings.report}
+*)
 
 
    
@@ -12812,7 +12818,8 @@ let make_custom_rules
       ~is_dev 
       ~postbuild : string =     
     Ext_buffer.clear buf;
-    Ext_buffer.add_string buf "$bsc $g_pkg_flg -color always";
+    Ext_buffer.add_string buf "$bsc -color always";
+    Ext_buffer.add_ninja_prefix_var buf Bsb_ninja_global_vars.g_pkg_flg;
     if bs_suffix then
       Ext_buffer.add_string buf " -bs-suffix";
     if read_cmi then 

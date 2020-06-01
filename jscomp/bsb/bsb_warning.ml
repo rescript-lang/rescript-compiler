@@ -54,11 +54,17 @@ let prepare_warning_concat ~(beg : bool) s =
 let to_merlin_string x =
   "-w " ^ Bsc_warnings.defaults_w
   ^
-  (match x with
-   | Some {number =None}
-   | None ->  Ext_string.empty
-   | Some {number = Some x} -> 
-    prepare_warning_concat ~beg:false x )
+  (let customize = (match x with
+       | Some {number =None}
+       | None ->  Ext_string.empty
+       | Some {number = Some x} -> 
+         prepare_warning_concat ~beg:false x 
+     ) in 
+   if customize = "" then customize
+   else customize ^ "-40-42-61") 
+(* see #4406 to avoid user pass A
+   Sync up with {!Warnings.report}
+*)
 
 
    
