@@ -33,7 +33,7 @@ val is_lib_dir : t -> bool
 
 val get_dev_index : unit -> t 
 
-val of_int : int -> t 
+
 
 
 

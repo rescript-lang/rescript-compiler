@@ -29,7 +29,7 @@ type t = int
    1 : dev 1 
    2 : dev 2 
 *)  
-external of_int : int -> t = "%identity"
+
 let lib_dir_index = 0
 
 let is_lib_dir x = x = lib_dir_index

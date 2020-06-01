@@ -160,7 +160,6 @@ let output_ninja_and_namespace_map
            bs_dev_dependencies
            (fun x -> x.package_install_path));  
         Bsb_ninja_global_vars.g_ns , g_ns_flg ; 
-        Bsb_build_schemas.bsb_dir_group, "0"  (*TODO: avoid name conflict in the future *)
       |] oc 
   in        
   let  bs_groups, bsc_lib_dirs, static_resources =    

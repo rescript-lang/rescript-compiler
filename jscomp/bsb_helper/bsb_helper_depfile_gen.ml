@@ -121,7 +121,7 @@ let oc_cmi buf namespace source =
 *)
 let oc_impl 
     (mlast : string)
-    (index : Bsb_dir_index.t)
+    (dev_group : bool)
     (db : Bsb_db_decode.t)
     (namespace : string option)
     (buf : Ext_buffer.t)
@@ -141,7 +141,6 @@ let oc_impl
       Ext_buffer.add_string buf ns;
       Ext_buffer.add_string buf Literals.suffix_cmi;
   ) ; (* TODO: moved into static files*)
-  let is_not_lib_dir = not (Bsb_dir_index.is_lib_dir index) in 
   let s = extract_dep_raw_string mlast in 
   let offset = ref 1 in 
   let size = String.length s in 
@@ -155,7 +154,7 @@ let oc_impl
       end
     );
     (match  
-      Bsb_db_decode.find db dependent_module is_not_lib_dir 
+      Bsb_db_decode.find db dependent_module dev_group 
     with      
     | None -> ()
     | Some ({dir_name; case }) -> 
@@ -187,7 +186,7 @@ let oc_impl
 *)
 let oc_intf
     mliast    
-    (index : Bsb_dir_index.t)
+    (dev_group : bool)
     (db : Bsb_db_decode.t)
     (namespace : string option)
     (buf : Ext_buffer.t) : unit =     
@@ -204,7 +203,6 @@ let oc_intf
       Ext_buffer.add_string buf Literals.suffix_cmi;
   ) ; 
   let cur_module_name = Ext_filename.module_name mliast in
-  let is_not_lib_dir = not (Bsb_dir_index.is_lib_dir index)  in  
   let s = extract_dep_raw_string mliast in 
   let offset = ref 1 in 
   let size = String.length s in 
@@ -217,7 +215,7 @@ let oc_intf
          exit 2
        end
     );
-    (match  Bsb_db_decode.find db dependent_module is_not_lib_dir 
+    (match  Bsb_db_decode.find db dependent_module dev_group 
      with     
      | None -> ()
      | Some {dir_name; case} ->       
@@ -236,7 +234,7 @@ let oc_intf
 
 let emit_d 
   compilation_kind
-  (index : Bsb_dir_index.t) 
+  (dev_group : bool) 
   (namespace : string option) (mlast : string) (mliast : string) = 
   let data  =
     Bsb_db_decode.read_build_cache 
@@ -252,7 +250,7 @@ let emit_d
   in   
   oc_impl 
     mlast
-    index 
+    dev_group
     data
     namespace
     buf 
@@ -261,7 +259,7 @@ let emit_d
   if mliast <> "" then begin
     oc_intf 
       mliast
-      index 
+      dev_group
       data 
       namespace 
       buf        

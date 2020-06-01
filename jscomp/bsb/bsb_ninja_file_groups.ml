@@ -115,7 +115,7 @@ let emit_module_build
     ?shadows:(if is_dev then
                 Some [{Bsb_ninja_targets.key = Bsb_build_schemas.bsb_dir_group ; 
                        op = 
-                         Overwrite (string_of_int (group_dir_index :> int)) }] 
+                         Overwrite "-g" }] 
               else None)
   ;  
   if has_intf_file then begin           

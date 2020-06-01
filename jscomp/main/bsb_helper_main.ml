@@ -29,7 +29,7 @@ let collect_file name =
   batch_files := name :: !batch_files
 
 (* let output_prefix = ref None *)
-let dev_group = ref 0
+let dev_group = ref false
 let namespace = ref None
 
 
@@ -39,7 +39,7 @@ let usage = "Usage: bsb_helper.exe [options] \nOptions are:"
  
 let () =
   Bsb_helper_arg.parse_exn [
-    "-g",  Set_int dev_group ,
+    "-g",  Set dev_group ,
     " Set the dev group (default to be 0)"
     ;
     "-bs-ns",  String (fun s -> namespace := Some s),
@@ -52,13 +52,13 @@ let () =
   | [x]
     ->  Bsb_helper_depfile_gen.emit_d
           !compilation_kind
-          (Bsb_dir_index.of_int !dev_group )          
+          !dev_group
           !namespace x ""
   | [y; x] (* reverse order *)
     -> 
     Bsb_helper_depfile_gen.emit_d
       !compilation_kind
-      (Bsb_dir_index.of_int !dev_group)
+      !dev_group
       !namespace x y
   | _ -> 
     ()
