@@ -177,8 +177,9 @@ let output_ninja_and_namespace_map
       Bsb_db_util.sanity_check bs_group;
       [|bs_group|], source_dirs, static_resources
     else
-      let bs_groups = Array.init  (number_of_dev_groups + 1 ) (fun _ -> Map_string.empty) in
-      let source_dirs = Array.init (number_of_dev_groups + 1 ) (fun _ -> []) in
+      (* number_of_dev_groups = 1 -- all devs share the same group *)
+      let bs_groups = Array.init  2 (fun _ -> Map_string.empty) in
+      let source_dirs = Array.init 2 (fun _ -> []) in
       let static_resources =
         Ext_list.fold_left bs_file_groups [] (fun (acc_resources : string list) {sources; dir; resources; dir_index} 
            ->
@@ -187,21 +188,20 @@ let output_ninja_and_namespace_map
             source_dirs.(dir_index) <- dir :: source_dirs.(dir_index);
             Ext_list.map_append resources  acc_resources (fun x -> dir//x) 
           ) in
-      let lib = bs_groups.((Bsb_dir_index.lib_dir_index :> int)) in               
+      let lib = bs_groups.(0) in               
       Bsb_db_util.sanity_check lib;
-      for i = 1 to number_of_dev_groups  do
-        let c = bs_groups.(i) in
-        Bsb_db_util.sanity_check c;
-        Map_string.iter c 
-          (fun k a -> 
-            if Map_string.mem lib k  then 
-              Bsb_db_util.conflict_module_info k a (Map_string.find_exn lib k)            
-            ) ;
-        Bsb_ninja_targets.output_kv 
-          (Bsb_dir_index.(string_of_bsb_dev_include (of_int i)))
-          (Bsb_build_util.include_dirs source_dirs.(i)) oc
-      done  ;
-      bs_groups,source_dirs.((Bsb_dir_index.lib_dir_index:>int)), static_resources
+      let c = bs_groups.(1) in
+      Bsb_db_util.sanity_check c;
+      Map_string.iter c 
+        (fun k a -> 
+           if Map_string.mem lib k  then 
+             Bsb_db_util.conflict_module_info k a (Map_string.find_exn lib k)            
+        ) ;
+      Bsb_ninja_targets.output_kv 
+        (Bsb_dir_index.(string_of_bsb_dev_include (of_int 1)))
+        (Bsb_build_util.include_dirs source_dirs.(1)) oc
+      ;
+      bs_groups,source_dirs.(0), static_resources
   in
 
   let digest = Bsb_db_encode.write_build_cache ~dir:cwd_lib_bs bs_groups in
