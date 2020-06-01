@@ -1,94 +1,3 @@
-module Bsb_dir_index : sig 
-#1 "bsb_dir_index.mli"
-(* Copyright (C) 2017 Authors of BuckleScript
- * 
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * In addition to the permissions granted to you by the LGPL, you may combine
- * or link a "work that uses the Library" with a publicly distributed version
- * of this file to produce a combined library or application, then distribute
- * that combined work under the terms of your choosing, with no requirement
- * to comply with the obligations normally placed on you by section 4 of the
- * LGPL version 3 (or the corresponding section of a later version of the LGPL
- * should you choose to use a later version).
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Lesser General Public License for more details.
- * 
- * You should have received a copy of the GNU Lesser General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
-
-(** Used to index [.bsbuildcache] may not be needed if we flatten dev 
-  into  a single group
-*)
-type t = private int
-
-val lib_dir_index : t 
-
-val is_lib_dir : t -> bool 
-
-val get_dev_index : unit -> t 
-
-val of_int : int -> t 
-
-
-
-
-end = struct
-#1 "bsb_dir_index.ml"
-(* Copyright (C) 2017 Authors of BuckleScript
- * 
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * In addition to the permissions granted to you by the LGPL, you may combine
- * or link a "work that uses the Library" with a publicly distributed version
- * of this file to produce a combined library or application, then distribute
- * that combined work under the terms of your choosing, with no requirement
- * to comply with the obligations normally placed on you by section 4 of the
- * LGPL version 3 (or the corresponding section of a later version of the LGPL
- * should you choose to use a later version).
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Lesser General Public License for more details.
- * 
- * You should have received a copy of the GNU Lesser General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
-
-type t = int 
-
-(** 
-   0 : lib 
-   1 : dev 1 
-   2 : dev 2 
-*)  
-external of_int : int -> t = "%identity"
-let lib_dir_index = 0
-
-let is_lib_dir x = x = lib_dir_index
-
-
-
-let get_dev_index ( ) =  1
-
-
-
-
-
-
-
-end
 module Ext_bytes : sig 
 #1 "ext_bytes.mli"
 (* Copyright (C) 2015-2016 Bloomberg Finance L.P.
@@ -3915,7 +3824,7 @@ val deps_of_channel : in_channel -> string list
 
 val emit_d: 
   kind -> 
-  Bsb_dir_index.t ->  
+  bool ->  
   string  option ->
   string ->
   string -> (* empty string means no mliast *)
@@ -4046,7 +3955,7 @@ let oc_cmi buf namespace source =
 *)
 let oc_impl 
     (mlast : string)
-    (index : Bsb_dir_index.t)
+    (dev_group : bool)
     (db : Bsb_db_decode.t)
     (namespace : string option)
     (buf : Ext_buffer.t)
@@ -4066,7 +3975,6 @@ let oc_impl
       Ext_buffer.add_string buf ns;
       Ext_buffer.add_string buf Literals.suffix_cmi;
   ) ; (* TODO: moved into static files*)
-  let is_not_lib_dir = not (Bsb_dir_index.is_lib_dir index) in 
   let s = extract_dep_raw_string mlast in 
   let offset = ref 1 in 
   let size = String.length s in 
@@ -4080,7 +3988,7 @@ let oc_impl
       end
     );
     (match  
-      Bsb_db_decode.find db dependent_module is_not_lib_dir 
+      Bsb_db_decode.find db dependent_module dev_group 
     with      
     | None -> ()
     | Some ({dir_name; case }) -> 
@@ -4112,7 +4020,7 @@ let oc_impl
 *)
 let oc_intf
     mliast    
-    (index : Bsb_dir_index.t)
+    (dev_group : bool)
     (db : Bsb_db_decode.t)
     (namespace : string option)
     (buf : Ext_buffer.t) : unit =     
@@ -4129,7 +4037,6 @@ let oc_intf
       Ext_buffer.add_string buf Literals.suffix_cmi;
   ) ; 
   let cur_module_name = Ext_filename.module_name mliast in
-  let is_not_lib_dir = not (Bsb_dir_index.is_lib_dir index)  in  
   let s = extract_dep_raw_string mliast in 
   let offset = ref 1 in 
   let size = String.length s in 
@@ -4142,7 +4049,7 @@ let oc_intf
          exit 2
        end
     );
-    (match  Bsb_db_decode.find db dependent_module is_not_lib_dir 
+    (match  Bsb_db_decode.find db dependent_module dev_group 
      with     
      | None -> ()
      | Some {dir_name; case} ->       
@@ -4161,7 +4068,7 @@ let oc_intf
 
 let emit_d 
   compilation_kind
-  (index : Bsb_dir_index.t) 
+  (dev_group : bool) 
   (namespace : string option) (mlast : string) (mliast : string) = 
   let data  =
     Bsb_db_decode.read_build_cache 
@@ -4177,7 +4084,7 @@ let emit_d
   in   
   oc_impl 
     mlast
-    index 
+    dev_group
     data
     namespace
     buf 
@@ -4186,7 +4093,7 @@ let emit_d
   if mliast <> "" then begin
     oc_intf 
       mliast
-      index 
+      dev_group
       data 
       namespace 
       buf        
@@ -4265,7 +4172,7 @@ let collect_file name =
   batch_files := name :: !batch_files
 
 (* let output_prefix = ref None *)
-let dev_group = ref 0
+let dev_group = ref false
 let namespace = ref None
 
 
@@ -4275,7 +4182,7 @@ let usage = "Usage: bsb_helper.exe [options] \nOptions are:"
  
 let () =
   Bsb_helper_arg.parse_exn [
-    "-g",  Set_int dev_group ,
+    "-g",  Set dev_group ,
     " Set the dev group (default to be 0)"
     ;
     "-bs-ns",  String (fun s -> namespace := Some s),
@@ -4288,13 +4195,13 @@ let () =
   | [x]
     ->  Bsb_helper_depfile_gen.emit_d
           !compilation_kind
-          (Bsb_dir_index.of_int !dev_group )          
+          !dev_group
           !namespace x ""
   | [y; x] (* reverse order *)
     -> 
     Bsb_helper_depfile_gen.emit_d
       !compilation_kind
-      (Bsb_dir_index.of_int !dev_group)
+      !dev_group
       !namespace x y
   | _ -> 
     ()
