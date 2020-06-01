@@ -3316,17 +3316,12 @@ val get_dev_index : unit -> t
 
 val of_int : int -> t 
 
-val get_current_number_of_dev_groups : unit -> int 
+
 
 
 val string_of_bsb_dev_include : t -> string 
 
-(** TODO: Need reset
-   when generating each ninja file to provide stronger guarantee. 
-   Here we get a weak guarantee because only dev group is 
-  inside the toplevel project
-   *)
-val reset : unit -> unit
+
 end = struct
 #1 "bsb_dir_index.ml"
 (* Copyright (C) 2017 Authors of BuckleScript
@@ -3365,13 +3360,10 @@ let lib_dir_index = 0
 
 let is_lib_dir x = x = lib_dir_index
 
-let dir_index = ref 0 
 
-let get_dev_index ( ) = 
-  incr dir_index ; !dir_index
 
-let get_current_number_of_dev_groups =
-   (fun () -> !dir_index )
+let get_dev_index ( ) =  1
+
 
 
 (** bsb generate pre-defined variables [bsc_group_i_includes]
@@ -3397,7 +3389,7 @@ let string_of_bsb_dev_include i =
     "bsc_group_" ^ string_of_int i ^ "_includes"
 
 
-let reset () = dir_index := 0
+
 end
 module Set_gen
 = struct
@@ -7773,7 +7765,6 @@ type t =
     cut_generators : bool; (* note when used as a dev mode, we will always ignore it *)
     bs_suffix : bool ; (* true means [.bs.js] we should pass [-bs-suffix] flag *)
     gentype_config : gentype_config option;
-    number_of_dev_groups : int
   }
 
 end
@@ -10539,7 +10530,7 @@ val scan :
   bs_suffix:bool -> 
   ignored_dirs:Set_string.t ->
   Ext_json_types.t ->   
-  Bsb_file_groups.t * int 
+  Bsb_file_groups.t 
 
 (** This function has some duplication 
   from [scan],
@@ -10953,21 +10944,18 @@ let scan
   ~namespace 
   ~bs_suffix 
   ~ignored_dirs
-  x : t * int = 
-  Bsb_dir_index.reset ();
-  let output = 
-    parse_sources {
-      ignored_dirs;
-      toplevel;
-      dir_index = Bsb_dir_index.lib_dir_index;
-      cwd = Filename.current_dir_name;
-      root ;
-      cut_generators;
-      namespace;
-      bs_suffix;
-      traverse = false
-    } x in 
-  output, Bsb_dir_index.get_current_number_of_dev_groups ()
+  x : t  = 
+  parse_sources {
+    ignored_dirs;
+    toplevel;
+    dir_index = Bsb_dir_index.lib_dir_index;
+    cwd = Filename.current_dir_name;
+    root ;
+    cut_generators;
+    namespace;
+    bs_suffix;
+    traverse = false
+  } x 
 
 
 
@@ -11745,7 +11733,7 @@ let interpret_json
       | Some sources -> 
         let cut_generators = 
           extract_boolean map Bsb_build_schemas.cut_generators false in 
-        let groups, number_of_dev_groups = Bsb_parse_sources.scan
+        let groups = Bsb_parse_sources.scan
             ~ignored_dirs:(extract_ignored_dirs map)
             ~toplevel
             ~root: per_proj_dir
@@ -11789,7 +11777,6 @@ let interpret_json
           entries;
           generators = extract_generators map ; 
           cut_generators ;
-          number_of_dev_groups;   
         }
       | None -> 
           Bsb_exception.invalid_spec
@@ -13753,7 +13740,7 @@ let output_ninja_and_namespace_map
       namespace ; 
       warning;
       gentype_config; 
-      number_of_dev_groups;
+
     } : Bsb_config_types.t) : unit 
   =
   let lib_artifacts_dir = !Bsb_global_backend.lib_artifacts_dir in
@@ -13801,19 +13788,6 @@ let output_ninja_and_namespace_map
       |] oc 
   in        
   let  bs_groups, bsc_lib_dirs, static_resources =    
-    if number_of_dev_groups = 0 then
-      let bs_group, source_dirs,static_resources  =
-        Ext_list.fold_left bs_file_groups (Map_string.empty,[],[]) 
-          (fun (acc, dirs,acc_resources) ({sources ; dir; resources } as x)   
-            ->
-            Bsb_db_util.merge  acc  sources ,  
-            (if Bsb_file_groups.is_empty x then dirs else  dir::dirs) , 
-            ( if resources = [] then acc_resources
-              else Ext_list.map_append resources acc_resources (fun x -> dir // x ) )
-          )  in
-      Bsb_db_util.sanity_check bs_group;
-      [|bs_group|], source_dirs, static_resources
-    else
       (* number_of_dev_groups = 1 -- all devs share the same group *)
       let bs_groups = Array.init  2 (fun _ -> Map_string.empty) in
       let source_dirs = Array.init 2 (fun _ -> []) in
