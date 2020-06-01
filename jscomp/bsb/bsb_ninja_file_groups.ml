@@ -65,7 +65,7 @@ let make_common_shadows
 let emit_module_build
     (rules : Bsb_ninja_rule.builtin)  
     (package_specs : Bsb_package_specs.t)
-    (group_dir_index : Bsb_dir_index.t) 
+    (is_dev : bool) 
     oc 
     ~bs_suffix
     js_post_build_cmd
@@ -75,7 +75,6 @@ let emit_module_build
   let has_intf_file = module_info.info = Ml_mli in 
   let is_re = module_info.is_re in 
   let filename_sans_extension = module_info.name_sans_extension in 
-  let is_dev = not (Bsb_dir_index.is_lib_dir group_dir_index) in
   let input_impl = 
     Bsb_config.proj_rel 
       (filename_sans_extension ^ if is_re then  Literals.suffix_re else  Literals.suffix_ml  ) in

@@ -45,7 +45,7 @@ let errorf x fmt =
 
 type cxt = {
   toplevel : bool ;
-  dir_index : Bsb_dir_index.t ; 
+  dir_index : bool; 
   cwd : string ;
   root : string;
   cut_generators : bool;
@@ -350,7 +350,7 @@ and parsing_single_source ({toplevel; dir_index ; cwd} as cxt ) (x : Ext_json_ty
   : t  =
   match x with 
   | Str  { str = dir }  -> 
-    if not toplevel && not (Bsb_dir_index.is_lib_dir dir_index) then 
+    if not toplevel &&  dir_index then 
       Bsb_file_groups.empty
     else 
       parsing_source_dir_map 
@@ -361,10 +361,10 @@ and parsing_single_source ({toplevel; dir_index ; cwd} as cxt ) (x : Ext_json_ty
     let current_dir_index = 
       match Map_string.find_opt map Bsb_build_schemas.type_ with 
       | Some (Str {str="dev"}) -> 
-        Bsb_dir_index.get_dev_index ()
+        true
       | Some _ -> Bsb_exception.config_error x {|type field expect "dev" literal |}
       | None -> dir_index in 
-    if not toplevel && not (Bsb_dir_index.is_lib_dir current_dir_index) then 
+    if not toplevel && current_dir_index then 
       Bsb_file_groups.empty 
     else 
       let dir = 
@@ -405,7 +405,7 @@ let scan
   parse_sources {
     ignored_dirs;
     toplevel;
-    dir_index = Bsb_dir_index.lib_dir_index;
+    dir_index = false;
     cwd = Filename.current_dir_name;
     root ;
     cut_generators;

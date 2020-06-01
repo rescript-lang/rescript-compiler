@@ -169,7 +169,7 @@ let output_ninja_and_namespace_map
       let static_resources =
         Ext_list.fold_left bs_file_groups [] (fun (acc_resources : string list) {sources; dir; resources; dir_index} 
            ->
-            let dir_index = (dir_index :> int) in 
+            let dir_index = if dir_index then 1 else 0 in 
             bs_groups.(dir_index) <- Bsb_db_util.merge bs_groups.(dir_index) sources ;
             source_dirs.(dir_index) <- dir :: source_dirs.(dir_index);
             Ext_list.map_append resources  acc_resources (fun x -> dir//x) 
