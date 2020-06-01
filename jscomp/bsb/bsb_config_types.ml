@@ -36,7 +36,6 @@ type entries_t = JsTarget of string | NativeTarget of string | BytecodeTarget of
 type compilation_kind_t = Js | Bytecode | Native
 
 type reason_react_jsx = 
-  | Jsx_v2
   | Jsx_v3
   (* string option  *)
 

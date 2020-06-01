@@ -45,7 +45,7 @@ type builtin = {
   copy_resources : t;
   (** Rules below all need restat *)
   build_bin_deps : t ;
-
+  build_bin_deps_dev : t ;
   ml_cmj_js : t;
   ml_cmj_js_dev : t;
   ml_cmj_cmi_js : t ;

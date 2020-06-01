@@ -61,7 +61,7 @@ let dev = "dev"
 let export_all = "all"
 let export_none = "none"
 
-let bsb_dir_group = "bsb_dir_group"
+
 let g_lib_incls = "g_lib_incls"
 let use_stdlib = "use-stdlib"
 let reason = "reason"

@@ -156,7 +156,7 @@ let merlin_file_gen ~per_proj_dir:(per_proj_dir:string)
             else  "'%s -as-ppx -bs-jsx %d'" 
           in 
           Printf.sprintf fmt  Bsb_global_paths.vendor_bsc
-            (match opt with Jsx_v2 -> 2 | Jsx_v3 -> 3)
+            (match opt with Jsx_v3 -> 3)
        )
       );    
     Ext_list.iter external_includes (fun path -> 

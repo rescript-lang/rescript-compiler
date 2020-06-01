@@ -110,12 +110,7 @@ let emit_module_build
     oc
     ~outputs:[output_d]
     ~inputs:(if has_intf_file then [output_mlast;output_mliast] else [output_mlast] )
-    ~rule:rules.build_bin_deps
-    ?shadows:(if is_dev then
-                Some [{Bsb_ninja_targets.key = Bsb_build_schemas.bsb_dir_group ; 
-                       op = 
-                         Overwrite "-g" }] 
-              else None)
+    ~rule:(if is_dev then rules.build_bin_deps_dev else rules.build_bin_deps)
   ;  
   if has_intf_file then begin           
     Bsb_ninja_targets.output_build oc

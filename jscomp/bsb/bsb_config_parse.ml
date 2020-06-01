@@ -261,8 +261,6 @@ let extract_reason_react_jsx (map : json_map) =
       match Map_string.find_opt m Bsb_build_schemas.react_jsx with 
       | Some (Flo{loc; flo}) -> 
         begin match flo with 
-          | "2" -> 
-            default := Some Jsx_v2
           | "3" -> 
             default := Some Jsx_v3
           | _ -> Bsb_exception.errorf ~loc "Unsupported jsx version %s" flo
