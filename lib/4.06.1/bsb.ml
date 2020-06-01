@@ -5914,7 +5914,7 @@ val length : t -> int
 
 val is_empty : t -> bool
 
-(* val clear : t -> unit *)
+val clear : t -> unit
 (** Empty the buffer. *)
 
 
@@ -6032,7 +6032,7 @@ let contents b = Bytes.sub_string b.buffer 0 b.position
 
 let length b = b.position
 let is_empty b = b.position = 0
-(* let clear b = b.position <- 0 *)
+let clear b = b.position <- 0
 
 (* let reset b =
   b.position <- 0; b.buffer <- b.initial_buffer;
@@ -12790,55 +12790,55 @@ let make_custom_rules
   builtin = 
   (** FIXME: We don't need set [-o ${out}] when building ast 
       since the default is already good -- it does not*)
-  let buf = Buffer.create 100 in     
+  let buf = Ext_buffer.create 100 in     
   let mk_ml_cmj_cmd 
       ~read_cmi 
       ~is_dev 
       ~postbuild : string =     
-    Buffer.clear buf;
-    Buffer.add_string buf "$bsc $g_pkg_flg -color always";
+    Ext_buffer.clear buf;
+    Ext_buffer.add_string buf "$bsc $g_pkg_flg -color always";
     if bs_suffix then
-      Buffer.add_string buf " -bs-suffix";
+      Ext_buffer.add_string buf " -bs-suffix";
     if read_cmi then 
-      Buffer.add_string buf " -bs-read-cmi";
+      Ext_buffer.add_string buf " -bs-read-cmi";
     if is_dev then 
-      Buffer.add_string buf " $g_dev_incls";      
-    Buffer.add_string buf " $g_lib_incls" ;
+      Ext_buffer.add_string buf " $g_dev_incls";      
+    Ext_buffer.add_string buf " $g_lib_incls" ;
     if is_dev then
-      Buffer.add_string buf " $g_dpkg_incls";
+      Ext_buffer.add_string buf " $g_dpkg_incls";
     if not has_builtin then   
-      Buffer.add_string buf " -nostdlib";
-    Buffer.add_string buf " $warnings $bsc_flags";
+      Ext_buffer.add_string buf " -nostdlib";
+    Ext_buffer.add_string buf " $warnings $bsc_flags";
     if has_gentype then
-      Buffer.add_string buf " $gentypeconfig";
-    Buffer.add_string buf " -o $out $in";
+      Ext_buffer.add_string buf " $gentypeconfig";
+    Ext_buffer.add_string buf " -o $out $in";
     if postbuild then
-      Buffer.add_string buf " $postbuild";
-    Buffer.contents buf
+      Ext_buffer.add_string buf " $postbuild";
+    Ext_buffer.contents buf
   in   
   let mk_ast ~(has_pp : bool) ~has_ppx ~has_reason_react_jsx : string =
-    Buffer.clear buf ; 
-    Buffer.add_string buf "$bsc  $warnings -color always";
+    Ext_buffer.clear buf ; 
+    Ext_buffer.add_string buf "$bsc  $warnings -color always";
     (match refmt with 
     | None -> ()
     | Some x ->
-      Buffer.add_string buf " -bs-refmt ";
-      Buffer.add_string buf (Ext_filename.maybe_quote x);
+      Ext_buffer.add_string buf " -bs-refmt ";
+      Ext_buffer.add_string buf (Ext_filename.maybe_quote x);
     );
     if has_pp then
-      Buffer.add_string buf " $pp_flags";
+      Ext_buffer.add_string buf " $pp_flags";
     (match has_reason_react_jsx, reason_react_jsx with
      | false, _ 
      | _, None -> ()
      | _, Some Jsx_v2
-       -> Buffer.add_string buf " -bs-jsx 2"
+       -> Ext_buffer.add_string buf " -bs-jsx 2"
      | _, Some Jsx_v3 
-       -> Buffer.add_string buf " -bs-jsx 3"
+       -> Ext_buffer.add_string buf " -bs-jsx 3"
     );
     if has_ppx then 
-      Buffer.add_string buf " $ppx_flags"; 
-    Buffer.add_string buf " $bsc_flags -o $out -bs-syntax-only -bs-binary-ast $in";   
-    Buffer.contents buf
+      Ext_buffer.add_string buf " $ppx_flags"; 
+    Ext_buffer.add_string buf " $bsc_flags -o $out -bs-syntax-only -bs-binary-ast $in";   
+    Ext_buffer.contents buf
   in  
   let build_ast =
     define
