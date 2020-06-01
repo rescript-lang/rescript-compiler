@@ -3277,97 +3277,6 @@ type ts = t array
 
 
 end
-module Bsb_dir_index : sig 
-#1 "bsb_dir_index.mli"
-(* Copyright (C) 2017 Authors of BuckleScript
- * 
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * In addition to the permissions granted to you by the LGPL, you may combine
- * or link a "work that uses the Library" with a publicly distributed version
- * of this file to produce a combined library or application, then distribute
- * that combined work under the terms of your choosing, with no requirement
- * to comply with the obligations normally placed on you by section 4 of the
- * LGPL version 3 (or the corresponding section of a later version of the LGPL
- * should you choose to use a later version).
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Lesser General Public License for more details.
- * 
- * You should have received a copy of the GNU Lesser General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
-
-(** Used to index [.bsbuildcache] may not be needed if we flatten dev 
-  into  a single group
-*)
-type t = private int
-
-val lib_dir_index : t 
-
-val is_lib_dir : t -> bool 
-
-val get_dev_index : unit -> t 
-
-
-
-
-
-
-end = struct
-#1 "bsb_dir_index.ml"
-(* Copyright (C) 2017 Authors of BuckleScript
- * 
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * In addition to the permissions granted to you by the LGPL, you may combine
- * or link a "work that uses the Library" with a publicly distributed version
- * of this file to produce a combined library or application, then distribute
- * that combined work under the terms of your choosing, with no requirement
- * to comply with the obligations normally placed on you by section 4 of the
- * LGPL version 3 (or the corresponding section of a later version of the LGPL
- * should you choose to use a later version).
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Lesser General Public License for more details.
- * 
- * You should have received a copy of the GNU Lesser General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
-
-type t = int 
-
-(** 
-   0 : lib 
-   1 : dev 1 
-   2 : dev 2 
-*)  
-
-let lib_dir_index = 0
-
-let is_lib_dir x = x = lib_dir_index
-
-
-
-let get_dev_index ( ) =  1
-
-
-
-
-
-
-
-end
 module Set_gen
 = struct
 #1 "set_gen.ml"
@@ -4045,7 +3954,7 @@ type  file_group =
     sources : Bsb_db.t; 
     resources : string list ;
     public : public ;
-    dir_index : Bsb_dir_index.t  ;
+    dir_index : bool ; (* false means not in dev mode *)
     generators : build_generator list ; 
     (* output of [generators] should be added to [sources],
        if it is [.ml,.mli,.re,.rei]
@@ -4122,7 +4031,7 @@ type  file_group =
     sources : Bsb_db.t; 
     resources : string list ;
     public : public ;
-    dir_index : Bsb_dir_index.t  ;
+    dir_index : bool  ;
     generators : build_generator list ; 
     (* output of [generators] should be added to [sources],
        if it is [.ml,.mli,.re,.rei]
@@ -10565,7 +10474,7 @@ let errorf x fmt =
 
 type cxt = {
   toplevel : bool ;
-  dir_index : Bsb_dir_index.t ; 
+  dir_index : bool; 
   cwd : string ;
   root : string;
   cut_generators : bool;
@@ -10870,7 +10779,7 @@ and parsing_single_source ({toplevel; dir_index ; cwd} as cxt ) (x : Ext_json_ty
   : t  =
   match x with 
   | Str  { str = dir }  -> 
-    if not toplevel && not (Bsb_dir_index.is_lib_dir dir_index) then 
+    if not toplevel &&  dir_index then 
       Bsb_file_groups.empty
     else 
       parsing_source_dir_map 
@@ -10881,10 +10790,10 @@ and parsing_single_source ({toplevel; dir_index ; cwd} as cxt ) (x : Ext_json_ty
     let current_dir_index = 
       match Map_string.find_opt map Bsb_build_schemas.type_ with 
       | Some (Str {str="dev"}) -> 
-        Bsb_dir_index.get_dev_index ()
+        true
       | Some _ -> Bsb_exception.config_error x {|type field expect "dev" literal |}
       | None -> dir_index in 
-    if not toplevel && not (Bsb_dir_index.is_lib_dir current_dir_index) then 
+    if not toplevel && current_dir_index then 
       Bsb_file_groups.empty 
     else 
       let dir = 
@@ -10925,7 +10834,7 @@ let scan
   parse_sources {
     ignored_dirs;
     toplevel;
-    dir_index = Bsb_dir_index.lib_dir_index;
+    dir_index = false;
     cwd = Filename.current_dir_name;
     root ;
     cut_generators;
@@ -13411,7 +13320,7 @@ let make_common_shadows
 let emit_module_build
     (rules : Bsb_ninja_rule.builtin)  
     (package_specs : Bsb_package_specs.t)
-    (group_dir_index : Bsb_dir_index.t) 
+    (is_dev : bool) 
     oc 
     ~bs_suffix
     js_post_build_cmd
@@ -13421,7 +13330,6 @@ let emit_module_build
   let has_intf_file = module_info.info = Ml_mli in 
   let is_re = module_info.is_re in 
   let filename_sans_extension = module_info.name_sans_extension in 
-  let is_dev = not (Bsb_dir_index.is_lib_dir group_dir_index) in
   let input_impl = 
     Bsb_config.proj_rel 
       (filename_sans_extension ^ if is_re then  Literals.suffix_re else  Literals.suffix_ml  ) in
@@ -13762,7 +13670,7 @@ let output_ninja_and_namespace_map
       let static_resources =
         Ext_list.fold_left bs_file_groups [] (fun (acc_resources : string list) {sources; dir; resources; dir_index} 
            ->
-            let dir_index = (dir_index :> int) in 
+            let dir_index = if dir_index then 1 else 0 in 
             bs_groups.(dir_index) <- Bsb_db_util.merge bs_groups.(dir_index) sources ;
             source_dirs.(dir_index) <- dir :: source_dirs.(dir_index);
             Ext_list.map_append resources  acc_resources (fun x -> dir//x) 
