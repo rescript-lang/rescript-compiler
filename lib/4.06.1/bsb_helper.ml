@@ -3241,10 +3241,20 @@ module Bsb_db_decode : sig
 
  
   
-type t
+ type group = private 
+  | Dummy 
+  | Group of {
+      modules : string array ; 
+      dir_length : int;
+      dir_info_offset : int ; 
+      module_info_offset : int;
+    }
 
-type group 
-
+type t = { 
+  lib : group ;
+  dev : group ; 
+  content : string (* string is whole content*)
+}
 
 val read_build_cache : 
   dir:string -> t
@@ -3261,6 +3271,9 @@ val find:
   string -> (* module name *)
   bool -> (* more likely to be zero *)
   module_info option 
+
+
+val decode : string -> t   
 end = struct
 #1 "bsb_db_decode.ml"
 (* Copyright (C) 2019 - Present Authors of BuckleScript
@@ -3310,7 +3323,7 @@ type cursor = int ref
 
 
 (*TODO: special case when module_count is zero *)
-let rec decode_internal (x : string) : t =   
+let rec decode (x : string) : t =   
   let (offset : cursor)  = ref 0 in 
   let lib = decode_single x offset in 
   let dev = decode_single x offset in
@@ -3358,7 +3371,7 @@ and decode_modules (x : string) (offset : cursor) module_number : string array =
 let read_build_cache ~dir  : t =   
   let all_content = 
     Ext_io.load_file (Filename.concat dir bsbuild_cache) in   
-  decode_internal all_content 
+  decode all_content 
 
 
 
