@@ -12466,7 +12466,7 @@ let nl buf =
     - not readable 
  *)  
 
-let make_encoding length buf =
+let make_encoding length buf : Ext_buffer.t -> int -> unit =
   let max_range = length lsl 1 + 1 in 
   if max_range <= 0xff then begin 
     Ext_buffer.add_char buf '1';
@@ -12489,44 +12489,46 @@ let make_encoding length buf =
   Strictly speaking, [tmp_buf1] is not needed
 *)
 let encode_single (db : Bsb_db.map) (buf : Ext_buffer.t) =    
-  nl buf ; (* module name section *)
+  (* module name section *)  
   let len = Map_string.cardinal db in 
   Ext_buffer.add_string_char buf (string_of_int len) '\n';
-  let mapping = Hash_string.create 50 in 
-  Map_string.iter db (fun name {dir} ->  
-      Ext_buffer.add_string_char buf name '\n'; 
-      if not (Hash_string.mem mapping dir) then
-        Hash_string.add mapping dir (Hash_string.length mapping)
-    ); 
-  let length = Hash_string.length mapping in   
-  let rev_mapping = Array.make length "" in 
-  Hash_string.iter mapping (fun k i -> Array.unsafe_set rev_mapping i k);
-  (* directory name section *)
-  Ext_array.iter rev_mapping (fun s -> Ext_buffer.add_string_char buf s '\t');
-  nl buf; (* module name info section *)
-  let len_encoding = make_encoding length buf in 
-  Map_string.iter db (fun _ module_info ->       
-      len_encoding buf 
-        (Hash_string.find_exn  mapping module_info.dir lsl 1 + Obj.magic module_info.case ))      
-    
+  if len <> 0 then begin 
+    let mapping = Hash_string.create 50 in 
+    Map_string.iter db (fun name {dir} ->  
+        Ext_buffer.add_string_char buf name '\n'; 
+        if not (Hash_string.mem mapping dir) then
+          Hash_string.add mapping dir (Hash_string.length mapping)
+      ); 
+    let length = Hash_string.length mapping in   
+    let rev_mapping = Array.make length "" in 
+    Hash_string.iter mapping (fun k i -> Array.unsafe_set rev_mapping i k);
+    (* directory name section *)
+    Ext_array.iter rev_mapping (fun s -> Ext_buffer.add_string_char buf s '\t');
+    nl buf; (* module name info section *)
+    let len_encoding = make_encoding length buf in 
+    Map_string.iter db (fun _ module_info ->       
+        len_encoding buf 
+          (Hash_string.find_exn  mapping module_info.dir lsl 1 + Obj.magic module_info.case ));      
+    nl buf 
+  end
 let encode (dbs : Bsb_db.t) buf =     
   encode_single dbs.lib buf ;
   encode_single dbs.dev buf 
-  (* Ext_buffer.add_char_string buf '\n' (string_of_int (Array.length dbs)); 
-  Ext_array.iter dbs (fun x ->  encode_single x  buf) *)
-  
 
-(* TODO: shall we avoid writing such file (checking the digest) *)
+
+(*  shall we avoid writing such file (checking the digest)?
+  It is expensive to start scanning the whole code base,
+  we should we avoid it in the first place, if we do start scanning,
+  this operation seems affordable
+ *)
 let write_build_cache ~dir (bs_files : Bsb_db.t)  : string = 
   let oc = open_out_bin (Filename.concat dir bsbuild_cache) in 
   let buf = Ext_buffer.create 100_000 in 
   encode bs_files buf ; 
-  let digest = Ext_buffer.digest buf in 
-  let hex_digest = Digest.to_hex digest in
-  output_string oc digest;
   Ext_buffer.output_buffer oc buf;
   close_out oc; 
-  hex_digest
+  let digest = Ext_buffer.digest buf in 
+  Digest.to_hex digest 
 
 end
 module Ext_digest : sig 
