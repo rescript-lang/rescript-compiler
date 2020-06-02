@@ -27,19 +27,7 @@
   
 type t
 
-type group = {
-   modules : string array ; 
-   dir_length : int ;
-   dir_info_offset : int ; 
-   module_info_offset : int ;
- }
-
-(* exposed only for testing *)
-val decode_internal : 
-  string -> 
-  int ref ->
-  group array 
-
+type group 
 
 
 val read_build_cache : 
