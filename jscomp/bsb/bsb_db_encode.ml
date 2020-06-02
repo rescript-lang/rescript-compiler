@@ -40,7 +40,7 @@ let nl buf =
     - not readable 
  *)  
 
-let make_encoding length buf =
+let make_encoding length buf : Ext_buffer.t -> int -> unit =
   let max_range = length lsl 1 + 1 in 
   if max_range <= 0xff then begin 
     Ext_buffer.add_char buf '1';
@@ -90,7 +90,11 @@ let encode (dbs : Bsb_db.t) buf =
   Ext_array.iter dbs (fun x ->  encode_single x  buf) *)
   
 
-(* TODO: shall we avoid writing such file (checking the digest) *)
+(*  shall we avoid writing such file (checking the digest)?
+  It is expensive to start scanning the whole code base,
+  we should we avoid it in the first place, if we do start scanning,
+  this operation seems affordable
+ *)
 let write_build_cache ~dir (bs_files : Bsb_db.t)  : string = 
   let oc = open_out_bin (Filename.concat dir bsbuild_cache) in 
   let buf = Ext_buffer.create 100_000 in 
