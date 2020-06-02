@@ -45,7 +45,7 @@ type cursor = int ref
 
 
 (*TODO: special case when module_count is zero *)
-let rec decode_internal (x : string) : t =   
+let rec decode (x : string) : t =   
   let (offset : cursor)  = ref 0 in 
   let lib = decode_single x offset in 
   let dev = decode_single x offset in
@@ -93,7 +93,7 @@ and decode_modules (x : string) (offset : cursor) module_number : string array =
 let read_build_cache ~dir  : t =   
   let all_content = 
     Ext_io.load_file (Filename.concat dir bsbuild_cache) in   
-  decode_internal all_content 
+  decode all_content 
 
 
 
