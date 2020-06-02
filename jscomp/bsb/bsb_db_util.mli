@@ -32,9 +32,9 @@ val conflict_module_info:
   'a 
 
 
-val merge : Bsb_db.t -> Bsb_db.t -> Bsb_db.t   
+val merge : Bsb_db.map -> Bsb_db.map -> Bsb_db.map   
 
-val sanity_check : Bsb_db.t -> unit
+val sanity_check : Bsb_db.map -> unit
 
 (** 
   Currently it is okay to have duplicated module, 
@@ -43,7 +43,7 @@ val sanity_check : Bsb_db.t -> unit
 
 val add_basename:
   dir:string -> 
-  Bsb_db.t ->  
+  Bsb_db.map ->  
   ?error_on_invalid_suffix:Ext_position.t-> 
   string -> 
-  Bsb_db.t
+  Bsb_db.map

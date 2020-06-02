@@ -62,7 +62,7 @@ let make_encoding length buf =
   they are only used to control the order.
   Strictly speaking, [tmp_buf1] is not needed
 *)
-let encode_single (db : Bsb_db.t) (buf : Ext_buffer.t) =    
+let encode_single (db : Bsb_db.map) (buf : Ext_buffer.t) =    
   nl buf ; (* module name section *)
   let len = Map_string.cardinal db in 
   Ext_buffer.add_string_char buf (string_of_int len) '\n';

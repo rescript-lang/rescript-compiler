@@ -37,7 +37,7 @@ type build_generator =
 
 type  file_group = 
   { dir : string ;
-    sources : Bsb_db.t; 
+    sources : Bsb_db.map; 
     resources : string list ;
     public : public ;
     dev_index : bool ; (* false means not in dev mode *)

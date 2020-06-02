@@ -60,7 +60,7 @@ type cxt = {
 *)
 let collect_pub_modules 
     (xs : Ext_json_types.t array)
-    (cache : Bsb_db.t) : Set_string.t = 
+    (cache : Bsb_db.map) : Set_string.t = 
   let set = ref Set_string.empty in 
   for i = 0 to Array.length xs - 1 do 
     let v = Array.unsafe_get xs i in 
@@ -80,7 +80,7 @@ let collect_pub_modules
   done  ;
   !set
 
-let extract_pub (input : Ext_json_types.t Map_string.t) (cur_sources : Bsb_db.t) : Bsb_file_groups.public =   
+let extract_pub (input : Ext_json_types.t Map_string.t) (cur_sources : Bsb_db.map) : Bsb_file_groups.public =   
   match Map_string.find_opt input  Bsb_build_schemas.public with 
   | Some ((Str({str = s}) as x)) ->  
     if s = Bsb_build_schemas.export_all then Export_all  else 
