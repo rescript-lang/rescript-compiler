@@ -50,7 +50,12 @@ type module_info =
 
 type map = module_info Map_string.t 
 
-type ts = map array 
+type 'a cat  = {
+  mutable lib : 'a ; 
+  mutable dev : 'a;
+}
+
+type t = map cat  
 
 (** store  the meta data indexed by {!Bsb_dir_index}
   {[

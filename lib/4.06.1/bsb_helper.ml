@@ -3378,17 +3378,19 @@ type cursor = int ref
 
 (*TODO: special case when module_count is zero *)
 let rec decode_internal (x : string) (offset : cursor) =   
-  let len = Ext_pervasives.parse_nat_of_string x offset in  
-  incr offset;
-  let first = decode_single x offset in 
-  if len = 1 then [|first|]
+  (* let len = Ext_pervasives.parse_nat_of_string x offset in  
+  incr offset; *)
+  let lib = decode_single x offset in 
+  let dev = decode_single x offset in
+  [|lib;dev|] 
+  (* if len = 1 then [|first|]
   else 
     let result = Array.make len first in 
     for i = 1 to len - 1 do 
       Array.unsafe_set result i (decode_single x offset)
     done ;
     result
-  
+   *)
 and decode_single (x : string) (offset : cursor) : group = 
   let module_number = Ext_pervasives.parse_nat_of_string x offset in 
   incr offset;

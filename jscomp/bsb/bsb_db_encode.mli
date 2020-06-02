@@ -23,4 +23,4 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
 val write_build_cache : 
-  dir:string -> Bsb_db.ts -> string
+  dir:string -> Bsb_db.t -> string

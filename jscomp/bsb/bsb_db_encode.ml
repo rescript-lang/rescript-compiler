@@ -83,14 +83,15 @@ let encode_single (db : Bsb_db.map) (buf : Ext_buffer.t) =
       len_encoding buf 
         (Hash_string.find_exn  mapping module_info.dir lsl 1 + Obj.magic module_info.case ))      
     
-let encode (dbs : Bsb_db.ts) buf =     
-  
-  Ext_buffer.add_char_string buf '\n' (string_of_int (Array.length dbs)); 
-  Ext_array.iter dbs (fun x ->  encode_single x  buf)
+let encode (dbs : Bsb_db.t) buf =     
+  encode_single dbs.lib buf ;
+  encode_single dbs.dev buf 
+  (* Ext_buffer.add_char_string buf '\n' (string_of_int (Array.length dbs)); 
+  Ext_array.iter dbs (fun x ->  encode_single x  buf) *)
   
 
 (* TODO: shall we avoid writing such file (checking the digest) *)
-let write_build_cache ~dir (bs_files : Bsb_db.ts)  : string = 
+let write_build_cache ~dir (bs_files : Bsb_db.t)  : string = 
   let oc = open_out_bin (Filename.concat dir bsbuild_cache) in 
   let buf = Ext_buffer.create 100_000 in 
   encode bs_files buf ; 

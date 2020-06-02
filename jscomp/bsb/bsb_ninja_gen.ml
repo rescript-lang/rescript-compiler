@@ -161,35 +161,40 @@ let output_ninja_and_namespace_map
            (fun x -> x.package_install_path));  
         Bsb_ninja_global_vars.g_ns , g_ns_flg ; 
       |] oc 
-  in        
-  let  bs_groups, bsc_lib_dirs, static_resources =    
-      (* number_of_dev_groups = 1 -- all devs share the same group *)
-      let bs_groups = Array.init  2 (fun _ -> Map_string.empty) in
-      let source_dirs = Array.init 2 (fun _ -> []) in
-      let static_resources =
-        Ext_list.fold_left bs_file_groups [] (fun (acc_resources : string list) {sources; dir; resources; dev_index} 
-           ->
-            let dir_index = if dev_index then 1 else 0 in 
-            bs_groups.(dir_index) <- Bsb_db_util.merge bs_groups.(dir_index) sources ;
-            source_dirs.(dir_index) <- dir :: source_dirs.(dir_index);
-            Ext_list.map_append resources  acc_resources (fun x -> dir//x) 
-          ) in
-      let lib = bs_groups.(0) in               
-      Bsb_db_util.sanity_check lib;
-      let c = bs_groups.(1) in
-      Bsb_db_util.sanity_check c;
-      Map_string.iter c 
-        (fun k a -> 
-           if Map_string.mem lib k  then 
-             Bsb_db_util.conflict_module_info k a (Map_string.find_exn lib k)            
-        ) ;
-      Bsb_ninja_targets.output_kv 
-        Bsb_ninja_global_vars.g_dev_incls
-        (Bsb_build_util.include_dirs source_dirs.(1)) oc
-      ;
-      bs_groups,source_dirs.(0), static_resources
-  in
-
+  in          
+  let bs_groups : Bsb_db.t = {lib = Map_string.empty; dev = Map_string.empty} in
+  let source_dirs : string list Bsb_db.cat = {lib = []; dev = []} in
+  let static_resources =
+    Ext_list.fold_left 
+      bs_file_groups 
+      [] (
+      fun 
+        (acc_resources : string list) 
+        {sources; dir; resources; dev_index} 
+        ->
+          if dev_index then begin
+            bs_groups.dev <- Bsb_db_util.merge bs_groups.dev sources ;
+            source_dirs.dev <- dir :: source_dirs.dev;  
+          end else begin 
+            bs_groups.lib <- Bsb_db_util.merge bs_groups.lib sources ;
+            source_dirs.lib <- dir :: source_dirs.lib
+          end;
+          Ext_list.map_append resources  acc_resources (fun x -> dir//x) 
+    ) in
+  let lib = bs_groups.lib in 
+  let dev = bs_groups.dev in 
+  Bsb_db_util.sanity_check lib;
+  Bsb_db_util.sanity_check dev;
+  Map_string.iter dev 
+    (fun k a -> 
+       if Map_string.mem lib k  then 
+         Bsb_db_util.conflict_module_info k a (Map_string.find_exn lib k)            
+    ) ;
+  if source_dirs.dev <> [] then
+    Bsb_ninja_targets.output_kv 
+      Bsb_ninja_global_vars.g_dev_incls
+      (Bsb_build_util.include_dirs source_dirs.dev) oc
+  ;
   let digest = Bsb_db_encode.write_build_cache ~dir:cwd_lib_bs bs_groups in
   let rules : Bsb_ninja_rule.builtin = 
       Bsb_ninja_rule.make_custom_rules 
@@ -202,9 +207,8 @@ let output_ninja_and_namespace_map
       ~reason_react_jsx
       ~bs_suffix
       ~digest
-      generators in 
-  
-  emit_bsc_lib_includes bs_dependencies bsc_lib_dirs external_includes namespace oc;
+      generators in   
+  emit_bsc_lib_includes bs_dependencies source_dirs.lib external_includes namespace oc;
   output_static_resources static_resources rules.copy_resources oc ;
   (** Generate build statement for each file *)        
   Ext_list.iter bs_file_groups 
