@@ -25,22 +25,20 @@
 
  
   
-type t
+ type group = private 
+  | Dummy 
+  | Group of {
+      modules : string array ; 
+      dir_length : int;
+      dir_info_offset : int ; 
+      module_info_offset : int;
+    }
 
-type group = {
-   modules : string array ; 
-   dir_length : int ;
-   dir_info_offset : int ; 
-   module_info_offset : int ;
- }
-
-(* exposed only for testing *)
-val decode_internal : 
-  string -> 
-  int ref ->
-  group array 
-
-
+type t = { 
+  lib : group ;
+  dev : group ; 
+  content : string (* string is whole content*)
+}
 
 val read_build_cache : 
   dir:string -> t
@@ -57,3 +55,6 @@ val find:
   string -> (* module name *)
   bool -> (* more likely to be zero *)
   module_info option 
+
+
+val decode : string -> t   

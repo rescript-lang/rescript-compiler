@@ -31,7 +31,24 @@ let s_test1 s a =
   | Global x  -> 
       a =~ x
   | _ -> OUnit.assert_failure __LOC__       
-  
+
+let group0 = Map_string.of_list [
+  "Liba", 
+  {Bsb_db.info = Ml_mli; dir= "a";is_re=false;case = false;
+  name_sans_extension = "liba"}
+]
+let group1 =  Map_string.of_list [
+  "Ciba", 
+  {Bsb_db.info = Ml_mli; dir= "b";is_re=false;case = false;
+  name_sans_extension = "liba"}
+] 
+
+let parse_db db : Bsb_db_decode.t =   
+  let buf = Ext_buffer.create 10_000 in   
+  Bsb_db_encode.encode db buf;
+  let s = Ext_buffer.contents buf in
+  Bsb_db_decode.decode s
+
 let suites = 
   __FILE__ >::: [
     __LOC__ >:: begin fun _ -> 
@@ -60,6 +77,31 @@ let suites =
     s_test1 "xx/yy/zz" "xx/yy/zz"
   end;
 
+  __LOC__ >:: begin fun _ ->
+    match parse_db {lib= group0; dev = group1}with 
+    | {lib = Group {modules = [|"Liba"|]};
+       dev = Group {modules = [|"Ciba"|]}}
+        -> OUnit.assert_bool __LOC__ true
+    | _ ->
+      OUnit.assert_failure __LOC__    
+  end  ;
+  __LOC__ >:: begin fun _ -> 
+    match parse_db {lib = group0;dev = Map_string.empty } with
+    | {lib = Group {modules = [|"Liba"|]};
+      dev = Dummy}
+      -> OUnit.assert_bool __LOC__ true
+    | _ ->
+      OUnit.assert_failure __LOC__    
+  end  ;
+  __LOC__ >:: begin fun _ -> 
+    match parse_db {lib = Map_string.empty ; dev = group1} with
+    | {lib = Dummy;
+       dev = Group {modules = [|"Ciba"|]}
+       }
+      -> OUnit.assert_bool __LOC__ true
+    | _ ->
+      OUnit.assert_failure __LOC__    
+  end
   (* __LOC__ >:: begin fun _ -> 
   OUnit.assert_equal parse_data_one  data_one
   end ;

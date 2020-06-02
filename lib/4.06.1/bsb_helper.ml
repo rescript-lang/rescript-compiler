@@ -1787,67 +1787,6 @@ let parse_exn  (speclist : t) anonfun errmsg =
  *)
 
 end
-module Ext_digest : sig 
-#1 "ext_digest.mli"
-(* Copyright (C) 2019- Authors of BuckleScript
- * 
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * In addition to the permissions granted to you by the LGPL, you may combine
- * or link a "work that uses the Library" with a publicly distributed version
- * of this file to produce a combined library or application, then distribute
- * that combined work under the terms of your choosing, with no requirement
- * to comply with the obligations normally placed on you by section 4 of the
- * LGPL version 3 (or the corresponding section of a later version of the LGPL
- * should you choose to use a later version).
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Lesser General Public License for more details.
- * 
- * You should have received a copy of the GNU Lesser General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
-
-
- val length : int 
-
- val hex_length : int
-end = struct
-#1 "ext_digest.ml"
-(* Copyright (C) 2019- Authors of BuckleScript
- * 
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * In addition to the permissions granted to you by the LGPL, you may combine
- * or link a "work that uses the Library" with a publicly distributed version
- * of this file to produce a combined library or application, then distribute
- * that combined work under the terms of your choosing, with no requirement
- * to comply with the obligations normally placed on you by section 4 of the
- * LGPL version 3 (or the corresponding section of a later version of the LGPL
- * should you choose to use a later version).
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Lesser General Public License for more details.
- * 
- * You should have received a copy of the GNU Lesser General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
-
-
- let length = 16
-
- let hex_length = 32
-end
 module Ext_pervasives : sig 
 #1 "ext_pervasives.mli"
 (* Copyright (C) 2015-2016 Bloomberg Finance L.P.
@@ -3302,22 +3241,20 @@ module Bsb_db_decode : sig
 
  
   
-type t
+ type group = private 
+  | Dummy 
+  | Group of {
+      modules : string array ; 
+      dir_length : int;
+      dir_info_offset : int ; 
+      module_info_offset : int;
+    }
 
-type group = {
-   modules : string array ; 
-   dir_length : int ;
-   dir_info_offset : int ; 
-   module_info_offset : int ;
- }
-
-(* exposed only for testing *)
-val decode_internal : 
-  string -> 
-  int ref ->
-  group array 
-
-
+type t = { 
+  lib : group ;
+  dev : group ; 
+  content : string (* string is whole content*)
+}
 
 val read_build_cache : 
   dir:string -> t
@@ -3334,6 +3271,9 @@ val find:
   string -> (* module name *)
   bool -> (* more likely to be zero *)
   module_info option 
+
+
+val decode : string -> t   
 end = struct
 #1 "bsb_db_decode.ml"
 (* Copyright (C) 2019 - Present Authors of BuckleScript
@@ -3363,47 +3303,49 @@ end = struct
  let bsbuild_cache = Literals.bsbuild_cache
 
 
- type group = {
-   modules : string array ; 
-   dir_length : int;
-   dir_info_offset : int ; 
-   module_info_offset : int;
- }
+type group = 
+  | Dummy 
+  | Group of {
+      modules : string array ; 
+      dir_length : int;
+      dir_info_offset : int ; 
+      module_info_offset : int;
+    }
 
-type t = group array * string (* string is whole content*)
+type t = { 
+  lib : group ;
+  dev : group ; 
+  content : string (* string is whole content*)
+}
 
 
 type cursor = int ref 
 
 
 (*TODO: special case when module_count is zero *)
-let rec decode_internal (x : string) (offset : cursor) =   
-  let len = Ext_pervasives.parse_nat_of_string x offset in  
-  incr offset;
-  let first = decode_single x offset in 
-  if len = 1 then [|first|]
-  else 
-    let result = Array.make len first in 
-    for i = 1 to len - 1 do 
-      Array.unsafe_set result i (decode_single x offset)
-    done ;
-    result
-  
+let rec decode (x : string) : t =   
+  let (offset : cursor)  = ref 0 in 
+  let lib = decode_single x offset in 
+  let dev = decode_single x offset in
+  {lib; dev; content = x}
+
 and decode_single (x : string) (offset : cursor) : group = 
   let module_number = Ext_pervasives.parse_nat_of_string x offset in 
   incr offset;
-  let modules = decode_modules x offset module_number in 
-  let dir_info_offset = !offset in 
-  let module_info_offset = 
-    String.index_from x dir_info_offset '\n'  + 1 in
-  let dir_length = Char.code x.[module_info_offset] - 48 (* Char.code '0'*) in
-  offset := 
-    module_info_offset +
-    1 +
-    dir_length * module_number +
-    1 
+  if module_number <> 0 then begin 
+    let modules = decode_modules x offset module_number in 
+    let dir_info_offset = !offset in 
+    let module_info_offset = 
+      String.index_from x dir_info_offset '\n'  + 1 in
+    let dir_length = Char.code x.[module_info_offset] - 48 (* Char.code '0'*) in
+    offset := 
+      module_info_offset +
+      1 +
+      dir_length * module_number +
+      1 
     ;
-  { modules ; dir_info_offset; module_info_offset ; dir_length}
+    Group { modules ; dir_info_offset; module_info_offset ; dir_length}
+  end else Dummy
 and decode_modules (x : string) (offset : cursor) module_number : string array =   
   let result = Array.make module_number "" in 
   let last = ref !offset in 
@@ -3429,7 +3371,7 @@ and decode_modules (x : string) (offset : cursor) module_number : string array =
 let read_build_cache ~dir  : t =   
   let all_content = 
     Ext_io.load_file (Filename.concat dir bsbuild_cache) in   
-  decode_internal all_content (ref (Ext_digest.length + 1)), all_content
+  decode all_content 
 
 
 
@@ -3440,11 +3382,13 @@ type module_info =  {
 
 
 let find_opt 
-  ((sorteds,whole) : t )  
-    (i : int) (key : string) 
+  ({content = whole} as db : t )  
+    lib (key : string) 
     : module_info option = 
-  let group = sorteds.(i) in 
-  let i = Ext_string_array.find_sorted  group.modules key in 
+  match if lib then db.lib else db.dev with  
+  | Dummy -> None
+  | Group ({modules ;} as group) ->
+  let i = Ext_string_array.find_sorted  modules key in 
   match i with 
   | None -> None 
   | Some count ->     
@@ -3470,12 +3414,12 @@ let find_opt
     Some {case ; dir_name = String.sub whole dir_name_start (dir_name_finish - dir_name_start)}
   
 let find db dependent_module is_not_lib_dir =         
-  let opt = find_opt db 0 dependent_module in 
+  let opt = find_opt db true dependent_module in 
   match opt with 
   | Some _ -> opt
   | None -> 
     if is_not_lib_dir then 
-      find_opt db 1 dependent_module 
+      find_opt db false dependent_module 
     else None       
 end
 module Ext_filename : sig 

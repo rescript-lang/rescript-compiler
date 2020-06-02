@@ -42,9 +42,14 @@ type module_info =
   }
 
 
-type t = module_info Map_string.t 
+type map = module_info Map_string.t 
 
-type ts = t array 
+type 'a cat  = {
+  mutable lib : 'a;
+  mutable dev : 'a
+}
+
+type t = map cat 
 (** indexed by the group *)
 
 

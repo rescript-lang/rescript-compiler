@@ -3386,1867 +3386,6 @@ let bench () =
   end ; 
 
 end
-module Bsb_pkg_types : sig 
-#1 "bsb_pkg_types.mli"
-(* Copyright (C) 2019- Authors of BuckleScript
- *
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * In addition to the permissions granted to you by the LGPL, you may combine
- * or link a "work that uses the Library" with a publicly distributed version
- * of this file to produce a combined library or application, then distribute
- * that combined work under the terms of your choosing, with no requirement
- * to comply with the obligations normally placed on you by section 4 of the
- * LGPL version 3 (or the corresponding section of a later version of the LGPL
- * should you choose to use a later version).
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Lesser General Public License for more details.
- *
- * You should have received a copy of the GNU Lesser General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
-
-
-type t = 
-  | Global of string
-  | Scope of string * scope
-and scope = string  
-
-val to_string : t -> string 
-val print : Format.formatter -> t -> unit 
-val equal : t -> t -> bool 
-
-(* The second element could be empty or dropped 
-*)
-val extract_pkg_name_and_file : string -> t * string 
-val string_as_package : string -> t 
-end = struct
-#1 "bsb_pkg_types.ml"
-
-(* Copyright (C) 2018- Authors of BuckleScript
- *
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * In addition to the permissions granted to you by the LGPL, you may combine
- * or link a "work that uses the Library" with a publicly distributed version
- * of this file to produce a combined library or application, then distribute
- * that combined work under the terms of your choosing, with no requirement
- * to comply with the obligations normally placed on you by section 4 of the
- * LGPL version 3 (or the corresponding section of a later version of the LGPL
- * should you choose to use a later version).
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Lesser General Public License for more details.
- *
- * You should have received a copy of the GNU Lesser General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
-
-let (//) = Filename.concat
-
-type t = 
-  | Global of string
-  | Scope of string * scope
-and scope = string  
-
-let to_string (x : t) = 
-  match x with
-  | Global s -> s
-  | Scope (s,scope) -> scope // s 
-
-let print fmt (x : t) = 
-  match x with   
-  | Global s -> Format.pp_print_string fmt s 
-  | Scope(name,scope) -> 
-    Format.fprintf fmt "%s/%s" scope name
-
-let equal (x : t) y = 
-  match x, y with 
-  | Scope(a0,a1), Scope(b0,b1) 
-    -> a0 = b0 && a1 = b1
-  | Global a0, Global b0 -> a0 = b0
-  | Scope _, Global _ 
-  | Global _, Scope _ -> false
-
-(**
-  input: {[
-    @hello/yy/xx
-    hello/yy
-  ]}
-  FIXME: fix invalid input
-  {[
-    hello//xh//helo
-  ]}
-*)
-let extract_pkg_name_and_file (s : string) =   
-  let len = String.length s in 
-  assert (len  > 0 ); 
-  let v = String.unsafe_get s 0 in 
-  if v = '@' then 
-    let scope_id = 
-      Ext_string.no_slash_idx s  in 
-    assert (scope_id > 0);
-    let pkg_id =   
-      Ext_string.no_slash_idx_from
-        s (scope_id + 1)   in 
-     let scope =     
-      String.sub s 0 scope_id in 
-     
-     if pkg_id < 0 then     
-      (Scope(String.sub s (scope_id + 1) (len - scope_id - 1), scope),"")
-     else 
-      (Scope(
-        String.sub s (scope_id + 1) (pkg_id - scope_id - 1), scope), 
-       String.sub s (pkg_id + 1) (len - pkg_id - 1))
-  else     
-      let pkg_id = Ext_string.no_slash_idx s in 
-      if pkg_id < 0 then 
-      Global s , ""
-      else 
-      Global (String.sub s 0 pkg_id), 
-              (String.sub s (pkg_id + 1) (len - pkg_id - 1))
-
-
-let string_as_package (s : string) : t = 
-  let len = String.length s in 
-  assert (len > 0); 
-  let v = String.unsafe_get s 0 in 
-  if v = '@' then 
-    let scope_id = 
-        Ext_string.no_slash_idx s in 
-    assert (scope_id > 0);
-    Scope(
-      String.sub s (scope_id + 1) (len - scope_id - 1),
-      String.sub s 0 scope_id
-      )    
-  else Global s       
-end
-module Ounit_bsb_pkg_tests
-= struct
-#1 "ounit_bsb_pkg_tests.ml"
-
-
-let ((>::),
-     (>:::)) = OUnit.((>::),(>:::))
-
-let printer_string = fun x -> x 
-let (=~) = OUnit.assert_equal  ~printer:printer_string  
-
-
-let scope_test s (a,b,c)= 
-  match Bsb_pkg_types.extract_pkg_name_and_file s with 
-  | Scope(a0,b0),c0 -> 
-    a =~ a0 ; b =~ b0 ; c =~ c0
-  | Global _,_ -> OUnit.assert_failure __LOC__
-
-let global_test s (a,b) = 
-  match Bsb_pkg_types.extract_pkg_name_and_file s with 
-  | Scope _, _ -> 
-    OUnit.assert_failure __LOC__
-  | Global a0, b0-> 
-    a=~a0; b=~b0
-
-let s_test0 s (a,b)=     
-  match Bsb_pkg_types.string_as_package s with 
-  | Scope(name,scope) -> 
-      a =~ name ; b =~scope 
-  | _ -> OUnit.assert_failure __LOC__     
-
-let s_test1 s a =     
-  match Bsb_pkg_types.string_as_package s with 
-  | Global x  -> 
-      a =~ x
-  | _ -> OUnit.assert_failure __LOC__       
-  
-let suites = 
-  __FILE__ >::: [
-    __LOC__ >:: begin fun _ -> 
-      scope_test "@hello/hi"
-        ("hi", "@hello","");
-
-      scope_test "@hello/hi/x"
-        ("hi", "@hello","x");
-
-      
-      scope_test "@hello/hi/x/y"
-        ("hi", "@hello","x/y");  
-  end ;
-  __LOC__ >:: begin fun _ -> 
-    global_test "hello"
-      ("hello","");
-    global_test "hello/x"
-      ("hello","x");  
-    global_test "hello/x/y"
-      ("hello","x/y")    
-  end ;
-  __LOC__ >:: begin fun _ -> 
-    s_test0 "@x/y" ("y","@x");
-    s_test0 "@x/y/z" ("y/z","@x");
-    s_test1 "xx" "xx";
-    s_test1 "xx/yy/zz" "xx/yy/zz"
-  end;
-
-  (* __LOC__ >:: begin fun _ -> 
-  OUnit.assert_equal parse_data_one  data_one
-  end ;
-  __LOC__ >:: begin fun _ -> 
-  
-  OUnit.assert_equal parse_data_two data_two
-  end  *)
-  ]
-
-
-
-
-end
-module Bsb_regex : sig 
-#1 "bsb_regex.mli"
-(* Copyright (C) 2017 Authors of BuckleScript
- *
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * In addition to the permissions granted to you by the LGPL, you may combine
- * or link a "work that uses the Library" with a publicly distributed version
- * of this file to produce a combined library or application, then distribute
- * that combined work under the terms of your choosing, with no requirement
- * to comply with the obligations normally placed on you by section 4 of the
- * LGPL version 3 (or the corresponding section of a later version of the LGPL
- * should you choose to use a later version).
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Lesser General Public License for more details.
- *
- * You should have received a copy of the GNU Lesser General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
-
-
-(** Used in `bsb -init` command *)
-val global_substitute:
-  string -> 
-  reg:string ->
-  (string -> string list -> string) -> 
-  string
-end = struct
-#1 "bsb_regex.ml"
-(* Copyright (C) 2017 Authors of BuckleScript
- *
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * In addition to the permissions granted to you by the LGPL, you may combine
- * or link a "work that uses the Library" with a publicly distributed version
- * of this file to produce a combined library or application, then distribute
- * that combined work under the terms of your choosing, with no requirement
- * to comply with the obligations normally placed on you by section 4 of the
- * LGPL version 3 (or the corresponding section of a later version of the LGPL
- * should you choose to use a later version).
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Lesser General Public License for more details.
- *
- * You should have received a copy of the GNU Lesser General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
-
-let string_after s n = String.sub s n (String.length s - n)
-
-
-
-(* There seems to be a bug in {!Str.global_substitute} 
-{[
-Str.global_substitute (Str.regexp "\\${bsb:\\([-a-zA-Z0-9]+\\)}") (fun x -> (x^":found")) {|   ${bsb:hello-world}  ${bsb:x} ${x}|}  ;;
-- : bytes =
-"      ${bsb:hello-world}  ${bsb:x} ${x}:found     ${bsb:hello-world}  ${bsb:x} ${x}:found ${x}"
-]}
-*)
-let global_substitute text ~reg:expr repl_fun =
-  let text_len = String.length text in 
-  let expr = Str.regexp expr in  
-  let rec replace accu start last_was_empty =
-    let startpos = if last_was_empty then start + 1 else start in
-    if startpos > text_len then
-      string_after text start :: accu
-    else
-      match Str.search_forward expr text startpos with
-      | exception Not_found -> 
-        string_after text start :: accu
-      |  pos ->
-        let end_pos = Str.match_end() in
-        let matched = (Str.matched_string text) in 
-        let  groups = 
-            let rec aux n  acc = 
-                match Str.matched_group n text with 
-                | exception (Not_found | Invalid_argument _ ) 
-                    -> acc 
-                | v -> aux (succ n) (v::acc) in 
-             aux 1 []  in 
-        let repl_text = repl_fun matched groups  in
-        replace (repl_text :: String.sub text start (pos-start) :: accu)
-          end_pos (end_pos = pos)
-  in
-  String.concat "" (List.rev (replace [] 0 false))
-
-end
-module Ounit_bsb_regex_tests
-= struct
-#1 "ounit_bsb_regex_tests.ml"
-
-
-let ((>::),
-     (>:::)) = OUnit.((>::),(>:::))
-
-let (=~) = OUnit.assert_equal
-
-
-let test_eq x y  = 
-    Bsb_regex.global_substitute ~reg:"\\${bsb:\\([-a-zA-Z0-9]+\\)}" x
-        (fun _ groups -> 
-            match groups with 
-            | x::_ -> x 
-            | _ -> assert false 
-        )  =~ y 
-
-
-let suites = 
-    __FILE__ 
-    >:::
-    [
-        __LOC__ >:: begin fun _ -> 
-        test_eq 
-        {| hi hi hi ${bsb:name}
-        ${bsb:x}
-        ${bsb:u}
-        |}        
-        {| hi hi hi name
-        x
-        u
-        |}
-    end;
-    __LOC__ >:: begin  fun _ ->
-    test_eq  "xx" "xx";
-    test_eq "${bsb:x}" "x";
-    test_eq "a${bsb:x}" "ax";
-    
-    end;
-
-    __LOC__ >:: begin fun _ ->
-        test_eq "${bsb:x}x" "xx"
-    end;
-
-    __LOC__ >:: begin fun _ -> 
-        test_eq {|
-{
-  "name": "${bsb:name}",
-  "version": "${bsb:proj-version}",
-  "sources": [
-    "src"
-  ],
-  "reason" : { "react-jsx" : true},
-  "bs-dependencies" : [
-      // add your bs-dependencies here 
-  ]
-}
-|} {|
-{
-  "name": "name",
-  "version": "proj-version",
-  "sources": [
-    "src"
-  ],
-  "reason" : { "react-jsx" : true},
-  "bs-dependencies" : [
-      // add your bs-dependencies here 
-  ]
-}
-|}
-    end
-
-    ;
-    __LOC__ >:: begin fun _ -> 
-    test_eq {|
-{
-  "name": "${bsb:name}",
-  "version": "${bsb:proj-version}",
-  "scripts": {
-    "clean": "bsb -clean",
-    "clean:all": "bsb -clean-world",
-    "build": "bsb",
-    "build:all": "bsb -make-world",
-    "watch": "bsb -w",
-  },
-  "keywords": [
-    "Bucklescript"
-  ],
-  "license": "MIT",
-  "devDependencies": {
-    "bs-platform": "${bsb:bs-version}"
-  }
-}
-|} {|
-{
-  "name": "name",
-  "version": "proj-version",
-  "scripts": {
-    "clean": "bsb -clean",
-    "clean:all": "bsb -clean-world",
-    "build": "bsb",
-    "build:all": "bsb -make-world",
-    "watch": "bsb -w",
-  },
-  "keywords": [
-    "Bucklescript"
-  ],
-  "license": "MIT",
-  "devDependencies": {
-    "bs-platform": "bs-version"
-  }
-}
-|}
-    end;
-    __LOC__ >:: begin fun _ -> 
-    test_eq {|
-{
-    "version": "0.1.0",
-    "command": "${bsb:bsb}",
-    "options": {
-        "cwd": "${workspaceRoot}"
-    },
-    "isShellCommand": true,
-    "args": [
-        "-w"
-    ],
-    "showOutput": "always",
-    "isWatching": true,
-    "problemMatcher": {
-        "fileLocation": "absolute",
-        "owner": "ocaml",
-        "watching": {
-            "activeOnStart": true,
-            "beginsPattern": ">>>> Start compiling",
-            "endsPattern": ">>>> Finish compiling"
-        },
-        "pattern": [
-            {
-                "regexp": "^File \"(.*)\", line (\\d+)(?:, characters (\\d+)-(\\d+))?:$",
-                "file": 1,
-                "line": 2,
-                "column": 3,
-                "endColumn": 4
-            },
-            {
-                "regexp": "^(?:(?:Parse\\s+)?(Warning|[Ee]rror)(?:\\s+\\d+)?:)?\\s+(.*)$",
-                "severity": 1,
-                "message": 2,
-                "loop": true
-            }
-        ]
-    }
-}
-|} {|
-{
-    "version": "0.1.0",
-    "command": "bsb",
-    "options": {
-        "cwd": "${workspaceRoot}"
-    },
-    "isShellCommand": true,
-    "args": [
-        "-w"
-    ],
-    "showOutput": "always",
-    "isWatching": true,
-    "problemMatcher": {
-        "fileLocation": "absolute",
-        "owner": "ocaml",
-        "watching": {
-            "activeOnStart": true,
-            "beginsPattern": ">>>> Start compiling",
-            "endsPattern": ">>>> Finish compiling"
-        },
-        "pattern": [
-            {
-                "regexp": "^File \"(.*)\", line (\\d+)(?:, characters (\\d+)-(\\d+))?:$",
-                "file": 1,
-                "line": 2,
-                "column": 3,
-                "endColumn": 4
-            },
-            {
-                "regexp": "^(?:(?:Parse\\s+)?(Warning|[Ee]rror)(?:\\s+\\d+)?:)?\\s+(.*)$",
-                "severity": 1,
-                "message": 2,
-                "loop": true
-            }
-        ]
-    }
-}
-|}
-    end
-    ]
-end
-module Literals : sig 
-#1 "literals.mli"
-(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
- * 
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * In addition to the permissions granted to you by the LGPL, you may combine
- * or link a "work that uses the Library" with a publicly distributed version
- * of this file to produce a combined library or application, then distribute
- * that combined work under the terms of your choosing, with no requirement
- * to comply with the obligations normally placed on you by section 4 of the
- * LGPL version 3 (or the corresponding section of a later version of the LGPL
- * should you choose to use a later version).
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Lesser General Public License for more details.
- * 
- * You should have received a copy of the GNU Lesser General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
-
-
-
-
-
-
-val js_array_ctor : string 
-val js_type_number : string
-val js_type_string : string
-val js_type_object : string
-val js_type_boolean : string
-val js_undefined : string
-val js_prop_length : string
-
-val param : string
-val partial_arg : string
-val prim : string
-
-(**temporary varaible used in {!Js_ast_util} *)
-val tmp : string 
-
-val create : string 
-val runtime : string
-val stdlib : string
-val imul : string
-
-val setter_suffix : string
-val setter_suffix_len : int
-
-
-val debugger : string
-
-val unsafe_downgrade : string
-val fn_run : string
-val method_run : string
-val fn_method : string
-val fn_mk : string
-
-(** callback actually, not exposed to user yet *)
-(* val js_fn_runmethod : string *)
-
-val bs_deriving : string
-val bs_deriving_dot : string
-val bs_type : string
-
-(** nodejs *)
-
-val node_modules : string
-val node_modules_length : int
-val package_json : string
-val bsconfig_json : string
-val build_ninja : string
-
-(* Name of the library file created for each external dependency. *)
-val library_file : string
-
-val suffix_a : string
-val suffix_cmj : string
-val suffix_cmo : string
-val suffix_cma : string
-val suffix_cmi : string
-val suffix_cmx : string
-val suffix_cmxa : string
-val suffix_ml : string
-val suffix_mlast : string 
-val suffix_mlast_simple : string
-val suffix_mliast : string
-val suffix_reast : string
-val suffix_reiast : string
-
-val suffix_mliast_simple : string
-val suffix_mlmap : string
-val suffix_mll : string
-val suffix_re : string
-val suffix_rei : string 
-
-val suffix_d : string
-val suffix_js : string
-val suffix_bs_js : string 
-(* val suffix_re_js : string *)
-val suffix_gen_js : string 
-val suffix_gen_tsx: string
-
-val suffix_tsx : string
-
-val suffix_mli : string 
-val suffix_cmt : string 
-val suffix_cmti : string 
-
-val commonjs : string 
-
-val es6 : string 
-val es6_global : string
-
-val unused_attribute : string 
-val dash_nostdlib : string
-
-val reactjs_jsx_ppx_2_exe : string 
-val reactjs_jsx_ppx_3_exe : string 
-
-val native : string
-val bytecode : string
-val js : string
-
-val node_sep : string 
-val node_parent : string 
-val node_current : string 
-val gentype_import : string
-
-val bsbuild_cache : string
-
-val sourcedirs_meta : string
-
-val ns_sep_char : char
-val ns_sep : string
-
-val exception_id : string
-
-val polyvar_hash : string
-val polyvar_value : string
-
-val cons : string
-val hd : string
-val tl : string
-val lazy_done : string
-val lazy_val : string
-end = struct
-#1 "literals.ml"
-(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
- * 
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * In addition to the permissions granted to you by the LGPL, you may combine
- * or link a "work that uses the Library" with a publicly distributed version
- * of this file to produce a combined library or application, then distribute
- * that combined work under the terms of your choosing, with no requirement
- * to comply with the obligations normally placed on you by section 4 of the
- * LGPL version 3 (or the corresponding section of a later version of the LGPL
- * should you choose to use a later version).
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Lesser General Public License for more details.
- * 
- * You should have received a copy of the GNU Lesser General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
-
-
-
-
-
-
-
-let js_array_ctor = "Array"
-let js_type_number = "number"
-let js_type_string = "string"
-let js_type_object = "object" 
-let js_type_boolean = "boolean"
-let js_undefined = "undefined"
-let js_prop_length = "length"
-
-let prim = "prim"
-let param = "param"
-let partial_arg = "partial_arg"
-let tmp = "tmp"
-
-let create = "create" (* {!Caml_exceptions.create}*)
-
-let runtime = "runtime" (* runtime directory *)
-
-let stdlib = "stdlib"
-
-let imul = "imul" (* signed int32 mul *)
-
-let setter_suffix = "#="
-let setter_suffix_len = String.length setter_suffix
-
-let debugger = "debugger"
-let unsafe_downgrade = "unsafe_downgrade"
-let fn_run = "fn_run"
-let method_run = "method_run"
-
-let fn_method = "fn_method"
-let fn_mk = "fn_mk"
-(*let js_fn_runmethod = "js_fn_runmethod"*)
-
-let bs_deriving = "bs.deriving"
-let bs_deriving_dot = "bs.deriving."
-let bs_type = "bs.type"
-
-
-(** nodejs *)
-let node_modules = "node_modules"
-let node_modules_length = String.length "node_modules"
-let package_json = "package.json"
-let bsconfig_json = "bsconfig.json"
-let build_ninja = "build.ninja"
-
-(* Name of the library file created for each external dependency. *)
-let library_file = "lib"
-
-let suffix_a = ".a"
-let suffix_cmj = ".cmj"
-let suffix_cmo = ".cmo"
-let suffix_cma = ".cma"
-let suffix_cmi = ".cmi"
-let suffix_cmx = ".cmx"
-let suffix_cmxa = ".cmxa"
-let suffix_mll = ".mll"
-let suffix_ml = ".ml"
-let suffix_mli = ".mli"
-let suffix_re = ".re"
-let suffix_rei = ".rei"
-let suffix_mlmap = ".mlmap"
-
-let suffix_cmt = ".cmt" 
-let suffix_cmti = ".cmti" 
-let suffix_mlast = ".mlast"
-let suffix_mlast_simple = ".mlast_simple"
-let suffix_mliast = ".mliast"
-let suffix_reast = ".reast"
-let suffix_reiast = ".reiast"
-let suffix_mliast_simple = ".mliast_simple"
-let suffix_d = ".d"
-let suffix_js = ".js"
-let suffix_bs_js = ".bs.js"
-(* let suffix_re_js = ".re.js" *)
-let suffix_gen_js = ".gen.js"
-let suffix_gen_tsx = ".gen.tsx"
-let suffix_tsx = ".tsx"
-
-let commonjs = "commonjs" 
-
-let es6 = "es6"
-let es6_global = "es6-global"
-
-let unused_attribute = "Unused attribute " 
-let dash_nostdlib = "-nostdlib"
-
-let reactjs_jsx_ppx_2_exe = "reactjs_jsx_ppx_2.exe"
-let reactjs_jsx_ppx_3_exe  = "reactjs_jsx_ppx_3.exe"
-
-let native = "native"
-let bytecode = "bytecode"
-let js = "js"
-
-
-
-(** Used when produce node compatible paths *)
-let node_sep = "/"
-let node_parent = ".."
-let node_current = "."
-
-let gentype_import = "genType.import"
-
-let bsbuild_cache = ".bsbuild"    
-
-let sourcedirs_meta = ".sourcedirs.json"
-
-(* Note the build system should check the validity of filenames
-   espeically, it should not contain '-'
-*)
-let ns_sep_char = '-'
-let ns_sep = "-"
-let exception_id = "RE_EXN_ID"
-
-let polyvar_hash = "HASH"
-let polyvar_value = "VAL"
-
-let cons = "::"
-let hd = "hd"
-let tl = "tl"
-
-let lazy_done = "LAZY_DONE"
-let lazy_val = "VAL"
-end
-module Ounit_cmd_util : sig 
-#1 "ounit_cmd_util.mli"
-type output = {
-  stderr : string ; 
-  stdout : string ;
-  exit_code : int 
-}
-
-
-val perform : string -> string array -> output 
-
-
-val perform_bsc : string array -> output 
-
-
- val bsc_check_eval : string -> output  
-
-val debug_output : output -> unit 
-end = struct
-#1 "ounit_cmd_util.ml"
-let (//) = Filename.concat
-
-(** may nonterminate when [cwd] is '.' *)
-let rec unsafe_root_dir_aux cwd  = 
-  if Sys.file_exists (cwd//Literals.bsconfig_json) then cwd 
-  else unsafe_root_dir_aux (Filename.dirname cwd)     
-
-let project_root = unsafe_root_dir_aux (Sys.getcwd ())
-let jscomp = project_root // "jscomp"
-
-
-let bsc_exe = project_root // "bsc"
-let runtime_dir = jscomp // "runtime"
-let others_dir = jscomp // "others"
-
-
-let stdlib_dir = jscomp // "stdlib-406"
-
-(* let rec safe_dup fd =
-  let new_fd = Unix.dup fd in
-  if (Obj.magic new_fd : int) >= 3 then
-    new_fd (* [dup] can not be 0, 1, 2*)
-  else begin
-    let res = safe_dup fd in
-    Unix.close new_fd;
-    res
-  end *)
-
-let safe_close fd =
-  try Unix.close fd with Unix.Unix_error(_,_,_) -> ()
-
-
-type output = {
-  stderr : string ; 
-  stdout : string ;
-  exit_code : int 
-}
-
-let perform command args = 
-  let new_fd_in, new_fd_out = Unix.pipe () in 
-  let err_fd_in, err_fd_out = Unix.pipe () in 
-  match Unix.fork () with 
-  | 0 -> 
-    begin try 
-        safe_close new_fd_in;  
-        safe_close err_fd_in;
-        Unix.dup2 err_fd_out Unix.stderr ; 
-        Unix.dup2 new_fd_out Unix.stdout; 
-        Unix.execv command args 
-      with _ -> 
-        exit 127
-    end
-  | pid ->
-    (* when all the descriptors on a pipe's input are closed and the pipe is 
-        empty, a call to [read] on its output returns zero: end of file.
-       when all the descriptiors on a pipe's output are closed, a call to 
-       [write] on its input kills the writing process (EPIPE).
-    *)
-    safe_close new_fd_out ; 
-    safe_close err_fd_out ; 
-    let in_chan = Unix.in_channel_of_descr new_fd_in in 
-    let err_in_chan = Unix.in_channel_of_descr err_fd_in in 
-    let buf = Buffer.create 1024 in 
-    let err_buf = Buffer.create 1024 in 
-    (try 
-       while true do 
-         Buffer.add_string buf (input_line in_chan );             
-         Buffer.add_char buf '\n'
-       done;
-     with
-       End_of_file -> ()) ; 
-    (try 
-       while true do 
-         Buffer.add_string err_buf (input_line err_in_chan );
-         Buffer.add_char err_buf '\n'
-       done;
-     with
-       End_of_file -> ()) ; 
-    let exit_code = match snd @@ Unix.waitpid [] pid with 
-      | Unix.WEXITED exit_code -> exit_code 
-      | Unix.WSIGNALED _signal_number 
-      | Unix.WSTOPPED _signal_number  -> 127 in 
-    {
-      stdout = Buffer.contents buf ; 
-      stderr = Buffer.contents err_buf;
-      exit_code 
-    }
-
-
-let perform_bsc args = 
-  perform bsc_exe 
-    (Array.append 
-       [|bsc_exe ; 
-         "-bs-package-name" ; "bs-platform"; 
-         "-bs-no-version-header"; 
-         "-bs-cross-module-opt";
-         "-w";
-         "-40";
-         "-I" ;
-         runtime_dir ; 
-         "-I"; 
-         others_dir ; 
-         "-I" ; 
-         stdlib_dir
-       |] args)
-
-let bsc_check_eval str = 
-  perform_bsc [|"-bs-eval"; str|]        
-
-  let debug_output o = 
-  Printf.printf "\nexit_code:%d\nstdout:%s\nstderr:%s\n"
-    o.exit_code o.stdout o.stderr
-
-end
-module Ounit_cmd_tests
-= struct
-#1 "ounit_cmd_tests.ml"
-let (//) = Filename.concat
-
-
-
-
-let ((>::),
-     (>:::)) = OUnit.((>::),(>:::))
-
-let (=~) = OUnit.assert_equal
-
-
-
-
-
-(* let output_of_exec_command command args =
-    let readme, writeme = Unix.pipe () in
-    let pid = Unix.create_process command args Unix.stdin writeme Unix.stderr in
-    let in_chan = Unix.in_channel_of_descr readme *)
-
-
-
-let perform_bsc = Ounit_cmd_util.perform_bsc
-let bsc_check_eval = Ounit_cmd_util.bsc_check_eval
-
-
-let suites =
-  __FILE__
-  >::: [
-    __LOC__ >:: begin fun _ ->
-      let v_output = perform_bsc  [| "-v" |] in
-      OUnit.assert_bool __LOC__ ((perform_bsc [| "-h" |]).exit_code  <> 0  );
-      OUnit.assert_bool __LOC__ (v_output.exit_code = 0);
-      (* Printf.printf "\n*>%s" v_output.stdout; *)
-      (* Printf.printf "\n*>%s" v_output.stderr ; *)
-    end;
-    __LOC__ >:: begin fun _ ->
-      let v_output =
-        perform_bsc  [| "-bs-eval"; {|let str = "'a'" |}|] in
-      OUnit.assert_bool __LOC__ (v_output.exit_code = 0)
-    end;
-    __LOC__ >:: begin fun _ -> 
-    let v_output = perform_bsc [|"-bs-eval"; {|type 'a arra = 'a array
-    external
-      f : 
-      int -> int -> int arra -> unit
-      = ""
-      [@@bs.send.pipe:int]
-      [@@bs.splice]|}|] in  
-      OUnit.assert_bool __LOC__ (Ext_string.contain_substring v_output.stderr "bs.splice")
-    end;
-        __LOC__ >:: begin fun _ -> 
-    let v_output = perform_bsc [|"-bs-eval"; {|external
-  f2 : 
-  int -> int -> ?y:int array -> unit  
-  = ""
-  [@@bs.send.pipe:int]
-  [@@bs.splice]  |}|] in  
-      OUnit.assert_bool __LOC__ (Ext_string.contain_substring v_output.stderr "bs.splice")
-    end;
-
-    __LOC__ >:: begin fun _ ->
-      let should_be_warning =
-        bsc_check_eval  {|let bla4 foo x y= foo##(method1 x y [@bs]) |} in
-      (* debug_output should_be_warning; *)
-      OUnit.assert_bool __LOC__ (Ext_string.contain_substring
-                                   should_be_warning.stderr "Unused")
-    end;
-     __LOC__ >:: begin fun _ ->
-      let should_be_warning =
-        bsc_check_eval  {| external mk : int -> ([`a|`b [@bs.string]]) = "mk" [@@bs.val] |} in
-        OUnit.assert_bool __LOC__
-        (Ext_string.contain_substring
-                                   should_be_warning.stderr "Unused")
-     end;
-    __LOC__ >:: begin fun _ ->
-      let should_err = bsc_check_eval {|
-external ff :
-    resp -> (_ [@bs.as "x"]) -> int -> unit =
-    "x" [@@bs.set]
-      |} in
-      OUnit.assert_bool __LOC__
-        (Ext_string.contain_substring should_err.stderr
-           "Ill defined"
-        )
-    end;
-
-    __LOC__ >:: begin fun _ ->
-      (** used in return value
-          This should fail, we did not
-          support uncurry return value yet
-      *)
-      let should_err = bsc_check_eval {|
-    external v3 :
-    int -> int -> (int -> int -> int [@bs.uncurry])
-    = "v3"[@@bs.val]
-
-    |} in
-      (* Ounit_cmd_util.debug_output should_err;*)
-      OUnit.assert_bool __LOC__
-        (Ext_string.contain_substring
-           should_err.stderr "bs.uncurry")
-    end ;
-
-    __LOC__ >:: begin fun _ ->
-      let should_err = bsc_check_eval {|
-    external v4 :
-    (int -> int -> int [@bs.uncurry]) = ""
-    [@@bs.val]
-
-    |} in
-      (* Ounit_cmd_util.debug_output should_err ; *)
-      OUnit.assert_bool __LOC__
-        (Ext_string.contain_substring
-           should_err.stderr "bs.uncurry")
-    end ;
-
-    __LOC__ >:: begin fun _ ->
-      let should_err = bsc_check_eval {|
-      {js| \uFFF|js}
-      |} in
-      OUnit.assert_bool __LOC__ (not @@ Ext_string.is_empty should_err.stderr)
-    end;
-
-    __LOC__ >:: begin fun _ ->
-      let should_err = bsc_check_eval {|
-      external mk : int -> ([`a|`b] [@bs.string]) = "" [@@bs.val]
-      |} in
-      OUnit.assert_bool __LOC__ (not @@ Ext_string.is_empty should_err.stderr)
-    end;
-
-    __LOC__ >:: begin fun _ ->
-      let should_err = bsc_check_eval {|
-      external mk : int -> ([`a|`b] ) = "mk" [@@bs.val]
-      |} in
-      OUnit.assert_bool __LOC__ ( Ext_string.is_empty should_err.stderr)
-      (* give a warning or ?
-         ( [`a | `b ] [@bs.string] )
-         (* auto-convert to ocaml poly-variant *)
-      *)
-    end;
-
-    __LOC__ >:: begin fun _ ->
-      let should_err = bsc_check_eval {|
-      type t
-      external mk : int -> (_ [@bs.as {json| { x : 3 } |json}]) ->  t = "mk" [@@bs.val]
-      |} in
-      OUnit.assert_bool __LOC__ (Ext_string.contain_substring should_err.stderr "Invalid json literal")
-    end
-    ;
-    __LOC__ >:: begin fun _ ->
-      let should_err = bsc_check_eval {|
-      type t
-      external mk : int -> (_ [@bs.as {json| { "x" : 3 } |json}]) ->  t = "mk" [@@bs.val]
-      |} in
-      OUnit.assert_bool __LOC__ (Ext_string.is_empty should_err.stderr)
-    end
-    ;
-    (* #1510 *)
-    __LOC__ >:: begin fun _ ->
-      let should_err = bsc_check_eval {|
-       let should_fail = fun [@bs.this] (Some x) y u -> y + u
-      |} in
-      OUnit.assert_bool __LOC__
-        (Ext_string.contain_substring  should_err.stderr "simple")
-    end;
-
-    __LOC__ >:: begin fun _ ->
-      let should_err = bsc_check_eval {|
-       let should_fail = fun [@bs.this] (Some x as v) y u -> y + u
-      |} in
-      (* Ounit_cmd_util.debug_output should_err; *)
-      OUnit.assert_bool __LOC__
-        (Ext_string.contain_substring  should_err.stderr "simple")
-    end;
-
-    (* __LOC__ >:: begin fun _ ->
-      let should_err = bsc_check_eval {|
-     external f : string -> unit -> unit = "x.y" [@@bs.send]
-     |} in
-      OUnit.assert_bool __LOC__
-        (Ext_string.contain_substring should_err.stderr "Not a valid method name")
-    end; *)
-
-
-    __LOC__ >:: begin fun _ -> 
-      let should_err = bsc_check_eval {|
-      (* let rec must be rejected *)
-type t10 = A of t10 [@@ocaml.unboxed];;
-let rec x = A x;;
-      |} in 
-      OUnit.assert_bool __LOC__
-      (Ext_string.contain_substring should_err.stderr "This kind of expression is not allowed")
-    end;
-
-    __LOC__ >:: begin fun _ -> 
-      let should_err = bsc_check_eval {|
-      type t = {x: int64} [@@unboxed];;
-let rec x = {x = y} and y = 3L;;
-      |} in 
-      OUnit.assert_bool __LOC__
-      (Ext_string.contain_substring should_err.stderr "This kind of expression is not allowed")
-    end;
-    __LOC__ >:: begin fun _ -> 
-      let should_err = bsc_check_eval {|
-      type r = A of r [@@unboxed];;
-let rec y = A y;;
-      |} in 
-      OUnit.assert_bool __LOC__
-      (Ext_string.contain_substring should_err.stderr "This kind of expression is not allowed")
-    end;
-
-    __LOC__ >:: begin fun _ ->
-      let should_err = bsc_check_eval {|
-          external f : int = "%identity"
-|} in
-      OUnit.assert_bool __LOC__
-        (not (Ext_string.is_empty should_err.stderr))
-    end;
-
-    __LOC__ >:: begin fun _ ->
-      let should_err = bsc_check_eval {|
-          external f : int -> int = "%identity"
-|} in
-      OUnit.assert_bool __LOC__
-        (Ext_string.is_empty should_err.stderr)
-    end;
-    __LOC__ >:: begin fun _ ->
-      let should_err = bsc_check_eval {|
-          external f : int -> int -> int = "%identity"
-|} in
-      OUnit.assert_bool __LOC__
-        (not (Ext_string.is_empty should_err.stderr))
-    end;
-    __LOC__ >:: begin fun _ ->
-      let should_err = bsc_check_eval {|
-          external f : (int -> int) -> int = "%identity"
-|} in
-      OUnit.assert_bool __LOC__
-        ( (Ext_string.is_empty should_err.stderr))
-
-    end;
-
-    __LOC__ >:: begin fun _ ->
-      let should_err = bsc_check_eval {|
-          external f : int -> (int-> int) = "%identity"
-|} in
-      OUnit.assert_bool __LOC__
-        (not (Ext_string.is_empty should_err.stderr))
-
-    end;
-    __LOC__ >:: begin fun _ ->
-    let should_err = bsc_check_eval {|
-    external foo_bar :
-    (_ [@bs.as "foo"]) ->
-    string ->
-    string = "bar"
-  [@@bs.send]
-    |} in
-    OUnit.assert_bool __LOC__
-    (Ext_string.contain_substring should_err.stderr "Ill defined attribute")
-  end;
-    __LOC__ >:: begin fun _ ->
-    let should_err = bsc_check_eval {|
-      let bla4 foo x y = foo##(method1 x y [@bs])
-    |} in
-    (* Ounit_cmd_util.debug_output should_err ;  *)
-    OUnit.assert_bool __LOC__
-    (Ext_string.contain_substring should_err.stderr
-    "Unused")
-  end;
-    __LOC__ >:: begin fun _ ->
-    let should_err = bsc_check_eval {|
-    external mk : int ->
-  (
-    [`a|`b]
-     [@bs.string]
-  ) = "mk" [@@bs.val]
-    |} in
-    (* Ounit_cmd_util.debug_output should_err ;  *)
-    OUnit.assert_bool __LOC__
-    (Ext_string.contain_substring should_err.stderr
-    "Unused")
-  end;
-  __LOC__ >:: begin fun _ ->
-    let should_err = bsc_check_eval {|
-    type -'a t = {k : 'a } [@@bs.deriving abstract]
-    |} in
-    OUnit.assert_bool __LOC__
-    (Ext_string.contain_substring should_err.stderr "contravariant")
-  end;
-  (* __LOC__ >:: begin fun _ ->
-    let should_err = bsc_check_eval {|
-    type 'a t = {k : int -> 'a } [@@bs.deriving abstract]
-    |} in
-    OUnit.assert_bool __LOC__
-    (Ext_string.contain_substring should_err.stderr "not allowed")
-  end *)
-    (* __LOC__ >:: begin fun _ ->  *)
-    (*   let should_infer = perform_bsc [| "-i"; "-bs-eval"|] {| *)
-    (*      let  f = fun [@bs] x -> let (a,b) = x in a + b  *)
-    (* |}  in  *)
-    (*   let infer_type  = bsc_eval (Printf.sprintf {| *)
-
-    (*      let f : %s  = fun [@bs] x -> let (a,b) = x in a + b  *)
-    (*  |} should_infer.stdout ) in  *)
-    (*  begin  *)
-    (*    Ounit_cmd_util.debug_output should_infer ; *)
-    (*    Ounit_cmd_util.debug_output infer_type ; *)
-    (*    OUnit.assert_bool __LOC__  *)
-    (*      ((Ext_string.is_empty infer_type.stderr)) *)
-    (*  end *)
-    (* end *)
-  ]
-
-
-end
-module Bs_exception : sig 
-#1 "bs_exception.mli"
-(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
- * 
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * In addition to the permissions granted to you by the LGPL, you may combine
- * or link a "work that uses the Library" with a publicly distributed version
- * of this file to produce a combined library or application, then distribute
- * that combined work under the terms of your choosing, with no requirement
- * to comply with the obligations normally placed on you by section 4 of the
- * LGPL version 3 (or the corresponding section of a later version of the LGPL
- * should you choose to use a later version).
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Lesser General Public License for more details.
- * 
- * You should have received a copy of the GNU Lesser General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
-
-type error =
-  | Cmj_not_found of string
-  | Js_not_found of string
-  | Bs_cyclic_depends of string  list
-  | Bs_duplicated_module of string * string
-  | Bs_duplicate_exports of string (* gpr_974 *)
-  | Bs_package_not_found of string                                                        
-  | Bs_main_not_exist of string 
-  | Bs_invalid_path of string
-  | Missing_ml_dependency of string 
-  | Dependency_script_module_dependent_not  of string
-(*
-TODO: In the futrue, we should refine dependency [bsb] 
-should not rely on such exception, it should have its own exception handling
-*)
-
-(* exception Error of error *)
-
-(* val report_error : Format.formatter -> error -> unit *)
-
-val error : error -> 'a 
-
-end = struct
-#1 "bs_exception.ml"
-(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
- * 
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * In addition to the permissions granted to you by the LGPL, you may combine
- * or link a "work that uses the Library" with a publicly distributed version
- * of this file to produce a combined library or application, then distribute
- * that combined work under the terms of your choosing, with no requirement
- * to comply with the obligations normally placed on you by section 4 of the
- * LGPL version 3 (or the corresponding section of a later version of the LGPL
- * should you choose to use a later version).
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Lesser General Public License for more details.
- * 
- * You should have received a copy of the GNU Lesser General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
-
-
-type error =
-  | Cmj_not_found of string
-  | Js_not_found of string 
-  | Bs_cyclic_depends of string  list
-  | Bs_duplicated_module of string * string
-  | Bs_duplicate_exports of string (* gpr_974 *)
-  | Bs_package_not_found of string                            
-  | Bs_main_not_exist of string 
-  | Bs_invalid_path of string
-  | Missing_ml_dependency of string 
-  | Dependency_script_module_dependent_not  of string 
-  (** TODO: we need add location handling *)    
-exception Error of error
-
-let error err = raise (Error err)
-
-let report_error ppf = function
-  | Dependency_script_module_dependent_not s
-    -> 
-    Format.fprintf ppf 
-      "%s is compiled in script mode while its dependent is not"
-      s
-  | Missing_ml_dependency s -> 
-    Format.fprintf ppf "Missing dependency %s in search path" s 
-  | Cmj_not_found s ->
-    Format.fprintf ppf "%s not found, it means either the module does not exist or it is a namespace" s
-  | Js_not_found s -> 
-    Format.fprintf ppf "%s not found, needed in script mode " s
-  | Bs_cyclic_depends  str
-    ->
-    Format.fprintf ppf "Cyclic depends : @[%a@]"
-      (Format.pp_print_list ~pp_sep:Format.pp_print_space
-         Format.pp_print_string)
-      str
-  | Bs_duplicate_exports str -> 
-    Format.fprintf ppf "%s are exported as twice" str 
-  | Bs_duplicated_module (a,b)
-    ->
-    Format.fprintf ppf "The build system does not support two files with same names yet %s, %s" a b
-  | Bs_main_not_exist main
-    ->
-    Format.fprintf ppf "File %s not found " main
-
-  | Bs_package_not_found package
-    ->
-    Format.fprintf ppf "Package %s not found or %s/lib/ocaml does not exist or please set npm_config_prefix correctly"
-      package package
-  | Bs_invalid_path path
-    ->  Format.pp_print_string ppf ("Invalid path: " ^ path )
-
-
-let () =
-  Location.register_error_of_exn
-    (function
-      | Error err
-        -> Some (Location.error_of_printer_file report_error err)
-      | _ -> None
-    )
-
-end
-module Ext_filename : sig 
-#1 "ext_filename.mli"
-(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
- * 
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * In addition to the permissions granted to you by the LGPL, you may combine
- * or link a "work that uses the Library" with a publicly distributed version
- * of this file to produce a combined library or application, then distribute
- * that combined work under the terms of your choosing, with no requirement
- * to comply with the obligations normally placed on you by section 4 of the
- * LGPL version 3 (or the corresponding section of a later version of the LGPL
- * should you choose to use a later version).
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Lesser General Public License for more details.
- * 
- * You should have received a copy of the GNU Lesser General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
-
-
-
-
-
-(* TODO:
-   Change the module name, this code is not really an extension of the standard 
-    library but rather specific to JS Module name convention. 
-*)
-
-
-
-
-
-(** An extension module to calculate relative path follow node/npm style. 
-    TODO : this short name will have to change upon renaming the file.
-*)
-
-val is_dir_sep : 
-  char -> bool 
-  
-val maybe_quote:
-  string -> 
-  string
-
-val chop_extension_maybe:
-  string -> 
-  string
-
-(* return an empty string if no extension found *)  
-val get_extension_maybe:   
-  string -> 
-  string
-
-
-val new_extension:  
-  string -> 
-  string -> 
-  string
-
-val chop_all_extensions_maybe:
-  string -> 
-  string  
-
-(* OCaml specific abstraction*)
-val module_name:  
-  string ->
-  string
-
-
-
-
-type module_info = {
-  module_name : string ;
-  case : bool;
-}   
-
-
-
-val as_module:
-  basename:string -> 
-  module_info option
-end = struct
-#1 "ext_filename.ml"
-(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
- * 
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * In addition to the permissions granted to you by the LGPL, you may combine
- * or link a "work that uses the Library" with a publicly distributed version
- * of this file to produce a combined library or application, then distribute
- * that combined work under the terms of your choosing, with no requirement
- * to comply with the obligations normally placed on you by section 4 of the
- * LGPL version 3 (or the corresponding section of a later version of the LGPL
- * should you choose to use a later version).
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Lesser General Public License for more details.
- * 
- * You should have received a copy of the GNU Lesser General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
-
-
-
-
-let is_dir_sep_unix c = c = '/'
-let is_dir_sep_win_cygwin c = 
-  c = '/' || c = '\\' || c = ':'
-
-let is_dir_sep = 
-  if Sys.unix then is_dir_sep_unix else is_dir_sep_win_cygwin
-
-(* reference ninja.cc IsKnownShellSafeCharacter *)
-let maybe_quote ( s : string) = 
-  let noneed_quote = 
-    Ext_string.for_all s (function
-        | '0' .. '9' 
-        | 'a' .. 'z' 
-        | 'A' .. 'Z'
-        | '_' | '+' 
-        | '-' | '.'
-        | '/' 
-        | '@' -> true
-        | _ -> false
-      )  in 
-  if noneed_quote then
-    s
-  else Filename.quote s 
-
-
-let chop_extension_maybe name =
-  let rec search_dot i =
-    if i < 0 || is_dir_sep (String.unsafe_get name i) then name
-    else if String.unsafe_get name i = '.' then String.sub name 0 i
-    else search_dot (i - 1) in
-  search_dot (String.length name - 1)
-
-let get_extension_maybe name =   
-  let name_len = String.length name in  
-  let rec search_dot name i name_len =
-    if i < 0 || is_dir_sep (String.unsafe_get name i) then ""
-    else if String.unsafe_get name i = '.' then String.sub name i (name_len - i)
-    else search_dot name (i - 1) name_len in
-  search_dot name (name_len - 1) name_len
-
-let chop_all_extensions_maybe name =
-  let rec search_dot i last =
-    if i < 0 || is_dir_sep (String.unsafe_get name i) then 
-      (match last with 
-      | None -> name
-      | Some i -> String.sub name 0 i)  
-    else if String.unsafe_get name i = '.' then 
-      search_dot (i - 1) (Some i)
-    else search_dot (i - 1) last in
-  search_dot (String.length name - 1) None
-
-
-let new_extension name (ext : string) = 
-  let rec search_dot name i ext =
-    if i < 0 || is_dir_sep (String.unsafe_get name i) then 
-      name ^ ext 
-    else if String.unsafe_get name i = '.' then 
-      let ext_len = String.length ext in
-      let buf = Bytes.create (i + ext_len) in 
-      Bytes.blit_string name 0 buf 0 i;
-      Bytes.blit_string ext 0 buf i ext_len;
-      Bytes.unsafe_to_string buf
-    else search_dot name (i - 1) ext  in
-  search_dot name (String.length name - 1) ext
-
-
-
-(** TODO: improve efficiency
-   given a path, calcuate its module name 
-   Note that `ocamlc.opt -c aa.xx.mli` gives `aa.xx.cmi`
-   we can not strip all extensions, otherwise
-   we can not tell the difference between "x.cpp.ml" 
-   and "x.ml"
-*)
-let module_name name = 
-  let rec search_dot i  name =
-    if i < 0  then 
-      Ext_string.capitalize_ascii name
-    else 
-    if String.unsafe_get name i = '.' then 
-      Ext_string.capitalize_sub name i 
-    else 
-      search_dot (i - 1) name in  
-  let name = Filename.basename  name in 
-  let name_len = String.length name in 
-  search_dot (name_len - 1)  name 
-
-type module_info = {
-  module_name : string ;
-  case : bool;
-} 
-
-
-
-let rec valid_module_name_aux name off len =
-  if off >= len then true 
-  else 
-    let c = String.unsafe_get name off in 
-    match c with 
-    | 'A'..'Z' | 'a'..'z' | '0'..'9' | '_' | '\'' -> 
-      valid_module_name_aux name (off + 1) len 
-    | _ -> false
-
-type state = 
-  | Invalid
-  | Upper
-  | Lower
-
-let valid_module_name name len =     
-  if len = 0 then Invalid
-  else 
-    let c = String.unsafe_get name 0 in 
-    match c with 
-    | 'A' .. 'Z'
-      -> 
-      if valid_module_name_aux name 1 len then 
-        Upper
-      else Invalid  
-    | 'a' .. 'z' 
-      -> 
-      if valid_module_name_aux name 1 len then
-        Lower
-      else Invalid
-    | _ -> Invalid
-
-
-let as_module ~basename =
-  let rec search_dot i  name name_len =
-    if i < 0  then
-      (* Input e.g, [a_b] *)
-      match valid_module_name name name_len with 
-      | Invalid -> None 
-      | Upper ->  Some {module_name = name; case = true }
-      | Lower -> Some {module_name = Ext_string.capitalize_ascii name; case = false}
-    else 
-    if String.unsafe_get name i = '.' then 
-      (*Input e.g, [A_b] *)
-      match valid_module_name  name i with 
-      | Invalid -> None 
-      | Upper -> 
-        Some {module_name = Ext_string.capitalize_sub name i; case = true}
-      | Lower -> 
-        Some {module_name = Ext_string.capitalize_sub name i; case = false}
-    else 
-      search_dot (i - 1) name name_len in  
-  let name_len = String.length basename in       
-  search_dot (name_len - 1)  basename name_len
-    
-end
-module Ext_format : sig 
-#1 "ext_format.mli"
-(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
- * 
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * In addition to the permissions granted to you by the LGPL, you may combine
- * or link a "work that uses the Library" with a publicly distributed version
- * of this file to produce a combined library or application, then distribute
- * that combined work under the terms of your choosing, with no requirement
- * to comply with the obligations normally placed on you by section 4 of the
- * LGPL version 3 (or the corresponding section of a later version of the LGPL
- * should you choose to use a later version).
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Lesser General Public License for more details.
- * 
- * You should have received a copy of the GNU Lesser General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
-
-
-
-
-
-
-
-
-(** Simplified wrapper module for the standard library [Format] module. 
-  *) 
-
-type t = private Format.formatter
-
-(* val string : t -> string -> unit
-
-val break : t -> unit
-
-val break1 : t -> unit
-
-val space :  t -> unit
-
-val group : t -> int -> (unit -> 'a) -> 'a
-(** [group] will record current indentation 
-    and indent futher
- *)
-
-val vgroup : t -> int -> (unit -> 'a) -> 'a
-
-val paren : t -> (unit -> 'a) -> 'a
-
-val paren_group : t -> int -> (unit -> 'a) -> 'a
-
-val brace_group : t -> int -> (unit -> 'a) -> 'a
-
-val brace_vgroup : t -> int -> (unit -> 'a) -> 'a
-
-val bracket_group : t -> int -> (unit -> 'a) -> 'a
-
-val newline : t -> unit
-
-val to_out_channel : out_channel -> t
-
-val flush : t -> unit -> unit *)
-
-val pp_print_queue :
-  ?pp_sep:(Format.formatter -> unit -> unit) ->
-  (Format.formatter -> 'a -> unit) -> Format.formatter -> 'a Queue.t -> unit
-
-end = struct
-#1 "ext_format.ml"
-(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
- * 
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * In addition to the permissions granted to you by the LGPL, you may combine
- * or link a "work that uses the Library" with a publicly distributed version
- * of this file to produce a combined library or application, then distribute
- * that combined work under the terms of your choosing, with no requirement
- * to comply with the obligations normally placed on you by section 4 of the
- * LGPL version 3 (or the corresponding section of a later version of the LGPL
- * should you choose to use a later version).
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Lesser General Public License for more details.
- * 
- * You should have received a copy of the GNU Lesser General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
-
-
-
-
-
-
-
-
-open Format
-
-type t = formatter
-
-(* let string = pp_print_string *)
-
-(* let break = fun fmt -> pp_print_break fmt 0 0
-
-let break1 =
-  fun fmt -> pp_print_break fmt 0 1 
-
-let space  fmt  = 
-  pp_print_break fmt 1 0
- *)
-(* let vgroup fmt indent u = 
-  pp_open_vbox fmt indent; 
-  let v = u () in
-  pp_close_box fmt ();
-  v
-
-let group fmt indent u = 
-  pp_open_hovbox fmt indent; 
-  let v = u () in
-  pp_close_box fmt ();
-  v
-  
-let paren fmt u = 
-  string fmt "(";
-  let v = u () in
-  string fmt ")";
-  v
-
-let brace fmt u = 
-  string fmt "{";
-  (* break1 fmt ; *)
-  let v = u () in
-  string fmt "}";
-  v 
-
-let bracket fmt u = 
-  string fmt "[";
-  let v = u () in
-  string fmt "]";
-  v  *)
-
-(* let paren_group st n action = 
-  group st n (fun _ -> paren st action)
-
-let brace_group st n action = 
-  group st n (fun _ -> brace st action )
-
-let brace_vgroup st n action = 
-  vgroup st n (fun _ -> 
-    string st "{";
-    pp_print_break st 0 2;
-    let v = vgroup st 0 action in
-    pp_print_break st 0 0;
-    string st "}";
-    v
-              )
-let bracket_group st n action = 
-  group st n (fun _ -> bracket st action)
-
-let newline fmt = pp_print_newline fmt ()
-
-let to_out_channel = formatter_of_out_channel
-
-(* let non_breaking_space  fmt = string fmt " " *)
-(* let set_needed_space_function _ _ = () *)
-let flush = pp_print_flush
- *)
-(* let list = pp_print_list *)
-
-let pp_print_queue ?(pp_sep = pp_print_cut) pp_v ppf q =
-  Queue.iter (fun q -> pp_v ppf q ;  pp_sep ppf ()) q 
-
-end
 module Ext_list : sig 
 #1 "ext_list.mli"
 (* Copyright (C) 2015-2016 Bloomberg Finance L.P.
@@ -6428,6 +4567,765 @@ let rec mem_string (xs : string list) (x : string) =
   | a::l ->  a = x  || mem_string l x
 
 end
+module Map_gen
+= struct
+#1 "map_gen.ml"
+(***********************************************************************)
+(*                                                                     *)
+(*                                OCaml                                *)
+(*                                                                     *)
+(*            Xavier Leroy, projet Cristal, INRIA Rocquencourt         *)
+(*                                                                     *)
+(*  Copyright 1996 Institut National de Recherche en Informatique et   *)
+(*  en Automatique.  All rights reserved.  This file is distributed    *)
+(*  under the terms of the GNU Library General Public License, with    *)
+(*  the special exception on linking described in file ../LICENSE.     *)
+(*                                                                     *)
+(***********************************************************************)
+(** adapted from stdlib *)
+
+type ('key,'a) t =
+  | Empty
+  | Node of ('key,'a) t * 'key * 'a * ('key,'a) t * int
+
+type ('key,'a) enumeration =
+  | End
+  | More of 'key * 'a * ('key,'a) t * ('key, 'a) enumeration
+
+let rec cardinal_aux acc  = function
+  | Empty -> acc 
+  | Node (l,_,_,r, _) -> 
+    cardinal_aux  (cardinal_aux (acc + 1)  r ) l 
+
+let cardinal s = cardinal_aux 0 s 
+
+let rec bindings_aux accu = function
+  | Empty -> accu
+  | Node(l, v, d, r, _) -> bindings_aux ((v, d) :: bindings_aux accu r) l
+
+let bindings s =
+  bindings_aux [] s
+
+let rec fill_array_with_f (s : _ t) i arr  f : int =    
+  match s with 
+  | Empty -> i 
+  | Node ( l ,k,v,r,_) -> 
+    let inext = fill_array_with_f l i arr f in 
+    Array.unsafe_set arr inext (f k v);
+    fill_array_with_f r (inext + 1) arr f
+
+let rec fill_array_aux (s : _ t) i arr : int =    
+  match s with 
+  | Empty -> i 
+  | Node (l,k,v,r,_) -> 
+    let inext = fill_array_aux l i arr in 
+    Array.unsafe_set arr inext (k,v);
+    fill_array_aux r (inext + 1) arr 
+
+
+let to_sorted_array (s : ('key,'a) t)  : ('key * 'a ) array =    
+  match s with 
+  | Empty -> [||]
+  | Node(l,k,v,r,_) -> 
+    let len = 
+      cardinal_aux (cardinal_aux 1 r) l in 
+    let arr =
+      Array.make len (k,v) in  
+    ignore (fill_array_aux s 0 arr : int);
+    arr 
+
+let to_sorted_array_with_f (type key a b ) (s : (key,a) t)  (f : key -> a -> b): b array =    
+  match s with 
+  | Empty -> [||]
+  | Node(l,k,v,r,_) -> 
+    let len = 
+      cardinal_aux (cardinal_aux 1 r) l in 
+    let arr =
+      Array.make len (f k v) in  
+    ignore (fill_array_with_f s 0 arr f: int);
+    arr     
+
+let rec keys_aux accu = function
+    Empty -> accu
+  | Node(l, v, _, r, _) -> keys_aux (v :: keys_aux accu r) l
+
+let keys s = keys_aux [] s
+
+
+
+let rec cons_enum m e =
+  match m with
+    Empty -> e
+  | Node(l, v, d, r, _) -> cons_enum l (More(v, d, r, e))
+
+
+let height = function
+  | Empty -> 0
+  | Node(_,_,_,_,h) -> h
+
+let create l x d r =
+  let hl = height l and hr = height r in
+  Node(l, x, d, r, (if hl >= hr then hl + 1 else hr + 1))
+
+let singleton x d = Node(Empty, x, d, Empty, 1)
+
+let bal l x d r =
+  let hl = match l with Empty -> 0 | Node(_,_,_,_,h) -> h in
+  let hr = match r with Empty -> 0 | Node(_,_,_,_,h) -> h in
+  if hl > hr + 2 then begin
+    match l with
+      Empty -> invalid_arg "Map.bal"
+    | Node(ll, lv, ld, lr, _) ->
+      if height ll >= height lr then
+        create ll lv ld (create lr x d r)
+      else begin
+        match lr with
+          Empty -> invalid_arg "Map.bal"
+        | Node(lrl, lrv, lrd, lrr, _)->
+          create (create ll lv ld lrl) lrv lrd (create lrr x d r)
+      end
+  end else if hr > hl + 2 then begin
+    match r with
+      Empty -> invalid_arg "Map.bal"
+    | Node(rl, rv, rd, rr, _) ->
+      if height rr >= height rl then
+        create (create l x d rl) rv rd rr
+      else begin
+        match rl with
+          Empty -> invalid_arg "Map.bal"
+        | Node(rll, rlv, rld, rlr, _) ->
+          create (create l x d rll) rlv rld (create rlr rv rd rr)
+      end
+  end else
+    Node(l, x, d, r, (if hl >= hr then hl + 1 else hr + 1))
+
+let empty = Empty
+
+let is_empty = function Empty -> true | _ -> false
+
+let rec min_binding_exn = function
+    Empty -> raise Not_found
+  | Node(Empty, x, d, _, _) -> (x, d)
+  | Node(l, _, _, _, _) -> min_binding_exn l
+
+let choose = min_binding_exn
+
+let rec max_binding_exn = function
+    Empty -> raise Not_found
+  | Node(_, x, d, Empty, _) -> (x, d)
+  | Node(_, _, _, r, _) -> max_binding_exn r
+
+let rec remove_min_binding = function
+    Empty -> invalid_arg "Map.remove_min_elt"
+  | Node(Empty, _, _, r, _) -> r
+  | Node(l, x, d, r, _) -> bal (remove_min_binding l) x d r
+
+let merge t1 t2 =
+  match (t1, t2) with
+    (Empty, t) -> t
+  | (t, Empty) -> t
+  | (_, _) ->
+    let (x, d) = min_binding_exn t2 in
+    bal t1 x d (remove_min_binding t2)
+
+
+let rec iter x f = match x with 
+    Empty -> ()
+  | Node(l, v, d, r, _) ->
+    iter l f; f v d; iter r f
+
+let rec map x f = match x with
+    Empty ->
+    Empty
+  | Node(l, v, d, r, h) ->
+    let l' = map l f in
+    let d' = f d in
+    let r' = map r f in
+    Node(l', v, d', r', h)
+
+let rec mapi x f = match x with
+    Empty ->
+    Empty
+  | Node(l, v, d, r, h) ->
+    let l' = mapi l f in
+    let d' = f v d in
+    let r' = mapi r f in
+    Node(l', v, d', r', h)
+
+let rec fold m accu f =
+  match m with
+    Empty -> accu
+  | Node(l, v, d, r, _) ->
+    fold r (f v d (fold l accu f)) f 
+
+let rec for_all x p = match x with 
+    Empty -> true
+  | Node(l, v, d, r, _) -> p v d && for_all l p && for_all r p
+
+let rec exists x p = match x with
+    Empty -> false
+  | Node(l, v, d, r, _) -> p v d || exists l p || exists r p
+
+(* Beware: those two functions assume that the added k is *strictly*
+   smaller (or bigger) than all the present keys in the tree; it
+   does not test for equality with the current min (or max) key.
+
+   Indeed, they are only used during the "join" operation which
+   respects this precondition.
+*)
+
+let rec add_min_binding k v = function
+  | Empty -> singleton k v
+  | Node (l, x, d, r, _) ->
+    bal (add_min_binding k v l) x d r
+
+let rec add_max_binding k v = function
+  | Empty -> singleton k v
+  | Node (l, x, d, r, _) ->
+    bal l x d (add_max_binding k v r)
+
+(* Same as create and bal, but no assumptions are made on the
+   relative heights of l and r. *)
+
+let rec join l v d r =
+  match (l, r) with
+    (Empty, _) -> add_min_binding v d r
+  | (_, Empty) -> add_max_binding v d l
+  | (Node(ll, lv, ld, lr, lh), Node(rl, rv, rd, rr, rh)) ->
+    if lh > rh + 2 then bal ll lv ld (join lr v d r) else
+    if rh > lh + 2 then bal (join l v d rl) rv rd rr else
+      create l v d r
+
+(* Merge two trees l and r into one.
+   All elements of l must precede the elements of r.
+   No assumption on the heights of l and r. *)
+
+let concat t1 t2 =
+  match (t1, t2) with
+    (Empty, t) -> t
+  | (t, Empty) -> t
+  | (_, _) ->
+    let (x, d) = min_binding_exn t2 in
+    join t1 x d (remove_min_binding t2)
+
+let concat_or_join t1 v d t2 =
+  match d with
+  | Some d -> join t1 v d t2
+  | None -> concat t1 t2
+
+let rec filter x p = match x with
+    Empty -> Empty
+  | Node(l, v, d, r, _) ->
+    (* call [p] in the expected left-to-right order *)
+    let l' = filter l p in
+    let pvd = p v d in
+    let r' = filter r p in
+    if pvd then join l' v d r' else concat l' r'
+
+let rec partition x p = match x with
+    Empty -> (Empty, Empty)
+  | Node(l, v, d, r, _) ->
+    (* call [p] in the expected left-to-right order *)
+    let (lt, lf) = partition l p in
+    let pvd = p v d in
+    let (rt, rf) = partition r p in
+    if pvd
+    then (join lt v d rt, concat lf rf)
+    else (concat lt rt, join lf v d rf)
+
+let compare compare_key cmp_val m1 m2 =
+  let rec compare_aux e1  e2 =
+    match (e1, e2) with
+      (End, End) -> 0
+    | (End, _)  -> -1
+    | (_, End) -> 1
+    | (More(v1, d1, r1, e1), More(v2, d2, r2, e2)) ->
+      let c = compare_key v1 v2 in
+      if c <> 0 then c else
+        let c = cmp_val d1 d2 in
+        if c <> 0 then c else
+          compare_aux (cons_enum r1 e1) (cons_enum r2 e2)
+  in compare_aux (cons_enum m1 End) (cons_enum m2 End)
+
+let equal compare_key cmp m1 m2 =
+  let rec equal_aux e1 e2 =
+    match (e1, e2) with
+      (End, End) -> true
+    | (End, _)  -> false
+    | (_, End) -> false
+    | (More(v1, d1, r1, e1), More(v2, d2, r2, e2)) ->
+      compare_key v1 v2 = 0 && cmp d1 d2 &&
+      equal_aux (cons_enum r1 e1) (cons_enum r2 e2)
+  in equal_aux (cons_enum m1 End) (cons_enum m2 End)
+
+
+
+    
+module type S =
+  sig
+    type key
+    type +'a t
+    val empty: 'a t
+    val compare_key: key -> key -> int 
+    val is_empty: 'a t -> bool
+    val mem: 'a t -> key -> bool
+    val to_sorted_array : 
+      'a t -> (key * 'a ) array
+    val to_sorted_array_with_f : 
+      'a t -> (key -> 'a -> 'b) -> 'b array  
+    val add: 'a t -> key -> 'a -> 'a t
+    (** [add x y m] 
+        If [x] was already bound in [m], its previous binding disappears. *)
+
+    val adjust: 'a t -> key -> ('a option->  'a) ->  'a t 
+    (** [adjust acc k replace ] if not exist [add (replace None ], otherwise 
+        [add k v (replace (Some old))]
+    *)
+    
+    val singleton: key -> 'a -> 'a t
+
+    val remove: 'a t -> key -> 'a t
+    (** [remove x m] returns a map containing the same bindings as
+       [m], except for [x] which is unbound in the returned map. *)
+
+    val merge:
+         'a t -> 'b t ->
+         (key -> 'a option -> 'b option -> 'c option) ->  'c t
+    (** [merge f m1 m2] computes a map whose keys is a subset of keys of [m1]
+        and of [m2]. The presence of each such binding, and the corresponding
+        value, is determined with the function [f].
+        @since 3.12.0
+     *)
+
+    val disjoint_merge : 'a t -> 'a t -> 'a t
+     (* merge two maps, will raise if they have the same key *)
+    val compare: 'a t -> 'a t -> ('a -> 'a -> int) -> int
+    (** Total ordering between maps.  The first argument is a total ordering
+        used to compare data associated with equal keys in the two maps. *)
+
+    val equal: 'a t -> 'a t -> ('a -> 'a -> bool) ->  bool
+
+    val iter: 'a t -> (key -> 'a -> unit) ->  unit
+    (** [iter f m] applies [f] to all bindings in map [m].
+        The bindings are passed to [f] in increasing order. *)
+
+    val fold: 'a t -> 'b -> (key -> 'a -> 'b -> 'b) -> 'b
+    (** [fold f m a] computes [(f kN dN ... (f k1 d1 a)...)],
+       where [k1 ... kN] are the keys of all bindings in [m]
+       (in increasing order) *)
+
+    val for_all: 'a t -> (key -> 'a -> bool) -> bool
+    (** [for_all p m] checks if all the bindings of the map.
+        order unspecified
+     *)
+
+    val exists: 'a t -> (key -> 'a -> bool) -> bool
+    (** [exists p m] checks if at least one binding of the map
+        satisfy the predicate [p]. 
+        order unspecified
+     *)
+
+    val filter: 'a t -> (key -> 'a -> bool) -> 'a t
+    (** [filter p m] returns the map with all the bindings in [m]
+        that satisfy predicate [p].
+        order unspecified
+     *)
+
+    val partition: 'a t -> (key -> 'a -> bool) ->  'a t * 'a t
+    (** [partition p m] returns a pair of maps [(m1, m2)], where
+        [m1] contains all the bindings of [s] that satisfy the
+        predicate [p], and [m2] is the map with all the bindings of
+        [s] that do not satisfy [p].
+     *)
+
+    val cardinal: 'a t -> int
+    (** Return the number of bindings of a map. *)
+
+    val bindings: 'a t -> (key * 'a) list
+    (** Return the list of all bindings of the given map.
+       The returned list is sorted in increasing order with respect
+       to the ordering *)
+    val keys : 'a t -> key list 
+    (* Increasing order *)
+
+    val min_binding_exn: 'a t -> (key * 'a)
+    (** raise [Not_found] if the map is empty. *)
+
+    val max_binding_exn: 'a t -> (key * 'a)
+    (** Same as {!Map.S.min_binding} *)
+
+    val choose: 'a t -> (key * 'a)
+    (** Return one binding of the given map, or raise [Not_found] if
+       the map is empty. Which binding is chosen is unspecified,
+       but equal bindings will be chosen for equal maps.
+     *)
+
+    val split: 'a t -> key -> 'a t * 'a option * 'a t
+    (** [split x m] returns a triple [(l, data, r)], where
+          [l] is the map with all the bindings of [m] whose key
+        is strictly less than [x];
+          [r] is the map with all the bindings of [m] whose key
+        is strictly greater than [x];
+          [data] is [None] if [m] contains no binding for [x],
+          or [Some v] if [m] binds [v] to [x].
+        @since 3.12.0
+     *)
+
+    val find_exn: 'a t -> key ->  'a
+    (** [find x m] returns the current binding of [x] in [m],
+       or raises [Not_found] if no such binding exists. *)
+    val find_opt:  'a t ->  key ->'a option
+    val find_default: 'a t -> key  ->  'a  -> 'a 
+    val map: 'a t -> ('a -> 'b) -> 'b t
+    (** [map f m] returns a map with same domain as [m], where the
+       associated value [a] of all bindings of [m] has been
+       replaced by the result of the application of [f] to [a].
+       The bindings are passed to [f] in increasing order
+       with respect to the ordering over the type of the keys. *)
+
+    val mapi: 'a t ->  (key -> 'a -> 'b) -> 'b t
+    (** Same as {!Map.S.map}, but the function receives as arguments both the
+       key and the associated value for each binding of the map. *)
+
+    val of_list : (key * 'a) list -> 'a t 
+    val of_array : (key * 'a ) array -> 'a t 
+    val add_list : (key * 'b) list -> 'b t -> 'b t
+
+  end
+
+end
+module Map_string : sig 
+#1 "map_string.mli"
+(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
+ * 
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * In addition to the permissions granted to you by the LGPL, you may combine
+ * or link a "work that uses the Library" with a publicly distributed version
+ * of this file to produce a combined library or application, then distribute
+ * that combined work under the terms of your choosing, with no requirement
+ * to comply with the obligations normally placed on you by section 4 of the
+ * LGPL version 3 (or the corresponding section of a later version of the LGPL
+ * should you choose to use a later version).
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ * 
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
+
+
+include Map_gen.S with type key = string
+
+end = struct
+#1 "map_string.ml"
+
+# 2 "ext/map.cppo.ml"
+(* we don't create [map_poly], since some operations require raise an exception which carries [key] *)
+
+
+  
+# 10 "ext/map.cppo.ml"
+  type key = string 
+  let compare_key = Ext_string.compare
+
+# 22 "ext/map.cppo.ml"
+type 'a t = (key,'a) Map_gen.t
+exception Duplicate_key of key 
+
+let empty = Map_gen.empty 
+let is_empty = Map_gen.is_empty
+let iter = Map_gen.iter
+let fold = Map_gen.fold
+let for_all = Map_gen.for_all 
+let exists = Map_gen.exists 
+let singleton = Map_gen.singleton 
+let cardinal = Map_gen.cardinal
+let bindings = Map_gen.bindings
+let to_sorted_array = Map_gen.to_sorted_array
+let to_sorted_array_with_f = Map_gen.to_sorted_array_with_f
+let keys = Map_gen.keys
+let choose = Map_gen.choose 
+let partition = Map_gen.partition 
+let filter = Map_gen.filter 
+let map = Map_gen.map 
+let mapi = Map_gen.mapi
+let bal = Map_gen.bal 
+let height = Map_gen.height 
+let max_binding_exn = Map_gen.max_binding_exn
+let min_binding_exn = Map_gen.min_binding_exn
+
+
+let rec add (tree : _ Map_gen.t as 'a) x data  : 'a = match tree with 
+  | Empty ->
+    Node(Empty, x, data, Empty, 1)
+  | Node(l, v, d, r, h) ->
+    let c = compare_key x v in
+    if c = 0 then
+      Node(l, x, data, r, h)
+    else if c < 0 then
+      bal (add l x data ) v d r
+    else
+      bal l v d (add r x data )
+
+
+let rec adjust (tree : _ Map_gen.t as 'a) x replace  : 'a = 
+  match tree with 
+  | Empty ->
+    Node(Empty, x, replace None, Empty, 1)
+  | Node(l, v, d, r, h) ->
+    let c = compare_key x v in
+    if c = 0 then
+      Node(l, x, replace  (Some d) , r, h)
+    else if c < 0 then
+      bal (adjust l x  replace ) v d r
+    else
+      bal l v d (adjust r x  replace )
+
+
+let rec find_exn (tree : _ Map_gen.t ) x = match tree with 
+  | Empty ->
+    raise Not_found
+  | Node(l, v, d, r, _) ->
+    let c = compare_key x v in
+    if c = 0 then d
+    else find_exn (if c < 0 then l else r) x
+
+let rec find_opt (tree : _ Map_gen.t ) x = match tree with 
+  | Empty -> None 
+  | Node(l, v, d, r, _) ->
+    let c = compare_key x v in
+    if c = 0 then Some d
+    else find_opt (if c < 0 then l else r) x
+
+let rec find_default (tree : _ Map_gen.t ) x  default     = match tree with 
+  | Empty -> default  
+  | Node(l, v, d, r, _) ->
+    let c = compare_key x v in
+    if c = 0 then  d
+    else find_default (if c < 0 then l else r) x default
+
+let rec mem (tree : _ Map_gen.t )  x= match tree with 
+  | Empty ->
+    false
+  | Node(l, v, _, r, _) ->
+    let c = compare_key x v in
+    c = 0 || mem (if c < 0 then l else r) x 
+
+let rec remove (tree : _ Map_gen.t as 'a) x : 'a = match tree with 
+  | Empty ->
+    Empty
+  | Node(l, v, d, r, _) ->
+    let c = compare_key x v in
+    if c = 0 then
+      Map_gen.merge l r
+    else if c < 0 then
+      bal (remove l x) v d r
+    else
+      bal l v d (remove r x )
+
+
+let rec split (tree : _ Map_gen.t as 'a) x : 'a * _ option * 'a  = match tree with 
+  | Empty ->
+    (Empty, None, Empty)
+  | Node(l, v, d, r, _) ->
+    let c = compare_key x v in
+    if c = 0 then (l, Some d, r)
+    else if c < 0 then
+      let (ll, pres, rl) = split l x in (ll, pres, Map_gen.join rl v d r)
+    else
+      let (lr, pres, rr) = split r x in (Map_gen.join l v d lr, pres, rr)
+
+let rec merge (s1 : _ Map_gen.t) (s2  : _ Map_gen.t) f  : _ Map_gen.t =
+  match (s1, s2) with
+  | (Empty, Empty) -> Empty
+  | (Node (l1, v1, d1, r1, h1), _) when h1 >= height s2 ->
+    let (l2, d2, r2) = split s2 v1 in
+    Map_gen.concat_or_join (merge l1 l2 f) v1 (f v1 (Some d1) d2) (merge r1 r2 f)
+  | (_, Node (l2, v2, d2, r2, _)) ->
+    let (l1, d1, r1) = split s1 v2 in
+    Map_gen.concat_or_join (merge l1 l2 f) v2 (f v2 d1 (Some d2)) (merge r1 r2 f)
+  | _ ->
+    assert false
+
+let rec disjoint_merge  (s1 : _ Map_gen.t) (s2  : _ Map_gen.t) : _ Map_gen.t =
+  match (s1, s2) with
+  | (Empty, Empty) -> Empty
+  | (Node (l1, v1, d1, r1, h1), _) when h1 >= height s2 ->
+    begin match split s2 v1 with 
+    | l2, None, r2 -> 
+      Map_gen.join (disjoint_merge  l1 l2) v1 d1 (disjoint_merge r1 r2)
+    | _, Some _, _ ->
+      raise (Duplicate_key  v1)
+    end        
+  | (_, Node (l2, v2, d2, r2, _)) ->
+    begin match  split s1 v2 with 
+    | (l1, None, r1) -> 
+      Map_gen.join (disjoint_merge  l1 l2) v2 d2 (disjoint_merge  r1 r2)
+    | (_, Some _, _) -> 
+      raise (Duplicate_key v2)
+    end
+  | _ ->
+    assert false
+
+
+
+let compare m1 m2 cmp = Map_gen.compare compare_key cmp m1 m2
+
+let equal m1 m2 cmp = Map_gen.equal compare_key cmp m1 m2 
+
+let add_list (xs : _ list ) init = 
+  Ext_list.fold_left xs init (fun  acc (k,v) -> add acc k v )
+
+let of_list xs = add_list xs empty
+
+let of_array xs = 
+  Ext_array.fold_left xs empty (fun acc (k,v) -> add acc k v ) 
+
+end
+module Bsb_db : sig 
+#1 "bsb_db.mli"
+
+(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
+ * 
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * In addition to the permissions granted to you by the LGPL, you may combine
+ * or link a "work that uses the Library" with a publicly distributed version
+ * of this file to produce a combined library or application, then distribute
+ * that combined work under the terms of your choosing, with no requirement
+ * to comply with the obligations normally placed on you by section 4 of the
+ * LGPL version 3 (or the corresponding section of a later version of the LGPL
+ * should you choose to use a later version).
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ * 
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
+
+(** Store a file called [.bsbuild] that can be communicated 
+    between [bsb.exe] and [bsb_helper.exe]. 
+    [bsb.exe] stores such data which would be retrieved by 
+    [bsb_helper.exe]. It is currently used to combine with 
+    ocamldep to figure out which module->file it depends on
+*) 
+
+type case = bool 
+
+type info = 
+  | Mli (* intemediate state *)
+  | Ml
+  | Ml_mli
+
+
+
+type module_info = 
+  {
+    mutable info : info;
+    dir : string;
+    is_re : bool;
+    case : bool;
+    name_sans_extension : string;
+  }
+
+type map = module_info Map_string.t 
+
+type 'a cat  = {
+  mutable lib : 'a ; 
+  mutable dev : 'a;
+}
+
+type t = map cat  
+
+(** store  the meta data indexed by {!Bsb_dir_index}
+  {[
+    0 --> lib group
+    1 --> dev 1 group
+    .
+    
+  ]}
+*)
+
+
+
+
+
+
+end = struct
+#1 "bsb_db.ml"
+
+(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
+ * 
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * In addition to the permissions granted to you by the LGPL, you may combine
+ * or link a "work that uses the Library" with a publicly distributed version
+ * of this file to produce a combined library or application, then distribute
+ * that combined work under the terms of your choosing, with no requirement
+ * to comply with the obligations normally placed on you by section 4 of the
+ * LGPL version 3 (or the corresponding section of a later version of the LGPL
+ * should you choose to use a later version).
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ * 
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
+
+type case = bool
+(** true means upper case*)
+
+
+type info = 
+  | Mli (* intemediate state *)
+  | Ml
+  | Ml_mli
+  
+type module_info = 
+  {
+    mutable info : info;
+    dir : string ; 
+    is_re : bool;
+    case : bool;
+    name_sans_extension : string  ;
+  }
+
+
+type map = module_info Map_string.t 
+
+type 'a cat  = {
+  mutable lib : 'a;
+  mutable dev : 'a
+}
+
+type t = map cat 
+(** indexed by the group *)
+
+
+
+
+
+
+end
 module Ext_pervasives : sig 
 #1 "ext_pervasives.mli"
 (* Copyright (C) 2015-2016 Bloomberg Finance L.P.
@@ -6603,6 +5501,3350 @@ let parse_nat_of_string (s : string) (cursor : int ref) =
   done ;
   cursor := !cur;
   !acc 
+end
+module Ext_io : sig 
+#1 "ext_io.mli"
+(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
+ * 
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * In addition to the permissions granted to you by the LGPL, you may combine
+ * or link a "work that uses the Library" with a publicly distributed version
+ * of this file to produce a combined library or application, then distribute
+ * that combined work under the terms of your choosing, with no requirement
+ * to comply with the obligations normally placed on you by section 4 of the
+ * LGPL version 3 (or the corresponding section of a later version of the LGPL
+ * should you choose to use a later version).
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ * 
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
+
+val load_file : string -> string
+
+val rev_lines_of_file : string -> string list
+
+val rev_lines_of_chann : in_channel -> string list
+
+val write_file : string -> string -> unit
+
+end = struct
+#1 "ext_io.ml"
+(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
+ * 
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * In addition to the permissions granted to you by the LGPL, you may combine
+ * or link a "work that uses the Library" with a publicly distributed version
+ * of this file to produce a combined library or application, then distribute
+ * that combined work under the terms of your choosing, with no requirement
+ * to comply with the obligations normally placed on you by section 4 of the
+ * LGPL version 3 (or the corresponding section of a later version of the LGPL
+ * should you choose to use a later version).
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ * 
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
+
+
+(** on 32 bit , there are 16M limitation *)
+let load_file f =
+  Ext_pervasives.finally (open_in_bin f) ~clean:close_in begin fun ic ->   
+    let n = in_channel_length ic in
+    let s = Bytes.create n in
+    really_input ic s 0 n;
+    Bytes.unsafe_to_string s
+  end
+
+
+let  rev_lines_of_chann chan = 
+    let rec loop acc chan = 
+      match input_line chan with
+      | line -> loop (line :: acc) chan
+      | exception End_of_file -> close_in chan ; acc in
+    loop [] chan
+
+
+let rev_lines_of_file file = 
+  Ext_pervasives.finally 
+    ~clean:close_in 
+    (open_in_bin file) rev_lines_of_chann
+
+
+let write_file f content = 
+  Ext_pervasives.finally ~clean:close_out 
+    (open_out_bin f)  begin fun oc ->   
+    output_string oc content
+  end
+
+end
+module Ext_string_array : sig 
+#1 "ext_string_array.mli"
+(* Copyright (C) 2020 - Present Authors of BuckleScript
+ * 
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * In addition to the permissions granted to you by the LGPL, you may combine
+ * or link a "work that uses the Library" with a publicly distributed version
+ * of this file to produce a combined library or application, then distribute
+ * that combined work under the terms of your choosing, with no requirement
+ * to comply with the obligations normally placed on you by section 4 of the
+ * LGPL version 3 (or the corresponding section of a later version of the LGPL
+ * should you choose to use a later version).
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ * 
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
+
+val cmp : string -> string -> int 
+
+val find_sorted : 
+  string array -> string -> int option
+
+val find_sorted_assoc : 
+  (string * 'a ) array -> 
+  string -> 
+  'a option
+end = struct
+#1 "ext_string_array.ml"
+(* Copyright (C) 2020 - Present Authors of BuckleScript
+ * 
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * In addition to the permissions granted to you by the LGPL, you may combine
+ * or link a "work that uses the Library" with a publicly distributed version
+ * of this file to produce a combined library or application, then distribute
+ * that combined work under the terms of your choosing, with no requirement
+ * to comply with the obligations normally placed on you by section 4 of the
+ * LGPL version 3 (or the corresponding section of a later version of the LGPL
+ * should you choose to use a later version).
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ * 
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
+
+
+(* Invariant: the same as encoding Map_string.compare_key  *)  
+let cmp  =  Ext_string.compare
+    
+
+let rec binarySearchAux (arr : string array) (lo : int) (hi : int) (key : string)  : _ option = 
+  let mid = (lo + hi)/2 in 
+  let midVal = Array.unsafe_get arr mid in 
+  let c = cmp key midVal in 
+  if c = 0 then Some (mid)
+  else if c < 0 then  (*  a[lo] =< key < a[mid] <= a[hi] *)
+    if hi = mid then  
+      let loVal = (Array.unsafe_get arr lo) in 
+      if  loVal = key then Some lo
+      else None
+    else binarySearchAux arr lo mid key 
+  else  (*  a[lo] =< a[mid] < key <= a[hi] *)
+  if lo = mid then 
+    let hiVal = (Array.unsafe_get arr hi) in 
+    if  hiVal = key then Some hi
+    else None
+  else binarySearchAux arr mid hi key 
+
+let find_sorted sorted key  : int option =  
+  let len = Array.length sorted in 
+  if len = 0 then None
+  else 
+    let lo = Array.unsafe_get sorted 0 in 
+    let c = cmp key lo in 
+    if c < 0 then None
+    else
+      let hi = Array.unsafe_get sorted (len - 1) in 
+      let c2 = cmp key hi in 
+      if c2 > 0 then None
+      else binarySearchAux sorted 0 (len - 1) key
+
+let rec binarySearchAssoc  (arr : (string * _) array) (lo : int) (hi : int) (key : string)  : _ option = 
+  let mid = (lo + hi)/2 in 
+  let midVal = Array.unsafe_get arr mid in 
+  let c = cmp key (fst midVal) in 
+  if c = 0 then Some (snd midVal)
+  else if c < 0 then  (*  a[lo] =< key < a[mid] <= a[hi] *)
+    if hi = mid then  
+      let loVal = (Array.unsafe_get arr lo) in 
+      if  fst loVal = key then Some (snd loVal)
+      else None
+    else binarySearchAssoc arr lo mid key 
+  else  (*  a[lo] =< a[mid] < key <= a[hi] *)
+  if lo = mid then 
+    let hiVal = (Array.unsafe_get arr hi) in 
+    if  fst hiVal = key then Some (snd hiVal)
+    else None
+  else binarySearchAssoc arr mid hi key 
+
+let find_sorted_assoc (type a) (sorted : (string * a) array) (key : string)  : a option =  
+  let len = Array.length sorted in 
+  if len = 0 then None
+  else 
+    let lo = Array.unsafe_get sorted 0 in 
+    let c = cmp key (fst lo) in 
+    if c < 0 then None
+    else
+      let hi = Array.unsafe_get sorted (len - 1) in 
+      let c2 = cmp key (fst hi) in 
+      if c2 > 0 then None
+      else binarySearchAssoc sorted 0 (len - 1) key
+
+end
+module Literals : sig 
+#1 "literals.mli"
+(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
+ * 
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * In addition to the permissions granted to you by the LGPL, you may combine
+ * or link a "work that uses the Library" with a publicly distributed version
+ * of this file to produce a combined library or application, then distribute
+ * that combined work under the terms of your choosing, with no requirement
+ * to comply with the obligations normally placed on you by section 4 of the
+ * LGPL version 3 (or the corresponding section of a later version of the LGPL
+ * should you choose to use a later version).
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ * 
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
+
+
+
+
+
+
+val js_array_ctor : string 
+val js_type_number : string
+val js_type_string : string
+val js_type_object : string
+val js_type_boolean : string
+val js_undefined : string
+val js_prop_length : string
+
+val param : string
+val partial_arg : string
+val prim : string
+
+(**temporary varaible used in {!Js_ast_util} *)
+val tmp : string 
+
+val create : string 
+val runtime : string
+val stdlib : string
+val imul : string
+
+val setter_suffix : string
+val setter_suffix_len : int
+
+
+val debugger : string
+
+val unsafe_downgrade : string
+val fn_run : string
+val method_run : string
+val fn_method : string
+val fn_mk : string
+
+(** callback actually, not exposed to user yet *)
+(* val js_fn_runmethod : string *)
+
+val bs_deriving : string
+val bs_deriving_dot : string
+val bs_type : string
+
+(** nodejs *)
+
+val node_modules : string
+val node_modules_length : int
+val package_json : string
+val bsconfig_json : string
+val build_ninja : string
+
+(* Name of the library file created for each external dependency. *)
+val library_file : string
+
+val suffix_a : string
+val suffix_cmj : string
+val suffix_cmo : string
+val suffix_cma : string
+val suffix_cmi : string
+val suffix_cmx : string
+val suffix_cmxa : string
+val suffix_ml : string
+val suffix_mlast : string 
+val suffix_mlast_simple : string
+val suffix_mliast : string
+val suffix_reast : string
+val suffix_reiast : string
+
+val suffix_mliast_simple : string
+val suffix_mlmap : string
+val suffix_mll : string
+val suffix_re : string
+val suffix_rei : string 
+
+val suffix_d : string
+val suffix_js : string
+val suffix_bs_js : string 
+(* val suffix_re_js : string *)
+val suffix_gen_js : string 
+val suffix_gen_tsx: string
+
+val suffix_tsx : string
+
+val suffix_mli : string 
+val suffix_cmt : string 
+val suffix_cmti : string 
+
+val commonjs : string 
+
+val es6 : string 
+val es6_global : string
+
+val unused_attribute : string 
+val dash_nostdlib : string
+
+val reactjs_jsx_ppx_2_exe : string 
+val reactjs_jsx_ppx_3_exe : string 
+
+val native : string
+val bytecode : string
+val js : string
+
+val node_sep : string 
+val node_parent : string 
+val node_current : string 
+val gentype_import : string
+
+val bsbuild_cache : string
+
+val sourcedirs_meta : string
+
+val ns_sep_char : char
+val ns_sep : string
+
+val exception_id : string
+
+val polyvar_hash : string
+val polyvar_value : string
+
+val cons : string
+val hd : string
+val tl : string
+val lazy_done : string
+val lazy_val : string
+end = struct
+#1 "literals.ml"
+(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
+ * 
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * In addition to the permissions granted to you by the LGPL, you may combine
+ * or link a "work that uses the Library" with a publicly distributed version
+ * of this file to produce a combined library or application, then distribute
+ * that combined work under the terms of your choosing, with no requirement
+ * to comply with the obligations normally placed on you by section 4 of the
+ * LGPL version 3 (or the corresponding section of a later version of the LGPL
+ * should you choose to use a later version).
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ * 
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
+
+
+
+
+
+
+
+let js_array_ctor = "Array"
+let js_type_number = "number"
+let js_type_string = "string"
+let js_type_object = "object" 
+let js_type_boolean = "boolean"
+let js_undefined = "undefined"
+let js_prop_length = "length"
+
+let prim = "prim"
+let param = "param"
+let partial_arg = "partial_arg"
+let tmp = "tmp"
+
+let create = "create" (* {!Caml_exceptions.create}*)
+
+let runtime = "runtime" (* runtime directory *)
+
+let stdlib = "stdlib"
+
+let imul = "imul" (* signed int32 mul *)
+
+let setter_suffix = "#="
+let setter_suffix_len = String.length setter_suffix
+
+let debugger = "debugger"
+let unsafe_downgrade = "unsafe_downgrade"
+let fn_run = "fn_run"
+let method_run = "method_run"
+
+let fn_method = "fn_method"
+let fn_mk = "fn_mk"
+(*let js_fn_runmethod = "js_fn_runmethod"*)
+
+let bs_deriving = "bs.deriving"
+let bs_deriving_dot = "bs.deriving."
+let bs_type = "bs.type"
+
+
+(** nodejs *)
+let node_modules = "node_modules"
+let node_modules_length = String.length "node_modules"
+let package_json = "package.json"
+let bsconfig_json = "bsconfig.json"
+let build_ninja = "build.ninja"
+
+(* Name of the library file created for each external dependency. *)
+let library_file = "lib"
+
+let suffix_a = ".a"
+let suffix_cmj = ".cmj"
+let suffix_cmo = ".cmo"
+let suffix_cma = ".cma"
+let suffix_cmi = ".cmi"
+let suffix_cmx = ".cmx"
+let suffix_cmxa = ".cmxa"
+let suffix_mll = ".mll"
+let suffix_ml = ".ml"
+let suffix_mli = ".mli"
+let suffix_re = ".re"
+let suffix_rei = ".rei"
+let suffix_mlmap = ".mlmap"
+
+let suffix_cmt = ".cmt" 
+let suffix_cmti = ".cmti" 
+let suffix_mlast = ".mlast"
+let suffix_mlast_simple = ".mlast_simple"
+let suffix_mliast = ".mliast"
+let suffix_reast = ".reast"
+let suffix_reiast = ".reiast"
+let suffix_mliast_simple = ".mliast_simple"
+let suffix_d = ".d"
+let suffix_js = ".js"
+let suffix_bs_js = ".bs.js"
+(* let suffix_re_js = ".re.js" *)
+let suffix_gen_js = ".gen.js"
+let suffix_gen_tsx = ".gen.tsx"
+let suffix_tsx = ".tsx"
+
+let commonjs = "commonjs" 
+
+let es6 = "es6"
+let es6_global = "es6-global"
+
+let unused_attribute = "Unused attribute " 
+let dash_nostdlib = "-nostdlib"
+
+let reactjs_jsx_ppx_2_exe = "reactjs_jsx_ppx_2.exe"
+let reactjs_jsx_ppx_3_exe  = "reactjs_jsx_ppx_3.exe"
+
+let native = "native"
+let bytecode = "bytecode"
+let js = "js"
+
+
+
+(** Used when produce node compatible paths *)
+let node_sep = "/"
+let node_parent = ".."
+let node_current = "."
+
+let gentype_import = "genType.import"
+
+let bsbuild_cache = ".bsbuild"    
+
+let sourcedirs_meta = ".sourcedirs.json"
+
+(* Note the build system should check the validity of filenames
+   espeically, it should not contain '-'
+*)
+let ns_sep_char = '-'
+let ns_sep = "-"
+let exception_id = "RE_EXN_ID"
+
+let polyvar_hash = "HASH"
+let polyvar_value = "VAL"
+
+let cons = "::"
+let hd = "hd"
+let tl = "tl"
+
+let lazy_done = "LAZY_DONE"
+let lazy_val = "VAL"
+end
+module Bsb_db_decode : sig 
+#1 "bsb_db_decode.mli"
+(* Copyright (C) 2019 - Present Authors of BuckleScript
+ * 
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * In addition to the permissions granted to you by the LGPL, you may combine
+ * or link a "work that uses the Library" with a publicly distributed version
+ * of this file to produce a combined library or application, then distribute
+ * that combined work under the terms of your choosing, with no requirement
+ * to comply with the obligations normally placed on you by section 4 of the
+ * LGPL version 3 (or the corresponding section of a later version of the LGPL
+ * should you choose to use a later version).
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ * 
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
+
+
+ 
+  
+ type group = private 
+  | Dummy 
+  | Group of {
+      modules : string array ; 
+      dir_length : int;
+      dir_info_offset : int ; 
+      module_info_offset : int;
+    }
+
+type t = { 
+  lib : group ;
+  dev : group ; 
+  content : string (* string is whole content*)
+}
+
+val read_build_cache : 
+  dir:string -> t
+
+
+
+type module_info = {
+  case : bool (* Bsb_db.case*);
+  dir_name : string
+} 
+
+val find:
+  t -> (* contains global info *)
+  string -> (* module name *)
+  bool -> (* more likely to be zero *)
+  module_info option 
+
+
+val decode : string -> t   
+end = struct
+#1 "bsb_db_decode.ml"
+(* Copyright (C) 2019 - Present Authors of BuckleScript
+ * 
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * In addition to the permissions granted to you by the LGPL, you may combine
+ * or link a "work that uses the Library" with a publicly distributed version
+ * of this file to produce a combined library or application, then distribute
+ * that combined work under the terms of your choosing, with no requirement
+ * to comply with the obligations normally placed on you by section 4 of the
+ * LGPL version 3 (or the corresponding section of a later version of the LGPL
+ * should you choose to use a later version).
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ * 
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
+
+ let bsbuild_cache = Literals.bsbuild_cache
+
+
+type group = 
+  | Dummy 
+  | Group of {
+      modules : string array ; 
+      dir_length : int;
+      dir_info_offset : int ; 
+      module_info_offset : int;
+    }
+
+type t = { 
+  lib : group ;
+  dev : group ; 
+  content : string (* string is whole content*)
+}
+
+
+type cursor = int ref 
+
+
+(*TODO: special case when module_count is zero *)
+let rec decode (x : string) : t =   
+  let (offset : cursor)  = ref 0 in 
+  let lib = decode_single x offset in 
+  let dev = decode_single x offset in
+  {lib; dev; content = x}
+
+and decode_single (x : string) (offset : cursor) : group = 
+  let module_number = Ext_pervasives.parse_nat_of_string x offset in 
+  incr offset;
+  if module_number <> 0 then begin 
+    let modules = decode_modules x offset module_number in 
+    let dir_info_offset = !offset in 
+    let module_info_offset = 
+      String.index_from x dir_info_offset '\n'  + 1 in
+    let dir_length = Char.code x.[module_info_offset] - 48 (* Char.code '0'*) in
+    offset := 
+      module_info_offset +
+      1 +
+      dir_length * module_number +
+      1 
+    ;
+    Group { modules ; dir_info_offset; module_info_offset ; dir_length}
+  end else Dummy
+and decode_modules (x : string) (offset : cursor) module_number : string array =   
+  let result = Array.make module_number "" in 
+  let last = ref !offset in 
+  let cur = ref !offset in 
+  let tasks = ref 0 in 
+  while !tasks <> module_number do 
+    if String.unsafe_get x !cur = '\n' then 
+      begin 
+        let offs = !last in 
+        let len = (!cur - !last) in         
+        Array.unsafe_set result !tasks
+        (Ext_string.unsafe_sub x offs len);
+        incr tasks;
+        last := !cur + 1;
+      end;
+    incr cur
+  done ;
+  offset := !cur;
+  result
+  
+
+(* TODO: shall we check the consistency of digest *)
+let read_build_cache ~dir  : t =   
+  let all_content = 
+    Ext_io.load_file (Filename.concat dir bsbuild_cache) in   
+  decode all_content 
+
+
+
+type module_info =  {
+  case : bool ; (* which is Bsb_db.case*)
+  dir_name : string
+} 
+
+
+let find_opt 
+  ({content = whole} as db : t )  
+    lib (key : string) 
+    : module_info option = 
+  match if lib then db.lib else db.dev with  
+  | Dummy -> None
+  | Group ({modules ;} as group) ->
+  let i = Ext_string_array.find_sorted  modules key in 
+  match i with 
+  | None -> None 
+  | Some count ->     
+    let encode_len = group.dir_length in 
+    let index = 
+      Ext_string.get_1_2_3_4 whole 
+      ~off:(group.module_info_offset + 1 + count * encode_len)
+      encode_len
+    in 
+    let case = not (index mod 2 = 0) in 
+    let ith = index lsr 1 in 
+    let dir_name_start = 
+      if ith = 0 then group.dir_info_offset 
+      else 
+        Ext_string.index_count 
+          whole group.dir_info_offset '\t'
+          ith + 1
+    in 
+    let dir_name_finish = 
+      String.index_from
+        whole dir_name_start '\t' 
+    in    
+    Some {case ; dir_name = String.sub whole dir_name_start (dir_name_finish - dir_name_start)}
+  
+let find db dependent_module is_not_lib_dir =         
+  let opt = find_opt db true dependent_module in 
+  match opt with 
+  | Some _ -> opt
+  | None -> 
+    if is_not_lib_dir then 
+      find_opt db false dependent_module 
+    else None       
+end
+module Ext_buffer : sig 
+#1 "ext_buffer.mli"
+(***********************************************************************)
+(*                                                                     *)
+(*                                OCaml                                *)
+(*                                                                     *)
+(*  Pierre Weis and Xavier Leroy, projet Cristal, INRIA Rocquencourt   *)
+(*                                                                     *)
+(*  Copyright 1999 Institut National de Recherche en Informatique et   *)
+(*  en Automatique.  All rights reserved.  This file is distributed    *)
+(*  under the terms of the GNU Library General Public License, with    *)
+(*  the special exception on linking described in file ../LICENSE.     *)
+(*                                                                     *)
+(***********************************************************************)
+
+(** Extensible buffers.
+
+   This module implements buffers that automatically expand
+   as necessary.  It provides accumulative concatenation of strings
+   in quasi-linear time (instead of quadratic time when strings are
+   concatenated pairwise).
+*)
+
+(* BuckleScript customization: customized for efficient digest *)
+
+type t
+(** The abstract type of buffers. *)
+
+val create : int -> t
+(** [create n] returns a fresh buffer, initially empty.
+   The [n] parameter is the initial size of the internal byte sequence
+   that holds the buffer contents. That byte sequence is automatically
+   reallocated when more than [n] characters are stored in the buffer,
+   but shrinks back to [n] characters when [reset] is called.
+   For best performance, [n] should be of the same order of magnitude
+   as the number of characters that are expected to be stored in
+   the buffer (for instance, 80 for a buffer that holds one output
+   line).  Nothing bad will happen if the buffer grows beyond that
+   limit, however. In doubt, take [n = 16] for instance.
+   If [n] is not between 1 and {!Sys.max_string_length}, it will
+   be clipped to that interval. *)
+
+val contents : t -> string
+(** Return a copy of the current contents of the buffer.
+    The buffer itself is unchanged. *)
+
+val length : t -> int
+(** Return the number of characters currently contained in the buffer. *)
+
+val is_empty : t -> bool
+
+val clear : t -> unit
+(** Empty the buffer. *)
+
+
+val add_char : t -> char -> unit
+(** [add_char b c] appends the character [c] at the end of the buffer [b]. *)
+
+val add_string : t -> string -> unit
+(** [add_string b s] appends the string [s] at the end of the buffer [b]. *)
+
+(* val add_bytes : t -> bytes -> unit *)
+(** [add_string b s] appends the string [s] at the end of the buffer [b].
+    @since 4.02 *)
+
+(* val add_substring : t -> string -> int -> int -> unit *)
+(** [add_substring b s ofs len] takes [len] characters from offset
+   [ofs] in string [s] and appends them at the end of the buffer [b]. *)
+
+(* val add_subbytes : t -> bytes -> int -> int -> unit *)
+(** [add_substring b s ofs len] takes [len] characters from offset
+    [ofs] in byte sequence [s] and appends them at the end of the buffer [b].
+    @since 4.02 *)
+
+(* val add_buffer : t -> t -> unit *)
+(** [add_buffer b1 b2] appends the current contents of buffer [b2]
+   at the end of buffer [b1].  [b2] is not modified. *)    
+
+(* val add_channel : t -> in_channel -> int -> unit *)
+(** [add_channel b ic n] reads exactly [n] character from the
+   input channel [ic] and stores them at the end of buffer [b].
+   Raise [End_of_file] if the channel contains fewer than [n]
+   characters. *)
+
+val output_buffer : out_channel -> t -> unit
+(** [output_buffer oc b] writes the current contents of buffer [b]
+   on the output channel [oc]. *)   
+
+val digest : t -> Digest.t   
+
+val not_equal : 
+  t -> 
+  string -> 
+  bool 
+
+val add_int_1 :    
+   t -> int -> unit 
+
+val add_int_2 :    
+   t -> int -> unit 
+
+val add_int_3 :    
+   t -> int -> unit 
+
+val add_int_4 :    
+   t -> int -> unit 
+
+val add_string_char :    
+   t -> 
+   string ->
+   char -> 
+   unit
+   
+val add_ninja_prefix_var : 
+   t -> 
+   string -> 
+   unit 
+   
+   
+val add_char_string :    
+   t -> 
+   char -> 
+   string -> 
+   unit
+end = struct
+#1 "ext_buffer.ml"
+(**************************************************************************)
+(*                                                                        *)
+(*                                 OCaml                                  *)
+(*                                                                        *)
+(*    Pierre Weis and Xavier Leroy, projet Cristal, INRIA Rocquencourt    *)
+(*                                                                        *)
+(*   Copyright 1999 Institut National de Recherche en Informatique et     *)
+(*     en Automatique.                                                    *)
+(*                                                                        *)
+(*   All rights reserved.  This file is distributed under the terms of    *)
+(*   the GNU Lesser General Public License version 2.1, with the          *)
+(*   special exception on linking described in the file LICENSE.          *)
+(*                                                                        *)
+(**************************************************************************)
+
+(* Extensible buffers *)
+
+type t =
+ {mutable buffer : bytes;
+  mutable position : int;
+  mutable length : int;
+  initial_buffer : bytes}
+
+let create n =
+ let n = if n < 1 then 1 else n in
+ 
+ let n = if n > Sys.max_string_length then Sys.max_string_length else n in
+ 
+ let s = Bytes.create n in
+ {buffer = s; position = 0; length = n; initial_buffer = s}
+
+let contents b = Bytes.sub_string b.buffer 0 b.position
+(* let to_bytes b = Bytes.sub b.buffer 0 b.position  *)
+
+(* let sub b ofs len =
+  if ofs < 0 || len < 0 || ofs > b.position - len
+  then invalid_arg "Ext_buffer.sub"
+  else Bytes.sub_string b.buffer ofs len *)
+
+
+(* let blit src srcoff dst dstoff len =
+  if len < 0 || srcoff < 0 || srcoff > src.position - len
+             || dstoff < 0 || dstoff > (Bytes.length dst) - len
+  then invalid_arg "Ext_buffer.blit"
+  else
+    Bytes.unsafe_blit src.buffer srcoff dst dstoff len *)
+
+let length b = b.position
+let is_empty b = b.position = 0
+let clear b = b.position <- 0
+
+(* let reset b =
+  b.position <- 0; b.buffer <- b.initial_buffer;
+  b.length <- Bytes.length b.buffer *)
+
+let resize b more =
+  let len = b.length in
+  let new_len = ref len in
+  while b.position + more > !new_len do new_len := 2 * !new_len done;
+   
+  if !new_len > Sys.max_string_length then begin
+    if b.position + more <= Sys.max_string_length
+    then new_len := Sys.max_string_length
+    else failwith "Ext_buffer.add: cannot grow buffer"
+  end;
+  
+  let new_buffer = Bytes.create !new_len in
+  (* PR#6148: let's keep using [blit] rather than [unsafe_blit] in
+     this tricky function that is slow anyway. *)
+  Bytes.blit b.buffer 0 new_buffer 0 b.position;
+  b.buffer <- new_buffer;
+  b.length <- !new_len ;
+  assert (b.position + more <= b.length)
+
+let add_char b c =
+  let pos = b.position in
+  if pos >= b.length then resize b 1;
+  Bytes.unsafe_set b.buffer pos c;
+  b.position <- pos + 1  
+
+(* let add_substring b s offset len =
+  if offset < 0 || len < 0 || offset > String.length s - len
+  then invalid_arg "Ext_buffer.add_substring/add_subbytes";
+  let new_position = b.position + len in
+  if new_position > b.length then resize b len;
+  Ext_bytes.unsafe_blit_string s offset b.buffer b.position len;
+  b.position <- new_position   *)
+
+
+(* let add_subbytes b s offset len =
+  add_substring b (Bytes.unsafe_to_string s) offset len *)
+
+let add_string b s =
+  let len = String.length s in
+  let new_position = b.position + len in
+  if new_position > b.length then resize b len;
+  Ext_bytes.unsafe_blit_string s 0 b.buffer b.position len;
+  b.position <- new_position  
+
+(* TODO: micro-optimzie *)
+let add_string_char b s c =
+  let s_len = String.length s in
+  let len = s_len + 1 in 
+  let new_position = b.position + len in
+  if new_position > b.length then resize b len;
+  let b_buffer = b.buffer in 
+  Ext_bytes.unsafe_blit_string s 0 b_buffer b.position s_len;
+  Bytes.unsafe_set b_buffer (new_position - 1) c;
+  b.position <- new_position 
+
+let add_char_string b c s  =
+  let s_len = String.length s in
+  let len = s_len + 1 in 
+  let new_position = b.position + len in
+  if new_position > b.length then resize b len;
+  let b_buffer = b.buffer in 
+  let b_position = b.position in 
+  Bytes.unsafe_set b_buffer b_position c ; 
+  Ext_bytes.unsafe_blit_string s 0 b_buffer (b_position + 1) s_len;
+  b.position <- new_position
+
+(* equivalent to add_char " "; add_char "$"; add_string s  *)
+let add_ninja_prefix_var b s =  
+  let s_len = String.length s in
+  let len = s_len + 2 in 
+  let new_position = b.position + len in
+  if new_position > b.length then resize b len;
+  let b_buffer = b.buffer in 
+  let b_position = b.position in 
+  Bytes.unsafe_set b_buffer b_position ' ' ; 
+  Bytes.unsafe_set b_buffer (b_position + 1) '$' ; 
+  Ext_bytes.unsafe_blit_string s 0 b_buffer (b_position + 2) s_len;
+  b.position <- new_position
+
+
+(* let add_bytes b s = add_string b (Bytes.unsafe_to_string s)
+
+let add_buffer b bs =
+  add_subbytes b bs.buffer 0 bs.position *)
+
+(* let add_channel b ic len =
+  if len < 0 
+    || len > Sys.max_string_length 
+    then   (* PR#5004 *)
+    invalid_arg "Ext_buffer.add_channel";
+  if b.position + len > b.length then resize b len;
+  really_input ic b.buffer b.position len;
+  b.position <- b.position + len *)
+
+let output_buffer oc b =
+  output oc b.buffer 0 b.position  
+
+external unsafe_string: bytes -> int -> int -> Digest.t = "caml_md5_string"
+
+let digest b = 
+  unsafe_string 
+  b.buffer 0 b.position    
+
+let rec not_equal_aux (b : bytes) (s : string) i len = 
+    if i >= len then false
+    else 
+      (Bytes.unsafe_get b i 
+      <>
+      String.unsafe_get s i )
+      || not_equal_aux b s (i + 1) len 
+
+(** avoid a large copy *)
+let not_equal  (b : t) (s : string) = 
+  let b_len = b.position in 
+  let s_len = String.length s in 
+  b_len <> s_len 
+  || not_equal_aux b.buffer s 0 s_len
+
+
+(**
+  It could be one byte, two bytes, three bytes and four bytes 
+  TODO: inline for better performance
+*)
+let add_int_1 (b : t ) (x : int ) = 
+  let c = (Char.unsafe_chr (x land 0xff)) in 
+  let pos = b.position in
+  if pos >= b.length then resize b 1;
+  Bytes.unsafe_set b.buffer pos c;
+  b.position <- pos + 1  
+  
+let add_int_2 (b : t ) (x : int ) = 
+  let c1 = (Char.unsafe_chr (x land 0xff)) in 
+  let c2 = (Char.unsafe_chr (x lsr 8 land 0xff)) in   
+  let pos = b.position in
+  if pos + 1 >= b.length then resize b 2;
+  let b_buffer = b.buffer in 
+  Bytes.unsafe_set b_buffer pos c1;
+  Bytes.unsafe_set b_buffer (pos + 1) c2;
+  b.position <- pos + 2
+
+let add_int_3 (b : t ) (x : int ) = 
+  let c1 = (Char.unsafe_chr (x land 0xff)) in 
+  let c2 = (Char.unsafe_chr (x lsr 8 land 0xff)) in   
+  let c3 = (Char.unsafe_chr (x lsr 16 land 0xff)) in
+  let pos = b.position in
+  if pos + 2 >= b.length then resize b 3;
+  let b_buffer = b.buffer in 
+  Bytes.unsafe_set b_buffer pos c1;
+  Bytes.unsafe_set b_buffer (pos + 1) c2;
+  Bytes.unsafe_set b_buffer (pos + 2) c3;
+  b.position <- pos + 3
+
+
+let add_int_4 (b : t ) (x : int ) = 
+  let c1 = (Char.unsafe_chr (x land 0xff)) in 
+  let c2 = (Char.unsafe_chr (x lsr 8 land 0xff)) in   
+  let c3 = (Char.unsafe_chr (x lsr 16 land 0xff)) in
+  let c4 = (Char.unsafe_chr (x lsr 24 land 0xff)) in
+  let pos = b.position in
+  if pos + 3 >= b.length then resize b 4;
+  let b_buffer = b.buffer in 
+  Bytes.unsafe_set b_buffer pos c1;
+  Bytes.unsafe_set b_buffer (pos + 1) c2;
+  Bytes.unsafe_set b_buffer (pos + 2) c3;
+  Bytes.unsafe_set b_buffer (pos + 3) c4;
+  b.position <- pos + 4
+
+
+
+
+end
+module Bs_hash_stubs
+= struct
+#1 "bs_hash_stubs.ml"
+
+
+external hash_string :  string -> int = "caml_bs_hash_string" [@@noalloc];;
+
+external hash_string_int :  string -> int  -> int = "caml_bs_hash_string_and_int" [@@noalloc];;
+
+external hash_string_small_int :  string -> int  -> int = "caml_bs_hash_string_and_small_int" [@@noalloc];;
+
+external hash_stamp_and_name : int -> string -> int = "caml_bs_hash_stamp_and_name" [@@noalloc];;
+
+external hash_small_int : int -> int = "caml_bs_hash_small_int" [@@noalloc];;
+
+external hash_int :  int  -> int = "caml_bs_hash_int" [@@noalloc];;
+
+external string_length_based_compare : string -> string -> int  = "caml_string_length_based_compare" [@@noalloc];;
+
+external    
+    int_unsafe_blit : 
+    int array -> int -> int array -> int -> int -> unit = "caml_int_array_blit" [@@noalloc];;
+
+    
+
+end
+module Ext_util : sig 
+#1 "ext_util.mli"
+(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
+ * 
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * In addition to the permissions granted to you by the LGPL, you may combine
+ * or link a "work that uses the Library" with a publicly distributed version
+ * of this file to produce a combined library or application, then distribute
+ * that combined work under the terms of your choosing, with no requirement
+ * to comply with the obligations normally placed on you by section 4 of the
+ * LGPL version 3 (or the corresponding section of a later version of the LGPL
+ * should you choose to use a later version).
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ * 
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
+
+
+ 
+val power_2_above : int -> int -> int
+
+
+val stats_to_string : Hashtbl.statistics -> string 
+end = struct
+#1 "ext_util.ml"
+(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
+ * 
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * In addition to the permissions granted to you by the LGPL, you may combine
+ * or link a "work that uses the Library" with a publicly distributed version
+ * of this file to produce a combined library or application, then distribute
+ * that combined work under the terms of your choosing, with no requirement
+ * to comply with the obligations normally placed on you by section 4 of the
+ * LGPL version 3 (or the corresponding section of a later version of the LGPL
+ * should you choose to use a later version).
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ * 
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
+
+(**
+   {[
+     (power_2_above 16 63 = 64)
+       (power_2_above 16 76 = 128)
+   ]}
+*)
+let rec power_2_above x n =
+  if x >= n then x
+  else if x * 2 > Sys.max_array_length then x
+  else power_2_above (x * 2) n
+
+
+let stats_to_string ({num_bindings; num_buckets; max_bucket_length; bucket_histogram} : Hashtbl.statistics) = 
+  Printf.sprintf 
+    "bindings: %d,buckets: %d, longest: %d, hist:[%s]" 
+    num_bindings 
+    num_buckets 
+    max_bucket_length
+    (String.concat "," (Array.to_list (Array.map string_of_int bucket_histogram)))
+end
+module Hash_gen
+= struct
+#1 "hash_gen.ml"
+(***********************************************************************)
+(*                                                                     *)
+(*                                OCaml                                *)
+(*                                                                     *)
+(*            Xavier Leroy, projet Cristal, INRIA Rocquencourt         *)
+(*                                                                     *)
+(*  Copyright 1996 Institut National de Recherche en Informatique et   *)
+(*  en Automatique.  All rights reserved.  This file is distributed    *)
+(*  under the terms of the GNU Library General Public License, with    *)
+(*  the special exception on linking described in file ../LICENSE.     *)
+(*                                                                     *)
+(***********************************************************************)
+
+(* Hash tables *)
+
+
+
+
+(* We do dynamic hashing, and resize the table and rehash the elements
+   when buckets become too long. *)
+
+type ('a, 'b) bucket =
+  | Empty
+  | Cons of {
+      mutable key : 'a ; 
+      mutable data : 'b ; 
+      mutable next :  ('a, 'b) bucket
+    }
+
+type ('a, 'b) t =
+  { mutable size: int;                        (* number of entries *)
+    mutable data: ('a, 'b) bucket array;  (* the buckets *)
+    initial_size: int;                        (* initial array size *)
+  }
+
+
+
+let create  initial_size =
+  let s = Ext_util.power_2_above 16 initial_size in
+  { initial_size = s; size = 0; data = Array.make s Empty }
+
+let clear h =
+  h.size <- 0;
+  let len = Array.length h.data in
+  for i = 0 to len - 1 do
+    Array.unsafe_set h.data i  Empty  
+  done
+
+let reset h =
+  h.size <- 0;
+  h.data <- Array.make h.initial_size Empty
+
+
+let length h = h.size
+
+let resize indexfun h =
+  let odata = h.data in
+  let osize = Array.length odata in
+  let nsize = osize * 2 in
+  if nsize < Sys.max_array_length then begin
+    let ndata = Array.make nsize Empty in
+    let ndata_tail = Array.make nsize Empty in 
+    h.data <- ndata;          (* so that indexfun sees the new bucket count *)
+    let rec insert_bucket = function
+        Empty -> ()
+      | Cons {key; next} as cell ->
+        let nidx = indexfun h key in
+        begin match Array.unsafe_get ndata_tail nidx with 
+        | Empty -> 
+          Array.unsafe_set ndata nidx cell
+        | Cons tail ->
+          tail.next <- cell  
+        end;
+        Array.unsafe_set ndata_tail nidx cell;
+        insert_bucket next
+    in
+    for i = 0 to osize - 1 do
+      insert_bucket (Array.unsafe_get odata i)
+    done;
+    for i = 0 to nsize - 1 do 
+      match Array.unsafe_get ndata_tail i with 
+      | Empty -> ()  
+      | Cons tail -> tail.next <- Empty
+    done   
+  end
+
+
+
+let iter h f =
+  let rec do_bucket = function
+    | Empty ->
+      ()
+    | Cons l  ->
+      f l.key l.data; do_bucket l.next in
+  let d = h.data in
+  for i = 0 to Array.length d - 1 do
+    do_bucket (Array.unsafe_get d i)
+  done
+
+let fold h init f =
+  let rec do_bucket b accu =
+    match b with
+      Empty ->
+      accu
+    | Cons l ->
+      do_bucket l.next (f l.key l.data accu) in
+  let d = h.data in
+  let accu = ref init in
+  for i = 0 to Array.length d - 1 do
+    accu := do_bucket (Array.unsafe_get d i) !accu
+  done;
+  !accu
+
+let to_list h f =
+  fold h [] (fun k data acc -> f k data :: acc)  
+
+
+
+
+let rec small_bucket_mem (lst : _ bucket) eq key  =
+  match lst with 
+  | Empty -> false 
+  | Cons lst -> 
+    eq  key lst.key ||
+    match lst.next with
+    | Empty -> false 
+    | Cons lst -> 
+      eq key lst.key  || 
+      match lst.next with 
+      | Empty -> false 
+      | Cons lst -> 
+        eq key lst.key  ||
+        small_bucket_mem lst.next eq key 
+
+
+let rec small_bucket_opt eq key (lst : _ bucket) : _ option =
+  match lst with 
+  | Empty -> None 
+  | Cons lst -> 
+    if eq  key lst.key then Some lst.data else 
+      match lst.next with
+      | Empty -> None 
+      | Cons lst -> 
+        if eq key lst.key then Some lst.data else 
+          match lst.next with 
+          | Empty -> None 
+          | Cons lst -> 
+            if eq key lst.key  then Some lst.data else 
+              small_bucket_opt eq key lst.next
+
+
+let rec small_bucket_key_opt eq key (lst : _ bucket) : _ option =
+  match lst with 
+  | Empty -> None 
+  | Cons {key=k;  next} -> 
+    if eq  key k then Some k else 
+      match next with
+      | Empty -> None 
+      | Cons {key=k; next} -> 
+        if eq key k then Some k else 
+          match next with 
+          | Empty -> None 
+          | Cons {key=k; next} -> 
+            if eq key k  then Some k else 
+              small_bucket_key_opt eq key next
+
+
+let rec small_bucket_default eq key default (lst : _ bucket) =
+  match lst with 
+  | Empty -> default 
+  | Cons lst -> 
+    if eq  key lst.key then  lst.data else 
+      match lst.next with
+      | Empty -> default 
+      | Cons lst -> 
+        if eq key lst.key then  lst.data else 
+          match lst.next with 
+          | Empty -> default 
+          | Cons lst -> 
+            if eq key lst.key  then lst.data else 
+              small_bucket_default eq key default lst.next
+
+let rec remove_bucket 
+    h  (i : int)
+    key 
+    ~(prec : _ bucket) 
+    (buck : _ bucket) 
+    eq_key = 
+  match buck with   
+  | Empty ->
+    ()
+  | Cons {key=k; next }  ->
+    if eq_key k key 
+    then begin
+      h.size <- h.size - 1;
+      match prec with
+      | Empty -> Array.unsafe_set h.data i  next
+      | Cons c -> c.next <- next
+    end
+    else remove_bucket h i key ~prec:buck next eq_key
+
+let rec replace_bucket key data (buck : _ bucket) eq_key = 
+  match buck with   
+  | Empty ->
+    true
+  | Cons slot ->
+    if eq_key slot.key key
+    then (slot.key <- key; slot.data <- data; false)
+    else replace_bucket key data slot.next eq_key
+
+module type S = sig 
+  type key
+  type 'a t
+  val create: int -> 'a t
+  val clear: 'a t -> unit
+  val reset: 'a t -> unit
+
+  val add: 'a t -> key -> 'a -> unit
+  val add_or_update: 
+    'a t -> 
+    key -> 
+    update:('a -> 'a) -> 
+    'a -> unit 
+  val remove: 'a t -> key -> unit
+  val find_exn: 'a t -> key -> 'a
+  val find_all: 'a t -> key -> 'a list
+  val find_opt: 'a t -> key  -> 'a option
+
+  (** return the key found in the hashtbl.
+      Use case: when you find the key existed in hashtbl, 
+      you want to use the one stored in the hashtbl. 
+      (they are semantically equivlanent, but may have other information different) 
+  *)
+  val find_key_opt: 'a t -> key -> key option 
+
+  val find_default: 'a t -> key -> 'a -> 'a 
+
+  val replace: 'a t -> key -> 'a -> unit
+  val mem: 'a t -> key -> bool
+  val iter: 'a t -> (key -> 'a -> unit) -> unit
+  val fold: 
+    'a t -> 'b ->
+    (key -> 'a -> 'b -> 'b) ->  'b
+  val length: 'a t -> int
+  (* val stats: 'a t -> Hashtbl.statistics *)
+  val to_list : 'a t -> (key -> 'a -> 'c) -> 'c list
+  val of_list2: key list -> 'a list -> 'a t
+end
+
+
+
+
+
+end
+module Hash_string : sig 
+#1 "hash_string.mli"
+(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
+ * 
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * In addition to the permissions granted to you by the LGPL, you may combine
+ * or link a "work that uses the Library" with a publicly distributed version
+ * of this file to produce a combined library or application, then distribute
+ * that combined work under the terms of your choosing, with no requirement
+ * to comply with the obligations normally placed on you by section 4 of the
+ * LGPL version 3 (or the corresponding section of a later version of the LGPL
+ * should you choose to use a later version).
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ * 
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
+
+
+include Hash_gen.S with type key = string
+
+
+
+
+end = struct
+#1 "hash_string.ml"
+# 9 "ext/hash.cppo.ml"
+type key = string
+type 'a t = (key, 'a)  Hash_gen.t 
+let key_index (h : _ t ) (key : key) =
+  (Bs_hash_stubs.hash_string  key ) land (Array.length h.data - 1)
+let eq_key = Ext_string.equal 
+
+# 33 "ext/hash.cppo.ml"
+type ('a, 'b) bucket = ('a,'b) Hash_gen.bucket
+let create = Hash_gen.create
+let clear = Hash_gen.clear
+let reset = Hash_gen.reset
+let iter = Hash_gen.iter
+let to_list = Hash_gen.to_list
+let fold = Hash_gen.fold
+let length = Hash_gen.length
+(* let stats = Hash_gen.stats *)
+
+
+
+let add (h : _ t) key data =
+  let i = key_index h key in
+  let h_data = h.data in   
+  Array.unsafe_set h_data i (Cons{key; data; next=Array.unsafe_get h_data i});
+  h.size <- h.size + 1;
+  if h.size > Array.length h_data lsl 1 then Hash_gen.resize key_index h
+
+(* after upgrade to 4.04 we should provide an efficient [replace_or_init] *)
+let add_or_update 
+  (h : 'a t) 
+  (key : key) 
+  ~update:(modf : 'a -> 'a) 
+  (default :  'a) : unit =
+  let rec find_bucket (bucketlist : _ bucket) : bool =
+    match bucketlist with
+    | Cons rhs  ->
+      if eq_key rhs.key key then begin rhs.data <- modf rhs.data; false end
+      else find_bucket rhs.next
+    | Empty -> true in
+  let i = key_index h key in 
+  let h_data = h.data in 
+  if find_bucket (Array.unsafe_get h_data i) then
+    begin 
+      Array.unsafe_set h_data i  (Cons{key; data=default; next = Array.unsafe_get h_data i});
+      h.size <- h.size + 1 ;
+      if h.size > Array.length h_data lsl 1 then Hash_gen.resize key_index h 
+    end
+
+let remove (h : _ t ) key =
+  let i = key_index h key in
+  let h_data = h.data in 
+  Hash_gen.remove_bucket h i key ~prec:Empty (Array.unsafe_get h_data i) eq_key
+
+(* for short bucket list, [find_rec is not called ] *)
+let rec find_rec key (bucketlist : _ bucket) = match bucketlist with  
+  | Empty ->
+    raise Not_found
+  | Cons rhs  ->
+    if eq_key key rhs.key then rhs.data else find_rec key rhs.next
+
+let find_exn (h : _ t) key =
+  match Array.unsafe_get h.data (key_index h key) with
+  | Empty -> raise Not_found
+  | Cons rhs  ->
+    if eq_key key rhs.key then rhs.data else
+      match rhs.next with
+      | Empty -> raise Not_found
+      | Cons rhs  ->
+        if eq_key key rhs.key then rhs.data else
+          match rhs.next with
+          | Empty -> raise Not_found
+          | Cons rhs ->
+            if eq_key key rhs.key  then rhs.data else find_rec key rhs.next
+
+let find_opt (h : _ t) key =
+  Hash_gen.small_bucket_opt eq_key key (Array.unsafe_get h.data (key_index h key))
+
+let find_key_opt (h : _ t) key =
+  Hash_gen.small_bucket_key_opt eq_key key (Array.unsafe_get h.data (key_index h key))
+  
+let find_default (h : _ t) key default = 
+  Hash_gen.small_bucket_default eq_key key default (Array.unsafe_get h.data (key_index h key))
+
+let find_all (h : _ t) key =
+  let rec find_in_bucket (bucketlist : _ bucket) = match bucketlist with 
+    | Empty ->
+      []
+    | Cons rhs  ->
+      if eq_key key rhs.key
+      then rhs.data :: find_in_bucket rhs.next
+      else find_in_bucket rhs.next in
+  find_in_bucket (Array.unsafe_get h.data (key_index h key))
+
+
+let replace h key data =
+  let i = key_index h key in
+  let h_data = h.data in 
+  let l = Array.unsafe_get h_data i in
+  if Hash_gen.replace_bucket key data l eq_key then 
+    begin 
+      Array.unsafe_set h_data i (Cons{key; data; next=l});
+      h.size <- h.size + 1;
+      if h.size > Array.length h_data lsl 1 then Hash_gen.resize key_index h;
+    end 
+
+let mem (h : _ t) key = 
+  Hash_gen.small_bucket_mem 
+    (Array.unsafe_get h.data (key_index h key))
+    eq_key key 
+
+
+let of_list2 ks vs = 
+  let len = List.length ks in 
+  let map = create len in 
+  List.iter2 (fun k v -> add map k v) ks vs ; 
+  map
+
+
+end
+module Bsb_db_encode : sig 
+#1 "bsb_db_encode.mli"
+(* Copyright (C) 2019 - Present Authors of BuckleScript
+ * 
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * In addition to the permissions granted to you by the LGPL, you may combine
+ * or link a "work that uses the Library" with a publicly distributed version
+ * of this file to produce a combined library or application, then distribute
+ * that combined work under the terms of your choosing, with no requirement
+ * to comply with the obligations normally placed on you by section 4 of the
+ * LGPL version 3 (or the corresponding section of a later version of the LGPL
+ * should you choose to use a later version).
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ * 
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
+
+
+val encode : 
+  Bsb_db.t -> 
+  Ext_buffer.t -> 
+  unit 
+
+val write_build_cache : 
+  dir:string -> Bsb_db.t -> string
+
+end = struct
+#1 "bsb_db_encode.ml"
+(* Copyright (C) 2019 - Present Authors of BuckleScript
+ * 
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * In addition to the permissions granted to you by the LGPL, you may combine
+ * or link a "work that uses the Library" with a publicly distributed version
+ * of this file to produce a combined library or application, then distribute
+ * that combined work under the terms of your choosing, with no requirement
+ * to comply with the obligations normally placed on you by section 4 of the
+ * LGPL version 3 (or the corresponding section of a later version of the LGPL
+ * should you choose to use a later version).
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ * 
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
+
+ 
+let bsbuild_cache = Literals.bsbuild_cache
+
+
+let nl buf = 
+  Ext_buffer.add_char buf '\n'
+
+
+
+(* IDEAS: 
+  Pros: 
+    - could be even shortened to a single byte
+  Cons: 
+    - decode would allocate
+    - code too verbose
+    - not readable 
+ *)  
+
+let make_encoding length buf : Ext_buffer.t -> int -> unit =
+  let max_range = length lsl 1 + 1 in 
+  if max_range <= 0xff then begin 
+    Ext_buffer.add_char buf '1';
+    Ext_buffer.add_int_1
+  end
+  else if max_range <= 0xff_ff then begin 
+    Ext_buffer.add_char buf '2';
+    Ext_buffer.add_int_2
+  end
+  else if length <= 0x7f_ff_ff then begin 
+    Ext_buffer.add_char buf '3';
+    Ext_buffer.add_int_3
+  end
+  else if length <= 0x7f_ff_ff_ff then begin
+    Ext_buffer.add_char buf '4';
+    Ext_buffer.add_int_4
+  end else assert false 
+(* Make sure [tmp_buf1] and [tmp_buf2] is cleared ,
+  they are only used to control the order.
+  Strictly speaking, [tmp_buf1] is not needed
+*)
+let encode_single (db : Bsb_db.map) (buf : Ext_buffer.t) =    
+  (* module name section *)  
+  let len = Map_string.cardinal db in 
+  Ext_buffer.add_string_char buf (string_of_int len) '\n';
+  if len <> 0 then begin 
+    let mapping = Hash_string.create 50 in 
+    Map_string.iter db (fun name {dir} ->  
+        Ext_buffer.add_string_char buf name '\n'; 
+        if not (Hash_string.mem mapping dir) then
+          Hash_string.add mapping dir (Hash_string.length mapping)
+      ); 
+    let length = Hash_string.length mapping in   
+    let rev_mapping = Array.make length "" in 
+    Hash_string.iter mapping (fun k i -> Array.unsafe_set rev_mapping i k);
+    (* directory name section *)
+    Ext_array.iter rev_mapping (fun s -> Ext_buffer.add_string_char buf s '\t');
+    nl buf; (* module name info section *)
+    let len_encoding = make_encoding length buf in 
+    Map_string.iter db (fun _ module_info ->       
+        len_encoding buf 
+          (Hash_string.find_exn  mapping module_info.dir lsl 1 + Obj.magic module_info.case ));      
+    nl buf 
+  end
+let encode (dbs : Bsb_db.t) buf =     
+  encode_single dbs.lib buf ;
+  encode_single dbs.dev buf 
+
+
+(*  shall we avoid writing such file (checking the digest)?
+  It is expensive to start scanning the whole code base,
+  we should we avoid it in the first place, if we do start scanning,
+  this operation seems affordable
+ *)
+let write_build_cache ~dir (bs_files : Bsb_db.t)  : string = 
+  let oc = open_out_bin (Filename.concat dir bsbuild_cache) in 
+  let buf = Ext_buffer.create 100_000 in 
+  encode bs_files buf ; 
+  Ext_buffer.output_buffer oc buf;
+  close_out oc; 
+  let digest = Ext_buffer.digest buf in 
+  Digest.to_hex digest 
+
+end
+module Bsb_pkg_types : sig 
+#1 "bsb_pkg_types.mli"
+(* Copyright (C) 2019- Authors of BuckleScript
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * In addition to the permissions granted to you by the LGPL, you may combine
+ * or link a "work that uses the Library" with a publicly distributed version
+ * of this file to produce a combined library or application, then distribute
+ * that combined work under the terms of your choosing, with no requirement
+ * to comply with the obligations normally placed on you by section 4 of the
+ * LGPL version 3 (or the corresponding section of a later version of the LGPL
+ * should you choose to use a later version).
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
+
+
+type t = 
+  | Global of string
+  | Scope of string * scope
+and scope = string  
+
+val to_string : t -> string 
+val print : Format.formatter -> t -> unit 
+val equal : t -> t -> bool 
+
+(* The second element could be empty or dropped 
+*)
+val extract_pkg_name_and_file : string -> t * string 
+val string_as_package : string -> t 
+end = struct
+#1 "bsb_pkg_types.ml"
+
+(* Copyright (C) 2018- Authors of BuckleScript
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * In addition to the permissions granted to you by the LGPL, you may combine
+ * or link a "work that uses the Library" with a publicly distributed version
+ * of this file to produce a combined library or application, then distribute
+ * that combined work under the terms of your choosing, with no requirement
+ * to comply with the obligations normally placed on you by section 4 of the
+ * LGPL version 3 (or the corresponding section of a later version of the LGPL
+ * should you choose to use a later version).
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
+
+let (//) = Filename.concat
+
+type t = 
+  | Global of string
+  | Scope of string * scope
+and scope = string  
+
+let to_string (x : t) = 
+  match x with
+  | Global s -> s
+  | Scope (s,scope) -> scope // s 
+
+let print fmt (x : t) = 
+  match x with   
+  | Global s -> Format.pp_print_string fmt s 
+  | Scope(name,scope) -> 
+    Format.fprintf fmt "%s/%s" scope name
+
+let equal (x : t) y = 
+  match x, y with 
+  | Scope(a0,a1), Scope(b0,b1) 
+    -> a0 = b0 && a1 = b1
+  | Global a0, Global b0 -> a0 = b0
+  | Scope _, Global _ 
+  | Global _, Scope _ -> false
+
+(**
+  input: {[
+    @hello/yy/xx
+    hello/yy
+  ]}
+  FIXME: fix invalid input
+  {[
+    hello//xh//helo
+  ]}
+*)
+let extract_pkg_name_and_file (s : string) =   
+  let len = String.length s in 
+  assert (len  > 0 ); 
+  let v = String.unsafe_get s 0 in 
+  if v = '@' then 
+    let scope_id = 
+      Ext_string.no_slash_idx s  in 
+    assert (scope_id > 0);
+    let pkg_id =   
+      Ext_string.no_slash_idx_from
+        s (scope_id + 1)   in 
+     let scope =     
+      String.sub s 0 scope_id in 
+     
+     if pkg_id < 0 then     
+      (Scope(String.sub s (scope_id + 1) (len - scope_id - 1), scope),"")
+     else 
+      (Scope(
+        String.sub s (scope_id + 1) (pkg_id - scope_id - 1), scope), 
+       String.sub s (pkg_id + 1) (len - pkg_id - 1))
+  else     
+      let pkg_id = Ext_string.no_slash_idx s in 
+      if pkg_id < 0 then 
+      Global s , ""
+      else 
+      Global (String.sub s 0 pkg_id), 
+              (String.sub s (pkg_id + 1) (len - pkg_id - 1))
+
+
+let string_as_package (s : string) : t = 
+  let len = String.length s in 
+  assert (len > 0); 
+  let v = String.unsafe_get s 0 in 
+  if v = '@' then 
+    let scope_id = 
+        Ext_string.no_slash_idx s in 
+    assert (scope_id > 0);
+    Scope(
+      String.sub s (scope_id + 1) (len - scope_id - 1),
+      String.sub s 0 scope_id
+      )    
+  else Global s       
+end
+module Ounit_bsb_pkg_tests
+= struct
+#1 "ounit_bsb_pkg_tests.ml"
+
+
+let ((>::),
+     (>:::)) = OUnit.((>::),(>:::))
+
+let printer_string = fun x -> x 
+let (=~) = OUnit.assert_equal  ~printer:printer_string  
+
+
+let scope_test s (a,b,c)= 
+  match Bsb_pkg_types.extract_pkg_name_and_file s with 
+  | Scope(a0,b0),c0 -> 
+    a =~ a0 ; b =~ b0 ; c =~ c0
+  | Global _,_ -> OUnit.assert_failure __LOC__
+
+let global_test s (a,b) = 
+  match Bsb_pkg_types.extract_pkg_name_and_file s with 
+  | Scope _, _ -> 
+    OUnit.assert_failure __LOC__
+  | Global a0, b0-> 
+    a=~a0; b=~b0
+
+let s_test0 s (a,b)=     
+  match Bsb_pkg_types.string_as_package s with 
+  | Scope(name,scope) -> 
+      a =~ name ; b =~scope 
+  | _ -> OUnit.assert_failure __LOC__     
+
+let s_test1 s a =     
+  match Bsb_pkg_types.string_as_package s with 
+  | Global x  -> 
+      a =~ x
+  | _ -> OUnit.assert_failure __LOC__       
+
+let group0 = Map_string.of_list [
+  "Liba", 
+  {Bsb_db.info = Ml_mli; dir= "a";is_re=false;case = false;
+  name_sans_extension = "liba"}
+]
+let group1 =  Map_string.of_list [
+  "Ciba", 
+  {Bsb_db.info = Ml_mli; dir= "b";is_re=false;case = false;
+  name_sans_extension = "liba"}
+] 
+
+let parse_db db : Bsb_db_decode.t =   
+  let buf = Ext_buffer.create 10_000 in   
+  Bsb_db_encode.encode db buf;
+  let s = Ext_buffer.contents buf in
+  Bsb_db_decode.decode s
+
+let suites = 
+  __FILE__ >::: [
+    __LOC__ >:: begin fun _ -> 
+      scope_test "@hello/hi"
+        ("hi", "@hello","");
+
+      scope_test "@hello/hi/x"
+        ("hi", "@hello","x");
+
+      
+      scope_test "@hello/hi/x/y"
+        ("hi", "@hello","x/y");  
+  end ;
+  __LOC__ >:: begin fun _ -> 
+    global_test "hello"
+      ("hello","");
+    global_test "hello/x"
+      ("hello","x");  
+    global_test "hello/x/y"
+      ("hello","x/y")    
+  end ;
+  __LOC__ >:: begin fun _ -> 
+    s_test0 "@x/y" ("y","@x");
+    s_test0 "@x/y/z" ("y/z","@x");
+    s_test1 "xx" "xx";
+    s_test1 "xx/yy/zz" "xx/yy/zz"
+  end;
+
+  __LOC__ >:: begin fun _ ->
+    match parse_db {lib= group0; dev = group1}with 
+    | {lib = Group {modules = [|"Liba"|]};
+       dev = Group {modules = [|"Ciba"|]}}
+        -> OUnit.assert_bool __LOC__ true
+    | _ ->
+      OUnit.assert_failure __LOC__    
+  end  ;
+  __LOC__ >:: begin fun _ -> 
+    match parse_db {lib = group0;dev = Map_string.empty } with
+    | {lib = Group {modules = [|"Liba"|]};
+      dev = Dummy}
+      -> OUnit.assert_bool __LOC__ true
+    | _ ->
+      OUnit.assert_failure __LOC__    
+  end  ;
+  __LOC__ >:: begin fun _ -> 
+    match parse_db {lib = Map_string.empty ; dev = group1} with
+    | {lib = Dummy;
+       dev = Group {modules = [|"Ciba"|]}
+       }
+      -> OUnit.assert_bool __LOC__ true
+    | _ ->
+      OUnit.assert_failure __LOC__    
+  end
+  (* __LOC__ >:: begin fun _ -> 
+  OUnit.assert_equal parse_data_one  data_one
+  end ;
+  __LOC__ >:: begin fun _ -> 
+  
+  OUnit.assert_equal parse_data_two data_two
+  end  *)
+  ]
+
+
+
+
+end
+module Bsb_regex : sig 
+#1 "bsb_regex.mli"
+(* Copyright (C) 2017 Authors of BuckleScript
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * In addition to the permissions granted to you by the LGPL, you may combine
+ * or link a "work that uses the Library" with a publicly distributed version
+ * of this file to produce a combined library or application, then distribute
+ * that combined work under the terms of your choosing, with no requirement
+ * to comply with the obligations normally placed on you by section 4 of the
+ * LGPL version 3 (or the corresponding section of a later version of the LGPL
+ * should you choose to use a later version).
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
+
+
+(** Used in `bsb -init` command *)
+val global_substitute:
+  string -> 
+  reg:string ->
+  (string -> string list -> string) -> 
+  string
+end = struct
+#1 "bsb_regex.ml"
+(* Copyright (C) 2017 Authors of BuckleScript
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * In addition to the permissions granted to you by the LGPL, you may combine
+ * or link a "work that uses the Library" with a publicly distributed version
+ * of this file to produce a combined library or application, then distribute
+ * that combined work under the terms of your choosing, with no requirement
+ * to comply with the obligations normally placed on you by section 4 of the
+ * LGPL version 3 (or the corresponding section of a later version of the LGPL
+ * should you choose to use a later version).
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
+
+let string_after s n = String.sub s n (String.length s - n)
+
+
+
+(* There seems to be a bug in {!Str.global_substitute} 
+{[
+Str.global_substitute (Str.regexp "\\${bsb:\\([-a-zA-Z0-9]+\\)}") (fun x -> (x^":found")) {|   ${bsb:hello-world}  ${bsb:x} ${x}|}  ;;
+- : bytes =
+"      ${bsb:hello-world}  ${bsb:x} ${x}:found     ${bsb:hello-world}  ${bsb:x} ${x}:found ${x}"
+]}
+*)
+let global_substitute text ~reg:expr repl_fun =
+  let text_len = String.length text in 
+  let expr = Str.regexp expr in  
+  let rec replace accu start last_was_empty =
+    let startpos = if last_was_empty then start + 1 else start in
+    if startpos > text_len then
+      string_after text start :: accu
+    else
+      match Str.search_forward expr text startpos with
+      | exception Not_found -> 
+        string_after text start :: accu
+      |  pos ->
+        let end_pos = Str.match_end() in
+        let matched = (Str.matched_string text) in 
+        let  groups = 
+            let rec aux n  acc = 
+                match Str.matched_group n text with 
+                | exception (Not_found | Invalid_argument _ ) 
+                    -> acc 
+                | v -> aux (succ n) (v::acc) in 
+             aux 1 []  in 
+        let repl_text = repl_fun matched groups  in
+        replace (repl_text :: String.sub text start (pos-start) :: accu)
+          end_pos (end_pos = pos)
+  in
+  String.concat "" (List.rev (replace [] 0 false))
+
+end
+module Ounit_bsb_regex_tests
+= struct
+#1 "ounit_bsb_regex_tests.ml"
+
+
+let ((>::),
+     (>:::)) = OUnit.((>::),(>:::))
+
+let (=~) = OUnit.assert_equal
+
+
+let test_eq x y  = 
+    Bsb_regex.global_substitute ~reg:"\\${bsb:\\([-a-zA-Z0-9]+\\)}" x
+        (fun _ groups -> 
+            match groups with 
+            | x::_ -> x 
+            | _ -> assert false 
+        )  =~ y 
+
+
+let suites = 
+    __FILE__ 
+    >:::
+    [
+        __LOC__ >:: begin fun _ -> 
+        test_eq 
+        {| hi hi hi ${bsb:name}
+        ${bsb:x}
+        ${bsb:u}
+        |}        
+        {| hi hi hi name
+        x
+        u
+        |}
+    end;
+    __LOC__ >:: begin  fun _ ->
+    test_eq  "xx" "xx";
+    test_eq "${bsb:x}" "x";
+    test_eq "a${bsb:x}" "ax";
+    
+    end;
+
+    __LOC__ >:: begin fun _ ->
+        test_eq "${bsb:x}x" "xx"
+    end;
+
+    __LOC__ >:: begin fun _ -> 
+        test_eq {|
+{
+  "name": "${bsb:name}",
+  "version": "${bsb:proj-version}",
+  "sources": [
+    "src"
+  ],
+  "reason" : { "react-jsx" : true},
+  "bs-dependencies" : [
+      // add your bs-dependencies here 
+  ]
+}
+|} {|
+{
+  "name": "name",
+  "version": "proj-version",
+  "sources": [
+    "src"
+  ],
+  "reason" : { "react-jsx" : true},
+  "bs-dependencies" : [
+      // add your bs-dependencies here 
+  ]
+}
+|}
+    end
+
+    ;
+    __LOC__ >:: begin fun _ -> 
+    test_eq {|
+{
+  "name": "${bsb:name}",
+  "version": "${bsb:proj-version}",
+  "scripts": {
+    "clean": "bsb -clean",
+    "clean:all": "bsb -clean-world",
+    "build": "bsb",
+    "build:all": "bsb -make-world",
+    "watch": "bsb -w",
+  },
+  "keywords": [
+    "Bucklescript"
+  ],
+  "license": "MIT",
+  "devDependencies": {
+    "bs-platform": "${bsb:bs-version}"
+  }
+}
+|} {|
+{
+  "name": "name",
+  "version": "proj-version",
+  "scripts": {
+    "clean": "bsb -clean",
+    "clean:all": "bsb -clean-world",
+    "build": "bsb",
+    "build:all": "bsb -make-world",
+    "watch": "bsb -w",
+  },
+  "keywords": [
+    "Bucklescript"
+  ],
+  "license": "MIT",
+  "devDependencies": {
+    "bs-platform": "bs-version"
+  }
+}
+|}
+    end;
+    __LOC__ >:: begin fun _ -> 
+    test_eq {|
+{
+    "version": "0.1.0",
+    "command": "${bsb:bsb}",
+    "options": {
+        "cwd": "${workspaceRoot}"
+    },
+    "isShellCommand": true,
+    "args": [
+        "-w"
+    ],
+    "showOutput": "always",
+    "isWatching": true,
+    "problemMatcher": {
+        "fileLocation": "absolute",
+        "owner": "ocaml",
+        "watching": {
+            "activeOnStart": true,
+            "beginsPattern": ">>>> Start compiling",
+            "endsPattern": ">>>> Finish compiling"
+        },
+        "pattern": [
+            {
+                "regexp": "^File \"(.*)\", line (\\d+)(?:, characters (\\d+)-(\\d+))?:$",
+                "file": 1,
+                "line": 2,
+                "column": 3,
+                "endColumn": 4
+            },
+            {
+                "regexp": "^(?:(?:Parse\\s+)?(Warning|[Ee]rror)(?:\\s+\\d+)?:)?\\s+(.*)$",
+                "severity": 1,
+                "message": 2,
+                "loop": true
+            }
+        ]
+    }
+}
+|} {|
+{
+    "version": "0.1.0",
+    "command": "bsb",
+    "options": {
+        "cwd": "${workspaceRoot}"
+    },
+    "isShellCommand": true,
+    "args": [
+        "-w"
+    ],
+    "showOutput": "always",
+    "isWatching": true,
+    "problemMatcher": {
+        "fileLocation": "absolute",
+        "owner": "ocaml",
+        "watching": {
+            "activeOnStart": true,
+            "beginsPattern": ">>>> Start compiling",
+            "endsPattern": ">>>> Finish compiling"
+        },
+        "pattern": [
+            {
+                "regexp": "^File \"(.*)\", line (\\d+)(?:, characters (\\d+)-(\\d+))?:$",
+                "file": 1,
+                "line": 2,
+                "column": 3,
+                "endColumn": 4
+            },
+            {
+                "regexp": "^(?:(?:Parse\\s+)?(Warning|[Ee]rror)(?:\\s+\\d+)?:)?\\s+(.*)$",
+                "severity": 1,
+                "message": 2,
+                "loop": true
+            }
+        ]
+    }
+}
+|}
+    end
+    ]
+end
+module Ounit_cmd_util : sig 
+#1 "ounit_cmd_util.mli"
+type output = {
+  stderr : string ; 
+  stdout : string ;
+  exit_code : int 
+}
+
+
+val perform : string -> string array -> output 
+
+
+val perform_bsc : string array -> output 
+
+
+ val bsc_check_eval : string -> output  
+
+val debug_output : output -> unit 
+end = struct
+#1 "ounit_cmd_util.ml"
+let (//) = Filename.concat
+
+(** may nonterminate when [cwd] is '.' *)
+let rec unsafe_root_dir_aux cwd  = 
+  if Sys.file_exists (cwd//Literals.bsconfig_json) then cwd 
+  else unsafe_root_dir_aux (Filename.dirname cwd)     
+
+let project_root = unsafe_root_dir_aux (Sys.getcwd ())
+let jscomp = project_root // "jscomp"
+
+
+let bsc_exe = project_root // "bsc"
+let runtime_dir = jscomp // "runtime"
+let others_dir = jscomp // "others"
+
+
+let stdlib_dir = jscomp // "stdlib-406"
+
+(* let rec safe_dup fd =
+  let new_fd = Unix.dup fd in
+  if (Obj.magic new_fd : int) >= 3 then
+    new_fd (* [dup] can not be 0, 1, 2*)
+  else begin
+    let res = safe_dup fd in
+    Unix.close new_fd;
+    res
+  end *)
+
+let safe_close fd =
+  try Unix.close fd with Unix.Unix_error(_,_,_) -> ()
+
+
+type output = {
+  stderr : string ; 
+  stdout : string ;
+  exit_code : int 
+}
+
+let perform command args = 
+  let new_fd_in, new_fd_out = Unix.pipe () in 
+  let err_fd_in, err_fd_out = Unix.pipe () in 
+  match Unix.fork () with 
+  | 0 -> 
+    begin try 
+        safe_close new_fd_in;  
+        safe_close err_fd_in;
+        Unix.dup2 err_fd_out Unix.stderr ; 
+        Unix.dup2 new_fd_out Unix.stdout; 
+        Unix.execv command args 
+      with _ -> 
+        exit 127
+    end
+  | pid ->
+    (* when all the descriptors on a pipe's input are closed and the pipe is 
+        empty, a call to [read] on its output returns zero: end of file.
+       when all the descriptiors on a pipe's output are closed, a call to 
+       [write] on its input kills the writing process (EPIPE).
+    *)
+    safe_close new_fd_out ; 
+    safe_close err_fd_out ; 
+    let in_chan = Unix.in_channel_of_descr new_fd_in in 
+    let err_in_chan = Unix.in_channel_of_descr err_fd_in in 
+    let buf = Buffer.create 1024 in 
+    let err_buf = Buffer.create 1024 in 
+    (try 
+       while true do 
+         Buffer.add_string buf (input_line in_chan );             
+         Buffer.add_char buf '\n'
+       done;
+     with
+       End_of_file -> ()) ; 
+    (try 
+       while true do 
+         Buffer.add_string err_buf (input_line err_in_chan );
+         Buffer.add_char err_buf '\n'
+       done;
+     with
+       End_of_file -> ()) ; 
+    let exit_code = match snd @@ Unix.waitpid [] pid with 
+      | Unix.WEXITED exit_code -> exit_code 
+      | Unix.WSIGNALED _signal_number 
+      | Unix.WSTOPPED _signal_number  -> 127 in 
+    {
+      stdout = Buffer.contents buf ; 
+      stderr = Buffer.contents err_buf;
+      exit_code 
+    }
+
+
+let perform_bsc args = 
+  perform bsc_exe 
+    (Array.append 
+       [|bsc_exe ; 
+         "-bs-package-name" ; "bs-platform"; 
+         "-bs-no-version-header"; 
+         "-bs-cross-module-opt";
+         "-w";
+         "-40";
+         "-I" ;
+         runtime_dir ; 
+         "-I"; 
+         others_dir ; 
+         "-I" ; 
+         stdlib_dir
+       |] args)
+
+let bsc_check_eval str = 
+  perform_bsc [|"-bs-eval"; str|]        
+
+  let debug_output o = 
+  Printf.printf "\nexit_code:%d\nstdout:%s\nstderr:%s\n"
+    o.exit_code o.stdout o.stderr
+
+end
+module Ounit_cmd_tests
+= struct
+#1 "ounit_cmd_tests.ml"
+let (//) = Filename.concat
+
+
+
+
+let ((>::),
+     (>:::)) = OUnit.((>::),(>:::))
+
+let (=~) = OUnit.assert_equal
+
+
+
+
+
+(* let output_of_exec_command command args =
+    let readme, writeme = Unix.pipe () in
+    let pid = Unix.create_process command args Unix.stdin writeme Unix.stderr in
+    let in_chan = Unix.in_channel_of_descr readme *)
+
+
+
+let perform_bsc = Ounit_cmd_util.perform_bsc
+let bsc_check_eval = Ounit_cmd_util.bsc_check_eval
+
+
+let suites =
+  __FILE__
+  >::: [
+    __LOC__ >:: begin fun _ ->
+      let v_output = perform_bsc  [| "-v" |] in
+      OUnit.assert_bool __LOC__ ((perform_bsc [| "-h" |]).exit_code  <> 0  );
+      OUnit.assert_bool __LOC__ (v_output.exit_code = 0);
+      (* Printf.printf "\n*>%s" v_output.stdout; *)
+      (* Printf.printf "\n*>%s" v_output.stderr ; *)
+    end;
+    __LOC__ >:: begin fun _ ->
+      let v_output =
+        perform_bsc  [| "-bs-eval"; {|let str = "'a'" |}|] in
+      OUnit.assert_bool __LOC__ (v_output.exit_code = 0)
+    end;
+    __LOC__ >:: begin fun _ -> 
+    let v_output = perform_bsc [|"-bs-eval"; {|type 'a arra = 'a array
+    external
+      f : 
+      int -> int -> int arra -> unit
+      = ""
+      [@@bs.send.pipe:int]
+      [@@bs.splice]|}|] in  
+      OUnit.assert_bool __LOC__ (Ext_string.contain_substring v_output.stderr "bs.splice")
+    end;
+        __LOC__ >:: begin fun _ -> 
+    let v_output = perform_bsc [|"-bs-eval"; {|external
+  f2 : 
+  int -> int -> ?y:int array -> unit  
+  = ""
+  [@@bs.send.pipe:int]
+  [@@bs.splice]  |}|] in  
+      OUnit.assert_bool __LOC__ (Ext_string.contain_substring v_output.stderr "bs.splice")
+    end;
+
+    __LOC__ >:: begin fun _ ->
+      let should_be_warning =
+        bsc_check_eval  {|let bla4 foo x y= foo##(method1 x y [@bs]) |} in
+      (* debug_output should_be_warning; *)
+      OUnit.assert_bool __LOC__ (Ext_string.contain_substring
+                                   should_be_warning.stderr "Unused")
+    end;
+     __LOC__ >:: begin fun _ ->
+      let should_be_warning =
+        bsc_check_eval  {| external mk : int -> ([`a|`b [@bs.string]]) = "mk" [@@bs.val] |} in
+        OUnit.assert_bool __LOC__
+        (Ext_string.contain_substring
+                                   should_be_warning.stderr "Unused")
+     end;
+    __LOC__ >:: begin fun _ ->
+      let should_err = bsc_check_eval {|
+external ff :
+    resp -> (_ [@bs.as "x"]) -> int -> unit =
+    "x" [@@bs.set]
+      |} in
+      OUnit.assert_bool __LOC__
+        (Ext_string.contain_substring should_err.stderr
+           "Ill defined"
+        )
+    end;
+
+    __LOC__ >:: begin fun _ ->
+      (** used in return value
+          This should fail, we did not
+          support uncurry return value yet
+      *)
+      let should_err = bsc_check_eval {|
+    external v3 :
+    int -> int -> (int -> int -> int [@bs.uncurry])
+    = "v3"[@@bs.val]
+
+    |} in
+      (* Ounit_cmd_util.debug_output should_err;*)
+      OUnit.assert_bool __LOC__
+        (Ext_string.contain_substring
+           should_err.stderr "bs.uncurry")
+    end ;
+
+    __LOC__ >:: begin fun _ ->
+      let should_err = bsc_check_eval {|
+    external v4 :
+    (int -> int -> int [@bs.uncurry]) = ""
+    [@@bs.val]
+
+    |} in
+      (* Ounit_cmd_util.debug_output should_err ; *)
+      OUnit.assert_bool __LOC__
+        (Ext_string.contain_substring
+           should_err.stderr "bs.uncurry")
+    end ;
+
+    __LOC__ >:: begin fun _ ->
+      let should_err = bsc_check_eval {|
+      {js| \uFFF|js}
+      |} in
+      OUnit.assert_bool __LOC__ (not @@ Ext_string.is_empty should_err.stderr)
+    end;
+
+    __LOC__ >:: begin fun _ ->
+      let should_err = bsc_check_eval {|
+      external mk : int -> ([`a|`b] [@bs.string]) = "" [@@bs.val]
+      |} in
+      OUnit.assert_bool __LOC__ (not @@ Ext_string.is_empty should_err.stderr)
+    end;
+
+    __LOC__ >:: begin fun _ ->
+      let should_err = bsc_check_eval {|
+      external mk : int -> ([`a|`b] ) = "mk" [@@bs.val]
+      |} in
+      OUnit.assert_bool __LOC__ ( Ext_string.is_empty should_err.stderr)
+      (* give a warning or ?
+         ( [`a | `b ] [@bs.string] )
+         (* auto-convert to ocaml poly-variant *)
+      *)
+    end;
+
+    __LOC__ >:: begin fun _ ->
+      let should_err = bsc_check_eval {|
+      type t
+      external mk : int -> (_ [@bs.as {json| { x : 3 } |json}]) ->  t = "mk" [@@bs.val]
+      |} in
+      OUnit.assert_bool __LOC__ (Ext_string.contain_substring should_err.stderr "Invalid json literal")
+    end
+    ;
+    __LOC__ >:: begin fun _ ->
+      let should_err = bsc_check_eval {|
+      type t
+      external mk : int -> (_ [@bs.as {json| { "x" : 3 } |json}]) ->  t = "mk" [@@bs.val]
+      |} in
+      OUnit.assert_bool __LOC__ (Ext_string.is_empty should_err.stderr)
+    end
+    ;
+    (* #1510 *)
+    __LOC__ >:: begin fun _ ->
+      let should_err = bsc_check_eval {|
+       let should_fail = fun [@bs.this] (Some x) y u -> y + u
+      |} in
+      OUnit.assert_bool __LOC__
+        (Ext_string.contain_substring  should_err.stderr "simple")
+    end;
+
+    __LOC__ >:: begin fun _ ->
+      let should_err = bsc_check_eval {|
+       let should_fail = fun [@bs.this] (Some x as v) y u -> y + u
+      |} in
+      (* Ounit_cmd_util.debug_output should_err; *)
+      OUnit.assert_bool __LOC__
+        (Ext_string.contain_substring  should_err.stderr "simple")
+    end;
+
+    (* __LOC__ >:: begin fun _ ->
+      let should_err = bsc_check_eval {|
+     external f : string -> unit -> unit = "x.y" [@@bs.send]
+     |} in
+      OUnit.assert_bool __LOC__
+        (Ext_string.contain_substring should_err.stderr "Not a valid method name")
+    end; *)
+
+
+    __LOC__ >:: begin fun _ -> 
+      let should_err = bsc_check_eval {|
+      (* let rec must be rejected *)
+type t10 = A of t10 [@@ocaml.unboxed];;
+let rec x = A x;;
+      |} in 
+      OUnit.assert_bool __LOC__
+      (Ext_string.contain_substring should_err.stderr "This kind of expression is not allowed")
+    end;
+
+    __LOC__ >:: begin fun _ -> 
+      let should_err = bsc_check_eval {|
+      type t = {x: int64} [@@unboxed];;
+let rec x = {x = y} and y = 3L;;
+      |} in 
+      OUnit.assert_bool __LOC__
+      (Ext_string.contain_substring should_err.stderr "This kind of expression is not allowed")
+    end;
+    __LOC__ >:: begin fun _ -> 
+      let should_err = bsc_check_eval {|
+      type r = A of r [@@unboxed];;
+let rec y = A y;;
+      |} in 
+      OUnit.assert_bool __LOC__
+      (Ext_string.contain_substring should_err.stderr "This kind of expression is not allowed")
+    end;
+
+    __LOC__ >:: begin fun _ ->
+      let should_err = bsc_check_eval {|
+          external f : int = "%identity"
+|} in
+      OUnit.assert_bool __LOC__
+        (not (Ext_string.is_empty should_err.stderr))
+    end;
+
+    __LOC__ >:: begin fun _ ->
+      let should_err = bsc_check_eval {|
+          external f : int -> int = "%identity"
+|} in
+      OUnit.assert_bool __LOC__
+        (Ext_string.is_empty should_err.stderr)
+    end;
+    __LOC__ >:: begin fun _ ->
+      let should_err = bsc_check_eval {|
+          external f : int -> int -> int = "%identity"
+|} in
+      OUnit.assert_bool __LOC__
+        (not (Ext_string.is_empty should_err.stderr))
+    end;
+    __LOC__ >:: begin fun _ ->
+      let should_err = bsc_check_eval {|
+          external f : (int -> int) -> int = "%identity"
+|} in
+      OUnit.assert_bool __LOC__
+        ( (Ext_string.is_empty should_err.stderr))
+
+    end;
+
+    __LOC__ >:: begin fun _ ->
+      let should_err = bsc_check_eval {|
+          external f : int -> (int-> int) = "%identity"
+|} in
+      OUnit.assert_bool __LOC__
+        (not (Ext_string.is_empty should_err.stderr))
+
+    end;
+    __LOC__ >:: begin fun _ ->
+    let should_err = bsc_check_eval {|
+    external foo_bar :
+    (_ [@bs.as "foo"]) ->
+    string ->
+    string = "bar"
+  [@@bs.send]
+    |} in
+    OUnit.assert_bool __LOC__
+    (Ext_string.contain_substring should_err.stderr "Ill defined attribute")
+  end;
+    __LOC__ >:: begin fun _ ->
+    let should_err = bsc_check_eval {|
+      let bla4 foo x y = foo##(method1 x y [@bs])
+    |} in
+    (* Ounit_cmd_util.debug_output should_err ;  *)
+    OUnit.assert_bool __LOC__
+    (Ext_string.contain_substring should_err.stderr
+    "Unused")
+  end;
+    __LOC__ >:: begin fun _ ->
+    let should_err = bsc_check_eval {|
+    external mk : int ->
+  (
+    [`a|`b]
+     [@bs.string]
+  ) = "mk" [@@bs.val]
+    |} in
+    (* Ounit_cmd_util.debug_output should_err ;  *)
+    OUnit.assert_bool __LOC__
+    (Ext_string.contain_substring should_err.stderr
+    "Unused")
+  end;
+  __LOC__ >:: begin fun _ ->
+    let should_err = bsc_check_eval {|
+    type -'a t = {k : 'a } [@@bs.deriving abstract]
+    |} in
+    OUnit.assert_bool __LOC__
+    (Ext_string.contain_substring should_err.stderr "contravariant")
+  end;
+  (* __LOC__ >:: begin fun _ ->
+    let should_err = bsc_check_eval {|
+    type 'a t = {k : int -> 'a } [@@bs.deriving abstract]
+    |} in
+    OUnit.assert_bool __LOC__
+    (Ext_string.contain_substring should_err.stderr "not allowed")
+  end *)
+    (* __LOC__ >:: begin fun _ ->  *)
+    (*   let should_infer = perform_bsc [| "-i"; "-bs-eval"|] {| *)
+    (*      let  f = fun [@bs] x -> let (a,b) = x in a + b  *)
+    (* |}  in  *)
+    (*   let infer_type  = bsc_eval (Printf.sprintf {| *)
+
+    (*      let f : %s  = fun [@bs] x -> let (a,b) = x in a + b  *)
+    (*  |} should_infer.stdout ) in  *)
+    (*  begin  *)
+    (*    Ounit_cmd_util.debug_output should_infer ; *)
+    (*    Ounit_cmd_util.debug_output infer_type ; *)
+    (*    OUnit.assert_bool __LOC__  *)
+    (*      ((Ext_string.is_empty infer_type.stderr)) *)
+    (*  end *)
+    (* end *)
+  ]
+
+
+end
+module Bs_exception : sig 
+#1 "bs_exception.mli"
+(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
+ * 
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * In addition to the permissions granted to you by the LGPL, you may combine
+ * or link a "work that uses the Library" with a publicly distributed version
+ * of this file to produce a combined library or application, then distribute
+ * that combined work under the terms of your choosing, with no requirement
+ * to comply with the obligations normally placed on you by section 4 of the
+ * LGPL version 3 (or the corresponding section of a later version of the LGPL
+ * should you choose to use a later version).
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ * 
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
+
+type error =
+  | Cmj_not_found of string
+  | Js_not_found of string
+  | Bs_cyclic_depends of string  list
+  | Bs_duplicated_module of string * string
+  | Bs_duplicate_exports of string (* gpr_974 *)
+  | Bs_package_not_found of string                                                        
+  | Bs_main_not_exist of string 
+  | Bs_invalid_path of string
+  | Missing_ml_dependency of string 
+  | Dependency_script_module_dependent_not  of string
+(*
+TODO: In the futrue, we should refine dependency [bsb] 
+should not rely on such exception, it should have its own exception handling
+*)
+
+(* exception Error of error *)
+
+(* val report_error : Format.formatter -> error -> unit *)
+
+val error : error -> 'a 
+
+end = struct
+#1 "bs_exception.ml"
+(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
+ * 
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * In addition to the permissions granted to you by the LGPL, you may combine
+ * or link a "work that uses the Library" with a publicly distributed version
+ * of this file to produce a combined library or application, then distribute
+ * that combined work under the terms of your choosing, with no requirement
+ * to comply with the obligations normally placed on you by section 4 of the
+ * LGPL version 3 (or the corresponding section of a later version of the LGPL
+ * should you choose to use a later version).
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ * 
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
+
+
+type error =
+  | Cmj_not_found of string
+  | Js_not_found of string 
+  | Bs_cyclic_depends of string  list
+  | Bs_duplicated_module of string * string
+  | Bs_duplicate_exports of string (* gpr_974 *)
+  | Bs_package_not_found of string                            
+  | Bs_main_not_exist of string 
+  | Bs_invalid_path of string
+  | Missing_ml_dependency of string 
+  | Dependency_script_module_dependent_not  of string 
+  (** TODO: we need add location handling *)    
+exception Error of error
+
+let error err = raise (Error err)
+
+let report_error ppf = function
+  | Dependency_script_module_dependent_not s
+    -> 
+    Format.fprintf ppf 
+      "%s is compiled in script mode while its dependent is not"
+      s
+  | Missing_ml_dependency s -> 
+    Format.fprintf ppf "Missing dependency %s in search path" s 
+  | Cmj_not_found s ->
+    Format.fprintf ppf "%s not found, it means either the module does not exist or it is a namespace" s
+  | Js_not_found s -> 
+    Format.fprintf ppf "%s not found, needed in script mode " s
+  | Bs_cyclic_depends  str
+    ->
+    Format.fprintf ppf "Cyclic depends : @[%a@]"
+      (Format.pp_print_list ~pp_sep:Format.pp_print_space
+         Format.pp_print_string)
+      str
+  | Bs_duplicate_exports str -> 
+    Format.fprintf ppf "%s are exported as twice" str 
+  | Bs_duplicated_module (a,b)
+    ->
+    Format.fprintf ppf "The build system does not support two files with same names yet %s, %s" a b
+  | Bs_main_not_exist main
+    ->
+    Format.fprintf ppf "File %s not found " main
+
+  | Bs_package_not_found package
+    ->
+    Format.fprintf ppf "Package %s not found or %s/lib/ocaml does not exist or please set npm_config_prefix correctly"
+      package package
+  | Bs_invalid_path path
+    ->  Format.pp_print_string ppf ("Invalid path: " ^ path )
+
+
+let () =
+  Location.register_error_of_exn
+    (function
+      | Error err
+        -> Some (Location.error_of_printer_file report_error err)
+      | _ -> None
+    )
+
+end
+module Ext_filename : sig 
+#1 "ext_filename.mli"
+(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
+ * 
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * In addition to the permissions granted to you by the LGPL, you may combine
+ * or link a "work that uses the Library" with a publicly distributed version
+ * of this file to produce a combined library or application, then distribute
+ * that combined work under the terms of your choosing, with no requirement
+ * to comply with the obligations normally placed on you by section 4 of the
+ * LGPL version 3 (or the corresponding section of a later version of the LGPL
+ * should you choose to use a later version).
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ * 
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
+
+
+
+
+
+(* TODO:
+   Change the module name, this code is not really an extension of the standard 
+    library but rather specific to JS Module name convention. 
+*)
+
+
+
+
+
+(** An extension module to calculate relative path follow node/npm style. 
+    TODO : this short name will have to change upon renaming the file.
+*)
+
+val is_dir_sep : 
+  char -> bool 
+  
+val maybe_quote:
+  string -> 
+  string
+
+val chop_extension_maybe:
+  string -> 
+  string
+
+(* return an empty string if no extension found *)  
+val get_extension_maybe:   
+  string -> 
+  string
+
+
+val new_extension:  
+  string -> 
+  string -> 
+  string
+
+val chop_all_extensions_maybe:
+  string -> 
+  string  
+
+(* OCaml specific abstraction*)
+val module_name:  
+  string ->
+  string
+
+
+
+
+type module_info = {
+  module_name : string ;
+  case : bool;
+}   
+
+
+
+val as_module:
+  basename:string -> 
+  module_info option
+end = struct
+#1 "ext_filename.ml"
+(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
+ * 
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * In addition to the permissions granted to you by the LGPL, you may combine
+ * or link a "work that uses the Library" with a publicly distributed version
+ * of this file to produce a combined library or application, then distribute
+ * that combined work under the terms of your choosing, with no requirement
+ * to comply with the obligations normally placed on you by section 4 of the
+ * LGPL version 3 (or the corresponding section of a later version of the LGPL
+ * should you choose to use a later version).
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ * 
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
+
+
+
+
+let is_dir_sep_unix c = c = '/'
+let is_dir_sep_win_cygwin c = 
+  c = '/' || c = '\\' || c = ':'
+
+let is_dir_sep = 
+  if Sys.unix then is_dir_sep_unix else is_dir_sep_win_cygwin
+
+(* reference ninja.cc IsKnownShellSafeCharacter *)
+let maybe_quote ( s : string) = 
+  let noneed_quote = 
+    Ext_string.for_all s (function
+        | '0' .. '9' 
+        | 'a' .. 'z' 
+        | 'A' .. 'Z'
+        | '_' | '+' 
+        | '-' | '.'
+        | '/' 
+        | '@' -> true
+        | _ -> false
+      )  in 
+  if noneed_quote then
+    s
+  else Filename.quote s 
+
+
+let chop_extension_maybe name =
+  let rec search_dot i =
+    if i < 0 || is_dir_sep (String.unsafe_get name i) then name
+    else if String.unsafe_get name i = '.' then String.sub name 0 i
+    else search_dot (i - 1) in
+  search_dot (String.length name - 1)
+
+let get_extension_maybe name =   
+  let name_len = String.length name in  
+  let rec search_dot name i name_len =
+    if i < 0 || is_dir_sep (String.unsafe_get name i) then ""
+    else if String.unsafe_get name i = '.' then String.sub name i (name_len - i)
+    else search_dot name (i - 1) name_len in
+  search_dot name (name_len - 1) name_len
+
+let chop_all_extensions_maybe name =
+  let rec search_dot i last =
+    if i < 0 || is_dir_sep (String.unsafe_get name i) then 
+      (match last with 
+      | None -> name
+      | Some i -> String.sub name 0 i)  
+    else if String.unsafe_get name i = '.' then 
+      search_dot (i - 1) (Some i)
+    else search_dot (i - 1) last in
+  search_dot (String.length name - 1) None
+
+
+let new_extension name (ext : string) = 
+  let rec search_dot name i ext =
+    if i < 0 || is_dir_sep (String.unsafe_get name i) then 
+      name ^ ext 
+    else if String.unsafe_get name i = '.' then 
+      let ext_len = String.length ext in
+      let buf = Bytes.create (i + ext_len) in 
+      Bytes.blit_string name 0 buf 0 i;
+      Bytes.blit_string ext 0 buf i ext_len;
+      Bytes.unsafe_to_string buf
+    else search_dot name (i - 1) ext  in
+  search_dot name (String.length name - 1) ext
+
+
+
+(** TODO: improve efficiency
+   given a path, calcuate its module name 
+   Note that `ocamlc.opt -c aa.xx.mli` gives `aa.xx.cmi`
+   we can not strip all extensions, otherwise
+   we can not tell the difference between "x.cpp.ml" 
+   and "x.ml"
+*)
+let module_name name = 
+  let rec search_dot i  name =
+    if i < 0  then 
+      Ext_string.capitalize_ascii name
+    else 
+    if String.unsafe_get name i = '.' then 
+      Ext_string.capitalize_sub name i 
+    else 
+      search_dot (i - 1) name in  
+  let name = Filename.basename  name in 
+  let name_len = String.length name in 
+  search_dot (name_len - 1)  name 
+
+type module_info = {
+  module_name : string ;
+  case : bool;
+} 
+
+
+
+let rec valid_module_name_aux name off len =
+  if off >= len then true 
+  else 
+    let c = String.unsafe_get name off in 
+    match c with 
+    | 'A'..'Z' | 'a'..'z' | '0'..'9' | '_' | '\'' -> 
+      valid_module_name_aux name (off + 1) len 
+    | _ -> false
+
+type state = 
+  | Invalid
+  | Upper
+  | Lower
+
+let valid_module_name name len =     
+  if len = 0 then Invalid
+  else 
+    let c = String.unsafe_get name 0 in 
+    match c with 
+    | 'A' .. 'Z'
+      -> 
+      if valid_module_name_aux name 1 len then 
+        Upper
+      else Invalid  
+    | 'a' .. 'z' 
+      -> 
+      if valid_module_name_aux name 1 len then
+        Lower
+      else Invalid
+    | _ -> Invalid
+
+
+let as_module ~basename =
+  let rec search_dot i  name name_len =
+    if i < 0  then
+      (* Input e.g, [a_b] *)
+      match valid_module_name name name_len with 
+      | Invalid -> None 
+      | Upper ->  Some {module_name = name; case = true }
+      | Lower -> Some {module_name = Ext_string.capitalize_ascii name; case = false}
+    else 
+    if String.unsafe_get name i = '.' then 
+      (*Input e.g, [A_b] *)
+      match valid_module_name  name i with 
+      | Invalid -> None 
+      | Upper -> 
+        Some {module_name = Ext_string.capitalize_sub name i; case = true}
+      | Lower -> 
+        Some {module_name = Ext_string.capitalize_sub name i; case = false}
+    else 
+      search_dot (i - 1) name name_len in  
+  let name_len = String.length basename in       
+  search_dot (name_len - 1)  basename name_len
+    
+end
+module Ext_format : sig 
+#1 "ext_format.mli"
+(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
+ * 
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * In addition to the permissions granted to you by the LGPL, you may combine
+ * or link a "work that uses the Library" with a publicly distributed version
+ * of this file to produce a combined library or application, then distribute
+ * that combined work under the terms of your choosing, with no requirement
+ * to comply with the obligations normally placed on you by section 4 of the
+ * LGPL version 3 (or the corresponding section of a later version of the LGPL
+ * should you choose to use a later version).
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ * 
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
+
+
+
+
+
+
+
+
+(** Simplified wrapper module for the standard library [Format] module. 
+  *) 
+
+type t = private Format.formatter
+
+(* val string : t -> string -> unit
+
+val break : t -> unit
+
+val break1 : t -> unit
+
+val space :  t -> unit
+
+val group : t -> int -> (unit -> 'a) -> 'a
+(** [group] will record current indentation 
+    and indent futher
+ *)
+
+val vgroup : t -> int -> (unit -> 'a) -> 'a
+
+val paren : t -> (unit -> 'a) -> 'a
+
+val paren_group : t -> int -> (unit -> 'a) -> 'a
+
+val brace_group : t -> int -> (unit -> 'a) -> 'a
+
+val brace_vgroup : t -> int -> (unit -> 'a) -> 'a
+
+val bracket_group : t -> int -> (unit -> 'a) -> 'a
+
+val newline : t -> unit
+
+val to_out_channel : out_channel -> t
+
+val flush : t -> unit -> unit *)
+
+val pp_print_queue :
+  ?pp_sep:(Format.formatter -> unit -> unit) ->
+  (Format.formatter -> 'a -> unit) -> Format.formatter -> 'a Queue.t -> unit
+
+end = struct
+#1 "ext_format.ml"
+(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
+ * 
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * In addition to the permissions granted to you by the LGPL, you may combine
+ * or link a "work that uses the Library" with a publicly distributed version
+ * of this file to produce a combined library or application, then distribute
+ * that combined work under the terms of your choosing, with no requirement
+ * to comply with the obligations normally placed on you by section 4 of the
+ * LGPL version 3 (or the corresponding section of a later version of the LGPL
+ * should you choose to use a later version).
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ * 
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
+
+
+
+
+
+
+
+
+open Format
+
+type t = formatter
+
+(* let string = pp_print_string *)
+
+(* let break = fun fmt -> pp_print_break fmt 0 0
+
+let break1 =
+  fun fmt -> pp_print_break fmt 0 1 
+
+let space  fmt  = 
+  pp_print_break fmt 1 0
+ *)
+(* let vgroup fmt indent u = 
+  pp_open_vbox fmt indent; 
+  let v = u () in
+  pp_close_box fmt ();
+  v
+
+let group fmt indent u = 
+  pp_open_hovbox fmt indent; 
+  let v = u () in
+  pp_close_box fmt ();
+  v
+  
+let paren fmt u = 
+  string fmt "(";
+  let v = u () in
+  string fmt ")";
+  v
+
+let brace fmt u = 
+  string fmt "{";
+  (* break1 fmt ; *)
+  let v = u () in
+  string fmt "}";
+  v 
+
+let bracket fmt u = 
+  string fmt "[";
+  let v = u () in
+  string fmt "]";
+  v  *)
+
+(* let paren_group st n action = 
+  group st n (fun _ -> paren st action)
+
+let brace_group st n action = 
+  group st n (fun _ -> brace st action )
+
+let brace_vgroup st n action = 
+  vgroup st n (fun _ -> 
+    string st "{";
+    pp_print_break st 0 2;
+    let v = vgroup st 0 action in
+    pp_print_break st 0 0;
+    string st "}";
+    v
+              )
+let bracket_group st n action = 
+  group st n (fun _ -> bracket st action)
+
+let newline fmt = pp_print_newline fmt ()
+
+let to_out_channel = formatter_of_out_channel
+
+(* let non_breaking_space  fmt = string fmt " " *)
+(* let set_needed_space_function _ _ = () *)
+let flush = pp_print_flush
+ *)
+(* let list = pp_print_list *)
+
+let pp_print_queue ?(pp_sep = pp_print_cut) pp_v ppf q =
+  Queue.iter (fun q -> pp_v ppf q ;  pp_sep ppf ()) q 
+
 end
 module Ext_fmt
 = struct
@@ -7252,520 +9494,6 @@ let protect_list rvs body =
     raise e 
 
 end
-module Bs_hash_stubs
-= struct
-#1 "bs_hash_stubs.ml"
-
-
-external hash_string :  string -> int = "caml_bs_hash_string" [@@noalloc];;
-
-external hash_string_int :  string -> int  -> int = "caml_bs_hash_string_and_int" [@@noalloc];;
-
-external hash_string_small_int :  string -> int  -> int = "caml_bs_hash_string_and_small_int" [@@noalloc];;
-
-external hash_stamp_and_name : int -> string -> int = "caml_bs_hash_stamp_and_name" [@@noalloc];;
-
-external hash_small_int : int -> int = "caml_bs_hash_small_int" [@@noalloc];;
-
-external hash_int :  int  -> int = "caml_bs_hash_int" [@@noalloc];;
-
-external string_length_based_compare : string -> string -> int  = "caml_string_length_based_compare" [@@noalloc];;
-
-external    
-    int_unsafe_blit : 
-    int array -> int -> int array -> int -> int -> unit = "caml_int_array_blit" [@@noalloc];;
-
-    
-
-end
-module Ext_util : sig 
-#1 "ext_util.mli"
-(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
- * 
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * In addition to the permissions granted to you by the LGPL, you may combine
- * or link a "work that uses the Library" with a publicly distributed version
- * of this file to produce a combined library or application, then distribute
- * that combined work under the terms of your choosing, with no requirement
- * to comply with the obligations normally placed on you by section 4 of the
- * LGPL version 3 (or the corresponding section of a later version of the LGPL
- * should you choose to use a later version).
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Lesser General Public License for more details.
- * 
- * You should have received a copy of the GNU Lesser General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
-
-
- 
-val power_2_above : int -> int -> int
-
-
-val stats_to_string : Hashtbl.statistics -> string 
-end = struct
-#1 "ext_util.ml"
-(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
- * 
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * In addition to the permissions granted to you by the LGPL, you may combine
- * or link a "work that uses the Library" with a publicly distributed version
- * of this file to produce a combined library or application, then distribute
- * that combined work under the terms of your choosing, with no requirement
- * to comply with the obligations normally placed on you by section 4 of the
- * LGPL version 3 (or the corresponding section of a later version of the LGPL
- * should you choose to use a later version).
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Lesser General Public License for more details.
- * 
- * You should have received a copy of the GNU Lesser General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
-
-(**
-   {[
-     (power_2_above 16 63 = 64)
-       (power_2_above 16 76 = 128)
-   ]}
-*)
-let rec power_2_above x n =
-  if x >= n then x
-  else if x * 2 > Sys.max_array_length then x
-  else power_2_above (x * 2) n
-
-
-let stats_to_string ({num_bindings; num_buckets; max_bucket_length; bucket_histogram} : Hashtbl.statistics) = 
-  Printf.sprintf 
-    "bindings: %d,buckets: %d, longest: %d, hist:[%s]" 
-    num_bindings 
-    num_buckets 
-    max_bucket_length
-    (String.concat "," (Array.to_list (Array.map string_of_int bucket_histogram)))
-end
-module Hash_gen
-= struct
-#1 "hash_gen.ml"
-(***********************************************************************)
-(*                                                                     *)
-(*                                OCaml                                *)
-(*                                                                     *)
-(*            Xavier Leroy, projet Cristal, INRIA Rocquencourt         *)
-(*                                                                     *)
-(*  Copyright 1996 Institut National de Recherche en Informatique et   *)
-(*  en Automatique.  All rights reserved.  This file is distributed    *)
-(*  under the terms of the GNU Library General Public License, with    *)
-(*  the special exception on linking described in file ../LICENSE.     *)
-(*                                                                     *)
-(***********************************************************************)
-
-(* Hash tables *)
-
-
-
-
-(* We do dynamic hashing, and resize the table and rehash the elements
-   when buckets become too long. *)
-
-type ('a, 'b) bucket =
-  | Empty
-  | Cons of {
-      mutable key : 'a ; 
-      mutable data : 'b ; 
-      mutable next :  ('a, 'b) bucket
-    }
-
-type ('a, 'b) t =
-  { mutable size: int;                        (* number of entries *)
-    mutable data: ('a, 'b) bucket array;  (* the buckets *)
-    initial_size: int;                        (* initial array size *)
-  }
-
-
-
-let create  initial_size =
-  let s = Ext_util.power_2_above 16 initial_size in
-  { initial_size = s; size = 0; data = Array.make s Empty }
-
-let clear h =
-  h.size <- 0;
-  let len = Array.length h.data in
-  for i = 0 to len - 1 do
-    Array.unsafe_set h.data i  Empty  
-  done
-
-let reset h =
-  h.size <- 0;
-  h.data <- Array.make h.initial_size Empty
-
-
-let length h = h.size
-
-let resize indexfun h =
-  let odata = h.data in
-  let osize = Array.length odata in
-  let nsize = osize * 2 in
-  if nsize < Sys.max_array_length then begin
-    let ndata = Array.make nsize Empty in
-    let ndata_tail = Array.make nsize Empty in 
-    h.data <- ndata;          (* so that indexfun sees the new bucket count *)
-    let rec insert_bucket = function
-        Empty -> ()
-      | Cons {key; next} as cell ->
-        let nidx = indexfun h key in
-        begin match Array.unsafe_get ndata_tail nidx with 
-        | Empty -> 
-          Array.unsafe_set ndata nidx cell
-        | Cons tail ->
-          tail.next <- cell  
-        end;
-        Array.unsafe_set ndata_tail nidx cell;
-        insert_bucket next
-    in
-    for i = 0 to osize - 1 do
-      insert_bucket (Array.unsafe_get odata i)
-    done;
-    for i = 0 to nsize - 1 do 
-      match Array.unsafe_get ndata_tail i with 
-      | Empty -> ()  
-      | Cons tail -> tail.next <- Empty
-    done   
-  end
-
-
-
-let iter h f =
-  let rec do_bucket = function
-    | Empty ->
-      ()
-    | Cons l  ->
-      f l.key l.data; do_bucket l.next in
-  let d = h.data in
-  for i = 0 to Array.length d - 1 do
-    do_bucket (Array.unsafe_get d i)
-  done
-
-let fold h init f =
-  let rec do_bucket b accu =
-    match b with
-      Empty ->
-      accu
-    | Cons l ->
-      do_bucket l.next (f l.key l.data accu) in
-  let d = h.data in
-  let accu = ref init in
-  for i = 0 to Array.length d - 1 do
-    accu := do_bucket (Array.unsafe_get d i) !accu
-  done;
-  !accu
-
-let to_list h f =
-  fold h [] (fun k data acc -> f k data :: acc)  
-
-
-
-
-let rec small_bucket_mem (lst : _ bucket) eq key  =
-  match lst with 
-  | Empty -> false 
-  | Cons lst -> 
-    eq  key lst.key ||
-    match lst.next with
-    | Empty -> false 
-    | Cons lst -> 
-      eq key lst.key  || 
-      match lst.next with 
-      | Empty -> false 
-      | Cons lst -> 
-        eq key lst.key  ||
-        small_bucket_mem lst.next eq key 
-
-
-let rec small_bucket_opt eq key (lst : _ bucket) : _ option =
-  match lst with 
-  | Empty -> None 
-  | Cons lst -> 
-    if eq  key lst.key then Some lst.data else 
-      match lst.next with
-      | Empty -> None 
-      | Cons lst -> 
-        if eq key lst.key then Some lst.data else 
-          match lst.next with 
-          | Empty -> None 
-          | Cons lst -> 
-            if eq key lst.key  then Some lst.data else 
-              small_bucket_opt eq key lst.next
-
-
-let rec small_bucket_key_opt eq key (lst : _ bucket) : _ option =
-  match lst with 
-  | Empty -> None 
-  | Cons {key=k;  next} -> 
-    if eq  key k then Some k else 
-      match next with
-      | Empty -> None 
-      | Cons {key=k; next} -> 
-        if eq key k then Some k else 
-          match next with 
-          | Empty -> None 
-          | Cons {key=k; next} -> 
-            if eq key k  then Some k else 
-              small_bucket_key_opt eq key next
-
-
-let rec small_bucket_default eq key default (lst : _ bucket) =
-  match lst with 
-  | Empty -> default 
-  | Cons lst -> 
-    if eq  key lst.key then  lst.data else 
-      match lst.next with
-      | Empty -> default 
-      | Cons lst -> 
-        if eq key lst.key then  lst.data else 
-          match lst.next with 
-          | Empty -> default 
-          | Cons lst -> 
-            if eq key lst.key  then lst.data else 
-              small_bucket_default eq key default lst.next
-
-let rec remove_bucket 
-    h  (i : int)
-    key 
-    ~(prec : _ bucket) 
-    (buck : _ bucket) 
-    eq_key = 
-  match buck with   
-  | Empty ->
-    ()
-  | Cons {key=k; next }  ->
-    if eq_key k key 
-    then begin
-      h.size <- h.size - 1;
-      match prec with
-      | Empty -> Array.unsafe_set h.data i  next
-      | Cons c -> c.next <- next
-    end
-    else remove_bucket h i key ~prec:buck next eq_key
-
-let rec replace_bucket key data (buck : _ bucket) eq_key = 
-  match buck with   
-  | Empty ->
-    true
-  | Cons slot ->
-    if eq_key slot.key key
-    then (slot.key <- key; slot.data <- data; false)
-    else replace_bucket key data slot.next eq_key
-
-module type S = sig 
-  type key
-  type 'a t
-  val create: int -> 'a t
-  val clear: 'a t -> unit
-  val reset: 'a t -> unit
-
-  val add: 'a t -> key -> 'a -> unit
-  val add_or_update: 
-    'a t -> 
-    key -> 
-    update:('a -> 'a) -> 
-    'a -> unit 
-  val remove: 'a t -> key -> unit
-  val find_exn: 'a t -> key -> 'a
-  val find_all: 'a t -> key -> 'a list
-  val find_opt: 'a t -> key  -> 'a option
-
-  (** return the key found in the hashtbl.
-      Use case: when you find the key existed in hashtbl, 
-      you want to use the one stored in the hashtbl. 
-      (they are semantically equivlanent, but may have other information different) 
-  *)
-  val find_key_opt: 'a t -> key -> key option 
-
-  val find_default: 'a t -> key -> 'a -> 'a 
-
-  val replace: 'a t -> key -> 'a -> unit
-  val mem: 'a t -> key -> bool
-  val iter: 'a t -> (key -> 'a -> unit) -> unit
-  val fold: 
-    'a t -> 'b ->
-    (key -> 'a -> 'b -> 'b) ->  'b
-  val length: 'a t -> int
-  (* val stats: 'a t -> Hashtbl.statistics *)
-  val to_list : 'a t -> (key -> 'a -> 'c) -> 'c list
-  val of_list2: key list -> 'a list -> 'a t
-end
-
-
-
-
-
-end
-module Hash_string : sig 
-#1 "hash_string.mli"
-(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
- * 
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * In addition to the permissions granted to you by the LGPL, you may combine
- * or link a "work that uses the Library" with a publicly distributed version
- * of this file to produce a combined library or application, then distribute
- * that combined work under the terms of your choosing, with no requirement
- * to comply with the obligations normally placed on you by section 4 of the
- * LGPL version 3 (or the corresponding section of a later version of the LGPL
- * should you choose to use a later version).
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Lesser General Public License for more details.
- * 
- * You should have received a copy of the GNU Lesser General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
-
-
-include Hash_gen.S with type key = string
-
-
-
-
-end = struct
-#1 "hash_string.ml"
-# 9 "ext/hash.cppo.ml"
-type key = string
-type 'a t = (key, 'a)  Hash_gen.t 
-let key_index (h : _ t ) (key : key) =
-  (Bs_hash_stubs.hash_string  key ) land (Array.length h.data - 1)
-let eq_key = Ext_string.equal 
-
-# 33 "ext/hash.cppo.ml"
-type ('a, 'b) bucket = ('a,'b) Hash_gen.bucket
-let create = Hash_gen.create
-let clear = Hash_gen.clear
-let reset = Hash_gen.reset
-let iter = Hash_gen.iter
-let to_list = Hash_gen.to_list
-let fold = Hash_gen.fold
-let length = Hash_gen.length
-(* let stats = Hash_gen.stats *)
-
-
-
-let add (h : _ t) key data =
-  let i = key_index h key in
-  let h_data = h.data in   
-  Array.unsafe_set h_data i (Cons{key; data; next=Array.unsafe_get h_data i});
-  h.size <- h.size + 1;
-  if h.size > Array.length h_data lsl 1 then Hash_gen.resize key_index h
-
-(* after upgrade to 4.04 we should provide an efficient [replace_or_init] *)
-let add_or_update 
-  (h : 'a t) 
-  (key : key) 
-  ~update:(modf : 'a -> 'a) 
-  (default :  'a) : unit =
-  let rec find_bucket (bucketlist : _ bucket) : bool =
-    match bucketlist with
-    | Cons rhs  ->
-      if eq_key rhs.key key then begin rhs.data <- modf rhs.data; false end
-      else find_bucket rhs.next
-    | Empty -> true in
-  let i = key_index h key in 
-  let h_data = h.data in 
-  if find_bucket (Array.unsafe_get h_data i) then
-    begin 
-      Array.unsafe_set h_data i  (Cons{key; data=default; next = Array.unsafe_get h_data i});
-      h.size <- h.size + 1 ;
-      if h.size > Array.length h_data lsl 1 then Hash_gen.resize key_index h 
-    end
-
-let remove (h : _ t ) key =
-  let i = key_index h key in
-  let h_data = h.data in 
-  Hash_gen.remove_bucket h i key ~prec:Empty (Array.unsafe_get h_data i) eq_key
-
-(* for short bucket list, [find_rec is not called ] *)
-let rec find_rec key (bucketlist : _ bucket) = match bucketlist with  
-  | Empty ->
-    raise Not_found
-  | Cons rhs  ->
-    if eq_key key rhs.key then rhs.data else find_rec key rhs.next
-
-let find_exn (h : _ t) key =
-  match Array.unsafe_get h.data (key_index h key) with
-  | Empty -> raise Not_found
-  | Cons rhs  ->
-    if eq_key key rhs.key then rhs.data else
-      match rhs.next with
-      | Empty -> raise Not_found
-      | Cons rhs  ->
-        if eq_key key rhs.key then rhs.data else
-          match rhs.next with
-          | Empty -> raise Not_found
-          | Cons rhs ->
-            if eq_key key rhs.key  then rhs.data else find_rec key rhs.next
-
-let find_opt (h : _ t) key =
-  Hash_gen.small_bucket_opt eq_key key (Array.unsafe_get h.data (key_index h key))
-
-let find_key_opt (h : _ t) key =
-  Hash_gen.small_bucket_key_opt eq_key key (Array.unsafe_get h.data (key_index h key))
-  
-let find_default (h : _ t) key default = 
-  Hash_gen.small_bucket_default eq_key key default (Array.unsafe_get h.data (key_index h key))
-
-let find_all (h : _ t) key =
-  let rec find_in_bucket (bucketlist : _ bucket) = match bucketlist with 
-    | Empty ->
-      []
-    | Cons rhs  ->
-      if eq_key key rhs.key
-      then rhs.data :: find_in_bucket rhs.next
-      else find_in_bucket rhs.next in
-  find_in_bucket (Array.unsafe_get h.data (key_index h key))
-
-
-let replace h key data =
-  let i = key_index h key in
-  let h_data = h.data in 
-  let l = Array.unsafe_get h_data i in
-  if Hash_gen.replace_bucket key data l eq_key then 
-    begin 
-      Array.unsafe_set h_data i (Cons{key; data; next=l});
-      h.size <- h.size + 1;
-      if h.size > Array.length h_data lsl 1 then Hash_gen.resize key_index h;
-    end 
-
-let mem (h : _ t) key = 
-  Hash_gen.small_bucket_mem 
-    (Array.unsafe_get h.data (key_index h key))
-    eq_key key 
-
-
-let of_list2 ks vs = 
-  let len = List.length ks in 
-  let map = create len in 
-  List.iter2 (fun k v -> add map k v) ks vs ; 
-  map
-
-
-end
 module Js_config : sig 
 #1 "js_config.mli"
 (* Copyright (C) 2015-2016 Bloomberg Finance L.P.
@@ -7986,628 +9714,6 @@ let record_as_js_object = ref false (* otherwise has an attribute *)
 let as_ppx = ref false
 
 let mono_empty_array = ref true
-end
-module Map_gen
-= struct
-#1 "map_gen.ml"
-(***********************************************************************)
-(*                                                                     *)
-(*                                OCaml                                *)
-(*                                                                     *)
-(*            Xavier Leroy, projet Cristal, INRIA Rocquencourt         *)
-(*                                                                     *)
-(*  Copyright 1996 Institut National de Recherche en Informatique et   *)
-(*  en Automatique.  All rights reserved.  This file is distributed    *)
-(*  under the terms of the GNU Library General Public License, with    *)
-(*  the special exception on linking described in file ../LICENSE.     *)
-(*                                                                     *)
-(***********************************************************************)
-(** adapted from stdlib *)
-
-type ('key,'a) t =
-  | Empty
-  | Node of ('key,'a) t * 'key * 'a * ('key,'a) t * int
-
-type ('key,'a) enumeration =
-  | End
-  | More of 'key * 'a * ('key,'a) t * ('key, 'a) enumeration
-
-let rec cardinal_aux acc  = function
-  | Empty -> acc 
-  | Node (l,_,_,r, _) -> 
-    cardinal_aux  (cardinal_aux (acc + 1)  r ) l 
-
-let cardinal s = cardinal_aux 0 s 
-
-let rec bindings_aux accu = function
-  | Empty -> accu
-  | Node(l, v, d, r, _) -> bindings_aux ((v, d) :: bindings_aux accu r) l
-
-let bindings s =
-  bindings_aux [] s
-
-let rec fill_array_with_f (s : _ t) i arr  f : int =    
-  match s with 
-  | Empty -> i 
-  | Node ( l ,k,v,r,_) -> 
-    let inext = fill_array_with_f l i arr f in 
-    Array.unsafe_set arr inext (f k v);
-    fill_array_with_f r (inext + 1) arr f
-
-let rec fill_array_aux (s : _ t) i arr : int =    
-  match s with 
-  | Empty -> i 
-  | Node (l,k,v,r,_) -> 
-    let inext = fill_array_aux l i arr in 
-    Array.unsafe_set arr inext (k,v);
-    fill_array_aux r (inext + 1) arr 
-
-
-let to_sorted_array (s : ('key,'a) t)  : ('key * 'a ) array =    
-  match s with 
-  | Empty -> [||]
-  | Node(l,k,v,r,_) -> 
-    let len = 
-      cardinal_aux (cardinal_aux 1 r) l in 
-    let arr =
-      Array.make len (k,v) in  
-    ignore (fill_array_aux s 0 arr : int);
-    arr 
-
-let to_sorted_array_with_f (type key a b ) (s : (key,a) t)  (f : key -> a -> b): b array =    
-  match s with 
-  | Empty -> [||]
-  | Node(l,k,v,r,_) -> 
-    let len = 
-      cardinal_aux (cardinal_aux 1 r) l in 
-    let arr =
-      Array.make len (f k v) in  
-    ignore (fill_array_with_f s 0 arr f: int);
-    arr     
-
-let rec keys_aux accu = function
-    Empty -> accu
-  | Node(l, v, _, r, _) -> keys_aux (v :: keys_aux accu r) l
-
-let keys s = keys_aux [] s
-
-
-
-let rec cons_enum m e =
-  match m with
-    Empty -> e
-  | Node(l, v, d, r, _) -> cons_enum l (More(v, d, r, e))
-
-
-let height = function
-  | Empty -> 0
-  | Node(_,_,_,_,h) -> h
-
-let create l x d r =
-  let hl = height l and hr = height r in
-  Node(l, x, d, r, (if hl >= hr then hl + 1 else hr + 1))
-
-let singleton x d = Node(Empty, x, d, Empty, 1)
-
-let bal l x d r =
-  let hl = match l with Empty -> 0 | Node(_,_,_,_,h) -> h in
-  let hr = match r with Empty -> 0 | Node(_,_,_,_,h) -> h in
-  if hl > hr + 2 then begin
-    match l with
-      Empty -> invalid_arg "Map.bal"
-    | Node(ll, lv, ld, lr, _) ->
-      if height ll >= height lr then
-        create ll lv ld (create lr x d r)
-      else begin
-        match lr with
-          Empty -> invalid_arg "Map.bal"
-        | Node(lrl, lrv, lrd, lrr, _)->
-          create (create ll lv ld lrl) lrv lrd (create lrr x d r)
-      end
-  end else if hr > hl + 2 then begin
-    match r with
-      Empty -> invalid_arg "Map.bal"
-    | Node(rl, rv, rd, rr, _) ->
-      if height rr >= height rl then
-        create (create l x d rl) rv rd rr
-      else begin
-        match rl with
-          Empty -> invalid_arg "Map.bal"
-        | Node(rll, rlv, rld, rlr, _) ->
-          create (create l x d rll) rlv rld (create rlr rv rd rr)
-      end
-  end else
-    Node(l, x, d, r, (if hl >= hr then hl + 1 else hr + 1))
-
-let empty = Empty
-
-let is_empty = function Empty -> true | _ -> false
-
-let rec min_binding_exn = function
-    Empty -> raise Not_found
-  | Node(Empty, x, d, _, _) -> (x, d)
-  | Node(l, _, _, _, _) -> min_binding_exn l
-
-let choose = min_binding_exn
-
-let rec max_binding_exn = function
-    Empty -> raise Not_found
-  | Node(_, x, d, Empty, _) -> (x, d)
-  | Node(_, _, _, r, _) -> max_binding_exn r
-
-let rec remove_min_binding = function
-    Empty -> invalid_arg "Map.remove_min_elt"
-  | Node(Empty, _, _, r, _) -> r
-  | Node(l, x, d, r, _) -> bal (remove_min_binding l) x d r
-
-let merge t1 t2 =
-  match (t1, t2) with
-    (Empty, t) -> t
-  | (t, Empty) -> t
-  | (_, _) ->
-    let (x, d) = min_binding_exn t2 in
-    bal t1 x d (remove_min_binding t2)
-
-
-let rec iter x f = match x with 
-    Empty -> ()
-  | Node(l, v, d, r, _) ->
-    iter l f; f v d; iter r f
-
-let rec map x f = match x with
-    Empty ->
-    Empty
-  | Node(l, v, d, r, h) ->
-    let l' = map l f in
-    let d' = f d in
-    let r' = map r f in
-    Node(l', v, d', r', h)
-
-let rec mapi x f = match x with
-    Empty ->
-    Empty
-  | Node(l, v, d, r, h) ->
-    let l' = mapi l f in
-    let d' = f v d in
-    let r' = mapi r f in
-    Node(l', v, d', r', h)
-
-let rec fold m accu f =
-  match m with
-    Empty -> accu
-  | Node(l, v, d, r, _) ->
-    fold r (f v d (fold l accu f)) f 
-
-let rec for_all x p = match x with 
-    Empty -> true
-  | Node(l, v, d, r, _) -> p v d && for_all l p && for_all r p
-
-let rec exists x p = match x with
-    Empty -> false
-  | Node(l, v, d, r, _) -> p v d || exists l p || exists r p
-
-(* Beware: those two functions assume that the added k is *strictly*
-   smaller (or bigger) than all the present keys in the tree; it
-   does not test for equality with the current min (or max) key.
-
-   Indeed, they are only used during the "join" operation which
-   respects this precondition.
-*)
-
-let rec add_min_binding k v = function
-  | Empty -> singleton k v
-  | Node (l, x, d, r, _) ->
-    bal (add_min_binding k v l) x d r
-
-let rec add_max_binding k v = function
-  | Empty -> singleton k v
-  | Node (l, x, d, r, _) ->
-    bal l x d (add_max_binding k v r)
-
-(* Same as create and bal, but no assumptions are made on the
-   relative heights of l and r. *)
-
-let rec join l v d r =
-  match (l, r) with
-    (Empty, _) -> add_min_binding v d r
-  | (_, Empty) -> add_max_binding v d l
-  | (Node(ll, lv, ld, lr, lh), Node(rl, rv, rd, rr, rh)) ->
-    if lh > rh + 2 then bal ll lv ld (join lr v d r) else
-    if rh > lh + 2 then bal (join l v d rl) rv rd rr else
-      create l v d r
-
-(* Merge two trees l and r into one.
-   All elements of l must precede the elements of r.
-   No assumption on the heights of l and r. *)
-
-let concat t1 t2 =
-  match (t1, t2) with
-    (Empty, t) -> t
-  | (t, Empty) -> t
-  | (_, _) ->
-    let (x, d) = min_binding_exn t2 in
-    join t1 x d (remove_min_binding t2)
-
-let concat_or_join t1 v d t2 =
-  match d with
-  | Some d -> join t1 v d t2
-  | None -> concat t1 t2
-
-let rec filter x p = match x with
-    Empty -> Empty
-  | Node(l, v, d, r, _) ->
-    (* call [p] in the expected left-to-right order *)
-    let l' = filter l p in
-    let pvd = p v d in
-    let r' = filter r p in
-    if pvd then join l' v d r' else concat l' r'
-
-let rec partition x p = match x with
-    Empty -> (Empty, Empty)
-  | Node(l, v, d, r, _) ->
-    (* call [p] in the expected left-to-right order *)
-    let (lt, lf) = partition l p in
-    let pvd = p v d in
-    let (rt, rf) = partition r p in
-    if pvd
-    then (join lt v d rt, concat lf rf)
-    else (concat lt rt, join lf v d rf)
-
-let compare compare_key cmp_val m1 m2 =
-  let rec compare_aux e1  e2 =
-    match (e1, e2) with
-      (End, End) -> 0
-    | (End, _)  -> -1
-    | (_, End) -> 1
-    | (More(v1, d1, r1, e1), More(v2, d2, r2, e2)) ->
-      let c = compare_key v1 v2 in
-      if c <> 0 then c else
-        let c = cmp_val d1 d2 in
-        if c <> 0 then c else
-          compare_aux (cons_enum r1 e1) (cons_enum r2 e2)
-  in compare_aux (cons_enum m1 End) (cons_enum m2 End)
-
-let equal compare_key cmp m1 m2 =
-  let rec equal_aux e1 e2 =
-    match (e1, e2) with
-      (End, End) -> true
-    | (End, _)  -> false
-    | (_, End) -> false
-    | (More(v1, d1, r1, e1), More(v2, d2, r2, e2)) ->
-      compare_key v1 v2 = 0 && cmp d1 d2 &&
-      equal_aux (cons_enum r1 e1) (cons_enum r2 e2)
-  in equal_aux (cons_enum m1 End) (cons_enum m2 End)
-
-
-
-    
-module type S =
-  sig
-    type key
-    type +'a t
-    val empty: 'a t
-    val compare_key: key -> key -> int 
-    val is_empty: 'a t -> bool
-    val mem: 'a t -> key -> bool
-    val to_sorted_array : 
-      'a t -> (key * 'a ) array
-    val to_sorted_array_with_f : 
-      'a t -> (key -> 'a -> 'b) -> 'b array  
-    val add: 'a t -> key -> 'a -> 'a t
-    (** [add x y m] 
-        If [x] was already bound in [m], its previous binding disappears. *)
-
-    val adjust: 'a t -> key -> ('a option->  'a) ->  'a t 
-    (** [adjust acc k replace ] if not exist [add (replace None ], otherwise 
-        [add k v (replace (Some old))]
-    *)
-    
-    val singleton: key -> 'a -> 'a t
-
-    val remove: 'a t -> key -> 'a t
-    (** [remove x m] returns a map containing the same bindings as
-       [m], except for [x] which is unbound in the returned map. *)
-
-    val merge:
-         'a t -> 'b t ->
-         (key -> 'a option -> 'b option -> 'c option) ->  'c t
-    (** [merge f m1 m2] computes a map whose keys is a subset of keys of [m1]
-        and of [m2]. The presence of each such binding, and the corresponding
-        value, is determined with the function [f].
-        @since 3.12.0
-     *)
-
-    val disjoint_merge : 'a t -> 'a t -> 'a t
-     (* merge two maps, will raise if they have the same key *)
-    val compare: 'a t -> 'a t -> ('a -> 'a -> int) -> int
-    (** Total ordering between maps.  The first argument is a total ordering
-        used to compare data associated with equal keys in the two maps. *)
-
-    val equal: 'a t -> 'a t -> ('a -> 'a -> bool) ->  bool
-
-    val iter: 'a t -> (key -> 'a -> unit) ->  unit
-    (** [iter f m] applies [f] to all bindings in map [m].
-        The bindings are passed to [f] in increasing order. *)
-
-    val fold: 'a t -> 'b -> (key -> 'a -> 'b -> 'b) -> 'b
-    (** [fold f m a] computes [(f kN dN ... (f k1 d1 a)...)],
-       where [k1 ... kN] are the keys of all bindings in [m]
-       (in increasing order) *)
-
-    val for_all: 'a t -> (key -> 'a -> bool) -> bool
-    (** [for_all p m] checks if all the bindings of the map.
-        order unspecified
-     *)
-
-    val exists: 'a t -> (key -> 'a -> bool) -> bool
-    (** [exists p m] checks if at least one binding of the map
-        satisfy the predicate [p]. 
-        order unspecified
-     *)
-
-    val filter: 'a t -> (key -> 'a -> bool) -> 'a t
-    (** [filter p m] returns the map with all the bindings in [m]
-        that satisfy predicate [p].
-        order unspecified
-     *)
-
-    val partition: 'a t -> (key -> 'a -> bool) ->  'a t * 'a t
-    (** [partition p m] returns a pair of maps [(m1, m2)], where
-        [m1] contains all the bindings of [s] that satisfy the
-        predicate [p], and [m2] is the map with all the bindings of
-        [s] that do not satisfy [p].
-     *)
-
-    val cardinal: 'a t -> int
-    (** Return the number of bindings of a map. *)
-
-    val bindings: 'a t -> (key * 'a) list
-    (** Return the list of all bindings of the given map.
-       The returned list is sorted in increasing order with respect
-       to the ordering *)
-    val keys : 'a t -> key list 
-    (* Increasing order *)
-
-    val min_binding_exn: 'a t -> (key * 'a)
-    (** raise [Not_found] if the map is empty. *)
-
-    val max_binding_exn: 'a t -> (key * 'a)
-    (** Same as {!Map.S.min_binding} *)
-
-    val choose: 'a t -> (key * 'a)
-    (** Return one binding of the given map, or raise [Not_found] if
-       the map is empty. Which binding is chosen is unspecified,
-       but equal bindings will be chosen for equal maps.
-     *)
-
-    val split: 'a t -> key -> 'a t * 'a option * 'a t
-    (** [split x m] returns a triple [(l, data, r)], where
-          [l] is the map with all the bindings of [m] whose key
-        is strictly less than [x];
-          [r] is the map with all the bindings of [m] whose key
-        is strictly greater than [x];
-          [data] is [None] if [m] contains no binding for [x],
-          or [Some v] if [m] binds [v] to [x].
-        @since 3.12.0
-     *)
-
-    val find_exn: 'a t -> key ->  'a
-    (** [find x m] returns the current binding of [x] in [m],
-       or raises [Not_found] if no such binding exists. *)
-    val find_opt:  'a t ->  key ->'a option
-    val find_default: 'a t -> key  ->  'a  -> 'a 
-    val map: 'a t -> ('a -> 'b) -> 'b t
-    (** [map f m] returns a map with same domain as [m], where the
-       associated value [a] of all bindings of [m] has been
-       replaced by the result of the application of [f] to [a].
-       The bindings are passed to [f] in increasing order
-       with respect to the ordering over the type of the keys. *)
-
-    val mapi: 'a t ->  (key -> 'a -> 'b) -> 'b t
-    (** Same as {!Map.S.map}, but the function receives as arguments both the
-       key and the associated value for each binding of the map. *)
-
-    val of_list : (key * 'a) list -> 'a t 
-    val of_array : (key * 'a ) array -> 'a t 
-    val add_list : (key * 'b) list -> 'b t -> 'b t
-
-  end
-
-end
-module Map_string : sig 
-#1 "map_string.mli"
-(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
- * 
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * In addition to the permissions granted to you by the LGPL, you may combine
- * or link a "work that uses the Library" with a publicly distributed version
- * of this file to produce a combined library or application, then distribute
- * that combined work under the terms of your choosing, with no requirement
- * to comply with the obligations normally placed on you by section 4 of the
- * LGPL version 3 (or the corresponding section of a later version of the LGPL
- * should you choose to use a later version).
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Lesser General Public License for more details.
- * 
- * You should have received a copy of the GNU Lesser General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
-
-
-include Map_gen.S with type key = string
-
-end = struct
-#1 "map_string.ml"
-
-# 2 "ext/map.cppo.ml"
-(* we don't create [map_poly], since some operations require raise an exception which carries [key] *)
-
-
-  
-# 10 "ext/map.cppo.ml"
-  type key = string 
-  let compare_key = Ext_string.compare
-
-# 22 "ext/map.cppo.ml"
-type 'a t = (key,'a) Map_gen.t
-exception Duplicate_key of key 
-
-let empty = Map_gen.empty 
-let is_empty = Map_gen.is_empty
-let iter = Map_gen.iter
-let fold = Map_gen.fold
-let for_all = Map_gen.for_all 
-let exists = Map_gen.exists 
-let singleton = Map_gen.singleton 
-let cardinal = Map_gen.cardinal
-let bindings = Map_gen.bindings
-let to_sorted_array = Map_gen.to_sorted_array
-let to_sorted_array_with_f = Map_gen.to_sorted_array_with_f
-let keys = Map_gen.keys
-let choose = Map_gen.choose 
-let partition = Map_gen.partition 
-let filter = Map_gen.filter 
-let map = Map_gen.map 
-let mapi = Map_gen.mapi
-let bal = Map_gen.bal 
-let height = Map_gen.height 
-let max_binding_exn = Map_gen.max_binding_exn
-let min_binding_exn = Map_gen.min_binding_exn
-
-
-let rec add (tree : _ Map_gen.t as 'a) x data  : 'a = match tree with 
-  | Empty ->
-    Node(Empty, x, data, Empty, 1)
-  | Node(l, v, d, r, h) ->
-    let c = compare_key x v in
-    if c = 0 then
-      Node(l, x, data, r, h)
-    else if c < 0 then
-      bal (add l x data ) v d r
-    else
-      bal l v d (add r x data )
-
-
-let rec adjust (tree : _ Map_gen.t as 'a) x replace  : 'a = 
-  match tree with 
-  | Empty ->
-    Node(Empty, x, replace None, Empty, 1)
-  | Node(l, v, d, r, h) ->
-    let c = compare_key x v in
-    if c = 0 then
-      Node(l, x, replace  (Some d) , r, h)
-    else if c < 0 then
-      bal (adjust l x  replace ) v d r
-    else
-      bal l v d (adjust r x  replace )
-
-
-let rec find_exn (tree : _ Map_gen.t ) x = match tree with 
-  | Empty ->
-    raise Not_found
-  | Node(l, v, d, r, _) ->
-    let c = compare_key x v in
-    if c = 0 then d
-    else find_exn (if c < 0 then l else r) x
-
-let rec find_opt (tree : _ Map_gen.t ) x = match tree with 
-  | Empty -> None 
-  | Node(l, v, d, r, _) ->
-    let c = compare_key x v in
-    if c = 0 then Some d
-    else find_opt (if c < 0 then l else r) x
-
-let rec find_default (tree : _ Map_gen.t ) x  default     = match tree with 
-  | Empty -> default  
-  | Node(l, v, d, r, _) ->
-    let c = compare_key x v in
-    if c = 0 then  d
-    else find_default (if c < 0 then l else r) x default
-
-let rec mem (tree : _ Map_gen.t )  x= match tree with 
-  | Empty ->
-    false
-  | Node(l, v, _, r, _) ->
-    let c = compare_key x v in
-    c = 0 || mem (if c < 0 then l else r) x 
-
-let rec remove (tree : _ Map_gen.t as 'a) x : 'a = match tree with 
-  | Empty ->
-    Empty
-  | Node(l, v, d, r, _) ->
-    let c = compare_key x v in
-    if c = 0 then
-      Map_gen.merge l r
-    else if c < 0 then
-      bal (remove l x) v d r
-    else
-      bal l v d (remove r x )
-
-
-let rec split (tree : _ Map_gen.t as 'a) x : 'a * _ option * 'a  = match tree with 
-  | Empty ->
-    (Empty, None, Empty)
-  | Node(l, v, d, r, _) ->
-    let c = compare_key x v in
-    if c = 0 then (l, Some d, r)
-    else if c < 0 then
-      let (ll, pres, rl) = split l x in (ll, pres, Map_gen.join rl v d r)
-    else
-      let (lr, pres, rr) = split r x in (Map_gen.join l v d lr, pres, rr)
-
-let rec merge (s1 : _ Map_gen.t) (s2  : _ Map_gen.t) f  : _ Map_gen.t =
-  match (s1, s2) with
-  | (Empty, Empty) -> Empty
-  | (Node (l1, v1, d1, r1, h1), _) when h1 >= height s2 ->
-    let (l2, d2, r2) = split s2 v1 in
-    Map_gen.concat_or_join (merge l1 l2 f) v1 (f v1 (Some d1) d2) (merge r1 r2 f)
-  | (_, Node (l2, v2, d2, r2, _)) ->
-    let (l1, d1, r1) = split s1 v2 in
-    Map_gen.concat_or_join (merge l1 l2 f) v2 (f v2 d1 (Some d2)) (merge r1 r2 f)
-  | _ ->
-    assert false
-
-let rec disjoint_merge  (s1 : _ Map_gen.t) (s2  : _ Map_gen.t) : _ Map_gen.t =
-  match (s1, s2) with
-  | (Empty, Empty) -> Empty
-  | (Node (l1, v1, d1, r1, h1), _) when h1 >= height s2 ->
-    begin match split s2 v1 with 
-    | l2, None, r2 -> 
-      Map_gen.join (disjoint_merge  l1 l2) v1 d1 (disjoint_merge r1 r2)
-    | _, Some _, _ ->
-      raise (Duplicate_key  v1)
-    end        
-  | (_, Node (l2, v2, d2, r2, _)) ->
-    begin match  split s1 v2 with 
-    | (l1, None, r1) -> 
-      Map_gen.join (disjoint_merge  l1 l2) v2 d2 (disjoint_merge  r1 r2)
-    | (_, Some _, _) -> 
-      raise (Duplicate_key v2)
-    end
-  | _ ->
-    assert false
-
-
-
-let compare m1 m2 cmp = Map_gen.compare compare_key cmp m1 m2
-
-let equal m1 m2 cmp = Map_gen.equal compare_key cmp m1 m2 
-
-let add_list (xs : _ list ) init = 
-  Ext_list.fold_left xs init (fun  acc (k,v) -> add acc k v )
-
-let of_list xs = add_list xs empty
-
-let of_array xs = 
-  Ext_array.fold_left xs empty (fun acc (k,v) -> add acc k v ) 
-
 end
 module Ml_binary : sig 
 #1 "ml_binary.mli"
@@ -15920,358 +17026,6 @@ let suites =
       end ;
 
     ]
-
-end
-module Ext_buffer : sig 
-#1 "ext_buffer.mli"
-(***********************************************************************)
-(*                                                                     *)
-(*                                OCaml                                *)
-(*                                                                     *)
-(*  Pierre Weis and Xavier Leroy, projet Cristal, INRIA Rocquencourt   *)
-(*                                                                     *)
-(*  Copyright 1999 Institut National de Recherche en Informatique et   *)
-(*  en Automatique.  All rights reserved.  This file is distributed    *)
-(*  under the terms of the GNU Library General Public License, with    *)
-(*  the special exception on linking described in file ../LICENSE.     *)
-(*                                                                     *)
-(***********************************************************************)
-
-(** Extensible buffers.
-
-   This module implements buffers that automatically expand
-   as necessary.  It provides accumulative concatenation of strings
-   in quasi-linear time (instead of quadratic time when strings are
-   concatenated pairwise).
-*)
-
-(* BuckleScript customization: customized for efficient digest *)
-
-type t
-(** The abstract type of buffers. *)
-
-val create : int -> t
-(** [create n] returns a fresh buffer, initially empty.
-   The [n] parameter is the initial size of the internal byte sequence
-   that holds the buffer contents. That byte sequence is automatically
-   reallocated when more than [n] characters are stored in the buffer,
-   but shrinks back to [n] characters when [reset] is called.
-   For best performance, [n] should be of the same order of magnitude
-   as the number of characters that are expected to be stored in
-   the buffer (for instance, 80 for a buffer that holds one output
-   line).  Nothing bad will happen if the buffer grows beyond that
-   limit, however. In doubt, take [n = 16] for instance.
-   If [n] is not between 1 and {!Sys.max_string_length}, it will
-   be clipped to that interval. *)
-
-val contents : t -> string
-(** Return a copy of the current contents of the buffer.
-    The buffer itself is unchanged. *)
-
-val length : t -> int
-(** Return the number of characters currently contained in the buffer. *)
-
-val is_empty : t -> bool
-
-val clear : t -> unit
-(** Empty the buffer. *)
-
-
-val add_char : t -> char -> unit
-(** [add_char b c] appends the character [c] at the end of the buffer [b]. *)
-
-val add_string : t -> string -> unit
-(** [add_string b s] appends the string [s] at the end of the buffer [b]. *)
-
-(* val add_bytes : t -> bytes -> unit *)
-(** [add_string b s] appends the string [s] at the end of the buffer [b].
-    @since 4.02 *)
-
-(* val add_substring : t -> string -> int -> int -> unit *)
-(** [add_substring b s ofs len] takes [len] characters from offset
-   [ofs] in string [s] and appends them at the end of the buffer [b]. *)
-
-(* val add_subbytes : t -> bytes -> int -> int -> unit *)
-(** [add_substring b s ofs len] takes [len] characters from offset
-    [ofs] in byte sequence [s] and appends them at the end of the buffer [b].
-    @since 4.02 *)
-
-(* val add_buffer : t -> t -> unit *)
-(** [add_buffer b1 b2] appends the current contents of buffer [b2]
-   at the end of buffer [b1].  [b2] is not modified. *)    
-
-(* val add_channel : t -> in_channel -> int -> unit *)
-(** [add_channel b ic n] reads exactly [n] character from the
-   input channel [ic] and stores them at the end of buffer [b].
-   Raise [End_of_file] if the channel contains fewer than [n]
-   characters. *)
-
-val output_buffer : out_channel -> t -> unit
-(** [output_buffer oc b] writes the current contents of buffer [b]
-   on the output channel [oc]. *)   
-
-val digest : t -> Digest.t   
-
-val not_equal : 
-  t -> 
-  string -> 
-  bool 
-
-val add_int_1 :    
-   t -> int -> unit 
-
-val add_int_2 :    
-   t -> int -> unit 
-
-val add_int_3 :    
-   t -> int -> unit 
-
-val add_int_4 :    
-   t -> int -> unit 
-
-val add_string_char :    
-   t -> 
-   string ->
-   char -> 
-   unit
-   
-val add_ninja_prefix_var : 
-   t -> 
-   string -> 
-   unit 
-   
-   
-val add_char_string :    
-   t -> 
-   char -> 
-   string -> 
-   unit
-end = struct
-#1 "ext_buffer.ml"
-(**************************************************************************)
-(*                                                                        *)
-(*                                 OCaml                                  *)
-(*                                                                        *)
-(*    Pierre Weis and Xavier Leroy, projet Cristal, INRIA Rocquencourt    *)
-(*                                                                        *)
-(*   Copyright 1999 Institut National de Recherche en Informatique et     *)
-(*     en Automatique.                                                    *)
-(*                                                                        *)
-(*   All rights reserved.  This file is distributed under the terms of    *)
-(*   the GNU Lesser General Public License version 2.1, with the          *)
-(*   special exception on linking described in the file LICENSE.          *)
-(*                                                                        *)
-(**************************************************************************)
-
-(* Extensible buffers *)
-
-type t =
- {mutable buffer : bytes;
-  mutable position : int;
-  mutable length : int;
-  initial_buffer : bytes}
-
-let create n =
- let n = if n < 1 then 1 else n in
- 
- let n = if n > Sys.max_string_length then Sys.max_string_length else n in
- 
- let s = Bytes.create n in
- {buffer = s; position = 0; length = n; initial_buffer = s}
-
-let contents b = Bytes.sub_string b.buffer 0 b.position
-(* let to_bytes b = Bytes.sub b.buffer 0 b.position  *)
-
-(* let sub b ofs len =
-  if ofs < 0 || len < 0 || ofs > b.position - len
-  then invalid_arg "Ext_buffer.sub"
-  else Bytes.sub_string b.buffer ofs len *)
-
-
-(* let blit src srcoff dst dstoff len =
-  if len < 0 || srcoff < 0 || srcoff > src.position - len
-             || dstoff < 0 || dstoff > (Bytes.length dst) - len
-  then invalid_arg "Ext_buffer.blit"
-  else
-    Bytes.unsafe_blit src.buffer srcoff dst dstoff len *)
-
-let length b = b.position
-let is_empty b = b.position = 0
-let clear b = b.position <- 0
-
-(* let reset b =
-  b.position <- 0; b.buffer <- b.initial_buffer;
-  b.length <- Bytes.length b.buffer *)
-
-let resize b more =
-  let len = b.length in
-  let new_len = ref len in
-  while b.position + more > !new_len do new_len := 2 * !new_len done;
-   
-  if !new_len > Sys.max_string_length then begin
-    if b.position + more <= Sys.max_string_length
-    then new_len := Sys.max_string_length
-    else failwith "Ext_buffer.add: cannot grow buffer"
-  end;
-  
-  let new_buffer = Bytes.create !new_len in
-  (* PR#6148: let's keep using [blit] rather than [unsafe_blit] in
-     this tricky function that is slow anyway. *)
-  Bytes.blit b.buffer 0 new_buffer 0 b.position;
-  b.buffer <- new_buffer;
-  b.length <- !new_len ;
-  assert (b.position + more <= b.length)
-
-let add_char b c =
-  let pos = b.position in
-  if pos >= b.length then resize b 1;
-  Bytes.unsafe_set b.buffer pos c;
-  b.position <- pos + 1  
-
-(* let add_substring b s offset len =
-  if offset < 0 || len < 0 || offset > String.length s - len
-  then invalid_arg "Ext_buffer.add_substring/add_subbytes";
-  let new_position = b.position + len in
-  if new_position > b.length then resize b len;
-  Ext_bytes.unsafe_blit_string s offset b.buffer b.position len;
-  b.position <- new_position   *)
-
-
-(* let add_subbytes b s offset len =
-  add_substring b (Bytes.unsafe_to_string s) offset len *)
-
-let add_string b s =
-  let len = String.length s in
-  let new_position = b.position + len in
-  if new_position > b.length then resize b len;
-  Ext_bytes.unsafe_blit_string s 0 b.buffer b.position len;
-  b.position <- new_position  
-
-(* TODO: micro-optimzie *)
-let add_string_char b s c =
-  let s_len = String.length s in
-  let len = s_len + 1 in 
-  let new_position = b.position + len in
-  if new_position > b.length then resize b len;
-  let b_buffer = b.buffer in 
-  Ext_bytes.unsafe_blit_string s 0 b_buffer b.position s_len;
-  Bytes.unsafe_set b_buffer (new_position - 1) c;
-  b.position <- new_position 
-
-let add_char_string b c s  =
-  let s_len = String.length s in
-  let len = s_len + 1 in 
-  let new_position = b.position + len in
-  if new_position > b.length then resize b len;
-  let b_buffer = b.buffer in 
-  let b_position = b.position in 
-  Bytes.unsafe_set b_buffer b_position c ; 
-  Ext_bytes.unsafe_blit_string s 0 b_buffer (b_position + 1) s_len;
-  b.position <- new_position
-
-(* equivalent to add_char " "; add_char "$"; add_string s  *)
-let add_ninja_prefix_var b s =  
-  let s_len = String.length s in
-  let len = s_len + 2 in 
-  let new_position = b.position + len in
-  if new_position > b.length then resize b len;
-  let b_buffer = b.buffer in 
-  let b_position = b.position in 
-  Bytes.unsafe_set b_buffer b_position ' ' ; 
-  Bytes.unsafe_set b_buffer (b_position + 1) '$' ; 
-  Ext_bytes.unsafe_blit_string s 0 b_buffer (b_position + 2) s_len;
-  b.position <- new_position
-
-
-(* let add_bytes b s = add_string b (Bytes.unsafe_to_string s)
-
-let add_buffer b bs =
-  add_subbytes b bs.buffer 0 bs.position *)
-
-(* let add_channel b ic len =
-  if len < 0 
-    || len > Sys.max_string_length 
-    then   (* PR#5004 *)
-    invalid_arg "Ext_buffer.add_channel";
-  if b.position + len > b.length then resize b len;
-  really_input ic b.buffer b.position len;
-  b.position <- b.position + len *)
-
-let output_buffer oc b =
-  output oc b.buffer 0 b.position  
-
-external unsafe_string: bytes -> int -> int -> Digest.t = "caml_md5_string"
-
-let digest b = 
-  unsafe_string 
-  b.buffer 0 b.position    
-
-let rec not_equal_aux (b : bytes) (s : string) i len = 
-    if i >= len then false
-    else 
-      (Bytes.unsafe_get b i 
-      <>
-      String.unsafe_get s i )
-      || not_equal_aux b s (i + 1) len 
-
-(** avoid a large copy *)
-let not_equal  (b : t) (s : string) = 
-  let b_len = b.position in 
-  let s_len = String.length s in 
-  b_len <> s_len 
-  || not_equal_aux b.buffer s 0 s_len
-
-
-(**
-  It could be one byte, two bytes, three bytes and four bytes 
-  TODO: inline for better performance
-*)
-let add_int_1 (b : t ) (x : int ) = 
-  let c = (Char.unsafe_chr (x land 0xff)) in 
-  let pos = b.position in
-  if pos >= b.length then resize b 1;
-  Bytes.unsafe_set b.buffer pos c;
-  b.position <- pos + 1  
-  
-let add_int_2 (b : t ) (x : int ) = 
-  let c1 = (Char.unsafe_chr (x land 0xff)) in 
-  let c2 = (Char.unsafe_chr (x lsr 8 land 0xff)) in   
-  let pos = b.position in
-  if pos + 1 >= b.length then resize b 2;
-  let b_buffer = b.buffer in 
-  Bytes.unsafe_set b_buffer pos c1;
-  Bytes.unsafe_set b_buffer (pos + 1) c2;
-  b.position <- pos + 2
-
-let add_int_3 (b : t ) (x : int ) = 
-  let c1 = (Char.unsafe_chr (x land 0xff)) in 
-  let c2 = (Char.unsafe_chr (x lsr 8 land 0xff)) in   
-  let c3 = (Char.unsafe_chr (x lsr 16 land 0xff)) in
-  let pos = b.position in
-  if pos + 2 >= b.length then resize b 3;
-  let b_buffer = b.buffer in 
-  Bytes.unsafe_set b_buffer pos c1;
-  Bytes.unsafe_set b_buffer (pos + 1) c2;
-  Bytes.unsafe_set b_buffer (pos + 2) c3;
-  b.position <- pos + 3
-
-
-let add_int_4 (b : t ) (x : int ) = 
-  let c1 = (Char.unsafe_chr (x land 0xff)) in 
-  let c2 = (Char.unsafe_chr (x lsr 8 land 0xff)) in   
-  let c3 = (Char.unsafe_chr (x lsr 16 land 0xff)) in
-  let c4 = (Char.unsafe_chr (x lsr 24 land 0xff)) in
-  let pos = b.position in
-  if pos + 3 >= b.length then resize b 4;
-  let b_buffer = b.buffer in 
-  Bytes.unsafe_set b_buffer pos c1;
-  Bytes.unsafe_set b_buffer (pos + 1) c2;
-  Bytes.unsafe_set b_buffer (pos + 2) c3;
-  Bytes.unsafe_set b_buffer (pos + 3) c4;
-  b.position <- pos + 4
-
-
-
 
 end
 module Ext_digest : sig 

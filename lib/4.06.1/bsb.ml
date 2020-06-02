@@ -3202,9 +3202,14 @@ type module_info =
     name_sans_extension : string;
   }
 
-type t = module_info Map_string.t 
+type map = module_info Map_string.t 
 
-type ts = t array 
+type 'a cat  = {
+  mutable lib : 'a ; 
+  mutable dev : 'a;
+}
+
+type t = map cat  
 
 (** store  the meta data indexed by {!Bsb_dir_index}
   {[
@@ -3266,9 +3271,14 @@ type module_info =
   }
 
 
-type t = module_info Map_string.t 
+type map = module_info Map_string.t 
 
-type ts = t array 
+type 'a cat  = {
+  mutable lib : 'a;
+  mutable dev : 'a
+}
+
+type t = map cat 
 (** indexed by the group *)
 
 
@@ -3951,7 +3961,7 @@ type build_generator =
 
 type  file_group = 
   { dir : string ;
-    sources : Bsb_db.t; 
+    sources : Bsb_db.map; 
     resources : string list ;
     public : public ;
     dev_index : bool ; (* false means not in dev mode *)
@@ -4028,7 +4038,7 @@ type build_generator =
 
 type  file_group = 
   { dir : string ;
-    sources : Bsb_db.t; 
+    sources : Bsb_db.map; 
     resources : string list ;
     public : public ;
     dev_index : bool  ;
@@ -10159,9 +10169,9 @@ val conflict_module_info:
   'a 
 
 
-val merge : Bsb_db.t -> Bsb_db.t -> Bsb_db.t   
+val merge : Bsb_db.map -> Bsb_db.map -> Bsb_db.map   
 
-val sanity_check : Bsb_db.t -> unit
+val sanity_check : Bsb_db.map -> unit
 
 (** 
   Currently it is okay to have duplicated module, 
@@ -10170,10 +10180,10 @@ val sanity_check : Bsb_db.t -> unit
 
 val add_basename:
   dir:string -> 
-  Bsb_db.t ->  
+  Bsb_db.map ->  
   ?error_on_invalid_suffix:Ext_position.t-> 
   string -> 
-  Bsb_db.t
+  Bsb_db.map
 end = struct
 #1 "bsb_db_util.ml"
 
@@ -10201,7 +10211,7 @@ end = struct
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 type module_info = Bsb_db.module_info
-type t = Bsb_db.t
+type t = Bsb_db.map
 (* type case = Bsb_db.case *)
 
 
@@ -10513,7 +10523,7 @@ type cxt = {
 *)
 let collect_pub_modules 
     (xs : Ext_json_types.t array)
-    (cache : Bsb_db.t) : Set_string.t = 
+    (cache : Bsb_db.map) : Set_string.t = 
   let set = ref Set_string.empty in 
   for i = 0 to Array.length xs - 1 do 
     let v = Array.unsafe_get xs i in 
@@ -10533,7 +10543,7 @@ let collect_pub_modules
   done  ;
   !set
 
-let extract_pub (input : Ext_json_types.t Map_string.t) (cur_sources : Bsb_db.t) : Bsb_file_groups.public =   
+let extract_pub (input : Ext_json_types.t Map_string.t) (cur_sources : Bsb_db.map) : Bsb_file_groups.public =   
   match Map_string.find_opt input  Bsb_build_schemas.public with 
   | Some ((Str({str = s}) as x)) ->  
     if s = Bsb_build_schemas.export_all then Export_all  else 
@@ -12260,8 +12270,14 @@ module Bsb_db_encode : sig
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
+
+val encode : 
+  Bsb_db.t -> 
+  Ext_buffer.t -> 
+  unit 
+
 val write_build_cache : 
-  dir:string -> Bsb_db.ts -> string
+  dir:string -> Bsb_db.t -> string
 
 end = struct
 #1 "bsb_db_encode.ml"
@@ -12307,7 +12323,7 @@ let nl buf =
     - not readable 
  *)  
 
-let make_encoding length buf =
+let make_encoding length buf : Ext_buffer.t -> int -> unit =
   let max_range = length lsl 1 + 1 in 
   if max_range <= 0xff then begin 
     Ext_buffer.add_char buf '1';
@@ -12329,44 +12345,47 @@ let make_encoding length buf =
   they are only used to control the order.
   Strictly speaking, [tmp_buf1] is not needed
 *)
-let encode_single (db : Bsb_db.t) (buf : Ext_buffer.t) =    
-  nl buf ; (* module name section *)
+let encode_single (db : Bsb_db.map) (buf : Ext_buffer.t) =    
+  (* module name section *)  
   let len = Map_string.cardinal db in 
   Ext_buffer.add_string_char buf (string_of_int len) '\n';
-  let mapping = Hash_string.create 50 in 
-  Map_string.iter db (fun name {dir} ->  
-      Ext_buffer.add_string_char buf name '\n'; 
-      if not (Hash_string.mem mapping dir) then
-        Hash_string.add mapping dir (Hash_string.length mapping)
-    ); 
-  let length = Hash_string.length mapping in   
-  let rev_mapping = Array.make length "" in 
-  Hash_string.iter mapping (fun k i -> Array.unsafe_set rev_mapping i k);
-  (* directory name section *)
-  Ext_array.iter rev_mapping (fun s -> Ext_buffer.add_string_char buf s '\t');
-  nl buf; (* module name info section *)
-  let len_encoding = make_encoding length buf in 
-  Map_string.iter db (fun _ module_info ->       
-      len_encoding buf 
-        (Hash_string.find_exn  mapping module_info.dir lsl 1 + Obj.magic module_info.case ))      
-    
-let encode (dbs : Bsb_db.ts) buf =     
-  
-  Ext_buffer.add_char_string buf '\n' (string_of_int (Array.length dbs)); 
-  Ext_array.iter dbs (fun x ->  encode_single x  buf)
-  
+  if len <> 0 then begin 
+    let mapping = Hash_string.create 50 in 
+    Map_string.iter db (fun name {dir} ->  
+        Ext_buffer.add_string_char buf name '\n'; 
+        if not (Hash_string.mem mapping dir) then
+          Hash_string.add mapping dir (Hash_string.length mapping)
+      ); 
+    let length = Hash_string.length mapping in   
+    let rev_mapping = Array.make length "" in 
+    Hash_string.iter mapping (fun k i -> Array.unsafe_set rev_mapping i k);
+    (* directory name section *)
+    Ext_array.iter rev_mapping (fun s -> Ext_buffer.add_string_char buf s '\t');
+    nl buf; (* module name info section *)
+    let len_encoding = make_encoding length buf in 
+    Map_string.iter db (fun _ module_info ->       
+        len_encoding buf 
+          (Hash_string.find_exn  mapping module_info.dir lsl 1 + Obj.magic module_info.case ));      
+    nl buf 
+  end
+let encode (dbs : Bsb_db.t) buf =     
+  encode_single dbs.lib buf ;
+  encode_single dbs.dev buf 
 
-(* TODO: shall we avoid writing such file (checking the digest) *)
-let write_build_cache ~dir (bs_files : Bsb_db.ts)  : string = 
+
+(*  shall we avoid writing such file (checking the digest)?
+  It is expensive to start scanning the whole code base,
+  we should we avoid it in the first place, if we do start scanning,
+  this operation seems affordable
+ *)
+let write_build_cache ~dir (bs_files : Bsb_db.t)  : string = 
   let oc = open_out_bin (Filename.concat dir bsbuild_cache) in 
   let buf = Ext_buffer.create 100_000 in 
   encode bs_files buf ; 
-  let digest = Ext_buffer.digest buf in 
-  let hex_digest = Digest.to_hex digest in
-  output_string oc digest;
   Ext_buffer.output_buffer oc buf;
   close_out oc; 
-  hex_digest
+  let digest = Ext_buffer.digest buf in 
+  Digest.to_hex digest 
 
 end
 module Ext_digest : sig 
@@ -13684,35 +13703,40 @@ let output_ninja_and_namespace_map
            (fun x -> x.package_install_path));  
         Bsb_ninja_global_vars.g_ns , g_ns_flg ; 
       |] oc 
-  in        
-  let  bs_groups, bsc_lib_dirs, static_resources =    
-      (* number_of_dev_groups = 1 -- all devs share the same group *)
-      let bs_groups = Array.init  2 (fun _ -> Map_string.empty) in
-      let source_dirs = Array.init 2 (fun _ -> []) in
-      let static_resources =
-        Ext_list.fold_left bs_file_groups [] (fun (acc_resources : string list) {sources; dir; resources; dev_index} 
-           ->
-            let dir_index = if dev_index then 1 else 0 in 
-            bs_groups.(dir_index) <- Bsb_db_util.merge bs_groups.(dir_index) sources ;
-            source_dirs.(dir_index) <- dir :: source_dirs.(dir_index);
-            Ext_list.map_append resources  acc_resources (fun x -> dir//x) 
-          ) in
-      let lib = bs_groups.(0) in               
-      Bsb_db_util.sanity_check lib;
-      let c = bs_groups.(1) in
-      Bsb_db_util.sanity_check c;
-      Map_string.iter c 
-        (fun k a -> 
-           if Map_string.mem lib k  then 
-             Bsb_db_util.conflict_module_info k a (Map_string.find_exn lib k)            
-        ) ;
-      Bsb_ninja_targets.output_kv 
-        Bsb_ninja_global_vars.g_dev_incls
-        (Bsb_build_util.include_dirs source_dirs.(1)) oc
-      ;
-      bs_groups,source_dirs.(0), static_resources
-  in
-
+  in          
+  let bs_groups : Bsb_db.t = {lib = Map_string.empty; dev = Map_string.empty} in
+  let source_dirs : string list Bsb_db.cat = {lib = []; dev = []} in
+  let static_resources =
+    Ext_list.fold_left 
+      bs_file_groups 
+      [] (
+      fun 
+        (acc_resources : string list) 
+        {sources; dir; resources; dev_index} 
+        ->
+          if dev_index then begin
+            bs_groups.dev <- Bsb_db_util.merge bs_groups.dev sources ;
+            source_dirs.dev <- dir :: source_dirs.dev;  
+          end else begin 
+            bs_groups.lib <- Bsb_db_util.merge bs_groups.lib sources ;
+            source_dirs.lib <- dir :: source_dirs.lib
+          end;
+          Ext_list.map_append resources  acc_resources (fun x -> dir//x) 
+    ) in
+  let lib = bs_groups.lib in 
+  let dev = bs_groups.dev in 
+  Bsb_db_util.sanity_check lib;
+  Bsb_db_util.sanity_check dev;
+  Map_string.iter dev 
+    (fun k a -> 
+       if Map_string.mem lib k  then 
+         Bsb_db_util.conflict_module_info k a (Map_string.find_exn lib k)            
+    ) ;
+  if source_dirs.dev <> [] then
+    Bsb_ninja_targets.output_kv 
+      Bsb_ninja_global_vars.g_dev_incls
+      (Bsb_build_util.include_dirs source_dirs.dev) oc
+  ;
   let digest = Bsb_db_encode.write_build_cache ~dir:cwd_lib_bs bs_groups in
   let rules : Bsb_ninja_rule.builtin = 
       Bsb_ninja_rule.make_custom_rules 
@@ -13725,9 +13749,8 @@ let output_ninja_and_namespace_map
       ~reason_react_jsx
       ~bs_suffix
       ~digest
-      generators in 
-  
-  emit_bsc_lib_includes bs_dependencies bsc_lib_dirs external_includes namespace oc;
+      generators in   
+  emit_bsc_lib_includes bs_dependencies source_dirs.lib external_includes namespace oc;
   output_static_resources static_resources rules.copy_resources oc ;
   (** Generate build statement for each file *)        
   Ext_list.iter bs_file_groups 

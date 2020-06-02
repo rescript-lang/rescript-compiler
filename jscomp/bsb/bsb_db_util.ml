@@ -23,7 +23,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 type module_info = Bsb_db.module_info
-type t = Bsb_db.t
+type t = Bsb_db.map
 (* type case = Bsb_db.case *)
 
 
