@@ -22,6 +22,9 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
+ type nested = {
+    depth : int ; [@bs.as "BS_PRIVATE_NESTED_SOME_NONE"]
+  } 
 
 val nullable_to_opt : 'a Js.null_undefined -> 'a option
 
@@ -32,6 +35,8 @@ val null_to_opt : 'a Js.null -> 'a option
 val valFromOption : Obj.t -> Obj.t 
 
 val some : Obj.t -> Obj.t 
+
+val isNested : Obj.t -> bool 
 
 val option_get : Obj.t option -> Obj.t Caml_undefined_extern.t 
 
