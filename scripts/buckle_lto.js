@@ -7,15 +7,29 @@ var pairs = [
   ["Clflags.unsafe_string", "false"],
   ["Clflags.record_event_when_debug", "false"],
   ["Clflags.no_std_include", "true"],
-  ["no_std_include", "true"],
   ["Clflags.use_threads", "false"],
   ["Clflags.use_vmthreads", "false"],
   ["Clflags.no_implicit_current_dir", "true"],
   ["Clflags.strict_sequence", "true"],
   ["Clflags.strict_formats", "true"],
+  ["Location.absname", "true"],
 ];
 
-var regexp = RegExp(`${pairs.map((x) => "!" + x[0]).join("|")}`, "g");
+var regexp = RegExp(
+  `${pairs
+    .map((x) => {
+      let result = [];
+      result.push("!" + x[0]);
+      let xs = x[0].split(".");
+      if (xs.length === 2 && xs[1]) {
+        result.push("!" + xs[1]);
+      }
+      return result;
+    })
+    .flat()
+    .join("|")}`,
+  "g"
+);
 
 /**
  *
@@ -24,7 +38,8 @@ var regexp = RegExp(`${pairs.map((x) => "!" + x[0]).join("|")}`, "g");
 function transform(s) {
   return s.replace(regexp, (s) => {
     for (let [k, v] of pairs) {
-      if (s.includes(k)) {
+      if (s.includes(k.split(".")[1])) {
+        // "bs_only" instead of "Clflags.bs_only"
         return v;
       }
     }
@@ -33,7 +48,7 @@ function transform(s) {
 }
 // transform('!Config.bs_only && Clflags.native && !Clflags.native')
 var file = process.argv[2];
-console.log(`post processing file`, file);
+console.log(`POST-PROCESSING-FILE:`, file);
 fs.writeFileSync(
   file,
 

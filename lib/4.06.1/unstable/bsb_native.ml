@@ -5193,8 +5193,8 @@ let rev_lib_bs_prefix p = rev_lib_bs // p
 
 let ocaml_bin_install_prefix p = lib_ocaml // p
 
-let lazy_src_root_dir = "$src_root_dir" 
-let proj_rel path = lazy_src_root_dir // path
+
+let proj_rel path = rev_lib_bs // path
 
 (** it may not be a bad idea to hard code the binary path 
     of bsb in configuration time
@@ -9760,9 +9760,6 @@ let include_dirs_by dirs fn =
     (Ext_list.flat_map dirs (fun x -> ["-I"; Ext_filename.maybe_quote (fn x)]))
 
 
-(* we use lazy $src_root_dir *)
-
-
 
 (* It does several conversion:
    First, it will convert unix path to windows backward on windows platform.
@@ -12739,7 +12736,6 @@ let g_pkg_flg = "g_pkg_flg"
 
 let bsc = "bsc" 
 
-let src_root_dir = "src_root_dir"
 let bsdep = "bsdep"
 
 let bsc_flags = "bsc_flags"
@@ -12747,7 +12743,6 @@ let bsc_flags = "bsc_flags"
 let ppx_flags = "ppx_flags"
 
 let pp_flags = "pp_flags"
-
 
 let g_dpkg_incls = "g_dpkg_incls"
 
@@ -13837,7 +13832,6 @@ let output_ninja_and_namespace_map
     Bsb_ninja_targets.output_kvs
       [|
         Bsb_ninja_global_vars.g_pkg_flg, g_pkg_flg ; 
-        Bsb_ninja_global_vars.src_root_dir, per_proj_dir (* TODO: need check its integrity -- allow relocate or not? *);
         (* The path to [bsc.exe] independent of config  *)
         Bsb_ninja_global_vars.bsc, (Ext_filename.maybe_quote Bsb_global_paths.vendor_bsc);
         (* The path to [bsb_heler.exe] *)

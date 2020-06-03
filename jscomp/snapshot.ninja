@@ -17,48 +17,45 @@ SNAP=../lib/$snapshot_path
 
 build snapshot: phony  $SNAP/whole_compiler.ml   $SNAP/bsb_helper.ml $SNAP/bsb.ml $SNAP/bspp.ml $SNAP/unstable/all_ounit_tests.ml
 
-build $SNAP/whole_compiler.ml: bspack | ./bin/bspack.exe
+build $SNAP/whole_compiler.ml: bspack | ./bin/bspack.exe $LTO
     flags = ${releaseMode} -bs-MD -module-alias Config=Config_whole_compiler -bs-exclude-I config  -I $OCAML_SRC_UTILS -I $OCAML_SRC_PARSING -I $OCAML_SRC_TYPING -I $OCAML_SRC_BYTECOMP -I $OCAML_SRC_DRIVER   ${includes}
     main = Js_main
     post_process = && node $LTO $SNAP/whole_compiler.ml
 
-
-
-build $SNAP/bsb_helper.ml: bspack | ./bin/bspack.exe
+build $SNAP/bsb_helper.ml: bspack | ./bin/bspack.exe $LTO
      flags = -bs-MD ${releaseMode}   -I stubs -I common -I ext -I syntax -I depends -I bsb_helper  -I main 
      main = Bsb_helper_main 
 
-build $SNAP/bsb.ml: bspack | ./bin/bspack.exe
+build $SNAP/bsb.ml: bspack | ./bin/bspack.exe $LTO
      flags =   -D BS_MIN_LEX_DEPS=true -bs-MD ${releaseMode} -I $OCAML_SRC_UTILS -I $OCAML_SRC_PARSING -I stubs -I common -I ext -I syntax -I depends -I bsb -I ext -I main 
      main = Bsb_main 
 
-
-build $SNAP/bspp.ml: bspack | ./bin/bspack.exe
+build $SNAP/bspp.ml: bspack | ./bin/bspack.exe $LTO
      flags = -D BS_MIN_LEX_DEPS=true ${releaseMode} -bs-MD -module-alias Config=Config_whole_compiler   -I $OCAML_SRC_UTILS -I $OCAML_SRC_PARSING?parser   -I common -I ext -I syntax -I depends -I bspp -I core -I main 
      main = Bspp_main 
 
-build $SNAP/unstable/bsb_native.ml: bspack | ./bin/bspack.exe
+build $SNAP/unstable/bsb_native.ml: bspack | ./bin/bspack.exe $LTO
      flags =   -D BS_MIN_LEX_DEPS=true -D BS_NATIVE=true -bs-MD ${releaseMode} -I $OCAML_SRC_UTILS -I $OCAML_SRC_PARSING -I stubs -I common -I ext -I syntax -I depends -I bsb -I ext -I main 
      main = Bsb_main 
      
-build $SNAP/unstable/native_ppx.ml: bspack | ./bin/bspack.exe     
+build $SNAP/unstable/native_ppx.ml: bspack | ./bin/bspack.exe $LTO 
      flags =   -module-alias Config=Config_whole_compiler -D BS_MIN_LEX_DEPS=true -D BS_NATIVE=true -bs-MD ${releaseMode} -I $OCAML_SRC_UTILS -I $OCAML_SRC_PARSING -I stubs -I common -I ext -I syntax -I depends -I bsb -I ext -I core -I main 
      main = Native_ppx_main
 
 
-build $SNAP/unstable/all_ounit_tests.ml: bspack | ./bin/bspack.exe
+build $SNAP/unstable/all_ounit_tests.ml: bspack | ./bin/bspack.exe $LTO
     flags =  -bs-MD    -I ounit -I ounit_tests  -I stubs -I bsb -I bsb_helper -I common -I ext -I syntax -I depends -I bspp -I core -I main
     main = Ounit_tests_main         
 
-build $SNAP/unstable/bspack.ml: bspack | ./bin/bspack.exe 
+build $SNAP/unstable/bspack.ml: bspack | ./bin/bspack.exe $LTO
     flags = -bs-MD -module-alias Config=Config_whole_compiler  -I $OCAML_SRC_PARSING -I $OCAML_SRC_UTILS -I stubs -I ext -I common -I depends -I core -I main -bs-main Bspack_main
     main = Bspack_main
 
-build $SNAP/unstable/js_compiler.ml: bspack | ./bin/bspack.exe
+build $SNAP/unstable/js_compiler.ml: bspack | ./bin/bspack.exe $LTO
     flags = -D BS_BROWSER=true -bs-MD  -module-alias Config=Config_whole_compiler  -bs-exclude-I config   -I $OCAML_SRC_UTILS -I $OCAML_SRC_PARSING -I $OCAML_SRC_TYPING -I $OCAML_SRC_BYTECOMP -I $OCAML_SRC_DRIVER -I stubs -I ext -I syntax -I depends -I common -I core -I super_errors -I bsb -I outcome_printer -I js_parser -I main
     main  = Jsoo_main
 
-build $SNAP/unstable/js_refmt_compiler.ml: bspack | ./bin/bspack.exe
+build $SNAP/unstable/js_refmt_compiler.ml: bspack | ./bin/bspack.exe $LTO
     flags = -D BS_BROWSER=true -bs-MD  -module-alias Config=Config_whole_compiler  -bs-exclude-I config   -I $OCAML_SRC_UTILS -I $OCAML_SRC_PARSING -I $OCAML_SRC_TYPING -I $OCAML_SRC_BYTECOMP -I $OCAML_SRC_DRIVER -I js_parser -I stubs -I ext -I syntax -I depends -I common -I core -I super_errors -I bsb -I outcome_printer -I js_parser -I main -I refmt
     main  = Jsoo_refmt_main
 

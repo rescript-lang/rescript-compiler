@@ -32,6 +32,7 @@ let setup_env () =
   Clflags.no_std_include := true;
   Warnings.parse_options false Bsc_warnings.defaults_w;
   Warnings.parse_options true Bsc_warnings.defaults_warn_error;
+  Location.absname := true;
   Clflags.dump_location := false;  
   Clflags.compile_only := true;
   Config.bs_only := true;  

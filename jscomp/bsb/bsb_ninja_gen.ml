@@ -146,7 +146,6 @@ let output_ninja_and_namespace_map
     Bsb_ninja_targets.output_kvs
       [|
         Bsb_ninja_global_vars.g_pkg_flg, g_pkg_flg ; 
-        Bsb_ninja_global_vars.src_root_dir, per_proj_dir (* TODO: need check its integrity -- allow relocate or not? *);
         (* The path to [bsc.exe] independent of config  *)
         Bsb_ninja_global_vars.bsc, (Ext_filename.maybe_quote Bsb_global_paths.vendor_bsc);
         (* The path to [bsb_heler.exe] *)

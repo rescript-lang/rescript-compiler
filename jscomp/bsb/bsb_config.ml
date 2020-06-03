@@ -52,8 +52,8 @@ let rev_lib_bs_prefix p = rev_lib_bs // p
 
 let ocaml_bin_install_prefix p = lib_ocaml // p
 
-let lazy_src_root_dir = "$src_root_dir" 
-let proj_rel path = lazy_src_root_dir // path
+
+let proj_rel path = rev_lib_bs // path
 
 (** it may not be a bad idea to hard code the binary path 
     of bsb in configuration time

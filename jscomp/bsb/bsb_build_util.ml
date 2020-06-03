@@ -54,9 +54,6 @@ let include_dirs_by dirs fn =
     (Ext_list.flat_map dirs (fun x -> ["-I"; Ext_filename.maybe_quote (fn x)]))
 
 
-(* we use lazy $src_root_dir *)
-
-
 
 (* It does several conversion:
    First, it will convert unix path to windows backward on windows platform.
