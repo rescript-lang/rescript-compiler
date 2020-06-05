@@ -166,32 +166,32 @@ let rec caml_compare (a : Obj.t) (b : Obj.t) : int =
   | "number", "number" -> 
       Pervasives.compare (Obj.magic a : int) (Obj.magic b : int)
   | "number", _ ->        
-      if b == Obj.repr Js.null || Obj.tag b = 256 then 1 (* Some (Some ..) < x *)
+      if b == Obj.repr Js.null || Caml_option.isNested b  then 1 (* Some (Some ..) < x *)
       else 
         -1 (* Integer < Block in OCaml runtime GPR #1195, except Some.. *)
   | _, "number" -> 
-      if a == Obj.repr Js.null || Obj.tag a = 256 then -1
+      if a == Obj.repr Js.null || Caml_option.isNested a then -1
       else 1
   | _ ->        
       if a == Obj.repr Js.null then 
         (* [b] could not be null otherwise would equal *)
-        if Obj.tag b = 256 then 1 else -1
+        if Caml_option.isNested b  then 1 else -1
      else if b == Obj.repr Js.null then 
-        if Obj.tag a = 256 then -1 else 1    
+        if Caml_option.isNested a  then -1 else 1    
      else    
-        let tag_a = Obj.tag a in
-        let tag_b = Obj.tag b in
         (* double_array_tag: 254
         *)
-        if tag_a = 256 then   
-          if tag_b = 256 then 
-            Pervasives.compare (Obj.magic (Obj.field a 1) : int)
-             (Obj.magic (Obj.field b 1) : int)
+        if Caml_option.isNested a  then   
+          if Caml_option.isNested b then 
+            aux_obj_compare a b
             (* Some None < Some (Some None)) *)
           else  (* b could not be undefined/None *)
              (* Some None < Some ..*) 
              -1 
-        else if tag_a = 248 (* object/exception *)  then
+        else 
+        let tag_a = Obj.tag a in
+        let tag_b = Obj.tag b in
+        if tag_a = 248 (* object/exception *)  then
           Pervasives.compare (Obj.magic (Obj.field a 1) : int) (Obj.magic (Obj.field b 1 ))
         else if tag_a = 251 (* abstract_tag *) then
           raise (Invalid_argument "equal: abstract value")
@@ -286,8 +286,6 @@ let rec caml_equal (a : Obj.t) (b : Obj.t) : bool =
           raise (Invalid_argument "equal: abstract value")
         else if tag_a <> tag_b then
           false
-        else if tag_a = 256 then 
-          (Obj.magic (Obj.field a 1) : int) = Obj.magic (Obj.field b 1)
         else 
           let len_a = Obj.size a in
           let len_b = Obj.size b in

@@ -22,27 +22,26 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
-let%private undefinedHeader = [| |]
-type nest = (int array * int)
 
+type nested = {
+  depth : int ; [@bs.as "BS_PRIVATE_NESTED_SOME_NONE"]
+}
+
+(* INPUT: [x] should not be nullable *)
+let isNested (x : Obj.t) : bool = 
+  Obj.repr ((Obj.magic x : nested).depth) != Obj.repr Js.undefined 
 
 let some ( x : Obj.t) : Obj.t = 
   if Obj.magic x =  None then 
-    (let block = Obj.repr (undefinedHeader, 0) in
-    Obj.set_tag block 256;
-    block)
+    (Obj.repr {depth = 0})
   else 
-    if x != Obj.repr Js.null && match (Obj.magic x :nest ) with (x,_) -> x ==  undefinedHeader then   
-      (
-      let nid =   match (Obj.magic x : nest) with (_,x) -> x + 1 in 
-      let block = Obj.repr (undefinedHeader, nid) in 
-       Obj.set_tag block 256;        
-       block
-      )
+    (* [x] is neither None nor null so it is safe to do property access *)
+    if x != Obj.repr Js.null &&  isNested x then   
+      Obj.repr {depth = (Obj.magic x : nested).depth + 1}
     else  x 
 
-let nullable_to_opt (type t) ( x : t Js.null_undefined) : t option = 
-  if (Obj.magic x) == Js.null ||  (Obj.magic x) == Js.undefined then 
+let nullable_to_opt (type t) ( x : t Js.nullable) : t option = 
+  if Js.isNullable x then 
     None 
   else Obj.magic (some (Obj.magic x : 'a))
 
@@ -62,11 +61,11 @@ let null_to_opt (type t ) ( x : t Js.null) : t option =
 (** The input is already of [Some] form, [x] is not None, 
     make sure [x[0]] will not throw *)
 let valFromOption (x : Obj.t) : Obj.t =   
-  if  x != Obj.repr Js.null && match (Obj.magic x : nest) with (x,_) -> x ==  undefinedHeader 
+  if  x != Obj.repr Js.null && isNested x
   then 
-    (match (Obj.magic x : nest) with _, depth ->  
+    let {depth } : nested = Obj.magic x in
     if depth = 0 then Obj.magic None
-    else Obj.magic (undefinedHeader, depth - 1))
+    else Obj.repr {depth = depth - 1}
   else Obj.magic x   
 
 
