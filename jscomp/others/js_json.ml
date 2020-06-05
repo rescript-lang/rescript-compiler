@@ -174,7 +174,7 @@ let patch : _ -> _ = [%raw{|function (json) {
 |}]
 
 
-let serialize (type t) (x : t) : string option = [%raw{| function(obj){
+let serializeExn (type t) (x : t) : string option = [%raw{| function(obj){
   return JSON.stringify(obj,function(_,value){
       if(value===undefined){
           return {RE_PRIVATE_NONE : true}

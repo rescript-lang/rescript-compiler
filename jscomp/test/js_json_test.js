@@ -737,7 +737,7 @@ eq("File \"js_json_test.ml\", line 388, characters 5-12", Js_json.decodeNull({})
 eq("File \"js_json_test.ml\", line 390, characters 5-12", Js_json.decodeNull(1.23), undefined);
 
 function id(obj) {
-  var x = Js_json.serialize(obj);
+  var x = Js_json.serializeExn(obj);
   if (x !== undefined) {
     return Js_json.deserializeExn(x);
   }

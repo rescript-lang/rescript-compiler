@@ -392,7 +392,7 @@ let () =
 
 
 let id (type t ) (obj : t) : t  = 
-    match J.serialize obj with 
+    match J.serializeExn obj with 
     | None -> assert false 
     | Some x -> J.deserializeExn x  
 
