@@ -37,8 +37,10 @@ module E = Js_exp_make
    Note if we inline {!Caml_exceptions.create}, 
    it seems can be useful for optimizations in theory, 
    in practice, it never happen, since the pattern match 
-   never dig into it internally, so maybe {!Obj.set_tag} 
-   is not necessary at all
+   never dig into it internally.
+   Alternative is to create a block `["xx"]` which relies on object identity
+   We try to avoid this, since inlining would break this, this would make reason
+   about the correctness of inlining more difficult
 *)
 let make exception_str  : J.expression = 
   E.runtime_call Js_runtime_modules.exceptions Literals.create [exception_str]

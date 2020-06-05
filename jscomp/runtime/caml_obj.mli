@@ -60,4 +60,3 @@ val caml_min :
 val caml_max : 
   t -> t -> t 
 
-val caml_obj_set_tag : Obj.t -> int -> unit 

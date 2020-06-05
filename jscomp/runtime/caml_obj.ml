@@ -346,5 +346,5 @@ let caml_min (x : Obj.t) y =
 let caml_max (x : Obj.t) y =    
   if caml_compare x y >= 0 then x else y 
 
-let caml_obj_set_tag = Obj.set_tag  
+  
 
