@@ -1,4 +1,5 @@
 let suites :  Mt.pair_suites ref  = ref []
+module J = Js.Json
 
 let add_test =
   let counter = ref 0 in
@@ -18,22 +19,22 @@ let true_ loc =
 
 let () =
 
-  let v = Js.Json.parseExn {| { "x" : [1, 2, 3 ] } |} in
+  let v = J.parseExn {| { "x" : [1, 2, 3 ] } |} in
 
   add_test __LOC__ (fun _ ->
-    let ty = Js.Json.classify v in
+    let ty = J.classify v in
     match ty with
-    | Js.Json.JSONObject x ->  (* compiler infer x : Js.Json.t Js.Dict.t *)
+    | J.JSONObject x ->  (* compiler infer x : J.t Js.Dict.t *)
       begin match Js.Dict.get x "x" with
       | Some v ->
-        let ty2 = Js.Json.classify v in
+        let ty2 = J.classify v in
         begin match ty2 with
-        | Js.Json.JSONArray x ->  (* compiler infer x : Js.Json.t array *)
+        | J.JSONArray x ->  (* compiler infer x : J.t array *)
           x
           |. Js.Array2.forEach (fun  x ->
-              let ty3 = Js.Json.classify x in
+              let ty3 = J.classify x in
               match ty3 with
-              | Js.Json.JSONNumber _ -> ()
+              | J.JSONNumber _ -> ()
               | _ -> assert false
           )
           |> (fun () -> Mt.Ok true)
@@ -45,54 +46,54 @@ let () =
     | _ -> Mt.Ok false
   );
 
-  eq __LOC__ (Js.Json.test v Object) true
+  eq __LOC__ (J.test v Object) true
 
 let () =
-  let json = Js.Json.null |> Js.Json.stringify |> Js.Json.parseExn in
-  let ty = Js.Json.classify json in
+  let json = J.null |> J.stringify |> J.parseExn in
+  let ty = J.classify json in
   match ty with
-  | Js.Json.JSONNull -> true_ __LOC__
+  | J.JSONNull -> true_ __LOC__
   | _ -> Js.log ty; false_ __LOC__
 
 let () =
   let json =
-    Js.Json.string "test string"
-    |> Js.Json.stringify |> Js.Json.parseExn
+    J.string "test string"
+    |> J.stringify |> J.parseExn
   in
-  let ty = Js.Json.classify json in
+  let ty = J.classify json in
   match ty with
-  | Js.Json.JSONString x -> eq __LOC__ x "test string"
+  | J.JSONString x -> eq __LOC__ x "test string"
   | _ -> false_ __LOC__
 
 let () =
   let json =
-    Js.Json.number 1.23456789
-    |> Js.Json.stringify |> Js.Json.parseExn
+    J.number 1.23456789
+    |> J.stringify |> J.parseExn
   in
-  let ty = Js.Json.classify json in
+  let ty = J.classify json in
   match ty with
-  | Js.Json.JSONNumber x -> eq __LOC__ x 1.23456789
+  | J.JSONNumber x -> eq __LOC__ x 1.23456789
   | _ -> add_test __LOC__ (fun _ -> Mt.Ok false)
 
 let () =
   let json =
-    Js.Json.number (float_of_int 0xAFAFAFAF)
-    |> Js.Json.stringify |> Js.Json.parseExn
+    J.number (float_of_int 0xAFAFAFAF)
+    |> J.stringify |> J.parseExn
   in
-  let ty = Js.Json.classify json in
+  let ty = J.classify json in
   match ty with
-  | Js.Json.JSONNumber x -> eq __LOC__ (int_of_float x) 0xAFAFAFAF
+  | J.JSONNumber x -> eq __LOC__ (int_of_float x) 0xAFAFAFAF
   | _ -> add_test __LOC__ (fun _ -> Mt.Ok false)
 
 let () =
   let test v =
     let json =
-        Js.Json.boolean v |> Js.Json.stringify |> Js.Json.parseExn
+        J.boolean v |> J.stringify |> J.parseExn
     in
-    let ty = Js.Json.classify json in
+    let ty = J.classify json in
     match ty with
-    | Js.Json.JSONTrue  -> eq __LOC__ true v
-    | Js.Json.JSONFalse  -> eq __LOC__ false v
+    | J.JSONTrue  -> eq __LOC__ true v
+    | J.JSONFalse  -> eq __LOC__ false v
     | _ -> false_ __LOC__
   in
   test true;
@@ -103,29 +104,29 @@ let option_get = function | None -> assert false | Some x -> x
 
 let () =
   let dict = Js_dict.empty  () in
-  Js_dict.set dict "a" (Js_json.string "test string");
-  Js_dict.set dict "b" (Js_json.number 123.0);
+  Js_dict.set dict "a" (J.string "test string");
+  Js_dict.set dict "b" (J.number 123.0);
 
   let json =
-    dict |> Js.Json.object_ |> Js.Json.stringify |> Js.Json.parseExn
+    dict |> J.object_ |> J.stringify |> J.parseExn
   in
 
   (* Make sure parsed as Object *)
-  let ty = Js.Json.classify json in
+  let ty = J.classify json in
   match ty with
-  | Js.Json.JSONObject x ->
+  | J.JSONObject x ->
 
     (* Test field 'a' *)
-    let ta = Js.Json.classify (option_get @@ Js_dict.get x "a") in
+    let ta = J.classify (option_get @@ Js_dict.get x "a") in
     begin match ta with
-    | Js.Json.JSONString a ->
+    | J.JSONString a ->
       if a <> "test string"
       then false_ __LOC__
       else
         (* Test field 'b' *)
-        let ty = Js.Json.classify (option_get @@ Js_dict.get x "b") in
+        let ty = J.classify (option_get @@ Js_dict.get x "b") in
         begin match ty with
-        | Js.Json.JSONNumber b ->
+        | J.JSONNumber b ->
           add_test __LOC__ (fun _ -> Mt.Approx (123.0, b))
         | _ -> false_ __LOC__
         end
@@ -138,17 +139,17 @@ let () =
 let eq_at_i
       (type a)
       (loc:string)
-      (json:Js_json.t)
+      (json:J.t)
       (i:int)
-      (kind:a Js.Json.kind)
+      (kind:a J.kind)
       (expected:a) : unit =
 
-  let ty = Js.Json.classify json in
+  let ty = J.classify json in
   match ty with
-  | Js.Json.JSONArray x ->
-    let ty = Js.Json.classify x.(i) in
+  | J.JSONArray x ->
+    let ty = J.classify x.(i) in
     begin match  kind with
-    |  Js.Json.Boolean ->
+    |  J.Boolean ->
       (match ty with
       | JSONTrue ->
         eq loc true expected
@@ -156,25 +157,25 @@ let eq_at_i
       | JSONFalse ->
         eq loc false expected
       | _ -> false_ loc)
-    | Js.Json.Number ->
+    | J.Number ->
       (match ty with
       | JSONNumber f -> eq loc f expected
       | _ -> false_ loc
       )
-    | Js.Json.Object  ->
+    | J.Object  ->
       (match ty with
       | JSONObject f -> eq loc f expected
       | _ -> false_ loc
       )
-    | Js.Json.Array ->
+    | J.Array ->
       (match ty with
       | JSONArray f -> eq loc f expected
       | _ -> false_ loc)
-    | Js.Json.Null ->
+    | J.Null ->
       (match ty with
       | JSONNull -> true_ loc
       | _ -> false_ loc)
-    | Js.Json.String ->
+    | J.String ->
       (match ty with
       | JSONString f -> eq loc f expected
       | _ -> false_ loc
@@ -185,40 +186,40 @@ let eq_at_i
 let () =
   let json =
     [| "string 0"; "string 1"; "string 2" |]
-    |> Array.map Js.Json.string
-    |> Js.Json.array
-    |> Js.Json.stringify
-    |> Js.Json.parseExn
+    |> Array.map J.string
+    |> J.array
+    |> J.stringify
+    |> J.parseExn
   in
-  eq_at_i __LOC__ json 0 Js.Json.String "string 0";
-  eq_at_i __LOC__ json 1 Js.Json.String "string 1";
-  eq_at_i __LOC__ json 2 Js.Json.String "string 2";
+  eq_at_i __LOC__ json 0 J.String "string 0";
+  eq_at_i __LOC__ json 1 J.String "string 1";
+  eq_at_i __LOC__ json 2 J.String "string 2";
   ()
 
 let () =
   let json =
     [| "string 0"; "string 1"; "string 2" |]
-    |> Js.Json.stringArray
-    |> Js.Json.stringify
-    |> Js.Json.parseExn
+    |> J.stringArray
+    |> J.stringify
+    |> J.parseExn
   in
-  eq_at_i __LOC__ json 0 Js.Json.String "string 0";
-  eq_at_i __LOC__ json 1 Js.Json.String "string 1";
-  eq_at_i __LOC__ json 2 Js.Json.String "string 2";
+  eq_at_i __LOC__ json 0 J.String "string 0";
+  eq_at_i __LOC__ json 1 J.String "string 1";
+  eq_at_i __LOC__ json 2 J.String "string 2";
   ()
 
 let () =
   let a = [| 1.0000001; 10000000000.1; 123.0 |] in
   let json =
     a
-    |> Js.Json.numberArray
-    |> Js.Json.stringify
-    |> Js.Json.parseExn
+    |> J.numberArray
+    |> J.stringify
+    |> J.parseExn
   in
   (* Loop is unrolled to keep relevant location information *)
-  eq_at_i __LOC__ json 0 Js.Json.Number a.(0);
-  eq_at_i __LOC__ json 1 Js.Json.Number a.(1);
-  eq_at_i __LOC__ json 2 Js.Json.Number a.(2);
+  eq_at_i __LOC__ json 0 J.Number a.(0);
+  eq_at_i __LOC__ json 1 J.Number a.(1);
+  eq_at_i __LOC__ json 2 J.Number a.(2);
   ()
 
 let () =
@@ -226,55 +227,55 @@ let () =
   let json =
     a
     |> Array.map float_of_int
-    |> Js.Json.numberArray
-    |> Js.Json.stringify
-    |> Js.Json.parseExn
+    |> J.numberArray
+    |> J.stringify
+    |> J.parseExn
   in
   (* Loop is unrolled to keep relevant location information *)
-  eq_at_i __LOC__ json 0 Js.Json.Number (float_of_int a.(0));
-  eq_at_i __LOC__ json 1 Js.Json.Number (float_of_int a.(1));
-  eq_at_i __LOC__ json 2 Js.Json.Number (float_of_int a.(2));
+  eq_at_i __LOC__ json 0 J.Number (float_of_int a.(0));
+  eq_at_i __LOC__ json 1 J.Number (float_of_int a.(1));
+  eq_at_i __LOC__ json 2 J.Number (float_of_int a.(2));
   ()
 
 let () =
   let a = [| true; false; true |] in
   let json =
     a
-    |> Js.Json.booleanArray
-    |> Js.Json.stringify
-    |> Js.Json.parseExn
+    |> J.booleanArray
+    |> J.stringify
+    |> J.parseExn
   in
   (* Loop is unrolled to keep relevant location information *)
-  eq_at_i __LOC__ json 0 Js.Json.Boolean a.(0);
-  eq_at_i __LOC__ json 1 Js.Json.Boolean a.(1);
-  eq_at_i __LOC__ json 2 Js.Json.Boolean a.(2);
+  eq_at_i __LOC__ json 0 J.Boolean a.(0);
+  eq_at_i __LOC__ json 1 J.Boolean a.(1);
+  eq_at_i __LOC__ json 2 J.Boolean a.(2);
   ()
 
 let () =
   let make_d s i =
     let d = Js_dict.empty() in
-    Js_dict.set d "a" (Js_json.string s);
-    Js_dict.set d "b" (Js_json.number (float_of_int i));
+    Js_dict.set d "a" (J.string s);
+    Js_dict.set d "b" (J.number (float_of_int i));
     d
   in
 
   let a = [| make_d "aaa" 123; make_d "bbb" 456 |] in
   let json =
     a
-    |> Js.Json.objectArray
-    |> Js.Json.stringify
-    |> Js.Json.parseExn
+    |> J.objectArray
+    |> J.stringify
+    |> J.parseExn
   in
 
-  let ty= Js.Json.classify json in
+  let ty= J.classify json in
   match ty with
-  | Js.Json.JSONArray x ->
-    let ty= Js.Json.classify x.(1) in
+  | J.JSONArray x ->
+    let ty= J.classify x.(1) in
     begin match ty with
-    | Js.Json.JSONObject a1->
-      let ty =  Js.Json.classify @@ option_get @@ Js_dict.get a1 "a" in
+    | J.JSONObject a1->
+      let ty =  J.classify @@ option_get @@ Js_dict.get a1 "a" in
       begin match ty with
-      | Js.Json.JSONString aValue -> eq __LOC__ aValue "bbb"
+      | J.JSONString aValue -> eq __LOC__ aValue "bbb"
       | _ -> false_ __LOC__
       end
     | _ -> false_ __LOC__
@@ -284,7 +285,7 @@ let () =
 let () =
   let invalid_json_str = "{{ A}" in
   try
-    let _ = Js_json.parseExn invalid_json_str in
+    let _ = J.parseExn invalid_json_str in
     false_ __LOC__
   with
   | exn ->
@@ -292,101 +293,115 @@ let () =
 
 (* stringifyAny tests *)
 
-let () = eq __LOC__ (Js.Json.stringifyAny [|1; 2; 3|]) (Some "[1,2,3]")
+let () = eq __LOC__ (J.stringifyAny [|1; 2; 3|]) (Some "[1,2,3]")
 
 let () =
   eq
   __LOC__
-  (Js.Json.stringifyAny [%bs.obj {foo = 1; bar = "hello"; baz = [%bs.obj {baaz = 10}]}])
+  (J.stringifyAny [%bs.obj {foo = 1; bar = "hello"; baz = [%bs.obj {baaz = 10}]}])
   (Some {|{"foo":1,"bar":"hello","baz":{"baaz":10}}|})
 
-let () = eq __LOC__ (Js.Json.stringifyAny Js.Null.empty) (Some "null")
+let () = eq __LOC__ (J.stringifyAny Js.Null.empty) (Some "null")
 
-let () = eq __LOC__ (Js.Json.stringifyAny Js.Undefined.empty) None
-
-let () =
-  eq __LOC__
-    (Js.Json.decodeString (Js.Json.string "test")) (Some "test");
-  eq __LOC__
-    (Js.Json.decodeString (Js.Json.boolean true)) None;
-  eq __LOC__
-    (Js.Json.decodeString (Js.Json.array [||])) None;
-  eq __LOC__
-    (Js.Json.decodeString Js.Json.null) None;
-  eq __LOC__
-    (Js.Json.decodeString (Js.Json.object_ @@ Js.Dict.empty ())) None;
-  eq __LOC__
-    (Js.Json.decodeString (Js.Json.number 1.23)) None
+let () = eq __LOC__ (J.stringifyAny Js.Undefined.empty) None
 
 let () =
   eq __LOC__
-    (Js.Json.decodeNumber (Js.Json.string "test")) None;
+    (J.decodeString (J.string "test")) (Some "test");
   eq __LOC__
-    (Js.Json.decodeNumber (Js.Json.boolean true)) None;
+    (J.decodeString (J.boolean true)) None;
   eq __LOC__
-    (Js.Json.decodeNumber (Js.Json.array [||])) None;
+    (J.decodeString (J.array [||])) None;
   eq __LOC__
-    (Js.Json.decodeNumber Js.Json.null) None;
+    (J.decodeString J.null) None;
   eq __LOC__
-    (Js.Json.decodeNumber (Js.Json.object_ @@ Js.Dict.empty ())) None;
+    (J.decodeString (J.object_ @@ Js.Dict.empty ())) None;
   eq __LOC__
-    (Js.Json.decodeNumber (Js.Json.number 1.23)) (Some 1.23)
+    (J.decodeString (J.number 1.23)) None
 
 let () =
   eq __LOC__
-    (Js.Json.decodeObject (Js.Json.string "test")) None;
+    (J.decodeNumber (J.string "test")) None;
   eq __LOC__
-    (Js.Json.decodeObject (Js.Json.boolean true)) None;
+    (J.decodeNumber (J.boolean true)) None;
   eq __LOC__
-    (Js.Json.decodeObject (Js.Json.array [||])) None;
+    (J.decodeNumber (J.array [||])) None;
   eq __LOC__
-    (Js.Json.decodeObject Js.Json.null) None;
+    (J.decodeNumber J.null) None;
   eq __LOC__
-    (Js.Json.decodeObject (Js.Json.object_ @@ Js.Dict.empty ()))
+    (J.decodeNumber (J.object_ @@ Js.Dict.empty ())) None;
+  eq __LOC__
+    (J.decodeNumber (J.number 1.23)) (Some 1.23)
+
+let () =
+  eq __LOC__
+    (J.decodeObject (J.string "test")) None;
+  eq __LOC__
+    (J.decodeObject (J.boolean true)) None;
+  eq __LOC__
+    (J.decodeObject (J.array [||])) None;
+  eq __LOC__
+    (J.decodeObject J.null) None;
+  eq __LOC__
+    (J.decodeObject (J.object_ @@ Js.Dict.empty ()))
     (Some (Js.Dict.empty ()));
   eq __LOC__
-    (Js.Json.decodeObject (Js.Json.number 1.23)) None
+    (J.decodeObject (J.number 1.23)) None
 
 let () =
   eq __LOC__
-    (Js.Json.decodeArray (Js.Json.string "test")) None;
+    (J.decodeArray (J.string "test")) None;
   eq __LOC__
-    (Js.Json.decodeArray (Js.Json.boolean true)) None;
+    (J.decodeArray (J.boolean true)) None;
   eq __LOC__
-    (Js.Json.decodeArray (Js.Json.array [||])) (Some [||]);
+    (J.decodeArray (J.array [||])) (Some [||]);
   eq __LOC__
-    (Js.Json.decodeArray Js.Json.null) None;
+    (J.decodeArray J.null) None;
   eq __LOC__
-    (Js.Json.decodeArray (Js.Json.object_ @@ Js.Dict.empty ())) None;
+    (J.decodeArray (J.object_ @@ Js.Dict.empty ())) None;
   eq __LOC__
-    (Js.Json.decodeArray (Js.Json.number 1.23)) None
+    (J.decodeArray (J.number 1.23)) None
 
 let () =
   eq __LOC__
-    (Js.Json.decodeBoolean (Js.Json.string "test")) None;
+    (J.decodeBoolean (J.string "test")) None;
   eq __LOC__
-    (Js.Json.decodeBoolean (Js.Json.boolean true)) (Some true);
+    (J.decodeBoolean (J.boolean true)) (Some true);
   eq __LOC__
-    (Js.Json.decodeBoolean (Js.Json.array [||])) None;
+    (J.decodeBoolean (J.array [||])) None;
   eq __LOC__
-    (Js.Json.decodeBoolean Js.Json.null) None;
+    (J.decodeBoolean J.null) None;
   eq __LOC__
-    (Js.Json.decodeBoolean (Js.Json.object_ @@ Js.Dict.empty ())) None;
+    (J.decodeBoolean (J.object_ @@ Js.Dict.empty ())) None;
   eq __LOC__
-    (Js.Json.decodeBoolean (Js.Json.number 1.23)) None
+    (J.decodeBoolean (J.number 1.23)) None
 
 let () =
   eq __LOC__
-    (Js.Json.decodeNull (Js.Json.string "test")) None;
+    (J.decodeNull (J.string "test")) None;
   eq __LOC__
-    (Js.Json.decodeNull (Js.Json.boolean true)) None;
+    (J.decodeNull (J.boolean true)) None;
   eq __LOC__
-    (Js.Json.decodeNull (Js.Json.array [||])) None;
+    (J.decodeNull (J.array [||])) None;
   eq __LOC__
-    (Js.Json.decodeNull Js.Json.null) (Some Js.null);
+    (J.decodeNull J.null) (Some Js.null);
   eq __LOC__
-    (Js.Json.decodeNull (Js.Json.object_ @@ Js.Dict.empty ())) None;
+    (J.decodeNull (J.object_ @@ Js.Dict.empty ())) None;
   eq __LOC__
-    (Js.Json.decodeNull (Js.Json.number 1.23)) None
+    (J.decodeNull (J.number 1.23)) None
+
+
+let id (type t ) (obj : t) : t  = 
+    match J.serialize obj with 
+    | None -> assert false 
+    | Some x -> J.deserializeExn x  
+
+let idtest obj = 
+  eq __LOC__ obj (id obj)      
+let ( ) = 
+  idtest None;
+  idtest [None, None, None];
+  idtest (Belt.List.makeBy 500 (fun i -> if i mod 2 = 0 then None else Some 1));
+  idtest (Belt.Array.makeBy 500 (fun i -> if i mod 2 = 0 then None else Some 1))
 
 let () = Mt.from_pair_suites __MODULE__ !suites

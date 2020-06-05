@@ -237,3 +237,8 @@ Js.log \@\@ Js.Json.stringifyAny [| "foo"; "bar" |]
 
 
 
+
+val deserializeExn : string -> 'a 
+
+(** Best-effort serialization, it tries to seralize as many objects as possible and deserialize it back*) 
+val serialize : 'a -> string option 

@@ -129,3 +129,61 @@ external stringify: t -> string = "stringify"
   [@@bs.val] [@@bs.scope "JSON"]
 external stringifyWithSpace: t -> (_ [@bs.as {json|null|json}]) -> int -> string = "stringify"
   [@@bs.val] [@@bs.scope "JSON"]
+
+
+(* in memory modification does not work until your root is
+   actually None, so we need wrap it as `[v]` and
+   return the first element instead *)
+
+let patch : _ -> _ = [%raw{|function (json) {
+  var x = [json];
+  var q = [{ kind: 0, i: 0, parent: x }];
+  while (q.length !== 0) {
+    // begin pop the stack
+    var cur = q[q.length - 1];
+    if (cur.kind === 0) {
+      cur.val = cur.parent[cur.i]; // patch the undefined value for array
+      if (++cur.i === cur.parent.length) {
+        q.pop();
+      }
+    } else {
+      q.pop();
+    }
+    // finish
+    var task = cur.val;
+    if (typeof task === "object") {
+      if (Array.isArray(task) && task.length !== 0) {
+        q.push({ kind: 0, i: 0, parent: task, val: undefined });
+      } else {
+        for (var k in task) {
+          if (k === "RE_PRIVATE_NONE") {
+            if (cur.kind === 0) {
+              cur.parent[cur.i - 1] = undefined;
+            } else {
+              cur.parent[cur.i] = undefined;
+            }
+            continue;
+          }
+          q.push({ kind: 1, i: k, parent: task, val: task[k] });
+        }
+      }
+    }
+  }
+  return x[0];
+}
+|}]
+
+
+let serialize (type t) (x : t) : string option = [%raw{| function(obj){
+  return JSON.stringify(obj,function(_,value){
+      if(value===undefined){
+          return {RE_PRIVATE_NONE : true}
+      }
+    return value
+  })
+  }
+|}] x 
+
+let deserializeExn (s: string) : 'a = 
+  patch (parseExn s)
+
