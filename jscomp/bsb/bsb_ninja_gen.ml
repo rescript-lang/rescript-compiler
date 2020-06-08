@@ -207,6 +207,7 @@ let output_ninja_and_namespace_map
       ~reason_react_jsx
       ~bs_suffix
       ~digest
+      ~debug:!Bsb_config.debug_mode
       generators in   
   emit_bsc_lib_includes bs_dependencies source_dirs.lib external_includes namespace oc;
   output_static_resources static_resources rules.copy_resources oc ;

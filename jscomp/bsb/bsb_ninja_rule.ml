@@ -119,6 +119,7 @@ let make_custom_rules
   ~(reason_react_jsx : Bsb_config_types.reason_react_jsx option)
   ~(digest : string)
   ~(refmt : string option) (* set refmt path when needed *)
+  ~(debug : bool)
   (custom_rules : command Map_string.t) : 
   builtin = 
   (** FIXME: We don't need set [-o ${out}] when building ast 
@@ -130,6 +131,8 @@ let make_custom_rules
       ~postbuild : string =     
     Ext_buffer.clear buf;
     Ext_buffer.add_string buf "$bsc -color always";
+    if debug then 
+      Ext_buffer.add_string buf "-bs-g";    
     Ext_buffer.add_ninja_prefix_var buf Bsb_ninja_global_vars.g_pkg_flg;
     if bs_suffix then
       Ext_buffer.add_string buf " -bs-suffix";
@@ -153,6 +156,8 @@ let make_custom_rules
   let mk_ast ~(has_pp : bool) ~has_ppx ~has_reason_react_jsx : string =
     Ext_buffer.clear buf ; 
     Ext_buffer.add_string buf "$bsc  $warnings -color always";
+    if debug then 
+      Ext_buffer.add_string buf "-bs-g";
     (match refmt with 
     | None -> ()
     | Some x ->

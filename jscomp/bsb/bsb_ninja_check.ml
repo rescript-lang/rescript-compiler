@@ -21,10 +21,11 @@
  * You should have received a copy of the GNU Lesser General Public License
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
-
+[@@@warning "+9"]
 
 type t =
   { 
+    debug_mode : bool;  
     dir_or_files : string array ;
     st_mtimes : float array;
     source_directory :  string ;    
@@ -79,8 +80,8 @@ let rec check_aux cwd (xs : string array) (ys: float array) i finish =
 let read (fname : string) (cont : t -> check_result) =
   match open_in_bin fname with   (* Windows binary mode*)
   | ic ->
-    let buffer = really_input_string ic (String.length magic_number) in
-    if (buffer <> magic_number) then Bsb_bsc_version_mismatch
+    let buffer = really_input_string ic (String.length Bs_version.version) in
+    if buffer <> Bs_version.version then Bsb_bsc_version_mismatch
     else
       let res : t = input_value ic  in
       close_in ic ;
@@ -96,7 +97,9 @@ let record ~per_proj_dir ~file  (file_or_dirs : string list) : unit =
          )
   in 
   write (Ext_string.concat3 file "_" !Bsb_global_backend.backend_string)
-    { st_mtimes ;
+    { 
+      debug_mode = !Bsb_config.debug_mode;  
+      st_mtimes ;
       dir_or_files;
       source_directory = per_proj_dir ;
     }
@@ -109,9 +112,11 @@ let record ~per_proj_dir ~file  (file_or_dirs : string list) : unit =
 *)
 let check ~(per_proj_dir:string) ~forced ~file : check_result =
   read (Ext_string.concat3 file "_" !Bsb_global_backend.backend_string)  (fun  {
-      dir_or_files ; source_directory; st_mtimes
+      dir_or_files ; source_directory; st_mtimes;
+      debug_mode
     } ->
       if per_proj_dir <> source_directory then Bsb_source_directory_changed else
+      if debug_mode <> !Bsb_config.debug_mode then Other "one in debug mode, ther other in release mode" else
       if forced then Bsb_forced (* No need walk through *)
       else
         try

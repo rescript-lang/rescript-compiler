@@ -66,7 +66,8 @@ let bsb_main_flags : (string * Arg.spec * string) list=
     " Init sample project to get started. Note (`bsb -init sample` will create a sample project while `bsb -init .` will reuse current directory)";
     "-theme", Arg.String set_theme,
     " The theme for project initialization, default is basic(https://github.com/bucklescript/bucklescript/tree/master/jscomp/bsb/templates)";
-    
+    "-g", Arg.Set Bsb_config.debug_mode,
+    " Build projects in Debug mode";
     regen, Arg.Set force_regenerate,
     " (internal) Always regenerate build.ninja no matter bsconfig.json is changed or not (for debugging purpose)";
     "-themes", Arg.Unit Bsb_theme_init.list_themes,

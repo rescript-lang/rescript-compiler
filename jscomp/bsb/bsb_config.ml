@@ -64,5 +64,5 @@ let proj_rel path = lazy_src_root_dir // path
 
 
 
-(* let cmd_package_specs = ref None  *)
+let debug_mode = ref false
 

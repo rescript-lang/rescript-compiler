@@ -75,7 +75,10 @@ let build_bs_deps cwd (deps : Bsb_package_specs.t) (ninja_args : string array) =
             Bsb_ninja_regen.regenerate_ninja 
               ~toplevel_package_specs:(Some deps) 
               ~forced:true
-              ~per_proj_dir:proj_dir  in (* set true to force regenrate ninja file so we have [config_opt]*)
+              ~per_proj_dir:proj_dir  in 
+          (* set true to force regenrate ninja file so we have [config_opt]
+            In the future, we may improve this but be careful with debug mode
+          *)
           let command = 
             {Bsb_unix.cmd = vendor_ninja;
              cwd = proj_dir // lib_artifacts_dir;

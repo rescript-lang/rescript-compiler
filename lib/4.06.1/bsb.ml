@@ -5136,7 +5136,7 @@ val rev_lib_bs_prefix : string -> string
 
 (** default not install, only when -make-world, its dependencies will be installed  *)
 
-
+val debug_mode : bool ref
 end = struct
 #1 "bsb_config.ml"
 (* Copyright (C) 2015-2016 Bloomberg Finance L.P.
@@ -5199,7 +5199,7 @@ let proj_rel path = lazy_src_root_dir // path
 
 
 
-(* let cmd_package_specs = ref None  *)
+let debug_mode = ref false
 
 
 end
@@ -12139,10 +12139,11 @@ end = struct
  * You should have received a copy of the GNU Lesser General Public License
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
-
+[@@@warning "+9"]
 
 type t =
   { 
+    debug_mode : bool;  
     dir_or_files : string array ;
     st_mtimes : float array;
     source_directory :  string ;    
@@ -12197,8 +12198,8 @@ let rec check_aux cwd (xs : string array) (ys: float array) i finish =
 let read (fname : string) (cont : t -> check_result) =
   match open_in_bin fname with   (* Windows binary mode*)
   | ic ->
-    let buffer = really_input_string ic (String.length magic_number) in
-    if (buffer <> magic_number) then Bsb_bsc_version_mismatch
+    let buffer = really_input_string ic (String.length Bs_version.version) in
+    if buffer <> Bs_version.version then Bsb_bsc_version_mismatch
     else
       let res : t = input_value ic  in
       close_in ic ;
@@ -12214,7 +12215,9 @@ let record ~per_proj_dir ~file  (file_or_dirs : string list) : unit =
          )
   in 
   write (Ext_string.concat3 file "_" !Bsb_global_backend.backend_string)
-    { st_mtimes ;
+    { 
+      debug_mode = !Bsb_config.debug_mode;  
+      st_mtimes ;
       dir_or_files;
       source_directory = per_proj_dir ;
     }
@@ -12227,9 +12230,11 @@ let record ~per_proj_dir ~file  (file_or_dirs : string list) : unit =
 *)
 let check ~(per_proj_dir:string) ~forced ~file : check_result =
   read (Ext_string.concat3 file "_" !Bsb_global_backend.backend_string)  (fun  {
-      dir_or_files ; source_directory; st_mtimes
+      dir_or_files ; source_directory; st_mtimes;
+      debug_mode
     } ->
       if per_proj_dir <> source_directory then Bsb_source_directory_changed else
+      if debug_mode <> !Bsb_config.debug_mode then Other "one in debug mode, ther other in release mode" else
       if forced then Bsb_forced (* No need walk through *)
       else
         try
@@ -12700,6 +12705,7 @@ val make_custom_rules :
   reason_react_jsx : Bsb_config_types.reason_react_jsx option ->
   digest:string ->
   refmt:string option ->
+  debug:bool ->
   command Map_string.t ->
   builtin
 
@@ -12827,6 +12833,7 @@ let make_custom_rules
   ~(reason_react_jsx : Bsb_config_types.reason_react_jsx option)
   ~(digest : string)
   ~(refmt : string option) (* set refmt path when needed *)
+  ~(debug : bool)
   (custom_rules : command Map_string.t) : 
   builtin = 
   (** FIXME: We don't need set [-o ${out}] when building ast 
@@ -12838,6 +12845,8 @@ let make_custom_rules
       ~postbuild : string =     
     Ext_buffer.clear buf;
     Ext_buffer.add_string buf "$bsc -color always";
+    if debug then 
+      Ext_buffer.add_string buf "-bs-g";    
     Ext_buffer.add_ninja_prefix_var buf Bsb_ninja_global_vars.g_pkg_flg;
     if bs_suffix then
       Ext_buffer.add_string buf " -bs-suffix";
@@ -12861,6 +12870,8 @@ let make_custom_rules
   let mk_ast ~(has_pp : bool) ~has_ppx ~has_reason_react_jsx : string =
     Ext_buffer.clear buf ; 
     Ext_buffer.add_string buf "$bsc  $warnings -color always";
+    if debug then 
+      Ext_buffer.add_string buf "-bs-g";
     (match refmt with 
     | None -> ()
     | Some x ->
@@ -13749,6 +13760,7 @@ let output_ninja_and_namespace_map
       ~reason_react_jsx
       ~bs_suffix
       ~digest
+      ~debug:!Bsb_config.debug_mode
       generators in   
   emit_bsc_lib_includes bs_dependencies source_dirs.lib external_includes namespace oc;
   output_static_resources static_resources rules.copy_resources oc ;
@@ -16549,7 +16561,10 @@ let build_bs_deps cwd (deps : Bsb_package_specs.t) (ninja_args : string array) =
             Bsb_ninja_regen.regenerate_ninja 
               ~toplevel_package_specs:(Some deps) 
               ~forced:true
-              ~per_proj_dir:proj_dir  in (* set true to force regenrate ninja file so we have [config_opt]*)
+              ~per_proj_dir:proj_dir  in 
+          (* set true to force regenrate ninja file so we have [config_opt]
+            In the future, we may improve this but be careful with debug mode
+          *)
           let command = 
             {Bsb_unix.cmd = vendor_ninja;
              cwd = proj_dir // lib_artifacts_dir;
@@ -16658,7 +16673,8 @@ let bsb_main_flags : (string * Arg.spec * string) list=
     " Init sample project to get started. Note (`bsb -init sample` will create a sample project while `bsb -init .` will reuse current directory)";
     "-theme", Arg.String set_theme,
     " The theme for project initialization, default is basic(https://github.com/bucklescript/bucklescript/tree/master/jscomp/bsb/templates)";
-    
+    "-g", Arg.Set Bsb_config.debug_mode,
+    " Build projects in Debug mode";
     regen, Arg.Set force_regenerate,
     " (internal) Always regenerate build.ninja no matter bsconfig.json is changed or not (for debugging purpose)";
     "-themes", Arg.Unit Bsb_theme_init.list_themes,

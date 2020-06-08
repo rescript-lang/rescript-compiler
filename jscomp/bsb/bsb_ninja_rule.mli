@@ -78,6 +78,7 @@ val make_custom_rules :
   reason_react_jsx : Bsb_config_types.reason_react_jsx option ->
   digest:string ->
   refmt:string option ->
+  debug:bool ->
   command Map_string.t ->
   builtin
 

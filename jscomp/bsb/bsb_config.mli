@@ -39,3 +39,4 @@ val rev_lib_bs_prefix : string -> string
 
 (** default not install, only when -make-world, its dependencies will be installed  *)
 
+val debug_mode : bool ref
