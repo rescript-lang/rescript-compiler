@@ -422,6 +422,7 @@ type walk_cxt = {
     root : string;
     traverse : bool;
     ignored_dirs : Set_string.t;
+    gentype_language: string;
   }
   
 let rec walk_sources (cxt : walk_cxt) (sources : Ext_json_types.t) = 
@@ -449,10 +450,11 @@ and walk_source_dir_map (cxt : walk_cxt)  sub_dirs_field =
     let working_dir = Filename.concat cxt.root cxt.cwd in 
     if not (Set_string.mem cxt.ignored_dirs cxt.cwd) then begin 
       let file_array = Sys.readdir working_dir in 
-      (* Remove .re.js when clean up *)
-      Ext_array.iter file_array begin fun file -> 
-        if Ext_string.ends_with file Literals.suffix_gen_js 
-        || Ext_string.ends_with file Literals.suffix_gen_tsx 
+      (* Remove .gen.js/.gen.tsx during clean up *)
+      Ext_array.iter file_array begin fun file ->
+        let is_typescript = cxt.gentype_language = "typescript" in
+        if ((not is_typescript) && Ext_string.ends_with file Literals.suffix_gen_js) 
+        || (is_typescript && Ext_string.ends_with file Literals.suffix_gen_tsx)
         then 
           Sys.remove (Filename.concat working_dir file)
       end; 
@@ -487,13 +489,20 @@ let clean_re_js root =
       | Some (Arr {content = x}) -> Set_string.of_list (Bsb_build_util.get_list_string x )
       | Some _
       | None -> Set_string.empty
-    in  
+    in
+    let gentype_language =
+        match Map_string.find_opt map Bsb_build_schemas.language with
+        | None -> ""
+        | Some (Str {str}) -> str
+        | Some _ -> ""
+    in
     Ext_option.iter (Map_string.find_opt map Bsb_build_schemas.sources) begin fun config -> 
       try (
           walk_sources { root ;                           
                          traverse = true; 
                          cwd = Filename.current_dir_name;
-                         ignored_dirs
+                         ignored_dirs;
+                         gentype_language;
                          } config
         ) with _ -> ()      
     end
