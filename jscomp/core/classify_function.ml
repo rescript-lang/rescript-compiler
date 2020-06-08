@@ -26,7 +26,7 @@ let classify (prog : string) : Js_raw_info.exp =
   match Parser_flow.parse_expression 
     (Parser_env.init_env None prog) false with 
   | (_, Function {
-    id = None;
+    id = _;
     params = (_, {params});
     async = false;
     generator = false;
