@@ -491,9 +491,13 @@ let clean_re_js root =
       | None -> Set_string.empty
     in
     let gentype_language =
-        match Map_string.find_opt map Bsb_build_schemas.language with
+      match Map_string.find_opt map Bsb_build_schemas.gentypeconfig with
         | None -> ""
-        | Some (Str {str}) -> str
+        | Some (Obj { map }) ->
+          (match Map_string.find_opt map Bsb_build_schemas.language with
+          | None -> ""
+          | Some (Str {str}) -> str
+          | Some _ -> "")
         | Some _ -> ""
     in
     Ext_option.iter (Map_string.find_opt map Bsb_build_schemas.sources) begin fun config -> 
