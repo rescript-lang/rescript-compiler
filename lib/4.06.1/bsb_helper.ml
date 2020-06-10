@@ -1611,10 +1611,13 @@ module Bsb_helper_arg : sig
 
 
 
+type string_action = 
+  | Call of (string -> unit)  
+  | Set of {mutable contents : string}
+
 type spec =
-  | Set of bool ref            
-  | String of (string -> unit) 
-  | Set_string of string ref   
+  | Bool of bool ref            
+  | String of string_action 
 
 type key = string
 type doc = string
@@ -1638,10 +1641,14 @@ type key = string
 type doc = string
 type anon_fun = rev_args:string list -> unit
 
+type string_action = 
+  | Call of (string -> unit)  
+  | Set of {mutable contents : string}
+
 type spec =
-  | Set of bool ref            
-  | String of (string -> unit) 
-  | Set_string of string ref   
+  | Bool of bool ref            
+  | String of string_action 
+
 
 exception Bad of string
 
@@ -1649,10 +1656,6 @@ exception Bad of string
 type error =
   | Unknown of string
   | Missing of string
-
-
-
-
 
 type t = (string * spec * string) list 
 
@@ -1669,13 +1672,18 @@ let (+>) = Ext_buffer.add_string
 let usage_b (buf : Ext_buffer.t) progname speclist  =
   buf +> progname;
   buf +> " options:\n";
+  let max_col = ref 0 in 
+  Ext_list.iter speclist (fun (key,_,_) -> 
+      if String.length key > !max_col then 
+        max_col := String.length key
+    );
   Ext_list.iter speclist (fun (key,_,doc) -> 
       buf +> "  ";
       buf +> key ; 
-      buf +> " ";
+      buf +> (String.make (!max_col - String.length key + 1 ) ' ');
       buf +> doc;
       buf +> "\n"
-    ) 
+    )
 ;;
 
 
@@ -1713,17 +1721,17 @@ let parse_exn  ~progname ~argv ~start (speclist : t) anonfun  =
       match assoc3 s speclist with 
       | Some action -> begin       
           begin match action with 
-            | Set r -> r := true;
+            | Bool r -> r := true;
             | String f  ->
-              if !current  < l then begin 
-                f argv.(!current);
-                incr current;
-              end else stop_raise ~progname ~error:(Missing s) speclist 
-            | Set_string r  ->
-              if !current  < l then begin 
-                r := argv.(!current);
-                incr current;
-              end else stop_raise ~progname ~error:(Missing s) speclist 
+              if !current >= l then stop_raise ~progname ~error:(Missing s) speclist 
+              else begin                 
+                let arg = argv.(!current) in 
+                incr current;  
+                match f with 
+                | Call f ->   
+                  f arg
+                | Set u -> u.contents <- arg
+              end             
           end;      
         end;      
       | None -> stop_raise ~progname ~error:(Unknown s) speclist 
@@ -4079,7 +4087,9 @@ end = struct
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 let compilation_kind = ref Bsb_helper_depfile_gen.Js
 
-let hash : string ref = ref ""
+let hash : Bsb_helper_arg.string_action = 
+  Set {contents = ""}
+
 let dev_group = ref false
 let namespace = ref None
  
@@ -4089,13 +4099,13 @@ let () =
   ~argv:Sys.argv
   ~start:1
   [
-    "-g",  Set dev_group ,
-    " Set the dev group (default to be 0)"
+    "-g",  Bool dev_group ,
+    "Set the dev group (default to be 0)"
     ;
-    "-bs-ns",  String (fun s -> namespace := Some s),
-    " Set namespace";
-    "-hash",  Set_string hash,
-    " Set hash(internal)";
+    "-bs-ns",  String (Call (fun s -> namespace := Some s)),
+    "Set namespace";
+    "-hash",  String hash,
+    "Set hash(internal)";
   ] (fun ~rev_args -> 
       match rev_args with
       | [x]

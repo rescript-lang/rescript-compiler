@@ -34,13 +34,18 @@ let (+>) = Ext_buffer.add_string
 let usage_b (buf : Ext_buffer.t) progname speclist  =
   buf +> progname;
   buf +> " options:\n";
+  let max_col = ref 0 in 
+  Ext_list.iter speclist (fun (key,_,_) -> 
+      if String.length key > !max_col then 
+        max_col := String.length key
+    );
   Ext_list.iter speclist (fun (key,_,doc) -> 
       buf +> "  ";
       buf +> key ; 
-      buf +> " ";
+      buf +> (String.make (!max_col - String.length key + 1 ) ' ');
       buf +> doc;
       buf +> "\n"
-    ) 
+    )
 ;;
 
 

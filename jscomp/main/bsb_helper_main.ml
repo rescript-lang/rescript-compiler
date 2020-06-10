@@ -25,7 +25,7 @@ let compilation_kind = ref Bsb_helper_depfile_gen.Js
 
 let hash : Bsb_helper_arg.string_action = 
   Set {contents = ""}
-  
+
 let dev_group = ref false
 let namespace = ref None
  
@@ -36,12 +36,12 @@ let () =
   ~start:1
   [
     "-g",  Bool dev_group ,
-    " Set the dev group (default to be 0)"
+    "Set the dev group (default to be 0)"
     ;
     "-bs-ns",  String (Call (fun s -> namespace := Some s)),
-    " Set namespace";
+    "Set namespace";
     "-hash",  String hash,
-    " Set hash(internal)";
+    "Set hash(internal)";
   ] (fun ~rev_args -> 
       match rev_args with
       | [x]
