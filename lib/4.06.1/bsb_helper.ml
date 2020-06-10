@@ -1612,12 +1612,9 @@ module Bsb_helper_arg : sig
 
 
 type spec =
-  | Unit of (unit -> unit)       
   | Set of bool ref            
   | String of (string -> unit) 
   | Set_string of string ref   
-  | Int of (int -> unit)       
-  | Set_int of int ref         
 
 type key = string
 type doc = string
@@ -1639,19 +1636,15 @@ type usage_msg = string
 type anon_fun = (string -> unit)
 
 type spec =
-  | Unit of (unit -> unit)     
   | Set of bool ref            
   | String of (string -> unit) 
   | Set_string of string ref   
-  | Int of (int -> unit)       
-  | Set_int of int ref         
 
 exception Bad of string
-(* exception Help of string *)
+
 
 type error =
   | Unknown of string
-  | Wrong of string * string * string  (* option, actual, expected *)
   | Missing of string
   | Message of string
 
@@ -1702,15 +1695,6 @@ let stop_raise progname (error : error) speclist errmsg  =
       Ext_buffer.add_string b " option '";
       Ext_buffer.add_string b s;
       Ext_buffer.add_string b "' needs an argument.\n"      
-    | Wrong (opt, arg, expected) ->
-      Ext_buffer.add_string_char b progname ':';
-      Ext_buffer.add_string b " wrong argument '";
-      Ext_buffer.add_string b arg; 
-      Ext_buffer.add_string b "'; option '";
-      Ext_buffer.add_string b opt;
-      Ext_buffer.add_string b "' expects ";
-      Ext_buffer.add_string b expected;
-      Ext_buffer.add_string b ".\n"      
     | Message s ->
       Ext_buffer.add_string_char b progname ':';
       Ext_buffer.add_char_string b ' ' s;
@@ -1734,30 +1718,13 @@ let parse_exn  (speclist : t) anonfun errmsg =
         | None -> stop_raise (Unknown s)
       in
       begin try
-        let treat_action = function
-        | Unit f -> f ();
+        let treat_action spec = match spec with 
         | Set r -> r := true;
         | String f when !current + 1 < l ->
             f argv.(!current + 1);
             incr current;
         | Set_string r when !current + 1 < l ->
             r := argv.(!current + 1);
-            incr current;
-        | Int f when !current + 1 < l ->
-            let arg = argv.(!current + 1) in
-            begin match int_of_string arg with 
-              | i -> f i 
-              | exception _ 
-                ->
-                raise (Stop (Wrong (s, arg, "an integer")))
-            end;
-            incr current;
-        | Set_int r when !current + 1 < l ->
-            let arg = argv.(!current + 1) in
-            r := (try int_of_string arg
-                  with _ ->
-                    raise (Stop (Wrong (s, arg, "an integer")))
-                 );
             incr current;
         | _ -> raise (Stop (Missing s))
         in
@@ -1774,17 +1741,6 @@ let parse_exn  (speclist : t) anonfun errmsg =
 ;;
 
 
-
-(* let parse l f msg =
-  try
-    parse_exn l f msg;
-  with
-  | Bad msg -> 
-    output_string stderr msg ; exit 2;
-  | Help msg -> 
-    output_string stdout  msg; exit 0;
-;;
- *)
 
 end
 module Ext_pervasives : sig 

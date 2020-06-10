@@ -2,12 +2,9 @@
 
 
 type spec =
-  | Unit of (unit -> unit)       
   | Set of bool ref            
   | String of (string -> unit) 
   | Set_string of string ref   
-  | Int of (int -> unit)       
-  | Set_int of int ref         
 
 type key = string
 type doc = string
