@@ -24,15 +24,8 @@
 let compilation_kind = ref Bsb_helper_depfile_gen.Js
 
 let hash : string ref = ref ""
-
-
-(* let output_prefix = ref None *)
 let dev_group = ref false
 let namespace = ref None
-
-
-
-let usage = "Usage: bsb_helper.exe [options] \nOptions are:"
  
 let () =
   Bsb_helper_arg.parse_exn 
@@ -62,6 +55,6 @@ let () =
           !namespace x y
       | _ -> 
         ()
-    ) usage;
+    ) ;
   (* arrange with mlast comes first *)
   

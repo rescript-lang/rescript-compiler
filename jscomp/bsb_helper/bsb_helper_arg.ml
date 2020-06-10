@@ -1,7 +1,6 @@
 
 type key = string
 type doc = string
-type usage_msg = string
 type anon_fun = rev_args:string list -> unit
 
 type spec =
@@ -32,27 +31,26 @@ let rec assoc3 (x : string) (l : t) =
 
 let (+>) = Ext_buffer.add_string
 
-let usage_b (buf : Ext_buffer.t) speclist errmsg =
-  let print_spec buf (key, _spec, doc) =
-    if  doc <> "" then begin 
-      Ext_buffer.add_string buf "  ";
-      Ext_buffer.add_string_char buf key ' ';  
-      Ext_buffer.add_string_char buf doc '\n'  
-    end 
-  in 
-
-  Ext_buffer.add_string_char buf errmsg '\n';
-  Ext_list.iter speclist (print_spec buf) 
+let usage_b (buf : Ext_buffer.t) progname speclist  =
+  buf +> progname;
+  buf +> " options:\n";
+  Ext_list.iter speclist (fun (key,_,doc) -> 
+      buf +> "  ";
+      buf +> key ; 
+      buf +> " ";
+      buf +> doc;
+      buf +> "\n"
+    ) 
 ;;
 
 
   
-let stop_raise ~progname ~(error : error) speclist errmsg  =
+let stop_raise ~progname ~(error : error) speclist   =
   let b = Ext_buffer.create 200 in  
   begin match error with
     | Unknown ("-help" | "--help" | "-h") -> 
-      usage_b b speclist errmsg;
-      output_string stdout (Ext_buffer.contents b);
+      usage_b b progname speclist ;
+      Ext_buffer.output_buffer stdout b;
       exit 0      
     | Unknown s ->
       b +> progname ;
@@ -65,11 +63,11 @@ let stop_raise ~progname ~(error : error) speclist errmsg  =
       b +> s;
       b +> "' needs an argument.\n"      
   end;
-  usage_b b speclist errmsg;
+  usage_b b progname speclist ;
   raise (Bad (Ext_buffer.contents b))
 
 
-let parse_exn  ~progname ~argv ~start (speclist : t) anonfun errmsg =    
+let parse_exn  ~progname ~argv ~start (speclist : t) anonfun  =    
   let l = Array.length argv in
   let current = ref start in 
   let rev_list = ref [] in 
@@ -85,15 +83,15 @@ let parse_exn  ~progname ~argv ~start (speclist : t) anonfun errmsg =
               if !current  < l then begin 
                 f argv.(!current);
                 incr current;
-              end else stop_raise ~progname ~error:(Missing s) speclist errmsg
+              end else stop_raise ~progname ~error:(Missing s) speclist 
             | Set_string r  ->
               if !current  < l then begin 
                 r := argv.(!current);
                 incr current;
-              end else stop_raise ~progname ~error:(Missing s) speclist errmsg
+              end else stop_raise ~progname ~error:(Missing s) speclist 
           end;      
         end;      
-      | None -> stop_raise ~progname ~error:(Unknown s) speclist errmsg
+      | None -> stop_raise ~progname ~error:(Unknown s) speclist 
     end else begin
       rev_list := s :: !rev_list;      
     end;
