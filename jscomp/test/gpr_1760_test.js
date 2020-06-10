@@ -90,7 +90,7 @@ catch (exn$5){
   a7 = 1;
 }
 
-eq("File \"gpr_1760_test.ml\", line 30, characters 5-12", [
+eq("File \"gpr_1760_test.ml\", line 26, characters 5-12", [
       a0,
       a1,
       a4,

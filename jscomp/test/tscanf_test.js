@@ -4784,18 +4784,7 @@ function test53(param) {
                 _3: /* End_of_format */0
               },
               _1: "%nd"
-            }), id) === 123 && Curry._1(Scanf.sscanf("124", /* Format */{
-              _0: {
-                TAG: /* Nativeint */6,
-                _0: /* Int_d */0,
-                _1: /* No_padding */0,
-                _2: /* No_precision */0,
-                _3: /* End_of_format */0
-              },
-              _1: "%nd"
-            }), (function (i) {
-            return i - 1 === 123;
-          })) && Curry._1(Scanf.sscanf("123", /* Format */{
+            }), id) === 123 && Curry._1(Scanf.sscanf("123", /* Format */{
               _0: {
                 TAG: /* Int32 */5,
                 _0: /* Int_d */0,

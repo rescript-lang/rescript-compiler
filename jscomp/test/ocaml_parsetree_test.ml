@@ -5566,7 +5566,7 @@ let mkuminus name arg =
   | "-", Pexp_constant(Const_int64 n) ->
       mkexp(Pexp_constant(Const_int64(Int64.neg n)))
   | "-", Pexp_constant(Const_nativeint n) ->
-      mkexp(Pexp_constant(Const_nativeint(Nativeint.neg n)))
+    assert false
   | ("-" | "-."), Pexp_constant(Const_float f) ->
       mkexp(Pexp_constant(Const_float(neg_float_string f)))
   | _ ->
@@ -16373,7 +16373,7 @@ let yyact = [|
     let _2 = (Parsing.peek_val __caml_parser_env 0 : nativeint) in
     Obj.repr(
 # 2152 "parsing/parser.mly"
-                                           ( Const_nativeint(Nativeint.neg _2) )
+                                           ( assert false )
 # 11015 "parsing/parser.ml"
                : 'signed_constant))
 ; (fun __caml_parser_env ->
@@ -18214,9 +18214,7 @@ let cvt_int32_literal s =
   Int32.neg (Int32.of_string ("-" ^ String.sub s 0 (String.length s - 1)))
 let cvt_int64_literal s =
   Int64.neg (Int64.of_string ("-" ^ String.sub s 0 (String.length s - 1)))
-let cvt_nativeint_literal s =
-  Nativeint.neg (Nativeint.of_string ("-" ^ String.sub s 0
-                                                       (String.length s - 1)))
+let cvt_nativeint_literal s = assert false
 
 (* Remove underscores from float literals *)
 

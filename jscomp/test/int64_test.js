@@ -898,72 +898,60 @@ var suites = Pervasives.$at({
                                                                               ],
                                                                               tl: {
                                                                                 hd: [
-                                                                                  "shift_right",
+                                                                                  "fib_int64",
                                                                                   (function (param) {
                                                                                       return {
                                                                                               TAG: /* Eq */0,
-                                                                                              _0: 4294967295,
-                                                                                              _1: 4294967295
+                                                                                              _0: fib(1000, Caml_int64.one, Caml_int64.mk(2, 0)),
+                                                                                              _1: Caml_int64.mk(-1420443336, -1990564327)
                                                                                             };
                                                                                     })
                                                                                 ],
                                                                                 tl: {
                                                                                   hd: [
-                                                                                    "fib_int64",
+                                                                                    "fac_int64",
                                                                                     (function (param) {
                                                                                         return {
                                                                                                 TAG: /* Eq */0,
-                                                                                                _0: fib(1000, Caml_int64.one, Caml_int64.mk(2, 0)),
-                                                                                                _1: Caml_int64.mk(-1420443336, -1990564327)
+                                                                                                _0: fac(30, Caml_int64.one),
+                                                                                                _1: Caml_int64.mk(1409286144, -2040662563)
                                                                                               };
                                                                                       })
                                                                                   ],
                                                                                   tl: {
                                                                                     hd: [
-                                                                                      "fac_int64",
+                                                                                      "File \"int64_test.ml\", line 163, characters 6-13",
                                                                                       (function (param) {
                                                                                           return {
                                                                                                   TAG: /* Eq */0,
-                                                                                                  _0: fac(30, Caml_int64.one),
-                                                                                                  _1: Caml_int64.mk(1409286144, -2040662563)
+                                                                                                  _0: Caml_int64.add(Int64.max_int, Int64.max_int),
+                                                                                                  _1: Caml_int64.mk(-2, -1)
                                                                                                 };
                                                                                         })
                                                                                     ],
                                                                                     tl: {
                                                                                       hd: [
-                                                                                        "File \"int64_test.ml\", line 163, characters 6-13",
+                                                                                        "File \"int64_test.ml\", line 166, characters 6-13",
                                                                                         (function (param) {
                                                                                             return {
                                                                                                     TAG: /* Eq */0,
-                                                                                                    _0: Caml_int64.add(Int64.max_int, Int64.max_int),
-                                                                                                    _1: Caml_int64.mk(-2, -1)
+                                                                                                    _0: Caml_int64.add(Int64.min_int, Int64.min_int),
+                                                                                                    _1: Caml_int64.zero
                                                                                                   };
                                                                                           })
                                                                                       ],
                                                                                       tl: {
                                                                                         hd: [
-                                                                                          "File \"int64_test.ml\", line 166, characters 6-13",
+                                                                                          "File \"int64_test.ml\", line 170, characters 6-13",
                                                                                           (function (param) {
                                                                                               return {
                                                                                                       TAG: /* Eq */0,
-                                                                                                      _0: Caml_int64.add(Int64.min_int, Int64.min_int),
-                                                                                                      _1: Caml_int64.zero
+                                                                                                      _0: Caml_int64.neg_one,
+                                                                                                      _1: Caml_int64.neg_one
                                                                                                     };
                                                                                             })
                                                                                         ],
-                                                                                        tl: {
-                                                                                          hd: [
-                                                                                            "File \"int64_test.ml\", line 170, characters 6-13",
-                                                                                            (function (param) {
-                                                                                                return {
-                                                                                                        TAG: /* Eq */0,
-                                                                                                        _0: Caml_int64.neg_one,
-                                                                                                        _1: Caml_int64.neg_one
-                                                                                                      };
-                                                                                              })
-                                                                                          ],
-                                                                                          tl: /* [] */0
-                                                                                        }
+                                                                                        tl: /* [] */0
                                                                                       }
                                                                                     }
                                                                                   }

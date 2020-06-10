@@ -6815,13 +6815,15 @@ var yyact = [
                                 }
                               });
                 case /* Const_nativeint */6 :
-                    return mkexp({
-                                TAG: /* Pexp_constant */1,
-                                _0: {
-                                  TAG: /* Const_nativeint */6,
-                                  _0: -n._0
-                                }
-                              });
+                    throw {
+                          RE_EXN_ID: "Assert_failure",
+                          _1: [
+                            "parser.mly",
+                            95,
+                            4
+                          ],
+                          Error: new Error()
+                        };
                 default:
                   exit = 2;
               }
@@ -9823,11 +9825,16 @@ var yyact = [
             };
     }),
   (function (__caml_parser_env) {
-      var _2 = Parsing.peek_val(__caml_parser_env, 0);
-      return {
-              TAG: /* Const_nativeint */6,
-              _0: -_2
-            };
+      Parsing.peek_val(__caml_parser_env, 0);
+      throw {
+            RE_EXN_ID: "Assert_failure",
+            _1: [
+              "parser.mly",
+              2152,
+              43
+            ],
+            Error: new Error()
+          };
     }),
   (function (__caml_parser_env) {
       var _2 = Parsing.peek_val(__caml_parser_env, 0);
@@ -11999,7 +12006,15 @@ function cvt_int64_literal(s) {
 }
 
 function cvt_nativeint_literal(s) {
-  return -Caml_format.caml_nativeint_of_string("-" + $$String.sub(s, 0, s.length - 1 | 0));
+  throw {
+        RE_EXN_ID: "Assert_failure",
+        _1: [
+          "lexer.mll",
+          622,
+          30
+        ],
+        Error: new Error()
+      };
 }
 
 function remove_underscores(s) {
