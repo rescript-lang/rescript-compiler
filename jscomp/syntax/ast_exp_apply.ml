@@ -51,7 +51,7 @@ let check_and_discard (args : Ast_compatible.args) =
 
 type app_pattern = {
   op : string;  
-  loc : Location.t; 
+  loc : Location.t; (* locatoin is the location of whole expression #4451 *)
   args : Parsetree.expression list
 }
 
@@ -62,10 +62,10 @@ let sane_property_name_check loc s =
 (* match fn as *)   
 let view_as_app (fn : exp) s : app_pattern option =      
   match fn.pexp_desc with 
-  | Pexp_apply ({pexp_desc = Pexp_ident {txt = Lident op; loc}}, args ) 
+  | Pexp_apply ({pexp_desc = Pexp_ident {txt = Lident op; _}}, args ) 
     when Ext_list.has_string s op
     -> 
-      Some {op; loc; args = check_and_discard args}
+      Some {op; loc = fn.pexp_loc; args = check_and_discard args}
   | _ -> None 
 
 
