@@ -118,21 +118,21 @@ let caml_lex_engine_aux : lex_tables -> int -> lexbuf -> exn -> int = [%raw{|fun
     var lex_trans = 'lex_trans';
     var lex_check = 'lex_check';
     if (!tbl.processed) {
-        tbl.lex_base = caml_lex_array(tbl[lex_base]);
-        tbl.lex_backtrk = caml_lex_array(tbl[lex_backtrk]);
-        tbl.lex_check = caml_lex_array(tbl[lex_check]);
-        tbl.lex_trans = caml_lex_array(tbl[lex_trans]);
-        tbl.lex_default = caml_lex_array(tbl[lex_default]);
+        tbl.lex_base = caml_lex_array(tbl.lex_base);
+        tbl.lex_backtrk = caml_lex_array(tbl.lex_backtrk);
+        tbl.lex_check = caml_lex_array(tbl.lex_check);
+        tbl.lex_trans = caml_lex_array(tbl.lex_trans);
+        tbl.lex_default = caml_lex_array(tbl.lex_default);
         tbl.processed = true;
     }
     var c;
     var state = start_state;
-    //var buffer = bytes_of_string(lexbuf[lex_buffer]);
-    var buffer = lexbuf[lex_buffer];
+    //var buffer = bytes_of_string(lexbuf.lex_buffer);
+    var buffer = lexbuf.lex_buffer;
     if (state >= 0) {
         /* First entry */
-        lexbuf[lex_last_pos] = lexbuf[lex_start_pos] = lexbuf[lex_curr_pos];
-        lexbuf[lex_last_action] = -1;
+        lexbuf.lex_last_pos = lexbuf.lex_start_pos = lexbuf.lex_curr_pos;
+        lexbuf.lex_last_action = -1;
     }
     else {
         /* Reentry after refill */
@@ -146,20 +146,20 @@ let caml_lex_engine_aux : lex_tables -> int -> lexbuf -> exn -> int = [%raw{|fun
         /* See if it's a backtrack point */
         var backtrk = tbl.lex_backtrk[state];
         if (backtrk >= 0) {
-            lexbuf[lex_last_pos] = lexbuf[lex_curr_pos];
-            lexbuf[lex_last_action] = backtrk;
+            lexbuf.lex_last_pos = lexbuf.lex_curr_pos;
+            lexbuf.lex_last_action = backtrk;
         }
         /* See if we need a refill */
-        if (lexbuf[lex_curr_pos] >= lexbuf[lex_buffer_len]) {
-            if (lexbuf[lex_eof_reached] === 0)
+        if (lexbuf.lex_curr_pos >= lexbuf.lex_buffer_len) {
+            if (lexbuf.lex_eof_reached === 0)
                 return -state - 1;
             else
                 c = 256;
         }
         else {
             /* Read next input char */
-            c = buffer[lexbuf[lex_curr_pos]];
-            lexbuf[lex_curr_pos]++;
+            c = buffer[lexbuf.lex_curr_pos];
+            lexbuf.lex_curr_pos++;
         }
         /* Determine next state */
         if (tbl.lex_check[base + c] === state) {
@@ -170,18 +170,18 @@ let caml_lex_engine_aux : lex_tables -> int -> lexbuf -> exn -> int = [%raw{|fun
         }
         /* If no transition on this char, return to last backtrack point */
         if (state < 0) {
-            lexbuf[lex_curr_pos] = lexbuf[lex_last_pos];
-            if (lexbuf[lex_last_action] == -1)
+            lexbuf.lex_curr_pos = lexbuf.lex_last_pos;
+            if (lexbuf.lex_last_action == -1)
                 throw exn
             else
-                return lexbuf[lex_last_action];
+                return lexbuf.lex_last_action;
         }
         else {
             /* Erase the EOF condition only if the EOF pseudo-character was
              consumed by the automaton (i.e. there was no backtrack above)
              */
             if (c == 256)
-                lexbuf[lex_eof_reached] = 0;
+                lexbuf.lex_eof_reached = 0;
         }
     }
 }    
@@ -274,11 +274,11 @@ let caml_new_lex_engine_aux : lex_tables -> int -> lexbuf -> exn -> int= [%raw{|
     var lex_check_code = 'lex_check_code';
     var lex_code = 'lex_code';
     if (!tbl.processed) {
-        tbl.lex_base = caml_lex_array(tbl[lex_base]);
-        tbl.lex_backtrk = caml_lex_array(tbl[lex_backtrk]);
-        tbl.lex_check = caml_lex_array(tbl[lex_check]);
-        tbl.lex_trans = caml_lex_array(tbl[lex_trans]);
-        tbl.lex_default = caml_lex_array(tbl[lex_default]);
+        tbl.lex_base = caml_lex_array(tbl.lex_base);
+        tbl.lex_backtrk = caml_lex_array(tbl.lex_backtrk);
+        tbl.lex_check = caml_lex_array(tbl.lex_check);
+        tbl.lex_trans = caml_lex_array(tbl.lex_trans);
+        tbl.lex_default = caml_lex_array(tbl.lex_default);
         tbl.lex_base_code = caml_lex_array(tbl[lex_base_code]);
         tbl.lex_backtrk_code = caml_lex_array(tbl[lex_backtrk_code]);
         tbl.lex_check_code = caml_lex_array(tbl[lex_check_code]);
@@ -287,12 +287,12 @@ let caml_new_lex_engine_aux : lex_tables -> int -> lexbuf -> exn -> int= [%raw{|
         tbl.processed = true;
     }
     var c, state = start_state;
-    //var buffer = caml_bytes_of_string(lexbuf[lex_buffer]);
-    var buffer = lexbuf[lex_buffer];
+    //var buffer = caml_bytes_of_string(lexbuf.lex_buffer);
+    var buffer = lexbuf.lex_buffer;
     if (state >= 0) {
         /* First entry */
-        lexbuf[lex_last_pos] = lexbuf[lex_start_pos] = lexbuf[lex_curr_pos];
-        lexbuf[lex_last_action] = -1;
+        lexbuf.lex_last_pos = lexbuf.lex_start_pos = lexbuf.lex_curr_pos;
+        lexbuf.lex_last_action = -1;
     }
     else {
         /* Reentry after refill */
@@ -311,20 +311,20 @@ let caml_new_lex_engine_aux : lex_tables -> int -> lexbuf -> exn -> int= [%raw{|
         if (backtrk >= 0) {
             var pc_off = tbl.lex_backtrk_code[state];
             caml_lex_run_tag(tbl.lex_code, pc_off, lexbuf[lex_mem]);
-            lexbuf[lex_last_pos] = lexbuf[lex_curr_pos];
-            lexbuf[lex_last_action] = backtrk;
+            lexbuf.lex_last_pos = lexbuf.lex_curr_pos;
+            lexbuf.lex_last_action = backtrk;
         }
         /* See if we need a refill */
-        if (lexbuf[lex_curr_pos] >= lexbuf[lex_buffer_len]) {
-            if (lexbuf[lex_eof_reached] == 0)
+        if (lexbuf.lex_curr_pos >= lexbuf.lex_buffer_len) {
+            if (lexbuf.lex_eof_reached == 0)
                 return -state - 1;
             else
                 c = 256;
         }
         else {
             /* Read next input char */
-            c = buffer[lexbuf[lex_curr_pos]];
-            lexbuf[lex_curr_pos]++;
+            c = buffer[lexbuf.lex_curr_pos];
+            lexbuf.lex_curr_pos++;
         }
         /* Determine next state */
         var pstate = state;
@@ -334,11 +334,11 @@ let caml_new_lex_engine_aux : lex_tables -> int -> lexbuf -> exn -> int= [%raw{|
             state = tbl.lex_default[state];
         /* If no transition on this char, return to last backtrack point */
         if (state < 0) {
-            lexbuf[lex_curr_pos] = lexbuf[lex_last_pos];
-            if (lexbuf[lex_last_action] == -1)
+            lexbuf.lex_curr_pos = lexbuf.lex_last_pos;
+            if (lexbuf.lex_last_action == -1)
                 throw exn;
             else
-                return lexbuf[lex_last_action];
+                return lexbuf.lex_last_action;
         }
         else {
             /* If some transition, get and perform memory moves */
@@ -348,12 +348,12 @@ let caml_new_lex_engine_aux : lex_tables -> int -> lexbuf -> exn -> int= [%raw{|
             else
                 pc_off = tbl.lex_default_code[pstate];
             if (pc_off > 0)
-                caml_lex_run_mem(tbl.lex_code, pc_off, lexbuf[lex_mem], lexbuf[lex_curr_pos]);
+                caml_lex_run_mem(tbl.lex_code, pc_off, lexbuf[lex_mem], lexbuf.lex_curr_pos);
             /* Erase the EOF condition only if the EOF pseudo-character was
              consumed by the automaton (i.e. there was no backtrack above)
              */
             if (c == 256)
-                lexbuf[lex_eof_reached] = 0;
+                lexbuf.lex_eof_reached = 0;
         }
     }
     }
