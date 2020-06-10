@@ -737,23 +737,11 @@ eq("File \"js_json_test.ml\", line 388, characters 5-12", Js_json.decodeNull({})
 eq("File \"js_json_test.ml\", line 390, characters 5-12", Js_json.decodeNull(1.23), undefined);
 
 function id(obj) {
-  var x = Js_json.serializeExn(obj);
-  if (x !== undefined) {
-    return Js_json.deserializeExn(x);
-  }
-  throw {
-        RE_EXN_ID: "Assert_failure",
-        _1: [
-          "js_json_test.ml",
-          396,
-          14
-        ],
-        Error: new Error()
-      };
+  return Js_json.deserializeUnsafe(Js_json.serializeExn(obj));
 }
 
 function idtest(obj) {
-  return eq("File \"js_json_test.ml\", line 400, characters 5-12", obj, id(obj));
+  return eq("File \"js_json_test.ml\", line 399, characters 5-12", obj, Js_json.deserializeUnsafe(Js_json.serializeExn(obj)));
 }
 
 idtest(undefined);

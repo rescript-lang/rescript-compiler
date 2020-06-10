@@ -392,9 +392,8 @@ let () =
 
 
 let id (type t ) (obj : t) : t  = 
-    match J.serializeExn obj with 
-    | None -> assert false 
-    | Some x -> J.deserializeExn x  
+    obj |. J.serializeExn |. J.deserializeUnsafe
+    
 
 let idtest obj = 
   eq __LOC__ obj (id obj)      

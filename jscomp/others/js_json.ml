@@ -174,16 +174,22 @@ let patch : _ -> _ = [%raw{|function (json) {
 |}]
 
 
-let serializeExn (type t) (x : t) : string option = [%raw{| function(obj){
-  return JSON.stringify(obj,function(_,value){
+let serializeExn (type t) (x : t) : string  = [%raw{| function(obj){
+  var output= JSON.stringify(obj,function(_,value){
       if(value===undefined){
           return {RE_PRIVATE_NONE : true}
       }
     return value
-  })
-  }
+  });
+  
+ if(output === undefined){
+   // JSON.stringify will raise TypeError when it detects cylic objects
+   throw new TypeError("output is undefined")
+ }
+ return output 
+ }
 |}] x 
 
-let deserializeExn (s: string) : 'a = 
+let deserializeUnsafe (s: string) : 'a = 
   patch (parseExn s)
 
