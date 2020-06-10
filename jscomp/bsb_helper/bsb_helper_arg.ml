@@ -3,10 +3,14 @@ type key = string
 type doc = string
 type anon_fun = rev_args:string list -> unit
 
+type string_action = 
+  | Call of (string -> unit)  
+  | Set of {mutable contents : string}
+
 type spec =
-  | Set of bool ref            
-  | String of (string -> unit) 
-  | Set_string of string ref   
+  | Bool of bool ref            
+  | String of string_action 
+
 
 exception Bad of string
 
@@ -14,10 +18,6 @@ exception Bad of string
 type error =
   | Unknown of string
   | Missing of string
-
-
-
-
 
 type t = (string * spec * string) list 
 
@@ -78,17 +78,17 @@ let parse_exn  ~progname ~argv ~start (speclist : t) anonfun  =
       match assoc3 s speclist with 
       | Some action -> begin       
           begin match action with 
-            | Set r -> r := true;
+            | Bool r -> r := true;
             | String f  ->
-              if !current  < l then begin 
-                f argv.(!current);
-                incr current;
-              end else stop_raise ~progname ~error:(Missing s) speclist 
-            | Set_string r  ->
-              if !current  < l then begin 
-                r := argv.(!current);
-                incr current;
-              end else stop_raise ~progname ~error:(Missing s) speclist 
+              if !current >= l then stop_raise ~progname ~error:(Missing s) speclist 
+              else begin                 
+                let arg = argv.(!current) in 
+                incr current;  
+                match f with 
+                | Call f ->   
+                  f arg
+                | Set u -> u.contents <- arg
+              end             
           end;      
         end;      
       | None -> stop_raise ~progname ~error:(Unknown s) speclist 

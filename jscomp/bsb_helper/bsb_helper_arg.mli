@@ -1,10 +1,13 @@
 
 
 
+type string_action = 
+  | Call of (string -> unit)  
+  | Set of {mutable contents : string}
+
 type spec =
-  | Set of bool ref            
-  | String of (string -> unit) 
-  | Set_string of string ref   
+  | Bool of bool ref            
+  | String of string_action 
 
 type key = string
 type doc = string
