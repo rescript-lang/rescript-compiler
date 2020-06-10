@@ -236,4 +236,21 @@ Js.log \@\@ Js.Json.stringifyAny [| "foo"; "bar" |]
 *)
 
 
+(** Best-effort serialization, it tries to seralize as 
+  many objects as possible and deserialize it back*) 
 
+(**
+  It is unsafe in two aspects
+  - It may throw during  parsing
+  - when you cast it to a specific type, it may have a type mismatch
+*)
+val deserializeUnsafe : string -> 'a 
+
+
+(**
+  It will raise in such situations:
+  - The object can not be serlialized to a JSON
+  - There are cycles
+  - Some JS engines can not stringify deeply nested json objects
+*)
+val serializeExn : 'a -> string 
