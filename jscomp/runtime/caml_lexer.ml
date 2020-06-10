@@ -103,20 +103,7 @@ function caml_lex_array(s) {
  * @returns {any}
  *)
 let caml_lex_engine_aux : lex_tables -> int -> lexbuf -> exn -> int = [%raw{|function (tbl, start_state, lexbuf, exn){
-    // Lexing.lexbuf
-    var lex_buffer = 'lex_buffer';
-    var lex_buffer_len = 'lex_buffer_len';
-    var lex_start_pos = 'lex_start_pos';
-    var lex_curr_pos = 'lex_curr_pos';
-    var lex_last_pos = 'lex_last_pos';
-    var lex_last_action = 'lex_last_action';
-    var lex_eof_reached = 'lex_eof_reached';
-    // Lexing.lex_tables
-    var lex_base = 'lex_base';
-    var lex_backtrk = 'lex_backtrk';
-    var lex_default = 'lex_default';
-    var lex_trans = 'lex_trans';
-    var lex_check = 'lex_check';
+
     if (!tbl.processed) {
         tbl.lex_base = caml_lex_array(tbl.lex_base);
         tbl.lex_backtrk = caml_lex_array(tbl.lex_backtrk);
@@ -252,38 +239,18 @@ function caml_lex_run_tag(s, i, mem) {
 
 
 let caml_new_lex_engine_aux : lex_tables -> int -> lexbuf -> exn -> int= [%raw{|function (tbl, start_state, lexbuf, exn) {
-    // Lexing.lexbuf
-    var lex_buffer = 'lex_buffer';
-    var lex_buffer_len = 'lex_buffer_len';
-    var lex_start_pos = 'lex_start_pos';
-    var lex_curr_pos = 'lex_curr_pos';
-    var lex_last_pos = 'lex_last_pos';
-    var lex_last_action = 'lex_last_action';
-    var lex_eof_reached = 'lex_eof_reached';
-    var lex_mem = 'lex_mem';
-    // Lexing.lex_tables
-    var lex_base = 'lex_base';
-    var lex_backtrk = 'lex_backtrk';
-    var lex_default = 'lex_default';
-    var lex_trans = 'lex_trans';
-    var lex_check = 'lex_check';
-    var lex_base_code = 'lex_base_code';
-    var lex_backtrk_code = 'lex_backtrk_code';
-    var lex_default_code = 'lex_default_code';
-    var lex_trans_code = 'lex_trans_code';
-    var lex_check_code = 'lex_check_code';
-    var lex_code = 'lex_code';
+
     if (!tbl.processed) {
         tbl.lex_base = caml_lex_array(tbl.lex_base);
         tbl.lex_backtrk = caml_lex_array(tbl.lex_backtrk);
         tbl.lex_check = caml_lex_array(tbl.lex_check);
         tbl.lex_trans = caml_lex_array(tbl.lex_trans);
         tbl.lex_default = caml_lex_array(tbl.lex_default);
-        tbl.lex_base_code = caml_lex_array(tbl[lex_base_code]);
-        tbl.lex_backtrk_code = caml_lex_array(tbl[lex_backtrk_code]);
-        tbl.lex_check_code = caml_lex_array(tbl[lex_check_code]);
-        tbl.lex_trans_code = caml_lex_array(tbl[lex_trans_code]);
-        tbl.lex_default_code = caml_lex_array(tbl[lex_default_code]);
+        tbl.lex_base_code = caml_lex_array(tbl.lex_base_code);
+        tbl.lex_backtrk_code = caml_lex_array(tbl.lex_backtrk_code);
+        tbl.lex_check_code = caml_lex_array(tbl.lex_check_code);
+        tbl.lex_trans_code = caml_lex_array(tbl.lex_trans_code);
+        tbl.lex_default_code = caml_lex_array(tbl.lex_default_code);
         tbl.processed = true;
     }
     var c, state = start_state;
@@ -303,14 +270,14 @@ let caml_new_lex_engine_aux : lex_tables -> int -> lexbuf -> exn -> int= [%raw{|
         var base = tbl.lex_base[state];
         if (base < 0) {
             var pc_off = tbl.lex_base_code[state];
-            caml_lex_run_tag(tbl.lex_code, pc_off, lexbuf[lex_mem]);
+            caml_lex_run_tag(tbl.lex_code, pc_off, lexbuf.lex_mem);
             return -base - 1;
         }
         /* See if it's a backtrack point */
         var backtrk = tbl.lex_backtrk[state];
         if (backtrk >= 0) {
             var pc_off = tbl.lex_backtrk_code[state];
-            caml_lex_run_tag(tbl.lex_code, pc_off, lexbuf[lex_mem]);
+            caml_lex_run_tag(tbl.lex_code, pc_off, lexbuf.lex_mem);
             lexbuf.lex_last_pos = lexbuf.lex_curr_pos;
             lexbuf.lex_last_action = backtrk;
         }
@@ -348,7 +315,7 @@ let caml_new_lex_engine_aux : lex_tables -> int -> lexbuf -> exn -> int= [%raw{|
             else
                 pc_off = tbl.lex_default_code[pstate];
             if (pc_off > 0)
-                caml_lex_run_mem(tbl.lex_code, pc_off, lexbuf[lex_mem], lexbuf.lex_curr_pos);
+                caml_lex_run_mem(tbl.lex_code, pc_off, lexbuf.lex_mem, lexbuf.lex_curr_pos);
             /* Erase the EOF condition only if the EOF pseudo-character was
              consumed by the automaton (i.e. there was no backtrack above)
              */
