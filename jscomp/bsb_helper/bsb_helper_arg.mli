@@ -12,6 +12,9 @@ type usage_msg = string
 type anon_fun = (string -> unit)
 
 val parse_exn :
+  progname:string -> 
+  argv:string array -> 
+  start:int ->
   (key * spec * doc) list -> anon_fun -> usage_msg -> unit
 
 

@@ -1622,6 +1622,9 @@ type usage_msg = string
 type anon_fun = (string -> unit)
 
 val parse_exn :
+  progname:string -> 
+  argv:string array -> 
+  start:int ->
   (key * spec * doc) list -> anon_fun -> usage_msg -> unit
 
 
@@ -1648,7 +1651,7 @@ type error =
   | Missing of string
   | Message of string
 
-exception Stop of error
+
 
 
 type t = (string * spec * string) list 
@@ -1677,7 +1680,7 @@ let usage_b (buf : Ext_buffer.t) speclist errmsg =
 
 
   
-let stop_raise progname (error : error) speclist errmsg  =
+let stop_raise ~progname ~(error : error) speclist errmsg  =
   let b = Ext_buffer.create 200 in  
   begin match error with
     | Unknown ("-help" | "--help" | "-h") -> 
@@ -1704,37 +1707,32 @@ let stop_raise progname (error : error) speclist errmsg  =
   raise (Bad (Ext_buffer.contents b))
 
 
-let parse_exn  (speclist : t) anonfun errmsg =    
-  let argv = Sys.argv in 
-  let stop_raise error = stop_raise argv.(0) error speclist errmsg in 
+let parse_exn  ~progname ~argv ~start (speclist : t) anonfun errmsg =    
   let l = Array.length argv in
-  let current = ref 1 in (* 0 is progname*)
+  let current = ref start in 
   while !current < l do
     let s = argv.(!current) in
     if s <> "" && s.[0] = '-' then begin
-      let action =
-        match assoc3 s speclist with 
-        | Some action -> action 
-        | None -> stop_raise (Unknown s)
-      in
-      begin try
-        let treat_action spec = match spec with 
-        | Set r -> r := true;
-        | String f when !current + 1 < l ->
-            f argv.(!current + 1);
-            incr current;
-        | Set_string r when !current + 1 < l ->
-            r := argv.(!current + 1);
-            incr current;
-        | _ -> raise (Stop (Missing s))
-        in
-        treat_action action
-      with Bad m -> stop_raise (Message m);
-         | Stop e -> stop_raise e;
-      end;
-      incr current;
+      match assoc3 s speclist with 
+      | Some action -> begin 
+          incr current;  
+          begin match action with 
+            | Set r -> r := true;
+            | String f  ->
+              if !current  < l then begin 
+                f argv.(!current);
+                incr current;
+              end else stop_raise ~progname ~error:(Missing s) speclist errmsg
+            | Set_string r  ->
+              if !current  < l then begin 
+                r := argv.(!current);
+                incr current;
+              end else stop_raise ~progname ~error:(Missing s) speclist errmsg
+          end;      
+        end;      
+      | None -> stop_raise ~progname ~error:(Unknown s) speclist errmsg
     end else begin
-      (try anonfun s with Bad m -> stop_raise (Message m));
+      (try anonfun s with Bad m -> stop_raise ~progname ~error:(Message m) speclist errmsg);
       incr current;
     end;
   done;
@@ -4100,7 +4098,11 @@ let anonymous filename =
 let usage = "Usage: bsb_helper.exe [options] \nOptions are:"
  
 let () =
-  Bsb_helper_arg.parse_exn [
+  Bsb_helper_arg.parse_exn 
+  ~progname:Sys.argv.(0)
+  ~argv:Sys.argv
+  ~start:1
+  [
     "-g",  Set dev_group ,
     " Set the dev group (default to be 0)"
     ;

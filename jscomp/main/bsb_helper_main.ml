@@ -38,7 +38,11 @@ let anonymous filename =
 let usage = "Usage: bsb_helper.exe [options] \nOptions are:"
  
 let () =
-  Bsb_helper_arg.parse_exn [
+  Bsb_helper_arg.parse_exn 
+  ~progname:Sys.argv.(0)
+  ~argv:Sys.argv
+  ~start:1
+  [
     "-g",  Set dev_group ,
     " Set the dev group (default to be 0)"
     ;
