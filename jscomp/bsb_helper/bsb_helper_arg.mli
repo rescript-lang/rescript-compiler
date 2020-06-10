@@ -9,13 +9,14 @@ type spec =
 type key = string
 type doc = string
 type usage_msg = string
-type anon_fun = (string -> unit)
+type anon_fun = rev_args:string list -> unit
 
 val parse_exn :
   progname:string -> 
   argv:string array -> 
   start:int ->
-  (key * spec * doc) list -> anon_fun -> usage_msg -> unit
+  (key * spec * doc) list -> 
+  anon_fun -> usage_msg -> unit
 
 
 

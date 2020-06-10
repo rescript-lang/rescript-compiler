@@ -1619,13 +1619,14 @@ type spec =
 type key = string
 type doc = string
 type usage_msg = string
-type anon_fun = (string -> unit)
+type anon_fun = rev_args:string list -> unit
 
 val parse_exn :
   progname:string -> 
   argv:string array -> 
   start:int ->
-  (key * spec * doc) list -> anon_fun -> usage_msg -> unit
+  (key * spec * doc) list -> 
+  anon_fun -> usage_msg -> unit
 
 
 
@@ -1636,7 +1637,7 @@ end = struct
 type key = string
 type doc = string
 type usage_msg = string
-type anon_fun = (string -> unit)
+type anon_fun = rev_args:string list -> unit
 
 type spec =
   | Set of bool ref            
@@ -1649,7 +1650,7 @@ exception Bad of string
 type error =
   | Unknown of string
   | Missing of string
-  | Message of string
+
 
 
 
@@ -1659,11 +1660,12 @@ type t = (string * spec * string) list
 let rec assoc3 (x : string) (l : t) =
   match l with
   | [] -> None
-  | (y1, y2, _y3) :: _t when y1 = x -> Some y2
+  | (y1, y2, _) :: _ when y1 = x -> Some y2
   | _ :: t -> assoc3 x t
 ;;
 
 
+let (+>) = Ext_buffer.add_string
 
 let usage_b (buf : Ext_buffer.t) speclist errmsg =
   let print_spec buf (key, _spec, doc) =
@@ -1686,22 +1688,17 @@ let stop_raise ~progname ~(error : error) speclist errmsg  =
     | Unknown ("-help" | "--help" | "-h") -> 
       usage_b b speclist errmsg;
       output_string stdout (Ext_buffer.contents b);
-      exit 0
-      
+      exit 0      
     | Unknown s ->
-      Ext_buffer.add_string_char b progname ':';
-      Ext_buffer.add_string b  " unknown option '";
-      Ext_buffer.add_string b s ;
-      Ext_buffer.add_string b "'.\n"
+      b +> progname ;
+      b +> ": unknown option '";
+      b +> s ;
+      b +> "'.\n"
     | Missing s ->
-      Ext_buffer.add_string_char b progname ':';
-      Ext_buffer.add_string b " option '";
-      Ext_buffer.add_string b s;
-      Ext_buffer.add_string b "' needs an argument.\n"      
-    | Message s ->
-      Ext_buffer.add_string_char b progname ':';
-      Ext_buffer.add_char_string b ' ' s;
-      Ext_buffer.add_string b ".\n"
+      b +> progname ;
+      b +> ": option '";
+      b +> s;
+      b +> "' needs an argument.\n"      
   end;
   usage_b b speclist errmsg;
   raise (Bad (Ext_buffer.contents b))
@@ -1710,12 +1707,13 @@ let stop_raise ~progname ~(error : error) speclist errmsg  =
 let parse_exn  ~progname ~argv ~start (speclist : t) anonfun errmsg =    
   let l = Array.length argv in
   let current = ref start in 
+  let rev_list = ref [] in 
   while !current < l do
     let s = argv.(!current) in
+    incr current;  
     if s <> "" && s.[0] = '-' then begin
       match assoc3 s speclist with 
-      | Some action -> begin 
-          incr current;  
+      | Some action -> begin       
           begin match action with 
             | Set r -> r := true;
             | String f  ->
@@ -1732,10 +1730,10 @@ let parse_exn  ~progname ~argv ~start (speclist : t) anonfun errmsg =
         end;      
       | None -> stop_raise ~progname ~error:(Unknown s) speclist errmsg
     end else begin
-      (try anonfun s with Bad m -> stop_raise ~progname ~error:(Message m) speclist errmsg);
-      incr current;
+      rev_list := s :: !rev_list;      
     end;
   done;
+  anonfun ~rev_args:!rev_list
 ;;
 
 
@@ -4084,17 +4082,14 @@ end = struct
 let compilation_kind = ref Bsb_helper_depfile_gen.Js
 
 let hash : string ref = ref ""
-let batch_files = ref []
-let collect_file name =
-  batch_files := name :: !batch_files
+
 
 (* let output_prefix = ref None *)
 let dev_group = ref false
 let namespace = ref None
 
 
-let anonymous filename =
-  collect_file filename
+
 let usage = "Usage: bsb_helper.exe [options] \nOptions are:"
  
 let () =
@@ -4110,21 +4105,22 @@ let () =
     " Set namespace";
     "-hash",  Set_string hash,
     " Set hash(internal)";
-  ] anonymous usage;
-  (* arrange with mlast comes first *)
-  match !batch_files with
-  | [x]
-    ->  Bsb_helper_depfile_gen.emit_d
+  ] (fun ~rev_args -> 
+      match rev_args with
+      | [x]
+        ->  Bsb_helper_depfile_gen.emit_d
+              !compilation_kind
+              !dev_group
+              !namespace x ""
+      | [y; x] (* reverse order *)
+        -> 
+        Bsb_helper_depfile_gen.emit_d
           !compilation_kind
           !dev_group
-          !namespace x ""
-  | [y; x] (* reverse order *)
-    -> 
-    Bsb_helper_depfile_gen.emit_d
-      !compilation_kind
-      !dev_group
-      !namespace x y
-  | _ -> 
-    ()
-
+          !namespace x y
+      | _ -> 
+        ()
+    ) usage;
+  (* arrange with mlast comes first *)
+  
 end

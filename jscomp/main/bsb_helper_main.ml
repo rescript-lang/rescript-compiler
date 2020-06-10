@@ -24,17 +24,14 @@
 let compilation_kind = ref Bsb_helper_depfile_gen.Js
 
 let hash : string ref = ref ""
-let batch_files = ref []
-let collect_file name =
-  batch_files := name :: !batch_files
+
 
 (* let output_prefix = ref None *)
 let dev_group = ref false
 let namespace = ref None
 
 
-let anonymous filename =
-  collect_file filename
+
 let usage = "Usage: bsb_helper.exe [options] \nOptions are:"
  
 let () =
@@ -50,19 +47,21 @@ let () =
     " Set namespace";
     "-hash",  Set_string hash,
     " Set hash(internal)";
-  ] anonymous usage;
-  (* arrange with mlast comes first *)
-  match !batch_files with
-  | [x]
-    ->  Bsb_helper_depfile_gen.emit_d
+  ] (fun ~rev_args -> 
+      match rev_args with
+      | [x]
+        ->  Bsb_helper_depfile_gen.emit_d
+              !compilation_kind
+              !dev_group
+              !namespace x ""
+      | [y; x] (* reverse order *)
+        -> 
+        Bsb_helper_depfile_gen.emit_d
           !compilation_kind
           !dev_group
-          !namespace x ""
-  | [y; x] (* reverse order *)
-    -> 
-    Bsb_helper_depfile_gen.emit_d
-      !compilation_kind
-      !dev_group
-      !namespace x y
-  | _ -> 
-    ()
+          !namespace x y
+      | _ -> 
+        ()
+    ) usage;
+  (* arrange with mlast comes first *)
+  
