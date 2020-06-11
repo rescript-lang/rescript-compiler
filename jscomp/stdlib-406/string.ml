@@ -24,7 +24,7 @@
 external length : string -> int = "%string_length"
 external get : string -> int -> char = "%string_safe_get"
 external set : bytes -> int -> char -> unit = "%bytes_safe_set"
-external create : int -> bytes = "caml_create_string"
+external create : int -> bytes = "caml_create_bytes"
 external unsafe_get : string -> int -> char = "%string_unsafe_get"
 external unsafe_set : bytes -> int -> char -> unit = "%bytes_unsafe_set"
 external unsafe_blit : string -> int ->  bytes -> int -> int -> unit

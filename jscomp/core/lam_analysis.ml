@@ -56,8 +56,6 @@ let rec no_side_effects (lam : Lam.t) : bool =
             (* non-observable side effect *)    
             | "caml_sys_get_config"
             | "caml_sys_get_argv" (* should be fine *)
-
-            | "caml_create_string" (* TODO: add more *)
             | "caml_make_vect"
             | "caml_create_bytes"
             | "caml_obj_dup"
