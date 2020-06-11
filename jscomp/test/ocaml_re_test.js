@@ -4199,7 +4199,7 @@ function exec(rex, pos, s) {
   return substr._0;
 }
 
-var s = Caml_bytes.bytes_to_string(Bytes.make(1048575, /* "a" */97)) + "b";
+var s = "a".repeat(1048575) + "b";
 
 eq("File \"xx.ml\", line 7, characters 3-10", get(exec(compile(re(undefined, "aa?b")), undefined, s), 0), "aab");
 

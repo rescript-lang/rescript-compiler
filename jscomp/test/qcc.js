@@ -313,7 +313,7 @@ function next(param) {
       if (!param$1) {
         return {
                 TAG: /* Op */0,
-                _0: Caml_bytes.bytes_to_string(Bytes.make(1, c))
+                _0: Caml_string.make(1, c)
               };
       }
       var lop = param$1.hd;

@@ -380,6 +380,20 @@ let translate loc (prim_name : string)
           E.string_comp Ge  e0 e1
         | _ -> assert false 
       end
+    | "caml_string_repeat"
+      ->   
+      begin match args with 
+        | [ n ; {expression_desc = Number (Int {i})} ] ->   
+          let str = (String.make 1 (Char.chr (Int32.to_int i))) in
+          begin match n.expression_desc with 
+            | Number (Int {i = 1l}) -> E.str str 
+            | _ -> 
+              E.call (E.dot (E.str str) "repeat") [n]
+                ~info:Js_call_info.builtin_runtime_call
+          end
+        | _ ->     
+          E.runtime_call Js_runtime_modules.string "make" args
+      end
     | "caml_string_greaterthan"
       -> 
       begin match args with 
@@ -475,7 +489,7 @@ let translate loc (prim_name : string)
       | _ -> assert false 
       end 
     | "caml_create_bytes"  
-    | "caml_create_string" -> 
+       -> 
       (* Bytes.create *)
       (* Note that for invalid range, JS raise an Exception RangeError, 
          here in OCaml it's [Invalid_argument], we have to preserve this semantics.

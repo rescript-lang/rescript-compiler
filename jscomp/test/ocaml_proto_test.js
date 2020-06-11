@@ -2101,7 +2101,7 @@ function indentation_prefix(n) {
     case 8 :
         return "                ";
     default:
-      return Caml_bytes.bytes_to_string(Bytes.make(n, /* " " */32));
+      return " ".repeat(n);
   }
 }
 

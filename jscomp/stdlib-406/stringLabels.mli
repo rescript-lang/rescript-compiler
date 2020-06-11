@@ -34,7 +34,7 @@ external set : bytes -> int -> char -> unit = "%bytes_safe_set"
 
    @deprecated This is a deprecated alias of {!BytesLabels.set}. *)
 
-external create : int -> bytes = "caml_create_string"
+external create : int -> bytes = "caml_create_bytes"
   [@@ocaml.deprecated "Use BytesLabels.create instead."]
 (** [String.create n] returns a fresh byte sequence of length [n].
    The sequence is uninitialized and contains arbitrary bytes.
