@@ -24,3 +24,5 @@
 
 
 val get : string -> int -> char 
+
+val make : int -> char -> string

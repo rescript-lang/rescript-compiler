@@ -36,9 +36,9 @@ module B = Bytes
 
 let bts = B.unsafe_to_string
 let bos = B.unsafe_of_string
-(*-FIXME: replaced by Belt.String.repeat *)
-let make n c =
-  B.make n c |> bts
+
+external make : int -> char -> string = "caml_string_repeat"  
+
 let init n f =
   B.init n f |> bts
 let copy s =
