@@ -2,7 +2,6 @@
 
 var Mt = require("./mt.js");
 var List = require("../../lib/js/list.js");
-var Bytes = require("../../lib/js/bytes.js");
 var Curry = require("../../lib/js/curry.js");
 var Scanf = require("../../lib/js/scanf.js");
 var $$Buffer = require("../../lib/js/buffer.js");
@@ -11,7 +10,6 @@ var $$String = require("../../lib/js/string.js");
 var Testing = require("./testing.js");
 var Caml_obj = require("../../lib/js/caml_obj.js");
 var Mt_global = require("./mt_global.js");
-var Caml_bytes = require("../../lib/js/caml_bytes.js");
 var Caml_int64 = require("../../lib/js/caml_int64.js");
 var Pervasives = require("../../lib/js/pervasives.js");
 var Caml_format = require("../../lib/js/caml_format.js");
@@ -1743,7 +1741,7 @@ function scan_elems$2(ib, accu) {
                                 tl: accu
                               });
                   }
-                  console.log(Caml_bytes.bytes_to_string(Bytes.make(1, c)));
+                  console.log(Caml_string.make(1, c));
                   throw {
                         RE_EXN_ID: "Failure",
                         _1: "scan_elems",
