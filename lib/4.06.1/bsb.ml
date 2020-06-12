@@ -16650,41 +16650,41 @@ let print_version_string () =
 
 let bsb_main_flags : (string * Arg.spec * string) list=
   [
-    "-v", Arg.Unit print_version_string, 
+    "-v", Unit print_version_string, 
     " Print version and exit";
-    "-version", Arg.Unit print_version_string, 
+    "-version", Unit print_version_string, 
     " Print version and exit";
-    "-verbose", Arg.Unit Bsb_log.verbose,
+    "-verbose", Unit Bsb_log.verbose,
     " Set the output(from bsb) to be verbose";
-    "-w", Arg.Set watch_mode,
+    "-w", Set watch_mode,
     " Watch mode" ;     
-    "-clean-world", Arg.Unit (fun _ -> 
+    "-clean-world", Unit (fun _ -> 
         Bsb_clean.clean_bs_deps  Bsb_global_paths.cwd),
     " Clean all bs dependencies";
-    "-clean", Arg.Unit (fun _ -> 
+    "-clean", Unit (fun _ -> 
         Bsb_clean.clean_self  Bsb_global_paths.cwd),
     " Clean only current project";
-    "-make-world", Arg.Unit set_make_world,
+    "-make-world", Unit set_make_world,
     " Build all dependencies and itself ";
-    "-install", Arg.Set do_install,
+    "-install", Set do_install,
     " Install public interface files into lib/ocaml";
-    "-init", Arg.String (fun path -> generate_theme_with_path := Some path),
+    "-init", String (fun path -> generate_theme_with_path := Some path),
     " Init sample project to get started. Note (`bsb -init sample` will create a sample project while `bsb -init .` will reuse current directory)";
-    "-theme", Arg.String set_theme,
+    "-theme", String set_theme,
     " The theme for project initialization, default is basic(https://github.com/bucklescript/bucklescript/tree/master/jscomp/bsb/templates)";
     
-    regen, Arg.Set force_regenerate,
+    regen, Set force_regenerate,
     " (internal) Always regenerate build.ninja no matter bsconfig.json is changed or not (for debugging purpose)";
-    "-themes", Arg.Unit Bsb_theme_init.list_themes,
+    "-themes", Unit Bsb_theme_init.list_themes,
     " List all available themes";
     "-where",
-    Arg.Unit (fun _ -> 
+    Unit (fun _ -> 
         print_endline (Filename.dirname Sys.executable_name)),
     " Show where bsb.exe is located";
 (** Below flags are only for bsb script, it is not available for bsb.exe 
   we make it at this time to make `bsb -help` easier
 *)
-    "-ws", Arg.Bool ignore, 
+    "-ws", Bool ignore, 
     " [host:]port specify a websocket number (and optionally, a host). When a build finishes, we send a message to that port. For tools that listen on build completion." ;
 
   ]
