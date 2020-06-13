@@ -112,7 +112,7 @@ let rec tolist_aux a f  i res =
        | Some v -> v :: res
        | None -> res) 
 
-let to_list_map f a = 
+let to_list_map a f  = 
   tolist_aux a f (Array.length a - 1) []
 
 let to_list_map_acc a acc f = 
@@ -187,13 +187,7 @@ let rfind_with_index arr cmp v =
     else aux (i - 1) in 
   aux (len - 1)
 
-type 'a split = [ `No_split | `Split of 'a array * 'a array ]
-let rfind_and_split arr cmp v : _ split = 
-  let i = rfind_with_index arr cmp v in 
-  if  i < 0 then 
-    `No_split 
-  else 
-    `Split (Array.sub arr 0 i , Array.sub arr  (i + 1 ) (Array.length arr - i - 1 ))
+type 'a split = No_split | Split of  'a array *  'a array 
 
 
 let find_with_index arr cmp v = 
@@ -207,9 +201,9 @@ let find_with_index arr cmp v =
 let find_and_split arr cmp v : _ split = 
   let i = find_with_index arr cmp v in 
   if i < 0 then 
-    `No_split
+    No_split
   else
-    `Split (Array.sub arr 0 i, Array.sub arr (i + 1 ) (Array.length arr - i - 1))        
+    Split (Array.sub arr 0 i, Array.sub arr (i + 1 ) (Array.length arr - i - 1))
 
 (** TODO: available since 4.03, use {!Array.exists} *)
 

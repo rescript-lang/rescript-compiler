@@ -49,7 +49,8 @@ val to_list_f :
   ('a -> 'b) -> 
   'b list 
 
-val to_list_map : ('a -> 'b option) -> 'a array -> 'b list 
+val to_list_map : 
+'a array -> ('a -> 'b option) -> 'b list 
 
 val to_list_map_acc : 
   'a array -> 
@@ -65,12 +66,9 @@ val of_list_map :
 val rfind_with_index : 'a array -> ('a -> 'b -> bool) -> 'b -> int
 
 
-type 'a split = [ `No_split | `Split of 'a array * 'a array ]
 
-val rfind_and_split : 
-  'a array ->
-  ('a -> 'b -> bool) ->
-  'b -> 'a split
+type 'a split = No_split | Split of  'a array *  'a array 
+
 
 val find_and_split : 
   'a array ->
