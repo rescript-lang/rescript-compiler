@@ -177,37 +177,18 @@ let install_target config_opt =
 let () =
   try begin 
     match Sys.argv with 
-#if BS_NATIVE then
-    | [| _; "-backend"; _ |]
-#end
     | [| _ |] ->  (* specialize this path [bsb.exe] which is used in watcher *)
-#if BS_NATIVE then
-      if Array.length Sys.argv = 3 then begin match Array.get Sys.argv 2 with
-        | "js"       -> Bsb_global_backend.set_backend Bsb_config_types.Js
-        | "native"   -> Bsb_global_backend.set_backend Bsb_config_types.Native
-        | "bytecode" -> Bsb_global_backend.set_backend Bsb_config_types.Bytecode
-        | _ -> failwith "-backend should be one of: 'js', 'bytecode' or 'native'."
-      end;
-#end
       Bsb_ninja_regen.regenerate_ninja 
         ~toplevel_package_specs:None 
         ~forced:false 
         ~per_proj_dir:Bsb_global_paths.cwd  |> ignore;
       ninja_command_exit  [||] 
-
     | argv -> 
       begin
-        let i =  Ext_array.rfind_with_index
-          argv Ext_string.equal separator in 
+        let i =  Ext_array.rfind_with_index argv Ext_string.equal separator in 
         if i < 0 then 
           begin
-            Bsb_arg.parse_exn 
-            ~usage
-            ~argv 
-
-            bsb_main_flags 
-            handle_anonymous_arg            
-            ;
+            Bsb_arg.parse_exn ~usage ~argv bsb_main_flags handle_anonymous_arg;
             (* first, check whether we're in boilerplate generation mode, aka -init foo -theme bar *)
             match !generate_theme_with_path with
             | Some path -> Bsb_theme_init.init_sample_project ~cwd:Bsb_global_paths.cwd ~theme:!current_theme  path

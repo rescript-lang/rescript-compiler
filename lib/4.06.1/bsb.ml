@@ -2007,7 +2007,8 @@ val to_list_f :
   ('a -> 'b) -> 
   'b list 
 
-val to_list_map : ('a -> 'b option) -> 'a array -> 'b list 
+val to_list_map : 
+'a array -> ('a -> 'b option) -> 'b list 
 
 val to_list_map_acc : 
   'a array -> 
@@ -2023,12 +2024,9 @@ val of_list_map :
 val rfind_with_index : 'a array -> ('a -> 'b -> bool) -> 'b -> int
 
 
-type 'a split = [ `No_split | `Split of 'a array * 'a array ]
 
-val rfind_and_split : 
-  'a array ->
-  ('a -> 'b -> bool) ->
-  'b -> 'a split
+type 'a split = No_split | Split of  'a array *  'a array 
+
 
 val find_and_split : 
   'a array ->
@@ -2187,7 +2185,7 @@ let rec tolist_aux a f  i res =
        | Some v -> v :: res
        | None -> res) 
 
-let to_list_map f a = 
+let to_list_map a f  = 
   tolist_aux a f (Array.length a - 1) []
 
 let to_list_map_acc a acc f = 
@@ -2262,13 +2260,7 @@ let rfind_with_index arr cmp v =
     else aux (i - 1) in 
   aux (len - 1)
 
-type 'a split = [ `No_split | `Split of 'a array * 'a array ]
-let rfind_and_split arr cmp v : _ split = 
-  let i = rfind_with_index arr cmp v in 
-  if  i < 0 then 
-    `No_split 
-  else 
-    `Split (Array.sub arr 0 i , Array.sub arr  (i + 1 ) (Array.length arr - i - 1 ))
+type 'a split = No_split | Split of  'a array *  'a array 
 
 
 let find_with_index arr cmp v = 
@@ -2282,9 +2274,9 @@ let find_with_index arr cmp v =
 let find_and_split arr cmp v : _ split = 
   let i = find_with_index arr cmp v in 
   if i < 0 then 
-    `No_split
+    No_split
   else
-    `Split (Array.sub arr 0 i, Array.sub arr (i + 1 ) (Array.length arr - i - 1))        
+    Split (Array.sub arr 0 i, Array.sub arr (i + 1 ) (Array.length arr - i - 1))
 
 (** TODO: available since 4.03, use {!Array.exists} *)
 
@@ -10770,23 +10762,23 @@ let extract_input_output (edge : Ext_json_types.t) : string list * string list =
   (match Ext_array.find_and_split content 
           (fun x () -> match x with Str { str =":"} -> true | _ -> false )
           () with 
-  | `No_split -> error ()
-  | `Split (  output, input) -> 
-    (Ext_array.to_list_map (fun (x : Ext_json_types.t) -> 
+  | No_split -> error ()
+  | Split (  output, input) -> 
+    (Ext_array.to_list_map output (fun x -> 
         match x with
         | Str {str = ":"} -> 
           error ()
         | Str {str } ->           
           Some str 
-        | _ -> None) output
+        | _ -> None) 
     ,
-    Ext_array.to_list_map (fun (x : Ext_json_types.t) -> 
+    Ext_array.to_list_map input (fun x -> 
         match x with
         | Str {str = ":"} -> 
           error () 
         | Str {str} -> 
           Some str (* More rigirous error checking: It would trigger a ninja syntax error *)
-        | _ -> None) input))
+        | _ -> None) ))
     | _ -> error ()    
 type json_map = Ext_json_types.t Map_string.t
 
@@ -16968,28 +16960,18 @@ let install_target config_opt =
 let () =
   try begin 
     match Sys.argv with 
-
     | [| _ |] ->  (* specialize this path [bsb.exe] which is used in watcher *)
-
       Bsb_ninja_regen.regenerate_ninja 
         ~toplevel_package_specs:None 
         ~forced:false 
         ~per_proj_dir:Bsb_global_paths.cwd  |> ignore;
       ninja_command_exit  [||] 
-
     | argv -> 
       begin
-        let i =  Ext_array.rfind_with_index
-          argv Ext_string.equal separator in 
+        let i =  Ext_array.rfind_with_index argv Ext_string.equal separator in 
         if i < 0 then 
           begin
-            Bsb_arg.parse_exn 
-            ~usage
-            ~argv 
-
-            bsb_main_flags 
-            handle_anonymous_arg            
-            ;
+            Bsb_arg.parse_exn ~usage ~argv bsb_main_flags handle_anonymous_arg;
             (* first, check whether we're in boilerplate generation mode, aka -init foo -theme bar *)
             match !generate_theme_with_path with
             | Some path -> Bsb_theme_init.init_sample_project ~cwd:Bsb_global_paths.cwd ~theme:!current_theme  path
