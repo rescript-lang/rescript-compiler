@@ -254,16 +254,16 @@ let () =
             ~argv:bsb_args 
             ~start:1
             bsb_main_flags handle_anonymous_arg  ;
-            let config_opt = lazy
+            let config_opt = 
               (Bsb_ninja_regen.regenerate_ninja 
                 ~toplevel_package_specs:None 
                 ~per_proj_dir:Bsb_global_paths.cwd 
                 ~forced:!force_regenerate) in
             (* [-make-world] should never be combined with [-package-specs] *)
             if !make_world then
-              Bsb_world.make_world_deps Bsb_global_paths.cwd (Lazy.force config_opt) ninja_args;
+              Bsb_world.make_world_deps Bsb_global_paths.cwd ( config_opt) ninja_args;
             if !do_install then
-              install_target (Lazy.force config_opt);
+              install_target ( config_opt);
             if !watch_mode then program_exit ()
             else ninja_command_exit  ninja_args 
           end
