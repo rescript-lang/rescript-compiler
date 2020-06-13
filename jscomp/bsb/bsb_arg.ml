@@ -100,11 +100,10 @@
    raise (Bad (Ext_buffer.contents b))
  
  
- let parse_exn  ~usage ~argv ~start (speclist : t) anonfun  =    
-   let l = Array.length argv in
+ let parse_exn  ~usage ~argv ~start ?(finish=Array.length argv) (speclist : t) anonfun = 
    let current = ref start in 
    let rev_list = ref [] in 
-   while !current < l do
+   while !current < finish do
      let s = argv.(!current) in
      incr current;  
      if s <> "" && s.[0] = '-' then begin
@@ -117,7 +116,7 @@
                  | Unit_call f -> f ()
                end
              | String f  ->
-               if !current >= l then stop_raise ~usage ~error:(Missing s) speclist 
+               if !current >= finish then stop_raise ~usage ~error:(Missing s) speclist 
                else begin                 
                  let arg = argv.(!current) in 
                  incr current;  
