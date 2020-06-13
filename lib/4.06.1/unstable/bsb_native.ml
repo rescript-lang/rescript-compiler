@@ -16982,7 +16982,6 @@ end = struct
 let () =  Bsb_log.setup () 
 let current_theme = ref "basic"
 let generate_theme_with_path = ref None
-let regen = "-regen"
 let separator = "--"
 let watch_mode = ref false
 let make_world = ref false 
@@ -17024,7 +17023,7 @@ let bsb_main_flags : (string * spec * string) list=
     "-theme", String (String_set current_theme),
     "The theme for project initialization, default is basic(https://github.com/bucklescript/bucklescript/tree/master/jscomp/bsb/templates)";
     
-    regen, unit_set_spec force_regenerate,
+    "-regen", unit_set_spec force_regenerate,
     "(internal) Always regenerate build.ninja no matter bsconfig.json is changed or not (for debugging purpose)";
     "-themes", call_spec Bsb_theme_init.list_themes,
     "List all available themes";
