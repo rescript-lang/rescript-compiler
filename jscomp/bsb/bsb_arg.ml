@@ -73,7 +73,25 @@
        buf +> "  ";
        buf +> key ; 
        buf +> (String.make (!max_col - String.length key + 2 ) ' ');
-       buf +> doc;
+       let cur = ref 0 in 
+       let doc_length = String.length doc in 
+       while !cur < doc_length do 
+         match String.index_from_opt doc !cur '\n' with 
+         | None -> 
+           if !cur <> 0 then begin 
+             buf +>  "\n";
+             buf +> String.make (!max_col + 4) ' ' ;
+           end;
+           buf +> String.sub doc !cur (String.length doc - !cur );
+           cur := doc_length
+         | Some new_line_pos -> 
+           if !cur <> 0 then begin 
+             buf +>  "\n";
+             buf +> String.make (!max_col + 4) ' ' ;
+           end;
+           buf +> String.sub doc !cur (new_line_pos - !cur );
+           cur := new_line_pos + 1
+       done ;
        buf +> "\n"
      )
  ;;

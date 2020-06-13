@@ -62,9 +62,13 @@ let bsb_main_flags : (string * spec * string) list=
     "-install", unit_set_spec do_install,
     "Install public interface files into lib/ocaml";
     "-init", String (String_call (fun path -> generate_theme_with_path := Some path)),
-    "Init sample project to get started. Note (`bsb -init sample` will create a sample project while `bsb -init .` will reuse current directory)";
+    "Init sample project to get started. \n\
+    Note (`bsb -init sample` will create a sample project while \n\
+    `bsb -init .` will reuse current directory)";
     "-theme", String (String_set current_theme),
-    "The theme for project initialization, default is basic(https://github.com/bucklescript/bucklescript/tree/master/jscomp/bsb/templates)";
+    "The theme for project initialization. \n\
+    default is basic:\n\
+    https://github.com/bucklescript/bucklescript/tree/master/jscomp/bsb/templates";
     
     "-regen", unit_set_spec force_regenerate,
     "(internal) Always regenerate build.ninja no matter bsconfig.json is changed or not (for debugging purpose)";
@@ -78,7 +82,10 @@ let bsb_main_flags : (string * spec * string) list=
   we make it at this time to make `bsb -help` easier
 *)
     "-ws", call_spec ignore, 
-    "[host:]port specify a websocket number (and optionally, a host). When a build finishes, we send a message to that port. For tools that listen on build completion." ;
+    "[host:]port \n\
+    specify a websocket number (and optionally, a host). \n\
+    When a build finishes, we send a message to that port. \n\
+    For tools that listen on build completion." ;
 #if BS_NATIVE then
     "-backend", String (String_call (fun s -> 
         match s with
