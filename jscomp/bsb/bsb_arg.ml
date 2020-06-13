@@ -100,7 +100,7 @@
    raise (Bad (Ext_buffer.contents b))
  
  
- let parse_exn  ~usage ~argv ~start ?(finish=Array.length argv) (speclist : t) anonfun = 
+ let parse_exn  ~usage ~argv ?(start=1) ?(finish=Array.length argv) (speclist : t) anonfun = 
    let current = ref start in 
    let rev_list = ref [] in 
    while !current < finish do

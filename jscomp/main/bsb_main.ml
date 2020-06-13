@@ -197,14 +197,14 @@ let () =
 
     | argv -> 
       begin
-        match Ext_array.find_and_split argv Ext_string.equal separator with
-        | `No_split
-          ->
+        let i =  Ext_array.rfind_with_index
+          argv Ext_string.equal separator in 
+        if i < 0 then 
           begin
             Bsb_arg.parse_exn 
             ~usage
             ~argv 
-            ~start:1
+
             bsb_main_flags 
             handle_anonymous_arg            
             ;
@@ -245,14 +245,18 @@ let () =
                    install_target config_opt
                  end)
           end
-        | `Split (bsb_args,ninja_args)
-          -> (* -make-world all dependencies fall into this category *)
+        else
+           (* -make-world all dependencies fall into this category *)
           begin
             Bsb_arg.parse_exn 
             ~usage
-            ~argv:bsb_args 
-            ~start:1
+            ~argv:argv
+            ~finish:i
             bsb_main_flags handle_anonymous_arg  ;
+            let ninja_args = Array.sub argv (i + 1) (Array.length argv - i - 1) in 
+            match ninja_args with 
+            | [|"-h"|] -> ninja_command_exit ninja_args
+            | _ ->  
             let config_opt = 
               (Bsb_ninja_regen.regenerate_ninja 
                 ~toplevel_package_specs:None 

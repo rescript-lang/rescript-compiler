@@ -44,7 +44,7 @@ type anon_fun = rev_args:string list -> unit
 val parse_exn :
   usage:string -> 
   argv:string array -> 
-  start:int ->
+  ?start:int ->
   ?finish:int ->
   (key * spec * doc) list -> 
   anon_fun  -> unit
