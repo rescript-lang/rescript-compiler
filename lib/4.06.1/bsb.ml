@@ -1669,682 +1669,6 @@ let rec mem_string (xs : string list) (x : string) =
   | a::l ->  a = x  || mem_string l x
 
 end
-module Bsb_arg : sig 
-#1 "bsb_arg.mli"
-(* Copyright (C) 2020- Authors of BuckleScript
- *
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * In addition to the permissions granted to you by the LGPL, you may combine
- * or link a "work that uses the Library" with a publicly distributed version
- * of this file to produce a combined library or application, then distribute
- * that combined work under the terms of your choosing, with no requirement
- * to comply with the obligations normally placed on you by section 4 of the
- * LGPL version 3 (or the corresponding section of a later version of the LGPL
- * should you choose to use a later version).
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Lesser General Public License for more details.
- *
- * You should have received a copy of the GNU Lesser General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
-
-type string_action = 
-  | String_call of (string -> unit)  
-  | String_set of string ref 
-
-type unit_action = 
-  | Unit_call of (unit -> unit) 
-  | Unit_set of bool ref 
-
-exception Bad of string
-
-type spec =
-  | Unit of unit_action
-  | String of string_action 
-
-type key = string
-type doc = string
-
-type anon_fun = rev_args:string list -> unit
-
-val parse_exn :
-  usage:string -> 
-  argv:string array -> 
-  ?start:int ->
-  ?finish:int ->
-  (key * spec * doc) list -> 
-  anon_fun  -> unit
-end = struct
-#1 "bsb_arg.ml"
-(* Copyright (C) 2020- Authors of BuckleScript
- *
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * In addition to the permissions granted to you by the LGPL, you may combine
- * or link a "work that uses the Library" with a publicly distributed version
- * of this file to produce a combined library or application, then distribute
- * that combined work under the terms of your choosing, with no requirement
- * to comply with the obligations normally placed on you by section 4 of the
- * LGPL version 3 (or the corresponding section of a later version of the LGPL
- * should you choose to use a later version).
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Lesser General Public License for more details.
- *
- * You should have received a copy of the GNU Lesser General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
-
-
-
-
- type key = string
- type doc = string
- type anon_fun = rev_args:string list -> unit
- 
- type string_action = 
-   | String_call of (string -> unit)  
-   | String_set of string ref
-
- type unit_action = 
-    | Unit_call of (unit -> unit) 
-    | Unit_set of bool ref
-
- type spec =
-   | Unit of unit_action
-   | String of string_action 
- 
- 
- exception Bad of string
- 
- 
- type error =
-   | Unknown of string
-   | Missing of string
- 
- type t = (string * spec * string) list 
- 
- let rec assoc3 (x : string) (l : t) =
-   match l with
-   | [] -> None
-   | (y1, y2, _) :: _ when y1 = x -> Some y2
-   | _ :: t -> assoc3 x t
- ;;
- 
- 
- let (+>) = Ext_buffer.add_string
- 
- let usage_b (buf : Ext_buffer.t) ~usage speclist  =
-   buf +> usage;
-   buf +> "\nOptions:\n";
-   let max_col = ref 0 in 
-   Ext_list.iter speclist (fun (key,_,_) -> 
-       if String.length key > !max_col then 
-         max_col := String.length key
-     );
-   Ext_list.iter speclist (fun (key,_,doc) -> 
-       buf +> "  ";
-       buf +> key ; 
-       buf +> (String.make (!max_col - String.length key + 2 ) ' ');
-       buf +> doc;
-       buf +> "\n"
-     )
- ;;
- 
- 
-   
- let stop_raise ~usage ~(error : error) speclist   =
-   let b = Ext_buffer.create 200 in  
-   begin match error with
-     | Unknown ("-help" | "--help" | "-h") -> 
-       usage_b b ~usage speclist ;
-       Ext_buffer.output_buffer stdout b;
-       exit 0      
-     | Unknown s ->
-       b +> "unknown option: '";
-       b +> s ;
-       b +> "'.\n"
-     | Missing s ->
-       b +> "option '";
-       b +> s;
-       b +> "' needs an argument.\n"      
-   end;
-   usage_b b ~usage speclist ;
-   raise (Bad (Ext_buffer.contents b))
- 
- 
- let parse_exn  ~usage ~argv ?(start=1) ?(finish=Array.length argv) (speclist : t) anonfun = 
-   let current = ref start in 
-   let rev_list = ref [] in 
-   while !current < finish do
-     let s = argv.(!current) in
-     incr current;  
-     if s <> "" && s.[0] = '-' then begin
-       match assoc3 s speclist with 
-       | Some action -> begin       
-           begin match action with 
-             | Unit r -> 
-               begin match r with 
-                 | Unit_set r -> r.contents <- true
-                 | Unit_call f -> f ()
-               end
-             | String f  ->
-               if !current >= finish then stop_raise ~usage ~error:(Missing s) speclist 
-               else begin                 
-                 let arg = argv.(!current) in 
-                 incr current;  
-                 match f with 
-                 | String_call f ->   
-                   f arg
-                 | String_set u -> u.contents <- arg
-               end             
-           end;      
-         end;      
-       | None -> stop_raise ~usage ~error:(Unknown s) speclist 
-     end else begin
-       rev_list := s :: !rev_list;      
-     end;
-   done;
-   anonfun ~rev_args:!rev_list
- ;;
- 
- 
- 
-end
-module Bsb_build_schemas
-= struct
-#1 "bsb_build_schemas.ml"
-(* Copyright (C) 2017 Authors of BuckleScript
- * 
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * In addition to the permissions granted to you by the LGPL, you may combine
- * or link a "work that uses the Library" with a publicly distributed version
- * of this file to produce a combined library or application, then distribute
- * that combined work under the terms of your choosing, with no requirement
- * to comply with the obligations normally placed on you by section 4 of the
- * LGPL version 3 (or the corresponding section of a later version of the LGPL
- * should you choose to use a later version).
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Lesser General Public License for more details.
- * 
- * You should have received a copy of the GNU Lesser General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
-
-
-(* let files = "files" *)
-let version = "version"
-let name = "name"
-(* let ocaml_config = "ocaml-config" *)
-let bsdep = "bsdep"
-let ppx_flags = "ppx-flags"
-let pp_flags = "pp-flags"
-let bsc = "bsc"
-let refmt = "refmt"
-
-let bs_external_includes = "bs-external-includes"
-let bs_lib_dir = "bs-lib-dir"
-let bs_dependencies = "bs-dependencies"
-let bs_dev_dependencies = "bs-dev-dependencies"
-
-
-let sources = "sources"
-let dir = "dir"
-let files = "files"
-let subdirs = "subdirs"
-let bsc_flags = "bsc-flags"
-let excludes = "excludes"
-let slow_re = "slow-re"
-let resources = "resources"
-let public = "public"
-let js_post_build = "js-post-build"
-let cmd = "cmd"
-let ninja = "ninja"
-let package_specs = "package-specs"
-
-let generate_merlin = "generate-merlin"
-
-let type_ = "type"
-let dev = "dev"
-
-let export_all = "all"
-let export_none = "none"
-
-
-let g_lib_incls = "g_lib_incls"
-let use_stdlib = "use-stdlib"
-let reason = "reason"
-let react_jsx = "react-jsx"
-
-let entries = "entries"
-let backend = "backend"
-let main_module = "main-module"
-let cut_generators = "cut-generators"
-let generators = "generators"
-let command = "command"
-let edge = "edge"
-let namespace = "namespace"
-let in_source = "in-source"
-let warnings = "warnings"
-let number = "number"
-let error = "error"
-let suffix = "suffix"
-let gentypeconfig = "gentypeconfig"
-let language = "language"
-let path = "path"
-let ignored_dirs = "ignored-dirs"
-
-end
-module Ext_array : sig 
-#1 "ext_array.mli"
-(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
- * 
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * In addition to the permissions granted to you by the LGPL, you may combine
- * or link a "work that uses the Library" with a publicly distributed version
- * of this file to produce a combined library or application, then distribute
- * that combined work under the terms of your choosing, with no requirement
- * to comply with the obligations normally placed on you by section 4 of the
- * LGPL version 3 (or the corresponding section of a later version of the LGPL
- * should you choose to use a later version).
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Lesser General Public License for more details.
- * 
- * You should have received a copy of the GNU Lesser General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
-
-
-
-
-
-
-(** Some utilities for {!Array} operations *)
-val reverse_range : 'a array -> int -> int -> unit
-val reverse_in_place : 'a array -> unit
-val reverse : 'a array -> 'a array 
-val reverse_of_list : 'a list -> 'a array
-
-val filter : ('a -> bool) -> 'a array -> 'a array
-
-val filter_map : 
-'a array -> 
-('a -> 'b option) -> 
-'b array
-
-val range : int -> int -> int array
-
-val map2i : (int -> 'a -> 'b -> 'c ) -> 'a array -> 'b array -> 'c array
-
-val to_list_f : 
-  'a array -> 
-  ('a -> 'b) -> 
-  'b list 
-
-val to_list_map : 
-'a array -> ('a -> 'b option) -> 'b list 
-
-val to_list_map_acc : 
-  'a array -> 
-  'b list -> 
-  ('a -> 'b option) -> 
-  'b list 
-
-val of_list_map : 
-  'a list -> 
-  ('a -> 'b) -> 
-  'b array 
-
-val rfind_with_index : 'a array -> ('a -> 'b -> bool) -> 'b -> int
-
-
-
-type 'a split = No_split | Split of  'a array *  'a array 
-
-
-val find_and_split : 
-  'a array ->
-  ('a -> 'b -> bool) ->
-  'b -> 'a split
-
-val exists : ('a -> bool) -> 'a array -> bool 
-
-val is_empty : 'a array -> bool 
-
-val for_all2_no_exn : 
-  'a array ->
-  'b array -> 
-  ('a -> 'b -> bool) -> 
-  bool
-
-val for_alli : 
-  'a array -> 
-  (int -> 'a -> bool) -> 
-  bool 
-    
-val map :   
-  'a array -> 
-  ('a -> 'b) -> 
-  'b array
-
-val iter :
-  'a array -> 
-  ('a -> unit) -> 
-  unit
-
-val fold_left :   
-  'b array -> 
-  'a -> 
-  ('a -> 'b -> 'a) ->   
-  'a
-
-val get_or :   
-  'a array -> 
-  int -> 
-  (unit -> 'a) -> 
-  'a
-end = struct
-#1 "ext_array.ml"
-(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
- * 
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * In addition to the permissions granted to you by the LGPL, you may combine
- * or link a "work that uses the Library" with a publicly distributed version
- * of this file to produce a combined library or application, then distribute
- * that combined work under the terms of your choosing, with no requirement
- * to comply with the obligations normally placed on you by section 4 of the
- * LGPL version 3 (or the corresponding section of a later version of the LGPL
- * should you choose to use a later version).
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Lesser General Public License for more details.
- * 
- * You should have received a copy of the GNU Lesser General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
-
-
-
-
-
-let reverse_range a i len =
-  if len = 0 then ()
-  else
-    for k = 0 to (len-1)/2 do
-      let t = Array.unsafe_get a (i+k) in
-      Array.unsafe_set a (i+k) ( Array.unsafe_get a (i+len-1-k));
-      Array.unsafe_set a (i+len-1-k) t;
-    done
-
-
-let reverse_in_place a =
-  reverse_range a 0 (Array.length a)
-
-let reverse a =
-  let b_len = Array.length a in
-  if b_len = 0 then [||] else  
-    let b = Array.copy a in  
-    for i = 0 to  b_len - 1 do
-      Array.unsafe_set b i (Array.unsafe_get a (b_len - 1 -i )) 
-    done;
-    b  
-
-let reverse_of_list =  function
-  | [] -> [||]
-  | hd::tl as l ->
-    let len = List.length l in
-    let a = Array.make len hd in
-    let rec fill i = function
-      | [] -> a
-      | hd::tl -> Array.unsafe_set a (len - i - 2) hd; fill (i+1) tl in
-    fill 0 tl
-
-let filter f a =
-  let arr_len = Array.length a in
-  let rec aux acc i =
-    if i = arr_len 
-    then reverse_of_list acc 
-    else
-      let v = Array.unsafe_get a i in
-      if f  v then 
-        aux (v::acc) (i+1)
-      else aux acc (i + 1) 
-  in aux [] 0
-
-
-let filter_map a (f : _ -> _ option)  =
-  let arr_len = Array.length a in
-  let rec aux acc i =
-    if i = arr_len 
-    then reverse_of_list acc 
-    else
-      let v = Array.unsafe_get a i in
-      match f  v with 
-      | Some v -> 
-        aux (v::acc) (i+1)
-      | None -> 
-        aux acc (i + 1) 
-  in aux [] 0
-
-let range from to_ =
-  if from > to_ then invalid_arg "Ext_array.range"  
-  else Array.init (to_ - from + 1) (fun i -> i + from)
-
-let map2i f a b = 
-  let len = Array.length a in 
-  if len <> Array.length b then 
-    invalid_arg "Ext_array.map2i"  
-  else
-    Array.mapi (fun i a -> f i  a ( Array.unsafe_get b i )) a 
-
-let rec tolist_f_aux a f  i res =
-  if i < 0 then res else
-    let v = Array.unsafe_get a i in
-    tolist_f_aux a f  (i - 1)
-      (f v :: res)
-       
-let to_list_f a f = tolist_f_aux a f (Array.length a  - 1) []
-
-let rec tolist_aux a f  i res =
-  if i < 0 then res else
-    let v = Array.unsafe_get a i in
-    tolist_aux a f  (i - 1)
-      (match f v with
-       | Some v -> v :: res
-       | None -> res) 
-
-let to_list_map a f  = 
-  tolist_aux a f (Array.length a - 1) []
-
-let to_list_map_acc a acc f = 
-  tolist_aux a f (Array.length a - 1) acc
-
-
-let of_list_map a f = 
-  match a with 
-  | [] -> [||]
-  | [a0] -> 
-    let b0 = f a0 in
-    [|b0|]
-  | [a0;a1] -> 
-    let b0 = f a0 in  
-    let b1 = f a1 in 
-    [|b0;b1|]
-  | [a0;a1;a2] -> 
-    let b0 = f a0 in  
-    let b1 = f a1 in 
-    let b2 = f a2 in  
-    [|b0;b1;b2|]
-  | [a0;a1;a2;a3] -> 
-    let b0 = f a0 in  
-    let b1 = f a1 in 
-    let b2 = f a2 in  
-    let b3 = f a3 in 
-    [|b0;b1;b2;b3|]
-  | [a0;a1;a2;a3;a4] -> 
-    let b0 = f a0 in  
-    let b1 = f a1 in 
-    let b2 = f a2 in  
-    let b3 = f a3 in 
-    let b4 = f a4 in 
-    [|b0;b1;b2;b3;b4|]
-
-  | a0::a1::a2::a3::a4::tl -> 
-    let b0 = f a0 in  
-    let b1 = f a1 in 
-    let b2 = f a2 in  
-    let b3 = f a3 in 
-    let b4 = f a4 in 
-    let len = List.length tl + 5 in 
-    let arr = Array.make len b0  in
-    Array.unsafe_set arr 1 b1 ;  
-    Array.unsafe_set arr 2 b2 ;
-    Array.unsafe_set arr 3 b3 ; 
-    Array.unsafe_set arr 4 b4 ; 
-    let rec fill i = function
-      | [] -> arr 
-      | hd :: tl -> 
-        Array.unsafe_set arr i (f hd); 
-        fill (i + 1) tl in 
-    fill 5 tl
-
-(**
-   {[
-     # rfind_with_index [|1;2;3|] (=) 2;;
-     - : int = 1
-               # rfind_with_index [|1;2;3|] (=) 1;;
-     - : int = 0
-               # rfind_with_index [|1;2;3|] (=) 3;;
-     - : int = 2
-               # rfind_with_index [|1;2;3|] (=) 4;;
-     - : int = -1
-   ]}
-*)
-let rfind_with_index arr cmp v = 
-  let len = Array.length arr in 
-  let rec aux i = 
-    if i < 0 then i
-    else if  cmp (Array.unsafe_get arr i) v then i
-    else aux (i - 1) in 
-  aux (len - 1)
-
-type 'a split = No_split | Split of  'a array *  'a array 
-
-
-let find_with_index arr cmp v = 
-  let len  = Array.length arr in 
-  let rec aux i len = 
-    if i >= len then -1 
-    else if cmp (Array.unsafe_get arr i ) v then i 
-    else aux (i + 1) len in 
-  aux 0 len
-
-let find_and_split arr cmp v : _ split = 
-  let i = find_with_index arr cmp v in 
-  if i < 0 then 
-    No_split
-  else
-    Split (Array.sub arr 0 i, Array.sub arr (i + 1 ) (Array.length arr - i - 1))
-
-(** TODO: available since 4.03, use {!Array.exists} *)
-
-let exists p a =
-  let n = Array.length a in
-  let rec loop i =
-    if i = n then false
-    else if p (Array.unsafe_get a i) then true
-    else loop (succ i) in
-  loop 0
-
-
-let is_empty arr =
-  Array.length arr = 0
-
-
-let rec unsafe_loop index len p xs ys  = 
-  if index >= len then true
-  else 
-    p 
-      (Array.unsafe_get xs index)
-      (Array.unsafe_get ys index) &&
-    unsafe_loop (succ index) len p xs ys 
-
-let for_alli a p =
-  let n = Array.length a in
-  let rec loop i =
-    if i = n then true
-    else if p i (Array.unsafe_get a i) then loop (succ i)
-    else false in
-  loop 0
-
-let for_all2_no_exn xs ys p = 
-  let len_xs = Array.length xs in 
-  let len_ys = Array.length ys in 
-  len_xs = len_ys &&    
-  unsafe_loop 0 len_xs p xs ys
-
-
-let map a f =
-  let open Array in 
-  let l = length a in
-  if l = 0 then [||] else begin
-    let r = make l (f(unsafe_get a 0)) in
-    for i = 1 to l - 1 do
-      unsafe_set r i (f(unsafe_get a i))
-    done;
-    r
-  end
-
-let iter a f =
-  let open Array in 
-  for i = 0 to length a - 1 do f(unsafe_get a i) done
-
-
-  let fold_left a x f =
-    let open Array in 
-    let r = ref x in    
-    for i = 0 to length a - 1 do
-      r := f !r (unsafe_get a i)
-    done;
-    !r
-  
-let get_or arr i cb =     
-  if i >=0 && i < Array.length arr then 
-    Array.unsafe_get arr i 
-  else cb ()  
-end
 module Ext_string : sig 
 #1 "ext_string.mli"
 (* Copyright (C) 2015-2016 Bloomberg Finance L.P.
@@ -3066,6 +2390,702 @@ let unsafe_sub  x offs len =
   let b = Bytes.create len in 
   Ext_bytes.unsafe_blit_string x offs b 0 len;
   (Bytes.unsafe_to_string b);
+end
+module Bsb_arg : sig 
+#1 "bsb_arg.mli"
+(* Copyright (C) 2020- Authors of BuckleScript
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * In addition to the permissions granted to you by the LGPL, you may combine
+ * or link a "work that uses the Library" with a publicly distributed version
+ * of this file to produce a combined library or application, then distribute
+ * that combined work under the terms of your choosing, with no requirement
+ * to comply with the obligations normally placed on you by section 4 of the
+ * LGPL version 3 (or the corresponding section of a later version of the LGPL
+ * should you choose to use a later version).
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
+
+type string_action = 
+  | String_call of (string -> unit)  
+  | String_set of string ref 
+
+type unit_action = 
+  | Unit_call of (unit -> unit) 
+  | Unit_set of bool ref 
+
+exception Bad of string
+
+type spec =
+  | Unit of unit_action
+  | String of string_action 
+
+type key = string
+type doc = string
+
+type anon_fun = rev_args:string list -> unit
+
+val parse_exn :
+  usage:string -> 
+  argv:string array -> 
+  ?start:int ->
+  ?finish:int ->
+  (key * spec * doc) list -> 
+  anon_fun  -> unit
+end = struct
+#1 "bsb_arg.ml"
+(* Copyright (C) 2020- Authors of BuckleScript
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * In addition to the permissions granted to you by the LGPL, you may combine
+ * or link a "work that uses the Library" with a publicly distributed version
+ * of this file to produce a combined library or application, then distribute
+ * that combined work under the terms of your choosing, with no requirement
+ * to comply with the obligations normally placed on you by section 4 of the
+ * LGPL version 3 (or the corresponding section of a later version of the LGPL
+ * should you choose to use a later version).
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
+
+
+
+
+ type key = string
+ type doc = string
+ type anon_fun = rev_args:string list -> unit
+ 
+ type string_action = 
+   | String_call of (string -> unit)  
+   | String_set of string ref
+
+ type unit_action = 
+    | Unit_call of (unit -> unit) 
+    | Unit_set of bool ref
+
+ type spec =
+   | Unit of unit_action
+   | String of string_action 
+ 
+ 
+ exception Bad of string
+ 
+ 
+ type error =
+   | Unknown of string
+   | Missing of string
+ 
+ type t = (string * spec * string) list 
+ 
+ let rec assoc3 (x : string) (l : t) =
+   match l with
+   | [] -> None
+   | (y1, y2, _) :: _ when y1 = x -> Some y2
+   | _ :: t -> assoc3 x t
+ ;;
+ 
+ 
+ let (+>) = Ext_buffer.add_string
+ 
+ let usage_b (buf : Ext_buffer.t) ~usage speclist  =
+   buf +> usage;
+   buf +> "\nOptions:\n";
+   let max_col = ref 0 in 
+   Ext_list.iter speclist (fun (key,_,_) -> 
+       if String.length key > !max_col then 
+         max_col := String.length key
+     );
+   Ext_list.iter speclist (fun (key,_,doc) -> 
+       if not (Ext_string.starts_with doc "*internal*") then begin 
+         buf +> "  ";
+         buf +> key ; 
+         buf +> (String.make (!max_col - String.length key + 2 ) ' ');
+         let cur = ref 0 in 
+         let doc_length = String.length doc in 
+         while !cur < doc_length do 
+           match String.index_from_opt doc !cur '\n' with 
+           | None -> 
+             if !cur <> 0 then begin 
+               buf +>  "\n";
+               buf +> String.make (!max_col + 4) ' ' ;
+             end;
+             buf +> String.sub doc !cur (String.length doc - !cur );
+             cur := doc_length
+           | Some new_line_pos -> 
+             if !cur <> 0 then begin 
+               buf +>  "\n";
+               buf +> String.make (!max_col + 4) ' ' ;
+             end;
+             buf +> String.sub doc !cur (new_line_pos - !cur );
+             cur := new_line_pos + 1
+         done ;
+         buf +> "\n"
+       end
+     )
+ ;;
+ 
+ 
+   
+ let stop_raise ~usage ~(error : error) speclist   =
+   let b = Ext_buffer.create 200 in  
+   begin match error with
+     | Unknown ("-help" | "--help" | "-h") -> 
+       usage_b b ~usage speclist ;
+       Ext_buffer.output_buffer stdout b;
+       exit 0      
+     | Unknown s ->
+       b +> "unknown option: '";
+       b +> s ;
+       b +> "'.\n"
+     | Missing s ->
+       b +> "option '";
+       b +> s;
+       b +> "' needs an argument.\n"      
+   end;
+   usage_b b ~usage speclist ;
+   raise (Bad (Ext_buffer.contents b))
+ 
+ 
+ let parse_exn  ~usage ~argv ?(start=1) ?(finish=Array.length argv) (speclist : t) anonfun = 
+   let current = ref start in 
+   let rev_list = ref [] in 
+   while !current < finish do
+     let s = argv.(!current) in
+     incr current;  
+     if s <> "" && s.[0] = '-' then begin
+       match assoc3 s speclist with 
+       | Some action -> begin       
+           begin match action with 
+             | Unit r -> 
+               begin match r with 
+                 | Unit_set r -> r.contents <- true
+                 | Unit_call f -> f ()
+               end
+             | String f  ->
+               if !current >= finish then stop_raise ~usage ~error:(Missing s) speclist 
+               else begin                 
+                 let arg = argv.(!current) in 
+                 incr current;  
+                 match f with 
+                 | String_call f ->   
+                   f arg
+                 | String_set u -> u.contents <- arg
+               end             
+           end;      
+         end;      
+       | None -> stop_raise ~usage ~error:(Unknown s) speclist 
+     end else begin
+       rev_list := s :: !rev_list;      
+     end;
+   done;
+   anonfun ~rev_args:!rev_list
+ ;;
+ 
+ 
+ 
+end
+module Bsb_build_schemas
+= struct
+#1 "bsb_build_schemas.ml"
+(* Copyright (C) 2017 Authors of BuckleScript
+ * 
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * In addition to the permissions granted to you by the LGPL, you may combine
+ * or link a "work that uses the Library" with a publicly distributed version
+ * of this file to produce a combined library or application, then distribute
+ * that combined work under the terms of your choosing, with no requirement
+ * to comply with the obligations normally placed on you by section 4 of the
+ * LGPL version 3 (or the corresponding section of a later version of the LGPL
+ * should you choose to use a later version).
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ * 
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
+
+
+(* let files = "files" *)
+let version = "version"
+let name = "name"
+(* let ocaml_config = "ocaml-config" *)
+let bsdep = "bsdep"
+let ppx_flags = "ppx-flags"
+let pp_flags = "pp-flags"
+let bsc = "bsc"
+let refmt = "refmt"
+
+let bs_external_includes = "bs-external-includes"
+let bs_lib_dir = "bs-lib-dir"
+let bs_dependencies = "bs-dependencies"
+let bs_dev_dependencies = "bs-dev-dependencies"
+
+
+let sources = "sources"
+let dir = "dir"
+let files = "files"
+let subdirs = "subdirs"
+let bsc_flags = "bsc-flags"
+let excludes = "excludes"
+let slow_re = "slow-re"
+let resources = "resources"
+let public = "public"
+let js_post_build = "js-post-build"
+let cmd = "cmd"
+let ninja = "ninja"
+let package_specs = "package-specs"
+
+let generate_merlin = "generate-merlin"
+
+let type_ = "type"
+let dev = "dev"
+
+let export_all = "all"
+let export_none = "none"
+
+
+let g_lib_incls = "g_lib_incls"
+let use_stdlib = "use-stdlib"
+let reason = "reason"
+let react_jsx = "react-jsx"
+
+let entries = "entries"
+let backend = "backend"
+let main_module = "main-module"
+let cut_generators = "cut-generators"
+let generators = "generators"
+let command = "command"
+let edge = "edge"
+let namespace = "namespace"
+let in_source = "in-source"
+let warnings = "warnings"
+let number = "number"
+let error = "error"
+let suffix = "suffix"
+let gentypeconfig = "gentypeconfig"
+let language = "language"
+let path = "path"
+let ignored_dirs = "ignored-dirs"
+
+end
+module Ext_array : sig 
+#1 "ext_array.mli"
+(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
+ * 
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * In addition to the permissions granted to you by the LGPL, you may combine
+ * or link a "work that uses the Library" with a publicly distributed version
+ * of this file to produce a combined library or application, then distribute
+ * that combined work under the terms of your choosing, with no requirement
+ * to comply with the obligations normally placed on you by section 4 of the
+ * LGPL version 3 (or the corresponding section of a later version of the LGPL
+ * should you choose to use a later version).
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ * 
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
+
+
+
+
+
+
+(** Some utilities for {!Array} operations *)
+val reverse_range : 'a array -> int -> int -> unit
+val reverse_in_place : 'a array -> unit
+val reverse : 'a array -> 'a array 
+val reverse_of_list : 'a list -> 'a array
+
+val filter : ('a -> bool) -> 'a array -> 'a array
+
+val filter_map : 
+'a array -> 
+('a -> 'b option) -> 
+'b array
+
+val range : int -> int -> int array
+
+val map2i : (int -> 'a -> 'b -> 'c ) -> 'a array -> 'b array -> 'c array
+
+val to_list_f : 
+  'a array -> 
+  ('a -> 'b) -> 
+  'b list 
+
+val to_list_map : 
+'a array -> ('a -> 'b option) -> 'b list 
+
+val to_list_map_acc : 
+  'a array -> 
+  'b list -> 
+  ('a -> 'b option) -> 
+  'b list 
+
+val of_list_map : 
+  'a list -> 
+  ('a -> 'b) -> 
+  'b array 
+
+val rfind_with_index : 'a array -> ('a -> 'b -> bool) -> 'b -> int
+
+
+
+type 'a split = No_split | Split of  'a array *  'a array 
+
+
+val find_and_split : 
+  'a array ->
+  ('a -> 'b -> bool) ->
+  'b -> 'a split
+
+val exists : ('a -> bool) -> 'a array -> bool 
+
+val is_empty : 'a array -> bool 
+
+val for_all2_no_exn : 
+  'a array ->
+  'b array -> 
+  ('a -> 'b -> bool) -> 
+  bool
+
+val for_alli : 
+  'a array -> 
+  (int -> 'a -> bool) -> 
+  bool 
+    
+val map :   
+  'a array -> 
+  ('a -> 'b) -> 
+  'b array
+
+val iter :
+  'a array -> 
+  ('a -> unit) -> 
+  unit
+
+val fold_left :   
+  'b array -> 
+  'a -> 
+  ('a -> 'b -> 'a) ->   
+  'a
+
+val get_or :   
+  'a array -> 
+  int -> 
+  (unit -> 'a) -> 
+  'a
+end = struct
+#1 "ext_array.ml"
+(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
+ * 
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * In addition to the permissions granted to you by the LGPL, you may combine
+ * or link a "work that uses the Library" with a publicly distributed version
+ * of this file to produce a combined library or application, then distribute
+ * that combined work under the terms of your choosing, with no requirement
+ * to comply with the obligations normally placed on you by section 4 of the
+ * LGPL version 3 (or the corresponding section of a later version of the LGPL
+ * should you choose to use a later version).
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ * 
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
+
+
+
+
+
+let reverse_range a i len =
+  if len = 0 then ()
+  else
+    for k = 0 to (len-1)/2 do
+      let t = Array.unsafe_get a (i+k) in
+      Array.unsafe_set a (i+k) ( Array.unsafe_get a (i+len-1-k));
+      Array.unsafe_set a (i+len-1-k) t;
+    done
+
+
+let reverse_in_place a =
+  reverse_range a 0 (Array.length a)
+
+let reverse a =
+  let b_len = Array.length a in
+  if b_len = 0 then [||] else  
+    let b = Array.copy a in  
+    for i = 0 to  b_len - 1 do
+      Array.unsafe_set b i (Array.unsafe_get a (b_len - 1 -i )) 
+    done;
+    b  
+
+let reverse_of_list =  function
+  | [] -> [||]
+  | hd::tl as l ->
+    let len = List.length l in
+    let a = Array.make len hd in
+    let rec fill i = function
+      | [] -> a
+      | hd::tl -> Array.unsafe_set a (len - i - 2) hd; fill (i+1) tl in
+    fill 0 tl
+
+let filter f a =
+  let arr_len = Array.length a in
+  let rec aux acc i =
+    if i = arr_len 
+    then reverse_of_list acc 
+    else
+      let v = Array.unsafe_get a i in
+      if f  v then 
+        aux (v::acc) (i+1)
+      else aux acc (i + 1) 
+  in aux [] 0
+
+
+let filter_map a (f : _ -> _ option)  =
+  let arr_len = Array.length a in
+  let rec aux acc i =
+    if i = arr_len 
+    then reverse_of_list acc 
+    else
+      let v = Array.unsafe_get a i in
+      match f  v with 
+      | Some v -> 
+        aux (v::acc) (i+1)
+      | None -> 
+        aux acc (i + 1) 
+  in aux [] 0
+
+let range from to_ =
+  if from > to_ then invalid_arg "Ext_array.range"  
+  else Array.init (to_ - from + 1) (fun i -> i + from)
+
+let map2i f a b = 
+  let len = Array.length a in 
+  if len <> Array.length b then 
+    invalid_arg "Ext_array.map2i"  
+  else
+    Array.mapi (fun i a -> f i  a ( Array.unsafe_get b i )) a 
+
+let rec tolist_f_aux a f  i res =
+  if i < 0 then res else
+    let v = Array.unsafe_get a i in
+    tolist_f_aux a f  (i - 1)
+      (f v :: res)
+       
+let to_list_f a f = tolist_f_aux a f (Array.length a  - 1) []
+
+let rec tolist_aux a f  i res =
+  if i < 0 then res else
+    let v = Array.unsafe_get a i in
+    tolist_aux a f  (i - 1)
+      (match f v with
+       | Some v -> v :: res
+       | None -> res) 
+
+let to_list_map a f  = 
+  tolist_aux a f (Array.length a - 1) []
+
+let to_list_map_acc a acc f = 
+  tolist_aux a f (Array.length a - 1) acc
+
+
+let of_list_map a f = 
+  match a with 
+  | [] -> [||]
+  | [a0] -> 
+    let b0 = f a0 in
+    [|b0|]
+  | [a0;a1] -> 
+    let b0 = f a0 in  
+    let b1 = f a1 in 
+    [|b0;b1|]
+  | [a0;a1;a2] -> 
+    let b0 = f a0 in  
+    let b1 = f a1 in 
+    let b2 = f a2 in  
+    [|b0;b1;b2|]
+  | [a0;a1;a2;a3] -> 
+    let b0 = f a0 in  
+    let b1 = f a1 in 
+    let b2 = f a2 in  
+    let b3 = f a3 in 
+    [|b0;b1;b2;b3|]
+  | [a0;a1;a2;a3;a4] -> 
+    let b0 = f a0 in  
+    let b1 = f a1 in 
+    let b2 = f a2 in  
+    let b3 = f a3 in 
+    let b4 = f a4 in 
+    [|b0;b1;b2;b3;b4|]
+
+  | a0::a1::a2::a3::a4::tl -> 
+    let b0 = f a0 in  
+    let b1 = f a1 in 
+    let b2 = f a2 in  
+    let b3 = f a3 in 
+    let b4 = f a4 in 
+    let len = List.length tl + 5 in 
+    let arr = Array.make len b0  in
+    Array.unsafe_set arr 1 b1 ;  
+    Array.unsafe_set arr 2 b2 ;
+    Array.unsafe_set arr 3 b3 ; 
+    Array.unsafe_set arr 4 b4 ; 
+    let rec fill i = function
+      | [] -> arr 
+      | hd :: tl -> 
+        Array.unsafe_set arr i (f hd); 
+        fill (i + 1) tl in 
+    fill 5 tl
+
+(**
+   {[
+     # rfind_with_index [|1;2;3|] (=) 2;;
+     - : int = 1
+               # rfind_with_index [|1;2;3|] (=) 1;;
+     - : int = 0
+               # rfind_with_index [|1;2;3|] (=) 3;;
+     - : int = 2
+               # rfind_with_index [|1;2;3|] (=) 4;;
+     - : int = -1
+   ]}
+*)
+let rfind_with_index arr cmp v = 
+  let len = Array.length arr in 
+  let rec aux i = 
+    if i < 0 then i
+    else if  cmp (Array.unsafe_get arr i) v then i
+    else aux (i - 1) in 
+  aux (len - 1)
+
+type 'a split = No_split | Split of  'a array *  'a array 
+
+
+let find_with_index arr cmp v = 
+  let len  = Array.length arr in 
+  let rec aux i len = 
+    if i >= len then -1 
+    else if cmp (Array.unsafe_get arr i ) v then i 
+    else aux (i + 1) len in 
+  aux 0 len
+
+let find_and_split arr cmp v : _ split = 
+  let i = find_with_index arr cmp v in 
+  if i < 0 then 
+    No_split
+  else
+    Split (Array.sub arr 0 i, Array.sub arr (i + 1 ) (Array.length arr - i - 1))
+
+(** TODO: available since 4.03, use {!Array.exists} *)
+
+let exists p a =
+  let n = Array.length a in
+  let rec loop i =
+    if i = n then false
+    else if p (Array.unsafe_get a i) then true
+    else loop (succ i) in
+  loop 0
+
+
+let is_empty arr =
+  Array.length arr = 0
+
+
+let rec unsafe_loop index len p xs ys  = 
+  if index >= len then true
+  else 
+    p 
+      (Array.unsafe_get xs index)
+      (Array.unsafe_get ys index) &&
+    unsafe_loop (succ index) len p xs ys 
+
+let for_alli a p =
+  let n = Array.length a in
+  let rec loop i =
+    if i = n then true
+    else if p i (Array.unsafe_get a i) then loop (succ i)
+    else false in
+  loop 0
+
+let for_all2_no_exn xs ys p = 
+  let len_xs = Array.length xs in 
+  let len_ys = Array.length ys in 
+  len_xs = len_ys &&    
+  unsafe_loop 0 len_xs p xs ys
+
+
+let map a f =
+  let open Array in 
+  let l = length a in
+  if l = 0 then [||] else begin
+    let r = make l (f(unsafe_get a 0)) in
+    for i = 1 to l - 1 do
+      unsafe_set r i (f(unsafe_get a i))
+    done;
+    r
+  end
+
+let iter a f =
+  let open Array in 
+  for i = 0 to length a - 1 do f(unsafe_get a i) done
+
+
+  let fold_left a x f =
+    let open Array in 
+    let r = ref x in    
+    for i = 0 to length a - 1 do
+      r := f !r (unsafe_get a i)
+    done;
+    !r
+  
+let get_or arr i cb =     
+  if i >=0 && i < Array.length arr then 
+    Array.unsafe_get arr i 
+  else cb ()  
 end
 module Map_gen
 = struct
@@ -16854,12 +16874,17 @@ let bsb_main_flags : (string * spec * string) list=
     "-install", unit_set_spec do_install,
     "Install public interface files into lib/ocaml";
     "-init", String (String_call (fun path -> generate_theme_with_path := Some path)),
-    "Init sample project to get started. Note (`bsb -init sample` will create a sample project while `bsb -init .` will reuse current directory)";
+    "Init sample project to get started. \n\
+    Note (`bsb -init sample` will create a sample project while \n\
+    `bsb -init .` will reuse current directory)";
     "-theme", String (String_set current_theme),
-    "The theme for project initialization, default is basic(https://github.com/bucklescript/bucklescript/tree/master/jscomp/bsb/templates)";
+    "The theme for project initialization. \n\
+    default is basic:\n\
+    https://github.com/bucklescript/bucklescript/tree/master/jscomp/bsb/templates";
     
     "-regen", unit_set_spec force_regenerate,
-    "(internal) Always regenerate build.ninja no matter bsconfig.json is changed or not (for debugging purpose)";
+    "*internal* \n\
+    Always regenerate build.ninja no matter bsconfig.json is changed or not";
     "-themes", call_spec Bsb_theme_init.list_themes,
     "List all available themes";
     "-where",
@@ -16870,7 +16895,10 @@ let bsb_main_flags : (string * spec * string) list=
   we make it at this time to make `bsb -help` easier
 *)
     "-ws", call_spec ignore, 
-    "[host:]port specify a websocket number (and optionally, a host). When a build finishes, we send a message to that port. For tools that listen on build completion." ;
+    "[host:]port \n\
+    specify a websocket number (and optionally, a host). \n\
+    When a build finishes, we send a message to that port. \n\
+    For tools that listen on build completion." ;
 
   ]
 

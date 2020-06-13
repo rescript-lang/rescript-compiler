@@ -71,7 +71,8 @@ let bsb_main_flags : (string * spec * string) list=
     https://github.com/bucklescript/bucklescript/tree/master/jscomp/bsb/templates";
     
     "-regen", unit_set_spec force_regenerate,
-    "(internal) Always regenerate build.ninja no matter bsconfig.json is changed or not (for debugging purpose)";
+    "*internal* \n\
+    Always regenerate build.ninja no matter bsconfig.json is changed or not";
     "-themes", call_spec Bsb_theme_init.list_themes,
     "List all available themes";
     "-where",
