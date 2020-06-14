@@ -48,7 +48,7 @@ build $SNAP/unstable/all_ounit_tests.ml: bspack | ./bin/bspack.exe $LTO
     main = Ounit_tests_main         
 
 build $SNAP/unstable/bspack.ml: bspack | ./bin/bspack.exe $LTO
-    flags = -bs-MD -module-alias Config=Config_whole_compiler  -I $OCAML_SRC_PARSING -I $OCAML_SRC_UTILS -I stubs -I ext -I common -I depends -I core -I main -bs-main Bspack_main
+    flags = -D BS_PACK=true -bs-MD -module-alias Config=Config_whole_compiler  -I $OCAML_SRC_PARSING -I $OCAML_SRC_UTILS -I stubs -I ext -I common -I depends -I core -I main -bs-main Bspack_main
     main = Bspack_main
 
 build $SNAP/unstable/js_compiler.ml: bspack | ./bin/bspack.exe $LTO
