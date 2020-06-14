@@ -112,23 +112,23 @@ let extract_input_output (edge : Ext_json_types.t) : string list * string list =
   (match Ext_array.find_and_split content 
           (fun x () -> match x with Str { str =":"} -> true | _ -> false )
           () with 
-  | `No_split -> error ()
-  | `Split (  output, input) -> 
-    (Ext_array.to_list_map (fun (x : Ext_json_types.t) -> 
+  | No_split -> error ()
+  | Split (  output, input) -> 
+    (Ext_array.to_list_map output (fun x -> 
         match x with
         | Str {str = ":"} -> 
           error ()
         | Str {str } ->           
           Some str 
-        | _ -> None) output
+        | _ -> None) 
     ,
-    Ext_array.to_list_map (fun (x : Ext_json_types.t) -> 
+    Ext_array.to_list_map input (fun x -> 
         match x with
         | Str {str = ":"} -> 
           error () 
         | Str {str} -> 
           Some str (* More rigirous error checking: It would trigger a ninja syntax error *)
-        | _ -> None) input))
+        | _ -> None) ))
     | _ -> error ()    
 type json_map = Ext_json_types.t Map_string.t
 

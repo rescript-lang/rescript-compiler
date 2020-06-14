@@ -23,72 +23,79 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
 let () =  Bsb_log.setup () 
-
-let force_regenerate = ref false
-
 let current_theme = ref "basic"
-let set_theme s = current_theme := s 
 let generate_theme_with_path = ref None
-let regen = "-regen"
 let separator = "--"
 let watch_mode = ref false
 let make_world = ref false 
 let do_install = ref false
-let set_make_world () = make_world := true
 let bs_version_string = Bs_version.version
-
 let print_version_string () = 
   print_string bs_version_string;
   print_newline (); 
   exit 0 
+type spec = Bsb_arg.spec
 
-let bsb_main_flags : (string * Arg.spec * string) list=
+let call_spec f : spec = Unit (Unit_call f )
+let  unit_set_spec b : spec = Unit (Unit_set b)
+
+
+let force_regenerate = ref false
+let bsb_main_flags : (string * spec * string) list=
   [
-    "-v", Arg.Unit print_version_string, 
-    " Print version and exit";
-    "-version", Arg.Unit print_version_string, 
-    " Print version and exit";
-    "-verbose", Arg.Unit Bsb_log.verbose,
-    " Set the output(from bsb) to be verbose";
-    "-w", Arg.Set watch_mode,
-    " Watch mode" ;     
-    "-clean-world", Arg.Unit (fun _ -> 
+    "-v", call_spec print_version_string, 
+    "Print version and exit";
+    "-version", call_spec print_version_string, 
+    "Print version and exit";
+    "-verbose", call_spec Bsb_log.verbose,
+    "Set the output(from bsb) to be verbose";
+    "-w", unit_set_spec watch_mode,
+    "Watch mode" ;     
+    "-clean-world",call_spec (fun _ -> 
         Bsb_clean.clean_bs_deps  Bsb_global_paths.cwd),
-    " Clean all bs dependencies";
-    "-clean", Arg.Unit (fun _ -> 
+    "Clean all bs dependencies";
+    "-clean", call_spec (fun _ -> 
         Bsb_clean.clean_self  Bsb_global_paths.cwd),
-    " Clean only current project";
-    "-make-world", Arg.Unit set_make_world,
-    " Build all dependencies and itself ";
-    "-install", Arg.Set do_install,
-    " Install public interface files into lib/ocaml";
-    "-init", Arg.String (fun path -> generate_theme_with_path := Some path),
-    " Init sample project to get started. Note (`bsb -init sample` will create a sample project while `bsb -init .` will reuse current directory)";
-    "-theme", Arg.String set_theme,
-    " The theme for project initialization, default is basic(https://github.com/bucklescript/bucklescript/tree/master/jscomp/bsb/templates)";
+    "Clean only current project";
+    "-make-world", unit_set_spec make_world,
+    "Build all dependencies and itself ";
+    "-install", unit_set_spec do_install,
+    "Install public interface files into lib/ocaml";
+    "-init", String (String_call (fun path -> generate_theme_with_path := Some path)),
+    "Init sample project to get started. \n\
+    Note (`bsb -init sample` will create a sample project while \n\
+    `bsb -init .` will reuse current directory)";
+    "-theme", String (String_set current_theme),
+    "The theme for project initialization. \n\
+    default is basic:\n\
+    https://github.com/bucklescript/bucklescript/tree/master/jscomp/bsb/templates";
     
-    regen, Arg.Set force_regenerate,
-    " (internal) Always regenerate build.ninja no matter bsconfig.json is changed or not (for debugging purpose)";
-    "-themes", Arg.Unit Bsb_theme_init.list_themes,
-    " List all available themes";
+    "-regen", unit_set_spec force_regenerate,
+    "*internal* \n\
+    Always regenerate build.ninja no matter bsconfig.json is changed or not";
+    "-themes", call_spec Bsb_theme_init.list_themes,
+    "List all available themes";
     "-where",
-    Arg.Unit (fun _ -> 
+    call_spec (fun _ -> 
         print_endline (Filename.dirname Sys.executable_name)),
-    " Show where bsb.exe is located";
+    "Show where bsb.exe is located";
 (** Below flags are only for bsb script, it is not available for bsb.exe 
   we make it at this time to make `bsb -help` easier
 *)
-    "-ws", Arg.Bool ignore, 
-    " [host:]port specify a websocket number (and optionally, a host). When a build finishes, we send a message to that port. For tools that listen on build completion." ;
+    "-ws", call_spec ignore, 
+    "[host:]port \n\
+    specify a websocket number (and optionally, a host). \n\
+    When a build finishes, we send a message to that port. \n\
+    For tools that listen on build completion." ;
 #if BS_NATIVE then
-    "-backend", Arg.String (fun s -> 
+    "-backend", String (String_call (fun s -> 
         match s with
         | "js"       -> Bsb_global_backend.set_backend Bsb_config_types.Js
         | "native"   -> Bsb_global_backend.set_backend Bsb_config_types.Native
         | "bytecode" -> Bsb_global_backend.set_backend Bsb_config_types.Bytecode
         | _ -> failwith "-backend should be one of: 'js', 'bytecode' or 'native'."
-      ),
-    " Builds the entries specified in the bsconfig that match the given backend. Can be either 'js', 'bytecode' or 'native'.";
+      )),
+    "Builds the entries specified in the bsconfig that match the given backend. Can be either 'js', 'bytecode' or 'native'.";
 #end
   ]
 
@@ -135,13 +142,16 @@ let ninja_command_exit   ninja_args  =
    ninja -C _build
 *)
 let usage = "Usage : bsb.exe <bsb-options> -- <ninja_options>\n\
-             For ninja options, try ninja -h \n\
+             For ninja options, try bsb.exe --  -h.  \n\
+             Note they are supposed to be internals and not reliable.\n\
              ninja will be loaded either by just running `bsb.exe' or `bsb.exe .. -- ..`\n\
-             It is always recommended to run ninja via bsb.exe \n\
-             Bsb options are:"
+             It is always recommended to run ninja via bsb.exe"
 
-let handle_anonymous_arg arg =
-  raise (Arg.Bad ("Unknown arg \"" ^ arg ^ "\""))
+let handle_anonymous_arg ~rev_args =
+  match rev_args with 
+  | [] -> ()  
+  | arg:: _ ->
+    raise (Bsb_arg.Bad ("Unknown arg \"" ^ arg ^ "\""))
 
 
 let program_exit () =
@@ -175,34 +185,21 @@ let install_target config_opt =
 let () =
   try begin 
     match Sys.argv with 
-#if BS_NATIVE then
-    | [| _; "-backend"; _ |]
-#end
     | [| _ |] ->  (* specialize this path [bsb.exe] which is used in watcher *)
-#if BS_NATIVE then
-      if Array.length Sys.argv = 3 then begin match Array.get Sys.argv 2 with
-        | "js"       -> Bsb_global_backend.set_backend Bsb_config_types.Js
-        | "native"   -> Bsb_global_backend.set_backend Bsb_config_types.Native
-        | "bytecode" -> Bsb_global_backend.set_backend Bsb_config_types.Bytecode
-        | _ -> failwith "-backend should be one of: 'js', 'bytecode' or 'native'."
-      end;
-#end
       Bsb_ninja_regen.regenerate_ninja 
         ~toplevel_package_specs:None 
         ~forced:false 
         ~per_proj_dir:Bsb_global_paths.cwd  |> ignore;
       ninja_command_exit  [||] 
-
     | argv -> 
       begin
-        match Ext_array.find_and_split argv Ext_string.equal separator with
-        | `No_split
-          ->
+        let i =  Ext_array.rfind_with_index argv Ext_string.equal separator in 
+        if i < 0 then 
           begin
-            Arg.parse bsb_main_flags handle_anonymous_arg usage;
+            Bsb_arg.parse_exn ~usage ~argv bsb_main_flags handle_anonymous_arg;
             (* first, check whether we're in boilerplate generation mode, aka -init foo -theme bar *)
             match !generate_theme_with_path with
-            | Some path -> Bsb_theme_init.init_sample_project ~cwd:Bsb_global_paths.cwd ~theme:!current_theme path
+            | Some path -> Bsb_theme_init.init_sample_project ~cwd:Bsb_global_paths.cwd ~theme:!current_theme  path
             | None -> 
               (* [-make-world] should never be combined with [-package-specs] *)
               let make_world = !make_world in 
@@ -237,20 +234,28 @@ let () =
                    install_target config_opt
                  end)
           end
-        | `Split (bsb_args,ninja_args)
-          -> (* -make-world all dependencies fall into this category *)
+        else
+           (* -make-world all dependencies fall into this category *)
           begin
-            Arg.parse_argv bsb_args bsb_main_flags handle_anonymous_arg usage ;
+            Bsb_arg.parse_exn 
+            ~usage
+            ~argv:argv
+            ~finish:i
+            bsb_main_flags handle_anonymous_arg  ;
+            let ninja_args = Array.sub argv (i + 1) (Array.length argv - i - 1) in 
+            match ninja_args with 
+            | [|"-h"|] -> ninja_command_exit ninja_args
+            | _ ->  
             let config_opt = 
-              Bsb_ninja_regen.regenerate_ninja 
+              (Bsb_ninja_regen.regenerate_ninja 
                 ~toplevel_package_specs:None 
                 ~per_proj_dir:Bsb_global_paths.cwd 
-                ~forced:!force_regenerate in
+                ~forced:!force_regenerate) in
             (* [-make-world] should never be combined with [-package-specs] *)
             if !make_world then
-              Bsb_world.make_world_deps Bsb_global_paths.cwd config_opt ninja_args;
+              Bsb_world.make_world_deps Bsb_global_paths.cwd ( config_opt) ninja_args;
             if !do_install then
-              install_target config_opt;
+              install_target ( config_opt);
             if !watch_mode then program_exit ()
             else ninja_command_exit  ninja_args 
           end
