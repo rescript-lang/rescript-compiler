@@ -1,6 +1,94 @@
 `*` means  potential break changes
 # current
 
+* Code generation
+- #4308,#4309, #4397 #4403 #4404 #4409 variant as objects
+  ```
+  A (0,1)
+  ```
+  now is 
+  ```js
+  { TAG : /*A*/0, _0 : 0, _1:1 }
+  ```
+- #4399 remove magics in Belt.List to prepare new data representations  
+- #4405 polyvar as objects
+  ```
+  A 1
+  ```  
+  now is 
+  ```js
+  {HASH:MAGIC_NUMBER, VAL:1}
+  ```
+- #4331,#4332 #4337,#4339, #4338, #4337 Encoding exception as dictionary, add stacktrace support
+- #4322, #4325,#4326, #4364, #4383, #4371 lazy values as objects, make `caml_update_dummy` generalized
+- #4456, #4458 optimize String.make
+- #4447, #4442 improve arity inference over raw named function expression
+- #4413 changed internal encoding of Some ((Some .. None)), not relying on physiclal equivalence, friendlier to serialization
+- #4379 make bs.config take effect ASAP, however, it can not happen befor parsing.
+  This meangs, it won't have effect over flags like `-bs-D` when it happens in lexing.
+- #4426, #4428 apply bs.inline to float literals
+- #4378 apply bs.inline to int64, proper error for not supported types
+- #4425 optimize `bs.as "0"` to allow users to turn record representation into array when needed
+- #4407, #4423 Fix compatiblity layer between debug mode and none-debug mode
+  - For exmaple, `A (1,2)` are equal for code generated either in debug or non-debug mode
+- #4422 remove Unix  module from stdlib
+- #4421 special encode list as `{hd : v0, tl : ...}`
+- #4420 remove legacy jsx v2
+
+- #4390 less parens for `bs.as` json literals
+- #4245, #4385 breaking changes: enable strict-sequence, strict-formats by default
+- #4304, #4293 better code generated for string interpolation
+* Fix 
+
+- #4451, #4454 fix imprecise locations over pipe
+- #4442 fix gentypeconfig.language parsing
+- #4430 when cleaning generated files, use `langauge` from `gentypeconfig`
+- #4324 fix react-hooks theme name field
+
+* Libs 
+
+- #4443 provide a best effort generic seralization mechanism
+- #4427 better error message for non-existing module in `sources[n].public`
+- #4414, #4419  better error message for cases like below
+  ```
+  Error: This expression should not be a function, the expected type is
+  (int bounce -> 'a bounce [@bs])
+  ```
+- #4416 fix typo (unrecognized primitive -> unrecognized primitive)
+- #4408 [playground] fix jsoo_refmt_main, remove load_modules (uneeded)
+- #4395 fix jsoo_refmt_main, delete playground folder
+- #4394 repl.js: add dev mode
+- #4393 Playground: bring back load_modules API
+- #4389 React JSX ppx: better error message for missing labels
+- #4388 [jsx] fix unused pattern warnings
+- #4380 [jsx] remove bs.config handling in jsx ppx, use bs.config.flags instead
+- #4376 remove Math.imul polyfill, inline Math.imul
+- #4370 remove deprecated support for `fun%raw`
+- #3845, #4367 fix `output too many parens for callback`
+- #4359 [jsx] rais error if creating react.component with unnamed argument
+- #4364 remove customised formatter for exceptions
+- #4358 change reasonreact version for templates
+- #4351 force binding location on the actual make binding
+
+* Internal tools/refactoring
+
+- #4460 bspack is a stand alone file not relying on c stubs
+- #4459 bsb customized command line parsing, prettier output over `bsb -h`
+- #4455 simplify bsb_helper command line parsing
+- #4458 clean up lexing runtime, stay close to lexing.c
+- #4441 remove unused Obj.set_tag
+- #4438 tweak post-processing after linking, better constant substitution
+- #4429 #4431 #4435 minor breaking changes
+    - more compatct encoding of .bsbuild
+    - flatten dev gropus
+    - for files in dev directory they can refer each other
+- #4402 move `caml_set_oo_id` into `caml_oo` module
+- #4392 remove unused return_exp in J.ml ast
+- #4387 fix a build bug when no mli provided, add reason-react for testing
+- #4366, #4373 update polymoprhic comparison not relying for lazy values
+- #4372 vendor jsoo byte code, build playground on the fly
+- #4354 `bstracing -all` can handle multiple build sessions
+
 # 7.3.2
 - #4315 synup super_errors for better uncurry error message
 - #4335 fix js_date.setUTCTime
