@@ -45,11 +45,11 @@ function fn(authState, route) {
       } else {
         exit$1 = 3;
       }
-    } else if (route.HASH !== 378129979) {
-      exit$1 = 3;
-    } else {
+    } else if (route.HASH === 378129979) {
       onboardingRoute = route.VAL;
       exit = 1;
+    } else {
+      exit$1 = 3;
     }
     if (exit$1 === 3) {
       div({

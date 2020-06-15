@@ -4070,7 +4070,7 @@ function parse(multiline, dollar_endonly, dotall, ungreedy, s) {
         return s;
       }
       var match = $$char(undefined);
-      if (match.HASH >= 748194550) {
+      if (match.HASH === 748194550) {
         var c = match.VAL;
         if (accept(/* "-" */45)) {
           if (accept(/* "]" */93)) {
@@ -4095,7 +4095,7 @@ function parse(multiline, dollar_endonly, dotall, ungreedy, s) {
                   };
           }
           var match$1 = $$char(undefined);
-          if (match$1.HASH < 748194550) {
+          if (match$1.HASH !== 748194550) {
             return {
                     hd: {
                       TAG: /* Set */0,

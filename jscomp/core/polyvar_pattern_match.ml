@@ -66,3 +66,15 @@ let call_switcher_variant_constant
                     )
       )
   | [], None -> assert false    
+
+
+let call_switcher_variant_constr 
+    (loc : Location.t) 
+    (fail : Lambda.lambda option) 
+    (arg  : Lambda.lambda) 
+    (int_lambda_list :  (int * Lambda.lambda) list)
+    (names : Lambda.switch_names option) : Lambda.lambda =
+  let v = Ident.create "variant" in
+  Llet(Alias, Pgenval, v, Lprim(Pfield (0, Fld_poly_var_tag), [arg], loc),
+       call_switcher_variant_constant
+         loc fail (Lvar v) int_lambda_list names)

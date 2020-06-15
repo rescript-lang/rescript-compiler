@@ -34,7 +34,7 @@ function eq(loc, param) {
 }
 
 function print_or_error(fmt, x) {
-  if (x.HASH >= 106380200) {
+  if (x.HASH === 106380200) {
     return Curry._1(Format.fprintf(fmt, /* Format */{
                     _0: {
                       TAG: /* Formatting_gen */18,
