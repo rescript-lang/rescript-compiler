@@ -1248,7 +1248,7 @@ function delta_1(marks, c, next_cat, prev_cat, x, rem) {
             marks
           ];
         var y$prime$prime = match[0];
-        if (s._0 >= 620821490) {
+        if (s._0 === 620821490) {
           return {
                   hd: {
                     TAG: /* TMatch */2,
@@ -1361,7 +1361,7 @@ function delta_seq(c, next_cat, prev_cat, kind, y, z, rem) {
   if (kind === -730718166) {
     return tseq(kind, Curry._1(remove_matches, y), z, delta_1(marks, c, next_cat, prev_cat, z, rem));
   }
-  if (kind < 332064784) {
+  if (kind !== 332064784) {
     return delta_1(marks, c, next_cat, prev_cat, z, tseq(kind, Curry._1(remove_matches, y), z, rem));
   }
   var match = split_at_match_rec(/* [] */0, y);
@@ -2253,10 +2253,10 @@ function merge_sequences(_param) {
 }
 
 function enforce_kind(ids, kind, kind$prime, cr) {
-  if (kind !== 332064784 || kind$prime === 332064784) {
-    return cr;
-  } else {
+  if (kind === 332064784 && kind$prime !== 332064784) {
     return seq$1(ids, kind$prime, cr, mk_expr(ids, /* Eps */0));
+  } else {
+    return cr;
   }
 }
 
@@ -2415,7 +2415,7 @@ function translate(ids, kind, _ign_group, ign_case, _greedy, pos, cache, c, _s) 
             var cr = match$1[0];
             var rem;
             if (j !== undefined) {
-              var f = greedy >= 620821490 ? (function(cr,kind$prime){
+              var f = greedy === 620821490 ? (function(cr,kind$prime){
                 return function (rem) {
                   return alt(ids, {
                               hd: mk_expr(ids, /* Eps */0),
@@ -4157,14 +4157,12 @@ function parse(multiline, dollar_endonly, dotall, ungreedy, s) {
 function re(flagsOpt, pat) {
   var flags = flagsOpt !== undefined ? flagsOpt : /* [] */0;
   var opts = List.map((function (param) {
-          if (param !== 601676297) {
-            if (param >= 613575188) {
-              return /* Anchored */616470068;
-            } else {
-              return /* Multiline */1071952589;
-            }
-          } else {
+          if (param === 601676297) {
             return /* Caseless */604571177;
+          } else if (param === 613575188) {
+            return /* Anchored */616470068;
+          } else {
+            return /* Multiline */1071952589;
           }
         }), flags);
   var optsOpt = opts;

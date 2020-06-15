@@ -26,14 +26,12 @@ function fff(x) {
 }
 
 function h(x) {
-  if (x !== 66) {
-    if (x >= 67) {
-      return 2;
-    } else {
-      return 0;
-    }
-  } else {
+  if (x === 66) {
     return 1;
+  } else if (x === 67) {
+    return 2;
+  } else {
+    return 0;
   }
 }
 

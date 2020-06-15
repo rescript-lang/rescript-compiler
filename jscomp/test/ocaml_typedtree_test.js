@@ -22379,29 +22379,28 @@ function directive_parse(token_with_comments, lexbuf) {
                   var pred = match[0];
                   var match$1 = semantic_version_parse(lhs$1, 0, lhs$1.length - 1 | 0);
                   var lversion = match$1[0];
-                  var l_major = lversion[0];
-                  if (pred >= 17049) {
-                    if (pred >= 172069535) {
-                      if (pred >= 785637236) {
-                        return major === l_major;
-                      } else {
-                        return Caml_obj.caml_equal(lversion, version);
-                      }
-                    } else if (pred >= 17064) {
-                      return Caml_obj.caml_lessthan(lversion, version);
-                    } else {
-                      return Caml_obj.caml_lessequal(lversion, version);
-                    }
-                  } else if (pred !== 15934) {
-                    if (pred >= 15949) {
-                      return Caml_obj.caml_greaterthan(lversion, version);
-                    } else if (major === l_major) {
-                      return version[1] === lversion[1];
-                    } else {
-                      return false;
-                    }
-                  } else {
+                  if (pred === 15934) {
                     return Caml_obj.caml_greaterequal(lversion, version);
+                  }
+                  if (pred === 15949) {
+                    return Caml_obj.caml_greaterthan(lversion, version);
+                  }
+                  if (pred === 17049) {
+                    return Caml_obj.caml_lessequal(lversion, version);
+                  }
+                  if (pred === 17064) {
+                    return Caml_obj.caml_lessthan(lversion, version);
+                  }
+                  if (pred === 172069535) {
+                    return Caml_obj.caml_equal(lversion, version);
+                  }
+                  var l_major = lversion[0];
+                  if (pred === 785637236) {
+                    return major === l_major;
+                  } else if (major === l_major) {
+                    return version[1] === lversion[1];
+                  } else {
+                    return false;
                   }
                 }
                 exit$2 = 3;
