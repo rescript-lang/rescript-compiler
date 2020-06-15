@@ -43,3 +43,26 @@ let make_test_sequence_variant_constant
                     )
       )
   | [], None -> assert false    
+
+let call_switcher_variant_constant 
+    (_loc : Location.t) 
+    (fail : Lambda.lambda option) 
+    (arg : Lambda.lambda) 
+    (int_lambda_list :  (int * Lambda.lambda) list) 
+    (_names : Lambda.switch_names option) =
+  match int_lambda_list, fail with 
+  | (_, act) :: rest, None -> 
+    Ext_list.fold_right rest act (fun (hash1,act1) acc -> 
+        Lifthenelse (Lprim(Pintcomp Ceq, 
+                           [arg; Lconst (Const_base(Const_int hash1))], Location.none),
+                     act1, acc
+                    )
+      )
+  | _, Some fail -> 
+    Ext_list.fold_right int_lambda_list fail (fun (hash1,act1) acc -> 
+        Lifthenelse (Lprim(Pintcomp Ceq, 
+                           [arg; Lconst (Const_base(Const_int hash1))], Location.none),
+                     act1, acc
+                    )
+      )
+  | [], None -> assert false    

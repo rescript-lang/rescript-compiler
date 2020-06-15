@@ -28,7 +28,8 @@
 let setup_env () =
   Env.Persistent_signature.load := Bs_cmi_load.load_cmi;    
   Translcore.wrap_single_field_record := Transl_single_field_record.wrap_single_field_record;
-  Matching.make_test_sequence_variant_constant := Polyvar_pattern_match.make_test_sequence_var;
+  Matching.make_test_sequence_variant_constant := Polyvar_pattern_match.make_test_sequence_variant_constant;
+  Matching.call_switcher_variant_constant := Polyvar_pattern_match.call_switcher_variant_constant;
   Typemod.should_hide := Typemod_hide.should_hide;
   Clflags.no_std_include := true;
   Warnings.parse_options false Bsc_warnings.defaults_w;

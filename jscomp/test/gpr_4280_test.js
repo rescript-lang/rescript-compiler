@@ -40,16 +40,10 @@ function fn(authState, route) {
   if (typeof authState === "number") {
     var exit$1 = 0;
     if (typeof route === "number") {
-      if (route >= -730831382) {
-        if (route !== -384135774 && route !== -384133096) {
-          exit$1 = 3;
-        } else {
-          exit = 2;
-        }
-      } else if (route !== -799423340 && route < -730831383) {
-        exit$1 = 3;
-      } else {
+      if (route === -799423340 || route === -730831383 || route === -384135774 || route === -384133096) {
         exit = 2;
+      } else {
+        exit$1 = 3;
       }
     } else if (route.HASH !== 378129979) {
       exit$1 = 3;
