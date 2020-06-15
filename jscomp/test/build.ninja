@@ -489,6 +489,7 @@ build test/poly_variant_test.cmj : cc_cmi test/poly_variant_test.ml | test/mt.cm
 build test/poly_variant_test.cmi : cc test/poly_variant_test.mli | $stdlib
 build test/polymorphism_test.cmj : cc_cmi test/polymorphism_test.ml | test/polymorphism_test.cmi $stdlib
 build test/polymorphism_test.cmi : cc test/polymorphism_test.mli | $stdlib
+build test/polyvar_match_test.cmi test/polyvar_match_test.cmj : cc test/polyvar_match_test.ml | $stdlib
 build test/polyvar_test.cmi test/polyvar_test.cmj : cc test/polyvar_test.ml | $stdlib
 build test/ppx_apply_test.cmi test/ppx_apply_test.cmj : cc test/ppx_apply_test.ml | test/mt.cmj $stdlib
 build test/ppx_this_obj_field.cmi test/ppx_this_obj_field.cmj : cc test/ppx_this_obj_field.ml | test/mt.cmj $stdlib

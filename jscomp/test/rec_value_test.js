@@ -255,7 +255,7 @@ function phd(l) {
           Error: new Error()
         };
   }
-  if (l.HASH === 748545553) {
+  if (l.HASH === /* Cons */748545553) {
     return l.VAL[0];
   }
   throw {
@@ -281,7 +281,7 @@ function ptl(l) {
           Error: new Error()
         };
   }
-  if (l.HASH === 748545553) {
+  if (l.HASH === /* Cons */748545553) {
     return l.VAL[1];
   }
   throw {

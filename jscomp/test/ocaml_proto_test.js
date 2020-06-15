@@ -2134,7 +2134,7 @@ function print(scope) {
 
 function runtime_function(param) {
   var match = param[0];
-  if (match === 427938126) {
+  if (match === /* Decode */427938126) {
     var match$1 = param[1];
     if (typeof match$1 === "number") {
       switch (match$1) {
@@ -2231,7 +2231,7 @@ function runtime_function(param) {
         
       }
     }
-  } else if (match === 779642422) {
+  } else if (match === /* Encode */779642422) {
     var match$3 = param[1];
     if (typeof match$3 === "number") {
       switch (match$3) {
@@ -7282,7 +7282,7 @@ function compile_field_type(field_name, all_types, file_options, field_options, 
     case /* Field_type_uint32 */4 :
     case /* Field_type_sint32 */6 :
     case /* Field_type_fixed32 */8 :
-        if (ocaml_type === -783406652) {
+        if (ocaml_type === /* Int_t */-783406652) {
           return {
                   TAG: /* Ft_basic_type */0,
                   _0: /* Bt_int */2
@@ -7294,7 +7294,7 @@ function compile_field_type(field_name, all_types, file_options, field_options, 
     case /* Field_type_uint64 */5 :
     case /* Field_type_sint64 */7 :
     case /* Field_type_fixed64 */9 :
-        if (ocaml_type === -783406652) {
+        if (ocaml_type === /* Int_t */-783406652) {
           return {
                   TAG: /* Ft_basic_type */0,
                   _0: /* Bt_int */2
@@ -7508,7 +7508,7 @@ function compile(proto_definition) {
                                         var mutable_ = is_mutable(field_name$1, field_options$1);
                                         var match$1 = field_label(field$1);
                                         var record_field_type;
-                                        if (match$1 === -132092992) {
+                                        if (match$1 === /* Optional */-132092992) {
                                           record_field_type = {
                                             TAG: /* Rft_optional */1,
                                             _0: [
@@ -7518,7 +7518,7 @@ function compile(proto_definition) {
                                               field_default$1
                                             ]
                                           };
-                                        } else if (match$1 === 202657151) {
+                                        } else if (match$1 === /* Required */202657151) {
                                           record_field_type = {
                                             TAG: /* Rft_required */0,
                                             _0: [

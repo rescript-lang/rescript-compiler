@@ -2,9 +2,9 @@
 
 
 function f(x) {
-  if (x === 98) {
+  if (x === /* b */98) {
     return "b";
-  } else if (x === 99) {
+  } else if (x === /* c */99) {
     return "c";
   } else {
     return "a";
@@ -55,9 +55,9 @@ function test(x) {
             Error: new Error()
           };
   }
-  if (match === 98) {
+  if (match === /* b */98) {
     return "b";
-  } else if (match === 99) {
+  } else if (match === /* c */99) {
     return "c";
   } else {
     return "a";

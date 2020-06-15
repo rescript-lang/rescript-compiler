@@ -26,9 +26,9 @@ function fff(x) {
 }
 
 function h(x) {
-  if (x === 66) {
+  if (x === /* B */66) {
     return 1;
-  } else if (x === 67) {
+  } else if (x === /* C */67) {
     return 2;
   } else {
     return 0;

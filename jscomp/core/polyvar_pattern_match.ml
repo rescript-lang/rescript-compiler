@@ -26,19 +26,19 @@
  
 let make_test_sequence_variant_constant 
   (fail : Lambda.lambda option) (arg : Lambda.lambda) 
-  (int_lambda_list : (int * Lambda.lambda ) list) : Lambda.lambda=
+  (int_lambda_list : (int * (string * Lambda.lambda) ) list) : Lambda.lambda=
   match int_lambda_list, fail with 
-  | (_, act) :: rest, None -> 
-    Ext_list.fold_right rest act (fun (hash1,act1) acc -> 
+  | (_, (_,act)) :: rest, None -> 
+    Ext_list.fold_right rest act (fun (hash1,(name,act1)) acc -> 
         Lifthenelse (Lprim(Pintcomp Ceq, 
-          [arg; Lconst (Const_base(Const_int hash1))], Location.none),
+          [arg; Lconst ((Const_pointer (hash1, Pt_variant{name})))], Location.none),
           act1, acc
           )
       )
   | _, Some fail -> 
-    Ext_list.fold_right int_lambda_list fail (fun (hash1,act1) acc -> 
+    Ext_list.fold_right int_lambda_list fail (fun (hash1,(name,act1)) acc -> 
         Lifthenelse (Lprim(Pintcomp Ceq, 
-                           [arg; Lconst (Const_base(Const_int hash1))], Location.none),
+                           [arg; Lconst (Const_pointer(hash1, Pt_variant{name}))], Location.none),
                      act1, acc
                     )
       )
@@ -48,20 +48,21 @@ let call_switcher_variant_constant
     (_loc : Location.t) 
     (fail : Lambda.lambda option) 
     (arg : Lambda.lambda) 
-    (int_lambda_list :  (int * Lambda.lambda) list) 
+    (int_lambda_list :  (int * (string * Lambda.lambda)) list) 
     (_names : Lambda.switch_names option) =
+  Ext_log.dwarn ~__POS__ "%a@." Ext_obj.pp_any _names;
   match int_lambda_list, fail with 
-  | (_, act) :: rest, None -> 
-    Ext_list.fold_right rest act (fun (hash1,act1) acc -> 
+  | (_, (_,act)) :: rest, None -> 
+    Ext_list.fold_right rest act (fun (hash1,(name,act1)) acc -> 
         Lifthenelse (Lprim(Pintcomp Ceq, 
-                           [arg; Lconst (Const_base(Const_int hash1))], Location.none),
+                           [arg; Lconst (Const_pointer(hash1, Pt_variant{name}))], Location.none),
                      act1, acc
                     )
       )
   | _, Some fail -> 
-    Ext_list.fold_right int_lambda_list fail (fun (hash1,act1) acc -> 
+    Ext_list.fold_right int_lambda_list fail (fun (hash1,(name,act1)) acc -> 
         Lifthenelse (Lprim(Pintcomp Ceq, 
-                           [arg; Lconst (Const_base(Const_int hash1))], Location.none),
+                           [arg; Lconst (Const_pointer(hash1, Pt_variant{name}))], Location.none),
                      act1, acc
                     )
       )
@@ -72,7 +73,7 @@ let call_switcher_variant_constr
     (loc : Location.t) 
     (fail : Lambda.lambda option) 
     (arg  : Lambda.lambda) 
-    (int_lambda_list :  (int * Lambda.lambda) list)
+    int_lambda_list 
     (names : Lambda.switch_names option) : Lambda.lambda =
   let v = Ident.create "variant" in
   Llet(Alias, Pgenval, v, Lprim(Pfield (0, Fld_poly_var_tag), [arg], loc),
