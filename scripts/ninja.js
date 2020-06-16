@@ -1026,7 +1026,8 @@ ${ninjaQuickBuidList([
     (x) =>
       x.startsWith("js") &&
       (x.endsWith(".ml") || x.endsWith(".mli")) &&
-      !x.includes(".cppo")
+      !x.includes(".cppo") &&
+      !x.includes("#")
   );
   var othersFiles = othersDirFiles.filter(
     (x) =>
@@ -1034,6 +1035,7 @@ ${ninjaQuickBuidList([
       x !== "belt.ml" &&
       x !== "node.ml" &&
       (x.endsWith(".ml") || x.endsWith(".mli")) &&
+      !x.includes("#") &&
       !x.includes(".cppo") // we have node ..
   );
   var jsTargets = collectTarget(jsPrefixSourceFiles);
