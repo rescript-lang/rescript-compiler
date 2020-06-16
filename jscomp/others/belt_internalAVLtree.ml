@@ -169,14 +169,14 @@ let rec findFirstByU n p =
   match  n with
   | None -> None 
   | Some n ->
-    let left = n .left |. findFirstByU p in
+    let left =  findFirstByU n.left p in
     if left <> None then left
       else
         let  {key = v; value =  d} = n  in
         let pvd = p v d [@bs] in
         if pvd then Some(v, d)
           else 
-            let right = n.right|. findFirstByU  p in
+            let right =  findFirstByU n.right p in
             if right <> None then right else None
 
 let findFirstBy n p = findFirstByU n (fun [@bs] a b -> p a b)
@@ -185,9 +185,9 @@ let rec forEachU n f =
   match  n with
   | None -> ()
   | Some n ->
-    n .left |. forEachU  f ;
+    forEachU  n.left f ;
     f n.key n.value [@bs];
-    n.right|. forEachU  f
+    forEachU n.right f
 
 let forEach n f = forEachU n (fun [@bs] a b -> f a b)
 
@@ -196,9 +196,9 @@ let rec mapU n f =
     None  ->
     None
   | Some n  ->
-    let newLeft = n .left |. mapU  f in
+    let newLeft =  mapU n.left f in
     let newD = f n.value [@bs] in
-    let newRight = n.right|. mapU  f in
+    let newRight = mapU n.right f in
     Some { left = newLeft; key = n.key;  value = newD; right = newRight; height = n.height}
 
 let map n f = mapU n (fun[@bs] a -> f a)
@@ -209,9 +209,9 @@ let rec mapWithKeyU n f =
     None
   | Some n ->
     let key = n.key  in
-    let newLeft = n .left |. mapWithKeyU  f in
+    let newLeft =  mapWithKeyU n.left f in
     let newD = f key n.value [@bs] in
-    let newRight = n.right|. mapWithKeyU  f in
+    let newRight =  mapWithKeyU n.right f in
     Some { left = newLeft; key; value = newD; right = newRight; height = n.height}
 
 let mapWithKey n f = mapWithKeyU n (fun [@bs] a b -> f a b)
@@ -232,8 +232,8 @@ let rec everyU  n p =
     None -> true
   | Some n  ->
     p n.key n.value [@bs] &&
-    n .left  |. everyU  p &&
-    n.right|. everyU  p
+    everyU n.left  p &&
+    everyU n.right p
 let every n p = everyU n (fun [@bs] a b -> p a b)
 
 let rec someU n p =
@@ -241,8 +241,8 @@ let rec someU n p =
     None -> false
   | Some n  ->
     p n.key n.value [@bs] ||
-    n .left  |. someU  p ||
-    n.right|. someU p
+    someU n.left p ||
+    someU n.right p
 let some n p  = someU n (fun[@bs] a b -> p a b)
 (* Beware: those two functions assume that the added k is *strictly*
    smaller (or bigger) than all the present keys in the tree; it
@@ -304,9 +304,9 @@ let rec keepSharedU n p =
   | Some n  ->
     (* call [p] in the expected left-to-right order *)
     let  {key = v; value = d} =  n   in
-    let newLeft = n .left |. keepSharedU  p in
+    let newLeft =  keepSharedU n.left p in
     let pvd = p v d [@bs] in
-    let newRight = n.right|. keepSharedU  p in
+    let newRight = keepSharedU n.right p in
     if pvd then join newLeft v d newRight else concat newLeft newRight
 
 let keepShared n p = keepSharedU n (fun [@bs] a b -> p a b)
@@ -317,9 +317,9 @@ let rec keepMapU n p =
   | Some n  ->
     (* call [p] in the expected left-to-right order *)
     let  {key = v; value = d} =  n  in
-    let newLeft = n .left |. keepMapU  p in
+    let newLeft = keepMapU n.left  p in
     let pvd = p v d [@bs] in
-    let newRight = n.right|. keepMapU  p in
+    let newRight = keepMapU n.right p in
     match pvd with
     | None -> concat newLeft newRight
     | Some d -> join newLeft v d newRight
@@ -332,9 +332,9 @@ let rec partitionSharedU n p =
   | Some n  ->
     let  {key; value } =  n  in
     (* call [p] in the expected left-to-right order *)
-    let (lt, lf) = n .left |. partitionSharedU  p in
+    let (lt, lf) =  partitionSharedU n.left p in
     let pvd = p key value [@bs] in
-    let (rt, rf) = n.right|. partitionSharedU  p in
+    let (rt, rf) = partitionSharedU n.right p in
     if pvd
     then (join lt key value rt, concat lf rf)
     else (concat lt rt, join lf key value rf)
@@ -365,7 +365,7 @@ let rec toListAux n accu =
   | None -> accu
   | Some n  ->
     let {left = l; right =  r ; key = k; value = v} = n in
-    l |. toListAux ((k, v) :: ( r |. toListAux accu ))
+    toListAux l ((k, v) :: (toListAux r accu ))
 
 let toList s =
   toListAux  s []
