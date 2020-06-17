@@ -1,5 +1,5 @@
 `*` means  potential break changes
-# current
+# 8.0
 
 * Code generation
 - #4308,#4309, #4397 #4403 #4404 #4409 variant as objects
