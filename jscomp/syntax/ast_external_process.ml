@@ -111,11 +111,13 @@ let refine_arg_type ~(nolabel:bool) (ptyp : Ast_core_type.t)
     match result with
     |  None ->
       Bs_syntaxerr.err ptyp.ptyp_loc Invalid_underscore_type_in_external
-    | Some (`Int i) ->
+    | Some (Int i) ->
+      (* This type is used in bs.obj only to construct obj type*)
       Ast_literal.type_int ~loc:ptyp.ptyp_loc (), Arg_cst(External_arg_spec.cst_int i)
-    | Some (`Str i)->
+    | Some (Str i)->
       Ast_literal.type_string ~loc:ptyp.ptyp_loc (), Arg_cst (External_arg_spec.cst_string i)
-    | Some (`Json_str s) ->
+    | Some (Json_str s) ->
+      (* FIXME: This seems to be wrong in bs.obj, we should disable such payload in bs.obj *)
       Ast_literal.type_string ~loc:ptyp.ptyp_loc (), Arg_cst (External_arg_spec.cst_json ptyp.ptyp_loc s)
   else (* ([`a|`b] [@bs.string]) *)
     ptyp, spec_of_ptyp nolabel ptyp   

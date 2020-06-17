@@ -81,12 +81,15 @@ val has_bs_optional :
 val iter_process_bs_int_as :
   t -> int option
 
+type as_const_payload = 
+  | Int of int
+  | Str of string
+  | Json_str of string  
+
 
 val iter_process_bs_string_or_int_as :
     t ->
-    [ `Int of int
-    | `Str of string
-    | `Json_str of string  ] option
+    as_const_payload option
 
 
 val process_derive_type :

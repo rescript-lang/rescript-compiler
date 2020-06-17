@@ -15532,12 +15532,15 @@ val has_bs_optional :
 val iter_process_bs_int_as :
   t -> int option
 
+type as_const_payload = 
+  | Int of int
+  | Str of string
+  | Json_str of string  
+
 
 val iter_process_bs_string_or_int_as :
     t ->
-    [ `Int of int
-    | `Str of string
-    | `Json_str of string  ] option
+    as_const_payload option
 
 
 val process_derive_type :
@@ -15872,6 +15875,10 @@ let iter_process_bs_int_as  (attrs : t) =
       | _  -> ()
     ) ; !st
 
+type as_const_payload = 
+  | Int of int
+  | Str of string
+  | Json_str of string  
 
 let iter_process_bs_string_or_int_as (attrs : Parsetree.attributes) =
   let st = ref None in
@@ -15887,15 +15894,15 @@ let iter_process_bs_string_or_int_as (attrs : Parsetree.attributes) =
            | None ->
              begin match Ast_payload.is_single_string payload with
                | Some (s,None) ->
-                 st := Some (`Str (s))
+                 st := Some (Str (s))
                | Some (s, Some "json") ->
-                 st := Some (`Json_str s )
+                 st := Some (Json_str s )
                | None | Some (_, Some _) ->
                  Bs_syntaxerr.err loc Expect_int_or_string_or_json_literal
 
              end
            | Some   v->
-             st := (Some (`Int v))
+             st := (Some (Int v))
           )
         else
           Bs_syntaxerr.err loc Duplicated_bs_as
@@ -19304,11 +19311,13 @@ let refine_arg_type ~(nolabel:bool) (ptyp : Ast_core_type.t)
     match result with
     |  None ->
       Bs_syntaxerr.err ptyp.ptyp_loc Invalid_underscore_type_in_external
-    | Some (`Int i) ->
+    | Some (Int i) ->
+      (* This type is used in bs.obj only to construct obj type*)
       Ast_literal.type_int ~loc:ptyp.ptyp_loc (), Arg_cst(External_arg_spec.cst_int i)
-    | Some (`Str i)->
+    | Some (Str i)->
       Ast_literal.type_string ~loc:ptyp.ptyp_loc (), Arg_cst (External_arg_spec.cst_string i)
-    | Some (`Json_str s) ->
+    | Some (Json_str s) ->
+      (* FIXME: This seems to be wrong in bs.obj, we should disable such payload in bs.obj *)
       Ast_literal.type_string ~loc:ptyp.ptyp_loc (), Arg_cst (External_arg_spec.cst_json ptyp.ptyp_loc s)
   else (* ([`a|`b] [@bs.string]) *)
     ptyp, spec_of_ptyp nolabel ptyp   
