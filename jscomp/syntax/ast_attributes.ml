@@ -307,6 +307,10 @@ let iter_process_bs_int_as  (attrs : t) =
       | _  -> ()
     ) ; !st
 
+type as_const_payload = 
+  | Int of int
+  | Str of string
+  | Json_str of string  
 
 let iter_process_bs_string_or_int_as (attrs : Parsetree.attributes) =
   let st = ref None in
@@ -322,15 +326,15 @@ let iter_process_bs_string_or_int_as (attrs : Parsetree.attributes) =
            | None ->
              begin match Ast_payload.is_single_string payload with
                | Some (s,None) ->
-                 st := Some (`Str (s))
+                 st := Some (Str (s))
                | Some (s, Some "json") ->
-                 st := Some (`Json_str s )
+                 st := Some (Json_str s )
                | None | Some (_, Some _) ->
                  Bs_syntaxerr.err loc Expect_int_or_string_or_json_literal
 
              end
            | Some   v->
-             st := (Some (`Int v))
+             st := (Some (Int v))
           )
         else
           Bs_syntaxerr.err loc Duplicated_bs_as
