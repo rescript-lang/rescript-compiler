@@ -477,9 +477,10 @@ let jsxMapper () =
       recursivelyTransformNamedArgsForMake mapper expression ((arg, default, pattern, alias, pattern.ppat_loc, type_) :: list)
     | Pexp_fun (Nolabel, _, { ppat_desc = (Ppat_construct ({txt = Lident "()"}, _) | Ppat_any)}, _expression) ->
         (list, None)
-    | Pexp_fun (Nolabel, _, { ppat_desc = Ppat_var ({txt})}, _expression) ->
+    | Pexp_fun (Nolabel, _, { ppat_desc = Ppat_var ({txt}) | Ppat_constraint ({ ppat_desc = Ppat_var ({txt})}, _)}, _expression) ->
         (list, Some txt)
-
+    | Pexp_fun (Nolabel, _, pattern, _expression) ->
+        Location.raise_errorf ~loc:pattern.ppat_loc "ReasonReact: react.component refs only support plain arguments and type annotations."
     | _ -> (list, None)
   in
 
@@ -618,6 +619,7 @@ let jsxMapper () =
           spelunkForFunExpression expression
         in
         let modifiedBinding binding =
+          let hasApplication = ref(false) in
           let wrapExpressionWithBinding expressionFn expression =
             Vb.mk
               ~loc:bindingLoc
@@ -641,14 +643,16 @@ let jsxMapper () =
           (* let make = (~prop) => ... *)
           | {
             pexp_desc = Pexp_fun ((Labelled(_) | Optional(_)), _default, _pattern, _internalExpression)
-          } -> ((fun a -> a), false, unerasableIgnoreExp  expression)
+          } -> ((fun a -> a), false, unerasableIgnoreExp expression)
           (* let make = (prop) => ... *)
           | {
             pexp_desc = Pexp_fun (_nolabel, _default, _pattern, _internalExpression);
             pexp_loc
           } -> 
-            Location.raise_errorf ~loc:pexp_loc 
-               "Make sure to use labeled arguments for props, if your component doesn't take any props use () or _ instead of a name as your argument"
+            if (hasApplication.contents) then
+              ((fun a -> a), false, unerasableIgnoreExp expression)
+            else
+              Location.raise_errorf ~loc:pattern.ppat_loc "ReasonReact: props need to be labelled arguments.\n  If you are working with refs be sure to wrap with React.forwardRef.\n  If your component doesn't have any props use () or _ instead of a name."
           (* let make = {let foo = bar in (~prop) => ...} *)
           | {
               pexp_desc = Pexp_let (recursive, vbs, internalExpression)
@@ -658,6 +662,7 @@ let jsxMapper () =
             (wrap, hasUnit, {expression with pexp_desc = Pexp_let (recursive, vbs, exp)})
           (* let make = React.forwardRef((~prop) => ...) *)
           | { pexp_desc = Pexp_apply (wrapperExpression, [(Nolabel, internalExpression)]) } ->
+            let () = hasApplication := true in
             let (_, hasUnit, exp) = spelunkForFunExpression internalExpression in
             ((fun exp -> Exp.apply wrapperExpression [(nolabel, exp)]), hasUnit, exp)
           | {
