@@ -73,7 +73,7 @@ let file_aux ppf  inputfile (type a) (parse_fun  : _ -> a)
 
 
 
-let parse_file kind ppf sourcefile =
+let parse_file (type a) (kind  : a Ml_binary.kind) (ppf : Format.formatter) (sourcefile : string) : a =
   Location.set_input_name  sourcefile;
   let inputfile = preprocess sourcefile in
   let ast =
@@ -88,9 +88,9 @@ let parse_file kind ppf sourcefile =
 
 
 
-let parse_implementation ppf ~tool_name sourcefile =  
-  Cmd_ppx_apply.apply_rewriters ~restore:false ~tool_name Ml  (parse_file 
+let parse_implementation ppf  sourcefile =  
+  (parse_file 
        Ml ppf sourcefile)
-let parse_interface ppf ~tool_name sourcefile =
-  Cmd_ppx_apply.apply_rewriters ~restore:false ~tool_name Mli (parse_file 
-       Mli ppf sourcefile)
+
+let parse_interface ppf  sourcefile =
+  parse_file Mli ppf sourcefile
