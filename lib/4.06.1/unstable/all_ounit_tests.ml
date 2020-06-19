@@ -9594,6 +9594,8 @@ val read_ast : 'a kind -> in_channel -> 'a
 
 val write_ast :
    'a kind -> string -> 'a -> out_channel -> unit
+
+val magic_of_kind : 'a kind -> string   
 end = struct
 #1 "ml_binary.ml"
 (* Copyright (C) 2015-2016 Bloomberg Finance L.P.
@@ -9647,6 +9649,12 @@ let write_ast (type t) (kind : t kind)
   output_string oc magic ;
   output_value oc fname;
   output_value oc pt
+
+let magic_of_kind : type a . a kind -> string = function
+  | Ml -> Config.ast_impl_magic_number
+  | Mli -> Config.ast_intf_magic_number
+
+  
 end
 module Ast_extract : sig 
 #1 "ast_extract.mli"
