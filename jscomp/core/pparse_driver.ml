@@ -22,9 +22,8 @@ let preprocess sourcefile =
 
 
 let remove_preprocessed inputfile =
-  match !Clflags.preprocessor with
-    None -> ()
-  | Some _ -> Misc.remove_file inputfile
+  if !Clflags.preprocessor <> None then  
+    Misc.remove_file inputfile
 
 
 
@@ -33,12 +32,12 @@ let remove_preprocessed inputfile =
 
 (* Parse a file or get a dumped syntax tree from it *)
 
-let parse (type a) (kind : a Ml_binary.kind) lexbuf : a =
+let parse (type a) (kind : a Ml_binary.kind) : _ -> a =
   match kind with
-  | Ml_binary.Ml -> Parse.implementation lexbuf
-  | Ml_binary.Mli -> Parse.interface lexbuf
+  | Ml_binary.Ml -> Parse.implementation 
+  | Ml_binary.Mli -> Parse.interface 
 
-let file_aux ppf  inputfile (type a) (parse_fun  : _ -> a)
+let file_aux  inputfile (type a) (parse_fun  : _ -> a)
              (kind : a Ml_binary.kind) : a  =
   let ast_magic = Ml_binary.magic_of_kind kind in
   let ic = open_in_bin inputfile in
@@ -53,10 +52,6 @@ let file_aux ppf  inputfile (type a) (parse_fun  : _ -> a)
   let ast =
     try
       if is_ast_file then begin
-        if !Clflags.fast then
-          (* FIXME make this a proper warning *)
-          Format.fprintf ppf "@[Warning: %s@]@."
-            "option -unsafe used with a preprocessor returning a syntax tree";
         Location.set_input_name (input_value ic : string);
         (input_value ic : a)
       end else begin
@@ -73,12 +68,12 @@ let file_aux ppf  inputfile (type a) (parse_fun  : _ -> a)
 
 
 
-let parse_file (type a) (kind  : a Ml_binary.kind) (ppf : Format.formatter) (sourcefile : string) : a =
+let parse_file (type a) (kind  : a Ml_binary.kind) (sourcefile : string) : a =
   Location.set_input_name  sourcefile;
   let inputfile = preprocess sourcefile in
   let ast =
     try 
-      (file_aux ppf  inputfile (parse kind)  kind)
+      (file_aux   inputfile (parse kind)  kind)
     with exn ->
       remove_preprocessed inputfile;
       raise exn
@@ -88,9 +83,8 @@ let parse_file (type a) (kind  : a Ml_binary.kind) (ppf : Format.formatter) (sou
 
 
 
-let parse_implementation ppf  sourcefile =  
-  (parse_file 
-       Ml ppf sourcefile)
+let parse_implementation sourcefile =  
+  parse_file Ml sourcefile
 
-let parse_interface ppf  sourcefile =
-  parse_file Mli ppf sourcefile
+let parse_interface  sourcefile =
+  parse_file Mli sourcefile

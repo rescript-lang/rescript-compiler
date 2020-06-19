@@ -12,22 +12,45 @@
 
 
 let process_interface_file ppf name =
-  Js_implementation.interface ppf name (Compenv.output_prefix name)
+  Js_implementation.interface ppf name 
+  ~parser:Pparse_driver.parse_interface
+  (Compenv.output_prefix name)
 let process_implementation_file ppf name =
-  Js_implementation.implementation ppf name (Compenv.output_prefix name)
+  Js_implementation.implementation ppf name 
+  ~parser:Pparse_driver.parse_implementation
+  (Compenv.output_prefix name)
 
 
 let setup_reason_context () = 
   Js_config.is_reason := true;
-  Clflags.preprocessor := None ; 
-  (* FIX #3988 - Don't run pp-flags on Reason files to make napkin easier*)
   Lazy.force Super_main.setup;  
   Lazy.force Reason_outcome_printer_main.setup
 
-let reason_pp ~sourcefile  = 
-  setup_reason_context ();
-  Ast_reason_pp.pp sourcefile
 
+let handle_reason (type a) (kind : a Ml_binary.kind) sourcefile ppf opref = 
+  setup_reason_context ();
+  let tmpfile =  Ast_reason_pp.pp sourcefile in   
+  (match kind with 
+   | Ml_binary.Ml -> 
+     Js_implementation.implementation
+       ~parser:(fun file_in -> 
+           let in_chan = open_in_bin file_in in 
+           let ast = Ml_binary.read_ast Ml in_chan in 
+           close_in in_chan; ast 
+         )
+       ppf  tmpfile opref    
+
+   | Ml_binary.Mli ->
+     Js_implementation.interface 
+       ~parser:(fun file_in -> 
+           let in_chan = open_in_bin file_in in 
+           let ast = Ml_binary.read_ast Mli in_chan in 
+           close_in in_chan; ast 
+         )
+       ppf  tmpfile opref ;    );
+  Ast_reason_pp.clean tmpfile 
+
+  
 type valid_input = 
   | Ml 
   | Mli
@@ -78,16 +101,9 @@ let process_file ppf sourcefile =
     | _ -> raise(Arg.Bad("don't know what to do with " ^ sourcefile)) in 
   let opref = Compenv.output_prefix sourcefile in 
   match input with 
-  | Re ->     
-    setup_reason_context ();
-    let tmpfile = reason_pp ~sourcefile in 
-    Js_implementation.implementation ppf tmpfile opref ;  
-    Ast_reason_pp.clean tmpfile
+  | Re -> handle_reason Ml sourcefile ppf opref     
   | Rei ->
-    setup_reason_context ();
-    let tmpfile = (reason_pp ~sourcefile) in 
-    Js_implementation.interface ppf  tmpfile opref ;
-    Ast_reason_pp.clean tmpfile
+    handle_reason Mli sourcefile ppf opref 
   | Reiast 
     -> 
     setup_reason_context ();
@@ -97,9 +113,13 @@ let process_file ppf sourcefile =
     setup_reason_context ();
     Js_implementation.implementation_mlast ppf sourcefile opref
   | Ml ->
-    Js_implementation.implementation ppf sourcefile opref 
+    Js_implementation.implementation 
+    ~parser:Pparse_driver.parse_implementation
+    ppf sourcefile opref 
   | Mli  ->   
-    Js_implementation.interface ppf sourcefile opref   
+    Js_implementation.interface 
+    ~parser:Pparse_driver.parse_interface
+    ppf sourcefile opref   
   | Mliast 
     -> Js_implementation.interface_mliast ppf sourcefile opref 
   | Mlast 
