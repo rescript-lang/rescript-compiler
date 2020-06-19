@@ -49,3 +49,9 @@ let write_ast (type t) (kind : t kind)
   output_string oc magic ;
   output_value oc fname;
   output_value oc pt
+
+let magic_of_kind : type a . a kind -> string = function
+  | Ml -> Config.ast_impl_magic_number
+  | Mli -> Config.ast_intf_magic_number
+
+  

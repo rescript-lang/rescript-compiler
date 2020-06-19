@@ -19,7 +19,8 @@ let process_implementation_file ppf name =
 
 let setup_reason_context () = 
   Js_config.is_reason := true;
-  Clflags.preprocessor := None ; (* FIX #3988*)
+  Clflags.preprocessor := None ; 
+  (* FIX #3988 - Don't run pp-flags on Reason files to make napkin easier*)
   Lazy.force Super_main.setup;  
   Lazy.force Reason_outcome_printer_main.setup
 
@@ -53,28 +54,28 @@ let process_file ppf sourcefile =
   Location.set_input_name  sourcefile;  
   let ext = Ext_filename.get_extension_maybe sourcefile in 
   let input = 
-    if ext = Literals.suffix_ml  then 
+    match () with 
+    | _ when ext = Literals.suffix_ml ->   
       Ml
-    else if  ext = Literals.suffix_re then
+    | _ when ext = Literals.suffix_re ->
       Re
-    else if ext = !Config.interface_suffix then 
+    | _ when ext = !Config.interface_suffix ->
       Mli  
-    else if  ext = Literals.suffix_rei  then
+    | _ when ext = Literals.suffix_rei ->
       Rei
-    else if ext =  Literals.suffix_mlast then 
+    | _ when ext =  Literals.suffix_mlast ->
       Mlast 
-    else if ext = Literals.suffix_mliast then 
+    | _ when ext = Literals.suffix_mliast ->
       Mliast
-    else if ext = Literals.suffix_reast then   
+    | _ when ext = Literals.suffix_reast ->
       Reast 
-    else if ext = Literals.suffix_reiast then   
+    | _ when ext = Literals.suffix_reiast ->
       Reiast
-    else if ext =  Literals.suffix_mlmap  then 
+    | _ when ext =  Literals.suffix_mlmap ->
       Mlmap 
-    else if ext =  Literals.suffix_cmi then 
+    | _ when ext =  Literals.suffix_cmi ->
       Cmi
-    else 
-      raise(Arg.Bad("don't know what to do with " ^ sourcefile)) in 
+    | _ -> raise(Arg.Bad("don't know what to do with " ^ sourcefile)) in 
   let opref = Compenv.output_prefix sourcefile in 
   match input with 
   | Re ->     
