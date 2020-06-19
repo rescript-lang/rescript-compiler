@@ -33,3 +33,5 @@ val read_ast : 'a kind -> in_channel -> 'a
 
 val write_ast :
    'a kind -> string -> 'a -> out_channel -> unit
+
+val magic_of_kind : 'a kind -> string   
