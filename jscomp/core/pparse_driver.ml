@@ -31,18 +31,15 @@ let remove_preprocessed inputfile =
     None -> ()
   | Some _ -> Misc.remove_file inputfile
 
-type 'a ast_kind =
-| Structure : Parsetree.structure ast_kind
-| Signature : Parsetree.signature ast_kind
 
-let magic_of_kind : type a . a ast_kind -> string = function
-  | Structure -> Config.ast_impl_magic_number
-  | Signature -> Config.ast_intf_magic_number
+let magic_of_kind : type a . a Ml_binary.kind -> string = function
+  | Ml_binary.Ml -> Config.ast_impl_magic_number
+  | Ml_binary.Mli -> Config.ast_intf_magic_number
 
 (* Note: some of the functions here should go to Ast_mapper instead,
    which would encapsulate the "binary AST" protocol. *)
 
-let write_ast (type a) (kind : a ast_kind) fn (ast : a) =
+let write_ast (type a) (kind : a Ml_binary.kind) fn (ast : a) =
   let oc = open_out_bin fn in
   output_string oc (magic_of_kind kind);
   output_value oc (!Location.input_name : string);
@@ -74,7 +71,7 @@ let apply_rewriter kind fn_in ppx =
   end;
   fn_out
 
-let read_ast (type a) (kind : a ast_kind) fn : a =
+let read_ast (type a) (kind : a Ml_binary.kind) fn : a =
   let ic = open_in_bin fn in
   try
     let magic = magic_of_kind kind in
@@ -102,7 +99,7 @@ let apply_rewriters_str ?(restore = true) ~tool_name ast =
   | ppxs ->
       ast
       |> Ast_mapper.add_ppx_context_str ~tool_name
-      |> rewrite Structure ppxs
+      |> rewrite Ml ppxs
       |> Ast_mapper.drop_ppx_context_str ~restore
 
 let apply_rewriters_sig ?(restore = true) ~tool_name ast =
@@ -111,15 +108,15 @@ let apply_rewriters_sig ?(restore = true) ~tool_name ast =
   | ppxs ->
       ast
       |> Ast_mapper.add_ppx_context_sig ~tool_name
-      |> rewrite Signature ppxs
+      |> rewrite Mli ppxs
       |> Ast_mapper.drop_ppx_context_sig ~restore
 
 let apply_rewriters ?restore ~tool_name
-    (type a) (kind : a ast_kind) (ast : a) : a =
+    (type a) (kind : a Ml_binary.kind) (ast : a) : a =
   match kind with
-  | Structure ->
+  | Ml_binary.Ml ->
       apply_rewriters_str ?restore ~tool_name ast
-  | Signature ->
+  | Ml_binary.Mli ->
       apply_rewriters_sig ?restore ~tool_name ast
 
 (* Parse a file or get a dumped syntax tree from it *)
@@ -142,13 +139,13 @@ let open_and_check_magic inputfile ast_magic =
   in
   (ic, is_ast_file)
 
-let parse (type a) (kind : a ast_kind) lexbuf : a =
+let parse (type a) (kind : a Ml_binary.kind) lexbuf : a =
   match kind with
-  | Structure -> Parse.implementation lexbuf
-  | Signature -> Parse.interface lexbuf
+  | Ml_binary.Ml -> Parse.implementation lexbuf
+  | Ml_binary.Mli -> Parse.interface lexbuf
 
 let file_aux ppf  inputfile (type a) (parse_fun  : _ -> a)
-             (kind : a ast_kind) : a  =
+             (kind : a Ml_binary.kind) : a  =
   let ast_magic = magic_of_kind kind in
   let (ic, is_ast_file) = open_and_check_magic inputfile ast_magic in
   let ast =
@@ -203,8 +200,8 @@ let parse_file kind ppf sourcefile =
 
 
 let parse_implementation ppf ~tool_name sourcefile =  
-  apply_rewriters ~restore:false ~tool_name Structure  (parse_file 
-       Structure ppf sourcefile)
+  apply_rewriters ~restore:false ~tool_name Ml  (parse_file 
+       Ml ppf sourcefile)
 let parse_interface ppf ~tool_name sourcefile =
-  apply_rewriters ~restore:false ~tool_name Signature (parse_file 
-       Signature ppf sourcefile)
+  apply_rewriters ~restore:false ~tool_name Mli (parse_file 
+       Mli ppf sourcefile)
