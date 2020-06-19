@@ -22,9 +22,8 @@ let preprocess sourcefile =
 
 
 let remove_preprocessed inputfile =
-  match !Clflags.preprocessor with
-    None -> ()
-  | Some _ -> Misc.remove_file inputfile
+  if !Clflags.preprocessor <> None then  
+    Misc.remove_file inputfile
 
 
 
@@ -89,8 +88,7 @@ let parse_file (type a) (kind  : a Ml_binary.kind) (ppf : Format.formatter) (sou
 
 
 let parse_implementation ppf  sourcefile =  
-  (parse_file 
-       Ml ppf sourcefile)
+  parse_file Ml ppf sourcefile
 
 let parse_interface ppf  sourcefile =
   parse_file Mli ppf sourcefile

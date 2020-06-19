@@ -12,15 +12,17 @@
 
 
 let process_interface_file ppf name =
-  Js_implementation.interface ppf name (Compenv.output_prefix name)
+  Js_implementation.interface ppf name 
+  ~parser:Pparse_driver.parse_interface
+  (Compenv.output_prefix name)
 let process_implementation_file ppf name =
-  Js_implementation.implementation ppf name (Compenv.output_prefix name)
+  Js_implementation.implementation ppf name 
+  ~parser:Pparse_driver.parse_implementation
+  (Compenv.output_prefix name)
 
 
 let setup_reason_context () = 
   Js_config.is_reason := true;
-  Clflags.preprocessor := None ; 
-  (* FIX #3988 - Don't run pp-flags on Reason files to make napkin easier*)
   Lazy.force Super_main.setup;  
   Lazy.force Reason_outcome_printer_main.setup
 
@@ -81,12 +83,24 @@ let process_file ppf sourcefile =
   | Re ->     
     setup_reason_context ();
     let tmpfile = reason_pp ~sourcefile in 
-    Js_implementation.implementation ppf tmpfile opref ;  
+    Js_implementation.implementation 
+      ~parser:(fun _ file_in -> 
+          let in_chan = open_in_bin file_in in   
+          let ast = Ml_binary.read_ast Ml in_chan in 
+          close_in in_chan; ast 
+        )
+      ppf tmpfile opref ;  
     Ast_reason_pp.clean tmpfile
   | Rei ->
     setup_reason_context ();
-    let tmpfile = (reason_pp ~sourcefile) in 
-    Js_implementation.interface ppf  tmpfile opref ;
+    let tmpfile = reason_pp ~sourcefile in 
+    Js_implementation.interface 
+      ~parser:(fun _ file_in -> 
+          let in_chan = open_in_bin file_in in 
+          let ast = Ml_binary.read_ast Mli in_chan in 
+          close_in in_chan; ast 
+        )
+      ppf  tmpfile opref ;    
     Ast_reason_pp.clean tmpfile
   | Reiast 
     -> 
@@ -97,9 +111,13 @@ let process_file ppf sourcefile =
     setup_reason_context ();
     Js_implementation.implementation_mlast ppf sourcefile opref
   | Ml ->
-    Js_implementation.implementation ppf sourcefile opref 
+    Js_implementation.implementation 
+    ~parser:Pparse_driver.parse_implementation
+    ppf sourcefile opref 
   | Mli  ->   
-    Js_implementation.interface ppf sourcefile opref   
+    Js_implementation.interface 
+    ~parser:Pparse_driver.parse_interface
+    ppf sourcefile opref   
   | Mliast 
     -> Js_implementation.interface_mliast ppf sourcefile opref 
   | Mlast 

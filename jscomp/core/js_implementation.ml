@@ -101,9 +101,9 @@ let after_parsing_sig ppf  outputprefix ast  =
 
 
 
-let interface ppf fname outputprefix =
+let interface ~parser ppf fname outputprefix =
   Compmisc.init_path false;
-  Pparse_driver.parse_interface  ppf fname
+  parser ppf fname
   |> Cmd_ppx_apply.apply_rewriters ~restore:false ~tool_name:Js_config.tool_name Mli 
   |> Ppx_entry.rewrite_signature
   |> print_if_pipe ppf Clflags.dump_parsetree Printast.interface
@@ -200,9 +200,9 @@ let after_parsing_impl ppf  outputprefix (ast : Parsetree.structure) =
       end;
       process_with_gentype (outputprefix ^ ".cmt")        
     end
-let implementation ppf fname outputprefix =
+let implementation ~parser ppf fname outputprefix  =
   Compmisc.init_path false;  
-  Pparse_driver.parse_implementation  ppf fname
+  parser ppf fname
   |> Cmd_ppx_apply.apply_rewriters ~restore:false ~tool_name:Js_config.tool_name Ml  
   |> Ppx_entry.rewrite_implementation
   |> print_if_pipe ppf Clflags.dump_parsetree Printast.implementation

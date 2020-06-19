@@ -35,7 +35,12 @@
     given [filename] and [outputprefix], 
     it will be useful if we don't care about bytecode output(generating js only).
  *)
-val interface : Format.formatter -> string -> string -> unit
+val interface : 
+  parser:(Format.formatter -> string -> Parsetree.signature) ->
+  Format.formatter -> 
+  string -> 
+  string -> 
+  unit
 
 val interface_mliast : Format.formatter -> string -> string  -> unit
   
@@ -51,7 +56,12 @@ val interface_mliast : Format.formatter -> string -> string  -> unit
     Used in eval
 *)
 
-val implementation : Format.formatter -> string -> string -> unit
+val implementation : 
+  parser:(Format.formatter -> string -> Parsetree.structure) ->
+  Format.formatter -> 
+  string -> 
+  string -> 
+  unit
 (** [implementation ppf sourcefile outprefix] compiles to JS directly *) 
 
 val implementation_mlast : Format.formatter -> string -> string -> unit
