@@ -1,11 +1,8 @@
 
 
-val parse_implementation:
-  Format.formatter ->
+val parse_implementation:  
   string -> Parsetree.structure
 
 
 val parse_interface:   
-  Format.formatter ->
-
   string -> Parsetree.signature

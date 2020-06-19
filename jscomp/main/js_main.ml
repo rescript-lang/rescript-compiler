@@ -26,10 +26,31 @@ let setup_reason_context () =
   Lazy.force Super_main.setup;  
   Lazy.force Reason_outcome_printer_main.setup
 
-let reason_pp ~sourcefile  = 
-  setup_reason_context ();
-  Ast_reason_pp.pp sourcefile
 
+let handle_reason (type a) (kind : a Ml_binary.kind) sourcefile ppf opref = 
+  setup_reason_context ();
+  let tmpfile =  Ast_reason_pp.pp sourcefile in   
+  (match kind with 
+   | Ml_binary.Ml -> 
+     Js_implementation.implementation
+       ~parser:(fun file_in -> 
+           let in_chan = open_in_bin file_in in 
+           let ast = Ml_binary.read_ast Ml in_chan in 
+           close_in in_chan; ast 
+         )
+       ppf  tmpfile opref    
+
+   | Ml_binary.Mli ->
+     Js_implementation.interface 
+       ~parser:(fun file_in -> 
+           let in_chan = open_in_bin file_in in 
+           let ast = Ml_binary.read_ast Mli in_chan in 
+           close_in in_chan; ast 
+         )
+       ppf  tmpfile opref ;    );
+  Ast_reason_pp.clean tmpfile 
+
+  
 type valid_input = 
   | Ml 
   | Mli
@@ -80,28 +101,9 @@ let process_file ppf sourcefile =
     | _ -> raise(Arg.Bad("don't know what to do with " ^ sourcefile)) in 
   let opref = Compenv.output_prefix sourcefile in 
   match input with 
-  | Re ->     
-    setup_reason_context ();
-    let tmpfile = reason_pp ~sourcefile in 
-    Js_implementation.implementation 
-      ~parser:(fun _ file_in -> 
-          let in_chan = open_in_bin file_in in   
-          let ast = Ml_binary.read_ast Ml in_chan in 
-          close_in in_chan; ast 
-        )
-      ppf tmpfile opref ;  
-    Ast_reason_pp.clean tmpfile
+  | Re -> handle_reason Ml sourcefile ppf opref     
   | Rei ->
-    setup_reason_context ();
-    let tmpfile = reason_pp ~sourcefile in 
-    Js_implementation.interface 
-      ~parser:(fun _ file_in -> 
-          let in_chan = open_in_bin file_in in 
-          let ast = Ml_binary.read_ast Mli in_chan in 
-          close_in in_chan; ast 
-        )
-      ppf  tmpfile opref ;    
-    Ast_reason_pp.clean tmpfile
+    handle_reason Mli sourcefile ppf opref 
   | Reiast 
     -> 
     setup_reason_context ();

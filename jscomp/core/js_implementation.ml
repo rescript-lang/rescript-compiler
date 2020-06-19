@@ -103,7 +103,7 @@ let after_parsing_sig ppf  outputprefix ast  =
 
 let interface ~parser ppf fname outputprefix =
   Compmisc.init_path false;
-  parser ppf fname
+  parser fname
   |> Cmd_ppx_apply.apply_rewriters ~restore:false ~tool_name:Js_config.tool_name Mli 
   |> Ppx_entry.rewrite_signature
   |> print_if_pipe ppf Clflags.dump_parsetree Printast.interface
@@ -202,7 +202,7 @@ let after_parsing_impl ppf  outputprefix (ast : Parsetree.structure) =
     end
 let implementation ~parser ppf fname outputprefix  =
   Compmisc.init_path false;  
-  parser ppf fname
+  parser fname
   |> Cmd_ppx_apply.apply_rewriters ~restore:false ~tool_name:Js_config.tool_name Ml  
   |> Ppx_entry.rewrite_implementation
   |> print_if_pipe ppf Clflags.dump_parsetree Printast.implementation

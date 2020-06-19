@@ -36,7 +36,7 @@
     it will be useful if we don't care about bytecode output(generating js only).
  *)
 val interface : 
-  parser:(Format.formatter -> string -> Parsetree.signature) ->
+  parser:(string -> Parsetree.signature) ->
   Format.formatter -> 
   string -> 
   string -> 
@@ -57,7 +57,7 @@ val interface_mliast : Format.formatter -> string -> string  -> unit
 *)
 
 val implementation : 
-  parser:(Format.formatter -> string -> Parsetree.structure) ->
+  parser:(string -> Parsetree.structure) ->
   Format.formatter -> 
   string -> 
   string -> 
