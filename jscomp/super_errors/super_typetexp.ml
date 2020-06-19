@@ -109,11 +109,13 @@ let report_error env ppf = function
       fprintf ppf "@[<v>\
       @{<info>The variant constructor %a can't be found.@}@,@,\
       @[<v 2>- If it's defined in another module or file, bring it into scope by:@,\
-        @[- Annotating it with said module name:@ @{<info>let food = MyModule.Apple@}@]@,\
-        @[- Or specifying its type:@ @{<info>let food: MyModule.fruit = Apple@}@]\
+        @[- Prefixing it with said module name:@ @{<info>TheModule.%a@}@]@,\
+        @[- Or specifying its type:@ @{<info>let theValue: TheModule.theType = %a@}@]\
       @]@,\
       - @[Constructors and modules are both capitalized.@ Did you want the latter?@ Then instead of @{<dim>let foo = Bar@}, try @{<info>module Foo = Bar@}.@]\
       @]"
+      longident lid
+      longident lid
       longident lid;
       Typetexp.spellcheck ppf fold_constructors env lid
   | Unbound_label lid ->
@@ -121,9 +123,11 @@ let report_error env ppf = function
       fprintf ppf "@[<v>\
       @{<info>The record field %a can't be found.@}@,@,\
       If it's defined in another module or file, bring it into scope by:@,\
-      @[- Annotating it with said module name:@ @{<info>let baby = {MyModule.age: 3}@}@]@,\
-      @[- Or specifying its type:@ @{<info>let baby: MyModule.person = {age: 3}@}@]\
+      @[- Prefixing it with said module name:@ @{<info>TheModule.%a@}@]@,\
+      @[- Or specifying its type:@ @{<info>let theValue: TheModule.theType = {%a: VALUE}@}@]\
       @]"
+      longident lid
+      longident lid
       longident lid;
       Typetexp.spellcheck ppf fold_labels env lid
   | anythingElse ->
