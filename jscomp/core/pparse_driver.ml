@@ -147,8 +147,8 @@ let parse (type a) (kind : a ast_kind) lexbuf : a =
   | Structure -> Parse.implementation lexbuf
   | Signature -> Parse.interface lexbuf
 
-let file_aux ppf ~tool_name inputfile (type a) (parse_fun  : _ -> a)
-             (kind : a ast_kind) =
+let file_aux ppf  inputfile (type a) (parse_fun  : _ -> a)
+             (kind : a ast_kind) : a  =
   let ast_magic = magic_of_kind kind in
   let (ic, is_ast_file) = open_and_check_magic inputfile ast_magic in
   let ast =
@@ -168,8 +168,8 @@ let file_aux ppf ~tool_name inputfile (type a) (parse_fun  : _ -> a)
       end
     with x -> close_in ic; raise x
   in
-  close_in ic;  
-  apply_rewriters ~restore:false ~tool_name kind ast 
+  close_in ic; ast   
+  
   
 
 let report_error ppf = function
@@ -187,11 +187,12 @@ let () =
       | _ -> None
     )
 
-let parse_file ~tool_name   kind ppf sourcefile =
+let parse_file kind ppf sourcefile =
   Location.set_input_name  sourcefile;
   let inputfile = preprocess sourcefile in
   let ast =
-    try file_aux ppf ~tool_name inputfile (parse kind)  kind
+    try 
+      (file_aux ppf  inputfile (parse kind)  kind)
     with exn ->
       remove_preprocessed inputfile;
       raise exn
@@ -202,8 +203,8 @@ let parse_file ~tool_name   kind ppf sourcefile =
 
 
 let parse_implementation ppf ~tool_name sourcefile =  
-    parse_file ~tool_name 
-       Structure ppf sourcefile
+  apply_rewriters ~restore:false ~tool_name Structure  (parse_file 
+       Structure ppf sourcefile)
 let parse_interface ppf ~tool_name sourcefile =
-    parse_file ~tool_name 
-       Signature ppf sourcefile
+  apply_rewriters ~restore:false ~tool_name Signature (parse_file 
+       Signature ppf sourcefile)
