@@ -114,7 +114,9 @@ let report_error env ppf = function
       @]@,\
       - @[Constructors and modules are both capitalized.@ Did you want the latter?@ Then instead of @{<dim>let foo = Bar@}, try @{<info>module Foo = Bar@}.@]\
       @]"
-      longident lid lid lid;
+      longident lid
+      longident lid
+      longident lid;
       Typetexp.spellcheck ppf fold_constructors env lid
   | Unbound_label lid ->
       (* modified *)
@@ -124,7 +126,9 @@ let report_error env ppf = function
       @[- Prefixing it with said module name:@ @{<info>TheModule.%a@}@]@,\
       @[- Or specifying its type:@ @{<info>let theValue: TheModule.theType = {%a: VALUE}@}@]\
       @]"
-      longident lid lid lid;
+      longident lid
+      longident lid
+      longident lid;
       Typetexp.spellcheck ppf fold_labels env lid
   | anythingElse ->
       Typetexp.report_error env ppf anythingElse
