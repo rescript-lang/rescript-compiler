@@ -3750,13 +3750,20 @@ type info =
   | Impl
   | Impl_intf
 
+type syntax_kind =   
+  | Ml 
+  | Reason     
 
 
 type module_info = 
   {
     mutable info : info;
     dir : string;
-    is_re : bool;
+    syntax_kind : syntax_kind;
+    (* This is actually not stored in bsbuild meta info 
+      since creating .d file only emit .cmj/.cmi dependencies, so it does not
+      need know which syntax it is written
+    *)
     case : bool;
     name_sans_extension : string;
   }
@@ -3819,12 +3826,16 @@ type info =
   | Intf (* intemediate state *)
   | Impl
   | Impl_intf
+
+type syntax_kind =   
+  | Ml 
+  | Reason     
   
 type module_info = 
   {
     mutable info : info;
     dir : string ; 
-    is_re : bool;
+    syntax_kind : syntax_kind;
     case : bool;
     name_sans_extension : string  ;
   }
@@ -10337,13 +10348,13 @@ let sanity_check (map : t) =
 let check (x : module_info) 
   name_sans_extension 
   case 
-  is_re 
+  syntax_kind 
   (module_info : Bsb_db.info)
   =  
   let x_ml_info = x.info in  
   (if x.name_sans_extension <> name_sans_extension 
    || x.case <> case 
-   || x.is_re <> is_re 
+   || x.syntax_kind <> syntax_kind 
    || x_ml_info = module_info 
    || x_ml_info = Impl_intf
    then 
@@ -10364,24 +10375,24 @@ let add_basename
     ?(error_on_invalid_suffix)
     basename : t =   
   let info = ref Bsb_db.Impl in   
-  let is_re = ref false in 
+  let syntax_kind = ref Bsb_db.Ml in 
   let invalid_suffix = ref false in
   (match Ext_filename.get_extension_maybe basename with 
    | ".ml" -> 
      () 
    | ".re" ->
-     is_re := true
+     syntax_kind := Reason
    | ".mli" -> 
      info := Intf
    | ".rei" -> 
      info := Intf;
-     is_re := true 
+     syntax_kind := Reason 
    | _ -> 
      invalid_suffix := true
 
   );   
   let info= !info in 
-  let is_re = !is_re in 
+  let syntax_kind = !syntax_kind in 
   let invalid_suffix = !invalid_suffix in 
   if invalid_suffix then 
     match error_on_invalid_suffix with
@@ -10404,9 +10415,9 @@ let add_basename
         (fun  opt_module_info -> 
            match opt_module_info with 
            | None -> 
-             {dir ; name_sans_extension ; info ; is_re ; case }
+             {dir ; name_sans_extension ; info ; syntax_kind ; case }
            | Some x -> 
-             check x name_sans_extension case is_re info      
+             check x name_sans_extension case syntax_kind info      
         )
 
 end
@@ -12584,7 +12595,7 @@ let encode_single (db : Bsb_db.map) (buf : Ext_buffer.t) =
     let len_encoding = make_encoding length buf in 
     Map_string.iter db (fun _ module_info ->       
         len_encoding buf 
-          (Hash_string.find_exn  mapping module_info.dir lsl 1 + Obj.magic module_info.case ));      
+          (Hash_string.find_exn  mapping module_info.dir lsl 1 + (Obj.magic (module_info.case : bool) : int)));      
     nl buf 
   end
 let encode (dbs : Bsb_db.t) buf =     
@@ -13593,7 +13604,7 @@ let emit_module_build
     (module_info : Bsb_db.module_info)
   =    
   let has_intf_file = module_info.info = Impl_intf in 
-  let is_re = module_info.is_re in 
+  let is_re = module_info.syntax_kind = Reason in 
   let filename_sans_extension = module_info.name_sans_extension in 
   let input_impl = 
     Bsb_config.proj_rel 

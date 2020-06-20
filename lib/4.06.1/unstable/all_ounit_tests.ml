@@ -5222,13 +5222,20 @@ type info =
   | Impl
   | Impl_intf
 
+type syntax_kind =   
+  | Ml 
+  | Reason     
 
 
 type module_info = 
   {
     mutable info : info;
     dir : string;
-    is_re : bool;
+    syntax_kind : syntax_kind;
+    (* This is actually not stored in bsbuild meta info 
+      since creating .d file only emit .cmj/.cmi dependencies, so it does not
+      need know which syntax it is written
+    *)
     case : bool;
     name_sans_extension : string;
   }
@@ -5291,12 +5298,16 @@ type info =
   | Intf (* intemediate state *)
   | Impl
   | Impl_intf
+
+type syntax_kind =   
+  | Ml 
+  | Reason     
   
 type module_info = 
   {
     mutable info : info;
     dir : string ; 
-    is_re : bool;
+    syntax_kind : syntax_kind;
     case : bool;
     name_sans_extension : string  ;
   }
@@ -7068,7 +7079,7 @@ let encode_single (db : Bsb_db.map) (buf : Ext_buffer.t) =
     let len_encoding = make_encoding length buf in 
     Map_string.iter db (fun _ module_info ->       
         len_encoding buf 
-          (Hash_string.find_exn  mapping module_info.dir lsl 1 + Obj.magic module_info.case ));      
+          (Hash_string.find_exn  mapping module_info.dir lsl 1 + (Obj.magic (module_info.case : bool) : int)));      
     nl buf 
   end
 let encode (dbs : Bsb_db.t) buf =     
@@ -7276,12 +7287,12 @@ let s_test1 s a =
 
 let group0 = Map_string.of_list [
   "Liba", 
-  {Bsb_db.info = Impl_intf; dir= "a";is_re=false;case = false;
+  {Bsb_db.info = Impl_intf; dir= "a";syntax_kind=Ml;case = false;
   name_sans_extension = "liba"}
 ]
 let group1 =  Map_string.of_list [
   "Ciba", 
-  {Bsb_db.info = Impl_intf; dir= "b";is_re=false;case = false;
+  {Bsb_db.info = Impl_intf; dir= "b";syntax_kind=Ml;case = false;
   name_sans_extension = "liba"}
 ] 
 
