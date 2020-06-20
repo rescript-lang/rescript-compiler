@@ -5218,9 +5218,9 @@ module Bsb_db : sig
 type case = bool 
 
 type info = 
-  | Mli (* intemediate state *)
-  | Ml
-  | Ml_mli
+  | Intf (* intemediate state *)
+  | Impl
+  | Impl_intf
 
 
 
@@ -5288,9 +5288,9 @@ type case = bool
 
 
 type info = 
-  | Mli (* intemediate state *)
-  | Ml
-  | Ml_mli
+  | Intf (* intemediate state *)
+  | Impl
+  | Impl_intf
   
 type module_info = 
   {
@@ -7276,12 +7276,12 @@ let s_test1 s a =
 
 let group0 = Map_string.of_list [
   "Liba", 
-  {Bsb_db.info = Ml_mli; dir= "a";is_re=false;case = false;
+  {Bsb_db.info = Impl_intf; dir= "a";is_re=false;case = false;
   name_sans_extension = "liba"}
 ]
 let group1 =  Map_string.of_list [
   "Ciba", 
-  {Bsb_db.info = Ml_mli; dir= "b";is_re=false;case = false;
+  {Bsb_db.info = Impl_intf; dir= "b";is_re=false;case = false;
   name_sans_extension = "liba"}
 ] 
 
