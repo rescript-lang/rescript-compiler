@@ -11281,7 +11281,7 @@ val force_cmj : bool ref
 
 val jsx_version : int ref
 val refmt : string option ref
-val is_reason : bool ref 
+
 
 val js_stdout : bool ref 
 
@@ -11392,7 +11392,6 @@ let jsx_version = ref (-1)
 
 let refmt = ref None
 
-let is_reason = ref false
 
 let js_stdout = ref true
 
