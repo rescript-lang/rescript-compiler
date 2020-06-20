@@ -58,10 +58,11 @@ let after_parsing_sig ppf  outputprefix ast  =
   end;
   if !Js_config.binary_ast then
     begin 
+      let sourcefile = !Location.input_name in   
       Binary_ast.write_ast
         Mli
-        ~sourcefile:!Location.input_name
-        ~output:(outputprefix ^ if !Js_config.is_reason  then Literals.suffix_reiast else Literals.suffix_mliast)
+        ~sourcefile
+        ~output:(outputprefix ^ Filename.extension sourcefile ^ "ast")
         (* to support relocate to another directory *)
         ast 
 
@@ -165,10 +166,9 @@ let after_parsing_impl ppf  outputprefix (ast : Parsetree.structure) =
     close_out oc ;
   end;
   if !Js_config.binary_ast then
-    Binary_ast.write_ast ~sourcefile:!Location.input_name 
-      Ml ~output:(outputprefix ^ 
-        if !Js_config.is_reason then  Literals.suffix_reast else Literals.suffix_mlast
-        )
+    let sourcefile = !Location.input_name in 
+    Binary_ast.write_ast ~sourcefile
+      Ml ~output:(outputprefix ^ Filename.extension sourcefile ^ "ast")
       ast ;
   if !Js_config.syntax_only then 
     Warnings.check_fatal ()
