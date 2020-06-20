@@ -165,11 +165,12 @@ let after_parsing_impl ppf  outputprefix (ast : Parsetree.structure) =
     Ml_binary.write_ast Ml !Location.input_name  ast oc;
     close_out oc ;
   end;
-  if !Js_config.binary_ast then
+  if !Js_config.binary_ast then begin 
     let sourcefile = !Location.input_name in 
     Binary_ast.write_ast ~sourcefile
       Ml ~output:(outputprefix ^ Filename.extension sourcefile ^ "ast")
-      ast ;
+      ast
+  end ;
   if !Js_config.syntax_only then 
     Warnings.check_fatal ()
   else 
