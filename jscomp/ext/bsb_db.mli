@@ -33,17 +33,24 @@
 type case = bool 
 
 type info = 
-  | Mli (* intemediate state *)
-  | Ml
-  | Ml_mli
+  | Intf (* intemediate state *)
+  | Impl
+  | Impl_intf
 
+type syntax_kind =   
+  | Ml 
+  | Reason     
 
 
 type module_info = 
   {
     mutable info : info;
     dir : string;
-    is_re : bool;
+    syntax_kind : syntax_kind;
+    (* This is actually not stored in bsbuild meta info 
+      since creating .d file only emit .cmj/.cmi dependencies, so it does not
+      need know which syntax it is written
+    *)
     case : bool;
     name_sans_extension : string;
   }

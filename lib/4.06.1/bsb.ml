@@ -3746,17 +3746,24 @@ module Bsb_db : sig
 type case = bool 
 
 type info = 
-  | Mli (* intemediate state *)
-  | Ml
-  | Ml_mli
+  | Intf (* intemediate state *)
+  | Impl
+  | Impl_intf
 
+type syntax_kind =   
+  | Ml 
+  | Reason     
 
 
 type module_info = 
   {
     mutable info : info;
     dir : string;
-    is_re : bool;
+    syntax_kind : syntax_kind;
+    (* This is actually not stored in bsbuild meta info 
+      since creating .d file only emit .cmj/.cmi dependencies, so it does not
+      need know which syntax it is written
+    *)
     case : bool;
     name_sans_extension : string;
   }
@@ -3816,15 +3823,19 @@ type case = bool
 
 
 type info = 
-  | Mli (* intemediate state *)
-  | Ml
-  | Ml_mli
+  | Intf (* intemediate state *)
+  | Impl
+  | Impl_intf
+
+type syntax_kind =   
+  | Ml 
+  | Reason     
   
 type module_info = 
   {
     mutable info : info;
     dir : string ; 
-    is_re : bool;
+    syntax_kind : syntax_kind;
     case : bool;
     name_sans_extension : string  ;
   }
@@ -10295,7 +10306,7 @@ let merge (acc : t) (sources : t) : t =
 
 let sanity_check (map : t) = 
   Map_string.iter map (fun m module_info -> 
-      if module_info.info = Mli then
+      if module_info.info = Intf then
         Bsb_exception.no_implementation m 
     )    
 
@@ -10305,21 +10316,21 @@ let sanity_check (map : t) =
 let check (x : module_info) 
   name_sans_extension 
   case 
-  is_re 
+  syntax_kind 
   (module_info : Bsb_db.info)
   =  
   let x_ml_info = x.info in  
   (if x.name_sans_extension <> name_sans_extension 
    || x.case <> case 
-   || x.is_re <> is_re 
+   || x.syntax_kind <> syntax_kind 
    || x_ml_info = module_info 
-   || x_ml_info = Ml_mli
+   || x_ml_info = Impl_intf
    then 
      Bsb_exception.invalid_spec 
        (Printf.sprintf 
           "implementation and interface have different path names or different cases %s vs %s"
           x.name_sans_extension name_sans_extension));
-  x.info <- Ml_mli;      
+  x.info <- Impl_intf;      
   x
 
 
@@ -10331,25 +10342,25 @@ let add_basename
     (map : t)  
     ?(error_on_invalid_suffix)
     basename : t =   
-  let info = ref Bsb_db.Ml in   
-  let is_re = ref false in 
+  let info = ref Bsb_db.Impl in   
+  let syntax_kind = ref Bsb_db.Ml in 
   let invalid_suffix = ref false in
-  (match Ext_filename.get_extension_maybe basename with 
-   | ".ml" -> 
+  let file_suffix = Ext_filename.get_extension_maybe basename in 
+  (match ()  with 
+   | _ when file_suffix = Literals.suffix_ml -> 
      () 
-   | ".re" ->
-     is_re := true
-   | ".mli" -> 
-     info := Mli
-   | ".rei" -> 
-     info := Mli;
-     is_re := true 
+   | _ when file_suffix = Literals.suffix_re -> 
+     syntax_kind := Reason
+   | _ when file_suffix = Literals.suffix_mli -> 
+     info := Intf
+   | _ when file_suffix = Literals.suffix_rei  -> 
+     info := Intf;
+     syntax_kind := Reason 
    | _ -> 
      invalid_suffix := true
-
   );   
   let info= !info in 
-  let is_re = !is_re in 
+  let syntax_kind = !syntax_kind in 
   let invalid_suffix = !invalid_suffix in 
   if invalid_suffix then 
     match error_on_invalid_suffix with
@@ -10372,9 +10383,9 @@ let add_basename
         (fun  opt_module_info -> 
            match opt_module_info with 
            | None -> 
-             {dir ; name_sans_extension ; info ; is_re ; case }
+             {dir ; name_sans_extension ; info ; syntax_kind ; case }
            | Some x -> 
-             check x name_sans_extension case is_re info      
+             check x name_sans_extension case syntax_kind info      
         )
 
 end
@@ -12435,7 +12446,7 @@ let encode_single (db : Bsb_db.map) (buf : Ext_buffer.t) =
     let len_encoding = make_encoding length buf in 
     Map_string.iter db (fun _ module_info ->       
         len_encoding buf 
-          (Hash_string.find_exn  mapping module_info.dir lsl 1 + Obj.magic module_info.case ));      
+          (Hash_string.find_exn  mapping module_info.dir lsl 1 + (Obj.magic (module_info.case : bool) : int)));      
     nl buf 
   end
 let encode (dbs : Bsb_db.t) buf =     
@@ -13432,7 +13443,27 @@ let make_common_shadows
     }] 
   
 
+type suffixes = {
+  impl : string;
+  intf : string ; 
+  impl_ast : string;
+  intf_ast : string;  
+}
 
+let re_suffixes = {
+  impl  = Literals.suffix_re;
+  intf = Literals.suffix_rei;
+  impl_ast = Literals.suffix_reast;
+  intf_ast = Literals.suffix_reiast;
+
+}
+
+let ml_suffixes = {
+  impl = Literals.suffix_ml;
+  intf = Literals.suffix_mli;
+  impl_ast = Literals.suffix_mlast;
+  intf_ast = Literals.suffix_mliast
+}
 let emit_module_build
     (rules : Bsb_ninja_rule.builtin)  
     (package_specs : Bsb_package_specs.t)
@@ -13443,19 +13474,16 @@ let emit_module_build
     namespace
     (module_info : Bsb_db.module_info)
   =    
-  let has_intf_file = module_info.info = Ml_mli in 
-  let is_re = module_info.is_re in 
+  let has_intf_file = module_info.info = Impl_intf in 
+  let config, ast_rule  = 
+    match module_info.syntax_kind with 
+    | Reason -> re_suffixes, rules.build_ast_from_re
+    | Ml -> ml_suffixes, rules.build_ast in   
   let filename_sans_extension = module_info.name_sans_extension in 
-  let input_impl = 
-    Bsb_config.proj_rel 
-      (filename_sans_extension ^ if is_re then  Literals.suffix_re else  Literals.suffix_ml  ) in
-  let input_intf =      
-    Bsb_config.proj_rel 
-      (filename_sans_extension ^ if is_re then  Literals.suffix_rei else  Literals.suffix_mli) in
-  let output_mlast = 
-    filename_sans_extension  ^ if is_re then Literals.suffix_reast else Literals.suffix_mlast in
-  let output_mliast = 
-    filename_sans_extension  ^ if is_re then Literals.suffix_reiast else Literals.suffix_mliast in
+  let input_impl = Bsb_config.proj_rel (filename_sans_extension ^ config.impl ) in
+  let input_intf = Bsb_config.proj_rel (filename_sans_extension ^ config.intf) in
+  let output_mlast = filename_sans_extension  ^ config.impl_ast in
+  let output_mliast = filename_sans_extension  ^ config.intf_ast in
   let output_d = filename_sans_extension ^ Literals.suffix_d in
   let output_filename_sans_extension =  
       Ext_namespace_encode.make ?ns:namespace filename_sans_extension
@@ -13468,11 +13496,7 @@ let emit_module_build
     make_common_shadows package_specs
       (Filename.dirname output_cmi)
       in  
-  let ast_rule =     
-    if is_re then 
-      rules.build_ast_from_re
-    else
-      rules.build_ast in 
+  
   Bsb_ninja_targets.output_build oc
     ~outputs:[output_mlast]
     ~inputs:[input_impl]

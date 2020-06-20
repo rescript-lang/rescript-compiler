@@ -22,7 +22,6 @@ let process_implementation_file ppf name =
 
 
 let setup_reason_context () = 
-  Js_config.is_reason := true;
   Lazy.force Super_main.setup;  
   Lazy.force Reason_outcome_printer_main.setup
 
