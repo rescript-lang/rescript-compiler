@@ -13592,7 +13592,27 @@ let make_common_shadows
     }] 
   
 
+type suffixes = {
+  impl : string;
+  intf : string ; 
+  impl_ast : string;
+  intf_ast : string;  
+}
 
+let re_suffixes = {
+  impl  = Literals.suffix_re;
+  intf = Literals.suffix_rei;
+  impl_ast = Literals.suffix_reast;
+  intf_ast = Literals.suffix_reiast;
+
+}
+
+let ml_suffixes = {
+  impl = Literals.suffix_ml;
+  intf = Literals.suffix_mli;
+  impl_ast = Literals.suffix_mlast;
+  intf_ast = Literals.suffix_mliast
+}
 let emit_module_build
     (rules : Bsb_ninja_rule.builtin)  
     (package_specs : Bsb_package_specs.t)
@@ -13604,18 +13624,15 @@ let emit_module_build
     (module_info : Bsb_db.module_info)
   =    
   let has_intf_file = module_info.info = Impl_intf in 
-  let is_re = module_info.syntax_kind = Reason in 
+  let config, ast_rule  = 
+    match module_info.syntax_kind with 
+    | Reason -> re_suffixes, rules.build_ast_from_re
+    | Ml -> ml_suffixes, rules.build_ast in   
   let filename_sans_extension = module_info.name_sans_extension in 
-  let input_impl = 
-    Bsb_config.proj_rel 
-      (filename_sans_extension ^ if is_re then  Literals.suffix_re else  Literals.suffix_ml  ) in
-  let input_intf =      
-    Bsb_config.proj_rel 
-      (filename_sans_extension ^ if is_re then  Literals.suffix_rei else  Literals.suffix_mli) in
-  let output_mlast = 
-    filename_sans_extension  ^ if is_re then Literals.suffix_reast else Literals.suffix_mlast in
-  let output_mliast = 
-    filename_sans_extension  ^ if is_re then Literals.suffix_reiast else Literals.suffix_mliast in
+  let input_impl = Bsb_config.proj_rel (filename_sans_extension ^ config.impl ) in
+  let input_intf = Bsb_config.proj_rel (filename_sans_extension ^ config.intf) in
+  let output_mlast = filename_sans_extension  ^ config.impl_ast in
+  let output_mliast = filename_sans_extension  ^ config.intf_ast in
   let output_d = filename_sans_extension ^ Literals.suffix_d in
   let output_filename_sans_extension =  
       Ext_namespace_encode.make ?ns:namespace filename_sans_extension
@@ -13628,11 +13645,7 @@ let emit_module_build
     make_common_shadows package_specs
       (Filename.dirname output_cmi)
       in  
-  let ast_rule =     
-    if is_re then 
-      rules.build_ast_from_re
-    else
-      rules.build_ast in 
+  
   Bsb_ninja_targets.output_build oc
     ~outputs:[output_mlast]
     ~inputs:[input_impl]
