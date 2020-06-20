@@ -10345,19 +10345,19 @@ let add_basename
   let info = ref Bsb_db.Impl in   
   let syntax_kind = ref Bsb_db.Ml in 
   let invalid_suffix = ref false in
-  (match Ext_filename.get_extension_maybe basename with 
-   | ".ml" -> 
+  let file_suffix = Ext_filename.get_extension_maybe basename in 
+  (match ()  with 
+   | _ when file_suffix = Literals.suffix_ml -> 
      () 
-   | ".re" ->
+   | _ when file_suffix = Literals.suffix_re -> 
      syntax_kind := Reason
-   | ".mli" -> 
+   | _ when file_suffix = Literals.suffix_mli -> 
      info := Intf
-   | ".rei" -> 
+   | _ when file_suffix = Literals.suffix_rei  -> 
      info := Intf;
      syntax_kind := Reason 
    | _ -> 
      invalid_suffix := true
-
   );   
   let info= !info in 
   let syntax_kind = !syntax_kind in 
