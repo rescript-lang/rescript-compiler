@@ -50,7 +50,7 @@ let merge (acc : t) (sources : t) : t =
 
 let sanity_check (map : t) = 
   Map_string.iter map (fun m module_info -> 
-      if module_info.info = Mli then
+      if module_info.info = Intf then
         Bsb_exception.no_implementation m 
     )    
 
@@ -68,13 +68,13 @@ let check (x : module_info)
    || x.case <> case 
    || x.is_re <> is_re 
    || x_ml_info = module_info 
-   || x_ml_info = Ml_mli
+   || x_ml_info = Impl_intf
    then 
      Bsb_exception.invalid_spec 
        (Printf.sprintf 
           "implementation and interface have different path names or different cases %s vs %s"
           x.name_sans_extension name_sans_extension));
-  x.info <- Ml_mli;      
+  x.info <- Impl_intf;      
   x
 
 
@@ -86,7 +86,7 @@ let add_basename
     (map : t)  
     ?(error_on_invalid_suffix)
     basename : t =   
-  let info = ref Bsb_db.Ml in   
+  let info = ref Bsb_db.Impl in   
   let is_re = ref false in 
   let invalid_suffix = ref false in
   (match Ext_filename.get_extension_maybe basename with 
@@ -95,9 +95,9 @@ let add_basename
    | ".re" ->
      is_re := true
    | ".mli" -> 
-     info := Mli
+     info := Intf
    | ".rei" -> 
-     info := Mli;
+     info := Intf;
      is_re := true 
    | _ -> 
      invalid_suffix := true

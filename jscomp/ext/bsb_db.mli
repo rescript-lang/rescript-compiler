@@ -33,9 +33,9 @@
 type case = bool 
 
 type info = 
-  | Mli (* intemediate state *)
-  | Ml
-  | Ml_mli
+  | Intf (* intemediate state *)
+  | Impl
+  | Impl_intf
 
 
 

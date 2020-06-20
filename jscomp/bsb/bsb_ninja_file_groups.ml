@@ -72,7 +72,7 @@ let emit_module_build
     namespace
     (module_info : Bsb_db.module_info)
   =    
-  let has_intf_file = module_info.info = Ml_mli in 
+  let has_intf_file = module_info.info = Impl_intf in 
   let is_re = module_info.is_re in 
   let filename_sans_extension = module_info.name_sans_extension in 
   let input_impl = 
