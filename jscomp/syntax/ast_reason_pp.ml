@@ -55,13 +55,8 @@ let pp (sourcefile : string) =
   let comm = 
       if Sys.win32 then cmd_windows_quote pp sourcefile tmpfile 
       else cmd_nix_quote pp sourcefile tmpfile
-  in
-  if !Clflags.verbose then begin 
-    prerr_string "+ ";
-    prerr_endline comm;
-    prerr_newline ()
-  end ;
-  if Sys.command comm <> 0 then begin
+  in  
+  if Ccomp.command comm <> 0 then begin
     clean tmpfile;
     raise Pp_error
   end;
