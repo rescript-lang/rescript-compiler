@@ -10,16 +10,17 @@ let write_ast (type a) (kind : a Ml_binary.kind) fn (ast : a) =
   output_value oc (ast : a);
   close_out oc
 
+let temp_ppx_file () =   
+  Filename.temp_file "ppx" (Filename.basename !Location.input_name)
+
 let apply_rewriter kind fn_in ppx =
   let magic = Ml_binary.magic_of_kind kind in
-  let fn_out = Filename.temp_file "camlppx" "" in
+  let fn_out = temp_ppx_file () in
   let comm =
     Printf.sprintf "%s %s %s" ppx (Filename.quote fn_in) (Filename.quote fn_out)
   in
   let ok = Ccomp.command comm = 0 in
-  Misc.remove_file fn_in;
   if not ok then begin
-    Misc.remove_file fn_out;
     Cmd_ast_exception.cannot_run comm
   end;
   if not (Sys.file_exists fn_out) then
@@ -30,31 +31,41 @@ let apply_rewriter kind fn_in ppx =
     try really_input_string ic (String.length magic) with End_of_file -> "" in
   close_in ic;
   if buffer <> magic then begin
-    Misc.remove_file fn_out;
     Cmd_ast_exception.wrong_magic buffer;
   end;
   fn_out
 
+(* This is a fatal error, no need to protect it *)
 let read_ast (type a) (kind : a Ml_binary.kind) fn : a =
   let ic = open_in_bin fn in
-  try
-    let magic = Ml_binary.magic_of_kind kind in
-    let buffer = really_input_string ic (String.length magic) in
-    assert(buffer = magic); (* already checked by apply_rewriter *)
-    Location.set_input_name @@ (input_value ic : string);
-    let ast = (input_value ic : a) in
-    close_in ic;
-    Misc.remove_file fn;
-    ast
-  with exn ->
-    close_in ic;
-    Misc.remove_file fn;
-    raise exn
+  let magic = Ml_binary.magic_of_kind kind in
+  let buffer = really_input_string ic (String.length magic) in
+  assert(buffer = magic); (* already checked by apply_rewriter *)
+  Location.set_input_name @@ (input_value ic : string);
+  let ast = (input_value ic : a) in
+  close_in ic;
+
+  ast
+
+
+(** [ppxs] are a stack, 
+    [-ppx1 -ppx2  -ppx3]
+    are stored as [-ppx3; -ppx2; -ppx1]
+    [fold_right] happens to process the first one *)
 let rewrite kind ppxs ast =
-  let fn = Filename.temp_file "camlppx" "" in
-  write_ast kind fn ast;
-  let fn = List.fold_left (apply_rewriter kind) fn (List.rev ppxs) in
-  read_ast kind fn
+  let fn_in = temp_ppx_file () in
+  write_ast kind fn_in ast;
+  let temp_files = List.fold_right (fun ppx fns -> 
+    match fns with 
+    | [] -> assert false
+    | fn_in :: _ -> (apply_rewriter kind fn_in ppx) :: fns
+  ) ppxs [fn_in] in 
+  match temp_files with 
+  | last_fn :: _ ->  
+    let out = read_ast kind last_fn in 
+    Ext_list.iter temp_files Misc.remove_file;
+    out
+  | _ -> assert false
 
 let apply_rewriters_str ?(restore = true) ~tool_name ast =
   match !Clflags.all_ppx with
