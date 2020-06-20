@@ -82,7 +82,7 @@ let encode_single (db : Bsb_db.map) (buf : Ext_buffer.t) =
     let len_encoding = make_encoding length buf in 
     Map_string.iter db (fun _ module_info ->       
         len_encoding buf 
-          (Hash_string.find_exn  mapping module_info.dir lsl 1 + Obj.magic module_info.case ));      
+          (Hash_string.find_exn  mapping module_info.dir lsl 1 + (Obj.magic (module_info.case : bool) : int)));      
     nl buf 
   end
 let encode (dbs : Bsb_db.t) buf =     

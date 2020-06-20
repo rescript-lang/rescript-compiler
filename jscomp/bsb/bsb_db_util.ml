@@ -60,13 +60,13 @@ let sanity_check (map : t) =
 let check (x : module_info) 
   name_sans_extension 
   case 
-  is_re 
+  syntax_kind 
   (module_info : Bsb_db.info)
   =  
   let x_ml_info = x.info in  
   (if x.name_sans_extension <> name_sans_extension 
    || x.case <> case 
-   || x.is_re <> is_re 
+   || x.syntax_kind <> syntax_kind 
    || x_ml_info = module_info 
    || x_ml_info = Impl_intf
    then 
@@ -87,24 +87,24 @@ let add_basename
     ?(error_on_invalid_suffix)
     basename : t =   
   let info = ref Bsb_db.Impl in   
-  let is_re = ref false in 
+  let syntax_kind = ref Bsb_db.Ml in 
   let invalid_suffix = ref false in
   (match Ext_filename.get_extension_maybe basename with 
    | ".ml" -> 
      () 
    | ".re" ->
-     is_re := true
+     syntax_kind := Reason
    | ".mli" -> 
      info := Intf
    | ".rei" -> 
      info := Intf;
-     is_re := true 
+     syntax_kind := Reason 
    | _ -> 
      invalid_suffix := true
 
   );   
   let info= !info in 
-  let is_re = !is_re in 
+  let syntax_kind = !syntax_kind in 
   let invalid_suffix = !invalid_suffix in 
   if invalid_suffix then 
     match error_on_invalid_suffix with
@@ -127,7 +127,7 @@ let add_basename
         (fun  opt_module_info -> 
            match opt_module_info with 
            | None -> 
-             {dir ; name_sans_extension ; info ; is_re ; case }
+             {dir ; name_sans_extension ; info ; syntax_kind ; case }
            | Some x -> 
-             check x name_sans_extension case is_re info      
+             check x name_sans_extension case syntax_kind info      
         )

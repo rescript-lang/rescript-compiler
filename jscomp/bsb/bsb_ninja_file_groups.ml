@@ -73,7 +73,7 @@ let emit_module_build
     (module_info : Bsb_db.module_info)
   =    
   let has_intf_file = module_info.info = Impl_intf in 
-  let is_re = module_info.is_re in 
+  let is_re = module_info.syntax_kind = Reason in 
   let filename_sans_extension = module_info.name_sans_extension in 
   let input_impl = 
     Bsb_config.proj_rel 

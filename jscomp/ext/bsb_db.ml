@@ -31,12 +31,16 @@ type info =
   | Intf (* intemediate state *)
   | Impl
   | Impl_intf
+
+type syntax_kind =   
+  | Ml 
+  | Reason     
   
 type module_info = 
   {
     mutable info : info;
     dir : string ; 
-    is_re : bool;
+    syntax_kind : syntax_kind;
     case : bool;
     name_sans_extension : string  ;
   }
