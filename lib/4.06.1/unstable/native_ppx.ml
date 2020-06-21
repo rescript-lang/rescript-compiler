@@ -15072,7 +15072,7 @@ let emit_external_warnings : iterator=
           )
         | _ -> default_iterator.expr self a 
       );
-    label_declaration = (fun self lbl ->
+    label_declaration = (fun self lbl ->     
      
       Ext_list.iter lbl.pld_attributes 
         (fun attr -> 
@@ -15082,6 +15082,14 @@ let emit_external_warnings : iterator=
           );
       default_iterator.label_declaration self lbl      
     );  
+    constructor_declaration = (fun self ({pcd_name} as ctr) -> 
+      (match pcd_name.txt with  
+      | "false"
+      | "true"  -> 
+        Location.raise_errorf ~loc:pcd_name.loc "true/false can not be redefined "
+      | _ -> ());
+      default_iterator.constructor_declaration self ctr  
+    );
     value_description =
       (fun self v -> 
          match v with 
