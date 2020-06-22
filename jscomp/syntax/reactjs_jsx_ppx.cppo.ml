@@ -646,8 +646,7 @@ let jsxMapper () =
           } -> ((fun a -> a), false, unerasableIgnoreExp expression)
           (* let make = (prop) => ... *)
           | {
-            pexp_desc = Pexp_fun (_nolabel, _default, _pattern, _internalExpression);
-            pexp_loc
+            pexp_desc = Pexp_fun (_nolabel, _default, pattern, _internalExpression)
           } -> 
             if (hasApplication.contents) then
               ((fun a -> a), false, unerasableIgnoreExp expression)
