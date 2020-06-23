@@ -40,7 +40,7 @@ type info =
 type syntax_kind =   
   | Ml 
   | Reason     
-
+  | Res
 
 type module_info = 
   {

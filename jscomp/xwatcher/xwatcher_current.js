@@ -81,7 +81,8 @@ if (exit === 1) {
         "super_errors",
         ".",
         "stubs",
-        "stdlib-406"
+        "stdlib-406",
+        "napkin"
       ]);
   exec(/* () */0);
 }

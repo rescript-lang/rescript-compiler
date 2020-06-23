@@ -82,6 +82,12 @@ let ml_suffixes = {
   impl_ast = Literals.suffix_mlast;
   intf_ast = Literals.suffix_mliast
 }
+let res_suffixes = {
+  impl = Literals.suffix_res;
+  intf = Literals.suffix_resi;
+  impl_ast = Literals.suffix_resast;
+  intf_ast = Literals.suffix_resiast
+}
 let emit_module_build
     (rules : Bsb_ninja_rule.builtin)  
     (package_specs : Bsb_package_specs.t)
@@ -96,7 +102,9 @@ let emit_module_build
   let config, ast_rule  = 
     match module_info.syntax_kind with 
     | Reason -> re_suffixes, rules.build_ast_from_re
-    | Ml -> ml_suffixes, rules.build_ast in   
+    | Ml -> ml_suffixes, rules.build_ast 
+    | Res -> res_suffixes, rules.build_ast_from_re (* FIXME: better names *)
+  in   
   let filename_sans_extension = module_info.name_sans_extension in 
   let input_impl = Bsb_config.proj_rel (filename_sans_extension ^ config.impl ) in
   let input_intf = Bsb_config.proj_rel (filename_sans_extension ^ config.intf) in
