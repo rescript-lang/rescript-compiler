@@ -30,7 +30,7 @@ let fx () = ()
 let u0 (x : unit) = Some x 
 
 let u1 = Some ()
-type t = ()
+type t = unit
 
 let u2 (x : t) = Some x 
 let u3 : t option = Some ()
