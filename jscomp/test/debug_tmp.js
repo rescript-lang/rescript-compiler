@@ -1,9 +1,1 @@
-'use strict';
-
-
-throw {
-      RE_EXN_ID: "Not_found",
-      Error: new Error()
-    };
-
-/*  Not a pure module */
+/* This output is empty. Its source's type definitions, externals and/or unused code got optimized away. */
