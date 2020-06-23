@@ -5225,7 +5225,7 @@ type info =
 type syntax_kind =   
   | Ml 
   | Reason     
-
+  | Res
 
 type module_info = 
   {
@@ -5302,6 +5302,7 @@ type info =
 type syntax_kind =   
   | Ml 
   | Reason     
+  | Res
   
 type module_info = 
   {
@@ -5819,6 +5820,10 @@ let suffix_ml = ".ml"
 let suffix_mli = ".mli"
 let suffix_re = ".re"
 let suffix_rei = ".rei"
+let suffix_res = ".res"
+let suffix_resi = ".resi"
+let suffix_resast = ".resast"
+let suffix_resiast = ".resiast"
 let suffix_mlmap = ".mlmap"
 
 let suffix_cmt = ".cmt" 
