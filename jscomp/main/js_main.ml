@@ -55,6 +55,10 @@ type valid_input =
   | Mli
   | Re
   | Rei
+  | Res
+  | Resi
+  | Resast
+  | Resiast
   | Mlast    
   | Mliast 
   | Reast
@@ -97,6 +101,12 @@ let process_file ppf sourcefile =
       Mlmap 
     | _ when ext =  Literals.suffix_cmi ->
       Cmi
+    | _ when ext = Literals.suffix_res -> 
+      Res
+    | _ when ext = Literals.suffix_resi -> 
+      Resi    
+    | _ when ext = Literals.suffix_resast -> Resast   
+    | _ when ext = Literals.suffix_resiast -> Resiast
     | _ -> raise(Arg.Bad("don't know what to do with " ^ sourcefile)) in 
   let opref = Compenv.output_prefix sourcefile in 
   match input with 
@@ -111,6 +121,14 @@ let process_file ppf sourcefile =
     -> 
     setup_reason_context ();
     Js_implementation.implementation_mlast ppf sourcefile opref
+  | Res -> 
+    Js_implementation.implementation 
+      ~parser:Napkin_driver.parse_implementation
+      ppf sourcefile opref 
+  | Resi ->   
+    Js_implementation.interface 
+      ~parser:Napkin_driver.parse_interface
+      ppf sourcefile opref       
   | Ml ->
     Js_implementation.implementation 
     ~parser:Pparse_driver.parse_implementation
@@ -119,8 +137,10 @@ let process_file ppf sourcefile =
     Js_implementation.interface 
     ~parser:Pparse_driver.parse_interface
     ppf sourcefile opref   
+  | Resiast  
   | Mliast 
     -> Js_implementation.interface_mliast ppf sourcefile opref 
+  | Resast  
   | Mlast 
     -> Js_implementation.implementation_mlast ppf sourcefile opref
   | Mlmap 
