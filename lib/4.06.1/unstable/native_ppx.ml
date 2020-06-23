@@ -15082,11 +15082,12 @@ let emit_external_warnings : iterator=
           );
       default_iterator.label_declaration self lbl      
     );  
-    constructor_declaration = (fun self ({pcd_name} as ctr) -> 
-      (match pcd_name.txt with  
+    constructor_declaration = (fun self ({pcd_name = {txt;loc}} as ctr) -> 
+      (match txt with  
       | "false"
-      | "true"  -> 
-        Location.raise_errorf ~loc:pcd_name.loc "true/false can not be redefined "
+      | "true" 
+      | "()" -> 
+        Location.raise_errorf ~loc:loc "%s can not be redefined " txt
       | _ -> ());
       default_iterator.constructor_declaration self ctr  
     );
