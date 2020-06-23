@@ -1590,6 +1590,7 @@ function nativeNinja() {
     "bsb",
     "bsb_helper",
     "ounit",
+    "napkin",
     "ounit_tests",
     "main",
   ];
@@ -1635,7 +1636,7 @@ build common/bs_version.ml : mk_bsversion build_version.js ../package.json
 
 build ../${
     process.platform
-  }/bsc: link js_parser/js_parser.cmxa stubs/stubs.cmxa ext/ext.cmxa common/common.cmxa syntax/syntax.cmxa depends/depends.cmxa super_errors/super_errors.cmxa outcome_printer/outcome_printer.cmxa core/core.cmxa main/js_main.cmx
+  }/bsc: link js_parser/js_parser.cmxa stubs/stubs.cmxa ext/ext.cmxa common/common.cmxa syntax/syntax.cmxa depends/depends.cmxa super_errors/super_errors.cmxa outcome_printer/outcome_printer.cmxa core/core.cmxa napkin/napkin.cmxa main/js_main.cmx
     libs = ocamlcommon.cmxa
 build ../${
     process.platform
