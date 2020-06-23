@@ -93,10 +93,15 @@ let add_basename
   (match ()  with 
    | _ when file_suffix = Literals.suffix_ml -> 
      () 
+   | _ when file_suffix = Literals.suffix_res -> 
+     syntax_kind := Res     
    | _ when file_suffix = Literals.suffix_re -> 
      syntax_kind := Reason
    | _ when file_suffix = Literals.suffix_mli -> 
      info := Intf
+   | _ when file_suffix = Literals.suffix_resi -> 
+     info :=  Intf;
+     syntax_kind := Res   
    | _ when file_suffix = Literals.suffix_rei  -> 
      info := Intf;
      syntax_kind := Reason 
