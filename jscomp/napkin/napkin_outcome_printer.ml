@@ -944,7 +944,7 @@
      | Ophr_exception (exc, outValue) ->
        printOutExceptionDoc exc outValue
  
-   let printOutPhase fmt outPhrase =
+   let printOutPhrase fmt outPhrase =
      Format.pp_print_string fmt
        (Doc.toString ~width:80 (printOutPhraseDoc outPhrase))
  
@@ -960,14 +960,19 @@
      Format.pp_print_string fmt
        (Doc.toString ~width:80 (printOutValueDoc outValue))
  
-   (* Not supported in Napkin *)
-   let printOutClassType _fmt _ = ()
+   
+
  
-   let out_value = ref printOutValue
-   let out_type = ref printOutType
-   let out_module_type = ref printOutModuleType
-   let out_sig_item = ref printOutSigItem
-   let out_signature = ref printOutSignature
-   let out_type_extension = ref printOutTypeExtension
-   let out_phrase = ref printOutPhase [@live]
-   let out_class_type =  ref printOutClassType
+   
+(* Not supported in Napkin *)
+(* Oprint.out_class_type *)
+   let setup  = lazy begin
+    Oprint.out_value := printOutValue;
+    Oprint.out_type := printOutType;
+    Oprint.out_module_type := printOutModuleType;
+    Oprint.out_sig_item := printOutSigItem;
+    Oprint.out_signature := printOutSignature;
+    Oprint.out_type_extension := printOutTypeExtension;
+    Oprint.out_phrase := printOutPhrase
+  end  
+     
