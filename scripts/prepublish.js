@@ -66,21 +66,16 @@ function stat(files) {
  * @param {Map<string, Set<string> >} map
  */
 function check(map) {
-  var compilers = ["bsb", "bsb_helper", "bsc", "ninja", "refmt"];
-  let oses = ["darwin", "linux"];
-  if (!process.argv.includes("-nowin")) {
-    oses.push("win32");
+  // we don't need check artifacts any more
+  // since it's already snapshot
+
+  // make sure the remote and current are on the same commit
+  var currentBranch = (p.execSync(`git branch --show-current`) + "").trim()
+  var remoteDiffs = p.execSync(`git diff ${currentBranch} origin/${currentBranch}`) + ""
+  if(remoteDiffs){
+    console.warn(`diffs with remote`)
+    console.log(remoteDiffs)
   }
-  for (let os of oses) {
-    for (let c of compilers) {
-      assert(map.get(os));
-      assert(map.get(os).has(`${c}.exe`));
-    }
-  }
-  assert(map.get("lib/ocaml").size > 400);
-  assert.equal(map.has("jscomp"), false);
-  assert.equal(map.get("jscomp/stubs").size, 1);
-  assert.equal(map.get("lib/js").size, map.get("lib/es6").size);
 }
 
 var map = stat(packedFiles);
