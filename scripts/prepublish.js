@@ -55,9 +55,9 @@ function stat(files) {
       map.get(p.dir).add(p.base);
     }
   }
-  for (let [k, v] of map) {
-    console.log(`dir: ${k} \t=>\t ${v.size}`);
-  }
+  // for (let [k, v] of map) {
+  //   console.log(`dir: ${k} \t=>\t ${v.size}`);
+  // }
   return map;
 }
 
@@ -71,7 +71,7 @@ function check(map) {
 
   // make sure the remote and current are on the same commit
   var currentBranch = (p.execSync(`git branch --show-current`) + "").trim()
-  var command = `git diff ${currentBranch} origin/${currentBranch}`
+  var command = `git fetch origin && git diff ${currentBranch} origin/${currentBranch}`
   console.log(`Running '${command}'`)
   var remoteDiffs = p.execSync(command) + ""
   if(remoteDiffs){
@@ -107,9 +107,9 @@ if (!process.argv.includes("-nocheck")) {
   check(map);
 }
 
-console.log("The diff of artifacts");
+
 var output = p.spawnSync(`git diff jscomp/artifacts.json`, {
   cwd: root,
   encoding: "utf8"
 });
-console.log(output.stdout);
+console.log("The diff of artifacts",output.stdout);
