@@ -5,7 +5,6 @@ process.env["BS_VSCODE"] = "1";
 var fs = require("fs");
 var path = require("path");
 var cp = require("child_process");
-var child_process = require("child_process");
 var sourceDirs = [
   "ext",
   "common",
@@ -72,7 +71,7 @@ function buildFinished(code, signal) {
       // This is not always correct
       // ninjaFile.updateDev();
       // This file is cached
-      child_process.fork(path.join(__dirname, "ninja.js"), ["-dev"]);
+      cp.fork(path.join(__dirname, "ninja.js"), ["-dev"]);
     }
   }
 }
@@ -118,7 +117,7 @@ readline
           console.log(`it's building`);
         } else {
           isBuilding = true;
-          child_process
+          cp
             .fork(path.join(__dirname, "ninja.js"), ["config"])
             .on("close", () => {
               isBuilding = false;
@@ -131,7 +130,7 @@ readline
           console.log(`it's building`);
         } else {
           isBuilding = true;
-          child_process
+          cp
             .fork(path.join(__dirname, "ninja.js"), ["cleanbuild"])
             .on("close", () => {
               isBuilding = false;
