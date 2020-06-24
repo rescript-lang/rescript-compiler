@@ -71,10 +71,14 @@ function check(map) {
 
   // make sure the remote and current are on the same commit
   var currentBranch = (p.execSync(`git branch --show-current`) + "").trim()
-  var remoteDiffs = p.execSync(`git diff ${currentBranch} origin/${currentBranch}`) + ""
+  var command = `git diff ${currentBranch} origin/${currentBranch}`
+  console.log(`Running '${command}'`)
+  var remoteDiffs = p.execSync(command) + ""
   if(remoteDiffs){
     console.warn(`diffs with remote`)
     console.log(remoteDiffs)
+  } else {
+    console.log(`remote diffs looking good`)
   }
 }
 
