@@ -23,7 +23,8 @@ var sourceDirs = [
   "ounit_tests",
   "bsb_helper",
   "refmt",
-  "js_parser"
+  "napkin",
+  "js_parser",
 ];
 
 var buildAppending = false;
