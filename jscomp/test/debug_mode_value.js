@@ -7,5 +7,11 @@ var u = {
   [Symbol.for("name")]: "A"
 };
 
+var h = {
+  hd: 1,
+  tl: /* [] */0
+};
+
 exports.u = u;
+exports.h = h;
 /* No side effect */
