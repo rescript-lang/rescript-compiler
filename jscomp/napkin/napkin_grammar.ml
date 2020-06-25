@@ -126,6 +126,7 @@ let isSignatureItemStart = function
   | Include
   | Module
   | AtAt
+  | Export
   | PercentPercent -> true
   | _ -> false
 
@@ -251,7 +252,8 @@ let isFunctorArgStart = function
 
 let isModExprStart = function
   | Token.At | Percent
-  | Uident _ | Lbrace | Lparen -> true
+  | Uident _ | Lbrace | Lparen
+  | Lident "unpack" -> true
   | _ -> false
 
 let isRecordRowStart = function

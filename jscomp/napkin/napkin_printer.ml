@@ -992,10 +992,14 @@ and printValueDescription valueDescription cmtTbl =
   let isExternal =
     match valueDescription.pval_prim with | [] -> false | _ -> true
   in
+  let (hasGenType, attrs) = ParsetreeViewer.splitGenTypeAttr valueDescription.pval_attributes in
+  let attrs = printAttributes ~loc:valueDescription.pval_loc attrs in
+  let header =
+    if isExternal then "external " else (if hasGenType then "export " else "let ") in
   Doc.group (
     Doc.concat [
-      printAttributes valueDescription.pval_attributes;
-      Doc.text (if isExternal then "external " else "let ");
+      attrs;
+      Doc.text header;
       printComments
         (printIdentLike valueDescription.pval_name.txt)
         cmtTbl
@@ -1340,7 +1344,7 @@ and printConstructorDeclarations
 
 and printConstructorDeclaration2 i (cd : Parsetree.constructor_declaration) cmtTbl =
   let attrs = printAttributes cd.pcd_attributes in
-  let bar = if i > 0 then Doc.text "| "
+  let bar = if i > 0 || cd.pcd_attributes <> [] then Doc.text "| "
   else Doc.ifBreaks (Doc.text "| ") Doc.nil
   in
   let constrName =
@@ -2027,6 +2031,8 @@ and printExtensionWithComments ~atModuleLvl (stringLoc, payload) cmtTbl =
         )
       ]
     )
+  | Parsetree.PStr [{pstr_desc = Pstr_value (_recFlag, _bindings)} as si] ->
+    Doc.concat [extName; addParens(printStructureItem si cmtTbl)] 
   | _ -> extName
 
 and printPattern (p : Parsetree.pattern) cmtTbl =
