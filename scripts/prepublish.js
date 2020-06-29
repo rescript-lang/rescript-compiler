@@ -55,9 +55,9 @@ function stat(files) {
       map.get(p.dir).add(p.base);
     }
   }
-  for (let [k, v] of map) {
-    console.log(`dir: ${k} \t=>\t ${v.size}`);
-  }
+  // for (let [k, v] of map) {
+  //   console.log(`dir: ${k} \t=>\t ${v.size}`);
+  // }
   return map;
 }
 
@@ -66,21 +66,20 @@ function stat(files) {
  * @param {Map<string, Set<string> >} map
  */
 function check(map) {
-  var compilers = ["bsb", "bsb_helper", "bsc", "ninja", "refmt"];
-  let oses = ["darwin", "linux"];
-  if (!process.argv.includes("-nowin")) {
-    oses.push("win32");
+  // we don't need check artifacts any more
+  // since it's already snapshot
+
+  // make sure the remote and current are on the same commit
+  var currentBranch = (p.execSync(`git branch --show-current`) + "").trim()
+  var command = `git fetch origin && git diff ${currentBranch} origin/${currentBranch}`
+  console.log(`Running '${command}'`)
+  var remoteDiffs = p.execSync(command) + ""
+  if(remoteDiffs){
+    console.warn(`diffs with remote`)
+    console.log(remoteDiffs)
+  } else {
+    console.log(`remote diffs looking good`)
   }
-  for (let os of oses) {
-    for (let c of compilers) {
-      assert(map.get(os));
-      assert(map.get(os).has(`${c}.exe`));
-    }
-  }
-  assert(map.get("lib/ocaml").size > 400);
-  assert.equal(map.has("jscomp"), false);
-  assert.equal(map.get("jscomp/stubs").size, 1);
-  assert.equal(map.get("lib/js").size, map.get("lib/es6").size);
 }
 
 var map = stat(packedFiles);
@@ -108,9 +107,9 @@ if (!process.argv.includes("-nocheck")) {
   check(map);
 }
 
-console.log("The diff of artifacts");
+
 var output = p.spawnSync(`git diff jscomp/artifacts.json`, {
   cwd: root,
   encoding: "utf8"
 });
-console.log(output.stdout);
+console.log("The diff of artifacts",output.stdout);

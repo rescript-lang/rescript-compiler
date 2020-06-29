@@ -21,13 +21,16 @@ let process_implementation_file ppf name =
   (Compenv.output_prefix name)
 
 
-let setup_reason_context () = 
+let setup_reason_error_printer () = 
   Lazy.force Super_main.setup;  
   Lazy.force Reason_outcome_printer_main.setup
 
+let setup_napkin_error_printer () =  
+  Lazy.force Super_main.setup;  
+  Lazy.force Napkin_outcome_printer.setup
 
 let handle_reason (type a) (kind : a Ml_binary.kind) sourcefile ppf opref = 
-  setup_reason_context ();
+  setup_reason_error_printer ();
   let tmpfile =  Ast_reason_pp.pp sourcefile in   
   (match kind with 
    | Ml_binary.Ml -> 
@@ -55,6 +58,10 @@ type valid_input =
   | Mli
   | Re
   | Rei
+  | Res
+  | Resi
+  | Resast
+  | Resiast
   | Mlast    
   | Mliast 
   | Reast
@@ -97,6 +104,12 @@ let process_file ppf sourcefile =
       Mlmap 
     | _ when ext =  Literals.suffix_cmi ->
       Cmi
+    | _ when ext = Literals.suffix_res -> 
+      Res
+    | _ when ext = Literals.suffix_resi -> 
+      Resi    
+    | _ when ext = Literals.suffix_resast -> Resast   
+    | _ when ext = Literals.suffix_resiast -> Resiast
     | _ -> raise(Arg.Bad("don't know what to do with " ^ sourcefile)) in 
   let opref = Compenv.output_prefix sourcefile in 
   match input with 
@@ -105,12 +118,22 @@ let process_file ppf sourcefile =
     handle_reason Mli sourcefile ppf opref 
   | Reiast 
     -> 
-    setup_reason_context ();
+    setup_reason_error_printer ();
     Js_implementation.interface_mliast ppf sourcefile opref   
   | Reast 
     -> 
-    setup_reason_context ();
+    setup_reason_error_printer ();
     Js_implementation.implementation_mlast ppf sourcefile opref
+  | Res -> 
+    setup_napkin_error_printer ();
+    Js_implementation.implementation 
+      ~parser:Napkin_driver.parse_implementation
+      ppf sourcefile opref 
+  | Resi ->   
+    setup_napkin_error_printer ();
+    Js_implementation.interface 
+      ~parser:Napkin_driver.parse_interface
+      ppf sourcefile opref       
   | Ml ->
     Js_implementation.implementation 
     ~parser:Pparse_driver.parse_implementation
@@ -119,8 +142,16 @@ let process_file ppf sourcefile =
     Js_implementation.interface 
     ~parser:Pparse_driver.parse_interface
     ppf sourcefile opref   
+  | Resiast
+    ->   
+    setup_napkin_error_printer ();
+    Js_implementation.interface_mliast ppf sourcefile opref 
   | Mliast 
     -> Js_implementation.interface_mliast ppf sourcefile opref 
+  | Resast  
+    ->
+    setup_napkin_error_printer ();
+    Js_implementation.implementation_mlast ppf sourcefile opref
   | Mlast 
     -> Js_implementation.implementation_mlast ppf sourcefile opref
   | Mlmap 

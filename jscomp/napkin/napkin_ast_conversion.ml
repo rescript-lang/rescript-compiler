@@ -232,7 +232,8 @@ let looksLikeRecursiveTypeDeclaration typeDeclaration =
     match typ.ptyp_desc with
     | Ptyp_any -> false
     | Ptyp_var _ -> false
-    | Ptyp_object _ -> false
+    | Ptyp_object (fields, _) ->
+      List.exists checkObjectField fields
     | Ptyp_class _ -> false
     | Ptyp_package _ -> false
     | Ptyp_extension _ -> false
@@ -252,14 +253,24 @@ let looksLikeRecursiveTypeDeclaration typeDeclaration =
     | Ptyp_poly (_, typ) ->
       checkTypExpr typ
 
+  and checkObjectField field = match field with
+    | Otag (_label, _attrs, typ) -> checkTypExpr typ
+    | Oinherit typ -> checkTypExpr typ
+
   and checkRowFields rowField =
     match rowField with
     | Rtag (_, _, _, types) ->
       List.exists checkTypExpr types
     | Rinherit typexpr ->
       checkTypExpr typexpr
+
+  and checkManifest manifest =
+    match manifest with
+    | Some typ ->
+      checkTypExpr typ
+    | None -> false
   in
-  checkKind typeDeclaration.ptype_kind
+  checkKind typeDeclaration.ptype_kind || checkManifest typeDeclaration.ptype_manifest
 
 
 let filterReasonRawLiteral attrs =
