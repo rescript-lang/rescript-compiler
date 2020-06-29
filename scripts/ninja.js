@@ -1849,6 +1849,10 @@ function main() {
           cwd: __dirname,
           stdio: [0, 1, 2],
         });
+        cp.execSync(`node ${__filename} config`, {
+          cwd: __dirname,
+          stdio: [0, 1, 2],
+        });
         break;
       case "docs":
         console.log(`building docs`);
