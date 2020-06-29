@@ -29,7 +29,6 @@ if (match !== undefined) {
             Error: new Error()
           };
     }
-    "bye";
     Js_math.floor(1);
   }
   
