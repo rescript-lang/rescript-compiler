@@ -1053,7 +1053,7 @@ and statement_desc top cxt f (s : J.statement_desc) : cxt =
           P.string f s;
         | None -> ());
         cxt
-
+      | Str _ -> cxt 
       | _ ->  
         let cxt =
           (

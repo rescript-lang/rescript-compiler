@@ -44,6 +44,9 @@ let flatten_map =
       match x.statement_desc with 
       |  Exp ({expression_desc = Seq _; _} as v) ->
           S.block ( List.rev_map self#statement (Js_analyzer.rev_flatten_seq v ))
+      | Exp {expression_desc = Caml_block (args, _mutable_flag, _tag, _tag_info )}
+        ->         
+        S.block (Ext_list.map args (fun arg -> self#statement (S.exp arg)))         
       |  Exp ({expression_desc = Cond(a,b,c); comment} ) -> 
           { statement_desc = If (a, [ self#statement (S.exp b)],  
                                   [ self#statement (S.exp c)]); comment}
