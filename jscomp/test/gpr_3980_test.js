@@ -29,10 +29,8 @@ if (match !== undefined) {
             Error: new Error()
           };
     }
-    ({
-        name: "bye",
-        age: Js_math.floor(1)
-      });
+    "bye";
+    Js_math.floor(1);
   }
   
 } else {
