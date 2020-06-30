@@ -3031,7 +3031,6 @@ module Set_int : sig
 include Set_gen.S with type elt = int 
 end = struct
 #1 "set_int.ml"
-# 1 "ext/set.cppo.ml"
 (* Copyright (C) 2015-2016 Bloomberg Finance L.P.
  * 
  * This program is free software: you can redistribute it and/or modify
@@ -3056,23 +3055,18 @@ end = struct
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
-[@@@warning "-34"]
-# 42 "ext/set.cppo.ml"
+[@@@warnerror "-34"]
 type elt = int 
 let compare_elt = Ext_int.compare 
 let print_elt = Format.pp_print_int
 
-# 49 "ext/set.cppo.ml"
 type ('a, 'id) t0 = ('a, 'id) Set_gen.t0 = 
   | Empty 
   | Node of ('a, 'id) t0 * 'a * ('a, 'id) t0 * int 
 
-type ('a, 'id) enumeration0 = ('a, 'id) Set_gen.enumeration0 = 
-  | End 
-  | More of 'a * ('a, 'id) t0 * ('a, 'id) enumeration0
-    
+
 type  t = (elt, unit) t0
-type enumeration = (elt, unit) Set_gen.enumeration0
+
 let empty = Set_gen.empty 
 let is_empty = Set_gen.is_empty
 let iter = Set_gen.iter
