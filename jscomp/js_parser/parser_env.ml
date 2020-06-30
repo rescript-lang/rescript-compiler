@@ -154,8 +154,8 @@ let default_parse_options =
     esproposal_class_static_fields = false;
     esproposal_decorators = false;
     esproposal_export_star_as = false;
-    esproposal_optional_chaining = false;
-    esproposal_nullish_coalescing = false;
+    esproposal_optional_chaining = true;
+    esproposal_nullish_coalescing = true;
     types = true;
     use_strict = false;
   }
