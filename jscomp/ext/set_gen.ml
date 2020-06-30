@@ -383,10 +383,9 @@ module type S = sig
   val diff: t -> t -> t
   val compare: t -> t -> int
   val equal: t -> t -> bool
-  val subset: t -> t -> bool
+  (* val subset: t -> t -> bool *)
   val filter: t -> (elt -> bool) ->  t
 
-  val split: t -> elt -> t * bool * t
   val find:  t -> elt -> elt
   val of_list: elt list -> t
   val of_sorted_list : elt list ->  t

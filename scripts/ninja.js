@@ -949,9 +949,9 @@ var dTypePoly = "TYPE_POLY";
 var cppoRuleName = `cppo`;
 var cppoFile = `./bin/cppo.exe`;
 
-var cppoRule = () => `
+var cppoRule = (flags = "") => `
 rule ${cppoRuleName}
-    command = ${cppoFile} -V OCAML:${getVersionString()} $type $in -o $out
+    command = ${cppoFile} -V OCAML:${getVersionString()} ${flags} $type $in -o $out
     generator = true
 `;
 
@@ -1522,7 +1522,7 @@ rule link
 build ${cppoFile}: link ${cppoMonoFile}
     libs = unix.cmxa str.cmxa
     generator = true
-${cppoRule()}
+${cppoRule("-n")}
 ${cppoList("ext", [
   ["hash_set_string.ml", "hash_set.cppo.ml", dTypeString],
   ["hash_set_int.ml", "hash_set.cppo.ml", dTypeInt],

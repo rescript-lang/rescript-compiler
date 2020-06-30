@@ -2945,10 +2945,9 @@ module type S = sig
   val diff: t -> t -> t
   val compare: t -> t -> int
   val equal: t -> t -> bool
-  val subset: t -> t -> bool
+  (* val subset: t -> t -> bool *)
   val filter: t -> (elt -> bool) ->  t
 
-  val split: t -> elt -> t * bool * t
   val find:  t -> elt -> elt
   val of_list: elt list -> t
   val of_sorted_list : elt list ->  t
@@ -3031,7 +3030,6 @@ module Set_int : sig
 include Set_gen.S with type elt = int 
 end = struct
 #1 "set_int.ml"
-# 1 "ext/set.cppo.ml"
 (* Copyright (C) 2015-2016 Bloomberg Finance L.P.
  * 
  * This program is free software: you can redistribute it and/or modify
@@ -3056,23 +3054,18 @@ end = struct
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
-[@@@warning "-34"]
-# 42 "ext/set.cppo.ml"
+
 type elt = int 
 let compare_elt = Ext_int.compare 
 let print_elt = Format.pp_print_int
 
-# 49 "ext/set.cppo.ml"
 type ('a, 'id) t0 = ('a, 'id) Set_gen.t0 = 
   | Empty 
   | Node of ('a, 'id) t0 * 'a * ('a, 'id) t0 * int 
 
-type ('a, 'id) enumeration0 = ('a, 'id) Set_gen.enumeration0 = 
-  | End 
-  | More of 'a * ('a, 'id) t0 * ('a, 'id) enumeration0
-    
+
 type  t = (elt, unit) t0
-type enumeration = (elt, unit) Set_gen.enumeration0
+
 let empty = Set_gen.empty 
 let is_empty = Set_gen.is_empty
 let iter = Set_gen.iter
@@ -3168,22 +3161,6 @@ let compare s1 s2 = Set_gen.compare ~cmp:compare_elt s1 s2
 
 let equal s1 s2 =
   compare s1 s2 = 0
-
-let rec subset (s1 : t) (s2 : t) =
-  match (s1, s2) with
-  | Empty, _ ->
-    true
-  | _, Empty ->
-    false
-  | Node (l1, v1, r1, _), (Node (l2, v2, r2, _) as t2) ->
-    let c = compare_elt v1 v2 in
-    if c = 0 then
-      subset l1 l2 && subset r1 r2
-    else if c < 0 then
-      subset (Node (l1, v1, Empty, 0)) l2 && subset r1 t2
-    else
-      subset (Node (Empty, v1, r1, 0)) r2 && subset l1 t2
-
 
 
 
