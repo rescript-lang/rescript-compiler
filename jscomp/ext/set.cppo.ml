@@ -22,7 +22,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
-[@@@warnerror "-34"]
+
 #if defined TYPE_STRING 
 type elt = string
 let compare_elt = Ext_string.compare 
@@ -148,22 +148,6 @@ let compare s1 s2 = Set_gen.compare ~cmp:compare_elt s1 s2
 
 let equal s1 s2 =
   compare s1 s2 = 0
-
-let rec subset (s1 : t) (s2 : t) =
-  match (s1, s2) with
-  | Empty, _ ->
-    true
-  | _, Empty ->
-    false
-  | Node (l1, v1, r1, _), (Node (l2, v2, r2, _) as t2) ->
-    let c = compare_elt v1 v2 in
-    if c = 0 then
-      subset l1 l2 && subset r1 r2
-    else if c < 0 then
-      subset (Node (l1, v1, Empty, 0)) l2 && subset r1 t2
-    else
-      subset (Node (Empty, v1, r1, 0)) r2 && subset l1 t2
-
 
 
 
