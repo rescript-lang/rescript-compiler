@@ -949,9 +949,9 @@ var dTypePoly = "TYPE_POLY";
 var cppoRuleName = `cppo`;
 var cppoFile = `./bin/cppo.exe`;
 
-var cppoRule = () => `
+var cppoRule = (flags = "") => `
 rule ${cppoRuleName}
-    command = ${cppoFile} -V OCAML:${getVersionString()} $type $in -o $out
+    command = ${cppoFile} -V OCAML:${getVersionString()} ${flags} $type $in -o $out
     generator = true
 `;
 

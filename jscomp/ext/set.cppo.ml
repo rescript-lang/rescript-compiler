@@ -50,12 +50,9 @@ type ('a, 'id) t0 = ('a, 'id) Set_gen.t0 =
   | Empty 
   | Node of ('a, 'id) t0 * 'a * ('a, 'id) t0 * int 
 
-type ('a, 'id) enumeration0 = ('a, 'id) Set_gen.enumeration0 = 
-  | End 
-  | More of 'a * ('a, 'id) t0 * ('a, 'id) enumeration0
-    
+
 type  t = (elt, unit) t0
-type enumeration = (elt, unit) Set_gen.enumeration0
+
 let empty = Set_gen.empty 
 let is_empty = Set_gen.is_empty
 let iter = Set_gen.iter
