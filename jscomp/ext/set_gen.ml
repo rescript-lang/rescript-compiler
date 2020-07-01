@@ -13,18 +13,18 @@
 
 (** balanced tree based on stdlib distribution *)
 
-type ('a, 'id) t0 = 
+type 'a t0 = 
   | Empty 
-  | Node of { l : ('a, 'id) t0 ; v :  'a ; r : ('a, 'id) t0 ; h :  int }
+  | Node of { l : 'a t0 ; v :  'a ; r : 'a t0 ; h :  int }
 
-type ('a, 'id) enumeration0 = 
-  | End | More of 'a * ('a, 'id) t0 * ('a, 'id) enumeration0
+(* type 'a enumeration0 = 
+  | End | More of 'a * 'a t0 * 'a enumeration0 *)
 
 
-let rec cons_enum s e = 
+(* let rec cons_enum s e = 
   match s with 
   | Empty -> e 
-  | Node {l; v;r} -> cons_enum l (More(v,r,e))
+  | Node {l; v;r} -> cons_enum l (More(v,r,e)) *)
 
 let  [@inline always] height = function
   | Empty -> 0 
@@ -328,7 +328,7 @@ let invariant ~cmp t =
   check t ; 
   is_ordered ~cmp t 
 
-let rec compare_aux ~cmp e1 e2 =
+(* let rec compare_aux ~cmp e1 e2 =
   match (e1, e2) with
     (End, End) -> 0
   | (End, _)  -> -1
@@ -340,7 +340,7 @@ let rec compare_aux ~cmp e1 e2 =
     else compare_aux ~cmp (cons_enum r1 e1) (cons_enum r2 e2)
 
 let compare ~cmp s1 s2 =
-  compare_aux ~cmp (cons_enum s1 End) (cons_enum s2 End)
+  compare_aux ~cmp (cons_enum s1 End) (cons_enum s2 End) *)
 
 
 module type S = sig
