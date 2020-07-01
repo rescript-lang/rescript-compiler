@@ -10,7 +10,7 @@
 (*  the special exception on linking described in file ../LICENSE.     *)
 (*                                                                     *)
 (***********************************************************************)
-
+[@@@warnerror "+55"]
 (** balanced tree based on stdlib distribution *)
 
 type 'a t0 = 
@@ -26,7 +26,7 @@ type 'a t0 =
   | Empty -> e 
   | Node {l; v;r} -> cons_enum l (More(v,r,e)) *)
 
-let  [@inline always] height = function
+let  [@inline] height = function
   | Empty -> 0 
   | Node {h} -> h   
 
@@ -111,9 +111,9 @@ let check tree =
     2. l and r balanced 
     3. [height l] - [height r] <= 2
 *)
-let create l v r = 
-  let hl = match l with Empty -> 0 | Node {h} -> h in
-  let hr = match r with Empty -> 0 | Node {h} -> h in
+let [@inline] create l v r = 
+  let hl = height l  in
+  let hr = height r  in
   Node{l;v;r; h = if hl >= hr then hl + 1 else hr + 1}         
 
 (* Same as create, but performs one step of rebalancing if necessary.
@@ -127,18 +127,22 @@ let create l v r =
     Lemma: the height of  [bal l v r] will bounded by [max l r] + 1 
 *)
 let internal_bal l v r =
-  let hl = match l with Empty -> 0 | Node{h} -> h in
-  let hr = match r with Empty -> 0 | Node{h} -> h in
+  let hl = height l in
+  let hr = height r in
   if hl > hr + 2 then 
     let [@warning "-8"] Node ({l=ll;r= lr} as l) = l in 
-    if height ll >= height lr then   
+    let hll = height ll in 
+    let hlr = height lr in 
+    if hll >= hlr then   
       create ll l.v (create lr v r)        
     else       
       let [@warning "-8"] Node ({l=lrl; r= lrr} as lr) = lr in 
       create (create ll l.v lrl) lr.v (create lrr v r)
   else if hr > hl + 2 then begin    
     let [@warning "-8"] Node ({l=rl; r=rr} as r) = r in 
-    if height rr >= height rl then
+    let hrr = height rr in 
+    let hrl = height rl in 
+    if hrr >= hrl then
       create (create l v rl) r.v rr
     else begin
       let [@warning "-8"] Node({l=rll;r= rlr} as rl) = rl in 
