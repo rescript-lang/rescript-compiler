@@ -83,13 +83,6 @@ let rec exists x p = match x with
   | Node {l; v; r} -> p v || exists l p  || exists r p
 
 
-let max_int3 (a : int) b c = 
-  if a >= b then 
-    if a >= c then a 
-    else c
-  else 
-  if b >=c then b
-  else c     
 let max_int_2 (a : int) b =  
   if a >= b then a else b 
 
