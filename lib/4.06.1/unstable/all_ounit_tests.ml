@@ -2630,7 +2630,7 @@ module type S =
     val of_list : elt list -> t
     val of_sorted_list : elt list -> t
     val of_sorted_array : elt array -> t
-    val of_array : elt array -> t
+    (* val of_array : elt array -> t *)
     val invariant : t -> bool
     val print : Format.formatter -> t -> unit
   end
@@ -3014,7 +3014,7 @@ module type S = sig
   val of_list: elt list -> t
   val of_sorted_list : elt list ->  t
   val of_sorted_array : elt array -> t 
-  val of_array : elt array -> t 
+  (* val of_array : elt array -> t  *)
   val invariant : t -> bool 
   val print : Format.formatter -> t -> unit 
 end 
@@ -3246,8 +3246,7 @@ let of_list l =
   | [x0; x1; x2; x3; x4] -> add (add (add (add (singleton x0) x1) x2 ) x3 ) x4 
   | _ -> of_sorted_list (List.sort_uniq compare_elt l)
 
-let of_array l = 
-  Ext_array.fold_left l empty (fun  acc x -> add acc x ) 
+
 
 (* also check order *)
 let invariant t =
@@ -3278,7 +3277,12 @@ let ((>::),
 
 let (=~) = OUnit.assert_equal
 
-module Set_poly = Set_int
+module Set_poly =  struct 
+  include Set_int
+
+let of_array l = 
+  Ext_array.fold_left l empty add
+end
 let suites = 
   __FILE__ >:::
   [
