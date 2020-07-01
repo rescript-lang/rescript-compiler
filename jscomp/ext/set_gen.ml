@@ -136,8 +136,8 @@ let internal_bal l v r =
     if hll >= hlr then   
       create ll l.v (create lr v r)        
     else       
-      let [@warning "-8"] Node ({l=lrl; r= lrr} as lr) = lr in 
-      create (create ll l.v lrl) lr.v (create lrr v r)
+      let [@warning "-8"] Node lr = lr in 
+      create (create ll l.v lr.l) lr.v (create lr.r v r)
   else if hr > hl + 2 then begin    
     let [@warning "-8"] Node ({l=rl; r=rr} as r) = r in 
     let hrr = height rr in 
@@ -145,8 +145,8 @@ let internal_bal l v r =
     if hrr >= hrl then
       create (create l v rl) r.v rr
     else begin
-      let [@warning "-8"] Node({l=rll;r= rlr} as rl) = rl in 
-      create (create l v rll) rl.v (create rlr r.v rr)
+      let [@warning "-8"] Node rl = rl in 
+      create (create l v rl.l) rl.v (create rl.r r.v rr)
     end
   end else
     Node{l; v; r; h = if hl >= hr then hl + 1 else hr + 1}
