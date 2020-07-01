@@ -226,7 +226,7 @@ let internal_concat t1 t2 =
   | (t, Empty) -> t
   | (_, _) -> internal_join t1 (min_elt t2) (remove_min_elt t2)
 
-let rec filter x p = match x with 
+(* let rec filter x p = match x with 
   | Empty -> Empty
   | Node {l; v; r} ->
     (* call [p] in the expected left-to-right order *)
@@ -234,7 +234,7 @@ let rec filter x p = match x with
     let pv = p v in
     let r' = filter r p in
     if pv then internal_join l' v r' else internal_concat l' r'
-
+ *)
 
 let rec partition x p = match x with 
   | Empty -> (Empty, Empty)

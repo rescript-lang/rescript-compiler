@@ -33,7 +33,7 @@ val add_min_element : 'a -> 'a t0-> 'a t0
 val add_max_element : 'a -> 'a t0-> 'a t0
 val internal_join : 'a t0-> 'a -> 'a t0-> 'a t0
 val internal_concat : 'a t0-> 'a t0-> 'a t0
-val filter : 'a t0-> ('a -> bool) -> 'a t0
+(* val filter : 'a t0-> ('a -> bool) -> 'a t0 *)
 val partition : 'a t0-> ('a -> bool) -> 'a t0 * 'a t0
 val of_sorted_list : 'a list -> 'a t0
 val of_sorted_array : 'a array -> 'a t0
