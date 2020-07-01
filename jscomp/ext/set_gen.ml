@@ -26,7 +26,7 @@ let rec cons_enum s e =
   | Empty -> e 
   | Node {l; v;r} -> cons_enum l (More(v,r,e))
 
-let  height = function
+let  [@inline always] height = function
   | Empty -> 0 
   | Node {h} -> h   
 
@@ -133,20 +133,12 @@ let internal_bal l v r =
     match l with
       Empty -> assert false
     | Node{l=ll;v= lv;r= lr}->   
-      if height ll >= height lr then
-        (* [ll] >~ [lr] 
-           [ll] >~ [r] 
-           [ll] ~~ [ lr ^ r]  
-        *)
+      if height ll >= height lr then   
         create ll lv (create lr v r)
       else begin
         match lr with
           Empty -> assert false
         | Node{l=lrl;v= lrv;r= lrr}->
-          (* [lr] >~ [ll]
-             [lr] >~ [r]
-             [ll ^ lrl] ~~ [lrr ^ r]   
-          *)
           create (create ll lv lrl) lrv (create lrr v r)
       end
   end else if hr > hl + 2 then begin
@@ -366,7 +358,7 @@ module type S = sig
   val min_elt: t -> elt
   val max_elt: t -> elt
   val choose: t -> elt
-  val partition: t -> (elt -> bool) ->  t * t
+  (* val partition: t -> (elt -> bool) ->  t * t *)
 
   val mem: t -> elt -> bool
   val add: t -> elt -> t
@@ -374,10 +366,10 @@ module type S = sig
   val union: t -> t -> t
   val inter: t -> t -> t
   val diff: t -> t -> t
-  val compare: t -> t -> int
-  val equal: t -> t -> bool
+  (* val compare: t -> t -> int *)
+  (* val equal: t -> t -> bool *)
   (* val subset: t -> t -> bool *)
-  val filter: t -> (elt -> bool) ->  t
+  (* val filter: t -> (elt -> bool) ->  t *)
 
   val find:  t -> elt -> elt
   val of_list: elt list -> t

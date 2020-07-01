@@ -146,8 +146,6 @@ let rec remove (tree : t)  x : t = match tree with
 let compare s1 s2 = Set_gen.compare ~cmp:compare_elt s1 s2 
 
 
-let equal s1 s2 =
-  compare s1 s2 = 0
 
 
 
