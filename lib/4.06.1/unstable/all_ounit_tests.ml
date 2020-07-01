@@ -2618,7 +2618,7 @@ module type S =
     val cardinal : t -> int
     val elements : t -> elt list
     val min_elt : t -> elt
-    val max_elt : t -> elt
+    (* val max_elt : t -> elt *)
     val choose : t -> elt
     val mem : t -> elt -> bool
     val add : t -> elt -> t
@@ -2995,7 +2995,7 @@ module type S = sig
   val cardinal: t -> int
   val elements: t -> elt list
   val min_elt: t -> elt
-  val max_elt: t -> elt
+  (* val max_elt: t -> elt *)
   val choose: t -> elt
   (* val partition: t -> (elt -> bool) ->  t * t *)
 
@@ -3141,7 +3141,7 @@ let singleton = Set_gen.singleton
 let cardinal = Set_gen.cardinal
 let elements = Set_gen.elements
 let min_elt = Set_gen.min_elt
-let max_elt = Set_gen.max_elt
+(* let max_elt = Set_gen.max_elt *)
 let choose = Set_gen.choose 
 (* let of_sorted_list = Set_gen.of_sorted_list *)
 (* let of_sorted_array = Set_gen.of_sorted_array *)
