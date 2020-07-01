@@ -2557,8 +2557,85 @@ let time ?nums description  f  =
     end
 
 end
-module Set_gen
-= struct
+module Set_gen : sig 
+#1 "set_gen.mli"
+type 'a t0 =private
+    Empty
+  | Node of { l : 'a t0; v : 'a; r : 'a t0; h : int; }
+(* type ('a, 'id) enumeration0 =
+    End
+  | More of 'a * ('a, 'id) t0 * ('a, 'id) enumeration0 *)
+(* val cons_enum : 'a t0-> ('a, 'b) enumeration0 -> ('a, 'b) enumeration0 *)
+(* val height : 'a t0-> int *)
+val min_elt : 'a t0-> 'a
+val max_elt : 'a t0-> 'a
+val empty : 'a t0
+val is_empty : 'a t0-> bool
+(* val cardinal_aux : int -> 'a t0-> int *)
+val cardinal : 'a t0-> int
+(* val elements_aux : 'a list -> 'a t0-> 'a list *)
+val elements : 'a t0-> 'a list
+val choose : 'a t0-> 'a
+val iter : 'a t0-> ('a -> 'c) -> unit
+val fold : 'a t0-> 'c -> ('a -> 'c -> 'c) -> 'c
+val for_all : 'a t0-> ('a -> bool) -> bool
+val exists : 'a t0-> ('a -> bool) -> bool
+(* val max_int_2 : int -> int -> int *)
+(* exception Height_invariant_broken
+exception Height_diff_borken *)
+(* val check_height_and_diff : 'a t0-> int *)
+val check : 'a t0-> unit
+(* val create : 'a t0-> 'a -> 'a t0-> 'a t0*)
+val internal_bal : 'a t0-> 'a -> 'a t0-> 'a t0
+val remove_min_elt : 'a t0-> 'a t0
+val singleton : 'a -> 'a t0
+val internal_merge : 'a t0-> 'a t0-> 'a t0
+val add_min_element : 'a -> 'a t0-> 'a t0
+val add_max_element : 'a -> 'a t0-> 'a t0
+val internal_join : 'a t0-> 'a -> 'a t0-> 'a t0
+val internal_concat : 'a t0-> 'a t0-> 'a t0
+val filter : 'a t0-> ('a -> bool) -> 'a t0
+val partition : 'a t0-> ('a -> bool) -> 'a t0 * 'a t0
+val of_sorted_list : 'a list -> 'a t0
+val of_sorted_array : 'a array -> 'a t0
+val is_ordered : cmp:('a -> 'a -> int) -> 'a t0-> bool
+val invariant : cmp:('a -> 'a -> int) -> 'a t0-> bool
+(* val compare_aux :
+  cmp:('a -> 'b -> int) ->
+  ('a, 'c) enumeration0 -> ('b, 'd) enumeration0 -> int *)
+(* val compare : cmp:('a -> 'b -> int) -> 'a t0 -> ('b, 'd) t0 -> int *)
+module type S =
+  sig
+    type elt
+    type t
+    val empty : t
+    val is_empty : t -> bool
+    val iter : t -> (elt -> unit) -> unit
+    val fold : t -> 'a -> (elt -> 'a -> 'a) -> 'a
+    val for_all : t -> (elt -> bool) -> bool
+    val exists : t -> (elt -> bool) -> bool
+    val singleton : elt -> t
+    val cardinal : t -> int
+    val elements : t -> elt list
+    val min_elt : t -> elt
+    val max_elt : t -> elt
+    val choose : t -> elt
+    val mem : t -> elt -> bool
+    val add : t -> elt -> t
+    val remove : t -> elt -> t
+    val union : t -> t -> t
+    val inter : t -> t -> t
+    val diff : t -> t -> t
+    val find : t -> elt -> elt
+    val of_list : elt list -> t
+    val of_sorted_list : elt list -> t
+    val of_sorted_array : elt array -> t
+    val of_array : elt array -> t
+    val invariant : t -> bool
+    val print : Format.formatter -> t -> unit
+  end
+
+end = struct
 #1 "set_gen.ml"
 (***********************************************************************)
 (*                                                                     *)
@@ -2575,20 +2652,20 @@ module Set_gen
 
 (** balanced tree based on stdlib distribution *)
 
-type ('a, 'id) t0 = 
+type 'a t0 = 
   | Empty 
-  | Node of { l : ('a, 'id) t0 ; v :  'a ; r : ('a, 'id) t0 ; h :  int }
+  | Node of { l : 'a t0 ; v :  'a ; r : 'a t0 ; h :  int }
 
-type ('a, 'id) enumeration0 = 
-  | End | More of 'a * ('a, 'id) t0 * ('a, 'id) enumeration0
+(* type 'a enumeration0 = 
+  | End | More of 'a * 'a t0 * 'a enumeration0 *)
 
 
-let rec cons_enum s e = 
+(* let rec cons_enum s e = 
   match s with 
   | Empty -> e 
-  | Node {l; v;r} -> cons_enum l (More(v,r,e))
+  | Node {l; v;r} -> cons_enum l (More(v,r,e)) *)
 
-let  height = function
+let  [@inline always] height = function
   | Empty -> 0 
   | Node {h} -> h   
 
@@ -2645,13 +2722,6 @@ let rec exists x p = match x with
   | Node {l; v; r} -> p v || exists l p  || exists r p
 
 
-let max_int3 (a : int) b c = 
-  if a >= b then 
-    if a >= c then a 
-    else c
-  else 
-  if b >=c then b
-  else c     
 let max_int_2 (a : int) b =  
   if a >= b then a else b 
 
@@ -2702,20 +2772,12 @@ let internal_bal l v r =
     match l with
       Empty -> assert false
     | Node{l=ll;v= lv;r= lr}->   
-      if height ll >= height lr then
-        (* [ll] >~ [lr] 
-           [ll] >~ [r] 
-           [ll] ~~ [ lr ^ r]  
-        *)
+      if height ll >= height lr then   
         create ll lv (create lr v r)
       else begin
         match lr with
           Empty -> assert false
         | Node{l=lrl;v= lrv;r= lrr}->
-          (* [lr] >~ [ll]
-             [lr] >~ [r]
-             [ll ^ lrl] ~~ [lrr ^ r]   
-          *)
           create (create ll lv lrl) lrv (create lrr v r)
       end
   end else if hr > hl + 2 then begin
@@ -2905,7 +2967,7 @@ let invariant ~cmp t =
   check t ; 
   is_ordered ~cmp t 
 
-let rec compare_aux ~cmp e1 e2 =
+(* let rec compare_aux ~cmp e1 e2 =
   match (e1, e2) with
     (End, End) -> 0
   | (End, _)  -> -1
@@ -2917,7 +2979,7 @@ let rec compare_aux ~cmp e1 e2 =
     else compare_aux ~cmp (cons_enum r1 e1) (cons_enum r2 e2)
 
 let compare ~cmp s1 s2 =
-  compare_aux ~cmp (cons_enum s1 End) (cons_enum s2 End)
+  compare_aux ~cmp (cons_enum s1 End) (cons_enum s2 End) *)
 
 
 module type S = sig
@@ -2935,7 +2997,7 @@ module type S = sig
   val min_elt: t -> elt
   val max_elt: t -> elt
   val choose: t -> elt
-  val partition: t -> (elt -> bool) ->  t * t
+  (* val partition: t -> (elt -> bool) ->  t * t *)
 
   val mem: t -> elt -> bool
   val add: t -> elt -> t
@@ -2943,10 +3005,10 @@ module type S = sig
   val union: t -> t -> t
   val inter: t -> t -> t
   val diff: t -> t -> t
-  val compare: t -> t -> int
-  val equal: t -> t -> bool
+  (* val compare: t -> t -> int *)
+  (* val equal: t -> t -> bool *)
   (* val subset: t -> t -> bool *)
-  val filter: t -> (elt -> bool) ->  t
+  (* val filter: t -> (elt -> bool) ->  t *)
 
   val find:  t -> elt -> elt
   val of_list: elt list -> t
@@ -3062,12 +3124,12 @@ let compare_elt = Ext_int.compare
 let print_elt = Format.pp_print_int
 
 # 49 "ext/set.cppo.ml"
-type ('a, 'id) t0 = ('a, 'id) Set_gen.t0 = 
+type ('a ) t0 = 'a Set_gen.t0 = private
   | Empty 
-  | Node of { l : ('a, 'id) t0 ; v : 'a ; r :  ('a, 'id) t0 ; h :  int }
+  | Node of { l : 'a t0 ; v : 'a ; r :  'a t0 ; h :  int }
 
 
-type  t = (elt, unit) t0
+type  t = elt t0
 
 let empty = Set_gen.empty 
 let is_empty = Set_gen.is_empty
@@ -3083,14 +3145,14 @@ let max_elt = Set_gen.max_elt
 let choose = Set_gen.choose 
 (* let of_sorted_list = Set_gen.of_sorted_list *)
 (* let of_sorted_array = Set_gen.of_sorted_array *)
-let partition = Set_gen.partition 
-let filter = Set_gen.filter 
+(* let partition = Set_gen.partition 
+let filter = Set_gen.filter  *)
 let of_sorted_list = Set_gen.of_sorted_list
 let of_sorted_array = Set_gen.of_sorted_array
 
 let rec split (tree : t) x : t * bool * t =  match tree with 
   | Empty ->
-    (Empty, false, Empty)
+    (empty, false, empty)
   | Node {l; v; r} ->
     let c = compare_elt x v in
     if c = 0 then (l, true, r)
@@ -3123,8 +3185,8 @@ let rec union (s1 : t) (s2 : t) : t  =
 
 let rec inter (s1 : t)  (s2 : t) : t  =
   match (s1, s2) with
-  | (Empty, _) -> Empty
-  | (_, Empty) -> Empty
+  | (Empty, _) -> empty
+  | (_, Empty) -> empty
   | (Node{l=l1; v=v1; r=r1}, t2) ->
     begin match split t2 v1 with
       | (l2, false, r2) ->
@@ -3135,7 +3197,7 @@ let rec inter (s1 : t)  (s2 : t) : t  =
 
 let rec diff (s1 : t) (s2 : t) : t  =
   match (s1, s2) with
-  | (Empty, _) -> Empty
+  | (Empty, _) -> empty
   | (t1, Empty) -> t1
   | (Node{l=l1; v=v1; r=r1}, t2) ->
     begin match split t2 v1 with
@@ -3153,17 +3215,15 @@ let rec mem (tree : t) x =  match tree with
     c = 0 || mem (if c < 0 then l else r) x
 
 let rec remove (tree : t)  x : t = match tree with 
-  | Empty -> Empty
+  | Empty -> empty
   | Node{l; v; r} ->
     let c = compare_elt x v in
     if c = 0 then Set_gen.internal_merge l r else
     if c < 0 then Set_gen.internal_bal (remove l x) v r else Set_gen.internal_bal l v (remove r x )
 
-let compare s1 s2 = Set_gen.compare ~cmp:compare_elt s1 s2 
+(* let compare s1 s2 = Set_gen.compare ~cmp:compare_elt s1 s2  *)
 
 
-let equal s1 s2 =
-  compare s1 s2 = 0
 
 
 
