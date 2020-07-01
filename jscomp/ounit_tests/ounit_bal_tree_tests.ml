@@ -3,7 +3,12 @@ let ((>::),
 
 let (=~) = OUnit.assert_equal
 
-module Set_poly = Set_int
+module Set_poly =  struct 
+  include Set_int
+
+let of_array l = 
+  Ext_array.fold_left l empty add
+end
 let suites = 
   __FILE__ >:::
   [

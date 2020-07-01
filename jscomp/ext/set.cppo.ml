@@ -168,8 +168,7 @@ let of_list l =
   | [x0; x1; x2; x3; x4] -> add (add (add (add (singleton x0) x1) x2 ) x3 ) x4 
   | _ -> of_sorted_list (List.sort_uniq compare_elt l)
 
-let of_array l = 
-  Ext_array.fold_left l empty (fun  acc x -> add acc x ) 
+
 
 (* also check order *)
 let invariant t =
