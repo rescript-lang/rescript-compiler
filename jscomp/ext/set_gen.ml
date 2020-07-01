@@ -129,30 +129,21 @@ let create l v r =
 let internal_bal l v r =
   let hl = match l with Empty -> 0 | Node{h} -> h in
   let hr = match r with Empty -> 0 | Node{h} -> h in
-  if hl > hr + 2 then begin
-    match l with
-      Empty -> assert false
-    | Node{l=ll;v= lv;r= lr}->   
-      if height ll >= height lr then   
-        create ll lv (create lr v r)
-      else begin
-        match lr with
-          Empty -> assert false
-        | Node{l=lrl;v= lrv;r= lrr}->
-          create (create ll lv lrl) lrv (create lrr v r)
-      end
-  end else if hr > hl + 2 then begin
-    match r with
-      Empty -> assert false
-    | Node{l=rl;v= rv; r=rr} ->
-      if height rr >= height rl then
-        create (create l v rl) rv rr
-      else begin
-        match rl with
-          Empty -> assert false
-        | Node{l=rll;v= rlv;r= rlr} ->
-          create (create l v rll) rlv (create rlr rv rr)
-      end
+  if hl > hr + 2 then 
+    let [@warning "-8"] Node ({l=ll;r= lr} as l) = l in 
+    if height ll >= height lr then   
+      create ll l.v (create lr v r)        
+    else       
+      let [@warning "-8"] Node ({l=lrl; r= lrr} as lr) = lr in 
+      create (create ll l.v lrl) lr.v (create lrr v r)
+  else if hr > hl + 2 then begin    
+    let [@warning "-8"] Node ({l=rl; r=rr} as r) = r in 
+    if height rr >= height rl then
+      create (create l v rl) r.v rr
+    else begin
+      let [@warning "-8"] Node({l=rll;r= rlr} as rl) = rl in 
+      create (create l v rll) rl.v (create rlr r.v rr)
+    end
   end else
     Node{l; v; r; h = if hl >= hr then hl + 1 else hr + 1}
 
