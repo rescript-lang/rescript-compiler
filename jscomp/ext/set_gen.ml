@@ -356,7 +356,7 @@ module type S = sig
   val cardinal: t -> int
   val elements: t -> elt list
   val min_elt: t -> elt
-  val max_elt: t -> elt
+  (* val max_elt: t -> elt *)
   val choose: t -> elt
   (* val partition: t -> (elt -> bool) ->  t * t *)
 
