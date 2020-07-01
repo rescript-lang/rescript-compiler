@@ -3895,7 +3895,7 @@ val add_min_element : 'a -> 'a t0-> 'a t0
 val add_max_element : 'a -> 'a t0-> 'a t0
 val internal_join : 'a t0-> 'a -> 'a t0-> 'a t0
 val internal_concat : 'a t0-> 'a t0-> 'a t0
-val filter : 'a t0-> ('a -> bool) -> 'a t0
+(* val filter : 'a t0-> ('a -> bool) -> 'a t0 *)
 val partition : 'a t0-> ('a -> bool) -> 'a t0 * 'a t0
 val of_sorted_list : 'a list -> 'a t0
 val of_sorted_array : 'a array -> 'a t0
@@ -4166,7 +4166,7 @@ let internal_concat t1 t2 =
   | (t, Empty) -> t
   | (_, _) -> internal_join t1 (min_elt t2) (remove_min_elt t2)
 
-let rec filter x p = match x with 
+(* let rec filter x p = match x with 
   | Empty -> Empty
   | Node {l; v; r} ->
     (* call [p] in the expected left-to-right order *)
@@ -4174,7 +4174,7 @@ let rec filter x p = match x with
     let pv = p v in
     let r' = filter r p in
     if pv then internal_join l' v r' else internal_concat l' r'
-
+ *)
 
 let rec partition x p = match x with 
   | Empty -> (Empty, Empty)
