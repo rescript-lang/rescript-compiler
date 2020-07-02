@@ -3192,6 +3192,12 @@ let choose = Set_gen.choose
 let filter = Set_gen.filter  *)
 let of_sorted_array = Set_gen.of_sorted_array
 
+let rec mem (tree : t) x =  match tree with 
+  | Empty -> false
+  | Leaf v -> compare_elt x v = 0
+  | Node{l; v; r} ->
+    let c = compare_elt x v in
+    c = 0 || mem (if c < 0 then l else r) x
 
 let rec split (tree : t) x : t * bool * t =  match tree with 
   | Empty ->
@@ -3266,7 +3272,7 @@ let rec inter (s1 : t)  (s2 : t) : t  =
         Set_gen.internal_join (inter l1 l2) v1 (inter r1 r2)
     end 
 
-and diff (s1 : t) (s2 : t) : t  =
+let rec diff (s1 : t) (s2 : t) : t  =
   match (s1, s2) with
   | (Empty, _) -> empty
   | (t1, Empty) -> t1
@@ -3281,12 +3287,7 @@ and diff (s1 : t) (s2 : t) : t  =
     end
 
 
-and mem (tree : t) x =  match tree with 
-  | Empty -> false
-  | Leaf v -> compare_elt x v = 0
-  | Node{l; v; r} ->
-    let c = compare_elt x v in
-    c = 0 || mem (if c < 0 then l else r) x
+
 
 let rec remove (tree : t)  x : t = match tree with 
   | Empty -> empty (* This case actually would be never reached *)
